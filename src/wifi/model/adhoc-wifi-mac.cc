@@ -553,8 +553,8 @@ AdhocWifiMac::GetHtOperation() const
 
     HtOperation operation;
 
-    operation.SetPrimaryChannel(GetWifiPhy()->GetPrimaryChannelNumber(20));
-    if (GetWifiPhy()->GetChannelWidth() > 20)
+    operation.SetPrimaryChannel(GetWifiPhy()->GetPrimaryChannelNumber(MHz_t{20}));
+    if (GetWifiPhy()->GetChannelWidth() > MHz_t{20})
     {
         operation.SetSecondaryChannelOffset(1);
         operation.SetStaChannelWidth(1);
@@ -592,21 +592,21 @@ AdhocWifiMac::GetVhtOperation() const
     const auto bssBandwidth = GetWifiPhy()->GetChannelWidth();
     // Set to 0 for 20 MHz or 40 MHz BSS bandwidth.
     // Set to 1 for 80 MHz, 160 MHz or 80+80 MHz BSS bandwidth.
-    operation.SetChannelWidth((bssBandwidth > 40) ? 1 : 0);
+    operation.SetChannelWidth((bssBandwidth > MHz_t{40}) ? 1 : 0);
     // For 20, 40, or 80 MHz BSS bandwidth, indicates the channel center frequency
     // index for the 20, 40, or 80 MHz channel on which the VHT BSS operates.
     // For 160 MHz BSS bandwidth and the Channel Width subfield equal to 1,
     // indicates the channel center frequency index of the 80 MHz channel
     // segment that contains the primary channel.
-    operation.SetChannelCenterFrequencySegment0((bssBandwidth == 160)
-                                                    ? GetWifiPhy()->GetPrimaryChannelNumber(80)
-                                                    : GetWifiPhy()->GetChannelNumber());
+    operation.SetChannelCenterFrequencySegment0(
+        (bssBandwidth == MHz_t{160}) ? GetWifiPhy()->GetPrimaryChannelNumber(MHz_t{80})
+                                     : GetWifiPhy()->GetChannelNumber());
     // For a 20, 40, or 80 MHz BSS bandwidth, this subfield is set to 0.
     // For a 160 MHz BSS bandwidth and the Channel Width subfield equal to 1,
     // indicates the channel center frequency index of the 160 MHz channel on
     // which the VHT BSS operates.
     operation.SetChannelCenterFrequencySegment1(
-        (bssBandwidth == 160) ? GetWifiPhy()->GetChannelNumber() : 0);
+        (bssBandwidth == MHz_t{160}) ? GetWifiPhy()->GetChannelNumber() : 0);
     for (uint8_t nss = 1; nss <= GetWifiPhy()->GetMaxSupportedRxSpatialStreams(); nss++)
     {
         uint8_t maxMcs =
@@ -637,15 +637,15 @@ AdhocWifiMac::GetHeOperation() const
         HeOperation::OpInfo6GHz op6Ghz;
         const auto bw = GetWifiPhy()->GetChannelWidth();
         const auto ch = GetWifiPhy()->GetOperatingChannel();
-        op6Ghz.m_chWid = (bw == MHz_u{20}) ? 0 : (bw == MHz_u{40}) ? 1 : (bw == MHz_u{80}) ? 2 : 3;
-        op6Ghz.m_primCh = ch.GetPrimaryChannelNumber(MHz_u{20}, WIFI_STANDARD_80211ax);
-        op6Ghz.m_chCntrFreqSeg0 = (bw == MHz_u{160})
-                                      ? ch.GetPrimaryChannelNumber(MHz_u{80}, WIFI_STANDARD_80211ax)
+        op6Ghz.m_chWid = (bw == MHz_t{20}) ? 0 : (bw == MHz_t{40}) ? 1 : (bw == MHz_t{80}) ? 2 : 3;
+        op6Ghz.m_primCh = ch.GetPrimaryChannelNumber(MHz_t{20}, WIFI_STANDARD_80211ax);
+        op6Ghz.m_chCntrFreqSeg0 = (bw == MHz_t{160})
+                                      ? ch.GetPrimaryChannelNumber(MHz_t{80}, WIFI_STANDARD_80211ax)
                                       : ch.GetNumber();
         op6Ghz.m_chCntrFreqSeg1 =
-            (bw == MHz_u{160})
+            (bw == MHz_t{160})
                 ? ((ch.GetWidthType() == WifiChannelWidthType::CW_80_PLUS_80MHZ)
-                       ? ch.GetSecondaryChannelNumber(MHz_u{80}, WIFI_STANDARD_80211ax)
+                       ? ch.GetSecondaryChannelNumber(MHz_t{80}, WIFI_STANDARD_80211ax)
                        : ch.GetNumber())
                 : 0;
 

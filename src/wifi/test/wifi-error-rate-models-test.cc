@@ -426,7 +426,7 @@ WifiErrorRateModelsTestCaseMimo::DoRun()
 
     txVector.SetMode(mode);
     txVector.SetTxPowerLevel(0);
-    txVector.SetChannelWidth(MHz_u{20});
+    txVector.SetChannelWidth(MHz_t{20});
     txVector.SetNss(1);
     txVector.SetNTx(1);
 

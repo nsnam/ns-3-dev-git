@@ -2643,8 +2643,7 @@ EmlsrUlTxopTest::EmlsrUlTxopTest(const Params& params)
 void
 EmlsrUlTxopTest::DoSetup()
 {
-    Config::SetDefault("ns3::EmlsrManager::AuxPhyChannelWidth",
-                       UintegerValue(m_auxPhyChannelWidth));
+    Config::SetDefault("ns3::EmlsrManager::AuxPhyChannelWidth", MHzValue(m_auxPhyChannelWidth));
     Config::SetDefault("ns3::DefaultEmlsrManager::SwitchAuxPhy", BooleanValue(false));
     Config::SetDefault("ns3::AdvancedEmlsrManager::UseAuxPhyCca", BooleanValue(m_useAuxPhyCca));
     Config::SetDefault("ns3::AdvancedEmlsrManager::SwitchMainPhyBackDelay",
@@ -2670,11 +2669,11 @@ EmlsrUlTxopTest::DoSetup()
     // configure channels of the given width
     for (auto band : {WIFI_PHY_BAND_2_4GHZ, WIFI_PHY_BAND_5GHZ, WIFI_PHY_BAND_6GHZ})
     {
-        MHz_u bw{20};
+        MHz_t bw{20};
         uint8_t number = band == WIFI_PHY_BAND_5GHZ ? 36 : 1;
 
         auto width =
-            std::min(m_channelWidth, band == WIFI_PHY_BAND_2_4GHZ ? MHz_u{40} : MHz_u{160});
+            std::min(m_channelWidth, band == WIFI_PHY_BAND_2_4GHZ ? MHz_t{40} : MHz_t{160});
         while (bw < width)
         {
             bw *= 2;
@@ -2684,7 +2683,7 @@ EmlsrUlTxopTest::DoSetup()
         for (auto mac : std::initializer_list<Ptr<WifiMac>>{m_apMac, m_staMacs[0]})
         {
             mac->GetWifiPhy(linkId)->SetOperatingChannel(
-                WifiPhy::ChannelTuple{number, width, band, 0});
+                WifiPhy::ChannelTuple{number, width.in_MHz(), band, 0});
         }
         linkId++;
     }
@@ -4148,7 +4147,7 @@ EmlsrLinkSwitchTest::EmlsrLinkSwitchTest(const Params& params)
           std::string("Check EMLSR link switching (switchAuxPhy=") +
           std::to_string(params.switchAuxPhy) + ", resetCamStateAndInterruptSwitch=" +
           std::to_string(params.resetCamStateAndInterruptSwitch) +
-          ", auxPhyMaxChWidth=" + std::to_string(params.auxPhyMaxChWidth) + "MHz )"),
+          ", auxPhyMaxChWidth=" + std::to_string(params.auxPhyMaxChWidth.in_MHz()) + "MHz )"),
       m_switchAuxPhy(params.switchAuxPhy),
       m_resetCamStateAndInterruptSwitch(params.resetCamStateAndInterruptSwitch),
       m_auxPhyMaxChWidth(params.auxPhyMaxChWidth),
@@ -4242,7 +4241,7 @@ EmlsrLinkSwitchTest::DoSetup()
                        BooleanValue(m_resetCamStateAndInterruptSwitch));
     Config::SetDefault("ns3::AdvancedEmlsrManager::InterruptSwitch",
                        BooleanValue(m_resetCamStateAndInterruptSwitch));
-    Config::SetDefault("ns3::EmlsrManager::AuxPhyChannelWidth", UintegerValue(m_auxPhyMaxChWidth));
+    Config::SetDefault("ns3::EmlsrManager::AuxPhyChannelWidth", MHzValue(m_auxPhyMaxChWidth));
     Config::SetDefault("ns3::WifiPhy::ChannelSwitchDelay", TimeValue(MicroSeconds(45)));
 
     EmlsrOperationsTestBase::DoSetup();
@@ -4752,9 +4751,9 @@ EmlsrLinkSwitchTest::CheckResults()
     }
 }
 
-EmlsrCcaBusyTest::EmlsrCcaBusyTest(MHz_u auxPhyMaxChWidth)
+EmlsrCcaBusyTest::EmlsrCcaBusyTest(MHz_t auxPhyMaxChWidth)
     : EmlsrOperationsTestBase(std::string("Check EMLSR link switching (auxPhyMaxChWidth=") +
-                              std::to_string(auxPhyMaxChWidth) + "MHz )"),
+                              std::to_string(auxPhyMaxChWidth.in_MHz()) + "MHz )"),
       m_auxPhyMaxChWidth(auxPhyMaxChWidth),
       m_channelSwitchDelay(MicroSeconds(75)),
       m_currMainPhyLinkId(0),
@@ -4782,7 +4781,7 @@ void
 EmlsrCcaBusyTest::DoSetup()
 {
     Config::SetDefault("ns3::DefaultEmlsrManager::SwitchAuxPhy", BooleanValue(true));
-    Config::SetDefault("ns3::EmlsrManager::AuxPhyChannelWidth", UintegerValue(m_auxPhyMaxChWidth));
+    Config::SetDefault("ns3::EmlsrManager::AuxPhyChannelWidth", MHzValue(m_auxPhyMaxChWidth));
     Config::SetDefault("ns3::EmlsrManager::AuxPhyMaxModClass", StringValue("EHT"));
     Config::SetDefault("ns3::WifiPhy::ChannelSwitchDelay", TimeValue(m_channelSwitchDelay));
 
@@ -5569,8 +5568,8 @@ WifiEmlsrTestSuite::WifiEmlsrTestSuite()
         for (auto nSlotsLeft : std::initializer_list<uint8_t>{0, 4})
         {
             AddTestCase(new EmlsrUlTxopTest({{0, 1, 2},
-                                             MHz_u{40},
-                                             MHz_u{20},
+                                             MHz_t{40},
+                                             MHz_t{20},
                                              MicroSeconds(5504),
                                              3,
                                              genBackoffAndUseAuxPhyCca,
@@ -5579,8 +5578,8 @@ WifiEmlsrTestSuite::WifiEmlsrTestSuite()
                                              false /* switchMainPhyBackDelayTimeout */}),
                         TestCase::Duration::QUICK);
             AddTestCase(new EmlsrUlTxopTest({{0, 1},
-                                             MHz_u{40},
-                                             MHz_u{20},
+                                             MHz_t{40},
+                                             MHz_t{20},
                                              MicroSeconds(5504),
                                              1,
                                              genBackoffAndUseAuxPhyCca,
@@ -5595,7 +5594,7 @@ WifiEmlsrTestSuite::WifiEmlsrTestSuite()
     {
         for (bool resetCamStateAndInterruptSwitch : {true, false})
         {
-            for (auto auxPhyMaxChWidth : {MHz_u{20}, MHz_u{40}, MHz_u{80}, MHz_u{160}})
+            for (auto auxPhyMaxChWidth : {MHz_t{20}, MHz_t{40}, MHz_t{80}, MHz_t{160}})
             {
                 AddTestCase(new EmlsrLinkSwitchTest(
                                 {switchAuxPhy, resetCamStateAndInterruptSwitch, auxPhyMaxChWidth}),
@@ -5607,8 +5606,8 @@ WifiEmlsrTestSuite::WifiEmlsrTestSuite()
     AddTestCase(new EmlsrUlOfdmaTest(false), TestCase::Duration::QUICK);
     AddTestCase(new EmlsrUlOfdmaTest(true), TestCase::Duration::QUICK);
 
-    AddTestCase(new EmlsrCcaBusyTest(MHz_u{20}), TestCase::Duration::QUICK);
-    AddTestCase(new EmlsrCcaBusyTest(MHz_u{80}), TestCase::Duration::QUICK);
+    AddTestCase(new EmlsrCcaBusyTest(MHz_t{20}), TestCase::Duration::QUICK);
+    AddTestCase(new EmlsrCcaBusyTest(MHz_t{80}), TestCase::Duration::QUICK);
 
     for (const auto switchAuxPhy : {true, false})
     {

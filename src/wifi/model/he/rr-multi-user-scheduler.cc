@@ -979,7 +979,7 @@ RrMultiUserScheduler::UpdateCredits(std::list<MasterInfo>& staList,
     double debitsPerMhz =
         txDuration.ToDouble(Time::US) /
         std::accumulate(ruMap.begin(), ruMap.end(), 0, [](uint16_t sum, auto pair) {
-            return sum + pair.second * HeRu::GetBandwidth(pair.first);
+            return sum + pair.second * HeRu::GetBandwidth(pair.first).in_MHz();
         });
 
     // assign credits to all stations
@@ -995,7 +995,8 @@ RrMultiUserScheduler::UpdateCredits(std::list<MasterInfo>& staList,
         auto mapIt = txVector.GetHeMuUserInfoMap().find(candidate.first->aid);
         NS_ASSERT(mapIt != txVector.GetHeMuUserInfoMap().end());
 
-        candidate.first->credits -= debitsPerMhz * HeRu::GetBandwidth(mapIt->second.ru.GetRuType());
+        candidate.first->credits -=
+            debitsPerMhz * HeRu::GetBandwidth(mapIt->second.ru.GetRuType()).in_MHz();
     }
 
     // sort the list in decreasing order of credits

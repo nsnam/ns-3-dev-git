@@ -615,8 +615,8 @@ class EmlsrUlTxopTest : public EmlsrOperationsTestBase
     {
         std::set<uint8_t>
             linksToEnableEmlsrOn;       //!< IDs of links on which EMLSR mode should be enabled
-        MHz_u channelWidth;             //!< width of the channels used by MLDs
-        MHz_u auxPhyChannelWidth;       //!< max width supported by aux PHYs
+        MHz_t channelWidth;             //!< width of the channels used by MLDs
+        MHz_t auxPhyChannelWidth;       //!< max width supported by aux PHYs
         Time mediumSyncDuration;        //!< duration of the MediumSyncDelay timer
         uint8_t msdMaxNTxops;           //!< Max number of TXOPs that an EMLSR client is allowed
                                         //!< to attempt to initiate while the MediumSyncDelay
@@ -713,8 +713,8 @@ class EmlsrUlTxopTest : public EmlsrOperationsTestBase
     void BackoffGenerated(uint32_t backoff, uint8_t linkId);
 
     std::set<uint8_t> m_emlsrLinks; /**< IDs of the links on which EMLSR mode has to be enabled */
-    MHz_u m_channelWidth;           //!< width of the channels used by MLDs
-    MHz_u m_auxPhyChannelWidth;     //!< max width supported by aux PHYs
+    MHz_t m_channelWidth;           //!< width of the channels used by MLDs
+    MHz_t m_auxPhyChannelWidth;     //!< max width supported by aux PHYs
     Time m_mediumSyncDuration;      //!< duration of the MediumSyncDelay timer
     uint8_t m_msdMaxNTxops;         //!< Max number of TXOPs that an EMLSR client is allowed
                                     //!< to attempt to initiate while the MediumSyncDelay
@@ -742,7 +742,7 @@ class EmlsrUlTxopTest : public EmlsrOperationsTestBase
                                           //!< after that the main PHY moved to an aux PHY link
     std::optional<bool> m_corruptCts;     //!< whether the transmitted CTS must be corrupted
     Time m_5thQosFrameTxTime;             //!< start transmission time of the 5th QoS data frame
-    MHz_u m_5thQosFrameExpWidth;          //!< expected width of the 5th QoS data frame
+    MHz_t m_5thQosFrameExpWidth;          //!< expected width of the 5th QoS data frame
 };
 
 /**
@@ -833,7 +833,7 @@ class EmlsrLinkSwitchTest : public EmlsrOperationsTestBase
                                               //!< with the link on which the main PHY has just
                                               //!< switched to, the second value controls whether
                                               //!< a main PHY channel switch can be interrupted
-        MHz_u auxPhyMaxChWidth;               //!< max channel width supported by aux PHYs
+        MHz_t auxPhyMaxChWidth;               //!< max channel width supported by aux PHYs
     };
 
     /**
@@ -902,7 +902,7 @@ class EmlsrLinkSwitchTest : public EmlsrOperationsTestBase
         m_resetCamStateAndInterruptSwitch; /**< whether to reset the state of the
                               ChannelAccessManager associated with the link on which the main PHY
                               has just switched to and whether main PHY switch can be interrupted */
-    MHz_u m_auxPhyMaxChWidth;              //!< max channel width supported by aux PHYs
+    MHz_t m_auxPhyMaxChWidth;              //!< max channel width supported by aux PHYs
     std::size_t m_countQoSframes;          //!< counter for QoS data frames
     std::size_t m_countIcfFrames;          //!< counter for ICF frames
     std::size_t m_countRtsFrames;          //!< counter for RTS frames
@@ -949,7 +949,7 @@ class EmlsrCcaBusyTest : public EmlsrOperationsTestBase
      *
      * @param auxPhyMaxChWidth max channel width supported by aux PHYs
      */
-    EmlsrCcaBusyTest(MHz_u auxPhyMaxChWidth);
+    EmlsrCcaBusyTest(MHz_t auxPhyMaxChWidth);
 
     ~EmlsrCcaBusyTest() override = default;
 
@@ -982,7 +982,7 @@ class EmlsrCcaBusyTest : public EmlsrOperationsTestBase
      */
     void CheckPoint3();
 
-    MHz_u m_auxPhyMaxChWidth;    //!< max channel width supported by aux PHYs
+    MHz_t m_auxPhyMaxChWidth;    //!< max channel width supported by aux PHYs
     Time m_channelSwitchDelay;   //!< the PHY channel switch delay
     uint8_t m_currMainPhyLinkId; //!< the ID of the link the main PHY switches from
     uint8_t m_nextMainPhyLinkId; //!< the ID of the link the main PHY switches to

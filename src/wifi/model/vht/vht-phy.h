@@ -191,7 +191,7 @@ class VhtPhy : public HtPhy
      * @return the physical bit rate of this signal in bps.
      */
     static uint64_t GetPhyRate(uint8_t mcsValue,
-                               MHz_u channelWidth,
+                               MHz_t channelWidth,
                                Time guardInterval,
                                uint8_t nss);
     /**
@@ -229,7 +229,7 @@ class VhtPhy : public HtPhy
      * @return the data bit rate in bps.
      */
     static uint64_t GetDataRate(uint8_t mcsValue,
-                                MHz_u channelWidth,
+                                MHz_t channelWidth,
                                 Time guardInterval,
                                 uint8_t nss);
     /**
@@ -250,7 +250,7 @@ class VhtPhy : public HtPhy
      * @param nss the considered number of streams
      * @returns true if this <MCS, channel width, NSS> combination is allowed, false otherwise.
      */
-    static bool IsCombinationAllowed(uint8_t mcsValue, MHz_u channelWidth, uint8_t nss);
+    static bool IsCombinationAllowed(uint8_t mcsValue, MHz_t channelWidth, uint8_t nss);
     /**
      * Check whether the combination in TXVECTOR is allowed.
      * This function is used as a callback for WifiMode operation.
@@ -267,7 +267,7 @@ class VhtPhy : public HtPhy
     PhyFieldRxStatus DoEndReceiveField(WifiPpduField field, Ptr<Event> event) override;
     bool IsAllConfigSupported(WifiPpduField field, Ptr<const WifiPpdu> ppdu) const override;
     uint32_t GetMaxPsduSize() const override;
-    const std::map<MHz_u, WifiChannelListType>& GetCcaSecondaryChannels() const override;
+    const std::map<MHz_t, WifiChannelListType>& GetCcaSecondaryChannels() const override;
 
     /**
      * End receiving the SIG-A or SIG-B, perform VHT-specific actions, and
@@ -322,7 +322,7 @@ class VhtPhy : public HtPhy
      * @param channelWidth the channel width
      * @return he number of usable subcarriers for data
      */
-    static uint16_t GetUsableSubcarriers(MHz_u channelWidth);
+    static uint16_t GetUsableSubcarriers(MHz_t channelWidth);
 
   private:
     void BuildModeList() override;
@@ -341,7 +341,7 @@ class VhtPhy : public HtPhy
      * Typedef for storing exceptions in the number of BCC encoders for VHT MCSs
      */
     typedef std::map<
-        std::tuple<MHz_u /* channelWidth */, uint8_t /* Nss */, uint8_t /* MCS index */>,
+        std::tuple<MHz_t /* channelWidth */, uint8_t /* Nss */, uint8_t /* MCS index */>,
         uint8_t /* Nes */>
         NesExceptionMap;
     static const NesExceptionMap m_exceptionsMap; //!< exception map for number of BCC encoders

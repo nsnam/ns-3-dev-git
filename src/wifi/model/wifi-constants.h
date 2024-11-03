@@ -66,11 +66,11 @@ extern const Time MAX_PROPAGATION_DELAY;
 extern const Time MEDIUM_SYNC_THRESHOLD;
 
 /// Subcarrier frequency spacing in Hz (Table 19-6 "Timing-related constants" of 802.11-2020)
-static constexpr uint32_t SUBCARRIER_FREQUENCY_SPACING{312500};
+static constexpr Hz_t SUBCARRIER_FREQUENCY_SPACING{312500.};
 
 /// Subcarrier frequency spacing for the HE modulated fields in Hz (Table 27-12 "Timing-related
 /// constants" of 802.11ax-2021)
-static constexpr uint32_t SUBCARRIER_FREQUENCY_SPACING_HE{78125};
+static constexpr Hz_t SUBCARRIER_FREQUENCY_SPACING_HE{78125.};
 
 /// Size of the space of sequence numbers
 static constexpr uint16_t SEQNO_SPACE_SIZE{4096};

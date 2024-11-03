@@ -135,7 +135,7 @@ QosFrameExchangeManager::PifsRecovery(bool forceCurrentCw)
         m_allowedWidth,
         m_channelAccessManager->GetLargestIdlePrimaryChannel(m_phy->GetPifs(), Simulator::Now()));
 
-    if (m_allowedWidth == MHz_u{0})
+    if (m_allowedWidth == MHz_t{0})
     {
         // PIFS recovery failed, TXOP is terminated
         NotifyChannelReleased(m_edca);
@@ -165,7 +165,7 @@ QosFrameExchangeManager::CancelPifsRecovery()
 }
 
 bool
-QosFrameExchangeManager::StartTransmission(Ptr<Txop> edca, MHz_u allowedWidth)
+QosFrameExchangeManager::StartTransmission(Ptr<Txop> edca, MHz_t allowedWidth)
 {
     NS_LOG_FUNCTION(this << edca << allowedWidth);
 

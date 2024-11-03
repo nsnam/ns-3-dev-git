@@ -42,7 +42,7 @@ class Time;
 /**
  * typedef for a pair of start and stop frequencies to represent a band
  */
-using WifiSpectrumBandFrequencies = std::pair<Hz_u, Hz_u>;
+using WifiSpectrumBandFrequencies = std::pair<Hz_t, Hz_t>;
 
 /// WifiSpectrumBandInfo structure containing info about a spectrum band
 struct WifiSpectrumBandInfo
@@ -97,8 +97,8 @@ operator<<(std::ostream& os, const WifiSpectrumBandInfo& band)
            << band.indices.at(segmentIndex).first << "-" << band.indices.at(segmentIndex).second
            << "], frequencies"
            << (printSegment ? std::string(" segment") + std::to_string(segmentIndex) : "") << ": ["
-           << band.frequencies.at(segmentIndex).first << "Hz-"
-           << band.frequencies.at(segmentIndex).second << "Hz] ";
+           << band.frequencies.at(segmentIndex).first << "-"
+           << band.frequencies.at(segmentIndex).second << "] ";
     }
     return os;
 }
@@ -693,7 +693,7 @@ WifiModulationClass GetModulationClassForStandard(WifiStandard standard);
  * @param modulation the modulation class
  * @return the maximum channel width allowed for the given modulation class
  */
-MHz_u GetMaximumChannelWidth(WifiModulationClass modulation);
+MHz_t GetMaximumChannelWidth(WifiModulationClass modulation);
 
 /**
  * Get the total channel width for the channel width type.
@@ -701,7 +701,7 @@ MHz_u GetMaximumChannelWidth(WifiModulationClass modulation);
  * @param width the channel width type
  * @return the total channel width for the channel width type
  */
-MHz_u GetChannelWidthInMhz(WifiChannelWidthType width);
+MHz_t GetChannelWidthInMhz(WifiChannelWidthType width);
 
 /**
  * Return true if a preamble corresponds to an EHT transmission.

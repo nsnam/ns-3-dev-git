@@ -318,7 +318,7 @@ RraaWifiManager::DoReportDataOk(WifiRemoteStation* st,
                                 double ackSnr,
                                 WifiMode ackMode,
                                 double dataSnr,
-                                MHz_u dataChannelWidth,
+                                MHz_t dataChannelWidth,
                                 uint8_t dataNss)
 {
     NS_LOG_FUNCTION(this << st << ackSnr << ackMode << dataSnr << dataChannelWidth << +dataNss);
@@ -342,14 +342,14 @@ RraaWifiManager::DoReportFinalDataFailed(WifiRemoteStation* st)
 }
 
 WifiTxVector
-RraaWifiManager::DoGetDataTxVector(WifiRemoteStation* st, MHz_u allowedWidth)
+RraaWifiManager::DoGetDataTxVector(WifiRemoteStation* st, MHz_t allowedWidth)
 {
     NS_LOG_FUNCTION(this << st << allowedWidth);
     auto station = static_cast<RraaWifiRemoteStation*>(st);
     auto channelWidth = GetChannelWidth(station);
-    if (channelWidth > MHz_u{20} && channelWidth != MHz_u{22})
+    if (channelWidth > MHz_t{20} && channelWidth != MHz_t{22})
     {
-        channelWidth = MHz_u{20};
+        channelWidth = MHz_t{20};
     }
     CheckInit(station);
     WifiMode mode = GetSupported(station, station->m_rateIndex);
@@ -377,9 +377,9 @@ RraaWifiManager::DoGetRtsTxVector(WifiRemoteStation* st)
     NS_LOG_FUNCTION(this << st);
     auto station = static_cast<RraaWifiRemoteStation*>(st);
     auto channelWidth = GetChannelWidth(station);
-    if (channelWidth > MHz_u{20} && channelWidth != MHz_u{22})
+    if (channelWidth > MHz_t{20} && channelWidth != MHz_t{22})
     {
-        channelWidth = MHz_u{20};
+        channelWidth = MHz_t{20};
     }
     WifiMode mode;
     if (!GetUseNonErpProtection())

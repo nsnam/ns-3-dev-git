@@ -713,8 +713,8 @@ ReducedNeighborReportTest::DoRun()
         if (channel2_4It != WifiPhyOperatingChannel::m_frequencyChannels.cend())
         {
             channel2_4It = WifiPhyOperatingChannel::FindFirst(0,
-                                                              MHz_u{0},
-                                                              MHz_u{0},
+                                                              MHz_t{0},
+                                                              MHz_t{0},
                                                               WIFI_STANDARD_80211be,
                                                               WIFI_PHY_BAND_2_4GHZ,
                                                               channel2_4It);
@@ -722,8 +722,8 @@ ReducedNeighborReportTest::DoRun()
         if (channel5It != WifiPhyOperatingChannel::m_frequencyChannels.cend())
         {
             channel5It = WifiPhyOperatingChannel::FindFirst(0,
-                                                            MHz_u{0},
-                                                            MHz_u{0},
+                                                            MHz_t{0},
+                                                            MHz_t{0},
                                                             WIFI_STANDARD_80211be,
                                                             WIFI_PHY_BAND_5GHZ,
                                                             channel5It);
@@ -731,8 +731,8 @@ ReducedNeighborReportTest::DoRun()
         if (channel6It != WifiPhyOperatingChannel::m_frequencyChannels.cend())
         {
             channel6It = WifiPhyOperatingChannel::FindFirst(0,
-                                                            MHz_u{0},
-                                                            MHz_u{0},
+                                                            MHz_t{0},
+                                                            MHz_t{0},
                                                             WIFI_STANDARD_80211be,
                                                             WIFI_PHY_BAND_6GHZ,
                                                             channel6It);
@@ -770,7 +770,7 @@ class WifiEhtCapabilitiesIeTest : public HeaderSerializationTestCase
      * @param is2_4Ghz whether the PHY is operating in 2.4 GHz
      * @param channelWidth the supported channel width
      */
-    WifiEhtCapabilitiesIeTest(bool is2_4Ghz, MHz_u channelWidth);
+    WifiEhtCapabilitiesIeTest(bool is2_4Ghz, MHz_t channelWidth);
     ~WifiEhtCapabilitiesIeTest() override = default;
 
     /**
@@ -837,10 +837,10 @@ class WifiEhtCapabilitiesIeTest : public HeaderSerializationTestCase
     void DoRun() override;
 
     bool m_is2_4Ghz;      //!< whether the PHY is operating in 2.4 GHz
-    MHz_u m_channelWidth; //!< Supported channel width by the PHY
+    MHz_t m_channelWidth; //!< Supported channel width by the PHY
 };
 
-WifiEhtCapabilitiesIeTest ::WifiEhtCapabilitiesIeTest(bool is2_4Ghz, MHz_u channelWidth)
+WifiEhtCapabilitiesIeTest ::WifiEhtCapabilitiesIeTest(bool is2_4Ghz, MHz_t channelWidth)
     : HeaderSerializationTestCase{"Check serialization and deserialization of EHT capabilities IE"},
       m_is2_4Ghz{is2_4Ghz},
       m_channelWidth{channelWidth}
@@ -852,15 +852,15 @@ WifiEhtCapabilitiesIeTest::GetHeCapabilities() const
 {
     HeCapabilities capabilities;
     uint8_t channelWidthSet = 0;
-    if ((m_channelWidth >= MHz_u{40}) && m_is2_4Ghz)
+    if ((m_channelWidth >= MHz_t{40}) && m_is2_4Ghz)
     {
         channelWidthSet |= 0x01;
     }
-    if ((m_channelWidth >= MHz_u{80}) && !m_is2_4Ghz)
+    if ((m_channelWidth >= MHz_t{80}) && !m_is2_4Ghz)
     {
         channelWidthSet |= 0x02;
     }
-    if ((m_channelWidth >= MHz_u{160}) && !m_is2_4Ghz)
+    if ((m_channelWidth >= MHz_t{160}) && !m_is2_4Ghz)
     {
         channelWidthSet |= 0x04;
     }
@@ -888,7 +888,7 @@ WifiEhtCapabilitiesIeTest::GetEhtCapabilities(uint16_t maxMpduLength,
         (maxSupportedMcs >= 12) ? 1 : 0;
     capabilities.m_phyCapabilities.supportRx1024And4096QamForRuSmallerThan242Tones =
         (maxSupportedMcs >= 12) ? 1 : 0;
-    if (m_channelWidth == MHz_u{20})
+    if (m_channelWidth == MHz_t{20})
     {
         for (auto maxMcs : {7, 9, 11, 13})
         {
@@ -914,7 +914,7 @@ WifiEhtCapabilitiesIeTest::GetEhtCapabilities(uint16_t maxMpduLength,
                 maxMcs <= maxSupportedMcs ? 4 : 0);
         }
     }
-    if (m_channelWidth >= MHz_u{160})
+    if (m_channelWidth >= MHz_t{160})
     {
         for (auto maxMcs : {9, 11, 13})
         {
@@ -926,7 +926,7 @@ WifiEhtCapabilitiesIeTest::GetEhtCapabilities(uint16_t maxMpduLength,
                                                     maxMcs <= maxSupportedMcs ? 1 : 0);
         }
     }
-    if (m_channelWidth == MHz_u{320})
+    if (m_channelWidth == MHz_t{320})
     {
         capabilities.m_phyCapabilities.support320MhzIn6Ghz = 1;
         for (auto maxMcs : {9, 11, 13})
@@ -979,7 +979,7 @@ void
 WifiEhtCapabilitiesIeTest::CheckEhtPhyCapabilitiesInformation(const Buffer& buffer,
                                                               uint8_t expectedValueSixthByte)
 {
-    CheckSerializedByte(buffer, 5, (m_channelWidth == MHz_u{320}) ? 0x02 : 0x00);
+    CheckSerializedByte(buffer, 5, (m_channelWidth == MHz_t{320}) ? 0x02 : 0x00);
     CheckSerializedByte(buffer, 6, 0x00);
     CheckSerializedByte(buffer, 7, 0x00);
     CheckSerializedByte(buffer, 8, 0x00);
@@ -994,7 +994,7 @@ void
 WifiEhtCapabilitiesIeTest::CheckSupportedEhtMcsAndNssSet(const Buffer& buffer,
                                                          uint8_t maxSupportedMcs)
 {
-    if (m_channelWidth == MHz_u{20})
+    if (m_channelWidth == MHz_t{20})
     {
         CheckSerializedByte(buffer, 14, 0x21); // first byte of Supported EHT-MCS And NSS Set
         CheckSerializedByte(
@@ -1022,7 +1022,7 @@ WifiEhtCapabilitiesIeTest::CheckSupportedEhtMcsAndNssSet(const Buffer& buffer,
             16,
             maxSupportedMcs >= 12 ? 0x43 : 0x00); // third byte of Supported EHT-MCS And NSS Set
     }
-    if (m_channelWidth >= MHz_u{160})
+    if (m_channelWidth >= MHz_t{160})
     {
         CheckSerializedByte(buffer, 17, 0x12); // first byte of EHT-MCS Map (BW = 160 MHz)
         CheckSerializedByte(
@@ -1034,7 +1034,7 @@ WifiEhtCapabilitiesIeTest::CheckSupportedEhtMcsAndNssSet(const Buffer& buffer,
             19,
             maxSupportedMcs >= 12 ? 0x12 : 0x00); // third byte of EHT-MCS Map (BW = 160 MHz)
     }
-    if (m_channelWidth == MHz_u{320})
+    if (m_channelWidth == MHz_t{320})
     {
         CheckSerializedByte(buffer, 20, 0x34); // first byte of EHT-MCS Map (BW = 320 MHz)
         CheckSerializedByte(
@@ -1053,7 +1053,7 @@ WifiEhtCapabilitiesIeTest::DoRun()
 {
     uint8_t maxMcs = 0;
     uint16_t expectedEhtMcsAndNssSetSize = 0;
-    switch (static_cast<uint16_t>(m_channelWidth))
+    switch (static_cast<uint16_t>(m_channelWidth.in_MHz()))
     {
     case 20:
         expectedEhtMcsAndNssSetSize = 4;
@@ -1079,7 +1079,7 @@ WifiEhtCapabilitiesIeTest::DoRun()
                             9 +                          // EHT PHY Capabilities Information
                             expectedEhtMcsAndNssSetSize; // Supported EHT-MCS And NSS Set
 
-    auto mapType = m_channelWidth == MHz_u{20}
+    auto mapType = m_channelWidth == MHz_t{20}
                        ? EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_20_MHZ_ONLY
                        : EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_NOT_LARGER_THAN_80_MHZ;
 
@@ -1366,13 +1366,13 @@ WifiEhtInfoElemsTestSuite::WifiEhtInfoElemsTestSuite()
 {
     AddTestCase(new BasicMultiLinkElementTest(), TestCase::Duration::QUICK);
     AddTestCase(new ReducedNeighborReportTest(), TestCase::Duration::QUICK);
-    AddTestCase(new WifiEhtCapabilitiesIeTest(false, MHz_u{20}), TestCase::Duration::QUICK);
-    AddTestCase(new WifiEhtCapabilitiesIeTest(true, MHz_u{20}), TestCase::Duration::QUICK);
-    AddTestCase(new WifiEhtCapabilitiesIeTest(false, MHz_u{80}), TestCase::Duration::QUICK);
-    AddTestCase(new WifiEhtCapabilitiesIeTest(true, MHz_u{40}), TestCase::Duration::QUICK);
-    AddTestCase(new WifiEhtCapabilitiesIeTest(true, MHz_u{80}), TestCase::Duration::QUICK);
-    AddTestCase(new WifiEhtCapabilitiesIeTest(false, MHz_u{160}), TestCase::Duration::QUICK);
-    AddTestCase(new WifiEhtCapabilitiesIeTest(false, MHz_u{320}), TestCase::Duration::QUICK);
+    AddTestCase(new WifiEhtCapabilitiesIeTest(false, MHz_t{20}), TestCase::Duration::QUICK);
+    AddTestCase(new WifiEhtCapabilitiesIeTest(true, MHz_t{20}), TestCase::Duration::QUICK);
+    AddTestCase(new WifiEhtCapabilitiesIeTest(false, MHz_t{80}), TestCase::Duration::QUICK);
+    AddTestCase(new WifiEhtCapabilitiesIeTest(true, MHz_t{40}), TestCase::Duration::QUICK);
+    AddTestCase(new WifiEhtCapabilitiesIeTest(true, MHz_t{80}), TestCase::Duration::QUICK);
+    AddTestCase(new WifiEhtCapabilitiesIeTest(false, MHz_t{160}), TestCase::Duration::QUICK);
+    AddTestCase(new WifiEhtCapabilitiesIeTest(false, MHz_t{320}), TestCase::Duration::QUICK);
     AddTestCase(
         new TidToLinkMappingElementTest(WifiDirection::DOWNLINK, std::nullopt, std::nullopt, {}),
         TestCase::Duration::QUICK);

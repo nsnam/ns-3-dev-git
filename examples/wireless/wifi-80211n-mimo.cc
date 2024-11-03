@@ -204,7 +204,7 @@ main(int argc, char* argv[])
 
             /* Setting applications */
             const auto maxLoad = HtPhy::GetDataRate(i,
-                                                    channelBonding ? MHz_u{40} : MHz_u{20},
+                                                    channelBonding ? MHz_t{40} : MHz_t{20},
                                                     NanoSeconds(shortGuardInterval ? 400 : 800),
                                                     nStreams);
             ApplicationContainer serverApp;

@@ -11,6 +11,7 @@
 
 #include "ns3/si-units.h"
 
+#include <compare>
 #include <ostream>
 
 namespace ns3
@@ -100,8 +101,8 @@ enum class FrequencyChannelType : uint8_t
  */
 struct FrequencyRange
 {
-    MHz_u minFrequency{0.0}; ///< the minimum frequency
-    MHz_u maxFrequency{0.0}; ///< the maximum frequency
+    MHz_t minFrequency{0.0}; ///< the minimum frequency
+    MHz_t maxFrequency{0.0}; ///< the maximum frequency
 
     /**
      * @brief spaceship operator.
@@ -110,7 +111,7 @@ struct FrequencyRange
      * @returns -1 if the provided range is located at a lower minimum frequency, 0 if the provided
      * range is identical or 1 if the provided range is located at a higher minimum frequency
      */
-    auto operator<=>(const FrequencyRange& range) const = default;
+    std::weak_ordering operator<=>(const FrequencyRange& range) const = default;
 };
 
 /**
@@ -124,21 +125,21 @@ struct FrequencyRange
 inline std::ostream&
 operator<<(std::ostream& os, const FrequencyRange& freqRange)
 {
-    os << "[" << freqRange.minFrequency << " MHz - " << freqRange.maxFrequency << " MHz]";
+    os << "[" << freqRange.minFrequency << " - " << freqRange.maxFrequency << "]";
     return os;
 }
 
 /// Identifier for the frequency range covering the whole wifi spectrum
-constexpr FrequencyRange WHOLE_WIFI_SPECTRUM = {2401, 7125};
+constexpr FrequencyRange WHOLE_WIFI_SPECTRUM = {MHz_t{2401}, MHz_t{7125}};
 
 /// Identifier for the frequency range covering the wifi spectrum in the 2.4 GHz band
-constexpr FrequencyRange WIFI_SPECTRUM_2_4_GHZ = {2401, 2483};
+constexpr FrequencyRange WIFI_SPECTRUM_2_4_GHZ = {MHz_t{2401}, MHz_t{2483}};
 
 /// Identifier for the frequency range covering the wifi spectrum in the 5 GHz band
-constexpr FrequencyRange WIFI_SPECTRUM_5_GHZ = {5170, 5915};
+constexpr FrequencyRange WIFI_SPECTRUM_5_GHZ = {MHz_t{5170}, MHz_t{5915}};
 
 /// Identifier for the frequency range covering the wifi spectrum in the 6 GHz band
-constexpr FrequencyRange WIFI_SPECTRUM_6_GHZ = {5945, 7125};
+constexpr FrequencyRange WIFI_SPECTRUM_6_GHZ = {MHz_t{5945}, MHz_t{7125}};
 
 } // namespace ns3
 

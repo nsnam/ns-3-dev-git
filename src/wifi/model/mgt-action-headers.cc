@@ -1761,35 +1761,35 @@ FilsDiscHeader::FdCapability::Deserialize(Buffer::Iterator start)
 }
 
 void
-FilsDiscHeader::FdCapability::SetOpChannelWidth(MHz_u width)
+FilsDiscHeader::FdCapability::SetOpChannelWidth(MHz_t width)
 {
-    m_chWidth = (width == MHz_u{20} || width == MHz_u{22}) ? 0
-                : (width == MHz_u{40})                     ? 1
-                : (width == MHz_u{80})                     ? 2
-                : (width == MHz_u{160})                    ? 3
-                : (width == MHz_u{320})                    ? 4
+    m_chWidth = (width == MHz_t{20} || width == MHz_t{22}) ? 0
+                : (width == MHz_t{40})                     ? 1
+                : (width == MHz_t{80})                     ? 2
+                : (width == MHz_t{160})                    ? 3
+                : (width == MHz_t{320})                    ? 4
                                                            : 5;
 }
 
-MHz_u
+MHz_t
 FilsDiscHeader::FdCapability::GetOpChannelWidth() const
 {
     switch (m_chWidth)
     {
     case 0:
-        return m_phyIdx == 0 ? MHz_u{22} : MHz_u{20}; // PHY Index 0 indicates 802.11b
+        return m_phyIdx == 0 ? MHz_t{22} : MHz_t{20}; // PHY Index 0 indicates 802.11b
     case 1:
-        return MHz_u{40};
+        return MHz_t{40};
     case 2:
-        return MHz_u{80};
+        return MHz_t{80};
     case 3:
-        return MHz_u{160};
+        return MHz_t{160};
     case 4:
-        return MHz_u{320};
+        return MHz_t{320};
     default:
         NS_ABORT_MSG("Reserved value: " << +m_chWidth);
     }
-    return MHz_u{0};
+    return MHz_t{0};
 }
 
 void

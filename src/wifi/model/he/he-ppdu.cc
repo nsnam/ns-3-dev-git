@@ -129,7 +129,7 @@ HePpdu::SetHeSigHeader(const WifiTxVector& txVector)
     }
     else if (ns3::IsDlMu(m_preamble))
     {
-        const auto p20Index = m_operatingChannel.GetPrimaryChannelIndex(MHz_u{20});
+        const auto p20Index = m_operatingChannel.GetPrimaryChannelIndex(MHz_t{20});
         const uint8_t noMuMimoUsers{0};
         m_heSig.emplace<HeMuSigHeader>(HeMuSigHeader{
             .m_bssColor = bssColor,
@@ -144,7 +144,7 @@ HePpdu::SetHeSigHeader(const WifiTxVector& txVector)
             .m_ruAllocation = txVector.GetRuAllocation(p20Index),
             .m_contentChannels = GetHeSigBContentChannels(txVector, p20Index),
             .m_center26ToneRuIndication =
-                (txVector.GetChannelWidth() >= MHz_u{80})
+                (txVector.GetChannelWidth() >= MHz_t{80})
                     ? std::optional{txVector.GetCenter26ToneRuIndication()}
                     : std::nullopt});
     }
@@ -206,7 +206,7 @@ HePpdu::SetTxVectorFromPhyHeaders(WifiTxVector& txVector) const
                          heSigHeader->m_sigBCompression,
                          GetMuMimoUsersFromEncoding(heSigHeader->m_muMimoUsers));
         txVector.SetSigBMode(HePhy::GetVhtMcs(heSigHeader->m_sigBMcs));
-        const auto p20Index = m_operatingChannel.GetPrimaryChannelIndex(MHz_u{20});
+        const auto p20Index = m_operatingChannel.GetPrimaryChannelIndex(MHz_t{20});
         txVector.SetRuAllocation(heSigHeader->m_ruAllocation, p20Index);
         if (heSigHeader->m_center26ToneRuIndication.has_value())
         {
@@ -268,7 +268,7 @@ HePpdu::SetHeMuUserInfos(WifiTxVector& txVector,
             auto ruSpec = ruSpecs.at(ruIndex);
             auto ruType = ruSpec.GetRuType();
             if ((ruAllocation.size() == 8) && (ruType == HeRu::RU_996_TONE) &&
-                (((txVector.GetChannelWidth() == MHz_u{160}) && sigBcompression) ||
+                (((txVector.GetChannelWidth() == MHz_t{160}) && sigBcompression) ||
                  std::all_of(
                      contentChannel.cbegin(),
                      contentChannel.cend(),
@@ -279,13 +279,13 @@ HePpdu::SetHeMuUserInfos(WifiTxVector& txVector,
             const auto ruBw = HeRu::GetBandwidth(ruType);
             auto primary80 = ruAllocIndex < 4;
             const uint8_t num20MhzSubchannelsInRu =
-                (ruBw < MHz_u{20}) ? 1 : Count20MHzSubchannels(ruBw);
+                (ruBw < MHz_t{20}) ? 1 : Count20MHzSubchannels(ruBw);
             auto numRuAllocsInContentChannel = std::max(1, num20MhzSubchannelsInRu / 2);
-            auto ruIndexOffset = (ruBw < MHz_u{20}) ? (ruSpecs.size() * ruAllocIndex)
+            auto ruIndexOffset = (ruBw < MHz_t{20}) ? (ruSpecs.size() * ruAllocIndex)
                                                     : (ruAllocIndex / num20MhzSubchannelsInRu);
             if (!primary80)
             {
-                ruIndexOffset -= HeRu::GetRusOfType(MHz_u{80}, ruType).size();
+                ruIndexOffset -= HeRu::GetRusOfType(MHz_t{80}, ruType).size();
             }
             if (!txVector.IsAllocated(userInfo.staId))
             {
@@ -413,7 +413,7 @@ HePpdu::GetStaId() const
     return m_psdus.begin()->first;
 }
 
-MHz_u
+MHz_t
 HePpdu::GetTxChannelWidth() const
 {
     if (const auto& txVector = GetTxVector();
@@ -421,9 +421,9 @@ HePpdu::GetTxChannelWidth() const
     {
         TxPsdFlag flag = GetTxPsdFlag();
         const auto ruWidth = HeRu::GetBandwidth(txVector.GetRu(GetStaId()).GetRuType());
-        MHz_u channelWidth =
-            (flag == PSD_NON_HE_PORTION && ruWidth < MHz_u{20}) ? MHz_u{20} : ruWidth;
-        NS_LOG_INFO("Use channelWidth=" << channelWidth << " MHz for HE TB from " << GetStaId()
+        MHz_t channelWidth =
+            (flag == PSD_NON_HE_PORTION && ruWidth < MHz_t{20}) ? MHz_t{20} : ruWidth;
+        NS_LOG_INFO("Use channelWidth=" << channelWidth << " for HE TB from " << GetStaId()
                                         << " for " << flag);
         return channelWidth;
     }
@@ -483,7 +483,7 @@ HePpdu::UpdateTxVectorForUlMu(const std::optional<WifiTxVector>& trigVector) con
 }
 
 std::pair<std::size_t, std::size_t>
-HePpdu::GetNumRusPerHeSigBContentChannel(MHz_u channelWidth,
+HePpdu::GetNumRusPerHeSigBContentChannel(MHz_t channelWidth,
                                          const RuAllocation& ruAllocation,
                                          bool sigBCompression,
                                          uint8_t numMuMimoUsers)
@@ -497,7 +497,7 @@ HePpdu::GetNumRusPerHeSigBContentChannel(MHz_u channelWidth,
         // If the HE-SIG-B Compression field in the HE-SIG-A field of an HE MU PPDU is 1,
         // for bandwidths larger than 20 MHz, the AP performs an equitable split of
         // the User fields between two HE-SIG-B content channels
-        if (channelWidth == MHz_u{20})
+        if (channelWidth == MHz_t{20})
         {
             return {numMuMimoUsers, 0};
         }
@@ -514,7 +514,7 @@ HePpdu::GetNumRusPerHeSigBContentChannel(MHz_u channelWidth,
     NS_ASSERT_MSG(ruAllocation.size() == Count20MHzSubchannels(channelWidth),
                   "RU allocation is not consistent with packet bandwidth");
 
-    switch (static_cast<uint16_t>(channelWidth))
+    switch (static_cast<uint16_t>(channelWidth.in_MHz()))
     {
     case 40:
         chSize.second += HeRu::GetRuSpecs(ruAllocation[1]).size();
@@ -556,7 +556,7 @@ HePpdu::GetHeSigBContentChannels(const WifiTxVector& txVector, uint8_t p20Index)
     HeSigBContentChannels contentChannels{{}};
 
     const auto channelWidth = txVector.GetChannelWidth();
-    if (channelWidth > MHz_u{20})
+    if (channelWidth > MHz_t{20})
     {
         contentChannels.emplace_back();
     }
@@ -582,14 +582,14 @@ HePpdu::GetHeSigBContentChannels(const WifiTxVector& txVector, uint8_t p20Index)
 
         std::size_t numRus = (ruType >= HeRu::RU_242_TONE)
                                  ? 1
-                                 : HeRu::m_heRuSubcarrierGroups.at({MHz_u{20}, ruType}).size();
+                                 : HeRu::m_heRuSubcarrierGroups.at({MHz_t{20}, ruType}).size();
         const auto ruIdx = ru.GetIndex();
         for (auto staId : staIds)
         {
             const auto& userInfo = txVector.GetHeMuUserInfo(staId);
             NS_ASSERT(ru == userInfo.ru);
             std::size_t ccIndex{0};
-            if (channelWidth < MHz_u{40})
+            if (channelWidth < MHz_t{40})
             {
                 // only one content channel
                 ccIndex = 0;
@@ -636,7 +636,7 @@ HePpdu::GetHeSigBContentChannels(const WifiTxVector& txVector, uint8_t p20Index)
 }
 
 uint32_t
-HePpdu::GetSigBFieldSize(MHz_u channelWidth,
+HePpdu::GetSigBFieldSize(MHz_t channelWidth,
                          const RuAllocation& ruAllocation,
                          bool sigBCompression,
                          std::size_t numMuMimoUsers)
@@ -646,14 +646,14 @@ HePpdu::GetSigBFieldSize(MHz_u channelWidth,
     if (!sigBCompression)
     {
         commonFieldSize = 4 /* CRC */ + 6 /* tail */;
-        if (channelWidth <= MHz_u{40})
+        if (channelWidth <= MHz_t{40})
         {
             commonFieldSize += 8; // only one allocation subfield
         }
         else
         {
             commonFieldSize +=
-                8 * (channelWidth / MHz_u{40}) /* one allocation field per 40 MHz */ +
+                8 * (channelWidth / MHz_t{40}) /* one allocation field per 40 MHz */ +
                 1 /* center RU */;
         }
     }
@@ -693,17 +693,17 @@ HePpdu::PrintPayload() const
 }
 
 uint8_t
-HePpdu::GetChannelWidthEncodingFromMhz(MHz_u channelWidth)
+HePpdu::GetChannelWidthEncodingFromMhz(MHz_t channelWidth)
 {
-    if (channelWidth == MHz_u{160})
+    if (channelWidth == MHz_t{160})
     {
         return 3;
     }
-    else if (channelWidth == MHz_u{80})
+    else if (channelWidth == MHz_t{80})
     {
         return 2;
     }
-    else if (channelWidth == MHz_u{40})
+    else if (channelWidth == MHz_t{40})
     {
         return 1;
     }
@@ -713,24 +713,24 @@ HePpdu::GetChannelWidthEncodingFromMhz(MHz_u channelWidth)
     }
 }
 
-MHz_u
+MHz_t
 HePpdu::GetChannelWidthMhzFromEncoding(uint8_t bandwidth)
 {
     if (bandwidth == 3)
     {
-        return MHz_u{160};
+        return MHz_t{160};
     }
     else if (bandwidth == 2)
     {
-        return MHz_u{80};
+        return MHz_t{80};
     }
     else if (bandwidth == 1)
     {
-        return MHz_u{40};
+        return MHz_t{40};
     }
     else
     {
-        return MHz_u{20};
+        return MHz_t{20};
     }
 }
 

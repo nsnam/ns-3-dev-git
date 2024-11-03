@@ -242,7 +242,7 @@ class InterferenceHelper : public Object
      * @return struct of SNR and PER (with PER being evaluated over the provided time window)
      */
     PhyEntity::SnrPer CalculatePayloadSnrPer(Ptr<Event> event,
-                                             MHz_u channelWidth,
+                                             MHz_t channelWidth,
                                              const WifiSpectrumBandInfo& band,
                                              uint16_t staId,
                                              std::pair<Time, Time> relativeMpduStartStop) const;
@@ -257,7 +257,7 @@ class InterferenceHelper : public Object
      * @return the SNR for the PPDU in linear scale
      */
     double CalculateSnr(Ptr<Event> event,
-                        MHz_u channelWidth,
+                        MHz_t channelWidth,
                         uint8_t nss,
                         const WifiSpectrumBandInfo& band) const;
     /**
@@ -272,7 +272,7 @@ class InterferenceHelper : public Object
      * @return struct of SNR and PER
      */
     PhyEntity::SnrPer CalculatePhyHeaderSnrPer(Ptr<Event> event,
-                                               MHz_u channelWidth,
+                                               MHz_t channelWidth,
                                                const WifiSpectrumBandInfo& band,
                                                WifiPpduField header) const;
 
@@ -312,7 +312,7 @@ class InterferenceHelper : public Object
      */
     double CalculateSnr(Watt_t signal,
                         Watt_t noiseInterference,
-                        MHz_u channelWidth,
+                        MHz_t channelWidth,
                         uint8_t nss) const;
     /**
      * Calculate the success rate of the chunk given the SINR, duration, and TXVECTOR.
@@ -476,7 +476,7 @@ class InterferenceHelper : public Object
      * @return the error rate of the payload
      */
     double CalculatePayloadPer(Ptr<const Event> event,
-                               MHz_u channelWidth,
+                               MHz_t channelWidth,
                                NiChangesPerBand* nis,
                                const WifiSpectrumBandInfo& band,
                                uint16_t staId,
@@ -495,7 +495,7 @@ class InterferenceHelper : public Object
      */
     double CalculatePhyHeaderPer(Ptr<const Event> event,
                                  NiChangesPerBand* nis,
-                                 MHz_u channelWidth,
+                                 MHz_t channelWidth,
                                  const WifiSpectrumBandInfo& band,
                                  WifiPpduField header) const;
     /**
@@ -511,7 +511,7 @@ class InterferenceHelper : public Object
      */
     double CalculatePhyHeaderSectionPsr(Ptr<const Event> event,
                                         NiChangesPerBand* nis,
-                                        MHz_u channelWidth,
+                                        MHz_t channelWidth,
                                         const WifiSpectrumBandInfo& band,
                                         PhyEntity::PhyHeaderSections phyHeaderSections) const;
 

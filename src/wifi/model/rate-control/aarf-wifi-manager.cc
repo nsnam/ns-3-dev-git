@@ -209,7 +209,7 @@ AarfWifiManager::DoReportDataOk(WifiRemoteStation* st,
                                 double ackSnr,
                                 WifiMode ackMode,
                                 double dataSnr,
-                                MHz_u dataChannelWidth,
+                                MHz_t dataChannelWidth,
                                 uint8_t dataNss)
 {
     NS_LOG_FUNCTION(this << st << ackSnr << ackMode << dataSnr << dataChannelWidth << +dataNss);
@@ -245,14 +245,14 @@ AarfWifiManager::DoReportFinalDataFailed(WifiRemoteStation* station)
 }
 
 WifiTxVector
-AarfWifiManager::DoGetDataTxVector(WifiRemoteStation* st, MHz_u allowedWidth)
+AarfWifiManager::DoGetDataTxVector(WifiRemoteStation* st, MHz_t allowedWidth)
 {
     NS_LOG_FUNCTION(this << st << allowedWidth);
     auto station = static_cast<AarfWifiRemoteStation*>(st);
     auto channelWidth = GetChannelWidth(station);
-    if (channelWidth > MHz_u{20} && channelWidth != MHz_u{22})
+    if (channelWidth > MHz_t{20} && channelWidth != MHz_t{22})
     {
-        channelWidth = MHz_u{20};
+        channelWidth = MHz_t{20};
     }
     WifiMode mode = GetSupported(station, station->m_rate);
     uint64_t rate = mode.GetDataRate(channelWidth);
@@ -281,9 +281,9 @@ AarfWifiManager::DoGetRtsTxVector(WifiRemoteStation* st)
     /// RTS only by picking a single rate within the BasicRateSet.
     auto station = static_cast<AarfWifiRemoteStation*>(st);
     auto channelWidth = GetChannelWidth(station);
-    if (channelWidth > MHz_u{20} && channelWidth != MHz_u{22})
+    if (channelWidth > MHz_t{20} && channelWidth != MHz_t{22})
     {
-        channelWidth = MHz_u{20};
+        channelWidth = MHz_t{20};
     }
     WifiMode mode;
     if (!GetUseNonErpProtection())

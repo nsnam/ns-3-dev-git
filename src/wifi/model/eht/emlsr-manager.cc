@@ -63,9 +63,9 @@ EmlsrManager::GetTypeId()
                           "by the configured maximum modulation class supported.",
                           TypeId::ATTR_GET |
                               TypeId::ATTR_CONSTRUCT, // prevent setting after construction
-                          UintegerValue(20),
-                          MakeUintegerAccessor(&EmlsrManager::m_auxPhyMaxWidth),
-                          MakeUintegerChecker<MHz_u>(20, 160))
+                          MHzValue(20_MHz),
+                          MakeMHzAccessor(&EmlsrManager::m_auxPhyMaxWidth),
+                          MakeMHzChecker(20_MHz, 160_MHz))
             .AddAttribute("AuxPhyMaxModClass",
                           "The maximum modulation class supported by Aux PHYs. Use "
                           "WIFI_MOD_CLASS_OFDM for non-HT.",
@@ -1339,7 +1339,7 @@ EmlsrManager::ComputeOperatingChannels()
                       "Primary" << auxPhyMaxWidth << " channel not found");
         m_auxPhyChannels.emplace(linkId, chIt);
         // find the P20 index for the channel used by the aux PHYs
-        auto p20Index = channel.GetPrimaryChannelIndex(MHz_u{20});
+        auto p20Index = channel.GetPrimaryChannelIndex(MHz_t{20});
         while (mainPhyChWidth > auxPhyMaxWidth)
         {
             mainPhyChWidth /= 2;

@@ -620,7 +620,7 @@ WifiRemoteStationManager::GetAffiliatedStaAddress(const Mac48Address& mldAddress
 }
 
 WifiTxVector
-WifiRemoteStationManager::GetDataTxVector(const WifiMacHeader& header, MHz_u allowedWidth)
+WifiRemoteStationManager::GetDataTxVector(const WifiMacHeader& header, MHz_t allowedWidth)
 {
     NS_LOG_FUNCTION(this << header << allowedWidth);
     const auto address = header.GetAddr1();
@@ -672,12 +672,11 @@ WifiRemoteStationManager::GetDataTxVector(const WifiMacHeader& header, MHz_u all
     }
     // If both the allowed width and the TXVECTOR channel width are integer multiple
     // of 20 MHz, then the TXVECTOR channel width must not exceed the allowed width
-    NS_ASSERT_MSG((static_cast<uint16_t>(txVector.GetChannelWidth()) % 20 != 0) ||
-                      (static_cast<uint16_t>(allowedWidth) % 20 != 0) ||
+    NS_ASSERT_MSG(((txVector.GetChannelWidth() % MHz_t{20}) != MHz_t{0}) ||
+                      ((allowedWidth % MHz_t{20}) != MHz_t{0}) ||
                       (txVector.GetChannelWidth() <= allowedWidth),
                   "TXVECTOR channel width (" << txVector.GetChannelWidth()
-                                             << " MHz) exceeds allowed width (" << allowedWidth
-                                             << " MHz)");
+                                             << ") exceeds allowed width (" << allowedWidth << ")");
     return txVector;
 }
 
@@ -720,13 +719,13 @@ WifiRemoteStationManager::GetCtsToSelfTxVector()
 
 void
 WifiRemoteStationManager::AdjustTxVectorForCtlResponse(WifiTxVector& txVector,
-                                                       MHz_u allowedWidth) const
+                                                       MHz_t allowedWidth) const
 {
     NS_LOG_FUNCTION(this << txVector << allowedWidth);
 
     auto modulation = txVector.GetModulationClass();
 
-    if (allowedWidth >= 40 &&
+    if (allowedWidth >= MHz_t{40} &&
         (modulation == WIFI_MOD_CLASS_DSSS || modulation == WIFI_MOD_CLASS_HR_DSSS))
     {
         // control frame must be sent in a non-HT duplicate PPDU because it must protect a frame
@@ -738,14 +737,14 @@ WifiRemoteStationManager::AdjustTxVectorForCtlResponse(WifiTxVector& txVector,
     // do not set allowedWidth as the TX width if the modulation class is (HR-)DSSS (allowedWidth
     // may be 20 MHz) or allowedWidth is 22 MHz (the selected modulation class may be OFDM)
     if (modulation != WIFI_MOD_CLASS_DSSS && modulation != WIFI_MOD_CLASS_HR_DSSS &&
-        allowedWidth != 22)
+        allowedWidth != MHz_t{22})
     {
         txVector.SetChannelWidth(allowedWidth);
     }
 }
 
 WifiTxVector
-WifiRemoteStationManager::GetRtsTxVector(Mac48Address address, MHz_u allowedWidth)
+WifiRemoteStationManager::GetRtsTxVector(Mac48Address address, MHz_t allowedWidth)
 {
     NS_LOG_FUNCTION(this << address << allowedWidth);
     WifiTxVector v;
@@ -1586,11 +1585,11 @@ WifiRemoteStationManager::AddStationHtCapabilities(Mac48Address from,
     auto state = LookupState(from);
     if (htCapabilities.GetSupportedChannelWidth() == 1)
     {
-        state->m_channelWidth = MHz_u{40};
+        state->m_channelWidth = MHz_t{40};
     }
     else
     {
-        state->m_channelWidth = MHz_u{20};
+        state->m_channelWidth = MHz_t{20};
     }
     SetQosSupport(from, true);
     for (const auto& mcs : m_wifiPhy->GetMcsList(WIFI_MOD_CLASS_HT))
@@ -1622,11 +1621,11 @@ WifiRemoteStationManager::AddStationVhtCapabilities(Mac48Address from,
     auto state = LookupState(from);
     if (vhtCapabilities.GetSupportedChannelWidthSet() == 1)
     {
-        state->m_channelWidth = MHz_u{160};
+        state->m_channelWidth = MHz_t{160};
     }
     else
     {
-        state->m_channelWidth = MHz_u{80};
+        state->m_channelWidth = MHz_t{80};
     }
     for (uint8_t i = 1; i <= m_wifiPhy->GetMaxSupportedTxSpatialStreams(); i++)
     {
@@ -1653,11 +1652,11 @@ WifiRemoteStationManager::AddStationHeCapabilities(Mac48Address from,
     {
         if (heCapabilities.GetChannelWidthSet() & 0x04)
         {
-            state->m_channelWidth = MHz_u{160};
+            state->m_channelWidth = MHz_t{160};
         }
         else if (heCapabilities.GetChannelWidthSet() & 0x02)
         {
-            state->m_channelWidth = MHz_u{80};
+            state->m_channelWidth = MHz_t{80};
         }
         // For other cases at 5 GHz, the supported channel width is set by the VHT capabilities
     }
@@ -1665,11 +1664,11 @@ WifiRemoteStationManager::AddStationHeCapabilities(Mac48Address from,
     {
         if (heCapabilities.GetChannelWidthSet() & 0x01)
         {
-            state->m_channelWidth = MHz_u{40};
+            state->m_channelWidth = MHz_t{40};
         }
         else
         {
-            state->m_channelWidth = MHz_u{20};
+            state->m_channelWidth = MHz_t{20};
         }
     }
     if (heCapabilities.GetHeSuPpdu1xHeLtf800nsGi())
@@ -1714,7 +1713,7 @@ WifiRemoteStationManager::AddStationEhtCapabilities(Mac48Address from,
     if (ehtCapabilities.m_phyCapabilities.support320MhzIn6Ghz &&
         (m_wifiPhy->GetPhyBand() == WIFI_PHY_BAND_6GHZ))
     {
-        state->m_channelWidth = 320;
+        state->m_channelWidth = MHz_t{320};
     }
     // For other cases, the supported channel width is set by the HT/VHT capabilities
     for (const auto& mcs : m_wifiPhy->GetMcsList(WIFI_MOD_CLASS_EHT))
@@ -2001,7 +2000,7 @@ WifiRemoteStationManager::GetNonUnicastMode() const
 }
 
 WifiTxVector
-WifiRemoteStationManager::GetGroupcastTxVector(const WifiMacHeader& header, MHz_u allowedWidth)
+WifiRemoteStationManager::GetGroupcastTxVector(const WifiMacHeader& header, MHz_t allowedWidth)
 {
     const auto& to = header.GetAddr1();
     NS_ASSERT(to.IsGroup());
@@ -2131,7 +2130,7 @@ WifiRemoteStationManager::DoReportAmpduTxStatus(WifiRemoteStation* station,
                                                 uint16_t nFailedMpdus,
                                                 double rxSnr,
                                                 double dataSnr,
-                                                MHz_u dataChannelWidth,
+                                                MHz_t dataChannelWidth,
                                                 uint8_t dataNss)
 {
     NS_LOG_DEBUG("DoReportAmpduTxStatus received but the manager does not handle A-MPDUs!");
@@ -2187,7 +2186,7 @@ WifiRemoteStationManager::GetAddress(const WifiRemoteStation* station) const
     return station->m_state->m_address;
 }
 
-MHz_u
+MHz_t
 WifiRemoteStationManager::GetChannelWidth(const WifiRemoteStation* station) const
 {
     return station->m_state->m_channelWidth;
@@ -2324,7 +2323,7 @@ WifiRemoteStationManager::GetNNonErpSupported(const WifiRemoteStation* station) 
     return size;
 }
 
-MHz_u
+MHz_t
 WifiRemoteStationManager::GetChannelWidthSupported(Mac48Address address) const
 {
     return LookupState(address)->m_channelWidth;

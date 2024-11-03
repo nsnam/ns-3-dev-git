@@ -188,7 +188,7 @@ class EhtPhy : public HePhy
      * @return the physical bit rate of this signal in bps.
      */
     static uint64_t GetPhyRate(uint8_t mcsValue,
-                               MHz_u channelWidth,
+                               MHz_t channelWidth,
                                Time guardInterval,
                                uint8_t nss);
 
@@ -227,7 +227,7 @@ class EhtPhy : public HePhy
      * @return the data bit rate in bps.
      */
     static uint64_t GetDataRate(uint8_t mcsValue,
-                                MHz_u channelWidth,
+                                MHz_t channelWidth,
                                 Time guardInterval,
                                 uint8_t nss);
 
@@ -254,7 +254,7 @@ class EhtPhy : public HePhy
     uint32_t GetSigBSize(const WifiTxVector& txVector) const override;
     dBm_t GetCcaThreshold(const Ptr<const WifiPpdu> ppdu,
                           WifiChannelListType channelType) const override;
-    const std::map<MHz_u, WifiChannelListType>& GetCcaSecondaryChannels() const override;
+    const std::map<MHz_t, WifiChannelListType>& GetCcaSecondaryChannels() const override;
     PhyEntity::CcaIndication GetCcaIndicationOnSecondary(const Ptr<const WifiPpdu> ppdu) override;
     std::vector<Time> GetPer20MHzDurations(const Ptr<const WifiPpdu> ppdu) override;
 
@@ -287,7 +287,7 @@ class EhtPhy : public HePhy
      * @param channelWidth the channel width
      * @return he number of usable subcarriers for data
      */
-    static uint16_t GetUsableSubcarriers(MHz_u channelWidth);
+    static uint16_t GetUsableSubcarriers(MHz_t channelWidth);
 
     /**
      * Compute the CCA threshold for Per 20MHz check.

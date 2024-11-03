@@ -99,7 +99,7 @@ class WifiProtectionManager : public Object
      * @param receiver the MAC address of the solicited station
      */
     void AddUserInfoToMuRts(CtrlTriggerHeader& muRts,
-                            MHz_u txWidth,
+                            MHz_t txWidth,
                             const Mac48Address& receiver) const;
 
     Ptr<WifiMac> m_mac; //!< MAC which is using this Protection Manager

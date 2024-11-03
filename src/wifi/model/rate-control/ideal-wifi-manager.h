@@ -59,18 +59,18 @@ class IdealWifiManager : public WifiRemoteStationManager
                         double ackSnr,
                         WifiMode ackMode,
                         double dataSnr,
-                        MHz_u dataChannelWidth,
+                        MHz_t dataChannelWidth,
                         uint8_t dataNss) override;
     void DoReportAmpduTxStatus(WifiRemoteStation* station,
                                uint16_t nSuccessfulMpdus,
                                uint16_t nFailedMpdus,
                                double rxSnr,
                                double dataSnr,
-                               MHz_u dataChannelWidth,
+                               MHz_t dataChannelWidth,
                                uint8_t dataNss) override;
     void DoReportFinalRtsFailed(WifiRemoteStation* station) override;
     void DoReportFinalDataFailed(WifiRemoteStation* station) override;
-    WifiTxVector DoGetDataTxVector(WifiRemoteStation* station, MHz_u allowedWidth) override;
+    WifiTxVector DoGetDataTxVector(WifiRemoteStation* station, MHz_t allowedWidth) override;
     WifiTxVector DoGetRtsTxVector(WifiRemoteStation* station) override;
 
   private:
@@ -111,7 +111,7 @@ class IdealWifiManager : public WifiRemoteStationManager
      * @param mode non-HT WifiMode
      * @return the channel width for the selected mode
      */
-    MHz_u GetChannelWidthForNonHtMode(WifiMode mode) const;
+    MHz_t GetChannelWidthForNonHtMode(WifiMode mode) const;
 
     /**
      * Convenience function to get the last observed SNR from a given station for a given channel
@@ -125,7 +125,7 @@ class IdealWifiManager : public WifiRemoteStationManager
      * @return the SNR in linear scale
      */
     double GetLastObservedSnr(IdealWifiRemoteStation* station,
-                              MHz_u channelWidth,
+                              MHz_t channelWidth,
                               uint8_t nss) const;
 
     /**

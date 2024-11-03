@@ -148,17 +148,17 @@ VhtPpdu::VhtSigHeader::SetMuFlag(bool mu)
 }
 
 void
-VhtPpdu::VhtSigHeader::SetChannelWidth(MHz_u channelWidth)
+VhtPpdu::VhtSigHeader::SetChannelWidth(MHz_t channelWidth)
 {
-    if (channelWidth == MHz_u{160})
+    if (channelWidth == MHz_t{160})
     {
         m_bw = 3;
     }
-    else if (channelWidth == MHz_u{80})
+    else if (channelWidth == MHz_t{80})
     {
         m_bw = 2;
     }
-    else if (channelWidth == MHz_u{40})
+    else if (channelWidth == MHz_t{40})
     {
         m_bw = 1;
     }
@@ -168,24 +168,24 @@ VhtPpdu::VhtSigHeader::SetChannelWidth(MHz_u channelWidth)
     }
 }
 
-MHz_u
+MHz_t
 VhtPpdu::VhtSigHeader::GetChannelWidth() const
 {
     if (m_bw == 3)
     {
-        return MHz_u{160};
+        return MHz_t{160};
     }
     else if (m_bw == 2)
     {
-        return MHz_u{80};
+        return MHz_t{80};
     }
     else if (m_bw == 1)
     {
-        return MHz_u{40};
+        return MHz_t{40};
     }
     else
     {
-        return MHz_u{20};
+        return MHz_t{20};
     }
 }
 

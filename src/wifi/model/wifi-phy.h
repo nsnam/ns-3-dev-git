@@ -640,7 +640,7 @@ class WifiPhy : public Object
      * @param staId the STA-ID
      */
     void NotifyMonitorSniffRx(Ptr<const WifiPsdu> psdu,
-                              MHz_u channelFreq,
+                              MHz_t channelFreq,
                               const WifiTxVector& txVector,
                               SignalNoise signalNoise,
                               const std::vector<bool>& statusPerMpdu,
@@ -686,7 +686,7 @@ class WifiPhy : public Object
      * @param staId the STA-ID
      */
     void NotifyMonitorSniffTx(Ptr<const WifiPsdu> psdu,
-                              MHz_u channelFreq,
+                              MHz_t channelFreq,
                               const WifiTxVector& txVector,
                               uint16_t staId = SU_STA_ID);
 
@@ -937,8 +937,9 @@ class WifiPhy : public Object
      */
     Ptr<MobilityModel> GetMobility() const;
 
+    // TODO: ChannelSettings is not using strong type yet for backward-compatibility
     using ChannelTuple = std::tuple<uint8_t /* channel number */,
-                                    MHz_u /* channel width */,
+                                    uint16_t /* channel width (MHz) */,
                                     WifiPhyBand /* WifiPhyBand */,
                                     uint8_t /* primary20 index*/>; //!< Tuple identifying a segment
                                                                    //!< of an operating channel
@@ -991,7 +992,7 @@ class WifiPhy : public Object
     /**
      * @return the operating center frequency
      */
-    MHz_u GetFrequency() const;
+    MHz_t GetFrequency() const;
     /**
      * @return the index of the primary 20 MHz channel
      */
@@ -1005,8 +1006,8 @@ class WifiPhy : public Object
      * @param maxAllowedBandWidth the maximum allowed TX bandwidth
      * @return the bandwidth for the transmission
      */
-    MHz_u GetTxBandwidth(WifiMode mode,
-                         MHz_u maxAllowedBandWidth = MHz_u{
+    MHz_t GetTxBandwidth(WifiMode mode,
+                         MHz_t maxAllowedBandWidth = MHz_t{
                              std::numeric_limits<double>::max()}) const;
     /**
      * @param antennas the number of antennas on this node.
@@ -1106,7 +1107,7 @@ class WifiPhy : public Object
     /**
      * @return the channel width
      */
-    MHz_u GetChannelWidth() const;
+    MHz_t GetChannelWidth() const;
 
     /**
      * Get the power of the given power level.
@@ -1241,7 +1242,7 @@ class WifiPhy : public Object
      *
      * This method is only relevant for SpectrumWifiPhy.
      */
-    virtual MHz_u GetGuardBandwidth(MHz_u currentChannelWidth) const = 0;
+    virtual MHz_t GetGuardBandwidth(MHz_t currentChannelWidth) const = 0;
     /**
      * @return a tuple containing the minimum rejection for the inner band,
      *                            the minimum rejection for the outer band, and
@@ -1258,7 +1259,7 @@ class WifiPhy : public Object
      *
      * @return channel number of the primary channel
      */
-    uint8_t GetPrimaryChannelNumber(MHz_u primaryChannelWidth) const;
+    uint8_t GetPrimaryChannelNumber(MHz_t primaryChannelWidth) const;
 
     /**
      * Get the info of a given band
@@ -1268,7 +1269,7 @@ class WifiPhy : public Object
      *
      * @return the info that defines the band
      */
-    virtual WifiSpectrumBandInfo GetBand(MHz_u bandWidth, uint8_t bandIndex = 0) = 0;
+    virtual WifiSpectrumBandInfo GetBand(MHz_t bandWidth, uint8_t bandIndex = 0) = 0;
 
     /**
      * Get the frequency range of the current RF interface.
@@ -1280,7 +1281,7 @@ class WifiPhy : public Object
     /**
      * @return the subcarrier spacing corresponding to the configure standard
      */
-    Hz_u GetSubcarrierSpacing() const;
+    Hz_t GetSubcarrierSpacing() const;
 
     /**
      * Callback invoked when the PHY model starts to transmit a signal
@@ -1604,10 +1605,29 @@ class WifiPhy : public Object
      */
     static std::map<WifiModulationClass, Ptr<PhyEntity>>& GetStaticPhyEntities();
 
+    using ChannelTupleWithUnits =
+        std::tuple<uint8_t /* channel number */,
+                   MHz_t /* channel width */,
+                   WifiPhyBand /* WifiPhyBand */,
+                   uint8_t /* primary20 index*/>; //!< Tuple identifying a segment
+                                                  //!< of an operating channel
+
+    using ChannelSegmentsWithUnits =
+        std::vector<ChannelTupleWithUnits>; //!< segments identifying an operating channel
+
+    /**
+     * This overloaded function is used to pass a list of segments (with correct units) from which
+     * the operating channel can be deduced.
+     *
+     * @param channelSegments the segments identifying the operating channel
+     */
+    void SetOperatingChannel(const ChannelSegmentsWithUnits& channelSegments);
+
     WifiStandard m_standard;                    //!< WifiStandard
     WifiModulationClass m_maxModClassSupported; //!< max modulation class supported
     WifiPhyBand m_band;                         //!< WifiPhyBand
-    ChannelSegments m_channelSettings; //!< Store operating channel settings until initialization
+    ChannelSegmentsWithUnits
+        m_channelSettings; //!< Store operating channel settings until initialization
     WifiPhyOperatingChannel m_operatingChannel; //!< Operating channel
     bool m_fixedPhyBand; //!< True to prohibit changing PHY band after initialization
 

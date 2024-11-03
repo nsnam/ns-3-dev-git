@@ -1633,12 +1633,12 @@ MultiLinkSetupTest::CheckMlSetup()
         const auto& apChannel = m_apMac->GetWifiPhy(apLinkId)->GetOperatingChannel();
 
         auto width = apChannel.GetTotalWidth();
-        auto primary20 = apChannel.GetPrimaryChannelIndex(MHz_u{20});
+        auto primary20 = apChannel.GetPrimaryChannelIndex(MHz_t{20});
 
-        if (width > MHz_u{80} && !m_support160MHzOp)
+        if (width > MHz_t{80} && !m_support160MHzOp)
         {
-            width = MHz_u{80};
-            primary20 -= apChannel.GetPrimaryChannelIndex(MHz_u{80}) * 4;
+            width = MHz_t{80};
+            primary20 -= apChannel.GetPrimaryChannelIndex(MHz_t{80}) * 4;
         }
 
         NS_TEST_EXPECT_MSG_EQ(+staChannel.GetNumber(),
@@ -1654,7 +1654,7 @@ MultiLinkSetupTest::CheckMlSetup()
         NS_TEST_EXPECT_MSG_EQ(+staChannel.GetPhyBand(),
                               +apChannel.GetPhyBand(),
                               "Incorrect operating PHY band for STA on link " << +staLinkId);
-        NS_TEST_EXPECT_MSG_EQ(+staChannel.GetPrimaryChannelIndex(MHz_u{20}),
+        NS_TEST_EXPECT_MSG_EQ(+staChannel.GetPrimaryChannelIndex(MHz_t{20}),
                               +primary20,
                               "Incorrect operating primary channel index for STA on link "
                                   << +staLinkId);
@@ -1769,7 +1769,7 @@ MultiLinkSetupTest::CheckQosData(Ptr<WifiMpdu> mpdu,
     // check TX width
     // STA of non-AP MLD operate on the same channel as the AP (or on its primary80 if the AP
     // operates on a 160 MHz channel and non-AP MLD does not support 160 MHz operations)
-    MHz_u width;
+    MHz_t width;
 
     if (!hdr.IsToDs() && hdr.IsFromDs())
     {
@@ -1787,9 +1787,9 @@ MultiLinkSetupTest::CheckQosData(Ptr<WifiMpdu> mpdu,
                                                                      << hdr.IsFromDs() << ")");
     }
 
-    if (width > MHz_u{80} && !m_support160MHzOp)
+    if (width > MHz_t{80} && !m_support160MHzOp)
     {
-        width = MHz_u{80};
+        width = MHz_t{80};
     }
     NS_TEST_EXPECT_MSG_EQ(txvector.GetChannelWidth(), width, "Unexpected TX width");
 

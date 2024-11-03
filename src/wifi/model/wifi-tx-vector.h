@@ -127,7 +127,7 @@ class WifiTxVector
                  uint8_t nTx,
                  uint8_t nss,
                  uint8_t ness,
-                 MHz_u channelWidth,
+                 MHz_t channelWidth,
                  bool aggregation,
                  bool stbc = false,
                  bool ldpc = false,
@@ -198,13 +198,13 @@ class WifiTxVector
     /**
      * @returns the channel width
      */
-    MHz_u GetChannelWidth() const;
+    MHz_t GetChannelWidth() const;
     /**
      * Sets the selected channelWidth
      *
      * @param channelWidth the channel width
      */
-    void SetChannelWidth(MHz_u channelWidth);
+    void SetChannelWidth(MHz_t channelWidth);
     /**
      * @returns the guard interval duration
      */
@@ -552,7 +552,7 @@ class WifiTxVector
                               It is the value that will be passed
                               to PMD_TXPWRLVL.request */
     WifiPreamble m_preamble;  /**< preamble */
-    MHz_u m_channelWidth;     /**< channel width */
+    MHz_t m_channelWidth;     /**< channel width */
     Time m_guardInterval;     /**< guard interval duration */
     uint8_t m_nTx;            /**< number of TX antennas */
     uint8_t m_nss;            /**< number of spatial streams */

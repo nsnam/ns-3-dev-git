@@ -403,20 +403,20 @@ InterferenceHelper::UpdateEvent(Ptr<Event> event, const RxPowerWattPerChannelBan
 double
 InterferenceHelper::CalculateSnr(Watt_t signal,
                                  Watt_t noiseInterference,
-                                 MHz_u channelWidth,
+                                 MHz_t channelWidth,
                                  uint8_t nss) const
 {
     NS_LOG_FUNCTION(this << signal << noiseInterference << channelWidth << +nss);
     // thermal noise at 290K in J/s = W
     static const double BOLTZMANN = 1.3803e-23;
     // Nt is the power of thermal noise in W
-    const auto Nt = BOLTZMANN * 290 * MHzToHz(channelWidth);
+    const auto Nt = BOLTZMANN * 290 * channelWidth.in_Hz();
     // receiver noise Floor which accounts for thermal noise and non-idealities of the receiver
     Watt_t noiseFloor{m_noiseFigure * Nt};
     Watt_t noise = noiseFloor + noiseInterference;
     auto snr = signal / noise; // linear scale
-    NS_LOG_DEBUG("bandwidth=" << channelWidth << "MHz, signal=" << signal
-                              << ", noise=" << noiseFloor << ", interference=" << noiseInterference
+    NS_LOG_DEBUG("bandwidth=" << channelWidth << ", signal=" << signal << ", noise=" << noiseFloor
+                              << ", interference=" << noiseInterference
                               << ", snr=" << RatioToDb(snr));
     if (m_errorRateModel->IsAwgn())
     {
@@ -565,7 +565,7 @@ InterferenceHelper::CalculatePayloadChunkSuccessRate(double snir,
 
 double
 InterferenceHelper::CalculatePayloadPer(Ptr<const Event> event,
-                                        MHz_u channelWidth,
+                                        MHz_t channelWidth,
                                         NiChangesPerBand* nis,
                                         const WifiSpectrumBandInfo& band,
                                         uint16_t staId,
@@ -648,7 +648,7 @@ double
 InterferenceHelper::CalculatePhyHeaderSectionPsr(
     Ptr<const Event> event,
     NiChangesPerBand* nis,
-    MHz_u channelWidth,
+    MHz_t channelWidth,
     const WifiSpectrumBandInfo& band,
     PhyEntity::PhyHeaderSections phyHeaderSections) const
 {
@@ -711,7 +711,7 @@ InterferenceHelper::CalculatePhyHeaderSectionPsr(
 double
 InterferenceHelper::CalculatePhyHeaderPer(Ptr<const Event> event,
                                           NiChangesPerBand* nis,
-                                          MHz_u channelWidth,
+                                          MHz_t channelWidth,
                                           const WifiSpectrumBandInfo& band,
                                           WifiPpduField header) const
 {
@@ -740,7 +740,7 @@ InterferenceHelper::CalculatePhyHeaderPer(Ptr<const Event> event,
 
 PhyEntity::SnrPer
 InterferenceHelper::CalculatePayloadSnrPer(Ptr<Event> event,
-                                           MHz_u channelWidth,
+                                           MHz_t channelWidth,
                                            const WifiSpectrumBandInfo& band,
                                            uint16_t staId,
                                            std::pair<Time, Time> relativeMpduStartStop) const
@@ -765,7 +765,7 @@ InterferenceHelper::CalculatePayloadSnrPer(Ptr<Event> event,
 
 double
 InterferenceHelper::CalculateSnr(Ptr<Event> event,
-                                 MHz_u channelWidth,
+                                 MHz_t channelWidth,
                                  uint8_t nss,
                                  const WifiSpectrumBandInfo& band) const
 {
@@ -776,7 +776,7 @@ InterferenceHelper::CalculateSnr(Ptr<Event> event,
 
 PhyEntity::SnrPer
 InterferenceHelper::CalculatePhyHeaderSnrPer(Ptr<Event> event,
-                                             MHz_u channelWidth,
+                                             MHz_t channelWidth,
                                              const WifiSpectrumBandInfo& band,
                                              WifiPpduField header) const
 {
@@ -844,8 +844,8 @@ InterferenceHelper::IsBandInFrequencyRange(const WifiSpectrumBandInfo& band,
     return std::all_of(band.frequencies.cbegin(),
                        band.frequencies.cend(),
                        [&freqRange](const auto& freqs) {
-                           return ((freqs.second > MHzToHz(freqRange.minFrequency)) &&
-                                   (freqs.first < MHzToHz(freqRange.maxFrequency)));
+                           return ((freqs.second > freqRange.minFrequency) &&
+                                   (freqs.first < freqRange.maxFrequency));
                        });
 }
 

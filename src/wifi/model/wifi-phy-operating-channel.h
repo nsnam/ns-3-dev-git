@@ -15,6 +15,7 @@
 
 #include "ns3/he-ru.h"
 
+#include <compare>
 #include <optional>
 #include <set>
 #include <tuple>
@@ -36,10 +37,10 @@ struct FrequencyChannelInfo
      * 0 if the provided channel info is identical or a positive value if the provided channel info
      * is located at a higher channel number
      */
-    auto operator<=>(const FrequencyChannelInfo& info) const = default;
+    std::weak_ordering operator<=>(const FrequencyChannelInfo& info) const = default;
     uint8_t number{0};                                        ///< the channel number
-    MHz_u frequency{0};                                       ///< the center frequency
-    MHz_u width{0};                                           ///< the channel width
+    MHz_t frequency{0};                                       ///< the center frequency
+    MHz_t width{0};                                           ///< the channel width
     WifiPhyBand band{WifiPhyBand::WIFI_PHY_BAND_UNSPECIFIED}; ///< the PHY band
     FrequencyChannelType type{FrequencyChannelType::OFDM};    ///< the frequency channel type
 };
@@ -154,7 +155,7 @@ class WifiPhyOperatingChannel
      * @param standard the standard
      * @param band the PHY band
      */
-    void SetDefault(MHz_u width, WifiStandard standard, WifiPhyBand band);
+    void SetDefault(MHz_t width, WifiStandard standard, WifiPhyBand band);
 
     /**
      * Get the default channel number for a given segment of the given width and for the given
@@ -169,7 +170,7 @@ class WifiPhyOperatingChannel
      * @return the default channel number
      */
     static uint8_t GetDefaultChannelNumber(
-        MHz_u width,
+        MHz_t width,
         WifiStandard standard,
         WifiPhyBand band,
         std::optional<uint8_t> previousChannelNumber = std::nullopt);
@@ -193,7 +194,7 @@ class WifiPhyOperatingChannel
      * @param segment the index of the frequency segment (if operating channel is non-contiguous)
      * @return the center frequency for a given frequency segment
      */
-    MHz_u GetFrequency(std::size_t segment = 0) const;
+    MHz_t GetFrequency(std::size_t segment = 0) const;
     /**
      * Return the channel width for a given frequency segment.
      * Segments are ordered by increasing frequencies, hence by default
@@ -203,13 +204,13 @@ class WifiPhyOperatingChannel
      * @param segment the index of the frequency segment (if operating channel is non-contiguous)
      * @return the channel width for a given frequency segment
      */
-    MHz_u GetWidth(std::size_t segment = 0) const;
+    MHz_t GetWidth(std::size_t segment = 0) const;
     /**
      * Return the width of the whole operating channel.
      *
      * @return the width of the whole operating channel
      */
-    MHz_u GetTotalWidth() const;
+    MHz_t GetTotalWidth() const;
     /**
      * Return the channel number per segment.
      * Segments are ordered by increasing frequencies.
@@ -223,14 +224,14 @@ class WifiPhyOperatingChannel
      *
      * @return the center frequency per segment
      */
-    std::vector<MHz_u> GetFrequencies() const;
+    std::vector<MHz_t> GetFrequencies() const;
     /**
      * Return the channel width per segment.
      * Segments are ordered by increasing frequencies.
      *
      * @return the channel width per segment
      */
-    std::vector<MHz_u> GetWidths() const;
+    std::vector<MHz_t> GetWidths() const;
     /**
      * Return the width type of the operating channel.
      *
@@ -270,7 +271,7 @@ class WifiPhyOperatingChannel
      * @param primaryChannelWidth the width of the primary channel
      * @return the index of the requested primary channel within the operating channel
      */
-    uint8_t GetPrimaryChannelIndex(MHz_u primaryChannelWidth) const;
+    uint8_t GetPrimaryChannelIndex(MHz_t primaryChannelWidth) const;
 
     /**
      * If the operating channel width is made of a multiple of 20 MHz, return the index of the
@@ -280,7 +281,7 @@ class WifiPhyOperatingChannel
      * @param secondaryChannelWidth the width of the secondary channel
      * @return the index of the requested secondary channel within the operating channel
      */
-    uint8_t GetSecondaryChannelIndex(MHz_u secondaryChannelWidth) const;
+    uint8_t GetSecondaryChannelIndex(MHz_t secondaryChannelWidth) const;
 
     /**
      * Set the index of the primary 20 MHz channel (0 indicates the 20 MHz subchannel
@@ -296,7 +297,7 @@ class WifiPhyOperatingChannel
      * @param primaryChannelWidth the width of the primary channel
      * @return the center frequency of the primary channel of the given width
      */
-    MHz_u GetPrimaryChannelCenterFrequency(MHz_u primaryChannelWidth) const;
+    MHz_t GetPrimaryChannelCenterFrequency(MHz_t primaryChannelWidth) const;
 
     /**
      * Get the center frequency of the secondary channel of the given width.
@@ -304,7 +305,7 @@ class WifiPhyOperatingChannel
      * @param secondaryChannelWidth the width of the secondary channel
      * @return the center frequency of the secondary channel of the given width
      */
-    MHz_u GetSecondaryChannelCenterFrequency(MHz_u secondaryChannelWidth) const;
+    MHz_t GetSecondaryChannelCenterFrequency(MHz_t secondaryChannelWidth) const;
 
     /**
      * Get the channel indices of all the 20 MHz channels included in the primary
@@ -316,7 +317,7 @@ class WifiPhyOperatingChannel
      *         channel of the given width, if such primary channel exists, or an empty set,
      *         otherwise
      */
-    std::set<uint8_t> GetAll20MHzChannelIndicesInPrimary(MHz_u width) const;
+    std::set<uint8_t> GetAll20MHzChannelIndicesInPrimary(MHz_t width) const;
     /**
      * Get the channel indices of all the 20 MHz channels included in the secondary
      * channel of the given width, if such secondary channel exists, or an empty set,
@@ -327,7 +328,7 @@ class WifiPhyOperatingChannel
      *         channel of the given width, if such secondary channel exists, or an empty set,
      *         otherwise
      */
-    std::set<uint8_t> GetAll20MHzChannelIndicesInSecondary(MHz_u width) const;
+    std::set<uint8_t> GetAll20MHzChannelIndicesInSecondary(MHz_t width) const;
     /**
      * Get the channel indices of all the 20 MHz channels included in the secondary
      * channel corresponding to the given primary channel, if such secondary channel
@@ -356,8 +357,8 @@ class WifiPhyOperatingChannel
      *         of the set of available channels
      */
     static ConstIterator FindFirst(uint8_t number,
-                                   MHz_u frequency,
-                                   MHz_u width,
+                                   MHz_t frequency,
+                                   MHz_t width,
                                    WifiStandard standard,
                                    WifiPhyBand band,
                                    ConstIterator start = m_frequencyChannels.begin());
@@ -369,7 +370,7 @@ class WifiPhyOperatingChannel
      *
      * @return channel number of the primary channel
      */
-    uint8_t GetPrimaryChannelNumber(MHz_u primaryChannelWidth, WifiStandard standard) const;
+    uint8_t GetPrimaryChannelNumber(MHz_t primaryChannelWidth, WifiStandard standard) const;
 
     /**
      * Get channel number of the secondary channel of the given width
@@ -378,7 +379,7 @@ class WifiPhyOperatingChannel
      *
      * @return channel number of the secondary channel
      */
-    uint8_t GetSecondaryChannelNumber(MHz_u secondaryChannelWidth, WifiStandard standard) const;
+    uint8_t GetSecondaryChannelNumber(MHz_t secondaryChannelWidth, WifiStandard standard) const;
 
     /**
      * Get a WifiPhyOperatingChannel object corresponding to the primary channel of the given width.
@@ -387,7 +388,7 @@ class WifiPhyOperatingChannel
      * @return a WifiPhyOperatingChannel object corresponding to the primary channel of the given
      *         width
      */
-    WifiPhyOperatingChannel GetPrimaryChannel(MHz_u primaryChannelWidth) const;
+    WifiPhyOperatingChannel GetPrimaryChannel(MHz_t primaryChannelWidth) const;
 
     /**
      * Get the channel indices of the minimum subset of 20 MHz channels containing the given RU.
@@ -397,7 +398,7 @@ class WifiPhyOperatingChannel
      *              it is the width of the PPDU for which the RU is allocated
      * @return the channel indices of the minimum subset of 20 MHz channels containing the given RU
      */
-    std::set<uint8_t> Get20MHzIndicesCoveringRu(HeRu::RuSpec ru, MHz_u width) const;
+    std::set<uint8_t> Get20MHzIndicesCoveringRu(HeRu::RuSpec ru, MHz_t width) const;
 
     /**
      * Get the index of the segment that contains a given primary channel.
@@ -405,7 +406,7 @@ class WifiPhyOperatingChannel
      * @param primaryChannelWidth the width of the primary channel
      * @return the index of the segment that contains the primary channel
      */
-    uint8_t GetPrimarySegmentIndex(MHz_u primaryChannelWidth) const;
+    uint8_t GetPrimarySegmentIndex(MHz_t primaryChannelWidth) const;
 
     /**
      * Get the index of the segment that contains a given secondary channel.
@@ -413,7 +414,7 @@ class WifiPhyOperatingChannel
      * @param secondaryChannelWidth the width of the secondary channel
      * @return the index of the segment that contains the secondary channel
      */
-    uint8_t GetSecondarySegmentIndex(MHz_u secondaryChannelWidth) const;
+    uint8_t GetSecondarySegmentIndex(MHz_t secondaryChannelWidth) const;
 
     /**
      * Get the number of frequency segments in the operating channel.

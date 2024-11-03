@@ -50,19 +50,19 @@ const PhyEntity::PpduFormats VhtPhy::m_vhtPpduFormats {
 
 const VhtPhy::NesExceptionMap VhtPhy::m_exceptionsMap {
                     /* {BW,Nss,MCS} Nes */
-    { std::make_tuple (MHz_u{80}, 7, 2),  3 }, // instead of 2
-    { std::make_tuple (MHz_u{80}, 7, 7),  6 }, // instead of 4
-    { std::make_tuple (MHz_u{80}, 7, 8),  6 }, // instead of 5
-    { std::make_tuple (MHz_u{80}, 8, 7),  6 }, // instead of 5
-    { std::make_tuple (MHz_u{160}, 4, 7),  6 }, // instead of 5
-    { std::make_tuple (MHz_u{160}, 5, 8),  8 }, // instead of 7
-    { std::make_tuple (MHz_u{160}, 6, 7),  8 }, // instead of 7
-    { std::make_tuple (MHz_u{160}, 7, 3),  4 }, // instead of 3
-    { std::make_tuple (MHz_u{160}, 7, 4),  6 }, // instead of 5
-    { std::make_tuple (MHz_u{160}, 7, 5),  7 }, // instead of 6
-    { std::make_tuple (MHz_u{160}, 7, 7),  9 }, // instead of 8
-    { std::make_tuple (MHz_u{160}, 7, 8), 12 }, // instead of 9
-    { std::make_tuple (MHz_u{160}, 7, 9), 12 }, // instead of 10
+    { std::make_tuple (MHz_t{80}, 7, 2),  3 }, // instead of 2
+    { std::make_tuple (MHz_t{80}, 7, 7),  6 }, // instead of 4
+    { std::make_tuple (MHz_t{80}, 7, 8),  6 }, // instead of 5
+    { std::make_tuple (MHz_t{80}, 8, 7),  6 }, // instead of 5
+    { std::make_tuple (MHz_t{160}, 4, 7),  6 }, // instead of 5
+    { std::make_tuple (MHz_t{160}, 5, 8),  8 }, // instead of 7
+    { std::make_tuple (MHz_t{160}, 6, 7),  8 }, // instead of 7
+    { std::make_tuple (MHz_t{160}, 7, 3),  4 }, // instead of 3
+    { std::make_tuple (MHz_t{160}, 7, 4),  6 }, // instead of 5
+    { std::make_tuple (MHz_t{160}, 7, 5),  7 }, // instead of 6
+    { std::make_tuple (MHz_t{160}, 7, 7),  9 }, // instead of 8
+    { std::make_tuple (MHz_t{160}, 7, 8), 12 }, // instead of 9
+    { std::make_tuple (MHz_t{160}, 7, 9), 12 }, // instead of 10
 };
 
 // clang-format on
@@ -70,10 +70,10 @@ const VhtPhy::NesExceptionMap VhtPhy::m_exceptionsMap {
 /**
  * @brief map a given secondary channel width to its channel list type
  */
-const std::map<MHz_u, WifiChannelListType> vhtSecondaryChannels{
-    {MHz_u{20}, WIFI_CHANLIST_SECONDARY},
-    {MHz_u{40}, WIFI_CHANLIST_SECONDARY40},
-    {MHz_u{80}, WIFI_CHANLIST_SECONDARY80},
+const std::map<MHz_t, WifiChannelListType> vhtSecondaryChannels{
+    {MHz_t{20}, WIFI_CHANLIST_SECONDARY},
+    {MHz_t{40}, WIFI_CHANLIST_SECONDARY40},
+    {MHz_t{80}, WIFI_CHANLIST_SECONDARY80},
 };
 
 VhtPhy::VhtPhy(bool buildModeList /* = true */)
@@ -409,7 +409,7 @@ VhtPhy::GetConstellationSize(uint8_t mcsValue)
 }
 
 uint64_t
-VhtPhy::GetPhyRate(uint8_t mcsValue, MHz_u channelWidth, Time guardInterval, uint8_t nss)
+VhtPhy::GetPhyRate(uint8_t mcsValue, MHz_t channelWidth, Time guardInterval, uint8_t nss)
 {
     WifiCodeRate codeRate = GetCodeRate(mcsValue);
     uint64_t dataRate = GetDataRate(mcsValue, channelWidth, guardInterval, nss);
@@ -435,12 +435,12 @@ VhtPhy::GetDataRateFromTxVector(const WifiTxVector& txVector, uint16_t /* staId 
 }
 
 uint64_t
-VhtPhy::GetDataRate(uint8_t mcsValue, MHz_u channelWidth, Time guardInterval, uint8_t nss)
+VhtPhy::GetDataRate(uint8_t mcsValue, MHz_t channelWidth, Time guardInterval, uint8_t nss)
 {
     NS_ASSERT(IsValidGuardInterval(guardInterval, WIFI_STANDARD_80211ac));
     NS_ASSERT(nss <= 8);
     NS_ASSERT_MSG(IsCombinationAllowed(mcsValue, channelWidth, nss),
-                  "VHT MCS " << +mcsValue << " forbidden at " << channelWidth << " MHz when NSS is "
+                  "VHT MCS " << +mcsValue << " forbidden at " << channelWidth << " when NSS is "
                              << +nss);
     return HtPhy::CalculateDataRate(GetSymbolDuration(guardInterval),
                                     GetUsableSubcarriers(channelWidth),
@@ -450,9 +450,9 @@ VhtPhy::GetDataRate(uint8_t mcsValue, MHz_u channelWidth, Time guardInterval, ui
 }
 
 uint16_t
-VhtPhy::GetUsableSubcarriers(MHz_u channelWidth)
+VhtPhy::GetUsableSubcarriers(MHz_t channelWidth)
 {
-    switch (static_cast<uint16_t>(channelWidth))
+    switch (static_cast<uint16_t>(channelWidth.in_MHz()))
     {
     case 80:
         return 234;
@@ -503,13 +503,13 @@ VhtPhy::IsAllowed(const WifiTxVector& txVector)
 }
 
 bool
-VhtPhy::IsCombinationAllowed(uint8_t mcsValue, MHz_u channelWidth, uint8_t nss)
+VhtPhy::IsCombinationAllowed(uint8_t mcsValue, MHz_t channelWidth, uint8_t nss)
 {
-    if (mcsValue == 9 && channelWidth == MHz_u{20} && nss != 3)
+    if (mcsValue == 9 && channelWidth == MHz_t{20} && nss != 3)
     {
         return false;
     }
-    if (mcsValue == 6 && channelWidth == MHz_u{80} && nss == 3)
+    if (mcsValue == 6 && channelWidth == MHz_t{80} && nss == 3)
     {
         return false;
     }
@@ -536,13 +536,13 @@ VhtPhy::GetCcaThreshold(const Ptr<const WifiPpdu> ppdu, WifiChannelListType chan
             return m_wifiPhy->GetCcaSensitivityThreshold();
         }
         case WIFI_CHANLIST_SECONDARY:
-            NS_ASSERT_MSG(ppduBw == MHz_u{20}, "Invalid channel width " << ppduBw);
+            NS_ASSERT_MSG(ppduBw == MHz_t{20}, "Invalid channel width " << ppduBw);
             break;
         case WIFI_CHANLIST_SECONDARY40:
-            NS_ASSERT_MSG(ppduBw <= MHz_u{40}, "Invalid channel width " << ppduBw);
+            NS_ASSERT_MSG(ppduBw <= MHz_t{40}, "Invalid channel width " << ppduBw);
             break;
         case WIFI_CHANLIST_SECONDARY80:
-            NS_ASSERT_MSG(ppduBw <= MHz_u{80}, "Invalid channel width " << ppduBw);
+            NS_ASSERT_MSG(ppduBw <= MHz_t{80}, "Invalid channel width " << ppduBw);
             break;
         default:
             NS_ASSERT_MSG(false, "Invalid channel list type");
@@ -562,7 +562,7 @@ VhtPhy::GetCcaThreshold(const Ptr<const WifiPpdu> ppdu, WifiChannelListType chan
     }
 }
 
-const std::map<MHz_u, WifiChannelListType>&
+const std::map<MHz_t, WifiChannelListType>&
 VhtPhy::GetCcaSecondaryChannels() const
 {
     return vhtSecondaryChannels;

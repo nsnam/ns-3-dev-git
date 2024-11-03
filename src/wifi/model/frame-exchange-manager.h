@@ -84,7 +84,7 @@ class FrameExchangeManager : public Object
      * @param allowedWidth the allowed width for the frame exchange sequence
      * @return true if a frame exchange sequence was started, false otherwise
      */
-    virtual bool StartTransmission(Ptr<Txop> dcf, MHz_u allowedWidth);
+    virtual bool StartTransmission(Ptr<Txop> dcf, MHz_t allowedWidth);
 
     /**
      * This method is intended to be called by the PHY layer every time an MPDU
@@ -206,7 +206,7 @@ class FrameExchangeManager : public Object
     /**
      * @return the width of the channel that the FEM is allowed to use for the current transmission
      */
-    MHz_u GetAllowedWidth() const;
+    MHz_t GetAllowedWidth() const;
     /**
      * Set the callback to invoke when an MPDU is dropped.
      *
@@ -527,7 +527,7 @@ class FrameExchangeManager : public Object
     bool m_protectedIfResponded;       //!< whether a STA is assumed to be protected if replied to a
                                        //!< frame requiring acknowledgment
     uint8_t m_linkId;                  //!< the ID of the link this object is associated with
-    MHz_u m_allowedWidth;              //!< the allowed width for the current transmission
+    MHz_t m_allowedWidth;              //!< the allowed width for the current transmission
     bool m_promisc;                    //!< Flag if the device is operating in promiscuous mode
     DroppedMpdu m_droppedMpduCallback; //!< the dropped MPDU callback
     AckedMpdu m_ackedMpduCallback;     //!< the acknowledged MPDU callback

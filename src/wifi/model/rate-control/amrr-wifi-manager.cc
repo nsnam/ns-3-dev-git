@@ -166,7 +166,7 @@ AmrrWifiManager::DoReportDataOk(WifiRemoteStation* st,
                                 double ackSnr,
                                 WifiMode ackMode,
                                 double dataSnr,
-                                MHz_u dataChannelWidth,
+                                MHz_t dataChannelWidth,
                                 uint8_t dataNss)
 {
     NS_LOG_FUNCTION(this << st << ackSnr << ackMode << dataSnr << dataChannelWidth << +dataNss);
@@ -320,7 +320,7 @@ AmrrWifiManager::UpdateMode(AmrrWifiRemoteStation* station)
 }
 
 WifiTxVector
-AmrrWifiManager::DoGetDataTxVector(WifiRemoteStation* st, MHz_u allowedWidth)
+AmrrWifiManager::DoGetDataTxVector(WifiRemoteStation* st, MHz_t allowedWidth)
 {
     NS_LOG_FUNCTION(this << st << allowedWidth);
     auto station = static_cast<AmrrWifiRemoteStation*>(st);
@@ -365,9 +365,9 @@ AmrrWifiManager::DoGetDataTxVector(WifiRemoteStation* st, MHz_u allowedWidth)
         }
     }
     auto channelWidth = GetChannelWidth(station);
-    if (channelWidth > MHz_u{20} && channelWidth != MHz_u{22})
+    if (channelWidth > MHz_t{20} && channelWidth != MHz_t{22})
     {
-        channelWidth = MHz_u{20};
+        channelWidth = MHz_t{20};
     }
     WifiMode mode = GetSupported(station, rateIndex);
     uint64_t rate = mode.GetDataRate(channelWidth);
@@ -394,9 +394,9 @@ AmrrWifiManager::DoGetRtsTxVector(WifiRemoteStation* st)
     NS_LOG_FUNCTION(this << st);
     auto station = static_cast<AmrrWifiRemoteStation*>(st);
     auto channelWidth = GetChannelWidth(station);
-    if (channelWidth > MHz_u{20} && channelWidth != MHz_u{22})
+    if (channelWidth > MHz_t{20} && channelWidth != MHz_t{22})
     {
-        channelWidth = MHz_u{20};
+        channelWidth = MHz_t{20};
     }
     UpdateMode(station);
     WifiMode mode;

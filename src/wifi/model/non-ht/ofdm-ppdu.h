@@ -50,14 +50,14 @@ class OfdmPpdu : public WifiPpdu
          * @param rate the RATE field of L-SIG expressed in bit/s
          * @param channelWidth the channel width
          */
-        void SetRate(uint64_t rate, MHz_u channelWidth = MHz_u{20});
+        void SetRate(uint64_t rate, MHz_t channelWidth = MHz_t{20});
         /**
          * Return the RATE field of L-SIG (in bit/s).
          *
          * @param channelWidth the channel width
          * @return the RATE field of L-SIG expressed in bit/s
          */
-        uint64_t GetRate(MHz_u channelWidth = MHz_u{20}) const;
+        uint64_t GetRate(MHz_t channelWidth = MHz_t{20}) const;
         /**
          * Fill the LENGTH field of L-SIG (in bytes).
          *
@@ -128,7 +128,7 @@ class OfdmPpdu : public WifiPpdu
      */
     virtual void SetTxVectorFromLSigHeader(WifiTxVector& txVector, const LSigHeader& lSig) const;
 
-    MHz_u m_channelWidth; //!< the channel width used to transmit that PPDU
+    MHz_t m_channelWidth; //!< the channel width used to transmit that PPDU
                           //!< (needed to distinguish 5 MHz, 10 MHz or 20 MHz PPDUs)
 };
 

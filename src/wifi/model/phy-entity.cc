@@ -867,7 +867,7 @@ PhyEntity::GetTimeToMacHdrEnd(uint16_t staId) const
     return std::nullopt;
 }
 
-std::pair<MHz_u, WifiSpectrumBandInfo>
+std::pair<MHz_t, WifiSpectrumBandInfo>
 PhyEntity::GetChannelWidthAndBand(const WifiTxVector& txVector, uint16_t /* staId */) const
 {
     const auto channelWidth = GetRxChannelWidth(txVector);
@@ -1269,9 +1269,9 @@ PhyEntity::GetCurrentEvent() const
 }
 
 WifiSpectrumBandInfo
-PhyEntity::GetPrimaryBand(MHz_u bandWidth) const
+PhyEntity::GetPrimaryBand(MHz_t bandWidth) const
 {
-    if (static_cast<uint16_t>(m_wifiPhy->GetChannelWidth()) % 20 != 0)
+    if (m_wifiPhy->GetChannelWidth() % MHz_t{20} != MHz_t{0})
     {
         return m_wifiPhy->GetBand(bandWidth);
     }
@@ -1280,14 +1280,14 @@ PhyEntity::GetPrimaryBand(MHz_u bandWidth) const
 }
 
 WifiSpectrumBandInfo
-PhyEntity::GetSecondaryBand(MHz_u bandWidth) const
+PhyEntity::GetSecondaryBand(MHz_t bandWidth) const
 {
-    NS_ASSERT(m_wifiPhy->GetChannelWidth() >= MHz_u{40});
+    NS_ASSERT(m_wifiPhy->GetChannelWidth() >= MHz_t{40});
     return m_wifiPhy->GetBand(bandWidth,
                               m_wifiPhy->GetOperatingChannel().GetSecondaryChannelIndex(bandWidth));
 }
 
-MHz_u
+MHz_t
 PhyEntity::GetRxChannelWidth(const WifiTxVector& txVector) const
 {
     return std::min(m_wifiPhy->GetChannelWidth(), txVector.GetChannelWidth());
@@ -1407,8 +1407,8 @@ PhyEntity::Transmit(Time txDuration,
     spectrumWifiPhy->Transmit(txParams);
 }
 
-MHz_u
-PhyEntity::GetGuardBandwidth(MHz_u currentChannelWidth) const
+MHz_t
+PhyEntity::GetGuardBandwidth(MHz_t currentChannelWidth) const
 {
     return m_wifiPhy->GetGuardBandwidth(currentChannelWidth);
 }
@@ -1435,10 +1435,10 @@ PhyEntity::CanStartRx(Ptr<const WifiPpdu> ppdu) const
     // The PHY shall not issue a PHY-RXSTART.indication primitive in response to a PPDU that does
     // not overlap the primary channel
     const auto channelWidth = m_wifiPhy->GetChannelWidth();
-    const auto primaryWidth = ((static_cast<uint16_t>(channelWidth) % 20 == 0)
-                                   ? MHz_u{20}
-                                   : channelWidth); // if the channel width is a multiple of 20 MHz,
-                                                    // then we consider the primary20 channel
+    const auto primaryWidth = ((channelWidth % MHz_t{20}) == MHz_t{0})
+                                  ? MHz_t{20}
+                                  : channelWidth; // if the channel width is a multiple of 20 MHz,
+                                                  // then we consider the primary20 channel
     const auto p20CenterFreq =
         m_wifiPhy->GetOperatingChannel().GetPrimaryChannelCenterFrequency(primaryWidth);
     const auto p20MinFreq = p20CenterFreq - (primaryWidth / 2);

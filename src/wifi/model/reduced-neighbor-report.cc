@@ -54,17 +54,17 @@ ReducedNeighborReport::SetOperatingChannel(std::size_t nbrApInfoId,
     switch (channel.GetPhyBand())
     {
     case WIFI_PHY_BAND_2_4GHZ:
-        if (channel.GetWidth() == MHz_u{20})
+        if (channel.GetWidth() == MHz_t{20})
         {
             operatingClass = 81;
         }
-        else if (channel.GetWidth() == MHz_u{40})
+        else if (channel.GetWidth() == MHz_t{40})
         {
             operatingClass = 83;
         }
         break;
     case WIFI_PHY_BAND_5GHZ:
-        if (channel.GetWidth() == MHz_u{20})
+        if (channel.GetWidth() == MHz_t{20})
         {
             if (channelNumber == 36 || channelNumber == 40 || channelNumber == 44 ||
                 channelNumber == 48)
@@ -90,7 +90,7 @@ ReducedNeighborReport::SetOperatingChannel(std::size_t nbrApInfoId,
                 operatingClass = 125;
             }
         }
-        else if (channel.GetWidth() == MHz_u{40})
+        else if (channel.GetWidth() == MHz_t{40})
         {
             if (channelNumber == 38 || channelNumber == 46)
             {
@@ -111,7 +111,7 @@ ReducedNeighborReport::SetOperatingChannel(std::size_t nbrApInfoId,
                 operatingClass = 126;
             }
         }
-        else if (channel.GetWidth() == MHz_u{80})
+        else if (channel.GetWidth() == MHz_t{80})
         {
             if (channelNumber == 42 || channelNumber == 58 || channelNumber == 106 ||
                 channelNumber == 122 || channelNumber == 138 || channelNumber == 155 ||
@@ -120,7 +120,7 @@ ReducedNeighborReport::SetOperatingChannel(std::size_t nbrApInfoId,
                 operatingClass = 128;
             }
         }
-        else if (channel.GetWidth() == MHz_u{160})
+        else if (channel.GetWidth() == MHz_t{160})
         {
             if (channelNumber == 50 || channelNumber == 114 || channelNumber == 163)
             {
@@ -129,23 +129,23 @@ ReducedNeighborReport::SetOperatingChannel(std::size_t nbrApInfoId,
         }
         break;
     case WIFI_PHY_BAND_6GHZ:
-        if (channel.GetWidth() == MHz_u{20})
+        if (channel.GetWidth() == MHz_t{20})
         {
             operatingClass = 131;
         }
-        else if (channel.GetWidth() == MHz_u{40})
+        else if (channel.GetWidth() == MHz_t{40})
         {
             operatingClass = 132;
         }
-        else if (channel.GetWidth() == MHz_u{80})
+        else if (channel.GetWidth() == MHz_t{80})
         {
             operatingClass = 133;
         }
-        else if (channel.GetWidth() == MHz_u{160})
+        else if (channel.GetWidth() == MHz_t{160})
         {
             operatingClass = 134;
         }
-        else if (channel.GetWidth() == 320)
+        else if (channel.GetWidth() == MHz_t{320})
         {
             operatingClass = 137;
         }
@@ -158,22 +158,22 @@ ReducedNeighborReport::SetOperatingChannel(std::size_t nbrApInfoId,
 
     NS_ABORT_MSG_IF(operatingClass == 0,
                     "Operating class not found for channel number "
-                        << +channelNumber << " width " << channel.GetWidth() << " MHz "
+                        << +channelNumber << " width " << channel.GetWidth() << " "
                         << "band " << channel.GetPhyBand());
 
     // find the primary channel number
-    MHz_u startingFreq{0};
+    MHz_t startingFreq{0};
 
     switch (channel.GetPhyBand())
     {
     case WIFI_PHY_BAND_2_4GHZ:
-        startingFreq = MHz_u{2407};
+        startingFreq = MHz_t{2407};
         break;
     case WIFI_PHY_BAND_5GHZ:
-        startingFreq = MHz_u{5000};
+        startingFreq = MHz_t{5000};
         break;
     case WIFI_PHY_BAND_6GHZ:
-        startingFreq = MHz_u{5950};
+        startingFreq = MHz_t{5950};
         break;
     case WIFI_PHY_BAND_UNSPECIFIED:
     default:
@@ -182,7 +182,7 @@ ReducedNeighborReport::SetOperatingChannel(std::size_t nbrApInfoId,
     }
 
     uint8_t primaryChannelNumber =
-        (channel.GetPrimaryChannelCenterFrequency(MHz_u{20}) - startingFreq) / MHz_u{5};
+        (channel.GetPrimaryChannelCenterFrequency(MHz_t{20}) - startingFreq) / MHz_t{5};
 
     m_nbrApInfoFields.at(nbrApInfoId).operatingClass = operatingClass;
     m_nbrApInfoFields.at(nbrApInfoId).channelNumber = primaryChannelNumber;
@@ -194,78 +194,78 @@ ReducedNeighborReport::GetOperatingChannel(std::size_t nbrApInfoId) const
     NS_ASSERT(nbrApInfoId < m_nbrApInfoFields.size());
 
     WifiPhyBand band = WIFI_PHY_BAND_UNSPECIFIED;
-    MHz_u width{0};
+    MHz_t width{0};
 
     switch (m_nbrApInfoFields.at(nbrApInfoId).operatingClass)
     {
     case 81:
         band = WIFI_PHY_BAND_2_4GHZ;
-        width = MHz_u{20};
+        width = MHz_t{20};
         break;
     case 83:
         band = WIFI_PHY_BAND_2_4GHZ;
-        width = MHz_u{40};
+        width = MHz_t{40};
         break;
     case 115:
     case 118:
     case 121:
     case 125:
         band = WIFI_PHY_BAND_5GHZ;
-        width = MHz_u{20};
+        width = MHz_t{20};
         break;
     case 116:
     case 119:
     case 122:
     case 126:
         band = WIFI_PHY_BAND_5GHZ;
-        width = MHz_u{40};
+        width = MHz_t{40};
         break;
     case 128:
         band = WIFI_PHY_BAND_5GHZ;
-        width = MHz_u{80};
+        width = MHz_t{80};
         break;
     case 129:
         band = WIFI_PHY_BAND_5GHZ;
-        width = MHz_u{160};
+        width = MHz_t{160};
         break;
     case 131:
         band = WIFI_PHY_BAND_6GHZ;
-        width = MHz_u{20};
+        width = MHz_t{20};
         break;
     case 132:
         band = WIFI_PHY_BAND_6GHZ;
-        width = MHz_u{40};
+        width = MHz_t{40};
         break;
     case 133:
         band = WIFI_PHY_BAND_6GHZ;
-        width = MHz_u{80};
+        width = MHz_t{80};
         break;
     case 134:
         band = WIFI_PHY_BAND_6GHZ;
-        width = MHz_u{160};
+        width = MHz_t{160};
         break;
     case 137:
         band = WIFI_PHY_BAND_6GHZ;
-        width = 320;
+        width = MHz_t{320};
         break;
     default:
         break;
     }
 
-    NS_ABORT_IF(band == WIFI_PHY_BAND_UNSPECIFIED || width == MHz_u{0});
+    NS_ABORT_IF(band == WIFI_PHY_BAND_UNSPECIFIED || width == MHz_t{0});
 
-    MHz_u startingFreq{0};
+    MHz_t startingFreq{0};
 
     switch (band)
     {
     case WIFI_PHY_BAND_2_4GHZ:
-        startingFreq = MHz_u{2407};
+        startingFreq = MHz_t{2407};
         break;
     case WIFI_PHY_BAND_5GHZ:
-        startingFreq = MHz_u{5000};
+        startingFreq = MHz_t{5000};
         break;
     case WIFI_PHY_BAND_6GHZ:
-        startingFreq = MHz_u{5950};
+        startingFreq = MHz_t{5950};
         break;
     case WIFI_PHY_BAND_UNSPECIFIED:
     default:
@@ -274,10 +274,10 @@ ReducedNeighborReport::GetOperatingChannel(std::size_t nbrApInfoId) const
     }
 
     uint8_t primaryChannelNumber = m_nbrApInfoFields.at(nbrApInfoId).channelNumber;
-    auto primaryChannelCenterFrequency = startingFreq + primaryChannelNumber * MHz_u{5};
+    auto primaryChannelCenterFrequency = startingFreq + primaryChannelNumber * MHz_t{5};
 
     uint8_t channelNumber = 0;
-    MHz_u frequency{0};
+    MHz_t frequency{0};
 
     for (const auto& channel : WifiPhyOperatingChannel::m_frequencyChannels)
     {
@@ -299,7 +299,7 @@ ReducedNeighborReport::GetOperatingChannel(std::size_t nbrApInfoId) const
                 // frequency channels overlap in the 2.4 GHz band, hence we have to check
                 // that the given primary channel center frequency can be the center frequency
                 // of the primary20 channel of the channel under consideration
-                switch (static_cast<uint16_t>(width))
+                switch (static_cast<uint16_t>(width.in_MHz()))
                 {
                 case 20:
                     if (channel.frequency == primaryChannelCenterFrequency)
@@ -308,14 +308,14 @@ ReducedNeighborReport::GetOperatingChannel(std::size_t nbrApInfoId) const
                     }
                     break;
                 case 40:
-                    if ((channel.frequency == primaryChannelCenterFrequency + MHz_u{10}) ||
-                        (channel.frequency == primaryChannelCenterFrequency - MHz_u{10}))
+                    if ((channel.frequency == primaryChannelCenterFrequency + MHz_t{10}) ||
+                        (channel.frequency == primaryChannelCenterFrequency - MHz_t{10}))
                     {
                         found = true;
                     }
                     break;
                 default:
-                    NS_ABORT_MSG("No channel of width " << width << " MHz in the 2.4 GHz band");
+                    NS_ABORT_MSG("No channel of width " << width << " in the 2.4 GHz band");
                 }
             }
 
@@ -328,13 +328,13 @@ ReducedNeighborReport::GetOperatingChannel(std::size_t nbrApInfoId) const
         }
     }
 
-    NS_ABORT_IF(channelNumber == 0 || frequency == MHz_u{0});
+    NS_ABORT_IF(channelNumber == 0 || frequency == MHz_t{0});
 
     WifiPhyOperatingChannel channel;
     channel.Set({{channelNumber, frequency, width, band}}, WIFI_STANDARD_UNSPECIFIED);
 
     const auto channelLowestFreq = frequency - width / 2;
-    const auto primaryChannelLowestFreq = primaryChannelCenterFrequency - MHz_u{10};
+    const auto primaryChannelLowestFreq = primaryChannelCenterFrequency - MHz_t{10};
     channel.SetPrimary20Index(Count20MHzSubchannels(channelLowestFreq, primaryChannelLowestFreq));
 
     return channel;

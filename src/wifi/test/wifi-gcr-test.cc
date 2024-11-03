@@ -184,7 +184,7 @@ class IdealWifiManagerForGcrTest : public IdealWifiManager
                                uint16_t nFailedMpdus,
                                double rxSnr,
                                double dataSnr,
-                               MHz_u dataChannelWidth,
+                               MHz_t dataChannelWidth,
                                uint8_t dataNss) override
     {
         m_blockAckSenders.insert(station->m_state->m_address);
@@ -889,7 +889,7 @@ GcrTestBase::DoSetup()
     m_apWifiMac->GetQosTxop(AC_BE)->SetTxopLimit(m_params.txopLimit);
 
     m_apWifiMac->GetWifiPhy(0)->SetOperatingChannel(
-        WifiPhy::ChannelTuple{0, maxChannelWidth, WIFI_PHY_BAND_5GHZ, 0});
+        WifiPhy::ChannelTuple{0, maxChannelWidth.in_MHz(), WIFI_PHY_BAND_5GHZ, 0});
 
     m_apWifiMac->GetWifiPhy(0)->SetNumberOfAntennas(maxNss);
     m_apWifiMac->GetWifiPhy(0)->SetMaxSupportedTxSpatialStreams(maxNss);
@@ -910,7 +910,7 @@ GcrTestBase::DoSetup()
             auto staHtConfiguration = CreateObject<HtConfiguration>();
             staHtConfiguration->m_40MHzSupported =
                 (m_params.stas.at(i).standard >= WIFI_STANDARD_80211ac ||
-                 m_params.stas.at(i).maxChannelWidth >= MHz_u{40});
+                 m_params.stas.at(i).maxChannelWidth >= MHz_t{40});
             staHtConfiguration->m_sgiSupported = (m_params.stas.at(i).minGi == NanoSeconds(400));
             staNetDevice->SetHtConfiguration(staHtConfiguration);
         }
@@ -918,7 +918,7 @@ GcrTestBase::DoSetup()
         {
             auto staVhtConfiguration = CreateObject<VhtConfiguration>();
             staVhtConfiguration->m_160MHzSupported =
-                (m_params.stas.at(i).maxChannelWidth >= MHz_u{160});
+                (m_params.stas.at(i).maxChannelWidth >= MHz_t{160});
             staNetDevice->SetVhtConfiguration(staVhtConfiguration);
         }
         if (m_params.stas.at(i).standard >= WIFI_STANDARD_80211ax)
@@ -930,7 +930,10 @@ GcrTestBase::DoSetup()
         }
 
         staWifiMac->GetWifiPhy(0)->SetOperatingChannel(
-            WifiPhy::ChannelTuple{0, m_params.stas.at(i).maxChannelWidth, WIFI_PHY_BAND_5GHZ, 0});
+            WifiPhy::ChannelTuple{0,
+                                  m_params.stas.at(i).maxChannelWidth.in_MHz(),
+                                  WIFI_PHY_BAND_5GHZ,
+                                  0});
 
         staWifiMac->GetWifiPhy(0)->SetNumberOfAntennas(m_params.stas.at(i).maxNumStreams);
         staWifiMac->GetWifiPhy(0)->SetMaxSupportedTxSpatialStreams(
@@ -1817,15 +1820,15 @@ WifiGcrTestSuite::WifiGcrTestSuite()
         {
             for (const auto& stasInfo : StationsScenarios{
                      {{{GCR_INCAPABLE_STA, WIFI_STANDARD_80211a}}},
-                     {{{GCR_CAPABLE_STA, WIFI_STANDARD_80211n, MHz_u{40}, 2, NanoSeconds(400)}}},
+                     {{{GCR_CAPABLE_STA, WIFI_STANDARD_80211n, MHz_t{40}, 2, NanoSeconds(400)}}},
                      {{{GCR_CAPABLE_STA, WIFI_STANDARD_80211ac}}},
                      {{{GCR_CAPABLE_STA, WIFI_STANDARD_80211ax}}},
                      {{{GCR_CAPABLE_STA, WIFI_STANDARD_80211be}}},
-                     {{{GCR_CAPABLE_STA, WIFI_STANDARD_80211ax, MHz_u{80}, 1, NanoSeconds(800)},
-                       {GCR_CAPABLE_STA, WIFI_STANDARD_80211be, MHz_u{80}, 1, NanoSeconds(3200)}}},
-                     {{{GCR_CAPABLE_STA, WIFI_STANDARD_80211n, MHz_u{20}, 1},
-                       {GCR_CAPABLE_STA, WIFI_STANDARD_80211ac, MHz_u{80}, 2},
-                       {GCR_CAPABLE_STA, WIFI_STANDARD_80211ax, MHz_u{160}, 3}}},
+                     {{{GCR_CAPABLE_STA, WIFI_STANDARD_80211ax, MHz_t{80}, 1, NanoSeconds(800)},
+                       {GCR_CAPABLE_STA, WIFI_STANDARD_80211be, MHz_t{80}, 1, NanoSeconds(3200)}}},
+                     {{{GCR_CAPABLE_STA, WIFI_STANDARD_80211n, MHz_t{20}, 1},
+                       {GCR_CAPABLE_STA, WIFI_STANDARD_80211ac, MHz_t{80}, 2},
+                       {GCR_CAPABLE_STA, WIFI_STANDARD_80211ax, MHz_t{160}, 3}}},
                      {{{GCR_INCAPABLE_STA, WIFI_STANDARD_80211a},
                        {GCR_CAPABLE_STA, WIFI_STANDARD_80211n}}},
                      {{{GCR_INCAPABLE_STA, WIFI_STANDARD_80211n},
@@ -2140,10 +2143,10 @@ WifiGcrTestSuite::WifiGcrTestSuite()
                               {}),
                 TestCase::Duration::QUICK);
     AddTestCase(new GcrUrTest("GCR-UR with buffer size limit to 1024 MPDUs",
-                              {.stas = {{GCR_CAPABLE_STA, WIFI_STANDARD_80211be, MHz_u{40}},
-                                        {GCR_CAPABLE_STA, WIFI_STANDARD_80211be, MHz_u{40}},
-                                        {GCR_CAPABLE_STA, WIFI_STANDARD_80211be, MHz_u{40}},
-                                        {GCR_CAPABLE_STA, WIFI_STANDARD_80211be, MHz_u{40}}},
+                              {.stas = {{GCR_CAPABLE_STA, WIFI_STANDARD_80211be, MHz_t{40}},
+                                        {GCR_CAPABLE_STA, WIFI_STANDARD_80211be, MHz_t{40}},
+                                        {GCR_CAPABLE_STA, WIFI_STANDARD_80211be, MHz_t{40}},
+                                        {GCR_CAPABLE_STA, WIFI_STANDARD_80211be, MHz_t{40}}},
                                .numGroupcastPackets = 1200,
                                .packetSize = 100,
                                .maxNumMpdusInPsdu = 1024,
@@ -2213,21 +2216,21 @@ WifiGcrTestSuite::WifiGcrTestSuite()
                          {{{GCR_INCAPABLE_STA, WIFI_STANDARD_80211a}}},
                          {{{GCR_CAPABLE_STA,
                             WIFI_STANDARD_80211n,
-                            MHz_u{40},
+                            MHz_t{40},
                             2,
                             NanoSeconds(400)}}},
                          {{{GCR_CAPABLE_STA, WIFI_STANDARD_80211ac}}},
                          {{{GCR_CAPABLE_STA, WIFI_STANDARD_80211ax}}},
                          {{{GCR_CAPABLE_STA, WIFI_STANDARD_80211be}}},
-                         {{{GCR_CAPABLE_STA, WIFI_STANDARD_80211ax, MHz_u{80}, 1, NanoSeconds(800)},
+                         {{{GCR_CAPABLE_STA, WIFI_STANDARD_80211ax, MHz_t{80}, 1, NanoSeconds(800)},
                            {GCR_CAPABLE_STA,
                             WIFI_STANDARD_80211be,
-                            MHz_u{80},
+                            MHz_t{80},
                             1,
                             NanoSeconds(3200)}}},
-                         {{{GCR_CAPABLE_STA, WIFI_STANDARD_80211n, MHz_u{20}, 1},
-                           {GCR_CAPABLE_STA, WIFI_STANDARD_80211ac, MHz_u{80}, 2},
-                           {GCR_CAPABLE_STA, WIFI_STANDARD_80211ax, MHz_u{160}, 3}}},
+                         {{{GCR_CAPABLE_STA, WIFI_STANDARD_80211n, MHz_t{20}, 1},
+                           {GCR_CAPABLE_STA, WIFI_STANDARD_80211ac, MHz_t{80}, 2},
+                           {GCR_CAPABLE_STA, WIFI_STANDARD_80211ax, MHz_t{160}, 3}}},
                          {{{GCR_INCAPABLE_STA, WIFI_STANDARD_80211a},
                            {GCR_CAPABLE_STA, WIFI_STANDARD_80211n}}},
                          {{{GCR_INCAPABLE_STA, WIFI_STANDARD_80211n},
@@ -2530,10 +2533,10 @@ WifiGcrTestSuite::WifiGcrTestSuite()
 
                 TestCase::Duration::QUICK);
     AddTestCase(new GcrBaTest("GCR-BA with buffer size limit to 1024 MPDUs",
-                              {.stas = {{GCR_CAPABLE_STA, WIFI_STANDARD_80211be, MHz_u{40}},
-                                        {GCR_CAPABLE_STA, WIFI_STANDARD_80211be, MHz_u{40}},
-                                        {GCR_CAPABLE_STA, WIFI_STANDARD_80211be, MHz_u{40}},
-                                        {GCR_CAPABLE_STA, WIFI_STANDARD_80211be, MHz_u{40}}},
+                              {.stas = {{GCR_CAPABLE_STA, WIFI_STANDARD_80211be, MHz_t{40}},
+                                        {GCR_CAPABLE_STA, WIFI_STANDARD_80211be, MHz_t{40}},
+                                        {GCR_CAPABLE_STA, WIFI_STANDARD_80211be, MHz_t{40}},
+                                        {GCR_CAPABLE_STA, WIFI_STANDARD_80211be, MHz_t{40}}},
                                .numGroupcastPackets = 1200,
                                .packetSize = 100,
                                .maxNumMpdusInPsdu = 1024,

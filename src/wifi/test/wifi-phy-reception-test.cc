@@ -48,9 +48,9 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("WifiPhyReceptionTest");
 
 static const uint8_t CHANNEL_NUMBER = 36;
-static const MHz_u FREQUENCY{5180};
-static const MHz_u CHANNEL_WIDTH{20};
-static const MHz_u GUARD_WIDTH = CHANNEL_WIDTH; // expanded to channel width to model spectrum mask
+static const MHz_t FREQUENCY{5180};
+static const MHz_t CHANNEL_WIDTH{20};
+static const MHz_t GUARD_WIDTH = CHANNEL_WIDTH; // expanded to channel width to model spectrum mask
 
 /**
  * @ingroup wifi-test
@@ -114,7 +114,7 @@ WifiPhyReceptionTest::SendPacket(dBm_t rxPower, uint32_t packetSize, uint8_t mcs
                                          1,
                                          1,
                                          0,
-                                         MHz_u{20},
+                                         MHz_t{20},
                                          false);
 
     Ptr<Packet> pkt = Create<Packet>(packetSize);
@@ -2736,7 +2736,7 @@ TestAmpduReception::SendAmpduWithThreeMpdus(dBm_t rxPower, uint32_t referencePac
                                          1,
                                          1,
                                          0,
-                                         MHz_u{20},
+                                         MHz_t{20},
                                          true);
 
     WifiMacHeader hdr;
@@ -4192,7 +4192,7 @@ class TestUnsupportedBandwidthReception : public TestCase
      * @param centerFreq the center frequency used for the transmission of the PPDU
      * @param bandwidth the bandwidth used for the transmission of the PPDU
      */
-    void SendPpdu(MHz_u centerFreq, MHz_u bandwidth);
+    void SendPpdu(MHz_t centerFreq, MHz_t bandwidth);
 
     /**
      * Function called upon a PSDU received successfully
@@ -4262,7 +4262,7 @@ TestUnsupportedBandwidthReception::TestUnsupportedBandwidthReception()
 }
 
 void
-TestUnsupportedBandwidthReception::SendPpdu(MHz_u centerFreq, MHz_u bandwidth)
+TestUnsupportedBandwidthReception::SendPpdu(MHz_t centerFreq, MHz_t bandwidth)
 {
     auto txVector = WifiTxVector(HePhy::GetHeMcs0(),
                                  0,
@@ -4440,8 +4440,8 @@ TestUnsupportedBandwidthReception::DoRun()
     Simulator::Schedule(Seconds(1),
                         &TestUnsupportedBandwidthReception::SendPpdu,
                         this,
-                        MHz_u{5190},
-                        MHz_u{40});
+                        MHz_t{5190},
+                        MHz_t{40});
 
     auto heSigAExpectedRxTime = Seconds(1) + MicroSeconds(32);
     Simulator::Schedule(Seconds(1.5),
@@ -4484,7 +4484,7 @@ class TestPrimary20CoveredByPpdu : public TestCase
      * @param ppduCenterFreq the center frequency used for the transmission of the PPDU
      * @return the created PPDU
      */
-    Ptr<HePpdu> CreatePpdu(MHz_u ppduCenterFreq);
+    Ptr<HePpdu> CreatePpdu(MHz_t ppduCenterFreq);
 
     /**
      * Run one function
@@ -4499,9 +4499,9 @@ class TestPrimary20CoveredByPpdu : public TestCase
      * primary 20 MHz channel is expected to overlap with the bandwidth of the incoming PPDU
      */
     void RunOne(WifiPhyBand band,
-                MHz_u phyCenterFreq,
+                MHz_t phyCenterFreq,
                 uint8_t p20Index,
-                MHz_u ppduCenterFreq,
+                MHz_t ppduCenterFreq,
                 bool expectedP20Overlap,
                 bool expectedP20Covered);
 
@@ -4516,15 +4516,15 @@ TestPrimary20CoveredByPpdu::TestPrimary20CoveredByPpdu()
 }
 
 Ptr<HePpdu>
-TestPrimary20CoveredByPpdu::CreatePpdu(MHz_u ppduCenterFreq)
+TestPrimary20CoveredByPpdu::CreatePpdu(MHz_t ppduCenterFreq)
 {
     const auto& channelInfo = (*WifiPhyOperatingChannel::FindFirst(0,
                                                                    ppduCenterFreq,
-                                                                   MHz_u{0},
+                                                                   MHz_t{0},
                                                                    WIFI_STANDARD_80211ax,
                                                                    m_rxPhy->GetPhyBand()));
     m_txPhy->SetOperatingChannel(
-        WifiPhy::ChannelTuple{channelInfo.number, channelInfo.width, channelInfo.band, 0});
+        WifiPhy::ChannelTuple{channelInfo.number, channelInfo.width.in_MHz(), channelInfo.band, 0});
     auto txVector = WifiTxVector(HePhy::GetHeMcs7(),
                                  0,
                                  WIFI_PREAMBLE_HE_SU,
@@ -4576,23 +4576,25 @@ TestPrimary20CoveredByPpdu::DoTeardown()
 
 void
 TestPrimary20CoveredByPpdu::RunOne(WifiPhyBand band,
-                                   MHz_u phyCenterFreq,
+                                   MHz_t phyCenterFreq,
                                    uint8_t p20Index,
-                                   MHz_u ppduCenterFreq,
+                                   MHz_t ppduCenterFreq,
                                    bool expectedP20Overlap,
                                    bool expectedP20Covered)
 {
     const auto& channelInfo = (*WifiPhyOperatingChannel::FindFirst(0,
                                                                    phyCenterFreq,
-                                                                   MHz_u{0},
+                                                                   MHz_t{0},
                                                                    WIFI_STANDARD_80211ax,
                                                                    band));
 
-    m_rxPhy->SetOperatingChannel(
-        WifiPhy::ChannelTuple{channelInfo.number, channelInfo.width, channelInfo.band, p20Index});
-    auto p20CenterFreq = m_rxPhy->GetOperatingChannel().GetPrimaryChannelCenterFrequency(MHz_u{20});
-    auto p20MinFreq = p20CenterFreq - MHz_u{10};
-    auto p20MaxFreq = p20CenterFreq + MHz_u{10};
+    m_rxPhy->SetOperatingChannel(WifiPhy::ChannelTuple{channelInfo.number,
+                                                       channelInfo.width.in_MHz(),
+                                                       channelInfo.band,
+                                                       p20Index});
+    auto p20CenterFreq = m_rxPhy->GetOperatingChannel().GetPrimaryChannelCenterFrequency(MHz_t{20});
+    auto p20MinFreq = p20CenterFreq - MHz_t{10};
+    auto p20MaxFreq = p20CenterFreq + MHz_t{10};
 
     auto ppdu = CreatePpdu(ppduCenterFreq);
 
@@ -4619,7 +4621,7 @@ TestPrimary20CoveredByPpdu::DoRun()
      * Overlap with primary 20 MHz: yes
      * Primary 20 MHz fully covered: yes
      */
-    RunOne(WIFI_PHY_BAND_2_4GHZ, MHz_u{2427}, 0, MHz_u{2427}, true, true);
+    RunOne(WIFI_PHY_BAND_2_4GHZ, MHz_t{2427}, 0, MHz_t{2427}, true, true);
 
     /*
      * Receiver PHY Operating Channel: 2.4 GHz Channel 4 (2417 MHz – 2437 MHz)
@@ -4627,7 +4629,7 @@ TestPrimary20CoveredByPpdu::DoRun()
      * Overlap with primary 20 MHz: yes
      * Primary 20 MHz fully covered: no
      */
-    RunOne(WIFI_PHY_BAND_2_4GHZ, MHz_u{2427}, 0, MHz_u{2437}, true, false);
+    RunOne(WIFI_PHY_BAND_2_4GHZ, MHz_t{2427}, 0, MHz_t{2437}, true, false);
 
     /*
      * Receiver PHY Operating Channel: 5 GHz Channel 36 (5170 MHz – 5190 MHz)
@@ -4635,7 +4637,7 @@ TestPrimary20CoveredByPpdu::DoRun()
      * Overlap with primary 20 MHz: yes
      * Primary 20 MHz fully covered: yes
      */
-    RunOne(WIFI_PHY_BAND_5GHZ, MHz_u{5180}, 0, MHz_u{5190}, true, true);
+    RunOne(WIFI_PHY_BAND_5GHZ, MHz_t{5180}, 0, MHz_t{5190}, true, true);
 
     /*
      * Receiver PHY Operating Channel: 5 GHz Channel 36 (5170 MHz–5190 MHz)
@@ -4643,7 +4645,7 @@ TestPrimary20CoveredByPpdu::DoRun()
      * Overlap with primary 20 MHz: no
      * Primary 20 MHz fully covered: no
      */
-    RunOne(WIFI_PHY_BAND_5GHZ, MHz_u{5180}, 0, MHz_u{5200}, false, false);
+    RunOne(WIFI_PHY_BAND_5GHZ, MHz_t{5180}, 0, MHz_t{5200}, false, false);
 
     /*
      * Receiver PHY Operating Channel: 5 GHz Channel 38 (5170 MHz – 5210 MHz) with P20 index 0
@@ -4651,7 +4653,7 @@ TestPrimary20CoveredByPpdu::DoRun()
      * Overlap with primary 20 MHz: yes
      * Primary 20 MHz fully covered: yes
      */
-    RunOne(WIFI_PHY_BAND_5GHZ, MHz_u{5190}, 0, MHz_u{5180}, true, true);
+    RunOne(WIFI_PHY_BAND_5GHZ, MHz_t{5190}, 0, MHz_t{5180}, true, true);
 
     /*
      * Receiver PHY Operating Channel: 5 GHz Channel 38 (5170 MHz – 5210 MHz) with P20 index 1
@@ -4659,7 +4661,7 @@ TestPrimary20CoveredByPpdu::DoRun()
      * Overlap with primary 20 MHz: no
      * Primary 20 MHz fully covered: no
      */
-    RunOne(WIFI_PHY_BAND_5GHZ, MHz_u{5190}, 1, MHz_u{5180}, false, false);
+    RunOne(WIFI_PHY_BAND_5GHZ, MHz_t{5190}, 1, MHz_t{5180}, false, false);
 
     Simulator::Destroy();
 }
@@ -4742,7 +4744,7 @@ TestSpectrumChannelWithBandwidthFilter::Send() const
                                          1,
                                          1,
                                          0,
-                                         MHz_u{20},
+                                         MHz_t{20},
                                          false);
 
     Ptr<Packet> pkt = Create<Packet>(1000);
@@ -4920,7 +4922,7 @@ TestPhyDropDueToTx::Send(Ptr<WifiPhy> phy) const
                                        1,
                                        1,
                                        0,
-                                       MHz_u{20},
+                                       MHz_t{20},
                                        false);
 
     auto pkt = Create<Packet>(1000);

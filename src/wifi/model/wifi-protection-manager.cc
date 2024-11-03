@@ -69,7 +69,7 @@ WifiProtectionManager::SetLinkId(uint8_t linkId)
 
 void
 WifiProtectionManager::AddUserInfoToMuRts(CtrlTriggerHeader& muRts,
-                                          MHz_u txWidth,
+                                          MHz_t txWidth,
                                           const Mac48Address& receiver) const
 {
     NS_LOG_FUNCTION(this << muRts << txWidth << receiver);
@@ -93,14 +93,14 @@ WifiProtectionManager::AddUserInfoToMuRts(CtrlTriggerHeader& muRts,
         std::min(txWidth, GetWifiRemoteStationManager()->GetChannelWidthSupported(receiver));
     auto phy = m_mac->GetWifiPhy(m_linkId);
     std::size_t primaryIdx = phy->GetOperatingChannel().GetPrimaryChannelIndex(ctsTxWidth);
-    std::size_t idx80MHz = MHz_u{80} / ctsTxWidth;
-    if ((phy->GetChannelWidth() == MHz_u{160}) && (ctsTxWidth <= MHz_u{40}) &&
+    std::size_t idx80MHz = MHz_t{80} / ctsTxWidth;
+    if ((phy->GetChannelWidth() == MHz_t{160}) && (ctsTxWidth <= MHz_t{40}) &&
         (primaryIdx >= idx80MHz))
     {
         // the primary80 is in the higher part of the 160 MHz channel
         primaryIdx -= idx80MHz;
     }
-    switch (static_cast<uint16_t>(ctsTxWidth))
+    switch (static_cast<uint16_t>(ctsTxWidth.in_MHz()))
     {
     case 20:
         ui.SetMuRtsRuAllocation(61 + primaryIdx);
@@ -115,7 +115,7 @@ WifiProtectionManager::AddUserInfoToMuRts(CtrlTriggerHeader& muRts,
         ui.SetMuRtsRuAllocation(68);
         break;
     default:
-        NS_ABORT_MSG("Unhandled TX width: " << ctsTxWidth << " MHz");
+        NS_ABORT_MSG("Unhandled TX width: " << ctsTxWidth);
     }
 }
 

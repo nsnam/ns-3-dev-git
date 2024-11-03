@@ -392,7 +392,7 @@ class HtPhy : public OfdmPhy
      * @return the physical bit rate of this signal in bps.
      */
     static uint64_t GetPhyRate(uint8_t mcsValue,
-                               MHz_u channelWidth,
+                               MHz_t channelWidth,
                                Time guardInterval,
                                uint8_t nss);
     /**
@@ -430,7 +430,7 @@ class HtPhy : public OfdmPhy
      * @return the data bit rate in bps.
      */
     static uint64_t GetDataRate(uint8_t mcsValue,
-                                MHz_u channelWidth,
+                                MHz_t channelWidth,
                                 Time guardInterval,
                                 uint8_t nss);
     /**
@@ -466,7 +466,7 @@ class HtPhy : public OfdmPhy
      *
      * @return the channel list type per supported secondary channel width
      */
-    virtual const std::map<MHz_u, WifiChannelListType>& GetCcaSecondaryChannels() const;
+    virtual const std::map<MHz_t, WifiChannelListType>& GetCcaSecondaryChannels() const;
 
     /**
      * Get the widths of the secondary channels to inspect for CCA indication.
@@ -474,7 +474,7 @@ class HtPhy : public OfdmPhy
      * @param ppdu the incoming PPDU or nullptr for any signal
      * @return the widths of the secondary channels to inspect for CCA indication
      */
-    std::vector<MHz_u> GetCcaSecondaryWidths(const Ptr<const WifiPpdu> ppdu) const;
+    std::vector<MHz_t> GetCcaSecondaryWidths(const Ptr<const WifiPpdu> ppdu) const;
 
     /**
      * Get CCA end time and its corresponding channel list type when a new signal not occupying the
@@ -556,7 +556,7 @@ class HtPhy : public OfdmPhy
      * @param channelWidth the channel width
      * @return the number of usable subcarriers for data
      */
-    static uint16_t GetUsableSubcarriers(MHz_u channelWidth);
+    static uint16_t GetUsableSubcarriers(MHz_t channelWidth);
 
     /**
      * @param guardInterval the guard interval duration

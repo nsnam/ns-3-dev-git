@@ -43,8 +43,8 @@ const PhyEntity::PpduFormats HtPhy::m_htPpduFormats {
 /**
  * \brief map a given secondary channel width to its channel list type
  */
-const std::map<MHz_u, WifiChannelListType> htSecondaryChannels {
-    {20, WIFI_CHANLIST_SECONDARY},
+const std::map<MHz_t, WifiChannelListType> htSecondaryChannels {
+    {MHz_t{20}, WIFI_CHANLIST_SECONDARY},
 };
 
 // clang-format on
@@ -646,7 +646,7 @@ HtPhy::GetConstellationSize(uint8_t mcsValue)
 }
 
 uint64_t
-HtPhy::GetPhyRate(uint8_t mcsValue, MHz_u channelWidth, Time guardInterval, uint8_t nss)
+HtPhy::GetPhyRate(uint8_t mcsValue, MHz_t channelWidth, Time guardInterval, uint8_t nss)
 {
     const auto codeRate = GetHtCodeRate(mcsValue);
     const auto dataRate = GetDataRate(mcsValue, channelWidth, guardInterval, nss);
@@ -690,7 +690,7 @@ HtPhy::GetDataRateFromTxVector(const WifiTxVector& txVector, uint16_t /* staId *
 }
 
 uint64_t
-HtPhy::GetDataRate(uint8_t mcsValue, MHz_u channelWidth, Time guardInterval, uint8_t nss)
+HtPhy::GetDataRate(uint8_t mcsValue, MHz_t channelWidth, Time guardInterval, uint8_t nss)
 {
     NS_ASSERT(IsValidGuardInterval(guardInterval, WIFI_STANDARD_80211n));
     NS_ASSERT(nss <= 4);
@@ -715,9 +715,9 @@ HtPhy::CalculateDataRate(Time symbolDuration,
 }
 
 uint16_t
-HtPhy::GetUsableSubcarriers(MHz_u channelWidth)
+HtPhy::GetUsableSubcarriers(MHz_t channelWidth)
 {
-    return (channelWidth == MHz_u{40}) ? 108 : 52;
+    return (channelWidth == MHz_t{40}) ? 108 : 52;
 }
 
 Time
@@ -818,16 +818,16 @@ HtPhy::GetMaxPsduSize() const
     return 65535;
 }
 
-const std::map<MHz_u, WifiChannelListType>&
+const std::map<MHz_t, WifiChannelListType>&
 HtPhy::GetCcaSecondaryChannels() const
 {
     return htSecondaryChannels;
 }
 
-std::vector<MHz_u>
+std::vector<MHz_t>
 HtPhy::GetCcaSecondaryWidths(const Ptr<const WifiPpdu> ppdu) const
 {
-    std::vector<MHz_u> secondaryWidthsToCheck{};
+    std::vector<MHz_t> secondaryWidthsToCheck{};
     if (ppdu)
     {
         for (const auto& secondaryChannel : GetCcaSecondaryChannels())
@@ -837,11 +837,11 @@ HtPhy::GetCcaSecondaryWidths(const Ptr<const WifiPpdu> ppdu) const
             {
                 break;
             }
-            const MHz_u secondaryMinFreq =
+            const MHz_t secondaryMinFreq =
                 m_wifiPhy->GetOperatingChannel().GetSecondaryChannelCenterFrequency(
                     secondaryWidth) -
                 (secondaryWidth / 2);
-            const MHz_u secondaryMaxFreq =
+            const MHz_t secondaryMaxFreq =
                 m_wifiPhy->GetOperatingChannel().GetSecondaryChannelCenterFrequency(
                     secondaryWidth) +
                 (secondaryWidth / 2);
@@ -853,7 +853,7 @@ HtPhy::GetCcaSecondaryWidths(const Ptr<const WifiPpdu> ppdu) const
     }
     else
     {
-        for (MHz_u secondaryWidth = 20; secondaryWidth < m_wifiPhy->GetChannelWidth();
+        for (MHz_t secondaryWidth{20}; secondaryWidth < m_wifiPhy->GetChannelWidth();
              secondaryWidth *= 2)
         {
             secondaryWidthsToCheck.push_back(secondaryWidth);
@@ -886,13 +886,13 @@ HtPhy::GetCcaIndicationOnSecondary(const Ptr<const WifiPpdu> ppdu)
 PhyEntity::CcaIndication
 HtPhy::GetCcaIndication(const Ptr<const WifiPpdu> ppdu)
 {
-    if (m_wifiPhy->GetChannelWidth() < MHz_u{40})
+    if (m_wifiPhy->GetChannelWidth() < MHz_t{40})
     {
         return OfdmPhy::GetCcaIndication(ppdu);
     }
 
     auto ccaThreshold = GetCcaThreshold(ppdu, WIFI_CHANLIST_PRIMARY);
-    auto delayUntilCcaEnd = GetDelayUntilCcaEnd(ccaThreshold, GetPrimaryBand(MHz_u{20}));
+    auto delayUntilCcaEnd = GetDelayUntilCcaEnd(ccaThreshold, GetPrimaryBand(MHz_t{20}));
     if (delayUntilCcaEnd.IsStrictlyPositive())
     {
         return std::make_pair(
@@ -902,11 +902,11 @@ HtPhy::GetCcaIndication(const Ptr<const WifiPpdu> ppdu)
 
     if (ppdu)
     {
-        const MHz_u primaryWidth{20};
-        const MHz_u p20MinFreq =
+        const MHz_t primaryWidth{20};
+        const MHz_t p20MinFreq =
             m_wifiPhy->GetOperatingChannel().GetPrimaryChannelCenterFrequency(primaryWidth) -
             (primaryWidth / 2);
-        const MHz_u p20MaxFreq =
+        const MHz_t p20MaxFreq =
             m_wifiPhy->GetOperatingChannel().GetPrimaryChannelCenterFrequency(primaryWidth) +
             (primaryWidth / 2);
         if (ppdu->DoesOverlapChannel(p20MinFreq, p20MaxFreq))

@@ -569,7 +569,7 @@ WifiPhyStateHelper::SwitchFromSleep()
 }
 
 void
-WifiPhyStateHelper::SwitchFromRxAbort(MHz_u operatingWidth)
+WifiPhyStateHelper::SwitchFromRxAbort(MHz_t operatingWidth)
 {
     NS_LOG_FUNCTION(this << operatingWidth);
     NS_ASSERT(IsStateCcaBusy()); // abort is called (with OBSS_PD_CCA_RESET reason) before RX is set
@@ -578,7 +578,7 @@ WifiPhyStateHelper::SwitchFromRxAbort(MHz_u operatingWidth)
     DoSwitchFromRx();
     m_endCcaBusy = Simulator::Now();
     std::vector<Time> per20MhzDurations;
-    if (operatingWidth >= MHz_u{40})
+    if (operatingWidth >= MHz_t{40})
     {
         std::fill_n(std::back_inserter(per20MhzDurations),
                     Count20MHzSubchannels(operatingWidth),

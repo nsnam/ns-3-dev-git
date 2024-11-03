@@ -1245,24 +1245,24 @@ HeFrameExchangeManager::GetCtsTxVectorAfterMuRts(const CtrlTriggerHeader& trigge
         userInfoIt = trigger.FindUserInfoWithAid(WIFI_AID_ADHOC_PEER);
     }
     NS_ASSERT_MSG(userInfoIt != trigger.end(), "User Info field for AID=" << staId << " not found");
-    MHz_u bw{0};
+    MHz_t bw{0};
 
     if (uint8_t ru = userInfoIt->GetMuRtsRuAllocation(); ru < 65)
     {
-        bw = MHz_u{20};
+        bw = MHz_t{20};
     }
     else if (ru < 67)
     {
-        bw = MHz_u{40};
+        bw = MHz_t{40};
     }
     else if (ru == 67)
     {
-        bw = MHz_u{80};
+        bw = MHz_t{80};
     }
     else
     {
         NS_ASSERT(ru == 68);
-        bw = MHz_u{160};
+        bw = MHz_t{160};
     }
 
     auto txVector = GetWifiRemoteStationManager()->GetCtsTxVector(m_bssid, GetCtsModeAfterMuRts());

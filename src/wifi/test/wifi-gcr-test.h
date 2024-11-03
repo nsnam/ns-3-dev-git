@@ -67,7 +67,7 @@ class GcrTestBase : public TestCase
     {
         bool gcrCapable{false};                           ///< flag whether the STA is GCR capable
         WifiStandard standard{WIFI_STANDARD_UNSPECIFIED}; ///< standard configured for the STA
-        MHz_u maxChannelWidth{20};    ///< maximum channel width supported by the STA
+        MHz_t maxChannelWidth{20};    ///< maximum channel width supported by the STA
         uint8_t maxNumStreams{1};     ///< maximum number of spatial streams supported by the STA
         Time minGi{NanoSeconds(800)}; ///< minimum guard interval duration supported by the STA
     };

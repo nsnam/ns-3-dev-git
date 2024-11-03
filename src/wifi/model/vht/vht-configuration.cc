@@ -81,20 +81,20 @@ VhtConfiguration::SetSecondaryCcaSensitivityThresholds(
     const SecondaryCcaSensitivityThresholds& thresholds)
 {
     NS_LOG_FUNCTION(this);
-    m_secondaryCcaSensitivityThresholds[MHz_u{20}] = std::get<0>(thresholds);
-    m_secondaryCcaSensitivityThresholds[MHz_u{40}] = std::get<1>(thresholds);
-    m_secondaryCcaSensitivityThresholds[MHz_u{80}] = std::get<2>(thresholds);
+    m_secondaryCcaSensitivityThresholds[MHz_t{20}] = std::get<0>(thresholds);
+    m_secondaryCcaSensitivityThresholds[MHz_t{40}] = std::get<1>(thresholds);
+    m_secondaryCcaSensitivityThresholds[MHz_t{80}] = std::get<2>(thresholds);
 }
 
 VhtConfiguration::SecondaryCcaSensitivityThresholds
 VhtConfiguration::GetSecondaryCcaSensitivityThresholds() const
 {
-    return {m_secondaryCcaSensitivityThresholds.at(MHz_u{20}),
-            m_secondaryCcaSensitivityThresholds.at(MHz_u{40}),
-            m_secondaryCcaSensitivityThresholds.at(MHz_u{80})};
+    return {m_secondaryCcaSensitivityThresholds.at(MHz_t{20}),
+            m_secondaryCcaSensitivityThresholds.at(MHz_t{40}),
+            m_secondaryCcaSensitivityThresholds.at(MHz_t{80})};
 }
 
-const std::map<MHz_u, dBm_t>&
+const std::map<MHz_t, dBm_t>&
 VhtConfiguration::GetSecondaryCcaSensitivityThresholdsPerBw() const
 {
     return m_secondaryCcaSensitivityThresholds;

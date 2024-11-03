@@ -54,7 +54,7 @@ const std::map<WifiModulationClass, MinstrelHtWifiManager::StandardInfo> minstre
         {
             .groupType = WIFI_MINSTREL_GROUP_HT,
             .maxMcs = 7,
-            .maxWidth = MHz_u{40},
+            .maxWidth = MHz_t{40},
             .guardIntervals = {NanoSeconds(800), NanoSeconds(400)},
             .maxStreams = 4,
         },
@@ -64,7 +64,7 @@ const std::map<WifiModulationClass, MinstrelHtWifiManager::StandardInfo> minstre
         {
             .groupType = WIFI_MINSTREL_GROUP_VHT,
             .maxMcs = 9,
-            .maxWidth = MHz_u{160},
+            .maxWidth = MHz_t{160},
             .guardIntervals = {NanoSeconds(800), NanoSeconds(400)},
             .maxStreams = 8,
         },
@@ -74,7 +74,7 @@ const std::map<WifiModulationClass, MinstrelHtWifiManager::StandardInfo> minstre
         {
             .groupType = WIFI_MINSTREL_GROUP_HE,
             .maxMcs = 11,
-            .maxWidth = MHz_u{160},
+            .maxWidth = MHz_t{160},
             .guardIntervals = {NanoSeconds(3200), NanoSeconds(1600), NanoSeconds(800)},
             .maxStreams = 8,
         },
@@ -84,7 +84,7 @@ const std::map<WifiModulationClass, MinstrelHtWifiManager::StandardInfo> minstre
         {
             .groupType = WIFI_MINSTREL_GROUP_EHT,
             .maxMcs = 13,
-            .maxWidth = MHz_u{320},
+            .maxWidth = MHz_t{320},
             .guardIntervals = {NanoSeconds(3200), NanoSeconds(1600), NanoSeconds(800)},
             .maxStreams = 8,
         },
@@ -224,7 +224,7 @@ void
 MinstrelHtWifiManager::InitializeGroups(WifiModulationClass mc)
 {
     const auto& standardInfos = minstrelHtStandardInfos.at(mc);
-    for (MHz_u chWidth{20}; chWidth <= standardInfos.maxWidth; chWidth *= 2)
+    for (MHz_t chWidth{20}; chWidth <= standardInfos.maxWidth; chWidth *= 2)
     {
         for (const auto& guardInterval : standardInfos.guardIntervals)
         {
@@ -364,7 +364,7 @@ MinstrelHtWifiManager::DoInitialize()
 }
 
 bool
-MinstrelHtWifiManager::IsValidMcs(uint8_t streams, MHz_u chWidth, WifiMode mode)
+MinstrelHtWifiManager::IsValidMcs(uint8_t streams, MHz_t chWidth, WifiMode mode)
 {
     NS_LOG_FUNCTION(this << streams << chWidth << mode);
     WifiTxVector txvector;
@@ -398,7 +398,7 @@ MinstrelHtWifiManager::ShouldAddMcsToGroup(WifiMode mode, std::size_t groupId)
 Time
 MinstrelHtWifiManager::CalculateMpduTxDuration(uint8_t streams,
                                                Time gi,
-                                               MHz_u chWidth,
+                                               MHz_t chWidth,
                                                WifiMode mode,
                                                MpduType mpduType)
 {
@@ -609,7 +609,7 @@ MinstrelHtWifiManager::DoReportDataOk(WifiRemoteStation* st,
                                       double ackSnr,
                                       WifiMode ackMode,
                                       double dataSnr,
-                                      MHz_u dataChannelWidth,
+                                      MHz_t dataChannelWidth,
                                       uint8_t dataNss)
 {
     NS_LOG_FUNCTION(this << st << ackSnr << ackMode << dataSnr << dataChannelWidth << dataNss);
@@ -743,7 +743,7 @@ MinstrelHtWifiManager::DoReportAmpduTxStatus(WifiRemoteStation* st,
                                              uint16_t nFailedMpdus,
                                              double rxSnr,
                                              double dataSnr,
-                                             MHz_u dataChannelWidth,
+                                             MHz_t dataChannelWidth,
                                              uint8_t dataNss)
 {
     NS_LOG_FUNCTION(this << st << nSuccessfulMpdus << nFailedMpdus << rxSnr << dataSnr
@@ -940,7 +940,7 @@ MinstrelHtWifiManager::UpdatePacketCounters(MinstrelHtWifiRemoteStation* station
 }
 
 uint16_t
-MinstrelHtWifiManager::UpdateRateAfterAllowedWidth(uint16_t txRate, MHz_u allowedWidth)
+MinstrelHtWifiManager::UpdateRateAfterAllowedWidth(uint16_t txRate, MHz_t allowedWidth)
 {
     NS_LOG_FUNCTION(this << txRate << allowedWidth);
 
@@ -954,13 +954,13 @@ MinstrelHtWifiManager::UpdateRateAfterAllowedWidth(uint16_t txRate, MHz_u allowe
     }
 
     NS_ASSERT(GetPhy()->GetDevice()->GetHtConfiguration() != nullptr);
-    NS_ASSERT(static_cast<uint16_t>(group.chWidth) % 20 == 0);
+    NS_ASSERT((group.chWidth % MHz_t{20}) == MHz_t{0});
     // try halving the channel width and check if the group with the same number of
     // streams and same GI is supported, until either a supported group is found or
     // the width becomes lower than 20 MHz
     auto width = group.chWidth / 2;
 
-    while (width >= MHz_u{20})
+    while (width >= MHz_t{20})
     {
         if (width > allowedWidth)
         {
@@ -976,13 +976,13 @@ MinstrelHtWifiManager::UpdateRateAfterAllowedWidth(uint16_t txRate, MHz_u allowe
         width /= 2;
     }
 
-    NS_ABORT_MSG_IF(width < MHz_u{20}, "No rate compatible with the allowed width found");
+    NS_ABORT_MSG_IF(width < MHz_t{20}, "No rate compatible with the allowed width found");
 
     return GetIndex(groupId, GetRateId(txRate));
 }
 
 WifiTxVector
-MinstrelHtWifiManager::DoGetDataTxVector(WifiRemoteStation* st, MHz_u allowedWidth)
+MinstrelHtWifiManager::DoGetDataTxVector(WifiRemoteStation* st, MHz_t allowedWidth)
 {
     NS_LOG_FUNCTION(this << st << allowedWidth);
     auto station = static_cast<MinstrelHtWifiRemoteStation*>(st);
@@ -1097,7 +1097,7 @@ MinstrelHtWifiManager::DoGetRtsTxVector(WifiRemoteStation* st)
 
         for (uint8_t i = 0; i < nBasicRates; i++)
         {
-            const auto rate = GetBasicMode(i).GetDataRate(MHz_u{20});
+            const auto rate = GetBasicMode(i).GetDataRate(MHz_t{20});
             if (rate <= lastDataRate)
             {
                 rtsRate = GetBasicMode(i);
@@ -1109,7 +1109,7 @@ MinstrelHtWifiManager::DoGetRtsTxVector(WifiRemoteStation* st)
         {
             for (const auto& mode : GetPhy()->GetModeList())
             {
-                const auto rate = mode.GetDataRate(MHz_u{20});
+                const auto rate = mode.GetDataRate(MHz_t{20});
                 if (rate <= lastDataRate)
                 {
                     rtsRate = mode;
@@ -2081,7 +2081,7 @@ std::size_t
 MinstrelHtWifiManager::GetIdInGroup(WifiModulationClass mc,
                                     uint8_t streams,
                                     Time guardInterval,
-                                    MHz_u chWidth)
+                                    MHz_t chWidth)
 {
     NS_LOG_FUNCTION(this << mc << streams << guardInterval << chWidth);
     const auto& standardInfos = minstrelHtStandardInfos.at(mc);
@@ -2089,7 +2089,7 @@ MinstrelHtWifiManager::GetIdInGroup(WifiModulationClass mc,
                               standardInfos.guardIntervals.cend(),
                               guardInterval);
     const auto giIndex = std::distance(standardInfos.guardIntervals.cbegin(), it);
-    const auto widthIndex = std::log2(chWidth / MHz_u{20});
+    const auto widthIndex = std::log2(chWidth / MHz_t{20});
     return (standardInfos.maxStreams * standardInfos.guardIntervals.size() * widthIndex) +
            (standardInfos.maxStreams * giIndex) + streams - 1;
 }
@@ -2098,19 +2098,19 @@ std::size_t
 MinstrelHtWifiManager::GetNumGroups(WifiModulationClass mc)
 {
     const auto& standardInfos = minstrelHtStandardInfos.at(mc);
-    const auto numWidths = std::log2(standardInfos.maxWidth / MHz_u{20}) + 1;
+    const auto numWidths = std::log2(standardInfos.maxWidth / MHz_t{20}) + 1;
     return numWidths * standardInfos.guardIntervals.size() * standardInfos.maxStreams;
 }
 
 std::size_t
-MinstrelHtWifiManager::GetHtGroupId(uint8_t streams, Time guardInterval, MHz_u chWidth)
+MinstrelHtWifiManager::GetHtGroupId(uint8_t streams, Time guardInterval, MHz_t chWidth)
 {
     NS_LOG_FUNCTION(this << streams << guardInterval << chWidth);
     return GetIdInGroup(WIFI_MOD_CLASS_HT, streams, guardInterval, chWidth);
 }
 
 std::size_t
-MinstrelHtWifiManager::GetVhtGroupId(uint8_t streams, Time guardInterval, MHz_u chWidth)
+MinstrelHtWifiManager::GetVhtGroupId(uint8_t streams, Time guardInterval, MHz_t chWidth)
 {
     NS_LOG_FUNCTION(this << streams << guardInterval << chWidth);
     const auto allHtGroups = GetNumGroups(WIFI_MOD_CLASS_HT);
@@ -2119,7 +2119,7 @@ MinstrelHtWifiManager::GetVhtGroupId(uint8_t streams, Time guardInterval, MHz_u 
 }
 
 std::size_t
-MinstrelHtWifiManager::GetHeGroupId(uint8_t streams, Time guardInterval, MHz_u chWidth)
+MinstrelHtWifiManager::GetHeGroupId(uint8_t streams, Time guardInterval, MHz_t chWidth)
 {
     NS_LOG_FUNCTION(this << streams << guardInterval << chWidth);
     // This check is needed since HT is not supported in 6 GHz band
@@ -2131,7 +2131,7 @@ MinstrelHtWifiManager::GetHeGroupId(uint8_t streams, Time guardInterval, MHz_u c
 }
 
 std::size_t
-MinstrelHtWifiManager::GetEhtGroupId(uint8_t streams, Time guardInterval, MHz_u chWidth)
+MinstrelHtWifiManager::GetEhtGroupId(uint8_t streams, Time guardInterval, MHz_t chWidth)
 {
     NS_LOG_FUNCTION(this << streams << guardInterval << chWidth);
     // This check is needed since HT is not supported in 6 GHz band
@@ -2147,7 +2147,7 @@ std::size_t
 MinstrelHtWifiManager::GetGroupIdForType(McsGroupType type,
                                          uint8_t streams,
                                          Time guardInterval,
-                                         MHz_u chWidth)
+                                         MHz_t chWidth)
 {
     switch (type)
     {

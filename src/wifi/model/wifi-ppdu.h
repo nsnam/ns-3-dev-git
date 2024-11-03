@@ -124,12 +124,12 @@ class WifiPpdu : public SimpleRefCount<WifiPpdu>
      *
      * @return the effective channel width used for the tranmsission
      */
-    virtual MHz_u GetTxChannelWidth() const;
+    virtual MHz_t GetTxChannelWidth() const;
 
     /**
      * @return the center frequency per segment used for the transmission of this PPDU
      */
-    std::vector<MHz_u> GetTxCenterFreqs() const;
+    std::vector<MHz_t> GetTxCenterFreqs() const;
 
     /**
      * Check whether the given PPDU overlaps a given channel.
@@ -138,7 +138,7 @@ class WifiPpdu : public SimpleRefCount<WifiPpdu>
      * @param maxFreq the maximum frequency of the channel
      * @return true if this PPDU overlaps the channel, false otherwise
      */
-    bool DoesOverlapChannel(MHz_u minFreq, MHz_u maxFreq) const;
+    bool DoesOverlapChannel(MHz_t minFreq, MHz_t maxFreq) const;
 
     /**
      * Get the modulation used for the PPDU.
@@ -192,7 +192,7 @@ class WifiPpdu : public SimpleRefCount<WifiPpdu>
     WifiPreamble m_preamble;            //!< the PHY preamble
     WifiModulationClass m_modulation;   //!< the modulation used for the transmission of this PPDU
     WifiConstPsduMap m_psdus;           //!< the PSDUs contained in this PPDU
-    std::vector<MHz_u> m_txCenterFreqs; //!< the center frequency per segment used for the
+    std::vector<MHz_t> m_txCenterFreqs; //!< the center frequency per segment used for the
                                         //!< transmission of this PPDU
     uint64_t m_uid;                     //!< the unique ID of this PPDU
     mutable std::optional<WifiTxVector>
@@ -214,7 +214,7 @@ class WifiPpdu : public SimpleRefCount<WifiPpdu>
                             //!< returned WifiTxVector)
     uint8_t m_txAntennas;   //!< the number of antennas used to transmit this PPDU
 
-    MHz_u m_txChannelWidth; /**< The channel width used for the transmission of this
+    MHz_t m_txChannelWidth; /**< The channel width used for the transmission of this
                                          PPDU. This has to be stored since channel width can not
                                          always be obtained from the PHY headers, especially for
                                          non-HT PPDU, since we do not sense the spectrum to

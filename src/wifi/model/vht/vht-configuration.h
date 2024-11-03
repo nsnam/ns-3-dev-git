@@ -76,12 +76,12 @@ class VhtConfiguration : public Object
      * @return the CCA sensitivity thresholds for PPDUs that do not occupy the primary channel,
      * indexed by signal bandwidth
      */
-    const std::map<MHz_u, dBm_t>& GetSecondaryCcaSensitivityThresholdsPerBw() const;
+    const std::map<MHz_t, dBm_t>& GetSecondaryCcaSensitivityThresholdsPerBw() const;
 
     bool m_160MHzSupported; ///< whether 160 MHz operation is supported
 
   private:
-    std::map<MHz_u, dBm_t>
+    std::map<MHz_t, dBm_t>
         m_secondaryCcaSensitivityThresholds; ///< CCA sensitivity thresholds for signals that do not
                                              ///< occupy the primary channel, indexed by signal
                                              ///< bandwidth

@@ -101,42 +101,16 @@ dBm_t WToDbm(Watt_t val);
 dB_t RatioToDb(double ratio);
 
 /**
- * Convert from MHz to Hz.
- *
- * @param val the value in MHz
- *
- * @return the value in Hz
- */
-inline Hz_u
-MHzToHz(MHz_u val)
-{
-    return val * 1e6;
-}
-
-/**
- * Convert from Hz to MHz.
- *
- * @param val the value in Hz
- *
- * @return the value in MHz
- */
-inline MHz_u
-HzToMHz(Hz_u val)
-{
-    return val * 1e-6;
-}
-
-/**
  * Return the number of 20 MHz subchannels covering the channel width.
  *
  * @param channelWidth the channel width
  * @return the number of 20 MHz subchannels
  */
 inline std::size_t
-Count20MHzSubchannels(MHz_u channelWidth)
+Count20MHzSubchannels(MHz_t channelWidth)
 {
-    NS_ASSERT(static_cast<uint16_t>(channelWidth) % 20 == 0);
-    return channelWidth / MHz_u{20};
+    NS_ASSERT((channelWidth % MHz_t{20}) == MHz_t{0});
+    return channelWidth / MHz_t{20};
 }
 
 /**
@@ -149,11 +123,11 @@ Count20MHzSubchannels(MHz_u channelWidth)
  * @return the number of 20 MHz subchannels
  */
 inline std::size_t
-Count20MHzSubchannels(MHz_u lower, MHz_u upper)
+Count20MHzSubchannels(MHz_t lower, MHz_t upper)
 {
     NS_ASSERT(upper >= lower);
     const auto width = upper - lower;
-    NS_ASSERT((static_cast<uint16_t>(width) % 20 == 0));
+    NS_ASSERT((width % MHz_t{20}) == MHz_t{0});
     return Count20MHzSubchannels(width);
 }
 

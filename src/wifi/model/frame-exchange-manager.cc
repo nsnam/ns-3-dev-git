@@ -240,7 +240,7 @@ FrameExchangeManager::GetBssid() const
     return m_bssid;
 }
 
-MHz_u
+MHz_t
 FrameExchangeManager::GetAllowedWidth() const
 {
     return m_allowedWidth;
@@ -345,7 +345,7 @@ FrameExchangeManager::GetReceivedMacHdr() const
 }
 
 bool
-FrameExchangeManager::StartTransmission(Ptr<Txop> dcf, MHz_u allowedWidth)
+FrameExchangeManager::StartTransmission(Ptr<Txop> dcf, MHz_t allowedWidth)
 {
     NS_LOG_FUNCTION(this << dcf << allowedWidth);
 

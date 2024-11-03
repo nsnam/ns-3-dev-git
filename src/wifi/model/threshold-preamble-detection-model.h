@@ -34,7 +34,7 @@ class ThresholdPreambleDetectionModel : public PreambleDetectionModel
 
     ThresholdPreambleDetectionModel();
     ~ThresholdPreambleDetectionModel() override;
-    bool IsPreambleDetected(dBm_t rssi, double snr, MHz_u channelWidth) const override;
+    bool IsPreambleDetected(dBm_t rssi, double snr, MHz_t channelWidth) const override;
 
   private:
     dB_t m_threshold; ///< SNR threshold used to decide whether a preamble is successfully received

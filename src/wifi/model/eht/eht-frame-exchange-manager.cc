@@ -322,7 +322,7 @@ EhtFrameExchangeManager::StartTransmission(Ptr<QosTxop> edca, Time txopDuration)
 }
 
 bool
-EhtFrameExchangeManager::StartTransmission(Ptr<Txop> edca, MHz_u allowedWidth)
+EhtFrameExchangeManager::StartTransmission(Ptr<Txop> edca, MHz_t allowedWidth)
 {
     NS_LOG_FUNCTION(this << edca << allowedWidth);
 

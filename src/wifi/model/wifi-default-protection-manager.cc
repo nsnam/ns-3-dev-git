@@ -267,7 +267,7 @@ WifiDefaultProtectionManager::TryAddMpduToMuPpdu(Ptr<const WifiMpdu> mpdu,
                         "HE APs and adhoc P2P STAs only can send DL MU PPDUs");
         auto modClass = txParams.m_txVector.GetModulationClass();
         auto txWidth = modClass == WIFI_MOD_CLASS_DSSS || modClass == WIFI_MOD_CLASS_HR_DSSS
-                           ? MHz_u{20}
+                           ? MHz_t{20}
                            : txParams.m_txVector.GetChannelWidth();
 
         if (protection != nullptr)

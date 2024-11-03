@@ -49,11 +49,11 @@ const PhyEntity::PpduFormats EhtPhy::m_ehtPpduFormats {
 /**
  * \brief map a given secondary channel width to its channel list type
  */
-const std::map<MHz_u, WifiChannelListType> ehtSecondaryChannels {
-    {20, WIFI_CHANLIST_SECONDARY},
-    {40, WIFI_CHANLIST_SECONDARY40},
-    {80, WIFI_CHANLIST_SECONDARY80},
-    {160, WIFI_CHANLIST_SECONDARY160},
+const std::map<MHz_t, WifiChannelListType> ehtSecondaryChannels {
+    {MHz_t{20}, WIFI_CHANLIST_SECONDARY},
+    {MHz_t{40}, WIFI_CHANLIST_SECONDARY40},
+    {MHz_t{80}, WIFI_CHANLIST_SECONDARY80},
+    {MHz_t{160}, WIFI_CHANLIST_SECONDARY160},
 };
 
 // clang-format on
@@ -90,9 +90,9 @@ EhtPhy::BuildModeList()
 }
 
 uint16_t
-EhtPhy::GetUsableSubcarriers(MHz_u channelWidth)
+EhtPhy::GetUsableSubcarriers(MHz_t channelWidth)
 {
-    if (channelWidth == 320)
+    if (channelWidth == MHz_t{320})
     {
         return 3920;
     }
@@ -152,7 +152,7 @@ EhtPhy::GetSigBSize(const WifiTxVector& txVector) const
         return EhtPpdu::GetEhtSigFieldSize(
             txVector.GetChannelWidth(),
             txVector.GetRuAllocation(
-                m_wifiPhy ? m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(MHz_u{20}) : 0),
+                m_wifiPhy ? m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(MHz_t{20}) : 0),
             txVector.GetEhtPpduType(),
             txVector.IsSigBCompression(),
             txVector.IsSigBCompression() ? txVector.GetHeMuUserInfoMap().size() : 0);
@@ -349,7 +349,7 @@ EhtPhy::GetConstellationSize(uint8_t mcsValue)
 }
 
 uint64_t
-EhtPhy::GetPhyRate(uint8_t mcsValue, MHz_u channelWidth, Time guardInterval, uint8_t nss)
+EhtPhy::GetPhyRate(uint8_t mcsValue, MHz_t channelWidth, Time guardInterval, uint8_t nss)
 {
     const auto codeRate = GetCodeRate(mcsValue);
     const auto dataRate = GetDataRate(mcsValue, channelWidth, guardInterval, nss);
@@ -385,7 +385,7 @@ EhtPhy::GetDataRateFromTxVector(const WifiTxVector& txVector, uint16_t staId /* 
 }
 
 uint64_t
-EhtPhy::GetDataRate(uint8_t mcsValue, MHz_u channelWidth, Time guardInterval, uint8_t nss)
+EhtPhy::GetDataRate(uint8_t mcsValue, MHz_t channelWidth, Time guardInterval, uint8_t nss)
 {
     NS_ASSERT(IsValidGuardInterval(guardInterval, WIFI_STANDARD_80211be));
     NS_ASSERT(nss <= 8);
@@ -467,7 +467,7 @@ EhtPhy::GetCcaThreshold(const Ptr<const WifiPpdu> ppdu, WifiChannelListType chan
     return HePhy::GetCcaThreshold(ppdu, channelType);
 }
 
-const std::map<MHz_u, WifiChannelListType>&
+const std::map<MHz_t, WifiChannelListType>&
 EhtPhy::GetCcaSecondaryChannels() const
 {
     return ehtSecondaryChannels;
@@ -486,7 +486,7 @@ EhtPhy::GetCcaIndicationOnSecondary(const Ptr<const WifiPpdu> ppdu)
             m_wifiPhy->GetOperatingChannel().GetAll20MHzChannelIndicesInSecondary(secondaryWidth);
         for (auto index : indices)
         {
-            const auto band = m_wifiPhy->GetBand(20, index);
+            const auto band = m_wifiPhy->GetBand(MHz_t{20}, index);
             if (const auto delayUntilCcaEnd = GetDelayUntilCcaEnd(ccaThreshold, band);
                 delayUntilCcaEnd.IsStrictlyPositive())
             {
@@ -509,7 +509,7 @@ EhtPhy::GetPer20MHzDurations(const Ptr<const WifiPpdu> ppdu)
      * primitive, the PHY shall set the per20bitmap to indicate the busy/idle status of each 20 MHz
      * subchannel.
      */
-    if (m_wifiPhy->GetChannelWidth() < 40)
+    if (m_wifiPhy->GetChannelWidth() < MHz_t{40})
     {
         return {};
     }
@@ -519,7 +519,7 @@ EhtPhy::GetPer20MHzDurations(const Ptr<const WifiPpdu> ppdu)
         m_wifiPhy->GetChannelWidth());
     for (auto index : indices)
     {
-        auto band = m_wifiPhy->GetBand(20, index);
+        auto band = m_wifiPhy->GetBand(MHz_t{20}, index);
         /**
          * A signal is present on the 20 MHz subchannel at or above a threshold of –62 dBm at the
          * receiver's antenna(s). The PHY shall indicate that the 20 MHz subchannel is busy a period
@@ -531,9 +531,9 @@ EhtPhy::GetPer20MHzDurations(const Ptr<const WifiPpdu> ppdu)
 
         if (ppdu)
         {
-            const MHz_u subchannelMinFreq =
-                m_wifiPhy->GetFrequency() - (m_wifiPhy->GetChannelWidth() / 2) + (index * 20);
-            const MHz_u subchannelMaxFreq = subchannelMinFreq + 20;
+            const auto subchannelMinFreq = m_wifiPhy->GetFrequency() -
+                                           (m_wifiPhy->GetChannelWidth() / 2) + (index * MHz_t{20});
+            const auto subchannelMaxFreq = subchannelMinFreq + MHz_t{20};
             const auto ppduBw = ppdu->GetTxVector().GetChannelWidth();
 
             if ((ppduBw <= m_wifiPhy->GetChannelWidth()) &&

@@ -416,7 +416,7 @@ WifiPhyHelper::GetRadiotapHeader(RadiotapHeader& header,
                            RadiotapHeader::MCS_KNOWN_HT_FORMAT | RadiotapHeader::MCS_KNOWN_NESS |
                            RadiotapHeader::MCS_KNOWN_FEC_TYPE | RadiotapHeader::MCS_KNOWN_STBC;
 
-        if (channelWidth == MHz_u{40})
+        if (channelWidth == MHz_t{40})
         {
             mcsFields.flags |= RadiotapHeader::MCS_FLAGS_BANDWIDTH_40;
         }
@@ -480,15 +480,15 @@ WifiPhyHelper::GetRadiotapHeader(RadiotapHeader& header,
         vhtFields.known |=
             RadiotapHeader::VHT_KNOWN_BEAMFORMED | RadiotapHeader::VHT_KNOWN_BANDWIDTH;
         // TODO: bandwidths can be provided with sideband info
-        if (channelWidth == MHz_u{40})
+        if (channelWidth == MHz_t{40})
         {
             vhtFields.bandwidth = 1;
         }
-        else if (channelWidth == MHz_u{80})
+        else if (channelWidth == MHz_t{80})
         {
             vhtFields.bandwidth = 4;
         }
-        else if (channelWidth == MHz_u{160})
+        else if (channelWidth == MHz_t{160})
         {
             vhtFields.bandwidth = 11;
         }
@@ -570,15 +570,15 @@ WifiPhyHelper::GetRadiotapHeader(RadiotapHeader& header,
                 NS_ABORT_MSG("Unexpected RU type");
             }
         }
-        else if (channelWidth == MHz_u{40})
+        else if (channelWidth == MHz_t{40})
         {
             heFields.data5 |= RadiotapHeader::HE_DATA5_DATA_BW_RU_ALLOC_40MHZ;
         }
-        else if (channelWidth == MHz_u{80})
+        else if (channelWidth == MHz_t{80})
         {
             heFields.data5 |= RadiotapHeader::HE_DATA5_DATA_BW_RU_ALLOC_80MHZ;
         }
-        else if (channelWidth == MHz_u{160})
+        else if (channelWidth == MHz_t{160})
         {
             heFields.data5 |= RadiotapHeader::HE_DATA5_DATA_BW_RU_ALLOC_160MHZ;
         }
@@ -604,14 +604,14 @@ WifiPhyHelper::GetRadiotapHeader(RadiotapHeader& header,
         header.SetHeMuOtherUserFields(heMuOtherUserFields);
     }
 
-    const auto isLowP80 = p20Index < (channelWidth / 40);
+    const auto isLowP80 = p20Index < (channelWidth / MHz_t{40});
     if (IsEht(preamble))
     {
         RadiotapHeader::UsigFields usigFields{};
         usigFields.common = RadiotapHeader::USIG_COMMON_PHY_VER_KNOWN |
                             RadiotapHeader::USIG_COMMON_BW_KNOWN |
                             RadiotapHeader::USIG_COMMON_BSS_COLOR_KNOWN;
-        switch (static_cast<uint16_t>(channelWidth))
+        switch (static_cast<uint16_t>(channelWidth.in_MHz()))
         {
         case 20:
             usigFields.common |= GetRadiotapField(RadiotapHeader::USIG_COMMON_BW,
@@ -645,7 +645,7 @@ WifiPhyHelper::GetRadiotapHeader(RadiotapHeader& header,
                                GetRadiotapField(RadiotapHeader::USIG2_MU_B9_B10_SIG_MCS,
                                                 txVector.GetSigBMode().GetMcsValue());
             std::optional<bool> isLow80MHz;
-            if (txVector.IsDlMu() && channelWidth > MHz_u{80})
+            if (txVector.IsDlMu() && channelWidth > MHz_t{80})
             {
                 const auto isP80 = txVector.GetHeMuUserInfo(staId).ru.GetPrimary80MHz();
                 isLow80MHz = (isLowP80 && isP80) || (!isLowP80 && !isP80);
@@ -732,13 +732,13 @@ WifiPhyHelper::GetRadiotapHeader(RadiotapHeader& header,
         ehtFields.data.at(1) |=
             GetRadiotapField(RadiotapHeader::EHT_DATA1_RU_MRU_INDEX, ruIndex) |
             GetRadiotapField(RadiotapHeader::EHT_DATA1_RU_ALLOC_CC_1_1_1, ruAllocation.at(0));
-        if (channelWidth >= MHz_u{40})
+        if (channelWidth >= MHz_t{40})
         {
             ehtFields.data.at(2) =
                 RadiotapHeader::EHT_DATA2_RU_ALLOC_CC_2_1_1_KNOWN |
                 GetRadiotapField(RadiotapHeader::EHT_DATA2_RU_ALLOC_CC_2_1_1, ruAllocation.at(1));
         }
-        if (channelWidth >= MHz_u{80})
+        if (channelWidth >= MHz_t{80})
         {
             ehtFields.data.at(2) |=
                 RadiotapHeader::EHT_DATA2_RU_ALLOC_CC_1_1_2_KNOWN |
@@ -746,7 +746,7 @@ WifiPhyHelper::GetRadiotapHeader(RadiotapHeader& header,
                 GetRadiotapField(RadiotapHeader::EHT_DATA2_RU_ALLOC_CC_1_1_2, ruAllocation.at(2)) |
                 GetRadiotapField(RadiotapHeader::EHT_DATA2_RU_ALLOC_CC_2_1_2, ruAllocation.at(3));
         }
-        if (channelWidth >= MHz_u{160})
+        if (channelWidth >= MHz_t{160})
         {
             ehtFields.data.at(3) =
                 RadiotapHeader::EHT_DATA3_RU_ALLOC_CC_1_2_1_KNOWN |

@@ -83,8 +83,8 @@ class InterferenceExperiment
         uint32_t packetSizeB;  ///< packet size B
         uint16_t channelA;     ///< channel number A
         uint16_t channelB;     ///< channel number B
-        MHz_u widthA;          ///< channel width A
-        MHz_u widthB;          ///< channel width B
+        MHz_t widthA;          ///< channel width A
+        MHz_t widthB;          ///< channel width B
         WifiStandard standard; ///< standard
         WifiPhyBand band;      ///< band
         WifiPreamble preamble; ///< preamble
@@ -191,8 +191,8 @@ InterferenceExperiment::Input::Input()
       packetSizeB(1500),
       channelA(36),
       channelB(36),
-      widthA(MHz_u{20}),
-      widthB(MHz_u{20}),
+      widthA(MHz_t{20}),
+      widthB(MHz_t{20}),
       standard(WIFI_STANDARD_80211a),
       band(WIFI_PHY_BAND_5GHZ),
       preamble(WIFI_PREAMBLE_LONG),

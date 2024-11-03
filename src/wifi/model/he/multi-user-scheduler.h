@@ -89,7 +89,7 @@ class MultiUserScheduler : public Object
     TxFormat NotifyAccessGranted(Ptr<QosTxop> edca,
                                  Time availableTime,
                                  bool initialFrame,
-                                 MHz_u allowedWidth,
+                                 MHz_t allowedWidth,
                                  uint8_t linkId);
 
     /**
@@ -260,7 +260,7 @@ class MultiUserScheduler : public Object
     Ptr<QosTxop> m_edca;          //!< the AC that gained channel access
     Time m_availableTime;         //!< the time available for frame exchange
     bool m_initialFrame;          //!< true if a TXOP is being started
-    MHz_u m_allowedWidth;         //!< the allowed width for the current transmission
+    MHz_t m_allowedWidth;         //!< the allowed width for the current transmission
     uint8_t m_linkId;             //!< the ID of the link over which channel access has been granted
     Time m_defaultTbPpduDuration; //!< the default duration of TB PPDUs solicited by Basic TFs
 

@@ -118,7 +118,7 @@ struct WifiRemoteStationState
     std::shared_ptr<CommonInfoBasicMle> m_mleCommonInfo;
     bool m_emlsrEnabled; //!< whether EMLSR mode is enabled on this link
 
-    MHz_u m_channelWidth; //!< Channel width supported by the remote station
+    MHz_t m_channelWidth; //!< Channel width supported by the remote station
     Time m_guardInterval; //!< HE Guard interval durationsupported by the remote station
     uint8_t m_ness;       //!< Number of extended spatial streams of the remote station
     bool m_aggregation;   //!< Flag if MPDU aggregation is used by the remote station
@@ -591,7 +591,7 @@ class WifiRemoteStationManager : public Object
      *
      * @return the channel width supported by the station
      */
-    MHz_u GetChannelWidthSupported(Mac48Address address) const;
+    MHz_t GetChannelWidthSupported(Mac48Address address) const;
     /**
      * Return whether the station supports HT/VHT short guard interval.
      *
@@ -705,7 +705,7 @@ class WifiRemoteStationManager : public Object
      * @param allowedWidth the allowed width in MHz to send this packet
      * @return the TXVECTOR to use to send the groupcast packet
      */
-    WifiTxVector GetGroupcastTxVector(const WifiMacHeader& header, MHz_u allowedWidth);
+    WifiTxVector GetGroupcastTxVector(const WifiMacHeader& header, MHz_t allowedWidth);
 
     /**
      * Invoked in a STA or AP to store the set of
@@ -877,7 +877,7 @@ class WifiRemoteStationManager : public Object
      * @param allowedWidth the allowed width to send this packet
      * @return the TXVECTOR to use to send this packet
      */
-    WifiTxVector GetDataTxVector(const WifiMacHeader& header, MHz_u allowedWidth);
+    WifiTxVector GetDataTxVector(const WifiMacHeader& header, MHz_t allowedWidth);
     /**
      * @param address remote address
      * @param allowedWidth the allowed width for the data frame being protected
@@ -885,7 +885,7 @@ class WifiRemoteStationManager : public Object
      * @return the TXVECTOR to use to send the RTS prior to the
      *         transmission of the data packet itself.
      */
-    WifiTxVector GetRtsTxVector(Mac48Address address, MHz_u allowedWidth);
+    WifiTxVector GetRtsTxVector(Mac48Address address, MHz_t allowedWidth);
     /**
      * Return a TXVECTOR for the CTS frame given the destination and the mode of the RTS
      * used by the sender.
@@ -912,7 +912,7 @@ class WifiRemoteStationManager : public Object
      * @param txVector the TXVECTOR to adjust
      * @param allowedWidth the allowed width for the data frame in the same frame exchange sequence
      */
-    void AdjustTxVectorForCtlResponse(WifiTxVector& txVector, MHz_u allowedWidth) const;
+    void AdjustTxVectorForCtlResponse(WifiTxVector& txVector, MHz_t allowedWidth) const;
     /**
      * Adjust the TXVECTOR for an initial Control frame to ensure that the modulation class
      * is non-HT and the rate is 6 Mbps, 12 Mbps or 24 Mbps.
@@ -1285,7 +1285,7 @@ class WifiRemoteStationManager : public Object
      *
      * @return the channel width supported by the station
      */
-    MHz_u GetChannelWidth(const WifiRemoteStation* station) const;
+    MHz_t GetChannelWidth(const WifiRemoteStation* station) const;
     /**
      * Return whether the given station supports HT/VHT short guard interval.
      *
@@ -1403,7 +1403,7 @@ class WifiRemoteStationManager : public Object
      * Note: This method is called before sending a unicast packet or a fragment
      *       of a unicast packet to decide which transmission mode to use.
      */
-    virtual WifiTxVector DoGetDataTxVector(WifiRemoteStation* station, MHz_u allowedWidth) = 0;
+    virtual WifiTxVector DoGetDataTxVector(WifiRemoteStation* station, MHz_t allowedWidth) = 0;
     /**
      * @param station the station that we need to communicate
      *
@@ -1456,7 +1456,7 @@ class WifiRemoteStationManager : public Object
                                 double ackSnr,
                                 WifiMode ackMode,
                                 double dataSnr,
-                                MHz_u dataChannelWidth,
+                                MHz_t dataChannelWidth,
                                 uint8_t dataNss) = 0;
     /**
      * This method is a pure virtual method that must be implemented by the sub-class.
@@ -1501,7 +1501,7 @@ class WifiRemoteStationManager : public Object
                                        uint16_t nFailedMpdus,
                                        double rxSnr,
                                        double dataSnr,
-                                       MHz_u dataChannelWidth,
+                                       MHz_t dataChannelWidth,
                                        uint8_t dataNss);
 
     /**

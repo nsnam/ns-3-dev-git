@@ -405,10 +405,10 @@ WifiPhyRxTraceSink::MapNodeToLinkToChannel(NodeContainer nodes)
             {
                 for (uint32_t link = 0; link < wdev->GetNPhys(); link++)
                 {
-                    m_nodeToDeviceToLinkToChannelInfo[nodes.Get(i)->GetId()][wdev->GetIfIndex()]
-                                                     [link] = std::make_pair(
-                                                         wdev->GetPhy(link)->GetChannelNumber(),
-                                                         wdev->GetPhy(link)->GetFrequency());
+                    m_nodeToDeviceToLinkToChannelInfo[nodes.Get(i)
+                                                          ->GetId()][wdev->GetIfIndex()][link] =
+                        std::make_pair(wdev->GetPhy(link)->GetChannelNumber(),
+                                       wdev->GetPhy(link)->GetFrequency().in_MHz());
 
                     NS_LOG_DEBUG("NodeId: "
                                  << nodes.Get(i)->GetId() << " DeviceID: " << wdev->GetIfIndex()

@@ -553,7 +553,7 @@ main(int argc, char* argv[])
                                     "AuxPhyTxCapable",
                                     BooleanValue(auxPhyTxCapable),
                                     "AuxPhyChannelWidth",
-                                    UintegerValue(auxPhyChWidth));
+                                    MHzValue(MHz_t{auxPhyChWidth}));
                 for (uint8_t linkId = 0; linkId < nLinks; linkId++)
                 {
                     phy.Set(linkId, "ChannelSettings", StringValue(channelStr[linkId]));
@@ -633,12 +633,8 @@ main(int argc, char* argv[])
                     clientNodes.Add(downlink ? wifiApNode.Get(0) : wifiStaNodes.Get(i));
                 }
 
-                const auto maxLoad = nLinks *
-                                     EhtPhy::GetDataRate(mcs,
-                                                         MHz_u{static_cast<double>(width)},
-                                                         NanoSeconds(gi),
-                                                         1) /
-                                     nStations;
+                const auto maxLoad =
+                    nLinks * EhtPhy::GetDataRate(mcs, MHz_t{width}, NanoSeconds(gi), 1) / nStations;
                 if (udp)
                 {
                     // UDP flow
