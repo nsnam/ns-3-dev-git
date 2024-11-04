@@ -411,7 +411,7 @@ InterferenceHelper::CalculateSnr(Watt_u signal,
     // thermal noise at 290K in J/s = W
     static const double BOLTZMANN = 1.3803e-23;
     // Nt is the power of thermal noise in W
-    const auto Nt = BOLTZMANN * 290 * channelWidth * 1e6;
+    const auto Nt = BOLTZMANN * 290 * MHzToHz(channelWidth);
     // receiver noise Floor which accounts for thermal noise and non-idealities of the receiver
     Watt_u noiseFloor = m_noiseFigure * Nt;
     Watt_u noise = noiseFloor + noiseInterference;
@@ -849,8 +849,8 @@ InterferenceHelper::IsBandInFrequencyRange(const WifiSpectrumBandInfo& band,
     return std::all_of(band.frequencies.cbegin(),
                        band.frequencies.cend(),
                        [&freqRange](const auto& freqs) {
-                           return ((freqs.second > (freqRange.minFrequency * 1e6)) &&
-                                   (freqs.first < (freqRange.maxFrequency * 1e6)));
+                           return ((freqs.second > MHzToHz(freqRange.minFrequency)) &&
+                                   (freqs.first < MHzToHz(freqRange.maxFrequency)));
                        });
 }
 

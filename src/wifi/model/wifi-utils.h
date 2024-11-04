@@ -97,6 +97,33 @@ dBm_u WToDbm(Watt_u val);
  * @return the value in dB
  */
 dB_u RatioToDb(double ratio);
+
+/**
+ * Convert from MHz to Hz.
+ *
+ * @param val the value in MHz
+ *
+ * @return the value in Hz
+ */
+inline Hz_u
+MHzToHz(MHz_u val)
+{
+    return val * 1e6;
+}
+
+/**
+ * Convert from Hz to MHz.
+ *
+ * @param val the value in Hz
+ *
+ * @return the value in MHz
+ */
+inline MHz_u
+HzToMHz(Hz_u val)
+{
+    return val * 1e-6;
+}
+
 /**
  * Return the total Ack size (including FCS trailer).
  *

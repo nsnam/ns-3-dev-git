@@ -1856,7 +1856,7 @@ HePhy::ConvertHeRuSubcarriers(MHz_u bandWidth,
     std::vector<WifiSpectrumBandIndices> convertedSubcarriers{};
     guardBandwidth /= centerFrequencies.size();
     const auto nGuardBands =
-        static_cast<uint32_t>(((2 * guardBandwidth * 1e6) / subcarrierSpacing) + 0.5);
+        static_cast<uint32_t>(((2 * MHzToHz(guardBandwidth)) / subcarrierSpacing) + 0.5);
     if (bandWidth > (totalWidth / centerFrequencies.size()))
     {
         NS_ASSERT(bandIndex == 0);
@@ -1882,7 +1882,7 @@ HePhy::ConvertHeRuSubcarriers(MHz_u bandWidth,
         break;
     }
 
-    const auto numBandsInBand = static_cast<size_t>(bandWidth * 1e6 / subcarrierSpacing);
+    const auto numBandsInBand = static_cast<size_t>(MHzToHz(bandWidth) / subcarrierSpacing);
     centerFrequencyIndex += numBandsInBand * bandIndex;
     // start and stop subcarriers might be in different frequency segments, hence define a low and a
     // high center frequency

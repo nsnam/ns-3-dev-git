@@ -924,8 +924,8 @@ SpectrumWifiPhyGetBandTest::DoRun()
                 expectedStartIndice + (indicesPer20MhzBand * (bandWidth / 20)) - 1;
             std::vector<WifiSpectrumBandIndices> expectedIndices{
                 {expectedStartIndice, expectedStopIndice}};
-            const Hz_u expectedStartFrequency = 5170 * 1e6;
-            const Hz_u expectedStopFrequency = (5170 + bandWidth) * 1e6;
+            const Hz_u expectedStartFrequency = MHzToHz(5170);
+            const Hz_u expectedStopFrequency = MHzToHz(5170 + bandWidth);
             std::vector<WifiSpectrumBandFrequencies> expectedFrequencies{
                 {expectedStartFrequency, expectedStopFrequency}};
             const std::size_t numBands = (channelWidth / bandWidth);
@@ -947,8 +947,8 @@ SpectrumWifiPhyGetBandTest::DoRun()
                 {
                     expectedIndices.at(0).first += (indicesPer20MhzBand * (separationWidth / 20));
                     expectedIndices.at(0).second += (indicesPer20MhzBand * (separationWidth / 20));
-                    expectedFrequencies.at(0).first += (separationWidth * 1e6);
-                    expectedFrequencies.at(0).second += (separationWidth * 1e6);
+                    expectedFrequencies.at(0).first += MHzToHz(separationWidth);
+                    expectedFrequencies.at(0).second += MHzToHz(separationWidth);
                 }
                 RunOne(contiguous160Mhz ? std::vector<uint8_t>{channelNumberContiguous160Mhz}
                                         : channelNumberPerSegment,
@@ -964,8 +964,8 @@ SpectrumWifiPhyGetBandTest::DoRun()
                 expectedIndices.at(0).first = expectedIndices.at(0).second + 1;
                 expectedIndices.at(0).second =
                     expectedIndices.at(0).first + (indicesPer20MhzBand * (bandWidth / 20)) - 1;
-                expectedFrequencies.at(0).first += (bandWidth * 1e6);
-                expectedFrequencies.at(0).second += (bandWidth * 1e6);
+                expectedFrequencies.at(0).first += MHzToHz(bandWidth);
+                expectedFrequencies.at(0).second += MHzToHz(bandWidth);
             }
         }
     }
@@ -1154,55 +1154,63 @@ SpectrumWifiPhyTrackedBandsTest::DoRun()
     // switch from 160 MHz to 80+80 MHz
     RunOne({50},
            {42, 106},
-           {{{5170 * 1e6, 5250 * 1e6}} /* first 80 MHz segment */,
-            {{5490 * 1e6, 5570 * 1e6}} /* second 80 MHz segment */,
-            {{5170 * 1e6, 5250 * 1e6},
-             {5490 * 1e6, 5570 * 1e6}} /* non-contiguous 160 MHz band made of the two segments */},
-           {{{5170 * 1e6, 5330 * 1e6}} /* full 160 MHz band should have been removed */});
+           {{{MHzToHz(5170), MHzToHz(5250)}} /* first 80 MHz segment */,
+            {{MHzToHz(5490), MHzToHz(5570)}} /* second 80 MHz segment */,
+            {{MHzToHz(5170), MHzToHz(5250)},
+             {MHzToHz(5490),
+              MHzToHz(5570)}} /* non-contiguous 160 MHz band made of the two segments */},
+           {{{MHzToHz(5170), MHzToHz(5330)}} /* full 160 MHz band should have been removed */});
 
     // switch from 80+80 MHz to 160 MHz
-    RunOne({42, 106},
-           {50},
-           {{{5170 * 1e6, 5330 * 1e6}} /* full 160 MHz band */,
-            {{5170 * 1e6, 5250 * 1e6}} /* first 80 MHz segment is part of the 160 MHz channel*/},
-           {{{5490 * 1e6, 5570 * 1e6}} /* second 80 MHz segment should have been removed */,
-            {{5170 * 1e6, 5250 * 1e6},
-             {5490 * 1e6, 5570 * 1e6}} /* non-contiguous 160 MHz band should have been removed */});
+    RunOne(
+        {42, 106},
+        {50},
+        {{{MHzToHz(5170), MHzToHz(5330)}} /* full 160 MHz band */,
+         {{MHzToHz(5170), MHzToHz(5250)}} /* first 80 MHz segment is part of the 160 MHz channel*/},
+        {{{MHzToHz(5490), MHzToHz(5570)}} /* second 80 MHz segment should have been removed */,
+         {{MHzToHz(5170), MHzToHz(5250)},
+          {MHzToHz(5490),
+           MHzToHz(5570)}} /* non-contiguous 160 MHz band should have been removed */});
 
     // switch from 80+80 MHz to 80+80 MHz with segment swap
     RunOne({42, 106},
            {106, 42},
-           {{{5490 * 1e6, 5570 * 1e6}} /* first 80 MHz segment */,
-            {{5490 * 1e6, 5570 * 1e6}} /* second 80 MHz segment */,
-            {{5170 * 1e6, 5250 * 1e6},
-             {5490 * 1e6, 5570 * 1e6}} /* non-contiguous 160 MHz band made of the two segments */},
+           {{{MHzToHz(5490), MHzToHz(5570)}} /* first 80 MHz segment */,
+            {{MHzToHz(5490), MHzToHz(5570)}} /* second 80 MHz segment */,
+            {{MHzToHz(5170), MHzToHz(5250)},
+             {MHzToHz(5490),
+              MHzToHz(5570)}} /* non-contiguous 160 MHz band made of the two segments */},
            {});
 
     // switch from 80+80 MHz to another 80+80 MHz with one common segment
     RunOne({42, 106},
            {106, 138},
-           {{{5490 * 1e6, 5570 * 1e6}} /* first 80 MHz segment */,
-            {{5650 * 1e6, 5730 * 1e6}} /* second 80 MHz segment */,
-            {{5490 * 1e6, 5570 * 1e6},
-             {5650 * 1e6, 5730 * 1e6}} /* non-contiguous 160 MHz band made of the two segments */},
-           {{{5170 * 1e6, 5250 * 1e6}} /* 80 MHz segment at channel 42 should have been removed */,
-            {{5170 * 1e6, 5250 * 1e6},
-             {5490 * 1e6,
-              5570 * 1e6}} /* previous non-contiguous 160 MHz band should have been removed */});
+           {{{MHzToHz(5490), MHzToHz(5570)}} /* first 80 MHz segment */,
+            {{MHzToHz(5650), MHzToHz(5730)}} /* second 80 MHz segment */,
+            {{MHzToHz(5490), MHzToHz(5570)},
+             {MHzToHz(5650),
+              MHzToHz(5730)}} /* non-contiguous 160 MHz band made of the two segments */},
+           {{{MHzToHz(5170),
+              MHzToHz(5250)}} /* 80 MHz segment at channel 42 should have been removed */,
+            {{MHzToHz(5170), MHzToHz(5250)},
+             {MHzToHz(5490),
+              MHzToHz(5570)}} /* previous non-contiguous 160 MHz band should have been removed */});
 
     // switch from 80+80 MHz to another 80+80 MHz with no common segment
-    RunOne(
-        {42, 106},
-        {122, 155},
-        {{{5570 * 1e6, 5650 * 1e6}} /* first 80 MHz segment */,
-         {{5735 * 1e6, 5815 * 1e6}} /* second 80 MHz segment */,
-         {{5570 * 1e6, 5650 * 1e6},
-          {5735 * 1e6, 5815 * 1e6}} /* non-contiguous 160 MHz band made of the two segments */},
-        {{{5170 * 1e6, 5250 * 1e6}} /* previous first 80 MHz segment should have been removed */,
-         {{5490 * 1e6, 5570 * 1e6}} /* previous second 80 MHz segment should have been removed */,
-         {{5170 * 1e6, 5250 * 1e6},
-          {5490 * 1e6,
-           5570 * 1e6}} /* previous non-contiguous 160 MHz band should have been removed */});
+    RunOne({42, 106},
+           {122, 155},
+           {{{MHzToHz(5570), MHzToHz(5650)}} /* first 80 MHz segment */,
+            {{MHzToHz(5735), MHzToHz(5815)}} /* second 80 MHz segment */,
+            {{MHzToHz(5570), MHzToHz(5650)},
+             {MHzToHz(5735),
+              MHzToHz(5815)}} /* non-contiguous 160 MHz band made of the two segments */},
+           {{{MHzToHz(5170),
+              MHzToHz(5250)}} /* previous first 80 MHz segment should have been removed */,
+            {{MHzToHz(5490),
+              MHzToHz(5570)}} /* previous second 80 MHz segment should have been removed */,
+            {{MHzToHz(5170), MHzToHz(5250)},
+             {MHzToHz(5490),
+              MHzToHz(5570)}} /* previous non-contiguous 160 MHz band should have been removed */});
 
     Simulator::Destroy();
 }
@@ -1482,9 +1490,9 @@ SpectrumWifiPhy80Plus80Test::RunOne(const std::vector<uint8_t>& channelNumbers,
                         channelNumbers);
 
     // create info about interference to generate
-    BandInfo bandInfo{.fl = (interferenceCenterFrequency - (interferenceBandWidth / 2)) * 1e6,
-                      .fc = interferenceCenterFrequency * 1e6,
-                      .fh = (interferenceCenterFrequency + (interferenceBandWidth / 2)) * 1e6};
+    BandInfo bandInfo{.fl = MHzToHz(interferenceCenterFrequency - (interferenceBandWidth / 2)),
+                      .fc = MHzToHz(interferenceCenterFrequency),
+                      .fh = MHzToHz(interferenceCenterFrequency + (interferenceBandWidth / 2))};
     auto spectrumInterference = Create<SpectrumModel>(Bands{bandInfo});
     auto interferencePsd = Create<SpectrumValue>(spectrumInterference);
     Watt_u interferencePower{0.1};

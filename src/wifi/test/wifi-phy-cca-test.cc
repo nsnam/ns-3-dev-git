@@ -852,15 +852,15 @@ WifiPhyCcaIndicationTest::StartSignal(Ptr<WaveformGenerator> signalGenerator,
     NS_LOG_FUNCTION(this << signalGenerator << txPower << frequency << bandwidth << duration);
 
     BandInfo bandInfo;
-    bandInfo.fc = frequency * 1e6;
-    bandInfo.fl = bandInfo.fc - ((bandwidth / 2) * 1e6);
-    bandInfo.fh = bandInfo.fc + ((bandwidth / 2) * 1e6);
+    bandInfo.fc = MHzToHz(frequency);
+    bandInfo.fl = bandInfo.fc - MHzToHz(bandwidth / 2);
+    bandInfo.fh = bandInfo.fc + MHzToHz(bandwidth / 2);
     Bands bands;
     bands.push_back(bandInfo);
 
     Ptr<SpectrumModel> spectrumSignal = Create<SpectrumModel>(bands);
     Ptr<SpectrumValue> signalPsd = Create<SpectrumValue>(spectrumSignal);
-    *signalPsd = DbmToW(txPower) / (bandwidth * 1e6);
+    *signalPsd = DbmToW(txPower) / MHzToHz(bandwidth);
 
     signalGenerator->SetTxPowerSpectralDensity(signalPsd);
     signalGenerator->SetPeriod(duration);

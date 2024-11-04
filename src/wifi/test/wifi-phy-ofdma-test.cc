@@ -691,7 +691,7 @@ TestDlOfdmaPhyTransmission::DoSetup()
 {
     Ptr<MultiModelSpectrumChannel> spectrumChannel = CreateObject<MultiModelSpectrumChannel>();
     Ptr<FriisPropagationLossModel> lossModel = CreateObject<FriisPropagationLossModel>();
-    lossModel->SetFrequency(m_frequency * 1e6);
+    lossModel->SetFrequency(MHzToHz(m_frequency));
     spectrumChannel->AddPropagationLossModel(lossModel);
     Ptr<ConstantSpeedPropagationDelayModel> delayModel =
         CreateObject<ConstantSpeedPropagationDelayModel>();
@@ -943,16 +943,16 @@ TestDlOfdmaPhyTransmission::RunOne()
 
     // A strong non-wifi interference is generated on RU 1 during PSDU reception
     BandInfo bandInfo;
-    bandInfo.fc = (m_frequency - (m_channelWidth / 4)) * 1e6;
-    bandInfo.fl = bandInfo.fc - ((m_channelWidth / 4) * 1e6);
-    bandInfo.fh = bandInfo.fc + ((m_channelWidth / 4) * 1e6);
+    bandInfo.fc = MHzToHz(m_frequency - (m_channelWidth / 4));
+    bandInfo.fl = bandInfo.fc - MHzToHz(m_channelWidth / 4);
+    bandInfo.fh = bandInfo.fc + MHzToHz(m_channelWidth / 4);
     Bands bands;
     bands.push_back(bandInfo);
 
     auto SpectrumInterferenceRu1 = Create<SpectrumModel>(bands);
     auto interferencePsdRu1 = Create<SpectrumValue>(SpectrumInterferenceRu1);
     Watt_u interferencePower{0.1};
-    *interferencePsdRu1 = interferencePower / ((m_channelWidth / 2) * 20e6);
+    *interferencePsdRu1 = interferencePower / (MHzToHz(m_channelWidth / 2) * 20);
 
     Simulator::Schedule(Seconds(3) + MicroSeconds(50),
                         &TestDlOfdmaPhyTransmission::GenerateInterference,
@@ -1013,15 +1013,15 @@ TestDlOfdmaPhyTransmission::RunOne()
     Simulator::Schedule(Seconds(4), &TestDlOfdmaPhyTransmission::SendMuPpdu, this, 1, 2);
 
     // A strong non-wifi interference is generated on RU 2 during PSDU reception
-    bandInfo.fc = (m_frequency + (m_channelWidth / 4)) * 1e6;
-    bandInfo.fl = bandInfo.fc - ((m_channelWidth / 4) * 1e6);
-    bandInfo.fh = bandInfo.fc + ((m_channelWidth / 4) * 1e6);
+    bandInfo.fc = MHzToHz(m_frequency + (m_channelWidth / 4));
+    bandInfo.fl = bandInfo.fc - MHzToHz(m_channelWidth / 4);
+    bandInfo.fh = bandInfo.fc + MHzToHz(m_channelWidth / 4);
     bands.clear();
     bands.push_back(bandInfo);
 
     Ptr<SpectrumModel> SpectrumInterferenceRu2 = Create<SpectrumModel>(bands);
     Ptr<SpectrumValue> interferencePsdRu2 = Create<SpectrumValue>(SpectrumInterferenceRu2);
-    *interferencePsdRu2 = interferencePower / ((m_channelWidth / 2) * 20e6);
+    *interferencePsdRu2 = interferencePower / (MHzToHz(m_channelWidth / 2) * 20);
 
     Simulator::Schedule(Seconds(4) + MicroSeconds(50),
                         &TestDlOfdmaPhyTransmission::GenerateInterference,
@@ -1082,15 +1082,15 @@ TestDlOfdmaPhyTransmission::RunOne()
     Simulator::Schedule(Seconds(5), &TestDlOfdmaPhyTransmission::SendMuPpdu, this, 1, 2);
 
     // A strong non-wifi interference is generated on the full band during PSDU reception
-    bandInfo.fc = m_frequency * 1e6;
-    bandInfo.fl = bandInfo.fc - ((m_channelWidth / 2) * 1e6);
-    bandInfo.fh = bandInfo.fc + ((m_channelWidth / 2) * 1e6);
+    bandInfo.fc = MHzToHz(m_frequency);
+    bandInfo.fl = bandInfo.fc - MHzToHz(m_channelWidth / 2);
+    bandInfo.fh = bandInfo.fc + MHzToHz(m_channelWidth / 2);
     bands.clear();
     bands.push_back(bandInfo);
 
     Ptr<SpectrumModel> SpectrumInterferenceAll = Create<SpectrumModel>(bands);
     Ptr<SpectrumValue> interferencePsdAll = Create<SpectrumValue>(SpectrumInterferenceAll);
-    *interferencePsdAll = interferencePower / (m_channelWidth * 20e6);
+    *interferencePsdAll = interferencePower / (MHzToHz(m_channelWidth) * 20);
 
     Simulator::Schedule(Seconds(5) + MicroSeconds(50),
                         &TestDlOfdmaPhyTransmission::GenerateInterference,
@@ -1534,7 +1534,7 @@ TestDlOfdmaPhyPuncturing::DoSetup()
 {
     Ptr<MultiModelSpectrumChannel> spectrumChannel = CreateObject<MultiModelSpectrumChannel>();
     Ptr<FriisPropagationLossModel> lossModel = CreateObject<FriisPropagationLossModel>();
-    lossModel->SetFrequency(m_frequency * 1e6);
+    lossModel->SetFrequency(MHzToHz(m_frequency));
     spectrumChannel->AddPropagationLossModel(lossModel);
     Ptr<ConstantSpeedPropagationDelayModel> delayModel =
         CreateObject<ConstantSpeedPropagationDelayModel>();
@@ -1643,11 +1643,11 @@ TestDlOfdmaPhyPuncturing::RunOne()
     // A strong non-wifi interference is generated on selected 20 MHz subchannel for the whole
     // duration of the test run
     BandInfo bandInfo;
-    bandInfo.fc = (m_frequency - (m_channelWidth / 2) + 10 + (m_indexSubchannel * 20)) * 1e6;
+    bandInfo.fc = MHzToHz(m_frequency - (m_channelWidth / 2) + 10 + (m_indexSubchannel * 20));
     // Occupy half of the RU to make sure we do not have some power allocated to the subcarriers on
     // the border of another RU
-    bandInfo.fl = bandInfo.fc - (5 * 1e6);
-    bandInfo.fh = bandInfo.fc + (5 * 1e6);
+    bandInfo.fl = bandInfo.fc - MHzToHz(5);
+    bandInfo.fh = bandInfo.fc + MHzToHz(5);
     Bands bands;
     bands.push_back(bandInfo);
 
@@ -4275,16 +4275,16 @@ TestUlOfdmaPhyTransmission::RunOne()
         "Reception of solicited HE TB PPDUs with interference on RU 1 during PSDU reception");
     // A strong non-wifi interference is generated on RU 1 during PSDU reception
     BandInfo bandInfo;
-    bandInfo.fc = (m_frequency - (m_channelWidth / 4)) * 1e6;
-    bandInfo.fl = bandInfo.fc - ((m_channelWidth / 4) * 1e6);
-    bandInfo.fh = bandInfo.fc + ((m_channelWidth / 4) * 1e6);
+    bandInfo.fc = MHzToHz(m_frequency - (m_channelWidth / 4));
+    bandInfo.fl = bandInfo.fc - MHzToHz(m_channelWidth / 4);
+    bandInfo.fh = bandInfo.fc + MHzToHz(m_channelWidth / 4);
     Bands bands;
     bands.push_back(bandInfo);
 
     Ptr<SpectrumModel> SpectrumInterferenceRu1 = Create<SpectrumModel>(bands);
     Ptr<SpectrumValue> interferencePsdRu1 = Create<SpectrumValue>(SpectrumInterferenceRu1);
     Watt_u interferencePower{0.1};
-    *interferencePsdRu1 = interferencePower / ((m_channelWidth / 2) * 20e6);
+    *interferencePsdRu1 = interferencePower / (MHzToHz(m_channelWidth / 2) * 20);
 
     Simulator::Schedule(delay + MicroSeconds(50),
                         &TestUlOfdmaPhyTransmission::GenerateInterference,
@@ -4313,15 +4313,15 @@ TestUlOfdmaPhyTransmission::RunOne()
         this,
         "Reception of solicited HE TB PPDUs with interference on RU 2 during PSDU reception");
     // A strong non-wifi interference is generated on RU 2 during PSDU reception
-    bandInfo.fc = (m_frequency + (m_channelWidth / 4)) * 1e6;
-    bandInfo.fl = bandInfo.fc - ((m_channelWidth / 4) * 1e6);
-    bandInfo.fh = bandInfo.fc + ((m_channelWidth / 4) * 1e6);
+    bandInfo.fc = MHzToHz(m_frequency + (m_channelWidth / 4));
+    bandInfo.fl = bandInfo.fc - MHzToHz(m_channelWidth / 4);
+    bandInfo.fh = bandInfo.fc + MHzToHz(m_channelWidth / 4);
     bands.clear();
     bands.push_back(bandInfo);
 
     Ptr<SpectrumModel> SpectrumInterferenceRu2 = Create<SpectrumModel>(bands);
     Ptr<SpectrumValue> interferencePsdRu2 = Create<SpectrumValue>(SpectrumInterferenceRu2);
-    *interferencePsdRu2 = interferencePower / ((m_channelWidth / 2) * 20e6);
+    *interferencePsdRu2 = interferencePower / (MHzToHz(m_channelWidth / 2) * 20);
 
     Simulator::Schedule(delay + MicroSeconds(50),
                         &TestUlOfdmaPhyTransmission::GenerateInterference,
@@ -4352,15 +4352,15 @@ TestUlOfdmaPhyTransmission::RunOne()
                         "Reception of solicited HE TB PPDUs with interference on the full band "
                         "during PSDU reception");
     // A strong non-wifi interference is generated on the full band during PSDU reception
-    bandInfo.fc = m_frequency * 1e6;
-    bandInfo.fl = bandInfo.fc - ((m_channelWidth / 2) * 1e6);
-    bandInfo.fh = bandInfo.fc + ((m_channelWidth / 2) * 1e6);
+    bandInfo.fc = MHzToHz(m_frequency);
+    bandInfo.fl = bandInfo.fc - MHzToHz(m_channelWidth / 2);
+    bandInfo.fh = bandInfo.fc + MHzToHz(m_channelWidth / 2);
     bands.clear();
     bands.push_back(bandInfo);
 
     Ptr<SpectrumModel> SpectrumInterferenceAll = Create<SpectrumModel>(bands);
     Ptr<SpectrumValue> interferencePsdAll = Create<SpectrumValue>(SpectrumInterferenceAll);
-    *interferencePsdAll = interferencePower / (m_channelWidth * 20e6);
+    *interferencePsdAll = interferencePower / (MHzToHz(m_channelWidth) * 20);
 
     Simulator::Schedule(delay + MicroSeconds(50),
                         &TestUlOfdmaPhyTransmission::GenerateInterference,
@@ -5066,7 +5066,7 @@ TestPhyPaddingExclusion::DoSetup()
 
     Ptr<MultiModelSpectrumChannel> spectrumChannel = CreateObject<MultiModelSpectrumChannel>();
     Ptr<FriisPropagationLossModel> lossModel = CreateObject<FriisPropagationLossModel>();
-    lossModel->SetFrequency(DEFAULT_FREQUENCY * 1e6);
+    lossModel->SetFrequency(MHzToHz(DEFAULT_FREQUENCY));
     spectrumChannel->AddPropagationLossModel(lossModel);
     Ptr<ConstantSpeedPropagationDelayModel> delayModel =
         CreateObject<ConstantSpeedPropagationDelayModel>();
@@ -5278,16 +5278,16 @@ TestPhyPaddingExclusion::DoRun()
 
     // A strong non-wifi interference is generated on RU 1 during padding reception
     BandInfo bandInfo;
-    bandInfo.fc = (DEFAULT_FREQUENCY - (DEFAULT_CHANNEL_WIDTH / 4)) * 1e6;
-    bandInfo.fl = bandInfo.fc - ((DEFAULT_CHANNEL_WIDTH / 4) * 1e6);
-    bandInfo.fh = bandInfo.fc + ((DEFAULT_CHANNEL_WIDTH / 4) * 1e6);
+    bandInfo.fc = MHzToHz(DEFAULT_FREQUENCY - (DEFAULT_CHANNEL_WIDTH / 4));
+    bandInfo.fl = bandInfo.fc - MHzToHz(DEFAULT_CHANNEL_WIDTH / 4);
+    bandInfo.fh = bandInfo.fc + MHzToHz(DEFAULT_CHANNEL_WIDTH / 4);
     Bands bands;
     bands.push_back(bandInfo);
 
     Ptr<SpectrumModel> SpectrumInterferenceRu1 = Create<SpectrumModel>(bands);
     Ptr<SpectrumValue> interferencePsdRu1 = Create<SpectrumValue>(SpectrumInterferenceRu1);
     Watt_u interferencePower{0.1};
-    *interferencePsdRu1 = interferencePower / ((DEFAULT_CHANNEL_WIDTH / 2) * 20e6);
+    *interferencePsdRu1 = interferencePower / (MHzToHz(DEFAULT_CHANNEL_WIDTH / 2) * 20);
 
     Simulator::Schedule(Seconds(2) + MicroSeconds(50) + expectedPpduDuration,
                         &TestPhyPaddingExclusion::GenerateInterference,

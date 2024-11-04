@@ -414,7 +414,7 @@ TestNonHtDuplicatePhyReception::DoSetup()
 {
     auto spectrumChannel = CreateObject<MultiModelSpectrumChannel>();
     auto lossModel = CreateObject<FriisPropagationLossModel>();
-    lossModel->SetFrequency(m_apFrequency * 1e6);
+    lossModel->SetFrequency(MHzToHz(m_apFrequency));
     spectrumChannel->AddPropagationLossModel(lossModel);
     auto delayModel = CreateObject<ConstantSpeedPropagationDelayModel>();
     spectrumChannel->SetPropagationDelayModel(delayModel);
@@ -551,9 +551,9 @@ TestNonHtDuplicatePhyReception::DoRun()
                     continue;
                 }
                 BandInfo bandInfo;
-                bandInfo.fc = (minApCenterFrequency + (i * 20)) * 1e6;
-                bandInfo.fl = bandInfo.fc - (5 * 1e6);
-                bandInfo.fh = bandInfo.fc + (5 * 1e6);
+                bandInfo.fc = MHzToHz(minApCenterFrequency + (i * 20));
+                bandInfo.fl = bandInfo.fc - MHzToHz(5);
+                bandInfo.fh = bandInfo.fc + MHzToHz(5);
                 Bands bands;
                 bands.push_back(bandInfo);
                 auto spectrumInterference = Create<SpectrumModel>(bands);
@@ -857,7 +857,7 @@ TestMultipleCtsResponsesFromMuRts::DoSetup()
 
     auto spectrumChannel = CreateObject<MultiModelSpectrumChannel>();
     auto lossModel = CreateObject<FriisPropagationLossModel>();
-    lossModel->SetFrequency(DEFAULT_FREQUENCY * 1e6);
+    lossModel->SetFrequency(MHzToHz(DEFAULT_FREQUENCY));
     spectrumChannel->AddPropagationLossModel(lossModel);
     auto delayModel = CreateObject<ConstantSpeedPropagationDelayModel>();
     spectrumChannel->SetPropagationDelayModel(delayModel);

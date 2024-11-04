@@ -15,6 +15,7 @@
 #include "ns3/spectrum-wifi-helper.h"
 #include "ns3/ssid.h"
 #include "ns3/string.h"
+#include "ns3/wifi-utils.h"
 
 using namespace ns3;
 
@@ -283,7 +284,7 @@ main(int argc, char** argv)
     freqs.reserve(4 * 10 * band);
     for (int i = 0; i < (4 * 10 * band); ++i) // conversion to 100kHz scale
     {
-        freqs.push_back(i * 1e5 + (freq - 2 * band) * 1e6);
+        freqs.push_back(i * MHzToHz(0.1) + MHzToHz(freq - 2 * band));
     }
     Ptr<SpectrumModel> spectrumAnalyzerFreqModel = Create<SpectrumModel>(freqs);
 

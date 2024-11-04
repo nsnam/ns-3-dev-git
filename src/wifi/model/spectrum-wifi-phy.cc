@@ -503,7 +503,7 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams,
                             band.frequencies.cend(),
                             0,
                             [](MHz_u sum, const auto& startStopFreqs) {
-                                return sum + ((startStopFreqs.second - startStopFreqs.first) / 1e6);
+                                return sum + HzToMHz(startStopFreqs.second - startStopFreqs.first);
                             });
         NS_ASSERT(bw <= channelWidth);
         index = ((bw != prevBw) ? 0 : (index + 1));
@@ -698,7 +698,7 @@ SpectrumWifiPhy::GetNumBandsBetweenSegments(const std::vector<MHz_u>& centerFreq
     // all segments have the same width
     const auto segmentsWidth = totalWidth / numSegments;
     const auto widthBetweenSegments = highFrequency - lowFrequency - segmentsWidth;
-    return (widthBetweenSegments * 1e6) / subcarrierSpacing;
+    return MHzToHz(widthBetweenSegments) / subcarrierSpacing;
 }
 
 WifiSpectrumBandInfo
@@ -721,8 +721,8 @@ SpectrumWifiPhy::GetBandForInterface(Ptr<WifiSpectrumPhyInterface> spectrumPhyIn
         numSegments = spectrumPhyInterface->GetCenterFrequencies().size();
         bandWidth /= spectrumPhyInterface->GetCenterFrequencies().size();
     }
-    const auto numBandsInBand = static_cast<size_t>(bandWidth * 1e6 / subcarrierSpacing);
-    auto numBandsInChannel = static_cast<size_t>(channelWidth * 1e6 / subcarrierSpacing);
+    const auto numBandsInBand = static_cast<size_t>(MHzToHz(bandWidth) / subcarrierSpacing);
+    auto numBandsInChannel = static_cast<size_t>(MHzToHz(channelWidth) / subcarrierSpacing);
     const auto numBands = channelWidth / bandWidth;
     if (numBandsInBand % 2 == 0)
     {
@@ -750,9 +750,9 @@ SpectrumWifiPhy::GetBandForInterface(Ptr<WifiSpectrumPhyInterface> spectrumPhyIn
         auto frequencies =
             ConvertIndicesToFrequenciesForInterface(spectrumPhyInterface, {startIndex, stopIndex});
         auto freqRange = spectrumPhyInterface->GetFrequencyRange();
-        NS_ASSERT(frequencies.first >= (freqRange.minFrequency * 1e6));
-        NS_ASSERT(frequencies.second <= (freqRange.maxFrequency * 1e6));
-        NS_ASSERT((frequencies.second - frequencies.first) == (bandWidth * 1e6));
+        NS_ASSERT(frequencies.first >= MHzToHz(freqRange.minFrequency));
+        NS_ASSERT(frequencies.second <= MHzToHz(freqRange.maxFrequency));
+        NS_ASSERT((frequencies.second - frequencies.first) == MHzToHz(bandWidth));
         if (startIndex >= totalNumBands / 2)
         {
             // step past DC
