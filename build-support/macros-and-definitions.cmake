@@ -552,6 +552,11 @@ macro(process_options)
 
     if(${EIGEN3_FOUND})
       set(ENABLE_EIGEN True)
+      # Prevent warning as error for ARM NEON PacketMath
+      if("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "aarch64")
+        add_compile_options(-Wno-error=class-memaccess)
+      endif()
+
       add_definitions(-DHAVE_EIGEN3)
       add_definitions(-DEIGEN_MPL2_ONLY)
       include_directories(${EIGEN3_INCLUDE_DIR})
