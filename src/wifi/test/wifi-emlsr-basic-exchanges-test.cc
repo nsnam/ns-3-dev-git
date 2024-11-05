@@ -2062,18 +2062,16 @@ EmlsrUlTxopTest::CheckQosFrames(const WifiConstPsduMap& psduMap,
                                      "header of the first data frame");
                 });
 
-                Simulator::Schedule(
-                    txDuration + MicroSeconds(MAX_PROPAGATION_DELAY_USEC),
-                    [=, this]() {
-                        CheckBlockedLink(
-                            m_apMac,
-                            m_staMacs[0]->GetAddress(),
-                            id,
-                            WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
-                            id != m_staMacs[0]->GetLinkForPhy(m_mainPhyId) &&
-                                m_staMacs[0]->IsEmlsrLink(id),
-                            "Checking EMLSR links on AP MLD after sending the first data frame");
-                    });
+                Simulator::Schedule(txDuration + MAX_PROPAGATION_DELAY, [=, this]() {
+                    CheckBlockedLink(
+                        m_apMac,
+                        m_staMacs[0]->GetAddress(),
+                        id,
+                        WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
+                        id != m_staMacs[0]->GetLinkForPhy(m_mainPhyId) &&
+                            m_staMacs[0]->IsEmlsrLink(id),
+                        "Checking EMLSR links on AP MLD after sending the first data frame");
+                });
             }
         });
 
@@ -2369,36 +2367,34 @@ EmlsrUlTxopTest::CheckCtsFrames(Ptr<const WifiMpdu> mpdu,
             // know which link the main PHY is moving from
             CheckMainPhyTraceInfo(0, "UlTxopRtsSentByAuxPhy", std::nullopt, linkId, false);
         });
-        Simulator::Schedule(
-            txDuration + MicroSeconds(2 * MAX_PROPAGATION_DELAY_USEC) + TimeStep(1),
-            [=, this]() {
-                // aux PHYs are put to sleep if and only if CTS is not corrupted
-                // (causing the end of the TXOP)
-                CheckAuxPhysSleepMode(m_staMacs[0], !doCorruptCts);
-                // if CTS is corrupted, TXOP ends and the main PHY switches back to the preferred
-                // link, unless channel access is obtained on another link before the main PHY
-                // completes the switch to the link on which CTS timeout occurred
-                if (auto ehtFem = StaticCast<EhtFrameExchangeManager>(
-                        m_staMacs[0]->GetFrameExchangeManager(linkId));
-                    doCorruptCts && !ehtFem->UsingOtherEmlsrLink())
+        Simulator::Schedule(txDuration + (2 * MAX_PROPAGATION_DELAY) + TimeStep(1), [=, this]() {
+            // aux PHYs are put to sleep if and only if CTS is not corrupted
+            // (causing the end of the TXOP)
+            CheckAuxPhysSleepMode(m_staMacs[0], !doCorruptCts);
+            // if CTS is corrupted, TXOP ends and the main PHY switches back to the preferred
+            // link, unless channel access is obtained on another link before the main PHY
+            // completes the switch to the link on which CTS timeout occurred
+            if (auto ehtFem = StaticCast<EhtFrameExchangeManager>(
+                    m_staMacs[0]->GetFrameExchangeManager(linkId));
+                doCorruptCts && !ehtFem->UsingOtherEmlsrLink())
+            {
+                // check the traced elapsed time since CTS timeout before calling
+                // CheckMainPhyTraceInfo
+                if (const auto traceInfoIt = m_traceInfo.find(0);
+                    traceInfoIt != m_traceInfo.cend() &&
+                    traceInfoIt->second->GetName() == "CtsAfterRtsTimeout")
                 {
-                    // check the traced elapsed time since CTS timeout before calling
-                    // CheckMainPhyTraceInfo
-                    if (const auto traceInfoIt = m_traceInfo.find(0);
-                        traceInfoIt != m_traceInfo.cend() &&
-                        traceInfoIt->second->GetName() == "CtsAfterRtsTimeout")
-                    {
-                        const auto& traceInfo =
-                            static_cast<const EmlsrCtsAfterRtsTimeoutTrace&>(*traceInfoIt->second);
-                        NS_TEST_EXPECT_MSG_GT(traceInfo.sinceCtsTimeout,
-                                              Time{0},
-                                              "Expected non-zero remaining time because main PHY "
-                                              "was switching when CTS timeout occurred");
-                    }
-
-                    CheckMainPhyTraceInfo(0, "CtsAfterRtsTimeout", linkId, m_mainPhyId);
+                    const auto& traceInfo =
+                        static_cast<const EmlsrCtsAfterRtsTimeoutTrace&>(*traceInfoIt->second);
+                    NS_TEST_EXPECT_MSG_GT(traceInfo.sinceCtsTimeout,
+                                          Time{0},
+                                          "Expected non-zero remaining time because main PHY "
+                                          "was switching when CTS timeout occurred");
                 }
-            });
+
+                CheckMainPhyTraceInfo(0, "CtsAfterRtsTimeout", linkId, m_mainPhyId);
+            }
+        });
     }
 
     if (doCorruptCts)

@@ -754,7 +754,10 @@ WifiDefaultAckManager::TryUlMuTransmission(Ptr<const WifiMpdu> mpdu,
                 NS_LOG_INFO("Unallocated RU");
                 continue;
             }
-            NS_ABORT_MSG_IF(aid12 == 0 || aid12 > 2007, "Allocation of RA-RUs is not supported");
+            const auto maxAid =
+                IsEht(txParams.m_txVector.GetPreambleType()) ? EHT_MAX_AID : MAX_AID;
+            NS_ABORT_MSG_IF(aid12 < MIN_AID || aid12 > maxAid,
+                            "Allocation of RA-RUs is not supported");
 
             const auto it = apMac->GetStaList(m_linkId).find(aid12);
             NS_ASSERT(it != apMac->GetStaList(m_linkId).end());

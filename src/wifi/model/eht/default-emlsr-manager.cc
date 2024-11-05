@@ -318,7 +318,7 @@ DefaultEmlsrManager::GetTimeToCtsEnd(uint8_t linkId, const WifiTxVector& rtsTxVe
 
     // the main PHY shall terminate the channel switch at the end of CTS reception;
     // the time remaining to the end of CTS reception includes two propagation delays
-    return rtsTxTime + phy->GetSifs() + ctsTxTime + MicroSeconds(2 * MAX_PROPAGATION_DELAY_USEC);
+    return rtsTxTime + phy->GetSifs() + ctsTxTime + 2 * MAX_PROPAGATION_DELAY;
 }
 
 std::pair<bool, Time>

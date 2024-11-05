@@ -10,10 +10,10 @@
 #define WIFI_UTILS_H
 
 #include "block-ack-type.h"
+#include "wifi-constants.h"
 #include "wifi-types.h"
 
 #include "ns3/fatal-error.h"
-#include "ns3/nstime.h"
 #include "ns3/ptr.h"
 
 #include <list>
@@ -269,12 +269,6 @@ bool IsGcr(Ptr<WifiMac> mac, const WifiMacHeader& hdr);
  */
 Mac48Address GetIndividuallyAddressedRecipient(Ptr<WifiMac> mac, const WifiMacHeader& hdr);
 
-/// Size of the space of sequence numbers
-static constexpr uint16_t SEQNO_SPACE_SIZE = 4096;
-
-/// Size of the half the space of sequence numbers (used to determine old packets)
-static constexpr uint16_t SEQNO_SPACE_HALF_SIZE = SEQNO_SPACE_SIZE / 2;
-
 /// Link ID for single link operations (helps tracking places where correct link
 /// ID is to be used to support multi-link operations)
 static constexpr uint8_t SINGLE_LINK_OP_ID = 0;
@@ -284,13 +278,6 @@ static constexpr uint8_t WIFI_LINKID_UNDEFINED = 0xff;
 
 /// Invalid TID identifier
 static constexpr uint8_t WIFI_TID_UNDEFINED = 0xff;
-
-/// Wi-Fi Time Unit value in microseconds (see IEEE 802.11-2020 sec. 3.1)
-/// Used to initialize WIFI_TU
-constexpr int WIFI_TU_US = 1024;
-
-/// Wi-Fi Time Unit (see IEEE 802.11-2020 sec. 3.1)
-extern const Time WIFI_TU;
 
 } // namespace ns3
 

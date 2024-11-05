@@ -30,8 +30,6 @@
 namespace ns3
 {
 
-const Time EMLSR_RX_PHY_START_DELAY = MicroSeconds(20);
-
 /**
  * Additional time (exceeding 20 us) to wait for a PHY-RXSTART.indication when the PHY is
  * decoding a PHY header.

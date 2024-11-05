@@ -76,18 +76,19 @@ WifiRemoteStationManager::GetTypeId()
                 BooleanValue(false),
                 MakeBooleanAccessor(&WifiRemoteStationManager::m_incrRetryCountUnderBa),
                 MakeBooleanChecker())
-            .AddAttribute("RtsCtsThreshold",
-                          "If the size of the PSDU is bigger than this value, we use an RTS/CTS "
-                          "handshake before sending the data frame."
-                          "This value will not have any effect on some rate control algorithms.",
-                          UintegerValue(4692480),
-                          MakeUintegerAccessor(&WifiRemoteStationManager::SetRtsCtsThreshold),
-                          MakeUintegerChecker<uint32_t>(0, 4692480))
+            .AddAttribute(
+                "RtsCtsThreshold",
+                "If the size of the PSDU is bigger than this value, we use an RTS/CTS "
+                "handshake before sending the data frame."
+                "This value will not have any effect on some rate control algorithms.",
+                UintegerValue(WIFI_DEFAULT_RTS_THRESHOLD),
+                MakeUintegerAccessor(&WifiRemoteStationManager::SetRtsCtsThreshold),
+                MakeUintegerChecker<uint32_t>(WIFI_MIN_RTS_THRESHOLD, WIFI_MAX_RTS_THRESHOLD))
             .AddAttribute("RtsCtsTxDurationThresh",
                           "If this threshold is a strictly positive value and the TX duration of "
                           "the PSDU is greater than or equal to this threshold, we use an RTS/CTS "
                           "handshake before sending the data frame.",
-                          TimeValue(Time{0}),
+                          TimeValue(),
                           MakeTimeAccessor(&WifiRemoteStationManager::m_rtsCtsTxDurationThresh),
                           MakeTimeChecker())
             .AddAttribute(
@@ -96,10 +97,10 @@ WifiRemoteStationManager::GetTypeId()
                 "size of the fragments are equal or smaller. "
                 "This value does not apply when it is carried in an A-MPDU. "
                 "This value will not have any effect on some rate control algorithms.",
-                UintegerValue(65535),
+                UintegerValue(WIFI_DEFAULT_FRAG_THRESHOLD),
                 MakeUintegerAccessor(&WifiRemoteStationManager::DoSetFragmentationThreshold,
                                      &WifiRemoteStationManager::DoGetFragmentationThreshold),
-                MakeUintegerChecker<uint32_t>())
+                MakeUintegerChecker<uint32_t>(WIFI_MIN_FRAG_THRESHOLD, WIFI_MAX_FRAG_THRESHOLD))
             .AddAttribute("NonUnicastMode",
                           "Wifi mode used for non-unicast transmissions.",
                           WifiModeValue(),
@@ -1353,13 +1354,12 @@ void
 WifiRemoteStationManager::DoSetFragmentationThreshold(uint32_t threshold)
 {
     NS_LOG_FUNCTION(this << threshold);
-    if (threshold < 256)
+    if (threshold < WIFI_MIN_FRAG_THRESHOLD)
     {
-        /*
-         * ASN.1 encoding of the MAC and PHY MIB (256 ... 8000)
-         */
-        NS_LOG_WARN("Fragmentation threshold should be larger than 256. Setting to 256.");
-        m_fragmentationThreshold = 256;
+        NS_LOG_WARN("Fragmentation threshold should be larger than "
+                    << WIFI_MIN_FRAG_THRESHOLD << ". Setting to " << WIFI_MIN_FRAG_THRESHOLD
+                    << ".");
+        m_fragmentationThreshold = WIFI_MIN_FRAG_THRESHOLD;
     }
     else
     {

@@ -97,9 +97,8 @@ EmlsrOperationsTestBase::Transmit(Ptr<WifiMac> mac,
             staMac && staMac->IsEmlsrLink(*linkId) &&
             staMac->GetEmlsrManager()->GetMediumSyncDuration().IsStrictlyPositive())
         {
-            const auto mustStartMsd =
-                staMac->GetEmlsrManager()->GetInDeviceInterference() &&
-                txDuration > MicroSeconds(EmlsrManager::MEDIUM_SYNC_THRESHOLD_USEC);
+            const auto mustStartMsd = staMac->GetEmlsrManager()->GetInDeviceInterference() &&
+                                      txDuration > MEDIUM_SYNC_THRESHOLD;
 
             for (auto id : staMac->GetLinkIds())
             {

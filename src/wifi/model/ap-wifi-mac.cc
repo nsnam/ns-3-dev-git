@@ -2684,10 +2684,11 @@ ApWifiMac::GetNextAssociationId() const
 
     // if this is an AP MLD, AIDs from 1 to N, where N is 2^(Group_addr_BU_Indic_Exp + 1) - 1
     // shall not be allocated (see Section 35.3.15.1 of 802.11be D7.0)
-    const uint16_t startAid = links.size() == 1 ? 1 : (1 << (m_grpAddrBuIndicExp + 1));
+    const uint16_t startAid = links.size() == 1 ? MIN_AID : (1 << (m_grpAddrBuIndicExp + 1));
 
-    // Return the first AID value between 1 and 2007 that is free for all the links
-    for (uint16_t nextAid = startAid; nextAid <= 2007; ++nextAid)
+    // Return the first AID value between min and max that is free for all the links
+    const auto maxAid = GetEhtSupported() ? EHT_MAX_AID : MAX_AID;
+    for (uint16_t nextAid = startAid; nextAid <= maxAid; ++nextAid)
     {
         if (std::none_of(links.cbegin(), links.cend(), [&](auto&& idLinkPair) {
                 return GetStaList(idLinkPair.first).contains(nextAid);

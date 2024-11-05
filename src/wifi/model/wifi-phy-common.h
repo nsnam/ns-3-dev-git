@@ -40,9 +40,6 @@ class WifiNetDevice;
 class WifiMode;
 class Time;
 
-/// maximum propagation delay
-static constexpr uint8_t MAX_PROPAGATION_DELAY_USEC = 1;
-
 /**
  * typedef for a pair of start and stop frequencies to represent a band
  */

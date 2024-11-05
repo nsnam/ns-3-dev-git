@@ -524,9 +524,7 @@ EmlsrLinkSwitchTest::CheckRtsFrame(const WifiConstPsduMap& psduMap,
                             NS_TEST_EXPECT_MSG_EQ(*id,
                                                   newLinkId,
                                                   "Main PHY is operating on an unexpected link");
-                            const auto startMsd =
-                                (totalSwitchDelay >
-                                 MicroSeconds(EmlsrManager::MEDIUM_SYNC_THRESHOLD_USEC));
+                            const auto startMsd = (totalSwitchDelay > MEDIUM_SYNC_THRESHOLD);
                             const auto msdIsRunning = msdWasRunning || startMsd;
                             CheckMsdTimerRunning(
                                 m_staMacs[0],

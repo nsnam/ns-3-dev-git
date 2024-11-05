@@ -8,6 +8,8 @@
 
 #include "tim.h"
 
+#include "wifi-constants.h"
+
 #include <algorithm>
 #include <cstdint>
 
@@ -37,7 +39,7 @@ Tim::GetInformationFieldSize() const
 void
 Tim::AddAid(uint16_t aid)
 {
-    NS_ABORT_IF(aid > 2007);
+    NS_ABORT_IF(aid > MAX_AID);
 
     m_aidValues.insert(aid);
 }

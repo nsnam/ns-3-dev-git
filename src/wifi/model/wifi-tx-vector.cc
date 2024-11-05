@@ -790,7 +790,7 @@ WifiTxVector::GetUserInfoMapOrderedByRus(uint8_t p20Index) const
 RuAllocation
 WifiTxVector::DeriveRuAllocation(uint8_t p20Index) const
 {
-    RuAllocation ruAllocations(Count20MHzSubchannels(m_channelWidth), HeRu::EMPTY_242_TONE_RU);
+    RuAllocation ruAllocations(Count20MHzSubchannels(m_channelWidth), EMPTY_242_TONE_HE_RU);
     std::vector<RuType> ruTypes{};
     ruTypes.resize(ruAllocations.size());
     const auto& orderedMap = GetUserInfoMapOrderedByRus(p20Index);
@@ -824,7 +824,7 @@ WifiTxVector::DeriveRuAllocation(uint8_t p20Index) const
                                               : ((ruIndex - 1) * numSubchannelsForRu);
         NS_ABORT_IF(index >= Count20MHzSubchannels(m_channelWidth));
         auto ruAlloc = WifiRu::GetEqualizedRuAllocation(ruType, false, true, mc);
-        if (ruAllocations.at(index) != HeRu::EMPTY_242_TONE_RU)
+        if (ruAllocations.at(index) != EMPTY_242_TONE_HE_RU)
         {
             if (ruType == ruTypes.at(index))
             {

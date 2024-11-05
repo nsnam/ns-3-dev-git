@@ -264,7 +264,7 @@ EmlsrManager::EmlsrLinkSwitchCallback(uint8_t linkId, Ptr<WifiPhy> phy, bool con
         NS_LOG_DEBUG("PHY " << +phy->GetPhyId() << " switched to link " << +linkId << " after "
                             << duration.As(Time::US)
                             << " since last time a PHY was operating on this link");
-        if (duration > MicroSeconds(MEDIUM_SYNC_THRESHOLD_USEC))
+        if (duration > MEDIUM_SYNC_THRESHOLD)
         {
             StartMediumSyncDelayTimer(linkId);
         }
@@ -831,7 +831,7 @@ EmlsrManager::NotifyInDeviceInterferenceStart(uint8_t linkId, Time duration)
 
     // The STA may choose not to (re)start the MediumSyncDelay timer if the transmission duration
     // is less than or equal to aMediumSyncThreshold. (Sec. 35.3.16.8.1 802.11be D5.1)
-    if (duration <= MicroSeconds(MEDIUM_SYNC_THRESHOLD_USEC))
+    if (duration <= MEDIUM_SYNC_THRESHOLD)
     {
         return;
     }
@@ -1444,7 +1444,7 @@ EmlsrManager::SetSleepStateForAllAuxPhys(bool sleep)
                 const auto sleepDuration = Simulator::Now() - it->second;
                 m_startSleep.erase(it);
 
-                if (sleepDuration > MicroSeconds(MEDIUM_SYNC_THRESHOLD_USEC))
+                if (sleepDuration > MEDIUM_SYNC_THRESHOLD)
                 {
                     StartMediumSyncDelayTimer(*linkId);
                 }

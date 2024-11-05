@@ -239,9 +239,6 @@ class HeRu
     /// @return RU_ALLOCATION value
     static uint16_t GetEqualizedRuAllocation(RuType ruType, bool isOdd, bool hasUsers);
 
-    /// Empty 242-tone RU identifier
-    static constexpr uint8_t EMPTY_242_TONE_RU = 113;
-
   private:
     /**
      * Get the number of 26-tone RUs that can be allocated if returned RU size is greater than 26
