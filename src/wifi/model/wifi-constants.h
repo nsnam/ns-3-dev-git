@@ -110,6 +110,10 @@ static constexpr uint8_t EMPTY_242_TONE_HE_RU{113};
 /// STA_ID for a RU that is intended for no user (Section 26.11.1 802.11ax-2021)
 static constexpr uint16_t NO_USER_STA_ID{2046};
 
+/// BSS Parameters Change Count max value for APs part of AP MLD
+/// IEEE 802.11be D5.0 35.3.10
+static constexpr uint8_t WIFI_DEFAULT_BSS_PARAMS_CHANGE_MAX{254};
+
 } // namespace ns3
 
 #endif /* WIFI_CONSTANTS_H */

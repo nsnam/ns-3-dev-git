@@ -39,10 +39,6 @@
 namespace ns3
 {
 
-/// BSS Parameters Change Count max value for APs part of AP MLD
-/// IEEE 802.11be D5.0 35.3.10
-static constexpr uint8_t WIFI_DEFAULT_BSS_PARAMS_CHANGE_MAX{254};
-
 NS_LOG_COMPONENT_DEFINE("ApWifiMac");
 
 NS_OBJECT_ENSURE_REGISTERED(ApWifiMac);
