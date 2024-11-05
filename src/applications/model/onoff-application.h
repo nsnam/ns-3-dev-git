@@ -20,6 +20,7 @@
 #include "ns3/event-id.h"
 #include "ns3/ptr.h"
 #include "ns3/traced-callback.h"
+#include "ns3/traced-value.h"
 
 namespace ns3
 {
@@ -189,6 +190,8 @@ class OnOffApplication : public SourceApplication
      * @param socket the not connected socket
      */
     void ConnectionFailed(Ptr<Socket> socket);
+
+    TracedValue<bool> m_state; //!< State of application (0-OFF, 1-ON)
 };
 
 } // namespace ns3

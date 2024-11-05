@@ -96,7 +96,11 @@ OnOffApplication::GetTypeId()
             .AddTraceSource("TxWithSeqTsSize",
                             "A new packet is created with SeqTsSizeHeader",
                             MakeTraceSourceAccessor(&OnOffApplication::m_txTraceWithSeqTsSize),
-                            "ns3::PacketSink::SeqTsSizeCallback");
+                            "ns3::PacketSink::SeqTsSizeCallback")
+            .AddTraceSource("OnOffState",
+                            "Application state (0-OFF, 1-ON)",
+                            MakeTraceSourceAccessor(&OnOffApplication::m_state),
+                            "ns3::TracedValueCallback::Bool");
     return tid;
 }
 
@@ -268,6 +272,7 @@ OnOffApplication::StartSending()
     m_lastStartTime = Simulator::Now();
     ScheduleNextTx(); // Schedule the send packet event
     ScheduleStopEvent();
+    m_state = true;
 }
 
 void
@@ -275,8 +280,8 @@ OnOffApplication::StopSending()
 {
     NS_LOG_FUNCTION(this);
     CancelEvents();
-
     ScheduleStartEvent();
+    m_state = false;
 }
 
 // Private helpers
