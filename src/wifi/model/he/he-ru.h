@@ -297,9 +297,6 @@ class HeRu
     /// @param isOdd if number of stations is an odd number
     /// @return RU_ALLOCATION value
     static uint8_t GetEqualizedRuAllocation(RuType ruType, bool isOdd);
-
-    /// Empty 242-tone RU identifier
-    static constexpr uint8_t EMPTY_242_TONE_RU = 113;
 };
 
 /**

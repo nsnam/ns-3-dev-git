@@ -10,6 +10,7 @@
 #ifndef WIFI_MODE_H
 #define WIFI_MODE_H
 
+#include "wifi-constants.h"
 #include "wifi-phy-common.h"
 
 #include "ns3/attribute-helper.h"
@@ -19,9 +20,6 @@
 
 namespace ns3
 {
-
-/// STA_ID to identify a single user (SU)
-static constexpr uint16_t SU_STA_ID = 65535;
 
 class WifiTxVector;
 

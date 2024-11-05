@@ -142,9 +142,8 @@ EmlsrOperationsTestBase::Transmit(Ptr<WifiMac> mac,
             staMac && staMac->IsEmlsrLink(*linkId) &&
             staMac->GetEmlsrManager()->GetMediumSyncDuration().IsStrictlyPositive())
         {
-            const auto mustStartMsd =
-                staMac->GetEmlsrManager()->GetInDeviceInterference() &&
-                txDuration > MicroSeconds(EmlsrManager::MEDIUM_SYNC_THRESHOLD_USEC);
+            const auto mustStartMsd = staMac->GetEmlsrManager()->GetInDeviceInterference() &&
+                                      txDuration > MEDIUM_SYNC_THRESHOLD;
 
             for (auto id : staMac->GetLinkIds())
             {
@@ -2887,18 +2886,16 @@ EmlsrUlTxopTest::CheckQosFrames(const WifiConstPsduMap& psduMap,
                                      "header of the first data frame");
                 });
 
-                Simulator::Schedule(
-                    txDuration + MicroSeconds(MAX_PROPAGATION_DELAY_USEC),
-                    [=, this]() {
-                        CheckBlockedLink(
-                            m_apMac,
-                            m_staMacs[0]->GetAddress(),
-                            id,
-                            WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
-                            id != m_staMacs[0]->GetLinkForPhy(m_mainPhyId) &&
-                                m_staMacs[0]->IsEmlsrLink(id),
-                            "Checking EMLSR links on AP MLD after sending the first data frame");
-                    });
+                Simulator::Schedule(txDuration + MAX_PROPAGATION_DELAY, [=, this]() {
+                    CheckBlockedLink(
+                        m_apMac,
+                        m_staMacs[0]->GetAddress(),
+                        id,
+                        WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
+                        id != m_staMacs[0]->GetLinkForPhy(m_mainPhyId) &&
+                            m_staMacs[0]->IsEmlsrLink(id),
+                        "Checking EMLSR links on AP MLD after sending the first data frame");
+                });
             }
         });
 
@@ -3412,32 +3409,30 @@ EmlsrUlTxopTest::CheckCtsFrames(Ptr<const WifiMpdu> mpdu,
             // know which link the main PHY is moving from
             CheckMainPhyTraceInfo(0, "UlTxopRtsSentByAuxPhy", std::nullopt, linkId, false);
         });
-        Simulator::Schedule(
-            txDuration + MicroSeconds(2 * MAX_PROPAGATION_DELAY_USEC) + TimeStep(1),
-            [=, this]() {
-                // aux PHYs are put to sleep if and only if CTS is not corrupted
-                // (causing the end of the TXOP)
-                CheckAuxPhysSleepMode(m_staMacs[0], !doCorruptCts);
-                // if CTS is corrupted, TXOP ends and the main PHY switches back
-                // to the preferred link
-                if (doCorruptCts)
+        Simulator::Schedule(txDuration + (2 * MAX_PROPAGATION_DELAY) + TimeStep(1), [=, this]() {
+            // aux PHYs are put to sleep if and only if CTS is not corrupted
+            // (causing the end of the TXOP)
+            CheckAuxPhysSleepMode(m_staMacs[0], !doCorruptCts);
+            // if CTS is corrupted, TXOP ends and the main PHY switches back
+            // to the preferred link
+            if (doCorruptCts)
+            {
+                // check the traced remaining time before calling CheckMainPhyTraceInfo
+                if (const auto traceInfoIt = m_traceInfo.find(0);
+                    traceInfoIt != m_traceInfo.cend() &&
+                    traceInfoIt->second->GetName() == "TxopEnded")
                 {
-                    // check the traced remaining time before calling CheckMainPhyTraceInfo
-                    if (const auto traceInfoIt = m_traceInfo.find(0);
-                        traceInfoIt != m_traceInfo.cend() &&
-                        traceInfoIt->second->GetName() == "TxopEnded")
-                    {
-                        const auto& traceInfo =
-                            static_cast<const EmlsrTxopEndedTrace&>(*traceInfoIt->second);
-                        NS_TEST_EXPECT_MSG_GT(traceInfo.remTime,
-                                              Time{0},
-                                              "Expected non-zero remaining time because main PHY "
-                                              "was switching when TXOP ended");
-                    }
-
-                    CheckMainPhyTraceInfo(0, "TxopEnded", linkId, m_mainPhyId);
+                    const auto& traceInfo =
+                        static_cast<const EmlsrTxopEndedTrace&>(*traceInfoIt->second);
+                    NS_TEST_EXPECT_MSG_GT(traceInfo.remTime,
+                                          Time{0},
+                                          "Expected non-zero remaining time because main PHY "
+                                          "was switching when TXOP ended");
                 }
-            });
+
+                CheckMainPhyTraceInfo(0, "TxopEnded", linkId, m_mainPhyId);
+            }
+        });
     }
 
     if (doCorruptCts)
@@ -4623,9 +4618,7 @@ EmlsrLinkSwitchTest::CheckRtsFrame(const WifiConstPsduMap& psduMap,
                             NS_TEST_EXPECT_MSG_EQ(*id,
                                                   newLinkId,
                                                   "Main PHY is operating on an unexpected link");
-                            const auto startMsd =
-                                (totalSwitchDelay >
-                                 MicroSeconds(EmlsrManager::MEDIUM_SYNC_THRESHOLD_USEC));
+                            const auto startMsd = (totalSwitchDelay > MEDIUM_SYNC_THRESHOLD);
                             const auto msdIsRunning = msdWasRunning || startMsd;
                             CheckMsdTimerRunning(
                                 m_staMacs[0],

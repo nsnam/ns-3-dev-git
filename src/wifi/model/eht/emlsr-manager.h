@@ -82,9 +82,6 @@ class EmlsrManager : public Object
     friend class ::EmlsrCcaBusyTest;
 
   public:
-    /// The aMediumSyncThreshold defined by Sec. 35.3.16.18.1 of 802.11be D4.0
-    static constexpr uint16_t MEDIUM_SYNC_THRESHOLD_USEC = 72;
-
     /**
      * @brief Get the type ID.
      * @return the object TypeId

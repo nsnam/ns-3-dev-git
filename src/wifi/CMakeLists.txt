@@ -136,6 +136,7 @@ set(source_files
     model/wifi-acknowledgment.cc
     model/wifi-assoc-manager.cc
     model/wifi-bandwidth-filter.cc
+    model/wifi-constants.cc
     model/wifi-default-ack-manager.cc
     model/wifi-default-assoc-manager.cc
     model/wifi-default-gcr-manager.cc
@@ -306,6 +307,7 @@ set(header_files
     model/wifi-acknowledgment.h
     model/wifi-assoc-manager.h
     model/wifi-bandwidth-filter.h
+    model/wifi-constants.h
     model/wifi-default-ack-manager.h
     model/wifi-default-assoc-manager.h
     model/wifi-default-gcr-manager.h
