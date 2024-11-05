@@ -126,7 +126,15 @@ cmake-format:
     - pip install pyyaml cmake cmake-format ninja
   script:
     - ./ns3 configure --enable-modules=core
-    - ./ns3 build cmake-format-check
+    - |
+      if (! ./ns3 build cmake-format-check) ; then
+        echo "Bad formatting detected in CMake files.";
+        echo "To fix the formatting issues, run the following command:";
+        echo "   $ ./ns3 build cmake-format";
+        echo "Note that it requires having cmake-format installed in your system.";
+        echo "You might need to run \"./ns3 configure\" after installing it.";
+        exit 1;
+      fi
   timeout: 1h
   interruptible: true
 
