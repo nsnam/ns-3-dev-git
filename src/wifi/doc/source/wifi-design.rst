@@ -803,9 +803,12 @@ Infrastructure association
 
 Association in infrastructure mode is a high-level MAC function performed by
 the Association Manager, which is implemented through a base class (``WifiAssocManager``)
-and a default subclass (``WifiDefaultAssocManager``). The interaction between
-the station MAC, the Association Manager base class and subclass is illustrated
-in Figure :ref:`fig-assoc-manager`.
+and a default subclass (``WifiDefaultAssocManager``), and controlled by the ``AssocType``
+attribute of the ``StaWifiMac`` class. This attribute controls whether the non-AP STA/MLD
+performs a legacy association or an ML setup with the AP device (the latter is only available for
+EHT devices associating with a multi-link AP; if this option is selected when this condition is not
+met, it falls back to legacy association automatically). The interaction between the station MAC,
+the Association Manager base class and subclass is illustrated in Figure :ref:`fig-assoc-manager`.
 
 .. _fig-assoc-manager:
 
@@ -1165,11 +1168,12 @@ MLD. Given that frame exchanges can occur on any of the EMLSR links, the link on
 Enabling/disabling EMLSR mode
 -----------------------------
 
-EMLSR mode can be enabled on the links (at least two) of a non-AP MLD that supports the EMLSR
+EMLSR mode can be enabled on the link(s) of a non-AP EHT device that supports the EMLSR
 operating mode and performs ML setup with an AP MLD that supports the EMLSR operating mode. The
-``EmlsrActivated`` attribute of the EHT configuration of an MLD determines whether the EMLSR
-operating mode is supported by the MLD. When the ``EmlsrActivated`` attribute is set to true for
-a non-AP MLD, the WifiMacHelper will install an EMLSR Manager by using the type and attribute
+``EmlsrActivated`` attribute of the EHT configuration of an EHT device determines whether the EMLSR
+operating mode is supported by the device. When the ``EmlsrActivated`` attribute is set to true for
+a non-AP EHT device and the ``ns3::StaWifiMac::AssocType`` attribute is set to ``ML_SETUP``, the
+WifiMacHelper will install an EMLSR Manager by using the type and attribute
 values configured through the ``SetEmlsrManager`` method.
 
 EMLSR mode on the links of a non-AP MLD can be enabled or disabled by using the ``EmlsrLinkSet``
