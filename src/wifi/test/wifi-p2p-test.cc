@@ -1155,8 +1155,7 @@ P2pTest::DoSetup()
                   m_params.infraLinkSetP2pSta.cend(),
                   std::ostream_iterator<uint16_t>(ss, ","));
         auto staEhtConfig = m_p2pSta->GetEhtConfiguration();
-        staEhtConfig->SetAttribute("TidToLinkMappingNegSupport",
-                                   EnumValue(WifiTidToLinkMappingNegSupport::ANY_LINK_SET));
+        staEhtConfig->m_tidLinkMappingSupport = WifiTidToLinkMappingNegSupport::ANY_LINK_SET;
         staEhtConfig->SetAttribute("TidToLinkMappingDl", StringValue(ss.str()));
         staEhtConfig->SetAttribute("TidToLinkMappingUl", StringValue(ss.str()));
     }

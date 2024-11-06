@@ -853,13 +853,11 @@ MultiLinkSetupTest::DoSetup()
     MultiLinkOperationsTestBase::DoSetup();
 
     m_staMacs[0]->SetAttribute("ActiveProbing", BooleanValue(m_scanType == WifiScanType::ACTIVE));
-    m_apMac->GetEhtConfiguration()->SetAttribute("TidToLinkMappingNegSupport",
-                                                 EnumValue(m_apNegSupport));
+    m_apMac->GetEhtConfiguration()->m_tidLinkMappingSupport = m_apNegSupport;
     // For non-AP MLD, it does not make sense to set the negotiation type to 0 (unless the AP MLD
     // also advertises 0) or 1 (the AP MLD is discarded if it advertises a support of 3)
     auto staEhtConfig = m_staMacs[0]->GetEhtConfiguration();
-    staEhtConfig->SetAttribute("TidToLinkMappingNegSupport",
-                               EnumValue(WifiTidToLinkMappingNegSupport::ANY_LINK_SET));
+    staEhtConfig->m_tidLinkMappingSupport = WifiTidToLinkMappingNegSupport::ANY_LINK_SET;
     staEhtConfig->SetAttribute("TidToLinkMappingDl", StringValue(m_dlTidLinkMappingStr));
     staEhtConfig->SetAttribute("TidToLinkMappingUl", StringValue(m_ulTidLinkMappingStr));
 
@@ -954,8 +952,7 @@ MultiLinkSetupTest::DoSetup()
     // are compatible
     for (auto staMac : m_staMacs)
     {
-        staMac->GetVhtConfiguration()->SetAttribute("Support160MHzOperation",
-                                                    BooleanValue(m_support160MHzOp));
+        staMac->GetVhtConfiguration()->m_160MHzSupported = m_support160MHzOp;
         uint8_t linkId = 0;
         for (const auto& str : m_staChannels)
         {
