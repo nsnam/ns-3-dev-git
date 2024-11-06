@@ -871,13 +871,13 @@ FrameExchangeManager::DoSendCtsAfterRts(const WifiMacHeader& rtsHdr,
 
 void
 FrameExchangeManager::SendCtsAfterRts(const WifiMacHeader& rtsHdr,
-                                      WifiMode rtsTxMode,
+                                      const WifiTxVector& rtsTxVector,
                                       double rtsSnr)
 {
-    NS_LOG_FUNCTION(this << rtsHdr << rtsTxMode << rtsSnr);
+    NS_LOG_FUNCTION(this << rtsHdr << rtsTxVector << rtsSnr);
 
     WifiTxVector ctsTxVector =
-        GetWifiRemoteStationManager()->GetCtsTxVector(rtsHdr.GetAddr2(), rtsTxMode);
+        GetWifiRemoteStationManager()->GetCtsTxVector(rtsHdr.GetAddr2(), rtsTxVector.GetMode());
     DoSendCtsAfterRts(rtsHdr, ctsTxVector, rtsSnr);
 }
 
@@ -1404,7 +1404,7 @@ FrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
                                                      &FrameExchangeManager::SendCtsAfterRts,
                                                      this,
                                                      hdr,
-                                                     txVector.GetMode(),
+                                                     txVector,
                                                      rxSnr);
             }
             else
