@@ -193,7 +193,8 @@ class MultiLinkOperationsTestBase : public TestCase
         std::vector<std::string>
             apChannels; //!< the strings specifying the operating channels for the AP MLD
         std::vector<uint8_t>
-            fixedPhyBands; //!< list of IDs of non-AP MLD PHYs that cannot switch band
+            fixedPhyBands;         //!< list of IDs of non-AP MLD PHYs that cannot switch band
+        WifiAssocType assocType{}; //!< type of the association procedure used by non-AP devices
     };
 
     /**
@@ -295,13 +296,14 @@ class MultiLinkOperationsTestBase : public TestCase
     const std::vector<std::string> m_staChannels; ///< strings specifying channels for STA
     const std::vector<std::string> m_apChannels;  ///< strings specifying channels for AP
     const std::vector<uint8_t> m_fixedPhyBands;   ///< links on non-AP MLD with fixed PHY band
-    Ptr<ApWifiMac> m_apMac;                       ///< AP wifi MAC
-    std::vector<Ptr<StaWifiMac>> m_staMacs;       ///< STA wifi MACs
-    uint8_t m_nStations;                          ///< number of stations to create
-    uint16_t m_lastAid;                           ///< AID of last associated station
-    Time m_duration{Seconds(1)};                  ///< simulation duration
-    std::vector<std::size_t> m_rxPkts; ///< number of packets received at application layer
-                                       ///< by each node (index is node ID)
+    WifiAssocType m_assocType; ///< type of the association procedure used by non-AP devices
+    Ptr<ApWifiMac> m_apMac;    ///< AP wifi MAC
+    std::vector<Ptr<StaWifiMac>> m_staMacs; ///< STA wifi MACs
+    uint8_t m_nStations;                    ///< number of stations to create
+    uint16_t m_lastAid;                     ///< AID of last associated station
+    Time m_duration{Seconds(1)};            ///< simulation duration
+    std::vector<std::size_t> m_rxPkts;      ///< number of packets received at application layer
+                                            ///< by each node (index is node ID)
 
     /**
      * Reset the given PHY helper, use the given strings to set the ChannelSettings

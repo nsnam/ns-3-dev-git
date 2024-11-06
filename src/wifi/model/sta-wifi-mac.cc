@@ -1033,13 +1033,30 @@ StaWifiMac::DoGetLocalAddress(const Mac48Address& remoteAddr) const
     {
         if (GetStaLink(link).bssid == remoteAddr)
         {
-            // the remote address is the address of the (single link) AP we are associated with;
+            // the remote address is the address of the AP we are associated with;
             return link->feManager->GetAddress();
         }
     }
 
     // the remote address is unknown
-    return GetAddress();
+
+    if (!IsAssociated())
+    {
+        return GetAddress();
+    }
+
+    // if this device has performed ML setup with an AP MLD, return the MLD address of this device
+    const auto linkIds = GetSetupLinkIds();
+    NS_ASSERT(!linkIds.empty());
+    const auto linkId = *linkIds.cbegin(); // a setup link
+
+    if (GetLink(linkId).stationManager->GetMldAddress(GetBssid(linkId)))
+    {
+        return GetAddress();
+    }
+
+    // return the address of the link used to perform association with the AP
+    return GetLink(linkId).feManager->GetAddress();
 }
 
 bool
@@ -1411,89 +1428,85 @@ StaWifiMac::ReceiveAssocResp(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
         return;
     }
 
-    // if this is an MLD, check if we can setup (other) links
-    if (GetNLinks() > 1)
+    // create a list of all local Link IDs. IDs are removed as we find a corresponding
+    // Per-STA Profile Subelements indicating successful association. Links with
+    // remaining IDs are not setup
+    std::list<uint8_t> setupLinks;
+    for (const auto& [id, link] : GetLinks())
     {
-        // create a list of all local Link IDs. IDs are removed as we find a corresponding
-        // Per-STA Profile Subelements indicating successful association. Links with
-        // remaining IDs are not setup
-        std::list<uint8_t> setupLinks;
-        for (const auto& [id, link] : GetLinks())
-        {
-            setupLinks.push_back(id);
-        }
-        if (assocResp.GetStatusCode().IsSuccess())
-        {
-            setupLinks.remove(linkId);
-        }
+        setupLinks.push_back(id);
+    }
+    if (assocResp.GetStatusCode().IsSuccess())
+    {
+        setupLinks.remove(linkId);
+    }
 
-        // if a Multi-Link Element is present, check its content
-        if (const auto& mle = assocResp.Get<MultiLinkElement>())
+    // if a Multi-Link Element is present, this is an ML setup, hence check if we can setup (other)
+    // links
+    if (const auto& mle = assocResp.Get<MultiLinkElement>())
+    {
+        NS_ABORT_MSG_IF(!GetLink(linkId).bssid.has_value(),
+                        "The link on which the Association Response was received "
+                        "is not a link we requested to setup");
+        NS_ABORT_MSG_IF(linkId != mle->GetLinkIdInfo(),
+                        "The link ID of the AP that transmitted the Association "
+                        "Response does not match the stored link ID");
+        NS_ABORT_MSG_IF(GetWifiRemoteStationManager(linkId)->GetMldAddress(hdr.GetAddr2()) !=
+                            mle->GetMldMacAddress(),
+                        "The AP MLD MAC address in the received Multi-Link Element does not "
+                        "match the address stored in the station manager for link "
+                            << +linkId);
+        // process the Per-STA Profile Subelements in the Multi-Link Element
+        for (std::size_t elem = 0; elem < mle->GetNPerStaProfileSubelements(); elem++)
         {
-            NS_ABORT_MSG_IF(!GetLink(linkId).bssid.has_value(),
-                            "The link on which the Association Response was received "
-                            "is not a link we requested to setup");
-            NS_ABORT_MSG_IF(linkId != mle->GetLinkIdInfo(),
-                            "The link ID of the AP that transmitted the Association "
-                            "Response does not match the stored link ID");
-            NS_ABORT_MSG_IF(GetWifiRemoteStationManager(linkId)->GetMldAddress(hdr.GetAddr2()) !=
-                                mle->GetMldMacAddress(),
+            auto& perStaProfile = mle->GetPerStaProfile(elem);
+            uint8_t apLinkId = perStaProfile.GetLinkId();
+            auto it = GetLinks().find(apLinkId);
+            uint8_t staLinkid = 0;
+            std::optional<Mac48Address> bssid;
+            NS_ABORT_MSG_IF(it == GetLinks().cend() ||
+                                !(bssid = GetLink((staLinkid = it->first)).bssid).has_value(),
+                            "Setup for AP link ID " << apLinkId << " was not requested");
+            NS_ABORT_MSG_IF(*bssid != perStaProfile.GetStaMacAddress(),
+                            "The BSSID in the Per-STA Profile for link ID "
+                                << +staLinkid << " does not match the stored BSSID");
+            NS_ABORT_MSG_IF(GetWifiRemoteStationManager(staLinkid)->GetMldAddress(
+                                perStaProfile.GetStaMacAddress()) != mle->GetMldMacAddress(),
                             "The AP MLD MAC address in the received Multi-Link Element does not "
                             "match the address stored in the station manager for link "
-                                << +linkId);
-            // process the Per-STA Profile Subelements in the Multi-Link Element
-            for (std::size_t elem = 0; elem < mle->GetNPerStaProfileSubelements(); elem++)
+                                << +staLinkid);
+            // process the Association Response contained in this Per-STA Profile
+            MgtAssocResponseHeader assoc = perStaProfile.GetAssocResponse();
+            if (assoc.GetStatusCode().IsSuccess())
             {
-                auto& perStaProfile = mle->GetPerStaProfile(elem);
-                uint8_t apLinkId = perStaProfile.GetLinkId();
-                auto it = GetLinks().find(apLinkId);
-                uint8_t staLinkid = 0;
-                std::optional<Mac48Address> bssid;
-                NS_ABORT_MSG_IF(it == GetLinks().cend() ||
-                                    !(bssid = GetLink((staLinkid = it->first)).bssid).has_value(),
-                                "Setup for AP link ID " << apLinkId << " was not requested");
-                NS_ABORT_MSG_IF(*bssid != perStaProfile.GetStaMacAddress(),
-                                "The BSSID in the Per-STA Profile for link ID "
-                                    << +staLinkid << " does not match the stored BSSID");
-                NS_ABORT_MSG_IF(
-                    GetWifiRemoteStationManager(staLinkid)->GetMldAddress(
-                        perStaProfile.GetStaMacAddress()) != mle->GetMldMacAddress(),
-                    "The AP MLD MAC address in the received Multi-Link Element does not "
-                    "match the address stored in the station manager for link "
-                        << +staLinkid);
-                // process the Association Response contained in this Per-STA Profile
-                MgtAssocResponseHeader assoc = perStaProfile.GetAssocResponse();
-                if (assoc.GetStatusCode().IsSuccess())
+                NS_ABORT_MSG_IF(m_aid != 0 && m_aid != assoc.GetAssociationId(),
+                                "AID should be the same for all the links");
+                m_aid = assoc.GetAssociationId();
+                NS_LOG_DEBUG("Setup on link " << staLinkid << " completed");
+                UpdateApInfo(assoc, *bssid, *bssid, staLinkid);
+                SetBssid(*bssid, staLinkid);
+                m_setupCompleted(staLinkid, *bssid);
+                SetState(ASSOCIATED);
+                apMldAddress = GetWifiRemoteStationManager(staLinkid)->GetMldAddress(*bssid);
+                if (!m_linkUp.IsNull())
                 {
-                    NS_ABORT_MSG_IF(m_aid != 0 && m_aid != assoc.GetAssociationId(),
-                                    "AID should be the same for all the links");
-                    m_aid = assoc.GetAssociationId();
-                    NS_LOG_DEBUG("Setup on link " << staLinkid << " completed");
-                    UpdateApInfo(assoc, *bssid, *bssid, staLinkid);
-                    SetBssid(*bssid, staLinkid);
-                    m_setupCompleted(staLinkid, *bssid);
-                    SetState(ASSOCIATED);
-                    apMldAddress = GetWifiRemoteStationManager(staLinkid)->GetMldAddress(*bssid);
-                    if (!m_linkUp.IsNull())
-                    {
-                        m_linkUp();
-                    }
+                    m_linkUp();
                 }
-                // remove the ID of the link we setup
-                setupLinks.remove(staLinkid);
             }
-        }
-        // remaining links in setupLinks are not setup and hence must be disabled
-        for (const auto& id : setupLinks)
-        {
-            GetLink(id).bssid = std::nullopt;
-            GetLink(id).phy->SetOffMode();
+            // remove the ID of the link we setup
+            setupLinks.remove(staLinkid);
         }
         if (apMldAddress)
         {
             // this is an ML setup, trace the MLD address of the AP (only once)
             m_assocLogger(*apMldAddress);
         }
+    }
+    // remaining links in setupLinks are not setup and hence must be disabled
+    for (const auto& id : setupLinks)
+    {
+        GetLink(id).bssid = std::nullopt;
+        GetLink(id).phy->SetOffMode();
     }
 
     // the station that associated with the AP may have dissociated and then associated again.

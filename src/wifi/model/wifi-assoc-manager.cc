@@ -250,7 +250,7 @@ WifiAssocManager::CanSetupMultiLink(OptMleConstRef& mle, OptRnrConstRef& rnr)
 {
     NS_LOG_FUNCTION(this);
 
-    if (m_mac->GetNLinks() == 1 || GetSortedList().empty())
+    if (m_mac->GetAssocType() == WifiAssocType::LEGACY || GetSortedList().empty())
     {
         return false;
     }

@@ -111,7 +111,9 @@ EhtFrameExchangeManager::CreateAliasIfNeeded(Ptr<WifiMpdu> mpdu) const
     NS_LOG_FUNCTION(this << *mpdu);
 
     // alias needs only be created for non-broadcast QoS data frames exchanged between two MLDs
-    if (!mpdu->GetHeader().IsQosData() || m_mac->GetNLinks() == 1 ||
+    if (auto staMac = DynamicCast<StaWifiMac>(m_mac);
+        !mpdu->GetHeader().IsQosData() ||
+        (staMac ? (staMac->GetAssocType() == WifiAssocType::LEGACY) : (m_mac->GetNLinks() == 1)) ||
         mpdu->GetHeader().GetAddr1().IsGroup() ||
         !GetWifiRemoteStationManager()->GetMldAddress(mpdu->GetHeader().GetAddr1()))
     {

@@ -332,7 +332,9 @@ AidAssignmentTest::DoSetup()
                     "Ssid", // first non-AP STA/MLD only starts associating
                     SsidValue(Ssid(m_staDevices.GetN() == 0 ? "ns-3-ssid" : "default")),
                     "ActiveProbing",
-                    BooleanValue(false));
+                    BooleanValue(false),
+                    "AssocType",
+                    EnumValue(links.size() > 1 ? WifiAssocType::ML_SETUP : WifiAssocType::LEGACY));
 
         auto staNode = CreateObject<Node>();
         auto staDevice = wifi.Install(phyHelper, mac, staNode);
@@ -423,6 +425,7 @@ MultiLinkOperationsTestBase::MultiLinkOperationsTestBase(const std::string& name
       m_staChannels(baseParams.staChannels),
       m_apChannels(baseParams.apChannels),
       m_fixedPhyBands(baseParams.fixedPhyBands),
+      m_assocType(baseParams.assocType),
       m_staMacs(nStations),
       m_nStations(nStations),
       m_lastAid(0),
@@ -680,7 +683,9 @@ MultiLinkOperationsTestBase::DoSetup()
                 "MaxMissedBeacons",
                 UintegerValue(1e6), // do not deassociate
                 "ActiveProbing",
-                BooleanValue(false));
+                BooleanValue(false),
+                "AssocType",
+                EnumValue(m_assocType));
 
     NetDeviceContainer staDevices = wifi.Install(staPhyHelper, mac, wifiStaNodes);
 
@@ -2714,7 +2719,8 @@ ReleaseSeqNoAfterCtsTimeoutTest::ReleaseSeqNoAfterCtsTimeoutTest()
           1,
           BaseParams{{"{36, 0, BAND_5GHZ, 0}", "{2, 0, BAND_2_4GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
                      {"{36, 0, BAND_5GHZ, 0}", "{2, 0, BAND_2_4GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
-                     {}}),
+                     {},
+                     WifiAssocType::ML_SETUP}),
       m_nQosDataFrames(0),
       m_errorModel(CreateObject<ListErrorModel>()),
       m_rtsCorrupted(false)
@@ -2831,7 +2837,8 @@ StartSeqNoUpdateAfterAddBaTimeoutTest::StartSeqNoUpdateAfterAddBaTimeoutTest()
           1,
           BaseParams{{"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
                      {"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
-                     {}}),
+                     {},
+                     WifiAssocType::ML_SETUP}),
       m_nQosDataCount(0),
       m_staErrorModel(CreateObject<ListErrorModel>())
 {
@@ -3003,7 +3010,8 @@ WifiMultiLinkOperationsTestSuite::WifiMultiLinkOperationsTestSuite()
             MultiLinkOperationsTestBase::BaseParams{
                 {"{42, 80, BAND_5GHZ, 2}", "{5, 40, BAND_2_4GHZ, 0}", "{7, 80, BAND_6GHZ, 0}"},
                 {"{3, 40, BAND_2_4GHZ, 0}", "{15, 160, BAND_6GHZ, 7}", "{50, 160, BAND_5GHZ, 2}"},
-                {}},
+                {},
+                WifiAssocType::ML_SETUP},
             WifiScanType::PASSIVE,
             {0, 1, 2},
             WifiTidToLinkMappingNegSupport::ANY_LINK_SET,
@@ -3012,16 +3020,13 @@ WifiMultiLinkOperationsTestSuite::WifiMultiLinkOperationsTestSuite()
             false),
         TestCase::Duration::QUICK);
 
-    for (const auto& [baseParams,
-                      setupLinks,
-                      apNegSupport,
-                      dlTidLinkMapping,
-                      ulTidLinkMapping] :
+    for (const auto& [baseParams, setupLinks, apNegSupport, dlTidLinkMapping, ulTidLinkMapping] :
          {// matching channels: setup all links
           ParamsTuple(
               {{"{36, 0, BAND_5GHZ, 0}", "{2, 0, BAND_2_4GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
                {"{36, 0, BAND_5GHZ, 0}", "{2, 0, BAND_2_4GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
-               {}},
+               {},
+               WifiAssocType::ML_SETUP},
               {0, 1, 2},
               WifiTidToLinkMappingNegSupport::NOT_SUPPORTED, // AP MLD does not support TID-to-Link
                                                              // Mapping negotiation
@@ -3031,7 +3036,8 @@ WifiMultiLinkOperationsTestSuite::WifiMultiLinkOperationsTestSuite()
           // non-matching channels, matching PHY bands: setup all links
           ParamsTuple({{"{108, 0, BAND_5GHZ, 0}", "{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
                        {"{36, 0, BAND_5GHZ, 0}", "{120, 0, BAND_5GHZ, 0}", "{5, 0, BAND_6GHZ, 0}"},
-                       {}},
+                       {},
+                       WifiAssocType::ML_SETUP},
                       {0, 1, 2},
                       WifiTidToLinkMappingNegSupport::SAME_LINK_SET, // AP MLD does not support
                                                                      // distinct link sets for TIDs
@@ -3040,7 +3046,8 @@ WifiMultiLinkOperationsTestSuite::WifiMultiLinkOperationsTestSuite()
           // non-AP MLD switches band on some links to setup 3 links
           ParamsTuple({{"{2, 0, BAND_2_4GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{36, 0, BAND_5GHZ, 0}"},
                        {"{36, 0, BAND_5GHZ, 0}", "{9, 0, BAND_6GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
-                       {}},
+                       {},
+                       WifiAssocType::ML_SETUP},
                       {0, 1, 2},
                       WifiTidToLinkMappingNegSupport::ANY_LINK_SET,
                       "0,1,2,3  0;  4,5,6,7  1,2", // frames of two TIDs are generated
@@ -3051,7 +3058,8 @@ WifiMultiLinkOperationsTestSuite::WifiMultiLinkOperationsTestSuite()
           ParamsTuple(
               {{"{2, 0, BAND_2_4GHZ, 0}", "{36, 0, BAND_5GHZ, 0}", "{8, 20, BAND_2_4GHZ, 0}"},
                {"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
-               {0}},
+               {0},
+               WifiAssocType::ML_SETUP},
               {0, 1},
               WifiTidToLinkMappingNegSupport::SAME_LINK_SET, // AP MLD does not support distinct
                                                              // link sets for TIDs
@@ -3063,7 +3071,8 @@ WifiMultiLinkOperationsTestSuite::WifiMultiLinkOperationsTestSuite()
           ParamsTuple(
               {{"{2, 0, BAND_2_4GHZ, 0}", "{36, 0, BAND_5GHZ, 0}", "{8, 20, BAND_2_4GHZ, 0}"},
                {"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
-               {0, 1}},
+               {0, 1},
+               WifiAssocType::ML_SETUP},
               {0, 1},
               WifiTidToLinkMappingNegSupport::ANY_LINK_SET,
               "0,1,2,3  1",
@@ -3075,7 +3084,8 @@ WifiMultiLinkOperationsTestSuite::WifiMultiLinkOperationsTestSuite()
           // hence 2 links are setup by switching channel (not band) on the third link
           ParamsTuple({{"{2, 0, BAND_2_4GHZ, 0}", "{36, 0, BAND_5GHZ, 0}", "{60, 0, BAND_5GHZ, 0}"},
                        {"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
-                       {0, 1, 2}},
+                       {0, 1, 2},
+                       WifiAssocType::ML_SETUP},
                       {0, 2},
                       WifiTidToLinkMappingNegSupport::ANY_LINK_SET,
                       "",
@@ -3085,7 +3095,8 @@ WifiMultiLinkOperationsTestSuite::WifiMultiLinkOperationsTestSuite()
           // an AP operating on the same channel; hence one link only is setup
           ParamsTuple({{"{2, 0, BAND_2_4GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
                        {"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
-                       {0, 1}},
+                       {0, 1},
+                       WifiAssocType::ML_SETUP},
                       {2},
                       WifiTidToLinkMappingNegSupport::ANY_LINK_SET,
                       "",
@@ -3093,23 +3104,26 @@ WifiMultiLinkOperationsTestSuite::WifiMultiLinkOperationsTestSuite()
           // non-AP MLD has only two STAs and setups two links
           ParamsTuple({{"{2, 0, BAND_2_4GHZ, 0}", "{36, 0, BAND_5GHZ, 0}"},
                        {"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
-                       {}},
+                       {},
+                       WifiAssocType::ML_SETUP},
                       {1, 0},
                       WifiTidToLinkMappingNegSupport::ANY_LINK_SET,
                       "0,1,2,3  1",
                       ""),
-          // single link non-AP STA associates with an AP affiliated with an AP MLD
+          // single link non-AP STA performs legacy association with an AP affiliated with an AP MLD
           ParamsTuple({{"{120, 0, BAND_5GHZ, 0}"},
                        {"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
-                       {}},
-                      {2}, // link ID of AP MLD only (non-AP STA is single link)
+                       {},
+                       WifiAssocType::LEGACY},
+                      {2}, // link ID of AP MLD only (non-AP STA performs legacy association)
                       WifiTidToLinkMappingNegSupport::ANY_LINK_SET,
                       "",
                       ""),
           // a STA affiliated with a non-AP MLD associates with a single link AP
           ParamsTuple({{"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
                        {"{120, 0, BAND_5GHZ, 0}"},
-                       {}},
+                       {},
+                       WifiAssocType::ML_SETUP},
                       {2}, // link ID of non-AP MLD only (AP is single link)
                       WifiTidToLinkMappingNegSupport::NOT_SUPPORTED,
                       "0,1,2,3  0,1;  4,5,6,7  0,1", // ignored by single link AP
