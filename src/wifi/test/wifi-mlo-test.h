@@ -149,8 +149,9 @@ class AidAssignmentTest : public TestCase
      * Constructor.
      *
      * @param linkIds A vector specifying the set of link IDs each STA will setup
+     * @param assocType the type of association procedure for non-AP devices
      */
-    AidAssignmentTest(const std::vector<std::set<uint8_t>>& linkIds);
+    AidAssignmentTest(const std::vector<std::set<uint8_t>>& linkIds, WifiAssocType assocType);
 
   private:
     void DoSetup() override;
@@ -166,6 +167,7 @@ class AidAssignmentTest : public TestCase
 
     const std::vector<std::string> m_linkChannels;  //!< channels for all AP links
     const std::vector<std::set<uint8_t>> m_linkIds; //!< link IDs for all non-AP STAs/MLDs
+    WifiAssocType m_assocType;                      //!< association type
     NetDeviceContainer m_staDevices;                //!< non-AP STAs/MLDs devices
     uint16_t m_expectedAid;                         //!< expected AID for current non-AP STA/MLD
 };
@@ -374,8 +376,11 @@ class MultiLinkSetupTest : public MultiLinkOperationsTestBase
      *
      * @param baseParams common configuration parameters
      * @param scanType the scan type (active or passive)
-     * @param setupLinks a list of links that are expected to be setup. In case one of the two
-     *                   devices has a single link, the ID of the link on the MLD is indicated
+     * @param setupLinks a list of IDs (as seen by the AP device) of the links that are expected
+     *                   to be setup
+     * @param staSetupLinks a list of IDs (as seen by the non-AP device) of the links that are
+     *                      expected to be setup. This list shall be left empty (indicating that
+     *                      it equals the setupLinks argument) when ML setup is performed
      * @param apNegSupport TID-to-Link Mapping negotiation supported by the AP MLD (0, 1, or 3)
      * @param dlTidToLinkMapping DL TID-to-Link Mapping for EHT configuration of non-AP MLD
      * @param ulTidToLinkMapping UL TID-to-Link Mapping for EHT configuration of non-AP MLD
@@ -384,6 +389,7 @@ class MultiLinkSetupTest : public MultiLinkOperationsTestBase
     MultiLinkSetupTest(const BaseParams& baseParams,
                        WifiScanType scanType,
                        const std::vector<uint8_t>& setupLinks,
+                       const std::vector<uint8_t>& staSetupLinks,
                        WifiTidToLinkMappingNegSupport apNegSupport,
                        const std::string& dlTidToLinkMapping,
                        const std::string& ulTidToLinkMapping,
@@ -455,8 +461,11 @@ class MultiLinkSetupTest : public MultiLinkOperationsTestBase
                       uint8_t linkId,
                       std::size_t index);
 
-    const std::vector<uint8_t> m_setupLinks; //!< IDs of the expected links to setup
-    WifiScanType m_scanType;                 //!< the scan type (active or passive)
+    const std::vector<uint8_t> m_setupLinks;    //!< IDs (as seen by the AP device) of the expected
+                                                //!< links to setup
+    const std::vector<uint8_t> m_staSetupLinks; //!< IDs (as seen by the non-AP device) of the
+                                                //!< expected links to setup
+    WifiScanType m_scanType;                    //!< the scan type (active or passive)
     std::size_t m_nProbeResp; //!< number of Probe Responses received by the non-AP MLD
     WifiTidToLinkMappingNegSupport
         m_apNegSupport;                //!< TID-to-Link Mapping negotiation supported by the AP MLD

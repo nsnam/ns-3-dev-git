@@ -49,33 +49,26 @@ NS_LOG_COMPONENT_DEFINE("WifiMloUdpTest");
  * STA to AP
  * ---------
  * The source HW address of the ARP Request sent by the STA is:
- * - the unique STA address, if the STA is an SLD
- * - the non-AP MLD address, if both the STA and the AP are MLDs
- * - the address of the link used to associate, if STA is an MLD and AP is an SLD
- * The source HW address of the ARP Reply sent by the AP is:
- * - the unique AP address, if the AP is an SLD
- * - the AP MLD address, if both the STA and the AP are MLDs
- * - the address of the link used by STA to associate, if STA is an SLD and AP is an MLD
+ * - the address of the link used to associate, if STA performs legacy association or AP is an SLD
+ * - the non-AP MLD address (or the unique STA address), otherwise
+ * The source HW address of the ARP Reply sent by the AP is the address of the link used by STA to
+ * associate, if the STA performed legacy association, or the AP MLD address, otherwise.
  *
  * AP to STA
  * ---------
  * The source HW address of the ARP Request sent by the AP is:
  * - the unique AP address, if the AP is an SLD
  * - the AP MLD address, if the AP is an MLD
- * The source HW address of the ARP Reply sent by the STA is:
- * - the unique STA address, if the STA is an SLD
- * - the non-AP MLD address, if both the STA and the AP are MLDs
- * - the address of the link used to associate, if STA is an MLD and AP is an SLD
+ * The source HW address of the ARP Reply sent by the STA is the address of the link used by STA to
+ * associate, if the STA performed legacy association, or the non-AP MLD address, otherwise.
  *
  * STA 1 to STA 2
  * --------------
  * The source HW address of the ARP Request sent by STA 1 is:
- * - the unique STA 1 address, if STA 1 is an SLD
- * - the non-AP MLD address, if both STA 1 and the AP are MLDs
- * - the address of the link used to associate, if STA 1 is an MLD and AP is an SLD
- * The source HW address of the ARP Reply sent by the STA 2 is (STA 1 is unknown to STA 2):
- * - the unique STA 2 address, if STA 2 is an SLD
- * - the non-AP MLD address, if STA 2 is an MLD
+ * - the address of the link used to associate, if STA performs legacy association or AP is an SLD
+ * - the non-AP MLD address (or the unique STA address), otherwise
+ * The source HW address of the ARP Reply sent by STA 2 is the address of the link used by STA 2 to
+ * associate, if STA 2 performed legacy association, or the non-AP MLD address of STA 2, otherwise.
  */
 class WifiMloUdpTest : public MultiLinkOperationsTestBase
 {
@@ -87,12 +80,14 @@ class WifiMloUdpTest : public MultiLinkOperationsTestBase
      * @param firstStaChannels string specifying channels for first STA
      * @param secondStaChannels string specifying channels for second STA
      * @param trafficPattern the pattern of traffic to generate
+     * @param assocType the type of association procedure for non-AP devices
      * @param amsduAggr whether A-MSDU aggregation is enabled
      */
     WifiMloUdpTest(const std::vector<std::string>& apChannels,
                    const std::vector<std::string>& firstStaChannels,
                    const std::vector<std::string>& secondStaChannels,
                    WifiTrafficPattern trafficPattern,
+                   WifiAssocType assocType,
                    bool amsduAggr);
 
   protected:
@@ -127,6 +122,7 @@ class WifiMloUdpTest : public MultiLinkOperationsTestBase
 
     const std::vector<std::string> m_2ndStaChannels; ///< string specifying channels for second STA
     WifiTrafficPattern m_trafficPattern;             ///< the pattern of traffic to generate
+    WifiAssocType m_assocType;                       //!< association type
     bool m_amsduAggr;                                ///< whether A-MSDU aggregation is enabled
     const std::size_t m_nPackets{3};                 ///< number of application packets to generate
     Ipv4InterfaceContainer m_staInterfaces;          ///< IP interfaces for non-AP MLDs
@@ -143,6 +139,7 @@ WifiMloUdpTest::WifiMloUdpTest(const std::vector<std::string>& apChannels,
                                const std::vector<std::string>& firstStaChannels,
                                const std::vector<std::string>& secondStaChannels,
                                WifiTrafficPattern trafficPattern,
+                               WifiAssocType assocType,
                                bool amsduAggr)
     : MultiLinkOperationsTestBase(
           std::string("Check UDP packet transmission between MLDs ") +
@@ -150,11 +147,13 @@ WifiMloUdpTest::WifiMloUdpTest(const std::vector<std::string>& apChannels,
               ", #STA_1_links: " + std::to_string(firstStaChannels.size()) +
               ", #STA_2_links: " + std::to_string(secondStaChannels.size()) +
               ", Traffic pattern: " + std::to_string(static_cast<uint8_t>(trafficPattern)) +
+              ", Assoc type: " + (assocType == WifiAssocType::LEGACY ? "Legacy" : "ML setup") +
               ", A-MSDU aggregation: " + std::to_string(amsduAggr) + ")",
           2,
           BaseParams{firstStaChannels, apChannels, {}}),
       m_2ndStaChannels(secondStaChannels),
       m_trafficPattern(trafficPattern),
+      m_assocType(assocType),
       m_amsduAggr(amsduAggr)
 {
 }
@@ -192,21 +191,19 @@ WifiMloUdpTest::DoSetup()
     SetChannels(apPhyHelper, m_apChannels, channelMap);
 
     WifiMacHelper mac;
-    mac.SetType(
-        "ns3::StaWifiMac", // default SSID
-        "ActiveProbing",
-        BooleanValue(false),
-        "AssocType",
-        EnumValue(m_staChannels.size() > 1 ? WifiAssocType::ML_SETUP : WifiAssocType::LEGACY));
+    mac.SetType("ns3::StaWifiMac", // default SSID
+                "ActiveProbing",
+                BooleanValue(false),
+                "AssocType",
+                EnumValue(m_assocType));
 
     NetDeviceContainer staDevices = wifi.Install(staPhyHelper1, mac, wifiStaNodes.Get(0));
 
-    mac.SetType(
-        "ns3::StaWifiMac", // default SSID
-        "ActiveProbing",
-        BooleanValue(false),
-        "AssocType",
-        EnumValue(m_2ndStaChannels.size() > 1 ? WifiAssocType::ML_SETUP : WifiAssocType::LEGACY));
+    mac.SetType("ns3::StaWifiMac", // default SSID
+                "ActiveProbing",
+                BooleanValue(false),
+                "AssocType",
+                EnumValue(m_assocType));
 
     staDevices.Add(wifi.Install(staPhyHelper2, mac, wifiStaNodes.Get(1)));
 
@@ -404,39 +401,39 @@ WifiMloUdpTest::CheckArpRequestHwAddresses(const ArpHeader& arp,
 {
     ++m_nArpRequest;
 
+    // source and destination HW addresses cannot be checked for forwarded frames because
+    // they can be forwarded on different links
+    if (auto srcMac =
+            (m_trafficPattern == WifiTrafficPattern::AP_TO_STA ? StaticCast<WifiMac>(m_apMac)
+                                                               : StaticCast<WifiMac>(m_staMacs[0]));
+        !srcMac->GetLinkIdByAddress(sender) && sender != srcMac->GetAddress())
+    {
+        // the sender address is not the MLD address nor a link address of the source device
+        return;
+    }
+
     Mac48Address expectedSrc;
-    Ptr<WifiMac> srcMac;
 
     switch (m_trafficPattern)
     {
     case WifiTrafficPattern::STA_TO_AP:
     case WifiTrafficPattern::STA_TO_STA:
         // if the ARP Request is sent by a STA, the source HW address is:
-        // - the unique STA address, if the STA is an SLD
-        // - the non-AP MLD address, if both the STA and the AP are MLDs
-        // - the address of the link used to associate, if STA is an MLD and AP is an SLD
-        expectedSrc = (m_staMacs[0]->GetNLinks() > 1 && m_apMac->GetNLinks() == 1)
+        // - the address of the link used to associate, if the STA performs legacy association or
+        //   the AP is an SLD
+        // - the non-AP MLD address (or the unique STA address), otherwise
+        expectedSrc = (m_assocType == WifiAssocType::LEGACY || m_apMac->GetNLinks() == 1)
                           ? m_staMacs[0]->GetFrameExchangeManager(linkId)->GetAddress()
                           : m_staMacs[0]->GetAddress();
-        srcMac = m_staMacs[0];
         break;
     case WifiTrafficPattern::AP_TO_STA:
         // if the ARP Request is sent by an AP, the source HW address is:
         // - the unique AP address, if the AP is an SLD
         // - the AP MLD address, if the AP is an MLD
         expectedSrc = m_apMac->GetAddress();
-        srcMac = m_apMac;
         break;
     default:
         NS_ABORT_MSG("Unsupported scenario " << +static_cast<uint8_t>(m_trafficPattern));
-    }
-
-    // source and destination HW addresses cannot be checked for forwarded frames because
-    // they can be forwarded on different links
-    if (!srcMac->GetLinkIdByAddress(sender) && sender != srcMac->GetAddress())
-    {
-        // the sender address in not the MLD address nor a link address of the source device
-        return;
     }
 
     ++m_nCheckedArpRequest;
@@ -454,50 +451,24 @@ WifiMloUdpTest::CheckArpReplyHwAddresses(const ArpHeader& arp, Mac48Address send
 {
     ++m_nArpReply;
 
-    Mac48Address expectedSrc;
-    Ptr<WifiMac> srcMac;
-
-    switch (m_trafficPattern)
-    {
-    case WifiTrafficPattern::STA_TO_AP:
-        // the source HW address of the ARP Reply sent by the AP is:
-        // - the unique AP address, if the AP is an SLD
-        // - the AP MLD address, if both the STA and the AP are MLDs
-        // - the address of the link used by STA to associate, if STA is an SLD and AP is an MLD
-        expectedSrc = (m_staMacs[0]->GetNLinks() == 1 && m_apMac->GetNLinks() > 1)
-                          ? m_apMac->GetFrameExchangeManager(linkId)->GetAddress()
-                          : m_apMac->GetAddress();
-        srcMac = m_apMac;
-        break;
-    case WifiTrafficPattern::AP_TO_STA:
-        // the source HW address of the ARP Reply sent by the STA is:
-        // - the unique STA address, if the STA is an SLD
-        // - the non-AP MLD address, if both the STA and the AP are MLDs
-        // - the address of the link used to associate, if STA is an MLD and AP is an SLD
-        expectedSrc = (m_staMacs[0]->GetNLinks() > 1 && m_apMac->GetNLinks() == 1)
-                          ? m_staMacs[0]->GetFrameExchangeManager(linkId)->GetAddress()
-                          : m_staMacs[0]->GetAddress();
-        srcMac = m_staMacs[0];
-        break;
-    case WifiTrafficPattern::STA_TO_STA:
-        // given that the source HW address of the ARP Request is unknown to STA 2, the source HW
-        // address of the ARP Reply sent by STA 2 is:
-        // - the unique STA 2 address, if STA 2 is an SLD
-        // - the non-AP MLD address, if STA 2 is an MLD
-        expectedSrc = m_staMacs[1]->GetAddress();
-        srcMac = m_staMacs[1];
-        break;
-    default:
-        NS_ABORT_MSG("Unsupported scenario " << +static_cast<uint8_t>(m_trafficPattern));
-    }
-
     // source and destination HW addresses cannot be checked for forwarded frames because
     // they can be forwarded on different links
+    auto srcMac =
+        (m_trafficPattern == WifiTrafficPattern::STA_TO_AP   ? StaticCast<WifiMac>(m_apMac)
+         : m_trafficPattern == WifiTrafficPattern::AP_TO_STA ? StaticCast<WifiMac>(m_staMacs[0])
+                                                             : StaticCast<WifiMac>(m_staMacs[1]));
+
     if (!srcMac->GetLinkIdByAddress(sender) && sender != srcMac->GetAddress())
     {
-        // the sender address in not the MLD address nor a link address of the source device
+        // the sender address is not the MLD address nor a link address of the source device
         return;
     }
+
+    // the source HW address of the ARP Reply is the address of the link on which the ARP Reply is
+    // sent, if the sender performed legacy association, or the MLD address, otherwise
+    Mac48Address expectedSrc = (m_assocType == WifiAssocType::LEGACY || m_apMac->GetNLinks() == 1)
+                                   ? srcMac->GetFrameExchangeManager(linkId)->GetAddress()
+                                   : srcMac->GetAddress();
 
     ++m_nCheckedArpReply;
 
@@ -556,14 +527,15 @@ WifiMloUdpTest::DoRun()
         break;
     case WifiTrafficPattern::AP_TO_STA:
         // ARP Request is broadcast, so it is sent by the AP on all of its links; the STA sends
-        // an ARP Reply for each received ARP Request
-        expectedNOrigArpReply = std::min(m_apMac->GetNLinks(), m_staMacs[0]->GetNLinks());
+        // an ARP Reply for each setup link
+        expectedNOrigArpReply =
+            std::min<std::size_t>(m_apMac->GetNLinks(), m_staMacs[0]->GetSetupLinkIds().size());
         expectedNFwdArpReply = 0;
         break;
     case WifiTrafficPattern::STA_TO_STA:
         // AP forwards ARP Request on all of its links; STA 2 sends as many ARP Replies as the
-        // number of received ARP Requests; each such ARP Reply is forwarded by the AP to STA 1
-        expectedNOrigArpReply = expectedNFwdArpReply = m_staMacs[1]->GetNLinks();
+        // number of setup links; each such ARP Reply is forwarded by the AP to STA 1
+        expectedNOrigArpReply = expectedNFwdArpReply = m_staMacs[1]->GetSetupLinkIds().size();
         break;
     default:
         NS_ABORT_MSG("Unsupported scenario " << +static_cast<uint8_t>(m_trafficPattern));
@@ -602,6 +574,11 @@ WifiMloUdpTestSuite::WifiMloUdpTestSuite()
               {{"{7, 80, BAND_6GHZ, 0}"},
                {"{42, 80, BAND_5GHZ, 2}", "{5, 40, BAND_2_4GHZ, 0}", "{7, 80, BAND_6GHZ, 0}"},
                {"{7, 80, BAND_6GHZ, 0}"}}},
+          // single link AP, non-AP MLD with 3 links, non-AP MLD with 2 links
+          ParamsTuple{
+              {{"{7, 80, BAND_6GHZ, 0}"},
+               {"{42, 80, BAND_5GHZ, 2}", "{5, 40, BAND_2_4GHZ, 0}", "{7, 80, BAND_6GHZ, 0}"},
+               {"{42, 80, BAND_5GHZ, 2}", "{7, 80, BAND_6GHZ, 0}"}}},
           // AP MLD with 3 links, single link non-AP STA, non-AP MLD with 2 links
           ParamsTuple{
               {{"{42, 80, BAND_5GHZ, 2}", "{5, 40, BAND_2_4GHZ, 0}", "{7, 80, BAND_6GHZ, 0}"},
@@ -619,12 +596,16 @@ WifiMloUdpTestSuite::WifiMloUdpTestSuite()
         {
             for (const auto amsduAggr : {false, true})
             {
-                AddTestCase(new WifiMloUdpTest(channels[0],
-                                               channels[1],
-                                               channels[2],
-                                               trafficPattern,
-                                               amsduAggr),
-                            TestCase::Duration::QUICK);
+                for (const auto assocType : {WifiAssocType::LEGACY, WifiAssocType::ML_SETUP})
+                {
+                    AddTestCase(new WifiMloUdpTest(channels[0],
+                                                   channels[1],
+                                                   channels[2],
+                                                   trafficPattern,
+                                                   assocType,
+                                                   amsduAggr),
+                                TestCase::Duration::QUICK);
+                }
             }
         }
     }
