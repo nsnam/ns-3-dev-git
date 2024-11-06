@@ -21,6 +21,7 @@ This file is a best-effort approach to solving this issue; we will do our best b
 * (internet) Added a new helper (P2pCacheHelper) to set up auto-generated ARP cache for P2P devices.
 * (wifi) Added a new attribute `Per20CcaSensitivityThreshold` to `EhtConfiguration` for tuning the Per 20MHz CCA threshold when 802.11be is used.
 * (internet) A new trace source `Ipv6L3Protocol::MulticastForward` has been added with the same meaning as for IPv4.
+* (wifi) Added a new `AssocType` attribute to `StaWifiMac` to configure the type of association performed by a device, provided that it is supported by the standard configured for the device. By using this attribute, it is possible for an EHT single-link device to perform ML setup with an AP MLD and for an EHT multi-link device to perform legacy association with an AP MLD.
 
 ### Changes to existing API
 
