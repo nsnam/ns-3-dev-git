@@ -1065,10 +1065,10 @@ EhtFrameExchangeManager::IsCrossLinkCollision(
 
 void
 EhtFrameExchangeManager::SendCtsAfterRts(const WifiMacHeader& rtsHdr,
-                                         WifiMode rtsTxMode,
+                                         const WifiTxVector& rtsTxVector,
                                          double rtsSnr)
 {
-    NS_LOG_FUNCTION(this << rtsHdr << rtsTxMode << rtsSnr);
+    NS_LOG_FUNCTION(this << rtsHdr << rtsTxVector << rtsSnr);
 
     auto addr2 = rtsHdr.GetAddr2();
 
@@ -1106,7 +1106,7 @@ EhtFrameExchangeManager::SendCtsAfterRts(const WifiMacHeader& rtsHdr,
         }
     }
 
-    HeFrameExchangeManager::SendCtsAfterRts(rtsHdr, rtsTxMode, rtsSnr);
+    HeFrameExchangeManager::SendCtsAfterRts(rtsHdr, rtsTxVector, rtsSnr);
 }
 
 bool

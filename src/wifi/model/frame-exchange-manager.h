@@ -595,10 +595,12 @@ class FrameExchangeManager : public Object
      * Send CTS after receiving RTS.
      *
      * @param rtsHdr the header of the received RTS
-     * @param rtsTxMode the TX mode used to transmit the RTS
+     * @param rtsTxVector the TXVECTOR used to transmit the RTS
      * @param rtsSnr the SNR of the RTS in linear scale
      */
-    virtual void SendCtsAfterRts(const WifiMacHeader& rtsHdr, WifiMode rtsTxMode, double rtsSnr);
+    virtual void SendCtsAfterRts(const WifiMacHeader& rtsHdr,
+                                 const WifiTxVector& rtsTxVector,
+                                 double rtsSnr);
 
     /**
      * Send CTS after receiving RTS.

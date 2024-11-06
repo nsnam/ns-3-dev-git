@@ -199,7 +199,9 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
                          const std::vector<bool>& perMpduStatus) override;
     void NavResetTimeout() override;
     void IntraBssNavResetTimeout() override;
-    void SendCtsAfterRts(const WifiMacHeader& rtsHdr, WifiMode rtsTxMode, double rtsSnr) override;
+    void SendCtsAfterRts(const WifiMacHeader& rtsHdr,
+                         const WifiTxVector& rtsTxVector,
+                         double rtsSnr) override;
     void PsduRxError(Ptr<const WifiPsdu> psdu) override;
     void ReceivedQosNullAfterBsrpTf(Mac48Address sender) override;
     void SendQosNullFramesInTbPpdu(const CtrlTriggerHeader& trigger,

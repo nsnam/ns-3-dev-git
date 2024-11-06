@@ -816,7 +816,7 @@ QosFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
                                                  &QosFrameExchangeManager::SendCtsAfterRts,
                                                  this,
                                                  hdr,
-                                                 txVector.GetMode(),
+                                                 txVector,
                                                  rxSnr);
         }
         else
