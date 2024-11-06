@@ -3756,7 +3756,7 @@ TestUlOfdmaPhyTransmission::SetBssColor(Ptr<WifiPhy> phy, uint8_t bssColor)
 {
     Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice>(phy->GetDevice());
     Ptr<HeConfiguration> heConfiguration = device->GetHeConfiguration();
-    heConfiguration->SetAttribute("BssColor", UintegerValue(bssColor));
+    heConfiguration->m_bssColor = bssColor;
 }
 
 void
@@ -5714,7 +5714,7 @@ TestUlOfdmaPowerControl::DoSetup()
                 TimeValue(MicroSeconds(1024 * 600)));
     m_apDev = DynamicCast<WifiNetDevice>(wifi.Install(spectrumPhy, mac, apNode).Get(0));
     NS_ASSERT(m_apDev);
-    m_apDev->GetHeConfiguration()->SetAttribute("BssColor", UintegerValue(m_bssColor));
+    m_apDev->GetHeConfiguration()->m_bssColor = m_bssColor;
     m_phyAp = DynamicCast<SpectrumWifiPhy>(m_apDev->GetPhy());
     NS_ASSERT(m_phyAp);
     // ReceiveOkCallback of AP will be set to corresponding test's method once BA sessions have been

@@ -160,10 +160,8 @@ WifiMacHelper::Create(Ptr<WifiNetDevice> device, WifiStandard standard) const
     }
 
     // create and install the AP EMLSR Manager if this is an EHT AP MLD with EMLSR activated
-    if (BooleanValue emlsrActivated;
-        standard >= WIFI_STANDARD_80211be && apMac && apMac->GetNLinks() > 1 &&
-        device->GetEhtConfiguration()->GetAttributeFailSafe("EmlsrActivated", emlsrActivated) &&
-        emlsrActivated.Get())
+    if (standard >= WIFI_STANDARD_80211be && apMac && apMac->GetNLinks() > 1 &&
+        device->GetEhtConfiguration()->m_emlsrActivated)
     {
         auto apEmlsrManager = m_apEmlsrManager.Create<ApEmlsrManager>();
         apMac->SetApEmlsrManager(apEmlsrManager);

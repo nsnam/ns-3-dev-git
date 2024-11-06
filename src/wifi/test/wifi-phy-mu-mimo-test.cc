@@ -1536,7 +1536,7 @@ TestUlMuMimoPhyTransmission::SetBssColor(Ptr<WifiPhy> phy, uint8_t bssColor)
 {
     Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice>(phy->GetDevice());
     Ptr<HeConfiguration> heConfiguration = device->GetHeConfiguration();
-    heConfiguration->SetAttribute("BssColor", UintegerValue(bssColor));
+    heConfiguration->m_bssColor = bssColor;
 }
 
 void
