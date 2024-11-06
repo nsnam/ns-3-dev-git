@@ -188,6 +188,9 @@ EmlsrManager::SetWifiMac(Ptr<StaWifiMac> mac)
                     "EmlsrManager requires EMLSR to be activated");
     NS_ABORT_MSG_IF(m_staMac->GetTypeOfStation() != STA,
                     "EmlsrManager can only be installed on non-AP MLDs");
+    NS_ABORT_MSG_IF(m_mainPhyId >= m_staMac->GetDevice()->GetNPhys(),
+                    "Main PHY ID (" << +m_mainPhyId << ") invalid given the number of PHY objects ("
+                                    << +m_staMac->GetDevice()->GetNPhys() << ")");
 
     m_staMac->TraceConnectWithoutContext("AckedMpdu", MakeCallback(&EmlsrManager::TxOk, this));
     m_staMac->TraceConnectWithoutContext("DroppedMpdu",
@@ -380,7 +383,6 @@ EmlsrManager::SetEmlsrLinks(const std::set<uint8_t>& linkIds)
         std::copy(linkIds.cbegin(), linkIds.cend(), std::ostream_iterator<uint16_t>(ss, " "));
     }
     NS_LOG_FUNCTION(this << ss.str());
-    NS_ABORT_MSG_IF(linkIds.size() == 1, "Cannot enable EMLSR mode on a single link");
 
     if (linkIds != m_emlsrLinks)
     {

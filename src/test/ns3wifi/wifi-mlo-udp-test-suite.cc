@@ -192,11 +192,22 @@ WifiMloUdpTest::DoSetup()
     SetChannels(apPhyHelper, m_apChannels, channelMap);
 
     WifiMacHelper mac;
-    mac.SetType("ns3::StaWifiMac", // default SSID
-                "ActiveProbing",
-                BooleanValue(false));
+    mac.SetType(
+        "ns3::StaWifiMac", // default SSID
+        "ActiveProbing",
+        BooleanValue(false),
+        "AssocType",
+        EnumValue(m_staChannels.size() > 1 ? WifiAssocType::ML_SETUP : WifiAssocType::LEGACY));
 
     NetDeviceContainer staDevices = wifi.Install(staPhyHelper1, mac, wifiStaNodes.Get(0));
+
+    mac.SetType(
+        "ns3::StaWifiMac", // default SSID
+        "ActiveProbing",
+        BooleanValue(false),
+        "AssocType",
+        EnumValue(m_2ndStaChannels.size() > 1 ? WifiAssocType::ML_SETUP : WifiAssocType::LEGACY));
+
     staDevices.Add(wifi.Install(staPhyHelper2, mac, wifiStaNodes.Get(1)));
 
     mac.SetType("ns3::ApWifiMac",

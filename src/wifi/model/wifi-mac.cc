@@ -1884,14 +1884,14 @@ WifiMac::GetLocalAddress(const Mac48Address& remoteAddr) const
             return m_address;
         }
     }
-    // we get here if no ML setup was established between this device and the remote device,
-    // i.e., they are not both multi-link devices
+    // we get here if no ML setup was established between this device and the remote device
     if (GetNLinks() == 1)
     {
         // this is a single link device
         return m_address;
     }
-    // this is an MLD (hence the remote device is single link or unknown)
+    // this is an MLD which performed legacy association with the remote device or the remote device
+    // is unknown
     return DoGetLocalAddress(remoteAddr);
 }
 
