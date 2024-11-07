@@ -668,11 +668,22 @@ EmlsrManager::NotifyProtectionCompleted(uint8_t linkId)
 
     if (m_auxPhyToSleep && m_staMac->IsEmlsrLink(linkId))
     {
+        // if main PHY is switching (or has been scheduled to switch) to this link to take over the
+        // UL TXOP, postpone aux PHY sleeping until after the main PHY has completed switching
+        Time delay{0};
         if (auto mainPhy = m_staMac->GetDevice()->GetPhy(m_mainPhyId); mainPhy->IsStateSwitching())
         {
-            // main PHY is switching to this link to take over the UL TXOP. Postpone aux PHY
-            // sleeping until after the main PHY has completed switching
-            Simulator::Schedule(mainPhy->GetDelayUntilIdle() + TimeStep(1),
+            delay = mainPhy->GetDelayUntilIdle();
+        }
+        else if (auto it = m_ulMainPhySwitch.find(linkId);
+                 it != m_ulMainPhySwitch.end() && it->second.IsPending())
+        {
+            delay = Simulator::GetDelayLeft(it->second) + mainPhy->GetChannelSwitchDelay();
+        }
+
+        if (delay.IsStrictlyPositive())
+        {
+            Simulator::Schedule(delay + TimeStep(1),
                                 &EmlsrManager::SetSleepStateForAllAuxPhys,
                                 this,
                                 true);
