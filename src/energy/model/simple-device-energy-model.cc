@@ -41,7 +41,7 @@ SimpleDeviceEnergyModel::GetTypeId()
 SimpleDeviceEnergyModel::SimpleDeviceEnergyModel()
 {
     NS_LOG_FUNCTION(this);
-    m_lastUpdateTime = Seconds(0.0);
+    m_lastUpdateTime = Seconds(0);
     m_actualCurrentA = 0.0;
     m_source = nullptr;
 }

@@ -62,7 +62,7 @@ main(int argc, char* argv[])
     clientHelper.SetAttribute("Remote", remoteAddress);
     clientApps.Add(clientHelper.Install(grid.GetNode(0, 0)));
 
-    clientApps.Start(Seconds(0.0));
+    clientApps.Start(Seconds(0));
     clientApps.Stop(Seconds(1.5));
 
     // Set the bounding box for animation

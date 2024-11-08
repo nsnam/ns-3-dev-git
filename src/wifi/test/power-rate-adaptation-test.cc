@@ -1136,7 +1136,7 @@ PowerRateAdaptationTest::TestRrpaa()
         "RRPAA: Incorrect vale of data rate");
     NS_TEST_ASSERT_MSG_EQ(power, 0, "RRPAA: Incorrect value of power level");
 
-    Simulator::Stop(Seconds(10.0));
+    Simulator::Stop(Seconds(10));
 
     Simulator::Run();
     Simulator::Destroy();

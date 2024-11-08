@@ -181,8 +181,8 @@ main(int argc, char* argv[])
     UdpEchoServerHelper echoServer(9);
 
     ApplicationContainer serverApps = echoServer.Install(nodes34.Get(1));
-    serverApps.Start(Seconds(1.0));
-    serverApps.Stop(Seconds(10.0));
+    serverApps.Start(Seconds(1));
+    serverApps.Stop(Seconds(10));
 
     // Set the destination address as 10.1.3.2
     UdpEchoClientHelper echoClient(interfaces34.GetAddress(1), 9);
@@ -191,8 +191,8 @@ main(int argc, char* argv[])
     echoClient.SetAttribute("PacketSize", UintegerValue(1024));
 
     ApplicationContainer clientApps = echoClient.Install(nodes12.Get(0));
-    clientApps.Start(Seconds(2.0));
-    clientApps.Stop(Seconds(10.0));
+    clientApps.Start(Seconds(2));
+    clientApps.Stop(Seconds(10));
 
     // Trace routing paths for different source and destinations.
     Ptr<OutputStreamWrapper> routingStream =

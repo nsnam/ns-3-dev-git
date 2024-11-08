@@ -36,7 +36,7 @@ BasicEnergyHarvester::GetTypeId()
             .AddAttribute("PeriodicHarvestedPowerUpdateInterval",
                           "Time between two consecutive periodic updates of the harvested power. "
                           "By default, the value is updated every 1 s",
-                          TimeValue(Seconds(1.0)),
+                          TimeValue(Seconds(1)),
                           MakeTimeAccessor(&BasicEnergyHarvester::SetHarvestedPowerUpdateInterval,
                                            &BasicEnergyHarvester::GetHarvestedPowerUpdateInterval),
                           MakeTimeChecker())

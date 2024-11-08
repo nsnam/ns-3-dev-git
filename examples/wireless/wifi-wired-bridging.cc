@@ -181,7 +181,7 @@ main(int argc, char* argv[])
     onoff.SetConstantRate(DataRate("500kb/s"));
     ApplicationContainer apps = onoff.Install(staNodes[0].Get(0));
     apps.Start(Seconds(0.5));
-    apps.Stop(Seconds(3.0));
+    apps.Stop(Seconds(3));
 
     wifiPhy.EnablePcap("wifi-wired-bridging", apDevices[0]);
     wifiPhy.EnablePcap("wifi-wired-bridging", apDevices[1]);
@@ -192,7 +192,7 @@ main(int argc, char* argv[])
         MobilityHelper::EnableAsciiAll(ascii.CreateFileStream("wifi-wired-bridging.mob"));
     }
 
-    Simulator::Stop(Seconds(5.0));
+    Simulator::Stop(Seconds(5));
     Simulator::Run();
     Simulator::Destroy();
 

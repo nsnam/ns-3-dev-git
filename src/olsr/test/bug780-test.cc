@@ -34,7 +34,7 @@ namespace olsr
 
 Bug780Test::Bug780Test()
     : TestCase("Test OLSR bug 780"),
-      m_time(Seconds(200.0)),
+      m_time(Seconds(200)),
       m_seq(0),
       m_recvCount(0)
 {
@@ -89,8 +89,8 @@ Bug780Test::CreateNodes()
     Ptr<SimpleNetDevice> nd2 = DynamicCast<SimpleNetDevice>(nd.Get(2));
     Ptr<SimpleChannel> ch = DynamicCast<SimpleChannel>(nd.Get(0)->GetChannel());
 
-    Simulator::Schedule(Seconds(100.0), &SimpleChannel::BlackList, ch, nd0, nd2);
-    Simulator::Schedule(Seconds(100.0), &SimpleChannel::BlackList, ch, nd2, nd0);
+    Simulator::Schedule(Seconds(100), &SimpleChannel::BlackList, ch, nd0, nd2);
+    Simulator::Schedule(Seconds(100), &SimpleChannel::BlackList, ch, nd2, nd0);
 
     // 3. Setup ping
     m_socket = Socket::CreateSocket(c.Get(0), TypeId::LookupByName("ns3::Ipv4RawSocketFactory"));

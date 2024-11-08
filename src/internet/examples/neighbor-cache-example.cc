@@ -458,7 +458,7 @@ NeighborCacheExample::Run()
             onoff.SetConstantRate(DataRate("10Gbps"));
             onoff.SetAttribute("EnableSeqTsSizeHeader", BooleanValue(true));
             ApplicationContainer apps = onoff.Install(csmaNodesLeft.Get(0));
-            apps.Start(Seconds(1.0));
+            apps.Start(Seconds(1));
 
             // Create a packet sink to receive these packets
             PacketSinkHelper sink("ns3::UdpSocketFactory",
@@ -538,7 +538,7 @@ NeighborCacheExample::Run()
             onoff.SetConstantRate(DataRate("10Gbps"));
             onoff.SetAttribute("EnableSeqTsSizeHeader", BooleanValue(true));
             ApplicationContainer apps = onoff.Install(csmaNodesLeft.Get(0));
-            apps.Start(Seconds(1.0));
+            apps.Start(Seconds(1));
 
             // Create a packet sink to receive these packets
             PacketSinkHelper sink("ns3::UdpSocketFactory",

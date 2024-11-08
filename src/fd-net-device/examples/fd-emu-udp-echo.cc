@@ -169,7 +169,7 @@ main(int argc, char* argv[])
         NS_LOG_INFO("Create Applications.");
         UdpEchoServerHelper server(9);
         apps = server.Install(n.Get(0));
-        apps.Start(Seconds(1.0));
+        apps.Start(Seconds(1));
         apps.Stop(Seconds(stopTime));
     }
     else if (clientMode)
@@ -185,7 +185,7 @@ main(int argc, char* argv[])
         client.SetAttribute("Interval", TimeValue(interPacketInterval));
         client.SetAttribute("PacketSize", UintegerValue(packetSize));
         apps = client.Install(n.Get(0));
-        apps.Start(Seconds(2.0));
+        apps.Start(Seconds(2));
         apps.Stop(Seconds(stopTime));
     }
     else
@@ -196,7 +196,7 @@ main(int argc, char* argv[])
         NS_LOG_INFO("Create Applications.");
         UdpEchoServerHelper server(9);
         apps = server.Install(n.Get(1));
-        apps.Start(Seconds(1.0));
+        apps.Start(Seconds(1));
         apps.Stop(Seconds(stopTime));
 
         //
@@ -210,7 +210,7 @@ main(int argc, char* argv[])
         client.SetAttribute("Interval", TimeValue(interPacketInterval));
         client.SetAttribute("PacketSize", UintegerValue(packetSize));
         apps = client.Install(n.Get(0));
-        apps.Start(Seconds(2.0));
+        apps.Start(Seconds(2));
         apps.Stop(Seconds(stopTime));
     }
 

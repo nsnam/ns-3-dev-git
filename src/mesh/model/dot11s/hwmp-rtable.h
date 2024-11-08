@@ -54,7 +54,7 @@ class HwmpRtable : public Object
                      uint32_t i = INTERFACE_ANY,
                      uint32_t m = MAX_METRIC,
                      uint32_t s = 0,
-                     Time l = Seconds(0.0));
+                     Time l = Seconds(0));
         /**
          * \returns True for valid route
          */

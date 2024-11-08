@@ -298,7 +298,7 @@ LteUplinkDataSinrTestCase::DoRun()
     ip4->cellId = pbCellId[5];
     Simulator::Schedule(ti4, &LteSpectrumPhy::StartRx, ulPhy, ip4);
 
-    Simulator::Stop(Seconds(5.0));
+    Simulator::Stop(Seconds(5));
     Simulator::Run();
 
     NS_LOG_INFO("Data Frame - Theoretical SINR: " << *m_expectedSinr);
@@ -474,7 +474,7 @@ LteUplinkSrsSinrTestCase::DoRun()
     ip4->cellId = pbCellId[5];
     Simulator::Schedule(ti4, &LteSpectrumPhy::StartRx, ulPhy, ip4);
 
-    Simulator::Stop(Seconds(5.0));
+    Simulator::Stop(Seconds(5));
     Simulator::Run();
 
     NS_ASSERT_MSG(m_actualSinr, "no actual SINR reported");

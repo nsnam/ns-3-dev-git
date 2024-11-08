@@ -86,7 +86,7 @@ TcpLedbatToNewReno::TcpLedbatToNewReno(uint32_t cWnd,
 void
 TcpLedbatToNewReno::DoRun()
 {
-    Simulator::Schedule(Seconds(0.0), &TcpLedbatToNewReno::ExecuteTest, this);
+    Simulator::Schedule(Seconds(0), &TcpLedbatToNewReno::ExecuteTest, this);
     Simulator::Run();
     Simulator::Destroy();
 }
@@ -187,7 +187,7 @@ TcpLedbatIncrementTest::TcpLedbatIncrementTest(uint32_t cWnd,
 void
 TcpLedbatIncrementTest::DoRun()
 {
-    Simulator::Schedule(Seconds(0.0), &TcpLedbatIncrementTest::ExecuteTest, this);
+    Simulator::Schedule(Seconds(0), &TcpLedbatIncrementTest::ExecuteTest, this);
     Simulator::Run();
     Simulator::Destroy();
 }
@@ -289,7 +289,7 @@ TcpLedbatDecrementTest::TcpLedbatDecrementTest(uint32_t cWnd,
 void
 TcpLedbatDecrementTest::DoRun()
 {
-    Simulator::Schedule(Seconds(0.0), &TcpLedbatDecrementTest::ExecuteTest, this);
+    Simulator::Schedule(Seconds(0), &TcpLedbatDecrementTest::ExecuteTest, this);
     Simulator::Run();
     Simulator::Destroy();
 }

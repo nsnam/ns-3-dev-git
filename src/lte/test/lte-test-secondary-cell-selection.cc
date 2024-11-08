@@ -142,7 +142,7 @@ LteSecondaryCellSelectionTestCase::DoRun()
         MakeCallback(&LteSecondaryCellSelectionTestCase::ConnectionEstablishedCallback, this));
 
     // Run simulation.
-    Simulator::Stop(Seconds(2.0));
+    Simulator::Stop(Seconds(2));
     Simulator::Run();
 
     for (auto& it : enbDev->GetCcMap())

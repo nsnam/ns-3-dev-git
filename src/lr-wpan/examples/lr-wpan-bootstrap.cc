@@ -442,7 +442,7 @@ main(int argc, char* argv[])
     params.m_logCh = 12;
 
     Simulator::ScheduleWithContext(coor1Device->GetNode()->GetId(),
-                                   Seconds(2.0),
+                                   Seconds(2),
                                    &LrWpanMac::MlmeStartRequest,
                                    coor1Device->GetMac(),
                                    params);
@@ -456,7 +456,7 @@ main(int argc, char* argv[])
     params2.m_logCh = 14;
 
     Simulator::ScheduleWithContext(coor2Device->GetNode()->GetId(),
-                                   Seconds(2.0),
+                                   Seconds(2),
                                    &LrWpanMac::MlmeStartRequest,
                                    coor2Device->GetMac(),
                                    params2);

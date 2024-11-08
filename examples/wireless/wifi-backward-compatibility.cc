@@ -196,13 +196,13 @@ main(int argc, char* argv[])
 
     UdpServerHelper apServer(9);
     ApplicationContainer apServerApp = apServer.Install(wifiApNode.Get(0));
-    apServerApp.Start(Seconds(0.0));
-    apServerApp.Stop(simulationTime + Seconds(1.0));
+    apServerApp.Start(Seconds(0));
+    apServerApp.Stop(simulationTime + Seconds(1));
 
     UdpServerHelper staServer(5001);
     ApplicationContainer staServerApp = staServer.Install(wifiStaNode.Get(0));
-    staServerApp.Start(Seconds(0.0));
-    staServerApp.Stop(simulationTime + Seconds(1.0));
+    staServerApp.Start(Seconds(0));
+    staServerApp.Stop(simulationTime + Seconds(1));
 
     if (apHasTraffic)
     {
@@ -211,8 +211,8 @@ main(int argc, char* argv[])
         apClient.SetAttribute("Interval", TimeValue(Time("0.00001")));   // packets/s
         apClient.SetAttribute("PacketSize", UintegerValue(payloadSize)); // bytes
         ApplicationContainer apClientApp = apClient.Install(wifiApNode.Get(0));
-        apClientApp.Start(Seconds(1.0));
-        apClientApp.Stop(simulationTime + Seconds(1.0));
+        apClientApp.Start(Seconds(1));
+        apClientApp.Stop(simulationTime + Seconds(1));
     }
 
     if (staHasTraffic)
@@ -222,13 +222,13 @@ main(int argc, char* argv[])
         staClient.SetAttribute("Interval", TimeValue(Time("0.00001")));   // packets/s
         staClient.SetAttribute("PacketSize", UintegerValue(payloadSize)); // bytes
         ApplicationContainer staClientApp = staClient.Install(wifiStaNode.Get(0));
-        staClientApp.Start(Seconds(1.0));
-        staClientApp.Stop(simulationTime + Seconds(1.0));
+        staClientApp.Start(Seconds(1));
+        staClientApp.Stop(simulationTime + Seconds(1));
     }
 
     Ipv4GlobalRoutingHelper::PopulateRoutingTables();
 
-    Simulator::Stop(simulationTime + Seconds(1.0));
+    Simulator::Stop(simulationTime + Seconds(1));
     Simulator::Run();
 
     double rxBytes;

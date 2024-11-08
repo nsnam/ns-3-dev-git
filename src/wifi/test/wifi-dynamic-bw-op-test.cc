@@ -154,8 +154,8 @@ WifiUseAvailBwTest::Transmit(uint8_t bss,
         client->SetAttribute("Interval", TimeValue(MicroSeconds(0)));
         client->SetRemote(m_sockets[0]);
         m_apDevices.Get(0)->GetNode()->AddApplication(client);
-        client->SetStartTime(Seconds(0));  // start now
-        client->SetStopTime(Seconds(1.0)); // stop in a second
+        client->SetStartTime(Seconds(0)); // start now
+        client->SetStopTime(Seconds(1));  // stop in a second
         client->Initialize();
 
         // after 1us (to allow for propagation delay), the largest idle primary
@@ -266,7 +266,7 @@ WifiUseAvailBwTest::DoRun()
         client1->SetRemote(m_sockets[bss]);
         wifiApNodes.Get(bss)->AddApplication(client1);
         client1->SetStartTime(Seconds(0.5) + bss * MilliSeconds(500));
-        client1->SetStopTime(Seconds(2.0));
+        client1->SetStopTime(Seconds(2));
 
         // At time 1.5, start a transmission in BSS 1
         if (bss == 1)
@@ -278,14 +278,14 @@ WifiUseAvailBwTest::DoRun()
             client2->SetRemote(m_sockets[bss]);
             wifiApNodes.Get(bss)->AddApplication(client2);
             client2->SetStartTime(Seconds(1.5));
-            client2->SetStopTime(Seconds(2.0));
+            client2->SetStopTime(Seconds(2));
         }
 
         Ptr<PacketSocketServer> server = CreateObject<PacketSocketServer>();
         server->SetLocal(m_sockets[bss]);
         wifiStaNodes.Get(bss)->AddApplication(server);
-        server->SetStartTime(Seconds(0.0));
-        server->SetStopTime(Seconds(2.0));
+        server->SetStartTime(Seconds(0));
+        server->SetStopTime(Seconds(2));
 
         // Trace received packets on non-AP STAs
         Config::ConnectWithoutContext("/NodeList/" + std::to_string(2 + bss) +

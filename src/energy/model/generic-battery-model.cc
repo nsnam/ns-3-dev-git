@@ -88,7 +88,7 @@ GenericBatteryModel::GetTypeId()
                           MakeDoubleChecker<double>())
             .AddAttribute("PeriodicEnergyUpdateInterval",
                           "Time between two consecutive periodic energy updates.",
-                          TimeValue(Seconds(1.0)),
+                          TimeValue(Seconds(1)),
                           MakeTimeAccessor(&GenericBatteryModel::SetEnergyUpdateInterval,
                                            &GenericBatteryModel::GetEnergyUpdateInterval),
                           MakeTimeChecker())

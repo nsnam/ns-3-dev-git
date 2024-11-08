@@ -80,11 +80,11 @@ main(int argc, char* argv[])
     mob1->TraceConnectWithoutContext("CourseChange", MakeBoundCallback(&CourseChangeCallback));
 
     // Schedule movements to node n1
-    Simulator::ScheduleWithContext(n1->GetId(), Seconds(2.0), &MoveNode, n1, Vector(10, 0, 0));
+    Simulator::ScheduleWithContext(n1->GetId(), Seconds(2), &MoveNode, n1, Vector(10, 0, 0));
 
-    Simulator::ScheduleWithContext(n1->GetId(), Seconds(4.0), &MoveNode, n1, Vector(20, 0, 0));
+    Simulator::ScheduleWithContext(n1->GetId(), Seconds(4), &MoveNode, n1, Vector(20, 0, 0));
 
-    Simulator::ScheduleWithContext(n1->GetId(), Seconds(6.0), &MoveNode, n1, Vector(30, 0, 0));
+    Simulator::ScheduleWithContext(n1->GetId(), Seconds(6), &MoveNode, n1, Vector(30, 0, 0));
 
     Simulator::Stop(Seconds(10));
     Simulator::Run();

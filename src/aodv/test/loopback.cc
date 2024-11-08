@@ -107,7 +107,7 @@ LoopbackTestCase::SendData(Ptr<Socket> socket)
     socket->SendTo(Create<Packet>(123), 0, realTo);
 
     Simulator::ScheduleWithContext(socket->GetNode()->GetId(),
-                                   Seconds(1.0),
+                                   Seconds(1),
                                    &LoopbackTestCase::SendData,
                                    this,
                                    socket);
@@ -158,7 +158,7 @@ LoopbackTestCase::DoRun()
     m_txSocket = socketFactory->CreateSocket();
 
     Simulator::ScheduleWithContext(m_txSocket->GetNode()->GetId(),
-                                   Seconds(1.0),
+                                   Seconds(1),
                                    &LoopbackTestCase::SendData,
                                    this,
                                    m_txSocket);

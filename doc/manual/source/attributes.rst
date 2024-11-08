@@ -893,7 +893,7 @@ in the ``my-mobility.cc`` implementation file::
         .AddAttribute("Time",
                       "Change current direction and speed after moving for this delay.",
                       // etc (more parameters).
-                      TimeValue(Seconds(1.0)),
+                      TimeValue(Seconds(1)),
                       MakeTimeAccessor(&MyMobility::m_modeTime),
                       MakeTimeChecker())
         ;

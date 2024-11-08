@@ -150,12 +150,12 @@ main(int argc, char* argv[])
 
     ApplicationContainer staApps = onOff.Install(sta);
 
-    staApps.Start(Seconds(1.0));
-    staApps.Stop(Seconds(10.0));
+    staApps.Start(Seconds(1));
+    staApps.Stop(Seconds(10));
 
     Ipv4GlobalRoutingHelper::PopulateRoutingTables();
 
-    Simulator::Stop(Seconds(10.0));
+    Simulator::Stop(Seconds(10));
 
     phy.EnablePcap("test-blockack", ap->GetId(), 0);
     Simulator::Run();

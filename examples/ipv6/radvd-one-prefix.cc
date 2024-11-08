@@ -114,8 +114,8 @@ main(int argc, char** argv)
     radvdHelper.GetRadvdInterface(iic2.GetInterfaceIndex(1))->SetSendAdvert(false);
 
     ApplicationContainer radvdApps = radvdHelper.Install(r);
-    radvdApps.Start(Seconds(1.0));
-    radvdApps.Stop(Seconds(10.0));
+    radvdApps.Start(Seconds(1));
+    radvdApps.Stop(Seconds(10));
 
     /* Create a Ping application to send ICMPv6 echo request from n0 to n1 via R */
     uint32_t packetSize = 1024;
@@ -126,8 +126,8 @@ main(int argc, char** argv)
     ping.SetAttribute("Count", UintegerValue(maxPacketCount));
     ping.SetAttribute("Size", UintegerValue(packetSize));
     ApplicationContainer apps = ping.Install(net1.Get(0));
-    apps.Start(Seconds(2.0));
-    apps.Stop(Seconds(7.0));
+    apps.Start(Seconds(2));
+    apps.Stop(Seconds(7));
 
     AsciiTraceHelper ascii;
     csma.EnableAsciiAll(ascii.CreateFileStream("radvd.tr"));

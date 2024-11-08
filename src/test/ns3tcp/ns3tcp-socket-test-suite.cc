@@ -112,7 +112,7 @@ Ns3TcpSocketTestCaseP2P::DoRun()
                           InetSocketAddress(Ipv4Address::GetAny(), sinkPort));
     ApplicationContainer apps = sink.Install(n1);
     // Start the sink application at time zero, and stop it at sinkStopTime
-    apps.Start(Seconds(0.0));
+    apps.Start(Seconds(0));
     apps.Stop(sinkStopTimeObj);
 
     Config::Connect("/NodeList/*/ApplicationList/*/$ns3::PacketSink/Rx",
@@ -241,7 +241,7 @@ Ns3TcpSocketTestCaseCsma::DoRun()
                           InetSocketAddress(Ipv4Address::GetAny(), sinkPort));
     ApplicationContainer apps = sink.Install(n1);
     // Start the sink application at time zero, and stop it at sinkStopTime
-    apps.Start(Seconds(0.0));
+    apps.Start(Seconds(0));
     apps.Stop(sinkStopTimeObj);
 
     Config::Connect("/NodeList/*/ApplicationList/*/$ns3::PacketSink/Rx",

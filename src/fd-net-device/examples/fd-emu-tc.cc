@@ -299,7 +299,7 @@ main(int argc, char* argv[])
     }
 
     NS_LOG_INFO("Run Emulation.");
-    Simulator::Stop(Seconds(50.0));
+    Simulator::Stop(Seconds(50));
     Simulator::Run();
     Simulator::Destroy();
     delete helper0;

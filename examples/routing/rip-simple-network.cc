@@ -204,25 +204,25 @@ main(int argc, char** argv)
     {
         Ptr<OutputStreamWrapper> routingStream = Create<OutputStreamWrapper>(&std::cout);
 
-        Ipv4RoutingHelper::PrintRoutingTableAt(Seconds(30.0), a, routingStream);
-        Ipv4RoutingHelper::PrintRoutingTableAt(Seconds(30.0), b, routingStream);
-        Ipv4RoutingHelper::PrintRoutingTableAt(Seconds(30.0), c, routingStream);
-        Ipv4RoutingHelper::PrintRoutingTableAt(Seconds(30.0), d, routingStream);
+        Ipv4RoutingHelper::PrintRoutingTableAt(Seconds(30), a, routingStream);
+        Ipv4RoutingHelper::PrintRoutingTableAt(Seconds(30), b, routingStream);
+        Ipv4RoutingHelper::PrintRoutingTableAt(Seconds(30), c, routingStream);
+        Ipv4RoutingHelper::PrintRoutingTableAt(Seconds(30), d, routingStream);
 
-        Ipv4RoutingHelper::PrintRoutingTableAt(Seconds(60.0), a, routingStream);
-        Ipv4RoutingHelper::PrintRoutingTableAt(Seconds(60.0), b, routingStream);
-        Ipv4RoutingHelper::PrintRoutingTableAt(Seconds(60.0), c, routingStream);
-        Ipv4RoutingHelper::PrintRoutingTableAt(Seconds(60.0), d, routingStream);
+        Ipv4RoutingHelper::PrintRoutingTableAt(Seconds(60), a, routingStream);
+        Ipv4RoutingHelper::PrintRoutingTableAt(Seconds(60), b, routingStream);
+        Ipv4RoutingHelper::PrintRoutingTableAt(Seconds(60), c, routingStream);
+        Ipv4RoutingHelper::PrintRoutingTableAt(Seconds(60), d, routingStream);
 
-        Ipv4RoutingHelper::PrintRoutingTableAt(Seconds(90.0), a, routingStream);
-        Ipv4RoutingHelper::PrintRoutingTableAt(Seconds(90.0), b, routingStream);
-        Ipv4RoutingHelper::PrintRoutingTableAt(Seconds(90.0), c, routingStream);
-        Ipv4RoutingHelper::PrintRoutingTableAt(Seconds(90.0), d, routingStream);
+        Ipv4RoutingHelper::PrintRoutingTableAt(Seconds(90), a, routingStream);
+        Ipv4RoutingHelper::PrintRoutingTableAt(Seconds(90), b, routingStream);
+        Ipv4RoutingHelper::PrintRoutingTableAt(Seconds(90), c, routingStream);
+        Ipv4RoutingHelper::PrintRoutingTableAt(Seconds(90), d, routingStream);
     }
 
     NS_LOG_INFO("Create Applications.");
     uint32_t packetSize = 1024;
-    Time interPacketInterval = Seconds(1.0);
+    Time interPacketInterval = Seconds(1);
     PingHelper ping(Ipv4Address("10.0.6.2"));
 
     ping.SetAttribute("Interval", TimeValue(interPacketInterval));
@@ -232,8 +232,8 @@ main(int argc, char** argv)
         ping.SetAttribute("VerboseMode", EnumValue(Ping::VerboseMode::VERBOSE));
     }
     ApplicationContainer apps = ping.Install(src);
-    apps.Start(Seconds(1.0));
-    apps.Stop(Seconds(110.0));
+    apps.Start(Seconds(1));
+    apps.Stop(Seconds(110));
 
     AsciiTraceHelper ascii;
     csma.EnableAsciiAll(ascii.CreateFileStream("rip-simple-routing.tr"));
@@ -243,7 +243,7 @@ main(int argc, char** argv)
 
     /* Now, do the actual simulation. */
     NS_LOG_INFO("Run Simulation.");
-    Simulator::Stop(Seconds(131.0));
+    Simulator::Stop(Seconds(131));
     Simulator::Run();
     Simulator::Destroy();
     NS_LOG_INFO("Done.");

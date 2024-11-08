@@ -124,8 +124,8 @@ Using the helper functions defined in ``src/applications/helper`` and
   Address sinkLocalAddress(InetSocketAddress(Ipv4Address::GetAny(), port));
   PacketSinkHelper sinkHelper("ns3::TcpSocketFactory", sinkLocalAddress);
   ApplicationContainer sinkApp = sinkHelper.Install(serverNode);
-  sinkApp.Start(Seconds(1.0));
-  sinkApp.Stop(Seconds(10.0));
+  sinkApp.Start(Seconds(1));
+  sinkApp.Stop(Seconds(10));
 
 Similarly, the below snippet configures OnOffApplication traffic source to use
 TCP::
@@ -1855,7 +1855,7 @@ the method ConfigureEnvironment:
       TcpGeneralTest::ConfigureEnvironment();
       SetAppPktCount(20);
       SetMTU(500);
-      SetTransmitStart(Seconds(2.0));
+      SetTransmitStart(Seconds(2));
       SetPropagationDelay(MilliSeconds(50));
   }
 
@@ -1901,7 +1901,7 @@ following code):
        Ptr<TcpSocketMsgBase> socket = TcpGeneralTest::CreateReceiverSocket(node);
 
        socket->SetAttribute("RcvBufSize", UintegerValue(0));
-       Simulator::Schedule(Seconds(10.0),
+       Simulator::Schedule(Seconds(10),
                          &TcpZeroWindowTest::IncreaseBufSize, this);
 
        return socket;

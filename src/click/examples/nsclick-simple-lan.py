@@ -51,8 +51,8 @@ ipv4.Assign(csmaDevices)
 LocalAddress = ns.InetSocketAddress(ns.Ipv4Address.GetAny(), 50000).ConvertTo()
 packetSinkHelper = ns.PacketSinkHelper("ns3::TcpSocketFactory", LocalAddress)
 recvapp = packetSinkHelper.Install(csmaNodes.Get(1))
-recvapp.Start(ns.Seconds(5.0))
-recvapp.Stop(ns.Seconds(10.0))
+recvapp.Start(ns.Seconds(5))
+recvapp.Stop(ns.Seconds(10))
 
 onOffHelper = ns.OnOffHelper("ns3::TcpSocketFactory", ns.Address())
 onOffHelper.SetAttribute("OnTime", ns.StringValue("ns3::ConstantRandomVariable[Constant=1]"))
@@ -64,13 +64,13 @@ remoteAddress = ns.InetSocketAddress(ns.Ipv4Address("172.16.1.2"), 50000).Conver
 onOffHelper.SetAttribute("Remote", ns.AddressValue(remoteAddress))
 appcont.Add(onOffHelper.Install(csmaNodes.Get(0)))
 
-appcont.Start(ns.Seconds(5.0))
-appcont.Stop(ns.Seconds(10.0))
+appcont.Start(ns.Seconds(5))
+appcont.Stop(ns.Seconds(10))
 
 # For tracing
 csma.EnablePcap("nsclick-simple-lan", csmaDevices, False)
 
-ns.Simulator.Stop(ns.Seconds(20.0))
+ns.Simulator.Stop(ns.Seconds(20))
 ns.Simulator.Run()
 
 ns.Simulator.Destroy()

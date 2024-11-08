@@ -78,7 +78,7 @@ TcpRttEstimationTest::ConfigureEnvironment()
     TcpGeneralTest::ConfigureEnvironment();
     SetAppPktCount(m_pktCount);
     SetPropagationDelay(MilliSeconds(50));
-    SetTransmitStart(Seconds(2.0));
+    SetTransmitStart(Seconds(2));
     SetMTU(500);
 }
 

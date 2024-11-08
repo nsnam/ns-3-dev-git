@@ -168,11 +168,11 @@ TimeSimpleTestCase::DoRun()
                               10.0,
                               Minutes(1).GetMinutes(),
                               "is 10 really 10 ?");
-    NS_TEST_ASSERT_MSG_EQ_TOL(Seconds(1.0).GetSeconds(),
+    NS_TEST_ASSERT_MSG_EQ_TOL(Seconds(1).GetSeconds(),
                               1.0,
                               TimeStep(1).GetSeconds(),
                               "is 1 really 1 ?");
-    NS_TEST_ASSERT_MSG_EQ_TOL(Seconds(10.0).GetSeconds(),
+    NS_TEST_ASSERT_MSG_EQ_TOL(Seconds(10).GetSeconds(),
                               10.0,
                               TimeStep(1).GetSeconds(),
                               "is 10 really 10 ?");

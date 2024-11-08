@@ -45,7 +45,7 @@ RandomWalk2dOutdoorMobilityModel::GetTypeId()
                           MakeRectangleChecker())
             .AddAttribute("Time",
                           "Change current direction and speed after moving for this delay.",
-                          TimeValue(Seconds(20.0)),
+                          TimeValue(Seconds(20)),
                           MakeTimeAccessor(&RandomWalk2dOutdoorMobilityModel::m_modeTime),
                           MakeTimeChecker())
             .AddAttribute("Distance",

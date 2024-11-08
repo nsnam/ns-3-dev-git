@@ -203,7 +203,7 @@ main(int argc, char** argv)
 
     Ptr<Socket> recvSink = SetupPacketReceive(c.Get(1));
 
-    Simulator::Stop(Seconds(10.0));
+    Simulator::Stop(Seconds(10));
 
     Config::Connect("/NodeList/*/DeviceList/*/Phy/TxStart", MakeCallback(&PhyTxStartTrace));
     Config::Connect("/NodeList/*/DeviceList/*/Phy/TxEnd", MakeCallback(&PhyTxEndTrace));

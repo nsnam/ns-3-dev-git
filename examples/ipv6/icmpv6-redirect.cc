@@ -103,8 +103,8 @@ main(int argc, char** argv)
                             iic1.GetInterfaceIndex(1));
 
     Ptr<OutputStreamWrapper> routingStream = Create<OutputStreamWrapper>(&std::cout);
-    Ipv6RoutingHelper::PrintRoutingTableAt(Seconds(0.0), r1, routingStream);
-    Ipv6RoutingHelper::PrintRoutingTableAt(Seconds(3.0), sta1, routingStream);
+    Ipv6RoutingHelper::PrintRoutingTableAt(Seconds(0), r1, routingStream);
+    Ipv6RoutingHelper::PrintRoutingTableAt(Seconds(3), sta1, routingStream);
 
     NS_LOG_INFO("Create Applications.");
     uint32_t packetSize = 1024;
@@ -114,8 +114,8 @@ main(int argc, char** argv)
     ping.SetAttribute("Count", UintegerValue(maxPacketCount));
     ping.SetAttribute("Size", UintegerValue(packetSize));
     ApplicationContainer apps = ping.Install(sta1);
-    apps.Start(Seconds(2.0));
-    apps.Stop(Seconds(10.0));
+    apps.Start(Seconds(2));
+    apps.Stop(Seconds(10));
 
     AsciiTraceHelper ascii;
     csma.EnableAsciiAll(ascii.CreateFileStream("icmpv6-redirect.tr"));

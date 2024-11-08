@@ -720,7 +720,7 @@ TapBridge::ReadCallback(uint8_t* buf, ssize_t len)
     NS_LOG_INFO("TapBridge::ReadCallback(): Received packet on node " << m_nodeId);
     NS_LOG_INFO("TapBridge::ReadCallback(): Scheduling handler");
     Simulator::ScheduleWithContext(m_nodeId,
-                                   Seconds(0.0),
+                                   Seconds(0),
                                    MakeEvent(&TapBridge::ForwardToBridgedDevice, this, buf, len));
 }
 

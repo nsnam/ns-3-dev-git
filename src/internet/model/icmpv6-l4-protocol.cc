@@ -1879,7 +1879,7 @@ Icmpv6L4Protocol::FunctionDadTimeout(Ipv6Interface* interface, Ipv6Address addr)
              */
             NS_LOG_LOGIC("Scheduled a first Router Solicitation");
             m_rsRetransmissionCount = 0;
-            Simulator::Schedule(Seconds(0.0),
+            Simulator::Schedule(Seconds(0),
                                 &Icmpv6L4Protocol::SendRS,
                                 this,
                                 ifaddr.GetAddress(),

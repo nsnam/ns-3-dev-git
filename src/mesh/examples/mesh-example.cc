@@ -291,7 +291,7 @@ MeshTest::InstallApplication()
     UdpEchoServerHelper echoServer(portNumber);
     uint16_t sinkNodeId = m_xSize * m_ySize - 1;
     ApplicationContainer serverApps = echoServer.Install(nodes.Get(sinkNodeId));
-    serverApps.Start(Seconds(1.0));
+    serverApps.Start(Seconds(1));
     serverApps.Stop(Seconds(m_totalTime + 1));
     UdpEchoClientHelper echoClient(interfaces.GetAddress(sinkNodeId), portNumber);
     echoClient.SetAttribute("MaxPackets",
@@ -302,7 +302,7 @@ MeshTest::InstallApplication()
     Ptr<UdpEchoClient> app = clientApps.Get(0)->GetObject<UdpEchoClient>();
     app->TraceConnectWithoutContext("Tx", MakeCallback(&TxTrace));
     app->TraceConnectWithoutContext("Rx", MakeCallback(&RxTrace));
-    clientApps.Start(Seconds(1.0));
+    clientApps.Start(Seconds(1));
     clientApps.Stop(Seconds(m_totalTime + 1.5));
 }
 

@@ -237,7 +237,7 @@ TcpGeneralTest::DoRun()
     m_receiverSocket->Listen();
     m_receiverSocket->ShutdownSend();
 
-    Simulator::Schedule(Seconds(0.0), &TcpGeneralTest::DoConnect, this);
+    Simulator::Schedule(Seconds(0), &TcpGeneralTest::DoConnect, this);
     Simulator::ScheduleWithContext(nodes.Get(0)->GetId(),
                                    m_startTime,
                                    &TcpGeneralTest::SendPacket,

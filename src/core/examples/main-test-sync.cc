@@ -87,7 +87,7 @@ FakeNetDevice::Doit3()
         // Exercise the realtime relative now path
         //
         Simulator::ScheduleWithContext(Simulator::NO_CONTEXT,
-                                       Seconds(0.0),
+                                       Seconds(0),
                                        MakeEvent(&inserted_function));
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
@@ -112,7 +112,7 @@ test()
     //
     // Make sure ScheduleNow works when the system isn't running
     //
-    Simulator::ScheduleWithContext(0xffffffff, Seconds(0.0), MakeEvent(&first_function));
+    Simulator::ScheduleWithContext(0xffffffff, Seconds(0), MakeEvent(&first_function));
 
     //
     // drive the progression of m_currentTs at a ten millisecond rate from the main thread
@@ -124,7 +124,7 @@ test()
 
     std::thread st3 = std::thread(&FakeNetDevice::Doit3, &fnd);
 
-    Simulator::Stop(Seconds(15.0));
+    Simulator::Stop(Seconds(15));
     Simulator::Run();
 
     if (st3.joinable())

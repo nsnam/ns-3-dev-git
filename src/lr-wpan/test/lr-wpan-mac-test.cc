@@ -263,7 +263,7 @@ TestRxOffWhenIdleAfterCsmaFailure::DoRun()
     params.m_dstAddr = Mac16Address("00:02");
 
     Simulator::ScheduleWithContext(2,
-                                   Seconds(0.0),
+                                   Seconds(0),
                                    &LrWpanMac::McpsDataRequest,
                                    dev2->GetMac(),
                                    params,
@@ -437,7 +437,7 @@ TestActiveScanPanDescriptors::DoRun()
     params.m_sfrmOrd = 15;
     params.m_logCh = 12;
     Simulator::ScheduleWithContext(1,
-                                   Seconds(2.0),
+                                   Seconds(2),
                                    &LrWpanMac::MlmeStartRequest,
                                    coord1NetDevice->GetMac(),
                                    params);
@@ -460,7 +460,7 @@ TestActiveScanPanDescriptors::DoRun()
     params2.m_sfrmOrd = 15;
     params2.m_logCh = 14;
     Simulator::ScheduleWithContext(2,
-                                   Seconds(2.0),
+                                   Seconds(2),
                                    &LrWpanMac::MlmeStartRequest,
                                    coord2NetDevice->GetMac(),
                                    params2);
@@ -477,7 +477,7 @@ TestActiveScanPanDescriptors::DoRun()
     scanParams.m_scanDuration = 14;
     scanParams.m_scanType = MLMESCAN_ACTIVE;
     Simulator::ScheduleWithContext(1,
-                                   Seconds(3.0),
+                                   Seconds(3),
                                    &LrWpanMac::MlmeScanRequest,
                                    endNodeNetDevice->GetMac(),
                                    scanParams);
@@ -660,7 +660,7 @@ TestOrphanScan::DoRun()
     params.m_sfrmOrd = 15;
     params.m_logCh = 12;
     Simulator::ScheduleWithContext(1,
-                                   Seconds(2.0),
+                                   Seconds(2),
                                    &LrWpanMac::MlmeStartRequest,
                                    coord1NetDevice->GetMac(),
                                    params);
@@ -679,7 +679,7 @@ TestOrphanScan::DoRun()
     scanParams.m_scanChannels = 0x7800;
     scanParams.m_scanType = MLMESCAN_ORPHAN;
     Simulator::ScheduleWithContext(1,
-                                   Seconds(3.0),
+                                   Seconds(3),
                                    &LrWpanMac::MlmeScanRequest,
                                    endNodeNetDevice->GetMac(),
                                    scanParams);

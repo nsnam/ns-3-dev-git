@@ -63,24 +63,24 @@ onoff.SetConstantRate(ns.DataRate("500kb/s"))
 
 app = onoff.Install(terminals.Get(0))
 
-app.Start(ns.Seconds(1.0))
-app.Stop(ns.Seconds(10.0))
+app.Start(ns.Seconds(1))
+app.Stop(ns.Seconds(10))
 
 sink = ns.PacketSinkHelper(
     "ns3::UdpSocketFactory", ns.InetSocketAddress(ns.Ipv4Address.GetAny(), port).ConvertTo()
 )
 app = sink.Install(terminals.Get(1))
-app.Start(ns.Seconds(0.0))
+app.Start(ns.Seconds(0))
 
 onoff.SetAttribute(
     "Remote", ns.AddressValue(ns.InetSocketAddress(ns.Ipv4Address("10.1.1.1"), port).ConvertTo())
 )
 app = onoff.Install(terminals.Get(3))
 app.Start(ns.Seconds(1.1))
-app.Stop(ns.Seconds(10.0))
+app.Stop(ns.Seconds(10))
 
 app = sink.Install(terminals.Get(0))
-app.Start(ns.Seconds(0.0))
+app.Start(ns.Seconds(0))
 
 ns.Simulator.Run()
 ns.Simulator.Destroy()

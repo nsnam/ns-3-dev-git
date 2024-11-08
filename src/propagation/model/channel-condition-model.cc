@@ -388,7 +388,7 @@ void
 ThreeGppChannelConditionModel::DoDispose()
 {
     m_channelConditionMap.clear();
-    m_updatePeriod = Seconds(0.0);
+    m_updatePeriod = Seconds(0);
 }
 
 Ptr<ChannelCondition>

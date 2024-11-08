@@ -825,37 +825,37 @@ TestDlOfdmaPhyTransmission::RunOne()
 
     // Send MU PPDU with two PSDUs addressed to STA 1 and STA 2:
     // Each STA should receive its PSDU.
-    Simulator::Schedule(Seconds(1.0), &TestDlOfdmaPhyTransmission::SendMuPpdu, this, 1, 2);
+    Simulator::Schedule(Seconds(1), &TestDlOfdmaPhyTransmission::SendMuPpdu, this, 1, 2);
 
     // Since it takes m_expectedPpduDuration to transmit the PPDU,
     // all 3 PHYs should be back to IDLE at the same time,
     // even the PHY that has no PSDU addressed to it.
-    Simulator::Schedule(Seconds(1.0) + m_expectedPpduDuration - NanoSeconds(1),
+    Simulator::Schedule(Seconds(1) + m_expectedPpduDuration - NanoSeconds(1),
                         &TestDlOfdmaPhyTransmission::CheckPhyState,
                         this,
                         m_phySta1,
                         WifiPhyState::RX);
-    Simulator::Schedule(Seconds(1.0) + m_expectedPpduDuration - NanoSeconds(1),
+    Simulator::Schedule(Seconds(1) + m_expectedPpduDuration - NanoSeconds(1),
                         &TestDlOfdmaPhyTransmission::CheckPhyState,
                         this,
                         m_phySta2,
                         WifiPhyState::RX);
-    Simulator::Schedule(Seconds(1.0) + m_expectedPpduDuration - NanoSeconds(1),
+    Simulator::Schedule(Seconds(1) + m_expectedPpduDuration - NanoSeconds(1),
                         &TestDlOfdmaPhyTransmission::CheckPhyState,
                         this,
                         m_phySta3,
                         WifiPhyState::CCA_BUSY);
-    Simulator::Schedule(Seconds(1.0) + m_expectedPpduDuration,
+    Simulator::Schedule(Seconds(1) + m_expectedPpduDuration,
                         &TestDlOfdmaPhyTransmission::CheckPhyState,
                         this,
                         m_phySta1,
                         WifiPhyState::IDLE);
-    Simulator::Schedule(Seconds(1.0) + m_expectedPpduDuration,
+    Simulator::Schedule(Seconds(1) + m_expectedPpduDuration,
                         &TestDlOfdmaPhyTransmission::CheckPhyState,
                         this,
                         m_phySta2,
                         WifiPhyState::IDLE);
-    Simulator::Schedule(Seconds(1.0) + m_expectedPpduDuration,
+    Simulator::Schedule(Seconds(1) + m_expectedPpduDuration,
                         &TestDlOfdmaPhyTransmission::CheckPhyState,
                         this,
                         m_phySta3,
@@ -883,37 +883,37 @@ TestDlOfdmaPhyTransmission::RunOne()
     // Send MU PPDU with two PSDUs addressed to STA 1 and STA 3:
     // STA 1 should receive its PSDU, whereas STA 2 should not receive any PSDU
     // but should keep its PHY busy during all PPDU duration.
-    Simulator::Schedule(Seconds(2.0), &TestDlOfdmaPhyTransmission::SendMuPpdu, this, 1, 3);
+    Simulator::Schedule(Seconds(2), &TestDlOfdmaPhyTransmission::SendMuPpdu, this, 1, 3);
 
     // Since it takes m_expectedPpduDuration to transmit the PPDU,
     // all 3 PHYs should be back to IDLE at the same time,
     // even the PHY that has no PSDU addressed to it.
-    Simulator::Schedule(Seconds(2.0) + m_expectedPpduDuration - NanoSeconds(1),
+    Simulator::Schedule(Seconds(2) + m_expectedPpduDuration - NanoSeconds(1),
                         &TestDlOfdmaPhyTransmission::CheckPhyState,
                         this,
                         m_phySta1,
                         WifiPhyState::RX);
-    Simulator::Schedule(Seconds(2.0) + m_expectedPpduDuration - NanoSeconds(1),
+    Simulator::Schedule(Seconds(2) + m_expectedPpduDuration - NanoSeconds(1),
                         &TestDlOfdmaPhyTransmission::CheckPhyState,
                         this,
                         m_phySta2,
                         WifiPhyState::CCA_BUSY);
-    Simulator::Schedule(Seconds(2.0) + m_expectedPpduDuration - NanoSeconds(1),
+    Simulator::Schedule(Seconds(2) + m_expectedPpduDuration - NanoSeconds(1),
                         &TestDlOfdmaPhyTransmission::CheckPhyState,
                         this,
                         m_phySta3,
                         WifiPhyState::RX);
-    Simulator::Schedule(Seconds(2.0) + m_expectedPpduDuration,
+    Simulator::Schedule(Seconds(2) + m_expectedPpduDuration,
                         &TestDlOfdmaPhyTransmission::CheckPhyState,
                         this,
                         m_phySta1,
                         WifiPhyState::IDLE);
-    Simulator::Schedule(Seconds(2.0) + m_expectedPpduDuration,
+    Simulator::Schedule(Seconds(2) + m_expectedPpduDuration,
                         &TestDlOfdmaPhyTransmission::CheckPhyState,
                         this,
                         m_phySta2,
                         WifiPhyState::IDLE);
-    Simulator::Schedule(Seconds(2.0) + m_expectedPpduDuration,
+    Simulator::Schedule(Seconds(2) + m_expectedPpduDuration,
                         &TestDlOfdmaPhyTransmission::CheckPhyState,
                         this,
                         m_phySta3,
@@ -939,7 +939,7 @@ TestDlOfdmaPhyTransmission::RunOne()
     Simulator::Schedule(Seconds(2.5), &TestDlOfdmaPhyTransmission::ResetResults, this);
 
     // Send MU PPDU with two PSDUs addressed to STA 1 and STA 2:
-    Simulator::Schedule(Seconds(3.0), &TestDlOfdmaPhyTransmission::SendMuPpdu, this, 1, 2);
+    Simulator::Schedule(Seconds(3), &TestDlOfdmaPhyTransmission::SendMuPpdu, this, 1, 2);
 
     // A strong non-wifi interference is generated on RU 1 during PSDU reception
     BandInfo bandInfo;
@@ -954,7 +954,7 @@ TestDlOfdmaPhyTransmission::RunOne()
     Watt_u interferencePower{0.1};
     *interferencePsdRu1 = interferencePower / ((m_channelWidth / 2) * 20e6);
 
-    Simulator::Schedule(Seconds(3.0) + MicroSeconds(50),
+    Simulator::Schedule(Seconds(3) + MicroSeconds(50),
                         &TestDlOfdmaPhyTransmission::GenerateInterference,
                         this,
                         interferencePsdRu1,
@@ -963,32 +963,32 @@ TestDlOfdmaPhyTransmission::RunOne()
     // Since it takes m_expectedPpduDuration to transmit the PPDU,
     // both PHYs should be back to CCA_BUSY (due to the interference) at the same time,
     // even the PHY that has no PSDU addressed to it.
-    Simulator::Schedule(Seconds(3.0) + m_expectedPpduDuration - NanoSeconds(1),
+    Simulator::Schedule(Seconds(3) + m_expectedPpduDuration - NanoSeconds(1),
                         &TestDlOfdmaPhyTransmission::CheckPhyState,
                         this,
                         m_phySta1,
                         WifiPhyState::RX);
-    Simulator::Schedule(Seconds(3.0) + m_expectedPpduDuration - NanoSeconds(1),
+    Simulator::Schedule(Seconds(3) + m_expectedPpduDuration - NanoSeconds(1),
                         &TestDlOfdmaPhyTransmission::CheckPhyState,
                         this,
                         m_phySta2,
                         WifiPhyState::RX);
-    Simulator::Schedule(Seconds(3.0) + m_expectedPpduDuration - NanoSeconds(1),
+    Simulator::Schedule(Seconds(3) + m_expectedPpduDuration - NanoSeconds(1),
                         &TestDlOfdmaPhyTransmission::CheckPhyState,
                         this,
                         m_phySta3,
                         WifiPhyState::CCA_BUSY);
-    Simulator::Schedule(Seconds(3.0) + m_expectedPpduDuration,
+    Simulator::Schedule(Seconds(3) + m_expectedPpduDuration,
                         &TestDlOfdmaPhyTransmission::CheckPhyState,
                         this,
                         m_phySta1,
                         WifiPhyState::CCA_BUSY);
-    Simulator::Schedule(Seconds(3.0) + m_expectedPpduDuration,
+    Simulator::Schedule(Seconds(3) + m_expectedPpduDuration,
                         &TestDlOfdmaPhyTransmission::CheckPhyState,
                         this,
                         m_phySta2,
                         WifiPhyState::CCA_BUSY);
-    Simulator::Schedule(Seconds(3.0) + m_expectedPpduDuration,
+    Simulator::Schedule(Seconds(3) + m_expectedPpduDuration,
                         &TestDlOfdmaPhyTransmission::CheckPhyState,
                         this,
                         m_phySta3,
@@ -1010,7 +1010,7 @@ TestDlOfdmaPhyTransmission::RunOne()
     Simulator::Schedule(Seconds(3.5), &TestDlOfdmaPhyTransmission::ResetResults, this);
 
     // Send MU PPDU with two PSDUs addressed to STA 1 and STA 2:
-    Simulator::Schedule(Seconds(4.0), &TestDlOfdmaPhyTransmission::SendMuPpdu, this, 1, 2);
+    Simulator::Schedule(Seconds(4), &TestDlOfdmaPhyTransmission::SendMuPpdu, this, 1, 2);
 
     // A strong non-wifi interference is generated on RU 2 during PSDU reception
     bandInfo.fc = (m_frequency + (m_channelWidth / 4)) * 1e6;
@@ -1023,7 +1023,7 @@ TestDlOfdmaPhyTransmission::RunOne()
     Ptr<SpectrumValue> interferencePsdRu2 = Create<SpectrumValue>(SpectrumInterferenceRu2);
     *interferencePsdRu2 = interferencePower / ((m_channelWidth / 2) * 20e6);
 
-    Simulator::Schedule(Seconds(4.0) + MicroSeconds(50),
+    Simulator::Schedule(Seconds(4) + MicroSeconds(50),
                         &TestDlOfdmaPhyTransmission::GenerateInterference,
                         this,
                         interferencePsdRu2,
@@ -1032,32 +1032,32 @@ TestDlOfdmaPhyTransmission::RunOne()
     // Since it takes m_expectedPpduDuration to transmit the PPDU,
     // both PHYs should be back to IDLE (or CCA_BUSY if interference on the primary 20 MHz) at the
     // same time, even the PHY that has no PSDU addressed to it.
-    Simulator::Schedule(Seconds(4.0) + m_expectedPpduDuration - NanoSeconds(1),
+    Simulator::Schedule(Seconds(4) + m_expectedPpduDuration - NanoSeconds(1),
                         &TestDlOfdmaPhyTransmission::CheckPhyState,
                         this,
                         m_phySta1,
                         WifiPhyState::RX);
-    Simulator::Schedule(Seconds(4.0) + m_expectedPpduDuration - NanoSeconds(1),
+    Simulator::Schedule(Seconds(4) + m_expectedPpduDuration - NanoSeconds(1),
                         &TestDlOfdmaPhyTransmission::CheckPhyState,
                         this,
                         m_phySta2,
                         WifiPhyState::RX);
-    Simulator::Schedule(Seconds(4.0) + m_expectedPpduDuration - NanoSeconds(1),
+    Simulator::Schedule(Seconds(4) + m_expectedPpduDuration - NanoSeconds(1),
                         &TestDlOfdmaPhyTransmission::CheckPhyState,
                         this,
                         m_phySta3,
                         WifiPhyState::CCA_BUSY);
-    Simulator::Schedule(Seconds(4.0) + m_expectedPpduDuration,
+    Simulator::Schedule(Seconds(4) + m_expectedPpduDuration,
                         &TestDlOfdmaPhyTransmission::CheckPhyState,
                         this,
                         m_phySta1,
                         (m_channelWidth >= 40) ? WifiPhyState::IDLE : WifiPhyState::CCA_BUSY);
-    Simulator::Schedule(Seconds(4.0) + m_expectedPpduDuration,
+    Simulator::Schedule(Seconds(4) + m_expectedPpduDuration,
                         &TestDlOfdmaPhyTransmission::CheckPhyState,
                         this,
                         m_phySta2,
                         (m_channelWidth >= 40) ? WifiPhyState::IDLE : WifiPhyState::CCA_BUSY);
-    Simulator::Schedule(Seconds(4.0) + m_expectedPpduDuration,
+    Simulator::Schedule(Seconds(4) + m_expectedPpduDuration,
                         &TestDlOfdmaPhyTransmission::CheckPhyState,
                         this,
                         m_phySta3,
@@ -1079,7 +1079,7 @@ TestDlOfdmaPhyTransmission::RunOne()
     Simulator::Schedule(Seconds(4.5), &TestDlOfdmaPhyTransmission::ResetResults, this);
 
     // Send MU PPDU with two PSDUs addressed to STA 1 and STA 2:
-    Simulator::Schedule(Seconds(5.0), &TestDlOfdmaPhyTransmission::SendMuPpdu, this, 1, 2);
+    Simulator::Schedule(Seconds(5), &TestDlOfdmaPhyTransmission::SendMuPpdu, this, 1, 2);
 
     // A strong non-wifi interference is generated on the full band during PSDU reception
     bandInfo.fc = m_frequency * 1e6;
@@ -1092,7 +1092,7 @@ TestDlOfdmaPhyTransmission::RunOne()
     Ptr<SpectrumValue> interferencePsdAll = Create<SpectrumValue>(SpectrumInterferenceAll);
     *interferencePsdAll = interferencePower / (m_channelWidth * 20e6);
 
-    Simulator::Schedule(Seconds(5.0) + MicroSeconds(50),
+    Simulator::Schedule(Seconds(5) + MicroSeconds(50),
                         &TestDlOfdmaPhyTransmission::GenerateInterference,
                         this,
                         interferencePsdAll,
@@ -1101,32 +1101,32 @@ TestDlOfdmaPhyTransmission::RunOne()
     // Since it takes m_expectedPpduDuration to transmit the PPDU,
     // both PHYs should be back to CCA_BUSY (due to the interference) at the same time,
     // even the PHY that has no PSDU addressed to it.
-    Simulator::Schedule(Seconds(5.0) + m_expectedPpduDuration - NanoSeconds(1),
+    Simulator::Schedule(Seconds(5) + m_expectedPpduDuration - NanoSeconds(1),
                         &TestDlOfdmaPhyTransmission::CheckPhyState,
                         this,
                         m_phySta1,
                         WifiPhyState::RX);
-    Simulator::Schedule(Seconds(5.0) + m_expectedPpduDuration - NanoSeconds(1),
+    Simulator::Schedule(Seconds(5) + m_expectedPpduDuration - NanoSeconds(1),
                         &TestDlOfdmaPhyTransmission::CheckPhyState,
                         this,
                         m_phySta2,
                         WifiPhyState::RX);
-    Simulator::Schedule(Seconds(5.0) + m_expectedPpduDuration - NanoSeconds(1),
+    Simulator::Schedule(Seconds(5) + m_expectedPpduDuration - NanoSeconds(1),
                         &TestDlOfdmaPhyTransmission::CheckPhyState,
                         this,
                         m_phySta3,
                         WifiPhyState::CCA_BUSY);
-    Simulator::Schedule(Seconds(5.0) + m_expectedPpduDuration,
+    Simulator::Schedule(Seconds(5) + m_expectedPpduDuration,
                         &TestDlOfdmaPhyTransmission::CheckPhyState,
                         this,
                         m_phySta1,
                         WifiPhyState::CCA_BUSY);
-    Simulator::Schedule(Seconds(5.0) + m_expectedPpduDuration,
+    Simulator::Schedule(Seconds(5) + m_expectedPpduDuration,
                         &TestDlOfdmaPhyTransmission::CheckPhyState,
                         this,
                         m_phySta2,
                         WifiPhyState::CCA_BUSY);
-    Simulator::Schedule(Seconds(5.0) + m_expectedPpduDuration,
+    Simulator::Schedule(Seconds(5) + m_expectedPpduDuration,
                         &TestDlOfdmaPhyTransmission::CheckPhyState,
                         this,
                         m_phySta3,
@@ -1656,7 +1656,7 @@ TestDlOfdmaPhyPuncturing::RunOne()
     Watt_u interferencePower{0.1};
     *interferencePsd = interferencePower / 10e6;
 
-    Simulator::Schedule(Seconds(0.0),
+    Simulator::Schedule(Seconds(0),
                         &TestDlOfdmaPhyPuncturing::GenerateInterference,
                         this,
                         interferencePsd,
@@ -1664,7 +1664,7 @@ TestDlOfdmaPhyPuncturing::RunOne()
 
     //---------------------------------------------------------------------------
     // Send MU PPDU with two PSDUs addressed to STA 1 and STA 2 without preamble puncturing:
-    Simulator::Schedule(Seconds(1.0),
+    Simulator::Schedule(Seconds(1),
                         &TestDlOfdmaPhyPuncturing::SendMuPpdu,
                         this,
                         1,
@@ -1673,22 +1673,22 @@ TestDlOfdmaPhyPuncturing::RunOne()
 
     // Since it takes m_expectedPpduDuration to transmit the PPDU,
     // both PHYs should be back to IDLE at the same time.
-    Simulator::Schedule(Seconds(1.0) + m_expectedPpduDuration40Mhz - NanoSeconds(1),
+    Simulator::Schedule(Seconds(1) + m_expectedPpduDuration40Mhz - NanoSeconds(1),
                         &TestDlOfdmaPhyPuncturing::CheckPhyState,
                         this,
                         m_phySta1,
                         WifiPhyState::RX);
-    Simulator::Schedule(Seconds(1.0) + m_expectedPpduDuration40Mhz - NanoSeconds(1),
+    Simulator::Schedule(Seconds(1) + m_expectedPpduDuration40Mhz - NanoSeconds(1),
                         &TestDlOfdmaPhyPuncturing::CheckPhyState,
                         this,
                         m_phySta2,
                         WifiPhyState::RX);
-    Simulator::Schedule(Seconds(1.0) + m_expectedPpduDuration40Mhz,
+    Simulator::Schedule(Seconds(1) + m_expectedPpduDuration40Mhz,
                         &TestDlOfdmaPhyPuncturing::CheckPhyState,
                         this,
                         m_phySta1,
                         WifiPhyState::IDLE);
-    Simulator::Schedule(Seconds(1.0) + m_expectedPpduDuration40Mhz,
+    Simulator::Schedule(Seconds(1) + m_expectedPpduDuration40Mhz,
                         &TestDlOfdmaPhyPuncturing::CheckPhyState,
                         this,
                         m_phySta2,
@@ -1747,7 +1747,7 @@ TestDlOfdmaPhyPuncturing::RunOne()
             puncturedSubchannels.push_back(false);
         }
     }
-    Simulator::Schedule(Seconds(2.0),
+    Simulator::Schedule(Seconds(2),
                         &TestDlOfdmaPhyPuncturing::SendMuPpdu,
                         this,
                         1,
@@ -1756,22 +1756,22 @@ TestDlOfdmaPhyPuncturing::RunOne()
 
     // Since it takes m_expectedPpduDuration to transmit the PPDU,
     // both PHYs should be back to IDLE at the same time.
-    Simulator::Schedule(Seconds(2.0) + m_expectedPpduDuration20Mhz - NanoSeconds(1),
+    Simulator::Schedule(Seconds(2) + m_expectedPpduDuration20Mhz - NanoSeconds(1),
                         &TestDlOfdmaPhyPuncturing::CheckPhyState,
                         this,
                         m_phySta1,
                         WifiPhyState::RX);
-    Simulator::Schedule(Seconds(2.0) + m_expectedPpduDuration20Mhz - NanoSeconds(1),
+    Simulator::Schedule(Seconds(2) + m_expectedPpduDuration20Mhz - NanoSeconds(1),
                         &TestDlOfdmaPhyPuncturing::CheckPhyState,
                         this,
                         m_phySta2,
                         WifiPhyState::RX);
-    Simulator::Schedule(Seconds(2.0) + m_expectedPpduDuration20Mhz,
+    Simulator::Schedule(Seconds(2) + m_expectedPpduDuration20Mhz,
                         &TestDlOfdmaPhyPuncturing::CheckPhyState,
                         this,
                         m_phySta1,
                         WifiPhyState::IDLE);
-    Simulator::Schedule(Seconds(2.0) + m_expectedPpduDuration20Mhz,
+    Simulator::Schedule(Seconds(2) + m_expectedPpduDuration20Mhz,
                         &TestDlOfdmaPhyPuncturing::CheckPhyState,
                         this,
                         m_phySta2,
@@ -2221,8 +2221,8 @@ TestUlOfdmaPpduUid::DoRun()
 
     // Send HE MU PPDU with two PSDUs addressed to STA 1 and STA 2.
     // PPDU UID should be equal to 0 (the first counter value).
-    Simulator::Schedule(Seconds(1.0), &TestUlOfdmaPpduUid::SendMuPpdu, this);
-    Simulator::Schedule(Seconds(1.0), &TestUlOfdmaPpduUid::CheckUid, this, 0, 0);
+    Simulator::Schedule(Seconds(1), &TestUlOfdmaPpduUid::SendMuPpdu, this);
+    Simulator::Schedule(Seconds(1), &TestUlOfdmaPpduUid::CheckUid, this, 0, 0);
 
     // Send HE SU PPDU from AP.
     // PPDU UID should be incremented since this is a new PPDU.
@@ -2559,7 +2559,7 @@ TestMultipleHeTbPreambles::DoRun()
                             txPower,
                             1002);
         // Check that we received a single UL MU transmission with the corresponding UID
-        Simulator::Schedule(Seconds(1.0) + MicroSeconds(1),
+        Simulator::Schedule(Seconds(1) + MicroSeconds(1),
                             &TestMultipleHeTbPreambles::CheckHeTbPreambles,
                             this,
                             1,
@@ -2602,7 +2602,7 @@ TestMultipleHeTbPreambles::DoRun()
                             1004);
         // Check that we received the correct reception of 2 UL MU transmissions with the
         // corresponding UIDs
-        Simulator::Schedule(Seconds(2.0) + MicroSeconds(1),
+        Simulator::Schedule(Seconds(2) + MicroSeconds(1),
                             &TestMultipleHeTbPreambles::CheckHeTbPreambles,
                             this,
                             2,
@@ -2646,7 +2646,7 @@ TestMultipleHeTbPreambles::DoRun()
                             1004);
         // Check that we received the correct reception of 2 UL MU transmissions with the
         // corresponding UIDs
-        Simulator::Schedule(Seconds(3.0) + MicroSeconds(1),
+        Simulator::Schedule(Seconds(3) + MicroSeconds(1),
                             &TestMultipleHeTbPreambles::CheckHeTbPreambles,
                             this,
                             2,
@@ -2690,13 +2690,13 @@ TestMultipleHeTbPreambles::DoRun()
                             1004);
         // Check that we received the correct reception of the first UL MU transmission with the
         // corresponding UID (second one dropped)
-        Simulator::Schedule(Seconds(4.0) + MicroSeconds(10),
+        Simulator::Schedule(Seconds(4) + MicroSeconds(10),
                             &TestMultipleHeTbPreambles::CheckHeTbPreambles,
                             this,
                             1,
                             std::vector<uint64_t>{uids[0]});
         // The packets of the second UL MU transmission should have been dropped
-        Simulator::Schedule(Seconds(4.0) + MicroSeconds(10),
+        Simulator::Schedule(Seconds(4) + MicroSeconds(10),
                             &TestMultipleHeTbPreambles::CheckBytesDropped,
                             this,
                             1003 + 1004);
@@ -2738,13 +2738,13 @@ TestMultipleHeTbPreambles::DoRun()
                             1004);
         // Check that we received the correct reception of the first UL MU transmission with the
         // corresponding UID (second one dropped)
-        Simulator::Schedule(Seconds(5.0) + MicroSeconds(100),
+        Simulator::Schedule(Seconds(5) + MicroSeconds(100),
                             &TestMultipleHeTbPreambles::CheckHeTbPreambles,
                             this,
                             1,
                             std::vector<uint64_t>{uids[0]});
         // The packets of the second UL MU transmission should have been dropped
-        Simulator::Schedule(Seconds(5.0) + MicroSeconds(100),
+        Simulator::Schedule(Seconds(5) + MicroSeconds(100),
                             &TestMultipleHeTbPreambles::CheckBytesDropped,
                             this,
                             1003 + 1004);
@@ -2771,7 +2771,7 @@ TestMultipleHeTbPreambles::DoRun()
                             txPower,
                             1002);
         // Check that we received a single UL MU transmission with the corresponding UID
-        Simulator::Schedule(Seconds(6.0) + MicroSeconds(1),
+        Simulator::Schedule(Seconds(6) + MicroSeconds(1),
                             &TestMultipleHeTbPreambles::CheckHeTbPreambles,
                             this,
                             1,
@@ -2780,7 +2780,7 @@ TestMultipleHeTbPreambles::DoRun()
         // 4us (because the PPDU that arrived at 500ns is interfering): the second HE TB PPDU is
         // acting as interference since it arrived after the maximum allowed 400ns. Obviously, that
         // second packet of 1002 bytes is dropped as well.
-        Simulator::Schedule(Seconds(6.0) + MicroSeconds(5),
+        Simulator::Schedule(Seconds(6) + MicroSeconds(5),
                             &TestMultipleHeTbPreambles::CheckBytesDropped,
                             this,
                             1001 + 1002);
@@ -4134,7 +4134,7 @@ TestUlOfdmaPhyTransmission::RunOne()
 
     Time delay;
     Simulator::Schedule(delay, &TestUlOfdmaPhyTransmission::Reset, this);
-    delay += Seconds(1.0);
+    delay += Seconds(1);
 
     /**
      * In all the following tests, 2 HE TB PPDUs of the same UL MU transmission
@@ -4159,7 +4159,7 @@ TestUlOfdmaPhyTransmission::RunOne()
                  1,
                  0,
                  1001); // One PSDU of 1001 bytes should have been successfully received from STA 2
-    delay += Seconds(1.0);
+    delay += Seconds(1);
 
     //---------------------------------------------------------------------------
     // Verify that two solicited HE TB PPDUs with delay (< 400ns) between the two signals have been
@@ -4180,7 +4180,7 @@ TestUlOfdmaPhyTransmission::RunOne()
                  1001, // One PSDU of 1001 bytes should have been successfully received from STA 2
                  true,
                  NanoSeconds(100));
-    delay += Seconds(1.0);
+    delay += Seconds(1);
 
     //---------------------------------------------------------------------------
     // Verify that no unsolicited HE TB PPDU is received
@@ -4200,7 +4200,7 @@ TestUlOfdmaPhyTransmission::RunOne()
                  true,
                  Seconds(0),
                  WifiPhyState::CCA_BUSY);
-    delay += Seconds(1.0);
+    delay += Seconds(1);
 
     //---------------------------------------------------------------------------
     // Verify that HE TB PPDUs with channel width differing from TRIGVECTOR are discarded
@@ -4221,7 +4221,7 @@ TestUlOfdmaPhyTransmission::RunOne()
                  Seconds(0),
                  WifiPhyState::CCA_BUSY,
                  CHANNEL_WIDTH);
-    delay += Seconds(1.0);
+    delay += Seconds(1);
 
     //---------------------------------------------------------------------------
     // Verify that HE TB PPDUs with UL Length differing from TRIGVECTOR are discarded
@@ -4242,7 +4242,7 @@ TestUlOfdmaPhyTransmission::RunOne()
                  Seconds(0),
                  WifiPhyState::CCA_BUSY,
                  UL_LENGTH);
-    delay += Seconds(1.0);
+    delay += Seconds(1);
 
     //---------------------------------------------------------------------------
     // Verify that HE TB PPDUs with AIDs differing from TRIGVECTOR are discarded
@@ -4263,7 +4263,7 @@ TestUlOfdmaPhyTransmission::RunOne()
                  Seconds(0),
                  WifiPhyState::CCA_BUSY,
                  AID);
-    delay += Seconds(1.0);
+    delay += Seconds(1);
 
     //---------------------------------------------------------------------------
     // Generate an interference on RU 1 and verify that only STA 1's solicited HE TB PPDU has been
@@ -4302,7 +4302,7 @@ TestUlOfdmaPhyTransmission::RunOne()
         1,
         0,
         1001); // One PSDU of 1001 bytes should have been successfully received from STA 2
-    delay += Seconds(1.0);
+    delay += Seconds(1);
 
     //---------------------------------------------------------------------------
     // Generate an interference on RU 2 and verify that only STA 2's solicited HE TB PPDU has been
@@ -4341,7 +4341,7 @@ TestUlOfdmaPhyTransmission::RunOne()
                  1,
                  0); // Reception of the PSDU from STA 2 should have failed (since interference
                      // occupies RU 2)
-    delay += Seconds(1.0);
+    delay += Seconds(1);
 
     //---------------------------------------------------------------------------
     // Generate an interference on the full band and verify that both solicited HE TB PPDUs have
@@ -4379,7 +4379,7 @@ TestUlOfdmaPhyTransmission::RunOne()
         1,
         0); // Reception of the PSDU from STA 2 should have failed (since interference occupies RU
             // 2)
-    delay += Seconds(1.0);
+    delay += Seconds(1);
 
     //---------------------------------------------------------------------------
     // Send another HE TB PPDU (of another UL MU transmission) on RU 1 and verify that both
@@ -4431,7 +4431,7 @@ TestUlOfdmaPhyTransmission::RunOne()
                  succ,
                  fail,
                  bytes);
-    delay += Seconds(1.0);
+    delay += Seconds(1);
 
     //---------------------------------------------------------------------------
     // Send another HE TB PPDU (of another UL MU transmission) on RU 2 and verify that both
@@ -4482,7 +4482,7 @@ TestUlOfdmaPhyTransmission::RunOne()
                  1,
                  0); // Reception of the PSDU from STA 2 should have failed (since interference from
                      // STA 3 on same 20 MHz channel)
-    delay += Seconds(1.0);
+    delay += Seconds(1);
 
     //---------------------------------------------------------------------------
     // Send an HE SU PPDU during 400 ns window and verify that both solicited HE TB PPDUs have been
@@ -4510,7 +4510,7 @@ TestUlOfdmaPhyTransmission::RunOne()
         0,
         1,
         0); // Reception of the PSDU from STA 2 should have failed (since interference from STA 3)
-    delay += Seconds(1.0);
+    delay += Seconds(1);
 
     //---------------------------------------------------------------------------
     // Only send a solicited HE TB PPDU from STA 2 on RU 2 and verify that it has been correctly
@@ -4541,7 +4541,7 @@ TestUlOfdmaPhyTransmission::RunOne()
                  false,
                  Seconds(0),
                  WifiPhyState::RX); // Measurement channel is total channel width
-    delay += Seconds(1.0);
+    delay += Seconds(1);
 
     //---------------------------------------------------------------------------
     // Measure the power of a solicited HE TB PPDU from STA 2 on RU 2
@@ -4568,7 +4568,7 @@ TestUlOfdmaPhyTransmission::RunOne()
                  false,
                  Seconds(0),
                  WifiPhyState::RX); // Measurement channel is total channel width
-    delay += Seconds(1.0);
+    delay += Seconds(1);
 
     //---------------------------------------------------------------------------
     // Measure the power of a solicited HE TB PPDU from STA 2 on RU 2 with power spectrum density
@@ -4621,7 +4621,7 @@ TestUlOfdmaPhyTransmission::RunOne()
                  false,
                  Seconds(0),
                  WifiPhyState::RX); // Measurement channel is total channel width
-    delay += Seconds(1.0);
+    delay += Seconds(1);
 
     //---------------------------------------------------------------------------
     // Measure the power of 2 solicited HE TB PPDU from both STAs
@@ -4643,7 +4643,7 @@ TestUlOfdmaPhyTransmission::RunOne()
                  1,
                  0,
                  1001); // One PSDU of 1001 bytes should have been successfully received from STA 2
-    delay += Seconds(1.0);
+    delay += Seconds(1);
 
     //---------------------------------------------------------------------------
     // Verify that an HE TB PPDU from another BSS has been correctly received (no UL MU transmission
@@ -4670,7 +4670,7 @@ TestUlOfdmaPhyTransmission::RunOne()
                         this);
 
     Simulator::Schedule(delay + MilliSeconds(500), &TestUlOfdmaPhyTransmission::Reset, this);
-    delay += Seconds(1.0);
+    delay += Seconds(1);
 
     //---------------------------------------------------------------------------
     // Verify that two solicited HE TB PPDUs with delay (< 400ns) between the two signals have been
@@ -4702,7 +4702,7 @@ TestUlOfdmaPhyTransmission::RunOne()
                  1001, // One PSDU of 1001 bytes should have been successfully received from STA 2
                  true,
                  NanoSeconds(200));
-    delay += Seconds(1.0);
+    delay += Seconds(1);
 
     Simulator::Run();
 }
@@ -5209,17 +5209,17 @@ TestPhyPaddingExclusion::DoRun()
     Time ppduWithPaddingDuration =
         expectedPpduDuration + 10 * NanoSeconds(12800 + 1600 /* GI */); // add 10 extra OFDM symbols
 
-    Simulator::Schedule(Seconds(0.0), &TestPhyPaddingExclusion::Reset, this);
+    Simulator::Schedule(Seconds(0), &TestPhyPaddingExclusion::Reset, this);
 
     // STA1 and STA2 send MU UL PPDUs addressed to AP:
-    Simulator::Schedule(Seconds(1.0),
+    Simulator::Schedule(Seconds(1),
                         &TestPhyPaddingExclusion::SendHeTbPpdu,
                         this,
                         1,
                         1,
                         1000,
                         ppduWithPaddingDuration);
-    Simulator::Schedule(Seconds(1.0),
+    Simulator::Schedule(Seconds(1),
                         &TestPhyPaddingExclusion::SendHeTbPpdu,
                         this,
                         2,
@@ -5228,18 +5228,18 @@ TestPhyPaddingExclusion::DoRun()
                         ppduWithPaddingDuration);
 
     // Set TRIGVECTOR on AP
-    Simulator::Schedule(Seconds(1.0),
+    Simulator::Schedule(Seconds(1),
                         &TestPhyPaddingExclusion::SetTrigVector,
                         this,
                         ppduWithPaddingDuration);
 
     // Verify it takes expectedPpduDuration + padding to transmit the PPDUs
-    Simulator::Schedule(Seconds(1.0) + ppduWithPaddingDuration - NanoSeconds(1),
+    Simulator::Schedule(Seconds(1) + ppduWithPaddingDuration - NanoSeconds(1),
                         &TestPhyPaddingExclusion::CheckPhyState,
                         this,
                         m_phyAp,
                         WifiPhyState::RX);
-    Simulator::Schedule(Seconds(1.0) + ppduWithPaddingDuration,
+    Simulator::Schedule(Seconds(1) + ppduWithPaddingDuration,
                         &TestPhyPaddingExclusion::CheckPhyState,
                         this,
                         m_phyAp,
@@ -5255,14 +5255,14 @@ TestPhyPaddingExclusion::DoRun()
     Simulator::Schedule(Seconds(1.5), &TestPhyPaddingExclusion::Reset, this);
 
     // STA1 and STA2 send MU UL PPDUs addressed to AP:
-    Simulator::Schedule(Seconds(2.0),
+    Simulator::Schedule(Seconds(2),
                         &TestPhyPaddingExclusion::SendHeTbPpdu,
                         this,
                         1,
                         1,
                         1000,
                         ppduWithPaddingDuration);
-    Simulator::Schedule(Seconds(2.0),
+    Simulator::Schedule(Seconds(2),
                         &TestPhyPaddingExclusion::SendHeTbPpdu,
                         this,
                         2,
@@ -5271,7 +5271,7 @@ TestPhyPaddingExclusion::DoRun()
                         ppduWithPaddingDuration);
 
     // Set TRIGVECTOR on AP
-    Simulator::Schedule(Seconds(2.0),
+    Simulator::Schedule(Seconds(2),
                         &TestPhyPaddingExclusion::SetTrigVector,
                         this,
                         ppduWithPaddingDuration);
@@ -5289,7 +5289,7 @@ TestPhyPaddingExclusion::DoRun()
     Watt_u interferencePower{0.1};
     *interferencePsdRu1 = interferencePower / ((DEFAULT_CHANNEL_WIDTH / 2) * 20e6);
 
-    Simulator::Schedule(Seconds(2.0) + MicroSeconds(50) + expectedPpduDuration,
+    Simulator::Schedule(Seconds(2) + MicroSeconds(50) + expectedPpduDuration,
                         &TestPhyPaddingExclusion::GenerateInterference,
                         this,
                         interferencePsdRu1,
@@ -5297,12 +5297,12 @@ TestPhyPaddingExclusion::DoRun()
 
     // Verify it takes  expectedPpduDuration + padding to transmit the PPDUs (PHY should move to
     // CCA_BUSY instead of IDLE due to the interference)
-    Simulator::Schedule(Seconds(2.0) + ppduWithPaddingDuration - NanoSeconds(1),
+    Simulator::Schedule(Seconds(2) + ppduWithPaddingDuration - NanoSeconds(1),
                         &TestPhyPaddingExclusion::CheckPhyState,
                         this,
                         m_phyAp,
                         WifiPhyState::RX);
-    Simulator::Schedule(Seconds(2.0) + ppduWithPaddingDuration,
+    Simulator::Schedule(Seconds(2) + ppduWithPaddingDuration,
                         &TestPhyPaddingExclusion::CheckPhyState,
                         this,
                         m_phyAp,

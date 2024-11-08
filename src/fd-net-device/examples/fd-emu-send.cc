@@ -181,7 +181,7 @@ main(int argc, char* argv[])
     Simulator::Schedule(Seconds(3), &Send, device, level, emuMode);
 
     NS_LOG_INFO("Run Emulation.");
-    Simulator::Stop(Seconds(6.0));
+    Simulator::Stop(Seconds(6));
     Simulator::Run();
     Simulator::Destroy();
     delete helper;

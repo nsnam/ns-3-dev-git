@@ -245,8 +245,8 @@ main(int argc, char* argv[])
         Address sinkLocalAddress(InetSocketAddress(localIp, sinkPort));
         PacketSinkHelper sinkHelper(socketType, sinkLocalAddress);
         ApplicationContainer sinkApp = sinkHelper.Install(node);
-        sinkApp.Start(Seconds(1.0));
-        sinkApp.Stop(Seconds(60.0));
+        sinkApp.Start(Seconds(1));
+        sinkApp.Stop(Seconds(60));
 
         helper->EnablePcap("fd-server", device);
     }
@@ -261,13 +261,13 @@ main(int argc, char* argv[])
         onoff.SetAttribute("PacketSize", UintegerValue(packetSize));
 
         ApplicationContainer clientApps = onoff.Install(node);
-        clientApps.Start(Seconds(4.0));
-        clientApps.Stop(Seconds(58.0));
+        clientApps.Start(Seconds(4));
+        clientApps.Stop(Seconds(58));
 
         helper->EnablePcap("fd-client", device);
     }
 
-    Simulator::Stop(Seconds(61.0));
+    Simulator::Stop(Seconds(61));
     Simulator::Run();
     Simulator::Destroy();
     delete helper;

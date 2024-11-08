@@ -311,8 +311,8 @@ LteIpv6RoutingTestCase::DoRun()
     serverApps.Add(echoServer2.Install(ueNodes.Get(1)));
     serverApps.Add(echoServer3.Install(ueNodes.Get(2)));
 
-    serverApps.Start(Seconds(4.0));
-    serverApps.Stop(Seconds(12.0));
+    serverApps.Start(Seconds(4));
+    serverApps.Stop(Seconds(12));
 
     UdpEchoClientHelper echoClient1(m_remoteHostAddr, 10);
     UdpEchoClientHelper echoClient2(m_ueIpIface.GetAddress(1, 1), 11);
@@ -334,14 +334,14 @@ LteIpv6RoutingTestCase::DoRun()
     ApplicationContainer clientApps2 = echoClient2.Install(ueNodes.Get(0));
     ApplicationContainer clientApps3 = echoClient3.Install(ueNodes.Get(0));
 
-    clientApps1.Start(Seconds(4.0));
-    clientApps1.Stop(Seconds(6.0));
+    clientApps1.Start(Seconds(4));
+    clientApps1.Stop(Seconds(6));
 
     clientApps2.Start(Seconds(6.1));
-    clientApps2.Stop(Seconds(8.0));
+    clientApps2.Stop(Seconds(8));
 
     clientApps3.Start(Seconds(8.1));
-    clientApps3.Stop(Seconds(10.0));
+    clientApps3.Stop(Seconds(10));
 
     // Set Cllback for Client Sent and Received packets
     Ptr<Ipv6L3Protocol> ipL3 = (ueNodes.Get(0))->GetObject<Ipv6L3Protocol>();
@@ -358,7 +358,7 @@ LteIpv6RoutingTestCase::DoRun()
     appPgw->TraceConnectWithoutContext("RxFromTun",
                                        MakeCallback(&LteIpv6RoutingTestCase::TunToPgw, this));
 
-    Simulator::Schedule(Seconds(12.0), &LteIpv6RoutingTestCase::Checker, this);
+    Simulator::Schedule(Seconds(12), &LteIpv6RoutingTestCase::Checker, this);
 
     Simulator::Stop(Seconds(14));
     Simulator::Run();

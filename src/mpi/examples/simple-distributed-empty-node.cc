@@ -273,7 +273,7 @@ main(int argc, char* argv[])
                                                            MakeCallback(&SinkTracer::SinkTrace));
             }
         }
-        sinkApp.Start(Seconds(1.0));
+        sinkApp.Start(Seconds(1));
         sinkApp.Stop(Seconds(5));
     }
 
@@ -292,7 +292,7 @@ main(int argc, char* argv[])
             clientHelper.SetAttribute("Remote", remoteAddress);
             clientApps.Add(clientHelper.Install(leftLeafNodes.Get(i)));
         }
-        clientApps.Start(Seconds(1.0));
+        clientApps.Start(Seconds(1));
         clientApps.Stop(Seconds(5));
     }
 

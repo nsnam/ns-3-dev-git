@@ -273,7 +273,7 @@ main(int argc, char* argv[])
     csma.EnableAsciiAll(ascii.CreateFileStream("olsr-hna-csma.tr"));
 
     Simulator::ScheduleWithContext(source->GetNode()->GetId(),
-                                   Seconds(15.0),
+                                   Seconds(15),
                                    &GenerateTraffic,
                                    source,
                                    packetSize,
@@ -284,7 +284,7 @@ main(int argc, char* argv[])
         Create<OutputStreamWrapper>("olsr-hna.routes", std::ios::out);
     Ipv4RoutingHelper::PrintRoutingTableAllAt(Seconds(15), routingStream);
 
-    Simulator::Stop(Seconds(20.0));
+    Simulator::Stop(Seconds(20));
     Simulator::Run();
     Simulator::Destroy();
 

@@ -99,13 +99,13 @@ BulkSendBasicTestCase::DoRun()
     BulkSendHelper sourceHelper("ns3::TcpSocketFactory", InetSocketAddress(i.GetAddress(1), port));
     sourceHelper.SetAttribute("MaxBytes", UintegerValue(300000));
     ApplicationContainer sourceApp = sourceHelper.Install(nodes.Get(0));
-    sourceApp.Start(Seconds(0.0));
-    sourceApp.Stop(Seconds(10.0));
+    sourceApp.Start(Seconds(0));
+    sourceApp.Stop(Seconds(10));
     PacketSinkHelper sinkHelper("ns3::TcpSocketFactory",
                                 InetSocketAddress(Ipv4Address::GetAny(), port));
     ApplicationContainer sinkApp = sinkHelper.Install(nodes.Get(1));
-    sinkApp.Start(Seconds(0.0));
-    sinkApp.Stop(Seconds(10.0));
+    sinkApp.Start(Seconds(0));
+    sinkApp.Stop(Seconds(10));
 
     Ptr<BulkSendApplication> source = DynamicCast<BulkSendApplication>(sourceApp.Get(0));
     Ptr<PacketSink> sink = DynamicCast<PacketSink>(sinkApp.Get(0));
@@ -226,14 +226,14 @@ BulkSendSeqTsSizeTestCase::DoRun()
     sourceHelper.SetAttribute("MaxBytes", UintegerValue(300000));
     sourceHelper.SetAttribute("EnableSeqTsSizeHeader", BooleanValue(true));
     ApplicationContainer sourceApp = sourceHelper.Install(nodes.Get(0));
-    sourceApp.Start(Seconds(0.0));
-    sourceApp.Stop(Seconds(10.0));
+    sourceApp.Start(Seconds(0));
+    sourceApp.Stop(Seconds(10));
     PacketSinkHelper sinkHelper("ns3::TcpSocketFactory",
                                 InetSocketAddress(Ipv4Address::GetAny(), port));
     sinkHelper.SetAttribute("EnableSeqTsSizeHeader", BooleanValue(true));
     ApplicationContainer sinkApp = sinkHelper.Install(nodes.Get(1));
-    sinkApp.Start(Seconds(0.0));
-    sinkApp.Stop(Seconds(10.0));
+    sinkApp.Start(Seconds(0));
+    sinkApp.Stop(Seconds(10));
 
     Ptr<BulkSendApplication> source = DynamicCast<BulkSendApplication>(sourceApp.Get(0));
     Ptr<PacketSink> sink = DynamicCast<PacketSink>(sinkApp.Get(0));

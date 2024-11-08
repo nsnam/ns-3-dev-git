@@ -166,8 +166,8 @@ main(int argc, char* argv[])
     uint16_t port = 9;
     UdpServerHelper server(port);
     ApplicationContainer serverApp = server.Install(wifiApNode);
-    serverApp.Start(Seconds(0.0));
-    serverApp.Stop(simulationTime + Seconds(1.0));
+    serverApp.Start(Seconds(0));
+    serverApp.Stop(simulationTime + Seconds(1));
     streamNumber += server.AssignStreams(wifiApNode, streamNumber);
 
     UdpClientHelper client(ApInterface.GetAddress(0), port);
@@ -177,8 +177,8 @@ main(int argc, char* argv[])
 
     // Saturated UDP traffic from stations to AP
     ApplicationContainer clientApp1 = client.Install(wifiStaNodes);
-    clientApp1.Start(Seconds(1.0));
-    clientApp1.Stop(simulationTime + Seconds(1.0));
+    clientApp1.Start(Seconds(1));
+    clientApp1.Stop(simulationTime + Seconds(1));
     streamNumber += client.AssignStreams(wifiStaNodes, streamNumber);
 
     phy.EnablePcap("SimpleHtHiddenStations_Ap", apDevice.Get(0));
@@ -188,7 +188,7 @@ main(int argc, char* argv[])
     AsciiTraceHelper ascii;
     phy.EnableAsciiAll(ascii.CreateFileStream("SimpleHtHiddenStations.tr"));
 
-    Simulator::Stop(simulationTime + Seconds(1.0));
+    Simulator::Stop(simulationTime + Seconds(1));
 
     Simulator::Run();
 

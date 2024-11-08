@@ -34,7 +34,7 @@ Application::GetTypeId()
                             .SetGroupName("Network")
                             .AddAttribute("StartTime",
                                           "Time at which the application will start",
-                                          TimeValue(Seconds(0.0)),
+                                          TimeValue(Seconds(0)),
                                           MakeTimeAccessor(&Application::m_startTime),
                                           MakeTimeChecker())
                             .AddAttribute("StopTime",

@@ -481,7 +481,7 @@ In order to activate the fading module (which is not active by default) the foll
 And for setting the parameters::
 
   lteHelper->SetFadingModelAttribute("TraceFilename", StringValue("src/lte/model/fading-traces/fading_trace_EPA_3kmph.fad"));
-  lteHelper->SetFadingModelAttribute("TraceLength", TimeValue(Seconds(10.0)));
+  lteHelper->SetFadingModelAttribute("TraceLength", TimeValue(Seconds(10)));
   lteHelper->SetFadingModelAttribute("SamplesNum", UintegerValue(10000));
   lteHelper->SetFadingModelAttribute("WindowSize", TimeValue(Seconds(0.5)));
   lteHelper->SetFadingModelAttribute("RbNum", UintegerValue(100));
@@ -939,7 +939,7 @@ UdpClient application on the remote host, and a PacketSink on the LTE UE
 
 That's all! You can now start your simulation as usual::
 
-  Simulator::Stop(Seconds(10.0));
+  Simulator::Stop(Seconds(10));
   Simulator::Run();
 
 

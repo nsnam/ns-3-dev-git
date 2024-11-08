@@ -184,7 +184,7 @@ Bug772ChainTest::CreateDevices()
     m_sendSocket->Connect(InetSocketAddress(interfaces.GetAddress(m_size - 1), m_port));
     m_sendSocket->SetAllowBroadcast(true);
     Simulator::ScheduleWithContext(m_sendSocket->GetNode()->GetId(),
-                                   Seconds(1.0),
+                                   Seconds(1),
                                    &Bug772ChainTest::SendData,
                                    this,
                                    m_sendSocket);

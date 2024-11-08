@@ -189,7 +189,7 @@ main(int argc, char* argv[])
     NS_LOG_UNCOND("Testing " << numPackets << " packets sent with receiver rss " << rss);
 
     Simulator::ScheduleWithContext(source->GetNode()->GetId(),
-                                   Seconds(1.0),
+                                   Seconds(1),
                                    &GenerateTraffic,
                                    source,
                                    packetSize,

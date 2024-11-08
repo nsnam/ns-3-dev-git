@@ -177,13 +177,13 @@ WifiChannelSwitchingTest::SendPacket()
     client->SetRemote(socket);
     m_staNode.Get(0)->AddApplication(client);
     client->SetStartTime(Seconds(0.5));
-    client->SetStopTime(Seconds(1.0));
+    client->SetStopTime(Seconds(1));
 
     auto server = CreateObject<PacketSocketServer>();
     server->SetLocal(socket);
     m_apNode.Get(0)->AddApplication(server);
-    server->SetStartTime(Seconds(0.0));
-    server->SetStopTime(Seconds(1.0));
+    server->SetStartTime(Seconds(0));
+    server->SetStopTime(Seconds(1));
 }
 
 void
@@ -209,7 +209,7 @@ WifiChannelSwitchingTest::StateChange(uint32_t nodeId,
 void
 WifiChannelSwitchingTest::DoRun()
 {
-    Time simulationTime(Seconds(6.0));
+    Time simulationTime(Seconds(6));
 
     RngSeedManager::SetSeed(1);
     RngSeedManager::SetRun(40);

@@ -93,8 +93,8 @@ method:
   Ptr<DoubleProbe> myprobe = CreateObjectWithAttributes<DoubleProbe>(
       "Name", StringValue("myprobe"),
       "Enabled", BooleanValue(false),
-      "Start", TimeValue(Seconds(100.0)),
-      "Stop", TimeValue(Seconds(1000.0)));
+      "Start", TimeValue(Seconds(100)),
+      "Stop", TimeValue(Seconds(1000)));
 
 Start and Stop are Time variables which determine the interval of action
 of the Probe. The Probe will only output data if the current time of the
@@ -301,7 +301,7 @@ First, the emitter needs to be setup:
 
     // The Emitter object is not associated with an ns-3 node, so
     // it won't get started automatically, so we need to do this ourselves
-    Simulator::Schedule(Seconds(0.0), &Emitter::Start, emitter);
+    Simulator::Schedule(Seconds(0), &Emitter::Start, emitter);
 
 The various DoubleProbes interact with the emitter in the example as
 shown below.

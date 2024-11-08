@@ -140,8 +140,8 @@ main(int argc, char* argv[])
     {
         sinkApps.Add(packetSinkHelper.Install(d.GetLeft(i)));
     }
-    sinkApps.Start(Seconds(0.0));
-    sinkApps.Stop(Seconds(30.0));
+    sinkApps.Start(Seconds(0));
+    sinkApps.Stop(Seconds(30));
 
     ApplicationContainer clientApps;
     for (uint32_t i = 0; i < d.RightCount(); ++i)
@@ -151,8 +151,8 @@ main(int argc, char* argv[])
         clientHelper.SetAttribute("Remote", remoteAddress);
         clientApps.Add(clientHelper.Install(d.GetRight(i)));
     }
-    clientApps.Start(Seconds(1.0)); // Start 1 second after sink
-    clientApps.Stop(Seconds(15.0)); // Stop before the sink
+    clientApps.Start(Seconds(1)); // Start 1 second after sink
+    clientApps.Stop(Seconds(15)); // Stop before the sink
 
     Ipv4GlobalRoutingHelper::PopulateRoutingTables();
 

@@ -606,7 +606,7 @@ TcpDctcpToLinuxReno::TcpDctcpToLinuxReno(uint32_t cWnd,
 void
 TcpDctcpToLinuxReno::DoRun()
 {
-    Simulator::Schedule(Seconds(0.0), &TcpDctcpToLinuxReno::ExecuteTest, this);
+    Simulator::Schedule(Seconds(0), &TcpDctcpToLinuxReno::ExecuteTest, this);
     Simulator::Run();
     Simulator::Destroy();
 }

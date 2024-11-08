@@ -140,7 +140,7 @@ BuildAppsTest(uint32_t test)
         ApplicationContainer clientApps2;
         clientHelper2.SetAttribute("Remote", remoteAddress);
         clientApps2.Add(clientHelper2.Install(n1n2.Get(0)));
-        clientApps2.Start(Seconds(3.0));
+        clientApps2.Start(Seconds(3));
         clientApps2.Stop(Seconds(client_stop_time));
     }
     else // 4 or 5
@@ -208,7 +208,7 @@ BuildAppsTest(uint32_t test)
         AddressValue remoteAddress2(InetSocketAddress(i3i5.GetAddress(1), port2));
         clientHelper2.SetAttribute("Remote", remoteAddress2);
         clientApps2.Add(clientHelper2.Install(n1n2.Get(0)));
-        clientApps2.Start(Seconds(2.0));
+        clientApps2.Start(Seconds(2));
         clientApps2.Stop(Seconds(client_stop_time));
 
         // Connection #3
@@ -240,7 +240,7 @@ BuildAppsTest(uint32_t test)
         AddressValue remoteAddress4(InetSocketAddress(i1i2.GetAddress(0), port4));
         clientHelper4.SetAttribute("Remote", remoteAddress4);
         clientApps4.Add(clientHelper4.Install(n3n5.Get(1)));
-        clientApps4.Start(Seconds(1.0));
+        clientApps4.Start(Seconds(1));
         clientApps4.Stop(Seconds(client_stop_time));
     }
 }

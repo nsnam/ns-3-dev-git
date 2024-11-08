@@ -230,7 +230,7 @@ LenaDataPhyErrorModelTestCase::DoRun()
         uePhy->SetAttribute("NoiseFigure", DoubleValue(9.0));
     }
 
-    Time statsDuration = Seconds(1.0);
+    Time statsDuration = Seconds(1);
     Simulator::Stop(m_statsStartTime + statsDuration - Seconds(0.0001));
 
     lena->EnableRlcTraces();
@@ -392,7 +392,7 @@ LenaDlCtrlPhyErrorModelTestCase::DoRun()
     uePhy->SetAttribute("TxPower", DoubleValue(23.0));
     uePhy->SetAttribute("NoiseFigure", DoubleValue(9.0));
 
-    Time statsDuration = Seconds(1.0);
+    Time statsDuration = Seconds(1);
     Simulator::Stop(m_statsStartTime + statsDuration - Seconds(0.0001));
 
     lena->EnableRlcTraces();

@@ -50,7 +50,7 @@ OnoeWifiManager::GetTypeId()
             .AddConstructor<OnoeWifiManager>()
             .AddAttribute("UpdatePeriod",
                           "The interval between decisions about rate control changes",
-                          TimeValue(Seconds(1.0)),
+                          TimeValue(Seconds(1)),
                           MakeTimeAccessor(&OnoeWifiManager::m_updatePeriod),
                           MakeTimeChecker())
             .AddAttribute("RaiseThreshold",

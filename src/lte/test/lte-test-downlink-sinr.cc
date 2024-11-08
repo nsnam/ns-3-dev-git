@@ -254,7 +254,7 @@ LteDownlinkDataSinrTestCase::DoRun()
     ip4->cellId = pbCellId[4];
     Simulator::Schedule(ti4, &LteSpectrumPhy::StartRx, dlPhy, ip4);
 
-    Simulator::Stop(Seconds(5.0));
+    Simulator::Stop(Seconds(5));
     Simulator::Run();
 
     NS_LOG_INFO("Data Frame - Theoretical SINR: " << *m_expectedSinr);
@@ -429,7 +429,7 @@ LteDownlinkCtrlSinrTestCase::DoRun()
     ip4->pss = false;
     Simulator::Schedule(ti4, &LteSpectrumPhy::StartRx, dlPhy, ip4);
 
-    Simulator::Stop(Seconds(5.0));
+    Simulator::Stop(Seconds(5));
     Simulator::Run();
 
     NS_LOG_INFO("Ctrl Frame - Theoretical SINR: " << *m_expectedSinr);

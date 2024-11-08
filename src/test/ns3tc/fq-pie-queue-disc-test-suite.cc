@@ -1030,7 +1030,7 @@ FqPieQueueDiscL4sMode::DoRun()
     // Dequeue 140 packets with delay 1ms
     delay = 0.001;
     DequeueWithDelay(queueDisc, delay, 140);
-    Simulator::Stop(Seconds(10.0));
+    Simulator::Stop(Seconds(10));
     Simulator::Run();
 
     Ptr<PieQueueDisc> q0 =
@@ -1112,7 +1112,7 @@ FqPieQueueDiscL4sMode::DoRun()
 
     // Dequeue 140 packets with delay 1ms
     DequeueWithDelay(queueDisc, delay, 140);
-    Simulator::Stop(Seconds(1.0));
+    Simulator::Stop(Seconds(1));
     Simulator::Run();
     q0 = queueDisc->GetQueueDiscClass(0)->GetQueueDisc()->GetObject<PieQueueDisc>();
     q0 = queueDisc->GetQueueDiscClass(0)->GetQueueDisc()->GetObject<PieQueueDisc>();

@@ -207,8 +207,8 @@ RadvdTestCase::DoRun()
     radvdHelper.GetRadvdInterface(iic2.GetInterfaceIndex(1))->SetSendAdvert(false);
 
     ApplicationContainer radvdApps = radvdHelper.Install(r);
-    radvdApps.Start(Seconds(1.0));
-    radvdApps.Stop(Seconds(10.0));
+    radvdApps.Start(Seconds(1));
+    radvdApps.Stop(Seconds(10));
 
     Simulator::Schedule(Seconds(2),
                         &RadvdTestCase::CheckAddresses,
@@ -225,7 +225,7 @@ RadvdTestCase::DoRun()
                         d2.Get(0),
                         d2.Get(1));
 
-    Simulator::Stop(Seconds(10.0));
+    Simulator::Stop(Seconds(10));
 
     Simulator::Run();
 

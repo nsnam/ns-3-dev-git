@@ -202,8 +202,8 @@ EpcS1uDlTestCase::DoRun()
             PacketSinkHelper packetSinkHelper("ns3::UdpSocketFactory",
                                               InetSocketAddress(Ipv4Address::GetAny(), port));
             ApplicationContainer apps = packetSinkHelper.Install(ue);
-            apps.Start(Seconds(1.0));
-            apps.Stop(Seconds(10.0));
+            apps.Start(Seconds(1));
+            apps.Stop(Seconds(10));
             enbit->ues[u].serverApp = apps.Get(0)->GetObject<PacketSink>();
 
             Time interPacketInterval = Seconds(0.01);
@@ -212,8 +212,8 @@ EpcS1uDlTestCase::DoRun()
             client.SetAttribute("Interval", TimeValue(interPacketInterval));
             client.SetAttribute("PacketSize", UintegerValue(enbit->ues[u].pktSize));
             apps = client.Install(remoteHost);
-            apps.Start(Seconds(2.0));
-            apps.Stop(Seconds(10.0));
+            apps.Start(Seconds(2));
+            apps.Stop(Seconds(10));
             enbit->ues[u].clientApp = apps.Get(0);
 
             uint64_t imsi = ++imsiCounter;

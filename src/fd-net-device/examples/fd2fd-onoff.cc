@@ -109,8 +109,8 @@ main(int argc, char* argv[])
 
     PacketSinkHelper sinkHelper(factory, sinkLocalAddress);
     ApplicationContainer sinkApp = sinkHelper.Install(serverNode);
-    sinkApp.Start(Seconds(0.0));
-    sinkApp.Stop(Seconds(30.0));
+    sinkApp.Start(Seconds(0));
+    sinkApp.Stop(Seconds(30));
     fd.EnablePcap("fd2fd-onoff-server", serverDevice);
 
     // client
@@ -122,11 +122,11 @@ main(int argc, char* argv[])
     onoff.SetAttribute("DataRate", DataRateValue(dataRate));
     onoff.SetAttribute("PacketSize", UintegerValue(packetSize));
     ApplicationContainer clientApps = onoff.Install(clientNode);
-    clientApps.Start(Seconds(2.0));
-    clientApps.Stop(Seconds(29.0));
+    clientApps.Start(Seconds(2));
+    clientApps.Stop(Seconds(29));
     fd.EnablePcap("fd2fd-onoff-client", clientDevice);
 
-    Simulator::Stop(Seconds(30.0));
+    Simulator::Stop(Seconds(30));
     Simulator::Run();
     Simulator::Destroy();
 

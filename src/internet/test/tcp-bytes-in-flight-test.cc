@@ -121,7 +121,7 @@ TcpBytesInFlightTest::ConfigureEnvironment()
     TcpGeneralTest::ConfigureEnvironment();
     SetAppPktCount(30);
     SetPropagationDelay(MilliSeconds(50));
-    SetTransmitStart(Seconds(2.0));
+    SetTransmitStart(Seconds(2));
 
     Config::SetDefault("ns3::TcpSocketBase::Sack", BooleanValue(false));
 }

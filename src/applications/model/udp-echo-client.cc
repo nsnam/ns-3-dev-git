@@ -38,7 +38,7 @@ UdpEchoClient::GetTypeId()
                 MakeUintegerChecker<uint32_t>())
             .AddAttribute("Interval",
                           "The time to wait between packets",
-                          TimeValue(Seconds(1.0)),
+                          TimeValue(Seconds(1)),
                           MakeTimeAccessor(&UdpEchoClient::m_interval),
                           MakeTimeChecker())
             .AddAttribute(

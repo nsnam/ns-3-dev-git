@@ -60,8 +60,8 @@ main(int argc, char* argv[])
     app->SetAttribute("Destination", AddressValue(interfaces.GetAddress(0)));
     app->SetAttribute("VerboseMode", EnumValue(Ping::VerboseMode::VERBOSE));
     nodes.Get(1)->AddApplication(app);
-    app->SetStartTime(Seconds(0.0));
-    app->SetStopTime(Seconds(4.0));
+    app->SetStartTime(Seconds(0));
+    app->SetStopTime(Seconds(4));
 
     fd.EnablePcapAll("realtime-dummy-network", false);
 

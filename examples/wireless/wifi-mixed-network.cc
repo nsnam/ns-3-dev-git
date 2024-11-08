@@ -265,8 +265,8 @@ Experiment::Run(Parameters params)
         uint16_t port = 9;
         UdpServerHelper server(port);
         ApplicationContainer serverApp = server.Install(wifiApNode);
-        serverApp.Start(Seconds(0.0));
-        serverApp.Stop(simulationTime + Seconds(1.0));
+        serverApp.Start(Seconds(0));
+        serverApp.Stop(simulationTime + Seconds(1));
 
         UdpClientHelper client(ApInterface.GetAddress(0), port);
         client.SetAttribute("MaxPackets", UintegerValue(4294967295U));
@@ -286,10 +286,10 @@ Experiment::Run(Parameters params)
         {
             clientApps.Add(client.Install(wifiNStaNodes));
         }
-        clientApps.Start(Seconds(1.0));
-        clientApps.Stop(simulationTime + Seconds(1.0));
+        clientApps.Start(Seconds(1));
+        clientApps.Stop(simulationTime + Seconds(1));
 
-        Simulator::Stop(simulationTime + Seconds(1.0));
+        Simulator::Stop(simulationTime + Seconds(1));
         Simulator::Run();
 
         double totalPacketsThrough = DynamicCast<UdpServer>(serverApp.Get(0))->GetReceived();
@@ -302,8 +302,8 @@ Experiment::Run(Parameters params)
         PacketSinkHelper packetSinkHelper("ns3::TcpSocketFactory", localAddress);
 
         ApplicationContainer serverApp = packetSinkHelper.Install(wifiApNode.Get(0));
-        serverApp.Start(Seconds(0.0));
-        serverApp.Stop(simulationTime + Seconds(1.0));
+        serverApp.Start(Seconds(0));
+        serverApp.Stop(simulationTime + Seconds(1));
 
         OnOffHelper onoff("ns3::TcpSocketFactory", Ipv4Address::GetAny());
         onoff.SetAttribute("OnTime", StringValue("ns3::ConstantRandomVariable[Constant=1]"));
@@ -327,10 +327,10 @@ Experiment::Run(Parameters params)
         {
             clientApps.Add(onoff.Install(wifiNStaNodes));
         }
-        clientApps.Start(Seconds(1.0));
-        clientApps.Stop(simulationTime + Seconds(1.0));
+        clientApps.Start(Seconds(1));
+        clientApps.Stop(simulationTime + Seconds(1));
 
-        Simulator::Stop(simulationTime + Seconds(1.0));
+        Simulator::Stop(simulationTime + Seconds(1));
         Simulator::Run();
 
         double totalPacketsThrough = DynamicCast<PacketSink>(serverApp.Get(0))->GetTotalRx();

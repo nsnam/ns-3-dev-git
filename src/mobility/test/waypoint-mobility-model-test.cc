@@ -81,15 +81,15 @@ WaypointMobilityModelNotifyTest::DoRun()
 
         // Add this mobility model to the stack.
         mobilityStack.push_back(model);
-        Simulator::Schedule(Seconds(0.0), &Object::Initialize, model);
+        Simulator::Schedule(Seconds(0), &Object::Initialize, model);
     }
 
-    Waypoint wpt(Seconds(0.0), Vector(0.0, 0.0, 0.0));
+    Waypoint wpt(Seconds(0), Vector(0.0, 0.0, 0.0));
 
     // Create waypoints
     for (uint32_t iw = 0; iw < waypointCount; ++iw)
     {
-        wpt.time += Seconds(1.0);
+        wpt.time += Seconds(1);
         waypoints.push_back(wpt);
     }
 
@@ -211,7 +211,7 @@ WaypointMobilityModelAddWaypointTest::DoRun()
         MakeCallback(&WaypointMobilityModelAddWaypointTest::CourseChangeCallback, this));
 
     // Add this mobility model to the stack.
-    Simulator::Schedule(Seconds(0.0), &Object::Initialize, m_mobilityModel);
+    Simulator::Schedule(Seconds(0), &Object::Initialize, m_mobilityModel);
 
     Ptr<WaypointMobilityModel> mob = DynamicCast<WaypointMobilityModel>(m_mobilityModel);
     Waypoint m_nextWaypoint(Seconds(m_waypointCounter), Vector(0.0, 0.0, 0.0));

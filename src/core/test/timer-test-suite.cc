@@ -67,7 +67,7 @@ TimerStateTestCase::DoRun()
 
     timer.SetFunction(&bari);
     timer.SetArguments(1);
-    timer.SetDelay(Seconds(10.0));
+    timer.SetDelay(Seconds(10));
     NS_TEST_ASSERT_MSG_EQ(!timer.IsRunning(), true, "");
     NS_TEST_ASSERT_MSG_EQ(timer.IsExpired(), true, "");
     NS_TEST_ASSERT_MSG_EQ(!timer.IsSuspended(), true, "");
@@ -160,7 +160,7 @@ TimerTemplateTestCase::DoRun()
     // the following call cannot possibly work and is flagged by
     // a runtime error.
     // timer.SetArguments (0.0);
-    timer.SetDelay(Seconds(1.0));
+    timer.SetDelay(Seconds(1));
     timer.Schedule();
 
     timer.SetFunction(&TimerTemplateTestCase::bazi, this);

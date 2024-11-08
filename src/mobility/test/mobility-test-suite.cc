@@ -87,14 +87,14 @@ WaypointLazyNotifyFalse::DoRun()
     m_mob = CreateObject<WaypointMobilityModel>();
     // LazyNotify should by default be false
     m_node->AggregateObject(m_mob);
-    Waypoint wpt(Seconds(0.0), Vector(0.0, 0.0, 0.0));
+    Waypoint wpt(Seconds(0), Vector(0.0, 0.0, 0.0));
     m_mob->AddWaypoint(wpt);
-    Waypoint wpt2(Seconds(10.0), Vector(10.0, 10.0, 10.0));
+    Waypoint wpt2(Seconds(10), Vector(10.0, 10.0, 10.0));
     m_mob->AddWaypoint(wpt2);
-    Waypoint wpt3(Seconds(20.0), Vector(20.0, 20.0, 20.0));
+    Waypoint wpt3(Seconds(20), Vector(20.0, 20.0, 20.0));
     m_mob->AddWaypoint(wpt3);
 
-    Simulator::Schedule(Seconds(5.0), &WaypointLazyNotifyFalse::TestXPosition, this, 5);
+    Simulator::Schedule(Seconds(5), &WaypointLazyNotifyFalse::TestXPosition, this, 5);
     Simulator::Run();
     Simulator::Destroy();
 }
@@ -161,14 +161,14 @@ WaypointLazyNotifyTrue::DoRun()
     m_mob = CreateObject<WaypointMobilityModel>();
     m_mob->SetAttributeFailSafe("LazyNotify", BooleanValue(true));
     m_node->AggregateObject(m_mob);
-    Waypoint wpt(Seconds(0.0), Vector(0.0, 0.0, 0.0));
+    Waypoint wpt(Seconds(0), Vector(0.0, 0.0, 0.0));
     m_mob->AddWaypoint(wpt);
-    Waypoint wpt2(Seconds(10.0), Vector(10.0, 10.0, 10.0));
+    Waypoint wpt2(Seconds(10), Vector(10.0, 10.0, 10.0));
     m_mob->AddWaypoint(wpt2);
-    Waypoint wpt3(Seconds(20.0), Vector(20.0, 20.0, 20.0));
+    Waypoint wpt3(Seconds(20), Vector(20.0, 20.0, 20.0));
     m_mob->AddWaypoint(wpt3);
 
-    Simulator::Schedule(Seconds(15.0), &WaypointLazyNotifyTrue::TestXPosition, this, 15);
+    Simulator::Schedule(Seconds(15), &WaypointLazyNotifyTrue::TestXPosition, this, 15);
     Simulator::Run();
     Simulator::Destroy();
 }
@@ -239,13 +239,13 @@ WaypointInitialPositionIsWaypoint::DoRun()
     m_mob1->SetAttributeFailSafe("InitialPositionIsWaypoint", BooleanValue(false));
     m_mob1->SetPosition(Vector(10.0, 10.0, 10.0));
     // At time 1s, there should be no waypoints
-    Simulator::Schedule(Seconds(1.0),
+    Simulator::Schedule(Seconds(1),
                         &WaypointInitialPositionIsWaypoint::TestNumWaypoints,
                         this,
                         m_mob1,
                         0);
     // At time 15s, the model should still be at x position 10.0
-    Simulator::Schedule(Seconds(15.0),
+    Simulator::Schedule(Seconds(15),
                         &WaypointInitialPositionIsWaypoint::TestXPosition,
                         this,
                         m_mob1,
@@ -255,19 +255,19 @@ WaypointInitialPositionIsWaypoint::DoRun()
     // after adding a waypoint.
     m_mob2 = CreateObject<WaypointMobilityModel>();
     m_mob2->SetAttributeFailSafe("InitialPositionIsWaypoint", BooleanValue(false));
-    Waypoint wpt21(Seconds(5.0), Vector(15.0, 15.0, 15.0));
+    Waypoint wpt21(Seconds(5), Vector(15.0, 15.0, 15.0));
     m_mob2->AddWaypoint(wpt21);
-    Waypoint wpt22(Seconds(10.0), Vector(20.0, 20.0, 20.0));
+    Waypoint wpt22(Seconds(10), Vector(20.0, 20.0, 20.0));
     m_mob2->AddWaypoint(wpt22);
     m_mob2->SetPosition(Vector(10.0, 10.0, 10.0));
     // At time 3, no waypoints have been hit, so position should be 10 and
     // numWaypoints should be 2, or 1 excluding the next one
-    Simulator::Schedule(Seconds(3.0),
+    Simulator::Schedule(Seconds(3),
                         &WaypointInitialPositionIsWaypoint::TestXPosition,
                         this,
                         m_mob2,
                         10.0);
-    Simulator::Schedule(Seconds(3.0),
+    Simulator::Schedule(Seconds(3),
                         &WaypointInitialPositionIsWaypoint::TestNumWaypoints,
                         this,
                         m_mob2,
@@ -275,12 +275,12 @@ WaypointInitialPositionIsWaypoint::DoRun()
     // At time 8, check that X position is 18 (i.e. position is interpolating
     // between 15 and 20) and there is one waypoint left, but we exclude
     // the next one so we test for zero waypoints
-    Simulator::Schedule(Seconds(8.0),
+    Simulator::Schedule(Seconds(8),
                         &WaypointInitialPositionIsWaypoint::TestXPosition,
                         this,
                         m_mob2,
                         18.0);
-    Simulator::Schedule(Seconds(8.0),
+    Simulator::Schedule(Seconds(8),
                         &WaypointInitialPositionIsWaypoint::TestNumWaypoints,
                         this,
                         m_mob2,
@@ -292,13 +292,13 @@ WaypointInitialPositionIsWaypoint::DoRun()
     m_mob3->SetAttributeFailSafe("InitialPositionIsWaypoint", BooleanValue(true));
     m_mob3->SetPosition(Vector(10.0, 10.0, 10.0));
     // At time 1s, there should be zero waypoints not counting the next one
-    Simulator::Schedule(Seconds(1.0),
+    Simulator::Schedule(Seconds(1),
                         &WaypointInitialPositionIsWaypoint::TestNumWaypoints,
                         this,
                         m_mob3,
                         0);
     // At time 15s, the model should still be at x position 10.0
-    Simulator::Schedule(Seconds(15.0),
+    Simulator::Schedule(Seconds(15),
                         &WaypointInitialPositionIsWaypoint::TestXPosition,
                         this,
                         m_mob3,
@@ -308,33 +308,33 @@ WaypointInitialPositionIsWaypoint::DoRun()
     // after adding a waypoint.
     m_mob4 = CreateObject<WaypointMobilityModel>();
     m_mob4->SetAttributeFailSafe("InitialPositionIsWaypoint", BooleanValue(true));
-    Waypoint wpt41(Seconds(5.0), Vector(15.0, 15.0, 15.0));
+    Waypoint wpt41(Seconds(5), Vector(15.0, 15.0, 15.0));
     m_mob4->AddWaypoint(wpt41);
-    Waypoint wpt42(Seconds(10.0), Vector(20.0, 20.0, 20.0));
+    Waypoint wpt42(Seconds(10), Vector(20.0, 20.0, 20.0));
     m_mob4->AddWaypoint(wpt42);
     // Here, SetPosition() is called after waypoints have been added.  In
     // this case, the initial position is set until the time of the first
     // waypoint, at which time it jumps to the waypoint and begins moving
     m_mob4->SetPosition(Vector(10.0, 10.0, 10.0));
     // At time 3, position should be fixed still at 10
-    Simulator::Schedule(Seconds(3.0),
+    Simulator::Schedule(Seconds(3),
                         &WaypointInitialPositionIsWaypoint::TestXPosition,
                         this,
                         m_mob4,
                         10.0);
-    Simulator::Schedule(Seconds(3.0),
+    Simulator::Schedule(Seconds(3),
                         &WaypointInitialPositionIsWaypoint::TestNumWaypoints,
                         this,
                         m_mob4,
                         1);
     // At time 6, we should be moving between 15 and 20
-    Simulator::Schedule(Seconds(6.0),
+    Simulator::Schedule(Seconds(6),
                         &WaypointInitialPositionIsWaypoint::TestXPosition,
                         this,
                         m_mob4,
                         16.0);
     // At time 15, we should be fixed at 20
-    Simulator::Schedule(Seconds(15.0),
+    Simulator::Schedule(Seconds(15),
                         &WaypointInitialPositionIsWaypoint::TestXPosition,
                         this,
                         m_mob4,
@@ -347,16 +347,16 @@ WaypointInitialPositionIsWaypoint::DoRun()
     // Note:  The below statement would result in a crash, because it would
     // violate the rule that waypoints must increase in start time
     // m_mob5->SetPosition (Vector (10.0, 10.0, 10.0));
-    Waypoint wpt51(Seconds(0.0), Vector(200.0, 200.0, 200.0));
+    Waypoint wpt51(Seconds(0), Vector(200.0, 200.0, 200.0));
     m_mob5->AddWaypoint(wpt51);
-    Waypoint wpt52(Seconds(5.0), Vector(15.0, 15.0, 15.0));
+    Waypoint wpt52(Seconds(5), Vector(15.0, 15.0, 15.0));
     m_mob5->AddWaypoint(wpt52);
-    Waypoint wpt53(Seconds(10.0), Vector(20.0, 20.0, 20.0));
+    Waypoint wpt53(Seconds(10), Vector(20.0, 20.0, 20.0));
     m_mob5->AddWaypoint(wpt53);
     // Here, since waypoints already exist, the below SetPosition will cancel
     // out wpt51 above, and model will stay at initial position until time 5
     m_mob5->SetPosition(Vector(10.0, 10.0, 10.0));
-    Simulator::Schedule(Seconds(3.0),
+    Simulator::Schedule(Seconds(3),
                         &WaypointInitialPositionIsWaypoint::TestXPosition,
                         this,
                         m_mob5,
@@ -425,8 +425,8 @@ WaypointMobilityModelViaHelper::DoRun()
     // Get back a pointer to this
     Ptr<WaypointMobilityModel> mob = c.Get(0)->GetObject<WaypointMobilityModel>();
     // Waypoint added at time 0 will override initial position
-    Waypoint wpt(Seconds(5.0), Vector(20.0, 20.0, 20.0));
-    Waypoint wpt2(Seconds(10.0), Vector(10.0, 10.0, 10.0));
+    Waypoint wpt(Seconds(5), Vector(20.0, 20.0, 20.0));
+    Waypoint wpt2(Seconds(10), Vector(10.0, 10.0, 10.0));
     mob->AddWaypoint(wpt);
     mob->AddWaypoint(wpt2);
     // At time 3 (before first waypoint, position is 20
@@ -452,7 +452,7 @@ WaypointMobilityModelViaHelper::DoRun()
                                BooleanValue(true));
     mobility2.Install(c2);
     Ptr<WaypointMobilityModel> mob2 = c2.Get(0)->GetObject<WaypointMobilityModel>();
-    Waypoint wpt3(Seconds(5.0), Vector(20.0, 20.0, 20.0));
+    Waypoint wpt3(Seconds(5), Vector(20.0, 20.0, 20.0));
     mob2->AddWaypoint(wpt3);
     // Move to position 12 at 3 seconds
     Simulator::Schedule(Seconds(3), &WaypointMobilityModelViaHelper::TestXPosition, this, mob2, 12);

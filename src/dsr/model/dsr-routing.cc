@@ -326,7 +326,7 @@ DsrRouting::GetTypeId()
                           MakeUintegerChecker<uint32_t>())
             .AddAttribute("MaxNetworkQueueDelay",
                           "The max time for a packet to stay in the network queue.",
-                          TimeValue(Seconds(30.0)),
+                          TimeValue(Seconds(30)),
                           MakeTimeAccessor(&DsrRouting::m_maxNetworkDelay),
                           MakeTimeChecker())
             .AddAttribute("NumPriorityQueues",

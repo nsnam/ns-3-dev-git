@@ -182,10 +182,10 @@ LtePrimaryCellChangeTestCase::DoRun()
                                 ->GetCellId();
 
     lteHelper->AddX2Interface(enbNodes);
-    lteHelper->HandoverRequest(Seconds(1.0), ueDev, sourceEnbDev, targetCellId);
+    lteHelper->HandoverRequest(Seconds(1), ueDev, sourceEnbDev, targetCellId);
 
     // Run simulation.
-    Simulator::Stop(Seconds(2.0));
+    Simulator::Stop(Seconds(2));
     Simulator::Run();
 
     uint16_t expectedCellId = targetCellId;

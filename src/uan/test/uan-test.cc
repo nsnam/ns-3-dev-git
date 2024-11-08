@@ -154,7 +154,7 @@ UanTest::DoOnePhyTest(Time txTime1,
     Simulator::Schedule(txTime2, &UanTest::SendOnePacket, this, dev2, mode2);
 
     m_bytesRx = 0;
-    Simulator::Stop(Seconds(20.0));
+    Simulator::Stop(Seconds(20));
     Simulator::Run();
     Simulator::Destroy();
 
@@ -179,12 +179,12 @@ UanTest::DoPhyTests()
     Ptr<UanPropModelIdeal> prop = CreateObject<UanPropModelIdeal>();
 
     // No collision (Get 2 packets)
-    NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL(DoOnePhyTest(Seconds(1.0), Seconds(3.001), 50, 50, prop),
+    NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL(DoOnePhyTest(Seconds(1), Seconds(3.001), 50, 50, prop),
                                        34,
                                        "Should have received 34 bytes from 2 disjoint packets");
 
     // Collision (Lose both packets)
-    NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL(DoOnePhyTest(Seconds(1.0), Seconds(2.99), 50, 50, prop),
+    NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL(DoOnePhyTest(Seconds(1), Seconds(2.99), 50, 50, prop),
                                        0,
                                        "Expected collision resulting in loss of both packets");
 
@@ -200,18 +200,18 @@ UanTest::DoPhyTests()
 #endif // UAN_PROP_BH_INSTALLED
 
     //  No collision (Get 2 packets)
-    NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL(DoOnePhyTest(Seconds(1.0), Seconds(3.001), 50, 50, prop),
+    NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL(DoOnePhyTest(Seconds(1), Seconds(3.001), 50, 50, prop),
                                        34,
                                        "Should have received 34 bytes from 2 disjoint packets");
 
     // Should correctly receive first arriving packet
-    NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL(DoOnePhyTest(Seconds(1.0), Seconds(1.0126), 50, 50, prop),
+    NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL(DoOnePhyTest(Seconds(1), Seconds(1.0126), 50, 50, prop),
                                        17,
                                        "Should have received 17 bytes from first arriving packet");
 
     // Packets should collide and both be lost
     NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL(
-        DoOnePhyTest(Seconds(1.0), Seconds(1.0 + 7.01 * (13.0 / 80.0)), 50, 50, prop),
+        DoOnePhyTest(Seconds(1), Seconds(1.0 + 7.01 * (13.0 / 80.0)), 50, 50, prop),
         0,
         "Packets should collide, but received data");
 
@@ -244,29 +244,25 @@ UanTest::DoPhyTests()
     m_phyFac.Set("SupportedModesPhy2", UanModesListValue(m1));
 
     // No collision (Get 2 packets)
-    NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL(DoOnePhyTest(Seconds(1.0), Seconds(3.01), 50, 50, prop),
+    NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL(DoOnePhyTest(Seconds(1), Seconds(3.01), 50, 50, prop),
                                        34,
                                        "Expected no collision");
 
-    NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL(
-        DoOnePhyTest(Seconds(1.0), Seconds(2.99), 50, 50, prop, 0, 0),
-        0,
-        "Expected collision with both packets lost");
+    NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL(DoOnePhyTest(Seconds(1), Seconds(2.99), 50, 50, prop, 0, 0),
+                                       0,
+                                       "Expected collision with both packets lost");
 
-    NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL(
-        DoOnePhyTest(Seconds(1.0), Seconds(2.99), 50, 50, prop, 0, 2),
-        17,
-        "Expected collision with only one packets lost");
+    NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL(DoOnePhyTest(Seconds(1), Seconds(2.99), 50, 50, prop, 0, 2),
+                                       17,
+                                       "Expected collision with only one packets lost");
 
-    NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL(
-        DoOnePhyTest(Seconds(1.0), Seconds(2.99), 50, 50, prop, 0, 5),
-        34,
-        "Expected no collision");
+    NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL(DoOnePhyTest(Seconds(1), Seconds(2.99), 50, 50, prop, 0, 5),
+                                       34,
+                                       "Expected no collision");
 
-    NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL(
-        DoOnePhyTest(Seconds(1.0), Seconds(2.99), 50, 50, prop, 2, 3),
-        34,
-        "Expected no collision");
+    NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL(DoOnePhyTest(Seconds(1), Seconds(2.99), 50, 50, prop, 2, 3),
+                                       34,
+                                       "Expected no collision");
 
     return false;
 }

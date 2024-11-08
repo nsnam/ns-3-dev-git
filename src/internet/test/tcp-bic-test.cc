@@ -86,7 +86,7 @@ TcpBicIncrementTest::DoRun()
     m_state->m_segmentSize = m_segmentSize;
     m_state->m_ssThresh = m_ssThresh;
 
-    Simulator::Schedule(Seconds(0.0), &TcpBicIncrementTest::ExecuteTest, this);
+    Simulator::Schedule(Seconds(0), &TcpBicIncrementTest::ExecuteTest, this);
     Simulator::Run();
     Simulator::Destroy();
 }
@@ -235,7 +235,7 @@ TcpBicDecrementTest::DoRun()
     m_state->m_cWnd = m_cWnd;
     m_state->m_segmentSize = m_segmentSize;
 
-    Simulator::Schedule(Seconds(0.0), &TcpBicDecrementTest::ExecuteTest, this);
+    Simulator::Schedule(Seconds(0), &TcpBicDecrementTest::ExecuteTest, this);
     Simulator::Run();
     Simulator::Destroy();
 }

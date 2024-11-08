@@ -72,7 +72,7 @@ TcpZeroWindowTest::ConfigureEnvironment()
     TcpGeneralTest::ConfigureEnvironment();
     SetAppPktCount(20);
     SetMTU(500);
-    SetTransmitStart(Seconds(2.0));
+    SetTransmitStart(Seconds(2));
     SetPropagationDelay(MilliSeconds(50));
 }
 
@@ -95,7 +95,7 @@ TcpZeroWindowTest::CreateReceiverSocket(Ptr<Node> node)
     Ptr<TcpSocketMsgBase> socket = TcpGeneralTest::CreateReceiverSocket(node);
 
     socket->SetAttribute("RcvBufSize", UintegerValue(0));
-    Simulator::Schedule(Seconds(10.0), &TcpZeroWindowTest::IncreaseBufSize, this);
+    Simulator::Schedule(Seconds(10), &TcpZeroWindowTest::IncreaseBufSize, this);
 
     return socket;
 }

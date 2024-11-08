@@ -284,8 +284,8 @@ main(int argc, char* argv[])
     uint16_t port = 5001;
     UdpServerHelper serverA(port);
     ApplicationContainer serverAppA = serverA.Install(wifiApNodes.Get(0));
-    serverAppA.Start(Seconds(0.0));
-    serverAppA.Stop(simulationTime + Seconds(1.0));
+    serverAppA.Start(Seconds(0));
+    serverAppA.Stop(simulationTime + Seconds(1));
 
     InetSocketAddress destA(ApInterfaceA.GetAddress(0), port);
 
@@ -297,13 +297,13 @@ main(int argc, char* argv[])
     clientA.SetAttribute("Tos", UintegerValue(0x70)); // AC_BE
 
     ApplicationContainer clientAppA = clientA.Install(wifiStaNodes.Get(0));
-    clientAppA.Start(Seconds(1.0));
-    clientAppA.Stop(simulationTime + Seconds(1.0));
+    clientAppA.Start(Seconds(1));
+    clientAppA.Stop(simulationTime + Seconds(1));
 
     UdpServerHelper serverB(port);
     ApplicationContainer serverAppB = serverB.Install(wifiApNodes.Get(1));
-    serverAppB.Start(Seconds(0.0));
-    serverAppB.Stop(simulationTime + Seconds(1.0));
+    serverAppB.Start(Seconds(0));
+    serverAppB.Stop(simulationTime + Seconds(1));
 
     InetSocketAddress destB(ApInterfaceB.GetAddress(0), port);
 
@@ -315,13 +315,13 @@ main(int argc, char* argv[])
     clientB.SetAttribute("Tos", UintegerValue(0x70)); // AC_BE
 
     ApplicationContainer clientAppB = clientB.Install(wifiStaNodes.Get(1));
-    clientAppB.Start(Seconds(1.0));
-    clientAppB.Stop(simulationTime + Seconds(1.0));
+    clientAppB.Start(Seconds(1));
+    clientAppB.Stop(simulationTime + Seconds(1));
 
     UdpServerHelper serverC(port);
     ApplicationContainer serverAppC = serverC.Install(wifiApNodes.Get(2));
-    serverAppC.Start(Seconds(0.0));
-    serverAppC.Stop(simulationTime + Seconds(1.0));
+    serverAppC.Start(Seconds(0));
+    serverAppC.Stop(simulationTime + Seconds(1));
 
     InetSocketAddress destC(ApInterfaceC.GetAddress(0), port);
 
@@ -333,13 +333,13 @@ main(int argc, char* argv[])
     clientC.SetAttribute("Tos", UintegerValue(0xb8)); // AC_VI
 
     ApplicationContainer clientAppC = clientC.Install(wifiStaNodes.Get(2));
-    clientAppC.Start(Seconds(1.0));
-    clientAppC.Stop(simulationTime + Seconds(1.0));
+    clientAppC.Start(Seconds(1));
+    clientAppC.Stop(simulationTime + Seconds(1));
 
     UdpServerHelper serverD(port);
     ApplicationContainer serverAppD = serverD.Install(wifiApNodes.Get(3));
-    serverAppD.Start(Seconds(0.0));
-    serverAppD.Stop(simulationTime + Seconds(1.0));
+    serverAppD.Start(Seconds(0));
+    serverAppD.Stop(simulationTime + Seconds(1));
 
     InetSocketAddress destD(ApInterfaceD.GetAddress(0), port);
 
@@ -351,8 +351,8 @@ main(int argc, char* argv[])
     clientD.SetAttribute("Tos", UintegerValue(0xb8)); // AC_VI
 
     ApplicationContainer clientAppD = clientD.Install(wifiStaNodes.Get(3));
-    clientAppD.Start(Seconds(1.0));
-    clientAppD.Stop(simulationTime + Seconds(1.0));
+    clientAppD.Start(Seconds(1));
+    clientAppD.Stop(simulationTime + Seconds(1));
 
     if (enablePcap)
     {
@@ -366,7 +366,7 @@ main(int argc, char* argv[])
         phy.EnablePcap("STA_D", staDeviceD.Get(0));
     }
 
-    Simulator::Stop(simulationTime + Seconds(1.0));
+    Simulator::Stop(simulationTime + Seconds(1));
     Simulator::Run();
 
     /* Show results */

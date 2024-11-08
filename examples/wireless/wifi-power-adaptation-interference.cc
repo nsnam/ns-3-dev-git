@@ -578,8 +578,8 @@ main(int argc, char* argv[])
 
     OnOffHelper onoff("ns3::UdpSocketFactory", InetSocketAddress(sinkAddress, port));
     onoff.SetConstantRate(DataRate("54Mb/s"), packetSize);
-    onoff.SetAttribute("StartTime", TimeValue(Seconds(0.0)));
-    onoff.SetAttribute("StopTime", TimeValue(Seconds(100.0)));
+    onoff.SetAttribute("StartTime", TimeValue(Seconds(0)));
+    onoff.SetAttribute("StopTime", TimeValue(Seconds(100)));
     ApplicationContainer apps_source = onoff.Install(wifiApNodes.Get(0));
 
     PacketSinkHelper sink1("ns3::UdpSocketFactory", InetSocketAddress(sinkAddress1, port));
@@ -587,8 +587,8 @@ main(int argc, char* argv[])
 
     OnOffHelper onoff1("ns3::UdpSocketFactory", InetSocketAddress(sinkAddress1, port));
     onoff1.SetConstantRate(DataRate("54Mb/s"), packetSize);
-    onoff1.SetAttribute("StartTime", TimeValue(Seconds(0.0)));
-    onoff1.SetAttribute("StopTime", TimeValue(Seconds(100.0)));
+    onoff1.SetAttribute("StartTime", TimeValue(Seconds(0)));
+    onoff1.SetAttribute("StopTime", TimeValue(Seconds(100)));
     apps_source.Add(onoff1.Install(wifiApNodes.Get(1)));
 
     apps_sink.Start(Seconds(0.5));

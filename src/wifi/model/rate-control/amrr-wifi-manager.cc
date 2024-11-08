@@ -50,7 +50,7 @@ AmrrWifiManager::GetTypeId()
             .AddConstructor<AmrrWifiManager>()
             .AddAttribute("UpdatePeriod",
                           "The interval between decisions about rate control changes",
-                          TimeValue(Seconds(1.0)),
+                          TimeValue(Seconds(1)),
                           MakeTimeAccessor(&AmrrWifiManager::m_updatePeriod),
                           MakeTimeChecker())
             .AddAttribute(

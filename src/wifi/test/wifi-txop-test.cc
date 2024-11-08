@@ -398,7 +398,7 @@ WifiTxopTest::DoRun()
         server->SetLocal(srvAddr);
         (*nodeIt)->AddApplication(server);
         server->SetStartTime(Time{0}); // now
-        server->SetStopTime(Seconds(1.0));
+        server->SetStopTime(Seconds(1));
     }
 
     // set DL and UL packet sockets
@@ -493,7 +493,7 @@ WifiTxopTest::GetApplication(TrafficDirection dir,
     client->SetAttribute("Interval", TimeValue(MicroSeconds(0)));
     client->SetRemote(dir == DOWNLINK ? m_dlSockets.at(staId) : m_ulSockets.at(staId));
     client->SetStartTime(Time{0}); // now
-    client->SetStopTime(Seconds(1.0));
+    client->SetStopTime(Seconds(1));
 
     return client;
 }

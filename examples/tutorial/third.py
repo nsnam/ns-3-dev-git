@@ -135,21 +135,21 @@ address.Assign(apDevices)
 echoServer = ns.UdpEchoServerHelper(9)
 
 serverApps = echoServer.Install(csmaNodes.Get(nCsma.value))
-serverApps.Start(ns.Seconds(1.0))
-serverApps.Stop(ns.Seconds(10.0))
+serverApps.Start(ns.Seconds(1))
+serverApps.Stop(ns.Seconds(10))
 
 echoClient = ns.UdpEchoClientHelper(csmaInterfaces.GetAddress(nCsma.value).ConvertTo(), 9)
 echoClient.SetAttribute("MaxPackets", ns.UintegerValue(1))
-echoClient.SetAttribute("Interval", ns.TimeValue(ns.Seconds(1.0)))
+echoClient.SetAttribute("Interval", ns.TimeValue(ns.Seconds(1)))
 echoClient.SetAttribute("PacketSize", ns.UintegerValue(1024))
 
 clientApps = echoClient.Install(wifiStaNodes.Get(nWifi.value - 1))
-clientApps.Start(ns.Seconds(2.0))
-clientApps.Stop(ns.Seconds(10.0))
+clientApps.Start(ns.Seconds(2))
+clientApps.Stop(ns.Seconds(10))
 
 ns.Ipv4GlobalRoutingHelper.PopulateRoutingTables()
 
-ns.Simulator.Stop(ns.Seconds(10.0))
+ns.Simulator.Stop(ns.Seconds(10))
 
 if tracing.value:
     phy.SetPcapDataLinkType(phy.DLT_IEEE802_11_RADIO)

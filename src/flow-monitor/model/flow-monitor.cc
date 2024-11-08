@@ -37,12 +37,12 @@ FlowMonitor::GetTypeId()
                 "MaxPerHopDelay",
                 ("The maximum per-hop delay that should be considered.  "
                  "Packets still not received after this delay are to be considered lost."),
-                TimeValue(Seconds(10.0)),
+                TimeValue(Seconds(10)),
                 MakeTimeAccessor(&FlowMonitor::m_maxPerHopDelay),
                 MakeTimeChecker())
             .AddAttribute("StartTime",
                           ("The time when the monitoring starts."),
-                          TimeValue(Seconds(0.0)),
+                          TimeValue(Seconds(0)),
                           MakeTimeAccessor(&FlowMonitor::Start),
                           MakeTimeChecker())
             .AddAttribute("DelayBinWidth",

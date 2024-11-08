@@ -104,8 +104,8 @@ main(int argc, char* argv[])
     onoff.SetAttribute("PacketSize", UintegerValue(50));
 
     ApplicationContainer apps = onoff.Install(c.Get(0));
-    apps.Start(Seconds(1.0));
-    apps.Stop(Seconds(10.0));
+    apps.Start(Seconds(1));
+    apps.Stop(Seconds(10));
 
     AsciiTraceHelper ascii;
     Ptr<OutputStreamWrapper> stream = ascii.CreateFileStream("mixed-global-routing.tr");

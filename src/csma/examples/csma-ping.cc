@@ -95,14 +95,14 @@ main(int argc, char* argv[])
     onoff.SetAttribute("PacketSize", UintegerValue(1200));
 
     ApplicationContainer apps = onoff.Install(c.Get(0));
-    apps.Start(Seconds(1.0));
-    apps.Stop(Seconds(10.0));
+    apps.Start(Seconds(1));
+    apps.Stop(Seconds(10));
 
     NS_LOG_INFO("Create Sink.");
     PacketSinkHelper sink = PacketSinkHelper("ns3::Ipv4RawSocketFactory", dst);
     apps = sink.Install(c.Get(3));
-    apps.Start(Seconds(0.0));
-    apps.Stop(Seconds(11.0));
+    apps.Start(Seconds(0));
+    apps.Stop(Seconds(11));
 
     NS_LOG_INFO("Create pinger");
     PingHelper ping(addresses.GetAddress(2));
@@ -111,8 +111,8 @@ main(int argc, char* argv[])
     pingers.Add(c.Get(1));
     pingers.Add(c.Get(3));
     apps = ping.Install(pingers);
-    apps.Start(Seconds(2.0));
-    apps.Stop(Seconds(5.0));
+    apps.Start(Seconds(2));
+    apps.Stop(Seconds(5));
 
     NS_LOG_INFO("Configure Tracing.");
     // first, pcap tracing in non-promiscuous mode

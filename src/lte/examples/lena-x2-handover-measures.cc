@@ -295,9 +295,9 @@ main(int argc, char* argv[])
     lteHelper->EnableRlcTraces();
     lteHelper->EnablePdcpTraces();
     Ptr<RadioBearerStatsCalculator> rlcStats = lteHelper->GetRlcStats();
-    rlcStats->SetAttribute("EpochDuration", TimeValue(Seconds(1.0)));
+    rlcStats->SetAttribute("EpochDuration", TimeValue(Seconds(1)));
     Ptr<RadioBearerStatsCalculator> pdcpStats = lteHelper->GetPdcpStats();
-    pdcpStats->SetAttribute("EpochDuration", TimeValue(Seconds(1.0)));
+    pdcpStats->SetAttribute("EpochDuration", TimeValue(Seconds(1)));
 
     // connect custom trace sinks for RRC connection establishment and handover notification
     Config::Connect("/NodeList/*/DeviceList/*/LteEnbRrc/ConnectionEstablished",

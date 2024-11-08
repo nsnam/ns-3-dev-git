@@ -271,7 +271,7 @@ LrWpanDataIfsTestCase::DoRun()
     ////////////////////////  SIFS ///////////////////////////
 
     Simulator::ScheduleWithContext(1,
-                                   Seconds(0.0),
+                                   Seconds(0),
                                    &LrWpanMac::McpsDataRequest,
                                    dev0->GetMac(),
                                    params,
@@ -293,7 +293,7 @@ LrWpanDataIfsTestCase::DoRun()
     p0 = Create<Packet>(8);
 
     Simulator::ScheduleWithContext(1,
-                                   Seconds(0.0),
+                                   Seconds(0),
                                    &LrWpanMac::McpsDataRequest,
                                    dev0->GetMac(),
                                    params,
@@ -316,7 +316,7 @@ LrWpanDataIfsTestCase::DoRun()
     p0 = Create<Packet>(2);
 
     Simulator::ScheduleWithContext(1,
-                                   Seconds(0.0),
+                                   Seconds(0),
                                    &LrWpanMac::McpsDataRequest,
                                    dev0->GetMac(),
                                    params,
@@ -339,7 +339,7 @@ LrWpanDataIfsTestCase::DoRun()
     p0 = Create<Packet>(8);
 
     Simulator::ScheduleWithContext(1,
-                                   Seconds(0.0),
+                                   Seconds(0),
                                    &LrWpanMac::McpsDataRequest,
                                    dev0->GetMac(),
                                    params,
@@ -377,7 +377,7 @@ LrWpanDataIfsTestCase::DoRun()
     params.m_msduHandle = 0;
 
     Simulator::ScheduleWithContext(1,
-                                   Seconds(0.0),
+                                   Seconds(0),
                                    &LrWpanMac::McpsDataRequest,
                                    dev0->GetMac(),
                                    params,

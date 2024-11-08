@@ -50,7 +50,7 @@ main(int argc, char* argv[])
     // Now, do the actual simulation.
     //
     NS_LOG_INFO("Run Simulation.");
-    Simulator::Stop(Seconds(20.0));
+    Simulator::Stop(Seconds(20));
     Simulator::Run();
     Simulator::Destroy();
     NS_LOG_INFO("Done.");

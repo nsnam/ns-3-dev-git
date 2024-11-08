@@ -78,7 +78,7 @@ int
 main(int argc, char* argv[])
 {
     bool logging{false};
-    Time interPacketInterval{Seconds(1.0)};
+    Time interPacketInterval{Seconds(1)};
     uint32_t size{56};
     uint32_t count{5};
     std::string destinationStr;
@@ -246,7 +246,7 @@ main(int argc, char* argv[])
 
     pointToPoint.EnablePcapAll("ping-example");
 
-    Simulator::Stop(Seconds(60.0));
+    Simulator::Stop(Seconds(60));
     Simulator::Run();
     Simulator::Destroy();
     return 0;

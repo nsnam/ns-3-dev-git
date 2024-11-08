@@ -1958,7 +1958,7 @@ BlockAckAggregationDisabledTest::DoRun()
     client1->SetRemote(socket);
     wifiStaNode.Get(0)->AddApplication(client1);
     client1->SetStartTime(Seconds(1));
-    client1->SetStopTime(Seconds(3.0));
+    client1->SetStopTime(Seconds(3));
 
     // the second client application generates 13 packets. Even if when the first
     // packet is queued the queue is empty, the first packet is not transmitted
@@ -1971,13 +1971,13 @@ BlockAckAggregationDisabledTest::DoRun()
     client2->SetRemote(socket);
     wifiStaNode.Get(0)->AddApplication(client2);
     client2->SetStartTime(Seconds(1.5));
-    client2->SetStopTime(Seconds(3.0));
+    client2->SetStopTime(Seconds(3));
 
     Ptr<PacketSocketServer> server = CreateObject<PacketSocketServer>();
     server->SetLocal(socket);
     wifiApNode.Get(0)->AddApplication(server);
-    server->SetStartTime(Seconds(0.0));
-    server->SetStopTime(Seconds(4.0));
+    server->SetStartTime(Seconds(0));
+    server->SetStopTime(Seconds(4));
 
     Config::Connect("/NodeList/*/ApplicationList/0/$ns3::PacketSocketServer/Rx",
                     MakeCallback(&BlockAckAggregationDisabledTest::L7Receive, this));
@@ -2215,13 +2215,13 @@ OrigBlockAckWindowStalled::DoSetup()
     client->SetRemote(socket);
     wifiStaNode.Get(0)->AddApplication(client);
     client->SetStartTime(Seconds(0.5));
-    client->SetStopTime(Seconds(3.0));
+    client->SetStopTime(Seconds(3));
 
     auto server = CreateObject<PacketSocketServer>();
     server->SetLocal(socket);
     wifiApNode.Get(0)->AddApplication(server);
-    server->SetStartTime(Seconds(0.0));
-    server->SetStopTime(Seconds(4.0));
+    server->SetStartTime(Seconds(0));
+    server->SetStopTime(Seconds(4));
 }
 
 void

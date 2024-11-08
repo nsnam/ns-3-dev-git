@@ -71,7 +71,7 @@ main(int argc, char* argv[])
     // - 10,000 samples
     // - 0.5 seconds for window size
     // - 100 RB
-    lteHelper->SetFadingModelAttribute("TraceLength", TimeValue(Seconds(10.0)));
+    lteHelper->SetFadingModelAttribute("TraceLength", TimeValue(Seconds(10)));
     lteHelper->SetFadingModelAttribute("SamplesNum", UintegerValue(10000));
     lteHelper->SetFadingModelAttribute("WindowSize", TimeValue(Seconds(0.5)));
     lteHelper->SetFadingModelAttribute("RbNum", UintegerValue(100));

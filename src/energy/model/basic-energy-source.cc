@@ -55,7 +55,7 @@ BasicEnergySource::GetTypeId()
                           MakeDoubleChecker<double>())
             .AddAttribute("PeriodicEnergyUpdateInterval",
                           "Time between two consecutive periodic energy updates.",
-                          TimeValue(Seconds(1.0)),
+                          TimeValue(Seconds(1)),
                           MakeTimeAccessor(&BasicEnergySource::SetEnergyUpdateInterval,
                                            &BasicEnergySource::GetEnergyUpdateInterval),
                           MakeTimeChecker())
@@ -69,7 +69,7 @@ BasicEnergySource::GetTypeId()
 BasicEnergySource::BasicEnergySource()
 {
     NS_LOG_FUNCTION(this);
-    m_lastUpdateTime = Seconds(0.0);
+    m_lastUpdateTime = Seconds(0);
     m_depleted = false;
 }
 

@@ -114,7 +114,7 @@ def main(argv):
     monitor.SetAttribute("JitterBinWidth", ns.DoubleValue(0.001))
     monitor.SetAttribute("PacketSizeBinWidth", ns.DoubleValue(20))
 
-    ns.Simulator.Stop(ns.Seconds(44.0))
+    ns.Simulator.Stop(ns.Seconds(44))
     ns.Simulator.Run()
 
     def print_stats(os, st):

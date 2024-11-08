@@ -74,7 +74,7 @@ HwmpReactiveRegressionTest::CreateNodes()
     mobility.SetPositionAllocator(positionAlloc);
     mobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
     mobility.Install(*m_nodes);
-    Simulator::Schedule(Seconds(5.0), &HwmpReactiveRegressionTest::ResetPosition, this);
+    Simulator::Schedule(Seconds(5), &HwmpReactiveRegressionTest::ResetPosition, this);
 }
 
 void
@@ -88,7 +88,7 @@ HwmpReactiveRegressionTest::InstallApplications()
     m_clientSocket->SetRecvCallback(
         MakeCallback(&HwmpReactiveRegressionTest::HandleReadClient, this));
     Simulator::ScheduleWithContext(m_clientSocket->GetNode()->GetId(),
-                                   Seconds(2.0),
+                                   Seconds(2),
                                    &HwmpReactiveRegressionTest::SendData,
                                    this,
                                    m_clientSocket);

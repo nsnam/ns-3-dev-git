@@ -197,7 +197,7 @@ Experiment::Run(const WifiHelper& wifi,
     uint32_t packetSize = 1014;
     uint32_t maxPacketCount = 200;
     Time interPacketInterval = Seconds(1.);
-    Simulator::Schedule(Seconds(1.0),
+    Simulator::Schedule(Seconds(1),
                         &Experiment::GenerateTraffic,
                         this,
                         source,

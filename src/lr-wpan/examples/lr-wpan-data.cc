@@ -196,7 +196,7 @@ main(int argc, char* argv[])
     params.m_txOptions = TX_OPTION_ACK;
     //  dev0->GetMac ()->McpsDataRequest (params, p0);
     Simulator::ScheduleWithContext(1,
-                                   Seconds(0.0),
+                                   Seconds(0),
                                    &LrWpanMac::McpsDataRequest,
                                    dev0->GetMac(),
                                    params,
@@ -213,7 +213,7 @@ main(int argc, char* argv[])
         params.m_dstExtAddr = Mac64Address("00:00:00:00:00:00:00:01");
     }
     Simulator::ScheduleWithContext(2,
-                                   Seconds(2.0),
+                                   Seconds(2),
                                    &LrWpanMac::McpsDataRequest,
                                    dev1->GetMac(),
                                    params,

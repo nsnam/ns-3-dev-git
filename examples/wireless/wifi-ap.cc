@@ -150,7 +150,7 @@ AdvancePosition(Ptr<Node> node)
     }
     mobility->SetPosition(pos);
 
-    Simulator::Schedule(Seconds(1.0), &AdvancePosition, node);
+    Simulator::Schedule(Seconds(1), &AdvancePosition, node);
 }
 
 int
@@ -196,7 +196,7 @@ main(int argc, char* argv[])
     mobility.Install(stas);
     mobility.Install(ap);
 
-    Simulator::Schedule(Seconds(1.0), &AdvancePosition, ap.Get(0));
+    Simulator::Schedule(Seconds(1), &AdvancePosition, ap.Get(0));
 
     PacketSocketAddress socket;
     socket.SetSingleDevice(staDevs.Get(0)->GetIfIndex());
@@ -208,9 +208,9 @@ main(int argc, char* argv[])
 
     ApplicationContainer apps = onoff.Install(stas.Get(0));
     apps.Start(Seconds(0.5));
-    apps.Stop(Seconds(43.0));
+    apps.Stop(Seconds(43));
 
-    Simulator::Stop(Seconds(44.0));
+    Simulator::Stop(Seconds(44));
 
     Config::Connect("/NodeList/*/DeviceList/*/Mac/MacTx", MakeCallback(&DevTxTrace));
     Config::Connect("/NodeList/*/DeviceList/*/Mac/MacRx", MakeCallback(&DevRxTrace));

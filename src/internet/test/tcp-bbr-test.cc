@@ -51,7 +51,7 @@ TcpBbrPacingEnableTest::TcpBbrPacingEnableTest(bool pacing, const std::string& n
 void
 TcpBbrPacingEnableTest::DoRun()
 {
-    Simulator::Schedule(Seconds(0.0), &TcpBbrPacingEnableTest::ExecuteTest, this);
+    Simulator::Schedule(Seconds(0), &TcpBbrPacingEnableTest::ExecuteTest, this);
     Simulator::Run();
     Simulator::Destroy();
 }
@@ -105,7 +105,7 @@ TcpBbrCheckGainValuesTest::TcpBbrCheckGainValuesTest(TcpBbr::BbrMode_t state,
 void
 TcpBbrCheckGainValuesTest::DoRun()
 {
-    Simulator::Schedule(Seconds(0.0), &TcpBbrCheckGainValuesTest::ExecuteTest, this);
+    Simulator::Schedule(Seconds(0), &TcpBbrCheckGainValuesTest::ExecuteTest, this);
     Simulator::Run();
     Simulator::Destroy();
 }

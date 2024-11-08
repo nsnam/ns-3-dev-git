@@ -144,17 +144,17 @@ main(int argc, char* argv[])
     // First packet as normal (goes via Rtr1)
     Simulator::Schedule(Seconds(0.1), &SendStuff, srcSocket, dstaddr, dstport);
     // Second via Rtr1 explicitly
-    Simulator::Schedule(Seconds(1.0), &BindSock, srcSocket, SrcToRtr1);
+    Simulator::Schedule(Seconds(1), &BindSock, srcSocket, SrcToRtr1);
     Simulator::Schedule(Seconds(1.1), &SendStuff, srcSocket, dstaddr, dstport);
     // Third via Rtr2 explicitly
-    Simulator::Schedule(Seconds(2.0), &BindSock, srcSocket, SrcToRtr2);
+    Simulator::Schedule(Seconds(2), &BindSock, srcSocket, SrcToRtr2);
     Simulator::Schedule(Seconds(2.1), &SendStuff, srcSocket, dstaddr, dstport);
     // Fourth again as normal (goes via Rtr1)
-    Simulator::Schedule(Seconds(3.0), &BindSock, srcSocket, Ptr<NetDevice>(nullptr));
+    Simulator::Schedule(Seconds(3), &BindSock, srcSocket, Ptr<NetDevice>(nullptr));
     Simulator::Schedule(Seconds(3.1), &SendStuff, srcSocket, dstaddr, dstport);
     // If you uncomment what's below, it results in ASSERT failing since you can't
     // bind to a socket not existing on a node
-    // Simulator::Schedule(Seconds(4.0),&BindSock, srcSocket, dDstRtrdDst.Get(0));
+    // Simulator::Schedule(Seconds(4),&BindSock, srcSocket, dDstRtrdDst.Get(0));
     Simulator::Run();
     Simulator::Destroy();
 

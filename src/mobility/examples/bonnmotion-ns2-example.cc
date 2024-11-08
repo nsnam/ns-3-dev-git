@@ -66,9 +66,9 @@ main(int argc, char* argv[])
     Ns2MobilityHelper ns2 = Ns2MobilityHelper(traceFile);
     ns2.Install();
 
-    Simulator::Schedule(Seconds(0.0), &showPosition, n0, deltaTime);
+    Simulator::Schedule(Seconds(0), &showPosition, n0, deltaTime);
 
-    Simulator::Stop(Seconds(1000.0));
+    Simulator::Stop(Seconds(1000));
     Simulator::Run();
     Simulator::Destroy();
     return 0;

@@ -131,8 +131,8 @@ main(int argc, char* argv[])
     uint16_t port = 9;
     UdpServerHelper server(port);
     ApplicationContainer serverApp = server.Install(wifiStaNode.Get(0));
-    serverApp.Start(Seconds(0.0));
-    serverApp.Stop(simulationTime + Seconds(1.0));
+    serverApp.Start(Seconds(0));
+    serverApp.Stop(simulationTime + Seconds(1));
 
     UdpClientHelper client(staNodeInterface.GetAddress(0), port);
     client.SetAttribute("MaxPackets", UintegerValue(4294967295U));
@@ -140,14 +140,14 @@ main(int argc, char* argv[])
     client.SetAttribute("PacketSize", UintegerValue(1472));     // bytes
 
     ApplicationContainer clientApp = client.Install(wifiApNode.Get(0));
-    clientApp.Start(Seconds(1.0));
-    clientApp.Stop(simulationTime + Seconds(1.0));
+    clientApp.Start(Seconds(1));
+    clientApp.Stop(simulationTime + Seconds(1));
 
     // Populate routing table
     Ipv4GlobalRoutingHelper::PopulateRoutingTables();
 
     // Set simulation time and launch simulation
-    Simulator::Stop(simulationTime + Seconds(1.0));
+    Simulator::Stop(simulationTime + Seconds(1));
     Simulator::Run();
 
     // Get and print results

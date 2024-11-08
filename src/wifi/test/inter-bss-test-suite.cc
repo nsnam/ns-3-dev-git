@@ -315,87 +315,87 @@ TestInterBssConstantObssPdAlgo::SetupSimulation()
     // We test PHY state and verify whether a CCA reset did occur.
 
     // AP2 sends a packet 0.5s later.
-    Simulator::Schedule(Seconds(2.0), &TestInterBssConstantObssPdAlgo::ClearDropReasons, this);
-    Simulator::Schedule(Seconds(2.0),
+    Simulator::Schedule(Seconds(2), &TestInterBssConstantObssPdAlgo::ClearDropReasons, this);
+    Simulator::Schedule(Seconds(2),
                         &TestInterBssConstantObssPdAlgo::SendOnePacket,
                         this,
                         ap_device2,
                         sta_device2,
                         m_payloadSize2);
-    Simulator::Schedule(Seconds(2.0) + MicroSeconds(10),
+    Simulator::Schedule(Seconds(2) + MicroSeconds(10),
                         &TestInterBssConstantObssPdAlgo::CheckPhyState,
                         this,
                         ap_device2,
                         WifiPhyState::TX);
     // All other PHYs should have stay idle until 4us (preamble detection time).
-    Simulator::Schedule(Seconds(2.0) + MicroSeconds(11),
+    Simulator::Schedule(Seconds(2) + MicroSeconds(11),
                         &TestInterBssConstantObssPdAlgo::CheckPhyState,
                         this,
                         sta_device1,
                         WifiPhyState::IDLE);
-    Simulator::Schedule(Seconds(2.0) + MicroSeconds(11),
+    Simulator::Schedule(Seconds(2) + MicroSeconds(11),
                         &TestInterBssConstantObssPdAlgo::CheckPhyState,
                         this,
                         sta_device2,
                         WifiPhyState::IDLE);
-    Simulator::Schedule(Seconds(2.0) + MicroSeconds(11),
+    Simulator::Schedule(Seconds(2) + MicroSeconds(11),
                         &TestInterBssConstantObssPdAlgo::CheckPhyState,
                         this,
                         ap_device1,
                         WifiPhyState::IDLE);
     // All PHYs should be receiving the PHY header (i.e. PHY state is CCA_BUSY) if preamble has been
     // detected (always the case in this test).
-    Simulator::Schedule(Seconds(2.0) + MicroSeconds(14),
+    Simulator::Schedule(Seconds(2) + MicroSeconds(14),
                         &TestInterBssConstantObssPdAlgo::CheckPhyState,
                         this,
                         sta_device1,
                         WifiPhyState::CCA_BUSY);
-    Simulator::Schedule(Seconds(2.0) + MicroSeconds(14),
+    Simulator::Schedule(Seconds(2) + MicroSeconds(14),
                         &TestInterBssConstantObssPdAlgo::CheckPhyState,
                         this,
                         sta_device2,
                         WifiPhyState::CCA_BUSY);
-    Simulator::Schedule(Seconds(2.0) + MicroSeconds(14),
+    Simulator::Schedule(Seconds(2) + MicroSeconds(14),
                         &TestInterBssConstantObssPdAlgo::CheckPhyState,
                         this,
                         ap_device1,
                         WifiPhyState::CCA_BUSY);
     // PHYs of AP1 and STA1 should be idle after HE-SIG-A if they were reset by OBSS_PD SR,
     // otherwise they should be CCA_busy until beginning of payload.
-    Simulator::Schedule(Seconds(2.0) + MicroSeconds(43),
+    Simulator::Schedule(Seconds(2) + MicroSeconds(43),
                         &TestInterBssConstantObssPdAlgo::CheckPhyDropReasons,
                         this,
                         sta_device1,
                         dropReasons);
-    Simulator::Schedule(Seconds(2.0) + MicroSeconds(43),
+    Simulator::Schedule(Seconds(2) + MicroSeconds(43),
                         &TestInterBssConstantObssPdAlgo::CheckPhyState,
                         this,
                         sta_device1,
                         expectPhyReset ? WifiPhyState::IDLE : WifiPhyState::CCA_BUSY);
-    Simulator::Schedule(Seconds(2.0) + MicroSeconds(43),
+    Simulator::Schedule(Seconds(2) + MicroSeconds(43),
                         &TestInterBssConstantObssPdAlgo::CheckPhyDropReasons,
                         this,
                         ap_device1,
                         dropReasons);
-    Simulator::Schedule(Seconds(2.0) + MicroSeconds(43),
+    Simulator::Schedule(Seconds(2) + MicroSeconds(43),
                         &TestInterBssConstantObssPdAlgo::CheckPhyState,
                         this,
                         ap_device1,
                         expectPhyReset ? WifiPhyState::IDLE : WifiPhyState::CCA_BUSY);
     // PHYs of AP1 and STA1 should be idle if they were reset by OBSS_PD SR, otherwise they should
     // be CCA_busy/Rx (since filtered/not filtered, resp.).
-    Simulator::Schedule(Seconds(2.0) + MicroSeconds(54),
+    Simulator::Schedule(Seconds(2) + MicroSeconds(54),
                         &TestInterBssConstantObssPdAlgo::CheckPhyState,
                         this,
                         sta_device1,
                         expectPhyReset ? WifiPhyState::IDLE : stateDuringPayloadNeighboringBss);
-    Simulator::Schedule(Seconds(2.0) + MicroSeconds(54),
+    Simulator::Schedule(Seconds(2) + MicroSeconds(54),
                         &TestInterBssConstantObssPdAlgo::CheckPhyState,
                         this,
                         ap_device1,
                         expectPhyReset ? WifiPhyState::IDLE : stateDuringPayloadNeighboringBss);
     // STA2 should be receiving
-    Simulator::Schedule(Seconds(2.0) + MicroSeconds(54),
+    Simulator::Schedule(Seconds(2) + MicroSeconds(54),
                         &TestInterBssConstantObssPdAlgo::CheckPhyState,
                         this,
                         sta_device2,

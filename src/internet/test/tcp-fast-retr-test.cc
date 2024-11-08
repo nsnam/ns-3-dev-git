@@ -132,7 +132,7 @@ Ptr<TcpSocketMsgBase>
 TcpFastRetrTest::CreateSenderSocket(Ptr<Node> node)
 {
     Ptr<TcpSocketMsgBase> socket = TcpGeneralTest::CreateSenderSocket(node);
-    socket->SetAttribute("MinRto", TimeValue(Seconds(10.0)));
+    socket->SetAttribute("MinRto", TimeValue(Seconds(10)));
 
     return socket;
 }

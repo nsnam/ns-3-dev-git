@@ -220,7 +220,7 @@ main(int argc, char** argv)
     onoff.SetAttribute("PacketSize", UintegerValue(1500));
 
     ApplicationContainer apps = onoff.Install(ofdmNodes.Get(0));
-    apps.Start(Seconds(0.0));
+    apps.Start(Seconds(0));
     apps.Stop(Seconds(1));
 
     Ptr<Socket> recvSink = SetupPacketReceive(ofdmNodes.Get(1));

@@ -695,8 +695,8 @@ OfdmaAckSequenceTest::Transmit(std::string context,
                 client->SetAttribute("Priority", UintegerValue(i * 2)); // 0, 2, 4 and 6
                 client->SetRemote(m_sockets[i]);
                 m_staDevices.Get(i)->GetNode()->AddApplication(client);
-                client->SetStartTime(txDuration);  // start when TX ends
-                client->SetStopTime(Seconds(1.0)); // stop in a second
+                client->SetStartTime(txDuration); // start when TX ends
+                client->SetStopTime(Seconds(1));  // stop in a second
                 client->Initialize();
             }
             m_ulPktsGenerated = true;
@@ -2265,7 +2265,7 @@ OfdmaAckSequenceTest::DoRun()
         client1->SetRemote(socket);
         wifiApNode.Get(0)->AddApplication(client1);
         client1->SetStartTime(Seconds(1) + i * MilliSeconds(1));
-        client1->SetStopTime(Seconds(2.0));
+        client1->SetStopTime(Seconds(2));
 
         // the second client application generates the selected number of packets,
         // which are sent in DL MU PPDUs.
@@ -2282,8 +2282,8 @@ OfdmaAckSequenceTest::DoRun()
         Ptr<PacketSocketServer> server = CreateObject<PacketSocketServer>();
         server->SetLocal(socket);
         wifiStaNodes.Get(i)->AddApplication(server);
-        server->SetStartTime(Seconds(0.0));
-        server->SetStopTime(Seconds(3.0));
+        server->SetStartTime(Seconds(0));
+        server->SetStopTime(Seconds(3));
     }
 
     // UL Traffic
@@ -2303,7 +2303,7 @@ OfdmaAckSequenceTest::DoRun()
         client1->SetRemote(m_sockets[i]);
         wifiStaNodes.Get(i)->AddApplication(client1);
         client1->SetStartTime(Seconds(1.005) + i * MilliSeconds(1));
-        client1->SetStopTime(Seconds(2.0));
+        client1->SetStopTime(Seconds(2));
 
         // packets to be included in HE TB PPDUs are generated (by Transmit()) when
         // the first Basic Trigger Frame is sent by the AP
@@ -2311,8 +2311,8 @@ OfdmaAckSequenceTest::DoRun()
         Ptr<PacketSocketServer> server = CreateObject<PacketSocketServer>();
         server->SetLocal(m_sockets[i]);
         wifiApNode.Get(0)->AddApplication(server);
-        server->SetStartTime(Seconds(0.0));
-        server->SetStopTime(Seconds(3.0));
+        server->SetStartTime(Seconds(0));
+        server->SetStopTime(Seconds(3));
     }
 
     Config::Connect("/NodeList/*/ApplicationList/0/$ns3::PacketSocketServer/Rx",

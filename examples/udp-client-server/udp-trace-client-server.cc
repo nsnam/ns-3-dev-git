@@ -81,16 +81,16 @@ main(int argc, char* argv[])
     NS_LOG_INFO("Create UdpServer application on node 1.");
     UdpServerHelper server(port);
     ApplicationContainer apps = server.Install(n.Get(1));
-    apps.Start(Seconds(1.0));
-    apps.Stop(Seconds(10.0));
+    apps.Start(Seconds(1));
+    apps.Stop(Seconds(10));
 
     NS_LOG_INFO("Create UdpClient application on node 0 to send to node 1.");
     uint32_t MaxPacketSize = 1472; // Back off 20 (IP) + 8 (UDP) bytes from MTU
     UdpTraceClientHelper client(serverAddress);
     client.SetAttribute("MaxPacketSize", UintegerValue(MaxPacketSize));
     apps = client.Install(n.Get(0));
-    apps.Start(Seconds(2.0));
-    apps.Stop(Seconds(10.0));
+    apps.Start(Seconds(2));
+    apps.Stop(Seconds(10));
 
     NS_LOG_INFO("Run Simulation.");
     Simulator::Run();

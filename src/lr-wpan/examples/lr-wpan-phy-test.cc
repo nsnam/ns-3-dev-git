@@ -89,9 +89,9 @@ main(int argc, char* argv[])
 
     receiver->SetPdDataIndicationCallback(MakeCallback(&ReceivePdDataIndication));
 
-    Simulator::Schedule(Seconds(1.0), &SendOnePacket, sender, receiver);
+    Simulator::Schedule(Seconds(1), &SendOnePacket, sender, receiver);
 
-    Simulator::Stop(Seconds(10.0));
+    Simulator::Stop(Seconds(10));
 
     Simulator::Run();
 

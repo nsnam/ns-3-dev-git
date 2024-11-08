@@ -400,8 +400,8 @@ Ns3TcpLossTestCase::DoRun()
     PacketSinkHelper sink("ns3::TcpSocketFactory",
                           InetSocketAddress(Ipv4Address::GetAny(), servPort));
     ApplicationContainer apps = sink.Install(r1k1.Get(1));
-    apps.Start(Seconds(0.0));
-    apps.Stop(Seconds(100.0));
+    apps.Start(Seconds(0));
+    apps.Stop(Seconds(100));
 
     // Create a data source to send packets on node s0.
     // Instead of full application, here use the socket directly by

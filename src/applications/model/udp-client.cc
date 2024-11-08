@@ -46,7 +46,7 @@ UdpClient::GetTypeId()
                 MakeUintegerChecker<uint32_t>())
             .AddAttribute("Interval",
                           "The time to wait between packets",
-                          TimeValue(Seconds(1.0)),
+                          TimeValue(Seconds(1)),
                           MakeTimeAccessor(&UdpClient::m_interval),
                           MakeTimeChecker())
             .AddAttribute("RemoteAddress",
@@ -226,7 +226,7 @@ UdpClient::StartApplication()
     m_peerString = peerAddressStringStream.str();
 #endif // NS3_LOG_ENABLE
 
-    m_sendEvent = Simulator::Schedule(Seconds(0.0), &UdpClient::Send, this);
+    m_sendEvent = Simulator::Schedule(Seconds(0), &UdpClient::Send, this);
 }
 
 void

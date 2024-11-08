@@ -275,7 +275,7 @@ main(int argc, char* argv[])
                         numPackets,
                         interPacketInterval);
 
-    Simulator::Stop(Seconds(10.0));
+    Simulator::Stop(Seconds(10));
     Simulator::Run();
 
     for (auto iter = deviceModels.Begin(); iter != deviceModels.End(); iter++)

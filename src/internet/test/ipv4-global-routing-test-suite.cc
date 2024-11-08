@@ -1027,8 +1027,8 @@ Ipv4DynamicGlobalRoutingTestCase::DoRun()
     sendSockA.first->Connect(InetSocketAddress(i5i6.GetAddress(1), port));
     sendSockA.second = true;
     m_sendSocks.push_back(sendSockA);
-    Simulator::Schedule(Seconds(1.0), &Ipv4DynamicGlobalRoutingTestCase::SendData, this, 0);
-    Simulator::Schedule(Seconds(10.0), &Ipv4DynamicGlobalRoutingTestCase::ShutDownSock, this, 0);
+    Simulator::Schedule(Seconds(1), &Ipv4DynamicGlobalRoutingTestCase::SendData, this, 0);
+    Simulator::Schedule(Seconds(10), &Ipv4DynamicGlobalRoutingTestCase::ShutDownSock, this, 0);
 
     std::pair<Ptr<Socket>, bool> sendSockB;
     sendSockB.first = Socket::CreateSocket(c.Get(1), tid);
@@ -1036,8 +1036,8 @@ Ipv4DynamicGlobalRoutingTestCase::DoRun()
     sendSockB.first->Connect(InetSocketAddress(i1i6.GetAddress(1), port));
     sendSockB.second = true;
     m_sendSocks.push_back(sendSockB);
-    Simulator::Schedule(Seconds(11.0), &Ipv4DynamicGlobalRoutingTestCase::SendData, this, 1);
-    Simulator::Schedule(Seconds(16.0), &Ipv4DynamicGlobalRoutingTestCase::ShutDownSock, this, 1);
+    Simulator::Schedule(Seconds(11), &Ipv4DynamicGlobalRoutingTestCase::SendData, this, 1);
+    Simulator::Schedule(Seconds(16), &Ipv4DynamicGlobalRoutingTestCase::ShutDownSock, this, 1);
 
     // Create an optional packet sink to receive these packets
     Ptr<Socket> sink2 = Socket::CreateSocket(c.Get(6), tid);

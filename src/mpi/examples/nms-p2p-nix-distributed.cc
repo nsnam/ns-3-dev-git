@@ -432,7 +432,7 @@ main(int argc, char* argv[])
             PacketSinkHelper sinkHelper("ns3::UdpSocketFactory",
                                         InetSocketAddress(Ipv4Address::GetAny(), 9999));
             ApplicationContainer sinkApp = sinkHelper.Install(nodes_net1[0][2].Get(0));
-            sinkApp.Start(Seconds(0.0));
+            sinkApp.Start(Seconds(0));
             if (testing)
             {
                 sinkApp.Get(0)->TraceConnectWithoutContext("RxWithAddresses",
@@ -453,7 +453,7 @@ main(int argc, char* argv[])
             PacketSinkHelper sinkHelper("ns3::UdpSocketFactory",
                                         InetSocketAddress(Ipv4Address::GetAny(), 9999));
             ApplicationContainer sinkApp = sinkHelper.Install(nodes_net1[1][0].Get(0));
-            sinkApp.Start(Seconds(0.0));
+            sinkApp.Start(Seconds(0));
             if (testing)
             {
                 sinkApp.Get(0)->TraceConnectWithoutContext("RxWithAddresses",
@@ -500,7 +500,7 @@ main(int argc, char* argv[])
                         ApplicationContainer sinkApp =
                             sinkHelper.Install(nodes_net2LAN[z][i][j].Get(0));
 
-                        sinkApp.Start(Seconds(0.0));
+                        sinkApp.Start(Seconds(0));
                         if (testing)
                         {
                             sinkApp.Get(0)->TraceConnectWithoutContext(
@@ -516,7 +516,7 @@ main(int argc, char* argv[])
                         ApplicationContainer sinkApp =
                             sinkHelper.Install(nodes_net2LAN[z][i][j].Get(0));
 
-                        sinkApp.Start(Seconds(0.0));
+                        sinkApp.Start(Seconds(0));
                         if (testing)
                         {
                             sinkApp.Get(0)->TraceConnectWithoutContext(
@@ -569,7 +569,7 @@ main(int argc, char* argv[])
 
                         ApplicationContainer sinkApp =
                             sinkHelper.Install(nodes_net3LAN[z][i][j].Get(0));
-                        sinkApp.Start(Seconds(0.0));
+                        sinkApp.Start(Seconds(0));
                         if (testing)
                         {
                             sinkApp.Get(0)->TraceConnectWithoutContext(
@@ -585,7 +585,7 @@ main(int argc, char* argv[])
                         ApplicationContainer sinkApp =
                             sinkHelper.Install(nodes_net3LAN[z][i][j].Get(0));
 
-                        sinkApp.Start(Seconds(0.0));
+                        sinkApp.Start(Seconds(0));
                         if (testing)
                         {
                             sinkApp.Get(0)->TraceConnectWithoutContext(

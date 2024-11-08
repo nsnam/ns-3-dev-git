@@ -121,7 +121,7 @@ EpsBearerTagUdpClient::GetTypeId()
                 MakeUintegerChecker<uint32_t>())
             .AddAttribute("Interval",
                           "The time to wait between packets",
-                          TimeValue(Seconds(1.0)),
+                          TimeValue(Seconds(1)),
                           MakeTimeAccessor(&EpsBearerTagUdpClient::m_interval),
                           MakeTimeChecker())
             .AddAttribute("RemoteAddress",
@@ -196,7 +196,7 @@ EpsBearerTagUdpClient::StartApplication()
     }
 
     m_socket->SetRecvCallback(MakeNullCallback<void, Ptr<Socket>>());
-    m_sendEvent = Simulator::Schedule(Seconds(0.0), &EpsBearerTagUdpClient::Send, this);
+    m_sendEvent = Simulator::Schedule(Seconds(0), &EpsBearerTagUdpClient::Send, this);
 }
 
 void
@@ -435,8 +435,8 @@ EpcS1uUlTestCase::DoRun()
                 "ns3::UdpSocketFactory",
                 InetSocketAddress(Ipv4Address::GetAny(), udpSinkPort));
             ApplicationContainer sinkApp = packetSinkHelper.Install(remoteHost);
-            sinkApp.Start(Seconds(1.0));
-            sinkApp.Stop(Seconds(10.0));
+            sinkApp.Start(Seconds(1));
+            sinkApp.Stop(Seconds(10));
             enbit->ues[u].serverApp = sinkApp.Get(0)->GetObject<PacketSink>();
 
             Time interPacketInterval = Seconds(0.01);
@@ -451,8 +451,8 @@ EpcS1uUlTestCase::DoRun()
             ue->AddApplication(client);
             ApplicationContainer clientApp;
             clientApp.Add(client);
-            clientApp.Start(Seconds(2.0));
-            clientApp.Stop(Seconds(10.0));
+            clientApp.Start(Seconds(2));
+            clientApp.Stop(Seconds(10));
             enbit->ues[u].clientApp = client;
 
             uint64_t imsi = ++imsiCounter;

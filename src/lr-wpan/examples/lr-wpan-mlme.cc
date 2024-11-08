@@ -152,7 +152,7 @@ main(int argc, char* argv[])
     params.m_bcnOrd = 14;
     params.m_sfrmOrd = 6;
     Simulator::ScheduleWithContext(1,
-                                   Seconds(2.0),
+                                   Seconds(2),
                                    &LrWpanMac::MlmeStartRequest,
                                    dev0->GetMac(),
                                    params);

@@ -134,7 +134,7 @@ FlameRegressionTest::InstallApplications()
     m_clientSocket->Connect(InetSocketAddress(m_interfaces.GetAddress(0), 9));
     m_clientSocket->SetRecvCallback(MakeCallback(&FlameRegressionTest::HandleReadClient, this));
     Simulator::ScheduleWithContext(m_clientSocket->GetNode()->GetId(),
-                                   Seconds(1.0),
+                                   Seconds(1),
                                    &FlameRegressionTest::SendData,
                                    this,
                                    m_clientSocket);

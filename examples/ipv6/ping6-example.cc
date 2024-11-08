@@ -85,8 +85,8 @@ main(int argc, char** argv)
     ping.SetAttribute("InterfaceAddress", AddressValue(i.GetAddress(0, 0)));
 
     ApplicationContainer apps = ping.Install(n.Get(0));
-    apps.Start(Seconds(2.0));
-    apps.Stop(Seconds(10.0));
+    apps.Start(Seconds(2));
+    apps.Stop(Seconds(10));
 
     AsciiTraceHelper ascii;
     csma.EnableAsciiAll(ascii.CreateFileStream("ping6.tr"));

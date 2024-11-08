@@ -170,8 +170,8 @@ main(int argc, char* argv[])
     ApplicationContainer serverApp = server.Install(staWifiNode);
 
     /* Start Applications */
-    sinkApp.Start(Seconds(0.0));
-    serverApp.Start(Seconds(1.0));
+    sinkApp.Start(Seconds(0));
+    serverApp.Start(Seconds(1));
     Simulator::Schedule(Seconds(1.1), &CalculateThroughput);
 
     /* Enable Traces */
@@ -183,7 +183,7 @@ main(int argc, char* argv[])
     }
 
     /* Start Simulation */
-    Simulator::Stop(simulationTime + Seconds(1.0));
+    Simulator::Stop(simulationTime + Seconds(1));
     Simulator::Run();
 
     auto averageThroughput =

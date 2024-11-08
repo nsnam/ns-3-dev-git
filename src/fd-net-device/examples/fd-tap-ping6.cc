@@ -124,7 +124,7 @@ main(int argc, char* argv[])
     //
     uint32_t packetSize = 1024;
     uint32_t maxPacketCount = 1;
-    Time interPacketInterval = Seconds(1.0);
+    Time interPacketInterval = Seconds(1);
 
     PingHelper ping(Ipv6Address(tapIp.c_str()));
     ping.SetAttribute("Count", UintegerValue(maxPacketCount));
@@ -140,8 +140,8 @@ main(int argc, char* argv[])
     // ping6.SetAttribute("Interval", TimeValue(interPacketInterval));
     // ping6.SetAttribute("PacketSize", UintegerValue(packetSize));
     // ApplicationContainer apps = ping6.Install(n);
-    apps.Start(Seconds(2.0));
-    apps.Stop(Seconds(20.0));
+    apps.Start(Seconds(2));
+    apps.Stop(Seconds(20));
 
     AsciiTraceHelper ascii;
     csma.EnableAsciiAll(ascii.CreateFileStream("csma-ping6.tr"));
@@ -156,7 +156,7 @@ main(int argc, char* argv[])
     // Run the experiment.
     //
     NS_LOG_INFO("Run Emulation.");
-    Simulator::Stop(Seconds(200.0));
+    Simulator::Stop(Seconds(200));
     Simulator::Run();
     Simulator::Destroy();
     NS_LOG_INFO("Done.");

@@ -264,7 +264,7 @@ main(int argc, char* argv[])
         nextWaypoint += Seconds((maxAxisX - streetWidth) / 2 / vTx);
         txMob->GetObject<WaypointMobilityModel>()->AddWaypoint(
             Waypoint(nextWaypoint, Vector(0.0, maxAxisY / 2 - streetWidth / 2, 1.5)));
-        nextWaypoint = Seconds(0.0);
+        nextWaypoint = Seconds(0);
         rxMob->GetObject<WaypointMobilityModel>()->AddWaypoint(
             Waypoint(nextWaypoint, Vector(maxAxisX / 2 - streetWidth / 2, 0.0, 1.5)));
         nextWaypoint += Seconds(maxAxisY / vRx);

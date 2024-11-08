@@ -122,7 +122,7 @@ main(int argc, char* argv[])
     params.m_sfrmOrd = 3;
     params.m_logCh = 12;
     Simulator::ScheduleWithContext(1,
-                                   Seconds(2.0),
+                                   Seconds(2),
                                    &LrWpanMac::MlmeStartRequest,
                                    dev0->GetMac(),
                                    params);
@@ -135,7 +135,7 @@ main(int argc, char* argv[])
     params2.m_sfrmOrd = 3;
     params2.m_logCh = 14;
     Simulator::ScheduleWithContext(1,
-                                   Seconds(2.0),
+                                   Seconds(2),
                                    &LrWpanMac::MlmeStartRequest,
                                    dev2->GetMac(),
                                    params2);
@@ -152,7 +152,7 @@ main(int argc, char* argv[])
     scanParams.m_scanDuration = 14;
     scanParams.m_scanType = MLMESCAN_ED;
     Simulator::ScheduleWithContext(1,
-                                   Seconds(2.0),
+                                   Seconds(2),
                                    &LrWpanMac::MlmeScanRequest,
                                    dev1->GetMac(),
                                    scanParams);

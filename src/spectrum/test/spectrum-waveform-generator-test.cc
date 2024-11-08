@@ -93,10 +93,10 @@ WaveformGeneratorTestCase::DoRun()
     wave->TraceConnectWithoutContext("TxStart",
                                      MakeCallback(&WaveformGeneratorTestCase::TraceWave, this));
 
-    Simulator::Schedule(Seconds(1.0), &WaveformGenerator::Start, wave);
+    Simulator::Schedule(Seconds(1), &WaveformGenerator::Start, wave);
     Simulator::Schedule(Seconds(m_stop), &WaveformGenerator::Stop, wave);
 
-    Simulator::Stop(Seconds(3.0));
+    Simulator::Stop(Seconds(3));
     Simulator::Run();
 
     NS_TEST_ASSERT_MSG_EQ(m_fails, 0, "Wave started after the stop method was called");

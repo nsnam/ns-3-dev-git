@@ -136,8 +136,8 @@ main(int argc, char* argv[])
         clientApps.Add(clientHelper.Install(d.GetRight(i)));
     }
 
-    clientApps.Start(Seconds(0.0));
-    clientApps.Stop(Seconds(10.0));
+    clientApps.Start(Seconds(0));
+    clientApps.Stop(Seconds(10));
 
     // Set the bounding box for animation
 

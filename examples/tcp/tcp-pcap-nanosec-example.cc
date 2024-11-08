@@ -108,16 +108,16 @@ main(int argc, char* argv[])
     // Set the amount of data to send in bytes.  Zero is unlimited.
     source.SetAttribute("MaxBytes", UintegerValue(maxBytes));
     ApplicationContainer sourceApps = source.Install(nodes.Get(0));
-    sourceApps.Start(Seconds(0.0));
-    sourceApps.Stop(Seconds(10.0));
+    sourceApps.Start(Seconds(0));
+    sourceApps.Stop(Seconds(10));
 
     //
     // Create a PacketSinkApplication and install it on node 1
     //
     PacketSinkHelper sink("ns3::TcpSocketFactory", InetSocketAddress(Ipv4Address::GetAny(), port));
     ApplicationContainer sinkApps = sink.Install(nodes.Get(1));
-    sinkApps.Start(Seconds(0.0));
-    sinkApps.Stop(Seconds(10.0));
+    sinkApps.Start(Seconds(0));
+    sinkApps.Stop(Seconds(10));
 
     //
     // Set up tracing if enabled
@@ -132,7 +132,7 @@ main(int argc, char* argv[])
     // Now, do the actual simulation.
     //
     NS_LOG_INFO("Run Simulation.");
-    Simulator::Stop(Seconds(10.0));
+    Simulator::Stop(Seconds(10));
     Simulator::Run();
     Simulator::Destroy();
     NS_LOG_INFO("Done.");

@@ -172,13 +172,13 @@ main(int argc, char* argv[])
     }
 
     ApplicationContainer apps = onoff.Install(clientNodes);
-    apps.Start(Seconds(1.0));
-    apps.Stop(Seconds(2.0));
+    apps.Start(Seconds(1));
+    apps.Stop(Seconds(2));
 
     PacketSinkHelper sink = PacketSinkHelper("ns3::Ipv4RawSocketFactory", dst);
     apps = sink.Install(randomServerNode);
-    apps.Start(Seconds(0.0));
-    apps.Stop(Seconds(3.0));
+    apps.Start(Seconds(0));
+    apps.Stop(Seconds(3));
 
     // we trap the packet sink receiver to extract the TTL.
     Config::ConnectWithoutContext("/NodeList/*/ApplicationList/*/$ns3::PacketSink/Rx",

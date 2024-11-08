@@ -114,8 +114,8 @@ main(int argc, char* argv[])
 
     UdpEchoServerHelper echoServer(9);
     ApplicationContainer serverApps = echoServer.Install(server.Get(0));
-    serverApps.Start(Seconds(1.0));
-    serverApps.Stop(Seconds(5.0));
+    serverApps.Start(Seconds(1));
+    serverApps.Stop(Seconds(5));
 
     UdpEchoClientHelper echoClient(serverInterfaces.GetAddress(0), 9);
     echoClient.SetAttribute("MaxPackets", UintegerValue(1));
@@ -123,8 +123,8 @@ main(int argc, char* argv[])
     echoClient.SetAttribute("PacketSize", UintegerValue(1024));
 
     ApplicationContainer clientApps = echoClient.Install(client.Get(0));
-    clientApps.Start(Seconds(2.0));
-    clientApps.Stop(Seconds(5.0));
+    clientApps.Start(Seconds(2));
+    clientApps.Stop(Seconds(5));
 
     if (!nix)
     {
@@ -137,7 +137,7 @@ main(int argc, char* argv[])
         p2p.EnableAsciiAll(ascii.CreateFileStream("briteLeaves.tr"));
     }
     // Run the simulator
-    Simulator::Stop(Seconds(6.0));
+    Simulator::Stop(Seconds(6));
     Simulator::Run();
     Simulator::Destroy();
 

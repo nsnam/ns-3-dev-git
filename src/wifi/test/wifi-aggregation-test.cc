@@ -1172,7 +1172,7 @@ PreservePacketsInAmpdus::DoRun()
     client->SetRemote(socket);
     wifiStaNode.Get(0)->AddApplication(client);
     client->SetStartTime(Seconds(1));
-    client->SetStopTime(Seconds(3.0));
+    client->SetStopTime(Seconds(3));
     Simulator::Schedule(Seconds(1.5),
                         &PacketSocketClient::SetAttribute,
                         client,
@@ -1182,8 +1182,8 @@ PreservePacketsInAmpdus::DoRun()
     Ptr<PacketSocketServer> server = CreateObject<PacketSocketServer>();
     server->SetLocal(socket);
     wifiApNode.Get(0)->AddApplication(server);
-    server->SetStartTime(Seconds(0.0));
-    server->SetStopTime(Seconds(4.0));
+    server->SetStartTime(Seconds(0));
+    server->SetStopTime(Seconds(4));
 
     sta_device->GetMac()->TraceConnectWithoutContext(
         "MacTx",

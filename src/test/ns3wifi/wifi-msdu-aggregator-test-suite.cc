@@ -140,7 +140,7 @@ WifiMsduAggregatorThroughputTest::DoRun()
                                 InetSocketAddress(Ipv4Address::GetAny(), udpPort));
     ApplicationContainer sinkApp = packetSink.Install(sta.Get(0));
     sinkApp.Start(Seconds(0));
-    sinkApp.Stop(Seconds(9.0));
+    sinkApp.Stop(Seconds(9));
 
     // The packet source is an on-off application on the AP
     // device. Given that we have fixed the transmit rate at 1 Mbps
@@ -153,8 +153,8 @@ WifiMsduAggregatorThroughputTest::DoRun()
     onoff.SetAttribute("PacketSize", UintegerValue(100));
     onoff.SetConstantRate(DataRate("1Mbps"));
     ApplicationContainer sourceApp = onoff.Install(ap.Get(0));
-    sourceApp.Start(Seconds(1.0));
-    sourceApp.Stop(Seconds(9.0));
+    sourceApp.Start(Seconds(1));
+    sourceApp.Stop(Seconds(9));
 
     // Enable tracing at the AP
     if (m_writeResults)
@@ -163,7 +163,7 @@ WifiMsduAggregatorThroughputTest::DoRun()
         wifiPhy.EnablePcap("wifi-amsdu-throughput", sta.Get(0)->GetId(), 0);
     }
 
-    Simulator::Stop(Seconds(10.0));
+    Simulator::Stop(Seconds(10));
     Simulator::Run();
     Simulator::Destroy();
 

@@ -245,7 +245,7 @@ main(int argc, char* argv[])
     Config::Connect("/NodeList/0/DeviceList/*/Phy/State/State", MakeCallback(&PhyStateTrace<0>));
     Config::Connect("/NodeList/1/DeviceList/*/Phy/State/State", MakeCallback(&PhyStateTrace<1>));
 
-    Simulator::Stop(duration + Seconds(1.0));
+    Simulator::Stop(duration + Seconds(1));
 
     Simulator::Run();
     Simulator::Destroy();

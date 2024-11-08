@@ -114,8 +114,8 @@ main(int argc, char** argv)
     ping.SetAttribute("Interval", TimeValue(interPacketInterval));
     ping.SetAttribute("Size", UintegerValue(packetSize));
     ApplicationContainer apps = ping.Install(nodes.Get(0));
-    apps.Start(Seconds(2.0));
-    apps.Stop(Seconds(10.0));
+    apps.Start(Seconds(2));
+    apps.Stop(Seconds(10));
 
     AsciiTraceHelper ascii;
     lrWpanHelper.EnableAsciiAll(ascii.CreateFileStream("ping6wsn.tr"));

@@ -84,7 +84,7 @@ TestDeterministic(Ptr<PropagationLossModel> model, double targetDistance, double
 
             dataset.Add(distance, rxPowerDbm);
 
-            Simulator::Stop(Seconds(1.0));
+            Simulator::Stop(Seconds(1));
             Simulator::Run();
         }
     }
@@ -250,7 +250,7 @@ main(int argc, char* argv[])
     double testDeterministicDistance = 2500.0;
     double testProbabilisticDistance = 2500.0;
     unsigned int testProbabilisticSamples = 100000;
-    Time testJakesTimeOneMsRes = Seconds(1.0);
+    Time testJakesTimeOneMsRes = Seconds(1);
     Time testJakesTimeZeroDotOneMsRes = Seconds(0.1);
 
     if (test)

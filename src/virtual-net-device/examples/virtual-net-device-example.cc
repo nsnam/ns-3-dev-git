@@ -314,21 +314,21 @@ main(int argc, char* argv[])
                       Address(InetSocketAddress(Ipv4Address("11.0.0.254"), port)));
     onoff.SetConstantRate(DataRate("448kb/s"));
     ApplicationContainer apps = onoff.Install(c.Get(0));
-    apps.Start(Seconds(1.0));
-    apps.Stop(Seconds(10.0));
+    apps.Start(Seconds(1));
+    apps.Stop(Seconds(10));
 
     // Create a packet sink to receive these packets
     PacketSinkHelper sink("ns3::UdpSocketFactory",
                           Address(InetSocketAddress(Ipv4Address::GetAny(), port)));
     apps = sink.Install(c.Get(3));
-    apps.Start(Seconds(1.0));
+    apps.Start(Seconds(1));
     // apps.Stop (Seconds (10.0));
 
     // Create a similar flow from n3 to n1, starting at time 1.1 seconds
     onoff.SetAttribute("Remote", AddressValue(InetSocketAddress(Ipv4Address("11.0.0.1"), port)));
     apps = onoff.Install(c.Get(3));
     apps.Start(Seconds(1.1));
-    apps.Stop(Seconds(10.0));
+    apps.Stop(Seconds(10));
 
     // Create a packet sink to receive these packets
     apps = sink.Install(c.Get(1));

@@ -137,13 +137,13 @@ CsmaBridgeTestCase::DoRun()
     onoff.SetConstantRate(DataRate(5000));
 
     ApplicationContainer app = onoff.Install(terminals.Get(0));
-    app.Start(Seconds(1.0));
-    app.Stop(Seconds(10.0));
+    app.Start(Seconds(1));
+    app.Stop(Seconds(10));
 
     PacketSinkHelper sink("ns3::UdpSocketFactory",
                           Address(InetSocketAddress(Ipv4Address::GetAny(), port)));
     app = sink.Install(terminals.Get(1));
-    app.Start(Seconds(0.0));
+    app.Start(Seconds(0));
 
     // Trace receptions
     Config::ConnectWithoutContext("/NodeList/1/ApplicationList/0/$ns3::PacketSink/Rx",
@@ -274,16 +274,16 @@ CsmaBroadcastTestCase::DoRun()
 
     ApplicationContainer app = onoff.Install(c0.Get(0));
     // Start the application
-    app.Start(Seconds(1.0));
-    app.Stop(Seconds(10.0));
+    app.Start(Seconds(1));
+    app.Stop(Seconds(10));
 
     // Create an optional packet sink to receive these packets
     PacketSinkHelper sink("ns3::UdpSocketFactory",
                           Address(InetSocketAddress(Ipv4Address::GetAny(), port)));
     app = sink.Install(c0.Get(1));
     app.Add(sink.Install(c1.Get(1)));
-    app.Start(Seconds(1.0));
-    app.Stop(Seconds(10.0));
+    app.Start(Seconds(1));
+    app.Stop(Seconds(10));
 
     // Trace receptions
     Config::ConnectWithoutContext("/NodeList/1/ApplicationList/0/$ns3::PacketSink/Rx",
@@ -465,8 +465,8 @@ CsmaMulticastTestCase::DoRun()
 
     ApplicationContainer sinkC = sink.Install(c1.Get(2)); // Node n4
     // Start the sink
-    sinkC.Start(Seconds(1.0));
-    sinkC.Stop(Seconds(10.0));
+    sinkC.Start(Seconds(1));
+    sinkC.Stop(Seconds(10));
 
     // Trace receptions
     Config::ConnectWithoutContext("/NodeList/4/ApplicationList/0/$ns3::PacketSink/Rx",
@@ -595,14 +595,14 @@ CsmaOneSubnetTestCase::DoRun()
 
     ApplicationContainer app = onoff.Install(nodes.Get(0));
     // Start the application
-    app.Start(Seconds(1.0));
-    app.Stop(Seconds(10.0));
+    app.Start(Seconds(1));
+    app.Stop(Seconds(10));
 
     // Create an optional packet sink to receive these packets
     PacketSinkHelper sink("ns3::UdpSocketFactory",
                           Address(InetSocketAddress(Ipv4Address::GetAny(), port)));
     app = sink.Install(nodes.Get(1));
-    app.Start(Seconds(0.0));
+    app.Start(Seconds(0));
 
     //
     // Create a similar flow from n3 to n0, starting at time 1.1 seconds
@@ -610,10 +610,10 @@ CsmaOneSubnetTestCase::DoRun()
     onoff.SetAttribute("Remote", AddressValue(InetSocketAddress(interfaces.GetAddress(0), port)));
     app = onoff.Install(nodes.Get(3));
     app.Start(Seconds(1.1));
-    app.Stop(Seconds(10.0));
+    app.Stop(Seconds(10));
 
     app = sink.Install(nodes.Get(0));
-    app.Start(Seconds(0.0));
+    app.Start(Seconds(0));
 
     // Trace receptions
     Config::ConnectWithoutContext("/NodeList/0/ApplicationList/1/$ns3::PacketSink/Rx",
@@ -731,21 +731,21 @@ CsmaPacketSocketTestCase::DoRun()
     OnOffHelper onoff("ns3::PacketSocketFactory", Address(socket));
     onoff.SetConstantRate(DataRate(5000));
     ApplicationContainer apps = onoff.Install(nodes.Get(0));
-    apps.Start(Seconds(1.0));
-    apps.Stop(Seconds(10.0));
+    apps.Start(Seconds(1));
+    apps.Stop(Seconds(10));
 
     socket.SetSingleDevice(devs.Get(3)->GetIfIndex());
     socket.SetPhysicalAddress(devs.Get(0)->GetAddress());
     socket.SetProtocol(3);
     onoff.SetAttribute("Remote", AddressValue(socket));
     apps = onoff.Install(nodes.Get(3));
-    apps.Start(Seconds(1.0));
-    apps.Stop(Seconds(10.0));
+    apps.Start(Seconds(1));
+    apps.Stop(Seconds(10));
 
     PacketSinkHelper sink = PacketSinkHelper("ns3::PacketSocketFactory", socket);
     apps = sink.Install(nodes.Get(0));
-    apps.Start(Seconds(0.0));
-    apps.Stop(Seconds(20.0));
+    apps.Start(Seconds(0));
+    apps.Stop(Seconds(20));
 
     // Trace receptions
     Config::Connect("/NodeList/0/ApplicationList/*/$ns3::PacketSink/Rx",
@@ -864,13 +864,13 @@ CsmaPingTestCase::DoRun()
     onoff.SetConstantRate(DataRate(5000));
 
     ApplicationContainer apps = onoff.Install(c.Get(0));
-    apps.Start(Seconds(1.0));
-    apps.Stop(Seconds(10.0));
+    apps.Start(Seconds(1));
+    apps.Stop(Seconds(10));
 
     PacketSinkHelper sink = PacketSinkHelper("ns3::Ipv4RawSocketFactory", dst);
     apps = sink.Install(c.Get(3));
-    apps.Start(Seconds(0.0));
-    apps.Stop(Seconds(11.0));
+    apps.Start(Seconds(0));
+    apps.Stop(Seconds(11));
 
     PingHelper ping(addresses.GetAddress(2));
     NodeContainer pingers;
@@ -878,8 +878,8 @@ CsmaPingTestCase::DoRun()
     pingers.Add(c.Get(1));
     pingers.Add(c.Get(3));
     apps = ping.Install(pingers);
-    apps.Start(Seconds(2.0));
-    apps.Stop(Seconds(5.0));
+    apps.Start(Seconds(2));
+    apps.Stop(Seconds(5));
 
     // Trace receptions
     Config::ConnectWithoutContext("/NodeList/3/ApplicationList/0/$ns3::PacketSink/Rx",
@@ -998,13 +998,13 @@ CsmaRawIpSocketTestCase::DoRun()
     onoff.SetConstantRate(DataRate(5000));
 
     ApplicationContainer apps = onoff.Install(c.Get(0));
-    apps.Start(Seconds(1.0));
-    apps.Stop(Seconds(10.0));
+    apps.Start(Seconds(1));
+    apps.Stop(Seconds(10));
 
     PacketSinkHelper sink = PacketSinkHelper("ns3::Ipv4RawSocketFactory", dst);
     apps = sink.Install(c.Get(3));
-    apps.Start(Seconds(0.0));
-    apps.Stop(Seconds(12.0));
+    apps.Start(Seconds(0));
+    apps.Stop(Seconds(12));
 
     // Trace receptions
     Config::ConnectWithoutContext("/NodeList/3/ApplicationList/0/$ns3::PacketSink/Rx",
@@ -1158,8 +1158,8 @@ CsmaStarTestCase::DoRun()
     Address hubLocalAddress(InetSocketAddress(Ipv4Address::GetAny(), port));
     PacketSinkHelper packetSinkHelper("ns3::TcpSocketFactory", hubLocalAddress);
     ApplicationContainer hubApp = packetSinkHelper.Install(star.GetHub());
-    hubApp.Start(Seconds(1.0));
-    hubApp.Stop(Seconds(10.0));
+    hubApp.Start(Seconds(1));
+    hubApp.Stop(Seconds(10));
 
     //
     // Create OnOff applications to send TCP to the hub, one on each spoke node.
@@ -1178,8 +1178,8 @@ CsmaStarTestCase::DoRun()
         spokeApps.Add(onOffHelper.Install(star.GetSpokeNode(i)));
     }
 
-    spokeApps.Start(Seconds(1.0));
-    spokeApps.Stop(Seconds(10.0));
+    spokeApps.Start(Seconds(1));
+    spokeApps.Stop(Seconds(10));
 
     //
     // Because we are evil, we also add OnOff applications to send TCP to the hub
@@ -1198,8 +1198,8 @@ CsmaStarTestCase::DoRun()
         fillApps.Add(onOffHelper.Install(fillNodes.Get(i)));
     }
 
-    fillApps.Start(Seconds(1.0));
-    fillApps.Stop(Seconds(10.0));
+    fillApps.Start(Seconds(1));
+    fillApps.Stop(Seconds(10));
 
     //
     // Turn on global static routing so we can actually be routed across the star.

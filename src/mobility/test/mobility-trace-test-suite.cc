@@ -89,7 +89,7 @@ MobilityTraceTestCase::DoRun()
 
     AsciiTraceHelper ascii;
     MobilityHelper::EnableAsciiAll(ascii.CreateFileStream(testMobilityFilePath));
-    Simulator::Stop(Seconds(5.0));
+    Simulator::Stop(Seconds(5));
     Simulator::Run();
     Simulator::Destroy();
 

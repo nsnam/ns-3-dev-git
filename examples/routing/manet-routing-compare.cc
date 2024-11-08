@@ -173,7 +173,7 @@ RoutingExperiment::CheckThroughput()
 
     out.close();
     packetsReceived = 0;
-    Simulator::Schedule(Seconds(1.0), &RoutingExperiment::CheckThroughput, this);
+    Simulator::Schedule(Seconds(1), &RoutingExperiment::CheckThroughput, this);
 }
 
 Ptr<Socket>

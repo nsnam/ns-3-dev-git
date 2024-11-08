@@ -124,7 +124,7 @@ Experiment::AdvancePosition(Ptr<Node> node)
         return;
     }
     SetPosition(node, pos);
-    Simulator::Schedule(Seconds(1.0), &Experiment::AdvancePosition, this, node);
+    Simulator::Schedule(Seconds(1), &Experiment::AdvancePosition, this, node);
 }
 
 void
@@ -186,7 +186,7 @@ Experiment::Run(const WifiHelper& wifi,
 
     ApplicationContainer apps = onoff.Install(c.Get(0));
     apps.Start(Seconds(0.5));
-    apps.Stop(Seconds(250.0));
+    apps.Stop(Seconds(250));
 
     Simulator::Schedule(Seconds(1.5), &Experiment::AdvancePosition, this, c.Get(1));
     Ptr<Socket> recvSink = SetupPacketReceive(c.Get(1));

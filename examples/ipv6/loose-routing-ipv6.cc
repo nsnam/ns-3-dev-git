@@ -146,7 +146,7 @@ main(int argc, char** argv)
      */
     uint32_t packetSize = 1024;
     uint32_t maxPacketCount = 1;
-    Time interPacketInterval = Seconds(1.0);
+    Time interPacketInterval = Seconds(1);
 
     std::vector<Ipv6Address> routersAddress;
     routersAddress.push_back(i3.GetAddress(1, 1));
@@ -163,8 +163,8 @@ main(int argc, char** argv)
     ApplicationContainer apps = client.Install(h0);
     DynamicCast<Ping>(apps.Get(0))->SetRouters(routersAddress);
 
-    apps.Start(Seconds(1.0));
-    apps.Stop(Seconds(20.0));
+    apps.Start(Seconds(1));
+    apps.Stop(Seconds(20));
 
     AsciiTraceHelper ascii;
     csma.EnableAsciiAll(ascii.CreateFileStream("loose-routing-ipv6.tr"));

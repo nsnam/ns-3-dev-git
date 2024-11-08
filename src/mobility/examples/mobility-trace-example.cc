@@ -50,7 +50,7 @@ main(int argc, char* argv[])
     AsciiTraceHelper ascii;
     MobilityHelper::EnableAsciiAll(ascii.CreateFileStream("mobility-trace-example.mob"));
 
-    Simulator::Stop(Seconds(5.0));
+    Simulator::Stop(Seconds(5));
     Simulator::Run();
     Simulator::Destroy();
 

@@ -187,7 +187,7 @@ SpectrumIdealPhyTestCase::DoRun()
                          TimeValue(Seconds(double(pktSize * 8) / (1.2 * double(phyRate)))));
     client->SetAttribute("PacketSize", UintegerValue(pktSize));
     client->SetAttribute("MaxPackets", UintegerValue(0));
-    client->SetStartTime(Seconds(0.0));
+    client->SetStartTime(Seconds(0));
     client->SetStopTime(Seconds(testDuration));
     c.Get(0)->AddApplication(client);
 

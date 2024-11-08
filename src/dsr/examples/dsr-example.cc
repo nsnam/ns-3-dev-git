@@ -183,7 +183,7 @@ main(int argc, char* argv[])
         PacketSinkHelper sink("ns3::UdpSocketFactory",
                               InetSocketAddress(Ipv4Address::GetAny(), port));
         ApplicationContainer apps_sink = sink.Install(adhocNodes.Get(i));
-        apps_sink.Start(Seconds(0.0));
+        apps_sink.Start(Seconds(0));
         apps_sink.Stop(Seconds(TotalTime));
 
         OnOffHelper onoff1("ns3::UdpSocketFactory",

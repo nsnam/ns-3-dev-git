@@ -142,8 +142,8 @@ main(int argc, char* argv[])
 
     ApplicationContainer sinkC = sink.Install(c1.Get(2)); // Node n4
     // Start the sink
-    sinkC.Start(Seconds(1.0));
-    sinkC.Stop(Seconds(10.0));
+    sinkC.Start(Seconds(1));
+    sinkC.Stop(Seconds(10));
 
     NS_LOG_INFO("Configure Tracing.");
     //

@@ -88,22 +88,22 @@ main(int argc, char* argv[])
     OnOffHelper onoff("ns3::PacketSocketFactory", Address(socket));
     onoff.SetConstantRate(DataRate("500kb/s"));
     ApplicationContainer apps = onoff.Install(nodes.Get(0));
-    apps.Start(Seconds(1.0));
-    apps.Stop(Seconds(10.0));
+    apps.Start(Seconds(1));
+    apps.Stop(Seconds(10));
 
     socket.SetSingleDevice(devs.Get(3)->GetIfIndex());
     socket.SetPhysicalAddress(devs.Get(0)->GetAddress());
     socket.SetProtocol(3);
     onoff.SetAttribute("Remote", AddressValue(socket));
     apps = onoff.Install(nodes.Get(3));
-    apps.Start(Seconds(1.0));
-    apps.Stop(Seconds(10.0));
+    apps.Start(Seconds(1));
+    apps.Stop(Seconds(10));
 
     // Install packet sink on node 0 to receive packets from node 1
     PacketSinkHelper sink = PacketSinkHelper("ns3::PacketSocketFactory", socket);
     apps = sink.Install(nodes.Get(0));
-    apps.Start(Seconds(0.0));
-    apps.Stop(Seconds(20.0));
+    apps.Start(Seconds(0));
+    apps.Stop(Seconds(20));
 
     // While the below trace sink is hooked to all nodes (the wildcard "*")
     // only one packet sink (on node 0) is actually added above, so

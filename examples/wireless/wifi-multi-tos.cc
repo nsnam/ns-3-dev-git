@@ -154,14 +154,14 @@ main(int argc, char* argv[])
         }
     }
 
-    sinkApplications.Start(Seconds(0.0));
-    sinkApplications.Stop(simulationTime + Seconds(1.0));
-    sourceApplications.Start(Seconds(1.0));
-    sourceApplications.Stop(simulationTime + Seconds(1.0));
+    sinkApplications.Start(Seconds(0));
+    sinkApplications.Stop(simulationTime + Seconds(1));
+    sourceApplications.Start(Seconds(1));
+    sourceApplications.Stop(simulationTime + Seconds(1));
 
     Ipv4GlobalRoutingHelper::PopulateRoutingTables();
 
-    Simulator::Stop(simulationTime + Seconds(1.0));
+    Simulator::Stop(simulationTime + Seconds(1));
     Simulator::Run();
 
     double throughput = 0;

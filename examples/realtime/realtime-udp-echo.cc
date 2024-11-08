@@ -76,8 +76,8 @@ main(int argc, char* argv[])
     uint16_t port = 9; // well-known echo port number
     UdpEchoServerHelper server(port);
     ApplicationContainer apps = server.Install(n.Get(1));
-    apps.Start(Seconds(1.0));
-    apps.Stop(Seconds(10.0));
+    apps.Start(Seconds(1));
+    apps.Stop(Seconds(10));
 
     //
     // Create a UdpEchoClient application to send UDP datagrams from node zero to
@@ -91,8 +91,8 @@ main(int argc, char* argv[])
     client.SetAttribute("Interval", TimeValue(interPacketInterval));
     client.SetAttribute("PacketSize", UintegerValue(packetSize));
     apps = client.Install(n.Get(0));
-    apps.Start(Seconds(2.0));
-    apps.Stop(Seconds(10.0));
+    apps.Start(Seconds(2));
+    apps.Stop(Seconds(10));
 
     AsciiTraceHelper ascii;
     csma.EnableAsciiAll(ascii.CreateFileStream("realtime-udp-echo.tr"));
@@ -101,7 +101,7 @@ main(int argc, char* argv[])
     //
     // Now, do the actual simulation.
     //
-    Simulator::Stop(Seconds(11.0));
+    Simulator::Stop(Seconds(11));
     NS_LOG_INFO("Run Simulation.");
     Simulator::Run();
     Simulator::Destroy();

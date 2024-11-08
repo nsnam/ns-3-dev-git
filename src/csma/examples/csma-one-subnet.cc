@@ -81,14 +81,14 @@ main(int argc, char* argv[])
 
     ApplicationContainer app = onoff.Install(nodes.Get(0));
     // Start the application
-    app.Start(Seconds(1.0));
-    app.Stop(Seconds(10.0));
+    app.Start(Seconds(1));
+    app.Stop(Seconds(10));
 
     // Create an optional packet sink to receive these packets
     PacketSinkHelper sink("ns3::UdpSocketFactory",
                           Address(InetSocketAddress(Ipv4Address::GetAny(), port)));
     app = sink.Install(nodes.Get(1));
-    app.Start(Seconds(0.0));
+    app.Start(Seconds(0));
 
     //
     // Create a similar flow from n3 to n0, starting at time 1.1 seconds
@@ -96,10 +96,10 @@ main(int argc, char* argv[])
     onoff.SetAttribute("Remote", AddressValue(InetSocketAddress(interfaces.GetAddress(0), port)));
     app = onoff.Install(nodes.Get(3));
     app.Start(Seconds(1.1));
-    app.Stop(Seconds(10.0));
+    app.Stop(Seconds(10));
 
     app = sink.Install(nodes.Get(0));
-    app.Start(Seconds(0.0));
+    app.Start(Seconds(0));
 
     NS_LOG_INFO("Configure Tracing.");
     //

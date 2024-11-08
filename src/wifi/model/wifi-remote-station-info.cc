@@ -14,7 +14,7 @@ namespace ns3
 {
 
 WifiRemoteStationInfo::WifiRemoteStationInfo()
-    : m_memoryTime(Seconds(1.0)),
+    : m_memoryTime(Seconds(1)),
       m_lastUpdate(),
       m_failAvg(0.0)
 {

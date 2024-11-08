@@ -812,7 +812,7 @@ TestDlMuMimoPhyTransmission::RunOne()
     // Send MU PPDU with two PSDUs addressed to STA 1 and STA 2:
     // STA 1 and STA 2 should receive their PSDUs, whereas STA 3 should not receive any PSDU
     // but should keep its PHY busy during all PPDU duration.
-    Simulator::Schedule(Seconds(1.0),
+    Simulator::Schedule(Seconds(1),
                         &TestDlMuMimoPhyTransmission::SendMuPpdu,
                         this,
                         std::vector<StaInfo>{{1, m_nss}, {2, m_nss}});
@@ -820,32 +820,32 @@ TestDlMuMimoPhyTransmission::RunOne()
     // Since it takes m_expectedPpduDuration to transmit the PPDU,
     // all 3 PHYs should be back to IDLE at the same time,
     // even the PHY that has no PSDU addressed to it.
-    Simulator::Schedule(Seconds(1.0) + m_expectedPpduDuration - NanoSeconds(1),
+    Simulator::Schedule(Seconds(1) + m_expectedPpduDuration - NanoSeconds(1),
                         &TestDlMuMimoPhyTransmission::CheckPhyState,
                         this,
                         m_phySta1,
                         WifiPhyState::RX);
-    Simulator::Schedule(Seconds(1.0) + m_expectedPpduDuration - NanoSeconds(1),
+    Simulator::Schedule(Seconds(1) + m_expectedPpduDuration - NanoSeconds(1),
                         &TestDlMuMimoPhyTransmission::CheckPhyState,
                         this,
                         m_phySta2,
                         WifiPhyState::RX);
-    Simulator::Schedule(Seconds(1.0) + m_expectedPpduDuration - NanoSeconds(1),
+    Simulator::Schedule(Seconds(1) + m_expectedPpduDuration - NanoSeconds(1),
                         &TestDlMuMimoPhyTransmission::CheckPhyState,
                         this,
                         m_phySta3,
                         WifiPhyState::CCA_BUSY);
-    Simulator::Schedule(Seconds(1.0) + m_expectedPpduDuration,
+    Simulator::Schedule(Seconds(1) + m_expectedPpduDuration,
                         &TestDlMuMimoPhyTransmission::CheckPhyState,
                         this,
                         m_phySta1,
                         WifiPhyState::IDLE);
-    Simulator::Schedule(Seconds(1.0) + m_expectedPpduDuration,
+    Simulator::Schedule(Seconds(1) + m_expectedPpduDuration,
                         &TestDlMuMimoPhyTransmission::CheckPhyState,
                         this,
                         m_phySta2,
                         WifiPhyState::IDLE);
-    Simulator::Schedule(Seconds(1.0) + m_expectedPpduDuration,
+    Simulator::Schedule(Seconds(1) + m_expectedPpduDuration,
                         &TestDlMuMimoPhyTransmission::CheckPhyState,
                         this,
                         m_phySta3,
@@ -879,7 +879,7 @@ TestDlMuMimoPhyTransmission::RunOne()
     // Send MU PPDU with two PSDUs addressed to STA 1 and STA 3:
     // STA 1 and STA 3 should receive their PSDUs, whereas STA 2 should not receive any PSDU
     // but should keep its PHY busy during all PPDU duration.
-    Simulator::Schedule(Seconds(2.0),
+    Simulator::Schedule(Seconds(2),
                         &TestDlMuMimoPhyTransmission::SendMuPpdu,
                         this,
                         std::vector<StaInfo>{{1, m_nss}, {3, m_nss}});
@@ -887,32 +887,32 @@ TestDlMuMimoPhyTransmission::RunOne()
     // Since it takes m_expectedPpduDuration to transmit the PPDU,
     // all 3 PHYs should be back to IDLE at the same time,
     // even the PHY that has no PSDU addressed to it.
-    Simulator::Schedule(Seconds(2.0) + m_expectedPpduDuration - NanoSeconds(1),
+    Simulator::Schedule(Seconds(2) + m_expectedPpduDuration - NanoSeconds(1),
                         &TestDlMuMimoPhyTransmission::CheckPhyState,
                         this,
                         m_phySta1,
                         WifiPhyState::RX);
-    Simulator::Schedule(Seconds(2.0) + m_expectedPpduDuration - NanoSeconds(1),
+    Simulator::Schedule(Seconds(2) + m_expectedPpduDuration - NanoSeconds(1),
                         &TestDlMuMimoPhyTransmission::CheckPhyState,
                         this,
                         m_phySta2,
                         WifiPhyState::CCA_BUSY);
-    Simulator::Schedule(Seconds(2.0) + m_expectedPpduDuration - NanoSeconds(1),
+    Simulator::Schedule(Seconds(2) + m_expectedPpduDuration - NanoSeconds(1),
                         &TestDlMuMimoPhyTransmission::CheckPhyState,
                         this,
                         m_phySta3,
                         WifiPhyState::RX);
-    Simulator::Schedule(Seconds(2.0) + m_expectedPpduDuration,
+    Simulator::Schedule(Seconds(2) + m_expectedPpduDuration,
                         &TestDlMuMimoPhyTransmission::CheckPhyState,
                         this,
                         m_phySta1,
                         WifiPhyState::IDLE);
-    Simulator::Schedule(Seconds(2.0) + m_expectedPpduDuration,
+    Simulator::Schedule(Seconds(2) + m_expectedPpduDuration,
                         &TestDlMuMimoPhyTransmission::CheckPhyState,
                         this,
                         m_phySta2,
                         WifiPhyState::IDLE);
-    Simulator::Schedule(Seconds(2.0) + m_expectedPpduDuration,
+    Simulator::Schedule(Seconds(2) + m_expectedPpduDuration,
                         &TestDlMuMimoPhyTransmission::CheckPhyState,
                         this,
                         m_phySta3,
@@ -946,7 +946,7 @@ TestDlMuMimoPhyTransmission::RunOne()
     // Send MU PPDU with two PSDUs addressed to STA 2 and STA 3:
     // STA 2 and STA 3 should receive their PSDUs, whereas STA 1 should not receive any PSDU
     // but should keep its PHY busy during all PPDU duration.
-    Simulator::Schedule(Seconds(3.0),
+    Simulator::Schedule(Seconds(3),
                         &TestDlMuMimoPhyTransmission::SendMuPpdu,
                         this,
                         std::vector<StaInfo>{{2, m_nss}, {3, m_nss}});
@@ -954,32 +954,32 @@ TestDlMuMimoPhyTransmission::RunOne()
     // Since it takes m_expectedPpduDuration to transmit the PPDU,
     // all 3 PHYs should be back to IDLE at the same time,
     // even the PHY that has no PSDU addressed to it.
-    Simulator::Schedule(Seconds(3.0) + m_expectedPpduDuration - NanoSeconds(1),
+    Simulator::Schedule(Seconds(3) + m_expectedPpduDuration - NanoSeconds(1),
                         &TestDlMuMimoPhyTransmission::CheckPhyState,
                         this,
                         m_phySta1,
                         WifiPhyState::CCA_BUSY);
-    Simulator::Schedule(Seconds(3.0) + m_expectedPpduDuration - NanoSeconds(1),
+    Simulator::Schedule(Seconds(3) + m_expectedPpduDuration - NanoSeconds(1),
                         &TestDlMuMimoPhyTransmission::CheckPhyState,
                         this,
                         m_phySta2,
                         WifiPhyState::RX);
-    Simulator::Schedule(Seconds(3.0) + m_expectedPpduDuration - NanoSeconds(1),
+    Simulator::Schedule(Seconds(3) + m_expectedPpduDuration - NanoSeconds(1),
                         &TestDlMuMimoPhyTransmission::CheckPhyState,
                         this,
                         m_phySta3,
                         WifiPhyState::RX);
-    Simulator::Schedule(Seconds(3.0) + m_expectedPpduDuration,
+    Simulator::Schedule(Seconds(3) + m_expectedPpduDuration,
                         &TestDlMuMimoPhyTransmission::CheckPhyState,
                         this,
                         m_phySta1,
                         WifiPhyState::IDLE);
-    Simulator::Schedule(Seconds(3.0) + m_expectedPpduDuration,
+    Simulator::Schedule(Seconds(3) + m_expectedPpduDuration,
                         &TestDlMuMimoPhyTransmission::CheckPhyState,
                         this,
                         m_phySta2,
                         WifiPhyState::IDLE);
-    Simulator::Schedule(Seconds(3.0) + m_expectedPpduDuration,
+    Simulator::Schedule(Seconds(3) + m_expectedPpduDuration,
                         &TestDlMuMimoPhyTransmission::CheckPhyState,
                         this,
                         m_phySta3,
@@ -1012,39 +1012,39 @@ TestDlMuMimoPhyTransmission::RunOne()
     //----------------------------------------------------------------------------------------------------
     // Send MU PPDU with three PSDUs addressed to STA 1, STA 2 and STA 3:
     // All STAs should receive their PSDUs.
-    Simulator::Schedule(Seconds(4.0),
+    Simulator::Schedule(Seconds(4),
                         &TestDlMuMimoPhyTransmission::SendMuPpdu,
                         this,
                         std::vector<StaInfo>{{1, m_nss}, {2, m_nss}, {3, m_nss}});
 
     // Since it takes m_expectedPpduDuration to transmit the PPDU,
     // all 3 PHYs should be back to IDLE at the same time.
-    Simulator::Schedule(Seconds(4.0) + m_expectedPpduDuration - NanoSeconds(1),
+    Simulator::Schedule(Seconds(4) + m_expectedPpduDuration - NanoSeconds(1),
                         &TestDlMuMimoPhyTransmission::CheckPhyState,
                         this,
                         m_phySta1,
                         WifiPhyState::RX);
-    Simulator::Schedule(Seconds(4.0) + m_expectedPpduDuration - NanoSeconds(1),
+    Simulator::Schedule(Seconds(4) + m_expectedPpduDuration - NanoSeconds(1),
                         &TestDlMuMimoPhyTransmission::CheckPhyState,
                         this,
                         m_phySta2,
                         WifiPhyState::RX);
-    Simulator::Schedule(Seconds(4.0) + m_expectedPpduDuration - NanoSeconds(1),
+    Simulator::Schedule(Seconds(4) + m_expectedPpduDuration - NanoSeconds(1),
                         &TestDlMuMimoPhyTransmission::CheckPhyState,
                         this,
                         m_phySta3,
                         WifiPhyState::RX);
-    Simulator::Schedule(Seconds(4.0) + m_expectedPpduDuration,
+    Simulator::Schedule(Seconds(4) + m_expectedPpduDuration,
                         &TestDlMuMimoPhyTransmission::CheckPhyState,
                         this,
                         m_phySta1,
                         WifiPhyState::IDLE);
-    Simulator::Schedule(Seconds(4.0) + m_expectedPpduDuration,
+    Simulator::Schedule(Seconds(4) + m_expectedPpduDuration,
                         &TestDlMuMimoPhyTransmission::CheckPhyState,
                         this,
                         m_phySta2,
                         WifiPhyState::IDLE);
-    Simulator::Schedule(Seconds(4.0) + m_expectedPpduDuration,
+    Simulator::Schedule(Seconds(4) + m_expectedPpduDuration,
                         &TestDlMuMimoPhyTransmission::CheckPhyState,
                         this,
                         m_phySta3,
@@ -1715,7 +1715,7 @@ TestUlMuMimoPhyTransmission::RunOne()
 
     Time delay;
     Simulator::Schedule(delay, &TestUlMuMimoPhyTransmission::Reset, this);
-    delay += Seconds(1.0);
+    delay += Seconds(1);
 
     //---------------------------------------------------------------------------
     // Verify that all HE TB PPDUs using full BW MU-MIMO have been corrected received
@@ -1734,7 +1734,7 @@ TestUlMuMimoPhyTransmission::RunOne()
                      std::make_tuple(1, 0, 1002)  // One PSDU of 1002 bytes should have been
                                                   // successfully received from STA 3
                  });
-    delay += Seconds(1.0);
+    delay += Seconds(1);
 
     //---------------------------------------------------------------------------
     // Send an HE SU PPDU during 400 ns window and verify that all HE TB PPDUs using full BW MU-MIMO
@@ -1763,7 +1763,7 @@ TestUlMuMimoPhyTransmission::RunOne()
                      std::make_tuple(0, 1, 0) // Reception of the PSDU from STA 3 should have failed
                                               // (since interference from STA 4)
                  });
-    delay += Seconds(1.0);
+    delay += Seconds(1);
 
     //---------------------------------------------------------------------------
     // Send an HE SU PPDU during HE portion reception and verify that all HE TB PPDUs have been
@@ -1792,7 +1792,7 @@ TestUlMuMimoPhyTransmission::RunOne()
                      std::make_tuple(0, 1, 0) // Reception of the PSDU from STA 3 should have failed
                                               // (since interference from STA 4)
                  });
-    delay += Seconds(1.0);
+    delay += Seconds(1);
 
     Simulator::Run();
 }

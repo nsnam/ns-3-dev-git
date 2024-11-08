@@ -142,8 +142,8 @@ main(int argc, char* argv[])
     // directly.
     //
     ApplicationContainer apps = server.Install("/Names/server");
-    apps.Start(Seconds(1.0));
-    apps.Stop(Seconds(10.0));
+    apps.Start(Seconds(1));
+    apps.Stop(Seconds(10));
 
     uint32_t packetSize = 1024;
     uint32_t maxPacketCount = 1;
@@ -157,8 +157,8 @@ main(int argc, char* argv[])
     // directly.
     //
     apps = client.Install("/Names/client");
-    apps.Start(Seconds(2.0));
-    apps.Stop(Seconds(10.0));
+    apps.Start(Seconds(2));
+    apps.Stop(Seconds(10));
 
     //
     // Use the Config system to connect a trace source using the object name

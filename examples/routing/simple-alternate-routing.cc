@@ -131,14 +131,14 @@ main(int argc, char* argv[])
 
     ApplicationContainer apps = onoff.Install(c.Get(3));
     apps.Start(Seconds(1.1));
-    apps.Stop(Seconds(10.0));
+    apps.Stop(Seconds(10));
 
     // Create a packet sink to receive these packets
     PacketSinkHelper sink("ns3::UdpSocketFactory",
                           Address(InetSocketAddress(Ipv4Address::GetAny(), port)));
     apps = sink.Install(c.Get(1));
     apps.Start(Seconds(1.1));
-    apps.Stop(Seconds(10.0));
+    apps.Stop(Seconds(10));
 
     AsciiTraceHelper ascii;
     p2p.EnableAsciiAll(ascii.CreateFileStream("simple-alternate-routing.tr"));

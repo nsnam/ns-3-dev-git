@@ -72,8 +72,8 @@ def main(argv):
     port = 9  # well-known echo port number
     server = ns.UdpEchoServerHelper(port)
     apps = server.Install(n.Get(1))
-    apps.Start(ns.Seconds(1.0))
-    apps.Stop(ns.Seconds(10.0))
+    apps.Start(ns.Seconds(1))
+    apps.Stop(ns.Seconds(10))
 
     #
     # Create a UdpEchoClient application to send UDP datagrams from node zero to
@@ -87,8 +87,8 @@ def main(argv):
     client.SetAttribute("Interval", ns.TimeValue(interPacketInterval))
     client.SetAttribute("PacketSize", ns.UintegerValue(packetSize))
     apps = client.Install(n.Get(0))
-    apps.Start(ns.Seconds(2.0))
-    apps.Stop(ns.Seconds(10.0))
+    apps.Start(ns.Seconds(2))
+    apps.Stop(ns.Seconds(10))
 
     ascii = ns.AsciiTraceHelper()
     csma.EnableAsciiAll(ascii.CreateFileStream("realtime-udp-echo.tr"))

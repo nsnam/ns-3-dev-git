@@ -88,8 +88,8 @@ UdpClientServerTestCase::DoRun()
     uint16_t port = 4000;
     UdpServerHelper serverHelper(port);
     auto serverApp = serverHelper.Install(n.Get(1));
-    serverApp.Start(Seconds(1.0));
-    serverApp.Stop(Seconds(10.0));
+    serverApp.Start(Seconds(1));
+    serverApp.Stop(Seconds(10));
 
     uint32_t MaxPacketSize = 1024;
     Time interPacketInterval = Seconds(1.);
@@ -100,8 +100,8 @@ UdpClientServerTestCase::DoRun()
     clientHelper.SetAttribute("Interval", TimeValue(interPacketInterval));
     clientHelper.SetAttribute("PacketSize", UintegerValue(MaxPacketSize));
     auto clientApp = clientHelper.Install(n.Get(0));
-    clientApp.Start(Seconds(2.0));
-    clientApp.Stop(Seconds(10.0));
+    clientApp.Start(Seconds(2));
+    clientApp.Stop(Seconds(10));
 
     Simulator::Run();
     Simulator::Destroy();
@@ -164,15 +164,15 @@ UdpTraceClientServerTestCase::DoRun()
     uint16_t port = 4000;
     UdpServerHelper serverHelper(InetSocketAddress(Ipv4Address::GetAny(), port));
     auto serverApp = serverHelper.Install(n.Get(1));
-    serverApp.Start(Seconds(1.0));
-    serverApp.Stop(Seconds(10.0));
+    serverApp.Start(Seconds(1));
+    serverApp.Stop(Seconds(10));
 
     uint32_t MaxPacketSize = 1400 - 28; // ip/udp header
     UdpTraceClientHelper clientHelper(InetSocketAddress(i.GetAddress(1), port));
     clientHelper.SetAttribute("MaxPacketSize", UintegerValue(MaxPacketSize));
     auto clientApp = clientHelper.Install(n.Get(0));
-    clientApp.Start(Seconds(2.0));
-    clientApp.Stop(Seconds(10.0));
+    clientApp.Start(Seconds(2));
+    clientApp.Stop(Seconds(10));
 
     Simulator::Run();
     Simulator::Destroy();
@@ -312,11 +312,11 @@ UdpEchoClientSetFillTestCase::DoRun()
     uint16_t port = 5000;
     UdpEchoServerHelper echoServer(InetSocketAddress(Ipv4Address::GetAny(), port));
     ApplicationContainer serverApps = echoServer.Install(nodes.Get(1));
-    serverApps.Start(Seconds(1.0));
-    serverApps.Stop(Seconds(10.0));
+    serverApps.Start(Seconds(1));
+    serverApps.Stop(Seconds(10));
     UdpEchoClientHelper echoClient(InetSocketAddress(interfaces.GetAddress(1), port));
     echoClient.SetAttribute("MaxPackets", UintegerValue(1));
-    echoClient.SetAttribute("Interval", TimeValue(Seconds(1.0)));
+    echoClient.SetAttribute("Interval", TimeValue(Seconds(1)));
     echoClient.SetAttribute("PacketSize", UintegerValue(1024));
 
     ApplicationContainer clientApps = echoClient.Install(nodes.Get(0));
@@ -329,8 +329,8 @@ UdpEchoClientSetFillTestCase::DoRun()
     }
     echoClient.SetFill(clientApps.Get(0), &(array[0]), (uint32_t)64, (uint32_t)64);
 
-    clientApps.Start(Seconds(2.0));
-    clientApps.Stop(Seconds(10.0));
+    clientApps.Start(Seconds(2));
+    clientApps.Stop(Seconds(10));
 
     Simulator::Run();
     Simulator::Destroy();

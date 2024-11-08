@@ -320,7 +320,7 @@ TcpRateLinuxWithSocketsTest::ConfigureEnvironment()
     TcpGeneralTest::ConfigureEnvironment();
     SetAppPktCount(300);
     SetPropagationDelay(MilliSeconds(50));
-    SetTransmitStart(Seconds(2.0));
+    SetTransmitStart(Seconds(2));
 
     Config::SetDefault("ns3::TcpSocketBase::Sack", BooleanValue(m_sackEnabled));
 }
@@ -482,7 +482,7 @@ TcpRateLinuxWithBufferTest::TcpRateLinuxWithBufferTest(uint32_t segmentSize, std
 void
 TcpRateLinuxWithBufferTest::DoRun()
 {
-    Simulator::Schedule(Seconds(0.0), &TcpRateLinuxWithBufferTest::TestWithSackBlocks, this);
+    Simulator::Schedule(Seconds(0), &TcpRateLinuxWithBufferTest::TestWithSackBlocks, this);
     Simulator::Run();
     Simulator::Destroy();
 }

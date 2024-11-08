@@ -134,7 +134,7 @@ main(int argc, char* argv[])
     double distance = 1;        // meters
     bool enableTwoBss = false;  // whether to enable a second (non-traced) BSS
     double distanceTwoBss = 10; // meters (distance between APs if enableTwoBss is true)
-    Time interval = Seconds(1.0);
+    Time interval = Seconds(1);
     bool verbose = true;
     bool logging = false;
 
@@ -303,7 +303,7 @@ main(int argc, char* argv[])
     rxTraceHelper.Stop(stopTime);
 
     Simulator::ScheduleWithContext(source->GetNode()->GetId(),
-                                   Seconds(1.0),
+                                   Seconds(1),
                                    &GeneratePacket,
                                    source,
                                    packetSize,

@@ -261,7 +261,7 @@ main(int argc, char* argv[])
         Ipv6RoutingHelper::PrintNeighborCacheAllAt(Seconds(2), outputStream);
     }
 
-    Simulator::Stop(Seconds(10.0));
+    Simulator::Stop(Seconds(10));
     Simulator::Run();
     Simulator::Destroy();
     return 0;

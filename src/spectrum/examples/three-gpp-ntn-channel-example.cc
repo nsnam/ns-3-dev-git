@@ -345,7 +345,7 @@ main(int argc, char* argv[])
     Config::SetDefault("ns3::ThreeGppChannelModel::UpdatePeriod",
                        TimeValue(MilliSeconds(10))); // update the channel at every 10 ms
     Config::SetDefault("ns3::ThreeGppChannelConditionModel::UpdatePeriod",
-                       TimeValue(MilliSeconds(0.0))); // do not update the channel condition
+                       TimeValue(MilliSeconds(0))); // do not update the channel condition
 
     RngSeedManager::SetSeed(1);
     RngSeedManager::SetRun(1);

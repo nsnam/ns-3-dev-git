@@ -270,8 +270,8 @@ main(int argc, char* argv[])
     uint16_t port = 9;
     UdpServerHelper serverA(port);
     ApplicationContainer serverAppA = serverA.Install(wifiStaNodes.Get(0));
-    serverAppA.Start(Seconds(0.0));
-    serverAppA.Stop(simulationTime + Seconds(1.0));
+    serverAppA.Start(Seconds(0));
+    serverAppA.Stop(simulationTime + Seconds(1));
 
     UdpClientHelper clientA(StaInterfaceA.GetAddress(0), port);
     clientA.SetAttribute("MaxPackets", UintegerValue(4294967295U));
@@ -279,13 +279,13 @@ main(int argc, char* argv[])
     clientA.SetAttribute("PacketSize", UintegerValue(payloadSize));
 
     ApplicationContainer clientAppA = clientA.Install(wifiApNodes.Get(0));
-    clientAppA.Start(Seconds(1.0));
-    clientAppA.Stop(simulationTime + Seconds(1.0));
+    clientAppA.Start(Seconds(1));
+    clientAppA.Stop(simulationTime + Seconds(1));
 
     UdpServerHelper serverB(port);
     ApplicationContainer serverAppB = serverB.Install(wifiStaNodes.Get(1));
-    serverAppB.Start(Seconds(0.0));
-    serverAppB.Stop(simulationTime + Seconds(1.0));
+    serverAppB.Start(Seconds(0));
+    serverAppB.Stop(simulationTime + Seconds(1));
 
     UdpClientHelper clientB(StaInterfaceB.GetAddress(0), port);
     clientB.SetAttribute("MaxPackets", UintegerValue(4294967295U));
@@ -293,13 +293,13 @@ main(int argc, char* argv[])
     clientB.SetAttribute("PacketSize", UintegerValue(payloadSize));
 
     ApplicationContainer clientAppB = clientB.Install(wifiApNodes.Get(1));
-    clientAppB.Start(Seconds(1.0));
-    clientAppB.Stop(simulationTime + Seconds(1.0));
+    clientAppB.Start(Seconds(1));
+    clientAppB.Stop(simulationTime + Seconds(1));
 
     UdpServerHelper serverC(port);
     ApplicationContainer serverAppC = serverC.Install(wifiStaNodes.Get(2));
-    serverAppC.Start(Seconds(0.0));
-    serverAppC.Stop(simulationTime + Seconds(1.0));
+    serverAppC.Start(Seconds(0));
+    serverAppC.Stop(simulationTime + Seconds(1));
 
     UdpClientHelper clientC(StaInterfaceC.GetAddress(0), port);
     clientC.SetAttribute("MaxPackets", UintegerValue(4294967295U));
@@ -307,13 +307,13 @@ main(int argc, char* argv[])
     clientC.SetAttribute("PacketSize", UintegerValue(payloadSize));
 
     ApplicationContainer clientAppC = clientC.Install(wifiApNodes.Get(2));
-    clientAppC.Start(Seconds(1.0));
-    clientAppC.Stop(simulationTime + Seconds(1.0));
+    clientAppC.Start(Seconds(1));
+    clientAppC.Stop(simulationTime + Seconds(1));
 
     UdpServerHelper serverD(port);
     ApplicationContainer serverAppD = serverD.Install(wifiStaNodes.Get(3));
-    serverAppD.Start(Seconds(0.0));
-    serverAppD.Stop(simulationTime + Seconds(1.0));
+    serverAppD.Start(Seconds(0));
+    serverAppD.Stop(simulationTime + Seconds(1));
 
     UdpClientHelper clientD(StaInterfaceD.GetAddress(0), port);
     clientD.SetAttribute("MaxPackets", UintegerValue(4294967295U));
@@ -321,8 +321,8 @@ main(int argc, char* argv[])
     clientD.SetAttribute("PacketSize", UintegerValue(payloadSize));
 
     ApplicationContainer clientAppD = clientD.Install(wifiApNodes.Get(3));
-    clientAppD.Start(Seconds(1.0));
-    clientAppD.Stop(simulationTime + Seconds(1.0));
+    clientAppD.Start(Seconds(1));
+    clientAppD.Stop(simulationTime + Seconds(1));
 
     if (enablePcap)
     {
@@ -336,7 +336,7 @@ main(int argc, char* argv[])
         phy.EnablePcap("STA_D", staDeviceD.Get(0));
     }
 
-    Simulator::Stop(simulationTime + Seconds(1.0));
+    Simulator::Stop(simulationTime + Seconds(1));
     Simulator::Run();
 
     // Show results

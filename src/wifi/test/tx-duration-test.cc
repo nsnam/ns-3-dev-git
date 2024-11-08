@@ -1652,7 +1652,7 @@ PhyHeaderSectionsTest::CheckPhyHeaderSections(PhyEntity::PhyHeaderSections obtai
 void
 PhyHeaderSectionsTest::DoRun()
 {
-    Time ppduStart = Seconds(1.0);
+    Time ppduStart = Seconds(1);
     Ptr<PhyEntity> phyEntity;
     PhyEntity::PhyHeaderSections sections;
     WifiTxVector txVector;

@@ -94,13 +94,13 @@ main(int argc, char** argv)
     echoClient.SetAttribute("PacketSize", UintegerValue(packetSize));
     echoClient.SetAttribute("MaxPackets", UintegerValue(maxPacketCount));
     ApplicationContainer clientApps = echoClient.Install(net1.Get(0));
-    clientApps.Start(Seconds(2.0));
-    clientApps.Stop(Seconds(20.0));
+    clientApps.Start(Seconds(2));
+    clientApps.Stop(Seconds(20));
 
     UdpEchoServerHelper echoServer(42);
     ApplicationContainer serverApps = echoServer.Install(net2.Get(1));
-    serverApps.Start(Seconds(0.0));
-    serverApps.Stop(Seconds(30.0));
+    serverApps.Start(Seconds(0));
+    serverApps.Stop(Seconds(30));
 
     AsciiTraceHelper ascii;
     csma.EnableAsciiAll(ascii.CreateFileStream("fragmentation-ipv6-two-mtu.tr"));

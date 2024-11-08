@@ -126,9 +126,9 @@ main(int argc, char* argv[])
 
     // The Emitter object is not associated with an ns-3 node, so
     // it won't get started automatically, so we need to do this ourselves
-    Simulator::Schedule(Seconds(0.0), &Emitter::Initialize, emitter);
+    Simulator::Schedule(Seconds(0), &Emitter::Initialize, emitter);
 
-    Simulator::Stop(Seconds(100.0));
+    Simulator::Stop(Seconds(100));
     Simulator::Run();
     Simulator::Destroy();
 

@@ -83,16 +83,16 @@ main(int argc, char* argv[])
 
     ApplicationContainer app = onoff.Install(c0.Get(0));
     // Start the application
-    app.Start(Seconds(1.0));
-    app.Stop(Seconds(10.0));
+    app.Start(Seconds(1));
+    app.Stop(Seconds(10));
 
     // Create an optional packet sink to receive these packets
     PacketSinkHelper sink("ns3::UdpSocketFactory",
                           Address(InetSocketAddress(Ipv4Address::GetAny(), port)));
     app = sink.Install(c0.Get(1));
     app.Add(sink.Install(c1.Get(1)));
-    app.Start(Seconds(1.0));
-    app.Stop(Seconds(10.0));
+    app.Start(Seconds(1));
+    app.Stop(Seconds(10));
 
     // Configure ascii tracing of all enqueue, dequeue, and NetDevice receive
     // events on all devices.  Trace output will be sent to the file

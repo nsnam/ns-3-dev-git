@@ -120,25 +120,25 @@ main(int argc, char* argv[])
 
     ApplicationContainer serverApps = echoServer.Install(remoteHost);
 
-    serverApps.Start(Seconds(1.0));
-    serverApps.Stop(Seconds(20.0));
+    serverApps.Start(Seconds(1));
+    serverApps.Stop(Seconds(20));
 
     UdpEchoClientHelper echoClient1(remoteHostAddr, 9);
     UdpEchoClientHelper echoClient2(remoteHostAddr, 9);
 
     echoClient1.SetAttribute("MaxPackets", UintegerValue(1000));
-    echoClient1.SetAttribute("Interval", TimeValue(Seconds(1.0)));
+    echoClient1.SetAttribute("Interval", TimeValue(Seconds(1)));
     echoClient1.SetAttribute("PacketSize", UintegerValue(1024));
 
     echoClient2.SetAttribute("MaxPackets", UintegerValue(1000));
-    echoClient2.SetAttribute("Interval", TimeValue(Seconds(1.0)));
+    echoClient2.SetAttribute("Interval", TimeValue(Seconds(1)));
     echoClient2.SetAttribute("PacketSize", UintegerValue(1024));
 
     ApplicationContainer clientApps1 = echoClient1.Install(ueNodes.Get(0));
     ApplicationContainer clientApps2 = echoClient2.Install(ueNodes.Get(1));
 
-    clientApps1.Start(Seconds(1.0));
-    clientApps1.Stop(Seconds(14.0));
+    clientApps1.Start(Seconds(1));
+    clientApps1.Stop(Seconds(14));
 
     clientApps2.Start(Seconds(1.5));
     clientApps2.Stop(Seconds(14.5));

@@ -528,7 +528,7 @@ BatteryLifetimeTest::CreateLoadProfiles()
     }
 
     loads.push_back(0.2227);
-    timeStamps.push_back(Seconds(200.0));
+    timeStamps.push_back(Seconds(200));
 
     profile.loads = loads;
     profile.timeStamps = timeStamps;
@@ -555,7 +555,7 @@ BatteryLifetimeTest::CreateLoadProfiles()
     }
 
     loads.push_back(0.2227);
-    timeStamps.push_back(Seconds(200.0));
+    timeStamps.push_back(Seconds(200));
 
     profile.loads = loads;
     profile.timeStamps = timeStamps;
@@ -638,27 +638,27 @@ main(int argc, char** argv)
     BatteryLifetimeTest test;
     int ret = 0;
 
-    if (test.ConstantLoadTest(0.640, Seconds(2844.0)))
+    if (test.ConstantLoadTest(0.640, Seconds(2844)))
     {
         ret = 1;
         std::cerr << "Problems with constant load test (640mA)." << std::endl;
     }
-    if (test.ConstantLoadTest(0.320, Seconds(6146.0)))
+    if (test.ConstantLoadTest(0.320, Seconds(6146)))
     {
         ret = 1;
         std::cerr << "Problems with constant load test (320mA)." << std::endl;
     }
-    if (test.ConstantLoadTest(0.128, Seconds(16052.0)))
+    if (test.ConstantLoadTest(0.128, Seconds(16052)))
     {
         ret = 1;
         std::cerr << "Problems with constant load test (128mA)." << std::endl;
     }
-    if (test.ConstantLoadTest(0.064, Seconds(32561.0)))
+    if (test.ConstantLoadTest(0.064, Seconds(32561)))
     {
         ret = 1;
         std::cerr << "Problems with constant load test (64mA)." << std::endl;
     }
-    if (test.ConstantLoadTest(0.032, Seconds(65580.0)))
+    if (test.ConstantLoadTest(0.032, Seconds(65580)))
     {
         ret = 1;
         std::cerr << "Problems with constant load test (32mA)." << std::endl;
@@ -766,7 +766,7 @@ BatteryLifetimeTest::ConstantLoadTest(double load, Time expLifetime) const
     DeviceEnergyModelContainer deviceModels = radioEnergyHelper.Install(devices, sources);
 
     // run simulation
-    Simulator::Stop(Seconds(70000.0));
+    Simulator::Stop(Seconds(70000));
     Simulator::Run();
 
     Time actualLifetime;
@@ -864,7 +864,7 @@ BatteryLifetimeTest::VariableLoadTest(std::vector<double> loads,
     }
 
     // run simulation
-    Simulator::Stop(Seconds(70000.0));
+    Simulator::Stop(Seconds(70000));
     Simulator::Run();
 
     Time actualLifetime;

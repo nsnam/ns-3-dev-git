@@ -229,7 +229,7 @@ DsdvManetExample::CheckThroughput()
 
     out.close();
     packetsReceived = 0;
-    Simulator::Schedule(Seconds(1.0), &DsdvManetExample::CheckThroughput, this);
+    Simulator::Schedule(Seconds(1), &DsdvManetExample::CheckThroughput, this);
 }
 
 Ptr<Socket>

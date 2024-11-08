@@ -66,8 +66,8 @@ is how one would create a UDP receiver::
   Address sinkLocalAddress(InetSocketAddress(Ipv4Address::GetAny(), port));
   PacketSinkHelper sinkHelper("ns3::UdpSocketFactory", sinkLocalAddress);
   ApplicationContainer sinkApp = sinkHelper.Install(serverNode);
-  sinkApp.Start(Seconds(1.0));
-  sinkApp.Stop(Seconds(10.0));
+  sinkApp.Start(Seconds(1));
+  sinkApp.Stop(Seconds(10));
 
 Similarly, the below snippet configures OnOffApplication traffic source to use
 UDP::
@@ -76,8 +76,8 @@ UDP::
   OnOffHelper clientHelper("ns3::UdpSocketFactory", Address());
   clientHelper.SetAttribute("Remote", remoteAddress);
   ApplicationContainer clientApps =(clientHelper.Install(clientNode);
-  clientApps.Start(Seconds(2.0));
-  clientApps.Stop(Seconds(9.0));
+  clientApps.Start(Seconds(2));
+  clientApps.Stop(Seconds(9));
 
 For users who wish to have a pointer to the actual socket(so that
 socket operations like ``Bind()``, setting socket options, etc. can be

@@ -263,8 +263,8 @@ main(int argc, char* argv[])
     app->SetAttribute("Destination", AddressValue(remoteIp));
     app->SetAttribute("VerboseMode", EnumValue(Ping::VerboseMode::VERBOSE));
     node->AddApplication(app);
-    app->SetStartTime(Seconds(1.0));
-    app->SetStopTime(Seconds(22.0));
+    app->SetStartTime(Seconds(1));
+    app->SetStopTime(Seconds(22));
 
     //
     // Give the application a name.  This makes life much easier when constructing
@@ -286,7 +286,7 @@ main(int argc, char* argv[])
     // Now, do the actual emulation.
     //
     NS_LOG_INFO("Run Emulation in " << emuMode << " mode.");
-    Simulator::Stop(Seconds(23.0));
+    Simulator::Stop(Seconds(23));
     Simulator::Run();
     Simulator::Destroy();
     delete helper;

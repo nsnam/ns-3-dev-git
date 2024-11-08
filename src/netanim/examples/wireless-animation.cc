@@ -139,18 +139,18 @@ main(int argc, char* argv[])
 
     UdpEchoServerHelper echoServer(9);
     ApplicationContainer serverApps = echoServer.Install(csmaNodes.Get(1));
-    serverApps.Start(Seconds(1.0));
-    serverApps.Stop(Seconds(15.0));
+    serverApps.Start(Seconds(1));
+    serverApps.Stop(Seconds(15));
     UdpEchoClientHelper echoClient(csmaInterfaces.GetAddress(1), 9);
     echoClient.SetAttribute("MaxPackets", UintegerValue(10));
     echoClient.SetAttribute("Interval", TimeValue(Seconds(1.)));
     echoClient.SetAttribute("PacketSize", UintegerValue(1024));
     ApplicationContainer clientApps = echoClient.Install(wifiStaNodes);
-    clientApps.Start(Seconds(2.0));
-    clientApps.Stop(Seconds(15.0));
+    clientApps.Start(Seconds(2));
+    clientApps.Stop(Seconds(15));
 
     Ipv4GlobalRoutingHelper::PopulateRoutingTables();
-    Simulator::Stop(Seconds(15.0));
+    Simulator::Stop(Seconds(15));
 
     AnimationInterface anim("wireless-animation.xml"); // Mandatory
     for (uint32_t i = 0; i < wifiStaNodes.GetN(); ++i)

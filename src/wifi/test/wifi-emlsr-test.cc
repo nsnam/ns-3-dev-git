@@ -3653,7 +3653,7 @@ EmlsrUlOfdmaTest::EmlsrUlOfdmaTest(bool enableBsrp)
     m_establishBaDl = false;
     m_establishBaUl = true;
     m_mainPhyId = 1;
-    m_duration = Seconds(1.0);
+    m_duration = Seconds(1);
 }
 
 void
@@ -3975,7 +3975,7 @@ EmlsrLinkSwitchTest::EmlsrLinkSwitchTest(const Params& params)
     m_linksToEnableEmlsrOn = {0, 1, 2}; // enable EMLSR on all links right after association
     m_mainPhyId = 1;
     m_establishBaDl = true;
-    m_duration = Seconds(1.0);
+    m_duration = Seconds(1);
     // when aux PHYs do not switch link, the main PHY switches back to its previous link after
     // a TXOP, hence the transition delay must exceed the channel switch delay (default: 250us)
     m_transitionDelay = {MicroSeconds(128)};
@@ -4580,7 +4580,7 @@ EmlsrCcaBusyTest::EmlsrCcaBusyTest(uint16_t auxPhyMaxChWidth)
     m_linksToEnableEmlsrOn = {0, 1, 2}; // enable EMLSR on all links right after association
     m_mainPhyId = 1;
     m_establishBaUl = true;
-    m_duration = Seconds(1.0);
+    m_duration = Seconds(1);
     m_transitionDelay = {MicroSeconds(128)};
 }
 

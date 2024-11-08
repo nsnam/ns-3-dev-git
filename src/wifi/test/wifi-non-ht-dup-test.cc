@@ -1009,13 +1009,13 @@ void
 TestMultipleCtsResponsesFromMuRts::DoRun()
 {
     // Fake transmission of a MU-RTS frame preceding the CTS responses
-    Simulator::Schedule(Seconds(0.0), &TestMultipleCtsResponsesFromMuRts::FakePreviousMuRts, this);
+    Simulator::Schedule(Seconds(0), &TestMultipleCtsResponsesFromMuRts::FakePreviousMuRts, this);
 
     for (std::size_t index = 0; index < m_phyStas.size(); ++index)
     {
         // Transmit CTS responses over their operating bandwidth with 1 nanosecond delay between
         // each other
-        const auto delay = (index + 1) * NanoSeconds(1.0);
+        const auto delay = (index + 1) * NanoSeconds(1);
         Simulator::Schedule(delay,
                             &TestMultipleCtsResponsesFromMuRts::TxNonHtDuplicateCts,
                             this,
@@ -1024,7 +1024,7 @@ TestMultipleCtsResponsesFromMuRts::DoRun()
 
     // Verify successful reception of the CTS frames: since multiple copies are sent
     // simultaneously, a single CTS frame should be forwarded up to the MAC.
-    Simulator::Schedule(Seconds(1.0), &TestMultipleCtsResponsesFromMuRts::CheckResults, this);
+    Simulator::Schedule(Seconds(1), &TestMultipleCtsResponsesFromMuRts::CheckResults, this);
 
     Simulator::Run();
     Simulator::Destroy();

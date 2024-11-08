@@ -59,7 +59,7 @@ main(int argc, char* argv[])
     mobility.InstallAll();
     Config::Connect("/NodeList/*/$ns3::MobilityModel/CourseChange", MakeCallback(&CourseChange));
 
-    Simulator::Stop(Seconds(100.0));
+    Simulator::Stop(Seconds(100));
 
     Simulator::Run();
 

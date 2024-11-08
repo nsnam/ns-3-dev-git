@@ -245,8 +245,8 @@ the constructor.
   UdpEchoServerHelper echoServer(9);
 
   ApplicationContainer serverApps = echoServer.Install(csmaNodes.Get(nCsma));
-  serverApps.Start(Seconds(1.0));
-  serverApps.Stop(Seconds(10.0));
+  serverApps.Start(Seconds(1));
+  serverApps.Stop(Seconds(10));
 
 Recall that the ``csmaNodes NodeContainer`` contains one of the
 nodes created for the point-to-point network and ``nCsma`` "extra" nodes.
@@ -269,12 +269,12 @@ leftmost point-to-point node seen in the topology illustration.
 
   UdpEchoClientHelper echoClient(csmaInterfaces.GetAddress(nCsma), 9);
   echoClient.SetAttribute("MaxPackets", UintegerValue(1));
-  echoClient.SetAttribute("Interval", TimeValue(Seconds(1.0)));
+  echoClient.SetAttribute("Interval", TimeValue(Seconds(1)));
   echoClient.SetAttribute("PacketSize", UintegerValue(1024));
 
   ApplicationContainer clientApps = echoClient.Install(p2pNodes.Get(0));
-  clientApps.Start(Seconds(2.0));
-  clientApps.Stop(Seconds(10.0));
+  clientApps.Start(Seconds(2));
+  clientApps.Stop(Seconds(10));
 
 Since we have actually built an internetwork here, we need some form of
 internetwork routing.  |ns3| provides what we call global routing to
@@ -1150,8 +1150,8 @@ start of the file.  We have done this before.
   UdpEchoServerHelper echoServer(9);
 
   ApplicationContainer serverApps = echoServer.Install(csmaNodes.Get(nCsma));
-  serverApps.Start(Seconds(1.0));
-  serverApps.Stop(Seconds(10.0));
+  serverApps.Start(Seconds(1));
+  serverApps.Stop(Seconds(10));
 
 And we put the echo client on the last STA node we created, pointing it to
 the server on the CSMA network.  We have also seen similar operations before.
@@ -1160,13 +1160,13 @@ the server on the CSMA network.  We have also seen similar operations before.
 
   UdpEchoClientHelper echoClient(csmaInterfaces.GetAddress(nCsma), 9);
   echoClient.SetAttribute("MaxPackets", UintegerValue(1));
-  echoClient.SetAttribute("Interval", TimeValue(Seconds(1.0)));
+  echoClient.SetAttribute("Interval", TimeValue(Seconds(1)));
   echoClient.SetAttribute("PacketSize", UintegerValue(1024));
 
   ApplicationContainer clientApps =
       echoClient.Install(wifiStaNodes.Get(nWifi - 1));
-  clientApps.Start(Seconds(2.0));
-  clientApps.Stop(Seconds(10.0));
+  clientApps.Start(Seconds(2));
+  clientApps.Stop(Seconds(10));
 
 Since we have built an internetwork here, we need to enable internetwork routing
 just as we did in the ``second.cc`` example script.
@@ -1186,7 +1186,7 @@ loop.
 
 ::
 
-  Simulator::Stop(Seconds(10.0));
+  Simulator::Stop(Seconds(10));
 
 We create just enough tracing to cover all three networks:
 

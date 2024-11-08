@@ -443,8 +443,8 @@ main(int argc, char* argv[])
             uint16_t port = 9;
             UdpServerHelper server(port);
             serverApp = server.Install(wifiStaNode.Get(0));
-            serverApp.Start(Seconds(0.0));
-            serverApp.Stop(simulationTime + Seconds(1.0));
+            serverApp.Start(Seconds(0));
+            serverApp.Stop(simulationTime + Seconds(1));
             const auto packetInterval = payloadSize * 8.0 / (datarate * 1e6);
 
             UdpClientHelper client(staNodeInterface.GetAddress(0), port);
@@ -452,8 +452,8 @@ main(int argc, char* argv[])
             client.SetAttribute("Interval", TimeValue(Seconds(packetInterval)));
             client.SetAttribute("PacketSize", UintegerValue(payloadSize));
             ApplicationContainer clientApp = client.Install(wifiApNode.Get(0));
-            clientApp.Start(Seconds(1.0));
-            clientApp.Stop(simulationTime + Seconds(1.0));
+            clientApp.Start(Seconds(1));
+            clientApp.Stop(simulationTime + Seconds(1));
         }
         else
         {
@@ -462,8 +462,8 @@ main(int argc, char* argv[])
             Address localAddress(InetSocketAddress(Ipv4Address::GetAny(), port));
             PacketSinkHelper packetSinkHelper("ns3::TcpSocketFactory", localAddress);
             serverApp = packetSinkHelper.Install(wifiStaNode.Get(0));
-            serverApp.Start(Seconds(0.0));
-            serverApp.Stop(simulationTime + Seconds(1.0));
+            serverApp.Start(Seconds(0));
+            serverApp.Stop(simulationTime + Seconds(1));
 
             OnOffHelper onoff("ns3::TcpSocketFactory", Ipv4Address::GetAny());
             onoff.SetAttribute("OnTime", StringValue("ns3::ConstantRandomVariable[Constant=1]"));
@@ -473,8 +473,8 @@ main(int argc, char* argv[])
             AddressValue remoteAddress(InetSocketAddress(staNodeInterface.GetAddress(0), port));
             onoff.SetAttribute("Remote", remoteAddress);
             ApplicationContainer clientApp = onoff.Install(wifiApNode.Get(0));
-            clientApp.Start(Seconds(1.0));
-            clientApp.Stop(simulationTime + Seconds(1.0));
+            clientApp.Start(Seconds(1));
+            clientApp.Stop(simulationTime + Seconds(1));
         }
 
         Config::ConnectWithoutContext("/NodeList/0/DeviceList/*/Phy/MonitorSnifferRx",
@@ -495,7 +495,7 @@ main(int argc, char* argv[])
         g_noiseDbmAvg = 0;
         g_samples = 0;
 
-        Simulator::Stop(simulationTime + Seconds(1.0));
+        Simulator::Stop(simulationTime + Seconds(1));
         Simulator::Run();
 
         auto throughput = 0.0;

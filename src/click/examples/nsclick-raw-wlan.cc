@@ -115,8 +115,8 @@ main(int argc, char* argv[])
     Address LocalAddress(InetSocketAddress(Ipv4Address::GetAny(), 50000));
     PacketSinkHelper packetSinkHelper("ns3::TcpSocketFactory", LocalAddress);
     ApplicationContainer recvapp = packetSinkHelper.Install(wifiNodes.Get(1));
-    recvapp.Start(Seconds(5.0));
-    recvapp.Stop(Seconds(10.0));
+    recvapp.Start(Seconds(5));
+    recvapp.Stop(Seconds(10));
 
     OnOffHelper onOffHelper("ns3::TcpSocketFactory", Address());
     onOffHelper.SetAttribute("OnTime", StringValue("ns3::ConstantRandomVariable[Constant=1]"));
@@ -128,13 +128,13 @@ main(int argc, char* argv[])
     onOffHelper.SetAttribute("Remote", remoteAddress);
     appcont.Add(onOffHelper.Install(wifiNodes.Get(0)));
 
-    appcont.Start(Seconds(5.0));
-    appcont.Stop(Seconds(10.0));
+    appcont.Start(Seconds(5));
+    appcont.Stop(Seconds(10));
 
     // For tracing
     wifiPhy.EnablePcap("nsclick-raw-wlan", wifiDevices);
 
-    Simulator::Stop(Seconds(20.0));
+    Simulator::Stop(Seconds(20));
     Simulator::Run();
 
     Simulator::Destroy();

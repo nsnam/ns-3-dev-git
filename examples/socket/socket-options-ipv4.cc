@@ -136,7 +136,7 @@ main(int argc, char* argv[])
     // Schedule SendPacket
     Time interPacketInterval = Seconds(packetInterval);
     Simulator::ScheduleWithContext(source->GetNode()->GetId(),
-                                   Seconds(1.0),
+                                   Seconds(1),
                                    &SendPacket,
                                    source,
                                    packetSize,

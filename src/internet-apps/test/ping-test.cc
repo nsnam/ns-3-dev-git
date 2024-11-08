@@ -242,13 +242,13 @@ class PingTestCase : public TestCase
     bool m_checkReportLoss{false};        //!< Set to true to check the Loss number
     bool m_checkReportTime{false};        //!< Set to true to check the Time
 
-    Time m_startTime{Seconds(1)};             //!< Start time
-    Time m_stopTime{Seconds(5)};              //!< Stop time
-    Time m_simulatorStopTime{Seconds(6)};     //!< Simulator stop time
-    bool m_useIpv6{false};                    //!< Use IPv6 (true) or IPv4 (false)
-    Time m_interpacketInterval{Seconds(1.0)}; //!< Time between pings
-    Time m_lastTx;                            //!< Last ping Tx time
-    std::list<uint32_t> m_dropList;           //!< Drop first reply (true)
+    Time m_startTime{Seconds(1)};           //!< Start time
+    Time m_stopTime{Seconds(5)};            //!< Stop time
+    Time m_simulatorStopTime{Seconds(6)};   //!< Simulator stop time
+    bool m_useIpv6{false};                  //!< Use IPv6 (true) or IPv4 (false)
+    Time m_interpacketInterval{Seconds(1)}; //!< Time between pings
+    Time m_lastTx;                          //!< Last ping Tx time
+    std::list<uint32_t> m_dropList;         //!< Drop first reply (true)
 
     NodeContainer m_nodes;                   //!< The simulation nodes
     Ipv4InterfaceContainer m_ipv4Interfaces; //!< The IPv4 interfaces
@@ -671,7 +671,7 @@ PingTestSuite::PingTestSuite()
     //                     The number sent (2) is equal to number received (2)
     // How validated:  PingReport trace is checked for number of packets
     //                 transmitted (2) and received (2), and number of drops (0)
-    Time interval = Seconds(3.0);
+    Time interval = Seconds(3);
     auto testcase4v4 =
         new PingTestCase("4. Test for the operation of interval attribute for IPv4", USEIPV6_FALSE);
     testcase4v4->SetStartTime(Seconds(1));

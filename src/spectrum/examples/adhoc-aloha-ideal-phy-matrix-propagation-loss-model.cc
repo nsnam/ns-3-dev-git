@@ -179,7 +179,7 @@ main(int argc, char** argv)
     onoff.SetAttribute("PacketSize", UintegerValue(pktSize));
 
     ApplicationContainer apps = onoff.Install(c.Get(0));
-    apps.Start(Seconds(0.0));
+    apps.Start(Seconds(0));
     apps.Stop(Seconds(simDuration));
 
     Config::Connect("/NodeList/*/DeviceList/*/Phy/RxEndOk", MakeCallback(&PhyRxEndOkTrace));

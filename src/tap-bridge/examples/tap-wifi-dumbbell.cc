@@ -204,13 +204,13 @@ main(int argc, char* argv[])
     onoff.SetConstantRate(DataRate("500kb/s"));
 
     ApplicationContainer apps = onoff.Install(nodesLeft.Get(3));
-    apps.Start(Seconds(1.0));
+    apps.Start(Seconds(1));
 
     // Create a packet sink to receive these packets
     PacketSinkHelper sink("ns3::UdpSocketFactory", InetSocketAddress(Ipv4Address::GetAny(), port));
 
     apps = sink.Install(nodesRight.Get(0));
-    apps.Start(Seconds(1.0));
+    apps.Start(Seconds(1));
 
     wifiPhy.EnablePcapAll("tap-wifi-dumbbell");
 

@@ -116,8 +116,8 @@ main(int argc, char** argv)
     ping.SetAttribute("Size", UintegerValue(packetSize));
     ApplicationContainer apps = ping.Install(wsnNodes.Get(nWsnNodes - 1));
 
-    apps.Start(Seconds(2.0));
-    apps.Stop(Seconds(20.0));
+    apps.Start(Seconds(2));
+    apps.Stop(Seconds(20));
 
     AsciiTraceHelper ascii;
     lrWpanHelper.EnableAsciiAll(ascii.CreateFileStream("Ping-6LoW-lr-wpan-meshunder-lr-wpan.tr"));

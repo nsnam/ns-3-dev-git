@@ -87,7 +87,7 @@ class ShowProgress
      * \param [in] interval The target wallclock interval to show progress.
      * \param [in] os The stream to print on.
      */
-    ShowProgress(const Time interval = Seconds(1.0), std::ostream& os = std::cout);
+    ShowProgress(const Time interval = Seconds(1), std::ostream& os = std::cout);
 
     /** Destructor. */
     ~ShowProgress();

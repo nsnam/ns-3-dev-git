@@ -35,7 +35,7 @@ RvBatteryModel::GetTypeId()
             .AddConstructor<RvBatteryModel>()
             .AddAttribute("RvBatteryModelPeriodicEnergyUpdateInterval",
                           "RV battery model sampling interval.",
-                          TimeValue(Seconds(1.0)),
+                          TimeValue(Seconds(1)),
                           MakeTimeAccessor(&RvBatteryModel::SetSamplingInterval,
                                            &RvBatteryModel::GetSamplingInterval),
                           MakeTimeChecker())
@@ -90,7 +90,7 @@ RvBatteryModel::RvBatteryModel()
     m_timeStamps.push_back(m_lastSampleTime);
     m_previousLoad = -1.0;
     m_batteryLevel = 1; // fully charged
-    m_lifetime = Seconds(0.0);
+    m_lifetime = Seconds(0);
 }
 
 RvBatteryModel::~RvBatteryModel()
@@ -336,7 +336,7 @@ RvBatteryModel::Discharge(double load, Time t)
     if (m_timeStamps.size() == 1)
     {
         // constant load
-        calculatedAlpha = m_load[0] * RvModelAFunction(t, t, Seconds(0.0), m_beta);
+        calculatedAlpha = m_load[0] * RvModelAFunction(t, t, Seconds(0), m_beta);
     }
     else
     {

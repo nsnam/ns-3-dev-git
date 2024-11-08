@@ -163,8 +163,8 @@ ProbeTestCase1::DoRun()
     p->SetName("testProbe");
 
     Simulator::Schedule(Seconds(1), &SampleEmitter::Start, m_s);
-    p->SetAttribute("Start", TimeValue(Seconds(100.0)));
-    p->SetAttribute("Stop", TimeValue(Seconds(200.0)));
+    p->SetAttribute("Start", TimeValue(Seconds(100)));
+    p->SetAttribute("Stop", TimeValue(Seconds(200)));
     Simulator::Stop(Seconds(300));
 
     // Register our emitter object so we can fetch it by using the Config
@@ -181,8 +181,8 @@ ProbeTestCase1::DoRun()
     // name set above
     Ptr<DoubleProbe> p2 = CreateObject<DoubleProbe>();
     p2->SetName("testProbe2");
-    p2->SetAttribute("Start", TimeValue(Seconds(100.0)));
-    p2->SetAttribute("Stop", TimeValue(Seconds(200.0)));
+    p2->SetAttribute("Start", TimeValue(Seconds(100)));
+    p2->SetAttribute("Stop", TimeValue(Seconds(200)));
 
     // Hook probe to the emitter.
     p2->ConnectByPath("/Names/SampleEmitter/Emitter");

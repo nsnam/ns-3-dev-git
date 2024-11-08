@@ -57,14 +57,14 @@ TcpTxBufferTestCase::TcpTxBufferTestCase()
 void
 TcpTxBufferTestCase::DoRun()
 {
-    Simulator::Schedule(Seconds(0.0), &TcpTxBufferTestCase::TestIsLost, this);
+    Simulator::Schedule(Seconds(0), &TcpTxBufferTestCase::TestIsLost, this);
     /*
      * Cases for new block:
      * -> is exactly the same as stored
      * -> starts over the boundary, but ends earlier
      * -> starts over the boundary, but ends after
      */
-    Simulator::Schedule(Seconds(0.0), &TcpTxBufferTestCase::TestNewBlock, this);
+    Simulator::Schedule(Seconds(0), &TcpTxBufferTestCase::TestNewBlock, this);
 
     /*
      * Cases for transmitted block:
@@ -75,8 +75,8 @@ TcpTxBufferTestCase::DoRun()
      * -> starts inside a packet, ends earlier in the same packet
      * -> starts inside a packet, ends in another packet
      */
-    Simulator::Schedule(Seconds(0.0), &TcpTxBufferTestCase::TestTransmittedBlock, this);
-    Simulator::Schedule(Seconds(0.0), &TcpTxBufferTestCase::TestNextSeg, this);
+    Simulator::Schedule(Seconds(0), &TcpTxBufferTestCase::TestTransmittedBlock, this);
+    Simulator::Schedule(Seconds(0), &TcpTxBufferTestCase::TestNextSeg, this);
 
     /*
      * Case for transmitted block:
@@ -85,7 +85,7 @@ TcpTxBufferTestCase::DoRun()
      *  -> during retransmission, the sender tries to send a full segment but it
      *     should stop to merge items when they have different values for m_lost.
      */
-    Simulator::Schedule(Seconds(0.0),
+    Simulator::Schedule(Seconds(0),
                         &TcpTxBufferTestCase::TestMergeItemsWhenGetTransmittedSegment,
                         this);
 

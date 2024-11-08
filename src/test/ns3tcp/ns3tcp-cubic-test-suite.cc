@@ -299,7 +299,7 @@ Ns3TcpCubicTestCase::DoRun()
     // Install application on the receiver
     PacketSinkHelper sink("ns3::TcpSocketFactory", InetSocketAddress(Ipv4Address::GetAny(), port));
     ApplicationContainer sinkApps = sink.Install(receiver.Get(0));
-    sinkApps.Start(Seconds(0.0));
+    sinkApps.Start(Seconds(0));
     sinkApps.Stop(stopTime);
 
     if (m_capacityIncrease)

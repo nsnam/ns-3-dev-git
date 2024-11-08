@@ -57,7 +57,7 @@ PointToPointNetDevice::GetTypeId()
                           MakePointerChecker<ErrorModel>())
             .AddAttribute("InterframeGap",
                           "The time to wait between packet (frame) transmissions",
-                          TimeValue(Seconds(0.0)),
+                          TimeValue(Seconds(0)),
                           MakeTimeAccessor(&PointToPointNetDevice::m_tInterframeGap),
                           MakeTimeChecker())
 

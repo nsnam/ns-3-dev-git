@@ -52,7 +52,7 @@ UplinkSchedulerMBQoS::GetTypeId()
 
                             .AddAttribute("WindowInterval",
                                           "The time to wait to reset window",
-                                          TimeValue(Seconds(1.0)),
+                                          TimeValue(Seconds(1)),
                                           MakeTimeAccessor(&UplinkSchedulerMBQoS::m_windowInterval),
                                           MakeTimeChecker());
     return tid;

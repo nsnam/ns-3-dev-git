@@ -657,7 +657,7 @@ main(int argc, char* argv[])
                 // Sinks
                 PacketSinkHelper sinkHelper("ns3::TcpSocketFactory", sinkAddress);
                 ApplicationContainer sinkApp = sinkHelper.Install(nodes_net2LAN[z][i][j].Get(0));
-                sinkApp.Start(Seconds(0.0));
+                sinkApp.Start(Seconds(0));
                 // Sources
                 r1 = 2 + (int)(4 * urng->GetValue());
                 r2 = 10 * urng->GetValue();
@@ -678,7 +678,7 @@ main(int argc, char* argv[])
                 // Sinks
                 PacketSinkHelper sinkHelper("ns3::TcpSocketFactory", sinkAddress);
                 ApplicationContainer sinkApp = sinkHelper.Install(nodes_net3LAN[z][i][j].Get(0));
-                sinkApp.Start(Seconds(0.0));
+                sinkApp.Start(Seconds(0));
                 // Sources
                 r1 = 2 + (int)(4 * urng->GetValue());
                 r2 = 10 * urng->GetValue();
@@ -716,7 +716,7 @@ main(int argc, char* argv[])
     Simulator::ScheduleNow(Progress);
     std::cout << "Running simulator..." << std::endl;
     auto t1 = std::chrono::steady_clock::now();
-    Simulator::Stop(Seconds(100.0));
+    Simulator::Stop(Seconds(100));
     Simulator::Run();
     auto t2 = std::chrono::steady_clock::now();
     std::cout << "Simulator finished." << std::endl;

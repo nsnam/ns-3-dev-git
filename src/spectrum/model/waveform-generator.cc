@@ -59,7 +59,7 @@ WaveformGenerator::GetTypeId()
             .AddAttribute(
                 "Period",
                 "the period (=1/frequency)",
-                TimeValue(Seconds(1.0)),
+                TimeValue(Seconds(1)),
                 MakeTimeAccessor(&WaveformGenerator::SetPeriod, &WaveformGenerator::GetPeriod),
                 MakeTimeChecker())
             .AddAttribute("DutyCycle",

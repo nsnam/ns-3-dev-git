@@ -57,7 +57,7 @@ TraceFadingLossModel::GetTypeId()
                           MakeStringChecker())
             .AddAttribute("TraceLength",
                           "The total length of the fading trace (default value 10 s.)",
-                          TimeValue(Seconds(10.0)),
+                          TimeValue(Seconds(10)),
                           MakeTimeAccessor(&TraceFadingLossModel::SetTraceLength),
                           MakeTimeChecker())
             .AddAttribute("SamplesNum",

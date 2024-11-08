@@ -148,16 +148,16 @@ main(int argc, char* argv[])
         Address hubLocalAddress(InetSocketAddress(Ipv4Address::GetAny(), port));
         PacketSinkHelper packetSinkHelper("ns3::TcpSocketFactory", hubLocalAddress);
         ApplicationContainer hubApp = packetSinkHelper.Install(star.GetHub());
-        hubApp.Start(Seconds(1.0));
-        hubApp.Stop(Seconds(10.0));
+        hubApp.Start(Seconds(1));
+        hubApp.Stop(Seconds(10));
     }
     else
     {
         Address hubLocalAddress6(Inet6SocketAddress(Ipv6Address::GetAny(), port));
         PacketSinkHelper packetSinkHelper6("ns3::TcpSocketFactory", hubLocalAddress6);
         ApplicationContainer hubApp6 = packetSinkHelper6.Install(star.GetHub());
-        hubApp6.Start(Seconds(1.0));
-        hubApp6.Stop(Seconds(10.0));
+        hubApp6.Start(Seconds(1));
+        hubApp6.Stop(Seconds(10));
     }
 
     //
@@ -184,8 +184,8 @@ main(int argc, char* argv[])
         spokeApps.Add(onOffHelper.Install(star.GetSpokeNode(i)));
     }
 
-    spokeApps.Start(Seconds(1.0));
-    spokeApps.Stop(Seconds(10.0));
+    spokeApps.Start(Seconds(1));
+    spokeApps.Stop(Seconds(10));
 
     //
     // Because we are evil, we also add OnOff applications to send TCP to the hub
@@ -214,8 +214,8 @@ main(int argc, char* argv[])
         fillApps.Add(onOffHelper.Install(fillNodes.Get(i)));
     }
 
-    fillApps.Start(Seconds(1.0));
-    fillApps.Stop(Seconds(10.0));
+    fillApps.Start(Seconds(1));
+    fillApps.Stop(Seconds(10));
 
     NS_LOG_INFO("Enable static global routing.");
     //

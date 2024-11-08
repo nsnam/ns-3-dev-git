@@ -70,7 +70,7 @@ Obviously the last point is the most important.
 Node::AddDevice (network/model/node.cc:128) assigns an interface index to the
 device, calls NetDevice::SetNode, sets the receive callback of the device to
 Node::NonPromiscReceiveFromDevice. Then, it schedules NetDevice::Initialize() method at
-Seconds(0.0), then notify the registered DeviceAdditionListener handlers (not used BY ANYONE).
+Seconds(0), then notify the registered DeviceAdditionListener handlers (not used BY ANYONE).
 
 Node::NonPromiscReceiveFromDevice calls Node::ReceiveFromDevice.
 

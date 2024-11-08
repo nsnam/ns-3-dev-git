@@ -577,8 +577,8 @@ main(int argc, char* argv[])
         uint16_t port = 9;
         UdpServerHelper server(port);
         ApplicationContainer serverApp = server.Install(wifiStaNode.Get(0));
-        serverApp.Start(Seconds(0.0));
-        serverApp.Stop(simulationTime + Seconds(1.0));
+        serverApp.Start(Seconds(0));
+        serverApp.Stop(simulationTime + Seconds(1));
         const auto packetInterval = payloadSize * 8.0 / (datarate * 1e6);
 
         UdpClientHelper client(staNodeInterface.GetAddress(0), port);
@@ -586,8 +586,8 @@ main(int argc, char* argv[])
         client.SetAttribute("Interval", TimeValue(Seconds(packetInterval)));
         client.SetAttribute("PacketSize", UintegerValue(payloadSize));
         ApplicationContainer clientApp = client.Install(wifiApNode.Get(0));
-        clientApp.Start(Seconds(1.0));
-        clientApp.Stop(simulationTime + Seconds(1.0));
+        clientApp.Start(Seconds(1));
+        clientApp.Stop(simulationTime + Seconds(1));
 
         if (enablePcap)
         {
@@ -600,7 +600,7 @@ main(int argc, char* argv[])
             phy.EnablePcap(ss.str(), apDevice);
         }
 
-        Simulator::Stop(simulationTime + Seconds(1.0));
+        Simulator::Stop(simulationTime + Seconds(1));
         Simulator::Run();
 
         double totalPacketsThrough = DynamicCast<UdpServer>(serverApp.Get(0))->GetReceived();

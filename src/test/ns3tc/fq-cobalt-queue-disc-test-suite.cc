@@ -946,7 +946,7 @@ FqCobaltQueueDiscEcnMarking::DoRun()
     // each queue
     DequeueWithDelay(queueDisc, 0.11, 60);
     Simulator::Run();
-    Simulator::Stop(Seconds(8.0));
+    Simulator::Stop(Seconds(8));
     Ptr<CobaltQueueDisc> q0 =
         queueDisc->GetQueueDiscClass(0)->GetQueueDisc()->GetObject<CobaltQueueDisc>();
     Ptr<CobaltQueueDisc> q1 =
@@ -1078,7 +1078,7 @@ FqCobaltQueueDiscEcnMarking::DoRun()
     // each queue
     DequeueWithDelay(queueDisc, 0.0001, 60);
     Simulator::Run();
-    Simulator::Stop(Seconds(8.0));
+    Simulator::Stop(Seconds(8));
     q0 = queueDisc->GetQueueDiscClass(0)->GetQueueDisc()->GetObject<CobaltQueueDisc>();
     q1 = queueDisc->GetQueueDiscClass(1)->GetQueueDisc()->GetObject<CobaltQueueDisc>();
     q2 = queueDisc->GetQueueDiscClass(2)->GetQueueDisc()->GetObject<CobaltQueueDisc>();
@@ -1216,7 +1216,7 @@ FqCobaltQueueDiscEcnMarking::DoRun()
     // each queue
     DequeueWithDelay(queueDisc, 0.110, 60);
     Simulator::Run();
-    Simulator::Stop(Seconds(8.0));
+    Simulator::Stop(Seconds(8));
     q0 = queueDisc->GetQueueDiscClass(0)->GetQueueDisc()->GetObject<CobaltQueueDisc>();
     q1 = queueDisc->GetQueueDiscClass(1)->GetQueueDisc()->GetObject<CobaltQueueDisc>();
     q2 = queueDisc->GetQueueDiscClass(2)->GetQueueDisc()->GetObject<CobaltQueueDisc>();
@@ -1586,7 +1586,7 @@ FqCobaltQueueDiscL4sMode::DoRun()
     delay = 0.001;
     DequeueWithDelay(queueDisc, delay, 140);
     Simulator::Run();
-    Simulator::Stop(Seconds(8.0));
+    Simulator::Stop(Seconds(8));
     Ptr<CobaltQueueDisc> q0 =
         queueDisc->GetQueueDiscClass(0)->GetQueueDisc()->GetObject<CobaltQueueDisc>();
     Ptr<CobaltQueueDisc> q1 =
@@ -1672,7 +1672,7 @@ FqCobaltQueueDiscL4sMode::DoRun()
     // Dequeue 140 packets with delay 1ms
     DequeueWithDelay(queueDisc, delay, 140);
     Simulator::Run();
-    Simulator::Stop(Seconds(8.0));
+    Simulator::Stop(Seconds(8));
     q0 = queueDisc->GetQueueDiscClass(0)->GetQueueDisc()->GetObject<CobaltQueueDisc>();
     q0 = queueDisc->GetQueueDiscClass(0)->GetQueueDisc()->GetObject<CobaltQueueDisc>();
 

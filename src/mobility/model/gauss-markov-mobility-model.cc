@@ -36,7 +36,7 @@ GaussMarkovMobilityModel::GetTypeId()
                           MakeBoxChecker())
             .AddAttribute("TimeStep",
                           "Change current direction and speed after moving for this time.",
-                          TimeValue(Seconds(1.0)),
+                          TimeValue(Seconds(1)),
                           MakeTimeAccessor(&GaussMarkovMobilityModel::m_timeStep),
                           MakeTimeChecker())
             .AddAttribute(
@@ -161,7 +161,7 @@ GaussMarkovMobilityModel::DoWalk(Time delayLeft)
     nextPosition.z += speed.z * delayLeft.GetSeconds();
     if (delayLeft.GetSeconds() < 0.0)
     {
-        delayLeft = Seconds(1.0);
+        delayLeft = Seconds(1);
     }
 
     // Make sure that the position by the next time step is still within the boundary.

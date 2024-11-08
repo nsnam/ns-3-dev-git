@@ -489,18 +489,18 @@ class TestSimulator(unittest.TestCase):
 
         serverApps = ns.ApplicationContainer()
         serverApps.Add(echoServer)
-        serverApps.Start(ns.Seconds(1.0))
-        serverApps.Stop(ns.Seconds(10.0))
+        serverApps.Start(ns.Seconds(1))
+        serverApps.Stop(ns.Seconds(10))
 
         address = interfaces.GetAddress(1).ConvertTo()
         echoClient = ns.UdpEchoClientHelper(address, EchoServer.ECHO_PORT)
         echoClient.SetAttribute("MaxPackets", ns.UintegerValue(10))
-        echoClient.SetAttribute("Interval", ns.TimeValue(ns.Seconds(1.0)))
+        echoClient.SetAttribute("Interval", ns.TimeValue(ns.Seconds(1)))
         echoClient.SetAttribute("PacketSize", ns.UintegerValue(101))
 
         clientApps = echoClient.Install(nodes.Get(0))
-        clientApps.Start(ns.Seconds(2.0))
-        clientApps.Stop(ns.Seconds(10.0))
+        clientApps.Start(ns.Seconds(2))
+        clientApps.Stop(ns.Seconds(10))
 
         ns.Simulator.Run()
         ns.Simulator.Destroy()

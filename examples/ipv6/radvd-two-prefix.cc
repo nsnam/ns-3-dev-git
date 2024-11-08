@@ -174,8 +174,8 @@ main(int argc, char** argv)
     }
 
     ApplicationContainer radvdApps = radvdHelper.Install(r);
-    radvdApps.Start(Seconds(1.0));
-    radvdApps.Stop(Seconds(2.0));
+    radvdApps.Start(Seconds(1));
+    radvdApps.Stop(Seconds(2));
 
     /* Create a Ping application to send ICMPv6 echo request from n0 to n1 via R */
     uint32_t packetSize = 1024;
@@ -187,18 +187,18 @@ main(int argc, char** argv)
     ping.SetAttribute("Count", UintegerValue(maxPacketCount));
     ping.SetAttribute("Size", UintegerValue(packetSize));
     ApplicationContainer apps = ping.Install(net1.Get(0));
-    apps.Start(Seconds(2.0));
-    apps.Stop(Seconds(5.0));
+    apps.Start(Seconds(2));
+    apps.Stop(Seconds(5));
 
     Ptr<OutputStreamWrapper> routingStream = Create<OutputStreamWrapper>(&std::cout);
-    Ipv6RoutingHelper::PrintRoutingTableAt(Seconds(2.0), n0, routingStream);
-    Ipv6RoutingHelper::PrintRoutingTableAt(Seconds(10.0), n0, routingStream);
+    Ipv6RoutingHelper::PrintRoutingTableAt(Seconds(2), n0, routingStream);
+    Ipv6RoutingHelper::PrintRoutingTableAt(Seconds(10), n0, routingStream);
 
     IpAddressHelper ipAddressHelper;
     /* RA should be received, two prefixes + routes + default route should be present */
-    Simulator::Schedule(Seconds(2.0), &IpAddressHelper::PrintIpAddresses, &ipAddressHelper, n0);
+    Simulator::Schedule(Seconds(2), &IpAddressHelper::PrintIpAddresses, &ipAddressHelper, n0);
     /* at the end, RA addresses and routes should be cleared */
-    Simulator::Schedule(Seconds(10.0), &IpAddressHelper::PrintIpAddresses, &ipAddressHelper, n0);
+    Simulator::Schedule(Seconds(10), &IpAddressHelper::PrintIpAddresses, &ipAddressHelper, n0);
 
     AsciiTraceHelper ascii;
     csma.EnableAsciiAll(ascii.CreateFileStream("radvd-two-prefix.tr"));

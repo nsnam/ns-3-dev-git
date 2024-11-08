@@ -278,8 +278,8 @@ main(int argc, char* argv[])
                     serverApp = server.Install(wifiStaNode.Get(0));
                     streamNumber += server.AssignStreams(wifiStaNode.Get(0), streamNumber);
 
-                    serverApp.Start(Seconds(0.0));
-                    serverApp.Stop(simulationTime + Seconds(1.0));
+                    serverApp.Start(Seconds(0));
+                    serverApp.Stop(simulationTime + Seconds(1));
                     const auto packetInterval = payloadSize * 8.0 / maxLoad;
 
                     UdpClientHelper client(staNodeInterface.GetAddress(0), port);
@@ -289,8 +289,8 @@ main(int argc, char* argv[])
                     ApplicationContainer clientApp = client.Install(wifiApNode.Get(0));
                     streamNumber += client.AssignStreams(wifiApNode.Get(0), streamNumber);
 
-                    clientApp.Start(Seconds(1.0));
-                    clientApp.Stop(simulationTime + Seconds(1.0));
+                    clientApp.Start(Seconds(1));
+                    clientApp.Stop(simulationTime + Seconds(1));
                 }
                 else
                 {
@@ -302,8 +302,8 @@ main(int argc, char* argv[])
                     streamNumber +=
                         packetSinkHelper.AssignStreams(wifiStaNode.Get(0), streamNumber);
 
-                    serverApp.Start(Seconds(0.0));
-                    serverApp.Stop(simulationTime + Seconds(1.0));
+                    serverApp.Start(Seconds(0));
+                    serverApp.Stop(simulationTime + Seconds(1));
 
                     OnOffHelper onoff("ns3::TcpSocketFactory", Ipv4Address::GetAny());
                     onoff.SetAttribute("OnTime",
@@ -318,13 +318,13 @@ main(int argc, char* argv[])
                     ApplicationContainer clientApp = onoff.Install(wifiApNode.Get(0));
                     streamNumber += onoff.AssignStreams(wifiApNode.Get(0), streamNumber);
 
-                    clientApp.Start(Seconds(1.0));
-                    clientApp.Stop(simulationTime + Seconds(1.0));
+                    clientApp.Start(Seconds(1));
+                    clientApp.Stop(simulationTime + Seconds(1));
                 }
 
                 Ipv4GlobalRoutingHelper::PopulateRoutingTables();
 
-                Simulator::Stop(simulationTime + Seconds(1.0));
+                Simulator::Stop(simulationTime + Seconds(1));
                 Simulator::Run();
 
                 auto rxBytes = 0.0;

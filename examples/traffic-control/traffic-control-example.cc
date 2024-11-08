@@ -149,7 +149,7 @@ main(int argc, char* argv[])
     PacketSinkHelper packetSinkHelper(socketType, localAddress);
     ApplicationContainer sinkApp = packetSinkHelper.Install(nodes.Get(0));
 
-    sinkApp.Start(Seconds(0.0));
+    sinkApp.Start(Seconds(0));
     sinkApp.Stop(Seconds(simulationTime + 0.1));
 
     uint32_t payloadSize = 1448;
@@ -166,7 +166,7 @@ main(int argc, char* argv[])
     onoff.SetAttribute("Remote", AddressValue(rmt));
     onoff.SetAttribute("Tos", UintegerValue(0xb8));
     apps.Add(onoff.Install(nodes.Get(1)));
-    apps.Start(Seconds(1.0));
+    apps.Start(Seconds(1));
     apps.Stop(Seconds(simulationTime + 0.1));
 
     FlowMonitorHelper flowmon;

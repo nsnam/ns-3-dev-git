@@ -407,8 +407,8 @@ main(int argc, char* argv[])
                     serverApp = server.Install(serverNodes.get());
                     streamNumber += server.AssignStreams(serverNodes.get(), streamNumber);
 
-                    serverApp.Start(Seconds(0.0));
-                    serverApp.Stop(simulationTime + Seconds(1.0));
+                    serverApp.Start(Seconds(0));
+                    serverApp.Stop(simulationTime + Seconds(1));
                     const auto packetInterval = payloadSize * 8.0 / maxLoad;
 
                     for (std::size_t i = 0; i < nStations; i++)
@@ -420,8 +420,8 @@ main(int argc, char* argv[])
                         ApplicationContainer clientApp = client.Install(clientNodes.Get(i));
                         streamNumber += client.AssignStreams(clientNodes.Get(i), streamNumber);
 
-                        clientApp.Start(Seconds(1.0));
-                        clientApp.Stop(simulationTime + Seconds(1.0));
+                        clientApp.Start(Seconds(1));
+                        clientApp.Stop(simulationTime + Seconds(1));
                     }
                 }
                 else
@@ -433,8 +433,8 @@ main(int argc, char* argv[])
                     serverApp = packetSinkHelper.Install(serverNodes.get());
                     streamNumber += packetSinkHelper.AssignStreams(serverNodes.get(), streamNumber);
 
-                    serverApp.Start(Seconds(0.0));
-                    serverApp.Stop(simulationTime + Seconds(1.0));
+                    serverApp.Start(Seconds(0));
+                    serverApp.Stop(simulationTime + Seconds(1));
 
                     for (std::size_t i = 0; i < nStations; i++)
                     {
@@ -451,14 +451,14 @@ main(int argc, char* argv[])
                         ApplicationContainer clientApp = onoff.Install(clientNodes.Get(i));
                         streamNumber += onoff.AssignStreams(clientNodes.Get(i), streamNumber);
 
-                        clientApp.Start(Seconds(1.0));
-                        clientApp.Stop(simulationTime + Seconds(1.0));
+                        clientApp.Start(Seconds(1));
+                        clientApp.Stop(simulationTime + Seconds(1));
                     }
                 }
 
                 Simulator::Schedule(Seconds(0), &Ipv4GlobalRoutingHelper::PopulateRoutingTables);
 
-                Simulator::Stop(simulationTime + Seconds(1.0));
+                Simulator::Stop(simulationTime + Seconds(1));
                 Simulator::Run();
 
                 // When multiple stations are used, there are chances that association requests

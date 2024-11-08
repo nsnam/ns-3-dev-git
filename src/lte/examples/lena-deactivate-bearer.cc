@@ -223,7 +223,7 @@ main(int argc, char* argv[])
                         2);
 
     // stop simulation after 3 seconds
-    Simulator::Stop(Seconds(3.0));
+    Simulator::Stop(Seconds(3));
 
     Simulator::Run();
     /*GtkConfigStore config;

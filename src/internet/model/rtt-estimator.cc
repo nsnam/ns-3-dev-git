@@ -39,7 +39,7 @@ RttEstimator::GetTypeId()
                             .SetGroupName("Internet")
                             .AddAttribute("InitialEstimation",
                                           "Initial RTT estimate",
-                                          TimeValue(Seconds(1.0)),
+                                          TimeValue(Seconds(1)),
                                           MakeTimeAccessor(&RttEstimator::m_initialEstimatedRtt),
                                           MakeTimeChecker());
     return tid;

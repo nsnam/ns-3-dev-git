@@ -143,8 +143,8 @@ main(int argc, char* argv[])
         Address sinkLocalAddress(InetSocketAddress(Ipv4Address::GetAny(), port));
         PacketSinkHelper packetSinkHelper("ns3::TcpSocketFactory", sinkLocalAddress);
         sinkApps.Add(packetSinkHelper.Install(server.Get(0)));
-        sinkApps.Start(Seconds(0.0));
-        sinkApps.Stop(Seconds(10.0));
+        sinkApps.Start(Seconds(0));
+        sinkApps.Stop(Seconds(10));
     }
 
     if (systemId == 0)
@@ -158,8 +158,8 @@ main(int argc, char* argv[])
         AddressValue remoteAddress(InetSocketAddress(serverInterfaces.GetAddress(0), port));
         clientHelper.SetAttribute("Remote", remoteAddress);
         clientApps.Add(clientHelper.Install(client.Get(0)));
-        clientApps.Start(Seconds(1.0)); // Start 1 second after sink
-        clientApps.Stop(Seconds(9.0));  // Stop before the sink
+        clientApps.Start(Seconds(1)); // Start 1 second after sink
+        clientApps.Stop(Seconds(9));  // Stop before the sink
     }
 
     if (!nix)
@@ -174,7 +174,7 @@ main(int argc, char* argv[])
     }
 
     // Run the simulator
-    Simulator::Stop(Seconds(200.0));
+    Simulator::Stop(Seconds(200));
     Simulator::Run();
     Simulator::Destroy();
 

@@ -90,8 +90,8 @@ main(int argc, char* argv[])
     uint16_t port = 4000;
     UdpServerHelper server(port);
     ApplicationContainer apps = server.Install(n.Get(1));
-    apps.Start(Seconds(1.0));
-    apps.Stop(Seconds(10.0));
+    apps.Start(Seconds(1));
+    apps.Stop(Seconds(10));
 
     //
     // Create one UdpClient application to send UDP datagrams from node zero to
@@ -105,8 +105,8 @@ main(int argc, char* argv[])
     client.SetAttribute("Interval", TimeValue(interPacketInterval));
     client.SetAttribute("PacketSize", UintegerValue(MaxPacketSize));
     apps = client.Install(NodeContainer(n.Get(0), n.Get(2)));
-    apps.Start(Seconds(2.0));
-    apps.Stop(Seconds(10.0));
+    apps.Start(Seconds(2));
+    apps.Stop(Seconds(10));
 
     csma.EnablePcap("nsclick-udp-client-server-csma", d, false);
 
@@ -114,7 +114,7 @@ main(int argc, char* argv[])
     // Now, do the actual simulation.
     //
     NS_LOG_INFO("Run Simulation.");
-    Simulator::Stop(Seconds(20.0));
+    Simulator::Stop(Seconds(20));
     Simulator::Run();
     Simulator::Destroy();
     NS_LOG_INFO("Done.");

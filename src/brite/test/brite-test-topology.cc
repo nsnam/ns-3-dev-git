@@ -174,19 +174,19 @@ BriteTopologyFunctionTestCase::DoRun()
 
     ApplicationContainer apps = onOff.Install(source.Get(0));
 
-    apps.Start(Seconds(1.0));
-    apps.Stop(Seconds(10.0));
+    apps.Start(Seconds(1));
+    apps.Stop(Seconds(10));
 
     PacketSinkHelper sinkHelper("ns3::UdpSocketFactory",
                                 Address(InetSocketAddress(Ipv4Address::GetAny(), port)));
     apps = sinkHelper.Install(sink.Get(0));
 
-    apps.Start(Seconds(1.0));
-    apps.Stop(Seconds(10.0));
+    apps.Start(Seconds(1));
+    apps.Stop(Seconds(10));
 
     Ipv4GlobalRoutingHelper::PopulateRoutingTables();
 
-    Simulator::Stop(Seconds(10.0));
+    Simulator::Stop(Seconds(10));
     Simulator::Run();
 
     Ptr<PacketSink> sink1 = DynamicCast<PacketSink>(apps.Get(0));

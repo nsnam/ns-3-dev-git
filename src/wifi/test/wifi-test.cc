@@ -175,7 +175,7 @@ WifiTest::CreateOne(Vector pos, Ptr<YansWifiChannel> channel)
     mobility->SetPosition(pos);
     node->AggregateObject(mobility);
 
-    Simulator::Schedule(Seconds(1.0), &WifiTest::SendOnePacket, this, dev);
+    Simulator::Schedule(Seconds(1), &WifiTest::SendOnePacket, this, dev);
 }
 
 void
@@ -191,7 +191,7 @@ WifiTest::RunOne()
     CreateOne(Vector(5.0, 0.0, 0.0), channel);
     CreateOne(Vector(5.0, 0.0, 0.0), channel);
 
-    Simulator::Stop(Seconds(10.0));
+    Simulator::Stop(Seconds(10));
 
     Simulator::Run();
     Simulator::Destroy();
@@ -394,7 +394,7 @@ InterferenceHelperSequenceTest::DoRun()
                       true);
     propLoss->SetDefaultLoss(999);
 
-    Simulator::Schedule(Seconds(1.0),
+    Simulator::Schedule(Seconds(1),
                         &InterferenceHelperSequenceTest::SendOnePacket,
                         this,
                         DynamicCast<WifiNetDevice>(senderB->GetDevice(0)));
@@ -404,17 +404,17 @@ InterferenceHelperSequenceTest::DoRun()
                         this,
                         DynamicCast<WifiNetDevice>(rxOnly->GetDevice(0)));
 
-    Simulator::Schedule(Seconds(5.0),
+    Simulator::Schedule(Seconds(5),
                         &InterferenceHelperSequenceTest::SendOnePacket,
                         this,
                         DynamicCast<WifiNetDevice>(senderA->GetDevice(0)));
 
-    Simulator::Schedule(Seconds(7.0),
+    Simulator::Schedule(Seconds(7),
                         &InterferenceHelperSequenceTest::SendOnePacket,
                         this,
                         DynamicCast<WifiNetDevice>(senderB->GetDevice(0)));
 
-    Simulator::Stop(Seconds(100.0));
+    Simulator::Stop(Seconds(100));
     Simulator::Run();
 
     Simulator::Destroy();
@@ -593,26 +593,26 @@ DcfImmediateAccessBroadcastTestCase::DoRun()
     // Txop::EndTxNoAck() calls to StartBackoffNow()
     AssignWifiRandomStreams(txMac, 23);
 
-    m_firstTransmissionTime = Seconds(0.0);
-    m_secondTransmissionTime = Seconds(0.0);
+    m_firstTransmissionTime = Seconds(0);
+    m_secondTransmissionTime = Seconds(0);
     m_numSentPackets = 0;
 
-    Simulator::Schedule(Seconds(1.0),
+    Simulator::Schedule(Seconds(1),
                         &DcfImmediateAccessBroadcastTestCase::SendOnePacket,
                         this,
                         txDev);
-    Simulator::Schedule(Seconds(1.0) + MicroSeconds(1),
+    Simulator::Schedule(Seconds(1) + MicroSeconds(1),
                         &DcfImmediateAccessBroadcastTestCase::SendOnePacket,
                         this,
                         txDev);
 
-    Simulator::Stop(Seconds(2.0));
+    Simulator::Stop(Seconds(2));
     Simulator::Run();
     Simulator::Destroy();
 
     // First packet is transmitted a DIFS after the packet is queued. A DIFS
     // is 2 slots (2 * 9 = 18 us) plus a SIFS (16 us), i.e., 34 us
-    Time expectedFirstTransmissionTime = Seconds(1.0) + MicroSeconds(34);
+    Time expectedFirstTransmissionTime = Seconds(1) + MicroSeconds(34);
 
     // First packet has 1408 us of transmit time.   Slot time is 9 us.
     // Backoff is 1 slots.  SIFS is 16 us.  DIFS is 2 slots = 18 us.
@@ -746,18 +746,18 @@ Bug730TestCase::DoRun()
     client->SetRemote(socket);
     wifiStaNode.Get(0)->AddApplication(client);
     client->SetStartTime(Seconds(1));
-    client->SetStopTime(Seconds(51.0));
+    client->SetStopTime(Seconds(51));
 
     Ptr<PacketSocketServer> server = CreateObject<PacketSocketServer>();
     server->SetLocal(socket);
     wifiApNode.Get(0)->AddApplication(server);
-    server->SetStartTime(Seconds(0.0));
-    server->SetStopTime(Seconds(52.0));
+    server->SetStartTime(Seconds(0));
+    server->SetStopTime(Seconds(52));
 
     Config::Connect("/NodeList/*/ApplicationList/0/$ns3::PacketSocketServer/Rx",
                     MakeCallback(&Bug730TestCase::Receive, this));
 
-    Simulator::Schedule(Seconds(10.0),
+    Simulator::Schedule(Seconds(10),
                         Config::Set,
                         "/NodeList/0/DeviceList/0/RemoteStationManager/FragmentationThreshold",
                         StringValue("800"));
@@ -907,13 +907,13 @@ QosFragmentationTestCase::DoRun()
     client->SetRemote(socket);
     wifiStaNode.Get(0)->AddApplication(client);
     client->SetStartTime(Seconds(1));
-    client->SetStopTime(Seconds(3.0));
+    client->SetStopTime(Seconds(3));
 
     Ptr<PacketSocketServer> server = CreateObject<PacketSocketServer>();
     server->SetLocal(socket);
     wifiApNode.Get(0)->AddApplication(server);
-    server->SetStartTime(Seconds(0.0));
-    server->SetStopTime(Seconds(4.0));
+    server->SetStartTime(Seconds(0));
+    server->SetStopTime(Seconds(4));
 
     Config::Connect("/NodeList/*/ApplicationList/0/$ns3::PacketSocketServer/Rx",
                     MakeCallback(&QosFragmentationTestCase::Receive, this));
@@ -1469,8 +1469,8 @@ Bug2222TestCase::DoRun()
     clientLowPriority->SetAttribute("Priority", UintegerValue(4)); // AC_VI
     clientLowPriority->SetRemote(socket);
     wifiNodes.Get(0)->AddApplication(clientLowPriority);
-    clientLowPriority->SetStartTime(Seconds(0.0));
-    clientLowPriority->SetStopTime(Seconds(1.0));
+    clientLowPriority->SetStartTime(Seconds(0));
+    clientLowPriority->SetStopTime(Seconds(1));
 
     Ptr<PacketSocketClient> clientHighPriority = CreateObject<PacketSocketClient>();
     clientHighPriority->SetAttribute("PacketSize", UintegerValue(1460));
@@ -1478,19 +1478,19 @@ Bug2222TestCase::DoRun()
     clientHighPriority->SetAttribute("Priority", UintegerValue(6)); // AC_VO
     clientHighPriority->SetRemote(socket);
     wifiNodes.Get(0)->AddApplication(clientHighPriority);
-    clientHighPriority->SetStartTime(Seconds(0.0));
-    clientHighPriority->SetStopTime(Seconds(1.0));
+    clientHighPriority->SetStartTime(Seconds(0));
+    clientHighPriority->SetStopTime(Seconds(1));
 
     Ptr<PacketSocketServer> server = CreateObject<PacketSocketServer>();
     server->SetLocal(socket);
     wifiNodes.Get(1)->AddApplication(server);
-    server->SetStartTime(Seconds(0.0));
-    server->SetStopTime(Seconds(1.0));
+    server->SetStartTime(Seconds(0));
+    server->SetStopTime(Seconds(1));
 
     Config::Connect("/NodeList/*/DeviceList/*/RemoteStationManager/MacTxDataFailed",
                     MakeCallback(&Bug2222TestCase::TxDataFailedTrace, this));
 
-    Simulator::Stop(Seconds(1.0));
+    Simulator::Stop(Seconds(1));
     Simulator::Run();
     Simulator::Destroy();
 
@@ -1923,9 +1923,9 @@ Bug2831TestCase::DoRun()
     Config::Connect("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/$ns3::WifiPhy/PhyRxBegin",
                     MakeCallback(&Bug2831TestCase::RxCallback, this));
 
-    Simulator::Schedule(Seconds(1.0), &Bug2831TestCase::ChangeSupportedChannelWidth, this);
+    Simulator::Schedule(Seconds(1), &Bug2831TestCase::ChangeSupportedChannelWidth, this);
 
-    Simulator::Stop(Seconds(3.0));
+    Simulator::Stop(Seconds(3));
     Simulator::Run();
     Simulator::Destroy();
 
@@ -2457,7 +2457,7 @@ Bug2470TestCase::RunSubtest(TypeOfStation rcvErrorType)
                         apDevice.Get(0),
                         staDevice.Get(0)->GetAddress());
 
-    Simulator::Stop(Seconds(1.0));
+    Simulator::Stop(Seconds(1));
     Simulator::Run();
     Simulator::Destroy();
 }
@@ -2695,7 +2695,7 @@ Issue40TestCase::RunOne(bool useAmpdu)
 
     Ptr<WaypointMobilityModel> staWaypointMobility =
         DynamicCast<WaypointMobilityModel>(wifiStaNode.Get(0)->GetObject<MobilityModel>());
-    staWaypointMobility->AddWaypoint(Waypoint(Seconds(1.0), Vector(10.0, 0.0, 0.0)));
+    staWaypointMobility->AddWaypoint(Waypoint(Seconds(1), Vector(10.0, 0.0, 0.0)));
     staWaypointMobility->AddWaypoint(Waypoint(Seconds(1.5), Vector(50.0, 0.0, 0.0)));
 
     if (useAmpdu)
@@ -2719,7 +2719,7 @@ Issue40TestCase::RunOne(bool useAmpdu)
 
     // Transmit a second data packet once the station is away from the access point: it should be
     // sent with the same high modulation and be unsuccessfuly received
-    Simulator::Schedule(Seconds(2.0),
+    Simulator::Schedule(Seconds(2),
                         &Issue40TestCase::SendPackets,
                         this,
                         useAmpdu ? 2 : 1,
@@ -2759,7 +2759,7 @@ Issue40TestCase::RunOne(bool useAmpdu)
                         apDevice.Get(0),
                         staDevice.Get(0)->GetAddress());
 
-    Simulator::Stop(Seconds(3.0));
+    Simulator::Stop(Seconds(3));
     Simulator::Run();
 
     NS_TEST_ASSERT_MSG_EQ(m_txCount,
@@ -2924,7 +2924,7 @@ Issue169TestCase::DoRun()
                         0);
 
     // Send non best-effort (voice) packet (i.e. priority 6)
-    Simulator::Schedule(Seconds(1.0),
+    Simulator::Schedule(Seconds(1),
                         &Issue169TestCase::SendPackets,
                         this,
                         1,
@@ -2932,7 +2932,7 @@ Issue169TestCase::DoRun()
                         staDevice.Get(0)->GetAddress(),
                         6);
 
-    Simulator::Stop(Seconds(2.0));
+    Simulator::Stop(Seconds(2));
     Simulator::Run();
 
     Simulator::Destroy();
@@ -3091,7 +3091,7 @@ IdealRateManagerChannelWidthTest::DoRun()
                         &IdealRateManagerChannelWidthTest::ChangeChannelWidth,
                         this,
                         80);
-    Simulator::Schedule(Seconds(1.0),
+    Simulator::Schedule(Seconds(1),
                         &IdealRateManagerChannelWidthTest::SendPacket,
                         this,
                         apDevice.Get(0),
@@ -3107,7 +3107,7 @@ IdealRateManagerChannelWidthTest::DoRun()
                         &IdealRateManagerChannelWidthTest::ChangeChannelWidth,
                         this,
                         20);
-    Simulator::Schedule(Seconds(2.0),
+    Simulator::Schedule(Seconds(2),
                         &IdealRateManagerChannelWidthTest::SendPacket,
                         this,
                         apDevice.Get(0),
@@ -3123,7 +3123,7 @@ IdealRateManagerChannelWidthTest::DoRun()
                         &IdealRateManagerChannelWidthTest::ChangeChannelWidth,
                         this,
                         40);
-    Simulator::Schedule(Seconds(3.0),
+    Simulator::Schedule(Seconds(3),
                         &IdealRateManagerChannelWidthTest::SendPacket,
                         this,
                         apDevice.Get(0),
@@ -3322,7 +3322,7 @@ IdealRateManagerMimoTest::DoRun()
     // RX: 1 antenna
     Simulator::Schedule(Seconds(0.9), &IdealRateManagerMimoTest::SetStaMimoSettings, this, 1, 1);
     // Send packets (2 times to get one feedback)
-    Simulator::Schedule(Seconds(1.0),
+    Simulator::Schedule(Seconds(1),
                         &IdealRateManagerMimoTest::SendPacket,
                         this,
                         apDevice.Get(0),
@@ -3345,7 +3345,7 @@ IdealRateManagerMimoTest::DoRun()
     // RX: 2 antennas, but only supports 1 spatial stream
     Simulator::Schedule(Seconds(1.9), &IdealRateManagerMimoTest::SetStaMimoSettings, this, 2, 1);
     // Send packets (2 times to get one feedback)
-    Simulator::Schedule(Seconds(2.0),
+    Simulator::Schedule(Seconds(2),
                         &IdealRateManagerMimoTest::SendPacket,
                         this,
                         apDevice.Get(0),
@@ -3369,7 +3369,7 @@ IdealRateManagerMimoTest::DoRun()
     // RX: 2 antennas, and supports 2 spatial streams
     Simulator::Schedule(Seconds(2.9), &IdealRateManagerMimoTest::SetStaMimoSettings, this, 2, 2);
     // Send packets (2 times to get one feedback)
-    Simulator::Schedule(Seconds(3.0),
+    Simulator::Schedule(Seconds(3),
                         &IdealRateManagerMimoTest::SendPacket,
                         this,
                         apDevice.Get(0),
@@ -3392,7 +3392,7 @@ IdealRateManagerMimoTest::DoRun()
     // RX: 1 antenna
     Simulator::Schedule(Seconds(3.9), &IdealRateManagerMimoTest::SetStaMimoSettings, this, 1, 1);
     // Send packets (2 times to get one feedback)
-    Simulator::Schedule(Seconds(4.0),
+    Simulator::Schedule(Seconds(4),
                         &IdealRateManagerMimoTest::SendPacket,
                         this,
                         apDevice.Get(0),
@@ -3416,7 +3416,7 @@ IdealRateManagerMimoTest::DoRun()
     // RX: 2 antennas, but only supports 1 spatial stream
     Simulator::Schedule(Seconds(4.9), &IdealRateManagerMimoTest::SetStaMimoSettings, this, 2, 1);
     // Send packets (2 times to get one feedback)
-    Simulator::Schedule(Seconds(5.0),
+    Simulator::Schedule(Seconds(5),
                         &IdealRateManagerMimoTest::SendPacket,
                         this,
                         apDevice.Get(0),
@@ -3441,7 +3441,7 @@ IdealRateManagerMimoTest::DoRun()
     // RX: 2 antennas, and supports 2 spatial streams
     Simulator::Schedule(Seconds(5.9), &IdealRateManagerMimoTest::SetStaMimoSettings, this, 2, 2);
     // Send packets (2 times to get one feedback)
-    Simulator::Schedule(Seconds(6.0),
+    Simulator::Schedule(Seconds(6),
                         &IdealRateManagerMimoTest::SendPacket,
                         this,
                         apDevice.Get(0),
@@ -3464,7 +3464,7 @@ IdealRateManagerMimoTest::DoRun()
     // RX: 1 antenna
     Simulator::Schedule(Seconds(6.9), &IdealRateManagerMimoTest::SetStaMimoSettings, this, 1, 1);
     // Send packets (2 times to get one feedback)
-    Simulator::Schedule(Seconds(7.0),
+    Simulator::Schedule(Seconds(7),
                         &IdealRateManagerMimoTest::SendPacket,
                         this,
                         apDevice.Get(0),
@@ -3488,7 +3488,7 @@ IdealRateManagerMimoTest::DoRun()
     // RX: 2 antennas, but only supports 1 spatial stream
     Simulator::Schedule(Seconds(7.9), &IdealRateManagerMimoTest::SetStaMimoSettings, this, 2, 1);
     // Send packets (2 times to get one feedback)
-    Simulator::Schedule(Seconds(8.0),
+    Simulator::Schedule(Seconds(8),
                         &IdealRateManagerMimoTest::SendPacket,
                         this,
                         apDevice.Get(0),
@@ -3513,7 +3513,7 @@ IdealRateManagerMimoTest::DoRun()
     // RX: 2 antennas, and supports 2 spatial streams
     Simulator::Schedule(Seconds(8.9), &IdealRateManagerMimoTest::SetStaMimoSettings, this, 2, 2);
     // Send packets (2 times to get one feedback)
-    Simulator::Schedule(Seconds(9.0),
+    Simulator::Schedule(Seconds(9),
                         &IdealRateManagerMimoTest::SendPacket,
                         this,
                         apDevice.Get(0),
@@ -3535,7 +3535,7 @@ IdealRateManagerMimoTest::DoRun()
     // Verify we can go back to initial situation
     Simulator::Schedule(Seconds(9.9), &IdealRateManagerMimoTest::SetApMimoSettings, this, 1, 1);
     Simulator::Schedule(Seconds(9.9), &IdealRateManagerMimoTest::SetStaMimoSettings, this, 1, 1);
-    Simulator::Schedule(Seconds(10.0),
+    Simulator::Schedule(Seconds(10),
                         &IdealRateManagerMimoTest::SendPacket,
                         this,
                         apDevice.Get(0),

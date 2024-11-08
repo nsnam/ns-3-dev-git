@@ -229,14 +229,14 @@ main(int argc, char* argv[])
     std::cout << "Testing " << numPackets << " packets sent with receiver rss " << rss << std::endl;
 
     Simulator::ScheduleWithContext(source->GetNode()->GetId(),
-                                   Seconds(1.0),
+                                   Seconds(1),
                                    &GenerateTraffic,
                                    source,
                                    packetSize,
                                    numPackets,
                                    interval);
 
-    Simulator::Stop(Seconds(30.0));
+    Simulator::Stop(Seconds(30));
     Simulator::Run();
     Simulator::Destroy();
 

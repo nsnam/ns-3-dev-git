@@ -318,7 +318,7 @@ CobaltQueueDiscDropTest::RunDropTest(QueueSizeUnit mode)
         EnqueueWithDelay(queue, 1, 200);
     }
 
-    Simulator::Stop(Seconds(8.0));
+    Simulator::Stop(Seconds(8));
     Simulator::Run();
 
     QueueDisc::Stats st = queue->GetStats();
@@ -1106,7 +1106,7 @@ CobaltQueueDiscEnhancedBlueTest::DoRun()
     Enqueue(queue, modeSize, 200);
     DequeueWithDelay(queue, 100, MilliSeconds(10));
 
-    Simulator::Stop(Seconds(8.0));
+    Simulator::Stop(Seconds(8));
     Simulator::Run();
 
     QueueDisc::Stats st = queue->GetStats();
@@ -1135,7 +1135,7 @@ CobaltQueueDiscEnhancedBlueTest::DoRun()
     Enqueue(queue, modeSize, 200);
     DequeueWithDelay(queue, 100, MilliSeconds(10));
 
-    Simulator::Stop(Seconds(8.0));
+    Simulator::Stop(Seconds(8));
     Simulator::Run();
 
     st = queue->GetStats();

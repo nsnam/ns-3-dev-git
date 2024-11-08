@@ -69,7 +69,7 @@ def main(argv):
     print("Application")
     packetSize = 1024
     maxPacketCount = 5
-    interPacketInterval = ns.Seconds(1.0)
+    interPacketInterval = ns.Seconds(1)
     # ping = ns.PingHelper(i2.GetAddress(1, 1).ConvertTo())
     ping = ns.PingHelper(i2.GetAddress(1, 1).ConvertTo())
 
@@ -81,8 +81,8 @@ def main(argv):
     ping.SetAttribute("Size", ns.UintegerValue(packetSize))
 
     apps = ping.Install(ns.NodeContainer(net1.Get(0)))
-    apps.Start(ns.Seconds(2.0))
-    apps.Stop(ns.Seconds(20.0))
+    apps.Start(ns.Seconds(2))
+    apps.Stop(ns.Seconds(20))
 
     print("Tracing")
     ascii = ns.AsciiTraceHelper()

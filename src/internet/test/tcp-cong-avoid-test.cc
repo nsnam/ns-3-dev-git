@@ -123,7 +123,7 @@ TcpNewRenoCongAvoidNormalTest::CWndTrace(uint32_t oldValue, uint32_t newValue)
 
     if (!m_event.IsPending())
     {
-        m_event = Simulator::Schedule(Seconds(1.0), &TcpNewRenoCongAvoidNormalTest::Check, this);
+        m_event = Simulator::Schedule(Seconds(1), &TcpNewRenoCongAvoidNormalTest::Check, this);
     }
 
     m_increment += newValue - oldValue;
@@ -155,7 +155,7 @@ TcpNewRenoCongAvoidNormalTest::Check()
 
     m_increment = 0;
 
-    m_event = Simulator::Schedule(Seconds(1.0), &TcpNewRenoCongAvoidNormalTest::Check, this);
+    m_event = Simulator::Schedule(Seconds(1), &TcpNewRenoCongAvoidNormalTest::Check, this);
 }
 
 void

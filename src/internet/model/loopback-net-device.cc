@@ -172,7 +172,7 @@ LoopbackNetDevice::Send(Ptr<Packet> packet, const Address& dest, uint16_t protoc
     Mac48Address to = Mac48Address::ConvertFrom(dest);
     NS_ASSERT_MSG(to == GetBroadcast() || to == m_address, "Invalid destination address");
     Simulator::ScheduleWithContext(m_node->GetId(),
-                                   Seconds(0.0),
+                                   Seconds(0),
                                    &LoopbackNetDevice::Receive,
                                    this,
                                    packet,
@@ -193,7 +193,7 @@ LoopbackNetDevice::SendFrom(Ptr<Packet> packet,
     Mac48Address from = Mac48Address::ConvertFrom(source);
     NS_ASSERT_MSG(to.IsBroadcast() || to == m_address, "Invalid destination address");
     Simulator::ScheduleWithContext(m_node->GetId(),
-                                   Seconds(0.0),
+                                   Seconds(0),
                                    &LoopbackNetDevice::Receive,
                                    this,
                                    packet,

@@ -191,7 +191,7 @@ WifiAcMappingTest::DoRun()
                                 InetSocketAddress(Ipv4Address::GetAny(), udpPort));
     ApplicationContainer sinkApp = packetSink.Install(sta.Get(0));
     sinkApp.Start(Seconds(0));
-    sinkApp.Stop(Seconds(4.0));
+    sinkApp.Stop(Seconds(4));
 
     // The packet source is an on-off application on the AP device
     InetSocketAddress dest(staNodeInterface.GetAddress(0), udpPort);
@@ -199,14 +199,14 @@ WifiAcMappingTest::DoRun()
     onoff.SetConstantRate(DataRate("5kbps"), 500);
     onoff.SetAttribute("Tos", UintegerValue(m_tos));
     ApplicationContainer sourceApp = onoff.Install(ap.Get(0));
-    sourceApp.Start(Seconds(1.0));
-    sourceApp.Stop(Seconds(4.0));
+    sourceApp.Start(Seconds(1));
+    sourceApp.Stop(Seconds(4));
 
     // The first packet will be transmitted at time 1+(500*8)/5000 = 1.8s.
     // The second packet will be transmitted at time 1.8+(500*8)/5000 = 2.6s.
     // The third packet will be transmitted at time 2.6+(500*8)/5000 = 3.4s.
 
-    Simulator::Stop(Seconds(5.0));
+    Simulator::Stop(Seconds(5));
 
     Ptr<QueueDisc> root =
         ap.Get(0)->GetObject<TrafficControlLayer>()->GetRootQueueDiscOnDevice(apDev.Get(0));

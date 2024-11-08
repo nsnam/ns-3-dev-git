@@ -1705,8 +1705,8 @@ LrWpanPhy::SetPhyOption(PhyOption phyOption)
     }
 
     m_edPower.averagePower = 0.0;
-    m_edPower.lastUpdate = Seconds(0.0);
-    m_edPower.measurementLength = Seconds(0.0);
+    m_edPower.lastUpdate = Seconds(0);
+    m_edPower.measurementLength = Seconds(0);
 
     // TODO: Change the limits  Rx sensitivity when other modulations are supported
     // Currently, only O-QPSK 250kbps is supported and its maximum possible sensitivity is

@@ -108,7 +108,7 @@ PointToPointTest::DoRun()
                          "for her merchandise, he traded in his prize.";
     size_t txBufferSize = sizeof(txBuffer);
 
-    Simulator::Schedule(Seconds(1.0),
+    Simulator::Schedule(Seconds(1),
                         &PointToPointTest::SendOnePacket,
                         this,
                         devA,

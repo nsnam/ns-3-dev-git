@@ -1518,8 +1518,8 @@ The most common way to start pumping events is to start an
 (hopefully) familiar lines of an |ns3| script::
 
   ApplicationContainer apps = ...
-  apps.Start(Seconds(1.0));
-  apps.Stop(Seconds(10.0));
+  apps.Start(Seconds(1));
+  apps.Stop(Seconds(10));
 
 The application container code (see
 ``src/network/helper/application-container.h`` if you are interested)

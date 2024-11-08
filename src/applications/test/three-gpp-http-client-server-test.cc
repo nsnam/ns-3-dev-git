@@ -563,7 +563,7 @@ ThreeGppHttpObjectTestCase::DoRun()
         MakeCallback(&ThreeGppHttpObjectTestCase::ClientRxRttCallback, this));
     NS_ASSERT(traceSourceConnected);
 
-    Simulator::Schedule(Seconds(1.0), &ThreeGppHttpObjectTestCase::ProgressCallback, this);
+    Simulator::Schedule(Seconds(1), &ThreeGppHttpObjectTestCase::ProgressCallback, this);
 
     /*
      * Here we don't set the simulation stop time. During the run, the simulation
@@ -707,7 +707,7 @@ ThreeGppHttpObjectTestCase::ServerRxCallback(Ptr<const Packet> packet,
                           22,
                           "Error finding ThreeGppHttpHeader in a packet received by the server");
     NS_TEST_ASSERT_MSG_GT(httpHeader.GetClientTs(),
-                          Seconds(0.0),
+                          Seconds(0),
                           "Request object's client TS is unexpectedly non-positive");
 
     m_requestObjectTracker.PartReceived(packet->GetSize());
@@ -755,10 +755,10 @@ ThreeGppHttpObjectTestCase::ClientRxMainObjectCallback(Ptr<const ThreeGppHttpCli
                           ThreeGppHttpHeader::MAIN_OBJECT,
                           "Invalid content type in the received packet");
     NS_TEST_ASSERT_MSG_GT(httpHeader.GetClientTs(),
-                          Seconds(0.0),
+                          Seconds(0),
                           "Main object's client TS is unexpectedly non-positive");
     NS_TEST_ASSERT_MSG_GT(httpHeader.GetServerTs(),
-                          Seconds(0.0),
+                          Seconds(0),
                           "Main object's server TS is unexpectedly non-positive");
 
     uint32_t txSize = 0;
@@ -803,10 +803,10 @@ ThreeGppHttpObjectTestCase::ClientRxEmbeddedObjectCallback(Ptr<const ThreeGppHtt
                           ThreeGppHttpHeader::EMBEDDED_OBJECT,
                           "Invalid content type in the received packet");
     NS_TEST_ASSERT_MSG_GT(httpHeader.GetClientTs(),
-                          Seconds(0.0),
+                          Seconds(0),
                           "Embedded object's client TS is unexpectedly non-positive");
     NS_TEST_ASSERT_MSG_GT(httpHeader.GetServerTs(),
-                          Seconds(0.0),
+                          Seconds(0),
                           "Embedded object's server TS is unexpectedly non-positive");
 
     uint32_t txSize = 0;
@@ -845,7 +845,7 @@ void
 ThreeGppHttpObjectTestCase::ProgressCallback()
 {
     NS_LOG_DEBUG("Simulator time now: " << Simulator::Now().As(Time::S) << ".");
-    Simulator::Schedule(Seconds(1.0), &ThreeGppHttpObjectTestCase::ProgressCallback, this);
+    Simulator::Schedule(Seconds(1), &ThreeGppHttpObjectTestCase::ProgressCallback, this);
 }
 
 void

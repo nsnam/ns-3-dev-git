@@ -79,22 +79,22 @@ serverInterfaces = address.Assign(p2pServerDevices)
 
 echoServer = ns.UdpEchoServerHelper(9)
 serverApps = echoServer.Install(server.Get(0))
-serverApps.Start(ns.Seconds(1.0))
-serverApps.Stop(ns.Seconds(5.0))
+serverApps.Start(ns.Seconds(1))
+serverApps.Stop(ns.Seconds(5))
 
 echoClient = ns.UdpEchoClientHelper(serverInterfaces.GetAddress(0).ConvertTo(), 9)
 echoClient.SetAttribute("MaxPackets", ns.UintegerValue(1))
-echoClient.SetAttribute("Interval", ns.TimeValue(ns.Seconds(1.0)))
+echoClient.SetAttribute("Interval", ns.TimeValue(ns.Seconds(1)))
 echoClient.SetAttribute("PacketSize", ns.UintegerValue(1024))
 
 clientApps = echoClient.Install(client.Get(0))
-clientApps.Start(ns.Seconds(2.0))
-clientApps.Stop(ns.Seconds(5.0))
+clientApps.Start(ns.Seconds(2))
+clientApps.Stop(ns.Seconds(5))
 
 asciiTrace = ns.AsciiTraceHelper()
 p2p.EnableAsciiAll(asciiTrace.CreateFileStream("briteLeaves.tr"))
 
 # Run the simulator
-ns.Simulator.Stop(ns.Seconds(6.0))
+ns.Simulator.Stop(ns.Seconds(6))
 ns.Simulator.Run()
 ns.Simulator.Destroy()

@@ -113,13 +113,13 @@ def main(argv):
     v.SetAttribute("Max", ns.DoubleValue(20))
 
     ev = ns.cppyy.gbl.ExampleFunctionEvent(model)
-    ns.Simulator.Schedule(ns.Seconds(10.0), ev)
+    ns.Simulator.Schedule(ns.Seconds(10), ev)
 
     ev2 = ns.cppyy.gbl.RandomFunctionEvent(model)
     ns.Simulator.Schedule(ns.Seconds(v.GetValue()), ev2)
 
     ev3 = ns.cppyy.gbl.CancelledFunctionEvent()
-    id = ns.Simulator.Schedule(ns.Seconds(30.0), ev3)
+    id = ns.Simulator.Schedule(ns.Seconds(30), ev3)
     ns.Simulator.Cancel(id)
 
     ns.Simulator.Run()
