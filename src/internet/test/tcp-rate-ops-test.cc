@@ -96,15 +96,12 @@ TcpRateLinuxBasicTest::DoRun()
     for (uint8_t i = 0; i < 100; ++i)
     {
         m_skbs.push_back(new TcpTxItem());
-        Simulator::Schedule(Time(Seconds(i * 0.01)),
-                            &TcpRateLinuxBasicTest::SendSkb,
-                            this,
-                            m_skbs[i]);
+        Simulator::Schedule(Seconds(i * 0.01), &TcpRateLinuxBasicTest::SendSkb, this, m_skbs[i]);
     }
 
     for (uint8_t i = 0; i < 100; ++i)
     {
-        Simulator::Schedule(Time(Seconds((i + 1) * 0.1)),
+        Simulator::Schedule(Seconds((i + 1) * 0.1),
                             &TcpRateLinuxBasicTest::SkbDelivered,
                             this,
                             m_skbs[i]);

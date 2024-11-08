@@ -274,7 +274,7 @@ Icmpv6L4Protocol::DoDAD(Ipv6Address target, Ptr<Ipv6Interface> interface)
 
     /* update last packet UID */
     interface->SetNsDadUid(target, p.first->GetUid());
-    Simulator::Schedule(Time(MilliSeconds(m_solicitationJitter->GetValue())),
+    Simulator::Schedule(MilliSeconds(m_solicitationJitter->GetValue()),
                         &Ipv6Interface::Send,
                         interface,
                         p.first,
@@ -1332,7 +1332,7 @@ Icmpv6L4Protocol::SendNS(Ipv6Address src,
     else
     {
         NS_LOG_LOGIC("Destination is Multicast, using DelayedSendMessage");
-        Simulator::Schedule(Time(MilliSeconds(m_solicitationJitter->GetValue())),
+        Simulator::Schedule(MilliSeconds(m_solicitationJitter->GetValue()),
                             &Icmpv6L4Protocol::DelayedSendMessage,
                             this,
                             p,
@@ -1388,7 +1388,7 @@ Icmpv6L4Protocol::SendRS(Ipv6Address src, Ipv6Address dst, Address hardwareAddre
             // First RS transmission - also add some jitter to desynchronize nodes.
             m_rsInitialRetransmissionTime = Simulator::Now();
             rsTimeout = m_rsInitialRetransmissionTime * (1 + m_rsRetransmissionJitter->GetValue());
-            rsDelay = Time(MilliSeconds(m_solicitationJitter->GetValue()));
+            rsDelay = MilliSeconds(m_solicitationJitter->GetValue());
         }
         else
         {

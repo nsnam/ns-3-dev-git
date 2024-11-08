@@ -122,23 +122,23 @@ DataRateTestCase1::DoRun()
     {
         Time::SetResolution(Time::FS);
     }
-    SingleTest("1GB/s", 512, Time(NanoSeconds(64)));
-    SingleTest("8Gb/s", 512, Time(NanoSeconds(64)));
-    SingleTest("1Gb/s", 512, Time(NanoSeconds(512)));
-    SingleTest("8GB/s", 512, Time(NanoSeconds(8)));
+    SingleTest("1GB/s", 512, NanoSeconds(64));
+    SingleTest("8Gb/s", 512, NanoSeconds(64));
+    SingleTest("1Gb/s", 512, NanoSeconds(512));
+    SingleTest("8GB/s", 512, NanoSeconds(8));
     size_t nBits;
     for (nBits = 0; nBits <= 512; nBits++)
     {
-        SingleTest("1Mb/s", nBits, Time(MicroSeconds(nBits)));
-        SingleTest("10Mb/s", nBits, Time(NanoSeconds(nBits * 100)));
-        SingleTest("100Mb/s", nBits, Time(NanoSeconds(nBits * 10)));
-        SingleTest("1Gb/s", nBits, Time(NanoSeconds(nBits)));
-        SingleTest("10Gb/s", nBits, Time(PicoSeconds(nBits * 100)));
-        SingleTest("25Gb/s", nBits, Time(PicoSeconds(nBits * 40)));
-        SingleTest("40Gb/s", nBits, Time(PicoSeconds(nBits * 25)));
-        SingleTest("100Gb/s", nBits, Time(PicoSeconds(nBits * 10)));
-        SingleTest("200Gb/s", nBits, Time(PicoSeconds(nBits * 5)));
-        SingleTest("400Gb/s", nBits, Time(FemtoSeconds(nBits * 2500)));
+        SingleTest("1Mb/s", nBits, MicroSeconds(nBits));
+        SingleTest("10Mb/s", nBits, NanoSeconds(nBits * 100));
+        SingleTest("100Mb/s", nBits, NanoSeconds(nBits * 10));
+        SingleTest("1Gb/s", nBits, NanoSeconds(nBits));
+        SingleTest("10Gb/s", nBits, PicoSeconds(nBits * 100));
+        SingleTest("25Gb/s", nBits, PicoSeconds(nBits * 40));
+        SingleTest("40Gb/s", nBits, PicoSeconds(nBits * 25));
+        SingleTest("100Gb/s", nBits, PicoSeconds(nBits * 10));
+        SingleTest("200Gb/s", nBits, PicoSeconds(nBits * 5));
+        SingleTest("400Gb/s", nBits, FemtoSeconds(nBits * 2500));
     }
 }
 

@@ -382,7 +382,7 @@ AredQueueDiscTestCase::EnqueueWithDelay(Ptr<RedQueueDisc> queue, uint32_t size, 
     double delay = 0.01; // enqueue packets with delay to allow m_curMaxP to adapt
     for (uint32_t i = 0; i < nPkt; i++)
     {
-        Simulator::Schedule(Time(Seconds((i + 1) * delay)),
+        Simulator::Schedule(Seconds((i + 1) * delay),
                             &AredQueueDiscTestCase::Enqueue,
                             this,
                             queue,

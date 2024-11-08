@@ -283,7 +283,7 @@ TbfQueueDiscTestCase::RunTbfTest(QueueSizeUnit mode)
     double delay = 0.09;
     for (uint32_t i = 1; i <= nPkt; i++)
     {
-        Simulator::Schedule(Time(Seconds((i + 1) * delay)),
+        Simulator::Schedule(Seconds((i + 1) * delay),
                             &TbfQueueDiscTestCase::Enqueue,
                             this,
                             queue,
@@ -293,7 +293,7 @@ TbfQueueDiscTestCase::RunTbfTest(QueueSizeUnit mode)
     delay = 0.1;
     for (uint32_t i = 1; i <= nPkt; i++)
     {
-        Simulator::Schedule(Time(Seconds((i + 1) * delay)),
+        Simulator::Schedule(Seconds((i + 1) * delay),
                             &TbfQueueDiscTestCase::DequeueAndCheck,
                             this,
                             queue,
@@ -361,7 +361,7 @@ TbfQueueDiscTestCase::RunTbfTest(QueueSizeUnit mode)
     delay = 0.09;
     for (uint32_t i = 1; i <= nPkt; i++)
     {
-        Simulator::Schedule(Time(Seconds((i + 1) * delay)),
+        Simulator::Schedule(Seconds((i + 1) * delay),
                             &TbfQueueDiscTestCase::Enqueue,
                             this,
                             queue,
@@ -373,7 +373,7 @@ TbfQueueDiscTestCase::RunTbfTest(QueueSizeUnit mode)
     {
         if (i == 10)
         {
-            Simulator::Schedule(Time(Seconds((i + 1) * delay)),
+            Simulator::Schedule(Seconds((i + 1) * delay),
                                 &TbfQueueDiscTestCase::DequeueAndCheck,
                                 this,
                                 queue,
@@ -382,7 +382,7 @@ TbfQueueDiscTestCase::RunTbfTest(QueueSizeUnit mode)
         }
         else
         {
-            Simulator::Schedule(Time(Seconds((i + 1) * delay)),
+            Simulator::Schedule(Seconds((i + 1) * delay),
                                 &TbfQueueDiscTestCase::DequeueAndCheck,
                                 this,
                                 queue,
@@ -457,7 +457,7 @@ TbfQueueDiscTestCase::RunTbfTest(QueueSizeUnit mode)
     delay = 0.04;
     for (uint32_t i = 1; i <= nPkt; i++)
     {
-        Simulator::Schedule(Time(Seconds((i + 1) * delay)),
+        Simulator::Schedule(Seconds((i + 1) * delay),
                             &TbfQueueDiscTestCase::Enqueue,
                             this,
                             queue,

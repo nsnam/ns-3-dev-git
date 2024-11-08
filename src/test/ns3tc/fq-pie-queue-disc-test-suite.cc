@@ -945,7 +945,7 @@ FqPieQueueDiscL4sMode::AddPacketWithDelay(Ptr<FqPieQueueDisc> queue,
 {
     for (uint32_t i = 0; i < nPkt; i++)
     {
-        Simulator::Schedule(Time(Seconds((i + 1) * delay)),
+        Simulator::Schedule(Seconds((i + 1) * delay),
                             &FqPieQueueDiscL4sMode::AddPacket,
                             this,
                             queue,
@@ -968,7 +968,7 @@ FqPieQueueDiscL4sMode::DequeueWithDelay(Ptr<FqPieQueueDisc> queue, double delay,
 {
     for (uint32_t i = 0; i < nPkt; i++)
     {
-        Simulator::Schedule(Time(Seconds((i + 1) * delay)),
+        Simulator::Schedule(Seconds((i + 1) * delay),
                             &FqPieQueueDiscL4sMode::Dequeue,
                             this,
                             queue,
@@ -1008,7 +1008,7 @@ FqPieQueueDiscL4sMode::DoRun()
     // Add 70 ECT1 (ECN capable) packets from the first flow
     // Set delay = 0.5ms
     double delay = 0.0005;
-    Simulator::Schedule(Time(Seconds(0)),
+    Simulator::Schedule(Seconds(0),
                         &FqPieQueueDiscL4sMode::AddPacketWithDelay,
                         this,
                         queueDisc,
@@ -1019,7 +1019,7 @@ FqPieQueueDiscL4sMode::DoRun()
     // Add 70 ECT0 (ECN capable) packets from second flow
     hdr.SetEcn(Ipv4Header::ECN_ECT0);
     hdr.SetDestination(Ipv4Address("10.10.1.10"));
-    Simulator::Schedule(Time(Seconds(0)),
+    Simulator::Schedule(Seconds(0),
                         &FqPieQueueDiscL4sMode::AddPacketWithDelay,
                         this,
                         queueDisc,
@@ -1086,13 +1086,13 @@ FqPieQueueDiscL4sMode::DoRun()
     // Add 70 ECT1 (ECN capable) packets from the first flow
     // Set delay = 1ms
     delay = 0.001;
-    Simulator::Schedule(Time(Seconds(0.0005)),
+    Simulator::Schedule(Seconds(0.0005),
                         &FqPieQueueDiscL4sMode::AddPacket,
                         this,
                         queueDisc,
                         hdr,
                         1);
-    Simulator::Schedule(Time(Seconds(0.0005)),
+    Simulator::Schedule(Seconds(0.0005),
                         &FqPieQueueDiscL4sMode::AddPacketWithDelay,
                         this,
                         queueDisc,
@@ -1102,7 +1102,7 @@ FqPieQueueDiscL4sMode::DoRun()
 
     // Add 70 ECT0 (ECN capable) packets from first flow
     hdr.SetEcn(Ipv4Header::ECN_ECT0);
-    Simulator::Schedule(Time(Seconds(0)),
+    Simulator::Schedule(Seconds(0),
                         &FqPieQueueDiscL4sMode::AddPacketWithDelay,
                         this,
                         queueDisc,

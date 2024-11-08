@@ -1145,7 +1145,7 @@ RoutingProtocol::SendRequest(Ipv4Address dst)
         }
         NS_LOG_DEBUG("Send RREQ with id " << rreqHeader.GetId() << " to socket");
         m_lastBcastTime = Simulator::Now();
-        Simulator::Schedule(Time(MilliSeconds(m_uniformRandomVariable->GetInteger(0, 10))),
+        Simulator::Schedule(MilliSeconds(m_uniformRandomVariable->GetInteger(0, 10)),
                             &RoutingProtocol::SendTo,
                             this,
                             socket,
@@ -1507,7 +1507,7 @@ RoutingProtocol::RecvRequest(Ptr<Packet> p, Ipv4Address receiver, Ipv4Address sr
             destination = iface.GetBroadcast();
         }
         m_lastBcastTime = Simulator::Now();
-        Simulator::Schedule(Time(MilliSeconds(m_uniformRandomVariable->GetInteger(0, 10))),
+        Simulator::Schedule(MilliSeconds(m_uniformRandomVariable->GetInteger(0, 10)),
                             &RoutingProtocol::SendTo,
                             this,
                             socket,
@@ -1942,8 +1942,8 @@ RoutingProtocol::HelloTimerExpire()
     }
     m_htimer.Cancel();
     Time diff = m_helloInterval - offset;
-    m_htimer.Schedule(std::max(Time(Seconds(0)), diff));
-    m_lastBcastTime = Time(Seconds(0));
+    m_htimer.Schedule(std::max(Seconds(0), diff));
+    m_lastBcastTime = Seconds(0);
 }
 
 void
@@ -2006,7 +2006,7 @@ RoutingProtocol::SendHello()
         {
             destination = iface.GetBroadcast();
         }
-        Time jitter = Time(MilliSeconds(m_uniformRandomVariable->GetInteger(0, 10)));
+        Time jitter = MilliSeconds(m_uniformRandomVariable->GetInteger(0, 10));
         Simulator::Schedule(jitter, &RoutingProtocol::SendTo, this, socket, packet, destination);
     }
 }
@@ -2177,7 +2177,7 @@ RoutingProtocol::SendRerrMessage(Ptr<Packet> packet, std::vector<Ipv4Address> pr
             NS_LOG_LOGIC("one precursor => unicast RERR to "
                          << toPrecursor.GetDestination() << " from "
                          << toPrecursor.GetInterface().GetLocal());
-            Simulator::Schedule(Time(MilliSeconds(m_uniformRandomVariable->GetInteger(0, 10))),
+            Simulator::Schedule(MilliSeconds(m_uniformRandomVariable->GetInteger(0, 10)),
                                 &RoutingProtocol::SendTo,
                                 this,
                                 socket,
@@ -2218,7 +2218,7 @@ RoutingProtocol::SendRerrMessage(Ptr<Packet> packet, std::vector<Ipv4Address> pr
         {
             destination = i->GetBroadcast();
         }
-        Simulator::Schedule(Time(MilliSeconds(m_uniformRandomVariable->GetInteger(0, 10))),
+        Simulator::Schedule(MilliSeconds(m_uniformRandomVariable->GetInteger(0, 10)),
                             &RoutingProtocol::SendTo,
                             this,
                             socket,

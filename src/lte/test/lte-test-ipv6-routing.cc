@@ -358,7 +358,7 @@ LteIpv6RoutingTestCase::DoRun()
     appPgw->TraceConnectWithoutContext("RxFromTun",
                                        MakeCallback(&LteIpv6RoutingTestCase::TunToPgw, this));
 
-    Simulator::Schedule(Time(Seconds(12.0)), &LteIpv6RoutingTestCase::Checker, this);
+    Simulator::Schedule(Seconds(12.0), &LteIpv6RoutingTestCase::Checker, this);
 
     Simulator::Stop(Seconds(14));
     Simulator::Run();

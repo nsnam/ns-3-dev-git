@@ -282,7 +282,7 @@ SixLowPanNetDevice::ReceiveFromDevice(Ptr<NetDevice> incomingPort,
                 Ptr<Packet> sendPkt = copyPkt->Copy();
                 sendPkt->AddHeader(bc0Hdr);
                 sendPkt->AddHeader(meshHdr);
-                Simulator::Schedule(Time(MilliSeconds(m_meshUnderJitter->GetValue())),
+                Simulator::Schedule(MilliSeconds(m_meshUnderJitter->GetValue()),
                                     &NetDevice::Send,
                                     m_netDevice,
                                     sendPkt,

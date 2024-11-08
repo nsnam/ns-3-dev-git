@@ -790,7 +790,7 @@ PieQueueDiscTestCase::EnqueueWithDelay(Ptr<PieQueueDisc> queue,
     double delay = 0.01; // enqueue packets with delay
     for (uint32_t i = 0; i < nPkt; i++)
     {
-        Simulator::Schedule(Time(Seconds((i + 1) * delay)),
+        Simulator::Schedule(Seconds((i + 1) * delay),
                             &PieQueueDiscTestCase::Enqueue,
                             this,
                             queue,
@@ -814,7 +814,7 @@ PieQueueDiscTestCase::DequeueWithDelay(Ptr<PieQueueDisc> queue, double delay, ui
 {
     for (uint32_t i = 0; i < nPkt; i++)
     {
-        Simulator::Schedule(Time(Seconds((i + 1) * delay)),
+        Simulator::Schedule(Seconds((i + 1) * delay),
                             &PieQueueDiscTestCase::Dequeue,
                             this,
                             queue,

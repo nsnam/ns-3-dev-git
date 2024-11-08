@@ -337,7 +337,7 @@ CobaltQueueDiscDropTest::EnqueueWithDelay(Ptr<CobaltQueueDisc> queue, uint32_t s
     double delay = 0.01; // enqueue packets with delay
     for (uint32_t i = 0; i < nPkt; i++)
     {
-        Simulator::Schedule(Time(Seconds((i + 1) * delay)),
+        Simulator::Schedule(Seconds((i + 1) * delay),
                             &CobaltQueueDiscDropTest::Enqueue,
                             this,
                             queue,
@@ -895,7 +895,7 @@ CobaltQueueDiscCeThresholdTest::EnqueueWithDelay(Ptr<CobaltQueueDisc> queue,
 {
     for (uint32_t i = 0; i < nPkt; i++)
     {
-        Simulator::Schedule(Time(Seconds((i + 1) * delay.GetSeconds())),
+        Simulator::Schedule(Seconds((i + 1) * delay.GetSeconds()),
                             &CobaltQueueDiscCeThresholdTest::Enqueue,
                             this,
                             queue,
@@ -940,7 +940,7 @@ CobaltQueueDiscCeThresholdTest::DequeueWithDelay(Ptr<CobaltQueueDisc> queue,
 {
     for (uint32_t i = 0; i < nPkt; i++)
     {
-        Simulator::Schedule(Time(Seconds((i + 1) * delay.GetSeconds())),
+        Simulator::Schedule(Seconds((i + 1) * delay.GetSeconds()),
                             &CobaltQueueDiscCeThresholdTest::Dequeue,
                             this,
                             queue,
@@ -1170,7 +1170,7 @@ CobaltQueueDiscEnhancedBlueTest::DequeueWithDelay(Ptr<CobaltQueueDisc> queue,
 {
     for (uint32_t i = 0; i < nPkt; i++)
     {
-        Simulator::Schedule(Time(Seconds((i + 1) * delay.GetSeconds())),
+        Simulator::Schedule(Seconds((i + 1) * delay.GetSeconds()),
                             &CobaltQueueDiscEnhancedBlueTest::Dequeue,
                             this,
                             queue);

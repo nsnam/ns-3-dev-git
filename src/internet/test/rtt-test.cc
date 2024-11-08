@@ -64,8 +64,8 @@ void
 RttEstimatorTestCase::CheckValuesWithTolerance(Ptr<RttEstimator> rtt, Time m, Time e, Time v)
 {
     rtt->Measurement(m);
-    NS_TEST_EXPECT_MSG_EQ_TOL(rtt->GetEstimate(), e, Time(NanoSeconds(1)), "Estimate not correct");
-    NS_TEST_EXPECT_MSG_EQ_TOL(rtt->GetVariation(), v, Time(NanoSeconds(1)), "Estimate not correct");
+    NS_TEST_EXPECT_MSG_EQ_TOL(rtt->GetEstimate(), e, NanoSeconds(1), "Estimate not correct");
+    NS_TEST_EXPECT_MSG_EQ_TOL(rtt->GetVariation(), v, NanoSeconds(1), "Estimate not correct");
 }
 
 void
@@ -103,23 +103,20 @@ RttEstimatorTestCase::DoRun()
     Time t(Seconds(1));
     Time t2(MilliSeconds(125));
     NS_TEST_EXPECT_MSG_EQ(t2, Time::From(t.GetInteger() >> 3), "X");
-    NS_TEST_EXPECT_MSG_EQ(rtt->GetEstimate(), Time(Seconds(1)), "Incorrect initial estimate");
-    NS_TEST_EXPECT_MSG_EQ(rtt->GetVariation(), Time(Seconds(0)), "Incorrect initial variance");
+    NS_TEST_EXPECT_MSG_EQ(rtt->GetEstimate(), Seconds(1), "Incorrect initial estimate");
+    NS_TEST_EXPECT_MSG_EQ(rtt->GetVariation(), Seconds(0), "Incorrect initial variance");
     NS_TEST_EXPECT_MSG_EQ(rtt->GetNSamples(), 0, "Incorrect initial estimate");
 
     // CheckValues (rtt, measurement, new estimate, new variance);
     // Initial value:  SRTT <- measurement; RTTVAR <- measurement/2
-    CheckValues(rtt, Time(Seconds(1)), Time(Seconds(1)), Time(MilliSeconds(500)));
+    CheckValues(rtt, Seconds(1), Seconds(1), MilliSeconds(500));
     // Subsequent values:  according to RFC 6298
-    CheckValues(rtt, Time(MilliSeconds(1200)), Time(MilliSeconds(1025)), Time(MilliSeconds(425)));
+    CheckValues(rtt, MilliSeconds(1200), MilliSeconds(1025), MilliSeconds(425));
     Ptr<RttEstimator> copy = rtt->Copy();
-    CheckValues(rtt, Time(MilliSeconds(900)), Time(MicroSeconds(1009375)), Time(MilliSeconds(350)));
+    CheckValues(rtt, MilliSeconds(900), MicroSeconds(1009375), MilliSeconds(350));
 
     // Check behavior of copy; should have inherited state
-    CheckValues(copy,
-                Time(MilliSeconds(900)),
-                Time(MicroSeconds(1009375)),
-                Time(MilliSeconds(350)));
+    CheckValues(copy, MilliSeconds(900), MicroSeconds(1009375), MilliSeconds(350));
 
     // Floating point arithmetic due to alpha and beta settings
     rtt->Reset();
@@ -127,15 +124,9 @@ RttEstimatorTestCase::DoRun()
     NS_TEST_EXPECT_MSG_EQ(ok, true, "Attribute should be settable");
     ok = rtt->SetAttributeFailSafe("Beta", DoubleValue(0.1));
     NS_TEST_EXPECT_MSG_EQ(ok, true, "Attribute should be settable");
-    CheckValuesWithTolerance(rtt, Time(Seconds(1.2)), Time(Seconds(1.2)), Time(Seconds(0.6)));
-    CheckValuesWithTolerance(rtt,
-                             Time(MilliSeconds(950)),
-                             Time(MilliSeconds(1175)),
-                             Time(MilliSeconds(565)));
-    CheckValuesWithTolerance(rtt,
-                             Time(MilliSeconds(1400)),
-                             Time(MicroSeconds(1197500)),
-                             Time(MilliSeconds(531)));
+    CheckValuesWithTolerance(rtt, Seconds(1.2), Seconds(1.2), Seconds(0.6));
+    CheckValuesWithTolerance(rtt, MilliSeconds(950), MilliSeconds(1175), MilliSeconds(565));
+    CheckValuesWithTolerance(rtt, MilliSeconds(1400), MicroSeconds(1197500), MilliSeconds(531));
 
     // Check boundary values; 0 will not update, 1 will use most recent value
     rtt->Reset();
@@ -143,22 +134,22 @@ RttEstimatorTestCase::DoRun()
     NS_TEST_EXPECT_MSG_EQ(ok, true, "Attribute should be settable");
     ok = rtt->SetAttributeFailSafe("Beta", DoubleValue(0));
     NS_TEST_EXPECT_MSG_EQ(ok, true, "Attribute should be settable");
-    CheckValues(rtt, Time(Seconds(1)), Time(Seconds(1)), Time(MilliSeconds(500)));
-    CheckValues(rtt, Time(Seconds(2)), Time(Seconds(1)), Time(MilliSeconds(500)));
-    CheckValues(rtt, Time(Seconds(3)), Time(Seconds(1)), Time(MilliSeconds(500)));
+    CheckValues(rtt, Seconds(1), Seconds(1), MilliSeconds(500));
+    CheckValues(rtt, Seconds(2), Seconds(1), MilliSeconds(500));
+    CheckValues(rtt, Seconds(3), Seconds(1), MilliSeconds(500));
     rtt->Reset();
     ok = rtt->SetAttributeFailSafe("Alpha", DoubleValue(1));
     NS_TEST_EXPECT_MSG_EQ(ok, true, "Attribute should be settable");
     ok = rtt->SetAttributeFailSafe("Beta", DoubleValue(1));
     NS_TEST_EXPECT_MSG_EQ(ok, true, "Attribute should be settable");
-    CheckValues(rtt, Time(Seconds(1)), Time(Seconds(1)), Time(MilliSeconds(500)));
-    CheckValues(rtt, Time(Seconds(2.5)), Time(Seconds(2.5)), Time(Seconds(1.5)));
-    CheckValues(rtt, Time(Seconds(7)), Time(Seconds(7)), Time(Seconds(4.5)));
+    CheckValues(rtt, Seconds(1), Seconds(1), MilliSeconds(500));
+    CheckValues(rtt, Seconds(2.5), Seconds(2.5), Seconds(1.5));
+    CheckValues(rtt, Seconds(7), Seconds(7), Seconds(4.5));
 
     // recheck initial values
     rtt->Reset();
-    NS_TEST_EXPECT_MSG_EQ(rtt->GetEstimate(), Time(Seconds(1)), "Incorrect initial estimate");
-    NS_TEST_EXPECT_MSG_EQ(rtt->GetVariation(), Time(Seconds(0)), "Incorrect initial variation");
+    NS_TEST_EXPECT_MSG_EQ(rtt->GetEstimate(), Seconds(1), "Incorrect initial estimate");
+    NS_TEST_EXPECT_MSG_EQ(rtt->GetVariation(), Seconds(0), "Incorrect initial variation");
     NS_TEST_EXPECT_MSG_EQ(rtt->GetNSamples(), 0, "Incorrect initial estimate");
 }
 

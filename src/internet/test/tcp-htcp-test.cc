@@ -114,13 +114,13 @@ TcpHtcpIncrementTest::DoRun()
                         cong,
                         m_state,
                         m_segmentsAcked,
-                        Time(ns3::MilliSeconds(80)));
+                        MilliSeconds(80));
     Simulator::Schedule(Time(m_secondAck),
                         &TcpHtcp::PktsAcked,
                         cong,
                         m_state,
                         m_segmentsAcked,
-                        Time(ns3::MilliSeconds(100)));
+                        MilliSeconds(100));
 
     Simulator::Run();
     NS_LOG_DEBUG("Simulation ran for the scheduled events");

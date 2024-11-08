@@ -811,7 +811,7 @@ FqCoDelQueueDiscECNMarking::DequeueWithDelay(Ptr<FqCoDelQueueDisc> queue,
 {
     for (uint32_t i = 0; i < nPkt; i++)
     {
-        Simulator::Schedule(Time(Seconds((i + 1) * delay)),
+        Simulator::Schedule(Seconds((i + 1) * delay),
                             &FqCoDelQueueDiscECNMarking::Dequeue,
                             this,
                             queue,
@@ -847,7 +847,7 @@ FqCoDelQueueDiscECNMarking::DoRun()
     hdr.SetEcn(Ipv4Header::ECN_ECT0);
 
     // Add 20 ECT0 (ECN capable) packets from the first flow
-    Simulator::Schedule(Time(Seconds(0)),
+    Simulator::Schedule(Seconds(0),
                         &FqCoDelQueueDiscECNMarking::AddPacket,
                         this,
                         queueDisc,
@@ -858,7 +858,7 @@ FqCoDelQueueDiscECNMarking::DoRun()
 
     // Add 20 ECT0 (ECN capable) packets from second flow
     hdr.SetDestination(Ipv4Address("10.10.1.10"));
-    Simulator::Schedule(Time(Seconds(0)),
+    Simulator::Schedule(Seconds(0),
                         &FqCoDelQueueDiscECNMarking::AddPacket,
                         this,
                         queueDisc,
@@ -869,7 +869,7 @@ FqCoDelQueueDiscECNMarking::DoRun()
 
     // Add 20 ECT0 (ECN capable) packets from third flow
     hdr.SetDestination(Ipv4Address("10.10.1.20"));
-    Simulator::Schedule(Time(Seconds(0)),
+    Simulator::Schedule(Seconds(0),
                         &FqCoDelQueueDiscECNMarking::AddPacket,
                         this,
                         queueDisc,
@@ -881,7 +881,7 @@ FqCoDelQueueDiscECNMarking::DoRun()
     // Add 20 NotECT packets from fourth flow
     hdr.SetDestination(Ipv4Address("10.10.1.30"));
     hdr.SetEcn(Ipv4Header::ECN_NotECT);
-    Simulator::Schedule(Time(Seconds(0)),
+    Simulator::Schedule(Seconds(0),
                         &FqCoDelQueueDiscECNMarking::AddPacket,
                         this,
                         queueDisc,
@@ -892,7 +892,7 @@ FqCoDelQueueDiscECNMarking::DoRun()
 
     // Add 20 NotECT packets from fifth flow
     hdr.SetDestination(Ipv4Address("10.10.1.40"));
-    Simulator::Schedule(Time(Seconds(0)),
+    Simulator::Schedule(Seconds(0),
                         &FqCoDelQueueDiscECNMarking::AddPacket,
                         this,
                         queueDisc,
@@ -1028,7 +1028,7 @@ FqCoDelQueueDiscECNMarking::DoRun()
     // Add 20 ECT0 (ECN capable) packets from first flow
     hdr.SetDestination(Ipv4Address("10.10.1.2"));
     hdr.SetEcn(Ipv4Header::ECN_ECT0);
-    Simulator::Schedule(Time(Seconds(0)),
+    Simulator::Schedule(Seconds(0),
                         &FqCoDelQueueDiscECNMarking::AddPacket,
                         this,
                         queueDisc,
@@ -1039,7 +1039,7 @@ FqCoDelQueueDiscECNMarking::DoRun()
 
     // Add 20 ECT0 (ECN capable) packets from second flow
     hdr.SetDestination(Ipv4Address("10.10.1.10"));
-    Simulator::Schedule(Time(Seconds(0)),
+    Simulator::Schedule(Seconds(0),
                         &FqCoDelQueueDiscECNMarking::AddPacket,
                         this,
                         queueDisc,
@@ -1050,7 +1050,7 @@ FqCoDelQueueDiscECNMarking::DoRun()
 
     // Add 20 ECT0 (ECN capable) packets from third flow
     hdr.SetDestination(Ipv4Address("10.10.1.20"));
-    Simulator::Schedule(Time(Seconds(0)),
+    Simulator::Schedule(Seconds(0),
                         &FqCoDelQueueDiscECNMarking::AddPacket,
                         this,
                         queueDisc,
@@ -1062,7 +1062,7 @@ FqCoDelQueueDiscECNMarking::DoRun()
     // Add 20 NotECT packets from fourth flow
     hdr.SetDestination(Ipv4Address("10.10.1.30"));
     hdr.SetEcn(Ipv4Header::ECN_NotECT);
-    Simulator::Schedule(Time(Seconds(0)),
+    Simulator::Schedule(Seconds(0),
                         &FqCoDelQueueDiscECNMarking::AddPacket,
                         this,
                         queueDisc,
@@ -1073,7 +1073,7 @@ FqCoDelQueueDiscECNMarking::DoRun()
 
     // Add 20 NotECT packets from fifth flow
     hdr.SetDestination(Ipv4Address("10.10.1.40"));
-    Simulator::Schedule(Time(Seconds(0)),
+    Simulator::Schedule(Seconds(0),
                         &FqCoDelQueueDiscECNMarking::AddPacket,
                         this,
                         queueDisc,
@@ -1189,7 +1189,7 @@ FqCoDelQueueDiscECNMarking::DoRun()
     // Add 20 ECT0 (ECN capable) packets from first flow
     hdr.SetDestination(Ipv4Address("10.10.1.2"));
     hdr.SetEcn(Ipv4Header::ECN_ECT0);
-    Simulator::Schedule(Time(Seconds(0)),
+    Simulator::Schedule(Seconds(0),
                         &FqCoDelQueueDiscECNMarking::AddPacket,
                         this,
                         queueDisc,
@@ -1200,7 +1200,7 @@ FqCoDelQueueDiscECNMarking::DoRun()
 
     // Add 20 ECT0 (ECN capable) packets from second flow
     hdr.SetDestination(Ipv4Address("10.10.1.10"));
-    Simulator::Schedule(Time(Seconds(0)),
+    Simulator::Schedule(Seconds(0),
                         &FqCoDelQueueDiscECNMarking::AddPacket,
                         this,
                         queueDisc,
@@ -1211,7 +1211,7 @@ FqCoDelQueueDiscECNMarking::DoRun()
 
     // Add 20 ECT0 (ECN capable) packets from third flow
     hdr.SetDestination(Ipv4Address("10.10.1.20"));
-    Simulator::Schedule(Time(Seconds(0)),
+    Simulator::Schedule(Seconds(0),
                         &FqCoDelQueueDiscECNMarking::AddPacket,
                         this,
                         queueDisc,
@@ -1223,7 +1223,7 @@ FqCoDelQueueDiscECNMarking::DoRun()
     // Add 20 NotECT packets from fourth flow
     hdr.SetDestination(Ipv4Address("10.10.1.30"));
     hdr.SetEcn(Ipv4Header::ECN_NotECT);
-    Simulator::Schedule(Time(Seconds(0)),
+    Simulator::Schedule(Seconds(0),
                         &FqCoDelQueueDiscECNMarking::AddPacket,
                         this,
                         queueDisc,
@@ -1234,7 +1234,7 @@ FqCoDelQueueDiscECNMarking::DoRun()
 
     // Add 20 NotECT packets from fifth flow
     hdr.SetDestination(Ipv4Address("10.10.1.40"));
-    Simulator::Schedule(Time(Seconds(0)),
+    Simulator::Schedule(Seconds(0),
                         &FqCoDelQueueDiscECNMarking::AddPacket,
                         this,
                         queueDisc,
@@ -1557,7 +1557,7 @@ FqCoDelQueueDiscL4sMode::AddPacketWithDelay(Ptr<FqCoDelQueueDisc> queue,
 {
     for (uint32_t i = 0; i < nPkt; i++)
     {
-        Simulator::Schedule(Time(Seconds((i + 1) * delay)),
+        Simulator::Schedule(Seconds((i + 1) * delay),
                             &FqCoDelQueueDiscL4sMode::AddPacket,
                             this,
                             queue,
@@ -1580,7 +1580,7 @@ FqCoDelQueueDiscL4sMode::DequeueWithDelay(Ptr<FqCoDelQueueDisc> queue, double de
 {
     for (uint32_t i = 0; i < nPkt; i++)
     {
-        Simulator::Schedule(Time(Seconds((i + 1) * delay)),
+        Simulator::Schedule(Seconds((i + 1) * delay),
                             &FqCoDelQueueDiscL4sMode::Dequeue,
                             this,
                             queue,
@@ -1620,7 +1620,7 @@ FqCoDelQueueDiscL4sMode::DoRun()
     // Add 70 ECT1 (ECN capable) packets from the first flow
     // Set delay = 0.5ms
     double delay = 0.0005;
-    Simulator::Schedule(Time(Seconds(0)),
+    Simulator::Schedule(Seconds(0),
                         &FqCoDelQueueDiscL4sMode::AddPacketWithDelay,
                         this,
                         queueDisc,
@@ -1631,7 +1631,7 @@ FqCoDelQueueDiscL4sMode::DoRun()
     // Add 70 ECT0 (ECN capable) packets from second flow
     hdr.SetEcn(Ipv4Header::ECN_ECT0);
     hdr.SetDestination(Ipv4Address("10.10.1.10"));
-    Simulator::Schedule(Time(Seconds(0)),
+    Simulator::Schedule(Seconds(0),
                         &FqCoDelQueueDiscL4sMode::AddPacketWithDelay,
                         this,
                         queueDisc,
@@ -1696,13 +1696,13 @@ FqCoDelQueueDiscL4sMode::DoRun()
     // Add 70 ECT1 (ECN capable) packets from the first flow
     // Set delay = 1ms
     delay = 0.001;
-    Simulator::Schedule(Time(Seconds(0.0005)),
+    Simulator::Schedule(Seconds(0.0005),
                         &FqCoDelQueueDiscL4sMode::AddPacket,
                         this,
                         queueDisc,
                         hdr,
                         1);
-    Simulator::Schedule(Time(Seconds(0.0005)),
+    Simulator::Schedule(Seconds(0.0005),
                         &FqCoDelQueueDiscL4sMode::AddPacketWithDelay,
                         this,
                         queueDisc,
@@ -1712,7 +1712,7 @@ FqCoDelQueueDiscL4sMode::DoRun()
 
     // Add 70 ECT0 (ECN capable) packets from first flow
     hdr.SetEcn(Ipv4Header::ECN_ECT0);
-    Simulator::Schedule(Time(Seconds(0)),
+    Simulator::Schedule(Seconds(0),
                         &FqCoDelQueueDiscL4sMode::AddPacketWithDelay,
                         this,
                         queueDisc,

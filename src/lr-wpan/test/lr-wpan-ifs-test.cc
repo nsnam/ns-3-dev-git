@@ -284,7 +284,7 @@ LrWpanDataIfsTestCase::DoRun()
     // SIFS = 12 symbols (192 Microseconds on a 2.4Ghz O-QPSK PHY)
     ifsSize = m_endIfs - m_lastTxTime;
     NS_TEST_EXPECT_MSG_EQ(ifsSize,
-                          Time(MicroSeconds(192)),
+                          MicroSeconds(192),
                           "Wrong Short InterFrame Space (SIFS) Size after dataframe Tx");
     std::cout << "----------------------------------\n";
 
@@ -306,7 +306,7 @@ LrWpanDataIfsTestCase::DoRun()
     // LIFS = 40 symbols (640 Microseconds on a 2.4Ghz O-QPSK PHY)
     ifsSize = m_endIfs - m_lastTxTime;
     NS_TEST_EXPECT_MSG_EQ(ifsSize,
-                          Time(MicroSeconds(640)),
+                          MicroSeconds(640),
                           "Wrong Long InterFrame Space (LIFS) Size after dataframe Tx");
     std::cout << "----------------------------------\n";
 
@@ -329,7 +329,7 @@ LrWpanDataIfsTestCase::DoRun()
     // SIFS = 12 symbols (192 Microseconds on a 2.4Ghz O-QPSK PHY)
     ifsSize = m_endIfs - m_ackRxTime;
     NS_TEST_EXPECT_MSG_EQ(ifsSize,
-                          Time(MicroSeconds(192)),
+                          MicroSeconds(192),
                           "Wrong Short InterFrame Space (SIFS) Size after ACK Rx");
     std::cout << "----------------------------------\n";
 
@@ -352,7 +352,7 @@ LrWpanDataIfsTestCase::DoRun()
     // LIFS = 40 symbols (640 Microseconds on a 2.4Ghz O-QPSK PHY)
     ifsSize = m_endIfs - m_ackRxTime;
     NS_TEST_EXPECT_MSG_EQ(ifsSize,
-                          Time(MicroSeconds(640)),
+                          MicroSeconds(640),
                           "Wrong Long InterFrame Space (LIFS) Size after ACK Rx");
     std::cout << "----------------------------------\n";
 

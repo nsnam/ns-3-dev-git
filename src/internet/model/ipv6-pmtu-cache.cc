@@ -30,7 +30,7 @@ Ipv6PmtuCache::GetTypeId()
                 "Validity time for a Path MTU entry. Default is 10 minutes, minimum is 5 minutes.",
                 TimeValue(Seconds(60 * 10)),
                 MakeTimeAccessor(&Ipv6PmtuCache::m_validityTime),
-                MakeTimeChecker(Time(Seconds(60 * 5))));
+                MakeTimeChecker(Seconds(60 * 5)));
     return tid;
 }
 
