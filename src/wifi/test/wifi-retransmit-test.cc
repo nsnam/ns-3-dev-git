@@ -66,6 +66,11 @@ NS_LOG_COMPONENT_DEFINE("WifiRetransmitTest");
  *
  * In case of multi-link devices, the first TXOP is carried out on link 0 and the second TXOP on
  * link 1. It is checked that QSRC and CW are updated on the link on which the TXOP is carried out.
+ *
+ * The TX width of transmitted frames is also checked, considering that the AP operates on a
+ * 160 MHz channel and the non-AP STA does not support 160 MHz operations (hence the AP will use
+ * its primary80 channel to transmit to the non-AP STA). In case of multi-link devices, the second
+ * link is operated on a 40 MHz channel.
  */
 class WifiRetransmitTest : public TestCase
 {
@@ -190,12 +195,12 @@ WifiRetransmitTest::DoSetup()
 
     SpectrumWifiPhyHelper phy(m_nLinks);
     phy.SetChannel(CreateObject<MultiModelSpectrumChannel>());
-    // use default 20 MHz channel in 5 GHz band
-    phy.Set(0, "ChannelSettings", StringValue("{0, 20, BAND_5GHZ, 0}"));
+    // use default 80 MHz channel in 5 GHz band for the non-AP STA
+    phy.Set(0, "ChannelSettings", StringValue("{0, 80, BAND_5GHZ, 0}"));
     if (m_nLinks > 1)
     {
-        // use default 20 MHz channel in 6 GHz band
-        phy.Set(1, "ChannelSettings", StringValue("{0, 20, BAND_6GHZ, 0}"));
+        // use default 40 MHz channel in 6 GHz band
+        phy.Set(1, "ChannelSettings", StringValue("{0, 40, BAND_6GHZ, 0}"));
     }
 
     Config::SetDefault("ns3::WifiRemoteStationManager::RtsCtsThreshold",
@@ -209,6 +214,7 @@ WifiRetransmitTest::DoSetup()
 
     WifiHelper wifi;
     wifi.SetStandard(m_nLinks == 1 ? WIFI_STANDARD_80211ax : WIFI_STANDARD_80211be);
+    wifi.ConfigVhtOptions("Support160MHzOperation", BooleanValue(false));
     wifi.SetRemoteStationManager("ns3::ConstantRateWifiManager",
                                  "DataMode",
                                  WifiModeValue(HePhy::GetHeMcs8()),
@@ -220,6 +226,10 @@ WifiRetransmitTest::DoSetup()
 
     NetDeviceContainer staDevice = wifi.Install(phy, mac, wifiStaNode);
     m_staMac = StaticCast<StaWifiMac>(StaticCast<WifiNetDevice>(staDevice.Get(0))->GetMac());
+
+    wifi.ConfigVhtOptions("Support160MHzOperation", BooleanValue(true));
+    // use default 160 MHz channel in 5 GHz band for the AP
+    phy.Set(0, "ChannelSettings", StringValue("{0, 160, BAND_5GHZ, 0}"));
 
     mac.SetType("ns3::ApWifiMac");
     mac.SetEdca(AC_BE,
@@ -381,6 +391,16 @@ WifiRetransmitTest::Transmit(uint8_t phyId,
     if (printAndQuit)
     {
         return;
+    }
+
+    // check width of transmitted frames, except CTS because we do not support yet static/dynamic
+    // bandwidth operation
+    const auto expectedWidth = (phyId == 0 ? 80 : 40);
+    if (!hdr.IsCts())
+    {
+        NS_TEST_EXPECT_MSG_EQ(txVector.GetChannelWidth(),
+                              expectedWidth,
+                              "Unexpected width for " << hdr.GetTypeString());
     }
 
     if (m_eventIt != m_events.cend())
@@ -654,7 +674,7 @@ WifiRetransmitTest::DoRun()
                         m_staMac->GetDevice()->GetNode(),
                         GetApplication(2, m_pktSize));
 
-    Simulator::Stop(Seconds(1));
+    Simulator::Stop(Seconds(0.550));
     Simulator::Run();
 
     NS_TEST_EXPECT_MSG_EQ((m_eventIt == m_events.cend()), true, "Not all events took place");

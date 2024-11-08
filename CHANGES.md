@@ -31,6 +31,8 @@ This file is a best-effort approach to solving this issue; we will do our best b
 
 ### Changed behavior
 
+* (wifi) Normal Ack, BlockAck and BlockAckReq frames are transmitted, if appropriate, as non-HT duplicate PPDUs on a bandwidth matching that of the data frame transmitted in the same frame exchange sequence.
+
 ## Changes from ns-3.43 to ns-3.44
 
 ### New API

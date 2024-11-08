@@ -1508,7 +1508,7 @@ Bug2222TestCase::DoRun()
  *
  * The scenario considers a UDP transmission between a 40 MHz 802.11ac station and a
  * 40 MHz 802.11ac access point. All transmission parameters are checked so as
- * to ensure that only 2 {starting frequency, channelWidth, Number of subbands
+ * to ensure that only 3 {starting frequency, channelWidth, Number of subbands
  * in SpectrumModel, modulation type} tuples are used.
  *
  * See \bugid{2843}
@@ -1688,33 +1688,48 @@ Bug2843TestCase::DoRun()
     // {starting frequency, channelWidth, Number of subbands in SpectrumModel, modulation type}
     // tuples
     std::size_t numberTuples = m_distinctTuples.size();
-    NS_TEST_ASSERT_MSG_EQ(numberTuples, 2, "Only two distinct tuples expected");
-    NS_TEST_ASSERT_MSG_EQ(std::get<0>(m_distinctTuples[0]) - Hz_u{20e6},
+    NS_TEST_ASSERT_MSG_EQ(numberTuples, 3, "Only three distinct tuples expected");
+    NS_TEST_EXPECT_MSG_EQ(std::get<0>(m_distinctTuples[0]) - Hz_u{20e6},
                           std::get<0>(m_distinctTuples[1]),
                           "The starting frequency of the first tuple should be shifted 20 MHz to "
                           "the right wrt second tuple");
     // Note that the first tuple should the one initiated by the beacon, i.e. non-HT OFDM (20 MHz)
-    NS_TEST_ASSERT_MSG_EQ(std::get<1>(m_distinctTuples[0]),
+    NS_TEST_EXPECT_MSG_EQ(std::get<1>(m_distinctTuples[0]),
                           MHz_u{20},
                           "First tuple's channel width should be 20 MHz");
-    NS_TEST_ASSERT_MSG_EQ(std::get<2>(m_distinctTuples[0]),
+    NS_TEST_EXPECT_MSG_EQ(std::get<2>(m_distinctTuples[0]),
                           193,
                           "First tuple should have 193 subbands (64+DC, 20MHz+DC, inband and 64*2 "
                           "out-of-band, 20MHz on each side)");
-    NS_TEST_ASSERT_MSG_EQ(std::get<3>(m_distinctTuples[0]),
+    NS_TEST_EXPECT_MSG_EQ(std::get<3>(m_distinctTuples[0]),
                           WifiModulationClass::WIFI_MOD_CLASS_OFDM,
                           "First tuple should be OFDM");
-    // Second tuple
-    NS_TEST_ASSERT_MSG_EQ(std::get<1>(m_distinctTuples[1]),
+    // Second tuple: data frames, VHT (40 MHz)
+    NS_TEST_EXPECT_MSG_EQ(std::get<1>(m_distinctTuples[1]),
                           channelWidth,
                           "Second tuple's channel width should be 40 MHz");
-    NS_TEST_ASSERT_MSG_EQ(std::get<2>(m_distinctTuples[1]),
+    NS_TEST_EXPECT_MSG_EQ(std::get<2>(m_distinctTuples[1]),
                           385,
                           "Second tuple should have 385 subbands (128+DC, 40MHz+DC, inband and "
                           "128*2 out-of-band, 40MHz on each side)");
-    NS_TEST_ASSERT_MSG_EQ(std::get<3>(m_distinctTuples[1]),
+    NS_TEST_EXPECT_MSG_EQ(std::get<3>(m_distinctTuples[1]),
                           WifiModulationClass::WIFI_MOD_CLASS_VHT,
                           "Second tuple should be VHT_OFDM");
+    // Third tuple: control response frames, non-HT (OFDM) duplicate (40 MHz)
+    NS_TEST_EXPECT_MSG_EQ(std::get<0>(m_distinctTuples[1]),
+                          std::get<0>(m_distinctTuples[2]),
+                          "The starting frequency of the third tuple should be the same as the "
+                          "second tuple");
+    NS_TEST_EXPECT_MSG_EQ(std::get<1>(m_distinctTuples[2]),
+                          channelWidth,
+                          "Third tuple's channel width should be 40 MHz");
+    NS_TEST_EXPECT_MSG_EQ(std::get<2>(m_distinctTuples[2]),
+                          385,
+                          "Third tuple should have 385 subbands (128+DC, 40MHz+DC, inband and "
+                          "128*2 out-of-band, 40MHz on each side)");
+    NS_TEST_EXPECT_MSG_EQ(std::get<3>(m_distinctTuples[2]),
+                          WifiModulationClass::WIFI_MOD_CLASS_OFDM,
+                          "Third tuple should be OFDM");
 }
 
 //-----------------------------------------------------------------------------
