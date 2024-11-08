@@ -890,6 +890,16 @@ class WifiRemoteStationManager : public Object
      */
     WifiTxVector GetCtsToSelfTxVector();
     /**
+     * Adjust the TXVECTOR for a control response frame to ensure that, if appropriate, the non-HT
+     * duplicate format is used and the TX width matches that of the data frame transmitted (in case
+     * of, e.g., Ack or BlockAck) or to transmit (in case of, e.g., RTS or BlockAckReq) in the same
+     * frame exchange sequence.
+     *
+     * @param txVector the TXVECTOR to adjust
+     * @param allowedWidth the allowed width for the data frame in the same frame exchange sequence
+     */
+    void AdjustTxVectorForCtlResponse(WifiTxVector& txVector, MHz_u allowedWidth) const;
+    /**
      * Adjust the TXVECTOR for an initial Control frame to ensure that the modulation class
      * is non-HT and the rate is 6 Mbps, 12 Mbps or 24 Mbps.
      *

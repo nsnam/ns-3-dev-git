@@ -702,6 +702,32 @@ WifiRemoteStationManager::GetCtsToSelfTxVector()
                         false);
 }
 
+void
+WifiRemoteStationManager::AdjustTxVectorForCtlResponse(WifiTxVector& txVector,
+                                                       MHz_u allowedWidth) const
+{
+    NS_LOG_FUNCTION(this << txVector << allowedWidth);
+
+    auto modulation = txVector.GetModulationClass();
+
+    if (allowedWidth >= 40 &&
+        (modulation == WIFI_MOD_CLASS_DSSS || modulation == WIFI_MOD_CLASS_HR_DSSS))
+    {
+        // control frame must be sent in a non-HT duplicate PPDU because it must protect a frame
+        // being transmitted on at least 40 MHz. Change the modulation class to ERP-OFDM and the
+        // rate to 6 Mbps
+        txVector.SetMode(ErpOfdmPhy::GetErpOfdmRate6Mbps());
+        modulation = txVector.GetModulationClass();
+    }
+    // do not set allowedWidth as the TX width if the modulation class is (HR-)DSSS (allowedWidth
+    // may be 20 MHz) or allowedWidth is 22 MHz (the selected modulation class may be OFDM)
+    if (modulation != WIFI_MOD_CLASS_DSSS && modulation != WIFI_MOD_CLASS_HR_DSSS &&
+        allowedWidth != 22)
+    {
+        txVector.SetChannelWidth(allowedWidth);
+    }
+}
+
 WifiTxVector
 WifiRemoteStationManager::GetRtsTxVector(Mac48Address address, MHz_u allowedWidth)
 {
@@ -724,24 +750,8 @@ WifiRemoteStationManager::GetRtsTxVector(Mac48Address address, MHz_u allowedWidt
     {
         v = DoGetRtsTxVector(Lookup(address));
     }
-    auto modulation = v.GetModulationClass();
 
-    if (allowedWidth >= 40 &&
-        (modulation == WIFI_MOD_CLASS_DSSS || modulation == WIFI_MOD_CLASS_HR_DSSS))
-    {
-        // RTS must be sent in a non-HT duplicate PPDU because it must protect a frame being
-        // transmitted on at least 40 MHz. Change the modulation class to ERP-OFDM and the rate
-        // to 6 Mbps
-        v.SetMode(ErpOfdmPhy::GetErpOfdmRate6Mbps());
-        modulation = v.GetModulationClass();
-    }
-    // do not set allowedWidth as the TX width if the modulation class is (HR-)DSSS (allowedWidth
-    // may be >= 40 MHz) or allowedWidth is 22 MHz (the selected modulation class may be OFDM)
-    if (modulation != WIFI_MOD_CLASS_DSSS && modulation != WIFI_MOD_CLASS_HR_DSSS &&
-        allowedWidth != 22)
-    {
-        v.SetChannelWidth(allowedWidth);
-    }
+    AdjustTxVectorForCtlResponse(v, allowedWidth);
 
     return v;
 }
@@ -810,6 +820,9 @@ WifiRemoteStationManager::GetAckTxVector(Mac48Address to, const WifiTxVector& da
     v.SetChannelWidth(m_wifiPhy->GetTxBandwidth(ackMode));
     v.SetGuardInterval(GetGuardIntervalForMode(ackMode, m_wifiPhy->GetDevice()));
     v.SetNss(1);
+
+    AdjustTxVectorForCtlResponse(v, dataTxVector.GetChannelWidth());
+
     return v;
 }
 
@@ -827,6 +840,9 @@ WifiRemoteStationManager::GetBlockAckTxVector(Mac48Address to,
     v.SetChannelWidth(m_wifiPhy->GetTxBandwidth(blockAckMode));
     v.SetGuardInterval(GetGuardIntervalForMode(blockAckMode, m_wifiPhy->GetDevice()));
     v.SetNss(1);
+
+    AdjustTxVectorForCtlResponse(v, dataTxVector.GetChannelWidth());
+
     return v;
 }
 
