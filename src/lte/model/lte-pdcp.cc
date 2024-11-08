@@ -27,7 +27,7 @@ class LtePdcpSpecificLteRlcSapUser : public LteRlcSapUser
     /**
      * Constructor
      *
-     * \param pdcp PDCP
+     * @param pdcp PDCP
      */
     LtePdcpSpecificLteRlcSapUser(LtePdcp* pdcp);
 

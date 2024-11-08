@@ -17,9 +17,9 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("TimestampTestSuite");
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief TCP TimeStamp enabling Test.
+ * @brief TCP TimeStamp enabling Test.
  */
 class TimestampTestCase : public TcpGeneralTest
 {
@@ -36,8 +36,8 @@ class TimestampTestCase : public TcpGeneralTest
     };
 
     /**
-     * \brief Constructor.
-     * \param conf Test configuration.
+     * @brief Constructor.
+     * @param conf Test configuration.
      */
     TimestampTestCase(TimestampTestCase::Configuration conf);
 
@@ -191,18 +191,18 @@ TimestampTestCase::Rx(const Ptr<const Packet> p, const TcpHeader& h, SocketWho w
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief TCP TimeStamp values Test.
+ * @brief TCP TimeStamp values Test.
  */
 class TimestampValueTestCase : public TestCase
 {
   public:
     /**
-     * \brief Constructor.
-     * \param startTime Start time (Seconds).
-     * \param timeToWait Time to wait (Seconds).
-     * \param name Test description.
+     * @brief Constructor.
+     * @param startTime Start time (Seconds).
+     * @param timeToWait Time to wait (Seconds).
+     * @param name Test description.
      */
     TimestampValueTestCase(double startTime, double timeToWait, std::string name);
 
@@ -211,11 +211,11 @@ class TimestampValueTestCase : public TestCase
     void DoTeardown() override;
 
     /**
-     * \brief Perform the test checks.
+     * @brief Perform the test checks.
      */
     void Check();
     /**
-     * \brief Test initialization.
+     * @brief Test initialization.
      */
     void Init();
 
@@ -271,9 +271,9 @@ TimestampValueTestCase::Check()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief TCP TimeStamp TestSuite.
+ * @brief TCP TimeStamp TestSuite.
  */
 class TcpTimestampTestSuite : public TestSuite
 {

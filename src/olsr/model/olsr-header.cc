@@ -29,10 +29,10 @@ namespace olsr
 #define OLSR_C 0.0625
 
 ///
-/// \brief Converts a decimal number of seconds to the mantissa/exponent format.
+/// @brief Converts a decimal number of seconds to the mantissa/exponent format.
 ///
-/// \param seconds decimal number of seconds we want to convert.
-/// \return the number of seconds in mantissa/exponent format.
+/// @param seconds decimal number of seconds we want to convert.
+/// @return the number of seconds in mantissa/exponent format.
 ///
 uint8_t
 SecondsToEmf(double seconds)
@@ -72,10 +72,10 @@ SecondsToEmf(double seconds)
 }
 
 ///
-/// \brief Converts a number of seconds in the mantissa/exponent format to a decimal number.
+/// @brief Converts a number of seconds in the mantissa/exponent format to a decimal number.
 ///
-/// \param olsrFormat number of seconds in mantissa/exponent format.
-/// \return the decimal number of seconds.
+/// @param olsrFormat number of seconds in mantissa/exponent format.
+/// @return the decimal number of seconds.
 ///
 double
 EmfToSeconds(uint8_t olsrFormat)

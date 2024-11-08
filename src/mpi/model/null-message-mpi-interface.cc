@@ -8,8 +8,8 @@
  */
 
 /**
- * \file
- * \ingroup mpi
+ * @file
+ * @ingroup mpi
  * Implementation of classes ns3::NullMessageSentBuffer and ns3::NullMessageMpiInterface.
  */
 
@@ -40,9 +40,9 @@ NS_LOG_COMPONENT_DEFINE("NullMessageMpiInterface");
 NS_OBJECT_ENSURE_REGISTERED(NullMessageMpiInterface);
 
 /**
- * \ingroup mpi
+ * @ingroup mpi
  *
- * \brief Non-blocking send buffers for Null Message implementation.
+ * @brief Non-blocking send buffers for Null Message implementation.
  *
  * One buffer is allocated for each non-blocking send.
  */
@@ -53,15 +53,15 @@ class NullMessageSentBuffer
     ~NullMessageSentBuffer();
 
     /**
-     * \return pointer to sent buffer
+     * @return pointer to sent buffer
      */
     uint8_t* GetBuffer();
     /**
-     * \param buffer pointer to sent buffer
+     * @param buffer pointer to sent buffer
      */
     void SetBuffer(uint8_t* buffer);
     /**
-     * \return MPI request
+     * @return MPI request
      */
     MPI_Request* GetRequest();
 

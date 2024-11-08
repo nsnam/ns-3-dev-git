@@ -16,7 +16,7 @@ namespace ns3
 {
 
 /**
- * \ingroup traffic-control
+ * @ingroup traffic-control
  *
  * mq is a classful multi-queue aware dummy scheduler. It has as many child
  * queue discs as the number of device transmission queues. Packets are
@@ -26,20 +26,20 @@ class MqQueueDisc : public QueueDisc
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     /**
-     * \brief MqQueueDisc constructor
+     * @brief MqQueueDisc constructor
      */
     MqQueueDisc();
 
     ~MqQueueDisc() override;
 
     /**
-     * \brief Return the wake mode adopted by this queue disc.
-     * \return the wake mode adopted by this queue disc.
+     * @brief Return the wake mode adopted by this queue disc.
+     * @return the wake mode adopted by this queue disc.
      */
     WakeMode GetWakeMode() const override;
 

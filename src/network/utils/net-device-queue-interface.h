@@ -27,14 +27,14 @@ class NetDeviceQueueInterface;
 class QueueItem;
 
 /**
- * \ingroup network
- * \defgroup netdevice Network Device
+ * @ingroup network
+ * @defgroup netdevice Network Device
  */
 
 /**
- * \ingroup netdevice
+ * @ingroup netdevice
  *
- * \brief Network device transmission queue
+ * @brief Network device transmission queue
  *
  * This class stores information about a single transmission queue
  * of a network device that is exposed to queue discs. Such information
@@ -47,8 +47,8 @@ class NetDeviceQueue : public Object
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -75,8 +75,8 @@ class NetDeviceQueue : public Object
     virtual void Wake();
 
     /**
-     * \brief Get the status of the device transmission queue.
-     * \return true if the device transmission queue is stopped.
+     * @brief Get the status of the device transmission queue.
+     * @return true if the device transmission queue is stopped.
      *
      * Called by queue discs to enquire about the status of a given transmission queue.
      * This is the analogous to the netif_xmit_stopped function of the Linux kernel.
@@ -84,10 +84,10 @@ class NetDeviceQueue : public Object
     virtual bool IsStopped() const;
 
     /**
-     * \brief Notify this NetDeviceQueue that the NetDeviceQueueInterface was
+     * @brief Notify this NetDeviceQueue that the NetDeviceQueueInterface was
      *        aggregated to an object.
      *
-     * \param ndqi the NetDeviceQueueInterface.
+     * @param ndqi the NetDeviceQueueInterface.
      *
      * This NetDeviceQueue stores a pointer to the NetDevice the NetDeviceQueueInterface
      * was aggregated to.
@@ -98,8 +98,8 @@ class NetDeviceQueue : public Object
     typedef Callback<void> WakeCallback;
 
     /**
-     * \brief Set the wake callback
-     * \param cb the callback to set
+     * @brief Set the wake callback
+     * @param cb the callback to set
      *
      * Called by the traffic control layer to set the wake callback. The wake callback
      * is invoked by the device whenever it is needed to "wake" the upper layers (i.e.,
@@ -110,40 +110,40 @@ class NetDeviceQueue : public Object
     virtual void SetWakeCallback(WakeCallback cb);
 
     /**
-     * \brief Called by the netdevice to report the number of bytes queued to the device queue
-     * \param bytes number of bytes queued to the device queue
+     * @brief Called by the netdevice to report the number of bytes queued to the device queue
+     * @param bytes number of bytes queued to the device queue
      */
     virtual void NotifyQueuedBytes(uint32_t bytes);
 
     /**
-     * \brief Called by the netdevice to report the number of bytes it is going to transmit
-     * \param bytes number of bytes the device is going to transmit
+     * @brief Called by the netdevice to report the number of bytes it is going to transmit
+     * @param bytes number of bytes the device is going to transmit
      */
     virtual void NotifyTransmittedBytes(uint32_t bytes);
 
     /**
-     * \brief Reset queue limits state
+     * @brief Reset queue limits state
      */
     void ResetQueueLimits();
 
     /**
-     * \brief Set queue limits to this queue
-     * \param ql the queue limits associated to this queue
+     * @brief Set queue limits to this queue
+     * @param ql the queue limits associated to this queue
      */
     void SetQueueLimits(Ptr<QueueLimits> ql);
 
     /**
-     * \brief Get queue limits to this queue
-     * \return the queue limits associated to this queue
+     * @brief Get queue limits to this queue
+     * @return the queue limits associated to this queue
      */
     Ptr<QueueLimits> GetQueueLimits();
 
     /**
-     * \brief Perform the actions required by flow control and dynamic queue
+     * @brief Perform the actions required by flow control and dynamic queue
      *        limits when a packet is enqueued in the queue of a netdevice
      *
-     * \param queue the device queue
-     * \param item the enqueued packet
+     * @param queue the device queue
+     * @param item the enqueued packet
      *
      * This method must be connected to the "Enqueue" traced callback of a Queue
      * object (through a bound callback) in order for a netdevice to support
@@ -153,12 +153,12 @@ class NetDeviceQueue : public Object
     void PacketEnqueued(QueueType* queue, Ptr<const typename QueueType::ItemType> item);
 
     /**
-     * \brief Perform the actions required by flow control and dynamic queue
+     * @brief Perform the actions required by flow control and dynamic queue
      *        limits when a packet is dequeued (or dropped after dequeue) from
      *        the queue of a netdevice
      *
-     * \param queue the device queue
-     * \param item the dequeued packet
+     * @param queue the device queue
+     * @param item the dequeued packet
      *
      * This method must be connected to the "Dequeue" traced callback of a Queue
      * object (through a bound callback) in order for
@@ -168,12 +168,12 @@ class NetDeviceQueue : public Object
     void PacketDequeued(QueueType* queue, Ptr<const typename QueueType::ItemType> item);
 
     /**
-     * \brief Perform the actions required by flow control and dynamic queue
+     * @brief Perform the actions required by flow control and dynamic queue
      *        limits when a packet is dropped before being enqueued in the queue
      *        of a netdevice (which likely indicates that the queue is full)
      *
-     * \param queue the device queue
-     * \param item the dropped packet
+     * @param queue the device queue
+     * @param item the dropped packet
      *
      * This method must be connected to the "DropBeforeEnqueue" traced callback
      * of a Queue object (through a bound callback) in order for a netdevice to
@@ -183,12 +183,12 @@ class NetDeviceQueue : public Object
     void PacketDiscarded(QueueType* queue, Ptr<const typename QueueType::ItemType> item);
 
     /**
-     * \brief Connect the traced callbacks of a queue to the methods providing support
+     * @brief Connect the traced callbacks of a queue to the methods providing support
      *        for flow control and dynamic queue limits. A queue can be any object providing:
      *        - "Enqueue", "Dequeue", "DropBeforeEnqueue" traces
      *        - an ItemType typedef for the type of stored items
      *        - GetCurrentSize and GetMaxSize methods
-     * \param queue the queue
+     * @param queue the queue
      */
     template <typename QueueType>
     void ConnectQueueTraces(Ptr<QueueType> queue);
@@ -204,9 +204,9 @@ class NetDeviceQueue : public Object
 };
 
 /**
- * \ingroup netdevice
+ * @ingroup netdevice
  *
- * \brief Network device transmission queue interface
+ * @brief Network device transmission queue interface
  *
  * This interface is used by the traffic control layer and by the aggregated
  * device to access the transmission queues of the device. Additionally, through
@@ -220,36 +220,36 @@ class NetDeviceQueueInterface : public Object
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
     /**
-     * \brief Constructor
+     * @brief Constructor
      */
     NetDeviceQueueInterface();
     ~NetDeviceQueueInterface() override;
 
     /**
-     * \brief Get the i-th transmission queue of the device.
+     * @brief Get the i-th transmission queue of the device.
      *
-     * \param i the index of the requested queue.
-     * \return the i-th transmission queue of the device.
+     * @param i the index of the requested queue.
+     * @return the i-th transmission queue of the device.
      *
      * The index of the first transmission queue is zero.
      */
     Ptr<NetDeviceQueue> GetTxQueue(std::size_t i) const;
 
     /**
-     * \brief Get the number of device transmission queues.
-     * \return the number of device transmission queues.
+     * @brief Get the number of device transmission queues.
+     * @return the number of device transmission queues.
      */
     std::size_t GetNTxQueues() const;
 
     /**
-     * \brief Set the type of device transmission queues to create.
-     * \param type type of device transmission queues to create.
+     * @brief Set the type of device transmission queues to create.
+     * @param type type of device transmission queues to create.
      *
      * This method is called when the TxQueuesType attribute is set to create
      * the corresponding type of device transmission queues. It cannot be
@@ -258,8 +258,8 @@ class NetDeviceQueueInterface : public Object
     void SetTxQueuesType(TypeId type);
 
     /**
-     * \brief Set the number of device transmission queues to create.
-     * \param numTxQueues number of device transmission queues to create.
+     * @brief Set the number of device transmission queues to create.
+     * @param numTxQueues number of device transmission queues to create.
      *
      * This method is called when the NTxQueues attribute is set to create
      * the corresponding number of device transmission queues. It cannot be
@@ -271,8 +271,8 @@ class NetDeviceQueueInterface : public Object
     typedef std::function<std::size_t(Ptr<QueueItem>)> SelectQueueCallback;
 
     /**
-     * \brief Set the select queue callback.
-     * \param cb the callback to set.
+     * @brief Set the select queue callback.
+     * @param cb the callback to set.
      *
      * This method is called to set the select queue callback, i.e., the
      * method used to select a device transmission queue for a given packet.
@@ -280,8 +280,8 @@ class NetDeviceQueueInterface : public Object
     void SetSelectQueueCallback(SelectQueueCallback cb);
 
     /**
-     * \brief Get the select queue callback.
-     * \return the select queue callback.
+     * @brief Get the select queue callback.
+     * @return the select queue callback.
      *
      * Called by the traffic control layer to get the select queue callback set
      * by a multi-queue device.
@@ -290,11 +290,11 @@ class NetDeviceQueueInterface : public Object
 
   protected:
     /**
-     * \brief Dispose of the object
+     * @brief Dispose of the object
      */
     void DoDispose() override;
     /**
-     * \brief Notify that an object was aggregated
+     * @brief Notify that an object was aggregated
      */
     void NotifyNewAggregate() override;
 

@@ -14,8 +14,8 @@
 #include <list>
 
 /**
- * \file
- * \ingroup tracing
+ * @file
+ * @ingroup tracing
  * ns3::TracedCallback declaration and template implementation.
  */
 
@@ -23,8 +23,8 @@ namespace ns3
 {
 
 /**
- * \ingroup tracing
- * \brief Forward calls to a chain of Callback
+ * @ingroup tracing
+ * @brief Forward calls to a chain of Callback
  *
  * A TracedCallback has almost exactly the same API as a normal
  * Callback but instead of forwarding calls to a single function
@@ -36,7 +36,7 @@ namespace ns3
  * calling the \c operator() form with the appropriate
  * number of arguments.
  *
- * \tparam Ts \explicit Types of the functor arguments.
+ * @tparam Ts \explicit Types of the functor arguments.
  */
 template <typename... Ts>
 class TracedCallback
@@ -47,7 +47,7 @@ class TracedCallback
     /**
      * Append a Callback to the chain (without a context).
      *
-     * \param [in] callback Callback to add to chain.
+     * @param [in] callback Callback to add to chain.
      */
     void ConnectWithoutContext(const CallbackBase& callback);
     /**
@@ -56,39 +56,39 @@ class TracedCallback
      * The context string will be provided as the first argument
      * to the Callback.
      *
-     * \param [in] callback Callback to add to chain.
-     * \param [in] path Context string to provide when invoking the Callback.
+     * @param [in] callback Callback to add to chain.
+     * @param [in] path Context string to provide when invoking the Callback.
      */
     void Connect(const CallbackBase& callback, std::string path);
     /**
      * Remove from the chain a Callback which was connected without a context.
      *
-     * \param [in] callback Callback to remove from the chain.
+     * @param [in] callback Callback to remove from the chain.
      */
     void DisconnectWithoutContext(const CallbackBase& callback);
     /**
      * Remove from the chain a Callback which was connected with a context.
      *
-     * \param [in] callback Callback to remove from the chain.
-     * \param [in] path Context path which was used to connect the Callback.
+     * @param [in] callback Callback to remove from the chain.
+     * @param [in] path Context path which was used to connect the Callback.
      */
     void Disconnect(const CallbackBase& callback, std::string path);
     /**
-     * \brief Functor which invokes the chain of Callbacks.
-     * \tparam Ts \deduced Types of the functor arguments.
-     * \param [in] args The arguments to the functor
+     * @brief Functor which invokes the chain of Callbacks.
+     * @tparam Ts \deduced Types of the functor arguments.
+     * @param [in] args The arguments to the functor
      */
     void operator()(Ts... args) const;
     /**
-     * \brief Checks if the Callbacks list is empty.
-     * \return true if the Callbacks list is empty.
+     * @brief Checks if the Callbacks list is empty.
+     * @return true if the Callbacks list is empty.
      */
     bool IsEmpty() const;
 
     /**
      *  TracedCallback signature for POD.
      *
-     * \param [in] value Value of the traced variable.
+     * @param [in] value Value of the traced variable.
      * @{
      */
     // Uint32Callback appears to be the only one used at the moment.
@@ -100,7 +100,7 @@ class TracedCallback
     /**
      * Container type for holding the chain of Callbacks.
      *
-     * \tparam Ts \deduced Types of the functor arguments.
+     * @tparam Ts \deduced Types of the functor arguments.
      */
     typedef std::list<Callback<void, Ts...>> CallbackList;
     /** The chain of Callbacks. */

@@ -25,7 +25,7 @@ class QueueDisc;
 class NetDeviceQueueInterface;
 
 /**
- * \defgroup traffic-control Traffic Control model
+ * @defgroup traffic-control Traffic Control model
  */
 
 /**
@@ -35,9 +35,9 @@ class NetDeviceQueueInterface;
  * processing packets and performing actions on them: scheduling, dropping,
  * marking, policing, etc.
  *
- * \ingroup traffic-control
+ * @ingroup traffic-control
  *
- * \brief Traffic control layer class
+ * @brief Traffic control layer class
  *
  * This object represents the main interface of the Traffic Control Module.
  * Basically, we manage both IN and OUT directions (sometimes called RX and TX,
@@ -88,19 +88,19 @@ class TrafficControlLayer : public Object
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
     /**
-     * \brief Get the type ID for the instance
-     * \return the instance TypeId
+     * @brief Get the type ID for the instance
+     * @return the instance TypeId
      */
     TypeId GetInstanceTypeId() const override;
 
     /**
-     * \brief Constructor
+     * @brief Constructor
      */
     TrafficControlLayer();
 
@@ -111,19 +111,19 @@ class TrafficControlLayer : public Object
     TrafficControlLayer& operator=(const TrafficControlLayer&) = delete;
 
     /**
-     * \brief Register an IN handler
+     * @brief Register an IN handler
      *
      * The handler will be invoked when a packet is received to pass it to
      * upper  layers.
      *
-     * \param handler the handler to register
-     * \param protocolType the type of protocol this handler is
+     * @param handler the handler to register
+     * @param protocolType the type of protocol this handler is
      *        interested in. This protocol type is a so-called
      *        EtherType, as registered here:
      *        http://standards.ieee.org/regauth/ethertype/eth.txt
      *        the value zero is interpreted as matching all
      *        protocols.
-     * \param device the device attached to this handler. If the
+     * @param device the device attached to this handler. If the
      *        value is zero, the handler is attached to all
      *        devices.
      */
@@ -135,7 +135,7 @@ class TrafficControlLayer : public Object
     typedef std::vector<Ptr<QueueDisc>> QueueDiscVector;
 
     /**
-     * \brief Collect information needed to determine how to handle packets
+     * @brief Collect information needed to determine how to handle packets
      *        destined to each of the NetDevices of this node
      *
      * Checks whether a NetDeviceQueueInterface objects is aggregated to each of
@@ -144,47 +144,47 @@ class TrafficControlLayer : public Object
     virtual void ScanDevices();
 
     /**
-     * \brief This method can be used to set the root queue disc installed on a device
+     * @brief This method can be used to set the root queue disc installed on a device
      *
-     * \param device the device on which the provided queue disc will be installed
-     * \param qDisc the queue disc to be installed as root queue disc on device
+     * @param device the device on which the provided queue disc will be installed
+     * @param qDisc the queue disc to be installed as root queue disc on device
      */
     virtual void SetRootQueueDiscOnDevice(Ptr<NetDevice> device, Ptr<QueueDisc> qDisc);
 
     /**
-     * \brief This method can be used to get the root queue disc installed on a device
+     * @brief This method can be used to get the root queue disc installed on a device
      *
-     * \param device the device on which the requested root queue disc is installed
-     * \return the root queue disc installed on the given device
+     * @param device the device on which the requested root queue disc is installed
+     * @return the root queue disc installed on the given device
      */
     virtual Ptr<QueueDisc> GetRootQueueDiscOnDevice(Ptr<NetDevice> device) const;
 
     /**
-     * \brief This method can be used to remove the root queue disc (and associated
+     * @brief This method can be used to remove the root queue disc (and associated
      *        filters, classes and queues) installed on a device
      *
-     * \param device the device on which the installed queue disc will be deleted
+     * @param device the device on which the installed queue disc will be deleted
      */
     virtual void DeleteRootQueueDiscOnDevice(Ptr<NetDevice> device);
 
     /**
-     * \brief Set node associated with this stack.
-     * \param node node to set
+     * @brief Set node associated with this stack.
+     * @param node node to set
      */
     void SetNode(Ptr<Node> node);
 
     /**
-     * \brief Called by NetDevices, incoming packet
+     * @brief Called by NetDevices, incoming packet
      *
      * After analyses and scheduling, this method will call the right handler
      * to pass the packet up in the stack.
      *
-     * \param device network device
-     * \param p the packet
-     * \param protocol next header value
-     * \param from address of the correspondent
-     * \param to address of the destination
-     * \param packetType type of the packet
+     * @param device network device
+     * @param p the packet
+     * @param protocol next header value
+     * @param from address of the correspondent
+     * @param to address of the destination
+     * @param packetType type of the packet
      */
     virtual void Receive(Ptr<NetDevice> device,
                          Ptr<const Packet> p,
@@ -193,10 +193,10 @@ class TrafficControlLayer : public Object
                          const Address& to,
                          NetDevice::PacketType packetType);
     /**
-     * \brief Called from upper layer to queue a packet for the transmission.
+     * @brief Called from upper layer to queue a packet for the transmission.
      *
-     * \param device the device the packet must be sent to
-     * \param item a queue item including a packet and additional information
+     * @param device the device the packet must be sent to
+     * @param item a queue item including a packet and additional information
      */
     virtual void Send(Ptr<NetDevice> device, Ptr<QueueDiscItem> item);
 
@@ -207,7 +207,7 @@ class TrafficControlLayer : public Object
 
   private:
     /**
-     * \brief Protocol handler entry.
+     * @brief Protocol handler entry.
      * This structure is used to demultiplex all the protocols.
      */
     struct ProtocolHandlerEntry
@@ -219,7 +219,7 @@ class TrafficControlLayer : public Object
     };
 
     /**
-     * \brief Information to store for each device
+     * @brief Information to store for each device
      */
     struct NetDeviceInfo
     {
@@ -232,14 +232,14 @@ class TrafficControlLayer : public Object
     typedef std::vector<ProtocolHandlerEntry> ProtocolHandlerList;
 
     /**
-     * \brief Required by the object map accessor
-     * \return the number of devices in the m_netDevices map
+     * @brief Required by the object map accessor
+     * @return the number of devices in the m_netDevices map
      */
     uint32_t GetNDevices() const;
     /**
-     * \brief Required by the object map accessor
-     * \param index the index of the device in the node's device list
-     * \return the root queue disc installed on the specified device
+     * @brief Required by the object map accessor
+     * @param index the index of the device in the node's device list
+     * @return the root queue disc installed on the specified device
      */
     Ptr<QueueDisc> GetRootQueueDiscOnDeviceByIndex(uint32_t index) const;
 

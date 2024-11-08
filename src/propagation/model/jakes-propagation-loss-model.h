@@ -15,9 +15,9 @@
 namespace ns3
 {
 /**
- * \ingroup propagation
+ * @ingroup propagation
  *
- * \brief a  Jakes narrowband propagation model.
+ * @brief a  Jakes narrowband propagation model.
  * Symmetrical cache for JakesProcess
  */
 
@@ -25,8 +25,8 @@ class JakesPropagationLossModel : public PropagationLossModel
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     JakesPropagationLossModel();
@@ -50,7 +50,7 @@ class JakesPropagationLossModel : public PropagationLossModel
 
     /**
      * Get the underlying RNG stream
-     * \return the RNG stream
+     * @return the RNG stream
      */
     Ptr<UniformRandomVariable> GetUniformRandomVariable() const;
 

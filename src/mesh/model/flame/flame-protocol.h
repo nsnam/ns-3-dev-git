@@ -16,10 +16,10 @@
 #include <map>
 
 /**
- * \ingroup mesh
- * \defgroup flame FLAME
+ * @ingroup mesh
+ * @defgroup flame FLAME
  *
- * \brief Forwarding LAyer for MEshing protocol
+ * @brief Forwarding LAyer for MEshing protocol
  *
  * Simple L2.5 mesh routing protocol developed by
  * Herman Elfrink <herman.elfrink@ti-wmc.nl> and presented in
@@ -39,8 +39,8 @@ class FlameHeader;
 class FlameRtable;
 
 /**
- * \ingroup flame
- * \brief Transmitter and receiver addresses
+ * @ingroup flame
+ * @brief Transmitter and receiver addresses
  */
 class FlameTag : public Tag
 {
@@ -53,7 +53,7 @@ class FlameTag : public Tag
     /**
      * Constructor
      *
-     * \param a receiver MAC address
+     * @param a receiver MAC address
      */
     FlameTag(Mac48Address a = Mac48Address())
         : receiver(a)
@@ -61,8 +61,8 @@ class FlameTag : public Tag
     }
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     // Inherited from Tag
@@ -74,15 +74,15 @@ class FlameTag : public Tag
 };
 
 /**
- * \ingroup flame
- * \brief FLAME routing protocol
+ * @ingroup flame
+ * @brief FLAME routing protocol
  */
 class FlameProtocol : public MeshL2RoutingProtocol
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -98,13 +98,13 @@ class FlameProtocol : public MeshL2RoutingProtocol
     /**
      * Route request, inherited from MeshL2RoutingProtocol
      *
-     * \param sourceIface the source interface
-     * \param source the source address
-     * \param destination the destination address
-     * \param packet the packet to route
-     * \param protocolType the protocol type
-     * \param routeReply the route reply
-     * \returns if route exists
+     * @param sourceIface the source interface
+     * @param source the source address
+     * @param destination the destination address
+     * @param packet the packet to route
+     * @param protocolType the protocol type
+     * @param routeReply the route reply
+     * @returns if route exists
      */
     bool RequestRoute(uint32_t sourceIface,
                       const Mac48Address source,
@@ -115,12 +115,12 @@ class FlameProtocol : public MeshL2RoutingProtocol
     /**
      * Cleanup flame headers!
      *
-     * \param fromIface the from interface
-     * \param source the source address
-     * \param destination the destination address
-     * \param packet the packet
-     * \param protocolType the protocol type
-     * \returns if the route removed
+     * @param fromIface the from interface
+     * @param source the source address
+     * @param destination the destination address
+     * @param packet the packet
+     * @param protocolType the protocol type
+     * @returns if the route removed
      */
     bool RemoveRoutingStuff(uint32_t fromIface,
                             const Mac48Address source,
@@ -128,9 +128,9 @@ class FlameProtocol : public MeshL2RoutingProtocol
                             Ptr<Packet> packet,
                             uint16_t& protocolType) override;
     /**
-     * \brief Install FLAME on given mesh point.
-     * \param mp the MeshPointDevice
-     * \returns true if successful
+     * @brief Install FLAME on given mesh point.
+     * @param mp the MeshPointDevice
+     * @returns true if successful
      *
      * Installing protocol causes installation of its interface MAC plugins.
      *
@@ -140,12 +140,12 @@ class FlameProtocol : public MeshL2RoutingProtocol
     bool Install(Ptr<MeshPointDevice> mp);
     /**
      * Get address of this instance
-     * \returns the MAC address
+     * @returns the MAC address
      */
     Mac48Address GetAddress();
     /**
      * Statistics
-     * \param os the output stream
+     * @param os the output stream
      */
     void Report(std::ostream& os) const;
     /// Reset statistics function
@@ -155,14 +155,14 @@ class FlameProtocol : public MeshL2RoutingProtocol
     /// LLC protocol number reserved by flame
     static const uint16_t FLAME_PROTOCOL = 0x4040;
     /**
-     * \brief Handles a packet: adds a routing information and drops packets by TTL or Seqno
+     * @brief Handles a packet: adds a routing information and drops packets by TTL or Seqno
      *
-     * \param seqno
-     * \param source
-     * \param flameHdr
-     * \param receiver
-     * \param fromIface
-     * \return true if packet shall be dropped
+     * @param seqno
+     * @param source
+     * @param flameHdr
+     * @param receiver
+     * @param fromIface
+     * @return true if packet shall be dropped
      */
     bool HandleDataFrame(uint16_t seqno,
                          Mac48Address source,
@@ -170,7 +170,7 @@ class FlameProtocol : public MeshL2RoutingProtocol
                          Mac48Address receiver,
                          uint32_t fromIface);
     /**
-     * \name Information about MeshPointDeviceaddress, plugins
+     * @name Information about MeshPointDeviceaddress, plugins
      * \{
      */
     typedef std::map<uint32_t, Ptr<FlameProtocolMac>> FlamePluginMap;
@@ -178,7 +178,7 @@ class FlameProtocol : public MeshL2RoutingProtocol
     Mac48Address m_address;      ///< address
     //\}
     /**
-     * \name Broadcast timers:
+     * @name Broadcast timers:
      * \{
      */
     Time m_broadcastInterval;
@@ -201,7 +201,7 @@ class FlameProtocol : public MeshL2RoutingProtocol
         uint16_t totalDropped; ///< total dropped
         /**
          * Print function
-         * \param os the output stream to print to
+         * @param os the output stream to print to
          */
         void Print(std::ostream& os) const;
         /// constructor

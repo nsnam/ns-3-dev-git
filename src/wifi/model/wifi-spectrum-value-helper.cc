@@ -58,9 +58,9 @@ struct WifiSpectrumModelId
 
 /**
  * Less than operator
- * \param lhs the left hand side wifi spectrum to compare
- * \param rhs the right hand side wifi spectrum to compare
- * \returns true if the left hand side spectrum is less than the right hand side spectrum
+ * @param lhs the left hand side wifi spectrum to compare
+ * @param rhs the right hand side wifi spectrum to compare
+ * @returns true if the left hand side spectrum is less than the right hand side spectrum
  */
 bool
 operator<(const WifiSpectrumModelId& lhs, const WifiSpectrumModelId& rhs)

@@ -39,9 +39,9 @@
 
 using namespace ns3;
 
-/// \ingroup wifi-test
-/// \ingroup tests
-/// \brief Fast Initial Link Setup (FILS) frame Test Suite
+/// @ingroup wifi-test
+/// @ingroup tests
+/// @brief Fast Initial Link Setup (FILS) frame Test Suite
 /// Test suite intended to test (de)serialization and timing
 /// of frames associated with FILS procedure.
 /// The test creates a BSS consisting of an AP and client and
@@ -436,9 +436,9 @@ WifiFilsFrameTestBuildCase(const WifiFilsFrameTestCase& tc)
     return params;
 }
 
-/// \ingroup wifi-test
-/// \ingroup tests
-/// \brief WiFi FILS frame Test Suite
+/// @ingroup wifi-test
+/// @ingroup tests
+/// @brief WiFi FILS frame Test Suite
 class WifiFilsFrameTestSuite : public TestSuite
 {
   public:

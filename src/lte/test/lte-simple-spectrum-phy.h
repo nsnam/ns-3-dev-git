@@ -22,7 +22,7 @@ namespace ns3
 {
 
 /**
- * \ingroup lte
+ * @ingroup lte
  *
  * The LteSimpleSpectrumPhy models the physical layer of LTE
  * This class is used to test Frequency Reuse Algorithms,
@@ -40,8 +40,8 @@ class LteSimpleSpectrumPhy : public SpectrumPhy
     ~LteSimpleSpectrumPhy() override;
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     // inherited from Object
@@ -58,14 +58,14 @@ class LteSimpleSpectrumPhy : public SpectrumPhy
     void StartRx(Ptr<SpectrumSignalParameters> params) override;
 
     /**
-     * \brief Set receive spectrum model.
-     * \param model the spectrum model
+     * @brief Set receive spectrum model.
+     * @param model the spectrum model
      */
     void SetRxSpectrumModel(Ptr<const SpectrumModel> model);
 
     /**
-     * \brief Set cell ID.
-     * \param cellId the cell ID
+     * @brief Set cell ID.
+     * @param cellId the cell ID
      */
     void SetCellId(uint16_t cellId);
 

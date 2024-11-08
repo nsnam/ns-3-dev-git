@@ -24,8 +24,8 @@ namespace ns3
 {
 
 /*!
- * \ingroup attributes
- * \addtogroup attribute_AttributeContainer AttributeContainer Attribute
+ * @ingroup attributes
+ * @addtogroup attribute_AttributeContainer AttributeContainer Attribute
  * AttributeValue implementation for AttributeContainer
  */
 
@@ -33,7 +33,7 @@ class AttributeChecker;
 
 // A = attribute value type, C = container type to return
 /**
- * \ingroup attribute_AttributeContainer
+ * @ingroup attribute_AttributeContainer
  *
  * A container for one type of attribute.
  *
@@ -78,7 +78,7 @@ class AttributeContainerValue : public AttributeValue
     /**
      * Construct from another container.
      * @tparam CONTAINER \deduced type of container passed for initialization.
-     * \param c Instance of CONTAINER with which to initialize AttributeContainerValue.
+     * @param c Instance of CONTAINER with which to initialize AttributeContainerValue.
      */
     template <class CONTAINER>
     AttributeContainerValue(const CONTAINER& c);
@@ -103,7 +103,7 @@ class AttributeContainerValue : public AttributeValue
     // defacto pure virtuals to integrate with built-in accessor code
     /**
      * Return a container of items.
-     * \return Container of items.
+     * @return Container of items.
      */
     result_type Get() const;
     /**
@@ -112,17 +112,17 @@ class AttributeContainerValue : public AttributeValue
      * This method assumes \p c has stl-style begin and end methods.
      * The AttributeContainerValue value is cleared before copying from \p c.
      * @tparam T type of container.
-     * \param c Container from which to copy items.
+     * @param c Container from which to copy items.
      */
     template <class T>
     void Set(const T& c);
     /**
      * Set the given variable to the values stored by this TupleValue object.
      *
-     * \tparam T \deduced the type of the given variable (normally, the argument type
+     * @tparam T \deduced the type of the given variable (normally, the argument type
      *           of a set method or the type of a data member)
-     * \param value the given variable
-     * \return true if the given variable was set
+     * @param value the given variable
+     * @return true if the given variable was set
      */
     template <typename T>
     bool GetAccessor(T& value) const;
@@ -130,44 +130,44 @@ class AttributeContainerValue : public AttributeValue
     // NS3 interface
     /**
      * NS3-style Number of items.
-     * \return Number of items in container.
+     * @return Number of items in container.
      */
     size_type GetN() const;
     /**
      * NS3-style beginning of container.
-     * \return Iterator pointing to first time in container.
+     * @return Iterator pointing to first time in container.
      */
     Iterator Begin();
     /**
      * NS3-style ending of container.
-     * \return Iterator pointing one past last item of container.
+     * @return Iterator pointing one past last item of container.
      */
     Iterator End();
 
     // STL-interface
     /**
      * STL-style number of items in container
-     * \return number of items in container.
+     * @return number of items in container.
      */
     size_type size() const;
     /**
      * STL-style beginning of container.
-     * \return Iterator pointing to first item in container.
+     * @return Iterator pointing to first item in container.
      */
     iterator begin();
     /**
      * STL-style end of container.
-     * \return Iterator pointing to one past last item in container.
+     * @return Iterator pointing to one past last item in container.
      */
     iterator end();
     /**
      * STL-style const beginning of container.
-     * \return Const iterator pointing to first item in container.
+     * @return Const iterator pointing to first item in container.
      */
     const_iterator begin() const;
     /**
      * STL-style const end of container.
-     * \return Const iterator pointing to one past last item in container.
+     * @return Const iterator pointing to one past last item in container.
      */
     const_iterator end() const;
 
@@ -180,7 +180,7 @@ class AttributeContainerValue : public AttributeValue
      * @tparam ITER \deduced iterator type
      * \param[in] begin Points to first item to copy
      * \param[in] end Points to one after last item to copy
-     * \return This object with items copied.
+     * @return This object with items copied.
      */
     template <class ITER>
     inline Ptr<AttributeContainerValue<A, Sep, C>> CopyFrom(const ITER begin, const ITER end);
@@ -189,97 +189,97 @@ class AttributeContainerValue : public AttributeValue
 };
 
 /*!
- * \ingroup attribute_AttributeContainer
+ * @ingroup attribute_AttributeContainer
  *
- * \class  ns3::AttributeContainerChecker "attribute-container.h"
+ * @class  ns3::AttributeContainerChecker "attribute-container.h"
  * AttributeChecker implementation for AttributeContainerValue.
- * \see AttributeChecker
+ * @see AttributeChecker
  */
 class AttributeContainerChecker : public AttributeChecker
 {
   public:
     /**
      * Set the item checker
-     * \param itemchecker The item checker
+     * @param itemchecker The item checker
      */
     virtual void SetItemChecker(Ptr<const AttributeChecker> itemchecker) = 0;
     /**
      * Get the item checker
-     * \return The item checker
+     * @return The item checker
      */
     virtual Ptr<const AttributeChecker> GetItemChecker() const = 0;
 };
 
 /**
- * \ingroup attribute_AttributeContainer
+ * @ingroup attribute_AttributeContainer
  *
  * Make AttributeContainerChecker from AttributeContainerValue.
  * @tparam A \deduced AttributeValue type in container.
  * @tparam Sep \deduced Character separator between elements for parsing.
  * @tparam C \deduced Container type returned by Get.
  * \param[in] value AttributeContainerValue from which to deduce types.
- * \return AttributeContainerChecker for value.
+ * @return AttributeContainerChecker for value.
  */
 template <class A, char Sep, template <class...> class C>
 Ptr<AttributeChecker> MakeAttributeContainerChecker(
     const AttributeContainerValue<A, Sep, C>& value);
 
 /**
- * \ingroup attribute_AttributeContainer
+ * @ingroup attribute_AttributeContainer
  *
  * Make AttributeContainerChecker using explicit types, initialize item checker.
  * @tparam A AttributeValue type in container.
  * @tparam Sep Character separator between elements for parsing.
  * @tparam C Container type returned by Get.
  * \param[in] itemchecker AttributeChecker used for each item in the container.
- * \return AttributeContainerChecker.
+ * @return AttributeContainerChecker.
  */
 template <class A, char Sep = ',', template <class...> class C = std::list>
 Ptr<const AttributeChecker> MakeAttributeContainerChecker(Ptr<const AttributeChecker> itemchecker);
 
 /**
- * \ingroup attribute_AttributeContainer
+ * @ingroup attribute_AttributeContainer
  *
  * Make uninitialized AttributeContainerChecker using explicit types.
  * @tparam A AttributeValue type in container.
  * @tparam Sep Character separator between elements for parsing.
  * @tparam C Container type returned by Get.
- * \return AttributeContainerChecker.
+ * @return AttributeContainerChecker.
  */
 template <class A, char Sep = ',', template <class...> class C = std::list>
 Ptr<AttributeChecker> MakeAttributeContainerChecker();
 
 /**
- * \ingroup attribute_AttributeContainer
+ * @ingroup attribute_AttributeContainer
  *
  * Make AttributeContainerAccessor  using explicit types.
  * @tparam A AttributeValue type in container.
  * @tparam Sep Character separator between elements for parsing.
  * @tparam C Container type returned by Get.
- * \tparam T1 \deduced The type of the class data member,
+ * @tparam T1 \deduced The type of the class data member,
  *            or the type of the class get functor or set method.
- * \param [in] a1 The address of the data member,
+ * @param [in] a1 The address of the data member,
  *            or the get or set method.
- * \return AttributeContainerAccessor.
+ * @return AttributeContainerAccessor.
  */
 template <typename A, char Sep = ',', template <typename...> class C = std::list, typename T1>
 Ptr<const AttributeAccessor> MakeAttributeContainerAccessor(T1 a1);
 
 /**
- * \ingroup attribute_AttributeContainer
+ * @ingroup attribute_AttributeContainer
  *
  * Make AttributeContainerAccessor  using explicit types.
  * @tparam A AttributeValue type in container.
  * @tparam Sep Character separator between elements for parsing.
  * @tparam C Container type returned by Get.
- * \tparam T1 \deduced The type of the class data member,
+ * @tparam T1 \deduced The type of the class data member,
  *            or the type of the class get functor or set method.
  *
- * \tparam T2 \deduced The type of the getter class functor method.
- * \param [in] a2 The address of the class method to set the attribute.
- * \param [in] a1 The address of the data member,
+ * @tparam T2 \deduced The type of the getter class functor method.
+ * @param [in] a2 The address of the class method to set the attribute.
+ * @param [in] a1 The address of the data member,
  *            or the get or set method.
- * \return AttributeContainerAccessor.
+ * @return AttributeContainerAccessor.
  */
 template <typename A,
           char Sep = ',',
@@ -301,9 +301,9 @@ namespace internal
 {
 
 /**
- * \ingroup attribute_AttributeContainer
+ * @ingroup attribute_AttributeContainer
  *
- * \internal
+ * @internal
  *
  * Templated AttributeContainerChecker class that is instantiated
  * in MakeAttributeContainerChecker. The non-templated base ns3::AttributeContainerChecker
@@ -316,7 +316,7 @@ class AttributeContainerChecker : public ns3::AttributeContainerChecker
     AttributeContainerChecker();
     /**
      * Explicit constructor
-     * \param itemchecker The AttributeChecker.
+     * @param itemchecker The AttributeChecker.
      */
     explicit AttributeContainerChecker(Ptr<const AttributeChecker> itemchecker);
     void SetItemChecker(Ptr<const AttributeChecker> itemchecker) override;

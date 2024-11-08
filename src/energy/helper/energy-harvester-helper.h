@@ -24,8 +24,8 @@ namespace ns3
 {
 
 /**
- * \ingroup energy
- * \brief Creates EnergyHarvester objects.
+ * @ingroup energy
+ * @brief Creates EnergyHarvester objects.
  *
  * This class creates and installs energy harvesters onto network nodes.
  *
@@ -36,32 +36,32 @@ class EnergyHarvesterHelper
     virtual ~EnergyHarvesterHelper();
 
     /**
-     * \param name Name of attribute to set.
-     * \param v Value of the attribute.
+     * @param name Name of attribute to set.
+     * @param v Value of the attribute.
      *
      * Sets one of the attributes of underlying EnergyHarvester.
      */
     virtual void Set(std::string name, const AttributeValue& v) = 0;
 
     /**
-     * \param source Pointer to the energy source where EnergyHarvester will be installed.
-     * \returns An EnergyHarvesterContainer which contains all the EnergyHarvesters.
+     * @param source Pointer to the energy source where EnergyHarvester will be installed.
+     * @returns An EnergyHarvesterContainer which contains all the EnergyHarvesters.
      *
      * This function installs an EnergyHarvester onto an energy source.
      */
     energy::EnergyHarvesterContainer Install(Ptr<energy::EnergySource> source) const;
 
     /**
-     * \param sourceContainer List of nodes where EnergyHarvester will be installed.
-     * \returns An EnergyHarvesterContainer which contains all the EnergyHarvester.
+     * @param sourceContainer List of nodes where EnergyHarvester will be installed.
+     * @returns An EnergyHarvesterContainer which contains all the EnergyHarvester.
      *
      * This function installs an EnergyHarvester onto a list of energy sources.
      */
     energy::EnergyHarvesterContainer Install(energy::EnergySourceContainer sourceContainer) const;
 
     /**
-     * \param sourceName Name of node where EnergyHarvester will be installed.
-     * \returns An EnergyHarvesterContainer which contains all the EnergyHarvesters.
+     * @param sourceName Name of node where EnergyHarvester will be installed.
+     * @returns An EnergyHarvesterContainer which contains all the EnergyHarvesters.
      *
      * This function installs an EnergyHarvester onto a node.
      */
@@ -69,8 +69,8 @@ class EnergyHarvesterHelper
 
   private:
     /**
-     * \param source Pointer to node where the energy harvester is to be installed.
-     * \returns Pointer to the created EnergyHarvester.
+     * @param source Pointer to node where the energy harvester is to be installed.
+     * @returns Pointer to the created EnergyHarvester.
      *
      * Child classes of EnergyHarvesterHelper only have to implement this function,
      * to create and aggregate an EnergyHarvester object onto a single node. Rest of

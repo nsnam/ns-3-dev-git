@@ -28,7 +28,7 @@ class UanTransducer;
 class UanTxMode;
 
 /**
- * \ingroup uan
+ * @ingroup uan
  *
  * Channel class used by UAN devices.
  */
@@ -46,7 +46,7 @@ class UanChannel : public Channel
 
     /**
      * Register this type.
-     * \return The object TypeId.
+     * @return The object TypeId.
      */
     static TypeId GetTypeId();
 
@@ -57,10 +57,10 @@ class UanChannel : public Channel
     /**
      * Send a packet out on the channel.
      *
-     * \param src Transducer transmitting packet.
-     * \param packet Packet to be transmitted.
-     * \param txPowerDb Transmission power in dB.
-     * \param txmode UanTxMode defining modulation of transmitted packet.
+     * @param src Transducer transmitting packet.
+     * @param packet Packet to be transmitted.
+     * @param txPowerDb Transmission power in dB.
+     * @param txmode UanTxMode defining modulation of transmitted packet.
      */
     virtual void TxPacket(Ptr<UanTransducer> src,
                           Ptr<Packet> packet,
@@ -70,8 +70,8 @@ class UanChannel : public Channel
     /**
      * Adds device to receiver list for this channel.
      *
-     * \param dev Net Device of node.
-     * \param trans Transducer of net device attached to this channel.
+     * @param dev Net Device of node.
+     * @param trans Transducer of net device attached to this channel.
      */
     void AddDevice(Ptr<UanNetDevice> dev, Ptr<UanTransducer> trans);
 
@@ -79,7 +79,7 @@ class UanChannel : public Channel
      * Set the propagation model this channel will use
      * for path loss/propagation delay.
      *
-     * \param prop The propagation model.
+     * @param prop The propagation model.
      */
     void SetPropagationModel(Ptr<UanPropModel> prop);
 
@@ -87,15 +87,15 @@ class UanChannel : public Channel
      * Set the noise model this channel will use
      * to determine ambient channel noise.
      *
-     * \param noise The noise model.
+     * @param noise The noise model.
      */
     void SetNoiseModel(Ptr<UanNoiseModel> noise);
 
     /**
      * Get the noise level on the channel.
      *
-     * \param fKhz Frequency in kHz.
-     * \return Ambient noise in dB/Hz on channel at a frequency.
+     * @param fKhz Frequency in kHz.
+     * @return Ambient noise in dB/Hz on channel at a frequency.
      */
     double GetNoiseDbHz(double fKhz);
 
@@ -113,11 +113,11 @@ class UanChannel : public Channel
     /**
      * Send a packet up to the receiving UanTransducer.
      *
-     * \param i Device number.
-     * \param packet The received packet.
-     * \param rxPowerDb Signal power in dB of arriving packet.
-     * \param txMode Mode arriving packet is using.
-     * \param pdp PDP of arriving signal.
+     * @param i Device number.
+     * @param packet The received packet.
+     * @param rxPowerDb Signal power in dB of arriving packet.
+     * @param txMode Mode arriving packet is using.
+     * @param pdp PDP of arriving signal.
      */
     void SendUp(uint32_t i, Ptr<Packet> packet, double rxPowerDb, UanTxMode txMode, UanPdp pdp);
 

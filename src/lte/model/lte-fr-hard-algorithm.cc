@@ -74,10 +74,10 @@ static const FrHardUplinkDefaultConfiguration g_frHardUplinkDefaultConfiguration
     {3, 100, 64, 36},
 };
 
-/** \returns number of downlink configurations */
+/** @returns number of downlink configurations */
 const uint16_t NUM_DOWNLINK_CONFS(sizeof(g_frHardDownlinkDefaultConfiguration) /
                                   sizeof(FrHardDownlinkDefaultConfiguration));
-/** \returns number of uplink configurations */
+/** @returns number of uplink configurations */
 const uint16_t NUM_UPLINK_CONFS(sizeof(g_frHardUplinkDefaultConfiguration) /
                                 sizeof(FrHardUplinkDefaultConfiguration));
 

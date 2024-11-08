@@ -25,13 +25,13 @@ namespace ns3
 {
 
 /**
- * \defgroup flow-monitor Flow Monitor
- * \brief  Collect and store performance data from a simulation
+ * @defgroup flow-monitor Flow Monitor
+ * @brief  Collect and store performance data from a simulation
  */
 
 /**
- * \ingroup flow-monitor
- * \brief An object that monitors and reports back packet flows observed during a simulation
+ * @ingroup flow-monitor
+ * @brief An object that monitors and reports back packet flows observed during a simulation
  *
  * The FlowMonitor class is responsible for coordinating efforts
  * regarding probes, and collects end-to-end flow statistics.
@@ -40,7 +40,7 @@ namespace ns3
 class FlowMonitor : public Object
 {
   public:
-    /// \brief Structure that represents the measured metrics of an individual packet flow
+    /// @brief Structure that represents the measured metrics of an individual packet flow
     struct FlowStats
     {
         /// Contains the absolute time when the first packet in the flow
@@ -133,24 +133,24 @@ class FlowMonitor : public Object
 
     // --- basic methods ---
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     TypeId GetInstanceTypeId() const override;
     FlowMonitor();
 
     /// Add a FlowClassifier to be used by the flow monitor.
-    /// \param classifier the FlowClassifier
+    /// @param classifier the FlowClassifier
     void AddFlowClassifier(Ptr<FlowClassifier> classifier);
 
     /// Set the time, counting from the current time, from which to start monitoring flows.
     /// This method overwrites any previous calls to Start()
-    /// \param time delta time to start
+    /// @param time delta time to start
     void Start(const Time& time);
     /// Set the time, counting from the current time, from which to stop monitoring flows.
     /// This method overwrites any previous calls to Stop()
-    /// \param time delta time to stop
+    /// @param time delta time to stop
     void Stop(const Time& time);
     /// Begin monitoring flows *right now*
     void StartRightNow();
@@ -161,48 +161,48 @@ class FlowMonitor : public Object
     /// Register a new FlowProbe that will begin monitoring and report
     /// events to this monitor.  This method is normally only used by
     /// FlowProbe implementations.
-    /// \param probe the probe to add
+    /// @param probe the probe to add
     void AddProbe(Ptr<FlowProbe> probe);
 
     /// FlowProbe implementations are supposed to call this method to
     /// report that a new packet was transmitted (but keep in mind the
     /// distinction between a new packet entering the system and a
     /// packet that is already known and is only being forwarded).
-    /// \param probe the reporting probe
-    /// \param flowId flow identification
-    /// \param packetId Packet ID
-    /// \param packetSize packet size
+    /// @param probe the reporting probe
+    /// @param flowId flow identification
+    /// @param packetId Packet ID
+    /// @param packetSize packet size
     void ReportFirstTx(Ptr<FlowProbe> probe,
                        FlowId flowId,
                        FlowPacketId packetId,
                        uint32_t packetSize);
     /// FlowProbe implementations are supposed to call this method to
     /// report that a known packet is being forwarded.
-    /// \param probe the reporting probe
-    /// \param flowId flow identification
-    /// \param packetId Packet ID
-    /// \param packetSize packet size
+    /// @param probe the reporting probe
+    /// @param flowId flow identification
+    /// @param packetId Packet ID
+    /// @param packetSize packet size
     void ReportForwarding(Ptr<FlowProbe> probe,
                           FlowId flowId,
                           FlowPacketId packetId,
                           uint32_t packetSize);
     /// FlowProbe implementations are supposed to call this method to
     /// report that a known packet is being received.
-    /// \param probe the reporting probe
-    /// \param flowId flow identification
-    /// \param packetId Packet ID
-    /// \param packetSize packet size
+    /// @param probe the reporting probe
+    /// @param flowId flow identification
+    /// @param packetId Packet ID
+    /// @param packetSize packet size
     void ReportLastRx(Ptr<FlowProbe> probe,
                       FlowId flowId,
                       FlowPacketId packetId,
                       uint32_t packetSize);
     /// FlowProbe implementations are supposed to call this method to
     /// report that a known packet is being dropped due to some reason.
-    /// \param probe the reporting probe
-    /// \param flowId flow identification
-    /// \param packetId Packet ID
-    /// \param packetSize packet size
-    /// \param reasonCode drop reason code
+    /// @param probe the reporting probe
+    /// @param flowId flow identification
+    /// @param packetId Packet ID
+    /// @param packetSize packet size
+    /// @param reasonCode drop reason code
     void ReportDrop(Ptr<FlowProbe> probe,
                     FlowId flowId,
                     FlowPacketId packetId,
@@ -215,7 +215,7 @@ class FlowMonitor : public Object
     /// Check right now for packets that appear to be lost, considering
     /// packets as lost if not seen in the network for a time larger
     /// than maxDelay
-    /// \param maxDelay the max delay for a packet
+    /// @param maxDelay the max delay for a packet
     void CheckForLostPackets(Time maxDelay);
 
     // --- methods to get the results ---
@@ -237,34 +237,34 @@ class FlowMonitor : public Object
     /// FlowMonitor has not stopped monitoring yet, you should call
     /// CheckForLostPackets() to make sure all possibly lost packets are
     /// accounted for.
-    /// \returns the flows statistics
+    /// @returns the flows statistics
     const FlowStatsContainer& GetFlowStats() const;
 
     /// Get a list of all FlowProbe's associated with this FlowMonitor
-    /// \returns a list of all the probes
+    /// @returns a list of all the probes
     const FlowProbeContainer& GetAllProbes() const;
 
     /// Serializes the results to an std::ostream in XML format
-    /// \param os the output stream
-    /// \param indent number of spaces to use as base indentation level
-    /// \param enableHistograms if true, include also the histograms in the output
-    /// \param enableProbes if true, include also the per-probe/flow pair statistics in the output
+    /// @param os the output stream
+    /// @param indent number of spaces to use as base indentation level
+    /// @param enableHistograms if true, include also the histograms in the output
+    /// @param enableProbes if true, include also the per-probe/flow pair statistics in the output
     void SerializeToXmlStream(std::ostream& os,
                               uint16_t indent,
                               bool enableHistograms,
                               bool enableProbes);
 
     /// Same as SerializeToXmlStream, but returns the output as a std::string
-    /// \param indent number of spaces to use as base indentation level
-    /// \param enableHistograms if true, include also the histograms in the output
-    /// \param enableProbes if true, include also the per-probe/flow pair statistics in the output
-    /// \return the XML output as string
+    /// @param indent number of spaces to use as base indentation level
+    /// @param enableHistograms if true, include also the histograms in the output
+    /// @param enableProbes if true, include also the per-probe/flow pair statistics in the output
+    /// @return the XML output as string
     std::string SerializeToXmlString(uint16_t indent, bool enableHistograms, bool enableProbes);
 
     /// Same as SerializeToXmlStream, but writes to a file instead
-    /// \param fileName name or path of the output file that will be created
-    /// \param enableHistograms if true, include also the histograms in the output
-    /// \param enableProbes if true, include also the per-probe/flow pair statistics in the output
+    /// @param fileName name or path of the output file that will be created
+    /// @param enableHistograms if true, include also the histograms in the output
+    /// @param enableProbes if true, include also the per-probe/flow pair statistics in the output
     void SerializeToXmlFile(std::string fileName, bool enableHistograms, bool enableProbes);
 
     /// Reset all the statistics
@@ -305,8 +305,8 @@ class FlowMonitor : public Object
     Time m_flowInterruptionsMinTime;    //!< Flow interruptions minimum time
 
     /// Get the stats for a given flow
-    /// \param flowId the Flow identification
-    /// \returns the stats of the flow
+    /// @param flowId the Flow identification
+    /// @returns the stats of the flow
     FlowStats& GetStatsForFlow(FlowId flowId);
 
     /// Periodic function to check for lost packets and prune statistics

@@ -58,7 +58,7 @@ namespace
 {
 
 /**
- * \brief map TcpPacketType and EcnMode to boolean value to check whether ECN-marking is allowed or
+ * @brief map TcpPacketType and EcnMode to boolean value to check whether ECN-marking is allowed or
  * not
  */
 const std::map<std::pair<ns3::TcpSocketBase::TcpPacketType_t, ns3::TcpSocketState::EcnMode_t>, bool>
@@ -808,7 +808,7 @@ int
 TcpSocketBase::Close()
 {
     NS_LOG_FUNCTION(this);
-    /// \internal
+    /// @internal
     /// First we check to see if there is any unread rx data.
     /// \bugid{426} claims we should send reset in this case.
     if (m_tcb->m_rxBuffer->Size() != 0)

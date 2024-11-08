@@ -49,8 +49,8 @@ using AssocReqRefVariant = std::variant<std::reference_wrapper<MgtAssocRequestHe
                                         std::reference_wrapper<MgtReassocRequestHeader>>;
 
 /**
- * \brief Wi-Fi AP state machine
- * \ingroup wifi
+ * @brief Wi-Fi AP state machine
+ * @ingroup wifi
  *
  * Handle association, dis-association and authentication,
  * of STAs within an infrastructure BSS.  By default, beacons are
@@ -63,8 +63,8 @@ class ApWifiMac : public WifiMac
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -80,21 +80,21 @@ class ApWifiMac : public WifiMac
     /**
      * Set the AP EMLSR Manager.
      *
-     * \param apEmlsrManager the AP EMLSR Manager
+     * @param apEmlsrManager the AP EMLSR Manager
      */
     void SetApEmlsrManager(Ptr<ApEmlsrManager> apEmlsrManager);
 
     /**
-     * \return the AP EMLSR Manager
+     * @return the AP EMLSR Manager
      */
     Ptr<ApEmlsrManager> GetApEmlsrManager() const;
 
     /**
-     * \param interval the interval between two beacon transmissions.
+     * @param interval the interval between two beacon transmissions.
      */
     void SetBeaconInterval(Time interval);
     /**
-     * \return the interval between two beacon transmissions.
+     * @return the interval between two beacon transmissions.
      */
     Time GetBeaconInterval() const;
 
@@ -103,14 +103,14 @@ class ApWifiMac : public WifiMac
      * Each station is specified by an (association ID, MAC address) pair. Make sure
      * not to use the returned reference after that this object has been deallocated.
      *
-     * \param linkId the ID of the given link
-     * \return a const reference to the map of associated stations
+     * @param linkId the ID of the given link
+     * @return a const reference to the map of associated stations
      */
     const std::map<uint16_t, Mac48Address>& GetStaList(uint8_t linkId) const;
     /**
-     * \param addr the address of the associated station
-     * \param linkId the ID of the link on which the station is associated
-     * \return the Association ID allocated by the AP to the station, SU_STA_ID if unallocated
+     * @param addr the address of the associated station
+     * @param linkId the ID of the link on which the station is associated
+     * @return the Association ID allocated by the AP to the station, SU_STA_ID if unallocated
      */
     uint16_t GetAssociationId(Mac48Address addr, uint8_t linkId) const;
 
@@ -119,14 +119,14 @@ class ApWifiMac : public WifiMac
      * address. The address can be either a link address or an MLD address. In the former case,
      * the returned ID is the ID of the link connecting the AP to the STA with the given address.
      *
-     * \param address the given MAC address
-     * \return the ID of a link (if any) that has been setup with the given station
+     * @param address the given MAC address
+     * @return the ID of a link (if any) that has been setup with the given station
      */
     std::optional<uint8_t> IsAssociated(const Mac48Address& address) const;
 
     /**
-     * \param aid the given AID
-     * \return the MLD address (in case of MLD) or link address (in case of single link device)
+     * @param aid the given AID
+     * @return the MLD address (in case of MLD) or link address (in case of single link device)
      *         of the STA having the given AID, if any
      */
     std::optional<Mac48Address> GetMldOrLinkAddressByAid(uint16_t aid) const;
@@ -143,9 +143,9 @@ class ApWifiMac : public WifiMac
      * A queue size value of 255 is used to indicate an unspecified or unknown size.
      * See Section 9.2.4.5.6 of 802.11-2016
      *
-     * \param tid the given TID
-     * \param address the given MAC address
-     * \return the value of the Queue Size subfield
+     * @param tid the given TID
+     * @param address the given MAC address
+     * @return the value of the Queue Size subfield
      */
     uint8_t GetBufferStatus(uint8_t tid, Mac48Address address) const;
     /**
@@ -153,9 +153,9 @@ class ApWifiMac : public WifiMac
      * frame received from the station with the given MAC address and belonging to
      * the given TID.
      *
-     * \param tid the given TID
-     * \param address the given MAC address
-     * \param size the value of the Queue Size subfield
+     * @param tid the given TID
+     * @param address the given MAC address
+     * @param size the value of the Queue Size subfield
      */
     void SetBufferStatus(uint8_t tid, Mac48Address address, uint8_t size);
     /**
@@ -163,8 +163,8 @@ class ApWifiMac : public WifiMac
      * QoS Data or QoS Null frames received from the station with the given MAC address
      * and belonging to any TID.
      *
-     * \param address the given MAC address
-     * \return the maximum among the values of the Queue Size subfields
+     * @param address the given MAC address
+     * @return the maximum among the values of the Queue Size subfields
      */
     uint8_t GetMaxBufferStatus(Mac48Address address) const;
 
@@ -193,18 +193,18 @@ class ApWifiMac : public WifiMac
      * be used to deserialize an ACI-indexed map of access parameters of type unsigned integer
      * (CWmin, CWmax and AIFSN) from a string:
      *
-     * \code
+     * @code
      *   ApWifiMac::UintAccessParamsMapValue value;
      *   value.DeserializeFromString("BE 31,31; VO 15,15",
      *                               ApWifiMac::GetUintAccessParamsChecker<uint32_t>());
      *   auto map = value.Get();
-     * \endcode
+     * @endcode
      *
      * The type of \p map is ApWifiMac::UintAccessParamsMapValue::result_type, which is
      * std::list<std::pair<AcIndex, std::vector<uint64_t>>>.
      *
-     * \tparam T \explicit the type of the unsigned integer access parameter
-     * \return a checker for the CwMinsForSta, CwMaxsForSta and AifsnsForSta attributes
+     * @tparam T \explicit the type of the unsigned integer access parameter
+     * @return a checker for the CwMinsForSta, CwMaxsForSta and AifsnsForSta attributes
      */
     template <class T>
     static Ptr<const AttributeChecker> GetUintAccessParamsChecker();
@@ -213,17 +213,17 @@ class ApWifiMac : public WifiMac
      * Get a checker for the TxopLimitsForSta attribute, which can be used to deserialize an
      * ACI-indexed map of access parameters of type Time (TxopLimit) from a string:
      *
-     * \code
+     * @code
      *   ApWifiMac::TimeAccessParamsMapValue value;
      *   value.DeserializeFromString("BE 3200us; VO 3232us",
      *                               ApWifiMac::GetTimeAccessParamsChecker());
      *   auto map = value.Get();
-     * \endcode
+     * @endcode
      *
      * The type of \p map is ApWifiMac::TimeAccessParamsMapValue::result_type, which is
      * std::list<std::pair<AcIndex, std::vector<Time>>>.
      *
-     * \return a checker for the TxopLimitsForSta attribute
+     * @return a checker for the TxopLimitsForSta attribute
      */
     static Ptr<const AttributeChecker> GetTimeAccessParamsChecker();
 
@@ -252,8 +252,8 @@ class ApWifiMac : public WifiMac
     /**
      * Get a reference to the link associated with the given ID.
      *
-     * \param linkId the given link ID
-     * \return a reference to the link associated with the given ID
+     * @param linkId the given link ID
+     * @return a reference to the link associated with the given ID
      */
     ApLinkEntity& GetLink(uint8_t linkId) const;
 
@@ -274,10 +274,10 @@ class ApWifiMac : public WifiMac
      * supported modes in its associated WifiRemoteStation and return true.
      * Otherwise, return false.
      *
-     * \param assoc the frame body of the received (Re)Association Request
-     * \param from the Transmitter Address field of the frame
-     * \param linkId the ID of the link on which the frame was received
-     * \return true if the (Re)Association request can be accepted, false otherwise
+     * @param assoc the frame body of the received (Re)Association Request
+     * @param from the Transmitter Address field of the frame
+     * @param linkId the ID of the link on which the frame was received
+     * @return true if the (Re)Association request can be accepted, false otherwise
      */
     bool ReceiveAssocRequest(const AssocReqRefVariant& assoc,
                              const Mac48Address& from,
@@ -290,9 +290,9 @@ class ApWifiMac : public WifiMac
      * a valid link other than the one the frame was received on and the supported
      * rates are compatible with our basic rate set).
      *
-     * \param assoc the frame body of the received (Re)Association Request
-     * \param from the Transmitter Address field of the frame
-     * \param linkId the ID of the link on which the frame was received
+     * @param assoc the frame body of the received (Re)Association Request
+     * @param from the Transmitter Address field of the frame
+     * @param linkId the ID of the link on which the frame was received
      */
     void ParseReportedStaInfo(const AssocReqRefVariant& assoc, Mac48Address from, uint8_t linkId);
 
@@ -300,9 +300,9 @@ class ApWifiMac : public WifiMac
      * Take necessary actions upon receiving the given EML Operating Mode Notification frame
      * from the given station on the given link.
      *
-     * \param frame the received EML Operating Mode Notification frame
-     * \param sender the MAC address of the sender of the frame
-     * \param linkId the ID of the link over which the frame was received
+     * @param frame the received EML Operating Mode Notification frame
+     * @param sender the MAC address of the sender of the frame
+     * @param linkId the ID of the link over which the frame was received
      */
     void ReceiveEmlOmn(MgtEmlOmn& frame, const Mac48Address& sender, uint8_t linkId);
 
@@ -312,7 +312,7 @@ class ApWifiMac : public WifiMac
      * was an association response to the receiver, we record that
      * the receiver is now associated with us.
      *
-     * \param mpdu the MPDU that we successfully sent
+     * @param mpdu the MPDU that we successfully sent
      */
     void TxOk(Ptr<const WifiMpdu> mpdu);
     /**
@@ -321,8 +321,8 @@ class ApWifiMac : public WifiMac
      * was an association response to the receiver, we record that
      * the receiver is not associated with us yet.
      *
-     * \param timeoutReason the reason why the TX timer was started (\see WifiTxTimer::Reason)
-     * \param mpdu the MPDU that we failed to sent
+     * @param timeoutReason the reason why the TX timer was started (\see WifiTxTimer::Reason)
+     * @param mpdu the MPDU that we failed to sent
      */
     void TxFailed(WifiMacDropReason timeoutReason, Ptr<const WifiMpdu> mpdu);
 
@@ -332,24 +332,24 @@ class ApWifiMac : public WifiMac
      * here because, as an AP, we also need to think about redistributing
      * to other associated STAs.
      *
-     * \param mpdu the MPDU containing the A-MSDU.
+     * @param mpdu the MPDU containing the A-MSDU.
      */
     void DeaggregateAmsduAndForward(Ptr<const WifiMpdu> mpdu) override;
     /**
      * Send a Probe Response in response to a Probe Request received from the STA with the
      * given address on the given link.
      *
-     * \param to the address of the STA we are sending a probe response to
-     * \param linkId the ID of the given link
+     * @param to the address of the STA we are sending a probe response to
+     * @param linkId the ID of the given link
      */
     void SendProbeResp(Mac48Address to, uint8_t linkId);
     /**
      * Get the Association Response frame to send on a given link. The returned frame
      * never includes a Multi-Link Element.
      *
-     * \param to the address of the STA we are sending an association response to
-     * \param linkId the ID of the given link
-     * \return the Association Response frame
+     * @param to the address of the STA we are sending an association response to
+     * @param linkId the ID of the given link
+     * @return the Association Response frame
      */
     MgtAssocResponseHeader GetAssocResp(Mac48Address to, uint8_t linkId);
     /// Map of (link ID, remote STA address) of the links to setup
@@ -362,8 +362,8 @@ class ApWifiMac : public WifiMac
      * non-AP MLD we are associating with. If no STA has an assigned AID value,
      * a new AID value is selected.
      *
-     * \param assoc the given Association Response frame
-     * \param linkIdStaAddrMap a map of (link ID, remote STA address) of the links to setup
+     * @param assoc the given Association Response frame
+     * @param linkIdStaAddrMap a map of (link ID, remote STA address) of the links to setup
      */
     void SetAid(MgtAssocResponseHeader& assoc, const LinkIdStaAddrMap& linkIdStaAddrMap);
     /**
@@ -371,10 +371,10 @@ class ApWifiMac : public WifiMac
      * is taken from the given Association Response that is sent over the given link
      * to the given station.
      *
-     * \param assoc the given Association Response frame
-     * \param to the Receiver Address (RA) of the Association Response frame
-     * \param linkId the ID of the link on which the Association Response frame is sent
-     * \return a map of (link ID, remote STA address) of the links to setup
+     * @param assoc the given Association Response frame
+     * @param to the Receiver Address (RA) of the Association Response frame
+     * @param linkId the ID of the link on which the Association Response frame is sent
+     * @return a map of (link ID, remote STA address) of the links to setup
      */
     LinkIdStaAddrMap GetLinkIdStaAddrMap(MgtAssocResponseHeader& assoc,
                                          const Mac48Address& to,
@@ -382,24 +382,24 @@ class ApWifiMac : public WifiMac
     /**
      * Forward an association or a reassociation response packet to the DCF/EDCA.
      *
-     * \param to the address of the STA we are sending an association response to
-     * \param isReassoc indicates whether it is a reassociation response
-     * \param linkId the ID of the link on which the association response must be sent
+     * @param to the address of the STA we are sending an association response to
+     * @param isReassoc indicates whether it is a reassociation response
+     * @param linkId the ID of the link on which the association response must be sent
      */
     void SendAssocResp(Mac48Address to, bool isReassoc, uint8_t linkId);
     /**
      * Forward a beacon packet to the beacon special DCF for transmission
      * on the given link.
      *
-     * \param linkId the ID of the given link
+     * @param linkId the ID of the given link
      */
     void SendOneBeacon(uint8_t linkId);
 
     /**
      * Get the FILS Discovery frame to send on the given link.
      *
-     * \param linkId the ID of the given link
-     * \return the FILS Discovery frame to send on the given link
+     * @param linkId the ID of the given link
+     * @return the FILS Discovery frame to send on the given link
      */
     Ptr<WifiMpdu> GetFilsDiscovery(uint8_t linkId) const;
 
@@ -407,7 +407,7 @@ class ApWifiMac : public WifiMac
      * Schedule the transmission of FILS Discovery frames or unsolicited Probe Response frames
      * on the given link
      *
-     * \param linkId the ID of the given link
+     * @param linkId the ID of the given link
      */
     void ScheduleFilsDiscOrUnsolProbeRespFrames(uint8_t linkId);
 
@@ -415,70 +415,70 @@ class ApWifiMac : public WifiMac
      * Process the Power Management bit in the Frame Control field of an MPDU
      * successfully received on the given link.
      *
-     * \param mpdu the successfully received MPDU
-     * \param linkId the ID of the given link
+     * @param mpdu the successfully received MPDU
+     * @param linkId the ID of the given link
      */
     void ProcessPowerManagementFlag(Ptr<const WifiMpdu> mpdu, uint8_t linkId);
     /**
      * Perform the necessary actions when a given station switches from active mode
      * to powersave mode.
      *
-     * \param staAddr the MAC address of the given station
-     * \param linkId the ID of the link on which the given station is operating
+     * @param staAddr the MAC address of the given station
+     * @param linkId the ID of the link on which the given station is operating
      */
     void StaSwitchingToPsMode(const Mac48Address& staAddr, uint8_t linkId);
     /**
      * Perform the necessary actions when a given station deassociates or switches
      * from powersave mode to active mode.
      *
-     * \param staAddr the MAC address of the given station
-     * \param linkId the ID of the link on which the given station is operating
+     * @param staAddr the MAC address of the given station
+     * @param linkId the ID of the link on which the given station is operating
      */
     void StaSwitchingToActiveModeOrDeassociated(const Mac48Address& staAddr, uint8_t linkId);
 
     /**
      * Return the Capability information of the current AP for the given link.
      *
-     * \param linkId the ID of the given link
-     * \return the Capability information that we support
+     * @param linkId the ID of the given link
+     * @return the Capability information that we support
      */
     CapabilityInformation GetCapabilities(uint8_t linkId) const;
     /**
      * Return the ERP information of the current AP for the given link.
      *
-     * \param linkId the ID of the given link
-     * \return the ERP information that we support for the given link
+     * @param linkId the ID of the given link
+     * @return the ERP information that we support for the given link
      */
     ErpInformation GetErpInformation(uint8_t linkId) const;
     /**
      * Return the EDCA Parameter Set of the current AP for the given link.
      *
-     * \param linkId the ID of the given link
-     * \return the EDCA Parameter Set that we support for the given link
+     * @param linkId the ID of the given link
+     * @return the EDCA Parameter Set that we support for the given link
      */
     EdcaParameterSet GetEdcaParameterSet(uint8_t linkId) const;
     /**
      * Return the MU EDCA Parameter Set of the current AP, if one needs to be advertised
      *
-     * \return the MU EDCA Parameter Set that needs to be advertised (if any)
+     * @return the MU EDCA Parameter Set that needs to be advertised (if any)
      */
     std::optional<MuEdcaParameterSet> GetMuEdcaParameterSet() const;
     /**
      * Return the Reduced Neighbor Report (RNR) element that the current AP sends
      * on the given link, if one needs to be advertised.
      *
-     * \param linkId the ID of the link to send the RNR element onto
-     * \return the Reduced Neighbor Report element
+     * @param linkId the ID of the link to send the RNR element onto
+     * @return the Reduced Neighbor Report element
      */
     std::optional<ReducedNeighborReport> GetReducedNeighborReport(uint8_t linkId) const;
     /**
      * Return the Multi-Link Element that the current AP includes in the management
      * frames of the given type it transmits on the given link.
      *
-     * \param linkId the ID of the link to send the Multi-Link Element onto
-     * \param frameType the type of the frame containing the Multi-Link Element
-     * \param to the Receiver Address of the frame containing the Multi-Link Element
-     * \return the Multi-Link Element
+     * @param linkId the ID of the link to send the Multi-Link Element onto
+     * @param frameType the type of the frame containing the Multi-Link Element
+     * @param to the Receiver Address of the frame containing the Multi-Link Element
+     * @return the Multi-Link Element
      */
     MultiLinkElement GetMultiLinkElement(uint8_t linkId,
                                          WifiMacType frameType,
@@ -486,50 +486,50 @@ class ApWifiMac : public WifiMac
     /**
      * Return the HT operation of the current AP for the given link.
      *
-     * \param linkId the ID of the given link
-     * \return the HT operation that we support
+     * @param linkId the ID of the given link
+     * @return the HT operation that we support
      */
     HtOperation GetHtOperation(uint8_t linkId) const;
     /**
      * Return the VHT operation of the current AP for the given link.
      *
-     * \param linkId the ID of the given link
-     * \return the VHT operation that we support
+     * @param linkId the ID of the given link
+     * @return the VHT operation that we support
      */
     VhtOperation GetVhtOperation(uint8_t linkId) const;
     /**
      * Return the HE operation of the current AP for the given link.
      *
-     * \param linkId the ID of the given link
-     * \return the HE operation that we support
+     * @param linkId the ID of the given link
+     * @return the HE operation that we support
      */
     HeOperation GetHeOperation(uint8_t linkId) const;
     /**
      * Return the EHT operation of the current AP for the given link.
      *
-     * \param linkId the ID of the given link
-     * \return the EHT operation that we support
+     * @param linkId the ID of the given link
+     * @return the EHT operation that we support
      */
     EhtOperation GetEhtOperation(uint8_t linkId) const;
     /**
      * Return an instance of SupportedRates that contains all rates that we support
      * for the given link (including HT rates).
      *
-     * \param linkId the ID of the given link
-     * \return all rates that we support
+     * @param linkId the ID of the given link
+     * @return all rates that we support
      */
     AllSupportedRates GetSupportedRates(uint8_t linkId) const;
     /**
      * Return the DSSS Parameter Set that we support on the given link
      *
-     * \param linkId the ID of the given link
-     * \return the DSSS Parameter Set that we support on the given link
+     * @param linkId the ID of the given link
+     * @return the DSSS Parameter Set that we support on the given link
      */
     DsssParameterSet GetDsssParameterSet(uint8_t linkId) const;
     /**
      * Enable or disable beacon generation of the AP.
      *
-     * \param enable enable or disable beacon generation
+     * @param enable enable or disable beacon generation
      */
     void SetBeaconGeneration(bool enable);
 
@@ -540,7 +540,7 @@ class ApWifiMac : public WifiMac
      * associated  to the AP, and that short slot time is supported by the AP and by all
      * other ERP stations that are associated to the AP. Otherwise, it is disabled.
      *
-     * \param linkId the ID of the given link
+     * @param linkId the ID of the given link
      */
     void UpdateShortSlotTimeEnabled(uint8_t linkId);
     /**
@@ -549,7 +549,7 @@ class ApWifiMac : public WifiMac
      * Typically, short preamble is enabled only when the AP and all associated
      * stations support short PHY preamble. Otherwise, it is disabled.
      *
-     * \param linkId the ID of the given link
+     * @param linkId the ID of the given link
      */
     void UpdateShortPreambleEnabled(uint8_t linkId);
 
@@ -557,8 +557,8 @@ class ApWifiMac : public WifiMac
      * Return whether protection for non-ERP stations is used in the BSS
      * corresponding to the given link.
      *
-     * \param linkId the ID of the given link
-     * \return true if protection for non-ERP stations is used in the BSS,
+     * @param linkId the ID of the given link
+     * @return true if protection for non-ERP stations is used in the BSS,
      *         false otherwise
      */
     bool GetUseNonErpProtection(uint8_t linkId) const;
@@ -567,7 +567,7 @@ class ApWifiMac : public WifiMac
     void DoInitialize() override;
 
     /**
-     * \return the next Association ID to be allocated by the AP
+     * @return the next Association ID to be allocated by the AP
      */
     uint16_t GetNextAssociationId() const;
 
@@ -608,8 +608,8 @@ class ApWifiMac : public WifiMac
     /**
      * TracedCallback signature for association/deassociation events.
      *
-     * \param aid the AID of the station
-     * \param address the MAC address of the station
+     * @param aid the AID of the station
+     * @param address the MAC address of the station
      */
     typedef void (*AssociationCallback)(uint16_t aid, Mac48Address address);
 

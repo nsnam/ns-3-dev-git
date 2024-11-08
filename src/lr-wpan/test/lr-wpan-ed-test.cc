@@ -26,10 +26,10 @@ using namespace ns3::lrwpan;
 NS_LOG_COMPONENT_DEFINE("lr-wpan-energy-detection-test");
 
 /**
- * \ingroup lr-wpan-test
- * \ingroup tests
+ * @ingroup lr-wpan-test
+ * @ingroup tests
  *
- * \brief LrWpan Energy Detection Test
+ * @brief LrWpan Energy Detection Test
  */
 class LrWpanEdTestCase : public TestCase
 {
@@ -40,9 +40,9 @@ class LrWpanEdTestCase : public TestCase
     void DoRun() override;
 
     /**
-     * \brief Function called when PlmeEdConfirm is hit.
-     * \param status The PHY status.
-     * \param level The ED level.
+     * @brief Function called when PlmeEdConfirm is hit.
+     * @param status The PHY status.
+     * @param level The ED level.
      */
     void PlmeEdConfirm(PhyEnumeration status, uint8_t level);
 
@@ -244,10 +244,10 @@ LrWpanEdTestCase::DoRun()
 }
 
 /**
- * \ingroup lr-wpan-test
- * \ingroup tests
+ * @ingroup lr-wpan-test
+ * @ingroup tests
  *
- * \brief LrWpan Energy Detection TestSuite
+ * @brief LrWpan Energy Detection TestSuite
  */
 class LrWpanEdTestSuite : public TestSuite
 {

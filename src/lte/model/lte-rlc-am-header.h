@@ -19,8 +19,8 @@ namespace ns3
 {
 
 /**
- * \ingroup lte
- * \brief The packet header for the AM Radio Link Control (RLC) protocol packets
+ * @ingroup lte
+ * @brief The packet header for the AM Radio Link Control (RLC) protocol packets
  *
  * This class has fields corresponding to those in an RLC header as well as
  * methods for serialization to and deserialization from a byte buffer.
@@ -30,7 +30,7 @@ class LteRlcAmHeader : public Header
 {
   public:
     /**
-     * \brief Constructor
+     * @brief Constructor
      *
      * Creates a null header
      */
@@ -42,17 +42,17 @@ class LteRlcAmHeader : public Header
     /**
      * Set control PDU function
      *
-     * \param controlPduType
+     * @param controlPduType
      */
     void SetControlPdu(uint8_t controlPduType);
     /**
      * Is data PDU function
-     * \returns true if data PDU
+     * @returns true if data PDU
      */
     bool IsDataPdu() const;
     /**
      * Is control PDU function
-     * \returns true if control PDU
+     * @returns true if control PDU
      */
     bool IsControlPdu() const;
 
@@ -73,26 +73,26 @@ class LteRlcAmHeader : public Header
     /**
      * Set sequence number
      *
-     * \param sequenceNumber sequence number
+     * @param sequenceNumber sequence number
      */
     void SetSequenceNumber(SequenceNumber10 sequenceNumber);
     /**
      * Get sequence number
      *
-     * \returns sequence number
+     * @returns sequence number
      */
     SequenceNumber10 GetSequenceNumber() const;
 
     /**
      * Set sequence number
      *
-     * \param framingInfo framing info
+     * @param framingInfo framing info
      */
     void SetFramingInfo(uint8_t framingInfo);
     /**
      * Get framing info
      *
-     * \returns framing info
+     * @returns framing info
      */
     uint8_t GetFramingInfo() const;
 
@@ -108,26 +108,26 @@ class LteRlcAmHeader : public Header
     /**
      * Push extension bit function
      *
-     * \param extensionBit the extension bit
+     * @param extensionBit the extension bit
      */
     void PushExtensionBit(uint8_t extensionBit);
     /**
      * Push length indicator function
      *
-     * \param lengthIndicator the length indicator
+     * @param lengthIndicator the length indicator
      */
     void PushLengthIndicator(uint16_t lengthIndicator);
 
     /**
      * Pop extension bit function
      *
-     * \returns the extension bit
+     * @returns the extension bit
      */
     uint8_t PopExtensionBit();
     /**
      * Pop length indicator function
      *
-     * \returns the length indicator
+     * @returns the length indicator
      */
     uint16_t PopLengthIndicator();
 
@@ -141,13 +141,13 @@ class LteRlcAmHeader : public Header
     /**
      * Pop extension bit function
      *
-     * \param resegFlag resegmentation flag
+     * @param resegFlag resegmentation flag
      */
     void SetResegmentationFlag(uint8_t resegFlag);
     /**
      * Get resegmentation flag function
      *
-     * \returns resegmentation flag
+     * @returns resegmentation flag
      */
     uint8_t GetResegmentationFlag() const;
 
@@ -161,13 +161,13 @@ class LteRlcAmHeader : public Header
     /**
      * Set polling bit function
      *
-     * \param pollingBit polling bit
+     * @param pollingBit polling bit
      */
     void SetPollingBit(uint8_t pollingBit);
     /**
      * Get polling bit function
      *
-     * \returns polling bit
+     * @returns polling bit
      */
     uint8_t GetPollingBit() const;
 
@@ -181,13 +181,13 @@ class LteRlcAmHeader : public Header
     /**
      * Set last segment flag function
      *
-     * \param lsf last segment flag
+     * @param lsf last segment flag
      */
     void SetLastSegmentFlag(uint8_t lsf);
     /**
      * Get last segment flag function
      *
-     * \returns last segment flag
+     * @returns last segment flag
      */
     uint8_t GetLastSegmentFlag() const;
 
@@ -201,19 +201,19 @@ class LteRlcAmHeader : public Header
     /**
      * Set segment offset function
      *
-     * \param segmentOffset segment offset
+     * @param segmentOffset segment offset
      */
     void SetSegmentOffset(uint16_t segmentOffset);
     /**
      * Get segment offset function
      *
-     * \returns segment offset
+     * @returns segment offset
      */
     uint16_t GetSegmentOffset() const;
     /**
      * Get last offset function
      *
-     * \returns last offset
+     * @returns last offset
      */
     uint16_t GetLastOffset() const;
 
@@ -224,19 +224,19 @@ class LteRlcAmHeader : public Header
     /**
      * Set ack sn function
      *
-     * \param ackSn ack sn
+     * @param ackSn ack sn
      */
     void SetAckSn(SequenceNumber10 ackSn);
     /**
      * Get ack sn function
      *
-     * \returns sequence number
+     * @returns sequence number
      */
     SequenceNumber10 GetAckSn() const;
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     TypeId GetInstanceTypeId() const override;
@@ -248,25 +248,25 @@ class LteRlcAmHeader : public Header
     /**
      *
      *
-     * \param bytes max allowed CONTROL PDU size
+     * @param bytes max allowed CONTROL PDU size
      *
-     * \return true if one more NACK would fit in the CONTROL PDU; false otherwise
+     * @return true if one more NACK would fit in the CONTROL PDU; false otherwise
      */
     bool OneMoreNackWouldFitIn(uint16_t bytes);
 
     /**
      * Add one more NACK to the CONTROL PDU
      *
-     * \param nack
+     * @param nack
      */
     void PushNack(int nack);
 
     /**
      *
      *
-     * \param nack SN of the NACK
+     * @param nack SN of the NACK
      *
-     * \return true if the NACK is present in the STATUS PDU, false otherwise
+     * @return true if the NACK is present in the STATUS PDU, false otherwise
      */
     bool IsNackPresent(SequenceNumber10 nack);
 
@@ -274,7 +274,7 @@ class LteRlcAmHeader : public Header
      * Retrieve one NACK from the CONTROL PDU
      *
      *
-     * \return the SN  >= 0 of the next nack; returns -1 if no NACK is left
+     * @return the SN  >= 0 of the next nack; returns -1 if no NACK is left
      */
     int PopNack();
 

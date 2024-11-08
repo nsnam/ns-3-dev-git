@@ -7,8 +7,8 @@
  */
 
 /**
- * \file
- * \ingroup logging
+ * @file
+ * @ingroup logging
  * Definition of empty logging macros and the NS_LOG_NOOP_INTERNAL macro.
  */
 
@@ -46,7 +46,7 @@
 */
 
 /**
- * \ingroup logging
+ * @ingroup logging
  * Empty logging macro implementation, used when logging is disabled.
  */
 #define NS_LOG_NOOP_INTERNAL(msg)                                                                  \
@@ -62,7 +62,7 @@
 #define NS_LOG_FUNCTION_NOARGS()
 
 /**
- * \ingroup logging
+ * @ingroup logging
  * Empty logging macro implementation, used when logging is disabled.
  */
 #define NS_LOG_NOOP_FUNC_INTERNAL(msg)                                                             \

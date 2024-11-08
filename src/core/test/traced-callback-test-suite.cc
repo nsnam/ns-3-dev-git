@@ -10,18 +10,18 @@
 using namespace ns3;
 
 /**
- * \file
- * \ingroup tracedcallback-tests
+ * @file
+ * @ingroup tracedcallback-tests
  * TracedCallback test suite
  */
 
 /**
- * \ingroup core-tests
- * \defgroup tracedcallback-tests TracedCallback class tests
+ * @ingroup core-tests
+ * @defgroup tracedcallback-tests TracedCallback class tests
  */
 
 /**
- * \ingroup tracedcallback-tests
+ * @ingroup tracedcallback-tests
  *
  * TracedCallback Test case, check basic TracedCallback operation.
  */
@@ -39,8 +39,8 @@ class BasicTracedCallbackTestCase : public TestCase
 
     /**
      * First callback.
-     * \param a First parameter.
-     * \param b Second parameter.
+     * @param a First parameter.
+     * @param b Second parameter.
      */
     void CbOne(uint8_t a, double b);
 
@@ -123,9 +123,9 @@ BasicTracedCallbackTestCase::DoRun()
 }
 
 /**
- * \ingroup tracedcallback-tests
+ * @ingroup tracedcallback-tests
  *
- * \brief The traced callback Test Suite.
+ * @brief The traced callback Test Suite.
  */
 class TracedCallbackTestSuite : public TestSuite
 {

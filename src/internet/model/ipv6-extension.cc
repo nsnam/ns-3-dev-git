@@ -1235,7 +1235,7 @@ Ipv6ExtensionESP::Process(Ptr<Packet>& packet,
 {
     NS_LOG_FUNCTION(this << packet << offset << ipv6Header << dst << nextHeader << isDropped);
 
-    /** \todo */
+    /** @todo */
 
     return 0;
 }
@@ -1278,7 +1278,7 @@ Ipv6ExtensionAH::Process(Ptr<Packet>& packet,
 {
     NS_LOG_FUNCTION(this << packet << offset << ipv6Header << dst << nextHeader << isDropped);
 
-    /** \todo */
+    /** @todo */
 
     return 1;
 }

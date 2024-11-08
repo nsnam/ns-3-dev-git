@@ -26,18 +26,18 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("PairTestSuite");
 
 /**
- * \file
- * \ingroup pair-tests
+ * @file
+ * @ingroup pair-tests
  * Pairs tests.
  */
 
 /**
- * \ingroup core-tests
- * \defgroup pair-tests Pairs tests
+ * @ingroup core-tests
+ * @defgroup pair-tests Pairs tests
  */
 
 /**
- * \ingroup pair-tests
+ * @ingroup pair-tests
  *
  * Object holding pairs of values.
  */
@@ -48,8 +48,8 @@ class PairObject : public Object
     ~PairObject() override;
 
     /**
-     * \brief Get the type ID.
-     * \return The object TypeId.
+     * @brief Get the type ID.
+     * @return The object TypeId.
      */
     static TypeId GetTypeId();
 
@@ -93,11 +93,11 @@ PairObject::GetTypeId()
 }
 
 /**
- * \brief Stream insertion operator.
+ * @brief Stream insertion operator.
  *
- * \param [in] os The reference to the output stream.
- * \param [in] obj The PairObject.
- * \returns The reference to the output stream.
+ * @param [in] os The reference to the output stream.
+ * @param [in] obj The PairObject.
+ * @returns The reference to the output stream.
  */
 std::ostream&
 operator<<(std::ostream& os, const PairObject& obj)
@@ -108,7 +108,7 @@ operator<<(std::ostream& os, const PairObject& obj)
 }
 
 /**
- * \ingroup pair-tests
+ * @ingroup pair-tests
  *
  * Pair test - Test instantiation, initialization, access.
  */
@@ -153,7 +153,7 @@ PairValueTestCase::DoRun()
 }
 
 /**
- * \ingroup pair-tests
+ * @ingroup pair-tests
  *
  * Pair test - test setting through attribute interface.
  */
@@ -189,9 +189,9 @@ PairValueSettingsTestCase::DoRun()
 }
 
 /**
- * \ingroup pair-tests
+ * @ingroup pair-tests
  *
- * \brief The pair-value Test Suite.
+ * @brief The pair-value Test Suite.
  */
 class PairValueTestSuite : public TestSuite
 {

@@ -18,9 +18,9 @@ namespace ns3
 {
 
 /**
- * \ingroup spectrum
+ * @ingroup spectrum
  *
- * \brief SpectrumChannel implementation which handles a single spectrum model
+ * @brief SpectrumChannel implementation which handles a single spectrum model
  *
  * All SpectrumPhy layers attached to this SpectrumChannel
  */
@@ -30,8 +30,8 @@ class SingleModelSpectrumChannel : public SpectrumChannel
     SingleModelSpectrumChannel();
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -53,8 +53,8 @@ class SingleModelSpectrumChannel : public SpectrumChannel
     /**
      * Used internally to reschedule transmission after the propagation delay.
      *
-     * \param params
-     * \param receiver
+     * @param params
+     * @param receiver
      */
     void StartRx(Ptr<SpectrumSignalParameters> params, Ptr<SpectrumPhy> receiver);
 

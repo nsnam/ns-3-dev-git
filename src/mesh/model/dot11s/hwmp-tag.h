@@ -20,9 +20,9 @@ namespace ns3
 namespace dot11s
 {
 /**
- * \ingroup dot11s
+ * @ingroup dot11s
  *
- * \brief Hwmp tag implements interaction between HWMP
+ * @brief Hwmp tag implements interaction between HWMP
  * protocol and MeshWifiMac
  *
  * Hwmp tag keeps the following:
@@ -43,50 +43,50 @@ class HwmpTag : public Tag
     ~HwmpTag() override;
     /**
      * Set address
-     * \param retransmitter the MAC address of the retransmitter
+     * @param retransmitter the MAC address of the retransmitter
      */
     void SetAddress(Mac48Address retransmitter);
     /**
      * Get address from tag
-     * \return the MAC address
+     * @return the MAC address
      */
     Mac48Address GetAddress();
     /**
      * Set the TTL value
-     * \param ttl
+     * @param ttl
      */
     void SetTtl(uint8_t ttl);
     /**
      * Get the TTL value
-     * \returns the TTL
+     * @returns the TTL
      */
     uint8_t GetTtl() const;
     /**
      * Set the metric value
-     * \param metric the metric
+     * @param metric the metric
      */
     void SetMetric(uint32_t metric);
     /**
      * Get the metric value
-     * \returns the metric
+     * @returns the metric
      */
     uint32_t GetMetric() const;
     /**
      * Set sequence number
-     * \param seqno the sequence number
+     * @param seqno the sequence number
      */
     void SetSeqno(uint32_t seqno);
     /**
      * Get the sequence number
-     * \returns the sequence number
+     * @returns the sequence number
      */
     uint32_t GetSeqno() const;
     /// Decrement TTL
     void DecrementTtl();
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     TypeId GetInstanceTypeId() const override;

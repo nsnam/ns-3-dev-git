@@ -17,9 +17,9 @@
 using namespace ns3;
 
 /**
- * \ingroup aodv
+ * @ingroup aodv
  *
- * \brief AODV chain regression test
+ * @brief AODV chain regression test
  *
  * This script creates 1-dimensional grid topology and then ping last node from the first one:
  */

@@ -15,9 +15,9 @@
 using namespace ns3;
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief Test 1.3 Link adaptation
+ * @brief Test 1.3 Link adaptation
  */
 class LteLinkAdaptationTestSuite : public TestSuite
 {
@@ -26,9 +26,9 @@ class LteLinkAdaptationTestSuite : public TestSuite
 };
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief Test that LTE link adaptation works according to the theoretical model.
+ * @brief Test that LTE link adaptation works according to the theoretical model.
  */
 class LteLinkAdaptationTestCase : public TestCase
 {
@@ -36,18 +36,18 @@ class LteLinkAdaptationTestCase : public TestCase
     /**
      * Constructor
      *
-     * \param name the reference name
-     * \param snrDb the SNR in dB
-     * \param loss the loss
-     * \param mcsIndex the DL se
+     * @param name the reference name
+     * @param snrDb the SNR in dB
+     * @param loss the loss
+     * @param mcsIndex the DL se
      */
     LteLinkAdaptationTestCase(std::string name, double snrDb, double loss, uint16_t mcsIndex);
     LteLinkAdaptationTestCase();
     ~LteLinkAdaptationTestCase() override;
 
     /**
-     * \brief DL scheduling function
-     * \param dlInfo the DL info
+     * @brief DL scheduling function
+     * @param dlInfo the DL info
      */
     void DlScheduling(DlSchedulingCallbackInfo dlInfo);
 

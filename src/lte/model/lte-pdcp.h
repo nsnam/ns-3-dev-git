@@ -33,8 +33,8 @@ class LtePdcp : public Object // SimpleRefCount<LtePdcp>
     LtePdcp();
     ~LtePdcp() override;
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     void DoDispose() override;
@@ -42,42 +42,42 @@ class LtePdcp : public Object // SimpleRefCount<LtePdcp>
     /**
      *
      *
-     * \param rnti
+     * @param rnti
      */
     void SetRnti(uint16_t rnti);
 
     /**
      *
      *
-     * \param lcId
+     * @param lcId
      */
     void SetLcId(uint8_t lcId);
 
     /**
      *
      *
-     * \param s the PDCP SAP user to be used by this LTE_PDCP
+     * @param s the PDCP SAP user to be used by this LTE_PDCP
      */
     void SetLtePdcpSapUser(LtePdcpSapUser* s);
 
     /**
      *
      *
-     * \return the PDCP SAP Provider interface offered to the RRC by this LTE_PDCP
+     * @return the PDCP SAP Provider interface offered to the RRC by this LTE_PDCP
      */
     LtePdcpSapProvider* GetLtePdcpSapProvider();
 
     /**
      *
      *
-     * \param s the RLC SAP Provider to be used by this LTE_PDCP
+     * @param s the RLC SAP Provider to be used by this LTE_PDCP
      */
     void SetLteRlcSapProvider(LteRlcSapProvider* s);
 
     /**
      *
      *
-     * \return the RLC SAP User interface offered to the RLC by this LTE_PDCP
+     * @return the RLC SAP User interface offered to the RLC by this LTE_PDCP
      */
     LteRlcSapUser* GetLteRlcSapUser();
 
@@ -95,35 +95,35 @@ class LtePdcp : public Object // SimpleRefCount<LtePdcp>
 
     /**
      *
-     * \return the current status of the PDCP
+     * @return the current status of the PDCP
      */
     Status GetStatus() const;
 
     /**
      * Set the status of the PDCP
      *
-     * \param s
+     * @param s
      */
     void SetStatus(Status s);
 
     /**
      * TracedCallback for PDU transmission event.
      *
-     * \param [in] rnti The C-RNTI identifying the UE.
-     * \param [in] lcid The logical channel id corresponding to
+     * @param [in] rnti The C-RNTI identifying the UE.
+     * @param [in] lcid The logical channel id corresponding to
      *             the sending RLC instance.
-     * \param [in] size Packet size.
+     * @param [in] size Packet size.
      */
     typedef void (*PduTxTracedCallback)(uint16_t rnti, uint8_t lcid, uint32_t size);
 
     /**
      * TracedCallback signature for PDU receive event.
      *
-     * \param [in] rnti The C-RNTI identifying the UE.
-     * \param [in] lcid The logical channel id corresponding to
+     * @param [in] rnti The C-RNTI identifying the UE.
+     * @param [in] lcid The logical channel id corresponding to
      *             the sending RLC instance.
-     * \param [in] size Packet size.
-     * \param [in] delay Delay since packet sent, in ns..
+     * @param [in] size Packet size.
+     * @param [in] delay Delay since packet sent, in ns..
      */
     typedef void (*PduRxTracedCallback)(const uint16_t rnti,
                                         const uint8_t lcid,
@@ -134,7 +134,7 @@ class LtePdcp : public Object // SimpleRefCount<LtePdcp>
     /**
      * Interface provided to upper RRC entity
      *
-     * \param params the TransmitPdcpSduParameters
+     * @param params the TransmitPdcpSduParameters
      */
     virtual void DoTransmitPdcpSdu(LtePdcpSapProvider::TransmitPdcpSduParameters params);
 
@@ -144,7 +144,7 @@ class LtePdcp : public Object // SimpleRefCount<LtePdcp>
     /**
      * Interface provided to lower RLC entity
      *
-     * \param p packet
+     * @param p packet
      */
     virtual void DoReceivePdu(Ptr<Packet> p);
 

@@ -17,7 +17,7 @@ namespace ns3
 {
 
 /**
- * \brief Service Access Point (SAP) offered by the Frequency Reuse algorithm
+ * @brief Service Access Point (SAP) offered by the Frequency Reuse algorithm
  *        instance to the eNodeB RRC instance.
  *
  * This is the *LteFfrRrcSapProvider*, i.e., the part of the SAP
@@ -30,24 +30,24 @@ class LteFfrRrcSapProvider
     virtual ~LteFfrRrcSapProvider();
 
     /**
-     * \brief SetCellId
-     * \param cellId the Cell Identifier
+     * @brief SetCellId
+     * @param cellId the Cell Identifier
      */
     virtual void SetCellId(uint16_t cellId) = 0;
 
     /**
-     * \brief Configure DL and UL bandwidth in Frequency Reuse Algorithm
+     * @brief Configure DL and UL bandwidth in Frequency Reuse Algorithm
      *        function is called during Cell configuration
-     * \param ulBandwidth UL bandwidth in number of RB
-     * \param dlBandwidth DL bandwidth in number of RB
+     * @param ulBandwidth UL bandwidth in number of RB
+     * @param dlBandwidth DL bandwidth in number of RB
      */
     virtual void SetBandwidth(uint8_t ulBandwidth, uint8_t dlBandwidth) = 0;
 
     /**
-     * \brief Send a UE measurement report to Frequency Reuse algorithm.
-     * \param rnti Radio Network Temporary Identity, an integer identifying the UE
+     * @brief Send a UE measurement report to Frequency Reuse algorithm.
+     * @param rnti Radio Network Temporary Identity, an integer identifying the UE
      *             where the report originates from
-     * \param measResults a single report of one measurement identity
+     * @param measResults a single report of one measurement identity
      *
      * The received measurement report is a result of the UE measurement
      * configuration previously configured by calling
@@ -58,15 +58,15 @@ class LteFfrRrcSapProvider
     virtual void ReportUeMeas(uint16_t rnti, LteRrcSap::MeasResults measResults) = 0;
 
     /**
-     * \brief RecvLoadInformation
-     * \param params the EpcX2Sap::LoadInformationParams
+     * @brief RecvLoadInformation
+     * @param params the EpcX2Sap::LoadInformationParams
      */
     virtual void RecvLoadInformation(EpcX2Sap::LoadInformationParams params) = 0;
 
 }; // end of class LteFfrRrcSapProvider
 
 /**
- * \brief Service Access Point (SAP) offered by the eNodeB RRC instance to the
+ * @brief Service Access Point (SAP) offered by the eNodeB RRC instance to the
  *        Frequency Reuse algorithm instance.
  *
  * This is the *LteFfrRrcSapUser*, i.e., the part of the SAP that
@@ -78,10 +78,10 @@ class LteFfrRrcSapUser
     virtual ~LteFfrRrcSapUser();
 
     /**
-     * \brief Request a certain reporting configuration to be fulfilled by the UEs
+     * @brief Request a certain reporting configuration to be fulfilled by the UEs
      *        attached to the eNodeB entity.
-     * \param reportConfig the UE measurement reporting configuration
-     * \return the measurement identity associated with this newly added
+     * @param reportConfig the UE measurement reporting configuration
+     * @return the measurement identity associated with this newly added
      *         reporting configuration
      *
      * The eNodeB RRC entity is expected to configure the same reporting
@@ -91,17 +91,17 @@ class LteFfrRrcSapUser
      * Frequency Reuse algorithm through the LteFfrRrcSapProvider::ReportUeMeas
      * SAP function.
      *
-     * \note This function is only valid before the simulation begins.
+     * @note This function is only valid before the simulation begins.
      */
     virtual uint8_t AddUeMeasReportConfigForFfr(LteRrcSap::ReportConfigEutra reportConfig) = 0;
 
     /**
-     * \brief Instruct the eNodeB RRC entity to perform RrcConnectionReconfiguration
+     * @brief Instruct the eNodeB RRC entity to perform RrcConnectionReconfiguration
      *        to inform UE about new PdschConfigDedicated (i.e. P_a value).
      *        Also Downlink Power Allocation is done based on this value.
-     * \param rnti Radio Network Temporary Identity, an integer identifying the
+     * @param rnti Radio Network Temporary Identity, an integer identifying the
      *             UE which shall perform the handover
-     * \param pdschConfigDedicated new PdschConfigDedicated to be configured for UE
+     * @param pdschConfigDedicated new PdschConfigDedicated to be configured for UE
      *
      * This function is used by the Frequency Reuse algorithm entity when it decides
      * that PDSCH for this UE should be allocated with different transmit power.
@@ -114,15 +114,15 @@ class LteFfrRrcSapUser
                                          LteRrcSap::PdschConfigDedicated pdschConfigDedicated) = 0;
 
     /**
-     * \brief SendLoadInformation
-     * \param params the EpcX2Sap::LoadInformationParams
+     * @brief SendLoadInformation
+     * @param params the EpcX2Sap::LoadInformationParams
      */
     virtual void SendLoadInformation(EpcX2Sap::LoadInformationParams params) = 0;
 
 }; // end of class LteFfrRrcSapUser
 
 /**
- * \brief Template for the implementation of the LteFfrRrcSapProvider
+ * @brief Template for the implementation of the LteFfrRrcSapProvider
  *        as a member of an owner class of type C to which all methods are
  *        forwarded.
  */
@@ -132,7 +132,7 @@ class MemberLteFfrRrcSapProvider : public LteFfrRrcSapProvider
   public:
     /**
      * Constructor
-     * \param owner the owner class
+     * @param owner the owner class
      */
     MemberLteFfrRrcSapProvider(C* owner);
 
@@ -185,7 +185,7 @@ MemberLteFfrRrcSapProvider<C>::RecvLoadInformation(EpcX2Sap::LoadInformationPara
 }
 
 /**
- * \brief Template for the implementation of the LteFfrRrcSapUser
+ * @brief Template for the implementation of the LteFfrRrcSapUser
  *        as a member of an owner class of type C to which all methods are
  *        forwarded.
  */
@@ -196,7 +196,7 @@ class MemberLteFfrRrcSapUser : public LteFfrRrcSapUser
     /**
      * Constructor
      *
-     * \param owner the owner class
+     * @param owner the owner class
      */
     MemberLteFfrRrcSapUser(C* owner);
 

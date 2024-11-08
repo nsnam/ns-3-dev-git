@@ -27,35 +27,35 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("LteSecondaryCellHandoverTest");
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief Test measurement-based handover to secondary cell.
+ * @brief Test measurement-based handover to secondary cell.
  */
 
 class LteSecondaryCellHandoverTestCase : public TestCase
 {
   public:
     /**
-     * \brief Creates an instance of the measurement-based secondary cell handover test case.
-     * \param name name of the test case
-     * \param useIdealRrc if true, simulation uses Ideal RRC protocol, otherwise
+     * @brief Creates an instance of the measurement-based secondary cell handover test case.
+     * @param name name of the test case
+     * @param useIdealRrc if true, simulation uses Ideal RRC protocol, otherwise
      *                    simulation uses Real RRC protocol
      */
 
     LteSecondaryCellHandoverTestCase(std::string name, bool useIdealRrc);
 
     /**
-     * \brief Shutdown cellId by reducing its power to 1 dBm.
-     * \param cellId ID of the cell to shutdown
+     * @brief Shutdown cellId by reducing its power to 1 dBm.
+     * @param cellId ID of the cell to shutdown
      */
     void ShutdownCell(uint32_t cellId);
 
     /**
-     * \brief Callback method indicating start of UE handover
-     * \param imsi The IMSI
-     * \param sourceCellId The source cell ID
-     * \param rnti The RNTI
-     * \param targetCellId The target cell ID
+     * @brief Callback method indicating start of UE handover
+     * @param imsi The IMSI
+     * @param sourceCellId The source cell ID
+     * @param rnti The RNTI
+     * @param targetCellId The target cell ID
      */
     void UeHandoverStartCallback(uint64_t imsi,
                                  uint16_t sourceCellId,
@@ -64,12 +64,12 @@ class LteSecondaryCellHandoverTestCase : public TestCase
 
   private:
     /**
-     * \brief Run a simulation.
+     * @brief Run a simulation.
      */
     void DoRun() override;
 
     /**
-     * \brief Verify that handover has occurred during the simulation.
+     * @brief Verify that handover has occurred during the simulation.
      */
     void DoTeardown() override;
 
@@ -183,9 +183,9 @@ LteSecondaryCellHandoverTestCase::DoTeardown()
 }
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief LTE measurement-based handover to secondary cell test suite.
+ * @brief LTE measurement-based handover to secondary cell test suite.
  */
 class LteSecondaryCellHandoverTestSuite : public TestSuite
 {
@@ -201,7 +201,7 @@ LteSecondaryCellHandoverTestSuite::LteSecondaryCellHandoverTestSuite()
 }
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  * Static variable for test initialization
  */
 static LteSecondaryCellHandoverTestSuite g_lteSecondaryCellHandoverTestSuiteInstance;

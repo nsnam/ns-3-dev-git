@@ -68,15 +68,15 @@
 using namespace ns3;
 
 /**
- * \ingroup internet-apps
- * \defgroup icmp-test ICMP protocol tests
+ * @ingroup internet-apps
+ * @defgroup icmp-test ICMP protocol tests
  */
 
 /**
- * \ingroup icmp-test
- * \ingroup tests
+ * @ingroup icmp-test
+ * @ingroup tests
  *
- * \brief ICMP  Echo Reply Test
+ * @brief ICMP  Echo Reply Test
  */
 class IcmpEchoReplyTestCase : public TestCase
 {
@@ -86,13 +86,13 @@ class IcmpEchoReplyTestCase : public TestCase
 
     /**
      * Send data
-     * \param socket output socket
-     * \param dst destination address
+     * @param socket output socket
+     * @param dst destination address
      */
     void SendData(Ptr<Socket> socket, Ipv4Address dst);
     /**
      * Receive data
-     * \param socket input socket
+     * @param socket input socket
      */
     void ReceivePkt(Ptr<Socket> socket);
 
@@ -202,10 +202,10 @@ IcmpEchoReplyTestCase::DoRun()
 }
 
 /**
- * \ingroup icmp-test
- * \ingroup tests
+ * @ingroup icmp-test
+ * @ingroup tests
  *
- * \brief ICMP Time Exceed Reply Test
+ * @brief ICMP Time Exceed Reply Test
  */
 class IcmpTimeExceedTestCase : public TestCase
 {
@@ -215,13 +215,13 @@ class IcmpTimeExceedTestCase : public TestCase
 
     /**
      * Send data
-     * \param socket output socket
-     * \param dst destination address
+     * @param socket output socket
+     * @param dst destination address
      */
     void SendData(Ptr<Socket> socket, Ipv4Address dst);
     /**
      * Receive data
-     * \param socket input socket
+     * @param socket input socket
      */
     void ReceivePkt(Ptr<Socket> socket);
 
@@ -347,10 +347,10 @@ IcmpTimeExceedTestCase::DoRun()
 }
 
 /**
- * \ingroup icmp-test
- * \ingroup tests
+ * @ingroup icmp-test
+ * @ingroup tests
  *
- * \brief ICMPV6  Echo Reply Test
+ * @brief ICMPV6  Echo Reply Test
  */
 class IcmpV6EchoReplyTestCase : public TestCase
 {
@@ -360,13 +360,13 @@ class IcmpV6EchoReplyTestCase : public TestCase
 
     /**
      * Send data
-     * \param socket output socket
-     * \param dst destination address
+     * @param socket output socket
+     * @param dst destination address
      */
     void SendData(Ptr<Socket> socket, Ipv6Address dst);
     /**
      * Receive data
-     * \param socket input socket
+     * @param socket input socket
      */
     void ReceivePkt(Ptr<Socket> socket);
 
@@ -485,10 +485,10 @@ IcmpV6EchoReplyTestCase::DoRun()
 }
 
 /**
- * \ingroup icmp-test
- * \ingroup tests
+ * @ingroup icmp-test
+ * @ingroup tests
  *
- * \brief ICMPV6  Time Exceed response test
+ * @brief ICMPV6  Time Exceed response test
  */
 class IcmpV6TimeExceedTestCase : public TestCase
 {
@@ -498,13 +498,13 @@ class IcmpV6TimeExceedTestCase : public TestCase
 
     /**
      * Send data
-     * \param socket output socket
-     * \param dst destination address
+     * @param socket output socket
+     * @param dst destination address
      */
     void SendData(Ptr<Socket> socket, Ipv6Address dst);
     /**
      * Receive data
-     * \param socket input socket
+     * @param socket input socket
      */
     void ReceivePkt(Ptr<Socket> socket);
 
@@ -640,10 +640,10 @@ IcmpV6TimeExceedTestCase::DoRun()
 }
 
 /**
- * \ingroup icmp-test
- * \ingroup tests
+ * @ingroup icmp-test
+ * @ingroup tests
  *
- * \brief ICMP TestSuite
+ * @brief ICMP TestSuite
  */
 
 class IcmpTestSuite : public TestSuite

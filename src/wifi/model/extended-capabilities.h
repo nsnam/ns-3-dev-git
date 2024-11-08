@@ -15,8 +15,8 @@ namespace ns3
 {
 
 /**
- * \brief The Extended Capabilities Information Element
- * \ingroup wifi
+ * @brief The Extended Capabilities Information Element
+ * @ingroup wifi
  *
  * This class knows how to serialise and deserialise the Extended Capabilities Information Element
  */
@@ -35,98 +35,98 @@ class ExtendedCapabilities : public WifiInformationElement
     /**
      * Set the first byte in the Extended Capabilities information element.
      *
-     * \param ctrl the first byte in the Extended Capabilities information element
+     * @param ctrl the first byte in the Extended Capabilities information element
      */
     void SetExtendedCapabilitiesByte1(uint8_t ctrl);
     /**
      * Set the second byte in the Extended Capabilities information element.
      *
-     * \param ctrl the second byte in the Extended Capabilities information element
+     * @param ctrl the second byte in the Extended Capabilities information element
      */
     void SetExtendedCapabilitiesByte2(uint8_t ctrl);
     /**
      * Set the third byte in the Extended Capabilities information element.
      *
-     * \param ctrl the third byte in the Extended Capabilities information element
+     * @param ctrl the third byte in the Extended Capabilities information element
      */
     void SetExtendedCapabilitiesByte3(uint8_t ctrl);
     /**
      * Set the fourth byte in the Extended Capabilities information element.
      *
-     * \param ctrl the fourth byte in the Extended Capabilities information element
+     * @param ctrl the fourth byte in the Extended Capabilities information element
      */
     void SetExtendedCapabilitiesByte4(uint8_t ctrl);
     /**
      * Set the fifth byte in the Extended Capabilities information element.
      *
-     * \param ctrl the fifth byte in the Extended Capabilities information element
+     * @param ctrl the fifth byte in the Extended Capabilities information element
      */
     void SetExtendedCapabilitiesByte5(uint8_t ctrl);
     /**
      * Set the sixth byte in the Extended Capabilities information element.
      *
-     * \param ctrl the sixth byte in the Extended Capabilities information element
+     * @param ctrl the sixth byte in the Extended Capabilities information element
      */
     void SetExtendedCapabilitiesByte6(uint8_t ctrl);
     /**
      * Set the seventh byte in the Extended Capabilities information element.
      *
-     * \param ctrl the seventh byte in the Extended Capabilities information element
+     * @param ctrl the seventh byte in the Extended Capabilities information element
      */
     void SetExtendedCapabilitiesByte7(uint8_t ctrl);
     /**
      * Set the eighth byte in the Extended Capabilities information element.
      *
-     * \param ctrl the eighth byte in the Extended Capabilities information element
+     * @param ctrl the eighth byte in the Extended Capabilities information element
      */
     void SetExtendedCapabilitiesByte8(uint8_t ctrl);
 
     /**
      * Return the first byte in the Extended Capabilities information element.
      *
-     * \return the first byte in the Extended Capabilities information element
+     * @return the first byte in the Extended Capabilities information element
      */
     uint8_t GetExtendedCapabilitiesByte1() const;
     /**
      * Return the second byte in the Extended Capabilities information element.
      *
-     * \return the second byte in the Extended Capabilities information element
+     * @return the second byte in the Extended Capabilities information element
      */
     uint8_t GetExtendedCapabilitiesByte2() const;
     /**
      * Return the third byte in the Extended Capabilities information element.
      *
-     * \return the third byte in the Extended Capabilities information element
+     * @return the third byte in the Extended Capabilities information element
      */
     uint8_t GetExtendedCapabilitiesByte3() const;
     /**
      * Return the fourth byte in the Extended Capabilities information element.
      *
-     * \return the fourth byte in the Extended Capabilities information element
+     * @return the fourth byte in the Extended Capabilities information element
      */
     uint8_t GetExtendedCapabilitiesByte4() const;
     /**
      * Return the fifth byte in the Extended Capabilities information element.
      *
-     * \return the fifth byte in the Extended Capabilities information element
+     * @return the fifth byte in the Extended Capabilities information element
      */
     uint8_t GetExtendedCapabilitiesByte5() const;
     /**
      * Return the sixth byte in the Extended Capabilities information element.
      *
-     * \return the sixth byte in the Extended Capabilities information element
+     * @return the sixth byte in the Extended Capabilities information element
      */
     uint8_t GetExtendedCapabilitiesByte6() const;
     /**
      * Return the seventh byte in the Extended Capabilities information element.
      *
-     * \return the seventh byte in the Extended Capabilities information element
+     * @return the seventh byte in the Extended Capabilities information element
      */
     uint8_t GetExtendedCapabilitiesByte7() const;
     /**
      * Return the eighth byte in the Extended Capabilities information element.
      *
-     * \return the eighth byte in the Extended Capabilities information element
+     * @return the eighth byte in the Extended Capabilities information element
      */
     uint8_t GetExtendedCapabilitiesByte8() const;
 

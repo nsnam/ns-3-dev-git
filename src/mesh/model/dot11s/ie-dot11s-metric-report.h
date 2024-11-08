@@ -19,7 +19,7 @@ namespace ns3
 namespace dot11s
 {
 /**
- * \brief a IEEE 802.11s Mesh ID 7.3.2.88 of 802.11s draft 3.0
+ * @brief a IEEE 802.11s Mesh ID 7.3.2.88 of 802.11s draft 3.0
  *
  */
 class IeLinkMetricReport : public WifiInformationElement
@@ -29,17 +29,17 @@ class IeLinkMetricReport : public WifiInformationElement
     /**
      * Constructor
      *
-     * \param metric the metric
+     * @param metric the metric
      */
     IeLinkMetricReport(uint32_t metric);
     /**
      * Set metric value
-     * \param metric the metric
+     * @param metric the metric
      */
     void SetMetric(uint32_t metric);
     /**
      * Get metric value
-     * \returns the metric
+     * @returns the metric
      */
     uint32_t GetMetric() const;
 
@@ -55,25 +55,25 @@ class IeLinkMetricReport : public WifiInformationElement
     /**
      * equality operator
      *
-     * \param a lhs
-     * \param b lhs
-     * \returns true if equal
+     * @param a lhs
+     * @param b lhs
+     * @returns true if equal
      */
     friend bool operator==(const IeLinkMetricReport& a, const IeLinkMetricReport& b);
     /**
      * greater than operator
      *
-     * \param a lhs
-     * \param b lhs
-     * \returns true if equal
+     * @param a lhs
+     * @param b lhs
+     * @returns true if equal
      */
     friend bool operator>(const IeLinkMetricReport& a, const IeLinkMetricReport& b);
     /**
      * less than operator
      *
-     * \param a lhs
-     * \param b lhs
-     * \returns true if equal
+     * @param a lhs
+     * @param b lhs
+     * @returns true if equal
      */
     friend bool operator<(const IeLinkMetricReport& a, const IeLinkMetricReport& b);
 };

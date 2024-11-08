@@ -9,8 +9,8 @@
 #include "log.h"
 
 /**
- * \file
- * \ingroup realtime
+ * @file
+ * @ingroup realtime
  * ns3::Synchronizer implementation.
  */
 

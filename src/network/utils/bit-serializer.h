@@ -16,15 +16,15 @@ namespace ns3
 {
 
 /**
- * \ingroup packet
+ * @ingroup packet
  *
- * \brief Bit serializer. See also \sa ns3::BitDeserializer
+ * @brief Bit serializer. See also \sa ns3::BitDeserializer
  *
  * This class helps converting a variable number, variable sized
  * number of bit-boundary fields to its final byte array representation.
  *
  * The typical use-case is:
- * \verbatim
+ * @verbatim
    aaa: A field
    bbb: B field
    ccc: C field
@@ -52,14 +52,14 @@ class BitSerializer
 
     /**
      * Toggles the padding insertion policy.
-     * \param padAtEnd true if the padding have to be inserted at the end of the bit blob.
+     * @param padAtEnd true if the padding have to be inserted at the end of the bit blob.
      */
     void InsertPaddingAtEnd(bool padAtEnd);
 
     /**
      * Pushes a number of bits in the blob.
-     * \param value the bits to be inserted.
-     * \param significantBits Number of bits to insert.
+     * @param value the bits to be inserted.
+     * @param significantBits Number of bits to insert.
      */
     void PushBits(uint64_t value, uint8_t significantBits);
 
@@ -68,9 +68,9 @@ class BitSerializer
      * Note that this operation  \b automatically add the
      * needed padding at the end (or start) of the blob.
      *
-     * \warning {This operation clears the stored data.}
+     * @warning {This operation clears the stored data.}
      *
-     * \returns The byte representation of the blob.
+     * @returns The byte representation of the blob.
      */
     std::vector<uint8_t> GetBytes();
 
@@ -79,11 +79,11 @@ class BitSerializer
      * Note that this operation  \b automatically add the
      * needed padding at the end (or start) of the blob.
      *
-     * \warning {This operation clears the stored data.}
+     * @warning {This operation clears the stored data.}
      *
-     * \param [out] buffer The buffer where to store the return data.
-     * \param [in] size The size of the buffer.
-     * \returns The number of bytes actually used in the buffer.
+     * @param [out] buffer The buffer where to store the return data.
+     * @param [in] size The size of the buffer.
+     * @returns The number of bytes actually used in the buffer.
      */
     uint8_t GetBytes(uint8_t* buffer, uint32_t size);
 

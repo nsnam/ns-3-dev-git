@@ -15,9 +15,9 @@
 using namespace ns3;
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief Test that connection failed callback is called when
+ * @brief Test that connection failed callback is called when
  * SYN retransmission number is exceeded.
  */
 class TcpSynConnectionFailedTest : public TestCase
@@ -25,14 +25,14 @@ class TcpSynConnectionFailedTest : public TestCase
   public:
     /**
      * Constructor.
-     * \param desc Test description.
-     * \param useEcn Whether to enable ECN.
+     * @param desc Test description.
+     * @param useEcn Whether to enable ECN.
      */
     TcpSynConnectionFailedTest(std::string desc, bool useEcn);
 
     /**
-     * \brief Handle a connection failure.
-     * \param socket The receiving socket.
+     * @brief Handle a connection failure.
+     * @param socket The receiving socket.
      */
     void HandleConnectionFailed(Ptr<Socket> socket);
     void DoRun() override;
@@ -83,9 +83,9 @@ TcpSynConnectionFailedTest::DoRun()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief TestSuite
+ * @brief TestSuite
  */
 class TcpSynConnectionFailedTestSuite : public TestSuite
 {

@@ -15,15 +15,15 @@ namespace ns3
 {
 
 /**
- * \ingroup dot11s
- * \brief Helper class to allow easy installation of 802.11s stack.
+ * @ingroup dot11s
+ * @brief Helper class to allow easy installation of 802.11s stack.
  */
 class Dot11sStack : public MeshStack
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -44,23 +44,23 @@ class Dot11sStack : public MeshStack
     void DoDispose() override;
 
     /**
-     * \brief Install an 802.11s stack.
-     * \param mp The Ptr<MeshPointDevice> to use when setting up the PMP.
-     * \return true if successful
+     * @brief Install an 802.11s stack.
+     * @param mp The Ptr<MeshPointDevice> to use when setting up the PMP.
+     * @return true if successful
      */
     bool InstallStack(Ptr<MeshPointDevice> mp) override;
 
     /**
-     * \brief Iterate through the referenced devices and protocols and print
+     * @brief Iterate through the referenced devices and protocols and print
      * their statistics
-     * \param mp The Ptr<MeshPointDevice> to use when setting up the PMP.
-     * \param os The output stream
+     * @param mp The Ptr<MeshPointDevice> to use when setting up the PMP.
+     * @param os The output stream
      */
     void Report(const Ptr<MeshPointDevice> mp, std::ostream&) override;
 
     /**
-     * \brief Reset the statistics on the referenced devices and protocols.
-     * \param mp The Ptr<MeshPointDevice> to use when setting up the PMP.
+     * @brief Reset the statistics on the referenced devices and protocols.
+     * @param mp The Ptr<MeshPointDevice> to use when setting up the PMP.
      */
     void ResetStats(const Ptr<MeshPointDevice> mp) override;
 

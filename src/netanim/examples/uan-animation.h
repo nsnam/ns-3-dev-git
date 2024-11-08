@@ -15,8 +15,8 @@
 using namespace ns3;
 
 /**
- * \class NetAnimExperiment
- * \brief Helper class for UAN CW MAC example
+ * @class NetAnimExperiment
+ * @brief Helper class for UAN CW MAC example
  *
  */
 class NetAnimExperiment
@@ -24,24 +24,24 @@ class NetAnimExperiment
   public:
     /**
      * Run function
-     * \param uan the UAN helper
+     * @param uan the UAN helper
      */
     void Run(UanHelper& uan);
     /**
      * Receive packet function
-     * \param socket the socket to receive from
+     * @param socket the socket to receive from
      */
     void ReceivePacket(Ptr<Socket> socket);
     /**
      * Update positions function
-     * \param nodes the collection of nodes
+     * @param nodes the collection of nodes
      */
     void UpdatePositions(NodeContainer& nodes) const;
     /// Reset data function
     void ResetData();
     /**
      * Increment CW function
-     * \param cw the CW
+     * @param cw the CW
      */
     void IncrementCw(uint32_t cw);
     uint32_t m_numNodes;   ///< number of nodes

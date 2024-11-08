@@ -17,8 +17,8 @@ namespace ns3
 {
 
 /**
- * \brief The HE Operation Information Element
- * \ingroup wifi
+ * @brief The HE Operation Information Element
+ * @ingroup wifi
  *
  * This class knows how to serialise and deserialise
  * the HE Operation Information Element
@@ -48,27 +48,27 @@ class HeOperation : public WifiInformationElement
         /**
          * Print the content of the HE Operation Parameters field.
          *
-         * \param os output stream
+         * @param os output stream
          */
         void Print(std::ostream& os) const;
 
         /**
-         * \return the serialized size of the HE Operation Parameters field
+         * @return the serialized size of the HE Operation Parameters field
          */
         uint16_t GetSerializedSize() const;
 
         /**
          * Serialize the HE Operation Parameters field
          *
-         * \param start an iterator which points to where the information should be written
+         * @param start an iterator which points to where the information should be written
          */
         void Serialize(Buffer::Iterator& start) const;
 
         /**
          * Deserialize the HE Operation Parameters field.
          *
-         * \param start an iterator which points to where the information should be read from
-         * \return the number of bytes read
+         * @param start an iterator which points to where the information should be read from
+         * @return the number of bytes read
          */
         uint16_t Deserialize(Buffer::Iterator& start);
     };
@@ -83,27 +83,27 @@ class HeOperation : public WifiInformationElement
         /**
          * Print the content of the BSS Color Information field.
          *
-         * \param os output stream
+         * @param os output stream
          */
         void Print(std::ostream& os) const;
 
         /**
-         * \return the serialized size of the BSS Color Information field
+         * @return the serialized size of the BSS Color Information field
          */
         uint16_t GetSerializedSize() const;
 
         /**
          * Serialize the BSS Color Information field
          *
-         * \param start an iterator which points to where the information should be written
+         * @param start an iterator which points to where the information should be written
          */
         void Serialize(Buffer::Iterator& start) const;
 
         /**
          * Deserialize the BSS Color Information field.
          *
-         * \param start an iterator which points to where the information should be read from
-         * \return the number of bytes read
+         * @param start an iterator which points to where the information should be read from
+         * @return the number of bytes read
          */
         uint16_t Deserialize(Buffer::Iterator& start);
     };
@@ -123,27 +123,27 @@ class HeOperation : public WifiInformationElement
         /**
          * Print the content of the 6 GHz Operation Information field.
          *
-         * \param os output stream
+         * @param os output stream
          */
         void Print(std::ostream& os) const;
 
         /**
-         * \return the serialized size of the 6 GHz Operation Information field
+         * @return the serialized size of the 6 GHz Operation Information field
          */
         uint16_t GetSerializedSize() const;
 
         /**
          * Serialize the 6 GHz Operation Information field
          *
-         * \param start an iterator which points to where the information should be written
+         * @param start an iterator which points to where the information should be written
          */
         void Serialize(Buffer::Iterator& start) const;
 
         /**
          * Deserialize the 6 GHz Operation Information field.
          *
-         * \param start an iterator which points to where the information should be read from
-         * \return the number of bytes read
+         * @param start an iterator which points to where the information should be read from
+         * @return the number of bytes read
          */
         uint16_t Deserialize(Buffer::Iterator& start);
     };
@@ -152,8 +152,8 @@ class HeOperation : public WifiInformationElement
      * Set the Basic HE-MCS and NSS field in the HE Operation information element
      * by specifying the pair (<i>nss</i>, <i>maxMcs</i>).
      *
-     * \param nss the NSS
-     * \param maxHeMcs the maximum supported HE-MCS value corresponding to that NSS
+     * @param nss the NSS
+     * @param maxHeMcs the maximum supported HE-MCS value corresponding to that NSS
      */
     void SetMaxHeMcsPerNss(uint8_t nss, uint8_t maxHeMcs);
 

@@ -42,16 +42,16 @@ using namespace dsr;
 
 // -----------------------------------------------------------------------------
 /**
- * \ingroup dsr
- * \defgroup dsr-test DSR routing module tests
+ * @ingroup dsr
+ * @defgroup dsr-test DSR routing module tests
  */
 
 /**
- * \ingroup dsr-test
- * \ingroup tests
+ * @ingroup dsr-test
+ * @ingroup tests
  *
- * \class DsrFsHeaderTest
- * \brief Unit test for DSR Fixed Size Header
+ * @class DsrFsHeaderTest
+ * @brief Unit test for DSR Fixed Size Header
  */
 class DsrFsHeaderTest : public TestCase
 {
@@ -92,11 +92,11 @@ DsrFsHeaderTest::DoRun()
 
 // -----------------------------------------------------------------------------
 /**
- * \ingroup dsr-test
- * \ingroup tests
+ * @ingroup dsr-test
+ * @ingroup tests
  *
- * \class DsrRreqHeaderTest
- * \brief Unit test for RREQ
+ * @class DsrRreqHeaderTest
+ * @brief Unit test for RREQ
  */
 class DsrRreqHeaderTest : public TestCase
 {
@@ -148,11 +148,11 @@ DsrRreqHeaderTest::DoRun()
 
 // -----------------------------------------------------------------------------
 /**
- * \ingroup dsr-test
- * \ingroup tests
+ * @ingroup dsr-test
+ * @ingroup tests
  *
- * \class DsrRrepHeaderTest
- * \brief Unit test for RREP
+ * @class DsrRrepHeaderTest
+ * @brief Unit test for RREP
  */
 class DsrRrepHeaderTest : public TestCase
 {
@@ -200,11 +200,11 @@ DsrRrepHeaderTest::DoRun()
 
 // -----------------------------------------------------------------------------
 /**
- * \ingroup dsr-test
- * \ingroup tests
+ * @ingroup dsr-test
+ * @ingroup tests
  *
- * \class DsrSRHeaderTest
- * \brief Unit test for Source Route
+ * @class DsrSRHeaderTest
+ * @brief Unit test for Source Route
  */
 class DsrSRHeaderTest : public TestCase
 {
@@ -257,11 +257,11 @@ DsrSRHeaderTest::DoRun()
 
 // -----------------------------------------------------------------------------
 /**
- * \ingroup dsr-test
- * \ingroup tests
+ * @ingroup dsr-test
+ * @ingroup tests
  *
- * \class DsrRerrHeaderTest
- * \brief Unit test for RERR
+ * @class DsrRerrHeaderTest
+ * @brief Unit test for RERR
  */
 class DsrRerrHeaderTest : public TestCase
 {
@@ -305,11 +305,11 @@ DsrRerrHeaderTest::DoRun()
 
 // -----------------------------------------------------------------------------
 /**
- * \ingroup dsr-test
- * \ingroup tests
+ * @ingroup dsr-test
+ * @ingroup tests
  *
- * \class DsrAckReqHeaderTest
- * \brief Unit test for ACK-REQ
+ * @class DsrAckReqHeaderTest
+ * @brief Unit test for ACK-REQ
  */
 class DsrAckReqHeaderTest : public TestCase
 {
@@ -350,11 +350,11 @@ DsrAckReqHeaderTest::DoRun()
 
 // -----------------------------------------------------------------------------
 /**
- * \ingroup dsr-test
- * \ingroup tests
+ * @ingroup dsr-test
+ * @ingroup tests
  *
- * \class DsrAckHeaderTest
- * \brief Unit test for ACK
+ * @class DsrAckHeaderTest
+ * @brief Unit test for ACK
  */
 class DsrAckHeaderTest : public TestCase
 {
@@ -399,11 +399,11 @@ DsrAckHeaderTest::DoRun()
 
 // -----------------------------------------------------------------------------
 /**
- * \ingroup dsr-test
- * \ingroup tests
+ * @ingroup dsr-test
+ * @ingroup tests
  *
- * \class DsrCacheEntryTest
- * \brief Unit test for DSR route cache entry
+ * @class DsrCacheEntryTest
+ * @brief Unit test for DSR route cache entry
  */
 class DsrCacheEntryTest : public TestCase
 {
@@ -466,11 +466,11 @@ DsrCacheEntryTest::DoRun()
 
 // -----------------------------------------------------------------------------
 /**
- * \ingroup dsr-test
- * \ingroup tests
+ * @ingroup dsr-test
+ * @ingroup tests
  *
- * \class DsrSendBuffTest
- * \brief Unit test for Send Buffer
+ * @class DsrSendBuffTest
+ * @brief Unit test for Send Buffer
  */
 class DsrSendBuffTest : public TestCase
 {
@@ -575,11 +575,11 @@ DsrSendBuffTest::CheckTimeout()
 
 // -----------------------------------------------------------------------------
 /**
- * \ingroup dsr-test
- * \ingroup tests
+ * @ingroup dsr-test
+ * @ingroup tests
  *
- * \class DsrRreqTableTest
- * \brief Unit test for DSR routing table entry
+ * @class DsrRreqTableTest
+ * @brief Unit test for DSR routing table entry
  */
 class DsrRreqTableTest : public TestCase
 {
@@ -609,11 +609,11 @@ DsrRreqTableTest::DoRun()
 
 // -----------------------------------------------------------------------------
 /**
- * \ingroup dsr-test
- * \ingroup tests
+ * @ingroup dsr-test
+ * @ingroup tests
  *
- * \class DsrTestSuite
- * \brief DSR test suite
+ * @class DsrTestSuite
+ * @brief DSR test suite
  */
 class DsrTestSuite : public TestSuite
 {

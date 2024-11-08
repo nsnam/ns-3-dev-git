@@ -15,8 +15,8 @@
 #include <string>
 
 /**
- * \file
- * \ingroup topology
+ * @file
+ * @ingroup topology
  * ns3::TopologyHelper declaration.
  */
 
@@ -24,9 +24,9 @@ namespace ns3
 {
 
 /**
- * \ingroup topology
+ * @ingroup topology
  *
- * \brief Helper class which makes it easier to configure and use a generic TopologyReader.
+ * @brief Helper class which makes it easier to configure and use a generic TopologyReader.
  */
 class TopologyReaderHelper
 {
@@ -34,20 +34,20 @@ class TopologyReaderHelper
     TopologyReaderHelper();
 
     /**
-     * \brief Sets the input file name.
-     * \param [in] fileName The input file name.
+     * @brief Sets the input file name.
+     * @param [in] fileName The input file name.
      */
     void SetFileName(const std::string fileName);
 
     /**
-     * \brief Sets the input file type. Supported file types are "Orbis", "Inet", "Rocketfuel".
-     * \param [in] fileType The input file type.
+     * @brief Sets the input file type. Supported file types are "Orbis", "Inet", "Rocketfuel".
+     * @param [in] fileType The input file type.
      */
     void SetFileType(const std::string fileType);
 
     /**
-     * \brief Gets a Ptr<TopologyReader> to the actual TopologyReader.
-     * \return The created Topology Reader (or null if there was an error).
+     * @brief Gets a Ptr<TopologyReader> to the actual TopologyReader.
+     * @return The created Topology Reader (or null if there was an error).
      */
     Ptr<TopologyReader> GetTopologyReader();
 

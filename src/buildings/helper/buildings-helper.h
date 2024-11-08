@@ -23,7 +23,7 @@ class MobilityModel;
 class Building;
 
 /**
- * \ingroup buildings
+ * @ingroup buildings
  *
  * Helper used to install a MobilityBuildingInfo into a set of nodes.
  */
@@ -33,13 +33,13 @@ class BuildingsHelper
     /**
      * Install the MobilityBuildingInfo to a node
      *
-     * \param node the mobility model of the node to be updated
+     * @param node the mobility model of the node to be updated
      */
     static void Install(Ptr<Node> node); // for any nodes
     /**
      * Install the MobilityBuildingInfo to the set of nodes in a NodeContainer
      *
-     * \param c the NodeContainer including the nodes to be updated
+     * @param c the NodeContainer including the nodes to be updated
      */
     static void Install(NodeContainer c); // for any nodes
 };

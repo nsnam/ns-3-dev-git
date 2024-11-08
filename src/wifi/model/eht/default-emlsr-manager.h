@@ -17,7 +17,7 @@ namespace ns3
 {
 
 /**
- * \ingroup wifi
+ * @ingroup wifi
  *
  * DefaultEmlsrManager is the default EMLSR manager.
  */
@@ -25,8 +25,8 @@ class DefaultEmlsrManager : public EmlsrManager
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -49,8 +49,8 @@ class DefaultEmlsrManager : public EmlsrManager
      * This function is intended to be called when an aux PHY is about to transmit an RTS on
      * the given link to calculate the time remaining to the end of the CTS reception.
      *
-     * \param linkId the ID of the given link
-     * \return the time remaining to the end of the CTS reception
+     * @param linkId the ID of the given link
+     * @return the time remaining to the end of the CTS reception
      */
     Time GetTimeToCtsEnd(uint8_t linkId) const;
 
@@ -58,9 +58,9 @@ class DefaultEmlsrManager : public EmlsrManager
      * This function is intended to be called when an aux PHY is about to transmit an RTS on
      * the given link to calculate the time remaining to the end of the CTS reception.
      *
-     * \param linkId the ID of the given link
-     * \param rtsTxVector the TXVECTOR used to transmit the RTS
-     * \return the time remaining to the end of the CTS reception
+     * @param linkId the ID of the given link
+     * @param rtsTxVector the TXVECTOR used to transmit the RTS
+     * @return the time remaining to the end of the CTS reception
      */
     Time GetTimeToCtsEnd(uint8_t linkId, const WifiTxVector& rtsTxVector) const;
 
@@ -69,7 +69,7 @@ class DefaultEmlsrManager : public EmlsrManager
      * to the preferred link and reconnect the aux PHY that was operating on the link left by the
      * main PHY.
      *
-     * \param linkId the ID of the link that the main PHY is leaving
+     * @param linkId the ID of the link that the main PHY is leaving
      */
     void SwitchMainPhyBackToPreferredLink(uint8_t linkId);
 

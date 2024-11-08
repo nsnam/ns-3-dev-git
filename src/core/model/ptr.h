@@ -15,8 +15,8 @@
 #include <stdint.h>
 
 /**
- * \file
- * \ingroup ptr
+ * @file
+ * @ingroup ptr
  * ns3::Ptr smart pointer declaration and implementation.
  */
 
@@ -24,18 +24,18 @@ namespace ns3
 {
 
 /**
- * \ingroup core
- * \defgroup ptr Smart Pointer
- * \brief Heap memory management.
+ * @ingroup core
+ * @defgroup ptr Smart Pointer
+ * @brief Heap memory management.
  *
  * See \ref ns3::Ptr for implementation details.
  *
  * See \ref main-ptr.cc for example usage.
  */
 /**
- * \ingroup ptr
+ * @ingroup ptr
  *
- * \brief Smart pointer class similar to \c boost::intrusive_ptr.
+ * @brief Smart pointer class similar to \c boost::intrusive_ptr.
  *
  * This smart-pointer class assumes that the underlying
  * type provides a pair of \c Ref() and \c Unref() methods which are
@@ -59,7 +59,7 @@ namespace ns3
  * bit of typing.  If the Object does not inherit from Object
  * (or ObjectBase) there is also a convenience wrapper Create<>()
  *
- * \tparam T \explicit The type of the underlying object.
+ * @tparam T \explicit The type of the underlying object.
  */
 template <typename T>
 class Ptr
@@ -78,9 +78,9 @@ class Ptr
      * to returning to the caller so the caller is
      * responsible for calling Unref himself.
      *
-     * \tparam U \deduced The actual type of the argument and return pointer.
-     * \param [in] p Smart pointer
-     * \return The pointer managed by this smart pointer.
+     * @tparam U \deduced The actual type of the argument and return pointer.
+     * @param [in] p Smart pointer
+     * @return The pointer managed by this smart pointer.
      */
     template <typename U>
     friend U* GetPointer(const Ptr<U>& p);
@@ -91,9 +91,9 @@ class Ptr
      * to returning to the caller so the caller is not
      * responsible for calling Unref himself.
      *
-     * \tparam U \deduced The actual type of the argument and return pointer.
-     * \param [in] p Smart pointer
-     * \return The pointer managed by this smart pointer.
+     * @tparam U \deduced The actual type of the argument and return pointer.
+     * @param [in] p Smart pointer
+     * @return The pointer managed by this smart pointer.
      */
     template <typename U>
     friend U* PeekPointer(const Ptr<U>& p);
@@ -112,29 +112,29 @@ class Ptr
      * same, so that object is deleted if no more references to it
      * remain.
      *
-     * \param [in] ptr Raw pointer to manage
+     * @param [in] ptr Raw pointer to manage
      */
     Ptr(T* ptr);
     /**
      * Create a smart pointer which points to the object pointed to by
      * the input raw pointer ptr.
      *
-     * \param [in] ptr Raw pointer to manage
-     * \param [in] ref if set to true, this method calls Ref, otherwise,
+     * @param [in] ptr Raw pointer to manage
+     * @param [in] ref if set to true, this method calls Ref, otherwise,
      *        it does not call Ref.
      */
     Ptr(T* ptr, bool ref);
     /**
      * Copy by referencing the same underlying object.
      *
-     * \param [in] o The other Ptr instance.
+     * @param [in] o The other Ptr instance.
      */
     Ptr(const Ptr& o);
     /**
      * Copy, removing \c const qualifier.
      *
-     * \tparam U \deduced The type underlying the Ptr being copied.
-     * \param [in] o The Ptr to copy.
+     * @tparam U \deduced The type underlying the Ptr being copied.
+     * @param [in] o The Ptr to copy.
      */
     template <typename U>
     Ptr(const Ptr<U>& o);
@@ -143,28 +143,28 @@ class Ptr
     /**
      * Assignment operator by referencing the same underlying object.
      *
-     * \param [in] o The other Ptr instance.
-     * \return A reference to self.
+     * @param [in] o The other Ptr instance.
+     * @return A reference to self.
      */
     Ptr<T>& operator=(const Ptr& o);
     /**
      * An rvalue member access.
-     * \returns A pointer to the underlying object.
+     * @returns A pointer to the underlying object.
      */
     T* operator->() const;
     /**
      * An lvalue member access.
-     * \returns A pointer to the underlying object.
+     * @returns A pointer to the underlying object.
      */
     T* operator->();
     /**
      * A \c const dereference.
-     * \returns A pointer to the underlying object.
+     * @returns A pointer to the underlying object.
      */
     T& operator*() const;
     /**
      * A  dereference.
-     * \returns A pointer to the underlying object.
+     * @returns A pointer to the underlying object.
      */
     T& operator*();
 
@@ -172,17 +172,17 @@ class Ptr
      * Test for non-NULL pointer.
      *
      * This enables simple pointer checks like
-     * \code
+     * @code
      *   Ptr<...> p = ...;
      *   if (p) ...
      *   if (!p) ...
-     * \endcode
+     * @endcode
      *
      * The same construct works in the NS_ASSERT... and NS_ABORT... macros.
      *
-     * \note Explicit tests against `0`, `NULL` or `nullptr` are not supported.
+     * @note Explicit tests against `0`, `NULL` or `nullptr` are not supported.
      * All these cases will fail to compile:
-     * \code
+     * @code
      *   if (p != nullptr {...}    // Should be `if (p)`
      *   if (p != NULL)   {...}
      *   if (p != 0)      {...}
@@ -190,48 +190,48 @@ class Ptr
      *   if (p == nullptr {...}    // Should be `if (!p)`
      *   if (p == NULL)   {...}
      *   if (p == 0)      {...}
-     * \endcode
+     * @endcode
      * Just use `if (p)` or `if (!p)` as indicated.
      *
-     * \note NS_TEST... invocations should be written as follows:
-     * \code
+     * @note NS_TEST... invocations should be written as follows:
+     * @code
      * // p should be non-NULL
      * NS_TEST...NE... (p, nullptr, ...);
      * // p should be NULL
      * NS_TEST...EQ... (p, nullptr, ...);
-     * \endcode
+     * @endcode
      *
-     * \note Unfortunately return values are not
+     * @note Unfortunately return values are not
      * "contextual conversion expression" contexts,
      * so you need to explicitly cast return values to bool:
-     * \code
+     * @code
      * bool f (...)
      * {
      *   Ptr<...> p = ...;
      *   return (bool)(p);
      * }
-     * \endcode
+     * @endcode
      *
-     * \returns \c true if the underlying pointer is non-NULL.
+     * @returns \c true if the underlying pointer is non-NULL.
      */
     explicit operator bool() const;
 };
 
 /**
- * \ingroup ptr
+ * @ingroup ptr
  * Create class instances by constructors with varying numbers
  * of arguments and return them by Ptr.
  *
  * This template work for any class \c T derived from ns3::SimpleRefCount
  *
- * \see CreateObject for methods to create derivatives of ns3::Object
+ * @see CreateObject for methods to create derivatives of ns3::Object
  */
 /** @{ */
 /**
- * \tparam T  \explicit The type of class object to create.
- * \tparam Ts \deduced Types of the constructor arguments.
- * \param  [in] args Constructor arguments.
- * \return A Ptr to the newly created \c T.
+ * @tparam T  \explicit The type of class object to create.
+ * @tparam Ts \deduced Types of the constructor arguments.
+ * @param  [in] args Constructor arguments.
+ * @return A Ptr to the newly created \c T.
  */
 template <typename T, typename... Ts>
 Ptr<T> Create(Ts&&... args);
@@ -239,35 +239,35 @@ Ptr<T> Create(Ts&&... args);
 /** @}*/
 
 /**
- * \ingroup ptr
+ * @ingroup ptr
  * Output streamer.
- * \tparam T \deduced The type of the underlying Object.
- * \param [in,out] os The output stream.
- * \param [in] p The Ptr.
- * \returns The stream.
+ * @tparam T \deduced The type of the underlying Object.
+ * @param [in,out] os The output stream.
+ * @param [in] p The Ptr.
+ * @returns The stream.
  */
 template <typename T>
 std::ostream& operator<<(std::ostream& os, const Ptr<T>& p);
 
 /**
- * \ingroup ptr
+ * @ingroup ptr
  * Equality operator.
  *
  * This enables code such as
- * \code
+ * @code
  *   Ptr<...> p = ...;
  *   Ptr<...> q = ...;
  *   if (p == q) ...
- * \endcode
+ * @endcode
  *
  * Note that either \c p or \c q could also be ordinary pointers
  * to the underlying object.
  *
- * \tparam T1 \deduced Type of the object on the lhs.
- * \tparam T2 \deduced Type of the object on the rhs.
- * \param [in] lhs The left operand.
- * \param [in] rhs The right operand.
- * \return \c true if the operands point to the same underlying object.
+ * @tparam T1 \deduced Type of the object on the lhs.
+ * @tparam T2 \deduced Type of the object on the rhs.
+ * @param [in] lhs The left operand.
+ * @param [in] rhs The right operand.
+ * @return \c true if the operands point to the same underlying object.
  */
 /** @{ */
 template <typename T1, typename T2>
@@ -281,32 +281,32 @@ bool operator==(const Ptr<T1>& lhs, const Ptr<T2>& rhs);
 /**@}*/
 
 /**
- * \ingroup ptr
+ * @ingroup ptr
  *  Specialization for comparison to \c nullptr
- * \copydoc operator==(Ptr<T1>const&,Ptr<T2>const&)
+ * @copydoc operator==(Ptr<T1>const&,Ptr<T2>const&)
  */
 template <typename T1, typename T2>
 std::enable_if_t<std::is_same_v<T2, std::nullptr_t>, bool> operator==(const Ptr<T1>& lhs, T2 rhs);
 
 /**
- * \ingroup ptr
+ * @ingroup ptr
  * Inequality operator.
  *
  * This enables code such as
- * \code
+ * @code
  *   Ptr<...> p = ...;
  *   Ptr<...> q = ...;
  *   if (p != q) ...
- * \endcode
+ * @endcode
  *
  * Note that either \c p or \c q could also be ordinary pointers
  * to the underlying object.
  *
- * \tparam T1 \deduced Type of the object on the lhs.
- * \tparam T2 \deduced Type of the object on the rhs.
- * \param [in] lhs The left operand.
- * \param [in] rhs The right operand.
- * \return \c true if the operands point to the same underlying object.
+ * @tparam T1 \deduced Type of the object on the lhs.
+ * @tparam T2 \deduced Type of the object on the rhs.
+ * @param [in] lhs The left operand.
+ * @param [in] rhs The right operand.
+ * @return \c true if the operands point to the same underlying object.
  */
 /** @{ */
 template <typename T1, typename T2>
@@ -320,21 +320,21 @@ bool operator!=(const Ptr<T1>& lhs, const Ptr<T2>& rhs);
 /**@}*/
 
 /**
- * \ingroup ptr
+ * @ingroup ptr
  * Specialization for comparison to \c nullptr
- * \copydoc operator==(Ptr<T1>const&,Ptr<T2>const&)
+ * @copydoc operator==(Ptr<T1>const&,Ptr<T2>const&)
  */
 template <typename T1, typename T2>
 std::enable_if_t<std::is_same_v<T2, std::nullptr_t>, bool> operator!=(const Ptr<T1>& lhs, T2 rhs);
 
 /**
- * \ingroup ptr
+ * @ingroup ptr
  * Comparison operator applied to the underlying pointers.
  *
- * \tparam T \deduced The type of the operands.
- * \param [in] lhs The left operand.
- * \param [in] rhs The right operand.
- * \return The comparison on the underlying pointers.
+ * @tparam T \deduced The type of the operands.
+ * @param [in] lhs The left operand.
+ * @param [in] rhs The right operand.
+ * @return The comparison on the underlying pointers.
  */
 /** @{ */
 template <typename T>
@@ -355,10 +355,10 @@ bool operator>=(const Ptr<T>& lhs, const Ptr<T>& rhs);
  * Return a copy of \c p with its stored pointer const casted from
  * \c T2 to \c T1.
  *
- * \tparam T1 \deduced The type to return in a Ptr.
- * \tparam T2 \deduced The type of the underlying object.
- * \param [in] p The original \c const Ptr.
- * \return A non-const Ptr.
+ * @tparam T1 \deduced The type to return in a Ptr.
+ * @tparam T2 \deduced The type of the underlying object.
+ * @param [in] p The original \c const Ptr.
+ * @return A non-const Ptr.
  */
 template <typename T1, typename T2>
 Ptr<T1> const_pointer_cast(const Ptr<T2>& p);
@@ -368,21 +368,21 @@ template <typename T>
 struct CallbackTraits;
 
 /**
- * \ingroup callbackimpl
+ * @ingroup callbackimpl
  *
  * Trait class to convert a pointer into a reference,
  * used by MemPtrCallBackImpl.
  *
  * This is the specialization for Ptr types.
  *
- * \tparam T \deduced The type of the underlying object.
+ * @tparam T \deduced The type of the underlying object.
  */
 template <typename T>
 struct CallbackTraits<Ptr<T>>
 {
     /**
-     * \param [in] p Object pointer
-     * \return A reference to the object pointed to by p
+     * @param [in] p Object pointer
+     * @return A reference to the object pointed to by p
      */
     static T& GetReference(const Ptr<T> p)
     {
@@ -400,19 +400,19 @@ template <typename T>
 struct EventMemberImplObjTraits;
 
 /**
- * \ingroup makeeventmemptr
+ * @ingroup makeeventmemptr
  * Helper for the MakeEvent functions which take a class method.
  *
  * This is the specialization for Ptr types.
  *
- * \tparam T \deduced The type of the underlying object.
+ * @tparam T \deduced The type of the underlying object.
  */
 template <typename T>
 struct EventMemberImplObjTraits<Ptr<T>>
 {
     /**
-     * \param [in] p Object pointer
-     * \return A reference to the object pointed to by p
+     * @param [in] p Object pointer
+     * @return A reference to the object pointed to by p
      */
     static T& GetReference(Ptr<T> p)
     {
@@ -562,10 +562,10 @@ operator>=(const Ptr<T>& lhs, const Ptr<T>& rhs)
 /**
  * Cast a Ptr.
  *
- * \tparam T1 \deduced The desired type to cast to.
- * \tparam T2 \deduced The type of the original Ptr.
- * \param [in] p The original Ptr.
- * \return The result of the cast.
+ * @tparam T1 \deduced The desired type to cast to.
+ * @tparam T2 \deduced The type of the original Ptr.
+ * @param [in] p The original Ptr.
+ * @return The result of the cast.
  */
 /** @{ */
 template <typename T1, typename T2>
@@ -594,9 +594,9 @@ StaticCast(const Ptr<T2>& p)
 /**
  * Return a deep copy of a Ptr.
  *
- * \tparam T \deduced The type of the underlying object.
- * \param [in] object The object Ptr to copy.
- * \returns The copy.
+ * @tparam T \deduced The type of the underlying object.
+ * @param [in] object The object Ptr to copy.
+ * @returns The copy.
  */
 /** @{ */
 template <typename T>
@@ -745,25 +745,25 @@ Ptr<T>::operator bool() const
  ***************************************************/
 
 /**
- * \ingroup ptr
+ * @ingroup ptr
  * Hashing functor taking a `Ptr` and returning a @c std::size_t.
  * For use with `unordered_map` and `unordered_set`.
  *
- * \note When a `Ptr` is used in a container the lifetime of the underlying
+ * @note When a `Ptr` is used in a container the lifetime of the underlying
  * object is at least as long as the container.  In other words,
  * you need to remove the object from the container when you are done with
  * it, otherwise the object will persist until the container itself is
  * deleted.
  *
- * \tparam T \deduced The type held by the `Ptr`
+ * @tparam T \deduced The type held by the `Ptr`
  */
 template <class T>
 struct std::hash<ns3::Ptr<T>>
 {
     /**
      * The functor.
-     * \param p The `Ptr` value to hash.
-     * \return the hash
+     * @param p The `Ptr` value to hash.
+     * @return the hash
      */
     std::size_t operator()(ns3::Ptr<T> p) const
     {

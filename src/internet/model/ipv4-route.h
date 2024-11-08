@@ -20,9 +20,9 @@ namespace ns3
 class NetDevice;
 
 /**
- * \ingroup ipv4Routing
+ * @ingroup ipv4Routing
  *
- * \brief IPv4 route cache entry (similar to Linux struct rtable)
+ * @brief IPv4 route cache entry (similar to Linux struct rtable)
  *
  * This is a reference counted object.  In the future, we will add other
  * entries from struct dst_entry, struct rtable, and struct dst_ops as needed.
@@ -33,40 +33,40 @@ class Ipv4Route : public SimpleRefCount<Ipv4Route>
     Ipv4Route();
 
     /**
-     * \param dest Destination Ipv4Address
+     * @param dest Destination Ipv4Address
      */
     void SetDestination(Ipv4Address dest);
     /**
-     * \return Destination Ipv4Address of the route
+     * @return Destination Ipv4Address of the route
      */
     Ipv4Address GetDestination() const;
 
     /**
-     * \param src Source Ipv4Address
+     * @param src Source Ipv4Address
      */
     void SetSource(Ipv4Address src);
     /**
-     * \return Source Ipv4Address of the route
+     * @return Source Ipv4Address of the route
      */
     Ipv4Address GetSource() const;
 
     /**
-     * \param gw Gateway (next hop) Ipv4Address
+     * @param gw Gateway (next hop) Ipv4Address
      */
     void SetGateway(Ipv4Address gw);
     /**
-     * \return Ipv4Address of the gateway (next hop)
+     * @return Ipv4Address of the gateway (next hop)
      */
     Ipv4Address GetGateway() const;
 
     /**
      * Equivalent in Linux to dst_entry.dev
      *
-     * \param outputDevice pointer to NetDevice for outgoing packets
+     * @param outputDevice pointer to NetDevice for outgoing packets
      */
     void SetOutputDevice(Ptr<NetDevice> outputDevice);
     /**
-     * \return pointer to NetDevice for outgoing packets
+     * @return pointer to NetDevice for outgoing packets
      */
     Ptr<NetDevice> GetOutputDevice() const;
 
@@ -87,18 +87,18 @@ class Ipv4Route : public SimpleRefCount<Ipv4Route>
 };
 
 /**
- * \brief Stream insertion operator.
+ * @brief Stream insertion operator.
  *
- * \param os the reference to the output stream
- * \param route the Ipv4 route
- * \returns the reference to the output stream
+ * @param os the reference to the output stream
+ * @param route the Ipv4 route
+ * @returns the reference to the output stream
  */
 std::ostream& operator<<(std::ostream& os, const Ipv4Route& route);
 
 /**
- * \ingroup ipv4Routing
+ * @ingroup ipv4Routing
  *
- * \brief Ipv4 multicast route cache entry (similar to Linux struct mfc_cache)
+ * @brief Ipv4 multicast route cache entry (similar to Linux struct mfc_cache)
  */
 class Ipv4MulticastRoute : public SimpleRefCount<Ipv4MulticastRoute>
 {
@@ -106,40 +106,40 @@ class Ipv4MulticastRoute : public SimpleRefCount<Ipv4MulticastRoute>
     Ipv4MulticastRoute();
 
     /**
-     * \param group Ipv4Address of the multicast group
+     * @param group Ipv4Address of the multicast group
      */
     void SetGroup(const Ipv4Address group);
     /**
-     * \return Ipv4Address of the multicast group
+     * @return Ipv4Address of the multicast group
      */
     Ipv4Address GetGroup() const;
 
     /**
-     * \param origin Ipv4Address of the origin address
+     * @param origin Ipv4Address of the origin address
      */
     void SetOrigin(const Ipv4Address origin);
     /**
-     * \return Ipv4Address of the origin address
+     * @return Ipv4Address of the origin address
      */
     Ipv4Address GetOrigin() const;
 
     /**
-     * \param iif Parent (input interface) for this route
+     * @param iif Parent (input interface) for this route
      */
     void SetParent(uint32_t iif);
     /**
-     * \return Parent (input interface) for this route
+     * @return Parent (input interface) for this route
      */
     uint32_t GetParent() const;
 
     /**
-     * \param oif Outgoing interface index
-     * \param ttl time-to-live for this route
+     * @param oif Outgoing interface index
+     * @param ttl time-to-live for this route
      */
     void SetOutputTtl(uint32_t oif, uint32_t ttl);
 
     /**
-     * \return map of output interface Ids and TTLs for this route
+     * @return map of output interface Ids and TTLs for this route
      */
     std::map<uint32_t, uint32_t> GetOutputTtlMap() const;
 

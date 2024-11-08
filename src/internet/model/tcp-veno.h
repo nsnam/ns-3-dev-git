@@ -23,9 +23,9 @@ namespace ns3
 class TcpSocketState;
 
 /**
- * \ingroup congestionOps
+ * @ingroup congestionOps
  *
- * \brief An implementation of TCP Veno
+ * @brief An implementation of TCP Veno
  *
  * TCP Veno enhances Reno algorithm for more effectively dealing with random
  * packet loss in wireless access networks by employing Vegas's method in
@@ -61,8 +61,8 @@ class TcpVeno : public TcpNewReno
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -72,8 +72,8 @@ class TcpVeno : public TcpNewReno
     TcpVeno();
 
     /**
-     * \brief Copy constructor
-     * \param sock the object to copy
+     * @brief Copy constructor
+     * @param sock the object to copy
      */
     TcpVeno(const TcpVeno& sock);
     ~TcpVeno() override;
@@ -81,7 +81,7 @@ class TcpVeno : public TcpNewReno
     std::string GetName() const override;
 
     /**
-     * \brief Perform RTT sampling needed to execute Veno algorithm
+     * @brief Perform RTT sampling needed to execute Veno algorithm
      *
      * The function filters RTT samples from the last RTT to find
      * the current smallest propagation delay + queueing delay (m_minRtt).
@@ -90,39 +90,39 @@ class TcpVeno : public TcpNewReno
      * The function also min-filters all RTT measurements seen to find the
      * propagation delay (m_baseRtt).
      *
-     * \param tcb internal congestion state
-     * \param segmentsAcked count of segments ACKed
-     * \param rtt last RTT
+     * @param tcb internal congestion state
+     * @param segmentsAcked count of segments ACKed
+     * @param rtt last RTT
      *
      */
     void PktsAcked(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time& rtt) override;
 
     /**
-     * \brief Enable/disable Veno depending on the congestion state
+     * @brief Enable/disable Veno depending on the congestion state
      *
      * We only start a Veno when we are in normal congestion state (CA_OPEN state).
      *
-     * \param tcb internal congestion state
-     * \param newState new congestion state to which the TCP is going to switch
+     * @param tcb internal congestion state
+     * @param newState new congestion state to which the TCP is going to switch
      */
     void CongestionStateSet(Ptr<TcpSocketState> tcb,
                             const TcpSocketState::TcpCongState_t newState) override;
 
     /**
-     * \brief Adjust cwnd following Veno additive increase algorithm
+     * @brief Adjust cwnd following Veno additive increase algorithm
      *
-     * \param tcb internal congestion state
-     * \param segmentsAcked count of segments ACKed
+     * @param tcb internal congestion state
+     * @param segmentsAcked count of segments ACKed
      */
     void IncreaseWindow(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked) override;
 
     /**
-     * \brief Get slow start threshold during Veno multiplicative-decrease phase
+     * @brief Get slow start threshold during Veno multiplicative-decrease phase
      *
-     * \param tcb internal congestion state
-     * \param bytesInFlight bytes in flight
+     * @param tcb internal congestion state
+     * @param bytesInFlight bytes in flight
      *
-     * \return the slow start threshold value
+     * @return the slow start threshold value
      */
     uint32_t GetSsThresh(Ptr<const TcpSocketState> tcb, uint32_t bytesInFlight) override;
 
@@ -131,7 +131,7 @@ class TcpVeno : public TcpNewReno
   protected:
   private:
     /**
-     * \brief Enable Veno algorithm to start Veno sampling
+     * @brief Enable Veno algorithm to start Veno sampling
      *
      * Veno algorithm is enabled in the following situations:
      * 1. at the establishment of a connection
@@ -143,7 +143,7 @@ class TcpVeno : public TcpNewReno
     void EnableVeno();
 
     /**
-     * \brief Turn off Veno
+     * @brief Turn off Veno
      */
     void DisableVeno();
 

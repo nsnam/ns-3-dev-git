@@ -21,8 +21,8 @@ namespace ns3
 {
 
 /**
- * \ingroup ping
- * \brief Create a ping application and associate it to a node
+ * @ingroup ping
+ * @brief Create a ping application and associate it to a node
  *
  * This class creates one or multiple instances of ns3::Ping and associates
  * it/them to one/multiple node(s).
@@ -40,8 +40,8 @@ class PingHelper : public ApplicationHelper
      * Create a PingHelper which is used to make life easier for people wanting
      * to use ping Applications.
      *
-     * \param remote The address which should be pinged
-     * \param local The source address
+     * @param remote The address which should be pinged
+     * @param local The source address
      */
     PingHelper(const Address& remote, const Address& local = Address());
 };

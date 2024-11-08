@@ -14,7 +14,7 @@ namespace ns3
 {
 
 /**
- * \brief These represent default traces, providing a number of
+ * @brief These represent default traces, providing a number of
  * parameters for each SNR value.
  *
  * The parameters provided are (in order):
@@ -60,8 +60,8 @@ namespace ns3
  * simple IT++ program simulating the theoretical model of a AWGN channel given
  * BER=3/2*erfc(sqrt(k*0.1*(Eb_N0_dB)));
  *
- * \relates ns3::SNRToBlockErrorRateManager
- * \hideinitializer
+ * @relates ns3::SNRToBlockErrorRateManager
+ * @hideinitializer
  * @{
  */
 

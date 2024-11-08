@@ -7,9 +7,9 @@
  */
 
 /**
- * \file
- * \ingroup core-examples
- * \ingroup assert
+ * @file
+ * @ingroup core-examples
+ * @ingroup assert
  * Example program illustrating the use of NS_ASSERT_MSG()
  */
 

@@ -20,9 +20,9 @@
 using namespace ns3;
 
 /**
- * \ingroup traffic-control-test
+ * @ingroup traffic-control-test
  *
- * \brief Red Queue Disc Test Item
+ * @brief Red Queue Disc Test Item
  */
 class RedQueueDiscTestItem : public QueueDiscItem
 {
@@ -30,9 +30,9 @@ class RedQueueDiscTestItem : public QueueDiscItem
     /**
      * Constructor
      *
-     * \param p packet
-     * \param addr address
-     * \param ecnCapable ECN capable flag
+     * @param p packet
+     * @param addr address
+     * @param ecnCapable ECN capable flag
      */
     RedQueueDiscTestItem(Ptr<Packet> p, const Address& addr, bool ecnCapable);
 
@@ -66,9 +66,9 @@ RedQueueDiscTestItem::Mark()
 }
 
 /**
- * \ingroup traffic-control-test
+ * @ingroup traffic-control-test
  *
- * \brief Red Queue Disc Test Case
+ * @brief Red Queue Disc Test Case
  */
 class RedQueueDiscTestCase : public TestCase
 {
@@ -79,15 +79,15 @@ class RedQueueDiscTestCase : public TestCase
   private:
     /**
      * Enqueue function
-     * \param queue the queue disc
-     * \param size the size
-     * \param nPkt the number of packets
-     * \param ecnCapable ECN capable flag
+     * @param queue the queue disc
+     * @param size the size
+     * @param nPkt the number of packets
+     * @param ecnCapable ECN capable flag
      */
     void Enqueue(Ptr<RedQueueDisc> queue, uint32_t size, uint32_t nPkt, bool ecnCapable);
     /**
      * Run RED test function
-     * \param mode the mode
+     * @param mode the mode
      */
     void RunRedTest(QueueSizeUnit mode);
 };
@@ -603,9 +603,9 @@ RedQueueDiscTestCase::DoRun()
 }
 
 /**
- * \ingroup traffic-control-test
+ * @ingroup traffic-control-test
  *
- * \brief Red Queue Disc Test Suite
+ * @brief Red Queue Disc Test Suite
  */
 static class RedQueueDiscTestSuite : public TestSuite
 {

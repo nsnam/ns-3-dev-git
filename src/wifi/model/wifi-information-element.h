@@ -232,8 +232,8 @@ typedef uint8_t WifiInformationElementId;
 #define IE_EXT_TID_TO_LINK_MAPPING_ELEMENT ((WifiInformationElementId)109)
 
 /**
- * \brief Information element, as defined in 802.11-2007 standard
- * \ingroup wifi
+ * @brief Information element, as defined in 802.11-2007 standard
+ * @ingroup wifi
  *
  * The IEEE 802.11 standard includes the notion of Information
  * Elements, which are encodings of management information to be
@@ -282,9 +282,9 @@ class WifiInformationElement : public SimpleRefCount<WifiInformationElement>
      * Serialize entire IE including Element ID and length fields. Handle
      * fragmentation of the IE if needed.
      *
-     * \param i an iterator which points to where the IE should be written.
+     * @param i an iterator which points to where the IE should be written.
      *
-     * \return an iterator
+     * @return an iterator
      */
     Buffer::Iterator Serialize(Buffer::Iterator i) const;
     /**
@@ -293,9 +293,9 @@ class WifiInformationElement : public SimpleRefCount<WifiInformationElement>
      * at the Element ID (i.e., the very first octet) of the correct type of
      * information element, otherwise this method will generate a fatal error.
      *
-     * \param i an iterator which points to where the IE should be read.
+     * @param i an iterator which points to where the IE should be read.
      *
-     * \return an iterator
+     * @return an iterator
      */
     Buffer::Iterator Deserialize(Buffer::Iterator i);
     /**
@@ -305,29 +305,29 @@ class WifiInformationElement : public SimpleRefCount<WifiInformationElement>
      * the Element ID is not the one that the given class is interested
      * in then it will return the same iterator.
      *
-     * \param i an iterator which points to where the IE should be read.
+     * @param i an iterator which points to where the IE should be read.
      *
-     * \return an iterator
+     * @return an iterator
      */
     Buffer::Iterator DeserializeIfPresent(Buffer::Iterator i);
     /**
      * Get the size of the serialized IE including Element ID and
      * length fields (for every element this IE is possibly fragmented into).
      *
-     * \return the size of the serialized IE in bytes
+     * @return the size of the serialized IE in bytes
      */
     uint16_t GetSerializedSize() const;
 
     // Each subclass must implement these pure virtual functions:
     /**
      * Get the wifi information element ID
-     * \returns the wifi information element ID
+     * @returns the wifi information element ID
      */
     virtual WifiInformationElementId ElementId() const = 0;
 
     /**
      * Get the wifi information element ID extension
-     * \returns the wifi information element ID extension
+     * @returns the wifi information element ID extension
      */
     virtual WifiInformationElementId ElementIdExt() const;
 
@@ -335,16 +335,16 @@ class WifiInformationElement : public SimpleRefCount<WifiInformationElement>
     /**
      * Generate human-readable form of IE
      *
-     * \param os output stream
+     * @param os output stream
      */
     virtual void Print(std::ostream& os) const;
     /**
      * Compare two IEs for equality by ID & Length, and then through
      * memcmp of serialised version
      *
-     * \param a another information element to compare with
+     * @param a another information element to compare with
      *
-     * \return true if the two IEs are equal,
+     * @return true if the two IEs are equal,
      *         false otherwise
      */
     virtual bool operator==(const WifiInformationElement& a) const;
@@ -353,18 +353,18 @@ class WifiInformationElement : public SimpleRefCount<WifiInformationElement>
     /**
      * Serialize an IE that needs to be fragmented.
      *
-     * \param i an iterator which points to where the IE should be written.
-     * \param size the size of the body of the IE
-     * \return an iterator pointing to past the IE that was serialized
+     * @param i an iterator which points to where the IE should be written.
+     * @param size the size of the body of the IE
+     * @return an iterator pointing to past the IE that was serialized
      */
     Buffer::Iterator SerializeFragments(Buffer::Iterator i, uint16_t size) const;
     /**
      * Deserialize the Information field of an IE. Also handle the case in which
      * the IE is fragmented.
      *
-     * \param i an iterator which points to where the Information field should be read.
-     * \param length the expected number of bytes to read
-     * \return an iterator pointing to past the IE that was deserialized
+     * @param i an iterator which points to where the Information field should be read.
+     * @param length the expected number of bytes to read
+     * @return an iterator pointing to past the IE that was deserialized
      */
     Buffer::Iterator DoDeserialize(Buffer::Iterator i, uint16_t length);
     /**
@@ -373,14 +373,14 @@ class WifiInformationElement : public SimpleRefCount<WifiInformationElement>
      * is the value that will appear in the second octet of the entire
      * IE - the length field - if the IE is not fragmented)
      *
-     * \return the length of serialized information
+     * @return the length of serialized information
      */
     virtual uint16_t GetInformationFieldSize() const = 0;
     /**
      * Serialize information (i.e., the body of the IE, not including
      * the Element ID and length octets)
      *
-     * \param start an iterator which points to where the information should
+     * @param start an iterator which points to where the information should
      *        be written.
      */
     virtual void SerializeInformationField(Buffer::Iterator start) const = 0;
@@ -388,20 +388,20 @@ class WifiInformationElement : public SimpleRefCount<WifiInformationElement>
      * Deserialize information (i.e., the body of the IE, not including
      * the Element ID and length octets)
      *
-     * \param start an iterator which points to where the information should be written.
-     * \param length the expected number of bytes to read
+     * @param start an iterator which points to where the information should be written.
+     * @param length the expected number of bytes to read
      *
-     * \return the number of bytes read
+     * @return the number of bytes read
      */
     virtual uint16_t DeserializeInformationField(Buffer::Iterator start, uint16_t length) = 0;
 };
 
 /**
- * \brief Stream insertion operator.
+ * @brief Stream insertion operator.
  *
- * \param os the output stream
- * \param element the Information Element
- * \returns a reference to the stream
+ * @param os the output stream
+ * @param element the Information Element
+ * @returns a reference to the stream
  */
 std::ostream& operator<<(std::ostream& os, const WifiInformationElement& element);
 

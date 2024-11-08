@@ -22,10 +22,10 @@ using namespace ns3::lrwpan;
 NS_LOG_COMPONENT_DEFINE("lr-wpan-collision-test");
 
 /**
- * \ingroup lr-wpan-test
- * \ingroup tests
+ * @ingroup lr-wpan-test
+ * @ingroup tests
  *
- * \brief LrWpan Collision Test
+ * @brief LrWpan Collision Test
  */
 class LrWpanCollisionTestCase : public TestCase
 {
@@ -34,9 +34,9 @@ class LrWpanCollisionTestCase : public TestCase
     ~LrWpanCollisionTestCase() override;
 
     /**
-     * \brief Function called when DataIndication is hit.
-     * \param params The MCPS params.
-     * \param p The packet.
+     * @brief Function called when DataIndication is hit.
+     * @param params The MCPS params.
+     * @param p The packet.
      */
     void DataIndication(McpsDataIndicationParams params, Ptr<Packet> p);
 
@@ -203,10 +203,10 @@ LrWpanCollisionTestCase::DoRun()
 }
 
 /**
- * \ingroup lr-wpan-test
- * \ingroup tests
+ * @ingroup lr-wpan-test
+ * @ingroup tests
  *
- * \brief LrWpan Collision TestSuite
+ * @brief LrWpan Collision TestSuite
  */
 class LrWpanCollisionTestSuite : public TestSuite
 {

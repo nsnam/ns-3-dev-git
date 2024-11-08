@@ -27,33 +27,33 @@ class Node;
 class NetDevice;
 
 /**
- * \ingroup spectrum
- * \brief Setup a SpectrumChannel
+ * @ingroup spectrum
+ * @brief Setup a SpectrumChannel
  */
 class SpectrumChannelHelper
 {
   public:
     /**
-     * \brief Setup a default SpectrumChannel. The Default mode is:
+     * @brief Setup a default SpectrumChannel. The Default mode is:
      * Channel: "ns3::SingleModelSpectrumChannel",
      * PropagationDelay: "ns3::ConstantSpeedPropagationDelayModel", and
      * SpectrumPropagationLoss: "ns3::FriisSpectrumPropagationLossModel".
      *
-     * \returns a Default-configured SpectrumChannelHelper
+     * @returns a Default-configured SpectrumChannelHelper
      */
     static SpectrumChannelHelper Default();
 
     /**
-     * \tparam Ts \deduced Argument types
-     * \param type the type of the SpectrumChannel to use
-     * \param [in] args Name and AttributeValue pairs to set.
+     * @tparam Ts \deduced Argument types
+     * @param type the type of the SpectrumChannel to use
+     * @param [in] args Name and AttributeValue pairs to set.
      */
     template <typename... Ts>
     void SetChannel(std::string type, Ts&&... args);
     /**
-     * \tparam Ts \deduced Argument types
-     * \param name the name of the model to set
-     * \param [in] args Name and AttributeValue pairs to set.
+     * @tparam Ts \deduced Argument types
+     * @param name the name of the model to set
+     * @param [in] args Name and AttributeValue pairs to set.
      *
      * Add a new single-frequency propagation loss model to this channel helper.
      */
@@ -63,14 +63,14 @@ class SpectrumChannelHelper
     /**
      * Add a new single-frequency propagation loss model instance to this channel helper.
      *
-     * \param m a pointer to the instance of the propagation loss model
+     * @param m a pointer to the instance of the propagation loss model
      */
     void AddPropagationLoss(Ptr<PropagationLossModel> m);
 
     /**
-     * \tparam Ts \deduced Argument types
-     * \param name the name of the model to set
-     * \param [in] args Name and AttributeValue pairs to set.
+     * @tparam Ts \deduced Argument types
+     * @param name the name of the model to set
+     * @param [in] args Name and AttributeValue pairs to set.
      *
      * Add a new frequency-dependent propagation loss model to this channel helper.
      */
@@ -80,14 +80,14 @@ class SpectrumChannelHelper
     /**
      * Add a new frequency-dependent propagation loss model instance to this channel helper.
      *
-     * \param m a pointer to the instance of the propagation loss model
+     * @param m a pointer to the instance of the propagation loss model
      */
     void AddSpectrumPropagationLoss(Ptr<SpectrumPropagationLossModel> m);
 
     /**
-     * \tparam Ts \deduced Argument types
-     * \param name the name of the model to set
-     * \param [in] args Name and AttributeValue pairs to set.
+     * @tparam Ts \deduced Argument types
+     * @param name the name of the model to set
+     * @param [in] args Name and AttributeValue pairs to set.
      *
      * Configure a propagation delay for this channel.
      */
@@ -95,7 +95,7 @@ class SpectrumChannelHelper
     void SetPropagationDelay(std::string name, Ts&&... args);
 
     /**
-     * \returns a new channel
+     * @returns a new channel
      *
      * Create a channel based on the configuration parameters set previously.
      */
@@ -110,7 +110,7 @@ class SpectrumChannelHelper
 };
 
 /**
- * \ingroup spectrum
+ * @ingroup spectrum
  *
  * Create and configure several SpectrumPhy instances and connect them to a channel.
  */
@@ -118,9 +118,9 @@ class SpectrumPhyHelper
 {
   public:
     /**
-     * \tparam Ts \deduced Argument types
-     * \param name the type of SpectrumPhy to use
-     * \param [in] args Name and AttributeValue pairs to set.
+     * @tparam Ts \deduced Argument types
+     * @param name the type of SpectrumPhy to use
+     * @param [in] args Name and AttributeValue pairs to set.
      */
     template <typename... Ts>
     void SetPhy(std::string name, Ts&&... args);
@@ -140,8 +140,8 @@ class SpectrumPhyHelper
     void SetChannel(std::string channelName);
 
     /**
-     * \param name the name of the attribute to set
-     * \param v the value of the attribute
+     * @param name the name of the attribute to set
+     * @param v the value of the attribute
      *
      * Set an attribute of the SpectrumPhy instances to be created
      */

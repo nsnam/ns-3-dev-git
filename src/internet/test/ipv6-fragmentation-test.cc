@@ -6,7 +6,7 @@
  * Author: Tommaso Pecorella <tommaso.pecorella@unifi.it>
  */
 /**
- * \file
+ * @file
  *
  * This is the test code for ipv6-l3protocol.cc (only the fragmentation and reassembly part).
  */
@@ -55,9 +55,9 @@ using namespace ns3;
 class UdpSocketImpl;
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief Tag used in IPv6 Fragmentation Test
+ * @brief Tag used in IPv6 Fragmentation Test
  */
 class IPv6TestTag : public Tag
 {
@@ -65,8 +65,8 @@ class IPv6TestTag : public Tag
     uint64_t token; //!< Token carried by the tag.
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId()
     {
@@ -101,8 +101,8 @@ class IPv6TestTag : public Tag
     }
 
     /**
-     * \brief Set the token.
-     * \param token The token.
+     * @brief Set the token.
+     * @param token The token.
      */
     void SetToken(uint64_t token)
     {
@@ -110,8 +110,8 @@ class IPv6TestTag : public Tag
     }
 
     /**
-     * \brief Get the token.
-     * \returns The token.
+     * @brief Get the token.
+     * @returns The token.
      */
     uint64_t GetToken() const
     {
@@ -120,9 +120,9 @@ class IPv6TestTag : public Tag
 };
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief IPv6 Fragmentation Test
+ * @brief IPv6 Fragmentation Test
  */
 class Ipv6FragmentationTest : public TestCase
 {
@@ -146,35 +146,35 @@ class Ipv6FragmentationTest : public TestCase
     // server part
 
     /**
-     * \brief Start the server.
-     * \param ServerNode The server.
+     * @brief Start the server.
+     * @param ServerNode The server.
      */
     void StartServer(Ptr<Node> ServerNode);
     /**
-     * \brief Handle incoming packets.
-     * \param socket The receiving socket.
+     * @brief Handle incoming packets.
+     * @param socket The receiving socket.
      */
     void HandleReadServer(Ptr<Socket> socket);
 
     // client part
 
     /**
-     * \brief Start the client.
-     * \param ClientNode The client.
+     * @brief Start the client.
+     * @param ClientNode The client.
      */
     void StartClient(Ptr<Node> ClientNode);
     /**
-     * \brief Handle incoming packets.
-     * \param socket The receiving socket.
+     * @brief Handle incoming packets.
+     * @param socket The receiving socket.
      */
     void HandleReadClient(Ptr<Socket> socket);
     /**
-     * \brief Handle incoming ICMP packets.
-     * \param icmpSource The ICMP sender.
-     * \param icmpTtl The ICMP TTL.
-     * \param icmpType The ICMP Type.
-     * \param icmpCode The ICMP Code.
-     * \param icmpInfo The ICMP Info.
+     * @brief Handle incoming ICMP packets.
+     * @param icmpSource The ICMP sender.
+     * @param icmpTtl The ICMP TTL.
+     * @param icmpType The ICMP Type.
+     * @param icmpCode The ICMP Code.
+     * @param icmpInfo The ICMP Info.
      */
     void HandleReadIcmpClient(Ipv6Address icmpSource,
                               uint8_t icmpTtl,
@@ -183,36 +183,36 @@ class Ipv6FragmentationTest : public TestCase
                               uint32_t icmpInfo);
 
     /**
-     * \brief Set the packet fill.
-     * \param fill The fill.
-     * \param fillSize The fill size.
-     * \param dataSize The packet size.
+     * @brief Set the packet fill.
+     * @param fill The fill.
+     * @param fillSize The fill size.
+     * @param dataSize The packet size.
      */
     void SetFill(uint8_t* fill, uint32_t fillSize, uint32_t dataSize);
 
     /**
-     * \brief Send a packet.
-     * \returns The sent packet.
+     * @brief Send a packet.
+     * @returns The sent packet.
      */
     Ptr<Packet> SendClient();
 
     /**
-     * \brief Handle Server's incoming packets.
+     * @brief Handle Server's incoming packets.
      * Ensure no packet greater than MTU is received
      *
-     * \param packet the packet.
-     * \param ipv6 the Ipv6 protocol.
-     * \param interface the IP-level interface index.
+     * @param packet the packet.
+     * @param ipv6 the Ipv6 protocol.
+     * @param interface the IP-level interface index.
      */
     void HandleServerRx(Ptr<const Packet> packet, Ptr<Ipv6> ipv6, uint32_t interface);
 
     /**
-     * \brief Handle Client's transmitting packets.
+     * @brief Handle Client's transmitting packets.
      * Ensure no packet greater than MTU is transmitted
      *
-     * \param packet the packet.
-     * \param ipv6 the Ipv6 protocol.
-     * \param interface the IP-level interface index.
+     * @param packet the packet.
+     * @param ipv6 the Ipv6 protocol.
+     * @param interface the IP-level interface index.
      */
     void HandleClientTx(Ptr<const Packet> packet, Ptr<Ipv6> ipv6, uint32_t interface);
 };
@@ -604,9 +604,9 @@ Ipv6FragmentationTest::DoRun()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief IPv6 Fragmentation TestSuite
+ * @brief IPv6 Fragmentation TestSuite
  */
 class Ipv6FragmentationTestSuite : public TestSuite
 {

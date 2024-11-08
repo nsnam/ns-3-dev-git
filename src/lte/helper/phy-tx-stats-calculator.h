@@ -24,7 +24,7 @@ namespace ns3
 {
 
 /**
- * \ingroup lte
+ * @ingroup lte
  *
  * Takes care of storing the information generated at PHY layer regarding
  * transmission. Metrics saved are:
@@ -54,7 +54,7 @@ class PhyTxStatsCalculator : public LteStatsCalculator
     // Inherited from ns3::Object
     /**
      * Register this type.
-     * \return The object TypeId.
+     * @return The object TypeId.
      */
     static TypeId GetTypeId();
 
@@ -99,9 +99,9 @@ class PhyTxStatsCalculator : public LteStatsCalculator
     /**
      * trace sink
      *
-     * \param phyTxStats
-     * \param path
-     * \param params
+     * @param phyTxStats
+     * @param path
+     * @param params
      */
     static void DlPhyTransmissionCallback(Ptr<PhyTxStatsCalculator> phyTxStats,
                                           std::string path,
@@ -110,9 +110,9 @@ class PhyTxStatsCalculator : public LteStatsCalculator
     /**
      * trace sink
      *
-     * \param phyTxStats
-     * \param path
-     * \param params
+     * @param phyTxStats
+     * @param path
+     * @param params
      */
     static void UlPhyTransmissionCallback(Ptr<PhyTxStatsCalculator> phyTxStats,
                                           std::string path,

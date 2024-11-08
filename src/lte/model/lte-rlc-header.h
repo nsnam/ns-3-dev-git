@@ -19,8 +19,8 @@ namespace ns3
 {
 
 /**
- * \ingroup lte
- * \brief The packet header for the Radio Link Control (RLC) protocol packets
+ * @ingroup lte
+ * @brief The packet header for the Radio Link Control (RLC) protocol packets
  *
  * This class has fields corresponding to those in an RLC header as well as
  * methods for serialization to and deserialization from a byte buffer.
@@ -30,7 +30,7 @@ class LteRlcHeader : public Header
 {
   public:
     /**
-     * \brief Constructor
+     * @brief Constructor
      *
      * Creates a null header
      */
@@ -40,52 +40,52 @@ class LteRlcHeader : public Header
     /**
      * Set framing info
      *
-     * \param framingInfo framing info
+     * @param framingInfo framing info
      */
     void SetFramingInfo(uint8_t framingInfo);
     /**
      * Set sequence number
      *
-     * \param sequenceNumber sequence number
+     * @param sequenceNumber sequence number
      */
     void SetSequenceNumber(SequenceNumber10 sequenceNumber);
 
     /**
      * Get framing info
      *
-     * \returns framing info
+     * @returns framing info
      */
     uint8_t GetFramingInfo() const;
     /**
      * Get sequence number
      *
-     * \returns sequence number
+     * @returns sequence number
      */
     SequenceNumber10 GetSequenceNumber() const;
 
     /**
      * Push extension bit
      *
-     * \param extensionBit the extension bit
+     * @param extensionBit the extension bit
      */
     void PushExtensionBit(uint8_t extensionBit);
     /**
      * Push length indicator
      *
-     * \param lengthIndicator the length indicator
+     * @param lengthIndicator the length indicator
      */
     void PushLengthIndicator(uint16_t lengthIndicator);
 
     /**
      * Pop extension bit
      *
-     * \returns the extension bit
+     * @returns the extension bit
      */
     uint8_t PopExtensionBit();
     /**
      * Pop length indicator
      *
-     * \returns the length indicator
+     * @returns the length indicator
      */
     uint16_t PopLengthIndicator();
 
@@ -106,8 +106,8 @@ class LteRlcHeader : public Header
     };
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     TypeId GetInstanceTypeId() const override;

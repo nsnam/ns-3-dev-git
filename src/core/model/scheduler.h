@@ -14,9 +14,9 @@
 #include <stdint.h>
 
 /**
- * \file
- * \ingroup scheduler
- * \ingroup events
+ * @file
+ * @ingroup scheduler
+ * @ingroup events
  * ns3::Scheduler abstract base class, ns3::Scheduler::Event and
  * ns3::Scheduler::EventKey declarations.
  */
@@ -27,17 +27,17 @@ namespace ns3
 class EventImpl;
 
 /**
- * \ingroup core
- * \defgroup scheduler Scheduler and Events
- * \brief Manage the event list by creating and scheduling events.
+ * @ingroup core
+ * @defgroup scheduler Scheduler and Events
+ * @brief Manage the event list by creating and scheduling events.
  */
 /**
- * \ingroup scheduler
- * \defgroup events Events
+ * @ingroup scheduler
+ * @defgroup events Events
  */
 /**
- * \ingroup scheduler
- * \brief Maintain the event list
+ * @ingroup scheduler
+ * @brief Maintain the event list
  *
  *
  * In ns-3 the Scheduler manages the future event list.  There are several
@@ -147,12 +147,12 @@ class Scheduler : public Object
   public:
     /**
      * Register this type.
-     * \return The object TypeId.
+     * @return The object TypeId.
      */
     static TypeId GetTypeId();
 
     /**
-     * \ingroup events
+     * @ingroup events
      * Structure for sorting and comparing Events.
      */
     struct EventKey
@@ -163,7 +163,7 @@ class Scheduler : public Object
     };
 
     /**
-     * \ingroup events
+     * @ingroup events
      * Scheduler event.
      *
      * An Event consists of an EventKey, used for maintaining the schedule,
@@ -181,13 +181,13 @@ class Scheduler : public Object
     /**
      * Insert a new Event in the schedule.
      *
-     * \param [in] ev Event to store in the event list
+     * @param [in] ev Event to store in the event list
      */
     virtual void Insert(const Event& ev) = 0;
     /**
      * Test if the schedule is empty.
      *
-     * \returns \c true if the event list is empty and \c false otherwise.
+     * @returns \c true if the event list is empty and \c false otherwise.
      */
     virtual bool IsEmpty() const = 0;
     /**
@@ -195,7 +195,7 @@ class Scheduler : public Object
      *
      * This method cannot be invoked if the list is empty.
      *
-     * \returns A pointer to the next earliest event. The caller
+     * @returns A pointer to the next earliest event. The caller
      *      takes ownership of the returned pointer.
      */
     virtual Event PeekNext() const = 0;
@@ -204,7 +204,7 @@ class Scheduler : public Object
      *
      * This method cannot be invoked if the list is empty.
      *
-     * \return The Event.
+     * @return The Event.
      */
     virtual Event RemoveNext() = 0;
     /**
@@ -212,18 +212,18 @@ class Scheduler : public Object
      *
      * This method cannot be invoked if the list is empty.
      *
-     * \param [in] ev The event to remove
+     * @param [in] ev The event to remove
      */
     virtual void Remove(const Event& ev) = 0;
 };
 
 /**
- * \ingroup events
+ * @ingroup events
  * Compare (equal) two events by EventKey.
  *
- * \param [in] a The first event.
- * \param [in] b The second event.
- * \returns \c true if \c a != \c b
+ * @param [in] a The first event.
+ * @param [in] b The second event.
+ * @returns \c true if \c a != \c b
  */
 inline bool
 operator==(const Scheduler::EventKey& a, const Scheduler::EventKey& b)
@@ -232,12 +232,12 @@ operator==(const Scheduler::EventKey& a, const Scheduler::EventKey& b)
 }
 
 /**
- * \ingroup events
+ * @ingroup events
  * Compare (not equal) two events by EventKey.
  *
- * \param [in] a The first event.
- * \param [in] b The second event.
- * \returns \c true if \c a != \c b
+ * @param [in] a The first event.
+ * @param [in] b The second event.
+ * @returns \c true if \c a != \c b
  */
 inline bool
 operator!=(const Scheduler::EventKey& a, const Scheduler::EventKey& b)
@@ -246,7 +246,7 @@ operator!=(const Scheduler::EventKey& a, const Scheduler::EventKey& b)
 }
 
 /**
- * \ingroup events
+ * @ingroup events
  * Compare (less than) two events by EventKey.
  *
  * Note the invariants which this function must provide:
@@ -254,9 +254,9 @@ operator!=(const Scheduler::EventKey& a, const Scheduler::EventKey& b)
  * - antisymmetry: f(x,y) = !f(y,x)
  * - transitivity: f(x,y) and f(y,z) => f(x,z)
  *
- * \param [in] a The first event.
- * \param [in] b The second event.
- * \returns \c true if \c a < \c b
+ * @param [in] a The first event.
+ * @param [in] b The second event.
+ * @returns \c true if \c a < \c b
  */
 inline bool
 operator<(const Scheduler::EventKey& a, const Scheduler::EventKey& b)
@@ -267,9 +267,9 @@ operator<(const Scheduler::EventKey& a, const Scheduler::EventKey& b)
 /**
  * Compare (greater than) two events by EventKey.
  *
- * \param [in] a The first event.
- * \param [in] b The second event.
- * \returns \c true if \c a > \c b
+ * @param [in] a The first event.
+ * @param [in] b The second event.
+ * @returns \c true if \c a > \c b
  */
 inline bool
 operator>(const Scheduler::EventKey& a, const Scheduler::EventKey& b)
@@ -280,9 +280,9 @@ operator>(const Scheduler::EventKey& a, const Scheduler::EventKey& b)
 /**
  * Compare (equal) two events by Event.
  *
- * \param [in] a The first event.
- * \param [in] b The second event.
- * \returns \c true if \c a == \c b
+ * @param [in] a The first event.
+ * @param [in] b The second event.
+ * @returns \c true if \c a == \c b
  */
 inline bool
 operator==(const Scheduler::Event& a, const Scheduler::Event& b)
@@ -293,9 +293,9 @@ operator==(const Scheduler::Event& a, const Scheduler::Event& b)
 /**
  * Compare (not equal) two events by Event.
  *
- * \param [in] a The first event.
- * \param [in] b The second event.
- * \returns \c true if \c a != \c b
+ * @param [in] a The first event.
+ * @param [in] b The second event.
+ * @returns \c true if \c a != \c b
  */
 inline bool
 operator!=(const Scheduler::Event& a, const Scheduler::Event& b)
@@ -306,9 +306,9 @@ operator!=(const Scheduler::Event& a, const Scheduler::Event& b)
 /**
  * Compare (less than) two events by Event.
  *
- * \param [in] a The first event.
- * \param [in] b The second event.
- * \returns \c true if \c a < \c b
+ * @param [in] a The first event.
+ * @param [in] b The second event.
+ * @returns \c true if \c a < \c b
  */
 inline bool
 operator<(const Scheduler::Event& a, const Scheduler::Event& b)
@@ -319,9 +319,9 @@ operator<(const Scheduler::Event& a, const Scheduler::Event& b)
 /**
  * Compare (greater than) two events by Event.
  *
- * \param [in] a The first event.
- * \param [in] b The second event.
- * \returns \c true if \c a > \c b
+ * @param [in] a The first event.
+ * @param [in] b The second event.
+ * @returns \c true if \c a > \c b
  */
 inline bool
 operator>(const Scheduler::Event& a, const Scheduler::Event& b)

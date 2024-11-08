@@ -17,10 +17,10 @@ using namespace ns3;
 using namespace ns3::lrwpan;
 
 /**
- * \ingroup lr-wpan-test
- * \ingroup tests
+ * @ingroup lr-wpan-test
+ * @ingroup tests
  *
- * \brief LrWpan PLME and PD Interfaces Test
+ * @brief LrWpan PLME and PD Interfaces Test
  */
 class LrWpanPlmeAndPdInterfaceTestCase : public TestCase
 {
@@ -32,10 +32,10 @@ class LrWpanPlmeAndPdInterfaceTestCase : public TestCase
     void DoRun() override;
 
     /**
-     * \brief Receives a PdData indication
-     * \param psduLength The PSDU length.
-     * \param p The packet.
-     * \param lqi The LQI.
+     * @brief Receives a PdData indication
+     * @param psduLength The PSDU length.
+     * @param p The packet.
+     * @param lqi The LQI.
      */
     void ReceivePdDataIndication(uint32_t psduLength, Ptr<Packet> p, uint8_t lqi);
 };
@@ -82,10 +82,10 @@ LrWpanPlmeAndPdInterfaceTestCase::DoRun()
 }
 
 /**
- * \ingroup lr-wpan-test
- * \ingroup tests
+ * @ingroup lr-wpan-test
+ * @ingroup tests
  *
- * \brief LrWpan PLME and PD Interfaces TestSuite
+ * @brief LrWpan PLME and PD Interfaces TestSuite
  */
 class LrWpanPlmeAndPdInterfaceTestSuite : public TestSuite
 {

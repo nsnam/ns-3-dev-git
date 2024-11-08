@@ -22,8 +22,8 @@ namespace energy
 class EnergySource;
 
 /**
- * \ingroup energy
- * \brief Base class for device energy models.
+ * @ingroup energy
+ * @brief Base class for device energy models.
  *
  * A device energy model should represent the energy consumption behavior of a
  * specific device. It will update remaining energy stored in the EnergySource
@@ -42,15 +42,15 @@ class DeviceEnergyModel : public Object
 
   public:
     /**
-     * \brief Get the type ID.
-     * \return The object TypeId.
+     * @brief Get the type ID.
+     * @return The object TypeId.
      */
     static TypeId GetTypeId();
     DeviceEnergyModel();
     ~DeviceEnergyModel() override;
 
     /**
-     * \param source Pointer to energy source installed on node.
+     * @param source Pointer to energy source installed on node.
      *
      * This function sets the pointer to energy source installed on node. Should
      * be called only by DeviceEnergyModel helper classes.
@@ -58,14 +58,14 @@ class DeviceEnergyModel : public Object
     virtual void SetEnergySource(Ptr<EnergySource> source) = 0;
 
     /**
-     * \returns Total energy consumption of the device.
+     * @returns Total energy consumption of the device.
      *
      * DeviceEnergyModel records its own energy consumption during simulation.
      */
     virtual double GetTotalEnergyConsumption() const = 0;
 
     /**
-     * \param newState New state the device is in.
+     * @param newState New state the device is in.
      *
      * DeviceEnergyModel is a state based model. This function is implemented by
      * all child of DeviceEnergyModel to change the model's state. States are to
@@ -74,7 +74,7 @@ class DeviceEnergyModel : public Object
     virtual void ChangeState(int newState) = 0;
 
     /**
-     * \returns Current draw of the device, in Ampere.
+     * @returns Current draw of the device, in Ampere.
      *
      * This function returns the current draw at the device in its current state.
      * This function is called from the EnergySource to obtain the total current
@@ -102,7 +102,7 @@ class DeviceEnergyModel : public Object
 
   private:
     /**
-     * \returns 0.0 as the current value, in Ampere.
+     * @returns 0.0 as the current value, in Ampere.
      *
      * Child class does not have to implement this method if current draw for its
      * states are not know. This default method will always return 0.0A. For the

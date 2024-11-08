@@ -40,16 +40,16 @@ enum WifiMacDropReason : uint8_t; // opaque enum declaration
 namespace aodv
 {
 /**
- * \ingroup aodv
+ * @ingroup aodv
  *
- * \brief AODV routing protocol
+ * @brief AODV routing protocol
  */
 class RoutingProtocol : public Ipv4RoutingProtocol
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     static const uint32_t AODV_PORT;
@@ -82,7 +82,7 @@ class RoutingProtocol : public Ipv4RoutingProtocol
     // Handle protocol parameters
     /**
      * Get maximum queue time
-     * \returns the maximum queue time
+     * @returns the maximum queue time
      */
     Time GetMaxQueueTime() const
     {
@@ -91,13 +91,13 @@ class RoutingProtocol : public Ipv4RoutingProtocol
 
     /**
      * Set the maximum queue time
-     * \param t the maximum queue time
+     * @param t the maximum queue time
      */
     void SetMaxQueueTime(Time t);
 
     /**
      * Get the maximum queue length
-     * \returns the maximum queue length
+     * @returns the maximum queue length
      */
     uint32_t GetMaxQueueLen() const
     {
@@ -106,13 +106,13 @@ class RoutingProtocol : public Ipv4RoutingProtocol
 
     /**
      * Set the maximum queue length
-     * \param len the maximum queue length
+     * @param len the maximum queue length
      */
     void SetMaxQueueLen(uint32_t len);
 
     /**
      * Get destination only flag
-     * \returns the destination only flag
+     * @returns the destination only flag
      */
     bool GetDestinationOnlyFlag() const
     {
@@ -121,7 +121,7 @@ class RoutingProtocol : public Ipv4RoutingProtocol
 
     /**
      * Set destination only flag
-     * \param f the destination only flag
+     * @param f the destination only flag
      */
     void SetDestinationOnlyFlag(bool f)
     {
@@ -130,7 +130,7 @@ class RoutingProtocol : public Ipv4RoutingProtocol
 
     /**
      * Get gratuitous reply flag
-     * \returns the gratuitous reply flag
+     * @returns the gratuitous reply flag
      */
     bool GetGratuitousReplyFlag() const
     {
@@ -139,7 +139,7 @@ class RoutingProtocol : public Ipv4RoutingProtocol
 
     /**
      * Set gratuitous reply flag
-     * \param f the gratuitous reply flag
+     * @param f the gratuitous reply flag
      */
     void SetGratuitousReplyFlag(bool f)
     {
@@ -148,7 +148,7 @@ class RoutingProtocol : public Ipv4RoutingProtocol
 
     /**
      * Set hello enable
-     * \param f the hello enable flag
+     * @param f the hello enable flag
      */
     void SetHelloEnable(bool f)
     {
@@ -157,7 +157,7 @@ class RoutingProtocol : public Ipv4RoutingProtocol
 
     /**
      * Get hello enable flag
-     * \returns the enable hello flag
+     * @returns the enable hello flag
      */
     bool GetHelloEnable() const
     {
@@ -166,7 +166,7 @@ class RoutingProtocol : public Ipv4RoutingProtocol
 
     /**
      * Set broadcast enable flag
-     * \param f enable broadcast flag
+     * @param f enable broadcast flag
      */
     void SetBroadcastEnable(bool f)
     {
@@ -175,7 +175,7 @@ class RoutingProtocol : public Ipv4RoutingProtocol
 
     /**
      * Get broadcast enable flag
-     * \returns the broadcast enable flag
+     * @returns the broadcast enable flag
      */
     bool GetBroadcastEnable() const
     {
@@ -187,8 +187,8 @@ class RoutingProtocol : public Ipv4RoutingProtocol
      * used by this model.  Return the number of streams (possibly zero) that
      * have been assigned.
      *
-     * \param stream first stream index to use
-     * \return the number of stream indices assigned by this model
+     * @param stream first stream index to use
+     * @return the number of stream indices assigned by this model
      */
     int64_t AssignStreams(int64_t stream);
 
@@ -199,8 +199,8 @@ class RoutingProtocol : public Ipv4RoutingProtocol
     /**
      * Notify that an MPDU was dropped.
      *
-     * \param reason the reason why the MPDU was dropped
-     * \param mpdu the dropped MPDU
+     * @param reason the reason why the MPDU was dropped
+     * @param mpdu the dropped MPDU
      */
     void NotifyTxError(WifiMacDropReason reason, Ptr<const WifiMpdu> mpdu);
 
@@ -286,10 +286,10 @@ class RoutingProtocol : public Ipv4RoutingProtocol
     /**
      * Queue packet and send route request
      *
-     * \param p the packet to route
-     * \param header the IP header
-     * \param ucb the UnicastForwardCallback function
-     * \param ecb the ErrorCallback function
+     * @param p the packet to route
+     * @param header the IP header
+     * @param ucb the UnicastForwardCallback function
+     * @param ecb the ErrorCallback function
      */
     void DeferredRouteOutput(Ptr<const Packet> p,
                              const Ipv4Header& header,
@@ -298,11 +298,11 @@ class RoutingProtocol : public Ipv4RoutingProtocol
     /**
      * If route exists and is valid, forward packet.
      *
-     * \param p the packet to route
-     * \param header the IP header
-     * \param ucb the UnicastForwardCallback function
-     * \param ecb the ErrorCallback function
-     * \returns true if forwarded
+     * @param p the packet to route
+     * @param header the IP header
+     * @param ucb the UnicastForwardCallback function
+     * @param ecb the ErrorCallback function
+     * @returns true if forwarded
      */
     bool Forwarding(Ptr<const Packet> p,
                     const Ipv4Header& header,
@@ -311,153 +311,153 @@ class RoutingProtocol : public Ipv4RoutingProtocol
     /**
      * Repeated attempts by a source node at route discovery for a single destination
      * use the expanding ring search technique.
-     * \param dst the destination IP address
+     * @param dst the destination IP address
      */
     void ScheduleRreqRetry(Ipv4Address dst);
     /**
      * Set lifetime field in routing table entry to the maximum of existing lifetime and lt, if the
      * entry exists
-     * \param addr destination address
-     * \param lt proposed time for lifetime field in routing table entry for destination with
+     * @param addr destination address
+     * @param lt proposed time for lifetime field in routing table entry for destination with
      * address addr.
-     * \return true if route to destination address addr exist
+     * @return true if route to destination address addr exist
      */
     bool UpdateRouteLifeTime(Ipv4Address addr, Time lt);
     /**
      * Update neighbor record.
-     * \param receiver is supposed to be my interface
-     * \param sender is supposed to be IP address of my neighbor.
+     * @param receiver is supposed to be my interface
+     * @param sender is supposed to be IP address of my neighbor.
      */
     void UpdateRouteToNeighbor(Ipv4Address sender, Ipv4Address receiver);
     /**
      * Test whether the provided address is assigned to an interface on this node
-     * \param src the source IP address
-     * \returns true if the IP address is the node's IP address
+     * @param src the source IP address
+     * @returns true if the IP address is the node's IP address
      */
     bool IsMyOwnAddress(Ipv4Address src);
     /**
      * Find unicast socket with local interface address iface
      *
-     * \param iface the interface
-     * \returns the socket associated with the interface
+     * @param iface the interface
+     * @returns the socket associated with the interface
      */
     Ptr<Socket> FindSocketWithInterfaceAddress(Ipv4InterfaceAddress iface) const;
     /**
      * Find subnet directed broadcast socket with local interface address iface
      *
-     * \param iface the interface
-     * \returns the socket associated with the interface
+     * @param iface the interface
+     * @returns the socket associated with the interface
      */
     Ptr<Socket> FindSubnetBroadcastSocketWithInterfaceAddress(Ipv4InterfaceAddress iface) const;
     /**
      * Process hello message
      *
-     * \param rrepHeader RREP message header
-     * \param receiverIfaceAddr receiver interface IP address
+     * @param rrepHeader RREP message header
+     * @param receiverIfaceAddr receiver interface IP address
      */
     void ProcessHello(const RrepHeader& rrepHeader, Ipv4Address receiverIfaceAddr);
     /**
      * Create loopback route for given header
      *
-     * \param header the IP header
-     * \param oif the output interface net device
-     * \returns the route
+     * @param header the IP header
+     * @param oif the output interface net device
+     * @returns the route
      */
     Ptr<Ipv4Route> LoopbackRoute(const Ipv4Header& header, Ptr<NetDevice> oif) const;
 
     /**
-     * \name Receive control packets
+     * @name Receive control packets
      * @{
      */
     /**
      * Receive and process control packet
-     * \param socket input socket
+     * @param socket input socket
      */
     void RecvAodv(Ptr<Socket> socket);
     /**
      * Receive RREQ
-     * \param p packet
-     * \param receiver receiver address
-     * \param src sender address
+     * @param p packet
+     * @param receiver receiver address
+     * @param src sender address
      */
     void RecvRequest(Ptr<Packet> p, Ipv4Address receiver, Ipv4Address src);
     /**
      * Receive RREP
-     * \param p packet
-     * \param my destination address
-     * \param src sender address
+     * @param p packet
+     * @param my destination address
+     * @param src sender address
      */
     void RecvReply(Ptr<Packet> p, Ipv4Address my, Ipv4Address src);
     /**
      * Receive RREP_ACK
-     * \param neighbor neighbor address
+     * @param neighbor neighbor address
      */
     void RecvReplyAck(Ipv4Address neighbor);
     /**
      * Receive RERR
-     * \param p packet
-     * \param src sender address
+     * @param p packet
+     * @param src sender address
      */
     /// Receive  from node with address src
     void RecvError(Ptr<Packet> p, Ipv4Address src);
     /** @} */
 
     /**
-     * \name Send
+     * @name Send
      * @{
      */
     /** Forward packet from route request queue
-     * \param dst destination address
-     * \param route route to use
+     * @param dst destination address
+     * @param route route to use
      */
     void SendPacketFromQueue(Ipv4Address dst, Ptr<Ipv4Route> route);
     /// Send hello
     void SendHello();
     /** Send RREQ
-     * \param dst destination address
+     * @param dst destination address
      */
     void SendRequest(Ipv4Address dst);
     /** Send RREP
-     * \param rreqHeader route request header
-     * \param toOrigin routing table entry to originator
+     * @param rreqHeader route request header
+     * @param toOrigin routing table entry to originator
      */
     void SendReply(const RreqHeader& rreqHeader, const RoutingTableEntry& toOrigin);
     /** Send RREP by intermediate node
-     * \param toDst routing table entry to destination
-     * \param toOrigin routing table entry to originator
-     * \param gratRep indicates whether a gratuitous RREP should be unicast to destination
+     * @param toDst routing table entry to destination
+     * @param toOrigin routing table entry to originator
+     * @param gratRep indicates whether a gratuitous RREP should be unicast to destination
      */
     void SendReplyByIntermediateNode(RoutingTableEntry& toDst,
                                      RoutingTableEntry& toOrigin,
                                      bool gratRep);
     /** Send RREP_ACK
-     * \param neighbor neighbor address
+     * @param neighbor neighbor address
      */
     void SendReplyAck(Ipv4Address neighbor);
     /** Initiate RERR
-     * \param nextHop next hop address
+     * @param nextHop next hop address
      */
     void SendRerrWhenBreaksLinkToNextHop(Ipv4Address nextHop);
     /** Forward RERR
-     * \param packet packet
-     * \param precursors list of addresses of the visited nodes
+     * @param packet packet
+     * @param precursors list of addresses of the visited nodes
      */
     void SendRerrMessage(Ptr<Packet> packet, std::vector<Ipv4Address> precursors);
     /**
      * Send RERR message when no route to forward input packet. Unicast if there is reverse route to
      * originating node, broadcast otherwise.
-     * \param dst destination node IP address
-     * \param dstSeqNo destination node sequence number
-     * \param origin originating node IP address
+     * @param dst destination node IP address
+     * @param dstSeqNo destination node sequence number
+     * @param origin originating node IP address
      */
     void SendRerrWhenNoRouteToForward(Ipv4Address dst, uint32_t dstSeqNo, Ipv4Address origin);
     /** @} */
 
     /**
      * Send packet to destination socket
-     * \param socket destination node socket
-     * \param packet packet to send
-     * \param destination destination node IP address
+     * @param socket destination node socket
+     * @param packet packet to send
+     * @param destination destination node IP address
      */
     void SendTo(Ptr<Socket> socket, Ptr<Packet> packet, Ipv4Address destination);
 
@@ -477,14 +477,14 @@ class RoutingProtocol : public Ipv4RoutingProtocol
     std::map<Ipv4Address, Timer> m_addressReqTimer;
     /**
      * Handle route discovery process
-     * \param dst the destination IP address
+     * @param dst the destination IP address
      */
     void RouteRequestTimerExpire(Ipv4Address dst);
     /**
      * Mark link to neighbor node as unidirectional for blacklistTimeout
      *
-     * \param neighbor the IP address of the neighbor node
-     * \param blacklistTimeout the black list timeout time
+     * @param neighbor the IP address of the neighbor node
+     * @param blacklistTimeout the black list timeout time
      */
     void AckTimerExpire(Ipv4Address neighbor, Time blacklistTimeout);
 

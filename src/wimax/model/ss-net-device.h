@@ -32,7 +32,7 @@ class SsServiceFlowManager;
 class IpcsClassifier;
 
 /**
- * \ingroup wimax
+ * @ingroup wimax
  * SubscriberStationNetDevice subclass of WimaxNetDevice
  */
 class SubscriberStationNetDevice : public WimaxNetDevice
@@ -68,205 +68,205 @@ class SubscriberStationNetDevice : public WimaxNetDevice
     };
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     SubscriberStationNetDevice();
     /**
      * Constructor
      *
-     * \param node the node
-     * \param phy the wimax phy
+     * @param node the node
+     * @param phy the wimax phy
      */
     SubscriberStationNetDevice(Ptr<Node> node, Ptr<WimaxPhy> phy);
     ~SubscriberStationNetDevice() override;
 
     /**
-     * \brief initializes the net device and sets the parameters to the default values
+     * @brief initializes the net device and sets the parameters to the default values
      */
     void InitSubscriberStationNetDevice();
     /**
-     * \param lostDlMapInterval time since last received DL-MAP message before downlink
+     * @param lostDlMapInterval time since last received DL-MAP message before downlink
      * synchronization is considered lost
      */
     void SetLostDlMapInterval(Time lostDlMapInterval);
     /**
-     * \returns the time since last received DL-MAP message before downlink synchronization is
+     * @returns the time since last received DL-MAP message before downlink synchronization is
      * considered lost
      */
     Time GetLostDlMapInterval() const;
     /**
-     * \param lostUlMapInterval Time since last received UL-MAP before uplink synchronization is
+     * @param lostUlMapInterval Time since last received UL-MAP before uplink synchronization is
      * considered lost
      */
     void SetLostUlMapInterval(Time lostUlMapInterval);
     /**
-     * \returns the time since last received UL-MAP before uplink synchronization is considered lost
+     * @returns the time since last received UL-MAP before uplink synchronization is considered lost
      */
     Time GetLostUlMapInterval() const;
     /**
-     * \param maxDcdInterval Maximum time between transmission of DCD messages
+     * @param maxDcdInterval Maximum time between transmission of DCD messages
      */
     void SetMaxDcdInterval(Time maxDcdInterval);
     /**
-     * \returns the maximum time between transmission of DCD messages
+     * @returns the maximum time between transmission of DCD messages
      */
     Time GetMaxDcdInterval() const;
     /**
-     * \param maxUcdInterval Maximum time between transmission of UCD messages
+     * @param maxUcdInterval Maximum time between transmission of UCD messages
      */
     void SetMaxUcdInterval(Time maxUcdInterval);
     /**
-     * \returns the maximum time between transmission of UCD messages
+     * @returns the maximum time between transmission of UCD messages
      */
     Time GetMaxUcdInterval() const;
     /**
-     * \param interval1 Wait for DCD timeout value
+     * @param interval1 Wait for DCD timeout value
      */
     void SetIntervalT1(Time interval1);
     /**
-     * \returns the wait for DCD timeout
+     * @returns the wait for DCD timeout
      */
     Time GetIntervalT1() const;
     /**
-     * \param interval2 the wait for broadcast ranging timeout, i.e., wait for initial ranging
+     * @param interval2 the wait for broadcast ranging timeout, i.e., wait for initial ranging
      * opportunity
      */
     void SetIntervalT2(Time interval2);
     /**
-     * \returns the wait for broadcast ranging timeout, i.e., wait for initial ranging opportunity
+     * @returns the wait for broadcast ranging timeout, i.e., wait for initial ranging opportunity
      */
     Time GetIntervalT2() const;
     /**
-     * \param interval3 the ranging Response reception timeout following the transmission of a
+     * @param interval3 the ranging Response reception timeout following the transmission of a
      * ranging request
      */
     void SetIntervalT3(Time interval3);
     /**
-     * \returns the ranging Response reception timeout following the transmission of a ranging
+     * @returns the ranging Response reception timeout following the transmission of a ranging
      * request
      */
     Time GetIntervalT3() const;
     /**
-     * \param interval7 the wait for DSA/DSC/DSD Response timeout
+     * @param interval7 the wait for DSA/DSC/DSD Response timeout
      */
     void SetIntervalT7(Time interval7);
     /**
-     * \returns the wait for DSA/DSC/DSD Response timeout
+     * @returns the wait for DSA/DSC/DSD Response timeout
      */
     Time GetIntervalT7() const;
     /**
-     * \param interval12 the Wait for UCD descriptor timeout
+     * @param interval12 the Wait for UCD descriptor timeout
      */
     void SetIntervalT12(Time interval12);
     /**
-     * \returns the wait for UCD descriptor timeout
+     * @returns the wait for UCD descriptor timeout
      */
     Time GetIntervalT12() const;
     /**
-     * \param interval20 the Time the SS searches for preambles on a given channel
+     * @param interval20 the Time the SS searches for preambles on a given channel
      */
     void SetIntervalT20(Time interval20);
     /**
-     * \returns the Time the SS searches for preambles on a given channel
+     * @returns the Time the SS searches for preambles on a given channel
      */
     Time GetIntervalT20() const;
     /**
-     * \param interval21 the time the SS searches for (decodable) DL-MAP on a given channel
+     * @param interval21 the time the SS searches for (decodable) DL-MAP on a given channel
      */
     void SetIntervalT21(Time interval21);
     /**
-     * \returns the time the SS searches for (decodable) DL-MAP on a given channel
+     * @returns the time the SS searches for (decodable) DL-MAP on a given channel
      */
     Time GetIntervalT21() const;
     /**
-     * \param maxContentionRangingRetries the Number of retries on contention Ranging Requests
+     * @param maxContentionRangingRetries the Number of retries on contention Ranging Requests
      */
     void SetMaxContentionRangingRetries(uint8_t maxContentionRangingRetries);
     /**
-     * \returns the Number of retries on contention Ranging Requests
+     * @returns the Number of retries on contention Ranging Requests
      */
     uint8_t GetMaxContentionRangingRetries() const;
     /**
-     * \param basicConnection the basic connection to be used
+     * @param basicConnection the basic connection to be used
      */
     void SetBasicConnection(Ptr<WimaxConnection> basicConnection);
     /**
-     * \return the basic connection currently in use
+     * @return the basic connection currently in use
      */
     Ptr<WimaxConnection> GetBasicConnection() const;
     /**
-     * \param primaryConnection the primary connection to be used
+     * @param primaryConnection the primary connection to be used
      */
     void SetPrimaryConnection(Ptr<WimaxConnection> primaryConnection);
     /**
-     * \returns the primary connection currently used
+     * @returns the primary connection currently used
      */
     Ptr<WimaxConnection> GetPrimaryConnection() const;
     /**
-     * \returns the basic CID
+     * @returns the basic CID
      */
     Cid GetBasicCid() const;
     /**
-     * \returns the primary CID
+     * @returns the primary CID
      */
     Cid GetPrimaryCid() const;
 
     /**
-     * \brief Set the most efficient modulation and coding scheme (MCS) supported by the device
-     * \param modulationType the most robust MCS supported
+     * @brief Set the most efficient modulation and coding scheme (MCS) supported by the device
+     * @param modulationType the most robust MCS supported
      */
     void SetModulationType(WimaxPhy::ModulationType modulationType);
     /**
-     * \returns the most efficient modulation and coding scheme (MCS) supported by the device
+     * @returns the most efficient modulation and coding scheme (MCS) supported by the device
      */
     WimaxPhy::ModulationType GetModulationType() const;
     /**
-     * \param areManagementConnectionsAllocated true if the management connections are allocated,
+     * @param areManagementConnectionsAllocated true if the management connections are allocated,
      * false otherwise
      */
     void SetAreManagementConnectionsAllocated(bool areManagementConnectionsAllocated);
     /**
-     * \returns true if the management connections are allocated, false otherwise
+     * @returns true if the management connections are allocated, false otherwise
      */
     bool GetAreManagementConnectionsAllocated() const;
     /**
-     * \param areServiceFlowsAllocated true if the service flows are allocated, false otherwise
+     * @param areServiceFlowsAllocated true if the service flows are allocated, false otherwise
      */
     void SetAreServiceFlowsAllocated(bool areServiceFlowsAllocated);
     /**
-     * \returns true if the service flows are allocated, false otherwise
+     * @returns true if the service flows are allocated, false otherwise
      */
     bool GetAreServiceFlowsAllocated() const;
     /**
-     * \return the scheduler installed on the device
+     * @return the scheduler installed on the device
      */
     Ptr<SSScheduler> GetScheduler() const;
     /**
-     * \param ssScheduler the scheduler to be installed on the device
+     * @param ssScheduler the scheduler to be installed on the device
      */
     void SetScheduler(Ptr<SSScheduler> ssScheduler);
     /**
-     * \returns true if the device has at least one active service flow, false otherwise
+     * @returns true if the device has at least one active service flow, false otherwise
      */
     bool HasServiceFlows() const;
     /**
-     * \brief Enqueue a packet into a connection queue
-     * \param packet the packet to be enqueued
-     * \param hdrType the mac header type to be appended to the packet
-     * \param connection the connection to be used
-     * \returns true if successful
+     * @brief Enqueue a packet into a connection queue
+     * @param packet the packet to be enqueued
+     * @param hdrType the mac header type to be appended to the packet
+     * @param connection the connection to be used
+     * @returns true if successful
      */
     bool Enqueue(Ptr<Packet> packet,
                  const MacHeaderType& hdrType,
                  Ptr<WimaxConnection> connection) override;
     /**
-     * \brief Sends a burst on the uplink frame
-     * \param uiuc theOfdmUlBurstProfile
-     * \param nrSymbols number of symbols
-     * \param connection connection to use
-     * \param packetType optional HeaderType (default HEADER_TYPE_GENERIC)
+     * @brief Sends a burst on the uplink frame
+     * @param uiuc theOfdmUlBurstProfile
+     * @param nrSymbols number of symbols
+     * @param connection connection to use
+     * @param packetType optional HeaderType (default HEADER_TYPE_GENERIC)
      */
     void SendBurst(uint8_t uiuc,
                    uint16_t nrSymbols,
@@ -274,70 +274,70 @@ class SubscriberStationNetDevice : public WimaxNetDevice
                    MacHeaderType::HeaderType packetType = MacHeaderType::HEADER_TYPE_GENERIC);
 
     /**
-     * \brief Start the device
+     * @brief Start the device
      */
     void Start() override;
     /**
-     * \brief Stop the device
+     * @brief Stop the device
      */
     void Stop() override;
 
     /**
-     * \brief adds a new service flow
-     * \param sf pointer to service flow to add
+     * @brief adds a new service flow
+     * @param sf pointer to service flow to add
      */
     void AddServiceFlow(ServiceFlow* sf) const;
     /**
-     * \brief adds a new service flow
-     * \param sf service flow to add
+     * @brief adds a new service flow
+     * @param sf service flow to add
      */
     void AddServiceFlow(ServiceFlow sf) const;
     /**
-     * \brief Set timer.  If in stopped state, the EventId passed in the first
+     * @brief Set timer.  If in stopped state, the EventId passed in the first
      * argument will be cancelled.  If not, the second parameter will be set
      * to the value of the first parameter.
      *
-     * \param eventId EventId to cancel or to map to the second argument
-     * \param event EventId is set to first argument if not in stopped state
+     * @param eventId EventId to cancel or to map to the second argument
+     * @param event EventId is set to first argument if not in stopped state
      */
     void SetTimer(EventId eventId, EventId& event);
     /**
-     * \returns true if the SS is registered to a BS, false otherwise
+     * @returns true if the SS is registered to a BS, false otherwise
      */
     bool IsRegistered() const;
     /**
-     * \brief Get time to allocation
-     * \param deferTime defer time
-     * \returns the time to allocation
+     * @brief Get time to allocation
+     * @param deferTime defer time
+     * @returns the time to allocation
      */
     Time GetTimeToAllocation(Time deferTime);
 
     Ptr<SSLinkManager> m_linkManager; ///< link manager
     /**
-     * \returns a pointer to the CS packet classifier
+     * @returns a pointer to the CS packet classifier
      */
     Ptr<IpcsClassifier> GetIpcsClassifier() const;
     /**
-     * \brief Sets the packet classifier to be used
-     * \param classifier the classifier to use
+     * @brief Sets the packet classifier to be used
+     * @param classifier the classifier to use
      */
     void SetIpcsPacketClassifier(Ptr<IpcsClassifier> classifier);
     /**
-     * \returns a pointer to the link manager currently used
+     * @returns a pointer to the link manager currently used
      */
     Ptr<SSLinkManager> GetLinkManager() const;
     /**
-     * \brief sets the link manager to be used
-     * \param linkManager link manager to use
+     * @brief sets the link manager to be used
+     * @param linkManager link manager to use
      */
     void SetLinkManager(Ptr<SSLinkManager> linkManager);
     /**
-     * \returns a pointer to the service flow manager installed on the device
+     * @returns a pointer to the service flow manager installed on the device
      */
     Ptr<SsServiceFlowManager> GetServiceFlowManager() const;
     /**
-     * \brief Sets the service flow manager to be installed on the device
-     * \param sfm service flow manager to be used
+     * @brief Sets the service flow manager to be installed on the device
+     * @param sfm service flow manager to be used
      */
     void SetServiceFlowManager(Ptr<SsServiceFlowManager> sfm);
 
@@ -346,37 +346,37 @@ class SubscriberStationNetDevice : public WimaxNetDevice
 
     /**
      * Set the Enqueue callback for ASCII tracing
-     * \param cb callback for ASCII tracing
+     * @param cb callback for ASCII tracing
      */
     void SetAsciiTxQueueEnqueueCallback(AsciiTraceCallback cb);
 
     /**
      * Set the Dequeue callback for ASCII tracing
-     * \param cb callback for ASCII tracing
+     * @param cb callback for ASCII tracing
      */
     void SetAsciiTxQueueDequeueCallback(AsciiTraceCallback cb);
 
     /**
      * Set the Drop callback for ASCII tracing
-     * \param cb callback for ASCII tracing
+     * @param cb callback for ASCII tracing
      */
     void SetAsciiTxQueueDropCallback(AsciiTraceCallback cb);
 
   private:
     /**
      * Get default lost DL map interval
-     * \returns the default lost DL map interval
+     * @returns the default lost DL map interval
      */
     static Time GetDefaultLostDlMapInterval();
 
     void DoDispose() override;
     /**
      * Send a packet
-     * \param packet the packet to send
-     * \param source the source MAC address
-     * \param dest the destination MAC address
-     * \param protocolNumber the protocol number
-     * \returns true if successful
+     * @param packet the packet to send
+     * @param source the source MAC address
+     * @param dest the destination MAC address
+     * @param protocolNumber the protocol number
+     * @returns true if successful
      */
     bool DoSend(Ptr<Packet> packet,
                 const Mac48Address& source,
@@ -384,28 +384,28 @@ class SubscriberStationNetDevice : public WimaxNetDevice
                 uint16_t protocolNumber) override;
     /**
      * Receive a packet
-     * \param packet the packet received
+     * @param packet the packet received
      */
     void DoReceive(Ptr<Packet> packet) override;
 
     /**
      * Process DL map
-     * \param dlmap the DL map
+     * @param dlmap the DL map
      */
     void ProcessDlMap(const DlMap& dlmap);
     /**
      * Process UL map
-     * \param ulmap the UL map
+     * @param ulmap the UL map
      */
     void ProcessUlMap(const UlMap& ulmap);
     /**
      * Process DCD
-     * \param dcd the DCD
+     * @param dcd the DCD
      */
     void ProcessDcd(const Dcd& dcd);
     /**
      * Process UCD
-     * \param ucd the UCD
+     * @param ucd the UCD
      */
     void ProcessUcd(const Ucd& ucd);
 
@@ -476,7 +476,7 @@ class SubscriberStationNetDevice : public WimaxNetDevice
      * The trace source fired when packets come into the "top" of the device
      * at the L3/L2 transition, before being queued for transmission.
      *
-     * \see class CallBackTraceSource
+     * @see class CallBackTraceSource
      */
     TracedCallback<Ptr<const Packet>> m_ssTxTrace;
 
@@ -484,7 +484,7 @@ class SubscriberStationNetDevice : public WimaxNetDevice
      * The trace source fired when packets coming into the "top" of the device
      * are dropped at the MAC layer during transmission.
      *
-     * \see class CallBackTraceSource
+     * @see class CallBackTraceSource
      */
     TracedCallback<Ptr<const Packet>> m_ssTxDropTrace;
 
@@ -493,7 +493,7 @@ class SubscriberStationNetDevice : public WimaxNetDevice
      * immediately before being forwarded up to higher layers (at the L2/L3
      * transition).  This is a promiscuous trace.
      *
-     * \see class CallBackTraceSource
+     * @see class CallBackTraceSource
      */
     TracedCallback<Ptr<const Packet>> m_ssPromiscRxTrace;
 
@@ -502,7 +502,7 @@ class SubscriberStationNetDevice : public WimaxNetDevice
      * immediately before being forwarded up to higher layers (at the L2/L3
      * transition).  This is a non- promiscuous trace.
      *
-     * \see class CallBackTraceSource
+     * @see class CallBackTraceSource
      */
     TracedCallback<Ptr<const Packet>> m_ssRxTrace;
 
@@ -510,7 +510,7 @@ class SubscriberStationNetDevice : public WimaxNetDevice
      * The trace source fired when packets coming into the "top" of the device
      * are dropped at the MAC layer during reception.
      *
-     * \see class CallBackTraceSource
+     * @see class CallBackTraceSource
      */
     TracedCallback<Ptr<const Packet>> m_ssRxDropTrace;
 

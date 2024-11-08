@@ -8,8 +8,8 @@
 using namespace ns3;
 
 /**
- * \ingroup network-test
- * \ingroup tests
+ * @ingroup network-test
+ * @ingroup tests
  *
  * Ipv6Address unit tests.
  */
@@ -85,10 +85,10 @@ Ipv6AddressTestCase::DoRun()
 }
 
 /**
- * \ingroup network-test
- * \ingroup tests
+ * @ingroup network-test
+ * @ingroup tests
  *
- * \brief Ipv6Address TestSuite
+ * @brief Ipv6Address TestSuite
  *
  */
 class Ipv6AddressTestSuite : public TestSuite

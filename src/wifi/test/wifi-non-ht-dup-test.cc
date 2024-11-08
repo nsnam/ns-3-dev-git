@@ -55,14 +55,14 @@ class MuRtsCtsHePhy : public HePhy
     /**
      * Set the previous TX PPDU UID counter.
      *
-     * \param uid the value to which the previous TX PPDU UID counter should be set
+     * @param uid the value to which the previous TX PPDU UID counter should be set
      */
     void SetPreviousTxPpduUid(uint64_t uid);
 
     /**
      * Set the TXVECTOR of the previously transmitted MU-RTS.
      *
-     * \param muRtsTxVector the TXVECTOR used to transmit MU-RTS trigger frame
+     * @param muRtsTxVector the TXVECTOR used to transmit MU-RTS trigger frame
      */
     void SetMuRtsTxVector(const WifiTxVector& muRtsTxVector);
 }; // class MuRtsCtsHePhy
@@ -99,8 +99,8 @@ class MuRtsCtsSpectrumWifiPhy : public SpectrumWifiPhy
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -113,14 +113,14 @@ class MuRtsCtsSpectrumWifiPhy : public SpectrumWifiPhy
     /**
      * Set the global PPDU UID counter.
      *
-     * \param uid the value to which the global PPDU UID counter should be set
+     * @param uid the value to which the global PPDU UID counter should be set
      */
     void SetPpduUid(uint64_t uid);
 
     /**
      * Set the TXVECTOR of the previously transmitted MU-RTS.
      *
-     * \param muRtsTxVector the TXVECTOR used to transmit MU-RTS trigger frame
+     * @param muRtsTxVector the TXVECTOR used to transmit MU-RTS trigger frame
      */
     void SetMuRtsTxVector(const WifiTxVector& muRtsTxVector);
 
@@ -180,10 +180,10 @@ MuRtsCtsSpectrumWifiPhy::SetMuRtsTxVector(const WifiTxVector& muRtsTxVector)
 }
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief non-HT duplicate PHY reception test
+ * @brief non-HT duplicate PHY reception test
  * The test consists in an AP sending a single non-HT duplicate PPDU
  * of a given channel width (multiple of 20 MHz) over a spectrum
  * channel and it checks whether the STAs attached to the channel
@@ -198,11 +198,11 @@ class TestNonHtDuplicatePhyReception : public TestCase
 
     /**
      * Constructor
-     * \param apStandard the standard to use for the AP
-     * \param apFrequency the center frequency of the AP
-     * \param apP20Index the index of the primary 20 MHz channel of the AP
-     * \param stasParams the parameters of the STAs (\see StasParams)
-     * \param per20MhzInterference flags per 20 MHz subchannel whether an interference should be
+     * @param apStandard the standard to use for the AP
+     * @param apFrequency the center frequency of the AP
+     * @param apP20Index the index of the primary 20 MHz channel of the AP
+     * @param stasParams the parameters of the STAs (\see StasParams)
+     * @param per20MhzInterference flags per 20 MHz subchannel whether an interference should be
      * generated on that subchannel. An empty vector means that the test will not generate any
      * interference.
      */
@@ -219,11 +219,11 @@ class TestNonHtDuplicatePhyReception : public TestCase
 
     /**
      * Receive success function
-     * \param index index of the RX STA
-     * \param psdu the PSDU
-     * \param rxSignalInfo the info on the received signal (\see RxSignalInfo)
-     * \param txVector the transmit vector
-     * \param statusPerMpdu reception status per MPDU
+     * @param index index of the RX STA
+     * @param psdu the PSDU
+     * @param rxSignalInfo the info on the received signal (\see RxSignalInfo)
+     * @param txVector the transmit vector
+     * @param statusPerMpdu reception status per MPDU
      */
     void RxSuccess(std::size_t index,
                    Ptr<const WifiPsdu> psdu,
@@ -233,16 +233,16 @@ class TestNonHtDuplicatePhyReception : public TestCase
 
     /**
      * Receive failure function
-     * \param index index of the RX STA
-     * \param psdu the PSDU
+     * @param index index of the RX STA
+     * @param psdu the PSDU
      */
     void RxFailure(std::size_t index, Ptr<const WifiPsdu> psdu);
 
     /**
      * Check the results
-     * \param index index of the RX STA
-     * \param expectedRxSuccess the expected number of RX success
-     * \param expectedRxFailure the expected number of RX failures
+     * @param index index of the RX STA
+     * @param expectedRxSuccess the expected number of RX success
+     * @param expectedRxFailure the expected number of RX failures
      */
     void CheckResults(std::size_t index, uint32_t expectedRxSuccess, uint32_t expectedRxFailure);
 
@@ -253,22 +253,22 @@ class TestNonHtDuplicatePhyReception : public TestCase
 
     /**
      * Send non-HT duplicate PPDU function
-     * \param channelWidth the channel width to use to transmit the non-HT PPDU
+     * @param channelWidth the channel width to use to transmit the non-HT PPDU
      */
     void SendNonHtDuplicatePpdu(MHz_u channelWidth);
 
     /**
      * Generate interference function
-     * \param interferer the PHY of the interferer to use to generate the signal
-     * \param interferencePsd the PSD of the interference to be generated
-     * \param duration the duration of the interference
+     * @param interferer the PHY of the interferer to use to generate the signal
+     * @param interferencePsd the PSD of the interference to be generated
+     * @param duration the duration of the interference
      */
     void GenerateInterference(Ptr<WaveformGenerator> interferer,
                               Ptr<SpectrumValue> interferencePsd,
                               Time duration);
     /**
      * Stop interference function
-     * \param interferer the PHY of the interferer that was used to generate the signal
+     * @param interferer the PHY of the interferer that was used to generate the signal
      */
     void StopInterference(Ptr<WaveformGenerator> interferer);
 
@@ -608,10 +608,10 @@ TestNonHtDuplicatePhyReception::DoRun()
 }
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief test PHY reception of multiple CTS frames as a response to a MU-RTS frame.
+ * @brief test PHY reception of multiple CTS frames as a response to a MU-RTS frame.
  * The test is checking whether the reception of multiple identical CTS frames as a response to a
  * MU-RTS frame is successfully received by the AP PHY and that only a single CTS frame is forwarded
  * up to the MAC. Since the test is focusing on the PHY reception of multiple CTS response, the
@@ -632,7 +632,7 @@ class TestMultipleCtsResponsesFromMuRts : public TestCase
 
     /**
      * Constructor
-     * \param ctsTxInfosPerSta the information about CTS responses to generate
+     * @param ctsTxInfosPerSta the information about CTS responses to generate
      */
     TestMultipleCtsResponsesFromMuRts(const std::vector<CtsTxInfos>& ctsTxInfosPerSta);
 
@@ -649,17 +649,17 @@ class TestMultipleCtsResponsesFromMuRts : public TestCase
     /**
      * Function called to trigger a CTS frame sent by a STA using non-HT duplicate.
      *
-     * \param phyIndex the index of the TX PHY
+     * @param phyIndex the index of the TX PHY
      */
     void TxNonHtDuplicateCts(std::size_t phyIndex);
 
     /**
      * CTS RX success function
-     * \param phyIndex the index of the PHY (0 for AP)
-     * \param psdu the PSDU
-     * \param rxSignalInfo the info on the received signal (\see RxSignalInfo)
-     * \param txVector the transmit vector
-     * \param statusPerMpdu reception status per MPDU
+     * @param phyIndex the index of the PHY (0 for AP)
+     * @param psdu the PSDU
+     * @param rxSignalInfo the info on the received signal (\see RxSignalInfo)
+     * @param txVector the transmit vector
+     * @param statusPerMpdu reception status per MPDU
      */
     void RxCtsSuccess(std::size_t phyIndex,
                       Ptr<const WifiPsdu> psdu,
@@ -669,8 +669,8 @@ class TestMultipleCtsResponsesFromMuRts : public TestCase
 
     /**
      * CTS RX failure function
-     * \param phyIndex the index of the PHY (0 for AP)
-     * \param psdu the PSDU
+     * @param phyIndex the index of the PHY (0 for AP)
+     * @param psdu the PSDU
      */
     void RxCtsFailure(std::size_t phyIndex, Ptr<const WifiPsdu> psdu);
 
@@ -1031,10 +1031,10 @@ TestMultipleCtsResponsesFromMuRts::DoRun()
 }
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief wifi non-HT duplicate Test Suite
+ * @brief wifi non-HT duplicate Test Suite
  */
 class WifiNonHtDuplicateTestSuite : public TestSuite
 {

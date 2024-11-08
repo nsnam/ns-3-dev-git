@@ -30,30 +30,30 @@ class LteAsSapProvider
     virtual ~LteAsSapProvider();
 
     /**
-     * \brief Set the selected Closed Subscriber Group subscription list to be
+     * @brief Set the selected Closed Subscriber Group subscription list to be
      *        used for cell selection.
      *
-     * \param csgId identity of the subscribed CSG
+     * @param csgId identity of the subscribed CSG
      */
     virtual void SetCsgWhiteList(uint32_t csgId) = 0;
 
     /**
-     * \brief Initiate Idle mode cell selection procedure.
+     * @brief Initiate Idle mode cell selection procedure.
      *
-     * \param dlEarfcn the downlink carrier frequency (EARFCN)
+     * @param dlEarfcn the downlink carrier frequency (EARFCN)
      */
     virtual void StartCellSelection(uint32_t dlEarfcn) = 0;
 
     /**
-     * \brief Force the RRC entity to stay camped on a certain eNodeB.
+     * @brief Force the RRC entity to stay camped on a certain eNodeB.
      *
-     * \param cellId the cell ID identifying the eNodeB
-     * \param dlEarfcn the downlink carrier frequency (EARFCN)
+     * @param cellId the cell ID identifying the eNodeB
+     * @param dlEarfcn the downlink carrier frequency (EARFCN)
      */
     virtual void ForceCampedOnEnb(uint16_t cellId, uint32_t dlEarfcn) = 0;
 
     /**
-     * \brief Tell the RRC entity to enter Connected mode.
+     * @brief Tell the RRC entity to enter Connected mode.
      *
      * If this function is called when the UE is in a situation where connecting
      * is not possible (e.g. before the simulation begin), then the UE will
@@ -63,15 +63,15 @@ class LteAsSapProvider
     virtual void Connect() = 0;
 
     /**
-     * \brief Send a data packet.
+     * @brief Send a data packet.
      *
-     * \param packet the packet
-     * \param bid the EPS bearer ID
+     * @param packet the packet
+     * @param bid the EPS bearer ID
      */
     virtual void SendData(Ptr<Packet> packet, uint8_t bid) = 0;
 
     /**
-     * \brief Tell the RRC entity to release the connection.
+     * @brief Tell the RRC entity to release the connection.
      */
     virtual void Disconnect() = 0;
 };
@@ -89,12 +89,12 @@ class LteAsSapUser
     virtual ~LteAsSapUser();
 
     /**
-     * \brief Notify the NAS that RRC Connection Establishment was successful.
+     * @brief Notify the NAS that RRC Connection Establishment was successful.
      */
     virtual void NotifyConnectionSuccessful() = 0;
 
     /**
-     * \brief Notify the NAS that RRC Connection Establishment failed.
+     * @brief Notify the NAS that RRC Connection Establishment failed.
      */
     virtual void NotifyConnectionFailed() = 0;
 
@@ -106,7 +106,7 @@ class LteAsSapUser
     /**
      * receive a data packet
      *
-     * \param packet the packet
+     * @param packet the packet
      */
     virtual void RecvData(Ptr<Packet> packet) = 0;
 };
@@ -122,7 +122,7 @@ class MemberLteAsSapProvider : public LteAsSapProvider
     /**
      * Constructor
      *
-     * \param owner the owner class
+     * @param owner the owner class
      */
     MemberLteAsSapProvider(C* owner);
 
@@ -200,7 +200,7 @@ class MemberLteAsSapUser : public LteAsSapUser
     /**
      * Constructor
      *
-     * \param owner the owner class
+     * @param owner the owner class
      */
     MemberLteAsSapUser(C* owner);
 

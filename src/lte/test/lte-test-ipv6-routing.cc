@@ -39,9 +39,9 @@ the followed route for a packet
 using namespace ns3;
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief Lte Ipv6 routing test case.
+ * @brief Lte Ipv6 routing test case.
  */
 class LteIpv6RoutingTestCase : public TestCase
 {
@@ -50,35 +50,35 @@ class LteIpv6RoutingTestCase : public TestCase
     ~LteIpv6RoutingTestCase() override;
 
     /**
-     * \brief Initialize testing parameters.
+     * @brief Initialize testing parameters.
      */
     void Checker();
 
     /**
-     * \brief sent Packets from client's IPv6 interface.
-     * \param p packet
-     * \param ipv6 Ipv6 object
-     * \param interface Ipv6interface from which the packet is transmitted
+     * @brief sent Packets from client's IPv6 interface.
+     * @param p packet
+     * @param ipv6 Ipv6 object
+     * @param interface Ipv6interface from which the packet is transmitted
      */
     void SentAtClient(Ptr<const Packet> p, Ptr<Ipv6> ipv6, uint32_t interface);
 
     /**
-     * \brief Received Packets at client's IPv6 interface.
-     * \param p packet
-     * \param ipv6 Ipv6 object
-     * \param interface Ipv6interface at which the packet is received
+     * @brief Received Packets at client's IPv6 interface.
+     * @param p packet
+     * @param ipv6 Ipv6 object
+     * @param interface Ipv6interface at which the packet is received
      */
     void ReceivedAtClient(Ptr<const Packet> p, Ptr<Ipv6> ipv6, uint32_t interface);
 
     /**
-     * \brief Received Packet at pgw from enb.
-     * \param p packet
+     * @brief Received Packet at pgw from enb.
+     * @param p packet
      */
     void EnbToPgw(Ptr<Packet> p);
 
     /**
-     * \brief Received Packet at pgw from enb.
-     * \param p packet
+     * @brief Received Packet at pgw from enb.
+     * @param p packet
      */
     void TunToPgw(Ptr<Packet> p);
 
@@ -367,7 +367,7 @@ LteIpv6RoutingTestCase::DoRun()
 }
 
 /**
- * \brief test suite 1
+ * @brief test suite 1
  */
 class LteIpv6RoutingTestSuite : public TestSuite
 {
@@ -382,7 +382,7 @@ LteIpv6RoutingTestSuite::LteIpv6RoutingTestSuite()
 }
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  * Static variable for test initialization
  */
 static LteIpv6RoutingTestSuite g_lteipv6testsuite;

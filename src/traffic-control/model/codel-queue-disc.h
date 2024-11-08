@@ -44,9 +44,9 @@ static const int CODEL_SHIFT = 10;
 class TraceContainer;
 
 /**
- * \ingroup traffic-control
+ * @ingroup traffic-control
  *
- * \brief A CoDel packet queue disc
+ * @brief A CoDel packet queue disc
  */
 
 class CoDelQueueDisc : public QueueDisc
@@ -54,13 +54,13 @@ class CoDelQueueDisc : public QueueDisc
   public:
     /**
      * Get the type ID.
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
     /**
-     * \brief CoDelQueueDisc Constructor
+     * @brief CoDelQueueDisc Constructor
      *
      * Creates a CoDel queue
      */
@@ -69,23 +69,23 @@ class CoDelQueueDisc : public QueueDisc
     ~CoDelQueueDisc() override;
 
     /**
-     * \brief Get the target queue delay
+     * @brief Get the target queue delay
      *
-     * \returns The target queue delay
+     * @returns The target queue delay
      */
     Time GetTarget();
 
     /**
-     * \brief Get the interval
+     * @brief Get the interval
      *
-     * \returns The interval
+     * @returns The interval
      */
     Time GetInterval();
 
     /**
-     * \brief Get the time for next packet drop while in the dropping state
+     * @brief Get the time for next packet drop while in the dropping state
      *
-     * \returns The time for next packet drop
+     * @returns The time for next packet drop
      */
     uint32_t GetDropNext();
 
@@ -103,56 +103,56 @@ class CoDelQueueDisc : public QueueDisc
     friend class ::CoDelQueueDiscNewtonStepTest; // Test code
     friend class ::CoDelQueueDiscControlLawTest; // Test code
     /**
-     * \brief Add a packet to the queue
+     * @brief Add a packet to the queue
      *
-     * \param item The item to be added
-     * \returns True if the packet can be added, False if the packet is dropped due to full queue
+     * @param item The item to be added
+     * @returns True if the packet can be added, False if the packet is dropped due to full queue
      */
     bool DoEnqueue(Ptr<QueueDiscItem> item) override;
 
     /**
-     * \brief Remove a packet from queue based on the current state
+     * @brief Remove a packet from queue based on the current state
      * If we are in dropping state, check if we could leave the dropping state
      * or if we should perform next drop
      * If we are not currently in dropping state, check if we need to enter the state
      * and drop the first packet
      *
-     * \returns The packet that is examined
+     * @returns The packet that is examined
      */
     Ptr<QueueDiscItem> DoDequeue() override;
 
     bool CheckConfig() override;
 
     /**
-     * \brief Calculate the reciprocal square root of m_count by using Newton's method
+     * @brief Calculate the reciprocal square root of m_count by using Newton's method
      *  http://en.wikipedia.org/wiki/Methods_of_computing_square_roots#Iterative_methods_for_reciprocal_square_roots
      * m_recInvSqrt (new) = (m_recInvSqrt (old) / 2) * (3 - m_count * m_recInvSqrt^2)
-     * \param recInvSqrt reciprocal value of sqrt (count)
-     * \param count count value
-     * \return The new recInvSqrt value
+     * @param recInvSqrt reciprocal value of sqrt (count)
+     * @param count count value
+     * @return The new recInvSqrt value
      */
     static uint16_t NewtonStep(uint16_t recInvSqrt, uint32_t count);
 
     /**
-     * \brief Determine the time for next drop
+     * @brief Determine the time for next drop
      * CoDel control law is t + m_interval/sqrt(m_count).
      * Here, we use m_recInvSqrt calculated by Newton's method in NewtonStep() to avoid
      * both sqrt() and divide operations
      *
-     * \param t Current next drop time (in units of CoDel time)
-     * \param interval interval (in units of CoDel time)
-     * \param recInvSqrt reciprocal value of sqrt (count)
-     * \return The new next drop time (in units of CoDel time)
+     * @param t Current next drop time (in units of CoDel time)
+     * @param interval interval (in units of CoDel time)
+     * @param recInvSqrt reciprocal value of sqrt (count)
+     * @return The new next drop time (in units of CoDel time)
      */
     static uint32_t ControlLaw(uint32_t t, uint32_t interval, uint32_t recInvSqrt);
 
     /**
-     * \brief Determine whether a packet is OK to be dropped. The packet
+     * @brief Determine whether a packet is OK to be dropped. The packet
      * may not be actually dropped (depending on the drop state)
      *
-     * \param item The packet that is considered
-     * \param now The current time represented as 32-bit unsigned integer (us)
-     * \returns True if it is OK to drop the packet (sojourn time above target for at least
+     * @param item The packet that is considered
+     * @param now The current time represented as 32-bit unsigned integer (us)
+     * @returns True if it is OK to drop the packet (sojourn time above target for at least
      * interval)
      */
     bool OkToDrop(Ptr<QueueDiscItem> item, uint32_t now);

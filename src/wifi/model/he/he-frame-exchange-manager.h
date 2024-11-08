@@ -34,21 +34,21 @@ typedef std::unordered_map<uint16_t /* staId */, Ptr<WifiPsdu> /* PSDU */> WifiP
 typedef std::unordered_map<uint16_t /* staId */, Ptr<const WifiPsdu> /* PSDU */> WifiConstPsduMap;
 
 /**
- * \param psduMap a PSDU map
- * \return true if the given PSDU map contains a single PSDU including a single MPDU
+ * @param psduMap a PSDU map
+ * @return true if the given PSDU map contains a single PSDU including a single MPDU
  *         that carries a Trigger Frame
  */
 bool IsTrigger(const WifiPsduMap& psduMap);
 
 /**
- * \param psduMap a PSDU map
- * \return true if the given PSDU map contains a single PSDU including a single MPDU
+ * @param psduMap a PSDU map
+ * @return true if the given PSDU map contains a single PSDU including a single MPDU
  *         that carries a Trigger Frame
  */
 bool IsTrigger(const WifiConstPsduMap& psduMap);
 
 /**
- * \ingroup wifi
+ * @ingroup wifi
  *
  * HeFrameExchangeManager handles the frame exchange sequences
  * for HE stations.
@@ -57,8 +57,8 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     HeFrameExchangeManager();
@@ -75,7 +75,7 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
     /**
      * Set the Multi-user Scheduler associated with this Frame Exchange Manager.
      *
-     * \param muScheduler the Multi-user Scheduler associated with this Frame Exchange Manager
+     * @param muScheduler the Multi-user Scheduler associated with this Frame Exchange Manager
      */
     void SetMultiUserScheduler(const Ptr<MultiUserScheduler> muScheduler);
 
@@ -83,9 +83,9 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
      * Get the PSDU in the given PSDU map that is addressed to the given MAC address,
      * if any, or a null pointer, otherwise.
      *
-     * \param to the MAC address
-     * \param psduMap the PSDU map
-     * \return the PSDU, if any, or a null pointer, otherwise
+     * @param to the MAC address
+     * @param psduMap the PSDU map
+     * @return the PSDU, if any, or a null pointer, otherwise
      */
     static Ptr<WifiPsdu> GetPsduTo(Mac48Address to, const WifiPsduMap& psduMap);
 
@@ -94,7 +94,7 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
      * Trigger Frame to the most recent RSSI observed from the corresponding
      * station.
      *
-     * \param trigger the given Trigger Frame
+     * @param trigger the given Trigger Frame
      */
     virtual void SetTargetRssi(CtrlTriggerHeader& trigger) const;
 
@@ -102,8 +102,8 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
      * Get the RSSI of the most recent packet received from the station having
      * the given address.
      *
-     * \param address of the remote station
-     * \return the RSSI of the most recent packet received from the remote station
+     * @param address of the remote station
+     * @return the RSSI of the most recent packet received from the remote station
      */
     virtual std::optional<dBm_u> GetMostRecentRssi(const Mac48Address& address) const;
 
@@ -111,9 +111,9 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
      * Return whether the received frame is classified as intra-BSS. It is assumed that
      * this station is already associated with an AP.
      *
-     * \param psdu the received PSDU
-     * \param txVector TX vector of the received PSDU
-     * \return true if the received frame is classified as intra-BSS, false otherwise
+     * @param psdu the received PSDU
+     * @param txVector TX vector of the received PSDU
+     * @return true if the received frame is classified as intra-BSS, false otherwise
      *         (the received frame is classified as inter-BSS or it cannot be classified
      *         as intra-BSS or inter-BSS)
      */
@@ -123,8 +123,8 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
      * This method is intended to be called a SIFS after the reception of a Trigger Frame
      * to determine whether the station is allowed to respond.
      *
-     * \param trigger the Trigger Frame soliciting a response
-     * \return true if CS is not required or the UL MU CS mechanism indicates that the medium
+     * @param trigger the Trigger Frame soliciting a response
+     * @return true if CS is not required or the UL MU CS mechanism indicates that the medium
      *         is idle, false otherwise
      */
     bool UlMuCsMediumIdle(const CtrlTriggerHeader& trigger) const;
@@ -132,8 +132,8 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
     /**
      * Get the (link) address of the non-AP stations solicited by the given Trigger Frame.
      *
-     * \param trigger the given Trigger Frame
-     * \return the (link) address of the non-AP stations solicited by the given Trigger Frame
+     * @param trigger the given Trigger Frame
+     * @return the (link) address of the non-AP stations solicited by the given Trigger Frame
      */
     std::set<Mac48Address> GetTfRecipients(const CtrlTriggerHeader& trigger) const;
 
@@ -177,11 +177,11 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
      * Compute how to set the Duration/ID field of an MU-RTS Trigger Frame to send to protect
      * a frame transmitted with the given TX vector.
      *
-     * \param muRtsSize the size of the MU-RTS Trigger Frame in bytes
-     * \param muRtsTxVector the TX vector used to send the MU-RTS Trigger Frame
-     * \param txDuration the TX duration of the data frame
-     * \param response the time taken by the response (acknowledgment) to the data frame
-     * \return the computed Duration/ID value for the MU-RTS Trigger Frame
+     * @param muRtsSize the size of the MU-RTS Trigger Frame in bytes
+     * @param muRtsTxVector the TX vector used to send the MU-RTS Trigger Frame
+     * @param txDuration the TX duration of the data frame
+     * @param response the time taken by the response (acknowledgment) to the data frame
+     * @return the computed Duration/ID value for the MU-RTS Trigger Frame
      */
     virtual Time GetMuRtsDurationId(uint32_t muRtsSize,
                                     const WifiTxVector& muRtsTxVector,
@@ -191,24 +191,24 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
     /**
      * Send an MU-RTS to begin an MU-RTS/CTS frame exchange protecting an MU PPDU.
      *
-     * \param txParams the TX parameters for the data frame
+     * @param txParams the TX parameters for the data frame
      */
     virtual void SendMuRts(const WifiTxParameters& txParams);
 
     /**
      * Called when no CTS frame is received after an MU-RTS.
      *
-     * \param muRts the MU-RTS that solicited CTS responses
-     * \param txVector the TXVECTOR used to transmit the MU-RTS frame
+     * @param muRts the MU-RTS that solicited CTS responses
+     * @param txVector the TXVECTOR used to transmit the MU-RTS frame
      */
     virtual void CtsAfterMuRtsTimeout(Ptr<WifiMpdu> muRts, const WifiTxVector& txVector);
 
     /**
      * Called when no CTS frame is received after an MU-RTS.
      *
-     * \param muRts the MU-RTS that solicited CTS responses
-     * \param txVector the TXVECTOR used to transmit the MU-RTS frame
-     * \param updateFailedCw whether to update CW in case of retransmission after TX failure
+     * @param muRts the MU-RTS that solicited CTS responses
+     * @param txVector the TXVECTOR used to transmit the MU-RTS frame
+     * @param updateFailedCw whether to update CW in case of retransmission after TX failure
      */
     void DoCtsAfterMuRtsTimeout(Ptr<WifiMpdu> muRts,
                                 const WifiTxVector& txVector,
@@ -217,16 +217,16 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
     /**
      * Send CTS after receiving an MU-RTS.
      *
-     * \param muRtsHdr the MAC header of the received MU-RTS
-     * \param trigger the MU-RTS Trigger Frame header
-     * \param muRtsSnr the SNR of the MU-RTS in linear scale
+     * @param muRtsHdr the MAC header of the received MU-RTS
+     * @param trigger the MU-RTS Trigger Frame header
+     * @param muRtsSnr the SNR of the MU-RTS in linear scale
      */
     virtual void SendCtsAfterMuRts(const WifiMacHeader& muRtsHdr,
                                    const CtrlTriggerHeader& trigger,
                                    double muRtsSnr);
 
     /**
-     * \return the mode used to transmit a CTS after an MU-RTS.
+     * @return the mode used to transmit a CTS after an MU-RTS.
      */
     WifiMode GetCtsModeAfterMuRts() const;
 
@@ -234,9 +234,9 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
      * Get the TXVECTOR that the station having the given station ID has to use to send a
      * CTS frame after receiving an MU-RTS Trigger Frame from the AP it is associated with.
      *
-     * \param trigger the MU-RTS Trigger Frame
-     * \param staId the station ID for MU
-     * \return the TXVECTOR to use to send a CTS frame
+     * @param trigger the MU-RTS Trigger Frame
+     * @param staId the station ID for MU
+     * @return the TXVECTOR to use to send a CTS frame
      */
     WifiTxVector GetCtsTxVectorAfterMuRts(const CtrlTriggerHeader& trigger, uint16_t staId) const;
 
@@ -245,16 +245,16 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
      * Note that both <i>psduMap</i> and <i>txParams</i> are moved to m_psduMap and
      * m_txParams, respectively, and hence are left in an undefined state.
      *
-     * \param psduMap the map of PSDUs to send
-     * \param txParams the TX parameters to use to transmit the PSDUs
+     * @param psduMap the map of PSDUs to send
+     * @param txParams the TX parameters to use to transmit the PSDUs
      */
     void SendPsduMapWithProtection(WifiPsduMap psduMap, WifiTxParameters& txParams);
 
     /**
      * Forward a map of PSDUs down to the PHY layer.
      *
-     * \param psduMap the map of PSDUs to transmit
-     * \param txVector the TXVECTOR used to transmit the MU PPDU
+     * @param psduMap the map of PSDUs to transmit
+     * @param txVector the TXVECTOR used to transmit the MU PPDU
      */
     virtual void ForwardPsduMapDown(WifiConstPsduMap psduMap, WifiTxVector& txVector);
 
@@ -263,8 +263,8 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
      * in response to a DL MU PPDU. This method must not be called if all the
      * expected BlockAck frames were received.
      *
-     * \param psduMap a pointer to PSDU map transmitted in a DL MU PPDU
-     * \param nSolicitedStations the number of stations solicited to send a TB PPDU
+     * @param psduMap a pointer to PSDU map transmitted in a DL MU PPDU
+     * @param nSolicitedStations the number of stations solicited to send a TB PPDU
      */
     virtual void BlockAcksInTbPpduTimeout(WifiPsduMap* psduMap, std::size_t nSolicitedStations);
 
@@ -273,8 +273,8 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
      * response to Trigger Frame. This method must not be called if all the
      * expected TB PPDUs were received.
      *
-     * \param psduMap a pointer to PSDU map transmitted in a DL MU PPDU
-     * \param nSolicitedStations the number of stations solicited to send a TB PPDU
+     * @param psduMap a pointer to PSDU map transmitted in a DL MU PPDU
+     * @param nSolicitedStations the number of stations solicited to send a TB PPDU
      */
     virtual void TbPpduTimeout(WifiPsduMap* psduMap, std::size_t nSolicitedStations);
 
@@ -283,9 +283,9 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
      * response to Trigger Frame. This method must not be called if all the
      * expected TB PPDUs were received.
      *
-     * \param psduMap a pointer to PSDU map transmitted in a DL MU PPDU
-     * \param nSolicitedStations the number of stations solicited to send a TB PPDU
-     * \param updateFailedCw whether to update CW in case the transmission failed
+     * @param psduMap a pointer to PSDU map transmitted in a DL MU PPDU
+     * @param nSolicitedStations the number of stations solicited to send a TB PPDU
+     * @param updateFailedCw whether to update CW in case the transmission failed
      */
     void DoTbPpduTimeout(WifiPsduMap* psduMap, std::size_t nSolicitedStations, bool updateFailedCw);
 
@@ -293,8 +293,8 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
      * Take the necessary actions after that a Block Ack is missing after a
      * TB PPDU solicited through a Trigger Frame.
      *
-     * \param psdu the PSDU in the TB PPDU
-     * \param txVector the TXVECTOR used to transmit the TB PPDU
+     * @param psdu the PSDU in the TB PPDU
+     * @param txVector the TXVECTOR used to transmit the TB PPDU
      */
     virtual void BlockAckAfterTbPpduTimeout(Ptr<WifiPsdu> psdu, const WifiTxVector& txVector);
 
@@ -302,8 +302,8 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
      * Get the TRIGVECTOR that the MAC has to pass to the PHY when transmitting
      * the given Trigger Frame.
      *
-     * \param trigger the given Trigger Frame
-     * \return the TRIGVECTOR
+     * @param trigger the given Trigger Frame
+     * @return the TRIGVECTOR
      */
     WifiTxVector GetTrigVector(const CtrlTriggerHeader& trigger) const;
 
@@ -313,9 +313,9 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
      * level to use for the consequent HE TB PPDU.
      * Note that this method should only be called by non-AP stations only.
      *
-     * \param trigger the received Trigger frame
-     * \param triggerSender the MAC address of the AP sending the Trigger frame
-     * \return TXVECTOR for the HE TB PPDU frame
+     * @param trigger the received Trigger frame
+     * @param triggerSender the MAC address of the AP sending the Trigger frame
+     * @return TXVECTOR for the HE TB PPDU frame
      */
     WifiTxVector GetHeTbTxVector(CtrlTriggerHeader trigger, Mac48Address triggerSender) const;
 
@@ -327,9 +327,9 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
      * Note that the number of recipients must match the number of users addressed
      * by the given TXVECTOR.
      *
-     * \param responseTxVector the given TXVECTOR
-     * \param recipients the list of BlockAckReq headers indexed by the station's AID
-     * \return the MPDU containing the built MU-BAR
+     * @param responseTxVector the given TXVECTOR
+     * @param recipients the list of BlockAckReq headers indexed by the station's AID
+     * @return the MPDU containing the built MU-BAR
      */
     Ptr<WifiMpdu> PrepareMuBar(const WifiTxVector& responseTxVector,
                                std::map<uint16_t, CtrlBAckRequestHeader> recipients) const;
@@ -337,8 +337,8 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
     /**
      * Send a Multi-STA Block Ack frame after the reception of some TB PPDUs.
      *
-     * \param txParams the TX parameters for the Trigger Frame that solicited the TB PPDUs
-     * \param durationId the Duration/ID field of the HE TB PPDU that elicited the Multi-STA
+     * @param txParams the TX parameters for the Trigger Frame that solicited the TB PPDUs
+     * @param durationId the Duration/ID field of the HE TB PPDU that elicited the Multi-STA
      *                   Block Ack response
      */
     void SendMultiStaBlockAck(const WifiTxParameters& txParams, Time durationId);
@@ -348,8 +348,8 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
      * of QoS Null frames that are actually aggregated depends on the available time
      * as indicated by the Trigger Frame and is at most 8 (one QoS Null frame per TID).
      *
-     * \param trigger the Basic or BSRP Trigger Frame content
-     * \param hdr the MAC header of the Basic or BSRP Trigger Frame
+     * @param trigger the Basic or BSRP Trigger Frame content
+     * @param hdr the MAC header of the Basic or BSRP Trigger Frame
      */
     virtual void SendQosNullFramesInTbPpdu(const CtrlTriggerHeader& trigger,
                                            const WifiMacHeader& hdr);
@@ -358,7 +358,7 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
      * Perform the actions required when receiving QoS Null frame(s) from the given sender after
      * a BSRP Trigger Frame.
      *
-     * \param sender the MAC address of the given sender
+     * @param sender the MAC address of the given sender
      */
     virtual void ReceivedQosNullAfterBsrpTf(Mac48Address sender);
 
@@ -377,18 +377,18 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
     /**
      * Take the necessary actions when receiving a Basic Trigger Frame.
      *
-     * \param trigger the Basic Trigger Frame content
-     * \param hdr the MAC header of the Basic Trigger Frame
+     * @param trigger the Basic Trigger Frame content
+     * @param hdr the MAC header of the Basic Trigger Frame
      */
     void ReceiveBasicTrigger(const CtrlTriggerHeader& trigger, const WifiMacHeader& hdr);
 
     /**
      * Respond to a MU-BAR Trigger Frame (if permitted by UL MU CS mechanism).
      *
-     * \param trigger the Basic Trigger Frame content
-     * \param tid the TID requested for us in the MU-BAR Trigger Frame
-     * \param durationId the Duration/ID field of the MPDU carrying the Trigger Frame
-     * \param snr the receive SNR
+     * @param trigger the Basic Trigger Frame content
+     * @param tid the TID requested for us in the MU-BAR Trigger Frame
+     * @param durationId the Duration/ID field of the MPDU carrying the Trigger Frame
+     * @param snr the receive SNR
      */
     void ReceiveMuBarTrigger(const CtrlTriggerHeader& trigger,
                              uint8_t tid,

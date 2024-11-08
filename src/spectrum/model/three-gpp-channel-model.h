@@ -26,13 +26,13 @@ namespace ns3
 class MobilityModel;
 
 /**
- * \ingroup spectrum
- * \brief Channel Matrix Generation following 3GPP TR 38.901
+ * @ingroup spectrum
+ * @brief Channel Matrix Generation following 3GPP TR 38.901
  *
  * The class implements the channel matrix generation procedure
  * described in 3GPP TR 38.901.
  *
- * \see GetChannel
+ * @see GetChannel
  */
 class ThreeGppChannelModel : public MatrixBasedChannelModel
 {
@@ -51,43 +51,43 @@ class ThreeGppChannelModel : public MatrixBasedChannelModel
 
     /**
      * Get the type ID
-     * \return the object TypeId
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
     /**
      * Set the channel condition model
-     * \param model a pointer to the ChannelConditionModel object
+     * @param model a pointer to the ChannelConditionModel object
      */
     void SetChannelConditionModel(Ptr<ChannelConditionModel> model);
 
     /**
      * Get the associated channel condition model
-     * \return a pointer to the ChannelConditionModel object
+     * @return a pointer to the ChannelConditionModel object
      */
     Ptr<ChannelConditionModel> GetChannelConditionModel() const;
 
     /**
      * Sets the center frequency of the model
-     * \param f the center frequency in Hz
+     * @param f the center frequency in Hz
      */
     void SetFrequency(double f);
 
     /**
      * Returns the center frequency
-     * \return the center frequency in Hz
+     * @return the center frequency in Hz
      */
     double GetFrequency() const;
 
     /**
      * Sets the propagation scenario
-     * \param scenario the propagation scenario
+     * @param scenario the propagation scenario
      */
     void SetScenario(const std::string& scenario);
 
     /**
      * Returns the propagation scenario
-     * \return the propagation scenario
+     * @return the propagation scenario
      */
     std::string GetScenario() const;
 
@@ -97,11 +97,11 @@ class ThreeGppChannelModel : public MatrixBasedChannelModel
      * be updated, it generates a new uncorrelated channel matrix using the
      * method GetNewChannel and updates m_channelMap.
      *
-     * \param aMob mobility model of the a device
-     * \param bMob mobility model of the b device
-     * \param aAntenna antenna of the a device
-     * \param bAntenna antenna of the b device
-     * \return the channel matrix
+     * @param aMob mobility model of the a device
+     * @param bMob mobility model of the b device
+     * @param aAntenna antenna of the a device
+     * @param bAntenna antenna of the b device
+     * @return the channel matrix
      */
     Ptr<const ChannelMatrix> GetChannel(Ptr<const MobilityModel> aMob,
                                         Ptr<const MobilityModel> bMob,
@@ -112,18 +112,18 @@ class ThreeGppChannelModel : public MatrixBasedChannelModel
      * Looks for the channel params associated to the aMob and bMob pair in
      * m_channelParamsMap. If not found it will return a nullptr.
      *
-     * \param aMob mobility model of the a device
-     * \param bMob mobility model of the b device
-     * \return the channel params
+     * @param aMob mobility model of the a device
+     * @param bMob mobility model of the b device
+     * @return the channel params
      */
     Ptr<const ChannelParams> GetParams(Ptr<const MobilityModel> aMob,
                                        Ptr<const MobilityModel> bMob) const override;
     /**
-     * \brief Assign a fixed random variable stream number to the random variables
+     * @brief Assign a fixed random variable stream number to the random variables
      * used by this model.
      *
-     * \param stream first stream index to use
-     * \return the number of stream indices assigned by this model
+     * @param stream first stream index to use
+     * @return the number of stream indices assigned by this model
      */
     int64_t AssignStreams(int64_t stream);
 
@@ -137,16 +137,16 @@ class ThreeGppChannelModel : public MatrixBasedChannelModel
      * the boundaries of the angle domain, specifically, generating angle distributions
      * close to inclinationRad=0 and inclinationRad=M_PI.
      *
-     * \param azimuthRad the azimuth angle in radians
-     * \param inclinationRad the inclination angle in radians
-     * \return the wrapped (azimuth, inclination) angle pair in radians
+     * @param azimuthRad the azimuth angle in radians
+     * @param inclinationRad the inclination angle in radians
+     * @return the wrapped (azimuth, inclination) angle pair in radians
      */
     static std::pair<double, double> WrapAngles(double azimuthRad, double inclinationRad);
 
     /**
-     * \brief Shuffle the elements of a simple sequence container of type double
-     * \param first Pointer to the first element among the elements to be shuffled
-     * \param last Pointer to the last element among the elements to be shuffled
+     * @brief Shuffle the elements of a simple sequence container of type double
+     * @param first Pointer to the first element among the elements to be shuffled
+     * @param last Pointer to the last element among the elements to be shuffled
      */
     void Shuffle(double* first, double* last) const;
 
@@ -235,11 +235,11 @@ class ThreeGppChannelModel : public MatrixBasedChannelModel
 
     /**
      * Get the parameters needed to apply the channel generation procedure
-     * \param channelCondition the channel condition
-     * \param hBS the height of the BS
-     * \param hUT the height of the UT
-     * \param distance2D the 2D distance between tx and rx
-     * \return the parameters table
+     * @param channelCondition the channel condition
+     * @param hBS the height of the BS
+     * @param hUT the height of the UT
+     * @param distance2D the 2D distance between tx and rx
+     * @return the parameters table
      */
     NS_DEPRECATED_3_41("Use GetThreeGppTable(const Ptr<const MobilityModel>, const Ptr<const "
                        "MobilityModel>, Ptr<const ChannelCondition>) instead")
@@ -250,10 +250,10 @@ class ThreeGppChannelModel : public MatrixBasedChannelModel
 
     /**
      * Get the parameters needed to apply the channel generation procedure
-     * \param aMob the mobility model of node A
-     * \param bMob the mobility model of node B
-     * \param channelCondition the channel condition
-     * \return the parameters table
+     * @param aMob the mobility model of node A
+     * @param bMob the mobility model of node B
+     * @param channelCondition the channel condition
+     * @return the parameters table
      */
     virtual Ptr<const ParamsTable> GetThreeGppTable(
         const Ptr<const MobilityModel> aMob,
@@ -275,11 +275,11 @@ class ThreeGppChannelModel : public MatrixBasedChannelModel
      *
      * All relevant generated parameters are added then to ThreeGppChannelParams
      * which is the return value of this function.
-     * \param channelCondition the channel condition
-     * \param table3gpp the 3gpp parameters from the table
-     * \param aMob the a node mobility model
-     * \param bMob the b node mobility model
-     * \return ThreeGppChannelParams structure with all the channel parameters generated
+     * @param channelCondition the channel condition
+     * @param table3gpp the 3gpp parameters from the table
+     * @param aMob the a node mobility model
+     * @param bMob the b node mobility model
+     * @return ThreeGppChannelParams structure with all the channel parameters generated
      * according 38.901 steps from 4 to 10.
      */
     Ptr<ThreeGppChannelParams> GenerateChannelParameters(
@@ -292,14 +292,14 @@ class ThreeGppChannelModel : public MatrixBasedChannelModel
      * Compute the channel matrix between two nodes a and b, and their
      * antenna arrays aAntenna and bAntenna using the procedure
      * described in 3GPP TR 38.901
-     * \param channelParams the channel parameters previously generated for the pair of
+     * @param channelParams the channel parameters previously generated for the pair of
      * nodes a and b
-     * \param table3gpp the 3gpp parameters table
-     * \param sMob the mobility model of node s
-     * \param uMob the mobility model of node u
-     * \param sAntenna the antenna array of node s
-     * \param uAntenna the antenna array of node u
-     * \return the channel realization
+     * @param table3gpp the 3gpp parameters table
+     * @param sMob the mobility model of node s
+     * @param uMob the mobility model of node u
+     * @param sAntenna the antenna array of node s
+     * @param uAntenna the antenna array of node u
+     * @return the channel realization
      */
 
     virtual Ptr<ChannelMatrix> GetNewChannel(Ptr<const ThreeGppChannelParams> channelParams,
@@ -310,10 +310,10 @@ class ThreeGppChannelModel : public MatrixBasedChannelModel
                                              Ptr<const PhasedArrayModel> uAntenna) const;
     /**
      * Applies the blockage model A described in 3GPP TR 38.901
-     * \param channelParams the channel parameters structure
-     * \param clusterAOA vector containing the azimuth angle of arrival for each cluster
-     * \param clusterZOA vector containing the zenith angle of arrival for each cluster
-     * \return vector containing the power attenuation for each cluster
+     * @param channelParams the channel parameters structure
+     * @param clusterAOA vector containing the azimuth angle of arrival for each cluster
+     * @param clusterZOA vector containing the zenith angle of arrival for each cluster
+     * @return vector containing the power attenuation for each cluster
      */
     DoubleVector CalcAttenuationOfBlockage(
         const Ptr<ThreeGppChannelModel::ThreeGppChannelParams> channelParams,
@@ -322,9 +322,9 @@ class ThreeGppChannelModel : public MatrixBasedChannelModel
 
     /**
      * Check if the channel params has to be updated
-     * \param channelParams channel params
-     * \param channelCondition the channel condition
-     * \return true if the channel params has to be updated, false otherwise
+     * @param channelParams channel params
+     * @param channelCondition the channel condition
+     * @return true if the channel params has to be updated, false otherwise
      */
     bool ChannelParamsNeedsUpdate(Ptr<const ThreeGppChannelParams> channelParams,
                                   Ptr<const ChannelCondition> channelCondition) const;
@@ -332,9 +332,9 @@ class ThreeGppChannelModel : public MatrixBasedChannelModel
     /**
      * Check if the channel matrix has to be updated (it needs update when the channel params
      * generation time is more recent than channel matrix generation time
-     * \param channelParams channel params structure
-     * \param channelMatrix channel matrix structure
-     * \return true if the channel matrix has to be updated, false otherwise
+     * @param channelParams channel params structure
+     * @param channelMatrix channel matrix structure
+     * @return true if the channel matrix has to be updated, false otherwise
      */
     bool ChannelMatrixNeedsUpdate(Ptr<const ThreeGppChannelParams> channelParams,
                                   Ptr<const ChannelMatrix> channelMatrix);
@@ -342,10 +342,10 @@ class ThreeGppChannelModel : public MatrixBasedChannelModel
     /**
      * Check if the channel matrix has to be updated due to
      * changes in the number of antenna ports
-     * \param aAntenna the antenna array of node a
-     * \param bAntenna the antenna array of node b
-     * \param channelMatrix channel matrix structure
-     * \return true if the channel matrix has to be updated, false otherwise
+     * @param aAntenna the antenna array of node a
+     * @param bAntenna the antenna array of node b
+     * @param channelMatrix channel matrix structure
+     * @return true if the channel matrix has to be updated, false otherwise
      */
     bool AntennaSetupChanged(Ptr<const PhasedArrayModel> aAntenna,
                              Ptr<const PhasedArrayModel> bAntenna,

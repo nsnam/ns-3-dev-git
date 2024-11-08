@@ -19,9 +19,9 @@ namespace ns3
 //------------------------------------------------------------
 //--------------------------------------------
 /**
- * \ingroup dataoutput
- * \class OmnetDataOutput
- * \brief Outputs data in a format compatible with OMNeT library and framework
+ * @ingroup dataoutput
+ * @class OmnetDataOutput
+ * @brief Outputs data in a format compatible with OMNeT library and framework
  *
  */
 class OmnetDataOutput : public DataOutputInterface
@@ -32,7 +32,7 @@ class OmnetDataOutput : public DataOutputInterface
 
     /**
      * Register this type.
-     * \return The TypeId.
+     * @return The TypeId.
      */
     static TypeId GetTypeId();
 
@@ -43,66 +43,66 @@ class OmnetDataOutput : public DataOutputInterface
 
   private:
     /**
-     * \ingroup dataoutput
+     * @ingroup dataoutput
      *
-     * \brief Class to generate OMNeT output
+     * @brief Class to generate OMNeT output
      */
     class OmnetOutputCallback : public DataOutputCallback
     {
       public:
         /**
          * Constructor
-         * \param scalar the output stream
+         * @param scalar the output stream
          */
         OmnetOutputCallback(std::ostream* scalar);
 
         /**
-         * \brief Generates data statistics
-         * \param context the output context
-         * \param name the output name
-         * \param statSum the stats to print
+         * @brief Generates data statistics
+         * @param context the output context
+         * @param name the output name
+         * @param statSum the stats to print
          */
         void OutputStatistic(std::string context,
                              std::string name,
                              const StatisticalSummary* statSum) override;
 
         /**
-         * \brief Generates a single data output
-         * \param context the output context
-         * \param name the output name
-         * \param val the value
+         * @brief Generates a single data output
+         * @param context the output context
+         * @param name the output name
+         * @param val the value
          */
         void OutputSingleton(std::string context, std::string name, int val) override;
 
         /**
-         * \brief Generates a single data output
-         * \param context the output context
-         * \param name the output name
-         * \param val the value
+         * @brief Generates a single data output
+         * @param context the output context
+         * @param name the output name
+         * @param val the value
          */
         void OutputSingleton(std::string context, std::string name, uint32_t val) override;
 
         /**
-         * \brief Generates a single data output
-         * \param context the output context
-         * \param name the output name
-         * \param val the value
+         * @brief Generates a single data output
+         * @param context the output context
+         * @param name the output name
+         * @param val the value
          */
         void OutputSingleton(std::string context, std::string name, double val) override;
 
         /**
-         * \brief Generates a single data output
-         * \param context the output context
-         * \param name the output name
-         * \param val the value
+         * @brief Generates a single data output
+         * @param context the output context
+         * @param name the output name
+         * @param val the value
          */
         void OutputSingleton(std::string context, std::string name, std::string val) override;
 
         /**
-         * \brief Generates a single data output
-         * \param context the output context
-         * \param name the output name
-         * \param val the value
+         * @brief Generates a single data output
+         * @param context the output context
+         * @param name the output name
+         * @param val the value
          */
         void OutputSingleton(std::string context, std::string name, Time val) override;
 

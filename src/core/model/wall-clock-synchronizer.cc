@@ -14,8 +14,8 @@
 #include <mutex>
 
 /**
- * \file
- * \ingroup realtime
+ * @file
+ * @ingroup realtime
  * ns3::WallClockSynchronizer implementation.
  */
 

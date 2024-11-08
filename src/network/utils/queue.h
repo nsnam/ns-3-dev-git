@@ -29,13 +29,13 @@ namespace ns3
 {
 
 /**
- * \ingroup network
- * \defgroup queue Queue
+ * @ingroup network
+ * @defgroup queue Queue
  */
 
 /**
- * \ingroup queue
- * \brief Abstract base class for packet Queues
+ * @ingroup queue
+ * @brief Abstract base class for packet Queues
  *
  * This class defines the subset of the base APIs for packet queues in the ns-3 system
  * that is independent of the type of enqueued objects
@@ -44,8 +44,8 @@ class QueueBase : public Object
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -53,19 +53,19 @@ class QueueBase : public Object
     ~QueueBase() override;
 
     /**
-     * \brief Append the item type to the provided type ID if the latter does not
+     * @brief Append the item type to the provided type ID if the latter does not
      *        end with '>'
      *
-     * \param typeId the type ID
-     * \param itemType the item type
+     * @param typeId the type ID
+     * @param itemType the item type
      *
      * This method is meant to be invoked by helpers to save users from
      * specifying the type of items stored in a queue. For instance,
      * PointToPointHelper::SetQueue calls
      *
-     * \code
+     * @code
      *   QueueBase::AppendItemTypeIfNotPresent (type, "Packet");
-     * \endcode
+     * @endcode
      *
      * where type specifies the queue type (e.g., "ns3::DropTailQueue").
      * This allows users to call SetQueue ("ns3::DropTailQueue")
@@ -74,77 +74,77 @@ class QueueBase : public Object
     static void AppendItemTypeIfNotPresent(std::string& typeId, const std::string& itemType);
 
     /**
-     * \return true if the queue is empty; false otherwise
+     * @return true if the queue is empty; false otherwise
      */
     bool IsEmpty() const;
 
     /**
-     * \return The number of packets currently stored in the Queue
+     * @return The number of packets currently stored in the Queue
      */
     uint32_t GetNPackets() const;
 
     /**
-     * \return The number of bytes currently occupied by the packets in the Queue
+     * @return The number of bytes currently occupied by the packets in the Queue
      */
     uint32_t GetNBytes() const;
 
     /**
-     * \return The current size of the Queue in terms of packets, if the maximum
+     * @return The current size of the Queue in terms of packets, if the maximum
      *         size is specified in packets, or bytes, otherwise
      */
     QueueSize GetCurrentSize() const;
 
     /**
-     * \return The total number of bytes received by this Queue since the
+     * @return The total number of bytes received by this Queue since the
      * simulation began, or since ResetStatistics was called, according to
      * whichever happened more recently
      */
     uint32_t GetTotalReceivedBytes() const;
 
     /**
-     * \return The total number of packets received by this Queue since the
+     * @return The total number of packets received by this Queue since the
      * simulation began, or since ResetStatistics was called, according to
      * whichever happened more recently
      */
     uint32_t GetTotalReceivedPackets() const;
 
     /**
-     * \return The total number of bytes dropped by this Queue since the
+     * @return The total number of bytes dropped by this Queue since the
      * simulation began, or since ResetStatistics was called, according to
      * whichever happened more recently
      */
     uint32_t GetTotalDroppedBytes() const;
 
     /**
-     * \return The total number of bytes dropped before enqueue by this Queue
+     * @return The total number of bytes dropped before enqueue by this Queue
      * since the simulation began, or since ResetStatistics was called, according
      * to whichever happened more recently
      */
     uint32_t GetTotalDroppedBytesBeforeEnqueue() const;
 
     /**
-     * \return The total number of bytes dropped after dequeue by this Queue
+     * @return The total number of bytes dropped after dequeue by this Queue
      * since the simulation began, or since ResetStatistics was called, according
      * to whichever happened more recently
      */
     uint32_t GetTotalDroppedBytesAfterDequeue() const;
 
     /**
-     * \return The total number of packets dropped by this Queue since the
+     * @return The total number of packets dropped by this Queue since the
      * simulation began, or since ResetStatistics was called, according to
      * whichever happened more recently
      */
     uint32_t GetTotalDroppedPackets() const;
 
     /**
-     * \return The total number of packets dropped before enqueue by this Queue
+     * @return The total number of packets dropped before enqueue by this Queue
      * since the simulation began, or since ResetStatistics was called, according
      * to whichever happened more recently
      */
     uint32_t GetTotalDroppedPacketsBeforeEnqueue() const;
 
     /**
-     * \return The total number of packets dropped after dequeue by this Queue
+     * @return The total number of packets dropped after dequeue by this Queue
      * since the simulation began, or since ResetStatistics was called, according
      * to whichever happened more recently
      */
@@ -157,25 +157,25 @@ class QueueBase : public Object
     void ResetStatistics();
 
     /**
-     * \brief Set the maximum size of this queue
+     * @brief Set the maximum size of this queue
      *
      * Trying to set a null size has no effect.
      *
-     * \param size the maximum size
+     * @param size the maximum size
      */
     void SetMaxSize(QueueSize size);
 
     /**
-     * \return the maximum size of this queue
+     * @return the maximum size of this queue
      */
     QueueSize GetMaxSize() const;
 
     /**
-     * \brief Check if the queue would overflow with additional bytes or packets
+     * @brief Check if the queue would overflow with additional bytes or packets
      * Note: the check is performed according to the queue's operating mode (bytes or packets).
-     * \param nPackets number of additional packets
-     * \param nBytes number of additional bytes
-     * \return true if the queue should overflow, false otherwise.
+     * @param nPackets number of additional packets
+     * @param nBytes number of additional bytes
+     * @return true if the queue should overflow, false otherwise.
      */
     bool WouldOverflow(uint32_t nPackets, uint32_t nBytes) const;
 
@@ -219,8 +219,8 @@ class QueueBase : public Object
 };
 
 /**
- * \ingroup queue
- * \brief Template class for packet Queues
+ * @ingroup queue
+ * @brief Template class for packet Queues
  *
  * This class defines the subset of the base APIs for packet queues in the ns-3 system
  * that is dependent on the type of enqueued objects.
@@ -249,16 +249,16 @@ class QueueBase : public Object
  * value for the template template parameter, instead of queue.h in your .h file.
  * Then, include queue.h in the corresponding .cc file.
  *
- * \tparam Item \explicit Type of the objects stored within the queue
- * \tparam Container \explicit Type of the container that stores queue items
+ * @tparam Item \explicit Type of the objects stored within the queue
+ * @tparam Container \explicit Type of the container that stores queue items
  */
 template <typename Item, typename Container>
 class Queue : public QueueBase
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -267,29 +267,29 @@ class Queue : public QueueBase
 
     /**
      * Place an item into the Queue (each subclass defines the position)
-     * \param item item to enqueue
-     * \return True if the operation was successful; false otherwise
+     * @param item item to enqueue
+     * @return True if the operation was successful; false otherwise
      */
     virtual bool Enqueue(Ptr<Item> item) = 0;
 
     /**
      * Remove an item from the Queue (each subclass defines the position),
      * counting it and tracing it as dequeued
-     * \return 0 if the operation was not successful; the item otherwise.
+     * @return 0 if the operation was not successful; the item otherwise.
      */
     virtual Ptr<Item> Dequeue() = 0;
 
     /**
      * Remove an item from the Queue (each subclass defines the position),
      * counting it and tracing it as both dequeued and dropped
-     * \return 0 if the operation was not successful; the item otherwise.
+     * @return 0 if the operation was not successful; the item otherwise.
      */
     virtual Ptr<Item> Remove() = 0;
 
     /**
      * Get a copy of an item in the queue (each subclass defines the position)
      * without removing it
-     * \return 0 if the operation was not successful; the item otherwise.
+     * @return 0 if the operation was not successful; the item otherwise.
      */
     virtual Ptr<const Item> Peek() const = 0;
 
@@ -312,51 +312,51 @@ class Queue : public QueueBase
     /**
      * Get a const reference to the container of queue items.
      *
-     * \return a const reference to the container of queue items
+     * @return a const reference to the container of queue items
      */
     const Container& GetContainer() const;
 
     /**
      * Push an item in the queue
-     * \param pos the position before which the item will be inserted
-     * \param item the item to enqueue
-     * \return true if success, false if the packet has been dropped.
+     * @param pos the position before which the item will be inserted
+     * @param item the item to enqueue
+     * @return true if success, false if the packet has been dropped.
      */
     bool DoEnqueue(ConstIterator pos, Ptr<Item> item);
 
     /**
      * Push an item in the queue
-     * \param pos the position before which the item will be inserted
-     * \param item the item to enqueue
+     * @param pos the position before which the item will be inserted
+     * @param item the item to enqueue
      * \param[out] ret an iterator pointing to the inserted value
-     * \return true if success, false if the packet has been dropped.
+     * @return true if success, false if the packet has been dropped.
      */
     bool DoEnqueue(ConstIterator pos, Ptr<Item> item, Iterator& ret);
 
     /**
      * Pull the item to dequeue from the queue
-     * \param pos the position of the item to dequeue
-     * \return the item.
+     * @param pos the position of the item to dequeue
+     * @return the item.
      */
     Ptr<Item> DoDequeue(ConstIterator pos);
 
     /**
      * Pull the item to drop from the queue
-     * \param pos the position of the item to remove
-     * \return the item.
+     * @param pos the position of the item to remove
+     * @return the item.
      */
     Ptr<Item> DoRemove(ConstIterator pos);
 
     /**
      * Peek the front item in the queue
-     * \param pos the position of the item to peek
-     * \return the item.
+     * @param pos the position of the item to peek
+     * @return the item.
      */
     Ptr<const Item> DoPeek(ConstIterator pos) const;
 
     /**
-     * \brief Drop a packet before enqueue
-     * \param item item that was dropped
+     * @brief Drop a packet before enqueue
+     * @param item item that was dropped
      *
      * This method is called by the base class when a packet is dropped because
      * the queue is full and by the subclasses to notify parent (this class) that
@@ -365,8 +365,8 @@ class Queue : public QueueBase
     void DropBeforeEnqueue(Ptr<Item> item);
 
     /**
-     * \brief Drop a packet after dequeue
-     * \param item item that was dropped
+     * @brief Drop a packet after dequeue
+     * @param item item that was dropped
      *
      * This method is called by the base class when a Remove operation is requested
      * and by the subclasses to notify parent (this class) that a packet has been
@@ -374,7 +374,7 @@ class Queue : public QueueBase
      */
     void DropAfterDequeue(Ptr<Item> item);
 
-    /** \copydoc ns3::Object::DoDispose */
+    /** @copydoc ns3::Object::DoDispose */
     void DoDispose() override;
 
   private:
@@ -389,8 +389,8 @@ class Queue : public QueueBase
     struct MakeGetItem
     {
         /**
-         * \param it the given const iterator
-         * \return the item included in the element pointed to by the given iterator
+         * @param it the given const iterator
+         * @return the item included in the element pointed to by the given iterator
          */
         static Ptr<Item> GetItem(const Container&, const ConstIterator it)
         {
@@ -410,9 +410,9 @@ class Queue : public QueueBase
         std::void_t<decltype(std::declval<T>().GetItem(std::declval<ConstIterator>()))>>
     {
         /**
-         * \param container the container
-         * \param it the given const iterator
-         * \return the item included in the element pointed to by the given iterator
+         * @param container the container
+         * @param it the given const iterator
+         * @return the item included in the element pointed to by the given iterator
          */
         static Ptr<Item> GetItem(const Container& container, const ConstIterator it)
         {

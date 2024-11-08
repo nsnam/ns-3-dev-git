@@ -18,18 +18,18 @@ namespace tests
 {
 
 /**
- * \file
- * \ingroup environ-var-tests
+ * @file
+ * @ingroup environ-var-tests
  * Environment variable caching test suite
  */
 
 /**
- * \ingroup core-tests
- * \defgroup environ-var-tests Environment variable caching tests
+ * @ingroup core-tests
+ * @defgroup environ-var-tests Environment variable caching tests
  */
 
 /**
- * \ingroup environ-var-tests
+ * @ingroup environ-var-tests
  *
  * EnvironmentVariable tests
  */
@@ -54,49 +54,49 @@ class EnvVarTestCase : public TestCase
 
     /**
      * Set the test environment variable.
-     * \param where The test condition being checked.
-     * \param value The value to set.
+     * @param where The test condition being checked.
+     * @param value The value to set.
      */
     void SetVariable(const std::string& where, const std::string& value);
 
     /**
      * Unset the test environment variable.
-     * \param where The test condition being checked.
+     * @param where The test condition being checked.
      */
     void UnsetVariable(const std::string& where);
 
     /**
      * Read \p envValue and check that it contains only the key,value pairs
      * from \p expect.
-     * \param where The test condition being checked.
-     * \param envValue The environment variable to parse and check.
-     * \param expect The set of key,values expected.
+     * @param where The test condition being checked.
+     * @param envValue The environment variable to parse and check.
+     * @param expect The set of key,values expected.
      */
     void Check(const std::string& where, const std::string& envValue, KeyValueStore expect);
 
     /**
      * Set and Check the variable.
-     * \param where The test condition being checked.
-     * \param envValue The environment variable to parse and check.
-     * \param expect The set of key,values expected.
+     * @param where The test condition being checked.
+     * @param envValue The environment variable to parse and check.
+     * @param expect The set of key,values expected.
      */
     void SetAndCheck(const std::string& where, const std::string& envValue, KeyValueStore expect);
 
     /**
      * Check the result from a Get.
-     * \param where The test condition being checked.
-     * \param key The key to check.
-     * \param expect The expected result.
+     * @param where The test condition being checked.
+     * @param key The key to check.
+     * @param expect The expected result.
      */
     void CheckGet(const std::string& where, const std::string& key, KeyFoundType expect);
 
     /**
      * Set, Check, and Get a variable.
-     * \param where The test condition being checked.
-     * \param envValue The environment variable to parse and check.
-     * \param expectDict The set of key,values expected.
-     * \param key The key to check.
-     * \param expectValue The expected result.
+     * @param where The test condition being checked.
+     * @param envValue The environment variable to parse and check.
+     * @param expectDict The set of key,values expected.
+     * @param key The key to check.
+     * @param expectValue The expected result.
      */
     void SetCheckAndGet(const std::string& where,
                         const std::string& envValue,
@@ -301,7 +301,7 @@ EnvVarTestCase::DoRun()
 }
 
 /**
- * \ingroup environ-var-tests
+ * @ingroup environ-var-tests
  *
  * Environment variable handling test suite.
  */
@@ -318,7 +318,7 @@ EnvironmentVariableTestSuite::EnvironmentVariableTestSuite()
 }
 
 /**
- * \ingroup environ-var-tests
+ * @ingroup environ-var-tests
  * Static variable for test initialization.
  */
 static EnvironmentVariableTestSuite g_EnvironmentVariableTestSuite;

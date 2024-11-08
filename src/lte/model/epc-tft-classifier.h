@@ -23,9 +23,9 @@ class EpcTft;
 class Packet;
 
 /**
- * \brief classifies IP packets according to Traffic Flow Templates (TFTs)
+ * @brief classifies IP packets according to Traffic Flow Templates (TFTs)
  *
- * \note this implementation works with IPv4 and IPv6.
+ * @note this implementation works with IPv4 and IPv6.
  * When there is fragmentation of IP packets, UDP/TCP ports maybe missing.
  *
  * The following actions are performed to use the port info present in the first segment with
@@ -46,8 +46,8 @@ class EpcTftClassifier : public SimpleRefCount<EpcTftClassifier>
     /**
      * add a TFT to the Classifier
      *
-     * \param tft the TFT to be added
-     * \param id the ID of the bearer which will be classified by specified TFT classifier
+     * @param tft the TFT to be added
+     * @param id the ID of the bearer which will be classified by specified TFT classifier
      *
      */
     void Add(Ptr<EpcTft> tft, uint32_t id);
@@ -55,18 +55,18 @@ class EpcTftClassifier : public SimpleRefCount<EpcTftClassifier>
     /**
      * delete an existing TFT from the classifier
      *
-     * \param id the identifier of the TFT to be deleted
+     * @param id the identifier of the TFT to be deleted
      */
     void Delete(uint32_t id);
 
     /**
      * classify an IP packet
      *
-     * \param p the IP packet. The outmost header can only be an IPv4 or an IPv6 header.
-     * \param direction the EPC TFT direction (can be downlink, uplink or bi-directional)
-     * \param protocolNumber the protocol of the packet. Only IPv4 and IPv6 are supported.
+     * @param p the IP packet. The outmost header can only be an IPv4 or an IPv6 header.
+     * @param direction the EPC TFT direction (can be downlink, uplink or bi-directional)
+     * @param protocolNumber the protocol of the packet. Only IPv4 and IPv6 are supported.
      *
-     * \return the identifier (>0) of the first TFT that matches with the IP packet; 0 if no TFT
+     * @return the identifier (>0) of the first TFT that matches with the IP packet; 0 if no TFT
      * matched.
      */
     uint32_t Classify(Ptr<Packet> p, EpcTft::Direction direction, uint16_t protocolNumber);

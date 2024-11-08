@@ -35,11 +35,11 @@ namespace ns3
 NS_LOG_COMPONENT_DEFINE("GlobalRouteManagerImpl");
 
 /**
- * \brief Stream insertion operator.
+ * @brief Stream insertion operator.
  *
- * \param os the reference to the output stream
- * \param exit the exit node
- * \returns the reference to the output stream
+ * @param os the reference to the output stream
+ * @param exit the exit node
+ * @returns the reference to the output stream
  */
 std::ostream&
 operator<<(std::ostream& os, const SPFVertex::NodeExit_t& exit)

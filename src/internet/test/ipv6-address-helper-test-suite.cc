@@ -17,9 +17,9 @@
 using namespace ns3;
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief IPv6 AddressHelper Test
+ * @brief IPv6 AddressHelper Test
  */
 class IpAddressHelperTestCasev6 : public TestCase
 {
@@ -157,9 +157,9 @@ IpAddressHelperTestCasev6::DoTeardown()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief IPv6 AddressHelper TestSuite
+ * @brief IPv6 AddressHelper TestSuite
  */
 class Ipv6AddressHelperTestSuite : public TestSuite
 {

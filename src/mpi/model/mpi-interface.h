@@ -7,8 +7,8 @@
  */
 
 /**
- * \file
- * \ingroup mpi
+ * @file
+ * @ingroup mpi
  * Declaration of class ns3::MpiInterface.
  */
 
@@ -23,21 +23,21 @@
 namespace ns3
 {
 /**
- * \defgroup mpi MPI Distributed Simulation
+ * @defgroup mpi MPI Distributed Simulation
  */
 
 /**
- * \ingroup mpi
- * \ingroup tests
- * \defgroup mpi-tests MPI Distributed Simulation tests
+ * @ingroup mpi
+ * @ingroup tests
+ * @defgroup mpi-tests MPI Distributed Simulation tests
  */
 
 class ParallelCommunicationInterface;
 
 /**
- * \ingroup mpi
+ * @ingroup mpi
  *
- * \brief Singleton used to interface to the communications infrastructure
+ * @brief Singleton used to interface to the communications infrastructure
  * when running NS3 in parallel.
  *
  * Delegates the implementation to the specific parallel
@@ -52,35 +52,35 @@ class MpiInterface
 {
   public:
     /**
-     * \brief Deletes storage used by the parallel environment.
+     * @brief Deletes storage used by the parallel environment.
      */
     static void Destroy();
     /**
-     * \brief Get the id number of this rank.
+     * @brief Get the id number of this rank.
      *
      * When running a sequential simulation this will return a systemID of 0.
      *
-     * \return system identification
+     * @return system identification
      */
     static uint32_t GetSystemId();
     /**
-     * \brief Get the number of ranks used by ns-3.
+     * @brief Get the number of ranks used by ns-3.
      *
      * Returns the size (number of MPI ranks) of the communicator used by
      * ns-3.  When running a sequential simulation this will return a
      * size of 1.
      *
-     * \return number of parallel tasks
+     * @return number of parallel tasks
      */
     static uint32_t GetSize();
     /**
-     * \brief Returns enabled state of parallel environment.
+     * @brief Returns enabled state of parallel environment.
      *
-     * \return true if parallel communication is enabled
+     * @return true if parallel communication is enabled
      */
     static bool IsEnabled();
     /**
-     * \brief Setup the parallel communication interface.
+     * @brief Setup the parallel communication interface.
      *
      * There are two ways to setup the communications interface.  This
      * Enable method is the easiest method and should be used in most
@@ -99,48 +99,48 @@ class MpiInterface
      * parallel simulators and the goal is to run each simulator on a
      * different set of ranks.
      *
-     * \note The `SimulatorImplementationType attribute in
+     * @note The `SimulatorImplementationType attribute in
      * ns3::GlobalValues must be set before calling Enable()
      *
-     * \param pargc number of command line arguments
-     * \param pargv command line arguments
+     * @param pargc number of command line arguments
+     * @param pargv command line arguments
      */
     static void Enable(int* pargc, char*** pargv);
     /**
-     * \brief Setup the parallel communication interface using the specified communicator.
+     * @brief Setup the parallel communication interface using the specified communicator.
      *
      * See @ref Enable (int* pargc, char*** pargv) for additional information.
      *
-     * \param communicator MPI Communicator that should be used by ns-3
+     * @param communicator MPI Communicator that should be used by ns-3
      */
     static void Enable(MPI_Comm communicator);
     /**
-     * \brief Clean up the ns-3 parallel communications interface.
+     * @brief Clean up the ns-3 parallel communications interface.
      *
      * MPI_Finalize will be called only if Enable (int* pargc, char***
      * pargv) was called.
      */
     static void Disable();
     /**
-     * \brief Send a packet to a remote node.
+     * @brief Send a packet to a remote node.
      *
-     * \param p packet to send
-     * \param rxTime received time at destination node
-     * \param node destination node
-     * \param dev destination device
+     * @param p packet to send
+     * @param rxTime received time at destination node
+     * @param node destination node
+     * @param dev destination device
      *
      * Serialize and send a packet to the specified node and net device
      */
     static void SendPacket(Ptr<Packet> p, const Time& rxTime, uint32_t node, uint32_t dev);
 
     /**
-     * \brief Return the communicator used to run ns-3.
+     * @brief Return the communicator used to run ns-3.
      *
      * The communicator returned will be MPI_COMM_WORLD if Enable (int*
      * pargc, char*** pargv) is used to enable or the user specified
      * communicator if Enable (MPI_Comm communicator) is used.
      *
-     * \return The MPI Communicator.
+     * @return The MPI Communicator.
      */
     static MPI_Comm GetCommunicator();
 

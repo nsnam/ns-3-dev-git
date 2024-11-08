@@ -17,9 +17,9 @@
 using namespace ns3;
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief This system test program creates different test cases with a single eNB and
+ * @brief This system test program creates different test cases with a single eNB and
  * several UEs, all having the same Radio Bearer specification. In each test
  * case, the UEs see the same SINR from the eNB; different test cases are
  * implemented obtained by using different SINR values and different numbers of
@@ -33,11 +33,11 @@ class LenaTdBetFfMacSchedulerTestCase1 : public TestCase
     /**
      * Constructor
      *
-     * \param nUser the number of UE nodes
-     * \param dist the distance between UE nodes and eNodeB
-     * \param thrRefDl DL reference throughput
-     * \param thrRefUl UL reference throughput
-     * \param errorModelEnabled indicates whether the error model is enabled
+     * @param nUser the number of UE nodes
+     * @param dist the distance between UE nodes and eNodeB
+     * @param thrRefDl DL reference throughput
+     * @param thrRefUl UL reference throughput
+     * @param errorModelEnabled indicates whether the error model is enabled
      */
     LenaTdBetFfMacSchedulerTestCase1(uint16_t nUser,
                                      double dist,
@@ -49,9 +49,9 @@ class LenaTdBetFfMacSchedulerTestCase1 : public TestCase
   private:
     /**
      * Builds the test name string based on provided parameter values
-     * \param nUser the number of UE nodes
-     * \param dist the distance between UE nodes and eNodeB
-     * \returns the name string
+     * @param nUser the number of UE nodes
+     * @param dist the distance between UE nodes and eNodeB
+     * @returns the name string
      */
     static std::string BuildNameString(uint16_t nUser, double dist);
     void DoRun() override;
@@ -63,9 +63,9 @@ class LenaTdBetFfMacSchedulerTestCase1 : public TestCase
 };
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief Lena TdBet Ff Mac Scheduler Test Case
+ * @brief Lena TdBet Ff Mac Scheduler Test Case
  */
 class LenaTdBetFfMacSchedulerTestCase2 : public TestCase
 {
@@ -73,10 +73,10 @@ class LenaTdBetFfMacSchedulerTestCase2 : public TestCase
     /**
      * Constructor
      *
-     * \param dist the distance between nodes
-     * \param achievableRateDl the DL achievable rate
-     * \param estThrTdBetUl UL reference throughput
-     * \param errorModelEnabled indicates whether the error model is enabled
+     * @param dist the distance between nodes
+     * @param achievableRateDl the DL achievable rate
+     * @param estThrTdBetUl UL reference throughput
+     * @param errorModelEnabled indicates whether the error model is enabled
      */
     LenaTdBetFfMacSchedulerTestCase2(std::vector<double> dist,
                                      std::vector<uint32_t> achievableRateDl,
@@ -87,9 +87,9 @@ class LenaTdBetFfMacSchedulerTestCase2 : public TestCase
   private:
     /**
      * Build name string
-     * \param nUser the number of UE nodes
-     * \param dist the distance between nodes
-     * \returns the name string
+     * @param nUser the number of UE nodes
+     * @param dist the distance between nodes
+     * @returns the name string
      */
     static std::string BuildNameString(uint16_t nUser, std::vector<double> dist);
     void DoRun() override;
@@ -101,9 +101,9 @@ class LenaTdBetFfMacSchedulerTestCase2 : public TestCase
 };
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief Test suite for TdBetFfMacScheduler tests.
+ * @brief Test suite for TdBetFfMacScheduler tests.
  */
 class LenaTestTdBetFfMacSchedulerSuite : public TestSuite
 {

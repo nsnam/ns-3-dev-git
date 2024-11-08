@@ -12,9 +12,9 @@
 #include <iostream>
 
 /**
- * \file
- * \ingroup core-examples
- * \ingroup callback
+ * @file
+ * @ingroup core-examples
+ * @ingroup callback
  * Example program illustrating use of callback functions and methods.
  *
  * See \ref callback
@@ -28,9 +28,9 @@ namespace
 /**
  * Example Callback function.
  *
- * \param [in] a The first argument.
- * \param [in] b The second argument.
- * \returns The first argument.
+ * @param [in] a The first argument.
+ * @param [in] b The second argument.
+ * @returns The first argument.
  */
 double
 CbOne(double a, double b)
@@ -46,8 +46,8 @@ class MyCb
     /**
      * Example Callback class method.
      *
-     * \param [in] a The argument.
-     * \returns -5
+     * @param [in] a The argument.
+     * @returns -5
      */
     int CbTwo(double a)
     {

@@ -26,21 +26,21 @@ class SubscriberStationNetDevice;
 class WimaxConnection;
 
 /**
- * \ingroup wimax
- * \param SSScheduler class
+ * @ingroup wimax
+ * @param SSScheduler class
  */
 class SSScheduler : public Object
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     /**
      * Constructor
      *
-     * \param ss subscriber station device
+     * @param ss subscriber station device
      */
     SSScheduler(Ptr<SubscriberStationNetDevice> ss);
     ~SSScheduler() override;
@@ -51,20 +51,20 @@ class SSScheduler : public Object
 
     /**
      * Set poll me value
-     * \param pollMe the poll me flag
+     * @param pollMe the poll me flag
      */
     void SetPollMe(bool pollMe);
     /**
      * Get the poll me value
-     * \returns the poll me flag
+     * @returns the poll me flag
      */
     bool GetPollMe() const;
     /**
-     * \return a list of packet to be sent in the next opportunity
-     * \param availableSymbols the available resources in symbols
-     * \param modulationType the used modulation
-     * \param packetType the type of packets to select from
-     * \param connection the connection from which packets will be selected
+     * @return a list of packet to be sent in the next opportunity
+     * @param availableSymbols the available resources in symbols
+     * @param modulationType the used modulation
+     * @param packetType the type of packets to select from
+     * @param connection the connection from which packets will be selected
      */
     Ptr<PacketBurst> Schedule(uint16_t availableSymbols,
                               WimaxPhy::ModulationType modulationType,
@@ -76,7 +76,7 @@ class SSScheduler : public Object
   private:
     /**
      * Select connection
-     * \returns pointer to the wimax connection
+     * @returns pointer to the wimax connection
      */
     Ptr<WimaxConnection> SelectConnection();
     Ptr<SubscriberStationNetDevice> m_ss; ///< the subscriber station

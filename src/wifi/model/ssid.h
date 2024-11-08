@@ -15,11 +15,11 @@ namespace ns3
 {
 
 /**
- * \ingroup wifi
+ * @ingroup wifi
  *
  * The IEEE 802.11 SSID Information Element
  *
- * \see attribute_Ssid
+ * @see attribute_Ssid
  */
 class Ssid : public WifiInformationElement
 {
@@ -31,7 +31,7 @@ class Ssid : public WifiInformationElement
     /**
      * Create SSID from a given string
      *
-     * \param s SSID in string
+     * @param s SSID in string
      */
     Ssid(std::string s);
 
@@ -42,16 +42,16 @@ class Ssid : public WifiInformationElement
     /**
      * Check if the two SSIDs are equal.
      *
-     * \param o SSID to compare to
+     * @param o SSID to compare to
      *
-     * \return true if the two SSIDs are equal,
+     * @return true if the two SSIDs are equal,
      *         false otherwise
      */
     bool IsEqual(const Ssid& o) const;
     /**
      * Check if the SSID is broadcast.
      *
-     * \return true if the SSID is broadcast,
+     * @return true if the SSID is broadcast,
      *         false otherwise
      */
     bool IsBroadcast() const;
@@ -59,7 +59,7 @@ class Ssid : public WifiInformationElement
     /**
      * Peek the SSID.
      *
-     * \return a pointer to SSID string
+     * @return a pointer to SSID string
      */
     char* PeekString() const;
 
@@ -75,10 +75,10 @@ class Ssid : public WifiInformationElement
 /**
  * Serialize from the given istream to this SSID.
  *
- * \param is the input stream
- * \param ssid the SSID
+ * @param is the input stream
+ * @param ssid the SSID
  *
- * \return std::istream
+ * @return std::istream
  */
 std::istream& operator>>(std::istream& is, Ssid& ssid);
 

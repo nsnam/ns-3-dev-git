@@ -27,16 +27,16 @@ namespace ns3
 namespace aodv
 {
 /**
- * \ingroup aodv
+ * @ingroup aodv
  *
- * \brief Unique packets identification cache used for simple duplicate detection.
+ * @brief Unique packets identification cache used for simple duplicate detection.
  */
 class IdCache
 {
   public:
     /**
      * constructor
-     * \param lifetime the lifetime for added entries
+     * @param lifetime the lifetime for added entries
      */
     IdCache(Time lifetime)
         : m_lifetime(lifetime)
@@ -45,21 +45,21 @@ class IdCache
 
     /**
      * Check that entry (addr, id) exists in cache. Add entry, if it doesn't exist.
-     * \param addr the IP address
-     * \param id the cache entry ID
-     * \returns true if the pair exists
+     * @param addr the IP address
+     * @param id the cache entry ID
+     * @returns true if the pair exists
      */
     bool IsDuplicate(Ipv4Address addr, uint32_t id);
     /// Remove all expired entries
     void Purge();
     /**
-     * \returns number of entries in cache
+     * @returns number of entries in cache
      */
     uint32_t GetSize();
 
     /**
      * Set lifetime for future added entries.
-     * \param lifetime the lifetime for entries
+     * @param lifetime the lifetime for entries
      */
     void SetLifetime(Time lifetime)
     {
@@ -68,7 +68,7 @@ class IdCache
 
     /**
      * Return lifetime for existing entries in cache
-     * \returns the lifetime
+     * @returns the lifetime
      */
     Time GetLifeTime() const
     {
@@ -88,15 +88,15 @@ class IdCache
     };
 
     /**
-     * \brief IsExpired structure
+     * @brief IsExpired structure
      */
     struct IsExpired
     {
         /**
-         * \brief Check if the entry is expired
+         * @brief Check if the entry is expired
          *
-         * \param u UniqueId entry
-         * \return true if expired, false otherwise
+         * @param u UniqueId entry
+         * @return true if expired, false otherwise
          */
         bool operator()(const UniqueId& u) const
         {

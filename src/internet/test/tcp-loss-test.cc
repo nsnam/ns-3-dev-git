@@ -16,9 +16,9 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("TcpLossTestSuite");
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief Check rollover of sequence number and how that affects loss recovery
+ * @brief Check rollover of sequence number and how that affects loss recovery
  *
  * This test checks that fast recovery is entered correctly even if it has
  * been a long time since the last recovery event.  Merge request !156
@@ -44,12 +44,12 @@ class TcpLargeTransferLossTest : public TcpGeneralTest
 {
   public:
     /**
-     * \brief Constructor
+     * @brief Constructor
      *
-     * \param firstLoss First packet number to force loss
-     * \param secondLoss Second packet number to force loss
-     * \param lastSegment Last packet number to transmit
-     * \param desc Description about the test
+     * @param firstLoss First packet number to force loss
+     * @param secondLoss Second packet number to force loss
+     * @param lastSegment Last packet number to transmit
+     * @param desc Description about the test
      */
     TcpLargeTransferLossTest(uint32_t firstLoss,
                              uint32_t secondLoss,
@@ -163,7 +163,7 @@ TcpLargeTransferLossTest::FinalChecks()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
  * Test various packet losses
  */

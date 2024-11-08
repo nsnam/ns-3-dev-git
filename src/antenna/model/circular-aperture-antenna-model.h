@@ -14,15 +14,15 @@
 #include <ns3/object.h>
 
 /**
- * \file
- * \ingroup antenna
+ * @file
+ * @ingroup antenna
  * Class CircularApertureAntennaModel declaration
  */
 
 namespace ns3
 {
 /**
- * \brief Circular Aperture Antenna Model
+ * @brief Circular Aperture Antenna Model
  *
  * This class implements the circular aperture antenna as described in 3GPP 38.811 6.4.1
  * https://www.3gpp.org/ftp/Specs/archive/38_series/38.811 without the cosine approximation, thanks
@@ -41,79 +41,79 @@ class CircularApertureAntennaModel : public AntennaModel
 
     /**
      * Register this type.
-     * \return The object TypeId.
+     * @return The object TypeId.
      */
     static TypeId GetTypeId();
 
     /**
-     * \brief Set the antenna aperture radius
+     * @brief Set the antenna aperture radius
      *
      * Sets the antenna operating frequency, asserting that
      * the provided value is within the acceptable range [0, +inf[.
      *
-     * \param aMeter the strictly positive antenna radius in meters
+     * @param aMeter the strictly positive antenna radius in meters
      */
     void SetApertureRadius(double aMeter);
 
     /**
-     * \brief Return the antenna aperture radius
+     * @brief Return the antenna aperture radius
      *
-     * \return the antenna radius in meters
+     * @return the antenna radius in meters
      */
     double GetApertureRadius() const;
 
     /**
-     * \brief Set the antenna operating frequency.
+     * @brief Set the antenna operating frequency.
      *
      * Sets the antenna operating frequency, asserting that
      * the provided value is within the acceptable range [0, +inf[.
      *
-     * \param freqHz the strictly positive antenna operating frequency, in Hz
+     * @param freqHz the strictly positive antenna operating frequency, in Hz
      */
     void SetOperatingFrequency(double freqHz);
 
     /**
-     * \brief Return the antenna operating frequency
+     * @brief Return the antenna operating frequency
      *
-     * \return the antenna operating frequency, in Hz
+     * @return the antenna operating frequency, in Hz
      */
     double GetOperatingFrequency() const;
 
     /**
-     * \brief Set the antenna max gain
+     * @brief Set the antenna max gain
      *
-     * \param gainDb the antenna max gain in dB
+     * @param gainDb the antenna max gain in dB
      */
     void SetMaxGain(double gainDb);
 
     /**
-     * \brief Return the antenna max gain
+     * @brief Return the antenna max gain
      *
-     * \return the antenna max gain in dB
+     * @return the antenna max gain in dB
      */
     double GetMaxGain() const;
 
     /**
-     * \brief Set the antenna min gain
+     * @brief Set the antenna min gain
      *
-     * \param gainDb the antenna min gain in dB
+     * @param gainDb the antenna min gain in dB
      */
     void SetMinGain(double gainDb);
 
     /**
-     * \brief Return the antenna min gain
+     * @brief Return the antenna min gain
      *
-     * \return the antenna min gain in dB
+     * @return the antenna min gain in dB
      */
     double GetMinGain() const;
 
     /**
-     * \brief Get the gain in dB, using Bessel equation of first kind and first order.
+     * @brief Get the gain in dB, using Bessel equation of first kind and first order.
      *
-     * \param a the angle at which the gain need to be calculated with respect to the antenna
+     * @param a the angle at which the gain need to be calculated with respect to the antenna
      * bore sight
      *
-     * \return the antenna gain at the specified Angles a
+     * @return the antenna gain at the specified Angles a
      */
     double GetGainDb(Angles a) override;
 

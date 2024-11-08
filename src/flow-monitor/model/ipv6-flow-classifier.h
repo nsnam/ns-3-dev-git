@@ -41,24 +41,24 @@ class Ipv6FlowClassifier : public FlowClassifier
 
     Ipv6FlowClassifier();
 
-    /// \brief try to classify the packet into flow-id and packet-id
+    /// @brief try to classify the packet into flow-id and packet-id
     ///
     /// \warning: it must be called only once per packet, from SendOutgoingLogger.
     ///
-    /// \return true if the packet was classified, false if not (i.e. it
+    /// @return true if the packet was classified, false if not (i.e. it
     /// does not appear to be part of a flow).
-    /// \param ipHeader packet's IP header
-    /// \param ipPayload packet's IP payload
-    /// \param out_flowId packet's FlowId
-    /// \param out_packetId packet's identifier
+    /// @param ipHeader packet's IP header
+    /// @param ipPayload packet's IP payload
+    /// @param out_flowId packet's FlowId
+    /// @param out_packetId packet's identifier
     bool Classify(const Ipv6Header& ipHeader,
                   Ptr<const Packet> ipPayload,
                   uint32_t* out_flowId,
                   uint32_t* out_packetId);
 
     /// Searches for the FiveTuple corresponding to the given flowId
-    /// \param flowId the FlowId to search for
-    /// \returns the FiveTuple corresponding to flowId
+    /// @param flowId the FlowId to search for
+    /// @returns the FiveTuple corresponding to flowId
     FiveTuple FindFlow(FlowId flowId) const;
 
     /// Comparator used to sort the vector of DSCP values
@@ -66,18 +66,18 @@ class Ipv6FlowClassifier : public FlowClassifier
     {
       public:
         /// Comparator function
-        /// \param left left operand
-        /// \param right right operand
-        /// \return true if left DSCP is greater than right DSCP
+        /// @param left left operand
+        /// @param right right operand
+        /// @return true if left DSCP is greater than right DSCP
         bool operator()(std::pair<Ipv6Header::DscpType, uint32_t> left,
                         std::pair<Ipv6Header::DscpType, uint32_t> right);
     };
 
-    /// \brief get the DSCP values of the packets belonging to the flow with the
+    /// @brief get the DSCP values of the packets belonging to the flow with the
     /// given FlowId, sorted in decreasing order of number of packets seen with
     /// that DSCP value
-    /// \param flowId the identifier of the flow of interest
-    /// \returns the vector of DSCP values
+    /// @param flowId the identifier of the flow of interest
+    /// @returns the vector of DSCP values
     std::vector<std::pair<Ipv6Header::DscpType, uint32_t>> GetDscpCounts(FlowId flowId) const;
 
     void SerializeToXmlStream(std::ostream& os, uint16_t indent) const override;
@@ -92,20 +92,20 @@ class Ipv6FlowClassifier : public FlowClassifier
 };
 
 /**
- * \brief Less than operator.
+ * @brief Less than operator.
  *
- * \param t1 the first operand
- * \param t2 the first operand
- * \returns true if the operands are equal
+ * @param t1 the first operand
+ * @param t2 the first operand
+ * @returns true if the operands are equal
  */
 bool operator<(const Ipv6FlowClassifier::FiveTuple& t1, const Ipv6FlowClassifier::FiveTuple& t2);
 
 /**
- * \brief Equal to operator.
+ * @brief Equal to operator.
  *
- * \param t1 the first operand
- * \param t2 the first operand
- * \returns true if the operands are equal
+ * @param t1 the first operand
+ * @param t2 the first operand
+ * @returns true if the operands are equal
  */
 bool operator==(const Ipv6FlowClassifier::FiveTuple& t1, const Ipv6FlowClassifier::FiveTuple& t2);
 

@@ -95,7 +95,7 @@ OmnetDataOutput::Output(DataCollector& dc)
     std::string fn = m_filePrefix + "-" + dc.GetRunLabel() + ".sca";
     scalarFile.open(fn, std::ios_base::out);
 
-    /// \todo add timestamp to the runlevel
+    /// @todo add timestamp to the runlevel
     scalarFile << "run " << dc.GetRunLabel() << std::endl;
     scalarFile << "attr experiment \"" << dc.GetExperimentLabel() << "\"" << std::endl;
     scalarFile << "attr strategy \"" << dc.GetStrategyLabel() << "\"" << std::endl;

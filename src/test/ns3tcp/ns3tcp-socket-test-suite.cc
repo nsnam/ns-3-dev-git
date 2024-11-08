@@ -30,9 +30,9 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("Ns3SocketTest");
 
 /**
- * \ingroup system-tests-tcp
+ * @ingroup system-tests-tcp
  *
- * \brief Tests of TCP implementations from the application/socket perspective
+ * @brief Tests of TCP implementations from the application/socket perspective
  * using point-to-point links.
  */
 class Ns3TcpSocketTestCaseP2P : public TestCase
@@ -50,9 +50,9 @@ class Ns3TcpSocketTestCaseP2P : public TestCase
 
     /**
      * Receive a TCP packet.
-     * \param path The callback context (unused).
-     * \param p The received packet.
-     * \param address The sender's address (unused).
+     * @param path The callback context (unused).
+     * @param p The received packet.
+     * @param address The sender's address (unused).
      */
     void SinkRx(std::string path, Ptr<const Packet> p, const Address& address);
 
@@ -155,9 +155,9 @@ Ns3TcpSocketTestCaseP2P::DoRun()
 }
 
 /**
- * \ingroup system-tests-tcp
+ * @ingroup system-tests-tcp
  *
- * \brief Tests of TCP implementations from the application/socket perspective
+ * @brief Tests of TCP implementations from the application/socket perspective
  * using CSMA links.
  */
 class Ns3TcpSocketTestCaseCsma : public TestCase
@@ -175,9 +175,9 @@ class Ns3TcpSocketTestCaseCsma : public TestCase
 
     /**
      * Receive a TCP packet.
-     * \param path The callback context (unused).
-     * \param p The received packet.
-     * \param address The sender's address (unused).
+     * @param path The callback context (unused).
+     * @param p The received packet.
+     * @param address The sender's address (unused).
      */
     void SinkRx(std::string path, Ptr<const Packet> p, const Address& address);
 
@@ -287,7 +287,7 @@ Ns3TcpSocketTestCaseCsma::DoRun()
 }
 
 /**
- * \ingroup system-tests-tcp
+ * @ingroup system-tests-tcp
  *
  * TCP implementations from the application/socket perspective TestSuite.
  */

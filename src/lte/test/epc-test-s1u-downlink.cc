@@ -33,17 +33,17 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("EpcTestS1uDownlink");
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief Custom structure for testing UE downlink data
+ * @brief Custom structure for testing UE downlink data
  */
 struct UeDlTestData
 {
     /**
      * Constructor
      *
-     * \param n number of packets
-     * \param s packet size
+     * @param n number of packets
+     * @param s packet size
      */
     UeDlTestData(uint32_t n, uint32_t s);
 
@@ -61,9 +61,9 @@ UeDlTestData::UeDlTestData(uint32_t n, uint32_t s)
 }
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief Custom structure for testing eNodeB downlink data, contains
+ * @brief Custom structure for testing eNodeB downlink data, contains
  * the list of data structures for UEs
  */
 struct EnbDlTestData
@@ -72,9 +72,9 @@ struct EnbDlTestData
 };
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief EpcS1uDlTestCase class
+ * @brief EpcS1uDlTestCase class
  */
 class EpcS1uDlTestCase : public TestCase
 {
@@ -82,8 +82,8 @@ class EpcS1uDlTestCase : public TestCase
     /**
      * Constructor
      *
-     * \param name the name of the test case instance
-     * \param v list of eNodeB downlink test data information
+     * @param name the name of the test case instance
+     * @param v list of eNodeB downlink test data information
      */
     EpcS1uDlTestCase(std::string name, std::vector<EnbDlTestData> v);
     ~EpcS1uDlTestCase() override;

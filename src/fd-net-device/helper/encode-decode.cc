@@ -14,13 +14,13 @@ namespace ns3
 {
 
 /**
- * \brief Convert a byte buffer to a string containing a hex representation
+ * @brief Convert a byte buffer to a string containing a hex representation
  * of the buffer.  Make the string pretty by adding a colon (':') between
  * the hex.
  *
- * \param buffer The input buffer to be converted.
- * \param len The length of the input buffer.
- * \returns A string containing a hex representation of the data in buffer.
+ * @param buffer The input buffer to be converted.
+ * @param len The length of the input buffer.
+ * @returns A string containing a hex representation of the data in buffer.
  */
 std::string
 BufferToString(uint8_t* buffer, uint32_t len)
@@ -44,13 +44,13 @@ BufferToString(uint8_t* buffer, uint32_t len)
 }
 
 /**
- * \brief Convert string encoded by the inverse function (TapBufferToString)
+ * @brief Convert string encoded by the inverse function (TapBufferToString)
  * back into a byte buffer.
  *
- * \param s The input string.
- * \param buffer The buffer to initialize with the converted bits.
- * \param len The length of the data that is valid in the buffer.
- * \returns True indicates a successful conversion.
+ * @param s The input string.
+ * @param buffer The buffer to initialize with the converted bits.
+ * @param len The length of the data that is valid in the buffer.
+ * @returns True indicates a successful conversion.
  */
 bool
 StringToBuffer(std::string s, uint8_t* buffer, uint32_t* len)

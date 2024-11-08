@@ -17,8 +17,8 @@ namespace ns3
 {
 
 /**
- * \ingroup energy
- * \brief Creates a BasicEnergySource object.
+ * @ingroup energy
+ * @brief Creates a BasicEnergySource object.
  *
  */
 class BasicEnergySourceHelper : public EnergySourceHelper

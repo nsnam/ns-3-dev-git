@@ -16,14 +16,14 @@
 namespace ns3
 {
 /**
- * \ingroup arp
- * \brief The packet header for an ARP packet
+ * @ingroup arp
+ * @brief The packet header for an ARP packet
  */
 class ArpHeader : public Header
 {
   public:
     /**
-     * \brief Enumeration listing the possible ARP types
+     * @brief Enumeration listing the possible ARP types
      *
      * These ARP types are part of the standard ARP packet format as defined in Section
      * "Definitions" of \RFC{826}.
@@ -35,7 +35,7 @@ class ArpHeader : public Header
     };
 
     /**
-     * \brief Enumeration listing the supported hardware types
+     * @brief Enumeration listing the supported hardware types
      *
      * \RFC{826} specifies that the Hardware Type field in the ARP packet indicates the type
      of hardware used.
@@ -50,24 +50,24 @@ class ArpHeader : public Header
     };
 
     /**
-     * \brief Set the ARP request parameters
-     * \param sourceHardwareAddress the source hardware address
-     * \param sourceProtocolAddress the source IP address
-     * \param destinationHardwareAddress the destination hardware address (usually the
+     * @brief Set the ARP request parameters
+     * @param sourceHardwareAddress the source hardware address
+     * @param sourceProtocolAddress the source IP address
+     * @param destinationHardwareAddress the destination hardware address (usually the
      * broadcast address)
-     * \param destinationProtocolAddress the destination IP address
+     * @param destinationProtocolAddress the destination IP address
      */
     void SetRequest(Address sourceHardwareAddress,
                     Ipv4Address sourceProtocolAddress,
                     Address destinationHardwareAddress,
                     Ipv4Address destinationProtocolAddress);
     /**
-     * \brief Set the ARP reply parameters
-     * \param sourceHardwareAddress the source hardware address
-     * \param sourceProtocolAddress the source IP address
-     * \param destinationHardwareAddress the destination hardware address (usually the
+     * @brief Set the ARP reply parameters
+     * @param sourceHardwareAddress the source hardware address
+     * @param sourceProtocolAddress the source IP address
+     * @param destinationHardwareAddress the destination hardware address (usually the
      * broadcast address)
-     * \param destinationProtocolAddress the destination IP address
+     * @param destinationProtocolAddress the destination IP address
      */
     void SetReply(Address sourceHardwareAddress,
                   Ipv4Address sourceProtocolAddress,
@@ -91,50 +91,50 @@ class ArpHeader : public Header
     HardwareType DetermineHardwareType(const Address& address) const;
 
     /**
-     * \brief Check if the ARP is a request
-     * \returns true if it is a request
+     * @brief Check if the ARP is a request
+     * @returns true if it is a request
      */
     bool IsRequest() const;
 
     /**
-     * \brief Check if the ARP is a reply
-     * \returns true if it is a reply
+     * @brief Check if the ARP is a reply
+     * @returns true if it is a reply
      */
     bool IsReply() const;
 
     /**
-     * \brief Get the hardware type
-     * \return the hardware type
+     * @brief Get the hardware type
+     * @return the hardware type
      */
     HardwareType GetHardwareType() const;
 
     /**
-     * \brief Returns the source hardware address
-     * \returns the source hardware address
+     * @brief Returns the source hardware address
+     * @returns the source hardware address
      */
     Address GetSourceHardwareAddress() const;
 
     /**
-     * \brief Returns the destination hardware address
-     * \returns the destination hardware address
+     * @brief Returns the destination hardware address
+     * @returns the destination hardware address
      */
     Address GetDestinationHardwareAddress() const;
 
     /**
-     * \brief Returns the source IP address
-     * \returns the source IP address
+     * @brief Returns the source IP address
+     * @returns the source IP address
      */
     Ipv4Address GetSourceIpv4Address() const;
 
     /**
-     * \brief Returns the destination IP address
-     * \returns the destination IP address
+     * @brief Returns the destination IP address
+     * @returns the destination IP address
      */
     Ipv4Address GetDestinationIpv4Address() const;
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     TypeId GetInstanceTypeId() const override;
@@ -152,11 +152,11 @@ class ArpHeader : public Header
 };
 
 /**
- * \brief Stream insertion operator.
+ * @brief Stream insertion operator.
  *
- * \param os The reference to the output stream
- * \param hardwareType the hardware type
- * \return The reference to the output stream.
+ * @param os The reference to the output stream
+ * @param hardwareType the hardware type
+ * @return The reference to the output stream.
  */
 std::ostream& operator<<(std::ostream& os, ArpHeader::HardwareType hardwareType);
 

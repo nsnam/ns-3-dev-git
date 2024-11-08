@@ -184,8 +184,8 @@ struct TvSpectrumModelId
 {
     /**
      * Constructor
-     * \param stFreq Start frequency [Hz]
-     * \param bwidth Bandwidth [Hz]
+     * @param stFreq Start frequency [Hz]
+     * @param bwidth Bandwidth [Hz]
      */
     TvSpectrumModelId(double stFreq, double bwidth);
     double startFrequency; //!< Start frequency [Hz]
@@ -200,9 +200,9 @@ TvSpectrumModelId::TvSpectrumModelId(double stFreq, double bwidth)
 
 /**
  * Minus-than operator
- * \param a left operand
- * \param b right operand
- * \returns true if the left operand has a lower starting frequency
+ * @param a left operand
+ * @param b right operand
+ * @returns true if the left operand has a lower starting frequency
  *          or a smaller bandwidth (if both have the same starting freq.)
  */
 bool

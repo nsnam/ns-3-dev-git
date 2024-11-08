@@ -31,15 +31,15 @@ using namespace ns3::lrwpan;
 NS_LOG_COMPONENT_DEFINE("lr-wpan-ack-test");
 
 /**
- * \ingroup lr-wpan
- * \defgroup lr-wpan-test LrWpan module tests
+ * @ingroup lr-wpan
+ * @defgroup lr-wpan-test LrWpan module tests
  */
 
 /**
- * \ingroup lr-wpan-test
- * \ingroup tests
+ * @ingroup lr-wpan-test
+ * @ingroup tests
  *
- * \brief LrWpan ACK Test
+ * @brief LrWpan ACK Test
  */
 class LrWpanAckTestCase : public TestCase
 {
@@ -58,31 +58,31 @@ class LrWpanAckTestCase : public TestCase
     /**
      * Create test case
      *
-     * \param prefix Unique file names prefix
-     * \param mode   Test mode
+     * @param prefix Unique file names prefix
+     * @param mode   Test mode
      */
     LrWpanAckTestCase(const char* const prefix, TestMode_e mode);
 
     /**
-     * \brief Function called when DataIndication is hit on dev0.
-     * \param params The MCPS params.
-     * \param p the packet.
+     * @brief Function called when DataIndication is hit on dev0.
+     * @param params The MCPS params.
+     * @param p the packet.
      */
     void DataIndicationDev0(McpsDataIndicationParams params, Ptr<Packet> p);
     /**
-     * \brief Function called when DataIndication is hit on dev1.
-     * \param params The MCPS params.
-     * \param p the packet.
+     * @brief Function called when DataIndication is hit on dev1.
+     * @param params The MCPS params.
+     * @param p the packet.
      */
     void DataIndicationDev1(McpsDataIndicationParams params, Ptr<Packet> p);
     /**
-     * \brief Function called when DataConfirm is hit on dev0.
-     * \param params The MCPS params.
+     * @brief Function called when DataConfirm is hit on dev0.
+     * @param params The MCPS params.
      */
     void DataConfirmDev0(McpsDataConfirmParams params);
     /**
-     * \brief Function called when DataConfirm is hit on dev1.
-     * \param params The MCPS params.
+     * @brief Function called when DataConfirm is hit on dev1.
+     * @param params The MCPS params.
      */
     void DataConfirmDev1(McpsDataConfirmParams params);
 
@@ -302,10 +302,10 @@ LrWpanAckTestCase::DoRun()
 }
 
 /**
- * \ingroup lr-wpan-test
- * \ingroup tests
+ * @ingroup lr-wpan-test
+ * @ingroup tests
  *
- * \brief LrWpan ACK TestSuite
+ * @brief LrWpan ACK TestSuite
  */
 class LrWpanAckTestSuite : public TestSuite
 {

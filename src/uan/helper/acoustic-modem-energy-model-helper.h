@@ -16,7 +16,7 @@ namespace ns3
 {
 
 /**
- * \ingroup uan
+ * @ingroup uan
  *
  * Assign AcousticModemEnergyModel to uan devices.
  *
@@ -39,15 +39,15 @@ class AcousticModemEnergyModelHelper : public DeviceEnergyModelHelper
     /**
      * Sets an attribute of the underlying energy model object.
      *
-     * \param name The name of the attribute to set.
-     * \param v The value of the attribute.
+     * @param name The name of the attribute to set.
+     * @param v The value of the attribute.
      */
     void Set(std::string name, const AttributeValue& v) override;
 
     /**
      * Sets the callback to be invoked when energy is depleted.
      *
-     * \param callback Callback function for energy depletion handling.
+     * @param callback Callback function for energy depletion handling.
      */
     void SetDepletionCallback(
         AcousticModemEnergyModel::AcousticModemEnergyDepletionCallback callback);
@@ -56,9 +56,9 @@ class AcousticModemEnergyModelHelper : public DeviceEnergyModelHelper
     /**
      * Implements DeviceEnergyModel::Install.
      *
-     * \param device Pointer to the NetDevice to install DeviceEnergyModel.
-     * \param source Pointer to EnergySource installed on node.
-     * \return The energy model.
+     * @param device Pointer to the NetDevice to install DeviceEnergyModel.
+     * @param source Pointer to EnergySource installed on node.
+     * @return The energy model.
      */
     Ptr<energy::DeviceEnergyModel> DoInstall(Ptr<NetDevice> device,
                                              Ptr<energy::EnergySource> source) const override;

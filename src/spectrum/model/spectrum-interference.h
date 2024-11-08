@@ -21,7 +21,7 @@ namespace ns3
 class SpectrumErrorModel;
 
 /**
- * \ingroup spectrum
+ * @ingroup spectrum
  *
  * This class implements a gaussian interference model, i.e., all
  * incoming signals are added to the total interference.
@@ -35,7 +35,7 @@ class SpectrumInterference : public Object
 
     /**
      * Register this type.
-     * \return The TypeId.
+     * @return The TypeId.
      */
     static TypeId GetTypeId();
 

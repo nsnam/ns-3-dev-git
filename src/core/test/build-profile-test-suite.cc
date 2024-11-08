@@ -10,16 +10,16 @@
 #include "ns3/test.h"
 
 /**
- * \file
- * \ingroup core-tests
- * \ingroup debugging
- * \ingroup build-profile-tests
+ * @file
+ * @ingroup core-tests
+ * @ingroup debugging
+ * @ingroup build-profile-tests
  * NS_BUILD_PROFILE macros test suite.
  */
 
 /**
- * \ingroup core-tests
- * \defgroup build-profile-tests NS_BUILD_PROFILE macros test suite
+ * @ingroup core-tests
+ * @defgroup build-profile-tests NS_BUILD_PROFILE macros test suite
  */
 
 namespace ns3
@@ -29,7 +29,7 @@ namespace tests
 {
 
 /**
- * \ingroup build-profile-tests
+ * @ingroup build-profile-tests
  * Build profile test
  */
 class BuildProfileTestCase : public TestCase
@@ -82,7 +82,7 @@ BuildProfileTestCase::DoRun()
 }
 
 /**
- * \ingroup build-profile-tests
+ * @ingroup build-profile-tests
  * Build profile test suite
  */
 class BuildProfileTestSuite : public TestSuite
@@ -98,7 +98,7 @@ BuildProfileTestSuite::BuildProfileTestSuite()
 }
 
 /**
- * \ingroup build-profile-tests
+ * @ingroup build-profile-tests
  * BuildProfileTestSuite instance variable.
  */
 static BuildProfileTestSuite g_BuildProfileTestSuite;

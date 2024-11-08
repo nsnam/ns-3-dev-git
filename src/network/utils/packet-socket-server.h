@@ -23,9 +23,9 @@ class Socket;
 class Packet;
 
 /**
- * \ingroup socket
+ * @ingroup socket
  *
- * \brief A server using PacketSocket.
+ * @brief A server using PacketSocket.
  *
  * Receives packets using PacketSocket. It does not require (or use) IP.
  * The application has the same requirements as the PacketSocket for
@@ -38,8 +38,8 @@ class PacketSocketServer : public Application
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -48,8 +48,8 @@ class PacketSocketServer : public Application
     ~PacketSocketServer() override;
 
     /**
-     * \brief set the local address and protocol to be used
-     * \param addr local address
+     * @brief set the local address and protocol to be used
+     * @param addr local address
      */
     void SetLocal(PacketSocketAddress addr);
 
@@ -61,8 +61,8 @@ class PacketSocketServer : public Application
     void StopApplication() override;
 
     /**
-     * \brief Handle a packet received by the application
-     * \param socket the receiving socket
+     * @brief Handle a packet received by the application
+     * @param socket the receiving socket
      */
     void HandleRead(Ptr<Socket> socket);
 

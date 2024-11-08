@@ -22,10 +22,10 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("WifiTransmitMaskTest");
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief Test checks if Wifi spectrum values for OFDM are generated properly.
+ * @brief Test checks if Wifi spectrum values for OFDM are generated properly.
  * Different test cases are configured by defining different standards and bandwidth.
  */
 class WifiOfdmMaskSlopesTestCase : public TestCase
@@ -44,16 +44,16 @@ class WifiOfdmMaskSlopesTestCase : public TestCase
     /**
      * Constructor
      *
-     * \param name test reference name
-     * \param standard selected standard
-     * \param band selected PHY band
-     * \param channelWidth total channel width
-     * \param centerFrequencies the center frequency per contiguous segment
-     * \param maskRefs vector of expected power values and corresponding indexes of generated PSD
+     * @param name test reference name
+     * @param standard selected standard
+     * @param band selected PHY band
+     * @param channelWidth total channel width
+     * @param centerFrequencies the center frequency per contiguous segment
+     * @param maskRefs vector of expected power values and corresponding indexes of generated PSD
      *                     (only start and stop indexes/values given)
-     * \param tolerance tolerance
-     * \param precision precision (in decimals)
-     * \param puncturedSubchannels bitmap indicating whether a 20 MHz subchannel is punctured or not
+     * @param tolerance tolerance
+     * @param precision precision (in decimals)
+     * @param puncturedSubchannels bitmap indicating whether a 20 MHz subchannel is punctured or not
      * (only for 802.11ax and later)
      */
     WifiOfdmMaskSlopesTestCase(const std::string& name,
@@ -75,10 +75,10 @@ class WifiOfdmMaskSlopesTestCase : public TestCase
      * Interpolate PSD values for indexes between provided start and stop and append to provided
      * vector.
      *
-     * \param vect vector of sub-band index and relative power value pairs to which interpolated
+     * @param vect vector of sub-band index and relative power value pairs to which interpolated
      values should be appended
-     * \param start pair of sub-band index and relative power value for interval start
-     * \param stop pair of sub-band index and relative power value for interval stop
+     * @param start pair of sub-band index and relative power value for interval start
+     * @param stop pair of sub-band index and relative power value for interval stop
     */
     void InterpolateAndAppendValues(IndexPowerVect& vect,
                                     IndexPowerPair start,
@@ -299,10 +299,10 @@ WifiOfdmMaskSlopesTestCase::DoRun()
 }
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief Test suite for checking the consistency of different OFDM-based transmit masks.
+ * @brief Test suite for checking the consistency of different OFDM-based transmit masks.
  */
 class WifiTransmitMaskTestSuite : public TestSuite
 {

@@ -17,8 +17,8 @@ namespace ns3
 namespace dot11s
 {
 /**
- * \ingroup dot11s
- * \brief See 7.3.2.97 of 802.11s draft 2.07
+ * @ingroup dot11s
+ * @brief See 7.3.2.97 of 802.11s draft 2.07
  */
 class IePrep : public WifiInformationElement
 {
@@ -27,93 +27,93 @@ class IePrep : public WifiInformationElement
     ~IePrep() override;
     /**
      * Set flags function
-     * \param flags the flags to set
+     * @param flags the flags to set
      */
     void SetFlags(uint8_t flags);
     /**
      * Set hop count function
-     * \param hopcount the hop count
+     * @param hopcount the hop count
      */
     void SetHopcount(uint8_t hopcount);
     /**
      * Set TTL function
-     * \param ttl the TTL
+     * @param ttl the TTL
      */
     void SetTtl(uint8_t ttl);
     /**
      * Set destination address function
-     * \param dest_address
+     * @param dest_address
      */
     void SetDestinationAddress(Mac48Address dest_address);
     /**
      * Set destination sequence number function
-     * \param dest_seq_number the destination sequence number
+     * @param dest_seq_number the destination sequence number
      */
     void SetDestinationSeqNumber(uint32_t dest_seq_number);
     /**
      * Set lifetime function
-     * \param lifetime the lifetime
+     * @param lifetime the lifetime
      */
     void SetLifetime(uint32_t lifetime);
     /**
      * Set metric function
-     * \param metric the metric to set
+     * @param metric the metric to set
      */
     void SetMetric(uint32_t metric);
     /**
      * Set originator address function
-     * \param originator_address the originator address
+     * @param originator_address the originator address
      */
     void SetOriginatorAddress(Mac48Address originator_address);
     /**
      * Set originator sequence number function
-     * \param originator_seq_number the originator sequence number
+     * @param originator_seq_number the originator sequence number
      */
     void SetOriginatorSeqNumber(uint32_t originator_seq_number);
 
     /**
      * Get flags function
-     * \returns the flags
+     * @returns the flags
      */
     uint8_t GetFlags() const;
     /**
      * Get hop count function
-     * \returns the hop count
+     * @returns the hop count
      */
     uint8_t GetHopcount() const;
     /**
      * Get TTL function
-     * \returns the TTL
+     * @returns the TTL
      */
     uint32_t GetTtl() const;
     /**
      * Get destination address function
-     * \returns the destination MAC address
+     * @returns the destination MAC address
      */
     Mac48Address GetDestinationAddress() const;
     /**
      * Get destination sequence number function
-     * \returns the destination sequence number
+     * @returns the destination sequence number
      */
     uint32_t GetDestinationSeqNumber() const;
     /**
      * Get lifetime function
-     * \returns the lifetime
+     * @returns the lifetime
      */
     uint32_t GetLifetime() const;
     /**
      * Get metric function
-     * \returns the metric
+     * @returns the metric
      */
     uint32_t GetMetric() const;
     /**
      * Get originator address function
-     * \returns the MAC address of the originator
+     * @returns the MAC address of the originator
      */
     Mac48Address GetOriginatorAddress() const;
     /**
      * Get originator sequence number
-     * \returns the originator sequence number
+     * @returns the originator sequence number
      */
     uint32_t GetOriginatorSeqNumber() const;
 
@@ -121,7 +121,7 @@ class IePrep : public WifiInformationElement
     void DecrementTtl();
     /**
      * Increment metric function
-     * \param metric the metric to increment
+     * @param metric the metric to increment
      */
     void IncrementMetric(uint32_t metric);
 
@@ -145,9 +145,9 @@ class IePrep : public WifiInformationElement
     /**
      * equality operator
      *
-     * \param a lhs
-     * \param b rhs
-     * \returns true if equal
+     * @param a lhs
+     * @param b rhs
+     * @returns true if equal
      */
     friend bool operator==(const IePrep& a, const IePrep& b);
 };

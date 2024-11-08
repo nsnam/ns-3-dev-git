@@ -17,18 +17,18 @@ namespace ns3
 {
 
 /**
- * \ingroup flow-monitor
- * \brief Abstract identifier of a packet flow
+ * @ingroup flow-monitor
+ * @brief Abstract identifier of a packet flow
  */
 typedef uint32_t FlowId;
 
 /**
- * \ingroup flow-monitor
- * \brief Abstract identifier of a packet within a flow
+ * @ingroup flow-monitor
+ * @brief Abstract identifier of a packet within a flow
  */
 typedef uint32_t FlowPacketId;
 
-/// \ingroup flow-monitor
+/// @ingroup flow-monitor
 /// Provides a method to translate raw packet data into abstract
 /// `flow identifier` and `packet identifier` parameters.  These
 /// identifiers are unsigned 32-bit integers that uniquely identify a
@@ -53,19 +53,19 @@ class FlowClassifier : public SimpleRefCount<FlowClassifier>
     FlowClassifier& operator=(const FlowClassifier&) = delete;
 
     /// Serializes the results to an std::ostream in XML format
-    /// \param os the output stream
-    /// \param indent number of spaces to use as base indentation level
+    /// @param os the output stream
+    /// @param indent number of spaces to use as base indentation level
     virtual void SerializeToXmlStream(std::ostream& os, uint16_t indent) const = 0;
 
   protected:
     /// Returns a new, unique Flow Identifier
-    /// \returns a new FlowId
+    /// @returns a new FlowId
     FlowId GetNewFlowId();
 
     ///
-    /// \brief Add a number of spaces for indentation purposes.
-    /// \param os The stream to write to.
-    /// \param level The number of spaces to add.
+    /// @brief Add a number of spaces for indentation purposes.
+    /// @param os The stream to write to.
+    /// @param level The number of spaces to add.
     void Indent(std::ostream& os, uint16_t level) const;
 };
 

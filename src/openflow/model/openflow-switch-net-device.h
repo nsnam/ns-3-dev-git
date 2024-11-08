@@ -5,7 +5,7 @@
  */
 
 /**
- * \defgroup openflow OpenFlow Switch Device
+ * @defgroup openflow OpenFlow Switch Device
  * This section documents the API of the ns-3 OpenFlow module. For a generic functional description,
  * please refer to the ns-3 manual.
  */
@@ -38,8 +38,8 @@ namespace ns3
 {
 
 /**
- * \ingroup openflow
- * \brief A net device that switches multiple LAN segments via an OpenFlow-compatible flow table
+ * @ingroup openflow
+ * @brief A net device that switches multiple LAN segments via an OpenFlow-compatible flow table
  *
  * The OpenFlowSwitchNetDevice object aggregates multiple netdevices as ports
  * and acts like a switch. It implements OpenFlow-compatibility,
@@ -57,37 +57,37 @@ namespace ns3
  * frames from one port may occasionally be forwarded throughout all other ports,
  * but usually they are forwarded only to a single correct output port.
  *
- * \attention The Spanning Tree Protocol part of 802.1D is not
+ * @attention The Spanning Tree Protocol part of 802.1D is not
  * implemented.  Therefore, you have to be careful not to create
  * bridging loops, or else the network will collapse.
  *
- * \attention Each NetDevice used must only be assigned a Mac Address, adding it
+ * @attention Each NetDevice used must only be assigned a Mac Address, adding it
  * to an Ipv4 or Ipv6 layer will cause an error. It also must support a SendFrom
  * call.
  */
 
 /**
- * \ingroup openflow
- * \ingroup tests
- * \defgroup openflow-tests OpenFlow module tests
+ * @ingroup openflow
+ * @ingroup tests
+ * @defgroup openflow-tests OpenFlow module tests
  */
 
 /**
- * \ingroup openflow
- * \brief A net device that switches multiple LAN segments via an OpenFlow-compatible flow table
+ * @ingroup openflow
+ * @brief A net device that switches multiple LAN segments via an OpenFlow-compatible flow table
  */
 class OpenFlowSwitchNetDevice : public NetDevice
 {
   public:
     /**
      * Register this type.
-     * \return The TypeId.
+     * @return The TypeId.
      */
     static TypeId GetTypeId();
 
     /**
-     * \name Descriptive Data
-     * \brief OpenFlowSwitchNetDevice Description Data
+     * @name Descriptive Data
+     * @brief OpenFlowSwitchNetDevice Description Data
      *
      * These four data describe the OpenFlowSwitchNetDevice as if it were
      * a real OpenFlow switch.
@@ -98,7 +98,7 @@ class OpenFlowSwitchNetDevice : public NetDevice
      * OpenFlow Switch", and the other two are "N/A".
      * @{
      */
-    /** \returns The descriptive string. */
+    /** @returns The descriptive string. */
     static const char* GetManufacturerDescription();
     static const char* GetHardwareDescription();
     static const char* GetSoftwareDescription();
@@ -109,32 +109,32 @@ class OpenFlowSwitchNetDevice : public NetDevice
     ~OpenFlowSwitchNetDevice() override;
 
     /**
-     * \brief Set up the Switch's controller connection.
+     * @brief Set up the Switch's controller connection.
      *
-     * \param c Pointer to a Controller.
+     * @param c Pointer to a Controller.
      */
     void SetController(Ptr<ofi::Controller> c);
 
     /**
-     * \brief Add a 'port' to a switch device
+     * @brief Add a 'port' to a switch device
      *
      * This method adds a new switch port to a OpenFlowSwitchNetDevice, so that
      * the new switch port NetDevice becomes part of the switch and L2
      * frames start being forwarded to/from this NetDevice.
      *
-     * \note The netdevice that is being added as switch port must
+     * @note The netdevice that is being added as switch port must
      * _not_ have an IP address.  In order to add IP connectivity to a
      * bridging node you must enable IP on the OpenFlowSwitchNetDevice itself,
      * never on its port netdevices.
      *
-     * \param switchPort The port to add.
-     * \return 0 if everything's ok, otherwise an error number.
+     * @param switchPort The port to add.
+     * @return 0 if everything's ok, otherwise an error number.
      * Possible error numbers: EXFULL
      */
     int AddSwitchPort(Ptr<NetDevice> switchPort);
 
     /**
-     * \brief Add a virtual port to a switch device
+     * @brief Add a virtual port to a switch device
      *
      * The Ericsson OFSID has the concept of virtual ports and virtual
      * port tables. These are implemented in the OpenFlowSwitchNetDevice, but
@@ -143,40 +143,40 @@ class OpenFlowSwitchNetDevice : public NetDevice
      *
      * Possible error numbers: EINVAL
      *
-     * \param ovpm The data for adding a virtual port.
-     * \return 0 if everything's ok, otherwise an error number.
+     * @param ovpm The data for adding a virtual port.
+     * @return 0 if everything's ok, otherwise an error number.
      */
     int AddVPort(const ofp_vport_mod* ovpm);
 
     /**
-     * \brief Stats callback is ready for a dump.
+     * @brief Stats callback is ready for a dump.
      *
      * Controllers have a callback system for status requests which calls this function.
      *
-     * \param cb_ The callback data.
-     * \return 0 if everything's ok, otherwise an error number.
+     * @param cb_ The callback data.
+     * @return 0 if everything's ok, otherwise an error number.
      */
     int StatsDump(ofi::StatsDumpCallback* cb_);
 
     /**
-     * \brief Stats callback is done.
+     * @brief Stats callback is done.
      *
      * Controllers have a callback system for status requests which calls this function.
      *
-     * \param cb_ The callback data.
+     * @param cb_ The callback data.
      */
     void StatsDone(ofi::StatsDumpCallback* cb_);
 
     /**
-     * \brief Called from the OpenFlow Interface to output the Packet on either a Port or the
+     * @brief Called from the OpenFlow Interface to output the Packet on either a Port or the
      * Controller
      *
-     * \param packet_uid Packet UID; used to fetch the packet and its metadata.
-     * \param in_port The index of the port the Packet was initially received on.
-     * \param max_len The maximum number of bytes the caller wants to be sent; a value of 0
+     * @param packet_uid Packet UID; used to fetch the packet and its metadata.
+     * @param in_port The index of the port the Packet was initially received on.
+     * @param max_len The maximum number of bytes the caller wants to be sent; a value of 0
      * indicates the entire packet should be sent. Used when outputting to controller.
-     * \param out_port The port we want to output on.
-     * \param ignore_no_fwd If true, Ports that are set to not forward are forced to forward.
+     * @param out_port The port we want to output on.
+     * @param ignore_no_fwd If true, Ports that are set to not forward are forced to forward.
      */
     void DoOutput(uint32_t packet_uid,
                   int in_port,
@@ -185,38 +185,38 @@ class OpenFlowSwitchNetDevice : public NetDevice
                   bool ignore_no_fwd);
 
     /**
-     * \brief The registered controller calls this method when sending a message to the switch.
+     * @brief The registered controller calls this method when sending a message to the switch.
      *
-     * \param msg The message received from the controller.
-     * \param length Length of the message.
-     * \return 0 if everything's ok, otherwise an error number.
+     * @param msg The message received from the controller.
+     * @param length Length of the message.
+     * @return 0 if everything's ok, otherwise an error number.
      */
     int ForwardControlInput(const void* msg, size_t length);
 
     /**
-     * \return The flow table chain.
+     * @return The flow table chain.
      */
     sw_chain* GetChain();
 
     /**
-     * \return Number of switch ports attached to this switch.
+     * @return Number of switch ports attached to this switch.
      */
     uint32_t GetNSwitchPorts() const;
 
     /**
-     * \param p The Port to get the index of.
-     * \return The index of the provided Port.
+     * @param p The Port to get the index of.
+     * @return The index of the provided Port.
      */
     int GetSwitchPortIndex(ofi::Port p);
 
     /**
-     * \param n index of the Port.
-     * \return The Port.
+     * @param n index of the Port.
+     * @return The Port.
      */
     ofi::Port GetSwitchPort(uint32_t n) const;
 
     /**
-     * \return The virtual port table.
+     * @return The virtual port table.
      */
     vport_table_t GetVPortTable();
 
@@ -255,12 +255,12 @@ class OpenFlowSwitchNetDevice : public NetDevice
     /**
      * Called when a packet is received on one of the switch's ports.
      *
-     * \param netdev The port the packet was received on.
-     * \param packet The Packet itself.
-     * \param protocol The protocol defining the Packet.
-     * \param src The source address of the Packet.
-     * \param dst The destination address of the Packet.
-     * \param packetType Type of the packet.
+     * @param netdev The port the packet was received on.
+     * @param packet The Packet itself.
+     * @param protocol The protocol defining the Packet.
+     * @param src The source address of the Packet.
+     * @param dst The destination address of the Packet.
+     * @param packetType Type of the packet.
      */
     void ReceiveFromDevice(Ptr<NetDevice> netdev,
                            Ptr<const Packet> packet,
@@ -273,12 +273,12 @@ class OpenFlowSwitchNetDevice : public NetDevice
      * Takes a packet and generates an OpenFlow buffer from it, loading the packet data as well as
      * its headers.
      *
-     * \param packet The packet.
-     * \param src The source address.
-     * \param dst The destination address.
-     * \param mtu The Maximum Transmission Unit.
-     * \param protocol The protocol defining the packet.
-     * \return The OpenFlow Buffer created from the packet.
+     * @param packet The packet.
+     * @param src The source address.
+     * @param dst The destination address.
+     * @param mtu The Maximum Transmission Unit.
+     * @param protocol The protocol defining the packet.
+     * @return The OpenFlow Buffer created from the packet.
      */
     ofpbuf* BufferFromPacket(Ptr<const Packet> packet,
                              Address src,
@@ -292,35 +292,35 @@ class OpenFlowSwitchNetDevice : public NetDevice
      *
      * Possible error numbers: ENOMEM, ENOBUFS, ESRCH
      *
-     * \param ofm The flow data to add.
-     * \return 0 if everything's ok, otherwise an error number.
+     * @param ofm The flow data to add.
+     * @return 0 if everything's ok, otherwise an error number.
      */
     int AddFlow(const ofp_flow_mod* ofm);
 
     /**
      * Modify a flow.
      *
-     * \param ofm The flow data to modify.
-     * \return 0 if everything's ok, otherwise an error number.
+     * @param ofm The flow data to modify.
+     * @return 0 if everything's ok, otherwise an error number.
      */
     int ModFlow(const ofp_flow_mod* ofm);
 
     /**
      * Send packets out all the ports except the originating one
      *
-     * \param packet_uid Packet UID; used to fetch the packet and its metadata.
-     * \param in_port The index of the port the Packet was initially received on. This port doesn't
+     * @param packet_uid Packet UID; used to fetch the packet and its metadata.
+     * @param in_port The index of the port the Packet was initially received on. This port doesn't
      * forward when flooding.
-     * \param flood If true, don't send out on the ports with flooding disabled.
-     * \return 0 if everything's ok, otherwise an error number.
+     * @param flood If true, don't send out on the ports with flooding disabled.
+     * @return 0 if everything's ok, otherwise an error number.
      */
     int OutputAll(uint32_t packet_uid, int in_port, bool flood);
 
     /**
      * Sends a copy of the Packet over the provided output port
      *
-     * \param packet_uid Packet UID; used to fetch the packet and its metadata.
-     * \param out_port Output port.
+     * @param packet_uid Packet UID; used to fetch the packet and its metadata.
+     * @param out_port Output port.
      */
     void OutputPacket(uint32_t packet_uid, int out_port);
 
@@ -330,10 +330,10 @@ class OpenFlowSwitchNetDevice : public NetDevice
      * pre-set types of port options besides a Port that's hooked to our OpenFlowSwitchNetDevice.
      * For example, it could be outputting as a flood, or seeking to output to the controller.
      *
-     * \param packet_uid Packet UID; used to fetch the packet and its metadata.
-     * \param in_port The index of the port the Packet was initially received on.
-     * \param out_port The port we want to output on.
-     * \param ignore_no_fwd If true, Ports that are set to not forward are forced to forward.
+     * @param packet_uid Packet UID; used to fetch the packet and its metadata.
+     * @param in_port The index of the port the Packet was initially received on.
+     * @param out_port The port we want to output on.
+     * @param ignore_no_fwd If true, Ports that are set to not forward are forced to forward.
      */
     void OutputPort(uint32_t packet_uid, int in_port, int out_port, bool ignore_no_fwd);
 
@@ -342,21 +342,21 @@ class OpenFlowSwitchNetDevice : public NetDevice
      * in an OpenFlow buffer, then only the first 'max_len' bytes of the packet
      * are sent; otherwise, all of the packet is sent.
      *
-     * \param packet_uid Packet UID; used to fetch the packet and its metadata.
-     * \param in_port The index of the port the Packet was initially received on.
-     * \param max_len The maximum number of bytes that the caller wants to be sent; a value of 0
+     * @param packet_uid Packet UID; used to fetch the packet and its metadata.
+     * @param in_port The index of the port the Packet was initially received on.
+     * @param max_len The maximum number of bytes that the caller wants to be sent; a value of 0
      * indicates the entire packet should be sent.
-     * \param reason Why the packet is being sent.
+     * @param reason Why the packet is being sent.
      */
     void OutputControl(uint32_t packet_uid, int in_port, size_t max_len, int reason);
 
     /**
      * If an error message happened during the controller's request, send it to the controller.
      *
-     * \param type The type of error.
-     * \param code The error code.
-     * \param data The faulty data that lead to the error.
-     * \param len The length of the faulty data.
+     * @param type The type of error.
+     * @param code The error code.
+     * @param data The faulty data that lead to the error.
+     * @param len The length of the faulty data.
      */
     void SendErrorMsg(uint16_t type, uint16_t code, const void* data, size_t len);
 
@@ -377,7 +377,7 @@ class OpenFlowSwitchNetDevice : public NetDevice
      * setting the IP source address and destination, setting the TCP/UDP source address
      * and destination, and setting the MPLS label and EXP bits.
      *
-     * \attention Capabilities STP (Spanning Tree Protocol) and IP packet
+     * @attention Capabilities STP (Spanning Tree Protocol) and IP packet
      * reassembly are not currently supported.
      *
      */
@@ -386,16 +386,16 @@ class OpenFlowSwitchNetDevice : public NetDevice
     /**
      * Send a reply to the controller that a specific flow has expired.
      *
-     * \param flow The flow that expired.
-     * \param reason The reason for sending this expiration notification.
+     * @param flow The flow that expired.
+     * @param reason The reason for sending this expiration notification.
      */
     void SendFlowExpired(sw_flow* flow, ofp_flow_expired_reason reason);
 
     /**
      * Send a reply about a Port's status to the controller.
      *
-     * \param p The port to get status from.
-     * \param status The reason for sending this reply.
+     * @param p The port to get status from.
+     * @param status The reason for sending this reply.
      */
     void SendPortStatus(ofi::Port p, uint8_t status);
 
@@ -410,8 +410,8 @@ class OpenFlowSwitchNetDevice : public NetDevice
      * sending. The other Send methods call this one when they
      * are ready to send a message.
      *
-     * \param buffer Buffer of the message to send out.
-     * \return 0 if successful, otherwise an error number.
+     * @param buffer Buffer of the message to send out.
+     * @return 0 if successful, otherwise an error number.
      */
     int SendOpenflowBuffer(ofpbuf* buffer);
 
@@ -419,9 +419,9 @@ class OpenFlowSwitchNetDevice : public NetDevice
      * Run the packet through the flow table. Looks up in the flow table for a match.
      * If it doesn't match, it forwards the packet to the registered controller, if the flag is set.
      *
-     * \param packet_uid Packet UID; used to fetch the packet and its metadata.
-     * \param port The port this packet was received over.
-     * \param send_to_controller If set, sends to the controller if the packet isn't matched.
+     * @param packet_uid Packet UID; used to fetch the packet and its metadata.
+     * @param port The port this packet was received over.
+     * @param send_to_controller If set, sends to the controller if the packet isn't matched.
      */
     void RunThroughFlowTable(uint32_t packet_uid, int port, bool send_to_controller = true);
 
@@ -429,10 +429,10 @@ class OpenFlowSwitchNetDevice : public NetDevice
      * Run the packet through the vport table. As with AddVPort,
      * this doesn't have an understood use yet.
      *
-     * \param packet_uid Packet UID; used to fetch the packet and its metadata.
-     * \param port The port this packet was received over.
-     * \param vport The virtual port this packet identifies itself by.
-     * \return 0 if everything's ok, otherwise an error number.
+     * @param packet_uid Packet UID; used to fetch the packet and its metadata.
+     * @param port The port this packet was received over.
+     * @param vport The virtual port this packet identifies itself by.
+     * @return 0 if everything's ok, otherwise an error number.
      */
     int RunThroughVPortTable(uint32_t packet_uid, int port, uint32_t vport);
 
@@ -440,11 +440,11 @@ class OpenFlowSwitchNetDevice : public NetDevice
      * Called by RunThroughFlowTable on a scheduled delay
      * to account for the flow table lookup overhead.
      *
-     * \param key Matching key to look up in the flow table.
-     * \param buffer Buffer of the packet received.
-     * \param packet_uid Packet UID; used to fetch the packet and its metadata.
-     * \param port The port the packet was received over.
-     * \param send_to_controller
+     * @param key Matching key to look up in the flow table.
+     * @param buffer Buffer of the packet received.
+     * @param packet_uid Packet UID; used to fetch the packet and its metadata.
+     * @param port The port the packet was received over.
+     * @param send_to_controller
      */
     void FlowTableLookup(sw_flow_key key,
                          ofpbuf* buffer,
@@ -456,8 +456,8 @@ class OpenFlowSwitchNetDevice : public NetDevice
      * Update the port status field of the switch port.
      * A non-zero return value indicates some field has changed.
      *
-     * \param p A reference to a Port; used to change its config and flag fields.
-     * \return true if the status of the Port is changed, false if unchanged (was already the right
+     * @param p A reference to a Port; used to change its config and flag fields.
+     * @return true if the status of the Port is changed, false if unchanged (was already the right
      * status).
      */
     int UpdatePortStatus(ofi::Port& p);
@@ -465,8 +465,8 @@ class OpenFlowSwitchNetDevice : public NetDevice
     /**
      * Fill out a description of the switch port.
      *
-     * \param p The port to get the description from.
-     * \param desc A pointer to the description message; used to fill the description message with
+     * @param p The port to get the description from.
+     * @param desc A pointer to the description message; used to fill the description message with
      * the data from the port.
      */
     void FillPortDesc(ofi::Port p, ofp_phy_port* desc);
@@ -474,23 +474,23 @@ class OpenFlowSwitchNetDevice : public NetDevice
     /**
      * Generates an OpenFlow reply message based on the type.
      *
-     * \param openflow_len Length of the reply to make.
-     * \param type Type of reply message to make.
-     * \param bufferp Message buffer; used to make the reply.
-     * \return The OpenFlow reply message.
+     * @param openflow_len Length of the reply to make.
+     * @param type Type of reply message to make.
+     * @param bufferp Message buffer; used to make the reply.
+     * @return The OpenFlow reply message.
      */
     void* MakeOpenflowReply(size_t openflow_len, uint8_t type, ofpbuf** bufferp);
 
     /**
-     * \name Receive Methods
+     * @name Receive Methods
      *
      * Actions to do when a specific OpenFlow message/packet is received
      *
      * @{
      */
     /**
-     * \param msg The OpenFlow message received.
-     * \return 0 if everything's ok, otherwise an error number.
+     * @param msg The OpenFlow message received.
+     * @return 0 if everything's ok, otherwise an error number.
      */
     int ReceivePortMod(const void* msg);
     int ReceiveFeaturesRequest(const void* msg);

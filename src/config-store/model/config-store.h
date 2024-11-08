@@ -17,9 +17,9 @@ namespace ns3
 {
 
 /**
- * \defgroup configstore Configuration Store/Load
+ * @defgroup configstore Configuration Store/Load
  *
- * \brief Store and load simulation attribute configuration
+ * @brief Store and load simulation attribute configuration
  *
  * ns-3 Objects and their attribute values (default, and per-instance values)
  * are stored in a specialized internal database.  The config-store module
@@ -43,15 +43,15 @@ namespace ns3
  */
 
 /**
- * \ingroup configstore
+ * @ingroup configstore
  *
  */
 class ConfigStore : public ObjectBase
 {
   public:
     /**
-     * \enum Mode for ConfigStore operation
-     * \brief store / load mode
+     * @enum Mode for ConfigStore operation
+     * @brief store / load mode
      */
     enum Mode
     {
@@ -61,8 +61,8 @@ class ConfigStore : public ObjectBase
     };
 
     /**
-     * \enum FileFormat for ConfigStore operation
-     * \brief file format
+     * @enum FileFormat for ConfigStore operation
+     * @brief file format
      */
     /// store format
     enum FileFormat
@@ -72,8 +72,8 @@ class ConfigStore : public ObjectBase
     };
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     TypeId GetInstanceTypeId() const override;
@@ -83,22 +83,22 @@ class ConfigStore : public ObjectBase
 
     /**
      * Set the mode of operation
-     * \param mode mode of operation
+     * @param mode mode of operation
      */
     void SetMode(Mode mode);
     /**
      * Set the file format
-     * \param format the file format
+     * @param format the file format
      */
     void SetFileFormat(FileFormat format);
     /**
      * Set the filename
-     * \param filename the file name
+     * @param filename the file name
      */
     void SetFilename(std::string filename);
     /**
      * Set if to save deprecated attributes
-     * \param saveDeprecated the deprecated attributes save policy
+     * @param saveDeprecated the deprecated attributes save policy
      */
     void SetSaveDeprecated(bool saveDeprecated);
 
@@ -120,19 +120,19 @@ class ConfigStore : public ObjectBase
 };
 
 /**
- * \brief Stream insertion operator.
+ * @brief Stream insertion operator.
  *
- * \param [in] os The reference to the output stream.
- * \param [in] mode The configStore mode.
- * \returns The reference to the output stream.
+ * @param [in] os The reference to the output stream.
+ * @param [in] mode The configStore mode.
+ * @returns The reference to the output stream.
  */
 std::ostream& operator<<(std::ostream& os, ConfigStore::Mode& mode);
 /**
- * \brief Stream insertion operator.
+ * @brief Stream insertion operator.
  *
- * \param [in] os The reference to the output stream.
- * \param [in] format The configStore file format.
- * \returns The reference to the output stream.
+ * @param [in] os The reference to the output stream.
+ * @param [in] format The configStore file format.
+ * @returns The reference to the output stream.
  */
 std::ostream& operator<<(std::ostream& os, ConfigStore::FileFormat& format);
 

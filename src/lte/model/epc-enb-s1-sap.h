@@ -32,16 +32,16 @@ class EpcEnbS1SapProvider
     /**
      * Initial UE message.
      *
-     * \param imsi IMSI
-     * \param rnti RNTI
+     * @param imsi IMSI
+     * @param rnti RNTI
      */
     virtual void InitialUeMessage(uint64_t imsi, uint16_t rnti) = 0;
 
     /**
-     * \brief Triggers epc-enb-application to send ERAB Release Indication message towards MME
-     * \param imsi the UE IMSI
-     * \param rnti the UE RNTI
-     * \param bearerId Bearer Identity which is to be de-activated
+     * @brief Triggers epc-enb-application to send ERAB Release Indication message towards MME
+     * @param imsi the UE IMSI
+     * @param rnti the UE RNTI
+     * @param bearerId Bearer Identity which is to be de-activated
      */
     virtual void DoSendReleaseIndication(uint64_t imsi, uint16_t rnti, uint8_t bearerId) = 0;
 
@@ -64,7 +64,7 @@ class EpcEnbS1SapProvider
     /**
      * Path Switch Request
      *
-     * \param params
+     * @param params
      */
     virtual void PathSwitchRequest(PathSwitchRequestParameters params) = 0;
 
@@ -73,7 +73,7 @@ class EpcEnbS1SapProvider
      * reception of the UE CONTEXT RELEASE X2 message from the target eNB
      * during X2-based handover
      *
-     * \param rnti RNTI
+     * @param rnti RNTI
      */
     virtual void UeContextRelease(uint16_t rnti) = 0;
 };
@@ -100,7 +100,7 @@ class EpcEnbS1SapUser
     /**
      * Initial context setup request
      *
-     * \param params Parameters
+     * @param params Parameters
      */
     virtual void InitialContextSetupRequest(InitialContextSetupRequestParameters params) = 0;
 
@@ -120,7 +120,7 @@ class EpcEnbS1SapUser
     /**
      * Request the setup of a DataRadioBearer
      *
-     * \param params Parameters
+     * @param params Parameters
      */
     virtual void DataRadioBearerSetupRequest(DataRadioBearerSetupRequestParameters params) = 0;
 
@@ -133,7 +133,7 @@ class EpcEnbS1SapUser
     /**
      * Request a path switch acknowledge
      *
-     * \param params Parameters
+     * @param params Parameters
      */
     virtual void PathSwitchRequestAcknowledge(PathSwitchRequestAcknowledgeParameters params) = 0;
 };
@@ -149,7 +149,7 @@ class MemberEpcEnbS1SapProvider : public EpcEnbS1SapProvider
     /**
      * Constructor
      *
-     * \param owner the owner class
+     * @param owner the owner class
      */
     MemberEpcEnbS1SapProvider(C* owner);
 
@@ -214,7 +214,7 @@ class MemberEpcEnbS1SapUser : public EpcEnbS1SapUser
     /**
      * Constructor
      *
-     * \param owner the owner class
+     * @param owner the owner class
      */
     MemberEpcEnbS1SapUser(C* owner);
 

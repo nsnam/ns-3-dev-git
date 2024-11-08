@@ -15,7 +15,7 @@ namespace ns3
 {
 
 /**
- * \ingroup wifi
+ * @ingroup wifi
  *
  * AdvancedEmlsrManager is an advanced EMLSR manager.
  */
@@ -23,8 +23,8 @@ class AdvancedEmlsrManager : public DefaultEmlsrManager
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -43,10 +43,10 @@ class AdvancedEmlsrManager : public DefaultEmlsrManager
      * Possibly take actions when notified of the MAC header of the MPDU being received by the
      * given PHY.
      *
-     * \param phy the given PHY
-     * \param macHdr the MAC header of the MPDU being received
-     * \param txVector the TXVECTOR used to transmit the PSDU
-     * \param psduDuration the remaining duration of the PSDU
+     * @param phy the given PHY
+     * @param macHdr the MAC header of the MPDU being received
+     * @param txVector the TXVECTOR used to transmit the PSDU
+     * @param psduDuration the remaining duration of the PSDU
      */
     void ReceivedMacHdr(Ptr<WifiPhy> phy,
                         const WifiMacHeader& macHdr,
@@ -59,9 +59,9 @@ class AdvancedEmlsrManager : public DefaultEmlsrManager
      * intended to be used when the main PHY switches channel to start an UL TXOP on a link where
      * channel access was obtained by a non-TX capable aux PHY.
      *
-     * \param phy the PHY that performed CCA in the last PIFS interval
-     * \param linkId the ID of the given link
-     * \param edca the given EDCAF
+     * @param phy the PHY that performed CCA in the last PIFS interval
+     * @param linkId the ID of the given link
+     * @param edca the given EDCAF
      */
     void CheckNavAndCcaLastPifs(Ptr<WifiPhy> phy, uint8_t linkId, Ptr<QosTxop> edca);
 
@@ -70,11 +70,11 @@ class AdvancedEmlsrManager : public DefaultEmlsrManager
      * is expected to gain channel access through the given AC in the given delay but it is not
      * TX capable.
      *
-     * \param linkId the ID of the link on which the aux PHY is operating
-     * \param aci the index of the given AC
-     * \param delay the delay after which the given AC is expected to gain channel access. Zero
+     * @param linkId the ID of the link on which the aux PHY is operating
+     * @param aci the index of the given AC
+     * @param delay the delay after which the given AC is expected to gain channel access. Zero
      *              indicates that channel access has been actually gained
-     * \return whether the main PHY shall be requested to switch to the link of the aux PHY
+     * @return whether the main PHY shall be requested to switch to the link of the aux PHY
      */
     bool RequestMainPhyToSwitch(uint8_t linkId, AcIndex aci, const Time& delay);
 
@@ -84,9 +84,9 @@ class AdvancedEmlsrManager : public DefaultEmlsrManager
      * is operating. This method has to decide whether to request the main PHY to switch to the
      * given link to try to start a TXOP.
      *
-     * \param linkId the ID of the given link
-     * \param aci the index of the given AC
-     * \param delay the delay after which the given AC is expected to gain channel access
+     * @param linkId the ID of the given link
+     * @param aci the index of the given AC
+     * @param delay the delay after which the given AC is expected to gain channel access
      */
     void SwitchMainPhyIfTxopToBeGainedByAuxPhy(uint8_t linkId, AcIndex aci, const Time& delay);
 

@@ -17,7 +17,7 @@ namespace ns3
 {
 
 /**
- * \ingroup traffic-control
+ * @ingroup traffic-control
  *
  * Linux pfifo_fast is the default priority queue enabled on Linux
  * systems. Packets are enqueued in three FIFO droptail queues according
@@ -39,12 +39,12 @@ class PfifoFastQueueDisc : public QueueDisc
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     /**
-     * \brief PfifoFastQueueDisc constructor
+     * @brief PfifoFastQueueDisc constructor
      *
      * Creates a queue with a depth of 1000 packets per band by default
      */

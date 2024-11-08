@@ -136,8 +136,8 @@ struct IsExpired
 {
     /**
      * comparison operator
-     * \param e entry to compare
-     * \return true if expired
+     * @param e entry to compare
+     * @return true if expired
      */
     bool operator()(const DsrSendBuffEntry& e) const
     {

@@ -24,8 +24,8 @@
 #include <iostream>
 
 /**
- * \file
- * \ingroup highprec
+ * @file
+ * @ingroup highprec
  * Declaration of the ns3::int64x64_t type and associated operators.
  */
 
@@ -33,8 +33,8 @@ namespace ns3
 {
 
 /**
- * \ingroup core
- * \defgroup highprec High Precision Q64.64
+ * @ingroup core
+ * @defgroup highprec High Precision Q64.64
  *
  * Functions and class for high precision Q64.64 fixed point arithmetic.
  *
@@ -59,18 +59,18 @@ namespace ns3
  */
 
 /**
- * \ingroup highprec
- * \class int64x64_t
+ * @ingroup highprec
+ * @class int64x64_t
  *
  * High precision numerical type, implementing Q64.64 fixed precision.
  */
 
 /**
- * \ingroup highprec
+ * @ingroup highprec
  * Addition operator.
- * \param [in] lhs Left hand argument
- * \param [in] rhs Right hand argument
- * \return The result of the operator.
+ * @param [in] lhs Left hand argument
+ * @param [in] rhs Right hand argument
+ * @return The result of the operator.
  */
 inline int64x64_t
 operator+(const int64x64_t& lhs, const int64x64_t& rhs)
@@ -81,11 +81,11 @@ operator+(const int64x64_t& lhs, const int64x64_t& rhs)
 }
 
 /**
- * \ingroup highprec
+ * @ingroup highprec
  * Subtraction operator.
- * \param [in] lhs Left hand argument
- * \param [in] rhs Right hand argument
- * \return The result of the operator.
+ * @param [in] lhs Left hand argument
+ * @param [in] rhs Right hand argument
+ * @return The result of the operator.
  */
 inline int64x64_t
 operator-(const int64x64_t& lhs, const int64x64_t& rhs)
@@ -96,11 +96,11 @@ operator-(const int64x64_t& lhs, const int64x64_t& rhs)
 }
 
 /**
- * \ingroup highprec
+ * @ingroup highprec
  * Multiplication operator.
- * \param [in] lhs Left hand argument
- * \param [in] rhs Right hand argument
- * \return The result of the operator.
+ * @param [in] lhs Left hand argument
+ * @param [in] rhs Right hand argument
+ * @return The result of the operator.
  */
 inline int64x64_t
 operator*(const int64x64_t& lhs, const int64x64_t& rhs)
@@ -111,11 +111,11 @@ operator*(const int64x64_t& lhs, const int64x64_t& rhs)
 }
 
 /**
- * \ingroup highprec
+ * @ingroup highprec
  * Division operator.
- * \param [in] lhs Left hand argument
- * \param [in] rhs Right hand argument
- * \return The result of the operator.
+ * @param [in] lhs Left hand argument
+ * @param [in] rhs Right hand argument
+ * @return The result of the operator.
  */
 inline int64x64_t
 operator/(const int64x64_t& lhs, const int64x64_t& rhs)
@@ -126,11 +126,11 @@ operator/(const int64x64_t& lhs, const int64x64_t& rhs)
 }
 
 /**
- * \ingroup highprec
+ * @ingroup highprec
  * Inequality operator
- * \param [in] lhs Left hand argument
- * \param [in] rhs Right hand argument
- * \return The result of the operator.
+ * @param [in] lhs Left hand argument
+ * @param [in] rhs Right hand argument
+ * @return The result of the operator.
  */
 inline bool
 operator!=(const int64x64_t& lhs, const int64x64_t& rhs)
@@ -139,11 +139,11 @@ operator!=(const int64x64_t& lhs, const int64x64_t& rhs)
 }
 
 /**
- * \ingroup highprec
+ * @ingroup highprec
  * Less or equal operator.
- * \param [in] lhs Left hand argument
- * \param [in] rhs Right hand argument
- * \return The result of the operator.
+ * @param [in] lhs Left hand argument
+ * @param [in] rhs Right hand argument
+ * @return The result of the operator.
  */
 inline bool
 operator<=(const int64x64_t& lhs, const int64x64_t& rhs)
@@ -152,11 +152,11 @@ operator<=(const int64x64_t& lhs, const int64x64_t& rhs)
 }
 
 /**
- * \ingroup highprec
+ * @ingroup highprec
  * Greater or equal operator.
- * \param [in] lhs Left hand argument
- * \param [in] rhs Right hand argument
- * \return The result of the operator.
+ * @param [in] lhs Left hand argument
+ * @param [in] rhs Right hand argument
+ * @return The result of the operator.
  */
 inline bool
 operator>=(const int64x64_t& lhs, const int64x64_t& rhs)
@@ -165,7 +165,7 @@ operator>=(const int64x64_t& lhs, const int64x64_t& rhs)
 }
 
 /**
- * \ingroup highprec
+ * @ingroup highprec
  * Output streamer for int64x64_t.
  *
  * Values are printed with the following format flags
@@ -178,26 +178,26 @@ operator>=(const int64x64_t& lhs, const int64x64_t& rhs)
  * all digits of the fractional part are printed, up to the
  * representation limit of 20 digits; trailing zeros are omitted.
  *
- * \param [in,out] os The output stream.
- * \param [in] value The numerical value to print.
- * \returns The stream.
+ * @param [in,out] os The output stream.
+ * @param [in] value The numerical value to print.
+ * @returns The stream.
  */
 std::ostream& operator<<(std::ostream& os, const int64x64_t& value);
 /**
- * \ingroup highprec
+ * @ingroup highprec
  * Input streamer for int64x64_t.
  *
- * \param [in,out] is The input stream.
- * \param [out] value The numerical value to set.
- * \returns The stream.
+ * @param [in,out] is The input stream.
+ * @param [out] value The numerical value to set.
+ * @returns The stream.
  */
 std::istream& operator>>(std::istream& is, int64x64_t& value);
 
 /**
- * \ingroup highprec
+ * @ingroup highprec
  * Absolute value.
- * \param [in] value The value to operate on.
- * \return The absolute value of \pname{value}.
+ * @param [in] value The value to operate on.
+ * @return The absolute value of \pname{value}.
  */
 inline int64x64_t
 Abs(const int64x64_t& value)
@@ -206,12 +206,12 @@ Abs(const int64x64_t& value)
 }
 
 /**
- * \ingroup highprec
+ * @ingroup highprec
  * Minimum.
  *
- * \param [in] a The first value.
- * \param [in] b The second value.
- * \return The smaller of the arguments.
+ * @param [in] a The first value.
+ * @param [in] b The second value.
+ * @return The smaller of the arguments.
  */
 inline int64x64_t
 Min(const int64x64_t& a, const int64x64_t& b)
@@ -220,12 +220,12 @@ Min(const int64x64_t& a, const int64x64_t& b)
 }
 
 /**
- * \ingroup highprec
+ * @ingroup highprec
  * Maximum.
  *
- * \param [in] a The first value.
- * \param [in] b The second value.
- * \return The larger of the arguments.
+ * @param [in] a The first value.
+ * @param [in] b The second value.
+ * @return The larger of the arguments.
  */
 inline int64x64_t
 Max(const int64x64_t& a, const int64x64_t& b)

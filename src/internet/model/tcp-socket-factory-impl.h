@@ -18,10 +18,10 @@ namespace ns3
 class TcpL4Protocol;
 
 /**
- * \ingroup socket
- * \ingroup tcp
+ * @ingroup socket
+ * @ingroup tcp
  *
- * \brief socket factory implementation for native ns-3 TCP
+ * @brief socket factory implementation for native ns-3 TCP
  *
  *
  * This class serves to create sockets of the TcpSocketBase type.
@@ -33,8 +33,8 @@ class TcpSocketFactoryImpl : public TcpSocketFactory
     ~TcpSocketFactoryImpl() override;
 
     /**
-     * \brief Set the associated TCP L4 protocol.
-     * \param tcp the TCP L4 protocol
+     * @brief Set the associated TCP L4 protocol.
+     * @param tcp the TCP L4 protocol
      */
     void SetTcp(Ptr<TcpL4Protocol> tcp);
 

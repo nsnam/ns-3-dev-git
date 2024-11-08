@@ -25,10 +25,10 @@ namespace ns3
 {
 
 /**
- * \ingroup buildings
- * \ingroup mobility
+ * @ingroup buildings
+ * @ingroup mobility
  *
- * \brief 2D random walk mobility model which avoids buildings.
+ * @brief 2D random walk mobility model which avoids buildings.
  *
  * This class reuses most of the code of RandomWalk2dMobilityModel,
  * but adds the awareness of buildings objects which are avoided
@@ -50,7 +50,7 @@ class RandomWalk2dOutdoorMobilityModel : public MobilityModel
   public:
     /**
      * Register this type with the TypeId system.
-     * \return the object TypeId
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -63,20 +63,20 @@ class RandomWalk2dOutdoorMobilityModel : public MobilityModel
 
   private:
     /**
-     * \brief Performs the rebound of the node if it reaches a boundary
-     * \param timeLeft The remaining time of the walk
+     * @brief Performs the rebound of the node if it reaches a boundary
+     * @param timeLeft The remaining time of the walk
      */
     void Rebound(Time timeLeft);
     /**
-     * \brief Avoid a building
-     * \param delayLeft The remaining time of the walk
-     * \param intersectPosition The position at which the building is intersected
+     * @brief Avoid a building
+     * @param delayLeft The remaining time of the walk
+     * @param intersectPosition The position at which the building is intersected
      */
     void AvoidBuilding(Time delayLeft, Vector intersectPosition);
     /**
      * Walk according to position and velocity, until distance is reached,
      * time is reached, or intersection with the bounding box, or building
-     * \param delayLeft The remaining time of the walk
+     * @param delayLeft The remaining time of the walk
      */
     void DoWalk(Time delayLeft);
     /**
@@ -87,9 +87,9 @@ class RandomWalk2dOutdoorMobilityModel : public MobilityModel
      * Check if there is a building between two positions (or if the nextPosition is inside a
      * building). The code is taken from MmWave3gppBuildingsPropagationLossModel from the NYU/UNIPD
      * ns-3 mmWave module
-     * \param currentPosition The current position of the node
-     * \param nextPosition The position to check
-     * \return a pair with a boolean (true if the line between the two position does not intersect
+     * @param currentPosition The current position of the node
+     * @param nextPosition The position to check
+     * @return a pair with a boolean (true if the line between the two position does not intersect
      * building), and a pointer which is 0 if the boolean is true, or it points to the building
      * which is intersected
      */
@@ -98,10 +98,10 @@ class RandomWalk2dOutdoorMobilityModel : public MobilityModel
     /**
      * Compute the intersecting point of the box represented by boundaries and the line between
      * current and next. Notice that we only consider a 2d plane.
-     * \param current The current position
-     * \param next The next position
-     * \param boundaries The boundaries of the building we will intersect
-     * \return a vector with the position of the intersection
+     * @param current The current position
+     * @param next The next position
+     * @param boundaries The boundaries of the building we will intersect
+     * @return a vector with the position of the intersection
      */
     Vector CalculateIntersectionFromOutside(const Vector& current,
                                             const Vector& next,

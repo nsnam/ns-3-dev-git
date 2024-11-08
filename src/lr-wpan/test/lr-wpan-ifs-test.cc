@@ -27,10 +27,10 @@ using namespace ns3::lrwpan;
 NS_LOG_COMPONENT_DEFINE("lr-wpan-ifs-test");
 
 /**
- * \ingroup lr-wpan-test
- * \ingroup tests
+ * @ingroup lr-wpan-test
+ * @ingroup tests
  *
- * \brief LrWpan Dataframe transmission with Interframe Space
+ * @brief LrWpan Dataframe transmission with Interframe Space
  */
 class LrWpanDataIfsTestCase : public TestCase
 {
@@ -40,50 +40,50 @@ class LrWpanDataIfsTestCase : public TestCase
 
   private:
     /**
-     * \brief Function called when DataConfirm is hit.
-     * \param testcase pointer to the testcase
-     * \param dev originating NetDevice
-     * \param params the MCPS params
+     * @brief Function called when DataConfirm is hit.
+     * @param testcase pointer to the testcase
+     * @param dev originating NetDevice
+     * @param params the MCPS params
      */
     static void DataConfirm(LrWpanDataIfsTestCase* testcase,
                             Ptr<LrWpanNetDevice> dev,
                             McpsDataConfirmParams params);
 
     /**
-     * \brief Function called when DataReceived is hit.
-     * \param testcase pointer to the testcase
-     * \param dev originating NetDevice
-     * \param p packet
+     * @brief Function called when DataReceived is hit.
+     * @param testcase pointer to the testcase
+     * @param dev originating NetDevice
+     * @param p packet
      */
     static void DataReceivedDev0(LrWpanDataIfsTestCase* testcase,
                                  Ptr<LrWpanNetDevice> dev,
                                  Ptr<const Packet> p);
 
     /**
-     * \brief Function called when PhyDataRxStart is hit.
-     * \param testcase pointer to the testcase
-     * \param dev originating NetDevice
-     * \param p packet
+     * @brief Function called when PhyDataRxStart is hit.
+     * @param testcase pointer to the testcase
+     * @param dev originating NetDevice
+     * @param p packet
      */
     static void PhyDataRxStart(LrWpanDataIfsTestCase* testcase,
                                Ptr<LrWpanNetDevice> dev,
                                Ptr<const Packet> p);
 
     /**
-     * \brief Function called when DataConfirm is hit.
-     * \param testcase pointer to the testcase
-     * \param dev originating NetDevice
-     * \param p packet
+     * @brief Function called when DataConfirm is hit.
+     * @param testcase pointer to the testcase
+     * @param dev originating NetDevice
+     * @param p packet
      */
     static void DataReceivedDev1(LrWpanDataIfsTestCase* testcase,
                                  Ptr<LrWpanNetDevice> dev,
                                  Ptr<const Packet>);
 
     /**
-     * \brief Function called when the IFS ends.
-     * \param testcase pointer to the testcase
-     * \param dev originating NetDevice
-     * \param IfsTime the IFS time
+     * @brief Function called when the IFS ends.
+     * @param testcase pointer to the testcase
+     * @param dev originating NetDevice
+     * @param IfsTime the IFS time
      */
     static void IfsEnd(LrWpanDataIfsTestCase* testcase, Ptr<LrWpanNetDevice> dev, Time IfsTime);
 
@@ -395,10 +395,10 @@ LrWpanDataIfsTestCase::DoRun()
 }
 
 /**
- * \ingroup lr-wpan-test
- * \ingroup tests
+ * @ingroup lr-wpan-test
+ * @ingroup tests
  *
- * \brief LrWpan IFS TestSuite
+ * @brief LrWpan IFS TestSuite
  */
 
 class LrWpanIfsTestSuite : public TestSuite

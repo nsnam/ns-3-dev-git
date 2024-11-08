@@ -21,8 +21,8 @@ namespace ns3
 class WifiPhyOperatingChannel;
 
 /**
- * \brief The Reduced Neighbor Report element
- * \ingroup wifi
+ * @brief The Reduced Neighbor Report element
+ * @ingroup wifi
  *
  * This class knows how to serialise and deserialise the Reduced Neighbor Report element.
  */
@@ -94,7 +94,7 @@ class ReducedNeighborReport : public WifiInformationElement
     /**
      * Get the number of Neighbor AP Information fields
      *
-     * \return the number of Neighbor AP Information fields
+     * @return the number of Neighbor AP Information fields
      */
     std::size_t GetNNbrApInfoFields() const;
     /**
@@ -106,16 +106,16 @@ class ReducedNeighborReport : public WifiInformationElement
      * Set the Operating Class and the Channel Number fields of the given
      * Neighbor AP Information field based on the given operating channel.
      *
-     * \param nbrApInfoId identifier of the given Neighbor AP Information field
-     * \param channel the PHY operating channel
+     * @param nbrApInfoId identifier of the given Neighbor AP Information field
+     * @param channel the PHY operating channel
      */
     void SetOperatingChannel(std::size_t nbrApInfoId, const WifiPhyOperatingChannel& channel);
     /**
      * Get the operating channel coded into the Operating Class and the Channel Number
      * fields of the given Neighbor AP Information field.
      *
-     * \param nbrApInfoId identifier of the given Neighbor AP Information field
-     * \return the PHY operating channel
+     * @param nbrApInfoId identifier of the given Neighbor AP Information field
+     * @return the PHY operating channel
      */
     WifiPhyOperatingChannel GetOperatingChannel(std::size_t nbrApInfoId) const;
 
@@ -123,15 +123,15 @@ class ReducedNeighborReport : public WifiInformationElement
      * Get the number of TBTT Information fields included in the TBTT Information Set
      * field of the given Neighbor AP Information field
      *
-     * \param nbrApInfoId identifier of the given Neighbor AP Information field
-     * \return the number of TBTT Information fields
+     * @param nbrApInfoId identifier of the given Neighbor AP Information field
+     * @return the number of TBTT Information fields
      */
     std::size_t GetNTbttInformationFields(std::size_t nbrApInfoId) const;
     /**
      * Add a TBTT Information fields to the TBTT Information Set field
      * of the given Neighbor AP Information field
      *
-     * \param nbrApInfoId identifier of the given Neighbor AP Information field
+     * @param nbrApInfoId identifier of the given Neighbor AP Information field
      */
     void AddTbttInformationField(std::size_t nbrApInfoId);
 
@@ -139,26 +139,26 @@ class ReducedNeighborReport : public WifiInformationElement
      * Set the BSSID field of the <i>i</i>-th TBTT Information field of the given
      * Neighbor AP Information field
      *
-     * \param nbrApInfoId identifier of the given Neighbor AP Information field
-     * \param index the index of the given TBTT Information field
-     * \param bssid the BSSID value
+     * @param nbrApInfoId identifier of the given Neighbor AP Information field
+     * @param index the index of the given TBTT Information field
+     * @param bssid the BSSID value
      */
     void SetBssid(std::size_t nbrApInfoId, std::size_t index, Mac48Address bssid);
     /**
      * Return true if the BSSID field is present in all the TBTT Information fields
      * of the given Neighbor AP Information field.
      *
-     * \param nbrApInfoId identifier of the given Neighbor AP Information field
-     * \return true if the BSSID field is present
+     * @param nbrApInfoId identifier of the given Neighbor AP Information field
+     * @return true if the BSSID field is present
      */
     bool HasBssid(std::size_t nbrApInfoId) const;
     /**
      * Get the BSSID field (must be present) in the <i>i</i>-th TBTT Information field
      * of the given Neighbor AP Information field.
      *
-     * \param nbrApInfoId identifier of the given Neighbor AP Information field
-     * \param index the index of the given TBTT Information field
-     * \return the BSSID field
+     * @param nbrApInfoId identifier of the given Neighbor AP Information field
+     * @param index the index of the given TBTT Information field
+     * @return the BSSID field
      */
     Mac48Address GetBssid(std::size_t nbrApInfoId, std::size_t index) const;
 
@@ -166,26 +166,26 @@ class ReducedNeighborReport : public WifiInformationElement
      * Set the Short SSID field of the <i>i</i>-th TBTT Information field of the given
      * Neighbor AP Information field
      *
-     * \param nbrApInfoId identifier of the given Neighbor AP Information field
-     * \param index the index of the given TBTT Information field
-     * \param shortSsid the short SSID value
+     * @param nbrApInfoId identifier of the given Neighbor AP Information field
+     * @param index the index of the given TBTT Information field
+     * @param shortSsid the short SSID value
      */
     void SetShortSsid(std::size_t nbrApInfoId, std::size_t index, uint32_t shortSsid);
     /**
      * Return true if the Short SSID field is present in all the TBTT Information fields
      * of the given Neighbor AP Information field.
      *
-     * \param nbrApInfoId identifier of the given Neighbor AP Information field
-     * \return true if the Short SSID field is present
+     * @param nbrApInfoId identifier of the given Neighbor AP Information field
+     * @return true if the Short SSID field is present
      */
     bool HasShortSsid(std::size_t nbrApInfoId) const;
     /**
      * Get the Short SSID field (must be present) in the <i>i</i>-th TBTT Information field
      * of the given Neighbor AP Information field.
      *
-     * \param nbrApInfoId identifier of the given Neighbor AP Information field
-     * \param index the index of the given TBTT Information field
-     * \return the Short SSID field
+     * @param nbrApInfoId identifier of the given Neighbor AP Information field
+     * @param index the index of the given TBTT Information field
+     * @return the Short SSID field
      */
     uint32_t GetShortSsid(std::size_t nbrApInfoId, std::size_t index) const;
 
@@ -193,26 +193,26 @@ class ReducedNeighborReport : public WifiInformationElement
      * Set the BSS Parameters field of the <i>i</i>-th TBTT Information field of the given
      * Neighbor AP Information field
      *
-     * \param nbrApInfoId identifier of the given Neighbor AP Information field
-     * \param index the index of the given TBTT Information field
-     * \param bssParameters the BSS Parameters value
+     * @param nbrApInfoId identifier of the given Neighbor AP Information field
+     * @param index the index of the given TBTT Information field
+     * @param bssParameters the BSS Parameters value
      */
     void SetBssParameters(std::size_t nbrApInfoId, std::size_t index, uint8_t bssParameters);
     /**
      * Return true if the BSS Parameters field is present in all the TBTT Information fields
      * of the given Neighbor AP Information field.
      *
-     * \param nbrApInfoId identifier of the given Neighbor AP Information field
-     * \return true if the BSS Parameters field is present
+     * @param nbrApInfoId identifier of the given Neighbor AP Information field
+     * @return true if the BSS Parameters field is present
      */
     bool HasBssParameters(std::size_t nbrApInfoId) const;
     /**
      * Get the BSS Parameters field (must be present) in the <i>i</i>-th TBTT Information field
      * of the given Neighbor AP Information field.
      *
-     * \param nbrApInfoId identifier of the given Neighbor AP Information field
-     * \param index the index of the given TBTT Information field
-     * \return the BSS Parameters field
+     * @param nbrApInfoId identifier of the given Neighbor AP Information field
+     * @param index the index of the given TBTT Information field
+     * @return the BSS Parameters field
      */
     uint8_t GetBssParameters(std::size_t nbrApInfoId, std::size_t index) const;
 
@@ -220,26 +220,26 @@ class ReducedNeighborReport : public WifiInformationElement
      * Set the 20 MHz PSD field of the <i>i</i>-th TBTT Information field of the given
      * Neighbor AP Information field
      *
-     * \param nbrApInfoId identifier of the given Neighbor AP Information field
-     * \param index the index of the given TBTT Information field
-     * \param psd20MHz the 20 MHz PSD value
+     * @param nbrApInfoId identifier of the given Neighbor AP Information field
+     * @param index the index of the given TBTT Information field
+     * @param psd20MHz the 20 MHz PSD value
      */
     void SetPsd20MHz(std::size_t nbrApInfoId, std::size_t index, uint8_t psd20MHz);
     /**
      * Return true if the 20 MHz PSD field is present in all the TBTT Information fields
      * of the given Neighbor AP Information field.
      *
-     * \param nbrApInfoId identifier of the given Neighbor AP Information field
-     * \return true if the 20 MHz PSD field is present
+     * @param nbrApInfoId identifier of the given Neighbor AP Information field
+     * @return true if the 20 MHz PSD field is present
      */
     bool HasPsd20MHz(std::size_t nbrApInfoId) const;
     /**
      * Get the 20 MHz PSD field (must be present) in the <i>i</i>-th TBTT Information field
      * of the given Neighbor AP Information field.
      *
-     * \param nbrApInfoId identifier of the given Neighbor AP Information field
-     * \param index the index of the given TBTT Information field
-     * \return the 20 MHz PSD field
+     * @param nbrApInfoId identifier of the given Neighbor AP Information field
+     * @param index the index of the given TBTT Information field
+     * @return the 20 MHz PSD field
      */
     uint8_t GetPsd20MHz(std::size_t nbrApInfoId, std::size_t index) const;
 
@@ -247,11 +247,11 @@ class ReducedNeighborReport : public WifiInformationElement
      * Set the MLD Parameters subfield of the <i>i</i>-th TBTT Information field of the given
      * Neighbor AP Information field
      *
-     * \param nbrApInfoId identifier of the given Neighbor AP Information field
-     * \param index the index of the given TBTT Information field
-     * \param mldId the MLD ID value
-     * \param linkId the Link ID value
-     * \param changeSequence the Change Sequence value
+     * @param nbrApInfoId identifier of the given Neighbor AP Information field
+     * @param index the index of the given TBTT Information field
+     * @param mldId the MLD ID value
+     * @param linkId the Link ID value
+     * @param changeSequence the Change Sequence value
      */
     void SetMldParameters(std::size_t nbrApInfoId,
                           std::size_t index,
@@ -262,26 +262,26 @@ class ReducedNeighborReport : public WifiInformationElement
      * Return true if the MLD Parameters subfield is present in all the TBTT Information fields
      * of the given Neighbor AP Information field.
      *
-     * \param nbrApInfoId identifier of the given Neighbor AP Information field
-     * \return true if the MLD Parameters subfield is present
+     * @param nbrApInfoId identifier of the given Neighbor AP Information field
+     * @return true if the MLD Parameters subfield is present
      */
     bool HasMldParameters(std::size_t nbrApInfoId) const;
     /**
      * Get the MLD ID value in the MLD Parameters subfield (must be present) in the
      * <i>i</i>-th TBTT Information field of the given Neighbor AP Information field.
      *
-     * \param nbrApInfoId identifier of the given Neighbor AP Information field
-     * \param index the index of the given TBTT Information field
-     * \return the MLD ID value
+     * @param nbrApInfoId identifier of the given Neighbor AP Information field
+     * @param index the index of the given TBTT Information field
+     * @return the MLD ID value
      */
     uint8_t GetMldId(std::size_t nbrApInfoId, std::size_t index) const;
     /**
      * Get the Link ID value in the MLD Parameters subfield (must be present) in the
      * <i>i</i>-th TBTT Information field of the given Neighbor AP Information field.
      *
-     * \param nbrApInfoId identifier of the given Neighbor AP Information field
-     * \param index the index of the given TBTT Information field
-     * \return the Link ID value
+     * @param nbrApInfoId identifier of the given Neighbor AP Information field
+     * @param index the index of the given TBTT Information field
+     * @return the Link ID value
      */
     uint8_t GetLinkId(std::size_t nbrApInfoId, std::size_t index) const;
 
@@ -295,14 +295,14 @@ class ReducedNeighborReport : public WifiInformationElement
      * we can set the TBTT Information Count field based on the number of TBTT Information
      * fields included in the given Neighbor AP Information field.
      *
-     * \param nbrApInfoId identifier of the given Neighbor AP Information field
+     * @param nbrApInfoId identifier of the given Neighbor AP Information field
      */
     void WriteTbttInformationCount(std::size_t nbrApInfoId) const;
     /**
      * Get the TBTT Information Count field of the given Neighbor AP Information field.
      *
-     * \param nbrApInfoId identifier of the given Neighbor AP Information field
-     * \return the TBTT Information Count
+     * @param nbrApInfoId identifier of the given Neighbor AP Information field
+     * @return the TBTT Information Count
      */
     uint8_t ReadTbttInformationCount(std::size_t nbrApInfoId) const;
 
@@ -315,14 +315,14 @@ class ReducedNeighborReport : public WifiInformationElement
      * we can set the TBTT Information Length field based on the TBTT Information
      * field contents.
      *
-     * \param nbrApInfoId identifier of the given Neighbor AP Information field
+     * @param nbrApInfoId identifier of the given Neighbor AP Information field
      */
     void WriteTbttInformationLength(std::size_t nbrApInfoId) const;
     /**
      * Use the TBTT Information Length field of the given Neighbor AP Information field
      * to set the xxxPresent flags of the NeighborApInformation struct
      *
-     * \param nbrApInfoId identifier of the given Neighbor AP Information field
+     * @param nbrApInfoId identifier of the given Neighbor AP Information field
      */
     void ReadTbttInformationLength(std::size_t nbrApInfoId);
 

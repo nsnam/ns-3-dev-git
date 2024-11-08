@@ -18,7 +18,7 @@ namespace ns3
 {
 
 /**
- * \brief Interface for all operations that involve a Rate monitoring for TCP.
+ * @brief Interface for all operations that involve a Rate monitoring for TCP.
  *
  * The interface is meant to take information to generate rate information
  * valid for congestion avoidance algorithm such as BBR.
@@ -33,24 +33,24 @@ class TcpRateOps : public Object
 
     /**
      * Get the type ID.
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     /**
-     * \brief Put the rate information inside the sent skb
+     * @brief Put the rate information inside the sent skb
      *
      * Snapshot the current delivery information in the skb, to generate
      * a rate sample later when the skb is (s)acked in SkbDelivered ().
      *
-     * \param skb The SKB sent
-     * \param isStartOfTransmission true if this is a start of transmission
+     * @param skb The SKB sent
+     * @param isStartOfTransmission true if this is a start of transmission
      * (i.e., in_flight == 0)
      */
     virtual void SkbSent(TcpTxItem* skb, bool isStartOfTransmission) = 0;
 
     /**
-     * \brief Update the Rate information after an item is received
+     * @brief Update the Rate information after an item is received
      *
      * When an skb is sacked or acked, we fill in the rate sample with the (prior)
      * delivery information when the skb was last transmitted.
@@ -59,22 +59,22 @@ class TcpRateOps : public Object
      * called multiple times. We favor the information from the most recently
      * sent skb, i.e., the skb with the highest prior_delivered count.
      *
-     * \param skb The SKB delivered ((s)ACKed)
+     * @param skb The SKB delivered ((s)ACKed)
      */
     virtual void SkbDelivered(TcpTxItem* skb) = 0;
 
     /**
-     * \brief If a gap is detected between sends, it means we are app-limited.
+     * @brief If a gap is detected between sends, it means we are app-limited.
      * TODO What the Linux kernel is setting in tp->app_limited?
      * https://elixir.bootlin.com/linux/latest/source/net/ipv4/tcp_rate.c#L177
      *
-     * \param cWnd Congestion Window
-     * \param in_flight In Flight size (in bytes)
-     * \param segmentSize Segment size
-     * \param tailSeq Tail Sequence
-     * \param nextTx NextTx
-     * \param lostOut Number of lost bytes
-     * \param retransOut Number of retransmitted bytes
+     * @param cWnd Congestion Window
+     * @param in_flight In Flight size (in bytes)
+     * @param segmentSize Segment size
+     * @param tailSeq Tail Sequence
+     * @param nextTx NextTx
+     * @param lostOut Number of lost bytes
+     * @param retransOut Number of retransmitted bytes
      */
     virtual void CalculateAppLimited(uint32_t cWnd,
                                      uint32_t in_flight,
@@ -86,21 +86,21 @@ class TcpRateOps : public Object
 
     /**
      *
-     * \brief Generate a TcpRateSample to feed a congestion avoidance algorithm.
+     * @brief Generate a TcpRateSample to feed a congestion avoidance algorithm.
      *
      * This function will be called after an ACK (or a SACK) is received. The
      * (S)ACK carries some implicit information, such as how many segments have been
      * lost or delivered. These values will be this function input.
      *
-     * \param delivered number of delivered segments (e.g., receiving a cumulative
+     * @param delivered number of delivered segments (e.g., receiving a cumulative
      * ACK means having more than 1 segment delivered) relative to the most recent
      * (S)ACK received
-     * \param lost number of segments that we detected as lost after the reception
+     * @param lost number of segments that we detected as lost after the reception
      * of the most recent (S)ACK
-     * \param priorInFlight number of segments previously considered in flight
-     * \param is_sack_reneg Is SACK reneged?
-     * \param minRtt Minimum RTT so far
-     * \return The TcpRateSample that will be used for CA
+     * @param priorInFlight number of segments previously considered in flight
+     * @param is_sack_reneg Is SACK reneged?
+     * @param minRtt Minimum RTT so far
+     * @return The TcpRateSample that will be used for CA
      */
     virtual const TcpRateSample& GenerateSample(uint32_t delivered,
                                                 uint32_t lost,
@@ -109,13 +109,13 @@ class TcpRateOps : public Object
                                                 const Time& minRtt) = 0;
 
     /**
-     * \return The information about the rate connection
+     * @return The information about the rate connection
      *
      */
     virtual const TcpRateConnection& GetConnectionRate() = 0;
 
     /**
-     * \brief Rate Sample structure
+     * @brief Rate Sample structure
      *
      * A rate sample measures the number of (original/retransmitted) data
      * packets delivered "delivered" over an interval of time "interval_us".
@@ -142,8 +142,8 @@ class TcpRateOps : public Object
         uint32_t m_ackedSacked{0}; //!< The amount of data acked and sacked in the last received ack
 
         /**
-         * \brief Is the sample valid?
-         * \return true if the sample is valid, false otherwise.
+         * @brief Is the sample valid?
+         * @return true if the sample is valid, false otherwise.
          */
         bool IsValid() const
         {
@@ -152,7 +152,7 @@ class TcpRateOps : public Object
     };
 
     /**
-     * \brief Information about the connection rate
+     * @brief Information about the connection rate
      *
      * In this struct, the values are for the entire connection, and not just
      * for an interval of time
@@ -174,7 +174,7 @@ class TcpRateOps : public Object
 };
 
 /**
- * \brief Linux management and generation of Rate information for TCP
+ * @brief Linux management and generation of Rate information for TCP
  *
  * This class is inspired by what Linux is performing in tcp_rate.c
  */
@@ -183,8 +183,8 @@ class TcpRateLinux : public TcpRateOps
   public:
     /**
      * Get the type ID.
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -217,7 +217,7 @@ class TcpRateLinux : public TcpRateOps
      *
      * The callback will be fired each time the rate is updated.
      *
-     * \param [in] rate The rate information.
+     * @param [in] rate The rate information.
      */
     typedef void (*TcpRateUpdated)(const TcpRateConnection& rate);
 
@@ -226,7 +226,7 @@ class TcpRateLinux : public TcpRateOps
      *
      * The callback will be fired each time the rate sample is updated.
      *
-     * \param [in] sample The rate sample that will be passed to congestion control
+     * @param [in] sample The rate sample that will be passed to congestion control
      * algorithms.
      */
     typedef void (*TcpRateSampleUpdated)(const TcpRateSample& sample);
@@ -241,34 +241,34 @@ class TcpRateLinux : public TcpRateOps
 };
 
 /**
- * \brief Output operator.
- * \param os The output stream.
- * \param sample the TcpRateLinux::TcpRateSample to print.
- * \returns The output stream.
+ * @brief Output operator.
+ * @param os The output stream.
+ * @param sample the TcpRateLinux::TcpRateSample to print.
+ * @returns The output stream.
  */
 std::ostream& operator<<(std::ostream& os, const TcpRateOps::TcpRateSample& sample);
 
 /**
- * \brief Output operator.
- * \param os The output stream.
- * \param rate the TcpRateLinux::TcpRateConnection to print.
- * \returns The output stream.
+ * @brief Output operator.
+ * @param os The output stream.
+ * @param rate the TcpRateLinux::TcpRateConnection to print.
+ * @returns The output stream.
  */
 std::ostream& operator<<(std::ostream& os, const TcpRateOps::TcpRateConnection& rate);
 
 /**
  * Comparison operator
- * \param lhs left operand
- * \param rhs right operand
- * \return true if the operands are equal
+ * @param lhs left operand
+ * @param rhs right operand
+ * @return true if the operands are equal
  */
 bool operator==(const TcpRateLinux::TcpRateSample& lhs, const TcpRateLinux::TcpRateSample& rhs);
 
 /**
  * Comparison operator
- * \param lhs left operand
- * \param rhs right operand
- * \return true if the operands are equal
+ * @param lhs left operand
+ * @param rhs right operand
+ * @return true if the operands are equal
  */
 bool operator==(const TcpRateLinux::TcpRateConnection& lhs,
                 const TcpRateLinux::TcpRateConnection& rhs);

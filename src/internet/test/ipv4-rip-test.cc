@@ -34,24 +34,24 @@
 using namespace ns3;
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief IPv4 RIP Test
+ * @brief IPv4 RIP Test
  */
 class Ipv4RipTest : public TestCase
 {
     Ptr<Packet> m_receivedPacket; //!< Received packet
 
     /**
-     * \brief Send data.
-     * \param socket The sending socket.
-     * \param to Destination address.
+     * @brief Send data.
+     * @param socket The sending socket.
+     * @param to Destination address.
      */
     void DoSendData(Ptr<Socket> socket, std::string to);
     /**
-     * \brief Send data.
-     * \param socket The sending socket.
-     * \param to Destination address.
+     * @brief Send data.
+     * @param socket The sending socket.
+     * @param to Destination address.
      */
     void SendData(Ptr<Socket> socket, std::string to);
 
@@ -60,8 +60,8 @@ class Ipv4RipTest : public TestCase
     Ipv4RipTest();
 
     /**
-     * \brief Receive data.
-     * \param socket The receiving socket.
+     * @brief Receive data.
+     * @param socket The receiving socket.
      */
     void ReceivePkt(Ptr<Socket> socket);
 };
@@ -263,24 +263,24 @@ Ipv4RipTest::DoRun()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief IPv4 RIP count to infinity Test
+ * @brief IPv4 RIP count to infinity Test
  */
 class Ipv4RipCountToInfinityTest : public TestCase
 {
     Ptr<Packet> m_receivedPacket; //!< Received packet
 
     /**
-     * \brief Send data.
-     * \param socket The sending socket.
-     * \param to Destination address.
+     * @brief Send data.
+     * @param socket The sending socket.
+     * @param to Destination address.
      */
     void DoSendData(Ptr<Socket> socket, std::string to);
     /**
-     * \brief Send data.
-     * \param socket The sending socket.
-     * \param to Destination address.
+     * @brief Send data.
+     * @param socket The sending socket.
+     * @param to Destination address.
      */
     void SendData(Ptr<Socket> socket, std::string to);
 
@@ -289,8 +289,8 @@ class Ipv4RipCountToInfinityTest : public TestCase
     Ipv4RipCountToInfinityTest();
 
     /**
-     * \brief Receive data.
-     * \param socket The receiving socket.
+     * @brief Receive data.
+     * @param socket The receiving socket.
      */
     void ReceivePkt(Ptr<Socket> socket);
 };
@@ -496,9 +496,9 @@ Ipv4RipCountToInfinityTest::DoRun()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief IPv4 RIP SplitHorizon strategy Test
+ * @brief IPv4 RIP SplitHorizon strategy Test
  */
 class Ipv4RipSplitHorizonStrategyTest : public TestCase
 {
@@ -509,14 +509,14 @@ class Ipv4RipSplitHorizonStrategyTest : public TestCase
     void DoRun() override;
 
     /**
-     * \brief Constructor.
-     * \param strategy The SplitHorizon strategy.
+     * @brief Constructor.
+     * @param strategy The SplitHorizon strategy.
      */
     Ipv4RipSplitHorizonStrategyTest(Rip::SplitHorizonType_e strategy);
 
     /**
-     * \brief Receive data.
-     * \param socket The receiving socket.
+     * @brief Receive data.
+     * @param socket The receiving socket.
      */
     void ReceivePktProbe(Ptr<Socket> socket);
 };
@@ -684,9 +684,9 @@ Ipv4RipSplitHorizonStrategyTest::DoRun()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief IPv4 RIP TestSuite
+ * @brief IPv4 RIP TestSuite
  */
 class Ipv4RipTestSuite : public TestSuite
 {

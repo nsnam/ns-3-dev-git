@@ -16,8 +16,8 @@ namespace ns3
 {
 
 /**
- * \brief HT configuration
- * \ingroup wifi
+ * @brief HT configuration
+ * @ingroup wifi
  *
  * This object stores HT configuration information, for use in modifying
  * AP or STA behavior and for constructing HT-related information elements.
@@ -30,24 +30,24 @@ class HtConfiguration : public Object
     ~HtConfiguration() override;
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
     /**
      * Enable or disable SGI support.
      *
-     * \param enable true if SGI is to be supported,
+     * @param enable true if SGI is to be supported,
      *               false otherwise
      */
     NS_DEPRECATED_3_44("Set the m_sgiSupported member variable instead")
     void SetShortGuardIntervalSupported(bool enable);
 
     /**
-     * \return whether the device supports SGI.
+     * @return whether the device supports SGI.
      *
-     * \return true if SGI is supported,
+     * @return true if SGI is supported,
      *         false otherwise.
      */
     NS_DEPRECATED_3_44("Get the m_sgiSupported member variable instead")
@@ -56,16 +56,16 @@ class HtConfiguration : public Object
     /**
      * Enable or disable LDPC support.
      *
-     * \param enable true if LDPC is to be supported,
+     * @param enable true if LDPC is to be supported,
      *               false otherwise
      */
     NS_DEPRECATED_3_44("Set the m_ldpcSupported member variable instead")
     void SetLdpcSupported(bool enable);
 
     /**
-     * \return whether the device supports LDPC.
+     * @return whether the device supports LDPC.
      *
-     * \return true if LDPC is supported,
+     * @return true if LDPC is supported,
      *         false otherwise.
      */
     NS_DEPRECATED_3_44("Get the m_ldpcSupported member variable instead")
@@ -74,14 +74,14 @@ class HtConfiguration : public Object
     /**
      * Enable or disable 40 MHz operation support.
      *
-     * \param enable true if both 20 MHz and 40 MHz operation is to be supported,
+     * @param enable true if both 20 MHz and 40 MHz operation is to be supported,
      *               false if only 20 MHz operation is to be supported
      */
     NS_DEPRECATED_3_44("Set the m_40MHzSupported member variable instead")
     void Set40MHzOperationSupported(bool enable);
 
     /**
-     * \return true if both 20 MHz and 40 MHz operation is supported, false if
+     * @return true if both 20 MHz and 40 MHz operation is supported, false if
      *         only 20 MHz operation is supported
      */
     NS_DEPRECATED_3_44("Get the m_40MHzSupported member variable instead")

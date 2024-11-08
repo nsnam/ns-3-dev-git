@@ -27,7 +27,7 @@ struct WifiProtection;
 struct WifiAcknowledgment;
 
 /**
- * \ingroup wifi
+ * @ingroup wifi
  *
  * This class stores the TX parameters (TX vector, protection mechanism,
  * acknowledgment mechanism, TX duration, ...) for a frame of different types
@@ -40,28 +40,28 @@ class WifiTxParameters
     /**
      * Copy constructor.
      *
-     * \param txParams the WifiTxParameters to copy
+     * @param txParams the WifiTxParameters to copy
      */
     WifiTxParameters(const WifiTxParameters& txParams);
 
     /**
      * Copy assignment operator.
-     * \param txParams the TX parameters to assign to this object
-     * \return the reference to this object
+     * @param txParams the TX parameters to assign to this object
+     * @return the reference to this object
      */
     WifiTxParameters& operator=(const WifiTxParameters& txParams);
 
     /**
      * Move constructor. Must define it manually because copy constructor is explicit.
-     * \param txParams the WifiTxParameters to copy
+     * @param txParams the WifiTxParameters to copy
      */
     WifiTxParameters(WifiTxParameters&& txParams) = default;
 
     /**
      * Move assignment operator. Must define it manually because copy assignment
      * operator is explicit.
-     * \param txParams the TX parameters to assign to this object
-     * \return the reference to this object
+     * @param txParams the TX parameters to assign to this object
+     * @return the reference to this object
      */
     WifiTxParameters& operator=(WifiTxParameters&& txParams) = default;
 
@@ -80,7 +80,7 @@ class WifiTxParameters
      * to the same receiver already exists in the frame, A-MPDU aggregation is considered.
      * Store information needed to "undo" the addition of the MPDU by calling UndoAddMpdu().
      *
-     * \param mpdu the MPDU being added
+     * @param mpdu the MPDU being added
      */
     void AddMpdu(Ptr<const WifiMpdu> mpdu);
 
@@ -93,8 +93,8 @@ class WifiTxParameters
      * Check if the last added MPDU is the first MPDU for the given receiver.
      * Call this method only after adding an MPDU for the given receiver.
      *
-     * \param receiver the MAC address of the given receiver
-     * \return whether the last added MPDU is the first MPDU for the given receiver
+     * @param receiver the MAC address of the given receiver
+     * @return whether the last added MPDU is the first MPDU for the given receiver
      */
     bool LastAddedIsFirstMpdu(Mac48Address receiver) const;
 
@@ -102,31 +102,31 @@ class WifiTxParameters
      * Record that an MSDU is being aggregated to the last MPDU added to the frame
      * that hase the same receiver.
      *
-     * \param msdu the MSDU being aggregated
+     * @param msdu the MSDU being aggregated
      */
     void AggregateMsdu(Ptr<const WifiMpdu> msdu);
 
     /**
      * Get the size in bytes of the frame in case the given MPDU is added.
      *
-     * \param mpdu the given MPDU
-     * \return the size in bytes of the frame in case the given MPDU is added
+     * @param mpdu the given MPDU
+     * @return the size in bytes of the frame in case the given MPDU is added
      */
     uint32_t GetSizeIfAddMpdu(Ptr<const WifiMpdu> mpdu) const;
 
     /**
      * Get the size in bytes of the frame in case the given MSDU is aggregated.
      *
-     * \param msdu the given MSDU
-     * \return size in bytes of the frame in case the given MSDU is aggregated
+     * @param msdu the given MSDU
+     * @return size in bytes of the frame in case the given MSDU is aggregated
      */
     uint32_t GetSizeIfAggregateMsdu(Ptr<const WifiMpdu> msdu) const;
 
     /**
      * Get the size in bytes of the (A-)MPDU addressed to the given receiver.
      *
-     * \param receiver the MAC address of the given receiver
-     * \return the size in bytes of the (A-)MPDU addressed to the given receiver
+     * @param receiver the MAC address of the given receiver
+     * @return the size in bytes of the (A-)MPDU addressed to the given receiver
      */
     uint32_t GetSize(Mac48Address receiver) const;
 
@@ -146,8 +146,8 @@ class WifiTxParameters
      * Get a pointer to the information about the PSDU addressed to the given
      * receiver, if present, and a null pointer otherwise.
      *
-     * \param receiver the MAC address of the receiver
-     * \return a pointer to an entry in the PSDU information map or a null pointer
+     * @param receiver the MAC address of the receiver
+     * @return a pointer to an entry in the PSDU information map or a null pointer
      */
     const PsduInfo* GetPsduInfo(Mac48Address receiver) const;
 
@@ -157,13 +157,13 @@ class WifiTxParameters
     /**
      * Get a const reference to the map containing information about PSDUs.
      *
-     * \return a const reference to the map containing information about PSDUs
+     * @return a const reference to the map containing information about PSDUs
      */
     const PsduInfoMap& GetPsduInfoMap() const;
 
     /**
-     * \brief Print the object contents.
-     * \param os output stream in which the data should be printed.
+     * @brief Print the object contents.
+     * @param os output stream in which the data should be printed.
      */
     void Print(std::ostream& os) const;
 
@@ -177,11 +177,11 @@ class WifiTxParameters
 };
 
 /**
- * \brief Stream insertion operator.
+ * @brief Stream insertion operator.
  *
- * \param os the output stream
- * \param txParams the TX parameters
- * \returns a reference to the stream
+ * @param os the output stream
+ * @param txParams the TX parameters
+ * @returns a reference to the stream
  */
 std::ostream& operator<<(std::ostream& os, const WifiTxParameters* txParams);
 

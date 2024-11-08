@@ -45,10 +45,10 @@
 using namespace ns3;
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief Ampdu Aggregation Test
+ * @brief Ampdu Aggregation Test
  */
 class AmpduAggregationTest : public TestCase
 {
@@ -70,8 +70,8 @@ class AmpduAggregationTest : public TestCase
     /**
      * Construct object with non-default test parameters
      *
-     * \param name the name of the test case
-     * \param params the test parameters
+     * @param name the name of the test case
+     * @param params the test parameters
      */
     AmpduAggregationTest(const std::string& name, const Params& params);
 
@@ -79,28 +79,28 @@ class AmpduAggregationTest : public TestCase
     /**
      * Establish a BlockAck agreement.
      *
-     * \param recipient the recipient MAC address
+     * @param recipient the recipient MAC address
      */
     void EstablishAgreement(const Mac48Address& recipient);
 
     /**
      * Enqueue the given number of packets addressed to the given station and of the given size.
      *
-     * \param count the number of packets
-     * \param size the size (bytes) of each packet
-     * \param dest the destination address
+     * @param count the number of packets
+     * @param size the size (bytes) of each packet
+     * @param dest the destination address
      */
     void EnqueuePkts(std::size_t count, uint32_t size, const Mac48Address& dest);
 
     /**
-     * \return the Best Effort QosTxop
+     * @return the Best Effort QosTxop
      */
     Ptr<QosTxop> GetBeQueue() const;
 
     /**
      * Dequeue a PSDU.
      *
-     * \param mpduList the MPDUs contained in the PSDU
+     * @param mpduList the MPDUs contained in the PSDU
      */
     void DequeueMpdus(const std::vector<Ptr<WifiMpdu>>& mpduList);
 
@@ -112,8 +112,8 @@ class AmpduAggregationTest : public TestCase
     /**
      * Fired when the MAC discards an MPDU.
      *
-     * \param reason the reason why the MPDU was discarded
-     * \param mpdu the discarded MPDU
+     * @param reason the reason why the MPDU was discarded
+     * @param mpdu the discarded MPDU
      */
     void MpduDiscarded(WifiMacDropReason reason, Ptr<const WifiMpdu> mpdu);
 
@@ -507,10 +507,10 @@ AmpduAggregationTest::DoTeardown()
 }
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief Two Level Aggregation Test
+ * @brief Two Level Aggregation Test
  */
 class TwoLevelAggregationTest : public AmpduAggregationTest
 {
@@ -727,10 +727,10 @@ TwoLevelAggregationTest::DoRun()
 }
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief 802.11ax aggregation test which permits 64 or 256 MPDUs in A-MPDU according to the
+ * @brief 802.11ax aggregation test which permits 64 or 256 MPDUs in A-MPDU according to the
  * negotiated buffer size.
  */
 class HeAggregationTest : public AmpduAggregationTest
@@ -739,7 +739,7 @@ class HeAggregationTest : public AmpduAggregationTest
     /**
      * Constructor.
      *
-     * \param bufferSize the size (in number of MPDUs) of the BlockAck buffer
+     * @param bufferSize the size (in number of MPDUs) of the BlockAck buffer
      */
     HeAggregationTest(uint16_t bufferSize);
 
@@ -793,10 +793,10 @@ HeAggregationTest::DoRun()
 }
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief 802.11be aggregation test which permits up to 1024 MPDUs in A-MPDU according to the
+ * @brief 802.11be aggregation test which permits up to 1024 MPDUs in A-MPDU according to the
  * negotiated buffer size.
  */
 class EhtAggregationTest : public AmpduAggregationTest
@@ -805,7 +805,7 @@ class EhtAggregationTest : public AmpduAggregationTest
     /**
      * Constructor.
      *
-     * \param bufferSize the size (in number of MPDUs) of the BlockAck buffer
+     * @param bufferSize the size (in number of MPDUs) of the BlockAck buffer
      */
     EhtAggregationTest(uint16_t bufferSize);
 
@@ -923,10 +923,10 @@ EhtAggregationTest::DoRun()
 }
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief Test for A-MSDU and A-MPDU aggregation
+ * @brief Test for A-MSDU and A-MPDU aggregation
  *
  * This test aims to check that the packets passed to the MAC layer (on the sender
  * side) are forwarded up to the upper layer (on the receiver side) when A-MSDU and
@@ -950,7 +950,7 @@ class PreservePacketsInAmpdus : public TestCase
     /**
      * Constructor.
      *
-     * \param notifyMacHdrRxEnd whether notification of MAC header reception end is enabled
+     * @param notifyMacHdrRxEnd whether notification of MAC header reception end is enabled
      */
     PreservePacketsInAmpdus(bool notifyMacHdrRxEnd);
     ~PreservePacketsInAmpdus() override;
@@ -969,22 +969,22 @@ class PreservePacketsInAmpdus : public TestCase
 
     /**
      * Callback invoked when an MSDU is passed to the MAC
-     * \param packet the MSDU to transmit
+     * @param packet the MSDU to transmit
      */
     void NotifyMacTransmit(Ptr<const Packet> packet);
     /**
      * Callback invoked when the sender MAC passes a PSDU(s) to the PHY
-     * \param psduMap the PSDU map
-     * \param txVector the TX vector
-     * \param txPowerW the transmit power in Watts
+     * @param psduMap the PSDU map
+     * @param txVector the TX vector
+     * @param txPowerW the transmit power in Watts
      */
     void NotifyPsduForwardedDown(WifiConstPsduMap psduMap, WifiTxVector txVector, double txPowerW);
     /**
      * Callback invoked when the reception of the MAC header of an MPDU is completed.
-     * \param mac the MAC to which the reception of the MAC header is notified
-     * \param macHdr the MAC header of the MPDU being received
-     * \param txVector the TXVECTOR used to transmit the PSDU
-     * \param psduDuration the remaining duration of the PSDU
+     * @param mac the MAC to which the reception of the MAC header is notified
+     * @param macHdr the MAC header of the MPDU being received
+     * @param txVector the TXVECTOR used to transmit the PSDU
+     * @param psduDuration the remaining duration of the PSDU
      */
     void NotifyMacHeaderEndRx(Ptr<WifiMac> mac,
                               const WifiMacHeader& macHdr,
@@ -992,7 +992,7 @@ class PreservePacketsInAmpdus : public TestCase
                               Time psduDuration);
     /**
      * Callback invoked when the receiver MAC forwards a packet up to the upper layer
-     * \param p the packet
+     * @param p the packet
      */
     void NotifyMacForwardUp(Ptr<const Packet> p);
 };
@@ -1224,10 +1224,10 @@ PreservePacketsInAmpdus::DoRun()
 }
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief Wifi Aggregation Test Suite
+ * @brief Wifi Aggregation Test Suite
  */
 class WifiAggregationTestSuite : public TestSuite
 {

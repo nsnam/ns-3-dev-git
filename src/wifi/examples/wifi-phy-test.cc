@@ -45,8 +45,8 @@ class PsrExperiment
 
     /**
      * Run function
-     * \param input the PSR experiment
-     * \returns the PSR experiment output
+     * @param input the PSR experiment
+     * @returns the PSR experiment output
      */
     PsrExperiment::Output Run(PsrExperiment::Input input);
 
@@ -55,10 +55,10 @@ class PsrExperiment
     void Send();
     /**
      * Send receive function
-     * \param psdu the PSDU
-     * \param rxSignalInfo the info on the received signal (\see RxSignalInfo)
-     * \param txVector the wifi transmit vector
-     * \param statusPerMpdu reception status per MPDU
+     * @param psdu the PSDU
+     * @param rxSignalInfo the info on the received signal (\see RxSignalInfo)
+     * @param txVector the wifi transmit vector
+     * @param statusPerMpdu reception status per MPDU
      */
     void Receive(Ptr<const WifiPsdu> psdu,
                  RxSignalInfo rxSignalInfo,
@@ -175,8 +175,8 @@ class CollisionExperiment
 
     /**
      * Run function
-     * \param input the collision experiment data
-     * \returns the experiment output
+     * @param input the collision experiment data
+     * @returns the experiment output
      */
     CollisionExperiment::Output Run(CollisionExperiment::Input input);
 
@@ -187,10 +187,10 @@ class CollisionExperiment
     void SendB() const;
     /**
      * Receive function
-     * \param psdu the PSDU
-     * \param rxSignalInfo the info on the received signal (\see RxSignalInfo)
-     * \param txVector the wifi transmit vector
-     * \param statusPerMpdu reception status per MPDU
+     * @param psdu the PSDU
+     * @param rxSignalInfo the info on the received signal (\see RxSignalInfo)
+     * @param txVector the wifi transmit vector
+     * @param statusPerMpdu reception status per MPDU
      */
     void Receive(Ptr<const WifiPsdu> psdu,
                  RxSignalInfo rxSignalInfo,

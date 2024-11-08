@@ -664,8 +664,8 @@ class WifiPhyRxTraceSink : public Object
 
     /**
      * Update the passed-in statistics object with statistics from the passed-in record.
-     * \param statistics The WifiPhyTraceStatistics object to modify
-     * \param record The WifiPpduRxRecord to examine
+     * @param statistics The WifiPhyTraceStatistics object to modify
+     * @param record The WifiPpduRxRecord to examine
      */
     void CountStatisticsForRecord(WifiPhyTraceStatistics& statistics,
                                   const WifiPpduRxRecord& record) const;

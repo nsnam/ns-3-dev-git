@@ -18,9 +18,9 @@ namespace ns3
 {
 
 /**
- * \ingroup traffic-control
+ * @ingroup traffic-control
  *
- * \brief Holds a vector of ns3::QueueDisc pointers.
+ * @brief Holds a vector of ns3::QueueDisc pointers.
  *
  * Typically ns-3 QueueDiscs are installed on net devices using a traffic control
  * helper. The helper Install method takes a NetDeviceContainer which holds
@@ -43,7 +43,7 @@ class QueueDiscContainer
     QueueDiscContainer();
 
     /**
-     * \param qDisc a queue disc to add to the container
+     * @param qDisc a queue disc to add to the container
      *
      * Create a QueueDiscContainer with exactly one queue disc that has previously
      * been instantiated
@@ -51,7 +51,7 @@ class QueueDiscContainer
     QueueDiscContainer(Ptr<QueueDisc> qDisc);
 
     /**
-     * \brief Get a const iterator which refers to the first QueueDisc in the
+     * @brief Get a const iterator which refers to the first QueueDisc in the
      * container.
      *
      * QueueDiscs can be retrieved from the container in two ways. First,
@@ -59,20 +59,20 @@ class QueueDiscContainer
      * This method is used in the iterator method and is typically used in a
      * for-loop to run through the QueueDiscs
      *
-     * \code
+     * @code
      *   QueueDiscContainer::ConstIterator i;
      *   for (i = container.Begin (); i != container.End (); ++i)
      *     {
      *       (*i)->method ();  // some QueueDisc method
      *     }
-     * \endcode
+     * @endcode
      *
-     * \returns a const iterator which refers to the first QueueDisc in the container.
+     * @returns a const iterator which refers to the first QueueDisc in the container.
      */
     ConstIterator Begin() const;
 
     /**
-     * \brief Get a const iterator which indicates past-the-last QueueDisc in the
+     * @brief Get a const iterator which indicates past-the-last QueueDisc in the
      * container.
      *
      * QueueDiscs can be retrieved from the container in two ways. First,
@@ -80,20 +80,20 @@ class QueueDiscContainer
      * This method is used in the iterator method and is typically used in a
      * for-loop to run through the QueueDiscs
      *
-     * \code
+     * @code
      *   QueueDiscContainer::ConstIterator i;
      *   for (i = container.Begin (); i != container.End (); ++i)
      *     {
      *       (*i)->method ();  // some QueueDisc method
      *     }
-     * \endcode
+     * @endcode
      *
-     * \returns a const iterator which indicates an ending condition for a loop.
+     * @returns a const iterator which indicates an ending condition for a loop.
      */
     ConstIterator End() const;
 
     /**
-     * \brief Get the number of Ptr<QueueDisc> stored in this container.
+     * @brief Get the number of Ptr<QueueDisc> stored in this container.
      *
      * QueueDiscs can be retrieved from the container in two ways. First,
      * directly by an index into the container, and second, using an iterator.
@@ -101,21 +101,21 @@ class QueueDiscContainer
      * define an ending condition in a for-loop that runs through the stored
      * QueueDiscs
      *
-     * \code
+     * @code
      *   uint32_t nQueueDiscs = container.GetN ();
      *   for (uint32_t i = 0 i < nQueueDiscs; ++i)
      *     {
      *       Ptr<QueueDisc> p = container.Get (i)
      *       i->method ();  // some QueueDisc method
      *     }
-     * \endcode
+     * @endcode
      *
-     * \returns the number of Ptr<QueueDisc> stored in this container.
+     * @returns the number of Ptr<QueueDisc> stored in this container.
      */
     std::size_t GetN() const;
 
     /**
-     * \brief Get the Ptr<QueueDisc> stored in this container at a given
+     * @brief Get the Ptr<QueueDisc> stored in this container at a given
      * index.
      *
      * QueueDiscs can be retrieved from the container in two ways. First,
@@ -123,32 +123,32 @@ class QueueDiscContainer
      * This method is used in the direct method and is used to retrieve the
      * indexed Ptr<QueueDisc>.
      *
-     * \code
+     * @code
      *   uint32_t nQueueDiscs = container.GetN ();
      *   for (uint32_t i = 0 i < nQueueDiscs; ++i)
      *     {
      *       Ptr<QueueDisc> p = container.Get (i)
      *       i->method ();  // some QueueDisc method
      *     }
-     * \endcode
+     * @endcode
      *
-     * \param i the index of the requested queue disc pointer.
-     * \returns the requested queue disc pointer.
+     * @param i the index of the requested queue disc pointer.
+     * @returns the requested queue disc pointer.
      */
     Ptr<QueueDisc> Get(std::size_t i) const;
 
     /**
-     * \brief Append the contents of another QueueDiscContainer to the end of
+     * @brief Append the contents of another QueueDiscContainer to the end of
      * this container.
      *
-     * \param other The QueueDiscContainer to append.
+     * @param other The QueueDiscContainer to append.
      */
     void Add(QueueDiscContainer other);
 
     /**
-     * \brief Append a single Ptr<QueueDisc> to this container.
+     * @brief Append a single Ptr<QueueDisc> to this container.
      *
-     * \param qDisc The Ptr<QueueDisc> to append.
+     * @param qDisc The Ptr<QueueDisc> to append.
      */
     void Add(Ptr<QueueDisc> qDisc);
 

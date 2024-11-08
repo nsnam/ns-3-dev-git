@@ -36,31 +36,31 @@ class TraceContainer;
 class UniformRandomVariable;
 
 /**
- * \ingroup traffic-control
+ * @ingroup traffic-control
  *
- * \brief Implements PIE Active Queue Management discipline
+ * @brief Implements PIE Active Queue Management discipline
  */
 class PieQueueDisc : public QueueDisc
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
     /**
-     * \brief PieQueueDisc Constructor
+     * @brief PieQueueDisc Constructor
      */
     PieQueueDisc();
 
     /**
-     * \brief PieQueueDisc Destructor
+     * @brief PieQueueDisc Destructor
      */
     ~PieQueueDisc() override;
 
     /**
-     * \brief Burst types
+     * @brief Burst types
      */
     enum BurstStateT
     {
@@ -70,9 +70,9 @@ class PieQueueDisc : public QueueDisc
     };
 
     /**
-     * \brief Get queue delay.
+     * @brief Get queue delay.
      *
-     * \returns The current queue delay.
+     * @returns The current queue delay.
      */
     Time GetQueueDelay();
     /**
@@ -80,8 +80,8 @@ class PieQueueDisc : public QueueDisc
      * used by this model.  Return the number of streams (possibly zero) that
      * have been assigned.
      *
-     * \param stream first stream index to use
-     * \return the number of stream indices assigned by this model
+     * @param stream first stream index to use
+     * @return the number of stream indices assigned by this model
      */
     int64_t AssignStreams(int64_t stream);
 
@@ -97,7 +97,7 @@ class PieQueueDisc : public QueueDisc
 
   protected:
     /**
-     * \brief Dispose of the object
+     * @brief Dispose of the object
      */
     void DoDispose() override;
 
@@ -108,15 +108,15 @@ class PieQueueDisc : public QueueDisc
     bool CheckConfig() override;
 
     /**
-     * \brief Initialize the queue parameters.
+     * @brief Initialize the queue parameters.
      */
     void InitializeParams() override;
 
     /**
-     * \brief Check if a packet needs to be dropped due to probability drop
-     * \param item queue item
-     * \param qSize queue size
-     * \returns 0 for no drop, 1 for drop
+     * @brief Check if a packet needs to be dropped due to probability drop
+     * @param item queue item
+     * @param qSize queue size
+     * @returns 0 for no drop, 1 for drop
      */
     bool DropEarly(Ptr<QueueDiscItem> item, uint32_t qSize);
 

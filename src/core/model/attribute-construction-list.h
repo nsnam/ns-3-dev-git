@@ -13,8 +13,8 @@
 #include <list>
 
 /**
- * \file
- * \ingroup object
+ * @file
+ * @ingroup object
  * ns3::AttributeConstructionList declaration.
  */
 
@@ -22,7 +22,7 @@ namespace ns3
 {
 
 /**
- * \ingroup object
+ * @ingroup object
  * List of Attribute name, value and checker triples used
  * to construct Objects.
  */
@@ -49,24 +49,24 @@ class AttributeConstructionList
     /**
      * Add an Attribute to the list.
      *
-     * \param [in] name The Attribute name.
-     * \param [in] checker The checker to use for this Attribute.
-     * \param [in] value The AttributeValue to add.
+     * @param [in] name The Attribute name.
+     * @param [in] checker The checker to use for this Attribute.
+     * @param [in] value The AttributeValue to add.
      */
     void Add(std::string name, Ptr<const AttributeChecker> checker, Ptr<AttributeValue> value);
 
     /**
      * Find an Attribute in the list from its AttributeChecker.
      *
-     * \param [in] checker The AttributeChecker to find.  Typically this is the
+     * @param [in] checker The AttributeChecker to find.  Typically this is the
      *             AttributeChecker from TypeId::AttributeInformation.
-     * \returns The AttributeValue.
+     * @returns The AttributeValue.
      */
     Ptr<AttributeValue> Find(Ptr<const AttributeChecker> checker) const;
 
-    /** \returns The first item in the list */
+    /** @returns The first item in the list */
     CIterator Begin() const;
-    /** \returns The end of the list (iterator to one past the last). */
+    /** @returns The end of the list (iterator to one past the last). */
     CIterator End() const;
 
   private:

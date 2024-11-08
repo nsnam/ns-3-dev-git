@@ -5,8 +5,8 @@
  */
 
 /**
- * \file
- * \ingroup mpi
+ * @file
+ * @ingroup mpi
  *
  * DARPA NMS Campus Network Model
  *

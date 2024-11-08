@@ -20,7 +20,7 @@ using namespace ns3::lrwpan;
 
 /**
  * Function called when a the PHY state change is confirmed
- * \param status PHY state
+ * @param status PHY state
  */
 void
 GetSetTRXStateConfirm(PhyEnumeration status)
@@ -30,9 +30,9 @@ GetSetTRXStateConfirm(PhyEnumeration status)
 
 /**
  * Function called when a the PHY receives a packet
- * \param psduLength PSDU length
- * \param p packet
- * \param lqi link quality indication
+ * @param psduLength PSDU length
+ * @param p packet
+ * @param lqi link quality indication
  */
 void
 ReceivePdDataIndication(uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
@@ -43,8 +43,8 @@ ReceivePdDataIndication(uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
 
 /**
  * Send one packet
- * \param sender sender PHY
- * \param receiver receiver PHY
+ * @param sender sender PHY
+ * @param receiver receiver PHY
  */
 void
 SendOnePacket(Ptr<LrWpanPhy> sender, Ptr<LrWpanPhy> receiver)

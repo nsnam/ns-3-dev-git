@@ -13,8 +13,8 @@
 #include <chrono>
 
 /**
- * \file
- * \ingroup system
+ * @file
+ * @ingroup system
  * ns3::SystemWallClockMs and ns3::SystemWallClockMsPrivate implementation.
  */
 
@@ -24,21 +24,21 @@ namespace ns3
 NS_LOG_COMPONENT_DEFINE("SystemWallClockMs");
 
 /**
- * \ingroup system
- * \brief System-dependent implementation for SystemWallClockMs
+ * @ingroup system
+ * @brief System-dependent implementation for SystemWallClockMs
  */
 class SystemWallClockMsPrivate
 {
   public:
-    /** \copydoc SystemWallClockMs::Start() */
+    /** @copydoc SystemWallClockMs::Start() */
     void Start();
-    /** \copydoc SystemWallClockMs::End() */
+    /** @copydoc SystemWallClockMs::End() */
     int64_t End();
-    /** \copydoc SystemWallClockMs::GetElapsedReal() */
+    /** @copydoc SystemWallClockMs::GetElapsedReal() */
     int64_t GetElapsedReal() const;
-    /** \copydoc SystemWallClockMs::GetElapsedUser() */
+    /** @copydoc SystemWallClockMs::GetElapsedUser() */
     int64_t GetElapsedUser() const;
-    /** \copydoc SystemWallClockMs::GetElapsedSystem() */
+    /** @copydoc SystemWallClockMs::GetElapsedSystem() */
     int64_t GetElapsedSystem() const;
 
   private:

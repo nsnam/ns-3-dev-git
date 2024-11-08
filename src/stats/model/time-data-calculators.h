@@ -20,7 +20,7 @@ namespace ns3
 //------------------------------------------------------------
 //--------------------------------------------
 /**
- * \ingroup stats
+ * @ingroup stats
  *
  * Unfortunately, templating the base MinMaxAvgTotalCalculator to
  * operate over Time values isn't straightforward.  The main issues
@@ -36,19 +36,19 @@ class TimeMinMaxAvgTotalCalculator : public DataCalculator
 
     /**
      * Register this type.
-     * \return The TypeId.
+     * @return The TypeId.
      */
     static TypeId GetTypeId();
 
     /**
      * Updates all variables of TimeMinMaxAvgTotalCalculator
-     * \param i value of type Time to use for updating the calculator
+     * @param i value of type Time to use for updating the calculator
      */
     void Update(const Time i);
 
     /**
      * Outputs data based on the provided callback
-     * \param callback
+     * @param callback
      */
     void Output(DataOutputCallback& callback) const override;
 

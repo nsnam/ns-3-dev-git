@@ -17,7 +17,7 @@ namespace ns3
 struct ParfWifiRemoteStation;
 
 /**
- * \ingroup wifi
+ * @ingroup wifi
  * PARF Rate control algorithm
  *
  * This class implements the PARF algorithm as described in
@@ -35,7 +35,7 @@ class ParfWifiManager : public WifiRemoteStationManager
   public:
     /**
      * Register this type.
-     * \return The object TypeId.
+     * @return The object TypeId.
      */
     static TypeId GetTypeId();
     ParfWifiManager();
@@ -66,7 +66,7 @@ class ParfWifiManager : public WifiRemoteStationManager
 
     /** Check for initializations.
      *
-     * \param station The remote station.
+     * @param station The remote station.
      */
     void CheckInit(ParfWifiRemoteStation* station);
 

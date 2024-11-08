@@ -21,7 +21,7 @@ class MacRxMiddle;
 class CtrlBAckResponseHeader;
 
 /**
- * \ingroup wifi
+ * @ingroup wifi
  * Maintains the scoreboard and the receive reordering buffer used by a recipient
  * of a Block Ack agreement.
  */
@@ -31,13 +31,13 @@ class RecipientBlockAckAgreement : public BlockAckAgreement
     /**
      * Constructor
      *
-     * \param originator MAC address
-     * \param amsduSupported whether A-MSDU support is enabled
-     * \param tid Traffic ID
-     * \param bufferSize the buffer size (in number of MPDUs)
-     * \param timeout the timeout value
-     * \param startingSeq the starting sequence number
-     * \param htSupported whether HT support is enabled
+     * @param originator MAC address
+     * @param amsduSupported whether A-MSDU support is enabled
+     * @param tid Traffic ID
+     * @param bufferSize the buffer size (in number of MPDUs)
+     * @param timeout the timeout value
+     * @param startingSeq the starting sequence number
+     * @param htSupported whether HT support is enabled
      */
     RecipientBlockAckAgreement(Mac48Address originator,
                                bool amsduSupported,
@@ -51,7 +51,7 @@ class RecipientBlockAckAgreement : public BlockAckAgreement
     /**
      * Set the MAC RX Middle to use.
      *
-     * \param rxMiddle the MAC RX Middle to use
+     * @param rxMiddle the MAC RX Middle to use
      */
     void SetMacRxMiddle(const Ptr<MacRxMiddle> rxMiddle);
 
@@ -59,14 +59,14 @@ class RecipientBlockAckAgreement : public BlockAckAgreement
      * Update both the scoreboard and the receive reordering buffer upon reception
      * of the given MPDU.
      *
-     * \param mpdu the received MPDU
+     * @param mpdu the received MPDU
      */
     void NotifyReceivedMpdu(Ptr<const WifiMpdu> mpdu);
     /**
      * Update both the scoreboard and the receive reordering buffer upon reception
      * of a Block Ack Request.
      *
-     * \param startingSequenceNumber the starting sequence number included in the
+     * @param startingSequenceNumber the starting sequence number included in the
      *                               received Block Ack Request
      */
     void NotifyReceivedBar(uint16_t startingSequenceNumber);
@@ -76,8 +76,8 @@ class RecipientBlockAckAgreement : public BlockAckAgreement
      * For Multi-STA Block Acks, <i>index</i> identifies the Per AID TID Info
      * subfield whose bitmap has to be filled.
      *
-     * \param blockAckHeader the block ack header
-     * \param index the index of the Per AID TID Info subfield (Multi-STA Block Ack only)
+     * @param blockAckHeader the block ack header
+     * @param index the index of the Per AID TID Info subfield (Multi-STA Block Ack only)
      */
     void FillBlockAckBitmap(CtrlBAckResponseHeader* blockAckHeader, std::size_t index = 0) const;
     /**
@@ -101,7 +101,7 @@ class RecipientBlockAckAgreement : public BlockAckAgreement
      * subfield values that are lower than the new value of WinStartB up to the next
      * MAC process in order of increasing Sequence Number subfield value.
      *
-     * \param newWinStartB the new value of WinStartB
+     * @param newWinStartB the new value of WinStartB
      */
     void PassBufferedMpdusWithSeqNumberLessThan(uint16_t newWinStartB);
 
@@ -114,9 +114,9 @@ class RecipientBlockAckAgreement : public BlockAckAgreement
         /**
          * Functional operator for sorting the buffered MPDUs.
          *
-         * \param a the key of first buffered MPDU (\see Key)
-         * \param b the key of second buffered MPDU (\see Key)
-         * \return true if first key is smaller than second
+         * @param a the key of first buffered MPDU (\see Key)
+         * @param b the key of second buffered MPDU (\see Key)
+         * @return true if first key is smaller than second
          */
         bool operator()(const Key& a, const Key& b) const;
     };

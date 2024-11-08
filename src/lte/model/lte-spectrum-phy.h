@@ -46,8 +46,8 @@ struct TbId_t
     /**
      * Constructor
      *
-     * \param a RNTI
-     * \param b Layer
+     * @param a RNTI
+     * @param b Layer
      */
     TbId_t(const uint16_t a, const uint8_t b);
 
@@ -127,8 +127,8 @@ typedef Callback<void, DlInfoListElement_s> LtePhyDlHarqFeedbackCallback;
 typedef Callback<void, UlInfoListElement_s> LtePhyUlHarqFeedbackCallback;
 
 /**
- * \ingroup lte
- * \class LteSpectrumPhy
+ * @ingroup lte
+ * @class LteSpectrumPhy
  *
  * The LteSpectrumPhy models the physical layer of LTE
  *
@@ -156,8 +156,8 @@ class LteSpectrumPhy : public SpectrumPhy
     };
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     // inherited from Object
@@ -173,23 +173,23 @@ class LteSpectrumPhy : public SpectrumPhy
     Ptr<Object> GetAntenna() const override;
     void StartRx(Ptr<SpectrumSignalParameters> params) override;
     /**
-     * \brief Start receive data function
-     * \param params Ptr<LteSpectrumSignalParametersDataFrame>
+     * @brief Start receive data function
+     * @param params Ptr<LteSpectrumSignalParametersDataFrame>
      */
     void StartRxData(Ptr<LteSpectrumSignalParametersDataFrame> params);
     /**
-     * \brief Start receive DL control function
-     * \param lteDlCtrlRxParams Ptr<LteSpectrumSignalParametersDlCtrlFrame>
+     * @brief Start receive DL control function
+     * @param lteDlCtrlRxParams Ptr<LteSpectrumSignalParametersDlCtrlFrame>
      */
     void StartRxDlCtrl(Ptr<LteSpectrumSignalParametersDlCtrlFrame> lteDlCtrlRxParams);
     /**
-     * \brief Start receive UL SRS function
-     * \param lteUlSrsRxParams Ptr<LteSpectrumSignalParametersUlSrsFrame>
+     * @brief Start receive UL SRS function
+     * @param lteUlSrsRxParams Ptr<LteSpectrumSignalParametersUlSrsFrame>
      */
     void StartRxUlSrs(Ptr<LteSpectrumSignalParametersUlSrsFrame> lteUlSrsRxParams);
     /**
-     * \brief Set HARQ phy function
-     * \param harq the HARQ phy module
+     * @brief Set HARQ phy function
+     * @param harq the HARQ phy module
      */
     void SetHarqPhyModule(Ptr<LteHarqPhy> harq);
 
@@ -201,7 +201,7 @@ class LteSpectrumPhy : public SpectrumPhy
     void SetTxPowerSpectralDensity(Ptr<SpectrumValue> txPsd);
 
     /**
-     * \brief set the noise power spectral density
+     * @brief set the noise power spectral density
      * @param noisePsd the Noise Power Spectral Density in power units
      * (Watt, Pascal...) per Hz.
      */
@@ -216,7 +216,7 @@ class LteSpectrumPhy : public SpectrumPhy
     /**
      * set the AntennaModel to be used
      *
-     * \param a the Antenna Model
+     * @param a the Antenna Model
      */
     void SetAntenna(Ptr<AntennaModel> a);
 
@@ -312,28 +312,28 @@ class LteSpectrumPhy : public SpectrumPhy
     void SetLtePhyUlHarqFeedbackCallback(LtePhyUlHarqFeedbackCallback c);
 
     /**
-     * \brief Set the state of the phy layer
-     * \param newState the state
+     * @brief Set the state of the phy layer
+     * @param newState the state
      */
     void SetState(State newState);
 
     /**
      *
      *
-     * \param cellId the Cell Identifier
+     * @param cellId the Cell Identifier
      */
     void SetCellId(uint16_t cellId);
 
     /**
      *
-     * \param componentCarrierId the component carrier id
+     * @param componentCarrierId the component carrier id
      */
     void SetComponentCarrierId(uint8_t componentCarrierId);
 
     /**
      *
      *
-     * \param p the new LteChunkProcessor to be added to the RS power
+     * @param p the new LteChunkProcessor to be added to the RS power
      *          processing chain
      */
     void AddRsPowerChunkProcessor(Ptr<LteChunkProcessor> p);
@@ -341,7 +341,7 @@ class LteSpectrumPhy : public SpectrumPhy
     /**
      *
      *
-     * \param p the new LteChunkProcessor to be added to the Data Channel power
+     * @param p the new LteChunkProcessor to be added to the Data Channel power
      *          processing chain
      */
     void AddDataPowerChunkProcessor(Ptr<LteChunkProcessor> p);
@@ -349,7 +349,7 @@ class LteSpectrumPhy : public SpectrumPhy
     /**
      *
      *
-     * \param p the new LteChunkProcessor to be added to the data processing chain
+     * @param p the new LteChunkProcessor to be added to the data processing chain
      */
     void AddDataSinrChunkProcessor(Ptr<LteChunkProcessor> p);
 
@@ -357,7 +357,7 @@ class LteSpectrumPhy : public SpectrumPhy
      *  LteChunkProcessor devoted to evaluate interference + noise power
      *  in control symbols of the subframe
      *
-     * \param p the new LteChunkProcessor to be added to the data processing chain
+     * @param p the new LteChunkProcessor to be added to the data processing chain
      */
     void AddInterferenceCtrlChunkProcessor(Ptr<LteChunkProcessor> p);
 
@@ -365,29 +365,29 @@ class LteSpectrumPhy : public SpectrumPhy
      *  LteChunkProcessor devoted to evaluate interference + noise power
      *  in data symbols of the subframe
      *
-     * \param p the new LteChunkProcessor to be added to the data processing chain
+     * @param p the new LteChunkProcessor to be added to the data processing chain
      */
     void AddInterferenceDataChunkProcessor(Ptr<LteChunkProcessor> p);
 
     /**
      *
      *
-     * \param p the new LteChunkProcessor to be added to the ctrl processing chain
+     * @param p the new LteChunkProcessor to be added to the ctrl processing chain
      */
     void AddCtrlSinrChunkProcessor(Ptr<LteChunkProcessor> p);
 
     /**
      *
      *
-     * \param rnti the RNTI of the source of the TB
-     * \param ndi new data indicator flag
-     * \param size the size of the TB
-     * \param mcs the MCS of the TB
-     * \param map the map of RB(s) used
-     * \param layer the layer (in case of MIMO tx)
-     * \param harqId the id of the HARQ process (valid only for DL)
-     * \param rv the redundancy version
-     * \param downlink true when the TB is for DL
+     * @param rnti the RNTI of the source of the TB
+     * @param ndi new data indicator flag
+     * @param size the size of the TB
+     * @param mcs the MCS of the TB
+     * @param map the map of RB(s) used
+     * @param layer the layer (in case of MIMO tx)
+     * @param harqId the id of the HARQ process (valid only for DL)
+     * @param rv the redundancy version
+     * @param downlink true when the TB is for DL
      */
     void AddExpectedTb(uint16_t rnti,
                        uint8_t ndi,
@@ -399,7 +399,7 @@ class LteSpectrumPhy : public SpectrumPhy
                        uint8_t rv,
                        bool downlink);
     /**
-     * \brief Remove expected transport block.
+     * @brief Remove expected transport block.
      *
      * When UE context at eNodeB is removed and if UL TB is expected to be received
      * but not transmitted due to break in radio link. The TB with different rnti or lcid
@@ -407,27 +407,27 @@ class LteSpectrumPhy : public SpectrumPhy
      * m_ulPhyReception trace, since the UE context was already removed. TB has to be
      * removed when ue context at eNodeB is removed
      *
-     * \param rnti The RNTI of the UE
+     * @param rnti The RNTI of the UE
      */
     void RemoveExpectedTb(uint16_t rnti);
 
     /**
      *
      *
-     * \param sinr vector of sinr perceived per each RB
+     * @param sinr vector of sinr perceived per each RB
      */
     void UpdateSinrPerceived(const SpectrumValue& sinr);
 
     /**
      *
      *
-     * \param txMode UE transmission mode (SISO, MIMO tx diversity, ...)
+     * @param txMode UE transmission mode (SISO, MIMO tx diversity, ...)
      */
     void SetTransmissionMode(uint8_t txMode);
 
     /**
      *
-     * \return the previously set channel
+     * @return the previously set channel
      */
     Ptr<SpectrumChannel> GetChannel();
 
@@ -439,16 +439,16 @@ class LteSpectrumPhy : public SpectrumPhy
      * used by this model.  Return the number of streams (possibly zero) that
      * have been assigned.
      *
-     * \param stream first stream index to use
-     * \return the number of stream indices assigned by this model
+     * @param stream first stream index to use
+     * @return the number of stream indices assigned by this model
      */
     int64_t AssignStreams(int64_t stream);
 
   private:
     /**
-     * \brief Change state function
+     * @brief Change state function
      *
-     * \param newState the new state to set
+     * @param newState the new state to set
      */
     void ChangeState(State newState);
     /// End transmit data function
@@ -465,10 +465,10 @@ class LteSpectrumPhy : public SpectrumPhy
     void EndRxUlSrs();
 
     /**
-     * \brief Set transmit mode gain function
+     * @brief Set transmit mode gain function
      *
-     * \param txMode the transmit mode
-     * \param gain the gain to set
+     * @param txMode the transmit mode
+     * @param gain the gain to set
      */
     void SetTxModeGain(uint8_t txMode, double gain);
 

@@ -64,9 +64,9 @@ using namespace ns3;
 // }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief IPv6 PacketInfoTag Test
+ * @brief IPv6 PacketInfoTag Test
  */
 class Ipv6PacketInfoTagTest : public TestCase
 {
@@ -76,14 +76,14 @@ class Ipv6PacketInfoTagTest : public TestCase
   private:
     void DoRun() override;
     /**
-     * \brief Receive callback.
-     * \param socket Receiving socket.
+     * @brief Receive callback.
+     * @param socket Receiving socket.
      */
     void RxCb(Ptr<Socket> socket);
     /**
-     * \brief Send data.
-     * \param socket Sending socket.
-     * \param to Destination address.
+     * @brief Send data.
+     * @param socket Sending socket.
+     * @param to Destination address.
      */
     void DoSendData(Ptr<Socket> socket, std::string to);
 };
@@ -232,9 +232,9 @@ Ipv6PacketInfoTagTest::DoRun()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief IPv6 PacketInfoTag TestSuite
+ * @brief IPv6 PacketInfoTag TestSuite
  */
 class Ipv6PacketInfoTagTestSuite : public TestSuite
 {

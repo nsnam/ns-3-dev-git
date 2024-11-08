@@ -30,8 +30,8 @@ static const std::string g_ueNasStateName[EpcUeNas::NUM_STATES] = {
 };
 
 /**
- * \param s The UE NAS state.
- * \return The string representation of the given state.
+ * @param s The UE NAS state.
+ * @return The string representation of the given state.
  */
 static inline const std::string&
 ToString(EpcUeNas::State s)

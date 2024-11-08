@@ -14,8 +14,8 @@
 #include <vector>
 
 /**
- * \file
- * \ingroup config
+ * @file
+ * @ingroup config
  * Declaration of the various ns3::Config functions and classes.
  */
 
@@ -27,29 +27,29 @@ class Object;
 class CallbackBase;
 
 /**
- * \ingroup core
- * \defgroup config Configuration
- * \brief Configuration of simulation parameters and tracing.
+ * @ingroup core
+ * @defgroup config Configuration
+ * @brief Configuration of simulation parameters and tracing.
  */
 
 /**
- * \ingroup config
+ * @ingroup config
  * Namespace for the various functions implementing the Config system.
  */
 namespace Config
 {
 
 /**
- * \ingroup config
+ * @ingroup config
  * Reset the initial value of every attribute as well as the value of every
  * global to what they were before any call to SetDefault and SetGlobal.
  */
 void Reset();
 
 /**
- * \ingroup config
- * \param [in] path A path to match attributes.
- * \param [in] value The value to set in all matching attributes.
+ * @ingroup config
+ * @param [in] path A path to match attributes.
+ * @param [in] value The value to set in all matching attributes.
  *
  * This function will attempt to find attributes which
  * match the input path and will then set their value to the input
@@ -58,20 +58,20 @@ void Reset();
  */
 void Set(std::string path, const AttributeValue& value);
 /**
- * \ingroup config
- * \param [in] path A path to match attributes.
- * \param [in] value The value to set in all matching attributes.
+ * @ingroup config
+ * @param [in] path A path to match attributes.
+ * @param [in] value The value to set in all matching attributes.
  *
  * This function will attempt to find attributes which
  * match the input path and will then set their value to the input
  * value, and will return true if at least one such attribute is found.
- * \return \c true if any matching attributes could be set.
+ * @return \c true if any matching attributes could be set.
  */
 bool SetFailSafe(std::string path, const AttributeValue& value);
 /**
- * \ingroup config
- * \param [in] name The full name of the attribute
- * \param [in] value The value to set.
+ * @ingroup config
+ * @param [in] name The full name of the attribute
+ * @param [in] value The value to set.
  *
  * This method overrides the initial value of the
  * matching attribute. This method cannot fail: it will
@@ -79,36 +79,36 @@ bool SetFailSafe(std::string path, const AttributeValue& value);
  */
 void SetDefault(std::string name, const AttributeValue& value);
 /**
- * \ingroup config
- * \param [in] name The full name of the attribute
- * \param [in] value The value to set.
- * \returns \c true if the value was set successfully, false otherwise.
+ * @ingroup config
+ * @param [in] name The full name of the attribute
+ * @param [in] value The value to set.
+ * @returns \c true if the value was set successfully, false otherwise.
  *
  * This method overrides the initial value of the
  * matching attribute.
  */
 bool SetDefaultFailSafe(std::string name, const AttributeValue& value);
 /**
- * \ingroup config
- * \param [in] name The name of the requested GlobalValue.
- * \param [in] value The value to set
+ * @ingroup config
+ * @param [in] name The name of the requested GlobalValue.
+ * @param [in] value The value to set
  *
  * This method is equivalent to GlobalValue::Bind
  */
 void SetGlobal(std::string name, const AttributeValue& value);
 /**
- * \ingroup config
- * \param [in] name The name of the requested GlobalValue.
- * \param [in] value The value to set
- * \return \c true if the GlobalValue could be set.
+ * @ingroup config
+ * @param [in] name The name of the requested GlobalValue.
+ * @param [in] value The value to set
+ * @return \c true if the GlobalValue could be set.
  *
  * This method is equivalent to GlobalValue::BindFailSafe
  */
 bool SetGlobalFailSafe(std::string name, const AttributeValue& value);
 /**
- * \ingroup config
- * \param [in] path A path to match trace sources.
- * \param [in] cb The callback to connect to the matching trace sources.
+ * @ingroup config
+ * @param [in] path A path to match trace sources.
+ * @param [in] cb The callback to connect to the matching trace sources.
  *
  * This function will attempt to find all trace sources which
  * match the input path and will then connect the input callback
@@ -118,29 +118,29 @@ bool SetGlobalFailSafe(std::string name, const AttributeValue& value);
  */
 void ConnectWithoutContext(std::string path, const CallbackBase& cb);
 /**
- * \ingroup config
- * \param [in] path A path to match trace sources.
- * \param [in] cb The callback to connect to the matching trace sources.
+ * @ingroup config
+ * @param [in] path A path to match trace sources.
+ * @param [in] cb The callback to connect to the matching trace sources.
  *
  * This function will attempt to find all trace sources which
  * match the input path and will then connect the input callback
  * to them.  If no matching trace sources are found, this method will
  * return false; otherwise true.
- * \returns \c true if any trace sources could be connected.
+ * @returns \c true if any trace sources could be connected.
  */
 bool ConnectWithoutContextFailSafe(std::string path, const CallbackBase& cb);
 /**
- * \ingroup config
- * \param [in] path A path to match trace sources.
- * \param [in] cb The callback to disconnect to the matching trace sources.
+ * @ingroup config
+ * @param [in] path A path to match trace sources.
+ * @param [in] cb The callback to disconnect to the matching trace sources.
  *
  * This function undoes the work of Config::Connect.
  */
 void DisconnectWithoutContext(std::string path, const CallbackBase& cb);
 /**
- * \ingroup config
- * \param [in] path A path to match trace sources.
- * \param [in] cb The callback to connect to the matching trace sources.
+ * @ingroup config
+ * @param [in] path A path to match trace sources.
+ * @param [in] cb The callback to connect to the matching trace sources.
  *
  * This function will attempt to find all trace sources which
  * match the input path and will then connect the input callback
@@ -152,29 +152,29 @@ void DisconnectWithoutContext(std::string path, const CallbackBase& cb);
  */
 void Connect(std::string path, const CallbackBase& cb);
 /**
- * \ingroup config
- * \param [in] path A path to match trace sources.
- * \param [in] cb The callback to connect to the matching trace sources.
+ * @ingroup config
+ * @param [in] path A path to match trace sources.
+ * @param [in] cb The callback to connect to the matching trace sources.
  *
  * This function will attempt to find all trace sources which
  * match the input path and will then connect the input callback
  * to them in such a way that the callback will receive an extra
  * context string upon trace event notification.
- * \returns \c true if any trace sources could be connected.
+ * @returns \c true if any trace sources could be connected.
  */
 bool ConnectFailSafe(std::string path, const CallbackBase& cb);
 /**
- * \ingroup config
- * \param [in] path A path to match trace sources.
- * \param [in] cb The callback to connect to the matching trace sources.
+ * @ingroup config
+ * @param [in] path A path to match trace sources.
+ * @param [in] cb The callback to connect to the matching trace sources.
  *
  * This function undoes the work of Config::ConnectWithContext.
  */
 void Disconnect(std::string path, const CallbackBase& cb);
 
 /**
- * \ingroup config
- * \brief hold a set of objects which match a specific search string.
+ * @ingroup config
+ * @brief hold a set of objects which match a specific search string.
  *
  * This class also allows you to perform a set of configuration operations
  * on the set of matching objects stored in the container. Specifically,
@@ -189,16 +189,16 @@ class MatchContainer
     /**
      * Constructor used only by implementation.
      *
-     * \param [in] objects The vector of objects to store in this container.
-     * \param [in] contexts The corresponding contexts.
-     * \param [in] path The path used for object matching.
+     * @param [in] objects The vector of objects to store in this container.
+     * @param [in] contexts The corresponding contexts.
+     * @param [in] path The path used for object matching.
      */
     MatchContainer(const std::vector<Ptr<Object>>& objects,
                    const std::vector<std::string>& contexts,
                    std::string path);
 
     /**
-     * \returns An iterator which points to the first item in the container
+     * @returns An iterator which points to the first item in the container
      * @{
      */
     MatchContainer::Iterator Begin() const;
@@ -210,7 +210,7 @@ class MatchContainer
 
     /** @} */
     /**
-     * \returns An iterator which points to the last item in the container
+     * @returns An iterator which points to the last item in the container
      * @{
      */
     MatchContainer::Iterator End() const;
@@ -222,7 +222,7 @@ class MatchContainer
 
     /** @} */
     /**
-     * \returns The number of items in the container
+     * @returns The number of items in the container
      * @{
      */
     std::size_t GetN() const;
@@ -234,26 +234,26 @@ class MatchContainer
 
     /** @} */
     /**
-     * \param [in] i Index of item to lookup ([0,n[)
-     * \returns The item requested.
+     * @param [in] i Index of item to lookup ([0,n[)
+     * @returns The item requested.
      */
     Ptr<Object> Get(std::size_t i) const;
     /**
-     * \param [in] i Index of item to lookup ([0,n[)
-     * \returns The fully-qualified matching path associated
+     * @param [in] i Index of item to lookup ([0,n[)
+     * @returns The fully-qualified matching path associated
      *          to the requested item.
      *
      * The matching patch uniquely identifies the requested object.
      */
     std::string GetMatchedPath(uint32_t i) const;
     /**
-     * \returns The path used to perform the object matching.
+     * @returns The path used to perform the object matching.
      */
     std::string GetPath() const;
 
     /**
-     * \param [in] name Name of attribute to set
-     * \param [in] value Value to set to the attribute
+     * @param [in] name Name of attribute to set
+     * @param [in] value Value to set to the attribute
      *
      * Set the specified attribute value to all the objects stored in this
      * container.  This method will raise a fatal error if no such attribute
@@ -263,18 +263,18 @@ class MatchContainer
      */
     void Set(std::string name, const AttributeValue& value);
     /**
-     * \param [in] name Name of attribute to set
-     * \param [in] value Value to set to the attribute
+     * @param [in] name Name of attribute to set
+     * @param [in] value Value to set to the attribute
      *
      * Set the specified attribute value to all the objects stored in this
      * container.  This method will return true if any attributes could be
      * set, and false otherwise.
-     * \returns \c true if any attributes could be set.
+     * @returns \c true if any attributes could be set.
      */
     bool SetFailSafe(std::string name, const AttributeValue& value);
     /**
-     * \param [in] name The name of the trace source to connect to
-     * \param [in] cb The sink to connect to the trace source
+     * @param [in] name The name of the trace source to connect to
+     * @param [in] cb The sink to connect to the trace source
      *
      * Connect the specified sink to all the objects stored in this
      * container.  This method will raise a fatal error if no objects could
@@ -284,18 +284,18 @@ class MatchContainer
      */
     void Connect(std::string name, const CallbackBase& cb);
     /**
-     * \param [in] name The name of the trace source to connect to
-     * \param [in] cb The sink to connect to the trace source
+     * @param [in] name The name of the trace source to connect to
+     * @param [in] cb The sink to connect to the trace source
      *
      * Connect the specified sink to all the objects stored in this
      * container.  This method will return true if any trace sources could be
      * connected, and false otherwise.
-     * \returns \c true if any trace sources could be connected.
+     * @returns \c true if any trace sources could be connected.
      */
     bool ConnectFailSafe(std::string name, const CallbackBase& cb);
     /**
-     * \param [in] name The name of the trace source to connect to
-     * \param [in] cb The sink to connect to the trace source
+     * @param [in] name The name of the trace source to connect to
+     * @param [in] cb The sink to connect to the trace source
      *
      * Connect the specified sink to all the objects stored in this
      * container.  This method will raise a fatal error if no objects could
@@ -305,18 +305,18 @@ class MatchContainer
      */
     void ConnectWithoutContext(std::string name, const CallbackBase& cb);
     /**
-     * \param [in] name The name of the trace source to connect to
-     * \param [in] cb The sink to connect to the trace source
+     * @param [in] name The name of the trace source to connect to
+     * @param [in] cb The sink to connect to the trace source
      *
      * Connect the specified sink to all the objects stored in this
      * container.  This method will return true if any trace sources could be
      * connected, and false otherwise.
-     * \returns \c true if any trace sources could be connected.
+     * @returns \c true if any trace sources could be connected.
      */
     bool ConnectWithoutContextFailSafe(std::string name, const CallbackBase& cb);
     /**
-     * \param [in] name The name of the trace source to disconnect from
-     * \param [in] cb The sink to disconnect from the trace source
+     * @param [in] name The name of the trace source to disconnect from
+     * @param [in] cb The sink to disconnect from the trace source
      *
      * Disconnect the specified sink from all the objects stored in this
      * container.
@@ -324,8 +324,8 @@ class MatchContainer
      */
     void Disconnect(std::string name, const CallbackBase& cb);
     /**
-     * \param [in] name The name of the trace source to disconnect from
-     * \param [in] cb The sink to disconnect from the trace source
+     * @param [in] name The name of the trace source to disconnect from
+     * @param [in] cb The sink to disconnect from the trace source
      *
      * Disconnect the specified sink from all the objects stored in this
      * container.
@@ -343,39 +343,39 @@ class MatchContainer
 };
 
 /**
- * \ingroup config
- * \param [in] path The path to perform a match against
- * \returns A container which contains all the objects which match the input
+ * @ingroup config
+ * @param [in] path The path to perform a match against
+ * @returns A container which contains all the objects which match the input
  *          path.
  */
 MatchContainer LookupMatches(std::string path);
 
 /**
- * \ingroup config
- * \param [in] obj A new root object
+ * @ingroup config
+ * @param [in] obj A new root object
  *
  * Each root object is used during path matching as
  * the root of the path by Config::Connect, and Config::Set.
  */
 void RegisterRootNamespaceObject(Ptr<Object> obj);
 /**
- * \ingroup config
- * \param [in] obj A new root object
+ * @ingroup config
+ * @param [in] obj A new root object
  *
  * This function undoes the work of Config::RegisterRootNamespaceObject.
  */
 void UnregisterRootNamespaceObject(Ptr<Object> obj);
 
 /**
- * \ingroup config
- * \returns The number of registered root namespace objects.
+ * @ingroup config
+ * @returns The number of registered root namespace objects.
  */
 std::size_t GetRootNamespaceObjectN();
 
 /**
- * \ingroup config
- * \param [in] i The index of the requested object.
- * \returns The requested root namespace object
+ * @ingroup config
+ * @param [in] i The index of the requested object.
+ * @returns The requested root namespace object
  */
 Ptr<Object> GetRootNamespaceObject(uint32_t i);
 

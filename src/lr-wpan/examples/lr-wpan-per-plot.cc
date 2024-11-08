@@ -40,8 +40,8 @@ NS_LOG_COMPONENT_DEFINE("LrWpanErrorDistancePlot");
 
 /**
  * Function called when a Data indication is invoked
- * \param params MCPS data indication parameters
- * \param p packet
+ * @param params MCPS data indication parameters
+ * @param p packet
  */
 void
 PacketReceivedCallback(McpsDataIndicationParams params, Ptr<Packet> p)

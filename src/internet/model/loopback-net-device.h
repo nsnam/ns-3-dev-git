@@ -20,10 +20,10 @@ namespace ns3
 class Node;
 
 /**
- * \ingroup netdevice
- * \ingroup internet
+ * @ingroup netdevice
+ * @ingroup internet
  *
- * \brief Virtual network interface that loops back any data sent to it to
+ * @brief Virtual network interface that loops back any data sent to it to
  * be immediately received on the same interface.
  *
  * This NetDevice is automatically added to any node as soon as the Internet
@@ -33,8 +33,8 @@ class LoopbackNetDevice : public NetDevice
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     LoopbackNetDevice();
@@ -77,10 +77,10 @@ class LoopbackNetDevice : public NetDevice
     /**
      * Receive a packet from tge Loopback NetDevice.
      *
-     * \param packet a reference to the received packet
-     * \param protocol the protocol
-     * \param to destination address
-     * \param from source address
+     * @param packet a reference to the received packet
+     * @param protocol the protocol
+     * @param to destination address
+     * @param from source address
      */
     void Receive(Ptr<Packet> packet, uint16_t protocol, Mac48Address to, Mac48Address from);
 

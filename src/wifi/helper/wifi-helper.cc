@@ -39,9 +39,9 @@ namespace
 /**
  * Helper function to place the value to set in the correct bit(s) of a radiotap subfield.
  *
- * \param mask the mask of the corresponding subfield
- * \param val the value the subfield should be set to
- * \return the value placed at the correct position based on the mask
+ * @param mask the mask of the corresponding subfield
+ * @param val the value the subfield should be set to
+ * @return the value placed at the correct position based on the mask
  */
 uint32_t
 GetRadiotapField(uint32_t mask, uint32_t val)
@@ -58,12 +58,12 @@ NS_LOG_COMPONENT_DEFINE("WifiHelper");
 
 /**
  * ASCII trace PHY transmit sink with context
- * \param stream the output stream
- * \param context the context name
- * \param p the packet
- * \param mode the wifi mode
- * \param preamble the wifi preamble
- * \param txLevel the transmit power level
+ * @param stream the output stream
+ * @param context the context name
+ * @param p the packet
+ * @param mode the wifi mode
+ * @param preamble the wifi preamble
+ * @param txLevel the transmit power level
  */
 static void
 AsciiPhyTransmitSinkWithContext(Ptr<OutputStreamWrapper> stream,
@@ -83,11 +83,11 @@ AsciiPhyTransmitSinkWithContext(Ptr<OutputStreamWrapper> stream,
 
 /**
  * ASCII trace PHY transmit sink without context
- * \param stream the output stream
- * \param p the packet
- * \param mode the wifi mode
- * \param preamble the wifi preamble
- * \param txLevel the transmit power level
+ * @param stream the output stream
+ * @param p the packet
+ * @param mode the wifi mode
+ * @param preamble the wifi preamble
+ * @param txLevel the transmit power level
  */
 static void
 AsciiPhyTransmitSinkWithoutContext(Ptr<OutputStreamWrapper> stream,
@@ -106,12 +106,12 @@ AsciiPhyTransmitSinkWithoutContext(Ptr<OutputStreamWrapper> stream,
 
 /**
  * ASCII trace PHY receive sink with context
- * \param stream the output stream
- * \param context the context name
- * \param p the packet
- * \param snr the SNR
- * \param mode the wifi mode
- * \param preamble the wifi preamble
+ * @param stream the output stream
+ * @param context the context name
+ * @param p the packet
+ * @param snr the SNR
+ * @param mode the wifi mode
+ * @param preamble the wifi preamble
  */
 static void
 AsciiPhyReceiveSinkWithContext(Ptr<OutputStreamWrapper> stream,
@@ -131,11 +131,11 @@ AsciiPhyReceiveSinkWithContext(Ptr<OutputStreamWrapper> stream,
 
 /**
  * ASCII trace PHY receive sink without context
- * \param stream the output stream
- * \param p the packet
- * \param snr the SNR
- * \param mode the wifi mode
- * \param preamble the wifi preamble
+ * @param stream the output stream
+ * @param p the packet
+ * @param snr the SNR
+ * @param mode the wifi mode
+ * @param preamble the wifi preamble
  */
 static void
 AsciiPhyReceiveSinkWithoutContext(Ptr<OutputStreamWrapper> stream,

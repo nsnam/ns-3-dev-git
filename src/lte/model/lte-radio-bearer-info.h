@@ -32,8 +32,8 @@ class LteRadioBearerInfo : public Object
     LteRadioBearerInfo();
     ~LteRadioBearerInfo() override;
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -49,8 +49,8 @@ class LteSignalingRadioBearerInfo : public LteRadioBearerInfo
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -66,8 +66,8 @@ class LteDataRadioBearerInfo : public LteRadioBearerInfo
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 

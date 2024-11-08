@@ -16,8 +16,8 @@ namespace ns3
 {
 
 /**
- * \ingroup applications
- * \brief Base class for source applications.
+ * @ingroup applications
+ * @brief Base class for source applications.
  *
  * This class can be used as a base class for source applications.
  * A source application is one that primarily sources new data towards a single remote client
@@ -35,8 +35,8 @@ class SourceApplication : public Application
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -44,14 +44,14 @@ class SourceApplication : public Application
     ~SourceApplication() override;
 
     /**
-     * \brief set the remote address
-     * \param addr remote address
+     * @brief set the remote address
+     * @param addr remote address
      */
     virtual void SetRemote(const Address& addr);
 
     /**
-     * \brief get the remote address
-     * \return the remote address
+     * @brief get the remote address
+     * @return the remote address
      */
     Address GetRemote() const;
 

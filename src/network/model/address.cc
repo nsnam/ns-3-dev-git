@@ -119,7 +119,7 @@ Address::CheckCompatible(uint8_t type, uint8_t len) const
 {
     NS_LOG_FUNCTION(this << static_cast<uint32_t>(type) << static_cast<uint32_t>(len));
     NS_ASSERT(len <= MAX_SIZE);
-    /// \internal
+    /// @internal
     /// Mac address type/length detection is discussed in \bugid{1568}
     return (m_len == len && m_type == type) || (m_len >= len && m_type == 0);
 }

@@ -51,7 +51,7 @@ namespace ns3
  *     std::ostream *stream = streamWrapper->GetStream();
  *     *stream << "got packet" << std::endl;
  * }
- * \endcode
+ * @endcode
  *
  *
  * This class uses a basic ns-3 reference counting base class but is not
@@ -62,13 +62,13 @@ class OutputStreamWrapper : public SimpleRefCount<OutputStreamWrapper>
   public:
     /**
      * Constructor
-     * \param filename file name
-     * \param filemode std::ios::openmode flags
+     * @param filename file name
+     * @param filemode std::ios::openmode flags
      */
     OutputStreamWrapper(std::string filename, std::ios::openmode filemode);
     /**
      * Constructor
-     * \param os output stream
+     * @param os output stream
      */
     OutputStreamWrapper(std::ostream* os);
     ~OutputStreamWrapper();
@@ -76,9 +76,9 @@ class OutputStreamWrapper : public SimpleRefCount<OutputStreamWrapper>
     /**
      * Return a pointer to an ostream previously set in the wrapper.
      *
-     * \see SetStream
+     * @see SetStream
      *
-     * \returns a pointer to the encapsulated std::ostream
+     * @returns a pointer to the encapsulated std::ostream
      */
     std::ostream* GetStream();
 

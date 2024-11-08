@@ -12,8 +12,8 @@ namespace ns3
 {
 
 /**
- * \ingroup configstore
- * \brief A class that provides a GTK-based front end to ns3::ConfigStore
+ * @ingroup configstore
+ * @brief A class that provides a GTK-based front end to ns3::ConfigStore
  *
  */
 class GtkConfigStore

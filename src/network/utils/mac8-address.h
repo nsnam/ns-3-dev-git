@@ -19,7 +19,7 @@ namespace ns3
 class Address;
 
 /**
- * \ingroup network
+ * @ingroup network
  *
  * A class used for addressing MAC8 MAC's.
  *
@@ -36,7 +36,7 @@ class Mac8Address
     /**
      * Create Mac8Address object with address addr.
      *
-     * \param addr Byte address to assign to this address.
+     * @param addr Byte address to assign to this address.
      */
     Mac8Address(uint8_t addr);
     /** Destructor */
@@ -45,51 +45,51 @@ class Mac8Address
     /**
      * Convert a generic address to a Mac8Address.
      *
-     * \param address  Address to convert to Mac8Address address.
-     * \return Mac8Address from Address.
+     * @param address  Address to convert to Mac8Address address.
+     * @return Mac8Address from Address.
      */
     static Mac8Address ConvertFrom(const Address& address);
 
     /**
      * Convert to a generic Address.
      *
-     * \return The Address value.
+     * @return The Address value.
      */
     Address ConvertTo() const;
 
     /**
      * Check that a generic Address is compatible with Mac8Address.
      *
-     * \param address  Address to test.
-     * \return True if address given is consistent with Mac8Address.
+     * @param address  Address to test.
+     * @return True if address given is consistent with Mac8Address.
      */
     static bool IsMatchingType(const Address& address);
 
     /**
      * Create a generic Address.
      *
-     * \return The Address.
+     * @return The Address.
      */
     operator Address() const;
 
     /**
      * Sets address to address stored in parameter.
      *
-     * \param pBuffer Buffer to extract address from.
+     * @param pBuffer Buffer to extract address from.
      */
     void CopyFrom(const uint8_t* pBuffer);
 
     /**
      * Writes address to buffer parameter.
      *
-     * \param pBuffer
+     * @param pBuffer
      */
     void CopyTo(uint8_t* pBuffer) const;
 
     /**
      * Get the broadcast address (255).
      *
-     * \return Broadcast address.
+     * @return Broadcast address.
      */
     static Mac8Address GetBroadcast();
 
@@ -99,7 +99,7 @@ class Mac8Address
      * Will wrap back to 0 if more than 254 are allocated.
      * Excludes the broadcast address.
      *
-     * \return The next sequential Mac8Address.
+     * @return The next sequential Mac8Address.
      */
     static Mac8Address Allocate();
 
@@ -109,9 +109,9 @@ class Mac8Address
      * This function resets (to zero) the global integer
      * that is used for unique address allocation.
      * It is automatically called whenever
-     * \code
+     * @code
      * SimulatorDestroy ();
-     * \endcode
+     * @endcode
      * is called.  It may also be optionally called
      * by user code if there is a need to force a reset
      * of this allocation index.
@@ -125,7 +125,7 @@ class Mac8Address
     /**
      * Get the Mac8Address type.
      *
-     * \return The type value.
+     * @return The type value.
      */
     static uint8_t GetType();
 
@@ -140,45 +140,45 @@ class Mac8Address
 /**
  * Address comparison, less than.
  *
- * \param a First address to compare.
- * \param b Second address to compare.
- * \return True if a < b.
+ * @param a First address to compare.
+ * @param b Second address to compare.
+ * @return True if a < b.
  */
 bool operator<(const Mac8Address& a, const Mac8Address& b);
 
 /**
  * Address comparison, equality.
  *
- * \param a First address to compare.
- * \param b Second address to compare.
- * \return True if a == b.
+ * @param a First address to compare.
+ * @param b Second address to compare.
+ * @return True if a == b.
  */
 bool operator==(const Mac8Address& a, const Mac8Address& b);
 
 /**
  * Address comparison, unequal.
  *
- * \param a First address to compare.
- * \param b Second address to compare.
- * \return True if a != b.
+ * @param a First address to compare.
+ * @param b Second address to compare.
+ * @return True if a != b.
  */
 bool operator!=(const Mac8Address& a, const Mac8Address& b);
 
 /**
  * Write \pname{address} to stream \pname{os} as 8 bit integer.
  *
- * \param os The output stream.
- * \param address The address
- * \return The output stream.
+ * @param os The output stream.
+ * @param address The address
+ * @return The output stream.
  */
 std::ostream& operator<<(std::ostream& os, const Mac8Address& address);
 
 /**
  * Read \pname{address} from stream \pname{is} as 8 bit integer.
  *
- * \param is The input stream.
- * \param address The address variable to set.
- * \return The input stream.
+ * @param is The input stream.
+ * @param address The address variable to set.
+ * @return The input stream.
  */
 std::istream& operator>>(std::istream& is, Mac8Address& address);
 

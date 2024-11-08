@@ -10,8 +10,8 @@
 #include "log.h"
 
 /**
- * \file
- * \ingroup timer
+ * @file
+ * @ingroup timer
  * ns3::Watchdog timer class implementation.
  */
 

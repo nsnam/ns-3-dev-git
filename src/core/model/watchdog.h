@@ -12,8 +12,8 @@
 #include "nstime.h"
 
 /**
- * \file
- * \ingroup timer
+ * @file
+ * @ingroup timer
  * ns3::Watchdog timer class declaration.
  */
 
@@ -28,8 +28,8 @@ class TimerImpl;
 } // namespace internal
 
 /**
- * \ingroup timer
- * \brief A very simple watchdog operating in virtual time.
+ * @ingroup timer
+ * @brief A very simple watchdog operating in virtual time.
  *
  * The watchdog timer is started by calling Ping with a delay value.
  * Once started the timer cannot be suspended, cancelled or shortened.
@@ -45,7 +45,7 @@ class TimerImpl;
  * If you don't ping the watchdog sufficiently often, it triggers its
  * listening function.
  *
- * \see Timer for a more sophisticated general purpose timer.
+ * @see Timer for a more sophisticated general purpose timer.
  */
 class Watchdog
 {
@@ -58,7 +58,7 @@ class Watchdog
     /**
      * Delay the timer.
      *
-     * \param [in] delay The watchdog delay
+     * @param [in] delay The watchdog delay
      *
      * After a call to this method, the watchdog will not be triggered
      * until the delay specified has been expired. This operation is
@@ -69,8 +69,8 @@ class Watchdog
     /**
      * Set the function to execute when the timer expires.
      *
-     * \tparam FN \deduced The type of the function.
-     * \param [in] fn The function
+     * @tparam FN \deduced The type of the function.
+     * @param [in] fn The function
      *
      * Store this function in this Timer for later use by Timer::Schedule.
      */
@@ -80,10 +80,10 @@ class Watchdog
     /**
      * Set the function to execute when the timer expires.
      *
-     * \tparam MEM_PTR \deduced Class method function type.
-     * \tparam OBJ_PTR \deduced Class type containing the function.
-     * \param [in] memPtr The member function pointer
-     * \param [in] objPtr The pointer to object
+     * @tparam MEM_PTR \deduced Class method function type.
+     * @tparam OBJ_PTR \deduced Class type containing the function.
+     * @param [in] memPtr The member function pointer
+     * @param [in] objPtr The pointer to object
      *
      * Store this function and object in this Timer for later use by Timer::Schedule.
      */
@@ -95,8 +95,8 @@ class Watchdog
      */
     /**@{*/
     /**
-     * \tparam Ts \deduced Argument types.
-     * \param [in] args arguments
+     * @tparam Ts \deduced Argument types.
+     * @param [in] args arguments
      */
     template <typename... Ts>
     void SetArguments(Ts&&... args);

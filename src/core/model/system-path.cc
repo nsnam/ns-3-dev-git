@@ -50,8 +50,8 @@ constexpr auto SYSTEM_PATH_SEP = "/";
 #endif
 
 /**
- * \file
- * \ingroup systempath
+ * @file
+ * @ingroup systempath
  * ns3::SystemPath implementation.
  */
 
@@ -64,11 +64,11 @@ NS_LOG_COMPONENT_DEFINE("SystemPath");
 namespace
 {
 /**
- * \ingroup systempath
+ * @ingroup systempath
  * Get the list of files located in a file system directory with error.
  *
- * \param [in] path A path which identifies a directory
- * \return Tuple with a list of the filenames which are located in the input directory or error flag
+ * @param [in] path A path which identifies a directory
+ * @return Tuple with a list of the filenames which are located in the input directory or error flag
  * \c true if directory doesn't exist.
  */
 std::tuple<std::list<std::string>, bool>
@@ -96,14 +96,14 @@ namespace SystemPath
 {
 
 /**
- * \ingroup systempath
- * \brief Get the directory path for a file.
+ * @ingroup systempath
+ * @brief Get the directory path for a file.
  *
  * This is an internal function (by virtue of not being
  * declared in a \c .h file); the public API is FindSelfDirectory().
  *
- * \param [in] path The full path to a file.
- * \returns The full path to the containing directory.
+ * @param [in] path The full path to a file.
+ * @returns The full path to the containing directory.
  */
 std::string
 Dirname(std::string path)

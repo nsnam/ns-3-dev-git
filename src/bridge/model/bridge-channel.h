@@ -12,8 +12,8 @@
 #include <vector>
 
 /**
- * \file
- * \ingroup bridge
+ * @file
+ * @ingroup bridge
  * ns3::BridgeChannel declaration.
  */
 
@@ -21,9 +21,9 @@ namespace ns3
 {
 
 /**
- * \ingroup bridge
+ * @ingroup bridge
  *
- * \brief Virtual channel implementation for bridges (BridgeNetDevice).
+ * @brief Virtual channel implementation for bridges (BridgeNetDevice).
  *
  * Just like BridgeNetDevice aggregates multiple NetDevices,
  * BridgeChannel aggregates multiple channels and make them appear as
@@ -33,8 +33,8 @@ class BridgeChannel : public Channel
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     BridgeChannel();
@@ -46,7 +46,7 @@ class BridgeChannel : public Channel
 
     /**
      * Adds a channel to the bridged pool
-     * \param bridgedChannel  the channel to add to the pool
+     * @param bridgedChannel  the channel to add to the pool
      */
     void AddChannel(Ptr<Channel> bridgedChannel);
 

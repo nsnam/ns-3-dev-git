@@ -21,15 +21,15 @@
 using namespace ns3;
 
 /**
- * \ingroup radvd
- * \defgroup radvd-test radvd tests
+ * @ingroup radvd
+ * @defgroup radvd-test radvd tests
  */
 
 /**
- * \ingroup radvd-test
- * \ingroup tests
+ * @ingroup radvd-test
+ * @ingroup tests
  *
- * \brief radvd basic tests
+ * @brief radvd basic tests
  */
 class RadvdTestCase : public TestCase
 {
@@ -42,10 +42,10 @@ class RadvdTestCase : public TestCase
 
     /**
      * Checks the addresses on the selected NetDevices.
-     * \param n0Dev node 0 device
-     * \param r0Dev router device toward node 0
-     * \param r1Dev router device toward node 1
-     * \param n1Dev node 1 device
+     * @param n0Dev node 0 device
+     * @param r0Dev router device toward node 0
+     * @param r1Dev router device toward node 1
+     * @param n1Dev node 1 device
      */
     void CheckAddresses(Ptr<NetDevice> n0Dev,
                         Ptr<NetDevice> r0Dev,
@@ -53,10 +53,10 @@ class RadvdTestCase : public TestCase
                         Ptr<NetDevice> n1Dev);
     /**
      * Checks the routing between the selected NetDevices.
-     * \param n0Dev node 0 device
-     * \param r0Dev router device toward node 0
-     * \param r1Dev router device toward node 1
-     * \param n1Dev node 1 device
+     * @param n0Dev node 0 device
+     * @param r0Dev router device toward node 0
+     * @param r1Dev router device toward node 1
+     * @param n1Dev node 1 device
      */
     void CheckRouting(Ptr<NetDevice> n0Dev,
                       Ptr<NetDevice> r0Dev,
@@ -286,10 +286,10 @@ RadvdTestCase::DoRun()
 }
 
 /**
- * \ingroup radvd-test
- * \ingroup tests
+ * @ingroup radvd-test
+ * @ingroup tests
  *
- * \brief radvd TestSuite
+ * @brief radvd TestSuite
  */
 class RadvdTestSuite : public TestSuite
 {

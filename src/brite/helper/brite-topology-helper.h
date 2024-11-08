@@ -31,20 +31,20 @@ class PointToPointHelper;
 class Ipv4AddressHelper;
 
 /**
- * \defgroup brite BRITE Topology Generator
+ * @defgroup brite BRITE Topology Generator
  *
  * Create topologies with BRITE.
  */
 
 /**
- * \ingroup brite
- * \ingroup tests
- * \defgroup brite-tests BRITE module tests
+ * @ingroup brite
+ * @ingroup tests
+ * @defgroup brite-tests BRITE module tests
  */
 
 /**
- * \ingroup brite
- * \brief Interface with BRITE, the Boston university Representative Internet
+ * @ingroup brite
+ * @brief Interface with BRITE, the Boston university Representative Internet
  *        Topology gEnerator
  *
  * This helper class creates an interface with BRITE and allows the user to
@@ -62,16 +62,16 @@ class BriteTopologyHelper
     /**
      * Construct a BriteTopologyHelper
      *
-     * \param confFile a BRITE configuration file
-     * \param seedFile a BRITE seed file
-     * \param newseedFile a BRITE seed file with newly generated values
+     * @param confFile a BRITE configuration file
+     * @param seedFile a BRITE seed file
+     * @param newseedFile a BRITE seed file with newly generated values
      */
     BriteTopologyHelper(std::string confFile, std::string seedFile, std::string newseedFile);
 
     /**
      * Construct a BriteTopologyHelper using NS3 to generate seed values
      * need by BRITE
-     * \param confFile a BRITE configuration file
+     * @param confFile a BRITE configuration file
      */
     BriteTopologyHelper(std::string confFile);
 
@@ -81,14 +81,14 @@ class BriteTopologyHelper
      * Assigns stream number to UniformRandomVariable used to
      * generate brite seed file
      *
-     * \param streamNumber the stream number to assign
+     * @param streamNumber the stream number to assign
      */
     void AssignStreams(int64_t streamNumber);
 
     /**
      * Create NS3 topology using information generated from BRITE.
      *
-     * \param stack Internet stack to assign to nodes in topology
+     * @param stack Internet stack to assign to nodes in topology
      */
     void BuildBriteTopology(InternetStackHelper& stack);
 
@@ -96,49 +96,49 @@ class BriteTopologyHelper
      * Create NS3 topology using information generated from BRITE and configure topology for MPI
      * use.
      *
-     * \param stack Internet stack to assign to nodes in topology.
-     * \param systemCount The number of MPI instances to be used in the simulation.
+     * @param stack Internet stack to assign to nodes in topology.
+     * @param systemCount The number of MPI instances to be used in the simulation.
      */
     void BuildBriteTopology(InternetStackHelper& stack, const uint32_t systemCount);
 
     /**
      * Returns the number of router leaf nodes for a given AS
      *
-     * \param asNum the AS number
-     * \returns the number of leaf nodes in the specified AS
+     * @param asNum the AS number
+     * @returns the number of leaf nodes in the specified AS
      */
     uint32_t GetNLeafNodesForAs(uint32_t asNum);
 
     /**
      * Returns a given router leaf node from a given AS
      *
-     * \param asNum the AS number
-     * \param leafNum the leaf number
-     * \returns the specified node
+     * @param asNum the AS number
+     * @param leafNum the leaf number
+     * @returns the specified node
      */
     Ptr<Node> GetLeafNodeForAs(uint32_t asNum, uint32_t leafNum);
 
     /**
      * Returns the total number of nodes for a given AS
      *
-     * \param asNum the AS number
-     * \returns the total number of nodes in the given AS
+     * @param asNum the AS number
+     * @returns the total number of nodes in the given AS
      */
     uint32_t GetNNodesForAs(uint32_t asNum);
 
     /**
      * Returns a given router node for a given AS
      *
-     * \param asNum the AS number
-     * \param nodeNum the Node number
-     * \return the specified node
+     * @param asNum the AS number
+     * @param nodeNum the Node number
+     * @return the specified node
      */
     Ptr<Node> GetNodeForAs(uint32_t asNum, uint32_t nodeNum);
 
     /**
      * Returns the number of AS created in the topology
      *
-     * \returns the number of AS created in the topology
+     * @returns the number of AS created in the topology
      */
     uint32_t GetNAs() const;
 
@@ -146,16 +146,16 @@ class BriteTopologyHelper
      * Returns the system number for the MPI instance that this AS is assigned to.  Will always
      * return 0 if MPI not used
      *
-     * \returns The system number that the specified AS number belongs to
+     * @returns The system number that the specified AS number belongs to
      *
-     * \param asNum The AS Number
+     * @param asNum The AS Number
      */
     uint32_t GetSystemNumberForAs(uint32_t asNum) const;
 
     /**
      * Assign IPv4 addresses.
      *
-     * \param address an Ipv4AddressHelper which is used to install
+     * @param address an Ipv4AddressHelper which is used to install
      *                IPv4 addresses on all the node interfaces in
      *                the topology
      */
@@ -164,7 +164,7 @@ class BriteTopologyHelper
     /**
      * Assign IPv6 addresses.
      *
-     * \param address an Ipv6AddressHelper which is used to install
+     * @param address an Ipv6AddressHelper which is used to install
      *                IPv6 addresses on all the node interfaces in
      *                the topology
      */
@@ -174,7 +174,7 @@ class BriteTopologyHelper
      * Returns the number of nodes created within
      * the topology
      *
-     * \returns the total number of nodes within the brite topology
+     * @returns the total number of nodes within the brite topology
      */
     uint32_t GetNNodesTopology() const;
 
@@ -182,7 +182,7 @@ class BriteTopologyHelper
      * Returns the number of edges created within
      * the topology
      *
-     * \returns the total number of edges within the brite topology
+     * @returns the total number of edges within the brite topology
      */
     uint32_t GetNEdgesTopology() const;
 
@@ -194,7 +194,7 @@ class BriteTopologyHelper
     static const int mbpsToBps = 1000000;
 
     /**
-     * \brief Node information from BRITE
+     * @brief Node information from BRITE
      *
      * The BRITE code generates a graph and returns
      * information on the nodes generated. This is
@@ -212,7 +212,7 @@ class BriteTopologyHelper
     };
 
     /**
-     * \brief Edge information from BRITE
+     * @brief Edge information from BRITE
      *
      * The BRITE code generates a graph and returns
      * information on the edges generated. This is

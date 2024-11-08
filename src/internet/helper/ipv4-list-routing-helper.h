@@ -17,9 +17,9 @@ namespace ns3
 {
 
 /**
- * \ingroup ipv4Helpers
+ * @ingroup ipv4Helpers
  *
- * \brief Helper class that adds ns3::Ipv4ListRouting objects
+ * @brief Helper class that adds ns3::Ipv4ListRouting objects
  *
  * This class is expected to be used in conjunction with
  * ns3::InternetStackHelper::SetRoutingHelper
@@ -39,9 +39,9 @@ class Ipv4ListRoutingHelper : public Ipv4RoutingHelper
     ~Ipv4ListRoutingHelper() override;
 
     /**
-     * \brief Construct an Ipv4ListRoutingHelper from another previously
+     * @brief Construct an Ipv4ListRoutingHelper from another previously
      * initialized instance (Copy Constructor).
-     * \param o object to be copied
+     * @param o object to be copied
      */
     Ipv4ListRoutingHelper(const Ipv4ListRoutingHelper& o);
 
@@ -49,7 +49,7 @@ class Ipv4ListRoutingHelper : public Ipv4RoutingHelper
     Ipv4ListRoutingHelper& operator=(const Ipv4ListRoutingHelper&) = delete;
 
     /**
-     * \returns pointer to clone of this Ipv4ListRoutingHelper
+     * @returns pointer to clone of this Ipv4ListRoutingHelper
      *
      * This method is mainly for internal use by the other helpers;
      * clients are expected to free the dynamic memory allocated by this method
@@ -57,8 +57,8 @@ class Ipv4ListRoutingHelper : public Ipv4RoutingHelper
     Ipv4ListRoutingHelper* Copy() const override;
 
     /**
-     * \param routing a routing helper
-     * \param priority the priority of the associated helper
+     * @param routing a routing helper
+     * @param priority the priority of the associated helper
      *
      * Store in the internal list a reference to the input routing helper
      * and associated priority. These helpers will be used later by
@@ -68,8 +68,8 @@ class Ipv4ListRoutingHelper : public Ipv4RoutingHelper
      */
     void Add(const Ipv4RoutingHelper& routing, int16_t priority);
     /**
-     * \param node the node on which the routing protocol will run
-     * \returns a newly-created routing protocol
+     * @param node the node on which the routing protocol will run
+     * @returns a newly-created routing protocol
      *
      * This method will be called by ns3::InternetStackHelper::Install
      */
@@ -77,7 +77,7 @@ class Ipv4ListRoutingHelper : public Ipv4RoutingHelper
 
   private:
     /**
-     * \brief Container for pairs of Ipv4RoutingHelper pointer / priority.
+     * @brief Container for pairs of Ipv4RoutingHelper pointer / priority.
      */
     std::list<std::pair<const Ipv4RoutingHelper*, int16_t>> m_list;
 };

@@ -111,7 +111,7 @@ static const int McsToItbsUl[29] = {
  * Table of number of physical resource blocks (NPRB), TBS index (ITBS), and
  * their associated transport block size. Taken from 3GPP TS 36.213 v8.8.0
  * Table 7.1.7.2.1-1: _Transport block size table (dimension 27×110)_.
- * \note For NPRB = 1 and ITBS = 6 the standard returns 328, but it is not
+ * @note For NPRB = 1 and ITBS = 6 the standard returns 328, but it is not
  *       consistent with the other values, therefore we use 88 obtained by
  *       following the sequence of NPRB = 1 values.
  */

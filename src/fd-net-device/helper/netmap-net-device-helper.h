@@ -26,8 +26,8 @@ namespace ns3
 class NetmapNetDevice;
 
 /**
- * \ingroup fd-net-device
- * \brief build a set of FdNetDevice objects attached to a physical network
+ * @ingroup fd-net-device
+ * @brief build a set of FdNetDevice objects attached to a physical network
  * interface
  *
  */
@@ -41,43 +41,43 @@ class NetmapNetDeviceHelper : public FdNetDeviceHelper
     }
 
     /**
-     * \brief Get the device name of this device.
-     * \returns The device name of this device.
+     * @brief Get the device name of this device.
+     * @returns The device name of this device.
      */
     std::string GetDeviceName();
 
     /**
-     * \brief Set the device name of this device.
-     * \param deviceName The device name of this device.
+     * @brief Set the device name of this device.
+     * @param deviceName The device name of this device.
      */
     void SetDeviceName(std::string deviceName);
 
   protected:
     /**
-     * \brief This method creates an ns3::FdNetDevice attached to a physical network
+     * @brief This method creates an ns3::FdNetDevice attached to a physical network
      * interface
-     * \param node The node to install the device in
-     * \returns A container holding the added net device.
+     * @param node The node to install the device in
+     * @returns A container holding the added net device.
      */
     Ptr<NetDevice> InstallPriv(Ptr<Node> node) const;
 
     /**
-     * \brief Sets device flags and MTU.
-     * \param device the FdNetDevice
+     * @brief Sets device flags and MTU.
+     * @param device the FdNetDevice
      */
     virtual void SetDeviceAttributes(Ptr<FdNetDevice> device) const;
 
     /**
-     * \brief Call out to a separate process running as suid root in order to get a raw
+     * @brief Call out to a separate process running as suid root in order to get a raw
      * socket.  We do this to avoid having the entire simulation running as root.
-     * \return the rawSocket number
+     * @return the rawSocket number
      */
     virtual int CreateFileDescriptor() const;
 
     /**
-     * \brief Switch the fd in netmap mode.
-     * \param fd the file descriptor
-     * \param device the NetmapNetDevice
+     * @brief Switch the fd in netmap mode.
+     * @param fd the file descriptor
+     * @param device the NetmapNetDevice
      */
     void SwitchInNetmapMode(int fd, Ptr<NetmapNetDevice> device) const;
 

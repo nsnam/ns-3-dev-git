@@ -34,7 +34,7 @@ namespace ns3
 {
 
 /**
- * \brief Artificial delay of UE measurements procedure.
+ * @brief Artificial delay of UE measurements procedure.
  *
  * i.e. the period between the time layer-1-filtered measurements from PHY
  * layer is received and the earliest time the actual measurement report
@@ -120,8 +120,8 @@ class LteUeRrc : public Object
 
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -131,67 +131,67 @@ class LteUeRrc : public Object
     /**
      * set the CPHY SAP this RRC should use to interact with the PHY
      *
-     * \param s the CPHY SAP Provider
+     * @param s the CPHY SAP Provider
      */
     void SetLteUeCphySapProvider(LteUeCphySapProvider* s);
     /**
      * set the CPHY SAP this RRC should use to interact with the PHY
      *
-     * \param s the CPHY SAP Provider
-     * \param index the index
+     * @param s the CPHY SAP Provider
+     * @param index the index
      */
     void SetLteUeCphySapProvider(LteUeCphySapProvider* s, uint8_t index);
 
     /**
      *
      *
-     * \return s the CPHY SAP User interface offered to the PHY by this RRC
+     * @return s the CPHY SAP User interface offered to the PHY by this RRC
      */
     LteUeCphySapUser* GetLteUeCphySapUser();
     /**
      *
-     * \param index the index
-     * \return s the CPHY SAP User interface offered to the PHY by this RRC
+     * @param index the index
+     * @return s the CPHY SAP User interface offered to the PHY by this RRC
      */
     LteUeCphySapUser* GetLteUeCphySapUser(uint8_t index);
 
     /**
      * set the CMAC SAP this RRC should interact with
-     * \brief This function is overloaded to maintain backward compatibility
-     * \param s the CMAC SAP Provider to be used by this RRC
+     * @brief This function is overloaded to maintain backward compatibility
+     * @param s the CMAC SAP Provider to be used by this RRC
      */
     void SetLteUeCmacSapProvider(LteUeCmacSapProvider* s);
     /**
      * set the CMAC SAP this RRC should interact with
-     * \brief This function is overloaded to maintain backward compatibility
-     * \param s the CMAC SAP Provider to be used by this RRC
-     * \param index the index
+     * @brief This function is overloaded to maintain backward compatibility
+     * @param s the CMAC SAP Provider to be used by this RRC
+     * @param index the index
      */
     void SetLteUeCmacSapProvider(LteUeCmacSapProvider* s, uint8_t index);
 
     /**
-     * \brief This function is overloaded to maintain backward compatibility
-     * \return s the CMAC SAP User interface offered to the MAC by this RRC
+     * @brief This function is overloaded to maintain backward compatibility
+     * @return s the CMAC SAP User interface offered to the MAC by this RRC
      */
     LteUeCmacSapUser* GetLteUeCmacSapUser();
     /**
-     * \brief This function is overloaded to maintain backward compatibility
-     * \param index the index
-     * \return s the CMAC SAP User interface offered to the MAC by this RRC
+     * @brief This function is overloaded to maintain backward compatibility
+     * @param index the index
+     * @return s the CMAC SAP User interface offered to the MAC by this RRC
      */
     LteUeCmacSapUser* GetLteUeCmacSapUser(uint8_t index);
 
     /**
      * set the RRC SAP this RRC should interact with
      *
-     * \param s the RRC SAP User to be used by this RRC
+     * @param s the RRC SAP User to be used by this RRC
      */
     void SetLteUeRrcSapUser(LteUeRrcSapUser* s);
 
     /**
      *
      *
-     * \return s the RRC SAP Provider interface offered to the MAC by this RRC
+     * @return s the RRC SAP Provider interface offered to the MAC by this RRC
      */
     LteUeRrcSapProvider* GetLteUeRrcSapProvider();
 
@@ -199,7 +199,7 @@ class LteUeRrc : public Object
      * set the MAC SAP provider. The ue RRC does not use this
      * directly, but it needs to provide it to newly created RLC instances.
      *
-     * \param s the MAC SAP provider that will be used by all
+     * @param s the MAC SAP provider that will be used by all
      * newly created RLC instances
      */
     void SetLteMacSapProvider(LteMacSapProvider* s);
@@ -207,128 +207,128 @@ class LteUeRrc : public Object
     /**
      * Set the AS SAP user to interact with the NAS entity
      *
-     * \param s the AS SAP user
+     * @param s the AS SAP user
      */
     void SetAsSapUser(LteAsSapUser* s);
 
     /**
      *
      *
-     * \return the AS SAP provider exported by this RRC
+     * @return the AS SAP provider exported by this RRC
      */
     LteAsSapProvider* GetAsSapProvider();
 
     /**
      * set the Component Carrier Management SAP this RRC should interact with
      *
-     * \param s the Component Carrier Management SAP Provider to be used by this RRC
+     * @param s the Component Carrier Management SAP Provider to be used by this RRC
      */
     void SetLteCcmRrcSapProvider(LteUeCcmRrcSapProvider* s);
 
     /**
      * Get the Component Carrier Management SAP offered by this RRC
-     * \return s the Component Carrier Management SAP User interface offered to the
+     * @return s the Component Carrier Management SAP User interface offered to the
      *           carrier component selection algorithm by this RRC
      */
     LteUeCcmRrcSapUser* GetLteCcmRrcSapUser();
 
     /**
      *
-     * \param imsi the unique UE identifier
+     * @param imsi the unique UE identifier
      */
     void SetImsi(uint64_t imsi);
 
     /**
-     * \brief Store the previous cell id
+     * @brief Store the previous cell id
      *
-     * \param cellId The cell id of the previous cell the UE was attached to
+     * @param cellId The cell id of the previous cell the UE was attached to
      */
     void StorePreviousCellId(uint16_t cellId);
 
     /**
      *
-     * \return imsi the unique UE identifier
+     * @return imsi the unique UE identifier
      */
     uint64_t GetImsi() const;
 
     /**
      *
-     * \return the C-RNTI of the user
+     * @return the C-RNTI of the user
      */
     uint16_t GetRnti() const;
 
     /**
      *
-     * \return the CellId of the attached Enb
+     * @return the CellId of the attached Enb
      */
     uint16_t GetCellId() const;
 
     /**
-     * \param cellId cell identifier
-     * \return true if cellId is the serving cell for this UE
+     * @param cellId cell identifier
+     * @return true if cellId is the serving cell for this UE
      */
     bool IsServingCell(uint16_t cellId) const;
 
     /**
-     * \return the uplink bandwidth in RBs
+     * @return the uplink bandwidth in RBs
      */
     uint8_t GetUlBandwidth() const;
 
     /**
-     * \return the downlink bandwidth in RBs
+     * @return the downlink bandwidth in RBs
      */
     uint8_t GetDlBandwidth() const;
 
     /**
-     * \return the downlink carrier frequency (EARFCN)
+     * @return the downlink carrier frequency (EARFCN)
      */
     uint32_t GetDlEarfcn() const;
 
     /**
-     * \return the uplink carrier frequency (EARFCN)
+     * @return the uplink carrier frequency (EARFCN)
      */
     uint32_t GetUlEarfcn() const;
 
     /**
      *
-     * \return the current state
+     * @return the current state
      */
     State GetState() const;
 
     /**
-     * \brief Get the previous cell id
+     * @brief Get the previous cell id
      *
-     * \return The cell Id of the previous cell the UE was attached to.
+     * @return The cell Id of the previous cell the UE was attached to.
      */
     uint16_t GetPreviousCellId() const;
 
     /**
      *
      *
-     * \param val true if RLC SM is to be used, false if RLC UM/AM are to be used
+     * @param val true if RLC SM is to be used, false if RLC UM/AM are to be used
      */
     void SetUseRlcSm(bool val);
 
     /**
-     * \param s The UE RRC state.
-     * \return The string representation of the given state.
+     * @param s The UE RRC state.
+     * @return The string representation of the given state.
      */
     static const std::string ToString(LteUeRrc::State s);
 
     /**
      * TracedCallback signature for imsi, cellId and rnti events.
      *
-     * \param [in] imsi
-     * \param [in] cellId
+     * @param [in] imsi
+     * @param [in] cellId
      */
     typedef void (*CellSelectionTracedCallback)(uint64_t imsi, uint16_t cellId);
 
     /**
      * TracedCallback signature for imsi, cellId and rnti events.
      *
-     * \param [in] imsi
-     * \param [in] cellId
-     * \param [in] rnti
+     * @param [in] imsi
+     * @param [in] cellId
+     * @param [in] rnti
      */
     typedef void (*ImsiCidRntiTracedCallback)(uint64_t imsi, uint16_t cellId, uint16_t rnti);
 
@@ -336,10 +336,10 @@ class LteUeRrc : public Object
      * TracedCallback signature for MIBReceived, Sib1Received and
      * HandoverStart events.
      *
-     * \param [in] imsi
-     * \param [in] cellId
-     * \param [in] rnti
-     * \param [in] otherCid
+     * @param [in] imsi
+     * @param [in] cellId
+     * @param [in] rnti
+     * @param [in] otherCid
      */
     typedef void (*MibSibHandoverTracedCallback)(uint64_t imsi,
                                                  uint16_t cellId,
@@ -349,11 +349,11 @@ class LteUeRrc : public Object
     /**
      * TracedCallback signature for state transition events.
      *
-     * \param [in] imsi
-     * \param [in] cellId
-     * \param [in] rnti
-     * \param [in] oldState
-     * \param [in] newState
+     * @param [in] imsi
+     * @param [in] cellId
+     * @param [in] rnti
+     * @param [in] oldState
+     * @param [in] newState
      */
     typedef void (*StateTracedCallback)(uint64_t imsi,
                                         uint16_t cellId,
@@ -364,8 +364,8 @@ class LteUeRrc : public Object
     /**
      * TracedCallback signature for secondary carrier configuration events.
      *
-     * \param [in] Pointer to UE RRC
-     * \param [in] List of LteRrcSap::SCellToAddMod
+     * @param [in] Pointer to UE RRC
+     * @param [in] List of LteRrcSap::SCellToAddMod
      */
     typedef void (*SCarrierConfiguredTracedCallback)(Ptr<LteUeRrc>,
                                                      std::list<LteRrcSap::SCellToAddMod>);
@@ -374,11 +374,11 @@ class LteUeRrc : public Object
      * TracedCallback signature for in-sync and out-of-sync detection events.
      *
      *
-     * \param [in] imsi
-     * \param [in] rnti
-     * \param [in] cellId
-     * \param [in] type
-     * \param [in] count
+     * @param [in] imsi
+     * @param [in] rnti
+     * @param [in] cellId
+     * @param [in] type
+     * @param [in] count
      */
     typedef void (*PhySyncDetectionTracedCallback)(uint64_t imsi,
                                                    uint16_t rnti,
@@ -390,10 +390,10 @@ class LteUeRrc : public Object
      * TracedCallback signature for imsi, cellId, rnti and counter for
      * random access events.
      *
-     * \param [in] imsi
-     * \param [in] cellId
-     * \param [in] rnti
-     * \param [in] count
+     * @param [in] imsi
+     * @param [in] cellId
+     * @param [in] rnti
+     * @param [in] count
      */
     typedef void (*ImsiCidRntiCountTracedCallback)(uint64_t imsi,
                                                    uint16_t cellId,
@@ -405,7 +405,7 @@ class LteUeRrc : public Object
     /**
      * Receive PDCP SDU function
      *
-     * \param params LtePdcpSapUser::ReceivePdcpSduParameters
+     * @param params LtePdcpSapUser::ReceivePdcpSduParameters
      */
     void DoReceivePdcpSdu(LtePdcpSapUser::ReceivePdcpSduParameters params);
 
@@ -413,7 +413,7 @@ class LteUeRrc : public Object
     /**
      * Set temporary cell rnti function
      *
-     * \param rnti RNTI
+     * @param rnti RNTI
      */
     void DoSetTemporaryCellRnti(uint16_t rnti);
     /// Notify random access successful function
@@ -425,20 +425,20 @@ class LteUeRrc : public Object
     /**
      * Set CSG white list function
      *
-     * \param csgId CSG ID
+     * @param csgId CSG ID
      */
     void DoSetCsgWhiteList(uint32_t csgId);
     /**
      * Force camped on ENB function
      *
-     * \param cellId the cell ID
-     * \param dlEarfcn the DL EARFCN
+     * @param cellId the cell ID
+     * @param dlEarfcn the DL EARFCN
      */
     void DoForceCampedOnEnb(uint16_t cellId, uint32_t dlEarfcn);
     /**
      * Start cell selection function
      *
-     * \param dlEarfcn the DL EARFCN
+     * @param dlEarfcn the DL EARFCN
      */
     void DoStartCellSelection(uint32_t dlEarfcn);
     /// Connect function
@@ -446,8 +446,8 @@ class LteUeRrc : public Object
     /**
      * Send data function
      *
-     * \param packet the packet
-     * \param bid the BID
+     * @param packet the packet
+     * @param bid the BID
      */
     void DoSendData(Ptr<Packet> packet, uint8_t bid);
     /// Disconnect function
@@ -457,22 +457,22 @@ class LteUeRrc : public Object
     /**
      * Receive master information block function
      *
-     * \param cellId the cell ID
-     * \param msg LteRrcSap::MasterInformationBlock
+     * @param cellId the cell ID
+     * @param msg LteRrcSap::MasterInformationBlock
      */
     void DoRecvMasterInformationBlock(uint16_t cellId, LteRrcSap::MasterInformationBlock msg);
     /**
      * Receive system information block type 1 function
      *
-     * \param cellId the cell ID
-     * \param msg LteRrcSap::SystemInformationBlockType1
+     * @param cellId the cell ID
+     * @param msg LteRrcSap::SystemInformationBlockType1
      */
     void DoRecvSystemInformationBlockType1(uint16_t cellId,
                                            LteRrcSap::SystemInformationBlockType1 msg);
     /**
      * Report UE measurements function
      *
-     * \param params LteUeCphySapUser::UeMeasurementsParameters
+     * @param params LteUeCphySapUser::UeMeasurementsParameters
      */
     void DoReportUeMeasurements(LteUeCphySapUser::UeMeasurementsParameters params);
 
@@ -480,73 +480,73 @@ class LteUeRrc : public Object
 
     /**
      * Part of the RRC protocol. Implement the LteUeRrcSapProvider::CompleteSetup interface.
-     * \param params the LteUeRrcSapProvider::CompleteSetupParameters
+     * @param params the LteUeRrcSapProvider::CompleteSetupParameters
      */
     void DoCompleteSetup(LteUeRrcSapProvider::CompleteSetupParameters params);
     /**
      * Part of the RRC protocol. Implement the LteUeRrcSapProvider::RecvSystemInformation interface.
-     * \param msg the LteRrcSap::SystemInformation
+     * @param msg the LteRrcSap::SystemInformation
      */
     void DoRecvSystemInformation(LteRrcSap::SystemInformation msg);
     /**
      * Part of the RRC protocol. Implement the LteUeRrcSapProvider::RecvRrcConnectionSetup
      * interface.
-     * \param msg the LteRrcSap::RrcConnectionSetup
+     * @param msg the LteRrcSap::RrcConnectionSetup
      */
     void DoRecvRrcConnectionSetup(LteRrcSap::RrcConnectionSetup msg);
     /**
      * Part of the RRC protocol. Implement the LteUeRrcSapProvider::RecvRrcConnectionReconfiguration
      * interface.
-     * \param msg the LteRrcSap::RrcConnectionReconfiguration
+     * @param msg the LteRrcSap::RrcConnectionReconfiguration
      */
     void DoRecvRrcConnectionReconfiguration(LteRrcSap::RrcConnectionReconfiguration msg);
     /**
      * Part of the RRC protocol. Implement the LteUeRrcSapProvider::RecvRrcConnectionReestablishment
      * interface.
-     * \param msg LteRrcSap::RrcConnectionReestablishment
+     * @param msg LteRrcSap::RrcConnectionReestablishment
      */
     void DoRecvRrcConnectionReestablishment(LteRrcSap::RrcConnectionReestablishment msg);
     /**
      * Part of the RRC protocol. Implement the
      * LteUeRrcSapProvider::RecvRrcConnectionReestablishmentReject interface.
-     * \param msg LteRrcSap::RrcConnectionReestablishmentReject
+     * @param msg LteRrcSap::RrcConnectionReestablishmentReject
      */
     void DoRecvRrcConnectionReestablishmentReject(
         LteRrcSap::RrcConnectionReestablishmentReject msg);
     /**
      * Part of the RRC protocol. Implement the LteUeRrcSapProvider::RecvRrcConnectionRelease
      * interface.
-     * \param msg LteRrcSap::RrcConnectionRelease
+     * @param msg LteRrcSap::RrcConnectionRelease
      */
     void DoRecvRrcConnectionRelease(LteRrcSap::RrcConnectionRelease msg);
     /**
      * Part of the RRC protocol. Implement the LteUeRrcSapProvider::RecvRrcConnectionReject
      * interface.
-     * \param msg the LteRrcSap::RrcConnectionReject
+     * @param msg the LteRrcSap::RrcConnectionReject
      */
     void DoRecvRrcConnectionReject(LteRrcSap::RrcConnectionReject msg);
 
     /**
      * RRC CCM SAP USER Method
-     * \param noOfComponentCarriers the number of component carriers
+     * @param noOfComponentCarriers the number of component carriers
      */
     void DoSetNumberOfComponentCarriers(uint16_t noOfComponentCarriers);
 
     // INTERNAL METHODS
 
     /**
-     * \brief Go through the list of measurement results, choose the one with the
+     * @brief Go through the list of measurement results, choose the one with the
      *        strongest RSRP, and tell PHY to synchronize to it.
      *
-     * \warning This function is a part of the *initial cell selection* procedure,
+     * @warning This function is a part of the *initial cell selection* procedure,
      *          hence must be only executed during IDLE mode.
      */
     void SynchronizeToStrongestCell();
 
     /**
-     * \brief Performs cell selection evaluation to the current serving cell.
+     * @brief Performs cell selection evaluation to the current serving cell.
      *
-     * \warning This function is a part of the *initial cell selection* procedure,
+     * @warning This function is a part of the *initial cell selection* procedure,
      *          hence must be only executed during IDLE mode and specifically
      *          during the state when the UE just received the first SIB1 message
      *          from the serving cell.
@@ -563,8 +563,8 @@ class LteUeRrc : public Object
     void EvaluateCellForSelection();
 
     /**
-     * \brief Update the current measurement configuration #m_varMeasConfig.
-     * \param mc measurements to be performed by the UE
+     * @brief Update the current measurement configuration #m_varMeasConfig.
+     * @param mc measurements to be performed by the UE
      *
      * Implements Section 5.5.2 "Measurement configuration" of 3GPP TS 36.331.
      * The supported subfunctions are:
@@ -600,7 +600,7 @@ class LteUeRrc : public Object
      * - s-Measure
      * - Speed-dependent scaling
      *
-     * \warning There is a possibility that the input argument (of type
+     * @warning There is a possibility that the input argument (of type
      *          LteRrcSap::MeasConfig) may contain information in fields related
      *          to the unsupported features. In such case, the function will raise
      *          an error.
@@ -618,14 +618,14 @@ class LteUeRrc : public Object
     void ApplyMeasConfig(LteRrcSap::MeasConfig mc);
 
     /**
-     * \brief Keep the given measurement result as the latest measurement figures,
+     * @brief Keep the given measurement result as the latest measurement figures,
      *        to be utilised by UE RRC functions.
-     * \param cellId the cell ID of the measured cell
-     * \param rsrp measured RSRP value to be saved (in dBm)
-     * \param rsrq measured RSRQ value to be saved (in dB)
-     * \param useLayer3Filtering
-     * \param componentCarrierId
-     * \todo Remove the useLayer3Filtering argument
+     * @param cellId the cell ID of the measured cell
+     * @param rsrp measured RSRP value to be saved (in dBm)
+     * @param rsrq measured RSRQ value to be saved (in dB)
+     * @param useLayer3Filtering
+     * @param componentCarrierId
+     * @todo Remove the useLayer3Filtering argument
      *
      * Implements Section 5.5.3.2 "Layer 3 filtering" of 3GPP TS 36.331. *Layer-3
      * filtering* is applied to the given measurement results before saved to
@@ -647,9 +647,9 @@ class LteUeRrc : public Object
                             uint8_t componentCarrierId);
 
     /**
-     * \brief Evaluate the reporting criteria of a measurement identity and
+     * @brief Evaluate the reporting criteria of a measurement identity and
      *        invoke some reporting actions based on the result.
-     * \param measId the measurement identity to be evaluated
+     * @param measId the measurement identity to be evaluated
      *
      * Implements Section 5.5.4.1 "Measurement report triggering - General" of
      * 3GPP TS 36.331. This function take into use the latest measurement results
@@ -673,10 +673,10 @@ class LteUeRrc : public Object
     void MeasurementReportTriggering(uint8_t measId);
 
     /**
-     * \brief Produce a proper measurement report from the given measurement
+     * @brief Produce a proper measurement report from the given measurement
      *        identity's reporting entry in #m_varMeasReportList and then submit
      *        it to the serving eNodeB.
-     * \param measId the measurement identity which report is to be submitted.
+     * @param measId the measurement identity which report is to be submitted.
      *
      * Implements Section 5.5.5 "Measurement reporting" of 3GPP TS 36.331.
      * Producing a *measurement report* involves several tasks such as:
@@ -707,19 +707,19 @@ class LteUeRrc : public Object
 
     /**
      * Apply radio resource config dedicated.
-     * \param rrcd LteRrcSap::RadioResourceConfigDedicated
+     * @param rrcd LteRrcSap::RadioResourceConfigDedicated
      */
     void ApplyRadioResourceConfigDedicated(LteRrcSap::RadioResourceConfigDedicated rrcd);
     /**
      * Apply radio resource config dedicated secondary carrier.
-     * \param nonCec LteRrcSap::NonCriticalExtensionConfiguration
+     * @param nonCec LteRrcSap::NonCriticalExtensionConfiguration
      */
     void ApplyRadioResourceConfigDedicatedSecondaryCarrier(
         LteRrcSap::NonCriticalExtensionConfiguration nonCec);
     /// Start connection function
     void StartConnection();
     /**
-     * \brief Leave connected mode method
+     * @brief Leave connected mode method
      * Resets the UE back to an appropriate state depending
      * on the nature of cause. For example, the UE is move
      * to the IDLE_START state upon radio link failure. At
@@ -733,13 +733,13 @@ class LteUeRrc : public Object
     void DisposeOldSrb1();
     /**
      * Bid 2 DR bid.
-     * \param bid the BID
-     * \returns the DR bid
+     * @param bid the BID
+     * @returns the DR bid
      */
     uint8_t Bid2Drbid(uint8_t bid);
     /**
      * Switch the UE RRC to the given state.
-     * \param s the destination state
+     * @param s the destination state
      */
     void SwitchToState(State s);
 
@@ -940,7 +940,7 @@ class LteUeRrc : public Object
     // INTERNAL DATA STRUCTURE RELATED TO UE MEASUREMENTS
 
     /**
-     * \brief Includes the accumulated configuration of the measurements to be
+     * @brief Includes the accumulated configuration of the measurements to be
      *        performed by the UE.
      *
      * Based on 3GPP TS 36.331 section 7.1. Also note that some optional variables
@@ -957,7 +957,7 @@ class LteUeRrc : public Object
     };
 
     /**
-     * \brief Includes the accumulated configuration of the measurements to be
+     * @brief Includes the accumulated configuration of the measurements to be
      *        performed by the UE.
      *
      * Based on 3GPP TS 36.331 section 7.1.
@@ -965,7 +965,7 @@ class LteUeRrc : public Object
     VarMeasConfig m_varMeasConfig;
 
     /**
-     * \brief Represents a single measurement reporting entry., which includes
+     * @brief Represents a single measurement reporting entry., which includes
      *        information about a measurement for which the triggering conditions
      *        have been met.
      *
@@ -980,61 +980,61 @@ class LteUeRrc : public Object
     };
 
     /**
-     * \brief The list of active reporting entries, indexed by the measurement
+     * @brief The list of active reporting entries, indexed by the measurement
      *        identity which triggered the reporting. Includes information about
      *        measurements for which the triggering conditions have been met.
      */
     std::map<uint8_t, VarMeasReport> m_varMeasReportList;
 
     /**
-     * \brief List of cell IDs which are responsible for a certain trigger.
+     * @brief List of cell IDs which are responsible for a certain trigger.
      */
     typedef std::list<uint16_t> ConcernedCells_t;
 
     /**
-     * \brief Compose a new reporting entry of the given measurement identity,
+     * @brief Compose a new reporting entry of the given measurement identity,
      *        insert it into #m_varMeasReportList, and set it up for submission
      *        to eNodeB.
-     * \param measId the measurement identity which the new reporting entry will
+     * @param measId the measurement identity which the new reporting entry will
      *               be based upon
-     * \param enteringCells the cells which are responsible for triggering the
+     * @param enteringCells the cells which are responsible for triggering the
      *                      reporting (i.e., successfully fulfilling the entering
      *                      condition of the measurement identity) and will be
      *                      included in the measurement report.
      *
-     * \note If an existing reporting entry with the same measurement identity has
+     * @note If an existing reporting entry with the same measurement identity has
      *       already existed in #m_varMeasReportList, the function will update it
      *       by adding the entering cells into the existing reporting entry.
-     * \note When time-to-trigger is enabled for this measurement identity, the
+     * @note When time-to-trigger is enabled for this measurement identity, the
      *       function will also remove the related trigger from the
      *       #m_enteringTriggerQueue.
      */
     void VarMeasReportListAdd(uint8_t measId, ConcernedCells_t enteringCells);
 
     /**
-     * \brief Remove some cells from an existing reporting entry in
+     * @brief Remove some cells from an existing reporting entry in
      *        #m_varMeasReportList.
-     * \param measId the measurement identity to be removed from
+     * @param measId the measurement identity to be removed from
      *               #m_varMeasReportList, must already exists there, otherwise
      *               an error would be raised
-     * \param leavingCells the cells which are about to be removed
-     * \param reportOnLeave when true, will make the function send one last
+     * @param leavingCells the cells which are about to be removed
+     * @param reportOnLeave when true, will make the function send one last
      *                      measurement report to eNodeB before removing it
      *
-     * \note If a given cell is not found in the reporting entry, the function
+     * @note If a given cell is not found in the reporting entry, the function
      *       will quietly continue.
-     * \note If the removal has removed all the cells in the reporting entry, the
+     * @note If the removal has removed all the cells in the reporting entry, the
      *       function will remove the reporting entry as well.
-     * \note When time-to-trigger is enabled for this measurement identity, the
+     * @note When time-to-trigger is enabled for this measurement identity, the
      *       function will also remove the related trigger from the
      *       #m_leavingTriggerQueue.
      */
     void VarMeasReportListErase(uint8_t measId, ConcernedCells_t leavingCells, bool reportOnLeave);
 
     /**
-     * \brief Remove the reporting entry of the given measurement identity from
+     * @brief Remove the reporting entry of the given measurement identity from
      *        #m_varMeasReportList.
-     * \param measId the measurement identity to be removed from
+     * @param measId the measurement identity to be removed from
      *               #m_varMeasReportList, must already exists there, otherwise
      *               an error would be raised
      *
@@ -1044,7 +1044,7 @@ class LteUeRrc : public Object
     void VarMeasReportListClear(uint8_t measId);
 
     /**
-     * \brief Represents a measurement result from a certain cell.
+     * @brief Represents a measurement result from a certain cell.
      */
     struct MeasValues
     {
@@ -1054,7 +1054,7 @@ class LteUeRrc : public Object
     };
 
     /**
-     * \brief Internal storage of the latest measurement results from all detected
+     * @brief Internal storage of the latest measurement results from all detected
      *        detected cells, indexed by the cell ID where the measurement was
      *        taken from.
      *
@@ -1069,12 +1069,12 @@ class LteUeRrc : public Object
     std::map<uint16_t, MeasValues> m_storedMeasValues;
 
     /**
-     * \brief Stored measure values per carrier.
+     * @brief Stored measure values per carrier.
      */
     std::map<uint16_t, std::map<uint8_t, MeasValues>> m_storedMeasValuesPerCarrier;
 
     /**
-     * \brief Internal storage of the latest measurement results from all detected
+     * @brief Internal storage of the latest measurement results from all detected
      *        detected Secondary carrier component, indexed by the carrier component ID
      *        where the measurement was taken from.
      *
@@ -1092,7 +1092,7 @@ class LteUeRrc : public Object
     std::map<uint16_t, MeasValues> m_storedScellMeasValues;
 
     /**
-     * \brief Represents a single triggered event from a measurement identity
+     * @brief Represents a single triggered event from a measurement identity
      *        which reporting criteria have been fulfilled, but delayed by
      *        time-to-trigger.
      */
@@ -1105,7 +1105,7 @@ class LteUeRrc : public Object
     };
 
     /**
-     * \brief List of triggers that were raised because entering condition have
+     * @brief List of triggers that were raised because entering condition have
      *        been true, but are still delayed from reporting it by
      *        time-to-trigger.
      *
@@ -1116,7 +1116,7 @@ class LteUeRrc : public Object
     std::map<uint8_t, std::list<PendingTrigger_t>> m_enteringTriggerQueue;
 
     /**
-     * \brief List of triggers that were raised because leaving condition have
+     * @brief List of triggers that were raised because leaving condition have
      *        been true, but are still delayed from stopping the reporting by
      *        time-to-trigger.
      *
@@ -1128,13 +1128,13 @@ class LteUeRrc : public Object
     std::map<uint8_t, std::list<PendingTrigger_t>> m_leavingTriggerQueue;
 
     /**
-     * \brief Clear all the waiting triggers in #m_enteringTriggerQueue which are
+     * @brief Clear all the waiting triggers in #m_enteringTriggerQueue which are
      *        associated with the given measurement identity.
-     * \param measId the measurement identity to be processed, must already exists
+     * @param measId the measurement identity to be processed, must already exists
      *               in #m_enteringTriggerQueue, otherwise an error would be
      *               raised
      *
-     * \note The function may conclude that there is nothing to be removed. In
+     * @note The function may conclude that there is nothing to be removed. In
      *       this case, the function will simply ignore quietly.
      *
      * This function is used when the entering condition of the measurement
@@ -1147,15 +1147,15 @@ class LteUeRrc : public Object
     void CancelEnteringTrigger(uint8_t measId);
 
     /**
-     * \brief Remove a specific cell from the waiting triggers in
+     * @brief Remove a specific cell from the waiting triggers in
      *        #m_enteringTriggerQueue which belong to the given measurement
      *        identity.
-     * \param measId the measurement identity to be processed, must already exists
+     * @param measId the measurement identity to be processed, must already exists
      *               in #m_enteringTriggerQueue, otherwise an error would be
      *               raised
-     * \param cellId the cell ID to be removed from the waiting triggers
+     * @param cellId the cell ID to be removed from the waiting triggers
      *
-     * \note The function may conclude that there is nothing to be removed. In
+     * @note The function may conclude that there is nothing to be removed. In
      *       this case, the function will simply ignore quietly.
      *
      * This function is used when a specific neighbour cell no longer fulfills
@@ -1168,13 +1168,13 @@ class LteUeRrc : public Object
     void CancelEnteringTrigger(uint8_t measId, uint16_t cellId);
 
     /**
-     * \brief Clear all the waiting triggers in #m_leavingTriggerQueue which are
+     * @brief Clear all the waiting triggers in #m_leavingTriggerQueue which are
      *        associated with the given measurement identity.
-     * \param measId the measurement identity to be processed, must already exists
+     * @param measId the measurement identity to be processed, must already exists
      *               in #m_leavingTriggerQueue, otherwise an error would be
      *               raised
      *
-     * \note The function may conclude that there is nothing to be removed. In
+     * @note The function may conclude that there is nothing to be removed. In
      *       this case, the function will simply ignore quietly.
      *
      * This function is used when the leaving condition of the measurement
@@ -1187,15 +1187,15 @@ class LteUeRrc : public Object
     void CancelLeavingTrigger(uint8_t measId);
 
     /**
-     * \brief Remove a specific cell from the waiting triggers in
+     * @brief Remove a specific cell from the waiting triggers in
      *        #m_leavingTriggerQueue which belong to the given measurement
      *        identity.
-     * \param measId the measurement identity to be processed, must already exists
+     * @param measId the measurement identity to be processed, must already exists
      *               in #m_leavingTriggerQueue, otherwise an error would be
      *               raised
-     * \param cellId the cell ID to be removed from the waiting triggers
+     * @param cellId the cell ID to be removed from the waiting triggers
      *
-     * \note The function may conclude that there is nothing to be removed. In
+     * @note The function may conclude that there is nothing to be removed. In
      *       this case, the function will simply ignore quietly.
      *
      * This function is used when a specific neighbour cell no longer fulfills
@@ -1215,13 +1215,13 @@ class LteUeRrc : public Object
     Time m_t300;
 
     /**
-     * \brief Invokes ConnectionEstablishmentTimeout() if RRC connection
+     * @brief Invokes ConnectionEstablishmentTimeout() if RRC connection
      *        establishment procedure for this UE takes longer than T300.
      */
     EventId m_connectionTimeout;
 
     /**
-     * \brief Invoked after timer T300 expires, notifying upper layers that RRC
+     * @brief Invoked after timer T300 expires, notifying upper layers that RRC
      *        connection establishment procedure has failed.
      */
     void ConnectionTimeout();
@@ -1272,7 +1272,7 @@ class LteUeRrc : public Object
 
     uint8_t m_connEstFailCount; ///< the counter to count T300 timer expiration
     /**
-     * \brief Radio link failure detected function
+     * @brief Radio link failure detected function
      *
      * Upon detection of radio link failure, the UE is reverted
      * back to idle state and the UE context at eNodeB and EPC
@@ -1284,7 +1284,7 @@ class LteUeRrc : public Object
     void RadioLinkFailureDetected();
 
     /**
-     * \brief Do notify in sync function
+     * @brief Do notify in sync function
      *
      * Triggered upon receiving an in sync indication from UE PHY.
      * When the count equals N311, then T310 is cancelled.
@@ -1292,7 +1292,7 @@ class LteUeRrc : public Object
     void DoNotifyInSync();
 
     /**
-     * \brief Do notify out of sync function
+     * @brief Do notify out of sync function
      *
      * Triggered upon receiving an out of sync indication from UE PHY.
      * When the count equals N310, then T310 is started.
@@ -1300,7 +1300,7 @@ class LteUeRrc : public Object
     void DoNotifyOutOfSync();
 
     /**
-     * \brief Do reset sync indication counter function
+     * @brief Do reset sync indication counter function
      *
      * Reset the sync indication counter
      * if the Qin or Qout condition at PHY
@@ -1310,7 +1310,7 @@ class LteUeRrc : public Object
     void DoResetSyncIndicationCounter();
 
     /**
-     * \brief Reset radio link failure parameters
+     * @brief Reset radio link failure parameters
      *
      * RLF timers and counters should be rest upon:
      *

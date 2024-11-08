@@ -36,15 +36,15 @@ namespace aodv
 class RoutingProtocol;
 
 /**
- * \ingroup aodv
- * \brief maintain list of active neighbors
+ * @ingroup aodv
+ * @brief maintain list of active neighbors
  */
 class Neighbors
 {
   public:
     /**
      * constructor
-     * \param delay the delay time for purging the list of neighbors
+     * @param delay the delay time for purging the list of neighbors
      */
     Neighbors(Time delay);
 
@@ -61,11 +61,11 @@ class Neighbors
         bool close;
 
         /**
-         * \brief Neighbor structure constructor
+         * @brief Neighbor structure constructor
          *
-         * \param ip Ipv4Address entry
-         * \param mac Mac48Address entry
-         * \param t Time expire time
+         * @param ip Ipv4Address entry
+         * @param mac Mac48Address entry
+         * @param t Time expire time
          */
         Neighbor(Ipv4Address ip, Mac48Address mac, Time t)
             : m_neighborAddress(ip),
@@ -78,20 +78,20 @@ class Neighbors
 
     /**
      * Return expire time for neighbor node with address addr, if exists, else return 0.
-     * \param addr the IP address of the neighbor node
-     * \returns the expire time for the neighbor node
+     * @param addr the IP address of the neighbor node
+     * @returns the expire time for the neighbor node
      */
     Time GetExpireTime(Ipv4Address addr);
     /**
      * Check that node with address addr is neighbor
-     * \param addr the IP address to check
-     * \returns true if the node with IP address is a neighbor
+     * @param addr the IP address to check
+     * @returns true if the node with IP address is a neighbor
      */
     bool IsNeighbor(Ipv4Address addr);
     /**
      * Update expire time for entry with address addr, if it exists, else add new entry
-     * \param addr the IP address to check
-     * \param expire the expire time for the address
+     * @param addr the IP address to check
+     * @param expire the expire time for the address
      */
     void Update(Ipv4Address addr, Time expire);
     /// Remove all expired entries
@@ -107,18 +107,18 @@ class Neighbors
 
     /**
      * Add ARP cache to be used to allow layer 2 notifications processing
-     * \param a pointer to the ARP cache to add
+     * @param a pointer to the ARP cache to add
      */
     void AddArpCache(Ptr<ArpCache> a);
     /**
      * Don't use given ARP cache any more (interface is down)
-     * \param a pointer to the ARP cache to delete
+     * @param a pointer to the ARP cache to delete
      */
     void DelArpCache(Ptr<ArpCache> a);
 
     /**
      * Get callback to ProcessTxError
-     * \returns the callback function
+     * @returns the callback function
      */
     Callback<void, const WifiMacHeader&> GetTxErrorCallback() const
     {
@@ -127,7 +127,7 @@ class Neighbors
 
     /**
      * Set link failure callback
-     * \param cb the callback function
+     * @param cb the callback function
      */
     void SetCallback(Callback<void, Ipv4Address> cb)
     {
@@ -136,7 +136,7 @@ class Neighbors
 
     /**
      * Get link failure callback
-     * \returns the link failure callback
+     * @returns the link failure callback
      */
     Callback<void, Ipv4Address> GetCallback() const
     {
@@ -158,13 +158,13 @@ class Neighbors
     /**
      * Find MAC address by IP using list of ARP caches
      *
-     * \param addr the IP address to lookup
-     * \returns the MAC address for the IP address
+     * @param addr the IP address to lookup
+     * @returns the MAC address for the IP address
      */
     Mac48Address LookupMacAddress(Ipv4Address addr);
     /**
      * Process layer 2 TX error notification
-     * \param hdr header of the packet
+     * @param hdr header of the packet
      */
     void ProcessTxError(const WifiMacHeader& hdr);
 };

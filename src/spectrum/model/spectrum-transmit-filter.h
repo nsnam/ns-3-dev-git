@@ -16,9 +16,9 @@ struct SpectrumSignalParameters;
 class SpectrumPhy;
 
 /**
- * \ingroup spectrum
+ * @ingroup spectrum
  *
- * \brief spectrum-aware transmit filter object
+ * @brief spectrum-aware transmit filter object
  *
  * Interface for transmit filters that permit an early discard of signal
  * reception before propagation loss models or receiving Phy objects have
@@ -31,8 +31,8 @@ class SpectrumTransmitFilter : public Object
     SpectrumTransmitFilter();
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -40,14 +40,14 @@ class SpectrumTransmitFilter : public Object
      * Add a transmit filter to be consulted next if this filter does not
      * filter the signal
      *
-     * \param next next transmit filter to add to the chain
+     * @param next next transmit filter to add to the chain
      */
     void SetNext(Ptr<SpectrumTransmitFilter> next);
 
     /**
      * Return the next transmit filter in the chain
      *
-     * \return next transmit filter in the chain
+     * @return next transmit filter in the chain
      */
     Ptr<const SpectrumTransmitFilter> GetNext() const;
 
@@ -56,10 +56,10 @@ class SpectrumTransmitFilter : public Object
      * instead be filtered (discarded) before being processed in this channel
      * and on the receiving Phy.
      *
-     * \param params the spectrum signal parameters.
-     * \param receiverPhy pointer to the receiving SpectrumPhy
+     * @param params the spectrum signal parameters.
+     * @param receiverPhy pointer to the receiving SpectrumPhy
      *
-     * \return whether to perform filtering of the signal
+     * @return whether to perform filtering of the signal
      */
     bool Filter(Ptr<const SpectrumSignalParameters> params, Ptr<const SpectrumPhy> receiverPhy);
 
@@ -71,8 +71,8 @@ class SpectrumTransmitFilter : public Object
      * together, this method will also assign streams to the
      * downstream models.
      *
-     * \param stream the stream index offset start
-     * \return the number of stream indices assigned by this model
+     * @param stream the stream index offset start
+     * @return the number of stream indices assigned by this model
      */
     int64_t AssignStreams(int64_t stream);
 
@@ -83,8 +83,8 @@ class SpectrumTransmitFilter : public Object
      *
      * Subclasses must implement this; those not using random variables can return zero.
      *
-     * \param stream first stream index to use
-     * \return the number of stream indices assigned by this model
+     * @param stream first stream index to use
+     * @return the number of stream indices assigned by this model
      */
     virtual int64_t DoAssignStreams(int64_t stream) = 0;
 
@@ -94,10 +94,10 @@ class SpectrumTransmitFilter : public Object
      * instead be filtered (discarded) before being processed in this channel
      * and on the receiving Phy.
      *
-     * \param params the spectrum signal parameters.
-     * \param receiverPhy pointer to the receiving SpectrumPhy
+     * @param params the spectrum signal parameters.
+     * @param receiverPhy pointer to the receiving SpectrumPhy
      *
-     * \return whether to perform filtering of the signal
+     * @return whether to perform filtering of the signal
      */
     virtual bool DoFilter(Ptr<const SpectrumSignalParameters> params,
                           Ptr<const SpectrumPhy> receiverPhy) = 0;

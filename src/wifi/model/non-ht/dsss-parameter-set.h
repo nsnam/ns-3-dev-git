@@ -15,8 +15,8 @@ namespace ns3
 {
 
 /**
- * \brief The DSSS Parameter Set
- * \ingroup wifi
+ * @brief The DSSS Parameter Set
+ * @ingroup wifi
  *
  * This class knows how to serialise and deserialise the DSSS Parameter Set.
  */
@@ -31,7 +31,7 @@ class DsssParameterSet : public WifiInformationElement
     /**
      * Set the Current Channel field in the DsssParameterSet information element.
      *
-     * \param currentChannel the CurrentChannel field in the DsssParameterSet information element
+     * @param currentChannel the CurrentChannel field in the DsssParameterSet information element
      */
     void SetCurrentChannel(uint8_t currentChannel);
 

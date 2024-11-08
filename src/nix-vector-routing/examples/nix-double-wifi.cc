@@ -25,7 +25,7 @@
  * two Wifi networks on the same channel.
  *
  * IPv4 Network Topology
- * \verbatim
+ * @verbatim
     Wifi 10.1.1.0/24
                    AP
     *    *    *    *
@@ -37,7 +37,7 @@
                                       Wifi 10.1.3.0/24
    \endverbatim
  *
- * \verbatim
+ * @verbatim
     Wifi 2001:1::/64
                    AP
     *    *    *    *
@@ -51,7 +51,7 @@
  *
  * Expected Outputs:
  * IPv4:
- * \verbatim
+ * @verbatim
    Time: +7s, Nix Routing
    Route path from Node 4 to Node 7, Nix Vector: 100011 (6 bits left)
    10.1.1.3                 (Node 4)  ---->   10.1.1.4                 (Node 0)
@@ -60,7 +60,7 @@
    \endverbatim
  *
  * IPv6:
- * \verbatim
+ * @verbatim
    Time: +7s, Nix Routing
    Route path from Node 4 to Node 7, Nix Vector: 100011 (6 bits left)
    2001:1::200:ff:fe00:5    (Node 4)  ---->   fe80::200:ff:fe00:6      (Node 0)

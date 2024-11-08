@@ -24,7 +24,7 @@ class WifiMac;
 class WifiRemoteStationManager;
 
 /**
- * \ingroup wifi
+ * @ingroup wifi
  *
  * WifiProtectionManager is an abstract base class. Each subclass defines a logic
  * to select the protection method for a given frame.
@@ -33,8 +33,8 @@ class WifiProtectionManager : public Object
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     WifiProtectionManager();
@@ -43,13 +43,13 @@ class WifiProtectionManager : public Object
     /**
      * Set the MAC which is using this Protection Manager
      *
-     * \param mac a pointer to the MAC
+     * @param mac a pointer to the MAC
      */
     void SetWifiMac(Ptr<WifiMac> mac);
     /**
      * Set the ID of the link this Protection Manager is associated with.
      *
-     * \param linkId the ID of the link this Protection Manager is associated with
+     * @param linkId the ID of the link this Protection Manager is associated with
      */
     void SetLinkId(uint8_t linkId);
 
@@ -58,9 +58,9 @@ class WifiProtectionManager : public Object
      * frame. Return a null pointer if the protection method is unchanged or the new
      * protection method otherwise.
      *
-     * \param mpdu the MPDU to be added to the current frame
-     * \param txParams the current TX parameters for the current frame
-     * \return a null pointer if the protection method is unchanged or the new
+     * @param mpdu the MPDU to be added to the current frame
+     * @param txParams the current TX parameters for the current frame
+     * @return a null pointer if the protection method is unchanged or the new
      *         protection method otherwise
      */
     virtual std::unique_ptr<WifiProtection> TryAddMpdu(Ptr<const WifiMpdu> mpdu,
@@ -71,9 +71,9 @@ class WifiProtectionManager : public Object
      * current frame. Return a null pointer if the protection method is unchanged or
      * the new protection method otherwise.
      *
-     * \param msdu the MSDU to be aggregated to the current frame
-     * \param txParams the current TX parameters for the current frame
-     * \return a null pointer if the protection method is unchanged or the new
+     * @param msdu the MSDU to be aggregated to the current frame
+     * @param txParams the current TX parameters for the current frame
+     * @return a null pointer if the protection method is unchanged or the new
      *         protection method otherwise
      */
     virtual std::unique_ptr<WifiProtection> TryAggregateMsdu(Ptr<const WifiMpdu> msdu,
@@ -83,7 +83,7 @@ class WifiProtectionManager : public Object
     void DoDispose() override;
 
     /**
-     * \return the remote station manager operating on our link
+     * @return the remote station manager operating on our link
      */
     Ptr<WifiRemoteStationManager> GetWifiRemoteStationManager() const;
 
@@ -94,9 +94,9 @@ class WifiProtectionManager : public Object
      * between the TX width of the protected data frame and the maximum width supported
      * by the solicited station.
      *
-     * \param muRts the MU-RTS Trigger Frame
-     * \param txWidth the TX width of the protected data frame
-     * \param receiver the MAC address of the solicited station
+     * @param muRts the MU-RTS Trigger Frame
+     * @param txWidth the TX width of the protected data frame
+     * @param receiver the MAC address of the solicited station
      */
     void AddUserInfoToMuRts(CtrlTriggerHeader& muRts,
                             MHz_u txWidth,

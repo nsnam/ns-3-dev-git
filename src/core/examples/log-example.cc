@@ -7,9 +7,9 @@
  */
 
 /**
- * \file
- * \ingroup core-examples
- * \ingroup logging
+ * @file
+ * @ingroup core-examples
+ * @ingroup logging
  * Example program illustrating the various logging functions.
  */
 
@@ -53,8 +53,8 @@ class MyEventObject : public Object
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId()
     {

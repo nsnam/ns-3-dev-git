@@ -30,8 +30,8 @@ namespace internal
 {
 
 /**
- * \ingroup object
- * \tparam T \explicit An Information Element type
+ * @ingroup object
+ * @tparam T \explicit An Information Element type
  *
  * Provides the type used to store Information Elements in the tuple held by WifiMgtHeader:
  * - a mandatory Information Element of type T is stored as std::optional\<T\>
@@ -45,7 +45,7 @@ struct GetStoredIe
     typedef std::optional<T> type;
 };
 
-/** \copydoc GetStoredIe */
+/** @copydoc GetStoredIe */
 template <class T>
 struct GetStoredIe<std::optional<T>>
 {
@@ -53,7 +53,7 @@ struct GetStoredIe<std::optional<T>>
     typedef std::optional<T> type;
 };
 
-/** \copydoc GetStoredIe */
+/** @copydoc GetStoredIe */
 template <class T>
 struct GetStoredIe<std::vector<T>>
 {
@@ -61,23 +61,23 @@ struct GetStoredIe<std::vector<T>>
     typedef std::vector<T> type;
 };
 
-/** \copydoc GetStoredIe */
+/** @copydoc GetStoredIe */
 template <class T>
 using GetStoredIeT = typename GetStoredIe<T>::type;
 
 } // namespace internal
 
 /**
- * \ingroup wifi
+ * @ingroup wifi
  * Implement the header for management frames.
- * \tparam Derived \explicit the type of derived management frame
- * \tparam Tuple \explicit A tuple of the types of Information Elements included in the mgt frame
+ * @tparam Derived \explicit the type of derived management frame
+ * @tparam Tuple \explicit A tuple of the types of Information Elements included in the mgt frame
  */
 template <typename Derived, typename Tuple>
 class WifiMgtHeader;
 
 /**
- * \ingroup wifi
+ * @ingroup wifi
  * Base class for implementing management frame headers. This class adopts the CRTP idiom,
  * mainly to allow subclasses to specialize the method used to initialize Information
  * Elements before deserialization (<i>InitForDeserialization</i>).
@@ -88,8 +88,8 @@ class WifiMgtHeader;
  * - the type of an optional Information Element IE is std::optional\<IE\>
  * - the type of an Information Element IE that can appear zero or more times is std::vector\<IE\>
  *
- * \tparam Derived \explicit the type of derived management frame
- * \tparam Elems \explicit sorted list of Information Elements that can be included in mgt frame
+ * @tparam Derived \explicit the type of derived management frame
+ * @tparam Elems \explicit sorted list of Information Elements that can be included in mgt frame
  */
 template <typename Derived, typename... Elems>
 class WifiMgtHeader<Derived, std::tuple<Elems...>> : public Header
@@ -98,8 +98,8 @@ class WifiMgtHeader<Derived, std::tuple<Elems...>> : public Header
     /**
      * Access a (mandatory or optional) Information Element.
      *
-     * \tparam T \explicit the type of the Information Element to return
-     * \return a reference to the Information Element of the given type
+     * @tparam T \explicit the type of the Information Element to return
+     * @return a reference to the Information Element of the given type
      */
     template <typename T,
               std::enable_if_t<(std::is_same_v<std::vector<T>, Elems> + ...) == 0, int> = 0>
@@ -108,8 +108,8 @@ class WifiMgtHeader<Derived, std::tuple<Elems...>> : public Header
     /**
      * Access a (mandatory or optional) Information Element.
      *
-     * \tparam T \explicit the type of the Information Element to return
-     * \return a const reference to the Information Element of the given type
+     * @tparam T \explicit the type of the Information Element to return
+     * @return a const reference to the Information Element of the given type
      */
     template <typename T,
               std::enable_if_t<(std::is_same_v<std::vector<T>, Elems> + ...) == 0, int> = 0>
@@ -118,8 +118,8 @@ class WifiMgtHeader<Derived, std::tuple<Elems...>> : public Header
     /**
      * Access an Information Element that can be present zero or more times.
      *
-     * \tparam T \explicit the type of the Information Element to return
-     * \return a reference to the Information Element of the given type
+     * @tparam T \explicit the type of the Information Element to return
+     * @return a reference to the Information Element of the given type
      */
     template <typename T,
               std::enable_if_t<(std::is_same_v<std::vector<T>, Elems> + ...) == 1, int> = 0>
@@ -128,8 +128,8 @@ class WifiMgtHeader<Derived, std::tuple<Elems...>> : public Header
     /**
      * Access an Information Element that can be present zero or more times.
      *
-     * \tparam T \explicit the type of the Information Element to return
-     * \return a reference to the Information Element of the given type
+     * @tparam T \explicit the type of the Information Element to return
+     * @return a reference to the Information Element of the given type
      */
     template <typename T,
               std::enable_if_t<(std::is_same_v<std::vector<T>, Elems> + ...) == 1, int> = 0>
@@ -142,8 +142,8 @@ class WifiMgtHeader<Derived, std::tuple<Elems...>> : public Header
 
   protected:
     /**
-     * \tparam IE \deduced the type of the Information Element to initialize for deserialization
-     * \param optElem the object to initialize for deserializing the information element into
+     * @tparam IE \deduced the type of the Information Element to initialize for deserialization
+     * @param optElem the object to initialize for deserializing the information element into
      *
      * The Information Element object is constructed by calling the object's default constructor.
      */
@@ -151,34 +151,34 @@ class WifiMgtHeader<Derived, std::tuple<Elems...>> : public Header
     void InitForDeserialization(std::optional<IE>& optElem);
 
     /**
-     * \param optElem the EhtCapabilities object to initialize for deserializing the
+     * @param optElem the EhtCapabilities object to initialize for deserializing the
      *                information element into
      */
     void InitForDeserialization(std::optional<EhtCapabilities>& optElem);
 
-    /** \copydoc ns3::Header::Print */
+    /** @copydoc ns3::Header::Print */
     void PrintImpl(std::ostream& os) const;
-    /** \copydoc ns3::Header::GetSerializedSize */
+    /** @copydoc ns3::Header::GetSerializedSize */
     uint32_t GetSerializedSizeImpl() const;
-    /** \copydoc ns3::Header::Serialize */
+    /** @copydoc ns3::Header::Serialize */
     void SerializeImpl(Buffer::Iterator start) const;
-    /** \copydoc ns3::Header::Deserialize */
+    /** @copydoc ns3::Header::Deserialize */
     uint32_t DeserializeImpl(Buffer::Iterator start);
 
     /**
-     * \tparam T \deduced the type of the Information Element
-     * \param elem the optional Information Element
-     * \param start the buffer iterator pointing to where deserialization starts
-     * \return an iterator pointing to where deserialization terminated
+     * @tparam T \deduced the type of the Information Element
+     * @param elem the optional Information Element
+     * @param start the buffer iterator pointing to where deserialization starts
+     * @return an iterator pointing to where deserialization terminated
      */
     template <typename T>
     Buffer::Iterator DoDeserialize(std::optional<T>& elem, Buffer::Iterator start);
 
     /**
-     * \tparam T \deduced the type of the Information Elements
-     * \param elems a vector of Information Elements
-     * \param start the buffer iterator pointing to where deserialization starts
-     * \return an iterator pointing to where deserialization terminated
+     * @tparam T \deduced the type of the Information Elements
+     * @param elems a vector of Information Elements
+     * @param start the buffer iterator pointing to where deserialization starts
+     * @return an iterator pointing to where deserialization terminated
      */
     template <typename T>
     Buffer::Iterator DoDeserialize(std::vector<T>& elems, Buffer::Iterator start);
@@ -190,38 +190,38 @@ class WifiMgtHeader<Derived, std::tuple<Elems...>> : public Header
 };
 
 /**
- * \ingroup wifi
+ * @ingroup wifi
  *  Inspect a type to deduce whether it is an Information Element that can be included in a
  *  Per-STA Profile subelement of a Multi-Link Element.
- *  \tparam T \explicit The type to inspect.
+ *  @tparam T \explicit The type to inspect.
  */
 template <class T>
 struct CanBeInPerStaProfile : std::true_type
 {
 };
 
-/** \copydoc CanBeInPerStaProfile */
+/** @copydoc CanBeInPerStaProfile */
 template <class T>
 inline constexpr bool CanBeInPerStaProfileV = CanBeInPerStaProfile<T>::value;
 
 /**
- * \ingroup wifi
+ * @ingroup wifi
  * Implement the header for management frames that can be included in a Per-STA Profile
  * subelement of a Multi-Link Element.
- * \tparam Derived \explicit the type of derived management frame
- * \tparam Tuple \explicit A tuple of the types of Information Elements included in the mgt frame
+ * @tparam Derived \explicit the type of derived management frame
+ * @tparam Tuple \explicit A tuple of the types of Information Elements included in the mgt frame
  */
 template <typename Derived, typename Tuple>
 class MgtHeaderInPerStaProfile;
 
 /**
- * \ingroup wifi
+ * @ingroup wifi
  *
  * Add methods needed to serialize/deserialize a management header into a Per-STA Profile
  * subelement of a Multi-Link Element.
  *
- * \tparam Derived \explicit the type of derived management frame
- * \tparam Elems \explicit sorted list of Information Elements that can be included in mgt frame
+ * @tparam Derived \explicit the type of derived management frame
+ * @tparam Elems \explicit sorted list of Information Elements that can be included in mgt frame
  */
 template <typename Derived, typename... Elems>
 class MgtHeaderInPerStaProfile<Derived, std::tuple<Elems...>>
@@ -229,8 +229,8 @@ class MgtHeaderInPerStaProfile<Derived, std::tuple<Elems...>>
 {
   public:
     /**
-     * \param frame the frame containing the Multi-Link Element
-     * \return the number of bytes that are needed to serialize this header into a Per-STA Profile
+     * @param frame the frame containing the Multi-Link Element
+     * @return the number of bytes that are needed to serialize this header into a Per-STA Profile
      *         subelement of the Multi-Link Element
      */
     uint32_t GetSerializedSizeInPerStaProfile(const Derived& frame) const;
@@ -238,18 +238,18 @@ class MgtHeaderInPerStaProfile<Derived, std::tuple<Elems...>>
     /**
      * Serialize this header into a Per-STA Profile subelement of a Multi-Link Element
      *
-     * \param start an iterator which points to where the header should be written
-     * \param frame the frame containing the Multi-Link Element
+     * @param start an iterator which points to where the header should be written
+     * @param frame the frame containing the Multi-Link Element
      */
     void SerializeInPerStaProfile(Buffer::Iterator start, const Derived& frame) const;
 
     /**
      * Deserialize this header from a Per-STA Profile subelement of a Multi-Link Element.
      *
-     * \param start an iterator which points to where the header should be read from
-     * \param length the expected number of bytes to read
-     * \param frame the frame containing the Multi-Link Element
-     * \return the number of bytes read
+     * @param start an iterator which points to where the header should be read from
+     * @param length the expected number of bytes to read
+     * @param frame the frame containing the Multi-Link Element
+     * @return the number of bytes read
      */
     uint32_t DeserializeFromPerStaProfile(Buffer::Iterator start,
                                           uint16_t length,
@@ -261,7 +261,7 @@ class MgtHeaderInPerStaProfile<Derived, std::tuple<Elems...>>
      * shall be invoked when the deserialization has been completed (i.e., the Non-Inheritance
      * element, if present, has been deserialized).
      *
-     * \param frame the frame containing the Multi-Link Element
+     * @param frame the frame containing the Multi-Link Element
      */
     void CopyIesFromContainingFrame(const Derived& frame);
 
@@ -269,8 +269,8 @@ class MgtHeaderInPerStaProfile<Derived, std::tuple<Elems...>>
     using WifiMgtHeader<Derived, std::tuple<Elems...>>::InitForDeserialization;
 
     /**
-     * \param frame the frame containing the Multi-Link Element
-     * \return the number of bytes that are needed to serialize this header into a Per-STA Profile
+     * @param frame the frame containing the Multi-Link Element
+     * @return the number of bytes that are needed to serialize this header into a Per-STA Profile
      *         subelement of the Multi-Link Element
      */
     uint32_t GetSerializedSizeInPerStaProfileImpl(const Derived& frame) const;
@@ -278,18 +278,18 @@ class MgtHeaderInPerStaProfile<Derived, std::tuple<Elems...>>
     /**
      * Serialize this header into a Per-STA Profile subelement of a Multi-Link Element
      *
-     * \param start an iterator which points to where the header should be written
-     * \param frame the frame containing the Multi-Link Element
+     * @param start an iterator which points to where the header should be written
+     * @param frame the frame containing the Multi-Link Element
      */
     void SerializeInPerStaProfileImpl(Buffer::Iterator start, const Derived& frame) const;
 
     /**
      * Deserialize this header from a Per-STA Profile subelement of a Multi-Link Element.
      *
-     * \param start an iterator which points to where the header should be read from
-     * \param length the expected number of bytes to read
-     * \param frame the frame containing the Multi-Link Element
-     * \return the number of bytes read
+     * @param start an iterator which points to where the header should be read from
+     * @param length the expected number of bytes to read
+     * @param frame the frame containing the Multi-Link Element
+     * @return the number of bytes read
      */
     uint32_t DeserializeFromPerStaProfileImpl(Buffer::Iterator start,
                                               uint16_t length,
@@ -301,7 +301,7 @@ class MgtHeaderInPerStaProfile<Derived, std::tuple<Elems...>>
     void SetMleContainingFrame() const;
 
     /**
-     * \param optElem the MultiLinkElement object to initialize for deserializing the
+     * @param optElem the MultiLinkElement object to initialize for deserializing the
      *                information element into
      */
     void InitForDeserialization(std::optional<MultiLinkElement>& optElem);
@@ -391,9 +391,9 @@ namespace internal
 {
 
 /**
- * \tparam T \deduced the type of the Information Element
- * \param elem the optional Information Element
- * \return the serialized size of the Information Element, if present, or 0, otherwise
+ * @tparam T \deduced the type of the Information Element
+ * @param elem the optional Information Element
+ * @return the serialized size of the Information Element, if present, or 0, otherwise
  */
 template <typename T>
 uint16_t
@@ -403,9 +403,9 @@ DoGetSerializedSize(const std::optional<T>& elem)
 }
 
 /**
- * \tparam T \deduced the type of the Information Elements
- * \param elems a vector of Information Elements
- * \return the serialized size of the Information Elements
+ * @tparam T \deduced the type of the Information Elements
+ * @param elems a vector of Information Elements
+ * @return the serialized size of the Information Elements
  */
 template <typename T>
 uint16_t
@@ -437,10 +437,10 @@ namespace internal
 {
 
 /**
- * \tparam T \deduced the type of the Information Element
- * \param elem the optional Information Element
- * \param start the buffer iterator pointing to where serialization starts
- * \return an iterator pointing to where serialization terminated
+ * @tparam T \deduced the type of the Information Element
+ * @param elem the optional Information Element
+ * @param start the buffer iterator pointing to where serialization starts
+ * @return an iterator pointing to where serialization terminated
  */
 template <typename T>
 Buffer::Iterator
@@ -450,10 +450,10 @@ DoSerialize(const std::optional<T>& elem, Buffer::Iterator start)
 }
 
 /**
- * \tparam T \deduced the type of the Information Elements
- * \param elems a vector of Information Elements
- * \param start the buffer iterator pointing to where serialization starts
- * \return an iterator pointing to where serialization terminated
+ * @tparam T \deduced the type of the Information Elements
+ * @param elems a vector of Information Elements
+ * @param start the buffer iterator pointing to where serialization starts
+ * @return an iterator pointing to where serialization terminated
  */
 template <typename T>
 Buffer::Iterator
@@ -562,9 +562,9 @@ namespace internal
 {
 
 /**
- * \tparam T \deduced the type of the Information Element
- * \param elem the optional Information Element
- * \param os the output stream
+ * @tparam T \deduced the type of the Information Element
+ * @param elem the optional Information Element
+ * @param os the output stream
  */
 template <typename T>
 void
@@ -577,9 +577,9 @@ DoPrint(const std::optional<T>& elem, std::ostream& os)
 }
 
 /**
- * \tparam T \deduced the type of the Information Elements
- * \param elems a vector of Information Elements
- * \param os the output stream
+ * @tparam T \deduced the type of the Information Elements
+ * @param elems a vector of Information Elements
+ * @param os the output stream
  */
 template <typename T>
 void
@@ -608,11 +608,11 @@ namespace internal
 {
 
 /**
- * \tparam T \deduced the type of the given Information Element
- * \tparam Derived \deduced the type of the containing management frame
- * \param elem the given Information Element
- * \param frame the containing management frame
- * \return whether the given Information Element shall be serialized in a Per-STA Profile
+ * @tparam T \deduced the type of the given Information Element
+ * @tparam Derived \deduced the type of the containing management frame
+ * @param elem the given Information Element
+ * @param frame the containing management frame
+ * @return whether the given Information Element shall be serialized in a Per-STA Profile
  *         subelement of the Multi-Link Element included in the containing management frame
  */
 template <typename T, typename Derived>
@@ -643,11 +643,11 @@ MustBeSerializedInPerStaProfile(const std::optional<T>& elem, const Derived& fra
 }
 
 /**
- * \tparam T \deduced the type of the given vector of Information Elements
- * \tparam Derived \deduced the type of the containing management frame
- * \param elems the given vector of Information Elements
- * \param frame the containing management frame
- * \return whether the given Information Elements shall be serialized in a Per-STA Profile
+ * @tparam T \deduced the type of the given vector of Information Elements
+ * @tparam Derived \deduced the type of the containing management frame
+ * @param elems the given vector of Information Elements
+ * @param frame the containing management frame
+ * @return whether the given Information Elements shall be serialized in a Per-STA Profile
  *         subelement of the Multi-Link Element included in the containing management frame
  */
 template <typename T, typename Derived>
@@ -678,11 +678,11 @@ MustBeSerializedInPerStaProfile(const std::vector<T>& elems, const Derived& fram
 }
 
 /**
- * \tparam T \deduced the type of the given Information Element
- * \tparam Derived \deduced the type of the containing management frame
- * \param elem the given Information Element
- * \param frame the containing management frame
- * \return a pair (Element ID, Element ID Extension) if the given Information Element shall be
+ * @tparam T \deduced the type of the given Information Element
+ * @tparam Derived \deduced the type of the containing management frame
+ * @param elem the given Information Element
+ * @param frame the containing management frame
+ * @return a pair (Element ID, Element ID Extension) if the given Information Element shall be
  *         listed in the Non-Inheritance IE of the Per-STA Profile subelement of the Multi-Link
  *         Element included in the containing management frame
  */
@@ -699,11 +699,11 @@ MustBeListedInNonInheritance(const std::optional<T>& elem, const Derived& frame)
 }
 
 /**
- * \tparam T \deduced the type of the given vector of Information Elements
- * \tparam Derived \deduced the type of the containing management frame
- * \param elems the given Information Elements
- * \param frame the containing management frame
- * \return a pair (Element ID, Element ID Extension) if the given Information Element shall be
+ * @tparam T \deduced the type of the given vector of Information Elements
+ * @tparam Derived \deduced the type of the containing management frame
+ * @param elems the given Information Elements
+ * @param frame the containing management frame
+ * @return a pair (Element ID, Element ID Extension) if the given Information Element shall be
  *         listed in the Non-Inheritance IE of the Per-STA Profile subelement of the Multi-Link
  *         Element included in the containing management frame
  */
@@ -814,10 +814,10 @@ namespace internal
 {
 
 /**
- * \tparam T \deduced the type of the given Information Element
- * \tparam Derived \deduced the type of the containing management frame
- * \param elem the given Information Element
- * \param frame the containing management frame
+ * @tparam T \deduced the type of the given Information Element
+ * @tparam Derived \deduced the type of the containing management frame
+ * @param elem the given Information Element
+ * @param frame the containing management frame
  *
  * Copy the given Information Element from the containing frame to the Per-STA Profile subelement
  * of the Multi-Link Element, if the Information Element has been inherited (i.e., it is present
@@ -835,10 +835,10 @@ DoCopyIeFromContainingFrame(std::optional<T>& elem, const Derived& frame)
 }
 
 /**
- * \tparam T \deduced the type of the given vector of Information Elements
- * \tparam Derived \deduced the type of the containing management frame
- * \param elems the given vector of Information Elements
- * \param frame the containing management frame
+ * @tparam T \deduced the type of the given vector of Information Elements
+ * @tparam Derived \deduced the type of the containing management frame
+ * @param elems the given vector of Information Elements
+ * @param frame the containing management frame
  *
  * Copy the given Information Element from the containing frame to the Per-STA Profile subelement
  * of the Multi-Link Element, if the Information Element has been inherited (i.e., it is present
@@ -906,9 +906,9 @@ namespace internal
 {
 
 /**
- * \tparam T \deduced the type of the given Information Element
- * \param elem the given Information Element
- * \param nonInheritance the Non-Inheritance information element
+ * @tparam T \deduced the type of the given Information Element
+ * @param elem the given Information Element
+ * @param nonInheritance the Non-Inheritance information element
  *
  * Remove the given Information Element from this header, if it is present and is listed in
  * the given Non-Inheritance element.
@@ -924,9 +924,9 @@ RemoveIfNotInherited(std::optional<T>& elem, const NonInheritance& nonInheritanc
 }
 
 /**
- * \tparam T \deduced the type of the given vector of Information Elements
- * \param elem the given Information Elements
- * \param nonInheritance the Non-Inheritance information element
+ * @tparam T \deduced the type of the given vector of Information Elements
+ * @param elem the given Information Elements
+ * @param nonInheritance the Non-Inheritance information element
  *
  * Remove the given Information Elements from this header, if they are present and are listed in
  * the given Non-Inheritance element.

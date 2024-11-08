@@ -13,8 +13,8 @@
 #include <sstream>
 
 /**
- * \file
- * \ingroup attribute_Pointer
+ * @file
+ * @ingroup attribute_Pointer
  * ns3::PointerValue attribute value implementations.
  */
 

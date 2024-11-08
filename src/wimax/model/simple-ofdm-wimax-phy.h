@@ -33,8 +33,8 @@ class Packet;
 class SimpleOfdmWimaxChannel;
 
 /**
- * \ingroup wimax
- * \brief SimpleOfdmWimaxPhy class
+ * @ingroup wimax
+ * @brief SimpleOfdmWimaxPhy class
  */
 class SimpleOfdmWimaxPhy : public WimaxPhy
 {
@@ -52,66 +52,66 @@ class SimpleOfdmWimaxPhy : public WimaxPhy
     };
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     SimpleOfdmWimaxPhy();
     /**
      * Constructor
      *
-     * \param tracesPath trace path
+     * @param tracesPath trace path
      */
     SimpleOfdmWimaxPhy(char* tracesPath);
     ~SimpleOfdmWimaxPhy() override;
     /**
-     * \brief if called with true it will enable the loss model
-     * \param loss set to true to enable the loss model
+     * @brief if called with true it will enable the loss model
+     * @param loss set to true to enable the loss model
      */
     void ActivateLoss(bool loss);
     /**
-     * \brief Set the path of the repository containing the traces
-     * \param tracesPath the path to the repository.
+     * @brief Set the path of the repository containing the traces
+     * @param tracesPath the path to the repository.
      *  see snr-to-block-error-rate-manager.h for more details.
      */
     void SetSNRToBlockErrorRateTracesPath(char* tracesPath);
     /**
      * Attach the physical layer to a channel.
-     * \param channel the channel to which the physical layer will be attached
+     * @param channel the channel to which the physical layer will be attached
      */
     void DoAttach(Ptr<WimaxChannel> channel) override;
     /**
-     * \brief set the callback function to call when a burst is received
-     * \param callback the receive callback function
+     * @brief set the callback function to call when a burst is received
+     * @param callback the receive callback function
      */
     void SetReceiveCallback(Callback<void, Ptr<PacketBurst>, Ptr<WimaxConnection>> callback);
     /**
-     * \brief Sends a burst on the channel
-     * \param burst the burst to send
-     * \param modulationType the modulation that will be used to send this burst
-     * \param direction set to uplink or downlink
+     * @brief Sends a burst on the channel
+     * @param burst the burst to send
+     * @param modulationType the modulation that will be used to send this burst
+     * @param direction set to uplink or downlink
      */
     void Send(Ptr<PacketBurst> burst, WimaxPhy::ModulationType modulationType, uint8_t direction);
     /**
-     * \brief Sends a burst on the channel
-     * \param params parameters
-     * \see SendParams
+     * @brief Sends a burst on the channel
+     * @param params parameters
+     * @see SendParams
      */
     void Send(SendParams* params) override;
     /**
-     * \brief returns the type this physical layer
-     * \return always  WimaxPhy::simpleOfdmWimaxPhy;
+     * @brief returns the type this physical layer
+     * @return always  WimaxPhy::simpleOfdmWimaxPhy;
      */
     WimaxPhy::PhyType GetPhyType() const override;
     /**
-     * \brief start the reception of a fec block
-     * \param burstSize the burst size
-     * \param isFirstBlock true if this block is the first one, false otherwise
-     * \param frequency the frequency in which the fec block is being received
-     * \param modulationType the modulation used to transmit this fec Block
-     * \param direction set to uplink and downlink
-     * \param rxPower the received power.
-     * \param burst the burst to be sent
+     * @brief start the reception of a fec block
+     * @param burstSize the burst size
+     * @param isFirstBlock true if this block is the first one, false otherwise
+     * @param frequency the frequency in which the fec block is being received
+     * @param modulationType the modulation used to transmit this fec Block
+     * @param direction set to uplink and downlink
+     * @param rxPower the received power.
+     * @param burst the burst to be sent
      */
 
     void StartReceive(uint32_t burstSize,
@@ -123,72 +123,72 @@ class SimpleOfdmWimaxPhy : public WimaxPhy
                       Ptr<PacketBurst> burst);
 
     /**
-     * \return the bandwidth
+     * @return the bandwidth
      */
     uint32_t GetBandwidth() const;
     /**
-     * \brief Set the bandwidth
-     * \param BW the bandwidth
+     * @brief Set the bandwidth
+     * @param BW the bandwidth
      */
     void SetBandwidth(uint32_t BW);
     /**
-     * \return the transmission power
+     * @return the transmission power
      */
     double GetTxPower() const;
     /**
-     * \brief set the transmission power
-     * \param txPower the transmission power
+     * @brief set the transmission power
+     * @param txPower the transmission power
      */
     void SetTxPower(double txPower);
     /**
-     * \return the noise figure
+     * @return the noise figure
      */
     double GetNoiseFigure() const;
     /**
-     * \brief set the noise figure of the device
-     * \param nf the noise figure
+     * @brief set the noise figure of the device
+     * @param nf the noise figure
      */
     void SetNoiseFigure(double nf);
 
     /**
      * Public method used to fire a PhyTxBegin trace.  Implemented for encapsulation
      * purposes.
-     * \param burst the packet burst
+     * @param burst the packet burst
      */
     void NotifyTxBegin(Ptr<PacketBurst> burst);
 
     /**
      * Public method used to fire a PhyTxEnd trace.  Implemented for encapsulation
      * purposes.
-     * \param burst the packet burst
+     * @param burst the packet burst
      */
     void NotifyTxEnd(Ptr<PacketBurst> burst);
 
     /**
      * Public method used to fire a PhyTxDrop trace.  Implemented for encapsulation
      * purposes.
-     * \param burst the packet burst
+     * @param burst the packet burst
      */
     void NotifyTxDrop(Ptr<PacketBurst> burst);
 
     /**
      * Public method used to fire a PhyRxBegin trace.  Implemented for encapsulation
      * purposes.
-     * \param burst the packet burst
+     * @param burst the packet burst
      */
     void NotifyRxBegin(Ptr<PacketBurst> burst);
 
     /**
      * Public method used to fire a PhyRxEnd trace.  Implemented for encapsulation
      * purposes.
-     * \param burst the packet burst
+     * @param burst the packet burst
      */
     void NotifyRxEnd(Ptr<PacketBurst> burst);
 
     /**
      * Public method used to fire a PhyRxDrop trace.  Implemented for encapsulation
      * purposes.
-     * \param burst the packet burst
+     * @param burst the packet burst
      */
     void NotifyRxDrop(Ptr<PacketBurst> burst);
 
@@ -197,80 +197,80 @@ class SimpleOfdmWimaxPhy : public WimaxPhy
      * used by this model.  Return the number of streams (possibly zero) that
      * have been assigned.
      *
-     * \param stream first stream index to use
-     * \return the number of stream indices assigned by this model
+     * @param stream first stream index to use
+     * @return the number of stream indices assigned by this model
      */
     int64_t AssignStreams(int64_t stream) override;
 
   private:
     /**
      * Get transmission time
-     * \param size the size
-     * \param modulationType the modulation type
-     * \returns the transmission time
+     * @param size the size
+     * @param modulationType the modulation type
+     * @returns the transmission time
      */
     Time DoGetTransmissionTime(uint32_t size,
                                WimaxPhy::ModulationType modulationType) const override;
     /**
      * Get number of symbols
-     * \param size the size
-     * \param modulationType the modulation type
-     * \returns the number of symbols
+     * @param size the size
+     * @param modulationType the modulation type
+     * @returns the number of symbols
      */
     uint64_t DoGetNrSymbols(uint32_t size, WimaxPhy::ModulationType modulationType) const override;
     /**
      * Get number of bytes
-     * \param symbols the symbols
-     * \param modulationType the modulation type
-     * \returns the number of bytes
+     * @param symbols the symbols
+     * @param modulationType the modulation type
+     * @returns the number of bytes
      */
     uint64_t DoGetNrBytes(uint32_t symbols, WimaxPhy::ModulationType modulationType) const override;
     /**
      * Convert burst to bits
-     * \param burst the packet burst
-     * \returns the BVEC
+     * @param burst the packet burst
+     * @returns the BVEC
      */
     Bvec ConvertBurstToBits(Ptr<const PacketBurst> burst);
     /**
      * Convert bits to burst
-     * \param buffer the BVEC
-     * \returns the packet burst
+     * @param buffer the BVEC
+     * @returns the packet burst
      */
     Ptr<PacketBurst> ConvertBitsToBurst(Bvec buffer);
     /**
      * Create FEC blocks
-     * \param buffer the BVEC
-     * \param modulationType the modulation type
+     * @param buffer the BVEC
+     * @param modulationType the modulation type
      */
     void CreateFecBlocks(const Bvec& buffer, WimaxPhy::ModulationType modulationType);
     /**
      * Recreate buffer
-     * \returns BVEC
+     * @returns BVEC
      */
     Bvec RecreateBuffer();
     /**
      * Get FEC block size
-     * \param type the modulation type
-     * \returns the FEC block size
+     * @param type the modulation type
+     * @returns the FEC block size
      */
     uint32_t GetFecBlockSize(WimaxPhy::ModulationType type) const;
     /**
      * Get coded FEC block size
-     * \param modulationType the modulation type
-     * \returns the coded FEC block size
+     * @param modulationType the modulation type
+     * @returns the coded FEC block size
      */
     uint32_t GetCodedFecBlockSize(WimaxPhy::ModulationType modulationType) const;
     /**
      * Set block parameters
-     * \param burstSize the burst size
-     * \param modulationType the modulation type
+     * @param burstSize the burst size
+     * @param modulationType the modulation type
      */
     void SetBlockParameters(uint32_t burstSize, WimaxPhy::ModulationType modulationType);
     /**
      * Get number of blocks
-     * \param burstSize the burst size
-     * \param modulationType the modulation type
-     * \returns the number of blocks
+     * @param burstSize the burst size
+     * @param modulationType the modulation type
+     * @returns the number of blocks
      */
     uint16_t GetNrBlocks(uint32_t burstSize, WimaxPhy::ModulationType modulationType) const;
     void DoDispose() override;
@@ -278,22 +278,22 @@ class SimpleOfdmWimaxPhy : public WimaxPhy
     void EndSend();
     /**
      * End send FEC block
-     * \param modulationType the modulation type
-     * \param direction the direction
+     * @param modulationType the modulation type
+     * @param direction the direction
      */
     void EndSendFecBlock(WimaxPhy::ModulationType modulationType, uint8_t direction);
     /**
      * End receive
-     * \param burst
+     * @param burst
      */
     void EndReceive(Ptr<const PacketBurst> burst);
     /**
      * End receive FEC block
-     * \param burstSize the burst size
-     * \param modulationType the modulation type
-     * \param direction the direction
-     * \param drop whether to drop
-     * \param burst the burst
+     * @param burstSize the burst size
+     * @param modulationType the modulation type
+     * @param direction the direction
+     * @param drop whether to drop
+     * @param burst the burst
      */
     void EndReceiveFecBlock(uint32_t burstSize,
                             WimaxPhy::ModulationType modulationType,
@@ -302,17 +302,17 @@ class SimpleOfdmWimaxPhy : public WimaxPhy
                             Ptr<PacketBurst> burst);
     /**
      * Start end dummy FEC block
-     * \param isFirstBlock is the first block?
-     * \param modulationType the modulation type
-     * \param direction the direction
+     * @param isFirstBlock is the first block?
+     * @param modulationType the modulation type
+     * @param direction the direction
      */
     void StartSendDummyFecBlock(bool isFirstBlock,
                                 WimaxPhy::ModulationType modulationType,
                                 uint8_t direction);
     /**
      * Get block transmission time
-     * \param modulationType the modulation type
-     * \returns the block transmission time
+     * @param modulationType the modulation type
+     * @returns the block transmission time
      */
     Time GetBlockTransmissionTime(WimaxPhy::ModulationType modulationType) const;
     /// Set data rates
@@ -322,109 +322,109 @@ class SimpleOfdmWimaxPhy : public WimaxPhy
 
     /**
      * Get moduleation FEC parameters
-     * \param modulationType the modulation type
-     * \param bitsPerSymbol the number of bits per symbol
-     * \param fecCode the FEC code
+     * @param modulationType the modulation type
+     * @param bitsPerSymbol the number of bits per symbol
+     * @param fecCode the FEC code
      */
     void GetModulationFecParams(WimaxPhy::ModulationType modulationType,
                                 uint8_t& bitsPerSymbol,
                                 double& fecCode) const;
     /**
      * Calculate data rate
-     * \param modulationType the modulation type
-     * \returns the data rate
+     * @param modulationType the modulation type
+     * @returns the data rate
      */
     uint32_t CalculateDataRate(WimaxPhy::ModulationType modulationType) const;
     /**
      * Get data rate
-     * \param modulationType the modulation type
-     * \returns the data rate
+     * @param modulationType the modulation type
+     * @returns the data rate
      */
     uint32_t DoGetDataRate(WimaxPhy::ModulationType modulationType) const override;
     /**
      * Get TTG
-     * \returns the TTG
+     * @returns the TTG
      */
     uint16_t DoGetTtg() const override;
     /**
      * Get RTG
-     * \returns the RTG
+     * @returns the RTG
      */
     uint16_t DoGetRtg() const override;
     /**
      * Get frame duration code
-     * \returns the frame duration code
+     * @returns the frame duration code
      */
     uint8_t DoGetFrameDurationCode() const override;
     /**
      * Get frame duration
-     * \param frameDurationCode the frame duration code
-     * \returns the frame duration
+     * @param frameDurationCode the frame duration code
+     * @returns the frame duration
      */
     Time DoGetFrameDuration(uint8_t frameDurationCode) const override;
     /// Set Phy parameters
     void DoSetPhyParameters() override;
     /**
      * Get NFFT
-     * \returns the NFFT
+     * @returns the NFFT
      */
     uint16_t DoGetNfft() const override;
     /**
      * Set NFFT
-     * \param nfft the NFFT
+     * @param nfft the NFFT
      */
     void DoSetNfft(uint16_t nfft);
     /**
      * Get sampling factor
-     * \returns the sampling factor
+     * @returns the sampling factor
      */
     double DoGetSamplingFactor() const override;
     /**
      * Get sampling frequency
-     * \returns the sampling frequency
+     * @returns the sampling frequency
      */
     double DoGetSamplingFrequency() const override;
     /**
      * Get G value
-     * \returns the G value
+     * @returns the G value
      */
     double DoGetGValue() const override;
     /**
      * Set G value
-     * \param g the G value
+     * @param g the G value
      */
     void DoSetGValue(double g);
 
     /**
      * Get receive gain
-     * \returns the receive gain
+     * @returns the receive gain
      */
     double GetRxGain() const;
     /**
      * Set receive gsain
-     * \param rxgain the receive gain
+     * @param rxgain the receive gain
      */
     void SetRxGain(double rxgain);
 
     /**
      * Get transmit gain
-     * \returns the transmit gain
+     * @returns the transmit gain
      */
     double GetTxGain() const;
     /**
      * Set transmit gain
-     * \param txgain the transmit gain
+     * @param txgain the transmit gain
      */
     void SetTxGain(double txgain);
 
     /**
      * Get trace file path
-     * \returns the trace file path name
+     * @returns the trace file path name
      */
     std::string GetTraceFilePath() const;
     /**
      * Set trace file path
-     * \param path the trace file path
+     * @param path the trace file path
      */
     void SetTraceFilePath(std::string path);
 
@@ -468,8 +468,8 @@ class SimpleOfdmWimaxPhy : public WimaxPhy
      * The trace source fired when a packet begins the transmission process on
      * the medium.
      *
-     * \see class CallBackTraceSource
-     * \deprecated The non-const \c Ptr<PacketBurst> argument is deprecated
+     * @see class CallBackTraceSource
+     * @deprecated The non-const \c Ptr<PacketBurst> argument is deprecated
      * and will be changed to \c Ptrc<PacketBurst> in a future release.
      */
     // NS_DEPRECATED() - tag for future removal
@@ -479,8 +479,8 @@ class SimpleOfdmWimaxPhy : public WimaxPhy
      * The trace source fired when a packet ends the transmission process on
      * the medium.
      *
-     * \see class CallBackTraceSource
-     * \deprecated The non-const \c Ptr<PacketBurst> argument is deprecated
+     * @see class CallBackTraceSource
+     * @deprecated The non-const \c Ptr<PacketBurst> argument is deprecated
      * and will be changed to \c Ptrc<PacketBurst> in a future release.
      */
     // NS_DEPRECATED() - tag for future removal
@@ -490,8 +490,8 @@ class SimpleOfdmWimaxPhy : public WimaxPhy
      * The trace source fired when the phy layer drops a packet as it tries
      * to transmit it.
      *
-     * \see class CallBackTraceSource
-     * \deprecated The non-const \c Ptr<PacketBurst> argument is deprecated
+     * @see class CallBackTraceSource
+     * @deprecated The non-const \c Ptr<PacketBurst> argument is deprecated
      * and will be changed to \c Ptrc<PacketBurst> in a future release.
      */
     // NS_DEPRECATED() - tag for future removal
@@ -501,8 +501,8 @@ class SimpleOfdmWimaxPhy : public WimaxPhy
      * The trace source fired when a packet begins the reception process from
      * the medium.
      *
-     * \see class CallBackTraceSource
-     * \deprecated The non-const \c Ptr<PacketBurst> argument is deprecated
+     * @see class CallBackTraceSource
+     * @deprecated The non-const \c Ptr<PacketBurst> argument is deprecated
      * and will be changed to \c Ptrc<PacketBurst> in a future release.
      */
     // NS_DEPRECATED() - tag for future removal
@@ -512,8 +512,8 @@ class SimpleOfdmWimaxPhy : public WimaxPhy
      * The trace source fired when a packet ends the reception process from
      * the medium.
      *
-     * \see class CallBackTraceSource
-     * \deprecated The non-const \c Ptr<PacketBurst> argument is deprecated
+     * @see class CallBackTraceSource
+     * @deprecated The non-const \c Ptr<PacketBurst> argument is deprecated
      * and will be changed to \c Ptrc<PacketBurst> in a future release.
      */
     // NS_DEPRECATED() - tag for future removal
@@ -522,8 +522,8 @@ class SimpleOfdmWimaxPhy : public WimaxPhy
     /**
      * The trace source fired when the phy layer drops a packet it has received.
      *
-     * \see class CallBackTraceSource
-     * \deprecated The non-const \c Ptr<PacketBurst> argument is deprecated
+     * @see class CallBackTraceSource
+     * @deprecated The non-const \c Ptr<PacketBurst> argument is deprecated
      * and will be changed to \c Ptrc<PacketBurst> in a future release.
      */
     // NS_DEPRECATED() - tag for future removal

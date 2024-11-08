@@ -20,7 +20,7 @@ namespace ns3
 NS_LOG_COMPONENT_DEFINE("AmrrWifiManager");
 
 /**
- * \brief hold per-remote-station state for AMRR Wifi manager.
+ * @brief hold per-remote-station state for AMRR Wifi manager.
  *
  * This struct extends from WifiRemoteStation struct to hold additional
  * information required by the AMRR Wifi manager

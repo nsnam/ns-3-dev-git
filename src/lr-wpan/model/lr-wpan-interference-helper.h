@@ -24,9 +24,9 @@ namespace lrwpan
 {
 
 /**
- * \ingroup lr-wpan
+ * @ingroup lr-wpan
  *
- * \brief This class provides helper functions for LrWpan interference handling.
+ * @brief This class provides helper functions for LrWpan interference handling.
  */
 class LrWpanInterferenceHelper : public SimpleRefCount<LrWpanInterferenceHelper>
 {
@@ -34,7 +34,7 @@ class LrWpanInterferenceHelper : public SimpleRefCount<LrWpanInterferenceHelper>
     /**
      * Create a new interference helper for the given SpectrumModel.
      *
-     * \param spectrumModel the SpectrumModel to be used
+     * @param spectrumModel the SpectrumModel to be used
      */
     LrWpanInterferenceHelper(Ptr<const SpectrumModel> spectrumModel);
 
@@ -45,8 +45,8 @@ class LrWpanInterferenceHelper : public SimpleRefCount<LrWpanInterferenceHelper>
      * signal more than once. The SpectrumModels of the signal and the one used
      * for instantiation of the helper have to be the same.
      *
-     * \param signal the signal to be added
-     * \return false, if the signal was not added because the SpectrumModel of the
+     * @param signal the signal to be added
+     * @return false, if the signal was not added because the SpectrumModel of the
      * signal does not match the one of the helper, true otherwise.
      */
     bool AddSignal(Ptr<const SpectrumValue> signal);
@@ -54,8 +54,8 @@ class LrWpanInterferenceHelper : public SimpleRefCount<LrWpanInterferenceHelper>
     /**
      * Remove the given signal to the set of accumulated signals.
      *
-     * \param signal the signal to be removed
-     * \return false, if the signal was not removed (because it was not added
+     * @param signal the signal to be removed
+     * @return false, if the signal was not removed (because it was not added
      * before), true otherwise.
      */
     bool RemoveSignal(Ptr<const SpectrumValue> signal);
@@ -68,26 +68,26 @@ class LrWpanInterferenceHelper : public SimpleRefCount<LrWpanInterferenceHelper>
     /**
      * Get the sum of all accumulated signals.
      *
-     * \return the sum of the signals
+     * @return the sum of the signals
      */
     Ptr<SpectrumValue> GetSignalPsd() const;
 
     /**
      * Get the SpectrumModel used by the helper.
      *
-     * \return the helpers SpectrumModel
+     * @return the helpers SpectrumModel
      */
     Ptr<const SpectrumModel> GetSpectrumModel() const;
 
   private:
     // Disable implicit copy constructors
     /**
-     * \brief Copy constructor - defined and not implemented.
+     * @brief Copy constructor - defined and not implemented.
      */
     LrWpanInterferenceHelper(const LrWpanInterferenceHelper&);
     /**
-     * \brief Copy constructor - defined and not implemented.
-     * \returns
+     * @brief Copy constructor - defined and not implemented.
+     * @returns
      */
     LrWpanInterferenceHelper& operator=(const LrWpanInterferenceHelper&);
     /**

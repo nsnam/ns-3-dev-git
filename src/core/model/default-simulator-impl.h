@@ -16,8 +16,8 @@
 #include <thread>
 
 /**
- * \file
- * \ingroup simulator
+ * @file
+ * @ingroup simulator
  * ns3::DefaultSimulatorImpl declaration.
  */
 
@@ -28,7 +28,7 @@ namespace ns3
 class Scheduler;
 
 /**
- * \ingroup simulator
+ * @ingroup simulator
  *
  * The default single process simulator implementation.
  */
@@ -37,7 +37,7 @@ class DefaultSimulatorImpl : public SimulatorImpl
   public:
     /**
      *  Register this type.
-     *  \return The object TypeId.
+     *  @return The object TypeId.
      */
     static TypeId GetTypeId();
 

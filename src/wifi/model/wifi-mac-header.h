@@ -79,7 +79,7 @@ enum WifiMacType
 };
 
 /**
- * \ingroup wifi
+ * @ingroup wifi
  *
  * Implements the IEEE 802.11 MAC header
  */
@@ -112,13 +112,13 @@ class WifiMacHeader : public Header
     /**
      * Construct a MAC header of the given type
      *
-     * \param type the MAC header type
+     * @param type the MAC header type
      */
     WifiMacHeader(WifiMacType type);
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -147,65 +147,65 @@ class WifiMacHeader : public Header
     /**
      * Fill the Address 1 field with the given address.
      *
-     * \param address the address to be used in the Address 1 field
+     * @param address the address to be used in the Address 1 field
      */
     void SetAddr1(Mac48Address address);
     /**
      * Fill the Address 2 field with the given address.
      *
-     * \param address the address to be used in the Address 2 field
+     * @param address the address to be used in the Address 2 field
      */
     void SetAddr2(Mac48Address address);
     /**
      * Fill the Address 3 field with the given address.
      *
-     * \param address the address to be used in the Address 3 field
+     * @param address the address to be used in the Address 3 field
      */
     void SetAddr3(Mac48Address address);
     /**
      * Fill the Address 4 field with the given address.
      *
-     * \param address the address to be used in the Address 4 field
+     * @param address the address to be used in the Address 4 field
      */
     void SetAddr4(Mac48Address address);
     /**
      * Set Type/Subtype values with the correct values depending
      * on the given type.
      *
-     * \param type the WifiMacType for the header
-     * \param resetToDsFromDs whether the ToDs and FromDs flags
+     * @param type the WifiMacType for the header
+     * @param resetToDsFromDs whether the ToDs and FromDs flags
      *        should be reset.
      */
     virtual void SetType(WifiMacType type, bool resetToDsFromDs = true);
     /**
      * Set the Duration/ID field with the given raw uint16_t value.
      *
-     * \param duration the raw duration in uint16_t
+     * @param duration the raw duration in uint16_t
      */
     void SetRawDuration(uint16_t duration);
     /**
      * Set the Duration/ID field with the given duration (Time object).
      * The method converts the given time to microseconds.
      *
-     * \param duration the duration (Time object)
+     * @param duration the duration (Time object)
      */
     void SetDuration(Time duration);
     /**
      * Set the Duration/ID field with the given ID.
      *
-     * \param id the ID
+     * @param id the ID
      */
     void SetId(uint16_t id);
     /**
      * Set the sequence number of the header.
      *
-     * \param seq the given sequence number
+     * @param seq the given sequence number
      */
     void SetSequenceNumber(uint16_t seq);
     /**
      * Set the fragment number of the header.
      *
-     * \param frag the given fragment number
+     * @param frag the given fragment number
      */
     void SetFragmentNumber(uint8_t frag);
     /**
@@ -235,7 +235,7 @@ class WifiMacHeader : public Header
     /**
      * Set the TID for the QoS header.
      *
-     * \param tid the TID for the QoS header
+     * @param tid the TID for the QoS header
      */
     void SetQosTid(uint8_t tid);
     /**
@@ -249,7 +249,7 @@ class WifiMacHeader : public Header
     /**
      * Set the QoS Ack policy in the QoS control field.
      *
-     * \param policy the Qos Ack policy
+     * @param policy the Qos Ack policy
      */
     void SetQosAckPolicy(QosAckPolicy policy);
     /**
@@ -263,13 +263,13 @@ class WifiMacHeader : public Header
     /**
      * Set TXOP limit in the QoS control field.
      *
-     * \param txop the TXOP limit
+     * @param txop the TXOP limit
      */
     void SetQosTxopLimit(uint8_t txop);
     /**
      * Set the Queue Size subfield in the QoS control field.
      *
-     * \param size the value for the Queue Size subfield
+     * @param size the value for the Queue Size subfield
      */
     void SetQosQueueSize(uint8_t size);
     /**
@@ -292,39 +292,39 @@ class WifiMacHeader : public Header
     /**
      * Return the address in the Address 1 field.
      *
-     * \return the address in the Address 1 field
+     * @return the address in the Address 1 field
      */
     Mac48Address GetAddr1() const;
     /**
      * Return the address in the Address 2 field.
      *
-     * \return the address in the Address 2 field
+     * @return the address in the Address 2 field
      */
     Mac48Address GetAddr2() const;
     /**
      * Return the address in the Address 3 field.
      *
-     * \return the address in the Address 3 field
+     * @return the address in the Address 3 field
      */
     Mac48Address GetAddr3() const;
     /**
      * Return the address in the Address 4 field.
      *
-     * \return the address in the Address 4 field
+     * @return the address in the Address 4 field
      */
     Mac48Address GetAddr4() const;
     /**
      * Return the type (WifiMacType)
      *
-     * \return the type (WifiMacType)
+     * @return the type (WifiMacType)
      */
     virtual WifiMacType GetType() const;
     /**
-     * \return true if From DS bit is set, false otherwise
+     * @return true if From DS bit is set, false otherwise
      */
     bool IsFromDs() const;
     /**
-     * \return true if To DS bit is set, false otherwise
+     * @return true if To DS bit is set, false otherwise
      */
     bool IsToDs() const;
     /**
@@ -332,295 +332,295 @@ class WifiMacHeader : public Header
      * not check the Subtype field. (e.g. the header may be
      * Data with QoS)
      *
-     * \return true if Type is DATA, false otherwise
+     * @return true if Type is DATA, false otherwise
      */
     bool IsData() const;
     /**
      * Return true if the Type is DATA and Subtype is one of the
      * possible values for QoS Data.
      *
-     * \return true if Type is QoS DATA, false otherwise
+     * @return true if Type is QoS DATA, false otherwise
      */
     bool IsQosData() const;
     /**
      * Return true if the header type is DATA and is not DATA_NULL.
      *
-     * \return true if the header type is DATA and is not DATA_NULL,
+     * @return true if the header type is DATA and is not DATA_NULL,
      *         false otherwise
      */
     bool HasData() const;
     /**
      * Return true if the Type is Control.
      *
-     * \return true if Type is Control, false otherwise
+     * @return true if Type is Control, false otherwise
      */
     bool IsCtl() const;
     /**
      * Return true if the Type is Management.
      *
-     * \return true if Type is Management, false otherwise
+     * @return true if Type is Management, false otherwise
      */
     bool IsMgt() const;
     /**
      * Return true if the Type/Subtype is one of the possible CF-Poll headers.
      *
-     * \return true if the Type/Subtype is one of the possible CF-Poll headers, false otherwise
+     * @return true if the Type/Subtype is one of the possible CF-Poll headers, false otherwise
      */
     bool IsCfPoll() const;
     /**
      * Return true if the header is a CF-Ack header.
      *
-     * \return true if the header is a CF-Ack header, false otherwise
+     * @return true if the header is a CF-Ack header, false otherwise
      */
     bool IsCfAck() const;
     /**
      * Return true if the header is a CF-End header.
      *
-     * \return true if the header is a CF-End header, false otherwise
+     * @return true if the header is a CF-End header, false otherwise
      */
     bool IsCfEnd() const;
     /**
      * Return true if the header is a PS-POLL header.
      *
-     * \return true if the header is a PS-POLL header, false otherwise
+     * @return true if the header is a PS-POLL header, false otherwise
      */
     bool IsPsPoll() const;
     /**
      * Return true if the header is a RTS header.
      *
-     * \return true if the header is a RTS header, false otherwise
+     * @return true if the header is a RTS header, false otherwise
      */
     bool IsRts() const;
     /**
      * Return true if the header is a CTS header.
      *
-     * \return true if the header is a CTS header, false otherwise
+     * @return true if the header is a CTS header, false otherwise
      */
     bool IsCts() const;
     /**
      * Return true if the header is an Ack header.
      *
-     * \return true if the header is an Ack header, false otherwise
+     * @return true if the header is an Ack header, false otherwise
      */
     bool IsAck() const;
     /**
      * Return true if the header is a BlockAckRequest header.
      *
-     * \return true if the header is a BlockAckRequest header, false otherwise
+     * @return true if the header is a BlockAckRequest header, false otherwise
      */
     bool IsBlockAckReq() const;
     /**
      * Return true if the header is a BlockAck header.
      *
-     * \return true if the header is a BlockAck header, false otherwise
+     * @return true if the header is a BlockAck header, false otherwise
      */
     bool IsBlockAck() const;
     /**
      * Return true if the header is a Trigger header.
      *
-     * \return true if the header is a Trigger header, false otherwise
+     * @return true if the header is a Trigger header, false otherwise
      */
     bool IsTrigger() const;
     /**
      * Return true if the header is an Association Request header.
      *
-     * \return true if the header is an Association Request header, false otherwise
+     * @return true if the header is an Association Request header, false otherwise
      */
     bool IsAssocReq() const;
     /**
      * Return true if the header is an Association Response header.
      *
-     * \return true if the header is an Association Response header, false otherwise
+     * @return true if the header is an Association Response header, false otherwise
      */
     bool IsAssocResp() const;
     /**
      * Return true if the header is a Reassociation Request header.
      *
-     * \return true if the header is a Reassociation Request header, false otherwise
+     * @return true if the header is a Reassociation Request header, false otherwise
      */
     bool IsReassocReq() const;
     /**
      * Return true if the header is a Reassociation Response header.
      *
-     * \return true if the header is a Reassociation Response header, false otherwise
+     * @return true if the header is a Reassociation Response header, false otherwise
      */
     bool IsReassocResp() const;
     /**
      * Return true if the header is a Probe Request header.
      *
-     * \return true if the header is a Probe Request header, false otherwise
+     * @return true if the header is a Probe Request header, false otherwise
      */
     bool IsProbeReq() const;
     /**
      * Return true if the header is a Probe Response header.
      *
-     * \return true if the header is a Probe Response header, false otherwise
+     * @return true if the header is a Probe Response header, false otherwise
      */
     bool IsProbeResp() const;
     /**
      * Return true if the header is a Beacon header.
      *
-     * \return true if the header is a Beacon header, false otherwise
+     * @return true if the header is a Beacon header, false otherwise
      */
     bool IsBeacon() const;
     /**
      * Return true if the header is a Disassociation header.
      *
-     * \return true if the header is a Disassociation header, false otherwise
+     * @return true if the header is a Disassociation header, false otherwise
      */
     bool IsDisassociation() const;
     /**
      * Return true if the header is an Authentication header.
      *
-     * \return true if the header is an Authentication header, false otherwise
+     * @return true if the header is an Authentication header, false otherwise
      */
     bool IsAuthentication() const;
     /**
      * Return true if the header is a Deauthentication header.
      *
-     * \return true if the header is a Deauthentication header, false otherwise
+     * @return true if the header is a Deauthentication header, false otherwise
      */
     bool IsDeauthentication() const;
     /**
      * Return true if the header is an Action header.
      *
-     * \return true if the header is an Action header, false otherwise
+     * @return true if the header is an Action header, false otherwise
      */
     bool IsAction() const;
     /**
      * Return true if the header is an Action No Ack header.
      *
-     * \return true if the header is an Action No Ack header, false otherwise
+     * @return true if the header is an Action No Ack header, false otherwise
      */
     bool IsActionNoAck() const;
     /**
      * Check if the header is a Multihop action header.
      *
-     * \return true if the header is a Multihop action header,
+     * @return true if the header is a Multihop action header,
      *         false otherwise
      */
     bool IsMultihopAction() const;
     /**
      * Return the raw duration from the Duration/ID field.
      *
-     * \return the raw duration from the Duration/ID field
+     * @return the raw duration from the Duration/ID field
      */
     uint16_t GetRawDuration() const;
     /**
      * Return the duration from the Duration/ID field (Time object).
      *
-     * \return the duration from the Duration/ID field (Time object)
+     * @return the duration from the Duration/ID field (Time object)
      */
     Time GetDuration() const;
     /**
      * Return the raw Sequence Control field.
      *
-     * \return the raw Sequence Control field
+     * @return the raw Sequence Control field
      */
     uint16_t GetSequenceControl() const;
     /**
      * Return the sequence number of the header.
      *
-     * \return the sequence number of the header
+     * @return the sequence number of the header
      */
     uint16_t GetSequenceNumber() const;
     /**
      * Return the fragment number of the header.
      *
-     * \return the fragment number of the header
+     * @return the fragment number of the header
      */
     uint8_t GetFragmentNumber() const;
     /**
      * Return if the Retry bit is set.
      *
-     * \return true if the Retry bit is set, false otherwise
+     * @return true if the Retry bit is set, false otherwise
      */
     bool IsRetry() const;
     /**
      * Return if the Power Management bit is set.
      *
-     * \return true if the Power Management bit is set, false otherwise
+     * @return true if the Power Management bit is set, false otherwise
      */
     bool IsPowerManagement() const;
     /**
      * Return if the More Data bit is set.
      *
-     * \return true if the More Data bit is set, false otherwise
+     * @return true if the More Data bit is set, false otherwise
      */
     bool IsMoreData() const;
     /**
      * Return if the More Fragment bit is set.
      *
-     * \return true if the More Fragment bit is set, false otherwise
+     * @return true if the More Fragment bit is set, false otherwise
      */
     bool IsMoreFragments() const;
     /**
      * Return if the QoS Ack policy is Block Ack.
      *
-     * \return true if the QoS Ack policy is Block Ack, false otherwise
+     * @return true if the QoS Ack policy is Block Ack, false otherwise
      */
     bool IsQosBlockAck() const;
     /**
      * Return if the QoS Ack policy is No Ack.
      *
-     * \return true if the QoS Ack policy is No Ack, false otherwise
+     * @return true if the QoS Ack policy is No Ack, false otherwise
      */
     bool IsQosNoAck() const;
     /**
      * Return if the QoS Ack policy is Normal Ack.
      *
-     * \return true if the QoS Ack policy is No Ack, false otherwise
+     * @return true if the QoS Ack policy is No Ack, false otherwise
      */
     bool IsQosAck() const;
     /**
      * Return if the end of service period (EOSP) is set.
      *
-     * \return true if the end of service period (EOSP) is set, false otherwise
+     * @return true if the end of service period (EOSP) is set, false otherwise
      */
     bool IsQosEosp() const;
     /**
      * Check if the A-MSDU present bit is set in the QoS control field.
      *
-     * \return true if the A-MSDU present bit is set,
+     * @return true if the A-MSDU present bit is set,
      *         false otherwise
      */
     bool IsQosAmsdu() const;
     /**
      * Return the Traffic ID of a QoS header.
      *
-     * \return the Traffic ID of a QoS header
+     * @return the Traffic ID of a QoS header
      */
     uint8_t GetQosTid() const;
     /**
      * Return the QoS Ack policy in the QoS control field.
      *
-     * \return the QoS Ack policy in the QoS control field
+     * @return the QoS Ack policy in the QoS control field
      */
     QosAckPolicy GetQosAckPolicy() const;
     /**
      * Get the Queue Size subfield in the QoS control field.
      *
-     * \return the value of the Queue Size subfield
+     * @return the value of the Queue Size subfield
      */
     uint8_t GetQosQueueSize() const;
     /**
      * Return the size of the WifiMacHeader in octets.
      * GetSerializedSize calls this function.
      *
-     * \return the size of the WifiMacHeader in octets
+     * @return the size of the WifiMacHeader in octets
      */
     virtual uint32_t GetSize() const;
     /**
      * Return a string corresponds to the header type.
      *
-     * \returns a string corresponds to the header type.
+     * @returns a string corresponds to the header type.
      */
     virtual const char* GetTypeString() const;
 
     /**
      * TracedCallback signature for WifiMacHeader
      *
-     * \param [in] header The header
+     * @param [in] header The header
      */
     typedef void (*TracedCallback)(const WifiMacHeader& header);
 
@@ -628,37 +628,37 @@ class WifiMacHeader : public Header
     /**
      * Return the raw Frame Control field.
      *
-     * \return the raw Frame Control field
+     * @return the raw Frame Control field
      */
     virtual uint16_t GetFrameControl() const;
     /**
      * Return the raw QoS Control field.
      *
-     * \return the raw QoS Control field
+     * @return the raw QoS Control field
      */
     virtual uint16_t GetQosControl() const;
     /**
      * Set the Frame Control field with the given raw value.
      *
-     * \param control the raw Frame Control field value
+     * @param control the raw Frame Control field value
      */
     virtual void SetFrameControl(uint16_t control);
     /**
      * Set the Sequence Control field with the given raw value.
      *
-     * \param seq the raw Sequence Control field value
+     * @param seq the raw Sequence Control field value
      */
     void SetSequenceControl(uint16_t seq);
     /**
      * Set the QoS Control field with the given raw value.
      *
-     * \param qos the raw QoS Control field value
+     * @param qos the raw QoS Control field value
      */
     virtual void SetQosControl(uint16_t qos);
     /**
      * Print the Frame Control field to the output stream.
      *
-     * \param os the output stream to print to
+     * @param os the output stream to print to
      */
     void PrintFrameControl(std::ostream& os) const;
 

@@ -27,14 +27,14 @@ class Node;
 class Channel;
 
 /**
- * \ingroup network
- * \defgroup netdevice Network Device
+ * @ingroup network
+ * @defgroup netdevice Network Device
  */
 
 /**
- * \ingroup netdevice
+ * @ingroup netdevice
  *
- * \brief Network layer to device interface
+ * @brief Network layer to device interface
  *
  * This interface defines the API which the IP and ARP
  * layers need to access to manage an instance of a network device
@@ -87,23 +87,23 @@ class NetDevice : public Object
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     ~NetDevice() override;
 
     /**
-     * \param index ifIndex of the device
+     * @param index ifIndex of the device
      */
     virtual void SetIfIndex(const uint32_t index) = 0;
     /**
-     * \return index ifIndex of the device
+     * @return index ifIndex of the device
      */
     virtual uint32_t GetIfIndex() const = 0;
 
     /**
-     * \return the channel this NetDevice is connected to. The value
+     * @return the channel this NetDevice is connected to. The value
      *         returned can be zero if the NetDevice is not yet connected
      *         to any channel or if the underlying NetDevice has no
      *         concept of a channel. i.e., callers _must_ check for zero
@@ -113,31 +113,31 @@ class NetDevice : public Object
 
     /**
      * Set the address of this interface
-     * \param address address to set
+     * @param address address to set
      */
     virtual void SetAddress(Address address) = 0;
 
     /**
-     * \return the current Address of this interface.
+     * @return the current Address of this interface.
      */
     virtual Address GetAddress() const = 0;
 
     /**
-     * \param mtu MTU value, in bytes, to set for the device
-     * \return whether the MTU value was within legal bounds
+     * @param mtu MTU value, in bytes, to set for the device
+     * @return whether the MTU value was within legal bounds
      *
      * Override for default MTU defined on a per-type basis.
      */
     virtual bool SetMtu(const uint16_t mtu) = 0;
     /**
-     * \return the link-level MTU in bytes for this interface.
+     * @return the link-level MTU in bytes for this interface.
      *
      * This value is typically used by the IP layer to perform
      * IP fragmentation when needed.
      */
     virtual uint16_t GetMtu() const = 0;
     /**
-     * \return true if link is up; false otherwise
+     * @return true if link is up; false otherwise
      */
     virtual bool IsLinkUp() const = 0;
     /**
@@ -145,7 +145,7 @@ class NetDevice : public Object
      */
     typedef void (*LinkChangeTracedCallback)();
     /**
-     * \param callback the callback to invoke
+     * @param callback the callback to invoke
      *
      * Add a callback invoked whenever the link
      * status changes to UP. This callback is typically used
@@ -154,12 +154,12 @@ class NetDevice : public Object
      */
     virtual void AddLinkChangeCallback(Callback<void> callback) = 0;
     /**
-     * \return true if this interface supports a broadcast address,
+     * @return true if this interface supports a broadcast address,
      *         false otherwise.
      */
     virtual bool IsBroadcast() const = 0;
     /**
-     * \return the broadcast address supported by
+     * @return the broadcast address supported by
      *         this netdevice.
      *
      * Calling this method is invalid if IsBroadcast returns
@@ -168,12 +168,12 @@ class NetDevice : public Object
     virtual Address GetBroadcast() const = 0;
 
     /**
-     * \return value of m_isMulticast flag
+     * @return value of m_isMulticast flag
      */
     virtual bool IsMulticast() const = 0;
 
     /**
-     * \brief Make and return a MAC multicast address using the provided
+     * @brief Make and return a MAC multicast address using the provided
      *        multicast group
      *
      * \RFC{1112} says that an Ipv4 host group address is mapped to an Ethernet
@@ -191,70 +191,70 @@ class NetDevice : public Object
      * support multicasting are expected to override this method and provide an
      * implementation appropriate to the particular device.
      *
-     * \param multicastGroup The IP address for the multicast group destination
+     * @param multicastGroup The IP address for the multicast group destination
      * of the packet.
-     * \return The MAC multicast Address used to send packets to the provided
+     * @return The MAC multicast Address used to send packets to the provided
      * multicast group.
      *
-     * \warning Calling this method is invalid if IsMulticast returns not true.
-     * \see IsMulticast()
+     * @warning Calling this method is invalid if IsMulticast returns not true.
+     * @see IsMulticast()
      */
     virtual Address GetMulticast(Ipv4Address multicastGroup) const = 0;
 
     /**
-     * \brief Get the MAC multicast address corresponding
+     * @brief Get the MAC multicast address corresponding
      * to the IPv6 address provided.
-     * \param addr IPv6 address
-     * \return the MAC multicast address
-     * \warning Calling this method is invalid if IsMulticast returns not true.
+     * @param addr IPv6 address
+     * @return the MAC multicast address
+     * @warning Calling this method is invalid if IsMulticast returns not true.
      */
     virtual Address GetMulticast(Ipv6Address addr) const = 0;
 
     /**
-     * \brief Return true if the net device is acting as a bridge.
+     * @brief Return true if the net device is acting as a bridge.
      *
-     * \return value of m_isBridge flag
+     * @return value of m_isBridge flag
      */
     virtual bool IsBridge() const = 0;
 
     /**
-     * \brief Return true if the net device is on a point-to-point link.
+     * @brief Return true if the net device is on a point-to-point link.
      *
-     * \return value of m_isPointToPoint flag
+     * @return value of m_isPointToPoint flag
      */
     virtual bool IsPointToPoint() const = 0;
     /**
-     * \param packet packet sent from above down to Network Device
-     * \param dest mac address of the destination (already resolved)
-     * \param protocolNumber identifies the type of payload contained in
+     * @param packet packet sent from above down to Network Device
+     * @param dest mac address of the destination (already resolved)
+     * @param protocolNumber identifies the type of payload contained in
      *        this packet. Used to call the right L3Protocol when the packet
      *        is received.
      *
      *  Called from higher layer to send packet into Network Device
      *  to the specified destination Address
      *
-     * \return whether the Send operation succeeded
+     * @return whether the Send operation succeeded
      */
     virtual bool Send(Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber) = 0;
     /**
-     * \param packet packet sent from above down to Network Device
-     * \param source source mac address (so called "MAC spoofing")
-     * \param dest mac address of the destination (already resolved)
-     * \param protocolNumber identifies the type of payload contained in
+     * @param packet packet sent from above down to Network Device
+     * @param source source mac address (so called "MAC spoofing")
+     * @param dest mac address of the destination (already resolved)
+     * @param protocolNumber identifies the type of payload contained in
      *        this packet. Used to call the right L3Protocol when the packet
      *        is received.
      *
      *  Called from higher layer to send packet into Network Device
      *  with the specified source and destination Addresses.
      *
-     * \return whether the Send operation succeeded
+     * @return whether the Send operation succeeded
      */
     virtual bool SendFrom(Ptr<Packet> packet,
                           const Address& source,
                           const Address& dest,
                           uint16_t protocolNumber) = 0;
     /**
-     * \returns the node base class which contains this network
+     * @returns the node base class which contains this network
      *          interface.
      *
      * When a subclass needs to get access to the underlying node
@@ -264,14 +264,14 @@ class NetDevice : public Object
     virtual Ptr<Node> GetNode() const = 0;
 
     /**
-     * \param node the node associated to this netdevice.
+     * @param node the node associated to this netdevice.
      *
      * This method is called from ns3::Node::AddDevice.
      */
     virtual void SetNode(Ptr<Node> node) = 0;
 
     /**
-     * \returns true if ARP is needed, false otherwise.
+     * @returns true if ARP is needed, false otherwise.
      *
      * Called by higher-layers to check if this NetDevice requires
      * ARP to be used.
@@ -298,20 +298,20 @@ class NetDevice : public Object
     };
 
     /**
-     * \param device a pointer to the net device which is calling this callback
-     * \param packet the packet received
-     * \param protocol the 16 bit protocol number associated with this packet.
+     * @param device a pointer to the net device which is calling this callback
+     * @param packet the packet received
+     * @param protocol the 16 bit protocol number associated with this packet.
      *        This protocol number is expected to be the same protocol number
      *        given to the Send method by the user on the sender side.
-     * \param sender the address of the sender
-     * \returns true if the callback could handle the packet successfully, false
+     * @param sender the address of the sender
+     * @returns true if the callback could handle the packet successfully, false
      *          otherwise.
      */
     typedef Callback<bool, Ptr<NetDevice>, Ptr<const Packet>, uint16_t, const Address&>
         ReceiveCallback;
 
     /**
-     * \param cb callback to invoke whenever a packet has been received and must
+     * @param cb callback to invoke whenever a packet has been received and must
      *        be forwarded to the higher layers.
      *
      * Set the callback to be used to notify higher layers when a packet has been
@@ -320,15 +320,15 @@ class NetDevice : public Object
     virtual void SetReceiveCallback(ReceiveCallback cb) = 0;
 
     /**
-     * \param device a pointer to the net device which is calling this callback
-     * \param packet the packet received
-     * \param protocol the 16 bit protocol number associated with this packet.
+     * @param device a pointer to the net device which is calling this callback
+     * @param packet the packet received
+     * @param protocol the 16 bit protocol number associated with this packet.
      *        This protocol number is expected to be the same protocol number
      *        given to the Send method by the user on the sender side.
-     * \param sender the address of the sender
-     * \param receiver the address of the receiver
-     * \param packetType type of packet received (broadcast/multicast/unicast/otherhost)
-     * \returns true if the callback could handle the packet successfully, false
+     * @param sender the address of the sender
+     * @param receiver the address of the receiver
+     * @param packetType type of packet received (broadcast/multicast/unicast/otherhost)
+     * @returns true if the callback could handle the packet successfully, false
      *          otherwise.
      */
     typedef Callback<bool,
@@ -341,7 +341,7 @@ class NetDevice : public Object
         PromiscReceiveCallback;
 
     /**
-     * \param cb callback to invoke whenever a packet has been received in promiscuous mode and must
+     * @param cb callback to invoke whenever a packet has been received in promiscuous mode and must
      *        be forwarded to the higher layers.
      *
      * Enables netdevice promiscuous mode and sets the callback that
@@ -353,7 +353,7 @@ class NetDevice : public Object
     virtual void SetPromiscReceiveCallback(PromiscReceiveCallback cb) = 0;
 
     /**
-     * \return true if this interface supports a bridging mode, false otherwise.
+     * @return true if this interface supports a bridging mode, false otherwise.
      */
     virtual bool SupportsSendFrom() const = 0;
 };

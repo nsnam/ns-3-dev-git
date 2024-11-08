@@ -15,12 +15,12 @@
 using namespace ns3;
 
 /**
- * \ingroup dot11s-test
+ * @ingroup dot11s-test
  *
- * \brief Peering Management & HWM Protocol regression test
+ * @brief Peering Management & HWM Protocol regression test
  * Initiate scenario with 2 stations. Procedure of opening peer link
  * is the following:
- * \verbatim
+ * @verbatim
  *           server       client
  * <-----------|----------->   Broadcast frame
  *             |----------->|  Unicast frame
@@ -52,7 +52,7 @@ using namespace ns3;
  *             |<-----------|             Data
  *             |----------->|             Data
  *             |............|
- * \endverbatim
+ * @endverbatim
  * At 10 seconds stations become unreachable, so UDP client tries to
  * close peer link due to TX-fail, and UDP server tries to close peer link
  * due to beacon loss
@@ -68,7 +68,7 @@ class HwmpSimplestRegressionTest : public TestCase
     void CheckResults();
 
   private:
-    /// \internal It is important to have pointers here
+    /// @internal It is important to have pointers here
     NodeContainer* m_nodes;
     /// Simulation time
     Time m_time;
@@ -93,25 +93,25 @@ class HwmpSimplestRegressionTest : public TestCase
 
     /**
      * Send data
-     * \param socket the sending socket
+     * @param socket the sending socket
      */
     void SendData(Ptr<Socket> socket);
 
     /**
-     * \brief Handle a packet reception.
+     * @brief Handle a packet reception.
      *
      * This function is called by lower layers.
      *
-     * \param socket the socket the packet was received to.
+     * @param socket the socket the packet was received to.
      */
     void HandleReadServer(Ptr<Socket> socket);
 
     /**
-     * \brief Handle a packet reception.
+     * @brief Handle a packet reception.
      *
      * This function is called by lower layers.
      *
-     * \param socket the socket the packet was received to.
+     * @param socket the socket the packet was received to.
      */
     void HandleReadClient(Ptr<Socket> socket);
 };

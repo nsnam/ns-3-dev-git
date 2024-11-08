@@ -21,7 +21,7 @@
 #define DSR_H
 
 /**
- * \defgroup dsr DSR Routing
+ * @defgroup dsr DSR Routing
  *
  * This section documents the API of the ns-3 DSR module. For a
  * generic functional description, please refer to the ns-3 model

@@ -24,13 +24,13 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("BuildingPositionAllocatorTest");
 
 /**
- * \ingroup buildings
- * \ingroup tests
- * \defgroup building-test Buildings module tests
+ * @ingroup buildings
+ * @ingroup tests
+ * @defgroup building-test Buildings module tests
  */
 
 /**
- * \ingroup building-test
+ * @ingroup building-test
  *
  * Room coordinates
  */
@@ -38,9 +38,9 @@ struct Room
 {
     /**
      * Constructor
-     * \param xx X coord
-     * \param yy Y coord
-     * \param zz Z coord
+     * @param xx X coord
+     * @param yy Y coord
+     * @param zz Z coord
      */
     Room(uint32_t xx, uint32_t yy, uint32_t zz);
     uint32_t x; //!< X coord
@@ -63,7 +63,7 @@ operator<(const Room& a, const Room& b)
 }
 
 /**
- * \ingroup building-test
+ * @ingroup building-test
  *
  * RandomRoomPositionAllocator test
  */
@@ -140,7 +140,7 @@ RandomRoomPositionAllocatorTestCase::DoRun()
 }
 
 /**
- * \ingroup building-test
+ * @ingroup building-test
  *
  * SameRoomPositionAllocator test
  */
@@ -213,9 +213,9 @@ SameRoomPositionAllocatorTestCase::DoRun()
 }
 
 /**
- * \ingroup building-test
+ * @ingroup building-test
  *
- * \brief RandomRoomPositionAllocator TestSuite
+ * @brief RandomRoomPositionAllocator TestSuite
  */
 class BuildingPositionAllocatorTestSuite : public TestSuite
 {

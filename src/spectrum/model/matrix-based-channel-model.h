@@ -25,7 +25,7 @@ namespace ns3
 class MobilityModel;
 
 /**
- * \ingroup spectrum
+ * @ingroup spectrum
  *
  * This is an interface for a channel model that can be described
  * by a channel matrix, e.g., the 3GPP Spatial Channel Models,
@@ -84,9 +84,9 @@ class MatrixBasedChannelModel : public Object
         /**
          * Returns true if the ChannelMatrix object was generated
          * considering node b as transmitter and node a as receiver.
-         * \param aAntennaId the ID of the antenna array of the a node
-         * \param bAntennaId the ID of the antenna array of the b node
-         * \return true if b is the rx and a is the tx, false otherwise
+         * @param aAntennaId the ID of the antenna array of the a node
+         * @param bAntennaId the ID of the antenna array of the b node
+         * @return true if b is the rx and a is the tx, false otherwise
          */
         bool IsReverse(uint32_t aAntennaId, uint32_t bAntennaId) const
         {
@@ -178,11 +178,11 @@ class MatrixBasedChannelModel : public Object
      * matrix corresponds to H_ab, a call to IsReverse (idA, idB) will return
      * false, conversely, IsReverse (idB, idA) will return true.
      *
-     * \param aMob mobility model of the a device
-     * \param bMob mobility model of the b device
-     * \param aAntenna antenna of the a device
-     * \param bAntenna antenna of the b device
-     * \return the channel matrix
+     * @param aMob mobility model of the a device
+     * @param bMob mobility model of the b device
+     * @param aAntenna antenna of the a device
+     * @param bAntenna antenna of the b device
+     * @return the channel matrix
      */
     virtual Ptr<const ChannelMatrix> GetChannel(Ptr<const MobilityModel> aMob,
                                                 Ptr<const MobilityModel> bMob,
@@ -193,9 +193,9 @@ class MatrixBasedChannelModel : public Object
      * Returns a channel parameters structure used to obtain the channel between
      * the nodes with mobility objects passed as input parameters.
      *
-     * \param aMob mobility model of the a device
-     * \param bMob mobility model of the b device
-     * \return the channel matrix
+     * @param aMob mobility model of the a device
+     * @param bMob mobility model of the b device
+     * @return the channel matrix
      */
     virtual Ptr<const ChannelParams> GetParams(Ptr<const MobilityModel> aMob,
                                                Ptr<const MobilityModel> bMob) const = 0;
@@ -203,9 +203,9 @@ class MatrixBasedChannelModel : public Object
     /**
      * Generate a unique value for the pair of unsigned integer of 32 bits,
      * where the order does not matter, i.e., the same value will be returned for (a,b) and (b,a).
-     * \param a the first value
-     * \param b the second value
-     * \return return an integer representing a unique value for the pair of values
+     * @param a the first value
+     * @param b the second value
+     * @return return an integer representing a unique value for the pair of values
      */
     static uint64_t GetKey(uint32_t a, uint32_t b)
     {

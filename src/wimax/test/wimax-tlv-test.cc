@@ -20,10 +20,10 @@
 using namespace ns3;
 
 /**
- * \ingroup wimax-test
- * \ingroup tests
+ * @ingroup wimax-test
+ * @ingroup tests
  *
- * \brief Test the wimax tlv implementation.
+ * @brief Test the wimax tlv implementation.
  */
 class Ns3WimaxCsParamTlvTestCase : public TestCase
 {
@@ -120,10 +120,10 @@ Ns3WimaxCsParamTlvTestCase::DoRun()
 }
 
 /**
- * \ingroup wimax-test
- * \ingroup tests
+ * @ingroup wimax-test
+ * @ingroup tests
  *
- * \brief Test the service flow tlv implementation.
+ * @brief Test the service flow tlv implementation.
  */
 class Ns3WimaxSfTlvTestCase : public TestCase
 {
@@ -201,10 +201,10 @@ Ns3WimaxSfTlvTestCase::DoRun()
 }
 
 /**
- * \ingroup wimax-test
- * \ingroup tests
+ * @ingroup wimax-test
+ * @ingroup tests
  *
- * \brief Ns3 Wimax Tlv Test Suite
+ * @brief Ns3 Wimax Tlv Test Suite
  */
 class Ns3WimaxTlvTestSuite : public TestSuite
 {

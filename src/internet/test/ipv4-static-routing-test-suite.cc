@@ -27,9 +27,9 @@
 using namespace ns3;
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief IPv4 StaticRouting /32 Test
+ * @brief IPv4 StaticRouting /32 Test
  */
 class Ipv4StaticRoutingSlash32TestCase : public TestCase
 {
@@ -40,21 +40,21 @@ class Ipv4StaticRoutingSlash32TestCase : public TestCase
     Ptr<Packet> m_receivedPacket; //!< Received packet
 
     /**
-     * \brief Send data.
-     * \param socket The sending socket.
-     * \param to Destination address.
+     * @brief Send data.
+     * @param socket The sending socket.
+     * @param to Destination address.
      */
     void DoSendData(Ptr<Socket> socket, std::string to);
     /**
-     * \brief Send data.
-     * \param socket The sending socket.
-     * \param to Destination address.
+     * @brief Send data.
+     * @param socket The sending socket.
+     * @param to Destination address.
      */
     void SendData(Ptr<Socket> socket, std::string to);
 
     /**
-     * \brief Receive data.
-     * \param socket The receiving socket.
+     * @brief Receive data.
+     * @param socket The receiving socket.
      */
     void ReceivePkt(Ptr<Socket> socket);
 
@@ -197,9 +197,9 @@ Ipv4StaticRoutingSlash32TestCase::DoRun()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief IPv4 StaticRouting /32 TestSuite
+ * @brief IPv4 StaticRouting /32 TestSuite
  */
 class Ipv4StaticRoutingTestSuite : public TestSuite
 {

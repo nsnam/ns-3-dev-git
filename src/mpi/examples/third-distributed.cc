@@ -18,8 +18,8 @@
 #include <iomanip>
 
 /**
- * \file
- * \ingroup mpi
+ * @file
+ * @ingroup mpi
  *
  * Distributed version of third.cc from the tutorial.
  *

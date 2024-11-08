@@ -24,19 +24,19 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("TcpScalableTestSuite");
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief Testing the congestion avoidance increment on TcpScalable
+ * @brief Testing the congestion avoidance increment on TcpScalable
  */
 class TcpScalableIncrementTest : public TestCase
 {
   public:
     /**
-     * \brief Constructor.
-     * \param cWnd Congestion window.
-     * \param segmentSize Segment size.
-     * \param segmentsAcked Segments ACKed.
-     * \param name Test description.
+     * @brief Constructor.
+     * @param cWnd Congestion window.
+     * @param segmentSize Segment size.
+     * @param segmentsAcked Segments ACKed.
+     * @param name Test description.
      */
     TcpScalableIncrementTest(uint32_t cWnd,
                              uint32_t segmentSize,
@@ -93,18 +93,18 @@ TcpScalableIncrementTest::DoRun()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief Testing the multiplicative decrease on TcpScalable
+ * @brief Testing the multiplicative decrease on TcpScalable
  */
 class TcpScalableDecrementTest : public TestCase
 {
   public:
     /**
-     * \brief Constructor.
-     * \param cWnd Congestion window.
-     * \param segmentSize Segment size.
-     * \param name Test description.
+     * @brief Constructor.
+     * @param cWnd Congestion window.
+     * @param segmentSize Segment size.
+     * @param name Test description.
      */
     TcpScalableDecrementTest(uint32_t cWnd, uint32_t segmentSize, const std::string& name);
 
@@ -151,9 +151,9 @@ TcpScalableDecrementTest::DoRun()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief TcpScalable TestSuite.
+ * @brief TcpScalable TestSuite.
  */
 class TcpScalableTestSuite : public TestSuite
 {

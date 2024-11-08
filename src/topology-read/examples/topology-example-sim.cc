@@ -23,7 +23,7 @@
 #include <sstream>
 
 /**
- * \ingroup topology
+ * @ingroup topology
  * Example of TopologyReader: read in a topology in a specified format.
  *
  * This example can be used with the following parameters:
@@ -42,8 +42,8 @@ NS_LOG_COMPONENT_DEFINE("TopologyCreationExperiment");
 
 /**
  * Print the TTL of received packet
- * \param p received packet
- * \param ad sender address
+ * @param p received packet
+ * @param ad sender address
  */
 static void
 SinkRx(Ptr<const Packet> p, const Address& ad)

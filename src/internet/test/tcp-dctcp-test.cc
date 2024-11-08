@@ -27,18 +27,18 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("TcpDctcpTestSuite");
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief Validates the setting of ECT and ECE codepoints for DCTCP enabled traffic
+ * @brief Validates the setting of ECT and ECE codepoints for DCTCP enabled traffic
  */
 class TcpDctcpCodePointsTest : public TcpGeneralTest
 {
   public:
     /**
-     * \brief Constructor
+     * @brief Constructor
      *
-     * \param testCase Test case number
-     * \param desc Description about the test
+     * @param testCase Test case number
+     * @param desc Description about the test
      */
     TcpDctcpCodePointsTest(uint8_t testCase, const std::string& desc);
 
@@ -196,9 +196,9 @@ TcpDctcpCodePointsTest::ConfigureEnvironment()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief A TCP socket which sends a data packet with CE flags set for test 3.
+ * @brief A TCP socket which sends a data packet with CE flags set for test 3.
  *
  * The SendDataPacket function of this class sends data packet numbered 1  with CE flags set and
  * also doesn't set CWR flags on receipt of ECE flags for test 3. This is done to verify that DCTCP
@@ -209,8 +209,8 @@ class TcpDctcpCongestedRouter : public TcpSocketMsgBase
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -224,8 +224,8 @@ class TcpDctcpCongestedRouter : public TcpSocketMsgBase
     }
 
     /**
-     * \brief Constructor.
-     * \param other The object to copy from.
+     * @brief Constructor.
+     * @param other The object to copy from.
      */
     TcpDctcpCongestedRouter(const TcpDctcpCongestedRouter& other)
         : TcpSocketMsgBase(other)
@@ -234,7 +234,7 @@ class TcpDctcpCongestedRouter : public TcpSocketMsgBase
 
     /**
      * Set the test case type
-     * \param testCase test case type
+     * @param testCase test case type
      */
     void SetTestCase(uint8_t testCase);
 
@@ -540,24 +540,24 @@ TcpDctcpCodePointsTest::CreateReceiverSocket(Ptr<Node> node)
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief DCTCP should be same as Linux during slow start
+ * @brief DCTCP should be same as Linux during slow start
  */
 class TcpDctcpToLinuxReno : public TestCase
 {
   public:
     /**
-     * \brief Constructor
+     * @brief Constructor
      *
-     * \param cWnd congestion window
-     * \param segmentSize segment size
-     * \param ssThresh slow start threshold
-     * \param segmentsAcked segments acked
-     * \param highTxMark high tx mark
-     * \param lastAckedSeq last acked seq
-     * \param rtt RTT
-     * \param name Name of the test
+     * @param cWnd congestion window
+     * @param segmentSize segment size
+     * @param ssThresh slow start threshold
+     * @param segmentsAcked segments acked
+     * @param highTxMark high tx mark
+     * @param lastAckedSeq last acked seq
+     * @param rtt RTT
+     * @param name Name of the test
      */
     TcpDctcpToLinuxReno(uint32_t cWnd,
                         uint32_t segmentSize,
@@ -570,7 +570,7 @@ class TcpDctcpToLinuxReno : public TestCase
 
   private:
     void DoRun() override;
-    /** \brief Execute the test
+    /** @brief Execute the test
      */
     void ExecuteTest();
 
@@ -640,9 +640,9 @@ TcpDctcpToLinuxReno::ExecuteTest()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief TCP DCTCP TestSuite
+ * @brief TCP DCTCP TestSuite
  */
 class TcpDctcpTestSuite : public TestSuite
 {

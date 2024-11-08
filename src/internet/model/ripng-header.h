@@ -21,9 +21,9 @@ namespace ns3
 {
 
 /**
- * \ingroup ripng
+ * @ingroup ripng
  *
- * \brief RipNg Routing Table Entry (RTE) - see \RFC{2080}
+ * @brief RipNg Routing Table Entry (RTE) - see \RFC{2080}
  */
 class RipNgRte : public Header
 {
@@ -31,83 +31,83 @@ class RipNgRte : public Header
     RipNgRte();
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
     /**
-     * \brief Return the instance type identifier.
-     * \return instance type ID
+     * @brief Return the instance type identifier.
+     * @return instance type ID
      */
     TypeId GetInstanceTypeId() const override;
 
     void Print(std::ostream& os) const override;
 
     /**
-     * \brief Get the serialized size of the packet.
-     * \return size
+     * @brief Get the serialized size of the packet.
+     * @return size
      */
     uint32_t GetSerializedSize() const override;
 
     /**
-     * \brief Serialize the packet.
-     * \param start Buffer iterator
+     * @brief Serialize the packet.
+     * @param start Buffer iterator
      */
     void Serialize(Buffer::Iterator start) const override;
 
     /**
-     * \brief Deserialize the packet.
-     * \param start Buffer iterator
-     * \return size of the packet
+     * @brief Deserialize the packet.
+     * @param start Buffer iterator
+     * @return size of the packet
      */
     uint32_t Deserialize(Buffer::Iterator start) override;
 
     /**
-     * \brief Set the prefix
-     * \param prefix the prefix
+     * @brief Set the prefix
+     * @param prefix the prefix
      */
     void SetPrefix(Ipv6Address prefix);
 
     /**
-     * \brief Get the prefix
-     * \returns the prefix
+     * @brief Get the prefix
+     * @returns the prefix
      */
     Ipv6Address GetPrefix() const;
 
     /**
-     * \brief Set the prefix length
-     * \param prefixLen the prefix length
+     * @brief Set the prefix length
+     * @param prefixLen the prefix length
      */
     void SetPrefixLen(uint8_t prefixLen);
 
     /**
-     * \brief Get the prefix length
-     * \returns the prefix length
+     * @brief Get the prefix length
+     * @returns the prefix length
      */
     uint8_t GetPrefixLen() const;
 
     /**
-     * \brief Set the route tag
-     * \param routeTag the route tag
+     * @brief Set the route tag
+     * @param routeTag the route tag
      */
     void SetRouteTag(uint16_t routeTag);
 
     /**
-     * \brief Get the route tag
-     * \returns the route tag
+     * @brief Get the route tag
+     * @returns the route tag
      */
     uint16_t GetRouteTag() const;
 
     /**
-     * \brief Set the route metric
-     * \param routeMetric the route metric
+     * @brief Set the route metric
+     * @param routeMetric the route metric
      */
     void SetRouteMetric(uint8_t routeMetric);
 
     /**
-     * \brief Get the route metric
-     * \returns the route metric
+     * @brief Get the route metric
+     * @returns the route metric
      */
     uint8_t GetRouteMetric() const;
 
@@ -119,18 +119,18 @@ class RipNgRte : public Header
 };
 
 /**
- * \brief Stream insertion operator.
+ * @brief Stream insertion operator.
  *
- * \param os the reference to the output stream
- * \param h the Routing Table Entry
- * \returns the reference to the output stream
+ * @param os the reference to the output stream
+ * @param h the Routing Table Entry
+ * @returns the reference to the output stream
  */
 std::ostream& operator<<(std::ostream& os, const RipNgRte& h);
 
 /**
- * \ingroup ripng
+ * @ingroup ripng
  *
- * \brief RipNgHeader - see \RFC{2080}
+ * @brief RipNgHeader - see \RFC{2080}
  */
 class RipNgHeader : public Header
 {
@@ -138,35 +138,35 @@ class RipNgHeader : public Header
     RipNgHeader();
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
     /**
-     * \brief Return the instance type identifier.
-     * \return instance type ID
+     * @brief Return the instance type identifier.
+     * @return instance type ID
      */
     TypeId GetInstanceTypeId() const override;
 
     void Print(std::ostream& os) const override;
 
     /**
-     * \brief Get the serialized size of the packet.
-     * \return size
+     * @brief Get the serialized size of the packet.
+     * @return size
      */
     uint32_t GetSerializedSize() const override;
 
     /**
-     * \brief Serialize the packet.
-     * \param start Buffer iterator
+     * @brief Serialize the packet.
+     * @param start Buffer iterator
      */
     void Serialize(Buffer::Iterator start) const override;
 
     /**
-     * \brief Deserialize the packet.
-     * \param start Buffer iterator
-     * \return size of the packet
+     * @brief Deserialize the packet.
+     * @param start Buffer iterator
+     * @return size of the packet
      */
     uint32_t Deserialize(Buffer::Iterator start) override;
 
@@ -180,37 +180,37 @@ class RipNgHeader : public Header
     };
 
     /**
-     * \brief Set the command
-     * \param command the command
+     * @brief Set the command
+     * @param command the command
      */
     void SetCommand(Command_e command);
 
     /**
-     * \brief Get the command
-     * \returns the command
+     * @brief Get the command
+     * @returns the command
      */
     Command_e GetCommand() const;
 
     /**
-     * \brief Add a RTE to the message
-     * \param rte the RTE
+     * @brief Add a RTE to the message
+     * @param rte the RTE
      */
     void AddRte(RipNgRte rte);
 
     /**
-     * \brief Clear all the RTEs from the header
+     * @brief Clear all the RTEs from the header
      */
     void ClearRtes();
 
     /**
-     * \brief Get the number of RTE included in the message
-     * \returns the number of RTE in the message
+     * @brief Get the number of RTE included in the message
+     * @returns the number of RTE in the message
      */
     uint16_t GetRteNumber() const;
 
     /**
-     * \brief Get the list of the RTEs included in the message
-     * \returns the list of the RTEs in the message
+     * @brief Get the list of the RTEs included in the message
+     * @returns the list of the RTEs in the message
      */
     std::list<RipNgRte> GetRteList() const;
 
@@ -220,11 +220,11 @@ class RipNgHeader : public Header
 };
 
 /**
- * \brief Stream insertion operator.
+ * @brief Stream insertion operator.
  *
- * \param os the reference to the output stream
- * \param h the RIPng header
- * \returns the reference to the output stream
+ * @param os the reference to the output stream
+ * @param h the RIPng header
+ * @returns the reference to the output stream
  */
 std::ostream& operator<<(std::ostream& os, const RipNgHeader& h);
 

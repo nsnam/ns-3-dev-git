@@ -63,9 +63,9 @@ struct TxopDurationTracer
     /**
      * Callback connected to TXOP duration trace source.
      *
-     * \param startTime TXOP start time
-     * \param duration TXOP duration
-     * \param linkId the ID of the link
+     * @param startTime TXOP start time
+     * @param duration TXOP duration
+     * @param linkId the ID of the link
      */
     void Trace(Time startTime, Time duration, uint8_t linkId);
     Time m_max; //!< maximum TXOP duration

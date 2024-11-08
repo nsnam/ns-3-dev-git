@@ -36,17 +36,17 @@ class Experiment
     Experiment();
     /**
      * Constructor.
-     * \param name The name of the experiment.
+     * @param name The name of the experiment.
      */
     Experiment(std::string name);
 
     /**
      * Run an experiment.
-     * \param wifi      //!< The WifiHelper class.
-     * \param wifiPhy   //!< The YansWifiPhyHelper class.
-     * \param wifiMac   //!< The WifiMacHelper class.
-     * \param wifiChannel //!< The YansWifiChannelHelper class.
-     * \return a 2D dataset of the experiment data.
+     * @param wifi      //!< The WifiHelper class.
+     * @param wifiPhy   //!< The YansWifiPhyHelper class.
+     * @param wifiMac   //!< The WifiMacHelper class.
+     * @param wifiChannel //!< The YansWifiChannelHelper class.
+     * @return a 2D dataset of the experiment data.
      */
     Gnuplot2dDataset Run(const WifiHelper& wifi,
                          const YansWifiPhyHelper& wifiPhy,
@@ -56,30 +56,30 @@ class Experiment
   private:
     /**
      * Receive a packet.
-     * \param socket The receiving socket.
+     * @param socket The receiving socket.
      */
     void ReceivePacket(Ptr<Socket> socket);
     /**
      * Set the position of a node.
-     * \param node The node.
-     * \param position The position of the node.
+     * @param node The node.
+     * @param position The position of the node.
      */
     void SetPosition(Ptr<Node> node, Vector position);
     /**
      * Get the position of a node.
-     * \param node The node.
-     * \return the position of the node.
+     * @param node The node.
+     * @return the position of the node.
      */
     Vector GetPosition(Ptr<Node> node);
     /**
      * Move a node by 1m on the x axis, stops at 210m.
-     * \param node The node.
+     * @param node The node.
      */
     void AdvancePosition(Ptr<Node> node);
     /**
      * Setup the receiving socket.
-     * \param node The receiving node.
-     * \return the socket.
+     * @param node The receiving node.
+     * @return the socket.
      */
     Ptr<Socket> SetupPacketReceive(Ptr<Node> node);
 

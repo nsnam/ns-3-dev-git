@@ -18,9 +18,9 @@ namespace ns3
 {
 
 /**
- * \ingroup packet
+ * @ingroup packet
  *
- * \brief tag a set of bytes in a packet
+ * @brief tag a set of bytes in a packet
  *
  * New kinds of tags can be created by subclassing from this abstract base class.
  */
@@ -28,20 +28,20 @@ class Tag : public ObjectBase
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
     /**
-     * \returns the number of bytes required to serialize the data of the tag.
+     * @returns the number of bytes required to serialize the data of the tag.
      *
      * This method is typically invoked by Packet::AddPacketTag or Packet::AddByteTag
      * just prior to calling Tag::Serialize.
      */
     virtual uint32_t GetSerializedSize() const = 0;
     /**
-     * \param i the buffer to write data into.
+     * @param i the buffer to write data into.
      *
      * Write the content of the tag in the provided tag buffer.
      * DO NOT attempt to write more bytes than you requested
@@ -49,7 +49,7 @@ class Tag : public ObjectBase
      */
     virtual void Serialize(TagBuffer i) const = 0;
     /**
-     * \param i the buffer to read data from.
+     * @param i the buffer to read data from.
      *
      * Read the content of the tag from the provided tag buffer.
      * DO NOT attempt to read more bytes than you wrote with
@@ -58,7 +58,7 @@ class Tag : public ObjectBase
     virtual void Deserialize(TagBuffer i) = 0;
 
     /**
-     * \param os the stream to print to
+     * @param os the stream to print to
      *
      * This method is typically invoked from the Packet::PrintByteTags
      * or Packet::PrintPacketTags methods.

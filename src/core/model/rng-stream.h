@@ -11,8 +11,8 @@
 #include <string>
 
 /**
- * \file
- * \ingroup rngimpl
+ * @file
+ * @ingroup rngimpl
  * ns3::RngStream declaration.
  */
 
@@ -20,14 +20,14 @@ namespace ns3
 {
 
 /**
- * \ingroup randomvariable
- * \defgroup rngimpl RNG Implementation
+ * @ingroup randomvariable
+ * @defgroup rngimpl RNG Implementation
  */
 
 /**
- * \ingroup rngimpl
+ * @ingroup rngimpl
  *
- * \brief Combined Multiple-Recursive Generator MRG32k3a
+ * @brief Combined Multiple-Recursive Generator MRG32k3a
  *
  * This class is the combined multiple-recursive random number
  * generator called MRG32k3a.  The ns3::RandomVariableBase class
@@ -41,22 +41,22 @@ class RngStream
     /**
      * Construct from explicit seed, stream and substream values.
      *
-     * \param [in] seed The starting seed.
-     * \param [in] stream The stream number.
-     * \param [in] substream The sub-stream number.
+     * @param [in] seed The starting seed.
+     * @param [in] stream The stream number.
+     * @param [in] substream The sub-stream number.
      */
     RngStream(uint32_t seed, uint64_t stream, uint64_t substream);
     /**
      * Copy constructor.
      *
-     * \param [in] r The RngStream to copy.
+     * @param [in] r The RngStream to copy.
      */
     RngStream(const RngStream& r);
     /**
      * Generate the next random number for this stream.
      * Uniformly distributed between 0 and 1.
      *
-     * \returns The next random.
+     * @returns The next random.
      */
     double RandU01();
 
@@ -64,9 +64,9 @@ class RngStream
     /**
      * Advance \pname{state} of the RNG by leaps and bounds.
      *
-     * \param [in] nth The stream or substream index.
-     * \param [in] by The log2 base of \pname{nth}.
-     * \param [in] state The state vector to advance.
+     * @param [in] nth The stream or substream index.
+     * @param [in] by The log2 base of \pname{nth}.
+     * @param [in] state The state vector to advance.
      */
     void AdvanceNthBy(uint64_t nth, int by, double state[6]);
 

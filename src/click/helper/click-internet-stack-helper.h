@@ -28,7 +28,7 @@ class Node;
 class Ipv4RoutingHelper;
 
 /**
- * \brief aggregate Click/IP/TCP/UDP functionality to existing Nodes.
+ * @brief aggregate Click/IP/TCP/UDP functionality to existing Nodes.
  *
  * This helper has been adapted from the InternetStackHelper class and
  * nodes will not be able to use Ipv6 functionalities.
@@ -50,15 +50,15 @@ class ClickInternetStackHelper : public PcapHelperForIpv4, public AsciiTraceHelp
     /**
      * Copy constructor.
      *
-     * \param o Object to copy from.
+     * @param o Object to copy from.
      */
     ClickInternetStackHelper(const ClickInternetStackHelper& o);
 
     /**
      * Assignment operator.
      *
-     * \param o Object to copy from.
-     * \return Reference to updated object.
+     * @param o Object to copy from.
+     * @return Reference to updated object.
      */
     ClickInternetStackHelper& operator=(const ClickInternetStackHelper& o);
 
@@ -72,7 +72,7 @@ class ClickInternetStackHelper : public PcapHelperForIpv4, public AsciiTraceHelp
      * ns3::Udp, and ns3::Tcp classes onto the provided node.  This method will
      * assert if called on a node that already has an Ipv4 object aggregated to it.
      *
-     * \param nodeName The name of the node on which to install the stack.
+     * @param nodeName The name of the node on which to install the stack.
      */
     void Install(std::string nodeName) const;
 
@@ -81,7 +81,7 @@ class ClickInternetStackHelper : public PcapHelperForIpv4, public AsciiTraceHelp
      * ns3::Udp, and ns3::Tcp classes onto the provided node.  This method will
      * assert if called on a node that already has an Ipv4 object aggregated to it.
      *
-     * \param node The node on which to install the stack.
+     * @param node The node on which to install the stack.
      */
     void Install(Ptr<Node> node) const;
 
@@ -91,7 +91,7 @@ class ClickInternetStackHelper : public PcapHelperForIpv4, public AsciiTraceHelp
      * The program will assert if this method is called on a container with a
      * node that already has an Ipv4 object aggregated to it.
      *
-     * \param c NodeContainer that holds the set of nodes on which to install the
+     * @param c NodeContainer that holds the set of nodes on which to install the
      * new stacks.
      */
     void Install(NodeContainer c) const;
@@ -102,55 +102,55 @@ class ClickInternetStackHelper : public PcapHelperForIpv4, public AsciiTraceHelp
     void InstallAll() const;
 
     /**
-     * \brief Set a Click file to be used for a group of nodes.
-     * \param c NodeContainer of nodes
-     * \param clickfile Click file to be used
+     * @brief Set a Click file to be used for a group of nodes.
+     * @param c NodeContainer of nodes
+     * @param clickfile Click file to be used
      */
     void SetClickFile(NodeContainer c, std::string clickfile);
 
     /**
-     * \brief Set a Click file to be used for a node.
-     * \param node Node for which Click file is to be set
-     * \param clickfile Click file to be used
+     * @brief Set a Click file to be used for a node.
+     * @param node Node for which Click file is to be set
+     * @param clickfile Click file to be used
      */
     void SetClickFile(Ptr<Node> node, std::string clickfile);
 
     /**
-     * \brief Set defines to be used for a group of nodes.
-     * \param c NodeContainer of nodes
-     * \param defines Defines mapping to be used
+     * @brief Set defines to be used for a group of nodes.
+     * @param c NodeContainer of nodes
+     * @param defines Defines mapping to be used
      */
     void SetDefines(NodeContainer c, std::map<std::string, std::string> defines);
 
     /**
-     * \brief Set defines to be used for a node.
-     * \param node Node for which the defines are to be set
-     * \param defines Defines mapping to be used
+     * @brief Set defines to be used for a node.
+     * @param node Node for which the defines are to be set
+     * @param defines Defines mapping to be used
      */
     void SetDefines(Ptr<Node> node, std::map<std::string, std::string> defines);
 
     /**
-     * \brief Set a Click routing table element for a group of nodes.
-     * \param c NodeContainer of nodes
-     * \param rt Click Routing Table element name
+     * @brief Set a Click routing table element for a group of nodes.
+     * @param c NodeContainer of nodes
+     * @param rt Click Routing Table element name
      */
     void SetRoutingTableElement(NodeContainer c, std::string rt);
 
     /**
-     * \brief Set a Click routing table element for a node.
-     * \param node Node for which Click file is to be set
-     * \param rt Click Routing Table element name
+     * @brief Set a Click routing table element for a node.
+     * @param node Node for which Click file is to be set
+     * @param rt Click Routing Table element name
      */
     void SetRoutingTableElement(Ptr<Node> node, std::string rt);
 
   private:
     /**
-     * \brief Enable pcap output the indicated Ipv4 and interface pair.
+     * @brief Enable pcap output the indicated Ipv4 and interface pair.
      *
-     * \param prefix Filename prefix to use for pcap files.
-     * \param ipv4 Ptr to the Ipv4 interface on which you want to enable tracing.
-     * \param interface Interface ID on the Ipv4 on which you want to enable tracing.
-     * \param explicitFilename Whether the filename is explicit or not.
+     * @param prefix Filename prefix to use for pcap files.
+     * @param ipv4 Ptr to the Ipv4 interface on which you want to enable tracing.
+     * @param interface Interface ID on the Ipv4 on which you want to enable tracing.
+     * @param explicitFilename Whether the filename is explicit or not.
      */
     void EnablePcapIpv4Internal(std::string prefix,
                                 Ptr<Ipv4> ipv4,
@@ -158,14 +158,14 @@ class ClickInternetStackHelper : public PcapHelperForIpv4, public AsciiTraceHelp
                                 bool explicitFilename) override;
 
     /**
-     * \brief Enable ascii trace output on the indicated Ipv4 and interface pair.
+     * @brief Enable ascii trace output on the indicated Ipv4 and interface pair.
      *
-     * \param stream An OutputStreamWrapper representing an existing file to use
+     * @param stream An OutputStreamWrapper representing an existing file to use
      *               when writing trace data.
-     * \param prefix Filename prefix to use for ascii trace files.
-     * \param ipv4 Ptr to the Ipv4 interface on which you want to enable tracing.
-     * \param interface Interface ID on the Ipv4 on which you want to enable tracing.
-     * \param explicitFilename Whether the filename is explicit or not.
+     * @param prefix Filename prefix to use for ascii trace files.
+     * @param ipv4 Ptr to the Ipv4 interface on which you want to enable tracing.
+     * @param interface Interface ID on the Ipv4 on which you want to enable tracing.
+     * @param explicitFilename Whether the filename is explicit or not.
      */
     void EnableAsciiIpv4Internal(Ptr<OutputStreamWrapper> stream,
                                  std::string prefix,
@@ -182,44 +182,44 @@ class ClickInternetStackHelper : public PcapHelperForIpv4, public AsciiTraceHelp
     /**
      * Create and aggregate object from type ID.
      *
-     * \param node Node.
-     * \param typeId Type ID.
+     * @param node Node.
+     * @param typeId Type ID.
      */
     static void CreateAndAggregateObjectFromTypeId(Ptr<Node> node, const std::string typeId);
 
     /**
      * Check if PCAP is hooked.
      *
-     * \param ipv4 IPv4 stack.
-     * \return True if PCAP is hooked.
+     * @param ipv4 IPv4 stack.
+     * @return True if PCAP is hooked.
      */
     bool PcapHooked(Ptr<Ipv4> ipv4);
 
     /**
      * Check if ASCII is hooked.
      *
-     * \param ipv4 IPv4 stack.
-     * \return True if ASCII is hooked.
+     * @param ipv4 IPv4 stack.
+     * @return True if ASCII is hooked.
      */
     bool AsciiHooked(Ptr<Ipv4> ipv4);
 
     /**
-     * \brief IPv4 install state (enabled/disabled) ?
+     * @brief IPv4 install state (enabled/disabled) ?
      */
     bool m_ipv4Enabled;
 
     /**
-     * \brief Node to Click file mapping
+     * @brief Node to Click file mapping
      */
     std::map<Ptr<Node>, std::string> m_nodeToClickFileMap;
 
     /**
-     * \brief Node to Click defines mapping
+     * @brief Node to Click defines mapping
      */
     std::map<Ptr<Node>, std::map<std::string, std::string>> m_nodeToDefinesMap;
 
     /**
-     * \brief Node to Routing Table Element mapping
+     * @brief Node to Routing Table Element mapping
      */
     std::map<Ptr<Node>, std::string> m_nodeToRoutingTableElementMap;
 };

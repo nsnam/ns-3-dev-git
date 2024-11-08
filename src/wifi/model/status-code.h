@@ -33,22 +33,22 @@ class StatusCode
     /**
      * Return whether the status code is success.
      *
-     * \return true if success,
+     * @return true if success,
      *         false otherwise
      */
     bool IsSuccess() const;
 
     /**
-     * \returns the expected size of the status code.
+     * @returns the expected size of the status code.
      *
      * This method should return the number of bytes which are needed to store
      * the status code data by Serialize.
      */
     uint32_t GetSerializedSize() const;
     /**
-     * \param start an iterator which points to where the status code should be written
+     * @param start an iterator which points to where the status code should be written
      *
-     * \return Buffer::Iterator
+     * @return Buffer::Iterator
      *
      * This method is used to store a status code into the byte buffer.
      * The data written is expected to match bit-for-bit the representation of this
@@ -56,9 +56,9 @@ class StatusCode
      */
     Buffer::Iterator Serialize(Buffer::Iterator start) const;
     /**
-     * \param start an iterator which points to where the status code should be read.
+     * @param start an iterator which points to where the status code should be read.
      *
-     * \returns the number of bytes read.
+     * @returns the number of bytes read.
      *
      * This method is used to re-create a status code from the byte buffer.
      * The data read is expected to match bit-for-bit the representation of this
@@ -73,10 +73,10 @@ class StatusCode
 /**
  * Serialize StatusCode to the given ostream.
  *
- * \param os the output stream
- * \param code the StatusCode
+ * @param os the output stream
+ * @param code the StatusCode
  *
- * \return std::ostream
+ * @return std::ostream
  */
 std::ostream& operator<<(std::ostream& os, const StatusCode& code);
 

@@ -50,7 +50,7 @@ struct DeferredRouteOutputTag : public Tag
     /**
      * Constructor
      *
-     * \param o outgoing interface (OIF)
+     * @param o outgoing interface (OIF)
      */
     DeferredRouteOutputTag(int32_t o = -1)
         : Tag(),
@@ -59,8 +59,8 @@ struct DeferredRouteOutputTag : public Tag
     }
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId()
     {

@@ -87,7 +87,7 @@ UdpSocketImpl::~UdpSocketImpl()
 {
     NS_LOG_FUNCTION(this);
 
-    /// \todo  leave any multicast groups that have been joined
+    /// @todo  leave any multicast groups that have been joined
     m_node = nullptr;
     /**
      * Note: actually this function is called AFTER

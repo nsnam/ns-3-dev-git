@@ -16,8 +16,8 @@ namespace ns3
 {
 
 /**
- * \brief implement the CARA rate control algorithm
- * \ingroup wifi
+ * @brief implement the CARA rate control algorithm
+ * @ingroup wifi
  *
  * Implement the CARA algorithm from:
  * J. Kim, S. Kim, S. Choi, and D. Qiao.
@@ -34,8 +34,8 @@ class CaraWifiManager : public WifiRemoteStationManager
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     CaraWifiManager();

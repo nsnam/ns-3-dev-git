@@ -8,8 +8,8 @@
  */
 
 /**
- * \file
- * \ingroup mpi
+ * @file
+ * @ingroup mpi
  * Declaration of class ns3::RemoteChannelBundle.
  */
 
@@ -28,9 +28,9 @@ namespace ns3
 {
 
 /**
- * \ingroup mpi
+ * @ingroup mpi
  *
- * \brief Collection of ns-3 channels between local and remote nodes.
+ * @brief Collection of ns-3 channels between local and remote nodes.
  *
  * An instance exists for each remote system that the local system is
  * in communication with.  These are created and managed by the
@@ -42,7 +42,7 @@ class RemoteChannelBundle : public Object
   public:
     /**
      *  Register this type.
-     *  \return The object TypeId.
+     *  @return The object TypeId.
      */
     static TypeId GetTypeId();
 
@@ -51,7 +51,7 @@ class RemoteChannelBundle : public Object
 
     /**
      *  Construct and assign system Id.
-     *  \param [in] remoteSystemId The system id.
+     *  @param [in] remoteSystemId The system id.
      */
     RemoteChannelBundle(const uint32_t remoteSystemId);
 
@@ -62,20 +62,20 @@ class RemoteChannelBundle : public Object
 
     /**
      * Add a channel to this bundle.
-     * \param channel to add to the bundle
-     * \param delay time for the channel (usually the latency)
+     * @param channel to add to the bundle
+     * @param delay time for the channel (usually the latency)
      */
     void AddChannel(Ptr<Channel> channel, Time delay);
 
     /**
      * Get the system Id for this side.
-     * \return SystemID for remote side of this bundle
+     * @return SystemID for remote side of this bundle
      */
     uint32_t GetSystemId() const;
 
     /**
      * Get the current guarantee time for this bundle.
-     * \return guarantee time
+     * @return guarantee time
      */
     Time GetGuaranteeTime() const;
 
@@ -83,13 +83,13 @@ class RemoteChannelBundle : public Object
      * Set the guarantee time for the bundle.  This should be called
      * after a packet or Null Message received.
      *
-     * \param time The guarantee time.
+     * @param time The guarantee time.
      */
     void SetGuaranteeTime(Time time);
 
     /**
      * Get the minimum delay along any channel in this bundle
-     * \return The minimum delay.
+     * @return The minimum delay.
      */
     Time GetDelay() const;
 
@@ -97,19 +97,19 @@ class RemoteChannelBundle : public Object
      * Set the event ID of the Null Message send event currently scheduled
      * for this channel.
      *
-     * \param [in] id The null message event id.
+     * @param [in] id The null message event id.
      */
     void SetEventId(EventId id);
 
     /**
      * Get the event ID of the Null Message send event for this bundle
-     * \return The null message event id.
+     * @return The null message event id.
      */
     EventId GetEventId() const;
 
     /**
      * Get the number of ns-3 channels in this bundle
-     * \return The number of channels.
+     * @return The number of channels.
      */
     std::size_t GetSize() const;
 
@@ -118,16 +118,16 @@ class RemoteChannelBundle : public Object
      * Message will be delivered at current simulation time + the time
      * passed in.
      *
-     * \param time The delay from now when the null message should be received.
+     * @param time The delay from now when the null message should be received.
      */
     void Send(Time time);
 
     /**
      * Output for debugging purposes.
      *
-     * \param [in,out] out The stream.
-     * \param [in] bundle The bundle to print.
-     * \return The stream.
+     * @param [in,out] out The stream.
+     * @param [in] bundle The bundle to print.
+     * @return The stream.
      */
     friend std::ostream& operator<<(std::ostream& out, ns3::RemoteChannelBundle& bundle);
 

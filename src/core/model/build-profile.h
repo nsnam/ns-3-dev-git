@@ -10,16 +10,16 @@
 #define NS3_BUILD_PROFILE_H
 
 /**
- * \file
- * \ingroup debugging
+ * @file
+ * @ingroup debugging
  * NS_BUILD_DEBUG, NS_BUILD_RELEASE, and NS_BUILD_OPTIMIZED
  * macro definitions.
  */
 
 /**
- * \ingroup debugging
+ * @ingroup debugging
  * Build profile no-op macro.
- * \param [in] code The code to skip.
+ * @param [in] code The code to skip.
  */
 #define NS_BUILD_PROFILE_NOOP(code)                                                                \
     do                                                                                             \
@@ -30,9 +30,9 @@
     while (false)
 
 /**
- * \ingroup debugging
+ * @ingroup debugging
  * Build profile macro to execute a code snippet.
- * \param [in] code The code to execute.
+ * @param [in] code The code to execute.
  */
 #define NS_BUILD_PROFILE_OP(code)                                                                  \
     do                                                                                             \
@@ -42,9 +42,9 @@
 
 #ifdef NS3_BUILD_PROFILE_DEBUG
 /**
- * \ingroup debugging
+ * @ingroup debugging
  * Execute a code snippet in debug builds.
- * \param [in] code The code to execute.
+ * @param [in] code The code to execute.
  */
 #define NS_BUILD_DEBUG(code) NS_BUILD_PROFILE_OP(code)
 #else
@@ -53,9 +53,9 @@
 
 #ifdef NS3_BUILD_PROFILE_RELEASE
 /**
- * \ingroup debugging
+ * @ingroup debugging
  * Execute a code snippet in release builds.
- * \param [in] code The code to execute.
+ * @param [in] code The code to execute.
  */
 #define NS_BUILD_RELEASE(code) NS_BUILD_PROFILE_OP(code)
 #else
@@ -64,9 +64,9 @@
 
 #ifdef NS3_BUILD_PROFILE_OPTIMIZED
 /**
- * \ingroup debugging
+ * @ingroup debugging
  * Execute a code snippet in optimized builds.
- * \param [in] code The code to execute.
+ * @param [in] code The code to execute.
  */
 #define NS_BUILD_OPTIMIZED(code) NS_BUILD_PROFILE_OP(code)
 #else

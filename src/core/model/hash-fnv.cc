@@ -26,9 +26,9 @@
 #include <sys/types.h>
 
 /**
- * \file
- * \ingroup hash
- * \brief ns3::Hash::Function::Fnv1a implementation.
+ * @file
+ * @ingroup hash
+ * @brief ns3::Hash::Function::Fnv1a implementation.
  */
 
 namespace ns3
@@ -51,8 +51,8 @@ namespace Fnv1aImplementation
  ************************************************/
 
 /**
- * \ingroup hash
- * \defgroup hash_fnv FNV Hash Implementation
+ * @ingroup hash
+ * @defgroup hash_fnv FNV Hash Implementation
  */
 /**@{*/
 

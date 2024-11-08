@@ -19,7 +19,7 @@ namespace ns3
 {
 
 /**
- * \ingroup wimax
+ * @ingroup wimax
  * This class is used exclusively by the BS to allocate CIDs to new connections.
  * This class uses the definitions from Table 345 in ieee-802.16-2004 to
  * allocate cids in different integer ranges according to their type.
@@ -39,55 +39,55 @@ class CidFactory
      */
     CidFactory();
     /**
-     * \brief This function returns the next basic CID.
-     * \returns the next basic CID.
+     * @brief This function returns the next basic CID.
+     * @returns the next basic CID.
      */
     Cid AllocateBasic();
     /**
-     * \brief This function returns the next primary basic CID.
-     * \returns the next primary CID.
+     * @brief This function returns the next primary basic CID.
+     * @returns the next primary CID.
      */
     Cid AllocatePrimary();
     /**
-     * \brief This function returns the next Transport (or Secondary) CID.
-     * \returns the next Transport (or Secondary) CID.
+     * @brief This function returns the next Transport (or Secondary) CID.
+     * @returns the next Transport (or Secondary) CID.
      */
     Cid AllocateTransportOrSecondary();
     /**
-     * \brief This function returns the next Multicast CID.
-     * \returns the next Multicast CID.
+     * @brief This function returns the next Multicast CID.
+     * @returns the next Multicast CID.
      */
     Cid AllocateMulticast();
     /**
-     * \brief This function returns the next CID for the specified type.
-     * \param type CID type
-     * \returns the next CID.
+     * @brief This function returns the next CID for the specified type.
+     * @param type CID type
+     * @returns the next CID.
      */
     Cid Allocate(Cid::Type type);
 
     /**
-     * \brief This function determines if the CID is a transport.
-     * \param cid CID type
-     * \returns true if the CID is a transport.
+     * @brief This function determines if the CID is a transport.
+     * @param cid CID type
+     * @returns true if the CID is a transport.
      */
     bool IsTransport(Cid cid) const;
     /**
-     * \brief This function determines if the CID is primary.
-     * \param cid CID type
-     * \returns true if the CID is primary.
+     * @brief This function determines if the CID is primary.
+     * @param cid CID type
+     * @returns true if the CID is primary.
      */
     bool IsPrimary(Cid cid) const;
     /**
-     * \brief This function determines if the CID is basic.
-     * \param cid CID type
-     * \returns true if the CID is basic.
+     * @brief This function determines if the CID is basic.
+     * @param cid CID type
+     * @returns true if the CID is basic.
      */
     bool IsBasic(Cid cid) const;
 
     /**
      * Notify the factory that the connection associated to this
      * cid has been killed and that this cid can be reused.
-     * \param cid CID type
+     * @param cid CID type
      */
     void FreeCid(Cid cid);
 

@@ -16,10 +16,10 @@ namespace ns3
 class Socket;
 
 /**
- * \ingroup socket
- * \ingroup tcp
+ * @ingroup socket
+ * @ingroup tcp
  *
- * \brief API to create TCP socket instances
+ * @brief API to create TCP socket instances
  *
  * This abstract class defines the API for TCP sockets.
  * This class also holds the global default variables used to
@@ -30,7 +30,7 @@ class Socket;
  * of CreateSocket
  * below, and should make use of the default values configured below.
  *
- * \see TcpSocketFactoryImpl
+ * @see TcpSocketFactoryImpl
  *
  */
 class TcpSocketFactory : public SocketFactory
@@ -38,8 +38,8 @@ class TcpSocketFactory : public SocketFactory
   public:
     /**
      * Get the type ID.
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 };

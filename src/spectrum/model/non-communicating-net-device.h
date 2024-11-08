@@ -27,7 +27,7 @@ class Channel;
 class SpectrumErrorModel;
 
 /**
- * \ingroup spectrum
+ * @ingroup spectrum
  *
  * This class implements a device which does not communicate, in the
  * sense that it does not interact with the above protocol stack. The
@@ -41,8 +41,8 @@ class NonCommunicatingNetDevice : public NetDevice
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 

@@ -52,25 +52,25 @@ uint8_t data[writeSize];
 /**
  * Start a flow.
  *
- * \param localSocket The local (sending) socket.
- * \param servAddress The server address.
- * \param servPort The server port.
+ * @param localSocket The local (sending) socket.
+ * @param servAddress The server address.
+ * @param servPort The server port.
  */
 void StartFlow(Ptr<Socket> localSocket, Ipv4Address servAddress, uint16_t servPort);
 
 /**
  * Write to the buffer, filling it.
  *
- * \param localSocket The socket.
- * \param txSpace The number of bytes to write.
+ * @param localSocket The socket.
+ * @param txSpace The number of bytes to write.
  */
 void WriteUntilBufferFull(Ptr<Socket> localSocket, uint32_t txSpace);
 
 /**
  * Congestion window tracker function.
  *
- * \param oldval Old value.
- * \param newval New value.
+ * @param oldval Old value.
+ * @param newval New value.
  */
 static void
 CwndTracer(uint32_t oldval, uint32_t newval)

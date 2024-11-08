@@ -29,7 +29,7 @@ class LteEnbRrcSapProvider;
 class LteUeRrc;
 
 /**
- * \ingroup lte
+ * @ingroup lte
  *
  * Models the transmission of RRC messages from the UE to the eNB in
  * a real fashion, by creating real RRC PDUs and transmitting them
@@ -53,28 +53,28 @@ class LteUeRrcProtocolReal : public Object
     // inherited from Object
     void DoDispose() override;
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
     /**
      * Set LTE UE RRC SAP provider function
      *
-     * \param p the LTE UE RRC SAP provider
+     * @param p the LTE UE RRC SAP provider
      */
     void SetLteUeRrcSapProvider(LteUeRrcSapProvider* p);
     /**
      * Get LTE UE RRC SAP user function
      *
-     * \returns LTE UE RRC SAP user
+     * @returns LTE UE RRC SAP user
      */
     LteUeRrcSapUser* GetLteUeRrcSapUser();
 
     /**
      * Set UE RRC function
      *
-     * \param rrc the LTE UE RRC
+     * @param rrc the LTE UE RRC
      */
     void SetUeRrc(Ptr<LteUeRrc> rrc);
 
@@ -83,56 +83,56 @@ class LteUeRrcProtocolReal : public Object
     /**
      * Setup function
      *
-     * \param params LteUeRrcSapUser::SetupParameters
+     * @param params LteUeRrcSapUser::SetupParameters
      */
     void DoSetup(LteUeRrcSapUser::SetupParameters params);
     /**
      * Send RRC connection request function
      *
-     * \param msg LteRrcSap::RrcConnectionRequest
+     * @param msg LteRrcSap::RrcConnectionRequest
      */
     void DoSendRrcConnectionRequest(LteRrcSap::RrcConnectionRequest msg);
     /**
      * Send RRC connection setup completed function
      *
-     * \param msg LteRrcSap::RrcConnectionSetupCompleted
+     * @param msg LteRrcSap::RrcConnectionSetupCompleted
      */
     void DoSendRrcConnectionSetupCompleted(LteRrcSap::RrcConnectionSetupCompleted msg) const;
     /**
      * Send RRC connection reconfiguration setup completed function
      *
-     * \param msg LteRrcSap::RrcConnectionReconfigurationCompleted
+     * @param msg LteRrcSap::RrcConnectionReconfigurationCompleted
      */
     void DoSendRrcConnectionReconfigurationCompleted(
         LteRrcSap::RrcConnectionReconfigurationCompleted msg);
     /**
      * Send RRC connection reestablishment request function
      *
-     * \param msg LteRrcSap::RrcConnectionReestablishmentRequest
+     * @param msg LteRrcSap::RrcConnectionReestablishmentRequest
      */
     void DoSendRrcConnectionReestablishmentRequest(
         LteRrcSap::RrcConnectionReestablishmentRequest msg) const;
     /**
      * Send RRC connection reestablishment complete function
      *
-     * \param msg LteRrcSap::RrcConnectionReestablishmentComplete
+     * @param msg LteRrcSap::RrcConnectionReestablishmentComplete
      */
     void DoSendRrcConnectionReestablishmentComplete(
         LteRrcSap::RrcConnectionReestablishmentComplete msg) const;
     /**
      * Send measurement report function
      *
-     * \param msg LteRrcSap::MeasurementReport
+     * @param msg LteRrcSap::MeasurementReport
      */
     void DoSendMeasurementReport(LteRrcSap::MeasurementReport msg);
     /**
-     * \brief Send ideal UE context remove request function
+     * @brief Send ideal UE context remove request function
      *
      * Notify eNodeB to release UE context once radio link failure
      * or random access failure is detected. It is needed since no
      * RLF detection mechanism at eNodeB is implemented
      *
-     * \param rnti the RNTI of the UE
+     * @param rnti the RNTI of the UE
      */
     void DoSendIdealUeContextRemoveRequest(uint16_t rnti);
 
@@ -141,13 +141,13 @@ class LteUeRrcProtocolReal : public Object
     /**
      * Receive PDCP PDU function
      *
-     * \param p the packet
+     * @param p the packet
      */
     void DoReceivePdcpPdu(Ptr<Packet> p);
     /**
      * Receive PDCP SDU function
      *
-     * \param params LtePdcpSapUser::ReceivePdcpSduParameters
+     * @param params LtePdcpSapUser::ReceivePdcpSduParameters
      */
     void DoReceivePdcpSdu(LtePdcpSapUser::ReceivePdcpSduParameters params);
 
@@ -187,43 +187,43 @@ class LteEnbRrcProtocolReal : public Object
     // inherited from Object
     void DoDispose() override;
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
     /**
      * Set LTE ENB RRC SAP provider function
      *
-     * \param p LteEnbRrcSapProvider *
+     * @param p LteEnbRrcSapProvider *
      */
     void SetLteEnbRrcSapProvider(LteEnbRrcSapProvider* p);
     /**
      * Get LTE ENB RRC SAP user function
      *
-     * \returns LteEnbRrcSapUser *
+     * @returns LteEnbRrcSapUser *
      */
     LteEnbRrcSapUser* GetLteEnbRrcSapUser();
 
     /**
      * Set cell ID function
      *
-     * \param cellId the cell ID
+     * @param cellId the cell ID
      */
     void SetCellId(uint16_t cellId);
 
     /**
      * Get UE RRC SAP provider function
      *
-     * \param rnti the RNTI
-     * \returns LteUeRrcSapProvider *
+     * @param rnti the RNTI
+     * @returns LteUeRrcSapProvider *
      */
     LteUeRrcSapProvider* GetUeRrcSapProvider(uint16_t rnti);
     /**
      * Set UE RRC SAP provider function
      *
-     * \param rnti the RNTI
-     * \param p LteUeRrcSapProvider *
+     * @param rnti the RNTI
+     * @param p LteUeRrcSapProvider *
      */
     void SetUeRrcSapProvider(uint16_t rnti, LteUeRrcSapProvider* p);
 
@@ -232,58 +232,58 @@ class LteEnbRrcProtocolReal : public Object
     /**
      * Setup UE function
      *
-     * \param rnti the RNTI
-     * \param params LteEnbRrcSapUser::SetupUeParameters
+     * @param rnti the RNTI
+     * @param params LteEnbRrcSapUser::SetupUeParameters
      */
     void DoSetupUe(uint16_t rnti, LteEnbRrcSapUser::SetupUeParameters params);
     /**
      * Remove UE function
      *
-     * \param rnti the RNTI
+     * @param rnti the RNTI
      */
     void DoRemoveUe(uint16_t rnti);
     /**
      * Send system information function
      *
-     * \param cellId cell ID
-     * \param msg LteRrcSap::SystemInformation
+     * @param cellId cell ID
+     * @param msg LteRrcSap::SystemInformation
      */
     void DoSendSystemInformation(uint16_t cellId, LteRrcSap::SystemInformation msg);
     /**
      * Send system information function
      *
-     * \param cellId cell ID
-     * \param msg LteRrcSap::SystemInformation
+     * @param cellId cell ID
+     * @param msg LteRrcSap::SystemInformation
      */
     void SendSystemInformation(uint16_t cellId, LteRrcSap::SystemInformation msg);
     /**
      * Send RRC connection setup function
      *
-     * \param rnti the RNTI
-     * \param msg LteRrcSap::RrcConnectionSetup
+     * @param rnti the RNTI
+     * @param msg LteRrcSap::RrcConnectionSetup
      */
     void DoSendRrcConnectionSetup(uint16_t rnti, LteRrcSap::RrcConnectionSetup msg);
     /**
      * Send RRC connection reconfiguration function
      *
-     * \param rnti the RNTI
-     * \param msg LteRrcSap::RrcConnectionReconfiguration
+     * @param rnti the RNTI
+     * @param msg LteRrcSap::RrcConnectionReconfiguration
      */
     void DoSendRrcConnectionReconfiguration(uint16_t rnti,
                                             LteRrcSap::RrcConnectionReconfiguration msg);
     /**
      * Send RRC connection reestabishment function
      *
-     * \param rnti the RNTI
-     * \param msg LteRrcSap::RrcConnectionReestablishment
+     * @param rnti the RNTI
+     * @param msg LteRrcSap::RrcConnectionReestablishment
      */
     void DoSendRrcConnectionReestablishment(uint16_t rnti,
                                             LteRrcSap::RrcConnectionReestablishment msg);
     /**
      * Send RRC connection reestabishment reject function
      *
-     * \param rnti the RNTI
-     * \param msg LteRrcSap::RrcConnectionReestablishmentReject
+     * @param rnti the RNTI
+     * @param msg LteRrcSap::RrcConnectionReestablishmentReject
      */
     void DoSendRrcConnectionReestablishmentReject(
         uint16_t rnti,
@@ -291,57 +291,57 @@ class LteEnbRrcProtocolReal : public Object
     /**
      * Send RRC connection release function
      *
-     * \param rnti the RNTI
-     * \param msg LteRrcSap::RrcConnectionRelease
+     * @param rnti the RNTI
+     * @param msg LteRrcSap::RrcConnectionRelease
      */
     void DoSendRrcConnectionRelease(uint16_t rnti, LteRrcSap::RrcConnectionRelease msg);
     /**
      * Send RRC connection reject function
      *
-     * \param rnti the RNTI
-     * \param msg LteRrcSap::RrcConnectionReject
+     * @param rnti the RNTI
+     * @param msg LteRrcSap::RrcConnectionReject
      */
     void DoSendRrcConnectionReject(uint16_t rnti, LteRrcSap::RrcConnectionReject msg);
     /**
      * Encode handover preparation information function
      *
-     * \param msg LteRrcSap::HandoverPreparationInfo
-     * \returns the packet
+     * @param msg LteRrcSap::HandoverPreparationInfo
+     * @returns the packet
      */
     Ptr<Packet> DoEncodeHandoverPreparationInformation(LteRrcSap::HandoverPreparationInfo msg);
     /**
      * Decode handover preparation information function
      *
-     * \param p the packet
-     * \returns LteRrcSap::HandoverPreparationInfo
+     * @param p the packet
+     * @returns LteRrcSap::HandoverPreparationInfo
      */
     LteRrcSap::HandoverPreparationInfo DoDecodeHandoverPreparationInformation(Ptr<Packet> p);
     /**
      * Encode handover command function
      *
-     * \param msg LteRrcSap::RrcConnectionReconfiguration
-     * \returns the packet
+     * @param msg LteRrcSap::RrcConnectionReconfiguration
+     * @returns the packet
      */
     Ptr<Packet> DoEncodeHandoverCommand(LteRrcSap::RrcConnectionReconfiguration msg);
     /**
      * Decode handover command function
      *
-     * \param p the packet
-     * \returns LteRrcSap::RrcConnectionReconfiguration
+     * @param p the packet
+     * @returns LteRrcSap::RrcConnectionReconfiguration
      */
     LteRrcSap::RrcConnectionReconfiguration DoDecodeHandoverCommand(Ptr<Packet> p);
 
     /**
      * Receive PDCP SDU function
      *
-     * \param params LtePdcpSapUser::ReceivePdcpSduParameters
+     * @param params LtePdcpSapUser::ReceivePdcpSduParameters
      */
     void DoReceivePdcpSdu(LtePdcpSapUser::ReceivePdcpSduParameters params);
     /**
      * Receive PDCP PDU function
      *
-     * \param rnti the RNTI
-     * \param p the packet
+     * @param rnti the RNTI
+     * @param p the packet
      */
     void DoReceivePdcpPdu(uint16_t rnti, Ptr<Packet> p);
 
@@ -363,8 +363,8 @@ class RealProtocolRlcSapUser : public LteRlcSapUser
     /**
      * Real protocol RC SAP user
      *
-     * \param pdcp LteEnbRrcProtocolReal *
-     * \param rnti the RNTI
+     * @param pdcp LteEnbRrcProtocolReal *
+     * @param rnti the RNTI
      */
     RealProtocolRlcSapUser(LteEnbRrcProtocolReal* pdcp, uint16_t rnti);
 

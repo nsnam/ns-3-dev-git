@@ -19,49 +19,49 @@ namespace ns3
 {
 
 /**
- * \ingroup radvd
- * \brief Radvd application helper.
+ * @ingroup radvd
+ * @brief Radvd application helper.
  */
 class RadvdHelper : public ApplicationHelper
 {
   public:
     /**
-     * \brief Constructor.
+     * @brief Constructor.
      */
     RadvdHelper();
 
     /**
-     * \brief Add a new prefix to be announced through an interface.
-     * \param interface outgoing interface
-     * \param prefix announced IPv6 prefix
-     * \param prefixLength announced IPv6 prefix length
+     * @brief Add a new prefix to be announced through an interface.
+     * @param interface outgoing interface
+     * @param prefix announced IPv6 prefix
+     * @param prefixLength announced IPv6 prefix length
      */
     void AddAnnouncedPrefix(uint32_t interface, const Ipv6Address& prefix, uint32_t prefixLength);
 
     /**
-     * \brief Enable the router as default router for the interface.
+     * @brief Enable the router as default router for the interface.
      * The effect is to set the Router Lifetime to the default value (30 minutes)
-     * \param interface outgoing interface
+     * @param interface outgoing interface
      */
     void EnableDefaultRouterForInterface(uint32_t interface);
 
     /**
-     * \brief Disable the router as default router for the interface.
+     * @brief Disable the router as default router for the interface.
      * The effect is to set the Router Lifetime to zero
-     * \param interface outgoing interface
+     * @param interface outgoing interface
      */
     void DisableDefaultRouterForInterface(uint32_t interface);
 
     /**
-     * \brief Get the low-level RadvdInterface specification for an interface.
+     * @brief Get the low-level RadvdInterface specification for an interface.
      * This method is provided to enable fine-grain parameter setup.
-     * \param interface outgoing interface
-     * \returns the RadvdInterface
+     * @param interface outgoing interface
+     * @returns the RadvdInterface
      */
     Ptr<RadvdInterface> GetRadvdInterface(uint32_t interface);
 
     /**
-     * \brief Clear the stored Prefixes
+     * @brief Clear the stored Prefixes
      */
     void ClearPrefixes();
 

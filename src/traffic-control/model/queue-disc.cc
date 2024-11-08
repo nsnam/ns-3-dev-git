@@ -943,7 +943,7 @@ QueueDisc::Run()
             quota -= 1;
             if (quota <= 0)
             {
-                /// \todo netif_schedule (q);
+                /// @todo netif_schedule (q);
                 break;
             }
         }
@@ -1040,7 +1040,7 @@ QueueDisc::Requeue(Ptr<QueueDiscItem> item)
 {
     NS_LOG_FUNCTION(this << item);
     m_requeued = item;
-    /// \todo netif_schedule (q);
+    /// @todo netif_schedule (q);
 
     m_stats.nTotalRequeuedPackets++;
     m_stats.nTotalRequeuedBytes += item->GetSize();

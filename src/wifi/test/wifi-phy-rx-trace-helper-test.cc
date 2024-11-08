@@ -52,8 +52,8 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("WifiPhyRxTraceHelperTest");
 
 /**
- * \ingroup wifi-test
- * \brief Implements a test case to evaluate the reception process of WiFi Physical Layer (PHY)
+ * @ingroup wifi-test
+ * @brief Implements a test case to evaluate the reception process of WiFi Physical Layer (PHY)
  * frames (PPDU) with multiple MAC Protocol Data Units (MPDUs).
  *
  * This class extends the TestCase class to simulate and analyze the reception of PPDUs containing
@@ -68,7 +68,7 @@ class TestWifiPhyRxTraceHelper : public TestCase
   public:
     /**
      * Constructs a TestWifiPhyRxTraceHelper instance with a given test name.
-     * \param test_name The name of the test case.
+     * @param test_name The name of the test case.
      */
     TestWifiPhyRxTraceHelper(std::string test_name);
 
@@ -84,10 +84,10 @@ class TestWifiPhyRxTraceHelper : public TestCase
 
     /**
      * Sends a PPDU containing two MPDUs addressed to specific receivers.
-     * \param rxPowerDbm The transmit power in dBm.
-     * \param add1 The MAC address of the first receiver.
-     * \param add2 The MAC address of the second receiver.
-     * \param tx_phy The transmitting PHY object.
+     * @param rxPowerDbm The transmit power in dBm.
+     * @param add1 The MAC address of the first receiver.
+     * @param add2 The MAC address of the second receiver.
+     * @param tx_phy The transmitting PHY object.
      */
     void SendPpduWithTwoMpdus(double rxPowerDbm,
                               Mac48Address add1,
@@ -96,9 +96,9 @@ class TestWifiPhyRxTraceHelper : public TestCase
 
     /**
      * Sends a PPDU containing one MPDU addressed to a specific receiver.
-     * \param rxPowerDbm The transmit power in dBm.
-     * \param add1 The MAC address of the receiver.
-     * \param tx_phy The transmitting PHY object.
+     * @param rxPowerDbm The transmit power in dBm.
+     * @param add1 The MAC address of the receiver.
+     * @param tx_phy The transmitting PHY object.
      */
     void SendPpduWithOneMpdu(double rxPowerDbm,
                              Mac48Address add1,
@@ -106,12 +106,12 @@ class TestWifiPhyRxTraceHelper : public TestCase
 
     /**
      * Checks the statistics of PPDU and MPDU reception success and failure.
-     * \param expectedPpduSuccess The expected number of successful PPDU receptions.
-     * \param expectedPpduFailure The expected number of failed PPDU receptions.
-     * \param expectedMpduSuccess The expected number of successful MPDU receptions within PPDUs.
-     * \param expectedMpduFailure The expected number of failed MPDU receptions within PPDUs.
-     * \param expectedOverlaps The expected number of overlapping reception events.
-     * \param expectedNonOverlaps The expected number of non-overlapping reception events.
+     * @param expectedPpduSuccess The expected number of successful PPDU receptions.
+     * @param expectedPpduFailure The expected number of failed PPDU receptions.
+     * @param expectedMpduSuccess The expected number of successful MPDU receptions within PPDUs.
+     * @param expectedMpduFailure The expected number of failed MPDU receptions within PPDUs.
+     * @param expectedOverlaps The expected number of overlapping reception events.
+     * @param expectedNonOverlaps The expected number of non-overlapping reception events.
      */
     void CheckAllStats(uint64_t expectedPpduSuccess,
                        uint64_t expectedPpduFailure,
@@ -122,7 +122,7 @@ class TestWifiPhyRxTraceHelper : public TestCase
 
     /**
      * Checks the statistics of PPDU and MPDU reception success and failure.
-     * \param expectedStats The expected counts for PPDU and MPDU reception.
+     * @param expectedStats The expected counts for PPDU and MPDU reception.
      * @param nodeId The node ID for which to check the received stats.
      * @param deviceId The device ID for which to check the received stats.
      * @param linkId The link ID for which to check the received stats.
@@ -134,7 +134,7 @@ class TestWifiPhyRxTraceHelper : public TestCase
 
     /**
      * Checks the statistics of PPDU and MPDU reception success and failure.
-     * \param expectedRecordCount The expected number of records.
+     * @param expectedRecordCount The expected number of records.
      */
     void CheckRecords(uint64_t expectedRecordCount);
 
@@ -841,8 +841,8 @@ TestWifiPhyRxTraceHelper::DoRun()
 }
 
 /**
- * \ingroup wifi-test
- * \brief Implements a test case to evaluate the reception process of WiFi Physical Layer (PHY)
+ * @ingroup wifi-test
+ * @brief Implements a test case to evaluate the reception process of WiFi Physical Layer (PHY)
  * frames (PPDU) containing multiple MAC Protocol Data Units (MPDUs) in Multi-Link Operation (MLO)
  * contexts.
  *
@@ -871,10 +871,10 @@ class TestWifiPhyRxTraceHelperMloStr : public TestCase
     /**
      * Sends a PPDU containing two MPDUs addressed to specific receivers, simulating an MLO
      * scenario.
-     * \param rxPowerDbm The transmit power in dBm.
-     * \param add1 The MAC address of the first receiver.
-     * \param add2 The MAC address of the second receiver.
-     * \param tx_phy The transmitting PHY object for MLO.
+     * @param rxPowerDbm The transmit power in dBm.
+     * @param add1 The MAC address of the first receiver.
+     * @param add2 The MAC address of the second receiver.
+     * @param tx_phy The transmitting PHY object for MLO.
      */
     void SendPpduWithTwoMpdus(double rxPowerDbm,
                               Mac48Address add1,
@@ -883,9 +883,9 @@ class TestWifiPhyRxTraceHelperMloStr : public TestCase
 
     /**
      * Sends a PPDU containing one MPDU addressed to a specific receiver, within an MLO setup.
-     * \param rxPowerDbm The transmit power in dBm.
-     * \param add1 The MAC address of the receiver.
-     * \param tx_phy The transmitting PHY object for MLO.
+     * @param rxPowerDbm The transmit power in dBm.
+     * @param add1 The MAC address of the receiver.
+     * @param tx_phy The transmitting PHY object for MLO.
      */
     void SendPpduWithOneMpdu(double rxPowerDbm,
                              Mac48Address add1,
@@ -893,14 +893,14 @@ class TestWifiPhyRxTraceHelperMloStr : public TestCase
 
     /**
      * Checks the statistics of PPDU and MPDU reception success and failure.
-     * \param expectedStats The expected counts for PPDU and MPDU reception.
+     * @param expectedStats The expected counts for PPDU and MPDU reception.
      * @param nodeId The node ID for which to check the received stats.
      */
     void CheckStats(WifiPhyTraceStatistics expectedStats, uint32_t nodeId);
 
     /**
      * Checks the statistics of PPDU and MPDU reception success and failure.
-     * \param expectedStats The expected counts for PPDU and MPDU reception.
+     * @param expectedStats The expected counts for PPDU and MPDU reception.
      * @param nodeId The node ID for which to check the received stats.
      * @param deviceId The device ID for which to check the received stats.
      */
@@ -908,7 +908,7 @@ class TestWifiPhyRxTraceHelperMloStr : public TestCase
 
     /**
      * Checks the statistics of PPDU and MPDU reception success and failure.
-     * \param expectedStats The expected counts for PPDU and MPDU reception.
+     * @param expectedStats The expected counts for PPDU and MPDU reception.
      * @param nodeId The node ID for which to check the received stats.
      * @param deviceId The device ID for which to check the received stats.
      * @param linkId The link ID for which to check the received stats.
@@ -920,12 +920,12 @@ class TestWifiPhyRxTraceHelperMloStr : public TestCase
 
     /**
      * Checks the statistics of PPDU and MPDU reception success and failure in MLO scenarios.
-     * \param expectedPpduSuccess The expected number of successful PPDU receptions.
-     * \param expectedPpduFailure The expected number of failed PPDU receptions.
-     * \param expectedMpduSuccess The expected number of successful MPDU receptions within PPDUs.
-     * \param expectedMpduFailure The expected number of failed MPDU receptions within PPDUs.
-     * \param expectedOverlaps The expected number of overlapping reception events.
-     * \param expectedNonOverlaps The expected number of non-overlapping reception events.
+     * @param expectedPpduSuccess The expected number of successful PPDU receptions.
+     * @param expectedPpduFailure The expected number of failed PPDU receptions.
+     * @param expectedMpduSuccess The expected number of successful MPDU receptions within PPDUs.
+     * @param expectedMpduFailure The expected number of failed MPDU receptions within PPDUs.
+     * @param expectedOverlaps The expected number of overlapping reception events.
+     * @param expectedNonOverlaps The expected number of non-overlapping reception events.
      */
     void CheckAllStats(uint64_t expectedPpduSuccess,
                        uint64_t expectedPpduFailure,
@@ -936,7 +936,7 @@ class TestWifiPhyRxTraceHelperMloStr : public TestCase
 
     /**
      * Checks the statistics of PPDU and MPDU reception success and failure.
-     * \param expectedRecordCount The expected number of records.
+     * @param expectedRecordCount The expected number of records.
      */
     void CheckRecords(uint64_t expectedRecordCount);
 
@@ -1675,8 +1675,8 @@ TestWifiPhyRxTraceHelperMloStr::DoRun()
 }
 
 /**
- * \ingroup wifi-test
- * \brief Implements a test case to evaluate the reception process of WiFi Physical Layer (PHY)
+ * @ingroup wifi-test
+ * @brief Implements a test case to evaluate the reception process of WiFi Physical Layer (PHY)
  * frames (PPDU) with multiple MAC Protocol Data Units (MPDUs) when using YansWifiPhy.
  *
  * This class extends the TestCase class to simulate and analyze the reception of PPDUs containing
@@ -1703,10 +1703,10 @@ class TestWifiPhyRxTraceHelperYans : public TestCase
 
     /**
      * Sends a PPDU containing two MPDUs addressed to specific receivers.
-     * \param rxPowerDbm The transmit power in dBm.
-     * \param add1 The MAC address of the first receiver.
-     * \param add2 The MAC address of the second receiver.
-     * \param tx_phy The transmitting PHY object.
+     * @param rxPowerDbm The transmit power in dBm.
+     * @param add1 The MAC address of the first receiver.
+     * @param add2 The MAC address of the second receiver.
+     * @param tx_phy The transmitting PHY object.
      */
     void SendPpduWithTwoMpdus(double rxPowerDbm,
                               Mac48Address add1,
@@ -1715,20 +1715,20 @@ class TestWifiPhyRxTraceHelperYans : public TestCase
 
     /**
      * Sends a PPDU containing one MPDU addressed to a specific receiver.
-     * \param rxPowerDbm The transmit power in dBm.
-     * \param add1 The MAC address of the receiver.
-     * \param tx_phy The transmitting PHY object.
+     * @param rxPowerDbm The transmit power in dBm.
+     * @param add1 The MAC address of the receiver.
+     * @param tx_phy The transmitting PHY object.
      */
     void SendPpduWithOneMpdu(double rxPowerDbm, Mac48Address add1, Ptr<ns3::YansWifiPhy> tx_phy);
 
     /**
      * Checks the statistics of PPDU and MPDU reception success and failure.
-     * \param expectedPpduSuccess The expected number of successful PPDU receptions.
-     * \param expectedPpduFailure The expected number of failed PPDU receptions.
-     * \param expectedMpduSuccess The expected number of successful MPDU receptions within PPDUs.
-     * \param expectedMpduFailure The expected number of failed MPDU receptions within PPDUs.
-     * \param expectedOverlaps The expected number of overlapping reception events.
-     * \param expectedNonOverlaps The expected number of non-overlapping reception events.
+     * @param expectedPpduSuccess The expected number of successful PPDU receptions.
+     * @param expectedPpduFailure The expected number of failed PPDU receptions.
+     * @param expectedMpduSuccess The expected number of successful MPDU receptions within PPDUs.
+     * @param expectedMpduFailure The expected number of failed MPDU receptions within PPDUs.
+     * @param expectedOverlaps The expected number of overlapping reception events.
+     * @param expectedNonOverlaps The expected number of non-overlapping reception events.
      */
     void CheckAllStats(uint64_t expectedPpduSuccess,
                        uint64_t expectedPpduFailure,
@@ -1739,7 +1739,7 @@ class TestWifiPhyRxTraceHelperYans : public TestCase
 
     /**
      * Checks the statistics of PPDU and MPDU reception success and failure.
-     * \param expectedStats The expected counts for PPDU and MPDU reception.
+     * @param expectedStats The expected counts for PPDU and MPDU reception.
      * @param nodeId The node ID for which to check the received stats.
      * @param deviceId The device ID for which to check the received stats.
      * @param linkId The link ID for which to check the received stats.
@@ -1751,7 +1751,7 @@ class TestWifiPhyRxTraceHelperYans : public TestCase
 
     /**
      * Checks the statistics of PPDU and MPDU reception success and failure.
-     * \param expectedRecordCount The expected number of records.
+     * @param expectedRecordCount The expected number of records.
      */
     void CheckRecords(uint64_t expectedRecordCount);
 
@@ -2491,10 +2491,10 @@ TestWifiPhyRxTraceHelperYans::DoRun()
 }
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief wifi PHY reception Test Suite
+ * @brief wifi PHY reception Test Suite
  */
 class WifiPhyRxTraceHelperTestSuite : public TestSuite
 {

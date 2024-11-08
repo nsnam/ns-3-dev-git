@@ -130,8 +130,8 @@ MobilityHelper::InstallAll() const
 /**
  * Utility function that rounds |1e-4| < input value < |1e-3| up to +/- 1e-3
  * and value <= |1e-4| to zero
- * \param v value to round
- * \return rounded value
+ * @param v value to round
+ * @return rounded value
  */
 static double
 DoRound(double v)

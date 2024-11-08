@@ -20,9 +20,9 @@ namespace ns3
 struct SpectrumSignalParameters;
 
 /**
- * \ingroup spectrum
+ * @ingroup spectrum
  *
- * \brief spectrum-aware propagation loss model that is
+ * @brief spectrum-aware propagation loss model that is
  * compatible with PhasedArrayModel type of ns-3 antenna
  *
  * Interface for propagation loss models to be adopted when
@@ -38,8 +38,8 @@ class PhasedArraySpectrumPropagationLossModel : public Object
     ~PhasedArraySpectrumPropagationLossModel() override;
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -86,8 +86,8 @@ class PhasedArraySpectrumPropagationLossModel : public Object
      * chained together, this method will also assign streams to the
      * downstream models.
      *
-     * \param stream the stream index offset start
-     * \return the number of stream indices assigned by this model
+     * @param stream the stream index offset start
+     * @return the number of stream indices assigned by this model
      */
     int64_t AssignStreams(int64_t stream);
 
@@ -98,8 +98,8 @@ class PhasedArraySpectrumPropagationLossModel : public Object
      *
      * Subclasses must implement this; those not using random variables can return zero.
      *
-     * \param stream first stream index to use
-     * \return the number of stream indices assigned by this model
+     * @param stream first stream index to use
+     * @return the number of stream indices assigned by this model
      */
     virtual int64_t DoAssignStreams(int64_t stream) = 0;
 

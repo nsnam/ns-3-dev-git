@@ -31,9 +31,9 @@ using namespace ns3::energy;
 NS_LOG_COMPONENT_DEFINE("LiIonEnergySourceTestSuite");
 
 /**
- * \ingroup energy-tests
+ * @ingroup energy-tests
  *
- * \brief LiIon battery Test
+ * @brief LiIon battery Test
  */
 class LiIonEnergyTestCase : public TestCase
 {
@@ -86,9 +86,9 @@ LiIonEnergyTestCase::DoRun()
 }
 
 /**
- * \ingroup energy-tests
+ * @ingroup energy-tests
  *
- * \brief LiIon battery TestSuite
+ * @brief LiIon battery TestSuite
  */
 class LiIonEnergySourceTestSuite : public TestSuite
 {

@@ -18,8 +18,8 @@
 #include <utility>
 
 /**
- * \file
- * \ingroup scheduler
+ * @file
+ * @ingroup scheduler
  * Declaration of ns3::PriorityQueueScheduler class.
  */
 
@@ -27,13 +27,13 @@ namespace ns3
 {
 
 /**
- * \ingroup scheduler
- * \brief a std::priority_queue event scheduler
+ * @ingroup scheduler
+ * @brief a std::priority_queue event scheduler
  *
  * This class implements an event scheduler using
  * `std::priority_queue` on a `std::vector`.
  *
- * \par Time Complexity
+ * @par Time Complexity
  *
  * Operation    | Amortized %Time  | Reason
  * :----------- | :--------------- | :-----
@@ -43,7 +43,7 @@ namespace ns3
  * Remove()     | Linear           | `std::find()` and `std::make_heap()`
  * RemoveNext() | Logarithmic      | `std::pop_heap()`
  *
- * \par Memory Complexity
+ * @par Memory Complexity
  *
  * Category  | Memory                           | Reason
  * :-------- | :------------------------------- | :-----
@@ -56,7 +56,7 @@ class PriorityQueueScheduler : public Scheduler
   public:
     /**
      *  Register this type.
-     *  \return The object TypeId.
+     *  @return The object TypeId.
      */
     static TypeId GetTypeId();
 
@@ -83,8 +83,8 @@ class PriorityQueueScheduler : public Scheduler
     {
       public:
         /**
-         * \copydoc PriorityQueueScheduler::Remove()
-         * \returns \c true if the event was found, false otherwise.
+         * @copydoc PriorityQueueScheduler::Remove()
+         * @returns \c true if the event was found, false otherwise.
          */
         bool remove(const Scheduler::Event& ev);
 

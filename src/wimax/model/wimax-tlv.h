@@ -25,7 +25,7 @@ namespace ns3
 {
 
 /**
- * \ingroup wimax
+ * @ingroup wimax
  * The value field of a tlv can take different values (uint8_t, uint16,
  * vector, ...). This class is a virtual interface
  * from which all the types of tlv values should derive
@@ -39,24 +39,24 @@ class TlvValue
 
     /**
      * Get serialized size in bytes
-     * \returns the serialized size
+     * @returns the serialized size
      */
     virtual uint32_t GetSerializedSize() const = 0;
     /**
      * Serialize to a buffer
-     * \param start the iterator
+     * @param start the iterator
      */
     virtual void Serialize(Buffer::Iterator start) const = 0;
     /**
      * Deserialize from a buffer
-     * \param start the iterator
-     * \param valueLen the maximum length of the value
-     * \returns the
+     * @param start the iterator
+     * @param valueLen the maximum length of the value
+     * @returns the
      */
     virtual uint32_t Deserialize(Buffer::Iterator start, uint64_t valueLen) = 0;
     /**
      * Copy function
-     * \returns the TLV value
+     * @returns the TLV value
      */
     virtual TlvValue* Copy() const = 0;
 
@@ -65,8 +65,8 @@ class TlvValue
 
 // =============================================================================
 /**
- * \ingroup wimax
- * \brief This class implements the Type-Len-Value structure channel encodings as described by "IEEE
+ * @ingroup wimax
+ * @brief This class implements the Type-Len-Value structure channel encodings as described by "IEEE
  * Standard for Local and metropolitan area networks Part 16: Air Interface for Fixed Broadband
  * Wireless Access Systems"
  * 11. TLV encodings, page 645
@@ -90,16 +90,16 @@ class Tlv : public Header
     /**
      * Constructor
      *
-     * \param type type
-     * \param length the length
-     * \param value TLV value
+     * @param type type
+     * @param length the length
+     * @param value TLV value
      */
     Tlv(uint8_t type, uint64_t length, const TlvValue& value);
     Tlv();
     ~Tlv() override;
     /**
      * Register this type.
-     * \return the TypeId.
+     * @return the TypeId.
      */
     static TypeId GetTypeId();
     TypeId GetInstanceTypeId() const override;
@@ -109,43 +109,43 @@ class Tlv : public Header
     uint32_t Deserialize(Buffer::Iterator start) override;
     /**
      * Get size of length field
-     * \returns the size of length field
+     * @returns the size of length field
      */
     uint8_t GetSizeOfLen() const;
     /**
      * Get type value
-     * \returns the type
+     * @returns the type
      */
     uint8_t GetType() const;
     /**
      * Get length value
-     * \returns the length
+     * @returns the length
      */
     uint64_t GetLength() const;
     /**
      * Peek value
-     * \returns the TLV value
+     * @returns the TLV value
      */
     TlvValue* PeekValue();
     /**
      * Copy TLV
-     * \returns a pointer to a TLV copy
+     * @returns a pointer to a TLV copy
      */
     Tlv* Copy() const;
     /**
      * Copy TlvValue
-     * \returns the TLV value
+     * @returns the TLV value
      */
     TlvValue* CopyValue() const;
     /**
      * assignment operator
-     * \param o the TLV to assign
-     * \returns the TLV
+     * @param o the TLV to assign
+     * @returns the TLV
      */
     Tlv& operator=(const Tlv& o);
     /**
      * type conversion operator
-     * \param tlv the TLV
+     * @param tlv the TLV
      */
     Tlv(const Tlv& tlv);
 
@@ -157,8 +157,8 @@ class Tlv : public Header
 
 // ==============================================================================
 /**
- * \ingroup wimax
- * \brief U8TlvValue class
+ * @ingroup wimax
+ * @brief U8TlvValue class
  */
 class U8TlvValue : public TlvValue
 {
@@ -166,7 +166,7 @@ class U8TlvValue : public TlvValue
     /**
      * Constructor
      *
-     * \param value value to encode
+     * @param value value to encode
      */
     U8TlvValue(uint8_t value);
     U8TlvValue();
@@ -176,18 +176,18 @@ class U8TlvValue : public TlvValue
     uint32_t Deserialize(Buffer::Iterator start, uint64_t valueLen) override;
     /**
      * Deserialize from a buffer
-     * \param start the iterator
-     * \returns the size of the item
+     * @param start the iterator
+     * @returns the size of the item
      */
     uint32_t Deserialize(Buffer::Iterator start);
     /**
      * Get value
-     * \returns the value
+     * @returns the value
      */
     uint8_t GetValue() const;
     /**
      * Copy
-     * \returns a U8 TLV value
+     * @returns a U8 TLV value
      */
     U8TlvValue* Copy() const override;
 
@@ -197,8 +197,8 @@ class U8TlvValue : public TlvValue
 
 // ==============================================================================
 /**
- * \ingroup wimax
- * \brief U16TlvValue class
+ * @ingroup wimax
+ * @brief U16TlvValue class
  */
 class U16TlvValue : public TlvValue
 {
@@ -206,7 +206,7 @@ class U16TlvValue : public TlvValue
     /**
      * Constructor
      *
-     * \param value value to encode
+     * @param value value to encode
      */
     U16TlvValue(uint16_t value);
     U16TlvValue();
@@ -216,18 +216,18 @@ class U16TlvValue : public TlvValue
     uint32_t Deserialize(Buffer::Iterator start, uint64_t valueLen) override;
     /**
      * Deserialize from a buffer
-     * \param start the iterator
-     * \returns the size
+     * @param start the iterator
+     * @returns the size
      */
     uint32_t Deserialize(Buffer::Iterator start);
     /**
      * Get value
-     * \returns the value
+     * @returns the value
      */
     uint16_t GetValue() const;
     /**
      * Copy
-     * \returns the U16 TLV value
+     * @returns the U16 TLV value
      */
     U16TlvValue* Copy() const override;
 
@@ -237,8 +237,8 @@ class U16TlvValue : public TlvValue
 
 // ==============================================================================
 /**
- * \ingroup wimax
- * \brief U32TlvValue class
+ * @ingroup wimax
+ * @brief U32TlvValue class
  */
 class U32TlvValue : public TlvValue
 {
@@ -246,7 +246,7 @@ class U32TlvValue : public TlvValue
     /**
      * Constructor
      *
-     * \param value to encode
+     * @param value to encode
      */
     U32TlvValue(uint32_t value);
     U32TlvValue();
@@ -257,18 +257,18 @@ class U32TlvValue : public TlvValue
     uint32_t Deserialize(Buffer::Iterator start, uint64_t valueLen) override;
     /**
      * Deserialize from a buffer
-     * \param start the iterator
-     * \returns the size
+     * @param start the iterator
+     * @returns the size
      */
     uint32_t Deserialize(Buffer::Iterator start);
     /**
      * Get value
-     * \returns the value
+     * @returns the value
      */
     uint32_t GetValue() const;
     /**
      * Copy
-     * \returns the U32 TLV Value
+     * @returns the U32 TLV Value
      */
     U32TlvValue* Copy() const override;
 
@@ -279,8 +279,8 @@ class U32TlvValue : public TlvValue
 // ==============================================================================
 
 /**
- * \ingroup wimax
- * \brief this class is used to implement a vector of values in one tlv value field
+ * @ingroup wimax
+ * @brief this class is used to implement a vector of values in one tlv value field
  */
 class VectorTlvValue : public TlvValue
 {
@@ -294,22 +294,22 @@ class VectorTlvValue : public TlvValue
     uint32_t Deserialize(Buffer::Iterator start, uint64_t valueLength) override = 0;
     /**
      * Begin iterator
-     * \returns the beginning element
+     * @returns the beginning element
      */
     Iterator Begin() const;
     /**
      * End iterator
-     * \returns the ending element
+     * @returns the ending element
      */
     Iterator End() const;
     /**
      * Add a TLV
-     * \param val the TLV value
+     * @param val the TLV value
      */
     void Add(const Tlv& val);
     /**
      * Copy
-     * \returns the vector TLV value
+     * @returns the vector TLV value
      */
     VectorTlvValue* Copy() const override = 0;
 
@@ -319,8 +319,8 @@ class VectorTlvValue : public TlvValue
 
 // ==============================================================================
 /**
- * \ingroup wimax
- * \brief SfVectorTlvValue class
+ * @ingroup wimax
+ * @brief SfVectorTlvValue class
  */
 class SfVectorTlvValue : public VectorTlvValue
 {
@@ -367,8 +367,8 @@ class SfVectorTlvValue : public VectorTlvValue
 // ==============================================================================
 
 /**
- * \ingroup wimax
- * \brief this class implements the convergence sub-layer descriptor as a tlv vector
+ * @ingroup wimax
+ * @brief this class implements the convergence sub-layer descriptor as a tlv vector
  */
 class CsParamVectorTlvValue : public VectorTlvValue
 {
@@ -390,8 +390,8 @@ class CsParamVectorTlvValue : public VectorTlvValue
 // ==============================================================================
 
 /**
- * \ingroup wimax
- * \brief this class implements the classifier descriptor as a tlv vector
+ * @ingroup wimax
+ * @brief this class implements the classifier descriptor as a tlv vector
  */
 class ClassificationRuleVectorTlvValue : public VectorTlvValue
 {
@@ -418,8 +418,8 @@ class ClassificationRuleVectorTlvValue : public VectorTlvValue
 
 // ==============================================================================
 /**
- * \ingroup wimax
- * \brief TosTlvValue class
+ * @ingroup wimax
+ * @brief TosTlvValue class
  */
 class TosTlvValue : public TlvValue
 {
@@ -428,9 +428,9 @@ class TosTlvValue : public TlvValue
     /**
      * Constructor
      *
-     * \param low low value
-     * \param high high value
-     * \param mask the mask
+     * @param low low value
+     * @param high high value
+     * @param mask the mask
      */
     TosTlvValue(uint8_t low, uint8_t high, uint8_t mask);
     ~TosTlvValue() override;
@@ -439,22 +439,22 @@ class TosTlvValue : public TlvValue
     uint32_t Deserialize(Buffer::Iterator start, uint64_t valueLength) override;
     /**
      * Get low part
-     * \returns the low part
+     * @returns the low part
      */
     uint8_t GetLow() const;
     /**
      * Get high part
-     * \returns the high part
+     * @returns the high part
      */
     uint8_t GetHigh() const;
     /**
      * Get the mask
-     * \returns the mask
+     * @returns the mask
      */
     uint8_t GetMask() const;
     /**
      * Copy
-     * \returns the TOS TLV value
+     * @returns the TOS TLV value
      */
     TosTlvValue* Copy() const override;
 
@@ -466,8 +466,8 @@ class TosTlvValue : public TlvValue
 
 // ==============================================================================
 /**
- * \ingroup wimax
- * \brief PortRangeTlvValue class
+ * @ingroup wimax
+ * @brief PortRangeTlvValue class
  */
 class PortRangeTlvValue : public TlvValue
 {
@@ -488,23 +488,23 @@ class PortRangeTlvValue : public TlvValue
     uint32_t Deserialize(Buffer::Iterator start, uint64_t valueLength) override;
     /**
      * Add a range
-     * \param portLow the low port of the range
-     * \param portHigh the high port of the range
+     * @param portLow the low port of the range
+     * @param portHigh the high port of the range
      */
     void Add(uint16_t portLow, uint16_t portHigh);
     /**
      * Begin iterator
-     * \returns the beginning element
+     * @returns the beginning element
      */
     Iterator Begin() const;
     /**
      * End iterator
-     * \returns the ending element
+     * @returns the ending element
      */
     Iterator End() const;
     /**
      * Copy
-     * \returns the port range tlv value
+     * @returns the port range tlv value
      */
     PortRangeTlvValue* Copy() const override;
 
@@ -514,8 +514,8 @@ class PortRangeTlvValue : public TlvValue
 
 // ==============================================================================
 /**
- * \ingroup wimax
- * \brief ProtocolTlvValue class
+ * @ingroup wimax
+ * @brief ProtocolTlvValue class
  */
 class ProtocolTlvValue : public TlvValue
 {
@@ -529,22 +529,22 @@ class ProtocolTlvValue : public TlvValue
     uint32_t Deserialize(Buffer::Iterator start, uint64_t valueLength) override;
     /**
      * Add protocol number
-     * \param protocol the protocol number
+     * @param protocol the protocol number
      */
     void Add(uint8_t protocol);
     /**
      * Begin iterator
-     * \returns the beginning element
+     * @returns the beginning element
      */
     Iterator Begin() const;
     /**
      * End iterator
-     * \return the ending element
+     * @return the ending element
      */
     Iterator End() const;
     /**
      * Copy
-     * \returns the protocol tlv value
+     * @returns the protocol tlv value
      */
     ProtocolTlvValue* Copy() const override;
 
@@ -555,8 +555,8 @@ class ProtocolTlvValue : public TlvValue
 // ==============================================================================
 
 /**
- * \ingroup wimax
- * \brief Ipv4AddressTlvValue class
+ * @ingroup wimax
+ * @brief Ipv4AddressTlvValue class
  */
 class Ipv4AddressTlvValue : public TlvValue
 {
@@ -577,18 +577,18 @@ class Ipv4AddressTlvValue : public TlvValue
     uint32_t Deserialize(Buffer::Iterator start, uint64_t valueLength) override;
     /**
      * Add IPv4 address and mask
-     * \param address the IPv4 address
-     * \param mask the IPv4 mask
+     * @param address the IPv4 address
+     * @param mask the IPv4 mask
      */
     void Add(Ipv4Address address, Ipv4Mask mask);
     /**
      * Begin iterator
-     * \returns the beginning element
+     * @returns the beginning element
      */
     Iterator Begin() const;
     /**
      * End iterator
-     * \returns the ending element
+     * @returns the ending element
      */
     Iterator End() const;
     Ipv4AddressTlvValue* Copy() const override;

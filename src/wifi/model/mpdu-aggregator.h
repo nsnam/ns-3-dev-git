@@ -30,8 +30,8 @@ class WifiTxParameters;
 class HtFrameExchangeManager;
 
 /**
- * \brief Aggregator used to construct A-MPDUs
- * \ingroup wifi
+ * @brief Aggregator used to construct A-MPDUs
+ * @ingroup wifi
  */
 class MpduAggregator : public Object
 {
@@ -42,8 +42,8 @@ class MpduAggregator : public Object
     typedef std::map<AcIndex, Ptr<QosTxop>> EdcaQueues;
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -53,16 +53,16 @@ class MpduAggregator : public Object
     /**
      * Aggregate an MPDU to an A-MPDU.
      *
-     * \param mpdu the MPDU.
-     * \param ampdu the A-MPDU.
-     * \param isSingle whether it is a single MPDU.
+     * @param mpdu the MPDU.
+     * @param ampdu the A-MPDU.
+     * @param isSingle whether it is a single MPDU.
      */
     static void Aggregate(Ptr<const WifiMpdu> mpdu, Ptr<Packet> ampdu, bool isSingle);
 
     /**
      * Set the ID of the link this MPDU aggregator is associated with.
      *
-     * \param linkId the ID of the link this MPDU aggregator is associated with
+     * @param linkId the ID of the link this MPDU aggregator is associated with
      */
     void SetLinkId(uint8_t linkId);
 
@@ -70,9 +70,9 @@ class MpduAggregator : public Object
      * Compute the size of the A-MPDU resulting from the aggregation of an MPDU of
      * size <i>mpduSize</i> and an A-MPDU of size <i>ampduSize</i>.
      *
-     * \param mpduSize the MPDU size in bytes.
-     * \param ampduSize the A-MPDU size in bytes.
-     * \return the size of the resulting A-MPDU in bytes.
+     * @param mpduSize the MPDU size in bytes.
+     * @param ampduSize the A-MPDU size in bytes.
+     * @return the size of the resulting A-MPDU in bytes.
      */
     static uint32_t GetSizeIfAggregated(uint32_t mpduSize, uint32_t ampduSize);
 
@@ -80,10 +80,10 @@ class MpduAggregator : public Object
      * Determine the maximum size for an A-MPDU of the given TID that can be sent
      * to the given receiver when using the given modulation class.
      *
-     * \param recipient the receiver station address.
-     * \param tid the TID.
-     * \param modulation the modulation class.
-     * \return the maximum A-MPDU size in bytes.
+     * @param recipient the receiver station address.
+     * @param tid the TID.
+     * @param modulation the modulation class.
+     * @return the maximum A-MPDU size in bytes.
      */
     uint32_t GetMaxAmpduSize(Mac48Address recipient,
                              uint8_t tid,
@@ -115,10 +115,10 @@ class MpduAggregator : public Object
      * established with the receiver, or another MPDU to aggregate was not found),
      * the returned vector is empty.
      *
-     * \param mpdu the given MPDU.
-     * \param txParams the TX parameters used to transmit the frame
-     * \param availableTime the time available for the frame exchange
-     * \return the resulting A-MPDU, if aggregation is possible.
+     * @param mpdu the given MPDU.
+     * @param txParams the TX parameters used to transmit the frame
+     * @param availableTime the time available for the frame exchange
+     * @return the resulting A-MPDU, if aggregation is possible.
      */
     std::vector<Ptr<WifiMpdu>> GetNextAmpdu(Ptr<WifiMpdu> mpdu,
                                             WifiTxParameters& txParams,
@@ -127,13 +127,13 @@ class MpduAggregator : public Object
     /**
      * Set the MAC layer to use.
      *
-     * \param mac the MAC layer to use
+     * @param mac the MAC layer to use
      */
     void SetWifiMac(const Ptr<WifiMac> mac);
 
     /**
-     * \param ampduSize the size of the A-MPDU that needs to be padded in bytes
-     * \return the size of the padding that must be added to the end of an A-MPDU in bytes
+     * @param ampduSize the size of the A-MPDU that needs to be padded in bytes
+     * @return the size of the padding that must be added to the end of an A-MPDU in bytes
      *
      * Calculates how much padding must be added to the end of an A-MPDU of the given size
      * (once another MPDU is aggregated).
@@ -145,9 +145,9 @@ class MpduAggregator : public Object
      * Get the A-MPDU subframe header corresponding to the MPDU size and
      * whether the MPDU is a single MPDU.
      *
-     * \param mpduSize size of the MPDU in bytes.
-     * \param isSingle true if S-MPDU.
-     * \return the A-MPDU subframe header
+     * @param mpduSize size of the MPDU in bytes.
+     * @param isSingle true if S-MPDU.
+     * @return the A-MPDU subframe header
      */
     static AmpduSubframeHeader GetAmpduSubframeHeader(uint16_t mpduSize, bool isSingle);
 

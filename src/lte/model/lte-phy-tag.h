@@ -21,8 +21,8 @@ class LtePhyTag : public Tag
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     TypeId GetInstanceTypeId() const override;
@@ -34,7 +34,7 @@ class LtePhyTag : public Tag
 
     /**
      * Create a LtePhyTag with the given RNTI and LC id
-     * \param cellId the cell ID
+     * @param cellId the cell ID
      */
     LtePhyTag(uint16_t cellId);
 
@@ -48,7 +48,7 @@ class LtePhyTag : public Tag
     /**
      * Get cell ID
      *
-     * \returns cell ID
+     * @returns cell ID
      */
     uint16_t GetCellId() const;
 

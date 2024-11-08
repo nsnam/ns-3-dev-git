@@ -28,7 +28,7 @@ namespace ns3
 class Packet;
 
 /**
- * \ingroup wifi
+ * @ingroup wifi
  *
  * See IEEE 802.11 chapter 7.3.1.11
  * Header format: | category: 1 | action value: 1 |
@@ -239,43 +239,43 @@ class WifiActionHeader : public Header
     /**
      * Set action for this Action header.
      *
-     * \param type category
-     * \param action action
+     * @param type category
+     * @param action action
      */
     void SetAction(CategoryValue type, ActionValue action);
 
     /**
      * Return the category value.
      *
-     * \return CategoryValue
+     * @return CategoryValue
      */
     CategoryValue GetCategory() const;
     /**
      * Return the action value.
      *
-     * \return ActionValue
+     * @return ActionValue
      */
     ActionValue GetAction() const;
 
     /**
      * Peek an Action header from the given packet.
      *
-     * \param pkt the given packet
-     * \return the category value and the action value in the peeked Action header
+     * @param pkt the given packet
+     * @return the category value and the action value in the peeked Action header
      */
     static std::pair<CategoryValue, ActionValue> Peek(Ptr<const Packet> pkt);
 
     /**
      * Remove an Action header from the given packet.
      *
-     * \param pkt the given packet
-     * \return the category value and the action value in the removed Action header
+     * @param pkt the given packet
+     * @return the category value and the action value in the removed Action header
      */
     static std::pair<CategoryValue, ActionValue> Remove(Ptr<Packet> pkt);
 
     /**
      * Register this type.
-     * \return The TypeId.
+     * @return The TypeId.
      */
     static TypeId GetTypeId();
     TypeId GetInstanceTypeId() const override;
@@ -290,7 +290,7 @@ class WifiActionHeader : public Header
 };
 
 /**
- * \ingroup wifi
+ * @ingroup wifi
  * Implement the header for management frames of type Add Block Ack request.
  */
 class MgtAddBaRequestHeader : public Header
@@ -298,7 +298,7 @@ class MgtAddBaRequestHeader : public Header
   public:
     /**
      * Register this type.
-     * \return The TypeId.
+     * @return The TypeId.
      */
     static TypeId GetTypeId();
     TypeId GetInstanceTypeId() const override;
@@ -318,68 +318,68 @@ class MgtAddBaRequestHeader : public Header
     /**
      * Set Traffic ID (TID).
      *
-     * \param tid traffic ID
+     * @param tid traffic ID
      */
     void SetTid(uint8_t tid);
     /**
      * Set timeout.
      *
-     * \param timeout timeout
+     * @param timeout timeout
      */
     void SetTimeout(uint16_t timeout);
     /**
      * Set buffer size.
      *
-     * \param size buffer size
+     * @param size buffer size
      */
     void SetBufferSize(uint16_t size);
     /**
      * Set the starting sequence number.
      *
-     * \param seq the starting sequence number
+     * @param seq the starting sequence number
      */
     void SetStartingSequence(uint16_t seq);
     /**
      * Enable or disable A-MSDU support.
      *
-     * \param supported enable or disable A-MSDU support
+     * @param supported enable or disable A-MSDU support
      */
     void SetAmsduSupport(bool supported);
 
     /**
      * Return the starting sequence number.
      *
-     * \return the starting sequence number
+     * @return the starting sequence number
      */
     uint16_t GetStartingSequence() const;
     /**
      * Return the Traffic ID (TID).
      *
-     * \return TID
+     * @return TID
      */
     uint8_t GetTid() const;
     /**
      * Return whether the Block Ack policy is immediate Block Ack.
      *
-     * \return true if immediate Block Ack is being used, false otherwise
+     * @return true if immediate Block Ack is being used, false otherwise
      */
     bool IsImmediateBlockAck() const;
     /**
      * Return the timeout.
      *
-     * \return timeout
+     * @return timeout
      */
     uint16_t GetTimeout() const;
     /**
      * Return the buffer size.
      *
-     * \return the buffer size.
+     * @return the buffer size.
      */
     uint16_t GetBufferSize() const;
     /**
      * Return whether A-MSDU capability is supported.
      *
-     * \return true is A-MSDU is supported, false otherwise
+     * @return true is A-MSDU is supported, false otherwise
      */
     bool IsAmsduSupported() const;
 
@@ -387,25 +387,25 @@ class MgtAddBaRequestHeader : public Header
     /**
      * Return the raw parameter set.
      *
-     * \return the raw parameter set
+     * @return the raw parameter set
      */
     uint16_t GetParameterSet() const;
     /**
      * Set the parameter set from the given raw value.
      *
-     * \param params raw parameter set value
+     * @param params raw parameter set value
      */
     void SetParameterSet(uint16_t params);
     /**
      * Return the raw sequence control.
      *
-     * \return the raw sequence control
+     * @return the raw sequence control
      */
     uint16_t GetStartingSequenceControl() const;
     /**
      * Set sequence control with the given raw value.
      *
-     * \param seqControl the raw sequence control
+     * @param seqControl the raw sequence control
      */
     void SetStartingSequenceControl(uint16_t seqControl);
 
@@ -419,7 +419,7 @@ class MgtAddBaRequestHeader : public Header
 };
 
 /**
- * \ingroup wifi
+ * @ingroup wifi
  * Implement the header for management frames of type Add Block Ack response.
  */
 class MgtAddBaResponseHeader : public Header
@@ -427,7 +427,7 @@ class MgtAddBaResponseHeader : public Header
   public:
     /**
      * Register this type.
-     * \return The TypeId.
+     * @return The TypeId.
      */
     static TypeId GetTypeId();
     TypeId GetInstanceTypeId() const override;
@@ -447,68 +447,68 @@ class MgtAddBaResponseHeader : public Header
     /**
      * Set Traffic ID (TID).
      *
-     * \param tid traffic ID
+     * @param tid traffic ID
      */
     void SetTid(uint8_t tid);
     /**
      * Set timeout.
      *
-     * \param timeout timeout
+     * @param timeout timeout
      */
     void SetTimeout(uint16_t timeout);
     /**
      * Set buffer size.
      *
-     * \param size buffer size
+     * @param size buffer size
      */
     void SetBufferSize(uint16_t size);
     /**
      * Set the status code.
      *
-     * \param code the status code
+     * @param code the status code
      */
     void SetStatusCode(StatusCode code);
     /**
      * Enable or disable A-MSDU support.
      *
-     * \param supported enable or disable A-MSDU support
+     * @param supported enable or disable A-MSDU support
      */
     void SetAmsduSupport(bool supported);
 
     /**
      * Return the status code.
      *
-     * \return the status code
+     * @return the status code
      */
     StatusCode GetStatusCode() const;
     /**
      * Return the Traffic ID (TID).
      *
-     * \return TID
+     * @return TID
      */
     uint8_t GetTid() const;
     /**
      * Return whether the Block Ack policy is immediate Block Ack.
      *
-     * \return true if immediate Block Ack is being used, false otherwise
+     * @return true if immediate Block Ack is being used, false otherwise
      */
     bool IsImmediateBlockAck() const;
     /**
      * Return the timeout.
      *
-     * \return timeout
+     * @return timeout
      */
     uint16_t GetTimeout() const;
     /**
      * Return the buffer size.
      *
-     * \return the buffer size.
+     * @return the buffer size.
      */
     uint16_t GetBufferSize() const;
     /**
      * Return whether A-MSDU capability is supported.
      *
-     * \return true is A-MSDU is supported, false otherwise
+     * @return true is A-MSDU is supported, false otherwise
      */
     bool IsAmsduSupported() const;
 
@@ -516,13 +516,13 @@ class MgtAddBaResponseHeader : public Header
     /**
      * Return the raw parameter set.
      *
-     * \return the raw parameter set
+     * @return the raw parameter set
      */
     uint16_t GetParameterSet() const;
     /**
      * Set the parameter set from the given raw value.
      *
-     * \param params raw parameter set value
+     * @param params raw parameter set value
      */
     void SetParameterSet(uint16_t params);
 
@@ -536,7 +536,7 @@ class MgtAddBaResponseHeader : public Header
 };
 
 /**
- * \ingroup wifi
+ * @ingroup wifi
  * Implement the header for management frames of type Delete Block Ack.
  */
 class MgtDelBaHeader : public Header
@@ -544,7 +544,7 @@ class MgtDelBaHeader : public Header
   public:
     /**
      * Register this type.
-     * \return The TypeId.
+     * @return The TypeId.
      */
     static TypeId GetTypeId();
 
@@ -557,20 +557,20 @@ class MgtDelBaHeader : public Header
     /**
      * Check if the initiator bit in the DELBA is set.
      *
-     * \return true if the initiator bit in the DELBA is set,
+     * @return true if the initiator bit in the DELBA is set,
      *         false otherwise
      */
     bool IsByOriginator() const;
     /**
      * Return the Traffic ID (TID).
      *
-     * \return TID
+     * @return TID
      */
     uint8_t GetTid() const;
     /**
      * Set Traffic ID (TID).
      *
-     * \param tid traffic ID
+     * @param tid traffic ID
      */
     void SetTid(uint8_t tid);
     /**
@@ -586,13 +586,13 @@ class MgtDelBaHeader : public Header
     /**
      * Return the raw parameter set.
      *
-     * \return the raw parameter set
+     * @return the raw parameter set
      */
     uint16_t GetParameterSet() const;
     /**
      * Set the parameter set from the given raw value.
      *
-     * \param params raw parameter set value
+     * @param params raw parameter set value
      */
     void SetParameterSet(uint16_t params);
 
@@ -602,7 +602,7 @@ class MgtDelBaHeader : public Header
 };
 
 /**
- * \ingroup wifi
+ * @ingroup wifi
  * Implement the header for Action frames of type EML Operating Mode Notification.
  */
 class MgtEmlOmn : public Header
@@ -612,7 +612,7 @@ class MgtEmlOmn : public Header
 
     /**
      * Register this type.
-     * \return The TypeId.
+     * @return The TypeId.
      */
     static TypeId GetTypeId();
     TypeId GetInstanceTypeId() const override;
@@ -647,11 +647,11 @@ class MgtEmlOmn : public Header
     /**
      * Set the bit position in the link bitmap corresponding to the given link.
      *
-     * \param linkId the ID of the given link
+     * @param linkId the ID of the given link
      */
     void SetLinkIdInBitmap(uint8_t linkId);
     /**
-     * \return the ID of the links whose bit position in the link bitmap is set to 1
+     * @return the ID of the links whose bit position in the link bitmap is set to 1
      */
     std::list<uint8_t> GetLinkBitmap() const;
 
@@ -661,7 +661,7 @@ class MgtEmlOmn : public Header
 };
 
 /**
- * \ingroup wifi
+ * @ingroup wifi
  * Implement the FILS (Fast Initial Link Setup) action frame.
  * See sec. 9.6.7.36 of IEEE 802.11-2020 and IEEE 802.11ax-2021.
  */
@@ -670,7 +670,7 @@ class FilsDiscHeader : public Header
   public:
     FilsDiscHeader();
 
-    /// \return the object TypeId
+    /// @return the object TypeId
     static TypeId GetTypeId();
     TypeId GetInstanceTypeId() const override;
     void Print(std::ostream& os) const override;
@@ -681,20 +681,20 @@ class FilsDiscHeader : public Header
     /**
      * Set the SSID field.
      *
-     * \param ssid the SSID
+     * @param ssid the SSID
      */
     void SetSsid(const std::string& ssid);
 
-    /// \return the SSID
+    /// @return the SSID
     const std::string& GetSsid() const;
 
-    /// \return size of FILS Discovery Information field in octets
+    /// @return size of FILS Discovery Information field in octets
     uint32_t GetInformationFieldSize() const;
 
-    /// \return size of non-optional subfields in octets
+    /// @return size of non-optional subfields in octets
     uint32_t GetSizeNonOptSubfields() const;
 
-    /// \brief sets value of Length subfield
+    /// @brief sets value of Length subfield
     void SetLengthSubfield();
 
     /// FILS Discovery Frame Control subfield of FILS Discovery Information field
@@ -714,15 +714,15 @@ class FilsDiscHeader : public Header
         uint8_t m_reserved : 2 {0};              ///< Reserved Bits
 
         /**
-         * \brief serialize content to a given buffer
-         * \param start given input buffer iterator
+         * @brief serialize content to a given buffer
+         * @param start given input buffer iterator
          */
         void Serialize(Buffer::Iterator& start) const;
 
         /**
-         * \brief read content from a given buffer
-         * \param start input buffer iterator
-         * \return number of read octets
+         * @brief read content from a given buffer
+         * @param start input buffer iterator
+         * @return number of read octets
          */
         uint32_t Deserialize(Buffer::Iterator start);
     };
@@ -740,17 +740,17 @@ class FilsDiscHeader : public Header
         uint8_t m_minRate : 3 {0};               ///< FILS Minimum Rate
 
         /**
-         * \brief Set the BSS Operating Channel Width field based on the operating channel width
-         * \param width the operating channel width
+         * @brief Set the BSS Operating Channel Width field based on the operating channel width
+         * @param width the operating channel width
          */
         void SetOpChannelWidth(MHz_u width);
 
-        /// \return the operating channel width encoded in the BSS Operating Channel Width field
+        /// @return the operating channel width encoded in the BSS Operating Channel Width field
         MHz_u GetOpChannelWidth() const;
 
         /**
-         * \brief Set the Maximum Number of Spatial Streams field
-         * \param maxNss the maximum number of supported spatial streams
+         * @brief Set the Maximum Number of Spatial Streams field
+         * @param maxNss the maximum number of supported spatial streams
          */
         void SetMaxNss(uint8_t maxNss);
 
@@ -758,33 +758,33 @@ class FilsDiscHeader : public Header
          * Note that this function returns 5 if the maximum number of supported spatial streams
          * is greater than 4.
          *
-         * \return the maximum number of supported spatial streams
+         * @return the maximum number of supported spatial streams
          */
         uint8_t GetMaxNss() const;
 
         /**
-         * \brief Set the PHY Index field based on the given wifi standard
-         * \param standard the wifi standard
+         * @brief Set the PHY Index field based on the given wifi standard
+         * @param standard the wifi standard
          */
         void SetStandard(WifiStandard standard);
 
         /**
-         * \param band the PHY band in which the device is operating (needed to distinguish
+         * @param band the PHY band in which the device is operating (needed to distinguish
          *             between 802.11a and 802.11g)
-         * \return the wifi standard encoded in the PHY Index field
+         * @return the wifi standard encoded in the PHY Index field
          */
         WifiStandard GetStandard(WifiPhyBand band) const;
 
         /**
-         * \brief serialize content to a given buffer
-         * \param start given input buffer iterator
+         * @brief serialize content to a given buffer
+         * @param start given input buffer iterator
          */
         void Serialize(Buffer::Iterator& start) const;
 
         /**
-         * \brief read content from a given buffer
-         * \param start input buffer iterator
-         * \return number of read octets
+         * @brief read content from a given buffer
+         * @param start input buffer iterator
+         * @return number of read octets
          */
         uint32_t Deserialize(Buffer::Iterator start);
     };
@@ -812,20 +812,20 @@ class FilsDiscHeader : public Header
 };
 
 /**
- * \brief Stream insertion operator.
+ * @brief Stream insertion operator.
  *
- * \param os the output stream
- * \param control the Fils Discovery Frame Control field
- * \returns a reference to the stream
+ * @param os the output stream
+ * @param control the Fils Discovery Frame Control field
+ * @returns a reference to the stream
  */
 std::ostream& operator<<(std::ostream& os, const FilsDiscHeader::FilsDiscFrameControl& control);
 
 /**
- * \brief Stream insertion operator.
+ * @brief Stream insertion operator.
  *
- * \param os the output stream
- * \param capability the Fils Discovery Frame Capability field
- * \returns a reference to the stream
+ * @param os the output stream
+ * @param capability the Fils Discovery Frame Capability field
+ * @returns a reference to the stream
  */
 std::ostream& operator<<(std::ostream& os, const FilsDiscHeader::FdCapability& capability);
 

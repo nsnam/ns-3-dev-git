@@ -19,7 +19,7 @@ namespace ns3
 {
 
 /**
- * \brief Manage pcap files for device models
+ * @brief Manage pcap files for device models
  *
  * Handling pcap files is a common operation for ns-3 devices.  It is useful to
  * provide a common base class for dealing with these ops.
@@ -153,7 +153,7 @@ PcapHelper::HookDefaultSink(Ptr<T> object, std::string tracename, Ptr<PcapFileWr
 }
 
 /**
- * \brief Manage ASCII trace files for device models
+ * @brief Manage ASCII trace files for device models
  *
  * Handling ascii trace files is a common operation for ns-3 devices.  It is
  * useful to provide a common base class for dealing with these ops.
@@ -606,7 +606,7 @@ AsciiTraceHelper::HookDefaultReceiveSinkWithContext(Ptr<T> object,
 }
 
 /**
- * \brief Base class providing common user-level pcap operations for helpers
+ * @brief Base class providing common user-level pcap operations for helpers
  * representing net devices.
  */
 class PcapHelperForDevice
@@ -680,9 +680,9 @@ class PcapHelperForDevice
      * @brief Enable pcap output on each device (which is of the appropriate type)
      * in the nodes provided in the container.
      *
-     * \param prefix Filename prefix to use for pcap files.
-     * \param n container of nodes.
-     * \param promiscuous If true capture all possible packets available at the device.
+     * @param prefix Filename prefix to use for pcap files.
+     * @param n container of nodes.
+     * @param promiscuous If true capture all possible packets available at the device.
      */
     void EnablePcap(std::string prefix, NodeContainer n, bool promiscuous = false);
 
@@ -711,7 +711,7 @@ class PcapHelperForDevice
 };
 
 /**
- * \brief Base class providing common user-level ascii trace operations for helpers
+ * @brief Base class providing common user-level ascii trace operations for helpers
  * representing net devices.
  */
 class AsciiTraceHelperForDevice
@@ -820,8 +820,8 @@ class AsciiTraceHelperForDevice
      * @brief Enable ascii trace output on each device (which is of the
      * appropriate type) in the nodes provided in the container.
      *
-     * \param prefix Filename prefix to use for ascii files.
-     * \param n container of nodes.
+     * @param prefix Filename prefix to use for ascii files.
+     * @param n container of nodes.
      */
     void EnableAscii(std::string prefix, NodeContainer n);
 
@@ -831,7 +831,7 @@ class AsciiTraceHelperForDevice
      *
      * @param stream An OutputStreamWrapper representing an existing file to use
      *               when writing trace data.
-     * \param n container of nodes.
+     * @param n container of nodes.
      */
     void EnableAscii(Ptr<OutputStreamWrapper> stream, NodeContainer n);
 

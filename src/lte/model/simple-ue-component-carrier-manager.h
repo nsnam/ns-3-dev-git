@@ -21,7 +21,7 @@ namespace ns3
 class LteUeCcmRrcSapProvider;
 
 /**
- * \brief Component carrier manager implementation which simply does nothing.
+ * @brief Component carrier manager implementation which simply does nothing.
  *
  * Selecting this component carrier selection algorithm is equivalent to disabling automatic
  * triggering of component carrier selection. This is the default choice.
@@ -36,8 +36,8 @@ class SimpleUeComponentCarrierManager : public LteUeComponentCarrierManager
     ~SimpleUeComponentCarrierManager() override;
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -59,68 +59,68 @@ class SimpleUeComponentCarrierManager : public LteUeComponentCarrierManager
     void DoDispose() override;
     // inherited from LteCcsAlgorithm as a Component Carrier Management SAP implementation
     /**
-     * \brief Report Ue Measure function
-     * \param rnti the RNTI
-     * \param measResults the measure results
+     * @brief Report Ue Measure function
+     * @param rnti the RNTI
+     * @param measResults the measure results
      */
     void DoReportUeMeas(uint16_t rnti, LteRrcSap::MeasResults measResults);
     // forwarded from LteMacSapProvider
     /**
-     * \brief Transmit PDU function
-     * \param params LteMacSapProvider::TransmitPduParameters
+     * @brief Transmit PDU function
+     * @param params LteMacSapProvider::TransmitPduParameters
      */
     void DoTransmitPdu(LteMacSapProvider::TransmitPduParameters params);
     /**
-     * \brief Report buffer status function
-     * \param params LteMacSapProvider::ReportBufferStatusParameters
+     * @brief Report buffer status function
+     * @param params LteMacSapProvider::ReportBufferStatusParameters
      */
     virtual void DoReportBufferStatus(LteMacSapProvider::ReportBufferStatusParameters params);
     /// Notify HARQ deliver failure
     void DoNotifyHarqDeliveryFailure();
     // forwarded from LteMacSapUser
     /**
-     * \brief Notify TX opportunity function
+     * @brief Notify TX opportunity function
      *
-     * \param txOpParams the LteMacSapUser::TxOpportunityParameters
+     * @param txOpParams the LteMacSapUser::TxOpportunityParameters
      */
     void DoNotifyTxOpportunity(LteMacSapUser::TxOpportunityParameters txOpParams);
     /**
-     * \brief Receive PDU function
+     * @brief Receive PDU function
      *
-     * \param rxPduParams the LteMacSapUser::ReceivePduParameters
+     * @param rxPduParams the LteMacSapUser::ReceivePduParameters
      */
     void DoReceivePdu(LteMacSapUser::ReceivePduParameters rxPduParams);
     // forwarded from LteUeCcmRrcSapProvider
     /**
-     * \brief Add LC function
-     * \param lcId the LCID
-     * \param lcConfig the logical channel config
-     * \param msu the MSU
-     * \returns updated LC config list
+     * @brief Add LC function
+     * @param lcId the LCID
+     * @param lcConfig the logical channel config
+     * @param msu the MSU
+     * @returns updated LC config list
      */
     virtual std::vector<LteUeCcmRrcSapProvider::LcsConfig> DoAddLc(
         uint8_t lcId,
         LteUeCmacSapProvider::LogicalChannelConfig lcConfig,
         LteMacSapUser* msu);
     /**
-     * \brief Remove LC function
-     * \param lcid the LCID
-     * \returns updated LC list
+     * @brief Remove LC function
+     * @param lcid the LCID
+     * @returns updated LC list
      */
     std::vector<uint16_t> DoRemoveLc(uint8_t lcid);
     /**
-     * \brief Configure signal bearer function
-     * \param lcId the LCID
-     * \param lcConfig the logical channel config
-     * \param msu the MSU
-     * \returns LteMacSapUser *
+     * @brief Configure signal bearer function
+     * @param lcId the LCID
+     * @param lcConfig the logical channel config
+     * @param msu the MSU
+     * @returns LteMacSapUser *
      */
     virtual LteMacSapUser* DoConfigureSignalBearer(
         uint8_t lcId,
         LteUeCmacSapProvider::LogicalChannelConfig lcConfig,
         LteMacSapUser* msu);
     /**
-     * \brief Reset LC map
+     * @brief Reset LC map
      *
      */
     void DoReset();

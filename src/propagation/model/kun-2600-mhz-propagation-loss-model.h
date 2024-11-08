@@ -17,9 +17,9 @@ namespace ns3
 {
 
 /**
- * \ingroup propagation
+ * @ingroup propagation
  *
- * \brief Empirical propagation model for the 2.6 GHz frequency
+ * @brief Empirical propagation model for the 2.6 GHz frequency
  *
  * This class implements the empirical model for 2.6 GHz taken from this paper:
  * Sun Kun, Wang Ping, Li Yingze
@@ -30,8 +30,8 @@ class Kun2600MhzPropagationLossModel : public PropagationLossModel
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -43,10 +43,10 @@ class Kun2600MhzPropagationLossModel : public PropagationLossModel
     Kun2600MhzPropagationLossModel& operator=(const Kun2600MhzPropagationLossModel&) = delete;
 
     /**
-     * \param a the first mobility model
-     * \param b the second mobility model
+     * @param a the first mobility model
+     * @param b the second mobility model
      *
-     * \return the loss in dBm for the propagation between
+     * @return the loss in dBm for the propagation between
      * the two given mobility models
      */
     double GetLoss(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;

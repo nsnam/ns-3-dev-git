@@ -21,10 +21,10 @@ using namespace ns3::lrwpan;
 NS_LOG_COMPONENT_DEFINE("lr-wpan-packet-test");
 
 /**
- * \ingroup lr-wpan-test
- * \ingroup tests
+ * @ingroup lr-wpan-test
+ * @ingroup tests
  *
- * \brief LrWpan header and trailer Test
+ * @brief LrWpan header and trailer Test
  */
 class LrWpanPacketTestCase : public TestCase
 {
@@ -98,10 +98,10 @@ LrWpanPacketTestCase::DoRun()
 }
 
 /**
- * \ingroup lr-wpan-test
- * \ingroup tests
+ * @ingroup lr-wpan-test
+ * @ingroup tests
  *
- * \brief LrWpan header and trailer TestSuite
+ * @brief LrWpan header and trailer TestSuite
  */
 class LrWpanPacketTestSuite : public TestSuite
 {

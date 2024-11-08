@@ -8,8 +8,8 @@
  */
 
 /**
- * \file
- * \ingroup mpi
+ * @file
+ * @ingroup mpi
  * Declaration of class ns3::ParallelCommunicationInterface.
  */
 
@@ -29,9 +29,9 @@ namespace ns3
 {
 
 /**
- * \ingroup mpi
+ * @ingroup mpi
  *
- * \brief Pure virtual base class for the interface between ns-3 and
+ * @brief Pure virtual base class for the interface between ns-3 and
  * the parallel communication layer being used.
  *
  * This class is implemented for each of the parallel versions of
@@ -55,39 +55,39 @@ class ParallelCommunicationInterface
     }
 
     /**
-     * \copydoc MpiInterface::Destroy
+     * @copydoc MpiInterface::Destroy
      */
     virtual void Destroy() = 0;
     /**
-     * \copydoc MpiInterface::GetSystemId
+     * @copydoc MpiInterface::GetSystemId
      */
     virtual uint32_t GetSystemId() = 0;
     /**
-     * \copydoc MpiInterface::GetSize
+     * @copydoc MpiInterface::GetSize
      */
     virtual uint32_t GetSize() = 0;
     /**
-     * \copydoc MpiInterface::IsEnabled
+     * @copydoc MpiInterface::IsEnabled
      */
     virtual bool IsEnabled() = 0;
     /**
-     * \copydoc MpiInterface::Enable(int* pargc,char*** pargv)
+     * @copydoc MpiInterface::Enable(int* pargc,char*** pargv)
      */
     virtual void Enable(int* pargc, char*** pargv) = 0;
     /**
-     * \copydoc MpiInterface::Enable(MPI_Comm communicator)
+     * @copydoc MpiInterface::Enable(MPI_Comm communicator)
      */
     virtual void Enable(MPI_Comm communicator) = 0;
     /**
-     * \copydoc MpiInterface::Disable
+     * @copydoc MpiInterface::Disable
      */
     virtual void Disable() = 0;
     /**
-     * \copydoc MpiInterface::SendPacket
+     * @copydoc MpiInterface::SendPacket
      */
     virtual void SendPacket(Ptr<Packet> p, const Time& rxTime, uint32_t node, uint32_t dev) = 0;
     /**
-     * \copydoc MpiInterface::GetCommunicator
+     * @copydoc MpiInterface::GetCommunicator
      */
     virtual MPI_Comm GetCommunicator() = 0;
 

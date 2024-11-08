@@ -29,7 +29,7 @@ namespace ns3
 {
 
 /**
- * \brief Handover algorithm implementation based on RSRQ measurements, Event
+ * @brief Handover algorithm implementation based on RSRQ measurements, Event
  *        A2 and Event A4.
  *
  * Handover decision made by this algorithm is primarily based on Event A2
@@ -63,7 +63,7 @@ namespace ns3
  *                                               UintegerValue (1));
  *     NetDeviceContainer enbLteDevs = lteHelper->InstallEnbDevice (enbNodes);
  *
- * \note Setting the handover algorithm type and attributes after the call to
+ * @note Setting the handover algorithm type and attributes after the call to
  *       LteHelper::InstallEnbDevice does not have any effect to the devices
  *       that have already been installed.
  */
@@ -76,8 +76,8 @@ class A2A4RsrqHandoverAlgorithm : public LteHandoverAlgorithm
     ~A2A4RsrqHandoverAlgorithm() override;
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -100,8 +100,8 @@ class A2A4RsrqHandoverAlgorithm : public LteHandoverAlgorithm
     /**
      * Called when Event A2 is detected, then trigger a handover if needed.
      *
-     * \param rnti The RNTI of the UE who reported the event.
-     * \param servingCellRsrq The RSRQ of this cell as reported by the UE.
+     * @param rnti The RNTI of the UE who reported the event.
+     * @param servingCellRsrq The RSRQ of this cell as reported by the UE.
      */
     void EvaluateHandover(uint16_t rnti, uint8_t servingCellRsrq);
 
@@ -109,8 +109,8 @@ class A2A4RsrqHandoverAlgorithm : public LteHandoverAlgorithm
      * Determines if a neighbour cell is a valid destination for handover.
      * Currently always return true.
      *
-     * \param cellId The cell ID of the neighbour cell.
-     * \return True if the cell is a valid destination for handover.
+     * @param cellId The cell ID of the neighbour cell.
+     * @return True if the cell is a valid destination for handover.
      */
     bool IsValidNeighbour(uint16_t cellId);
 
@@ -120,9 +120,9 @@ class A2A4RsrqHandoverAlgorithm : public LteHandoverAlgorithm
      * entry will be created. Only the latest measurements are stored in the
      * table.
      *
-     * \param rnti The RNTI of the UE who reported the event.
-     * \param cellId The cell ID of the measured cell.
-     * \param rsrq The RSRQ of the cell as measured by the UE.
+     * @param rnti The RNTI of the UE who reported the event.
+     * @param cellId The cell ID of the measured cell.
+     * @param rsrq The RSRQ of the cell as measured by the UE.
      */
     void UpdateNeighbourMeasurements(uint16_t rnti, uint16_t cellId, uint8_t rsrq);
 

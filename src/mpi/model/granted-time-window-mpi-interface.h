@@ -5,8 +5,8 @@
  */
 
 /**
- * \file
- * \ingroup mpi
+ * @file
+ * @ingroup mpi
  * Declaration of classes ns3::SentBuffer and ns3::GrantedTimeWindowMpiInterface.
  */
 
@@ -35,9 +35,9 @@ namespace ns3
 const uint32_t MAX_MPI_MSG_SIZE = 2000;
 
 /**
- * \ingroup mpi
+ * @ingroup mpi
  *
- * \brief Tracks non-blocking sends
+ * @brief Tracks non-blocking sends
  *
  * This class is used to keep track of the asynchronous non-blocking
  * sends that have been posted.
@@ -49,15 +49,15 @@ class SentBuffer
     ~SentBuffer();
 
     /**
-     * \return pointer to sent buffer
+     * @return pointer to sent buffer
      */
     uint8_t* GetBuffer();
     /**
-     * \param buffer pointer to sent buffer
+     * @param buffer pointer to sent buffer
      */
     void SetBuffer(uint8_t* buffer);
     /**
-     * \return MPI request
+     * @return MPI request
      */
     MPI_Request* GetRequest();
 
@@ -70,9 +70,9 @@ class Packet;
 class DistributedSimulatorImpl;
 
 /**
- * \ingroup mpi
+ * @ingroup mpi
  *
- * \brief Interface between ns-3 and MPI
+ * @brief Interface between ns-3 and MPI
  *
  * Implements the interface used by the singleton parallel controller
  * to interface between NS3 and the communications layer being
@@ -83,7 +83,7 @@ class GrantedTimeWindowMpiInterface : public ParallelCommunicationInterface, Obj
   public:
     /**
      * Register this type.
-     * \return The object TypeId.
+     * @return The object TypeId.
      */
     static TypeId GetTypeId();
 
@@ -116,11 +116,11 @@ class GrantedTimeWindowMpiInterface : public ParallelCommunicationInterface, Obj
      */
     static void TestSendComplete();
     /**
-     * \return received count in packets
+     * @return received count in packets
      */
     static uint32_t GetRxCount();
     /**
-     * \return transmitted count in packets
+     * @return transmitted count in packets
      */
     static uint32_t GetTxCount();
 

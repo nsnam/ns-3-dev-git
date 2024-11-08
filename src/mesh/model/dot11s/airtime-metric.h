@@ -17,9 +17,9 @@ namespace ns3
 namespace dot11s
 {
 /**
- * \ingroup dot11s
+ * @ingroup dot11s
  *
- * \brief Airtime link metric calculator
+ * @brief Airtime link metric calculator
  *
  * Airtime link metric is defined in 11B.10 of 802.11s Draft D3.0 as:
  *
@@ -36,8 +36,8 @@ class AirtimeLinkMetricCalculator : public Object
   public:
     AirtimeLinkMetricCalculator();
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     /**
@@ -52,21 +52,21 @@ class AirtimeLinkMetricCalculator : public Object
      * Final result is expressed encoded as an unsigned integer in units of
      * 0.01 TU = 10.24 us
      *
-     * \param peerAddress The peer MAC address
-     * \param mac The MAC layer
-     * \returns the calculated metric in units of 0.01 TU
+     * @param peerAddress The peer MAC address
+     * @param mac The MAC layer
+     * @returns the calculated metric in units of 0.01 TU
      */
     uint32_t CalculateMetric(Mac48Address peerAddress, Ptr<MeshWifiInterfaceMac> mac);
 
   private:
     /**
      * Set number of bytes in test frame (a constant 1024 in the standard)
-     * \param testLength the test length in bits
+     * @param testLength the test length in bits
      */
     void SetTestLength(uint16_t testLength);
     /**
      * Set header TID from the Dot11MetricTid attribute
-     * \param tid the header TID to use to calculate data rate
+     * @param tid the header TID to use to calculate data rate
      */
     void SetHeaderTid(uint8_t tid);
 

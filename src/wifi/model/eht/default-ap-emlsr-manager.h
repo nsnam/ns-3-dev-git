@@ -15,7 +15,7 @@ namespace ns3
 {
 
 /**
- * \ingroup wifi
+ * @ingroup wifi
  *
  * DefaultApEmlsrManager is the default AP EMLSR manager.
  */
@@ -23,8 +23,8 @@ class DefaultApEmlsrManager : public ApEmlsrManager
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 

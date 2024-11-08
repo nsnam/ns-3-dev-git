@@ -67,7 +67,7 @@ std::stringstream filePlotQueueAvg; //!< Output file name for queue average.
 /**
  * Check the queue size and write its stats to the output files.
  *
- * \param queue The queue to check.
+ * @param queue The queue to check.
  */
 void
 CheckQueueSize(Ptr<QueueDisc> queue)
@@ -92,7 +92,7 @@ CheckQueueSize(Ptr<QueueDisc> queue)
 /**
  * Setup the apps.
  *
- * \param test The test number.
+ * @param test The test number.
  */
 void
 BuildAppsTest(uint32_t test)

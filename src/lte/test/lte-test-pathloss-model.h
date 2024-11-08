@@ -17,9 +17,9 @@
 using namespace ns3;
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief Test 1.1 pathloss calculation
+ * @brief Test 1.1 pathloss calculation
  */
 class LtePathlossModelTestSuite : public TestSuite
 {
@@ -28,9 +28,9 @@ class LtePathlossModelTestSuite : public TestSuite
 };
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief  Tests that the BuildingPathlossModel works according to
+ * @brief  Tests that the BuildingPathlossModel works according to
  * the expected theoretical values. Theoretical reference values
  * are obtained with the octave script src/lte/test/reference/lte_pathloss.m
  */
@@ -40,18 +40,18 @@ class LtePathlossModelSystemTestCase : public TestCase
     /**
      * Constructor
      *
-     * \param name the reference name
-     * \param snrDb the SNR in dB
-     * \param dist the distance
-     * \param mcsIndex the MCS index
+     * @param name the reference name
+     * @param snrDb the SNR in dB
+     * @param dist the distance
+     * @param mcsIndex the MCS index
      */
     LtePathlossModelSystemTestCase(std::string name, double snrDb, double dist, uint16_t mcsIndex);
     LtePathlossModelSystemTestCase();
     ~LtePathlossModelSystemTestCase() override;
 
     /**
-     * \brief DL scheduling function
-     * \param dlInfo the DL info
+     * @brief DL scheduling function
+     * @param dlInfo the DL info
      */
     void DlScheduling(DlSchedulingCallbackInfo dlInfo);
 

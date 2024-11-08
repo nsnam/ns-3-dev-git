@@ -83,50 +83,50 @@ struct CommonInfoBasicMle
     /**
      * Get the Presence Bitmap subfield of the Common Info field
      *
-     * \return the Presence Bitmap subfield of the Common Info field
+     * @return the Presence Bitmap subfield of the Common Info field
      */
     uint16_t GetPresenceBitmap() const;
     /**
      * Get the size of the serialized Common Info field
      *
-     * \return the size of the serialized Common Info field
+     * @return the size of the serialized Common Info field
      */
     uint8_t GetSize() const;
     /**
      * Serialize the Common Info field
      *
-     * \param start iterator pointing to where the Common Info field should be written to
+     * @param start iterator pointing to where the Common Info field should be written to
      */
     void Serialize(Buffer::Iterator& start) const;
     /**
      * Deserialize the Common Info field
      *
-     * \param start iterator pointing to where the Common Info field should be read from
-     * \param presence the value of the Presence Bitmap field indicating which subfields
+     * @param start iterator pointing to where the Common Info field should be read from
+     * @param presence the value of the Presence Bitmap field indicating which subfields
      *                 are present in the Common Info field
-     * \return the number of bytes read
+     * @return the number of bytes read
      */
     uint8_t Deserialize(Buffer::Iterator start, uint16_t presence);
 
     /**
-     * \param delay the EMLSR Padding delay
-     * \return the encoded value for the EMLSR Padding Delay subfield
+     * @param delay the EMLSR Padding delay
+     * @return the encoded value for the EMLSR Padding Delay subfield
      */
     static uint8_t EncodeEmlsrPaddingDelay(Time delay);
     /**
-     * \param value the value for the EMLSR Padding Delay subfield
-     * \return the corresponding EMLSR Padding delay
+     * @param value the value for the EMLSR Padding Delay subfield
+     * @return the corresponding EMLSR Padding delay
      */
     static Time DecodeEmlsrPaddingDelay(uint8_t value);
 
     /**
-     * \param delay the EMLSR Transition delay
-     * \return the encoded value for the EMLSR Transition Delay subfield
+     * @param delay the EMLSR Transition delay
+     * @return the encoded value for the EMLSR Transition Delay subfield
      */
     static uint8_t EncodeEmlsrTransitionDelay(Time delay);
     /**
-     * \param value the value for the EMLSR Transition Delay subfield
-     * \return the corresponding EMLSR Transition delay
+     * @param value the value for the EMLSR Transition Delay subfield
+     * @return the corresponding EMLSR Transition delay
      */
     static Time DecodeEmlsrTransitionDelay(uint8_t value);
 
@@ -134,14 +134,14 @@ struct CommonInfoBasicMle
      * Set the Medium Synchronization Duration subfield of the Medium Synchronization
      * Delay Information in the Common Info field.
      *
-     * \param delay the timer duration (must be a multiple of 32 microseconds)
+     * @param delay the timer duration (must be a multiple of 32 microseconds)
      */
     void SetMediumSyncDelayTimer(Time delay);
     /**
      * Set the Medium Synchronization OFDM ED Threshold subfield of the Medium Synchronization
      * Delay Information in the Common Info field.
      *
-     * \param threshold the threshold in dBm (ranges from -72 to -62 dBm)
+     * @param threshold the threshold in dBm (ranges from -72 to -62 dBm)
      */
     void SetMediumSyncOfdmEdThreshold(int8_t threshold);
     /**
@@ -149,7 +149,7 @@ struct CommonInfoBasicMle
      * Delay Information in the Common Info field. A value of zero indicates no limit on the
      * maximum number of TXOPs.
      *
-     * \param nTxops the maximum number of TXOPs a non-AP STA is allowed to attempt to
+     * @param nTxops the maximum number of TXOPs a non-AP STA is allowed to attempt to
      *               initiate while the MediumSyncDelay timer is running at a non-AP STA
      */
     void SetMediumSyncMaxNTxops(uint8_t nTxops);
@@ -158,14 +158,14 @@ struct CommonInfoBasicMle
      * Information in the Common Info field. Make sure that the Medium Synchronization Delay
      * Information subfield is present.
      *
-     * \return the timer duration
+     * @return the timer duration
      */
     Time GetMediumSyncDelayTimer() const;
     /**
      * Get the Medium Synchronization OFDM ED Threshold in dBm. Make sure that the Medium
      * Synchronization Delay Information subfield is present.
      *
-     * \return the threshold in dBm
+     * @return the threshold in dBm
      */
     int8_t GetMediumSyncOfdmEdThreshold() const;
     /**
@@ -174,14 +174,14 @@ struct CommonInfoBasicMle
      * no limit is imposed on the number of TXOPs. Make sure that the Medium Synchronization
      * Delay Information subfield is present.
      *
-     * \return the number of TXOPs
+     * @return the number of TXOPs
      */
     std::optional<uint8_t> GetMediumSyncMaxNTxops() const;
 };
 
 /**
- * \brief The Multi-Link element
- * \ingroup wifi
+ * @brief The Multi-Link element
+ * @ingroup wifi
  *
  * The 802.11be Multi-Link element (see Sec.9.4.2.312 of 802.11be D1.5)
  *
@@ -194,7 +194,7 @@ class MultiLinkElement : public WifiInformationElement
 {
   public:
     /**
-     * \ingroup wifi
+     * @ingroup wifi
      * Multi-Link element variants
      *
      * Note that Multi-Link element variants can be added to this enum only when
@@ -213,7 +213,7 @@ class MultiLinkElement : public WifiInformationElement
     };
 
     /**
-     * \ingroup wifi
+     * @ingroup wifi
      * SubElement IDs
      */
     enum SubElementId : uint8_t
@@ -230,14 +230,14 @@ class MultiLinkElement : public WifiInformationElement
     /**
      * Construct a Multi-Link Element with no variant set.
      *
-     * \param frame the management frame containing this Multi-Link Element
+     * @param frame the management frame containing this Multi-Link Element
      */
     MultiLinkElement(ContainingFrame frame = {});
     /**
      * Constructor
      *
-     * \param variant the Multi-Link element variant (cannot be UNSET)
-     * \param frame the management frame containing this Multi-Link Element
+     * @param variant the Multi-Link element variant (cannot be UNSET)
+     * @param frame the management frame containing this Multi-Link Element
      */
     MultiLinkElement(Variant variant, ContainingFrame frame = {});
 
@@ -250,21 +250,21 @@ class MultiLinkElement : public WifiInformationElement
     /**
      * Get the Multi-Link element variant
      *
-     * \return the Multi-Link element variant
+     * @return the Multi-Link element variant
      */
     Variant GetVariant() const;
 
-    /// \return a reference to the Common Info field (the MLE variant must be Basic)
+    /// @return a reference to the Common Info field (the MLE variant must be Basic)
     CommonInfoBasicMle& GetCommonInfoBasic();
 
-    /// \return a const reference to the Common Info field (the MLE variant must be Basic)
+    /// @return a const reference to the Common Info field (the MLE variant must be Basic)
     const CommonInfoBasicMle& GetCommonInfoBasic() const;
 
     /**
      * Set the MLD MAC Address subfield in the Common Info field. Make sure that
      * this is a Basic Multi-Link Element.
      *
-     * \param address the MLD MAC address
+     * @param address the MLD MAC address
      */
     void SetMldMacAddress(Mac48Address address);
 
@@ -272,7 +272,7 @@ class MultiLinkElement : public WifiInformationElement
      * Return the MLD MAC Address subfield in the Common Info field. Make sure that
      * this is a Basic Multi-Link Element.
      *
-     * \return the MLD MAC Address subfield in the Common Info field.
+     * @return the MLD MAC Address subfield in the Common Info field.
      */
     Mac48Address GetMldMacAddress() const;
 
@@ -280,14 +280,14 @@ class MultiLinkElement : public WifiInformationElement
      * Set the Link ID Info subfield in the Common Info field. Make sure that
      * this is a Basic Multi-Link Element.
      *
-     * \param linkIdInfo the link ID information
+     * @param linkIdInfo the link ID information
      */
     void SetLinkIdInfo(uint8_t linkIdInfo);
     /**
      * Return true if the Link ID Info subfield in the Common Info field is present
      * and false otherwise. Make sure that this is a Basic Multi-Link Element.
      *
-     * \return true if the Link ID Info subfield in the Common Info field is present
+     * @return true if the Link ID Info subfield in the Common Info field is present
      *         and false otherwise
      */
     bool HasLinkIdInfo() const;
@@ -295,7 +295,7 @@ class MultiLinkElement : public WifiInformationElement
      * Return the Link ID Info subfield in the Common Info field. Make sure that
      * this is a Basic Multi-Link Element and the Link ID Info subfield is present.
      *
-     * \return the Link ID Info subfield in the Common Info field
+     * @return the Link ID Info subfield in the Common Info field
      */
     uint8_t GetLinkIdInfo() const;
 
@@ -303,14 +303,14 @@ class MultiLinkElement : public WifiInformationElement
      * Set the BSS Parameters Change Count subfield in the Common Info field. Make sure that
      * this is a Basic Multi-Link Element.
      *
-     * \param count the BSS Parameters Change Count
+     * @param count the BSS Parameters Change Count
      */
     void SetBssParamsChangeCount(uint8_t count);
     /**
      * Return true if the BSS Parameters Change Count subfield in the Common Info field is present
      * and false otherwise. Make sure that this is a Basic Multi-Link Element.
      *
-     * \return true if the BSS Parameters Change Count subfield in the Common Info field is present
+     * @return true if the BSS Parameters Change Count subfield in the Common Info field is present
      *         and false otherwise
      */
     bool HasBssParamsChangeCount() const;
@@ -318,7 +318,7 @@ class MultiLinkElement : public WifiInformationElement
      * Return the BSS Parameters Change Count subfield in the Common Info field. Make sure that
      * this is a Basic Multi-Link Element and the BSS Parameters Change Count subfield is present.
      *
-     * \return the BSS Parameters Change Count subfield in the Common Info field
+     * @return the BSS Parameters Change Count subfield in the Common Info field
      */
     uint8_t GetBssParamsChangeCount() const;
 
@@ -327,35 +327,35 @@ class MultiLinkElement : public WifiInformationElement
      * to 1 if EMLSR mode is supported and set it to 0 otherwise. Make sure that this is a Basic
      * Multi-Link Element.
      *
-     * \param supported whether EMLSR mode is supported
+     * @param supported whether EMLSR mode is supported
      */
     void SetEmlsrSupported(bool supported);
     /**
      * Set the EMLSR Padding Delay subfield of the EML Capabilities subfield in the
      * Common Info field. Make sure that this is a Basic Multi-Link Element.
      *
-     * \param delay the EMLSR Padding delay (0us, 32us, 64us, 128us or 256us)
+     * @param delay the EMLSR Padding delay (0us, 32us, 64us, 128us or 256us)
      */
     void SetEmlsrPaddingDelay(Time delay);
     /**
      * Set the EMLSR Transition Delay subfield of the EML Capabilities subfield in the
      * Common Info field. Make sure that this is a Basic Multi-Link Element.
      *
-     * \param delay the EMLSR Transition delay (0us, 16us, 32us, 64us, 128us or 256us)
+     * @param delay the EMLSR Transition delay (0us, 16us, 32us, 64us, 128us or 256us)
      */
     void SetEmlsrTransitionDelay(Time delay);
     /**
      * Set the Transition Timeout subfield of the EML Capabilities subfield in the
      * Common Info field. Make sure that this is a Basic Multi-Link Element.
      *
-     * \param timeout the Transition Timeout (0us or 2^n us, with n=7..16)
+     * @param timeout the Transition Timeout (0us or 2^n us, with n=7..16)
      */
     void SetTransitionTimeout(Time timeout);
     /**
      * Return true if the EML Capabilities subfield in the Common Info field is present
      * and false otherwise. Make sure that this is a Basic Multi-Link Element.
      *
-     * \return whether the EML Capabilities subfield in the Common Info field is present
+     * @return whether the EML Capabilities subfield in the Common Info field is present
      */
     bool HasEmlCapabilities() const;
     /**
@@ -363,7 +363,7 @@ class MultiLinkElement : public WifiInformationElement
      * Common Info field is set to 1 and false otherwise. Make sure that this is a Basic
      * Multi-Link Element and the EML Capabilities subfield is present.
      *
-     * \return whether the EMLSR Support subfield is set to 1
+     * @return whether the EMLSR Support subfield is set to 1
      */
     bool IsEmlsrSupported() const;
     /**
@@ -371,7 +371,7 @@ class MultiLinkElement : public WifiInformationElement
      * Common Info field. Make sure that this is a Basic Multi-Link Element and the
      * EML Capabilities subfield is present.
      *
-     * \return the EMLSR Padding Delay
+     * @return the EMLSR Padding Delay
      */
     Time GetEmlsrPaddingDelay() const;
     /**
@@ -379,7 +379,7 @@ class MultiLinkElement : public WifiInformationElement
      * Common Info field. Make sure that this is a Basic Multi-Link Element and the
      * EML Capabilities subfield is present.
      *
-     * \return the EMLSR Transition Delay
+     * @return the EMLSR Transition Delay
      */
     Time GetEmlsrTransitionDelay() const;
     /**
@@ -387,14 +387,14 @@ class MultiLinkElement : public WifiInformationElement
      * Common Info field. Make sure that this is a Basic Multi-Link Element and the
      * EML Capabilities subfield is present.
      *
-     * \return the Transition Timeout
+     * @return the Transition Timeout
      */
     Time GetTransitionTimeout() const;
 
     mutable ContainingFrame m_containingFrame; //!< reference to the mgt frame containing this MLE
 
     /**
-     * \ingroup wifi
+     * @ingroup wifi
      * Per-STA Profile Subelement of Multi-Link element.
      * See Sec. 9.4.2.312.2.3 of 802.11be D1.5
      *
@@ -411,28 +411,28 @@ class MultiLinkElement : public WifiInformationElement
         /**
          * Constructor
          *
-         * \param variant the Multi-Link element variant
+         * @param variant the Multi-Link element variant
          */
         PerStaProfileSubelement(Variant variant);
 
         /**
          * Copy constructor performing a deep copy of the object
          *
-         * \param perStaProfile the object to copy
+         * @param perStaProfile the object to copy
          */
         PerStaProfileSubelement(const PerStaProfileSubelement& perStaProfile);
         /**
          * Copy assignment operator performing a deep copy of the object
          *
-         * \param perStaProfile the object to copy-assign
-         * \return a reference to this object
+         * @param perStaProfile the object to copy-assign
+         * @return a reference to this object
          */
         PerStaProfileSubelement& operator=(const PerStaProfileSubelement& perStaProfile);
         /**
          * Use default move assignment operator
          *
-         * \param perStaProfile the object to move-assign
-         * \return a reference to this object
+         * @param perStaProfile the object to move-assign
+         * @return a reference to this object
          */
         PerStaProfileSubelement& operator=(PerStaProfileSubelement&& perStaProfile) = default;
 
@@ -441,13 +441,13 @@ class MultiLinkElement : public WifiInformationElement
         /**
          * Set the Link ID subfield in the STA Control field
          *
-         * \param linkId the Link ID value
+         * @param linkId the Link ID value
          */
         void SetLinkId(uint8_t linkId);
         /**
          * Get the Link ID subfield in the STA Control field
          *
-         * \return the Link ID subfield in the STA Control field
+         * @return the Link ID subfield in the STA Control field
          */
         uint8_t GetLinkId() const;
 
@@ -456,26 +456,26 @@ class MultiLinkElement : public WifiInformationElement
          */
         void SetCompleteProfile();
         /**
-         * \return whether the Complete Profile flag in the STA Control field is set
+         * @return whether the Complete Profile flag in the STA Control field is set
          */
         bool IsCompleteProfileSet() const;
 
         /**
          * Set the STA MAC Address subfield in the STA Info field
          *
-         * \param address the MAC address to set
+         * @param address the MAC address to set
          */
         void SetStaMacAddress(Mac48Address address);
         /**
          * Return true if the STA MAC Address subfield in the STA Info field is present
          *
-         * \return true if the STA MAC Address subfield in the STA Info field is present
+         * @return true if the STA MAC Address subfield in the STA Info field is present
          */
         bool HasStaMacAddress() const;
         /**
          * Get the STA MAC Address subfield in the STA Info field, if present
          *
-         * \return the STA MAC Address subfield in the STA Info field, if present
+         * @return the STA MAC Address subfield in the STA Info field, if present
          */
         Mac48Address GetStaMacAddress() const;
 
@@ -483,31 +483,31 @@ class MultiLinkElement : public WifiInformationElement
          * Include the given (Re)Association Request frame body in the STA Profile field
          * of this Per-STA Profile subelement
          *
-         * \param assoc the given (Re)Association Request frame body
+         * @param assoc the given (Re)Association Request frame body
          */
         void SetAssocRequest(
             const std::variant<MgtAssocRequestHeader, MgtReassocRequestHeader>& assoc);
-        /** \copydoc SetAssocRequest */
+        /** @copydoc SetAssocRequest */
         void SetAssocRequest(std::variant<MgtAssocRequestHeader, MgtReassocRequestHeader>&& assoc);
         /**
          * Return true if an Association Request frame body is included in the
          * STA Profile field of this Per-STA Profile subelement
          *
-         * \return true if an Association Request frame body is included
+         * @return true if an Association Request frame body is included
          */
         bool HasAssocRequest() const;
         /**
          * Return true if a Reassociation Request frame body is included in the
          * STA Profile field of this Per-STA Profile subelement
          *
-         * \return true if a Reassociation Request frame body is included
+         * @return true if a Reassociation Request frame body is included
          */
         bool HasReassocRequest() const;
         /**
          * Get the (Re)Association Request frame body included in the STA Profile
          * field of this Per-STA Profile subelement
          *
-         * \return the (Re)Association Request frame body
+         * @return the (Re)Association Request frame body
          */
         AssocReqRefVariant GetAssocRequest() const;
 
@@ -515,23 +515,23 @@ class MultiLinkElement : public WifiInformationElement
          * Include the given (Re)Association Response frame body in the STA Profile field
          * of this Per-STA Profile subelement
          *
-         * \param assoc the given (Re)Association Response frame body
+         * @param assoc the given (Re)Association Response frame body
          */
         void SetAssocResponse(const MgtAssocResponseHeader& assoc);
-        /** \copydoc SetAssocResponse */
+        /** @copydoc SetAssocResponse */
         void SetAssocResponse(MgtAssocResponseHeader&& assoc);
         /**
          * Return true if a (Re)Association Response frame body is included in the
          * STA Profile field of this Per-STA Profile subelement
          *
-         * \return true if a (Re)Association Response frame body is included
+         * @return true if a (Re)Association Response frame body is included
          */
         bool HasAssocResponse() const;
         /**
          * Get the (Re)Association Response frame body included in the STA Profile
          * field of this Per-STA Profile subelement
          *
-         * \return the (Re)Association Response frame body
+         * @return the (Re)Association Response frame body
          */
         MgtAssocResponseHeader& GetAssocResponse() const;
 
@@ -539,7 +539,7 @@ class MultiLinkElement : public WifiInformationElement
          * Get the size in bytes of the serialized STA Info Length subfield of
          * the STA Info field
          *
-         * \return the size in bytes of the serialized STA Info Length subfield
+         * @return the size in bytes of the serialized STA Info Length subfield
          */
         uint8_t GetStaInfoLength() const;
 
@@ -569,21 +569,21 @@ class MultiLinkElement : public WifiInformationElement
     /**
      * Return the number of Per-STA Profile Subelement in the Link Info field
      *
-     * \return the number of Per-STA Profile Subelement in the Link Info field
+     * @return the number of Per-STA Profile Subelement in the Link Info field
      */
     std::size_t GetNPerStaProfileSubelements() const;
     /**
      * Get a reference to the <i>i</i>-th Per-STA Profile Subelement in the Link Info field
      *
-     * \param i the index of the Per-STA Profile Subelement in the Link Info field
-     * \return a reference to the <i>i</i>-th Per-STA Profile Subelement in the Link Info field
+     * @param i the index of the Per-STA Profile Subelement in the Link Info field
+     * @return a reference to the <i>i</i>-th Per-STA Profile Subelement in the Link Info field
      */
     PerStaProfileSubelement& GetPerStaProfile(std::size_t i);
     /**
      * Get a reference to the <i>i</i>-th Per-STA Profile Subelement in the Link Info field
      *
-     * \param i the index of the Per-STA Profile Subelement in the Link Info field
-     * \return a reference to the <i>i</i>-th Per-STA Profile Subelement in the Link Info field
+     * @param i the index of the Per-STA Profile Subelement in the Link Info field
+     * @return a reference to the <i>i</i>-th Per-STA Profile Subelement in the Link Info field
      */
     const PerStaProfileSubelement& GetPerStaProfile(std::size_t i) const;
 
@@ -591,7 +591,7 @@ class MultiLinkElement : public WifiInformationElement
     /**
      * Set the variant of this Multi-Link Element
      *
-     * \param variant the variant of this Multi-Link Element
+     * @param variant the variant of this Multi-Link Element
      */
     void SetVariant(Variant variant);
 

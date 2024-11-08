@@ -47,7 +47,7 @@ class UeMemberLteUeCmacSapUser : public LteUeCmacSapUser
     /**
      * Constructor
      *
-     * \param rrc the RRC class
+     * @param rrc the RRC class
      */
     UeMemberLteUeCmacSapUser(LteUeRrc* rrc);
 
@@ -707,7 +707,7 @@ LteUeRrc::DoNotifyRandomAccessFailed()
     case CONNECTED_HANDOVER: {
         m_handoverEndErrorTrace(m_imsi, m_cellId, m_rnti);
         /**
-         * \todo After a handover failure because of a random access failure,
+         * @todo After a handover failure because of a random access failure,
          *       send an RRC Connection Re-establishment and switch to
          *       CONNECTED_REESTABLISHING state.
          */
@@ -1149,7 +1149,7 @@ LteUeRrc::DoRecvRrcConnectionReestablishment(LteRrcSap::RrcConnectionReestablish
     {
     case CONNECTED_REESTABLISHING: {
         /**
-         * \todo After receiving RRC Connection Re-establishment, stop timer
+         * @todo After receiving RRC Connection Re-establishment, stop timer
          *       T301, fire a new trace source, reply with RRC Connection
          *       Re-establishment Complete, and finally switch to
          *       CONNECTED_NORMALLY state. See Section 5.3.7.5 of 3GPP TS
@@ -1173,7 +1173,7 @@ LteUeRrc::DoRecvRrcConnectionReestablishmentReject(
     {
     case CONNECTED_REESTABLISHING: {
         /**
-         * \todo After receiving RRC Connection Re-establishment Reject, stop
+         * @todo After receiving RRC Connection Re-establishment Reject, stop
          *       timer T301. See Section 5.3.7.8 of 3GPP TS 36.331.
          */
         m_asSapUser->NotifyConnectionReleased(); // Inform upper layers
@@ -1190,7 +1190,7 @@ void
 LteUeRrc::DoRecvRrcConnectionRelease(LteRrcSap::RrcConnectionRelease msg)
 {
     NS_LOG_FUNCTION(this << " RNTI " << m_rnti);
-    /// \todo Currently not implemented, see Section 5.3.8 of 3GPP TS 36.331.
+    /// @todo Currently not implemented, see Section 5.3.8 of 3GPP TS 36.331.
 
     m_lastRrcTransactionIdentifier = msg.rrcTransactionIdentifier;
     // release resources at UE
@@ -1593,7 +1593,7 @@ LteUeRrc::ApplyRadioResourceConfigDedicated(LteRrcSap::RadioResourceConfigDedica
         {
             NS_LOG_INFO("request to modify existing DRBID");
             Ptr<LteDataRadioBearerInfo> drbInfo = drbMapIt->second;
-            /// \todo currently not implemented. Would need to modify drbInfo, and then propagate
+            /// @todo currently not implemented. Would need to modify drbInfo, and then propagate
             /// changes to the MAC
         }
     }

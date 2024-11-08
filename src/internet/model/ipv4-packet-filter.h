@@ -19,8 +19,8 @@ namespace ns3
 {
 
 /**
- * \ingroup ipv4
- * \ingroup traffic-control
+ * @ingroup ipv4
+ * @ingroup traffic-control
  *
  * Ipv4PacketFilter is the abstract base class for filters defined for IPv4 packets.
  */
@@ -28,8 +28,8 @@ class Ipv4PacketFilter : public PacketFilter
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 

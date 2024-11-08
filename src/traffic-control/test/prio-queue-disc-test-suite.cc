@@ -23,9 +23,9 @@
 using namespace ns3;
 
 /**
- * \ingroup traffic-control-test
+ * @ingroup traffic-control-test
  *
- * \brief Prio Queue Disc Test Item
+ * @brief Prio Queue Disc Test Item
  */
 class PrioQueueDiscTestItem : public QueueDiscItem
 {
@@ -33,9 +33,9 @@ class PrioQueueDiscTestItem : public QueueDiscItem
     /**
      * Constructor
      *
-     * \param p the packet
-     * \param addr the address
-     * \param priority the packet priority
+     * @param p the packet
+     * @param addr the address
+     * @param priority the packet priority
      */
     PrioQueueDiscTestItem(Ptr<Packet> p, const Address& addr, uint8_t priority);
     void AddHeader() override;
@@ -62,9 +62,9 @@ PrioQueueDiscTestItem::Mark()
 }
 
 /**
- * \ingroup traffic-control-test
+ * @ingroup traffic-control-test
  *
- * \brief Prio Queue Disc Test Packet Filter
+ * @brief Prio Queue Disc Test Packet Filter
  */
 class PrioQueueDiscTestFilter : public PacketFilter
 {
@@ -72,14 +72,14 @@ class PrioQueueDiscTestFilter : public PacketFilter
     /**
      * Constructor
      *
-     * \param cls whether this filter is able to classify a PrioQueueDiscTestItem
+     * @param cls whether this filter is able to classify a PrioQueueDiscTestItem
      */
     PrioQueueDiscTestFilter(bool cls);
     ~PrioQueueDiscTestFilter() override;
     /**
-     * \brief Set the value returned by DoClassify
+     * @brief Set the value returned by DoClassify
      *
-     * \param ret the value that DoClassify returns
+     * @param ret the value that DoClassify returns
      */
     void SetReturnValue(int32_t ret);
 
@@ -120,9 +120,9 @@ PrioQueueDiscTestFilter::DoClassify(Ptr<QueueDiscItem> item) const
 }
 
 /**
- * \ingroup traffic-control-test
+ * @ingroup traffic-control-test
  *
- * \brief Prio Queue Disc Test Case
+ * @brief Prio Queue Disc Test Case
  */
 class PrioQueueDiscTestCase : public TestCase
 {
@@ -303,9 +303,9 @@ PrioQueueDiscTestCase::DoRun()
 }
 
 /**
- * \ingroup traffic-control-test
+ * @ingroup traffic-control-test
  *
- * \brief Prio Queue Disc Test Suite
+ * @brief Prio Queue Disc Test Suite
  */
 static class PrioQueueDiscTestSuite : public TestSuite
 {

@@ -16,8 +16,8 @@
 #include <stdint.h>
 
 /**
- * \file
- * \ingroup scheduler
+ * @file
+ * @ingroup scheduler
  * ns3::CalendarScheduler class declaration.
  */
 
@@ -27,8 +27,8 @@ namespace ns3
 class EventImpl;
 
 /**
- * \ingroup scheduler
- * \brief a calendar queue event scheduler
+ * @ingroup scheduler
+ * @brief a calendar queue event scheduler
  *
  * This event scheduler is a direct implementation of the algorithm
  * known as a calendar queue, first published in 1988 in
@@ -46,7 +46,7 @@ class EventImpl;
  * Buckets themselves are implemented as a `std::list<>`, and events are
  * kept sorted within the buckets.
  *
- * \par Time Complexity
+ * @par Time Complexity
  *
  * Operation    | Amortized %Time | Reason
  * :----------- | :-------------- | :-----
@@ -56,21 +56,21 @@ class EventImpl;
  * Remove()     | ~Constant       | Search within bucket; possible resize
  * RemoveNext() | ~Constant       | Search buckets; possible resize
  *
- * \par Memory Complexity
+ * @par Memory Complexity
  *
  * Category  | Memory                           | Reason
  * :-------- | :------------------------------- | :-----
  * Overhead  | 2 x `sizeof (*)` + `size_t`<br/>(24 bytes) | `std::list`
  * Per Event | 2 x `sizeof (*)`                 | `std::list`
  *
- * \note
+ * @note
  * This queue is much slower than I expected (much slower than the
  * std::map queue) and this seems to be because the original resizing policy
  * is horribly bad.  This is most likely the reason why there have been
  * so many variations published which all slightly tweak the resizing
  * heuristics to obtain a better distribution of events across buckets.
  *
- * \note While inserion sort is not discussed in the original article, its
+ * @note While inserion sort is not discussed in the original article, its
  * implementation appears to dramatically affect performance.
  * The default implementation sorts buckets in increasing (chronological)
  * order.  The alternative, sorting buckets in decreasing order,
@@ -84,7 +84,7 @@ class CalendarScheduler : public Scheduler
   public:
     /**
      *  Register this type.
-     *  \return The object TypeId.
+     *  @return The object TypeId.
      */
     static TypeId GetTypeId();
 
@@ -108,28 +108,28 @@ class CalendarScheduler : public Scheduler
     /**
      * Resize to a new number of buckets, with automatically computed width.
      *
-     * \param [in] newSize The new number of buckets.
+     * @param [in] newSize The new number of buckets.
      */
     void Resize(uint32_t newSize);
     /**
      * Compute the new bucket size, based on up to the first 25 entries.
      *
-     * \returns The new width.
+     * @returns The new width.
      */
     uint64_t CalculateNewWidth();
     /**
      * Initialize the calendar queue.
      *
-     * \param [in] nBuckets The number of buckets.
-     * \param [in] width The bucket size, in dimensionless time units.
-     * \param [in] startPrio The starting time.
+     * @param [in] nBuckets The number of buckets.
+     * @param [in] width The bucket size, in dimensionless time units.
+     * @param [in] startPrio The starting time.
      */
     void Init(uint32_t nBuckets, uint64_t width, uint64_t startPrio);
     /**
      * Hash the dimensionless time to a bucket.
      *
-     * \param [in] key The dimensionless time.
-     * \returns The bucket index.
+     * @param [in] key The dimensionless time.
+     * @returns The bucket index.
      */
     inline uint32_t Hash(uint64_t key) const;
     /** Print the configuration and bucket size distribution. */
@@ -137,20 +137,20 @@ class CalendarScheduler : public Scheduler
     /**
      * Resize the number of buckets and width.
      *
-     * \param [in] newSize The number of buckets.
-     * \param [in] newWidth The size of the new buckets.
+     * @param [in] newSize The number of buckets.
+     * @param [in] newWidth The size of the new buckets.
      */
     void DoResize(uint32_t newSize, uint64_t newWidth);
     /**
      * Remove the earliest event.
      *
-     * \returns The earliest event.
+     * @returns The earliest event.
      */
     Scheduler::Event DoRemoveNext();
     /**
      * Insert a new event in to the correct bucket.
      *
-     * \param [in] ev The new Event.
+     * @param [in] ev The new Event.
      */
     void DoInsert(const Scheduler::Event& ev);
 
@@ -178,26 +178,26 @@ class CalendarScheduler : public Scheduler
      * This can only be used at construction, as invoked by the
      * Attribute Reverse.
      *
-     * \param [in] reverse If \c true, store events in *decreasing*
+     * @param [in] reverse If \c true, store events in *decreasing*
      * time stamp order.
      */
     void SetReverse(bool reverse);
     /**
      * Get the next event from the bucket, according to \c m_reverse.
-     * \param [in] bucket The bucket to draw from.
-     * \return The next event from the \c bucket.
+     * @param [in] bucket The bucket to draw from.
+     * @return The next event from the \c bucket.
      */
     Scheduler::Event& (*NextEvent)(Bucket& bucket);
     /**
      * Ordering function to identify the insertion point, according to \c m_reverse.
-     * \param [in] newEvent The new event being inserted.
-     * \param [in] it The current position in the bucket being examined.
-     * \return \c true if the \c newEvent belongs before \c it.
+     * @param [in] newEvent The new event being inserted.
+     * @param [in] it The current position in the bucket being examined.
+     * @return \c true if the \c newEvent belongs before \c it.
      */
     bool (*Order)(const EventKey& newEvent, const EventKey& it);
     /**
      * Pop the next event from the bucket, according to \c m_reverse.
-     * \param [in] bucket The bucket to pop from.
+     * @param [in] bucket The bucket to pop from.
      */
     void (*Pop)(Bucket&);
     /**

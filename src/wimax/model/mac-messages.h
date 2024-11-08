@@ -25,7 +25,7 @@ namespace ns3
 {
 
 /**
- * \ingroup wimax
+ * @ingroup wimax
  * Mac Management messages
  * Section 6.3.2.3 MAC Management messages page 42, Table 14 page 43
  */
@@ -52,26 +52,26 @@ class ManagementMessageType : public Header
     /**
      * Constructor
      *
-     * \param type message type
+     * @param type message type
      */
     ManagementMessageType(uint8_t type);
     ~ManagementMessageType() override;
     /**
      * Set type field
-     * \param type the type
+     * @param type the type
      */
     void SetType(uint8_t type);
     /**
      * Get type field
-     * \returns the type value
+     * @returns the type value
      */
     uint8_t GetType() const;
 
-    /** \returns the name field */
+    /** @returns the name field */
     std::string GetName() const;
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     TypeId GetInstanceTypeId() const override;
@@ -105,7 +105,7 @@ namespace ns3
 {
 
 /**
- * \ingroup wimax
+ * @ingroup wimax
  * This class implements the ranging response message described by "IEEE Standard for
  * Local and metropolitan area networks Part 16: Air Interface for Fixed Broadband Wireless Access
  * Systems" 6.3.2.3.6 Ranging response (RNG-RSP) message, page 50
@@ -116,156 +116,156 @@ class RngRsp : public Header
     RngRsp();
     ~RngRsp() override;
     /**
-     * \brief set the  Tx timing offset adjustment (signed 32-bit).
-     * \param timingAdjust The time required to advance SS transmission so frames
+     * @brief set the  Tx timing offset adjustment (signed 32-bit).
+     * @param timingAdjust The time required to advance SS transmission so frames
      * arrive at the expected time instance at the BS.
      */
     void SetTimingAdjust(uint32_t timingAdjust);
     /**
-     * \brief set the relative change in transmission power level that the SS should make in order
+     * @brief set the relative change in transmission power level that the SS should make in order
      * that transmissions arrive at the BS at the desired power. When subchannelization is employed,
      * the subscriber shall interpret the power offset adjustment as a required change to the
      * transmitted power density.
-     * \param powerLevelAdjust the relative change in transmission power level
+     * @param powerLevelAdjust the relative change in transmission power level
      */
     void SetPowerLevelAdjust(uint8_t powerLevelAdjust);
     /**
-     * \brief set the relative change in transmission frequency that the SS should take in order to
+     * @brief set the relative change in transmission frequency that the SS should take in order to
      * better match the BS. This is fine-frequency adjustment within a channel, not reassignment to
      * a different channel
-     * \param offsetFreqAdjust Offset frequency adjustment
+     * @param offsetFreqAdjust Offset frequency adjustment
      */
     void SetOffsetFreqAdjust(uint32_t offsetFreqAdjust);
     /**
-     * \brief set the range status.
-     * \param rangStatus Range status
+     * @brief set the range status.
+     * @param rangStatus Range status
      */
     void SetRangStatus(uint8_t rangStatus);
     /**
-     * \brief set the Center frequency, in kHz, of new downlink channel where the SS should redo
+     * @brief set the Center frequency, in kHz, of new downlink channel where the SS should redo
      * initial ranging.
-     * \param dlFreqOverride the Center frequency in kHz
+     * @param dlFreqOverride the Center frequency in kHz
      */
     void SetDlFreqOverride(uint32_t dlFreqOverride);
     /**
-     * \brief set the identifier of the uplink channel with which the SS is to redo initial ranging
-     * \param ulChnlIdOverride the uplink channel index
+     * @brief set the identifier of the uplink channel with which the SS is to redo initial ranging
+     * @param ulChnlIdOverride the uplink channel index
      */
     void SetUlChnlIdOverride(uint8_t ulChnlIdOverride);
     /**
-     * \brief set the DL oper burst profile
-     * \param dlOperBurstProfile the oper burt profile
+     * @brief set the DL oper burst profile
+     * @param dlOperBurstProfile the oper burt profile
      */
     void SetDlOperBurstProfile(uint16_t dlOperBurstProfile);
     /**
-     * \brief set the MAC address
-     * \param macAddress the MAC address
+     * @brief set the MAC address
+     * @param macAddress the MAC address
      */
     void SetMacAddress(Mac48Address macAddress);
 
     /**
-     * \brief set basic CID.
-     * \param basicCid Basic CID
+     * @brief set basic CID.
+     * @param basicCid Basic CID
      */
     void SetBasicCid(Cid basicCid);
     /**
-     * \brief set primary CID.
-     * \param primaryCid Primary CID
+     * @brief set primary CID.
+     * @param primaryCid Primary CID
      */
     void SetPrimaryCid(Cid primaryCid);
 
     /**
-     * \brief set AAS broadcast permission.
-     * \param aasBdcastPermission AAS broadcast permission
+     * @brief set AAS broadcast permission.
+     * @param aasBdcastPermission AAS broadcast permission
      */
     void SetAasBdcastPermission(uint8_t aasBdcastPermission);
     /**
-     * \brief set frame number.
-     * \param frameNumber Frame number
+     * @brief set frame number.
+     * @param frameNumber Frame number
      */
     void SetFrameNumber(uint32_t frameNumber);
     /**
-     * \brief set initial range opp number.
-     * \param initRangOppNumber Initial range opp number
+     * @brief set initial range opp number.
+     * @param initRangOppNumber Initial range opp number
      */
     void SetInitRangOppNumber(uint8_t initRangOppNumber);
     /**
-     * \brief set range sub channel.
-     * \param rangSubchnl Range subchannel
+     * @brief set range sub channel.
+     * @param rangSubchnl Range subchannel
      */
     void SetRangSubchnl(uint8_t rangSubchnl);
     /**
-     * \return Tx timing offset adjustment (signed 32-bit). The time required to advance SS
+     * @return Tx timing offset adjustment (signed 32-bit). The time required to advance SS
      * transmission so frames arrive at the expected time instance at the BS.
      */
     uint32_t GetTimingAdjust() const;
     /**
-     * \return the relative change in transmission power level that the SS should take in order
+     * @return the relative change in transmission power level that the SS should take in order
      * that transmissions arrive at the BS at the desired power. When subchannelization is employed,
      * the subscriber shall interpret the power offset adjustment as a required change to the
      * transmitted power density.
      */
     uint8_t GetPowerLevelAdjust() const;
     /**
-     * \return the relative change in transmission frequency that the SS should take in order to
+     * @return the relative change in transmission frequency that the SS should take in order to
      * better match the BS. This is fine-frequency adjustment within a channel, not reassignment to
      * a different channel.
      */
     uint32_t GetOffsetFreqAdjust() const;
     /**
-     * \return the range status.
+     * @return the range status.
      */
     uint8_t GetRangStatus() const;
     /**
-     * \return Center frequency, in kHz, of new downlink channel where the SS should redo initial
+     * @return Center frequency, in kHz, of new downlink channel where the SS should redo initial
      * ranging.
      */
     uint32_t GetDlFreqOverride() const;
     /**
-     * \return The identifier of the uplink channel with which the SS is to redo initial ranging
+     * @return The identifier of the uplink channel with which the SS is to redo initial ranging
      */
     uint8_t GetUlChnlIdOverride() const;
     /**
-     * \return DlOperBurstProfile: This parameter is sent in response to the RNG-REQ Requested
+     * @return DlOperBurstProfile: This parameter is sent in response to the RNG-REQ Requested
      * Downlink Burst Profile parameter
      */
     uint16_t GetDlOperBurstProfile() const;
     /**
-     * \return MAC address
+     * @return MAC address
      */
     Mac48Address GetMacAddress() const;
     /**
-     * \return basic CID
+     * @return basic CID
      */
     Cid GetBasicCid() const;
     /**
-     * \return primary CID
+     * @return primary CID
      */
     Cid GetPrimaryCid() const;
     /**
-     * \return AAS broadcast permission
+     * @return AAS broadcast permission
      */
     uint8_t GetAasBdcastPermission() const;
     /**
-     * \return frame number
+     * @return frame number
      */
     uint32_t GetFrameNumber() const;
     /**
-     * \return initial range opp number
+     * @return initial range opp number
      */
     uint8_t GetInitRangOppNumber() const;
     /**
-     * \return range sub channel
+     * @return range sub channel
      */
     uint8_t GetRangSubchnl() const;
 
     /**
-     * \return name string
+     * @return name string
      */
     std::string GetName() const;
     /**
      * Register this type.
-     * \return The TypeId.
+     * @return The TypeId.
      */
     static TypeId GetTypeId();
     TypeId GetInstanceTypeId() const override;
@@ -366,7 +366,7 @@ class RngRsp : public Header
 namespace ns3
 {
 /**
- * \ingroup wimax
+ * @ingroup wimax
  * This class implements the DSA-REQ message described by "IEEE Standard for
  * Local and metropolitan area networks Part 16: Air Interface for Fixed Broadband Wireless Access
  * Systems" 6.3.2.3.10 DSA-REQ message, page 62
@@ -379,52 +379,52 @@ class DsaReq : public Header
     /**
      * Constructor
      *
-     * \param sf service flow
+     * @param sf service flow
      */
     DsaReq(ServiceFlow sf);
     /**
-     * \brief set the transaction ID
-     * \param transactionId
+     * @brief set the transaction ID
+     * @param transactionId
      */
     void SetTransactionId(uint16_t transactionId);
     /**
-     * \brief set the service flow identifier
-     * \param sfid the service flow identifier
+     * @brief set the service flow identifier
+     * @param sfid the service flow identifier
      */
     void SetSfid(uint32_t sfid);
     /**
-     * \brief set the connection identifier
-     * \param cid the connection identifier
+     * @brief set the connection identifier
+     * @param cid the connection identifier
      */
     void SetCid(Cid cid);
     /**
-     * \brief specify a service flow to be requested by this message
-     * \param sf the service flow
+     * @brief specify a service flow to be requested by this message
+     * @param sf the service flow
      */
     void SetServiceFlow(ServiceFlow sf);
     /**
-     * \return the service flow requested by this message
+     * @return the service flow requested by this message
      */
     ServiceFlow GetServiceFlow() const;
     /**
-     * \return the transaction ID
+     * @return the transaction ID
      */
     uint16_t GetTransactionId() const;
     /**
-     * \return the service flow identifier
+     * @return the service flow identifier
      */
     uint32_t GetSfid() const;
     /**
-     * \return the connection identifier
+     * @return the connection identifier
      */
     Cid GetCid() const;
     /**
-     * \return the service name
+     * @return the service name
      */
     std::string GetName() const;
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     TypeId GetInstanceTypeId() const override;
@@ -461,11 +461,11 @@ namespace ns3
 {
 
 /**
- * \ingroup wimax
+ * @ingroup wimax
  * This class implements the DSA-RSP message described by "IEEE Standard for
  * Local and metropolitan area networks Part 16: Air Interface for Fixed Broadband Wireless Access
  * Systems" 6.3.2.3.11 DSA-RSP message, page 63
- * \verbatim
+ * @verbatim
    0             7             15            23
    +-------------+-------------+-------------+
    |Mngt msg type|       Transaction ID      |
@@ -481,59 +481,59 @@ class DsaRsp : public Header
     ~DsaRsp() override;
 
     /**
-     * \brief set the transaction ID
-     * \param transactionId
+     * @brief set the transaction ID
+     * @param transactionId
      */
     void SetTransactionId(uint16_t transactionId);
     /**
-     * \return the transaction ID
+     * @return the transaction ID
      */
     uint16_t GetTransactionId() const;
 
     /**
-     * \brief set the confirmation code
-     * \param confirmationCode
+     * @brief set the confirmation code
+     * @param confirmationCode
      */
     void SetConfirmationCode(uint16_t confirmationCode);
     /**
-     * \return the confirmation code
+     * @return the confirmation code
      */
     uint16_t GetConfirmationCode() const;
     /**
-     * \brief set the service flow identifier
-     * \param sfid the service flow identifier
+     * @brief set the service flow identifier
+     * @param sfid the service flow identifier
      */
     void SetSfid(uint32_t sfid);
     /**
-     * \return the service flow identifier
+     * @return the service flow identifier
      */
     uint32_t GetSfid() const;
     /**
-     * \brief set the connection identifier
-     * \param cid the connection identifier
+     * @brief set the connection identifier
+     * @param cid the connection identifier
      */
     void SetCid(Cid cid);
     /**
-     * \return the connection identifier
+     * @return the connection identifier
      */
     Cid GetCid() const;
     /**
-     * \brief specify a service flow to be requested by this message
-     * \param sf the service flow
+     * @brief specify a service flow to be requested by this message
+     * @param sf the service flow
      */
     void SetServiceFlow(ServiceFlow sf);
     /**
-     * \return the service flow requested by this message
+     * @return the service flow requested by this message
      */
     ServiceFlow GetServiceFlow() const;
 
     /**
-     * \return the service name
+     * @return the service name
      */
     std::string GetName() const;
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     TypeId GetInstanceTypeId() const override;
@@ -569,7 +569,7 @@ namespace ns3
 {
 
 /**
- * \ingroup wimax
+ * @ingroup wimax
  * This class implements the DSA-ACK message described by "IEEE Standard for
  * Local and metropolitan area networks Part 16: Air Interface for Fixed Broadband Wireless Access
  * Systems" 6.3.2.3.12 DSA-ACK message, page 64
@@ -582,34 +582,34 @@ class DsaAck : public Header
 
     /**
      * Set transaction ID field
-     * \param transactionId the transaction ID
+     * @param transactionId the transaction ID
      */
     void SetTransactionId(uint16_t transactionId);
     /**
      * Get transaction ID field
-     * \returns the transaction ID
+     * @returns the transaction ID
      */
     uint16_t GetTransactionId() const;
 
     /**
      * Set confirmation code field
-     * \param confirmationCode the confirmation code
+     * @param confirmationCode the confirmation code
      */
     void SetConfirmationCode(uint16_t confirmationCode);
     /**
      * Get confirmation code field
-     * \returns the confirmation code
+     * @returns the confirmation code
      */
     uint16_t GetConfirmationCode() const;
 
     /**
      * Get name field
-     * \return the name string
+     * @return the name string
      */
     std::string GetName() const;
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     TypeId GetInstanceTypeId() const override;
@@ -643,7 +643,7 @@ namespace ns3
 {
 
 /**
- * \ingroup wimax
+ * @ingroup wimax
  * This class implements the ranging request message described by "IEEE Standard for
  * Local and metropolitan area networks Part 16: Air Interface for Fixed Broadband Wireless Access
  * Systems"
@@ -656,44 +656,44 @@ class RngReq : public Header
 
     /**
      * Set request DL burst profile field
-     * \param reqDlBurstProfile the request DL burst profile
+     * @param reqDlBurstProfile the request DL burst profile
      */
     void SetReqDlBurstProfile(uint8_t reqDlBurstProfile);
     /**
      * Set MAC address field
-     * \param macAddress the MAC address
+     * @param macAddress the MAC address
      */
     void SetMacAddress(Mac48Address macAddress);
     /**
      * Set ranging anomalies field
-     * \param rangingAnomalies the rnaging anomalies
+     * @param rangingAnomalies the rnaging anomalies
      */
     void SetRangingAnomalies(uint8_t rangingAnomalies);
 
     /**
      * Get request DL burst profile field
-     * \returns the request DL burst profile
+     * @returns the request DL burst profile
      */
     uint8_t GetReqDlBurstProfile() const;
     /**
      * Get MAC address field
-     * \returns the MAC address
+     * @returns the MAC address
      */
     Mac48Address GetMacAddress() const;
     /**
      * Get ranging anomalies field
-     * \returns the ranging anomalies
+     * @returns the ranging anomalies
      */
     uint8_t GetRangingAnomalies() const;
 
     /**
-     * \brief Get name field
-     * \returns the name string
+     * @brief Get name field
+     * @returns the name string
      */
     std::string GetName() const;
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     TypeId GetInstanceTypeId() const override;

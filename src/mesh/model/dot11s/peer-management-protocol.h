@@ -36,9 +36,9 @@ class IePeerManagement;
 class IeConfiguration;
 
 /**
- * \ingroup dot11s
+ * @ingroup dot11s
  *
- * \brief 802.11s Peer Management Protocol model
+ * @brief 802.11s Peer Management Protocol model
  */
 class PeerManagementProtocol : public Object
 {
@@ -51,15 +51,15 @@ class PeerManagementProtocol : public Object
     PeerManagementProtocol& operator=(const PeerManagementProtocol&) = delete;
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     void DoDispose() override;
     /**
-     * \brief Install PMP on given mesh point.
-     * \param mp the MeshPointDevice to install onto
-     * \return true if successful
+     * @brief Install PMP on given mesh point.
+     * @param mp the MeshPointDevice to install onto
+     * @return true if successful
      *
      * Installing protocol causes installation of its interface MAC plugins.
      *
@@ -68,24 +68,24 @@ class PeerManagementProtocol : public Object
      */
     bool Install(Ptr<MeshPointDevice> mp);
     /**
-     * \brief Methods that handle beacon sending/receiving procedure.
+     * @brief Methods that handle beacon sending/receiving procedure.
      *
-     * \name This methods interact with MAC_layer plug-in
+     * @name This methods interact with MAC_layer plug-in
      */
     ///@{
     /**
-     * \brief When we are sending a beacon - we fill beacon timing
+     * @brief When we are sending a beacon - we fill beacon timing
      * element
-     * \return IeBeaconTiming is a beacon timing element that should be present in beacon
-     * \param interface is a interface sending a beacon
+     * @return IeBeaconTiming is a beacon timing element that should be present in beacon
+     * @param interface is a interface sending a beacon
      */
     Ptr<IeBeaconTiming> GetBeaconTimingElement(uint32_t interface);
     /**
-     * \brief To initiate peer link we must notify about received beacon
-     * \param interface the interface where a beacon was received from
-     * \param peerAddress address of station, which sent a beacon
-     * \param beaconInterval beacon interval (needed by beacon loss counter)
-     * \param beaconTiming beacon timing element (needed by BCA)
+     * @brief To initiate peer link we must notify about received beacon
+     * @param interface the interface where a beacon was received from
+     * @param peerAddress address of station, which sent a beacon
+     * @param beaconInterval beacon interval (needed by beacon loss counter)
+     * @param beaconTiming beacon timing element (needed by BCA)
      */
     void ReceiveBeacon(uint32_t interface,
                        Mac48Address peerAddress,
@@ -94,19 +94,19 @@ class PeerManagementProtocol : public Object
     ///@}
 
     /**
-     * \name Methods that handle Peer link management frames interaction:
+     * @name Methods that handle Peer link management frames interaction:
      */
     ///@{
     /**
      * Deliver Peer link management information to the protocol-part
-     * \param interface is a interface ID of a given MAC (interfaceID rather than MAC address,
+     * @param interface is a interface ID of a given MAC (interfaceID rather than MAC address,
      * because many interfaces may have the same MAC)
-     * \param peerAddress is address of peer
-     * \param peerMeshPointAddress is address of peer mesh point device (equal to peer address when
+     * @param peerAddress is address of peer
+     * @param peerMeshPointAddress is address of peer mesh point device (equal to peer address when
      * only one interface)
-     * \param aid is association ID, which peer has assigned to us
-     * \param peerManagementElement is peer link management element
-     * \param meshConfig is mesh configuration element taken from the peer management frame
+     * @param aid is association ID, which peer has assigned to us
+     * @param peerManagementElement is peer link management element
+     * @param meshConfig is mesh configuration element taken from the peer management frame
      */
     void ReceivePeerLinkFrame(uint32_t interface,
                               Mac48Address peerAddress,
@@ -115,101 +115,101 @@ class PeerManagementProtocol : public Object
                               IePeerManagement peerManagementElement,
                               IeConfiguration meshConfig);
     /**
-     * \brief Cancels peer link due to broken configuration (Mesh ID or Supported
+     * @brief Cancels peer link due to broken configuration (Mesh ID or Supported
      * rates)
-     * \param interface interface of the link to cancel
-     * \param peerAddress peer address of the link to cancel
+     * @param interface interface of the link to cancel
+     * @param peerAddress peer address of the link to cancel
      */
     void ConfigurationMismatch(uint32_t interface, Mac48Address peerAddress);
     /**
-     * \brief Cancels peer link due to successive transmission failures
-     * \param interface interface of the link to cancel
-     * \param peerAddress peer address of the link to cancel
+     * @brief Cancels peer link due to successive transmission failures
+     * @param interface interface of the link to cancel
+     * @param peerAddress peer address of the link to cancel
      */
     void TransmissionFailure(uint32_t interface, const Mac48Address peerAddress);
     /**
-     * \brief resets transmission failure statistics
-     * \param interface interface of the link to reset
-     * \param peerAddress peer address of the link to reset
+     * @brief resets transmission failure statistics
+     * @param interface interface of the link to reset
+     * @param peerAddress peer address of the link to reset
      */
     void TransmissionSuccess(uint32_t interface, const Mac48Address peerAddress);
     /**
-     * \brief Checks if there is established link
-     * \param interface interface of the link to check
-     * \param peerAddress peer address of the link to check
-     * \return true if the link is active
+     * @brief Checks if there is established link
+     * @param interface interface of the link to check
+     * @param peerAddress peer address of the link to check
+     * @return true if the link is active
      */
     bool IsActiveLink(uint32_t interface, Mac48Address peerAddress);
     ///@}
 
-    /// \name Interface to other protocols (MLME)
+    /// @name Interface to other protocols (MLME)
     ///@{
     /**
      * Set peer link status change callback
-     * \param cb the callback
+     * @param cb the callback
      */
     void SetPeerLinkStatusCallback(Callback<void, Mac48Address, Mac48Address, uint32_t, bool> cb);
     /**
      * Find active peer link by my interface and peer interface MAC
-     * \param interface interface of the link to find
-     * \param peerAddress peer address of the link to find
-     * \return The peer link (null if not found)
+     * @param interface interface of the link to find
+     * @param peerAddress peer address of the link to find
+     * @return The peer link (null if not found)
      */
     Ptr<PeerLink> FindPeerLink(uint32_t interface, Mac48Address peerAddress);
     /**
      * Get list of all active peer links
-     * \return a list of all the active peer links
+     * @return a list of all the active peer links
      */
     std::vector<Ptr<PeerLink>> GetPeerLinks() const;
     /**
      * Get list of active peers of my given interface
-     * \param interface the interface
-     * \return a list of all the active peer links on an interface
+     * @param interface the interface
+     * @return a list of all the active peer links on an interface
      */
     std::vector<Mac48Address> GetPeers(uint32_t interface) const;
     /**
      * Get mesh point address. \todo this used by plugins only. Now MAC plugins can ask MP address
      * directly from main MAC
      *
-     * \return Mac48Address
+     * @return Mac48Address
      */
     Mac48Address GetAddress();
     /**
      * Get number of links
-     * \returns the number of links
+     * @returns the number of links
      */
     uint8_t GetNumberOfLinks() const;
     /**
      * Set mesh ID to a string value
-     * \param s the mesh ID string value
+     * @param s the mesh ID string value
      */
     void SetMeshId(std::string s);
     /**
      * Get mesh ID information element
-     * \returns the mesh ID information element
+     * @returns the mesh ID information element
      */
     Ptr<IeMeshId> GetMeshId() const;
     /**
      * Enable or disable beacon collision avoidance
-     * \param enable true to enable beacon collision avoidance
+     * @param enable true to enable beacon collision avoidance
      */
     void SetBeaconCollisionAvoidance(bool enable);
     /**
      * Get beacon collision avoidance
-     * \returns the beacon collision avoidance flag
+     * @returns the beacon collision avoidance flag
      */
     bool GetBeaconCollisionAvoidance() const;
     /**
      * Notify about beacon send event, needed to schedule BCA
-     * \param interface the interface to use
-     * \param beaconInterval the beacon interval
+     * @param interface the interface to use
+     * @param beaconInterval the beacon interval
      */
     void NotifyBeaconSent(uint32_t interface, Time beaconInterval);
     ///@}
 
     /**
-     * \brief Report statistics
-     * \param os the output stream
+     * @brief Report statistics
+     * @param os the output stream
      */
     void Report(std::ostream& os) const;
     /// Reset statistics function
@@ -219,16 +219,16 @@ class PeerManagementProtocol : public Object
      * used by this model.  Return the number of streams (possibly zero) that
      * have been assigned.
      *
-     * \param stream first stream index to use
-     * \return the number of stream indices assigned by this model
+     * @param stream first stream index to use
+     * @return the number of stream indices assigned by this model
      */
     int64_t AssignStreams(int64_t stream);
 
     /**
      * TracedCallback signature for link open/close events.
      *
-     * \param [in] src MAC address of source interface.
-     * \param [in] dst MAC address of destination interface.
+     * @param [in] src MAC address of source interface.
+     * @param [in] dst MAC address of destination interface.
      */
     typedef void (*LinkOpenCloseTracedCallback)(Mac48Address src, const Mac48Address dst);
 
@@ -252,46 +252,46 @@ class PeerManagementProtocol : public Object
     typedef std::map<uint32_t, PeerLinksOnInterface> PeerLinksMap;
     /// This map keeps relationship between peer address and its beacon information
     typedef std::map<Mac48Address, BeaconInfo> BeaconsOnInterface;
-    /// \brief This map keeps beacon information on all interfaces
+    /// @brief This map keeps beacon information on all interfaces
     typedef std::map<uint32_t, BeaconsOnInterface> BeaconInfoMap;
-    /// \brief this vector keeps pointers to MAC-plugins
+    /// @brief this vector keeps pointers to MAC-plugins
     typedef std::map<uint32_t, Ptr<PeerManagementProtocolMac>> PeerManagementProtocolMacMap;
 
     /**
      * Initiate link function
      *
-     * \param interface the interface to use
-     * \param peerAddress the peer address
-     * \param peerMeshPointAddress the peer mesh point address
-     * \returns the peer link
+     * @param interface the interface to use
+     * @param peerAddress the peer address
+     * @param peerMeshPointAddress the peer mesh point address
+     * @returns the peer link
      */
     Ptr<PeerLink> InitiateLink(uint32_t interface,
                                Mac48Address peerAddress,
                                Mac48Address peerMeshPointAddress);
     /**
-     * \brief External peer-chooser
-     * \param interface the interface to use
-     * \param peerAddress the peer address
-     * \returns true is should send an open
+     * @brief External peer-chooser
+     * @param interface the interface to use
+     * @param peerAddress the peer address
+     * @returns true is should send an open
      */
     bool ShouldSendOpen(uint32_t interface, Mac48Address peerAddress) const;
     /**
-     * \brief External peer-chooser
-     * \param interface the interface to use
-     * \param peerAddress the peer address
-     * \param reasonCode reason code
-     * \returns true is should send an open
+     * @brief External peer-chooser
+     * @param interface the interface to use
+     * @param peerAddress the peer address
+     * @param reasonCode reason code
+     * @returns true is should send an open
      */
     bool ShouldAcceptOpen(uint32_t interface,
                           Mac48Address peerAddress,
                           PmpReasonCode& reasonCode) const;
     /**
-     * \brief Indicates changes in peer links
-     * \param interface the interface
-     * \param peerAddress the peer address
-     * \param peerMeshPointAddress the peer mesh point address
-     * \param ostate old state
-     * \param nstate new state
+     * @brief Indicates changes in peer links
+     * @param interface the interface
+     * @param peerAddress the peer address
+     * @param peerMeshPointAddress the peer mesh point address
+     * @param ostate old state
+     * @param nstate new state
      */
     void PeerLinkStatus(uint32_t interface,
                         Mac48Address peerAddress,
@@ -299,34 +299,34 @@ class PeerManagementProtocol : public Object
                         PeerLink::PeerState ostate,
                         PeerLink::PeerState nstate);
     /**
-     * \brief BCA
-     * \param interface interface
+     * @brief BCA
+     * @param interface interface
      */
     void CheckBeaconCollisions(uint32_t interface);
     /**
      * Shift own beacon function
-     * \param interface interface
+     * @param interface interface
      */
     void ShiftOwnBeacon(uint32_t interface);
     /**
-     * \brief Time<-->TU converters:
-     * \param x TU
-     * \return Time
+     * @brief Time<-->TU converters:
+     * @param x TU
+     * @return Time
      */
     Time TuToTime(int x);
     /**
-     * \brief Time<-->TU converters:
-     * \param x Time
-     * \return TU
+     * @brief Time<-->TU converters:
+     * @param x Time
+     * @return TU
      */
     int TimeToTu(Time x);
 
     /**
      * Aux. method to register open links
-     * \param peerMp peer mesh point address
-     * \param peerIface peer address
-     * \param myIface my address
-     * \param interface interface
+     * @param peerMp peer mesh point address
+     * @param peerIface peer address
+     * @param myIface my address
+     * @param interface interface
      */
     void NotifyLinkOpen(Mac48Address peerMp,
                         Mac48Address peerIface,
@@ -334,10 +334,10 @@ class PeerManagementProtocol : public Object
                         uint32_t interface);
     /**
      * Aux. method to register closed links
-     * \param peerMp peer mesh point address
-     * \param peerIface peer address
-     * \param myIface my address
-     * \param interface interface
+     * @param peerMp peer mesh point address
+     * @param peerIface peer address
+     * @param myIface my address
+     * @param interface interface
      */
     void NotifyLinkClose(Mac48Address peerMp,
                          Mac48Address peerIface,
@@ -362,11 +362,11 @@ class PeerManagementProtocol : public Object
     std::map<uint32_t, Time> m_beaconInterval;
 
     /**
-     * \name Peer Links
+     * @name Peer Links
      */
     PeerLinksMap m_peerLinks;
     /**
-     * \brief Callback to notify about peer link changes:
+     * @brief Callback to notify about peer link changes:
      * Mac48Address is peer address of mesh point,
      * Mac48Address is peer address of interface,
      * uint32_t - interface ID,
@@ -391,12 +391,12 @@ class PeerManagementProtocol : public Object
         /**
          * Constructor
          *
-         * \param t
+         * @param t
          */
         Statistics(uint16_t t = 0);
         /**
          * Print function
-         * \param os the output stream to print to
+         * @param os the output stream to print to
          */
         void Print(std::ostream& os) const;
     };

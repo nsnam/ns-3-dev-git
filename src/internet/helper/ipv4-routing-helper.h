@@ -21,9 +21,9 @@ class Ipv4RoutingProtocol;
 class Node;
 
 /**
- * \ingroup ipv4Helpers
+ * @ingroup ipv4Helpers
  *
- * \brief a factory to create ns3::Ipv4RoutingProtocol objects
+ * @brief a factory to create ns3::Ipv4RoutingProtocol objects
  *
  * For each new routing protocol created as a subclass of
  * ns3::Ipv4RoutingProtocol, you need to create a subclass of
@@ -40,8 +40,8 @@ class Ipv4RoutingHelper
     virtual ~Ipv4RoutingHelper();
 
     /**
-     * \brief virtual constructor
-     * \returns pointer to clone of this Ipv4RoutingHelper
+     * @brief virtual constructor
+     * @returns pointer to clone of this Ipv4RoutingHelper
      *
      * This method is mainly for internal use by the other helpers;
      * clients are expected to free the dynamic memory allocated by this method
@@ -49,16 +49,16 @@ class Ipv4RoutingHelper
     virtual Ipv4RoutingHelper* Copy() const = 0;
 
     /**
-     * \param node the node within which the new routing protocol will run
-     * \returns a newly-created routing protocol
+     * @param node the node within which the new routing protocol will run
+     * @returns a newly-created routing protocol
      */
     virtual Ptr<Ipv4RoutingProtocol> Create(Ptr<Node> node) const = 0;
 
     /**
-     * \brief prints the routing tables of all nodes at a particular time.
-     * \param printTime the time at which the routing table is supposed to be printed.
-     * \param stream The output stream object to use
-     * \param unit The time unit to be used in the report
+     * @brief prints the routing tables of all nodes at a particular time.
+     * @param printTime the time at which the routing table is supposed to be printed.
+     * @param stream The output stream object to use
+     * @param unit The time unit to be used in the report
      *
      * This method calls the PrintRoutingTable() method of the
      * Ipv4RoutingProtocol stored in the Ipv4 object, for all nodes at the
@@ -69,10 +69,10 @@ class Ipv4RoutingHelper
                                        Time::Unit unit = Time::S);
 
     /**
-     * \brief prints the routing tables of all nodes at regular intervals specified by user.
-     * \param printInterval the time interval for which the routing table is supposed to be printed.
-     * \param stream The output stream object to use
-     * \param unit The time unit to be used in the report
+     * @brief prints the routing tables of all nodes at regular intervals specified by user.
+     * @param printInterval the time interval for which the routing table is supposed to be printed.
+     * @param stream The output stream object to use
+     * @param unit The time unit to be used in the report
      *
      * This method calls the PrintRoutingTable() method of the
      * Ipv4RoutingProtocol stored in the Ipv4 object, for all nodes at the
@@ -83,11 +83,11 @@ class Ipv4RoutingHelper
                                           Time::Unit unit = Time::S);
 
     /**
-     * \brief prints the routing tables of a node at a particular time.
-     * \param printTime the time at which the routing table is supposed to be printed.
-     * \param node The node ptr for which we need the routing table to be printed
-     * \param stream The output stream object to use
-     * \param unit The time unit to be used in the report
+     * @brief prints the routing tables of a node at a particular time.
+     * @param printTime the time at which the routing table is supposed to be printed.
+     * @param node The node ptr for which we need the routing table to be printed
+     * @param stream The output stream object to use
+     * @param unit The time unit to be used in the report
      *
      * This method calls the PrintRoutingTable() method of the
      * Ipv4RoutingProtocol stored in the Ipv4 object, for the selected node
@@ -99,11 +99,11 @@ class Ipv4RoutingHelper
                                     Time::Unit unit = Time::S);
 
     /**
-     * \brief prints the routing tables of a node at regular intervals specified by user.
-     * \param printInterval the time interval for which the routing table is supposed to be printed.
-     * \param node The node ptr for which we need the routing table to be printed
-     * \param stream The output stream object to use
-     * \param unit The time unit to be used in the report
+     * @brief prints the routing tables of a node at regular intervals specified by user.
+     * @param printInterval the time interval for which the routing table is supposed to be printed.
+     * @param node The node ptr for which we need the routing table to be printed
+     * @param stream The output stream object to use
+     * @param unit The time unit to be used in the report
      *
      * This method calls the PrintRoutingTable() method of the
      * Ipv4RoutingProtocol stored in the Ipv4 object, for the selected node
@@ -115,15 +115,15 @@ class Ipv4RoutingHelper
                                        Time::Unit unit = Time::S);
 
     /**
-     * \brief prints the neighbor cache of all nodes at a particular time.
-     * \param printTime the time at which the neighbor cache is supposed to be printed.
-     * \param stream The output stream object to use
-     * \param unit The time unit to be used in the report
+     * @brief prints the neighbor cache of all nodes at a particular time.
+     * @param printTime the time at which the neighbor cache is supposed to be printed.
+     * @param stream The output stream object to use
+     * @param unit The time unit to be used in the report
      *
      * This method calls the PrintArpCache() method of the
      * ArpCache associated with each Ipv4Interface stored in the Ipv4 object, for all nodes at the
      * specified time. The output format is similar to:
-     * \verbatim
+     * @verbatim
        10.1.1.2 dev 1 lladdr 00-06-00:00:00:00:00:02 REACHABLE
        \endverbatim
      * Note that the MAC address is printed as "type"-"size"-"actual address"
@@ -133,16 +133,16 @@ class Ipv4RoutingHelper
                                         Time::Unit unit = Time::S);
 
     /**
-     * \brief prints the neighbor cache of all nodes at regular intervals specified by user.
-     * \param printInterval the time interval for which the neighbor cache is supposed to be
+     * @brief prints the neighbor cache of all nodes at regular intervals specified by user.
+     * @param printInterval the time interval for which the neighbor cache is supposed to be
      printed.
-     * \param stream The output stream object to use
-     * \param unit The time unit to be used in the report
+     * @param stream The output stream object to use
+     * @param unit The time unit to be used in the report
      *
      * This method calls the PrintArpCache() method of the
      * ArpCache associated with each Ipv4Interface stored in the Ipv4 object, for all nodes at the
      * specified time. The output format is similar to:
-     * \verbatim
+     * @verbatim
        10.1.1.2 dev 1 lladdr 00-06-00:00:00:00:00:02 REACHABLE
        \endverbatim
      * Note that the MAC address is printed as "type"-"size"-"actual address"
@@ -152,16 +152,16 @@ class Ipv4RoutingHelper
                                            Time::Unit unit = Time::S);
 
     /**
-     * \brief prints the neighbor cache of a node at a particular time.
-     * \param printTime the time at which the neighbor cache is supposed to be printed.
-     * \param node The node ptr for which we need the neighbor cache to be printed
-     * \param stream The output stream object to use
-     * \param unit The time unit to be used in the report
+     * @brief prints the neighbor cache of a node at a particular time.
+     * @param printTime the time at which the neighbor cache is supposed to be printed.
+     * @param node The node ptr for which we need the neighbor cache to be printed
+     * @param stream The output stream object to use
+     * @param unit The time unit to be used in the report
      *
      * This method calls the PrintArpCache() method of the
      * ArpCache associated with each Ipv4Interface stored in the Ipv4 object, for all nodes at the
      * specified time. The output format is similar to:
-     * \verbatim
+     * @verbatim
        10.1.1.2 dev 1 lladdr 00-06-00:00:00:00:00:02 REACHABLE
        \endverbatim
      * Note that the MAC address is printed as "type"-"size"-"actual address"
@@ -172,17 +172,17 @@ class Ipv4RoutingHelper
                                      Time::Unit unit = Time::S);
 
     /**
-     * \brief prints the neighbor cache of a node at regular intervals specified by user.
-     * \param printInterval the time interval for which the neighbor cache is supposed to be
+     * @brief prints the neighbor cache of a node at regular intervals specified by user.
+     * @param printInterval the time interval for which the neighbor cache is supposed to be
      printed.
-     * \param node The node ptr for which we need the neighbor cache to be printed
-     * \param stream The output stream object to use
-     * \param unit The time unit to be used in the report
+     * @param node The node ptr for which we need the neighbor cache to be printed
+     * @param stream The output stream object to use
+     * @param unit The time unit to be used in the report
      *
      * This method calls the PrintArpCache() method of the
      * ArpCache associated with each Ipv4Interface stored in the Ipv4 object, for all nodes at the
      * specified time. The output format is similar to:
-     * \verbatim
+     * @verbatim
        10.1.1.2 dev 1 lladdr 00-06-00:00:00:00:00:02 REACHABLE
        \endverbatim
      * Note that the MAC address is printed as "type"-"size"-"actual address"
@@ -193,23 +193,23 @@ class Ipv4RoutingHelper
                                         Time::Unit unit = Time::S);
 
     /**
-     * \brief Request a specified routing protocol &lt;T&gt; from Ipv4RoutingProtocol protocol
+     * @brief Request a specified routing protocol &lt;T&gt; from Ipv4RoutingProtocol protocol
      *
      * If protocol is Ipv4ListRouting, then protocol will be searched in the list,
      * otherwise a simple DynamicCast will be performed
      *
-     * \param protocol Smart pointer to Ipv4RoutingProtocol object
-     * \return a Smart Pointer to the requested protocol (zero if the protocol can't be found)
+     * @param protocol Smart pointer to Ipv4RoutingProtocol object
+     * @return a Smart Pointer to the requested protocol (zero if the protocol can't be found)
      */
     template <class T>
     static Ptr<T> GetRouting(Ptr<Ipv4RoutingProtocol> protocol);
 
   private:
     /**
-     * \brief prints the routing tables of a node.
-     * \param node The node ptr for which we need the routing table to be printed
-     * \param stream The output stream object to use
-     * \param unit The time unit to be used in the report
+     * @brief prints the routing tables of a node.
+     * @param node The node ptr for which we need the routing table to be printed
+     * @param stream The output stream object to use
+     * @param unit The time unit to be used in the report
      *
      * This method calls the PrintRoutingTable() method of the
      * Ipv4RoutingProtocol stored in the Ipv4 object;
@@ -218,11 +218,11 @@ class Ipv4RoutingHelper
     static void Print(Ptr<Node> node, Ptr<OutputStreamWrapper> stream, Time::Unit unit = Time::S);
 
     /**
-     * \brief prints the routing tables of a node at regular intervals specified by user.
-     * \param printInterval the time interval for which the routing table is supposed to be printed.
-     * \param node The node ptr for which we need the routing table to be printed
-     * \param stream The output stream object to use
-     * \param unit The time unit to be used in the report
+     * @brief prints the routing tables of a node at regular intervals specified by user.
+     * @param printInterval the time interval for which the routing table is supposed to be printed.
+     * @param node The node ptr for which we need the routing table to be printed
+     * @param stream The output stream object to use
+     * @param unit The time unit to be used in the report
      *
      * This method calls the PrintRoutingTable() method of the
      * Ipv4RoutingProtocol stored in the Ipv4 object, for the selected node
@@ -234,15 +234,15 @@ class Ipv4RoutingHelper
                            Time::Unit unit = Time::S);
 
     /**
-     * \brief prints the neighbor cache of a node.
-     * \param node The node ptr for which we need the neighbor cache to be printed
-     * \param stream The output stream object to use
-     * \param unit The time unit to be used in the report
+     * @brief prints the neighbor cache of a node.
+     * @param node The node ptr for which we need the neighbor cache to be printed
+     * @param stream The output stream object to use
+     * @param unit The time unit to be used in the report
      *
      * This method calls the PrintArpCache() method of the
      * ArpCache associated with each Ipv4Interface stored in the Ipv4 object, for all nodes at the
      * specified time. The output format is similar to:
-     * \verbatim
+     * @verbatim
        10.1.1.2 dev 1 lladdr 00-06-00:00:00:00:00:02 REACHABLE
        \endverbatim
      * Note that the MAC address is printed as "type"-"size"-"actual address"
@@ -252,17 +252,17 @@ class Ipv4RoutingHelper
                               Time::Unit unit = Time::S);
 
     /**
-     * \brief prints the neighbor cache of a node at regular intervals specified by user.
-     * \param printInterval the time interval for which the neighbor cache is supposed to be
+     * @brief prints the neighbor cache of a node at regular intervals specified by user.
+     * @param printInterval the time interval for which the neighbor cache is supposed to be
      printed.
-     * \param node The node ptr for which we need the neighbor cache to be printed
-     * \param stream The output stream object to use
-     * \param unit The time unit to be used in the report
+     * @param node The node ptr for which we need the neighbor cache to be printed
+     * @param stream The output stream object to use
+     * @param unit The time unit to be used in the report
      *
      * This method calls the PrintArpCache() method of the
      * ArpCache associated with each Ipv4Interface stored in the Ipv4 object, for all nodes at the
      * specified time. The output format is similar to:
-     * \verbatim
+     * @verbatim
        10.1.1.2 dev 1 lladdr 00-06-00:00:00:00:00:02 REACHABLE
        \endverbatim
      * Note that the MAC address is printed as "type"-"size"-"actual address"

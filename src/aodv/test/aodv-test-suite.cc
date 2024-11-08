@@ -18,9 +18,9 @@ namespace aodv
 {
 
 /**
- * \ingroup aodv-test
+ * @ingroup aodv-test
  *
- * \brief Unit test for neighbors
+ * @brief Unit test for neighbors
  */
 struct NeighborTest : public TestCase
 {
@@ -33,7 +33,7 @@ struct NeighborTest : public TestCase
     void DoRun() override;
     /**
      * Handler test function
-     * \param addr the IPv4 address of the neighbor
+     * @param addr the IPv4 address of the neighbor
      */
     void Handler(Ipv4Address addr);
     /// Check timeout function 1
@@ -123,9 +123,9 @@ NeighborTest::DoRun()
 }
 
 /**
- * \ingroup aodv-test
+ * @ingroup aodv-test
  *
- * \brief Type header test case
+ * @brief Type header test case
  */
 struct TypeHeaderTest : public TestCase
 {
@@ -150,9 +150,9 @@ struct TypeHeaderTest : public TestCase
 };
 
 /**
- * \ingroup aodv-test
+ * @ingroup aodv-test
  *
- * \brief Unit test for RREQ
+ * @brief Unit test for RREQ
  */
 struct RreqHeaderTest : public TestCase
 {
@@ -209,9 +209,9 @@ struct RreqHeaderTest : public TestCase
 };
 
 /**
- * \ingroup aodv-test
+ * @ingroup aodv-test
  *
- * \brief Unit test for RREP
+ * @brief Unit test for RREP
  */
 struct RrepHeaderTest : public TestCase
 {
@@ -266,9 +266,9 @@ struct RrepHeaderTest : public TestCase
 };
 
 /**
- * \ingroup aodv-test
+ * @ingroup aodv-test
  *
- * \brief Unit test for RREP-ACK
+ * @brief Unit test for RREP-ACK
  */
 struct RrepAckHeaderTest : public TestCase
 {
@@ -290,9 +290,9 @@ struct RrepAckHeaderTest : public TestCase
 };
 
 /**
- * \ingroup aodv-test
+ * @ingroup aodv-test
  *
- * \brief Unit test for RERR
+ * @brief Unit test for RERR
  */
 struct RerrHeaderTest : public TestCase
 {
@@ -324,9 +324,9 @@ struct RerrHeaderTest : public TestCase
 };
 
 /**
- * \ingroup aodv-test
+ * @ingroup aodv-test
  *
- * \brief Unit test for AODV routing table entry
+ * @brief Unit test for AODV routing table entry
  */
 struct QueueEntryTest : public TestCase
 {
@@ -337,9 +337,9 @@ struct QueueEntryTest : public TestCase
 
     /**
      * Unicast test function
-     * \param route the IPv4 route
-     * \param packet the packet
-     * \param header the IPv4 header
+     * @param route the IPv4 route
+     * @param packet the packet
+     * @param header the IPv4 header
      */
     void Unicast(Ptr<Ipv4Route> route, Ptr<const Packet> packet, const Ipv4Header& header)
     {
@@ -347,9 +347,9 @@ struct QueueEntryTest : public TestCase
 
     /**
      * Error test function
-     * \param p The packet
-     * \param h The header
-     * \param e the socket error
+     * @param p The packet
+     * @param h The header
+     * @param e the socket error
      */
     void Error(Ptr<const Packet> p, const Ipv4Header& h, Socket::SocketErrno e)
     {
@@ -357,9 +357,9 @@ struct QueueEntryTest : public TestCase
 
     /**
      * Unicast 2 testfunction
-     * \param route The IPv4 route
-     * \param packet The packet
-     * \param header The header
+     * @param route The IPv4 route
+     * @param packet The packet
+     * @param header The header
      */
     void Unicast2(Ptr<Ipv4Route> route, Ptr<const Packet> packet, const Ipv4Header& header)
     {
@@ -367,9 +367,9 @@ struct QueueEntryTest : public TestCase
 
     /**
      * Error2 test function
-     * \param p The packet
-     * \param h The header
-     * \param e the socket error
+     * @param p The packet
+     * @param h The header
+     * @param e the socket error
      */
     void Error2(Ptr<const Packet> p, const Ipv4Header& h, Socket::SocketErrno e)
     {
@@ -425,9 +425,9 @@ struct AodvRqueueTest : public TestCase
 
     /**
      * Unicast test function
-     * \param route the IPv4 route
-     * \param packet the packet
-     * \param header the IPv4 header
+     * @param route the IPv4 route
+     * @param packet the packet
+     * @param header the IPv4 header
      */
     void Unicast(Ptr<Ipv4Route> route, Ptr<const Packet> packet, const Ipv4Header& header)
     {
@@ -435,9 +435,9 @@ struct AodvRqueueTest : public TestCase
 
     /**
      * Error test function
-     * \param p The packet
-     * \param h The header
-     * \param e the socket error
+     * @param p The packet
+     * @param h The header
+     * @param e the socket error
      */
     void Error(Ptr<const Packet> p, const Ipv4Header& h, Socket::SocketErrno e)
     {
@@ -540,9 +540,9 @@ AodvRqueueTest::CheckTimeout()
 }
 
 /**
- * \ingroup aodv-test
+ * @ingroup aodv-test
  *
- * \brief Unit test for AODV routing table entry
+ * @brief Unit test for AODV routing table entry
  */
 struct AodvRtableEntryTest : public TestCase
 {
@@ -633,9 +633,9 @@ struct AodvRtableEntryTest : public TestCase
 };
 
 /**
- * \ingroup aodv-test
+ * @ingroup aodv-test
  *
- * \brief Unit test for AODV routing table
+ * @brief Unit test for AODV routing table
  */
 struct AodvRtableTest : public TestCase
 {
@@ -720,9 +720,9 @@ struct AodvRtableTest : public TestCase
 };
 
 /**
- * \ingroup aodv-test
+ * @ingroup aodv-test
  *
- * \brief AODV test suite
+ * @brief AODV test suite
  */
 class AodvTestSuite : public TestSuite
 {

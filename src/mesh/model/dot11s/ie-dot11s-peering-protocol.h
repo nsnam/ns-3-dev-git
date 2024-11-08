@@ -17,9 +17,9 @@ namespace dot11s
 {
 
 /**
- * \ingroup dot11s
+ * @ingroup dot11s
  *
- * \brief Mesh Peering Protocol Identifier information element
+ * @brief Mesh Peering Protocol Identifier information element
  * Note that it does not permit to set any value besides zero
  * (corresponding to mesh peering management protocol)
  */

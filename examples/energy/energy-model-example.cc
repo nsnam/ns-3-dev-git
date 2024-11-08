@@ -27,8 +27,8 @@ NS_LOG_COMPONENT_DEFINE("EnergyExample");
 /**
  * Print a received packet
  *
- * \param from sender address
- * \return a string with the details of the packet: dst {IP, port}, time.
+ * @param from sender address
+ * @return a string with the details of the packet: dst {IP, port}, time.
  */
 static inline std::string
 PrintReceivedPacket(Address& from)
@@ -43,7 +43,7 @@ PrintReceivedPacket(Address& from)
 }
 
 /**
- * \param socket Pointer to socket.
+ * @param socket Pointer to socket.
  *
  * Packet receiving sink.
  */
@@ -62,11 +62,11 @@ ReceivePacket(Ptr<Socket> socket)
 }
 
 /**
- * \param socket Pointer to socket.
- * \param pktSize Packet size.
- * \param n Pointer to node.
- * \param pktCount Number of packets to generate.
- * \param pktInterval Packet sending interval.
+ * @param socket Pointer to socket.
+ * @param pktSize Packet size.
+ * @param n Pointer to node.
+ * @param pktCount Number of packets to generate.
+ * @param pktInterval Packet sending interval.
  *
  * Traffic generator.
  */
@@ -97,8 +97,8 @@ GenerateTraffic(Ptr<Socket> socket,
 /**
  * Trace function for remaining energy at node.
  *
- * \param oldValue Old value
- * \param remainingEnergy New value
+ * @param oldValue Old value
+ * @param remainingEnergy New value
  */
 void
 RemainingEnergy(double oldValue, double remainingEnergy)
@@ -108,10 +108,10 @@ RemainingEnergy(double oldValue, double remainingEnergy)
 }
 
 /**
- * \brief Trace function for total energy consumption at node.
+ * @brief Trace function for total energy consumption at node.
  *
- * \param oldValue Old value
- * \param totalEnergy New value
+ * @param oldValue Old value
+ * @param totalEnergy New value
  */
 void
 TotalEnergy(double oldValue, double totalEnergy)

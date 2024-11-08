@@ -69,8 +69,8 @@ struct PyVizPacketTag : public Tag
 };
 
 /**
- * \brief Get the type ID.
- * \return the object TypeId
+ * @brief Get the type ID.
+ * @return the object TypeId
  */
 TypeId
 PyVizPacketTag::GetTypeId()
@@ -930,7 +930,7 @@ class FastClipping
   private:
     /**
      * Clip start top function
-     * \param line the clip line
+     * @param line the clip line
      */
     void ClipStartTop(Line& line) const
     {
@@ -940,7 +940,7 @@ class FastClipping
 
     /**
      * Clip start bottom function
-     * \param line the clip line
+     * @param line the clip line
      */
     void ClipStartBottom(Line& line) const
     {
@@ -950,7 +950,7 @@ class FastClipping
 
     /**
      * Clip start right function
-     * \param line the clip line
+     * @param line the clip line
      */
     void ClipStartRight(Line& line) const
     {
@@ -960,7 +960,7 @@ class FastClipping
 
     /**
      * Clip start left function
-     * \param line the clip line
+     * @param line the clip line
      */
     void ClipStartLeft(Line& line) const
     {
@@ -970,7 +970,7 @@ class FastClipping
 
     /**
      * Clip end top function
-     * \param line the clip line
+     * @param line the clip line
      */
     void ClipEndTop(Line& line) const
     {
@@ -980,7 +980,7 @@ class FastClipping
 
     /**
      * Clip end bottom function
-     * \param line the clip line
+     * @param line the clip line
      */
     void ClipEndBottom(Line& line) const
     {
@@ -990,7 +990,7 @@ class FastClipping
 
     /**
      * Clip end right function
-     * \param line the clip line
+     * @param line the clip line
      */
     void ClipEndRight(Line& line) const
     {
@@ -1000,7 +1000,7 @@ class FastClipping
 
     /**
      * Clip end left function
-     * \param line the clip line
+     * @param line the clip line
      */
     void ClipEndLeft(Line& line) const
     {
@@ -1012,8 +1012,8 @@ class FastClipping
     /**
      * Constructor
      *
-     * \param clipMin minimum clipping vector
-     * \param clipMax maximum clipping vector
+     * @param clipMin minimum clipping vector
+     * @param clipMax maximum clipping vector
      */
     FastClipping(Vector2 clipMin, Vector2 clipMax)
         : m_clipMin(clipMin),
@@ -1023,8 +1023,8 @@ class FastClipping
 
     /**
      * Clip line function
-     * \param line the clip line
-     * \returns true if clipped
+     * @param line the clip line
+     * @returns true if clipped
      */
     bool ClipLine(Line& line)
     {

@@ -14,9 +14,9 @@
 #include <set>
 
 /**
- * \file
- * \ingroup events
- * \ingroup core-helpers
+ * @file
+ * @ingroup events
+ * @ingroup core-helpers
  * ns3::EventGarbageCollector declaration.
  */
 
@@ -24,10 +24,10 @@ namespace ns3
 {
 
 /**
- * \ingroup events
- * \ingroup core-helpers
+ * @ingroup events
+ * @ingroup core-helpers
  *
- * \brief An object that tracks scheduled events and automatically
+ * @brief An object that tracks scheduled events and automatically
  * cancels them when it is destroyed.  It is useful in situations
  * where multiple instances of the same type of event can
  * simultaneously be scheduled, and when the events should be limited
@@ -39,8 +39,8 @@ class EventGarbageCollector
     EventGarbageCollector();
 
     /**
-     * \brief Tracks a new event
-     * \param [in] event the Event to track
+     * @brief Tracks a new event
+     * @param [in] event the Event to track
      */
     void Track(EventId event);
 
@@ -62,19 +62,19 @@ class EventGarbageCollector
     EventList m_events;                     //!< The tracked event list
 
     /**
-     * \brief Called when a new event was added and the cleanup limit was
+     * @brief Called when a new event was added and the cleanup limit was
      * exceeded in consequence.
      */
     void Cleanup();
     /**
-     * \brief Grow the cleanup limit.
+     * @brief Grow the cleanup limit.
      * Increase the cleanup size by the smaller of
      * the current cleanup size (exponential growth),
      * or the CHUNK_MAX_SIZE (linear growth).
      */
     void Grow();
     /**
-     * \brief Shrink the cleanup limit
+     * @brief Shrink the cleanup limit
      * Reduce the cleanup size by factors of two until less than the
      * current event list, then Grow one step.
      */

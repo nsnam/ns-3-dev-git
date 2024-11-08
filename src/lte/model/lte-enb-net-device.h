@@ -40,7 +40,7 @@ class LteFfrAlgorithm;
 class LteEnbComponentCarrierManager;
 
 /**
- * \ingroup lte
+ * @ingroup lte
  *
  * The eNodeB device implementation
  */
@@ -48,8 +48,8 @@ class LteEnbNetDevice : public LteNetDevice
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -62,103 +62,103 @@ class LteEnbNetDevice : public LteNetDevice
     bool Send(Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber) override;
 
     /**
-     * \return a pointer to the MAC of the PCC.
+     * @return a pointer to the MAC of the PCC.
      */
     Ptr<LteEnbMac> GetMac() const;
 
     /**
-     * \param index CC index
-     * \return a pointer to the MAC of the CC addressed by index.
+     * @param index CC index
+     * @return a pointer to the MAC of the CC addressed by index.
      */
     Ptr<LteEnbMac> GetMac(uint8_t index) const;
 
     /**
-     * \return a pointer to the physical layer of the PCC.
+     * @return a pointer to the physical layer of the PCC.
      */
     Ptr<LteEnbPhy> GetPhy() const;
 
     /**
-     * \param index SCC index
-     * \return a pointer to the physical layer of the SCC addressed by index.
+     * @param index SCC index
+     * @return a pointer to the physical layer of the SCC addressed by index.
      */
     Ptr<LteEnbPhy> GetPhy(uint8_t index) const;
 
     /**
-     * \return a pointer to the Radio Resource Control instance of the eNB
+     * @return a pointer to the Radio Resource Control instance of the eNB
      */
     Ptr<LteEnbRrc> GetRrc() const;
 
     /**
-     * \return a pointer to the ComponentCarrierManager instance of the eNB
+     * @return a pointer to the ComponentCarrierManager instance of the eNB
      */
     Ptr<LteEnbComponentCarrierManager> GetComponentCarrierManager() const;
 
     /**
-     * \return the Cell Identifier of this eNB
+     * @return the Cell Identifier of this eNB
      */
     uint16_t GetCellId() const;
 
     /**
-     * \return the identifiers of cells served by this eNB
+     * @return the identifiers of cells served by this eNB
      */
     std::vector<uint16_t> GetCellIds() const;
 
     /**
-     * \param cellId cell ID
-     * \return true if cellId is served by this eNB
+     * @param cellId cell ID
+     * @return true if cellId is served by this eNB
      */
     bool HasCellId(uint16_t cellId) const;
 
     /**
-     * \return the uplink bandwidth in RBs
+     * @return the uplink bandwidth in RBs
      */
     uint16_t GetUlBandwidth() const;
 
     /**
-     * \param bw the uplink bandwidth in RBs
+     * @param bw the uplink bandwidth in RBs
      */
     void SetUlBandwidth(uint16_t bw);
 
     /**
-     * \return the downlink bandwidth in RBs
+     * @return the downlink bandwidth in RBs
      */
     uint16_t GetDlBandwidth() const;
 
     /**
-     * \param bw the downlink bandwidth in RBs
+     * @param bw the downlink bandwidth in RBs
      */
     void SetDlBandwidth(uint16_t bw);
 
     /**
-     * \return the downlink carrier frequency (EARFCN)
+     * @return the downlink carrier frequency (EARFCN)
      */
     uint32_t GetDlEarfcn() const;
 
     /**
-     * \param earfcn the downlink carrier frequency (EARFCN)
+     * @param earfcn the downlink carrier frequency (EARFCN)
      */
     void SetDlEarfcn(uint32_t earfcn);
 
     /**
-     * \return the uplink carrier frequency (EARFCN)
+     * @return the uplink carrier frequency (EARFCN)
      */
     uint32_t GetUlEarfcn() const;
 
     /**
-     * \param earfcn the uplink carrier frequency (EARFCN)
+     * @param earfcn the uplink carrier frequency (EARFCN)
      */
     void SetUlEarfcn(uint32_t earfcn);
 
     /**
-     * \brief Returns the CSG ID of the eNodeB.
-     * \return the Closed Subscriber Group identity
+     * @brief Returns the CSG ID of the eNodeB.
+     * @return the Closed Subscriber Group identity
      * \sa LteEnbNetDevice::SetCsgId
      */
     uint32_t GetCsgId() const;
 
     /**
-     * \brief Associate the eNodeB device with a particular CSG.
-     * \param csgId the intended Closed Subscriber Group identity
+     * @brief Associate the eNodeB device with a particular CSG.
+     * @param csgId the intended Closed Subscriber Group identity
      *
      * CSG identity is a number identifying a Closed Subscriber Group which the
      * cell belongs to. eNodeB is associated with a single CSG identity.
@@ -171,15 +171,15 @@ class LteEnbNetDevice : public LteNetDevice
     void SetCsgId(uint32_t csgId);
 
     /**
-     * \brief Returns the CSG indication flag of the eNodeB.
-     * \return the CSG indication flag
+     * @brief Returns the CSG indication flag of the eNodeB.
+     * @return the CSG indication flag
      * \sa LteEnbNetDevice::SetCsgIndication
      */
     bool GetCsgIndication() const;
 
     /**
-     * \brief Enable or disable the CSG indication flag.
-     * \param csgIndication if TRUE, only CSG members are allowed to access this
+     * @brief Enable or disable the CSG indication flag.
+     * @param csgIndication if TRUE, only CSG members are allowed to access this
      *                      cell
      *
      * When the CSG indication field is set to TRUE, only UEs which are members of
@@ -187,7 +187,7 @@ class LteEnbNetDevice : public LteNetDevice
      * enforcing closed access mode. Otherwise, the eNodeB operates as a non-CSG
      * cell and implements open access mode.
      *
-     * \note This restriction only applies to initial cell selection and
+     * @note This restriction only applies to initial cell selection and
      *       EPC-enabled simulation.
      *
      * \sa LteEnbNetDevice::SetCsgIndication
@@ -195,15 +195,15 @@ class LteEnbNetDevice : public LteNetDevice
     void SetCsgIndication(bool csgIndication);
 
     /**
-     * \brief Set the ComponentCarrier Map of the Enb
-     * \param ccm the map of ComponentCarrierEnb
+     * @brief Set the ComponentCarrier Map of the Enb
+     * @param ccm the map of ComponentCarrierEnb
      *
      */
 
     void SetCcMap(std::map<uint8_t, Ptr<ComponentCarrierBaseStation>> ccm);
 
     /**
-     * \returns  The Component Carrier Map of the Enb.
+     * @returns  The Component Carrier Map of the Enb.
      *
      */
 
@@ -218,7 +218,7 @@ class LteEnbNetDevice : public LteNetDevice
     bool m_isConfigured;  ///< is configured?
 
     /**
-     * \brief Propagate attributes and configuration to sub-modules.
+     * @brief Propagate attributes and configuration to sub-modules.
      *
      * Several attributes (e.g., the bandwidth) are exported as the attributes of
      * the LteEnbNetDevice from a user perspective, but are actually used also in

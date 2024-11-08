@@ -23,53 +23,53 @@ namespace ns3
 class Address;
 
 /**
- * \ingroup address
+ * @ingroup address
  *
- * \brief an EUI-64 address
+ * @brief an EUI-64 address
  *
  * This class can contain 64 bit IEEE addresses.
  *
- * \see attribute_Mac64Address
+ * @see attribute_Mac64Address
  */
 class Mac64Address
 {
   public:
     Mac64Address() = default;
     /**
-     * \param str a string representing the new Mac64Address
+     * @param str a string representing the new Mac64Address
      *
      * The format of the string is "xx:xx:xx:xx:xx:xx:xx:xx"
      */
     Mac64Address(const char* str);
 
     /**
-     * \param addr The 64 bit unsigned integer used to create a Mac64Address object.
+     * @param addr The 64 bit unsigned integer used to create a Mac64Address object.
      *
      * Create a Mac64Address from an 64 bit unsigned integer.
      */
     Mac64Address(uint64_t addr);
 
     /**
-     * \param buffer address in network order
+     * @param buffer address in network order
      *
      * Copy the input address to our internal buffer.
      */
     void CopyFrom(const uint8_t buffer[8]);
     /**
-     * \param buffer address in network order
+     * @param buffer address in network order
      *
      * Copy the internal address to the input buffer.
      */
     void CopyTo(uint8_t buffer[8]) const;
     /**
-     * \returns a new Address instance
+     * @returns a new Address instance
      *
      * Convert an instance of this class to a polymorphic Address instance.
      */
     operator Address() const;
     /**
-     * \param address a polymorphic address
-     * \returns a new Mac64Address from the polymorphic address
+     * @param address a polymorphic address
+     * @returns a new Mac64Address from the polymorphic address
      *
      * This function performs a type check and asserts if the
      * type of the input address is not compatible with an
@@ -77,27 +77,27 @@ class Mac64Address
      */
     static Mac64Address ConvertFrom(const Address& address);
     /**
-     * \returns a new Address instance
+     * @returns a new Address instance
      *
      * Convert an instance of this class to a polymorphic Address instance.
      */
     Address ConvertTo() const;
 
     /**
-     * \return the mac address in a 64 bit unsigned integer.
+     * @return the mac address in a 64 bit unsigned integer.
      *
      * Convert an instance of this class to a 64 bit unsigned integer.
      */
     uint64_t ConvertToInt() const;
 
     /**
-     * \param address address to test
-     * \returns true if the address matches, false otherwise.
+     * @param address address to test
+     * @returns true if the address matches, false otherwise.
      */
     static bool IsMatchingType(const Address& address);
     /**
      * Allocate a new Mac64Address.
-     * \returns newly allocated mac64Address
+     * @returns newly allocated mac64Address
      */
     static Mac64Address Allocate();
 
@@ -107,9 +107,9 @@ class Mac64Address
      * This function resets (to zero) the global integer
      * that is used for unique address allocation.
      * It is automatically called whenever
-     * \code
+     * @code
      * SimulatorDestroy ();
-     * \endcode
+     * @endcode
      * is called.  It may also be optionally called
      * by user code if there is a need to force a reset
      * of this allocation index.
@@ -118,53 +118,53 @@ class Mac64Address
 
   private:
     /**
-     * \brief Return the Type of address.
-     * \return type of address
+     * @brief Return the Type of address.
+     * @return type of address
      */
     static uint8_t GetType();
 
     /**
-     * \brief Equal to operator.
+     * @brief Equal to operator.
      *
-     * \param a the first operand
-     * \param b the first operand
-     * \returns true if the operands are equal
+     * @param a the first operand
+     * @param b the first operand
+     * @returns true if the operands are equal
      */
     friend bool operator==(const Mac64Address& a, const Mac64Address& b);
 
     /**
-     * \brief Not equal to operator.
+     * @brief Not equal to operator.
      *
-     * \param a the first operand
-     * \param b the first operand
-     * \returns true if the operands are not equal
+     * @param a the first operand
+     * @param b the first operand
+     * @returns true if the operands are not equal
      */
     friend bool operator!=(const Mac64Address& a, const Mac64Address& b);
 
     /**
-     * \brief Less than operator.
+     * @brief Less than operator.
      *
-     * \param a the first operand
-     * \param b the first operand
-     * \returns true if the operand a is less than operand b
+     * @param a the first operand
+     * @param b the first operand
+     * @returns true if the operand a is less than operand b
      */
     friend bool operator<(const Mac64Address& a, const Mac64Address& b);
 
     /**
-     * \brief Stream insertion operator.
+     * @brief Stream insertion operator.
      *
-     * \param os the stream
-     * \param address the address
-     * \returns a reference to the stream
+     * @param os the stream
+     * @param address the address
+     * @returns a reference to the stream
      */
     friend std::ostream& operator<<(std::ostream& os, const Mac64Address& address);
 
     /**
-     * \brief Stream extraction operator.
+     * @brief Stream extraction operator.
      *
-     * \param is the stream
-     * \param address the address
-     * \returns a reference to the stream
+     * @param is the stream
+     * @param address the address
+     * @returns a reference to the stream
      */
     friend std::istream& operator>>(std::istream& is, Mac64Address& address);
 
@@ -173,8 +173,8 @@ class Mac64Address
 };
 
 /**
- * \class ns3::Mac64AddressValue
- * \brief hold objects of type ns3::Mac64Address
+ * @class ns3::Mac64AddressValue
+ * @brief hold objects of type ns3::Mac64Address
  */
 
 ATTRIBUTE_HELPER_HEADER(Mac64Address);

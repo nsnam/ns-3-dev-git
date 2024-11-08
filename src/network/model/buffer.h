@@ -20,9 +20,9 @@ namespace ns3
 {
 
 /**
- * \ingroup packet
+ * @ingroup packet
  *
- * \brief automatically resized byte buffer
+ * @brief automatically resized byte buffer
  *
  * This represents a buffer of bytes. Its size is
  * automatically adjusted to hold any data prepended
@@ -32,7 +32,7 @@ namespace ns3
  * The correct maximum size is learned at runtime during use by
  * recording the maximum size of each packet.
  *
- * \internal
+ * @internal
  * The implementation of the Buffer class uses a COW (Copy On Write)
  * technique to ensure that the underlying data buffer which holds
  * the data bytes is shared among a lot of Buffer instances despite
@@ -60,7 +60,7 @@ namespace ns3
  * a pair of integers which describe where in the buffer content
  * the "virtual zero area" starts and ends.
  *
- * \verbatim
+ * @verbatim
  * ***: unused bytes
  * xxx: bytes "added" at the front of the zero area
  * ...: bytes "added" at the back of the zero area
@@ -75,7 +75,7 @@ namespace ns3
  *                        |--------------------^ m_zeroAreaStart
  *                        |---------------------------------^ m_zeroAreaEnd
  *                        |------------------------------------------^ m_end
- * \endverbatim
+ * @endverbatim
  *
  * A simple state invariant is that m_start <= m_zeroStart <= m_zeroEnd <= m_end
  */
@@ -83,7 +83,7 @@ class Buffer
 {
   public:
     /**
-     * \brief iterator in a Buffer instance
+     * @brief iterator in a Buffer instance
      */
     class Iterator
     {
@@ -98,16 +98,16 @@ class Buffer
          */
         inline void Prev();
         /**
-         * \param delta number of bytes to go forward
+         * @param delta number of bytes to go forward
          */
         inline void Next(uint32_t delta);
         /**
-         * \param delta number of bytes to go backward
+         * @param delta number of bytes to go backward
          */
         inline void Prev(uint32_t delta);
         /**
-         * \param o the second iterator
-         * \return number of bytes included between the two iterators
+         * @param o the second iterator
+         * @return number of bytes included between the two iterators
          *
          * This method works only if the two iterators point
          * to the same underlying buffer. Debug builds ensure
@@ -116,33 +116,33 @@ class Buffer
         uint32_t GetDistanceFrom(const Iterator& o) const;
 
         /**
-         * \return true if this iterator points to the end of the byte array.
+         * @return true if this iterator points to the end of the byte array.
          *     false otherwise.
          */
         bool IsEnd() const;
         /**
-         * \return true if this iterator points to the start of the byte array.
+         * @return true if this iterator points to the start of the byte array.
          *     false otherwise.
          */
         bool IsStart() const;
 
         /**
-         * \param data data to write in buffer
+         * @param data data to write in buffer
          *
          * Write the data in buffer and advance the iterator position
          * by one byte.
          */
         inline void WriteU8(uint8_t data);
         /**
-         * \param data data to write in buffer
-         * \param len number of times data must be written in buffer
+         * @param data data to write in buffer
+         * @param len number of times data must be written in buffer
          *
          * Write the data in buffer len times and advance the iterator position
          * by len byte.
          */
         inline void WriteU8(uint8_t data, uint32_t len);
         /**
-         * \param data data to write in buffer
+         * @param data data to write in buffer
          *
          * Write the data in buffer and advance the iterator position
          * by two bytes. The format of the data written in the byte
@@ -152,7 +152,7 @@ class Buffer
          */
         void WriteU16(uint16_t data);
         /**
-         * \param data data to write in buffer
+         * @param data data to write in buffer
          *
          * Write the data in buffer and advance the iterator position
          * by four bytes. The format of the data written in the byte
@@ -162,7 +162,7 @@ class Buffer
          */
         void WriteU32(uint32_t data);
         /**
-         * \param data data to write in buffer
+         * @param data data to write in buffer
          *
          * Write the data in buffer and advance the iterator position
          * by eight bytes. The format of the data written in the byte
@@ -172,7 +172,7 @@ class Buffer
          */
         void WriteU64(uint64_t data);
         /**
-         * \param data data to write in buffer
+         * @param data data to write in buffer
          *
          * Write the data in buffer and advance the iterator position
          * by two bytes. The data is written in least significant byte order and the
@@ -180,7 +180,7 @@ class Buffer
          */
         void WriteHtolsbU16(uint16_t data);
         /**
-         * \param data data to write in buffer
+         * @param data data to write in buffer
          *
          * Write the data in buffer and advance the iterator position
          * by four bytes. The data is written in least significant byte order and the
@@ -188,7 +188,7 @@ class Buffer
          */
         void WriteHtolsbU32(uint32_t data);
         /**
-         * \param data data to write in buffer
+         * @param data data to write in buffer
          *
          * Write the data in buffer and advance the iterator position
          * by eight bytes. The data is written in least significant byte order and the
@@ -196,7 +196,7 @@ class Buffer
          */
         void WriteHtolsbU64(uint64_t data);
         /**
-         * \param data data to write in buffer
+         * @param data data to write in buffer
          *
          * Write the data in buffer and advance the iterator position
          * by two bytes. The data is written in network order and the
@@ -204,7 +204,7 @@ class Buffer
          */
         inline void WriteHtonU16(uint16_t data);
         /**
-         * \param data data to write in buffer
+         * @param data data to write in buffer
          *
          * Write the data in buffer and advance the iterator position
          * by four bytes. The data is written in network order and the
@@ -212,7 +212,7 @@ class Buffer
          */
         inline void WriteHtonU32(uint32_t data);
         /**
-         * \param data data to write in buffer
+         * @param data data to write in buffer
          *
          * Write the data in buffer and advance the iterator position
          * by eight bytes. The data is written in network order and the
@@ -220,16 +220,16 @@ class Buffer
          */
         void WriteHtonU64(uint64_t data);
         /**
-         * \param buffer a byte buffer to copy in the internal buffer.
-         * \param size number of bytes to copy.
+         * @param buffer a byte buffer to copy in the internal buffer.
+         * @param size number of bytes to copy.
          *
          * Write the data in buffer and advance the iterator position
          * by size bytes.
          */
         void Write(const uint8_t* buffer, uint32_t size);
         /**
-         * \param start the start of the data to copy
-         * \param end the end of the data to copy
+         * @param start the start of the data to copy
+         * @param end the end of the data to copy
          *
          * Write the data delimited by start and end in internal buffer
          * and advance the iterator position by the number of bytes
@@ -241,21 +241,21 @@ class Buffer
         void Write(Iterator start, Iterator end);
 
         /**
-         * \return the byte read in the buffer.
+         * @return the byte read in the buffer.
          *
          * Read data, but do not advance the Iterator read.
          */
         inline uint8_t PeekU8();
 
         /**
-         * \return the byte read in the buffer.
+         * @return the byte read in the buffer.
          *
          * Read data and advance the Iterator by the number of bytes
          * read.
          */
         inline uint8_t ReadU8();
         /**
-         * \return the two bytes read in the buffer.
+         * @return the two bytes read in the buffer.
          *
          * Read data and advance the Iterator by the number of bytes
          * read.
@@ -263,7 +263,7 @@ class Buffer
          */
         inline uint16_t ReadU16();
         /**
-         * \return the four bytes read in the buffer.
+         * @return the four bytes read in the buffer.
          *
          * Read data and advance the Iterator by the number of bytes
          * read.
@@ -271,7 +271,7 @@ class Buffer
          */
         uint32_t ReadU32();
         /**
-         * \return the eight bytes read in the buffer.
+         * @return the eight bytes read in the buffer.
          *
          * Read data and advance the Iterator by the number of bytes
          * read.
@@ -279,7 +279,7 @@ class Buffer
          */
         uint64_t ReadU64();
         /**
-         * \return the two bytes read in the buffer.
+         * @return the two bytes read in the buffer.
          *
          * Read data and advance the Iterator by the number of bytes
          * read.
@@ -287,7 +287,7 @@ class Buffer
          */
         inline uint16_t ReadNtohU16();
         /**
-         * \return the four bytes read in the buffer.
+         * @return the four bytes read in the buffer.
          *
          * Read data and advance the Iterator by the number of bytes
          * read.
@@ -295,7 +295,7 @@ class Buffer
          */
         inline uint32_t ReadNtohU32();
         /**
-         * \return the eight bytes read in the buffer.
+         * @return the eight bytes read in the buffer.
          *
          * Read data and advance the Iterator by the number of bytes
          * read.
@@ -303,7 +303,7 @@ class Buffer
          */
         uint64_t ReadNtohU64();
         /**
-         * \return the two bytes read in the buffer.
+         * @return the two bytes read in the buffer.
          *
          * Read data and advance the Iterator by the number of bytes
          * read.
@@ -311,7 +311,7 @@ class Buffer
          */
         uint16_t ReadLsbtohU16();
         /**
-         * \return the four bytes read in the buffer.
+         * @return the four bytes read in the buffer.
          *
          * Read data and advance the Iterator by the number of bytes
          * read.
@@ -319,7 +319,7 @@ class Buffer
          */
         uint32_t ReadLsbtohU32();
         /**
-         * \return the eight bytes read in the buffer.
+         * @return the eight bytes read in the buffer.
          *
          * Read data and advance the Iterator by the number of bytes
          * read.
@@ -327,8 +327,8 @@ class Buffer
          */
         uint64_t ReadLsbtohU64();
         /**
-         * \param buffer buffer to copy data into
-         * \param size number of bytes to copy
+         * @param buffer buffer to copy data into
+         * @param size number of bytes to copy
          *
          * Copy size bytes of data from the internal buffer to the
          * input buffer and advance the Iterator by the number of
@@ -337,8 +337,8 @@ class Buffer
         void Read(uint8_t* buffer, uint32_t size);
 
         /**
-         * \param start start iterator of the buffer to copy data into
-         * \param size  number of bytes to copy
+         * @param start start iterator of the buffer to copy data into
+         * @param size  number of bytes to copy
          *
          * Copy size bytes of data from the internal buffer to the input buffer via
          * the provided iterator and advance the Iterator by the number of bytes
@@ -347,27 +347,27 @@ class Buffer
         inline void Read(Iterator start, uint32_t size);
 
         /**
-         * \brief Calculate the checksum.
-         * \param size size of the buffer.
-         * \return checksum
+         * @brief Calculate the checksum.
+         * @param size size of the buffer.
+         * @return checksum
          */
         uint16_t CalculateIpChecksum(uint16_t size);
 
         /**
-         * \brief Calculate the checksum.
-         * \param size size of the buffer.
-         * \param initialChecksum initial value
-         * \return checksum
+         * @brief Calculate the checksum.
+         * @param size size of the buffer.
+         * @param initialChecksum initial value
+         * @return checksum
          */
         uint16_t CalculateIpChecksum(uint16_t size, uint32_t initialChecksum);
 
         /**
-         * \returns the size of the underlying buffer we are iterating
+         * @returns the size of the underlying buffer we are iterating
          */
         uint32_t GetSize() const;
 
         /**
-         * \returns the size left to read of the underlying buffer we are iterating
+         * @returns the size left to read of the underlying buffer we are iterating
          */
         uint32_t GetRemainingSize() const;
 
@@ -377,68 +377,68 @@ class Buffer
         /**
          * Constructor - initializes the iterator to point to the buffer start
          *
-         * \param buffer the buffer this iterator refers to
+         * @param buffer the buffer this iterator refers to
          */
         inline Iterator(const Buffer* buffer);
         /**
          * Constructor - initializes the iterator to point to the buffer end
          *
-         * \param buffer the buffer this iterator refers to
-         * \param dummy not used param
+         * @param buffer the buffer this iterator refers to
+         * @param dummy not used param
          */
         inline Iterator(const Buffer* buffer, bool dummy);
         /**
          * Initializes the iterator values
          *
-         * \param buffer the buffer this iterator refers to
+         * @param buffer the buffer this iterator refers to
          */
         inline void Construct(const Buffer* buffer);
         /**
          * Checks that the [start, end) is not in the "virtual zero area".
          *
-         * \param start start buffer position
-         * \param end end buffer position
-         * \returns true if [start, end) is not in the "virtual zero area".
+         * @param start start buffer position
+         * @param end end buffer position
+         * @returns true if [start, end) is not in the "virtual zero area".
          */
         bool CheckNoZero(uint32_t start, uint32_t end) const;
         /**
          * Checks that the buffer position is not in the "virtual zero area".
          *
-         * \param i buffer position
-         * \returns true if not in the "virtual zero area".
+         * @param i buffer position
+         * @returns true if not in the "virtual zero area".
          */
         bool Check(uint32_t i) const;
         /**
-         * \return the two bytes read in the buffer.
+         * @return the two bytes read in the buffer.
          *
          * Read data and advance the Iterator by the number of bytes
          * read.
          * The data is read in network format and returned in host format.
          *
-         * \warning this is the slow version, please use ReadNtohU16 ()
+         * @warning this is the slow version, please use ReadNtohU16 ()
          */
         uint16_t SlowReadNtohU16();
         /**
-         * \return the four bytes read in the buffer.
+         * @return the four bytes read in the buffer.
          *
          * Read data and advance the Iterator by the number of bytes
          * read.
          * The data is read in network format and returned in host format.
          *
-         * \warning this is the slow version, please use ReadNtohU32 ()
+         * @warning this is the slow version, please use ReadNtohU32 ()
          */
         uint32_t SlowReadNtohU32();
         /**
-         * \brief Returns an appropriate message indicating a read error
-         * \returns the error message
+         * @brief Returns an appropriate message indicating a read error
+         * @returns the error message
          */
         std::string GetReadErrorMessage() const;
         /**
-         * \brief Returns an appropriate message indicating a write error
+         * @brief Returns an appropriate message indicating a write error
          *
          * The message depends on the actual Buffer::Iterator status.
          *
-         * \returns the error message
+         * @returns the error message
          */
         std::string GetWriteErrorMessage() const;
 
@@ -475,12 +475,12 @@ class Buffer
     };
 
     /**
-     * \return the number of bytes stored in this buffer.
+     * @return the number of bytes stored in this buffer.
      */
     inline uint32_t GetSize() const;
 
     /**
-     * \return a pointer to the start of the internal
+     * @return a pointer to the start of the internal
      * byte buffer.
      *
      * The returned pointer points to an area of
@@ -491,7 +491,7 @@ class Buffer
     const uint8_t* PeekData() const;
 
     /**
-     * \param start size to reserve
+     * @param start size to reserve
      *
      * Add bytes at the start of the Buffer. The
      * content of these bytes is undefined but debugging
@@ -501,7 +501,7 @@ class Buffer
      */
     void AddAtStart(uint32_t start);
     /**
-     * \param end size to reserve
+     * @param end size to reserve
      *
      * Add bytes at the end of the Buffer. The
      * content of these bytes is undefined but debugging
@@ -512,7 +512,7 @@ class Buffer
     void AddAtEnd(uint32_t end);
 
     /**
-     * \param o the buffer to append to the end of this buffer.
+     * @param o the buffer to append to the end of this buffer.
      *
      * Add bytes at the end of the Buffer.
      * Any call to this method invalidates any Iterator
@@ -520,7 +520,7 @@ class Buffer
      */
     void AddAtEnd(const Buffer& o);
     /**
-     * \param start size to remove
+     * @param start size to remove
      *
      * Remove bytes at the start of the Buffer.
      * Any call to this method invalidates any Iterator
@@ -528,7 +528,7 @@ class Buffer
      */
     void RemoveAtStart(uint32_t start);
     /**
-     * \param end size to remove
+     * @param end size to remove
      *
      * Remove bytes at the end of the Buffer.
      * Any call to this method invalidates any Iterator
@@ -537,35 +537,35 @@ class Buffer
     void RemoveAtEnd(uint32_t end);
 
     /**
-     * \param start offset from start of packet
-     * \param length
+     * @param start offset from start of packet
+     * @param length
      *
-     * \return a fragment of size length starting at offset
+     * @return a fragment of size length starting at offset
      * start.
      */
     Buffer CreateFragment(uint32_t start, uint32_t length) const;
 
     /**
-     * \return an Iterator which points to the
+     * @return an Iterator which points to the
      * start of this Buffer.
      */
     inline Buffer::Iterator Begin() const;
     /**
-     * \return an Iterator which points to the
+     * @return an Iterator which points to the
      * end of this Buffer.
      */
     inline Buffer::Iterator End() const;
 
     /**
-     * \brief Return the number of bytes required for serialization.
-     * \return the number of bytes.
+     * @brief Return the number of bytes required for serialization.
+     * @return the number of bytes.
      */
     uint32_t GetSerializedSize() const;
 
     /**
-     * \return zero if buffer not large enough
-     * \param buffer points to serialization buffer
-     * \param maxSize max number of bytes to write
+     * @return zero if buffer not large enough
+     * @param buffer points to serialization buffer
+     * @param maxSize max number of bytes to write
      *
      * This buffer's contents are serialized into the raw
      * character buffer parameter. Note: The zero length
@@ -575,9 +575,9 @@ class Buffer
     uint32_t Serialize(uint8_t* buffer, uint32_t maxSize) const;
 
     /**
-     * \return zero if a complete buffer is not deserialized
-     * \param buffer points to buffer for deserialization
-     * \param size number of bytes to deserialize
+     * @return zero if a complete buffer is not deserialized
+     * @param buffer points to buffer for deserialization
+     * @param size number of bytes to deserialize
      *
      * The raw character buffer is deserialized and all the
      * data is placed into this buffer.
@@ -602,33 +602,33 @@ class Buffer
     uint32_t CopyData(uint8_t* buffer, uint32_t size) const;
 
     /**
-     * \brief Copy constructor
-     * \param o the buffer to copy
+     * @brief Copy constructor
+     * @param o the buffer to copy
      */
     inline Buffer(const Buffer& o);
     /**
-     * \brief Assignment operator
-     * \param o the buffer to copy
-     * \return a reference to the buffer
+     * @brief Assignment operator
+     * @param o the buffer to copy
+     * @return a reference to the buffer
      */
     Buffer& operator=(const Buffer& o);
     Buffer();
     /**
-     * \brief Constructor
+     * @brief Constructor
      *
      * The buffer will be initialized with zeroes up to its size.
      *
-     * \param dataSize the buffer size
+     * @param dataSize the buffer size
      */
     Buffer(uint32_t dataSize);
     /**
-     * \brief Constructor
+     * @brief Constructor
      *
      * If initialize is set to true, the buffer will be initialized
      * with zeroes up to its size.
      *
-     * \param dataSize the buffer size.
-     * \param initialize initialize the buffer with zeroes.
+     * @param dataSize the buffer size.
+     * @param initialize initialize the buffer with zeroes.
      */
     Buffer(uint32_t dataSize, bool initialize);
     ~Buffer();
@@ -677,66 +677,66 @@ class Buffer
     };
 
     /**
-     * \brief Create a full copy of the buffer, including
+     * @brief Create a full copy of the buffer, including
      * all the internal structures.
      *
-     * \returns a copy of the buffer
+     * @returns a copy of the buffer
      */
     Buffer CreateFullCopy() const;
 
     /**
-     * \brief Transform a "Virtual byte buffer" into a "Real byte buffer"
+     * @brief Transform a "Virtual byte buffer" into a "Real byte buffer"
      */
     void TransformIntoRealBuffer() const;
     /**
-     * \brief Checks the internal buffer structures consistency
+     * @brief Checks the internal buffer structures consistency
      *
      * Used only for debugging purposes.
      *
-     * \returns true if the buffer status is consistent.
+     * @returns true if the buffer status is consistent.
      */
     bool CheckInternalState() const;
 
     /**
-     * \brief Initializes the buffer with a number of zeroes.
+     * @brief Initializes the buffer with a number of zeroes.
      *
-     * \param zeroSize the zeroes size
+     * @param zeroSize the zeroes size
      */
     void Initialize(uint32_t zeroSize);
 
     /**
-     * \brief Get the buffer real size.
-     * \warning The real size is the actual memory used by the buffer.
-     * \returns the memory used by the buffer.
+     * @brief Get the buffer real size.
+     * @warning The real size is the actual memory used by the buffer.
+     * @returns the memory used by the buffer.
      */
     uint32_t GetInternalSize() const;
 
     /**
-     * \brief Get the buffer end position.
-     * \returns the buffer end index.
+     * @brief Get the buffer end position.
+     * @returns the buffer end index.
      */
     uint32_t GetInternalEnd() const;
 
     /**
-     * \brief Recycle the buffer memory
-     * \param data the buffer data storage
+     * @brief Recycle the buffer memory
+     * @param data the buffer data storage
      */
     static void Recycle(Buffer::Data* data);
     /**
-     * \brief Create a buffer data storage
-     * \param size the storage size to create
-     * \returns a pointer to the created buffer storage
+     * @brief Create a buffer data storage
+     * @param size the storage size to create
+     * @returns a pointer to the created buffer storage
      */
     static Buffer::Data* Create(uint32_t size);
     /**
-     * \brief Allocate a buffer data storage
-     * \param reqSize the storage size to create
-     * \returns a pointer to the allocated buffer storage
+     * @brief Allocate a buffer data storage
+     * @param reqSize the storage size to create
+     * @returns a pointer to the allocated buffer storage
      */
     static Buffer::Data* Allocate(uint32_t reqSize);
     /**
-     * \brief Deallocate the buffer memory
-     * \param data the buffer data storage
+     * @brief Deallocate the buffer memory
+     * @param data the buffer data storage
      */
     static void Deallocate(Buffer::Data* data);
 

@@ -31,9 +31,9 @@ namespace ns3
 namespace dsdv
 {
 /**
- * \ingroup dsdv
- * \brief DSDV Update Packet Format
- * \verbatim
+ * @ingroup dsdv
+ * @brief DSDV Update Packet Format
+ * @verbatim
  |      0        |      1        |      2        |       3       |
   0 1 2 3 4 5 6 7 0 1 2 3 4 5 6 7 0 1 2 3 4 5 6 7 0 1 2 3 4 5 6 7
  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -43,7 +43,7 @@ namespace dsdv
  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  |                       Sequence Number                         |
  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * \endverbatim
+ * @endverbatim
  */
 
 class DsdvHeader : public Header
@@ -52,15 +52,15 @@ class DsdvHeader : public Header
     /**
      * Constructor
      *
-     * \param dst destination IP address
-     * \param hopcount hop count
-     * \param dstSeqNo destination sequence number
+     * @param dst destination IP address
+     * @param hopcount hop count
+     * @param dstSeqNo destination sequence number
      */
     DsdvHeader(Ipv4Address dst = Ipv4Address(), uint32_t hopcount = 0, uint32_t dstSeqNo = 0);
     ~DsdvHeader() override;
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     TypeId GetInstanceTypeId() const override;
@@ -71,7 +71,7 @@ class DsdvHeader : public Header
 
     /**
      * Set destination address
-     * \param destination the destination IPv4 address
+     * @param destination the destination IPv4 address
      */
     void SetDst(Ipv4Address destination)
     {
@@ -80,7 +80,7 @@ class DsdvHeader : public Header
 
     /**
      * Get destination address
-     * \returns the destination IPv4 address
+     * @returns the destination IPv4 address
      */
     Ipv4Address GetDst() const
     {
@@ -89,7 +89,7 @@ class DsdvHeader : public Header
 
     /**
      * Set hop count
-     * \param hopCount the hop count
+     * @param hopCount the hop count
      */
     void SetHopCount(uint32_t hopCount)
     {
@@ -98,7 +98,7 @@ class DsdvHeader : public Header
 
     /**
      * Get hop count
-     * \returns the hop count
+     * @returns the hop count
      */
     uint32_t GetHopCount() const
     {
@@ -107,7 +107,7 @@ class DsdvHeader : public Header
 
     /**
      * Set destination sequence number
-     * \param sequenceNumber The sequence number
+     * @param sequenceNumber The sequence number
      */
     void SetDstSeqno(uint32_t sequenceNumber)
     {
@@ -116,7 +116,7 @@ class DsdvHeader : public Header
 
     /**
      * Get destination sequence number
-     * \returns the destination sequence number
+     * @returns the destination sequence number
      */
     uint32_t GetDstSeqno() const
     {

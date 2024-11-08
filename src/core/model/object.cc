@@ -21,8 +21,8 @@
 #include <vector>
 
 /**
- * \file
- * \ingroup object
+ * @file
+ * @ingroup object
  * ns3::Object class implementation.
  */
 

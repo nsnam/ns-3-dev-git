@@ -17,9 +17,9 @@ namespace ns3
 class Socket;
 
 /**
- * \ingroup socket
+ * @ingroup socket
  *
- * \brief Object to create transport layer instances that provide a
+ * @brief Object to create transport layer instances that provide a
  * socket API to applications.
  *
  * This base class defines the API for creating sockets.
@@ -31,22 +31,22 @@ class Socket;
  * sockets, you need to subclass this factory class, implement CreateSocket,
  * instantiate the object, and aggregate it to the node.
  *
- * \see Udp
- * \see UdpImpl
+ * @see Udp
+ * @see UdpImpl
  */
 class SocketFactory : public Object
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
     SocketFactory();
 
     /**
-     * \return smart pointer to Socket
+     * @return smart pointer to Socket
      *
      * Base class method for creating socket instances.
      */

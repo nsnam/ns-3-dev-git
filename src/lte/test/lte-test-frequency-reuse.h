@@ -25,9 +25,9 @@ class MobilityModel;
 using namespace ns3;
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief Test the fractional frequency reuse algorithms.
+ * @brief Test the fractional frequency reuse algorithms.
  */
 class LteFrequencyReuseTestSuite : public TestSuite
 {
@@ -36,9 +36,9 @@ class LteFrequencyReuseTestSuite : public TestSuite
 };
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief Test frequency reuse algorithm. Test fails if the muted frequencies
+ * @brief Test frequency reuse algorithm. Test fails if the muted frequencies
  *  are being used.
  */
 class LteFrTestCase : public TestCase
@@ -47,12 +47,12 @@ class LteFrTestCase : public TestCase
     /**
      * Constructor
      *
-     * \param name the reference name
-     * \param userNum the number of UE nodes
-     * \param dlBandwidth the DL bandwidth
-     * \param ulBandwidth the UL bandwidth
-     * \param availableDlRb the available DL per RB
-     * \param availableUlRb the available UL per RB
+     * @param name the reference name
+     * @param userNum the number of UE nodes
+     * @param dlBandwidth the DL bandwidth
+     * @param ulBandwidth the UL bandwidth
+     * @param availableDlRb the available DL per RB
+     * @param availableUlRb the available UL per RB
      */
     LteFrTestCase(std::string name,
                   uint32_t userNum,
@@ -64,12 +64,12 @@ class LteFrTestCase : public TestCase
 
     /**
      * DL data receive start function
-     * \param spectrumValue the DL data receive spectrum value
+     * @param spectrumValue the DL data receive spectrum value
      */
     void DlDataRxStart(Ptr<const SpectrumValue> spectrumValue);
     /**
      * UL data receive start function
-     * \param spectrumValue the UL data receive spectrum value
+     * @param spectrumValue the UL data receive spectrum value
      */
     void UlDataRxStart(Ptr<const SpectrumValue> spectrumValue);
 
@@ -88,9 +88,9 @@ class LteFrTestCase : public TestCase
 };
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief Test hard frequency reuse algorithm. Test fails if the muted
+ * @brief Test hard frequency reuse algorithm. Test fails if the muted
  *  frequencies are being used.
  */
 class LteHardFrTestCase : public LteFrTestCase
@@ -99,17 +99,17 @@ class LteHardFrTestCase : public LteFrTestCase
     /**
      * Constructor
      *
-     * \param name the reference name
-     * \param userNum the number of UE nodes
-     * \param schedulerType the scheduler type
-     * \param dlBandwidth the DL bandwidth
-     * \param ulBandwidth the UL bandwidth
-     * \param dlSubBandOffset DL subband offset
-     * \param dlSubBandwidth DL subbandwidth
-     * \param ulSubBandOffset UL subband offset
-     * \param ulSubBandwidth UL subbandwidth
-     * \param availableDlRb the available DL per RB
-     * \param availableUlRb the available UL per RB
+     * @param name the reference name
+     * @param userNum the number of UE nodes
+     * @param schedulerType the scheduler type
+     * @param dlBandwidth the DL bandwidth
+     * @param ulBandwidth the UL bandwidth
+     * @param dlSubBandOffset DL subband offset
+     * @param dlSubBandwidth DL subbandwidth
+     * @param ulSubBandOffset UL subband offset
+     * @param ulSubBandwidth UL subbandwidth
+     * @param availableDlRb the available DL per RB
+     * @param availableUlRb the available UL per RB
      */
     LteHardFrTestCase(std::string name,
                       uint32_t userNum,
@@ -137,9 +137,9 @@ class LteHardFrTestCase : public LteFrTestCase
 };
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief Test strict frequency reuse algorithm. Test fails if the muted frequencies
+ * @brief Test strict frequency reuse algorithm. Test fails if the muted frequencies
  *  are being used.
  */
 class LteStrictFrTestCase : public LteFrTestCase
@@ -148,19 +148,19 @@ class LteStrictFrTestCase : public LteFrTestCase
     /**
      * Constructor
      *
-     * \param name the reference name
-     * \param userNum the number of UE nodes
-     * \param schedulerType the scheduler type
-     * \param dlBandwidth the DL bandwidth
-     * \param ulBandwidth the UL bandwidth
-     * \param dlCommonSubBandwidth DL common bandwidth
-     * \param dlEdgeSubBandOffset DL edge subband offset
-     * \param dlEdgeSubBandwidth DL edge subbandwidth
-     * \param ulCommonSubBandwidth UL common subbandwidth
-     * \param ulEdgeSubBandOffset UL subband offset
-     * \param ulEdgeSubBandwidth UL subbandwidth
-     * \param availableDlRb the available DL per RB
-     * \param availableUlRb the available UL per RB
+     * @param name the reference name
+     * @param userNum the number of UE nodes
+     * @param schedulerType the scheduler type
+     * @param dlBandwidth the DL bandwidth
+     * @param ulBandwidth the UL bandwidth
+     * @param dlCommonSubBandwidth DL common bandwidth
+     * @param dlEdgeSubBandOffset DL edge subband offset
+     * @param dlEdgeSubBandwidth DL edge subbandwidth
+     * @param ulCommonSubBandwidth UL common subbandwidth
+     * @param ulEdgeSubBandOffset UL subband offset
+     * @param ulEdgeSubBandwidth UL subbandwidth
+     * @param availableDlRb the available DL per RB
+     * @param availableUlRb the available UL per RB
      */
     LteStrictFrTestCase(std::string name,
                         uint32_t userNum,
@@ -192,9 +192,9 @@ class LteStrictFrTestCase : public LteFrTestCase
 };
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief Test frequency reuse algorithm by teleporting UEs to different
+ * @brief Test frequency reuse algorithm by teleporting UEs to different
  * parts of area and checking if the frequency is used according to the
  * frequency pattern for different parts of area. Test fails if the muted
  * frequencies for a given part of area are being used by UE.
@@ -205,44 +205,44 @@ class LteFrAreaTestCase : public TestCase
     /**
      * Constructor
      *
-     * \param name the reference name
-     * \param schedulerType the scheduler type
+     * @param name the reference name
+     * @param schedulerType the scheduler type
      */
     LteFrAreaTestCase(std::string name, std::string schedulerType);
     ~LteFrAreaTestCase() override;
 
     /**
      * DL data receive start function
-     * \param spectrumValue the DL receive spectrum value
+     * @param spectrumValue the DL receive spectrum value
      */
     void DlDataRxStart(Ptr<const SpectrumValue> spectrumValue);
     /**
      * UL data receive start function
-     * \param spectrumValue the UL receive spectrum value
+     * @param spectrumValue the UL receive spectrum value
      */
     void UlDataRxStart(Ptr<const SpectrumValue> spectrumValue);
 
     /**
      * Simple teleport UE function
-     * \param x the X position
-     * \param y the Y position
+     * @param x the X position
+     * @param y the Y position
      */
     void SimpleTeleportUe(uint32_t x, uint32_t y);
     /**
      * Teleport UE function
-     * \param x the X position
-     * \param y the Y position
-     * \param expectedPower the expected power
-     * \param expectedDlRb the expected DL pwr RB
+     * @param x the X position
+     * @param y the Y position
+     * @param expectedPower the expected power
+     * @param expectedDlRb the expected DL pwr RB
      */
     void TeleportUe(uint32_t x, uint32_t y, double expectedPower, std::vector<bool> expectedDlRb);
     /**
      * Teleport UE 2 function
-     * \param ueNode the UE node
-     * \param x the X position
-     * \param y the Y position
-     * \param expectedPower the expected power
-     * \param expectedDlRb the expected DL pwr RB
+     * @param ueNode the UE node
+     * @param x the X position
+     * @param y the Y position
+     * @param expectedPower the expected power
+     * @param expectedDlRb the expected DL pwr RB
      */
     void TeleportUe2(Ptr<Node> ueNode,
                      uint32_t x,
@@ -252,14 +252,14 @@ class LteFrAreaTestCase : public TestCase
 
     /**
      * Set DL expected values function
-     * \param expectedPower the expected power
-     * \param expectedDlRb the expected DL pwr RB
+     * @param expectedPower the expected power
+     * @param expectedDlRb the expected DL pwr RB
      */
     void SetDlExpectedValues(double expectedPower, std::vector<bool> expectedDlRb);
     /**
      * Set UL expected values function
-     * \param expectedPower the expected power
-     * \param expectedDlRb the expected DL pwr RB
+     * @param expectedPower the expected power
+     * @param expectedDlRb the expected DL pwr RB
      */
     void SetUlExpectedValues(double expectedPower, std::vector<bool> expectedDlRb);
 
@@ -286,9 +286,9 @@ class LteFrAreaTestCase : public TestCase
 };
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief Lte Fr Area Test Case
+ * @brief Lte Fr Area Test Case
  */
 class LteStrictFrAreaTestCase : public LteFrAreaTestCase
 {
@@ -296,8 +296,8 @@ class LteStrictFrAreaTestCase : public LteFrAreaTestCase
     /**
      * Constructor
      *
-     * \param name the reference name
-     * \param schedulerType the scheduler type
+     * @param name the reference name
+     * @param schedulerType the scheduler type
      */
     LteStrictFrAreaTestCase(std::string name, std::string schedulerType);
     ~LteStrictFrAreaTestCase() override;
@@ -307,9 +307,9 @@ class LteStrictFrAreaTestCase : public LteFrAreaTestCase
 };
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief Lte Soft Fr Area Test Case
+ * @brief Lte Soft Fr Area Test Case
  */
 class LteSoftFrAreaTestCase : public LteFrAreaTestCase
 {
@@ -317,8 +317,8 @@ class LteSoftFrAreaTestCase : public LteFrAreaTestCase
     /**
      * Constructor
      *
-     * \param name the reference name
-     * \param schedulerType the scheduler type
+     * @param name the reference name
+     * @param schedulerType the scheduler type
      */
     LteSoftFrAreaTestCase(std::string name, std::string schedulerType);
     ~LteSoftFrAreaTestCase() override;
@@ -328,9 +328,9 @@ class LteSoftFrAreaTestCase : public LteFrAreaTestCase
 };
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief Lte Soft Ffr Area Test Case
+ * @brief Lte Soft Ffr Area Test Case
  */
 class LteSoftFfrAreaTestCase : public LteFrAreaTestCase
 {
@@ -338,8 +338,8 @@ class LteSoftFfrAreaTestCase : public LteFrAreaTestCase
     /**
      * Constructor
      *
-     * \param name the reference name
-     * \param schedulerType the scheduler type
+     * @param name the reference name
+     * @param schedulerType the scheduler type
      */
     LteSoftFfrAreaTestCase(std::string name, std::string schedulerType);
     ~LteSoftFfrAreaTestCase() override;
@@ -349,9 +349,9 @@ class LteSoftFfrAreaTestCase : public LteFrAreaTestCase
 };
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief Lte Enhanced Ffr Area Test Case
+ * @brief Lte Enhanced Ffr Area Test Case
  */
 class LteEnhancedFfrAreaTestCase : public LteFrAreaTestCase
 {
@@ -359,8 +359,8 @@ class LteEnhancedFfrAreaTestCase : public LteFrAreaTestCase
     /**
      * Constructor
      *
-     * \param name the reference name
-     * \param schedulerType the scheduler type
+     * @param name the reference name
+     * @param schedulerType the scheduler type
      */
     LteEnhancedFfrAreaTestCase(std::string name, std::string schedulerType);
     ~LteEnhancedFfrAreaTestCase() override;
@@ -370,9 +370,9 @@ class LteEnhancedFfrAreaTestCase : public LteFrAreaTestCase
 };
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief Lte Distributed Ffr Area Test Case
+ * @brief Lte Distributed Ffr Area Test Case
  */
 class LteDistributedFfrAreaTestCase : public LteFrAreaTestCase
 {
@@ -380,8 +380,8 @@ class LteDistributedFfrAreaTestCase : public LteFrAreaTestCase
     /**
      * Constructor
      *
-     * \param name the reference name
-     * \param schedulerType the scheduler type
+     * @param name the reference name
+     * @param schedulerType the scheduler type
      */
     LteDistributedFfrAreaTestCase(std::string name, std::string schedulerType);
     ~LteDistributedFfrAreaTestCase() override;

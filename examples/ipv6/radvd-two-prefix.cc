@@ -37,15 +37,15 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("RadvdTwoPrefixExample");
 
 /**
- * \class IpAddressHelper
- * \brief Helper to print a node's IP addresses.
+ * @class IpAddressHelper
+ * @brief Helper to print a node's IP addresses.
  */
 class IpAddressHelper
 {
   public:
     /**
-     * \brief Print the node's IP addresses.
-     * \param n the node
+     * @brief Print the node's IP addresses.
+     * @param n the node
      */
     inline void PrintIpAddresses(Ptr<Node>& n)
     {

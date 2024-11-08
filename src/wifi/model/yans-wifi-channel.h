@@ -25,8 +25,8 @@ class Time;
 class WifiPpdu;
 
 /**
- * \brief a channel to interconnect ns3::YansWifiPhy objects.
- * \ingroup wifi
+ * @brief a channel to interconnect ns3::YansWifiPhy objects.
+ * @ingroup wifi
  *
  * This class is expected to be used in tandem with the ns3::YansWifiPhy
  * class and supports an ns3::PropagationLossModel and an
@@ -37,8 +37,8 @@ class YansWifiChannel : public Channel
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -51,23 +51,23 @@ class YansWifiChannel : public Channel
     /**
      * Adds the given YansWifiPhy to the PHY list
      *
-     * \param phy the YansWifiPhy to be added to the PHY list
+     * @param phy the YansWifiPhy to be added to the PHY list
      */
     void Add(Ptr<YansWifiPhy> phy);
 
     /**
-     * \param loss the new propagation loss model.
+     * @param loss the new propagation loss model.
      */
     void SetPropagationLossModel(const Ptr<PropagationLossModel> loss);
     /**
-     * \param delay the new propagation delay model.
+     * @param delay the new propagation delay model.
      */
     void SetPropagationDelayModel(const Ptr<PropagationDelayModel> delay);
 
     /**
-     * \param sender the PHY object from which the packet is originating.
-     * \param ppdu the PPDU to send
-     * \param txPower the TX power associated to the packet
+     * @param sender the PHY object from which the packet is originating.
+     * @param ppdu the PPDU to send
+     * @param txPower the TX power associated to the packet
      *
      * This method should not be invoked by normal users. It is
      * currently invoked only from YansWifiPhy::StartTx.  The channel
@@ -81,9 +81,9 @@ class YansWifiChannel : public Channel
      * used by this model.  Return the number of streams (possibly zero) that
      * have been assigned.
      *
-     * \param stream first stream index to use
+     * @param stream first stream index to use
      *
-     * \return the number of stream indices assigned by this model
+     * @return the number of stream indices assigned by this model
      */
     int64_t AssignStreams(int64_t stream);
 
@@ -98,9 +98,9 @@ class YansWifiChannel : public Channel
      * The method then calls the corresponding YansWifiPhy that the first
      * bit of the PPDU has arrived.
      *
-     * \param receiver the device to which the packet is destined
-     * \param ppdu the PPDU being sent
-     * \param txPower the TX power associated to the packet being sent
+     * @param receiver the device to which the packet is destined
+     * @param ppdu the PPDU being sent
+     * @param txPower the TX power associated to the packet being sent
      */
     static void Receive(Ptr<YansWifiPhy> receiver, Ptr<const WifiPpdu> ppdu, dBm_u txPower);
 

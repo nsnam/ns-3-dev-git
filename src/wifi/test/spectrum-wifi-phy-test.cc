@@ -58,8 +58,8 @@ class ExtInterferenceHelper : public InterferenceHelper
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId()
     {
@@ -73,7 +73,7 @@ class ExtInterferenceHelper : public InterferenceHelper
     /**
      * Indicate whether the interference helper is in receiving state
      *
-     * \return true if the interference helper is in receiving state, false otherwise
+     * @return true if the interference helper is in receiving state, false otherwise
      */
     bool IsRxing() const
     {
@@ -85,9 +85,9 @@ class ExtInterferenceHelper : public InterferenceHelper
     /**
      * Indicate whether a given band is tracked by the interference helper
      *
-     * \param startStopFreqs the start and stop frequencies per segment of the band
+     * @param startStopFreqs the start and stop frequencies per segment of the band
      *
-     * \return true if the specified band is tracked by the interference helper, false otherwise
+     * @return true if the specified band is tracked by the interference helper, false otherwise
      */
     bool IsBandTracked(const std::vector<WifiSpectrumBandFrequencies>& startStopFreqs) const
     {
@@ -105,10 +105,10 @@ class ExtInterferenceHelper : public InterferenceHelper
 NS_OBJECT_ENSURE_REGISTERED(ExtInterferenceHelper);
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief Spectrum Wifi Phy Basic Test
+ * @brief Spectrum Wifi Phy Basic Test
  */
 class SpectrumWifiPhyBasicTest : public TestCase
 {
@@ -117,7 +117,7 @@ class SpectrumWifiPhyBasicTest : public TestCase
     /**
      * Constructor
      *
-     * \param name reference name
+     * @param name reference name
      */
     SpectrumWifiPhyBasicTest(std::string name);
     ~SpectrumWifiPhyBasicTest() override;
@@ -128,23 +128,23 @@ class SpectrumWifiPhyBasicTest : public TestCase
     Ptr<SpectrumWifiPhy> m_phy; ///< Phy
     /**
      * Make signal function
-     * \param txPower the transmit power
-     * \param channel the operating channel of the PHY used for the transmission
-     * \returns Ptr<SpectrumSignalParameters>
+     * @param txPower the transmit power
+     * @param channel the operating channel of the PHY used for the transmission
+     * @returns Ptr<SpectrumSignalParameters>
      */
     Ptr<SpectrumSignalParameters> MakeSignal(Watt_u txPower,
                                              const WifiPhyOperatingChannel& channel);
     /**
      * Send signal function
-     * \param txPower the transmit power
+     * @param txPower the transmit power
      */
     void SendSignal(Watt_u txPower);
     /**
      * Spectrum wifi receive success function
-     * \param psdu the PSDU
-     * \param rxSignalInfo the info on the received signal (\see RxSignalInfo)
-     * \param txVector the transmit vector
-     * \param statusPerMpdu reception status per MPDU
+     * @param psdu the PSDU
+     * @param rxSignalInfo the info on the received signal (\see RxSignalInfo)
+     * @param txVector the transmit vector
+     * @param statusPerMpdu reception status per MPDU
      */
     void SpectrumWifiPhyRxSuccess(Ptr<const WifiPsdu> psdu,
                                   RxSignalInfo rxSignalInfo,
@@ -152,7 +152,7 @@ class SpectrumWifiPhyBasicTest : public TestCase
                                   const std::vector<bool>& statusPerMpdu);
     /**
      * Spectrum wifi receive failure function
-     * \param psdu the PSDU
+     * @param psdu the PSDU
      */
     void SpectrumWifiPhyRxFailure(Ptr<const WifiPsdu> psdu);
     uint32_t m_count; ///< count
@@ -301,10 +301,10 @@ SpectrumWifiPhyBasicTest::DoRun()
 }
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief Test Phy Listener
+ * @brief Test Phy Listener
  */
 class TestPhyListener : public ns3::WifiPhyListener
 {
@@ -397,10 +397,10 @@ class TestPhyListener : public ns3::WifiPhyListener
 };
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief Spectrum Wifi Phy Listener Test
+ * @brief Spectrum Wifi Phy Listener Test
  */
 class SpectrumWifiPhyListenerTest : public SpectrumWifiPhyBasicTest
 {
@@ -447,10 +447,10 @@ SpectrumWifiPhyListenerTest::DoRun()
 }
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief Spectrum Wifi Phy Filter Test
+ * @brief Spectrum Wifi Phy Filter Test
  */
 class SpectrumWifiPhyFilterTest : public TestCase
 {
@@ -459,7 +459,7 @@ class SpectrumWifiPhyFilterTest : public TestCase
     /**
      * Constructor
      *
-     * \param name reference name
+     * @param name reference name
      */
     SpectrumWifiPhyFilterTest(std::string name);
     ~SpectrumWifiPhyFilterTest() override;
@@ -481,8 +481,8 @@ class SpectrumWifiPhyFilterTest : public TestCase
 
     /**
      * Callback triggered when a packet is received by the PHYs
-     * \param p the received packet
-     * \param rxPowersW the received power per channel band in watts
+     * @param p the received packet
+     * @param rxPowersW the received power per channel band in watts
      */
     void RxCallback(Ptr<const Packet> p, RxPowerWattPerChannelBand rxPowersW);
 
@@ -783,10 +783,10 @@ SpectrumWifiPhyFilterTest::DoRun()
 }
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief Spectrum Wifi Phy Bands Calculations Test
+ * @brief Spectrum Wifi Phy Bands Calculations Test
  *
  * This test verifies SpectrumWifiPhy::GetBand produces the expected results, for both contiguous
  * (160 MHz) and non-contiguous (80+80MHz) operating channel
@@ -803,10 +803,10 @@ class SpectrumWifiPhyGetBandTest : public TestCase
 
     /**
      * Run one function
-     * \param channelNumberPerSegment the channel number for each segment of the operating channel
-     * \param bandWidth the width of the band to test
-     * \param bandIndex the index of the band to test
-     * \param expectedIndices the expected start and stop indices returned by
+     * @param channelNumberPerSegment the channel number for each segment of the operating channel
+     * @param bandWidth the width of the band to test
+     * @param bandIndex the index of the band to test
+     * @param expectedIndices the expected start and stop indices returned by
      * SpectrumWifiPhy::GetBand \param expectedFrequencies the expected start and stop frequencies
      * returned by SpectrumWifiPhy::GetBand
      */
@@ -974,10 +974,10 @@ SpectrumWifiPhyGetBandTest::DoRun()
 }
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief Test tracked bands in interference helper upon channel switching
+ * @brief Test tracked bands in interference helper upon channel switching
  *
  * The test is verifying that the correct bands are tracked by the interference helper upon channel
  * switching. It focuses on 80 and 160 MHz bands while considering 160 MHz operating channels, for
@@ -996,7 +996,7 @@ class SpectrumWifiPhyTrackedBandsTest : public TestCase
     /**
      * Switch channel function
      *
-     * \param channelNumberPerSegment the channel number for each segment of the operating channel
+     * @param channelNumberPerSegment the channel number for each segment of the operating channel
      * to switch to
      */
     void SwitchChannel(const std::vector<uint8_t>& channelNumberPerSegment);
@@ -1004,9 +1004,9 @@ class SpectrumWifiPhyTrackedBandsTest : public TestCase
     /**
      * Verify the bands tracked by the interference helper
      *
-     * \param expectedTrackedBands the bands that are expected to be tracked by the interference
+     * @param expectedTrackedBands the bands that are expected to be tracked by the interference
      * helper
-     * \param expectedUntrackedBands the bands that are expected to be untracked by the
+     * @param expectedUntrackedBands the bands that are expected to be untracked by the
      * interference helper
      */
     void VerifyTrackedBands(
@@ -1015,7 +1015,7 @@ class SpectrumWifiPhyTrackedBandsTest : public TestCase
 
     /**
      * Run one function
-     * \param channelNumberPerSegmentBeforeSwitching the channel number for each segment of the
+     * @param channelNumberPerSegmentBeforeSwitching the channel number for each segment of the
      * operating channel to switch from \param channelNumberPerSegmentAfterSwitching the channel
      * number for each segment of the operating channel to switch to \param expectedTrackedBands the
      * bands that are expected to be tracked by the interference helper \param expectedUntrackedBand
@@ -1208,10 +1208,10 @@ SpectrumWifiPhyTrackedBandsTest::DoRun()
 }
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief Test 80+80MHz transmission
+ * @brief Test 80+80MHz transmission
  *
  * The test verifies that two non-contiguous segments are handled by the spectrum PHY
  * to transmit 160 MHz PPDUs when the operating channel is configured as 80+80MHz.
@@ -1238,11 +1238,11 @@ class SpectrumWifiPhy80Plus80Test : public TestCase
 
     /**
      * Run one function
-     * \param channelNumbers the channel number for each segment of the operating channel
-     * \param interferenceCenterFrequency the center frequency of the interference signal to
+     * @param channelNumbers the channel number for each segment of the operating channel
+     * @param interferenceCenterFrequency the center frequency of the interference signal to
      * generate
-     * \param interferenceBandWidth the band width of the interference signal to generate
-     * \param expectSuccess flag to indicate whether reception is expected to be successful
+     * @param interferenceBandWidth the band width of the interference signal to generate
+     * @param expectSuccess flag to indicate whether reception is expected to be successful
      */
     void RunOne(const std::vector<uint8_t>& channelNumbers,
                 MHz_u interferenceCenterFrequency,
@@ -1252,7 +1252,7 @@ class SpectrumWifiPhy80Plus80Test : public TestCase
     /**
      * Switch channel function
      *
-     * \param channelNumbers the channel number for each segment of the operating channel
+     * @param channelNumbers the channel number for each segment of the operating channel
      * to switch to
      */
     void SwitchChannel(const std::vector<uint8_t>& channelNumbers);
@@ -1264,8 +1264,8 @@ class SpectrumWifiPhy80Plus80Test : public TestCase
 
     /**
      * Generate interference function
-     * \param interferencePsd the PSD of the interference to be generated
-     * \param duration the duration of the interference
+     * @param interferencePsd the PSD of the interference to be generated
+     * @param duration the duration of the interference
      */
     void GenerateInterference(Ptr<SpectrumValue> interferencePsd, Time duration);
 
@@ -1276,10 +1276,10 @@ class SpectrumWifiPhy80Plus80Test : public TestCase
 
     /**
      * Receive success function for STA
-     * \param psdu the PSDU
-     * \param rxSignalInfo the info on the received signal (\see RxSignalInfo)
-     * \param txVector the transmit vector
-     * \param statusPerMpdu reception status per MPDU
+     * @param psdu the PSDU
+     * @param rxSignalInfo the info on the received signal (\see RxSignalInfo)
+     * @param txVector the transmit vector
+     * @param statusPerMpdu reception status per MPDU
      */
     void RxSuccessSta(Ptr<const WifiPsdu> psdu,
                       RxSignalInfo rxSignalInfo,
@@ -1288,14 +1288,14 @@ class SpectrumWifiPhy80Plus80Test : public TestCase
 
     /**
      * Receive failure function for STA
-     * \param psdu the PSDU
+     * @param psdu the PSDU
      */
     void RxFailureSta(Ptr<const WifiPsdu> psdu);
 
     /**
      * Verify results
      *
-     * \param expectSuccess flag to indicate whether reception is expected to be successful
+     * @param expectSuccess flag to indicate whether reception is expected to be successful
      */
     void CheckResults(bool expectSuccess);
 
@@ -1576,10 +1576,10 @@ SpectrumWifiPhy80Plus80Test::DoRun()
 }
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief Spectrum Wifi Phy Multiple Spectrum Test
+ * @brief Spectrum Wifi Phy Multiple Spectrum Test
  *
  * This test is testing the ability to plug multiple spectrum channels to the spectrum wifi PHY.
  * It considers 4 TX-RX PHY pairs that are independent from each others and are plugged to different
@@ -1610,9 +1610,9 @@ class SpectrumWifiPhyMultipleInterfacesTest : public TestCase
     /**
      * Constructor
      *
-     * \param trackSignalsInactiveInterfaces flag to indicate whether signals coming from inactive
+     * @param trackSignalsInactiveInterfaces flag to indicate whether signals coming from inactive
      * spectrum PHY interfaces shall be tracked during the test
-     * \param chanSwitchScenario the channel switching scenario to consider for the test
+     * @param chanSwitchScenario the channel switching scenario to consider for the test
      */
     SpectrumWifiPhyMultipleInterfacesTest(bool trackSignalsInactiveInterfaces,
                                           ChannelSwitchScenario chanSwitchScenario);
@@ -1625,11 +1625,11 @@ class SpectrumWifiPhyMultipleInterfacesTest : public TestCase
     /**
      * Switch channel function
      *
-     * \param phy the PHY to switch
-     * \param band the PHY band to use
-     * \param channelNumber number the channel number to use
-     * \param channelWidth the channel width to use
-     * \param listenerIndex index of the listener for that PHY, if PHY is a RX PHY
+     * @param phy the PHY to switch
+     * @param band the PHY band to use
+     * @param channelNumber number the channel number to use
+     * @param channelWidth the channel width to use
+     * @param listenerIndex index of the listener for that PHY, if PHY is a RX PHY
      */
     void SwitchChannel(Ptr<SpectrumWifiPhy> phy,
                        WifiPhyBand band,
@@ -1640,17 +1640,17 @@ class SpectrumWifiPhyMultipleInterfacesTest : public TestCase
     /**
      * Send PPDU function
      *
-     * \param phy the PHY to transmit the signal
-     * \param txPower the power to transmit the signal (this is also the received power since we do
+     * @param phy the PHY to transmit the signal
+     * @param txPower the power to transmit the signal (this is also the received power since we do
      * not have propagation loss to simplify) \param payloadSize the payload size in bytes
      */
     void SendPpdu(Ptr<SpectrumWifiPhy> phy, dBm_u txPower, uint32_t payloadSize);
 
     /**
      * Callback triggered when a packet is received by a PHY
-     * \param index the index to identify the RX PHY
-     * \param packet the received packet
-     * \param rxPowersW the received power per channel band in watts
+     * @param index the index to identify the RX PHY
+     * @param packet the received packet
+     * @param rxPowersW the received power per channel band in watts
      */
     void RxCallback(std::size_t index,
                     Ptr<const Packet> packet,
@@ -1658,11 +1658,11 @@ class SpectrumWifiPhyMultipleInterfacesTest : public TestCase
 
     /**
      * Receive success function
-     * \param index index of the RX STA
-     * \param psdu the PSDU
-     * \param rxSignalInfo the info on the received signal (\see RxSignalInfo)
-     * \param txVector the transmit vector
-     * \param statusPerMpdu reception status per MPDU
+     * @param index index of the RX STA
+     * @param psdu the PSDU
+     * @param rxSignalInfo the info on the received signal (\see RxSignalInfo)
+     * @param txVector the transmit vector
+     * @param statusPerMpdu reception status per MPDU
      */
     void RxSuccess(std::size_t index,
                    Ptr<const WifiPsdu> psdu,
@@ -1672,17 +1672,17 @@ class SpectrumWifiPhyMultipleInterfacesTest : public TestCase
 
     /**
      * Receive failure function
-     * \param index index of the RX STA
-     * \param psdu the PSDU
+     * @param index index of the RX STA
+     * @param psdu the PSDU
      */
     void RxFailure(std::size_t index, Ptr<const WifiPsdu> psdu);
 
     /**
      * Schedule now to check the interferences
-     * \param phy the PHY for which the check has to be executed
-     * \param freqRange the frequency range for which the check has to be executed
-     * \param band the band for which the check has to be executed
-     * \param interferencesExpected flag whether interferences are expected to have been tracked
+     * @param phy the PHY for which the check has to be executed
+     * @param freqRange the frequency range for which the check has to be executed
+     * @param band the band for which the check has to be executed
+     * @param interferencesExpected flag whether interferences are expected to have been tracked
      */
     void CheckInterferences(Ptr<SpectrumWifiPhy> phy,
                             const FrequencyRange& freqRange,
@@ -1691,9 +1691,9 @@ class SpectrumWifiPhyMultipleInterfacesTest : public TestCase
 
     /**
      * Check the interferences
-     * \param phy the PHY for which the check has to be executed
-     * \param band the band for which the check has to be executed
-     * \param interferencesExpected flag whether interferences are expected to have been tracked
+     * @param phy the PHY for which the check has to be executed
+     * @param band the band for which the check has to be executed
+     * @param interferencesExpected flag whether interferences are expected to have been tracked
      */
     void DoCheckInterferences(Ptr<SpectrumWifiPhy> phy,
                               const WifiSpectrumBandInfo& band,
@@ -1702,13 +1702,13 @@ class SpectrumWifiPhyMultipleInterfacesTest : public TestCase
     /**
      * Verify results
      *
-     * \param index the index to identify the RX PHY to check
-     * \param expectedNumRx the expected number of RX events for that PHY
-     * \param expectedNumRxSuccess the expected amount of successfully received packets
-     * \param expectedRxBytes the expected amount of received bytes
-     * \param expectedFrequencyRangeActiveRfInterface the expected frequency range (in MHz) of the
+     * @param index the index to identify the RX PHY to check
+     * @param expectedNumRx the expected number of RX events for that PHY
+     * @param expectedNumRxSuccess the expected amount of successfully received packets
+     * @param expectedRxBytes the expected amount of received bytes
+     * @param expectedFrequencyRangeActiveRfInterface the expected frequency range (in MHz) of the
      * active RF interface
-     * \param expectedConnectedPhysPerChannel the expected number of PHYs attached for each spectrum
+     * @param expectedConnectedPhysPerChannel the expected number of PHYs attached for each spectrum
      * channel
      */
     void CheckResults(std::size_t index,
@@ -1721,11 +1721,11 @@ class SpectrumWifiPhyMultipleInterfacesTest : public TestCase
     /**
      * Verify CCA indication reported by a given PHY
      *
-     * \param index the index to identify the RX PHY to check
-     * \param expectedCcaBusyIndication flag to indicate whether a CCA BUSY notification is expected
-     * \param switchingDelay delay between the TX has started and the time RX switched to the TX
+     * @param index the index to identify the RX PHY to check
+     * @param expectedCcaBusyIndication flag to indicate whether a CCA BUSY notification is expected
+     * @param switchingDelay delay between the TX has started and the time RX switched to the TX
      * channel
-     * \param propagationDelay the propagation delay
+     * @param propagationDelay the propagation delay
      */
     void CheckCcaIndication(std::size_t index,
                             bool expectedCcaBusyIndication,
@@ -1735,8 +1735,8 @@ class SpectrumWifiPhyMultipleInterfacesTest : public TestCase
     /**
      * Verify rxing state of the interference helper
      *
-     * \param phy the PHY to which the interference helper instance is attached
-     * \param rxingExpected flag whether the interference helper is expected to be in rxing state or
+     * @param phy the PHY to which the interference helper instance is attached
+     * @param rxingExpected flag whether the interference helper is expected to be in rxing state or
      * not
      */
     void CheckRxingState(Ptr<SpectrumWifiPhy> phy, bool rxingExpected);
@@ -2583,10 +2583,10 @@ SpectrumWifiPhyMultipleInterfacesTest::DoRun()
 }
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief Spectrum Wifi Phy Interfaces Helper Test
+ * @brief Spectrum Wifi Phy Interfaces Helper Test
  *
  * This test checks the expected interfaces are added to the spectrum PHY instances
  * created by the helper.
@@ -2772,10 +2772,10 @@ SpectrumWifiPhyInterfacesHelperTest::DoRun()
 }
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief Spectrum Wifi Phy Test Suite
+ * @brief Spectrum Wifi Phy Test Suite
  */
 class SpectrumWifiPhyTestSuite : public TestSuite
 {

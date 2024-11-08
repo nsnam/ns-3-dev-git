@@ -16,8 +16,8 @@ namespace ns3
 {
 
 /**
- * \ingroup fd-net-device
- * \brief build a DpdkNetDevice object attached to a physical network
+ * @ingroup fd-net-device
+ * @brief build a DpdkNetDevice object attached to a physical network
  * interface
  */
 class DpdkNetDeviceHelper : public EmuFdNetDeviceHelper
@@ -33,33 +33,33 @@ class DpdkNetDeviceHelper : public EmuFdNetDeviceHelper
     }
 
     /**
-     * \brief Sets list of logical cores to use
+     * @brief Sets list of logical cores to use
      *
-     * \param lCoreList Comma separated logical core list (e.g., "0,1")
+     * @param lCoreList Comma separated logical core list (e.g., "0,1")
      */
     void SetLCoreList(std::string lCoreList);
 
     /**
-     * \brief Sets PMD Library to be used for the NIC
+     * @brief Sets PMD Library to be used for the NIC
      *
-     * \param pmdLibrary The PMD Library
+     * @param pmdLibrary The PMD Library
      */
     void SetPmdLibrary(std::string pmdLibrary);
 
     /**
-     * \brief Sets DPDK Driver to bind NIC to
+     * @brief Sets DPDK Driver to bind NIC to
      *
-     * \param dpdkDriver The DPDK Driver
+     * @param dpdkDriver The DPDK Driver
      */
     void SetDpdkDriver(std::string dpdkDriver);
 
   protected:
     /**
-     * \brief This method creates an ns3::FdNetDevice attached to a physical network
+     * @brief This method creates an ns3::FdNetDevice attached to a physical network
      * interface
      *
-     * \param node The node to install the device in
-     * \returns A container holding the added net device.
+     * @param node The node to install the device in
+     * @returns A container holding the added net device.
      */
     Ptr<NetDevice> InstallPriv(Ptr<Node> node) const override;
 

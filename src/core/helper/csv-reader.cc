@@ -19,8 +19,8 @@
 #include <vector>
 
 /**
- * \file
- * \ingroup csvreader
+ * @file
+ * @ingroup csvreader
  *
  * ns3::CsvReader implementation
  */
@@ -36,11 +36,11 @@ namespace
  * Uses a stringstream to deserialize the value stored in \p input
  * to a value of type T and writes the deserialized value to \p output.
  *
- * \tparam T Data type of output.
- * \param input String containing serialized data.
- * \param output Place to store deserialized value.
+ * @tparam T Data type of output.
+ * @param input String containing serialized data.
+ * @param output Place to store deserialized value.
  *
- * \return \c true if deserialization was successful, \c false otherwise.
+ * @return \c true if deserialization was successful, \c false otherwise.
  */
 template <typename T>
 bool

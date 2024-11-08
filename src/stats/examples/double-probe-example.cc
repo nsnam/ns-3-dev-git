@@ -28,7 +28,7 @@ class Emitter : public Object
   public:
     /**
      * Register this type.
-     * \return The TypeId.
+     * @return The TypeId.
      */
     static TypeId GetTypeId();
     Emitter();
@@ -97,9 +97,9 @@ Emitter::Count()
 /**
  * This is a function to test hooking a raw function to the trace source,
  *
- * \param context The trace context.
- * \param oldVal Old value.
- * \param newVal New value.
+ * @param context The trace context.
+ * @param oldVal Old value.
+ * @param newVal New value.
  */
 void
 NotifyViaTraceSource(std::string context, double oldVal, double newVal)
@@ -110,9 +110,9 @@ NotifyViaTraceSource(std::string context, double oldVal, double newVal)
 /**
  * This is a function to test hooking it to the probe output
  *
- * \param context The trace context.
- * \param oldVal Old value.
- * \param newVal New value.
+ * @param context The trace context.
+ * @param oldVal Old value.
+ * @param newVal New value.
  */
 void
 NotifyViaProbe(std::string context, double oldVal, double newVal)

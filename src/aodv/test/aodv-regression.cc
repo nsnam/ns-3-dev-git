@@ -33,9 +33,9 @@
 using namespace ns3;
 
 /**
- * \ingroup aodv-test
+ * @ingroup aodv-test
  *
- * \brief AODV regression test suite
+ * @brief AODV regression test suite
  */
 class AodvRegressionTestSuite : public TestSuite
 {
@@ -57,9 +57,9 @@ class AodvRegressionTestSuite : public TestSuite
 } g_aodvRegressionTestSuite; ///< the test suite
 
 /**
- * \ingroup aodv-test
+ * @ingroup aodv-test
  *
- * \brief Chain Regression Test
+ * @brief Chain Regression Test
  */
 ChainRegressionTest::ChainRegressionTest(const char* const prefix,
                                          Time t,

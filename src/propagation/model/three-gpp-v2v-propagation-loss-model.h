@@ -17,17 +17,17 @@ namespace ns3
 {
 
 /**
- * \ingroup propagation
+ * @ingroup propagation
  *
- * \brief Implements the pathloss model defined in 3GPP TR 37.885, Table 6.2.1-1
+ * @brief Implements the pathloss model defined in 3GPP TR 37.885, Table 6.2.1-1
  *        for the Urban scenario.
  */
 class ThreeGppV2vUrbanPropagationLossModel : public ThreeGppPropagationLossModel
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -47,16 +47,16 @@ class ThreeGppV2vUrbanPropagationLossModel : public ThreeGppPropagationLossModel
 
   private:
     /**
-     * \brief Computes the pathloss between a and b considering that the line of
+     * @brief Computes the pathloss between a and b considering that the line of
      *        sight is not obstructed
-     * \param a mobility model of one of the two communicating nodes
-     * \param b mobility model of one of the two communicating nodes
-     * \return pathloss value in dB
+     * @param a mobility model of one of the two communicating nodes
+     * @param b mobility model of one of the two communicating nodes
+     * @return pathloss value in dB
      */
     double GetLossLos(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const override;
 
     /**
-     * \brief Returns the minimum of the two independently generated distances
+     * @brief Returns the minimum of the two independently generated distances
      *        according to the uniform distribution between the minimum and the maximum
      *        value depending on the specific 3GPP scenario (UMa, UMi-Street Canyon, RMa),
      *        i.e., between 0 and 25 m for UMa and UMi-Street Canyon, and between 0 and 10 m
@@ -68,51 +68,51 @@ class ThreeGppV2vUrbanPropagationLossModel : public ThreeGppPropagationLossModel
      *
      *        TODO O2I car penetration loss (TR 38.901 7.4.3.2) not considered
      *
-     * \return Returns 02i 2D distance (in meters) used to calculate low/high losses.
+     * @return Returns 02i 2D distance (in meters) used to calculate low/high losses.
      */
     double GetO2iDistance2dIn() const override;
 
     /**
-     * \brief Computes the pathloss between a and b considering that the line of
+     * @brief Computes the pathloss between a and b considering that the line of
      *        sight is obstructed by a vehicle
-     * \param a mobility model of one of the two communicating nodes
-     * \param b mobility model of one of the two communicating nodes
-     * \return pathloss value in dB
+     * @param a mobility model of one of the two communicating nodes
+     * @param b mobility model of one of the two communicating nodes
+     * @return pathloss value in dB
      */
     double GetLossNlosv(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const override;
 
     /**
-     * \brief Computes the pathloss between a and b considering that the line of
+     * @brief Computes the pathloss between a and b considering that the line of
      *        sight is obstructed by a building
-     * \param a mobility model of one of the two communicating nodes
-     * \param b mobility model of one of the two communicating nodes
-     * \return pathloss value in dB
+     * @param a mobility model of one of the two communicating nodes
+     * @param b mobility model of one of the two communicating nodes
+     * @return pathloss value in dB
      */
     double GetLossNlos(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const override;
 
     /**
-     * \brief Computes the additional loss due to an obstruction caused by a vehicle
-     * \param a mobility model of one of the two communicating nodes
-     * \param b mobility model of one of the two communicating nodes
-     * \return pathloss value in dB
+     * @brief Computes the additional loss due to an obstruction caused by a vehicle
+     * @param a mobility model of one of the two communicating nodes
+     * @param b mobility model of one of the two communicating nodes
+     * @return pathloss value in dB
      */
     double GetAdditionalNlosvLoss(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
 
     /**
-     * \brief Returns the shadow fading standard deviation
-     * \param a mobility model of one of the two communicating nodes
-     * \param b mobility model of one of the two communicating nodes
-     * \param cond the LOS/NLOS channel condition
-     * \return shadowing std in dB
+     * @brief Returns the shadow fading standard deviation
+     * @param a mobility model of one of the two communicating nodes
+     * @param b mobility model of one of the two communicating nodes
+     * @param cond the LOS/NLOS channel condition
+     * @return shadowing std in dB
      */
     double GetShadowingStd(Ptr<MobilityModel> a,
                            Ptr<MobilityModel> b,
                            ChannelCondition::LosConditionValue cond) const override;
 
     /**
-     * \brief Returns the shadow fading correlation distance
-     * \param cond the LOS/NLOS channel condition
-     * \return shadowing correlation distance in meters
+     * @brief Returns the shadow fading correlation distance
+     * @param cond the LOS/NLOS channel condition
+     * @return shadowing correlation distance in meters
      */
     double GetShadowingCorrelationDistance(ChannelCondition::LosConditionValue cond) const override;
 
@@ -124,17 +124,17 @@ class ThreeGppV2vUrbanPropagationLossModel : public ThreeGppPropagationLossModel
 };
 
 /**
- * \ingroup propagation
+ * @ingroup propagation
  *
- * \brief Implements the pathloss model defined in 3GPP TR 37.885, Table 6.2.1-1
+ * @brief Implements the pathloss model defined in 3GPP TR 37.885, Table 6.2.1-1
  *        for the Highway scenario.
  */
 class ThreeGppV2vHighwayPropagationLossModel : public ThreeGppV2vUrbanPropagationLossModel
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -150,11 +150,11 @@ class ThreeGppV2vHighwayPropagationLossModel : public ThreeGppV2vUrbanPropagatio
 
   private:
     /**
-     * \brief Computes the pathloss between a and b considering that the line of
+     * @brief Computes the pathloss between a and b considering that the line of
      *        sight is not obstructed
-     * \param a mobility model of one of the two communicating nodes
-     * \param b mobility model of one of the two communicating nodes
-     * \return pathloss value in dB
+     * @param a mobility model of one of the two communicating nodes
+     * @param b mobility model of one of the two communicating nodes
+     * @return pathloss value in dB
      */
     double GetLossLos(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const override;
 };

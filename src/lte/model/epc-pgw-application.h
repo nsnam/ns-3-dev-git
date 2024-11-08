@@ -21,7 +21,7 @@ namespace ns3
 {
 
 /**
- * \ingroup lte
+ * @ingroup lte
  *
  * This application implements the Packet Data Network (PDN) Gateway Entity (PGW)
  * according to the 3GPP TS 23.401 document.
@@ -42,8 +42,8 @@ class EpcPgwApplication : public Application
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     void DoDispose() override;
@@ -51,12 +51,12 @@ class EpcPgwApplication : public Application
     /**
      * Constructor that binds the tap device to the callback methods.
      *
-     * \param tunDevice TUN VirtualNetDevice used to tunnel IP packets from
+     * @param tunDevice TUN VirtualNetDevice used to tunnel IP packets from
      * the SGi interface of the PGW in the internet
      * over GTP-U/UDP/IP on the S5 interface
-     * \param s5Addr IP address of the PGW S5 interface
-     * \param s5uSocket socket used to send GTP-U packets to the peer SGW
-     * \param s5cSocket socket used to send GTP-C packets to the peer SGW
+     * @param s5Addr IP address of the PGW S5 interface
+     * @param s5uSocket socket used to send GTP-U packets to the peer SGW
+     * @param s5cSocket socket used to send GTP-C packets to the peer SGW
      */
     EpcPgwApplication(const Ptr<VirtualNetDevice> tunDevice,
                       Ipv4Address s5Addr,
@@ -72,11 +72,11 @@ class EpcPgwApplication : public Application
      * internet (including IP headers) that is to be sent to the UE via
      * its associated SGW and eNB, tunneling IP over GTP-U/UDP/IP.
      *
-     * \param packet
-     * \param source
-     * \param dest
-     * \param protocolNumber
-     * \return true always
+     * @param packet
+     * @param source
+     * @param dest
+     * @param protocolNumber
+     * @return true always
      */
     bool RecvFromTunDevice(Ptr<Packet> packet,
                            const Address& source,
@@ -88,7 +88,7 @@ class EpcPgwApplication : public Application
      * It is called when the PGW receives a data packet from the SGW
      * that is to be forwarded to the internet.
      *
-     * \param socket pointer to the S5-U socket
+     * @param socket pointer to the S5-U socket
      */
     void RecvFromS5uSocket(Ptr<Socket> socket);
 
@@ -96,86 +96,86 @@ class EpcPgwApplication : public Application
      * Method to be assigned to the receiver callback of the S5-C socket.
      * It is called when the PGW receives a control packet from the SGW.
      *
-     * \param socket pointer to the S5-C socket
+     * @param socket pointer to the S5-C socket
      */
     void RecvFromS5cSocket(Ptr<Socket> socket);
 
     /**
      * Send a data packet to the internet via the SGi interface of the PGW
      *
-     * \param packet packet to be sent
-     * \param teid the Tunnel Endpoint Identifier
+     * @param packet packet to be sent
+     * @param teid the Tunnel Endpoint Identifier
      */
     void SendToTunDevice(Ptr<Packet> packet, uint32_t teid);
 
     /**
      * Send a data packet to the SGW via the S5-U interface
      *
-     * \param packet packet to be sent
-     * \param sgwS5uAddress the address of the SGW
-     * \param teid the Tunnel Endpoint Identifier
+     * @param packet packet to be sent
+     * @param sgwS5uAddress the address of the SGW
+     * @param teid the Tunnel Endpoint Identifier
      */
     void SendToS5uSocket(Ptr<Packet> packet, Ipv4Address sgwS5uAddress, uint32_t teid);
 
     /**
      * Let the PGW be aware of a new SGW
      *
-     * \param sgwS5Addr the address of the SGW S5 interface
+     * @param sgwS5Addr the address of the SGW S5 interface
      */
     void AddSgw(Ipv4Address sgwS5Addr);
 
     /**
      * Let the PGW be aware of a new UE
      *
-     * \param imsi the unique identifier of the UE
+     * @param imsi the unique identifier of the UE
      */
     void AddUe(uint64_t imsi);
 
     /**
      * Set the address of a previously added UE
      *
-     * \param imsi the unique identifier of the UE
-     * \param ueAddr the IPv4 address of the UE
+     * @param imsi the unique identifier of the UE
+     * @param ueAddr the IPv4 address of the UE
      */
     void SetUeAddress(uint64_t imsi, Ipv4Address ueAddr);
 
     /**
      * set the address of a previously added UE
      *
-     * \param imsi the unique identifier of the UE
-     * \param ueAddr the IPv6 address of the UE
+     * @param imsi the unique identifier of the UE
+     * @param ueAddr the IPv6 address of the UE
      */
     void SetUeAddress6(uint64_t imsi, Ipv6Address ueAddr);
 
     /**
      * TracedCallback signature for data Packet reception event.
      *
-     * \param [in] packet The data packet sent from the internet.
+     * @param [in] packet The data packet sent from the internet.
      */
     typedef void (*RxTracedCallback)(Ptr<Packet> packet);
 
   private:
     /**
      * Process Create Session Request message
-     * \param packet GTPv2-C Create Session Request message
+     * @param packet GTPv2-C Create Session Request message
      */
     void DoRecvCreateSessionRequest(Ptr<Packet> packet);
 
     /**
      * Process Modify Bearer Request message
-     * \param packet GTPv2-C Modify Bearer Request message
+     * @param packet GTPv2-C Modify Bearer Request message
      */
     void DoRecvModifyBearerRequest(Ptr<Packet> packet);
 
     /**
      * Process Delete Bearer Command message
-     * \param packet GTPv2-C Delete Bearer Command message
+     * @param packet GTPv2-C Delete Bearer Command message
      */
     void DoRecvDeleteBearerCommand(Ptr<Packet> packet);
 
     /**
      * Process Delete Bearer Response message
-     * \param packet GTPv2-C Delete Bearer Response message
+     * @param packet GTPv2-C Delete Bearer Response message
      */
     void DoRecvDeleteBearerResponse(Ptr<Packet> packet);
 
@@ -190,27 +190,27 @@ class EpcPgwApplication : public Application
         /**
          * Add a bearer for this UE on PGW side
          *
-         * \param bearerId the ID of the EPS Bearer to be activated
-         * \param teid  the TEID of the new bearer
-         * \param tft the Traffic Flow Template of the new bearer to be added
+         * @param bearerId the ID of the EPS Bearer to be activated
+         * @param teid  the TEID of the new bearer
+         * @param tft the Traffic Flow Template of the new bearer to be added
          */
         void AddBearer(uint8_t bearerId, uint32_t teid, Ptr<EpcTft> tft);
 
         /**
          * Delete context of bearer for this UE on PGW side
          *
-         * \param bearerId the ID of the EPS Bearer whose contexts is to be removed
+         * @param bearerId the ID of the EPS Bearer whose contexts is to be removed
          */
         void RemoveBearer(uint8_t bearerId);
 
         /**
          * Classify the packet according to TFTs of this UE
          *
-         * \param p the IPv4 or IPv6 packet from the internet to be classified
-         * \param protocolNumber identifies the type of packet.
+         * @param p the IPv4 or IPv6 packet from the internet to be classified
+         * @param protocolNumber identifies the type of packet.
          *        Only IPv4 and IPv6 packets are allowed.
          *
-         * \return the corresponding bearer ID > 0 identifying the bearer
+         * @return the corresponding bearer ID > 0 identifying the bearer
          * among all the bearers of this UE;  returns 0 if no bearers
          * matches with the previously declared TFTs
          */
@@ -219,42 +219,42 @@ class EpcPgwApplication : public Application
         /**
          * Get the address of the SGW to which the UE is connected
          *
-         * \return the address of the SGW
+         * @return the address of the SGW
          */
         Ipv4Address GetSgwAddr();
 
         /**
          * Set the address of the eNB to which the UE is connected
          *
-         * \param addr the address of the SGW
+         * @param addr the address of the SGW
          */
         void SetSgwAddr(Ipv4Address addr);
 
         /**
          * Get the IPv4 address of the UE
          *
-         * \return the IPv4 address of the UE
+         * @return the IPv4 address of the UE
          */
         Ipv4Address GetUeAddr();
 
         /**
          * Set the IPv4 address of the UE
          *
-         * \param addr the IPv4 address of the UE
+         * @param addr the IPv4 address of the UE
          */
         void SetUeAddr(Ipv4Address addr);
 
         /**
          * Get the IPv6 address of the UE
          *
-         * \return the IPv6 address of the UE
+         * @return the IPv6 address of the UE
          */
         Ipv6Address GetUeAddr6();
 
         /**
          * Set the IPv6 address of the UE
          *
-         * \param addr the IPv6 address of the UE
+         * @param addr the IPv6 address of the UE
          */
         void SetUeAddr6(Ipv6Address addr);
 
@@ -318,12 +318,12 @@ class EpcPgwApplication : public Application
     Ipv4Address m_sgwS5Addr;
 
     /**
-     * \brief Callback to trace received data packets at Tun NetDevice from internet.
+     * @brief Callback to trace received data packets at Tun NetDevice from internet.
      */
     TracedCallback<Ptr<Packet>> m_rxTunPktTrace;
 
     /**
-     * \brief Callback to trace received data packets from S5 socket.
+     * @brief Callback to trace received data packets from S5 socket.
      */
     TracedCallback<Ptr<Packet>> m_rxS5PktTrace;
 };

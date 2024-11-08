@@ -25,13 +25,13 @@ class UanMac;
 class UanTransducer;
 
 /**
- * \defgroup uan UAN Models
+ * @defgroup uan UAN Models
  * This section documents the API of the ns-3 UAN module. For a generic functional description,
  * please refer to the ns-3 manual.
  */
 
 /**
- * \ingroup uan
+ * @ingroup uan
  *
  * Net device for UAN models.
  */
@@ -45,7 +45,7 @@ class UanNetDevice : public NetDevice
 
     /**
      * Register this type.
-     * \return The TypeId.
+     * @return The TypeId.
      */
     static TypeId GetTypeId();
 
@@ -57,48 +57,48 @@ class UanNetDevice : public NetDevice
     /**
      * Set the MAC layer for this device.
      *
-     * \param mac The MAC layer.
+     * @param mac The MAC layer.
      */
     void SetMac(Ptr<UanMac> mac);
 
     /**
      * Set the Phy layer for this device.
      *
-     * \param phy The PHY layer.
+     * @param phy The PHY layer.
      */
     void SetPhy(Ptr<UanPhy> phy);
 
     /**
      * Attach a channel.
      *
-     * \param channel The channel.
+     * @param channel The channel.
      */
     void SetChannel(Ptr<UanChannel> channel);
 
     /**
      * Get the MAC used by this device.
      *
-     * \return The MAC.
+     * @return The MAC.
      */
     Ptr<UanMac> GetMac() const;
 
     /**
      * Get the Phy used by this device.
      *
-     * \return The Phy.
+     * @return The Phy.
      */
     Ptr<UanPhy> GetPhy() const;
 
     /**
      * Get the transducer associated with this device.
      *
-     * \return The transducer.
+     * @return The transducer.
      */
     Ptr<UanTransducer> GetTransducer() const;
     /**
      * Set the transdcuer used by this device.
      *
-     * \param trans The transducer.
+     * @param trans The transducer.
      */
     void SetTransducer(Ptr<UanTransducer> trans);
 
@@ -108,7 +108,7 @@ class UanNetDevice : public NetDevice
     /**
      * Set the Phy SLEEP mode.
      *
-     * \param sleep SLEEP on or off.
+     * @param sleep SLEEP on or off.
      */
     void SetSleepMode(bool sleep);
 
@@ -143,21 +143,21 @@ class UanNetDevice : public NetDevice
 
     /**
      * Get the Tx mode index (Modulation type).
-     * \return the Tx mode index
+     * @return the Tx mode index
      */
     uint32_t GetTxModeIndex();
 
     /**
      * Set the Tx mode index (Modulation type).
-     * \param txModeIndex the Tx mode index
+     * @param txModeIndex the Tx mode index
      */
     void SetTxModeIndex(uint32_t txModeIndex);
 
     /**
      * TracedCallback signature for MAC send/receive events.
      *
-     * \param [in] packet The Packet.
-     * \param [in] address The source address.
+     * @param [in] packet The Packet.
+     * @param [in] address The source address.
      */
     typedef void (*RxTxTracedCallback)(Ptr<const Packet> packet, Mac8Address address);
 
@@ -165,13 +165,13 @@ class UanNetDevice : public NetDevice
     /**
      * Forward the packet to a higher level, set with SetReceiveCallback.
      *
-     * \param pkt The packet.
-     * \param src The source address.
-     * \param protocolNumber The layer 3 protocol number.
+     * @param pkt The packet.
+     * @param src The source address.
+     * @param protocolNumber The layer 3 protocol number.
      */
     virtual void ForwardUp(Ptr<Packet> pkt, uint16_t protocolNumber, const Mac8Address& src);
 
-    /** \return The channel attached to this device. */
+    /** @return The channel attached to this device. */
     Ptr<UanChannel> DoGetChannel() const;
 
     Ptr<UanTransducer> m_trans; //!< The Transducer attached to this device.

@@ -20,7 +20,7 @@ class MobilityModel;
 using namespace ns3;
 
 /**
- * \ingroup building-test
+ * @ingroup building-test
  *
  * Shadowing compound test
  *
@@ -34,7 +34,7 @@ class BuildingsShadowingTestSuite : public TestSuite
 };
 
 /**
- * \ingroup building-test
+ * @ingroup building-test
  *
  * Shadowing test
  */
@@ -43,11 +43,11 @@ class BuildingsShadowingTestCase : public TestCase
   public:
     /**
      * Constructor
-     * \param m1 First MobilityModel Index
-     * \param m2 Second MobilityModel Index
-     * \param refValue Theoretical loss
-     * \param sigmaRef Theoretical loss standard deviation
-     * \param name Test name
+     * @param m1 First MobilityModel Index
+     * @param m2 Second MobilityModel Index
+     * @param refValue Theoretical loss
+     * @param sigmaRef Theoretical loss standard deviation
+     * @param name Test name
      */
     BuildingsShadowingTestCase(uint16_t m1,
                                uint16_t m2,
@@ -60,8 +60,8 @@ class BuildingsShadowingTestCase : public TestCase
     void DoRun() override;
     /**
      * Create a mobility model based on its index
-     * \param index MobilityModel index
-     * \return The MobilityModel
+     * @param index MobilityModel index
+     * @return The MobilityModel
      */
     Ptr<MobilityModel> CreateMobilityModel(uint16_t index);
 

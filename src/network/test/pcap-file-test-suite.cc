@@ -66,10 +66,10 @@ CheckFileLength(std::string filename, long sizeExpected)
 }
 
 /**
- * \ingroup network-test
- * \ingroup tests
+ * @ingroup network-test
+ * @ingroup tests
  *
- * \brief Test case to make sure that the Pcap File Object can do its
+ * @brief Test case to make sure that the Pcap File Object can do its
  * most basic job and create an empty pcap file.
  */
 class WriteModeCreateTestCase : public TestCase
@@ -193,10 +193,10 @@ WriteModeCreateTestCase::DoRun()
 }
 
 /**
- * \ingroup network-test
- * \ingroup tests
+ * @ingroup network-test
+ * @ingroup tests
  *
- * \brief Test case to make sure that the Pcap File Object can open an
+ * @brief Test case to make sure that the Pcap File Object can open an
  * existing pcap file.
  */
 class ReadModeCreateTestCase : public TestCase
@@ -424,10 +424,10 @@ AppendModeCreateTestCase::DoRun ()
 #endif
 
 /**
- * \ingroup network-test
- * \ingroup tests
+ * @ingroup network-test
+ * @ingroup tests
  *
- * \brief Test case to make sure that the Pcap File Object can
+ * @brief Test case to make sure that the Pcap File Object can
  * write out correct pcap file headers in both endian cases,
  * and then read them in correctly.
  */
@@ -702,10 +702,10 @@ FileHeaderTestCase::DoRun()
 }
 
 /**
- * \ingroup network-test
- * \ingroup tests
+ * @ingroup network-test
+ * @ingroup tests
  *
- * \brief Test case to make sure that the Pcap File Object can
+ * @brief Test case to make sure that the Pcap File Object can
  * write pcap packet records in both endian cases, and then read
  * them in correctly.
  */
@@ -1060,10 +1060,10 @@ RecordHeaderTestCase::DoRun()
 }
 
 /**
- * \ingroup network-test
- * \ingroup tests
+ * @ingroup network-test
+ * @ingroup tests
  *
- * \brief Test case to make sure that the Pcap File Object can read
+ * @brief Test case to make sure that the Pcap File Object can read
  * out the contents of a known good pcap file.
  */
 class ReadFileTestCase : public TestCase
@@ -1302,10 +1302,10 @@ ReadFileTestCase::DoRun()
 }
 
 /**
- * \ingroup network-test
- * \ingroup tests
+ * @ingroup network-test
+ * @ingroup tests
  *
- * \brief Test case to make sure that the Pcap::Diff method works as expected.
+ * @brief Test case to make sure that the Pcap::Diff method works as expected.
  */
 class DiffTestCase : public TestCase
 {
@@ -1365,10 +1365,10 @@ DiffTestCase::DoRun()
 }
 
 /**
- * \ingroup network-test
- * \ingroup tests
+ * @ingroup network-test
+ * @ingroup tests
  *
- * \brief PCAP file utils TestSuite
+ * @brief PCAP file utils TestSuite
  */
 class PcapFileTestSuite : public TestSuite
 {

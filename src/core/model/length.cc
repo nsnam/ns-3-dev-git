@@ -25,13 +25,13 @@
 #include <vector>
 
 /**
- * \file
- * \ingroup length
+ * @file
+ * @ingroup length
  * ns3::Length implementation
  */
 
 /**
- * \ingroup length
+ * @ingroup length
  * Unnamed namespace
  */
 namespace
@@ -39,11 +39,11 @@ namespace
 /**
  * Helper function to scale an input value by a given ratio
  *
- * \tparam R a std::ratio
+ * @tparam R a std::ratio
  *
- * \param value Input value to scale by R
+ * @param value Input value to scale by R
  *
- * \return The result of value * R::num / R::den
+ * @return The result of value * R::num / R::den
  */
 template <class R>
 double
@@ -55,9 +55,9 @@ ScaleValue(double value)
 /**
  * Convert a value in feet to the equivalent value in meters
  *
- * \param value Input value in feet
+ * @param value Input value in feet
  *
- * \return Equivalent value in meters
+ * @return Equivalent value in meters
  */
 double
 FootToMeter(double value)
@@ -68,9 +68,9 @@ FootToMeter(double value)
 /**
  * Convert a value in meters to the equivalent value in feet
  *
- * \param value Input value in meters
+ * @param value Input value in meters
  *
- * \return Equivalent value in feet
+ * @return Equivalent value in feet
  */
 double
 MeterToFoot(double value)
@@ -83,11 +83,11 @@ MeterToFoot(double value)
  *
  * Value is scaled to feet then converted to meters
  *
- * \tparam R std::ratio needed to convert value to feet
+ * @tparam R std::ratio needed to convert value to feet
  *
- * \param value Input value in some US Customary unit
+ * @param value Input value in some US Customary unit
  *
- * \return Equivalent value in meters
+ * @return Equivalent value in meters
  */
 template <class R>
 double
@@ -101,11 +101,11 @@ USToMeter(double value)
  *
  * Value is converted to feet then scaled to the desired US Customary unit
  *
- * \tparam R std::ratio needed to convert feet to desired US customary unit
+ * @tparam R std::ratio needed to convert feet to desired US customary unit
  *
- * \param value Input value in meters
+ * @param value Input value in meters
  *
- * \return Equivalent value in a US customary unit
+ * @return Equivalent value in a US customary unit
  */
 template <class R>
 double
@@ -117,11 +117,11 @@ MeterToUS(double value)
 /**
  * Convert a value in one unit to the equivalent value in another unit
  *
- * \param value Length value in \p fromUnit units
- * \param fromUnit Unit of \p value
- * \param toUnit Target unit
+ * @param value Length value in \p fromUnit units
+ * @param fromUnit Unit of \p value
+ * @param toUnit Target unit
  *
- * \return Result of converting value from \p fromUnit to \p toUnit
+ * @return Result of converting value from \p fromUnit to \p toUnit
  */
 double
 Convert(double value, ns3::Length::Unit fromUnit, ns3::Length::Unit toUnit)
@@ -186,10 +186,10 @@ Convert(double value, ns3::Length::Unit fromUnit, ns3::Length::Unit toUnit)
 /**
  * Convert a Length::Quantity to the equivalent value in another unit
  *
- * \param from Quantity with the current value and unit
- * \param toUnit Target unit
+ * @param from Quantity with the current value and unit
+ * @param toUnit Target unit
  *
- * \return Result of converting the quantity value to the requested units
+ * @return Result of converting the quantity value to the requested units
  */
 double
 Convert(const ns3::Length::Quantity& from, ns3::Length::Unit toUnit)
@@ -209,9 +209,9 @@ class EnumHash
     /**
      * Produce a hash value for a Length::Unit
      *
-     * \param u Length::Unit to hash
+     * @param u Length::Unit to hash
      *
-     * \return Hash value for the Length::Unit
+     * @return Hash value for the Length::Unit
      */
     std::size_t operator()(ns3::Length::Unit u) const noexcept
     {
@@ -681,8 +681,8 @@ operator<<(std::ostream& stream, Length::Unit unit)
  * The input string can either contain a double (for example, "5.5") or
  * a double and a string with no space between them (for example, "5.5m")
  *
- * \param input The input string
- * \return A three element tuple containing the result of parsing the string.
+ * @param input The input string
+ * @return A three element tuple containing the result of parsing the string.
  * The first tuple element is a boolean indicating whether the parsing succeeded
  * or failed.  The second element contains the value of the double that was
  * extracted from the string.  The third element was the unit symbol that was

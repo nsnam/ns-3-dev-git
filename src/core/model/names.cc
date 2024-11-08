@@ -15,8 +15,8 @@
 #include <map>
 
 /**
- * \file
- * \ingroup config
+ * @file
+ * @ingroup config
  * ns3::Names, ns3::NamesNode and ns3::NamePriv implementations.
  */
 
@@ -26,7 +26,7 @@ namespace ns3
 NS_LOG_COMPONENT_DEFINE("Names");
 
 /**
- * \ingroup config
+ * @ingroup config
  *  Node in the naming tree.
  */
 class NameNode
@@ -37,22 +37,22 @@ class NameNode
     /**
      * Copy constructor.
      *
-     * \param [in] nameNode The NameNode to copy from.
+     * @param [in] nameNode The NameNode to copy from.
      */
     NameNode(const NameNode& nameNode);
     /**
      * Constructor.
      *
-     * \param [in] parent The parent NameNode.
-     * \param [in] name The name of this NameNode
-     * \param [in] object The object corresponding to this NameNode.
+     * @param [in] parent The parent NameNode.
+     * @param [in] name The name of this NameNode
+     * @param [in] object The object corresponding to this NameNode.
      */
     NameNode(NameNode* parent, std::string name, Ptr<Object> object);
     /**
      * Assignment operator.
      *
-     * \param [in] rhs The NameNode to copy from.
-     * \returns The lhs NameNode.
+     * @param [in] rhs The NameNode to copy from.
+     * @returns The lhs NameNode.
      */
     NameNode& operator=(const NameNode& rhs);
 
@@ -109,7 +109,7 @@ NameNode::~NameNode()
 }
 
 /**
- * \ingroup config
+ * @ingroup config
  * The singleton root Names object.
  */
 class NamesPriv : public Singleton<NamesPriv>
@@ -125,85 +125,85 @@ class NamesPriv : public Singleton<NamesPriv>
     /**
      * Internal implementation for Names::Add(std::string,Ptr<Object>)
      *
-     * \param [in] name The name of the object you want to associate;
+     * @param [in] name The name of the object you want to associate;
      *             which may be prepended with a path to that object.
-     * \param [in] object A smart pointer to the object itself.
-     * \return \c true if the object was named successfully.
+     * @param [in] object A smart pointer to the object itself.
+     * @return \c true if the object was named successfully.
      */
     bool Add(std::string name, Ptr<Object> object);
     /**
      * Internal implementation for Names::Add(std::string,std::string,Ptr<Object>)
      *
-     * \param [in] path A path name describing a previously named object
+     * @param [in] path A path name describing a previously named object
      *             under which you want this new name to be defined.
-     * \param [in] name The name of the object you want to associate.
-     * \param [in] object A smart pointer to the object itself.
-     * \return \c true if the object was named successfully.
+     * @param [in] name The name of the object you want to associate.
+     * @param [in] object A smart pointer to the object itself.
+     * @return \c true if the object was named successfully.
      */
     bool Add(std::string path, std::string name, Ptr<Object> object);
     /**
      * Internal implementation for Names::Add(Ptr<Object>,std::string,Ptr<Object>)
      *
-     * \param [in] context A smart pointer to an object that is used
+     * @param [in] context A smart pointer to an object that is used
      *             in place of the path under which you want this new
      *             name to be defined.
-     * \param [in] name The name of the object you want to associate.
-     * \param [in] object A smart pointer to the object itself.
-     * \return \c true if the object was named successfully.
+     * @param [in] name The name of the object you want to associate.
+     * @param [in] object A smart pointer to the object itself.
+     * @return \c true if the object was named successfully.
      */
     bool Add(Ptr<Object> context, std::string name, Ptr<Object> object);
 
     /**
      * Internal implementation for Names::Rename(std::string,std::string)
      *
-     * \param [in] oldpath The current path name to the object you want
+     * @param [in] oldpath The current path name to the object you want
      *             to change.
-     * \param [in] newname The new name of the object you want to change.
-     * \return \c true if the object was renamed successfully.
+     * @param [in] newname The new name of the object you want to change.
+     * @return \c true if the object was renamed successfully.
      */
     bool Rename(std::string oldpath, std::string newname);
     /**
      * Internal implementation for
      * Names::Rename(std::string,std::string,std::string)
      *
-     * \param [in] path A path name describing a previously named object
+     * @param [in] path A path name describing a previously named object
      *             under which you want this name change to occur
      *             (cf. directory).
-     * \param [in] oldname The currently defined name of the object.
-     * \param [in] newname The new name you want the object to have.
-     * \return \c true if the object was renamed successfully.
+     * @param [in] oldname The currently defined name of the object.
+     * @param [in] newname The new name you want the object to have.
+     * @return \c true if the object was renamed successfully.
      */
     bool Rename(std::string path, std::string oldname, std::string newname);
     /**
      * Internal implementation for
      * Names::Rename(Ptr<Object>,std::string,std::string)
      *
-     * \param [in] context A smart pointer to an object that is used
+     * @param [in] context A smart pointer to an object that is used
      *             in place of the path under which you want this
      *             new name to be defined.
-     * \param [in] oldname The current shortname of the object you want
+     * @param [in] oldname The current shortname of the object you want
      *             to change.
-     * \param [in] newname The new shortname of the object you want
+     * @param [in] newname The new shortname of the object you want
      *             to change.
-     * \return \c true if the object was renamed successfully.
+     * @return \c true if the object was renamed successfully.
      */
     bool Rename(Ptr<Object> context, std::string oldname, std::string newname);
 
     /**
      * Internal implementation for Names::FindName()
      *
-     * \param [in] object A smart pointer to an object for which you want
+     * @param [in] object A smart pointer to an object for which you want
      *             to find its name.
-     * \returns A string containing the name of the object if found,
+     * @returns A string containing the name of the object if found,
      *          otherwise the empty string.
      */
     std::string FindName(Ptr<Object> object);
     /**
      * Internal implementation of Names::FindPath()
      *
-     * \param [in] object A smart pointer to an object for which you
+     * @param [in] object A smart pointer to an object for which you
      *             want to find its fullname.
-     * \returns A string containing the name path of the object,
+     * @returns A string containing the name path of the object,
      *          otherwise the empty string.
      */
     std::string FindPath(Ptr<Object> object);
@@ -216,30 +216,30 @@ class NamesPriv : public Singleton<NamesPriv>
     /**
      * Internal implementation for ns3::Names::Find(std::string)
      *
-     * \param [in] path A string containing a name space path used
+     * @param [in] path A string containing a name space path used
      *             to locate the object.
-     * \returns A smart pointer to the named object converted to
+     * @returns A smart pointer to the named object converted to
      *          the requested type.
      */
     Ptr<Object> Find(std::string path);
     /**
      * Internal implementation for ns3::Names::Find(std::string,std::string)
      *
-     * \param [in] path A path name describing a previously named object
+     * @param [in] path A path name describing a previously named object
      *             under which you want to look for the specified name.
-     * \param [in] name A string containing a name to search for.
-     * \returns A smart pointer to the named object converted to
+     * @param [in] name A string containing a name to search for.
+     * @returns A smart pointer to the named object converted to
      *          the requested type.
      */
     Ptr<Object> Find(std::string path, std::string name);
     /**
      * Internal implementation for ns3::Names::Find(Ptr<Object>,std::string)
      *
-     * \param [in] context A smart pointer to an object that is used
+     * @param [in] context A smart pointer to an object that is used
      *             in place of the path under which you want this
      *             new name to be defined.
-     * \param [in] name A string containing a name to search for.
-     * \returns A smart pointer to the named object converted to
+     * @param [in] name A string containing a name to search for.
+     * @returns A smart pointer to the named object converted to
      *          the requested type.
      */
     Ptr<Object> Find(Ptr<Object> context, std::string name);
@@ -248,16 +248,16 @@ class NamesPriv : public Singleton<NamesPriv>
     /**
      * Check if an object has a name.
      *
-     * \param [in] object The object to check.
-     * \returns The corresponding NameNode, if it exists.
+     * @param [in] object The object to check.
+     * @returns The corresponding NameNode, if it exists.
      */
     NameNode* IsNamed(Ptr<Object> object);
     /**
      * Check if a name already exists as a child of a NameNode.
      *
-     * \param [in] node The node to search.
-     * \param [in] name The name to search for.
-     * \returns \c true if \c name already exists as a child of \c node.
+     * @param [in] node The node to search.
+     * @param [in] name The name to search for.
+     * @returns \c true if \c name already exists as a child of \c node.
      */
     bool IsDuplicateName(NameNode* node, std::string name);
 

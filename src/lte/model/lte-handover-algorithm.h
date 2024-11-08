@@ -21,7 +21,7 @@ class LteHandoverManagementSapUser;
 class LteHandoverManagementSapProvider;
 
 /**
- * \brief The abstract base class of a handover algorithm that operates using
+ * @brief The abstract base class of a handover algorithm that operates using
  *        the Handover Management SAP interface.
  *
  * Handover algorithm receives measurement reports from an eNodeB RRC instance
@@ -58,22 +58,22 @@ class LteHandoverAlgorithm : public Object
     ~LteHandoverAlgorithm() override;
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
     /**
-     * \brief Set the "user" part of the Handover Management SAP interface that
+     * @brief Set the "user" part of the Handover Management SAP interface that
      *        this handover algorithm instance will interact with.
-     * \param s a reference to the "user" part of the interface, typically a
+     * @param s a reference to the "user" part of the interface, typically a
      *          member of an LteEnbRrc instance
      */
     virtual void SetLteHandoverManagementSapUser(LteHandoverManagementSapUser* s) = 0;
 
     /**
-     * \brief Export the "provider" part of the Handover Management SAP interface.
-     * \return the reference to the "provider" part of the interface, typically to
+     * @brief Export the "provider" part of the Handover Management SAP interface.
+     * @return the reference to the "provider" part of the interface, typically to
      *         be kept by an LteEnbRrc instance
      */
     virtual LteHandoverManagementSapProvider* GetLteHandoverManagementSapProvider() = 0;
@@ -85,10 +85,10 @@ class LteHandoverAlgorithm : public Object
     // HANDOVER MANAGEMENT SAP PROVIDER IMPLEMENTATION
 
     /**
-     * \brief Implementation of LteHandoverManagementSapProvider::ReportUeMeas.
-     * \param rnti Radio Network Temporary Identity, an integer identifying the UE
+     * @brief Implementation of LteHandoverManagementSapProvider::ReportUeMeas.
+     * @param rnti Radio Network Temporary Identity, an integer identifying the UE
      *             where the report originates from
-     * \param measResults a single report of one measurement identity
+     * @param measResults a single report of one measurement identity
      */
     virtual void DoReportUeMeas(uint16_t rnti, LteRrcSap::MeasResults measResults) = 0;
 

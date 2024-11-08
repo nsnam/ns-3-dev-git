@@ -35,11 +35,11 @@ extern "C"
 { /* } */
 #endif
     /**
-     * \brief Mix hash keys in-place for lookuphash
+     * @brief Mix hash keys in-place for lookuphash
      *
-     * \param a first word of the hash key
-     * \param b second word of the hash key
-     * \param c third word of the hash key
+     * @param a first word of the hash key
+     * @param b second word of the hash key
+     * @param c third word of the hash key
      */
     void mixHashKey(uint32_t& a, uint32_t& b, uint32_t& c)
     {
@@ -73,12 +73,12 @@ extern "C"
     }
 
     /**
-     * \brief Get a hash key.
-     * \param k the key
-     * \param length the length of the key
-     * \param level the previous hash, or an arbitrary value
-     * \return hash
-     * \note Adapted from Jens Jakobsen implementation (chillispot).
+     * @brief Get a hash key.
+     * @param k the key
+     * @param length the length of the key
+     * @param level the previous hash, or an arbitrary value
+     * @return hash
+     * @note Adapted from Jens Jakobsen implementation (chillispot).
      */
     static uint32_t lookuphash(unsigned char* k, uint32_t length, uint32_t level)
     {

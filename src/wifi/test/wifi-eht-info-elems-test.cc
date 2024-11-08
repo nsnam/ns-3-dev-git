@@ -27,10 +27,10 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("WifiEhtInfoElemsTest");
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief Test Multi-Link Element (Basic variant) serialization and deserialization
+ * @brief Test Multi-Link Element (Basic variant) serialization and deserialization
  */
 class BasicMultiLinkElementTest : public HeaderSerializationTestCase
 {
@@ -45,9 +45,9 @@ class BasicMultiLinkElementTest : public HeaderSerializationTestCase
      * Get a Multi-Link Element including the given Common Info field and the
      * given Per-STA Profile Subelements
      *
-     * \param commonInfo the given Common Info field
-     * \param subelements the given set of Per-STA Profile Subelements
-     * \return a Multi-Link Element
+     * @param commonInfo the given Common Info field
+     * @param subelements the given set of Per-STA Profile Subelements
+     * @return a Multi-Link Element
      */
     MultiLinkElement GetMultiLinkElement(
         const CommonInfoBasicMle& commonInfo,
@@ -583,10 +583,10 @@ BasicMultiLinkElementTest::DoRun()
 }
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief Test Reduced Neighbor Report serialization and deserialization
+ * @brief Test Reduced Neighbor Report serialization and deserialization
  */
 class ReducedNeighborReportTest : public HeaderSerializationTestCase
 {
@@ -603,10 +603,10 @@ class ReducedNeighborReportTest : public HeaderSerializationTestCase
     /**
      * Get a Reduced Neighbor Report element including the given operating channels
      *
-     * \param channel2_4It a channel in the 2.4 GHz band
-     * \param channel5It a channel in the 5 GHz band
-     * \param channel6It a channel in the 6 GHz band
-     * \return a Reduced Neighbor Report element
+     * @param channel2_4It a channel in the 2.4 GHz band
+     * @param channel5It a channel in the 5 GHz band
+     * @param channel6It a channel in the 6 GHz band
+     * @return a Reduced Neighbor Report element
      */
     ReducedNeighborReport GetReducedNeighborReport(PhyOpChannelIt channel2_4It,
                                                    PhyOpChannelIt channel5It,
@@ -757,18 +757,18 @@ ReducedNeighborReportTest::DoRun()
 }
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief Test serialization and deserialization of EHT capabilities IE
+ * @brief Test serialization and deserialization of EHT capabilities IE
  */
 class WifiEhtCapabilitiesIeTest : public HeaderSerializationTestCase
 {
   public:
     /**
      * Constructor
-     * \param is2_4Ghz whether the PHY is operating in 2.4 GHz
-     * \param channelWidth the supported channel width
+     * @param is2_4Ghz whether the PHY is operating in 2.4 GHz
+     * @param channelWidth the supported channel width
      */
     WifiEhtCapabilitiesIeTest(bool is2_4Ghz, MHz_u channelWidth);
     ~WifiEhtCapabilitiesIeTest() override = default;
@@ -776,17 +776,17 @@ class WifiEhtCapabilitiesIeTest : public HeaderSerializationTestCase
     /**
      * Generate the HE capabilities IE.
      *
-     * \return the generated HE capabilities IE
+     * @return the generated HE capabilities IE
      */
     HeCapabilities GetHeCapabilities() const;
 
     /**
      * Generate the EHT capabilities IE.
      *
-     * \param maxMpduLength the maximum MPDU length in bytes
-     * \param maxAmpduSize the maximum A-MPDU size in bytes
-     * \param maxSupportedMcs the maximum EHT MCS supported by the PHY
-     * \return the generated EHT capabilities IE
+     * @param maxMpduLength the maximum MPDU length in bytes
+     * @param maxAmpduSize the maximum A-MPDU size in bytes
+     * @param maxSupportedMcs the maximum EHT MCS supported by the PHY
+     * @return the generated EHT capabilities IE
      */
     EhtCapabilities GetEhtCapabilities(uint16_t maxMpduLength,
                                        uint32_t maxAmpduSize,
@@ -795,41 +795,41 @@ class WifiEhtCapabilitiesIeTest : public HeaderSerializationTestCase
     /**
      * Serialize the EHT capabilities in a buffer.
      *
-     * \param ehtCapabilities the EHT capabilities
-     * \return the buffer in which the EHT capabilities has been serialized
+     * @param ehtCapabilities the EHT capabilities
+     * @return the buffer in which the EHT capabilities has been serialized
      */
     Buffer SerializeIntoBuffer(const EhtCapabilities& ehtCapabilities);
 
     /**
      * Check that the given buffer contains the given value at the given position.
      *
-     * \param buffer the given buffer
-     * \param position the given position (starting at 0)
-     * \param value the given value
+     * @param buffer the given buffer
+     * @param position the given position (starting at 0)
+     * @param value the given value
      */
     void CheckSerializedByte(const Buffer& buffer, uint32_t position, uint8_t value);
 
     /**
      * Check the content of the EHT MAC Capabilities Information subfield.
      *
-     * \param buffer the buffer containing the serialized EHT capabilities
-     * \param expectedValueFirstByte the expected value for the first byte
+     * @param buffer the buffer containing the serialized EHT capabilities
+     * @param expectedValueFirstByte the expected value for the first byte
      */
     void CheckEhtMacCapabilitiesInformation(const Buffer& buffer, uint8_t expectedValueFirstByte);
 
     /**
      * Check the content of the EHT PHY Capabilities Information subfield.
      *
-     * \param buffer the buffer containing the serialized EHT capabilities
-     * \param expectedValueSixthByte the expected value for the sixth byte
+     * @param buffer the buffer containing the serialized EHT capabilities
+     * @param expectedValueSixthByte the expected value for the sixth byte
      */
     void CheckEhtPhyCapabilitiesInformation(const Buffer& buffer, uint8_t expectedValueSixthByte);
 
     /**
      * Check the content of the Supported EHT-MCS And NSS Set subfield.
-     * \param maxSupportedMcs the maximum EHT MCS supported by the PHY
+     * @param maxSupportedMcs the maximum EHT MCS supported by the PHY
      *
-     * \param buffer the buffer containing the serialized EHT capabilities
+     * @param buffer the buffer containing the serialized EHT capabilities
      */
     void CheckSupportedEhtMcsAndNssSet(const Buffer& buffer, uint8_t maxSupportedMcs);
 
@@ -1187,10 +1187,10 @@ WifiEhtCapabilitiesIeTest::DoRun()
 }
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief Test TID-To-Link Mapping information element serialization and deserialization
+ * @brief Test TID-To-Link Mapping information element serialization and deserialization
  */
 class TidToLinkMappingElementTest : public HeaderSerializationTestCase
 {
@@ -1198,10 +1198,10 @@ class TidToLinkMappingElementTest : public HeaderSerializationTestCase
     /**
      * Constructor
      *
-     * \param direction The direction for the TID-to-link mapping
-     * \param mappingSwitchTime the Mapping Switching Time
-     * \param expectedDuration the Expected Duration
-     * \param mappings A TID-indexed map of the link sets the TIDs are mapped to
+     * @param direction The direction for the TID-to-link mapping
+     * @param mappingSwitchTime the Mapping Switching Time
+     * @param expectedDuration the Expected Duration
+     * @param mappings A TID-indexed map of the link sets the TIDs are mapped to
      */
     TidToLinkMappingElementTest(WifiDirection direction,
                                 std::optional<Time> mappingSwitchTime,
@@ -1276,10 +1276,10 @@ TidToLinkMappingElementTest::DoRun()
 }
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief Test EHT Operation information element serialization and deserialization
+ * @brief Test EHT Operation information element serialization and deserialization
  */
 class EhtOperationElementTest : public HeaderSerializationTestCase
 {
@@ -1287,16 +1287,16 @@ class EhtOperationElementTest : public HeaderSerializationTestCase
     /**
      * Constructor
      *
-     * \param params the EHT Operation Parameters field
-     * \param rxMaxNss0_7 RX max NSS that supports EHT MCS 0-7
-     * \param txMaxNss0_7 TX max NSS that supports EHT MCS 0-7
-     * \param rxMaxNss8_9 RX max NSS that supports EHT MCS 8-9
-     * \param txMaxNss8_9 TX max NSS that supports EHT MCS 8-9
-     * \param rxMaxNss10_11 RX max NSS that supports EHT MCS 10-11
-     * \param txMaxNss10_11 TX max NSS that supports EHT MCS 10-11
-     * \param rxMaxNss12_13 RX max NSS that supports EHT MCS 12-13
-     * \param txMaxNss12_13 TX max NSS that supports EHT MCS 12-13
-     * \param opInfo the EHT Operation Information field
+     * @param params the EHT Operation Parameters field
+     * @param rxMaxNss0_7 RX max NSS that supports EHT MCS 0-7
+     * @param txMaxNss0_7 TX max NSS that supports EHT MCS 0-7
+     * @param rxMaxNss8_9 RX max NSS that supports EHT MCS 8-9
+     * @param txMaxNss8_9 TX max NSS that supports EHT MCS 8-9
+     * @param rxMaxNss10_11 RX max NSS that supports EHT MCS 10-11
+     * @param txMaxNss10_11 TX max NSS that supports EHT MCS 10-11
+     * @param rxMaxNss12_13 RX max NSS that supports EHT MCS 12-13
+     * @param txMaxNss12_13 TX max NSS that supports EHT MCS 12-13
+     * @param opInfo the EHT Operation Information field
      */
     EhtOperationElementTest(const EhtOperation::EhtOpParams& params,
                             uint8_t rxMaxNss0_7,
@@ -1349,10 +1349,10 @@ EhtOperationElementTest::DoRun()
 }
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief wifi EHT Information Elements Test Suite
+ * @brief wifi EHT Information Elements Test Suite
  */
 class WifiEhtInfoElemsTestSuite : public TestSuite
 {

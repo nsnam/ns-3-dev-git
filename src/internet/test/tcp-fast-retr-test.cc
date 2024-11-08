@@ -17,9 +17,9 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("TcpFastRetrTest");
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief Test the fast retransmission
+ * @brief Test the fast retransmission
  *
  * Checking what is happening is not so easy, so there are a lot of variables
  * which helps to keep track on what is happening.
@@ -30,10 +30,10 @@ class TcpFastRetrTest : public TcpGeneralTest
 {
   public:
     /**
-     * \brief Constructor
-     * \param congControl Type of congestion control.
-     * \param seqToKill Sequence number of the packet to drop.
-     * \param msg Test message.
+     * @brief Constructor
+     * @param congControl Type of congestion control.
+     * @param seqToKill Sequence number of the packet to drop.
+     * @param msg Test message.
      */
     TcpFastRetrTest(TypeId congControl, uint32_t seqToKill, const std::string& msg);
 
@@ -57,10 +57,10 @@ class TcpFastRetrTest : public TcpGeneralTest
     void AfterRTOExpired(const Ptr<const TcpSocketState> tcb, SocketWho who) override;
 
     /**
-     * \brief Check if the packet being dropped is the right one.
-     * \param ipH IPv4 header.
-     * \param tcpH TCP header.
-     * \param p The packet.
+     * @brief Check if the packet being dropped is the right one.
+     * @param ipH IPv4 header.
+     * @param tcpH TCP header.
+     * @param p The packet.
      */
     void PktDropped(const Ipv4Header& ipH, const TcpHeader& tcpH, Ptr<const Packet> p);
     void FinalChecks() override;
@@ -414,9 +414,9 @@ TcpFastRetrTest::FinalChecks()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief Testsuite for the fast retransmission
+ * @brief Testsuite for the fast retransmission
  */
 class TcpFastRetrTestSuite : public TestSuite
 {

@@ -35,15 +35,15 @@ uint16_t port = 9;
 NS_LOG_COMPONENT_DEFINE("DsdvManetExample");
 
 /**
- * \defgroup dsdv-examples DSDV Examples
- * \ingroup dsdv
- * \ingroup examples
+ * @defgroup dsdv-examples DSDV Examples
+ * @ingroup dsdv
+ * @ingroup examples
  */
 
 /**
- * \ingroup dsdv-examples
+ * @ingroup dsdv-examples
  *
- * \brief DSDV Manet example
+ * @brief DSDV Manet example
  */
 class DsdvManetExample
 {
@@ -51,17 +51,17 @@ class DsdvManetExample
     DsdvManetExample();
     /**
      * Run function
-     * \param nWifis The total number of nodes
-     * \param nSinks The total number of receivers
-     * \param totalTime The total simulation time
-     * \param rate The network speed
-     * \param phyMode The physical mode
-     * \param nodeSpeed The node speed
-     * \param periodicUpdateInterval The routing update interval
-     * \param settlingTime The routing update settling time
-     * \param dataStart The data transmission start time
-     * \param printRoutes print the routes if true
-     * \param CSVfileName The CSV file name
+     * @param nWifis The total number of nodes
+     * @param nSinks The total number of receivers
+     * @param totalTime The total simulation time
+     * @param rate The network speed
+     * @param phyMode The physical mode
+     * @param nodeSpeed The node speed
+     * @param periodicUpdateInterval The routing update interval
+     * @param settlingTime The routing update settling time
+     * @param dataStart The data transmission start time
+     * @param printRoutes print the routes if true
+     * @param CSVfileName The CSV file name
      */
     void CaseRun(uint32_t nWifis,
                  uint32_t nSinks,
@@ -99,12 +99,12 @@ class DsdvManetExample
     void CreateNodes();
     /**
      * Create and initialize all devices
-     * \param tr_name The trace file name
+     * @param tr_name The trace file name
      */
     void CreateDevices(std::string tr_name);
     /**
      * Create network
-     * \param tr_name The trace file name
+     * @param tr_name The trace file name
      */
     void InstallInternetStack(std::string tr_name);
     /// Create data sinks and sources
@@ -113,14 +113,14 @@ class DsdvManetExample
     void SetupMobility();
     /**
      * Packet receive function
-     * \param socket The communication socket
+     * @param socket The communication socket
      */
     void ReceivePacket(Ptr<Socket> socket);
     /**
      * Setup packet receivers
-     * \param addr the receiving IPv4 address
-     * \param node the receiving node
-     * \returns the communication socket
+     * @param addr the receiving IPv4 address
+     * @param node the receiving node
+     * @returns the communication socket
      */
     Ptr<Socket> SetupPacketReceive(Ipv4Address addr, Ptr<Node> node);
     /// Check network throughput

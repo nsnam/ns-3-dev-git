@@ -15,17 +15,17 @@ namespace ns3
 {
 
 /**
- * \ingroup flame
+ * @ingroup flame
  *
- * \brief Helper class used to install FLAME mesh stack (actually single
+ * @brief Helper class used to install FLAME mesh stack (actually single
  * protocol in this stack)
  */
 class FlameStack : public MeshStack
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -46,22 +46,22 @@ class FlameStack : public MeshStack
     void DoDispose() override;
 
     /**
-     * \brief Install a flame stack on the given MeshPointDevice
-     * \param mp The Ptr<MeshPointDevice> to use.
-     * \return true if successful
+     * @brief Install a flame stack on the given MeshPointDevice
+     * @param mp The Ptr<MeshPointDevice> to use.
+     * @return true if successful
      */
     bool InstallStack(Ptr<MeshPointDevice> mp) override;
 
     /**
-     * \brief Print flame protocol statistics.
-     * \param mp The Ptr<MeshPointDevice> to use.
-     * \param os The output stream
+     * @brief Print flame protocol statistics.
+     * @param mp The Ptr<MeshPointDevice> to use.
+     * @param os The output stream
      */
     void Report(const Ptr<MeshPointDevice> mp, std::ostream&) override;
 
     /**
-     * \brief Reset the statistics.
-     * \param mp The Ptr<MeshPointDevice> to use.
+     * @brief Reset the statistics.
+     * @param mp The Ptr<MeshPointDevice> to use.
      */
     void ResetStats(const Ptr<MeshPointDevice> mp) override;
 };

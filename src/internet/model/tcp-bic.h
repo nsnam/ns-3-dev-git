@@ -18,9 +18,9 @@ namespace ns3
 {
 
 /**
- * \ingroup congestionOps
+ * @ingroup congestionOps
  *
- * \brief BIC congestion control algorithm
+ * @brief BIC congestion control algorithm
  *
  * In TCP Bic the congestion control problem is viewed as a search
  * problem. Taking as a starting point the current window value
@@ -71,19 +71,19 @@ class TcpBic : public TcpCongestionOps
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
     /**
-     * \brief Constructor
+     * @brief Constructor
      */
     TcpBic();
 
     /**
      * Copy constructor.
-     * \param sock The socket to copy from.
+     * @param sock The socket to copy from.
      */
     TcpBic(const TcpBic& sock);
 
@@ -95,21 +95,21 @@ class TcpBic : public TcpCongestionOps
 
   protected:
     /**
-     * \brief Bic window update after a new ack received
-     * \param tcb the socket state.
-     * \returns The number of segments acked since the last cwnd increment.
+     * @brief Bic window update after a new ack received
+     * @param tcb the socket state.
+     * @returns The number of segments acked since the last cwnd increment.
      */
     virtual uint32_t Update(Ptr<TcpSocketState> tcb);
 
   private:
     /**
-     * \brief TcpBicIncrementTest friend class (for tests).
-     * \relates TcpBicIncrementTest
+     * @brief TcpBicIncrementTest friend class (for tests).
+     * @relates TcpBicIncrementTest
      */
     friend class ::TcpBicIncrementTest;
     /**
-     * \brief TcpBicDecrementTest friend class (for tests).
-     * \relates TcpBicDecrementTest
+     * @brief TcpBicDecrementTest friend class (for tests).
+     * @relates TcpBicDecrementTest
      */
     friend class ::TcpBicDecrementTest;
 

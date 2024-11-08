@@ -19,17 +19,17 @@ namespace ns3
 class TcpSocketState;
 
 /**
- * \ingroup tcp
- * \defgroup recoveryOps Recovery Algorithms.
+ * @ingroup tcp
+ * @defgroup recoveryOps Recovery Algorithms.
  *
  * The various recovery algorithms used in recovery phase of TCP. The interface
  * is defined in class TcpRecoveryOps.
  */
 
 /**
- * \ingroup recoveryOps
+ * @ingroup recoveryOps
  *
- * \brief recovery abstract class
+ * @brief recovery abstract class
  *
  * The design is inspired by the TcpCongestionOps class in ns-3. The fast
  * recovery is split from the main socket code, and it is a pluggable
@@ -43,50 +43,50 @@ class TcpSocketState;
  *
  * Each condition is represented by a pure virtual method.
  *
- * \see TcpClassicRecovery
- * \see DoRecovery
+ * @see TcpClassicRecovery
+ * @see DoRecovery
  */
 class TcpRecoveryOps : public Object
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
     /**
-     * \brief Constructor
+     * @brief Constructor
      */
     TcpRecoveryOps();
 
     /**
-     * \brief Copy constructor.
-     * \param other object to copy.
+     * @brief Copy constructor.
+     * @param other object to copy.
      */
     TcpRecoveryOps(const TcpRecoveryOps& other);
 
     /**
-     * \brief Deconstructor
+     * @brief Deconstructor
      */
     ~TcpRecoveryOps() override;
 
     /**
-     * \brief Get the name of the recovery algorithm
+     * @brief Get the name of the recovery algorithm
      *
-     * \return A string identifying the name
+     * @return A string identifying the name
      */
     virtual std::string GetName() const = 0;
 
     /**
-     * \brief Performs variable initialization at the start of recovery
+     * @brief Performs variable initialization at the start of recovery
      *
      * The function is called when the TcpSocketState is changed to CA_RECOVERY.
      *
-     * \param tcb internal congestion state
-     * \param dupAckCount duplicate acknowledgement count
-     * \param unAckDataCount total bytes of data unacknowledged
-     * \param deliveredBytes bytes (S)ACKed in the last (S)ACK
+     * @param tcb internal congestion state
+     * @param dupAckCount duplicate acknowledgement count
+     * @param unAckDataCount total bytes of data unacknowledged
+     * @param deliveredBytes bytes (S)ACKed in the last (S)ACK
      */
     virtual void EnterRecovery(Ptr<TcpSocketState> tcb,
                                uint32_t dupAckCount,
@@ -94,48 +94,48 @@ class TcpRecoveryOps : public Object
                                uint32_t deliveredBytes) = 0;
 
     /**
-     * \brief Performs recovery based on the recovery algorithm
+     * @brief Performs recovery based on the recovery algorithm
      *
      * The function is called on arrival of every ack when TcpSocketState
      * is set to CA_RECOVERY. It performs the necessary cwnd changes
      * as per the recovery algorithm.
      * The param `isDupAck` has been added to align PRR implementation with RFC 6937 bis-08.
      *
-     * \param tcb internal congestion state
-     * \param deliveredBytes bytes (S)ACKed in the last (S)ACK
-     * \param isDupAck Indicates if the last acknowledgement was duplicate.
+     * @param tcb internal congestion state
+     * @param deliveredBytes bytes (S)ACKed in the last (S)ACK
+     * @param isDupAck Indicates if the last acknowledgement was duplicate.
      */
     virtual void DoRecovery(Ptr<TcpSocketState> tcb, uint32_t deliveredBytes, bool isDupAck) = 0;
 
     /**
-     * \brief Performs cwnd adjustments at the end of recovery
+     * @brief Performs cwnd adjustments at the end of recovery
      *
      * The function is called when the TcpSocketState is changed from CA_RECOVERY.
      *
-     * \param tcb internal congestion state
+     * @param tcb internal congestion state
      */
     virtual void ExitRecovery(Ptr<TcpSocketState> tcb) = 0;
 
     /**
-     * \brief Keeps track of bytes sent during recovery phase
+     * @brief Keeps track of bytes sent during recovery phase
      *
      * The function is called whenever a data packet is sent during recovery phase
      * (optional).
      *
-     * \param bytesSent bytes sent
+     * @param bytesSent bytes sent
      */
     virtual void UpdateBytesSent(uint32_t bytesSent);
 
     /**
-     * \brief Copy the recovery algorithm across socket
+     * @brief Copy the recovery algorithm across socket
      *
-     * \return a pointer of the copied object
+     * @return a pointer of the copied object
      */
     virtual Ptr<TcpRecoveryOps> Fork() = 0;
 };
 
 /**
- * \brief The Classic recovery implementation
+ * @brief The Classic recovery implementation
  *
  * Classic recovery refers to the two well-established recovery algorithms,
  * namely, NewReno (RFC 6582) and SACK based recovery (RFC 6675).
@@ -146,30 +146,30 @@ class TcpRecoveryOps : public Object
  * the highest sequence transmitted at time of detecting the loss is
  * ACKed by the receiver).
  *
- * \see DoRecovery
+ * @see DoRecovery
  */
 class TcpClassicRecovery : public TcpRecoveryOps
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
     /**
-     * \brief Constructor
+     * @brief Constructor
      */
     TcpClassicRecovery();
 
     /**
-     * \brief Copy constructor.
-     * \param recovery object to copy.
+     * @brief Copy constructor.
+     * @param recovery object to copy.
      */
     TcpClassicRecovery(const TcpClassicRecovery& recovery);
 
     /**
-     * \brief Constructor
+     * @brief Constructor
      */
     ~TcpClassicRecovery() override;
 

@@ -18,7 +18,7 @@ namespace ns3
 {
 
 /**
- * \ingroup uan
+ * @ingroup uan
  *
  * WHOI micro-modem energy model.
  *
@@ -53,7 +53,7 @@ class AcousticModemEnergyModel : public energy::DeviceEnergyModel
   public:
     /**
      * Register this type.
-     * \return The object TypeId.
+     * @return The object TypeId.
      */
     static TypeId GetTypeId();
     /** Constructor. */
@@ -64,14 +64,14 @@ class AcousticModemEnergyModel : public energy::DeviceEnergyModel
     /**
      * Sets pointer to node.
      *
-     * \param node Pointer to node.
+     * @param node Pointer to node.
      */
     virtual void SetNode(Ptr<Node> node);
 
     /**
      * Gets pointer to node.
      *
-     * \return Pointer to node.
+     * @return Pointer to node.
      */
     virtual Ptr<Node> GetNode() const;
 
@@ -82,75 +82,75 @@ class AcousticModemEnergyModel : public energy::DeviceEnergyModel
     /**
      * Get the transmission power of the modem.
      *
-     * \return The transmission power in Watts.
+     * @return The transmission power in Watts.
      */
     double GetTxPowerW() const;
 
     /**
      * Set the transmission power of the modem.
      *
-     * \param txPowerW Transmission power in watts.
+     * @param txPowerW Transmission power in watts.
      */
     void SetTxPowerW(double txPowerW);
 
     /**
      * Get the receiving power.
      *
-     * \return The receiving power in Watts
+     * @return The receiving power in Watts
      */
     double GetRxPowerW() const;
 
     /**
      * Set the receiving power of the modem.
      *
-     * \param rxPowerW Receiving power in watts
+     * @param rxPowerW Receiving power in watts
      */
     void SetRxPowerW(double rxPowerW);
 
     /**
      *Get the idle power of the modem.
      *
-     * \return The idle power in Watts
+     * @return The idle power in Watts
      */
     double GetIdlePowerW() const;
 
     /**
      * Set the idle state power of the modem.
      *
-     * \param idlePowerW Idle power of the modem in watts.
+     * @param idlePowerW Idle power of the modem in watts.
      */
     void SetIdlePowerW(double idlePowerW);
 
     /**
      * Get the sleep state power of the modem.
      *
-     * \return Sleep power of the modem in Watts
+     * @return Sleep power of the modem in Watts
      */
     double GetSleepPowerW() const;
 
     /**
      * Set the sleep power of the modem.
      *
-     * \param sleepPowerW Sleep power of the modem in watts.
+     * @param sleepPowerW Sleep power of the modem in watts.
      */
     void SetSleepPowerW(double sleepPowerW);
 
     /**
      * Get the current state of the modem.
      *
-     * \return Current state.
+     * @return Current state.
      */
     int GetCurrentState() const;
 
     /**
-     * \param callback Callback function.
+     * @param callback Callback function.
      *
      * Sets callback for energy depletion handling.
      */
     void SetEnergyDepletionCallback(AcousticModemEnergyDepletionCallback callback);
 
     /**
-     * \param callback Callback function.
+     * @param callback Callback function.
      *
      * Sets callback for energy recharge handling.
      */
@@ -159,22 +159,22 @@ class AcousticModemEnergyModel : public energy::DeviceEnergyModel
     /**
      * Changes state of the AcousticModemEnergyModel.
      *
-     * \param newState New state the modem is in.
+     * @param newState New state the modem is in.
      */
     void ChangeState(int newState) override;
 
     /**
-     * \brief Handles energy depletion.
+     * @brief Handles energy depletion.
      */
     void HandleEnergyDepletion() override;
 
     /**
-     * \brief Handles energy recharged.
+     * @brief Handles energy recharged.
      */
     void HandleEnergyRecharged() override;
 
     /**
-     * \brief Handles energy changed.
+     * @brief Handles energy changed.
      *
      * Not implemented
      */
@@ -184,20 +184,20 @@ class AcousticModemEnergyModel : public energy::DeviceEnergyModel
     void DoDispose() override;
 
     /**
-     * \return Current draw of device, at current state.
+     * @return Current draw of device, at current state.
      */
     double DoGetCurrentA() const override;
 
     /**
-     * \param destState Modem state to switch to.
-     * \return True if the transition is allowed.
+     * @param destState Modem state to switch to.
+     * @return True if the transition is allowed.
      *
      * This function checks if a given modem state transition is allowed.
      */
     bool IsStateTransitionValid(const int destState);
 
     /**
-     * \param state New state the modem is currently in.
+     * @param state New state the modem is currently in.
      *
      * Sets current state. This function is private so that only the energy model
      * can change its own state.

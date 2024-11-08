@@ -25,8 +25,8 @@ class LteFfrSapProvider;
 class LteFfrSapUser;
 
 /**
- * \ingroup lte
- * \defgroup ff-api FF MAC Schedulers
+ * @ingroup lte
+ * @defgroup ff-api FF MAC Schedulers
  */
 
 /// DL HARQ process status vector
@@ -61,7 +61,7 @@ constexpr uint32_t HARQ_PROC_NUM = 8;
 constexpr uint32_t HARQ_DL_TIMEOUT = 11;
 
 /**
- * \ingroup ff-api
+ * @ingroup ff-api
  *
  * This abstract base class identifies the interface by means of which
  * the helper object can plug on the MAC a scheduler implementation based on the
@@ -97,8 +97,8 @@ class FfMacScheduler : public Object
     // inherited from Object
     void DoDispose() override;
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -106,7 +106,7 @@ class FfMacScheduler : public Object
      * set the user part of the FfMacCschedSap that this Scheduler will
      * interact with. Normally this part of the SAP is exported by the MAC.
      *
-     * \param s
+     * @param s
      */
     virtual void SetFfMacCschedSapUser(FfMacCschedSapUser* s) = 0;
 
@@ -115,19 +115,19 @@ class FfMacScheduler : public Object
      * set the user part of the FfMacSchedSap that this Scheduler will
      * interact with. Normally this part of the SAP is exported by the MAC.
      *
-     * \param s
+     * @param s
      */
     virtual void SetFfMacSchedSapUser(FfMacSchedSapUser* s) = 0;
 
     /**
      *
-     * \return the Provider part of the FfMacCschedSap provided by the Scheduler
+     * @return the Provider part of the FfMacCschedSap provided by the Scheduler
      */
     virtual FfMacCschedSapProvider* GetFfMacCschedSapProvider() = 0;
 
     /**
      *
-     * \return the Provider part of the FfMacSchedSap provided by the Scheduler
+     * @return the Provider part of the FfMacSchedSap provided by the Scheduler
      */
     virtual FfMacSchedSapProvider* GetFfMacSchedSapProvider() = 0;
 
@@ -137,13 +137,13 @@ class FfMacScheduler : public Object
      * Set the Provider part of the LteFfrSap that this Scheduler will
      * interact with
      *
-     * \param s
+     * @param s
      */
     virtual void SetLteFfrSapProvider(LteFfrSapProvider* s) = 0;
 
     /**
      *
-     * \return the User part of the LteFfrSap provided by the FfrAlgorithm
+     * @return the User part of the LteFfrSap provided by the FfrAlgorithm
      */
     virtual LteFfrSapUser* GetLteFfrSapUser() = 0;
 

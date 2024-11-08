@@ -33,7 +33,7 @@ NS_LOG_COMPONENT_DEFINE("UdpTraceClient");
 NS_OBJECT_ENSURE_REGISTERED(UdpTraceClient);
 
 /**
- * \brief Default trace to send
+ * @brief Default trace to send
  */
 UdpTraceClient::TraceEntry UdpTraceClient::g_defaultEntries[] = {
     {0, 534, 'I'},

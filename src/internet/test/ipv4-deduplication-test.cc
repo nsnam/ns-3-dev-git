@@ -45,9 +45,9 @@
 using namespace ns3;
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief IPv4 Deduplication Test
+ * @brief IPv4 Deduplication Test
  *
  * Tests topology:
  *
@@ -71,42 +71,42 @@ using namespace ns3;
 class Ipv4DeduplicationTest : public TestCase
 {
     /**
-     * \brief Send data.
-     * \param socket The sending socket.
-     * \param to Destination address.
+     * @brief Send data.
+     * @param socket The sending socket.
+     * @param to Destination address.
      */
     void DoSendData(Ptr<Socket> socket, std::string to);
     /**
-     * \brief Send data.
-     * \param socket The sending socket.
-     * \param packet The packet to send.
-     * \param to Destination address.
+     * @brief Send data.
+     * @param socket The sending socket.
+     * @param packet The packet to send.
+     * @param to Destination address.
      */
     void DoSendPacket(Ptr<Socket> socket, Ptr<Packet> packet, std::string to);
     /**
-     * \brief Send data.
-     * \param socket The sending socket.
-     * \param to Destination address.
+     * @brief Send data.
+     * @param socket The sending socket.
+     * @param to Destination address.
      */
     void SendData(Ptr<Socket> socket, std::string to);
 
     /**
-     * \brief Send data.
-     * \param socket The sending socket.
-     * \param packet The packet to send.
-     * \param to Destination address.
+     * @brief Send data.
+     * @param socket The sending socket.
+     * @param packet The packet to send.
+     * @param to Destination address.
      */
     void SendPacket(Ptr<Socket> socket, Ptr<Packet> packet, std::string to);
 
     /**
-     * \brief Check packet receptions
-     * \param name Node name
+     * @brief Check packet receptions
+     * @param name Node name
      */
     void CheckPackets(const std::string& name);
 
     /**
-     * \brief Check packet drops
-     * \param name Node name
+     * @brief Check packet drops
+     * @param name Node name
      */
     void CheckDrops(const std::string& name);
 
@@ -114,9 +114,9 @@ class Ipv4DeduplicationTest : public TestCase
 
     /**
      * Creates the test name according to the parameters
-     * \param enable deduplication enabled
-     * \param expire expiration delay for duplicate cache entries
-     * \returns A string describing the test
+     * @param enable deduplication enabled
+     * @param expire expiration delay for duplicate cache entries
+     * @returns A string describing the test
      */
     static std::string MakeName(bool enable, Time expire);
 
@@ -142,24 +142,24 @@ class Ipv4DeduplicationTest : public TestCase
 
     /**
      * Constructor
-     * \param enable deduplication enabled
-     * \param expire expiration delay for duplicate cache entries
+     * @param enable deduplication enabled
+     * @param expire expiration delay for duplicate cache entries
      */
     Ipv4DeduplicationTest(bool enable, Time expire = Seconds(1));
 
     /**
-     * \brief Receive data.
-     * \param [in] socket The receive socket.
+     * @brief Receive data.
+     * @param [in] socket The receive socket.
      */
     void ReceivePkt(Ptr<Socket> socket);
 
     /**
-     * \brief Register dropped packet.
-     * \param [in] ipHeader IP header
-     * \param [in] packet Packet that was dropped
-     * \param [in] reason Reason for dropping packet
-     * \param [in] ipv4 Ipv4 instance
-     * \param [in] interface Interface number
+     * @brief Register dropped packet.
+     * @param [in] ipHeader IP header
+     * @param [in] packet Packet that was dropped
+     * @param [in] reason Reason for dropping packet
+     * @param [in] ipv4 Ipv4 instance
+     * @param [in] interface Interface number
      */
     void DropPkt(const Ipv4Header& ipHeader,
                  Ptr<const Packet> packet,
@@ -533,9 +533,9 @@ Ipv4DeduplicationTest::CheckDrops(const std::string& name)
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief IPv4 Deduplication TestSuite
+ * @brief IPv4 Deduplication TestSuite
  */
 class Ipv4DeduplicationTestSuite : public TestSuite
 {
@@ -558,9 +558,9 @@ static Ipv4DeduplicationTestSuite
     g_ipv4DeduplicationTestSuite; //!< Static variable for test initialization
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief IPv4 Deduplication Performance Test
+ * @brief IPv4 Deduplication Performance Test
  *
  * This test case sets up a fully connected network of
  * 10 nodes.  Each node transmits 2 packets / second
@@ -593,9 +593,9 @@ class Ipv4DeduplicationPerformanceTest : public TestCase
 
     /**
      * Send data
-     * \param socket output socket
-     * \param to destination address
-     * \param socketIndex index of the socket
+     * @param socket output socket
+     * @param to destination address
+     * @param socketIndex index of the socket
      */
     void DoSendData(Ptr<Socket> socket, Address to, uint8_t socketIndex);
 };
@@ -715,9 +715,9 @@ Ipv4DeduplicationPerformanceTest::DoSendData(Ptr<Socket> socket, Address to, uin
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief IPv4 Deduplication Performance TestSuite
+ * @brief IPv4 Deduplication Performance TestSuite
  */
 class Ipv4DeduplicationPerformanceTestSuite : public TestSuite
 {

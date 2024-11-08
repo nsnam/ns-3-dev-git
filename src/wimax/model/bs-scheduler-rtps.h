@@ -30,8 +30,8 @@ class WimaxConnection;
 class Cid;
 
 /**
- * \ingroup wimax
- * \brief This class implements a simple downlink scheduler for rtPS flows.
+ * @ingroup wimax
+ * @brief This class implements a simple downlink scheduler for rtPS flows.
  *
  * The DL-rtPS-Scheduler assigns the available bandwidth the service flows
  * in the following order: IR Connections, Broadcast Connections, Basic and
@@ -53,123 +53,123 @@ class BSSchedulerRtps : public BSScheduler
     /**
      * Constructor
      *
-     * \param bs base station device
+     * @param bs base station device
      */
     BSSchedulerRtps(Ptr<BaseStationNetDevice> bs);
     ~BSSchedulerRtps() override;
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
     /**
-     * \brief This function returns all the downlink bursts scheduled for the next
+     * @brief This function returns all the downlink bursts scheduled for the next
      * downlink sub-frame
-     * \returns  all the downlink bursts scheduled for the next downlink sub-frame
+     * @returns  all the downlink bursts scheduled for the next downlink sub-frame
      */
     std::list<std::pair<OfdmDlMapIe*, Ptr<PacketBurst>>>* GetDownlinkBursts() const override;
 
     /**
-     * \brief This function adds a downlink burst to the list of downlink bursts
+     * @brief This function adds a downlink burst to the list of downlink bursts
      * scheduled for the next downlink sub-frame
-     * \param connection a pointer to connection in which the burst will be sent
-     * \param diuc downlink iuc
-     * \param modulationType the modulation type of the burst
-     * \param burst the downlink burst to add to the downlink sub frame
+     * @param connection a pointer to connection in which the burst will be sent
+     * @param diuc downlink iuc
+     * @param modulationType the modulation type of the burst
+     * @param burst the downlink burst to add to the downlink sub frame
      */
     void AddDownlinkBurst(Ptr<const WimaxConnection> connection,
                           uint8_t diuc,
                           WimaxPhy::ModulationType modulationType,
                           Ptr<PacketBurst> burst) override;
     /**
-     * \brief Schedule function.
+     * @brief Schedule function.
      */
     void Schedule() override;
     /**
-     * \brief Check for IR and Broadcast connections that have packets to transmit.
-     * \param connection will point to a initial ranging or broadcast connection
+     * @brief Check for IR and Broadcast connections that have packets to transmit.
+     * @param connection will point to a initial ranging or broadcast connection
      * which have packets to transmit
-     * \returns false if no initial ranging or broadcast connection has packets
+     * @returns false if no initial ranging or broadcast connection has packets
      * to transmit, true otherwise
      */
     bool SelectIRandBCConnection(Ptr<WimaxConnection>& connection);
     /**
-     * \brief Check for Basic and Primary connections that have packets to transmit.
-     * \param connection will point to a basic or primary connection
+     * @brief Check for Basic and Primary connections that have packets to transmit.
+     * @param connection will point to a basic or primary connection
      * which have packets to transmit
-     * \returns false if no basic or primary connection has packets
+     * @returns false if no basic or primary connection has packets
      * to transmit, true otherwise
      */
     bool SelectMenagementConnection(Ptr<WimaxConnection>& connection);
     /**
-     * \brief Check for UGS connections that have packets to transmit.
+     * @brief Check for UGS connections that have packets to transmit.
      *
      * The method return the UGS connection that have packets to transmits,
      * according to the MaxLatency specifications.
-     * \param connection will point to a connection that has packets to be sent
-     * \return true if successful
+     * @param connection will point to a connection that has packets to be sent
+     * @return true if successful
      */
     bool SelectUGSConnection(Ptr<WimaxConnection>& connection);
     /**
-     * \brief Check for rtPS connections that have packets to transmit.
-     * \param connection will point to a connection that has packets to be sent
-     * \returns false if no connection has packets to be sent, true otherwise
+     * @brief Check for rtPS connections that have packets to transmit.
+     * @param connection will point to a connection that has packets to be sent
+     * @returns false if no connection has packets to be sent, true otherwise
      */
     bool SelectRTPSConnection(Ptr<WimaxConnection>& connection);
     /**
-     * \brief Check for nrtPS connections that have packets to transmit.
-     * \param connection will point to a connection that has packets to be sent
-     * \returns false if no connection has packets to be sent, true otherwise
+     * @brief Check for nrtPS connections that have packets to transmit.
+     * @param connection will point to a connection that has packets to be sent
+     * @returns false if no connection has packets to be sent, true otherwise
      */
     bool SelectNRTPSConnection(Ptr<WimaxConnection>& connection);
     /**
-     * \brief Check for BE connections that have packets to transmit.
-     * \param connection will point to a connection that has packets to be sent
-     * \returns false if no connection has packets to be sent, true otherwise
+     * @brief Check for BE connections that have packets to transmit.
+     * @param connection will point to a connection that has packets to be sent
+     * @returns false if no connection has packets to be sent, true otherwise
      */
     bool SelectBEConnection(Ptr<WimaxConnection>& connection);
 
     /**
-     * \brief Selects a connection from the list of connections having packets to be sent .
-     * \param connection will point to a connection that has packets to be sent
-     * \returns false if no connection has packets to be sent, true otherwise
+     * @brief Selects a connection from the list of connections having packets to be sent .
+     * @param connection will point to a connection that has packets to be sent
+     * @returns false if no connection has packets to be sent, true otherwise
      */
     bool SelectConnection(Ptr<WimaxConnection>& connection) override;
 
     /**
-     * \brief schedules the broadcast connections
-     * \param availableSymbols the remaining free OFDM symbols in the current subframe
+     * @brief schedules the broadcast connections
+     * @param availableSymbols the remaining free OFDM symbols in the current subframe
      */
     void BSSchedulerBroadcastConnection(uint32_t& availableSymbols);
 
     /**
-     * \brief schedules the IR connections
-     * \param availableSymbols the remaining free OFDM symbols in the current subframe
+     * @brief schedules the IR connections
+     * @param availableSymbols the remaining free OFDM symbols in the current subframe
      */
     void BSSchedulerInitialRangingConnection(uint32_t& availableSymbols);
 
     /**
-     * \brief schedules the basic connections
-     * \param availableSymbols the remaining free OFDM symbols in the current subframe
+     * @brief schedules the basic connections
+     * @param availableSymbols the remaining free OFDM symbols in the current subframe
      */
     void BSSchedulerBasicConnection(uint32_t& availableSymbols);
 
     /**
-     * \brief schedules the primary connection
-     * \param availableSymbols the remaining free OFDM symbols in the current subframe
+     * @brief schedules the primary connection
+     * @param availableSymbols the remaining free OFDM symbols in the current subframe
      */
     void BSSchedulerPrimaryConnection(uint32_t& availableSymbols);
     /**
-     * \brief schedules the UGS connection
-     * \param availableSymbols the remaining free OFDM symbols in the current subframe
+     * @brief schedules the UGS connection
+     * @param availableSymbols the remaining free OFDM symbols in the current subframe
      */
     void BSSchedulerUGSConnection(uint32_t& availableSymbols);
     /**
-     * \brief Downlink Scheduler for rtPS connections.
+     * @brief Downlink Scheduler for rtPS connections.
      *
-     * \param availableSymbols available symbols for rtPS flows
+     * @param availableSymbols available symbols for rtPS flows
      *
      * This method represent the DL Scheduler for rtPS  connections.
      * The scheduler is designed to serve all rtPS connections that
@@ -184,23 +184,23 @@ class BSSchedulerRtps : public BSScheduler
     void BSSchedulerRTPSConnection(uint32_t& availableSymbols);
 
     /**
-     * \brief schedules the NRTPS connections
-     * \param availableSymbols the remaining free OFDM symbols in the current subframe
+     * @brief schedules the NRTPS connections
+     * @param availableSymbols the remaining free OFDM symbols in the current subframe
      */
     void BSSchedulerNRTPSConnection(uint32_t& availableSymbols);
 
     /**
-     * \brief schedules the BE connection
-     * \param availableSymbols the remaining free OFDM symbols in the current subframe
+     * @brief schedules the BE connection
+     * @param availableSymbols the remaining free OFDM symbols in the current subframe
      */
     void BSSchedulerBEConnection(uint32_t& availableSymbols);
 
     /**
-     * \brief Creates a downlink UGS burst
-     * \param serviceFlow the service flow of the burst
-     * \param modulationType the modulation type to be used for the burst
-     * \param availableSymbols maximum number of OFDM symbols to be used by the burst
-     * \returns a Burst (list of packets)
+     * @brief Creates a downlink UGS burst
+     * @param serviceFlow the service flow of the burst
+     * @param modulationType the modulation type to be used for the burst
+     * @param availableSymbols maximum number of OFDM symbols to be used by the burst
+     * @returns a Burst (list of packets)
      */
     Ptr<PacketBurst> CreateUgsBurst(ServiceFlow* serviceFlow,
                                     WimaxPhy::ModulationType modulationType,

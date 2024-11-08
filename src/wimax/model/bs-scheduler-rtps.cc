@@ -104,7 +104,7 @@ BSSchedulerRtps::AddDownlinkBurst(Ptr<const WimaxConnection> connection,
 }
 
 /**
- * \brief A DownLink Scheduler for rtPS Flows
+ * @brief A DownLink Scheduler for rtPS Flows
  *
  * The DL Scheduler assigns the available bandwidth in the following order:
  * - IR Connections

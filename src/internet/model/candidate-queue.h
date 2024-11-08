@@ -20,9 +20,9 @@ namespace ns3
 class SPFVertex;
 
 /**
- * \ingroup globalrouting
+ * @ingroup globalrouting
  *
- * \brief A Candidate Queue used in routing calculations.
+ * @brief A Candidate Queue used in routing calculations.
  *
  * The CandidateQueue is used in the OSPF shortest path computations.  It
  * is a priority queue used to store candidates for the shortest path to a
@@ -150,15 +150,15 @@ class CandidateQueue
 
   private:
     /**
-     * \brief return true if v1 < v2
+     * @brief return true if v1 < v2
      *
      * SPFVertex items are added into the queue according to the ordering
      * defined by this method. If v1 should be popped before v2, this
      * method return true; false otherwise
      *
-     * \param v1 first operand
-     * \param v2 second operand
-     * \return True if v1 should be popped before v2; false otherwise
+     * @param v1 first operand
+     * @param v2 second operand
+     * @return True if v1 should be popped before v2; false otherwise
      */
     static bool CompareSPFVertex(const SPFVertex* v1, const SPFVertex* v2);
 
@@ -166,11 +166,11 @@ class CandidateQueue
     CandidateList_t m_candidates;                  //!< SPFVertex candidates
 
     /**
-     * \brief Stream insertion operator.
+     * @brief Stream insertion operator.
      *
-     * \param os the reference to the output stream
-     * \param q the CandidateQueue
-     * \returns the reference to the output stream
+     * @param os the reference to the output stream
+     * @param q the CandidateQueue
+     * @returns the reference to the output stream
      */
     friend std::ostream& operator<<(std::ostream& os, const CandidateQueue& q);
 };

@@ -23,15 +23,15 @@
 using namespace ns3;
 
 /**
- * \ingroup mesh
- * \ingroup tests
- * \defgroup mesh-test mesh module tests
+ * @ingroup mesh
+ * @ingroup tests
+ * @defgroup mesh-test mesh module tests
  */
 
 /**
- * \ingroup mesh-test
+ * @ingroup mesh-test
  *
- * \brief Built-in self test for MeshInformationElementVector and all IE
+ * @brief Built-in self test for MeshInformationElementVector and all IE
  */
 struct MeshInformationElementVectorBist : public TestCase
 {
@@ -143,9 +143,9 @@ MeshInformationElementVectorBist::DoRun()
 }
 
 /**
- * \ingroup mesh-test
+ * @ingroup mesh-test
  *
- * \brief Mesh Test Suite
+ * @brief Mesh Test Suite
  */
 class MeshTestSuite : public TestSuite
 {

@@ -29,7 +29,7 @@ class LteUeNetDevice;
 using namespace ns3;
 
 /**
- * \brief Test suite for
+ * @brief Test suite for
  *
  * \sa ns3::LteRadioLinkFailureTestCase
  */
@@ -40,25 +40,25 @@ class LteRadioLinkFailureTestSuite : public TestSuite
 };
 
 /**
- * \ingroup lte
+ * @ingroup lte
  *
- * \brief Testing the cell reselection procedure by UE at IDLE state
+ * @brief Testing the cell reselection procedure by UE at IDLE state
  */
 class LteRadioLinkFailureTestCase : public TestCase
 {
   public:
     /**
-     * \brief Creates an instance of the radio link failure test case.
+     * @brief Creates an instance of the radio link failure test case.
      *
-     * \param numEnbs number of eNodeBs
-     * \param numUes number of UEs
-     * \param simTime the simulation time
-     * \param isIdealRrc if true, simulation uses Ideal RRC protocol, otherwise
+     * @param numEnbs number of eNodeBs
+     * @param numUes number of UEs
+     * @param simTime the simulation time
+     * @param isIdealRrc if true, simulation uses Ideal RRC protocol, otherwise
      *                   simulation uses Real RRC protocol
-     * \param uePositionList Position of the UEs
-     * \param enbPositionList Position of the eNodeBs
-     * \param ueJumpAwayPosition Vector holding the UE jump away coordinates
-     * \param checkConnectedList the time at which UEs should have an active RRC connection
+     * @param uePositionList Position of the UEs
+     * @param enbPositionList Position of the eNodeBs
+     * @param ueJumpAwayPosition Vector holding the UE jump away coordinates
+     * @param checkConnectedList the time at which UEs should have an active RRC connection
      */
     LteRadioLinkFailureTestCase(uint32_t numEnbs,
                                 uint32_t numUes,
@@ -74,48 +74,48 @@ class LteRadioLinkFailureTestCase : public TestCase
   private:
     /**
      * Builds the test name string based on provided parameter values
-     * \param numEnbs the number of eNB nodes
-     * \param numUes the number of UE nodes
-     * \param isIdealRrc True if the Ideal RRC protocol is used
-     * \returns the name string
+     * @param numEnbs the number of eNB nodes
+     * @param numUes the number of UE nodes
+     * @param isIdealRrc True if the Ideal RRC protocol is used
+     * @returns the name string
      */
     std::string BuildNameString(uint32_t numEnbs, uint32_t numUes, bool isIdealRrc);
     /**
-     * \brief Setup the simulation according to the configuration set by the
+     * @brief Setup the simulation according to the configuration set by the
      *        class constructor, run it, and verify the result.
      */
     void DoRun() override;
 
     /**
      * Check connected function
-     * \param ueDevice the UE device
-     * \param enbDevices the ENB devices
+     * @param ueDevice the UE device
+     * @param enbDevices the ENB devices
      */
     void CheckConnected(Ptr<NetDevice> ueDevice, NetDeviceContainer enbDevices);
 
     /**
      * Check if the UE is in idle state
-     * \param ueDevice the UE device
-     * \param enbDevices the ENB devices
+     * @param ueDevice the UE device
+     * @param enbDevices the ENB devices
      */
     void CheckIdle(Ptr<NetDevice> ueDevice, NetDeviceContainer enbDevices);
 
     /**
-     * \brief Check if the UE exist at the eNB
-     * \param rnti the RNTI of the UE
-     * \param enbDevice the eNB device
-     * \return true if the UE exist at the eNB, otherwise false
+     * @brief Check if the UE exist at the eNB
+     * @param rnti the RNTI of the UE
+     * @param enbDevice the eNB device
+     * @return true if the UE exist at the eNB, otherwise false
      */
     bool CheckUeExistAtEnb(uint16_t rnti, Ptr<NetDevice> enbDevice);
 
     /**
-     * \brief State transition callback function
-     * \param context the context string
-     * \param imsi the IMSI
-     * \param cellId the cell ID
-     * \param rnti the RNTI
-     * \param oldState the old state
-     * \param newState the new state
+     * @brief State transition callback function
+     * @param context the context string
+     * @param imsi the IMSI
+     * @param cellId the cell ID
+     * @param rnti the RNTI
+     * @param oldState the old state
+     * @param newState the new state
      */
     void UeStateTransitionCallback(std::string context,
                                    uint64_t imsi,
@@ -125,11 +125,11 @@ class LteRadioLinkFailureTestCase : public TestCase
                                    LteUeRrc::State newState);
 
     /**
-     * \brief Connection established at UE callback function
-     * \param context the context string
-     * \param imsi the IMSI
-     * \param cellId the cell ID
-     * \param rnti the RNTI
+     * @brief Connection established at UE callback function
+     * @param context the context string
+     * @param imsi the IMSI
+     * @param cellId the cell ID
+     * @param rnti the RNTI
      */
     void ConnectionEstablishedUeCallback(std::string context,
                                          uint64_t imsi,
@@ -137,11 +137,11 @@ class LteRadioLinkFailureTestCase : public TestCase
                                          uint16_t rnti);
 
     /**
-     * \brief Connection established at eNodeB callback function
-     * \param context the context string
-     * \param imsi the IMSI
-     * \param cellId the cell ID
-     * \param rnti the RNTI
+     * @brief Connection established at eNodeB callback function
+     * @param context the context string
+     * @param imsi the IMSI
+     * @param cellId the cell ID
+     * @param rnti the RNTI
      */
     void ConnectionEstablishedEnbCallback(std::string context,
                                           uint64_t imsi,
@@ -149,11 +149,11 @@ class LteRadioLinkFailureTestCase : public TestCase
                                           uint16_t rnti);
 
     /**
-     * \brief This callback function is executed when UE context is removed at eNodeB
-     * \param context the context string
-     * \param imsi the IMSI
-     * \param cellId the cell ID
-     * \param rnti the RNTI
+     * @brief This callback function is executed when UE context is removed at eNodeB
+     * @param context the context string
+     * @param imsi the IMSI
+     * @param cellId the cell ID
+     * @param rnti the RNTI
      */
     void ConnectionReleaseAtEnbCallback(std::string context,
                                         uint64_t imsi,
@@ -161,14 +161,14 @@ class LteRadioLinkFailureTestCase : public TestCase
                                         uint16_t rnti);
 
     /**
-     * \brief This callback function is executed when UE RRC receives an in-sync or out-of-sync
+     * @brief This callback function is executed when UE RRC receives an in-sync or out-of-sync
      * indication
-     * \param context the context string
-     * \param imsi the IMSI
-     * \param rnti the RNTI
-     * \param cellId the cell ID
-     * \param type in-sync or out-of-sync indication
-     * \param count the number of in-sync or out-of-sync indications
+     * @param context the context string
+     * @param imsi the IMSI
+     * @param rnti the RNTI
+     * @param cellId the cell ID
+     * @param type in-sync or out-of-sync indication
+     * @param count the number of in-sync or out-of-sync indications
      */
     void PhySyncDetectionCallback(std::string context,
                                   uint64_t imsi,
@@ -178,11 +178,11 @@ class LteRadioLinkFailureTestCase : public TestCase
                                   uint8_t count);
 
     /**
-     * \brief This callback function is executed when radio link failure is detected
-     * \param context the context string
-     * \param imsi the IMSI
-     * \param rnti the RNTI
-     * \param cellId the cell ID
+     * @brief This callback function is executed when radio link failure is detected
+     * @param context the context string
+     * @param imsi the IMSI
+     * @param rnti the RNTI
+     * @param cellId the cell ID
      */
     void RadioLinkFailureCallback(std::string context,
                                   uint64_t imsi,
@@ -190,9 +190,9 @@ class LteRadioLinkFailureTestCase : public TestCase
                                   uint16_t rnti);
 
     /**
-     * \brief Jump away function
+     * @brief Jump away function
      *
-     * \param UeJumpAwayPositionList A list of positions where UE would jump
+     * @param UeJumpAwayPositionList A list of positions where UE would jump
      */
     void JumpAway(Vector UeJumpAwayPositionList);
 

@@ -22,9 +22,9 @@
 #include <vector>
 
 /**
- * \file
- * \ingroup testing
- * \brief ns3::TestCase, ns3::TestSuite, ns3::TestRunner implementations,
+ * @file
+ * @ingroup testing
+ * @brief ns3::TestCase, ns3::TestSuite, ns3::TestRunner implementations,
  */
 
 namespace ns3
@@ -58,7 +58,7 @@ TestDoubleIsEqual(const double x1, const double x2, const double epsilon)
 }
 
 /**
- * \ingroup testingimpl
+ * @ingroup testingimpl
  * Container for details of a test failure.
  */
 struct TestCaseFailure
@@ -66,12 +66,12 @@ struct TestCaseFailure
     /**
      * Constructor.
      *
-     * \param [in] _cond    The name of the condition being tested.
-     * \param [in] _actual  The actual value returned by the test.
-     * \param [in] _limit   The expected value.
-     * \param [in] _message The associated message.
-     * \param [in] _file    The source file.
-     * \param [in] _line    The source line.
+     * @param [in] _cond    The name of the condition being tested.
+     * @param [in] _actual  The actual value returned by the test.
+     * @param [in] _limit   The expected value.
+     * @param [in] _message The associated message.
+     * @param [in] _file    The source file.
+     * @param [in] _line    The source line.
      */
     TestCaseFailure(std::string _cond,
                     std::string _actual,
@@ -90,9 +90,9 @@ struct TestCaseFailure
 /**
  * Output streamer for TestCaseFailure.
  *
- * \param [in,out] os The output stream.
- * \param [in] failure The TestCaseFailure to print.
- * \returns The stream.
+ * @param [in,out] os The output stream.
+ * @param [in] failure The TestCaseFailure to print.
+ * @returns The stream.
  */
 std::ostream&
 operator<<(std::ostream& os, const TestCaseFailure& failure)
@@ -105,7 +105,7 @@ operator<<(std::ostream& os, const TestCaseFailure& failure)
 }
 
 /**
- * \ingroup testingimpl
+ * @ingroup testingimpl
  * Container for results from a TestCase.
  */
 struct TestCase::Result
@@ -122,9 +122,9 @@ struct TestCase::Result
 };
 
 /**
- * \ingroup testingimpl
+ * @ingroup testingimpl
  * Container for all tests.
- * \todo Move TestRunnerImpl to separate file.
+ * @todo Move TestRunnerImpl to separate file.
  */
 class TestRunnerImpl : public Singleton<TestRunnerImpl>
 {
@@ -134,16 +134,16 @@ class TestRunnerImpl : public Singleton<TestRunnerImpl>
 
     /**
      * Add a new top-level TestSuite.
-     * \param [in] testSuite The new TestSuite.
+     * @param [in] testSuite The new TestSuite.
      */
     void AddTestSuite(TestSuite* testSuite);
-    /** \copydoc TestCase::MustAssertOnFailure() */
+    /** @copydoc TestCase::MustAssertOnFailure() */
     bool MustAssertOnFailure() const;
-    /** \copydoc TestCase::MustContinueOnFailure() */
+    /** @copydoc TestCase::MustContinueOnFailure() */
     bool MustContinueOnFailure() const;
     /**
      * Check if this run should update the reference data.
-     * \return \c true if we should update the reference data.
+     * @return \c true if we should update the reference data.
      */
     bool MustUpdateData() const;
     /**
@@ -152,22 +152,22 @@ class TestRunnerImpl : public Singleton<TestRunnerImpl>
      * The root directory is defined by the presence of two files:
      * "VERSION" and "LICENSE".
      *
-     * \returns The path to the root.
+     * @returns The path to the root.
      */
     std::string GetTopLevelSourceDir() const;
     /**
      * Get the path to temporary directory.
-     * \return The temporary directory path.
+     * @return The temporary directory path.
      */
     std::string GetTempDir() const;
-    /** \copydoc TestRunner::Run() */
+    /** @copydoc TestRunner::Run() */
     int Run(int argc, char* argv[]);
 
   private:
     /**
      * Check if this is the root of the source tree.
-     * \param [in] path The path to test.
-     * \returns \c true if \pname{path} is the root.
+     * @param [in] path The path to test.
+     * @returns \c true if \pname{path} is the root.
      */
     bool IsTopLevelSourceDir(std::string path) const;
     /**
@@ -186,25 +186,25 @@ class TestRunnerImpl : public Singleton<TestRunnerImpl>
      *    '"'        | "&39;"
      *    '\'        | "&quot;"
      *
-     * \param [in] xml The raw string.
-     * \returns The sanitized string.
+     * @param [in] xml The raw string.
+     * @returns The sanitized string.
      */
     std::string ReplaceXmlSpecialCharacters(std::string xml) const;
     /**
      * Print the test report.
      *
-     * \param [in] test The TestCase to print.
-     * \param [in,out] os The output stream.
-     * \param [in] xml Generate XML output if \c true.
-     * \param [in] level Indentation level.
+     * @param [in] test The TestCase to print.
+     * @param [in,out] os The output stream.
+     * @param [in] xml Generate XML output if \c true.
+     * @param [in] level Indentation level.
      */
     void PrintReport(TestCase* test, std::ostream* os, bool xml, int level);
     /**
      * Print the list of all requested test suites.
      *
-     * \param [in] begin Iterator to the first TestCase to print.
-     * \param [in] end Iterator to the end of the list.
-     * \param [in] printTestType Prepend the test type label if \c true.
+     * @param [in] begin Iterator to the first TestCase to print.
+     * @param [in] end Iterator to the end of the list.
+     * @param [in] printTestType Prepend the test type label if \c true.
      */
     void PrintTestNameList(std::list<TestCase*>::const_iterator begin,
                            std::list<TestCase*>::const_iterator end,
@@ -213,7 +213,7 @@ class TestRunnerImpl : public Singleton<TestRunnerImpl>
     void PrintTestTypeList() const;
     /**
      * Print the help text.
-     * \param [in] programName The name of the invoking program.
+     * @param [in] programName The name of the invoking program.
      */
     void PrintHelp(const char* programName) const;
     /**
@@ -222,10 +222,10 @@ class TestRunnerImpl : public Singleton<TestRunnerImpl>
      * Test name and type constraints are or'ed.  The duration constraint
      * is and'ed.
      *
-     * \param [in] testName Include a specific test by name.
-     * \param [in] testType Include all tests of give type.
-     * \param [in] maximumTestDuration Restrict to tests shorter than this.
-     * \returns The list of tests matching the filter constraints.
+     * @param [in] testName Include a specific test by name.
+     * @param [in] testType Include all tests of give type.
+     * @param [in] maximumTestDuration Restrict to tests shorter than this.
+     * @returns The list of tests matching the filter constraints.
      */
     std::list<TestCase*> FilterTests(std::string testName,
                                      TestSuite::Type testType,
@@ -642,7 +642,7 @@ struct Indent
 {
     /**
      * Constructor.
-     * \param [in] level The number of steps.  A step is "  ".
+     * @param [in] level The number of steps.  A step is "  ".
      */
     Indent(int level);
     /** The number of steps. */
@@ -657,9 +657,9 @@ Indent::Indent(int _level)
 
 /**
  * Output streamer for Indent.
- * \param [in,out] os The output stream.
- * \param [in] val The Indent object.
- * \returns The stream.
+ * @param [in,out] os The output stream.
+ * @param [in] val The Indent object.
+ * @returns The stream.
  */
 std::ostream&
 operator<<(std::ostream& os, const Indent& val)

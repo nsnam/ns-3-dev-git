@@ -32,16 +32,16 @@ class CsmaChannel;
 class ErrorModel;
 
 /**
- * \defgroup csma CSMA Network Device
+ * @defgroup csma CSMA Network Device
  *
  * This section documents the API of the ns-3 csma module. For a generic functional description,
  * please refer to the ns-3 manual.
  */
 
 /**
- * \ingroup csma
- * \class CsmaNetDevice
- * \brief A Device for a Csma Network Link.
+ * @ingroup csma
+ * @class CsmaNetDevice
+ * @brief A Device for a Csma Network Link.
  *
  * The Csma net device class is analogous to layer 1 and 2 of the
  * TCP stack. The NetDevice takes a raw packet of bytes and creates a
@@ -51,8 +51,8 @@ class CsmaNetDevice : public NetDevice
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -85,7 +85,7 @@ class CsmaNetDevice : public NetDevice
      * defines the minimum space required between packets sent by this device.
      * As in Ethernet, it defaults to 96 bit times.
      *
-     * \param t the interframe gap time
+     * @param t the interframe gap time
      */
     void SetInterframeGap(Time t);
 
@@ -93,12 +93,12 @@ class CsmaNetDevice : public NetDevice
      * Set the backoff parameters used to determine the wait to retry
      * transmitting a packet when the channel is busy.
      *
-     * \see Attach ()
-     * \param slotTime Length of a packet slot (or average packet time)
-     * \param minSlots Minimum number of slots to wait
-     * \param maxSlots Maximum number of slots to wait
-     * \param maxRetries Maximum number of retries before packet is discard
-     * \param ceiling Cap on the exponential function when calculating max slots
+     * @see Attach ()
+     * @param slotTime Length of a packet slot (or average packet time)
+     * @param minSlots Minimum number of slots to wait
+     * @param maxSlots Maximum number of slots to wait
+     * @param maxRetries Maximum number of retries before packet is discard
+     * @param ceiling Cap on the exponential function when calculating max slots
      */
     void SetBackoffParams(Time slotTime,
                           uint32_t minSlots,
@@ -111,10 +111,10 @@ class CsmaNetDevice : public NetDevice
      *
      * The function Attach is used to add a CsmaNetDevice to a CsmaChannel.
      *
-     * \see SetDataRate ()
-     * \see SetInterframeGap ()
-     * \param ch a pointer to the channel to which this object is being attached.
-     * \returns true if no error
+     * @see SetDataRate ()
+     * @see SetInterframeGap ()
+     * @param ch a pointer to the channel to which this object is being attached.
+     * @returns true if no error
      */
     bool Attach(Ptr<CsmaChannel> ch);
 
@@ -125,16 +125,16 @@ class CsmaNetDevice : public NetDevice
      * level topology objects to implement a particular queueing method such as
      * DropTail.
      *
-     * \see Queue
-     * \see DropTailQueue
-     * \param queue a Ptr to the queue for being assigned to the device.
+     * @see Queue
+     * @see DropTailQueue
+     * @param queue a Ptr to the queue for being assigned to the device.
      */
     void SetQueue(Ptr<Queue<Packet>> queue);
 
     /**
      * Get a copy of the attached Queue.
      *
-     * \return a pointer to the queue.
+     * @return a pointer to the queue.
      */
     Ptr<Queue<Packet>> GetQueue() const;
 
@@ -144,8 +144,8 @@ class CsmaNetDevice : public NetDevice
      * The CsmaNetDevice may optionally include an ErrorModel in
      * the packet receive chain to simulate data errors in during transmission.
      *
-     * \see ErrorModel
-     * \param em a pointer to the ErrorModel
+     * @see ErrorModel
+     * @param em a pointer to the ErrorModel
      */
     void SetReceiveErrorModel(Ptr<ErrorModel> em);
 
@@ -157,44 +157,44 @@ class CsmaNetDevice : public NetDevice
      * used by the channel to indicate that the last bit of a packet has
      * arrived at the device.
      *
-     * \see CsmaChannel
-     * \param p a reference to the received packet
-     * \param sender the CsmaNetDevice that transmitted the packet in the first place
+     * @see CsmaChannel
+     * @param p a reference to the received packet
+     * @param sender the CsmaNetDevice that transmitted the packet in the first place
      */
     void Receive(Ptr<const Packet> p, Ptr<CsmaNetDevice> sender);
 
     /**
      * Is the send side of the network device enabled?
      *
-     * \returns True if the send side is enabled, otherwise false.
+     * @returns True if the send side is enabled, otherwise false.
      */
     bool IsSendEnabled() const;
 
     /**
      * Enable or disable the send side of the network device.
      *
-     * \param enable Enable the send side if true, otherwise disable.
+     * @param enable Enable the send side if true, otherwise disable.
      */
     void SetSendEnable(bool enable);
 
     /**
      * Is the receive side of the network device enabled?
      *
-     * \returns True if the receiver side is enabled, otherwise false.
+     * @returns True if the receiver side is enabled, otherwise false.
      */
     bool IsReceiveEnabled() const;
 
     /**
      * Enable or disable the receive side of the network device.
      *
-     * \param enable Enable the receive side if true, otherwise disable.
+     * @param enable Enable the receive side if true, otherwise disable.
      */
     void SetReceiveEnable(bool enable);
 
     /**
      * Set the encapsulation mode of this device.
      *
-     * \param mode The encapsulation mode of this device.
+     * @param mode The encapsulation mode of this device.
      *
      */
     void SetEncapsulationMode(CsmaNetDevice::EncapsulationMode mode);
@@ -202,7 +202,7 @@ class CsmaNetDevice : public NetDevice
     /**
      * Get the encapsulation mode of this device.
      *
-     * \returns The encapsulation mode of this device.
+     * @returns The encapsulation mode of this device.
      */
     CsmaNetDevice::EncapsulationMode GetEncapsulationMode();
 
@@ -223,7 +223,7 @@ class CsmaNetDevice : public NetDevice
     bool IsMulticast() const override;
 
     /**
-     * \brief Make and return a MAC multicast address using the provided
+     * @brief Make and return a MAC multicast address using the provided
      *        multicast group
      *
      * \RFC{1112} says that an Ipv4 host group address is mapped to an Ethernet
@@ -235,45 +235,45 @@ class CsmaNetDevice : public NetDevice
      * to an EUI-48-based CSMA device.  This MAC address is encapsulated in an
      *  abstract Address to avoid dependencies on the exact address format.
      *
-     * \param multicastGroup The IP address for the multicast group destination
+     * @param multicastGroup The IP address for the multicast group destination
      * of the packet.
-     * \return The MAC multicast Address used to send packets to the provided
+     * @return The MAC multicast Address used to send packets to the provided
      * multicast group.
      *
-     * \see Ipv4Address
-     * \see Mac48Address
-     * \see Address
+     * @see Ipv4Address
+     * @see Mac48Address
+     * @see Address
      */
     Address GetMulticast(Ipv4Address multicastGroup) const override;
 
     /**
      * Is this a point to point link?
-     * \returns false.
+     * @returns false.
      */
     bool IsPointToPoint() const override;
 
     /**
      * Is this a bridge?
-     * \returns false.
+     * @returns false.
      */
     bool IsBridge() const override;
 
     /**
      * Start sending a packet down the channel.
-     * \param packet packet to send
-     * \param dest layer 2 destination address
-     * \param protocolNumber protocol number
-     * \return true if successful, false otherwise (drop, ...)
+     * @param packet packet to send
+     * @param dest layer 2 destination address
+     * @param protocolNumber protocol number
+     * @return true if successful, false otherwise (drop, ...)
      */
     bool Send(Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber) override;
 
     /**
      * Start sending a packet down the channel, with MAC spoofing
-     * \param packet packet to send
-     * \param source layer 2 source address
-     * \param dest layer 2 destination address
-     * \param protocolNumber protocol number
-     * \return true if successful, false otherwise (drop, ...)
+     * @param packet packet to send
+     * @param source layer 2 source address
+     * @param dest layer 2 destination address
+     * @param protocolNumber protocol number
+     * @return true if successful, false otherwise (drop, ...)
      */
     bool SendFrom(Ptr<Packet> packet,
                   const Address& source,
@@ -283,21 +283,21 @@ class CsmaNetDevice : public NetDevice
     /**
      * Get the node to which this device is attached.
      *
-     * \returns Ptr to the Node to which the device is attached.
+     * @returns Ptr to the Node to which the device is attached.
      */
     Ptr<Node> GetNode() const override;
 
     /**
      * Set the node to which this device is being attached.
      *
-     * \param node Ptr to the Node to which the device is being attached.
+     * @param node Ptr to the Node to which the device is being attached.
      */
     void SetNode(Ptr<Node> node) override;
 
     /**
      * Does this device need to use the address resolution protocol?
      *
-     * \returns True if the encapsulation mode is set to a value that requires
+     * @returns True if the encapsulation mode is set to a value that requires
      * ARP (IP_ARP or LLC).
      */
     bool NeedsArp() const override;
@@ -306,16 +306,16 @@ class CsmaNetDevice : public NetDevice
      * Set the callback to be used to notify higher layers when a packet has been
      * received.
      *
-     * \param cb The callback.
+     * @param cb The callback.
      */
     void SetReceiveCallback(NetDevice::ReceiveCallback cb) override;
 
     /**
-     * \brief Get the MAC multicast address corresponding
+     * @brief Get the MAC multicast address corresponding
      * to the IPv6 address provided.
-     * \param addr IPv6 address
-     * \return the MAC multicast address
-     * \warning Calling this method is invalid if IsMulticast returns not true.
+     * @param addr IPv6 address
+     * @return the MAC multicast address
+     * @warning Calling this method is invalid if IsMulticast returns not true.
      */
     Address GetMulticast(Ipv6Address addr) const override;
 
@@ -327,8 +327,8 @@ class CsmaNetDevice : public NetDevice
      * used by this model.  Return the number of streams (possibly zero) that
      * have been assigned.
      *
-     * \param stream first stream index to use
-     * \return the number of stream indices assigned by this model
+     * @param stream first stream index to use
+     * @return the number of stream indices assigned by this model
      */
     int64_t AssignStreams(int64_t stream);
 
@@ -343,10 +343,10 @@ class CsmaNetDevice : public NetDevice
      * Adds the necessary headers and trailers to a packet of data in order to
      * respect the packet type
      *
-     * \param p Packet to which header should be added
-     * \param source MAC source address from which packet should be sent
-     * \param dest MAC destination address to which packet should be sent
-     * \param protocolNumber In some protocols, identifies the type of
+     * @param p Packet to which header should be added
+     * @param source MAC source address from which packet should be sent
+     * @param dest MAC destination address to which packet should be sent
+     * @param protocolNumber In some protocols, identifies the type of
      * payload contained in this packet.
      */
     void AddHeader(Ptr<Packet> p, Mac48Address source, Mac48Address dest, uint16_t protocolNumber);
@@ -355,22 +355,22 @@ class CsmaNetDevice : public NetDevice
     /**
      * Operator = is declared but not implemented.  This disables the assignment
      * operator for CsmaNetDevice objects.
-     * \param o object to copy
-     * \returns the copied object
+     * @param o object to copy
+     * @returns the copied object
      */
     CsmaNetDevice& operator=(const CsmaNetDevice& o);
 
     /**
      * Copy constructor is declared but not implemented.  This disables the
      * copy constructor for CsmaNetDevice objects.
-     * \param o object to copy
+     * @param o object to copy
      */
     CsmaNetDevice(const CsmaNetDevice& o);
 
     /**
      * Initialization function used during object construction.
-     * \param sendEnable if device will be allowed to send
-     * \param receiveEnable if device will be allowed to receive
+     * @param sendEnable if device will be allowed to send
+     * @param receiveEnable if device will be allowed to receive
      */
     void Init(bool sendEnable, bool receiveEnable);
 
@@ -388,8 +388,8 @@ class CsmaNetDevice : public NetDevice
      * If the channel is found to be BUSY, this method reschedules itself for
      * execution at a later time (within the backoff period).
      *
-     * \see CsmaChannel::TransmitStart ()
-     * \see TransmitCompleteEvent ()
+     * @see CsmaChannel::TransmitStart ()
+     * @see TransmitCompleteEvent ()
      */
     void TransmitStart();
 
@@ -406,8 +406,8 @@ class CsmaNetDevice : public NetDevice
      * method, the net device also schedules the TransmitReadyEvent at which
      * time the transmitter becomes ready to send the next packet.
      *
-     * \see CsmaChannel::TransmitEnd ()
-     * \see TransmitReadyEvent ()
+     * @see CsmaChannel::TransmitEnd ()
+     * @see TransmitReadyEvent ()
      */
     void TransmitCompleteEvent();
 
@@ -423,7 +423,7 @@ class CsmaNetDevice : public NetDevice
      * If a packet is in the queue, it is extracted for the queue as the
      * next packet to be transmitted by the net device.
      *
-     * \see TransmitStart ()
+     * @see TransmitStart ()
      */
     void TransmitReadyEvent();
 
@@ -471,7 +471,7 @@ class CsmaNetDevice : public NetDevice
 
     /**
      * The state of the Net Device transmit state machine.
-     * \see TxMachineState
+     * @see TxMachineState
      */
     TxMachineState m_txMachineState;
 
@@ -485,14 +485,14 @@ class CsmaNetDevice : public NetDevice
     /**
      * The data rate that the Net Device uses to simulate packet transmission
      * timing.
-     * \see class DataRate
+     * @see class DataRate
      */
     DataRate m_bps;
 
     /**
      * The interframe gap that the Net Device uses insert time between packet
      * transmission
-     * \see class Time
+     * @see class Time
      */
     Time m_tInterframeGap;
 
@@ -513,7 +513,7 @@ class CsmaNetDevice : public NetDevice
     /**
      * The CsmaChannel to which this CsmaNetDevice has been
      * attached.
-     * \see class CsmaChannel
+     * @see class CsmaChannel
      */
     Ptr<CsmaChannel> m_channel;
 
@@ -521,8 +521,8 @@ class CsmaNetDevice : public NetDevice
      * The Queue which this CsmaNetDevice uses as a packet source.
      * Management of this Queue has been delegated to the CsmaNetDevice
      * and it has the responsibility for deletion.
-     * \see class Queue
-     * \see class DropTailQueue
+     * @see class Queue
+     * @see class DropTailQueue
      */
     Ptr<Queue<Packet>> m_queue;
 
@@ -537,7 +537,7 @@ class CsmaNetDevice : public NetDevice
      * The trace source fired when packets come into the "top" of the device
      * at the L3/L2 transition, before being queued for transmission.
      *
-     * \see class CallBackTraceSource
+     * @see class CallBackTraceSource
      */
     TracedCallback<Ptr<const Packet>> m_macTxTrace;
 
@@ -545,7 +545,7 @@ class CsmaNetDevice : public NetDevice
      * The trace source fired when packets coming into the "top" of the device
      * at the L3/L2 transition are dropped before being queued for transmission.
      *
-     * \see class CallBackTraceSource
+     * @see class CallBackTraceSource
      */
     TracedCallback<Ptr<const Packet>> m_macTxDropTrace;
 
@@ -554,7 +554,7 @@ class CsmaNetDevice : public NetDevice
      * immediately before being forwarded up to higher layers (at the L2/L3
      * transition).  This is a promiscuous trace.
      *
-     * \see class CallBackTraceSource
+     * @see class CallBackTraceSource
      */
     TracedCallback<Ptr<const Packet>> m_macPromiscRxTrace;
 
@@ -563,7 +563,7 @@ class CsmaNetDevice : public NetDevice
      * immediately before being forwarded up to higher layers (at the L2/L3
      * transition).  This is a non-promiscuous trace.
      *
-     * \see class CallBackTraceSource
+     * @see class CallBackTraceSource
      */
     TracedCallback<Ptr<const Packet>> m_macRxTrace;
 
@@ -572,7 +572,7 @@ class CsmaNetDevice : public NetDevice
      * but dropped before being forwarded up to higher layers (at the L2/L3
      * transition).
      *
-     * \see class CallBackTraceSource
+     * @see class CallBackTraceSource
      */
     TracedCallback<Ptr<const Packet>> m_macRxDropTrace;
 
@@ -581,7 +581,7 @@ class CsmaNetDevice : public NetDevice
      * process for a packet.  This can happen a number of times as the backoff
      * sequence is repeated with increasing delays.
      *
-     * \see class CallBackTraceSource
+     * @see class CallBackTraceSource
      */
     TracedCallback<Ptr<const Packet>> m_macTxBackoffTrace;
 
@@ -589,7 +589,7 @@ class CsmaNetDevice : public NetDevice
      * The trace source fired when a packet begins the transmission process on
      * the medium.
      *
-     * \see class CallBackTraceSource
+     * @see class CallBackTraceSource
      */
     TracedCallback<Ptr<const Packet>> m_phyTxBeginTrace;
 
@@ -597,7 +597,7 @@ class CsmaNetDevice : public NetDevice
      * The trace source fired when a packet ends the transmission process on
      * the medium.
      *
-     * \see class CallBackTraceSource
+     * @see class CallBackTraceSource
      */
     TracedCallback<Ptr<const Packet>> m_phyTxEndTrace;
 
@@ -605,7 +605,7 @@ class CsmaNetDevice : public NetDevice
      * The trace source fired when the phy layer drops a packet as it tries
      * to transmit it.
      *
-     * \see class CallBackTraceSource
+     * @see class CallBackTraceSource
      */
     TracedCallback<Ptr<const Packet>> m_phyTxDropTrace;
 
@@ -613,7 +613,7 @@ class CsmaNetDevice : public NetDevice
      * The trace source fired when a packet begins the reception process from
      * the medium.
      *
-     * \see class CallBackTraceSource
+     * @see class CallBackTraceSource
      */
     TracedCallback<Ptr<const Packet>> m_phyRxBeginTrace;
 
@@ -621,14 +621,14 @@ class CsmaNetDevice : public NetDevice
      * The trace source fired when a packet ends the reception process from
      * the medium.
      *
-     * \see class CallBackTraceSource
+     * @see class CallBackTraceSource
      */
     TracedCallback<Ptr<const Packet>> m_phyRxEndTrace;
 
     /**
      * The trace source fired when the phy layer drops a packet it has received.
      *
-     * \see class CallBackTraceSource
+     * @see class CallBackTraceSource
      */
     TracedCallback<Ptr<const Packet>> m_phyRxDropTrace;
 
@@ -648,7 +648,7 @@ class CsmaNetDevice : public NetDevice
      * this would correspond to the point at which the packet is dispatched to
      * packet sniffers in netif_receive_skb.
      *
-     * \see class CallBackTraceSource
+     * @see class CallBackTraceSource
      */
     TracedCallback<Ptr<const Packet>> m_snifferTrace;
 
@@ -668,7 +668,7 @@ class CsmaNetDevice : public NetDevice
      * this would correspond to the point at which the packet is dispatched to
      * packet sniffers in netif_receive_skb.
      *
-     * \see class CallBackTraceSource
+     * @see class CallBackTraceSource
      */
     TracedCallback<Ptr<const Packet>> m_promiscSnifferTrace;
 

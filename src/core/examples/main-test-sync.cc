@@ -18,9 +18,9 @@
 #include <thread> // sleep_for
 
 /**
- * \file
- * \ingroup core-examples
- * \ingroup scheduler
+ * @file
+ * @ingroup core-examples
+ * @ingroup scheduler
  * An example of scheduling events in a background thread.
  *
  * See \ref ns3::SimulatorImpl::ScheduleWithContext

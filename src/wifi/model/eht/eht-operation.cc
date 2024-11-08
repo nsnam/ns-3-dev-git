@@ -64,10 +64,10 @@ EhtOperation::EhtOpParams::Deserialize(Buffer::Iterator start)
 
 /**
  * set the max Tx/Rx NSS for input MCS index range
- * \param vec vector of max NSS per MCS
- * \param maxNss max NSS for input MCS range
- * \param mcsStart MCS index start
- * \param mcsEnd MCS index end
+ * @param vec vector of max NSS per MCS
+ * @param maxNss max NSS for input MCS range
+ * @param mcsStart MCS index start
+ * @param mcsEnd MCS index end
  */
 void
 SetMaxNss(std::vector<uint8_t>& vec, uint8_t maxNss, uint8_t mcsStart, uint8_t mcsEnd)
@@ -83,10 +83,10 @@ SetMaxNss(std::vector<uint8_t>& vec, uint8_t maxNss, uint8_t mcsStart, uint8_t m
 
 /**
  * Get the max Tx/Rx NSS for input MCS index range
- * \param vec vector of max NSS per MCS
- * \param mcsStart MCS index start
- * \param mcsEnd MCS index end
- * \return max Rx NSS
+ * @param vec vector of max NSS per MCS
+ * @param mcsStart MCS index start
+ * @param mcsEnd MCS index end
+ * @return max Rx NSS
  */
 uint32_t
 GetMaxNss(const std::vector<uint8_t>& vec, uint8_t mcsStart, uint8_t mcsEnd)

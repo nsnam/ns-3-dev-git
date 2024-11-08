@@ -106,9 +106,9 @@ NS_LOG_COMPONENT_DEFINE("Ipv4GlobalRoutingTestSuite");
 //              route to 10.1.1.0 gw 10.1.2.1
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief IPv4 GlobalRouting Link test
+ * @brief IPv4 GlobalRouting Link test
  */
 class LinkTest : public TestCase
 {
@@ -190,9 +190,9 @@ LinkTest::DoRun()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief IPv4 GlobalRouting LAN test
+ * @brief IPv4 GlobalRouting LAN test
  */
 class LanTest : public TestCase
 {
@@ -271,9 +271,9 @@ LanTest::DoRun()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief IPv4 GlobalRouting Two Link test
+ * @brief IPv4 GlobalRouting Two Link test
  */
 class TwoLinkTest : public TestCase
 {
@@ -390,9 +390,9 @@ TwoLinkTest::DoRun()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief IPv4 GlobalRouting Two LAN test
+ * @brief IPv4 GlobalRouting Two LAN test
  */
 class TwoLanTest : public TestCase
 {
@@ -490,9 +490,9 @@ TwoLanTest::DoRun()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief IPv4 GlobalRouting Bridge test
+ * @brief IPv4 GlobalRouting Bridge test
  */
 class BridgeTest : public TestCase
 {
@@ -673,9 +673,9 @@ BridgeTest::DoRun()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief IPv4 GlobalRouting Two bridges test
+ * @brief IPv4 GlobalRouting Two bridges test
  */
 class TwoBridgeTest : public TestCase
 {
@@ -830,9 +830,9 @@ TwoBridgeTest::DoRun()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief IPv4 Dynamic GlobalRouting test
+ * @brief IPv4 Dynamic GlobalRouting test
  */
 class Ipv4DynamicGlobalRoutingTestCase : public TestCase
 {
@@ -842,20 +842,20 @@ class Ipv4DynamicGlobalRoutingTestCase : public TestCase
 
   private:
     /**
-     * \brief Send some data
-     * \param index Index of the socket to use.
+     * @brief Send some data
+     * @param index Index of the socket to use.
      */
     void SendData(uint8_t index);
 
     /**
-     * \brief Shutdown a socket
-     * \param index Index of the socket to close.
+     * @brief Shutdown a socket
+     * @param index Index of the socket to close.
      */
     void ShutDownSock(uint8_t index);
 
     /**
      * Handle an incoming packet
-     * \param socket The input socket.
+     * @param socket The input socket.
      */
     void HandleRead(Ptr<Socket> socket);
     void DoRun() override;
@@ -1138,9 +1138,9 @@ Ipv4DynamicGlobalRoutingTestCase::DoRun()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief IPv4 Dynamic GlobalRouting /32 test
+ * @brief IPv4 Dynamic GlobalRouting /32 test
  */
 class Ipv4GlobalRoutingSlash32TestCase : public TestCase
 {
@@ -1151,20 +1151,20 @@ class Ipv4GlobalRoutingSlash32TestCase : public TestCase
     Ptr<Packet> m_receivedPacket; //!< number of received packets
 
     /**
-     * \brief Receive a packet.
-     * \param socket The receiving socket.
+     * @brief Receive a packet.
+     * @param socket The receiving socket.
      */
     void ReceivePkt(Ptr<Socket> socket);
     /**
-     * \brief Send a packet.
-     * \param socket The sending socket.
-     * \param to The address of the receiver.
+     * @brief Send a packet.
+     * @param socket The sending socket.
+     * @param to The address of the receiver.
      */
     void DoSendData(Ptr<Socket> socket, std::string to);
     /**
-     * \brief Send a packet.
-     * \param socket The sending socket.
-     * \param to The address of the receiver.
+     * @brief Send a packet.
+     * @param socket The sending socket.
+     * @param to The address of the receiver.
      */
     void SendData(Ptr<Socket> socket, std::string to);
 
@@ -1301,9 +1301,9 @@ Ipv4GlobalRoutingSlash32TestCase::DoRun()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief IPv4 GlobalRouting TestSuite
+ * @brief IPv4 GlobalRouting TestSuite
  */
 class Ipv4GlobalRoutingTestSuite : public TestSuite
 {

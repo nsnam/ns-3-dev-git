@@ -24,7 +24,7 @@ namespace ns3
 {
 
 /**
- * \ingroup lte
+ * @ingroup lte
  */
 
 /**
@@ -38,14 +38,14 @@ class RrcAsn1Header : public Asn1Header
     /**
      * Get message type
      *
-     * \returns the message type
+     * @returns the message type
      */
     int GetMessageType() const;
 
   protected:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     // Inherited from Asn1Header
@@ -57,15 +57,15 @@ class RrcAsn1Header : public Asn1Header
     /**
      * Convert from bandwidth (in RBs) to ENUMERATED value
      *
-     * \param bandwidth Bandwidth in RBs: 6, 15, 25, 50, 75, 100
-     * \returns ENUMERATED value: 0, 1, 2, 3, 4, 5
+     * @param bandwidth Bandwidth in RBs: 6, 15, 25, 50, 75, 100
+     * @returns ENUMERATED value: 0, 1, 2, 3, 4, 5
      */
     int BandwidthToEnum(uint16_t bandwidth) const;
     /**
      * Convert from ENUMERATED value to bandwidth (in RBs)
      *
-     * \param n ENUMERATED value: 0, 1, 2, 3, 4, 5
-     * \returns bandwidth Bandwidth in RBs: 6, 15, 25, 50, 75, 100
+     * @param n ENUMERATED value: 0, 1, 2, 3, 4, 5
+     * @returns bandwidth Bandwidth in RBs: 6, 15, 25, 50, 75, 100
      */
     uint16_t EnumToBandwidth(int n) const;
 
@@ -73,124 +73,124 @@ class RrcAsn1Header : public Asn1Header
     /**
      * Serialize SRB to add mod list function
      *
-     * \param srbToAddModList std::list<LteRrcSap::SrbToAddMod>
+     * @param srbToAddModList std::list<LteRrcSap::SrbToAddMod>
      */
     void SerializeSrbToAddModList(std::list<LteRrcSap::SrbToAddMod> srbToAddModList) const;
     /**
      * Serialize DRB to add mod list function
      *
-     * \param drbToAddModList std::list<LteRrcSap::SrbToAddMod>
+     * @param drbToAddModList std::list<LteRrcSap::SrbToAddMod>
      */
     void SerializeDrbToAddModList(std::list<LteRrcSap::DrbToAddMod> drbToAddModList) const;
     /**
      * Serialize logicala channel config function
      *
-     * \param logicalChannelConfig LteRrcSap::LogicalChannelConfig
+     * @param logicalChannelConfig LteRrcSap::LogicalChannelConfig
      */
     void SerializeLogicalChannelConfig(LteRrcSap::LogicalChannelConfig logicalChannelConfig) const;
     /**
      * Serialize radio resource config function
      *
-     * \param radioResourceConfigDedicated LteRrcSap::RadioResourceConfigDedicated
+     * @param radioResourceConfigDedicated LteRrcSap::RadioResourceConfigDedicated
      */
     void SerializeRadioResourceConfigDedicated(
         LteRrcSap::RadioResourceConfigDedicated radioResourceConfigDedicated) const;
     /**
      * Serialize physical config dedicated function
      *
-     * \param physicalConfigDedicated LteRrcSap::PhysicalConfigDedicated
+     * @param physicalConfigDedicated LteRrcSap::PhysicalConfigDedicated
      */
     void SerializePhysicalConfigDedicated(
         LteRrcSap::PhysicalConfigDedicated physicalConfigDedicated) const;
     /**
      * Serialize physical config dedicated function
      *
-     * \param pcdsc LteRrcSap::PhysicalConfigDedicatedSCell
+     * @param pcdsc LteRrcSap::PhysicalConfigDedicatedSCell
      */
     void SerializePhysicalConfigDedicatedSCell(LteRrcSap::PhysicalConfigDedicatedSCell pcdsc) const;
     /**
      * Serialize system information block type 1 function
      *
-     * \param systemInformationBlockType1 LteRrcSap::SystemInformationBlockType1
+     * @param systemInformationBlockType1 LteRrcSap::SystemInformationBlockType1
      */
     void SerializeSystemInformationBlockType1(
         LteRrcSap::SystemInformationBlockType1 systemInformationBlockType1) const;
     /**
      * Serialize system information block type 2 function
      *
-     * \param systemInformationBlockType2 LteRrcSap::SystemInformationBlockType2
+     * @param systemInformationBlockType2 LteRrcSap::SystemInformationBlockType2
      */
     void SerializeSystemInformationBlockType2(
         LteRrcSap::SystemInformationBlockType2 systemInformationBlockType2) const;
     /**
      * Serialize system information block type 2 function
      *
-     * \param radioResourceConfigCommon LteRrcSap::RadioResourceConfigCommon
+     * @param radioResourceConfigCommon LteRrcSap::RadioResourceConfigCommon
      */
     void SerializeRadioResourceConfigCommon(
         LteRrcSap::RadioResourceConfigCommon radioResourceConfigCommon) const;
     /**
      * Serialize radio resource config common SIB function
      *
-     * \param radioResourceConfigCommonSib LteRrcSap::RadioResourceConfigCommonSib
+     * @param radioResourceConfigCommonSib LteRrcSap::RadioResourceConfigCommonSib
      */
     void SerializeRadioResourceConfigCommonSib(
         LteRrcSap::RadioResourceConfigCommonSib radioResourceConfigCommonSib) const;
     /**
      * Serialize measure results function
      *
-     * \param measResults LteRrcSap::MeasResults
+     * @param measResults LteRrcSap::MeasResults
      */
     void SerializeMeasResults(LteRrcSap::MeasResults measResults) const;
     /**
      * Serialize PLMN identity function
      *
-     * \param plmnId the PLMN ID
+     * @param plmnId the PLMN ID
      */
     void SerializePlmnIdentity(uint32_t plmnId) const;
     /**
      * Serialize RACH config common function
      *
-     * \param rachConfigCommon LteRrcSap::RachConfigCommon
+     * @param rachConfigCommon LteRrcSap::RachConfigCommon
      */
     void SerializeRachConfigCommon(LteRrcSap::RachConfigCommon rachConfigCommon) const;
     /**
      * Serialize measure config function
      *
-     * \param measConfig LteRrcSap::MeasConfig
+     * @param measConfig LteRrcSap::MeasConfig
      */
     void SerializeMeasConfig(LteRrcSap::MeasConfig measConfig) const;
     /**
      * Serialize non critical extension config function
      *
-     * \param nonCriticalExtensionConfiguration LteRrcSap::NonCriticalExtensionConfiguration
+     * @param nonCriticalExtensionConfiguration LteRrcSap::NonCriticalExtensionConfiguration
      */
     void SerializeNonCriticalExtensionConfiguration(
         LteRrcSap::NonCriticalExtensionConfiguration nonCriticalExtensionConfiguration) const;
     /**
      * Serialize radio resource config common SCell function
      *
-     * \param rrccsc LteRrcSap::RadioResourceConfigCommonSCell
+     * @param rrccsc LteRrcSap::RadioResourceConfigCommonSCell
      */
     void SerializeRadioResourceConfigCommonSCell(
         LteRrcSap::RadioResourceConfigCommonSCell rrccsc) const;
     /**
      * Serialize radio resource dedicated SCell function
      *
-     * \param rrcdsc LteRrcSap::RadioResourceConfigDedicatedSCell
+     * @param rrcdsc LteRrcSap::RadioResourceConfigDedicatedSCell
      */
     void SerializeRadioResourceDedicatedSCell(
         LteRrcSap::RadioResourceConfigDedicatedSCell rrcdsc) const;
     /**
      * Serialize Q offset range function
      *
-     * \param qOffsetRange q offset range
+     * @param qOffsetRange q offset range
      */
     void SerializeQoffsetRange(int8_t qOffsetRange) const;
     /**
      * Serialize threshold eutra function
      *
-     * \param thresholdEutra LteRrcSap::ThresholdEutra
+     * @param thresholdEutra LteRrcSap::ThresholdEutra
      */
     void SerializeThresholdEutra(LteRrcSap::ThresholdEutra thresholdEutra) const;
 
@@ -198,27 +198,27 @@ class RrcAsn1Header : public Asn1Header
     /**
      * Deserialize DRB to add mod list function
      *
-     * \param drbToAddModLis std::list<LteRrcSap::DrbToAddMod> *
-     * \param bIterator buffer iterator
-     * \returns buffer iterator
+     * @param drbToAddModLis std::list<LteRrcSap::DrbToAddMod> *
+     * @param bIterator buffer iterator
+     * @returns buffer iterator
      */
     Buffer::Iterator DeserializeDrbToAddModList(std::list<LteRrcSap::DrbToAddMod>* drbToAddModLis,
                                                 Buffer::Iterator bIterator);
     /**
      * Deserialize SRB to add mod list function
      *
-     * \param srbToAddModList std::list<LteRrcSap::SrbToAddMod> *
-     * \param bIterator buffer iterator
-     * \returns buffer iterator
+     * @param srbToAddModList std::list<LteRrcSap::SrbToAddMod> *
+     * @param bIterator buffer iterator
+     * @returns buffer iterator
      */
     Buffer::Iterator DeserializeSrbToAddModList(std::list<LteRrcSap::SrbToAddMod>* srbToAddModList,
                                                 Buffer::Iterator bIterator);
     /**
      * Deserialize logical channel config function
      *
-     * \param logicalChannelConfig LteRrcSap::LogicalChannelConfig *
-     * \param bIterator buffer iterator
-     * \returns buffer iterator
+     * @param logicalChannelConfig LteRrcSap::LogicalChannelConfig *
+     * @param bIterator buffer iterator
+     * @returns buffer iterator
      */
     Buffer::Iterator DeserializeLogicalChannelConfig(
         LteRrcSap::LogicalChannelConfig* logicalChannelConfig,
@@ -226,9 +226,9 @@ class RrcAsn1Header : public Asn1Header
     /**
      * Deserialize radio resource config dedicated function
      *
-     * \param radioResourceConfigDedicated LteRrcSap::RadioResourceConfigDedicated *
-     * \param bIterator buffer iterator
-     * \returns buffer iterator
+     * @param radioResourceConfigDedicated LteRrcSap::RadioResourceConfigDedicated *
+     * @param bIterator buffer iterator
+     * @returns buffer iterator
      */
     Buffer::Iterator DeserializeRadioResourceConfigDedicated(
         LteRrcSap::RadioResourceConfigDedicated* radioResourceConfigDedicated,
@@ -236,9 +236,9 @@ class RrcAsn1Header : public Asn1Header
     /**
      * Deserialize physical config dedicated function
      *
-     * \param physicalConfigDedicated LteRrcSap::PhysicalConfigDedicated *
-     * \param bIterator buffer iterator
-     * \returns buffer iterator
+     * @param physicalConfigDedicated LteRrcSap::PhysicalConfigDedicated *
+     * @param bIterator buffer iterator
+     * @returns buffer iterator
      */
     Buffer::Iterator DeserializePhysicalConfigDedicated(
         LteRrcSap::PhysicalConfigDedicated* physicalConfigDedicated,
@@ -246,9 +246,9 @@ class RrcAsn1Header : public Asn1Header
     /**
      * Deserialize system information block type 1 function
      *
-     * \param systemInformationBlockType1 LteRrcSap::SystemInformationBlockType1 *
-     * \param bIterator buffer iterator
-     * \returns buffer iterator
+     * @param systemInformationBlockType1 LteRrcSap::SystemInformationBlockType1 *
+     * @param bIterator buffer iterator
+     * @returns buffer iterator
      */
     Buffer::Iterator DeserializeSystemInformationBlockType1(
         LteRrcSap::SystemInformationBlockType1* systemInformationBlockType1,
@@ -256,9 +256,9 @@ class RrcAsn1Header : public Asn1Header
     /**
      * Deserialize system information block type 2 function
      *
-     * \param systemInformationBlockType2 LteRrcSap::SystemInformationBlockType2 *
-     * \param bIterator buffer iterator
-     * \returns buffer iterator
+     * @param systemInformationBlockType2 LteRrcSap::SystemInformationBlockType2 *
+     * @param bIterator buffer iterator
+     * @returns buffer iterator
      */
     Buffer::Iterator DeserializeSystemInformationBlockType2(
         LteRrcSap::SystemInformationBlockType2* systemInformationBlockType2,
@@ -266,9 +266,9 @@ class RrcAsn1Header : public Asn1Header
     /**
      * Deserialize radio resource config common function
      *
-     * \param radioResourceConfigCommon LteRrcSap::RadioResourceConfigCommon *
-     * \param bIterator buffer iterator
-     * \returns buffer iterator
+     * @param radioResourceConfigCommon LteRrcSap::RadioResourceConfigCommon *
+     * @param bIterator buffer iterator
+     * @returns buffer iterator
      */
     Buffer::Iterator DeserializeRadioResourceConfigCommon(
         LteRrcSap::RadioResourceConfigCommon* radioResourceConfigCommon,
@@ -276,9 +276,9 @@ class RrcAsn1Header : public Asn1Header
     /**
      * Deserialize radio resource config common SIB function
      *
-     * \param radioResourceConfigCommonSib LteRrcSap::RadioResourceConfigCommonSib *
-     * \param bIterator buffer iterator
-     * \returns buffer iterator
+     * @param radioResourceConfigCommonSib LteRrcSap::RadioResourceConfigCommonSib *
+     * @param bIterator buffer iterator
+     * @returns buffer iterator
      */
     Buffer::Iterator DeserializeRadioResourceConfigCommonSib(
         LteRrcSap::RadioResourceConfigCommonSib* radioResourceConfigCommonSib,
@@ -286,61 +286,61 @@ class RrcAsn1Header : public Asn1Header
     /**
      * Deserialize measure results function
      *
-     * \param measResults LteRrcSap::MeasResults *
-     * \param bIterator buffer iterator
-     * \returns buffer iterator
+     * @param measResults LteRrcSap::MeasResults *
+     * @param bIterator buffer iterator
+     * @returns buffer iterator
      */
     Buffer::Iterator DeserializeMeasResults(LteRrcSap::MeasResults* measResults,
                                             Buffer::Iterator bIterator);
     /**
      * Deserialize PLMN identity function
      *
-     * \param plmnId the PLMN ID
-     * \param bIterator buffer iterator
-     * \returns buffer iterator
+     * @param plmnId the PLMN ID
+     * @param bIterator buffer iterator
+     * @returns buffer iterator
      */
     Buffer::Iterator DeserializePlmnIdentity(uint32_t* plmnId, Buffer::Iterator bIterator);
     /**
      * Deserialize RACH config common function
      *
-     * \param rachConfigCommon LteRrcSap::RachConfigCommon *
-     * \param bIterator buffer iterator
-     * \returns buffer iterator
+     * @param rachConfigCommon LteRrcSap::RachConfigCommon *
+     * @param bIterator buffer iterator
+     * @returns buffer iterator
      */
     Buffer::Iterator DeserializeRachConfigCommon(LteRrcSap::RachConfigCommon* rachConfigCommon,
                                                  Buffer::Iterator bIterator);
     /**
      * Deserialize measure config function
      *
-     * \param measConfig LteRrcSap::MeasConfig *
-     * \param bIterator buffer iterator
-     * \returns buffer iterator
+     * @param measConfig LteRrcSap::MeasConfig *
+     * @param bIterator buffer iterator
+     * @returns buffer iterator
      */
     Buffer::Iterator DeserializeMeasConfig(LteRrcSap::MeasConfig* measConfig,
                                            Buffer::Iterator bIterator);
     /**
      * Deserialize Qoffset range function
      *
-     * \param qOffsetRange Qoffset range
-     * \param bIterator buffer iterator
-     * \returns buffer iterator
+     * @param qOffsetRange Qoffset range
+     * @param bIterator buffer iterator
+     * @returns buffer iterator
      */
     Buffer::Iterator DeserializeQoffsetRange(int8_t* qOffsetRange, Buffer::Iterator bIterator);
     /**
      * Deserialize threshold eutra function
      *
-     * \param thresholdEutra LteRrcSap::ThresholdEutra *
-     * \param bIterator buffer iterator
-     * \returns buffer iterator
+     * @param thresholdEutra LteRrcSap::ThresholdEutra *
+     * @param bIterator buffer iterator
+     * @returns buffer iterator
      */
     Buffer::Iterator DeserializeThresholdEutra(LteRrcSap::ThresholdEutra* thresholdEutra,
                                                Buffer::Iterator bIterator);
     /**
      * Deserialize non critical extension config function
      *
-     * \param nonCriticalExtension LteRrcSap::NonCriticalExtensionConfiguration *
-     * \param bIterator buffer iterator
-     * \returns buffer iterator
+     * @param nonCriticalExtension LteRrcSap::NonCriticalExtensionConfiguration *
+     * @param bIterator buffer iterator
+     * @returns buffer iterator
      */
     Buffer::Iterator DeserializeNonCriticalExtensionConfig(
         LteRrcSap::NonCriticalExtensionConfiguration* nonCriticalExtension,
@@ -348,18 +348,18 @@ class RrcAsn1Header : public Asn1Header
     /**
      * Deserialize cell identification function
      *
-     * \param ci LteRrcSap::CellIdentification *
-     * \param bIterator buffer iterator
-     * \returns buffer iterator
+     * @param ci LteRrcSap::CellIdentification *
+     * @param bIterator buffer iterator
+     * @returns buffer iterator
      */
     Buffer::Iterator DeserializeCellIdentification(LteRrcSap::CellIdentification* ci,
                                                    Buffer::Iterator bIterator);
     /**
      * Deserialize radio resource config common SCell function
      *
-     * \param rrccsc LteRrcSap::RadioResourceConfigCommonSCell *
-     * \param bIterator buffer iterator
-     * \returns buffer iterator
+     * @param rrccsc LteRrcSap::RadioResourceConfigCommonSCell *
+     * @param bIterator buffer iterator
+     * @returns buffer iterator
      */
     Buffer::Iterator DeserializeRadioResourceConfigCommonSCell(
         LteRrcSap::RadioResourceConfigCommonSCell* rrccsc,
@@ -367,9 +367,9 @@ class RrcAsn1Header : public Asn1Header
     /**
      * Deserialize radio resource config dedicated SCell function
      *
-     * \param rrcdsc LteRrcSap::RadioResourceConfigDedicatedSCell *
-     * \param bIterator buffer iterator
-     * \returns buffer iterator
+     * @param rrcdsc LteRrcSap::RadioResourceConfigDedicatedSCell *
+     * @param bIterator buffer iterator
+     * @returns buffer iterator
      */
     Buffer::Iterator DeserializeRadioResourceConfigDedicatedSCell(
         LteRrcSap::RadioResourceConfigDedicatedSCell* rrcdsc,
@@ -377,9 +377,9 @@ class RrcAsn1Header : public Asn1Header
     /**
      * Deserialize physical config dedicated SCell function
      *
-     * \param pcdsc LteRrcSap::PhysicalConfigDedicatedSCell *
-     * \param bIterator buffer iterator
-     * \returns buffer iterator
+     * @param pcdsc LteRrcSap::PhysicalConfigDedicatedSCell *
+     * @param bIterator buffer iterator
+     * @returns buffer iterator
      */
     Buffer::Iterator DeserializePhysicalConfigDedicatedSCell(
         LteRrcSap::PhysicalConfigDedicatedSCell* pcdsc,
@@ -421,14 +421,14 @@ class RrcUlDcchMessage : public RrcAsn1Header
     /**
      * Serialize UL DCCH message function
      *
-     * \param msgType message type
+     * @param msgType message type
      */
     void SerializeUlDcchMessage(int msgType) const;
     /**
      * Deserialize UL DCCH message function
      *
-     * \param bIterator buffer iterator
-     * \returns buffer iterator
+     * @param bIterator buffer iterator
+     * @returns buffer iterator
      */
     Buffer::Iterator DeserializeUlDcchMessage(Buffer::Iterator bIterator);
 };
@@ -452,14 +452,14 @@ class RrcDlDcchMessage : public RrcAsn1Header
     /**
      * Serialize DL DCCH message function
      *
-     * \param msgType message type
+     * @param msgType message type
      */
     void SerializeDlDcchMessage(int msgType) const;
     /**
      * Deserialize DL DCCH message function
      *
-     * \param bIterator buffer iterator
-     * \returns buffer iterator
+     * @param bIterator buffer iterator
+     * @returns buffer iterator
      */
     Buffer::Iterator DeserializeDlDcchMessage(Buffer::Iterator bIterator);
 };
@@ -483,14 +483,14 @@ class RrcUlCcchMessage : public RrcAsn1Header
     /**
      * Serialize UL CCCH message function
      *
-     * \param msgType message type
+     * @param msgType message type
      */
     void SerializeUlCcchMessage(int msgType) const;
     /**
      * Deserialize DL CCCH message function
      *
-     * \param bIterator buffer iterator
-     * \returns buffer iterator
+     * @param bIterator buffer iterator
+     * @returns buffer iterator
      */
     Buffer::Iterator DeserializeUlCcchMessage(Buffer::Iterator bIterator);
 };
@@ -514,14 +514,14 @@ class RrcDlCcchMessage : public RrcAsn1Header
     /**
      * Serialize DL CCCH message function
      *
-     * \param msgType message type
+     * @param msgType message type
      */
     void SerializeDlCcchMessage(int msgType) const;
     /**
      * Deserialize DL CCCH message function
      *
-     * \param bIterator buffer iterator
-     * \returns buffer iterator
+     * @param bIterator buffer iterator
+     * @returns buffer iterator
      */
     Buffer::Iterator DeserializeDlCcchMessage(Buffer::Iterator bIterator);
 };
@@ -536,8 +536,8 @@ class RrcConnectionRequestHeader : public RrcUlCcchMessage
     ~RrcConnectionRequestHeader() override;
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     // Inherited from RrcAsn1Header

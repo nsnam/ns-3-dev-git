@@ -24,53 +24,53 @@ class UniformRandomVariable;
 class Socket;
 
 /**
- * \ingroup internet-apps
- * \defgroup radvd Radvd
+ * @ingroup internet-apps
+ * @defgroup radvd Radvd
  */
 
 /**
- * \ingroup radvd
- * \brief Router advertisement daemon.
+ * @ingroup radvd
+ * @brief Router advertisement daemon.
  */
 class Radvd : public Application
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return type ID
+     * @brief Get the type ID.
+     * @return type ID
      */
     static TypeId GetTypeId();
 
     /**
-     * \brief Constructor.
+     * @brief Constructor.
      */
     Radvd();
 
     /**
-     * \brief Destructor.
+     * @brief Destructor.
      */
     ~Radvd() override;
 
     /**
-     * \brief Default value for maximum delay of RA (ms)
+     * @brief Default value for maximum delay of RA (ms)
      */
     static const uint32_t MAX_RA_DELAY_TIME = 500;
     /**
-     * \brief Default value for maximum initial RA advertisements
+     * @brief Default value for maximum initial RA advertisements
      */
     static const uint32_t MAX_INITIAL_RTR_ADVERTISEMENTS = 3;
     /**
-     * \brief Default value for maximum initial RA advertisements interval (ms)
+     * @brief Default value for maximum initial RA advertisements interval (ms)
      */
     static const uint32_t MAX_INITIAL_RTR_ADVERT_INTERVAL = 16000;
     /**
-     * \brief Default value for minimum delay between RA advertisements (ms)
+     * @brief Default value for minimum delay between RA advertisements (ms)
      */
     static const uint32_t MIN_DELAY_BETWEEN_RAS = 3000;
 
     /**
-     * \brief Add configuration for an interface;
-     * \param routerInterface configuration
+     * @brief Add configuration for an interface;
+     * @param routerInterface configuration
      */
     void AddConfiguration(Ptr<RadvdInterface> routerInterface);
 
@@ -105,48 +105,48 @@ class Radvd : public Application
     typedef std::map<uint32_t, Ptr<Socket>>::const_iterator SocketMapCI;
 
     /**
-     * \brief Send a packet.
-     * \param config interface configuration
-     * \param dst destination address (default ff02::1)
-     * \param reschedule if true another send will be reschedule (periodic)
+     * @brief Send a packet.
+     * @param config interface configuration
+     * @param dst destination address (default ff02::1)
+     * @param reschedule if true another send will be reschedule (periodic)
      */
     void Send(Ptr<RadvdInterface> config,
               Ipv6Address dst = Ipv6Address::GetAllNodesMulticast(),
               bool reschedule = false);
 
     /**
-     * \brief Handle received packet, especially router solicitation
-     * \param socket socket to read data from
+     * @brief Handle received packet, especially router solicitation
+     * @param socket socket to read data from
      */
     void HandleRead(Ptr<Socket> socket);
 
     /**
-     * \brief Raw socket to receive RS.
+     * @brief Raw socket to receive RS.
      */
     Ptr<Socket> m_recvSocket;
 
     /**
-     * \brief Raw socket to send RA.
+     * @brief Raw socket to send RA.
      */
     SocketMap m_sendSockets;
 
     /**
-     * \brief List of configuration for interface.
+     * @brief List of configuration for interface.
      */
     RadvdInterfaceList m_configurations;
 
     /**
-     * \brief Event ID map for unsolicited RAs.
+     * @brief Event ID map for unsolicited RAs.
      */
     EventIdMap m_unsolicitedEventIds;
 
     /**
-     * \brief Event ID map for solicited RAs.
+     * @brief Event ID map for solicited RAs.
      */
     EventIdMap m_solicitedEventIds;
 
     /**
-     * \brief Variable to provide jitter in advertisement interval
+     * @brief Variable to provide jitter in advertisement interval
      */
     Ptr<UniformRandomVariable> m_jitter;
 };

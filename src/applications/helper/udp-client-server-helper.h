@@ -19,8 +19,8 @@
 namespace ns3
 {
 /**
- * \ingroup udpclientserver
- * \brief Create a server application which waits for input UDP packets
+ * @ingroup udpclientserver
+ * @brief Create a server application which waits for input UDP packets
  *        and uses the information carried into their payload to compute
  *        delay and to determine if some packets are lost.
  */
@@ -38,7 +38,7 @@ class UdpServerHelper : public ApplicationHelper
      * Create UdpServerHelper which will make life easier for people trying
      * to set up simulations with udp-client-server application.
      *
-     * \param port The port the server will wait on for incoming packets
+     * @param port The port the server will wait on for incoming packets
      */
     UdpServerHelper(uint16_t port);
 
@@ -46,14 +46,14 @@ class UdpServerHelper : public ApplicationHelper
      * Create UdpServerHelper which will make life easier for people trying
      * to set up simulations with udp-client-server application.
      *
-     * \param address The address the server will bind to
+     * @param address The address the server will bind to
      */
     UdpServerHelper(const Address& address);
 };
 
 /**
- * \ingroup udpclientserver
- * \brief Create a client application which sends UDP packets carrying
+ * @ingroup udpclientserver
+ * @brief Create a client application which sends UDP packets carrying
  *  a 32bit sequence number and a 64 bit time stamp.
  *
  */
@@ -73,8 +73,8 @@ class UdpClientHelper : public ApplicationHelper
      * addresses that do not include a port value (e.g., Ipv4Address and
      * Ipv6Address).
      *
-     * \param ip The IP address of the remote UDP server
-     * \param port The port number of the remote UDP server
+     * @param ip The IP address of the remote UDP server
+     * @param port The port number of the remote UDP server
      */
 
     UdpClientHelper(const Address& ip, uint16_t port);
@@ -84,14 +84,14 @@ class UdpClientHelper : public ApplicationHelper
      * addresses that do include a port value (e.g., InetSocketAddress and
      * Inet6SocketAddress).
      *
-     * \param addr The address of the remote UDP server
+     * @param addr The address of the remote UDP server
      */
 
     UdpClientHelper(const Address& addr);
 };
 
 /**
- * \ingroup udpclientserver
+ * @ingroup udpclientserver
  * Create UdpTraceClient application which sends UDP packets based on a trace
  * file of an MPEG4 stream. Trace files could be downloaded form :
  * https://web.archive.org/web/20190907061916/http://www2.tkn.tu-berlin.de/research/trace/ltvt.html
@@ -118,9 +118,9 @@ class UdpTraceClientHelper : public ApplicationHelper
      * addresses that do not include a port value (e.g., Ipv4Address and
      * Ipv6Address).
      *
-     * \param ip The IP address of the remote UDP server
-     * \param port The port number of the remote UDP server
-     * \param filename the file from which packet traces will be loaded
+     * @param ip The IP address of the remote UDP server
+     * @param port The port number of the remote UDP server
+     * @param filename the file from which packet traces will be loaded
      */
     UdpTraceClientHelper(const Address& ip, uint16_t port, const std::string& filename = "");
 
@@ -130,8 +130,8 @@ class UdpTraceClientHelper : public ApplicationHelper
      * addresses that do include a port value (e.g., InetSocketAddress and
      * Inet6SocketAddress).
      *
-     * \param addr The address of the remote UDP server
-     * \param filename the file from which packet traces will be loaded
+     * @param addr The address of the remote UDP server
+     * @param filename the file from which packet traces will be loaded
      */
     UdpTraceClientHelper(const Address& addr, const std::string& filename = "");
 };

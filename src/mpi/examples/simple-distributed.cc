@@ -3,8 +3,8 @@
  */
 
 /**
- * \file
- * \ingroup mpi
+ * @file
+ * @ingroup mpi
  *
  * TestDistributed creates a dumbbell topology and logically splits it in
  * half.  The left half is placed on logical processor 0 and the right half

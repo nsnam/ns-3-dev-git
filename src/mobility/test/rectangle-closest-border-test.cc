@@ -11,9 +11,9 @@
 using namespace ns3;
 
 /**
- * \ingroup mobility-test
+ * @ingroup mobility-test
  *
- * \brief Rectangle detection of closest border to a point, inside or outside.
+ * @brief Rectangle detection of closest border to a point, inside or outside.
  */
 class RectangleClosestBorderTestSuite : public TestSuite
 {
@@ -25,29 +25,29 @@ class RectangleClosestBorderTestSuite : public TestSuite
 };
 
 /**
- * \ingroup mobility-test
+ * @ingroup mobility-test
  *
- * \brief TestCase to check the rectangle line intersection
+ * @brief TestCase to check the rectangle line intersection
  */
 class RectangleClosestBorderTestCase : public TestCase
 {
   public:
     /**
-     * \brief Create RectangleClosestBorderTestCase
-     * \param x Index of the first position to generate
-     * \param y Index of the second position to generate
-     * \param rectangle The 2D rectangle
-     * \param side The expected result of the test
+     * @brief Create RectangleClosestBorderTestCase
+     * @param x Index of the first position to generate
+     * @param y Index of the second position to generate
+     * @param rectangle The 2D rectangle
+     * @param side The expected result of the test
      */
     RectangleClosestBorderTestCase(double x, double y, Rectangle rectangle, Rectangle::Side side);
     /**
-     * \brief Builds the test name string based on provided parameter values
-     * \param x Index of the first position to generate
-     * \param y Index of the second position to generate
-     * \param rectangle The 2D rectangle
-     * \param side The expected result of the test
+     * @brief Builds the test name string based on provided parameter values
+     * @param x Index of the first position to generate
+     * @param y Index of the second position to generate
+     * @param rectangle The 2D rectangle
+     * @param side The expected result of the test
      *
-     * \return The name string
+     * @return The name string
      */
     std::string BuildNameString(double x, double y, Rectangle rectangle, Rectangle::Side side);
     /**
@@ -57,7 +57,7 @@ class RectangleClosestBorderTestCase : public TestCase
 
   private:
     /**
-     * \brief Setup the simulation according to the configuration set by the
+     * @brief Setup the simulation according to the configuration set by the
      *        class constructor, run it, and verify the result.
      */
     void DoRun() override;
@@ -150,7 +150,7 @@ RectangleClosestBorderTestSuite::RectangleClosestBorderTestSuite()
 }
 
 /**
- * \ingroup mobility-test
+ * @ingroup mobility-test
  * Static variable for test initialization
  */
 static RectangleClosestBorderTestSuite rectangleClosestBorderTestSuite;

@@ -42,19 +42,19 @@
 namespace ns3
 {
 /**
- * \brief Compares two values
- * \param T  type of the measurement that is being filtered.
+ * @brief Compares two values
+ * @param T  type of the measurement that is being filtered.
  */
 template <class T>
 struct MinFilter
 {
   public:
     /**
-     * \brief Compares two values
+     * @brief Compares two values
      *
-     * \param lhs left hand value
-     * \param rhs right hand value
-     * \return returns true if the first is less than or equal to the second.
+     * @param lhs left hand value
+     * @param rhs right hand value
+     * @return returns true if the first is less than or equal to the second.
      */
     bool operator()(const T& lhs, const T& rhs) const
     {
@@ -67,19 +67,19 @@ struct MinFilter
 };
 
 /**
- * \brief Compares two values
- * \param T  type of the measurement that is being filtered.
+ * @brief Compares two values
+ * @param T  type of the measurement that is being filtered.
  */
 template <class T>
 struct MaxFilter
 {
   public:
     /**
-     * \brief Compares two values
+     * @brief Compares two values
      *
-     * \param lhs left hand value
-     * \param rhs right hand value
-     * \return returns true if the first is greater than or equal to the second.
+     * @param lhs left hand value
+     * @param rhs right hand value
+     * @return returns true if the first is greater than or equal to the second.
      */
     bool operator()(const T& lhs, const T& rhs) const
     {
@@ -92,7 +92,7 @@ struct MaxFilter
 };
 
 /**
- * \brief Construct a windowed filter
+ * @brief Construct a windowed filter
  *
  * Use the following to construct a windowed filter object of type T.
  * For example, a min filter using QuicTime as the time type:
@@ -100,10 +100,10 @@ struct MaxFilter
  * max filter using 64-bit integers as the time type:
  *      WindowedFilter<T, MaxFilter<T>, uint64_t, int64_t> ObjectName;
  *
- * \param T -- type of the measurement that is being filtered.
- * \param Compare -- MinFilter<T> or MaxFilter<T>, depending on the type of filter desired.
- * \param TimeT -- the type used to represent timestamps.
- * \param TimeDeltaT -- the type used to represent continuous time intervals between
+ * @param T -- type of the measurement that is being filtered.
+ * @param Compare -- MinFilter<T> or MaxFilter<T>, depending on the type of filter desired.
+ * @param TimeT -- the type used to represent timestamps.
+ * @param TimeDeltaT -- the type used to represent continuous time intervals between
  * two timestamps.  Has to be the type of (a - b) if both |a| and |b| are
  * of type TimeT.
  */
@@ -112,18 +112,18 @@ class WindowedFilter
 {
   public:
     /**
-     * \brief constructor
+     * @brief constructor
      */
     WindowedFilter()
     {
     }
 
     /**
-     * \brief constructor
-     * \param windowLength is the period after which a best estimate expires.
-     * \param zeroValue is used as the uninitialized value for objects of T. Importantly,
+     * @brief constructor
+     * @param windowLength is the period after which a best estimate expires.
+     * @param zeroValue is used as the uninitialized value for objects of T. Importantly,
      * zeroValue should be an invalid value for a true sample.
-     * \param zeroTime is the time of instance record time.
+     * @param zeroTime is the time of instance record time.
      */
     WindowedFilter(TimeDeltaT windowLength, T zeroValue, TimeT zeroTime)
         : m_windowLength(windowLength),
@@ -135,8 +135,8 @@ class WindowedFilter
     }
 
     /**
-     * \brief Changes the window length.  Does not update any current samples.
-     * \param windowLength is the period after which a best estimate expires.
+     * @brief Changes the window length.  Does not update any current samples.
+     * @param windowLength is the period after which a best estimate expires.
      */
     void SetWindowLength(TimeDeltaT windowLength)
     {
@@ -144,11 +144,11 @@ class WindowedFilter
     }
 
     /**
-     * \brief Updates best estimates with |sample|, and expires and updates best
+     * @brief Updates best estimates with |sample|, and expires and updates best
      * estimates as necessary.
      *
-     * \param new_sample update new sample.
-     * \param new_time record time of the new sample.
+     * @param new_sample update new sample.
+     * @param new_time record time of the new sample.
      */
     void Update(T new_sample, TimeT new_time)
     {
@@ -206,9 +206,9 @@ class WindowedFilter
     }
 
     /**
-     * \brief Resets all estimates to new sample.
-     * \param new_sample update new sample.
-     * \param new_time record time of the new sample.
+     * @brief Resets all estimates to new sample.
+     * @param new_sample update new sample.
+     * @param new_time record time of the new sample.
      */
     void Reset(T new_sample, TimeT new_time)
     {
@@ -216,8 +216,8 @@ class WindowedFilter
     }
 
     /**
-     * \brief Returns Max/Min value so far among the windowed samples.
-     * \return returns Best (max/min) value so far among the windowed samples.
+     * @brief Returns Max/Min value so far among the windowed samples.
+     * @return returns Best (max/min) value so far among the windowed samples.
      */
     T GetBest() const
     {
@@ -225,8 +225,8 @@ class WindowedFilter
     }
 
     /**
-     * \brief Returns second Max/Min value so far among the windowed samples.
-     * \return returns second Best (max/min) value so far among the windowed samples.
+     * @brief Returns second Max/Min value so far among the windowed samples.
+     * @return returns second Best (max/min) value so far among the windowed samples.
      */
     T GetSecondBest() const
     {
@@ -234,8 +234,8 @@ class WindowedFilter
     }
 
     /**
-     * \brief Returns third Max/Min value so far among the windowed samples.
-     * \return returns third Best (max/min) value so far among the windowed samples.
+     * @brief Returns third Max/Min value so far among the windowed samples.
+     * @return returns third Best (max/min) value so far among the windowed samples.
      */
     T GetThirdBest() const
     {
@@ -243,7 +243,7 @@ class WindowedFilter
     }
 
     /**
-     * \brief sample.
+     * @brief sample.
      */
     struct Sample
     {
@@ -251,16 +251,16 @@ class WindowedFilter
         TimeT time; //!< time when the sample was recorded.
 
         /**
-         * \brief constructor
+         * @brief constructor
          */
         Sample()
         {
         }
 
         /**
-         * \brief constructor
-         * \param init_sample value of sample.
-         * \param init_time time when the sample was recorded..
+         * @brief constructor
+         * @param init_sample value of sample.
+         * @param init_time time when the sample was recorded..
          */
         Sample(T init_sample, TimeT init_time)
             : sample(init_sample),

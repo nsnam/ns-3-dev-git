@@ -30,12 +30,12 @@ class IpL4Protocol;
 class Ipv4Header;
 
 /**
- * \ingroup internet
- * \defgroup ipv4 IPv4 classes and sub-modules
+ * @ingroup internet
+ * @defgroup ipv4 IPv4 classes and sub-modules
  */
 /**
- * \ingroup ipv4
- * \brief Access to the IPv4 forwarding table, interfaces, and configuration
+ * @ingroup ipv4
+ * @brief Access to the IPv4 forwarding table, interfaces, and configuration
  *
  * This class defines the API to manipulate the following aspects of
  * the IPv4 implementation:
@@ -62,42 +62,42 @@ class Ipv4Header;
  *
  * TO DO:  Add API to allow access to the Ipv4 neighbor table
  *
- * \see Ipv4RoutingProtocol
- * \see Ipv4InterfaceAddress
+ * @see Ipv4RoutingProtocol
+ * @see Ipv4InterfaceAddress
  */
 class Ipv4 : public Object
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     Ipv4();
     ~Ipv4() override;
 
     /**
-     * \brief Register a new routing protocol to be used by this Ipv4 stack
+     * @brief Register a new routing protocol to be used by this Ipv4 stack
      *
      * This call will replace any routing protocol that has been previously
      * registered.  If you want to add multiple routing protocols, you must
      * add them to a Ipv4ListRoutingProtocol directly.
      *
-     * \param routingProtocol smart pointer to Ipv4RoutingProtocol object
+     * @param routingProtocol smart pointer to Ipv4RoutingProtocol object
      */
     virtual void SetRoutingProtocol(Ptr<Ipv4RoutingProtocol> routingProtocol) = 0;
 
     /**
-     * \brief Get the routing protocol to be used by this Ipv4 stack
+     * @brief Get the routing protocol to be used by this Ipv4 stack
      *
-     * \returns smart pointer to Ipv4RoutingProtocol object, or null pointer if none
+     * @returns smart pointer to Ipv4RoutingProtocol object, or null pointer if none
      */
     virtual Ptr<Ipv4RoutingProtocol> GetRoutingProtocol() const = 0;
 
     /**
-     * \param device device to add to the list of Ipv4 interfaces
+     * @param device device to add to the list of Ipv4 interfaces
      *        which can be used as output interfaces during packet forwarding.
-     * \returns the index of the Ipv4 interface added.
+     * @returns the index of the Ipv4 interface added.
      *
      * Once a device has been added, it can never be removed: if you want
      * to disable it, you can invoke Ipv4::SetDown which will
@@ -106,16 +106,16 @@ class Ipv4 : public Object
     virtual uint32_t AddInterface(Ptr<NetDevice> device) = 0;
 
     /**
-     * \returns the number of interfaces added by the user.
+     * @returns the number of interfaces added by the user.
      */
     virtual uint32_t GetNInterfaces() const = 0;
 
     /**
-     * \brief Return the interface number of the interface that has been
+     * @brief Return the interface number of the interface that has been
      *        assigned the specified IP address.
      *
-     * \param address The IP address being searched for
-     * \returns The interface number of the Ipv4 interface with the given
+     * @param address The IP address being searched for
+     * @returns The interface number of the Ipv4 interface with the given
      *          address or -1 if not found.
      *
      * Each IP interface has one or more IP addresses associated with it.
@@ -128,11 +128,11 @@ class Ipv4 : public Object
     virtual int32_t GetInterfaceForAddress(Ipv4Address address) const = 0;
 
     /**
-     * \param packet packet to send
-     * \param source source address of packet
-     * \param destination address of packet
-     * \param protocol number of packet
-     * \param route route entry
+     * @param packet packet to send
+     * @param source source address of packet
+     * @param destination address of packet
+     * @param protocol number of packet
+     * @param route route entry
      *
      * Higher-level layers call this method to send a packet
      * down the stack to the MAC and PHY layers.
@@ -144,9 +144,9 @@ class Ipv4 : public Object
                       Ptr<Ipv4Route> route) = 0;
 
     /**
-     * \param packet packet to send
-     * \param ipHeader IP Header
-     * \param route route entry
+     * @param packet packet to send
+     * @param ipHeader IP Header
+     * @param route route entry
      *
      * Higher-level layers call this method to send a packet with IPv4 Header
      * (Intend to be used with IpHeaderInclude attribute.)
@@ -154,7 +154,7 @@ class Ipv4 : public Object
     virtual void SendWithHeader(Ptr<Packet> packet, Ipv4Header ipHeader, Ptr<Ipv4Route> route) = 0;
 
     /**
-     * \param protocol a template for the protocol to add to this L4 Demux.
+     * @param protocol a template for the protocol to add to this L4 Demux.
      *
      * Invoke Copy on the input template to get a copy of the input
      * protocol which can be used on the Node on which this L4 Demux
@@ -165,7 +165,7 @@ class Ipv4 : public Object
     virtual void Insert(Ptr<IpL4Protocol> protocol) = 0;
 
     /**
-     * \brief Add a L4 protocol to a specific interface.
+     * @brief Add a L4 protocol to a specific interface.
      *
      * This may be called multiple times for multiple interfaces for the same
      * protocol.  To insert for all interfaces, use the separate
@@ -174,13 +174,13 @@ class Ipv4 : public Object
      * Setting a protocol on a specific interface will overwrite the
      * previously bound protocol.
      *
-     * \param protocol L4 protocol.
-     * \param interfaceIndex interface index.
+     * @param protocol L4 protocol.
+     * @param interfaceIndex interface index.
      */
     virtual void Insert(Ptr<IpL4Protocol> protocol, uint32_t interfaceIndex) = 0;
 
     /**
-     * \param protocol protocol to remove from this demux.
+     * @param protocol protocol to remove from this demux.
      *
      * The input value to this method should be the value
      * returned from the Ipv4L4Protocol::Insert method.
@@ -188,19 +188,19 @@ class Ipv4 : public Object
     virtual void Remove(Ptr<IpL4Protocol> protocol) = 0;
 
     /**
-     * \brief Remove a L4 protocol from a specific interface.
-     * \param protocol L4 protocol to remove.
-     * \param interfaceIndex interface index.
+     * @brief Remove a L4 protocol from a specific interface.
+     * @param protocol L4 protocol to remove.
+     * @param interfaceIndex interface index.
      */
     virtual void Remove(Ptr<IpL4Protocol> protocol, uint32_t interfaceIndex) = 0;
 
     /**
-     * \brief Determine whether address and interface corresponding to
+     * @brief Determine whether address and interface corresponding to
      *        received packet can be accepted for local delivery
      *
-     * \param address The IP address being considered
-     * \param iif The incoming Ipv4 interface index
-     * \returns true if the address is associated with the interface index
+     * @param address The IP address being considered
+     * @param iif The incoming Ipv4 interface index
+     * @returns true if the address is associated with the interface index
      *
      * This method can be used to determine whether a received packet has
      * an acceptable address for local delivery on the host.  The address
@@ -217,13 +217,13 @@ class Ipv4 : public Object
     virtual bool IsDestinationAddress(Ipv4Address address, uint32_t iif) const = 0;
 
     /**
-     * \brief Return the interface number of first interface found that
+     * @brief Return the interface number of first interface found that
      *  has an Ipv4 address within the prefix specified by the input
      *  address and mask parameters
      *
-     * \param address The IP address assigned to the interface of interest.
-     * \param mask The IP prefix to use in the mask
-     * \returns The interface number of the Ipv4 interface with the given
+     * @param address The IP address assigned to the interface of interest.
+     * @param mask The IP prefix to use in the mask
+     * @returns The interface number of the Ipv4 interface with the given
      *          address or -1 if not found.
      *
      * Each IP interface has one or more IP addresses associated with it.
@@ -235,27 +235,27 @@ class Ipv4 : public Object
     virtual int32_t GetInterfaceForPrefix(Ipv4Address address, Ipv4Mask mask) const = 0;
 
     /**
-     * \param interface The interface number of an Ipv4 interface.
-     * \returns The NetDevice associated with the Ipv4 interface number.
+     * @param interface The interface number of an Ipv4 interface.
+     * @returns The NetDevice associated with the Ipv4 interface number.
      */
     virtual Ptr<NetDevice> GetNetDevice(uint32_t interface) = 0;
 
     /**
-     * \param device The NetDevice for an Ipv4Interface
-     * \returns The interface number of an Ipv4 interface or -1 if not found.
+     * @param device The NetDevice for an Ipv4Interface
+     * @returns The interface number of an Ipv4 interface or -1 if not found.
      */
     virtual int32_t GetInterfaceForDevice(Ptr<const NetDevice> device) const = 0;
 
     /**
-     * \param interface Interface number of an Ipv4 interface
-     * \param address Ipv4InterfaceAddress address to associate with the underlying Ipv4 interface
-     * \returns true if the operation succeeded
+     * @param interface Interface number of an Ipv4 interface
+     * @param address Ipv4InterfaceAddress address to associate with the underlying Ipv4 interface
+     * @returns true if the operation succeeded
      */
     virtual bool AddAddress(uint32_t interface, Ipv4InterfaceAddress address) = 0;
 
     /**
-     * \param interface Interface number of an Ipv4 interface
-     * \returns the number of Ipv4InterfaceAddress entries for the interface.
+     * @param interface Interface number of an Ipv4 interface
+     * @returns the number of Ipv4InterfaceAddress entries for the interface.
      */
     virtual uint32_t GetNAddresses(uint32_t interface) const = 0;
 
@@ -263,9 +263,9 @@ class Ipv4 : public Object
      * Because addresses can be removed, the addressIndex is not guaranteed
      * to be static across calls to this method.
      *
-     * \param interface Interface number of an Ipv4 interface
-     * \param addressIndex index of Ipv4InterfaceAddress
-     * \returns the Ipv4InterfaceAddress associated to the interface and addressIndex
+     * @param interface Interface number of an Ipv4 interface
+     * @param addressIndex index of Ipv4InterfaceAddress
+     * @returns the Ipv4InterfaceAddress associated to the interface and addressIndex
      */
     virtual Ipv4InterfaceAddress GetAddress(uint32_t interface, uint32_t addressIndex) const = 0;
 
@@ -275,23 +275,23 @@ class Ipv4 : public Object
      * so, for example, to remove 5 addresses from an interface i, one could
      * call RemoveAddress (i, 0); 5 times.
      *
-     * \param interface Interface number of an Ipv4 interface
-     * \param addressIndex index of Ipv4InterfaceAddress to remove
-     * \returns true if the operation succeeded
+     * @param interface Interface number of an Ipv4 interface
+     * @param addressIndex index of Ipv4InterfaceAddress to remove
+     * @returns true if the operation succeeded
      */
     virtual bool RemoveAddress(uint32_t interface, uint32_t addressIndex) = 0;
 
     /**
-     * \brief Remove the given address on named Ipv4 interface
+     * @brief Remove the given address on named Ipv4 interface
      *
-     * \param interface Interface number of an Ipv4 interface
-     * \param address The address to remove
-     * \returns true if the operation succeeded
+     * @param interface Interface number of an Ipv4 interface
+     * @param address The address to remove
+     * @returns true if the operation succeeded
      */
     virtual bool RemoveAddress(uint32_t interface, Ipv4Address address) = 0;
 
     /**
-     * \brief Return the first primary source address with scope less than
+     * @brief Return the first primary source address with scope less than
      * or equal to the requested scope, to use in sending a packet to
      * destination dst out of the specified device.
      *
@@ -299,7 +299,7 @@ class Ipv4 : public Object
      * provided because interfaces may have multiple IP addresses configured
      * on them with different scopes, and with a primary and secondary status.
      * Secondary addresses are never returned.
-     * \see Ipv4InterfaceAddress
+     * @see Ipv4InterfaceAddress
      *
      * If a non-zero device pointer is provided, the method first tries to
      * return a primary address that is configured on that device, and whose
@@ -320,10 +320,10 @@ class Ipv4 : public Object
      * If there are no possible addresses to return, a warning log message
      * is issued and the all-zeroes address is returned.
      *
-     * \param device output NetDevice (optionally provided, only to constrain the search)
-     * \param dst Destination address to match, if device is provided
-     * \param scope Scope of returned address must be less than or equal to this
-     * \returns the first primary Ipv4Address that meets the search criteria
+     * @param device output NetDevice (optionally provided, only to constrain the search)
+     * @param dst Destination address to match, if device is provided
+     * @param scope Scope of returned address must be less than or equal to this
+     * @returns the first primary Ipv4Address that meets the search criteria
      */
     virtual Ipv4Address SelectSourceAddress(
         Ptr<const NetDevice> device,
@@ -331,35 +331,35 @@ class Ipv4 : public Object
         Ipv4InterfaceAddress::InterfaceAddressScope_e scope) = 0;
 
     /**
-     * \param interface The interface number of an Ipv4 interface
-     * \param metric routing metric (cost) associated to the underlying
+     * @param interface The interface number of an Ipv4 interface
+     * @param metric routing metric (cost) associated to the underlying
      *          Ipv4 interface
      */
     virtual void SetMetric(uint32_t interface, uint16_t metric) = 0;
 
     /**
-     * \param interface The interface number of an Ipv4 interface
-     * \returns routing metric (cost) associated to the underlying
+     * @param interface The interface number of an Ipv4 interface
+     * @returns routing metric (cost) associated to the underlying
      *          Ipv4 interface
      */
     virtual uint16_t GetMetric(uint32_t interface) const = 0;
 
     /**
-     * \param interface Interface number of Ipv4 interface
-     * \returns the Maximum Transmission Unit (in bytes) associated
+     * @param interface Interface number of Ipv4 interface
+     * @returns the Maximum Transmission Unit (in bytes) associated
      *          to the underlying Ipv4 interface
      */
     virtual uint16_t GetMtu(uint32_t interface) const = 0;
 
     /**
-     * \param interface Interface number of Ipv4 interface
-     * \returns true if the underlying interface is in the "up" state,
+     * @param interface Interface number of Ipv4 interface
+     * @returns true if the underlying interface is in the "up" state,
      *          false otherwise.
      */
     virtual bool IsUp(uint32_t interface) const = 0;
 
     /**
-     * \param interface Interface number of Ipv4 interface
+     * @param interface Interface number of Ipv4 interface
      *
      * Set the interface into the "up" state. In this state, it is
      * considered valid during Ipv4 forwarding.
@@ -367,7 +367,7 @@ class Ipv4 : public Object
     virtual void SetUp(uint32_t interface) = 0;
 
     /**
-     * \param interface Interface number of Ipv4 interface
+     * @param interface Interface number of Ipv4 interface
      *
      * Set the interface into the "down" state. In this state, it is
      * ignored during Ipv4 forwarding.
@@ -375,31 +375,31 @@ class Ipv4 : public Object
     virtual void SetDown(uint32_t interface) = 0;
 
     /**
-     * \param interface Interface number of Ipv4 interface
-     * \returns true if IP forwarding enabled for input datagrams on this device
+     * @param interface Interface number of Ipv4 interface
+     * @returns true if IP forwarding enabled for input datagrams on this device
      */
     virtual bool IsForwarding(uint32_t interface) const = 0;
 
     /**
-     * \param interface Interface number of Ipv4 interface
-     * \param val Value to set the forwarding flag
+     * @param interface Interface number of Ipv4 interface
+     * @param val Value to set the forwarding flag
      *
      * If set to true, IP forwarding is enabled for input datagrams on this device
      */
     virtual void SetForwarding(uint32_t interface, bool val) = 0;
 
     /**
-     * \brief Choose the source address to use with destination address.
-     * \param interface interface index
-     * \param dest IPv4 destination address
-     * \return IPv4 source address to use
+     * @brief Choose the source address to use with destination address.
+     * @param interface interface index
+     * @param dest IPv4 destination address
+     * @return IPv4 source address to use
      */
     virtual Ipv4Address SourceAddressSelection(uint32_t interface, Ipv4Address dest) = 0;
 
     /**
-     * \param protocolNumber number of protocol to lookup
+     * @param protocolNumber number of protocol to lookup
      *        in this L4 Demux
-     * \returns a matching L4 Protocol
+     * @returns a matching L4 Protocol
      *
      * This method is typically called by lower layers
      * to forward packets up the stack to the right protocol.
@@ -407,24 +407,24 @@ class Ipv4 : public Object
     virtual Ptr<IpL4Protocol> GetProtocol(int protocolNumber) const = 0;
 
     /**
-     * \brief Get L4 protocol by protocol number for the specified interface.
-     * \param protocolNumber protocol number
-     * \param interfaceIndex interface index, -1 means "any" interface.
-     * \return corresponding IpL4Protocol or 0 if not found
+     * @brief Get L4 protocol by protocol number for the specified interface.
+     * @param protocolNumber protocol number
+     * @param interfaceIndex interface index, -1 means "any" interface.
+     * @return corresponding IpL4Protocol or 0 if not found
      */
     virtual Ptr<IpL4Protocol> GetProtocol(int protocolNumber, int32_t interfaceIndex) const = 0;
 
     /**
-     * \brief Creates a raw socket
+     * @brief Creates a raw socket
      *
-     * \returns a smart pointer to the instantiated raw socket
+     * @returns a smart pointer to the instantiated raw socket
      */
     virtual Ptr<Socket> CreateRawSocket() = 0;
 
     /**
-     * \brief Deletes a particular raw socket
+     * @brief Deletes a particular raw socket
      *
-     * \param socket Smart pointer to the raw socket to be deleted
+     * @param socket Smart pointer to the raw socket to be deleted
      */
     virtual void DeleteRawSocket(Ptr<Socket> socket) = 0;
 
@@ -434,46 +434,46 @@ class Ipv4 : public Object
     // Indirect the Ipv4 attributes through private pure virtual methods
 
     /**
-     * \brief Set or unset the IP forwarding state
-     * \param forward the forwarding state
+     * @brief Set or unset the IP forwarding state
+     * @param forward the forwarding state
      */
     virtual void SetIpForward(bool forward) = 0;
     /**
-     * \brief Get the IP forwarding state
-     * \returns true if IP is in forwarding state
+     * @brief Get the IP forwarding state
+     * @returns true if IP is in forwarding state
      */
     virtual bool GetIpForward() const = 0;
 
     /**
-     * \brief Get the Weak Es Model status
+     * @brief Get the Weak Es Model status
      *
      * RFC1122 term for whether host accepts datagram with a dest. address on another interface
-     * \returns true for Weak Es Model activated
+     * @returns true for Weak Es Model activated
      */
     NS_DEPRECATED_3_41("Use GetStrongEndSystemModel instead")
     virtual bool GetWeakEsModel() const = 0;
 
     /**
-     * \brief Set or unset the Weak Es Model
+     * @brief Set or unset the Weak Es Model
      *
      * RFC1122 term for whether host accepts datagram with a dest. address on another interface
-     * \param model true for Weak Es Model
+     * @param model true for Weak Es Model
      */
     NS_DEPRECATED_3_41("Use SetStrongEndSystemModel instead")
     virtual void SetWeakEsModel(bool model) = 0;
 
     /**
-     * \brief Set or unset the Strong End System Model
+     * @brief Set or unset the Strong End System Model
      *
      * RFC1122 term for whether host rejects datagram with a dest. address on another interface
-     * \param model true for Strong End System Model
+     * @param model true for Strong End System Model
      */
     virtual void SetStrongEndSystemModel(bool model) = 0;
     /**
-     * \brief Get the Strong End System Model status
+     * @brief Get the Strong End System Model status
      *
      * RFC1122 term for whether host rejects datagram with a dest. address on another interface
-     * \returns true for Strong End System Model activated
+     * @returns true for Strong End System Model activated
      */
     virtual bool GetStrongEndSystemModel() const = 0;
 };

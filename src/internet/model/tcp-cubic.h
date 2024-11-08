@@ -15,7 +15,7 @@ namespace ns3
 {
 
 /**
- * \brief The Cubic Congestion Control Algorithm
+ * @brief The Cubic Congestion Control Algorithm
  *
  * TCP Cubic is a protocol that enhances the fairness property
  * of Bic while retaining its scalability and stability. The main feature is
@@ -59,7 +59,7 @@ class TcpCubic : public TcpCongestionOps
 {
   public:
     /**
-     * \brief Values to detect the Slow Start mode of HyStart
+     * @brief Values to detect the Slow Start mode of HyStart
      */
     enum HybridSSDetectionMode
     {
@@ -69,8 +69,8 @@ class TcpCubic : public TcpCongestionOps
     };
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -78,7 +78,7 @@ class TcpCubic : public TcpCongestionOps
 
     /**
      * Copy constructor
-     * \param sock Socket to copy
+     * @param sock Socket to copy
      */
     TcpCubic(const TcpCubic& sock);
 
@@ -130,41 +130,41 @@ class TcpCubic : public TcpCongestionOps
 
   private:
     /**
-     * \brief Reset HyStart parameters
-     * \param tcb Transmission Control Block of the connection
+     * @brief Reset HyStart parameters
+     * @param tcb Transmission Control Block of the connection
      */
     void HystartReset(Ptr<const TcpSocketState> tcb);
 
     /**
-     * \brief Reset Cubic parameters
-     * \param tcb Transmission Control Block of the connection
+     * @brief Reset Cubic parameters
+     * @param tcb Transmission Control Block of the connection
      */
     void CubicReset(Ptr<const TcpSocketState> tcb);
 
     /**
-     * \brief Cubic window update after a new ack received
-     * \param tcb Transmission Control Block of the connection
-     * \param segmentsAcked Segments acked
-     * \returns the congestion window update counter
+     * @brief Cubic window update after a new ack received
+     * @param tcb Transmission Control Block of the connection
+     * @param segmentsAcked Segments acked
+     * @returns the congestion window update counter
      */
     uint32_t Update(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked);
 
     /**
-     * \brief Update HyStart parameters
+     * @brief Update HyStart parameters
      *
-     * \param tcb Transmission Control Block of the connection
-     * \param delay Delay for HyStart algorithm
+     * @param tcb Transmission Control Block of the connection
+     * @param delay Delay for HyStart algorithm
      */
     void HystartUpdate(Ptr<TcpSocketState> tcb, const Time& delay);
 
     /**
-     * \brief Clamp time value in a range
+     * @brief Clamp time value in a range
      *
      * The returned value is t, clamped in a range specified
      * by attributes (HystartDelayMin < t < HystartDelayMax)
      *
-     * \param t Time value to clamp
-     * \return t itself if it is in range, otherwise the min or max
+     * @param t Time value to clamp
+     * @return t itself if it is in range, otherwise the min or max
      * value
      */
     Time HystartDelayThresh(const Time& t) const;

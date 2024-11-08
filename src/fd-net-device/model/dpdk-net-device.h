@@ -24,9 +24,9 @@ namespace ns3
 {
 
 /**
- * \ingroup fd-net-device
+ * @ingroup fd-net-device
  *
- * \brief a NetDevice to read/write network traffic from/into a
+ * @brief a NetDevice to read/write network traffic from/into a
  *        Dpdk enabled port.
  *
  * A DpdkNetDevice object will read and write frames/packets
@@ -37,8 +37,8 @@ class DpdkNetDevice : public FdNetDevice
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -62,30 +62,30 @@ class DpdkNetDevice : public FdNetDevice
      * Initialize Dpdk.
      * Initializes EAL.
      *
-     * \param argc Dpdk EAL args count.
-     * \param argv Dpdk EAL args list.
-     * \param dpdkDriver Dpdk Driver to bind NIC to.
+     * @param argc Dpdk EAL args count.
+     * @param argv Dpdk EAL args list.
+     * @param dpdkDriver Dpdk Driver to bind NIC to.
      */
     void InitDpdk(int argc, char** argv, std::string dpdkDriver);
 
     /**
      * Set device name.
      *
-     * \param deviceName The device name.
+     * @param deviceName The device name.
      */
     void SetDeviceName(std::string deviceName);
 
     /**
      * A signal handler for SIGINT and SIGTERM signals.
      *
-     * \param signum The signal number.
+     * @param signum The signal number.
      */
     static void SignalHandler(int signum);
 
     /**
      * A function to handle rx & tx operations.
-     * \param arg a pointer to the DpdkNetDevice
-     * \return zero on failure or exit.
+     * @param arg a pointer to the DpdkNetDevice
+     * @return zero on failure or exit.
      */
     static int LaunchCore(void* arg);
 
@@ -101,29 +101,29 @@ class DpdkNetDevice : public FdNetDevice
 
     /**
      * Check the status of the link.
-     * \return Status of the link - up/down as true/false.
+     * @return Status of the link - up/down as true/false.
      */
     bool IsLinkUp() const override;
 
     /**
      * Free the given packet buffer.
-     * \param buf the pointer to the buffer to be freed
+     * @param buf the pointer to the buffer to be freed
      */
     void FreeBuffer(uint8_t* buf) override;
 
     /**
      * Allocate packet buffer.
-     * \param len the length of the buffer
-     * \return A pointer to the newly created buffer.
+     * @param len the length of the buffer
+     * @return A pointer to the newly created buffer.
      */
     uint8_t* AllocateBuffer(size_t len) override;
 
   protected:
     /**
      * Write packet data to device.
-     * \param buffer The data.
-     * \param length The data length.
-     * \return The size of data written.
+     * @param buffer The data.
+     * @param length The data length.
+     * @return The size of data written.
      */
     ssize_t Write(uint8_t* buffer, size_t length) override;
 

@@ -7,8 +7,8 @@
  */
 
 /**
- * \file
- * \ingroup mpi
+ * @file
+ * @ingroup mpi
  * Declaration of classes ns3::NullMessageSentBuffer and ns3::NullMessageMpiInterface.
  */
 
@@ -32,9 +32,9 @@ class RemoteChannelBundle;
 class Packet;
 
 /**
- * \ingroup mpi
+ * @ingroup mpi
  *
- * \brief Interface between ns-3 and MPI for the Null Message
+ * @brief Interface between ns-3 and MPI for the Null Message
  * distributed simulation implementation.
  */
 class NullMessageMpiInterface : public ParallelCommunicationInterface, Object
@@ -42,7 +42,7 @@ class NullMessageMpiInterface : public ParallelCommunicationInterface, Object
   public:
     /**
      * Register this type.
-     * \return The object TypeId.
+     * @return The object TypeId.
      */
     static TypeId GetTypeId();
 
@@ -71,19 +71,19 @@ class NullMessageMpiInterface : public ParallelCommunicationInterface, Object
     friend ns3::NullMessageSimulatorImpl;
 
     /**
-     * \brief Send a Null Message to across the specified bundle.
+     * @brief Send a Null Message to across the specified bundle.
      *
      * Null Messages are sent when a packet has not been sent across
      * this bundle in order to allow time advancement on the remote
      * MPI task.
      *
-     * \param [in] guaranteeUpdate Lower bound time on the next
+     * @param [in] guaranteeUpdate Lower bound time on the next
      * possible event from this MPI task to the remote MPI task across
      * the bundle.  Remote task may execute events up to this time.
      *
-     * \param [in] bundle The bundle of links between two ranks.
+     * @param [in] bundle The bundle of links between two ranks.
      *
-     * \internal The Null Message MPI buffer format uses the same packet
+     * @internal The Null Message MPI buffer format uses the same packet
      * metadata format as sending a normal packet with the time,
      * destination node, and destination device set to zero.  Using the
      * same packet metadata simplifies receive logic.
@@ -105,7 +105,7 @@ class NullMessageMpiInterface : public ParallelCommunicationInterface, Object
     static void TestSendComplete();
 
     /**
-     * \brief Initialize send and receive buffers.
+     * @brief Initialize send and receive buffers.
      *
      * This method should be called after all links have been added to the RemoteChannelBundle
      * manager to setup any required send and receive buffers.
@@ -119,7 +119,7 @@ class NullMessageMpiInterface : public ParallelCommunicationInterface, Object
      * only check for received messages complete, and return
      * all messages that are queued up locally.
      *
-     * \param [in] blocking Whether this call should block.
+     * @param [in] blocking Whether this call should block.
      */
     static void ReceiveMessages(bool blocking = false);
 

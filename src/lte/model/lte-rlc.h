@@ -45,8 +45,8 @@ class LteRlc : public Object // SimpleRefCount<LteRlc>
     LteRlc();
     ~LteRlc() override;
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     void DoDispose() override;
@@ -54,75 +54,75 @@ class LteRlc : public Object // SimpleRefCount<LteRlc>
     /**
      *
      *
-     * \param rnti
+     * @param rnti
      */
     void SetRnti(uint16_t rnti);
 
     /**
      *
      *
-     * \param lcId
+     * @param lcId
      */
     void SetLcId(uint8_t lcId);
 
     /**
-     * \param packetDelayBudget
+     * @param packetDelayBudget
      */
     void SetPacketDelayBudgetMs(uint16_t packetDelayBudget);
 
     /**
      *
      *
-     * \param s the RLC SAP user to be used by this LTE_RLC
+     * @param s the RLC SAP user to be used by this LTE_RLC
      */
     void SetLteRlcSapUser(LteRlcSapUser* s);
 
     /**
      *
      *
-     * \return the RLC SAP Provider interface offered to the PDCP by this LTE_RLC
+     * @return the RLC SAP Provider interface offered to the PDCP by this LTE_RLC
      */
     LteRlcSapProvider* GetLteRlcSapProvider();
 
     /**
      *
      *
-     * \param s the MAC SAP Provider to be used by this LTE_RLC
+     * @param s the MAC SAP Provider to be used by this LTE_RLC
      */
     void SetLteMacSapProvider(LteMacSapProvider* s);
 
     /**
      *
      *
-     * \return the MAC SAP User interface offered to the MAC by this LTE_RLC
+     * @return the MAC SAP User interface offered to the MAC by this LTE_RLC
      */
     LteMacSapUser* GetLteMacSapUser();
 
     /**
      * TracedCallback signature for NotifyTxOpportunity events.
      *
-     * \param [in] rnti C-RNTI scheduled.
-     * \param [in] lcid The logical channel id corresponding to
+     * @param [in] rnti C-RNTI scheduled.
+     * @param [in] lcid The logical channel id corresponding to
      *             the sending RLC instance.
-     * \param [in] bytes The number of bytes to transmit
+     * @param [in] bytes The number of bytes to transmit
      */
     typedef void (*NotifyTxTracedCallback)(uint16_t rnti, uint8_t lcid, uint32_t bytes);
 
     /**
      * TracedCallback signature for
      *
-     * \param [in] rnti C-RNTI scheduled.
-     * \param [in] lcid The logical channel id corresponding to
+     * @param [in] rnti C-RNTI scheduled.
+     * @param [in] lcid The logical channel id corresponding to
      *             the sending RLC instance.
-     * \param [in] bytes The packet size.
-     * \param [in] delay Delay since sender timestamp, in ns.
+     * @param [in] bytes The packet size.
+     * @param [in] delay Delay since sender timestamp, in ns.
      */
     typedef void (*ReceiveTracedCallback)(uint16_t rnti,
                                           uint8_t lcid,
                                           uint32_t bytes,
                                           uint64_t delay);
 
-    /// \todo MRE What is the sense to duplicate all the interfaces here???
+    /// @todo MRE What is the sense to duplicate all the interfaces here???
     // NB to avoid the use of multiple inheritance
 
   protected:
@@ -130,7 +130,7 @@ class LteRlc : public Object // SimpleRefCount<LteRlc>
     /**
      * Transmit PDCP PDU
      *
-     * \param p packet
+     * @param p packet
      */
     virtual void DoTransmitPdcpPdu(Ptr<Packet> p) = 0;
 
@@ -141,7 +141,7 @@ class LteRlc : public Object // SimpleRefCount<LteRlc>
     /**
      * Notify transmit opportunity
      *
-     * \param params LteMacSapUser::TxOpportunityParameters
+     * @param params LteMacSapUser::TxOpportunityParameters
      */
     virtual void DoNotifyTxOpportunity(LteMacSapUser::TxOpportunityParameters params) = 0;
     /**
@@ -151,7 +151,7 @@ class LteRlc : public Object // SimpleRefCount<LteRlc>
     /**
      * Receive PDU function
      *
-     * \param params the LteMacSapUser::ReceivePduParameters
+     * @param params the LteMacSapUser::ReceivePduParameters
      */
     virtual void DoReceivePdu(LteMacSapUser::ReceivePduParameters params) = 0;
 
@@ -192,8 +192,8 @@ class LteRlcSm : public LteRlc
     LteRlcSm();
     ~LteRlcSm() override;
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     void DoInitialize() override;

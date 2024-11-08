@@ -420,13 +420,13 @@ cell_edited_callback_config_default(GtkCellRendererText* cell,
  * an attribute value and the type of the object for an attribute object or a
  * typeID object
  *
- * \param widget is the display object
- * \param x is the x position
- * \param y is the y position
- * \param keyboard_tip
- * \param tooltip is the tooltip information to be displayed
- * \param user_data
- * \return false if the tooltip is not displayed
+ * @param widget is the display object
+ * @param x is the x position
+ * @param y is the y position
+ * @param keyboard_tip
+ * @param tooltip is the tooltip information to be displayed
+ * @param user_data
+ * @return false if the tooltip is not displayed
  */
 gboolean
 cell_tooltip_callback_config_default(GtkWidget* widget,
@@ -507,8 +507,8 @@ cell_tooltip_callback_config_default(GtkWidget* widget,
  * This is the action done when the user presses on the save button.
  * It will save the config to a file.
  *
- * \param button (unused)
- * \param user_data
+ * @param button (unused)
+ * @param user_data
  */
 void
 save_clicked_default(GtkButton* button, gpointer user_data)
@@ -545,8 +545,8 @@ save_clicked_default(GtkButton* button, gpointer user_data)
 /*
  * If the user presses the button load, it will load the config file into memory.
  *
- * \param button (unused)
- * \param user_data
+ * @param button (unused)
+ * @param user_data
  */
 void
 load_clicked_default(GtkButton* button, gpointer user_data)
@@ -577,8 +577,8 @@ load_clicked_default(GtkButton* button, gpointer user_data)
  * This is the action done when the user presses on the save button.
  * It will save the config to a file.
  *
- * \param button (unused)
- * \param user_data
+ * @param button (unused)
+ * @param user_data
  */
 void
 save_clicked_attribute(GtkButton* button, gpointer user_data)
@@ -615,8 +615,8 @@ save_clicked_attribute(GtkButton* button, gpointer user_data)
 /*
  * If the user presses the button load, it will load the config file into memory.
  *
- * \param button (unused)
- * \param user_data
+ * @param button (unused)
+ * @param user_data
  */
 void
 load_clicked_attribute(GtkButton* button, gpointer user_data)

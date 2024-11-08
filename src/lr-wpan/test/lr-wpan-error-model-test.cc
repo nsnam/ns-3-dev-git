@@ -27,10 +27,10 @@ using namespace ns3::lrwpan;
 NS_LOG_COMPONENT_DEFINE("lr-wpan-error-model-test");
 
 /**
- * \ingroup lr-wpan-test
- * \ingroup tests
+ * @ingroup lr-wpan-test
+ * @ingroup tests
  *
- * \brief LrWpan Error Vs Distance Test
+ * @brief LrWpan Error Vs Distance Test
  */
 class LrWpanErrorDistanceTestCase : public TestCase
 {
@@ -39,8 +39,8 @@ class LrWpanErrorDistanceTestCase : public TestCase
     ~LrWpanErrorDistanceTestCase() override;
 
     /**
-     * \brief Get the number of received packets.
-     * \returns The number of received packets.
+     * @brief Get the number of received packets.
+     * @returns The number of received packets.
      */
     uint32_t GetReceived() const
     {
@@ -51,19 +51,19 @@ class LrWpanErrorDistanceTestCase : public TestCase
     void DoRun() override;
 
     /**
-     * \brief Function to be called when a packet is received.
-     * \param params MCPS params.
-     * \param p The packet.
+     * @brief Function to be called when a packet is received.
+     * @param params MCPS params.
+     * @param p The packet.
      */
     void Callback(McpsDataIndicationParams params, Ptr<Packet> p);
     uint32_t m_received; //!< The number of received packets.
 };
 
 /**
- * \ingroup lr-wpan-test
- * \ingroup tests
+ * @ingroup lr-wpan-test
+ * @ingroup tests
  *
- * \brief LrWpan Error model Test
+ * @brief LrWpan Error model Test
  */
 class LrWpanErrorModelTestCase : public TestCase
 {
@@ -185,10 +185,10 @@ LrWpanErrorModelTestCase::DoRun()
 }
 
 /**
- * \ingroup lr-wpan-test
- * \ingroup tests
+ * @ingroup lr-wpan-test
+ * @ingroup tests
  *
- * \brief LrWpan Error model TestSuite
+ * @brief LrWpan Error model TestSuite
  */
 class LrWpanErrorModelTestSuite : public TestSuite
 {

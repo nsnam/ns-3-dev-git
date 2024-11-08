@@ -13,9 +13,9 @@
 #include "ns3/random-variable-stream.h"
 
 /**
- * \file
- * \ingroup core-helpers
- * \ingroup randomvariable
+ * @file
+ * @ingroup core-helpers
+ * @ingroup randomvariable
  * ns3::RandomVariableStreamHelper implementation.
  */
 

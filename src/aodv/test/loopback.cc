@@ -35,9 +35,9 @@ namespace aodv
 {
 
 /**
- * \ingroup aodv
+ * @ingroup aodv
  *
- * \brief AODV loopback UDP echo test case
+ * @brief AODV loopback UDP echo test case
  */
 class LoopbackTestCase : public TestCase
 {
@@ -50,17 +50,17 @@ class LoopbackTestCase : public TestCase
 
     /**
      * Send data function
-     * \param socket The socket to send data
+     * @param socket The socket to send data
      */
     void SendData(Ptr<Socket> socket);
     /**
      * Receive packet function
-     * \param socket The socket to receive data
+     * @param socket The socket to receive data
      */
     void ReceivePkt(Ptr<Socket> socket);
     /**
      * Echo data function
-     * \param socket The socket to echo data
+     * @param socket The socket to echo data
      */
     void EchoData(Ptr<Socket> socket) const;
 
@@ -178,9 +178,9 @@ LoopbackTestCase::DoRun()
 }
 
 /**
- * \ingroup aodv-test
+ * @ingroup aodv-test
  *
- * \brief AODV Loopback test suite
+ * @brief AODV Loopback test suite
  */
 class AodvLoopbackTestSuite : public TestSuite
 {

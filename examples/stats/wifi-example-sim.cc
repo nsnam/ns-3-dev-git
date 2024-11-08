@@ -37,9 +37,9 @@ NS_LOG_COMPONENT_DEFINE("WiFiDistanceExperiment");
 /**
  * Function called when a packet is transmitted.
  *
- * \param datac The counter of the number of transmitted packets.
- * \param path The callback context.
- * \param packet The transmitted packet.
+ * @param datac The counter of the number of transmitted packets.
+ * @param path The callback context.
+ * @param packet The transmitted packet.
  */
 void
 TxCallback(Ptr<CounterCalculator<uint32_t>> datac, std::string path, Ptr<const Packet> packet)

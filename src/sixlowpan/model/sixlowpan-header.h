@@ -17,8 +17,8 @@ namespace ns3
 {
 
 /**
-* \ingroup sixlowpan
-* \brief   Dispatch header helper. This class only purpose is to interpret
+* @ingroup sixlowpan
+* @brief   Dispatch header helper. This class only purpose is to interpret
 * the Dispatch header into its correct type.
 *
 * The dispatch type is defined by a zero bit as the first bit and a one
@@ -35,7 +35,7 @@ class SixLowPanDispatch
 {
   public:
     /**
-     * \brief Dispatch values, as defined in \RFC{4944} and \RFC{6282}
+     * @brief Dispatch values, as defined in \RFC{4944} and \RFC{6282}
      \verbatim
        Pattern    Header Type
      +------------+------------------------------------------------+
@@ -81,7 +81,7 @@ class SixLowPanDispatch
     };
 
     /**
-     *  \brief Dispatch values for Next Header compression.
+     *  @brief Dispatch values for Next Header compression.
      *
      *  The dispatch values reflect the dispatch use, since
      *  some dispatch bits carry actual header compression bits.
@@ -98,29 +98,29 @@ class SixLowPanDispatch
     SixLowPanDispatch();
 
     /**
-     * \brief Get the Dispatch type.
-     * \param [in] dispatch The dispatch value.
-     * \return The Dispatch type.
+     * @brief Get the Dispatch type.
+     * @param [in] dispatch The dispatch value.
+     * @return The Dispatch type.
      */
     static Dispatch_e GetDispatchType(uint8_t dispatch);
 
     /**
-     * \brief Get the NhcDispatch type.
-     * \param [in] dispatch The dispatch value.
-     * \return The NhcDispatch type.
+     * @brief Get the NhcDispatch type.
+     * @param [in] dispatch The dispatch value.
+     * @return The NhcDispatch type.
      */
     static NhcDispatch_e GetNhcDispatchType(uint8_t dispatch);
 };
 
 /**
- * \ingroup sixlowpan
- * \brief 6LoWPAN HC1 header - see \RFC{4944}.
+ * @ingroup sixlowpan
+ * @brief 6LoWPAN HC1 header - see \RFC{4944}.
  */
 class SixLowPanHc1 : public Header
 {
   public:
     /**
-     * \brief Kind of address compression.
+     * @brief Kind of address compression.
      *
      * The address compression is handled in 4 bits and might mean:
      * PI: Prefix inline, PC: Prefix Compressed,
@@ -135,7 +135,7 @@ class SixLowPanHc1 : public Header
     };
 
     /**
-     * \brief Next header information.
+     * @brief Next header information.
      *
      * The Next header compression is handled in 4 bits and might mean:
      * NC: Not Compressed, UDP, ICMP or TCP.
@@ -151,14 +151,14 @@ class SixLowPanHc1 : public Header
     SixLowPanHc1();
 
     /**
-     * \brief Get the type ID.
-     * \return The object TypeId.
+     * @brief Get the type ID.
+     * @return The object TypeId.
      */
     static TypeId GetTypeId();
 
     /**
-     * \brief Return the instance type identifier.
-     * \return Instance type ID.
+     * @brief Return the instance type identifier.
+     * @return Instance type ID.
      */
 
     TypeId GetInstanceTypeId() const override;
@@ -166,165 +166,165 @@ class SixLowPanHc1 : public Header
     void Print(std::ostream& os) const override;
 
     /**
-     * \brief Get the serialized size of the packet.
-     * \return Size.
+     * @brief Get the serialized size of the packet.
+     * @return Size.
      */
     uint32_t GetSerializedSize() const override;
 
     /**
-     * \brief Serialize the packet.
-     * \param [in] start Buffer iterator.
+     * @brief Serialize the packet.
+     * @param [in] start Buffer iterator.
      */
     void Serialize(Buffer::Iterator start) const override;
 
     /**
-     * \brief Deserialize the packet.
-     * \param [in] start Buffer iterator.
-     * \return Size of the packet.
+     * @brief Deserialize the packet.
+     * @param [in] start Buffer iterator.
+     * @return Size of the packet.
      */
     uint32_t Deserialize(Buffer::Iterator start) override;
 
     /**
-     * \brief Set the "Hop limit" field (TTL).
-     * \param [in] limit The hop limit value.
+     * @brief Set the "Hop limit" field (TTL).
+     * @param [in] limit The hop limit value.
      */
     void SetHopLimit(uint8_t limit);
 
     /**
-     * \brief Get the "Hop limit" field (TTL).
-     * \return The hop limit value.
+     * @brief Get the "Hop limit" field (TTL).
+     * @return The hop limit value.
      */
     uint8_t GetHopLimit() const;
 
     /**
-     * \brief Get Destination Compression type.
-     * \returns The kind of address compression.
+     * @brief Get Destination Compression type.
+     * @returns The kind of address compression.
      */
     LowPanHc1Addr_e GetDstCompression() const;
 
     /**
-     * \brief Get the destination interface.
-     * \returns The destination interface.
+     * @brief Get the destination interface.
+     * @returns The destination interface.
      */
     const uint8_t* GetDstInterface() const;
 
     /**
-     * \brief Get the destination prefix.
-     * \returns The destination prefix.
+     * @brief Get the destination prefix.
+     * @returns The destination prefix.
      */
     const uint8_t* GetDstPrefix() const;
 
     /**
-     * \brief Get the Flow Label value.
-     * \returns The Flow Label.
+     * @brief Get the Flow Label value.
+     * @returns The Flow Label.
      */
     uint32_t GetFlowLabel() const;
 
     /**
-     * \brief Get the Next Header value.
-     * \returns The Next Header value.
+     * @brief Get the Next Header value.
+     * @returns The Next Header value.
      */
     uint8_t GetNextHeader() const;
 
     /**
-     * \brief Get Source Compression type.
-     * \returns The kind of address compression.
+     * @brief Get Source Compression type.
+     * @returns The kind of address compression.
      */
     LowPanHc1Addr_e GetSrcCompression() const;
 
     /**
-     * \brief Get the source interface.
-     * \returns The source interface.
+     * @brief Get the source interface.
+     * @returns The source interface.
      */
     const uint8_t* GetSrcInterface() const;
 
     /**
-     * \brief Get the source prefix.
-     * \returns The source prefix.
+     * @brief Get the source prefix.
+     * @returns The source prefix.
      */
     const uint8_t* GetSrcPrefix() const;
 
     /**
-     * \brief Get the Traffic Class value.
-     * \returns The Traffic Class value.
+     * @brief Get the Traffic Class value.
+     * @returns The Traffic Class value.
      */
     uint8_t GetTrafficClass() const;
 
     /**
-     * \brief Check if the Traffic Class and Flow Labels are compressed.
-     * \returns True if TC and FL are compressed.
+     * @brief Check if the Traffic Class and Flow Labels are compressed.
+     * @returns True if TC and FL are compressed.
      */
     bool IsTcflCompression() const;
 
     /**
-     * \brief Check if there is a HC2 compressed header.
-     * \returns True if next header is HC2 compressed.
+     * @brief Check if there is a HC2 compressed header.
+     * @returns True if next header is HC2 compressed.
      */
     bool IsHc2HeaderPresent() const;
 
     /**
-     * \brief Set Destination Compression type.
-     * \param [in] dstCompression The kind of address compression.
+     * @brief Set Destination Compression type.
+     * @param [in] dstCompression The kind of address compression.
      */
     void SetDstCompression(LowPanHc1Addr_e dstCompression);
 
     /**
-     * \brief Set the destination interface.
-     * \param [in] dstInterface The destination interface.
+     * @brief Set the destination interface.
+     * @param [in] dstInterface The destination interface.
      */
     void SetDstInterface(const uint8_t* dstInterface);
 
     /**
-     * \brief Set the destination prefix.
-     * \param [in] dstPrefix The destination prefix.
+     * @brief Set the destination prefix.
+     * @param [in] dstPrefix The destination prefix.
      */
     void SetDstPrefix(const uint8_t* dstPrefix);
 
     /**
-     * \brief Set the Flow Label value.
-     * \param [in] flowLabel The Flow Label.
+     * @brief Set the Flow Label value.
+     * @param [in] flowLabel The Flow Label.
      */
     void SetFlowLabel(uint32_t flowLabel);
 
     /**
-     * \brief Set the Next Header value.
-     * \param [in] nextHeader The Next Header value.
+     * @brief Set the Next Header value.
+     * @param [in] nextHeader The Next Header value.
      */
     void SetNextHeader(uint8_t nextHeader);
 
     /**
-     * \brief Set Source Compression type.
-     * \param [in] srcCompression The kind of address compression.
+     * @brief Set Source Compression type.
+     * @param [in] srcCompression The kind of address compression.
      */
     void SetSrcCompression(LowPanHc1Addr_e srcCompression);
 
     /**
-     * \brief Set the source interface.
-     * \param [in] srcInterface The source interface.
+     * @brief Set the source interface.
+     * @param [in] srcInterface The source interface.
      */
     void SetSrcInterface(const uint8_t* srcInterface);
 
     /**
-     * \brief Set the source prefix.
-     * \param [in] srcPrefix The source prefix.
+     * @brief Set the source prefix.
+     * @param [in] srcPrefix The source prefix.
      */
     void SetSrcPrefix(const uint8_t* srcPrefix);
 
     /**
-     * \brief Set the Traffic Class and Flow Labels as compressed.
-     * \param [in] tcflCompression True if TC and FL are compressed.
+     * @brief Set the Traffic Class and Flow Labels as compressed.
+     * @param [in] tcflCompression True if TC and FL are compressed.
      */
     void SetTcflCompression(bool tcflCompression);
 
     /**
-     * \brief Set the next header a HC2 compressed header.
-     * \param [in] hc2HeaderPresent True if next header is HC2 compressed.
+     * @brief Set the next header a HC2 compressed header.
+     * @param [in] hc2HeaderPresent True if next header is HC2 compressed.
      */
     void SetHc2HeaderPresent(bool hc2HeaderPresent);
 
     /**
-     * \brief Set the Traffic Class value.
-     * \param [in] trafficClass The Traffic Class value.
+     * @brief Set the Traffic Class value.
+     * @param [in] trafficClass The Traffic Class value.
      */
     void SetTrafficClass(uint8_t trafficClass);
 
@@ -345,17 +345,17 @@ class SixLowPanHc1 : public Header
 };
 
 /**
- * \brief Stream insertion operator.
+ * @brief Stream insertion operator.
  *
- * \param [in] os The reference to the output stream.
- * \param [in] header The HC1 Header.
- * \returns The reference to the output stream.
+ * @param [in] os The reference to the output stream.
+ * @param [in] header The HC1 Header.
+ * @returns The reference to the output stream.
  */
 std::ostream& operator<<(std::ostream& os, const SixLowPanHc1& header);
 
 /**
- * \ingroup sixlowpan
- * \brief 6LoWPAN FRAG1 header - see \RFC{4944}.
+ * @ingroup sixlowpan
+ * @brief 6LoWPAN FRAG1 header - see \RFC{4944}.
  */
 class SixLowPanFrag1 : public Header
 {
@@ -363,59 +363,59 @@ class SixLowPanFrag1 : public Header
     SixLowPanFrag1();
 
     /**
-     * \brief Get the type ID.
-     * \return The object TypeId.
+     * @brief Get the type ID.
+     * @return The object TypeId.
      */
     static TypeId GetTypeId();
 
     /**
-     * \brief Return the instance type identifier.
-     * \return Instance type ID.
+     * @brief Return the instance type identifier.
+     * @return Instance type ID.
      */
     TypeId GetInstanceTypeId() const override;
 
     void Print(std::ostream& os) const override;
 
     /**
-     * \brief Get the serialized size of the packet.
-     * \return Size.
+     * @brief Get the serialized size of the packet.
+     * @return Size.
      */
     uint32_t GetSerializedSize() const override;
 
     /**
-     * \brief Serialize the packet.
-     * \param [in] start Buffer iterator.
+     * @brief Serialize the packet.
+     * @param [in] start Buffer iterator.
      */
     void Serialize(Buffer::Iterator start) const override;
 
     /**
-     * \brief Deserialize the packet.
-     * \param [in] start Buffer iterator.
-     * \return Size of the packet.
+     * @brief Deserialize the packet.
+     * @param [in] start Buffer iterator.
+     * @return Size of the packet.
      */
     uint32_t Deserialize(Buffer::Iterator start) override;
 
     /**
-     * \brief Set the datagram size.
-     * \param [in] datagramSize The datagram size.
+     * @brief Set the datagram size.
+     * @param [in] datagramSize The datagram size.
      */
     void SetDatagramSize(uint16_t datagramSize);
 
     /**
-     * \brief Get the datagram size.
-     * \returns The datagram size.
+     * @brief Get the datagram size.
+     * @returns The datagram size.
      */
     uint16_t GetDatagramSize() const;
 
     /**
-     * \brief Set the datagram tag.
-     * \param [in] datagramTag The datagram tag.
+     * @brief Set the datagram tag.
+     * @param [in] datagramTag The datagram tag.
      */
     void SetDatagramTag(uint16_t datagramTag);
 
     /**
-     * \brief Get the datagram tag.
-     * \returns The datagram tag.
+     * @brief Get the datagram tag.
+     * @returns The datagram tag.
      */
     uint16_t GetDatagramTag() const;
 
@@ -425,17 +425,17 @@ class SixLowPanFrag1 : public Header
 };
 
 /**
- * \brief Stream insertion operator.
+ * @brief Stream insertion operator.
  *
- * \param [in] os The reference to the output stream.
- * \param [in] header The Frag1 Header.
- * \returns The reference to the output stream.
+ * @param [in] os The reference to the output stream.
+ * @param [in] header The Frag1 Header.
+ * @returns The reference to the output stream.
  */
 std::ostream& operator<<(std::ostream& os, const SixLowPanFrag1& header);
 
 /**
- * \ingroup sixlowpan
- * \brief 6LoWPAN FRAGN header - see \RFC{4944}.
+ * @ingroup sixlowpan
+ * @brief 6LoWPAN FRAGN header - see \RFC{4944}.
  */
 class SixLowPanFragN : public Header
 {
@@ -443,71 +443,71 @@ class SixLowPanFragN : public Header
     SixLowPanFragN();
 
     /**
-     * \brief Get the type ID.
-     * \return The object TypeId.
+     * @brief Get the type ID.
+     * @return The object TypeId.
      */
     static TypeId GetTypeId();
 
     /**
-     * \brief Return the instance type identifier.
-     * \return Instance type ID.
+     * @brief Return the instance type identifier.
+     * @return Instance type ID.
      */
     TypeId GetInstanceTypeId() const override;
 
     void Print(std::ostream& os) const override;
 
     /**
-     * \brief Get the serialized size of the packet.
-     * \return Size.
+     * @brief Get the serialized size of the packet.
+     * @return Size.
      */
     uint32_t GetSerializedSize() const override;
 
     /**
-     * \brief Serialize the packet.
-     * \param [in] start Buffer iterator.
+     * @brief Serialize the packet.
+     * @param [in] start Buffer iterator.
      */
     void Serialize(Buffer::Iterator start) const override;
 
     /**
-     * \brief Deserialize the packet.
-     * \param [in] start Buffer iterator.
-     * \return Size of the packet.
+     * @brief Deserialize the packet.
+     * @param [in] start Buffer iterator.
+     * @return Size of the packet.
      */
     uint32_t Deserialize(Buffer::Iterator start) override;
 
     /**
-     * \brief Set the datagram size.
-     * \param [in] datagramSize The datagram size.
+     * @brief Set the datagram size.
+     * @param [in] datagramSize The datagram size.
      */
     void SetDatagramSize(uint16_t datagramSize);
 
     /**
-     * \brief Get the datagram size.
-     * \returns The datagram size.
+     * @brief Get the datagram size.
+     * @returns The datagram size.
      */
     uint16_t GetDatagramSize() const;
 
     /**
-     * \brief Set the datagram tag.
-     * \param [in] datagramTag The datagram tag.
+     * @brief Set the datagram tag.
+     * @param [in] datagramTag The datagram tag.
      */
     void SetDatagramTag(uint16_t datagramTag);
 
     /**
-     * \brief Get the datagram tag.
-     * \returns The datagram tag.
+     * @brief Get the datagram tag.
+     * @returns The datagram tag.
      */
     uint16_t GetDatagramTag() const;
 
     /**
-     * \brief Set the datagram offset.
-     * \param [in] datagramOffset The datagram offset.
+     * @brief Set the datagram offset.
+     * @param [in] datagramOffset The datagram offset.
      */
     void SetDatagramOffset(uint8_t datagramOffset);
 
     /**
-     * \brief Get the datagram offset.
-     * \returns The datagram offset.
+     * @brief Get the datagram offset.
+     * @returns The datagram offset.
      */
     uint8_t GetDatagramOffset() const;
 
@@ -518,17 +518,17 @@ class SixLowPanFragN : public Header
 };
 
 /**
- * \brief Stream insertion operator.
+ * @brief Stream insertion operator.
  *
- * \param [in] os The reference to the output stream.
- * \param [in] header The FragN Header.
- * \returns The reference to the output stream.
+ * @param [in] os The reference to the output stream.
+ * @param [in] header The FragN Header.
+ * @returns The reference to the output stream.
  */
 std::ostream& operator<<(std::ostream& os, const SixLowPanFragN& header);
 
 /**
- * \ingroup sixlowpan
- * \brief 6LoWPAN IPv6 uncompressed header - see \RFC{4944}.
+ * @ingroup sixlowpan
+ * @brief 6LoWPAN IPv6 uncompressed header - see \RFC{4944}.
  */
 class SixLowPanIpv6 : public Header
 {
@@ -536,51 +536,51 @@ class SixLowPanIpv6 : public Header
     SixLowPanIpv6();
 
     /**
-     * \brief Get the type ID.
-     * \return The object TypeId.
+     * @brief Get the type ID.
+     * @return The object TypeId.
      */
     static TypeId GetTypeId();
 
     /**
-     * \brief Return the instance type identifier.
-     * \return Instance type ID.
+     * @brief Return the instance type identifier.
+     * @return Instance type ID.
      */
     TypeId GetInstanceTypeId() const override;
 
     void Print(std::ostream& os) const override;
 
     /**
-     * \brief Get the serialized size of the packet.
-     * \return Size.
+     * @brief Get the serialized size of the packet.
+     * @return Size.
      */
     uint32_t GetSerializedSize() const override;
 
     /**
-     * \brief Serialize the packet.
-     * \param [in] start Buffer iterator.
+     * @brief Serialize the packet.
+     * @param [in] start Buffer iterator.
      */
     void Serialize(Buffer::Iterator start) const override;
 
     /**
-     * \brief Deserialize the packet.
-     * \param [in] start Buffer iterator.
-     * \return Size of the packet.
+     * @brief Deserialize the packet.
+     * @param [in] start Buffer iterator.
+     * @return Size of the packet.
      */
     uint32_t Deserialize(Buffer::Iterator start) override;
 };
 
 /**
- * \brief Stream insertion operator.
+ * @brief Stream insertion operator.
  *
- * \param [in] os The reference to the output stream.
- * \param [in] header The Frag1 Header.
- * \returns The reference to the output stream.
+ * @param [in] os The reference to the output stream.
+ * @param [in] header The Frag1 Header.
+ * @returns The reference to the output stream.
  */
 std::ostream& operator<<(std::ostream& os, const SixLowPanIpv6& header);
 
 /**
-* \ingroup sixlowpan
-* \brief   LOWPAN_IPHC base Encoding - see \RFC{6282}.
+* @ingroup sixlowpan
+* @brief   LOWPAN_IPHC base Encoding - see \RFC{6282}.
   \verbatim
        0                                       1
        0   1   2   3   4   5   6   7   8   9   0   1   2   3   4   5
@@ -593,7 +593,7 @@ class SixLowPanIphc : public Header
 {
   public:
     /**
-     *  \brief TF: Traffic Class, Flow Label.
+     *  @brief TF: Traffic Class, Flow Label.
      *
      *  00:  ECN + DSCP + 4-bit Pad + Flow Label (4 bytes)
      *  01:  ECN + 2-bit Pad + Flow Label (3 bytes), DSCP is elided.
@@ -610,7 +610,7 @@ class SixLowPanIphc : public Header
     };
 
     /**
-     *  \brief HLIM: Hop Limit.
+     *  @brief HLIM: Hop Limit.
      *
      *  00:  The Hop Limit field is carried in-line.
      *  01:  The Hop Limit field is compressed and the hop limit is 1.
@@ -626,7 +626,7 @@ class SixLowPanIphc : public Header
     };
 
     /**
-     *  \brief Source or Destination Address Mode.
+     *  @brief Source or Destination Address Mode.
      *
      *  00:  128 bits.
      *  01:  64 bits (or 48 bits if multicast).
@@ -643,259 +643,259 @@ class SixLowPanIphc : public Header
 
     SixLowPanIphc();
     /**
-     * \brief Constructor.
-     * \param [in] dispatch Dispatch value.
+     * @brief Constructor.
+     * @param [in] dispatch Dispatch value.
      */
     SixLowPanIphc(uint8_t dispatch);
 
     /**
-     * \brief Get the type ID.
-     * \return The object TypeId.
+     * @brief Get the type ID.
+     * @return The object TypeId.
      */
     static TypeId GetTypeId();
 
     /**
-     * \brief Return the instance type identifier.
-     * \return Instance type ID.
+     * @brief Return the instance type identifier.
+     * @return Instance type ID.
      */
     TypeId GetInstanceTypeId() const override;
 
     void Print(std::ostream& os) const override;
 
     /**
-     * \brief Get the serialized size of the packet.
-     * \return Size.
+     * @brief Get the serialized size of the packet.
+     * @return Size.
      */
     uint32_t GetSerializedSize() const override;
 
     /**
-     * \brief Serialize the packet.
-     * \param [in] start Buffer iterator.
+     * @brief Serialize the packet.
+     * @param [in] start Buffer iterator.
      */
     void Serialize(Buffer::Iterator start) const override;
 
     /**
-     * \brief Deserialize the packet.
-     * \param [in] start Buffer iterator.
-     * \return Size of the packet.
+     * @brief Deserialize the packet.
+     * @param [in] start Buffer iterator.
+     * @return Size of the packet.
      */
     uint32_t Deserialize(Buffer::Iterator start) override;
 
     /**
-     * \brief Set the TF (Traffic Class, Flow Label) compression.
-     * \param [in] tfField ECN, DSCP, Flow Label compression type.
+     * @brief Set the TF (Traffic Class, Flow Label) compression.
+     * @param [in] tfField ECN, DSCP, Flow Label compression type.
      */
     void SetTf(TrafficClassFlowLabel_e tfField);
 
     /**
-     * \brief Get the TF (Traffic Class, Flow Label) compression.
-     * \return The ECN, DSCP, Flow Label compression type.
+     * @brief Get the TF (Traffic Class, Flow Label) compression.
+     * @return The ECN, DSCP, Flow Label compression type.
      */
     TrafficClassFlowLabel_e GetTf() const;
 
     /**
-     * \brief Set the NH (Next Header) compression.
-     * \param [in] nhField False (Next Header carried in-line), true (compressed NH).
+     * @brief Set the NH (Next Header) compression.
+     * @param [in] nhField False (Next Header carried in-line), true (compressed NH).
      */
     void SetNh(bool nhField);
 
     /**
-     * \brief Get the NH (Next Header) compression.
-     * \return False (Next Header carried in-line), true (compressed NH).
+     * @brief Get the NH (Next Header) compression.
+     * @return False (Next Header carried in-line), true (compressed NH).
      */
     bool GetNh() const;
 
     /**
-     * \brief Set the HLIM (Hop Limit) compression.
-     * \param [in] hlimField Hop Limit compression type
+     * @brief Set the HLIM (Hop Limit) compression.
+     * @param [in] hlimField Hop Limit compression type
      */
     void SetHlim(Hlim_e hlimField);
 
     /**
-     * \brief Get the HLIM (Hop Limit) compression.
-     * \return Hop Limit compression type.
+     * @brief Get the HLIM (Hop Limit) compression.
+     * @return Hop Limit compression type.
      */
     Hlim_e GetHlim() const;
 
     /**
-     * \brief Set the CID (Context Identifier Extension) compression.
-     * \param [in] cidField False (no CID present), true (CID follows).
+     * @brief Set the CID (Context Identifier Extension) compression.
+     * @param [in] cidField False (no CID present), true (CID follows).
      */
     void SetCid(bool cidField);
 
     /**
-     * \brief Get the CID (Context Identifier Extension) compression.
-     * \return False (no CID present), true (CID follows).
+     * @brief Get the CID (Context Identifier Extension) compression.
+     * @return False (no CID present), true (CID follows).
      */
     bool GetCid() const;
 
     /**
-     * \brief Set the SAC (Source Address Compression) compression.
-     * \param [in] sacField False (stateless), true (stateful).
+     * @brief Set the SAC (Source Address Compression) compression.
+     * @param [in] sacField False (stateless), true (stateful).
      */
     void SetSac(bool sacField);
 
     /**
-     * \brief Get the SAC (Source Address Compression) compression.
-     * \return False (stateless), true (stateful).
+     * @brief Get the SAC (Source Address Compression) compression.
+     * @return False (stateless), true (stateful).
      */
     bool GetSac() const;
 
     /**
-     * \brief Set the SAM (Source Address Mode) compression.
-     * \param [in] samField Depends on the SAC.
+     * @brief Set the SAM (Source Address Mode) compression.
+     * @param [in] samField Depends on the SAC.
      */
     void SetSam(HeaderCompression_e samField);
 
     /**
-     * \brief Get the SAM (Source Address Mode) compression.
-     * \return Depends on the SAC field.
+     * @brief Get the SAM (Source Address Mode) compression.
+     * @return Depends on the SAC field.
      */
     HeaderCompression_e GetSam() const;
 
     /**
      * brief Set the source address inline part
-     * \param srcInlinePart The inline portion of the compressed source address (16 bytes)
-     * \param size The number of inline bytes
+     * @param srcInlinePart The inline portion of the compressed source address (16 bytes)
+     * @param size The number of inline bytes
      */
     void SetSrcInlinePart(uint8_t srcInlinePart[16], uint8_t size);
 
     /**
      * brief Get the source address inline part
-     * \return The inline portion of the compressed source address (16 bytes)
+     * @return The inline portion of the compressed source address (16 bytes)
      */
     const uint8_t* GetSrcInlinePart() const;
 
     /**
-     * \brief Set the M (Multicast) compression.
-     * \param [in] mField True if destination is multicast.
+     * @brief Set the M (Multicast) compression.
+     * @param [in] mField True if destination is multicast.
      */
     void SetM(bool mField);
 
     /**
-     * \brief Get the M (Multicast) compression.
-     * \return True if destination is multicast.
+     * @brief Get the M (Multicast) compression.
+     * @return True if destination is multicast.
      */
     bool GetM() const;
 
     /**
-     * \brief Set the DAC (Destination Address Compression) compression.
-     * \param [in] dacField False (stateless), true (stateful).
+     * @brief Set the DAC (Destination Address Compression) compression.
+     * @param [in] dacField False (stateless), true (stateful).
      */
     void SetDac(bool dacField);
 
     /**
-     * \brief Get the DAC (Destination Address Compression) compression.
-     * \return False (stateless), true (stateful).
+     * @brief Get the DAC (Destination Address Compression) compression.
+     * @return False (stateless), true (stateful).
      */
     bool GetDac() const;
 
     /**
-     * \brief Set the DAM (Destination Address Mode) compression.
-     * \param [in] damField Depends on the DAC and M fields.
+     * @brief Set the DAM (Destination Address Mode) compression.
+     * @param [in] damField Depends on the DAC and M fields.
      */
     void SetDam(HeaderCompression_e damField);
 
     /**
-     * \brief Get the DAM (Destination Address Mode) compression.
-     * \return Depends on the DAC and M fields.
+     * @brief Get the DAM (Destination Address Mode) compression.
+     * @return Depends on the DAC and M fields.
      */
     HeaderCompression_e GetDam() const;
 
     /**
      * brief Set the destination address inline part
-     * \param dstInlinePart The inline portion of the compressed destination address (16 bytes)
-     * \param size The number of inline bytes
+     * @param dstInlinePart The inline portion of the compressed destination address (16 bytes)
+     * @param size The number of inline bytes
      */
     void SetDstInlinePart(uint8_t dstInlinePart[16], uint8_t size);
 
     /**
      * brief Get the destination address inline part
-     * \return The inline portion of the compressed destination address (16 bytes)
+     * @return The inline portion of the compressed destination address (16 bytes)
      */
     const uint8_t* GetDstInlinePart() const;
 
     /**
-     * \brief Set the SrcContextId.
-     * \param [in] srcContextId Valid values are [0:15].
+     * @brief Set the SrcContextId.
+     * @param [in] srcContextId Valid values are [0:15].
      */
     void SetSrcContextId(uint8_t srcContextId);
 
     /**
-     * \brief Get the SrcContextId.
-     * \return The SrcContextId.
+     * @brief Get the SrcContextId.
+     * @return The SrcContextId.
      */
     uint8_t GetSrcContextId() const;
 
     /**
-     * \brief Set the DstContextId.
-     * \param [in] dstContextId Valid values are [0:15].
+     * @brief Set the DstContextId.
+     * @param [in] dstContextId Valid values are [0:15].
      */
     void SetDstContextId(uint8_t dstContextId);
 
     /**
-     * \brief Get the DstContextId.
-     * \return The DstContextId.
+     * @brief Get the DstContextId.
+     * @return The DstContextId.
      */
     uint8_t GetDstContextId() const;
 
     /**
-     * \brief Set the ECN (2bits).
-     * \param [in] ecn Valid values are [0:3].
+     * @brief Set the ECN (2bits).
+     * @param [in] ecn Valid values are [0:3].
      */
     void SetEcn(uint8_t ecn);
 
     /**
-     * \brief Get the ECN.
-     * \return The ECN.
+     * @brief Get the ECN.
+     * @return The ECN.
      */
     uint8_t GetEcn() const;
 
     /**
-     * \brief Set the DSCP (6bits).
-     * \param [in] dscp Valid values are [0:63].
+     * @brief Set the DSCP (6bits).
+     * @param [in] dscp Valid values are [0:63].
      */
     void SetDscp(uint8_t dscp);
 
     /**
-     * \brief Get the DSCP.
-     * \return The DSCP.
+     * @brief Get the DSCP.
+     * @return The DSCP.
      */
     uint8_t GetDscp() const;
 
     /**
-     * \brief Set the Flow Label (20bits).
-     * \param [in] flowLabel Valid values are 20 bits long.
+     * @brief Set the Flow Label (20bits).
+     * @param [in] flowLabel Valid values are 20 bits long.
      */
     void SetFlowLabel(uint32_t flowLabel);
 
     /**
-     * \brief Get the Flow Label.
-     * \return The Flow Label.
+     * @brief Get the Flow Label.
+     * @return The Flow Label.
      */
     uint32_t GetFlowLabel() const;
 
     /**
-     * \brief Set the Next Header field.
-     * \param [in] nextHeader Next Header field.
+     * @brief Set the Next Header field.
+     * @param [in] nextHeader Next Header field.
      */
     void SetNextHeader(uint8_t nextHeader);
 
     /**
-     * \brief Get the Next Header field.
-     * \return The Next Header field.
+     * @brief Get the Next Header field.
+     * @return The Next Header field.
      */
     uint8_t GetNextHeader() const;
 
     /**
-     * \brief Set the Hop Limit field.
-     * \param [in] hopLimit Hop Limit field.
+     * @brief Set the Hop Limit field.
+     * @param [in] hopLimit Hop Limit field.
      */
     void SetHopLimit(uint8_t hopLimit);
 
     /**
-     * \brief Get the Hop Limit field.
-     * \return The Hop Limit field.
+     * @brief Get the Hop Limit field.
+     * @return The Hop Limit field.
      */
     uint8_t GetHopLimit() const;
 
@@ -912,17 +912,17 @@ class SixLowPanIphc : public Header
 };
 
 /**
- * \brief Stream insertion operator.
+ * @brief Stream insertion operator.
  *
- * \param [in] os The reference to the output stream.
- * \param [in] header The IPHC Header.
- * \returns The reference to the output stream.
+ * @param [in] os The reference to the output stream.
+ * @param [in] header The IPHC Header.
+ * @returns The reference to the output stream.
  */
 std::ostream& operator<<(std::ostream& os, const SixLowPanIphc& header);
 
 /**
-* \ingroup sixlowpan
-* \brief   LOWPAN_NHC Extension Header Encoding - see \RFC{6282}.
+* @ingroup sixlowpan
+* @brief   LOWPAN_NHC Extension Header Encoding - see \RFC{6282}.
   \verbatim
      0   1   2   3   4   5   6   7
    +---+---+---+---+---+---+---+---+
@@ -934,7 +934,7 @@ class SixLowPanNhcExtension : public Header
 {
   public:
     /**
-     *  \brief EID: IPv6 Extension Header ID.
+     *  @brief EID: IPv6 Extension Header ID.
      *
      *   EID: IPv6 Extension Header ID:
      *      0: IPv6 Hop-by-Hop Options Header [\RFC{2460}]
@@ -959,92 +959,92 @@ class SixLowPanNhcExtension : public Header
     SixLowPanNhcExtension();
 
     /**
-     * \brief Get the type ID.
-     * \return The object TypeId.
+     * @brief Get the type ID.
+     * @return The object TypeId.
      */
     static TypeId GetTypeId();
 
     /**
-     * \brief Return the instance type identifier.
-     * \return Instance type ID.
+     * @brief Return the instance type identifier.
+     * @return Instance type ID.
      */
     TypeId GetInstanceTypeId() const override;
 
     void Print(std::ostream& os) const override;
 
     /**
-     * \brief Get the serialized size of the packet.
-     * \return Size.
+     * @brief Get the serialized size of the packet.
+     * @return Size.
      */
     uint32_t GetSerializedSize() const override;
 
     /**
-     * \brief Serialize the packet.
-     * \param [in] start Buffer iterator.
+     * @brief Serialize the packet.
+     * @param [in] start Buffer iterator.
      */
     void Serialize(Buffer::Iterator start) const override;
 
     /**
-     * \brief Deserialize the packet.
-     * \param [in] start Buffer iterator.
-     * \return Size of the packet.
+     * @brief Deserialize the packet.
+     * @param [in] start Buffer iterator.
+     * @return Size of the packet.
      */
     uint32_t Deserialize(Buffer::Iterator start) override;
 
     /**
-     * \brief Get the NhcDispatch type.
-     * \return The NhcDispatch type.
+     * @brief Get the NhcDispatch type.
+     * @return The NhcDispatch type.
      */
     virtual SixLowPanDispatch::NhcDispatch_e GetNhcDispatchType() const;
 
     /**
-     * \brief Set the Extension Header Type.
-     * \param [in] extensionHeaderType The Extension Header Type.
+     * @brief Set the Extension Header Type.
+     * @param [in] extensionHeaderType The Extension Header Type.
      */
     void SetEid(Eid_e extensionHeaderType);
 
     /**
-     * \brief Get the Extension Header Type.
-     * \return The Extension Header Type.
+     * @brief Get the Extension Header Type.
+     * @return The Extension Header Type.
      */
     Eid_e GetEid() const;
 
     /**
-     * \brief Set the Next Header field values.
-     * \param [in] nextHeader The Next Header field value.
+     * @brief Set the Next Header field values.
+     * @param [in] nextHeader The Next Header field value.
      */
     void SetNextHeader(uint8_t nextHeader);
 
     /**
-     * \brief Get the Next Header field value.
-     * \return The Next Header field value.
+     * @brief Get the Next Header field value.
+     * @return The Next Header field value.
      */
     uint8_t GetNextHeader() const;
 
     /**
-     * \brief Set the NH field values.
-     * \param [in] nhField The NH field value.
+     * @brief Set the NH field values.
+     * @param [in] nhField The NH field value.
      */
     void SetNh(bool nhField);
 
     /**
-     * \brief Get the Next Header field value.
-     * \return The NH field value.
+     * @brief Get the Next Header field value.
+     * @return The NH field value.
      */
     bool GetNh() const;
 
     /**
-     * \brief Set the option header data blob.
-     * \param [in] blob A buffer holding the blob data.
-     * \param [in] size The data blob size.
+     * @brief Set the option header data blob.
+     * @param [in] blob A buffer holding the blob data.
+     * @param [in] size The data blob size.
      */
     void SetBlob(const uint8_t* blob, uint32_t size);
 
     /**
-     * \brief Get the option header data blob.
-     * \param [in] blob A buffer to copy the blob data into.
-     * \param [in] size The size of the buffer.
-     * \return The length of the copied data.
+     * @brief Get the option header data blob.
+     * @param [in] blob A buffer to copy the blob data into.
+     * @param [in] size The size of the buffer.
+     * @return The length of the copied data.
      */
     uint32_t CopyBlob(uint8_t* blob, uint32_t size) const;
 
@@ -1056,17 +1056,17 @@ class SixLowPanNhcExtension : public Header
 };
 
 /**
- * \brief Stream insertion operator.
+ * @brief Stream insertion operator.
  *
- * \param [in] os The reference to the output stream.
- * \param [in] header The NHC Extension Header.
- * \returns The reference to the output stream.
+ * @param [in] os The reference to the output stream.
+ * @param [in] header The NHC Extension Header.
+ * @returns The reference to the output stream.
  */
 std::ostream& operator<<(std::ostream& os, const SixLowPanNhcExtension& header);
 
 /**
-* \ingroup sixlowpan
-* \brief   UDP LOWPAN_NHC Extension Header Encoding - see \RFC{6282}.
+* @ingroup sixlowpan
+* @brief   UDP LOWPAN_NHC Extension Header Encoding - see \RFC{6282}.
   \verbatim
      0   1   2   3   4   5   6   7
    +---+---+---+---+---+---+---+---+
@@ -1078,7 +1078,7 @@ class SixLowPanUdpNhcExtension : public Header
 {
   public:
     /**
-     *  \brief Ports:
+     *  @brief Ports:
      *
      *  00: 16 bits for both Source Port and Destination Port
      *  01: 16 bits for Source Port. Last 8 bits for Destination Port
@@ -1096,101 +1096,101 @@ class SixLowPanUdpNhcExtension : public Header
     SixLowPanUdpNhcExtension();
 
     /**
-     * \brief Get the type ID.
-     * \return The object TypeId.
+     * @brief Get the type ID.
+     * @return The object TypeId.
      */
     static TypeId GetTypeId();
 
     /**
-     * \brief Return the instance type identifier.
-     * \return Instance type ID.
+     * @brief Return the instance type identifier.
+     * @return Instance type ID.
      */
     TypeId GetInstanceTypeId() const override;
 
     void Print(std::ostream& os) const override;
 
     /**
-     * \brief Get the serialized size of the packet.
-     * \return Size.
+     * @brief Get the serialized size of the packet.
+     * @return Size.
      */
     uint32_t GetSerializedSize() const override;
 
     /**
-     * \brief Serialize the packet.
-     * \param [in] start Buffer iterator.
+     * @brief Serialize the packet.
+     * @param [in] start Buffer iterator.
      */
     void Serialize(Buffer::Iterator start) const override;
 
     /**
-     * \brief Deserialize the packet.
-     * \param [in] start Buffer iterator.
-     * \return Size of the packet.
+     * @brief Deserialize the packet.
+     * @param [in] start Buffer iterator.
+     * @return Size of the packet.
      */
     uint32_t Deserialize(Buffer::Iterator start) override;
 
     /**
-     * \brief Get the NhcDispatch type.
-     * \return The NhcDispatch type.
+     * @brief Get the NhcDispatch type.
+     * @return The NhcDispatch type.
      */
     virtual SixLowPanDispatch::NhcDispatch_e GetNhcDispatchType() const;
 
     /**
-     * \brief Set the compressed Src and Dst Ports.
-     * \param [in] port Src and Dst Ports.
+     * @brief Set the compressed Src and Dst Ports.
+     * @param [in] port Src and Dst Ports.
      */
     void SetPorts(Ports_e port);
 
     /**
-     * \brief Get the compressed Src and Dst Ports.
-     * \return The Src and Dst Ports.
+     * @brief Get the compressed Src and Dst Ports.
+     * @return The Src and Dst Ports.
      */
     Ports_e GetPorts() const;
 
     /**
-     * \brief Set the Source Port.
-     * \param [in] port The Source Port.
+     * @brief Set the Source Port.
+     * @param [in] port The Source Port.
      */
     void SetSrcPort(uint16_t port);
 
     /**
-     * \brief Get the Source Port.
-     * \return The Source Port.
+     * @brief Get the Source Port.
+     * @return The Source Port.
      */
     uint16_t GetSrcPort() const;
 
     /**
-     * \brief Set the Destination Port.
-     * \param [in] port The Destination Port.
+     * @brief Set the Destination Port.
+     * @param [in] port The Destination Port.
      */
     void SetDstPort(uint16_t port);
 
     /**
-     * \brief Get the Destination Port.
-     * \return The Destination Port.
+     * @brief Get the Destination Port.
+     * @return The Destination Port.
      */
     uint16_t GetDstPort() const;
 
     /**
-     * \brief Set the C (Checksum).
-     * \param [in] cField False (All checksum carried in-line), true (Checksum elided).
+     * @brief Set the C (Checksum).
+     * @param [in] cField False (All checksum carried in-line), true (Checksum elided).
      */
     void SetC(bool cField);
 
     /**
-     * \brief Get the C (Checksum).
-     * \return False (All checksum carried in-line), true (Checksum elided).
+     * @brief Get the C (Checksum).
+     * @return False (All checksum carried in-line), true (Checksum elided).
      */
     bool GetC() const;
 
     /**
-     * \brief Set the Checksum field values.
-     * \param [in] checksum The Checksum field value.
+     * @brief Set the Checksum field values.
+     * @param [in] checksum The Checksum field value.
      */
     void SetChecksum(uint16_t checksum);
 
     /**
-     * \brief Get the Checksum field value.
-     * \return The Checksum field value.
+     * @brief Get the Checksum field value.
+     * @return The Checksum field value.
      */
     uint16_t GetChecksum() const;
 
@@ -1202,17 +1202,17 @@ class SixLowPanUdpNhcExtension : public Header
 };
 
 /**
- * \brief Stream insertion operator.
+ * @brief Stream insertion operator.
  *
- * \param [in] os The reference to the output stream.
- * \param [in] header The UDP NHC Extension Header.
- * \returns The reference to the output stream.
+ * @param [in] os The reference to the output stream.
+ * @param [in] header The UDP NHC Extension Header.
+ * @returns The reference to the output stream.
  */
 std::ostream& operator<<(std::ostream& os, const SixLowPanUdpNhcExtension& header);
 
 /**
- * \ingroup sixlowpan
- * \brief 6LoWPAN BC0 header - see \RFC{4944}.
+ * @ingroup sixlowpan
+ * @brief 6LoWPAN BC0 header - see \RFC{4944}.
  */
 class SixLowPanBc0 : public Header
 {
@@ -1220,47 +1220,47 @@ class SixLowPanBc0 : public Header
     SixLowPanBc0();
 
     /**
-     * \brief Get the type ID.
-     * \return The object TypeId.
+     * @brief Get the type ID.
+     * @return The object TypeId.
      */
     static TypeId GetTypeId();
 
     /**
-     * \brief Return the instance type identifier.
-     * \return Instance type ID.
+     * @brief Return the instance type identifier.
+     * @return Instance type ID.
      */
     TypeId GetInstanceTypeId() const override;
 
     void Print(std::ostream& os) const override;
 
     /**
-     * \brief Get the serialized size of the packet.
-     * \return Size.
+     * @brief Get the serialized size of the packet.
+     * @return Size.
      */
     uint32_t GetSerializedSize() const override;
 
     /**
-     * \brief Serialize the packet.
-     * \param [in] start Buffer iterator.
+     * @brief Serialize the packet.
+     * @param [in] start Buffer iterator.
      */
     void Serialize(Buffer::Iterator start) const override;
 
     /**
-     * \brief Deserialize the packet.
-     * \param [in] start Buffer iterator.
-     * \return Size of the packet.
+     * @brief Deserialize the packet.
+     * @param [in] start Buffer iterator.
+     * @return Size of the packet.
      */
     uint32_t Deserialize(Buffer::Iterator start) override;
 
     /**
-     * \brief Set the "Sequence Number" field.
-     * \param [in] seqNumber The sequence number value.
+     * @brief Set the "Sequence Number" field.
+     * @param [in] seqNumber The sequence number value.
      */
     void SetSequenceNumber(uint8_t seqNumber);
 
     /**
-     * \brief Get the "Sequence Number" field.
-     * \return The sequence number value.
+     * @brief Get the "Sequence Number" field.
+     * @return The sequence number value.
      */
     uint8_t GetSequenceNumber() const;
 
@@ -1269,17 +1269,17 @@ class SixLowPanBc0 : public Header
 };
 
 /**
- * \brief Stream insertion operator.
+ * @brief Stream insertion operator.
  *
- * \param [in] os The reference to the output stream.
- * \param [in] header The BC0 Extension Header.
- * \returns The reference to the output stream.
+ * @param [in] os The reference to the output stream.
+ * @param [in] header The BC0 Extension Header.
+ * @returns The reference to the output stream.
  */
 std::ostream& operator<<(std::ostream& os, const SixLowPanBc0& header);
 
 /**
- * \ingroup sixlowpan
- * \brief 6LoWPAN Mesh header - see \RFC{4944}.
+ * @ingroup sixlowpan
+ * @brief 6LoWPAN Mesh header - see \RFC{4944}.
  */
 class SixLowPanMesh : public Header
 {
@@ -1287,71 +1287,71 @@ class SixLowPanMesh : public Header
     SixLowPanMesh();
 
     /**
-     * \brief Get the type ID.
-     * \return The object TypeId.
+     * @brief Get the type ID.
+     * @return The object TypeId.
      */
     static TypeId GetTypeId();
 
     /**
-     * \brief Return the instance type identifier.
-     * \return Instance type ID.
+     * @brief Return the instance type identifier.
+     * @return Instance type ID.
      */
     TypeId GetInstanceTypeId() const override;
 
     void Print(std::ostream& os) const override;
 
     /**
-     * \brief Get the serialized size of the packet.
-     * \return Size.
+     * @brief Get the serialized size of the packet.
+     * @return Size.
      */
     uint32_t GetSerializedSize() const override;
 
     /**
-     * \brief Serialize the packet.
-     * \param [in] start Buffer iterator.
+     * @brief Serialize the packet.
+     * @param [in] start Buffer iterator.
      */
     void Serialize(Buffer::Iterator start) const override;
 
     /**
-     * \brief Deserialize the packet.
-     * \param [in] start Buffer iterator.
-     * \return Size of the packet.
+     * @brief Deserialize the packet.
+     * @param [in] start Buffer iterator.
+     * @return Size of the packet.
      */
     uint32_t Deserialize(Buffer::Iterator start) override;
 
     /**
-     * \brief Set the "Hops Left" field.
-     * \param [in] hopsLeft The number of hops left.
+     * @brief Set the "Hops Left" field.
+     * @param [in] hopsLeft The number of hops left.
      */
     void SetHopsLeft(uint8_t hopsLeft);
 
     /**
-     * \brief Get the "Hops Left" field.
-     * \return The number of hops left.
+     * @brief Get the "Hops Left" field.
+     * @return The number of hops left.
      */
     uint8_t GetHopsLeft() const;
 
     /**
-     * \brief Set the "Originator" address.
-     * \param [in] originator The Originator address (Mac64Address or Mac16Address).
+     * @brief Set the "Originator" address.
+     * @param [in] originator The Originator address (Mac64Address or Mac16Address).
      */
     void SetOriginator(Address originator);
 
     /**
-     * \brief Get the "Originator" address.
-     * \return The Originator address (Mac64Address or Mac16Address).
+     * @brief Get the "Originator" address.
+     * @return The Originator address (Mac64Address or Mac16Address).
      */
     Address GetOriginator() const;
 
     /**
-     * \brief Set the "Final Destination" address.
-     * \param [in] finalDst The Final Destination address (Mac64Address or Mac16Address).
+     * @brief Set the "Final Destination" address.
+     * @param [in] finalDst The Final Destination address (Mac64Address or Mac16Address).
      */
     void SetFinalDst(Address finalDst);
 
     /**
-     * \brief Get the "Final Destination" address.
-     * \return The Final Destination address (Mac64Address or Mac16Address).
+     * @brief Get the "Final Destination" address.
+     * @return The Final Destination address (Mac64Address or Mac16Address).
      */
     Address GetFinalDst() const;
 
@@ -1364,11 +1364,11 @@ class SixLowPanMesh : public Header
 };
 
 /**
- * \brief Stream insertion operator.
+ * @brief Stream insertion operator.
  *
- * \param [in] os The reference to the output stream.
- * \param [in] header The Mesh Extension Header.
- * \returns The reference to the output stream.
+ * @param [in] os The reference to the output stream.
+ * @param [in] header The Mesh Extension Header.
+ * @returns The reference to the output stream.
  */
 std::ostream& operator<<(std::ostream& os, const SixLowPanMesh& header);
 

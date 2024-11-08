@@ -33,7 +33,7 @@ class LteEnbCmacSapProvider;
 class LteCcmMacSapProvider;
 
 /**
- * \brief The class implements Component Carrier Manager (CCM) that operates
+ * @brief The class implements Component Carrier Manager (CCM) that operates
  * using the Component Carrier Manager SAP interfaces.
  *
  * CCM receives measurement reports from an eNode RRC instance and is forwarding
@@ -71,72 +71,72 @@ class LteEnbComponentCarrierManager : public Object
     LteEnbComponentCarrierManager();
     ~LteEnbComponentCarrierManager() override;
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
     /**
-     * \brief Set the "user" part of the ComponentCarrier Management SAP interface that
+     * @brief Set the "user" part of the ComponentCarrier Management SAP interface that
      *        this ComponentCarrier algorithm instance will interact with.
-     * \param s a reference to the "user" part of the interface, typically a
+     * @param s a reference to the "user" part of the interface, typically a
      *          member of an LteEnbRrc instance
      */
     virtual void SetLteCcmRrcSapUser(LteCcmRrcSapUser* s);
 
     /**
-     * \brief Export the "provider" part of the ComponentCarrier Management SAP interface.
-     * \return the reference to the "provider" part of the interface, typically to
+     * @brief Export the "provider" part of the ComponentCarrier Management SAP interface.
+     * @return the reference to the "provider" part of the interface, typically to
      *         be kept by an LteEnbRlc instance
      */
     virtual LteCcmRrcSapProvider* GetLteCcmRrcSapProvider();
 
     /**
-     * \brief This function returns a pointer to the LteCcmMacSapUser interface, which
+     * @brief This function returns a pointer to the LteCcmMacSapUser interface, which
      * is used by MAC to communicate to CCM when e.g. UL buffer status report is
      * received, or to notify CCM about PRB occupancy, and similar. Functions that are
      * specific for the communication between MAC and CCM.
      *
-     * \returns LteCcmMacSapUser*
+     * @returns LteCcmMacSapUser*
      */
     virtual LteCcmMacSapUser* GetLteCcmMacSapUser();
 
     /**
-     * \brief Returns the pointer to the LteMacSapProvider interface, the
+     * @brief Returns the pointer to the LteMacSapProvider interface, the
      * provider of MAC, which is this new architecture served by
      * LteEnbComponentCarrierManager object which will behave as a
      * proxy, and will forward calls between to MAC objects of
      * component carriers based on the logic implemented in the
      * specific component carrier manager.
      *
-     * \returns LteMacSapProvider*
+     * @returns LteMacSapProvider*
      */
     virtual LteMacSapProvider* GetLteMacSapProvider();
 
     /**
-     * \brief Set LteMacSapProvider interface for the MAC object of
+     * @brief Set LteMacSapProvider interface for the MAC object of
      * the specified component carrier.
      *
-     * \param componentCarrierId component carrier ID
-     * \param sap the MAC SAP provider
-     * \returns true if successful
+     * @param componentCarrierId component carrier ID
+     * @param sap the MAC SAP provider
+     * @returns true if successful
      */
     virtual bool SetMacSapProvider(uint8_t componentCarrierId, LteMacSapProvider* sap);
 
     /**
-     * \brief Set LteCcmMacSapProvider interface for the MAC object of
+     * @brief Set LteCcmMacSapProvider interface for the MAC object of
      * the specified component carrier. Through this interface CCM communicates with
      * MAC, e.g. it notifies MAC of the specific carrier when to scheduler UL BSR.
      *
-     * \param componentCarrierId component carrier ID
-     * \param sap the MAC SAP provider
-     * \returns true if successful
+     * @param componentCarrierId component carrier ID
+     * @param sap the MAC SAP provider
+     * @returns true if successful
      */
     virtual bool SetCcmMacSapProviders(uint8_t componentCarrierId, LteCcmMacSapProvider* sap);
 
     /**
-     * \brief Sets the total number of component carriers.
-     * \param noOfComponentCarriers number of component carriers
+     * @brief Sets the total number of component carriers.
+     * @param noOfComponentCarriers number of component carriers
      */
     virtual void SetNumberOfComponentCarriers(uint16_t noOfComponentCarriers);
 
@@ -145,15 +145,15 @@ class LteEnbComponentCarrierManager : public Object
     void DoDispose() override;
 
     /**
-     * \brief Implementation of ReportUeMeas.
-     * \param rnti Radio Network Temporary Identity, an integer identifying the UE
+     * @brief Implementation of ReportUeMeas.
+     * @param rnti Radio Network Temporary Identity, an integer identifying the UE
      *             where the report originates from
-     * \param measResults a single report of one measurement identity
+     * @param measResults a single report of one measurement identity
      */
     virtual void DoReportUeMeas(uint16_t rnti, LteRrcSap::MeasResults measResults) = 0;
 
     /**
-     * \brief Structure to represent UE info
+     * @brief Structure to represent UE info
      */
     struct UeInfo
     {

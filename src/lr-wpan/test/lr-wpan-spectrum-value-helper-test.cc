@@ -16,10 +16,10 @@ using namespace ns3;
 using namespace ns3::lrwpan;
 
 /**
- * \ingroup lr-wpan-test
- * \ingroup tests
+ * @ingroup lr-wpan-test
+ * @ingroup tests
  *
- * \brief LrWpan SpectrumValue Helper TestSuite
+ * @brief LrWpan SpectrumValue Helper TestSuite
  */
 class LrWpanSpectrumValueHelperTestCase : public TestCase
 {
@@ -63,10 +63,10 @@ LrWpanSpectrumValueHelperTestCase::DoRun()
 }
 
 /**
- * \ingroup lr-wpan-test
- * \ingroup tests
+ * @ingroup lr-wpan-test
+ * @ingroup tests
  *
- * \brief LrWpan SpectrumValue Helper TestSuite
+ * @brief LrWpan SpectrumValue Helper TestSuite
  */
 class LrWpanSpectrumValueHelperTestSuite : public TestSuite
 {

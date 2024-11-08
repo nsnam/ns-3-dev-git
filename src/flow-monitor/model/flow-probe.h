@@ -30,7 +30,7 @@ class FlowProbe : public Object
 {
   protected:
     /// Constructor
-    /// \param flowMonitor the FlowMonitor this probe is associated with
+    /// @param flowMonitor the FlowMonitor this probe is associated with
     FlowProbe(Ptr<FlowMonitor> flowMonitor);
     void DoDispose() override;
 
@@ -42,7 +42,7 @@ class FlowProbe : public Object
     FlowProbe& operator=(const FlowProbe&) = delete;
 
     /// Register this type.
-    /// \return The TypeId.
+    /// @return The TypeId.
     static TypeId GetTypeId();
 
     /// Structure to hold the statistics of a flow
@@ -72,26 +72,26 @@ class FlowProbe : public Object
     typedef std::map<FlowId, FlowStats> Stats;
 
     /// Add a packet data to the flow stats
-    /// \param flowId the flow Identifier
-    /// \param packetSize the packet size
-    /// \param delayFromFirstProbe packet delay
+    /// @param flowId the flow Identifier
+    /// @param packetSize the packet size
+    /// @param delayFromFirstProbe packet delay
     void AddPacketStats(FlowId flowId, uint32_t packetSize, Time delayFromFirstProbe);
     /// Add a packet drop data to the flow stats
-    /// \param flowId the flow Identifier
-    /// \param packetSize the packet size
-    /// \param reasonCode reason code for the drop
+    /// @param flowId the flow Identifier
+    /// @param packetSize the packet size
+    /// @param reasonCode reason code for the drop
     void AddPacketDropStats(FlowId flowId, uint32_t packetSize, uint32_t reasonCode);
 
     /// Get the partial flow statistics stored in this probe.  With this
     /// information you can, for example, find out what is the delay
     /// from the first probe to this one.
-    /// \returns the partial flow statistics
+    /// @returns the partial flow statistics
     Stats GetStats() const;
 
     /// Serializes the results to an std::ostream in XML format
-    /// \param os the output stream
-    /// \param indent number of spaces to use as base indentation level
-    /// \param index FlowProbe index
+    /// @param os the output stream
+    /// @param indent number of spaces to use as base indentation level
+    /// @param index FlowProbe index
     void SerializeToXmlStream(std::ostream& os, uint16_t indent, uint32_t index) const;
 
   protected:

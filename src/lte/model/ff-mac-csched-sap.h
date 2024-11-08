@@ -18,8 +18,8 @@ namespace ns3
 {
 
 /**
- * \ingroup ff-api
- * \brief Provides the CSCHED SAP
+ * @ingroup ff-api
+ * @brief Provides the CSCHED SAP
  *
  * This abstract class defines the MAC Scheduler interface specified in the
  * Femto Forum Technical Document:
@@ -234,37 +234,37 @@ class FfMacCschedSapProvider
     //
 
     /**
-     * \brief CSCHED_CELL_CONFIG_REQ
+     * @brief CSCHED_CELL_CONFIG_REQ
      *
-     * \param params CschedCellConfigReqParameters
+     * @param params CschedCellConfigReqParameters
      */
     virtual void CschedCellConfigReq(const CschedCellConfigReqParameters& params) = 0;
 
     /**
-     * \brief CSCHED_UE_CONFIG_REQ
+     * @brief CSCHED_UE_CONFIG_REQ
      *
-     * \param params CschedUeConfigReqParameters
+     * @param params CschedUeConfigReqParameters
      */
     virtual void CschedUeConfigReq(const CschedUeConfigReqParameters& params) = 0;
 
     /**
-     * \brief CSCHED_LC_CONFIG_REQ
+     * @brief CSCHED_LC_CONFIG_REQ
      *
-     * \param params CschedLcConfigReqParameters
+     * @param params CschedLcConfigReqParameters
      */
     virtual void CschedLcConfigReq(const CschedLcConfigReqParameters& params) = 0;
 
     /**
-     * \brief CSCHED_LC_RELEASE_REQ
+     * @brief CSCHED_LC_RELEASE_REQ
      *
-     * \param params CschedLcReleaseReqParameters
+     * @param params CschedLcReleaseReqParameters
      */
     virtual void CschedLcReleaseReq(const CschedLcReleaseReqParameters& params) = 0;
 
     /**
-     * \brief CSCHED_UE_RELEASE_REQ
+     * @brief CSCHED_UE_RELEASE_REQ
      *
-     * \param params CschedUeReleaseReqParameters
+     * @param params CschedUeReleaseReqParameters
      */
     virtual void CschedUeReleaseReq(const CschedUeReleaseReqParameters& params) = 0;
 
@@ -382,51 +382,51 @@ class FfMacCschedSapUser
     //
 
     /**
-     * \brief CSCHED_CELL_CONFIG_CNF
+     * @brief CSCHED_CELL_CONFIG_CNF
      *
-     * \param params CschedCellConfigCnfParameters
+     * @param params CschedCellConfigCnfParameters
      */
     virtual void CschedCellConfigCnf(const CschedCellConfigCnfParameters& params) = 0;
 
     /**
-     * \brief CSCHED_UE_CONFIG_CNF
+     * @brief CSCHED_UE_CONFIG_CNF
      *
-     * \param params CschedUeConfigCnfParameters
+     * @param params CschedUeConfigCnfParameters
      */
     virtual void CschedUeConfigCnf(const CschedUeConfigCnfParameters& params) = 0;
 
     /**
-     * \brief CSCHED_LC_CONFIG_CNF
+     * @brief CSCHED_LC_CONFIG_CNF
      *
-     * \param params CschedLcConfigCnfParameters
+     * @param params CschedLcConfigCnfParameters
      */
     virtual void CschedLcConfigCnf(const CschedLcConfigCnfParameters& params) = 0;
 
     /**
-     * \brief CSCHED_LC_RELEASE_CNF
+     * @brief CSCHED_LC_RELEASE_CNF
      *
-     * \param params CschedLcReleaseCnfParameters
+     * @param params CschedLcReleaseCnfParameters
      */
     virtual void CschedLcReleaseCnf(const CschedLcReleaseCnfParameters& params) = 0;
 
     /**
-     * \brief CSCHED_UE_RELEASE_CNF
+     * @brief CSCHED_UE_RELEASE_CNF
      *
-     * \param params CschedUeReleaseCnfParameters
+     * @param params CschedUeReleaseCnfParameters
      */
     virtual void CschedUeReleaseCnf(const CschedUeReleaseCnfParameters& params) = 0;
 
     /**
-     * \brief CSCHED_UE_UPDATE_IND
+     * @brief CSCHED_UE_UPDATE_IND
      *
-     * \param params CschedUeConfigUpdateIndParameters
+     * @param params CschedUeConfigUpdateIndParameters
      */
     virtual void CschedUeConfigUpdateInd(const CschedUeConfigUpdateIndParameters& params) = 0;
 
     /**
-     * \brief CSCHED_UE_CONFIG_IND
+     * @brief CSCHED_UE_CONFIG_IND
      *
-     * \param params CschedCellConfigUpdateIndParameters
+     * @param params CschedCellConfigUpdateIndParameters
      */
     virtual void CschedCellConfigUpdateInd(const CschedCellConfigUpdateIndParameters& params) = 0;
 
@@ -441,7 +441,7 @@ class MemberCschedSapProvider : public FfMacCschedSapProvider
     /**
      * Constructor
      *
-     * \param scheduler the scheduler class
+     * @param scheduler the scheduler class
      */
     MemberCschedSapProvider(C* scheduler);
 

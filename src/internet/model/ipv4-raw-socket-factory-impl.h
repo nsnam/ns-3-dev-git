@@ -15,10 +15,10 @@ namespace ns3
 {
 
 /**
- * \ingroup socket
- * \ingroup ipv4
+ * @ingroup socket
+ * @ingroup ipv4
  *
- * \brief Implementation of IPv4 raw socket factory.
+ * @brief Implementation of IPv4 raw socket factory.
  */
 class Ipv4RawSocketFactoryImpl : public Ipv4RawSocketFactory
 {

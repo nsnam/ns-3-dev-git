@@ -21,22 +21,22 @@ namespace ns3
 NS_LOG_COMPONENT_DEFINE("TcpBbrTestSuite");
 
 /**
- * \brief Testing whether BBR enables pacing
+ * @brief Testing whether BBR enables pacing
  */
 class TcpBbrPacingEnableTest : public TestCase
 {
   public:
     /**
-     * \brief constructor
-     * \param pacing pacing configuration
-     * \param name description of the test
+     * @brief constructor
+     * @param pacing pacing configuration
+     * @param name description of the test
      */
     TcpBbrPacingEnableTest(bool pacing, const std::string& name);
 
   private:
     void DoRun() override;
     /**
-     * \brief Execute the test.
+     * @brief Execute the test.
      */
     void ExecuteTest();
     bool m_pacing; //!< Initial pacing configuration.
@@ -70,23 +70,23 @@ TcpBbrPacingEnableTest::ExecuteTest()
 }
 
 /**
- * \brief Tests whether BBR sets correct value of pacing and cwnd gain based on different state.
+ * @brief Tests whether BBR sets correct value of pacing and cwnd gain based on different state.
  */
 class TcpBbrCheckGainValuesTest : public TestCase
 {
   public:
     /**
-     * \brief constructor
-     * \param state BBR state/mode under test
-     * \param highGain value of pacing and cwnd gain
-     * \param name description of the test
+     * @brief constructor
+     * @param state BBR state/mode under test
+     * @param highGain value of pacing and cwnd gain
+     * @param name description of the test
      */
     TcpBbrCheckGainValuesTest(TcpBbr::BbrMode_t state, double highGain, const std::string& name);
 
   private:
     void DoRun() override;
     /**
-     * \brief Execute the test.
+     * @brief Execute the test.
      */
     void ExecuteTest();
     TcpBbr::BbrMode_t m_mode; //!< BBR mode under test
@@ -170,15 +170,15 @@ TcpBbrCheckGainValuesTest::ExecuteTest()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief TCP BBR TestSuite
+ * @brief TCP BBR TestSuite
  */
 class TcpBbrTestSuite : public TestSuite
 {
   public:
     /**
-     * \brief constructor
+     * @brief constructor
      */
     TcpBbrTestSuite()
         : TestSuite("tcp-bbr-test", Type::UNIT)

@@ -50,9 +50,9 @@ static InterfaceStreamMapIpv4
 /**
  * IPv4 Rx / Tx packet callback.
  *
- * \param p Packet.
- * \param ipv4 IPv4 stack.
- * \param interface Interface number.
+ * @param p Packet.
+ * @param ipv4 IPv4 stack.
+ * @param interface Interface number.
  */
 static void
 Ipv4L3ProtocolRxTxSink(Ptr<const Packet> p, Ptr<Ipv4> ipv4, uint32_t interface)
@@ -79,12 +79,12 @@ Ipv4L3ProtocolRxTxSink(Ptr<const Packet> p, Ptr<Ipv4> ipv4, uint32_t interface)
 /**
  * Packet dropped callback without context.
  *
- * \param stream Output stream.
- * \param header IPv4 header.
- * \param packet Packet.
- * \param reason Packet drop reason.
- * \param ipv4 IPv4 stack.
- * \param interface Interface number.
+ * @param stream Output stream.
+ * @param header IPv4 header.
+ * @param packet Packet.
+ * @param reason Packet drop reason.
+ * @param ipv4 IPv4 stack.
+ * @param interface Interface number.
  */
 static void
 Ipv4L3ProtocolDropSinkWithoutContext(Ptr<OutputStreamWrapper> stream,
@@ -115,13 +115,13 @@ Ipv4L3ProtocolDropSinkWithoutContext(Ptr<OutputStreamWrapper> stream,
 /**
  * Packet dropped callback with context.
  *
- * \param stream Output stream.
- * \param context Context.
- * \param header IPv4 header.
- * \param packet Packet.
- * \param reason Packet drop reason.
- * \param ipv4 IPv4 stack.
- * \param interface Interface number.
+ * @param stream Output stream.
+ * @param context Context.
+ * @param header IPv4 header.
+ * @param packet Packet.
+ * @param reason Packet drop reason.
+ * @param ipv4 IPv4 stack.
+ * @param interface Interface number.
  */
 static void
 Ipv4L3ProtocolDropSinkWithContext(Ptr<OutputStreamWrapper> stream,

@@ -24,13 +24,13 @@ namespace ns3
 class Socket;
 
 /**
- * \ingroup internet-apps
- * \defgroup v4traceroute V4Traceroute
+ * @ingroup internet-apps
+ * @defgroup v4traceroute V4Traceroute
  */
 
 /**
- * \ingroup v4traceroute
- * \brief Traceroute application sends one ICMP ECHO request with TTL=1,
+ * @ingroup v4traceroute
+ * @brief Traceroute application sends one ICMP ECHO request with TTL=1,
  *        and after receiving an ICMP TIME EXCEED reply, it increases the
  *        TTL and repeat the process to reveal all the intermediate hops to
  *        the destination.
@@ -40,15 +40,15 @@ class V4TraceRoute : public Application
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     V4TraceRoute();
     ~V4TraceRoute() override;
     /**
-     * \brief Prints the application traced routes into a given OutputStream.
-     * \param stream the output stream
+     * @brief Prints the application traced routes into a given OutputStream.
+     * @param stream the output stream
      */
     void Print(Ptr<OutputStreamWrapper> stream);
 
@@ -60,25 +60,25 @@ class V4TraceRoute : public Application
     void StopApplication() override;
 
     /**
-     * \brief Return the application ID in the node.
-     * \returns the application id
+     * @brief Return the application ID in the node.
+     * @returns the application id
      */
     uint32_t GetApplicationId() const;
     /**
-     * \brief Receive an ICMP Echo
-     * \param socket the receiving socket
+     * @brief Receive an ICMP Echo
+     * @param socket the receiving socket
      *
      * This function is called by lower layers through a callback.
      */
     void Receive(Ptr<Socket> socket);
 
-    /** \brief Send one (ICMP ECHO) to the destination.*/
+    /** @brief Send one (ICMP ECHO) to the destination.*/
     void Send();
 
-    /** \brief Starts a timer after sending an ICMP ECHO.*/
+    /** @brief Starts a timer after sending an ICMP ECHO.*/
     void StartWaitReplyTimer();
 
-    /** \brief Triggers an action if an ICMP TIME EXCEED have not being received
+    /** @brief Triggers an action if an ICMP TIME EXCEED have not being received
      *         in the time defined by StartWaitReplyTimer.
      */
     void HandleWaitReplyTimeout();

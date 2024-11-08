@@ -21,7 +21,7 @@
 using namespace ns3;
 
 /**
- * \ingroup uan
+ * @ingroup uan
  *
  * This example shows the usage of raw packets transfer data.
  * Two nodes are sending their remaining energy percentage (1 byte)
@@ -64,15 +64,15 @@ class UanExperiment
 
     /**
      * Send a packet from one of the nodes
-     * \param node The sending node
-     * \param pkt The packet
-     * \param dst the destination
+     * @param node The sending node
+     * @param pkt The packet
+     * @param dst the destination
      */
     void SendSinglePacket(Ptr<Node> node, Ptr<Packet> pkt, Mac8Address dst);
 
     /**
      * Print the received packet
-     * \param socket The receiving socket
+     * @param socket The receiving socket
      */
     void PrintReceivedPacket(Ptr<Socket> socket);
 

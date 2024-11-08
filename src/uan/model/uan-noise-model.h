@@ -15,7 +15,7 @@ namespace ns3
 {
 
 /**
- * \ingroup uan
+ * @ingroup uan
  *
  * UAN Noise Model base class.
  */
@@ -24,15 +24,15 @@ class UanNoiseModel : public Object
   public:
     /**
      * Register this type.
-     * \return The TypeId.
+     * @return The TypeId.
      */
     static TypeId GetTypeId();
 
     /**
      * Compute the noise power at a given frequency.
      *
-     * \param fKhz Frequency in kHz.
-     * \return Noise power in dB re 1uPa/Hz.
+     * @param fKhz Frequency in kHz.
+     * @return Noise power in dB re 1uPa/Hz.
      */
     virtual double GetNoiseDbHz(double fKhz) const = 0;
 

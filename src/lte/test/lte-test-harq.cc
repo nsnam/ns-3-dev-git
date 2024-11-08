@@ -63,7 +63,7 @@ LenaTestHarqSuite::LenaTestHarqSuite()
 }
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  * Static variable for test initialization
  */
 static LenaTestHarqSuite lenaTestHarqSuite;

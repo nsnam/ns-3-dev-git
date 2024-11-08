@@ -40,11 +40,11 @@ namespace olsr
 {
 
 ///
-/// \defgroup olsr OLSR Routing
+/// @defgroup olsr OLSR Routing
 /// This section documents the API of the ns-3 OLSR module. For a generic
 /// functional description, please refer to the ns-3 manual.
 
-/// \ingroup olsr
+/// @ingroup olsr
 /// An OLSR's routing table entry.
 struct RoutingTableEntry
 {
@@ -66,9 +66,9 @@ struct RoutingTableEntry
 class RoutingProtocol;
 
 ///
-/// \ingroup olsr
+/// @ingroup olsr
 ///
-/// \brief OLSR routing protocol for IPv4
+/// @brief OLSR routing protocol for IPv4
 ///
 class RoutingProtocol : public Ipv4RoutingProtocol
 {
@@ -81,8 +81,8 @@ class RoutingProtocol : public Ipv4RoutingProtocol
     static const uint16_t OLSR_PORT_NUMBER; //!< port number (698)
 
     /**
-     * \brief Get the type ID.
-     * \return The object TypeId.
+     * @brief Get the type ID.
+     * @return The object TypeId.
      */
     static TypeId GetTypeId();
 
@@ -90,9 +90,9 @@ class RoutingProtocol : public Ipv4RoutingProtocol
     ~RoutingProtocol() override;
 
     /**
-     * \brief Set the OLSR main address to the first address on the indicated interface.
+     * @brief Set the OLSR main address to the first address on the indicated interface.
      *
-     * \param interface IPv4 interface index
+     * @param interface IPv4 interface index
      */
     void SetMainInterface(uint32_t interface);
 
@@ -105,43 +105,43 @@ class RoutingProtocol : public Ipv4RoutingProtocol
 
     /**
      * Get the routing table entries.
-     * \return the list of routing table entries discovered by OLSR
+     * @return the list of routing table entries discovered by OLSR
      */
     std::vector<RoutingTableEntry> GetRoutingTableEntries() const;
 
     /**
      * Gets the MPR set.
-     * \return The MPR set.
+     * @return The MPR set.
      */
     MprSet GetMprSet() const;
 
     /**
      * Gets the MPR selectors.
-     * \returns The MPR selectors.
+     * @returns The MPR selectors.
      */
     const MprSelectorSet& GetMprSelectors() const;
 
     /**
      * Get the one hop neighbors.
-     * \return the set of neighbors discovered by OLSR
+     * @return the set of neighbors discovered by OLSR
      */
     const NeighborSet& GetNeighbors() const;
 
     /**
      * Get the two hop neighbors.
-     * \return the set of two hop neighbors discovered by OLSR
+     * @return the set of two hop neighbors discovered by OLSR
      */
     const TwoHopNeighborSet& GetTwoHopNeighbors() const;
 
     /**
      * Gets the topology set.
-     * \returns The topology set discovery by OLSR
+     * @returns The topology set discovery by OLSR
      */
     const TopologySet& GetTopologySet() const;
 
     /**
      * Gets the underlying OLSR state object
-     * \returns The OLSR state object
+     * @returns The OLSR state object
      */
     const OlsrState& GetOlsrState() const;
 
@@ -150,16 +150,16 @@ class RoutingProtocol : public Ipv4RoutingProtocol
      * used by this model.  Return the number of streams (possibly zero) that
      * have been assigned.
      *
-     * \param stream first stream index to use
-     * \return the number of stream indices assigned by this model
+     * @param stream first stream index to use
+     * @return the number of stream indices assigned by this model
      */
     int64_t AssignStreams(int64_t stream);
 
     /**
      * TracedCallback signature for Packet transmit and receive events.
      *
-     * \param [in] header
-     * \param [in] messages
+     * @param [in] header
+     * @param [in] messages
      */
     typedef void (*PacketTxRxTracedCallback)(const PacketHeader& header,
                                              const MessageList& messages);
@@ -167,7 +167,7 @@ class RoutingProtocol : public Ipv4RoutingProtocol
     /**
      * TracedCallback signature for routing table computation.
      *
-     * \param [in] size Final routing table size.
+     * @param [in] size Final routing table size.
      */
     typedef void (*TableChangeTracedCallback)(uint32_t size);
 
@@ -179,7 +179,7 @@ class RoutingProtocol : public Ipv4RoutingProtocol
   public:
     /**
      * Get the excluded interfaces.
-     * \returns Container of excluded interfaces.
+     * @returns Container of excluded interfaces.
      */
     std::set<uint32_t> GetInterfaceExclusions() const
     {
@@ -188,45 +188,45 @@ class RoutingProtocol : public Ipv4RoutingProtocol
 
     /**
      * Set the interfaces to be excluded.
-     * \param exceptions Container of excluded interfaces.
+     * @param exceptions Container of excluded interfaces.
      */
     void SetInterfaceExclusions(std::set<uint32_t> exceptions);
 
     /**
-     *  \brief Injects the specified (networkAddr, netmask) tuple in the list of
+     *  @brief Injects the specified (networkAddr, netmask) tuple in the list of
      *  local HNA associations to be sent by the node via HNA messages.
      *  If this tuple already exists, nothing is done.
      *
-     * \param networkAddr The network address.
-     * \param netmask The network mask.
+     * @param networkAddr The network address.
+     * @param netmask The network mask.
      */
     void AddHostNetworkAssociation(Ipv4Address networkAddr, Ipv4Mask netmask);
 
     /**
-     * \brief Removes the specified (networkAddr, netmask) tuple from the list of
+     * @brief Removes the specified (networkAddr, netmask) tuple from the list of
      * local HNA associations to be sent by the node via HNA messages.
      * If this tuple does not exist, nothing is done (see "OlsrState::EraseAssociation()").
      *
-     * \param networkAddr The network address.
-     * \param netmask The network mask.
+     * @param networkAddr The network address.
+     * @param netmask The network mask.
      */
     void RemoveHostNetworkAssociation(Ipv4Address networkAddr, Ipv4Mask netmask);
 
     /**
-     * \brief Associates the specified Ipv4StaticRouting routing table
+     * @brief Associates the specified Ipv4StaticRouting routing table
      *        to the OLSR routing protocol. Entries from this associated
      *        routing table that use non-olsr outgoing interfaces are added
      *        to the list of local HNA associations so that they are included
      *        in HNA messages sent by the node.
      *        If this method is called more than once, entries from the old
      *        association are deleted before entries from the new one are added.
-     * \param routingTable the Ipv4StaticRouting routing table to be associated.
+     * @param routingTable the Ipv4StaticRouting routing table to be associated.
      */
     void SetRoutingTableAssociation(Ptr<Ipv4StaticRouting> routingTable);
 
     /**
-     * \brief Returns the internal HNA table
-     * \returns the internal HNA table
+     * @brief Returns the internal HNA table
+     * @returns the internal HNA table
      */
     Ptr<const Ipv4StaticRouting> GetRoutingTableAssociation() const;
 
@@ -255,13 +255,13 @@ class RoutingProtocol : public Ipv4RoutingProtocol
     Ptr<Ipv4> m_ipv4;  //!< IPv4 object the routing is linked to.
 
     /**
-     * \brief Clears the routing table and frees the memory assigned to each one of its entries.
+     * @brief Clears the routing table and frees the memory assigned to each one of its entries.
      */
     void Clear();
 
     /**
      * Returns the routing table size.
-     * \return The routing table size.
+     * @return The routing table size.
      */
     uint32_t GetSize() const
     {
@@ -269,33 +269,33 @@ class RoutingProtocol : public Ipv4RoutingProtocol
     }
 
     /**
-     * \brief Deletes the entry whose destination address is given.
-     * \param dest address of the destination node.
+     * @brief Deletes the entry whose destination address is given.
+     * @param dest address of the destination node.
      */
     void RemoveEntry(const Ipv4Address& dest);
     /**
-     * \brief Adds a new entry into the routing table.
+     * @brief Adds a new entry into the routing table.
      *
      * If an entry for the given destination existed, it is deleted and freed.
      *
-     * \param dest address of the destination node.
-     * \param next address of the next hop node.
-     * \param interface address of the local interface.
-     * \param distance distance to the destination node.
+     * @param dest address of the destination node.
+     * @param next address of the next hop node.
+     * @param interface address of the local interface.
+     * @param distance distance to the destination node.
      */
     void AddEntry(const Ipv4Address& dest,
                   const Ipv4Address& next,
                   uint32_t interface,
                   uint32_t distance);
     /**
-     * \brief Adds a new entry into the routing table.
+     * @brief Adds a new entry into the routing table.
      *
      * If an entry for the given destination existed, an error is thrown.
      *
-     * \param dest address of the destination node.
-     * \param next address of the next hop node.
-     * \param interfaceAddress address of the local interface.
-     * \param distance distance to the destination node.
+     * @param dest address of the destination node.
+     * @param next address of the next hop node.
+     * @param interfaceAddress address of the local interface.
+     * @param distance distance to the destination node.
      */
     void AddEntry(const Ipv4Address& dest,
                   const Ipv4Address& next,
@@ -303,15 +303,15 @@ class RoutingProtocol : public Ipv4RoutingProtocol
                   uint32_t distance);
 
     /**
-     * \brief Looks up an entry for the specified destination address.
-     * \param [in] dest Destination address.
-     * \param [out] outEntry Holds the routing entry result, if found.
-     * \return true if found, false if not found.
+     * @brief Looks up an entry for the specified destination address.
+     * @param [in] dest Destination address.
+     * @param [out] outEntry Holds the routing entry result, if found.
+     * @return true if found, false if not found.
      */
     bool Lookup(const Ipv4Address& dest, RoutingTableEntry& outEntry) const;
 
     /**
-     * \brief Finds the appropriate entry which must be used in order to forward
+     * @brief Finds the appropriate entry which must be used in order to forward
      * a data packet to a next hop (given a destination).
      *
      * Imagine a routing table like this: [A,B] [B,C] [C,C]; being each pair of the
@@ -326,7 +326,7 @@ class RoutingProtocol : public Ipv4RoutingProtocol
      * \param[out] outEntry The appropriate routing table entry which indicates the next
      * hop which must be used for forwarding a data packet, or NULL if there is no such entry.
      *
-     * \return True if an entry was found, false otherwise.
+     * @return True if an entry was found, false otherwise.
      */
     bool FindSendEntry(const RoutingTableEntry& entry, RoutingTableEntry& outEntry) const;
 
@@ -356,52 +356,52 @@ class RoutingProtocol : public Ipv4RoutingProtocol
 
     /**
      * Send an OLSR message.
-     * \param packet The packet to be sent.
-     * \param containedMessages The messages contained in the packet.
+     * @param packet The packet to be sent.
+     * @param containedMessages The messages contained in the packet.
      */
     void SendPacket(Ptr<Packet> packet, const MessageList& containedMessages);
 
     /**
      * Increments packet sequence number and returns the new value.
-     * \return The packet sequence number.
+     * @return The packet sequence number.
      */
     inline uint16_t GetPacketSequenceNumber();
 
     /**
      * Increments message sequence number and returns the new value.
-     * \return The message sequence number.
+     * @return The message sequence number.
      */
     inline uint16_t GetMessageSequenceNumber();
 
     /**
      * Receive an OLSR message.
-     * \param socket The receiving socket.
+     * @param socket The receiving socket.
      */
     void RecvOlsr(Ptr<Socket> socket);
 
     /**
-     * \brief Computes MPR set of a node following \RFC{3626} hints.
+     * @brief Computes MPR set of a node following \RFC{3626} hints.
      */
     void MprComputation();
 
     /**
-     * \brief Creates the routing table of the node following \RFC{3626} hints.
+     * @brief Creates the routing table of the node following \RFC{3626} hints.
      */
     void RoutingTableComputation();
 
   public:
     /**
-     * \brief Gets the main address associated with a given interface address.
-     * \param iface_addr the interface address.
-     * \return the corresponding main address.
+     * @brief Gets the main address associated with a given interface address.
+     * @param iface_addr the interface address.
+     * @return the corresponding main address.
      */
     Ipv4Address GetMainAddress(Ipv4Address iface_addr) const;
 
   private:
     /**
-     * \brief Tests whether or not the specified route uses a non-OLSR outgoing interface.
-     * \param route The route to be tested.
-     * \returns True if the outgoing interface of the specified route is a non-OLSR interface,
+     * @brief Tests whether or not the specified route uses a non-OLSR outgoing interface.
+     * @param route The route to be tested.
+     * @returns True if the outgoing interface of the specified route is a non-OLSR interface,
      * false otherwise.
      */
     bool UsesNonOlsrOutgoingInterface(const Ipv4RoutingTableEntry& route);
@@ -409,44 +409,44 @@ class RoutingProtocol : public Ipv4RoutingProtocol
     // Timer handlers
     Timer m_helloTimer; //!< Timer for the HELLO message.
     /**
-     * \brief Sends a HELLO message and reschedules the HELLO timer.
+     * @brief Sends a HELLO message and reschedules the HELLO timer.
      */
     void HelloTimerExpire();
 
     Timer m_tcTimer; //!< Timer for the TC message.
     /**
-     * \brief Sends a TC message (if there exists any MPR selector) and reschedules the TC timer.
+     * @brief Sends a TC message (if there exists any MPR selector) and reschedules the TC timer.
      */
     void TcTimerExpire();
 
     Timer m_midTimer; //!< Timer for the MID message.
     /**
-     * \brief \brief Sends a MID message (if the node has more than one interface) and resets the
+     * @brief @brief Sends a MID message (if the node has more than one interface) and resets the
      * MID timer.
      */
     void MidTimerExpire();
 
     Timer m_hnaTimer; //!< Timer for the HNA message.
     /**
-     * \brief Sends an HNA message (if the node has associated hosts/networks) and reschedules the
+     * @brief Sends an HNA message (if the node has associated hosts/networks) and reschedules the
      * HNA timer.
      */
     void HnaTimerExpire();
 
     /**
-     * \brief Removes tuple if expired. Else timer is rescheduled to expire at tuple.expirationTime.
+     * @brief Removes tuple if expired. Else timer is rescheduled to expire at tuple.expirationTime.
      *
      * The task of actually removing the tuple is left to the OLSR agent.
      *
-     * \param address The address of the tuple.
-     * \param sequenceNumber The sequence number of the tuple.
+     * @param address The address of the tuple.
+     * @param sequenceNumber The sequence number of the tuple.
      */
     void DupTupleTimerExpire(Ipv4Address address, uint16_t sequenceNumber);
 
     bool m_linkTupleTimerFirstTime; //!< Flag to indicate if it is the first time the LinkTupleTimer
                                     //!< fires.
     /**
-     * \brief Removes tuple_ if expired. Else if symmetric time
+     * @brief Removes tuple_ if expired. Else if symmetric time
      * has expired then it is assumed a neighbor loss and agent_->nb_loss()
      * is called. In this case the timer is rescheduled to expire at
      * tuple_->time(). Otherwise the timer is rescheduled to expire at
@@ -454,57 +454,57 @@ class RoutingProtocol : public Ipv4RoutingProtocol
      *
      * The task of actually removing the tuple is left to the OLSR agent.
      *
-     * \param neighborIfaceAddr The tuple neighbor interface address.
+     * @param neighborIfaceAddr The tuple neighbor interface address.
      */
     void LinkTupleTimerExpire(Ipv4Address neighborIfaceAddr);
 
     /**
-     * \brief Removes 2_hop neighbor tuple_ if expired. Else the timer is rescheduled to expire at
+     * @brief Removes 2_hop neighbor tuple_ if expired. Else the timer is rescheduled to expire at
      * tuple_->time().
      *
      * The task of actually removing the tuple is left to the OLSR agent.
      *
-     * \param neighborMainAddr The neighbor main address.
-     * \param twoHopNeighborAddr The 2-hop neighbor address.
+     * @param neighborMainAddr The neighbor main address.
+     * @param twoHopNeighborAddr The 2-hop neighbor address.
      */
     void Nb2hopTupleTimerExpire(Ipv4Address neighborMainAddr, Ipv4Address twoHopNeighborAddr);
 
     /**
-     * \brief Removes MPR selector tuple_ if expired. Else the timer is rescheduled to expire at
+     * @brief Removes MPR selector tuple_ if expired. Else the timer is rescheduled to expire at
      * tuple_->time().
      *
      * The task of actually removing the tuple is left to the OLSR agent.
      *
-     * \param mainAddr The tuple IPv4 address.
+     * @param mainAddr The tuple IPv4 address.
      */
     void MprSelTupleTimerExpire(Ipv4Address mainAddr);
 
     /**
-     * \brief Removes topology tuple_ if expired. Else the timer is rescheduled to expire at
+     * @brief Removes topology tuple_ if expired. Else the timer is rescheduled to expire at
      * tuple_->time().
      *
      * The task of actually removing the tuple is left to the OLSR agent.
      *
-     * \param destAddr The destination address.
-     * \param lastAddr The last address.
+     * @param destAddr The destination address.
+     * @param lastAddr The last address.
      */
     void TopologyTupleTimerExpire(Ipv4Address destAddr, Ipv4Address lastAddr);
 
     /**
-     * \brief Removes interface association tuple_ if expired. Else the timer is rescheduled to
+     * @brief Removes interface association tuple_ if expired. Else the timer is rescheduled to
      * expire at tuple_->time().
      *
-     * \param ifaceAddr The interface address.
+     * @param ifaceAddr The interface address.
      */
     void IfaceAssocTupleTimerExpire(Ipv4Address ifaceAddr);
 
     /**
-     * \brief Removes association tuple_ if expired. Else timer is rescheduled to expire at
+     * @brief Removes association tuple_ if expired. Else timer is rescheduled to expire at
      * tuple_->time().
      *
-     * \param gatewayAddr The gateway address.
-     * \param networkAddr The network address.
-     * \param netmask  The network mask.
+     * @param gatewayAddr The gateway address.
+     * @param networkAddr The network address.
+     * @param netmask  The network mask.
      */
     void AssociationTupleTimerExpire(Ipv4Address gatewayAddr,
                                      Ipv4Address networkAddr,
@@ -520,15 +520,15 @@ class RoutingProtocol : public Ipv4RoutingProtocol
     Timer m_queuedMessagesTimer; //!< timer for throttling outgoing messages
 
     /**
-     * \brief OLSR's default forwarding algorithm.
+     * @brief OLSR's default forwarding algorithm.
      *
      * See \RFC{3626} for details.
      *
-     * \param olsrMessage The %OLSR message which must be forwarded.
-     * \param duplicated NULL if the message has never been considered for forwarding, or a
+     * @param olsrMessage The %OLSR message which must be forwarded.
+     * @param duplicated NULL if the message has never been considered for forwarding, or a
      * duplicate tuple in other case.
-     * \param localIface The address of the interface where the message was received from.
-     * \param senderAddress The sender IPv4 address.
+     * @param localIface The address of the interface where the message was received from.
+     * @param senderAddress The sender IPv4 address.
      */
     void ForwardDefault(olsr::MessageHeader olsrMessage,
                         DuplicateTuple* duplicated,
@@ -536,18 +536,18 @@ class RoutingProtocol : public Ipv4RoutingProtocol
                         const Ipv4Address& senderAddress);
 
     /**
-     * \brief Enqueues an %OLSR message which will be sent with a delay of (0, delay].
+     * @brief Enqueues an %OLSR message which will be sent with a delay of (0, delay].
      *
      * This buffering system is used in order to piggyback several %OLSR messages in
      * a same %OLSR packet.
      *
-     * \param message the %OLSR message which must be sent.
-     * \param delay maximum delay the %OLSR message is going to be buffered.
+     * @param message the %OLSR message which must be sent.
+     * @param delay maximum delay the %OLSR message is going to be buffered.
      */
     void QueueMessage(const olsr::MessageHeader& message, Time delay);
 
     /**
-     * \brief Creates as many %OLSR packets as needed in order to send all buffered
+     * @brief Creates as many %OLSR packets as needed in order to send all buffered
      * %OLSR messages.
      *
      * Maximum number of messages which can be contained in an %OLSR packet is
@@ -556,214 +556,214 @@ class RoutingProtocol : public Ipv4RoutingProtocol
     void SendQueuedMessages();
 
     /**
-     * \brief Creates a new %OLSR HELLO message which is buffered for being sent later on.
+     * @brief Creates a new %OLSR HELLO message which is buffered for being sent later on.
      */
     void SendHello();
 
     /**
-     * \brief Creates a new %OLSR TC message which is buffered for being sent later on.
+     * @brief Creates a new %OLSR TC message which is buffered for being sent later on.
      */
     void SendTc();
 
     /**
-     * \brief Creates a new %OLSR MID message which is buffered for being sent later on.
+     * @brief Creates a new %OLSR MID message which is buffered for being sent later on.
      */
     void SendMid();
 
     /**
-     * \brief Creates a new %OLSR HNA message which is buffered for being sent later on.
+     * @brief Creates a new %OLSR HNA message which is buffered for being sent later on.
      */
     void SendHna();
 
     /**
-     * \brief Performs all actions needed when a neighbor loss occurs.
+     * @brief Performs all actions needed when a neighbor loss occurs.
      *
      * Neighbor Set, 2-hop Neighbor Set, MPR Set and MPR Selector Set are updated.
      *
-     * \param tuple link tuple with the information of the link to the neighbor which has been lost.
+     * @param tuple link tuple with the information of the link to the neighbor which has been lost.
      */
     void NeighborLoss(const LinkTuple& tuple);
 
     /**
-     * \brief Adds a duplicate tuple to the Duplicate Set.
+     * @brief Adds a duplicate tuple to the Duplicate Set.
      *
-     * \param tuple The duplicate tuple to be added.
+     * @param tuple The duplicate tuple to be added.
      */
     void AddDuplicateTuple(const DuplicateTuple& tuple);
 
     /**
-     * \brief Removes a duplicate tuple from the Duplicate Set.
+     * @brief Removes a duplicate tuple from the Duplicate Set.
      *
-     * \param tuple The duplicate tuple to be removed.
+     * @param tuple The duplicate tuple to be removed.
      */
     void RemoveDuplicateTuple(const DuplicateTuple& tuple);
 
     /**
      * Adds a link tuple.
-     * \param tuple The tuple to be added.
-     * \param willingness The tuple willingness.
+     * @param tuple The tuple to be added.
+     * @param willingness The tuple willingness.
      */
     void LinkTupleAdded(const LinkTuple& tuple, Willingness willingness);
 
     /**
-     * \brief Removes a link tuple from the Link Set.
+     * @brief Removes a link tuple from the Link Set.
      *
-     * \param tuple The link tuple to be removed.
+     * @param tuple The link tuple to be removed.
      */
     void RemoveLinkTuple(const LinkTuple& tuple);
 
     /**
-     * \brief This function is invoked when a link tuple is updated. Its aim is to
+     * @brief This function is invoked when a link tuple is updated. Its aim is to
      * also update the corresponding neighbor tuple if it is needed.
      *
-     * \param tuple The link tuple which has been updated.
-     * \param willingness The tuple willingness.
+     * @param tuple The link tuple which has been updated.
+     * @param willingness The tuple willingness.
      */
     void LinkTupleUpdated(const LinkTuple& tuple, Willingness willingness);
 
     /**
-     * \brief Adds a neighbor tuple to the Neighbor Set.
+     * @brief Adds a neighbor tuple to the Neighbor Set.
      *
-     * \param tuple The neighbor tuple to be added.
+     * @param tuple The neighbor tuple to be added.
      */
     void AddNeighborTuple(const NeighborTuple& tuple);
 
     /**
-     * \brief Removes a neighbor tuple from the Neighbor Set.
+     * @brief Removes a neighbor tuple from the Neighbor Set.
      *
-     * \param tuple The neighbor tuple to be removed.
+     * @param tuple The neighbor tuple to be removed.
      */
     void RemoveNeighborTuple(const NeighborTuple& tuple);
 
     /**
-     * \brief Adds a 2-hop neighbor tuple to the 2-hop Neighbor Set.
+     * @brief Adds a 2-hop neighbor tuple to the 2-hop Neighbor Set.
      *
-     * \param tuple The 2-hop neighbor tuple to be added.
+     * @param tuple The 2-hop neighbor tuple to be added.
      */
     void AddTwoHopNeighborTuple(const TwoHopNeighborTuple& tuple);
 
     /**
-     * \brief Removes a 2-hop neighbor tuple from the 2-hop Neighbor Set.
+     * @brief Removes a 2-hop neighbor tuple from the 2-hop Neighbor Set.
      *
-     * \param tuple The 2-hop neighbor tuple to be removed.
+     * @param tuple The 2-hop neighbor tuple to be removed.
      */
     void RemoveTwoHopNeighborTuple(const TwoHopNeighborTuple& tuple);
 
     /**
-     * \brief Adds an MPR selector tuple to the MPR Selector Set.
+     * @brief Adds an MPR selector tuple to the MPR Selector Set.
      * Advertised Neighbor Sequence Number (ANSN) is also updated.
      *
-     * \param tuple The MPR selector tuple to be added.
+     * @param tuple The MPR selector tuple to be added.
      */
     void AddMprSelectorTuple(const MprSelectorTuple& tuple);
 
     /**
-     * \brief Removes an MPR selector tuple from the MPR Selector Set.
+     * @brief Removes an MPR selector tuple from the MPR Selector Set.
      * Advertised Neighbor Sequence Number (ANSN) is also updated.
      *
-     * \param tuple The MPR selector tuple to be removed.
+     * @param tuple The MPR selector tuple to be removed.
      */
     void RemoveMprSelectorTuple(const MprSelectorTuple& tuple);
 
     /**
-     * \brief Adds a topology tuple to the Topology Set.
+     * @brief Adds a topology tuple to the Topology Set.
      *
-     * \param tuple The topology tuple to be added.
+     * @param tuple The topology tuple to be added.
      */
     void AddTopologyTuple(const TopologyTuple& tuple);
 
     /**
-     * \brief Removes a topology tuple to the Topology Set.
+     * @brief Removes a topology tuple to the Topology Set.
      *
-     * \param tuple The topology tuple to be removed.
+     * @param tuple The topology tuple to be removed.
      */
     void RemoveTopologyTuple(const TopologyTuple& tuple);
 
     /**
-     * \brief Adds an interface association tuple to the Interface Association Set.
+     * @brief Adds an interface association tuple to the Interface Association Set.
      *
-     * \param tuple The interface association tuple to be added.
+     * @param tuple The interface association tuple to be added.
      */
     void AddIfaceAssocTuple(const IfaceAssocTuple& tuple);
 
     /**
-     * \brief Removed an interface association tuple to the Interface Association Set.
+     * @brief Removed an interface association tuple to the Interface Association Set.
      *
-     * \param tuple The interface association tuple to be removed.
+     * @param tuple The interface association tuple to be removed.
      */
     void RemoveIfaceAssocTuple(const IfaceAssocTuple& tuple);
 
     /**
-     * \brief Adds a host network association tuple to the Association Set.
+     * @brief Adds a host network association tuple to the Association Set.
      *
-     * \param tuple The host network association tuple to be added.
+     * @param tuple The host network association tuple to be added.
      */
     void AddAssociationTuple(const AssociationTuple& tuple);
 
     /**
-     * \brief Removes a host network association tuple to the Association Set.
+     * @brief Removes a host network association tuple to the Association Set.
      *
-     * \param tuple The host network association tuple to be removed.
+     * @param tuple The host network association tuple to be removed.
      */
     void RemoveAssociationTuple(const AssociationTuple& tuple);
 
     /**
-     * \brief Processes a HELLO message following \RFC{3626} specification.
+     * @brief Processes a HELLO message following \RFC{3626} specification.
      *
      * Link sensing and population of the Neighbor Set, 2-hop Neighbor Set and MPR
      * Selector Set are performed.
      *
-     * \param msg the %OLSR message which contains the HELLO message.
-     * \param receiverIface the address of the interface where the message was received from.
-     * \param senderIface the address of the interface where the message was sent from.
+     * @param msg the %OLSR message which contains the HELLO message.
+     * @param receiverIface the address of the interface where the message was received from.
+     * @param senderIface the address of the interface where the message was sent from.
      */
     void ProcessHello(const olsr::MessageHeader& msg,
                       const Ipv4Address& receiverIface,
                       const Ipv4Address& senderIface);
 
     /**
-     * \brief Processes a TC message following \RFC{3626} specification.
+     * @brief Processes a TC message following \RFC{3626} specification.
      *
      * The Topology Set is updated (if needed) with the information of
      * the received TC message.
      *
-     * \param msg The %OLSR message which contains the TC message.
-     * \param senderIface The address of the interface where the message was sent from.
+     * @param msg The %OLSR message which contains the TC message.
+     * @param senderIface The address of the interface where the message was sent from.
      *
      */
     void ProcessTc(const olsr::MessageHeader& msg, const Ipv4Address& senderIface);
 
     /**
-     * \brief Processes a MID message following \RFC{3626} specification.
+     * @brief Processes a MID message following \RFC{3626} specification.
      *
      * The Interface Association Set is updated (if needed) with the information
      * of the received MID message.
      *
-     * \param msg the %OLSR message which contains the MID message.
-     * \param senderIface the address of the interface where the message was sent from.
+     * @param msg the %OLSR message which contains the MID message.
+     * @param senderIface the address of the interface where the message was sent from.
      */
     void ProcessMid(const olsr::MessageHeader& msg, const Ipv4Address& senderIface);
 
     /**
      *
-     * \brief Processes a HNA message following \RFC{3626} specification.
+     * @brief Processes a HNA message following \RFC{3626} specification.
      *
      * The Host Network Association Set is updated (if needed) with the information
      * of the received HNA message.
      *
-     * \param msg the %OLSR message which contains the HNA message.
-     * \param senderIface the address of the interface where the message was sent from.
+     * @param msg the %OLSR message which contains the HNA message.
+     * @param senderIface the address of the interface where the message was sent from.
      *
      */
     void ProcessHna(const olsr::MessageHeader& msg, const Ipv4Address& senderIface);
 
     /**
-     * \brief Updates Link Set according to a new received HELLO message
+     * @brief Updates Link Set according to a new received HELLO message
      * (following \RFC{3626} specification). Neighbor Set is also updated if needed.
-     * \param msg The received message.
-     * \param hello The received HELLO sub-message.
-     * \param receiverIface The interface that received the message.
-     * \param senderIface The sender interface.
+     * @param msg The received message.
+     * @param hello The received HELLO sub-message.
+     * @param receiverIface The interface that received the message.
+     * @param senderIface The sender interface.
      */
     void LinkSensing(const olsr::MessageHeader& msg,
                      const olsr::MessageHeader::Hello& hello,
@@ -771,28 +771,28 @@ class RoutingProtocol : public Ipv4RoutingProtocol
                      const Ipv4Address& senderIface);
 
     /**
-     * \brief Updates the Neighbor Set according to the information contained in
+     * @brief Updates the Neighbor Set according to the information contained in
      * a new received HELLO message (following \RFC{3626}).
-     * \param msg The received message.
-     * \param hello The received HELLO sub-message.
+     * @param msg The received message.
+     * @param hello The received HELLO sub-message.
      */
     void PopulateNeighborSet(const olsr::MessageHeader& msg,
                              const olsr::MessageHeader::Hello& hello);
 
     /**
-     * \brief Updates the 2-hop Neighbor Set according to the information contained
+     * @brief Updates the 2-hop Neighbor Set according to the information contained
      * in a new received HELLO message (following \RFC{3626}).
-     * \param msg The received message.
-     * \param hello The received HELLO sub-message.
+     * @param msg The received message.
+     * @param hello The received HELLO sub-message.
      */
     void PopulateTwoHopNeighborSet(const olsr::MessageHeader& msg,
                                    const olsr::MessageHeader::Hello& hello);
 
     /**
-     * \brief Updates the MPR Selector Set according to the information contained in
+     * @brief Updates the MPR Selector Set according to the information contained in
      * a new received HELLO message (following \RFC{3626}).
-     * \param msg The received message.
-     * \param hello The received HELLO sub-message.
+     * @param msg The received message.
+     * @param hello The received HELLO sub-message.
      */
     void PopulateMprSelectorSet(const olsr::MessageHeader& msg,
                                 const olsr::MessageHeader::Hello& hello);
@@ -801,8 +801,8 @@ class RoutingProtocol : public Ipv4RoutingProtocol
 
     /**
      * Check that address is one of my interfaces.
-     * \param a the address to check.
-     * \return true if the address is own by the node.
+     * @param a the address to check.
+     * @return true if the address is own by the node.
      */
     bool IsMyOwnAddress(const Ipv4Address& a) const;
 

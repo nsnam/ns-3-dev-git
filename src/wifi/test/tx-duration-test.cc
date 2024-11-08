@@ -27,10 +27,10 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("TxDurationTest");
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief Tx Duration Test
+ * @brief Tx Duration Test
  */
 class TxDurationTest : public TestCase
 {
@@ -1434,10 +1434,10 @@ TxDurationTest::DoRun()
 }
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief HE-SIG-B duration test
+ * @brief HE-SIG-B duration test
  */
 class HeSigBDurationTest : public TestCase
 {
@@ -1454,13 +1454,13 @@ class HeSigBDurationTest : public TestCase
     /**
      * Constructor
      *
-     * \param userInfos the HE MU specific per-user information to use for the test
-     * \param sigBMode the mode to transmit HE-SIG-B for the test
-     * \param channelWidth the channel width to select for the test
-     * \param expectedMuType the expected MU type (OFDMA or MU-MIMO)
-     * \param expectedRuAllocation the expected RU_ALLOCATION
-     * \param expectedNumUsersPerCc the expected number of users per content channel
-     * \param expectedSigBDuration the expected duration of the HE-SIG-B header
+     * @param userInfos the HE MU specific per-user information to use for the test
+     * @param sigBMode the mode to transmit HE-SIG-B for the test
+     * @param channelWidth the channel width to select for the test
+     * @param expectedMuType the expected MU type (OFDMA or MU-MIMO)
+     * @param expectedRuAllocation the expected RU_ALLOCATION
+     * @param expectedNumUsersPerCc the expected number of users per content channel
+     * @param expectedSigBDuration the expected duration of the HE-SIG-B header
      */
     HeSigBDurationTest(const std::list<HeMuUserInfo>& userInfos,
                        const WifiMode& sigBMode,
@@ -1476,7 +1476,7 @@ class HeSigBDurationTest : public TestCase
     /**
      * Build a TXVECTOR for HE MU.
      *
-     * \return the configured HE MU TXVECTOR
+     * @return the configured HE MU TXVECTOR
      */
     WifiTxVector BuildTxVector() const;
 
@@ -1573,10 +1573,10 @@ HeSigBDurationTest::DoRun()
 }
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief PHY header sections consistency test
+ * @brief PHY header sections consistency test
  */
 class PhyHeaderSectionsTest : public TestCase
 {
@@ -1926,10 +1926,10 @@ PhyHeaderSectionsTest::DoRun()
 }
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief Tx Duration Test Suite
+ * @brief Tx Duration Test Suite
  */
 class TxDurationTestSuite : public TestSuite
 {

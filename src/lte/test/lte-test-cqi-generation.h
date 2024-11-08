@@ -16,9 +16,9 @@
 using namespace ns3;
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief Lte Cqi Generation Test Suite
+ * @brief Lte Cqi Generation Test Suite
  */
 
 class LteCqiGenerationTestSuite : public TestSuite
@@ -28,9 +28,9 @@ class LteCqiGenerationTestSuite : public TestSuite
 };
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief This is the test case for testing different configuration of CQI generation.
+ * @brief This is the test case for testing different configuration of CQI generation.
  *  The topology consists of the two UEs and two eNbs. UEs have the same position,
  *  while eNodeBs are at the same distance from both UEs. The checking whether CQI is
  *  generated properly for two different cases: when PDCCH is used for the CQI
@@ -43,10 +43,10 @@ class LteCqiGenerationTestCase : public TestCase
     /**
      * Constructor
      *
-     * \param name reference name
-     * \param usePdcchForCqiGeneration use PDCCH for CQI generation
-     * \param dlMcs DL MCS
-     * \param ulMcs UL MCS
+     * @param name reference name
+     * @param usePdcchForCqiGeneration use PDCCH for CQI generation
+     * @param dlMcs DL MCS
+     * @param ulMcs UL MCS
      */
     LteCqiGenerationTestCase(std::string name,
                              bool usePdcchForCqiGeneration,
@@ -55,18 +55,18 @@ class LteCqiGenerationTestCase : public TestCase
     ~LteCqiGenerationTestCase() override;
 
     /**
-     * \brief DL Scheduling function
-     * \param dlInfo DL info
+     * @brief DL Scheduling function
+     * @param dlInfo DL info
      */
     void DlScheduling(DlSchedulingCallbackInfo dlInfo);
 
     /**
-     * \brief UL Scheduling function
-     * \param frameNo frame number
-     * \param subframeNo subframe number
-     * \param rnti the RNTI
-     * \param mcs the MCS
-     * \param sizeTb size
+     * @brief UL Scheduling function
+     * @param frameNo frame number
+     * @param subframeNo subframe number
+     * @param rnti the RNTI
+     * @param mcs the MCS
+     * @param sizeTb size
      */
     void UlScheduling(uint32_t frameNo,
                       uint32_t subframeNo,
@@ -83,9 +83,9 @@ class LteCqiGenerationTestCase : public TestCase
 };
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief This test is very similar to LteCqiGenerationTestCase. The difference is that in this
+ * @brief This test is very similar to LteCqiGenerationTestCase. The difference is that in this
  * test is enabled the downlink power control.
  */
 
@@ -95,11 +95,11 @@ class LteCqiGenerationDlPowerControlTestCase : public TestCase
     /**
      * Constructor
      *
-     * \param name reference name
-     * \param cell0Pa cell # 0 PA
-     * \param cell1Pa cell # 1 PA
-     * \param dlMcs DL MCS
-     * \param ulMcs UL MCS
+     * @param name reference name
+     * @param cell0Pa cell # 0 PA
+     * @param cell1Pa cell # 1 PA
+     * @param dlMcs DL MCS
+     * @param ulMcs UL MCS
      */
     LteCqiGenerationDlPowerControlTestCase(std::string name,
                                            uint8_t cell0Pa,
@@ -109,18 +109,18 @@ class LteCqiGenerationDlPowerControlTestCase : public TestCase
     ~LteCqiGenerationDlPowerControlTestCase() override;
 
     /**
-     * \brief DL Scheduling function
-     * \param dlInfo DL info
+     * @brief DL Scheduling function
+     * @param dlInfo DL info
      */
     void DlScheduling(DlSchedulingCallbackInfo dlInfo);
 
     /**
-     * \brief UL Scheduling function
-     * \param frameNo frame number
-     * \param subframeNo subframe number
-     * \param rnti the RNTI
-     * \param mcs the MCS
-     * \param sizeTb size
+     * @brief UL Scheduling function
+     * @param frameNo frame number
+     * @param subframeNo subframe number
+     * @param rnti the RNTI
+     * @param mcs the MCS
+     * @param sizeTb size
      */
     void UlScheduling(uint32_t frameNo,
                       uint32_t subframeNo,

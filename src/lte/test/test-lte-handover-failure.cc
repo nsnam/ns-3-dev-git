@@ -35,9 +35,9 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("LteHandoverFailureTest");
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief Verifying that a handover failure occurs due to various causes
+ * @brief Verifying that a handover failure occurs due to various causes
  *
  * Handover failure cases dealt with in this test include the below.
  *
@@ -54,31 +54,31 @@ class LteHandoverFailureTestCase : public TestCase
     /**
      * Constructor
      *
-     * \param name the name of the test case, to be displayed in the test result
-     * \param useIdealRrc if true, use the ideal RRC
-     * \param handoverTime the time of handover
-     * \param simulationDuration duration of the simulation
-     * \param numberOfRaPreambles number of random access preambles available for contention based
+     * @param name the name of the test case, to be displayed in the test result
+     * @param useIdealRrc if true, use the ideal RRC
+     * @param handoverTime the time of handover
+     * @param simulationDuration duration of the simulation
+     * @param numberOfRaPreambles number of random access preambles available for contention based
      RACH process
      *                            number of non-contention preambles available for handover = (64 -
      numberRaPreambles)
      *                            as numberOfRaPreambles out of the max 64 are reserved contention
      based RACH process
-     * \param preambleTransMax maximum number of random access preamble transmissions from UE to
+     * @param preambleTransMax maximum number of random access preamble transmissions from UE to
      eNodeB
-     * \param raResponseWindowSize window length for reception of random access response (RAR)
-     * \param handoverJoiningTimeout time before which RRC RECONFIGURATION COMPLETE must be received
+     * @param raResponseWindowSize window length for reception of random access response (RAR)
+     * @param handoverJoiningTimeout time before which RRC RECONFIGURATION COMPLETE must be received
                                      at target eNodeB after it receives a handover request
                                      Else, the UE context is destroyed in the RRC.
                                      Timeout can occur before different stages as below.
                                      i. Reception of RRC CONNECTION RECONFIGURATION at source eNodeB
                                      ii. Non-contention random access procedure from UE to target
      eNodeB iii. Reception of RRC CONNECTION RECONFIGURATION COMPLETE at target eNodeB
-     * \param handoverLeavingTimeout time before which source eNodeB must receive a UE context
+     * @param handoverLeavingTimeout time before which source eNodeB must receive a UE context
      release from target eNodeB or RRC CONNECTION RESTABLISHMENT from UE after issuing a handover
      request Else, the UE context is destroyed in the RRC. Timeout can occur before any of the cases
      in HANDOVER JOINING TIMEOUT
-     * \param targeteNodeBPosition position of the target eNodeB
+     * @param targeteNodeBPosition position of the target eNodeB
      */
     LteHandoverFailureTestCase(std::string name,
                                bool useIdealRrc,
@@ -106,24 +106,24 @@ class LteHandoverFailureTestCase : public TestCase
 
   private:
     /**
-     * \brief Run a simulation of a two eNodeB network using the parameters
+     * @brief Run a simulation of a two eNodeB network using the parameters
      *        provided to the constructor function.
      */
     void DoRun() override;
 
     /**
-     * \brief Called at the end of simulation and verifies that a handover
+     * @brief Called at the end of simulation and verifies that a handover
      *        and a handover failure has occurred in the simulation.
      */
     void DoTeardown() override;
 
     /**
      * UE handover start callback function to indicate start of handover
-     * \param context the context string
-     * \param imsi the IMSI
-     * \param sourceCellId the source cell ID
-     * \param rnti the RNTI
-     * \param targetCellId the target cell ID
+     * @param context the context string
+     * @param imsi the IMSI
+     * @param sourceCellId the source cell ID
+     * @param rnti the RNTI
+     * @param targetCellId the target cell ID
      */
     void UeHandoverStartCallback(std::string context,
                                  uint64_t imsi,
@@ -133,10 +133,10 @@ class LteHandoverFailureTestCase : public TestCase
 
     /**
      * Handover failure callback due to maximum RACH transmissions reached from UE to target eNodeB
-     * \param context the context string
-     * \param imsi the IMSI
-     * \param rnti the RNTI
-     * \param targetCellId the target cell ID
+     * @param context the context string
+     * @param imsi the IMSI
+     * @param rnti the RNTI
+     * @param targetCellId the target cell ID
      */
     void HandoverFailureMaxRach(std::string context,
                                 uint64_t imsi,
@@ -145,10 +145,10 @@ class LteHandoverFailureTestCase : public TestCase
 
     /**
      * Handover failure callback due to non-allocation of non-contention preamble at target eNodeB
-     * \param context the context string
-     * \param imsi the IMSI
-     * \param rnti the RNTI
-     * \param targetCellId the target cell ID
+     * @param context the context string
+     * @param imsi the IMSI
+     * @param rnti the RNTI
+     * @param targetCellId the target cell ID
      */
     void HandoverFailureNoPreamble(std::string context,
                                    uint64_t imsi,
@@ -157,10 +157,10 @@ class LteHandoverFailureTestCase : public TestCase
 
     /**
      * Handover failure callback due to handover joining timeout at target eNodeB
-     * \param context the context string
-     * \param imsi the IMSI
-     * \param rnti the RNTI
-     * \param targetCellId the target cell ID
+     * @param context the context string
+     * @param imsi the IMSI
+     * @param rnti the RNTI
+     * @param targetCellId the target cell ID
      */
     void HandoverFailureJoining(std::string context,
                                 uint64_t imsi,
@@ -169,10 +169,10 @@ class LteHandoverFailureTestCase : public TestCase
 
     /**
      * Handover failure callback due to handover leaving timeout at source eNodeB
-     * \param context the context string
-     * \param imsi the IMSI
-     * \param rnti the RNTI
-     * \param targetCellId the target cell ID
+     * @param context the context string
+     * @param imsi the IMSI
+     * @param rnti the RNTI
+     * @param targetCellId the target cell ID
      */
     void HandoverFailureLeaving(std::string context,
                                 uint64_t imsi,
@@ -356,12 +356,12 @@ LteHandoverFailureTestCase::DoTeardown()
 }
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
  * The following log components can be used to debug this test's behavior:
  * LteHandoverFailureTest:LteEnbRrc:LteEnbMac:LteUeRrc:EpcX2
  *
- * \brief Lte Handover Failure Test Suite
+ * @brief Lte Handover Failure Test Suite
  */
 static class LteHandoverFailureTestSuite : public TestSuite
 {

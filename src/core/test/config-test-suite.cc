@@ -21,16 +21,16 @@
 #include <sstream>
 
 /**
- * \file
- * \ingroup core-tests
- * \ingroup config
- * \ingroup config-tests
+ * @file
+ * @ingroup core-tests
+ * @ingroup config
+ * @ingroup config-tests
  * Config test suite
  */
 
 /**
- * \ingroup core-tests
- * \defgroup config-tests Config test suite
+ * @ingroup core-tests
+ * @defgroup config-tests Config test suite
  */
 
 namespace ns3
@@ -40,48 +40,48 @@ namespace tests
 {
 
 /**
- * \ingroup config-tests
+ * @ingroup config-tests
  * An object with some attributes that we can play with using config.
  */
 class ConfigTestObject : public Object
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
     /**
      * Add node A function
-     * \param a test object a
+     * @param a test object a
      */
     void AddNodeA(Ptr<ConfigTestObject> a);
     /**
      * Add node B function
-     * \param b test object b
+     * @param b test object b
      */
     void AddNodeB(Ptr<ConfigTestObject> b);
 
     /**
      * Set node A function
-     * \param a test object a
+     * @param a test object a
      */
     void SetNodeA(Ptr<ConfigTestObject> a);
     /**
      * Set node b function
-     * \param b test object b
+     * @param b test object b
      */
     void SetNodeB(Ptr<ConfigTestObject> b);
 
     /**
      * Get node A function
-     * \returns the value of node a
+     * @returns the value of node a
      */
     int8_t GetA() const;
     /**
      * Get node b function
-     * \returns the value of node b
+     * @returns the value of node b
      */
     int8_t GetB() const;
 
@@ -179,15 +179,15 @@ ConfigTestObject::GetB() const
 }
 
 /**
- * \ingroup config-tests
+ * @ingroup config-tests
  * Derived test objects.
  */
 class DerivedConfigTestObject : public ConfigTestObject
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -210,15 +210,15 @@ DerivedConfigTestObject::GetTypeId()
 }
 
 /**
- * \ingroup config-tests
+ * @ingroup config-tests
  * Base config object.
  */
 class BaseConfigObject : public Object
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -251,15 +251,15 @@ BaseConfigObject::GetTypeId()
 }
 
 /**
- * \ingroup config-tests
+ * @ingroup config-tests
  * Derived config object.
  */
 class DerivedConfigObject : public BaseConfigObject
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -282,7 +282,7 @@ DerivedConfigObject::GetTypeId()
 }
 
 /**
- * \ingroup config-tests
+ * @ingroup config-tests
  * Test for the ability to register and use a root namespace.
  */
 class RootNamespaceConfigTestCase : public TestCase
@@ -346,7 +346,7 @@ RootNamespaceConfigTestCase::DoRun()
 }
 
 /**
- * \ingroup config-tests
+ * @ingroup config-tests
  * Test for the ability to add an object under the root namespace.
  */
 class UnderRootNamespaceConfigTestCase : public TestCase
@@ -459,7 +459,7 @@ UnderRootNamespaceConfigTestCase::DoRun()
 }
 
 /**
- * \ingroup config-tests
+ * @ingroup config-tests
  * Test for the ability to deal configure with vectors of objects.
  */
 class ObjectVectorConfigTestCase : public TestCase
@@ -619,7 +619,7 @@ ObjectVectorConfigTestCase::DoRun()
 }
 
 /**
- * \ingroup config-tests
+ * @ingroup config-tests
  * Test for the ability to trace configure with vectors of objects.
  */
 class ObjectVectorTraceConfigTestCase : public TestCase
@@ -635,8 +635,8 @@ class ObjectVectorTraceConfigTestCase : public TestCase
 
     /**
      * Trace callback without context.
-     * \param oldValue The old value.
-     * \param newValue The new value.
+     * @param oldValue The old value.
+     * @param newValue The new value.
      */
     void Trace(int16_t oldValue [[maybe_unused]], int16_t newValue)
     {
@@ -645,9 +645,9 @@ class ObjectVectorTraceConfigTestCase : public TestCase
 
     /**
      * Trace callback with context path.
-     * \param path The context path.
-     * \param old The old value.
-     * \param newValue The new value.
+     * @param path The context path.
+     * @param old The old value.
+     * @param newValue The new value.
      */
     void TraceWithPath(std::string path, int16_t old [[maybe_unused]], int16_t newValue)
     {
@@ -797,7 +797,7 @@ ObjectVectorTraceConfigTestCase::DoRun()
 }
 
 /**
- * \ingroup config-tests
+ * @ingroup config-tests
  * Test for the ability to search attributes of parent classes
  * when Resolver searches for attributes in a derived class object.
  * This test passes with the patch found in
@@ -854,7 +854,7 @@ SearchAttributesOfParentObjectsTestCase::DoRun()
 }
 
 /**
- * \ingroup config-tests
+ * @ingroup config-tests
  * The Test Suite that glues all of the Test Cases together.
  */
 class ConfigTestSuite : public TestSuite
@@ -874,7 +874,7 @@ ConfigTestSuite::ConfigTestSuite()
 }
 
 /**
- * \ingroup config-tests
+ * @ingroup config-tests
  * ConfigTestSuite instance variable.
  */
 static ConfigTestSuite g_configTestSuite;

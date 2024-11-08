@@ -984,7 +984,7 @@ AnimationInterface::WifiPhyRxBeginTrace(std::string context,
         AddPendingPacket(AnimationInterface::WIFI, animUid, pktInfo);
         NS_LOG_WARN("WifiPhyRxBegin: unknown Uid, but we are adding a wifi packet");
     }
-    /// \todo NS_ASSERT (WifiPacketIsPending (animUid) == true);
+    /// @todo NS_ASSERT (WifiPacketIsPending (animUid) == true);
     m_pendingWifiPackets[animUid].ProcessRxBegin(ndev, Simulator::Now().GetSeconds());
     OutputWirelessPacketRxInfo(p, m_pendingWifiPackets[animUid], animUid);
 }
@@ -1190,7 +1190,7 @@ AnimationInterface::CsmaPhyTxEndTrace(std::string context, Ptr<const Packet> p)
         AddPendingPacket(AnimationInterface::CSMA, animUid, pktInfo);
         NS_LOG_WARN("Unknown Uid, but adding Csma Packet anyway");
     }
-    /// \todo NS_ASSERT (IsPacketPending (AnimUid) == true);
+    /// @todo NS_ASSERT (IsPacketPending (AnimUid) == true);
     AnimPacketInfo& pktInfo = m_pendingCsmaPackets[animUid];
     pktInfo.m_lbTx = Simulator::Now().GetSeconds();
 }
@@ -1209,7 +1209,7 @@ AnimationInterface::CsmaPhyRxEndTrace(std::string context, Ptr<const Packet> p)
         NS_LOG_WARN("CsmaPhyRxEndTrace: unknown Uid");
         return;
     }
-    /// \todo NS_ASSERT (CsmaPacketIsPending (AnimUid) == true);
+    /// @todo NS_ASSERT (CsmaPacketIsPending (AnimUid) == true);
     AnimPacketInfo& pktInfo = m_pendingCsmaPackets[animUid];
     pktInfo.ProcessRxBegin(ndev, Simulator::Now().GetSeconds());
     NS_LOG_INFO("CsmaPhyRxEndTrace for packet:" << animUid);
@@ -1230,7 +1230,7 @@ AnimationInterface::CsmaMacRxTrace(std::string context, Ptr<const Packet> p)
         NS_LOG_WARN("CsmaMacRxTrace: unknown Uid");
         return;
     }
-    /// \todo NS_ASSERT (CsmaPacketIsPending (AnimUid) == true);
+    /// @todo NS_ASSERT (CsmaPacketIsPending (AnimUid) == true);
     AnimPacketInfo& pktInfo = m_pendingCsmaPackets[animUid];
     NS_LOG_INFO("MacRxTrace for packet:" << animUid << " complete");
     OutputCsmaPacket(p, pktInfo);

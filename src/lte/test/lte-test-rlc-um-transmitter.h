@@ -26,9 +26,9 @@ class LteRlc;
 using namespace ns3;
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief TestSuite 4.1.1 for RLC UM: Only transmitter part.
+ * @brief TestSuite 4.1.1 for RLC UM: Only transmitter part.
  */
 class LteRlcUmTransmitterTestSuite : public TestSuite
 {
@@ -37,9 +37,9 @@ class LteRlcUmTransmitterTestSuite : public TestSuite
 };
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief Test case used by LteRlcUmTransmitterOneSduTestCase to create topology
+ * @brief Test case used by LteRlcUmTransmitterOneSduTestCase to create topology
  * and to implement functionalities and check if data received corresponds to
  * data sent.
  */
@@ -49,7 +49,7 @@ class LteRlcUmTransmitterTestCase : public TestCase
     /**
      * Constructor
      *
-     * \param name the test name
+     * @param name the test name
      */
     LteRlcUmTransmitterTestCase(std::string name);
     LteRlcUmTransmitterTestCase();
@@ -57,9 +57,9 @@ class LteRlcUmTransmitterTestCase : public TestCase
 
     /**
      * Check data received function
-     * \param time the time to check
-     * \param shouldReceived should have received indicator
-     * \param assertMsg the assert message
+     * @param time the time to check
+     * @param shouldReceived should have received indicator
+     * @param assertMsg the assert message
      */
     void CheckDataReceived(Time time, std::string shouldReceived, std::string assertMsg);
 
@@ -73,16 +73,16 @@ class LteRlcUmTransmitterTestCase : public TestCase
   private:
     /**
      * Check data received function
-     * \param shouldReceived should have received indicator
-     * \param assertMsg the assert message
+     * @param shouldReceived should have received indicator
+     * @param assertMsg the assert message
      */
     void DoCheckDataReceived(std::string shouldReceived, std::string assertMsg);
 };
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief Test 4.1.1.1 One SDU, One PDU
+ * @brief Test 4.1.1.1 One SDU, One PDU
  */
 class LteRlcUmTransmitterOneSduTestCase : public LteRlcUmTransmitterTestCase
 {
@@ -90,7 +90,7 @@ class LteRlcUmTransmitterOneSduTestCase : public LteRlcUmTransmitterTestCase
     /**
      * Constructor
      *
-     * \param name the test name
+     * @param name the test name
      */
     LteRlcUmTransmitterOneSduTestCase(std::string name);
     LteRlcUmTransmitterOneSduTestCase();
@@ -101,9 +101,9 @@ class LteRlcUmTransmitterOneSduTestCase : public LteRlcUmTransmitterTestCase
 };
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief Test 4.1.1.2 Segmentation (One SDU => n PDUs)
+ * @brief Test 4.1.1.2 Segmentation (One SDU => n PDUs)
  */
 class LteRlcUmTransmitterSegmentationTestCase : public LteRlcUmTransmitterTestCase
 {
@@ -111,7 +111,7 @@ class LteRlcUmTransmitterSegmentationTestCase : public LteRlcUmTransmitterTestCa
     /**
      * Constructor
      *
-     * \param name the reference name
+     * @param name the reference name
      */
     LteRlcUmTransmitterSegmentationTestCase(std::string name);
     LteRlcUmTransmitterSegmentationTestCase();
@@ -122,9 +122,9 @@ class LteRlcUmTransmitterSegmentationTestCase : public LteRlcUmTransmitterTestCa
 };
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief Test 4.1.1.3 Concatenation (n SDUs => One PDU)
+ * @brief Test 4.1.1.3 Concatenation (n SDUs => One PDU)
  */
 class LteRlcUmTransmitterConcatenationTestCase : public LteRlcUmTransmitterTestCase
 {
@@ -132,7 +132,7 @@ class LteRlcUmTransmitterConcatenationTestCase : public LteRlcUmTransmitterTestC
     /**
      * Constructor
      *
-     * \param name the reference name
+     * @param name the reference name
      */
     LteRlcUmTransmitterConcatenationTestCase(std::string name);
     LteRlcUmTransmitterConcatenationTestCase();
@@ -143,9 +143,9 @@ class LteRlcUmTransmitterConcatenationTestCase : public LteRlcUmTransmitterTestC
 };
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief Test 4.1.1.4 Report Buffer Status (test primitive parameters)
+ * @brief Test 4.1.1.4 Report Buffer Status (test primitive parameters)
  */
 class LteRlcUmTransmitterReportBufferStatusTestCase : public LteRlcUmTransmitterTestCase
 {
@@ -153,7 +153,7 @@ class LteRlcUmTransmitterReportBufferStatusTestCase : public LteRlcUmTransmitter
     /**
      * Constructor
      *
-     * \param name the reference name
+     * @param name the reference name
      */
     LteRlcUmTransmitterReportBufferStatusTestCase(std::string name);
     LteRlcUmTransmitterReportBufferStatusTestCase();

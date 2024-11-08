@@ -19,7 +19,7 @@ namespace ns3
 class WifiMpdu;
 
 /**
- * \ingroup wifi
+ * @ingroup wifi
  *
  * Definition of priority for container queues.
  */
@@ -30,20 +30,20 @@ struct FcfsPrio
 };
 
 /**
- * \param lhs the left hand side priority
- * \param rhs the right hand side priority
- * \return whether the left hand side priority is equal to the right hand side priority
+ * @param lhs the left hand side priority
+ * @param rhs the right hand side priority
+ * @return whether the left hand side priority is equal to the right hand side priority
  */
 bool operator==(const FcfsPrio& lhs, const FcfsPrio& rhs);
 /**
- * \param lhs the left hand side priority
- * \param rhs the right hand side priority
- * \return whether the left hand side priority is less than the right hand side priority
+ * @param lhs the left hand side priority
+ * @param rhs the right hand side priority
+ * @return whether the left hand side priority is less than the right hand side priority
  */
 bool operator<(const FcfsPrio& lhs, const FcfsPrio& rhs);
 
 /**
- * \ingroup wifi
+ * @ingroup wifi
  *
  * FcfsWifiQueueScheduler is a wifi queue scheduler that serves data frames in a
  * first come first serve fashion. Control frames have the highest priority.
@@ -54,8 +54,8 @@ class FcfsWifiQueueScheduler : public WifiMacQueueSchedulerImpl<FcfsPrio>
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 

@@ -25,9 +25,9 @@ class Header;
 class Packet;
 
 /**
- * \ingroup ipv6
+ * @ingroup ipv6
  *
- * \brief A representation of an IPv6 endpoint/connection
+ * @brief A representation of an IPv6 endpoint/connection
  *
  * This class provides an Internet four-tuple (source and destination ports
  * and addresses).  These are used in the ns3::Ipv6EndPointDemux as targets
@@ -40,59 +40,59 @@ class Ipv6EndPoint
 {
   public:
     /**
-     * \brief Constructor.
-     * \param addr the IPv6 address
-     * \param port the port
+     * @brief Constructor.
+     * @param addr the IPv6 address
+     * @param port the port
      */
     Ipv6EndPoint(Ipv6Address addr, uint16_t port);
 
     ~Ipv6EndPoint();
 
     /**
-     * \brief Get the local address.
-     * \return the local address
+     * @brief Get the local address.
+     * @return the local address
      */
     Ipv6Address GetLocalAddress() const;
 
     /**
-     * \brief Set the local address.
-     * \param addr the address to set
+     * @brief Set the local address.
+     * @param addr the address to set
      */
     void SetLocalAddress(Ipv6Address addr);
 
     /**
-     * \brief Get the local port.
-     * \return the local port
+     * @brief Get the local port.
+     * @return the local port
      */
     uint16_t GetLocalPort() const;
 
     /**
-     * \brief Set the local port.
-     * \param port the port to set
+     * @brief Set the local port.
+     * @param port the port to set
      */
     void SetLocalPort(uint16_t port);
 
     /**
-     * \brief Get the peer address.
-     * \return the peer address
+     * @brief Get the peer address.
+     * @return the peer address
      */
     Ipv6Address GetPeerAddress() const;
 
     /**
-     * \brief Get the peer port.
-     * \return the peer port
+     * @brief Get the peer port.
+     * @return the peer port
      */
     uint16_t GetPeerPort() const;
 
     /**
-     * \brief Set the peer information (address and port).
-     * \param addr peer address
-     * \param port peer port
+     * @brief Set the peer information (address and port).
+     * @param addr peer address
+     * @param port peer port
      */
     void SetPeer(Ipv6Address addr, uint16_t port);
 
     /**
-     * \brief Bind a socket to specific device.
+     * @brief Bind a socket to specific device.
      *
      * This method corresponds to using setsockopt() SO_BINDTODEVICE
      * of real network or BSD sockets.   If set on a socket, this option will
@@ -107,50 +107,50 @@ class Ipv6EndPoint
      * is also possible to bind to mismatching device and address, even if
      * the socket can not receive any packets as a result.
      *
-     * \param netdevice Pointer to Netdevice of desired interface
+     * @param netdevice Pointer to Netdevice of desired interface
      */
     void BindToNetDevice(Ptr<NetDevice> netdevice);
 
     /**
-     * \brief Returns socket's bound netdevice, if any.
+     * @brief Returns socket's bound netdevice, if any.
      *
      * This method corresponds to using getsockopt() SO_BINDTODEVICE
      * of real network or BSD sockets.
      *
      *
-     * \returns Pointer to interface.
+     * @returns Pointer to interface.
      */
     Ptr<NetDevice> GetBoundNetDevice() const;
 
     /**
-     * \brief Set the reception callback.
-     * \param callback callback function
+     * @brief Set the reception callback.
+     * @param callback callback function
      */
     void SetRxCallback(
         Callback<void, Ptr<Packet>, Ipv6Header, uint16_t, Ptr<Ipv6Interface>> callback);
 
     /**
-     * \brief Set the ICMP callback.
-     * \param callback callback function
+     * @brief Set the ICMP callback.
+     * @param callback callback function
      */
     void SetIcmpCallback(Callback<void, Ipv6Address, uint8_t, uint8_t, uint8_t, uint32_t> callback);
 
     /**
-     * \brief Set the default destroy callback.
-     * \param callback callback function
+     * @brief Set the default destroy callback.
+     * @param callback callback function
      */
     void SetDestroyCallback(Callback<void> callback);
 
     /**
-     * \brief Forward the packet to the upper level.
+     * @brief Forward the packet to the upper level.
      *
      * Called from an L4Protocol implementation to notify an endpoint of a
      * packet reception.
      *
-     * \param p the packet
-     * \param header the packet header
-     * \param port source port
-     * \param incomingInterface incoming interface
+     * @param p the packet
+     * @param header the packet header
+     * @param port source port
+     * @param incomingInterface incoming interface
      */
     void ForwardUp(Ptr<Packet> p,
                    Ipv6Header header,
@@ -158,74 +158,74 @@ class Ipv6EndPoint
                    Ptr<Ipv6Interface> incomingInterface);
 
     /**
-     * \brief Forward the ICMP packet to the upper level.
+     * @brief Forward the ICMP packet to the upper level.
      *
      * Called from an L4Protocol implementation to notify an endpoint of
      * an icmp message reception.
      *
-     * \param src source IPv6 address
-     * \param ttl time-to-live
-     * \param type ICMPv6 type
-     * \param code ICMPv6 code
-     * \param info ICMPv6 info
+     * @param src source IPv6 address
+     * @param ttl time-to-live
+     * @param type ICMPv6 type
+     * @param code ICMPv6 code
+     * @param info ICMPv6 info
      */
     void ForwardIcmp(Ipv6Address src, uint8_t ttl, uint8_t type, uint8_t code, uint32_t info);
 
     /**
-     * \brief Enable or Disable the endpoint Rx capability.
-     * \param enabled true if Rx is enabled
+     * @brief Enable or Disable the endpoint Rx capability.
+     * @param enabled true if Rx is enabled
      */
     void SetRxEnabled(bool enabled);
 
     /**
-     * \brief Checks if the endpoint can receive packets.
-     * \returns true if the endpoint can receive packets.
+     * @brief Checks if the endpoint can receive packets.
+     * @returns true if the endpoint can receive packets.
      */
     bool IsRxEnabled() const;
 
   private:
     /**
-     * \brief The local address.
+     * @brief The local address.
      */
     Ipv6Address m_localAddr;
 
     /**
-     * \brief The local port.
+     * @brief The local port.
      */
     uint16_t m_localPort;
 
     /**
-     * \brief The peer address.
+     * @brief The peer address.
      */
     Ipv6Address m_peerAddr;
 
     /**
-     * \brief The peer port.
+     * @brief The peer port.
      */
     uint16_t m_peerPort;
 
     /**
-     * \brief The NetDevice the EndPoint is bound to (if any).
+     * @brief The NetDevice the EndPoint is bound to (if any).
      */
     Ptr<NetDevice> m_boundnetdevice;
 
     /**
-     * \brief The RX callback.
+     * @brief The RX callback.
      */
     Callback<void, Ptr<Packet>, Ipv6Header, uint16_t, Ptr<Ipv6Interface>> m_rxCallback;
 
     /**
-     * \brief The ICMPv6 callback.
+     * @brief The ICMPv6 callback.
      */
     Callback<void, Ipv6Address, uint8_t, uint8_t, uint8_t, uint32_t> m_icmpCallback;
 
     /**
-     * \brief The destroy callback.
+     * @brief The destroy callback.
      */
     Callback<void> m_destroyCallback;
 
     /**
-     * \brief true if the endpoint can receive packets.
+     * @brief true if the endpoint can receive packets.
      */
     bool m_rxEnabled;
 };

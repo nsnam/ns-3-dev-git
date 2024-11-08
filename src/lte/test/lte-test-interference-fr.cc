@@ -109,7 +109,7 @@ LteInterferenceFrTestSuite::LteInterferenceFrTestSuite()
 }
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  * Static variable for test initialization
  */
 static LteInterferenceFrTestSuite LteInterferenceFrTestSuite;

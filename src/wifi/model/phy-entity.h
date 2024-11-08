@@ -28,8 +28,8 @@
 #include <utility>
 
 /**
- * \file
- * \ingroup wifi
+ * @file
+ * @ingroup wifi
  * Declaration of:
  * - ns3::PhyEntity class
  * - ns3::SignalNoiseDbm, ns3::MpduInfo, and ns3::RxSignalInfo structs
@@ -53,8 +53,8 @@ class WifiPsdu;
 class WifiPpdu;
 
 /**
- * \brief Abstract class for PHY entities
- * \ingroup wifi
+ * @brief Abstract class for PHY entities
+ * @ingroup wifi
  *
  * This class enables to have a unique set of APIs
  * to be used by each PHY entity, corresponding to
@@ -86,7 +86,7 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
         /**
          * Constructor setting outcome of reception.
          *
-         * \param s \c true if success
+         * @param s \c true if success
          */
         PhyFieldRxStatus(bool s)
             : isSuccess(s)
@@ -96,9 +96,9 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
         /**
          * Constructor.
          *
-         * \param s \c true if success
-         * \param r reason of failure
-         * \param a action to perform in case of failure
+         * @param s \c true if success
+         * @param r reason of failure
+         * @param a action to perform in case of failure
          */
         PhyFieldRxStatus(bool s, WifiPhyRxfailureReason r, PhyRxFailureAction a)
             : isSuccess(s),
@@ -126,8 +126,8 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
         /**
          * Constructor for SnrPer.
          *
-         * \param s the SNR in linear scale
-         * \param p the PER
+         * @param s the SNR in linear scale
+         * @param p the PER
          */
         SnrPer(double s, double p)
             : snr(s),
@@ -144,28 +144,28 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
     /**
      * Set the WifiPhy owning this PHY entity.
      *
-     * \param wifiPhy the WifiPhy owning this PHY entity
+     * @param wifiPhy the WifiPhy owning this PHY entity
      */
     void SetOwner(Ptr<WifiPhy> wifiPhy);
 
     /**
      * Check if the WifiMode is supported.
      *
-     * \param mode the WifiMode to check
-     * \return true if the WifiMode is supported,
+     * @param mode the WifiMode to check
+     * @return true if the WifiMode is supported,
      *         false otherwise
      */
     virtual bool IsModeSupported(WifiMode mode) const;
     /**
-     * \return the number of WifiModes supported by this entity
+     * @return the number of WifiModes supported by this entity
      */
     virtual uint8_t GetNumModes() const;
 
     /**
      * Get the WifiMode corresponding to the given MCS index.
      *
-     * \param index the index of the MCS
-     * \return the WifiMode corresponding to the MCS index
+     * @param index the index of the MCS
+     * @return the WifiMode corresponding to the MCS index
      *
      * This method should be used only for HtPhy and child classes.
      */
@@ -173,8 +173,8 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
     /**
      * Check if the WifiMode corresponding to the given MCS index is supported.
      *
-     * \param index the index of the MCS
-     * \return true if the WifiMode corresponding to the MCS index is supported,
+     * @param index the index of the MCS
+     * @return true if the WifiMode corresponding to the MCS index is supported,
      *         false otherwise
      *
      * Will return false for non-MCS modes.
@@ -183,7 +183,7 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
     /**
      * Check if the WifiModes handled by this PHY are MCSs.
      *
-     * \return true if the handled WifiModes are MCSs,
+     * @return true if the handled WifiModes are MCSs,
      *         false if they are non-MCS modes
      */
     virtual bool HandlesMcsModes() const;
@@ -191,32 +191,32 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
     /**
      * Get the WifiMode for the SIG field specified by the PPDU field.
      *
-     * \param field the PPDU field
-     * \param txVector the transmission parameters
+     * @param field the PPDU field
+     * @param txVector the transmission parameters
      *
-     * \return the WifiMode used for the SIG field
+     * @return the WifiMode used for the SIG field
      */
     virtual WifiMode GetSigMode(WifiPpduField field, const WifiTxVector& txVector) const;
 
     /**
-     * \brief Return a const iterator to the first WifiMode
+     * @brief Return a const iterator to the first WifiMode
      *
-     * \return a const iterator to the first WifiMode.
+     * @return a const iterator to the first WifiMode.
      */
     std::list<WifiMode>::const_iterator begin() const;
     /**
-     * \brief Return a const iterator to past-the-last WifiMode
+     * @brief Return a const iterator to past-the-last WifiMode
      *
-     * \return a const iterator to past-the-last WifiMode.
+     * @return a const iterator to past-the-last WifiMode.
      */
     std::list<WifiMode>::const_iterator end() const;
 
     /**
      * Return the field following the provided one.
      *
-     * \param currentField the considered PPDU field
-     * \param preamble the preamble indicating the PPDU format
-     * \return the PPDU field following the reference one
+     * @param currentField the considered PPDU field
+     * @param preamble the preamble indicating the PPDU format
+     * @return the PPDU field following the reference one
      */
     WifiPpduField GetNextField(WifiPpduField currentField, WifiPreamble preamble) const;
 
@@ -224,35 +224,35 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      * Get the duration of the PPDU field (or group of fields)
      * used by this entity for the given transmission parameters.
      *
-     * \param field the PPDU field (or group of fields)
-     * \param txVector the transmission parameters
+     * @param field the PPDU field (or group of fields)
+     * @param txVector the transmission parameters
      *
-     * \return the duration of the PPDU field
+     * @return the duration of the PPDU field
      */
     virtual Time GetDuration(WifiPpduField field, const WifiTxVector& txVector) const;
     /**
-     * \param txVector the transmission parameters
+     * @param txVector the transmission parameters
      *
-     * \return the total duration of the PHY preamble and PHY header.
+     * @return the total duration of the PHY preamble and PHY header.
      */
     Time CalculatePhyPreambleAndHeaderDuration(const WifiTxVector& txVector) const;
 
     /**
-     * \param size the number of bytes in the packet to send
-     * \param txVector the TXVECTOR used for the transmission of this packet
-     * \param band the frequency band
-     * \param mpdutype the type of the MPDU as defined in WifiPhy::MpduType.
-     * \param incFlag this flag is used to indicate that the variables need to be update or not
+     * @param size the number of bytes in the packet to send
+     * @param txVector the TXVECTOR used for the transmission of this packet
+     * @param band the frequency band
+     * @param mpdutype the type of the MPDU as defined in WifiPhy::MpduType.
+     * @param incFlag this flag is used to indicate that the variables need to be update or not
      * This function is called a couple of times for the same packet so variables should not be
      * increased each time.
-     * \param totalAmpduSize the total size of the previously transmitted MPDUs for the concerned
+     * @param totalAmpduSize the total size of the previously transmitted MPDUs for the concerned
      * A-MPDU. If incFlag is set, this parameter will be updated.
-     * \param totalAmpduNumSymbols the number of symbols previously transmitted for the MPDUs in the
+     * @param totalAmpduNumSymbols the number of symbols previously transmitted for the MPDUs in the
      * concerned A-MPDU, used for the computation of the number of symbols needed for the last MPDU.
      * If incFlag is set, this parameter will be updated.
-     * \param staId the STA-ID of the PSDU (only used for MU PPDUs)
+     * @param staId the STA-ID of the PSDU (only used for MU PPDUs)
      *
-     * \return the duration of the PSDU
+     * @return the duration of the PSDU
      */
     virtual Time GetPayloadDuration(uint32_t size,
                                     const WifiTxVector& txVector,
@@ -268,9 +268,9 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      * The STA-ID value is properly determined based on whether the given PSDU has
      * to be transmitted as a DL or UL frame.
      *
-     * \param psdu the given PSDU
-     * \param txVector the TXVECTOR to use to send the PSDU
-     * \return a WifiConstPsduMap built from the given PSDU and the given TXVECTOR
+     * @param psdu the given PSDU
+     * @param txVector the TXVECTOR to use to send the PSDU
+     * @return a WifiConstPsduMap built from the given PSDU and the given TXVECTOR
      */
     virtual WifiConstPsduMap GetWifiConstPsduMap(Ptr<const WifiPsdu> psdu,
                                                  const WifiTxVector& txVector) const;
@@ -278,7 +278,7 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
     /**
      * Get the maximum PSDU size in bytes.
      *
-     * \return the maximum PSDU size in bytes
+     * @return the maximum PSDU size in bytes
      */
     virtual uint32_t GetMaxPsduSize() const = 0;
 
@@ -289,7 +289,7 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
     typedef std::pair<std::pair<Time /* start */, Time /* stop */>, WifiMode> PhyHeaderChunkInfo;
     /**
      * A map of PhyHeaderChunkInfo elements per PPDU field.
-     * \see PhyHeaderChunkInfo
+     * @see PhyHeaderChunkInfo
      */
     typedef std::map<WifiPpduField, PhyHeaderChunkInfo> PhyHeaderSections;
     /**
@@ -297,22 +297,22 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      * This map will contain the PPDU fields that are actually present based
      * on the \p txVector information.
      *
-     * \param txVector the transmission parameters
-     * \param ppduStart the time at which the PPDU started
-     * \return the list of preamble sections
+     * @param txVector the transmission parameters
+     * @param ppduStart the time at which the PPDU started
+     * @return the list of preamble sections
      *
-     * \see PhyHeaderSections
+     * @see PhyHeaderSections
      */
     PhyHeaderSections GetPhyHeaderSections(const WifiTxVector& txVector, Time ppduStart) const;
 
     /**
      * Build amendment-specific PPDU.
      *
-     * \param psdus the PHY payloads (PSDUs)
-     * \param txVector the TXVECTOR that was used for the PPDU
-     * \param ppduDuration the transmission duration of the PPDU
+     * @param psdus the PHY payloads (PSDUs)
+     * @param txVector the TXVECTOR that was used for the PPDU
+     * @param ppduDuration the transmission duration of the PPDU
      *
-     * \return the amendment-specific WifiPpdu
+     * @return the amendment-specific WifiPpdu
      */
     virtual Ptr<WifiPpdu> BuildPpdu(const WifiConstPsduMap& psdus,
                                     const WifiTxVector& txVector,
@@ -321,25 +321,25 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
     /**
      * Get the duration of the PPDU up to (but excluding) the given field.
      *
-     * \param field the considered PPDU field
-     * \param txVector the transmission parameters
-     * \return the duration from the beginning of the PPDU up to the field
+     * @param field the considered PPDU field
+     * @param txVector the transmission parameters
+     * @return the duration from the beginning of the PPDU up to the field
      */
     Time GetDurationUpToField(WifiPpduField field, const WifiTxVector& txVector) const;
     /**
      * Get the remaining duration of the PPDU after the end of the given field.
      *
-     * \param field the considered PPDU field
-     * \param ppdu the received PPDU
-     * \return the remaining duration of the PPDU after the end of to the field
+     * @param field the considered PPDU field
+     * @param ppdu the received PPDU
+     * @return the remaining duration of the PPDU after the end of to the field
      */
     Time GetRemainingDurationAfterField(Ptr<const WifiPpdu> ppdu, WifiPpduField field) const;
 
     /**
      * Get the PSDU addressed to that PHY in a PPDU (useful for MU PPDU).
      *
-     * \param ppdu the PPDU to extract the PSDU from
-     * \return the PSDU addressed to that PHY
+     * @param ppdu the PPDU to extract the PSDU from
+     * @return the PSDU addressed to that PHY
      */
     virtual Ptr<const WifiPsdu> GetAddressedPsduInPpdu(Ptr<const WifiPpdu> ppdu) const;
 
@@ -349,9 +349,9 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      * This method triggers the start of the preamble detection period (\see
      * StartPreambleDetectionPeriod) if the PHY can process the PPDU.
      *
-     * \param ppdu the arriving PPDU
-     * \param rxPowersW the receive power in W per band
-     * \param rxDuration the duration of the PPDU
+     * @param ppdu the arriving PPDU
+     * @param rxPowersW the receive power in W per band
+     * @param rxDuration the duration of the PPDU
      */
     virtual void StartReceivePreamble(Ptr<const WifiPpdu> ppdu,
                                       RxPowerWattPerChannelBand& rxPowersW,
@@ -365,8 +365,8 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      * The PHY is kept in CCA busy during the reception of the field (except for
      * data field which should be in RX).
      *
-     * \param field the starting PPDU field
-     * \param event the event holding incoming PPDU's information
+     * @param field the starting PPDU field
+     * @param event the event holding incoming PPDU's information
      */
     void StartReceiveField(WifiPpduField field, Ptr<Event> event);
     /**
@@ -377,22 +377,22 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      * In case of failure, the indications in the returned \see PhyFieldRxStatus
      * are performed.
      *
-     * \param field the ending PPDU field
-     * \param event the event holding incoming PPDU's information
+     * @param field the ending PPDU field
+     * @param event the event holding incoming PPDU's information
      */
     void EndReceiveField(WifiPpduField field, Ptr<Event> event);
 
     /**
      * The last symbol of the PPDU has arrived.
      *
-     * \param event the event holding incoming PPDU's information
+     * @param event the event holding incoming PPDU's information
      */
     void EndReceivePayload(Ptr<Event> event);
 
     /**
      * Reset PHY at the end of the PPDU under reception after it has failed the PHY header.
      *
-     * \param event the event holding incoming PPDU's information
+     * @param event the event holding incoming PPDU's information
      */
     void ResetReceive(Ptr<Event> event);
 
@@ -401,7 +401,7 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      */
     virtual void CancelAllEvents();
     /**
-     * \return \c true if there is no end preamble detection event running, \c false otherwise
+     * @return \c true if there is no end preamble detection event running, \c false otherwise
      */
     bool NoEndPreambleDetectionEvents() const;
     /**
@@ -413,8 +413,8 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      * Return the STA ID that has been assigned to the station this PHY belongs to.
      * This is typically called for MU PPDUs, in order to pick the correct PSDU.
      *
-     * \param ppdu the PPDU for which the STA ID is requested
-     * \return the STA ID
+     * @param ppdu the PPDU for which the STA ID is requested
+     * @return the STA ID
      */
     virtual uint16_t GetStaId(const Ptr<const WifiPpdu> ppdu) const;
 
@@ -422,8 +422,8 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      * Determine whether the PHY shall issue a PHY-RXSTART.indication primitive in response to a
      * given PPDU.
      *
-     * \param ppdu the PPDU
-     * \return true if the PHY shall issue a PHY-RXSTART.indication primitive in response to a PPDU,
+     * @param ppdu the PPDU
+     * @return true if the PHY shall issue a PHY-RXSTART.indication primitive in response to a PPDU,
      * false otherwise
      */
     virtual bool CanStartRx(Ptr<const WifiPpdu> ppdu) const;
@@ -432,15 +432,15 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      * Check if PHY state should move to CCA busy state based on current
      * state of interference tracker.
      *
-     * \param ppdu the incoming PPDU or nullptr for any signal
+     * @param ppdu the incoming PPDU or nullptr for any signal
      */
     virtual void SwitchMaybeToCcaBusy(const Ptr<const WifiPpdu> ppdu);
     /**
      * Notify PHY state helper to switch to CCA busy state,
      *
-     * \param ppdu the incoming PPDU or nullptr for any signal
-     * \param duration the duration of the CCA state
-     * \param channelType the channel type for which the CCA busy state is reported.
+     * @param ppdu the incoming PPDU or nullptr for any signal
+     * @param duration the duration of the CCA state
+     * @param channelType the channel type for which the CCA busy state is reported.
      */
     virtual void NotifyCcaBusy(const Ptr<const WifiPpdu> ppdu,
                                Time duration,
@@ -448,22 +448,22 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
     /**
      * This function is called by SpectrumWifiPhy to send
      * the PPDU while performing amendment-specific actions.
-     * \see SpectrumWifiPhy::StartTx
+     * @see SpectrumWifiPhy::StartTx
      *
-     * \param ppdu the PPDU to send
+     * @param ppdu the PPDU to send
      */
     virtual void StartTx(Ptr<const WifiPpdu> ppdu);
 
     /**
      * This function prepares most of the WifiSpectrumSignalParameters
      * parameters and invokes SpectrumWifiPhy's Transmit method.
-     * \see SpectrumWifiPhy::Transmit
+     * @see SpectrumWifiPhy::Transmit
      *
-     * \param txDuration the duration of the transmission
-     * \param ppdu the PPDU to send
-     * \param txPower the total TX power
-     * \param txPowerSpectrum the TX PSD
-     * \param type the type of transmission (for logging)
+     * @param txDuration the duration of the transmission
+     * @param ppdu the PPDU to send
+     * @param txPower the total TX power
+     * @param txPowerSpectrum the TX PSD
+     * @param type the type of transmission (for logging)
      */
     void Transmit(Time txDuration,
                   Ptr<const WifiPpdu> ppdu,
@@ -472,11 +472,11 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
                   const std::string& type);
 
     /**
-     * \param psduMap the PSDU(s) to transmit indexed by STA-ID
-     * \param txVector the TXVECTOR used for the transmission of the PPDU
-     * \param band the frequency band being used
+     * @param psduMap the PSDU(s) to transmit indexed by STA-ID
+     * @param txVector the TXVECTOR used for the transmission of the PPDU
+     * @param band the frequency band being used
      *
-     * \return the total amount of time this PHY will stay busy for the transmission of the PPDU
+     * @return the total amount of time this PHY will stay busy for the transmission of the PPDU
      */
     virtual Time CalculateTxDuration(const WifiConstPsduMap& psduMap,
                                      const WifiTxVector& txVector,
@@ -485,9 +485,9 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      * Return the CCA threshold for a given channel type.
      * If the channel type is not provided, the default CCA threshold is returned.
      *
-     * \param ppdu the PPDU that is being received
-     * \param channelType the channel type
-     * \return the CCA threshold
+     * @param ppdu the PPDU that is being received
+     * @param channelType the channel type
+     * @return the CCA threshold
      */
     virtual dBm_u GetCcaThreshold(const Ptr<const WifiPpdu> ppdu,
                                   WifiChannelListType channelType) const;
@@ -498,8 +498,8 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      * from TX instead of a copy of it. Child classes can change that behavior and do a copy and/or
      * change the content of the parameters stored in WifiPpdu.
      *
-     * \param ppdu the WifiPpdu transmitted by the TX PHY
-     * \return the WifiPpdu to be used by the RX PHY
+     * @param ppdu the WifiPpdu transmitted by the TX PHY
+     * @return the WifiPpdu to be used by the RX PHY
      */
     virtual Ptr<const WifiPpdu> GetRxPpduFromTxPpdu(Ptr<const WifiPpdu> ppdu);
 
@@ -507,8 +507,8 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      * Obtain the next UID for the PPDU to transmit.
      * Note that the global UID counter could be incremented.
      *
-     * \param txVector the transmission parameters
-     * \return the UID to use for the PPDU to transmit
+     * @param txVector the transmission parameters
+     * @return the UID to use for the PPDU to transmit
      */
     virtual uint64_t ObtainNextUid(const WifiTxVector& txVector);
 
@@ -516,8 +516,8 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      * Obtain the maximum time between two PPDUs with the same UID to consider they are identical
      * and their power can be added construtively.
      *
-     * \param txVector the TXVECTOR used for the transmission of the PPDUs
-     * \return the maximum time between two PPDUs with the same UID to decode them
+     * @param txVector the TXVECTOR used for the transmission of the PPDUs
+     * @return the maximum time between two PPDUs with the same UID to decode them
      */
     virtual Time GetMaxDelayPpduSameUid(const WifiTxVector& txVector);
 
@@ -541,7 +541,7 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
     /**
      * Return the PPDU formats of the PHY.
      *
-     * \return the PPDU formats of the PHY
+     * @return the PPDU formats of the PHY
      */
     virtual const PpduFormats& GetPpduFormats() const = 0;
 
@@ -549,18 +549,18 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      * Start receiving a given field, perform amendment-specific actions, and
      * signify if it is supported.
      *
-     * \param field the starting PPDU field
-     * \param event the event holding incoming PPDU's information
-     * \return \c true if the field is supported, \c false otherwise
+     * @param field the starting PPDU field
+     * @param event the event holding incoming PPDU's information
+     * @return \c true if the field is supported, \c false otherwise
      */
     virtual bool DoStartReceiveField(WifiPpduField field, Ptr<Event> event);
     /**
      * End receiving a given field, perform amendment-specific actions, and
      * provide the status of the reception.
      *
-     * \param field the ending PPDU field
-     * \param event the event holding incoming PPDU's information
-     * \return status of the reception of the PPDU field
+     * @param field the ending PPDU field
+     * @param event the event holding incoming PPDU's information
+     * @return status of the reception of the PPDU field
      */
     virtual PhyFieldRxStatus DoEndReceiveField(WifiPpduField field, Ptr<Event> event);
 
@@ -570,23 +570,23 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      * We store all incoming preamble events, perform amendment-specific actions,
      * and a decision is made at the end of the preamble detection window.
      *
-     * \param ppdu the incoming PPDU
-     * \param rxPowersW the receive power in W per band
-     * \return the event holding the incoming PPDU's information
+     * @param ppdu the incoming PPDU
+     * @param rxPowersW the receive power in W per band
+     * @return the event holding the incoming PPDU's information
      */
     virtual Ptr<Event> DoGetEvent(Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPowersW);
     /**
      * End receiving the preamble, perform amendment-specific actions, and
      * provide the status of the reception.
      *
-     * \param event the event holding incoming PPDU's information
-     * \return status of the reception of the preamble
+     * @param event the event holding incoming PPDU's information
+     * @return status of the reception of the preamble
      */
     virtual PhyFieldRxStatus DoEndReceivePreamble(Ptr<Event> event);
     /**
      * Start the preamble detection period.
      *
-     * \param event the event holding incoming PPDU's information
+     * @param event the event holding incoming PPDU's information
      */
     void StartPreambleDetectionPeriod(Ptr<Event> event);
     /**
@@ -596,14 +596,14 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      * In addition, in case of successful detection, the end of the
      * preamble reception is triggered (\see DoEndReceivePreamble).
      *
-     * \param event the event holding incoming PPDU's information
+     * @param event the event holding incoming PPDU's information
      */
     void EndPreambleDetectionPeriod(Ptr<Event> event);
 
     /**
      * Start receiving the PSDU (i.e. the first symbol of the PSDU has arrived).
      *
-     * \param event the event holding incoming PPDU's information
+     * @param event the event holding incoming PPDU's information
      */
     void StartReceivePayload(Ptr<Event> event);
 
@@ -611,8 +611,8 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      * Start receiving the PSDU (i.e. the first symbol of the PSDU has arrived)
      * and perform amendment-specific actions.
      *
-     * \param event the event holding incoming PPDU's information
-     * \return the payload duration
+     * @param event the event holding incoming PPDU's information
+     * @return the payload duration
      */
     virtual Time DoStartReceivePayload(Ptr<Event> event);
 
@@ -620,7 +620,7 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      * Perform amendment-specific actions before resetting PHY at
      * the end of the PPDU under reception after it has failed the PHY header.
      *
-     * \param event the event holding incoming PPDU's information
+     * @param event the event holding incoming PPDU's information
      */
     virtual void DoResetReceive(Ptr<Event> event);
 
@@ -628,7 +628,7 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      * Perform amendment-specific actions before aborting the
      * current reception.
      *
-     * \param reason the reason the reception is aborted
+     * @param reason the reason the reception is aborted
      */
     virtual void DoAbortCurrentReception(WifiPhyRxfailureReason reason);
 
@@ -636,8 +636,8 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      * Checks if the signaled configuration (excluding bandwidth)
      * is supported by the PHY.
      *
-     * \param ppdu the received PPDU
-     * \return \c true if supported, \c false otherwise
+     * @param ppdu the received PPDU
+     * @return \c true if supported, \c false otherwise
      */
     virtual bool IsConfigSupported(Ptr<const WifiPpdu> ppdu) const;
 
@@ -645,9 +645,9 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      * Drop the PPDU and the corresponding preamble detection event, but keep CCA busy
      * state after the completion of the currently processed event.
      *
-     * \param ppdu the incoming PPDU
-     * \param reason the reason the PPDU is dropped
-     * \param endRx the end of the incoming PPDU's reception
+     * @param ppdu the incoming PPDU
+     * @param reason the reason the PPDU is dropped
+     * @param endRx the end of the incoming PPDU's reception
      */
     void DropPreambleEvent(Ptr<const WifiPpdu> ppdu, WifiPhyRxfailureReason reason, Time endRx);
 
@@ -655,22 +655,22 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      * Erase the event corresponding to the PPDU from the list of preamble events,
      * but consider it as noise after the completion of the current event.
      *
-     * \param ppdu the incoming PPDU
-     * \param rxDuration the duration of the PPDU
+     * @param ppdu the incoming PPDU
+     * @param rxDuration the duration of the PPDU
      */
     void ErasePreambleEvent(Ptr<const WifiPpdu> ppdu, Time rxDuration);
 
     /**
      * Get the reception status for the provided MPDU and notify.
      *
-     * \param mpdu the arriving MPDU
-     * \param event the event holding incoming PPDU's information
-     * \param staId the station ID of the PSDU (only used for MU)
-     * \param relativeMpduStart the relative start time of the MPDU within the A-MPDU.
+     * @param mpdu the arriving MPDU
+     * @param event the event holding incoming PPDU's information
+     * @param staId the station ID of the PSDU (only used for MU)
+     * @param relativeMpduStart the relative start time of the MPDU within the A-MPDU.
      * 0 for normal MPDUs
-     * \param mpduDuration the duration of the MPDU
+     * @param mpduDuration the duration of the MPDU
      *
-     * \return information on MPDU reception: status, signal power (dBm), and noise power (in dBm)
+     * @return information on MPDU reception: status, signal power (dBm), and noise power (in dBm)
      */
     std::pair<bool, SignalNoiseDbm> GetReceptionStatus(Ptr<WifiMpdu> mpdu,
                                                        Ptr<Event> event,
@@ -680,11 +680,11 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
     /**
      * The last symbol of an MPDU in an A-MPDU has arrived.
      *
-     * \param event the event holding incoming PPDU's information
-     * \param mpdu the arriving MPDU
-     * \param mpduIndex the index of the MPDU within the A-MPDU
-     * \param relativeStart the relative start time of the MPDU within the A-MPDU.
-     * \param mpduDuration the duration of the MPDU
+     * @param event the event holding incoming PPDU's information
+     * @param mpdu the arriving MPDU
+     * @param mpduIndex the index of the MPDU within the A-MPDU
+     * @param relativeStart the relative start time of the MPDU within the A-MPDU.
+     * @param mpduDuration the duration of the MPDU
      */
     void EndOfMpdu(Ptr<Event> event,
                    Ptr<WifiMpdu> mpdu,
@@ -695,18 +695,18 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
     /**
      * Schedule end of MPDUs events.
      *
-     * \param event the event holding incoming PPDU's information
+     * @param event the event holding incoming PPDU's information
      */
     void ScheduleEndOfMpdus(Ptr<Event> event);
 
     /**
      * Perform amendment-specific actions when the payload is successfully received.
      *
-     * \param psdu the successfully received PSDU
-     * \param rxSignalInfo the info on the received signal (\see RxSignalInfo)
-     * \param txVector TXVECTOR of the PSDU
-     * \param staId the station ID of the PSDU (only used for MU)
-     * \param statusPerMpdu reception status per MPDU
+     * @param psdu the successfully received PSDU
+     * @param rxSignalInfo the info on the received signal (\see RxSignalInfo)
+     * @param txVector TXVECTOR of the PSDU
+     * @param staId the station ID of the PSDU (only used for MU)
+     * @param statusPerMpdu reception status per MPDU
      */
     virtual void RxPayloadSucceeded(Ptr<const WifiPsdu> psdu,
                                     RxSignalInfo rxSignalInfo,
@@ -716,9 +716,9 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
     /**
      * Perform amendment-specific actions when the payload is unsuccessfuly received.
      *
-     * \param psdu the PSDU that we failed to received
-     * \param snr the SNR of the received PSDU in linear scale
-     * \param txVector TXVECTOR of the PSDU
+     * @param psdu the PSDU that we failed to received
+     * @param snr the SNR of the received PSDU in linear scale
+     * @param txVector TXVECTOR of the PSDU
      */
     virtual void RxPayloadFailed(Ptr<const WifiPsdu> psdu,
                                  double snr,
@@ -728,16 +728,16 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      * Perform amendment-specific actions at the end of the reception of
      * the payload.
      *
-     * \param ppdu the incoming PPDU
+     * @param ppdu the incoming PPDU
      */
     virtual void DoEndReceivePayload(Ptr<const WifiPpdu> ppdu);
 
     /**
      * Get the channel width and band to use (will be overloaded by child classes).
      *
-     * \param txVector the transmission parameters
-     * \param staId the station ID of the PSDU
-     * \return a pair of channel width and band
+     * @param txVector the transmission parameters
+     * @param staId the station ID of the PSDU
+     * @return a pair of channel width and band
      */
     virtual std::pair<MHz_u, WifiSpectrumBandInfo> GetChannelWidthAndBand(
         const WifiTxVector& txVector,
@@ -746,7 +746,7 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
     /**
      * Abort the current reception.
      *
-     * \param reason the reason the reception is aborted
+     * @param reason the reason the reception is aborted
      */
     void AbortCurrentReception(WifiPhyRxfailureReason reason);
 
@@ -754,45 +754,45 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      * Obtain a random value from the WifiPhy's generator.
      * Wrapper used by child classes.
      *
-     * \return a uniform random value
+     * @return a uniform random value
      */
     double GetRandomValue() const;
     /**
      * Obtain the SNR and PER of the PPDU field from the WifiPhy's InterferenceHelper class.
      * Wrapper used by child classes.
      *
-     * \param field the PPDU field
-     * \param event the event holding incoming PPDU's information
-     * \return the SNR and PER
+     * @param field the PPDU field
+     * @param event the event holding incoming PPDU's information
+     * @return the SNR and PER
      */
     SnrPer GetPhyHeaderSnrPer(WifiPpduField field, Ptr<Event> event) const;
     /**
      * Obtain the received power for a given band.
      * Wrapper used by child classes.
      *
-     * \param event the event holding incoming PPDU's information
-     * \return the received power for the event over a given band
+     * @param event the event holding incoming PPDU's information
+     * @return the received power for the event over a given band
      */
     Watt_u GetRxPowerForPpdu(Ptr<Event> event) const;
     /**
      * Get the pointer to the current event (stored in WifiPhy).
      * Wrapper used by child classes.
      *
-     * \return the pointer to the current event
+     * @return the pointer to the current event
      */
     Ptr<const Event> GetCurrentEvent() const;
     /**
      * Get the map of current preamble events (stored in WifiPhy).
      * Wrapper used by child classes.
      *
-     * \return the reference to the map of current preamble events
+     * @return the reference to the map of current preamble events
      */
     const std::map<std::pair<uint64_t, WifiPreamble>, Ptr<Event>>& GetCurrentPreambleEvents() const;
     /**
      * Add an entry to the map of current preamble events (stored in WifiPhy).
      * Wrapper used by child classes.
      *
-     * \param event the event holding incoming PPDU's information
+     * @param event the event holding incoming PPDU's information
      */
     void AddPreambleEvent(Ptr<Event> event);
 
@@ -800,12 +800,12 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      * Create an event using WifiPhy's InterferenceHelper class.
      * Wrapper used by child classes.
      *
-     * \param ppdu the PPDU
-     * \param duration the PPDU duration
-     * \param rxPower received power per band (W)
-     * \param isStartHePortionRxing flag whether the event corresponds to the start of the OFDMA
+     * @param ppdu the PPDU
+     * @param duration the PPDU duration
+     * @param rxPower received power per band (W)
+     * @param isStartHePortionRxing flag whether the event corresponds to the start of the OFDMA
      * payload reception (only used for UL-OFDMA)
-     * \return the created event
+     * @return the created event
      */
     Ptr<Event> CreateInterferenceEvent(Ptr<const WifiPpdu> ppdu,
                                        Time duration,
@@ -820,9 +820,9 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      * updated accordingly. Otherwise, a new interference event is created and PPDU is dropped by
      * the PHY.
      *
-     * \param event the event of the ongoing reception
-     * \param ppdu the newly received PPDU (UL MU or non-HT duplicate)
-     * \param rxPower the received power (W) per band of the newly received PPDU
+     * @param event the event of the ongoing reception
+     * @param ppdu the newly received PPDU (UL MU or non-HT duplicate)
+     * @param rxPower the received power (W) per band of the newly received PPDU
      */
     virtual void HandleRxPpduWithSameContent(Ptr<Event> event,
                                              Ptr<const WifiPpdu> ppdu,
@@ -832,14 +832,14 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      * Notify WifiPhy's InterferenceHelper of the end of the reception,
      * clear maps and end of MPDU event, and eventually reset WifiPhy.
      *
-     * \param reset whether to reset WifiPhy
+     * @param reset whether to reset WifiPhy
      */
     void NotifyInterferenceRxEndAndClear(bool reset);
 
     /**
-     * \param txPower power to spread across the bands
-     * \param ppdu the PPDU that will be transmitted
-     * \return Pointer to SpectrumValue
+     * @param txPower power to spread across the bands
+     * @param ppdu the PPDU that will be transmitted
+     * @return Pointer to SpectrumValue
      *
      * This is a helper function to create the right TX PSD corresponding
      * to the amendment of this PHY.
@@ -850,8 +850,8 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
     /**
      * Fire the trace indicating that the PHY is starting to receive the payload of a PPDU.
      *
-     * \param txVector the TXVECTOR used to transmit the PPDU
-     * \param payloadDuration the TX duration of the PPDU payload
+     * @param txVector the TXVECTOR used to transmit the PPDU
+     * @param payloadDuration the TX duration of the PPDU payload
      */
     void NotifyPayloadBegin(const WifiTxVector& txVector, const Time& payloadDuration);
 
@@ -862,9 +862,9 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      * channel width). Otherwise, this call is equivalent to GetBand with
      * <i>bandIndex</i> equal to zero.
      *
-     * \param bandWidth the width of the band to be returned
+     * @param bandWidth the width of the band to be returned
      *
-     * \return the info corresponding to the band
+     * @return the info corresponding to the band
      */
     WifiSpectrumBandInfo GetPrimaryBand(MHz_u bandWidth) const;
     /**
@@ -872,47 +872,47 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      * the secondary channel of the given bandwidth (which must be a multiple of 20 MHz
      * and not exceed the operating channel width).
      *
-     * \param bandWidth the width of the band to be returned
+     * @param bandWidth the width of the band to be returned
      *
-     * \return the info corresponding to the band
+     * @return the info corresponding to the band
      */
     WifiSpectrumBandInfo GetSecondaryBand(MHz_u bandWidth) const;
 
     /**
      * Return the channel width used to measure the RSSI.
      *
-     * \param ppdu the PPDU that is being received
-     * \return the channel width used for RSSI measurement
+     * @param ppdu the PPDU that is being received
+     * @return the channel width used for RSSI measurement
      */
     virtual MHz_u GetMeasurementChannelWidth(const Ptr<const WifiPpdu> ppdu) const = 0;
 
     /**
      * Return the channel width used in the reception spectrum model.
      *
-     * \param txVector the TXVECTOR of the PPDU that is being received
-     * \return the channel width used for RxSpectrumModel
+     * @param txVector the TXVECTOR of the PPDU that is being received
+     * @return the channel width used for RxSpectrumModel
      */
     virtual MHz_u GetRxChannelWidth(const WifiTxVector& txVector) const;
 
     /**
      * Return the delay until CCA busy is ended for a given sensitivity threshold and a given band.
      *
-     * \param threshold the CCA sensitivity threshold
-     * \param band identify the requested band
-     * \return the delay until CCA busy is ended
+     * @param threshold the CCA sensitivity threshold
+     * @param band identify the requested band
+     * @return the delay until CCA busy is ended
      */
     Time GetDelayUntilCcaEnd(dBm_u threshold, const WifiSpectrumBandInfo& band);
 
     /**
-     * \param currentChannelWidth channel width of the current transmission
-     * \return the width of the guard band
+     * @param currentChannelWidth channel width of the current transmission
+     * @return the width of the guard band
      *
      * Wrapper method used by child classes for PSD generation.
      * Note that this method is necessary for testing UL OFDMA.
      */
     MHz_u GetGuardBandwidth(MHz_u currentChannelWidth) const;
     /**
-     * \return a tuple containing the minimum rejection for the inner band,
+     * @return a tuple containing the minimum rejection for the inner band,
      *                            the minimum rejection for the outer band, and
      *                            the maximum rejection for the outer band
      *                            for the transmit spectrum mask.
@@ -930,8 +930,8 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      * Get CCA end time and its corresponding channel list type when a new signal has been received
      * by the PHY.
      *
-     * \param ppdu the incoming PPDU or nullptr for any signal
-     * \return CCA end time and its corresponding channel list type when a new signal has been
+     * @param ppdu the incoming PPDU or nullptr for any signal
+     * @return CCA end time and its corresponding channel list type when a new signal has been
      * received by the PHY, or std::nullopt if all channel list types are IDLE.
      */
     virtual CcaIndication GetCcaIndication(const Ptr<const WifiPpdu> ppdu);
@@ -965,19 +965,19 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
 };                                   // class PhyEntity
 
 /**
- * \brief Stream insertion operator.
+ * @brief Stream insertion operator.
  *
- * \param os the stream
- * \param action the action to perform in case of failure
- * \returns a reference to the stream
+ * @param os the stream
+ * @param action the action to perform in case of failure
+ * @returns a reference to the stream
  */
 std::ostream& operator<<(std::ostream& os, const PhyEntity::PhyRxFailureAction& action);
 /**
- * \brief Stream insertion operator.
+ * @brief Stream insertion operator.
  *
- * \param os the stream
- * \param status the status of the reception of a PPDU field
- * \returns a reference to the stream
+ * @param os the stream
+ * @param status the status of the reception of a PPDU field
+ * @returns a reference to the stream
  */
 std::ostream& operator<<(std::ostream& os, const PhyEntity::PhyFieldRxStatus& status);
 

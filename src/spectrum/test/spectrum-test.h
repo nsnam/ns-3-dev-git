@@ -15,23 +15,23 @@
 #include <ns3/test.h>
 
 /**
- * \ingroup spectrum
- * \defgroup spectrum-test Spectrum module tests
+ * @ingroup spectrum
+ * @defgroup spectrum-test Spectrum module tests
  */
 
 /**
- * \ingroup spectrum-tests
+ * @ingroup spectrum-tests
  *
- * \brief Test if two SpectrumModel instances are equal within a given tolerance.
+ * @brief Test if two SpectrumModel instances are equal within a given tolerance.
  *
  * This test compares component-by-component the two SpectrumModel
  * instances; if any pair of components differs by more than the given
  * tolerance, the test fails.
  *
- * \param actual the actual value obtained by the simulator
- * \param expected the expected value obtained by off-line calculations
- * \param tol the tolerance
- * \param msg the message to print if the test fails
+ * @param actual the actual value obtained by the simulator
+ * @param expected the expected value obtained by off-line calculations
+ * @param tol the tolerance
+ * @param msg the message to print if the test fails
  *
  */
 #define NS_TEST_ASSERT_MSG_SPECTRUM_MODEL_EQ_TOL(actual, expected, tol, msg)                       \
@@ -85,18 +85,18 @@
     } while (false);
 
 /**
- * \ingroup spectrum-tests
+ * @ingroup spectrum-tests
  *
- * \brief Test if two SpectrumValue instances are equal within a given tolerance.
+ * @brief Test if two SpectrumValue instances are equal within a given tolerance.
  *
  * This test compares component-by-component the two SpectrumValue
  * instances; if any pair of components differs by more than the given
  * tolerance, the test fails.
  *
- * \param actual the actual value obtained by the simulator
- * \param expected the expected value obtained by off-line calculations
- * \param tol the tolerance
- * \param msg the message to print if the test fails
+ * @param actual the actual value obtained by the simulator
+ * @param expected the expected value obtained by off-line calculations
+ * @param tol the tolerance
+ * @param msg the message to print if the test fails
  *
  */
 #define NS_TEST_ASSERT_MSG_SPECTRUM_VALUE_EQ_TOL(actual, expected, tol, msg)                       \

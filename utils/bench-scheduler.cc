@@ -49,8 +49,8 @@ class Bench
   public:
     /**
      * Constructor
-     * \param [in] population The number of events to keep in the scheduler.
-     * \param [in] total The total number of events to execute.
+     * @param [in] population The number of events to keep in the scheduler.
+     * @param [in] total The total number of events to execute.
      */
     Bench(const uint64_t population, const uint64_t total)
         : m_population(population),
@@ -62,7 +62,7 @@ class Bench
     /**
      * Set the event delay interval random stream.
      *
-     * \param [in] stream The random variable stream to be used to generate
+     * @param [in] stream The random variable stream to be used to generate
      *              delays for future events.
      */
     void SetRandomStream(Ptr<RandomVariableStream> stream)
@@ -73,7 +73,7 @@ class Bench
     /**
      * Set the number of events to populate the scheduler with.
      * Each event executed schedules a new event, maintaining the population.
-     * \param [in] population The number of events to keep in the scheduler.
+     * @param [in] population The number of events to keep in the scheduler.
      */
     void SetPopulation(const uint64_t population)
     {
@@ -82,7 +82,7 @@ class Bench
 
     /**
      * Set the total number of events to execute.
-     * \param [in] total The total number of events to execute.
+     * @param [in] total The total number of events to execute.
      */
     void SetTotal(const uint64_t total)
     {
@@ -101,7 +101,7 @@ class Bench
     /**
      *  Run the benchmark as configured.
      *
-     * \returns The Result.
+     * @returns The Result.
      */
     Result Run();
 
@@ -176,12 +176,12 @@ class BenchSuite
      *
      * Output will be in the form of a table showing performance for each run.
      *
-     * \param [in] factory Factory pre-configured to create the desired Scheduler.
-     * \param [in] pop The event population size.
-     * \param [in] total The total number of events to execute.
-     * \param [in] runs The number of replications.
-     * \param [in] eventStream The random stream of event delays.
-     * \param [in] calRev For the CalendarScheduler, whether the Reverse attribute was set.
+     * @param [in] factory Factory pre-configured to create the desired Scheduler.
+     * @param [in] pop The event population size.
+     * @param [in] total The total number of events to execute.
+     * @param [in] runs The number of replications.
+     * @param [in] eventStream The random stream of event delays.
+     * @param [in] calRev For the CalendarScheduler, whether the Reverse attribute was set.
      */
     BenchSuite(ObjectFactory& factory,
                uint64_t pop,
@@ -213,16 +213,16 @@ class BenchSuite
         /**
          * Construct from the individual run result.
          *
-         * \param [in] r The result from a single run.
-         * \returns The run result.
+         * @param [in] r The result from a single run.
+         * @returns The run result.
          */
         static Result Bench(Bench::Result r);
 
         /**
          * Log this result.
          *
-         * \tparam T The type of the label.
-         * \param label The label for the line.
+         * @tparam T The type of the label.
+         * @param label The label for the line.
          */
         template <typename T>
         void Log(T label) const;
@@ -384,8 +384,8 @@ BenchSuite::Log() const
  *
  *  If the \p filename is `-` standard input will be used.
  *
- *  \param [in] filename The delay interval source file name.
- *  \returns The RandomVariableStream.
+ *  @param [in] filename The delay interval source file name.
+ *  @returns The RandomVariableStream.
  */
 Ptr<RandomVariableStream>
 GetRandomStream(std::string filename)

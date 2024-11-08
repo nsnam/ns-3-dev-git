@@ -24,7 +24,7 @@ namespace
 {
 /**
  * Get an object factory configured to the default simulator implementation
- * \return an object factory.
+ * @return an object factory.
  */
 ObjectFactory
 GetDefaultSimulatorImplFactory()

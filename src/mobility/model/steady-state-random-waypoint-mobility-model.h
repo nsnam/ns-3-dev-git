@@ -19,8 +19,8 @@ namespace ns3
 {
 
 /**
- * \ingroup mobility
- * \brief Steady-state random waypoint mobility model.
+ * @ingroup mobility
+ * @brief Steady-state random waypoint mobility model.
  *
  * This model based on random waypoint mobility (RWM) model for case when
  * speed, pause and position are uniformly distributed random variables.
@@ -47,7 +47,7 @@ class SteadyStateRandomWaypointMobilityModel : public MobilityModel
   public:
     /**
      * Register this type with the TypeId system.
-     * \return the object TypeId
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     SteadyStateRandomWaypointMobilityModel();
@@ -66,7 +66,7 @@ class SteadyStateRandomWaypointMobilityModel : public MobilityModel
     /**
      * Use provided destination to calculate travel delay, and schedule a
      * Start() event at that time.
-     * \param destination the destination to move to
+     * @param destination the destination to move to
      */
     void SteadyStateBeginWalk(const Vector& destination);
     /**

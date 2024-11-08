@@ -15,15 +15,15 @@
 using namespace ns3;
 
 /**
- * \ingroup lte
- * \ingroup tests
- * \defgroup lte-test lte module tests
+ * @ingroup lte
+ * @ingroup tests
+ * @defgroup lte-test lte module tests
  */
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief Test suite for testing GPRS tunnelling protocol header coding and decoding.
+ * @brief Test suite for testing GPRS tunnelling protocol header coding and decoding.
  */
 class EpsGtpuTestSuite : public TestSuite
 {

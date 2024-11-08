@@ -21,9 +21,9 @@ class Packet;
 using namespace ns3;
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief Test suite for RlcAmE2e test case.
+ * @brief Test suite for RlcAmE2e test case.
  */
 class LteRlcAmE2eTestSuite : public TestSuite
 {
@@ -32,7 +32,7 @@ class LteRlcAmE2eTestSuite : public TestSuite
 };
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
  * Test cases used for the test suite lte-rlc-am-e2e. See the testing section of
  * the LTE module documentation for details.
@@ -43,10 +43,10 @@ class LteRlcAmE2eTestCase : public TestCase
     /**
      * Constructor
      *
-     * \param name the reference name
-     * \param seed the random variable seed
-     * \param losses the error rate
-     * \param bulkSduArrival true if bulk SDU arrival
+     * @param name the reference name
+     * @param seed the random variable seed
+     * @param losses the error rate
+     * @param bulkSduArrival true if bulk SDU arrival
      */
     LteRlcAmE2eTestCase(std::string name, uint32_t seed, double losses, bool bulkSduArrival);
     LteRlcAmE2eTestCase();
@@ -57,12 +57,12 @@ class LteRlcAmE2eTestCase : public TestCase
 
     /**
      * DL drop event
-     * \param p the packet
+     * @param p the packet
      */
     void DlDropEvent(Ptr<const Packet> p);
     /**
      * UL drop event
-     * \param p the packet
+     * @param p the packet
      */
     void UlDropEvent(Ptr<const Packet> p);
 

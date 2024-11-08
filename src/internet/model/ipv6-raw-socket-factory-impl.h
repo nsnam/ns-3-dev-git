@@ -15,17 +15,17 @@ namespace ns3
 {
 
 /**
- * \ingroup socket
- * \ingroup ipv6
+ * @ingroup socket
+ * @ingroup ipv6
  *
- * \brief Implementation of IPv6 raw socket factory.
+ * @brief Implementation of IPv6 raw socket factory.
  */
 class Ipv6RawSocketFactoryImpl : public Ipv6RawSocketFactory
 {
   public:
     /**
-     * \brief Create a raw IPv6 socket.
-     * \returns A new RAW IPv6 socket.
+     * @brief Create a raw IPv6 socket.
+     * @returns A new RAW IPv6 socket.
      */
     Ptr<Socket> CreateSocket() override;
 };

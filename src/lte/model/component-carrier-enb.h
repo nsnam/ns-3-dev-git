@@ -25,7 +25,7 @@ class FfMacScheduler;
 class LteFfrAlgorithm;
 
 /**
- * \ingroup lte
+ * @ingroup lte
  *
  * Defines a single carrier for enb, and contains pointers to LteEnbPhy,
  * LteEnbMac, LteFfrAlgorithm, and FfMacScheduler objects.
@@ -35,8 +35,8 @@ class ComponentCarrierEnb : public ComponentCarrierBaseStation
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -46,45 +46,45 @@ class ComponentCarrierEnb : public ComponentCarrierBaseStation
     void DoDispose() override;
 
     /**
-     * \return a pointer to the physical layer.
+     * @return a pointer to the physical layer.
      */
     Ptr<LteEnbPhy> GetPhy();
 
     /**
-     * \return a pointer to the MAC layer.
+     * @return a pointer to the MAC layer.
      */
     Ptr<LteEnbMac> GetMac();
 
     /**
-     * \return a pointer to the Ffr Algorithm.
+     * @return a pointer to the Ffr Algorithm.
      */
     Ptr<LteFfrAlgorithm> GetFfrAlgorithm();
 
     /**
-     * \return a pointer to the Mac Scheduler.
+     * @return a pointer to the Mac Scheduler.
      */
     Ptr<FfMacScheduler> GetFfMacScheduler();
 
     /**
      * Set the LteEnbPhy
-     * \param s a pointer to the LteEnbPhy
+     * @param s a pointer to the LteEnbPhy
      */
     void SetPhy(Ptr<LteEnbPhy> s);
     /**
      * Set the LteEnbMac
-     * \param s a pointer to the LteEnbMac
+     * @param s a pointer to the LteEnbMac
      */
     void SetMac(Ptr<LteEnbMac> s);
 
     /**
      * Set the FfMacScheduler Algorithm
-     * \param s a pointer to the FfMacScheduler
+     * @param s a pointer to the FfMacScheduler
      */
     void SetFfMacScheduler(Ptr<FfMacScheduler> s);
 
     /**
      * Set the LteFfrAlgorithm
-     * \param s a pointer to the LteFfrAlgorithm
+     * @param s a pointer to the LteFfrAlgorithm
      */
     void SetFfrAlgorithm(Ptr<LteFfrAlgorithm> s);
 

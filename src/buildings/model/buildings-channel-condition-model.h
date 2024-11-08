@@ -18,10 +18,10 @@ namespace ns3
 class MobilityModel;
 
 /**
- * \ingroup buildings
- * \ingroup propagation
+ * @ingroup buildings
+ * @ingroup propagation
  *
- * \brief Determines the channel condition based on the buildings deployed in the
+ * @brief Determines the channel condition based on the buildings deployed in the
  * scenario
  *
  * Code adapted from MmWave3gppBuildingsPropagationLossModel
@@ -31,8 +31,8 @@ class BuildingsChannelConditionModel : public ChannelConditionModel
   public:
     /**
      * Get the type ID.
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -49,9 +49,9 @@ class BuildingsChannelConditionModel : public ChannelConditionModel
     /**
      * Computes the condition of the channel between a and b.
      *
-     * \param a mobility model
-     * \param b mobility model
-     * \return the condition of the channel between a and b
+     * @param a mobility model
+     * @param b mobility model
+     * @return the condition of the channel between a and b
      */
     Ptr<ChannelCondition> GetChannelCondition(Ptr<const MobilityModel> a,
                                               Ptr<const MobilityModel> b) const override;
@@ -62,19 +62,19 @@ class BuildingsChannelConditionModel : public ChannelConditionModel
      * 'stream'. Return the number of streams (possibly zero) that
      * have been assigned.
      *
-     * \param stream
-     * \return the number of stream indices assigned by this model
+     * @param stream
+     * @return the number of stream indices assigned by this model
      */
     int64_t AssignStreams(int64_t stream) override;
 
   private:
     /**
-     * \brief Checks if the line of sight between position l1 and position l2 is
+     * @brief Checks if the line of sight between position l1 and position l2 is
      *        blocked by a building.
      *
-     * \param l1 position
-     * \param l2 position
-     * \return true if the line of sight is blocked, false otherwise
+     * @param l1 position
+     * @param l2 position
+     * @return true if the line of sight is blocked, false otherwise
      */
     bool IsLineOfSightBlocked(const Vector& l1, const Vector& l2) const;
 };

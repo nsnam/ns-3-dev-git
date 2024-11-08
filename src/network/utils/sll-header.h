@@ -17,16 +17,16 @@ namespace ns3
 {
 
 /**
-  * \ingroup packet
+  * @ingroup packet
   *
-  * \brief Protocol header serialization and deserialization.
+  * @brief Protocol header serialization and deserialization.
   *
   * Libpcap sometimes add an additional header to provide information that would be
   * lost otherwise due to the link-layer/capture mechanism, for instance when capturing from
   * "nlmon" device on linux
   *
-  * \see http://www.tcpdump.org/linktypes/LINKTYPE_LINUX_SLL.html
-  * \see https://wiki.wireshark.org/SLL
+  * @see http://www.tcpdump.org/linktypes/LINKTYPE_LINUX_SLL.html
+  * @see https://wiki.wireshark.org/SLL
   *
   \verbatim
     +---------------------------+
@@ -67,8 +67,8 @@ class SllHeader : public Header
     };
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -76,24 +76,24 @@ class SllHeader : public Header
     ~SllHeader() override;
 
     /**
-     * \return ARP header type field in network byte order
+     * @return ARP header type field in network byte order
      *  The ARPHRD_ type field is in network byte order; it contains a Linux ARPHRD_ value for the
      * link-layer device type.
      */
     uint16_t GetArpType() const;
 
     /**
-     * \param arphdType ARP protocol hardware identifier
+     * @param arphdType ARP protocol hardware identifier
      */
     void SetArpType(uint16_t arphdType);
 
     /**
-     * \return Packet type
+     * @return Packet type
      */
     PacketType GetPacketType() const;
 
     /**
-     * \param type Depends on source and address of the packet
+     * @param type Depends on source and address of the packet
      */
     void SetPacketType(PacketType type);
 

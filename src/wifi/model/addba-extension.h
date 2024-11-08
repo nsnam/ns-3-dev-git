@@ -15,7 +15,7 @@ namespace ns3
 {
 
 /**
- * \ingroup wifi
+ * @ingroup wifi
  *
  * The IEEE 802.11 ADDBA Extension Element (Sec. 9.4.2.139 of 802.11-2020)
  */

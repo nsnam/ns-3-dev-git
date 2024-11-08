@@ -26,9 +26,9 @@ class Socket;
 class Packet;
 
 /**
- * \ingroup udpclientserver
+ * @ingroup udpclientserver
  *
- * \brief A trace based streamer
+ * @brief A trace based streamer
  *
  * Sends UDP packets based on a trace file of a MPEG4 stream.
  * Trace files can be downloaded from:
@@ -55,8 +55,8 @@ class UdpTraceClient : public SourceApplication
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -66,17 +66,17 @@ class UdpTraceClient : public SourceApplication
     static constexpr uint16_t DEFAULT_PORT{100}; //!< default port
 
     /**
-     * \brief set the remote address and port
-     * \param ip remote IP address
-     * \param port remote port
+     * @brief set the remote address and port
+     * @param ip remote IP address
+     * @param port remote port
      */
     NS_DEPRECATED_3_44("Use SetRemote without port parameter instead")
     void SetRemote(const Address& ip, uint16_t port);
     void SetRemote(const Address& addr) override;
 
     /**
-     * \brief Set the trace file to be used by the application
-     * \param filename a path to an MPEG4 trace file formatted as follows:
+     * @brief Set the trace file to be used by the application
+     * @param filename a path to an MPEG4 trace file formatted as follows:
      *  Frame No Frametype   Time[ms]    Length [byte]
      *  Frame No Frametype   Time[ms]    Length [byte]
      *  ...
@@ -84,20 +84,20 @@ class UdpTraceClient : public SourceApplication
     void SetTraceFile(const std::string& filename);
 
     /**
-     * \brief Return the maximum packet size
-     * \return the maximum packet size
+     * @brief Return the maximum packet size
+     * @return the maximum packet size
      */
     uint16_t GetMaxPacketSize();
 
     /**
-     * \brief Set the maximum packet size
-     * \param maxPacketSize The maximum packet size
+     * @brief Set the maximum packet size
+     * @param maxPacketSize The maximum packet size
      */
     void SetMaxPacketSize(uint16_t maxPacketSize);
 
     /**
-     * \brief Set the trace loop flag
-     * \param traceLoop true if the trace should be re-used
+     * @brief Set the trace loop flag
+     * @param traceLoop true if the trace should be re-used
      */
     void SetTraceLoop(bool traceLoop);
 
@@ -106,46 +106,46 @@ class UdpTraceClient : public SourceApplication
     void StopApplication() override;
 
     /**
-     * \brief Set the remote port (temporary function until deprecated attributes are removed)
-     * \param port remote port
+     * @brief Set the remote port (temporary function until deprecated attributes are removed)
+     * @param port remote port
      */
     void SetPort(uint16_t port);
 
     /**
-     * \brief Get the remote port (temporary function until deprecated attributes are removed)
-     * \return the remote port
+     * @brief Get the remote port (temporary function until deprecated attributes are removed)
+     * @return the remote port
      */
     uint16_t GetPort() const;
 
     /**
-     * \brief Get the remote address (temporary function until deprecated attributes are removed)
-     * \return the remote address
+     * @brief Get the remote address (temporary function until deprecated attributes are removed)
+     * @return the remote address
      */
     Address GetRemote() const;
 
     /**
-     * \brief Load current trace file
+     * @brief Load current trace file
      */
     void LoadTrace();
 
     /**
-     * \brief Load the default trace
+     * @brief Load the default trace
      */
     void LoadDefaultTrace();
 
     /**
-     * \brief Send a packet
+     * @brief Send a packet
      */
     void Send();
 
     /**
-     * \brief Send a packet of a given size
-     * \param size the packet size
+     * @brief Send a packet of a given size
+     * @param size the packet size
      */
     void SendPacket(uint32_t size);
 
     /**
-     * \brief Entry to send.
+     * @brief Entry to send.
      *
      * Each entry represents an MPEG frame
      */

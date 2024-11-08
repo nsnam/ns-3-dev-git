@@ -16,9 +16,9 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("LteTestSpectrumValueHelper");
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief Test checks if lte spectrum model is generated properly. Different
+ * @brief Test checks if lte spectrum model is generated properly. Different
  * test cases are configured by defining different frequency and banwidth.
  */
 class LteSpectrumModelTestCase : public TestCase
@@ -27,10 +27,10 @@ class LteSpectrumModelTestCase : public TestCase
     /**
      * Constructor
      *
-     * \param str the test reference name
-     * \param earfcn the central carrier frequency
-     * \param bw bandwidth the bandwidth
-     * \param fcs the expected spectrum model
+     * @param str the test reference name
+     * @param earfcn the central carrier frequency
+     * @param bw bandwidth the bandwidth
+     * @param fcs the expected spectrum model
      */
     LteSpectrumModelTestCase(const char* str, uint16_t earfcn, uint8_t bw, std::vector<double> fcs);
     ~LteSpectrumModelTestCase() override;
@@ -69,9 +69,9 @@ LteSpectrumModelTestCase::DoRun()
 }
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief Test that the function for creation of LTE noise power spectral
+ * @brief Test that the function for creation of LTE noise power spectral
  * density is working properly.
  */
 class LteNoisePsdTestCase : public TestCase
@@ -80,11 +80,11 @@ class LteNoisePsdTestCase : public TestCase
     /**
      * Constructor
      *
-     * \param str the test reference name
-     * \param earfcn
-     * \param bw bandwidth
-     * \param noiseFigureDb noise figure in dB
-     * \param expected executed spectrum value
+     * @param str the test reference name
+     * @param earfcn
+     * @param bw bandwidth
+     * @param noiseFigureDb noise figure in dB
+     * @param expected executed spectrum value
      */
     LteNoisePsdTestCase(const char* str,
                         uint16_t earfcn,
@@ -130,9 +130,9 @@ LteNoisePsdTestCase::DoRun()
 }
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief Test that the funtcion for the creation of the Lte transmission power
+ * @brief Test that the funtcion for the creation of the Lte transmission power
  * spectral density is working as expected.
  */
 class LteTxPsdTestCase : public TestCase
@@ -141,12 +141,12 @@ class LteTxPsdTestCase : public TestCase
     /**
      * Constructor
      *
-     * \param str the reference name
-     * \param earfcn
-     * \param bw bandwidth
-     * \param txPowerDbm transmit power in dBm
-     * \param activeRbs active RBs
-     * \param expected executed spectrum value
+     * @param str the reference name
+     * @param earfcn
+     * @param bw bandwidth
+     * @param txPowerDbm transmit power in dBm
+     * @param activeRbs active RBs
+     * @param expected executed spectrum value
      */
     LteTxPsdTestCase(const char* str,
                      uint16_t earfcn,
@@ -195,9 +195,9 @@ LteTxPsdTestCase::DoRun()
 }
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief Test suite for LteSpectrumValueHelper. Test suite is
+ * @brief Test suite for LteSpectrumValueHelper. Test suite is
  * checking different functionalities of LteSpectrumValueHelper.
  */
 class LteSpectrumValueHelperTestSuite : public TestSuite
@@ -207,7 +207,7 @@ class LteSpectrumValueHelperTestSuite : public TestSuite
 };
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  * Static variable for test initialization
  */
 static LteSpectrumValueHelperTestSuite g_lteSpectrumValueHelperTestSuite;

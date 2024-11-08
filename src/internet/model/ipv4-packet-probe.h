@@ -27,7 +27,7 @@ namespace ns3
 {
 
 /**
- * \ingroup ipv4
+ * @ingroup ipv4
  *
  * This class is designed to probe an underlying ns3 TraceSource
  * exporting a packet, an IPv4 object, and an interface.  This probe
@@ -40,29 +40,29 @@ class Ipv4PacketProbe : public Probe
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     Ipv4PacketProbe();
     ~Ipv4PacketProbe() override;
 
     /**
-     * \brief Set a probe value
+     * @brief Set a probe value
      *
-     * \param packet set the traced packet equal to this
-     * \param ipv4 set the IPv4 object for the traced packet equal to this
-     * \param interface set the IPv4 interface for the traced packet equal to this
+     * @param packet set the traced packet equal to this
+     * @param ipv4 set the IPv4 object for the traced packet equal to this
+     * @param interface set the IPv4 interface for the traced packet equal to this
      */
     void SetValue(Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t interface);
 
     /**
-     * \brief Set a probe value by its name in the Config system
+     * @brief Set a probe value by its name in the Config system
      *
-     * \param path config path to access the probe
-     * \param packet set the traced packet equal to this
-     * \param ipv4 set the IPv4 object for the traced packet equal to this
-     * \param interface set the IPv4 interface for the traced packet equal to this
+     * @param path config path to access the probe
+     * @param packet set the traced packet equal to this
+     * @param ipv4 set the IPv4 object for the traced packet equal to this
+     * @param interface set the IPv4 interface for the traced packet equal to this
      */
     static void SetValueByPath(std::string path,
                                Ptr<const Packet> packet,
@@ -70,18 +70,18 @@ class Ipv4PacketProbe : public Probe
                                uint32_t interface);
 
     /**
-     * \brief connect to a trace source attribute provided by a given object
+     * @brief connect to a trace source attribute provided by a given object
      *
-     * \param traceSource the name of the attribute TraceSource to connect to
-     * \param obj ns3::Object to connect to
-     * \return true if the trace source was successfully connected
+     * @param traceSource the name of the attribute TraceSource to connect to
+     * @param obj ns3::Object to connect to
+     * @return true if the trace source was successfully connected
      */
     bool ConnectByObject(std::string traceSource, Ptr<Object> obj) override;
 
     /**
-     * \brief connect to a trace source provided by a config path
+     * @brief connect to a trace source provided by a config path
      *
-     * \param path Config path to bind to
+     * @param path Config path to bind to
      *
      * Note, if an invalid path is provided, the probe will not be connected
      * to anything.
@@ -90,12 +90,12 @@ class Ipv4PacketProbe : public Probe
 
   private:
     /**
-     * \brief Method to connect to an underlying ns3::TraceSource with
+     * @brief Method to connect to an underlying ns3::TraceSource with
      * arguments of type Ptr<const Packet>, Ptr<Ipv4>, and uint32_t
      *
-     * \param packet the traced packet
-     * \param ipv4 the IPv4 object for the traced packet
-     * \param interface the IPv4 interface for the traced packet
+     * @param packet the traced packet
+     * @param ipv4 the IPv4 object for the traced packet
+     * @param interface the IPv4 interface for the traced packet
      */
     void TraceSink(Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t interface);
 

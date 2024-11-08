@@ -22,7 +22,7 @@ namespace ns3
 {
 
 /**
- * \ingroup spectrum
+ * @ingroup spectrum
  *
  * SpectrumPhy implementation that creates a customizable TV transmitter which
  * transmits a PSD spectrum specified by user-set attributes.
@@ -49,7 +49,7 @@ class TvSpectrumTransmitter : public SpectrumPhy
 
     /**
      * Register this type.
-     * \return The object TypeId.
+     * @return The object TypeId.
      */
     static TypeId GetTypeId();
 

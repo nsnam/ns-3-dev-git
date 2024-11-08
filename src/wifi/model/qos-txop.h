@@ -30,9 +30,9 @@ class QosFrameExchangeManager;
 class WifiTxParameters;
 
 /**
- * \brief Handles the packet queue and stores DCF/EDCA access parameters
+ * @brief Handles the packet queue and stores DCF/EDCA access parameters
  * (one Txop per AC).
- * \ingroup wifi
+ * @ingroup wifi
  *
  * This class handles the packet queue and stores DCF/EDCA access
  * parameters (one Txop per AC). It generates backoff values and stores the channel access status
@@ -52,8 +52,8 @@ class QosTxop : public Txop
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -69,38 +69,38 @@ class QosTxop : public Txop
     /**
      * Get the access category of this object.
      *
-     * \return the access category.
+     * @return the access category.
      */
     AcIndex GetAccessCategory() const;
 
     /**
      * Return true if an explicit BlockAckRequest is sent after a missed BlockAck
      *
-     * \return true if an explicit BlockAckRequest is sent after a missed BlockAck
+     * @return true if an explicit BlockAckRequest is sent after a missed BlockAck
      */
     bool UseExplicitBarAfterMissedBlockAck() const;
 
     /**
      * Get the Block Ack Manager associated with this QosTxop.
      *
-     * \returns the Block Ack Manager
+     * @returns the Block Ack Manager
      */
     Ptr<BlockAckManager> GetBaManager();
     /**
-     * \param address recipient address of the peer station
-     * \param tid traffic ID.
+     * @param address recipient address of the peer station
+     * @param tid traffic ID.
      *
-     * \return the negotiated buffer size during ADDBA handshake.
+     * @return the negotiated buffer size during ADDBA handshake.
      *
      * Returns the negotiated buffer size during ADDBA handshake with station addressed by
      * <i>recipient</i> for TID <i>tid</i>.
      */
     uint16_t GetBaBufferSize(Mac48Address address, uint8_t tid) const;
     /**
-     * \param address recipient address of the peer station
-     * \param tid traffic ID.
+     * @param address recipient address of the peer station
+     * @param tid traffic ID.
      *
-     * \return the starting sequence number of the originator transmit window.
+     * @return the starting sequence number of the originator transmit window.
      *
      * Returns the current starting sequence number of the transmit window on the
      * originator (WinStartO) of the block ack agreement established with the given
@@ -108,9 +108,9 @@ class QosTxop : public Txop
      */
     uint16_t GetBaStartingSequence(Mac48Address address, uint8_t tid) const;
     /**
-     * \param recipient Address of recipient.
-     * \param tid traffic ID.
-     * \return the BlockAckRequest header and the MAC header for the BlockAckReq
+     * @param recipient Address of recipient.
+     * @param tid traffic ID.
+     * @return the BlockAckRequest header and the MAC header for the BlockAckReq
      *
      * Prepare a BlockAckRequest to be sent to <i>recipient</i> for Traffic ID
      * <i>tid</i>. The header for the BlockAckRequest is requested to the QosTxop
@@ -124,37 +124,37 @@ class QosTxop : public Txop
     /**
      * Event handler when an ADDBA response is received.
      *
-     * \param respHdr ADDBA response header.
-     * \param recipient address of the recipient.
+     * @param respHdr ADDBA response header.
+     * @param recipient address of the recipient.
      */
     void GotAddBaResponse(const MgtAddBaResponseHeader& respHdr, Mac48Address recipient);
     /**
      * Event handler when a DELBA frame is received.
      *
-     * \param delBaHdr DELBA header.
-     * \param recipient address of the recipient.
+     * @param delBaHdr DELBA header.
+     * @param recipient address of the recipient.
      */
     void GotDelBaFrame(const MgtDelBaHeader* delBaHdr, Mac48Address recipient);
     /**
      * Take action upon notification of ADDBA_REQUEST frame being discarded
      * (likely due to exceeded max retry limit).
      *
-     * \param recipient the intended recipient of the ADDBA_REQUEST frame
-     * \param tid the TID
+     * @param recipient the intended recipient of the ADDBA_REQUEST frame
+     * @param tid the TID
      */
     void NotifyOriginatorAgreementNoReply(const Mac48Address& recipient, uint8_t tid);
     /**
      * Callback when ADDBA response is not received after timeout.
      *
-     * \param recipient MAC address of recipient
-     * \param tid traffic ID
+     * @param recipient MAC address of recipient
+     * @param tid traffic ID
      */
     void AddBaResponseTimeout(Mac48Address recipient, uint8_t tid);
     /**
      * Reset BA agreement after BA negotiation failed.
      *
-     * \param recipient MAC address of recipient
-     * \param tid traffic ID
+     * @param recipient MAC address of recipient
+     * @param tid traffic ID
      */
     void ResetBa(Mac48Address recipient, uint8_t tid);
 
@@ -162,76 +162,76 @@ class QosTxop : public Txop
      * Set threshold for block ack mechanism. If number of packets in the
      * queue reaches the threshold, block ack mechanism is used.
      *
-     * \param threshold block ack threshold value.
+     * @param threshold block ack threshold value.
      */
     void SetBlockAckThreshold(uint8_t threshold);
     /**
      * Return the current threshold for block ack mechanism.
      *
-     * \return the current threshold for block ack mechanism.
+     * @return the current threshold for block ack mechanism.
      */
     uint8_t GetBlockAckThreshold() const;
 
     /**
      * Set the BlockAck inactivity timeout.
      *
-     * \param timeout the BlockAck inactivity timeout.
+     * @param timeout the BlockAck inactivity timeout.
      */
     void SetBlockAckInactivityTimeout(uint16_t timeout);
     /**
      * Get the BlockAck inactivity timeout.
      *
-     * \return the BlockAck inactivity timeout.
+     * @return the BlockAck inactivity timeout.
      */
     uint16_t GetBlockAckInactivityTimeout() const;
     /**
      * Stores an MPDU (part of an A-MPDU) in block ack agreement (i.e. the sender is waiting
      * for a BlockAck containing the sequence number of this MPDU).
      *
-     * \param mpdu received MPDU.
+     * @param mpdu received MPDU.
      */
     void CompleteMpduTx(Ptr<WifiMpdu> mpdu);
     /**
      * Set the timeout to wait for ADDBA response.
      *
-     * \param addBaResponseTimeout the timeout to wait for ADDBA response
+     * @param addBaResponseTimeout the timeout to wait for ADDBA response
      */
     void SetAddBaResponseTimeout(Time addBaResponseTimeout);
     /**
      * Get the timeout for ADDBA response.
      *
-     * \returns the timeout to wait for ADDBA response
+     * @returns the timeout to wait for ADDBA response
      */
     Time GetAddBaResponseTimeout() const;
     /**
      * Set the timeout for failed BA agreement. During the timeout period,
      * all packets will be transmitted using normal MPDU.
      *
-     * \param failedAddBaTimeout the timeout for failed BA agreement
+     * @param failedAddBaTimeout the timeout for failed BA agreement
      */
     void SetFailedAddBaTimeout(Time failedAddBaTimeout);
     /**
      * Get the timeout for failed BA agreement.
      *
-     * \returns the timeout for failed BA agreement
+     * @returns the timeout for failed BA agreement
      */
     Time GetFailedAddBaTimeout() const;
 
     /**
      * Return the next sequence number for the given header.
      *
-     * \param hdr Wi-Fi header.
+     * @param hdr Wi-Fi header.
      *
-     * \return the next sequence number.
+     * @return the next sequence number.
      */
     uint16_t GetNextSequenceNumberFor(const WifiMacHeader* hdr);
     /**
      * Return the next sequence number for the Traffic ID and destination, but do not pick it (i.e.
      * the current sequence number remains unchanged).
      *
-     * \param hdr Wi-Fi header.
+     * @param hdr Wi-Fi header.
      *
-     * \return the next sequence number.
+     * @return the next sequence number.
      */
     uint16_t PeekNextSequenceNumberFor(const WifiMacHeader* hdr);
     /**
@@ -244,11 +244,11 @@ class QosTxop : public Txop
      * transmitted, it is assigned a sequence number peeked from MacTxMiddle.
      * Also note that multiple links are only available since 802.11be.
      *
-     * \param linkId the ID of the given link
-     * \param tid traffic ID.
-     * \param recipient the receiver station address.
-     * \param mpdu the MPDU after which the search starts from
-     * \returns the peeked frame.
+     * @param linkId the ID of the given link
+     * @param tid traffic ID.
+     * @param recipient the receiver station address.
+     * @param mpdu the MPDU after which the search starts from
+     * @returns the peeked frame.
      */
     Ptr<WifiMpdu> PeekNextMpdu(uint8_t linkId,
                                uint8_t tid = 8,
@@ -264,14 +264,14 @@ class QosTxop : public Txop
      * attempt to perform A-MSDU aggregation (while meeting the constraints mentioned
      * above) and assign a sequence number to the dequeued frame.
      *
-     * \param linkId the ID of the given link
-     * \param peekedItem the peeked frame.
-     * \param txParams the TX parameters for the frame
-     * \param availableTime the time available for the transmission of the frame
+     * @param linkId the ID of the given link
+     * @param peekedItem the peeked frame.
+     * @param txParams the TX parameters for the frame
+     * @param availableTime the time available for the transmission of the frame
                             (including protection and acknowledgment); a value of
      *                      Time::Min() indicates no time constraint
-     * \param initialFrame true if the frame is the initial PPDU of a TXOP
-     * \return the frame to transmit or a null pointer if no frame meets the time constraints
+     * @param initialFrame true if the frame is the initial PPDU of a TXOP
+     * @return the frame to transmit or a null pointer if no frame meets the time constraints
      */
     Ptr<WifiMpdu> GetNextMpdu(uint8_t linkId,
                               Ptr<WifiMpdu> peekedItem,
@@ -283,7 +283,7 @@ class QosTxop : public Txop
      * Assign a sequence number to the given MPDU, if it is not a fragment
      * and it is not a retransmitted frame.
      *
-     * \param mpdu the MPDU
+     * @param mpdu the MPDU
      */
     void AssignSequenceNumber(Ptr<WifiMpdu> mpdu) const;
 
@@ -291,22 +291,22 @@ class QosTxop : public Txop
      * Get the value for the Queue Size subfield of the QoS Control field of a
      * QoS data frame of the given TID and addressed to the given receiver.
      *
-     * \param tid the Traffic ID
-     * \param receiver the address of the given receiver
-     * \return the value for the Queue Size subfield
+     * @param tid the Traffic ID
+     * @param receiver the address of the given receiver
+     * @return the value for the Queue Size subfield
      */
     uint8_t GetQosQueueSize(uint8_t tid, Mac48Address receiver) const;
 
     /**
-     * \param linkId the ID of the given link
-     * \return the TXOP start time, if a TXOP is ongoing on the given link
+     * @param linkId the ID of the given link
+     * @return the TXOP start time, if a TXOP is ongoing on the given link
      */
     virtual std::optional<Time> GetTxopStartTime(uint8_t linkId) const;
     /**
      * Return the remaining duration in the current TXOP on the given link.
      *
-     * \param linkId the ID of the given link
-     * \return the remaining duration in the current TXOP.
+     * @param linkId the ID of the given link
+     * @return the remaining duration in the current TXOP.
      */
     virtual Time GetRemainingTxop(uint8_t linkId) const;
 
@@ -314,52 +314,52 @@ class QosTxop : public Txop
      * Set the minimum contention window size to use while the MU EDCA Timer
      * is running for the given link.
      *
-     * \param cwMin the minimum contention window size.
-     * \param linkId the ID of the given link
+     * @param cwMin the minimum contention window size.
+     * @param linkId the ID of the given link
      */
     void SetMuCwMin(uint16_t cwMin, uint8_t linkId);
     /**
      * Set the maximum contention window size to use while the MU EDCA Timer
      * is running for the given link.
      *
-     * \param cwMax the maximum contention window size.
-     * \param linkId the ID of the given link
+     * @param cwMax the maximum contention window size.
+     * @param linkId the ID of the given link
      */
     void SetMuCwMax(uint16_t cwMax, uint8_t linkId);
     /**
      * Set the number of slots that make up an AIFS while the MU EDCA Timer
      * is running for the given link.
      *
-     * \param aifsn the number of slots that make up an AIFS.
-     * \param linkId the ID of the given link
+     * @param aifsn the number of slots that make up an AIFS.
+     * @param linkId the ID of the given link
      */
     void SetMuAifsn(uint8_t aifsn, uint8_t linkId);
     /**
      * Set the MU EDCA Timer for the given link.
      *
-     * \param timer the timer duration.
-     * \param linkId the ID of the given link
+     * @param timer the timer duration.
+     * @param linkId the ID of the given link
      */
     void SetMuEdcaTimer(Time timer, uint8_t linkId);
     /**
      * Start the MU EDCA Timer for the given link.
      *
-     * \param linkId the ID of the given link
+     * @param linkId the ID of the given link
      */
     void StartMuEdcaTimerNow(uint8_t linkId);
     /**
      * Return true if the MU EDCA Timer is running for the given link, false otherwise.
      *
-     * \param linkId the ID of the given link
-     * \return whether the MU EDCA Timer is running
+     * @param linkId the ID of the given link
+     * @return whether the MU EDCA Timer is running
      */
     bool MuEdcaTimerRunning(uint8_t linkId) const;
     /**
      * Return true if the EDCA is disabled (the MU EDCA Timer is running and the
      * MU AIFSN is zero) for the given link, false otherwise.
      *
-     * \param linkId the ID of the given link
-     * \return whether the EDCA is disabled
+     * @param linkId the ID of the given link
+     * @return whether the EDCA is disabled
      */
     bool EdcaDisabled(uint8_t linkId) const;
     /**
@@ -367,8 +367,8 @@ class QosTxop : public Txop
      * EDCA Parameter Set or the MU EDCA Parameter Set, depending on whether the
      * MU EDCA Timer is running or not.
      *
-     * \param linkId the ID of the given link
-     * \return the currently used minimum contention window size.
+     * @param linkId the ID of the given link
+     * @return the currently used minimum contention window size.
      */
     uint32_t GetMinCw(uint8_t linkId) const override;
     /**
@@ -376,8 +376,8 @@ class QosTxop : public Txop
      * EDCA Parameter Set or the MU EDCA Parameter Set, depending on whether the
      * MU EDCA Timer is running or not.
      *
-     * \param linkId the ID of the given link
-     * \return the currently used maximum contention window size.
+     * @param linkId the ID of the given link
+     * @return the currently used maximum contention window size.
      */
     uint32_t GetMaxCw(uint8_t linkId) const override;
     /**
@@ -385,8 +385,8 @@ class QosTxop : public Txop
      * to the EDCA Parameter Set or the MU EDCA Parameter Set, depending on whether
      * the MU EDCA Timer is running or not.
      *
-     * \param linkId the ID of the given link
-     * \return the number of slots that currently make up an AIFS.
+     * @param linkId the ID of the given link
+     * @return the number of slots that currently make up an AIFS.
      */
     uint8_t GetAifsn(uint8_t linkId) const override;
 
@@ -416,8 +416,8 @@ class QosTxop : public Txop
     /**
      * Get a reference to the link associated with the given ID.
      *
-     * \param linkId the given link ID
-     * \return a reference to the link associated with the given ID
+     * @param linkId the given link ID
+     * @return a reference to the link associated with the given ID
      */
     QosLinkEntity& GetLink(uint8_t linkId) const;
 
@@ -432,8 +432,8 @@ class QosTxop : public Txop
      * starting sequence number of the transmit window, provided that a block ack
      * agreement has been established with the recipient for the given TID.
      *
-     * \param mpdu the given MPDU
-     * \return true if the MPDU is to be considered old, false otherwise
+     * @param mpdu the given MPDU
+     * @return true if the MPDU is to be considered old, false otherwise
      */
     bool IsQosOldPacket(Ptr<const WifiMpdu> mpdu);
 

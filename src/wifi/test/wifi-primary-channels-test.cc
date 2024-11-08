@@ -33,10 +33,10 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("WifiPrimaryChannelsTest");
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief Test transmissions under different primary channel settings
+ * @brief Test transmissions under different primary channel settings
  *
  * This test can be repeated for different widths of the operating channel. We
  * configure as many BSSes as the number of distinct 20 MHz subchannels in the
@@ -54,8 +54,8 @@ class WifiPrimaryChannelsTest : public TestCase
     /**
      * Constructor
      *
-     * \param channelWidth the operating channel width
-     * \param useDistinctBssColors whether to set distinct BSS colors to BSSes
+     * @param channelWidth the operating channel width
+     * @param useDistinctBssColors whether to set distinct BSS colors to BSSes
      */
     WifiPrimaryChannelsTest(MHz_u channelWidth, bool useDistinctBssColors);
     ~WifiPrimaryChannelsTest() override;
@@ -64,10 +64,10 @@ class WifiPrimaryChannelsTest : public TestCase
      * Callback invoked when PHY receives a PSDU to transmit. Used to print
      * transmitted PSDUs for debug purposes.
      *
-     * \param context the context
-     * \param psduMap the PSDU map
-     * \param txVector the TX vector
-     * \param txPowerW the tx power in Watts
+     * @param context the context
+     * @param psduMap the PSDU map
+     * @param txVector the TX vector
+     * @param txPowerW the tx power in Watts
      */
     void Transmit(std::string context,
                   WifiConstPsduMap psduMap,
@@ -77,18 +77,18 @@ class WifiPrimaryChannelsTest : public TestCase
      * Have the AP of the given BSS transmit a SU PPDU using the given
      * transmission channel width
      *
-     * \param bss the given BSS
-     * \param txChannelWidth the given transmission channel width
+     * @param bss the given BSS
+     * @param txChannelWidth the given transmission channel width
      */
     void SendDlSuPpdu(uint8_t bss, MHz_u txChannelWidth);
     /**
      * Have the AP of the given BSS transmit a MU PPDU using the given
      * transmission channel width and RU type
      *
-     * \param bss the given BSS
-     * \param txChannelWidth the given transmission channel width
-     * \param ruType the given RU type
-     * \param nRus the number of RUs
+     * @param bss the given BSS
+     * @param txChannelWidth the given transmission channel width
+     * @param ruType the given RU type
+     * @param nRus the number of RUs
      */
     void SendDlMuPpdu(uint8_t bss, MHz_u txChannelWidth, HeRu::RuType ruType, std::size_t nRus);
     /**
@@ -96,31 +96,31 @@ class WifiPrimaryChannelsTest : public TestCase
      * DoSendHeTbPpdu to actually have STAs transmit HE TB PPDUs using the given
      * transmission channel width and RU type
      *
-     * \param bss the given BSS
-     * \param txChannelWidth the given transmission channel width
-     * \param ruType the given RU type
-     * \param nRus the number of RUs
+     * @param bss the given BSS
+     * @param txChannelWidth the given transmission channel width
+     * @param ruType the given RU type
+     * @param nRus the number of RUs
      */
     void SendHeTbPpdu(uint8_t bss, MHz_u txChannelWidth, HeRu::RuType ruType, std::size_t nRus);
     /**
      * Have the STAs of the given BSS transmit an HE TB PPDU using the given
      * transmission channel width and RU type
      *
-     * \param bss the given BSS
-     * \param txChannelWidth the given transmission channel width
-     * \param ruType the given RU type
-     * \param nRus the number of RUs
+     * @param bss the given BSS
+     * @param txChannelWidth the given transmission channel width
+     * @param ruType the given RU type
+     * @param nRus the number of RUs
      */
     void DoSendHeTbPpdu(uint8_t bss, MHz_u txChannelWidth, HeRu::RuType ruType, std::size_t nRus);
     /**
      * Callback invoked when a station receives a DL PPDU.
      *
-     * \param bss the BSS the receiving STA belongs to
-     * \param station the receiving station
-     * \param psdu the received PSDU
-     * \param rxSignalInfo the info on the received signal (\see RxSignalInfo)
-     * \param txVector TxVector of the received PSDU
-     * \param perMpduStatus per MPDU reception status
+     * @param bss the BSS the receiving STA belongs to
+     * @param station the receiving station
+     * @param psdu the received PSDU
+     * @param rxSignalInfo the info on the received signal (\see RxSignalInfo)
+     * @param txVector TxVector of the received PSDU
+     * @param perMpduStatus per MPDU reception status
      */
     void ReceiveDl(uint8_t bss,
                    uint8_t station,
@@ -131,11 +131,11 @@ class WifiPrimaryChannelsTest : public TestCase
     /**
      * Callback invoked when an AP receives an UL PPDU.
      *
-     * \param bss the BSS the receiving AP belongs to
-     * \param psdu the received PSDU
-     * \param rxSignalInfo the info on the received signal (\see RxSignalInfo)
-     * \param txVector TxVector of the received PSDU
-     * \param perMpduStatus per MPDU reception status
+     * @param bss the BSS the receiving AP belongs to
+     * @param psdu the received PSDU
+     * @param rxSignalInfo the info on the received signal (\see RxSignalInfo)
+     * @param txVector TxVector of the received PSDU
+     * @param perMpduStatus per MPDU reception status
      */
     void ReceiveUl(uint8_t bss,
                    Ptr<const WifiPsdu> psdu,
@@ -153,8 +153,8 @@ class WifiPrimaryChannelsTest : public TestCase
      * filtering) or if no transmission was performed on a channel adjacent to the one
      * they operate on, otherwise.
      *
-     * \param txBss the set of BSSes that transmitted an SU PPDU
-     * \param txChannelWidth the given transmission channel width
+     * @param txBss the set of BSSes that transmitted an SU PPDU
+     * @param txChannelWidth the given transmission channel width
      */
     void CheckReceivedSuPpdus(std::set<uint8_t> txBss, MHz_u txChannelWidth);
     /**
@@ -164,11 +164,11 @@ class WifiPrimaryChannelsTest : public TestCase
      * filtering) or if no transmission addressed to/from stations with the same AID was
      * performed on a channel adjacent to the one they operate on, otherwise.
      *
-     * \param txBss the set of BSSes that transmitted an SU PPDU
-     * \param txChannelWidth the given transmission channel width
-     * \param ruType the given RU type
-     * \param nRus the number of RUs
-     * \param isDlMu true for DL MU PPDU, false for HE TB PPDU
+     * @param txBss the set of BSSes that transmitted an SU PPDU
+     * @param txChannelWidth the given transmission channel width
+     * @param ruType the given RU type
+     * @param nRus the number of RUs
+     * @param isDlMu true for DL MU PPDU, false for HE TB PPDU
      */
     void CheckReceivedMuPpdus(std::set<uint8_t> txBss,
                               MHz_u txChannelWidth,
@@ -181,8 +181,8 @@ class WifiPrimaryChannelsTest : public TestCase
      * any frame Trigger Frame (given that a Trigger Frame is transmitted on the primary20
      * channel and all the primary20 channels are distinct).
      *
-     * \param txBss the set of BSSes that transmitted a Trigger Frame
-     * \param txChannelWidth the given transmission channel width
+     * @param txBss the set of BSSes that transmitted a Trigger Frame
+     * @param txChannelWidth the given transmission channel width
      */
     void CheckReceivedTriggerFrames(std::set<uint8_t> txBss, MHz_u txChannelWidth);
 
@@ -1209,10 +1209,10 @@ WifiPrimaryChannelsTest::CheckReceivedTriggerFrames(std::set<uint8_t> txBss, MHz
 }
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief Test functions returning the indices of primary and secondary channels
+ * @brief Test functions returning the indices of primary and secondary channels
  *        of different width.
  */
 class Wifi20MHzChannelIndicesTest : public TestCase
@@ -1228,12 +1228,12 @@ class Wifi20MHzChannelIndicesTest : public TestCase
      * Check that the indices of the 20 MHz channels included in all the primary
      * and secondary channels are correct when setting the given primary20 channel.
      *
-     * \param primary20 the index of the primary20 channel to configure
-     * \param secondary20 the expected index of the secondary20 channel
-     * \param primary40 the expected indices of the 20 MHz channels in the primary40 channel
-     * \param secondary40 the expected indices of the 20 MHz channels in the secondary40 channel
-     * \param primary80 the expected indices of the 20 MHz channels in the primary80 channel
-     * \param secondary80 the expected indices of the 20 MHz channels in the secondary80 channel
+     * @param primary20 the index of the primary20 channel to configure
+     * @param secondary20 the expected index of the secondary20 channel
+     * @param primary40 the expected indices of the 20 MHz channels in the primary40 channel
+     * @param secondary40 the expected indices of the 20 MHz channels in the secondary40 channel
+     * @param primary80 the expected indices of the 20 MHz channels in the primary80 channel
+     * @param secondary80 the expected indices of the 20 MHz channels in the secondary80 channel
      */
     void RunOne(uint8_t primary20,
                 const std::set<uint8_t>& secondary20,
@@ -1347,10 +1347,10 @@ Wifi20MHzChannelIndicesTest::DoRun()
 }
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief wifi primary channels test suite
+ * @brief wifi primary channels test suite
  */
 class WifiPrimaryChannelsTestSuite : public TestSuite
 {

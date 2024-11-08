@@ -30,7 +30,7 @@ class RadiotapHeader;
 class QueueItem;
 
 /**
- * \brief create PHY objects
+ * @brief create PHY objects
  *
  * This base class must be implemented by new PHY implementation which wish to integrate
  * with the \ref ns3::WifiHelper class.
@@ -41,16 +41,16 @@ class WifiPhyHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevi
     /**
      * Constructor
      *
-     * \param nLinks the number of links to configure (>1 only for 11be devices)
+     * @param nLinks the number of links to configure (>1 only for 11be devices)
      */
     WifiPhyHelper(uint8_t nLinks = 1);
     ~WifiPhyHelper() override;
 
     /**
-     * \param node the node on which the PHY object(s) will reside
-     * \param device the device within which the PHY object(s) will reside
+     * @param node the node on which the PHY object(s) will reside
+     * @param device the device within which the PHY object(s) will reside
      *
-     * \returns new PHY objects.
+     * @returns new PHY objects.
      *
      * Subclasses must implement this method to allow the ns3::WifiHelper class
      * to create PHY objects from ns3::WifiHelper::Install.
@@ -58,17 +58,17 @@ class WifiPhyHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevi
     virtual std::vector<Ptr<WifiPhy>> Create(Ptr<Node> node, Ptr<WifiNetDevice> device) const = 0;
 
     /**
-     * \param name the name of the attribute to set
-     * \param v the value of the attribute
+     * @param name the name of the attribute to set
+     * @param v the value of the attribute
      *
      * Set an attribute of all the underlying PHY object.
      */
     void Set(std::string name, const AttributeValue& v);
 
     /**
-     * \param name the name of the attribute to set
-     * \param v the value of the attribute
-     * \param linkId ID of the link to configure (>0 only for 11be devices)
+     * @param name the name of the attribute to set
+     * @param v the value of the attribute
+     * @param linkId ID of the link to configure (>0 only for 11be devices)
      *
      * Set an attribute of the given underlying PHY object.
      */
@@ -77,9 +77,9 @@ class WifiPhyHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevi
     /**
      * Helper function used to set the interference helper.
      *
-     * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
-     * \param type the type of interference helper
-     * \param args A sequence of name-value pairs of the attributes to set.
+     * @tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * @param type the type of interference helper
+     * @param args A sequence of name-value pairs of the attributes to set.
      */
     template <typename... Args>
     void SetInterferenceHelper(std::string type, Args&&... args);
@@ -87,18 +87,18 @@ class WifiPhyHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevi
     /**
      * Helper function used to set the error rate model.
      *
-     * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
-     * \param type the type of error rate model
-     * \param args A sequence of name-value pairs of the attributes to set.
+     * @tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * @param type the type of error rate model
+     * @param args A sequence of name-value pairs of the attributes to set.
      */
     template <typename... Args>
     void SetErrorRateModel(std::string type, Args&&... args);
 
     /**
-     * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
-     * \param linkId ID of the link to configure (>0 only for 11be devices)
-     * \param type the type of the error rate model to set.
-     * \param args A sequence of name-value pairs of the attributes to set.
+     * @tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * @param linkId ID of the link to configure (>0 only for 11be devices)
+     * @param type the type of the error rate model to set.
+     * @param args A sequence of name-value pairs of the attributes to set.
      *
      * Set the error rate model and its attributes to use for the given link when Install is called.
      */
@@ -108,18 +108,18 @@ class WifiPhyHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevi
     /**
      * Helper function used to set the frame capture model.
      *
-     * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
-     * \param type the type of frame capture model
-     * \param args A sequence of name-value pairs of the attributes to set.
+     * @tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * @param type the type of frame capture model
+     * @param args A sequence of name-value pairs of the attributes to set.
      */
     template <typename... Args>
     void SetFrameCaptureModel(std::string type, Args&&... args);
 
     /**
-     * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
-     * \param linkId ID of the link to configure (>0 only for 11be devices)
-     * \param type the type of the frame capture model to set.
-     * \param args A sequence of name-value pairs of the attributes to set.
+     * @tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * @param linkId ID of the link to configure (>0 only for 11be devices)
+     * @param type the type of the frame capture model to set.
+     * @param args A sequence of name-value pairs of the attributes to set.
      *
      * Set the frame capture model and its attributes to use for the given link when Install is
      * called.
@@ -130,18 +130,18 @@ class WifiPhyHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevi
     /**
      * Helper function used to set the preamble detection model.
      *
-     * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
-     * \param type the type of preamble detection model
-     * \param args A sequence of name-value pairs of the attributes to set.
+     * @tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * @param type the type of preamble detection model
+     * @param args A sequence of name-value pairs of the attributes to set.
      */
     template <typename... Args>
     void SetPreambleDetectionModel(std::string type, Args&&... args);
 
     /**
-     * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
-     * \param linkId ID of the link to configure (>0 only for 11be devices)
-     * \param type the type of the preamble detection model to set.
-     * \param args A sequence of name-value pairs of the attributes to set.
+     * @tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * @param linkId ID of the link to configure (>0 only for 11be devices)
+     * @param type the type of the preamble detection model to set.
+     * @param args A sequence of name-value pairs of the attributes to set.
      *
      * Set the preamble detection model and its attributes to use for the given link when Install is
      * called.
@@ -188,10 +188,10 @@ class WifiPhyHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevi
         /**
          * Constructor
          *
-         * \param filename the common file name of the PCAP files
-         * \param dlt the selected data link type of the pcap file
-         * \param type the selected PCAP capture type
-         * \param dev the WifiNetDevice for which the PCAP files are generated
+         * @param filename the common file name of the PCAP files
+         * @param dlt the selected data link type of the pcap file
+         * @param type the selected PCAP capture type
+         * @param dev the WifiNetDevice for which the PCAP files are generated
          */
         PcapFilesInfo(const std::string& filename,
                       PcapHelper::DataLinkType dlt,
@@ -217,48 +217,48 @@ class WifiPhyHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevi
      * called before EnablePcap(), so that the header of the pcap file can be
      * written correctly.
      *
-     * \see SupportedPcapDataLinkTypes
+     * @see SupportedPcapDataLinkTypes
      *
-     * \param dlt The data link type of the pcap file (and packets) to be used
+     * @param dlt The data link type of the pcap file (and packets) to be used
      */
     void SetPcapDataLinkType(SupportedPcapDataLinkTypes dlt);
 
     /**
      * Get the data link type of PCAP traces to be used.
      *
-     * \see SupportedPcapDataLinkTypes
+     * @see SupportedPcapDataLinkTypes
      *
-     * \returns The data link type of the pcap file (and packets) to be used
+     * @returns The data link type of the pcap file (and packets) to be used
      */
     PcapHelper::DataLinkType GetPcapDataLinkType() const;
 
     /**
      * Set the PCAP capture type to be used. This function has to be called before EnablePcap().
      *
-     * \see PcapCaptureType
+     * @see PcapCaptureType
      *
-     * \param type The PCAP capture type
+     * @param type The PCAP capture type
      */
     void SetPcapCaptureType(PcapCaptureType type);
 
     /**
      * Get the PCAP capture type to be used.
      *
-     * \see PcapCaptureType
+     * @see PcapCaptureType
      *
-     * \return The PCAP capture type to be used
+     * @return The PCAP capture type to be used
      */
     PcapCaptureType GetPcapCaptureType() const;
 
   protected:
     /**
-     * \param info the information needed to write to the correct PCAP file
-     * \param phyId the ID of the PHY that raised the event
-     * \param packet the packet
-     * \param channelFreqMhz the channel frequency
-     * \param txVector the TXVECTOR
-     * \param aMpdu the A-MPDU information
-     * \param staId the STA-ID (only used for MU)
+     * @param info the information needed to write to the correct PCAP file
+     * @param phyId the ID of the PHY that raised the event
+     * @param packet the packet
+     * @param channelFreqMhz the channel frequency
+     * @param txVector the TXVECTOR
+     * @param aMpdu the A-MPDU information
+     * @param staId the STA-ID (only used for MU)
      *
      * Handle TX pcap.
      */
@@ -270,14 +270,14 @@ class WifiPhyHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevi
                                  MpduInfo aMpdu,
                                  uint16_t staId = SU_STA_ID);
     /**
-     * \param info the information needed to write to the correct PCAP file
-     * \param phyId the ID of the PHY that raised the event
-     * \param packet the packet
-     * \param channelFreqMhz the channel frequency
-     * \param txVector the TXVECTOR
-     * \param aMpdu the A-MPDU information
-     * \param signalNoise the RX signal and noise information
-     * \param staId the STA-ID (only used for MU)
+     * @param info the information needed to write to the correct PCAP file
+     * @param phyId the ID of the PHY that raised the event
+     * @param packet the packet
+     * @param channelFreqMhz the channel frequency
+     * @param txVector the TXVECTOR
+     * @param aMpdu the A-MPDU information
+     * @param signalNoise the RX signal and noise information
+     * @param staId the STA-ID (only used for MU)
      *
      * Handle RX pcap.
      */
@@ -302,9 +302,9 @@ class WifiPhyHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevi
      * If PCAP files are generated per link, it might create a new file if a link
      * has swapped to a new ID.
      *
-     * \param info the information needed to write to the correct PCAP file
-     * \param phyId the ID of the PHY that raised the event
-     * \return the PCAP file to write to
+     * @param info the information needed to write to the correct PCAP file
+     * @param phyId the ID of the PHY that raised the event
+     * @return the PCAP file to write to
      */
     static Ptr<PcapFileWrapper> GetOrCreatePcapFile(const std::shared_ptr<PcapFilesInfo>& info,
                                                     uint8_t phyId);
@@ -312,13 +312,13 @@ class WifiPhyHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevi
     /**
      * Get the Radiotap header for a transmitted packet.
      *
-     * \param header the radiotap header to be filled in
-     * \param packet the packet
-     * \param channelFreqMhz the channel frequency
-     * \param p20Index the index of the primary20 channel
-     * \param txVector the TXVECTOR
-     * \param aMpdu the A-MPDU information
-     * \param staId the STA-ID
+     * @param header the radiotap header to be filled in
+     * @param packet the packet
+     * @param channelFreqMhz the channel frequency
+     * @param p20Index the index of the primary20 channel
+     * @param txVector the TXVECTOR
+     * @param aMpdu the A-MPDU information
+     * @param staId the STA-ID
      */
     static void GetRadiotapHeader(RadiotapHeader& header,
                                   Ptr<Packet> packet,
@@ -331,14 +331,14 @@ class WifiPhyHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevi
     /**
      * Get the Radiotap header for a received packet.
      *
-     * \param header the radiotap header to be filled in
-     * \param packet the packet
-     * \param channelFreqMhz the channel frequency
-     * \param p20Index the index of the primary20 channel
-     * \param txVector the TXVECTOR
-     * \param aMpdu the A-MPDU information
-     * \param staId the STA-ID
-     * \param signalNoise the rx signal and noise information
+     * @param header the radiotap header to be filled in
+     * @param packet the packet
+     * @param channelFreqMhz the channel frequency
+     * @param p20Index the index of the primary20 channel
+     * @param txVector the TXVECTOR
+     * @param aMpdu the A-MPDU information
+     * @param staId the STA-ID
+     * @param signalNoise the rx signal and noise information
      */
     static void GetRadiotapHeader(RadiotapHeader& header,
                                   Ptr<Packet> packet,
@@ -350,15 +350,15 @@ class WifiPhyHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevi
                                   SignalNoiseDbm signalNoise);
 
     /**
-     * \brief Enable pcap output the indicated net device.
+     * @brief Enable pcap output the indicated net device.
      *
      * NetDevice-specific implementation mechanism for hooking the trace and
      * writing to the trace file.
      *
-     * \param prefix Filename prefix to use for pcap files.
-     * \param nd Net device for which you want to enable tracing.
-     * \param promiscuous If true capture all possible packets available at the device.
-     * \param explicitFilename Treat the prefix as an explicit filename if true
+     * @param prefix Filename prefix to use for pcap files.
+     * @param nd Net device for which you want to enable tracing.
+     * @param promiscuous If true capture all possible packets available at the device.
+     * @param explicitFilename Treat the prefix as an explicit filename if true
      */
     void EnablePcapInternal(std::string prefix,
                             Ptr<NetDevice> nd,
@@ -366,15 +366,15 @@ class WifiPhyHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevi
                             bool explicitFilename) override;
 
     /**
-     * \brief Enable ASCII trace output on the indicated net device.
+     * @brief Enable ASCII trace output on the indicated net device.
      *
      * NetDevice-specific implementation mechanism for hooking the trace and
      * writing to the trace file.
      *
-     * \param stream The output stream object to use when logging ASCII traces.
-     * \param prefix Filename prefix to use for ASCII trace files.
-     * \param nd Net device for which you want to enable tracing.
-     * \param explicitFilename Treat the prefix as an explicit filename if true
+     * @param stream The output stream object to use when logging ASCII traces.
+     * @param prefix Filename prefix to use for ASCII trace files.
+     * @param nd Net device for which you want to enable tracing.
+     * @param explicitFilename Treat the prefix as an explicit filename if true
      */
     void EnableAsciiInternal(Ptr<OutputStreamWrapper> stream,
                              std::string prefix,
@@ -386,7 +386,7 @@ class WifiPhyHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevi
 };
 
 /**
- * \brief helps to create WifiNetDevice objects
+ * @brief helps to create WifiNetDevice objects
  *
  * This class can help to create a large set of similar
  * WifiNetDevice objects and to configure a large set of
@@ -410,18 +410,18 @@ class WifiHelper
     /**
      * Helper function used to set the station manager
      *
-     * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
-     * \param type the type of station manager
-     * \param args A sequence of name-value pairs of the attributes to set.
+     * @tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * @param type the type of station manager
+     * @param args A sequence of name-value pairs of the attributes to set.
      */
     template <typename... Args>
     void SetRemoteStationManager(std::string type, Args&&... args);
 
     /**
-     * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
-     * \param linkId ID of the link to configure (>0 only for 11be devices)
-     * \param type the type of the preamble detection model to set.
-     * \param args A sequence of name-value pairs of the attributes to set.
+     * @tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * @param linkId ID of the link to configure (>0 only for 11be devices)
+     * @param type the type of the preamble detection model to set.
+     * @param args A sequence of name-value pairs of the attributes to set.
      *
      * Set the remote station manager model and its attributes to use for the given link.
      * If the helper stored a remote station manager model for the first N links only
@@ -435,9 +435,9 @@ class WifiHelper
     /**
      * Helper function used to set the OBSS-PD algorithm
      *
-     * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
-     * \param type the type of OBSS-PD algorithm
-     * \param args A sequence of name-value pairs of the attributes to set.
+     * @tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * @param type the type of OBSS-PD algorithm
+     * @param args A sequence of name-value pairs of the attributes to set.
      */
     template <typename... Args>
     void SetObssPdAlgorithm(std::string type, Args&&... args);
@@ -446,7 +446,7 @@ class WifiHelper
     typedef std::function<std::size_t(Ptr<QueueItem>)> SelectQueueCallback;
 
     /**
-     * \param f the select queue callback
+     * @param f the select queue callback
      *
      * Set the select queue callback to set on the NetDevice queue interface aggregated
      * to the WifiNetDevice, in case WifiMac with QoS enabled is used
@@ -464,45 +464,45 @@ class WifiHelper
     void DisableFlowControl();
 
     /**
-     * \param phy the PHY helper to create PHY objects
-     * \param mac the MAC helper to create MAC objects
-     * \param first lower bound on the set of nodes on which a wifi device must be created
-     * \param last upper bound on the set of nodes on which a wifi device must be created
-     * \returns a device container which contains all the devices created by this method.
+     * @param phy the PHY helper to create PHY objects
+     * @param mac the MAC helper to create MAC objects
+     * @param first lower bound on the set of nodes on which a wifi device must be created
+     * @param last upper bound on the set of nodes on which a wifi device must be created
+     * @returns a device container which contains all the devices created by this method.
      */
     NetDeviceContainer virtual Install(const WifiPhyHelper& phy,
                                        const WifiMacHelper& mac,
                                        NodeContainer::Iterator first,
                                        NodeContainer::Iterator last) const;
     /**
-     * \param phy the PHY helper to create PHY objects
-     * \param mac the MAC helper to create MAC objects
-     * \param c the set of nodes on which a wifi device must be created
-     * \returns a device container which contains all the devices created by this method.
+     * @param phy the PHY helper to create PHY objects
+     * @param mac the MAC helper to create MAC objects
+     * @param c the set of nodes on which a wifi device must be created
+     * @returns a device container which contains all the devices created by this method.
      */
     virtual NetDeviceContainer Install(const WifiPhyHelper& phy,
                                        const WifiMacHelper& mac,
                                        NodeContainer c) const;
     /**
-     * \param phy the PHY helper to create PHY objects
-     * \param mac the MAC helper to create MAC objects
-     * \param node the node on which a wifi device must be created
-     * \returns a device container which contains all the devices created by this method.
+     * @param phy the PHY helper to create PHY objects
+     * @param mac the MAC helper to create MAC objects
+     * @param node the node on which a wifi device must be created
+     * @returns a device container which contains all the devices created by this method.
      */
     virtual NetDeviceContainer Install(const WifiPhyHelper& phy,
                                        const WifiMacHelper& mac,
                                        Ptr<Node> node) const;
     /**
-     * \param phy the PHY helper to create PHY objects
-     * \param mac the MAC helper to create MAC objects
-     * \param nodeName the name of node on which a wifi device must be created
-     * \returns a device container which contains all the devices created by this method.
+     * @param phy the PHY helper to create PHY objects
+     * @param mac the MAC helper to create MAC objects
+     * @param nodeName the name of node on which a wifi device must be created
+     * @returns a device container which contains all the devices created by this method.
      */
     virtual NetDeviceContainer Install(const WifiPhyHelper& phy,
                                        const WifiMacHelper& mac,
                                        std::string nodeName) const;
     /**
-     * \param standard the standard to configure during installation
+     * @param standard the standard to configure during installation
      *
      * This method sets standards-compliant defaults for WifiMac
      * parameters such as SIFS time, slot time, timeout values, etc.,
@@ -518,7 +518,7 @@ class WifiHelper
      * any default values affected by ConfigureStandard() while using this
      * helper, the user should use a post-install configuration such as
      * Config::Set() on any objects that this helper creates, such as:
-     * \code
+     * @code
      * Config::Set ("/NodeList/0/DeviceList/0/$ns3::WifiNetDevice/Mac/Slot", TimeValue (MicroSeconds
      * (slot))); \endcode
      *
@@ -528,7 +528,7 @@ class WifiHelper
     virtual void SetStandard(WifiStandard standard);
 
     /**
-     * \param standard String representation of the Wi-Fi standard
+     * @param standard String representation of the Wi-Fi standard
      *
      * This method overloads WifiHelper::SetStandard(WifiStandard standard) by allowing
      * selected string names. For example, the strings "802.11ax", "11ax", and "HE"
@@ -542,8 +542,8 @@ class WifiHelper
      * Helper function used to configure the HT options listed as attributes of
      * the HtConfiguration class.
      *
-     * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
-     * \param args A sequence of name-value pairs of the attributes to set.
+     * @tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * @param args A sequence of name-value pairs of the attributes to set.
      */
     template <typename... Args>
     void ConfigHtOptions(Args&&... args);
@@ -552,8 +552,8 @@ class WifiHelper
      * Helper function used to configure the VHT options listed as attributes of
      * the VhtConfiguration class.
      *
-     * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
-     * \param args A sequence of name-value pairs of the attributes to set.
+     * @tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * @param args A sequence of name-value pairs of the attributes to set.
      */
     template <typename... Args>
     void ConfigVhtOptions(Args&&... args);
@@ -562,8 +562,8 @@ class WifiHelper
      * Helper function used to configure the HE options listed as attributes of
      * the HeConfiguration class.
      *
-     * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
-     * \param args A sequence of name-value pairs of the attributes to set.
+     * @tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * @param args A sequence of name-value pairs of the attributes to set.
      */
     template <typename... Args>
     void ConfigHeOptions(Args&&... args);
@@ -572,15 +572,15 @@ class WifiHelper
      * Helper function used to configure the EHT options listed as attributes of
      * the EhtConfiguration class.
      *
-     * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
-     * \param args A sequence of name-value pairs of the attributes to set.
+     * @tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * @param args A sequence of name-value pairs of the attributes to set.
      */
     template <typename... Args>
     void ConfigEhtOptions(Args&&... args);
 
     /**
      * Helper to enable all WifiNetDevice log components with one statement
-     * \param logLevel (optional) log level setting
+     * @param logLevel (optional) log level setting
      */
     static void EnableLogComponents(LogLevel logLevel = LOG_LEVEL_ALL);
 
@@ -593,10 +593,10 @@ class WifiHelper
      * have been assigned. The Install() method should have previously been
      * called by the user.
      *
-     * \param c NetDeviceContainer of the set of net devices for which the
+     * @param c NetDeviceContainer of the set of net devices for which the
      *          WifiNetDevice should be modified to use fixed streams
-     * \param stream first stream index to use
-     * \return the number of stream indices assigned by this helper
+     * @param stream first stream index to use
+     * @return the number of stream indices assigned by this helper
      */
     static int64_t AssignStreams(NetDeviceContainer c, int64_t stream);
 

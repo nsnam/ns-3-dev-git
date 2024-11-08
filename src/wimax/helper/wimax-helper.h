@@ -37,7 +37,7 @@ class WimaxPhy;
 class UplinkScheduler;
 
 /**
- * \brief helps to manage and create WimaxNetDevice objects
+ * @brief helps to manage and create WimaxNetDevice objects
  *
  * This class can help to create a large set of similar
  * WimaxNetDevice objects and to configure their attributes
@@ -80,18 +80,18 @@ class WimaxHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevice
     };
 
     /**
-     * \brief Create a Wimax helper in an empty state.
+     * @brief Create a Wimax helper in an empty state.
      */
     WimaxHelper();
     ~WimaxHelper() override;
     /**
-     * \brief Enable ascii trace output on the indicated net device for a given connection
-     * \param oss The output stream object to use when logging ascii traces.
-     * \param nodeid the id of the node for which you want to enable tracing.
-     * \param deviceid the id of the net device for which you want to enable tracing.
-     * \param netdevice the type of net device for which you want to enable tracing
+     * @brief Enable ascii trace output on the indicated net device for a given connection
+     * @param oss The output stream object to use when logging ascii traces.
+     * @param nodeid the id of the node for which you want to enable tracing.
+     * @param deviceid the id of the net device for which you want to enable tracing.
+     * @param netdevice the type of net device for which you want to enable tracing
      * (SubscriberStationNetDevice, BaseStationNetDevice or WimaxNetDevice)
-     * \param connection the connection for which you want to enable tracing
+     * @param connection the connection for which you want to enable tracing
      * (InitialRangingConnection, BroadcastConnection, BasicConnection, PrimaryConnection).
      */
     static void EnableAsciiForConnection(Ptr<OutputStreamWrapper> oss,
@@ -101,16 +101,16 @@ class WimaxHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevice
                                          char* connection);
 
     /**
-     * \param phyType WiMAX Physical layer type
-     * \return WiMAX Phy object
+     * @param phyType WiMAX Physical layer type
+     * @return WiMAX Phy object
      *
      * Creates a physical layer object to be used in simulation.
      */
     Ptr<WimaxPhy> CreatePhy(PhyType phyType);
 
     /**
-     * \param schedulerType Scheduling mechanism
-     * \return Uplink scheduler
+     * @param schedulerType Scheduling mechanism
+     * @return Uplink scheduler
      *
      * Creates a uplink scheduler to be used by base station
      * according to selected scheduling mechanism.
@@ -118,8 +118,8 @@ class WimaxHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevice
     Ptr<UplinkScheduler> CreateUplinkScheduler(SchedulerType schedulerType);
 
     /**
-     * \param schedulerType Scheduling mechanism
-     * \return Downlink scheduler
+     * @param schedulerType Scheduling mechanism
+     * @return Downlink scheduler
      *
      * Creates a downlink scheduler to be used by base station
      * according to selected scheduling mechanism.
@@ -127,11 +127,11 @@ class WimaxHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevice
     Ptr<BSScheduler> CreateBSScheduler(SchedulerType schedulerType);
 
     /**
-     * \param c a set of nodes
-     * \param type device type to create
-     * \param phyType a phy to use
-     * \param schedulerType the type of the scheduling algorithm to install
-     * \return NetDeviceContainer
+     * @param c a set of nodes
+     * @param type device type to create
+     * @param phyType a phy to use
+     * @param schedulerType the type of the scheduling algorithm to install
+     * @return NetDeviceContainer
      *
      * For each of the input nodes, a new WiMAX net device (either
      * ns3::SubscriberStationNetDevice or ns3::BaseStationNetDevice
@@ -143,12 +143,12 @@ class WimaxHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevice
                                SchedulerType schedulerType);
 
     /**
-     * \param c A set of nodes.
-     * \param deviceType Device type to create.
-     * \param phyType PHY type to create.
-     * \param channel A channel to use.
-     * \param schedulerType The scheduling mechanism.
-     * \return NetDeviceContainer
+     * @param c A set of nodes.
+     * @param deviceType Device type to create.
+     * @param phyType PHY type to create.
+     * @param channel A channel to use.
+     * @param schedulerType The scheduling mechanism.
+     * @return NetDeviceContainer
      *
      * For each of the input nodes, a new WiMAX net device (either
      * ns3::SubscriberStationNetDevice or ns3::BaseStationNetDevice
@@ -160,12 +160,12 @@ class WimaxHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevice
                                Ptr<WimaxChannel> channel,
                                SchedulerType schedulerType);
     /**
-     * \param c A set of nodes.
-     * \param deviceType Device type to create.
-     * \param phyType PHY type to create.
-     * \param schedulerType The scheduling mechanism.
-     * \param frameDuration the farme duration in seconds
-     * \return NetDeviceContainer
+     * @param c A set of nodes.
+     * @param deviceType Device type to create.
+     * @param phyType PHY type to create.
+     * @param schedulerType The scheduling mechanism.
+     * @param frameDuration the farme duration in seconds
+     * @return NetDeviceContainer
      *
      * For each of the input nodes, a new WiMAX net device (either
      * ns3::SubscriberStationNetDevice or ns3::BaseStationNetDevice
@@ -178,25 +178,25 @@ class WimaxHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevice
                                double frameDuration);
 
     /**
-     * \brief Set the propagation and loss model of the channel. By default the channel
+     * @brief Set the propagation and loss model of the channel. By default the channel
      *  uses a COST231 propagation and loss model.
-     * \param propagationModel The propagation and loss model to set
+     * @param propagationModel The propagation and loss model to set
      */
     void SetPropagationLossModel(SimpleOfdmWimaxChannel::PropModel propagationModel);
 
     /**
-     * \param phyType WiMAX Physical layer type
-     * \return WiMAX Phy object
+     * @param phyType WiMAX Physical layer type
+     * @return WiMAX Phy object
      *
      * Creates a physical layer without a channel
      */
     Ptr<WimaxPhy> CreatePhyWithoutChannel(PhyType phyType);
 
     /**
-     * \param phyType WiMAX Physical layer type
-     * \param SNRTraceFilePath of the repository containing the SNR traces files
-     * \param activateLoss set to 1 to activate losses 0 otherwise
-     * \return WiMAX Phy object
+     * @param phyType WiMAX Physical layer type
+     * @param SNRTraceFilePath of the repository containing the SNR traces files
+     * @param activateLoss set to 1 to activate losses 0 otherwise
+     * @return WiMAX Phy object
      *
      * Creates a physical layer without creating a channel
      */
@@ -205,21 +205,21 @@ class WimaxHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevice
                                           bool activateLoss);
 
     /**
-     * \param phyType WiMAX Physical layer type
-     * \param SNRTraceFilePath the path to the repository containing the SNR traces files
-     * \param activateLoss set to 1 if you want ton activate losses 0 otherwise
-     * \return WiMAX Phy object
+     * @param phyType WiMAX Physical layer type
+     * @param SNRTraceFilePath the path to the repository containing the SNR traces files
+     * @param activateLoss set to 1 if you want ton activate losses 0 otherwise
+     * @return WiMAX Phy object
      *
      * Creates a physical layer
      */
     Ptr<WimaxPhy> CreatePhy(PhyType phyType, char* SNRTraceFilePath, bool activateLoss);
     /**
-     * \param node Node to be installed.
-     * \param deviceType Device type to create.
-     * \param phyType PHY type to create.
-     * \param channel A channel to use.
-     * \param schedulerType The scheduling mechanism to install on the device.
-     * \return Ptr<WimaxNetDevice>
+     * @param node Node to be installed.
+     * @param deviceType Device type to create.
+     * @param phyType PHY type to create.
+     * @param channel A channel to use.
+     * @param schedulerType The scheduling mechanism to install on the device.
+     * @return Ptr<WimaxNetDevice>
      *
      * For each of the input nodes, a new WiMAX net device (either
      * ns3::SubscriberStationNetDevice or ns3::BaseStationNetDevice
@@ -232,11 +232,11 @@ class WimaxHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevice
                                 SchedulerType schedulerType);
 
     /**
-     * \brief Creates a transport service flow.
-     * \param direction the direction of the service flow: UP or DOWN.
-     * \param schedulingType The service scheduling type to be used: UGS, RTPS, NRTPS, BE
-     * \param classifier The classifier to be used for this service flow
-     * \return ServiceFlow
+     * @brief Creates a transport service flow.
+     * @param direction the direction of the service flow: UP or DOWN.
+     * @param schedulingType The service scheduling type to be used: UGS, RTPS, NRTPS, BE
+     * @param classifier The classifier to be used for this service flow
+     * @return ServiceFlow
      *
      */
     ServiceFlow CreateServiceFlow(ServiceFlow::Direction direction,
@@ -253,8 +253,8 @@ class WimaxHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevice
      * used by this model.  Return the number of streams (possibly zero) that
      * have been assigned.
      *
-     * \param stream first stream index to use
-     * \return the number of stream indices assigned by this model
+     * @param stream first stream index to use
+     * @return the number of stream indices assigned by this model
      */
     int64_t AssignStreams(int64_t stream);
 
@@ -264,20 +264,20 @@ class WimaxHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevice
      * have been assigned. The Install() method should have previously been
      * called by the user.
      *
-     * \param c NetDeviceContainer of the set of net devices for which the
+     * @param c NetDeviceContainer of the set of net devices for which the
      *          WimaxNetDevice should be modified to use a fixed stream
-     * \param stream first stream index to use
-     * \return the number of stream indices assigned by this helper
+     * @param stream first stream index to use
+     * @return the number of stream indices assigned by this helper
      */
     int64_t AssignStreams(NetDeviceContainer c, int64_t stream);
 
   private:
     /**
      * ASCII trace receive event
-     * \param stream the output stream
-     * \param path the path name
-     * \param packet the packet
-     * \param source the source MAC address
+     * @param stream the output stream
+     * @param path the path name
+     * @param packet the packet
+     * @param source the source MAC address
      */
     static void AsciiRxEvent(Ptr<OutputStreamWrapper> stream,
                              std::string path,
@@ -285,25 +285,25 @@ class WimaxHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevice
                              const Mac48Address& source);
     /**
      * ASCII trace transmit event
-     * \param stream the output stream
-     * \param path the path
-     * \param packet the packet
-     * \param dest the destination MAC address
+     * @param stream the output stream
+     * @param path the path
+     * @param packet the packet
+     * @param dest the destination MAC address
      */
     static void AsciiTxEvent(Ptr<OutputStreamWrapper> stream,
                              std::string path,
                              Ptr<const Packet> packet,
                              const Mac48Address& dest);
     /**
-     * \brief Enable pcap output on the indicated net device.
+     * @brief Enable pcap output on the indicated net device.
      *
      * NetDevice-specific implementation mechanism for hooking the trace and
      * writing to the trace file.
      *
-     * \param prefix Filename prefix to use for pcap files.
-     * \param nd Net device for which you want to enable tracing.
-     * \param explicitFilename Treat the prefix as an explicit filename if true
-     * \param promiscuous If true capture all possible packets available at the device.
+     * @param prefix Filename prefix to use for pcap files.
+     * @param nd Net device for which you want to enable tracing.
+     * @param explicitFilename Treat the prefix as an explicit filename if true
+     * @param promiscuous If true capture all possible packets available at the device.
      */
     void EnablePcapInternal(std::string prefix,
                             Ptr<NetDevice> nd,
@@ -311,15 +311,15 @@ class WimaxHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevice
                             bool promiscuous) override;
 
     /**
-     * \brief Enable ascii trace output on the indicated net device.
+     * @brief Enable ascii trace output on the indicated net device.
      *
      * NetDevice-specific implementation mechanism for hooking the trace and
      * writing to the trace file.
      *
-     * \param stream The output stream object to use when logging ascii traces.
-     * \param prefix Filename prefix to use for ascii trace files.
-     * \param nd Net device for which you want to enable tracing.
-     * \param explicitFilename Treat the prefix as an explicit filename if true
+     * @param stream The output stream object to use when logging ascii traces.
+     * @param prefix Filename prefix to use for ascii trace files.
+     * @param nd Net device for which you want to enable tracing.
+     * @param explicitFilename Treat the prefix as an explicit filename if true
      */
     void EnableAsciiInternal(Ptr<OutputStreamWrapper> stream,
                              std::string prefix,

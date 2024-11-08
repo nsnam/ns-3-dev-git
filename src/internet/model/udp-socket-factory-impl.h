@@ -18,10 +18,10 @@ namespace ns3
 class UdpL4Protocol;
 
 /**
- * \ingroup socket
- * \ingroup udp
+ * @ingroup socket
+ * @ingroup udp
  *
- * \brief Object to create UDP socket instances
+ * @brief Object to create UDP socket instances
  *
  * This class implements the API for creating UDP sockets.
  * It is a socket factory (deriving from class SocketFactory).
@@ -33,16 +33,16 @@ class UdpSocketFactoryImpl : public UdpSocketFactory
     ~UdpSocketFactoryImpl() override;
 
     /**
-     * \brief Set the associated UDP L4 protocol.
-     * \param udp the UDP L4 protocol
+     * @brief Set the associated UDP L4 protocol.
+     * @param udp the UDP L4 protocol
      */
     void SetUdp(Ptr<UdpL4Protocol> udp);
 
     /**
-     * \brief Implements a method to create a Udp-based socket and return
+     * @brief Implements a method to create a Udp-based socket and return
      * a base class smart pointer to the socket.
      *
-     * \return smart pointer to Socket
+     * @return smart pointer to Socket
      */
     Ptr<Socket> CreateSocket() override;
 

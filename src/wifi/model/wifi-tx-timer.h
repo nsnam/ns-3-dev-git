@@ -28,7 +28,7 @@ class Mac48Address;
 typedef std::unordered_map<uint16_t /* staId */, Ptr<WifiPsdu> /* PSDU */> WifiPsduMap;
 
 /**
- * \ingroup wifi
+ * @ingroup wifi
  *
  * This class is used to handle the timer that a station starts when transmitting
  * a frame that solicits a response. The timeout can be rescheduled (multiple times)
@@ -38,8 +38,8 @@ class WifiTxTimer
 {
   public:
     /**
-     * \enum Reason
-     * \brief The reason why the timer was started
+     * @enum Reason
+     * @brief The reason why the timer was started
      */
     enum Reason : uint8_t
     {
@@ -65,15 +65,15 @@ class WifiTxTimer
      * This method starts a timer of the given duration and schedules a call to
      * the given method in case the timer expires.
      *
-     * \tparam MEM \deduced Class method function signature type
-     * \tparam OBJ \deduced Class type of the object
-     * \tparam Args \deduced Type template parameter pack
-     * \param reason the reason why the timer was started
-     * \param delay the time to the expiration of the timer
-     * \param from the set of stations we expect to receive a response from
-     * \param mem_ptr Member method pointer to invoke
-     * \param obj The object on which to invoke the member method
-     * \param args The arguments to pass to the invoked method
+     * @tparam MEM \deduced Class method function signature type
+     * @tparam OBJ \deduced Class type of the object
+     * @tparam Args \deduced Type template parameter pack
+     * @param reason the reason why the timer was started
+     * @param delay the time to the expiration of the timer
+     * @param from the set of stations we expect to receive a response from
+     * @param mem_ptr Member method pointer to invoke
+     * @param obj The object on which to invoke the member method
+     * @param args The arguments to pass to the invoked method
      */
     template <typename MEM, typename OBJ, typename... Args>
     void Set(Reason reason,
@@ -87,7 +87,7 @@ class WifiTxTimer
      * Reschedule the timer to time out the given amount of time from the moment
      * this function is called. Note that nothing is done if the timer is not running.
      *
-     * \param delay the time to the expiration of the timer
+     * @param delay the time to the expiration of the timer
      */
     void Reschedule(const Time& delay);
 
@@ -95,22 +95,22 @@ class WifiTxTimer
      * Get the reason why the timer was started. Call
      * this method only if the timer is running
      *
-     * \return the reason why the timer was started
+     * @return the reason why the timer was started
      */
     Reason GetReason() const;
 
     /**
      * Get a string associated with the given reason
      *
-     * \param reason the given reason
-     * \return a string associated with the given reason
+     * @param reason the given reason
+     * @return a string associated with the given reason
      */
     std::string GetReasonString(Reason reason) const;
 
     /**
      * Return true if the timer is running
      *
-     * \return true if the timer is running
+     * @return true if the timer is running
      */
     bool IsRunning() const;
 
@@ -122,19 +122,19 @@ class WifiTxTimer
     /**
      * Notify that a response was got from the given station.
      *
-     * \param from the MAC address of the given station
+     * @param from the MAC address of the given station
      */
     void GotResponseFrom(const Mac48Address& from);
 
     /**
-     * \return the set of stations that are still expected to respond
+     * @return the set of stations that are still expected to respond
      */
     const std::set<Mac48Address>& GetStasExpectedToRespond() const;
 
     /**
      * Get the remaining time until the timer will expire.
      *
-     * \return the remaining time until the timer will expire.
+     * @return the remaining time until the timer will expire.
      *         If the timer is not running, this method returns zero.
      */
     Time GetDelayLeft() const;
@@ -158,7 +158,7 @@ class WifiTxTimer
     /**
      * Set the callback to invoke when the TX timer following the transmission of an MPDU expires.
      *
-     * \param callback the callback to invoke when the TX timer following the transmission
+     * @param callback the callback to invoke when the TX timer following the transmission
      *                 of an MPDU expires
      */
     void SetMpduResponseTimeoutCallback(MpduResponseTimeout callback) const;
@@ -166,7 +166,7 @@ class WifiTxTimer
     /**
      * Set the callback to invoke when the TX timer following the transmission of a PSDU expires.
      *
-     * \param callback the callback to invoke when the TX timer following the transmission
+     * @param callback the callback to invoke when the TX timer following the transmission
      *                 of a PSDU expires
      */
     void SetPsduResponseTimeoutCallback(PsduResponseTimeout callback) const;
@@ -175,7 +175,7 @@ class WifiTxTimer
      * Set the callback to invoke when the TX timer following the transmission of a PSDU map
      * expires.
      *
-     * \param callback the callback to invoke when the TX timer following the transmission
+     * @param callback the callback to invoke when the TX timer following the transmission
      *                 of a PSDU map expires
      */
     void SetPsduMapResponseTimeoutCallback(PsduMapResponseTimeout callback) const;
@@ -185,12 +185,12 @@ class WifiTxTimer
      * This method is called when the timer expires. It invokes the callbacks
      * and the method set by the user.
      *
-     * \tparam MEM \deduced Class method function signature type
-     * \tparam OBJ \deduced Class type of the object
-     * \tparam Args \deduced Type template parameter pack
-     * \param mem_ptr Member method pointer to invoke
-     * \param obj The object on which to invoke the member method
-     * \param args The arguments to pass to the invoked method
+     * @tparam MEM \deduced Class method function signature type
+     * @tparam OBJ \deduced Class type of the object
+     * @tparam Args \deduced Type template parameter pack
+     * @param mem_ptr Member method pointer to invoke
+     * @param obj The object on which to invoke the member method
+     * @param args The arguments to pass to the invoked method
      */
     template <typename MEM, typename OBJ, typename... Args>
     void Timeout(MEM mem_ptr, OBJ obj, Args... args);
@@ -204,8 +204,8 @@ class WifiTxTimer
      * This method is called when the timer expires to feed the MPDU response
      * timeout callback.
      *
-     * \param item the MPDU followed by no response
-     * \param txVector the TXVECTOR used to transmit the MPDU
+     * @param item the MPDU followed by no response
+     * @param txVector the TXVECTOR used to transmit the MPDU
      */
     void FeedTraceSource(Ptr<WifiMpdu> item, WifiTxVector txVector);
 
@@ -213,8 +213,8 @@ class WifiTxTimer
      * This method is called when the timer expires to feed the PSDU response
      * timeout callback.
      *
-     * \param psdu the PSDU followed by no response
-     * \param txVector the TXVECTOR used to transmit the PSDU
+     * @param psdu the PSDU followed by no response
+     * @param txVector the TXVECTOR used to transmit the PSDU
      */
     void FeedTraceSource(Ptr<WifiPsdu> psdu, WifiTxVector txVector);
 
@@ -222,8 +222,8 @@ class WifiTxTimer
      * This method is called when the timer expires to feed the PSDU map response
      * timeout callback.
      *
-     * \param psduMap the PSDU map for which not all responses were received
-     * \param nTotalStations the total number of expected responses
+     * @param psduMap the PSDU map for which not all responses were received
+     * @param nTotalStations the total number of expected responses
      */
     void FeedTraceSource(WifiPsduMap* psduMap, std::size_t nTotalStations);
 

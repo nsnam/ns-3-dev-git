@@ -19,8 +19,8 @@
 #include <string>
 
 /**
- * \file
- * \ingroup topology
+ * @file
+ * @ingroup topology
  * ns3::RocketfuelTopologyReader implementation.
  */
 
@@ -75,25 +75,25 @@ RocketfuelTopologyReader::~RocketfuelTopologyReader()
 
 /**
  * Build a Regex object for RocketFuel topology maps file type
- * \return a static regex object for maps file type
+ * @return a static regex object for maps file type
  */
 static const std::regex rocketfuel_maps_regex(ROCKETFUEL_MAPS_LINE);
 
 /**
  * Build a Regex object for RocketFuel topology weights file type
- * \return a static regex object for weights file type
+ * @return a static regex object for weights file type
  */
 static const std::regex rocketfuel_weights_regex(ROCKETFUEL_WEIGHTS_LINE);
 
 /**
- * \brief Print node info
- * \param uid node ID
- * \param loc node location
- * \param dns is a DNS node ?
- * \param bb is a BB node ?
- * \param neighListSize size of neighbor list
- * \param name node name
- * \param radius node radius
+ * @brief Print node info
+ * @param uid node ID
+ * @param loc node location
+ * @param dns is a DNS node ?
+ * @param bb is a BB node ?
+ * @param neighListSize size of neighbor list
+ * @param name node name
+ * @param radius node radius
  */
 static inline void
 PrintNodeInfo(std::string& uid,

@@ -48,17 +48,17 @@ struct RouteChange
 };
 
 /**
- * \ingroup dot11s
+ * @ingroup dot11s
  *
- * \brief Hybrid wireless mesh protocol -- a mesh routing protocol defined
+ * @brief Hybrid wireless mesh protocol -- a mesh routing protocol defined
  * in IEEE 802.11-2012 standard.
  */
 class HwmpProtocol : public MeshL2RoutingProtocol
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -72,7 +72,7 @@ class HwmpProtocol : public MeshL2RoutingProtocol
     void DoDispose() override;
 
     /**
-     * \brief structure of unreachable destination - address and sequence number
+     * @brief structure of unreachable destination - address and sequence number
      */
     struct FailedDestination
     {
@@ -83,13 +83,13 @@ class HwmpProtocol : public MeshL2RoutingProtocol
     /**
      * Route request, inherited from MeshL2RoutingProtocol
      *
-     * \param sourceIface the source interface
-     * \param source the source address
-     * \param destination the destination address
-     * \param packet the packet to route
-     * \param protocolType the protocol type
-     * \param routeReply the route reply
-     * \returns true if route exists
+     * @param sourceIface the source interface
+     * @param source the source address
+     * @param destination the destination address
+     * @param packet the packet to route
+     * @param protocolType the protocol type
+     * @param routeReply the route reply
+     * @returns true if route exists
      */
     bool RequestRoute(uint32_t sourceIface,
                       const Mac48Address source,
@@ -100,12 +100,12 @@ class HwmpProtocol : public MeshL2RoutingProtocol
     /**
      * Clean HWMP packet tag from packet; only the packet parameter is used
      *
-     * \param fromIface the from interface
-     * \param source the source address
-     * \param destination the destination address
-     * \param packet the packet to route
-     * \param protocolType the protocol type
-     * \returns true if successful
+     * @param fromIface the from interface
+     * @param source the source address
+     * @param destination the destination address
+     * @param packet the packet to route
+     * @param protocolType the protocol type
+     * @returns true if successful
      */
     bool RemoveRoutingStuff(uint32_t fromIface,
                             const Mac48Address source,
@@ -113,9 +113,9 @@ class HwmpProtocol : public MeshL2RoutingProtocol
                             Ptr<Packet> packet,
                             uint16_t& protocolType) override;
     /**
-     * \brief Install HWMP on given mesh point.
-     * \param mp the MeshPointDevice
-     * \returns true if successful
+     * @brief Install HWMP on given mesh point.
+     * @param mp the MeshPointDevice
+     * @returns true if successful
      *
      * Installing protocol causes installation of its interface MAC plugins.
      *
@@ -125,21 +125,21 @@ class HwmpProtocol : public MeshL2RoutingProtocol
     bool Install(Ptr<MeshPointDevice> mp);
     /**
      * Peer link status function
-     * \param meshPointAddress The MAC address of the mesh point
-     * \param peerAddress The MAC address of the peer
-     * \param interface The interface number
-     * \param status The status of the peer link
+     * @param meshPointAddress The MAC address of the mesh point
+     * @param peerAddress The MAC address of the peer
+     * @param interface The interface number
+     * @param status The status of the peer link
      */
     void PeerLinkStatus(Mac48Address meshPointAddress,
                         Mac48Address peerAddress,
                         uint32_t interface,
                         bool status);
     /**
-     * \brief This callback is used to obtain active neighbours on a given interface
-     * \param cb is a callback, which returns a list of addresses on given interface (uint32_t)
+     * @brief This callback is used to obtain active neighbours on a given interface
+     * @param cb is a callback, which returns a list of addresses on given interface (uint32_t)
      */
     void SetNeighboursCallback(Callback<std::vector<Mac48Address>, uint32_t> cb);
-    /// \name Proactive PREQ mechanism:
+    /// @name Proactive PREQ mechanism:
     ///@{
     /// Set the current node as root
     void SetRoot();
@@ -147,14 +147,14 @@ class HwmpProtocol : public MeshL2RoutingProtocol
     void UnsetRoot();
     ///@}
 
-    /// \brief Statistics:
+    /// @brief Statistics:
     ///@{
     /**
      *  Print statistics counters
-     *  \param os the output stream
+     *  @param os the output stream
      */
     void Report(std::ostream& os) const;
-    /// \brief Reset Statistics:
+    /// @brief Reset Statistics:
     void ResetStats();
     ///@}
 
@@ -163,14 +163,14 @@ class HwmpProtocol : public MeshL2RoutingProtocol
      * used by this model.  Return the number of streams (possibly zero) that
      * have been assigned.
      *
-     * \param stream first stream index to use
-     * \return the number of stream indices assigned by this model
+     * @param stream first stream index to use
+     * @return the number of stream indices assigned by this model
      */
     int64_t AssignStreams(int64_t stream);
 
     /**
-     * \brief Get pointer to HWMP routing table
-     * \return pointer to routing table
+     * @brief Get pointer to HWMP routing table
+     * @return pointer to routing table
      */
     Ptr<HwmpRtable> GetRoutingTable() const;
 
@@ -181,7 +181,7 @@ class HwmpProtocol : public MeshL2RoutingProtocol
     void DoInitialize() override;
 
     /**
-     * \brief Structure of path error: IePerr and list of receivers:
+     * @brief Structure of path error: IePerr and list of receivers:
      * interfaces and MAC address
      */
     struct PathError
@@ -211,14 +211,14 @@ class HwmpProtocol : public MeshL2RoutingProtocol
     /**
      * Like RequestRoute, but for unicast packets
      *
-     * \param sourceIface the source interface
-     * \param source the source address
-     * \param destination the destination address
-     * \param packet the packet to route
-     * \param protocolType the protocol type
-     * \param routeReply the route reply callback
-     * \param ttl the TTL
-     * \returns true if forwarded
+     * @param sourceIface the source interface
+     * @param source the source address
+     * @param destination the destination address
+     * @param packet the packet to route
+     * @param protocolType the protocol type
+     * @param routeReply the route reply callback
+     * @param ttl the TTL
+     * @returns true if forwarded
      */
     bool ForwardUnicast(uint32_t sourceIface,
                         const Mac48Address source,
@@ -228,16 +228,16 @@ class HwmpProtocol : public MeshL2RoutingProtocol
                         RouteReplyCallback routeReply,
                         uint32_t ttl);
 
-    /// \name Interaction with HWMP MAC plugin
+    /// @name Interaction with HWMP MAC plugin
     ///@{
     /**
-     * \brief Handler for receiving Path Request
+     * @brief Handler for receiving Path Request
      *
-     * \param preq the IE preq
-     * \param from the from address
-     * \param interface the interface
-     * \param fromMp the 'from MP' address
-     * \param metric the metric
+     * @param preq the IE preq
+     * @param from the from address
+     * @param interface the interface
+     * @param fromMp the 'from MP' address
+     * @param metric the metric
      */
     void ReceivePreq(IePreq preq,
                      Mac48Address from,
@@ -245,13 +245,13 @@ class HwmpProtocol : public MeshL2RoutingProtocol
                      Mac48Address fromMp,
                      uint32_t metric);
     /**
-     * \brief Handler for receiving Path Reply
+     * @brief Handler for receiving Path Reply
      *
-     * \param prep the IE prep
-     * \param from the from address
-     * \param interface the interface
-     * \param fromMp the 'from MP' address
-     * \param metric the metric
+     * @param prep the IE prep
+     * @param from the from address
+     * @param interface the interface
+     * @param fromMp the 'from MP' address
+     * @param metric the metric
      */
     void ReceivePrep(IePrep prep,
                      Mac48Address from,
@@ -259,27 +259,27 @@ class HwmpProtocol : public MeshL2RoutingProtocol
                      Mac48Address fromMp,
                      uint32_t metric);
     /**
-     * \brief Handler for receiving Path Error
+     * @brief Handler for receiving Path Error
      *
-     * \param destinations the list of failed destinations
-     * \param from the from address
-     * \param interface the interface
-     * \param fromMp the from MP address
+     * @param destinations the list of failed destinations
+     * @param from the from address
+     * @param interface the interface
+     * @param fromMp the from MP address
      */
     void ReceivePerr(std::vector<FailedDestination> destinations,
                      Mac48Address from,
                      uint32_t interface,
                      Mac48Address fromMp);
     /**
-     * \brief Send Path Reply
-     * \param src the source address
-     * \param dst the destination address
-     * \param retransmitter the retransmitter address
-     * \param initMetric the initial metric
-     * \param originatorDsn the originator DSN
-     * \param destinationSN the destination DSN
-     * \param lifetime the lifetime
-     * \param interface the interface
+     * @brief Send Path Reply
+     * @param src the source address
+     * @param dst the destination address
+     * @param retransmitter the retransmitter address
+     * @param initMetric the initial metric
+     * @param originatorDsn the originator DSN
+     * @param destinationSN the destination DSN
+     * @param lifetime the lifetime
+     * @param interface the interface
      */
     void SendPrep(Mac48Address src,
                   Mac48Address dst,
@@ -290,28 +290,28 @@ class HwmpProtocol : public MeshL2RoutingProtocol
                   uint32_t lifetime,
                   uint32_t interface);
     /**
-     * \brief forms a path error information element when list of destination fails on a given
+     * @brief forms a path error information element when list of destination fails on a given
      * interface \attention removes all entries from routing table!
      *
-     * \param destinations vector of failed destinations
-     * \return PathError
+     * @param destinations vector of failed destinations
+     * @return PathError
      */
     PathError MakePathError(std::vector<FailedDestination> destinations);
     /**
-     * \brief Forwards a received path error
-     * \param perr the path error
+     * @brief Forwards a received path error
+     * @param perr the path error
      */
     void ForwardPathError(PathError perr);
     /**
-     * \brief Passes a self-generated PERR to interface-plugin
-     * \param perr the path error
+     * @brief Passes a self-generated PERR to interface-plugin
+     * @param perr the path error
      */
     void InitiatePathError(PathError perr);
     /**
      * Get PERR receivers
      *
-     * \param failedDest
-     * \return list of addresses where a PERR should be sent to
+     * @param failedDest
+     * @return list of addresses where a PERR should be sent to
      */
     std::vector<std::pair<uint32_t, Mac48Address>> GetPerrReceivers(
         std::vector<FailedDestination> failedDest);
@@ -319,24 +319,24 @@ class HwmpProtocol : public MeshL2RoutingProtocol
     /**
      * Get PREQ receivers
      *
-     * \param interface
-     * \return list of addresses where a PREQ should be sent to
+     * @param interface
+     * @return list of addresses where a PREQ should be sent to
      */
     std::vector<Mac48Address> GetPreqReceivers(uint32_t interface);
     /**
      * Get broadcast receivers
      *
-     * \param interface
-     * \return list of addresses where a broadcast should be retransmitted
+     * @param interface
+     * @return list of addresses where a broadcast should be retransmitted
      */
     std::vector<Mac48Address> GetBroadcastReceivers(uint32_t interface);
     /**
-     * \brief MAC-plugin asks whether the frame can be dropped. Protocol automatically updates
+     * @brief MAC-plugin asks whether the frame can be dropped. Protocol automatically updates
      * seqno.
      *
-     * \return true if frame can be dropped
-     * \param seqno is the sequence number of source
-     * \param source is the source address
+     * @return true if frame can be dropped
+     * @param seqno is the sequence number of source
+     * @param source is the source address
      */
     bool DropDataFrame(uint32_t seqno, Mac48Address source);
     ///@}
@@ -352,24 +352,24 @@ class HwmpProtocol : public MeshL2RoutingProtocol
     ///@{
     /**
      * Queue a packet
-     * \param packet the packet to be queued
-     * \return true on success
+     * @param packet the packet to be queued
+     * @return true on success
      */
     bool QueuePacket(QueuedPacket packet);
     /**
      * Dequeue the first packet for a given destination
-     * \param dst the destination
-     * \return the dequeued packet
+     * @param dst the destination
+     * @return the dequeued packet
      */
     QueuedPacket DequeueFirstPacketByDst(Mac48Address dst);
     /**
      * Dequeue the first packet in the queue
-     * \return the dequeued packet
+     * @return the dequeued packet
      */
     QueuedPacket DequeueFirstPacket();
     /**
      * Signal the protocol that the reactive path toward a destination is now available
-     * \param dst the destination
+     * @param dst the destination
      */
     void ReactivePathResolved(Mac48Address dst);
     /**
@@ -378,21 +378,21 @@ class HwmpProtocol : public MeshL2RoutingProtocol
     void ProactivePathResolved();
     ///@}
 
-    /// \name Methods responsible for path discovery retry procedure:
+    /// @name Methods responsible for path discovery retry procedure:
     ///@{
     /**
-     * \brief checks when the last path discovery procedure was started for a given destination.
-     * \return true if should send PREQ
-     * \param dst is the destination address
+     * @brief checks when the last path discovery procedure was started for a given destination.
+     * @return true if should send PREQ
+     * @param dst is the destination address
      *
      * If the retry counter has not achieved the maximum level - preq should not be sent
      */
     bool ShouldSendPreq(Mac48Address dst);
 
     /**
-     * \brief Generates PREQ retry when retry timeout has expired and route is still unresolved.
-     * \param dst is the destination address
-     * \param numOfRetry is the number of retries
+     * @brief Generates PREQ retry when retry timeout has expired and route is still unresolved.
+     * @param dst is the destination address
+     * @param numOfRetry is the number of retries
      *
      * When PREQ retry has achieved the maximum level - retry mechanism should be canceled
      */
@@ -401,53 +401,53 @@ class HwmpProtocol : public MeshL2RoutingProtocol
     void SendProactivePreq();
     ///@}
 
-    /// \return address of MeshPointDevice
+    /// @return address of MeshPointDevice
     Mac48Address GetAddress();
-    /// \name Methods needed by HwmpMacLugin to access protocol parameters:
+    /// @name Methods needed by HwmpMacLugin to access protocol parameters:
     ///@{
     /**
      * Get do flag function
-     * \returns DO flag
+     * @returns DO flag
      */
     bool GetDoFlag() const;
     /**
      * Get rf flag function
-     * \returns the RF flag
+     * @returns the RF flag
      */
     bool GetRfFlag() const;
     /**
      * Get PREQ minimum interval function
-     * \returns the PREQ
+     * @returns the PREQ
      */
     Time GetPreqMinInterval();
     /**
      * Get PERR minimum interval function
-     * \returns the PERR minimum interval
+     * @returns the PERR minimum interval
      */
     Time GetPerrMinInterval();
     /**
      * Get maximum TTL function
-     * \returns the maximum TTL
+     * @returns the maximum TTL
      */
     uint8_t GetMaxTtl() const;
     /**
      * Get next period function
-     * \returns the next period
+     * @returns the next period
      */
     uint32_t GetNextPreqId();
     /**
      * Get next HWMP sequence no function
-     * \returns the next HWMP sequence number
+     * @returns the next HWMP sequence number
      */
     uint32_t GetNextHwmpSeqno();
     /**
      * Get active path lifetime function
-     * \returns the active path lifetime
+     * @returns the active path lifetime
      */
     uint32_t GetActivePathLifetime();
     /**
      * Get unicast PERR threshold function
-     * \returns the unicast PERR threshold
+     * @returns the unicast PERR threshold
      */
     uint8_t GetUnicastPerrThreshold() const;
     ///@}
@@ -468,7 +468,7 @@ class HwmpProtocol : public MeshL2RoutingProtocol
 
         /**
          * Print function
-         * \param os The output stream
+         * @param os The output stream
          */
         void Print(std::ostream& os) const;
         /// constructor
@@ -482,7 +482,7 @@ class HwmpProtocol : public MeshL2RoutingProtocol
     uint32_t m_dataSeqno;            ///< data sequence no
     uint32_t m_hwmpSeqno;            ///< HWMP sequence no
     uint32_t m_preqId;               ///< PREQ ID
-    /// \name Sequence number filters
+    /// @name Sequence number filters
     ///@{
     /// Data sequence number database
     std::map<Mac48Address, uint32_t> m_lastDataSeqno;
@@ -507,7 +507,7 @@ class HwmpProtocol : public MeshL2RoutingProtocol
     /// Packet Queue
     std::vector<QueuedPacket> m_rqueue;
 
-    /// \name HWMP-protocol parameters
+    /// @name HWMP-protocol parameters
     /// These are all Attributes
     ///@{
     uint16_t m_maxQueueSize; //!< Maximum number of packets we can store when resolving route

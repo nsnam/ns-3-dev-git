@@ -21,7 +21,7 @@ namespace ns3
 {
 
 /**
- * \ingroup stats
+ * @ingroup stats
  *
  * Simple average, min, max and std. deviation calculator
  *
@@ -40,7 +40,7 @@ class Average
 
     /**
      * Add new sample
-     * \param x The sample
+     * @param x The sample
      */
     void Update(const T& x)
     {
@@ -65,7 +65,7 @@ class Average
     // Sample statistics
     /**
      * Sample size
-     * \return the sample size
+     * @return the sample size
      */
     uint32_t Count() const
     {
@@ -74,7 +74,7 @@ class Average
 
     /**
      * Sample minimum
-     * \return the minimum of the sample
+     * @return the minimum of the sample
      */
     T Min() const
     {
@@ -83,7 +83,7 @@ class Average
 
     /**
      * Sample maximum
-     * \return the maximum of the sample
+     * @return the maximum of the sample
      */
     T Max() const
     {
@@ -92,7 +92,7 @@ class Average
 
     /**
      * Sample average
-     * \return the average of the sample
+     * @return the average of the sample
      */
     double Avg() const
     {
@@ -101,7 +101,7 @@ class Average
 
     /**
      * Sample estimate of mean, alias to Avg
-     * \return the average of the sample
+     * @return the average of the sample
      */
     double Mean() const
     {
@@ -110,7 +110,7 @@ class Average
 
     /**
      * Sample unbiased nbiased estimate of variance
-     * \return the unbiased nbiased estimate of variance
+     * @return the unbiased nbiased estimate of variance
      */
     double Var() const
     {
@@ -119,7 +119,7 @@ class Average
 
     /**
      * Sample standard deviation
-     * \return the standard deviation
+     * @return the standard deviation
      */
     double Stddev() const
     {
@@ -127,19 +127,19 @@ class Average
     }
 
     /**
-     * \name Error of the mean estimates
+     * @name Error of the mean estimates
      *
      * @{
      */
     /**
-     * \brief Margin of error of the mean for 90% confidence level
+     * @brief Margin of error of the mean for 90% confidence level
      *
      * Note that estimates are valid for
      *   - uncorrelated measurements,
      *   - normal distribution and
      *   - large enough sample size.
      *
-     * \returns Margin of error of the mean for 90% confidence level
+     * @returns Margin of error of the mean for 90% confidence level
      */
     double Error90() const
     {
@@ -147,14 +147,14 @@ class Average
     }
 
     /**
-     * \brief Margin of error of the mean for 95% confidence level
+     * @brief Margin of error of the mean for 95% confidence level
      *
      * Note that estimates are valid for
      *   - uncorrelated measurements,
      *   - normal distribution and
      *   - large enough sample size.
      *
-     * \returns Margin of error of the mean for 95% confidence level
+     * @returns Margin of error of the mean for 95% confidence level
      */
     double Error95() const
     {
@@ -162,14 +162,14 @@ class Average
     }
 
     /**
-     * \brief Margin of error of the mean for 99% confidence level
+     * @brief Margin of error of the mean for 99% confidence level
      *
      * Note that estimates are valid for
      *   - uncorrelated measurements,
      *   - normal distribution and
      *   - large enough sample size.
      *
-     * \returns Margin of error of the mean for 99% confidence level
+     * @returns Margin of error of the mean for 99% confidence level
      *
      */
     double Error99() const
@@ -188,9 +188,9 @@ class Average
 
 /**
  * Print avg (err) [min, max]
- * \param os The output stream
- * \param x The Average value to print
- * \return the output stream.
+ * @param os The output stream
+ * @param x The Average value to print
+ * @return the output stream.
  */
 template <typename T>
 std::ostream&

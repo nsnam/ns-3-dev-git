@@ -15,7 +15,7 @@ namespace ns3
 {
 
 /**
- * \ingroup spectrum
+ * @ingroup spectrum
  *
  * A Constant (fixed) propagation loss. The loss is not dependent on the distance.
  */
@@ -26,8 +26,8 @@ class ConstantSpectrumPropagationLossModel : public SpectrumPropagationLossModel
     ~ConstantSpectrumPropagationLossModel() override;
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -36,12 +36,12 @@ class ConstantSpectrumPropagationLossModel : public SpectrumPropagationLossModel
                                                     Ptr<const MobilityModel> b) const override;
     /**
      * Set the propagation loss
-     * \param lossDb the propagation loss [dB]
+     * @param lossDb the propagation loss [dB]
      */
     void SetLossDb(double lossDb);
     /**
      * Get the propagation loss
-     * \returns the propagation loss [dB]
+     * @returns the propagation loss [dB]
      */
     double GetLossDb() const;
 

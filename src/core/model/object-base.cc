@@ -17,8 +17,8 @@
 #include "ns3/core-config.h"
 
 /**
- * \file
- * \ingroup object
+ * @file
+ * @ingroup object
  * ns3::ObjectBase class implementation.
  */
 
@@ -27,9 +27,9 @@ namespace ns3
 // Explicit instantiation declaration
 
 /**
- * \ingroup callback
+ * @ingroup callback
  * Explicit instantiation for ObjectBase
- * \return A wrapper Callback
+ * @return A wrapper Callback
  * \sa ns3::MakeCallback
  */
 template Callback<ObjectBase*> MakeCallback<ObjectBase*>(ObjectBase* (*)());
@@ -44,9 +44,9 @@ NS_OBJECT_ENSURE_REGISTERED(ObjectBase);
  * Ensure the TypeId for ObjectBase gets fully configured
  * to anchor the inheritance tree properly.
  *
- * \relates ns3::ObjectBase
+ * @relates ns3::ObjectBase
  *
- * \return The TypeId for ObjectBase.
+ * @return The TypeId for ObjectBase.
  */
 static TypeId
 GetObjectIid()

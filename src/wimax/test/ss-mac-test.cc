@@ -16,10 +16,10 @@
 using namespace ns3;
 
 /**
- * \ingroup wimax-test
- * \ingroup tests
+ * @ingroup wimax-test
+ * @ingroup tests
  *
- * \brief Test the network entry procedure.
+ * @brief Test the network entry procedure.
  * Create a network with a BS and 10 SS and check that all the SS perform the
  * network entry correctly
  *
@@ -79,10 +79,10 @@ Ns3WimaxNetworkEntryTestCase::DoRun()
 }
 
 /**
- * \ingroup wimax-test
- * \ingroup tests
+ * @ingroup wimax-test
+ * @ingroup tests
  *
- * \brief Test if the management connections are correctly setup.
+ * @brief Test if the management connections are correctly setup.
  * Create a network with a BS and 10 SS and check that the management
  * connections are correctly setup for all SS
  *
@@ -143,10 +143,10 @@ Ns3WimaxManagementConnectionsTestCase::DoRun()
 }
 
 /**
- * \ingroup wimax-test
- * \ingroup tests
+ * @ingroup wimax-test
+ * @ingroup tests
  *
- * \brief Ns3 Wimax SS Mac Test Suite
+ * @brief Ns3 Wimax SS Mac Test Suite
  */
 class Ns3WimaxSSMacTestSuite : public TestSuite
 {

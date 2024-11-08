@@ -13,8 +13,8 @@ namespace ns3
 {
 
 /**
- * \ingroup point-to-point
- * \brief Packet header for PPP
+ * @ingroup point-to-point
+ * @brief Packet header for PPP
  *
  * This class can be used to add a header to PPP packet.  Currently we do not
  * implement any of the state machine in \RFC{1661}, we just encapsulate the
@@ -38,26 +38,26 @@ class PppHeader : public Header
 {
   public:
     /**
-     * \brief Construct a PPP header.
+     * @brief Construct a PPP header.
      */
     PppHeader();
 
     /**
-     * \brief Destroy a PPP header.
+     * @brief Destroy a PPP header.
      */
     ~PppHeader() override;
 
     /**
-     * \brief Get the TypeId
+     * @brief Get the TypeId
      *
-     * \return The TypeId for this class
+     * @return The TypeId for this class
      */
     static TypeId GetTypeId();
 
     /**
-     * \brief Get the TypeId of the instance
+     * @brief Get the TypeId of the instance
      *
-     * \return The TypeId for this instance
+     * @return The TypeId for this instance
      */
     TypeId GetInstanceTypeId() const override;
 
@@ -67,26 +67,26 @@ class PppHeader : public Header
     uint32_t GetSerializedSize() const override;
 
     /**
-     * \brief Set the protocol type carried by this PPP packet
+     * @brief Set the protocol type carried by this PPP packet
      *
      * The type numbers to be used are defined in \RFC{3818}
      *
-     * \param protocol the protocol type being carried
+     * @param protocol the protocol type being carried
      */
     void SetProtocol(uint16_t protocol);
 
     /**
-     * \brief Get the protocol type carried by this PPP packet
+     * @brief Get the protocol type carried by this PPP packet
      *
      * The type numbers to be used are defined in \RFC{3818}
      *
-     * \return the protocol type being carried
+     * @return the protocol type being carried
      */
     uint16_t GetProtocol() const;
 
   private:
     /**
-     * \brief The PPP protocol type of the payload packet
+     * @brief The PPP protocol type of the payload packet
      */
     uint16_t m_protocol;
 };

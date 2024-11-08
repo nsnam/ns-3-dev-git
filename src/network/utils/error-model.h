@@ -62,12 +62,12 @@ namespace ns3
 class Packet;
 
 /**
- * \ingroup network
- * \defgroup errormodel Error Model
+ * @ingroup network
+ * @defgroup errormodel Error Model
  */
 /**
- * \ingroup errormodel
- * \brief General error model that can be used to corrupt packets
+ * @ingroup errormodel
+ * @brief General error model that can be used to corrupt packets
  *
  * This object is used to flag packets as being lost/errored or not.
  * It is part of the Object framework and can be aggregated to
@@ -84,7 +84,7 @@ class Packet;
  *
  * Typical code (simplified) to use an ErrorModel may look something like
  * this:
- * \code
+ * @code
  * Ptr<ErrorModel> rem = CreateObject<RateErrorModel> ();
  * Ptr<UniformRandomVariable> uv = CreateObject<UniformRandomVariable> ();
  * rem->SetRandomVariable (uv);
@@ -97,7 +97,7 @@ class Packet;
  *   } else {
  *     Forward (p);
  *   }
- * \endcode
+ * @endcode
  *
  * Four practical error models, a RateErrorModel, a BurstErrorModel,
  * a ListErrorModel, and a ReceiveListErrorModel, are currently implemented.
@@ -106,8 +106,8 @@ class ErrorModel : public Object
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -118,8 +118,8 @@ class ErrorModel : public Object
      * Note:  Depending on the error model, this function may or may not
      * alter the contents of the packet upon returning true.
      *
-     * \returns true if the Packet is to be considered as errored/corrupted
-     * \param pkt Packet to apply error model to
+     * @returns true if the Packet is to be considered as errored/corrupted
+     * @param pkt Packet to apply error model to
      */
     bool IsCorrupt(Ptr<Packet> pkt);
     /**
@@ -135,15 +135,15 @@ class ErrorModel : public Object
      */
     void Disable();
     /**
-     * \return true if error model is enabled; false otherwise
+     * @return true if error model is enabled; false otherwise
      */
     bool IsEnabled() const;
 
   private:
     /**
      * Corrupt a packet according to the specified model.
-     * \param p the packet to corrupt
-     * \returns true if the packet is corrupted
+     * @param p the packet to corrupt
+     * @returns true if the packet is corrupted
      */
     virtual bool DoCorrupt(Ptr<Packet> p) = 0;
     /**
@@ -155,7 +155,7 @@ class ErrorModel : public Object
 };
 
 /**
- * \brief Determine which packets are errored corresponding to an underlying
+ * @brief Determine which packets are errored corresponding to an underlying
  * distribution, rate, and unit.
  *
  * This object is used to flag packets as being lost/errored or not.
@@ -173,8 +173,8 @@ class RateErrorModel : public ErrorModel
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -192,25 +192,25 @@ class RateErrorModel : public ErrorModel
     };
 
     /**
-     * \returns the ErrorUnit being used by the underlying model
+     * @returns the ErrorUnit being used by the underlying model
      */
     RateErrorModel::ErrorUnit GetUnit() const;
     /**
-     * \param error_unit the ErrorUnit to be used by the underlying model
+     * @param error_unit the ErrorUnit to be used by the underlying model
      */
     void SetUnit(ErrorUnit error_unit);
 
     /**
-     * \returns the error rate being applied by the model
+     * @returns the error rate being applied by the model
      */
     double GetRate() const;
     /**
-     * \param rate the error rate to be used by the model
+     * @param rate the error rate to be used by the model
      */
     void SetRate(double rate);
 
     /**
-     * \param ranvar A random variable distribution to generate random variates
+     * @param ranvar A random variable distribution to generate random variates
      */
     void SetRandomVariable(Ptr<RandomVariableStream>);
 
@@ -219,8 +219,8 @@ class RateErrorModel : public ErrorModel
      * used by this model.  Return the number of streams (possibly zero) that
      * have been assigned.
      *
-     * \param stream first stream index to use
-     * \return the number of stream indices assigned by this model
+     * @param stream first stream index to use
+     * @return the number of stream indices assigned by this model
      */
     int64_t AssignStreams(int64_t stream);
 
@@ -228,20 +228,20 @@ class RateErrorModel : public ErrorModel
     bool DoCorrupt(Ptr<Packet> p) override;
     /**
      * Corrupt a packet (packet unit).
-     * \param p the packet to corrupt
-     * \returns true if the packet is corrupted
+     * @param p the packet to corrupt
+     * @returns true if the packet is corrupted
      */
     virtual bool DoCorruptPkt(Ptr<Packet> p);
     /**
      * Corrupt a packet (Byte unit).
-     * \param p the packet to corrupt
-     * \returns true if the packet is corrupted
+     * @param p the packet to corrupt
+     * @returns true if the packet is corrupted
      */
     virtual bool DoCorruptByte(Ptr<Packet> p);
     /**
      * Corrupt a packet (bit unit).
-     * \param p the packet to corrupt
-     * \returns true if the packet is corrupted
+     * @param p the packet to corrupt
+     * @returns true if the packet is corrupted
      */
     virtual bool DoCorruptBit(Ptr<Packet> p);
     void DoReset() override;
@@ -253,7 +253,7 @@ class RateErrorModel : public ErrorModel
 };
 
 /**
- * \brief Determine which bursts of packets are errored corresponding to
+ * @brief Determine which bursts of packets are errored corresponding to
  * an underlying distribution, burst rate, and burst size.
  *
  * This object is used to flag packets as being lost/errored or not.
@@ -288,8 +288,8 @@ class BurstErrorModel : public ErrorModel
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -297,21 +297,21 @@ class BurstErrorModel : public ErrorModel
     ~BurstErrorModel() override;
 
     /**
-     * \returns the error rate being applied by the model
+     * @returns the error rate being applied by the model
      */
     double GetBurstRate() const;
     /**
-     * \param rate the error rate to be used by the model
+     * @param rate the error rate to be used by the model
      */
     void SetBurstRate(double rate);
 
     /**
-     * \param ranVar A random variable distribution to generate random variates
+     * @param ranVar A random variable distribution to generate random variates
      */
     void SetRandomVariable(Ptr<RandomVariableStream> ranVar);
 
     /**
-     * \param burstSz A random variable distribution to generate random burst size
+     * @param burstSz A random variable distribution to generate random burst size
      */
     void SetRandomBurstSize(Ptr<RandomVariableStream> burstSz);
 
@@ -320,8 +320,8 @@ class BurstErrorModel : public ErrorModel
      * used by this model.  Return the number of streams (possibly zero) that
      * have been assigned.
      *
-     * \param stream first stream index to use
-     * \return the number of stream indices assigned by this model
+     * @param stream first stream index to use
+     * @return the number of stream indices assigned by this model
      */
     int64_t AssignStreams(int64_t stream);
 
@@ -342,7 +342,7 @@ class BurstErrorModel : public ErrorModel
 };
 
 /**
- * \brief Provide a list of Packet uids to corrupt
+ * @brief Provide a list of Packet uids to corrupt
  *
  * This object is used to flag packets as being lost/errored or not.
  * A note on performance:  the list is assumed to be unordered, and
@@ -367,19 +367,19 @@ class ListErrorModel : public ErrorModel
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     ListErrorModel();
     ~ListErrorModel() override;
 
     /**
-     * \return a copy of the underlying list
+     * @return a copy of the underlying list
      */
     std::list<uint64_t> GetList() const;
     /**
-     * \param packetlist The list of packet uids to error.
+     * @param packetlist The list of packet uids to error.
      *
      * This method overwrites any previously provided list.
      */
@@ -398,7 +398,7 @@ class ListErrorModel : public ErrorModel
 };
 
 /**
- * \brief Provide a list of Packets to corrupt
+ * @brief Provide a list of Packets to corrupt
  *
  * This model also processes a user-generated list of packets to
  * corrupt, except that the list corresponds to the sequence of
@@ -413,19 +413,19 @@ class ReceiveListErrorModel : public ErrorModel
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     ReceiveListErrorModel();
     ~ReceiveListErrorModel() override;
 
     /**
-     * \return a copy of the underlying list
+     * @return a copy of the underlying list
      */
     std::list<uint32_t> GetList() const;
     /**
-     * \param packetlist The list of packets to error.
+     * @param packetlist The list of packets to error.
      *
      * This method overwrites any previously provided list.
      */
@@ -445,14 +445,14 @@ class ReceiveListErrorModel : public ErrorModel
 };
 
 /**
- * \brief The simplest error model, corrupts even packets and does not corrupt odd ones.
+ * @brief The simplest error model, corrupts even packets and does not corrupt odd ones.
  */
 class BinaryErrorModel : public ErrorModel
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 

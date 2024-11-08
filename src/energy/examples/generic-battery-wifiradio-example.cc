@@ -44,8 +44,8 @@ NS_LOG_COMPONENT_DEFINE("GenericBatteryWifiRadioExample");
 /**
  * Print a received packet
  *
- * \param from sender address
- * \return a string with the details of the packet: dst {IP, port}, time.
+ * @param from sender address
+ * @return a string with the details of the packet: dst {IP, port}, time.
  */
 inline std::string
 PrintReceivedPacket(Address& from)
@@ -60,7 +60,7 @@ PrintReceivedPacket(Address& from)
 }
 
 /**
- * \param socket Pointer to socket.
+ * @param socket Pointer to socket.
  *
  * Packet receiving sink.
  */
@@ -79,11 +79,11 @@ ReceivePacket(Ptr<Socket> socket)
 }
 
 /**
- * \param socket Pointer to socket.
- * \param pktSize Packet size.
- * \param n Pointer to node.
- * \param pktCount Number of packets to generate.
- * \param pktInterval Packet sending interval.
+ * @param socket Pointer to socket.
+ * @param pktSize Packet size.
+ * @param n Pointer to node.
+ * @param pktCount Number of packets to generate.
+ * @param pktInterval Packet sending interval.
  *
  * Generate Traffic
  */
@@ -114,8 +114,8 @@ GenerateTraffic(Ptr<Socket> socket,
 /**
  * Trace function for remaining energy at node.
  *
- * \param oldValue Old value
- * \param remainingEnergy New value
+ * @param oldValue Old value
+ * @param remainingEnergy New value
  */
 void
 RemainingEnergy(double oldValue, double remainingEnergy)

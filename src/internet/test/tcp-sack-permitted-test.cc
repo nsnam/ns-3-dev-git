@@ -17,15 +17,15 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("SackPermittedTestSuite");
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief Test case for checking the SACK-PERMITTED option.
+ * @brief Test case for checking the SACK-PERMITTED option.
  *
  */
 class SackPermittedTestCase : public TcpGeneralTest
 {
   public:
-    /** \brief Configuration of the test */
+    /** @brief Configuration of the test */
     enum Configuration
     {
         DISABLED,
@@ -35,8 +35,8 @@ class SackPermittedTestCase : public TcpGeneralTest
     };
 
     /**
-     * \brief Constructor
-     * \param conf Test configuration.
+     * @brief Constructor
+     * @param conf Test configuration.
      * */
     SackPermittedTestCase(SackPermittedTestCase::Configuration conf);
 
@@ -186,15 +186,15 @@ SackPermittedTestCase::Tx(const Ptr<const Packet> p, const TcpHeader& h, SocketW
 }
 
 /**
- * \ingroup internet-test
- * \ingroup tests
+ * @ingroup internet-test
+ * @ingroup tests
  *
  * The test case for testing the TCP SACK PERMITTED option.
  */
 class TcpSackPermittedTestSuite : public TestSuite
 {
   public:
-    /** \brief Constructor */
+    /** @brief Constructor */
     TcpSackPermittedTestSuite()
         : TestSuite("tcp-sack-permitted", Type::UNIT)
     {

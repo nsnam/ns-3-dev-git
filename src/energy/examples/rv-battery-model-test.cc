@@ -29,7 +29,7 @@ using namespace ns3::energy;
 NS_LOG_COMPONENT_DEFINE("RvBatteryModelTestSuite");
 
 /**
- * \ingroup energy
+ * @ingroup energy
  *
  * This example was originally devised as a test, then it was converted
  * to an example.
@@ -56,9 +56,9 @@ class BatteryLifetimeTest
     void CreateLoadProfiles();
 
     /**
-     * \param load Load value, in Amperes (A).
-     * \param expLifetime Expected lifetime.
-     * \return False if no error occurs.
+     * @param load Load value, in Amperes (A).
+     * @param expLifetime Expected lifetime.
+     * @return False if no error occurs.
      *
      * Runs simulation with constant load and checks the battery lifetime with
      * known results.
@@ -66,10 +66,10 @@ class BatteryLifetimeTest
     bool ConstantLoadTest(double load, Time expLifetime) const;
 
     /**
-     * \param loads Load profile.
-     * \param timeStamps Time stamps.
-     * \param expLifetime Expected lifetime.
-     * \returns False if no error occurs.
+     * @param loads Load profile.
+     * @param timeStamps Time stamps.
+     * @param expLifetime Expected lifetime.
+     * @returns False if no error occurs.
      *
      * Runs simulation with variable load and checks the battery lifetime with
      * known results.

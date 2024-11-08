@@ -68,7 +68,7 @@ const VhtPhy::NesExceptionMap VhtPhy::m_exceptionsMap {
 // clang-format on
 
 /**
- * \brief map a given channel list type to the corresponding scaling factor
+ * @brief map a given channel list type to the corresponding scaling factor
  */
 const std::map<WifiChannelListType, dBm_u> channelTypeToScalingFactor{
     {WIFI_CHANLIST_PRIMARY, 0.0},
@@ -78,7 +78,7 @@ const std::map<WifiChannelListType, dBm_u> channelTypeToScalingFactor{
 };
 
 /**
- * \brief map a given secondary channel width to its channel list type
+ * @brief map a given secondary channel width to its channel list type
  */
 const std::map<MHz_u, WifiChannelListType> secondaryChannels{
     {20, WIFI_CHANLIST_SECONDARY},

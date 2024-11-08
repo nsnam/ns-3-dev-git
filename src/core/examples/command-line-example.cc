@@ -13,9 +13,9 @@
 #include <string>
 
 /**
- * \file
- * \ingroup core-examples
- * \ingroup commandline
+ * @file
+ * @ingroup core-examples
+ * @ingroup commandline
  * Example program illustrating use of ns3::CommandLine.
  */
 
@@ -34,8 +34,8 @@ std::string g_cbArg = "cbArg default";
  * Function to illustrate command line arguments handled by a
  * Callback function.
  *
- * \param [in] val New value for \pname{g_cbArg}.
- * \returns \c true.
+ * @param [in] val New value for \pname{g_cbArg}.
+ * @returns \c true.
  */
 bool
 SetCbArg(const std::string& val)
@@ -50,9 +50,9 @@ SetCbArg(const std::string& val)
  * Print a row containing the name, the default
  * and the final values of an argument.
  *
- * \param [in] label The argument label.
- * \param [in] defaultValue The default value of the argument.
- * \param [in] finalValue The final value of the argument.
+ * @param [in] label The argument label.
+ * @param [in] defaultValue The default value of the argument.
+ * @param [in] finalValue The final value of the argument.
  *
  */
 #define DefaultFinal(label, defaultValue, finalValue)                                              \

@@ -18,8 +18,8 @@ namespace ns3
 {
 
 /**
- * \ingroup applications
- * \brief Base class for sink applications.
+ * @ingroup applications
+ * @brief Base class for sink applications.
  *
  * This class can be used as a base class for sink applications.
  * A sink application is an application that is primarily used to only receive or echo packets.
@@ -39,15 +39,15 @@ class SinkApplication : public Application
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
     /**
      * Constructor
      *
-     * \param defaultPort the default port number
+     * @param defaultPort the default port number
      */
     SinkApplication(uint16_t defaultPort = 0);
     ~SinkApplication() override;
@@ -60,26 +60,26 @@ class SinkApplication : public Application
 
   private:
     /**
-     * \brief set the local address
-     * \param addr local address
+     * @brief set the local address
+     * @param addr local address
      */
     virtual void SetLocal(const Address& addr);
 
     /**
-     * \brief get the local address
-     * \return the local address
+     * @brief get the local address
+     * @return the local address
      */
     Address GetLocal() const;
 
     /**
-     * \brief set the server port
-     * \param port server port
+     * @brief set the server port
+     * @param port server port
      */
     virtual void SetPort(uint32_t port);
 
     /**
-     * \brief get the server port
-     * \return the server port
+     * @brief get the server port
+     * @return the server port
      */
     uint32_t GetPort() const;
 };

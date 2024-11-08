@@ -13,8 +13,8 @@
 #include <sstream>
 
 /**
- * \file
- * \ingroup attribute_Integer
+ * @file
+ * @ingroup attribute_Integer
  * ns3::MakeIntegerChecker implementation.
  */
 
@@ -29,13 +29,13 @@ namespace internal
 {
 
 /**
- * \ingroup attribute_Integer
+ * @ingroup attribute_Integer
  * Make an Integer attribute checker with embedded numeric type name.
  *
- * \param [in] min The minimum allowed value.
- * \param [in] max The maximum allowed value.
- * \param [in] name The original type name ("int8_t", "int16_t", _etc_.).
- * \returns The AttributeChecker.
+ * @param [in] min The minimum allowed value.
+ * @param [in] max The maximum allowed value.
+ * @param [in] name The original type name ("int8_t", "int16_t", _etc_.).
+ * @returns The AttributeChecker.
  */
 Ptr<const AttributeChecker>
 MakeIntegerChecker(int64_t min, int64_t max, std::string name)

@@ -22,7 +22,7 @@ namespace ns3
 {
 
 /**
- * \ingroup wimax
+ * @ingroup wimax
  * SimpleOfdmSendParam class
  */
 class SimpleOfdmSendParam
@@ -32,13 +32,13 @@ class SimpleOfdmSendParam
     /**
      * Constructor
      *
-     * \param fecBlock FEC block
-     * \param burstSize burst size
-     * \param isFirstBlock is the first block
-     * \param Frequency frequency
-     * \param modulationType modulation type
-     * \param direction the direction
-     * \param rxPowerDbm receive power
+     * @param fecBlock FEC block
+     * @param burstSize burst size
+     * @param isFirstBlock is the first block
+     * @param Frequency frequency
+     * @param modulationType modulation type
+     * @param direction the direction
+     * @param rxPowerDbm receive power
      */
     SimpleOfdmSendParam(const Bvec& fecBlock,
                         uint32_t burstSize,
@@ -50,13 +50,13 @@ class SimpleOfdmSendParam
     /**
      * Constructor
      *
-     * \param burstSize burst size
-     * \param isFirstBlock is the first block
-     * \param Frequency frequency
-     * \param modulationType modulation type
-     * \param direction the direction
-     * \param rxPowerDbm receive power
-     * \param burst packet burst object
+     * @param burstSize burst size
+     * @param isFirstBlock is the first block
+     * @param Frequency frequency
+     * @param modulationType modulation type
+     * @param direction the direction
+     * @param rxPowerDbm receive power
+     * @param burst packet burst object
      */
     SimpleOfdmSendParam(uint32_t burstSize,
                         bool isFirstBlock,
@@ -67,66 +67,66 @@ class SimpleOfdmSendParam
                         Ptr<PacketBurst> burst);
     ~SimpleOfdmSendParam();
     /**
-     * \brief sent the fec block to send
-     * \param fecBlock the fec block to send
+     * @brief sent the fec block to send
+     * @param fecBlock the fec block to send
      */
     void SetFecBlock(const Bvec& fecBlock);
     /**
-     * \brief set the burst size
-     * \param burstSize the burst size in bytes
+     * @brief set the burst size
+     * @param burstSize the burst size in bytes
      */
     void SetBurstSize(uint32_t burstSize);
     /**
-     * \param isFirstBlock Set to true if this fec block is the first one in the burst, set to false
+     * @param isFirstBlock Set to true if this fec block is the first one in the burst, set to false
      * otherwise
      */
     void SetIsFirstBlock(bool isFirstBlock);
     /**
-     * \param Frequency set the frequency of the channel in which this fec block will be sent
+     * @param Frequency set the frequency of the channel in which this fec block will be sent
      */
     void SetFrequency(uint64_t Frequency);
     /**
-     * \param modulationType the modulation type used to send this fec block
+     * @param modulationType the modulation type used to send this fec block
      */
     void SetModulationType(WimaxPhy::ModulationType modulationType);
     /**
-     * \param direction the direction on which this fec block will be sent
+     * @param direction the direction on which this fec block will be sent
      */
     void SetDirection(uint8_t direction);
     /**
-     * \param rxPowerDbm the received power
+     * @param rxPowerDbm the received power
      */
     void SetRxPowerDbm(double rxPowerDbm);
     /**
-     * \return the fec block
+     * @return the fec block
      */
     Bvec GetFecBlock();
     /**
-     * \return the burst size
+     * @return the burst size
      */
     uint32_t GetBurstSize() const;
     /**
-     * \return true if this fec block is the first one in the burst, false otherwise
+     * @return true if this fec block is the first one in the burst, false otherwise
      */
     bool GetIsFirstBlock() const;
     /**
-     * \return the frequency on which the fec block is sent/received
+     * @return the frequency on which the fec block is sent/received
      */
     uint64_t GetFrequency() const;
     /**
-     * \return the modulation type used to send this fec block
+     * @return the modulation type used to send this fec block
      */
     WimaxPhy::ModulationType GetModulationType();
     /**
-     * \return the direction on which this fec block was sent. UP or DOWN
+     * @return the direction on which this fec block was sent. UP or DOWN
      */
     uint8_t GetDirection() const;
     /**
-     * \return the Received power
+     * @return the Received power
      */
     double GetRxPowerDbm() const;
     /**
-     * \return the received burst
+     * @return the received burst
      */
     Ptr<PacketBurst> GetBurst();
 

@@ -21,9 +21,9 @@ namespace
  * If the specified channel width is spread over multiple frequency segments (e.g. 160 MHz if
  * operating channel is 80+80MHz), multiple center frequencies are returned.
  *
- * \param channel the operating channel of the PHY
- * \param channelWidth the channel width
- * \return the center frequency of each segment covered by the given width
+ * @param channel the operating channel of the PHY
+ * @param channelWidth the channel width
+ * @return the center frequency of each segment covered by the given width
  */
 std::vector<ns3::MHz_u>
 GetChannelCenterFrequenciesPerSegment(const ns3::WifiPhyOperatingChannel& channel,

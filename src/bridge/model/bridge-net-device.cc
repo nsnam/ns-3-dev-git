@@ -14,8 +14,8 @@
 #include "ns3/uinteger.h"
 
 /**
- * \file
- * \ingroup bridge
+ * @file
+ * @ingroup bridge
  * ns3::BridgeNetDevice implementation.
  */
 

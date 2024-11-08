@@ -10,16 +10,16 @@
 #include "ns3/test.h"
 
 /**
- * \file
- * \ingroup core-tests
- * \ingroup ptr
- * \ingroup ptr-tests
+ * @file
+ * @ingroup core-tests
+ * @ingroup ptr
+ * @ingroup ptr-tests
  * Smart pointer test suite.
  */
 
 /**
- * \ingroup core-tests
- * \defgroup ptr-tests Smart pointer test suite
+ * @ingroup core-tests
+ * @defgroup ptr-tests Smart pointer test suite
  */
 
 namespace ns3
@@ -31,7 +31,7 @@ namespace tests
 class PtrTestCase;
 
 /**
- * \ingroup ptr-tests
+ * @ingroup ptr-tests
  * Pointer base test class
  */
 class PtrTestBase
@@ -51,7 +51,7 @@ class PtrTestBase
 };
 
 /**
- * \ingroup ptr-tests
+ * @ingroup ptr-tests
  * No Count class
  */
 class NoCount : public PtrTestBase
@@ -60,7 +60,7 @@ class NoCount : public PtrTestBase
     /**
      * Constructor
      *
-     * \param [in] test The object to track.
+     * @param [in] test The object to track.
      */
     NoCount(PtrTestCase* test);
     /**
@@ -77,7 +77,7 @@ class NoCount : public PtrTestBase
 };
 
 /**
- * \ingroup ptr-tests
+ * @ingroup ptr-tests
  * Test case for pointer
  */
 class PtrTestCase : public TestCase
@@ -92,11 +92,11 @@ class PtrTestCase : public TestCase
     void DoRun() override;
     /**
      * Test that \pname{p} is a valid object, by calling a member function.
-     * \param [in] p The object pointer to test.
-     * \returns The object pointer.
+     * @param [in] p The object pointer to test.
+     * @returns The object pointer.
      */
     Ptr<NoCount> CallTest(Ptr<NoCount> p);
-    /** \copydoc CallTest(Ptr<NoCount>) */
+    /** @copydoc CallTest(Ptr<NoCount>) */
     const Ptr<NoCount> CallTestConst(const Ptr<NoCount> p);
     uint32_t m_nDestroyed; //!< Counter of number of objects destroyed.
 };
@@ -327,7 +327,7 @@ PtrTestCase::DoRun()
 }
 
 /**
- * \ingroup ptr-tests
+ * @ingroup ptr-tests
  * Test suite for pointer
  */
 class PtrTestSuite : public TestSuite
@@ -342,7 +342,7 @@ class PtrTestSuite : public TestSuite
 };
 
 /**
- * \ingroup ptr-tests
+ * @ingroup ptr-tests
  * PtrTestSuite instance variable.
  */
 static PtrTestSuite g_ptrTestSuite;

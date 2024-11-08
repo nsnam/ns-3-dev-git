@@ -17,8 +17,8 @@
 #include <vector>
 
 /**
- * \file
- * \ingroup csvreader
+ * @file
+ * @ingroup csvreader
  *
  * ns3::CsvReader declaration
  *
@@ -27,14 +27,14 @@ namespace ns3
 {
 
 /**
- * \ingroup core
- * \defgroup csvreader CSV File Reader
+ * @ingroup core
+ * @defgroup csvreader CSV File Reader
  *
  * A way to extract data from simple csv files.
  */
 
 /**
- * \ingroup csvreader
+ * @ingroup csvreader
  *
  * Provides functions for parsing and extracting data from
  * Comma Separated Value (CSV) formatted text files.
@@ -43,7 +43,7 @@ namespace ns3
  * In particular it is possible to set the delimiting character at construction,
  * enabling parsing of tab-delimited streams or other formats with delimiters.
  *
- * \note Excel may generate "CSV" files with either ',' or ';' delimiter
+ * @note Excel may generate "CSV" files with either ',' or ';' delimiter
  * depending on the locale: if ',' is the decimal mark then ';' is the list
  * separator and used to read/write "CSV" files.
  *
@@ -52,7 +52,7 @@ namespace ns3
  * to extract specific values from the row.
  *
  * For example:
- * \code
+ * @code
  *   CsvReader csv (filePath);
  *   while (csv.FetchNextRow ())
  *     {
@@ -76,11 +76,11 @@ namespace ns3
  *       // Do something with values
  *
  *     }  // while FetchNextRow
- * \endcode
+ * @endcode
  *
  * As another example, supposing we need a vector from each row,
  * the middle of the previous example would become:
- * \code
+ * @code
  *       std::vector<double> v (n);
  *       bool ok = true;
  *       for (std::size_t i = 0; i < v.size (); ++i)
@@ -88,7 +88,7 @@ namespace ns3
  *           ok |= csv.GetValue (i, v[i]);
  *         }
  *       if (!ok) ...
- * \endcode
+ * @endcode
  *
  *
  * File Format
@@ -170,52 +170,52 @@ namespace ns3
  *
  * Examples
  * --------
- * \par Example 1: Basic
- * \code
+ * @par Example 1: Basic
+ * @code
  *     # Column 1: Product
  *     # Column 2: Price
  *     widget, 12.5
- * \endcode
+ * @endcode
  *
- * \par Example 2: Comment at end of line
- * \code
+ * @par Example 2: Comment at end of line
+ * @code
  *     # Column 1: Product
  *     # Column 2: Price
  *     broken widget, 12.5 # this widget is broken
- * \endcode
+ * @endcode
  *
- * \par Example 3: Delimiter in double quotes
- * \code
+ * @par Example 3: Delimiter in double quotes
+ * @code
  *     # Column 1: Product
  *     # Column 2: Price
  *     # Column 3: Count
  *     # Column 4: Date
  *     widget, 12.5, 100, "November 6, 2018"
- * \endcode
+ * @endcode
  *
- * \par # Example 4: Hash character in double quotes
- * \code
+ * @par # Example 4: Hash character in double quotes
+ * @code
  *     # Column 1: Key
  *     # Column 2: Value
  *     # Column 3: Description
  *     count, 5, "# of widgets currently in stock"
- * \endcode
+ * @endcode
  *
- * \par Example 5: Extra whitespace
- * \code
+ * @par Example 5: Extra whitespace
+ * @code
  *     # Column 1: Key
  *     # Column 2: Value
  *     # Column 3: Description
  *     count     ,     5    ,"# of widgets in stock"
- * \endcode
+ * @endcode
  *
- * \par Example 6: Escaped quotes
- * \code
+ * @par Example 6: Escaped quotes
+ * @code
  *     # Column 1: Key
  *     # Column 2: Description
  *     # The value returned for Column 2 will be: String with "embedded" quotes
  *     foo, "String with ""embedded"" quotes"
- * \endcode
+ * @endcode
  */
 class CsvReader
 {
@@ -226,8 +226,8 @@ class CsvReader
      * Opens the file specified in the filepath argument and
      * reads data from it.
      *
-     * \param filepath Path to a file containing CSV data.
-     * \param delimiter Character used to separate fields in the data file.
+     * @param filepath Path to a file containing CSV data.
+     * @param delimiter Character used to separate fields in the data file.
      */
     CsvReader(const std::string& filepath, char delimiter = ',');
 
@@ -236,8 +236,8 @@ class CsvReader
      *
      * Reads csv data from the supplied input stream.
      *
-     * \param stream Input stream containing csv data.
-     * \param delimiter Character used to separate fields in the data stream.
+     * @param stream Input stream containing csv data.
+     * @param delimiter Character used to separate fields in the data stream.
      */
     CsvReader(std::istream& stream, char delimiter = ',');
 
@@ -249,21 +249,21 @@ class CsvReader
     /**
      * Returns the number of columns in the csv data.
      *
-     * \return Number of columns
+     * @return Number of columns
      */
     std::size_t ColumnCount() const;
 
     /**
      * The number of lines that have been read.
      *
-     * \return The number of lines that have been read.
+     * @return The number of lines that have been read.
      */
     std::size_t RowNumber() const;
 
     /**
      * Returns the delimiter character specified during object construction.
      *
-     * \return Character used as the column separator.
+     * @return Character used as the column separator.
      */
     char Delimiter() const;
 
@@ -272,7 +272,7 @@ class CsvReader
      * The read data is stored in a cache which is accessed by the
      * GetValue functions to extract fields from the data.
      *
-     * \return \c true if a line was read successfully or \c false if the
+     * @return \c true if a line was read successfully or \c false if the
      * read failed or reached the end of the file.
      */
     bool FetchNextRow();
@@ -281,12 +281,12 @@ class CsvReader
      * Attempt to convert from the string data in the specified column
      * to the specified data type.
      *
-     * \tparam T The data type of the output variable.
+     * @tparam T The data type of the output variable.
      *
-     * \param [in] columnIndex Index of the column to fetch.
-     * \param [out] value Location where the converted data will be stored.
+     * @param [in] columnIndex Index of the column to fetch.
+     * @param [out] value Location where the converted data will be stored.
      *
-     * \return \c true if the specified column has data and the data
+     * @return \c true if the specified column has data and the data
      * was converted to the specified data type.
      */
     template <class T>
@@ -300,7 +300,7 @@ class CsvReader
      * - Comment
      * - Quoted empty string `""`
      *
-     * \returns \c true if the input row is a blank line.
+     * @returns \c true if the input row is a blank line.
      */
     bool IsBlankRow() const;
 
@@ -309,10 +309,10 @@ class CsvReader
      * Attempt to convert from the string data stored at the specified column
      * index into the specified type.
      *
-     * \param input [in] String value to be converted.
-     * \param value [out] Location where the converted value will be stored.
+     * @param input [in] String value to be converted.
+     * @param value [out] Location where the converted value will be stored.
      *
-     * \return \c true if the column exists and the conversion succeeded,
+     * @return \c true if the column exists and the conversion succeeded,
      * \c false otherwise.
      */
     /** @{ */
@@ -346,8 +346,8 @@ class CsvReader
     /**
      * Returns \c true if the supplied character matches the delimiter.
      *
-     * \param c Character to check.
-     * \return \c true if \pname{c} is the delimiter character,
+     * @param c Character to check.
+     * @return \c true if \pname{c} is the delimiter character,
      * \c false otherwise.
      */
     bool IsDelimiter(char c) const;
@@ -355,16 +355,16 @@ class CsvReader
     /**
      * Scans the string and splits it into individual columns based on the delimiter.
      *
-     * \param [in] line String containing delimiter separated data.
+     * @param [in] line String containing delimiter separated data.
      */
     void ParseLine(const std::string& line);
 
     /**
      * Extracts the data for one column in a csv row.
      *
-     * \param begin Iterator to the first character in the row.
-     * \param end Iterator to the last character in the row.
-     * \return A tuple containing the content of the column and an iterator
+     * @param begin Iterator to the first character in the row.
+     * @param end Iterator to the last character in the row.
+     * @return A tuple containing the content of the column and an iterator
      * pointing to the position in the row where the column ended.
      */
     std::tuple<std::string, std::string::const_iterator> ParseColumn(

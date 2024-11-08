@@ -20,9 +20,9 @@
 using namespace ns3;
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief IPv6 Test
+ * @brief IPv6 Test
  */
 class Ipv6L3ProtocolTestCase : public TestCase
 {
@@ -167,9 +167,9 @@ Ipv6L3ProtocolTestCase::DoRun()
 } // end DoRun
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief IPv6 TestSuite
+ * @brief IPv6 TestSuite
  */
 class IPv6L3ProtocolTestSuite : public TestSuite
 {

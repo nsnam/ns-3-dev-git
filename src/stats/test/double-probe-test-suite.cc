@@ -14,16 +14,16 @@
 using namespace ns3;
 
 /**
- * \ingroup stats-tests
+ * @ingroup stats-tests
  *
- * \brief Simple data emitter to check that a probe receives data.
+ * @brief Simple data emitter to check that a probe receives data.
  */
 class SampleEmitter : public Object
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return The object TypeId.
+     * @brief Get the type ID.
+     * @return The object TypeId.
      */
     static TypeId GetTypeId();
 
@@ -50,13 +50,13 @@ class SampleEmitter : public Object
         m_time += Simulator::Now().GetSeconds();
     }
 
-    /// \return the time delta of the next report.
+    /// @return the time delta of the next report.
     double GetTime() const
     {
         return m_time;
     }
 
-    /// \return a random variable, different for each reschedule.
+    /// @return a random variable, different for each reschedule.
     double GetValue() const
     {
         return aux;
@@ -90,9 +90,9 @@ SampleEmitter::GetTypeId()
 }
 
 /**
- * \ingroup stats-tests
+ * @ingroup stats-tests
  *
- * \brief DoubleProbe class - Test case for connecting and receiving data.
+ * @brief DoubleProbe class - Test case for connecting and receiving data.
  */
 class ProbeTestCase1 : public TestCase
 {
@@ -105,9 +105,9 @@ class ProbeTestCase1 : public TestCase
 
     /**
      * Trace sink.
-     * \param context Trace context
-     * \param oldValue Old value
-     * \param newValue New value
+     * @param context Trace context
+     * @param oldValue Old value
+     * @param newValue New value
      */
     void TraceSink(std::string context, double oldValue, double newValue);
     uint32_t m_objectProbed; //!< Number of probes by Object
@@ -199,9 +199,9 @@ ProbeTestCase1::DoRun()
 }
 
 /**
- * \ingroup stats-tests
+ * @ingroup stats-tests
  *
- * \brief DoubleProbe class TestSuite
+ * @brief DoubleProbe class TestSuite
  */
 class ProbeTestSuite : public TestSuite
 {

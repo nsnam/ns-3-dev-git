@@ -20,8 +20,8 @@
 // #define pipe(fds) _pipe(fds,4096, _O_BINARY)
 
 /**
- * \file
- * \ingroup system
+ * @file
+ * @ingroup system
  * ns3::FdReader implementation.
  */
 

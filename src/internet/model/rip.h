@@ -24,8 +24,8 @@ namespace ns3
 {
 
 /**
- * \ingroup ipv4Routing
- * \defgroup rip RIP
+ * @ingroup ipv4Routing
+ * @defgroup rip RIP
  *
  * The RIP protocol (\RFC{2453}) is a unicast-only IPv4 IGP (Interior Gateway Protocol).
  * Its convergence time is rather long. As a consequence, it is suggested to
@@ -47,8 +47,8 @@ namespace ns3
  */
 
 /**
- * \ingroup rip
- * \brief Rip Routing Table Entry
+ * @ingroup rip
+ * @brief Rip Routing Table Entry
  */
 class RipRoutingTableEntry : public Ipv4RoutingTableEntry
 {
@@ -65,11 +65,11 @@ class RipRoutingTableEntry : public Ipv4RoutingTableEntry
     RipRoutingTableEntry();
 
     /**
-     * \brief Constructor
-     * \param network network address
-     * \param networkPrefix network prefix
-     * \param nextHop next hop address to route the packet
-     * \param interface interface index
+     * @brief Constructor
+     * @param network network address
+     * @param networkPrefix network prefix
+     * @param nextHop next hop address to route the packet
+     * @param interface interface index
      */
     RipRoutingTableEntry(Ipv4Address network,
                          Ipv4Mask networkPrefix,
@@ -77,66 +77,66 @@ class RipRoutingTableEntry : public Ipv4RoutingTableEntry
                          uint32_t interface);
 
     /**
-     * \brief Constructor
-     * \param network network address
-     * \param networkPrefix network prefix
-     * \param interface interface index
+     * @brief Constructor
+     * @param network network address
+     * @param networkPrefix network prefix
+     * @param interface interface index
      */
     RipRoutingTableEntry(Ipv4Address network, Ipv4Mask networkPrefix, uint32_t interface);
 
     virtual ~RipRoutingTableEntry();
 
     /**
-     * \brief Set the route tag
-     * \param routeTag the route tag
+     * @brief Set the route tag
+     * @param routeTag the route tag
      */
     void SetRouteTag(uint16_t routeTag);
 
     /**
-     * \brief Get the route tag
-     * \returns the route tag
+     * @brief Get the route tag
+     * @returns the route tag
      */
     uint16_t GetRouteTag() const;
 
     /**
-     * \brief Set the route metric
-     * \param routeMetric the route metric
+     * @brief Set the route metric
+     * @param routeMetric the route metric
      */
     void SetRouteMetric(uint8_t routeMetric);
 
     /**
-     * \brief Get the route metric
-     * \returns the route metric
+     * @brief Get the route metric
+     * @returns the route metric
      */
     uint8_t GetRouteMetric() const;
 
     /**
-     * \brief Set the route status
-     * \param status the route status
+     * @brief Set the route status
+     * @param status the route status
      */
     void SetRouteStatus(Status_e status);
 
     /**
-     * \brief Get the route status
-     * \returns the route status
+     * @brief Get the route status
+     * @returns the route status
      */
     Status_e GetRouteStatus() const;
 
     /**
-     * \brief Set the route as changed
+     * @brief Set the route as changed
      *
      * The changed routes are scheduled for a Triggered Update.
      * After a Triggered Update, all the changed flags are cleared
      * from the routing table.
      *
-     * \param changed true if route is changed
+     * @param changed true if route is changed
      */
     void SetRouteChanged(bool changed);
 
     /**
-     * \brief Get the route changed status
+     * @brief Get the route changed status
      *
-     * \returns true if route is changed
+     * @returns true if route is changed
      */
     bool IsRouteChanged() const;
 
@@ -148,18 +148,18 @@ class RipRoutingTableEntry : public Ipv4RoutingTableEntry
 };
 
 /**
- * \brief Stream insertion operator.
+ * @brief Stream insertion operator.
  *
- * \param os the reference to the output stream
- * \param route the Ipv4 routing table entry
- * \returns the reference to the output stream
+ * @param os the reference to the output stream
+ * @param route the Ipv4 routing table entry
+ * @returns the reference to the output stream
  */
 std::ostream& operator<<(std::ostream& os, const RipRoutingTableEntry& route);
 
 /**
- * \ingroup rip
+ * @ingroup rip
  *
- * \brief RIP Routing Protocol, defined in \RFC{2453}.
+ * @brief RIP Routing Protocol, defined in \RFC{2453}.
  */
 class Rip : public Ipv4RoutingProtocol
 {
@@ -169,8 +169,8 @@ class Rip : public Ipv4RoutingProtocol
     ~Rip() override;
 
     /**
-     * \brief Get the type ID
-     * \return type ID
+     * @brief Get the type ID
+     * @return type ID
      */
     static TypeId GetTypeId();
 
@@ -209,51 +209,51 @@ class Rip : public Ipv4RoutingProtocol
      * used by this model.  Return the number of streams (possibly zero) that
      * have been assigned.
      *
-     * \param stream first stream index to use
-     * \return the number of stream indices assigned by this model
+     * @param stream first stream index to use
+     * @return the number of stream indices assigned by this model
      */
     int64_t AssignStreams(int64_t stream);
 
     /**
-     * \brief Get the set of interface excluded from the protocol
-     * \return the set of excluded interfaces
+     * @brief Get the set of interface excluded from the protocol
+     * @return the set of excluded interfaces
      */
     std::set<uint32_t> GetInterfaceExclusions() const;
 
     /**
-     * \brief Set the set of interface excluded from the protocol
-     * \param exceptions the set of excluded interfaces
+     * @brief Set the set of interface excluded from the protocol
+     * @param exceptions the set of excluded interfaces
      */
     void SetInterfaceExclusions(std::set<uint32_t> exceptions);
 
     /**
-     * \brief Get the metric for an interface
-     * \param interface the interface
-     * \returns the interface metric
+     * @brief Get the metric for an interface
+     * @param interface the interface
+     * @returns the interface metric
      */
     uint8_t GetInterfaceMetric(uint32_t interface) const;
 
     /**
-     * \brief Set the metric for an interface
-     * \param interface the interface
-     * \param metric the interface metric
+     * @brief Set the metric for an interface
+     * @param interface the interface
+     * @param metric the interface metric
      */
     void SetInterfaceMetric(uint32_t interface, uint8_t metric);
 
     /**
-     * \brief Add a default route to the router through the nextHop located on interface.
+     * @brief Add a default route to the router through the nextHop located on interface.
      *
      * The default route is usually installed manually, or it is the result of
      * some "other" routing protocol (e.g., BGP).
      *
-     * \param nextHop the next hop
-     * \param interface the interface
+     * @param nextHop the next hop
+     * @param interface the interface
      */
     void AddDefaultRouteTo(Ipv4Address nextHop, uint32_t interface);
 
   protected:
     /**
-     * \brief Dispose this object.
+     * @brief Dispose this object.
      */
     void DoDispose() override;
 
@@ -273,20 +273,20 @@ class Rip : public Ipv4RoutingProtocol
     typedef std::list<std::pair<RipRoutingTableEntry*, EventId>>::iterator RoutesI;
 
     /**
-     * \brief Receive RIP packets.
+     * @brief Receive RIP packets.
      *
-     * \param socket the socket the packet was received to.
+     * @param socket the socket the packet was received to.
      */
     void Receive(Ptr<Socket> socket);
 
     /**
-     * \brief Handle RIP requests.
+     * @brief Handle RIP requests.
      *
-     * \param hdr message header (including RTEs)
-     * \param senderAddress sender address
-     * \param senderPort sender port
-     * \param incomingInterface incoming interface
-     * \param hopLimit packet's hop limit
+     * @param hdr message header (including RTEs)
+     * @param senderAddress sender address
+     * @param senderPort sender port
+     * @param incomingInterface incoming interface
+     * @param hopLimit packet's hop limit
      */
     void HandleRequests(RipHeader hdr,
                         Ipv4Address senderAddress,
@@ -295,12 +295,12 @@ class Rip : public Ipv4RoutingProtocol
                         uint8_t hopLimit);
 
     /**
-     * \brief Handle RIP responses.
+     * @brief Handle RIP responses.
      *
-     * \param hdr message header (including RTEs)
-     * \param senderAddress sender address
-     * \param incomingInterface incoming interface
-     * \param hopLimit packet's hop limit
+     * @param hdr message header (including RTEs)
+     * @param senderAddress sender address
+     * @param incomingInterface incoming interface
+     * @param hopLimit packet's hop limit
      */
     void HandleResponses(RipHeader hdr,
                          Ipv4Address senderAddress,
@@ -308,31 +308,31 @@ class Rip : public Ipv4RoutingProtocol
                          uint8_t hopLimit);
 
     /**
-     * \brief Lookup in the forwarding table for destination.
-     * \param dest destination address
-     * \param setSource set source address in the route
-     * \param interface output interface if any (put 0 otherwise)
-     * \return Ipv4Route to route the packet to reach dest address
+     * @brief Lookup in the forwarding table for destination.
+     * @param dest destination address
+     * @param setSource set source address in the route
+     * @param interface output interface if any (put 0 otherwise)
+     * @return Ipv4Route to route the packet to reach dest address
      */
     Ptr<Ipv4Route> Lookup(Ipv4Address dest, bool setSource, Ptr<NetDevice> = nullptr);
 
     /**
      * Receive and process unicast packet
-     * \param socket socket where packet is arrived
+     * @param socket socket where packet is arrived
      */
     void RecvUnicastRip(Ptr<Socket> socket);
     /**
      * Receive and process multicast packet
-     * \param socket socket where packet is arrived
+     * @param socket socket where packet is arrived
      */
     void RecvMulticastRip(Ptr<Socket> socket);
 
     /**
-     * \brief Add route to network.
-     * \param network network address
-     * \param networkPrefix network prefix
-     * \param nextHop next hop address to route the packet.
-     * \param interface interface index
+     * @brief Add route to network.
+     * @param network network address
+     * @param networkPrefix network prefix
+     * @param nextHop next hop address to route the packet.
+     * @param interface interface index
      */
     void AddNetworkRouteTo(Ipv4Address network,
                            Ipv4Mask networkPrefix,
@@ -340,43 +340,43 @@ class Rip : public Ipv4RoutingProtocol
                            uint32_t interface);
 
     /**
-     * \brief Add route to network.
-     * \param network network address
-     * \param networkPrefix network prefix
-     * \param interface interface index
+     * @brief Add route to network.
+     * @param network network address
+     * @param networkPrefix network prefix
+     * @param interface interface index
      */
     void AddNetworkRouteTo(Ipv4Address network, Ipv4Mask networkPrefix, uint32_t interface);
 
     /**
-     * \brief Send Routing Updates on all interfaces.
-     * \param periodic true for periodic update, else triggered.
+     * @brief Send Routing Updates on all interfaces.
+     * @param periodic true for periodic update, else triggered.
      */
     void DoSendRouteUpdate(bool periodic);
 
     /**
-     * \brief Send Routing Request on all interfaces.
+     * @brief Send Routing Request on all interfaces.
      */
     void SendRouteRequest();
 
     /**
-     * \brief Send Triggered Routing Updates on all interfaces.
+     * @brief Send Triggered Routing Updates on all interfaces.
      */
     void SendTriggeredRouteUpdate();
 
     /**
-     * \brief Send Unsolicited Routing Updates on all interfaces.
+     * @brief Send Unsolicited Routing Updates on all interfaces.
      */
     void SendUnsolicitedRouteUpdate();
 
     /**
-     * \brief Invalidate a route.
-     * \param route the route to be removed
+     * @brief Invalidate a route.
+     * @param route the route to be removed
      */
     void InvalidateRoute(RipRoutingTableEntry* route);
 
     /**
-     * \brief Delete a route.
-     * \param route the route to be removed
+     * @brief Delete a route.
+     * @param route the route to be removed
      */
     void DeleteRoute(RipRoutingTableEntry* route);
 

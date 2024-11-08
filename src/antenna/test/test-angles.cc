@@ -18,23 +18,23 @@
 using namespace ns3;
 
 /**
- * \ingroup tests
+ * @ingroup tests
  *
- * \brief Angles Test using one vector for initialization
+ * @brief Angles Test using one vector for initialization
  */
 class OneVectorConstructorTestCase : public TestCase
 {
   public:
     /**
      * Build the test name
-     * \param v test parameter
-     * \return the test name
+     * @param v test parameter
+     * @return the test name
      */
     static std::string BuildNameString(Vector v);
     /**
      * Constructor
-     * \param v vector
-     * \param a expected angle
+     * @param v vector
+     * @param a expected angle
      */
     OneVectorConstructorTestCase(Vector v, Angles a);
 
@@ -69,25 +69,25 @@ OneVectorConstructorTestCase::DoRun()
 }
 
 /**
- * \ingroup tests
+ * @ingroup tests
  *
- * \brief Angles Test using two vectors for initialization
+ * @brief Angles Test using two vectors for initialization
  */
 class TwoVectorsConstructorTestCase : public TestCase
 {
   public:
     /**
      * Build the test name
-     * \param v test parameter
-     * \param o test parameter
-     * \return the test name
+     * @param v test parameter
+     * @param o test parameter
+     * @return the test name
      */
     static std::string BuildNameString(Vector v, Vector o);
     /**
      * Constructor
-     * \param v point
-     * \param o origin
-     * \param a expected angle
+     * @param v point
+     * @param o origin
+     * @param a expected angle
      */
     TwoVectorsConstructorTestCase(Vector v, Vector o, Angles a);
 
@@ -126,9 +126,9 @@ TwoVectorsConstructorTestCase::DoRun()
 using WrapToRangeFunction = std::function<double(double)>;
 
 /**
- * \ingroup tests
+ * @ingroup tests
  *
- * \brief  Test bounds for various WrapTo... methods (WrapTo180, WrapTo360, WrapToPi, and WrapTo2Pi)
+ * @brief  Test bounds for various WrapTo... methods (WrapTo180, WrapTo360, WrapToPi, and WrapTo2Pi)
  * by using a std::function wrapper
  */
 class WrapToRangeTestCase : public TestCase
@@ -136,23 +136,23 @@ class WrapToRangeTestCase : public TestCase
   public:
     /**
      * Build the test name
-     * \param lowerBound the lower bound of the WrapTo... function
-     * \param upperBound the upper bound of the WrapTo... function
-     * \return the test name
+     * @param lowerBound the lower bound of the WrapTo... function
+     * @param upperBound the upper bound of the WrapTo... function
+     * @return the test name
      */
     static std::string BuildNameString(double lowerBound, double upperBound);
     /**
      * Constructor
-     * \param wrapper for one of WrapTo180, WrapTo360, WrapToPi, and WrapTo2Pi
-     * \param lowerBound the corresponding lower bound
-     * \param upperBound the corresponding upper bound
+     * @param wrapper for one of WrapTo180, WrapTo360, WrapToPi, and WrapTo2Pi
+     * @param lowerBound the corresponding lower bound
+     * @param upperBound the corresponding upper bound
      */
     WrapToRangeTestCase(WrapToRangeFunction wrapper, double lowerBound, double upperBound);
 
   protected:
     /**
      * The given wrapper shall wrap an angle into the expected range
-     * \param wrapPoint an angle
+     * @param wrapPoint an angle
      */
     void CheckWrappingPoint(double wrapPoint);
 
@@ -215,25 +215,25 @@ WrapToRangeTestCase::CheckWrappingPoint(double wrapPoint)
 }
 
 /**
- * \ingroup tests
+ * @ingroup tests
  *
- * \brief Test the output for WrapToRangeFunction
+ * @brief Test the output for WrapToRangeFunction
  */
 class WrapToRangeFunctionalTestCase : public TestCase
 {
   public:
     /**
      * Build the test name
-     * \param angle the angle
-     * \param wrappedAngle the expected result
-     * \return the test name
+     * @param angle the angle
+     * @param wrappedAngle the expected result
+     * @return the test name
      */
     static std::string BuildNameString(double angle, double wrappedAngle);
     /**
      * Constructor
-     * \param wrapper one WrapToRangeFunction
-     * \param angle the angle
-     * \param wrappedAngle the expected result
+     * @param wrapper one WrapToRangeFunction
+     * @param angle the angle
+     * @param wrappedAngle the expected result
      */
     WrapToRangeFunctionalTestCase(WrapToRangeFunction wrapper, double angle, double wrappedAngle);
 
@@ -274,9 +274,9 @@ WrapToRangeFunctionalTestCase::DoRun()
 }
 
 /**
- * \ingroup tests
+ * @ingroup tests
  *
- * \brief Angles TestSuite
+ * @brief Angles TestSuite
  */
 class AnglesTestSuite : public TestSuite
 {

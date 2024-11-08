@@ -65,7 +65,7 @@ typedef std::vector<RateInfo> MinstrelRate;
 typedef std::vector<std::vector<uint8_t>> SampleRate;
 
 /**
- * \brief hold per-remote-station state for Minstrel Wifi manager.
+ * @brief hold per-remote-station state for Minstrel Wifi manager.
  *
  * This struct extends from WifiRemoteStation struct to hold additional
  * information required by the Minstrel Wifi manager
@@ -103,8 +103,8 @@ struct MinstrelWifiRemoteStation : public WifiRemoteStation
 };
 
 /**
- * \brief Implementation of Minstrel Rate Control Algorithm
- * \ingroup wifi
+ * @brief Implementation of Minstrel Rate Control Algorithm
+ * @ingroup wifi
  *
  * Minstrel is a rate control algorithm implemented in MadWifi and Linux.
  * The basic principle is to probe the environment and adapt the rate
@@ -147,8 +147,8 @@ class MinstrelWifiManager : public WifiRemoteStationManager
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     MinstrelWifiManager();
@@ -161,74 +161,74 @@ class MinstrelWifiManager : public WifiRemoteStationManager
     /**
      * Update the rate.
      *
-     * \param station the station object
+     * @param station the station object
      */
     void UpdateRate(MinstrelWifiRemoteStation* station);
 
     /**
      * Update the Minstrel Table.
      *
-     * \param station the station object
+     * @param station the station object
      */
     void UpdateStats(MinstrelWifiRemoteStation* station);
 
     /**
      * Find a rate to use from Minstrel Table.
      *
-     * \param station the station object
-     * \returns the rate in bps
+     * @param station the station object
+     * @returns the rate in bps
      */
     uint16_t FindRate(MinstrelWifiRemoteStation* station);
 
     /**
      * Get data transmit vector.
      *
-     * \param station the station object
-     * \returns WifiTxVector
+     * @param station the station object
+     * @returns WifiTxVector
      */
     WifiTxVector GetDataTxVector(MinstrelWifiRemoteStation* station);
 
     /**
      * Get RTS transmit vector.
      *
-     * \param station the station object
-     * \returns WifiTxVector
+     * @param station the station object
+     * @returns WifiTxVector
      */
     WifiTxVector GetRtsTxVector(MinstrelWifiRemoteStation* station);
 
     /**
      * Get the number of retries.
      *
-     * \param station the station object
-     * \returns the number of retries
+     * @param station the station object
+     * @returns the number of retries
      */
     uint32_t CountRetries(MinstrelWifiRemoteStation* station);
 
     /**
      * Update packet counters.
      *
-     * \param station the station object
+     * @param station the station object
      */
     void UpdatePacketCounters(MinstrelWifiRemoteStation* station);
 
     /**
      * Update the number of retries and reset accordingly.
      *
-     * \param station the station object
+     * @param station the station object
      */
     void UpdateRetry(MinstrelWifiRemoteStation* station);
 
     /**
      * Check for initializations.
      *
-     * \param station the station object
+     * @param station the station object
      */
     void CheckInit(MinstrelWifiRemoteStation* station);
 
     /**
      * Initialize Sample Table.
      *
-     * \param station the station object
+     * @param station the station object
      */
     void InitSampleTable(MinstrelWifiRemoteStation* station);
 
@@ -260,30 +260,30 @@ class MinstrelWifiManager : public WifiRemoteStationManager
     /**
      * Estimate the TxTime of a packet with a given mode.
      *
-     * \param mode Wi-Fi mode
-     * \returns the transmission time
+     * @param mode Wi-Fi mode
+     * @returns the transmission time
      */
     Time GetCalcTxTime(WifiMode mode) const;
     /**
      * Add transmission time for the given mode to an internal list.
      *
-     * \param mode Wi-Fi mode
-     * \param t transmission time
+     * @param mode Wi-Fi mode
+     * @param t transmission time
      */
     void AddCalcTxTime(WifiMode mode, Time t);
 
     /**
      * Initialize Minstrel Table.
      *
-     * \param station the station object
+     * @param station the station object
      */
     void RateInit(MinstrelWifiRemoteStation* station);
 
     /**
      * Get the next sample from Sample Table.
      *
-     * \param station the station object
-     * \returns the next sample
+     * @param station the station object
+     * @returns the next sample
      */
     uint16_t GetNextSample(MinstrelWifiRemoteStation* station);
 
@@ -303,10 +303,10 @@ class MinstrelWifiManager : public WifiRemoteStationManager
      *  - Data transmission
      *  - backoffs according to CW
      *
-     * \param dataTransmissionTime the data transmission time
-     * \param shortRetries short retries
-     * \param longRetries long retries
-     * \returns the unicast packet time
+     * @param dataTransmissionTime the data transmission time
+     * @param shortRetries short retries
+     * @param longRetries long retries
+     * @returns the unicast packet time
      */
     Time CalculateTimeUnicastPacket(Time dataTransmissionTime,
                                     uint32_t shortRetries,
@@ -315,14 +315,14 @@ class MinstrelWifiManager : public WifiRemoteStationManager
     /**
      * Print Sample Table.
      *
-     * \param station the station object
+     * @param station the station object
      */
     void PrintSampleTable(MinstrelWifiRemoteStation* station) const;
 
     /**
      * Print Minstrel Table.
      *
-     * \param station the station object
+     * @param station the station object
      */
     void PrintTable(MinstrelWifiRemoteStation* station);
 

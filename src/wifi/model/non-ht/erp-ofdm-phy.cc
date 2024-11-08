@@ -55,7 +55,7 @@ static const std::array<uint64_t, 8> s_erpOfdmRatesBpsList =
 /**
  * Get the array of possible ERP OFDM rates.
  *
- * \return the ERP OFDM rates in bits per second
+ * @return the ERP OFDM rates in bits per second
  */
 const std::array<uint64_t, 8>&
 GetErpOfdmRatesBpsList()

@@ -23,9 +23,9 @@ namespace ns3
 {
 
 /**
- * \ingroup point-to-point-layout
+ * @ingroup point-to-point-layout
  *
- * \brief A helper to make it easier to create a grid topology
+ * @brief A helper to make it easier to create a grid topology
  * with p2p links
  */
 class PointToPointGridHelper
@@ -35,11 +35,11 @@ class PointToPointGridHelper
      * Create a PointToPointGridHelper in order to easily create
      * grid topologies using p2p links
      *
-     * \param nRows total number of rows in the grid
+     * @param nRows total number of rows in the grid
      *
-     * \param nCols total number of columns in the grid
+     * @param nCols total number of columns in the grid
      *
-     * \param pointToPoint the PointToPointHelper which is used
+     * @param pointToPoint the PointToPointHelper which is used
      *                     to connect all of the nodes together
      *                     in the grid
      */
@@ -48,11 +48,11 @@ class PointToPointGridHelper
     ~PointToPointGridHelper();
 
     /**
-     * \param row the row address of the node desired
+     * @param row the row address of the node desired
      *
-     * \param col the column address of the node desired
+     * @param col the column address of the node desired
      *
-     * \returns a pointer to the node specified by the
+     * @returns a pointer to the node specified by the
      *          (row, col) address
      */
     Ptr<Node> GetNode(uint32_t row, uint32_t col);
@@ -66,11 +66,11 @@ class PointToPointGridHelper
      * is the left row device of all the nodes, except the left-most
      * grid nodes, which returns the right row device.
      *
-     * \param row the row address of the node desired
+     * @param row the row address of the node desired
      *
-     * \param col the column address of the node desired
+     * @param col the column address of the node desired
      *
-     * \returns Ipv4Address of one of the interfaces of the node
+     * @returns Ipv4Address of one of the interfaces of the node
      *          specified by the (row, col) address
      */
     Ipv4Address GetIpv4Address(uint32_t row, uint32_t col);
@@ -84,17 +84,17 @@ class PointToPointGridHelper
      * is the left row device of all the nodes, except the left-most
      * grid nodes, which returns the right row device.
      *
-     * \param row the row address of the node desired
+     * @param row the row address of the node desired
      *
-     * \param col the column address of the node desired
+     * @param col the column address of the node desired
      *
-     * \returns Ipv6Address of one of the interfaces of the node
+     * @returns Ipv6Address of one of the interfaces of the node
      *          specified by the (row, col) address
      */
     Ipv6Address GetIpv6Address(uint32_t row, uint32_t col);
 
     /**
-     * \param stack an InternetStackHelper which is used to install
+     * @param stack an InternetStackHelper which is used to install
      *              on every node in the grid
      */
     void InstallStack(InternetStackHelper stack);
@@ -102,10 +102,10 @@ class PointToPointGridHelper
     /**
      * Assigns Ipv4 addresses to all the row and column interfaces
      *
-     * \param rowIp the Ipv4AddressHelper used to assign Ipv4 addresses
+     * @param rowIp the Ipv4AddressHelper used to assign Ipv4 addresses
      *              to all of the row interfaces in the grid
      *
-     * \param colIp the Ipv4AddressHelper used to assign Ipv4 addresses
+     * @param colIp the Ipv4AddressHelper used to assign Ipv4 addresses
      *              to all of the column interfaces in the grid
      */
     void AssignIpv4Addresses(Ipv4AddressHelper rowIp, Ipv4AddressHelper colIp);
@@ -113,9 +113,9 @@ class PointToPointGridHelper
     /**
      * Assigns Ipv6 addresses to all the row and column interfaces
      *
-     * \param network an IPv6 address representing the network portion
+     * @param network an IPv6 address representing the network portion
      *                of the IPv6 Address
-     * \param prefix the prefix length
+     * @param prefix the prefix length
      */
     void AssignIpv6Addresses(Ipv6Address network, Ipv6Prefix prefix);
 
@@ -123,10 +123,10 @@ class PointToPointGridHelper
      * Sets up the node canvas locations for every node in the grid.
      * This is needed for use with the animation interface
      *
-     * \param ulx upper left x value
-     * \param uly upper left y value
-     * \param lrx lower right x value
-     * \param lry lower right y value
+     * @param ulx upper left x value
+     * @param uly upper left y value
+     * @param lrx lower right x value
+     * @param lry lower right y value
      */
     void BoundingBox(double ulx, double uly, double lrx, double lry);
 

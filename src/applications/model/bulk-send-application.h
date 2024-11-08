@@ -24,8 +24,8 @@ class TcpHeader;
 class TcpSocketBase;
 
 /**
- * \ingroup applications
- * \defgroup bulksend BulkSendApplication
+ * @ingroup applications
+ * @defgroup bulksend BulkSendApplication
  *
  * This traffic generator simply sends data
  * as fast as possible up to MaxBytes or until
@@ -40,9 +40,9 @@ class TcpSocketBase;
  */
 
 /**
- * \ingroup bulksend
+ * @ingroup bulksend
  *
- * \brief Send as much traffic as possible, trying to fill the bandwidth.
+ * @brief Send as much traffic as possible, trying to fill the bandwidth.
  *
  * This traffic generator simply sends data
  * as fast as possible up to MaxBytes or until
@@ -66,8 +66,8 @@ class BulkSendApplication : public SourceApplication
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -75,7 +75,7 @@ class BulkSendApplication : public SourceApplication
     ~BulkSendApplication() override;
 
     /**
-     * \brief Set the upper bound for the total number of bytes to send.
+     * @brief Set the upper bound for the total number of bytes to send.
      *
      * Once this bound is reached, no more application bytes are sent. If the
      * application is stopped during the simulation and restarted, the
@@ -85,13 +85,13 @@ class BulkSendApplication : public SourceApplication
      * there is no upper bound; i.e. data is sent until the application
      * or simulation is stopped.
      *
-     * \param maxBytes the upper bound of bytes to send
+     * @param maxBytes the upper bound of bytes to send
      */
     void SetMaxBytes(uint64_t maxBytes);
 
     /**
-     * \brief Get the socket this application is attached to.
-     * \return pointer to associated socket
+     * @brief Get the socket this application is attached to.
+     * @return pointer to associated socket
      */
     Ptr<Socket> GetSocket() const;
 
@@ -103,9 +103,9 @@ class BulkSendApplication : public SourceApplication
     void StopApplication() override;
 
     /**
-     * \brief Send data until the L4 transmission buffer is full.
-     * \param from From address
-     * \param to To address
+     * @brief Send data until the L4 transmission buffer is full.
+     * @param from From address
+     * @param to To address
      */
     void SendData(const Address& from, const Address& to);
 
@@ -137,32 +137,32 @@ class BulkSendApplication : public SourceApplication
 
   private:
     /**
-     * \brief Connection Succeeded (called by Socket through a callback)
-     * \param socket the connected socket
+     * @brief Connection Succeeded (called by Socket through a callback)
+     * @param socket the connected socket
      */
     void ConnectionSucceeded(Ptr<Socket> socket);
     /**
-     * \brief Connection Failed (called by Socket through a callback)
-     * \param socket the connected socket
+     * @brief Connection Failed (called by Socket through a callback)
+     * @param socket the connected socket
      */
     void ConnectionFailed(Ptr<Socket> socket);
     /**
-     * \brief Send more data as soon as some has been transmitted.
+     * @brief Send more data as soon as some has been transmitted.
      *
      * Used in socket's SetSendCallback - params are forced by it.
      *
-     * \param socket socket to use
-     * \param unused actually unused
+     * @param socket socket to use
+     * @param unused actually unused
      */
     void DataSend(Ptr<Socket> socket, uint32_t unused);
 
     /**
-     *  \brief Packet retransmitted (called by TcpSocketBase sockets via callback)
-     *  \param p the retransmitted packet
-     *  \param header the TCP header
-     *  \param localAddr the local address
-     *  \param peerAddr the peer address
-     *  \param socket the socket that retransmitted the packet
+     *  @brief Packet retransmitted (called by TcpSocketBase sockets via callback)
+     *  @param p the retransmitted packet
+     *  @param header the TCP header
+     *  @param localAddr the local address
+     *  @param peerAddr the peer address
+     *  @param socket the socket that retransmitted the packet
      */
     void PacketRetransmitted(Ptr<const Packet> p,
                              const TcpHeader& header,

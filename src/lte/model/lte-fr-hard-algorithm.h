@@ -19,21 +19,21 @@ namespace ns3
 {
 
 /**
- * \brief Hard Frequency Reuse algorithm implementation which uses only 1 sub-band.
+ * @brief Hard Frequency Reuse algorithm implementation which uses only 1 sub-band.
  */
 class LteFrHardAlgorithm : public LteFfrAlgorithm
 {
   public:
     /**
-     * \brief Creates a trivial ffr algorithm instance.
+     * @brief Creates a trivial ffr algorithm instance.
      */
     LteFrHardAlgorithm();
 
     ~LteFrHardAlgorithm() override;
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -77,15 +77,15 @@ class LteFrHardAlgorithm : public LteFfrAlgorithm
     /**
      * Set downlink configuration
      *
-     * \param cellId the cell ID
-     * \param bandwidth the bandwidth
+     * @param cellId the cell ID
+     * @param bandwidth the bandwidth
      */
     void SetDownlinkConfiguration(uint16_t cellId, uint8_t bandwidth);
     /**
      * Set uplink configuration
      *
-     * \param cellId the cell ID
-     * \param bandwidth the bandwidth
+     * @param cellId the cell ID
+     * @param bandwidth the bandwidth
      */
     void SetUplinkConfiguration(uint16_t cellId, uint8_t bandwidth);
     /**

@@ -14,9 +14,9 @@
 namespace ns3
 {
 /**
- * \ingroup tcp
+ * @ingroup tcp
  *
- * \brief Item that encloses the application packet and some flags for it
+ * @brief Item that encloses the application packet and some flags for it
  */
 class TcpTxItem
 {
@@ -24,51 +24,51 @@ class TcpTxItem
     // Default constructor, copy-constructor, destructor
 
     /**
-     * \brief Print the time
-     * \param os ostream
-     * \param unit Time::Unit
+     * @brief Print the time
+     * @param os ostream
+     * @param unit Time::Unit
      */
     void Print(std::ostream& os, Time::Unit unit = Time::S) const;
 
     /**
-     * \brief Get the size in the sequence number space
+     * @brief Get the size in the sequence number space
      *
-     * \return 1 if the packet size is 0 or there's no packet, otherwise the size of the packet
+     * @return 1 if the packet size is 0 or there's no packet, otherwise the size of the packet
      */
     uint32_t GetSeqSize() const;
 
     /**
-     * \brief Is the item sacked?
-     * \return true if the item is sacked, false otherwise
+     * @brief Is the item sacked?
+     * @return true if the item is sacked, false otherwise
      */
     bool IsSacked() const;
 
     /**
-     * \brief Is the item retransmitted?
-     * \return true if the item have been retransmitted
+     * @brief Is the item retransmitted?
+     * @return true if the item have been retransmitted
      */
     bool IsRetrans() const;
 
     /**
-     * \brief Get a copy of the Packet underlying this item
-     * \return a copy of the Packet
+     * @brief Get a copy of the Packet underlying this item
+     * @return a copy of the Packet
      */
     Ptr<Packet> GetPacketCopy() const;
 
     /**
-     * \brief Get the Packet underlying this item
-     * \return a pointer to a const Packet
+     * @brief Get the Packet underlying this item
+     * @return a pointer to a const Packet
      */
     Ptr<const Packet> GetPacket() const;
 
     /**
-     * \brief Get a reference to the time the packet was sent for the last time
-     * \return a reference to the last sent time
+     * @brief Get a reference to the time the packet was sent for the last time
+     * @return a reference to the last sent time
      */
     const Time& GetLastSent() const;
 
     /**
-     * \brief Various rate-related information, can be accessed by TcpRateOps.
+     * @brief Various rate-related information, can be accessed by TcpRateOps.
      *
      * Note: This is not enforced through C++, but you developer must honour
      * this description.
@@ -84,9 +84,9 @@ class TcpTxItem
     };
 
     /**
-     * \brief Get (to modify) the Rate Information of this item
+     * @brief Get (to modify) the Rate Information of this item
      *
-     * \return A reference to the rate information.
+     * @return A reference to the rate information.
      */
     RateInformation& GetRateInformation();
 

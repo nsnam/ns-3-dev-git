@@ -18,9 +18,9 @@ namespace ns3
 {
 
 /**
- * \ingroup packet
+ * @ingroup packet
  *
- * \brief Neighbor-index data structure for nix-vector routing
+ * @brief Neighbor-index data structure for nix-vector routing
  *
  * This data structure holds a vector of "neighbor-indexes" for
  * a simulation specific routing protocol, nix-vector routing.
@@ -31,7 +31,7 @@ namespace ns3
  * route, the current node extracts the appropriate
  * neighbor-index and routes the packet.
  *
- * \internal
+ * @internal
  * The implementation of NixVector uses a vector to store
  * the neighbor-indexes.  Each entry in the vector is 32
  * bits long and can store multiple neighbor-indexes.  A
@@ -56,24 +56,24 @@ class NixVector : public SimpleRefCount<NixVector>
     NixVector();
     ~NixVector();
     /**
-     * \return a copy of this nix-vector
+     * @return a copy of this nix-vector
      */
     Ptr<NixVector> Copy() const;
     /**
-     * \param o the NixVector to copy to a new NixVector
+     * @param o the NixVector to copy to a new NixVector
      *          using a constructor
      */
     NixVector(const NixVector& o);
     /**
-     * \return a reference to the assignee
+     * @return a reference to the assignee
      *
-     * \param o the NixVector to copy to a new NixVector using the
+     * @param o the NixVector to copy to a new NixVector using the
      *          equals operator
      */
     NixVector& operator=(const NixVector& o);
     /**
-     * \param newBits the neighbor-index to be added to the vector
-     * \param numberOfBits the number of bits that newBits contains
+     * @param newBits the neighbor-index to be added to the vector
+     * @param numberOfBits the number of bits that newBits contains
      *
      * Adds the neighbor index to the vector using a fair amount of
      * bit manipulation to pack everything in efficiently.
@@ -85,9 +85,9 @@ class NixVector : public SimpleRefCount<NixVector>
      */
     void AddNeighborIndex(uint32_t newBits, uint32_t numberOfBits);
     /**
-     * \return the neighbor index
+     * @return the neighbor index
      *
-     * \param numberOfBits the number of bits to extract from the vector
+     * @param numberOfBits the number of bits to extract from the vector
      *
      * Extracts the number of bits specified from
      * the vector and returns the value extracted
@@ -99,40 +99,40 @@ class NixVector : public SimpleRefCount<NixVector>
      */
     uint32_t ExtractNeighborIndex(uint32_t numberOfBits);
     /**
-     * \return number of bits remaining in the
+     * @return number of bits remaining in the
      *         nix-vector (ie m_total - m_used)
      */
     uint32_t GetRemainingBits() const;
     /**
-     * \return the number of bytes required for serialization
+     * @return the number of bytes required for serialization
      */
     uint32_t GetSerializedSize() const;
     /**
-     * \return zero if buffer not large enough
+     * @return zero if buffer not large enough
      *
-     * \param buffer points to serialization buffer
+     * @param buffer points to serialization buffer
      *
-     * \param maxSize max number of bytes to write
+     * @param maxSize max number of bytes to write
      *
      * This nix-vector is serialized into the raw character
      * buffer parameter.
      */
     uint32_t Serialize(uint32_t* buffer, uint32_t maxSize) const;
     /**
-     * \return zero if a complete nix-vector is not deserialized
+     * @return zero if a complete nix-vector is not deserialized
      *
-     * \param buffer points to buffer for deserialization
+     * @param buffer points to buffer for deserialization
      *
-     * \param size number of bytes to deserialize
+     * @param size number of bytes to deserialize
      *
      * The raw character buffer containing all the nix-vector
      * information is deserialized into this nix-vector.
      */
     uint32_t Deserialize(const uint32_t* buffer, uint32_t size);
     /**
-     * \return number of bits of numberOfNeighbors
+     * @return number of bits of numberOfNeighbors
      *
-     * \param numberOfNeighbors the total number of neighbors
+     * @param numberOfNeighbors the total number of neighbors
      *
      * This function is used to determine the number of bits of
      * numberOfNeighbors so that this value can be passed in to
@@ -142,13 +142,13 @@ class NixVector : public SimpleRefCount<NixVector>
 
     /**
      * Set the NixVector Epoch
-     * \param epoch the NixVector Epoch
+     * @param epoch the NixVector Epoch
      */
     void SetEpoch(uint32_t epoch);
 
     /**
      * Get the NixVector Epoch
-     * \return the NixVector Epoch
+     * @return the NixVector Epoch
      */
     uint32_t GetEpoch() const;
 
@@ -157,20 +157,20 @@ class NixVector : public SimpleRefCount<NixVector>
     typedef std::vector<uint32_t> NixBits_t;
 
     /**
-     * \brief Print the NixVector.
+     * @brief Print the NixVector.
      *
-     * \param os the output stream
+     * @param os the output stream
      *
      * \note: this could be greatly simplified by using std::format (but it's C++20).
      */
     void DumpNixVector(std::ostream& os) const;
 
     /**
-     * \brief Stream insertion operator.
+     * @brief Stream insertion operator.
      *
-     * \param os the stream
-     * \param nix the Nixvector
-     * \returns a reference to the stream
+     * @param os the stream
+     * @param nix the Nixvector
+     * @returns a reference to the stream
      */
     friend std::ostream& operator<<(std::ostream& os, const NixVector& nix);
 
@@ -187,9 +187,9 @@ class NixVector : public SimpleRefCount<NixVector>
 
     /**
      * Internal for pretty printing of nix-vector (no fill)
-     * \param decimalNum decimal divider
-     * \param bitCount bit counter
-     * \param os output stream
+     * @param decimalNum decimal divider
+     * @param bitCount bit counter
+     * @param os output stream
      */
     void PrintDec2BinNix(uint32_t decimalNum, uint32_t bitCount, std::ostream& os) const;
 };

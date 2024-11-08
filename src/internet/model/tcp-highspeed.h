@@ -16,9 +16,9 @@ namespace ns3
 class TcpSocketState;
 
 /**
- * \ingroup congestionOps
+ * @ingroup congestionOps
  *
- * \brief An implementation of TCP HighSpeed
+ * @brief An implementation of TCP HighSpeed
  *
  * TCP HighSpeed is designed for high-capacity channels or, in general, for
  * TCP connections with large congestion windows.
@@ -39,8 +39,8 @@ class TcpHighSpeed : public TcpNewReno
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -50,8 +50,8 @@ class TcpHighSpeed : public TcpNewReno
     TcpHighSpeed();
 
     /**
-     * \brief Copy constructor
-     * \param sock the object to copy
+     * @brief Copy constructor
+     * @param sock the object to copy
      */
     TcpHighSpeed(const TcpHighSpeed& sock);
     ~TcpHighSpeed() override;
@@ -63,20 +63,20 @@ class TcpHighSpeed : public TcpNewReno
     Ptr<TcpCongestionOps> Fork() override;
 
     /**
-     * \brief Lookup table for the coefficient a (from RFC 3649)
+     * @brief Lookup table for the coefficient a (from RFC 3649)
      *
-     * \param w Window value (in packets)
+     * @param w Window value (in packets)
      *
-     * \return the coefficient a
+     * @return the coefficient a
      */
     static uint32_t TableLookupA(uint32_t w);
 
     /**
-     * \brief Lookup table for the coefficient b (from RFC 3649)
+     * @brief Lookup table for the coefficient b (from RFC 3649)
      *
-     * \param w Window value (in packets)
+     * @param w Window value (in packets)
      *
-     * \return the coefficient b
+     * @return the coefficient b
      */
     static double TableLookupB(uint32_t w);
 

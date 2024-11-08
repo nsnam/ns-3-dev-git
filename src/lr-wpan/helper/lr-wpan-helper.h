@@ -22,9 +22,9 @@ class SpectrumChannel;
 class MobilityModel;
 
 /**
- * \ingroup lr-wpan
+ * @ingroup lr-wpan
  *
- * \brief helps to manage and create IEEE 802.15.4 NetDevice objects
+ * @brief helps to manage and create IEEE 802.15.4 NetDevice objects
  *
  * This class can help to create IEEE 802.15.4 NetDevice objects
  * and to configure their attributes during creation.  It also contains
@@ -39,13 +39,13 @@ class LrWpanHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevic
 {
   public:
     /**
-     * \brief Create a LrWpan helper in an empty state.
+     * @brief Create a LrWpan helper in an empty state.
      */
     LrWpanHelper();
 
     /**
-     * \brief Create a LrWpan helper in an empty state.
-     * \param useMultiModelSpectrumChannel use a MultiModelSpectrumChannel if true, a
+     * @brief Create a LrWpan helper in an empty state.
+     * @param useMultiModelSpectrumChannel use a MultiModelSpectrumChannel if true, a
      * SingleModelSpectrumChannel otherwise
      */
     LrWpanHelper(bool useMultiModelSpectrumChannel);
@@ -57,27 +57,27 @@ class LrWpanHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevic
     LrWpanHelper& operator=(const LrWpanHelper&) = delete;
 
     /**
-     * \brief Get the channel associated to this helper
-     * \returns the channel
+     * @brief Get the channel associated to this helper
+     * @returns the channel
      */
     Ptr<SpectrumChannel> GetChannel();
 
     /**
-     * \brief Set the channel associated to this helper
-     * \param channel the channel
+     * @brief Set the channel associated to this helper
+     * @param channel the channel
      */
     void SetChannel(Ptr<SpectrumChannel> channel);
 
     /**
-     * \brief Set the channel associated to this helper
-     * \param channelName the channel name
+     * @brief Set the channel associated to this helper
+     * @param channelName the channel name
      */
     void SetChannel(std::string channelName);
 
     /**
-     * \tparam Ts \deduced Argument types
-     * \param name the name of the model to set
-     * \param [in] args Name and AttributeValue pairs to set.
+     * @tparam Ts \deduced Argument types
+     * @param name the name of the model to set
+     * @param [in] args Name and AttributeValue pairs to set.
      *
      * Add a propagation loss model to the set of currently-configured loss models.
      */
@@ -85,9 +85,9 @@ class LrWpanHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevic
     void AddPropagationLossModel(std::string name, Ts&&... args);
 
     /**
-     * \tparam Ts \deduced Argument types
-     * \param name the name of the model to set
-     * \param [in] args Name and AttributeValue pairs to set.
+     * @tparam Ts \deduced Argument types
+     * @param name the name of the model to set
+     * @param [in] args Name and AttributeValue pairs to set.
      *
      * Configure a propagation delay for this channel.
      */
@@ -95,14 +95,14 @@ class LrWpanHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevic
     void SetPropagationDelayModel(std::string name, Ts&&... args);
 
     /**
-     * \brief Add mobility model to a physical device
-     * \param phy the physical device
-     * \param m the mobility model
+     * @brief Add mobility model to a physical device
+     * @param phy the physical device
+     * @param m the mobility model
      */
     void AddMobility(Ptr<lrwpan::LrWpanPhy> phy, Ptr<MobilityModel> m);
 
     /**
-     * \brief Install a LrWpanNetDevice and the associated structures (e.g., channel) in the nodes.
+     * @brief Install a LrWpanNetDevice and the associated structures (e.g., channel) in the nodes.
      *
      * If the channel is not already initialized, it will be created as either a
      * SingleModelSpectrumChannel or a MultiModelSpectrumChannel, depending on the
@@ -113,26 +113,26 @@ class LrWpanHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevic
      *
      * If the channel is already initialized but lacks either a PropagationDelayModel or a
      * PropagationLossModel, an error will be raised.
-     * \param c a set of nodes
-     * \returns A container holding the added net devices.
+     * @param c a set of nodes
+     * @returns A container holding the added net devices.
      */
     NetDeviceContainer Install(NodeContainer c);
 
     /**
-     * \brief Creates an PAN with associated nodes and assigned addresses(16 and 64)
+     * @brief Creates an PAN with associated nodes and assigned addresses(16 and 64)
      *        from the nodes in the node container.
      *        The first node in the container becomes the PAN coordinator.
      *
-     * \param c a The node container with the nodes that will form the PAN.
-     * \param panId The PAN identifier.
+     * @param c a The node container with the nodes that will form the PAN.
+     * @param panId The PAN identifier.
      */
     void CreateAssociatedPan(NetDeviceContainer c, uint16_t panId);
 
     /**
-     * \brief Set the extended 64 bit addresses (EUI-64) for a group of
+     * @brief Set the extended 64 bit addresses (EUI-64) for a group of
      *        LrWpanNetDevices
      *
-     * \param c The NetDevice container.
+     * @param c The NetDevice container.
      *
      */
     void SetExtendedAddresses(NetDeviceContainer c);
@@ -143,16 +143,16 @@ class LrWpanHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevic
     void EnableLogComponents();
 
     /**
-     * \brief Transform the LrWpanPhyEnumeration enumeration into a printable string.
-     * \param e the LrWpanPhyEnumeration
-     * \return a string
+     * @brief Transform the LrWpanPhyEnumeration enumeration into a printable string.
+     * @param e the LrWpanPhyEnumeration
+     * @return a string
      */
     static std::string LrWpanPhyEnumerationPrinter(lrwpan::PhyEnumeration e);
 
     /**
-     * \brief Transform the LrWpanMacState enumeration into a printable string.
-     * \param e the LrWpanMacState
-     * \return a string
+     * @brief Transform the LrWpanMacState enumeration into a printable string.
+     * @param e the LrWpanMacState
+     * @return a string
      */
     static std::string LrWpanMacStatePrinter(lrwpan::MacState e);
 
@@ -162,24 +162,24 @@ class LrWpanHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevic
      * assigned. The Install() method should have previously been
      * called by the user.
      *
-     * \param c NetDeviceContainer of the set of net devices for which the
+     * @param c NetDeviceContainer of the set of net devices for which the
      *          CsmaNetDevice should be modified to use a fixed stream
-     * \param stream first stream index to use
-     * \return the number of stream indices assigned by this helper
+     * @param stream first stream index to use
+     * @return the number of stream indices assigned by this helper
      */
     int64_t AssignStreams(NetDeviceContainer c, int64_t stream);
 
   private:
     /**
-     * \brief Enable pcap output on the indicated net device.
+     * @brief Enable pcap output on the indicated net device.
      *
      * NetDevice-specific implementation mechanism for hooking the trace and
      * writing to the trace file.
      *
-     * \param prefix Filename prefix to use for pcap files.
-     * \param nd Net device for which you want to enable tracing.
-     * \param promiscuous If true capture all possible packets available at the device.
-     * \param explicitFilename Treat the prefix as an explicit filename if true
+     * @param prefix Filename prefix to use for pcap files.
+     * @param nd Net device for which you want to enable tracing.
+     * @param promiscuous If true capture all possible packets available at the device.
+     * @param explicitFilename Treat the prefix as an explicit filename if true
      */
     void EnablePcapInternal(std::string prefix,
                             Ptr<NetDevice> nd,
@@ -187,15 +187,15 @@ class LrWpanHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevic
                             bool explicitFilename) override;
 
     /**
-     * \brief Enable ascii trace output on the indicated net device.
+     * @brief Enable ascii trace output on the indicated net device.
      *
      * NetDevice-specific implementation mechanism for hooking the trace and
      * writing to the trace file.
      *
-     * \param stream The output stream object to use when logging ascii traces.
-     * \param prefix Filename prefix to use for ascii trace files.
-     * \param nd Net device for which you want to enable tracing.
-     * \param explicitFilename Treat the prefix as an explicit filename if true
+     * @param stream The output stream object to use when logging ascii traces.
+     * @param prefix Filename prefix to use for ascii trace files.
+     * @param nd Net device for which you want to enable tracing.
+     * @param explicitFilename Treat the prefix as an explicit filename if true
      */
     void EnableAsciiInternal(Ptr<OutputStreamWrapper> stream,
                              std::string prefix,

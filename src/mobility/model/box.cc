@@ -191,11 +191,11 @@ Box::IsIntersect(const Vector& l1, const Vector& l2) const
 ATTRIBUTE_HELPER_CPP(Box);
 
 /**
- * \brief Stream insertion operator.
+ * @brief Stream insertion operator.
  *
- * \param os the stream
- * \param box the box
- * \returns a reference to the stream
+ * @param os the stream
+ * @param box the box
+ * @returns a reference to the stream
  */
 std::ostream&
 operator<<(std::ostream& os, const Box& box)
@@ -206,11 +206,11 @@ operator<<(std::ostream& os, const Box& box)
 }
 
 /**
- * \brief Stream extraction operator.
+ * @brief Stream extraction operator.
  *
- * \param is the stream
- * \param box the box
- * \returns a reference to the stream
+ * @param is the stream
+ * @param box the box
+ * @returns a reference to the stream
  */
 std::istream&
 operator>>(std::istream& is, Box& box)

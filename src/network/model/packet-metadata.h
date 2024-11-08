@@ -27,8 +27,8 @@ class Header;
 class Trailer;
 
 /**
- * \ingroup packet
- * \brief Handle packet metadata about packet headers and trailers
+ * @ingroup packet
+ * @brief Handle packet metadata about packet headers and trailers
  *
  * This class is used by the Packet class to record every operation
  * performed on the packet's buffer. This class also provides
@@ -70,7 +70,7 @@ class PacketMetadata
 {
   public:
     /**
-     * \brief structure describing a packet metadata item
+     * @brief structure describing a packet metadata item
      */
     struct Item
     {
@@ -120,25 +120,25 @@ class PacketMetadata
     };
 
     /**
-     * \brief Iterator class for metadata items.
+     * @brief Iterator class for metadata items.
      */
     class ItemIterator
     {
       public:
         /**
-         * \brief Constructor
-         * \param metadata a pointer to the metadata
-         * \param buffer the buffer the metadata refers to
+         * @brief Constructor
+         * @param metadata a pointer to the metadata
+         * @param buffer the buffer the metadata refers to
          */
         ItemIterator(const PacketMetadata* metadata, Buffer buffer);
         /**
-         * \brief Checks if there is another metadata item
-         * \returns true if there is another item
+         * @brief Checks if there is another metadata item
+         * @returns true if there is another item
          */
         bool HasNext() const;
         /**
-         * \brief Retrieve the next metadata item
-         * \returns the next metadata item
+         * @brief Retrieve the next metadata item
+         * @returns the next metadata item
          */
         Item Next();
 
@@ -151,29 +151,29 @@ class PacketMetadata
     };
 
     /**
-     * \brief Enable the packet metadata
+     * @brief Enable the packet metadata
      */
     static void Enable();
     /**
-     * \brief Enable the packet metadata checking
+     * @brief Enable the packet metadata checking
      */
     static void EnableChecking();
 
     /**
-     * \brief Constructor
-     * \param uid packet uid
-     * \param size size of the header
+     * @brief Constructor
+     * @param uid packet uid
+     * @param size size of the header
      */
     inline PacketMetadata(uint64_t uid, uint32_t size);
     /**
-     * \brief Copy constructor
-     * \param o the object to copy
+     * @brief Copy constructor
+     * @param o the object to copy
      */
     inline PacketMetadata(const PacketMetadata& o);
     /**
-     * \brief Basic assignment
-     * \param o the object to copy
-     * \return a copied object
+     * @brief Basic assignment
+     * @param o the object to copy
+     * @return a copied object
      */
     inline PacketMetadata& operator=(const PacketMetadata& o);
     inline ~PacketMetadata();
@@ -182,37 +182,37 @@ class PacketMetadata
     PacketMetadata() = delete;
 
     /**
-     * \brief Add an header
-     * \param header header to add
-     * \param size header serialized size
+     * @brief Add an header
+     * @param header header to add
+     * @param size header serialized size
      */
     void AddHeader(const Header& header, uint32_t size);
     /**
-     * \brief Remove an header
-     * \param header header to remove
-     * \param size header serialized size
+     * @brief Remove an header
+     * @param header header to remove
+     * @param size header serialized size
      */
     void RemoveHeader(const Header& header, uint32_t size);
 
     /**
      * Add a trailer
-     * \param trailer trailer to add
-     * \param size trailer serialized size
+     * @param trailer trailer to add
+     * @param size trailer serialized size
      */
     void AddTrailer(const Trailer& trailer, uint32_t size);
     /**
      * Remove a trailer
-     * \param trailer trailer to remove
-     * \param size trailer serialized size
+     * @param trailer trailer to remove
+     * @param size trailer serialized size
      */
     void RemoveTrailer(const Trailer& trailer, uint32_t size);
 
     /**
-     * \brief Creates a fragment.
+     * @brief Creates a fragment.
      *
-     * \param start the amount of stuff to remove from the start
-     * \param end the amount of stuff to remove from the end
-     * \return the fragment's metadata
+     * @param start the amount of stuff to remove from the start
+     * @param end the amount of stuff to remove from the end
+     * @return the fragment's metadata
      *
      * Calling this method is equivalent to calling RemoveAtStart (start)
      * and then, RemoveAtEnd (end).
@@ -220,69 +220,69 @@ class PacketMetadata
     PacketMetadata CreateFragment(uint32_t start, uint32_t end) const;
 
     /**
-     * \brief Add a metadata at the metadata start
-     * \param o the metadata to add
+     * @brief Add a metadata at the metadata start
+     * @param o the metadata to add
      */
     void AddAtEnd(const PacketMetadata& o);
     /**
-     * \brief Add some padding at the end
-     * \param end size of padding
+     * @brief Add some padding at the end
+     * @param end size of padding
      */
     void AddPaddingAtEnd(uint32_t end);
     /**
-     * \brief Remove a chunk of metadata at the metadata start
-     * \param start the size of metadata to remove
+     * @brief Remove a chunk of metadata at the metadata start
+     * @param start the size of metadata to remove
      */
     void RemoveAtStart(uint32_t start);
     /**
-     * \brief Remove a chunk of metadata at the metadata end
-     * \param end the size of metadata to remove
+     * @brief Remove a chunk of metadata at the metadata end
+     * @param end the size of metadata to remove
      */
     void RemoveAtEnd(uint32_t end);
 
     /**
-     * \brief Get the packet Uid
-     * \return the packet Uid
+     * @brief Get the packet Uid
+     * @return the packet Uid
      */
     uint64_t GetUid() const;
 
     /**
-     * \brief Get the metadata serialized size
-     * \return the serialized size
+     * @brief Get the metadata serialized size
+     * @return the serialized size
      */
     uint32_t GetSerializedSize() const;
 
     /**
-     * \brief Initialize the item iterator to the buffer begin
-     * \param buffer buffer to initialize.
-     * \return the buffer iterator.
+     * @brief Initialize the item iterator to the buffer begin
+     * @param buffer buffer to initialize.
+     * @return the buffer iterator.
      */
     ItemIterator BeginItem(Buffer buffer) const;
 
     /**
-     * \brief Serialization to raw uint8_t*
-     * \param buffer the buffer to serialize to
-     * \param maxSize the maximum serialization size
-     * \return 1 on success, 0 on failure
+     * @brief Serialization to raw uint8_t*
+     * @param buffer the buffer to serialize to
+     * @param maxSize the maximum serialization size
+     * @return 1 on success, 0 on failure
      */
     uint32_t Serialize(uint8_t* buffer, uint32_t maxSize) const;
     /**
-     * \brief Deserialization from raw uint8_t*
-     * \param buffer the buffer to deserialize from
-     * \param size the size
-     * \return 1 on success, 0 on failure
+     * @brief Deserialization from raw uint8_t*
+     * @param buffer the buffer to deserialize from
+     * @param size the size
+     * @return 1 on success, 0 on failure
      */
     uint32_t Deserialize(const uint8_t* buffer, uint32_t size);
 
   private:
     /**
-     * \brief Helper for the raw serialization.
+     * @brief Helper for the raw serialization.
      *
-     * \param data the buffer to write to
-     * \param start start index
-     * \param current current index
-     * \param maxSize maximum size
-     * \return updated current index
+     * @param data the buffer to write to
+     * @param start start index
+     * @param current current index
+     * @param maxSize maximum size
+     * @return updated current index
      */
     static uint8_t* AddToRawU8(const uint8_t& data,
                                uint8_t* start,
@@ -290,13 +290,13 @@ class PacketMetadata
                                uint32_t maxSize);
 
     /**
-     * \brief Helper for the raw serialization.
+     * @brief Helper for the raw serialization.
      *
-     * \param data the buffer to write to
-     * \param start start index
-     * \param current current index
-     * \param maxSize maximum size
-     * \return updated current index
+     * @param data the buffer to write to
+     * @param start start index
+     * @param current current index
+     * @param maxSize maximum size
+     * @return updated current index
      */
     static uint8_t* AddToRawU16(const uint16_t& data,
                                 uint8_t* start,
@@ -304,13 +304,13 @@ class PacketMetadata
                                 uint32_t maxSize);
 
     /**
-     * \brief Helper for the raw serialization.
+     * @brief Helper for the raw serialization.
      *
-     * \param data the buffer to write to
-     * \param start start index
-     * \param current current index
-     * \param maxSize maximum size
-     * \return updated current index
+     * @param data the buffer to write to
+     * @param start start index
+     * @param current current index
+     * @param maxSize maximum size
+     * @return updated current index
      */
     static uint8_t* AddToRawU32(const uint32_t& data,
                                 uint8_t* start,
@@ -318,13 +318,13 @@ class PacketMetadata
                                 uint32_t maxSize);
 
     /**
-     * \brief Helper for the raw serialization.
+     * @brief Helper for the raw serialization.
      *
-     * \param data the buffer to write to
-     * \param start start index
-     * \param current current index
-     * \param maxSize maximum size
-     * \return updated current index
+     * @param data the buffer to write to
+     * @param start start index
+     * @param current current index
+     * @param maxSize maximum size
+     * @return updated current index
      */
     static uint8_t* AddToRawU64(const uint64_t& data,
                                 uint8_t* start,
@@ -332,14 +332,14 @@ class PacketMetadata
                                 uint32_t maxSize);
 
     /**
-     * \brief Helper for the raw serialization.
+     * @brief Helper for the raw serialization.
      *
-     * \param data the buffer to write to
-     * \param dataSize the data size to write to
-     * \param start start index
-     * \param current current index
-     * \param maxSize maximum size
-     * \return updated current index
+     * @param data the buffer to write to
+     * @param dataSize the data size to write to
+     * @param start start index
+     * @param current current index
+     * @param maxSize maximum size
+     * @return updated current index
      */
     static uint8_t* AddToRaw(const uint8_t* data,
                              uint32_t dataSize,
@@ -348,13 +348,13 @@ class PacketMetadata
                              uint32_t maxSize);
 
     /**
-     * \brief Helper for the raw deserialization.
+     * @brief Helper for the raw deserialization.
      *
-     * \param data the buffer to read from
-     * \param start start index
-     * \param current current index
-     * \param maxSize maximum size
-     * \return updated current index
+     * @param data the buffer to read from
+     * @param start start index
+     * @param current current index
+     * @param maxSize maximum size
+     * @return updated current index
      */
     static uint8_t* ReadFromRawU8(uint8_t& data,
                                   const uint8_t* start,
@@ -362,13 +362,13 @@ class PacketMetadata
                                   uint32_t maxSize);
 
     /**
-     * \brief Helper for the raw deserialization.
+     * @brief Helper for the raw deserialization.
      *
-     * \param data the buffer to read from
-     * \param start start index
-     * \param current current index
-     * \param maxSize maximum size
-     * \return updated current index
+     * @param data the buffer to read from
+     * @param start start index
+     * @param current current index
+     * @param maxSize maximum size
+     * @return updated current index
      */
     static uint8_t* ReadFromRawU16(uint16_t& data,
                                    const uint8_t* start,
@@ -376,13 +376,13 @@ class PacketMetadata
                                    uint32_t maxSize);
 
     /**
-     * \brief Helper for the raw deserialization.
+     * @brief Helper for the raw deserialization.
      *
-     * \param data the buffer to read from
-     * \param start start index
-     * \param current current index
-     * \param maxSize maximum size
-     * \return updated current index
+     * @param data the buffer to read from
+     * @param start start index
+     * @param current current index
+     * @param maxSize maximum size
+     * @return updated current index
      */
     static uint8_t* ReadFromRawU32(uint32_t& data,
                                    const uint8_t* start,
@@ -390,13 +390,13 @@ class PacketMetadata
                                    uint32_t maxSize);
 
     /**
-     * \brief Helper for the raw deserialization.
+     * @brief Helper for the raw deserialization.
      *
-     * \param data the buffer to read from
-     * \param start start index
-     * \param current current index
-     * \param maxSize maximum size
-     * \return updated current index
+     * @param data the buffer to read from
+     * @param start start index
+     * @param current current index
+     * @param maxSize maximum size
+     * @return updated current index
      */
     static uint8_t* ReadFromRawU64(uint64_t& data,
                                    const uint8_t* start,
@@ -431,7 +431,7 @@ class PacketMetadata
        a m_data byte buffer.
      */
     /**
-     * \brief SmallItem structure
+     * @brief SmallItem structure
      */
     struct SmallItem
     {
@@ -476,7 +476,7 @@ class PacketMetadata
     };
 
     /**
-     * \brief ExtraItem structure
+     * @brief ExtraItem structure
      */
     struct ExtraItem
     {
@@ -499,7 +499,7 @@ class PacketMetadata
     };
 
     /**
-     * \brief Class to hold all the metadata
+     * @brief Class to hold all the metadata
      */
     class DataFreeList : public std::vector<Data*>
     {
@@ -512,155 +512,155 @@ class PacketMetadata
     friend class ItemIterator;
 
     /**
-     * \brief Add a SmallItem
-     * \param item the SmallItem to add
-     * \return added size
+     * @brief Add a SmallItem
+     * @param item the SmallItem to add
+     * @return added size
      */
     inline uint16_t AddSmall(const PacketMetadata::SmallItem* item);
     /**
-     * \brief Add a "Big" Item (a SmallItem plus an ExtraItem)
-     * \param head the head
-     * \param tail the tail
-     * \param item the SmallItem to add
-     * \param extraItem the ExtraItem to add
-     * \return added size
+     * @brief Add a "Big" Item (a SmallItem plus an ExtraItem)
+     * @param head the head
+     * @param tail the tail
+     * @param item the SmallItem to add
+     * @param extraItem the ExtraItem to add
+     * @return added size
      */
     uint16_t AddBig(uint32_t head,
                     uint32_t tail,
                     const PacketMetadata::SmallItem* item,
                     const PacketMetadata::ExtraItem* extraItem);
     /**
-     * \brief Replace the tail
-     * \param item the item data to write
-     * \param extraItem the extra item data to write
-     * \param available the number of bytes which can
+     * @brief Replace the tail
+     * @param item the item data to write
+     * @param extraItem the extra item data to write
+     * @param available the number of bytes which can
      *        be written without having to rewrite the buffer entirely.
      */
     void ReplaceTail(PacketMetadata::SmallItem* item,
                      PacketMetadata::ExtraItem* extraItem,
                      uint32_t available);
     /**
-     * \brief Update the head
-     * \param written the used bytes
+     * @brief Update the head
+     * @param written the used bytes
      */
     inline void UpdateHead(uint16_t written);
     /**
-     * \brief Update the tail
-     * \param written the used bytes
+     * @brief Update the tail
+     * @param written the used bytes
      */
     inline void UpdateTail(uint16_t written);
 
     /**
-     * \brief Get the ULEB128 (Unsigned Little Endian Base 128) size
-     * \param value the value
-     * \returns the value's ULEB128 size
+     * @brief Get the ULEB128 (Unsigned Little Endian Base 128) size
+     * @param value the value
+     * @returns the value's ULEB128 size
      */
     inline uint32_t GetUleb128Size(uint32_t value) const;
     /**
-     * \brief Read a ULEB128 (Unsigned Little Endian Base 128) coded number
-     * \param pBuffer the buffer to read from
-     * \returns the value
+     * @brief Read a ULEB128 (Unsigned Little Endian Base 128) coded number
+     * @param pBuffer the buffer to read from
+     * @returns the value
      */
     uint32_t ReadUleb128(const uint8_t** pBuffer) const;
     /**
-     * \brief Append a 16-bit value to the buffer
-     * \param value the value to add
-     * \param buffer the buffer to write to
+     * @brief Append a 16-bit value to the buffer
+     * @param value the value to add
+     * @param buffer the buffer to write to
      */
     inline void Append16(uint16_t value, uint8_t* buffer);
     /**
-     * \brief Append a 32-bit value to the buffer
-     * \param value the value to add
-     * \param buffer the buffer to write to
+     * @brief Append a 32-bit value to the buffer
+     * @param value the value to add
+     * @param buffer the buffer to write to
      */
     inline void Append32(uint32_t value, uint8_t* buffer);
     /**
-     * \brief Append a value to the buffer
-     * \param value the value to add
-     * \param buffer the buffer to write to
+     * @brief Append a value to the buffer
+     * @param value the value to add
+     * @param buffer the buffer to write to
      */
     inline void AppendValue(uint32_t value, uint8_t* buffer);
     /**
-     * \brief Append a value to the buffer - extra
+     * @brief Append a value to the buffer - extra
      *
      * This function is called by AppendValue
      *
-     * \param value the value to add
-     * \param buffer the buffer to write to
+     * @param value the value to add
+     * @param buffer the buffer to write to
      */
     void AppendValueExtra(uint32_t value, uint8_t* buffer);
 
     /**
-     * \brief Reserve space
-     * \param n space to reserve
+     * @brief Reserve space
+     * @param n space to reserve
      */
     inline void Reserve(uint32_t n);
     /**
-     * \brief Reserve space and make a metadata copy
-     * \param n space to reserve
+     * @brief Reserve space and make a metadata copy
+     * @param n space to reserve
      */
     void ReserveCopy(uint32_t n);
 
     /**
-     * \brief Get the total size used by the metadata
-     * \return the metadata used size
+     * @brief Get the total size used by the metadata
+     * @return the metadata used size
      */
     uint32_t GetTotalSize() const;
 
     /**
-     * \brief Read items
-     * \param current the offset we should start reading the data from
-     * \param item pointer to where we should store the data to return to the caller
-     * \param extraItem pointer to where we should store the data to return to the caller
-     * \returns the number of bytes read.
+     * @brief Read items
+     * @param current the offset we should start reading the data from
+     * @param item pointer to where we should store the data to return to the caller
+     * @param extraItem pointer to where we should store the data to return to the caller
+     * @returns the number of bytes read.
      */
     uint32_t ReadItems(uint16_t current,
                        PacketMetadata::SmallItem* item,
                        PacketMetadata::ExtraItem* extraItem) const;
     /**
-     * \brief Add an header
-     * \param uid header's uid to add
-     * \param size header serialized size
+     * @brief Add an header
+     * @param uid header's uid to add
+     * @param size header serialized size
      */
     void DoAddHeader(uint32_t uid, uint32_t size);
     /**
-     * \brief Check if the metadata state is ok
-     * \returns true if the internal state is ok
+     * @brief Check if the metadata state is ok
+     * @returns true if the internal state is ok
      */
     bool IsStateOk() const;
     /**
-     * \brief Check if the position is valid
-     * \param pointer the position to check
-     * \returns true if the position is valid
+     * @brief Check if the position is valid
+     * @param pointer the position to check
+     * @returns true if the position is valid
      */
     bool IsPointerOk(uint16_t pointer) const;
     /**
-     * \brief Check if the position is valid
-     * \param pointer the position to check
-     * \returns true if the position is valid
+     * @brief Check if the position is valid
+     * @param pointer the position to check
+     * @returns true if the position is valid
      */
     bool IsSharedPointerOk(uint16_t pointer) const;
 
     /**
-     * \brief Recycle the buffer memory
-     * \param data the buffer data storage
+     * @brief Recycle the buffer memory
+     * @param data the buffer data storage
      */
     static void Recycle(PacketMetadata::Data* data);
     /**
-     * \brief Create a buffer data storage
-     * \param size the storage size to create
-     * \returns a pointer to the created buffer storage
+     * @brief Create a buffer data storage
+     * @param size the storage size to create
+     * @returns a pointer to the created buffer storage
      */
     static PacketMetadata::Data* Create(uint32_t size);
     /**
-     * \brief Allocate a buffer data storage
-     * \param n the storage size to create
-     * \returns a pointer to the allocated buffer storage
+     * @brief Allocate a buffer data storage
+     * @param n the storage size to create
+     * @returns a pointer to the allocated buffer storage
      */
     static PacketMetadata::Data* Allocate(uint32_t n);
     /**
-     * \brief Deallocate the buffer memory
-     * \param data the buffer data storage
+     * @brief Deallocate the buffer memory
+     * @param data the buffer data storage
      */
     static void Deallocate(PacketMetadata::Data* data);
 

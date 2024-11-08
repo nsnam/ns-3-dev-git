@@ -12,8 +12,8 @@
 #include "simulator.h"
 
 /**
- * \file
- * \ingroup timer
+ * @file
+ * @ingroup timer
  * ns3::Timer implementation.
  */
 

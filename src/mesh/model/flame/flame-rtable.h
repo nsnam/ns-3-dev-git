@@ -20,9 +20,9 @@ namespace ns3
 namespace flame
 {
 /**
- * \ingroup flame
+ * @ingroup flame
  *
- * \brief Routing table for FLAME
+ * @brief Routing table for FLAME
  */
 class FlameRtable : public Object
 {
@@ -43,10 +43,10 @@ class FlameRtable : public Object
         /**
          * Constructor
          *
-         * \param r retransmitter MAC address
-         * \param i interfce index
-         * \param c cost
-         * \param s sequence number
+         * @param r retransmitter MAC address
+         * @param i interfce index
+         * @param c cost
+         * @param s sequence number
          */
         LookupResult(Mac48Address r = Mac48Address::GetBroadcast(),
                      uint32_t i = INTERFACE_ANY,
@@ -60,22 +60,22 @@ class FlameRtable : public Object
         }
 
         /**
-         * \returns True for valid route
+         * @returns True for valid route
          */
         bool IsValid() const;
         /**
          * Compare route lookup results, used by tests
          *
-         * \param o the object to compare
-         * \returns true if equal
+         * @param o the object to compare
+         * @returns true if equal
          */
         bool operator==(const LookupResult& o) const;
     };
 
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -91,11 +91,11 @@ class FlameRtable : public Object
     /**
      * Add path
      *
-     * \param destination the destination address
-     * \param retransmitter the retransmitter address
-     * \param interface the interface
-     * \param cost the cost
-     * \param seqnum the sequence number
+     * @param destination the destination address
+     * @param retransmitter the retransmitter address
+     * @param interface the interface
+     * @param cost the cost
+     * @param seqnum the sequence number
      */
     void AddPath(const Mac48Address destination,
                  const Mac48Address retransmitter,
@@ -103,9 +103,9 @@ class FlameRtable : public Object
                  const uint8_t cost,
                  const uint16_t seqnum);
     /**
-     * \brief Lookup path to destination
-     * \param destination
-     * \return Broadcast if not found
+     * @brief Lookup path to destination
+     * @param destination
+     * @return Broadcast if not found
      */
     LookupResult Lookup(Mac48Address destination);
 

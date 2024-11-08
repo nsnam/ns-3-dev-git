@@ -20,8 +20,8 @@
 #include <string>
 
 /**
- * \file
- * \ingroup testing
+ * @file
+ * @ingroup testing
  * Implementation of classes ns3::ExampleAsTestSuite and ns3::ExampleTestCase.
  */
 

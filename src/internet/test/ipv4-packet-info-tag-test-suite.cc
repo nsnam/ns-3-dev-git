@@ -42,9 +42,9 @@
 using namespace ns3;
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief IPv4 PacketInfoTag Test
+ * @brief IPv4 PacketInfoTag Test
  */
 class Ipv4PacketInfoTagTest : public TestCase
 {
@@ -55,14 +55,14 @@ class Ipv4PacketInfoTagTest : public TestCase
     void DoRun() override;
 
     /**
-     * \brief Receive callback.
-     * \param socket Receiving socket.
+     * @brief Receive callback.
+     * @param socket Receiving socket.
      */
     void RxCb(Ptr<Socket> socket);
     /**
-     * \brief Send data.
-     * \param socket Sending socket.
-     * \param to Destination address.
+     * @brief Send data.
+     * @param socket Sending socket.
+     * @param to Destination address.
      */
     void DoSendData(Ptr<Socket> socket, std::string to);
 };
@@ -196,9 +196,9 @@ Ipv4PacketInfoTagTest::DoRun()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief IPv4 PacketInfoTag TestSuite
+ * @brief IPv4 PacketInfoTag TestSuite
  */
 class Ipv4PacketInfoTagTestSuite : public TestSuite
 {

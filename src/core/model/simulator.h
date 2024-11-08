@@ -187,7 +187,7 @@ class Simulator
     /**
      * Context enum values.
      *
-     * \internal
+     * @internal
      * This enum type is fixed to match the representation size
      * of simulation context.
      */
@@ -201,7 +201,7 @@ class Simulator
 
     /**
      * Get the number of events executed.
-     * \returns The total number of events executed.
+     * @returns The total number of events executed.
      */
     static uint64_t GetEventCount();
 

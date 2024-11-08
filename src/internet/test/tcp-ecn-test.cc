@@ -30,9 +30,9 @@ namespace ns3
 NS_LOG_COMPONENT_DEFINE("TcpEcnTestSuite");
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief checks if ECT, CWR and ECE bits are set correctly in different scenarios
+ * @brief checks if ECT, CWR and ECE bits are set correctly in different scenarios
  *
  * This test suite will run four combinations of enabling ECN (sender off and receiver off; sender
  * on and receiver off; sender off and receiver on; sender on and receiver on;) and checks that the
@@ -45,10 +45,10 @@ class TcpEcnTest : public TcpGeneralTest
 {
   public:
     /**
-     * \brief Constructor
+     * @brief Constructor
      *
-     * \param testcase test case number
-     * \param desc Description about the ECN capabilities of sender and receiver
+     * @param testcase test case number
+     * @param desc Description about the ECN capabilities of sender and receiver
      */
     TcpEcnTest(uint32_t testcase, const std::string& desc);
 
@@ -68,9 +68,9 @@ class TcpEcnTest : public TcpGeneralTest
 };
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief A TCP socket which sends certain data packets with CE flags set for tests 5 and 6.
+ * @brief A TCP socket which sends certain data packets with CE flags set for tests 5 and 6.
  *
  * The SendDataPacket function of this class sends data packets numbered 1 and 3 with CE flags set
  * for test 5 to verify if ECE and CWR bits are correctly set by receiver and sender respectively.
@@ -82,8 +82,8 @@ class TcpSocketCongestedRouter : public TcpSocketMsgBase
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -97,8 +97,8 @@ class TcpSocketCongestedRouter : public TcpSocketMsgBase
     }
 
     /**
-     * \brief Constructor.
-     * \param other The object to copy from.
+     * @brief Constructor.
+     * @param other The object to copy from.
      */
     TcpSocketCongestedRouter(const TcpSocketCongestedRouter& other)
         : TcpSocketMsgBase(other)
@@ -107,7 +107,7 @@ class TcpSocketCongestedRouter : public TcpSocketMsgBase
 
     /**
      * Set the test case type
-     * \param testCase Test case type
+     * @param testCase Test case type
      */
     void SetTestCase(uint8_t testCase);
 
@@ -554,9 +554,9 @@ TcpEcnTest::CreateSenderSocket(Ptr<Node> node)
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief TCP ECN TestSuite
+ * @brief TCP ECN TestSuite
  */
 class TcpEcnTestSuite : public TestSuite
 {

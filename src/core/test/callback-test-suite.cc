@@ -12,18 +12,18 @@
 using namespace ns3;
 
 /**
- * \file
- * \ingroup callback-tests
+ * @file
+ * @ingroup callback-tests
  * Callback test suite
  */
 
 /**
- * \ingroup core-tests
- * \defgroup callback-tests Callback tests
+ * @ingroup core-tests
+ * @defgroup callback-tests Callback tests
  */
 
 /**
- * \ingroup callback-tests
+ * @ingroup callback-tests
  *
  * Test the basic Callback mechanism.
  */
@@ -46,7 +46,7 @@ class BasicCallbackTestCase : public TestCase
 
     /**
      * Callback 2 target function.
-     * \return two.
+     * @return two.
      */
     int Target2()
     {
@@ -56,7 +56,7 @@ class BasicCallbackTestCase : public TestCase
 
     /**
      * Callback 3 target function.
-     * \param a A parameter (unused).
+     * @param a A parameter (unused).
      */
     void Target3(double a [[maybe_unused]])
     {
@@ -65,9 +65,9 @@ class BasicCallbackTestCase : public TestCase
 
     /**
      * Callback 4 target function.
-     * \param a A parameter (unused).
-     * \param b Another parameter (unused).
-     * \return four.
+     * @param a A parameter (unused).
+     * @param b Another parameter (unused).
+     * @return four.
      */
     int Target4(double a [[maybe_unused]], int b [[maybe_unused]])
     {
@@ -116,8 +116,8 @@ BasicCallbackTarget6(int)
 
 /**
  * Callback 6 target function.
- * \param a The value passed by the callback.
- * \return the value of the calling function.
+ * @param a The value passed by the callback.
+ * @return the value of the calling function.
  */
 int
 BasicCallbackTarget7(int a)
@@ -220,7 +220,7 @@ BasicCallbackTestCase::DoRun()
 }
 
 /**
- * \ingroup callback-tests
+ * @ingroup callback-tests
  *
  * Test the MakeCallback mechanism.
  */
@@ -243,7 +243,7 @@ class MakeCallbackTestCase : public TestCase
 
     /**
      * Callback 2 target function.
-     * \return two.
+     * @return two.
      */
     int Target2()
     {
@@ -253,7 +253,7 @@ class MakeCallbackTestCase : public TestCase
 
     /**
      * Callback 3 target function.
-     * \param a A parameter (unused).
+     * @param a A parameter (unused).
      */
     void Target3(double a [[maybe_unused]])
     {
@@ -262,9 +262,9 @@ class MakeCallbackTestCase : public TestCase
 
     /**
      * Callback 4 target function.
-     * \param a A parameter (unused).
-     * \param b Another parameter (unused).
-     * \return four.
+     * @param a A parameter (unused).
+     * @param b Another parameter (unused).
+     * @return four.
      */
     int Target4(double a [[maybe_unused]], int b [[maybe_unused]])
     {
@@ -312,8 +312,8 @@ MakeCallbackTarget6(int)
 
 /**
  * MakeCallback 7 target function.
- * \param a The value passed by the callback.
- * \return the value of the calling function.
+ * @param a The value passed by the callback.
+ * @return the value of the calling function.
  */
 int
 MakeCallbackTarget7(int a)
@@ -406,7 +406,7 @@ MakeCallbackTestCase::DoRun()
 }
 
 /**
- * \ingroup callback-tests
+ * @ingroup callback-tests
  *
  * Test the MakeBoundCallback mechanism.
  */
@@ -422,10 +422,10 @@ class MakeBoundCallbackTestCase : public TestCase
     /**
      * Member function to test the creation of a bound callback pointing to a member function
      *
-     * \param a first argument
-     * \param b second argument
-     * \param c third argument
-     * \return the sum of the arguments
+     * @param a first argument
+     * @param b second argument
+     * @param c third argument
+     * @return the sum of the arguments
      */
     int BoundTarget(int a, int b, int c)
     {
@@ -470,7 +470,7 @@ static int gMakeBoundCallbackTest9d;
 
 /**
  * MakeBoundCallback 1 target function.
- * \param a The value passed by the callback.
+ * @param a The value passed by the callback.
  */
 void
 MakeBoundCallbackTarget1(int a)
@@ -480,7 +480,7 @@ MakeBoundCallbackTarget1(int a)
 
 /**
  * MakeBoundCallback 2 target function.
- * \param a The value passed by the callback.
+ * @param a The value passed by the callback.
  */
 void
 MakeBoundCallbackTarget2(bool* a)
@@ -490,9 +490,9 @@ MakeBoundCallbackTarget2(bool* a)
 
 /**
  * MakeBoundCallback 3 target function.
- * \param a The value passed by the callback.
- * \param b The value passed by the callback.
- * \return the value 1234.
+ * @param a The value passed by the callback.
+ * @param b The value passed by the callback.
+ * @return the value 1234.
  */
 int
 MakeBoundCallbackTarget3(bool* a, int b)
@@ -504,8 +504,8 @@ MakeBoundCallbackTarget3(bool* a, int b)
 
 /**
  * MakeBoundCallback 4 target function.
- * \param a The value passed by the callback.
- * \param b The value passed by the callback.
+ * @param a The value passed by the callback.
+ * @param b The value passed by the callback.
  */
 void
 MakeBoundCallbackTarget4(int a, int b)
@@ -516,9 +516,9 @@ MakeBoundCallbackTarget4(int a, int b)
 
 /**
  * MakeBoundCallback 5 target function.
- * \param a The value passed by the callback.
- * \param b The value passed by the callback.
- * \return the value 1234.
+ * @param a The value passed by the callback.
+ * @param b The value passed by the callback.
+ * @return the value 1234.
  */
 int
 MakeBoundCallbackTarget5(int a, int b)
@@ -530,10 +530,10 @@ MakeBoundCallbackTarget5(int a, int b)
 
 /**
  * MakeBoundCallback 5 target function.
- * \param a The value passed by the callback.
- * \param b The value passed by the callback.
- * \param c The value passed by the callback.
- * \return the value 1234.
+ * @param a The value passed by the callback.
+ * @param b The value passed by the callback.
+ * @param c The value passed by the callback.
+ * @return the value 1234.
  */
 int
 MakeBoundCallbackTarget6(int a, int b, int c)
@@ -546,9 +546,9 @@ MakeBoundCallbackTarget6(int a, int b, int c)
 
 /**
  * MakeBoundCallback 7 target function.
- * \param a The value passed by the callback.
- * \param b The value passed by the callback.
- * \param c The value passed by the callback.
+ * @param a The value passed by the callback.
+ * @param b The value passed by the callback.
+ * @param c The value passed by the callback.
  */
 void
 MakeBoundCallbackTarget7(int a, int b, int c)
@@ -560,10 +560,10 @@ MakeBoundCallbackTarget7(int a, int b, int c)
 
 /**
  * MakeBoundCallback 8 target function.
- * \param a The value passed by the callback.
- * \param b The value passed by the callback.
- * \param c The value passed by the callback.
- * \return the value 1234.
+ * @param a The value passed by the callback.
+ * @param b The value passed by the callback.
+ * @param c The value passed by the callback.
+ * @return the value 1234.
  */
 int
 MakeBoundCallbackTarget8(int a, int b, int c)
@@ -576,11 +576,11 @@ MakeBoundCallbackTarget8(int a, int b, int c)
 
 /**
  * MakeBoundCallback 5 target function.
- * \param a The value passed by the callback.
- * \param b The value passed by the callback.
- * \param c The value passed by the callback.
- * \param d The value passed by the callback.
- * \return the value 1234.
+ * @param a The value passed by the callback.
+ * @param b The value passed by the callback.
+ * @param c The value passed by the callback.
+ * @param d The value passed by the callback.
+ * @return the value 1234.
  */
 int
 MakeBoundCallbackTarget9(int a, int b, int c, int d)
@@ -766,7 +766,7 @@ MakeBoundCallbackTestCase::DoRun()
 }
 
 /**
- * \ingroup callback-tests
+ * @ingroup callback-tests
  *
  * Test the callback equality implementation.
  */
@@ -782,9 +782,9 @@ class CallbackEqualityTestCase : public TestCase
     /**
      * Member function used to test equality of callbacks.
      *
-     * \param a first argument
-     * \param b second argument
-     * \return the sum of the arguments
+     * @param a first argument
+     * @param b second argument
+     * @return the sum of the arguments
      */
     int TargetMember(double a, int b)
     {
@@ -799,9 +799,9 @@ class CallbackEqualityTestCase : public TestCase
 /**
  * Non-member function used to test equality of callbacks.
  *
- * \param a first argument
- * \param b second argument
- * \return the sum of the arguments
+ * @param a first argument
+ * @param b second argument
+ * @return the sum of the arguments
  */
 int
 CallbackEqualityTarget(double a, int b)
@@ -923,7 +923,7 @@ CallbackEqualityTestCase::DoRun()
 }
 
 /**
- * \ingroup callback-tests
+ * @ingroup callback-tests
  *
  * Test the Nullify mechanism.
  */
@@ -981,7 +981,7 @@ NullifyCallbackTestCase::DoRun()
 }
 
 /**
- * \ingroup callback-tests
+ * @ingroup callback-tests
  *
  * Make sure that various MakeCallback template functions compile and execute;
  * doesn't check an results of the execution.
@@ -1031,7 +1031,7 @@ void TestFRSix(int&, int&, int&, int&, int&, int&){};
 /** @} */
 
 /**
- * \ingroup callback-tests
+ * @ingroup callback-tests
  *
  * Class used to check the capability of callbacks to call
  * public, protected, and private functions.
@@ -1063,7 +1063,7 @@ class CallbackTestParent
 };
 
 /**
- * \ingroup callback-tests
+ * @ingroup callback-tests
  *
  * Derived class used to check the capability of callbacks to call
  * public, protected, and private functions.
@@ -1168,9 +1168,9 @@ MakeCallbackTemplatesTestCase::DoRun()
 }
 
 /**
- * \ingroup callback-tests
+ * @ingroup callback-tests
  *
- * \brief The callback Test Suite.
+ * @brief The callback Test Suite.
  */
 class CallbackTestSuite : public TestSuite
 {

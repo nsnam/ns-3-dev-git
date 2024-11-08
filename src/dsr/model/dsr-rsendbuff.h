@@ -30,8 +30,8 @@ namespace ns3
 namespace dsr
 {
 /**
- * \ingroup dsr
- * \brief DSR Send Buffer Entry
+ * @ingroup dsr
+ * @brief DSR Send Buffer Entry
  */
 class DsrSendBuffEntry
 {
@@ -39,10 +39,10 @@ class DsrSendBuffEntry
     /**
      * Construct DsrSendBuffEntry with the given parameters.
      *
-     * \param pa packet
-     * \param d destination address
-     * \param exp expiration time
-     * \param p protocol number
+     * @param pa packet
+     * @param d destination address
+     * @param exp expiration time
+     * @param p protocol number
      */
     DsrSendBuffEntry(Ptr<const Packet> pa = nullptr,
                      Ipv4Address d = Ipv4Address(),
@@ -57,8 +57,8 @@ class DsrSendBuffEntry
 
     /**
      * Compare send buffer entries
-     * \param o another DsrSendBuffEntry
-     * \return true if equal
+     * @param o another DsrSendBuffEntry
+     * @return true if equal
      */
     bool operator==(const DsrSendBuffEntry& o) const
     {
@@ -68,7 +68,7 @@ class DsrSendBuffEntry
     // Fields
     /**
      * Get pointer to entry's packet
-     * \returns the current packet
+     * @returns the current packet
      */
     Ptr<const Packet> GetPacket() const
     {
@@ -77,7 +77,7 @@ class DsrSendBuffEntry
 
     /**
      * Set pointer to entry's packet
-     * \param p the current packet
+     * @param p the current packet
      */
     void SetPacket(Ptr<const Packet> p)
     {
@@ -86,7 +86,7 @@ class DsrSendBuffEntry
 
     /**
      * Get destination address of entry
-     * \returns the destination IPv4 address
+     * @returns the destination IPv4 address
      */
     Ipv4Address GetDestination() const
     {
@@ -95,7 +95,7 @@ class DsrSendBuffEntry
 
     /**
      * Set destination address of entry
-     * \param d the destination IP address
+     * @param d the destination IP address
      */
     void SetDestination(Ipv4Address d)
     {
@@ -104,7 +104,7 @@ class DsrSendBuffEntry
 
     /**
      * Set expire time for entry
-     * \param exp the expire time
+     * @param exp the expire time
      */
     void SetExpireTime(Time exp)
     {
@@ -113,7 +113,7 @@ class DsrSendBuffEntry
 
     /**
      * Get expire time for entry
-     * \returns the expire time
+     * @returns the expire time
      */
     Time GetExpireTime() const
     {
@@ -122,7 +122,7 @@ class DsrSendBuffEntry
 
     /**
      * Set protocol value
-     * \param p the protocol
+     * @param p the protocol
      */
     void SetProtocol(uint8_t p)
     {
@@ -131,7 +131,7 @@ class DsrSendBuffEntry
 
     /**
      * Get protocol value
-     * \returns the protocol
+     * @returns the protocol
      */
     uint8_t GetProtocol() const
     {
@@ -150,8 +150,8 @@ class DsrSendBuffEntry
 };
 
 /**
- * \ingroup dsr
- * \brief DSR send buffer
+ * @ingroup dsr
+ * @brief DSR send buffer
  */
 /************************************************************************************************************************/
 class DsrSendBuffer
@@ -168,8 +168,8 @@ class DsrSendBuffer
      * Push entry in queue, if there is no entry with
      * the same packet and destination address in queue.
      *
-     * \param entry DsrSendBuffEntry to put in the queue
-     * \return true if successfully enqueued,
+     * @param entry DsrSendBuffEntry to put in the queue
+     * @return true if successfully enqueued,
      *         false otherwise
      */
     bool Enqueue(DsrSendBuffEntry& entry);
@@ -177,36 +177,36 @@ class DsrSendBuffer
      * Return first found (the earliest) entry for
      * the given destination.
      *
-     * \param dst IPv4 address of the destination
-     * \param entry pointer to entry to return
-     * \return true if successfully dequeued,
+     * @param dst IPv4 address of the destination
+     * @param entry pointer to entry to return
+     * @return true if successfully dequeued,
      *         false otherwise
      */
     bool Dequeue(Ipv4Address dst, DsrSendBuffEntry& entry);
     /**
      * Remove all packets with destination IP address dst
      *
-     * \param dst IPv4 address of the destination
+     * @param dst IPv4 address of the destination
      */
     void DropPacketWithDst(Ipv4Address dst);
     /**
      * Check if a packet with destination dst exists in the queue
      *
-     * \param dst IPv4 address of the destination
-     * \return true if found, false otherwise
+     * @param dst IPv4 address of the destination
+     * @return true if found, false otherwise
      */
     bool Find(Ipv4Address dst);
     /**
      * Number of entries
      *
-     * \return the number of entries in the queue
+     * @return the number of entries in the queue
      */
     uint32_t GetSize();
 
     /**
      * Return the maximum queue length
      *
-     * \return the maximum queue length
+     * @return the maximum queue length
      */
     uint32_t GetMaxQueueLen() const
     {
@@ -216,7 +216,7 @@ class DsrSendBuffer
     /**
      * Set the maximum queue length
      *
-     * \param len the maximum queue length
+     * @param len the maximum queue length
      */
     void SetMaxQueueLen(uint32_t len)
     {
@@ -226,7 +226,7 @@ class DsrSendBuffer
     /**
      * Return the entry lifetime in the queue
      *
-     * \return the entry lifetime in the queue
+     * @return the entry lifetime in the queue
      */
     Time GetSendBufferTimeout() const
     {
@@ -236,7 +236,7 @@ class DsrSendBuffer
     /**
      * Set the entry lifetime in the queue
      *
-     * \param t the entry lifetime in the queue
+     * @param t the entry lifetime in the queue
      */
     void SetSendBufferTimeout(Time t)
     {
@@ -248,7 +248,7 @@ class DsrSendBuffer
     /**
      * Return a pointer to the internal queue
      *
-     * \return a pointer to the internal queue
+     * @return a pointer to the internal queue
      */
     std::vector<DsrSendBuffEntry>& GetBuffer()
     {
@@ -260,8 +260,8 @@ class DsrSendBuffer
     void Purge();                               ///< Remove all expired entries
 
     /// Notify that packet is dropped from queue by timeout
-    /// \param en BuffEntry Buffer entry
-    /// \param reason Drop reason
+    /// @param en BuffEntry Buffer entry
+    /// @param reason Drop reason
     void Drop(DsrSendBuffEntry en, std::string reason);
 
     uint32_t

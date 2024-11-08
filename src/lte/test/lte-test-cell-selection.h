@@ -28,7 +28,7 @@ class LteUeNetDevice;
 using namespace ns3;
 
 /**
- * \brief Test suite for executing the cell selection test cases in without-EPC
+ * @brief Test suite for executing the cell selection test cases in without-EPC
  *        and with-EPC scenarios.
  *
  * \sa ns3::LteCellSelectionTestCase
@@ -40,16 +40,16 @@ class LteCellSelectionTestSuite : public TestSuite
 };
 
 /**
- * \ingroup lte
+ * @ingroup lte
  *
- * \brief Testing the initial cell selection procedure by UE at IDLE state in
+ * @brief Testing the initial cell selection procedure by UE at IDLE state in
  *        the beginning of simulation.
  */
 class LteCellSelectionTestCase : public TestCase
 {
   public:
     /**
-     * \brief A set of input parameters for setting up a UE in the simulation.
+     * @brief A set of input parameters for setting up a UE in the simulation.
      */
     struct UeSetup_t
     {
@@ -62,14 +62,14 @@ class LteCellSelectionTestCase : public TestCase
         uint16_t expectedCellId2; ///< An alternative cell ID that the UE is expected to attach to
                                   ///< (0 means that this no alternative cell is expected).
         /**
-         * \brief UE test setup function.
-         * \param relPosX relative position to the inter site distance in X
-         * \param relPosY relative position to the inter site distance in Y
-         * \param isCsgMember if true, simulation is allowed access to CSG cell
-         * \param checkPoint the time in the simulation when the UE is verified
-         * \param expectedCellId1 the cell ID that the UE is expected to attach to
+         * @brief UE test setup function.
+         * @param relPosX relative position to the inter site distance in X
+         * @param relPosY relative position to the inter site distance in Y
+         * @param isCsgMember if true, simulation is allowed access to CSG cell
+         * @param checkPoint the time in the simulation when the UE is verified
+         * @param expectedCellId1 the cell ID that the UE is expected to attach to
          * (0 means that the UE should not attach to any cell).
-         * \param expectedCellId2 an alternative cell ID that the UE is expected to attach to
+         * @param expectedCellId2 an alternative cell ID that the UE is expected to attach to
          * (0 means that this no alternative cell is expected).
          */
         UeSetup_t(double relPosX,
@@ -81,13 +81,13 @@ class LteCellSelectionTestCase : public TestCase
     };
 
     /**
-     * \brief Creates an instance of the initial cell selection test case.
-     * \param name name of this test
-     * \param isEpcMode set to true for setting up simulation with EPC enabled
-     * \param isIdealRrc if true, simulation uses Ideal RRC protocol, otherwise
+     * @brief Creates an instance of the initial cell selection test case.
+     * @param name name of this test
+     * @param isEpcMode set to true for setting up simulation with EPC enabled
+     * @param isIdealRrc if true, simulation uses Ideal RRC protocol, otherwise
      *                   simulation uses Real RRC protocol
-     * \param interSiteDistance the distance between eNodeB in meters
-     * \param ueSetupList a list of UE configuration to be installed in the
+     * @param interSiteDistance the distance between eNodeB in meters
+     * @param ueSetupList a list of UE configuration to be installed in the
      *                    simulation
      */
     LteCellSelectionTestCase(std::string name,
@@ -100,28 +100,28 @@ class LteCellSelectionTestCase : public TestCase
 
   private:
     /**
-     * \brief Setup the simulation according to the configuration set by the
+     * @brief Setup the simulation according to the configuration set by the
      *        class constructor, run it, and verify the result.
      */
     void DoRun() override;
 
     /**
-     * \brief Verifies if the given UE is attached to either of the given two
+     * @brief Verifies if the given UE is attached to either of the given two
      *        cells and in a CONNECTED_NORMALLY state.
-     * \param ueDev the UE device
-     * \param expectedCellId1 the first cell ID
-     * \param expectedCellId2 the second cell ID
+     * @param ueDev the UE device
+     * @param expectedCellId1 the first cell ID
+     * @param expectedCellId2 the second cell ID
      */
     void CheckPoint(Ptr<LteUeNetDevice> ueDev, uint16_t expectedCellId1, uint16_t expectedCellId2);
 
     /**
-     * \brief State transition callback function
-     * \param context the context string
-     * \param imsi the IMSI
-     * \param cellId the cell ID
-     * \param rnti the RNTI
-     * \param oldState the old state
-     * \param newState the new state
+     * @brief State transition callback function
+     * @param context the context string
+     * @param imsi the IMSI
+     * @param cellId the cell ID
+     * @param rnti the RNTI
+     * @param oldState the old state
+     * @param newState the new state
      */
     void StateTransitionCallback(std::string context,
                                  uint64_t imsi,
@@ -130,25 +130,25 @@ class LteCellSelectionTestCase : public TestCase
                                  LteUeRrc::State oldState,
                                  LteUeRrc::State newState);
     /**
-     * \brief Initial cell selection end ok callback function
-     * \param context the context string
-     * \param imsi the IMSI
-     * \param cellId the cell ID
+     * @brief Initial cell selection end ok callback function
+     * @param context the context string
+     * @param imsi the IMSI
+     * @param cellId the cell ID
      */
     void InitialCellSelectionEndOkCallback(std::string context, uint64_t imsi, uint16_t cellId);
     /**
-     * \brief Initial cell selection end error callback function
-     * \param context the context string
-     * \param imsi the IMSI
-     * \param cellId the cell ID
+     * @brief Initial cell selection end error callback function
+     * @param context the context string
+     * @param imsi the IMSI
+     * @param cellId the cell ID
      */
     void InitialCellSelectionEndErrorCallback(std::string context, uint64_t imsi, uint16_t cellId);
     /**
-     * \brief Connection established callback function
-     * \param context the context string
-     * \param imsi the IMSI
-     * \param cellId the cell ID
-     * \param rnti the RNTI
+     * @brief Connection established callback function
+     * @param context the context string
+     * @param imsi the IMSI
+     * @param cellId the cell ID
+     * @param rnti the RNTI
      */
     void ConnectionEstablishedCallback(std::string context,
                                        uint64_t imsi,

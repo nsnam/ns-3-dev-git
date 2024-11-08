@@ -13,8 +13,8 @@
 #include "topology-reader.h"
 
 /**
- * \file
- * \ingroup topology
+ * @file
+ * @ingroup topology
  * ns3::InetTopologyReader declaration.
  */
 
@@ -24,9 +24,9 @@ namespace ns3
 // ------------------------------------------------------------
 // --------------------------------------------
 /**
- * \ingroup topology
+ * @ingroup topology
  *
- * \brief Topology file reader (Inet-format type).
+ * @brief Topology file reader (Inet-format type).
  *
  * This class takes an input file in Inet format and extracts all
  * the information needed to build the topology
@@ -41,8 +41,8 @@ class InetTopologyReader : public TopologyReader
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId.
+     * @brief Get the type ID.
+     * @return the object TypeId.
      */
     static TypeId GetTypeId();
 
@@ -54,7 +54,7 @@ class InetTopologyReader : public TopologyReader
     InetTopologyReader& operator=(const InetTopologyReader&) = delete;
 
     /**
-     * \brief Main topology reading function.
+     * @brief Main topology reading function.
      *
      * This method opens an input stream and reads the Inet-format file.
      * From the first line it takes the total number of nodes and links.
@@ -63,7 +63,7 @@ class InetTopologyReader : public TopologyReader
      * Then reads until the end of the file (total links number rows) and saves
      * the structure of every single link in the topology.
      *
-     * \return The container of the nodes created (or empty container if there was an error)
+     * @return The container of the nodes created (or empty container if there was an error)
      */
     NodeContainer Read() override;
 

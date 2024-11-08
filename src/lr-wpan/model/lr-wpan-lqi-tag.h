@@ -17,7 +17,7 @@ namespace lrwpan
 {
 
 /**
- * \ingroup lr-wpan
+ * @ingroup lr-wpan
  * Represent the LQI (Link Quality Estination).
  *
  * The LQI Tag is added to each received packet, and can be
@@ -31,7 +31,7 @@ class LrWpanLqiTag : public Tag
     /**
      * Get the type ID.
      *
-     * \return the object TypeId
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -44,7 +44,7 @@ class LrWpanLqiTag : public Tag
 
     /**
      * Create a LrWpanLqiTag with the given LQI value.
-     * \param lqi The LQI.
+     * @param lqi The LQI.
      */
     LrWpanLqiTag(uint8_t lqi);
 
@@ -56,14 +56,14 @@ class LrWpanLqiTag : public Tag
     /**
      * Set the LQI to the given value.
      *
-     * \param lqi the value of the LQI to set
+     * @param lqi the value of the LQI to set
      */
     void Set(uint8_t lqi);
 
     /**
      * Get the LQI value.
      *
-     * \return the LQI value
+     * @return the LQI value
      */
     uint8_t Get() const;
 

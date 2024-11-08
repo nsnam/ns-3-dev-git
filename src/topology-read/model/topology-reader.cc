@@ -12,8 +12,8 @@
 #include "ns3/log.h"
 
 /**
- * \file
- * \ingroup topology
+ * @file
+ * @ingroup topology
  * ns3::TopologyReader implementation.
  */
 

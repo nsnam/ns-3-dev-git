@@ -17,9 +17,9 @@ namespace ns3
 {
 
 /**
- * \ingroup gnuplot
+ * @ingroup gnuplot
  *
- * \brief Abstract class to store a plot line to be used by ns3::Gnuplot.
+ * @brief Abstract class to store a plot line to be used by ns3::Gnuplot.
  *
  * This class contains a reference counted data object in m_data. The data
  * object contains different structs derived from struct Data by subclasses.
@@ -29,7 +29,7 @@ class GnuplotDataset
   public:
     /**
      * Reference-counting copy constructor.
-     * \param original Original GnuPlotDataset
+     * @param original Original GnuPlotDataset
      */
     GnuplotDataset(const GnuplotDataset& original);
 
@@ -40,30 +40,30 @@ class GnuplotDataset
 
     /**
      * Reference-counting assignment operator.
-     * \param original Right-hand side of assignment operator
-     * \return Copy of original GnuplotDataset
+     * @param original Right-hand side of assignment operator
+     * @return Copy of original GnuplotDataset
      */
     GnuplotDataset& operator=(const GnuplotDataset& original);
 
     /**
-     * \brief Change line title.
-     * \param title the new title string to use for this dataset.
+     * @brief Change line title.
+     * @param title the new title string to use for this dataset.
      *
-     * \note If you want your title to contain a newline character,
+     * @note If you want your title to contain a newline character,
      *       escape it like this:  "First line\\nSecond line" so that
      *       it is converted to "First line\nSecond line" in the plot file.
      */
     void SetTitle(const std::string& title);
 
     /**
-     * \brief Change extra formatting style parameters for newly created objects.
-     * \param extra       extra formatting
+     * @brief Change extra formatting style parameters for newly created objects.
+     * @param extra       extra formatting
      */
     static void SetDefaultExtra(const std::string& extra);
 
     /**
-     * \brief Add extra formatting parameters to this dataset.
-     * \param extra       extra formatting
+     * @brief Add extra formatting parameters to this dataset.
+     * @param extra       extra formatting
      */
     void SetExtra(const std::string& extra);
 
@@ -73,18 +73,18 @@ class GnuplotDataset
     friend class Gnuplot;
 
     /**
-     * \brief Extra gnuplot parameters set on every newly created dataset.
+     * @brief Extra gnuplot parameters set on every newly created dataset.
      */
     static std::string m_defaultExtra;
 
     /**
-     * \brief Derived classes subclass this struct and add their own data fields.
+     * @brief Derived classes subclass this struct and add their own data fields.
      */
     struct Data;
 
     /**
      * Called by constructors of derived classes.
-     * \param data the reference counted data object representing this dataset.
+     * @param data the reference counted data object representing this dataset.
      */
     GnuplotDataset(Data* data);
 
@@ -95,10 +95,10 @@ class GnuplotDataset
 };
 
 /**
- * \ingroup gnuplot
+ * @ingroup gnuplot
  *
- * \class Gnuplot2dDataset
- * \brief Class to represent a 2D points plot. Set the line or points style
+ * @class Gnuplot2dDataset
+ * @brief Class to represent a 2D points plot. Set the line or points style
  * using SetStyle() and set points using Add().
  */
 class Gnuplot2dDataset : public GnuplotDataset
@@ -131,7 +131,7 @@ class Gnuplot2dDataset : public GnuplotDataset
     };
 
     /**
-     * \param title the title to be associated to this dataset (default "Untitled").
+     * @param title the title to be associated to this dataset (default "Untitled").
      *
      * Create an empty dataset. Usually, the dataset's title is
      * displayed in the legend box.
@@ -140,23 +140,23 @@ class Gnuplot2dDataset : public GnuplotDataset
 
     /**
      * Change default style for all newly created objects.
-     * \param style the style of plotting to use for newly created datasets.
+     * @param style the style of plotting to use for newly created datasets.
      */
     static void SetDefaultStyle(Style style);
 
     /**
-     * \param style the style of plotting to use for this dataset.
+     * @param style the style of plotting to use for this dataset.
      */
     void SetStyle(Style style);
 
     /**
      * Change default errorbars style for all newly created objects.
-     * \param errorBars the style of errorbars to use for newly created datasets.
+     * @param errorBars the style of errorbars to use for newly created datasets.
      */
     static void SetDefaultErrorBars(ErrorBars errorBars);
 
     /**
-     * \param errorBars the style of errorbars to display.
+     * @param errorBars the style of errorbars to display.
      *
      * If you use any style other than none, you need
      * to make sure you store the delta information in
@@ -166,27 +166,27 @@ class Gnuplot2dDataset : public GnuplotDataset
     void SetErrorBars(ErrorBars errorBars);
 
     /**
-     * \param x x coord to new data point
-     * \param y y coord to new data point
+     * @param x x coord to new data point
+     * @param y y coord to new data point
      *
      * Use this method with error bar style NONE.
      */
     void Add(double x, double y);
 
     /**
-     * \param x x coord to new data point
-     * \param y y coord to new data point
-     * \param errorDelta x and y data point uncertainty
+     * @param x x coord to new data point
+     * @param y y coord to new data point
+     * @param errorDelta x and y data point uncertainty
      *
      * Use this method with error bar style X or Y.
      */
     void Add(double x, double y, double errorDelta);
 
     /**
-     * \param x x coord to new data point
-     * \param y y coord to new data point
-     * \param xErrorDelta x data point uncertainty
-     * \param yErrorDelta y data point uncertainty
+     * @param x x coord to new data point
+     * @param y y coord to new data point
+     * @param xErrorDelta x data point uncertainty
+     * @param yErrorDelta y data point uncertainty
      *
      * Use this method with error bar style XY.
      */
@@ -222,9 +222,9 @@ class Gnuplot2dDataset : public GnuplotDataset
 };
 
 /**
- * \ingroup gnuplot
+ * @ingroup gnuplot
  *
- * \brief Class to represent a 2D function expression plot.
+ * @brief Class to represent a 2D function expression plot.
  *
  * Since the function expression is not escaped, styles and extras could just
  * as well be included in the expression string.
@@ -233,8 +233,8 @@ class Gnuplot2dFunction : public GnuplotDataset
 {
   public:
     /**
-     * \param title the title to be associated to this dataset.
-     * \param function function to plot
+     * @param title the title to be associated to this dataset.
+     * @param function function to plot
      *
      * Create an function dataset. Usually, the dataset's title is displayed in
      * the legend box.
@@ -242,7 +242,7 @@ class Gnuplot2dFunction : public GnuplotDataset
     Gnuplot2dFunction(const std::string& title = "Untitled", const std::string& function = "");
 
     /**
-     * \param function new function string to set
+     * @param function new function string to set
      */
     void SetFunction(const std::string& function);
 
@@ -252,16 +252,16 @@ class Gnuplot2dFunction : public GnuplotDataset
 };
 
 /**
- * \ingroup gnuplot
+ * @ingroup gnuplot
  *
- * \brief Class to represent a 3D points plot. Set the line or points style
+ * @brief Class to represent a 3D points plot. Set the line or points style
  * using SetStyle() and set points using Add().
  */
 class Gnuplot3dDataset : public GnuplotDataset
 {
   public:
     /**
-     * \param title the title to be associated to this dataset.
+     * @param title the title to be associated to this dataset.
      *
      * Create an empty dataset. Usually, the dataset's title is
      * displayed in the legend box.
@@ -270,19 +270,19 @@ class Gnuplot3dDataset : public GnuplotDataset
 
     /**
      * Change default style for all newly created objects.
-     * \param style the style of plotting to use for newly created datasets.
+     * @param style the style of plotting to use for newly created datasets.
      */
     static void SetDefaultStyle(const std::string& style);
 
     /**
-     * \param style the style of plotting to use for this dataset.
+     * @param style the style of plotting to use for this dataset.
      */
     void SetStyle(const std::string& style);
 
     /**
-     * \param x x coord to new data point
-     * \param y y coord to new data point
-     * \param z z coord to new data point
+     * @param x x coord to new data point
+     * @param y y coord to new data point
+     * @param z z coord to new data point
      *
      * Use this method to add a new 3D point
      */
@@ -316,9 +316,9 @@ class Gnuplot3dDataset : public GnuplotDataset
 };
 
 /**
- * \ingroup gnuplot
+ * @ingroup gnuplot
  *
- * \brief Class to represent a 3D function expression plot.
+ * @brief Class to represent a 3D function expression plot.
  *
  * Since the function expression is not escaped, styles and extras could just as
  * well be included in the expression string. The only difference to
@@ -328,8 +328,8 @@ class Gnuplot3dFunction : public GnuplotDataset
 {
   public:
     /**
-     * \param title the title to be associated to this dataset.
-     * \param function function to plot
+     * @param title the title to be associated to this dataset.
+     * @param function function to plot
      *
      * Create an function dataset. Usually, the dataset's title is displayed in
      * the legend box.
@@ -337,7 +337,7 @@ class Gnuplot3dFunction : public GnuplotDataset
     Gnuplot3dFunction(const std::string& title = "Untitled", const std::string& function = "");
 
     /**
-     * \param function new function string to set
+     * @param function new function string to set
      */
     void SetFunction(const std::string& function);
 
@@ -347,9 +347,9 @@ class Gnuplot3dFunction : public GnuplotDataset
 };
 
 /**
- * \ingroup gnuplot
+ * @ingroup gnuplot
  *
- * \brief a simple class to generate gnuplot-ready plotting commands
+ * @brief a simple class to generate gnuplot-ready plotting commands
  *        from a set of datasets.
  *
  * This class really represents a single graph on which multiple datasets
@@ -359,15 +359,15 @@ class Gnuplot
 {
   public:
     /**
-     * \param outputFilename the name of the file where the rendering of the
+     * @param outputFilename the name of the file where the rendering of the
      *        graph will be generated if you feed the command stream output by
      *        Gnuplot::GenerateOutput to the gnuplot program.
-     * \param title title line of the plot page
+     * @param title title line of the plot page
      */
     Gnuplot(const std::string& outputFilename = "", const std::string& title = "");
 
     /**
-     * \param outputFilename the name of the file where the rendering of the
+     * @param outputFilename the name of the file where the rendering of the
      *        graph will be generated if you feed the command stream output by
      *        Gnuplot::GenerateOutput to the gnuplot program.
      */
@@ -376,71 +376,71 @@ class Gnuplot
     /**
      * Crude attempt to auto-detect the correct terminal setting by inspecting
      * the filename's extension.
-     * \param filename output filename
-     * \return File extension of the provided filename
+     * @param filename output filename
+     * @return File extension of the provided filename
      */
     static std::string DetectTerminal(const std::string& filename);
 
     /**
-     * \param terminal terminal setting string for output. The default terminal
+     * @param terminal terminal setting string for output. The default terminal
      * string is "png"
      */
     void SetTerminal(const std::string& terminal);
 
     /**
-     * \param title set new plot title string to use for this plot.
+     * @param title set new plot title string to use for this plot.
      */
     void SetTitle(const std::string& title);
 
     /**
-     * \param xLegend the legend for the x horizontal axis
-     * \param yLegend the legend for the y vertical axis
+     * @param xLegend the legend for the x horizontal axis
+     * @param yLegend the legend for the y vertical axis
      */
     void SetLegend(const std::string& xLegend, const std::string& yLegend);
 
     /**
-     * \param extra set extra gnuplot directive for output.
+     * @param extra set extra gnuplot directive for output.
      */
     void SetExtra(const std::string& extra);
 
     /**
-     * \param extra append extra gnuplot directive for output.
+     * @param extra append extra gnuplot directive for output.
      */
     void AppendExtra(const std::string& extra);
 
     /**
-     * \param dataset add a dataset to the graph to be plotted.
+     * @param dataset add a dataset to the graph to be plotted.
      */
     void AddDataset(const GnuplotDataset& dataset);
 
     /**
-     * \param os the output stream on which the relevant gnuplot
+     * @param os the output stream on which the relevant gnuplot
      * commands should be generated. Including output file and terminal
      * headers.
      *
-     * \brief Writes gnuplot commands and data values to a single
+     * @brief Writes gnuplot commands and data values to a single
      * output stream.
      */
     void GenerateOutput(std::ostream& os);
 
     /**
-     * \param osControl the output stream on which the relevant gnuplot
+     * @param osControl the output stream on which the relevant gnuplot
      * control commands should be generated. Including output file and
      * terminal headers.
-     * \param osData the output stream on which the relevant gnuplot
+     * @param osData the output stream on which the relevant gnuplot
      * data values should be generated.
-     * \param dataFileName the name for the data file that will be
+     * @param dataFileName the name for the data file that will be
      * written.
      *
-     * \brief Writes gnuplot commands and data values to two
+     * @brief Writes gnuplot commands and data values to two
      * different outputs streams.
      */
     void GenerateOutput(std::ostream& osControl, std::ostream& osData, std::string dataFileName);
 
     /**
-     * \param index the index for the data stream in the data file.
+     * @param index the index for the data stream in the data file.
      *
-     * \brief Sets the current data stream index in the data file.
+     * @brief Sets the current data stream index in the data file.
      */
     void SetDataFileDatasetIndex(unsigned int index);
 
@@ -464,52 +464,52 @@ class Gnuplot
 };
 
 /**
- * \ingroup gnuplot
+ * @ingroup gnuplot
  *
- * \brief a simple class to group together multiple gnuplots into one file,
+ * @brief a simple class to group together multiple gnuplots into one file,
  * e.g. for PDF multi-page output terminals.
  */
 class GnuplotCollection
 {
   public:
     /**
-     * \param outputFilename the name of the file where the rendering of the
+     * @param outputFilename the name of the file where the rendering of the
      *        graph will be generated if you feed the command stream output by
      *        GnuplotCollection::GenerateOutput to the gnuplot program.
      */
     GnuplotCollection(const std::string& outputFilename);
 
     /**
-     * \param terminal terminal setting string for output. The default terminal
+     * @param terminal terminal setting string for output. The default terminal
      * string is guessed from the output filename's extension.
      */
     void SetTerminal(const std::string& terminal);
 
     /**
-     * \param plot add a plot to the collection to be plotted.
+     * @param plot add a plot to the collection to be plotted.
      */
     void AddPlot(const Gnuplot& plot);
 
     /**
      * Return a pointer to one of the added plots.
-     * \param id  index of plot to return
-     * \return    reference to plot, throws std::range_error if it does not exist.
+     * @param id  index of plot to return
+     * @return    reference to plot, throws std::range_error if it does not exist.
      */
     Gnuplot& GetPlot(unsigned int id);
 
     /**
-     * \param os the output stream on which the relevant gnuplot commands should
+     * @param os the output stream on which the relevant gnuplot commands should
      * be generated.
      */
     void GenerateOutput(std::ostream& os);
 
     /**
-     * \param osControl the output stream on which the relevant gnuplot
+     * @param osControl the output stream on which the relevant gnuplot
      * control commands should be generated. Including output file and
      * terminal headers.
-     * \param osData the output stream on which the relevant gnuplot
+     * @param osData the output stream on which the relevant gnuplot
      * data values should be generated.
-     * \param dataFileName the name for the data file that will be
+     * @param dataFileName the name for the data file that will be
      * written.
      */
     void GenerateOutput(std::ostream& osControl, std::ostream& osData, std::string dataFileName);

@@ -17,7 +17,7 @@ namespace ns3
 struct AparfWifiRemoteStation;
 
 /**
- * \ingroup wifi
+ * @ingroup wifi
  * APARF Power and rate control algorithm
  *
  * This class implements the High Performance power and rate control algorithm
@@ -36,7 +36,7 @@ class AparfWifiManager : public WifiRemoteStationManager
   public:
     /**
      * Register this type.
-     * \return The object TypeId.
+     * @return The object TypeId.
      */
     static TypeId GetTypeId();
     AparfWifiManager();
@@ -77,7 +77,7 @@ class AparfWifiManager : public WifiRemoteStationManager
 
     /** Check for initializations.
      *
-     * \param station The remote station.
+     * @param station The remote station.
      */
     void CheckInit(AparfWifiRemoteStation* station);
 

@@ -50,7 +50,7 @@ class OriginatorRxStatus
     /**
      * Check if we are de-fragmenting packets.
      *
-     * \return true if we are de-fragmenting packets,
+     * @return true if we are de-fragmenting packets,
      *         false otherwise
      */
     bool IsDeFragmenting() const
@@ -62,7 +62,7 @@ class OriginatorRxStatus
      * We have received a first fragmented packet.
      * We start the deframentation by saving the first fragment.
      *
-     * \param packet the first fragmented packet
+     * @param packet the first fragmented packet
      */
     void AccumulateFirstFragment(Ptr<const Packet> packet)
     {
@@ -77,9 +77,9 @@ class OriginatorRxStatus
      * We re-construct the packet from the fragments we saved
      * and return the full packet.
      *
-     * \param packet the last fragment
+     * @param packet the last fragment
      *
-     * \return the fully reconstructed packet
+     * @return the fully reconstructed packet
      */
     Ptr<Packet> AccumulateLastFragment(Ptr<const Packet> packet)
     {
@@ -99,7 +99,7 @@ class OriginatorRxStatus
      * We received a fragmented packet (not first and not last).
      * We simply save it into our internal list.
      *
-     * \param packet the received fragment
+     * @param packet the received fragment
      */
     void AccumulateFragment(Ptr<const Packet> packet)
     {
@@ -111,9 +111,9 @@ class OriginatorRxStatus
      * Check if the sequence control (i.e. fragment number) is
      * in order.
      *
-     * \param sequenceControl the raw sequence control
+     * @param sequenceControl the raw sequence control
      *
-     * \return true if the sequence control is in order,
+     * @return true if the sequence control is in order,
      *         false otherwise
      */
     bool IsNextFragment(uint16_t sequenceControl) const
@@ -125,7 +125,7 @@ class OriginatorRxStatus
     /**
      * Return the last sequence control we received.
      *
-     * \return the last sequence control
+     * @return the last sequence control
      */
     uint16_t GetLastSequenceControl() const
     {
@@ -135,7 +135,7 @@ class OriginatorRxStatus
     /**
      * Set the last sequence control we received.
      *
-     * \param sequenceControl the last sequence control we received
+     * @param sequenceControl the last sequence control we received
      */
     void SetSequenceControl(uint16_t sequenceControl)
     {

@@ -22,16 +22,16 @@ namespace ns3
 {
 
 /**
- * \brief Stream insertion operator.
+ * @brief Stream insertion operator.
  * See https://en.cppreference.com/w/cpp/utility/apply
  *
  * Prints tuple values separated by a comma. E.g., if the tuple contains
  * v1, v2 and v3, then "v1, v2, v3" will be added to the stream.
  *
- * \tparam Args \deduced Tuple arguments
- * \param os the output stream
- * \param t the tuple
- * \returns a reference to the stream
+ * @tparam Args \deduced Tuple arguments
+ * @param os the output stream
+ * @param t the tuple
+ * @returns a reference to the stream
  */
 template <class... Args>
 std::ostream&
@@ -47,20 +47,20 @@ operator<<(std::ostream& os, const std::tuple<Args...>& t)
 }
 
 /**
- * \ingroup attributes
- * \defgroup attribute_Tuple Tuple Attribute
+ * @ingroup attributes
+ * @defgroup attribute_Tuple Tuple Attribute
  * AttributeValue implementation for Tuple
  */
 
 /**
- * \ingroup attribute_Tuple
+ * @ingroup attribute_Tuple
  *
  * AttributeValue implementation for Tuple.
  *
  * Hold objects of type std::tuple<Args...>.
- * \tparam Args \explicit The list of AttributeValues to be held by this TupleValue
+ * @tparam Args \explicit The list of AttributeValues to be held by this TupleValue
  *
- * \see AttributeValue
+ * @see AttributeValue
  */
 template <class... Args>
 class TupleValue : public AttributeValue
@@ -76,7 +76,7 @@ class TupleValue : public AttributeValue
     /**
      * Construct this TupleValue from a std::tuple
      *
-     * \param [in] value Value with which to construct.
+     * @param [in] value Value with which to construct.
      */
     TupleValue(const result_type& value);
 
@@ -89,29 +89,29 @@ class TupleValue : public AttributeValue
      *
      * This differs from the actual value stored in the object which is
      * a tuple of Ptr<AV> where AV is a class derived from AttributeValue.
-     * \return stored values as a std::tuple
+     * @return stored values as a std::tuple
      */
     result_type Get() const;
     /**
      * Set the stored values.
      *
-     * \param value The stored value
+     * @param value The stored value
      */
     void Set(const result_type& value);
 
     /**
      * Get the attribute values as a tuple.
-     * \return the attribute values as a tuple
+     * @return the attribute values as a tuple
      */
     value_type GetValue() const;
 
     /**
      * Set the given variable to the values stored by this TupleValue object.
      *
-     * \tparam T \deduced the type of the given variable (normally, the argument type
+     * @tparam T \deduced the type of the given variable (normally, the argument type
      *           of a set method or the type of a data member)
-     * \param [out] value The stored value
-     * \return true if the given variable was set
+     * @param [out] value The stored value
+     * @return true if the given variable was set
      */
     template <typename T>
     bool GetAccessor(T& value) const;
@@ -121,9 +121,9 @@ class TupleValue : public AttributeValue
      * Set the attribute values starting from the given values.
      * Used by DeserializeFromString method.
      *
-     * \tparam Is \deduced index sequence
-     * \param values the given attribute values
-     * \return true if the attribute values of this object were set
+     * @tparam Is \deduced index sequence
+     * @param values the given attribute values
+     * @return true if the attribute values of this object were set
      */
     template <std::size_t... Is>
     bool SetValueImpl(std::index_sequence<Is...>, const std::vector<Ptr<AttributeValue>>& values);
@@ -132,27 +132,27 @@ class TupleValue : public AttributeValue
 };
 
 /**
- * \ingroup attribute_Tuple
+ * @ingroup attribute_Tuple
  *
  * Create a TupleValue object. Enable to write code like this snippet:
  *
- * \code
+ * @code
  * typedef std::tuple<uint16_t, double> Tuple;
  * typedef std::tuple<UintegerValue, DoubleValue> Pack;
  *
  * TupleValue<UintegerValue, DoubleValue> t = MakeTupleValue<Pack> (Tuple {10, 1.5});
- * \endcode
+ * @endcode
  *
- * \tparam T1 \explicit A std::tuple of the AttributeValue types included in TupleValue
- * \tparam T2 \deduced A std::tuple of the type of elements stored by TupleValue
- * \param t the tuple of elements stored by TupleValue
- * \return a TupleValue object
+ * @tparam T1 \explicit A std::tuple of the AttributeValue types included in TupleValue
+ * @tparam T2 \deduced A std::tuple of the type of elements stored by TupleValue
+ * @param t the tuple of elements stored by TupleValue
+ * @return a TupleValue object
  */
 template <class T1, class T2>
 auto MakeTupleValue(T2 t);
 
 /**
- * \ingroup attribute_Tuple
+ * @ingroup attribute_Tuple
  *
  * Checker for attribute values storing tuples.
  */
@@ -162,53 +162,53 @@ class TupleChecker : public AttributeChecker
     /**
      * Get the checkers for all tuple elements.
      *
-     * \return the checkers for all tuple elements
+     * @return the checkers for all tuple elements
      */
     virtual const std::vector<Ptr<const AttributeChecker>>& GetCheckers() const = 0;
 };
 
 /**
- * \ingroup attribute_Tuple
+ * @ingroup attribute_Tuple
  *
  * Create a TupleChecker from AttributeCheckers associated with TupleValue elements.
  *
- * \tparam Args \explicit Attribute value types
- * \tparam Ts \deduced Attribute checker types
- * \param checkers attribute checkers
- * \return Pointer to TupleChecker instance.
+ * @tparam Args \explicit Attribute value types
+ * @tparam Ts \deduced Attribute checker types
+ * @param checkers attribute checkers
+ * @return Pointer to TupleChecker instance.
  */
 template <class... Args, class... Ts>
 Ptr<const AttributeChecker> MakeTupleChecker(Ts... checkers);
 
 /**
- * \ingroup attribute_Tuple
+ * @ingroup attribute_Tuple
  *
  * Create an AttributeAccessor for a class data member of type tuple,
  * or a lone class get functor or set method.
  *
- * \tparam Args \explicit Attribute value types
- * \tparam T1 \deduced The type of the class data member,
+ * @tparam Args \explicit Attribute value types
+ * @tparam T1 \deduced The type of the class data member,
  *            or the type of the class get functor or set method.
- * \param a1 The address of the data member,
+ * @param a1 The address of the data member,
  *           or the get or set method.
- * \return the AttributeAccessor
+ * @return the AttributeAccessor
  */
 template <class... Args, class T1>
 Ptr<const AttributeAccessor> MakeTupleAccessor(T1 a1);
 
 /**
- * \ingroup attribute_Tuple
+ * @ingroup attribute_Tuple
  *
  * Create an AttributeAccessor using a pair of get functor
  * and set methods from a class.
  *
- * \tparam Args \explicit Attribute value types
- * \tparam T1 \deduced The type of the class data member,
+ * @tparam Args \explicit Attribute value types
+ * @tparam T1 \deduced The type of the class data member,
  *            or the type of the class get functor or set method.
- * \tparam T2 \deduced The type of the getter class functor method.
- * \param a2 The address of the class method to set the attribute.
- * \param a1 The address of the data member, or the get or set method.
- * \return the AttributeAccessor
+ * @tparam T2 \deduced The type of the getter class functor method.
+ * @param a2 The address of the class method to set the attribute.
+ * @param a1 The address of the data member, or the get or set method.
+ * @return the AttributeAccessor
  */
 template <class... Args, class T1, class T2>
 Ptr<const AttributeAccessor> MakeTupleAccessor(T1 a1, T2 a2);
@@ -354,7 +354,7 @@ namespace internal
 {
 
 /**
- * \ingroup attribute_Tuple
+ * @ingroup attribute_Tuple
  *
  * Internal checker class templated to each AttributeChecker
  * for each entry in the tuple.
@@ -365,8 +365,8 @@ class TupleChecker : public ns3::TupleChecker
   public:
     /**
      * Constructor.
-     * \tparam Ts \deduced the type of the attribute checkers
-     * \param checkers the attribute checkers for individual elements of the tuple
+     * @tparam Ts \deduced the type of the attribute checkers
+     * @param checkers the attribute checkers for individual elements of the tuple
      */
     template <class... Ts>
     TupleChecker(Ts... checkers)
@@ -431,7 +431,7 @@ class TupleChecker : public ns3::TupleChecker
 };
 
 /**
- * \ingroup attribute_Tuple
+ * @ingroup attribute_Tuple
  *
  * Helper class defining static methods for MakeTupleChecker and MakeTupleAccessor
  * that are called when user specifies the list of AttributeValue types included
@@ -441,7 +441,7 @@ template <class... Args>
 struct TupleHelper
 {
     /**
-     * \copydoc ns3::MakeTupleChecker
+     * @copydoc ns3::MakeTupleChecker
      */
     template <class... Ts>
     static Ptr<const AttributeChecker> MakeTupleChecker(Ts... checkers)
@@ -450,7 +450,7 @@ struct TupleHelper
     }
 
     /**
-     * \copydoc ns3::MakeTupleAccessor(T1)
+     * @copydoc ns3::MakeTupleAccessor(T1)
      */
     template <class T1>
     static Ptr<const AttributeAccessor> MakeTupleAccessor(T1 a1)
@@ -459,7 +459,7 @@ struct TupleHelper
     }
 
     /**
-     * \copydoc ns3::MakeTupleAccessor(T1,T2)
+     * @copydoc ns3::MakeTupleAccessor(T1,T2)
      */
     template <class T1, class T2>
     static Ptr<const AttributeAccessor> MakeTupleAccessor(T1 a1, T2 a2)
@@ -469,7 +469,7 @@ struct TupleHelper
 };
 
 /**
- * \ingroup attribute_Tuple
+ * @ingroup attribute_Tuple
  *
  * Helper class defining static methods for MakeTupleValue, MakeTupleChecker and
  * MakeTupleAccessor that are called when user provides a std::tuple of the
@@ -480,7 +480,7 @@ template <class... Args>
 struct TupleHelper<std::tuple<Args...>>
 {
     /**
-     * \copydoc ns3::MakeTupleValue
+     * @copydoc ns3::MakeTupleValue
      */
     static TupleValue<Args...> MakeTupleValue(const typename TupleValue<Args...>::result_type& t)
     {
@@ -488,7 +488,7 @@ struct TupleHelper<std::tuple<Args...>>
     }
 
     /**
-     * \copydoc ns3::MakeTupleChecker
+     * @copydoc ns3::MakeTupleChecker
      */
     template <class... Ts>
     static Ptr<const AttributeChecker> MakeTupleChecker(Ts... checkers)
@@ -497,7 +497,7 @@ struct TupleHelper<std::tuple<Args...>>
     }
 
     /**
-     * \copydoc ns3::MakeTupleAccessor(T1)
+     * @copydoc ns3::MakeTupleAccessor(T1)
      */
     template <class T1>
     static Ptr<const AttributeAccessor> MakeTupleAccessor(T1 a1)
@@ -506,7 +506,7 @@ struct TupleHelper<std::tuple<Args...>>
     }
 
     /**
-     * \copydoc ns3::MakeTupleAccessor(T1,T2)
+     * @copydoc ns3::MakeTupleAccessor(T1,T2)
      */
     template <class T1, class T2>
     static Ptr<const AttributeAccessor> MakeTupleAccessor(T1 a1, T2 a2)

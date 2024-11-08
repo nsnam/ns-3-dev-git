@@ -7,8 +7,8 @@
  */
 
 /**
- * \file uan-animation.cc
- * \ingroup uan
+ * @file uan-animation.cc
+ * @ingroup uan
  *
  * This example showcases the "CW-MAC" described in System Design Considerations for Undersea
  * Networks article in the IEEE Journal on Selected Areas of Communications 2008 by Nathan Parrish,

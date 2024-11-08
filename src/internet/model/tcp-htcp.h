@@ -23,9 +23,9 @@ namespace ns3
 class TcpSocketState;
 
 /**
- * \ingroup congestionOps
+ * @ingroup congestionOps
  *
- * \brief An implementation of the H-TCP variant of TCP.
+ * @brief An implementation of the H-TCP variant of TCP.
  *
  * This class contains the H-TCP implementation of TCP, according to
  * Internet-Draft draft-leith-tcp-htcp-03 and its related paper,
@@ -39,8 +39,8 @@ class TcpHtcp : public TcpNewReno
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     /**
@@ -48,8 +48,8 @@ class TcpHtcp : public TcpNewReno
      */
     TcpHtcp();
     /**
-     * \brief Copy constructor
-     * \param sock the object to copy
+     * @brief Copy constructor
+     * @param sock the object to copy
      */
     TcpHtcp(const TcpHtcp& sock);
     ~TcpHtcp() override;
@@ -64,12 +64,12 @@ class TcpHtcp : public TcpNewReno
 
   private:
     /**
-     * \brief Updates the additive increase parameter for H-TCP
+     * @brief Updates the additive increase parameter for H-TCP
      */
     void UpdateAlpha();
 
     /**
-     * \brief Updates the multiplicative decrease factor beta for H-TCP
+     * @brief Updates the multiplicative decrease factor beta for H-TCP
      */
     void UpdateBeta();
 

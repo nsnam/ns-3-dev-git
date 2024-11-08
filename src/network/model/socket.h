@@ -30,13 +30,13 @@ class Node;
 class Packet;
 
 /**
- * \ingroup network
- * \defgroup socket Socket
+ * @ingroup network
+ * @defgroup socket Socket
  */
 
 /**
- * \brief A low-level Socket API based loosely on the BSD Socket API.
- * \ingroup socket
+ * @brief A low-level Socket API based loosely on the BSD Socket API.
+ * @ingroup socket
  *
  * A few things to keep in mind about this type of socket:
  * - it uses ns-3 API constructs such as class ns3::Address instead of
@@ -57,8 +57,8 @@ class Socket : public Object
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -66,8 +66,8 @@ class Socket : public Object
     ~Socket() override;
 
     /**
-     * \enum SocketErrno
-     * \brief Enumeration of the possible errors returned by a socket.
+     * @enum SocketErrno
+     * @brief Enumeration of the possible errors returned by a socket.
      */
     enum SocketErrno
     {
@@ -89,8 +89,8 @@ class Socket : public Object
     };
 
     /**
-     * \enum SocketType
-     * \brief Enumeration of the possible socket types.
+     * @enum SocketType
+     * @brief Enumeration of the possible socket types.
      */
     enum SocketType
     {
@@ -101,8 +101,8 @@ class Socket : public Object
     };
 
     /**
-     * \enum SocketPriority
-     * \brief Enumeration of the possible socket priorities.
+     * @enum SocketPriority
+     * @brief Enumeration of the possible socket priorities.
      *
      * Names and corresponding values are derived from
      * the Linux TC_PRIO_* macros
@@ -118,8 +118,8 @@ class Socket : public Object
     };
 
     /**
-     * \enum Ipv6MulticastFilterMode
-     * \brief Enumeration of the possible filter of a socket.
+     * @enum Ipv6MulticastFilterMode
+     * @brief Enumeration of the possible filter of a socket.
      *
      * A socket can have filters on specific sources to include only
      * packets incoming from them, or to exclude packets incoming
@@ -138,37 +138,37 @@ class Socket : public Object
      * This method wraps the creation of sockets that is performed
      * on a given node by a SocketFactory specified by TypeId.
      *
-     * \return A smart pointer to a newly created socket.
+     * @return A smart pointer to a newly created socket.
      *
-     * \param node The node on which to create the socket
-     * \param tid The TypeId of a SocketFactory class to use
+     * @param node The node on which to create the socket
+     * @param tid The TypeId of a SocketFactory class to use
      */
     static Ptr<Socket> CreateSocket(Ptr<Node> node, TypeId tid);
     /**
-     * \brief Get last error number.
+     * @brief Get last error number.
      *
-     * \return the errno associated to the last call which failed in this
+     * @return the errno associated to the last call which failed in this
      *         socket. Each socket's errno is initialized to zero
      *         when the socket is created.
      */
     virtual Socket::SocketErrno GetErrno() const = 0;
     /**
-     * \return the socket type, analogous to getsockopt (SO_TYPE)
+     * @return the socket type, analogous to getsockopt (SO_TYPE)
      */
     virtual Socket::SocketType GetSocketType() const = 0;
     /**
-     * \brief Return the node this socket is associated with.
-     * \returns the node
+     * @brief Return the node this socket is associated with.
+     * @returns the node
      */
     virtual Ptr<Node> GetNode() const = 0;
     /**
-     * \brief Specify callbacks to allow the caller to determine if
+     * @brief Specify callbacks to allow the caller to determine if
      * the connection succeeds of fails.
-     * \param connectionSucceeded this callback is invoked when the
+     * @param connectionSucceeded this callback is invoked when the
      *        connection request initiated by the user is successfully
      *        completed. The callback is passed  back a pointer to
      *        the same socket object.
-     * \param connectionFailed this callback is invoked when the
+     * @param connectionFailed this callback is invoked when the
      *        connection request initiated by the user is unsuccessfuly
      *        completed. The callback is passed back a pointer to the
      *        same socket object.
@@ -176,7 +176,7 @@ class Socket : public Object
     void SetConnectCallback(Callback<void, Ptr<Socket>> connectionSucceeded,
                             Callback<void, Ptr<Socket>> connectionFailed);
     /**
-     * \brief Detect socket recv() events such as graceful shutdown or error.
+     * @brief Detect socket recv() events such as graceful shutdown or error.
      *
      * For connection-oriented sockets, the first callback is used to signal
      * that the remote side has gracefully shut down the connection, and the
@@ -185,16 +185,16 @@ class Socket : public Object
      * as a connection reset.  For datagram sockets, these callbacks may
      * never be invoked.
      *
-     * \param normalClose this callback is invoked when the
+     * @param normalClose this callback is invoked when the
      *        peer closes the connection gracefully
-     * \param errorClose this callback is invoked when the
+     * @param errorClose this callback is invoked when the
      *        connection closes abnormally
      */
     void SetCloseCallbacks(Callback<void, Ptr<Socket>> normalClose,
                            Callback<void, Ptr<Socket>> errorClose);
     /**
-     * \brief Accept connection requests from remote hosts
-     * \param connectionRequest Callback for connection request from peer.
+     * @brief Accept connection requests from remote hosts
+     * @param connectionRequest Callback for connection request from peer.
      *        This user callback is passed a pointer to this socket, the
      *        ip address and the port number of the connection originator.
      *        This callback must return true to accept the incoming connection,
@@ -203,7 +203,7 @@ class Socket : public Object
      *        give access to the user to the socket created to match
      *        this new connection. If the user does not explicitly
      *        specify this callback, all incoming  connections will be refused.
-     * \param newConnectionCreated Callback for new connection: when a new
+     * @param newConnectionCreated Callback for new connection: when a new
      *        is accepted, it is created and the corresponding socket is passed
      *        back to the user through this callback. This user callback is
      *        passed a pointer to the new socket, and the ip address and
@@ -212,22 +212,22 @@ class Socket : public Object
     void SetAcceptCallback(Callback<bool, Ptr<Socket>, const Address&> connectionRequest,
                            Callback<void, Ptr<Socket>, const Address&> newConnectionCreated);
     /**
-     * \brief Notify application when a packet has been sent from transport
+     * @brief Notify application when a packet has been sent from transport
      *        protocol (non-standard socket call)
-     * \param dataSent Callback for the event that data is sent from the
+     * @param dataSent Callback for the event that data is sent from the
      *        underlying transport protocol.  This callback is passed a
      *        pointer to the socket, and the number of bytes sent.
      */
     void SetDataSentCallback(Callback<void, Ptr<Socket>, uint32_t> dataSent);
     /**
-     * \brief Notify application when space in transmit buffer is added
+     * @brief Notify application when space in transmit buffer is added
      *
      *        This callback is intended to notify a
      *        socket that would have been blocked in a blocking socket model
      *        that space is available in the transmit buffer and that it
      *        can call Send() again.
      *
-     * \param sendCb Callback for the event that the socket transmit buffer
+     * @param sendCb Callback for the event that the socket transmit buffer
      *        fill level has decreased.  This callback is passed a pointer to
      *        the socket, and the number of bytes available for writing
      *        into the buffer (an absolute value).  If there is no transmit
@@ -235,40 +235,40 @@ class Socket : public Object
      */
     void SetSendCallback(Callback<void, Ptr<Socket>, uint32_t> sendCb);
     /**
-     * \brief Notify application when new data is available to be read.
+     * @brief Notify application when new data is available to be read.
      *
      *        This callback is intended to notify a socket that would
      *        have been blocked in a blocking socket model that data
      *        is available to be read.
-     * \param receivedData Callback for the event that data is received
+     * @param receivedData Callback for the event that data is received
      *        from the underlying transport protocol.  This callback
      *        is passed a pointer to the socket.
      */
     void SetRecvCallback(Callback<void, Ptr<Socket>> receivedData);
     /**
-     * \brief Allocate a local endpoint for this socket.
-     * \param address the address to try to allocate
-     * \returns 0 on success, -1 on failure.
+     * @brief Allocate a local endpoint for this socket.
+     * @param address the address to try to allocate
+     * @returns 0 on success, -1 on failure.
      */
     virtual int Bind(const Address& address) = 0;
 
     /**
-     * \brief Allocate a local IPv4 endpoint for this socket.
+     * @brief Allocate a local IPv4 endpoint for this socket.
      *
-     * \returns 0 on success, -1 on failure.
+     * @returns 0 on success, -1 on failure.
      */
     virtual int Bind() = 0;
 
     /**
-     * \brief Allocate a local IPv6 endpoint for this socket.
+     * @brief Allocate a local IPv6 endpoint for this socket.
      *
-     * \returns 0 on success, -1 on failure.
+     * @returns 0 on success, -1 on failure.
      */
     virtual int Bind6() = 0;
 
     /**
-     * \brief Close a socket.
-     * \returns zero on success, -1 on failure.
+     * @brief Close a socket.
+     * @returns zero on success, -1 on failure.
      *
      * After the Close call, the socket is no longer valid, and cannot
      * safely be used for subsequent operations.
@@ -276,7 +276,7 @@ class Socket : public Object
     virtual int Close() = 0;
 
     /**
-     * \returns zero on success, -1 on failure.
+     * @returns zero on success, -1 on failure.
      *
      * Do not allow any further Send calls. This method is typically
      * implemented for Tcp sockets by a half close.
@@ -284,7 +284,7 @@ class Socket : public Object
     virtual int ShutdownSend() = 0;
 
     /**
-     * \returns zero on success, -1 on failure.
+     * @returns zero on success, -1 on failure.
      *
      * Do not allow any further Recv calls. This method is typically
      * implemented for Tcp sockets by a half close.
@@ -292,20 +292,20 @@ class Socket : public Object
     virtual int ShutdownRecv() = 0;
 
     /**
-     * \brief Initiate a connection to a remote host
-     * \param address Address of remote.
-     * \returns 0 on success, -1 on error (in which case errno is set).
+     * @brief Initiate a connection to a remote host
+     * @param address Address of remote.
+     * @returns 0 on success, -1 on error (in which case errno is set).
      */
     virtual int Connect(const Address& address) = 0;
 
     /**
-     * \brief Listen for incoming connections.
-     * \returns 0 on success, -1 on error (in which case errno is set).
+     * @brief Listen for incoming connections.
+     * @returns 0 on success, -1 on error (in which case errno is set).
      */
     virtual int Listen() = 0;
 
     /**
-     * \brief Returns the number of bytes which can be sent in a single call
+     * @brief Returns the number of bytes which can be sent in a single call
      * to Send.
      *
      * For datagram sockets, this returns the number of bytes that
@@ -314,12 +314,12 @@ class Socket : public Object
      * For stream sockets, this returns the available space in bytes
      * left in the transmit buffer.
      *
-     * \returns The number of bytes which can be sent in a single Send call.
+     * @returns The number of bytes which can be sent in a single Send call.
      */
     virtual uint32_t GetTxAvailable() const = 0;
 
     /**
-     * \brief Send data (or dummy data) to the remote host
+     * @brief Send data (or dummy data) to the remote host
      *
      * This function matches closely in semantics to the send() function
      * call in the standard C library (libc):
@@ -356,26 +356,26 @@ class Socket : public Object
      *        MSG_DONTROUTE  bypass routing, use direct interface
      * These flags are _unsupported_ as of ns-3.1.
      *
-     * \param p ns3::Packet to send
-     * \param flags Socket control flags
-     * \returns the number of bytes accepted for transmission if no error
+     * @param p ns3::Packet to send
+     * @param flags Socket control flags
+     * @returns the number of bytes accepted for transmission if no error
      *          occurs, and -1 otherwise.
      *
-     * \see SetSendCallback
+     * @see SetSendCallback
      */
     virtual int Send(Ptr<Packet> p, uint32_t flags) = 0;
 
     /**
-     * \brief Send data to a specified peer.
+     * @brief Send data to a specified peer.
      *
      * This method has similar semantics to Send () but subclasses may
      * want to provide checks on socket state, so the implementation is
      * pushed to subclasses.
      *
-     * \param p packet to send
-     * \param flags Socket control flags
-     * \param toAddress IP Address of remote host
-     * \returns -1 in case of error or the number of bytes copied in the
+     * @param p packet to send
+     * @param flags Socket control flags
+     * @param toAddress IP Address of remote host
+     * @returns -1 in case of error or the number of bytes copied in the
      *          internal buffer and accepted for transmission.
      */
     virtual int SendTo(Ptr<Packet> p, uint32_t flags, const Address& toAddress) = 0;
@@ -385,13 +385,13 @@ class Socket : public Object
      * multiple calls to Recv.
      * Must be possible to call this method from the Recv callback.
      *
-     * \returns the number of bytes which can be returned from one or
+     * @returns the number of bytes which can be returned from one or
      *          multiple Recv calls.
      */
     virtual uint32_t GetRxAvailable() const = 0;
 
     /**
-     * \brief Read data from the socket
+     * @brief Read data from the socket
      *
      * This function matches closely in semantics to the recv() function
      * call in the standard C library (libc):
@@ -433,18 +433,18 @@ class Socket : public Object
      * including RecvFrom(), overloaded Recv() without arguments,
      * and variants that use raw character buffers.
      *
-     * \param maxSize reader will accept packet up to maxSize
-     * \param flags Socket control flags
-     * \returns Ptr<Packet> of the next in-sequence packet.  Returns
+     * @param maxSize reader will accept packet up to maxSize
+     * @param flags Socket control flags
+     * @returns Ptr<Packet> of the next in-sequence packet.  Returns
      * 0 if the socket cannot return a next in-sequence packet conforming
      * to the maxSize and flags.
      *
-     * \see SetRecvCallback
+     * @see SetRecvCallback
      */
     virtual Ptr<Packet> Recv(uint32_t maxSize, uint32_t flags) = 0;
 
     /**
-     * \brief Read a single packet from the socket and retrieve the sender
+     * @brief Read a single packet from the socket and retrieve the sender
      * address.
      *
      * Calls Recv(maxSize, flags) with maxSize
@@ -454,12 +454,12 @@ class Socket : public Object
      * want to provide checks on socket state, so the implementation is
      * pushed to subclasses.
      *
-     * \param maxSize reader will accept packet up to maxSize
-     * \param flags Socket control flags
-     * \param fromAddress output parameter that will return the
+     * @param maxSize reader will accept packet up to maxSize
+     * @param flags Socket control flags
+     * @param fromAddress output parameter that will return the
      * address of the sender of the received packet, if any.  Remains
      * untouched if no packet is received.
-     * \returns Ptr<Packet> of the next in-sequence packet.  Returns
+     * @returns Ptr<Packet> of the next in-sequence packet.  Returns
      * 0 if the socket cannot return a next in-sequence packet.
      */
     virtual Ptr<Packet> RecvFrom(uint32_t maxSize, uint32_t flags, Address& fromAddress) = 0;
@@ -470,63 +470,63 @@ class Socket : public Object
     /////////////////////////////////////////////////////////////////////
 
     /**
-     * \brief Send data (or dummy data) to the remote host
+     * @brief Send data (or dummy data) to the remote host
      *
      * Overloaded version of Send(..., flags) with flags set to zero.
      *
-     * \param p ns3::Packet to send
-     * \returns the number of bytes accepted for transmission if no error
+     * @param p ns3::Packet to send
+     * @returns the number of bytes accepted for transmission if no error
      *          occurs, and -1 otherwise.
      */
     int Send(Ptr<Packet> p);
 
     /**
-     * \brief Send data (or dummy data) to the remote host
+     * @brief Send data (or dummy data) to the remote host
      *
      * This method is provided so as to have an API which is closer in
      * appearance to that of real network or BSD sockets.
      *
-     * \param buf A pointer to a raw byte buffer of some data to send.  If
+     * @param buf A pointer to a raw byte buffer of some data to send.  If
      * this buffer is 0, we send dummy data whose size is specified by the
      * second parameter
-     * \param size the number of bytes to copy from the buffer
-     * \param flags Socket control flags
-     * \returns the number of bytes accepted for transmission if no error
+     * @param size the number of bytes to copy from the buffer
+     * @param flags Socket control flags
+     * @returns the number of bytes accepted for transmission if no error
      *          occurs, and -1 otherwise.
      */
     int Send(const uint8_t* buf, uint32_t size, uint32_t flags);
 
     /**
-     * \brief Send data to a specified peer.
+     * @brief Send data to a specified peer.
      *
      * This method is provided so as to have an API which is closer in
      * appearance to that of real network or BSD sockets.
      *
-     * \param buf A pointer to a raw byte buffer of some data to send.
+     * @param buf A pointer to a raw byte buffer of some data to send.
      * If this is 0, we send dummy data whose size is specified by the
      * third parameter
-     * \param size the number of bytes to copy from the buffer
-     * \param flags Socket control flags
-     * \param address IP Address of remote host
-     * \returns -1 in case of error or the number of bytes copied in the
+     * @param size the number of bytes to copy from the buffer
+     * @param flags Socket control flags
+     * @param address IP Address of remote host
+     * @returns -1 in case of error or the number of bytes copied in the
      *          internal buffer and accepted for transmission.
      *
      */
     int SendTo(const uint8_t* buf, uint32_t size, uint32_t flags, const Address& address);
 
     /**
-     * \brief Read a single packet from the socket
+     * @brief Read a single packet from the socket
      *
      * Overloaded version of Recv(maxSize, flags) with maxSize
      * implicitly set to maximum sized integer, and flags set to zero.
      *
-     * \returns Ptr<Packet> of the next in-sequence packet.  Returns
+     * @returns Ptr<Packet> of the next in-sequence packet.  Returns
      * 0 if the socket cannot return a next in-sequence packet.
      */
     Ptr<Packet> Recv();
 
     /**
-     * \brief Recv data (or dummy data) from the remote host
+     * @brief Recv data (or dummy data) from the remote host
      *
      * This method is provided so as to have an API which is closer in
      * appearance to that of real network or BSD sockets.
@@ -534,62 +534,62 @@ class Socket : public Object
      * If the underlying packet was carring null (fake) data, this buffer
      * will be zeroed up to the length specified by the return value.
      *
-     * \param buf A pointer to a raw byte buffer to write the data to.
-     * \param size Number of bytes (at most) to copy to buf
-     * \param flags any flags to pass to the socket
-     * \returns number of bytes copied into buf
+     * @param buf A pointer to a raw byte buffer to write the data to.
+     * @param size Number of bytes (at most) to copy to buf
+     * @param flags any flags to pass to the socket
+     * @returns number of bytes copied into buf
      */
     int Recv(uint8_t* buf, uint32_t size, uint32_t flags);
 
     /**
-     * \brief Read a single packet from the socket and retrieve the sender
+     * @brief Read a single packet from the socket and retrieve the sender
      * address.
      *
      * Calls RecvFrom (maxSize, flags, fromAddress) with maxSize
      * implicitly set to maximum sized integer, and flags set to zero.
      *
-     * \param fromAddress output parameter that will return the
+     * @param fromAddress output parameter that will return the
      * address of the sender of the received packet, if any.  Remains
      * untouched if no packet is received.
-     * \returns Ptr<Packet> of the next in-sequence packet.  Returns
+     * @returns Ptr<Packet> of the next in-sequence packet.  Returns
      * 0 if the socket cannot return a next in-sequence packet.
      */
     Ptr<Packet> RecvFrom(Address& fromAddress);
 
     /**
-     * \brief Read a single packet from the socket and retrieve the sender
+     * @brief Read a single packet from the socket and retrieve the sender
      * address.
      *
      * This method is provided so as to have an API which is closer in
      * appearance to that of real network or BSD sockets.
      *
-     * \param buf A pointer to a raw byte buffer to write the data to.
+     * @param buf A pointer to a raw byte buffer to write the data to.
      * If the underlying packet was carring null (fake) data, this buffer
      * will be zeroed up to the length specified by the return value.
-     * \param size Number of bytes (at most) to copy to buf
-     * \param flags any flags to pass to the socket
-     * \param fromAddress output parameter that will return the
+     * @param size Number of bytes (at most) to copy to buf
+     * @param flags any flags to pass to the socket
+     * @param fromAddress output parameter that will return the
      * address of the sender of the received packet, if any.  Remains
      * untouched if no packet is received.
-     * \returns number of bytes copied into buf
+     * @returns number of bytes copied into buf
      */
     int RecvFrom(uint8_t* buf, uint32_t size, uint32_t flags, Address& fromAddress);
     /**
-     * \brief Get socket address.
-     * \param address the address name this socket is associated with.
-     * \returns 0 if success, -1 otherwise
+     * @brief Get socket address.
+     * @param address the address name this socket is associated with.
+     * @returns 0 if success, -1 otherwise
      */
     virtual int GetSockName(Address& address) const = 0;
 
     /**
-     * \brief Get the peer address of a connected socket.
-     * \param address the address this socket is connected to.
-     * \returns 0 if success, -1 otherwise
+     * @brief Get the peer address of a connected socket.
+     * @param address the address this socket is connected to.
+     * @returns 0 if success, -1 otherwise
      */
     virtual int GetPeerName(Address& address) const = 0;
 
     /**
-     * \brief Bind a socket to specific device.
+     * @brief Bind a socket to specific device.
      *
      * This method corresponds to using setsockopt() SO_BINDTODEVICE
      * of real network or BSD sockets.   If set on a socket, this option will
@@ -604,46 +604,46 @@ class Socket : public Object
      * is also possible to bind to mismatching device and address, even if
      * the socket can not receive any packets as a result.
      *
-     * \param netdevice Pointer to NetDevice of desired interface
+     * @param netdevice Pointer to NetDevice of desired interface
      */
     virtual void BindToNetDevice(Ptr<NetDevice> netdevice);
 
     /**
-     * \brief Returns socket's bound NetDevice, if any.
+     * @brief Returns socket's bound NetDevice, if any.
      *
      * This method corresponds to using getsockopt() SO_BINDTODEVICE
      * of real network or BSD sockets.
      *
      *
-     * \returns Pointer to interface.
+     * @returns Pointer to interface.
      */
     Ptr<NetDevice> GetBoundNetDevice();
 
     /**
-     * \brief Configure whether broadcast datagram transmissions are allowed
+     * @brief Configure whether broadcast datagram transmissions are allowed
      *
      * This method corresponds to using setsockopt() SO_BROADCAST of
      * real network or BSD sockets.  If set on a socket, this option
      * will enable or disable packets to be transmitted to broadcast
      * destination addresses.
      *
-     * \param allowBroadcast Whether broadcast is allowed
-     * \return true if operation succeeds
+     * @param allowBroadcast Whether broadcast is allowed
+     * @return true if operation succeeds
      */
     virtual bool SetAllowBroadcast(bool allowBroadcast) = 0;
 
     /**
-     * \brief Query whether broadcast datagram transmissions are allowed
+     * @brief Query whether broadcast datagram transmissions are allowed
      *
      * This method corresponds to using getsockopt() SO_BROADCAST of
      * real network or BSD sockets.
      *
-     * \returns true if broadcast is allowed, false otherwise
+     * @returns true if broadcast is allowed, false otherwise
      */
     virtual bool GetAllowBroadcast() const = 0;
 
     /**
-     * \brief Enable/Disable receive packet information to socket.
+     * @brief Enable/Disable receive packet information to socket.
      *
      * For IP_PKTINFO/IP6_PKTINFO. This method is only usable for
      * Raw socket and Datagram Socket. Not supported for Stream socket.
@@ -651,19 +651,19 @@ class Socket : public Object
      * Method doesn't make distinction between IPv4 and IPv6. If it is enabled,
      * it is enabled for all types of sockets that supports packet information
      *
-     * \param flag Enable/Disable receive information
+     * @param flag Enable/Disable receive information
      */
     void SetRecvPktInfo(bool flag);
 
     /**
-     * \brief Get status indicating whether enable/disable packet information to socket
+     * @brief Get status indicating whether enable/disable packet information to socket
      *
-     * \returns True if packet information should be sent to socket
+     * @returns True if packet information should be sent to socket
      */
     bool IsRecvPktInfo() const;
 
     /**
-     * \brief Manually set the socket priority
+     * @brief Manually set the socket priority
      *
      * This method corresponds to using setsockopt () SO_PRIORITY of
      * real network or BSD sockets. On Linux, the socket priority can be
@@ -672,22 +672,22 @@ class Socket : public Object
      * users to set the socket priority to any 8-bit non-negative value,
      * which is equivalent to assuming that the CAP_NET_ADMIN capability is set.
      *
-     * \param priority The socket priority
+     * @param priority The socket priority
      */
     void SetPriority(uint8_t priority);
 
     /**
-     * \brief Query the priority value of this socket
+     * @brief Query the priority value of this socket
      *
      * This method corresponds to using getsockopt () SO_PRIORITY of real network
      * or BSD sockets.
      *
-     * \return The priority value
+     * @return The priority value
      */
     uint8_t GetPriority() const;
 
     /**
-     * \brief Return the priority corresponding to a given TOS value
+     * @brief Return the priority corresponding to a given TOS value
      *
      * This function is implemented after the Linux rt_tos2priority
      * function. The usage of the TOS byte has been originally defined by
@@ -759,13 +759,13 @@ class Socket : public Object
      * CS6  | 0x30 |   110000xx   |   0-1    |  Best Effort (0)
      * CS7  | 0x38 |   111000xx   |   0-1    |  Best Effort (0)
      *
-     * \param ipTos the TOS value (in the range 0..255)
-     * \return The priority value corresponding to the given TOS value
+     * @param ipTos the TOS value (in the range 0..255)
+     * @return The priority value corresponding to the given TOS value
      */
     static uint8_t IpTos2Priority(uint8_t ipTos);
 
     /**
-     * \brief Manually set IP Type of Service field
+     * @brief Manually set IP Type of Service field
      *
      * This method corresponds to using setsockopt () IP_TOS of
      * real network or BSD sockets.
@@ -774,178 +774,178 @@ class Socket : public Object
      * This option affects only IPv4 sockets, it has no effect
      * on IPv6 sockets.
      *
-     * \param ipTos The desired TOS value for IP headers
+     * @param ipTos The desired TOS value for IP headers
      */
     void SetIpTos(uint8_t ipTos);
 
     /**
-     * \brief Query the value of IP Type of Service of this socket
+     * @brief Query the value of IP Type of Service of this socket
      *
      * This method corresponds to using getsockopt () IP_TOS of real network
      * or BSD sockets.
      *
-     * \return The raw IP TOS value
+     * @return The raw IP TOS value
      */
     uint8_t GetIpTos() const;
 
     /**
-     * \brief Tells a socket to pass information about IP Type of Service up the stack
+     * @brief Tells a socket to pass information about IP Type of Service up the stack
      *
      * This method corresponds to using setsockopt () IP_RECVTOS of real
      * network or BSD sockets. In our implementation, the socket simply
      * adds a SocketIpTosTag tag to the packet before passing the
      * packet up the stack.
      *
-     * \param ipv4RecvTos Whether the socket should add SocketIpv4TosTag tag
+     * @param ipv4RecvTos Whether the socket should add SocketIpv4TosTag tag
      * to the packet
      */
     void SetIpRecvTos(bool ipv4RecvTos);
 
     /**
-     * \brief Ask if the socket is currently passing information about IP Type of Service up the
+     * @brief Ask if the socket is currently passing information about IP Type of Service up the
      * stack
      *
      * This method corresponds to using getsockopt () IP_RECVTOS of real
      * network or BSD sockets.
      *
-     * \return Whether the IP_RECVTOS is set
+     * @return Whether the IP_RECVTOS is set
      */
     bool IsIpRecvTos() const;
 
     /**
-     * \brief Manually set IPv6 Traffic Class field
+     * @brief Manually set IPv6 Traffic Class field
      *
      * This method corresponds to using setsockopt () IPV6_TCLASS of
      * real network or BSD sockets. This option is for IPv6 only.
      * Setting the IPV6_TCLASSS to -1 clears the option and let the socket
      * uses the default value.
      *
-     * \param ipTclass The desired TCLASS value for IPv6 headers
+     * @param ipTclass The desired TCLASS value for IPv6 headers
      */
     void SetIpv6Tclass(int ipTclass);
 
     /**
-     * \brief Query the value of IPv6 Traffic Class field of this socket
+     * @brief Query the value of IPv6 Traffic Class field of this socket
      *
      * This method corresponds to using getsockopt () IPV6_TCLASS of real network
      * or BSD sockets.
      *
-     * \return The raw IPV6_TCLASS value
+     * @return The raw IPV6_TCLASS value
      */
     uint8_t GetIpv6Tclass() const;
 
     /**
-     * \brief Tells a socket to pass information about IPv6 Traffic Class up the stack
+     * @brief Tells a socket to pass information about IPv6 Traffic Class up the stack
      *
      * This method corresponds to using setsockopt () IPV6_RECVTCLASS of real
      * network or BSD sockets. In our implementation, the socket simply
      * adds a SocketIpv6TclasssTag tag to the packet before passing the
      * packet up the stack.
      *
-     * \param ipv6RecvTclass Whether the socket should add SocketIpv6TclassTag tag
+     * @param ipv6RecvTclass Whether the socket should add SocketIpv6TclassTag tag
      * to the packet
      */
     void SetIpv6RecvTclass(bool ipv6RecvTclass);
 
     /**
-     * \brief Ask if the socket is currently passing information about IPv6 Traffic Class up the
+     * @brief Ask if the socket is currently passing information about IPv6 Traffic Class up the
      * stack
      *
      * This method corresponds to using getsockopt () IPV6_RECVTCLASS of real
      * network or BSD sockets.
      *
-     * \return Whether the IPV6_RECVTCLASS is set
+     * @return Whether the IPV6_RECVTCLASS is set
      */
     bool IsIpv6RecvTclass() const;
 
     /**
-     * \brief Manually set IP Time to Live field
+     * @brief Manually set IP Time to Live field
      *
      * This method corresponds to using setsockopt () IP_TTL of
      * real network or BSD sockets.
      *
-     * \param ipTtl The desired TTL value for IP headers
+     * @param ipTtl The desired TTL value for IP headers
      */
     virtual void SetIpTtl(uint8_t ipTtl);
 
     /**
-     * \brief Query the value of IP Time to Live field of this socket
+     * @brief Query the value of IP Time to Live field of this socket
      *
      * This method corresponds to using getsockopt () IP_TTL of real network
      * or BSD sockets.
      *
-     * \return The raw IP TTL value
+     * @return The raw IP TTL value
      */
     virtual uint8_t GetIpTtl() const;
 
     /**
-     * \brief Tells a socket to pass information about IP_TTL up the stack
+     * @brief Tells a socket to pass information about IP_TTL up the stack
      *
      * This method corresponds to using setsockopt () IP_RECVTTL of real
      * network or BSD sockets. In our implementation, the socket simply
      * adds a SocketIpTtlTag tag to the packet before passing the
      * packet up the stack.
      *
-     * \param ipv4RecvTtl Whether the socket should add SocketIpv4TtlTag tag
+     * @param ipv4RecvTtl Whether the socket should add SocketIpv4TtlTag tag
      * to the packet
      */
     void SetIpRecvTtl(bool ipv4RecvTtl);
 
     /**
-     * \brief Ask if the socket is currently passing information about IP_TTL up the stack
+     * @brief Ask if the socket is currently passing information about IP_TTL up the stack
      *
      * This method corresponds to using getsockopt () IP_RECVTTL of real
      * network or BSD sockets.
      *
-     * \return Whether the IP_RECVTTL is set
+     * @return Whether the IP_RECVTTL is set
      */
     bool IsIpRecvTtl() const;
 
     /**
-     * \brief Manually set IPv6 Hop Limit
+     * @brief Manually set IPv6 Hop Limit
      *
      * This method corresponds to using setsockopt () IPV6_HOPLIMIT of
      * real network or BSD sockets.
      *
-     * \param ipHopLimit The desired Hop Limit value for IPv6 headers
+     * @param ipHopLimit The desired Hop Limit value for IPv6 headers
      */
     virtual void SetIpv6HopLimit(uint8_t ipHopLimit);
 
     /**
-     * \brief Query the value of IP Hop Limit field of this socket
+     * @brief Query the value of IP Hop Limit field of this socket
      *
      * This method corresponds to using getsockopt () IPV6_HOPLIMIT of real network
      * or BSD sockets.
      *
-     * \return The raw IPv6 Hop Limit value
+     * @return The raw IPv6 Hop Limit value
      */
     virtual uint8_t GetIpv6HopLimit() const;
 
     /**
-     * \brief Tells a socket to pass information about IPv6 Hop Limit up the stack
+     * @brief Tells a socket to pass information about IPv6 Hop Limit up the stack
      *
      * This method corresponds to using setsockopt () IPV6_RECVHOPLIMIT of real
      * network or BSD sockets. In our implementation, the socket simply
      * adds a SocketIpv6HopLimitTag tag to the packet before passing the
      * packet up the stack.
      *
-     * \param ipv6RecvHopLimit Whether the socket should add SocketIpv6HopLimitTag tag
+     * @param ipv6RecvHopLimit Whether the socket should add SocketIpv6HopLimitTag tag
      * to the packet
      */
     void SetIpv6RecvHopLimit(bool ipv6RecvHopLimit);
 
     /**
-     * \brief Ask if the socket is currently passing information about IPv6 Hop Limit up the stack
+     * @brief Ask if the socket is currently passing information about IPv6 Hop Limit up the stack
      *
      * This method corresponds to using getsockopt () IPV6_RECVHOPLIMIT of real
      * network or BSD sockets.
      *
-     * \return Whether the IPV6_RECVHOPLIMIT is set
+     * @return Whether the IPV6_RECVHOPLIMIT is set
      */
     bool IsIpv6RecvHopLimit() const;
 
     /**
-     * \brief Joins a IPv6 multicast group.
+     * @brief Joins a IPv6 multicast group.
      *
      * Based on the filter mode and source addresses this can be interpreted as a
      * join, leave, or modification to source filtering on a multicast group.
@@ -954,9 +954,9 @@ class Socket : public Object
      * remove the old one.
      *
      *
-     * \param address Requested multicast address.
-     * \param filterMode Socket filtering mode (INCLUDE | EXCLUDE).
-     * \param sourceAddresses All the source addresses on which socket is interested or not
+     * @param address Requested multicast address.
+     * @param filterMode Socket filtering mode (INCLUDE | EXCLUDE).
+     * @param sourceAddresses All the source addresses on which socket is interested or not
      * interested.
      */
     virtual void Ipv6JoinGroup(Ipv6Address address,
@@ -964,82 +964,82 @@ class Socket : public Object
                                std::vector<Ipv6Address> sourceAddresses);
 
     /**
-     * \brief Joins a IPv6 multicast group without filters.
+     * @brief Joins a IPv6 multicast group without filters.
      *
      * A socket can join only one multicast group. Any attempt to join another group will remove the
      * old one.
      *
-     * \param address Group address on which socket wants to join.
+     * @param address Group address on which socket wants to join.
      */
     virtual void Ipv6JoinGroup(Ipv6Address address);
 
     /**
-     * \brief Leaves IPv6 multicast group this socket is joined to.
+     * @brief Leaves IPv6 multicast group this socket is joined to.
      */
     virtual void Ipv6LeaveGroup();
 
   protected:
     /**
-     * \brief Notify through the callback (if set) that the connection has been
+     * @brief Notify through the callback (if set) that the connection has been
      *        established.
      */
     void NotifyConnectionSucceeded();
 
     /**
-     * \brief Notify through the callback (if set) that the connection has not been
+     * @brief Notify through the callback (if set) that the connection has not been
      *        established due to an error.
      */
     void NotifyConnectionFailed();
 
     /**
-     * \brief Notify through the callback (if set) that the connection has been
+     * @brief Notify through the callback (if set) that the connection has been
      *        closed.
      */
     void NotifyNormalClose();
 
     /**
-     * \brief Notify through the callback (if set) that the connection has been
+     * @brief Notify through the callback (if set) that the connection has been
      *        closed due to an error.
      */
     void NotifyErrorClose();
 
     /**
-     * \brief Notify through the callback (if set) that an incoming connection
+     * @brief Notify through the callback (if set) that an incoming connection
      *        is being requested by a remote host.
      *
      * This function returns true by default (i.e., accept all the incoming connections).
      * The callback (if set) might restrict this behaviour by returning zero for a
      * connection that should be refused.
      *
-     * \param from the address the connection is incoming from
-     * \returns true if the connection must be accepted, false otherwise.
+     * @param from the address the connection is incoming from
+     * @returns true if the connection must be accepted, false otherwise.
      */
     bool NotifyConnectionRequest(const Address& from);
 
     /**
-     * \brief Notify through the callback (if set) that a new connection has been
+     * @brief Notify through the callback (if set) that a new connection has been
      *        created.
-     * \param socket The socket receiving the new connection.
-     * \param from The address of the node initiating the connection.
+     * @param socket The socket receiving the new connection.
+     * @param from The address of the node initiating the connection.
      */
     void NotifyNewConnectionCreated(Ptr<Socket> socket, const Address& from);
 
     /**
-     * \brief Notify through the callback (if set) that some data have been sent.
+     * @brief Notify through the callback (if set) that some data have been sent.
      *
-     * \param size number of sent bytes.
+     * @param size number of sent bytes.
      */
     void NotifyDataSent(uint32_t size);
 
     /**
-     * \brief Notify through the callback (if set) that some data have been sent.
+     * @brief Notify through the callback (if set) that some data have been sent.
      *
-     * \param spaceAvailable the number of bytes available in the transmission buffer.
+     * @param spaceAvailable the number of bytes available in the transmission buffer.
      */
     void NotifySend(uint32_t spaceAvailable);
 
     /**
-     * \brief Notify through the callback (if set) that some data have been received.
+     * @brief Notify through the callback (if set) that some data have been received.
      */
     void NotifyDataRecv();
 
@@ -1047,23 +1047,23 @@ class Socket : public Object
     void DoDispose() override;
 
     /**
-     * \brief Checks if the socket has a specific IPv6 Tclass set
+     * @brief Checks if the socket has a specific IPv6 Tclass set
      *
-     * \returns true if the socket has a IPv6 Tclass set, false otherwise.
+     * @returns true if the socket has a IPv6 Tclass set, false otherwise.
      */
     bool IsManualIpv6Tclass() const;
 
     /**
-     * \brief Checks if the socket has a specific IPv4 TTL set
+     * @brief Checks if the socket has a specific IPv4 TTL set
      *
-     * \returns true if the socket has a IPv4 TTL set, false otherwise.
+     * @returns true if the socket has a IPv4 TTL set, false otherwise.
      */
     bool IsManualIpTtl() const;
 
     /**
-     * \brief Checks if the socket has a specific IPv6 Hop Limit set
+     * @brief Checks if the socket has a specific IPv6 Hop Limit set
      *
-     * \returns true if the socket has a IPv6 Hop Limit set, false otherwise.
+     * @returns true if the socket has a IPv6 Hop Limit set, false otherwise.
      */
     bool IsManualIpv6HopLimit() const;
 
@@ -1106,7 +1106,7 @@ class Socket : public Object
 };
 
 /**
- * \brief This class implements a tag that carries the socket-specific
+ * @brief This class implements a tag that carries the socket-specific
  * TTL of a packet to the IP layer
  */
 class SocketIpTtlTag : public Tag
@@ -1115,22 +1115,22 @@ class SocketIpTtlTag : public Tag
     SocketIpTtlTag();
 
     /**
-     * \brief Set the tag's TTL
+     * @brief Set the tag's TTL
      *
-     * \param ttl the TTL
+     * @param ttl the TTL
      */
     void SetTtl(uint8_t ttl);
 
     /**
-     * \brief Get the tag's TTL
+     * @brief Get the tag's TTL
      *
-     * \returns the TTL
+     * @returns the TTL
      */
     uint8_t GetTtl() const;
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -1154,7 +1154,7 @@ class SocketIpTtlTag : public Tag
 };
 
 /**
- * \brief This class implements a tag that carries the socket-specific
+ * @brief This class implements a tag that carries the socket-specific
  * HOPLIMIT of a packet to the IPv6 layer
  */
 class SocketIpv6HopLimitTag : public Tag
@@ -1163,22 +1163,22 @@ class SocketIpv6HopLimitTag : public Tag
     SocketIpv6HopLimitTag();
 
     /**
-     * \brief Set the tag's Hop Limit
+     * @brief Set the tag's Hop Limit
      *
-     * \param hopLimit the Hop Limit
+     * @param hopLimit the Hop Limit
      */
     void SetHopLimit(uint8_t hopLimit);
 
     /**
-     * \brief Get the tag's Hop Limit
+     * @brief Get the tag's Hop Limit
      *
-     * \returns the Hop Limit
+     * @returns the Hop Limit
      */
     uint8_t GetHopLimit() const;
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -1202,7 +1202,7 @@ class SocketIpv6HopLimitTag : public Tag
 };
 
 /**
- * \brief indicates whether packets should be sent out with
+ * @brief indicates whether packets should be sent out with
  * the DF (Don't Fragment) flag set.
  */
 class SocketSetDontFragmentTag : public Tag
@@ -1211,25 +1211,25 @@ class SocketSetDontFragmentTag : public Tag
     SocketSetDontFragmentTag();
 
     /**
-     * \brief Enables the DF (Don't Fragment) flag
+     * @brief Enables the DF (Don't Fragment) flag
      */
     void Enable();
 
     /**
-     * \brief Disables the DF (Don't Fragment) flag
+     * @brief Disables the DF (Don't Fragment) flag
      */
     void Disable();
 
     /**
-     * \brief Checks if the DF (Don't Fragment) flag is set
+     * @brief Checks if the DF (Don't Fragment) flag is set
      *
-     * \returns true if DF is set.
+     * @returns true if DF is set.
      */
     bool IsEnabled() const;
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -1253,7 +1253,7 @@ class SocketSetDontFragmentTag : public Tag
 };
 
 /**
- * \brief indicates whether the socket has IP_TOS set.
+ * @brief indicates whether the socket has IP_TOS set.
  * This tag is for IPv4 socket.
  */
 class SocketIpTosTag : public Tag
@@ -1262,22 +1262,22 @@ class SocketIpTosTag : public Tag
     SocketIpTosTag();
 
     /**
-     * \brief Set the tag's TOS
+     * @brief Set the tag's TOS
      *
-     * \param tos the TOS
+     * @param tos the TOS
      */
     void SetTos(uint8_t tos);
 
     /**
-     * \brief Get the tag's TOS
+     * @brief Get the tag's TOS
      *
-     * \returns the TOS
+     * @returns the TOS
      */
     uint8_t GetTos() const;
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -1301,7 +1301,7 @@ class SocketIpTosTag : public Tag
 };
 
 /**
- * \brief indicates whether the socket has a priority set.
+ * @brief indicates whether the socket has a priority set.
  */
 class SocketPriorityTag : public Tag
 {
@@ -1309,22 +1309,22 @@ class SocketPriorityTag : public Tag
     SocketPriorityTag();
 
     /**
-     * \brief Set the tag's priority
+     * @brief Set the tag's priority
      *
-     * \param priority the priority
+     * @param priority the priority
      */
     void SetPriority(uint8_t priority);
 
     /**
-     * \brief Get the tag's priority
+     * @brief Get the tag's priority
      *
-     * \returns the priority
+     * @returns the priority
      */
     uint8_t GetPriority() const;
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -1348,7 +1348,7 @@ class SocketPriorityTag : public Tag
 };
 
 /**
- * \brief indicates whether the socket has IPV6_TCLASS set.
+ * @brief indicates whether the socket has IPV6_TCLASS set.
  * This tag is for IPv6 socket.
  */
 class SocketIpv6TclassTag : public Tag
@@ -1357,22 +1357,22 @@ class SocketIpv6TclassTag : public Tag
     SocketIpv6TclassTag();
 
     /**
-     * \brief Set the tag's Tclass
+     * @brief Set the tag's Tclass
      *
-     * \param tclass the Tclass
+     * @param tclass the Tclass
      */
     void SetTclass(uint8_t tclass);
 
     /**
-     * \brief Get the tag's Tclass
+     * @brief Get the tag's Tclass
      *
-     * \returns the Tclass
+     * @returns the Tclass
      */
     uint8_t GetTclass() const;
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 

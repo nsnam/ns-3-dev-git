@@ -8,9 +8,9 @@
 #include "event-garbage-collector.h"
 
 /**
- * \file
- * \ingroup core-helpers
- * \ingroup events
+ * @file
+ * @ingroup core-helpers
+ * @ingroup events
  * ns3::EventGarbageCollector implementation.
  */
 

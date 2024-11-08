@@ -7,8 +7,8 @@
  */
 
 /**
- * \file uan-rc-example.cc
- * \ingroup uan
+ * @file uan-rc-example.cc
+ * @ingroup uan
  *
  * This example uses UanMacRc and UanMacRcGw which combined form a system
  * using what is referred to as RC-MAC.  Details of RC-MAC will be published

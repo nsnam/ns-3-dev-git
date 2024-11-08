@@ -55,7 +55,7 @@ enum Dot11sAuthenticationProtocol
 };
 
 /**
- * \ingroup dot11s
+ * @ingroup dot11s
  * A set of values indicating whether a mesh STA is a possible candidate
  * for mesh peering establishment (Section 8.4.2.100.8 of IEEE 802.11-2012)
  */
@@ -65,25 +65,25 @@ class Dot11sMeshCapability
     Dot11sMeshCapability();
     /**
      * Size of the field in bytes when serialized
-     * \returns the serialized size in bytes
+     * @returns the serialized size in bytes
      */
     uint8_t GetSerializedSize() const;
     /**
      * Serialize to a buffer
-     * \param i the iterator of the buffer to serialize to
-     * \returns new value of the iterator
+     * @param i the iterator of the buffer to serialize to
+     * @returns new value of the iterator
      */
     Buffer::Iterator Serialize(Buffer::Iterator i) const;
     /**
      * Deserialize from a buffer
-     * \param i the iterator from which to deserialize
-     * \returns new value of the iterator
+     * @param i the iterator from which to deserialize
+     * @returns new value of the iterator
      */
     Buffer::Iterator Deserialize(Buffer::Iterator i);
     /**
      * The Mesh Capability is expressed in terms of 8 single bit fields.
      * This method returns the whole byte.
-     * \returns the Mesh Capability byte
+     * @returns the Mesh Capability byte
      */
     uint8_t GetUint8() const;
     bool acceptPeerLinks;    ///< accept peer links
@@ -95,24 +95,24 @@ class Dot11sMeshCapability
     bool powerSaveLevel;     ///< power save level
     /**
      * This is a utility function to test if the bit at position n is true
-     * \param cap byte to test
-     * \param n bit number to mask
-     * \returns true if bit n is set in cap
+     * @param cap byte to test
+     * @param n bit number to mask
+     * @returns true if bit n is set in cap
      */
     bool Is(uint8_t cap, uint8_t n) const;
     /**
      * equality operator
      *
-     * \param a lhs
-     * \param b rhs
-     * \returns true if equal
+     * @param a lhs
+     * @param b rhs
+     * @returns true if equal
      */
     friend bool operator==(const Dot11sMeshCapability& a, const Dot11sMeshCapability& b);
 };
 
 /**
- * \ingroup dot11s
- * \brief Describes Mesh Configuration Element
+ * @ingroup dot11s
+ * @brief Describes Mesh Configuration Element
  * see 7.3.2.86 of 802.11s draft 3.0
  */
 class IeConfiguration : public WifiInformationElement
@@ -121,39 +121,39 @@ class IeConfiguration : public WifiInformationElement
     IeConfiguration();
     /**
      * Set routing value
-     * \param routingId the routing ID
+     * @param routingId the routing ID
      */
     void SetRouting(Dot11sPathSelectionProtocol routingId);
     /**
      * Set metric value
-     * \param metricId the path selection metric
+     * @param metricId the path selection metric
      */
     void SetMetric(Dot11sPathSelectionMetric metricId);
     /**
      * Is HWMP function
-     * \returns true if Active Path Selection Protocol Identifier field set
+     * @returns true if Active Path Selection Protocol Identifier field set
      *          to HWMP
      */
     bool IsHWMP();
     /**
      * Is airtime function
-     * \returns true if Active Path Selection Metric Identifier is set to
+     * @returns true if Active Path Selection Metric Identifier is set to
      *          airtime link metric
      */
     bool IsAirtime();
     /**
      * Set neighbor count
-     * \param neighbors the number of neighbors
+     * @param neighbors the number of neighbors
      */
     void SetNeighborCount(uint8_t neighbors);
     /**
      * Get neighbor count
-     * \returns the the neighbor count
+     * @returns the the neighbor count
      */
     uint8_t GetNeighborCount() const;
     /**
      * Mesh capability
-     * \returns the dot11s mesh capability
+     * @returns the dot11s mesh capability
      */
     const Dot11sMeshCapability& MeshCapability();
 
@@ -181,9 +181,9 @@ class IeConfiguration : public WifiInformationElement
     /**
      * equality operator
      *
-     * \param a lhs
-     * \param b rhs
-     * \returns true if equal
+     * @param a lhs
+     * @param b rhs
+     * @returns true if equal
      */
     friend bool operator==(const IeConfiguration& a, const IeConfiguration& b);
 };

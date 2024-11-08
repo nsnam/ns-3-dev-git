@@ -55,14 +55,14 @@ static const Time DL_CTRL_DELAY_FROM_SUBFRAME_START = NanoSeconds(214286);
 // member SAP forwarders
 ////////////////////////////////////////
 
-/// \todo SetBandwidth() and SetCellId() can be removed.
+/// @todo SetBandwidth() and SetCellId() can be removed.
 class EnbMemberLteEnbPhySapProvider : public LteEnbPhySapProvider
 {
   public:
     /**
      * Constructor
      *
-     * \param phy the ENB Phy
+     * @param phy the ENB Phy
      */
     EnbMemberLteEnbPhySapProvider(LteEnbPhy* phy);
 
@@ -73,14 +73,14 @@ class EnbMemberLteEnbPhySapProvider : public LteEnbPhySapProvider
     /**
      * Set bandwidth function
      *
-     * \param ulBandwidth the UL bandwidth
-     * \param dlBandwidth the DL bandwidth
+     * @param ulBandwidth the UL bandwidth
+     * @param dlBandwidth the DL bandwidth
      */
     virtual void SetBandwidth(uint16_t ulBandwidth, uint16_t dlBandwidth);
     /**
      * Set Cell ID function
      *
-     * \param cellId the cell ID
+     * @param cellId the cell ID
      */
     virtual void SetCellId(uint16_t cellId);
 

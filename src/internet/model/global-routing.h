@@ -6,13 +6,13 @@
  */
 
 /**
- * \ingroup ipv4Routing
- * \defgroup globalrouting Global Routing.
+ * @ingroup ipv4Routing
+ * @defgroup globalrouting Global Routing.
  *
  * Performs pre-simulation static route computation
  * on a layer-3 IPv4 topology.
  *
- * \section model Model
+ * @section model Model
  *
  * ns-3 global routing performs pre-simulation static route computation
  * on a layer-3 IPv4 topology.  The user API from the script level is
@@ -36,7 +36,7 @@
  *   There is a helper method that encapsulates this
  *   (Ipv4GlobalRoutingHelper::RecomputeRoutingTables())
  *
- * \section api API and Usage
+ * @section api API and Usage
  *
  * Users must include ns3/global-route-manager.h header file.  After the
  * IPv4 topology has been built and addresses assigned, users call
@@ -47,7 +47,7 @@
  * - Ipv4GlobalRouting::RandomEcmpRouting
  * - Ipv4GlobalRouting::RespondToInterfaceEvents
  *
- * \section impl Implementation
+ * @section impl Implementation
  *
  * A singleton object, ns3::GlobalRouteManager, builds a global routing
  * database of information about the topology, and executes a Dijkstra

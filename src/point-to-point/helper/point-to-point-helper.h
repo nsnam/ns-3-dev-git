@@ -23,7 +23,7 @@ class NetDevice;
 class Node;
 
 /**
- * \brief Build a set of PointToPointNetDevice objects
+ * @brief Build a set of PointToPointNetDevice objects
  *
  * Normally we eschew multiple inheritance, however, the classes
  * PcapUserHelperForDevice and AsciiTraceUserHelperForDevice are
@@ -47,9 +47,9 @@ class PointToPointHelper : public PcapHelperForDevice, public AsciiTraceHelperFo
      * This method allows one to set the type of the queue that is automatically
      * created when the device is created and attached to a node.
      *
-     * \tparam Ts \deduced Argument types
-     * \param type the type of queue
-     * \param [in] args Name and AttributeValue pairs to set.
+     * @tparam Ts \deduced Argument types
+     * @param type the type of queue
+     * @param [in] args Name and AttributeValue pairs to set.
      *
      * Set the type of queue to create and associated to each
      * PointToPointNetDevice created through PointToPointHelper::Install.
@@ -61,8 +61,8 @@ class PointToPointHelper : public PcapHelperForDevice, public AsciiTraceHelperFo
      * Set an attribute value to be propagated to each NetDevice created by the
      * helper.
      *
-     * \param name the name of the attribute to set
-     * \param value the value of the attribute to set
+     * @param name the name of the attribute to set
+     * @param value the value of the attribute to set
      *
      * Set these attributes on each ns3::PointToPointNetDevice created
      * by PointToPointHelper::Install
@@ -73,8 +73,8 @@ class PointToPointHelper : public PcapHelperForDevice, public AsciiTraceHelperFo
      * Set an attribute value to be propagated to each Channel created by the
      * helper.
      *
-     * \param name the name of the attribute to set
-     * \param value the value of the attribute to set
+     * @param name the name of the attribute to set
+     * @param value the value of the attribute to set
      *
      * Set these attribute on each ns3::PointToPointChannel created
      * by PointToPointHelper::Install
@@ -92,8 +92,8 @@ class PointToPointHelper : public PcapHelperForDevice, public AsciiTraceHelperFo
     void DisableFlowControl();
 
     /**
-     * \param c a set of nodes
-     * \return a NetDeviceContainer for nodes
+     * @param c a set of nodes
+     * @return a NetDeviceContainer for nodes
      *
      * This method creates a ns3::PointToPointChannel with the
      * attributes configured by PointToPointHelper::SetChannelAttribute,
@@ -105,9 +105,9 @@ class PointToPointHelper : public PcapHelperForDevice, public AsciiTraceHelperFo
     NetDeviceContainer Install(NodeContainer c);
 
     /**
-     * \param a first node
-     * \param b second node
-     * \return a NetDeviceContainer for nodes
+     * @param a first node
+     * @param b second node
+     * @return a NetDeviceContainer for nodes
      *
      * Saves you from having to construct a temporary NodeContainer.
      * Also, if MPI is enabled, for distributed simulations,
@@ -116,27 +116,27 @@ class PointToPointHelper : public PcapHelperForDevice, public AsciiTraceHelperFo
     NetDeviceContainer Install(Ptr<Node> a, Ptr<Node> b);
 
     /**
-     * \param a first node
-     * \param bName name of second node
-     * \return a NetDeviceContainer for nodes
+     * @param a first node
+     * @param bName name of second node
+     * @return a NetDeviceContainer for nodes
      *
      * Saves you from having to construct a temporary NodeContainer.
      */
     NetDeviceContainer Install(Ptr<Node> a, std::string bName);
 
     /**
-     * \param aName Name of first node
-     * \param b second node
-     * \return a NetDeviceContainer for nodes
+     * @param aName Name of first node
+     * @param b second node
+     * @return a NetDeviceContainer for nodes
      *
      * Saves you from having to construct a temporary NodeContainer.
      */
     NetDeviceContainer Install(std::string aName, Ptr<Node> b);
 
     /**
-     * \param aNode Name of first node
-     * \param bNode Name of second node
-     * \return a NetDeviceContainer for nodes
+     * @param aNode Name of first node
+     * @param bNode Name of second node
+     * @return a NetDeviceContainer for nodes
      *
      * Saves you from having to construct a temporary NodeContainer.
      */
@@ -144,15 +144,15 @@ class PointToPointHelper : public PcapHelperForDevice, public AsciiTraceHelperFo
 
   private:
     /**
-     * \brief Enable pcap output the indicated net device.
+     * @brief Enable pcap output the indicated net device.
      *
      * NetDevice-specific implementation mechanism for hooking the trace and
      * writing to the trace file.
      *
-     * \param prefix Filename prefix to use for pcap files.
-     * \param nd Net device for which you want to enable tracing.
-     * \param promiscuous If true capture all possible packets available at the device.
-     * \param explicitFilename Treat the prefix as an explicit filename if true
+     * @param prefix Filename prefix to use for pcap files.
+     * @param nd Net device for which you want to enable tracing.
+     * @param promiscuous If true capture all possible packets available at the device.
+     * @param explicitFilename Treat the prefix as an explicit filename if true
      */
     void EnablePcapInternal(std::string prefix,
                             Ptr<NetDevice> nd,
@@ -160,15 +160,15 @@ class PointToPointHelper : public PcapHelperForDevice, public AsciiTraceHelperFo
                             bool explicitFilename) override;
 
     /**
-     * \brief Enable ascii trace output on the indicated net device.
+     * @brief Enable ascii trace output on the indicated net device.
      *
      * NetDevice-specific implementation mechanism for hooking the trace and
      * writing to the trace file.
      *
-     * \param stream The output stream object to use when logging ascii traces.
-     * \param prefix Filename prefix to use for ascii trace files.
-     * \param nd Net device for which you want to enable tracing.
-     * \param explicitFilename Treat the prefix as an explicit filename if true
+     * @param stream The output stream object to use when logging ascii traces.
+     * @param prefix Filename prefix to use for ascii trace files.
+     * @param nd Net device for which you want to enable tracing.
+     * @param explicitFilename Treat the prefix as an explicit filename if true
      */
     void EnableAsciiInternal(Ptr<OutputStreamWrapper> stream,
                              std::string prefix,

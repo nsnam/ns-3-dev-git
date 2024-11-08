@@ -18,7 +18,7 @@ namespace ns3
 {
 
 /**
- * \ingroup uan
+ * @ingroup uan
  *
  *  UAN protocol descriptor
  */
@@ -29,7 +29,7 @@ struct UanProtocolBits
 };
 
 /**
- * \ingroup uan
+ * @ingroup uan
  *
  * Common packet header fields.
  *
@@ -60,10 +60,10 @@ class UanHeaderCommon : public Header
      * Create UanHeaderCommon object with given source and destination
      * address and header type
      *
-     * \param src Source address defined in header.
-     * \param dest Destination address defined in header.
-     * \param type Header type.
-     * \param protocolNumber the layer 3 protocol number
+     * @param src Source address defined in header.
+     * @param dest Destination address defined in header.
+     * @param type Header type.
+     * @param protocolNumber the layer 3 protocol number
      */
     UanHeaderCommon(const Mac8Address src,
                     const Mac8Address dest,
@@ -74,59 +74,59 @@ class UanHeaderCommon : public Header
 
     /**
      * Register this type.
-     * \return The TypeId.
+     * @return The TypeId.
      */
     static TypeId GetTypeId();
 
     /**
      * Set the destination address.
      *
-     * \param dest Address of destination node.
+     * @param dest Address of destination node.
      */
     void SetDest(Mac8Address dest);
     /**
      * Set the source address.
      *
-     * \param src Address of packet source node.
+     * @param src Address of packet source node.
      */
     void SetSrc(Mac8Address src);
     /**
      * Set the header type.
      *
      * Use of this value is protocol specific.
-     * \param type The type value.
+     * @param type The type value.
      */
     void SetType(uint8_t type);
     /**
      * Set the packet type.
      *
      * Used to indicate the layer 3 protocol
-     * \param protocolNumber The layer 3 protocol number value.
+     * @param protocolNumber The layer 3 protocol number value.
      */
     void SetProtocolNumber(uint16_t protocolNumber);
 
     /**
      * Get the destination address.
      *
-     * \return Mac8Address in destination field.
+     * @return Mac8Address in destination field.
      */
     Mac8Address GetDest() const;
     /**
      * Get the source address
      *
-     * \return Mac8Address in source field.
+     * @return Mac8Address in source field.
      */
     Mac8Address GetSrc() const;
     /**
      * Get the header type value.
      *
-     * \return value of type field.
+     * @return value of type field.
      */
     uint8_t GetType() const;
     /**
      * Get the packet type value.
      *
-     * \return value of protocolNumber field.
+     * @return value of protocolNumber field.
      */
     uint16_t GetProtocolNumber() const;
 

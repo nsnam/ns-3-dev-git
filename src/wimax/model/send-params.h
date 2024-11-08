@@ -17,8 +17,8 @@ namespace ns3
 class WimaxPhy;
 
 /**
- * \ingroup wimax
- * \brief The SendParams class defines the parameters with which Send() function of
+ * @ingroup wimax
+ * @brief The SendParams class defines the parameters with which Send() function of
  *  a particular PHY is called. The sole purpose of this class is to allow
  *  defining the pure virtual Send() function in the PHY base-class (WimaxPhy).
  *  This class shall be sub-classed every time a new PHY is integrated (i.e.,
@@ -59,15 +59,15 @@ class OfdmSendParams : public SendParams
     /**
      * Constructor
      *
-     * \param burst packet burst object
-     * \param modulationType modulation type
-     * \param direction the direction
+     * @param burst packet burst object
+     * @param modulationType modulation type
+     * @param direction the direction
      */
     OfdmSendParams(Ptr<PacketBurst> burst, uint8_t modulationType, uint8_t direction);
     ~OfdmSendParams() override;
 
     /**
-     * \return the packet burst
+     * @return the packet burst
      */
     Ptr<PacketBurst> GetBurst() const
     {
@@ -75,7 +75,7 @@ class OfdmSendParams : public SendParams
     }
 
     /**
-     * \return the modulation type
+     * @return the modulation type
      */
     uint8_t GetModulationType() const
     {
@@ -83,7 +83,7 @@ class OfdmSendParams : public SendParams
     }
 
     /**
-     * \return the direction
+     * @return the direction
      */
     uint8_t GetDirection() const
     {

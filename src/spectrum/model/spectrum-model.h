@@ -18,17 +18,17 @@ namespace ns3
 {
 
 /**
- * \defgroup spectrum Spectrum Models
+ * @defgroup spectrum Spectrum Models
  */
 
 /**
- * \ingroup spectrum
- * \ingroup tests
- * \defgroup spectrum-tests Spectrum Models tests
+ * @ingroup spectrum
+ * @ingroup tests
+ * @defgroup spectrum-tests Spectrum Models tests
  */
 
 /**
- * \ingroup spectrum
+ * @ingroup spectrum
  *
  * The building block of a SpectrumModel. This struct models
  * a frequency band defined by the frequency interval [fl, fc] and
@@ -63,9 +63,9 @@ class SpectrumModel : public SimpleRefCount<SpectrumModel>
   public:
     /**
      * Comparison operator. Returns true if the two SpectrumModels are identical
-     * \param lhs left operand
-     * \param rhs right operand
-     * \returns true if the two operands are identical
+     * @param lhs left operand
+     * @param rhs right operand
+     * @returns true if the two operands are identical
      */
     friend bool operator==(const SpectrumModel& lhs, const SpectrumModel& rhs);
 
@@ -125,8 +125,8 @@ class SpectrumModel : public SimpleRefCount<SpectrumModel>
     /**
      * Check if another SpectrumModels has bands orthogonal to our bands.
      *
-     * \param other another SpectrumModel
-     * \returns true if bands are orthogonal
+     * @param other another SpectrumModel
+     * @returns true if bands are orthogonal
      */
     bool IsOrthogonal(const SpectrumModel& other) const;
 

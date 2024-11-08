@@ -16,8 +16,8 @@ namespace ns3
 {
 
 /**
- * \ingroup energy
- * \brief Assign WifiRadioEnergyModel to wifi devices.
+ * @ingroup energy
+ * @brief Assign WifiRadioEnergyModel to wifi devices.
  *
  * This installer installs WifiRadioEnergyModel for only WifiNetDevice objects.
  *
@@ -36,31 +36,31 @@ class WifiRadioEnergyModelHelper : public DeviceEnergyModelHelper
     ~WifiRadioEnergyModelHelper() override;
 
     /**
-     * \param name the name of the attribute to set
-     * \param v the value of the attribute
+     * @param name the name of the attribute to set
+     * @param v the value of the attribute
      *
      * Sets an attribute of the underlying PHY object.
      */
     void Set(std::string name, const AttributeValue& v) override;
 
     /**
-     * \param callback Callback function for energy depletion handling.
+     * @param callback Callback function for energy depletion handling.
      *
      * Sets the callback to be invoked when energy is depleted.
      */
     void SetDepletionCallback(WifiRadioEnergyModel::WifiRadioEnergyDepletionCallback callback);
 
     /**
-     * \param callback Callback function for energy recharged handling.
+     * @param callback Callback function for energy recharged handling.
      *
      * Sets the callback to be invoked when energy is recharged.
      */
     void SetRechargedCallback(WifiRadioEnergyModel::WifiRadioEnergyRechargedCallback callback);
 
     /**
-     * \tparam Ts \deduced Argument types
-     * \param name the name of the model to set
-     * \param [in] args Name and AttributeValue pairs to set.
+     * @tparam Ts \deduced Argument types
+     * @param name the name of the model to set
+     * @param [in] args Name and AttributeValue pairs to set.
      *
      * Configure a Transmission Current model for this EnergySource.
      */
@@ -69,9 +69,9 @@ class WifiRadioEnergyModelHelper : public DeviceEnergyModelHelper
 
   private:
     /**
-     * \param device Pointer to the NetDevice to install DeviceEnergyModel.
-     * \param source Pointer to EnergySource to install.
-     * \returns Ptr<DeviceEnergyModel>
+     * @param device Pointer to the NetDevice to install DeviceEnergyModel.
+     * @param source Pointer to EnergySource to install.
+     * @returns Ptr<DeviceEnergyModel>
      *
      * Implements DeviceEnergyModel::Install.
      */

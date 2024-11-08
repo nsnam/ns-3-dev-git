@@ -19,7 +19,7 @@ namespace ns3
 // --- GnuplotDataset::Data ------------------------------------------------ //
 
 /**
- * \ingroup gnuplot
+ * @ingroup gnuplot
  *
  * Structure storing the data to plot.
  * Derived classes subclass this struct and add their own data fields.
@@ -35,7 +35,7 @@ struct GnuplotDataset::Data
 
     /**
      * Initializes the reference counter to 1 and sets m_title and m_extra.
-     * \param title Dataset title
+     * @param title Dataset title
      */
     Data(const std::string& title);
 
@@ -43,8 +43,8 @@ struct GnuplotDataset::Data
     virtual ~Data();
 
     /**
-     * \brief Returns the plot type ("plot" or "splot").
-     * \returns the plot type ("plot" or "splot").
+     * @brief Returns the plot type ("plot" or "splot").
+     * @returns the plot type ("plot" or "splot").
      */
     virtual std::string GetCommand() const = 0;
 
@@ -57,10 +57,10 @@ struct GnuplotDataset::Data
      * data and control files, then the index for the current dataset
      * and the name for the data file are also included.
      *
-     * \param os Output stream
-     * \param generateOneOutputFile If true, generate only one output file.
-     * \param dataFileDatasetIndex Dataset Index
-     * \param dataFileName Dataset file name
+     * @param os Output stream
+     * @param generateOneOutputFile If true, generate only one output file.
+     * @param dataFileDatasetIndex Dataset Index
+     * @param dataFileName Dataset file name
      */
     virtual void PrintExpression(std::ostream& os,
                                  bool generateOneOutputFile,
@@ -71,14 +71,14 @@ struct GnuplotDataset::Data
      * Print the inline data file contents trailing the plot command. Empty for
      * functions.
      *
-     * \param os Output stream
-     * \param generateOneOutputFile If true, generate only one output file.
+     * @param os Output stream
+     * @param generateOneOutputFile If true, generate only one output file.
      */
     virtual void PrintDataFile(std::ostream& os, bool generateOneOutputFile) const = 0;
 
     /**
      * Checks to see if this GnuplotDataset is empty.
-     * \return    indicates if this GnuplotDataset is empty.
+     * @return    indicates if this GnuplotDataset is empty.
      */
     virtual bool IsEmpty() const = 0;
 };
@@ -154,7 +154,7 @@ GnuplotDataset::SetExtra(const std::string& extra)
 // --- Gnuplot2dDataset::Data2d -------------------------------------------- //
 
 /**
- * \ingroup gnuplot
+ * @ingroup gnuplot
  *
  * Structure storing the data to for a 2D plot.
  */
@@ -169,7 +169,7 @@ struct Gnuplot2dDataset::Data2d : public GnuplotDataset::Data
 
     /**
      * Initializes with the values from m_defaultStyle and m_defaultErrorBars.
-     * \param title Dataset title
+     * @param title Dataset title
      */
     Data2d(const std::string& title);
 
@@ -416,7 +416,7 @@ Gnuplot2dDataset::AddEmptyLine()
 // --- Gnuplot2dFunction::Function2d --------------------------------------- //
 
 /**
- * \ingroup gnuplot
+ * @ingroup gnuplot
  *
  * Structure storing the function to be used for a 2D plot.
  */
@@ -429,8 +429,8 @@ struct Gnuplot2dFunction::Function2d : public GnuplotDataset::Data
     /**
      * Initializes with the function and title.
      *
-     * \param title Title of the plot
-     * \param function Function to plot
+     * @param title Title of the plot
+     * @param function Function to plot
      */
     Function2d(const std::string& title, const std::string& function);
 
@@ -501,7 +501,7 @@ Gnuplot2dFunction::SetFunction(const std::string& function)
 // --- Gnuplot3dDataset::Data3d -------------------------------------------- //
 
 /**
- * \ingroup gnuplot
+ * @ingroup gnuplot
  *
  * Structure storing the data for a 3D plot.
  */
@@ -515,7 +515,7 @@ struct Gnuplot3dDataset::Data3d : public GnuplotDataset::Data
 
     /**
      * Initializes with value from m_defaultStyle.
-     * \param title Dataset title
+     * @param title Dataset title
      */
     Data3d(const std::string& title);
 
@@ -629,7 +629,7 @@ Gnuplot3dDataset::AddEmptyLine()
 // --- Gnuplot3dFunction::Function3d --------------------------------------- //
 
 /**
- * \ingroup gnuplot
+ * @ingroup gnuplot
  *
  * Structure storing the function to be used for a 3D plot.
  */
@@ -642,8 +642,8 @@ struct Gnuplot3dFunction::Function3d : public GnuplotDataset::Data
     /**
      * Initializes with the function and title.
      *
-     * \param title Title of the plot
-     * \param function Function to plot
+     * @param title Title of the plot
+     * @param function Function to plot
      */
     Function3d(const std::string& title, const std::string& function);
 

@@ -25,22 +25,22 @@ namespace ns3
 {
 
 /**
- * \ingroup wimax
- * \brief this class implements the link manager of subscriber station net device. An ss link
+ * @ingroup wimax
+ * @brief this class implements the link manager of subscriber station net device. An ss link
  * manager is responsible for link scanning and ranging
  */
 class SSLinkManager : public Object
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     /**
      * Constructor
      *
-     * \param ss subscriber station device
+     * @param ss subscriber station device
      */
     SSLinkManager(Ptr<SubscriberStationNetDevice> ss);
     ~SSLinkManager() override;
@@ -48,58 +48,58 @@ class SSLinkManager : public Object
 
     /**
      * Set BS EIRP
-     * \param bs_eirp the BS EIRP
+     * @param bs_eirp the BS EIRP
      */
     void SetBsEirp(uint16_t bs_eirp);
     /**
      * Set EIRX IR maximum
-     * \param eir_x_p_ir_max the EIRX IR maximum
+     * @param eir_x_p_ir_max the EIRX IR maximum
      */
     void SetEirXPIrMax(uint16_t eir_x_p_ir_max);
     /**
      * Set ranging interval found
-     * \param rangingIntervalFound the ranging interval found
+     * @param rangingIntervalFound the ranging interval found
      */
     void SetRangingIntervalFound(bool rangingIntervalFound);
     /**
      * Get ranging interval found
-     * \returns the ranging interval found
+     * @returns the ranging interval found
      */
     bool GetRangingIntervalFound() const;
     /**
      * Set NR ranging trans opps
-     * \param nrRangingTransOpps the NR ranging trans opps
+     * @param nrRangingTransOpps the NR ranging trans opps
      */
     void SetNrRangingTransOpps(uint8_t nrRangingTransOpps);
     /**
      * Set ranging CW
-     * \param rangingCW the ranging CW
+     * @param rangingCW the ranging CW
      */
     void SetRangingCW(uint8_t rangingCW);
     /// Increment NR invited polls received
     void IncrementNrInvitedPollsRecvd();
     /**
      * Get DL map sync timeout event
-     * \returns the event ID
+     * @returns the event ID
      */
     EventId GetDlMapSyncTimeoutEvent();
 
     /**
      * Perform ranging
-     * \param cid the CID
-     * \param rngrsp the ranging response
+     * @param cid the CID
+     * @param rngrsp the ranging response
      */
     void PerformRanging(Cid cid, RngRsp rngrsp);
     /**
      * Start scanning
-     * \param type the event type
-     * \param deleteParameters the delete parameters
+     * @param type the event type
+     * @param deleteParameters the delete parameters
      */
     void StartScanning(SubscriberStationNetDevice::EventType type, bool deleteParameters);
     /**
      * Send ranging request
-     * \param uiuc the UIUC
-     * \param allocationSize the allocation size
+     * @param uiuc the UIUC
+     * @param allocationSize the allocation size
      */
     void SendRangingRequest(uint8_t uiuc, uint16_t allocationSize);
     /// Start contention resolution
@@ -108,15 +108,15 @@ class SSLinkManager : public Object
     void PerformBackoff();
     /**
      * Is UL channel usable
-     * \returns the UL channel usable flag
+     * @returns the UL channel usable flag
      */
     bool IsUlChannelUsable();
     /**
      * Schedule scanning request
-     * \param interval the scanning request interval
-     * \param eventType event type
-     * \param deleteUlParameters the delete UL parameters
-     * \param eventId the event ID
+     * @param interval the scanning request interval
+     * @param eventType event type
+     * @param deleteUlParameters the delete UL parameters
+     * @param eventId the event ID
      */
     void ScheduleScanningRestart(Time interval,
                                  SubscriberStationNetDevice::EventType eventType,
@@ -128,22 +128,22 @@ class SSLinkManager : public Object
     SSLinkManager(const SSLinkManager&);
     /**
      * assignment operator
-     * \returns SS link manager
+     * @returns SS link manager
      */
     SSLinkManager& operator=(const SSLinkManager&);
 
     /**
      * End scanning
-     * \param status the end status
-     * \param frequency the frequency
+     * @param status the end status
+     * @param frequency the frequency
      */
     void EndScanning(bool status, uint64_t frequency);
     /// Start synchronizing
     void StartSynchronizing();
     /**
      * Search for DL channel
-     * \param channel the DL channel
-     * \returns true if found
+     * @param channel the DL channel
+     * @returns true if found
      */
     bool SearchForDlChannel(uint8_t channel);
     /// Select random backoff
@@ -156,19 +156,19 @@ class SSLinkManager : public Object
     void DeleteUplinkParameters();
     /**
      * Adjust ranging parameters
-     * \param rngrsp the ranging response
+     * @param rngrsp the ranging response
      */
     void AdjustRangingParameters(const RngRsp& rngrsp);
     /// Negotiate basic capabilities
     void NegotiateBasicCapabilities();
     /**
      * Calculate maximum IR signal strength
-     * \returns the maximum IR signal strength
+     * @returns the maximum IR signal strength
      */
     uint16_t CalculateMaxIRSignalStrength();
     /**
      * Get minimum transmit power level
-     * \returns the minimum transmit power level
+     * @returns the minimum transmit power level
      */
     uint16_t GetMinTransmitPowerLevel();
 

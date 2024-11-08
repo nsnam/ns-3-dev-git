@@ -19,9 +19,9 @@ class Node;
 class Packet;
 
 /**
- * \ingroup ipv4
+ * @ingroup ipv4
  *
- * \brief This class implements Linux struct pktinfo
+ * @brief This class implements Linux struct pktinfo
  * in order to deliver ancillary information to the socket interface.
  * This is used with socket option such as IP_PKTINFO, IP_RECVTTL,
  * IP_RECVTOS. See linux manpage ip(7).
@@ -40,48 +40,48 @@ class Ipv4PacketInfoTag : public Tag
     Ipv4PacketInfoTag();
 
     /**
-     * \brief Set the tag's address
+     * @brief Set the tag's address
      *
-     * \param addr the address
+     * @param addr the address
      */
     void SetAddress(Ipv4Address addr);
 
     /**
-     * \brief Get the tag's address
+     * @brief Get the tag's address
      *
-     * \returns the address
+     * @returns the address
      */
     Ipv4Address GetAddress() const;
 
     /**
-     * \brief Set the tag's receiving interface
+     * @brief Set the tag's receiving interface
      *
-     * \param ifindex the interface index
+     * @param ifindex the interface index
      */
     void SetRecvIf(uint32_t ifindex);
     /**
-     * \brief Get the tag's receiving interface
+     * @brief Get the tag's receiving interface
      *
-     * \returns the interface index
+     * @returns the interface index
      */
     uint32_t GetRecvIf() const;
 
     /**
-     * \brief Set the tag's Time to Live
+     * @brief Set the tag's Time to Live
      * Implemented, but not used in the stack yet
-     * \param ttl the TTL
+     * @param ttl the TTL
      */
     void SetTtl(uint8_t ttl);
     /**
-     * \brief Get the tag's Time to Live
+     * @brief Get the tag's Time to Live
      * Implemented, but not used in the stack yet
-     * \returns the TTL
+     * @returns the TTL
      */
     uint8_t GetTtl() const;
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     TypeId GetInstanceTypeId() const override;

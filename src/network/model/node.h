@@ -26,9 +26,9 @@ class Address;
 class Time;
 
 /**
- * \ingroup network
+ * @ingroup network
  *
- * \brief A network Node.
+ * @brief A network Node.
  *
  * This class holds together:
  *   - a list of NetDevice objects which represent the network interfaces
@@ -46,21 +46,21 @@ class Node : public Object
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
     Node();
     /**
-     * \param systemId a unique integer used for parallel simulations.
+     * @param systemId a unique integer used for parallel simulations.
      */
     Node(uint32_t systemId);
 
     ~Node() override;
 
     /**
-     * \returns the unique id of this node.
+     * @returns the unique id of this node.
      *
      * This unique id happens to be also the index of the Node into
      * the NodeList.
@@ -73,73 +73,73 @@ class Node : public Object
      * This function is currently a placeholder to ease the development of this feature.
      * For now, it is only an alias to Simulator::Now()
      *
-     * \return The time as seen by this node
+     * @return The time as seen by this node
      */
     Time GetLocalTime() const;
 
     /**
-     * \returns the system id for parallel simulations associated
+     * @returns the system id for parallel simulations associated
      *          to this node.
      */
     uint32_t GetSystemId() const;
 
     /**
-     * \brief Associate a NetDevice to this node.
+     * @brief Associate a NetDevice to this node.
      *
-     * \param device NetDevice to associate to this node.
-     * \returns the index of the NetDevice into the Node's list of
+     * @param device NetDevice to associate to this node.
+     * @returns the index of the NetDevice into the Node's list of
      *          NetDevice.
      */
     uint32_t AddDevice(Ptr<NetDevice> device);
     /**
-     * \brief Retrieve the index-th NetDevice associated to this node.
+     * @brief Retrieve the index-th NetDevice associated to this node.
      *
-     * \param index the index of the requested NetDevice
-     * \returns the requested NetDevice.
+     * @param index the index of the requested NetDevice
+     * @returns the requested NetDevice.
      */
     Ptr<NetDevice> GetDevice(uint32_t index) const;
     /**
-     * \returns the number of NetDevice instances associated
+     * @returns the number of NetDevice instances associated
      *          to this Node.
      */
     uint32_t GetNDevices() const;
 
     /**
-     * \brief Associate an Application to this Node.
+     * @brief Associate an Application to this Node.
      *
-     * \param application Application to associate to this node.
-     * \returns the index of the Application within the Node's list
+     * @param application Application to associate to this node.
+     * @returns the index of the Application within the Node's list
      *          of Application.
      */
     uint32_t AddApplication(Ptr<Application> application);
     /**
-     * \brief Retrieve the index-th Application associated to this node.
+     * @brief Retrieve the index-th Application associated to this node.
      *
-     * \param index the index of the requested Application
-     * \returns the requested Application.
+     * @param index the index of the requested Application
+     * @returns the requested Application.
      */
     Ptr<Application> GetApplication(uint32_t index) const;
 
     /**
-     * \returns the number of Application instances associated to this Node.
+     * @returns the number of Application instances associated to this Node.
      */
     uint32_t GetNApplications() const;
 
     /**
      * A protocol handler
      *
-     * \param device a pointer to the net device which received the packet
-     * \param packet the packet received
-     * \param protocol the 16 bit protocol number associated with this packet.
+     * @param device a pointer to the net device which received the packet
+     * @param packet the packet received
+     * @param protocol the 16 bit protocol number associated with this packet.
      *        This protocol number is expected to be the same protocol number
      *        given to the Send method by the user on the sender side.
-     * \param sender the address of the sender
-     * \param receiver the address of the receiver; Note: this value is
+     * @param sender the address of the sender
+     * @param receiver the address of the receiver; Note: this value is
      *                 only valid for promiscuous mode protocol
      *                 handlers.  Note:  If the L2 protocol does not use L2
      *                 addresses, the address reported here is the value of
      *                 device->GetAddress().
-     * \param packetType type of packet received
+     * @param packetType type of packet received
      *                   (broadcast/multicast/unicast/otherhost); Note:
      *                   this value is only valid for promiscuous mode
      *                   protocol handlers.
@@ -153,24 +153,24 @@ class Node : public Object
                      NetDevice::PacketType>
         ProtocolHandler;
     /**
-     * \param handler the handler to register
-     * \param protocolType the type of protocol this handler is
+     * @param handler the handler to register
+     * @param protocolType the type of protocol this handler is
      *        interested in. This protocol type is a so-called
      *        EtherType, as registered here:
      *        http://standards.ieee.org/regauth/ethertype/eth.txt
      *        the value zero is interpreted as matching all
      *        protocols.
-     * \param device the device attached to this handler. If the
+     * @param device the device attached to this handler. If the
      *        value is zero, the handler is attached to all
      *        devices on this node.
-     * \param promiscuous whether to register a promiscuous mode handler
+     * @param promiscuous whether to register a promiscuous mode handler
      */
     void RegisterProtocolHandler(ProtocolHandler handler,
                                  uint16_t protocolType,
                                  Ptr<NetDevice> device,
                                  bool promiscuous = false);
     /**
-     * \param handler the handler to unregister
+     * @param handler the handler to unregister
      *
      * After this call returns, the input handler will never
      * be invoked anymore.
@@ -182,7 +182,7 @@ class Node : public Object
      */
     typedef Callback<void, Ptr<NetDevice>> DeviceAdditionListener;
     /**
-     * \param listener the listener to add
+     * @param listener the listener to add
      *
      * Add a new listener to the list of listeners for the device-added
      * event. When a new listener is added, it is notified of the existence
@@ -190,7 +190,7 @@ class Node : public Object
      */
     void RegisterDeviceAdditionListener(DeviceAdditionListener listener);
     /**
-     * \param listener the listener to remove
+     * @param listener the listener to remove
      *
      * Remove an existing listener from the list of listeners for the
      * device-added event.
@@ -198,7 +198,7 @@ class Node : public Object
     void UnregisterDeviceAdditionListener(DeviceAdditionListener listener);
 
     /**
-     * \returns true if checksums are enabled, false otherwise.
+     * @returns true if checksums are enabled, false otherwise.
      */
     static bool ChecksumEnabled();
 
@@ -213,32 +213,32 @@ class Node : public Object
 
   private:
     /**
-     * \brief Notifies all the DeviceAdditionListener about the new device added.
-     * \param device the added device to notify.
+     * @brief Notifies all the DeviceAdditionListener about the new device added.
+     * @param device the added device to notify.
      */
     void NotifyDeviceAdded(Ptr<NetDevice> device);
 
     /**
-     * \brief Receive a packet from a device in non-promiscuous mode.
-     * \param device the device
-     * \param packet the packet
-     * \param protocol the protocol
-     * \param from the sender
-     * \returns true if the packet has been delivered to a protocol handler.
+     * @brief Receive a packet from a device in non-promiscuous mode.
+     * @param device the device
+     * @param packet the packet
+     * @param protocol the protocol
+     * @param from the sender
+     * @returns true if the packet has been delivered to a protocol handler.
      */
     bool NonPromiscReceiveFromDevice(Ptr<NetDevice> device,
                                      Ptr<const Packet> packet,
                                      uint16_t protocol,
                                      const Address& from);
     /**
-     * \brief Receive a packet from a device in promiscuous mode.
-     * \param device the device
-     * \param packet the packet
-     * \param protocol the protocol
-     * \param from the sender
-     * \param to the destination
-     * \param packetType the packet type
-     * \returns true if the packet has been delivered to a protocol handler.
+     * @brief Receive a packet from a device in promiscuous mode.
+     * @param device the device
+     * @param packet the packet
+     * @param protocol the protocol
+     * @param from the sender
+     * @param to the destination
+     * @param packetType the packet type
+     * @returns true if the packet has been delivered to a protocol handler.
      */
     bool PromiscReceiveFromDevice(Ptr<NetDevice> device,
                                   Ptr<const Packet> packet,
@@ -247,15 +247,15 @@ class Node : public Object
                                   const Address& to,
                                   NetDevice::PacketType packetType);
     /**
-     * \brief Receive a packet from a device.
-     * \param device the device
-     * \param packet the packet
-     * \param protocol the protocol
-     * \param from the sender
-     * \param to the destination
-     * \param packetType the packet type
-     * \param promisc true if received in promiscuous mode
-     * \returns true if the packet has been delivered to a protocol handler.
+     * @brief Receive a packet from a device.
+     * @param device the device
+     * @param packet the packet
+     * @param protocol the protocol
+     * @param from the sender
+     * @param to the destination
+     * @param packetType the packet type
+     * @param promisc true if received in promiscuous mode
+     * @returns true if the packet has been delivered to a protocol handler.
      */
     bool ReceiveFromDevice(Ptr<NetDevice> device,
                            Ptr<const Packet>,
@@ -266,12 +266,12 @@ class Node : public Object
                            bool promisc);
 
     /**
-     * \brief Finish node's construction by setting the correct node ID.
+     * @brief Finish node's construction by setting the correct node ID.
      */
     void Construct();
 
     /**
-     * \brief Protocol handler entry.
+     * @brief Protocol handler entry.
      * This structure is used to demultiplex all the protocols.
      */
     struct ProtocolHandlerEntry

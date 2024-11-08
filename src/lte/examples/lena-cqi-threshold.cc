@@ -22,7 +22,7 @@ using namespace ns3;
  * This function will move a node with a x coordinate greater than 10 m
  * to a x equal to 5 m, and less than or equal to 10 m to 10 Km
  *
- * \param node The node to move.
+ * @param node The node to move.
  */
 static void
 ChangePosition(Ptr<Node> node)

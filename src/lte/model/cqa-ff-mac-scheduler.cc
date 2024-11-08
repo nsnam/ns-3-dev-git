@@ -53,9 +53,9 @@ struct qos_rb_and_CQI_assigned_to_lc
 
 /**
  * CQI value comparator function
- * \param key1 the first item
- * \param key2 the second item
- * \returns true if the first item is > the second item
+ * @param key1 the first item
+ * @param key2 the second item
+ * @returns true if the first item is > the second item
  */
 bool
 CQIValueDescComparator(uint8_t key1, uint8_t key2)
@@ -65,9 +65,9 @@ CQIValueDescComparator(uint8_t key1, uint8_t key2)
 
 /**
  * CGA group comparator function
- * \param key1 the first item
- * \param key2 the second item
- * \returns true if the first item is > the second item
+ * @param key1 the first item
+ * @param key2 the second item
+ * @returns true if the first item is > the second item
  */
 bool
 CqaGroupDescComparator(int key1, int key2)
@@ -107,9 +107,9 @@ typedef std::map<HOL_group, std::set<LteFlowId_t>>::iterator t_it_HOLgroupToUEs;
 
 /**
  * CQA key comparator
- * \param key1 the first item
- * \param key2 the second item
- * \returns true if the first item > the second item
+ * @param key1 the first item
+ * @param key2 the second item
+ * @returns true if the first item > the second item
  */
 bool
 CqaKeyDescComparator(uint16_t key1, uint16_t key2)

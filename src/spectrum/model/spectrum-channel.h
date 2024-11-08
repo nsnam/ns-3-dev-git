@@ -30,7 +30,7 @@ class PacketBurst;
 class SpectrumValue;
 
 /**
- * \ingroup spectrum
+ * @ingroup spectrum
  *
  * Defines the interface for spectrum-aware channel implementations
  *
@@ -53,29 +53,29 @@ class SpectrumChannel : public Channel
     void DoDispose() override;
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
     /**
      * Add the single-frequency propagation loss model to be used
-     * \warning only models that do not depend on the TX power should be used.
+     * @warning only models that do not depend on the TX power should be used.
      *
-     * \param loss a pointer to the propagation loss model to be used.
+     * @param loss a pointer to the propagation loss model to be used.
      */
     void AddPropagationLossModel(Ptr<PropagationLossModel> loss);
 
     /**
      * Add the frequency-dependent propagation loss model to be used
-     * \param loss a pointer to the propagation loss model to be used.
+     * @param loss a pointer to the propagation loss model to be used.
      */
     void AddSpectrumPropagationLossModel(Ptr<SpectrumPropagationLossModel> loss);
 
     /**
      * Add the frequency-dependent propagation loss model
      * that is compapatible with the phased antenna arrays at the TX and RX
-     * \param loss a pointer to the propagation loss model to be used.
+     * @param loss a pointer to the propagation loss model to be used.
      */
     void AddPhasedArraySpectrumPropagationLossModel(
         Ptr<PhasedArraySpectrumPropagationLossModel> loss);
@@ -85,32 +85,32 @@ class SpectrumChannel : public Channel
      * the simulation if there exists a previously set propagation delay model
      * (i.e., unlike propagation loss models, multiple of which can be chained
      * together, there is only one propagation delay model).
-     * \param delay Ptr to the propagation delay model to be used.
+     * @param delay Ptr to the propagation delay model to be used.
      */
     void SetPropagationDelayModel(Ptr<PropagationDelayModel> delay);
 
     /**
      * Get the frequency-dependent propagation loss model.
-     * \returns a pointer to the propagation loss model.
+     * @returns a pointer to the propagation loss model.
      */
     Ptr<SpectrumPropagationLossModel> GetSpectrumPropagationLossModel() const;
 
     /**
      * Get the frequency-dependent propagation loss model that is
      * compatible with the phased antenna arrays at TX and RX
-     * \returns a pointer to the propagation loss model.
+     * @returns a pointer to the propagation loss model.
      */
     Ptr<PhasedArraySpectrumPropagationLossModel> GetPhasedArraySpectrumPropagationLossModel() const;
 
     /**
      * Get the propagation loss model.
-     * \returns a pointer to the propagation loss model.
+     * @returns a pointer to the propagation loss model.
      */
     Ptr<PropagationLossModel> GetPropagationLossModel() const;
 
     /**
      * Get the propagation delay model that has been set on the channel.
-     * \returns a pointer to the propagation delay model.
+     * @returns a pointer to the propagation delay model.
      */
     Ptr<PropagationDelayModel> GetPropagationDelayModel() const;
 
@@ -120,21 +120,21 @@ class SpectrumChannel : public Channel
      * times to chain multiple filters together; the last filter added will
      * be the first one used in the chain.
      *
-     * \param filter an instance of a SpectrumTransmitFilter
+     * @param filter an instance of a SpectrumTransmitFilter
      */
     void AddSpectrumTransmitFilter(Ptr<SpectrumTransmitFilter> filter);
 
     /**
      * Get the transmit filter, or first in a chain of transmit filters
      * if more than one is present.
-     * \returns a pointer to the transmit filter.
+     * @returns a pointer to the transmit filter.
      */
     Ptr<SpectrumTransmitFilter> GetSpectrumTransmitFilter() const;
 
     /**
      * Used by attached PHY instances to transmit signals on the channel
      *
-     * \param params the parameters of the signals being transmitted
+     * @param params the parameters of the signals being transmitted
      */
     virtual void StartTx(Ptr<SpectrumSignalParameters> params) = 0;
 
@@ -147,13 +147,13 @@ class SpectrumChannel : public Channel
      * objects), the base class of that object is responsible for ensuring
      * that all models in the chain have AssignStreams recursively called.
      *
-     * \param stream the stream index offset start
-     * \return the number of stream indices assigned by this model
+     * @param stream the stream index offset start
+     * @return the number of stream indices assigned by this model
      */
     int64_t AssignStreams(int64_t stream);
 
     /**
-     * \brief Remove a SpectrumPhy from a channel
+     * @brief Remove a SpectrumPhy from a channel
      *
      * This method is used to detach a SpectrumPhy instance from a
      * SpectrumChannel instance, so that the SpectrumPhy does not receive
@@ -168,7 +168,7 @@ class SpectrumChannel : public Channel
     virtual void RemoveRx(Ptr<SpectrumPhy> phy) = 0;
 
     /**
-     * \brief Add a SpectrumPhy to a channel, so it can receive packets
+     * @brief Add a SpectrumPhy to a channel, so it can receive packets
      *
      * This method is used to attach a SpectrumPhy instance to a
      * SpectrumChannel instance, so that the SpectrumPhy can receive
@@ -179,7 +179,7 @@ class SpectrumChannel : public Channel
      * This method is to be implemented by all classes inheriting from
      * SpectrumChannel.
      *
-     * \param phy the SpectrumPhy instance to be added to the channel as
+     * @param phy the SpectrumPhy instance to be added to the channel as
      * a receiver.
      */
     virtual void AddRx(Ptr<SpectrumPhy> phy) = 0;
@@ -187,9 +187,9 @@ class SpectrumChannel : public Channel
     /**
      * TracedCallback signature for path loss calculation events.
      *
-     * \param [in] txPhy The TX SpectrumPhy instance.
-     * \param [in] rxPhy The RX SpectrumPhy instance.
-     * \param [in] lossDb The loss value, in dB.
+     * @param [in] txPhy The TX SpectrumPhy instance.
+     * @param [in] rxPhy The RX SpectrumPhy instance.
+     * @param [in] lossDb The loss value, in dB.
      */
     typedef void (*LossTracedCallback)(Ptr<const SpectrumPhy> txPhy,
                                        Ptr<const SpectrumPhy> rxPhy,
@@ -197,12 +197,12 @@ class SpectrumChannel : public Channel
     /**
      * TracedCallback signature for path loss calculation events.
      *
-     * \param [in] txMobility The mobility model of the transmitter.
-     * \param [in] rxMobility The mobility model of the receiver.
-     * \param [in] txAntennaGain The transmitter antenna gain, in dB.
-     * \param [in] rxAntennaGain The receiver antenna gain, in dB.
-     * \param [in] propagationGain The propagation gain, in dB.
-     * \param [in] pathloss The path loss value, in dB.
+     * @param [in] txMobility The mobility model of the transmitter.
+     * @param [in] rxMobility The mobility model of the receiver.
+     * @param [in] txAntennaGain The transmitter antenna gain, in dB.
+     * @param [in] rxAntennaGain The receiver antenna gain, in dB.
+     * @param [in] propagationGain The propagation gain, in dB.
+     * @param [in] pathloss The path loss value, in dB.
      */
     typedef void (*GainTracedCallback)(Ptr<const MobilityModel> txMobility,
                                        Ptr<const MobilityModel> rxMobility,
@@ -213,7 +213,7 @@ class SpectrumChannel : public Channel
     /**
      * TracedCallback signature for Ptr<const SpectrumSignalParameters>.
      *
-     * \param [in] params SpectrumSignalParameters instance.
+     * @param [in] params SpectrumSignalParameters instance.
      */
     typedef void (*SignalParametersTracedCallback)(Ptr<SpectrumSignalParameters> params);
 
@@ -222,8 +222,8 @@ class SpectrumChannel : public Channel
      * This provides a base class implementation that may be subclassed
      * if needed by subclasses that might need additional stream assignments.
      *
-     * \param stream first stream index to use
-     * \return the number of stream indices assigned by this model
+     * @param stream first stream index to use
+     * @return the number of stream indices assigned by this model
      */
     virtual int64_t DoAssignStreams(int64_t stream);
 

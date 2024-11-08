@@ -29,9 +29,9 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("Ns3TcpNoDelayTest");
 
 /**
- * \ingroup system-tests-tcp
+ * @ingroup system-tests-tcp
  *
- * \brief Tests of Nagle's algorithm and the TCP no delay option.
+ * @brief Tests of Nagle's algorithm and the TCP no delay option.
  */
 class Ns3TcpNoDelayTestCase : public TestCase
 {
@@ -39,7 +39,7 @@ class Ns3TcpNoDelayTestCase : public TestCase
     /**
      * Constructor.
      *
-     * \param noDelay Enable or disable TCP no delay option.
+     * @param noDelay Enable or disable TCP no delay option.
      */
     Ns3TcpNoDelayTestCase(bool noDelay);
 
@@ -54,9 +54,9 @@ class Ns3TcpNoDelayTestCase : public TestCase
 
     /**
      * Receive a TCP packet.
-     * \param path The callback context (unused).
-     * \param p The received packet.
-     * \param address The sender's address (unused).
+     * @param path The callback context (unused).
+     * @param p The received packet.
+     * @param address The sender's address (unused).
      */
     void SinkRx(std::string path, Ptr<const Packet> p, const Address& address);
 
@@ -201,7 +201,7 @@ Ns3TcpNoDelayTestCase::DoRun()
 }
 
 /**
- * \ingroup system-tests-tcp
+ * @ingroup system-tests-tcp
  *
  * TCP Nagle's algorithm and the TCP no delay option TestSuite.
  */

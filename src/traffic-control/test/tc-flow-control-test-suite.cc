@@ -29,9 +29,9 @@
 using namespace ns3;
 
 /**
- * \ingroup traffic-control-test
+ * @ingroup traffic-control-test
  *
- * \brief Queue Disc Test Item
+ * @brief Queue Disc Test Item
  */
 class QueueDiscTestItem : public QueueDiscItem
 {
@@ -39,7 +39,7 @@ class QueueDiscTestItem : public QueueDiscItem
     /**
      * Constructor
      *
-     * \param p the packet stored in this item
+     * @param p the packet stored in this item
      */
     QueueDiscTestItem(Ptr<Packet> p);
     ~QueueDiscTestItem() override;
@@ -74,9 +74,9 @@ QueueDiscTestItem::Mark()
 }
 
 /**
- * \ingroup traffic-control-test
+ * @ingroup traffic-control-test
  *
- * \brief Traffic Control Flow Control Test Case
+ * @brief Traffic Control Flow Control Test Case
  */
 class TcFlowControlTestCase : public TestCase
 {
@@ -84,9 +84,9 @@ class TcFlowControlTestCase : public TestCase
     /**
      * Constructor
      *
-     * \param tt the test type
-     * \param deviceQueueLength the queue length of the device
-     * \param totalTxPackets the total number of packets to transmit
+     * @param tt the test type
+     * @param deviceQueueLength the queue length of the device
+     * @param totalTxPackets the total number of packets to transmit
      */
     TcFlowControlTestCase(QueueSizeUnit tt, uint32_t deviceQueueLength, uint32_t totalTxPackets);
     ~TcFlowControlTestCase() override;
@@ -95,29 +95,29 @@ class TcFlowControlTestCase : public TestCase
     void DoRun() override;
     /**
      * Instruct a node to send a specified number of packets
-     * \param n the node
-     * \param nPackets the number of packets to send
+     * @param n the node
+     * @param nPackets the number of packets to send
      */
     void SendPackets(Ptr<Node> n, uint16_t nPackets);
     /**
      * Check if the device queue stores the expected number of packets
-     * \param dev the device
-     * \param nPackets the expected number of packets stored in the device queue
-     * \param msg the message to print if a different number of packets are stored
+     * @param dev the device
+     * @param nPackets the expected number of packets stored in the device queue
+     * @param msg the message to print if a different number of packets are stored
      */
     void CheckPacketsInDeviceQueue(Ptr<NetDevice> dev, uint16_t nPackets, const std::string msg);
     /**
      * Check if the device queue is in the expected status (stopped or not)
-     * \param dev the device
-     * \param value the expected status of the queue (true means stopped)
-     * \param msg the message to print if the status of the device queue is different
+     * @param dev the device
+     * @param value the expected status of the queue (true means stopped)
+     * @param msg the message to print if the status of the device queue is different
      */
     void CheckDeviceQueueStopped(Ptr<NetDevice> dev, bool value, const std::string msg);
     /**
      * Check if the queue disc stores the expected number of packets
-     * \param dev the device the queue disc is installed on
-     * \param nPackets the expected number of packets stored in the queue disc
-     * \param msg the message to print if a different number of packets are stored
+     * @param dev the device the queue disc is installed on
+     * @param nPackets the expected number of packets stored in the queue disc
+     * @param msg the message to print if a different number of packets are stored
      */
     void CheckPacketsInQueueDisc(Ptr<NetDevice> dev, uint16_t nPackets, const std::string msg);
     QueueSizeUnit m_type;         //!< the test type
@@ -482,9 +482,9 @@ TcFlowControlTestCase::DoRun()
 }
 
 /**
- * \ingroup traffic-control-test
+ * @ingroup traffic-control-test
  *
- * \brief Traffic Control Flow Control Test Suite
+ * @brief Traffic Control Flow Control Test Suite
  */
 static class TcFlowControlTestSuite : public TestSuite
 {

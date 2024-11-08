@@ -11,8 +11,8 @@
 #include "ptr.h"
 
 /**
- * \file
- * \ingroup config
+ * @file
+ * @ingroup config
  * Declaration of class ns3::Names.
  */
 
@@ -20,15 +20,15 @@ namespace ns3
 {
 
 /**
- * \ingroup config
- * \brief A directory of name and Ptr<Object> associations that allows
+ * @ingroup config
+ * @brief A directory of name and Ptr<Object> associations that allows
  * us to give any ns3 Object a name.
  */
 class Names
 {
   public:
     /**
-     * \brief Add the association between the string "name" and the
+     * @brief Add the association between the string "name" and the
      * Ptr<Object> obj.
      *
      * The name may begin either with "/Names" to explicitly call out
@@ -60,14 +60,14 @@ class Names
      * time just as you might have different files of the same name
      * under different directories.
      *
-     * \param [in] name The name of the object you want to associate; which may be
+     * @param [in] name The name of the object you want to associate; which may be
      *             prepended with a path to that object.
-     * \param [in] object A smart pointer to the object itself.
+     * @param [in] object A smart pointer to the object itself.
      */
     static void Add(std::string name, Ptr<Object> object);
 
     /**
-     * \brief An intermediate form of Names::Add allowing you to provide
+     * @brief An intermediate form of Names::Add allowing you to provide
      * a path to the parent object (under which you want this name to be
      * defined) in the form of a name path string.
      *
@@ -94,17 +94,17 @@ class Names
      * time just as you might have different files of the same name
      * under different directories.
      *
-     * \param [in] path A path name describing a previously named object
+     * @param [in] path A path name describing a previously named object
      *             under which you want this new name to be defined.
-     * \param [in] name The name of the object you want to associate.
-     * \param [in] object A smart pointer to the object itself.
+     * @param [in] name The name of the object you want to associate.
+     * @param [in] object A smart pointer to the object itself.
      *
-     * \see Names::Add (Ptr<Object>,std::string,Ptr<Object>);
+     * @see Names::Add (Ptr<Object>,std::string,Ptr<Object>);
      */
     static void Add(std::string path, std::string name, Ptr<Object> object);
 
     /**
-     * \brief A low-level form of Names::Add allowing you to specify the
+     * @brief A low-level form of Names::Add allowing you to specify the
      * path to the parent object (under which you want this name to be
      * defined) in the form of a previously named object.
      *
@@ -151,16 +151,16 @@ class Names
      * have different files of the same name under different
      * directories.
      *
-     * \param [in] context A smart pointer to an object that is used
+     * @param [in] context A smart pointer to an object that is used
      *             in place of the path under which you want this new
      *             name to be defined.
-     * \param [in] name The name of the object you want to associate.
-     * \param [in] object A smart pointer to the object itself.
+     * @param [in] name The name of the object you want to associate.
+     * @param [in] object A smart pointer to the object itself.
      */
     static void Add(Ptr<Object> context, std::string name, Ptr<Object> object);
 
     /**
-     * \brief Rename a previously associated name.
+     * @brief Rename a previously associated name.
      *
      * The name may begin either with "/Names" to explicitly call out
      * the fact that the name provided is installed under the root of
@@ -183,16 +183,16 @@ class Names
      * the path "/Names/server/eth0".  Note that Names::Rename
      * ("server/csma", "eth0") would accomplish exactly the same thing.
      *
-     * \param [in] oldpath The current path name to the object you want
+     * @param [in] oldpath The current path name to the object you want
      *             to change.
-     * \param [in] newname The new name of the object you want to change.
+     * @param [in] newname The new name of the object you want to change.
      *
-     * \see Names::Add (std::string name, Ptr<Object> obj)
+     * @see Names::Add (std::string name, Ptr<Object> obj)
      */
     static void Rename(std::string oldpath, std::string newname);
 
     /**
-     * \brief An intermediate form of Names::Rename allowing you to
+     * @brief An intermediate form of Names::Rename allowing you to
      * provide a path to the parent object (under which you want this
      * name to be changed) in the form of a name path string.
      *
@@ -208,16 +208,16 @@ class Names
      * "eth0") or, using the split path and name approach, Names::Rename
      * ("/Names/server", "csma", "eth0").
      *
-     * \param [in] path A path name describing a previously named object
+     * @param [in] path A path name describing a previously named object
      *             under which you want this name change to occur
      *             (cf. directory).
-     * \param [in] oldname The currently defined name of the object.
-     * \param [in] newname The new name you want the object to have.
+     * @param [in] oldname The currently defined name of the object.
+     * @param [in] newname The new name you want the object to have.
      */
     static void Rename(std::string path, std::string oldname, std::string newname);
 
     /**
-     * \brief A low-level form of Names::Rename allowing you to specify
+     * @brief A low-level form of Names::Rename allowing you to specify
      * the path to the parent object (under which you want this name to
      * be changed) in the form of a previously named object.
      *
@@ -252,18 +252,18 @@ class Names
      * could also accomplish this by Names::Rename (node, "csma",
      * "eth0").
      *
-     * \param [in] context A smart pointer to an object that is used
+     * @param [in] context A smart pointer to an object that is used
      *             in place of the path under which you want this
      *             new name to be defined.
-     * \param [in] oldname The current shortname of the object you want
+     * @param [in] oldname The current shortname of the object you want
      *             to change.
-     * \param [in] newname The new shortname of the object you want
+     * @param [in] newname The new shortname of the object you want
      *             to change.
      */
     static void Rename(Ptr<Object> context, std::string oldname, std::string newname);
 
     /**
-     * \brief Given a pointer to an object, look to see if that object
+     * @brief Given a pointer to an object, look to see if that object
      * has a name associated with it and, if so, return the name of the
      * object otherwise return an empty string.
      *
@@ -274,16 +274,16 @@ class Names
      *
      * This method returns the name of the object, e.g., "eth0".
      *
-     * \param [in] object A smart pointer to an object for which you want
+     * @param [in] object A smart pointer to an object for which you want
      *             to find its name.
      *
-     * \returns A string containing the name of the object if found,
+     * @returns A string containing the name of the object if found,
      *          otherwise the empty string.
      */
     static std::string FindName(Ptr<Object> object);
 
     /**
-     * \brief Given a pointer to an object, look to see if that object
+     * @brief Given a pointer to an object, look to see if that object
      * has a name associated with it and return the fully qualified name
      * path of the object otherwise return an empty string.
      *
@@ -295,22 +295,22 @@ class Names
      * This method returns the name path of the object, e.g.,
      * "Names/client/eth0".
      *
-     * \param [in] object A smart pointer to an object for which you
+     * @param [in] object A smart pointer to an object for which you
      *             want to find its fullname.
      *
-     * \returns A string containing the name path of the object,
+     * @returns A string containing the name path of the object,
      *          otherwise the empty string.
      */
     static std::string FindPath(Ptr<Object> object);
 
     /**
-     * \brief Clear the list of objects associated with names.
+     * @brief Clear the list of objects associated with names.
      */
 
     static void Clear();
 
     /**
-     * \brief Given a name path string, look to see if there's an object
+     * @brief Given a name path string, look to see if there's an object
      * in the system with that associated to it.  If there is, do a
      * GetObject on the resulting object to convert it to the requested
      * typename and return it.
@@ -323,17 +323,17 @@ class Names
      * This method requires that the name path of the object be
      * provided, e.g., "Names/client/eth0".
      *
-     * \param [in] path A string containing a name space path used
+     * @param [in] path A string containing a name space path used
      *             to locate the object.
      *
-     * \returns A smart pointer to the named object converted to
+     * @returns A smart pointer to the named object converted to
      *          the requested type.
      */
     template <typename T>
     static Ptr<T> Find(std::string path);
 
     /**
-     * \brief Given a path to an object and an object name, look through
+     * @brief Given a path to an object and an object name, look through
      * the names defined under the path to see if there's an object
      * there with the given name.
      *
@@ -349,18 +349,18 @@ class Names
      * ("/Names/server/eth0") or, using the split path and name
      * approach, Names::Find ("/Names/server", "eth0").
      *
-     * \param [in] path A path name describing a previously named object
+     * @param [in] path A path name describing a previously named object
      *             under which you want to look for the specified name.
-     * \param [in] name A string containing a name to search for.
+     * @param [in] name A string containing a name to search for.
      *
-     * \returns A smart pointer to the named object converted to
+     * @returns A smart pointer to the named object converted to
      *          the requested type.
      */
     template <typename T>
     static Ptr<T> Find(std::string path, std::string name);
 
     /**
-     * \brief Given a path to an object and an object name, look through
+     * @brief Given a path to an object and an object name, look through
      * the names defined under the path to see if there's an object
      * there with the given name.
      *
@@ -391,12 +391,12 @@ class Names
      * up an internal name service entry which contains the names
      * defined for that context.
      *
-     * \param [in] context A smart pointer to an object that is used
+     * @param [in] context A smart pointer to an object that is used
      *             in place of the path under which you want this
      *             new name to be defined.
-     * \param [in] name A string containing a name to search for.
+     * @param [in] name A string containing a name to search for.
      *
-     * \returns A smart pointer to the named object converted to
+     * @returns A smart pointer to the named object converted to
      *          the requested type.
      */
     template <typename T>
@@ -404,35 +404,35 @@ class Names
 
   private:
     /**
-     * \brief Non-templated internal version of Names::Find
+     * @brief Non-templated internal version of Names::Find
      *
-     * \param [in] path A string containing the path of the object
+     * @param [in] path A string containing the path of the object
      *             to look for.
      *
-     * \returns A smart pointer to the named object.
+     * @returns A smart pointer to the named object.
      */
     static Ptr<Object> FindInternal(std::string path);
 
     /**
-     * \brief Non-templated internal version of Names::Find
+     * @brief Non-templated internal version of Names::Find
      *
-     * \param [in] path A string containing the path to search
+     * @param [in] path A string containing the path to search
      *             for the object in.
-     * \param [in] name A string containing the name of the object
+     * @param [in] name A string containing the name of the object
      *             to look for.
      *
-     * \returns A smart pointer to the named object.
+     * @returns A smart pointer to the named object.
      */
     static Ptr<Object> FindInternal(std::string path, std::string name);
 
     /**
-     * \brief Non-templated internal version of Names::Find
+     * @brief Non-templated internal version of Names::Find
      *
-     * \param [in] context A smart pointer to an object under which
+     * @param [in] context A smart pointer to an object under which
      *             you want to look for the provided name.
-     * \param [in] name A string containing the name to look for.
+     * @param [in] name A string containing the name to look for.
      *
-     * \returns A smart pointer to the named object.
+     * @returns A smart pointer to the named object.
      */
     static Ptr<Object> FindInternal(Ptr<Object> context, std::string name);
 };

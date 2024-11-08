@@ -25,10 +25,10 @@
 using namespace ns3;
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief Power Rate Adaptation Test
+ * @brief Power Rate Adaptation Test
  */
 class PowerRateAdaptationTest : public TestCase
 {
@@ -46,7 +46,7 @@ class PowerRateAdaptationTest : public TestCase
     void TestRrpaa();
     /**
      * Configure nde function
-     * \returns the node
+     * @returns the node
      */
     Ptr<Node> ConfigureNode();
 
@@ -1151,10 +1151,10 @@ PowerRateAdaptationTest::DoRun()
 }
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief Power Rate Adaptation Test Suite
+ * @brief Power Rate Adaptation Test Suite
  */
 class PowerRateAdaptationTestSuite : public TestSuite
 {

@@ -45,9 +45,9 @@ class Reservation
      * Create Reservation object with given packet list,
      * frame number and max packets.
      *
-     * \param list List of packets for assigned to reservation.
-     * \param frameNo Frame number of reservation transmission.
-     * \param maxPkts Maximum number of packets to assign to reservation
+     * @param list List of packets for assigned to reservation.
+     * @param frameNo Frame number of reservation transmission.
+     * @param maxPkts Maximum number of packets to assign to reservation
      *   from packet list (0 = no maximum).
      */
     Reservation(std::list<std::pair<Ptr<Packet>, Mac8Address>>& list,
@@ -58,7 +58,7 @@ class Reservation
     /**
      * Get the number of frames in this Reservation.
      *
-     * \return Number of frames.
+     * @return Number of frames.
      */
     uint32_t GetNoFrames() const;
     /**
@@ -66,47 +66,47 @@ class Reservation
      *
      * This is the sum of packets with headers.
      *
-     * \return Total length, in bytes.
+     * @return Total length, in bytes.
      */
     uint32_t GetLength() const;
     /**
      * Get the list of packets.
      *
-     * \return The list of packets.
+     * @return The list of packets.
      */
     const std::list<std::pair<Ptr<Packet>, Mac8Address>>& GetPktList() const;
     /**
      * Get the frame number.
      *
-     * \return The frame number.
+     * @return The frame number.
      */
     uint8_t GetFrameNo() const;
     /**
      * Get the retry number.
      *
-     * \return The retry number.
+     * @return The retry number.
      */
     uint8_t GetRetryNo() const;
     /**
      * Get the timestamp for the n'th RTS.
      *
-     * \param n Which retry number.
-     * \return N'th timestamp.
+     * @param n Which retry number.
+     * @return N'th timestamp.
      */
     Time GetTimestamp(uint8_t n) const;
 
-    /** \return True if reservation packets have been transmitted. */
+    /** @return True if reservation packets have been transmitted. */
     bool IsTransmitted() const;
     /**
      * Set the frame number.
      *
-     * \param fn The frame number.
+     * @param fn The frame number.
      */
     void SetFrameNo(uint8_t fn);
     /**
      * Set the time of the latest RTS sent.
      *
-     * \param t RTS timestamp.
+     * @param t RTS timestamp.
      */
     void AddTimestamp(Time t);
     /** Increment the retry count. */
@@ -114,7 +114,7 @@ class Reservation
     /**
      * Set the reservation transmitted state.
      *
-     * \param t True if reservation has been transmitted.
+     * @param t True if reservation has been transmitted.
      */
     void SetTransmitted(bool t = true);
 
@@ -135,7 +135,7 @@ class Reservation
 }; // class Reservation
 
 /**
- * \ingroup uan
+ * @ingroup uan
  *
  * Non-gateway node MAC for reservation channel MAC protocol.
  *
@@ -168,7 +168,7 @@ class UanMacRc : public UanMac
 
     /**
      * Register this type.
-     * \return The TypeId.
+     * @return The TypeId.
      */
     static TypeId GetTypeId();
 
@@ -182,8 +182,8 @@ class UanMacRc : public UanMac
     /**
      *  TracedCallback signature for dequeue of a packet.
      *
-     * \param [in] packet The Packet being received.
-     * \param [in] proto The protocol number.
+     * @param [in] packet The Packet being received.
+     * @param [in] proto The protocol number.
      */
     typedef void (*QueueTracedCallback)(Ptr<const Packet> packet, uint32_t proto);
 
@@ -241,9 +241,9 @@ class UanMacRc : public UanMac
     /**
      * PHY receive ok Callback.
      *
-     * \param pkt The received packet.
-     * \param sinr (Unused).
-     * \param mode Modulation mode.
+     * @param pkt The received packet.
+     * @param sinr (Unused).
+     * @param mode Modulation mode.
      */
     void ReceiveOkFromPhy(Ptr<Packet> pkt, double sinr, UanTxMode mode);
     /** Associate with a gateway by sending the first GWPING. */
@@ -257,16 +257,16 @@ class UanMacRc : public UanMac
     /**
      * Create the RTS header from a Reservation.
      *
-     * \param res The Reservation.
-     * \return A RTS header.
+     * @param res The Reservation.
+     * @return A RTS header.
      */
     UanHeaderRcRts CreateRtsHeader(const Reservation& res);
     /**
      * Schedule Packet sends.
      *
-     * \param ctsh The CTS header identifying the frame number and delay.
-     * \param ctsg The CTS global header giving the transmit time stamp base.
-     * \param ctsBytes Number of bytes total in CTS packet.
+     * @param ctsh The CTS header identifying the frame number and delay.
+     * @param ctsg The CTS global header giving the transmit time stamp base.
+     * @param ctsBytes Number of bytes total in CTS packet.
      */
     void ScheduleData(const UanHeaderRcCts& ctsh,
                       const UanHeaderRcCtsGlobal& ctsg,
@@ -274,21 +274,21 @@ class UanMacRc : public UanMac
     /**
      * Process a received ACK.
      *
-     * \param ack The ACK packet.
+     * @param ack The ACK packet.
      */
     void ProcessAck(Ptr<Packet> ack);
     /**
      * Send on packet on the PHY.
      *
-     * \param pkt The packet.
-     * \param rate The transmission rate.
+     * @param pkt The packet.
+     * @param rate The transmission rate.
      */
     void SendPacket(Ptr<Packet> pkt, uint32_t rate);
     /**
      * Check that PHY is ok:
      *   not CTS or ACK
      *   not to my address
-     * \return True if PHY is ok.
+     * @return True if PHY is ok.
      */
     bool IsPhy1Ok();
     /** Callback to block RST. */

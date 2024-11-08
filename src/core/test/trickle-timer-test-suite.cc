@@ -14,10 +14,10 @@
 #include <vector>
 
 /**
- * \file
- * \ingroup core-tests
- * \ingroup timer
- * \ingroup timer-tests
+ * @file
+ * @ingroup core-tests
+ * @ingroup timer
+ * @ingroup timer-tests
  *
  * Trickle Timer test suite.
  *
@@ -35,7 +35,7 @@ namespace tests
 {
 
 /**
- * \ingroup timer-tests
+ * @ingroup timer-tests
  *  TrickleTimer test
  */
 class TrickleTimerTestCase : public TestCase
@@ -57,20 +57,20 @@ class TrickleTimerTestCase : public TestCase
 
     /**
      * Test the steady-state
-     * \param unit Minimum interval
+     * @param unit Minimum interval
      */
     void TestSteadyState(Time unit);
 
     /**
      * Test the redundancy suppression
-     * \param unit Minimum interval
+     * @param unit Minimum interval
      */
     void TestRedundancy(Time unit);
 
     /**
      * Inject in the timer a consistent event
-     * \param interval Interval
-     * \param tricklePtr Pointer to the TrickleTimer
+     * @param interval Interval
+     * @param tricklePtr Pointer to the TrickleTimer
      */
     void ConsistentEvent(Time interval, TrickleTimer* tricklePtr);
 
@@ -194,7 +194,7 @@ TrickleTimerTestCase::DoRun()
 }
 
 /**
- * \ingroup timer-tests
+ * @ingroup timer-tests
  *  Trickle Timer test suite
  */
 class TrickleTimerTestSuite : public TestSuite
@@ -209,7 +209,7 @@ class TrickleTimerTestSuite : public TestSuite
 };
 
 /**
- * \ingroup timer-tests
+ * @ingroup timer-tests
  * TrickleTimerTestSuite instance variable.
  */
 static TrickleTimerTestSuite g_trickleTimerTestSuite;

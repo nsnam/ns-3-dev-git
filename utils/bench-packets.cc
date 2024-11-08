@@ -35,13 +35,13 @@ class BenchHeader : public Header
      * deserialization was correct.  If Deserialize() has not yet been
      * called on the header, will return false.
      *
-     * \returns true if success, false if failed or if deserialization not tried
+     * @returns true if success, false if failed or if deserialization not tried
      */
     bool IsOk() const;
 
     /**
      * Register this type.
-     * \return The TypeId.
+     * @return The TypeId.
      */
     static TypeId GetTypeId();
     TypeId GetInstanceTypeId() const override;
@@ -53,7 +53,7 @@ class BenchHeader : public Header
   private:
     /**
      * Get type name function
-     * \returns the type name string
+     * @returns the type name string
      */
     static std::string GetTypeName();
     bool m_ok; ///< variable to track whether deserialization succeeded
@@ -143,7 +143,7 @@ class BenchTag : public Tag
   public:
     /**
      * Get the bench tag name.
-     * \return the name.
+     * @return the name.
      */
     static std::string GetName()
     {
@@ -154,7 +154,7 @@ class BenchTag : public Tag
 
     /**
      * Register this type.
-     * \return The TypeId.
+     * @return The TypeId.
      */
     static TypeId GetTypeId()
     {

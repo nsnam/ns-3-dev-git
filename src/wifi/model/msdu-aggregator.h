@@ -29,8 +29,8 @@ class HtFrameExchangeManager;
 class WifiTxParameters;
 
 /**
- * \brief Aggregator used to construct A-MSDUs
- * \ingroup wifi
+ * @brief Aggregator used to construct A-MSDUs
+ * @ingroup wifi
  */
 class MsduAggregator : public Object
 {
@@ -39,8 +39,8 @@ class MsduAggregator : public Object
     typedef std::map<AcIndex, Ptr<QosTxop>> EdcaQueues;
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -50,7 +50,7 @@ class MsduAggregator : public Object
     /**
      * Set the ID of the link this MSDU aggregator is associated with.
      *
-     * \param linkId the ID of the link this MSDU aggregator is associated with
+     * @param linkId the ID of the link this MSDU aggregator is associated with
      */
     void SetLinkId(uint8_t linkId);
 
@@ -60,9 +60,9 @@ class MsduAggregator : public Object
      * Note that only the basic A-MSDU subframe format (section 9.3.2.2.2 of IEEE
      * 802.11-2016) is supported.
      *
-     * \param msduSize the MSDU size in bytes.
-     * \param amsduSize the A-MSDU size in bytes.
-     * \return the size of the resulting A-MSDU in bytes.
+     * @param msduSize the MSDU size in bytes.
+     * @param amsduSize the A-MSDU size in bytes.
+     * @return the size of the resulting A-MSDU in bytes.
      */
     static uint16_t GetSizeIfAggregated(uint16_t msduSize, uint16_t amsduSize);
 
@@ -91,10 +91,10 @@ class MsduAggregator : public Object
      * A-MSDU is enqueued in the queue (replacing the given MPDU) and returned.
      * Otherwise, no MSDU is dequeued from the EDCA queue and a null pointer is returned.
      *
-     * \param peekedItem the MSDU which we attempt to aggregate other MSDUs to
-     * \param txParams the TX parameters for the current frame
-     * \param availableTime the time available for the frame exchange
-     * \return the resulting A-MSDU, if aggregation is possible, a null pointer otherwise.
+     * @param peekedItem the MSDU which we attempt to aggregate other MSDUs to
+     * @param txParams the TX parameters for the current frame
+     * @param availableTime the time available for the frame exchange
+     * @return the resulting A-MSDU, if aggregation is possible, a null pointer otherwise.
      */
     Ptr<WifiMpdu> GetNextAmsdu(Ptr<WifiMpdu> peekedItem,
                                WifiTxParameters& txParams,
@@ -104,10 +104,10 @@ class MsduAggregator : public Object
      * Determine the maximum size for an A-MSDU of the given TID that can be sent
      * to the given receiver when using the given modulation class.
      *
-     * \param recipient the receiver station address.
-     * \param tid the TID.
-     * \param modulation the modulation class.
-     * \return the maximum A-MSDU size in bytes.
+     * @param recipient the receiver station address.
+     * @param tid the TID.
+     * @param modulation the modulation class.
+     * @return the maximum A-MSDU size in bytes.
      */
     uint16_t GetMaxAmsduSize(Mac48Address recipient,
                              uint8_t tid,
@@ -115,15 +115,15 @@ class MsduAggregator : public Object
 
     /**
      *
-     * \param aggregatedPacket the aggregated packet.
-     * \returns DeaggregatedMsdus.
+     * @param aggregatedPacket the aggregated packet.
+     * @returns DeaggregatedMsdus.
      */
     static WifiMpdu::DeaggregatedMsdus Deaggregate(Ptr<Packet> aggregatedPacket);
 
     /**
      * Set the MAC layer to use.
      *
-     * \param mac the MAC layer to use
+     * @param mac the MAC layer to use
      */
     void SetWifiMac(const Ptr<WifiMac> mac);
 
@@ -132,9 +132,9 @@ class MsduAggregator : public Object
      * given size if a new MSDU is added.
      * Each A-MSDU subframe is padded so that its length is multiple of 4 octets.
      *
-     * \param amsduSize the size of the A-MSDU
+     * @param amsduSize the size of the A-MSDU
      *
-     * \return the number of octets required for padding
+     * @return the number of octets required for padding
      */
     static uint8_t CalculatePadding(uint16_t amsduSize);
 

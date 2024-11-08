@@ -14,8 +14,8 @@
 #include <string>
 
 /**
- * \file
- * \ingroup core-examples
+ * @file
+ * @ingroup core-examples
  * Example program illustrating use of ns3::Version.
  */
 

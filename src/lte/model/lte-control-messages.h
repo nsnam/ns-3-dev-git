@@ -24,7 +24,7 @@ namespace ns3
 class LteNetDevice;
 
 /**
- * \ingroup lte
+ * @ingroup lte
  *
  * The LteControlMessage provides a basic implementations for
  * control messages (such as PDCCH allocation map, CQI feedbacks)
@@ -59,13 +59,13 @@ class LteControlMessage : public SimpleRefCount<LteControlMessage>
     virtual ~LteControlMessage();
 
     /**
-     * \brief Set the type of the message
-     * \param type the type of the message
+     * @brief Set the type of the message
+     * @param type the type of the message
      */
     void SetMessageType(MessageType type);
     /**
-     * \brief Get the type of the message
-     * \return the type of the message
+     * @brief Get the type of the message
+     * @return the type of the message
      */
     MessageType GetMessageType();
 
@@ -76,7 +76,7 @@ class LteControlMessage : public SimpleRefCount<LteControlMessage>
 // -----------------------------------------------------------------------
 
 /**
- * \ingroup lte
+ * @ingroup lte
  * The Downlink Data Control Indicator messages defines the RB allocation for the
  * users in the downlink
  */
@@ -87,14 +87,14 @@ class DlDciLteControlMessage : public LteControlMessage
     ~DlDciLteControlMessage() override;
 
     /**
-     * \brief add a DCI into the message
-     * \param dci the dci
+     * @brief add a DCI into the message
+     * @param dci the dci
      */
     void SetDci(DlDciListElement_s dci);
 
     /**
-     * \brief Get dic information
-     * \return dci messages
+     * @brief Get dic information
+     * @return dci messages
      */
     const DlDciListElement_s& GetDci();
 
@@ -105,7 +105,7 @@ class DlDciLteControlMessage : public LteControlMessage
 // ---------------------------------------------------------------------------
 
 /**
- * \ingroup lte
+ * @ingroup lte
  * The Uplink Data Control Indicator messages defines the RB allocation for the
  * users in the uplink
  */
@@ -116,14 +116,14 @@ class UlDciLteControlMessage : public LteControlMessage
     ~UlDciLteControlMessage() override;
 
     /**
-     * \brief add a DCI into the message
-     * \param dci the dci
+     * @brief add a DCI into the message
+     * @param dci the dci
      */
     void SetDci(UlDciListElement_s dci);
 
     /**
-     * \brief Get dic information
-     * \return dci messages
+     * @brief Get dic information
+     * @return dci messages
      */
     const UlDciListElement_s& GetDci();
 
@@ -134,7 +134,7 @@ class UlDciLteControlMessage : public LteControlMessage
 // ---------------------------------------------------------------------------
 
 /**
- * \ingroup lte
+ * @ingroup lte
  * The downlink CqiLteControlMessage defines an ideal list of
  * feedback about the channel quality sent by the UE to the eNodeB.
  */
@@ -145,14 +145,14 @@ class DlCqiLteControlMessage : public LteControlMessage
     ~DlCqiLteControlMessage() override;
 
     /**
-     * \brief add a DL-CQI feedback record into the message.
-     * \param dlcqi the DL cqi feedback
+     * @brief add a DL-CQI feedback record into the message.
+     * @param dlcqi the DL cqi feedback
      */
     void SetDlCqi(CqiListElement_s dlcqi);
 
     /**
-     * \brief Get DL cqi information
-     * \return dlcqi messages
+     * @brief Get DL cqi information
+     * @return dlcqi messages
      */
     CqiListElement_s GetDlCqi();
 
@@ -163,7 +163,7 @@ class DlCqiLteControlMessage : public LteControlMessage
 // ---------------------------------------------------------------------------
 
 /**
- * \ingroup lte
+ * @ingroup lte
  * The uplink BsrLteControlMessage defines the specific
  * extension of the CE element for reporting the buffer status report
  */
@@ -174,14 +174,14 @@ class BsrLteControlMessage : public LteControlMessage
     ~BsrLteControlMessage() override;
 
     /**
-     * \brief add a BSR feedback record into the message.
-     * \param bsr the BSR feedback
+     * @brief add a BSR feedback record into the message.
+     * @param bsr the BSR feedback
      */
     void SetBsr(MacCeListElement_s bsr);
 
     /**
-     * \brief Get BSR information
-     * \return BSR message
+     * @brief Get BSR information
+     * @return BSR message
      */
     MacCeListElement_s GetBsr();
 
@@ -192,7 +192,7 @@ class BsrLteControlMessage : public LteControlMessage
 // ---------------------------------------------------------------------------
 
 /**
- * \ingroup lte
+ * @ingroup lte
  * The downlink DlHarqFeedbackLteControlMessage defines the specific
  * messages for transmitting the DL HARQ feedback through PUCCH
  */
@@ -203,14 +203,14 @@ class DlHarqFeedbackLteControlMessage : public LteControlMessage
     ~DlHarqFeedbackLteControlMessage() override;
 
     /**
-     * \brief add a DL HARQ feedback record into the message.
-     * \param m the DL HARQ feedback
+     * @brief add a DL HARQ feedback record into the message.
+     * @param m the DL HARQ feedback
      */
     void SetDlHarqFeedback(DlInfoListElement_s m);
 
     /**
-     * \brief Get DL HARQ information
-     * \return DL HARQ message
+     * @brief Get DL HARQ information
+     * @return DL HARQ message
      */
     DlInfoListElement_s GetDlHarqFeedback();
 
@@ -221,7 +221,7 @@ class DlHarqFeedbackLteControlMessage : public LteControlMessage
 // ---------------------------------------------------------------------------
 
 /**
- * \ingroup lte
+ * @ingroup lte
  *
  * abstract model for the Random Access Preamble
  */
@@ -233,13 +233,13 @@ class RachPreambleLteControlMessage : public LteControlMessage
     /**
      * Set the Random Access Preamble Identifier (RAPID), see 3GPP TS 36.321 6.2.2
      *
-     * \param rapid the RAPID
+     * @param rapid the RAPID
      */
     void SetRapId(uint32_t rapid);
 
     /**
      *
-     * \return the RAPID
+     * @return the RAPID
      */
     uint32_t GetRapId() const;
 
@@ -250,7 +250,7 @@ class RachPreambleLteControlMessage : public LteControlMessage
 // ---------------------------------------------------------------------------
 
 /**
- * \ingroup lte
+ * @ingroup lte
  *
  * abstract model for the MAC Random Access Response message
  */
@@ -261,13 +261,13 @@ class RarLteControlMessage : public LteControlMessage
 
     /**
      *
-     * \param raRnti the RA-RNTI, see 3GPP TS 36.321 5.1.4
+     * @param raRnti the RA-RNTI, see 3GPP TS 36.321 5.1.4
      */
     void SetRaRnti(uint16_t raRnti);
 
     /**
      *
-     * \return  the RA-RNTI, see 3GPP TS 36.321 5.1.4
+     * @return  the RA-RNTI, see 3GPP TS 36.321 5.1.4
      */
     uint16_t GetRaRnti() const;
 
@@ -284,19 +284,19 @@ class RarLteControlMessage : public LteControlMessage
     /**
      * add a RAR to the MAC PDU, see 3GPP TS 36.321 6.2.3
      *
-     * \param rar the rar
+     * @param rar the rar
      */
     void AddRar(Rar rar);
 
     /**
      *
-     * \return a const iterator to the beginning of the RAR list
+     * @return a const iterator to the beginning of the RAR list
      */
     std::list<Rar>::const_iterator RarListBegin() const;
 
     /**
      *
-     * \return a const iterator to the end of the RAR list
+     * @return a const iterator to the end of the RAR list
      */
     std::list<Rar>::const_iterator RarListEnd() const;
 
@@ -308,8 +308,8 @@ class RarLteControlMessage : public LteControlMessage
 // ---------------------------------------------------------------------------
 
 /**
- * \ingroup lte
- * \brief Abstract model for broadcasting the Master Information Block (MIB)
+ * @ingroup lte
+ * @brief Abstract model for broadcasting the Master Information Block (MIB)
  *        within the control channel (BCCH).
  *
  * MIB is transmitted by eNodeB RRC and received by UE RRC at every radio frame,
@@ -322,19 +322,19 @@ class MibLteControlMessage : public LteControlMessage
 {
   public:
     /**
-     * \brief Create a new instance of MIB control message.
+     * @brief Create a new instance of MIB control message.
      */
     MibLteControlMessage();
 
     /**
-     * \brief Replace the MIB content of this control message.
-     * \param mib the desired MIB content
+     * @brief Replace the MIB content of this control message.
+     * @param mib the desired MIB content
      */
     void SetMib(LteRrcSap::MasterInformationBlock mib);
 
     /**
-     * \brief Retrieve the MIB content from this control message.
-     * \return the current MIB content that this control message holds
+     * @brief Retrieve the MIB content from this control message.
+     * @return the current MIB content that this control message holds
      */
     LteRrcSap::MasterInformationBlock GetMib() const;
 
@@ -346,8 +346,8 @@ class MibLteControlMessage : public LteControlMessage
 // ---------------------------------------------------------------------------
 
 /**
- * \ingroup lte
- * \brief Abstract model for broadcasting the System Information Block Type 1
+ * @ingroup lte
+ * @brief Abstract model for broadcasting the System Information Block Type 1
  *        (SIB1) within the control channel (BCCH).
  *
  * SIB1 is transmitted by eNodeB RRC and received by UE RRC at the 6th subframe
@@ -360,19 +360,19 @@ class Sib1LteControlMessage : public LteControlMessage
 {
   public:
     /**
-     * \brief Create a new instance of SIB1 control message.
+     * @brief Create a new instance of SIB1 control message.
      */
     Sib1LteControlMessage();
 
     /**
-     * \brief Replace the SIB1 content of this control message.
-     * \param sib1 the desired SIB1 content
+     * @brief Replace the SIB1 content of this control message.
+     * @param sib1 the desired SIB1 content
      */
     void SetSib1(LteRrcSap::SystemInformationBlockType1 sib1);
 
     /**
-     * \brief Retrieve the SIB1 content from this control message.
-     * \return the current SIB1 content that this control message holds
+     * @brief Retrieve the SIB1 content from this control message.
+     * @return the current SIB1 content that this control message holds
      */
     LteRrcSap::SystemInformationBlockType1 GetSib1() const;
 

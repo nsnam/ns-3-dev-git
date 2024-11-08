@@ -77,8 +77,8 @@ HwmpTag::GetSeqno() const
 }
 
 /**
- * \brief Get the type ID.
- * \return the object TypeId
+ * @brief Get the type ID.
+ * @return the object TypeId
  */
 TypeId
 HwmpTag::GetTypeId()

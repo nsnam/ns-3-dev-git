@@ -19,9 +19,9 @@ namespace ns3
 class Rectangle;
 
 /**
- * \ingroup mobility
+ * @ingroup mobility
  *
- * \brief Utility class used to move node with constant velocity.
+ * @brief Utility class used to move node with constant velocity.
  */
 class ConstantVelocityHelper
 {
@@ -29,34 +29,34 @@ class ConstantVelocityHelper
     ConstantVelocityHelper();
     /**
      * Create object and set position
-     * \param position the position vector
+     * @param position the position vector
      */
     ConstantVelocityHelper(const Vector& position);
     /**
      * Create object and set position and velocity
-     * \param position the position vector
-     * \param vel the velocity vector
+     * @param position the position vector
+     * @param vel the velocity vector
      */
     ConstantVelocityHelper(const Vector& position, const Vector& vel);
 
     /**
      * Set position vector
-     * \param position Position vector
+     * @param position Position vector
      */
     void SetPosition(const Vector& position);
     /**
      * Get current position vector
-     * \return Position vector
+     * @return Position vector
      */
     Vector GetCurrentPosition() const;
     /**
      * Get velocity; if paused, will return a zero vector
-     * \return Velocity vector
+     * @return Velocity vector
      */
     Vector GetVelocity() const;
     /**
      * Set new velocity vector
-     * \param vel Velocity vector
+     * @param vel Velocity vector
      */
     void SetVelocity(const Vector& vel);
     /**
@@ -70,13 +70,13 @@ class ConstantVelocityHelper
 
     /**
      * Update position, if not paused, from last position and time of last update
-     * \param rectangle 2D bounding rectangle for resulting position; object will not move outside
+     * @param rectangle 2D bounding rectangle for resulting position; object will not move outside
      * the rectangle
      */
     void UpdateWithBounds(const Rectangle& rectangle) const;
     /**
      * Update position, if not paused, from last position and time of last update
-     * \param bounds 3D bounding box for resulting position; object will not move outside the box
+     * @param bounds 3D bounding box for resulting position; object will not move outside the box
      */
     void UpdateWithBounds(const Box& bounds) const;
     /**

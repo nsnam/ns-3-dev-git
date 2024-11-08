@@ -24,23 +24,23 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("TcpHtcpTestSuite");
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief Testing the congestion avoidance increment on TcpHtcp
+ * @brief Testing the congestion avoidance increment on TcpHtcp
  */
 class TcpHtcpIncrementTest : public TestCase
 {
   public:
     /**
-     * \brief Constructor.
-     * \param cWnd Congestion window.
-     * \param segmentSize Segment size.
-     * \param segmentsAcked Segments already ACKed.
-     * \param lastCongestion Last congestion time.
-     * \param firstAck First ACK time.
-     * \param secondAck Second ACK time.
-     * \param expectedCwnd Expected cWnd.
-     * \param name Test description.
+     * @brief Constructor.
+     * @param cWnd Congestion window.
+     * @param segmentSize Segment size.
+     * @param segmentsAcked Segments already ACKed.
+     * @param lastCongestion Last congestion time.
+     * @param firstAck First ACK time.
+     * @param secondAck Second ACK time.
+     * @param expectedCwnd Expected cWnd.
+     * @param name Test description.
      */
     TcpHtcpIncrementTest(uint32_t cWnd,
                          uint32_t segmentSize,
@@ -84,7 +84,7 @@ TcpHtcpIncrementTest::TcpHtcpIncrementTest(uint32_t cWnd,
 }
 
 /**
- * \brief Since the calculation depends on the throughput and its associated
+ * @brief Since the calculation depends on the throughput and its associated
  * timing, we schedule a few exact events. We get the value from HTCP methods
  * during the simulation and compare them with their associated expected
  * values calculated from the algorithm by hand.
@@ -135,9 +135,9 @@ TcpHtcpIncrementTest::DoRun()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief TCP Htcp TestSuite.
+ * @brief TCP Htcp TestSuite.
  *
  * The following tests simulate conditions after a congestion event and
  * return to 1/2 ssthresh. After that, two acks are scheduled and the

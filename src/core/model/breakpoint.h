@@ -10,8 +10,8 @@
 #define BREAKPOINT_H
 
 /**
- * \file
- * \ingroup breakpoint
+ * @file
+ * @ingroup breakpoint
  * NS_BREAKPOINT() macro definition and ns3::BreakpointFallback
  * function declaration.
  */
@@ -31,14 +31,14 @@ namespace ns3
  */
 
 /**
- * \ingroup debugging
- * \defgroup breakpoint Breakpoints
+ * @ingroup debugging
+ * @defgroup breakpoint Breakpoints
  *
- * \brief Trigger a debugger breakpoint.
+ * @brief Trigger a debugger breakpoint.
  */
 
 /**
- * \ingroup breakpoint
+ * @ingroup breakpoint
  *
  * Inserts a breakpoint instruction (or equivalent system call) into
  * the code for selected machines.  When an NS_ASSERT cannot verify
@@ -70,9 +70,9 @@ namespace ns3
 #endif
 
 /**
- * \ingroup breakpoint
+ * @ingroup breakpoint
  *
- * \brief fallback breakpoint function
+ * @brief fallback breakpoint function
  *
  * This function is used by the NS_BREAKPOINT() macro as a fallback
  * for when breakpoint assembly instructions are not available.  It

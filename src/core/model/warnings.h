@@ -10,74 +10,74 @@
 #define NS3_WARNINGS_H
 
 /**
- * \defgroup warnings Compiler warnings
- * \ingroup core
+ * @defgroup warnings Compiler warnings
+ * @ingroup core
  *
  * Macros useful to silence compiler warnings on selected code parts.
  */
 
 /**
- * \ingroup warnings
- * \def NS_WARNING_POP
+ * @ingroup warnings
+ * @def NS_WARNING_POP
  * Pops the diagnostic warning list from the stack, restoring it to the previous state.
  * \sa NS_WARNING_PUSH
  */
 
 /**
- * \ingroup warnings
- * \def NS_WARNING_PUSH
+ * @ingroup warnings
+ * @def NS_WARNING_PUSH
  * Push the diagnostic warning list to the stack, allowing it to be restored later.
  * \sa NS_WARNING_POP
  */
 
 /**
- * \ingroup warnings
- * \def NS_WARNING_SILENCE_DEPRECATED
+ * @ingroup warnings
+ * @def NS_WARNING_SILENCE_DEPRECATED
  * Silences the "-Wdeprecated-declarations" warnings.
  * \sa NS_WARNING_POP
  */
 
 /**
- * \ingroup warnings
- * \def NS_WARNING_SILENCE_MAYBE_UNINITIALIZED
+ * @ingroup warnings
+ * @def NS_WARNING_SILENCE_MAYBE_UNINITIALIZED
  * Silences GCC "-Wmaybe-uninitialized" warnings.
  * \sa NS_WARNING_POP
  */
 
 /**
- * \ingroup warnings
- * \def NS_WARNING_PUSH_DEPRECATED
+ * @ingroup warnings
+ * @def NS_WARNING_PUSH_DEPRECATED
  * Save the current warning list and disables the ones about deprecated functions and classes.
  *
  * This macro can be used to silence deprecation warnings and should be used as a last resort
  * to silence the compiler for very specific lines of code.
  * The typical pattern is:
- * \code
+ * @code
  *   NS_WARNING_PUSH_DEPRECATED;
  *   // call to a function or class that has been deprecated.
  *   NS_WARNING_POP;
- * \endcode
+ * @endcode
  *
  * This macro is equivalent to
- * \code
+ * @code
  *   NS_WARNING_PUSH;
  *   NS_WARNING_SILENCE_DEPRECATED;
- * \endcode
+ * @endcode
  *
  * Its use is, of course, not suggested unless strictly necessary.
  */
 
 /**
- * \ingroup warnings
- * \def NS_WARNING_PUSH_MAYBE_UNINITIALIZED
+ * @ingroup warnings
+ * @def NS_WARNING_PUSH_MAYBE_UNINITIALIZED
  * Save the current warning list and disables the ones about possible uninitialized variables.
  *
  *
  * This macro is equivalent to
- * \code
+ * @code
  *   NS_WARNING_PUSH;
  *   NS_WARNING_SILENCE_MAYBE_UNINITIALIZED;
- * \endcode
+ * @endcode
  *
  * \sa NS_WARNING_PUSH_DEPRECATED
  */

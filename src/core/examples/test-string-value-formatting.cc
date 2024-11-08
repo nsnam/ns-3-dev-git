@@ -7,16 +7,16 @@
 #include "ns3/core-module.h"
 
 /**
- * \defgroup string-value-formatting StringValue parsing tests
+ * @defgroup string-value-formatting StringValue parsing tests
  * Check that StringValue parses complex values correctly.
  */
 
 /**
- * \file
- * \ingroup core-examples
- * \ingroup string-value-formatting
+ * @file
+ * @ingroup core-examples
+ * @ingroup string-value-formatting
  * Check that StringValue parses complex values correctly.
- * \todo This should really be turned into a TestSuite
+ * @todo This should really be turned into a TestSuite
  */
 
 using namespace ns3;
@@ -27,7 +27,7 @@ namespace
 {
 
 /**
- * \ingroup string-value-formatting
+ * @ingroup string-value-formatting
  *
  * StringValue formatting example test object.
  *
@@ -38,15 +38,15 @@ class FormattingTestObject : public Object
 {
   public:
     /**
-     * \brief Register this type and get the TypeId.
-     * \return the object TypeId
+     * @brief Register this type and get the TypeId.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     /** Default constructor */
     FormattingTestObject();
     /**
      * Get the test variable
-     * \returns the test variable
+     * @returns the test variable
      */
     Ptr<RandomVariableStream> GetTestVariable() const;
 
@@ -82,7 +82,7 @@ FormattingTestObject::GetTestVariable() const
 }
 
 /**
- * \ingroup string-value-formatting
+ * @ingroup string-value-formatting
  *
  * StringValue formatting example test helper class.
  */
@@ -93,13 +93,13 @@ class FormattingTestObjectHelper
     FormattingTestObjectHelper();
     /**
      * Set an attribute by name
-     * \param name the attribute
-     * \param value the attribute value
+     * @param name the attribute
+     * @param value the attribute value
      */
     void SetAttribute(std::string name, const AttributeValue& value);
     /**
      * Create an Object as configured by SetAttribute
-     * \returns the newly created Object
+     * @returns the newly created Object
      */
     Ptr<Object> CreateFromFactory();
 

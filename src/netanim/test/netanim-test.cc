@@ -24,26 +24,26 @@ using namespace ns3;
 using namespace ns3::energy;
 
 /**
- * \ingroup netanim
- * \ingroup tests
- * \defgroup netanim-test animation module tests
+ * @ingroup netanim
+ * @ingroup tests
+ * @defgroup netanim-test animation module tests
  */
 
 /**
- * \ingroup netanim-test
+ * @ingroup netanim-test
  *
- * \brief Abstract Animation Interface Test Case
+ * @brief Abstract Animation Interface Test Case
  */
 class AbstractAnimationInterfaceTestCase : public TestCase
 {
   public:
     /**
-     * \brief Constructor.
-     * \param name testcase name
+     * @brief Constructor.
+     * @param name testcase name
      */
     AbstractAnimationInterfaceTestCase(std::string name);
     /**
-     * \brief Destructor.
+     * @brief Destructor.
      */
 
     ~AbstractAnimationInterfaceTestCase() override;
@@ -101,15 +101,15 @@ AbstractAnimationInterfaceTestCase::CheckFileExistence()
 }
 
 /**
- * \ingroup netanim-test
+ * @ingroup netanim-test
  *
- * \brief Animation Interface Test Case
+ * @brief Animation Interface Test Case
  */
 class AnimationInterfaceTestCase : public AbstractAnimationInterfaceTestCase
 {
   public:
     /**
-     * \brief Constructor.
+     * @brief Constructor.
      */
     AnimationInterfaceTestCase();
 
@@ -169,15 +169,15 @@ AnimationInterfaceTestCase::CheckLogic()
 }
 
 /**
- * \ingroup netanim-test
+ * @ingroup netanim-test
  *
- * \brief Animation Remaining Energy Test Case
+ * @brief Animation Remaining Energy Test Case
  */
 class AnimationRemainingEnergyTestCase : public AbstractAnimationInterfaceTestCase
 {
   public:
     /**
-     * \brief Constructor.
+     * @brief Constructor.
      */
     AnimationRemainingEnergyTestCase();
 
@@ -230,9 +230,9 @@ AnimationRemainingEnergyTestCase::CheckLogic()
 }
 
 /**
- * \ingroup netanim-test
+ * @ingroup netanim-test
  *
- * \brief Animation Interface Test Suite
+ * @brief Animation Interface Test Suite
  */
 static class AnimationInterfaceTestSuite : public TestSuite
 {

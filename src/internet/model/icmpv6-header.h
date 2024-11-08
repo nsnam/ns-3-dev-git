@@ -19,15 +19,15 @@ namespace ns3
 {
 
 /**
- * \ingroup icmpv6
+ * @ingroup icmpv6
  *
- * \brief ICMPv6 header.
+ * @brief ICMPv6 header.
  */
 class Icmpv6Header : public Header
 {
   public:
     /**
-     * \brief ICMPv6 type code.
+     * @brief ICMPv6 type code.
      */
     enum Type_e
     {
@@ -60,7 +60,7 @@ class Icmpv6Header : public Header
     };
 
     /**
-     * \brief ICMPv6 Option type code.
+     * @brief ICMPv6 Option type code.
      */
     enum OptionType_e
     {
@@ -72,7 +72,7 @@ class Icmpv6Header : public Header
     };
 
     /**
-     * \brief ICMPv6 error code : Destination Unreachable
+     * @brief ICMPv6 error code : Destination Unreachable
      */
     enum ErrorDestinationUnreachable_e
     {
@@ -84,7 +84,7 @@ class Icmpv6Header : public Header
     };
 
     /**
-     * \brief ICMPv6 error code : Time Exceeded
+     * @brief ICMPv6 error code : Time Exceeded
      */
     enum ErrorTimeExceeded_e
     {
@@ -93,7 +93,7 @@ class Icmpv6Header : public Header
     };
 
     /**
-     * \brief ICMPv6 error code : Parameter Error
+     * @brief ICMPv6 error code : Parameter Error
      */
     enum ErrorParameterError_e
     {
@@ -103,94 +103,94 @@ class Icmpv6Header : public Header
     };
 
     /**
-     * \brief Get the UID of this class.
-     * \return UID
+     * @brief Get the UID of this class.
+     * @return UID
      */
     static TypeId GetTypeId();
 
     /**
-     * \brief Get the instance type ID.
-     * \return instance type ID
+     * @brief Get the instance type ID.
+     * @return instance type ID
      */
     TypeId GetInstanceTypeId() const override;
 
     /**
-     * \brief Constructor.
+     * @brief Constructor.
      */
     Icmpv6Header();
 
     /**
-     * \brief Destructor.
+     * @brief Destructor.
      */
     ~Icmpv6Header() override;
 
     /**
-     * \brief Get the type field.
-     * \return type of ICMPv6 message
+     * @brief Get the type field.
+     * @return type of ICMPv6 message
      */
     uint8_t GetType() const;
 
     /**
-     * \brief Set the type.
-     * \param type type to set
+     * @brief Set the type.
+     * @param type type to set
      */
     void SetType(uint8_t type);
 
     /**
-     * \brief Get the code field.
-     * \return code of ICMPv6 message
+     * @brief Get the code field.
+     * @return code of ICMPv6 message
      */
     uint8_t GetCode() const;
 
     /**
-     * \brief Set the code field.
-     * \param code code to set
+     * @brief Set the code field.
+     * @param code code to set
      */
     void SetCode(uint8_t code);
 
     /**
-     * \brief Get the checksum.
-     * \return checksum
+     * @brief Get the checksum.
+     * @return checksum
      */
     uint16_t GetChecksum() const;
 
     /**
-     * \brief Set the checksum.
-     * \param checksum to set
+     * @brief Set the checksum.
+     * @param checksum to set
      */
     void SetChecksum(uint16_t checksum);
 
     /**
-     * \brief Print information.
-     * \param os output stream
+     * @brief Print information.
+     * @param os output stream
      */
     void Print(std::ostream& os) const override;
 
     /**
-     * \brief Get the serialized size.
-     * \return serialized size
+     * @brief Get the serialized size.
+     * @return serialized size
      */
     uint32_t GetSerializedSize() const override;
 
     /**
-     * \brief Serialize the packet.
-     * \param start start offset
+     * @brief Serialize the packet.
+     * @param start start offset
      */
     void Serialize(Buffer::Iterator start) const override;
 
     /**
-     * \brief Deserialize the packet.
-     * \param start start offset
-     * \return length of packet
+     * @brief Deserialize the packet.
+     * @param start start offset
+     * @return length of packet
      */
     uint32_t Deserialize(Buffer::Iterator start) override;
 
     /**
-     * \brief Calculate pseudo header checksum for IPv6.
-     * \param src source address
-     * \param dst destination address
-     * \param length length
-     * \param protocol the protocol number to use in the
+     * @brief Calculate pseudo header checksum for IPv6.
+     * @param src source address
+     * @param dst destination address
+     * @param length length
+     * @param protocol the protocol number to use in the
      * underlying IPv6 packet.
      */
     void CalculatePseudoHeaderChecksum(Ipv6Address src,
@@ -200,1254 +200,1254 @@ class Icmpv6Header : public Header
 
   protected:
     /**
-     * \brief Checksum enable or not.
+     * @brief Checksum enable or not.
      */
     bool m_calcChecksum;
 
     /**
-     * \brief The checksum.
+     * @brief The checksum.
      */
     uint16_t m_checksum;
 
   private:
     /**
-     * \brief The type.
+     * @brief The type.
      */
     uint8_t m_type;
 
     /**
-     * \brief The code.
+     * @brief The code.
      */
     uint8_t m_code;
 };
 
 /**
- * \ingroup icmpv6
+ * @ingroup icmpv6
  *
- * \brief ICMPv6 option header.
+ * @brief ICMPv6 option header.
  */
 class Icmpv6OptionHeader : public Header
 {
   public:
     /**
-     * \brief Get the UID of this class.
-     * \return UID
+     * @brief Get the UID of this class.
+     * @return UID
      */
     static TypeId GetTypeId();
 
     /**
-     * \brief Get the instance type ID.
-     * \return instance type ID
+     * @brief Get the instance type ID.
+     * @return instance type ID
      */
     TypeId GetInstanceTypeId() const override;
 
     /**
-     * \brief Constructor.
+     * @brief Constructor.
      */
     Icmpv6OptionHeader();
 
     /**
-     * \brief Destructor.
+     * @brief Destructor.
      */
     ~Icmpv6OptionHeader() override;
 
     /**
-     * \brief Get the type of the option.
-     * \return type
+     * @brief Get the type of the option.
+     * @return type
      */
     uint8_t GetType() const;
 
     /**
-     * \brief Set the type of the option.
-     * \param type the type to set
+     * @brief Set the type of the option.
+     * @param type the type to set
      */
     void SetType(uint8_t type);
 
     /**
-     * \brief Get the length of the option in 8 bytes unit.
-     * \return length of the option
+     * @brief Get the length of the option in 8 bytes unit.
+     * @return length of the option
      */
     uint8_t GetLength() const;
 
     /**
-     * \brief Set the length of the option.
-     * \param len length value to set
+     * @brief Set the length of the option.
+     * @param len length value to set
      */
     void SetLength(uint8_t len);
 
     /**
-     * \brief Print information.
-     * \param os output stream
+     * @brief Print information.
+     * @param os output stream
      */
     void Print(std::ostream& os) const override;
 
     /**
-     * \brief Get the serialized size.
-     * \return serialized size
+     * @brief Get the serialized size.
+     * @return serialized size
      */
     uint32_t GetSerializedSize() const override;
 
     /**
-     * \brief Serialize the packet.
-     * \param start start offset
+     * @brief Serialize the packet.
+     * @param start start offset
      */
     void Serialize(Buffer::Iterator start) const override;
 
     /**
-     * \brief Deserialize the packet.
-     * \param start start offset
-     * \return length of packet
+     * @brief Deserialize the packet.
+     * @param start start offset
+     * @return length of packet
      */
     uint32_t Deserialize(Buffer::Iterator start) override;
 
   private:
     /**
-     * \brief The type.
+     * @brief The type.
      */
     uint8_t m_type;
 
     /**
-     * \brief The length.
+     * @brief The length.
      */
     uint8_t m_len;
 };
 
 /**
- * \ingroup icmpv6
+ * @ingroup icmpv6
  *
- * \brief ICMPv6 Neighbor Solicitation header.
+ * @brief ICMPv6 Neighbor Solicitation header.
  */
 class Icmpv6NS : public Icmpv6Header
 {
   public:
     /**
-     * \brief Constructor.
-     * \param target target IPv6 address
+     * @brief Constructor.
+     * @param target target IPv6 address
      */
     Icmpv6NS(Ipv6Address target);
 
     /**
-     * \brief Constructor.
+     * @brief Constructor.
      */
     Icmpv6NS();
 
     /**
-     * \brief Destructor.
+     * @brief Destructor.
      */
     ~Icmpv6NS() override;
 
     /**
-     * \brief Get the UID of this class.
-     * \return UID
+     * @brief Get the UID of this class.
+     * @return UID
      */
     static TypeId GetTypeId();
 
     /**
-     * \brief Get the instance type ID.
-     * \return instance type ID
+     * @brief Get the instance type ID.
+     * @return instance type ID
      */
     TypeId GetInstanceTypeId() const override;
 
     /**
-     * \brief Get the reserved field.
-     * \return reserved value
+     * @brief Get the reserved field.
+     * @return reserved value
      */
     uint32_t GetReserved() const;
 
     /**
-     * \brief Set the reserved field.
-     * \param reserved the reserved value
+     * @brief Set the reserved field.
+     * @param reserved the reserved value
      */
     void SetReserved(uint32_t reserved);
 
     /**
-     * \brief Get the IPv6 target field.
-     * \return IPv6 address
+     * @brief Get the IPv6 target field.
+     * @return IPv6 address
      */
     Ipv6Address GetIpv6Target() const;
 
     /**
-     * \brief Set the IPv6 target field.
-     * \param target IPv6 address
+     * @brief Set the IPv6 target field.
+     * @param target IPv6 address
      */
     void SetIpv6Target(Ipv6Address target);
 
     /**
-     * \brief Print information.
-     * \param os output stream
+     * @brief Print information.
+     * @param os output stream
      */
     void Print(std::ostream& os) const override;
 
     /**
-     * \brief Get the serialized size.
-     * \return serialized size
+     * @brief Get the serialized size.
+     * @return serialized size
      */
     uint32_t GetSerializedSize() const override;
 
     /**
-     * \brief Serialize the packet.
-     * \param start start offset
+     * @brief Serialize the packet.
+     * @param start start offset
      */
     void Serialize(Buffer::Iterator start) const override;
 
     /**
-     * \brief Deserialize the packet.
-     * \param start start offset
-     * \return length of packet
+     * @brief Deserialize the packet.
+     * @param start start offset
+     * @return length of packet
      */
     uint32_t Deserialize(Buffer::Iterator start) override;
 
   private:
     /**
-     * \brief The reserved value.
+     * @brief The reserved value.
      */
     uint32_t m_reserved;
 
     /**
-     * \brief The IPv6 target address.
+     * @brief The IPv6 target address.
      */
     Ipv6Address m_target;
 };
 
 /**
- * \ingroup icmpv6
+ * @ingroup icmpv6
  *
- * \brief ICMPv6 Neighbor Advertisement header.
+ * @brief ICMPv6 Neighbor Advertisement header.
  */
 class Icmpv6NA : public Icmpv6Header
 {
   public:
     /**
-     * \brief Constructor.
+     * @brief Constructor.
      */
     Icmpv6NA();
 
     /**
-     * \brief Destructor.
+     * @brief Destructor.
      */
     ~Icmpv6NA() override;
 
     /**
-     * \brief Get the UID of this class.
-     * \return UID
+     * @brief Get the UID of this class.
+     * @return UID
      */
     static TypeId GetTypeId();
 
     /**
-     * \brief Get the instance type ID.
-     * \return instance type ID
+     * @brief Get the instance type ID.
+     * @return instance type ID
      */
     TypeId GetInstanceTypeId() const override;
 
     /**
-     * \brief Get the reserved field.
-     * \return reserved value
+     * @brief Get the reserved field.
+     * @return reserved value
      */
     uint32_t GetReserved() const;
 
     /**
-     * \brief Set the reserved field.
-     * \param reserved the reserved value
+     * @brief Set the reserved field.
+     * @param reserved the reserved value
      */
     void SetReserved(uint32_t reserved);
 
     /**
-     * \brief Get the IPv6 target field.
-     * \return IPv6 address
+     * @brief Get the IPv6 target field.
+     * @return IPv6 address
      */
     Ipv6Address GetIpv6Target() const;
 
     /**
-     * \brief Set the IPv6 target field.
-     * \param target IPv6 address
+     * @brief Set the IPv6 target field.
+     * @param target IPv6 address
      */
     void SetIpv6Target(Ipv6Address target);
 
     /**
-     * \brief Get the R flag.
-     * \return R flag
+     * @brief Get the R flag.
+     * @return R flag
      */
     bool GetFlagR() const;
 
     /**
-     * \brief Set the R flag.
-     * \param r value
+     * @brief Set the R flag.
+     * @param r value
      */
     void SetFlagR(bool r);
 
     /**
-     * \brief Get the S flag.
-     * \return S flag
+     * @brief Get the S flag.
+     * @return S flag
      */
     bool GetFlagS() const;
 
     /**
-     * \brief Set the S flag.
-     * \param s value
+     * @brief Set the S flag.
+     * @param s value
      */
     void SetFlagS(bool s);
 
     /**
-     * \brief Get the O flag.
-     * \return O flag
+     * @brief Get the O flag.
+     * @return O flag
      */
     bool GetFlagO() const;
 
     /**
-     * \brief Set the O flag.
-     * \param o value
+     * @brief Set the O flag.
+     * @param o value
      */
     void SetFlagO(bool o);
 
     /**
-     * \brief Print information.
-     * \param os output stream
+     * @brief Print information.
+     * @param os output stream
      */
     void Print(std::ostream& os) const override;
 
     /**
-     * \brief Get the serialized size.
-     * \return serialized size
+     * @brief Get the serialized size.
+     * @return serialized size
      */
     uint32_t GetSerializedSize() const override;
 
     /**
-     * \brief Serialize the packet.
-     * \param start start offset
+     * @brief Serialize the packet.
+     * @param start start offset
      */
     void Serialize(Buffer::Iterator start) const override;
 
     /**
-     * \brief Deserialize the packet.
-     * \param start start offset
-     * \return length of packet
+     * @brief Deserialize the packet.
+     * @param start start offset
+     * @return length of packet
      */
     uint32_t Deserialize(Buffer::Iterator start) override;
 
   private:
     /**
-     * \brief The R flag.
+     * @brief The R flag.
      */
     bool m_flagR;
 
     /**
-     * \brief The O flag.
+     * @brief The O flag.
      */
     bool m_flagS;
 
     /**
-     * \brief The M flag.
+     * @brief The M flag.
      */
     bool m_flagO;
 
     /**
-     * \brief The reserved value.
+     * @brief The reserved value.
      */
     uint32_t m_reserved;
 
     /**
-     * \brief The IPv6 target address.
+     * @brief The IPv6 target address.
      */
     Ipv6Address m_target;
 };
 
 /**
- * \ingroup icmpv6
+ * @ingroup icmpv6
  *
- * \brief ICMPv6 Router Advertisement header.
+ * @brief ICMPv6 Router Advertisement header.
  */
 class Icmpv6RA : public Icmpv6Header
 {
   public:
     /**
-     * \brief Constructor.
+     * @brief Constructor.
      */
     Icmpv6RA();
 
     /**
-     * \brief Destructor.
+     * @brief Destructor.
      */
     ~Icmpv6RA() override;
 
     /**
-     * \brief Get the UID of this class.
-     * \return UID
+     * @brief Get the UID of this class.
+     * @return UID
      */
     static TypeId GetTypeId();
 
     /**
-     * \brief Get the instance type ID.
-     * \return instance type ID
+     * @brief Get the instance type ID.
+     * @return instance type ID
      */
     TypeId GetInstanceTypeId() const override;
 
     /**
-     * \brief Set the IPv6 maximum number of jumps.
-     * \param m maximum jumps
+     * @brief Set the IPv6 maximum number of jumps.
+     * @param m maximum jumps
      */
     void SetCurHopLimit(uint8_t m);
 
     /**
-     * \brief Get the IPv6 maximum number of jumps.
-     * \return maximum jumps
+     * @brief Get the IPv6 maximum number of jumps.
+     * @return maximum jumps
      */
     uint8_t GetCurHopLimit() const;
 
     /**
-     * \brief Set the node Life time (Neighbor Discovery).
-     * \param l life time
+     * @brief Set the node Life time (Neighbor Discovery).
+     * @param l life time
      */
     void SetLifeTime(uint16_t l);
 
     /**
-     * \brief Get the node Life time (Neighbor Discovery).
-     * \return life time
+     * @brief Get the node Life time (Neighbor Discovery).
+     * @return life time
      */
     uint16_t GetLifeTime() const;
 
     /**
-     * \brief Set the node Reachable time (Neighbor Discovery).
-     * \param r Reachable time
+     * @brief Set the node Reachable time (Neighbor Discovery).
+     * @param r Reachable time
      */
     void SetReachableTime(uint32_t r);
 
     /**
-     * \brief Get the node Reachable time (Neighbor Discovery).
-     * \return reachable time
+     * @brief Get the node Reachable time (Neighbor Discovery).
+     * @return reachable time
      */
     uint32_t GetReachableTime() const;
 
     /**
-     * \brief Set the node Retransmission time (Neighbor Discovery).
-     * \param r Retransmission time
+     * @brief Set the node Retransmission time (Neighbor Discovery).
+     * @param r Retransmission time
      */
     void SetRetransmissionTime(uint32_t r);
 
     /**
-     * \brief Get the node Retransmission time (Neighbor Discovery).
-     * \return retransmission time
+     * @brief Get the node Retransmission time (Neighbor Discovery).
+     * @return retransmission time
      */
     uint32_t GetRetransmissionTime() const;
 
     /**
-     * \brief Get the M flag.
-     * \return M flag
+     * @brief Get the M flag.
+     * @return M flag
      */
     bool GetFlagM() const;
 
     /**
-     * \brief Set the M flag.
-     * \param m value
+     * @brief Set the M flag.
+     * @param m value
      */
     void SetFlagM(bool m);
 
     /**
-     * \brief Get the O flag.
-     * \return O flag
+     * @brief Get the O flag.
+     * @return O flag
      */
     bool GetFlagO() const;
 
     /**
-     * \brief Set the O flag.
-     * \param o value
+     * @brief Set the O flag.
+     * @param o value
      */
     void SetFlagO(bool o);
 
     /**
-     * \brief Get the H flag.
-     * \return H flag
+     * @brief Get the H flag.
+     * @return H flag
      */
     bool GetFlagH() const;
 
     /**
-     * \brief Set the H flag.
-     * \param h value
+     * @brief Set the H flag.
+     * @param h value
      */
     void SetFlagH(bool h);
 
     /**
-     * \brief Print information.
-     * \param os output stream
+     * @brief Print information.
+     * @param os output stream
      */
     void Print(std::ostream& os) const override;
 
     /**
-     * \brief Get the serialized size.
-     * \return serialized size
+     * @brief Get the serialized size.
+     * @return serialized size
      */
     uint32_t GetSerializedSize() const override;
 
     /**
-     * \brief Serialize the packet.
-     * \param start start offset
+     * @brief Serialize the packet.
+     * @param start start offset
      */
     void Serialize(Buffer::Iterator start) const override;
 
     /**
-     * \brief Deserialize the packet.
-     * \param start start offset
-     * \return length of packet
+     * @brief Deserialize the packet.
+     * @param start start offset
+     * @return length of packet
      */
     uint32_t Deserialize(Buffer::Iterator start) override;
 
   private:
     /**
-     * \brief The M flag.
+     * @brief The M flag.
      */
     bool m_flagM;
 
     /**
-     * \brief The O flag.
+     * @brief The O flag.
      */
     bool m_flagO;
 
     /**
-     * \brief The H flag.
+     * @brief The H flag.
      */
     bool m_flagH;
 
     /**
-     * \brief The lifetime value.
+     * @brief The lifetime value.
      */
     uint16_t m_LifeTime;
 
     /**
-     * \brief The reachable time value.
+     * @brief The reachable time value.
      */
     uint32_t m_ReachableTime;
 
     /**
-     * \brief The retransmission timer.
+     * @brief The retransmission timer.
      */
     uint32_t m_RetransmissionTimer;
 
     /**
-     * \brief The max jumps.
+     * @brief The max jumps.
      */
     uint8_t m_curHopLimit;
 };
 
 /**
- * \ingroup icmpv6
+ * @ingroup icmpv6
  *
- * \brief ICMPv6 Router Solicitation header.
+ * @brief ICMPv6 Router Solicitation header.
  */
 class Icmpv6RS : public Icmpv6Header
 {
   public:
     /**
-     * \brief Constructor.
+     * @brief Constructor.
      */
     Icmpv6RS();
 
     /**
-     * \brief Destructor.
+     * @brief Destructor.
      */
     ~Icmpv6RS() override;
 
     /**
-     * \brief Get the UID of this class.
-     * \return UID
+     * @brief Get the UID of this class.
+     * @return UID
      */
     static TypeId GetTypeId();
 
     /**
-     * \brief Get the instance type ID.
-     * \return instance type ID
+     * @brief Get the instance type ID.
+     * @return instance type ID
      */
     TypeId GetInstanceTypeId() const override;
 
     /**
-     * \brief Get the reserved field.
-     * \return reserved value
+     * @brief Get the reserved field.
+     * @return reserved value
      */
     uint32_t GetReserved() const;
 
     /**
-     * \brief Set the reserved field.
-     * \param reserved the reserved value
+     * @brief Set the reserved field.
+     * @param reserved the reserved value
      */
     void SetReserved(uint32_t reserved);
 
     /**
-     * \brief Print information.
-     * \param os output stream
+     * @brief Print information.
+     * @param os output stream
      */
     void Print(std::ostream& os) const override;
 
     /**
-     * \brief Get the serialized size.
-     * \return serialized size
+     * @brief Get the serialized size.
+     * @return serialized size
      */
     uint32_t GetSerializedSize() const override;
 
     /**
-     * \brief Serialize the packet.
-     * \param start start offset
+     * @brief Serialize the packet.
+     * @param start start offset
      */
     void Serialize(Buffer::Iterator start) const override;
 
     /**
-     * \brief Deserialize the packet.
-     * \param start start offset
-     * \return length of packet
+     * @brief Deserialize the packet.
+     * @param start start offset
+     * @return length of packet
      */
     uint32_t Deserialize(Buffer::Iterator start) override;
 
   private:
     /**
-     * \brief The reserved value.
+     * @brief The reserved value.
      */
     uint32_t m_reserved;
 };
 
 /**
- * \ingroup icmpv6
+ * @ingroup icmpv6
  *
- * \brief ICMPv6 Redirection header.
+ * @brief ICMPv6 Redirection header.
  */
 class Icmpv6Redirection : public Icmpv6Header
 {
   public:
     /**
-     * \brief Constructor.
+     * @brief Constructor.
      */
     Icmpv6Redirection();
 
     /**
-     * \brief Destructor.
+     * @brief Destructor.
      */
     ~Icmpv6Redirection() override;
 
     /**
-     * \brief Get the UID of this class.
-     * \return UID
+     * @brief Get the UID of this class.
+     * @return UID
      */
     static TypeId GetTypeId();
 
     /**
-     * \brief Get the instance type ID.
-     * \return instance type ID
+     * @brief Get the instance type ID.
+     * @return instance type ID
      */
     TypeId GetInstanceTypeId() const override;
 
     /**
-     * \brief Get the IPv6 target address.
-     * \return the IPv6 target address
+     * @brief Get the IPv6 target address.
+     * @return the IPv6 target address
      */
     Ipv6Address GetTarget() const;
 
     /**
-     * \brief Set the IPv6 target address.
-     * \param target IPv6 target address
+     * @brief Set the IPv6 target address.
+     * @param target IPv6 target address
      */
     void SetTarget(Ipv6Address target);
 
     /**
-     * \brief Get the IPv6 destination address.
-     * \return the IPv6 destination address
+     * @brief Get the IPv6 destination address.
+     * @return the IPv6 destination address
      */
     Ipv6Address GetDestination() const;
 
     /**
-     * \brief Set the IPv6 destination address.
-     * \param destination IPv6 destination address
+     * @brief Set the IPv6 destination address.
+     * @param destination IPv6 destination address
      */
     void SetDestination(Ipv6Address destination);
 
     /**
-     * \brief Print information.
-     * \param os output stream
+     * @brief Print information.
+     * @param os output stream
      */
     void Print(std::ostream& os) const override;
 
     /**
-     * \brief Get the serialized size.
-     * \return serialized size
+     * @brief Get the serialized size.
+     * @return serialized size
      */
     uint32_t GetSerializedSize() const override;
 
     /**
-     * \brief Serialize the packet.
-     * \param start start offset
+     * @brief Serialize the packet.
+     * @param start start offset
      */
     void Serialize(Buffer::Iterator start) const override;
 
     /**
-     * \brief Deserialize the packet.
-     * \param start start offset
-     * \return length of packet
+     * @brief Deserialize the packet.
+     * @param start start offset
+     * @return length of packet
      */
     uint32_t Deserialize(Buffer::Iterator start) override;
 
     /**
-     * \brief Get the reserved field.
-     * \return reserved value
+     * @brief Get the reserved field.
+     * @return reserved value
      */
     uint32_t GetReserved() const;
 
     /**
-     * \brief Set the reserved field.
-     * \param reserved the reserved value
+     * @brief Set the reserved field.
+     * @param reserved the reserved value
      */
     void SetReserved(uint32_t reserved);
 
   private:
     /**
-     * \brief IPv6 target address.
+     * @brief IPv6 target address.
      */
     Ipv6Address m_target;
 
     /**
-     * \brief IPv6 destination address.
+     * @brief IPv6 destination address.
      */
     Ipv6Address m_destination;
 
     /**
-     * \brief Reserved value.
+     * @brief Reserved value.
      */
     uint32_t m_reserved;
 };
 
 /**
- * \ingroup icmpv6
+ * @ingroup icmpv6
  *
- * \brief ICMPv6 Echo message.
+ * @brief ICMPv6 Echo message.
  */
 class Icmpv6Echo : public Icmpv6Header
 {
   public:
     /**
-     * \brief Get the UID of this class.
-     * \return UID
+     * @brief Get the UID of this class.
+     * @return UID
      */
     static TypeId GetTypeId();
 
     /**
-     * \brief Get the instance type ID.
-     * \return instance type ID
+     * @brief Get the instance type ID.
+     * @return instance type ID
      */
     TypeId GetInstanceTypeId() const override;
 
     /**
-     * \brief Default constructor.
+     * @brief Default constructor.
      */
     Icmpv6Echo();
 
     /**
-     * \brief Constructor.
-     * \param request request or reply message
+     * @brief Constructor.
+     * @param request request or reply message
      */
     Icmpv6Echo(bool request);
 
     /**
-     * \brief Destructor.
+     * @brief Destructor.
      */
     ~Icmpv6Echo() override;
 
     /**
-     * \brief Get the ID of the packet.
-     * \return id
+     * @brief Get the ID of the packet.
+     * @return id
      */
     uint16_t GetId() const;
 
     /**
-     * \brief Set the ID of the packet.
-     * \param id id to set
+     * @brief Set the ID of the packet.
+     * @param id id to set
      */
     void SetId(uint16_t id);
 
     /**
-     * \brief Get the sequence number.
-     * \return sequence number
+     * @brief Get the sequence number.
+     * @return sequence number
      */
     uint16_t GetSeq() const;
 
     /**
-     * \brief Set the sequence number.
-     * \param seq sequence to set
+     * @brief Set the sequence number.
+     * @param seq sequence to set
      */
     void SetSeq(uint16_t seq);
 
     /**
-     * \brief Print information.
-     * \param os output stream
+     * @brief Print information.
+     * @param os output stream
      */
     void Print(std::ostream& os) const override;
 
     /**
-     * \brief Get the serialized size.
-     * \return serialized size
+     * @brief Get the serialized size.
+     * @return serialized size
      */
     uint32_t GetSerializedSize() const override;
 
     /**
-     * \brief Serialize the packet.
-     * \param start start offset
+     * @brief Serialize the packet.
+     * @param start start offset
      */
     void Serialize(Buffer::Iterator start) const override;
 
     /**
-     * \brief Deserialize the packet.
-     * \param start start offset
-     * \return length of packet
+     * @brief Deserialize the packet.
+     * @param start start offset
+     * @return length of packet
      */
     uint32_t Deserialize(Buffer::Iterator start) override;
 
   private:
     /**
-     * \brief ID of the packet (to distinguish response between many ping program).
+     * @brief ID of the packet (to distinguish response between many ping program).
      */
     uint16_t m_id;
 
     /**
-     * \brief Sequence number (to distinguish response).
+     * @brief Sequence number (to distinguish response).
      */
     uint16_t m_seq;
 };
 
 /**
- * \ingroup icmpv6
+ * @ingroup icmpv6
  *
- * \brief ICMPv6 Error Destination Unreachable header.
+ * @brief ICMPv6 Error Destination Unreachable header.
  */
 class Icmpv6DestinationUnreachable : public Icmpv6Header
 {
   public:
     /**
-     * \brief Constructor.
+     * @brief Constructor.
      */
     Icmpv6DestinationUnreachable();
 
     /**
-     * \brief Destructor.
+     * @brief Destructor.
      */
     ~Icmpv6DestinationUnreachable() override;
 
     /**
-     * \brief Get the UID of this class.
-     * \return UID
+     * @brief Get the UID of this class.
+     * @return UID
      */
     static TypeId GetTypeId();
 
     /**
-     * \brief Get the instance type ID.
-     * \return instance type ID
+     * @brief Get the instance type ID.
+     * @return instance type ID
      */
     TypeId GetInstanceTypeId() const override;
 
     /**
-     * \brief Set the incorrect packet.
-     * \param p the incorrect packet
+     * @brief Set the incorrect packet.
+     * @param p the incorrect packet
      */
     void SetPacket(Ptr<Packet> p);
 
     /**
-     * \brief Print information.
-     * \param os output stream
+     * @brief Print information.
+     * @param os output stream
      */
     void Print(std::ostream& os) const override;
 
     /**
-     * \brief Get the serialized size.
-     * \return serialized size
+     * @brief Get the serialized size.
+     * @return serialized size
      */
     uint32_t GetSerializedSize() const override;
 
     /**
-     * \brief Serialize the packet.
-     * \param start start offset
+     * @brief Serialize the packet.
+     * @param start start offset
      */
     void Serialize(Buffer::Iterator start) const override;
 
     /**
-     * \brief Deserialize the packet.
-     * \param start start offset
-     * \return length of packet
+     * @brief Deserialize the packet.
+     * @param start start offset
+     * @return length of packet
      */
     uint32_t Deserialize(Buffer::Iterator start) override;
 
   private:
     /**
-     * \brief The incorrect Packet.
+     * @brief The incorrect Packet.
      */
     Ptr<Packet> m_packet;
 };
 
 /**
- * \ingroup icmpv6
+ * @ingroup icmpv6
  *
- * \brief ICMPv6 Error Too Big header.
+ * @brief ICMPv6 Error Too Big header.
  */
 class Icmpv6TooBig : public Icmpv6Header
 {
   public:
     /**
-     * \brief Constructor.
+     * @brief Constructor.
      */
     Icmpv6TooBig();
 
     /**
-     * \brief Destructor.
+     * @brief Destructor.
      */
     ~Icmpv6TooBig() override;
 
     /**
-     * \brief Get the UID of this class.
-     * \return UID
+     * @brief Get the UID of this class.
+     * @return UID
      */
     static TypeId GetTypeId();
 
     /**
-     * \brief Get the instance type ID.
-     * \return instance type ID
+     * @brief Get the instance type ID.
+     * @return instance type ID
      */
     TypeId GetInstanceTypeId() const override;
 
     /**
-     * \brief Set the incorrect packet.
-     * \param p the incorrect packet
+     * @brief Set the incorrect packet.
+     * @param p the incorrect packet
      */
     void SetPacket(Ptr<Packet> p);
 
     /**
-     * \brief Get the MTU field.
-     * \return MTU value
+     * @brief Get the MTU field.
+     * @return MTU value
      */
     uint32_t GetMtu() const;
 
     /**
-     * \brief Set the MTU.
-     * \param mtu the MTU
+     * @brief Set the MTU.
+     * @param mtu the MTU
      */
     void SetMtu(uint32_t mtu);
 
     /**
-     * \brief Print information.
-     * \param os output stream
+     * @brief Print information.
+     * @param os output stream
      */
     void Print(std::ostream& os) const override;
 
     /**
-     * \brief Get the serialized size.
-     * \return serialized size
+     * @brief Get the serialized size.
+     * @return serialized size
      */
     uint32_t GetSerializedSize() const override;
 
     /**
-     * \brief Serialize the packet.
-     * \param start start offset
+     * @brief Serialize the packet.
+     * @param start start offset
      */
     void Serialize(Buffer::Iterator start) const override;
 
     /**
-     * \brief Deserialize the packet.
-     * \param start start offset
-     * \return length of packet
+     * @brief Deserialize the packet.
+     * @param start start offset
+     * @return length of packet
      */
     uint32_t Deserialize(Buffer::Iterator start) override;
 
   private:
     /**
-     * \brief the incorrect packet.
+     * @brief the incorrect packet.
      */
     Ptr<Packet> m_packet;
 
     /**
-     * \brief The MTU value.
+     * @brief The MTU value.
      */
     uint32_t m_mtu;
 };
 
 /**
- * \ingroup icmpv6
+ * @ingroup icmpv6
  *
- * \brief ICMPv6 Error Time Exceeded header.
+ * @brief ICMPv6 Error Time Exceeded header.
  */
 class Icmpv6TimeExceeded : public Icmpv6Header
 {
   public:
     /**
-     * \brief Constructor.
+     * @brief Constructor.
      */
     Icmpv6TimeExceeded();
 
     /**
-     * \brief Destructor.
+     * @brief Destructor.
      */
     ~Icmpv6TimeExceeded() override;
 
     /**
-     * \brief Get the UID of this class.
-     * \return UID
+     * @brief Get the UID of this class.
+     * @return UID
      */
     static TypeId GetTypeId();
 
     /**
-     * \brief Get the instance type ID.
-     * \return instance type ID
+     * @brief Get the instance type ID.
+     * @return instance type ID
      */
     TypeId GetInstanceTypeId() const override;
 
     /**
-     * \brief Set the incorrect packet.
-     * \param p the incorrect packet
+     * @brief Set the incorrect packet.
+     * @param p the incorrect packet
      */
     void SetPacket(Ptr<Packet> p);
 
     /**
-     * \brief Print information.
-     * \param os output stream
+     * @brief Print information.
+     * @param os output stream
      */
     void Print(std::ostream& os) const override;
 
     /**
-     * \brief Get the serialized size.
-     * \return serialized size
+     * @brief Get the serialized size.
+     * @return serialized size
      */
     uint32_t GetSerializedSize() const override;
 
     /**
-     * \brief Serialize the packet.
-     * \param start start offset
+     * @brief Serialize the packet.
+     * @param start start offset
      */
     void Serialize(Buffer::Iterator start) const override;
 
     /**
-     * \brief Deserialize the packet.
-     * \param start start offset
-     * \return length of packet
+     * @brief Deserialize the packet.
+     * @param start start offset
+     * @return length of packet
      */
     uint32_t Deserialize(Buffer::Iterator start) override;
 
   private:
     /**
-     * \brief The incorrect packet.
+     * @brief The incorrect packet.
      */
     Ptr<Packet> m_packet;
 };
 
 /**
- * \ingroup icmpv6
+ * @ingroup icmpv6
  *
- * \brief ICMPv6 Error Parameter Error header.
+ * @brief ICMPv6 Error Parameter Error header.
  */
 class Icmpv6ParameterError : public Icmpv6Header
 {
   public:
     /**
-     * \brief Constructor.
+     * @brief Constructor.
      */
     Icmpv6ParameterError();
 
     /**
-     * \brief Destructor.
+     * @brief Destructor.
      */
     ~Icmpv6ParameterError() override;
 
     /**
-     * \brief Get the UID of this class.
-     * \return UID
+     * @brief Get the UID of this class.
+     * @return UID
      */
     static TypeId GetTypeId();
 
     /**
-     * \brief Get the instance type ID.
-     * \return instance type ID
+     * @brief Get the instance type ID.
+     * @return instance type ID
      */
     TypeId GetInstanceTypeId() const override;
 
     /**
-     * \brief Set the incorrect packet.
-     * \param p the incorrect packet
+     * @brief Set the incorrect packet.
+     * @param p the incorrect packet
      */
     void SetPacket(Ptr<Packet> p);
 
     /**
-     * \brief Get the pointer field.
-     * \return pointer value
+     * @brief Get the pointer field.
+     * @return pointer value
      */
     uint32_t GetPtr() const;
 
     /**
-     * \brief Set the pointer field.
-     * \param ptr byte where the error is located in the incorrect packet
+     * @brief Set the pointer field.
+     * @param ptr byte where the error is located in the incorrect packet
      */
     void SetPtr(uint32_t ptr);
 
     /**
-     * \brief Print information.
-     * \param os output stream
+     * @brief Print information.
+     * @param os output stream
      */
     void Print(std::ostream& os) const override;
 
     /**
-     * \brief Get the serialized size.
-     * \return serialized size
+     * @brief Get the serialized size.
+     * @return serialized size
      */
     uint32_t GetSerializedSize() const override;
 
     /**
-     * \brief Serialize the packet.
-     * \param start start offset
+     * @brief Serialize the packet.
+     * @param start start offset
      */
     void Serialize(Buffer::Iterator start) const override;
 
     /**
-     * \brief Deserialize the packet.
-     * \param start start offset
-     * \return length of packet
+     * @brief Deserialize the packet.
+     * @param start start offset
+     * @return length of packet
      */
     uint32_t Deserialize(Buffer::Iterator start) override;
 
   private:
     /**
-     * \brief The incorrect packet.
+     * @brief The incorrect packet.
      */
     Ptr<Packet> m_packet;
 
     /**
-     * \brief The pointer field.
+     * @brief The pointer field.
      */
     uint32_t m_ptr;
 };
 
 /**
- * \ingroup icmpv6
+ * @ingroup icmpv6
  *
- * \brief ICMPv6 MTU option.
+ * @brief ICMPv6 MTU option.
  */
 class Icmpv6OptionMtu : public Icmpv6OptionHeader
 {
   public:
     /**
-     * \brief Constructor.
+     * @brief Constructor.
      */
     Icmpv6OptionMtu();
 
     /**
-     * \brief Constructor.
-     * \param mtu MTU used.
+     * @brief Constructor.
+     * @param mtu MTU used.
      */
     Icmpv6OptionMtu(uint32_t mtu);
 
     /**
-     * \brief Destructor.
+     * @brief Destructor.
      */
     ~Icmpv6OptionMtu() override;
 
     /**
-     * \brief Get the UID of this class.
-     * \return UID
+     * @brief Get the UID of this class.
+     * @return UID
      */
     static TypeId GetTypeId();
 
     /**
-     * \brief Get the instance type ID.
-     * \return instance type ID
+     * @brief Get the instance type ID.
+     * @return instance type ID
      */
     TypeId GetInstanceTypeId() const override;
 
     /**
-     * \brief Get the reserved field.
-     * \return the reserved value
+     * @brief Get the reserved field.
+     * @return the reserved value
      */
     uint16_t GetReserved() const;
 
     /**
-     * \brief Set the reserved field.
-     * \param reserved the reserved value
+     * @brief Set the reserved field.
+     * @param reserved the reserved value
      */
     void SetReserved(uint16_t reserved);
 
     /**
-     * \brief Get the MTU.
-     * \return the MTU value
+     * @brief Get the MTU.
+     * @return the MTU value
      */
     uint32_t GetMtu() const;
 
     /**
-     * \brief Set the MTU.
-     * \param mtu the MTU to set
+     * @brief Set the MTU.
+     * @param mtu the MTU to set
      */
     void SetMtu(uint32_t mtu);
 
     /**
-     * \brief Print information.
-     * \param os output stream
+     * @brief Print information.
+     * @param os output stream
      */
     void Print(std::ostream& os) const override;
 
     /**
-     * \brief Get the serialized size.
-     * \return serialized size
+     * @brief Get the serialized size.
+     * @return serialized size
      */
     uint32_t GetSerializedSize() const override;
 
     /**
-     * \brief Serialize the packet.
-     * \param start start offset
+     * @brief Serialize the packet.
+     * @param start start offset
      */
     void Serialize(Buffer::Iterator start) const override;
 
     /**
-     * \brief Deserialize the packet.
-     * \param start start offset
-     * \return length of packet
+     * @brief Deserialize the packet.
+     * @param start start offset
+     * @return length of packet
      */
     uint32_t Deserialize(Buffer::Iterator start) override;
 
   private:
     /**
-     * \brief The reserved value
+     * @brief The reserved value
      */
     uint16_t m_reserved;
 
     /**
-     * \brief The MTU value.
+     * @brief The MTU value.
      */
     uint32_t m_mtu;
 };
 
 /**
- * \ingroup icmpv6
+ * @ingroup icmpv6
  *
- * \brief ICMPv6 Option Prefix Information.
+ * @brief ICMPv6 Option Prefix Information.
  */
 class Icmpv6OptionPrefixInformation : public Icmpv6OptionHeader
 {
   public:
     /**
-     * \brief Constructor.
+     * @brief Constructor.
      */
     Icmpv6OptionPrefixInformation();
 
     /**
-     * \brief Constructor.
-     * \param network prefix
-     * \param prefixlen prefix length
+     * @brief Constructor.
+     * @param network prefix
+     * @param prefixlen prefix length
      */
     Icmpv6OptionPrefixInformation(Ipv6Address network, uint8_t prefixlen);
 
     /**
-     * \brief Destructor.
+     * @brief Destructor.
      */
     ~Icmpv6OptionPrefixInformation() override;
 
     /**
-     * \brief Get the UID of this class.
-     * \return UID
+     * @brief Get the UID of this class.
+     * @return UID
      */
     static TypeId GetTypeId();
 
     /**
-     * \brief Get the instance type ID.
-     * \return instance type ID
+     * @brief Get the instance type ID.
+     * @return instance type ID
      */
     TypeId GetInstanceTypeId() const override;
 
     /**
-     * \brief Icmpv6 Option Prefix Information flag field values
+     * @brief Icmpv6 Option Prefix Information flag field values
      */
     enum Flags_t
     {
@@ -1458,285 +1458,285 @@ class Icmpv6OptionPrefixInformation : public Icmpv6OptionHeader
     };
 
     /**
-     * \brief Get the prefix length.
-     * \return prefix length
+     * @brief Get the prefix length.
+     * @return prefix length
      */
     uint8_t GetPrefixLength() const;
 
     /**
-     * \brief Set the prefix length.
-     * \param prefixLength the prefix length
+     * @brief Set the prefix length.
+     * @param prefixLength the prefix length
      */
     void SetPrefixLength(uint8_t prefixLength);
 
     /**
-     * \brief Get the flags.
-     * \return the flags.
+     * @brief Get the flags.
+     * @return the flags.
      */
     uint8_t GetFlags() const;
 
     /**
-     * \brief Set the flags.
-     * \param flags the flags to set
+     * @brief Set the flags.
+     * @param flags the flags to set
      */
     void SetFlags(uint8_t flags);
 
     /**
-     * \brief Get the valid time of the information.
-     * \return valid time
+     * @brief Get the valid time of the information.
+     * @return valid time
      */
     uint32_t GetValidTime() const;
 
     /**
-     * \brief Set the valid time of the information.
-     * \param validTime valid time
+     * @brief Set the valid time of the information.
+     * @param validTime valid time
      */
     void SetValidTime(uint32_t validTime);
 
     /**
-     * \brief Get the preferred time of the information.
-     * \return preferred time
+     * @brief Get the preferred time of the information.
+     * @return preferred time
      */
     uint32_t GetPreferredTime() const;
 
     /**
-     * \brief Set the preferred time of the information.
-     * \param preferredTime preferred time
+     * @brief Set the preferred time of the information.
+     * @param preferredTime preferred time
      */
     void SetPreferredTime(uint32_t preferredTime);
 
     /**
-     * \brief Get the reserved field.
-     * \return the reserved field (should be 0x00000000)
+     * @brief Get the reserved field.
+     * @return the reserved field (should be 0x00000000)
      */
     uint32_t GetReserved() const;
 
     /**
-     * \brief Set the reserved field (normally it will be 0x00000000).
-     * \param reserved reserved value
+     * @brief Set the reserved field (normally it will be 0x00000000).
+     * @param reserved reserved value
      */
     void SetReserved(uint32_t reserved);
 
     /**
-     * \brief Get the IPv6 prefix.
-     * \return IPv6 prefix
+     * @brief Get the IPv6 prefix.
+     * @return IPv6 prefix
      */
     Ipv6Address GetPrefix() const;
 
     /**
-     * \brief Set the IPv6 prefix.
-     * \param prefix the IPv6 prefix
+     * @brief Set the IPv6 prefix.
+     * @param prefix the IPv6 prefix
      */
     void SetPrefix(Ipv6Address prefix);
 
     /**
-     * \brief Print information.
-     * \param os output stream
+     * @brief Print information.
+     * @param os output stream
      */
     void Print(std::ostream& os) const override;
 
     /**
-     * \brief Get the serialized size.
-     * \return serialized size
+     * @brief Get the serialized size.
+     * @return serialized size
      */
     uint32_t GetSerializedSize() const override;
 
     /**
-     * \brief Serialize the packet.
-     * \param start start offset
+     * @brief Serialize the packet.
+     * @param start start offset
      */
     void Serialize(Buffer::Iterator start) const override;
 
     /**
-     * \brief Deserialize the packet.
-     * \param start start offset
-     * \return length of packet
+     * @brief Deserialize the packet.
+     * @param start start offset
+     * @return length of packet
      */
     uint32_t Deserialize(Buffer::Iterator start) override;
 
   private:
     /**
-     * \brief The prefix value.
+     * @brief The prefix value.
      */
     Ipv6Address m_prefix;
 
     /**
-     * \brief The length of the prefix.
+     * @brief The length of the prefix.
      */
     uint8_t m_prefixLength;
 
     /**
-     * \brief The flags.
+     * @brief The flags.
      */
     uint8_t m_flags;
 
     /**
-     * \brief The valid time.
+     * @brief The valid time.
      */
     uint32_t m_validTime;
 
     /**
-     * \brief The preferred time.
+     * @brief The preferred time.
      */
     uint32_t m_preferredTime;
 
     /**
-     * \brief The reserved field.
+     * @brief The reserved field.
      */
     uint32_t m_reserved;
 };
 
 /**
- * \ingroup icmpv6
+ * @ingroup icmpv6
  *
- * \brief ICMPv6 link-layer address option.
+ * @brief ICMPv6 link-layer address option.
  */
 class Icmpv6OptionLinkLayerAddress : public Icmpv6OptionHeader
 {
   public:
     /**
-     * \brief Constructor.
-     * \param source source hardware address or target hardware address for the option
+     * @brief Constructor.
+     * @param source source hardware address or target hardware address for the option
      */
     Icmpv6OptionLinkLayerAddress(bool source);
 
     /**
-     * \brief Get the UID of this class.
-     * \return UID
+     * @brief Get the UID of this class.
+     * @return UID
      */
     static TypeId GetTypeId();
 
     /**
-     * \brief Get the instance type ID.
-     * \return instance type ID
+     * @brief Get the instance type ID.
+     * @return instance type ID
      */
     TypeId GetInstanceTypeId() const override;
 
     /**
-     * \brief Constructor.
-     * \param source source hardware address or target hardware address for the option
-     * \param addr hardware address
+     * @brief Constructor.
+     * @param source source hardware address or target hardware address for the option
+     * @param addr hardware address
      */
     Icmpv6OptionLinkLayerAddress(bool source, Address addr);
 
     /**
-     * \brief Constructor.
+     * @brief Constructor.
      */
     Icmpv6OptionLinkLayerAddress();
 
     /**
-     * \brief Destructor.
+     * @brief Destructor.
      */
     ~Icmpv6OptionLinkLayerAddress() override;
 
     /**
-     * \brief Get the hardware address.
-     * \return the hardware address
+     * @brief Get the hardware address.
+     * @return the hardware address
      */
     Address GetAddress() const;
 
     /**
-     * \brief Set the hardware address.
-     * \param addr the address to set
+     * @brief Set the hardware address.
+     * @param addr the address to set
      */
     void SetAddress(Address addr);
 
     /**
-     * \brief Print information.
-     * \param os output stream
+     * @brief Print information.
+     * @param os output stream
      */
     void Print(std::ostream& os) const override;
 
     /**
-     * \brief Get the serialized size.
-     * \return serialized size
+     * @brief Get the serialized size.
+     * @return serialized size
      */
     uint32_t GetSerializedSize() const override;
 
     /**
-     * \brief Serialize the packet.
-     * \param start start offset
+     * @brief Serialize the packet.
+     * @param start start offset
      */
     void Serialize(Buffer::Iterator start) const override;
 
     /**
-     * \brief Deserialize the packet.
-     * \param start start offset
-     * \return length of packet
+     * @brief Deserialize the packet.
+     * @param start start offset
+     * @return length of packet
      */
     uint32_t Deserialize(Buffer::Iterator start) override;
 
   private:
     /**
-     * \brief The hardware address.
+     * @brief The hardware address.
      */
     Address m_addr;
 };
 
 /**
- * \ingroup icmpv6
+ * @ingroup icmpv6
  *
- * \brief ICMPv6 redirected option.
+ * @brief ICMPv6 redirected option.
  */
 class Icmpv6OptionRedirected : public Icmpv6OptionHeader
 {
   public:
     /**
-     * \brief Get the UID of this class.
-     * \return UID
+     * @brief Get the UID of this class.
+     * @return UID
      */
     static TypeId GetTypeId();
 
     /**
-     * \brief Get the instance type ID.
-     * \return instance type ID
+     * @brief Get the instance type ID.
+     * @return instance type ID
      */
     TypeId GetInstanceTypeId() const override;
 
     /**
-     * \brief Constructor.
+     * @brief Constructor.
      */
     Icmpv6OptionRedirected();
 
     /**
-     * \brief Destructor.
+     * @brief Destructor.
      */
     ~Icmpv6OptionRedirected() override;
 
     /**
-     * \brief Set the redirected packet.
-     * \param packet the redirected packet
+     * @brief Set the redirected packet.
+     * @param packet the redirected packet
      */
     void SetPacket(Ptr<Packet> packet);
 
     /**
-     * \brief Print information.
-     * \param os output stream
+     * @brief Print information.
+     * @param os output stream
      */
     void Print(std::ostream& os) const override;
 
     /**
-     * \brief Get the serialized size.
-     * \return serialized size
+     * @brief Get the serialized size.
+     * @return serialized size
      */
     uint32_t GetSerializedSize() const override;
 
     /**
-     * \brief Serialize the packet.
-     * \param start start offset
+     * @brief Serialize the packet.
+     * @param start start offset
      */
     void Serialize(Buffer::Iterator start) const override;
 
     /**
-     * \brief Deserialize the packet.
-     * \param start start offset
-     * \return length of packet
+     * @brief Deserialize the packet.
+     * @param start start offset
+     * @return length of packet
      */
     uint32_t Deserialize(Buffer::Iterator start) override;
 
   private:
     /**
-     * \brief The redirected packet.
+     * @brief The redirected packet.
      */
     Ptr<Packet> m_packet;
 };

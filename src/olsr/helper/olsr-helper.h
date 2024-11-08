@@ -20,9 +20,9 @@ namespace ns3
 {
 
 /**
- * \ingroup olsr
+ * @ingroup olsr
  *
- * \brief Helper class that adds OLSR routing to nodes.
+ * @brief Helper class that adds OLSR routing to nodes.
  *
  * This class is expected to be used in conjunction with
  * ns3::InternetStackHelper::SetRoutingHelper
@@ -37,10 +37,10 @@ class OlsrHelper : public Ipv4RoutingHelper
     OlsrHelper();
 
     /**
-     * \brief Construct an OlsrHelper from another previously initialized instance
+     * @brief Construct an OlsrHelper from another previously initialized instance
      * (Copy Constructor).
      *
-     * \param o object to copy
+     * @param o object to copy
      */
     OlsrHelper(const OlsrHelper& o);
 
@@ -48,7 +48,7 @@ class OlsrHelper : public Ipv4RoutingHelper
     OlsrHelper& operator=(const OlsrHelper&) = delete;
 
     /**
-     * \returns pointer to clone of this OlsrHelper
+     * @returns pointer to clone of this OlsrHelper
      *
      * This method is mainly for internal use by the other helpers;
      * clients are expected to free the dynamic memory allocated by this method
@@ -56,24 +56,24 @@ class OlsrHelper : public Ipv4RoutingHelper
     OlsrHelper* Copy() const override;
 
     /**
-     * \param node the node for which an exception is to be defined
-     * \param interface an interface of node on which OLSR is not to be installed
+     * @param node the node for which an exception is to be defined
+     * @param interface an interface of node on which OLSR is not to be installed
      *
      * This method allows the user to specify an interface on which OLSR is not to be installed on
      */
     void ExcludeInterface(Ptr<Node> node, uint32_t interface);
 
     /**
-     * \param node the node on which the routing protocol will run
-     * \returns a newly-created routing protocol
+     * @param node the node on which the routing protocol will run
+     * @returns a newly-created routing protocol
      *
      * This method will be called by ns3::InternetStackHelper::Install
      */
     Ptr<Ipv4RoutingProtocol> Create(Ptr<Node> node) const override;
 
     /**
-     * \param name the name of the attribute to set
-     * \param value the value of the attribute to set.
+     * @param name the name of the attribute to set
+     * @param value the value of the attribute to set.
      *
      * This method controls the attributes of ns3::olsr::RoutingProtocol
      */
@@ -85,10 +85,10 @@ class OlsrHelper : public Ipv4RoutingHelper
      * have been assigned.  The Install() method of the InternetStackHelper
      * should have previously been called by the user.
      *
-     * \param stream first stream index to use
-     * \param c NodeContainer of the set of nodes for which the OlsrRoutingProtocol
+     * @param stream first stream index to use
+     * @param c NodeContainer of the set of nodes for which the OlsrRoutingProtocol
      *          should be modified to use a fixed stream
-     * \return the number of stream indices assigned by this helper
+     * @return the number of stream indices assigned by this helper
      */
     int64_t AssignStreams(NodeContainer c, int64_t stream);
 

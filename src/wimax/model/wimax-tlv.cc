@@ -157,15 +157,15 @@ Tlv::Deserialize(Buffer::Iterator i)
     switch (m_type)
     {
     case HMAC_TUPLE:
-        /// \todo implement Deserialize HMAC_TUPLE
+        /// @todo implement Deserialize HMAC_TUPLE
         NS_FATAL_ERROR("Not implemented-- please implement and contribute a patch");
         break;
     case MAC_VERSION_ENCODING:
-        /// \todo implement Deserialize MAC_VERSION_ENCODING
+        /// @todo implement Deserialize MAC_VERSION_ENCODING
         NS_FATAL_ERROR("Not implemented-- please implement and contribute a patch");
         break;
     case CURRENT_TRANSMIT_POWER:
-        /// \todo implement Deserialize CURRENT_TRANSMIT_POWER
+        /// @todo implement Deserialize CURRENT_TRANSMIT_POWER
         NS_FATAL_ERROR("Not implemented-- please implement and contribute a patch");
         break;
     case DOWNLINK_SERVICE_FLOW: {
@@ -181,11 +181,11 @@ Tlv::Deserialize(Buffer::Iterator i)
         break;
     }
     case VENDOR_ID_EMCODING:
-        /// \todo implement Deserialize VENDOR_ID_EMCODING
+        /// @todo implement Deserialize VENDOR_ID_EMCODING
         NS_FATAL_ERROR("Not implemented-- please implement and contribute a patch");
         break;
     case VENDOR_SPECIFIC_INFORMATION:
-        /// \todo implement Deserialize  VENDOR_SPECIFIC_INFORMATION
+        /// @todo implement Deserialize  VENDOR_SPECIFIC_INFORMATION
         NS_FATAL_ERROR("Not implemented-- please implement and contribute a patch");
         break;
     default:

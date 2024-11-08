@@ -17,7 +17,7 @@ namespace ns3
 {
 
 /**
- * \ingroup uan
+ * @ingroup uan
  *
  * Half duplex implementation of transducer object
  *
@@ -34,7 +34,7 @@ class UanTransducerHd : public UanTransducer
 
     /**
      * Register this type.
-     * \return The object TypeId.
+     * @return The object TypeId.
      */
     static TypeId GetTypeId();
 
@@ -67,7 +67,7 @@ class UanTransducerHd : public UanTransducer
     /**
      * Remove an entry from the arrival list.
      *
-     * \param arrival The packet arrival to remove.
+     * @param arrival The packet arrival to remove.
      */
     void RemoveArrival(UanPacketArrival arrival);
     /** Handle end of transmission event. */

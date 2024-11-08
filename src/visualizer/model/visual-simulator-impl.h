@@ -15,15 +15,15 @@ namespace ns3
 {
 
 /**
- * \defgroup  visualizer Visualizer
+ * @defgroup  visualizer Visualizer
  *
  */
 
 /**
- * \ingroup visualizer
- * \ingroup simulator
+ * @ingroup visualizer
+ * @ingroup simulator
  *
- * \brief A replacement simulator that starts the visualizer
+ * @brief A replacement simulator that starts the visualizer
  *
  * To use this class, run any ns-3 simulation with the command-line
  * argument --SimulatorImplementationType=ns3::VisualSimulatorImpl.
@@ -33,8 +33,8 @@ class VisualSimulatorImpl : public SimulatorImpl
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 

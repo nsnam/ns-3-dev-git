@@ -19,8 +19,8 @@ namespace ns3
 namespace dot11s
 {
 /**
- * \ingroup dot11s
- * \brief See 7.3.2.98 of 802.11s draft 2.07
+ * @ingroup dot11s
+ * @brief See 7.3.2.98 of 802.11s draft 2.07
  */
 class IePerr : public WifiInformationElement
 {
@@ -29,27 +29,27 @@ class IePerr : public WifiInformationElement
     ~IePerr() override;
     /**
      * Get number of destination function
-     * \returns the number of destinations
+     * @returns the number of destinations
      */
     uint8_t GetNumOfDest() const;
     /**
      * Add address unit function
-     * \param unit the address of the failed destination
+     * @param unit the address of the failed destination
      */
     void AddAddressUnit(HwmpProtocol::FailedDestination unit);
     /**
      * Is full function
-     * \returns true if full
+     * @returns true if full
      */
     bool IsFull() const;
     /**
      * Get address unit vector function
-     * \returns the list of failed destinations
+     * @returns the list of failed destinations
      */
     std::vector<HwmpProtocol::FailedDestination> GetAddressUnitVector() const;
     /**
      * Delete address unit function
-     * \param address the MAC address of the deleted unit
+     * @param address the MAC address of the deleted unit
      */
     void DeleteAddressUnit(Mac48Address address);
     /// Reset PERR
@@ -67,9 +67,9 @@ class IePerr : public WifiInformationElement
     /**
      * equality operator
      *
-     * \param a lhs
-     * \param b rhs
-     * \returns true if equal
+     * @param a lhs
+     * @param b rhs
+     * @returns true if equal
      */
     friend bool operator==(const IePerr& a, const IePerr& b);
 };

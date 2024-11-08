@@ -18,9 +18,9 @@ NS_LOG_COMPONENT_DEFINE("TcpPktsAckedTestSuite");
 class DummyCongControl;
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief Check the number of times that PktsAcked is called
+ * @brief Check the number of times that PktsAcked is called
  *
  * Set a custom congestion control class, which calls PktsAckedCalled
  * each time the TCP implementation calls PktsAcked.
@@ -29,21 +29,21 @@ class DummyCongControl;
  * by segment size should be the same as the number of segments passed through
  * PktsAcked in the congestion control.
  *
- * \see DummyCongControl
- * \see FinalChecks
+ * @see DummyCongControl
+ * @see FinalChecks
  */
 class TcpPktsAckedOpenTest : public TcpGeneralTest
 {
   public:
     /**
-     * \brief Constructor.
-     * \param desc Test description.
+     * @brief Constructor.
+     * @param desc Test description.
      */
     TcpPktsAckedOpenTest(const std::string& desc);
 
     /**
-     * \brief Called when an ACK is received.
-     * \param segmentsAcked The segment ACKed.
+     * @brief Called when an ACK is received.
+     * @param segmentsAcked The segment ACKed.
      */
     void PktsAckedCalled(uint32_t segmentsAcked);
 
@@ -63,17 +63,17 @@ class TcpPktsAckedOpenTest : public TcpGeneralTest
 };
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief Behaves as NewReno, except that each time PktsAcked is called,
+ * @brief Behaves as NewReno, except that each time PktsAcked is called,
  * a notification is sent to TcpPktsAckedOpenTest.
  */
 class DummyCongControl : public TcpNewReno
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -82,8 +82,8 @@ class DummyCongControl : public TcpNewReno
     }
 
     /**
-     * \brief Set the callback to be used when an ACK is received.
-     * \param test The callback.
+     * @brief Set the callback to be used when an ACK is received.
+     * @param test The callback.
      */
     void SetCallback(Callback<void, uint32_t> test)
     {
@@ -159,9 +159,9 @@ TcpPktsAckedOpenTest::FinalChecks()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief PktsAcked is calls TestSuite.
+ * @brief PktsAcked is calls TestSuite.
  */
 class TcpPktsAckedTestSuite : public TestSuite
 {

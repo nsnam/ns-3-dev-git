@@ -20,8 +20,8 @@
 #include <utility>
 
 /**
- * \file
- * \ingroup scheduler
+ * @file
+ * @ingroup scheduler
  * ns3::CalendarScheduler class implementation.
  */
 

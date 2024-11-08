@@ -33,14 +33,14 @@ class LteInterference : public Object
     ~LteInterference() override;
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     void DoDispose() override;
 
     /**
-     * \brief Add a LteChunkProcessor that will use the time-vs-frequency SINR
+     * @brief Add a LteChunkProcessor that will use the time-vs-frequency SINR
      * calculated by this LteInterference instance. Note that all the
      * added LteChunkProcessors will work in parallel.
      *
@@ -49,7 +49,7 @@ class LteInterference : public Object
     virtual void AddSinrChunkProcessor(Ptr<LteChunkProcessor> p);
 
     /**
-     * \brief Add a LteChunkProcessor that will use the time-vs-frequency
+     * @brief Add a LteChunkProcessor that will use the time-vs-frequency
      * interference calculated by this LteInterference instance. Note
      * that all the added LteChunkProcessors will work in parallel.
      *
@@ -67,7 +67,7 @@ class LteInterference : public Object
     virtual void AddRsPowerChunkProcessor(Ptr<LteChunkProcessor> p);
 
     /**
-     * \brief Notify that the PHY is starting a RX attempt
+     * @brief Notify that the PHY is starting a RX attempt
      *
      * @param rxPsd the power spectral density of the signal being RX
      */

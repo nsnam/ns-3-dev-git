@@ -14,8 +14,8 @@
 #include "ptr.h"
 
 /**
- * \file
- * \ingroup attribute_ObjectMap
+ * @file
+ * @ingroup attribute_ObjectMap
  * ns3::ObjectMap attribute value declarations and template implementations.
  */
 
@@ -23,15 +23,15 @@ namespace ns3
 {
 
 /**
- * \ingroup attribute_ObjectMap
+ * @ingroup attribute_ObjectMap
  * ObjectMapValue is an alias for ObjectPtrContainerValue
  */
 typedef ObjectPtrContainerValue ObjectMapValue;
 
 /**
- * \ingroup attribute_ObjectMap
+ * @ingroup attribute_ObjectMap
  * MakeAccessorHelper implementation for ObjectVector.
- * \copydetails ns3::DoMakeAccessorHelperOne(U T::*)
+ * @copydetails ns3::DoMakeAccessorHelperOne(U T::*)
  */
 template <typename T, typename U>
 Ptr<const AttributeAccessor> MakeObjectMapAccessor(U T::*memberVariable);
@@ -41,16 +41,16 @@ template <typename T>
 Ptr<const AttributeChecker> MakeObjectMapChecker();
 
 /**
- * \ingroup attribute_ObjectMap
- * \copydoc ns3::MakeObjectPtrContainerAccessor()
+ * @ingroup attribute_ObjectMap
+ * @copydoc ns3::MakeObjectPtrContainerAccessor()
  */
 template <typename T, typename U, typename INDEX>
 Ptr<const AttributeAccessor> MakeObjectMapAccessor(Ptr<U> (T::*get)(INDEX) const,
                                                    INDEX (T::*getN)() const);
 
 /**
- * \ingroup attribute_ObjectMap
- * \copydoc ns3::MakeObjectPtrContainerAccessor()
+ * @ingroup attribute_ObjectMap
+ * @copydoc ns3::MakeObjectPtrContainerAccessor()
  */
 template <typename T, typename U, typename INDEX>
 Ptr<const AttributeAccessor> MakeObjectMapAccessor(INDEX (T::*getN)() const,

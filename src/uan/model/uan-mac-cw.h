@@ -22,7 +22,7 @@ namespace ns3
 {
 
 /**
- * \ingroup uan
+ * @ingroup uan
  *
  * CW-MAC protocol, similar in idea to the 802.11 DCF with
  * constant backoff window
@@ -42,32 +42,32 @@ class UanMacCw : public UanMac, public UanPhyListener
     ~UanMacCw() override;
     /**
      * Register this type.
-     * \return The TypeId.
+     * @return The TypeId.
      */
     static TypeId GetTypeId();
 
     /**
      * Set the contention window size.
      *
-     * \param cw Contention window size.
+     * @param cw Contention window size.
      */
     virtual void SetCw(uint32_t cw);
     /**
      * Set the slot time duration.
      *
-     * \param duration Slot time duration.
+     * @param duration Slot time duration.
      */
     virtual void SetSlotTime(Time duration);
     /**
      * Get the contention window size.
      *
-     * \return Contention window size.
+     * @return Contention window size.
      */
     virtual uint32_t GetCw();
     /**
      * Get the slot time duration.
      *
-     * \return Slot time duration.
+     * @return Slot time duration.
      */
     virtual Time GetSlotTime();
 
@@ -90,8 +90,8 @@ class UanMacCw : public UanMac, public UanPhyListener
     /**
      *  TracedCallback signature for enqueue/dequeue of a packet.
      *
-     * \param [in] packet The Packet being received.
-     * \param [in] proto The protocol number.
+     * @param [in] packet The Packet being received.
+     * @param [in] proto The protocol number.
      */
     typedef void (*QueueTracedCallback)(Ptr<const Packet> packet, uint16_t proto);
 
@@ -145,16 +145,16 @@ class UanMacCw : public UanMac, public UanPhyListener
     /**
      * Receive packet from lower layer (passed to PHY as callback).
      *
-     * \param packet Packet being received.
-     * \param sinr SINR of received packet.
-     * \param mode Mode of received packet.
+     * @param packet Packet being received.
+     * @param sinr SINR of received packet.
+     * @param mode Mode of received packet.
      */
     void PhyRxPacketGood(Ptr<Packet> packet, double sinr, UanTxMode mode);
     /**
      * Packet received at lower layer in error.
      *
-     * \param packet Packet received in error.
-     * \param sinr SINR of received packet.
+     * @param packet Packet received in error.
+     * @param sinr SINR of received packet.
      */
     void PhyRxPacketError(Ptr<Packet> packet, double sinr);
     /** Cancel SendEvent and save remaining delay. */

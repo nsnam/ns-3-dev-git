@@ -29,7 +29,7 @@ class WimaxConnection;
 class Cid;
 
 /**
- * \ingroup wimax
+ * @ingroup wimax
  *
  * BaseStation Scheduler - simplified
  */
@@ -40,30 +40,30 @@ class BSSchedulerSimple : public BSScheduler
     /**
      * Constructor
      *
-     * \param bs base station device
+     * @param bs base station device
      */
     BSSchedulerSimple(Ptr<BaseStationNetDevice> bs);
     ~BSSchedulerSimple() override;
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
     /**
-     * \brief This function returns all the downlink bursts scheduled for the next
+     * @brief This function returns all the downlink bursts scheduled for the next
      * downlink sub-frame
-     * \returns  all the downlink bursts scheduled for the next downlink sub-frame
+     * @returns  all the downlink bursts scheduled for the next downlink sub-frame
      */
     std::list<std::pair<OfdmDlMapIe*, Ptr<PacketBurst>>>* GetDownlinkBursts() const override;
     /**
-     * \brief This function adds a downlink burst to the list of downlink bursts
+     * @brief This function adds a downlink burst to the list of downlink bursts
      * scheduled for the next downlink sub-frame
-     * \param connection a pointer to connection in which the burst will be sent
-     * \param diuc downlink iuc
-     * \param modulationType the modulation type of the burst
-     * \param burst the downlink burst to add to the downlink sub frame
+     * @param connection a pointer to connection in which the burst will be sent
+     * @param diuc downlink iuc
+     * @param modulationType the modulation type of the burst
+     * @param burst the downlink burst to add to the downlink sub frame
      */
     void AddDownlinkBurst(Ptr<const WimaxConnection> connection,
                           uint8_t diuc,
@@ -71,21 +71,21 @@ class BSSchedulerSimple : public BSScheduler
                           Ptr<PacketBurst> burst) override;
 
     /**
-     * \brief the scheduling function for the downlink subframe.
+     * @brief the scheduling function for the downlink subframe.
      */
     void Schedule() override;
     /**
-     * \brief Selects a connection from the list of connections having packets to be sent .
-     * \param connection will point to a connection that have packets to be sent
-     * \returns false if no connection has packets to be sent, true otherwise
+     * @brief Selects a connection from the list of connections having packets to be sent .
+     * @param connection will point to a connection that have packets to be sent
+     * @returns false if no connection has packets to be sent, true otherwise
      */
     bool SelectConnection(Ptr<WimaxConnection>& connection) override;
     /**
-     * \brief Creates a downlink UGS burst
-     * \param serviceFlow the service flow of the burst
-     * \param modulationType the modulation type to be used for the burst
-     * \param availableSymbols maximum number of OFDM symbols to be used by the burst
-     * \returns a Burst (list of packets)
+     * @brief Creates a downlink UGS burst
+     * @param serviceFlow the service flow of the burst
+     * @param modulationType the modulation type to be used for the burst
+     * @param availableSymbols maximum number of OFDM symbols to be used by the burst
+     * @returns a Burst (list of packets)
      */
     Ptr<PacketBurst> CreateUgsBurst(ServiceFlow* serviceFlow,
                                     WimaxPhy::ModulationType modulationType,

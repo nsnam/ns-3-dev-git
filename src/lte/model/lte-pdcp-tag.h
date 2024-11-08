@@ -26,8 +26,8 @@ class PdcpTag : public Tag
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     TypeId GetInstanceTypeId() const override;
@@ -38,7 +38,7 @@ class PdcpTag : public Tag
     PdcpTag();
     /**
      * Create an PDCP tag with the given senderTimestamp
-     * \param senderTimestamp the time stamp
+     * @param senderTimestamp the time stamp
      */
     PdcpTag(Time senderTimestamp);
 

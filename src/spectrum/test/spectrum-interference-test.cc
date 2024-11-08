@@ -22,19 +22,19 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("SpectrumInterferenceTest");
 
 /**
- * \ingroup spectrum-tests
+ * @ingroup spectrum-tests
  *
- * \brief Spectrum Interference Test
+ * @brief Spectrum Interference Test
  */
 class SpectrumInterferenceTestCase : public TestCase
 {
   public:
     /**
      * Constructor
-     * \param s Spectrum value
-     * \param txBytes number of bytes to transmit
-     * \param rxCorrect expected Rx bytes
-     * \param name test name
+     * @param s Spectrum value
+     * @param txBytes number of bytes to transmit
+     * @param rxCorrect expected Rx bytes
+     * @param name test name
      */
     SpectrumInterferenceTestCase(Ptr<SpectrumValue> s,
                                  uint32_t txBytes,
@@ -44,7 +44,7 @@ class SpectrumInterferenceTestCase : public TestCase
     void DoRun() override;
     /**
      * Retrieve the test results
-     * \param si SpectrumInterference instance
+     * @param si SpectrumInterference instance
      */
     void RetrieveTestResult(SpectrumInterference* si);
 
@@ -130,9 +130,9 @@ SpectrumInterferenceTestCase::RetrieveTestResult(SpectrumInterference* si)
 }
 
 /**
- * \ingroup spectrum-tests
+ * @ingroup spectrum-tests
  *
- * \brief Spectrum Interference TestSuite
+ * @brief Spectrum Interference TestSuite
  */
 class SpectrumInterferenceTestSuite : public TestSuite
 {

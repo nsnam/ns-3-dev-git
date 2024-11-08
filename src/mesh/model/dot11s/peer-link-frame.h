@@ -23,9 +23,9 @@ namespace ns3
 namespace dot11s
 {
 /**
- * \ingroup dot11s
+ * @ingroup dot11s
  *
- * \brief 802.11s Peer link open management frame
+ * @brief 802.11s Peer link open management frame
  *
  * Peer link open start frame includes the following:
  * - Capability
@@ -42,7 +42,7 @@ class PeerLinkOpenStart : public Header
     PeerLinkOpenStart(const PeerLinkOpenStart&) = delete;
     PeerLinkOpenStart& operator=(const PeerLinkOpenStart&) = delete;
 
-    /// \brief fields:
+    /// @brief fields:
     struct PlinkOpenStartFields
     {
         IePeeringProtocol protocol; ///< Peering protocol version - 3 octets
@@ -55,18 +55,18 @@ class PeerLinkOpenStart : public Header
 
     /**
      * Set peer link open start fields
-     * \param fields PlinkOpenStartFields to set
+     * @param fields PlinkOpenStartFields to set
      */
     void SetPlinkOpenStart(PlinkOpenStartFields fields);
     /**
      * Get peer link open start fields
-     * \return PlinkOpenStartFields
+     * @return PlinkOpenStartFields
      */
     PlinkOpenStartFields GetFields() const;
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     // Inherited from header:
@@ -86,9 +86,9 @@ class PeerLinkOpenStart : public Header
     /**
      * equality operator
      *
-     * \param a lhs
-     * \param b rhs
-     * \returns true if equal
+     * @param a lhs
+     * @param b rhs
+     * @returns true if equal
      */
     friend bool operator==(const PeerLinkOpenStart& a, const PeerLinkOpenStart& b);
 };
@@ -96,9 +96,9 @@ class PeerLinkOpenStart : public Header
 bool operator==(const PeerLinkOpenStart& a, const PeerLinkOpenStart& b);
 
 /**
- * \ingroup dot11s
+ * @ingroup dot11s
  *
- * \brief 802.11s Peer link close management frame
+ * @brief 802.11s Peer link close management frame
  *
  * Peer link close frame includes the following:
  * - Mesh ID of mesh
@@ -112,7 +112,7 @@ class PeerLinkCloseStart : public Header
     PeerLinkCloseStart(const PeerLinkCloseStart&) = delete;
     PeerLinkCloseStart& operator=(const PeerLinkCloseStart&) = delete;
 
-    /// \brief fields:
+    /// @brief fields:
     struct PlinkCloseStartFields
     {
         IePeeringProtocol protocol; ///< Peering protocol version - 3 octets
@@ -121,18 +121,18 @@ class PeerLinkCloseStart : public Header
 
     /**
      * Set peer link close start fields
-     * \param fields PlinkCloseStartFields to set
+     * @param fields PlinkCloseStartFields to set
      */
     void SetPlinkCloseStart(PlinkCloseStartFields fields);
     /**
      * Get peer link close start fields
-     * \return PlinkOpenStartFields
+     * @return PlinkOpenStartFields
      */
     PlinkCloseStartFields GetFields() const;
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     // Inherited from header:
@@ -148,9 +148,9 @@ class PeerLinkCloseStart : public Header
     /**
      * equality operator
      *
-     * \param a lhs
-     * \param b rhs
-     * \returns true if equal
+     * @param a lhs
+     * @param b rhs
+     * @returns true if equal
      */
     friend bool operator==(const PeerLinkCloseStart& a, const PeerLinkCloseStart& b);
 };
@@ -158,9 +158,9 @@ class PeerLinkCloseStart : public Header
 bool operator==(const PeerLinkCloseStart& a, const PeerLinkCloseStart& b);
 
 /**
- * \ingroup dot11s
+ * @ingroup dot11s
  *
- * \brief 802.11s Peer link confirm management frame
+ * @brief 802.11s Peer link confirm management frame
  *
  * Peer link confirm frame includes the following:
  * - Association ID field
@@ -176,7 +176,7 @@ class PeerLinkConfirmStart : public Header
     PeerLinkConfirmStart(const PeerLinkConfirmStart&) = delete;
     PeerLinkConfirmStart& operator=(const PeerLinkConfirmStart&) = delete;
 
-    /// \brief fields:
+    /// @brief fields:
     struct PlinkConfirmStartFields
     {
         IePeeringProtocol protocol; ///< Peering protocol version - 3 octets
@@ -189,18 +189,18 @@ class PeerLinkConfirmStart : public Header
 
     /**
      * Set peer link confirm start fields
-     * \param fields PlinkCloseStartFields to set
+     * @param fields PlinkCloseStartFields to set
      */
     void SetPlinkConfirmStart(PlinkConfirmStartFields fields);
     /**
      * Get peer link confirm start fields
-     * \return PlinkOpenStartFields
+     * @return PlinkOpenStartFields
      */
     PlinkConfirmStartFields GetFields() const;
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     // Inherited from header:
@@ -220,9 +220,9 @@ class PeerLinkConfirmStart : public Header
     /**
      * equality operator
      *
-     * \param a lhs
-     * \param b rhs
-     * \returns true if equal
+     * @param a lhs
+     * @param b rhs
+     * @returns true if equal
      */
     friend bool operator==(const PeerLinkConfirmStart& a, const PeerLinkConfirmStart& b);
 };

@@ -12,8 +12,8 @@
 #include "ptr.h"
 
 /**
- *  \file
- *  \ingroup object
+ *  @file
+ *  @ingroup object
  *  ns3::TypeTraits introspection declaration and template implementation.
  */
 
@@ -21,9 +21,9 @@ namespace ns3
 {
 
 /**
- * \ingroup object
+ * @ingroup object
  *  Inspect a type to deduce its features.
- *  \tparam T \deduced The type to inspect.
+ *  @tparam T \deduced The type to inspect.
  */
 template <typename T>
 struct NS_DEPRECATED_3_43("Use functions provided by #include <type_traits>") TypeTraits
@@ -36,7 +36,7 @@ struct NS_DEPRECATED_3_43("Use functions provided by #include <type_traits>") Ty
 
     /**
      *  Not a const type.
-     *  \tparam U \deduced The type being inspected.
+     *  @tparam U \deduced The type being inspected.
      */
     template <typename U>
     struct UnConst
@@ -46,7 +46,7 @@ struct NS_DEPRECATED_3_43("Use functions provided by #include <type_traits>") Ty
 
     /**
      *  Const type.
-     *  \tparam U \deduced The type being inspected.
+     *  @tparam U \deduced The type being inspected.
      */
     template <typename U>
     struct UnConst<const U>
@@ -56,7 +56,7 @@ struct NS_DEPRECATED_3_43("Use functions provided by #include <type_traits>") Ty
 
     /**
      *  Not a reference type.
-     *  \tparam U \deduced The type being inspected.
+     *  @tparam U \deduced The type being inspected.
      */
     template <typename U>
     struct ReferenceTraits
@@ -72,7 +72,7 @@ struct NS_DEPRECATED_3_43("Use functions provided by #include <type_traits>") Ty
 
     /**
      *  Reference type.
-     *  \tparam U \deduced The type being inspected.
+     *  @tparam U \deduced The type being inspected.
      */
     template <typename U>
     struct ReferenceTraits<U&>
@@ -88,7 +88,7 @@ struct NS_DEPRECATED_3_43("Use functions provided by #include <type_traits>") Ty
 
     /**
      *  Not a pointer type.
-     *  \tparam U \deduced The type being inspected.
+     *  @tparam U \deduced The type being inspected.
      */
     template <typename U>
     struct PointerTraits
@@ -105,7 +105,7 @@ struct NS_DEPRECATED_3_43("Use functions provided by #include <type_traits>") Ty
 
     /**
      *  Pointer type.
-     *  \tparam U \deduced The type being inspected.
+     *  @tparam U \deduced The type being inspected.
      */
     template <typename U>
     struct PointerTraits<U*>
@@ -122,7 +122,7 @@ struct NS_DEPRECATED_3_43("Use functions provided by #include <type_traits>") Ty
 
     /**
      *  Ptr type.
-     *  \tparam U \deduced The type being inspected.
+     *  @tparam U \deduced The type being inspected.
      */
     template <typename U>
     struct PointerTraits<ns3::Ptr<U>>
@@ -139,7 +139,7 @@ struct NS_DEPRECATED_3_43("Use functions provided by #include <type_traits>") Ty
 
     /**
      * Base type, after removing \c &, \c * and \c const.
-     * \tparam U \deduced The type being inspected.
+     * @tparam U \deduced The type being inspected.
      */
     template <typename U>
     struct Base
@@ -149,7 +149,7 @@ struct NS_DEPRECATED_3_43("Use functions provided by #include <type_traits>") Ty
 
     /**
      * Base type, after removing \c &.
-     * \tparam U \deduced The type being inspected.
+     * @tparam U \deduced The type being inspected.
      */
     template <typename U>
     struct Base<U&>
@@ -159,7 +159,7 @@ struct NS_DEPRECATED_3_43("Use functions provided by #include <type_traits>") Ty
 
     /**
      * Base type, after removing \c *.
-     * \tparam U \deduced The type being inspected.
+     * @tparam U \deduced The type being inspected.
      */
     template <typename U>
     struct Base<U*>
@@ -169,7 +169,7 @@ struct NS_DEPRECATED_3_43("Use functions provided by #include <type_traits>") Ty
 
     /**
      * Base type, after removing \c const.
-     * \tparam U \deduced The type being inspected.
+     * @tparam U \deduced The type being inspected.
      */
     template <typename U>
     struct Base<const U>
@@ -179,7 +179,7 @@ struct NS_DEPRECATED_3_43("Use functions provided by #include <type_traits>") Ty
 
     /**
      * Base type of a Ptr.
-     * \tparam U \deduced The type being inspected.
+     * @tparam U \deduced The type being inspected.
      */
     template <typename U>
     struct PtrBase
@@ -189,7 +189,7 @@ struct NS_DEPRECATED_3_43("Use functions provided by #include <type_traits>") Ty
 
     /**
      * Base type of a Ptr.
-     * \tparam U \deduced The type being inspected.
+     * @tparam U \deduced The type being inspected.
      */
     template <typename U>
     struct PtrBase<ns3::Ptr<U>>
@@ -199,7 +199,7 @@ struct NS_DEPRECATED_3_43("Use functions provided by #include <type_traits>") Ty
 
     /**
      *  Not a function pointer type.
-     *  \tparam U \deduced The type being inspected.
+     *  @tparam U \deduced The type being inspected.
      */
     template <typename U>
     struct FunctionPtrTraits
@@ -215,7 +215,7 @@ struct NS_DEPRECATED_3_43("Use functions provided by #include <type_traits>") Ty
 
     /**
      *  Function pointer type.
-     *  \tparam U \deduced Return type.
+     *  @tparam U \deduced Return type.
      */
     template <typename U>
     struct FunctionPtrTraits<U (*)()>
@@ -236,8 +236,8 @@ struct NS_DEPRECATED_3_43("Use functions provided by #include <type_traits>") Ty
 
     /**
      *  Function pointer type.
-     *  \tparam U \deduced Return type.
-     *  \tparam V1 \deduced Argument type.
+     *  @tparam U \deduced Return type.
+     *  @tparam V1 \deduced Argument type.
      */
     template <typename U, typename V1>
     struct FunctionPtrTraits<U (*)(V1)>
@@ -259,9 +259,9 @@ struct NS_DEPRECATED_3_43("Use functions provided by #include <type_traits>") Ty
 
     /**
      *  Function pointer type.
-     *  \tparam U \deduced Return type.
-     *  \tparam V1 \deduced Argument type.
-     *  \tparam V2 \deduced Argument type.
+     *  @tparam U \deduced Return type.
+     *  @tparam V1 \deduced Argument type.
+     *  @tparam V2 \deduced Argument type.
      */
     template <typename U, typename V1, typename V2>
     struct FunctionPtrTraits<U (*)(V1, V2)>
@@ -284,10 +284,10 @@ struct NS_DEPRECATED_3_43("Use functions provided by #include <type_traits>") Ty
 
     /**
      *  Function pointer type.
-     *  \tparam U \deduced Return type.
-     *  \tparam V1 \deduced Argument type.
-     *  \tparam V2 \deduced Argument type.
-     *  \tparam V3 \deduced Argument type.
+     *  @tparam U \deduced Return type.
+     *  @tparam V1 \deduced Argument type.
+     *  @tparam V2 \deduced Argument type.
+     *  @tparam V3 \deduced Argument type.
      */
     template <typename U, typename V1, typename V2, typename V3>
     struct FunctionPtrTraits<U (*)(V1, V2, V3)>
@@ -311,11 +311,11 @@ struct NS_DEPRECATED_3_43("Use functions provided by #include <type_traits>") Ty
 
     /**
      *  Function pointer type.
-     *  \tparam U \deduced Return type.
-     *  \tparam V1 \deduced Argument type.
-     *  \tparam V2 \deduced Argument type.
-     *  \tparam V3 \deduced Argument type.
-     *  \tparam V4 \deduced Argument type.
+     *  @tparam U \deduced Return type.
+     *  @tparam V1 \deduced Argument type.
+     *  @tparam V2 \deduced Argument type.
+     *  @tparam V3 \deduced Argument type.
+     *  @tparam V4 \deduced Argument type.
      */
     template <typename U, typename V1, typename V2, typename V3, typename V4>
     struct FunctionPtrTraits<U (*)(V1, V2, V3, V4)>
@@ -340,12 +340,12 @@ struct NS_DEPRECATED_3_43("Use functions provided by #include <type_traits>") Ty
 
     /**
      *  Function pointer type.
-     *  \tparam U \deduced Return type.
-     *  \tparam V1 \deduced Argument type.
-     *  \tparam V2 \deduced Argument type.
-     *  \tparam V3 \deduced Argument type.
-     *  \tparam V4 \deduced Argument type.
-     *  \tparam V5 \deduced Argument type.
+     *  @tparam U \deduced Return type.
+     *  @tparam V1 \deduced Argument type.
+     *  @tparam V2 \deduced Argument type.
+     *  @tparam V3 \deduced Argument type.
+     *  @tparam V4 \deduced Argument type.
+     *  @tparam V5 \deduced Argument type.
      */
     template <typename U, typename V1, typename V2, typename V3, typename V4, typename V5>
     struct FunctionPtrTraits<U (*)(V1, V2, V3, V4, V5)>
@@ -371,13 +371,13 @@ struct NS_DEPRECATED_3_43("Use functions provided by #include <type_traits>") Ty
 
     /**
      *  Function pointer type.
-     *  \tparam U \deduced Return type.
-     *  \tparam V1 \deduced Argument type.
-     *  \tparam V2 \deduced Argument type.
-     *  \tparam V3 \deduced Argument type.
-     *  \tparam V4 \deduced Argument type.
-     *  \tparam V5 \deduced Argument type.
-     *  \tparam V6 \deduced Argument type.
+     *  @tparam U \deduced Return type.
+     *  @tparam V1 \deduced Argument type.
+     *  @tparam V2 \deduced Argument type.
+     *  @tparam V3 \deduced Argument type.
+     *  @tparam V4 \deduced Argument type.
+     *  @tparam V5 \deduced Argument type.
+     *  @tparam V6 \deduced Argument type.
      */
     template <typename U,
               typename V1,
@@ -410,7 +410,7 @@ struct NS_DEPRECATED_3_43("Use functions provided by #include <type_traits>") Ty
 
     /**
      *  Not a pointer to member type.
-     *  \tparam U \deduced Return type.
+     *  @tparam U \deduced Return type.
      */
     template <typename U>
     struct PtrToMemberTraits
@@ -424,8 +424,8 @@ struct NS_DEPRECATED_3_43("Use functions provided by #include <type_traits>") Ty
 
     /**
      *  Pointer to member function.
-     *  \tparam U \deduced Return type.
-     *  \tparam V \deduced Class type.
+     *  @tparam U \deduced Return type.
+     *  @tparam V \deduced Class type.
      */
     template <typename U, typename V>
     struct PtrToMemberTraits<U (V::*)()>
@@ -446,8 +446,8 @@ struct NS_DEPRECATED_3_43("Use functions provided by #include <type_traits>") Ty
 
     /**
      *  Pointer to const member function.
-     *  \tparam U \deduced Return type.
-     *  \tparam V \deduced Class type.
+     *  @tparam U \deduced Return type.
+     *  @tparam V \deduced Class type.
      */
     template <typename U, typename V>
     struct PtrToMemberTraits<U (V::*)() const>
@@ -468,9 +468,9 @@ struct NS_DEPRECATED_3_43("Use functions provided by #include <type_traits>") Ty
 
     /**
      *  Pointer to member function.
-     *  \tparam U \deduced Return type.
-     *  \tparam V \deduced Class type.
-     *  \tparam W1 \deduced Argument type.
+     *  @tparam U \deduced Return type.
+     *  @tparam V \deduced Class type.
+     *  @tparam W1 \deduced Argument type.
      */
     template <typename U, typename V, typename W1>
     struct PtrToMemberTraits<U (V::*)(W1)>
@@ -492,9 +492,9 @@ struct NS_DEPRECATED_3_43("Use functions provided by #include <type_traits>") Ty
 
     /**
      *  Pointer to const member function.
-     *  \tparam U \deduced Return type.
-     *  \tparam V \deduced Class type.
-     *  \tparam W1 \deduced Argument type.
+     *  @tparam U \deduced Return type.
+     *  @tparam V \deduced Class type.
+     *  @tparam W1 \deduced Argument type.
      */
     template <typename U, typename V, typename W1>
     struct PtrToMemberTraits<U (V::*)(W1) const>
@@ -516,10 +516,10 @@ struct NS_DEPRECATED_3_43("Use functions provided by #include <type_traits>") Ty
 
     /**
      *  Pointer to member function.
-     *  \tparam U \deduced Return type.
-     *  \tparam V \deduced Class type.
-     *  \tparam W1 \deduced Argument type.
-     *  \tparam W2 \deduced Argument type.
+     *  @tparam U \deduced Return type.
+     *  @tparam V \deduced Class type.
+     *  @tparam W1 \deduced Argument type.
+     *  @tparam W2 \deduced Argument type.
      */
     template <typename U, typename V, typename W1, typename W2>
     struct PtrToMemberTraits<U (V::*)(W1, W2)>
@@ -542,10 +542,10 @@ struct NS_DEPRECATED_3_43("Use functions provided by #include <type_traits>") Ty
 
     /**
      *  Pointer to const member function.
-     *  \tparam U \deduced Return type.
-     *  \tparam V \deduced Class type.
-     *  \tparam W1 \deduced Argument type.
-     *  \tparam W2 \deduced Argument type.
+     *  @tparam U \deduced Return type.
+     *  @tparam V \deduced Class type.
+     *  @tparam W1 \deduced Argument type.
+     *  @tparam W2 \deduced Argument type.
      */
     template <typename U, typename V, typename W1, typename W2>
     struct PtrToMemberTraits<U (V::*)(W1, W2) const>
@@ -568,11 +568,11 @@ struct NS_DEPRECATED_3_43("Use functions provided by #include <type_traits>") Ty
 
     /**
      *  Pointer to member function.
-     *  \tparam U \deduced Return type.
-     *  \tparam V \deduced Class type.
-     *  \tparam W1 \deduced Argument type.
-     *  \tparam W2 \deduced Argument type.
-     *  \tparam W3 \deduced Argument type.
+     *  @tparam U \deduced Return type.
+     *  @tparam V \deduced Class type.
+     *  @tparam W1 \deduced Argument type.
+     *  @tparam W2 \deduced Argument type.
+     *  @tparam W3 \deduced Argument type.
      */
     template <typename U, typename V, typename W1, typename W2, typename W3>
     struct PtrToMemberTraits<U (V::*)(W1, W2, W3)>
@@ -596,11 +596,11 @@ struct NS_DEPRECATED_3_43("Use functions provided by #include <type_traits>") Ty
 
     /**
      *  Pointer to const member function.
-     *  \tparam U \deduced Return type.
-     *  \tparam V \deduced Class type.
-     *  \tparam W1 \deduced Argument type.
-     *  \tparam W2 \deduced Argument type.
-     *  \tparam W3 \deduced Argument type.
+     *  @tparam U \deduced Return type.
+     *  @tparam V \deduced Class type.
+     *  @tparam W1 \deduced Argument type.
+     *  @tparam W2 \deduced Argument type.
+     *  @tparam W3 \deduced Argument type.
      */
     template <typename U, typename V, typename W1, typename W2, typename W3>
     struct PtrToMemberTraits<U (V::*)(W1, W2, W3) const>
@@ -624,12 +624,12 @@ struct NS_DEPRECATED_3_43("Use functions provided by #include <type_traits>") Ty
 
     /**
      *  Pointer to member function.
-     *  \tparam U \deduced Return type.
-     *  \tparam V \deduced Class type.
-     *  \tparam W1 \deduced Argument type.
-     *  \tparam W2 \deduced Argument type.
-     *  \tparam W3 \deduced Argument type.
-     *  \tparam W4 \deduced Argument type.
+     *  @tparam U \deduced Return type.
+     *  @tparam V \deduced Class type.
+     *  @tparam W1 \deduced Argument type.
+     *  @tparam W2 \deduced Argument type.
+     *  @tparam W3 \deduced Argument type.
+     *  @tparam W4 \deduced Argument type.
      */
     template <typename U, typename V, typename W1, typename W2, typename W3, typename W4>
     struct PtrToMemberTraits<U (V::*)(W1, W2, W3, W4)>
@@ -654,12 +654,12 @@ struct NS_DEPRECATED_3_43("Use functions provided by #include <type_traits>") Ty
 
     /**
      *  Pointer to const member function.
-     *  \tparam U \deduced Return type.
-     *  \tparam V \deduced Class type.
-     *  \tparam W1 \deduced Argument type.
-     *  \tparam W2 \deduced Argument type.
-     *  \tparam W3 \deduced Argument type.
-     *  \tparam W4 \deduced Argument type.
+     *  @tparam U \deduced Return type.
+     *  @tparam V \deduced Class type.
+     *  @tparam W1 \deduced Argument type.
+     *  @tparam W2 \deduced Argument type.
+     *  @tparam W3 \deduced Argument type.
+     *  @tparam W4 \deduced Argument type.
      */
     template <typename U, typename V, typename W1, typename W2, typename W3, typename W4>
     struct PtrToMemberTraits<U (V::*)(W1, W2, W3, W4) const>
@@ -684,13 +684,13 @@ struct NS_DEPRECATED_3_43("Use functions provided by #include <type_traits>") Ty
 
     /**
      *  Pointer to member function.
-     *  \tparam U \deduced Return type.
-     *  \tparam V \deduced Class type.
-     *  \tparam W1 \deduced Argument type.
-     *  \tparam W2 \deduced Argument type.
-     *  \tparam W3 \deduced Argument type.
-     *  \tparam W4 \deduced Argument type.
-     *  \tparam W5 \deduced Argument type.
+     *  @tparam U \deduced Return type.
+     *  @tparam V \deduced Class type.
+     *  @tparam W1 \deduced Argument type.
+     *  @tparam W2 \deduced Argument type.
+     *  @tparam W3 \deduced Argument type.
+     *  @tparam W4 \deduced Argument type.
+     *  @tparam W5 \deduced Argument type.
      */
     template <typename U,
               typename V,
@@ -722,13 +722,13 @@ struct NS_DEPRECATED_3_43("Use functions provided by #include <type_traits>") Ty
 
     /**
      *  Pointer to const member function.
-     *  \tparam U \deduced Return type.
-     *  \tparam V \deduced Class type.
-     *  \tparam W1 \deduced Argument type.
-     *  \tparam W2 \deduced Argument type.
-     *  \tparam W3 \deduced Argument type.
-     *  \tparam W4 \deduced Argument type.
-     *  \tparam W5 \deduced Argument type.
+     *  @tparam U \deduced Return type.
+     *  @tparam V \deduced Class type.
+     *  @tparam W1 \deduced Argument type.
+     *  @tparam W2 \deduced Argument type.
+     *  @tparam W3 \deduced Argument type.
+     *  @tparam W4 \deduced Argument type.
+     *  @tparam W5 \deduced Argument type.
      */
     template <typename U,
               typename V,
@@ -760,14 +760,14 @@ struct NS_DEPRECATED_3_43("Use functions provided by #include <type_traits>") Ty
 
     /**
      *  Pointer to member function.
-     *  \tparam U \deduced Return type.
-     *  \tparam V \deduced Class type.
-     *  \tparam W1 \deduced Argument type.
-     *  \tparam W2 \deduced Argument type.
-     *  \tparam W3 \deduced Argument type.
-     *  \tparam W4 \deduced Argument type.
-     *  \tparam W5 \deduced Argument type.
-     *  \tparam W6 \deduced Argument type.
+     *  @tparam U \deduced Return type.
+     *  @tparam V \deduced Class type.
+     *  @tparam W1 \deduced Argument type.
+     *  @tparam W2 \deduced Argument type.
+     *  @tparam W3 \deduced Argument type.
+     *  @tparam W4 \deduced Argument type.
+     *  @tparam W5 \deduced Argument type.
+     *  @tparam W6 \deduced Argument type.
      */
     template <typename U,
               typename V,
@@ -801,14 +801,14 @@ struct NS_DEPRECATED_3_43("Use functions provided by #include <type_traits>") Ty
 
     /**
      *  Pointer to const member function.
-     *  \tparam U \deduced Return type.
-     *  \tparam V \deduced Class type.
-     *  \tparam W1 \deduced Argument type.
-     *  \tparam W2 \deduced Argument type.
-     *  \tparam W3 \deduced Argument type.
-     *  \tparam W4 \deduced Argument type.
-     *  \tparam W5 \deduced Argument type.
-     *  \tparam W6 \deduced Argument type.
+     *  @tparam U \deduced Return type.
+     *  @tparam V \deduced Class type.
+     *  @tparam W1 \deduced Argument type.
+     *  @tparam W2 \deduced Argument type.
+     *  @tparam W3 \deduced Argument type.
+     *  @tparam W4 \deduced Argument type.
+     *  @tparam W5 \deduced Argument type.
+     *  @tparam W6 \deduced Argument type.
      */
     template <typename U,
               typename V,

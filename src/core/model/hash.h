@@ -18,27 +18,27 @@
 #include <string>
 
 /**
- * \file
- * \ingroup hash
- * \brief ns3::Hasher, ns3::Hash32() and ns3::Hash64() function declarations.
+ * @file
+ * @ingroup hash
+ * @brief ns3::Hasher, ns3::Hash32() and ns3::Hash64() function declarations.
  */
 
 namespace ns3
 {
 
 /**
- * \ingroup core
- * \defgroup hash Hash Functions
+ * @ingroup core
+ * @defgroup hash Hash Functions
  *
- * \brief Generic Hash function interface.
+ * @brief Generic Hash function interface.
  *
  * See \ref Hasher for main entry point.
  * See \ref hash-example.cc for example usage.
  */
 /**
- *  \ingroup hash
+ *  @ingroup hash
  *
- *  \brief Generic Hash function interface.
+ *  @brief Generic Hash function interface.
  *
  *  This class provides a generic interface for computing hashes
  *  of buffers.  Various getters return hashes of different lengths.
@@ -51,10 +51,10 @@ namespace ns3
  *  will be the cumulative hash across all calls.
  *
  *  The choice of hash function can be made at construction by
- *    \code
+ *    @code
  *    Hasher hasher = Hasher ( Create<Hash::Function::Fnv1a> () );
  *    uint32_t hash = Hasher.GetHash32 (data);
- *    \endcode
+ *    @endcode
  *
  *  The available implementations are documented in \ref hash.
  *  The default implementation is Murmur3.  FNV1a is also available.
@@ -62,7 +62,7 @@ namespace ns3
  *  In addition to this class interface, global functions are
  *  defined which use the default hash implementation.
  *
- * \internal
+ * @internal
  *
  *  Would be nice to offer longer hashes.  \c uint128_t looks doable,
  *  except that our fallback \c int64x64_t implementation doesn't
@@ -82,7 +82,7 @@ class Hasher
     /**
      * Constructor using the supplied implementation.
      *
-     * \param [in] hp Ptr<Hash::Implementation> to the desired implementation.
+     * @param [in] hp Ptr<Hash::Implementation> to the desired implementation.
      */
     Hasher(Ptr<Hash::Implementation> hp);
     /**
@@ -95,9 +95,9 @@ class Hasher
      * you can hash successive buffers.  The final return value
      * will be the cumulative hash across all calls.
      *
-     * \param [in] buffer Pointer to the beginning of the buffer.
-     * \param [in] size Length of the buffer, in bytes.
-     * \return 32-bit hash of the buffer..
+     * @param [in] buffer Pointer to the beginning of the buffer.
+     * @param [in] size Length of the buffer, in bytes.
+     * @return 32-bit hash of the buffer..
      */
     uint32_t GetHash32(const char* buffer, const std::size_t size);
     /**
@@ -110,9 +110,9 @@ class Hasher
      * you can hash successive buffers.  The final return value
      * will be the cumulative hash across all calls.
      *
-     * \param [in] buffer Pointer to the beginning of the buffer.
-     * \param [in] size Length of the buffer, in bytes.
-     * \return 64-bit hash of the buffer.
+     * @param [in] buffer Pointer to the beginning of the buffer.
+     * @param [in] size Length of the buffer, in bytes.
+     * @return 64-bit hash of the buffer.
      */
     uint64_t GetHash64(const char* buffer, const std::size_t size);
 
@@ -126,8 +126,8 @@ class Hasher
      * you can hash successive strings.  The final return value
      * will be the cumulative hash across all calls.
      *
-     * \param [in] s String to hash.
-     * \return 32-bit hash of the string.
+     * @param [in] s String to hash.
+     * @return 32-bit hash of the string.
      */
     uint32_t GetHash32(const std::string s);
     /**
@@ -140,8 +140,8 @@ class Hasher
      * you can hash successive strings.  The final return value
      * will be the cumulative hash across all calls.
      *
-     * \param [in] s String to hash.
-     * \return 64-bit hash of the string.
+     * @param [in] s String to hash.
+     * @return 64-bit hash of the string.
      */
     uint64_t GetHash64(const std::string s);
     /**
@@ -149,14 +149,14 @@ class Hasher
      *
      * Returning this Hasher allows code like this:
      *
-     * \code
+     * @code
      *   Hasher h;
      *   h.GetHash32 (...);
      *   ...
      *   h.clear ().GetHash64 (...);
-     * \endcode
+     * @endcode
      *
-     * \return This hasher.
+     * @return This hasher.
      */
     Hasher& clear();
 
@@ -169,42 +169,42 @@ class Hasher
  ************************************************/
 
 /**
- * \ingroup hash
+ * @ingroup hash
  *
  * Compute 32-bit hash of a byte buffer, using the default hash function.
  *
- * \param [in] buffer Pointer to the beginning of the buffer.
- * \param [in] size Length of the buffer, in bytes.
- * \return 32-bit hash of the buffer.
+ * @param [in] buffer Pointer to the beginning of the buffer.
+ * @param [in] size Length of the buffer, in bytes.
+ * @return 32-bit hash of the buffer.
  */
 uint32_t Hash32(const char* buffer, const std::size_t size);
 /**
- * \ingroup hash
+ * @ingroup hash
  *
  * Compute 64-bit hash of a byte buffer, using the default hash function.
  *
- * \param [in] buffer Pointer to the beginning of the buffer.
- * \param [in] size Length of the buffer, in bytes.
- * \return 64-bit hash of the buffer.
+ * @param [in] buffer Pointer to the beginning of the buffer.
+ * @param [in] size Length of the buffer, in bytes.
+ * @return 64-bit hash of the buffer.
  */
 uint64_t Hash64(const char* buffer, const std::size_t size);
 
 /**
- * \ingroup hash
+ * @ingroup hash
  *
  * Compute 32-bit hash of a string, using the default hash function.
  *
- * \param [in] s String to hash.
- * \return 32-bit hash of the string.
+ * @param [in] s String to hash.
+ * @return 32-bit hash of the string.
  */
 uint32_t Hash32(const std::string s);
 /**
- * \ingroup hash
+ * @ingroup hash
  *
  * Compute 64-bit hash of a string, using the default hash function.
  *
- * \param [in] s String to hash.
- * \return 64-bit hash of the string.
+ * @param [in] s String to hash.
+ * @return 64-bit hash of the string.
  */
 uint64_t Hash64(const std::string s);
 
@@ -254,8 +254,8 @@ Hasher::GetHash64(const std::string s)
 */
 
 /**
- * \brief Get a reference to the static global hasher at g_hasher
- * \return Reference to the static Hasher instance.
+ * @brief Get a reference to the static global hasher at g_hasher
+ * @return Reference to the static Hasher instance.
  */
 Hasher& GetStaticHash();
 

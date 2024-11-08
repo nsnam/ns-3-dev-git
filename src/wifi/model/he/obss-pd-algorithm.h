@@ -23,8 +23,8 @@ struct HeSigAParameters;
 class WifiNetDevice;
 
 /**
- * \brief OBSS PD algorithm interface
- * \ingroup wifi
+ * @brief OBSS PD algorithm interface
+ * @ingroup wifi
  *
  * This object provides the interface for all OBSS_PD algorithms
  * and is designed to be subclassed.
@@ -37,26 +37,26 @@ class ObssPdAlgorithm : public Object
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
     /**
      * Connect the WifiNetDevice and setup eventual callbacks.
      *
-     * \param device the WifiNetDevice
+     * @param device the WifiNetDevice
      */
     virtual void ConnectWifiNetDevice(const Ptr<WifiNetDevice> device);
 
     /**
      * Reset PHY to IDLE.
-     * \param params HeSigAParameters causing PHY reset
+     * @param params HeSigAParameters causing PHY reset
      */
     void ResetPhy(HeSigAParameters params);
 
     /**
-     * \param params the HE-SIG-A parameters
+     * @param params the HE-SIG-A parameters
      *
      * Evaluate the receipt of HE-SIG-A.
      */
@@ -65,11 +65,11 @@ class ObssPdAlgorithm : public Object
     /**
      * TracedCallback signature for OBSS_PD reset events.
      *
-     * \param [in] bssColor The BSS color of frame triggering the reset
-     * \param [in] rssiDbm The RSSI (dBm) of frame triggering the reset
-     * \param [in] powerRestricted Whether a TX power restriction is triggered
-     * \param [in] txPowerMaxDbmSiso The SISO TX power restricted level (dBm)
-     * \param [in] txPowerMaxDbmMimo The MIMO TX power restricted level (dBm)
+     * @param [in] bssColor The BSS color of frame triggering the reset
+     * @param [in] rssiDbm The RSSI (dBm) of frame triggering the reset
+     * @param [in] powerRestricted Whether a TX power restriction is triggered
+     * @param [in] txPowerMaxDbmSiso The SISO TX power restricted level (dBm)
+     * @param [in] txPowerMaxDbmMimo The MIMO TX power restricted level (dBm)
      */
     typedef void (*ResetTracedCallback)(uint8_t bssColor,
                                         double rssiDbm,
@@ -78,11 +78,11 @@ class ObssPdAlgorithm : public Object
                                         double txPowerMaxDbmMimo);
 
     /**
-     * \param level the current OBSS PD level
+     * @param level the current OBSS PD level
      */
     void SetObssPdLevel(dBm_u level);
     /**
-     * \return the current OBSS PD level
+     * @return the current OBSS PD level
      */
     dBm_u GetObssPdLevel() const;
 

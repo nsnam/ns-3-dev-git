@@ -84,7 +84,7 @@ SQLiteOutput::RetrieveColumn(sqlite3_stmt* /* stmt */, int /* pos */) const
     NS_FATAL_ERROR("Can't call generic fn");
 }
 
-/// \copydoc SQLiteOutput::RetrieveColumn
+/// @copydoc SQLiteOutput::RetrieveColumn
 template <>
 int
 SQLiteOutput::RetrieveColumn(sqlite3_stmt* stmt, int pos) const
@@ -92,7 +92,7 @@ SQLiteOutput::RetrieveColumn(sqlite3_stmt* stmt, int pos) const
     return sqlite3_column_int(stmt, pos);
 }
 
-/// \copydoc SQLiteOutput::RetrieveColumn
+/// @copydoc SQLiteOutput::RetrieveColumn
 template <>
 uint32_t
 SQLiteOutput::RetrieveColumn(sqlite3_stmt* stmt, int pos) const
@@ -100,7 +100,7 @@ SQLiteOutput::RetrieveColumn(sqlite3_stmt* stmt, int pos) const
     return static_cast<uint32_t>(sqlite3_column_int(stmt, pos));
 }
 
-/// \copydoc SQLiteOutput::RetrieveColumn
+/// @copydoc SQLiteOutput::RetrieveColumn
 template <>
 double
 SQLiteOutput::RetrieveColumn(sqlite3_stmt* stmt, int pos) const

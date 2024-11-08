@@ -38,10 +38,10 @@ ConvertContextToNodeId(std::string context)
 }
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief Wifi Test
+ * @brief Wifi Test
  *
  * This test case tests the transmission of inter-BSS cases
  * and verify behavior of 11ax OBSS_PD spatial reuse.
@@ -69,7 +69,7 @@ class TestInterBssConstantObssPdAlgo : public TestCase
     /**
      * Constructor
      *
-     * \param standard The standard to use for the test
+     * @param standard The standard to use for the test
      */
     TestInterBssConstantObssPdAlgo(WifiStandard standard);
     ~TestInterBssConstantObssPdAlgo() override;
@@ -79,20 +79,20 @@ class TestInterBssConstantObssPdAlgo : public TestCase
   private:
     /**
      * Send one packet function
-     * \param tx_dev the transmitting device
-     * \param rx_dev the receiving device
-     * \param payloadSize the payload size
+     * @param tx_dev the transmitting device
+     * @param rx_dev the receiving device
+     * @param payloadSize the payload size
      */
     void SendOnePacket(Ptr<WifiNetDevice> tx_dev, Ptr<WifiNetDevice> rx_dev, uint32_t payloadSize);
 
     /**
      * Allocate the node positions
-     * \param d1 distance d1
-     * \param d2 distance d2
-     * \param d3 distance d3
-     * \param d4 distance d4
-     * \param d5 distance d5
-     * \return the node positions
+     * @param d1 distance d1
+     * @param d2 distance d2
+     * @param d3 distance d3
+     * @param d4 distance d4
+     * @param d5 distance d5
+     * @return the node positions
      */
     Ptr<ListPositionAllocator> AllocatePositions(meter_u d1,
                                                  meter_u d2,
@@ -102,7 +102,7 @@ class TestInterBssConstantObssPdAlgo : public TestCase
 
     /**
      * Set the expected transmit power
-     * \param txPower the transmit power
+     * @param txPower the transmit power
      */
     void SetExpectedTxPower(dBm_u txPower);
 
@@ -133,39 +133,39 @@ class TestInterBssConstantObssPdAlgo : public TestCase
 
     /**
      * Check if the Phy State for a device is an expected value
-     * \param device the device to check
-     * \param expectedState the expected PHY state
+     * @param device the device to check
+     * @param expectedState the expected PHY state
      */
     void CheckPhyState(Ptr<WifiNetDevice> device, WifiPhyState expectedState);
 
     /**
      * Check if the Phy drop reasons for a device are as expected
-     * \param device the device to check
-     * \param expectedDropReasons the expected PHY drop reasons
+     * @param device the device to check
+     * @param expectedDropReasons the expected PHY drop reasons
      */
     void CheckPhyDropReasons(Ptr<WifiNetDevice> device,
                              std::vector<WifiPhyRxfailureReason> expectedDropReasons);
 
     /**
      * Notify Phy transmit begin
-     * \param context the context
-     * \param p the packet
-     * \param txPowerW the tx power
+     * @param context the context
+     * @param p the packet
+     * @param txPowerW the tx power
      */
     void NotifyPhyTxBegin(std::string context, Ptr<const Packet> p, double txPowerW);
 
     /**
      * Notify Phy receive ends
-     * \param context the context
-     * \param p the packet
+     * @param context the context
+     * @param p the packet
      */
     void NotifyPhyRxEnd(std::string context, Ptr<const Packet> p);
 
     /**
      * Notify Phy receive drops
-     * \param context the context
-     * \param p the packet
-     * \param reason the reason why it was dropped
+     * @param context the context
+     * @param p the packet
+     * @param reason the reason why it was dropped
      */
     void NotifyPhyRxDrop(std::string context, Ptr<const Packet> p, WifiPhyRxfailureReason reason);
 
@@ -976,10 +976,10 @@ TestInterBssConstantObssPdAlgo::DoRun()
 }
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief Inter BSS Test Suite
+ * @brief Inter BSS Test Suite
  */
 
 class InterBssTestSuite : public TestSuite

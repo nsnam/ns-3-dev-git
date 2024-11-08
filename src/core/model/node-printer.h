@@ -11,8 +11,8 @@
 #include <ostream>
 
 /**
- * \file
- * \ingroup logging
+ * @file
+ * @ingroup logging
  * Declaration of ns3::NodePrinter function pointer type
  * and ns3::DefaultNodePrinter function.
  */
@@ -24,15 +24,15 @@ namespace ns3
  * Function signature for prepending the node id
  * to a log message.
  *
- * \param [in,out] os The output stream to print on.
+ * @param [in,out] os The output stream to print on.
  */
 typedef void (*NodePrinter)(std::ostream& os);
 
 /**
- * \ingroup logging
+ * @ingroup logging
  * Default node id printer implementation.
  *
- * \param [in,out] os The output stream to print the node id on.
+ * @param [in,out] os The output stream to print the node id on.
  */
 void DefaultNodePrinter(std::ostream& os);
 

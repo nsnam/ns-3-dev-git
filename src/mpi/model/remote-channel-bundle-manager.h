@@ -8,8 +8,8 @@
  */
 
 /**
- * \file
- * \ingroup mpi
+ * @file
+ * @ingroup mpi
  * Declaration of class ns3::RemoteChannelBundleManager.
  */
 
@@ -27,9 +27,9 @@ namespace ns3
 class RemoteChannelBundle;
 
 /**
- * \ingroup mpi
+ * @ingroup mpi
  *
- * \brief Singleton for managing the RemoteChannelBundles for each process.
+ * @brief Singleton for managing the RemoteChannelBundles for each process.
  *
  * Manages collective tasks associated with the bundle collection.
  */
@@ -39,8 +39,8 @@ class RemoteChannelBundleManager
     /**
      * Get the bundle corresponding to a remote rank.
      *
-     * \param [in] systemId The remote system id.
-     * \return The bundle for the specified system id.
+     * @param [in] systemId The remote system id.
+     * @return The bundle for the specified system id.
      */
     static Ptr<RemoteChannelBundle> Find(uint32_t systemId);
 
@@ -49,14 +49,14 @@ class RemoteChannelBundleManager
      * on other side of the link.
      * Can not be invoked after InitializeNullMessageEvents has been invoked.
      *
-     * \param [in] systemId The remote system id.
-     * \return The newly added bundle.
+     * @param [in] systemId The remote system id.
+     * @return The newly added bundle.
      */
     static Ptr<RemoteChannelBundle> Add(uint32_t systemId);
 
     /**
      * Get the number of ns-3 channels in this bundle
-     * \return The number of channels.
+     * @return The number of channels.
      */
     static std::size_t Size();
 
@@ -68,7 +68,7 @@ class RemoteChannelBundleManager
 
     /**
      * Get the safe time across all channels in this bundle.
-     * \return The safe time.
+     * @return The safe time.
      */
     static Time GetSafeTime();
 

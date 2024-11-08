@@ -221,9 +221,9 @@ DsrMaintainBuffer::LinkEqual(DsrMaintainBuffEntry& entry)
 struct IsExpired
 {
     /**
-     * \brief comparison operator
-     * \param e maintain buffer entry
-     * \return true if the entry is expired
+     * @brief comparison operator
+     * @param e maintain buffer entry
+     * @return true if the entry is expired
      */
     bool operator()(const DsrMaintainBuffEntry& e) const
     {

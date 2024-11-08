@@ -16,35 +16,35 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("TcpTxBufferTestSuite");
 
 /**
- * \ingroup internet-test
- * \ingroup tests
+ * @ingroup internet-test
+ * @ingroup tests
  *
- * \brief The TcpTxBuffer Test
+ * @brief The TcpTxBuffer Test
  */
 class TcpTxBufferTestCase : public TestCase
 {
   public:
-    /** \brief Constructor */
+    /** @brief Constructor */
     TcpTxBufferTestCase();
 
   private:
     void DoRun() override;
     void DoTeardown() override;
 
-    /** \brief Test if a segment is really set as lost */
+    /** @brief Test if a segment is really set as lost */
     void TestIsLost();
-    /** \brief Test the generation of an unsent block */
+    /** @brief Test the generation of an unsent block */
     void TestNewBlock();
-    /** \brief Test the generation of a previously sent block */
+    /** @brief Test the generation of a previously sent block */
     void TestTransmittedBlock();
-    /** \brief Test the generation of the "next" block */
+    /** @brief Test the generation of the "next" block */
     void TestNextSeg();
-    /** \brief Test the logic of merging items in GetTransmittedSegment()
+    /** @brief Test the logic of merging items in GetTransmittedSegment()
      * which is triggered by CopyFromSequence()*/
     void TestMergeItemsWhenGetTransmittedSegment();
     /**
-     * \brief Callback to provide a value of receiver window
-     * \returns the receiver window size
+     * @brief Callback to provide a value of receiver window
+     * @returns the receiver window size
      */
     uint32_t GetRWnd() const;
 };
@@ -420,9 +420,9 @@ TcpTxBufferTestCase::DoTeardown()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief the TestSuite for the TcpTxBuffer test case
+ * @brief the TestSuite for the TcpTxBuffer test case
  */
 class TcpTxBufferTestSuite : public TestSuite
 {

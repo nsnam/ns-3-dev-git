@@ -16,8 +16,8 @@
 #include <vector>
 
 /**
- * \file
- * \ingroup wifi
+ * @file
+ * @ingroup wifi
  * Declaration of ns3::DsssPhy class.
  */
 
@@ -25,8 +25,8 @@ namespace ns3
 {
 
 /**
- * \brief PHY entity for HR/DSSS (11b)
- * \ingroup wifi
+ * @brief PHY entity for HR/DSSS (11b)
+ * @ingroup wifi
  *
  * Refer to IEEE 802.11-2016, clause 16 (HR/DSSS).
  * Note that DSSS rates (clause 15) are a subset
@@ -68,32 +68,32 @@ class DsssPhy : public PhyEntity
      * Return a WifiMode for HR/DSSS
      * corresponding to the provided rate.
      *
-     * \param rate the rate in bps
-     * \return a WifiMode for HR/DSSS
+     * @param rate the rate in bps
+     * @return a WifiMode for HR/DSSS
      */
     static WifiMode GetDsssRate(uint64_t rate);
     /**
      * Return a WifiMode for DSSS at 1 Mbps.
      *
-     * \return a WifiMode for DSSS at 1 Mbps
+     * @return a WifiMode for DSSS at 1 Mbps
      */
     static WifiMode GetDsssRate1Mbps();
     /**
      * Return a WifiMode for DSSS at 2 Mbps.
      *
-     * \return a WifiMode for DSSS at 2 Mbps
+     * @return a WifiMode for DSSS at 2 Mbps
      */
     static WifiMode GetDsssRate2Mbps();
     /**
      * Return a WifiMode for HR/DSSS at 5.5 Mbps.
      *
-     * \return a WifiMode for HR/DSSS at 5.5 Mbps
+     * @return a WifiMode for HR/DSSS at 5.5 Mbps
      */
     static WifiMode GetDsssRate5_5Mbps();
     /**
      * Return a WifiMode for HR/DSSS at 11 Mbps.
      *
-     * \return a WifiMode for HR/DSSS at 11 Mbps
+     * @return a WifiMode for HR/DSSS at 11 Mbps
      */
     static WifiMode GetDsssRate11Mbps();
 
@@ -102,8 +102,8 @@ class DsssPhy : public PhyEntity
      * name using ModulationLookupTable. This is mainly used as a
      * callback for WifiMode operation.
      *
-     * \param name the unique name of the DSSS or HR/DSSS mode
-     * \return WifiCodeRate corresponding to the unique name
+     * @param name the unique name of the DSSS or HR/DSSS mode
+     * @return WifiCodeRate corresponding to the unique name
      */
     static WifiCodeRate GetCodeRate(const std::string& name);
     /**
@@ -111,8 +111,8 @@ class DsssPhy : public PhyEntity
      * unique name using ModulationLookupTable. This is mainly used
      * as a callback for WifiMode operation.
      *
-     * \param name the unique name of the DSSS or HR/DSSS mode
-     * \return constellation size corresponding to the unique name
+     * @param name the unique name of the DSSS or HR/DSSS mode
+     * @return constellation size corresponding to the unique name
      */
     static uint16_t GetConstellationSize(const std::string& name);
     /**
@@ -121,9 +121,9 @@ class DsssPhy : public PhyEntity
      * This function is mainly used as a callback
      * for WifiMode operation.
      *
-     * \param txVector the TXVECTOR used for the transmission
-     * \param staId the station ID (only here to have a common signature for all callbacks)
-     * \return the data bit rate in bps.
+     * @param txVector the TXVECTOR used for the transmission
+     * @param staId the station ID (only here to have a common signature for all callbacks)
+     * @return the data bit rate in bps.
      */
     static uint64_t GetDataRateFromTxVector(const WifiTxVector& txVector, uint16_t staId);
     /**
@@ -131,19 +131,19 @@ class DsssPhy : public PhyEntity
      * the supplied parameters. This function is mainly used as a callback
      * for WifiMode operation.
      *
-     * \param name the unique name of the DSSS or HR/DSSS mode
-     * \param modClass the modulation class, must be either WIFI_MOD_CLASS_DSSS or
+     * @param name the unique name of the DSSS or HR/DSSS mode
+     * @param modClass the modulation class, must be either WIFI_MOD_CLASS_DSSS or
      * WIFI_MOD_CLASS_HR_DSSS
      *
-     * \return the data bit rate of this signal in bps.
+     * @return the data bit rate of this signal in bps.
      */
     static uint64_t GetDataRate(const std::string& name, WifiModulationClass modClass);
     /**
      * Check whether the combination in TXVECTOR is allowed.
      * This function is used as a callback for WifiMode operation.
      *
-     * \param txVector the TXVECTOR
-     * \returns true if this combination is allowed, false otherwise.
+     * @param txVector the TXVECTOR
+     * @returns true if this combination is allowed, false otherwise.
      */
     static bool IsAllowed(const WifiTxVector& txVector);
 
@@ -155,21 +155,21 @@ class DsssPhy : public PhyEntity
     MHz_u GetMeasurementChannelWidth(const Ptr<const WifiPpdu> ppdu) const override;
 
     /**
-     * \param txVector the transmission parameters
-     * \return the WifiMode used for the PHY header field
+     * @param txVector the transmission parameters
+     * @return the WifiMode used for the PHY header field
      */
     WifiMode GetHeaderMode(const WifiTxVector& txVector) const;
 
     /**
-     * \param txVector the transmission parameters
-     * \return the duration of the PHY preamble field
+     * @param txVector the transmission parameters
+     * @return the duration of the PHY preamble field
      *
-     * \see WIFI_PPDU_FIELD_PREAMBLE
+     * @see WIFI_PPDU_FIELD_PREAMBLE
      */
     Time GetPreambleDuration(const WifiTxVector& txVector) const;
     /**
-     * \param txVector the transmission parameters
-     * \return the duration of the PHY header field
+     * @param txVector the transmission parameters
+     * @return the duration of the PHY header field
      */
     Time GetHeaderDuration(const WifiTxVector& txVector) const;
 
@@ -177,8 +177,8 @@ class DsssPhy : public PhyEntity
      * End receiving the header, perform DSSS-specific actions, and
      * provide the status of the reception.
      *
-     * \param event the event holding incoming PPDU's information
-     * \return status of the reception of the header
+     * @param event the event holding incoming PPDU's information
+     * @return status of the reception of the header
      */
     PhyFieldRxStatus EndReceiveHeader(Ptr<Event> event);
 
@@ -187,10 +187,10 @@ class DsssPhy : public PhyEntity
      * must already be contained inside ModulationLookupTable.
      * This method binds all the callbacks used by WifiMode.
      *
-     * \param uniqueName the unique name of the WifiMode
-     * \param modClass the modulation class of the WifiMode, must be either WIFI_MOD_CLASS_DSSS or
+     * @param uniqueName the unique name of the WifiMode
+     * @param modClass the modulation class of the WifiMode, must be either WIFI_MOD_CLASS_DSSS or
      * WIFI_MOD_CLASS_HR_DSSS
-     * \return the DSSS or HR/DSSS WifiMode
+     * @return the DSSS or HR/DSSS WifiMode
      */
     static WifiMode CreateDsssMode(std::string uniqueName, WifiModulationClass modClass);
 

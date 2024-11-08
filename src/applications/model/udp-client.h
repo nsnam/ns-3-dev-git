@@ -28,9 +28,9 @@ class Socket;
 class Packet;
 
 /**
- * \ingroup udpclientserver
+ * @ingroup udpclientserver
  *
- * \brief A Udp client. Sends UDP packet carrying sequence number and time stamp
+ * @brief A Udp client. Sends UDP packet carrying sequence number and time stamp
  *  in their payloads
  *
  */
@@ -38,8 +38,8 @@ class UdpClient : public SourceApplication
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -49,16 +49,16 @@ class UdpClient : public SourceApplication
     static constexpr uint16_t DEFAULT_PORT{100}; //!< default port
 
     /**
-     * \brief set the remote address and port
-     * \param ip remote IP address
-     * \param port remote port
+     * @brief set the remote address and port
+     * @param ip remote IP address
+     * @param port remote port
      */
     NS_DEPRECATED_3_44("Use SetRemote without port parameter instead")
     void SetRemote(const Address& ip, uint16_t port);
     void SetRemote(const Address& addr) override;
 
     /**
-     * \return the total bytes sent by this app
+     * @return the total bytes sent by this app
      */
     uint64_t GetTotalTx() const;
 
@@ -67,25 +67,25 @@ class UdpClient : public SourceApplication
     void StopApplication() override;
 
     /**
-     * \brief Send a packet
+     * @brief Send a packet
      */
     void Send();
 
     /**
-     * \brief Set the remote port (temporary function until deprecated attributes are removed)
-     * \param port remote port
+     * @brief Set the remote port (temporary function until deprecated attributes are removed)
+     * @param port remote port
      */
     void SetPort(uint16_t port);
 
     /**
-     * \brief Get the remote port (temporary function until deprecated attributes are removed)
-     * \return the remote port
+     * @brief Get the remote port (temporary function until deprecated attributes are removed)
+     * @return the remote port
      */
     uint16_t GetPort() const;
 
     /**
-     * \brief Get the remote address (temporary function until deprecated attributes are removed)
-     * \return the remote address
+     * @brief Get the remote address (temporary function until deprecated attributes are removed)
+     * @return the remote address
      */
     Address GetRemote() const;
 

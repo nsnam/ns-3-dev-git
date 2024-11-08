@@ -21,8 +21,8 @@ namespace energy
 {
 
 /**
- * \ingroup energy
- * \brief Rakhmatov Vrudhula non-linear battery model.
+ * @ingroup energy
+ * @brief Rakhmatov Vrudhula non-linear battery model.
  *
  * This (energy source) model implements an analytical non-linear battery model.
  * It is capable of capturing load capacity and recovery effects of batteries.
@@ -43,36 +43,36 @@ class RvBatteryModel : public EnergySource
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return The object TypeId.
+     * @brief Get the type ID.
+     * @return The object TypeId.
      */
     static TypeId GetTypeId();
     RvBatteryModel();
     ~RvBatteryModel() override;
 
     /**
-     * \return Initial energy stored (theoretical capacity) in the battery, in Joules.
+     * @return Initial energy stored (theoretical capacity) in the battery, in Joules.
      *
      * Implements GetInitialEnergy.
      */
     double GetInitialEnergy() const override;
 
     /**
-     * \returns Supply voltage at the energy source.
+     * @returns Supply voltage at the energy source.
      *
      * Implements GetSupplyVoltage.
      */
     double GetSupplyVoltage() const override;
 
     /**
-     * \return Remaining energy in energy source, in Joules
+     * @return Remaining energy in energy source, in Joules
      *
      * Implements GetRemainingEnergy.
      */
     double GetRemainingEnergy() override;
 
     /**
-     * \returns Energy fraction.
+     * @returns Energy fraction.
      *
      * Implements GetEnergyFraction. For the RV battery model, energy fraction is
      * equivalent to battery level.
@@ -86,85 +86,85 @@ class RvBatteryModel : public EnergySource
     void UpdateEnergySource() override;
 
     /**
-     * \param interval Energy update interval.
+     * @param interval Energy update interval.
      *
      * This function sets the interval between each energy update.
      */
     void SetSamplingInterval(Time interval);
 
     /**
-     * \returns The interval between each energy update.
+     * @returns The interval between each energy update.
      */
     Time GetSamplingInterval() const;
 
     /**
-     * \brief Sets open circuit voltage of battery.
+     * @brief Sets open circuit voltage of battery.
      *
-     * \param voltage Open circuit voltage.
+     * @param voltage Open circuit voltage.
      */
     void SetOpenCircuitVoltage(double voltage);
 
     /**
-     * \return Open circuit voltage of battery.
+     * @return Open circuit voltage of battery.
      */
     double GetOpenCircuitVoltage() const;
 
     /**
-     * \brief Sets cutoff voltage of battery.
+     * @brief Sets cutoff voltage of battery.
      *
-     * \param voltage Cutoff voltage.
+     * @param voltage Cutoff voltage.
      */
     void SetCutoffVoltage(double voltage);
 
     /**
-     * \returns Cutoff voltage of battery.
+     * @returns Cutoff voltage of battery.
      */
     double GetCutoffVoltage() const;
 
     /**
-     * \brief Sets the alpha value for the battery model.
+     * @brief Sets the alpha value for the battery model.
      *
-     * \param alpha Alpha.
+     * @param alpha Alpha.
      */
     void SetAlpha(double alpha);
 
     /**
-     * \returns The alpha value used by the battery model.
+     * @returns The alpha value used by the battery model.
      */
     double GetAlpha() const;
 
     /**
-     * \brief Sets the beta value for the battery model.
+     * @brief Sets the beta value for the battery model.
      *
-     * \param beta Beta.
+     * @param beta Beta.
      */
     void SetBeta(double beta);
 
     /**
-     * \returns The beta value used by the battery model.
+     * @returns The beta value used by the battery model.
      */
     double GetBeta() const;
 
     /**
-     * \returns Battery level [0, 1].
+     * @returns Battery level [0, 1].
      */
     double GetBatteryLevel();
 
     /**
-     * \returns Lifetime of the battery.
+     * @returns Lifetime of the battery.
      */
     Time GetLifetime() const;
 
     /**
-     * \brief Sets the number of terms of the infinite sum for estimating battery
+     * @brief Sets the number of terms of the infinite sum for estimating battery
      * level.
      *
-     * \param num Number of terms.
+     * @param num Number of terms.
      */
     void SetNumOfTerms(int num);
 
     /**
-     * \returns The number of terms of the infinite sum for estimating battery
+     * @returns The number of terms of the infinite sum for estimating battery
      * level.
      */
     int GetNumOfTerms() const;
@@ -184,11 +184,11 @@ class RvBatteryModel : public EnergySource
     void HandleEnergyDrainedEvent();
 
     /**
-     * \brief Discharges the battery.
+     * @brief Discharges the battery.
      *
-     * \param load Load value (total current form devices, in mA).
-     * \param t Time stamp of the load value.
-     * \returns Calculated alpha value.
+     * @param load Load value (total current form devices, in mA).
+     * @param t Time stamp of the load value.
+     * @returns Calculated alpha value.
      *
      * Discharge function calculates a value which is then compared to the alpha
      * value to determine if the battery is dead. It will also update the battery
@@ -199,13 +199,13 @@ class RvBatteryModel : public EnergySource
     double Discharge(double load, Time t);
 
     /**
-     * \brief RV model A function.
+     * @brief RV model A function.
      *
-     * \param t Current time.
-     * \param sk Time stamp in array position k
-     * \param sk_1 Time stamp in array position k-1
-     * \param beta Beta value used by the battery model.
-     * \returns Result of A function.
+     * @param t Current time.
+     * @param sk Time stamp in array position k
+     * @param sk_1 Time stamp in array position k-1
+     * @param beta Beta value used by the battery model.
+     * @returns Result of A function.
      *
      * This function computes alpha value using the recorded load profile.
      */

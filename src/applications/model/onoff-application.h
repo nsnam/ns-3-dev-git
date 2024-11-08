@@ -28,8 +28,8 @@ class RandomVariableStream;
 class Socket;
 
 /**
- * \ingroup applications
- * \defgroup onoff OnOffApplication
+ * @ingroup applications
+ * @defgroup onoff OnOffApplication
  *
  * This traffic generator follows an On/Off pattern: after
  * Application::StartApplication
@@ -40,9 +40,9 @@ class Socket;
  * characterized by the specified "data rate" and "packet size".
  */
 /**
- * \ingroup onoff
+ * @ingroup onoff
  *
- * \brief Generate traffic to a single destination according to an
+ * @brief Generate traffic to a single destination according to an
  *        OnOff pattern.
  *
  * This traffic generator follows an On/Off pattern: after
@@ -84,8 +84,8 @@ class OnOffApplication : public SourceApplication
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -93,18 +93,18 @@ class OnOffApplication : public SourceApplication
     ~OnOffApplication() override;
 
     /**
-     * \brief Set the total number of bytes to send.
+     * @brief Set the total number of bytes to send.
      *
      * Once these bytes are sent, no packet is sent again, even in on state.
      * The value zero means that there is no limit.
      *
-     * \param maxBytes the total number of bytes to send
+     * @param maxBytes the total number of bytes to send
      */
     void SetMaxBytes(uint64_t maxBytes);
 
     /**
-     * \brief Return a pointer to associated socket.
-     * \return pointer to associated socket
+     * @brief Return a pointer to associated socket.
+     * @return pointer to associated socket
      */
     Ptr<Socket> GetSocket() const;
 
@@ -119,21 +119,21 @@ class OnOffApplication : public SourceApplication
 
     // helpers
     /**
-     * \brief Cancel all pending events.
+     * @brief Cancel all pending events.
      */
     void CancelEvents();
 
     // Event handlers
     /**
-     * \brief Start an On period
+     * @brief Start an On period
      */
     void StartSending();
     /**
-     * \brief Start an Off period
+     * @brief Start an Off period
      */
     void StopSending();
     /**
-     * \brief Send a packet
+     * @brief Send a packet
      */
     void SendPacket();
 
@@ -168,25 +168,25 @@ class OnOffApplication : public SourceApplication
 
   private:
     /**
-     * \brief Schedule the next packet transmission
+     * @brief Schedule the next packet transmission
      */
     void ScheduleNextTx();
     /**
-     * \brief Schedule the next On period start
+     * @brief Schedule the next On period start
      */
     void ScheduleStartEvent();
     /**
-     * \brief Schedule the next Off period start
+     * @brief Schedule the next Off period start
      */
     void ScheduleStopEvent();
     /**
-     * \brief Handle a Connection Succeed event
-     * \param socket the connected socket
+     * @brief Handle a Connection Succeed event
+     * @param socket the connected socket
      */
     void ConnectionSucceeded(Ptr<Socket> socket);
     /**
-     * \brief Handle a Connection Failed event
-     * \param socket the not connected socket
+     * @brief Handle a Connection Failed event
+     * @param socket the not connected socket
      */
     void ConnectionFailed(Ptr<Socket> socket);
 };

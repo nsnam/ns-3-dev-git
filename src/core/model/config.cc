@@ -18,14 +18,14 @@
 #include <sstream>
 
 /**
- * \file
- * \ingroup config-impl
+ * @file
+ * @ingroup config-impl
  * ns3::Config implementations.
  */
 
 /**
- * \defgroup config-impl Config implementations
- * \ingroup config
+ * @defgroup config-impl Config implementations
+ * @ingroup config
  */
 namespace ns3
 {
@@ -188,7 +188,7 @@ MatchContainer::DisconnectWithoutContext(std::string name, const CallbackBase& c
 }
 
 /**
- * \ingroup config-impl
+ * @ingroup config-impl
  * Helper to test if an array entry matches a config path specification.
  */
 class ArrayMatcher
@@ -197,14 +197,14 @@ class ArrayMatcher
     /**
      * Construct from a Config path specification.
      *
-     * \param [in] element The Config path specification.
+     * @param [in] element The Config path specification.
      */
     ArrayMatcher(std::string element);
     /**
      * Test if a specific index matches the Config Path.
      *
-     * \param [in] i The index.
-     * \returns \c true if the index matches the Config Path.
+     * @param [in] i The index.
+     * @returns \c true if the index matches the Config Path.
      */
     bool Matches(std::size_t i) const;
 
@@ -212,9 +212,9 @@ class ArrayMatcher
     /**
      * Convert a string to an \c uint32_t.
      *
-     * \param [in] str The string.
-     * \param [in] value The location to store the \c uint32_t.
-     * \returns \c true if the string could be converted.
+     * @param [in] str The string.
+     * @param [in] value The location to store the \c uint32_t.
+     * @returns \c true if the string could be converted.
      */
     bool StringToUint32(std::string str, uint32_t* value) const;
     /** The Config path element. */
@@ -301,7 +301,7 @@ ArrayMatcher::StringToUint32(std::string str, uint32_t* value) const
 }
 
 /**
- * \ingroup config-impl
+ * @ingroup config-impl
  * Abstract class to parse Config paths into object references.
  */
 class Resolver
@@ -310,7 +310,7 @@ class Resolver
     /**
      * Construct from a base Config path.
      *
-     * \param [in] path The Config path.
+     * @param [in] path The Config path.
      */
     Resolver(std::string path);
     /** Destructor. */
@@ -320,7 +320,7 @@ class Resolver
      * Parse the stored Config path into an object reference,
      * beginning at the indicated root object.
      *
-     * \param [in] root The object corresponding to the current position in
+     * @param [in] root The object corresponding to the current position in
      *                  in the Config path.
      */
     void Resolve(Ptr<Object> root);
@@ -331,35 +331,35 @@ class Resolver
     /**
      * Parse the next element in the Config path.
      *
-     * \param [in] path The remaining portion of the Config path.
-     * \param [in] root The object corresponding to the current position
+     * @param [in] path The remaining portion of the Config path.
+     * @param [in] root The object corresponding to the current position
      *                  in the Config path.
      */
     void DoResolve(std::string path, Ptr<Object> root);
     /**
      * Parse an index on the Config path.
      *
-     * \param [in] path The remaining Config path.
-     * \param [in,out] vector The resulting list of matching objects.
+     * @param [in] path The remaining Config path.
+     * @param [in,out] vector The resulting list of matching objects.
      */
     void DoArrayResolve(std::string path, const ObjectPtrContainerValue& vector);
     /**
      * Handle one object found on the path.
      *
-     * \param [in] object The current object on the Config path.
+     * @param [in] object The current object on the Config path.
      */
     void DoResolveOne(Ptr<Object> object);
     /**
      * Get the current Config path.
      *
-     * \returns The current Config path.
+     * @returns The current Config path.
      */
     std::string GetResolvedPath() const;
     /**
      * Handle one found object.
      *
-     * \param [in] object The found object.
-     * \param [in] path The matching Config path context.
+     * @param [in] object The found object.
+     * @param [in] path The matching Config path context.
      */
     virtual void DoOne(Ptr<Object> object, std::string path) = 0;
 
@@ -623,7 +623,7 @@ Resolver::DoArrayResolve(std::string path, const ObjectPtrContainerValue& contai
 }
 
 /**
- * \ingroup config-impl
+ * @ingroup config-impl
  * Config system implementation class.
  */
 class ConfigImpl : public Singleton<ConfigImpl>
@@ -631,38 +631,38 @@ class ConfigImpl : public Singleton<ConfigImpl>
   public:
     // Keep Set and SetFailSafe since their errors are triggered
     // by the underlying ObjectBase functions.
-    /** \copydoc ns3::Config::Set() */
+    /** @copydoc ns3::Config::Set() */
     void Set(std::string path, const AttributeValue& value);
-    /** \copydoc ns3::Config::SetFailSafe() */
+    /** @copydoc ns3::Config::SetFailSafe() */
     bool SetFailSafe(std::string path, const AttributeValue& value);
-    /** \copydoc ns3::Config::ConnectWithoutContextFailSafe() */
+    /** @copydoc ns3::Config::ConnectWithoutContextFailSafe() */
     bool ConnectWithoutContextFailSafe(std::string path, const CallbackBase& cb);
-    /** \copydoc ns3::Config::ConnectFailSafe() */
+    /** @copydoc ns3::Config::ConnectFailSafe() */
     bool ConnectFailSafe(std::string path, const CallbackBase& cb);
-    /** \copydoc ns3::Config::DisconnectWithoutContext() */
+    /** @copydoc ns3::Config::DisconnectWithoutContext() */
     void DisconnectWithoutContext(std::string path, const CallbackBase& cb);
-    /** \copydoc ns3::Config::Disconnect() */
+    /** @copydoc ns3::Config::Disconnect() */
     void Disconnect(std::string path, const CallbackBase& cb);
-    /** \copydoc ns3::Config::LookupMatches() */
+    /** @copydoc ns3::Config::LookupMatches() */
     MatchContainer LookupMatches(std::string path);
 
-    /** \copydoc ns3::Config::RegisterRootNamespaceObject() */
+    /** @copydoc ns3::Config::RegisterRootNamespaceObject() */
     void RegisterRootNamespaceObject(Ptr<Object> obj);
-    /** \copydoc ns3::Config::UnregisterRootNamespaceObject() */
+    /** @copydoc ns3::Config::UnregisterRootNamespaceObject() */
     void UnregisterRootNamespaceObject(Ptr<Object> obj);
 
-    /** \copydoc ns3::Config::GetRootNamespaceObjectN() */
+    /** @copydoc ns3::Config::GetRootNamespaceObjectN() */
     std::size_t GetRootNamespaceObjectN() const;
-    /** \copydoc ns3::Config::GetRootNamespaceObject() */
+    /** @copydoc ns3::Config::GetRootNamespaceObject() */
     Ptr<Object> GetRootNamespaceObject(std::size_t i) const;
 
   private:
     /**
      * Break a Config path into the leading path and the last leaf token.
-     * \param [in] path The Config path.
-     * \param [in,out] root The leading part of the \pname{path},
+     * @param [in] path The Config path.
+     * @param [in,out] root The leading part of the \pname{path},
      *   up to the final slash.
-     * \param [in,out] leaf The trailing part of the \pname{path}.
+     * @param [in,out] leaf The trailing part of the \pname{path}.
      */
     void ParsePath(std::string path, std::string* root, std::string* leaf) const;
 

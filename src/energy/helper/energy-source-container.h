@@ -23,14 +23,14 @@ namespace energy
 {
 
 /**
- * \ingroup energy
- * \brief Holds a vector of ns3::EnergySource pointers.
+ * @ingroup energy
+ * @brief Holds a vector of ns3::EnergySource pointers.
  *
  * EnergySourceHelper returns a list of EnergySource pointers installed onto a
  * node. Users can use this list to access EnergySource objects to obtain total
  * energy consumption on a node easily.
  *
- * \see NetDeviceContainer
+ * @see NetDeviceContainer
  *
  */
 class EnergySourceContainer : public Object
@@ -41,8 +41,8 @@ class EnergySourceContainer : public Object
 
   public:
     /**
-     * \brief Get the type ID.
-     * \return The object TypeId.
+     * @brief Get the type ID.
+     * @return The object TypeId.
      */
     static TypeId GetTypeId();
     /**
@@ -52,7 +52,7 @@ class EnergySourceContainer : public Object
     ~EnergySourceContainer() override;
 
     /**
-     * \param source Pointer to an EnergySource.
+     * @param source Pointer to an EnergySource.
      *
      * Creates an EnergySourceContainer with exactly one EnergySource previously
      * instantiated.
@@ -60,7 +60,7 @@ class EnergySourceContainer : public Object
     EnergySourceContainer(Ptr<EnergySource> source);
 
     /**
-     * \param sourceName Name of EnergySource.
+     * @param sourceName Name of EnergySource.
      *
      * Creates an EnergySourceContainer with exactly one EnergySource previously
      * instantiated and assigned a name using the Object name service. This
@@ -69,76 +69,76 @@ class EnergySourceContainer : public Object
     EnergySourceContainer(std::string sourceName);
 
     /**
-     * \param a A EnergySourceContainer.
-     * \param b Another EnergySourceContainer.
+     * @param a A EnergySourceContainer.
+     * @param b Another EnergySourceContainer.
      *
      * Creates an EnergySourceContainer by concatenating EnergySourceContainer b
      * to EnergySourceContainer a.
      *
-     * \note Can be used to concatenate 2 Ptr<EnergySource> directly. C++ will be
+     * @note Can be used to concatenate 2 Ptr<EnergySource> directly. C++ will be
      * calling EnergySourceContainer constructor with Ptr<EnergySource> first.
      */
     EnergySourceContainer(const EnergySourceContainer& a, const EnergySourceContainer& b);
 
     /**
-     * \brief Get an iterator which refers to the first EnergySource pointer in
+     * @brief Get an iterator which refers to the first EnergySource pointer in
      * the container.
      *
-     * \returns An iterator which refers to the first EnergySource in container.
+     * @returns An iterator which refers to the first EnergySource in container.
      *
      * EnergySources can be retrieved from the container in two ways. First,
      * directly by an index into the container, and second, using an iterator.
      * This method is used in the iterator method and is typically used in a
      * for-loop to run through the EnergySources.
      *
-     * \code
+     * @code
      *   EnergySourceContainer::Iterator i;
      *   for (i = container.Begin (); i != container.End (); ++i)
      *     {
      *       (*i)->method ();  // some EnergySource method
      *     }
-     * \endcode
+     * @endcode
      */
     Iterator Begin() const;
 
     /**
-     * \brief Get an iterator which refers to the last EnergySource pointer in
+     * @brief Get an iterator which refers to the last EnergySource pointer in
      * the container.
      *
-     * \returns An iterator which refers to the last EnergySource in container.
+     * @returns An iterator which refers to the last EnergySource in container.
      *
      * EnergySources can be retrieved from the container in two ways. First,
      * directly by an index into the container, and second, using an iterator.
      * This method is used in the iterator method and is typically used in a
      * for-loop to run through the EnergySources.
      *
-     * \code
+     * @code
      *   EnergySourceContainer::Iterator i;
      *   for (i = container.Begin (); i != container.End (); ++i)
      *     {
      *       (*i)->method ();  // some EnergySource method
      *     }
-     * \endcode
+     * @endcode
      */
     Iterator End() const;
 
     /**
-     * \brief Get the number of Ptr<EnergySource> stored in this container.
+     * @brief Get the number of Ptr<EnergySource> stored in this container.
      *
-     * \returns The number of Ptr<EnergySource> stored in this container.
+     * @returns The number of Ptr<EnergySource> stored in this container.
      */
     uint32_t GetN() const;
 
     /**
-     * \brief Get the i-th Ptr<EnergySource> stored in this container.
+     * @brief Get the i-th Ptr<EnergySource> stored in this container.
      *
-     * \param i Index of the requested Ptr<EnergySource>.
-     * \returns The requested Ptr<EnergySource>.
+     * @param i Index of the requested Ptr<EnergySource>.
+     * @returns The requested Ptr<EnergySource>.
      */
     Ptr<EnergySource> Get(uint32_t i) const;
 
     /**
-     * \param container Another EnergySourceContainer to append.
+     * @param container Another EnergySourceContainer to append.
      *
      * Appends the contents of another EnergySourceContainer to the end of this
      * EnergySourceContainer.
@@ -146,17 +146,17 @@ class EnergySourceContainer : public Object
     void Add(EnergySourceContainer container);
 
     /**
-     * \brief Append a single Ptr<EnergySource> to the end of this container.
+     * @brief Append a single Ptr<EnergySource> to the end of this container.
      *
-     * \param source Pointer to an EnergySource.
+     * @param source Pointer to an EnergySource.
      */
     void Add(Ptr<EnergySource> source);
 
     /**
-     * \brief Append a single Ptr<EnergySource> referred to by its object name to
+     * @brief Append a single Ptr<EnergySource> referred to by its object name to
      * the end of this container.
      *
-     * \param sourceName Name of EnergySource object.
+     * @param sourceName Name of EnergySource object.
      */
     void Add(std::string sourceName);
 
@@ -164,7 +164,7 @@ class EnergySourceContainer : public Object
     void DoDispose() override;
 
     /**
-     * \brief Calls Object::Start () for all EnergySource objects.
+     * @brief Calls Object::Start () for all EnergySource objects.
      */
     void DoInitialize() override;
 

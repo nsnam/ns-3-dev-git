@@ -15,8 +15,8 @@ namespace ns3
 {
 
 /**
- * \ingroup configstore
- * \brief base class for ConfigStore classes using files
+ * @ingroup configstore
+ * @brief base class for ConfigStore classes using files
  *
  */
 class FileConfig
@@ -25,7 +25,7 @@ class FileConfig
     virtual ~FileConfig();
     /**
      * Set the file name
-     * \param filename the filename
+     * @param filename the filename
      */
     virtual void SetFilename(std::string filename) = 0;
     /**
@@ -43,8 +43,8 @@ class FileConfig
 };
 
 /**
- * \ingroup configstore
- * \brief A dummy class (does nothing)
+ * @ingroup configstore
+ * @brief A dummy class (does nothing)
  */
 class NoneFileConfig : public FileConfig
 {

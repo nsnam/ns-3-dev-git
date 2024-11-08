@@ -23,23 +23,23 @@ namespace ns3
 NS_LOG_COMPONENT_DEFINE("NodeList");
 
 /**
- * \ingroup network
- * \brief private implementation detail of the NodeList API.
+ * @ingroup network
+ * @brief private implementation detail of the NodeList API.
  */
 class NodeListPriv : public Object
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     NodeListPriv();
     ~NodeListPriv() override;
 
     /**
-     * \param node node to add
-     * \returns index of node in list.
+     * @param node node to add
+     * @returns index of node in list.
      *
      * This method is called automatically from Node::Node so
      * the user has little reason to call it himself.
@@ -47,48 +47,48 @@ class NodeListPriv : public Object
     uint32_t Add(Ptr<Node> node);
 
     /**
-     * \returns a C++ iterator located at the beginning of this
+     * @returns a C++ iterator located at the beginning of this
      *          list.
      */
     NodeList::Iterator Begin() const;
 
     /**
-     * \returns a C++ iterator located at the end of this
+     * @returns a C++ iterator located at the end of this
      *          list.
      */
     NodeList::Iterator End() const;
 
     /**
-     * \param n index of requested node.
-     * \returns the Node associated to index n.
+     * @param n index of requested node.
+     * @returns the Node associated to index n.
      */
     Ptr<Node> GetNode(uint32_t n);
 
     /**
-     * \returns the number of nodes currently in the list.
+     * @returns the number of nodes currently in the list.
      */
     uint32_t GetNNodes();
 
     /**
-     * \brief Get the node list object
-     * \returns the node list
+     * @brief Get the node list object
+     * @returns the node list
      */
     static Ptr<NodeListPriv> Get();
 
   private:
     /**
-     * \brief Get the node list object
-     * \returns the node list
+     * @brief Get the node list object
+     * @returns the node list
      */
     static Ptr<NodeListPriv>* DoGet();
 
     /**
-     * \brief Delete the nodes list object
+     * @brief Delete the nodes list object
      */
     static void Delete();
 
     /**
-     * \brief Dispose the nodes in the list
+     * @brief Dispose the nodes in the list
      */
     void DoDispose() override;
 

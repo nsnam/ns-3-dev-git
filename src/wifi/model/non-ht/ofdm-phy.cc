@@ -87,7 +87,7 @@ const std::map<MHz_u, std::array<uint64_t, 8> > s_ofdmRatesBpsList =
 /**
  * Get the array of possible OFDM rates for each bandwidth.
  *
- * \return the OFDM rates in bits per second
+ * @return the OFDM rates in bits per second
  */
 const std::map<MHz_u, std::array<uint64_t, 8>>&
 GetOfdmRatesBpsList()

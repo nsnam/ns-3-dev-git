@@ -16,7 +16,7 @@ namespace ns3
 {
 
 /**
- * \ingroup wifi
+ * @ingroup wifi
  *
  * OptFieldWithPresenceInd is a class modeling an optional field (in an Information Element, a
  * management frame, etc.) having an associated Presence Indicator bit. This class is a wrapper

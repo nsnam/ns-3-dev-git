@@ -265,7 +265,7 @@ NdiscCache::Entry::AddWaitingPacket(Ipv6PayloadHeaderPair p)
     if (m_waiting.size() >= m_ndCache->GetUnresQlen())
     {
         /* we store only m_unresQlen packet => first packet in first packet remove */
-        /** \todo report packet as 'dropped' */
+        /** @todo report packet as 'dropped' */
         m_waiting.pop_front();
     }
     m_waiting.push_back(p);
@@ -275,7 +275,7 @@ void
 NdiscCache::Entry::ClearWaitingPacket()
 {
     NS_LOG_FUNCTION(this);
-    /** \todo report packets as 'dropped' */
+    /** @todo report packets as 'dropped' */
     m_waiting.clear();
 }
 

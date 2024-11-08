@@ -16,9 +16,9 @@ namespace ns3
 {
 
 /**
- * \ingroup mobility
- * \brief a 2d rectangle
- * \see attribute_Rectangle
+ * @ingroup mobility
+ * @brief a 2d rectangle
+ * @see attribute_Rectangle
  */
 class Rectangle
 {
@@ -39,10 +39,10 @@ class Rectangle
     };
 
     /**
-     * \param _xMin x coordinates of left boundary.
-     * \param _xMax x coordinates of right boundary.
-     * \param _yMin y coordinates of bottom boundary.
-     * \param _yMax y coordinates of top boundary.
+     * @param _xMin x coordinates of left boundary.
+     * @param _xMax x coordinates of right boundary.
+     * @param _yMin y coordinates of bottom boundary.
+     * @param _yMax y coordinates of top boundary.
      *
      * Create a rectangle.
      */
@@ -52,24 +52,24 @@ class Rectangle
      */
     Rectangle();
     /**
-     * \param position the position to test.
-     * \return true if the input position is located within the rectangle, false otherwise.
+     * @param position the position to test.
+     * @return true if the input position is located within the rectangle, false otherwise.
      *
      * This method compares only the x and y coordinates of the input position.
      * It ignores the z coordinate.
      */
     bool IsInside(const Vector& position) const;
     /**
-     * \param position the position to test.
-     * \return true if the input position is located on the rectable border, false otherwise.
+     * @param position the position to test.
+     * @return true if the input position is located on the rectable border, false otherwise.
      *
      * This method compares only the x and y coordinates of the input position.
      * It ignores the z coordinate.
      */
     bool IsOnTheBorder(const Vector& position) const;
     /**
-     * \param position the position to test.
-     * \return the side of the rectangle the input position is closest to.
+     * @param position the position to test.
+     * @return the side of the rectangle the input position is closest to.
      *
      * This method compares only the x and y coordinates of the input position.
      * It ignores the z coordinate.
@@ -90,9 +90,9 @@ class Rectangle
      */
     Side GetClosestSideOrCorner(const Vector& position) const;
     /**
-     * \param current the current position
-     * \param speed the current speed
-     * \return the intersection point between the rectangle and the current+speed vector.
+     * @param current the current position
+     * @param speed the current speed
+     * @return the intersection point between the rectangle and the current+speed vector.
      *
      * This method assumes that the current position is located _inside_
      * the rectangle and checks for this with an assert.

@@ -28,8 +28,8 @@
 using namespace ns3;
 
 /**
- * \ingroup applications-test
- * \ingroup tests
+ * @ingroup applications-test
+ * @ingroup tests
  *
  * Basic test, checks that the right quantity of packets are sent and received.
  */
@@ -43,13 +43,13 @@ class BulkSendBasicTestCase : public TestCase
     void DoRun() override;
     /**
      * Record a packet successfully sent
-     * \param p the packet
+     * @param p the packet
      */
     void SendTx(Ptr<const Packet> p);
     /**
      * Record a packet successfully received
-     * \param p the packet
-     * \param addr the sender's address
+     * @param p the packet
+     * @param addr the sender's address
      */
     void ReceiveRx(Ptr<const Packet> p, const Address& addr);
     uint64_t m_sent{0};     //!< number of bytes sent
@@ -121,8 +121,8 @@ BulkSendBasicTestCase::DoRun()
 }
 
 /**
- * \ingroup applications-test
- * \ingroup tests
+ * @ingroup applications-test
+ * @ingroup tests
  *
  * This test checks that the sequence number is sent and received in sequence
  * despite the sending application having to pause and restart its sending
@@ -138,10 +138,10 @@ class BulkSendSeqTsSizeTestCase : public TestCase
     void DoRun() override;
     /**
      * Record a packet successfully sent
-     * \param p the packet
-     * \param from source address
-     * \param to destination address
-     * \param header the SeqTsSizeHeader
+     * @param p the packet
+     * @param from source address
+     * @param to destination address
+     * @param header the SeqTsSizeHeader
      */
     void SendTx(Ptr<const Packet> p,
                 const Address& from,
@@ -149,10 +149,10 @@ class BulkSendSeqTsSizeTestCase : public TestCase
                 const SeqTsSizeHeader& header);
     /**
      * Record a packet successfully received
-     * \param p the packet
-     * \param from source address
-     * \param to destination address
-     * \param header the SeqTsSizeHeader
+     * @param p the packet
+     * @param from source address
+     * @param to destination address
+     * @param header the SeqTsSizeHeader
      */
     void ReceiveRx(Ptr<const Packet> p,
                    const Address& from,
@@ -251,10 +251,10 @@ BulkSendSeqTsSizeTestCase::DoRun()
 }
 
 /**
- * \ingroup applications-test
- * \ingroup tests
+ * @ingroup applications-test
+ * @ingroup tests
  *
- * \brief BulkSend TestSuite
+ * @brief BulkSend TestSuite
  */
 class BulkSendTestSuite : public TestSuite
 {

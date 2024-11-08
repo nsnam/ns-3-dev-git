@@ -26,12 +26,12 @@ namespace ns3
 class Socket;
 
 /**
- * \ingroup internet-apps
- * \defgroup ping Ping
+ * @ingroup internet-apps
+ * @defgroup ping Ping
  */
 
 /**
- * \ingroup ping
+ * @ingroup ping
  *
  * This application behaves similarly to the Unix ping application, although
  * with fewer options supported.  The application can be used to send
@@ -45,14 +45,14 @@ class Ping : public Application
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
     /**
-     * \enum VerboseMode
-     * \brief Encode three possible levels of verbose output
+     * @enum VerboseMode
+     * @brief Encode three possible levels of verbose output
      */
     enum VerboseMode
     {
@@ -62,8 +62,8 @@ class Ping : public Application
     };
 
     /**
-     * \enum DropReason
-     * \brief Reason why a ping was dropped
+     * @enum DropReason
+     * @brief Reason why a ping was dropped
      */
     enum DropReason
     {
@@ -100,39 +100,39 @@ class Ping : public Application
     ~Ping() override;
 
     /**
-     * \brief Set routers for IPv6 routing type 0 (loose routing).
-     * \param routers routers addresses
+     * @brief Set routers for IPv6 routing type 0 (loose routing).
+     * @param routers routers addresses
      */
     void SetRouters(const std::vector<Ipv6Address>& routers);
 
     /**
      * TracedCallback signature for Rtt trace
      *
-     * \param [in] seq The ICMP sequence number
-     * \param [in] p The ICMP echo request packet (including ICMP header)
+     * @param [in] seq The ICMP sequence number
+     * @param [in] p The ICMP echo request packet (including ICMP header)
      */
     typedef void (*TxTrace)(uint16_t seq, Ptr<const Packet> p);
 
     /**
      * TracedCallback signature for Rtt trace
      *
-     * \param [in] seq The ICMP sequence number
-     * \param [in] rtt The reported RTT
+     * @param [in] seq The ICMP sequence number
+     * @param [in] rtt The reported RTT
      */
     typedef void (*RttTrace)(uint16_t seq, Time rtt);
 
     /**
      * TracedCallback signature for Drop trace
      *
-     * \param [in] seq The ICMP sequence number
-     * \param [in] reason The reason for the reported drop
+     * @param [in] seq The ICMP sequence number
+     * @param [in] reason The reason for the reported drop
      */
     typedef void (*DropTrace)(uint16_t seq, DropReason reason);
 
     /**
      * TracedCallback signature for Report trace
      *
-     * \param [in] report The report information
+     * @param [in] report The report information
      */
     typedef void (*ReportTrace)(const PingReport& report);
 
@@ -144,7 +144,7 @@ class Ping : public Application
     void StopApplication() override;
 
     /**
-     * \brief Writes data to buffer in little-endian format.
+     * @brief Writes data to buffer in little-endian format.
      *
      * Least significant byte of data is at lowest buffer address
      *
@@ -154,16 +154,16 @@ class Ping : public Application
     void Write64(uint8_t* buffer, const uint64_t data);
 
     /**
-     * \brief Writes data from a little-endian formatted buffer to data.
+     * @brief Writes data from a little-endian formatted buffer to data.
      *
-     * \param buffer the buffer to read from
-     * \return the read data
+     * @param buffer the buffer to read from
+     * @return the read data
      */
     uint64_t Read64(const uint8_t* buffer);
 
     /**
-     * \brief Return the application signatiure.
-     * \returns the application signature.
+     * @brief Return the application signatiure.
+     * @returns the application signature.
      *
      * The application signature is the NodeId concatenated with the
      * application index in the node.
@@ -171,15 +171,15 @@ class Ping : public Application
     uint64_t GetApplicationSignature() const;
 
     /**
-     * \brief Receive an ICMPv4 or an ICMPv6 Echo reply
-     * \param socket the receiving socket
+     * @brief Receive an ICMPv4 or an ICMPv6 Echo reply
+     * @param socket the receiving socket
      *
      * This function is called by lower layers through a callback.
      */
     void Receive(Ptr<Socket> socket);
 
     /**
-     * \brief Send one Ping (ICMPv4 ECHO or ICMPv6 ECHO) to the destination
+     * @brief Send one Ping (ICMPv4 ECHO or ICMPv6 ECHO) to the destination
      */
     void Send();
 
@@ -229,15 +229,15 @@ class Ping : public Application
     EventId m_next;
 
     /**
-     * \brief Sent echo request data.
+     * @brief Sent echo request data.
      */
     class EchoRequestData
     {
       public:
         /**
          * Constructor.
-         * \param txTimePar Echo request Tx time.
-         * \param ackedPar True if the Echo request has been acknowledged at least once.
+         * @param txTimePar Echo request Tx time.
+         * @param ackedPar True if the Echo request has been acknowledged at least once.
          */
         EchoRequestData(Time txTimePar, bool ackedPar)
             : txTime(txTimePar),

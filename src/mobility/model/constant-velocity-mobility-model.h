@@ -19,9 +19,9 @@ namespace ns3
 {
 
 /**
- * \ingroup mobility
+ * @ingroup mobility
  *
- * \brief Mobility model for which the current speed does not change once it has been set and until
+ * @brief Mobility model for which the current speed does not change once it has been set and until
  * it is set again explicitly to a new value.
  */
 class ConstantVelocityMobilityModel : public MobilityModel
@@ -29,7 +29,7 @@ class ConstantVelocityMobilityModel : public MobilityModel
   public:
     /**
      * Register this type with the TypeId system.
-     * \return the object TypeId
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     /**
@@ -40,7 +40,7 @@ class ConstantVelocityMobilityModel : public MobilityModel
     ~ConstantVelocityMobilityModel() override;
 
     /**
-     * \param speed the new speed to set.
+     * @param speed the new speed to set.
      *
      * Set the current speed now to (dx,dy,dz)
      * Unit is meters/s

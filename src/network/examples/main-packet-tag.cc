@@ -15,15 +15,15 @@
 using namespace ns3;
 
 /**
- * \ingroup network
+ * @ingroup network
  * A simple example of an Tag implementation
  */
 class MyTag : public Tag
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     TypeId GetInstanceTypeId() const override;
@@ -35,12 +35,12 @@ class MyTag : public Tag
     // these are our accessors to our tag structure
     /**
      * Set the tag value
-     * \param value The tag value.
+     * @param value The tag value.
      */
     void SetSimpleValue(uint8_t value);
     /**
      * Get the tag value
-     * \return the tag value.
+     * @return the tag value.
      */
     uint8_t GetSimpleValue() const;
 

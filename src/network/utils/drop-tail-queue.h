@@ -13,21 +13,21 @@ namespace ns3
 {
 
 /**
- * \ingroup queue
+ * @ingroup queue
  *
- * \brief A FIFO packet queue that drops tail-end packets on overflow
+ * @brief A FIFO packet queue that drops tail-end packets on overflow
  */
 template <typename Item>
 class DropTailQueue : public Queue<Item>
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     /**
-     * \brief DropTailQueue Constructor
+     * @brief DropTailQueue Constructor
      *
      * Creates a droptail queue with a maximum size of 100 packets by default
      */

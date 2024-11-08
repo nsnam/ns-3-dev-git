@@ -195,7 +195,7 @@ NixVectorRouting<T>::GetNixVector(Ptr<Node> source, IpAddress dest, Ptr<NetDevic
     }
 
     // if source == dest, then we have a special case
-    /// \internal
+    /// @internal
     /// Do not process packets to self (see \bugid{1308})
     if (source == destNode)
     {

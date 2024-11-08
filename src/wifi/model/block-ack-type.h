@@ -17,14 +17,14 @@ namespace ns3
 {
 
 /**
- * \ingroup wifi
+ * @ingroup wifi
  * The different BlockAck variants.
  */
 struct BlockAckType
 {
     /**
-     * \enum Variant
-     * \brief The BlockAck variants
+     * @enum Variant
+     * @brief The BlockAck variants
      */
     enum Variant
     {
@@ -45,28 +45,28 @@ struct BlockAckType
     /**
      * Constructor for BlockAckType with given variant.
      *
-     * \param v the Block Ack variant
+     * @param v the Block Ack variant
      */
     BlockAckType(Variant v);
     /**
      * Constructor for BlockAckType with given variant
      * and bitmap length.
      *
-     * \param v the Block Ack variant
-     * \param l the length (bytes) of included bitmaps
+     * @param v the Block Ack variant
+     * @param l the length (bytes) of included bitmaps
      */
     BlockAckType(Variant v, std::vector<uint8_t> l);
 };
 
 /**
- * \ingroup wifi
+ * @ingroup wifi
  * The different BlockAckRequest variants.
  */
 struct BlockAckReqType
 {
     /**
-     * \enum Variant
-     * \brief The BlockAckReq variants
+     * @enum Variant
+     * @brief The BlockAckReq variants
      */
     enum Variant
     {
@@ -87,15 +87,15 @@ struct BlockAckReqType
     /**
      * Constructor for BlockAckReqType with given variant.
      *
-     * \param v the Block Ack Request variant
+     * @param v the Block Ack Request variant
      */
     BlockAckReqType(Variant v);
     /**
      * Constructor for BlockAckReqType with given variant
      * and number of SSC fields.
      *
-     * \param v the Block Ack Request variant
-     * \param nSeqControls the number of included Starting Sequence Control fields
+     * @param v the Block Ack Request variant
+     * @param nSeqControls the number of included Starting Sequence Control fields
      */
     BlockAckReqType(Variant v, uint8_t nSeqControls);
 };
@@ -103,18 +103,18 @@ struct BlockAckReqType
 /**
  * Serialize BlockAckType to ostream in a human-readable form.
  *
- * \param os std::ostream
- * \param type block ack type
- * \return std::ostream
+ * @param os std::ostream
+ * @param type block ack type
+ * @return std::ostream
  */
 std::ostream& operator<<(std::ostream& os, const BlockAckType& type);
 
 /**
  * Serialize BlockAckReqType to ostream in a human-readable form.
  *
- * \param os std::ostream
- * \param type block ack request type
- * \return std::ostream
+ * @param os std::ostream
+ * @param type block ack request type
+ * @return std::ostream
  */
 std::ostream& operator<<(std::ostream& os, const BlockAckReqType& type);
 

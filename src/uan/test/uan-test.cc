@@ -23,10 +23,10 @@
 using namespace ns3;
 
 /**
- * \ingroup uan-test
- * \ingroup tests
+ * @ingroup uan-test
+ * @ingroup tests
  *
- * \brief Uan Test
+ * @brief Uan Test
  */
 class UanTest : public TestCase
 {
@@ -38,26 +38,26 @@ class UanTest : public TestCase
   private:
     /**
      * Create node function
-     * \param pos the position of the device
-     * \param chan the communication channel
-     * \returns the UAN device
+     * @param pos the position of the device
+     * @param chan the communication channel
+     * @returns the UAN device
      */
     Ptr<UanNetDevice> CreateNode(Vector pos, Ptr<UanChannel> chan);
     /**
      * Phy test function
-     * \returns true if successful
+     * @returns true if successful
      */
     bool DoPhyTests();
     /**
      * Do one Phy test function
-     * \param t1 the time to send first packet
-     * \param t2 the time to send the second packet
-     * \param r1 first distance constant
-     * \param r2 second distance constant
-     * \param prop the propagation model
-     * \param mode1 the send mode for device 1
-     * \param mode2 the send mode for device 2
-     * \returns number of bytes received
+     * @param t1 the time to send first packet
+     * @param t2 the time to send the second packet
+     * @param r1 first distance constant
+     * @param r2 second distance constant
+     * @param prop the propagation model
+     * @param mode1 the send mode for device 1
+     * @param mode2 the send mode for device 2
+     * @returns number of bytes received
      */
     uint32_t DoOnePhyTest(Time t1,
                           Time t2,
@@ -68,17 +68,17 @@ class UanTest : public TestCase
                           uint16_t mode2 = 0);
     /**
      * Receive packet function
-     * \param dev the device
-     * \param pkt the packet
-     * \param mode the receive mode
-     * \param sender the address of the sender
-     * \returns true if successful
+     * @param dev the device
+     * @param pkt the packet
+     * @param mode the receive mode
+     * @param sender the address of the sender
+     * @returns true if successful
      */
     bool RxPacket(Ptr<NetDevice> dev, Ptr<const Packet> pkt, uint16_t mode, const Address& sender);
     /**
      * Send one packet function
-     * \param dev the device
-     * \param mode the transmit mode
+     * @param dev the device
+     * @param mode the transmit mode
      */
     void SendOnePacket(Ptr<UanNetDevice> dev, uint16_t mode);
     ObjectFactory m_phyFac; ///< Phy
@@ -296,10 +296,10 @@ UanTest::DoRun()
 }
 
 /**
- * \ingroup uan-test
- * \ingroup tests
+ * @ingroup uan-test
+ * @ingroup tests
  *
- * \brief UanModesList Test
+ * @brief UanModesList Test
  */
 class UanModesListTest : public TestCase
 {
@@ -381,10 +381,10 @@ UanModesListTest::DoRun()
 }
 
 /**
- * \ingroup uan-test
- * \ingroup tests
+ * @ingroup uan-test
+ * @ingroup tests
  *
- * \brief Uan Test Suite
+ * @brief Uan Test Suite
  */
 class UanTestSuite : public TestSuite
 {

@@ -15,8 +15,8 @@ namespace ns3
 {
 
 /**
- * \brief Model the error rate for different modulations.
- * \ingroup wifi
+ * @brief Model the error rate for different modulations.
+ * @ingroup wifi
  *
  * A packet of interest (e.g., a packet can potentially be received by the MAC)
  * is divided into chunks. Each chunk is related to an start/end receiving event.
@@ -43,8 +43,8 @@ class YansErrorRateModel : public ErrorRateModel
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -61,72 +61,72 @@ class YansErrorRateModel : public ErrorRateModel
     /**
      * Return BER of BPSK with the given parameters.
      *
-     * \param snr SNR ratio (not dB)
-     * \param signalSpread
-     * \param phyRate
+     * @param snr SNR ratio (not dB)
+     * @param signalSpread
+     * @param phyRate
      *
-     * \return BER of BPSK at the given SNR
+     * @return BER of BPSK at the given SNR
      */
     double GetBpskBer(double snr, uint32_t signalSpread, uint64_t phyRate) const;
     /**
      * Return BER of QAM-m with the given parameters.
      *
-     * \param snr SNR ratio (not dB)
-     * \param m
-     * \param signalSpread
-     * \param phyRate
+     * @param snr SNR ratio (not dB)
+     * @param m
+     * @param signalSpread
+     * @param phyRate
      *
-     * \return BER of BPSK at the given SNR
+     * @return BER of BPSK at the given SNR
      */
     double GetQamBer(double snr, unsigned int m, uint32_t signalSpread, uint64_t phyRate) const;
     /**
      * Return k!
      *
-     * \param k
+     * @param k
      *
-     * \return k!
+     * @return k!
      */
     uint32_t Factorial(uint32_t k) const;
     /**
      * Return Binomial distribution for a given k, p, and n
      *
-     * \param k
-     * \param p
-     * \param n
+     * @param k
+     * @param p
+     * @param n
      *
-     * \return a Binomial distribution
+     * @return a Binomial distribution
      */
     double Binomial(uint32_t k, double p, uint32_t n) const;
     /**
-     * \param ber
-     * \param d
+     * @param ber
+     * @param d
      *
-     * \return double
+     * @return double
      */
     double CalculatePdOdd(double ber, unsigned int d) const;
     /**
-     * \param ber
-     * \param d
+     * @param ber
+     * @param d
      *
-     * \return double
+     * @return double
      */
     double CalculatePdEven(double ber, unsigned int d) const;
     /**
-     * \param ber
-     * \param d
+     * @param ber
+     * @param d
      *
-     * \return double
+     * @return double
      */
     double CalculatePd(double ber, unsigned int d) const;
     /**
-     * \param snr SNR ratio (not dB)
-     * \param nbits
-     * \param signalSpread
-     * \param phyRate
-     * \param dFree
-     * \param adFree
+     * @param snr SNR ratio (not dB)
+     * @param nbits
+     * @param signalSpread
+     * @param phyRate
+     * @param dFree
+     * @param adFree
      *
-     * \return double
+     * @return double
      */
     double GetFecBpskBer(double snr,
                          uint64_t nbits,
@@ -135,16 +135,16 @@ class YansErrorRateModel : public ErrorRateModel
                          uint32_t dFree,
                          uint32_t adFree) const;
     /**
-     * \param snr SNR ratio (not dB)
-     * \param nbits
-     * \param signalSpread
-     * \param phyRate
-     * \param m
-     * \param dfree
-     * \param adFree
-     * \param adFreePlusOne
+     * @param snr SNR ratio (not dB)
+     * @param nbits
+     * @param signalSpread
+     * @param phyRate
+     * @param m
+     * @param dfree
+     * @param adFree
+     * @param adFreePlusOne
      *
-     * \return double
+     * @return double
      */
     double GetFecQamBer(double snr,
                         uint64_t nbits,

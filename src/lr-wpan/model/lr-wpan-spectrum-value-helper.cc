@@ -23,8 +23,8 @@ Ptr<SpectrumModel>
     g_LrWpanSpectrumModel; //!< Global object used to initialize the LrWpan Spectrum Model
 
 /**
- * \ingroup lr-wpan
- * \brief Helper class used to automatically initialize the LrWpan Spectrum Model objects
+ * @ingroup lr-wpan
+ * @brief Helper class used to automatically initialize the LrWpan Spectrum Model objects
  */
 class LrWpanSpectrumModelInitializer
 {

@@ -17,9 +17,9 @@ namespace ns3
 {
 
 /**
- * \ingroup Matrices
+ * @ingroup Matrices
  *
- * \brief MatrixArray class inherits ValArray class and provides additional
+ * @brief MatrixArray class inherits ValArray class and provides additional
  * interfaces to ValArray which enable page-wise linear algebra operations for
  * arrays of matrices. While ValArray class is focused on efficient storage,
  * access and basic algebra element-wise operations on 3D numerical arrays,
@@ -74,122 +74,122 @@ class MatrixArray : public ValArray<T>
     // instruct the compiler to generate the default constructor
     MatrixArray() = default;
     /**
-     * \brief Constructor "pages" number of matrices that are of size "numRows"x"numCols",
+     * @brief Constructor "pages" number of matrices that are of size "numRows"x"numCols",
      * and are initialized with all-zero elements.
      * If only 1 parameter, numRows, is provided then a single 1D array is being created.
-     * \param numRows the number of rows
-     * \param numCols the number of columns
-     * \param numPages the number of pages
+     * @param numRows the number of rows
+     * @param numCols the number of columns
+     * @param numPages the number of pages
      */
     MatrixArray(size_t numRows, size_t numCols = 1, size_t numPages = 1);
     /**
-     * \brief Constructor creates a single array of values.size () elements and 1 column,
+     * @brief Constructor creates a single array of values.size () elements and 1 column,
      * and uses std::valarray<T> values to initialize the elements.
-     * \param values std::valarray<T> that will be used to initialize elements of 1D array
+     * @param values std::valarray<T> that will be used to initialize elements of 1D array
      */
     explicit MatrixArray(const std::valarray<T>& values);
     /**
-     * \brief Constructor creates a single array of values.size () elements and 1 column,
+     * @brief Constructor creates a single array of values.size () elements and 1 column,
      * and moves std::valarray<T> values to initialize the elements.
-     * \param values std::valarray<T> that will be moved to initialize elements of 1D array
+     * @param values std::valarray<T> that will be moved to initialize elements of 1D array
      */
     MatrixArray(std::valarray<T>&& values);
     /**
-     * \brief Constructor creates a single array of values.size () elements and 1 column,
+     * @brief Constructor creates a single array of values.size () elements and 1 column,
      * and uses std::vector<T> values to initialize the elements.
-     * \param values std::vector<T> that will be used to initialize elements of 1D array
+     * @param values std::vector<T> that will be used to initialize elements of 1D array
      */
     explicit MatrixArray(const std::vector<T>& values);
     /**
-     * \brief Constructor creates a single matrix of numRows and numCols, and uses
+     * @brief Constructor creates a single matrix of numRows and numCols, and uses
      * std::valarray<T> values to initialize the elements.
-     * \param numRows the number of rows
-     * \param numCols the number of columns
-     * \param values std::valarray<T> that will be used to initialize elements of 3D array
+     * @param numRows the number of rows
+     * @param numCols the number of columns
+     * @param values std::valarray<T> that will be used to initialize elements of 3D array
      */
     MatrixArray(size_t numRows, size_t numCols, const std::valarray<T>& values);
     /**
-     * \brief Constructor creates a single matrix of numRows and numCols, and moves
+     * @brief Constructor creates a single matrix of numRows and numCols, and moves
      * std::valarray<T> values to initialize the elements.
-     * \param numRows the number of rows
-     * \param numCols the number of columns
-     * \param values std::valarray<T> that will be moved to initialize elements of 3D array
+     * @param numRows the number of rows
+     * @param numCols the number of columns
+     * @param values std::valarray<T> that will be moved to initialize elements of 3D array
      */
     MatrixArray(size_t numRows, size_t numCols, std::valarray<T>&& values);
     /**
-     * \brief Constructor creates the array of numPages matrices of numRows x numCols dimensions,
+     * @brief Constructor creates the array of numPages matrices of numRows x numCols dimensions,
      * and uses std::valarray<T> values to initialize all the elements.
-     * \param numRows the number of rows
-     * \param numCols the number of columns
-     * \param numPages the number of pages
-     * \param values std::valarray<T> that will be used to initialize elements of 3D array
+     * @param numRows the number of rows
+     * @param numCols the number of columns
+     * @param numPages the number of pages
+     * @param values std::valarray<T> that will be used to initialize elements of 3D array
      */
     MatrixArray(size_t numRows, size_t numCols, size_t numPages, const std::valarray<T>& values);
     /**
-     * \brief Constructor creates the array of numPages matrices of numRows x numCols dimensions,
+     * @brief Constructor creates the array of numPages matrices of numRows x numCols dimensions,
      * and moves std::valarray<T> values to initialize all the elements.
-     * \param numRows the number of rows
-     * \param numCols the number of columns
-     * \param numPages the number of pages
-     * \param values std::valarray<T> that will be used to initialize elements of 3D array
+     * @param numRows the number of rows
+     * @param numCols the number of columns
+     * @param numPages the number of pages
+     * @param values std::valarray<T> that will be used to initialize elements of 3D array
      */
     MatrixArray(size_t numRows, size_t numCols, size_t numPages, std::valarray<T>&& values);
 
     /**
-     * \brief Element-wise multiplication with a scalar value.
-     * \param rhs is a scalar value of type T
-     * \returns The matrix in which each element has been multiplied by the given
+     * @brief Element-wise multiplication with a scalar value.
+     * @param rhs is a scalar value of type T
+     * @returns The matrix in which each element has been multiplied by the given
      * scalar value.
      */
     MatrixArray operator*(const T& rhs) const;
     /**
-     * \brief operator+ definition for MatrixArray<T>.
-     * \param rhs The rhs MatrixArray object
-     * \returns The result of operator+ of this MatrixArray and rhs MatrixArray
+     * @brief operator+ definition for MatrixArray<T>.
+     * @param rhs The rhs MatrixArray object
+     * @returns The result of operator+ of this MatrixArray and rhs MatrixArray
      */
     MatrixArray operator+(const MatrixArray<T>& rhs) const;
     /**
-     * \brief binary operator- definition for MatrixArray<T>.
-     * \param rhs The rhs MatrixArray object
-     * \returns The result of operator- of this MatrixArray and rhs MatrixArray
+     * @brief binary operator- definition for MatrixArray<T>.
+     * @param rhs The rhs MatrixArray object
+     * @returns The result of operator- of this MatrixArray and rhs MatrixArray
      */
     MatrixArray operator-(const MatrixArray<T>& rhs) const;
     /**
-     * \brief unary operator- definition for MatrixArray<T>.
-     * \return the result of the operator-
+     * @brief unary operator- definition for MatrixArray<T>.
+     * @return the result of the operator-
      */
     MatrixArray operator-() const;
     /**
-     * \brief Page-wise matrix multiplication.
+     * @brief Page-wise matrix multiplication.
      * This operator interprets the 3D array as an array of matrices,
      * and performs a linear algebra operation on each of the matrices (pages),
      * i.e., matrices from this MatrixArray and rhs with the same page indices are
      * multiplied.
      * The number of columns of this MatrixArray must be equal to the number of
      * rows in rhs, and rhs must have the same number of pages as this MatrixArray.
-     * \param rhs is another MatrixArray instance
-     * \returns The array of results of matrix multiplications.
+     * @param rhs is another MatrixArray instance
+     * @returns The array of results of matrix multiplications.
      */
     MatrixArray operator*(const MatrixArray<T>& rhs) const;
     /**
-     * \brief This operator interprets the 3D array as an array of matrices,
+     * @brief This operator interprets the 3D array as an array of matrices,
      * and performs a linear algebra operation on each of the matrices (pages),
      * i.e., transposes the matrix or array of matrices definition for MatrixArray<T>.
-     * \return The resulting MatrixArray composed of the array of transposed matrices.
+     * @return The resulting MatrixArray composed of the array of transposed matrices.
      */
     MatrixArray Transpose() const;
     /**
-     * \brief This operator calculates a vector o determinants, one for each page
-     * \return The resulting MatrixArray with the determinants for each page.
+     * @brief This operator calculates a vector o determinants, one for each page
+     * @return The resulting MatrixArray with the determinants for each page.
      */
     MatrixArray Determinant() const;
     /**
-     * \brief This operator calculates a vector of Frobenius norm, one for each page
-     * \return The resulting MatrixArray with the Frobenius norm for each page.
+     * @brief This operator calculates a vector of Frobenius norm, one for each page
+     * @return The resulting MatrixArray with the Frobenius norm for each page.
      */
     MatrixArray FrobeniusNorm() const;
     /**
-     * \brief Multiply each matrix in the array by the left and the right matrix.
+     * @brief Multiply each matrix in the array by the left and the right matrix.
      * For each page of this MatrixArray the operation performed is
      * lMatrix * matrix(pageIndex) * rMatrix, and the resulting MatrixArray<T>
      * contains the array of the results per page. If "this" has dimensions
@@ -205,9 +205,9 @@ class MatrixArray : public ValArray<T>
      * This operation is not possible when using the multiplication operator because
      * the number of pages does not match.
      *
-     * \param lMatrix the left matrix in the multiplication
-     * \param rMatrix the right matrix in the multiplication
-     * \returns Returns the result of the multiplication which is a 3D MatrixArray
+     * @param lMatrix the left matrix in the multiplication
+     * @param rMatrix the right matrix in the multiplication
+     * @returns Returns the result of the multiplication which is a 3D MatrixArray
      * with dimensions J x K x P as explained previously.
      */
     MatrixArray MultiplyByLeftAndRightMatrix(const MatrixArray<T>& lMatrix,
@@ -218,47 +218,47 @@ class MatrixArray : public ValArray<T>
     using ValArray<T>::AssertEqualDims;
 
     /**
-     * \brief Function that performs the Hermitian transpose of this MatrixArray
+     * @brief Function that performs the Hermitian transpose of this MatrixArray
      * and returns a new matrix that is the result of the operation.
      * This function assumes that the matrix contains complex numbers, because of that
      * it is only available for the <std::complex<double>> specialization of MatrixArray.
-     * \return Returns a new matrix that is the result of the Hermitian transpose
+     * @return Returns a new matrix that is the result of the Hermitian transpose
      */
     template <bool EnableBool = true,
               typename = std::enable_if_t<(std::is_same_v<T, std::complex<double>> && EnableBool)>>
     MatrixArray<T> HermitianTranspose() const;
 
     /**
-     * \brief Function that copies the current 1-page matrix into a new matrix with n copies of the
+     * @brief Function that copies the current 1-page matrix into a new matrix with n copies of the
      * original matrix
-     * \param nCopies Number of copies to make of the input 1-page MatrixArray
-     * \return Returns a new matrix with n page copies
+     * @param nCopies Number of copies to make of the input 1-page MatrixArray
+     * @return Returns a new matrix with n page copies
      */
     MatrixArray<T> MakeNCopies(size_t nCopies) const;
     /**
-     * \brief Function extracts a page from a MatrixArray
-     * \param page Index of the page to be extracted from the n-page MatrixArray
-     * \return Returns an extracted page of the original MatrixArray
+     * @brief Function extracts a page from a MatrixArray
+     * @param page Index of the page to be extracted from the n-page MatrixArray
+     * @return Returns an extracted page of the original MatrixArray
      */
     MatrixArray<T> ExtractPage(size_t page) const;
     /**
-     * \brief Function joins multiple pages into a single MatrixArray
-     * \param pages Vector containing n 1-page MatrixArrays to be merged into a n-page MatrixArray
-     * \return Returns a joint MatrixArray
+     * @brief Function joins multiple pages into a single MatrixArray
+     * @param pages Vector containing n 1-page MatrixArrays to be merged into a n-page MatrixArray
+     * @return Returns a joint MatrixArray
      */
     static MatrixArray<T> JoinPages(const std::vector<MatrixArray<T>>& pages);
     /**
-     * \brief Function produces an identity MatrixArray with the specified size
-     * \param size Size of the output identity matrix
-     * \param pages Number of copies of the identity matrix
-     * \return Returns an identity MatrixArray
+     * @brief Function produces an identity MatrixArray with the specified size
+     * @param size Size of the output identity matrix
+     * @param pages Number of copies of the identity matrix
+     * @return Returns an identity MatrixArray
      */
     static MatrixArray<T> IdentityMatrix(const size_t size, const size_t pages = 1);
     /**
-     * \brief Function produces an identity MatrixArray with the same size
+     * @brief Function produces an identity MatrixArray with the same size
      * as the input MatrixArray
-     * \param likeme Input matrix used to determine the size of the identity matrix
-     * \return Returns an identity MatrixArray
+     * @param likeme Input matrix used to determine the size of the identity matrix
+     * @return Returns an identity MatrixArray
      */
     static MatrixArray<T> IdentityMatrix(const MatrixArray& likeme);
 

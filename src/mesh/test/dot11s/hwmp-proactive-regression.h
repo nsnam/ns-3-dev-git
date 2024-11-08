@@ -15,12 +15,12 @@
 using namespace ns3;
 
 /**
- * \ingroup dot11s-test
+ * @ingroup dot11s-test
  *
- * \brief There are 5 stations set into a row, the center station is root.
+ * @brief There are 5 stations set into a row, the center station is root.
  * Regression test indicates that traffic goes from the first to the
  * last stations without reactive route discovery procedure
- * \verbatim
+ * @verbatim
  *          Src                Root                 Dst
  * (node ID) 0         1         2         3         4
  * (MAC)   00:01     00:02     00:03     00:04     00:05
@@ -43,7 +43,7 @@ using namespace ns3;
  *           |         |         |         |<--------|          DATA
  *                                             ^
  *               Further data is forwarded by proactive path
- * \endverbatim
+ * @endverbatim
  *
  */
 class HwmpProactiveRegressionTest : public TestCase
@@ -57,7 +57,7 @@ class HwmpProactiveRegressionTest : public TestCase
     void CheckResults();
 
   private:
-    /// \internal It is important to have pointers here
+    /// @internal It is important to have pointers here
     NodeContainer* m_nodes;
     /// Simulation time
     Time m_time;
@@ -82,25 +82,25 @@ class HwmpProactiveRegressionTest : public TestCase
 
     /**
      * Send data
-     * \param socket the sending socket
+     * @param socket the sending socket
      */
     void SendData(Ptr<Socket> socket);
 
     /**
-     * \brief Handle a packet reception.
+     * @brief Handle a packet reception.
      *
      * This function is called by lower layers.
      *
-     * \param socket the socket the packet was received to.
+     * @param socket the socket the packet was received to.
      */
     void HandleReadServer(Ptr<Socket> socket);
 
     /**
-     * \brief Handle a packet reception.
+     * @brief Handle a packet reception.
      *
      * This function is called by lower layers.
      *
-     * \param socket the socket the packet was received to.
+     * @param socket the socket the packet was received to.
      */
     void HandleReadClient(Ptr<Socket> socket);
 };

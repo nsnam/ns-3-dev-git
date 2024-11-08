@@ -15,15 +15,15 @@
 using namespace ns3;
 
 /**
- * \ingroup mesh-test
- * \defgroup flame-test flame sub-module tests
+ * @ingroup mesh-test
+ * @defgroup flame-test flame sub-module tests
  */
 
 /**
- * \ingroup flame-test
+ * @ingroup flame-test
  *
- * \brief FLAME protocol regression test of three stations:
- * \verbatim
+ * @brief FLAME protocol regression test of three stations:
+ * @verbatim
  * <-----------|----------->   Broadcast frame
  *             |----------->|  Unicast frame
  *           Source                   Destination
@@ -47,7 +47,7 @@ using namespace ns3;
  *             |............|............|
  *             After five seconds data is transmitted again as
  *             broadcast, and PATH_UPDATE is sent
- * \endverbatim
+ * @endverbatim
  */
 class FlameRegressionTest : public TestCase
 {
@@ -60,7 +60,7 @@ class FlameRegressionTest : public TestCase
     void CheckResults();
 
   private:
-    /// \internal It is important to have pointers here
+    /// @internal It is important to have pointers here
     NodeContainer* m_nodes;
     /// Simulation time
     Time m_time;
@@ -84,25 +84,25 @@ class FlameRegressionTest : public TestCase
 
     /**
      * Send data
-     * \param socket the sending socket
+     * @param socket the sending socket
      */
     void SendData(Ptr<Socket> socket);
 
     /**
-     * \brief Handle a packet reception.
+     * @brief Handle a packet reception.
      *
      * This function is called by lower layers.
      *
-     * \param socket the socket the packet was received to.
+     * @param socket the socket the packet was received to.
      */
     void HandleReadServer(Ptr<Socket> socket);
 
     /**
-     * \brief Handle a packet reception.
+     * @brief Handle a packet reception.
      *
      * This function is called by lower layers.
      *
-     * \param socket the socket the packet was received to.
+     * @param socket the socket the packet was received to.
      */
     void HandleReadClient(Ptr<Socket> socket);
 };

@@ -16,9 +16,9 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("TcpNewRenoCongAvoidTest");
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief Test the behavior of RFC congestion avoidance
+ * @brief Test the behavior of RFC congestion avoidance
  *
  * From RFC 5681:\n
  *
@@ -44,12 +44,12 @@ class TcpNewRenoCongAvoidNormalTest : public TcpGeneralTest
 {
   public:
     /**
-     * \brief Constructor.
-     * \param segmentSize Segment size.
-     * \param packetSize Size of the packets.
-     * \param packets Number of packets.
-     * \param congControl Type of congestion control.
-     * \param desc The test description.
+     * @brief Constructor.
+     * @param segmentSize Segment size.
+     * @param packetSize Size of the packets.
+     * @param packets Number of packets.
+     * @param congControl Type of congestion control.
+     * @param desc The test description.
      */
     TcpNewRenoCongAvoidNormalTest(uint32_t segmentSize,
                                   uint32_t packetSize,
@@ -63,7 +63,7 @@ class TcpNewRenoCongAvoidNormalTest : public TcpGeneralTest
     void PhyDrop(SocketWho who) override;
     void NormalClose(SocketWho who) override;
     /**
-     * \brief Called each RTT (1.0 sec in the testing environment) and check
+     * @brief Called each RTT (1.0 sec in the testing environment) and check
      * that the overall increment in this RTT is less or equal than 1 MSS
      */
     void Check();
@@ -168,9 +168,9 @@ TcpNewRenoCongAvoidNormalTest::NormalClose(SocketWho who)
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief TestSuite for the behavior of RFC congestion avoidance
+ * @brief TestSuite for the behavior of RFC congestion avoidance
  */
 class TcpRenoCongAvoidTestSuite : public TestSuite
 {

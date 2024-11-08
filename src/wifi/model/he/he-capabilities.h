@@ -15,7 +15,7 @@ namespace ns3
 {
 
 /**
- * \ingroup wifi
+ * @ingroup wifi
  *
  * The IEEE 802.11ax HE Capabilities
  */
@@ -32,22 +32,22 @@ class HeCapabilities : public WifiInformationElement
     /**
      * Set the HE MAC Capabilities Info field in the HE Capabilities information element.
      *
-     * \param ctrl1 the HE MAC Capabilities Info field 1 in the HE Capabilities information element
-     * \param ctrl2 the HE MAC Capabilities Info field 2 in the HE Capabilities information element
+     * @param ctrl1 the HE MAC Capabilities Info field 1 in the HE Capabilities information element
+     * @param ctrl2 the HE MAC Capabilities Info field 2 in the HE Capabilities information element
      */
     void SetHeMacCapabilitiesInfo(uint32_t ctrl1, uint16_t ctrl2);
     /**
      * Set the HE PHY Capabilities Info field in the HE Capabilities information element.
      *
-     * \param ctrl1 the HE PHY Capabilities Info field 1 in the HE Capabilities information element
-     * \param ctrl2 the HE PHY Capabilities Info field 2 in the HE Capabilities information element
-     * \param ctrl3 the HE PHY Capabilities Info field 3 in the HE Capabilities information element
+     * @param ctrl1 the HE PHY Capabilities Info field 1 in the HE Capabilities information element
+     * @param ctrl2 the HE PHY Capabilities Info field 2 in the HE Capabilities information element
+     * @param ctrl3 the HE PHY Capabilities Info field 3 in the HE Capabilities information element
      */
     void SetHePhyCapabilitiesInfo(uint64_t ctrl1, uint16_t ctrl2, uint8_t ctrl3);
     /**
      * Set the MCS and NSS field in the HE Capabilities information element.
      *
-     * \param ctrl the MCS and NSS field in the HE Capabilities information element
+     * @param ctrl the MCS and NSS field in the HE Capabilities information element
      */
     void SetSupportedMcsAndNss(uint16_t ctrl);
 
@@ -55,7 +55,7 @@ class HeCapabilities : public WifiInformationElement
      * Return the 4 first octets of the HE MAC Capabilities Info field in the HE Capabilities
      * information element.
      *
-     * \return the 4 first octets of the HE MAC Capabilities Info field in the HE Capabilities
+     * @return the 4 first octets of the HE MAC Capabilities Info field in the HE Capabilities
      * information element
      */
     uint32_t GetHeMacCapabilitiesInfo1() const;
@@ -63,7 +63,7 @@ class HeCapabilities : public WifiInformationElement
      * Return the last 2 octets of the HE MAC Capabilities Info field in the HE Capabilities
      * information element.
      *
-     * \return the last 2 octets of the HE MAC Capabilities Info field in the HE Capabilities
+     * @return the last 2 octets of the HE MAC Capabilities Info field in the HE Capabilities
      * information element
      */
     uint16_t GetHeMacCapabilitiesInfo2() const;
@@ -71,7 +71,7 @@ class HeCapabilities : public WifiInformationElement
      * Return the 8 first octets of the HE PHY Capabilities Info field in the HE Capabilities
      * information element.
      *
-     * \return the 8 first octets of the HE PHY Capabilities Info field in the HE Capabilities
+     * @return the 8 first octets of the HE PHY Capabilities Info field in the HE Capabilities
      * information element
      */
     uint64_t GetHePhyCapabilitiesInfo1() const;
@@ -79,7 +79,7 @@ class HeCapabilities : public WifiInformationElement
      * Return the octets 9-10 of the HE PHY Capabilities Info field in the HE Capabilities
      * information element.
      *
-     * \return the octets 9-10 of the HE PHY Capabilities Info field in the HE Capabilities
+     * @return the octets 9-10 of the HE PHY Capabilities Info field in the HE Capabilities
      * information element
      */
     uint16_t GetHePhyCapabilitiesInfo2() const;
@@ -87,14 +87,14 @@ class HeCapabilities : public WifiInformationElement
      * Return the last octet of the HE PHY Capabilities Info field in the HE Capabilities
      * information element.
      *
-     * \return the last octet of the HE PHY Capabilities Info field in the HE Capabilities
+     * @return the last octet of the HE PHY Capabilities Info field in the HE Capabilities
      * information element
      */
     uint8_t GetHePhyCapabilitiesInfo3() const;
     /**
      * Return the MCS and NSS field in the HE Capabilities information element.
      *
-     * \return the MCS and NSS field in the HE Capabilities information element
+     * @return the MCS and NSS field in the HE Capabilities information element
      */
     uint16_t GetSupportedMcsAndNss() const;
 
@@ -102,65 +102,65 @@ class HeCapabilities : public WifiInformationElement
     /**
      * Set channel width set.
      *
-     * \param channelWidthSet the channel width set
+     * @param channelWidthSet the channel width set
      */
     void SetChannelWidthSet(uint8_t channelWidthSet);
     /**
      * Set indication whether the transmission and reception of LDPC encoded packets is supported.
      *
-     * \param ldpcCodingInPayload indication whether the transmission and reception of LDPC encoded
+     * @param ldpcCodingInPayload indication whether the transmission and reception of LDPC encoded
      * packets is supported
      */
     void SetLdpcCodingInPayload(uint8_t ldpcCodingInPayload);
     /**
      * Set 1xHE-LTF and 800ns GI in HE SU PPDU reception support
      *
-     * \param heSuPpdu1xHeLtf800nsGi 1xHE-LTF and 800ns GI in HE SU PPDU reception support
+     * @param heSuPpdu1xHeLtf800nsGi 1xHE-LTF and 800ns GI in HE SU PPDU reception support
      */
     void SetHeSuPpdu1xHeLtf800nsGi(bool heSuPpdu1xHeLtf800nsGi);
     /**
      * Set 4xHE-LTF and 800ns GI in HE SU PPDU and HE MU PPDU reception support
      *
-     * \param heSuPpdu4xHeLtf800nsGi 4xHE-LTF and 800ns GI in HE SU PPDU and HE MU PPDU reception
+     * @param heSuPpdu4xHeLtf800nsGi 4xHE-LTF and 800ns GI in HE SU PPDU and HE MU PPDU reception
      * support
      */
     void SetHePpdu4xHeLtf800nsGi(bool heSuPpdu4xHeLtf800nsGi);
     /**
      * Get channel width set.
      *
-     * \returns the channel width set
+     * @returns the channel width set
      */
     uint8_t GetChannelWidthSet() const;
     /**
      * Indicates support for the transmission and reception of LDPC encoded packets.
      *
-     * \returns indication whether the transmission and reception of LDPC encoded packets is
+     * @returns indication whether the transmission and reception of LDPC encoded packets is
      * supported
      */
     uint8_t GetLdpcCodingInPayload() const;
     /**
      * Get 1xHE-LTF and 800ns GI in HE SU PPDU reception support
      *
-     * \returns true if 1xHE-LTF and 800ns GI in HE SU PPDU reception is supported, false otherwise
+     * @returns true if 1xHE-LTF and 800ns GI in HE SU PPDU reception is supported, false otherwise
      */
     bool GetHeSuPpdu1xHeLtf800nsGi() const;
     /**
      * Get 4xHE-LTF and 800ns GI in HE SU PPDU and HE MU PPDU reception support
      *
-     * \returns true if 4xHE-LTF and 800ns GI in HE SU PPDU and HE MU PPDU reception is supported,
+     * @returns true if 4xHE-LTF and 800ns GI in HE SU PPDU and HE MU PPDU reception is supported,
      *          false otherwise
      */
     bool GetHePpdu4xHeLtf800nsGi() const;
     /**
      * Get highest MCS supported.
      *
-     * \returns the highest MCS is supported
+     * @returns the highest MCS is supported
      */
     uint8_t GetHighestMcsSupported() const;
     /**
      * Get highest NSS supported.
      *
-     * \returns the highest supported NSS
+     * @returns the highest supported NSS
      */
     uint8_t GetHighestNssSupported() const;
 
@@ -168,7 +168,7 @@ class HeCapabilities : public WifiInformationElement
     /**
      * Set the maximum AMPDU length.
      *
-     * \param maxAmpduLength 2^(20 + x) - 1, x in the range 0 to 3
+     * @param maxAmpduLength 2^(20 + x) - 1, x in the range 0 to 3
      */
     void SetMaxAmpduLength(uint32_t maxAmpduLength);
 
@@ -176,35 +176,35 @@ class HeCapabilities : public WifiInformationElement
     /**
      * Set highest MCS supported.
      *
-     * \param mcs the MCS
+     * @param mcs the MCS
      */
     void SetHighestMcsSupported(uint8_t mcs);
     /**
      * Set highest NSS supported.
      *
-     * \param nss the NSS
+     * @param nss the NSS
      */
     void SetHighestNssSupported(uint8_t nss);
 
     /**
      * Is RX MCS supported.
      *
-     * \param mcs the MCS
-     * \returns true if MCS transmit supported
+     * @param mcs the MCS
+     * @returns true if MCS transmit supported
      */
     bool IsSupportedTxMcs(uint8_t mcs) const;
     /**
      * Is RX MCS supported.
      *
-     * \param mcs the MCS
-     * \returns true if MCS receive supported
+     * @param mcs the MCS
+     * @returns true if MCS receive supported
      */
     bool IsSupportedRxMcs(uint8_t mcs) const;
 
     /**
      * Return the maximum A-MPDU length.
      *
-     * \return the maximum A-MPDU length
+     * @return the maximum A-MPDU length
      */
     uint32_t GetMaxAmpduLength() const;
 

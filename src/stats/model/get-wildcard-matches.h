@@ -15,13 +15,13 @@ namespace ns3
 {
 
 /**
- * \param configPath Config path to access the probe.
- * \param matchedPath the path that matched the Config path.
- * \param wildcardSeparator the text to put between the wildcard
+ * @param configPath Config path to access the probe.
+ * @param matchedPath the path that matched the Config path.
+ * @param wildcardSeparator the text to put between the wildcard
  * matches.  By default, a space is used.
- * \return String value of text matches
+ * @return String value of text matches
  *
- * \brief Returns the text matches from the matched path for each of
+ * @brief Returns the text matches from the matched path for each of
  * the wildcards in the Config path, separated by the wild card
  * separator.
  */

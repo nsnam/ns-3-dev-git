@@ -21,8 +21,8 @@
 #include <optional>
 
 /**
- * \file
- * \ingroup wifi
+ * @file
+ * @ingroup wifi
  * Declaration of ns3::HePhy class
  * and ns3::HeSigAParameters struct.
  */
@@ -47,8 +47,8 @@ struct HeSigAParameters
 };
 
 /**
- * \brief PHY entity for HE (11ax)
- * \ingroup wifi
+ * @brief PHY entity for HE (11ax)
+ * @ingroup wifi
  *
  * HE PHY is based on VHT PHY.
  *
@@ -67,7 +67,7 @@ class HePhy : public VhtPhy
     /**
      * Constructor for HE PHY
      *
-     * \param buildModeList flag used to add HE modes to list (disabled
+     * @param buildModeList flag used to add HE modes to list (disabled
      *                      by child classes to only add child classes' modes)
      */
     HePhy(bool buildModeList = true);
@@ -110,7 +110,7 @@ class HePhy : public VhtPhy
     Ptr<const WifiPpdu> GetRxPpduFromTxPpdu(Ptr<const WifiPpdu> ppdu) override;
 
     /**
-     * \return the BSS color of this PHY.
+     * @return the BSS color of this PHY.
      */
     uint8_t GetBssColor() const;
 
@@ -119,37 +119,37 @@ class HePhy : public VhtPhy
      * If the latter is not a feasible duration (considering the selected guard interval),
      * a proper duration is computed and returned along with the L-SIG length value.
      *
-     * \param ppduDuration the duration of the HE TB PPDU
-     * \param txVector the TXVECTOR used for the transmission of this HE TB PPDU
-     * \param band the frequency band being used
+     * @param ppduDuration the duration of the HE TB PPDU
+     * @param txVector the TXVECTOR used for the transmission of this HE TB PPDU
+     * @param band the frequency band being used
      *
-     * \return the L-SIG length value and the adjusted HE TB PPDU duration.
+     * @return the L-SIG length value and the adjusted HE TB PPDU duration.
      */
     static std::pair<uint16_t, Time> ConvertHeTbPpduDurationToLSigLength(
         Time ppduDuration,
         const WifiTxVector& txVector,
         WifiPhyBand band);
     /**
-     * \param length the L-SIG length value
-     * \param txVector the TXVECTOR used for the transmission of this HE TB PPDU
-     * \param band the frequency band being used
+     * @param length the L-SIG length value
+     * @param txVector the TXVECTOR used for the transmission of this HE TB PPDU
+     * @param band the frequency band being used
      *
-     * \return the duration of the HE TB PPDU corresponding to that L-SIG length value.
+     * @return the duration of the HE TB PPDU corresponding to that L-SIG length value.
      */
     static Time ConvertLSigLengthToHeTbPpduDuration(uint16_t length,
                                                     const WifiTxVector& txVector,
                                                     WifiPhyBand band);
     /**
-     * \param txVector the transmission parameters used for the HE TB PPDU
+     * @param txVector the transmission parameters used for the HE TB PPDU
      *
-     * \return the duration of the non-HE portion of the HE TB PPDU.
+     * @return the duration of the non-HE portion of the HE TB PPDU.
      */
     virtual Time CalculateNonHeDurationForHeTb(const WifiTxVector& txVector) const;
 
     /**
-     * \param txVector the transmission parameters used for the HE MU PPDU
+     * @param txVector the transmission parameters used for the HE MU PPDU
      *
-     * \return the duration of the non-HE portion of the HE MU PPDU.
+     * @return the duration of the non-HE portion of the HE MU PPDU.
      */
     virtual Time CalculateNonHeDurationForHeMu(const WifiTxVector& txVector) const;
 
@@ -157,41 +157,41 @@ class HePhy : public VhtPhy
      * Get the band in the TX spectrum associated with the RU used by the PSDU
      * transmitted to/by a given STA in a DL MU PPDU/HE TB PPDU
      *
-     * \param txVector the TXVECTOR used for the transmission
-     * \param staId the STA-ID of the station
+     * @param txVector the TXVECTOR used for the transmission
+     * @param staId the STA-ID of the station
      *
-     * \return the RU band in the TX spectrum
+     * @return the RU band in the TX spectrum
      */
     WifiSpectrumBandInfo GetRuBandForTx(const WifiTxVector& txVector, uint16_t staId) const;
     /**
      * Get the band in the RX spectrum associated with the RU used by the PSDU
      * transmitted to/by a given STA in a DL MU PPDU/HE TB PPDU
      *
-     * \param txVector the TXVECTOR used for the transmission
-     * \param staId the STA-ID of the station
+     * @param txVector the TXVECTOR used for the transmission
+     * @param staId the STA-ID of the station
      *
-     * \return the RU band in the RX spectrum
+     * @return the RU band in the RX spectrum
      */
     WifiSpectrumBandInfo GetRuBandForRx(const WifiTxVector& txVector, uint16_t staId) const;
     /**
      * Get the band used to transmit the non-OFDMA part of an HE TB PPDU.
      *
-     * \param txVector the TXVECTOR used for the transmission
-     * \param staId the STA-ID of the station taking part of the UL MU
+     * @param txVector the TXVECTOR used for the transmission
+     * @param staId the STA-ID of the station taking part of the UL MU
      *
-     * \return the spectrum band used to transmit the non-OFDMA part of an HE TB PPDU
+     * @return the spectrum band used to transmit the non-OFDMA part of an HE TB PPDU
      */
     WifiSpectrumBandInfo GetNonOfdmaBand(const WifiTxVector& txVector, uint16_t staId) const;
     /**
      * Get the width of the non-OFDMA portion of an HE TB PPDU
      *
-     * \param ru the RU in which the HE TB PPDU is sent
-     * \return the width of the non-OFDMA portion of an HE TB PPDU
+     * @param ru the RU in which the HE TB PPDU is sent
+     * @return the width of the non-OFDMA portion of an HE TB PPDU
      */
     MHz_u GetNonOfdmaWidth(HeRu::RuSpec ru) const;
 
     /**
-     * \return the UID of the HE TB PPDU being received
+     * @return the UID of the HE TB PPDU being received
      */
     uint64_t GetCurrentHeTbPpduUid() const;
 
@@ -199,8 +199,8 @@ class HePhy : public VhtPhy
      * Set the TRIGVECTOR and the associated expiration time. A TRIGVECTOR shall expire
      * when the TX timer associated with the transmission of the Trigger Frame expires.
      *
-     * \param trigVector the TRIGVECTOR
-     * \param validity the amount of time (from now) until expiration of the TRIGVECTOR
+     * @param trigVector the TRIGVECTOR
+     * @param validity the amount of time (from now) until expiration of the TRIGVECTOR
      */
     void SetTrigVector(const WifiTxVector& trigVector, Time validity);
 
@@ -208,9 +208,9 @@ class HePhy : public VhtPhy
      * Get the center frequency per segment of the non-HE portion of the current PPDU for the given
      * STA-ID. Note this method is only to be used for UL MU.
      *
-     * \param ppdu the PPDU
-     * \param staId the STA-ID of the station taking part of the UL MU
-     * \return the center frequency corresponding to the non-HE portion of the HE TB PPDU
+     * @param ppdu the PPDU
+     * @param staId the STA-ID of the station taking part of the UL MU
+     * @return the center frequency corresponding to the non-HE portion of the HE TB PPDU
      */
     std::vector<MHz_u> GetCenterFrequenciesForNonHePart(const Ptr<const WifiPpdu> ppdu,
                                                         uint16_t staId) const;
@@ -218,21 +218,21 @@ class HePhy : public VhtPhy
     /**
      * Sets the OBSS-PD algorithm.
      *
-     * \param algorithm the OBSS-PD algorithm
+     * @param algorithm the OBSS-PD algorithm
      */
     void SetObssPdAlgorithm(const Ptr<ObssPdAlgorithm> algorithm);
 
     /**
      * Gets the OBSS-PD algorithm.
      *
-     * \return the OBSS-PD algorithm
+     * @return the OBSS-PD algorithm
      */
     Ptr<ObssPdAlgorithm> GetObssPdAlgorithm() const;
 
     /**
      * Set a callback for a end of HE-SIG-A.
      *
-     * \param callback the EndOfHeSigACallback to set
+     * @param callback the EndOfHeSigACallback to set
      */
     void SetEndOfHeSigACallback(EndOfHeSigACallback callback);
 
@@ -241,7 +241,7 @@ class HePhy : public VhtPhy
      * This method is scheduled immediately after end of HE-SIG-A, once
      * field processing is finished.
      *
-     * \param params the HE-SIG-A parameters
+     * @param params the HE-SIG-A parameters
      */
     void NotifyEndOfHeSigA(HeSigAParameters params);
 
@@ -253,81 +253,81 @@ class HePhy : public VhtPhy
      * Return the HE MCS corresponding to
      * the provided index.
      *
-     * \param index the index of the MCS
-     * \return an HE MCS
+     * @param index the index of the MCS
+     * @return an HE MCS
      */
     static WifiMode GetHeMcs(uint8_t index);
 
     /**
      * Return MCS 0 from HE MCS values.
      *
-     * \return MCS 0 from HE MCS values
+     * @return MCS 0 from HE MCS values
      */
     static WifiMode GetHeMcs0();
     /**
      * Return MCS 1 from HE MCS values.
      *
-     * \return MCS 1 from HE MCS values
+     * @return MCS 1 from HE MCS values
      */
     static WifiMode GetHeMcs1();
     /**
      * Return MCS 2 from HE MCS values.
      *
-     * \return MCS 2 from HE MCS values
+     * @return MCS 2 from HE MCS values
      */
     static WifiMode GetHeMcs2();
     /**
      * Return MCS 3 from HE MCS values.
      *
-     * \return MCS 3 from HE MCS values
+     * @return MCS 3 from HE MCS values
      */
     static WifiMode GetHeMcs3();
     /**
      * Return MCS 4 from HE MCS values.
      *
-     * \return MCS 4 from HE MCS values
+     * @return MCS 4 from HE MCS values
      */
     static WifiMode GetHeMcs4();
     /**
      * Return MCS 5 from HE MCS values.
      *
-     * \return MCS 5 from HE MCS values
+     * @return MCS 5 from HE MCS values
      */
     static WifiMode GetHeMcs5();
     /**
      * Return MCS 6 from HE MCS values.
      *
-     * \return MCS 6 from HE MCS values
+     * @return MCS 6 from HE MCS values
      */
     static WifiMode GetHeMcs6();
     /**
      * Return MCS 7 from HE MCS values.
      *
-     * \return MCS 7 from HE MCS values
+     * @return MCS 7 from HE MCS values
      */
     static WifiMode GetHeMcs7();
     /**
      * Return MCS 8 from HE MCS values.
      *
-     * \return MCS 8 from HE MCS values
+     * @return MCS 8 from HE MCS values
      */
     static WifiMode GetHeMcs8();
     /**
      * Return MCS 9 from HE MCS values.
      *
-     * \return MCS 9 from HE MCS values
+     * @return MCS 9 from HE MCS values
      */
     static WifiMode GetHeMcs9();
     /**
      * Return MCS 10 from HE MCS values.
      *
-     * \return MCS 10 from HE MCS values
+     * @return MCS 10 from HE MCS values
      */
     static WifiMode GetHeMcs10();
     /**
      * Return MCS 11 from HE MCS values.
      *
-     * \return MCS 11 from HE MCS values
+     * @return MCS 11 from HE MCS values
      */
     static WifiMode GetHeMcs11();
 
@@ -336,8 +336,8 @@ class HePhy : public VhtPhy
      * the supplied HE MCS index. This function is used
      * as a callback for WifiMode operation.
      *
-     * \param mcsValue the MCS index
-     * \return the coding rate.
+     * @param mcsValue the MCS index
+     * @return the coding rate.
      */
     static WifiCodeRate GetCodeRate(uint8_t mcsValue);
     /**
@@ -345,8 +345,8 @@ class HePhy : public VhtPhy
      * to the supplied HE MCS index. This function is used
      * as a callback for WifiMode operation.
      *
-     * \param mcsValue the MCS index
-     * \return the size of modulation constellation.
+     * @param mcsValue the MCS index
+     * @return the size of modulation constellation.
      */
     static uint16_t GetConstellationSize(uint8_t mcsValue);
     /**
@@ -355,12 +355,12 @@ class HePhy : public VhtPhy
      * spatial stream. This function calls HtPhy::CalculatePhyRate
      * and is mainly used as a callback for WifiMode operation.
      *
-     * \param mcsValue the HE MCS index
-     * \param channelWidth the considered channel width
-     * \param guardInterval the considered guard interval duration
-     * \param nss the considered number of stream
+     * @param mcsValue the HE MCS index
+     * @param channelWidth the considered channel width
+     * @param guardInterval the considered guard interval duration
+     * @param nss the considered number of stream
      *
-     * \return the physical bit rate of this signal in bps.
+     * @return the physical bit rate of this signal in bps.
      */
     static uint64_t GetPhyRate(uint8_t mcsValue,
                                MHz_u channelWidth,
@@ -370,9 +370,9 @@ class HePhy : public VhtPhy
      * Return the PHY rate corresponding to
      * the supplied TXVECTOR for the STA-ID.
      *
-     * \param txVector the TXVECTOR used for the transmission
-     * \param staId the station ID for MU (unused if SU)
-     * \return the physical bit rate of this signal in bps.
+     * @param txVector the TXVECTOR used for the transmission
+     * @param staId the station ID for MU (unused if SU)
+     * @return the physical bit rate of this signal in bps.
      */
     static uint64_t GetPhyRateFromTxVector(const WifiTxVector& txVector,
                                            uint16_t staId = SU_STA_ID);
@@ -380,9 +380,9 @@ class HePhy : public VhtPhy
      * Return the data rate corresponding to
      * the supplied TXVECTOR for the STA-ID.
      *
-     * \param txVector the TXVECTOR used for the transmission
-     * \param staId the station ID for MU (unused if SU)
-     * \return the data bit rate in bps.
+     * @param txVector the TXVECTOR used for the transmission
+     * @param staId the station ID for MU (unused if SU)
+     * @return the data bit rate in bps.
      */
     static uint64_t GetDataRateFromTxVector(const WifiTxVector& txVector,
                                             uint16_t staId = SU_STA_ID);
@@ -392,11 +392,11 @@ class HePhy : public VhtPhy
      * guard interval, and number of spatial
      * streams.
      *
-     * \param mcsValue the MCS index
-     * \param channelWidth the channel width
-     * \param guardInterval the guard interval duration
-     * \param nss the number of spatial streams
-     * \return the data bit rate in bps.
+     * @param mcsValue the MCS index
+     * @param channelWidth the channel width
+     * @param guardInterval the guard interval duration
+     * @param nss the number of spatial streams
+     * @return the data bit rate in bps.
      */
     static uint64_t GetDataRate(uint8_t mcsValue,
                                 MHz_u channelWidth,
@@ -407,16 +407,16 @@ class HePhy : public VhtPhy
      * to the supplied HE MCS index. This function calls CalculateNonHtReferenceRate
      * and is used as a callback for WifiMode operation.
      *
-     * \param mcsValue the HE MCS index
-     * \return the rate in bps of the non-HT Reference Rate.
+     * @param mcsValue the HE MCS index
+     * @return the rate in bps of the non-HT Reference Rate.
      */
     static uint64_t GetNonHtReferenceRate(uint8_t mcsValue);
     /**
      * Check whether the combination in TXVECTOR is allowed.
      * This function is used as a callback for WifiMode operation.
      *
-     * \param txVector the TXVECTOR
-     * \returns true if this combination is allowed, false otherwise.
+     * @param txVector the TXVECTOR
+     * @returns true if this combination is allowed, false otherwise.
      */
     static bool IsAllowed(const WifiTxVector& txVector);
 
@@ -425,27 +425,27 @@ class HePhy : public VhtPhy
      * the provided index.
      * This method binds all the callbacks used by WifiMode.
      *
-     * \param index the index of the MCS
-     * \return an HE MCS
+     * @param index the index of the MCS
+     * @return an HE MCS
      */
     static WifiMode CreateHeMcs(uint8_t index);
 
     /**
-     * \param guardInterval the guard interval duration
-     * \return the symbol duration
+     * @param guardInterval the guard interval duration
+     * @return the symbol duration
      */
     static Time GetSymbolDuration(Time guardInterval);
 
     /**
-     * \param bandWidth the width of the band used for the OFDMA transmission. Must be a multiple of
+     * @param bandWidth the width of the band used for the OFDMA transmission. Must be a multiple of
      * 20 MHz
-     * \param guardBandwidth width of the guard band
-     * \param centerFrequencies the center frequency of each segment
-     * \param totalWidth the width of the operating channel
-     * \param subcarrierSpacing the subcarrier spacing
-     * \param subcarrierRange the subcarrier range of the HE RU
-     * \param bandIndex the index (starting at 0) of the band within the operating channel
-     * \return the converted subcarriers
+     * @param guardBandwidth width of the guard band
+     * @param centerFrequencies the center frequency of each segment
+     * @param totalWidth the width of the operating channel
+     * @param subcarrierSpacing the subcarrier spacing
+     * @param subcarrierRange the subcarrier range of the HE RU
+     * @param bandIndex the index (starting at 0) of the band within the operating channel
+     * @return the converted subcarriers
      *
      * This is a helper function to convert HE RU subcarriers, which are relative to the center
      * frequency subcarrier, to the indexes used by the Spectrum model. The size of the returned
@@ -495,10 +495,10 @@ class HePhy : public VhtPhy
      * Process SIG-A, perform amendment-specific actions, and
      * provide an updated status of the reception.
      *
-     * \param event the event holding incoming PPDU's information
-     * \param status the status of the reception of the correctly received SIG-A after the
+     * @param event the event holding incoming PPDU's information
+     * @param status the status of the reception of the correctly received SIG-A after the
      * configuration support check
-     * \return the updated status of the reception of the SIG-A
+     * @return the updated status of the reception of the SIG-A
      */
     virtual PhyFieldRxStatus ProcessSigA(Ptr<Event> event, PhyFieldRxStatus status);
 
@@ -506,16 +506,16 @@ class HePhy : public VhtPhy
      * Process SIG-B, perform amendment-specific actions, and
      * provide an updated status of the reception.
      *
-     * \param event the event holding incoming PPDU's information
-     * \param status the status of the reception of the correctly received SIG-A after the
+     * @param event the event holding incoming PPDU's information
+     * @param status the status of the reception of the correctly received SIG-A after the
      * configuration support check
-     * \return the updated status of the reception of the SIG-B
+     * @return the updated status of the reception of the SIG-B
      */
     virtual PhyFieldRxStatus ProcessSigB(Ptr<Event> event, PhyFieldRxStatus status);
 
     /**
-     * \param txVector the transmission parameters
-     * \return the number of bits of the HE-SIG-B
+     * @param txVector the transmission parameters
+     * @return the number of bits of the HE-SIG-B
      */
     virtual uint32_t GetSigBSize(const WifiTxVector& txVector) const;
 
@@ -524,7 +524,7 @@ class HePhy : public VhtPhy
      * transmission. This function is called upon the RX event corresponding to the HE portion of
      * the MU PPDU.
      *
-     * \param event the event holding incoming HE portion of the PPDU's information
+     * @param event the event holding incoming HE portion of the PPDU's information
      */
     void StartReceiveMuPayload(Ptr<Event> event);
 
@@ -533,9 +533,9 @@ class HePhy : public VhtPhy
      * which corresponds to the supplied code rate and
      * constellation size.
      *
-     * \param codeRate the convolutional coding rate
-     * \param constellationSize the size of modulation constellation
-     * \returns the rate in bps.
+     * @param codeRate the convolutional coding rate
+     * @param constellationSize the size of modulation constellation
+     * @returns the rate in bps.
      *
      * To convert an HE MCS to its corresponding non-HT Reference Rate
      * use the modulation and coding rate of the HT MCS
@@ -544,8 +544,8 @@ class HePhy : public VhtPhy
     static uint64_t CalculateNonHtReferenceRate(WifiCodeRate codeRate, uint16_t constellationSize);
 
     /**
-     * \param channelWidth the channel width
-     * \return the number of usable subcarriers for data
+     * @param channelWidth the channel width
+     * @return the number of usable subcarriers for data
      */
     static uint16_t GetUsableSubcarriers(MHz_u channelWidth);
 
@@ -571,10 +571,10 @@ class HePhy : public VhtPhy
     /**
      * This is a helper function to create the TX PSD of the non-HE and HE portions.
      *
-     * \param txPower power to spread across the bands
-     * \param ppdu the PPDU that will be transmitted
-     * \param flag flag indicating whether the PSD is for non-HE portion or HE portion
-     * \return Pointer to SpectrumValue
+     * @param txPower power to spread across the bands
+     * @param ppdu the PPDU that will be transmitted
+     * @param flag flag indicating whether the PSD is for non-HE portion or HE portion
+     * @return Pointer to SpectrumValue
      */
     Ptr<SpectrumValue> GetTxPowerSpectralDensity(Watt_u txPower,
                                                  Ptr<const WifiPpdu> ppdu,
@@ -583,10 +583,10 @@ class HePhy : public VhtPhy
     /**
      * Start the transmission of the HE portion of the MU PPDU.
      *
-     * \param ppdu the PPDU
-     * \param txPower the total TX power
-     * \param txPowerSpectrum the TX PSD
-     * \param hePortionDuration the duration of the HE portion
+     * @param ppdu the PPDU
+     * @param txPower the total TX power
+     * @param txPowerSpectrum the TX PSD
+     * @param hePortionDuration the duration of the HE portion
      */
     void StartTxHePortion(Ptr<const WifiPpdu> ppdu,
                           dBm_u txPower,
@@ -596,9 +596,9 @@ class HePhy : public VhtPhy
     /**
      * Notify PHY state helper to switch to CCA busy state,
      *
-     * \param duration the duration of the CCA state
-     * \param channelType the channel type for which the CCA busy state is reported.
-     * \param per20MHzDurations the per-20 MHz CCA durations vector
+     * @param duration the duration of the CCA state
+     * @param channelType the channel type for which the CCA busy state is reported.
+     * @param per20MHzDurations the per-20 MHz CCA durations vector
      */
     void NotifyCcaBusy(Time duration,
                        WifiChannelListType channelType,
@@ -611,8 +611,8 @@ class HePhy : public VhtPhy
      * indicates that the subchannel is idle. The vector is non-empty if the
      * operational channel width is larger than 20 MHz.
      *
-     * \param ppdu the incoming PPDU or nullptr for any signal
-     * \return the per-20 MHz CCA durations vector
+     * @param ppdu the incoming PPDU or nullptr for any signal
+     * @return the per-20 MHz CCA durations vector
      */
     std::vector<Time> GetPer20MHzDurations(const Ptr<const WifiPpdu> ppdu);
 
@@ -621,10 +621,10 @@ class HePhy : public VhtPhy
      * the PHY band, compute a valid PPDU duration considering the number and
      * duration of symbols, the preamble duration and the guard interval.
      *
-     * \param ppduDuration the given PPDU duration
-     * \param txVector the given TXVECTOR
-     * \param band the PHY band
-     * \return a valid PPDU duration
+     * @param ppduDuration the given PPDU duration
+     * @param txVector the given TXVECTOR
+     * @param band the PHY band
+     * @return a valid PPDU duration
      */
     static Time GetValidPpduDuration(Time ppduDuration,
                                      const WifiTxVector& txVector,

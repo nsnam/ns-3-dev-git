@@ -56,10 +56,10 @@ const std::map<MHz_u, Time> PpduDurations = {
 };
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief PHY CCA thresholds test
+ * @brief PHY CCA thresholds test
  */
 class WifiPhyCcaThresholdsTest : public TestCase
 {
@@ -78,45 +78,45 @@ class WifiPhyCcaThresholdsTest : public TestCase
 
     /**
      * Create a dummy PSDU whose payload is 1000 bytes
-     * \return a dummy PSDU whose payload is 1000 bytes
+     * @return a dummy PSDU whose payload is 1000 bytes
      */
     Ptr<WifiPsdu> CreateDummyPsdu();
     /**
      * Create a non-HT PPDU
-     * \param channel the operating channel of the PHY used for the transmission
-     * \return a non-HT PPDU
+     * @param channel the operating channel of the PHY used for the transmission
+     * @return a non-HT PPDU
      */
     Ptr<OfdmPpdu> CreateDummyNonHtPpdu(const WifiPhyOperatingChannel& channel);
     /**
      * Create a HT PPDU
-     * \param bandwidth the bandwidth used for the transmission the PPDU
-     * \param channel the operating channel of the PHY used for the transmission
-     * \return a HT PPDU
+     * @param bandwidth the bandwidth used for the transmission the PPDU
+     * @param channel the operating channel of the PHY used for the transmission
+     * @return a HT PPDU
      */
     Ptr<HtPpdu> CreateDummyHtPpdu(MHz_u bandwidth, const WifiPhyOperatingChannel& channel);
     /**
      * Create a VHT PPDU
-     * \param bandwidth the bandwidth used for the transmission the PPDU
-     * \param channel the operating channel of the PHY used for the transmission
-     * \return a VHT PPDU
+     * @param bandwidth the bandwidth used for the transmission the PPDU
+     * @param channel the operating channel of the PHY used for the transmission
+     * @return a VHT PPDU
      */
     Ptr<VhtPpdu> CreateDummyVhtPpdu(MHz_u bandwidth, const WifiPhyOperatingChannel& channel);
     /**
      * Create a HE PPDU
-     * \param bandwidth the bandwidth used for the transmission the PPDU
-     * \param channel the operating channel of the PHY used for the transmission
-     * \return a HE PPDU
+     * @param bandwidth the bandwidth used for the transmission the PPDU
+     * @param channel the operating channel of the PHY used for the transmission
+     * @return a HE PPDU
      */
     Ptr<HePpdu> CreateDummyHePpdu(MHz_u bandwidth, const WifiPhyOperatingChannel& channel);
 
     /**
      * Function to verify the CCA threshold that is being reported by a given PHY entity upon
      * reception of a signal or a PPDU
-     * \param phy the PHY entity to verify
-     * \param ppdu the incoming PPDU or signal (if nullptr)
-     * \param channelType the channel list type that indicates which channel the PPDU or the
+     * @param phy the PHY entity to verify
+     * @param ppdu the incoming PPDU or signal (if nullptr)
+     * @param channelType the channel list type that indicates which channel the PPDU or the
      * signal occupies
-     * \param expectedCcaThreshold the CCA threshold that is expected to be reported
+     * @param expectedCcaThreshold the CCA threshold that is expected to be reported
      */
     void VerifyCcaThreshold(const Ptr<PhyEntity> phy,
                             const Ptr<const WifiPpdu> ppdu,
@@ -604,10 +604,10 @@ WifiPhyCcaThresholdsTest::DoRun()
 }
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief PHY listener for CCA tests
+ * @brief PHY listener for CCA tests
  */
 class CcaTestPhyListener : public ns3::WifiPhyListener
 {
@@ -685,10 +685,10 @@ class CcaTestPhyListener : public ns3::WifiPhyListener
 };
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief Wifi Phy Threshold Test base class
+ * @brief Wifi Phy Threshold Test base class
  */
 class WifiPhyCcaIndicationTest : public TestCase
 {
@@ -702,19 +702,19 @@ class WifiPhyCcaIndicationTest : public TestCase
 
     /**
      * Send an HE SU PPDU
-     * \param txPower the transmit power
-     * \param frequency the center frequency the transmitter is operating on
-     * \param bandwidth the bandwidth to use for the transmission
+     * @param txPower the transmit power
+     * @param frequency the center frequency the transmitter is operating on
+     * @param bandwidth the bandwidth to use for the transmission
      */
     void SendHeSuPpdu(dBm_u txPower, MHz_u frequency, MHz_u bandwidth);
 
     /**
      * Start to generate a signal
-     * \param signalGenerator the signal generator to use
-     * \param txPower the transmit power
-     * \param frequency the center frequency of the signal to send
-     * \param bandwidth the bandwidth of the signal to send
-     * \param duration the duration of the signal
+     * @param signalGenerator the signal generator to use
+     * @param txPower the transmit power
+     * @param frequency the center frequency of the signal to send
+     * @param bandwidth the bandwidth of the signal to send
+     * @param duration the duration of the signal
      */
     void StartSignal(Ptr<WaveformGenerator> signalGenerator,
                      dBm_u txPower,
@@ -723,23 +723,23 @@ class WifiPhyCcaIndicationTest : public TestCase
                      Time duration);
     /**
      * Stop to generate a signal
-     * \param signalGenerator the signal generator to use
+     * @param signalGenerator the signal generator to use
      */
     void StopSignal(Ptr<WaveformGenerator> signalGenerator);
 
     /**
      * Check the PHY state
-     * \param expectedState the expected state of the PHY
+     * @param expectedState the expected state of the PHY
      */
     void CheckPhyState(WifiPhyState expectedState);
-    /// \copydoc CheckPhyState
+    /// @copydoc CheckPhyState
     void DoCheckPhyState(WifiPhyState expectedState);
 
     /**
      * Check the last CCA-BUSY notification
-     * \param expectedEndTime the expected CCA-BUSY end time
-     * \param expectedChannelType the expected channel type
-     * \param expectedPer20MhzDurations the expected per-20 MHz CCA-BUSY durations
+     * @param expectedEndTime the expected CCA-BUSY end time
+     * @param expectedChannelType the expected channel type
+     * @param expectedPer20MhzDurations the expected per-20 MHz CCA-BUSY durations
      */
     void CheckLastCcaBusyNotification(Time expectedEndTime,
                                       WifiChannelListType expectedChannelType,
@@ -748,7 +748,7 @@ class WifiPhyCcaIndicationTest : public TestCase
     /**
      * Log scenario description
      *
-     * \param log the scenario description to add to log
+     * @param log the scenario description to add to log
      */
     void LogScenario(const std::string& log) const;
 
@@ -798,11 +798,11 @@ class WifiPhyCcaIndicationTest : public TestCase
 
     /**
      * Schedule test to perform.
-     * \param delay the reference delay to schedule the events
-     * \param generatedSignals the vector of signals to be generated
-     * \param generatedPpdus the vector of PPDUs to be generated
-     * \param stateCheckpoints the vector of PHY state checks
-     * \param ccaCheckpoints the vector of PHY CCA checks
+     * @param delay the reference delay to schedule the events
+     * @param generatedSignals the vector of signals to be generated
+     * @param generatedPpdus the vector of PPDUs to be generated
+     * @param stateCheckpoints the vector of PHY state checks
+     * @param ccaCheckpoints the vector of PHY CCA checks
      */
     void ScheduleTest(Time delay,
                       const std::vector<TxSignalInfo>& generatedSignals,
@@ -2954,10 +2954,10 @@ WifiPhyCcaIndicationTest::DoTeardown()
 }
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief Wi-Fi PHY CCA Test Suite
+ * @brief Wi-Fi PHY CCA Test Suite
  */
 class WifiPhyCcaTestSuite : public TestSuite
 {

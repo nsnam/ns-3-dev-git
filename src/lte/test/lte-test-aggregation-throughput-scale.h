@@ -15,7 +15,7 @@
 using namespace ns3;
 
 /**
- * \brief Test suite for executing carrier aggregation throughput scaling test case.
+ * @brief Test suite for executing carrier aggregation throughput scaling test case.
  *
  * \sa ns3::LteAggregationThroughputScaleTestCase
  */
@@ -26,9 +26,9 @@ class LteAggregationThroughputScaleTestSuite : public TestSuite
 };
 
 /**
- * \ingroup lte
+ * @ingroup lte
  *
- * \brief Testing that UE throughput scales linearly with number of component carriers.
+ * @brief Testing that UE throughput scales linearly with number of component carriers.
  *        Also attaches UE to last component carrier to make sure no code assumes
  *        that primary carrier is first.
  */
@@ -36,8 +36,8 @@ class LteAggregationThroughputScaleTestCase : public TestCase
 {
   public:
     /**
-     * \brief Creates an instance of the carrier aggregation throughput scaling test case.
-     * \param name name of this test
+     * @brief Creates an instance of the carrier aggregation throughput scaling test case.
+     * @param name name of this test
      */
     LteAggregationThroughputScaleTestCase(std::string name);
 
@@ -45,15 +45,15 @@ class LteAggregationThroughputScaleTestCase : public TestCase
 
   private:
     /**
-     * \brief Setup the simulation, run it, and verify the result.
+     * @brief Setup the simulation, run it, and verify the result.
      */
     void DoRun() override;
 
     /**
-     * \brief Get throughput function
+     * @brief Get throughput function
      *
-     * \param numberOfComponentCarriers Number of component carriers
-     * \return The total data received (in Megabits)
+     * @param numberOfComponentCarriers Number of component carriers
+     * @return The total data received (in Megabits)
      */
     double GetThroughput(uint8_t numberOfComponentCarriers);
 

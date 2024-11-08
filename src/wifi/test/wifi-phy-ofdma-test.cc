@@ -66,7 +66,7 @@ class OfdmaTestHePhy : public HePhy
     /**
      * Constructor
      *
-     * \param staId the ID of the STA to which this PHY belongs to
+     * @param staId the ID of the STA to which this PHY belongs to
      */
     OfdmaTestHePhy(uint16_t staId);
     ~OfdmaTestHePhy() override;
@@ -75,15 +75,15 @@ class OfdmaTestHePhy : public HePhy
      * Return the STA ID that has been assigned to the station this PHY belongs to.
      * This is typically called for MU PPDUs, in order to pick the correct PSDU.
      *
-     * \param ppdu the PPDU for which the STA ID is requested
-     * \return the STA ID
+     * @param ppdu the PPDU for which the STA ID is requested
+     * @return the STA ID
      */
     uint16_t GetStaId(const Ptr<const WifiPpdu> ppdu) const override;
 
     /**
      * Set the global PPDU UID counter.
      *
-     * \param uid the value to which the global PPDU UID counter should be set
+     * @param uid the value to which the global PPDU UID counter should be set
      */
     void SetGlobalPpduUid(uint64_t uid);
 
@@ -124,14 +124,14 @@ class OfdmaSpectrumWifiPhy : public SpectrumWifiPhy
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     /**
      * Constructor
      *
-     * \param staId the ID of the STA to which this PHY belongs to
+     * @param staId the ID of the STA to which this PHY belongs to
      */
     OfdmaSpectrumWifiPhy(uint16_t staId);
     ~OfdmaSpectrumWifiPhy() override;
@@ -145,47 +145,47 @@ class OfdmaSpectrumWifiPhy : public SpectrumWifiPhy
     /**
      * TracedCallback signature for UID of transmitted PPDU.
      *
-     * \param uid the UID of the transmitted PPDU
+     * @param uid the UID of the transmitted PPDU
      */
     typedef void (*TxPpduUidCallback)(uint64_t uid);
 
     /**
      * Set the global PPDU UID counter.
      *
-     * \param uid the value to which the global PPDU UID counter should be set
+     * @param uid the value to which the global PPDU UID counter should be set
      */
     void SetPpduUid(uint64_t uid);
 
     /**
      * Since we assume trigger frame was previously received from AP, this is used to set its UID
      *
-     * \param uid the PPDU UID of the trigger frame
+     * @param uid the PPDU UID of the trigger frame
      */
     void SetTriggerFrameUid(uint64_t uid);
 
     /**
-     * \return the current preamble events map
+     * @return the current preamble events map
      */
     std::map<std::pair<uint64_t, WifiPreamble>, Ptr<Event>>& GetCurrentPreambleEvents();
     /**
-     * \return the current event
+     * @return the current event
      */
     Ptr<Event> GetCurrentEvent();
 
     /**
      * Wrapper to InterferenceHelper method.
      *
-     * \param energy the minimum energy requested
-     * \param band identify the requested band
+     * @param energy the minimum energy requested
+     * @param band identify the requested band
      *
-     * \returns the expected amount of time the observed
+     * @returns the expected amount of time the observed
      *          energy on the medium for a given band will
      *          be higher than the requested threshold.
      */
     Time GetEnergyDuration(Watt_u energy, WifiSpectrumBandInfo band);
 
     /**
-     * \return a const pointer to the HE PHY instance
+     * @return a const pointer to the HE PHY instance
      */
     Ptr<const HePhy> GetHePhy() const;
 
@@ -280,10 +280,10 @@ OfdmaSpectrumWifiPhy::GetHePhy() const
 }
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief DL-OFDMA PHY test
+ * @brief DL-OFDMA PHY test
  */
 class TestDlOfdmaPhyTransmission : public TestCase
 {
@@ -298,10 +298,10 @@ class TestDlOfdmaPhyTransmission : public TestCase
 
     /**
      * Receive success function for STA 1
-     * \param psdu the PSDU
-     * \param rxSignalInfo the info on the received signal (\see RxSignalInfo)
-     * \param txVector the transmit vector
-     * \param statusPerMpdu reception status per MPDU
+     * @param psdu the PSDU
+     * @param rxSignalInfo the info on the received signal (\see RxSignalInfo)
+     * @param txVector the transmit vector
+     * @param statusPerMpdu reception status per MPDU
      */
     void RxSuccessSta1(Ptr<const WifiPsdu> psdu,
                        RxSignalInfo rxSignalInfo,
@@ -309,10 +309,10 @@ class TestDlOfdmaPhyTransmission : public TestCase
                        const std::vector<bool>& statusPerMpdu);
     /**
      * Receive success function for STA 2
-     * \param psdu the PSDU
-     * \param rxSignalInfo the info on the received signal (\see RxSignalInfo)
-     * \param txVector the transmit vector
-     * \param statusPerMpdu reception status per MPDU
+     * @param psdu the PSDU
+     * @param rxSignalInfo the info on the received signal (\see RxSignalInfo)
+     * @param txVector the transmit vector
+     * @param statusPerMpdu reception status per MPDU
      */
     void RxSuccessSta2(Ptr<const WifiPsdu> psdu,
                        RxSignalInfo rxSignalInfo,
@@ -320,10 +320,10 @@ class TestDlOfdmaPhyTransmission : public TestCase
                        const std::vector<bool>& statusPerMpdu);
     /**
      * Receive success function for STA 3
-     * \param psdu the PSDU
-     * \param rxSignalInfo the info on the received signal (\see RxSignalInfo)
-     * \param txVector the transmit vector
-     * \param statusPerMpdu reception status per MPDU
+     * @param psdu the PSDU
+     * @param rxSignalInfo the info on the received signal (\see RxSignalInfo)
+     * @param txVector the transmit vector
+     * @param statusPerMpdu reception status per MPDU
      */
     void RxSuccessSta3(Ptr<const WifiPsdu> psdu,
                        RxSignalInfo rxSignalInfo,
@@ -332,43 +332,43 @@ class TestDlOfdmaPhyTransmission : public TestCase
 
     /**
      * Receive failure function for STA 1
-     * \param psdu the PSDU
+     * @param psdu the PSDU
      */
     void RxFailureSta1(Ptr<const WifiPsdu> psdu);
     /**
      * Receive failure function for STA 2
-     * \param psdu the PSDU
+     * @param psdu the PSDU
      */
     void RxFailureSta2(Ptr<const WifiPsdu> psdu);
     /**
      * Receive failure function for STA 3
-     * \param psdu the PSDU
+     * @param psdu the PSDU
      */
     void RxFailureSta3(Ptr<const WifiPsdu> psdu);
 
     /**
      * Check the results for STA 1
-     * \param expectedRxSuccess the expected number of RX success
-     * \param expectedRxFailure the expected number of RX failures
-     * \param expectedRxBytes the expected number of RX bytes
+     * @param expectedRxSuccess the expected number of RX success
+     * @param expectedRxFailure the expected number of RX failures
+     * @param expectedRxBytes the expected number of RX bytes
      */
     void CheckResultsSta1(uint32_t expectedRxSuccess,
                           uint32_t expectedRxFailure,
                           uint32_t expectedRxBytes);
     /**
      * Check the results for STA 2
-     * \param expectedRxSuccess the expected number of RX success
-     * \param expectedRxFailure the expected number of RX failures
-     * \param expectedRxBytes the expected number of RX bytes
+     * @param expectedRxSuccess the expected number of RX success
+     * @param expectedRxFailure the expected number of RX failures
+     * @param expectedRxBytes the expected number of RX bytes
      */
     void CheckResultsSta2(uint32_t expectedRxSuccess,
                           uint32_t expectedRxFailure,
                           uint32_t expectedRxBytes);
     /**
      * Check the results for STA 3
-     * \param expectedRxSuccess the expected number of RX success
-     * \param expectedRxFailure the expected number of RX failures
-     * \param expectedRxBytes the expected number of RX bytes
+     * @param expectedRxSuccess the expected number of RX success
+     * @param expectedRxFailure the expected number of RX failures
+     * @param expectedRxBytes the expected number of RX bytes
      */
     void CheckResultsSta3(uint32_t expectedRxSuccess,
                           uint32_t expectedRxFailure,
@@ -381,15 +381,15 @@ class TestDlOfdmaPhyTransmission : public TestCase
 
     /**
      * Send MU-PPDU function
-     * \param rxStaId1 the ID of the recipient STA for the first PSDU
-     * \param rxStaId2 the ID of the recipient STA for the second PSDU
+     * @param rxStaId1 the ID of the recipient STA for the first PSDU
+     * @param rxStaId2 the ID of the recipient STA for the second PSDU
      */
     void SendMuPpdu(uint16_t rxStaId1, uint16_t rxStaId2);
 
     /**
      * Generate interference function
-     * \param interferencePsd the PSD of the interference to be generated
-     * \param duration the duration of the interference
+     * @param interferencePsd the PSD of the interference to be generated
+     * @param duration the duration of the interference
      */
     void GenerateInterference(Ptr<SpectrumValue> interferencePsd, Time duration);
     /**
@@ -404,14 +404,14 @@ class TestDlOfdmaPhyTransmission : public TestCase
 
     /**
      * Schedule now to check  the PHY state
-     * \param phy the PHY
-     * \param expectedState the expected state of the PHY
+     * @param phy the PHY
+     * @param expectedState the expected state of the PHY
      */
     void CheckPhyState(Ptr<OfdmaSpectrumWifiPhy> phy, WifiPhyState expectedState);
     /**
      * Check the PHY state now
-     * \param phy the PHY
-     * \param expectedState the expected state of the PHY
+     * @param phy the PHY
+     * @param expectedState the expected state of the PHY
      */
     void DoCheckPhyState(Ptr<OfdmaSpectrumWifiPhy> phy, WifiPhyState expectedState);
 
@@ -1173,10 +1173,10 @@ TestDlOfdmaPhyTransmission::DoRun()
 }
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief DL-OFDMA PHY puncturing test
+ * @brief DL-OFDMA PHY puncturing test
  */
 class TestDlOfdmaPhyPuncturing : public TestCase
 {
@@ -1190,10 +1190,10 @@ class TestDlOfdmaPhyPuncturing : public TestCase
 
     /**
      * Receive success function for STA 1
-     * \param psdu the PSDU
-     * \param rxSignalInfo the info on the received signal (\see RxSignalInfo)
-     * \param txVector the transmit vector
-     * \param statusPerMpdu reception status per MPDU
+     * @param psdu the PSDU
+     * @param rxSignalInfo the info on the received signal (\see RxSignalInfo)
+     * @param txVector the transmit vector
+     * @param statusPerMpdu reception status per MPDU
      */
     void RxSuccessSta1(Ptr<const WifiPsdu> psdu,
                        RxSignalInfo rxSignalInfo,
@@ -1202,10 +1202,10 @@ class TestDlOfdmaPhyPuncturing : public TestCase
 
     /**
      * Receive success function for STA 2
-     * \param psdu the PSDU
-     * \param rxSignalInfo the info on the received signal (\see RxSignalInfo)
-     * \param txVector the transmit vector
-     * \param statusPerMpdu reception status per MPDU
+     * @param psdu the PSDU
+     * @param rxSignalInfo the info on the received signal (\see RxSignalInfo)
+     * @param txVector the transmit vector
+     * @param statusPerMpdu reception status per MPDU
      */
     void RxSuccessSta2(Ptr<const WifiPsdu> psdu,
                        RxSignalInfo rxSignalInfo,
@@ -1214,21 +1214,21 @@ class TestDlOfdmaPhyPuncturing : public TestCase
 
     /**
      * Receive failure function for STA 1
-     * \param psdu the PSDU
+     * @param psdu the PSDU
      */
     void RxFailureSta1(Ptr<const WifiPsdu> psdu);
 
     /**
      * Receive failure function for STA 2
-     * \param psdu the PSDU
+     * @param psdu the PSDU
      */
     void RxFailureSta2(Ptr<const WifiPsdu> psdu);
 
     /**
      * Check the results for STA 1
-     * \param expectedRxSuccess the expected number of RX success
-     * \param expectedRxFailure the expected number of RX failures
-     * \param expectedRxBytes the expected number of RX bytes
+     * @param expectedRxSuccess the expected number of RX success
+     * @param expectedRxFailure the expected number of RX failures
+     * @param expectedRxBytes the expected number of RX bytes
      */
     void CheckResultsSta1(uint32_t expectedRxSuccess,
                           uint32_t expectedRxFailure,
@@ -1236,9 +1236,9 @@ class TestDlOfdmaPhyPuncturing : public TestCase
 
     /**
      * Check the results for STA 2
-     * \param expectedRxSuccess the expected number of RX success
-     * \param expectedRxFailure the expected number of RX failures
-     * \param expectedRxBytes the expected number of RX bytes
+     * @param expectedRxSuccess the expected number of RX success
+     * @param expectedRxFailure the expected number of RX failures
+     * @param expectedRxBytes the expected number of RX bytes
      */
     void CheckResultsSta2(uint32_t expectedRxSuccess,
                           uint32_t expectedRxFailure,
@@ -1251,9 +1251,9 @@ class TestDlOfdmaPhyPuncturing : public TestCase
 
     /**
      * Send MU-PPDU function
-     * \param rxStaId1 the ID of the recipient STA for the first PSDU
-     * \param rxStaId2 the ID of the recipient STA for the second PSDU
-     * \param puncturedSubchannels indicates for each subchannel whether it is punctured or not. if
+     * @param rxStaId1 the ID of the recipient STA for the first PSDU
+     * @param rxStaId2 the ID of the recipient STA for the second PSDU
+     * @param puncturedSubchannels indicates for each subchannel whether it is punctured or not. if
      * empty, preamble puncturing is not used.
      */
     void SendMuPpdu(uint16_t rxStaId1,
@@ -1262,8 +1262,8 @@ class TestDlOfdmaPhyPuncturing : public TestCase
 
     /**
      * Generate interference function
-     * \param interferencePsd the PSD of the interference to be generated
-     * \param duration the duration of the interference
+     * @param interferencePsd the PSD of the interference to be generated
+     * @param duration the duration of the interference
      */
     void GenerateInterference(Ptr<SpectrumValue> interferencePsd, Time duration);
 
@@ -1279,15 +1279,15 @@ class TestDlOfdmaPhyPuncturing : public TestCase
 
     /**
      * Schedule now to check  the PHY state
-     * \param phy the PHY
-     * \param expectedState the expected state of the PHY
+     * @param phy the PHY
+     * @param expectedState the expected state of the PHY
      */
     void CheckPhyState(Ptr<OfdmaSpectrumWifiPhy> phy, WifiPhyState expectedState);
 
     /**
      * Check the PHY state now
-     * \param phy the PHY
-     * \param expectedState the expected state of the PHY
+     * @param phy the PHY
+     * @param expectedState the expected state of the PHY
      */
     void DoCheckPhyState(Ptr<OfdmaSpectrumWifiPhy> phy, WifiPhyState expectedState);
 
@@ -1811,10 +1811,10 @@ TestDlOfdmaPhyPuncturing::DoRun()
 }
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief UL-OFDMA PPDU UID attribution test
+ * @brief UL-OFDMA PPDU UID attribution test
  */
 class TestUlOfdmaPpduUid : public TestCase
 {
@@ -1829,17 +1829,17 @@ class TestUlOfdmaPpduUid : public TestCase
 
     /**
      * Transmitted PPDU information function for AP
-     * \param uid the UID of the transmitted PPDU
+     * @param uid the UID of the transmitted PPDU
      */
     void TxPpduAp(uint64_t uid);
     /**
      * Transmitted PPDU information function for STA 1
-     * \param uid the UID of the transmitted PPDU
+     * @param uid the UID of the transmitted PPDU
      */
     void TxPpduSta1(uint64_t uid);
     /**
      * Transmitted PPDU information function for STA 2
-     * \param uid the UID of the transmitted PPDU
+     * @param uid the UID of the transmitted PPDU
      */
     void TxPpduSta2(uint64_t uid);
     /**
@@ -1857,14 +1857,14 @@ class TestUlOfdmaPpduUid : public TestCase
     void SendTbPpdu();
     /**
      * Send SU-PPDU function
-     * \param txStaId the ID of the sending STA
+     * @param txStaId the ID of the sending STA
      */
     void SendSuPpdu(uint16_t txStaId);
 
     /**
      * Check the UID of the transmitted PPDU
-     * \param staId the STA-ID of the PHY (0 for AP)
-     * \param expectedUid the expected UID
+     * @param staId the STA-ID of the PHY (0 for AP)
+     * @param expectedUid the expected UID
      */
     void CheckUid(uint16_t staId, uint64_t expectedUid);
 
@@ -2246,10 +2246,10 @@ TestUlOfdmaPpduUid::DoRun()
 }
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief UL-OFDMA multiple RX events test
+ * @brief UL-OFDMA multiple RX events test
  */
 class TestMultipleHeTbPreambles : public TestCase
 {
@@ -2265,11 +2265,11 @@ class TestMultipleHeTbPreambles : public TestCase
     /**
      * Receive HE TB PPDU function.
      *
-     * \param uid the UID used to identify a set of HE TB PPDUs belonging to the same UL-MU
+     * @param uid the UID used to identify a set of HE TB PPDUs belonging to the same UL-MU
      * transmission
-     * \param staId the STA ID
-     * \param txPower the TX power
-     * \param payloadSize the size of the payload in bytes
+     * @param staId the STA ID
+     * @param txPower the TX power
+     * @param payloadSize the size of the payload in bytes
      */
     void RxHeTbPpdu(uint64_t uid, uint16_t staId, Watt_u txPower, size_t payloadSize);
 
@@ -2277,21 +2277,21 @@ class TestMultipleHeTbPreambles : public TestCase
      * Receive OFDMA part of HE TB PPDU function.
      * Immediately schedules DoRxHeTbPpduOfdmaPart.
      *
-     * \param rxParamsOfdma the spectrum signal parameters to send for OFDMA part
+     * @param rxParamsOfdma the spectrum signal parameters to send for OFDMA part
      */
     void RxHeTbPpduOfdmaPart(Ptr<WifiSpectrumSignalParameters> rxParamsOfdma);
     /**
      * Receive OFDMA part of HE TB PPDU function.
      * Actual reception call.
      *
-     * \param rxParamsOfdma the spectrum signal parameters to send for OFDMA part
+     * @param rxParamsOfdma the spectrum signal parameters to send for OFDMA part
      */
     void DoRxHeTbPpduOfdmaPart(Ptr<WifiSpectrumSignalParameters> rxParamsOfdma);
 
     /**
      * RX dropped function
-     * \param p the packet
-     * \param reason the reason
+     * @param p the packet
+     * @param reason the reason
      */
     void RxDropped(Ptr<const Packet> p, WifiPhyRxfailureReason reason);
 
@@ -2302,14 +2302,14 @@ class TestMultipleHeTbPreambles : public TestCase
 
     /**
      * Check the received HE TB preambles
-     * \param nEvents the number of events created by the PHY
-     * \param uids the vector of expected UIDs
+     * @param nEvents the number of events created by the PHY
+     * @param uids the vector of expected UIDs
      */
     void CheckHeTbPreambles(size_t nEvents, std::vector<uint64_t> uids);
 
     /**
      * Check the number of bytes dropped
-     * \param expectedBytesDropped the expected number of bytes dropped
+     * @param expectedBytesDropped the expected number of bytes dropped
      */
     void CheckBytesDropped(size_t expectedBytesDropped);
 
@@ -2792,10 +2792,10 @@ TestMultipleHeTbPreambles::DoRun()
 }
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief PHY listener for OFDMA tests
+ * @brief PHY listener for OFDMA tests
  */
 class OfdmaTestPhyListener : public ns3::WifiPhyListener
 {
@@ -2872,7 +2872,7 @@ class OfdmaTestPhyListener : public ns3::WifiPhyListener
 
     /**
      * Return the number of RX start notifications that has been received since the last reset.
-     * \return the number of RX start notifications that has been received
+     * @return the number of RX start notifications that has been received
      */
     uint32_t GetNumRxStartNotifications() const
     {
@@ -2881,7 +2881,7 @@ class OfdmaTestPhyListener : public ns3::WifiPhyListener
 
     /**
      * Return the number of RX end notifications that has been received since the last reset.
-     * \return the number of RX end notifications that has been received
+     * @return the number of RX end notifications that has been received
      */
     uint32_t GetNumRxEndNotifications() const
     {
@@ -2890,7 +2890,7 @@ class OfdmaTestPhyListener : public ns3::WifiPhyListener
 
     /**
      * Return the time at which the last RX start notification has been received.
-     * \return the time at which the last RX start notification has been received
+     * @return the time at which the last RX start notification has been received
      */
     Time GetLastRxStartNotification() const
     {
@@ -2899,7 +2899,7 @@ class OfdmaTestPhyListener : public ns3::WifiPhyListener
 
     /**
      * Return the time at which the last RX end notification has been received.
-     * \return the time at which the last RX end notification has been received
+     * @return the time at which the last RX end notification has been received
      */
     Time GetLastRxEndNotification() const
     {
@@ -2908,7 +2908,7 @@ class OfdmaTestPhyListener : public ns3::WifiPhyListener
 
     /**
      * Return whether last RX has been successful.
-     * \return true if last RX has been successful, false otherwise
+     * @return true if last RX has been successful, false otherwise
      */
     bool IsLastRxSuccess() const
     {
@@ -2924,10 +2924,10 @@ class OfdmaTestPhyListener : public ns3::WifiPhyListener
 };
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief UL-OFDMA PHY test
+ * @brief UL-OFDMA PHY test
  */
 class TestUlOfdmaPhyTransmission : public TestCase
 {
@@ -2953,10 +2953,10 @@ class TestUlOfdmaPhyTransmission : public TestCase
 
     /**
      * Get TXVECTOR for HE TB PPDU.
-     * \param txStaId the ID of the TX STA
-     * \param index the RU index used for the transmission
-     * \param bssColor the BSS color of the TX STA
-     * \return the TXVECTOR for HE TB PPDU
+     * @param txStaId the ID of the TX STA
+     * @param index the RU index used for the transmission
+     * @param bssColor the BSS color of the TX STA
+     * @return the TXVECTOR for HE TB PPDU
      */
     WifiTxVector GetTxVectorForHeTbPpdu(uint16_t txStaId,
                                         std::size_t index,
@@ -2964,18 +2964,18 @@ class TestUlOfdmaPhyTransmission : public TestCase
     /**
      * Set TRIGVECTOR for HE TB PPDU
      *
-     * \param bssColor the BSS color of the TX STA
-     * \param error the erroneous info (if any) in the TRIGVECTOR to set
+     * @param bssColor the BSS color of the TX STA
+     * @param error the erroneous info (if any) in the TRIGVECTOR to set
      */
     void SetTrigVector(uint8_t bssColor, TrigVectorInfo error);
     /**
      * Send HE TB PPDU function
-     * \param txStaId the ID of the TX STA
-     * \param index the RU index used for the transmission
-     * \param payloadSize the size of the payload in bytes
-     * \param uid the UID of the trigger frame that is initiating this transmission
-     * \param bssColor the BSS color of the TX STA
-     * \param incrementUid whether UID shall be incremented
+     * @param txStaId the ID of the TX STA
+     * @param index the RU index used for the transmission
+     * @param payloadSize the size of the payload in bytes
+     * @param uid the UID of the trigger frame that is initiating this transmission
+     * @param bssColor the BSS color of the TX STA
+     * @param incrementUid whether UID shall be incremented
      */
     void SendHeTbPpdu(uint16_t txStaId,
                       std::size_t index,
@@ -2986,31 +2986,31 @@ class TestUlOfdmaPhyTransmission : public TestCase
 
     /**
      * Send HE SU PPDU function
-     * \param txStaId the ID of the TX STA
-     * \param payloadSize the size of the payload in bytes
-     * \param uid the UID of the trigger frame that is initiating this transmission
-     * \param bssColor the BSS color of the TX STA
+     * @param txStaId the ID of the TX STA
+     * @param payloadSize the size of the payload in bytes
+     * @param uid the UID of the trigger frame that is initiating this transmission
+     * @param bssColor the BSS color of the TX STA
      */
     void SendHeSuPpdu(uint16_t txStaId, std::size_t payloadSize, uint64_t uid, uint8_t bssColor);
 
     /**
      * Set the BSS color
-     * \param phy the PHY
-     * \param bssColor the BSS color
+     * @param phy the PHY
+     * @param bssColor the BSS color
      */
     void SetBssColor(Ptr<WifiPhy> phy, uint8_t bssColor);
 
     /**
      * Set the PSD limit
-     * \param phy the PHY
-     * \param psdLimit the PSD limit
+     * @param phy the PHY
+     * @param psdLimit the PSD limit
      */
     void SetPsdLimit(Ptr<WifiPhy> phy, dBm_per_MHz_u psdLimit);
 
     /**
      * Generate interference function
-     * \param interferencePsd the PSD of the interference to be generated
-     * \param duration the duration of the interference
+     * @param interferencePsd the PSD of the interference to be generated
+     * @param duration the duration of the interference
      */
     void GenerateInterference(Ptr<SpectrumValue> interferencePsd, Time duration);
     /**
@@ -3025,9 +3025,9 @@ class TestUlOfdmaPhyTransmission : public TestCase
 
     /**
      * Check the received PSDUs from STA1
-     * \param expectedSuccess the expected number of success
-     * \param expectedFailures the expected number of failures
-     * \param expectedBytes the expected number of bytes
+     * @param expectedSuccess the expected number of success
+     * @param expectedFailures the expected number of failures
+     * @param expectedBytes the expected number of bytes
      */
     void CheckRxFromSta1(uint32_t expectedSuccess,
                          uint32_t expectedFailures,
@@ -3035,9 +3035,9 @@ class TestUlOfdmaPhyTransmission : public TestCase
 
     /**
      * Check the received PSDUs from STA2
-     * \param expectedSuccess the expected number of success
-     * \param expectedFailures the expected number of failures
-     * \param expectedBytes the expected number of bytes
+     * @param expectedSuccess the expected number of success
+     * @param expectedFailures the expected number of failures
+     * @param expectedBytes the expected number of bytes
      */
     void CheckRxFromSta2(uint32_t expectedSuccess,
                          uint32_t expectedFailures,
@@ -3045,18 +3045,18 @@ class TestUlOfdmaPhyTransmission : public TestCase
 
     /**
      * Check the received power for the non-OFDMA of the HE TB PPDUs over the given band
-     * \param phy the PHY
-     * \param band the indices of the band over which the power is measured
-     * \param expectedRxPower the expected received power
+     * @param phy the PHY
+     * @param band the indices of the band over which the power is measured
+     * @param expectedRxPower the expected received power
      */
     void CheckNonOfdmaRxPower(Ptr<OfdmaSpectrumWifiPhy> phy,
                               WifiSpectrumBandInfo band,
                               Watt_u expectedRxPower);
     /**
      * Check the received power for the OFDMA part of the HE TB PPDUs over the given band
-     * \param phy the PHY
-     * \param band the indices of the band over which the power is measured
-     * \param expectedRxPower the expected received power
+     * @param phy the PHY
+     * @param band the indices of the band over which the power is measured
+     * @param expectedRxPower the expected received power
      */
     void CheckOfdmaRxPower(Ptr<OfdmaSpectrumWifiPhy> phy,
                            WifiSpectrumBandInfo band,
@@ -3069,26 +3069,26 @@ class TestUlOfdmaPhyTransmission : public TestCase
 
     /**
      * Check the PHY state
-     * \param phy the PHY
-     * \param expectedState the expected state of the PHY
+     * @param phy the PHY
+     * @param expectedState the expected state of the PHY
      */
     void CheckPhyState(Ptr<OfdmaSpectrumWifiPhy> phy, WifiPhyState expectedState);
-    /// \copydoc CheckPhyState
+    /// @copydoc CheckPhyState
     void DoCheckPhyState(Ptr<OfdmaSpectrumWifiPhy> phy, WifiPhyState expectedState);
 
     /**
      * Check the the number of RX start notifications at the AP as well as the last time a RX start
      * has been notified
-     * \param expectedNotifications the expected number of RX start notifications at the AP
-     * \param expectedLastNotification the expected time of the last RX start notification at the AP
+     * @param expectedNotifications the expected number of RX start notifications at the AP
+     * @param expectedLastNotification the expected time of the last RX start notification at the AP
      */
     void CheckApRxStart(uint32_t expectedNotifications, Time expectedLastNotification);
     /**
      * Check the the number of RX end notifications at the AP as well as the last time a RX end has
      * been notified
-     * \param expectedNotifications the expected number of RX end notifications at the AP
-     * \param expectedLastNotification the expected time of the last RX end notification at the AP
-     * \param expectedSuccess true if the last RX notification indicates a success, false otherwise
+     * @param expectedNotifications the expected number of RX end notifications at the AP
+     * @param expectedLastNotification the expected time of the last RX end notification at the AP
+     * @param expectedSuccess true if the last RX notification indicates a success, false otherwise
      */
     void CheckApRxEnd(uint32_t expectedNotifications,
                       Time expectedLastNotification,
@@ -3101,10 +3101,10 @@ class TestUlOfdmaPhyTransmission : public TestCase
 
     /**
      * Receive success function
-     * \param psdu the PSDU
-     * \param rxSignalInfo the info on the received signal (\see RxSignalInfo)
-     * \param txVector the transmit vector
-     * \param statusPerMpdu reception status per MPDU
+     * @param psdu the PSDU
+     * @param rxSignalInfo the info on the received signal (\see RxSignalInfo)
+     * @param txVector the transmit vector
+     * @param statusPerMpdu reception status per MPDU
      */
     void RxSuccess(Ptr<const WifiPsdu> psdu,
                    RxSignalInfo rxSignalInfo,
@@ -3113,7 +3113,7 @@ class TestUlOfdmaPhyTransmission : public TestCase
 
     /**
      * Receive failure function
-     * \param psdu the PSDU
+     * @param psdu the PSDU
      */
     void RxFailure(Ptr<const WifiPsdu> psdu);
 
@@ -3121,21 +3121,21 @@ class TestUlOfdmaPhyTransmission : public TestCase
      * Schedule test to perform.
      * The interference generation should be scheduled apart.
      *
-     * \param delay the reference delay to schedule the events
-     * \param solicited flag indicating if HE TB PPDUs were solicited by the AP
-     * \param expectedStateAtEnd the expected state of the PHY at the end of the reception
-     * \param expectedSuccessFromSta1 the expected number of success from STA 1
-     * \param expectedFailuresFromSta1 the expected number of failures from STA 1
-     * \param expectedBytesFromSta1 the expected number of bytes from STA 1
-     * \param expectedSuccessFromSta2 the expected number of success from STA 2
-     * \param expectedFailuresFromSta2 the expected number of failures from STA 2
-     * \param expectedBytesFromSta2 the expected number of bytes from STA 2
-     * \param scheduleTxSta1 flag indicating to schedule a HE TB PPDU from STA 1
-     * \param ulTimeDifference delay between HE TB PPDU from STA 1 and HE TB PPDU from STA 2
+     * @param delay the reference delay to schedule the events
+     * @param solicited flag indicating if HE TB PPDUs were solicited by the AP
+     * @param expectedStateAtEnd the expected state of the PHY at the end of the reception
+     * @param expectedSuccessFromSta1 the expected number of success from STA 1
+     * @param expectedFailuresFromSta1 the expected number of failures from STA 1
+     * @param expectedBytesFromSta1 the expected number of bytes from STA 1
+     * @param expectedSuccessFromSta2 the expected number of success from STA 2
+     * @param expectedFailuresFromSta2 the expected number of failures from STA 2
+     * @param expectedBytesFromSta2 the expected number of bytes from STA 2
+     * @param scheduleTxSta1 flag indicating to schedule a HE TB PPDU from STA 1
+     * @param ulTimeDifference delay between HE TB PPDU from STA 1 and HE TB PPDU from STA 2
      * are received
-     * \param expectedStateBeforeEnd the expected state of the PHY before the end of the
+     * @param expectedStateBeforeEnd the expected state of the PHY before the end of the
      * transmission
-     * \param error the erroneous info (if any) in the TRIGVECTOR to set
+     * @param error the erroneous info (if any) in the TRIGVECTOR to set
      */
     void ScheduleTest(Time delay,
                       bool solicited,
@@ -3154,11 +3154,11 @@ class TestUlOfdmaPhyTransmission : public TestCase
     /**
      * Schedule power measurement related checks.
      *
-     * \param delay the reference delay used to schedule the events
-     * \param rxPowerNonOfdmaRu1 the received power on the non-OFDMA part of RU1
-     * \param rxPowerNonOfdmaRu2 the received power on the non-OFDMA part of RU2
-     * \param rxPowerOfdmaRu1 the received power on RU1
-     * \param rxPowerOfdmaRu2 the received power on RU2
+     * @param delay the reference delay used to schedule the events
+     * @param rxPowerNonOfdmaRu1 the received power on the non-OFDMA part of RU1
+     * @param rxPowerNonOfdmaRu2 the received power on the non-OFDMA part of RU2
+     * @param rxPowerOfdmaRu1 the received power on RU1
+     * @param rxPowerOfdmaRu2 the received power on RU2
      */
     void SchedulePowerMeasurementChecks(Time delay,
                                         Watt_u rxPowerNonOfdmaRu1,
@@ -3168,7 +3168,7 @@ class TestUlOfdmaPhyTransmission : public TestCase
     /**
      * Log scenario description
      *
-     * \param log the scenario description to add to log
+     * @param log the scenario description to add to log
      */
     void LogScenario(std::string log) const;
 
@@ -4738,10 +4738,10 @@ TestUlOfdmaPhyTransmission::DoRun()
 }
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief PHY padding exclusion test
+ * @brief PHY padding exclusion test
  */
 class TestPhyPaddingExclusion : public TestCase
 {
@@ -4756,10 +4756,10 @@ class TestPhyPaddingExclusion : public TestCase
 
     /**
      * Send HE TB PPDU function
-     * \param txStaId the ID of the TX STA
-     * \param index the RU index used for the transmission
-     * \param payloadSize the size of the payload in bytes
-     * \param txDuration the duration of the PPDU
+     * @param txStaId the ID of the TX STA
+     * @param index the RU index used for the transmission
+     * @param payloadSize the size of the payload in bytes
+     * @param txDuration the duration of the PPDU
      */
     void SendHeTbPpdu(uint16_t txStaId,
                       std::size_t index,
@@ -4768,14 +4768,14 @@ class TestPhyPaddingExclusion : public TestCase
     /**
      * Set TRIGVECTOR for HE TB PPDU
      *
-     * \param ppduDuration the duration of the HE TB PPDU
+     * @param ppduDuration the duration of the HE TB PPDU
      */
     void SetTrigVector(Time ppduDuration);
 
     /**
      * Generate interference function
-     * \param interferencePsd the PSD of the interference to be generated
-     * \param duration the duration of the interference
+     * @param interferencePsd the PSD of the interference to be generated
+     * @param duration the duration of the interference
      */
     void GenerateInterference(Ptr<SpectrumValue> interferencePsd, Time duration);
     /**
@@ -4790,9 +4790,9 @@ class TestPhyPaddingExclusion : public TestCase
 
     /**
      * Check the received PSDUs from STA1
-     * \param expectedSuccess the expected number of success
-     * \param expectedFailures the expected number of failures
-     * \param expectedBytes the expected number of bytes
+     * @param expectedSuccess the expected number of success
+     * @param expectedFailures the expected number of failures
+     * @param expectedBytes the expected number of bytes
      */
     void CheckRxFromSta1(uint32_t expectedSuccess,
                          uint32_t expectedFailures,
@@ -4800,9 +4800,9 @@ class TestPhyPaddingExclusion : public TestCase
 
     /**
      * Check the received PSDUs from STA2
-     * \param expectedSuccess the expected number of success
-     * \param expectedFailures the expected number of failures
-     * \param expectedBytes the expected number of bytes
+     * @param expectedSuccess the expected number of success
+     * @param expectedFailures the expected number of failures
+     * @param expectedBytes the expected number of bytes
      */
     void CheckRxFromSta2(uint32_t expectedSuccess,
                          uint32_t expectedFailures,
@@ -4815,11 +4815,11 @@ class TestPhyPaddingExclusion : public TestCase
 
     /**
      * Check the PHY state
-     * \param phy the PHY
-     * \param expectedState the expected state of the PHY
+     * @param phy the PHY
+     * @param expectedState the expected state of the PHY
      */
     void CheckPhyState(Ptr<OfdmaSpectrumWifiPhy> phy, WifiPhyState expectedState);
-    /// \copydoc CheckPhyState
+    /// @copydoc CheckPhyState
     void DoCheckPhyState(Ptr<OfdmaSpectrumWifiPhy> phy, WifiPhyState expectedState);
 
     /**
@@ -4829,10 +4829,10 @@ class TestPhyPaddingExclusion : public TestCase
 
     /**
      * Receive success function
-     * \param psdu the PSDU
-     * \param rxSignalInfo the info on the received signal (\see RxSignalInfo)
-     * \param txVector the transmit vector
-     * \param statusPerMpdu reception status per MPDU
+     * @param psdu the PSDU
+     * @param rxSignalInfo the info on the received signal (\see RxSignalInfo)
+     * @param txVector the transmit vector
+     * @param statusPerMpdu reception status per MPDU
      */
     void RxSuccess(Ptr<const WifiPsdu> psdu,
                    RxSignalInfo rxSignalInfo,
@@ -4841,7 +4841,7 @@ class TestPhyPaddingExclusion : public TestCase
 
     /**
      * Receive failure function
-     * \param psdu the PSDU
+     * @param psdu the PSDU
      */
     void RxFailure(Ptr<const WifiPsdu> psdu);
 
@@ -5324,10 +5324,10 @@ TestPhyPaddingExclusion::DoRun()
 }
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief UL-OFDMA power control test
+ * @brief UL-OFDMA power control test
  */
 class TestUlOfdmaPowerControl : public TestCase
 {
@@ -5343,7 +5343,7 @@ class TestUlOfdmaPowerControl : public TestCase
     /**
      * Send a MU BAR through the AP to the STAs listed in the provided vector.
      *
-     * \param staIds the vector of STA-IDs of STAs to address the MU-BAR to
+     * @param staIds the vector of STA-IDs of STAs to address the MU-BAR to
      */
     void SendMuBar(std::vector<uint16_t> staIds);
 
@@ -5351,14 +5351,14 @@ class TestUlOfdmaPowerControl : public TestCase
      * Send a QoS Data packet to the destination station in order
      * to set up a block Ack session (so that the MU-BAR may have a reply).
      *
-     * \param destination the address of the destination station
+     * @param destination the address of the destination station
      */
     void SetupBa(Address destination);
 
     /**
      * Run one simulation with an optional BA session set up phase.
      *
-     * \param setupBa true if BA session should be set up (i.e. upon first run),
+     * @param setupBa true if BA session should be set up (i.e. upon first run),
      *                false otherwise
      */
     void RunOne(bool setupBa);
@@ -5373,10 +5373,10 @@ class TestUlOfdmaPowerControl : public TestCase
      * Receive OK callback function at AP.
      * This method will be plugged into the AP PHY's ReceiveOkCallback once the
      * block Ack session has been set up. This is done in the Reset function.
-     * \param psdu the PSDU
-     * \param rxSignalInfo the info on the received signal (\see RxSignalInfo)
-     * \param txVector the TXVECTOR used for the packet
-     * \param statusPerMpdu reception status per MPDU
+     * @param psdu the PSDU
+     * @param rxSignalInfo the info on the received signal (\see RxSignalInfo)
+     * @param txVector the TXVECTOR used for the packet
+     * @param statusPerMpdu reception status per MPDU
      */
     void ReceiveOkCallbackAtAp(Ptr<const WifiPsdu> psdu,
                                RxSignalInfo rxSignalInfo,
@@ -5828,10 +5828,10 @@ TestUlOfdmaPowerControl::DoRun()
 }
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief wifi PHY OFDMA Test Suite
+ * @brief wifi PHY OFDMA Test Suite
  */
 class WifiPhyOfdmaTestSuite : public TestSuite
 {

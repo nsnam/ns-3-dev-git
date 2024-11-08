@@ -21,15 +21,15 @@
 using namespace ns3;
 
 /**
- * \ingroup dhcp
- * \defgroup dhcp-test DHCP module tests
+ * @ingroup dhcp
+ * @defgroup dhcp-test DHCP module tests
  */
 
 /**
- * \ingroup dhcp-test
- * \ingroup tests
+ * @ingroup dhcp-test
+ * @ingroup tests
  *
- * \brief DHCP basic tests
+ * @brief DHCP basic tests
  */
 class DhcpTestCase : public TestCase
 {
@@ -38,8 +38,8 @@ class DhcpTestCase : public TestCase
     ~DhcpTestCase() override;
     /**
      * Triggered by an address lease on a client.
-     * \param context The test name.
-     * \param newAddress The leased address.
+     * @param context The test name.
+     * @param newAddress The leased address.
      */
     void LeaseObtained(std::string context, const Ipv4Address& newAddress);
 
@@ -145,10 +145,10 @@ DhcpTestCase::DoRun()
 }
 
 /**
- * \ingroup dhcp-test
- * \ingroup tests
+ * @ingroup dhcp-test
+ * @ingroup tests
  *
- * \brief DHCP TestSuite
+ * @brief DHCP TestSuite
  */
 class DhcpTestSuite : public TestSuite
 {

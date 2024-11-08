@@ -23,10 +23,10 @@ class NetDevice;
 class Node;
 
 /**
- * \ingroup socket
- * \ingroup ipv6
+ * @ingroup socket
+ * @ingroup ipv6
  *
- * \brief IPv6 raw socket.
+ * @brief IPv6 raw socket.
  *
  * A RAW Socket typically is used to access specific IP layers not usually
  * available through L4 sockets, e.g., ICMP. The implementer should take
@@ -38,7 +38,7 @@ class Node;
  * behavior.
  *
  * A correct example is (from src/applications/model/radvd.cc):
- * \code
+ * @code
    if (!m_socket)
      {
        TypeId tid = TypeId::LookupByName ("ns3::Ipv6RawSocketFactory");
@@ -49,15 +49,15 @@ class Node;
        m_socket->SetAttribute ("Protocol", UintegerValue(Ipv6Header::IPV6_ICMPV6));
        m_socket->SetRecvCallback (MakeCallback (&Radvd::HandleRead, this));
      }
- * \endcode
+ * @endcode
  *
  */
 class Ipv6RawSocketImpl : public Socket
 {
   public:
     /**
-     * \brief Get the type ID of this class.
-     * \return type ID
+     * @brief Get the type ID of this class.
+     * @return type ID
      */
     static TypeId GetTypeId();
 
@@ -65,16 +65,16 @@ class Ipv6RawSocketImpl : public Socket
     ~Ipv6RawSocketImpl() override;
 
     /**
-     * \brief Set the node associated with this socket.
-     * \param node node to set
+     * @brief Set the node associated with this socket.
+     * @param node node to set
      */
     void SetNode(Ptr<Node> node);
 
     Socket::SocketErrno GetErrno() const override;
 
     /**
-     * \brief Get socket type (NS3_SOCK_RAW)
-     * \return socket type
+     * @brief Get socket type (NS3_SOCK_RAW)
+     * @return socket type
      */
     Socket::SocketType GetSocketType() const override;
 
@@ -103,17 +103,17 @@ class Ipv6RawSocketImpl : public Socket
                        std::vector<Ipv6Address> sourceAddresses) override;
 
     /**
-     * \brief Set protocol field.
-     * \param protocol protocol to set
+     * @brief Set protocol field.
+     * @param protocol protocol to set
      */
     void SetProtocol(uint16_t protocol);
 
     /**
-     * \brief Forward up to receive method.
-     * \param p packet
-     * \param hdr IPv6 header
-     * \param device device
-     * \return true if forwarded, false otherwise
+     * @brief Forward up to receive method.
+     * @param p packet
+     * @param hdr IPv6 header
+     * @param device device
+     * @return true if forwarded, false otherwise
      */
     bool ForwardUp(Ptr<const Packet> p, Ipv6Header hdr, Ptr<NetDevice> device);
 
@@ -121,44 +121,44 @@ class Ipv6RawSocketImpl : public Socket
     bool GetAllowBroadcast() const override;
 
     /**
-     * \brief Clean the ICMPv6 filter structure
+     * @brief Clean the ICMPv6 filter structure
      */
     void Icmpv6FilterSetPassAll();
 
     /**
-     * \brief Set the filter to block all the ICMPv6 types
+     * @brief Set the filter to block all the ICMPv6 types
      */
     void Icmpv6FilterSetBlockAll();
 
     /**
-     * \brief Set the filter to pass one ICMPv6 type
-     * \param type the ICMPv6 type to pass
+     * @brief Set the filter to pass one ICMPv6 type
+     * @param type the ICMPv6 type to pass
      */
     void Icmpv6FilterSetPass(uint8_t type);
 
     /**
-     * \brief Set the filter to block one ICMPv6 type
-     * \param type the ICMPv6 type to block
+     * @brief Set the filter to block one ICMPv6 type
+     * @param type the ICMPv6 type to block
      */
     void Icmpv6FilterSetBlock(uint8_t type);
 
     /**
-     * \brief Ask the filter about the status of one ICMPv6 type
-     * \param type the ICMPv6 type
-     * \return true if the ICMP type is passing through
+     * @brief Ask the filter about the status of one ICMPv6 type
+     * @param type the ICMPv6 type
+     * @return true if the ICMP type is passing through
      */
     bool Icmpv6FilterWillPass(uint8_t type);
 
     /**
-     * \brief Ask the filter about the status of one ICMPv6 type
-     * \param type the ICMPv6 type
-     * \return true if the ICMP type is being blocked
+     * @brief Ask the filter about the status of one ICMPv6 type
+     * @param type the ICMPv6 type
+     * @return true if the ICMP type is being blocked
      */
     bool Icmpv6FilterWillBlock(uint8_t type);
 
   private:
     /**
-     * \brief IPv6 raw data and additional information.
+     * @brief IPv6 raw data and additional information.
      */
     struct Data
     {
@@ -168,52 +168,52 @@ class Ipv6RawSocketImpl : public Socket
     };
 
     /**
-     * \brief Dispose object.
+     * @brief Dispose object.
      */
     void DoDispose() override;
 
     /**
-     * \brief Last error number.
+     * @brief Last error number.
      */
     mutable Socket::SocketErrno m_err;
 
     /**
-     * \brief Node.
+     * @brief Node.
      */
     Ptr<Node> m_node;
 
     /**
-     * \brief Source address.
+     * @brief Source address.
      */
     Ipv6Address m_src;
 
     /**
-     * \brief Destination address.
+     * @brief Destination address.
      */
     Ipv6Address m_dst;
 
     /**
-     * \brief Protocol.
+     * @brief Protocol.
      */
     uint16_t m_protocol;
 
     /**
-     * \brief Packet waiting to be processed.
+     * @brief Packet waiting to be processed.
      */
     std::list<Data> m_data;
 
     /**
-     * \brief Flag to shutdown send capability.
+     * @brief Flag to shutdown send capability.
      */
     bool m_shutdownSend;
 
     /**
-     * \brief Flag to shutdown receive capability.
+     * @brief Flag to shutdown receive capability.
      */
     bool m_shutdownRecv;
 
     /**
-     * \brief Struct to hold the ICMPv6 filter
+     * @brief Struct to hold the ICMPv6 filter
      */
     struct Icmpv6Filter
     {
@@ -221,7 +221,7 @@ class Ipv6RawSocketImpl : public Socket
     };
 
     /**
-     * \brief ICMPv6 filter.
+     * @brief ICMPv6 filter.
      */
     Icmpv6Filter m_icmpFilter;
 };

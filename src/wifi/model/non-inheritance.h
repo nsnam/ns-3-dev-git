@@ -17,7 +17,7 @@ namespace ns3
 {
 
 /**
- * \ingroup wifi
+ * @ingroup wifi
  *
  * The IEEE 802.11 Non-Inheritance Information Element
  */
@@ -31,15 +31,15 @@ class NonInheritance : public WifiInformationElement
     /**
      * Add the Information Element specified by the given Element ID and Element ID Extension.
      *
-     * \param elemId the given Element ID
-     * \param elemIdExt the given Element ID Extension
+     * @param elemId the given Element ID
+     * @param elemIdExt the given Element ID Extension
      */
     void Add(uint8_t elemId, uint8_t elemIdExt = 0);
 
     /**
-     * \param elemId the given Element ID
-     * \param elemIdExt the given Element ID Extension
-     * \return whether the Information Element specified by the given Element ID and
+     * @param elemId the given Element ID
+     * @param elemIdExt the given Element ID Extension
+     * @return whether the Information Element specified by the given Element ID and
      *         Element ID Extension is present
      */
     bool IsPresent(uint8_t elemId, uint8_t elemIdExt = 0) const;

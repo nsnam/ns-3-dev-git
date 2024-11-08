@@ -17,9 +17,9 @@ namespace ns3
 {
 
 /**
- * \ingroup propagation
+ * @ingroup propagation
  *
- * \brief the ITU-R 1411 LOS propagation model
+ * @brief the ITU-R 1411 LOS propagation model
  *
  * This class implements the ITU-R 1411 LOS propagation model for
  * Line-of-Sight (LoS) short range outdoor communication in the
@@ -31,8 +31,8 @@ class ItuR1411LosPropagationLossModel : public PropagationLossModel
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -46,17 +46,17 @@ class ItuR1411LosPropagationLossModel : public PropagationLossModel
     /**
      * Set the operating frequency
      *
-     * \param freq the frequency in Hz
+     * @param freq the frequency in Hz
      */
     void SetFrequency(double freq);
 
     /**
      *
      *
-     * \param a the first mobility model
-     * \param b the second mobility model
+     * @param a the first mobility model
+     * @param b the second mobility model
      *
-     * \return the loss in dBm for the propagation between
+     * @return the loss in dBm for the propagation between
      * the two given mobility models
      */
     double GetLoss(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;

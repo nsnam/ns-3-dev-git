@@ -44,8 +44,8 @@ class TupleObject : public Object
     ~TupleObject() override;
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -60,22 +60,22 @@ class TupleObject : public Object
 
     /**
      * Set tuple1
-     * \param tuple tuple value
+     * @param tuple tuple value
      */
     void SetTuple1(const Tuple1& tuple);
     /**
      * Get tuple1
-     * \return tuple1
+     * @return tuple1
      */
     Tuple1 GetTuple1() const;
     /**
      * Set tuple2
-     * \param tuple tuple value
+     * @param tuple tuple value
      */
     void SetTuple2(const Tuple2& tuple);
     /**
      * Get tuple2
-     * \return tuple2
+     * @return tuple2
      */
     Tuple2 GetTuple2() const;
 

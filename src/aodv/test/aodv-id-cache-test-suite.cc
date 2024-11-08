@@ -22,15 +22,15 @@ namespace aodv
 {
 
 /**
- * \defgroup aodv-test AODV module tests
- * \ingroup aodv
- * \ingroup tests
+ * @defgroup aodv-test AODV module tests
+ * @ingroup aodv
+ * @ingroup tests
  */
 
 /**
- * \ingroup aodv-test
+ * @ingroup aodv-test
  *
- * \brief Unit test for id cache
+ * @brief Unit test for id cache
  */
 class IdCacheTest : public TestCase
 {
@@ -99,9 +99,9 @@ IdCacheTest::CheckTimeout3()
 }
 
 /**
- * \ingroup aodv-test
+ * @ingroup aodv-test
  *
- * \brief Id Cache Test Suite
+ * @brief Id Cache Test Suite
  */
 class IdCacheTestSuite : public TestSuite
 {

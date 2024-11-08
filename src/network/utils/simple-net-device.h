@@ -27,7 +27,7 @@ class Node;
 class ErrorModel;
 
 /**
- * \ingroup netdevice
+ * @ingroup netdevice
  *
  * This device assumes 48-bit mac addressing; there is also the possibility to
  * add an ErrorModel if you want to force losses on the device.
@@ -38,14 +38,14 @@ class ErrorModel;
  *
  * By default the device is in Broadcast mode, with infinite bandwidth.
  *
- * \brief simple net device for simple things and testing
+ * @brief simple net device for simple things and testing
  */
 class SimpleNetDevice : public NetDevice
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     SimpleNetDevice();
@@ -55,10 +55,10 @@ class SimpleNetDevice : public NetDevice
      * SimpleNetDevice receives packets from its connected channel
      * and then forwards them by calling its rx callback method
      *
-     * \param packet Packet received on the channel
-     * \param protocol protocol number
-     * \param to address packet should be sent to
-     * \param from address packet was sent from
+     * @param packet Packet received on the channel
+     * @param protocol protocol number
+     * @param to address packet should be sent to
+     * @param from address packet was sent from
      */
     void Receive(Ptr<Packet> packet, uint16_t protocol, Mac48Address to, Mac48Address from);
 
@@ -66,7 +66,7 @@ class SimpleNetDevice : public NetDevice
      * Attach a channel to this net device.  This will be the
      * channel the net device sends on
      *
-     * \param channel channel to assign to this net device
+     * @param channel channel to assign to this net device
      *
      */
     void SetChannel(Ptr<SimpleChannel> channel);
@@ -74,14 +74,14 @@ class SimpleNetDevice : public NetDevice
     /**
      * Attach a queue to the SimpleNetDevice.
      *
-     * \param queue Ptr to the new queue.
+     * @param queue Ptr to the new queue.
      */
     void SetQueue(Ptr<Queue<Packet>> queue);
 
     /**
      * Get a copy of the attached Queue.
      *
-     * \returns Ptr to the queue.
+     * @returns Ptr to the queue.
      */
     Ptr<Queue<Packet>> GetQueue() const;
 
@@ -91,8 +91,8 @@ class SimpleNetDevice : public NetDevice
      * The SimpleNetDevice may optionally include an ErrorModel in
      * the packet receive chain.
      *
-     * \see ErrorModel
-     * \param em Ptr to the ErrorModel.
+     * @see ErrorModel
+     * @param em Ptr to the ErrorModel.
      */
     void SetReceiveErrorModel(Ptr<ErrorModel> em);
 
@@ -146,7 +146,7 @@ class SimpleNetDevice : public NetDevice
      * really have a Phy model, we choose this trace source name for alignment
      * with other trace sources.
      *
-     * \see class CallBackTraceSource
+     * @see class CallBackTraceSource
      */
     TracedCallback<Ptr<const Packet>> m_phyRxDropTrace;
 
@@ -161,7 +161,7 @@ class SimpleNetDevice : public NetDevice
     /**
      * The FinishTransmission method is used internally to finish the process
      * of sending a packet out on the channel.
-     * \param packet The packet to send on the channel
+     * @param packet The packet to send on the channel
      */
     void FinishTransmission(Ptr<Packet> packet);
 

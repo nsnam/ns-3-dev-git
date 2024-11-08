@@ -95,15 +95,15 @@ class InterferenceExperiment
     InterferenceExperiment();
     /**
      * Run function
-     * \param input the interference experiment data
+     * @param input the interference experiment data
      */
     void Run(InterferenceExperiment::Input input);
 
   private:
     /**
      * Function triggered when a packet is dropped
-     * \param packet the packet that was dropped
-     * \param reason the reason why it was dropped
+     * @param packet the packet that was dropped
+     * @param reason the reason why it was dropped
      */
     void PacketDropped(Ptr<const Packet> packet, WifiPhyRxfailureReason reason);
     /// Send A function

@@ -21,9 +21,9 @@
 using namespace ns3;
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief Test suite for executing the secondary cell selection test cases.
+ * @brief Test suite for executing the secondary cell selection test cases.
  *
  * Checks that if multiple component carriers are defined for an eNB, that
  * UEs can connect to each of these component carriers, not just the primary
@@ -37,21 +37,21 @@ class LteSecondaryCellSelectionTestSuite : public TestSuite
 };
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief Testing the initial cell selection procedure by UE at IDLE state in
+ * @brief Testing the initial cell selection procedure by UE at IDLE state in
  *        the beginning of simulation with multiple component carriers.
  */
 class LteSecondaryCellSelectionTestCase : public TestCase
 {
   public:
     /**
-     * \brief Creates an instance of the initial cell selection test case.
-     * \param name name of this test
-     * \param isIdealRrc if true, simulation uses Ideal RRC protocol, otherwise
+     * @brief Creates an instance of the initial cell selection test case.
+     * @param name name of this test
+     * @param isIdealRrc if true, simulation uses Ideal RRC protocol, otherwise
      *                   simulation uses Real RRC protocol
-     * \param rngRun the number of run to be used by the random number generator
-     * \param numberOfComponentCarriers number of component carriers
+     * @param rngRun the number of run to be used by the random number generator
+     * @param numberOfComponentCarriers number of component carriers
      */
     LteSecondaryCellSelectionTestCase(std::string name,
                                       bool isIdealRrc,
@@ -62,19 +62,19 @@ class LteSecondaryCellSelectionTestCase : public TestCase
 
   private:
     /**
-     * \brief Setup the simulation according to the configuration set by the
+     * @brief Setup the simulation according to the configuration set by the
      *        class constructor, run it, and verify the result.
      */
     void DoRun() override;
 
     /**
-     * \brief State transition callback function
-     * \param context the context string
-     * \param imsi the IMSI
-     * \param cellId the cell ID
-     * \param rnti the RNTI
-     * \param oldState the old state
-     * \param newState the new state
+     * @brief State transition callback function
+     * @param context the context string
+     * @param imsi the IMSI
+     * @param cellId the cell ID
+     * @param rnti the RNTI
+     * @param oldState the old state
+     * @param newState the new state
      */
     void StateTransitionCallback(std::string context,
                                  uint64_t imsi,
@@ -83,20 +83,20 @@ class LteSecondaryCellSelectionTestCase : public TestCase
                                  LteUeRrc::State oldState,
                                  LteUeRrc::State newState);
     /**
-     * \brief Initial cell selection end ok callback function
-     * \param context the context string
-     * \param imsi the IMSI
-     * \param cellId the cell ID
+     * @brief Initial cell selection end ok callback function
+     * @param context the context string
+     * @param imsi the IMSI
+     * @param cellId the cell ID
      */
     void InitialSecondaryCellSelectionEndOkCallback(std::string context,
                                                     uint64_t imsi,
                                                     uint16_t cellId);
     /**
-     * \brief Connection established callback function
-     * \param context the context string
-     * \param imsi the IMSI
-     * \param cellId the cell ID
-     * \param rnti the RNTI
+     * @brief Connection established callback function
+     * @param context the context string
+     * @param imsi the IMSI
+     * @param cellId the cell ID
+     * @param rnti the RNTI
      */
     void ConnectionEstablishedCallback(std::string context,
                                        uint64_t imsi,

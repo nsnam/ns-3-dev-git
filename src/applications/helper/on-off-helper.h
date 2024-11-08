@@ -18,8 +18,8 @@ namespace ns3
 {
 
 /**
- * \ingroup onoff
- * \brief A helper to make it easier to instantiate an ns3::OnOffApplication
+ * @ingroup onoff
+ * @brief A helper to make it easier to instantiate an ns3::OnOffApplication
  * on a set of nodes.
  */
 class OnOffHelper : public ApplicationHelper
@@ -28,11 +28,11 @@ class OnOffHelper : public ApplicationHelper
     /**
      * Create an OnOffHelper to make it easier to work with OnOffApplications
      *
-     * \param protocol the name of the protocol to use to send traffic
+     * @param protocol the name of the protocol to use to send traffic
      *        by the applications. This string identifies the socket
      *        factory type used to create sockets for the applications.
      *        A typical value would be ns3::UdpSocketFactory.
-     * \param address the address of the remote node to send traffic
+     * @param address the address of the remote node to send traffic
      *        to.
      */
     OnOffHelper(const std::string& protocol, const Address& address);
@@ -42,8 +42,8 @@ class OnOffHelper : public ApplicationHelper
      * setting the attributes OnTime to constant 1000 seconds, OffTime to
      * constant 0 seconds, and the DataRate and PacketSize set accordingly
      *
-     * \param dataRate DataRate object for the sending rate
-     * \param packetSize size in bytes of the packet payloads generated
+     * @param dataRate DataRate object for the sending rate
+     * @param packetSize size in bytes of the packet payloads generated
      */
     void SetConstantRate(DataRate dataRate, uint32_t packetSize = 512);
 };

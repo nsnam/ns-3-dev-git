@@ -19,13 +19,13 @@ namespace ns3
 class Packet;
 
 /**
- * \ingroup network
- * \defgroup netdevice Network Device
+ * @ingroup network
+ * @defgroup netdevice Network Device
  */
 
 /**
- * \ingroup netdevice
- * \brief Base class to represent items of packet Queues
+ * @ingroup netdevice
+ * @brief Base class to represent items of packet Queues
  *
  * An item stored in an ns-3 packet Queue contains a packet and possibly other
  * information. An item of the base class only contains a packet. Subclasses
@@ -36,8 +36,8 @@ class QueueItem : public SimpleRefCount<QueueItem>
 {
   public:
     /**
-     * \brief Create a queue item containing a packet.
-     * \param p the packet included in the created item.
+     * @brief Create a queue item containing a packet.
+     * @param p the packet included in the created item.
      */
     QueueItem(Ptr<Packet> p);
 
@@ -49,23 +49,23 @@ class QueueItem : public SimpleRefCount<QueueItem>
     QueueItem& operator=(const QueueItem&) = delete;
 
     /**
-     * \return the packet included in this item.
+     * @return the packet included in this item.
      */
     Ptr<Packet> GetPacket() const;
 
     /**
-     * \brief Use this method (instead of GetPacket ()->GetSize ()) to get the packet size
+     * @brief Use this method (instead of GetPacket ()->GetSize ()) to get the packet size
      *
      * Subclasses may keep header and payload separate to allow manipulating the header,
      * so using this method ensures that the correct packet size is returned.
      *
-     * \return the size of the packet included in this item.
+     * @return the size of the packet included in this item.
      */
     virtual uint32_t GetSize() const;
 
     /**
-     * \enum Uint8Values
-     * \brief 1-byte fields of the packet whose value can be retrieved, if present
+     * @enum Uint8Values
+     * @brief 1-byte fields of the packet whose value can be retrieved, if present
      */
     enum Uint8Values
     {
@@ -73,24 +73,24 @@ class QueueItem : public SimpleRefCount<QueueItem>
     };
 
     /**
-     * \brief Retrieve the value of a given field from the packet, if present
-     * \param field the field whose value has to be retrieved
-     * \param value the output parameter to store the retrieved value
+     * @brief Retrieve the value of a given field from the packet, if present
+     * @param field the field whose value has to be retrieved
+     * @param value the output parameter to store the retrieved value
      *
-     * \return true if the requested field is present in the packet, false otherwise.
+     * @return true if the requested field is present in the packet, false otherwise.
      */
     virtual bool GetUint8Value(Uint8Values field, uint8_t& value) const;
 
     /**
-     * \brief Print the item contents.
-     * \param os output stream in which the data should be printed.
+     * @brief Print the item contents.
+     * @param os output stream in which the data should be printed.
      */
     virtual void Print(std::ostream& os) const;
 
     /**
      * TracedCallback signature for Ptr<QueueItem>
      *
-     * \param [in] item The queue item.
+     * @param [in] item The queue item.
      */
     typedef void (*TracedCallback)(Ptr<const QueueItem> item);
 
@@ -102,16 +102,16 @@ class QueueItem : public SimpleRefCount<QueueItem>
 };
 
 /**
- * \brief Stream insertion operator.
+ * @brief Stream insertion operator.
  *
- * \param os the stream
- * \param item the item
- * \returns a reference to the stream
+ * @param os the stream
+ * @param item the item
+ * @returns a reference to the stream
  */
 std::ostream& operator<<(std::ostream& os, const QueueItem& item);
 
 /**
- * \ingroup network
+ * @ingroup network
  *
  * QueueDiscItem is the abstract base class for items that are stored in a queue
  * disc. It is derived from QueueItem (which only consists of a Ptr<Packet>)
@@ -122,10 +122,10 @@ class QueueDiscItem : public QueueItem
 {
   public:
     /**
-     * \brief Create a queue disc item.
-     * \param p the packet included in the created item.
-     * \param addr the destination MAC address
-     * \param protocol the L3 protocol number
+     * @brief Create a queue disc item.
+     * @param p the packet included in the created item.
+     * @param addr the destination MAC address
+     * @param protocol the L3 protocol number
      */
     QueueDiscItem(Ptr<Packet> p, const Address& addr, uint16_t protocol);
 
@@ -137,43 +137,43 @@ class QueueDiscItem : public QueueItem
     QueueDiscItem& operator=(const QueueDiscItem&) = delete;
 
     /**
-     * \brief Get the MAC address included in this item
-     * \return the MAC address included in this item.
+     * @brief Get the MAC address included in this item
+     * @return the MAC address included in this item.
      */
     Address GetAddress() const;
 
     /**
-     * \brief Get the L3 protocol included in this item
-     * \return the L3 protocol included in this item.
+     * @brief Get the L3 protocol included in this item
+     * @return the L3 protocol included in this item.
      */
     uint16_t GetProtocol() const;
 
     /**
-     * \brief Get the transmission queue index included in this item
-     * \return the transmission queue index included in this item.
+     * @brief Get the transmission queue index included in this item
+     * @return the transmission queue index included in this item.
      */
     uint8_t GetTxQueueIndex() const;
 
     /**
-     * \brief Set the transmission queue index to store in this item
-     * \param txq the transmission queue index to store in this item.
+     * @brief Set the transmission queue index to store in this item
+     * @param txq the transmission queue index to store in this item.
      */
     void SetTxQueueIndex(uint8_t txq);
 
     /**
-     * \brief Get the timestamp included in this item
-     * \return the timestamp included in this item.
+     * @brief Get the timestamp included in this item
+     * @return the timestamp included in this item.
      */
     Time GetTimeStamp() const;
 
     /**
-     * \brief Set the timestamp included in this item
-     * \param t the timestamp to include in this item.
+     * @brief Set the timestamp included in this item
+     * @param t the timestamp to include in this item.
      */
     void SetTimeStamp(Time t);
 
     /**
-     * \brief Add the header to the packet
+     * @brief Add the header to the packet
      *
      * Subclasses may keep header and payload separate to allow manipulating the header,
      * so this method allows to add the header to the packet before sending the packet
@@ -182,27 +182,27 @@ class QueueDiscItem : public QueueItem
     virtual void AddHeader() = 0;
 
     /**
-     * \brief Print the item contents.
-     * \param os output stream in which the data should be printed.
+     * @brief Print the item contents.
+     * @param os output stream in which the data should be printed.
      */
     void Print(std::ostream& os) const override;
 
     /**
-     * \brief Marks the packet as a substitute for dropping it, such as for Explicit Congestion
+     * @brief Marks the packet as a substitute for dropping it, such as for Explicit Congestion
      * Notification
      *
-     * \return true if the packet is marked by this method or is already marked, false otherwise
+     * @return true if the packet is marked by this method or is already marked, false otherwise
      */
     virtual bool Mark() = 0;
 
     /**
-     * \brief Computes the hash of various fields of the packet header
+     * @brief Computes the hash of various fields of the packet header
      *
      * This method just returns 0. Subclasses should implement a reasonable hash
      * for their protocol type, such as hashing on the TCP/IP 5-tuple.
      *
-     * \param perturbation hash perturbation value
-     * \return the hash of various fields of the packet header
+     * @param perturbation hash perturbation value
+     * @return the hash of various fields of the packet header
      */
     virtual uint32_t Hash(uint32_t perturbation = 0) const;
 

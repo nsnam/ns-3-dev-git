@@ -13,15 +13,15 @@
 using namespace ns3;
 
 /**
- * \ingroup wimax
- * \defgroup wimax-test wimax module tests
+ * @ingroup wimax
+ * @defgroup wimax-test wimax module tests
  */
 
 /**
- * \ingroup wimax-test
- * \ingroup tests
+ * @ingroup wimax-test
+ * @ingroup tests
  *
- * \brief Test the DSA request message.
+ * @brief Test the DSA request message.
  */
 class DsaRequestTestCase : public TestCase
 {
@@ -100,10 +100,10 @@ DsaRequestTestCase::DoRun()
 }
 
 /**
- * \ingroup wimax-test
- * \ingroup tests
+ * @ingroup wimax-test
+ * @ingroup tests
  *
- * \brief Ns3 Wimax Mac Messages Test Suite
+ * @brief Ns3 Wimax Mac Messages Test Suite
  */
 class Ns3WimaxMacMessagesTestSuite : public TestSuite
 {

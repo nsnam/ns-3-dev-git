@@ -47,7 +47,7 @@ static Ptr<ThreeGppSpectrumPropagationLossModel>
 static Ptr<ChannelConditionModel> m_condModel; //!< the ChannelConditionModel object
 
 /*
- * \brief A structure that holds the parameters for the ComputeSnr
+ * @brief A structure that holds the parameters for the ComputeSnr
  * function. In this way the problem with the limited
  * number of parameters of method Schedule is avoided.
  */
@@ -63,9 +63,9 @@ struct ComputeSnrParams
 
 /**
  * Perform the beamforming using the DFT beamforming method
- * \param thisDevice the device performing the beamforming
- * \param thisAntenna the antenna object associated to thisDevice
- * \param otherDevice the device towards which point the beam
+ * @param thisDevice the device performing the beamforming
+ * @param thisAntenna the antenna object associated to thisDevice
+ * @param otherDevice the device towards which point the beam
  */
 static void
 DoBeamforming(Ptr<NetDevice> thisDevice,
@@ -87,7 +87,7 @@ DoBeamforming(Ptr<NetDevice> thisDevice,
 
 /**
  * Compute the average SNR
- * \param params A structure that holds a bunch of parameters needed by ComputSnr function to
+ * @param params A structure that holds a bunch of parameters needed by ComputSnr function to
  * calculate the average SNR
  */
 static void
@@ -138,7 +138,7 @@ ComputeSnr(const ComputeSnrParams& params)
 /**
  * Generates a GNU-plottable file representing the buildings deployed in the
  * scenario
- * \param filename the name of the output file
+ * @param filename the name of the output file
  */
 void
 PrintGnuplottableBuildingListToFile(std::string filename)

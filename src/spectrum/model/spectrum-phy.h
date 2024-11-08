@@ -26,7 +26,7 @@ class NetDevice;
 struct SpectrumSignalParameters;
 
 /**
- * \ingroup spectrum
+ * @ingroup spectrum
  *
  * Abstract base class for Spectrum-aware PHY layers
  *
@@ -42,8 +42,8 @@ class SpectrumPhy : public Object
     SpectrumPhy& operator=(const SpectrumPhy&) = delete;
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -91,7 +91,7 @@ class SpectrumPhy : public Object
     virtual Ptr<const SpectrumModel> GetRxSpectrumModel() const = 0;
 
     /**
-     * \brief Get the AntennaModel used by this SpectrumPhy instance for
+     * @brief Get the AntennaModel used by this SpectrumPhy instance for
      * transmission and/or reception
      *
      * Note that in general and depending on each module design, there can be

@@ -17,8 +17,8 @@
 #include <cmath> // pow
 
 /**
- * \file
- * \ingroup highprec
+ * @file
+ * @ingroup highprec
  * Declaration of the ns3::int64x64_t type using the Cairo implementation.
  */
 
@@ -26,7 +26,7 @@ namespace ns3
 {
 
 /**
- * \internal
+ * @internal
  * The implementation documented here uses cairo 128-bit integers.
  */
 class int64x64_t
@@ -65,13 +65,13 @@ class int64x64_t
     }
 
     /**
-     * \name Construct from a floating point value.
+     * @name Construct from a floating point value.
      */
     /**
      * @{
      * Constructor from a floating point.
      *
-     * \param [in] value Floating value to represent.
+     * @param [in] value Floating value to represent.
      */
     inline int64x64_t(const double value)
     {
@@ -111,13 +111,13 @@ class int64x64_t
     /**@}*/
 
     /**
-     * \name Construct from an integral type.
+     * @name Construct from an integral type.
      */
     /**@{*/
     /**
      * Construct from an integral type.
      *
-     * \param [in] v Integer value to represent
+     * @param [in] v Integer value to represent
      */
     inline int64x64_t(const int v)
     {
@@ -159,8 +159,8 @@ class int64x64_t
     /**
      * Construct from explicit high and low values.
      *
-     * \param [in] hi Integer portion.
-     * \param [in] lo Fractional portion, already scaled to HP_MAX_64.
+     * @param [in] hi Integer portion.
+     * @param [in] lo Fractional portion, already scaled to HP_MAX_64.
      */
     explicit inline int64x64_t(const int64_t hi, const uint64_t lo)
     {
@@ -171,7 +171,7 @@ class int64x64_t
     /**
      * Copy constructor.
      *
-     * \param [in] o Value to copy.
+     * @param [in] o Value to copy.
      */
     inline int64x64_t(const int64x64_t& o)
         : _v(o._v)
@@ -181,8 +181,8 @@ class int64x64_t
     /**
      * Assignment.
      *
-     * \param [in] o Value to assign to this int64x64_t.
-     * \returns a copy of \pname{o}
+     * @param [in] o Value to assign to this int64x64_t.
+     * @returns a copy of \pname{o}
      */
     inline int64x64_t& operator=(const int64x64_t& o)
     {
@@ -199,7 +199,7 @@ class int64x64_t
     /**
      * Get this value as a double.
      *
-     * \return This value in floating form.
+     * @return This value in floating form.
      */
     inline double GetDouble() const
     {
@@ -216,7 +216,7 @@ class int64x64_t
     /**
      * Get the integer portion.
      *
-     * \return The integer portion of this value.
+     * @return The integer portion of this value.
      */
     inline int64_t GetHigh() const
     {
@@ -226,7 +226,7 @@ class int64x64_t
     /**
      * Get the fractional portion of this value, unscaled.
      *
-     * \return The fractional portion, unscaled, as an integer.
+     * @return The fractional portion, unscaled, as an integer.
      */
     inline uint64_t GetLow() const
     {
@@ -236,7 +236,7 @@ class int64x64_t
     /**
      * Truncate to an integer.
      * Truncation is always toward zero,
-     * \return The value truncated toward zero.
+     * @return The value truncated toward zero.
      */
     int64_t GetInt() const
     {
@@ -251,7 +251,7 @@ class int64x64_t
      * Round to the nearest int.
      * Similar to std::round this rounds halfway cases away from zero,
      * regardless of the current (floating) rounding mode.
-     * \return The value rounded to the nearest int.
+     * @return The value rounded to the nearest int.
      */
     int64_t Round() const
     {
@@ -268,9 +268,9 @@ class int64x64_t
      * Multiply this value by a Q0.128 value, presumably representing an inverse,
      * completing a division operation.
      *
-     * \param [in] o The inverse operand.
+     * @param [in] o The inverse operand.
      *
-     * \see Invert
+     * @see Invert
      */
     void MulByInvert(const int64x64_t& o);
 
@@ -284,22 +284,22 @@ class int64x64_t
      *
      * (Really this should be a separate type representing Q0.128.)
      *
-     * \param [in] v The value to compute the inverse of.
-     * \return A Q0.128 representation of the inverse.
+     * @param [in] v The value to compute the inverse of.
+     * @return A Q0.128 representation of the inverse.
      */
     static int64x64_t Invert(const uint64_t v);
 
   private:
     /**
-     * \name Arithmetic Operators
+     * @name Arithmetic Operators
      * Arithmetic operators for int64x64_t.
      */
     /**
      * @{
      * Arithmetic operator.
-     * \param [in] lhs Left hand argument
-     * \param [in] rhs Right hand argument
-     * \return The result of the operator.
+     * @param [in] lhs Left hand argument
+     * @param [in] rhs Right hand argument
+     * @return The result of the operator.
      */
 
     friend inline bool operator==(const int64x64_t& lhs, const int64x64_t& rhs)
@@ -344,14 +344,14 @@ class int64x64_t
     /** @} */
 
     /**
-     * \name Unary Operators
+     * @name Unary Operators
      * Unary operators for int64x64_t.
      */
     /**
      * @{
      * Unary operator.
-     * \param [in] lhs Left hand argument
-     * \return The result of the operator.
+     * @param [in] lhs Left hand argument
+     * @return The result of the operator.
      */
     friend inline int64x64_t operator+(const int64x64_t& lhs)
     {
@@ -375,13 +375,13 @@ class int64x64_t
     /**
      * Implement `*=`.
      *
-     * \param [in] o The other factor.
+     * @param [in] o The other factor.
      */
     void Mul(const int64x64_t& o);
     /**
      * Implement `/=`.
      *
-     * \param [in] o The divisor.
+     * @param [in] o The divisor.
      */
     void Div(const int64x64_t& o);
     /**
@@ -391,11 +391,11 @@ class int64x64_t
      * we keep the central 128 bits, representing the Q64.64 result.
      * We assert on integer overflow beyond the 64-bit integer portion.
      *
-     * \param [in] a First factor.
-     * \param [in] b Second factor.
-     * \return The Q64.64 product.
+     * @param [in] a First factor.
+     * @param [in] b Second factor.
+     * @return The Q64.64 product.
      *
-     * \internal
+     * @internal
      *
      * It might be tempting to just use \pname{a} `*` \pname{b}
      * and be done with it, but it's not that simple.  With \pname{a}
@@ -412,19 +412,19 @@ class int64x64_t
     /**
      * Unsigned division of Q64.64 values.
      *
-     * \param [in] a Numerator.
-     * \param [in] b Denominator.
-     * \return The Q64.64 representation of `a / b`
+     * @param [in] a Numerator.
+     * @param [in] b Denominator.
+     * @return The Q64.64 representation of `a / b`
      */
     static cairo_uint128_t Udiv(const cairo_uint128_t a, const cairo_uint128_t b);
     /**
      * Unsigned multiplication of Q64.64 and Q0.128 values.
      *
-     * \param [in] a The numerator, a Q64.64 value.
-     * \param [in] b The inverse of the denominator, a Q0.128 value
-     * \return The product `a * b`, representing the ration `a / b^-1`
+     * @param [in] a The numerator, a Q64.64 value.
+     * @param [in] b The inverse of the denominator, a Q0.128 value
+     * @return The product `a * b`, representing the ration `a / b^-1`
      *
-     * \see Invert
+     * @see Invert
      */
     static cairo_uint128_t UmulByInvert(const cairo_uint128_t a, const cairo_uint128_t b);
 

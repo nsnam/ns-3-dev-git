@@ -14,8 +14,8 @@
 #include "ptr.h"
 
 /**
- * \file
- * \ingroup attribute_ObjectVector
+ * @file
+ * @ingroup attribute_ObjectVector
  * ns3::ObjectVectorValue attribute value declarations and template implementations.
  */
 
@@ -23,15 +23,15 @@ namespace ns3
 {
 
 /**
- * \ingroup attribute_ObjectVector
+ * @ingroup attribute_ObjectVector
  * ObjectVectorValue is an alias for ObjectPtrContainerValue
  */
 typedef ObjectPtrContainerValue ObjectVectorValue;
 
 /**
- * \ingroup attribute_ObjectVector
+ * @ingroup attribute_ObjectVector
  * MakeAccessorHelper implementation for ObjectVector.
- * \copydetails ns3::DoMakeAccessorHelperOne(U T::*)
+ * @copydetails ns3::DoMakeAccessorHelperOne(U T::*)
  */
 template <typename T, typename U>
 Ptr<const AttributeAccessor> MakeObjectVectorAccessor(U T::*memberVariable);
@@ -41,16 +41,16 @@ template <typename T>
 Ptr<const AttributeChecker> MakeObjectVectorChecker();
 
 /**
- * \ingroup attribute_ObjectVector
- * \copydoc ns3::MakeObjectPtrContainerAccessor()
+ * @ingroup attribute_ObjectVector
+ * @copydoc ns3::MakeObjectPtrContainerAccessor()
  */
 template <typename T, typename U, typename INDEX>
 Ptr<const AttributeAccessor> MakeObjectVectorAccessor(Ptr<U> (T::*get)(INDEX) const,
                                                       INDEX (T::*getN)() const);
 
 /**
- * \ingroup attribute_ObjectVector
- * \copydoc ns3::MakeObjectPtrContainerAccessor()
+ * @ingroup attribute_ObjectVector
+ * @copydoc ns3::MakeObjectPtrContainerAccessor()
  */
 template <typename T, typename U, typename INDEX>
 Ptr<const AttributeAccessor> MakeObjectVectorAccessor(INDEX (T::*getN)() const,

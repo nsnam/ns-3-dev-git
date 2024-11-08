@@ -62,34 +62,34 @@ namespace ns3
 class TraceContainer;
 
 /**
- * \ingroup traffic-control
+ * @ingroup traffic-control
  *
- * \brief A RED packet queue disc
+ * @brief A RED packet queue disc
  */
 class RedQueueDisc : public QueueDisc
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     /**
-     * \brief RedQueueDisc Constructor
+     * @brief RedQueueDisc Constructor
      *
      * Create a RED queue disc
      */
     RedQueueDisc();
 
     /**
-     * \brief Destructor
+     * @brief Destructor
      *
      * Destructor
      */
     ~RedQueueDisc() override;
 
     /**
-     * \brief Used in Feng's Adaptive RED
+     * @brief Used in Feng's Adaptive RED
      */
     enum FengStatus
     {
@@ -99,7 +99,7 @@ class RedQueueDisc : public QueueDisc
     };
 
     /**
-     * \brief Drop types
+     * @brief Drop types
      */
     enum
     {
@@ -109,66 +109,66 @@ class RedQueueDisc : public QueueDisc
     };
 
     /**
-     * \brief Set the alpha value to adapt m_curMaxP.
+     * @brief Set the alpha value to adapt m_curMaxP.
      *
-     * \param alpha The value of alpha to adapt m_curMaxP.
+     * @param alpha The value of alpha to adapt m_curMaxP.
      */
     void SetAredAlpha(double alpha);
 
     /**
-     * \brief Get the alpha value to adapt m_curMaxP.
+     * @brief Get the alpha value to adapt m_curMaxP.
      *
-     * \returns The alpha value to adapt m_curMaxP.
+     * @returns The alpha value to adapt m_curMaxP.
      */
     double GetAredAlpha();
 
     /**
-     * \brief Set the beta value to adapt m_curMaxP.
+     * @brief Set the beta value to adapt m_curMaxP.
      *
-     * \param beta The value of beta to adapt m_curMaxP.
+     * @param beta The value of beta to adapt m_curMaxP.
      */
     void SetAredBeta(double beta);
 
     /**
-     * \brief Get the beta value to adapt m_curMaxP.
+     * @brief Get the beta value to adapt m_curMaxP.
      *
-     * \returns The beta value to adapt m_curMaxP.
+     * @returns The beta value to adapt m_curMaxP.
      */
     double GetAredBeta();
 
     /**
-     * \brief Set the alpha value to adapt m_curMaxP in Feng's Adaptive RED.
+     * @brief Set the alpha value to adapt m_curMaxP in Feng's Adaptive RED.
      *
-     * \param a The value of alpha to adapt m_curMaxP in Feng's Adaptive RED.
+     * @param a The value of alpha to adapt m_curMaxP in Feng's Adaptive RED.
      */
     void SetFengAdaptiveA(double a);
 
     /**
-     * \brief Get the alpha value to adapt m_curMaxP in Feng's Adaptive RED.
+     * @brief Get the alpha value to adapt m_curMaxP in Feng's Adaptive RED.
      *
-     * \returns The alpha value to adapt m_curMaxP in Feng's Adaptive RED.
+     * @returns The alpha value to adapt m_curMaxP in Feng's Adaptive RED.
      */
     double GetFengAdaptiveA();
 
     /**
-     * \brief Set the beta value to adapt m_curMaxP in Feng's Adaptive RED.
+     * @brief Set the beta value to adapt m_curMaxP in Feng's Adaptive RED.
      *
-     * \param b The value of beta to adapt m_curMaxP in Feng's Adaptive RED.
+     * @param b The value of beta to adapt m_curMaxP in Feng's Adaptive RED.
      */
     void SetFengAdaptiveB(double b);
 
     /**
-     * \brief Get the beta value to adapt m_curMaxP in Feng's Adaptive RED.
+     * @brief Get the beta value to adapt m_curMaxP in Feng's Adaptive RED.
      *
-     * \returns The beta value to adapt m_curMaxP in Feng's Adaptive RED.
+     * @returns The beta value to adapt m_curMaxP in Feng's Adaptive RED.
      */
     double GetFengAdaptiveB();
 
     /**
-     * \brief Set the thresh limits of RED.
+     * @brief Set the thresh limits of RED.
      *
-     * \param minTh Minimum thresh in bytes or packets.
-     * \param maxTh Maximum thresh in bytes or packets.
+     * @param minTh Minimum thresh in bytes or packets.
+     * @param maxTh Maximum thresh in bytes or packets.
      */
     void SetTh(double minTh, double maxTh);
 
@@ -177,8 +177,8 @@ class RedQueueDisc : public QueueDisc
      * used by this model.  Return the number of streams (possibly zero) that
      * have been assigned.
      *
-     * \param stream first stream index to use
-     * \return the number of stream indices assigned by this model
+     * @param stream first stream index to use
+     * @return the number of stream indices assigned by this model
      */
     int64_t AssignStreams(int64_t stream);
 
@@ -191,7 +191,7 @@ class RedQueueDisc : public QueueDisc
 
   protected:
     /**
-     * \brief Dispose of the object
+     * @brief Dispose of the object
      */
     void DoDispose() override;
 
@@ -202,7 +202,7 @@ class RedQueueDisc : public QueueDisc
     bool CheckConfig() override;
 
     /**
-     * \brief Initialize the queue parameters.
+     * @brief Initialize the queue parameters.
      *
      * Note: if the link bandwidth changes in the course of the
      * simulation, the bandwidth-dependent RED parameters do not change.
@@ -211,41 +211,41 @@ class RedQueueDisc : public QueueDisc
      */
     void InitializeParams() override;
     /**
-     * \brief Compute the average queue size
-     * \param nQueued number of queued packets
-     * \param m simulated number of packets arrival during idle period
-     * \param qAvg average queue size
-     * \param qW queue weight given to cur q size sample
-     * \returns new average queue size
+     * @brief Compute the average queue size
+     * @param nQueued number of queued packets
+     * @param m simulated number of packets arrival during idle period
+     * @param qAvg average queue size
+     * @param qW queue weight given to cur q size sample
+     * @returns new average queue size
      */
     double Estimator(uint32_t nQueued, uint32_t m, double qAvg, double qW);
     /**
-     * \brief Update m_curMaxP
-     * \param newAve new average queue length
+     * @brief Update m_curMaxP
+     * @param newAve new average queue length
      */
     void UpdateMaxP(double newAve);
     /**
-     * \brief Update m_curMaxP based on Feng's Adaptive RED
-     * \param newAve new average queue length
+     * @brief Update m_curMaxP based on Feng's Adaptive RED
+     * @param newAve new average queue length
      */
     void UpdateMaxPFeng(double newAve);
     /**
-     * \brief Check if a packet needs to be dropped due to probability mark
-     * \param item queue item
-     * \param qSize queue size
-     * \returns false for no drop/mark, true for drop
+     * @brief Check if a packet needs to be dropped due to probability mark
+     * @param item queue item
+     * @param qSize queue size
+     * @returns false for no drop/mark, true for drop
      */
     bool DropEarly(Ptr<QueueDiscItem> item, uint32_t qSize);
     /**
-     * \brief Returns a probability using these function parameters for the DropEarly function
-     * \returns Prob. of packet drop before "count"
+     * @brief Returns a probability using these function parameters for the DropEarly function
+     * @returns Prob. of packet drop before "count"
      */
     double CalculatePNew();
     /**
-     * \brief Returns a probability using these function parameters for the DropEarly function
-     * \param p Prob. of packet drop before "count"
-     * \param size packet size
-     * \returns Prob. of packet drop
+     * @brief Returns a probability using these function parameters for the DropEarly function
+     * @param p Prob. of packet drop before "count"
+     * @param size packet size
+     * @returns Prob. of packet drop
      */
     double ModifyP(double p, uint32_t size);
 

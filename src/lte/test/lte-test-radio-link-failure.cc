@@ -104,7 +104,7 @@ LteRadioLinkFailureTestSuite::LteRadioLinkFailureTestSuite()
 } // end of LteRadioLinkFailureTestSuite::LteRadioLinkFailureTestSuite ()
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  * Static variable for test initialization
  */
 static LteRadioLinkFailureTestSuite g_lteRadioLinkFailureTestSuite;

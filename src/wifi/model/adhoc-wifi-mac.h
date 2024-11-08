@@ -17,16 +17,16 @@ namespace ns3
 {
 
 /**
- * \ingroup wifi
+ * @ingroup wifi
  *
- * \brief Wifi MAC high model for an ad-hoc Wifi MAC
+ * @brief Wifi MAC high model for an ad-hoc Wifi MAC
  */
 class AdhocWifiMac : public WifiMac
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 

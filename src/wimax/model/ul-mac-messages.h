@@ -20,7 +20,7 @@ namespace ns3
 {
 
 /**
- * \ingroup wimax
+ * @ingroup wimax
  * This class implements the UCD channel encodings as described by "IEEE Standard for
  * Local and metropolitan area networks Part 16: Air Interface for Fixed Broadband Wireless Access
  * Systems" 11.3.1 UCD channel encodings, page 651
@@ -33,66 +33,66 @@ class UcdChannelEncodings
 
     /**
      * Set BW request opp size
-     * \param bwReqOppSize the bandwidth request opp size
+     * @param bwReqOppSize the bandwidth request opp size
      */
     void SetBwReqOppSize(uint16_t bwReqOppSize);
     /**
      * Set range request opp size
-     * \param rangReqOppSize the ranging request opp size
+     * @param rangReqOppSize the ranging request opp size
      */
     void SetRangReqOppSize(uint16_t rangReqOppSize);
     /**
      * Set frequency
-     * \param frequency the frequency
+     * @param frequency the frequency
      */
     void SetFrequency(uint32_t frequency);
 
     /**
      * Get BW request opp size
-     * \returns the bandwidth request opp size
+     * @returns the bandwidth request opp size
      */
     uint16_t GetBwReqOppSize() const;
     /**
      * Get range request opp size
-     * \returns the ragning request opp size
+     * @returns the ragning request opp size
      */
     uint16_t GetRangReqOppSize() const;
     /**
      * Get frequency
-     * \returns the frequency
+     * @returns the frequency
      */
     uint32_t GetFrequency() const;
 
     /**
      * Get size
-     * \returns the size
+     * @returns the size
      */
     uint16_t GetSize() const;
 
     /**
      * Write item
-     * \param start the iterator
-     * \returns the updated iterator
+     * @param start the iterator
+     * @returns the updated iterator
      */
     Buffer::Iterator Write(Buffer::Iterator start) const;
     /**
      * Read item
-     * \param start the iterator
-     * \returns the updated iterator
+     * @param start the iterator
+     * @returns the updated iterator
      */
     Buffer::Iterator Read(Buffer::Iterator start);
 
   private:
     /**
      * Write item
-     * \param start the iterator
-     * \returns the updated iterator
+     * @param start the iterator
+     * @returns the updated iterator
      */
     virtual Buffer::Iterator DoWrite(Buffer::Iterator start) const = 0;
     /**
      * Read item
-     * \param start the iterator
-     * \returns the updated iterator
+     * @param start the iterator
+     * @returns the updated iterator
      */
     virtual Buffer::Iterator DoRead(Buffer::Iterator start) = 0;
 
@@ -128,43 +128,43 @@ class OfdmUcdChannelEncodings : public UcdChannelEncodings
 
     /**
      * Set SB channel reguest region full parameters
-     * \param sbchnlReqRegionFullParams the channel request region full parameters
+     * @param sbchnlReqRegionFullParams the channel request region full parameters
      */
     void SetSbchnlReqRegionFullParams(uint8_t sbchnlReqRegionFullParams);
     /**
      * Set SB channel for control codes
-     * \param sbchnlFocContCodes the channel control codes
+     * @param sbchnlFocContCodes the channel control codes
      */
     void SetSbchnlFocContCodes(uint8_t sbchnlFocContCodes);
 
     /**
      * Get SB channel request region full parameters
-     * \returns the channel request region full parameters
+     * @returns the channel request region full parameters
      */
     uint8_t GetSbchnlReqRegionFullParams() const;
     /**
      * Get SB channel for control codes
-     * \returns the channel for control codes
+     * @returns the channel for control codes
      */
     uint8_t GetSbchnlFocContCodes() const;
 
     /**
      * Get size
-     * \returns the size
+     * @returns the size
      */
     uint16_t GetSize() const;
 
   private:
     /**
      * Write item
-     * \param start the iterator
-     * \returns the updated iterator
+     * @param start the iterator
+     * @returns the updated iterator
      */
     Buffer::Iterator DoWrite(Buffer::Iterator start) const override;
     /**
      * Read item
-     * \param start the iterator
-     * \returns the updated iterator
+     * @param start the iterator
+     * @returns the updated iterator
      */
     Buffer::Iterator DoRead(Buffer::Iterator start) override;
 
@@ -220,62 +220,62 @@ class OfdmUlBurstProfile
 
     /**
      * Set type
-     * \param type the type
+     * @param type the type
      */
     void SetType(uint8_t type);
     /**
      * Set length
-     * \param length the length
+     * @param length the length
      */
     void SetLength(uint8_t length);
     /**
      * Set UIUC
-     * \param uiuc the UIUC
+     * @param uiuc the UIUC
      */
     void SetUiuc(uint8_t uiuc);
     /**
      * Set FEC code type
-     * \param fecCodeType the FEC code type
+     * @param fecCodeType the FEC code type
      */
     void SetFecCodeType(uint8_t fecCodeType);
 
     /**
      * Get type
-     * \returns the type
+     * @returns the type
      */
     uint8_t GetType() const;
     /**
      * Get length
-     * \returns the length
+     * @returns the length
      */
     uint8_t GetLength() const;
     /**
      * Get UIUC
-     * \returns the UIUC
+     * @returns the UIUC
      */
     uint8_t GetUiuc() const;
     /**
      * Get FEC code type
-     * \returns the FEC code type
+     * @returns the FEC code type
      */
     uint8_t GetFecCodeType() const;
 
     /**
      * Get size
-     * \returns the size
+     * @returns the size
      */
     uint16_t GetSize() const;
 
     /**
      * Write item
-     * \param start the iterator
-     * \returns the updated iterator
+     * @param start the iterator
+     * @returns the updated iterator
      */
     Buffer::Iterator Write(Buffer::Iterator start) const;
     /**
      * Read item
-     * \param start the iterator
-     * \returns the updated iterator
+     * @param start the iterator
+     * @returns the updated iterator
      */
     Buffer::Iterator Read(Buffer::Iterator start);
 
@@ -318,94 +318,94 @@ class Ucd : public Header
 
     /**
      * Set configuration change count
-     * \param ucdCount the UCD count
+     * @param ucdCount the UCD count
      */
     void SetConfigurationChangeCount(uint8_t ucdCount);
     /**
      * Set ranging backoff start
-     * \param rangingBackoffStart ranging backoff start
+     * @param rangingBackoffStart ranging backoff start
      */
     void SetRangingBackoffStart(uint8_t rangingBackoffStart);
     /**
      * Set ranging backoff end
-     * \param rangingBackoffEnd the ranging backoff end
+     * @param rangingBackoffEnd the ranging backoff end
      */
     void SetRangingBackoffEnd(uint8_t rangingBackoffEnd);
     /**
      * Set request backoff start
-     * \param requestBackoffStart the request backoff start
+     * @param requestBackoffStart the request backoff start
      */
     void SetRequestBackoffStart(uint8_t requestBackoffStart);
     /**
      * Set request backoff end
-     * \param requestBackoffEnd the request backoff end
+     * @param requestBackoffEnd the request backoff end
      */
     void SetRequestBackoffEnd(uint8_t requestBackoffEnd);
     /**
      * Set channel encodings
-     * \param channelEncodings the channel encodings
+     * @param channelEncodings the channel encodings
      */
     void SetChannelEncodings(OfdmUcdChannelEncodings channelEncodings);
     /**
      * Add UL burst profile
-     * \param ulBurstProfile the UL burst profile
+     * @param ulBurstProfile the UL burst profile
      */
     void AddUlBurstProfile(OfdmUlBurstProfile ulBurstProfile);
     /**
      * Set NR UL burst profiles
-     * \param nrUlBurstProfiles the NR UL burst profiles
+     * @param nrUlBurstProfiles the NR UL burst profiles
      */
     void SetNrUlBurstProfiles(uint8_t nrUlBurstProfiles);
 
     /**
      * Get configuration change count
-     * \returns the configuration change count
+     * @returns the configuration change count
      */
     uint8_t GetConfigurationChangeCount() const;
     /**
      * Get ranging backoff start
-     * \returns the ranging backoff start
+     * @returns the ranging backoff start
      */
     uint8_t GetRangingBackoffStart() const;
     /**
      * Get ranging backoff end
-     * \returns the ranging backoff end value
+     * @returns the ranging backoff end value
      */
     uint8_t GetRangingBackoffEnd() const;
     /**
      * Get request backoff start
-     * \returns the request backoff start value
+     * @returns the request backoff start value
      */
     uint8_t GetRequestBackoffStart() const;
     /**
      * Get request backoff end
-     * \returns the request backoff end value
+     * @returns the request backoff end value
      */
     uint8_t GetRequestBackoffEnd() const;
     /**
      * Get channel encodings
-     * \returns the OFDM UCD channel encodings
+     * @returns the OFDM UCD channel encodings
      */
     OfdmUcdChannelEncodings GetChannelEncodings() const;
     /**
      * Get UL burst profiles
-     * \returns the UL burst profile
+     * @returns the UL burst profile
      */
     std::vector<OfdmUlBurstProfile> GetUlBurstProfiles() const;
     /**
      * Get number UL burst profiles
-     * \returns the number of UL burst profiles
+     * @returns the number of UL burst profiles
      */
     uint8_t GetNrUlBurstProfiles() const;
 
     /**
      * Get name
-     * \returns the name string
+     * @returns the name string
      */
     std::string GetName() const;
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     TypeId GetInstanceTypeId() const override;
@@ -457,82 +457,82 @@ class OfdmUlMapIe
 
     /**
      * Set CID
-     * \param cid the CID
+     * @param cid the CID
      */
     void SetCid(const Cid& cid);
     /**
      * Set start time
-     * \param startTime the start time
+     * @param startTime the start time
      */
     void SetStartTime(uint16_t startTime);
     /**
      * Set subchannel index
-     * \param subchannelIndex
+     * @param subchannelIndex
      */
     void SetSubchannelIndex(uint8_t subchannelIndex);
     /**
      * Set UIUC
-     * \param uiuc the UIUC
+     * @param uiuc the UIUC
      */
     void SetUiuc(uint8_t uiuc);
     /**
      * Set duration
-     * \param duration the duration
+     * @param duration the duration
      */
     void SetDuration(uint16_t duration);
     /**
      * Set midambe repetition interval
-     * \param midambleRepetitionInterval the midambe repetition interval
+     * @param midambleRepetitionInterval the midambe repetition interval
      */
     void SetMidambleRepetitionInterval(uint8_t midambleRepetitionInterval);
 
     /**
      * Get CID
-     * \returns the CID
+     * @returns the CID
      */
     Cid GetCid() const;
     /**
      * Get start time
-     * \returns the start time
+     * @returns the start time
      */
     uint16_t GetStartTime() const;
     /**
      * Get subchannel index
-     * \returns the subchannel index
+     * @returns the subchannel index
      */
     uint8_t GetSubchannelIndex() const;
     /**
      * Get UIUC
-     * \returns the UIUC
+     * @returns the UIUC
      */
     uint8_t GetUiuc() const;
     /**
      * Get duration
-     * \returns the duration
+     * @returns the duration
      */
     uint16_t GetDuration() const;
     /**
      * Get Midamble repetition interval
-     * \returns the midamble repetition interval
+     * @returns the midamble repetition interval
      */
     uint8_t GetMidambleRepetitionInterval() const;
 
     /**
      * Get size
-     * \returns the size
+     * @returns the size
      */
     uint16_t GetSize() const;
 
     /**
      * Write item
-     * \param start the iterator
-     * \returns the updated iterator
+     * @param start the iterator
+     * @returns the updated iterator
      */
     Buffer::Iterator Write(Buffer::Iterator start) const;
     /**
      * Read item
-     * \param start the iterator
-     * \returns the updated iterator
+     * @param start the iterator
+     * @returns the updated iterator
      */
     Buffer::Iterator Read(Buffer::Iterator start);
 
@@ -581,44 +581,44 @@ class UlMap : public Header
 
     /**
      * Set UCD count
-     * \param ucdCount the UCD count
+     * @param ucdCount the UCD count
      */
     void SetUcdCount(uint8_t ucdCount);
     /**
      * Set allocation start time
-     * \param allocationStartTime the allocation start time
+     * @param allocationStartTime the allocation start time
      */
     void SetAllocationStartTime(uint32_t allocationStartTime);
     /**
      * Add UL map element
-     * \param ulMapElement the UL map element
+     * @param ulMapElement the UL map element
      */
     void AddUlMapElement(OfdmUlMapIe ulMapElement);
 
     /**
      * Get UCD count
-     * \returns the UCD count
+     * @returns the UCD count
      */
     uint8_t GetUcdCount() const;
     /**
      * Get allocation start time
-     * \returns the allocation start time
+     * @returns the allocation start time
      */
     uint32_t GetAllocationStartTime() const;
     /**
      * Get UL map elements
-     * \returns the UL map elements
+     * @returns the UL map elements
      */
     std::list<OfdmUlMapIe> GetUlMapElements() const;
 
     /**
      * Get name
-     * \returns the name
+     * @returns the name
      */
     std::string GetName() const;
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     TypeId GetInstanceTypeId() const override;

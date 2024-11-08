@@ -35,15 +35,15 @@
 using namespace ns3;
 
 /**
- * \file
- * \ingroup system-tests-traced
+ * @file
+ * @ingroup system-tests-traced
  *
  * TracedCallback tests to verify if they are called with
  * the right type and number of arguments.
  */
 
 /**
- * \ingroup system-tests-traced
+ * @ingroup system-tests-traced
  *
  * TracedCallback Testcase.
  *
@@ -88,10 +88,10 @@ namespace
 {
 
 /**
- * \ingroup system-tests-traced
+ * @ingroup system-tests-traced
  *
  * Record typedefs which are identical to previously declared.
- * \return a container of strings representing the duplicates.
+ * @return a container of strings representing the duplicates.
  */
 std::set<std::string>
 Duplicates()
@@ -108,20 +108,20 @@ Duplicates()
 }
 
 /**
- * \ingroup system-tests-traced
+ * @ingroup system-tests-traced
  *
  * Container for duplicate types.
  */
 std::set<std::string> g_dupes = Duplicates();
 
 /**
- * \ingroup system-tests-traced
+ * @ingroup system-tests-traced
  *
  * Stringify the known TracedCallback type names.
  *
- * \tparam T \explicit The typedef name.
- * \param [in] N The number of arguments expected.
- * \returns The \c TracedCallback type name.
+ * @tparam T \explicit The typedef name.
+ * @param [in] N The number of arguments expected.
+ * @returns The \c TracedCallback type name.
  */
 template <typename T>
 inline std::string
@@ -131,7 +131,7 @@ TypeName(int N)
 }
 
 /**
- * \ingroup system-tests-traced
+ * @ingroup system-tests-traced
  *
  * Returns a string representing the type of a class.
  */
@@ -145,13 +145,13 @@ TypeName(int N)
     }
 
 /**
- * \ingroup system-tests-traced
+ * @ingroup system-tests-traced
  *
- * \name Stringify known typename.
+ * @name Stringify known typename.
  */
 /**
  * @{
- * \brief Stringify a known typename
+ * @brief Stringify a known typename
  */
 TYPENAME(dsr::DsrOptionSRHeader::TracedCallback);
 TYPENAME(EpcUeNas::StateTracedCallback);
@@ -212,14 +212,14 @@ TYPENAME(WifiRemoteStationManager::RateChangeTracedCallback);
 #undef TYPENAME
 
 /**
- * \ingroup system-tests-traced
+ * @ingroup system-tests-traced
  *
  * Log that a callback was invoked.
  *
  * We can't actually do anything with any of the arguments,
  * but the fact we got called is what's important.
  *
- * \param [in] N The number of arguments passed to the callback.
+ * @param [in] N The number of arguments passed to the callback.
  */
 void
 SinkIt(std::size_t N)
@@ -229,7 +229,7 @@ SinkIt(std::size_t N)
 }
 
 /**
- * \ingroup system-tests-traced
+ * @ingroup system-tests-traced
  *
  * Sink functions.
  */
@@ -238,8 +238,8 @@ class TracedCbSink
 {
   public:
     /**
-     * \brief Sink function, called by a TracedCallback.
-     * \tparam Ts parameters of the TracedCallback.
+     * @brief Sink function, called by a TracedCallback.
+     * @tparam Ts parameters of the TracedCallback.
      */
     static void Sink(Ts...)
     {
@@ -318,7 +318,7 @@ TracedCallbackTypedefTestCase::TracedCallbackTypedefTestCase()
 }
 
 /**
- * \ingroup system-tests-traced
+ * @ingroup system-tests-traced
  *
  * Check the TracedCallback duplicate by checking if it matches the TracedCallback
  * it is supposed to be equal to.
@@ -342,7 +342,7 @@ TracedCallbackTypedefTestCase::TracedCallbackTypedefTestCase()
     }
 
 /**
- * \ingroup system-tests-traced
+ * @ingroup system-tests-traced
  *
  * Check the TracedCallback by calling its Invoke function.
  */
@@ -524,9 +524,9 @@ TracedCallbackTypedefTestCase::DoRun()
 }
 
 /**
- * \ingroup system-tests-traced
+ * @ingroup system-tests-traced
  *
- * \brief TracedCallback typedef TestSuite
+ * @brief TracedCallback typedef TestSuite
  */
 class TracedCallbackTypedefTestSuite : public TestSuite
 {

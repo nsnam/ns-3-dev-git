@@ -176,11 +176,11 @@ Rectangle::CalculateIntersection(const Vector& current, const Vector& speed) con
 ATTRIBUTE_HELPER_CPP(Rectangle);
 
 /**
- * \brief Stream insertion operator.
+ * @brief Stream insertion operator.
  *
- * \param os the stream
- * \param rectangle the rectangle
- * \returns a reference to the stream
+ * @param os the stream
+ * @param rectangle the rectangle
+ * @returns a reference to the stream
  */
 std::ostream&
 operator<<(std::ostream& os, const Rectangle& rectangle)
@@ -190,11 +190,11 @@ operator<<(std::ostream& os, const Rectangle& rectangle)
 }
 
 /**
- * \brief Stream extraction operator.
+ * @brief Stream extraction operator.
  *
- * \param is the stream
- * \param rectangle the rectangle
- * \returns a reference to the stream
+ * @param is the stream
+ * @param rectangle the rectangle
+ * @returns a reference to the stream
  */
 std::istream&
 operator>>(std::istream& is, Rectangle& rectangle)
@@ -211,11 +211,11 @@ operator>>(std::istream& is, Rectangle& rectangle)
 }
 
 /**
- * \brief Stream insertion operator.
+ * @brief Stream insertion operator.
  *
- * \param os the stream
- * \param side the rectangle side
- * \returns a reference to the stream
+ * @param os the stream
+ * @param side the rectangle side
+ * @returns a reference to the stream
  */
 std::ostream&
 operator<<(std::ostream& os, const Rectangle::Side& side)

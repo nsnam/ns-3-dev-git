@@ -32,8 +32,8 @@ class Ipv4Interface;
 class Ipv4Header;
 
 /**
- * \ingroup arp
- * \brief An ARP cache
+ * @ingroup arp
+ * @brief An ARP cache
  *
  * A cached lookup table for translating layer 3 addresses to layer 2.
  * This implementation does lookups from IPv4 to a MAC address
@@ -42,8 +42,8 @@ class ArpCache : public Object
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     class Entry;
@@ -56,52 +56,52 @@ class ArpCache : public Object
     ArpCache& operator=(const ArpCache&) = delete;
 
     /**
-     * \brief Set the NetDevice and Ipv4Interface associated with the ArpCache
+     * @brief Set the NetDevice and Ipv4Interface associated with the ArpCache
      *
-     * \param device The hardware NetDevice associated with this ARP cache
-     * \param interface the Ipv4Interface associated with this ARP cache
+     * @param device The hardware NetDevice associated with this ARP cache
+     * @param interface the Ipv4Interface associated with this ARP cache
      */
     void SetDevice(Ptr<NetDevice> device, Ptr<Ipv4Interface> interface);
     /**
-     * \brief Returns the NetDevice that this ARP cache is associated with
-     * \return The NetDevice that this ARP cache is associated with
+     * @brief Returns the NetDevice that this ARP cache is associated with
+     * @return The NetDevice that this ARP cache is associated with
      */
     Ptr<NetDevice> GetDevice() const;
     /**
-     * \brief Returns the Ipv4Interface that this ARP cache is associated with
-     * \return the Ipv4Interface that this ARP cache is associated with
+     * @brief Returns the Ipv4Interface that this ARP cache is associated with
+     * @return the Ipv4Interface that this ARP cache is associated with
      */
     Ptr<Ipv4Interface> GetInterface() const;
 
     /**
-     * \brief Set the time the entry will be in ALIVE state (unless refreshed)
-     * \param aliveTimeout the Alive state timeout
+     * @brief Set the time the entry will be in ALIVE state (unless refreshed)
+     * @param aliveTimeout the Alive state timeout
      */
     void SetAliveTimeout(Time aliveTimeout);
     /**
-     * \brief Set the time the entry will be in DEAD state before being removed
-     * \param deadTimeout the Dead state timeout
+     * @brief Set the time the entry will be in DEAD state before being removed
+     * @param deadTimeout the Dead state timeout
      */
     void SetDeadTimeout(Time deadTimeout);
     /**
-     * \brief Set the time the entry will be in WAIT_REPLY state
-     * \param waitReplyTimeout the WAIT_REPLY state timeout
+     * @brief Set the time the entry will be in WAIT_REPLY state
+     * @param waitReplyTimeout the WAIT_REPLY state timeout
      */
     void SetWaitReplyTimeout(Time waitReplyTimeout);
 
     /**
-     * \brief Get the time the entry will be in ALIVE state (unless refreshed)
-     * \returns the Alive state timeout
+     * @brief Get the time the entry will be in ALIVE state (unless refreshed)
+     * @returns the Alive state timeout
      */
     Time GetAliveTimeout() const;
     /**
-     * \brief Get the time the entry will be in DEAD state before being removed
-     * \returns the Dead state timeout
+     * @brief Get the time the entry will be in DEAD state before being removed
+     * @returns the Dead state timeout
      */
     Time GetDeadTimeout() const;
     /**
-     * \brief Get the time the entry will be in WAIT_REPLY state
-     * \returns the WAIT_REPLY state timeout
+     * @brief Get the time the entry will be in WAIT_REPLY state
+     * @returns the WAIT_REPLY state timeout
      */
     Time GetWaitReplyTimeout() const;
 
@@ -110,7 +110,7 @@ class ArpCache : public Object
      * the cache to generate an Arp request when the WaitReply
      * time expires and a retransmission must be sent
      *
-     * \param arpRequestCallback Callback for transmitting an Arp request.
+     * @param arpRequestCallback Callback for transmitting an Arp request.
      */
     void SetArpRequestCallback(Callback<void, Ptr<const ArpCache>, Ipv4Address> arpRequestCallback);
     /**
@@ -120,167 +120,167 @@ class ArpCache : public Object
      */
     void StartWaitReplyTimer();
     /**
-     * \brief Do lookup in the ARP cache against an IP address
-     * \param destination The destination IPv4 address to lookup the MAC address
+     * @brief Do lookup in the ARP cache against an IP address
+     * @param destination The destination IPv4 address to lookup the MAC address
      * of
-     * \return An ArpCache::Entry with info about layer 2
+     * @return An ArpCache::Entry with info about layer 2
      */
     ArpCache::Entry* Lookup(Ipv4Address destination);
     /**
-     * \brief Do lookup in the ARP cache against a MAC address
-     * \param destination The destination MAC address to lookup
+     * @brief Do lookup in the ARP cache against a MAC address
+     * @param destination The destination MAC address to lookup
      * of
-     * \return A std::list of ArpCache::Entry with info about layer 2
+     * @return A std::list of ArpCache::Entry with info about layer 2
      */
     std::list<ArpCache::Entry*> LookupInverse(Address destination);
     /**
-     * \brief Add an Ipv4Address to this ARP cache
-     * \param to the destination address of the ARP entry.
-     * \returns A pointer to a new ARP Entry.
+     * @brief Add an Ipv4Address to this ARP cache
+     * @param to the destination address of the ARP entry.
+     * @returns A pointer to a new ARP Entry.
      */
     ArpCache::Entry* Add(Ipv4Address to);
     /**
-     * \brief Remove an entry.
-     * \param entry pointer to delete it from the list
+     * @brief Remove an entry.
+     * @param entry pointer to delete it from the list
      */
     void Remove(ArpCache::Entry* entry);
     /**
-     * \brief Clear the ArpCache of all entries
+     * @brief Clear the ArpCache of all entries
      */
     void Flush();
 
     /**
-     * \brief Print the ARP cache entries
+     * @brief Print the ARP cache entries
      *
-     * \param stream the ostream the ARP cache entries is printed to
+     * @param stream the ostream the ARP cache entries is printed to
      */
     void PrintArpCache(Ptr<OutputStreamWrapper> stream);
 
     /**
-     * \brief Clear the ArpCache of all Auto-Generated entries
+     * @brief Clear the ArpCache of all Auto-Generated entries
      */
     void RemoveAutoGeneratedEntries();
 
     /**
-     * \brief Pair of a packet and an Ipv4 header.
+     * @brief Pair of a packet and an Ipv4 header.
      */
     typedef std::pair<Ptr<Packet>, Ipv4Header> Ipv4PayloadHeaderPair;
 
     /**
-     * \brief A record that that holds information about an ArpCache entry
+     * @brief A record that that holds information about an ArpCache entry
      */
     class Entry
     {
       public:
         /**
-         * \brief Constructor
-         * \param arp The ArpCache this entry belongs to
+         * @brief Constructor
+         * @param arp The ArpCache this entry belongs to
          */
         Entry(ArpCache* arp);
 
         /**
-         * \brief Changes the state of this entry to dead
+         * @brief Changes the state of this entry to dead
          */
         void MarkDead();
         /**
-         * \param macAddress
+         * @param macAddress
          */
         void MarkAlive(Address macAddress);
         /**
-         * \param waiting
+         * @param waiting
          */
         void MarkWaitReply(Ipv4PayloadHeaderPair waiting);
         /**
-         * \brief Changes the state of this entry to Permanent.
+         * @brief Changes the state of this entry to Permanent.
          *
          * The entry must have a valid MacAddress.
          */
         void MarkPermanent();
         /**
-         * \brief Changes the state of this entry to auto-generated.
+         * @brief Changes the state of this entry to auto-generated.
          *
          * The entry must have a valid MacAddress.
          */
         void MarkAutoGenerated();
         /**
-         * \param waiting
-         * \return
+         * @param waiting
+         * @return
          */
         bool UpdateWaitReply(Ipv4PayloadHeaderPair waiting);
         /**
-         * \return True if the state of this entry is dead; false otherwise.
+         * @return True if the state of this entry is dead; false otherwise.
          */
         bool IsDead();
         /**
-         * \return True if the state of this entry is alive; false otherwise.
+         * @return True if the state of this entry is alive; false otherwise.
          */
         bool IsAlive();
         /**
-         * \return True if the state of this entry is wait_reply; false otherwise.
+         * @return True if the state of this entry is wait_reply; false otherwise.
          */
         bool IsWaitReply();
         /**
-         * \return True if the state of this entry is permanent; false otherwise.
+         * @return True if the state of this entry is permanent; false otherwise.
          */
         bool IsPermanent();
         /**
-         * \return True if the state of this entry is auto-generated; false otherwise.
+         * @return True if the state of this entry is auto-generated; false otherwise.
          */
         bool IsAutoGenerated();
         /**
-         * \return The MacAddress of this entry
+         * @return The MacAddress of this entry
          */
         Address GetMacAddress() const;
         /**
-         * \return The Ipv4Address for this entry
+         * @return The Ipv4Address for this entry
          */
         Ipv4Address GetIpv4Address() const;
         /**
-         * \param macAddress The MacAddress for this entry
+         * @param macAddress The MacAddress for this entry
          */
         void SetMacAddress(Address macAddress);
         /**
-         * \param destination The Ipv4Address for this entry
+         * @param destination The Ipv4Address for this entry
          */
         void SetIpv4Address(Ipv4Address destination);
         /**
-         * \return True if this entry has timed out; false otherwise.
+         * @return True if this entry has timed out; false otherwise.
          *
          * This function returns true if the time elapsed strictly exceeds
          * the timeout value (i.e., is not less than or equal to the timeout).
          */
         bool IsExpired() const;
         /**
-         * \returns 0 is no packet is pending, the next packet to send if
+         * @returns 0 is no packet is pending, the next packet to send if
          *            packets are pending.
          */
         Ipv4PayloadHeaderPair DequeuePending();
         /**
-         * \brief Clear the pending packet list
+         * @brief Clear the pending packet list
          */
         void ClearPendingPacket();
         /**
-         * \returns number of retries that have been sent for an ArpRequest
+         * @returns number of retries that have been sent for an ArpRequest
          *  in WaitReply state.
          */
         uint32_t GetRetries() const;
         /**
-         * \brief Increment the counter of number of retries for an entry
+         * @brief Increment the counter of number of retries for an entry
          */
         void IncrementRetries();
         /**
-         * \brief Zero the counter of number of retries for an entry
+         * @brief Zero the counter of number of retries for an entry
          */
         void ClearRetries();
 
         /**
-         * \brief Update the entry when seeing a packet
+         * @brief Update the entry when seeing a packet
          */
         void UpdateSeen();
 
       private:
         /**
-         * \brief ARP cache entry states
+         * @brief ARP cache entry states
          */
         enum ArpCacheEntryState_e
         {
@@ -292,8 +292,8 @@ class ArpCache : public Object
         };
 
         /**
-         * \brief Returns the entry timeout
-         * \returns the entry timeout
+         * @brief Returns the entry timeout
+         * @returns the entry timeout
          */
         Time GetTimeout() const;
 
@@ -308,11 +308,11 @@ class ArpCache : public Object
 
   private:
     /**
-     * \brief ARP Cache container
+     * @brief ARP Cache container
      */
     typedef std::map<Ipv4Address, ArpCache::Entry*> Cache;
     /**
-     * \brief ARP Cache container iterator
+     * @brief ARP Cache container iterator
      */
     typedef std::map<Ipv4Address, ArpCache::Entry*>::iterator CacheI;
 

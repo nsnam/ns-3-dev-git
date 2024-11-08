@@ -34,9 +34,9 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("LteHandoverDelayTest");
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief Verifying that the time needed for handover is under a
+ * @brief Verifying that the time needed for handover is under a
  * specified threshold.
  */
 
@@ -46,11 +46,11 @@ class LteHandoverDelayTestCase : public TestCase
     /**
      * Constructor
      *
-     * \param numberOfComponentCarriers number of component carriers
-     * \param useIdealRrc if true, use the ideal RRC
-     * \param handoverTime the time of handover
-     * \param delayThreshold the delay threshold
-     * \param simulationDuration duration of the simulation
+     * @param numberOfComponentCarriers number of component carriers
+     * @param useIdealRrc if true, use the ideal RRC
+     * @param handoverTime the time of handover
+     * @param delayThreshold the delay threshold
+     * @param simulationDuration duration of the simulation
      */
     LteHandoverDelayTestCase(uint8_t numberOfComponentCarriers,
                              bool useIdealRrc,
@@ -73,11 +73,11 @@ class LteHandoverDelayTestCase : public TestCase
 
     /**
      * UE handover start callback function
-     * \param context the context string
-     * \param imsi the IMSI
-     * \param cellid the cell ID
-     * \param rnti the RNTI
-     * \param targetCellId the target cell ID
+     * @param context the context string
+     * @param imsi the IMSI
+     * @param cellid the cell ID
+     * @param rnti the RNTI
+     * @param targetCellId the target cell ID
      */
     void UeHandoverStartCallback(std::string context,
                                  uint64_t imsi,
@@ -86,10 +86,10 @@ class LteHandoverDelayTestCase : public TestCase
                                  uint16_t targetCellId);
     /**
      * UE handover end OK callback function
-     * \param context the context string
-     * \param imsi the IMSI
-     * \param cellid the cell ID
-     * \param rnti the RNTI
+     * @param context the context string
+     * @param imsi the IMSI
+     * @param cellid the cell ID
+     * @param rnti the RNTI
      */
     void UeHandoverEndOkCallback(std::string context,
                                  uint64_t imsi,
@@ -97,11 +97,11 @@ class LteHandoverDelayTestCase : public TestCase
                                  uint16_t rnti);
     /**
      * ENB handover start callback function
-     * \param context the context string
-     * \param imsi the IMSI
-     * \param cellid the cell ID
-     * \param rnti the RNTI
-     * \param targetCellId the target cell ID
+     * @param context the context string
+     * @param imsi the IMSI
+     * @param cellid the cell ID
+     * @param rnti the RNTI
+     * @param targetCellId the target cell ID
      */
     void EnbHandoverStartCallback(std::string context,
                                   uint64_t imsi,
@@ -110,10 +110,10 @@ class LteHandoverDelayTestCase : public TestCase
                                   uint16_t targetCellId);
     /**
      * ENB handover end OK callback function
-     * \param context the context string
-     * \param imsi the IMSI
-     * \param cellid the cell ID
-     * \param rnti the RNTI
+     * @param context the context string
+     * @param imsi the IMSI
+     * @param cellid the cell ID
+     * @param rnti the RNTI
      */
     void EnbHandoverEndOkCallback(std::string context,
                                   uint64_t imsi,
@@ -275,9 +275,9 @@ LteHandoverDelayTestCase::EnbHandoverEndOkCallback(std::string context,
 }
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief Lte Handover Delay Test Suite
+ * @brief Lte Handover Delay Test Suite
  */
 
 static class LteHandoverDelayTestSuite : public TestSuite

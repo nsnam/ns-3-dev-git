@@ -34,16 +34,16 @@ class Experiment
     Experiment();
     /**
      * Constructor.
-     * \param name The name of the experiment.
+     * @param name The name of the experiment.
      */
     Experiment(std::string name);
     /**
      * Run an experiment.
-     * \param wifi      //!< The WifiHelper class.
-     * \param wifiPhy   //!< The YansWifiPhyHelper class.
-     * \param wifiMac   //!< The WifiMacHelper class.
-     * \param wifiChannel //!< The YansWifiChannelHelper class.
-     * \return the number of received packets.
+     * @param wifi      //!< The WifiHelper class.
+     * @param wifiPhy   //!< The YansWifiPhyHelper class.
+     * @param wifiMac   //!< The WifiMacHelper class.
+     * @param wifiChannel //!< The YansWifiChannelHelper class.
+     * @return the number of received packets.
      */
     uint32_t Run(const WifiHelper& wifi,
                  const YansWifiPhyHelper& wifiPhy,
@@ -53,33 +53,33 @@ class Experiment
   private:
     /**
      * Receive a packet.
-     * \param socket The receiving socket.
+     * @param socket The receiving socket.
      */
     void ReceivePacket(Ptr<Socket> socket);
     /**
      * Set the position of a node.
-     * \param node The node.
-     * \param position The position of the node.
+     * @param node The node.
+     * @param position The position of the node.
      */
     void SetPosition(Ptr<Node> node, Vector position);
     /**
      * Get the position of a node.
-     * \param node The node.
-     * \return the position of the node.
+     * @param node The node.
+     * @return the position of the node.
      */
     Vector GetPosition(Ptr<Node> node);
     /**
      * Setup the receiving socket.
-     * \param node The receiving node.
-     * \return the socket.
+     * @param node The receiving node.
+     * @return the socket.
      */
     Ptr<Socket> SetupPacketReceive(Ptr<Node> node);
     /**
      * Generate the traffic.
-     * \param socket The sending socket.
-     * \param pktSize The packet size.
-     * \param pktCount The number of packets to send.
-     * \param pktInterval The time between packets.
+     * @param socket The sending socket.
+     * @param pktSize The packet size.
+     * @param pktCount The number of packets to send.
+     * @param pktInterval The time between packets.
      */
     void GenerateTraffic(Ptr<Socket> socket, uint32_t pktSize, uint32_t pktCount, Time pktInterval);
 

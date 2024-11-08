@@ -15,9 +15,9 @@
 #include <iostream>
 
 /**
- * \file
- * \ingroup core-examples
- * \ingroup simulator
+ * @file
+ * @ingroup core-examples
+ * @ingroup simulator
  * Example program demonstrating use of various Schedule functions.
  */
 
@@ -37,7 +37,7 @@ class MyModel
     /**
      *  Simple event handler.
      *
-     * \param [in] eventValue Event argument.
+     * @param [in] eventValue Event argument.
      */
     void HandleEvent(double eventValue);
 };
@@ -58,7 +58,7 @@ MyModel::HandleEvent(double value)
 /**
  * Simple function event handler which Starts a MyModel object.
  *
- * \param [in] model The MyModel object to start.
+ * @param [in] model The MyModel object to start.
  */
 void
 ExampleFunction(MyModel* model)

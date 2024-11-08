@@ -49,7 +49,7 @@ class LteEnbRrc;
 class Packet;
 
 /**
- * \ingroup lte
+ * @ingroup lte
  * Manages all the radio bearer information possessed by the ENB RRC for a
  * single UE.
  */
@@ -84,10 +84,10 @@ class UeManager : public Object
     /**
      * UeManager constructor
      *
-     * \param rrc pointer to the LteEnbRrc holding this UeManager
-     * \param rnti RNTI of the UE
-     * \param s initial state of the UeManager
-     * \param componentCarrierId primary component carrier ID
+     * @param rrc pointer to the LteEnbRrc holding this UeManager
+     * @param rnti RNTI of the UE
+     * @param s initial state of the UeManager
+     * @param componentCarrierId primary component carrier ID
      */
     UeManager(Ptr<LteEnbRrc> rrc, uint16_t rnti, State s, uint8_t componentCarrierId);
 
@@ -100,8 +100,8 @@ class UeManager : public Object
 
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -109,15 +109,15 @@ class UeManager : public Object
      * Set the identifiers of the source eNB for the case where a UE
      * joins the current eNB as part of a handover procedure
      *
-     * \param sourceCellId
-     * \param sourceX2apId
+     * @param sourceCellId
+     * @param sourceX2apId
      */
     void SetSource(uint16_t sourceCellId, uint16_t sourceX2apId);
 
     /**
      * Set the IMSI
      *
-     * \param imsi the IMSI
+     * @param imsi the IMSI
      */
     void SetImsi(uint64_t imsi);
 
@@ -131,10 +131,10 @@ class UeManager : public Object
      * Setup a new data radio bearer, including both the configuration
      * within the eNB and the necessary RRC signaling with the UE
      *
-     * \param bearer the QoS characteristics of the bearer
-     * \param bearerId the EPS bearer identifier
-     * \param gtpTeid S1-bearer GTP tunnel endpoint identifier, see 36.423 9.2.1
-     * \param transportLayerAddress  IP Address of the SGW, see 36.423 9.2.1
+     * @param bearer the QoS characteristics of the bearer
+     * @param bearerId the EPS bearer identifier
+     * @param gtpTeid S1-bearer GTP tunnel endpoint identifier, see 36.423 9.2.1
+     * @param transportLayerAddress  IP Address of the SGW, see 36.423 9.2.1
      *
      */
     void SetupDataRadioBearer(EpsBearer bearer,
@@ -160,7 +160,7 @@ class UeManager : public Object
      *
      * Release a given radio bearer
      *
-     * \param drbid the data radio bearer id of the bearer to be released
+     * @param drbid the data radio bearer id of the bearer to be released
      */
     void ReleaseDataRadioBearer(uint8_t drbid);
 
@@ -173,32 +173,32 @@ class UeManager : public Object
     /**
      * Start the handover preparation and send the handover request
      *
-     * \param cellId id of the target cell
+     * @param cellId id of the target cell
      */
     void PrepareHandover(uint16_t cellId);
 
     /**
      * take the necessary actions in response to the reception of an X2 HANDOVER REQUEST ACK message
      *
-     * \param params
+     * @param params
      */
     void RecvHandoverRequestAck(EpcX2SapUser::HandoverRequestAckParams params);
 
     /**
      *
-     * \return the HandoverPreparationInfo sent by the source eNB to the
+     * @return the HandoverPreparationInfo sent by the source eNB to the
      * target eNB in the X2-based handover procedure
      */
     LteRrcSap::RadioResourceConfigDedicated GetRadioResourceConfigForHandoverPreparationInfo();
 
     /**
-     * \param componentCarrierId target component carrier ID
+     * @param componentCarrierId target component carrier ID
      *
-     * \return retrieve the data that the target eNB needs to send to the source
+     * @return retrieve the data that the target eNB needs to send to the source
      * eNB as the Handover Command in the X2-based handover
      * procedure.
      *
-     * \note mobility control info is not expected to be filled in
+     * @note mobility control info is not expected to be filled in
      * (shall be filled in by the caller).
      */
     LteRrcSap::RrcConnectionReconfiguration GetRrcConnectionReconfigurationForHandover(
@@ -212,14 +212,14 @@ class UeManager : public Object
      * RRC Connection Reconfiguration, the packet is sent through the
      * X2 interface.
      *
-     * \param bid the corresponding EPS Bearer ID
-     * \param p the packet
+     * @param bid the corresponding EPS Bearer ID
+     * @param p the packet
      */
     void SendData(uint8_t bid, Ptr<Packet> p);
 
     /**
      *
-     * \return a list of ERAB-to-be-setup items to be put in a X2 HO REQ message
+     * @return a list of ERAB-to-be-setup items to be put in a X2 HO REQ message
      */
     std::vector<EpcX2Sap::ErabToBeSetupItem> GetErabList();
 
@@ -234,28 +234,28 @@ class UeManager : public Object
      * Take the necessary actions in response to the reception of an X2 HO preparation failure
      * message
      *
-     * \param cellId id of the target cell
+     * @param cellId id of the target cell
      */
     void RecvHandoverPreparationFailure(uint16_t cellId);
 
     /**
      * Take the necessary actions in response to the reception of an X2 SN STATUS TRANSFER message
      *
-     * \param params the SN STATUS
+     * @param params the SN STATUS
      */
     void RecvSnStatusTransfer(EpcX2SapUser::SnStatusTransferParams params);
 
     /**
      * Take the necessary actions in response to the reception of an X2 UE CONTEXT RELEASE message
      *
-     * \param params the SN STATUS
+     * @param params the SN STATUS
      */
     void RecvUeContextRelease(EpcX2SapUser::UeContextReleaseParams params);
 
     /**
      * Take the necessary actions in response to the reception of an X2 UE CONTEXT RELEASE message
      *
-     * \param params the SN STATUS
+     * @param params the SN STATUS
      */
     void RecvHandoverCancel(EpcX2SapUser::HandoverCancelParams params);
 
@@ -263,46 +263,46 @@ class UeManager : public Object
 
     /**
      * Implement the LteEnbRrcSapProvider::CompleteSetupUe interface.
-     * \param params CompleteSetupUeParameters
+     * @param params CompleteSetupUeParameters
      */
     void CompleteSetupUe(LteEnbRrcSapProvider::CompleteSetupUeParameters params);
     /**
      * Implement the LteEnbRrcSapProvider::RecvRrcConnectionRequest interface.
-     * \param msg the RRC connection request message
+     * @param msg the RRC connection request message
      */
     void RecvRrcConnectionRequest(LteRrcSap::RrcConnectionRequest msg);
     /**
      * Implement the LteEnbRrcSapProvider::RecvRrcConnectionSetupCompleted interface.
-     * \param msg RRC connection setup completed message
+     * @param msg RRC connection setup completed message
      */
     void RecvRrcConnectionSetupCompleted(LteRrcSap::RrcConnectionSetupCompleted msg);
     /**
      * Implement the LteEnbRrcSapProvider::RecvRrcConnectionReconfigurationCompleted interface.
-     * \param msg RRC connection reconfiguration completed message
+     * @param msg RRC connection reconfiguration completed message
      */
     void RecvRrcConnectionReconfigurationCompleted(
         LteRrcSap::RrcConnectionReconfigurationCompleted msg);
     /**
      * Implement the LteEnbRrcSapProvider::RecvRrcConnectionReestablishmentRequest interface.
-     * \param msg the RRC connection reestablishment request message
+     * @param msg the RRC connection reestablishment request message
      */
     void RecvRrcConnectionReestablishmentRequest(
         LteRrcSap::RrcConnectionReestablishmentRequest msg);
     /**
      * Implement the LteEnbRrcSapProvider::RecvRrcConnectionReestablishmentComplete interface.
-     * \param msg the RRC connection reestablsihment complete message
+     * @param msg the RRC connection reestablsihment complete message
      */
     void RecvRrcConnectionReestablishmentComplete(
         LteRrcSap::RrcConnectionReestablishmentComplete msg);
     /**
      * Implement the LteEnbRrcSapProvider::RecvMeasurementReport interface.
-     * \param msg the measrurement report
+     * @param msg the measrurement report
      */
     void RecvMeasurementReport(LteRrcSap::MeasurementReport msg);
     /**
      * Implement the LteEnbRrcSapProvider::RecvIdealUeContextRemoveRequest interface.
      *
-     * \param rnti the C-RNTI identifying the user
+     * @param rnti the C-RNTI identifying the user
      */
     void RecvIdealUeContextRemoveRequest(uint16_t rnti);
 
@@ -310,7 +310,7 @@ class UeManager : public Object
 
     /**
      * CMAC UE config update indication function
-     * \param cmacParams the UE config parameters
+     * @param cmacParams the UE config parameters
      */
     void CmacUeConfigUpdateInd(LteEnbCmacSapUser::UeConfig cmacParams);
 
@@ -318,45 +318,45 @@ class UeManager : public Object
 
     /**
      * Receive PDCP SDU function
-     * \param params the receive PDCP SDU parameters
+     * @param params the receive PDCP SDU parameters
      */
     void DoReceivePdcpSdu(LtePdcpSapUser::ReceivePdcpSduParameters params);
 
     /**
      *
-     * \return the RNTI, i.e., an UE identifier that is unique within
+     * @return the RNTI, i.e., an UE identifier that is unique within
      * the cell
      */
     uint16_t GetRnti() const;
 
     /**
      *
-     * \return the IMSI, i.e., a globally unique UE identifier
+     * @return the IMSI, i.e., a globally unique UE identifier
      */
     uint64_t GetImsi() const;
 
     /**
      *
-     * \return the primary component carrier ID
+     * @return the primary component carrier ID
      */
     uint8_t GetComponentCarrierId() const;
 
     /**
      *
-     * \return the SRS Configuration Index
+     * @return the SRS Configuration Index
      */
     uint16_t GetSrsConfigurationIndex() const;
 
     /**
      * Set the SRS configuration index and do the necessary reconfiguration
      *
-     * \param srsConfIndex
+     * @param srsConfIndex
      */
     void SetSrsConfigurationIndex(uint16_t srsConfIndex);
 
     /**
      *
-     * \return the current state
+     * @return the current state
      */
     State GetState() const;
 
@@ -364,7 +364,7 @@ class UeManager : public Object
      * Configure PdschConfigDedicated (i.e. P_A value) for UE and start RrcConnectionReconfiguration
      * to inform UE about new PdschConfigDedicated
      *
-     * \param pdschConfigDedicated new pdschConfigDedicated (i.e. P_A value) to be set
+     * @param pdschConfigDedicated new pdschConfigDedicated (i.e. P_A value) to be set
      */
     void SetPdschConfigDedicated(LteRrcSap::PdschConfigDedicated pdschConfigDedicated);
 
@@ -375,32 +375,32 @@ class UeManager : public Object
     void CancelPendingEvents();
 
     /**
-     *  \brief This function acts as an interface to trigger the connection
+     *  @brief This function acts as an interface to trigger the connection
      *  release towards eNB, EPC and UE.
      *
      */
     void SendRrcConnectionRelease();
 
     /**
-     * \brief build handover preparation failure message
-     * \return the handover preparation failure message.
+     * @brief build handover preparation failure message
+     * @return the handover preparation failure message.
      */
     EpcX2Sap::HandoverPreparationFailureParams BuildHoPrepFailMsg();
 
     /**
-     * \brief build handover cancel message
-     * \return the handover cancel message.
+     * @brief build handover cancel message
+     * @return the handover cancel message.
      */
     EpcX2Sap::HandoverCancelParams BuildHoCancelMsg();
 
     /**
      * TracedCallback signature for state transition events.
      *
-     * \param [in] imsi
-     * \param [in] cellId
-     * \param [in] rnti
-     * \param [in] oldState
-     * \param [in] newState
+     * @param [in] imsi
+     * @param [in] cellId
+     * @param [in] rnti
+     * @param [in] oldState
+     * @param [in] newState
      */
     typedef void (*StateTracedCallback)(const uint64_t imsi,
                                         const uint16_t cellId,
@@ -412,92 +412,92 @@ class UeManager : public Object
     /**
      * Add a new LteDataRadioBearerInfo structure to the UeManager
      *
-     * \param radioBearerInfo
+     * @param radioBearerInfo
      *
-     * \return the id of the newly added data radio bearer structure
+     * @return the id of the newly added data radio bearer structure
      */
     uint8_t AddDataRadioBearerInfo(Ptr<LteDataRadioBearerInfo> radioBearerInfo);
 
     /**
-     * \param drbid the Data Radio Bearer id
+     * @param drbid the Data Radio Bearer id
      *
-     * \return the corresponding LteDataRadioBearerInfo
+     * @return the corresponding LteDataRadioBearerInfo
      */
     Ptr<LteDataRadioBearerInfo> GetDataRadioBearerInfo(uint8_t drbid);
 
     /**
      * remove the LteDataRadioBearerInfo corresponding to a bearer being released
      *
-     * \param drbid the Data Radio Bearer id
+     * @param drbid the Data Radio Bearer id
      */
     void RemoveDataRadioBearerInfo(uint8_t drbid);
 
     /**
      *
-     * \return an RrcConnectionReconfiguration struct built based on the
+     * @return an RrcConnectionReconfiguration struct built based on the
      * current configuration
      */
     LteRrcSap::RrcConnectionReconfiguration BuildRrcConnectionReconfiguration();
 
     /**
      *
-     * \return an NonCriticalExtensionConfiguration struct built based on the
+     * @return an NonCriticalExtensionConfiguration struct built based on the
      * current configuration
      */
     LteRrcSap::NonCriticalExtensionConfiguration BuildNonCriticalExtensionConfigurationCa();
 
     /**
      *
-     * \return a RadioResourceConfigDedicated struct built based on the
+     * @return a RadioResourceConfigDedicated struct built based on the
      * current configuration
      */
     LteRrcSap::RadioResourceConfigDedicated BuildRadioResourceConfigDedicated();
 
     /**
      *
-     * \return a newly allocated identifier for a new RRC transaction
+     * @return a newly allocated identifier for a new RRC transaction
      */
     uint8_t GetNewRrcTransactionIdentifier();
 
     /**
-     * \param lcid a Logical Channel Identifier
+     * @param lcid a Logical Channel Identifier
      *
-     * \return the corresponding Data Radio Bearer Id
+     * @return the corresponding Data Radio Bearer Id
      */
     uint8_t Lcid2Drbid(uint8_t lcid);
 
     /**
-     * \param drbid a Data Radio Bearer Id
+     * @param drbid a Data Radio Bearer Id
      *
-     * \return the corresponding  Logical Channel Identifier
+     * @return the corresponding  Logical Channel Identifier
      */
     uint8_t Drbid2Lcid(uint8_t drbid);
 
     /**
-     * \param lcid a  Logical Channel Identifier
+     * @param lcid a  Logical Channel Identifier
      *
-     * \return the corresponding EPS Bearer Identifier
+     * @return the corresponding EPS Bearer Identifier
      */
     uint8_t Lcid2Bid(uint8_t lcid);
 
     /**
-     * \param bid  an EPS Bearer Identifier
+     * @param bid  an EPS Bearer Identifier
      *
-     * \return the corresponding Logical Channel Identifier
+     * @return the corresponding Logical Channel Identifier
      */
     uint8_t Bid2Lcid(uint8_t bid);
 
     /**
-     * \param drbid Data Radio Bearer Id
+     * @param drbid Data Radio Bearer Id
      *
-     * \return the corresponding EPS Bearer Identifier
+     * @return the corresponding EPS Bearer Identifier
      */
     uint8_t Drbid2Bid(uint8_t drbid);
 
     /**
-     * \param bid an EPS Bearer Identifier
+     * @param bid an EPS Bearer Identifier
      *
-     * \return the corresponding Data Radio Bearer Id
+     * @return the corresponding Data Radio Bearer Id
      */
     uint8_t Bid2Drbid(uint8_t bid);
 
@@ -507,15 +507,15 @@ class UeManager : public Object
      * or when the RRC Connection Reconfiguration Complete message
      * is received and the packets are debuffered.
      *
-     * \param bid the corresponding EPS Bearer ID
-     * \param p the packet
+     * @param bid the corresponding EPS Bearer ID
+     * @param p the packet
      */
     void SendPacket(uint8_t bid, Ptr<Packet> p);
 
     /**
      * Switch the UeManager to the given state
      *
-     * \param s the given state
+     * @param s the given state
      */
     void SwitchToState(State s);
 
@@ -637,7 +637,7 @@ class UeManager : public Object
 }; // end of `class UeManager`
 
 /**
- * \ingroup lte
+ * @ingroup lte
  *
  * The LTE Radio Resource Control entity at the eNB
  */
@@ -680,61 +680,61 @@ class LteEnbRrc : public Object
 
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
     /**
      * Set the X2 SAP this RRC should interact with
-     * \param s the X2 SAP Provider to be used by this RRC entity
+     * @param s the X2 SAP Provider to be used by this RRC entity
      */
     void SetEpcX2SapProvider(EpcX2SapProvider* s);
 
     /**
      * Get the X2 SAP offered by this RRC
-     * \return s the X2 SAP User interface offered to the X2 entity by this RRC entity
+     * @return s the X2 SAP User interface offered to the X2 entity by this RRC entity
      */
     EpcX2SapUser* GetEpcX2SapUser();
 
     /**
      * set the CMAC SAP this RRC should interact with
      *
-     * \param s the CMAC SAP Provider to be used by this RRC
+     * @param s the CMAC SAP Provider to be used by this RRC
      */
     void SetLteEnbCmacSapProvider(LteEnbCmacSapProvider* s);
 
     /**
      * set the CMAC SAP this RRC should interact with
      *
-     * \param s the CMAC SAP Provider to be used by this RRC
-     * \param pos the position
+     * @param s the CMAC SAP Provider to be used by this RRC
+     * @param pos the position
      */
     void SetLteEnbCmacSapProvider(LteEnbCmacSapProvider* s, uint8_t pos);
 
     /**
      * Get the CMAC SAP offered by this RRC
-     * \returns the CMAC SAP User interface offered to the MAC by this RRC
+     * @returns the CMAC SAP User interface offered to the MAC by this RRC
      */
     LteEnbCmacSapUser* GetLteEnbCmacSapUser();
 
     /**
      * Get the CMAC SAP offered by this RRC
-     * \param pos the position
-     * \returns the CMAC SAP User interface offered to the MAC by this RRC
+     * @param pos the position
+     * @returns the CMAC SAP User interface offered to the MAC by this RRC
      */
     LteEnbCmacSapUser* GetLteEnbCmacSapUser(uint8_t pos);
 
     /**
      * set the Handover Management SAP this RRC should interact with
      *
-     * \param s the Handover Management SAP Provider to be used by this RRC
+     * @param s the Handover Management SAP Provider to be used by this RRC
      */
     void SetLteHandoverManagementSapProvider(LteHandoverManagementSapProvider* s);
 
     /**
      * Get the Handover Management SAP offered by this RRC
-     * \returns the Handover Management SAP User interface offered to the
+     * @returns the Handover Management SAP User interface offered to the
      *           handover algorithm by this RRC
      */
     LteHandoverManagementSapUser* GetLteHandoverManagementSapUser();
@@ -742,13 +742,13 @@ class LteEnbRrc : public Object
     /**
      * set the Component Carrier Management SAP this RRC should interact with
      *
-     * \param s the Component Carrier Management SAP Provider to be used by this RRC
+     * @param s the Component Carrier Management SAP Provider to be used by this RRC
      */
     void SetLteCcmRrcSapProvider(LteCcmRrcSapProvider* s);
 
     /**
      * Get the Component Carrier Management SAP offered by this RRC
-     * \return s the Component Carrier Management SAP User interface offered to the
+     * @return s the Component Carrier Management SAP User interface offered to the
      *           carrier component selection algorithm by this RRC
      */
     LteCcmRrcSapUser* GetLteCcmRrcSapUser();
@@ -756,13 +756,13 @@ class LteEnbRrc : public Object
     /**
      * set the ANR SAP this RRC should interact with
      *
-     * \param s the ANR SAP Provider to be used by this RRC
+     * @param s the ANR SAP Provider to be used by this RRC
      */
     void SetLteAnrSapProvider(LteAnrSapProvider* s);
 
     /**
      * Get the ANR SAP offered by this RRC
-     * \return s the ANR SAP User interface offered to the ANR instance by this
+     * @return s the ANR SAP User interface offered to the ANR instance by this
      *           RRC
      */
     LteAnrSapUser* GetLteAnrSapUser();
@@ -770,27 +770,27 @@ class LteEnbRrc : public Object
     /**
      * set the FFR SAP this RRC should interact with
      *
-     * \param s the FFR SAP Provider to be used by this RRC
+     * @param s the FFR SAP Provider to be used by this RRC
      */
     void SetLteFfrRrcSapProvider(LteFfrRrcSapProvider* s);
     /**
      * set the FFR SAP this RRC should interact with
      *
-     * \param s the FFR SAP Provider to be used by this RRC
-     * \param index the index
+     * @param s the FFR SAP Provider to be used by this RRC
+     * @param index the index
      */
     void SetLteFfrRrcSapProvider(LteFfrRrcSapProvider* s, uint8_t index);
 
     /**
      * Get the FFR SAP offered by this RRC
-     * \return s the FFR SAP User interface offered to the ANR instance by this
+     * @return s the FFR SAP User interface offered to the ANR instance by this
      *           RRC
      */
     LteFfrRrcSapUser* GetLteFfrRrcSapUser();
     /**
      * Get the FFR SAP offered by this RRC
-     * \param index the index
-     * \return s the FFR SAP User interface offered to the ANR instance by this
+     * @param index the index
+     * @return s the FFR SAP User interface offered to the ANR instance by this
      *           RRC
      */
     LteFfrRrcSapUser* GetLteFfrRrcSapUser(uint8_t index);
@@ -798,14 +798,14 @@ class LteEnbRrc : public Object
     /**
      * set the RRC SAP this RRC should interact with
      *
-     * \param s the RRC SAP User to be used by this RRC
+     * @param s the RRC SAP User to be used by this RRC
      */
     void SetLteEnbRrcSapUser(LteEnbRrcSapUser* s);
 
     /**
      *
      *
-     * \return s the RRC SAP Provider interface offered to the MAC by this RRC
+     * @return s the RRC SAP Provider interface offered to the MAC by this RRC
      */
     LteEnbRrcSapProvider* GetLteEnbRrcSapProvider();
 
@@ -813,7 +813,7 @@ class LteEnbRrc : public Object
      * set the MAC SAP provider. The eNB RRC does not use this
      * directly, but it needs to provide it to newly created RLC instances.
      *
-     * \param s the MAC SAP provider that will be used by all
+     * @param s the MAC SAP provider that will be used by all
      * newly created RLC instances
      */
     void SetLteMacSapProvider(LteMacSapProvider* s);
@@ -821,68 +821,68 @@ class LteEnbRrc : public Object
     /**
      * Set the S1 SAP Provider
      *
-     * \param s the S1 SAP Provider
+     * @param s the S1 SAP Provider
      */
     void SetS1SapProvider(EpcEnbS1SapProvider* s);
 
     /**
      *
-     * \return the S1 SAP user
+     * @return the S1 SAP user
      */
     EpcEnbS1SapUser* GetS1SapUser();
 
     /**
      * set the CPHY SAP this RRC should use to interact with the PHY
      *
-     * \param s the CPHY SAP Provider
+     * @param s the CPHY SAP Provider
      */
     void SetLteEnbCphySapProvider(LteEnbCphySapProvider* s);
 
     /**
      * set the CPHY SAP this RRC should use to interact with the PHY
      *
-     * \param s the CPHY SAP Provider
-     * \param pos the position
+     * @param s the CPHY SAP Provider
+     * @param pos the position
      */
     void SetLteEnbCphySapProvider(LteEnbCphySapProvider* s, uint8_t pos);
 
     /**
      *
      *
-     * \return s the CPHY SAP User interface offered to the PHY by this RRC
+     * @return s the CPHY SAP User interface offered to the PHY by this RRC
      */
     LteEnbCphySapUser* GetLteEnbCphySapUser();
 
     /**
      * Get the ENB CPhy SAP user
      *
-     * \param pos the position
-     * \return s the CPHY SAP User interface offered to the PHY by this RRC
+     * @param pos the position
+     * @return s the CPHY SAP User interface offered to the PHY by this RRC
      */
     LteEnbCphySapUser* GetLteEnbCphySapUser(uint8_t pos);
 
     /**
      *
      *
-     * \param rnti the identifier of an UE
+     * @param rnti the identifier of an UE
      *
-     * \return true if the corresponding UeManager instance exists
+     * @return true if the corresponding UeManager instance exists
      */
     bool HasUeManager(uint16_t rnti) const;
 
     /**
      *
      *
-     * \param rnti the identifier of an UE
+     * @param rnti the identifier of an UE
      *
-     * \return the corresponding UeManager instance
+     * @return the corresponding UeManager instance
      */
     Ptr<UeManager> GetUeManager(uint16_t rnti);
 
     /**
-     * \brief Add a new UE measurement reporting configuration
-     * \param config the new reporting configuration
-     * \return the measurement IDs (measId) referring to the newly added
+     * @brief Add a new UE measurement reporting configuration
+     * @param config the new reporting configuration
+     * @return the measurement IDs (measId) referring to the newly added
      *         reporting configuration
      *
      * Assuming intra-frequency environment, the new measurement reporting
@@ -894,7 +894,7 @@ class LteEnbRrc : public Object
     std::vector<uint8_t> AddUeMeasReportConfig(LteRrcSap::ReportConfigEutra config);
 
     /**
-     * \brief Configure cell-specific parameters.
+     * @brief Configure cell-specific parameters.
      *
      * Configure cell-specific parameters and propagate them to lower layers.
      * The parameters include bandwidth, EARFCN (E-UTRA Absolute Radio Frequency
@@ -911,54 +911,54 @@ class LteEnbRrc : public Object
      * Typically runs when the eNodeB NetDevice is installed, for instance by
      * `LteHelper::InstallEnbDevice` (i.e. before the simulation starts).
      *
-     * \warning Raises an error when executed more than once.
+     * @warning Raises an error when executed more than once.
      *
-     * \param ccPhyConf the component carrier configuration
+     * @param ccPhyConf the component carrier configuration
      */
     void ConfigureCell(std::map<uint8_t, Ptr<ComponentCarrierBaseStation>> ccPhyConf);
 
     /**
-     * \brief Configure carriers.
-     * \param ccPhyConf the component carrier configuration
+     * @brief Configure carriers.
+     * @param ccPhyConf the component carrier configuration
      */
     void ConfigureCarriers(std::map<uint8_t, Ptr<ComponentCarrierBaseStation>> ccPhyConf);
 
     /**
      * set the cell id of this eNB
      *
-     * \param m_cellId
+     * @param m_cellId
      */
     void SetCellId(uint16_t m_cellId);
 
     /**
      * set the cell id of this eNB
      *
-     * \param m_cellId
-     * \param ccIndex
+     * @param m_cellId
+     * @param ccIndex
      */
     void SetCellId(uint16_t m_cellId, uint8_t ccIndex);
 
     /**
      * convert the cell id to component carrier id
      *
-     * \param cellId Cell ID
+     * @param cellId Cell ID
      *
-     * \return corresponding component carrier id
+     * @return corresponding component carrier id
      */
     uint8_t CellToComponentCarrierId(uint16_t cellId);
 
     /**
      * convert the component carrier id to cell id
      *
-     * \param componentCarrierId component carrier ID
+     * @param componentCarrierId component carrier ID
      *
-     * \return corresponding cell ID
+     * @return corresponding cell ID
      */
     uint16_t ComponentCarrierToCellId(uint8_t componentCarrierId);
 
     /**
-     * \param cellId cell ID
-     * \return true if cellId is served by this eNB
+     * @param cellId cell ID
+     * @return true if cellId is served by this eNB
      */
     bool HasCellId(uint16_t cellId) const;
 
@@ -967,16 +967,16 @@ class LteEnbRrc : public Object
      * transmission. Normally expected to be called by the NetDevice
      * forwarding a packet coming from the EpcEnbApplication
      *
-     * \param p the packet
+     * @param p the packet
      *
-     * \return true if successful, false if an error occurred
+     * @return true if successful, false if an error occurred
      */
     bool SendData(Ptr<Packet> p);
 
     /**
      * set the callback used to forward data packets up the stack
      *
-     * \param cb
+     * @param cb
      */
     void SetForwardUpCallback(Callback<void, Ptr<Packet>> cb);
 
@@ -984,7 +984,7 @@ class LteEnbRrc : public Object
      * Method triggered when a UE is expected to request for connection but does
      * not do so in a reasonable time. The method will remove the UE context.
      *
-     * \param rnti the T-C-RNTI whose timeout expired
+     * @param rnti the T-C-RNTI whose timeout expired
      */
     void ConnectionRequestTimeout(uint16_t rnti);
 
@@ -993,7 +993,7 @@ class LteEnbRrc : public Object
      * procedure but does not do so in a reasonable time. The method will remove
      * the UE context.
      *
-     * \param rnti the T-C-RNTI whose timeout expired
+     * @param rnti the T-C-RNTI whose timeout expired
      */
     void ConnectionSetupTimeout(uint16_t rnti);
 
@@ -1001,7 +1001,7 @@ class LteEnbRrc : public Object
      * Method triggered a while after sending RRC Connection Rejected. The method
      * will remove the UE context.
      *
-     * \param rnti the T-C-RNTI whose timeout expired
+     * @param rnti the T-C-RNTI whose timeout expired
      */
     void ConnectionRejectedTimeout(uint16_t rnti);
 
@@ -1010,7 +1010,7 @@ class LteEnbRrc : public Object
      * but does not do so in a reasonable time. The method will remove the UE
      * context.
      *
-     * \param rnti the C-RNTI whose timeout expired
+     * @param rnti the C-RNTI whose timeout expired
      */
     void HandoverJoiningTimeout(uint16_t rnti);
 
@@ -1019,7 +1019,7 @@ class LteEnbRrc : public Object
      * but no feedback is received in a reasonable time. The method will remove
      * the UE context.
      *
-     * \param rnti the C-RNTI whose timeout expired
+     * @param rnti the C-RNTI whose timeout expired
      */
     void HandoverLeavingTimeout(uint16_t rnti);
 
@@ -1028,22 +1028,22 @@ class LteEnbRrc : public Object
      * trigger a handover which is started by the RRC by sending a handover
      * request to the target eNB over the X2 interface
      *
-     * \param rnti the ID of the UE to be handed over
-     * \param cellId the ID of the target eNB
+     * @param rnti the ID of the UE to be handed over
+     * @param cellId the ID of the target eNB
      */
     void SendHandoverRequest(uint16_t rnti, uint16_t cellId);
 
     /**
-     * \brief This function acts as an interface to trigger Release indication messages towards eNB
+     * @brief This function acts as an interface to trigger Release indication messages towards eNB
      * and EPC
-     * \param imsi the IMSI
-     * \param rnti the RNTI
-     * \param bearerId Bearer Identity which is to be de-activated
+     * @param imsi the IMSI
+     * @param rnti the RNTI
+     * @param bearerId Bearer Identity which is to be de-activated
      */
     void DoSendReleaseDataRadioBearer(uint64_t imsi, uint16_t rnti, uint8_t bearerId);
 
     /**
-     *  \brief Send RRC connection release function
+     *  @brief Send RRC connection release function
      *
      *  This function acts as an interface to trigger the connection
      *  release towards eNB, EPC and UE.
@@ -1065,17 +1065,17 @@ class LteEnbRrc : public Object
     /**
      * TracedCallback signature for new Ue Context events.
      *
-     * \param [in] cellId
-     * \param [in] rnti
+     * @param [in] cellId
+     * @param [in] rnti
      */
     typedef void (*NewUeContextTracedCallback)(const uint16_t cellId, const uint16_t rnti);
 
     /**
      * TracedCallback signature for connection and handover end events.
      *
-     * \param [in] imsi
-     * \param [in] cellId
-     * \param [in] rnti
+     * @param [in] imsi
+     * @param [in] cellId
+     * @param [in] rnti
      */
     typedef void (*ConnectionHandoverTracedCallback)(const uint64_t imsi,
                                                      const uint16_t cellId,
@@ -1084,10 +1084,10 @@ class LteEnbRrc : public Object
     /**
      * TracedCallback signature for handover start events.
      *
-     * \param [in] imsi
-     * \param [in] cellId
-     * \param [in] rnti
-     * \param [in] targetCid
+     * @param [in] imsi
+     * @param [in] cellId
+     * @param [in] rnti
+     * @param [in] targetCid
      */
     typedef void (*HandoverStartTracedCallback)(const uint64_t imsi,
                                                 const uint16_t cellId,
@@ -1097,11 +1097,11 @@ class LteEnbRrc : public Object
     /**
      * TracedCallback signature for receive measurement report events.
      *
-     * \param [in] imsi
-     * \param [in] cellId
-     * \param [in] rnti
-     * \param [in] report
-     * \todo The \c LteRrcSap::MeasurementReport argument should be
+     * @param [in] imsi
+     * @param [in] cellId
+     * @param [in] rnti
+     * @param [in] report
+     * @todo The \c LteRrcSap::MeasurementReport argument should be
      * changed to a const reference since the argument is large.
      */
     typedef void (*ReceiveReportTracedCallback)(const uint64_t imsi,
@@ -1112,10 +1112,10 @@ class LteEnbRrc : public Object
     /**
      * TracedCallback signature for timer expiry events
      *
-     * \param [in] imsi
-     * \param [in] rnti
-     * \param [in] cellId
-     * \param [in] cause
+     * @param [in] imsi
+     * @param [in] rnti
+     * @param [in] cellId
+     * @param [in] cause
      */
     typedef void (*TimerExpiryTracedCallback)(const uint64_t imsi,
                                               const uint16_t rnti,
@@ -1125,9 +1125,9 @@ class LteEnbRrc : public Object
     /**
      * TracedCallback signature for handover failure events.
      *
-     * \param [in] imsi
-     * \param [in] rnti
-     * \param [in] cellId
+     * @param [in] imsi
+     * @param [in] rnti
+     * @param [in] cellId
      */
     typedef void (*HandoverFailureTracedCallback)(const uint64_t imsi,
                                                   const uint16_t rnti,
@@ -1139,24 +1139,24 @@ class LteEnbRrc : public Object
     /**
      * Part of the RRC protocol. Forwarding LteEnbRrcSapProvider::CompleteSetupUe interface to
      * UeManager::CompleteSetupUe
-     * \param rnti the RNTI
-     * \param params the LteEnbRrcSapProvider::CompleteSetupUeParameters
+     * @param rnti the RNTI
+     * @param params the LteEnbRrcSapProvider::CompleteSetupUeParameters
      */
     void DoCompleteSetupUe(uint16_t rnti, LteEnbRrcSapProvider::CompleteSetupUeParameters params);
     /**
      * Part of the RRC protocol. Forwarding LteEnbRrcSapProvider::RecvRrcConnectionRequest interface
      * to UeManager::RecvRrcConnectionRequest
      *
-     * \param rnti the RNTI
-     * \param msg the LteRrcSap::RrcConnectionRequest
+     * @param rnti the RNTI
+     * @param msg the LteRrcSap::RrcConnectionRequest
      */
     void DoRecvRrcConnectionRequest(uint16_t rnti, LteRrcSap::RrcConnectionRequest msg);
     /**
      * Part of the RRC protocol. Forwarding LteEnbRrcSapProvider::RecvRrcConnectionSetupCompleted
      * interface to UeManager::RecvRrcConnectionSetupCompleted
      *
-     * \param rnti the RNTI
-     * \param msg the LteRrcSap::RrcConnectionSetupCompleted
+     * @param rnti the RNTI
+     * @param msg the LteRrcSap::RrcConnectionSetupCompleted
      */
     void DoRecvRrcConnectionSetupCompleted(uint16_t rnti,
                                            LteRrcSap::RrcConnectionSetupCompleted msg);
@@ -1165,8 +1165,8 @@ class LteEnbRrc : public Object
      * LteEnbRrcSapProvider::RecvRrcConnectionReconfigurationCompleted interface to
      * UeManager::RecvRrcConnectionReconfigurationCompleted
      *
-     * \param rnti the RNTI
-     * \param msg the LteRrcSap::RrcConnectionReconfigurationCompleted
+     * @param rnti the RNTI
+     * @param msg the LteRrcSap::RrcConnectionReconfigurationCompleted
      */
     void DoRecvRrcConnectionReconfigurationCompleted(
         uint16_t rnti,
@@ -1176,8 +1176,8 @@ class LteEnbRrc : public Object
      * LteEnbRrcSapProvider::RecvRrcConnectionReestablishmentRequest interface to
      * UeManager::RecvRrcConnectionReestablishmentRequest
      *
-     * \param rnti the RNTI
-     * \param msg the LteRrcSap::RrcConnectionReestablishmentRequest
+     * @param rnti the RNTI
+     * @param msg the LteRrcSap::RrcConnectionReestablishmentRequest
      */
     void DoRecvRrcConnectionReestablishmentRequest(
         uint16_t rnti,
@@ -1187,8 +1187,8 @@ class LteEnbRrc : public Object
      * LteEnbRrcSapProvider::RecvRrcConnectionReestablishmentComplete interface to
      * UeManager::RecvRrcConnectionReestablishmentComplete
      *
-     * \param rnti the RNTI
-     * \param msg the LteRrcSap::RrcConnectionReestablishmentComplete
+     * @param rnti the RNTI
+     * @param msg the LteRrcSap::RrcConnectionReestablishmentComplete
      */
     void DoRecvRrcConnectionReestablishmentComplete(
         uint16_t rnti,
@@ -1197,12 +1197,12 @@ class LteEnbRrc : public Object
      * Part of the RRC protocol. Forwarding LteEnbRrcSapProvider::RecvMeasurementReport interface to
      * UeManager::RecvMeasurementReport
      *
-     * \param rnti the RNTI
-     * \param msg the LteRrcSap::MeasurementReport
+     * @param rnti the RNTI
+     * @param msg the LteRrcSap::MeasurementReport
      */
     void DoRecvMeasurementReport(uint16_t rnti, LteRrcSap::MeasurementReport msg);
     /**
-     * \brief Part of the RRC protocol. Forwarding
+     * @brief Part of the RRC protocol. Forwarding
      * LteEnbRrcSapProvider::RecvIdealUeContextRemoveRequest interface to
      * UeManager::RecvIdealUeContextRemoveRequest.
      *
@@ -1211,7 +1211,7 @@ class LteEnbRrc : public Object
      * MME only at the beginning of simulation and if they are removed,
      * the bearers cannot be activated again.
      *
-     * \param rnti the C-RNTI identifying the user
+     * @param rnti the C-RNTI identifying the user
      */
     void DoRecvIdealUeContextRemoveRequest(uint16_t rnti);
 
@@ -1220,20 +1220,20 @@ class LteEnbRrc : public Object
     /**
      * Initial context setup request function
      *
-     * \param params EpcEnbS1SapUser::InitialContextSetupRequestParameters
+     * @param params EpcEnbS1SapUser::InitialContextSetupRequestParameters
      */
     void DoInitialContextSetupRequest(EpcEnbS1SapUser::InitialContextSetupRequestParameters params);
     /**
      * Data radio beaerer setup request function
      *
-     * \param params EpcEnbS1SapUser::DataRadioBearerSetupRequestParameters
+     * @param params EpcEnbS1SapUser::DataRadioBearerSetupRequestParameters
      */
     void DoDataRadioBearerSetupRequest(
         EpcEnbS1SapUser::DataRadioBearerSetupRequestParameters params);
     /**
      * Path switch request acknowledge function
      *
-     * \param params EpcEnbS1SapUser::PathSwitchRequestAcknowledgeParameters
+     * @param params EpcEnbS1SapUser::PathSwitchRequestAcknowledgeParameters
      */
     void DoPathSwitchRequestAcknowledge(
         EpcEnbS1SapUser::PathSwitchRequestAcknowledgeParameters params);
@@ -1243,55 +1243,55 @@ class LteEnbRrc : public Object
     /**
      * Receive handover request function
      *
-     * \param params EpcX2SapUser::HandoverRequestParams
+     * @param params EpcX2SapUser::HandoverRequestParams
      */
     void DoRecvHandoverRequest(EpcX2SapUser::HandoverRequestParams params);
     /**
      * Receive handover request acknowledge function
      *
-     * \param params EpcX2SapUser::HandoverRequestAckParams
+     * @param params EpcX2SapUser::HandoverRequestAckParams
      */
     void DoRecvHandoverRequestAck(EpcX2SapUser::HandoverRequestAckParams params);
     /**
      * Receive handover preparation failure function
      *
-     * \param params EpcX2SapUser::HandoverPreparationFailureParams
+     * @param params EpcX2SapUser::HandoverPreparationFailureParams
      */
     void DoRecvHandoverPreparationFailure(EpcX2SapUser::HandoverPreparationFailureParams params);
     /**
      * Receive SN status transfer function
      *
-     * \param params EpcX2SapUser::SnStatusTransferParams
+     * @param params EpcX2SapUser::SnStatusTransferParams
      */
     void DoRecvSnStatusTransfer(EpcX2SapUser::SnStatusTransferParams params);
     /**
      * Receive UE context release function
      *
-     * \param params EpcX2SapUser::UeContextReleaseParams
+     * @param params EpcX2SapUser::UeContextReleaseParams
      */
     void DoRecvUeContextRelease(EpcX2SapUser::UeContextReleaseParams params);
     /**
      * Receive load information function
      *
-     * \param params EpcX2SapUser::LoadInformationParams
+     * @param params EpcX2SapUser::LoadInformationParams
      */
     void DoRecvLoadInformation(EpcX2SapUser::LoadInformationParams params);
     /**
      * Receive resource status update function
      *
-     * \param params EpcX2SapUser::ResourceStatusUpdateParams
+     * @param params EpcX2SapUser::ResourceStatusUpdateParams
      */
     void DoRecvResourceStatusUpdate(EpcX2SapUser::ResourceStatusUpdateParams params);
     /**
      * Receive UE data function
      *
-     * \param params EpcX2SapUser::UeDataParams
+     * @param params EpcX2SapUser::UeDataParams
      */
     void DoRecvUeData(EpcX2SapUser::UeDataParams params);
     /**
      * Receive Handover Cancel function.
      *
-     * \param params EpcX2SapUser::HandoverCancelParams
+     * @param params EpcX2SapUser::HandoverCancelParams
      */
     void DoRecvHandoverCancel(EpcX2SapUser::HandoverCancelParams params);
 
@@ -1300,22 +1300,22 @@ class LteEnbRrc : public Object
     /**
      * Allocate temporary cell RNTI function
      *
-     * \param componentCarrierId ID of the primary component carrier
-     * \return temporary RNTI
+     * @param componentCarrierId ID of the primary component carrier
+     * @return temporary RNTI
      */
     uint16_t DoAllocateTemporaryCellRnti(uint8_t componentCarrierId);
     /**
      * Notify LC config result function
      *
-     * \param rnti RNTI
-     * \param lcid LCID
-     * \param success the success indicator
+     * @param rnti RNTI
+     * @param lcid LCID
+     * @param success the success indicator
      */
     void DoNotifyLcConfigResult(uint16_t rnti, uint8_t lcid, bool success);
     /**
      * RRC configuration update indication function
      *
-     * \param params LteEnbCmacSapUser::UeConfig
+     * @param params LteEnbCmacSapUser::UeConfig
      */
     void DoRrcConfigurationUpdateInd(LteEnbCmacSapUser::UeConfig params);
 
@@ -1324,29 +1324,29 @@ class LteEnbRrc : public Object
     /**
      * Add UE measure report config for handover function
      *
-     * \param reportConfig LteRrcSap::ReportConfigEutra
-     * \returns measure ID
+     * @param reportConfig LteRrcSap::ReportConfigEutra
+     * @returns measure ID
      */
     std::vector<uint8_t> DoAddUeMeasReportConfigForHandover(
         LteRrcSap::ReportConfigEutra reportConfig);
     /**
      * Add UE measure report config for component carrier function
      *
-     * \param reportConfig LteRrcSap::ReportConfigEutra
-     * \returns measure ID
+     * @param reportConfig LteRrcSap::ReportConfigEutra
+     * @returns measure ID
      */
     uint8_t DoAddUeMeasReportConfigForComponentCarrier(LteRrcSap::ReportConfigEutra reportConfig);
     /**
-     * \brief Set number of component carriers
-     * \param numberOfComponentCarriers the number of component carriers
+     * @brief Set number of component carriers
+     * @param numberOfComponentCarriers the number of component carriers
      */
     void DoSetNumberOfComponentCarriers(uint16_t numberOfComponentCarriers);
 
     /**
      * Trigger handover function
      *
-     * \param rnti RNTI
-     * \param targetCellId target cell ID
+     * @param rnti RNTI
+     * @param targetCellId target cell ID
      */
     void DoTriggerHandover(uint16_t rnti, uint16_t targetCellId);
 
@@ -1355,8 +1355,8 @@ class LteEnbRrc : public Object
     /**
      * Add UE measure report config for ANR function
      *
-     * \param reportConfig LteRrcSap::ReportConfigEutra
-     * \returns measure ID
+     * @param reportConfig LteRrcSap::ReportConfigEutra
+     * @returns measure ID
      */
     uint8_t DoAddUeMeasReportConfigForAnr(LteRrcSap::ReportConfigEutra reportConfig);
 
@@ -1364,21 +1364,21 @@ class LteEnbRrc : public Object
     /**
      * Add UE measure report config for FFR function
      *
-     * \param reportConfig LteRrcSap::ReportConfigEutra
-     * \returns measure ID
+     * @param reportConfig LteRrcSap::ReportConfigEutra
+     * @returns measure ID
      */
     uint8_t DoAddUeMeasReportConfigForFfr(LteRrcSap::ReportConfigEutra reportConfig);
     /**
      * Set PDSCH config dedicated function
      *
-     * \param rnti the RNTI
-     * \param pa LteRrcSap::PdschConfigDedicated
+     * @param rnti the RNTI
+     * @param pa LteRrcSap::PdschConfigDedicated
      */
     void DoSetPdschConfigDedicated(uint16_t rnti, LteRrcSap::PdschConfigDedicated pa);
     /**
      * Send load information function
      *
-     * \param params EpcX2Sap::LoadInformationParams
+     * @param params EpcX2Sap::LoadInformationParams
      */
     void DoSendLoadInformation(EpcX2Sap::LoadInformationParams params);
 
@@ -1389,30 +1389,30 @@ class LteEnbRrc : public Object
      *   * T-C-RNTI allocation upon contention-based MAC Random Access procedure
      *   * target cell RNTI allocation upon handover
      *
-     * \param state the initial state of the UeManager
-     * \param componentCarrierId primary component carrier ID of the UeManager
+     * @param state the initial state of the UeManager
+     * @param componentCarrierId primary component carrier ID of the UeManager
      *
-     * \return the newly allocated RNTI
+     * @return the newly allocated RNTI
      */
     uint16_t AddUe(UeManager::State state, uint8_t componentCarrierId);
 
     /**
      * remove a UE from the cell
      *
-     * \param rnti the C-RNTI identiftying the user
+     * @param rnti the C-RNTI identiftying the user
      */
     void RemoveUe(uint16_t rnti);
 
     /**
      *
-     * \param bearer the specification of an EPS bearer
+     * @param bearer the specification of an EPS bearer
      *
-     * \return the type of RLC that is to be created for the given EPS bearer
+     * @return the type of RLC that is to be created for the given EPS bearer
      */
     TypeId GetRlcType(EpsBearer bearer);
 
     /**
-     * \brief Is random access completed function
+     * @brief Is random access completed function
      *
      * This method is executed to decide if the non contention based
      * preamble has to reused or not upon preamble expiry. If the random access
@@ -1420,8 +1420,8 @@ class LteEnbRrc : public Object
      * If not, the same UE retains the preamble and other available preambles is
      * assigned to the required UEs.
      *
-     * \param rnti the C-RNTI identifying the user
-     * \return true if the random access in connected mode is completed
+     * @param rnti the C-RNTI identifying the user
+     * @return true if the random access in connected mode is completed
      */
     bool IsRandomAccessCompleted(uint16_t rnti);
 
@@ -1429,26 +1429,26 @@ class LteEnbRrc : public Object
     /**
      * Add a neighbour with an X2 interface
      *
-     * \param cellId neighbouring cell id
+     * @param cellId neighbouring cell id
      */
     void AddX2Neighbour(uint16_t cellId);
 
     /**
      *
-     * \param p the SRS periodicity in num TTIs
+     * @param p the SRS periodicity in num TTIs
      */
     void SetSrsPeriodicity(uint32_t p);
 
     /**
      *
-     * \return the current SRS periodicity
+     * @return the current SRS periodicity
      */
     uint32_t GetSrsPeriodicity() const;
 
     /**
-     * \brief Associate this RRC entity with a particular CSG information.
-     * \param csgId the intended Closed Subscriber Group identity
-     * \param csgIndication if TRUE, only CSG members are allowed to access the
+     * @brief Associate this RRC entity with a particular CSG information.
+     * @param csgId the intended Closed Subscriber Group identity
+     * @param csgIndication if TRUE, only CSG members are allowed to access the
      *                      cell
      *
      * CSG identity is a number identifying a Closed Subscriber Group which the
@@ -1470,42 +1470,42 @@ class LteEnbRrc : public Object
     /**
      * Allocate a new SRS configuration index for a new UE.
      *
-     * \note this method can have the side effect of updating the SRS
+     * @note this method can have the side effect of updating the SRS
      * configuration index of all UEs
      *
-     * \return the newly allocated SRS configuration index
+     * @return the newly allocated SRS configuration index
      */
     uint16_t GetNewSrsConfigurationIndex();
 
     /**
      * remove a previously allocated SRS configuration index
      *
-     * \note this method can have the side effect of updating the SRS
+     * @note this method can have the side effect of updating the SRS
      * configuration index of all UEs
      *
-     * \param srcCi the index to be removed
+     * @param srcCi the index to be removed
      */
     void RemoveSrsConfigurationIndex(uint16_t srcCi);
 
     /**
-     * \return true if all the SRS indices are assigned to UEs
+     * @return true if all the SRS indices are assigned to UEs
      */
     bool IsMaxSrsReached();
 
     /**
      *
-     * \param bearer the characteristics of the bearer
+     * @param bearer the characteristics of the bearer
      *
-     * \return the Logical Channel Group in a bearer with these
+     * @return the Logical Channel Group in a bearer with these
      * characteristics is put. Used for MAC Buffer Status Reporting purposes.
      */
     uint8_t GetLogicalChannelGroup(EpsBearer bearer);
 
     /**
      *
-     * \param bearer the characteristics of the bearer
+     * @param bearer the characteristics of the bearer
      *
-     * \return the priority level of a bearer with these
+     * @return the priority level of a bearer with these
      * characteristics is put. Used for the part of UL MAC Scheduling
      * carried out by the UE
      */

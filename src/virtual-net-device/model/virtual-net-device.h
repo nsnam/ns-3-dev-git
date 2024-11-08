@@ -21,15 +21,15 @@ namespace ns3
 {
 
 /**
- * \defgroup virtual-net-device Virtual Device
+ * @defgroup virtual-net-device Virtual Device
  *
  */
 
 /**
- * \ingroup virtual-net-device
+ * @ingroup virtual-net-device
  *
- * \class VirtualNetDevice
- * \brief A virtual device, similar to Linux TUN/TAP interfaces.
+ * @class VirtualNetDevice
+ * @brief A virtual device, similar to Linux TUN/TAP interfaces.
  *
  * A VirtualNetDevice is a "virtual" NetDevice implementation which
  * delegates to a user callback (see method SetSendCallback()) the
@@ -53,8 +53,8 @@ class VirtualNetDevice : public NetDevice
     typedef Callback<bool, Ptr<Packet>, const Address&, const Address&, uint16_t> SendCallback;
 
     /**
-     * \brief Get the type ID.
-     * \return The object TypeId.
+     * @brief Get the type ID.
+     * @return The object TypeId.
      */
     static TypeId GetTypeId();
     VirtualNetDevice();
@@ -62,48 +62,48 @@ class VirtualNetDevice : public NetDevice
     ~VirtualNetDevice() override;
 
     /**
-     * \brief Set the user callback to be called when a L2 packet is to be transmitted
-     * \param transmitCb the new transmit callback
+     * @brief Set the user callback to be called when a L2 packet is to be transmitted
+     * @param transmitCb the new transmit callback
      */
     void SetSendCallback(SendCallback transmitCb);
 
     /**
-     * \brief Configure whether the virtual device needs ARP
+     * @brief Configure whether the virtual device needs ARP
      *
-     * \param needsArp the the 'needs arp' value that will be returned
+     * @param needsArp the the 'needs arp' value that will be returned
      * by the NeedsArp() method.  The method IsBroadcast() will also
      * return this value.
      */
     void SetNeedsArp(bool needsArp);
 
     /**
-     * \brief Configure whether the virtual device is point-to-point
+     * @brief Configure whether the virtual device is point-to-point
      *
-     * \param isPointToPoint the value that should be returned by the
+     * @param isPointToPoint the value that should be returned by the
      * IsPointToPoint method for this instance.
      */
     void SetIsPointToPoint(bool isPointToPoint);
 
     /**
-     * \brief Configure whether the virtual device supports SendFrom
-     * \param supportsSendFrom true if the device supports SendFrom
+     * @brief Configure whether the virtual device supports SendFrom
+     * @param supportsSendFrom true if the device supports SendFrom
      */
     void SetSupportsSendFrom(bool supportsSendFrom);
 
     /**
-     * \brief Configure the reported MTU for the virtual device.
-     * \param mtu MTU value to set
-     * \return whether the MTU value was within legal bounds
+     * @brief Configure the reported MTU for the virtual device.
+     * @param mtu MTU value to set
+     * @return whether the MTU value was within legal bounds
      */
     bool SetMtu(const uint16_t mtu) override;
 
     /**
-     * \param packet packet sent from below up to Network Device
-     * \param protocol Protocol type
-     * \param source the address of the sender of this packet.
-     * \param destination the address of the receiver of this packet.
-     * \param packetType type of packet received (broadcast/multicast/unicast/otherhost)
-     * \returns true if the packet was forwarded successfully, false otherwise.
+     * @param packet packet sent from below up to Network Device
+     * @param protocol Protocol type
+     * @param source the address of the sender of this packet.
+     * @param destination the address of the receiver of this packet.
+     * @param packetType type of packet received (broadcast/multicast/unicast/otherhost)
+     * @returns true if the packet was forwarded successfully, false otherwise.
      *
      * Forward a "virtually received" packet up
      * the node's protocol stack.

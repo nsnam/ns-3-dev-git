@@ -34,9 +34,9 @@ namespace ns3
 class Time;
 
 /**
- * \ingroup congestionOps
+ * @ingroup congestionOps
  *
- * \brief An implementation of TCP Westwood+.
+ * @brief An implementation of TCP Westwood+.
  *
  * Westwood+ employ the AIAD (Additive Increase/Adaptive Decrease)
  * congestion control paradigm. When a congestion episode happens,
@@ -57,21 +57,21 @@ class TcpWestwoodPlus : public TcpNewReno
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
     TcpWestwoodPlus();
     /**
-     * \brief Copy constructor
-     * \param sock the object to copy
+     * @brief Copy constructor
+     * @param sock the object to copy
      */
     TcpWestwoodPlus(const TcpWestwoodPlus& sock);
     ~TcpWestwoodPlus() override;
 
     /**
-     * \brief Filter type (None or Tustin)
+     * @brief Filter type (None or Tustin)
      */
     enum FilterType
     {
@@ -89,15 +89,15 @@ class TcpWestwoodPlus : public TcpNewReno
     /**
      * Update the total number of acknowledged packets during the current RTT
      *
-     * \param [in] acked the number of packets the currently received ACK acknowledges
+     * @param [in] acked the number of packets the currently received ACK acknowledges
      */
     void UpdateAckedSegments(int acked);
 
     /**
      * Estimate the network's bandwidth
      *
-     * \param [in] rtt the RTT estimation.
-     * \param [in] tcb the socket state.
+     * @param [in] rtt the RTT estimation.
+     * @param [in] tcb the socket state.
      */
     void EstimateBW(const Time& rtt, Ptr<TcpSocketState> tcb);
 

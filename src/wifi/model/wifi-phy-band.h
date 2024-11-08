@@ -15,7 +15,7 @@ namespace ns3
 {
 
 /**
- * \ingroup wifi
+ * @ingroup wifi
  * Identifies the PHY band.
  */
 enum WifiPhyBand
@@ -33,11 +33,11 @@ enum WifiPhyBand
 };
 
 /**
- * \brief Stream insertion operator.
+ * @brief Stream insertion operator.
  *
- * \param os the stream
- * \param band the band
- * \returns a reference to the stream
+ * @param os the stream
+ * @param band the band
+ * @returns a reference to the stream
  */
 inline std::ostream&
 operator<<(std::ostream& os, WifiPhyBand band)

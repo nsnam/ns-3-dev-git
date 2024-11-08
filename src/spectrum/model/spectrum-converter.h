@@ -15,7 +15,7 @@ namespace ns3
 {
 
 /**
- * \ingroup spectrum
+ * @ingroup spectrum
  *
  * Class which implements a converter between SpectrumValue which are
  * defined over different SpectrumModel. In more formal terms, this class

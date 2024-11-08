@@ -38,8 +38,8 @@ struct LteFlowId_t
     /**
      * Constructor
      *
-     * \param a RNTI
-     * \param b LCID
+     * @param a RNTI
+     * @param b LCID
      */
     LteFlowId_t(const uint16_t a, const uint8_t b);
 
@@ -58,8 +58,8 @@ struct ImsiLcidPair_t
     /**
      * Constructor
      *
-     * \param a first pair
-     * \param b second pair
+     * @param a first pair
+     * @param b second pair
      */
     ImsiLcidPair_t(const uint64_t a, const uint8_t b);
 
@@ -68,7 +68,7 @@ struct ImsiLcidPair_t
 };
 
 /**
- * \brief Parameters for configuring the UE
+ * @brief Parameters for configuring the UE
  */
 struct LteUeConfig_t
 {
@@ -95,17 +95,17 @@ struct LteUeConfig_t
     /**
      * Equality operator
      *
-     * \param a lhs
-     * \param b rhs
-     * \returns true if "equal"
+     * @param a lhs
+     * @param b rhs
+     * @returns true if "equal"
      */
     friend bool operator==(const LteUeConfig_t& a, const LteUeConfig_t& b);
     /**
      * Less than operator
      *
-     * \param a lhs
-     * \param b rhs
-     * \returns true if "less than"
+     * @param a lhs
+     * @param b rhs
+     * @returns true if "less than"
      */
     friend bool operator<(const LteUeConfig_t& a, const LteUeConfig_t& b);
 };
@@ -117,21 +117,21 @@ class LteFfConverter
     /**
      * Convert from double to fixed point S11.3 notation
      *
-     * \param val double value
-     * \returns fixed point S11.3 value
+     * @param val double value
+     * @returns fixed point S11.3 value
      */
     static uint16_t double2fpS11dot3(double val);
     /**
      * Convert from fixed point S11.3 notation to double
      *
-     * \param val fixed point S11.3 value
-     * \returns double value
+     * @param val fixed point S11.3 value
+     * @returns double value
      */
     static double fpS11dot3toDouble(uint16_t val);
     /**
      * Get minimum fixed point S11.3 value
      *
-     * \returns double value for the minimum fixed point S11.3 value
+     * @returns double value for the minimum fixed point S11.3 value
      */
     static double getMinFpS11dot3Value();
 
@@ -145,15 +145,15 @@ class BufferSizeLevelBsr
     /**
      * Convert BSR ID to buffer size
      *
-     * \param val BSR ID
-     * \returns buffer size
+     * @param val BSR ID
+     * @returns buffer size
      */
     static uint32_t BsrId2BufferSize(uint8_t val);
     /**
      * Convert Buffer size to BSR ID
      *
-     * \param val buffer size
-     * \returns BSR ID
+     * @param val buffer size
+     * @returns BSR ID
      */
     static uint8_t BufferSize2BsrId(uint32_t val);
 
@@ -166,8 +166,8 @@ class TransmissionModesLayers
   public:
     /**
      * Transmit mode 2 layer number
-     * \param txMode the transmit mode
-     * \returns the layer 2 number
+     * @param txMode the transmit mode
+     * @returns the layer 2 number
      */
     static uint8_t TxMode2LayerNum(uint8_t txMode);
 };
@@ -190,8 +190,8 @@ struct PhyTransmissionStatParameters
     /**
      *  TracedCallback signature.
      *
-     * \param [in] params Value of the PhyTransmissionionStatParameters.
-     * \todo The argument should be passed by const reference, since it's large.
+     * @param [in] params Value of the PhyTransmissionionStatParameters.
+     * @todo The argument should be passed by const reference, since it's large.
      */
     typedef void (*TracedCallback)(const PhyTransmissionStatParameters params);
 };
@@ -215,8 +215,8 @@ struct PhyReceptionStatParameters
     /**
      *  TracedCallback signature.
      *
-     * \param [in] params Value of the PhyReceptionStatParameters.
-     * \todo The argument should be passed by const reference, since it's large.
+     * @param [in] params Value of the PhyReceptionStatParameters.
+     * @todo The argument should be passed by const reference, since it's large.
      */
     typedef void (*TracedCallback)(const PhyReceptionStatParameters params);
 };
@@ -246,9 +246,9 @@ class EutranMeasurementMapping
      * converts an RSRP range to dBm as per
      * 3GPP TS 36.133 section 9.1.4 RSRP Measurement Report Mapping
      *
-     * \param range the RSRP range value
+     * @param range the RSRP range value
      *
-     * \return the corresponding RSRP value in dBm
+     * @return the corresponding RSRP value in dBm
      */
     static double RsrpRange2Dbm(uint8_t range);
 
@@ -256,9 +256,9 @@ class EutranMeasurementMapping
      * convert an RSRP value in dBm to the corresponding range as per
      * 3GPP TS 36.133 section 9.1.4 RSRP Measurement Report Mapping
      *
-     * \param dbm the RSRP value in dBm
+     * @param dbm the RSRP value in dBm
      *
-     * \return the corresponding range
+     * @return the corresponding range
      */
     static uint8_t Dbm2RsrpRange(double dbm);
 
@@ -266,9 +266,9 @@ class EutranMeasurementMapping
      * converts an RSRQ range to dB as per
      * 3GPP TS 36.133 section 9.1.7 RSRQ Measurement Report Mapping
      *
-     * \param range the RSRQ range value
+     * @param range the RSRQ range value
      *
-     * \return the corresponding RSRQ value in dB
+     * @return the corresponding RSRQ value in dB
      */
     static double RsrqRange2Db(uint8_t range);
 
@@ -276,34 +276,34 @@ class EutranMeasurementMapping
      * convert an RSRQ value in dB to the corresponding range as per
      * 3GPP TS 36.133 section 9.1.7 RSRQ Measurement Report Mapping
      *
-     * \param db the RSRQ value in dB
+     * @param db the RSRQ value in dB
      *
-     * \return the corresponding range
+     * @return the corresponding range
      */
     static uint8_t Db2RsrqRange(double db);
 
     /**
      * Quantize an RSRP value according to the measurement mapping of TS 36.133
      *
-     * \param v RSRP value in dBm
+     * @param v RSRP value in dBm
      *
-     * \return the quantized RSRP value in dBm
+     * @return the quantized RSRP value in dBm
      */
     static double QuantizeRsrp(double v);
 
     /**
      * Quantize an RSRQ value according to the measurement mapping of TS 36.133
      *
-     * \param v RSRQ value in dB
+     * @param v RSRQ value in dB
      *
-     * \return the quantized RSRQ value in dB
+     * @return the quantized RSRQ value in dB
      */
     static double QuantizeRsrq(double v);
 
     /**
-     * \brief Returns the actual value of a hysteresis parameter.
-     * \param hysteresisIeValue IE value of hysteresis
-     * \return actual value in dB, which is IE value * 0.5 dB
+     * @brief Returns the actual value of a hysteresis parameter.
+     * @param hysteresisIeValue IE value of hysteresis
+     * @return actual value in dB, which is IE value * 0.5 dB
      *
      * As per section 6.3.5 of 3GPP TS 36.331.
      *
@@ -314,9 +314,9 @@ class EutranMeasurementMapping
     static double IeValue2ActualHysteresis(uint8_t hysteresisIeValue);
 
     /**
-     * \brief Returns the IE value of hysteresis.
-     * \param hysteresisDb actual hysteresis value in dB
-     * \return IE value of hysteresis in dB, which is actual value * 2, rounded
+     * @brief Returns the IE value of hysteresis.
+     * @param hysteresisDb actual hysteresis value in dB
+     * @return IE value of hysteresis in dB, which is actual value * 2, rounded
      *         to the nearest integer
      *
      * The allowed values for hysteresis are between 0 and 15 dB.
@@ -326,9 +326,9 @@ class EutranMeasurementMapping
     static uint8_t ActualHysteresis2IeValue(double hysteresisDb);
 
     /**
-     * \brief Returns the actual value of an a3-Offset parameter.
-     * \param a3OffsetIeValue IE value of a3-Offset
-     * \return actual value in dB, which is IE value * 0.5 dB
+     * @brief Returns the actual value of an a3-Offset parameter.
+     * @param a3OffsetIeValue IE value of a3-Offset
+     * @return actual value in dB, which is IE value * 0.5 dB
      *
      * As per section 6.3.5 of 3GPP TS 36.331.
      *
@@ -339,9 +339,9 @@ class EutranMeasurementMapping
     static double IeValue2ActualA3Offset(int8_t a3OffsetIeValue);
 
     /**
-     * \brief Returns the IE value of a3-Offset.
-     * \param a3OffsetDb actual A3 Offset value in dB
-     * \return IE value of a3-Offset in dB, which is actual value * 2, rounded
+     * @brief Returns the IE value of a3-Offset.
+     * @param a3OffsetDb actual A3 Offset value in dB
+     * @return IE value of a3-Offset in dB, which is actual value * 2, rounded
      *         to the nearest integer
      *
      * The allowed values for A3 Offset are between -15 and 15 dB.
@@ -351,9 +351,9 @@ class EutranMeasurementMapping
     static int8_t ActualA3Offset2IeValue(double a3OffsetDb);
 
     /**
-     * \brief Returns the actual value of an Q-RxLevMin parameter.
-     * \param qRxLevMinIeValue IE value of Q-RxLevMin
-     * \return Q-RxLevMin actual value in dBm, which is IE value * 2 dBm
+     * @brief Returns the actual value of an Q-RxLevMin parameter.
+     * @param qRxLevMinIeValue IE value of Q-RxLevMin
+     * @return Q-RxLevMin actual value in dBm, which is IE value * 2 dBm
      *
      * As per section 6.3.4 of 3GPP TS 36.331.
      *
@@ -362,9 +362,9 @@ class EutranMeasurementMapping
     static double IeValue2ActualQRxLevMin(int8_t qRxLevMinIeValue);
 
     /**
-     * \brief Returns the actual value of an Q-QualMin parameter.
-     * \param qQualMinIeValue IE value of Q-QualMin
-     * \return Q-QualMin actual value in dB, which is IE value dB
+     * @brief Returns the actual value of an Q-QualMin parameter.
+     * @param qQualMinIeValue IE value of Q-QualMin
+     * @return Q-QualMin actual value in dB, which is IE value dB
      *
      * As per section 6.3.4 of 3GPP TS 36.331.
      *

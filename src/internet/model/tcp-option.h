@@ -19,7 +19,7 @@ namespace ns3
 {
 
 /**
- * \ingroup tcp
+ * @ingroup tcp
  *
  * Base class for all kinds of TCP options
  */
@@ -30,8 +30,8 @@ class TcpOption : public Object
     ~TcpOption() override;
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -55,56 +55,56 @@ class TcpOption : public Object
     };
 
     /**
-     * \brief Print the Option contents
-     * \param os the output stream
+     * @brief Print the Option contents
+     * @param os the output stream
      */
     virtual void Print(std::ostream& os) const = 0;
     /**
-     * \brief Serialize the Option to a buffer iterator
-     * \param start the buffer iterator
+     * @brief Serialize the Option to a buffer iterator
+     * @param start the buffer iterator
      */
     virtual void Serialize(Buffer::Iterator start) const = 0;
 
     /**
-     * \brief Deserialize the Option from a buffer iterator
-     * \param start the buffer iterator
-     * \returns the number of deserialized bytes
+     * @brief Deserialize the Option from a buffer iterator
+     * @param start the buffer iterator
+     * @returns the number of deserialized bytes
      */
     virtual uint32_t Deserialize(Buffer::Iterator start) = 0;
 
     /**
-     * \brief Get the `kind' (as in \RFC{793}) of this option
-     * \return the Option Kind
+     * @brief Get the `kind' (as in \RFC{793}) of this option
+     * @return the Option Kind
      */
     virtual uint8_t GetKind() const = 0;
     /**
-     * \brief Returns number of bytes required for Option
+     * @brief Returns number of bytes required for Option
      * serialization.
      *
-     * \returns number of bytes required for Option
+     * @returns number of bytes required for Option
      * serialization
      */
     virtual uint32_t GetSerializedSize() const = 0;
 
     /**
-     * \brief Creates an option
-     * \param kind the option kind
-     * \return the requested option or an ns3::UnknownOption if the option is not supported
+     * @brief Creates an option
+     * @param kind the option kind
+     * @return the requested option or an ns3::UnknownOption if the option is not supported
      */
     static Ptr<TcpOption> CreateOption(uint8_t kind);
 
     /**
-     * \brief Check if the option is implemented
-     * \param kind the Option kind
-     * \return true if the option is known
+     * @brief Check if the option is implemented
+     * @param kind the Option kind
+     * @return true if the option is known
      */
     static bool IsKindKnown(uint8_t kind);
 };
 
 /**
- * \ingroup tcp
+ * @ingroup tcp
  *
- * \brief An unknown TCP option.
+ * @brief An unknown TCP option.
  *
  * An unknown option can be deserialized and (only if deserialized previously)
  * serialized again.
@@ -116,8 +116,8 @@ class TcpOptionUnknown : public TcpOption
     ~TcpOptionUnknown() override;
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     TypeId GetInstanceTypeId() const override;

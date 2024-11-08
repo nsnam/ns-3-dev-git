@@ -40,8 +40,8 @@ class LteUeMac : public Object
 
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -50,14 +50,14 @@ class LteUeMac : public Object
     void DoDispose() override;
 
     /**
-     * \brief TracedCallback signature for RA response timeout events
+     * @brief TracedCallback signature for RA response timeout events
      * exporting IMSI, contention flag, preamble transmission counter
      * and the max limit of preamble transmission
      *
-     * \param [in] imsi
-     * \param [in] contention
-     * \param [in] preambleTxCounter
-     * \param [in] maxPreambleTxLimit
+     * @param [in] imsi
+     * @param [in] contention
+     * @param [in] preambleTxCounter
+     * @param [in] maxPreambleTxLimit
      */
     typedef void (*RaResponseTimeoutTracedCallback)(uint64_t imsi,
                                                     bool contention,
@@ -65,44 +65,44 @@ class LteUeMac : public Object
                                                     uint8_t maxPreambleTxLimit);
 
     /**
-     * \brief Get the LTE MAC SAP provider
-     * \return a pointer to the LTE MAC SAP provider
+     * @brief Get the LTE MAC SAP provider
+     * @return a pointer to the LTE MAC SAP provider
      */
     LteMacSapProvider* GetLteMacSapProvider();
     /**
-     * \brief Set the LTE UE CMAC SAP user
-     * \param s the LTE UE CMAC SAP User
+     * @brief Set the LTE UE CMAC SAP user
+     * @param s the LTE UE CMAC SAP User
      */
     void SetLteUeCmacSapUser(LteUeCmacSapUser* s);
     /**
-     * \brief Get the LTE CMAC SAP provider
-     * \return a pointer to the LTE CMAC SAP provider
+     * @brief Get the LTE CMAC SAP provider
+     * @return a pointer to the LTE CMAC SAP provider
      */
     LteUeCmacSapProvider* GetLteUeCmacSapProvider();
 
     /**
-     * \brief Set the component carried ID
-     * \param index the component carrier ID
+     * @brief Set the component carried ID
+     * @param index the component carrier ID
      */
     void SetComponentCarrierId(uint8_t index);
 
     /**
-     * \brief Get the PHY SAP user
-     * \return a pointer to the SAP user of the PHY
+     * @brief Get the PHY SAP user
+     * @return a pointer to the SAP user of the PHY
      */
     LteUePhySapUser* GetLteUePhySapUser();
 
     /**
-     * \brief Set the PHY SAP Provider
-     * \param s a pointer to the PHY SAP Provider
+     * @brief Set the PHY SAP Provider
+     * @param s a pointer to the PHY SAP Provider
      */
     void SetLteUePhySapProvider(LteUePhySapProvider* s);
 
     /**
-     * \brief Forwarded from LteUePhySapUser: trigger the start from a new frame
+     * @brief Forwarded from LteUePhySapUser: trigger the start from a new frame
      *
-     * \param frameNo frame number
-     * \param subframeNo subframe number
+     * @param frameNo frame number
+     * @param subframeNo subframe number
      */
     void DoSubframeIndication(uint32_t frameNo, uint32_t subframeNo);
 
@@ -111,8 +111,8 @@ class LteUeMac : public Object
      * used by this model.  Return the number of streams (possibly zero) that
      * have been assigned.
      *
-     * \param stream first stream index to use
-     * \return the number of stream indices assigned by this model
+     * @param stream first stream index to use
+     * @return the number of stream indices assigned by this model
      */
     int64_t AssignStreams(int64_t stream);
 
@@ -121,13 +121,13 @@ class LteUeMac : public Object
     /**
      * Transmit PDU function
      *
-     * \param params LteMacSapProvider::TransmitPduParameters
+     * @param params LteMacSapProvider::TransmitPduParameters
      */
     void DoTransmitPdu(LteMacSapProvider::TransmitPduParameters params);
     /**
      * Report buffers status function
      *
-     * \param params LteMacSapProvider::ReportBufferStatusParameters
+     * @param params LteMacSapProvider::ReportBufferStatusParameters
      */
     void DoReportBufferStatus(LteMacSapProvider::ReportBufferStatusParameters params);
 
@@ -135,7 +135,7 @@ class LteUeMac : public Object
     /**
      * Configure RACH function
      *
-     * \param rc LteUeCmacSapProvider::RachConfig
+     * @param rc LteUeCmacSapProvider::RachConfig
      */
     void DoConfigureRach(LteUeCmacSapProvider::RachConfig rc);
     /**
@@ -145,15 +145,15 @@ class LteUeMac : public Object
     /**
      * Set RNTI
      *
-     * \param rnti the RNTI
+     * @param rnti the RNTI
      */
     void DoSetRnti(uint16_t rnti);
     /**
      * Start non contention based random access procedure function
      *
-     * \param rnti the RNTI
-     * \param rapId the RAPID
-     * \param prachMask the PRACH mask
+     * @param rnti the RNTI
+     * @param rapId the RAPID
+     * @param prachMask the PRACH mask
      */
     void DoStartNonContentionBasedRandomAccessProcedure(uint16_t rnti,
                                                         uint8_t rapId,
@@ -161,9 +161,9 @@ class LteUeMac : public Object
     /**
      * Add LC function
      *
-     * \param lcId the LCID
-     * \param lcConfig the logical channel config
-     * \param msu the MSU
+     * @param lcId the LCID
+     * @param lcConfig the logical channel config
+     * @param msu the MSU
      */
     void DoAddLc(uint8_t lcId,
                  LteUeCmacSapProvider::LogicalChannelConfig lcConfig,
@@ -171,22 +171,22 @@ class LteUeMac : public Object
     /**
      * Remove LC function
      *
-     * \param lcId the LCID
+     * @param lcId the LCID
      */
     void DoRemoveLc(uint8_t lcId);
     /**
-     * \brief Reset function
+     * @brief Reset function
      */
     void DoReset();
     /**
-     * \brief Notify MAC about the successful RRC connection
+     * @brief Notify MAC about the successful RRC connection
      * establishment.
      */
     void DoNotifyConnectionSuccessful();
     /**
      * Set IMSI
      *
-     * \param imsi the IMSI of the UE
+     * @param imsi the IMSI of the UE
      */
     void DoSetImsi(uint64_t imsi);
 
@@ -194,13 +194,13 @@ class LteUeMac : public Object
     /**
      * Receive Phy PDU function
      *
-     * \param p the packet
+     * @param p the packet
      */
     void DoReceivePhyPdu(Ptr<Packet> p);
     /**
      * Receive LTE control message function
      *
-     * \param msg the LTE control message
+     * @param msg the LTE control message
      */
     void DoReceiveLteControlMessage(Ptr<LteControlMessage> msg);
 
@@ -210,7 +210,7 @@ class LteUeMac : public Object
     /**
      * Send RA preamble function
      *
-     * \param contention if true randomly select and send the RA preamble
+     * @param contention if true randomly select and send the RA preamble
      */
     void SendRaPreamble(bool contention);
     /// Start waiting for RA response function
@@ -218,13 +218,13 @@ class LteUeMac : public Object
     /**
      * Receive the RA response function
      *
-     * \param raResponse RA response received
+     * @param raResponse RA response received
      */
     void RecvRaResponse(BuildRarListElement_s raResponse);
     /**
      * RA response timeout function
      *
-     * \param contention if true randomly select and send the RA preamble
+     * @param contention if true randomly select and send the RA preamble
      */
     void RaResponseTimeout(bool contention);
     /// Send report buffer status
@@ -283,7 +283,7 @@ class LteUeMac : public Object
     bool m_waitingForRaResponse; ///< waiting for RA response
 
     /**
-     * \brief The `RaResponseTimeout` trace source. Fired RA response timeout.
+     * @brief The `RaResponseTimeout` trace source. Fired RA response timeout.
      * Exporting IMSI, contention flag, preamble transmission counter
      * and the max limit of preamble transmission.
      */

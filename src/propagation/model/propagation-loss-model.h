@@ -22,21 +22,21 @@ namespace ns3
 {
 
 /**
- * \defgroup propagation Propagation Models
+ * @defgroup propagation Propagation Models
  */
 
 /**
- * \ingroup propagation
- * \ingroup tests
- * \defgroup propagation-tests Propagation module tests
+ * @ingroup propagation
+ * @ingroup tests
+ * @defgroup propagation-tests Propagation module tests
  */
 
 class MobilityModel;
 
 /**
- * \ingroup propagation
+ * @ingroup propagation
  *
- * \brief Models the propagation loss through a transmission medium
+ * @brief Models the propagation loss through a transmission medium
  *
  * Calculate the receive power (dbm) from a transmit power (dbm)
  * and a mobility model for the source and destination positions.
@@ -46,8 +46,8 @@ class PropagationLossModel : public Object
   public:
     /**
      * Get the type ID.
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -59,8 +59,8 @@ class PropagationLossModel : public Object
     PropagationLossModel& operator=(const PropagationLossModel&) = delete;
 
     /**
-     * \brief Enables a chain of loss models to act on the signal
-     * \param next The next PropagationLossModel to add to the chain
+     * @brief Enables a chain of loss models to act on the signal
+     * @param next The next PropagationLossModel to add to the chain
      *
      * This method of chaining propagation loss models only works commutatively
      * if the propagation loss of all models in the chain are independent
@@ -69,9 +69,9 @@ class PropagationLossModel : public Object
     void SetNext(Ptr<PropagationLossModel> next);
 
     /**
-     * \brief Gets the next PropagationLossModel in the chain of loss models
+     * @brief Gets the next PropagationLossModel in the chain of loss models
      * that act on the signal.
-     * \returns The next PropagationLossModel in the chain
+     * @returns The next PropagationLossModel in the chain
      *
      * This method of chaining propagation loss models only works commutatively
      * if the propagation loss of all models in the chain are independent
@@ -83,10 +83,10 @@ class PropagationLossModel : public Object
      * Returns the Rx Power taking into account all the PropagationLossModel(s)
      * chained to the current one.
      *
-     * \param txPowerDbm current transmission power (in dBm)
-     * \param a the mobility model of the source
-     * \param b the mobility model of the destination
-     * \returns the reception power after adding/multiplying propagation loss (in dBm)
+     * @param txPowerDbm current transmission power (in dBm)
+     * @param a the mobility model of the source
+     * @param b the mobility model of the destination
+     * @returns the reception power after adding/multiplying propagation loss (in dBm)
      */
     double CalcRxPower(double txPowerDbm, Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
 
@@ -98,8 +98,8 @@ class PropagationLossModel : public Object
      * together, this method will also assign streams to the
      * downstream models.
      *
-     * \param stream the stream index offset start
-     * \return the number of stream indices assigned by this model
+     * @param stream the stream index offset start
+     * @return the number of stream indices assigned by this model
      */
     int64_t AssignStreams(int64_t stream);
 
@@ -110,8 +110,8 @@ class PropagationLossModel : public Object
      * Subclasses must implement this; those not using random variables
      * can return zero.
      *
-     * \param stream first stream index to use
-     * \return the number of stream indices assigned by this model
+     * @param stream first stream index to use
+     * @return the number of stream indices assigned by this model
      */
     virtual int64_t DoAssignStreams(int64_t stream) = 0;
 
@@ -119,10 +119,10 @@ class PropagationLossModel : public Object
     /**
      * PropagationLossModel.
      *
-     * \param txPowerDbm current transmission power (in dBm)
-     * \param a the mobility model of the source
-     * \param b the mobility model of the destination
-     * \returns the reception power after adding/multiplying propagation loss (in dBm)
+     * @param txPowerDbm current transmission power (in dBm)
+     * @param a the mobility model of the source
+     * @param b the mobility model of the destination
+     * @returns the reception power after adding/multiplying propagation loss (in dBm)
      */
     virtual double DoCalcRxPower(double txPowerDbm,
                                  Ptr<MobilityModel> a,
@@ -132,16 +132,16 @@ class PropagationLossModel : public Object
 };
 
 /**
- * \ingroup propagation
+ * @ingroup propagation
  *
- * \brief The propagation loss follows a random distribution.
+ * @brief The propagation loss follows a random distribution.
  */
 class RandomPropagationLossModel : public PropagationLossModel
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -162,9 +162,9 @@ class RandomPropagationLossModel : public PropagationLossModel
 };
 
 /**
- * \ingroup propagation
+ * @ingroup propagation
  *
- * \brief a Friis propagation loss model
+ * @brief a Friis propagation loss model
  *
  * The Friis propagation loss model was first described in
  * "A Note on a Simple Transmission Formula", by
@@ -242,8 +242,8 @@ class FriisPropagationLossModel : public PropagationLossModel
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     FriisPropagationLossModel();
@@ -253,14 +253,14 @@ class FriisPropagationLossModel : public PropagationLossModel
     FriisPropagationLossModel& operator=(const FriisPropagationLossModel&) = delete;
 
     /**
-     * \param frequency (Hz)
+     * @param frequency (Hz)
      *
      * Set the carrier frequency used in the Friis model
      * calculation.
      */
     void SetFrequency(double frequency);
     /**
-     * \param systemLoss (linear factor, dimension-less)
+     * @param systemLoss (linear factor, dimension-less)
      *
      * Set the system loss used by the Friis propagation model.
      * Value should be greater than or equal to 1; the default of 1
@@ -269,7 +269,7 @@ class FriisPropagationLossModel : public PropagationLossModel
     void SetSystemLoss(double systemLoss);
 
     /**
-     * \param minLoss the minimum loss (dB)
+     * @param minLoss the minimum loss (dB)
      *
      * no matter how short the distance, the total propagation loss (in
      * dB) will always be greater or equal than this value
@@ -277,16 +277,16 @@ class FriisPropagationLossModel : public PropagationLossModel
     void SetMinLoss(double minLoss);
 
     /**
-     * \return the minimum loss.
+     * @return the minimum loss.
      */
     double GetMinLoss() const;
 
     /**
-     * \returns the current frequency (Hz)
+     * @returns the current frequency (Hz)
      */
     double GetFrequency() const;
     /**
-     * \returns the current system loss (linear factor, dimension-less)
+     * @returns the current system loss (linear factor, dimension-less)
      */
     double GetSystemLoss() const;
 
@@ -298,15 +298,15 @@ class FriisPropagationLossModel : public PropagationLossModel
 
     /**
      * Transforms a Dbm value to Watt
-     * \param dbm the Dbm value
-     * \return the Watts
+     * @param dbm the Dbm value
+     * @return the Watts
      */
     double DbmToW(double dbm) const;
 
     /**
      * Transforms a Watt value to Dbm
-     * \param w the Watt value
-     * \return the Dbm
+     * @param w the Watt value
+     * @return the Dbm
      */
     double DbmFromW(double w) const;
 
@@ -317,9 +317,9 @@ class FriisPropagationLossModel : public PropagationLossModel
 };
 
 /**
- * \ingroup propagation
+ * @ingroup propagation
  *
- * \brief a Two-Ray Ground propagation loss model ported from NS2
+ * @brief a Two-Ray Ground propagation loss model ported from NS2
  *
  * Two-ray ground reflection model.
  *
@@ -348,8 +348,8 @@ class TwoRayGroundPropagationLossModel : public PropagationLossModel
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     TwoRayGroundPropagationLossModel();
@@ -359,7 +359,7 @@ class TwoRayGroundPropagationLossModel : public PropagationLossModel
     TwoRayGroundPropagationLossModel& operator=(const TwoRayGroundPropagationLossModel&) = delete;
 
     /**
-     * \param frequency (Hz)
+     * @param frequency (Hz)
      *
      * Set the carrier frequency used in the TwoRayGround model
      * calculation.
@@ -367,7 +367,7 @@ class TwoRayGroundPropagationLossModel : public PropagationLossModel
     void SetFrequency(double frequency);
 
     /**
-     * \param systemLoss (linear factor, dimension-less)
+     * @param systemLoss (linear factor, dimension-less)
      *
      * Set the system loss used by the TwoRayGround propagation model.
      * Value should be greater than or equal to 1; the default of 1
@@ -375,28 +375,28 @@ class TwoRayGroundPropagationLossModel : public PropagationLossModel
      */
     void SetSystemLoss(double systemLoss);
     /**
-     * \param minDistance the minimum distance
+     * @param minDistance the minimum distance
      *
      * Below this distance, the txpower is returned
      * unmodified as the rxpower.
      */
     void SetMinDistance(double minDistance);
     /**
-     * \returns the minimum distance.
+     * @returns the minimum distance.
      */
     double GetMinDistance() const;
 
     /**
-     * \returns the current frequency (Hz)
+     * @returns the current frequency (Hz)
      */
     double GetFrequency() const;
 
     /**
-     * \returns the current system loss (linear factor, dimension-less)
+     * @returns the current system loss (linear factor, dimension-less)
      */
     double GetSystemLoss() const;
     /**
-     * \param heightAboveZ the model antenna height above the node's Z coordinate
+     * @param heightAboveZ the model antenna height above the node's Z coordinate
      *
      * Set the model antenna height above the node's Z coordinate
      */
@@ -410,15 +410,15 @@ class TwoRayGroundPropagationLossModel : public PropagationLossModel
 
     /**
      * Transforms a Dbm value to Watt
-     * \param dbm the Dbm value
-     * \return the Watts
+     * @param dbm the Dbm value
+     * @return the Watts
      */
     double DbmToW(double dbm) const;
 
     /**
      * Transforms a Watt value to Dbm
-     * \param w the Watt value
-     * \return the Dbm
+     * @param w the Watt value
+     * @return the Dbm
      */
     double DbmFromW(double w) const;
 
@@ -430,9 +430,9 @@ class TwoRayGroundPropagationLossModel : public PropagationLossModel
 };
 
 /**
- * \ingroup propagation
+ * @ingroup propagation
  *
- * \brief a log distance propagation model.
+ * @brief a log distance propagation model.
  *
  * This model calculates the reception power with a so-called
  * log-distance propagation model:
@@ -453,8 +453,8 @@ class LogDistancePropagationLossModel : public PropagationLossModel
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     LogDistancePropagationLossModel();
@@ -464,19 +464,19 @@ class LogDistancePropagationLossModel : public PropagationLossModel
     LogDistancePropagationLossModel& operator=(const LogDistancePropagationLossModel&) = delete;
 
     /**
-     * \param n the path loss exponent.
+     * @param n the path loss exponent.
      * Set the path loss exponent.
      */
     void SetPathLossExponent(double n);
     /**
-     * \returns the current path loss exponent.
+     * @returns the current path loss exponent.
      */
     double GetPathLossExponent() const;
 
     /**
      * Set the reference path loss at a given distance
-     * \param referenceDistance reference distance
-     * \param referenceLoss reference path loss
+     * @param referenceDistance reference distance
+     * @param referenceLoss reference path loss
      */
     void SetReference(double referenceDistance, double referenceLoss);
 
@@ -489,7 +489,7 @@ class LogDistancePropagationLossModel : public PropagationLossModel
 
     /**
      *  Creates a default reference loss model
-     * \return a default reference loss model
+     * @return a default reference loss model
      */
     static Ptr<PropagationLossModel> CreateDefaultReference();
 
@@ -499,9 +499,9 @@ class LogDistancePropagationLossModel : public PropagationLossModel
 };
 
 /**
- * \ingroup propagation
+ * @ingroup propagation
  *
- * \brief A log distance path loss propagation model with three distance
+ * @brief A log distance path loss propagation model with three distance
  * fields. This model is the same as ns3::LogDistancePropagationLossModel
  * except that it has three distance fields: near, middle and far with
  * different exponents.
@@ -543,8 +543,8 @@ class ThreeLogDistancePropagationLossModel : public PropagationLossModel
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     ThreeLogDistancePropagationLossModel();
@@ -575,9 +575,9 @@ class ThreeLogDistancePropagationLossModel : public PropagationLossModel
 };
 
 /**
- * \ingroup propagation
+ * @ingroup propagation
  *
- * \brief Nakagami-m fast fading propagation loss model.
+ * @brief Nakagami-m fast fading propagation loss model.
  *
  * This propagation loss model implements the Nakagami-m fast fading
  * model, which accounts for the variations in signal strength due to multipath
@@ -597,7 +597,7 @@ class ThreeLogDistancePropagationLossModel : public PropagationLossModel
  * The implementation of the model allows to specify different values of the m parameter (and hence
  * different fading profiles) for three different distance ranges: \f[ \underbrace{0
  * \cdots\cdots}_{m_0} \underbrace{d_1 \cdots\cdots}_{m_1} \underbrace{d_2 \cdots\cdots}_{m_2}
- * \infty \f]
+ * @infty \f]
  *
  * For m = 1 the Nakagami-m distribution equals the Rayleigh distribution. Thus
  * this model also implements Rayleigh distribution based fast fading.
@@ -606,8 +606,8 @@ class NakagamiPropagationLossModel : public PropagationLossModel
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -638,9 +638,9 @@ class NakagamiPropagationLossModel : public PropagationLossModel
 };
 
 /**
- * \ingroup propagation
+ * @ingroup propagation
  *
- * \brief Return a constant received power level independent of the transmit
+ * @brief Return a constant received power level independent of the transmit
  *  power
  *
  * The received power is constant independent of the transmit power.  The user
@@ -654,8 +654,8 @@ class FixedRssLossModel : public PropagationLossModel
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -667,7 +667,7 @@ class FixedRssLossModel : public PropagationLossModel
     FixedRssLossModel& operator=(const FixedRssLossModel&) = delete;
 
     /**
-     * \param rss (dBm) the received signal strength
+     * @param rss (dBm) the received signal strength
      *
      * Set the received signal strength (RSS) in dBm.
      */
@@ -684,9 +684,9 @@ class FixedRssLossModel : public PropagationLossModel
 };
 
 /**
- * \ingroup propagation
+ * @ingroup propagation
  *
- * \brief The propagation loss is fixed for each pair of nodes and doesn't depend on their actual
+ * @brief The propagation loss is fixed for each pair of nodes and doesn't depend on their actual
  * positions.
  *
  * This is supposed to be used by synthetic tests. Note that by default propagation loss is assumed
@@ -696,8 +696,8 @@ class MatrixPropagationLossModel : public PropagationLossModel
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -709,19 +709,19 @@ class MatrixPropagationLossModel : public PropagationLossModel
     MatrixPropagationLossModel& operator=(const MatrixPropagationLossModel&) = delete;
 
     /**
-     * \brief Set loss (in dB, positive) between pair of ns-3 objects
+     * @brief Set loss (in dB, positive) between pair of ns-3 objects
      * (typically, nodes).
      *
-     * \param a ma          Source mobility model
-     * \param b mb          Destination mobility model
-     * \param loss        a -> b path loss, positive in dB
-     * \param symmetric   If true (default), both a->b and b->a paths will be affected
+     * @param a ma          Source mobility model
+     * @param b mb          Destination mobility model
+     * @param loss        a -> b path loss, positive in dB
+     * @param symmetric   If true (default), both a->b and b->a paths will be affected
      */
     void SetLoss(Ptr<MobilityModel> a, Ptr<MobilityModel> b, double loss, bool symmetric = true);
 
     /**
      * Set the default propagation loss (in dB, positive) to be used, infinity if not set
-     * \param defaultLoss the default proagation loss
+     * @param defaultLoss the default proagation loss
      */
     void SetDefaultLoss(double defaultLoss);
 
@@ -738,17 +738,17 @@ class MatrixPropagationLossModel : public PropagationLossModel
     typedef std::pair<const Ptr<MobilityModel>, const Ptr<MobilityModel>> MobilityPair;
 
     /**
-     * \ingroup propagation
+     * @ingroup propagation
      *
-     * \brief Hasher for a pair of mobility models.
+     * @brief Hasher for a pair of mobility models.
      */
     class MobilityPairHasher
     {
       public:
         /**
-         * \brief Get the hash for a MobilityPair.
-         * \param key MobilityPair reference to hash
-         * \return the MobilityPair hash
+         * @brief Get the hash for a MobilityPair.
+         * @param key MobilityPair reference to hash
+         * @return the MobilityPair hash
          */
         size_t operator()(const MobilityPair& key) const
         {
@@ -761,9 +761,9 @@ class MatrixPropagationLossModel : public PropagationLossModel
 };
 
 /**
- * \ingroup propagation
+ * @ingroup propagation
  *
- * \brief The propagation loss depends only on the distance (range) between transmitter and
+ * @brief The propagation loss depends only on the distance (range) between transmitter and
  * receiver.
  *
  * The single MaxRange attribute (units of meters) determines path loss.
@@ -775,8 +775,8 @@ class RangePropagationLossModel : public PropagationLossModel
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     RangePropagationLossModel();

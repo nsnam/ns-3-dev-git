@@ -17,7 +17,7 @@ namespace ns3
 {
 
 /**
- * \ingroup spectrum
+ * @ingroup spectrum
  *
  * Implements Wifi SpectrumValue for the 2.4 GHz ISM band only, with a
  * 5 MHz spectrum resolution.

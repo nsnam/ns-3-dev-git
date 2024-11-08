@@ -25,7 +25,7 @@
  * 2) Print Routing Path, given source and destination.
  *
  * Simple point to point links:
- * \verbatim
+ * @verbatim
        ________
       /        \
     n0 -- n1 -- n2 -- n3
@@ -69,7 +69,7 @@
  *
  * Expected IPv4 Routing Path output for above
  * cases (in the output stream):
- * \verbatim
+ * @verbatim
   Time: +3s, Nix Routing
   Route path from Node 0 to Node 3, Nix Vector: 101 (3 bits left)
   10.1.4.1                 (Node 0)  ---->   10.1.4.2                 (Node 2)
@@ -117,7 +117,7 @@
  *
  * Expected IPv6 Routing Path output for above
  * cases (in the output stream):
- * \verbatim
+ * @verbatim
   Time: +3s, Nix Routing
   Route path from Node 0 to Node 3, Nix Vector: 101 (3 bits left)
   2001:4::200:ff:fe00:7    (Node 0)  ---->   fe80::200:ff:fe00:8      (Node 2)

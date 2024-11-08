@@ -15,40 +15,40 @@
 namespace ns3
 {
 /**
- * \ingroup ipv4
+ * @ingroup ipv4
  *
- * \brief Packet header for IPv4
+ * @brief Packet header for IPv4
  */
 class Ipv4Header : public Header
 {
   public:
     /**
-     * \brief Construct a null IPv4 header
+     * @brief Construct a null IPv4 header
      */
     Ipv4Header();
     /**
-     * \brief Enable checksum calculation for this header.
+     * @brief Enable checksum calculation for this header.
      */
     void EnableChecksum();
     /**
-     * \param size the size of the payload in bytes
+     * @param size the size of the payload in bytes
      */
     void SetPayloadSize(uint16_t size);
     /**
-     * \param identification the Identification field of IPv4 packets.
+     * @param identification the Identification field of IPv4 packets.
      *
      * By default, set to zero.
      */
     void SetIdentification(uint16_t identification);
     /**
-     * \param tos the 8 bits of Ipv4 TOS.
+     * @param tos the 8 bits of Ipv4 TOS.
      */
     void SetTos(uint8_t tos);
 
   public:
     /**
-     * \enum DscpType
-     * \brief DiffServ codepoints
+     * @enum DscpType
+     * @brief DiffServ codepoints
      *
      * The values correspond to the 6-bit DSCP codepoint within the 8-bit
      * DS field defined in \RFC{2474}.  ECN bits are separately set with the
@@ -90,14 +90,14 @@ class Ipv4Header : public Header
     };
 
     /**
-     * \brief Set DSCP Field
-     * \param dscp DSCP value
+     * @brief Set DSCP Field
+     * @param dscp DSCP value
      */
     void SetDscp(DscpType dscp);
 
     /**
-     * \enum EcnType
-     * \brief ECN Type defined in \RFC{3168}
+     * @enum EcnType
+     * @brief ECN Type defined in \RFC{3168}
      */
     enum EcnType
     {
@@ -109,8 +109,8 @@ class Ipv4Header : public Header
     };
 
     /**
-     * \brief Set ECN Field
-     * \param ecn ECN Type
+     * @brief Set ECN Field
+     * @param ecn ECN Type
      */
     void SetEcn(EcnType ecn);
     /**
@@ -133,86 +133,86 @@ class Ipv4Header : public Header
      * The offset is measured in bytes for the packet start.
      * Mind that IPv4 "fragment offset" field is 13 bits long and is measured in 8-bytes words.
      * Hence, the function does enforce that the offset is a multiple of 8.
-     * \param offsetBytes the ipv4 fragment offset measured in bytes from the start.
+     * @param offsetBytes the ipv4 fragment offset measured in bytes from the start.
      */
     void SetFragmentOffset(uint16_t offsetBytes);
     /**
-     * \param ttl the ipv4 TTL
+     * @param ttl the ipv4 TTL
      */
     void SetTtl(uint8_t ttl);
     /**
-     * \param num the ipv4 protocol field
+     * @param num the ipv4 protocol field
      */
     void SetProtocol(uint8_t num);
     /**
-     * \param source the source of this packet
+     * @param source the source of this packet
      */
     void SetSource(Ipv4Address source);
     /**
-     * \param destination the destination of this packet.
+     * @param destination the destination of this packet.
      */
     void SetDestination(Ipv4Address destination);
     /**
-     * \returns the size of the payload in bytes
+     * @returns the size of the payload in bytes
      */
     uint16_t GetPayloadSize() const;
     /**
-     * \returns the identification field of this packet.
+     * @returns the identification field of this packet.
      */
     uint16_t GetIdentification() const;
     /**
-     * \returns the TOS field of this packet.
+     * @returns the TOS field of this packet.
      */
     uint8_t GetTos() const;
     /**
-     * \returns the DSCP field of this packet.
+     * @returns the DSCP field of this packet.
      */
     DscpType GetDscp() const;
     /**
-     * \param dscp the dscp
-     * \returns std::string of DSCPType
+     * @param dscp the dscp
+     * @returns std::string of DSCPType
      */
     std::string DscpTypeToString(DscpType dscp) const;
     /**
-     * \returns the ECN field of this packet.
+     * @returns the ECN field of this packet.
      */
     EcnType GetEcn() const;
     /**
-     * \param ecn the ECNType
-     * \returns std::string of ECNType
+     * @param ecn the ECNType
+     * @returns std::string of ECNType
      */
     std::string EcnTypeToString(EcnType ecn) const;
     /**
-     * \returns true if this is the last fragment of a packet, false otherwise.
+     * @returns true if this is the last fragment of a packet, false otherwise.
      */
     bool IsLastFragment() const;
     /**
-     * \returns true if this is this packet can be fragmented.
+     * @returns true if this is this packet can be fragmented.
      */
     bool IsDontFragment() const;
     /**
-     * \returns the offset of this fragment measured in bytes from the start.
+     * @returns the offset of this fragment measured in bytes from the start.
      */
     uint16_t GetFragmentOffset() const;
     /**
-     * \returns the TTL field of this packet
+     * @returns the TTL field of this packet
      */
     uint8_t GetTtl() const;
     /**
-     * \returns the protocol field of this packet
+     * @returns the protocol field of this packet
      */
     uint8_t GetProtocol() const;
     /**
-     * \returns the source address of this packet
+     * @returns the source address of this packet
      */
     Ipv4Address GetSource() const;
     /**
-     * \returns the destination address of this packet
+     * @returns the destination address of this packet
      */
     Ipv4Address GetDestination() const;
 
     /**
-     * \returns true if the ipv4 checksum is correct, false otherwise.
+     * @returns true if the ipv4 checksum is correct, false otherwise.
      *
      * If Ipv4Header::EnableChecksums has not been called prior to
      * deserializing this header, this method will always return true.
@@ -220,8 +220,8 @@ class Ipv4Header : public Header
     bool IsChecksumOk() const;
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     TypeId GetInstanceTypeId() const override;

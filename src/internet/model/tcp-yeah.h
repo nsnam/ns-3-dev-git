@@ -22,9 +22,9 @@ namespace ns3
 {
 
 /**
- * \ingroup congestionOps
+ * @ingroup congestionOps
  *
- * \brief An implementation of TCP YeAH
+ * @brief An implementation of TCP YeAH
  *
  *  YeAH-TCP (Yet Another HighSpeed TCP) is a heuristic designed to balance various
  *  requirements of a state-of-the-art congestion control algorithm:
@@ -62,8 +62,8 @@ class TcpYeah : public TcpNewReno
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -73,8 +73,8 @@ class TcpYeah : public TcpNewReno
     TcpYeah();
 
     /**
-     * \brief Copy constructor
-     * \param sock the object to copy
+     * @brief Copy constructor
+     * @param sock the object to copy
      */
     TcpYeah(const TcpYeah& sock);
     ~TcpYeah() override;
@@ -82,7 +82,7 @@ class TcpYeah : public TcpNewReno
     std::string GetName() const override;
 
     /**
-     * \brief Compute RTTs needed to execute YeAH algorithm
+     * @brief Compute RTTs needed to execute YeAH algorithm
      *
      * The function filters RTT samples from the last RTT to find
      * the current smallest propagation delay + queueing delay (minRtt).
@@ -91,39 +91,39 @@ class TcpYeah : public TcpNewReno
      * The function also min-filters all RTT measurements seen to find the
      * propagation delay (baseRtt).
      *
-     * \param tcb internal congestion state
-     * \param segmentsAcked count of segments ACKed
-     * \param rtt last RTT
+     * @param tcb internal congestion state
+     * @param segmentsAcked count of segments ACKed
+     * @param rtt last RTT
      *
      */
     void PktsAcked(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time& rtt) override;
 
     /**
-     * \brief Enable/disable YeAH algorithm depending on the congestion state
+     * @brief Enable/disable YeAH algorithm depending on the congestion state
      *
      * We only start a YeAH cycle when we are in normal congestion state (CA_OPEN state).
      *
-     * \param tcb internal congestion state
-     * \param newState new congestion state to which the TCP is going to switch
+     * @param tcb internal congestion state
+     * @param newState new congestion state to which the TCP is going to switch
      */
     void CongestionStateSet(Ptr<TcpSocketState> tcb,
                             const TcpSocketState::TcpCongState_t newState) override;
 
     /**
-     * \brief Adjust cwnd following YeAH dual-mode algorithm
+     * @brief Adjust cwnd following YeAH dual-mode algorithm
      *
-     * \param tcb internal congestion state
-     * \param segmentsAcked count of segments ACKed
+     * @param tcb internal congestion state
+     * @param segmentsAcked count of segments ACKed
      */
     void IncreaseWindow(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked) override;
 
     /**
-     * \brief Get slow start threshold upon the receipt of 3 dupACKs
+     * @brief Get slow start threshold upon the receipt of 3 dupACKs
      *
-     * \param tcb internal congestion state
-     * \param bytesInFlight number of outstanding bytes
+     * @param tcb internal congestion state
+     * @param bytesInFlight number of outstanding bytes
      *
-     * \return the slow start threshold value
+     * @return the slow start threshold value
      */
     uint32_t GetSsThresh(Ptr<const TcpSocketState> tcb, uint32_t bytesInFlight) override;
 
@@ -132,7 +132,7 @@ class TcpYeah : public TcpNewReno
   protected:
   private:
     /**
-     * \brief Enable YeAH algorithm to start taking YeAH samples
+     * @brief Enable YeAH algorithm to start taking YeAH samples
      *
      * YeAH algorithm is enabled in the following situations:
      * 1. at the establishment of a connection
@@ -140,12 +140,12 @@ class TcpYeah : public TcpNewReno
      * 3. after fast recovery
      * 4. when an idle connection is restarted
      *
-     * \param nextTxSequence Sequence to transmit next
+     * @param nextTxSequence Sequence to transmit next
      */
     void EnableYeah(const SequenceNumber32& nextTxSequence);
 
     /**
-     * \brief Stop taking YeAH samples
+     * @brief Stop taking YeAH samples
      */
     void DisableYeah();
 

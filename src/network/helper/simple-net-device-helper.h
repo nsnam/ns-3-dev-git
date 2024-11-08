@@ -22,7 +22,7 @@ namespace ns3
 {
 
 /**
- * \brief build a set of SimpleNetDevice objects
+ * @brief build a set of SimpleNetDevice objects
  */
 class SimpleNetDeviceHelper
 {
@@ -41,9 +41,9 @@ class SimpleNetDeviceHelper
      * This method allows one to set the type of the queue that is automatically
      * created when the device is created and attached to a node.
      *
-     * \tparam Ts \deduced Argument types
-     * \param type the type of queue
-     * \param [in] args Name and AttributeValue pairs to set.
+     * @tparam Ts \deduced Argument types
+     * @param type the type of queue
+     * @param [in] args Name and AttributeValue pairs to set.
      *
      * Set the type of queue to create and associated to each
      * SimpleNetDevice created through SimpleNetDeviceHelper::Install.
@@ -56,9 +56,9 @@ class SimpleNetDeviceHelper
      * This method allows one to set the type of the channel that is automatically
      * created when the device is created and attached to a node.
      *
-     * \tparam Ts \deduced Argument types
-     * \param type the type of channel
-     * \param [in] args Name and AttributeValue pairs to set.
+     * @tparam Ts \deduced Argument types
+     * @param type the type of channel
+     * @param [in] args Name and AttributeValue pairs to set.
      *
      * Set the type of channel to create and associated to each
      * SimpleNetDevice created through SimpleNetDeviceHelper::Install.
@@ -67,8 +67,8 @@ class SimpleNetDeviceHelper
     void SetChannel(std::string type, Ts&&... args);
 
     /**
-     * \param n1 the name of the attribute to set
-     * \param v1 the value of the attribute to set
+     * @param n1 the name of the attribute to set
+     * @param v1 the value of the attribute to set
      *
      * Set these attributes on each ns3::SimpleNetDevice created
      * by SimpleNetDeviceHelper::Install
@@ -76,8 +76,8 @@ class SimpleNetDeviceHelper
     void SetDeviceAttribute(std::string n1, const AttributeValue& v1);
 
     /**
-     * \param n1 the name of the attribute to set
-     * \param v1 the value of the attribute to set
+     * @param n1 the name of the attribute to set
+     * @param v1 the value of the attribute to set
      *
      * Set these attributes on each ns3::CsmaChannel created
      * by SimpleNetDeviceHelper::Install
@@ -89,9 +89,9 @@ class SimpleNetDeviceHelper
      * limits the number of SimpleNetDevices on one channel to two, disables
      * Broadcast and ARP and enables PointToPoint mode.
      *
-     * \warning It must be used before installing a NetDevice on a node.
+     * @warning It must be used before installing a NetDevice on a node.
      *
-     * \param pointToPointMode True for PointToPoint SimpleNetDevice
+     * @param pointToPointMode True for PointToPoint SimpleNetDevice
      */
     void SetNetDevicePointToPointMode(bool pointToPointMode);
 
@@ -111,8 +111,8 @@ class SimpleNetDeviceHelper
      * configured by SimpleNetDeviceHelper::SetDeviceAttribute and then adds the device
      * to the node and attaches the channel to the device.
      *
-     * \param node The node to install the device in
-     * \returns A container holding the added net device.
+     * @param node The node to install the device in
+     * @returns A container holding the added net device.
      */
     NetDeviceContainer Install(Ptr<Node> node) const;
 
@@ -121,9 +121,9 @@ class SimpleNetDeviceHelper
      * SimpleNetDeviceHelper::SetDeviceAttribute and then adds the device to the node and
      * attaches the provided channel to the device.
      *
-     * \param node The node to install the device in
-     * \param channel The channel to attach to the device.
-     * \returns A container holding the added net device.
+     * @param node The node to install the device in
+     * @param channel The channel to attach to the device.
+     * @returns A container holding the added net device.
      */
     NetDeviceContainer Install(Ptr<Node> node, Ptr<SimpleChannel> channel) const;
 
@@ -134,8 +134,8 @@ class SimpleNetDeviceHelper
      * configured by SimpleNetDeviceHelper::SetDeviceAttribute); adds the device to the
      * node; and attaches the channel to the device.
      *
-     * \param c The NodeContainer holding the nodes to be changed.
-     * \returns A container holding the added net devices.
+     * @param c The NodeContainer holding the nodes to be changed.
+     * @returns A container holding the added net devices.
      */
     NetDeviceContainer Install(const NodeContainer& c) const;
 
@@ -145,9 +145,9 @@ class SimpleNetDeviceHelper
      * SimpleNetDeviceHelper::SetDeviceAttribute); adds the device to the node; and attaches
      * the provided channel to the device.
      *
-     * \param c The NodeContainer holding the nodes to be changed.
-     * \param channel The channel to attach to the devices.
-     * \returns A container holding the added net devices.
+     * @param c The NodeContainer holding the nodes to be changed.
+     * @param channel The channel to attach to the devices.
+     * @returns A container holding the added net devices.
      */
     NetDeviceContainer Install(const NodeContainer& c, Ptr<SimpleChannel> channel) const;
 
@@ -157,9 +157,9 @@ class SimpleNetDeviceHelper
      * SimpleNetDeviceHelper::SetDeviceAttribute and then adds the device to the node and
      * attaches the provided channel to the device.
      *
-     * \param node The node to install the device in
-     * \param channel The channel to attach to the device.
-     * \returns The new net device.
+     * @param node The node to install the device in
+     * @param channel The channel to attach to the device.
+     * @returns The new net device.
      */
     Ptr<NetDevice> InstallPriv(Ptr<Node> node, Ptr<SimpleChannel> channel) const;
 

@@ -20,10 +20,10 @@ namespace ns3
 namespace olsr
 {
 /**
- * \ingroup olsr-test
- * \ingroup tests
+ * @ingroup olsr-test
+ * @ingroup tests
  *
- * \brief Less trivial test of OLSR Topology Control message generation
+ * @brief Less trivial test of OLSR Topology Control message generation
  *
  * This test simulates 3 Wi-Fi stations with chain topology and runs OLSR without any extra traffic.
  * It is expected that only second station will send TC messages.
@@ -83,7 +83,7 @@ class TcRegressionTest : public TestCase
 
     /**
      * Receive raw data on node A
-     * \param socket receiving socket
+     * @param socket receiving socket
      */
     void ReceivePktProbeA(Ptr<Socket> socket);
     /// Packet counter on node A
@@ -93,7 +93,7 @@ class TcRegressionTest : public TestCase
 
     /**
      * Receive raw data on node B
-     * \param socket receiving socket
+     * @param socket receiving socket
      */
     void ReceivePktProbeB(Ptr<Socket> socket);
     /// Packet counter on node B
@@ -103,7 +103,7 @@ class TcRegressionTest : public TestCase
 
     /**
      * Receive raw data on node C
-     * \param socket receiving socket
+     * @param socket receiving socket
      */
     void ReceivePktProbeC(Ptr<Socket> socket);
     /// Packet counter on node C

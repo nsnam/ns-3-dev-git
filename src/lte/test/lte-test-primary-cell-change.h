@@ -21,7 +21,7 @@
 using namespace ns3;
 
 /**
- * \brief Test suite for executing the primary cell change test cases.
+ * @brief Test suite for executing the primary cell change test cases.
  *
  * \sa ns3::LtePrimaryCellChangeTestCase
  */
@@ -32,22 +32,22 @@ class LtePrimaryCellChangeTestSuite : public TestSuite
 };
 
 /**
- * \ingroup lte
+ * @ingroup lte
  *
- * \brief Testing the handover procedure with multiple component carriers.
+ * @brief Testing the handover procedure with multiple component carriers.
  */
 class LtePrimaryCellChangeTestCase : public TestCase
 {
   public:
     /**
-     * \brief Creates an instance of the initial cell selection test case.
-     * \param name name of this test
-     * \param isIdealRrc if true, simulation uses Ideal RRC protocol, otherwise
+     * @brief Creates an instance of the initial cell selection test case.
+     * @param name name of this test
+     * @param isIdealRrc if true, simulation uses Ideal RRC protocol, otherwise
      *                   simulation uses Real RRC protocol
-     * \param rngRun the number of run to be used by the random number generator
-     * \param numberOfComponentCarriers number of component carriers
-     * \param sourceComponentCarrier source component carrier
-     * \param targetComponentCarrier target component carrier
+     * @param rngRun the number of run to be used by the random number generator
+     * @param numberOfComponentCarriers number of component carriers
+     * @param sourceComponentCarrier source component carrier
+     * @param targetComponentCarrier target component carrier
      *
      * If sourceComponentCarrier or targetComponentCarrier is greater than
      * number of component carriers, it identifies component carrier on second eNB.
@@ -63,19 +63,19 @@ class LtePrimaryCellChangeTestCase : public TestCase
 
   private:
     /**
-     * \brief Setup the simulation according to the configuration set by the
+     * @brief Setup the simulation according to the configuration set by the
      *        class constructor, run it, and verify the result.
      */
     void DoRun() override;
 
     /**
-     * \brief State transition callback function
-     * \param context the context string
-     * \param imsi the IMSI
-     * \param cellId the cell ID
-     * \param rnti the RNTI
-     * \param oldState the old state
-     * \param newState the new state
+     * @brief State transition callback function
+     * @param context the context string
+     * @param imsi the IMSI
+     * @param cellId the cell ID
+     * @param rnti the RNTI
+     * @param oldState the old state
+     * @param newState the new state
      */
     void StateTransitionCallback(std::string context,
                                  uint64_t imsi,
@@ -84,18 +84,18 @@ class LtePrimaryCellChangeTestCase : public TestCase
                                  LteUeRrc::State oldState,
                                  LteUeRrc::State newState);
     /**
-     * \brief Initial cell selection end ok callback function
-     * \param context the context string
-     * \param imsi the IMSI
-     * \param cellId the cell ID
+     * @brief Initial cell selection end ok callback function
+     * @param context the context string
+     * @param imsi the IMSI
+     * @param cellId the cell ID
      */
     void InitialPrimaryCellChangeEndOkCallback(std::string context, uint64_t imsi, uint16_t cellId);
     /**
-     * \brief Connection established callback function
-     * \param context the context string
-     * \param imsi the IMSI
-     * \param cellId the cell ID
-     * \param rnti the RNTI
+     * @brief Connection established callback function
+     * @param context the context string
+     * @param imsi the IMSI
+     * @param cellId the cell ID
+     * @param rnti the RNTI
      */
     void ConnectionEstablishedCallback(std::string context,
                                        uint64_t imsi,

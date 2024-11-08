@@ -18,29 +18,29 @@ namespace ns3
 class OkumuraHataPropagationLossModel;
 
 /**
- * \ingroup buildings
- * \ingroup propagation
+ * @ingroup buildings
+ * @ingroup propagation
  *
  *  this model combines the OkumuraHata model with the BuildingsPropagationLossModel
  *
- *  \warning This model works with MobilityBuildingInfo only
+ *  @warning This model works with MobilityBuildingInfo only
  *
  */
 class OhBuildingsPropagationLossModel : public BuildingsPropagationLossModel
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return The object TypeId.
+     * @brief Get the type ID.
+     * @return The object TypeId.
      */
     static TypeId GetTypeId();
     OhBuildingsPropagationLossModel();
     ~OhBuildingsPropagationLossModel() override;
 
     /**
-     * \param a the mobility model of the source
-     * \param b the mobility model of the destination
-     * \returns the propagation loss (in dBm)
+     * @param a the mobility model of the source
+     * @param b the mobility model of the destination
+     * @returns the propagation loss (in dBm)
      */
     double GetLoss(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const override;
 

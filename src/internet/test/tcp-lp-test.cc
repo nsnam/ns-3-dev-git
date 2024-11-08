@@ -21,21 +21,21 @@ namespace ns3
 NS_LOG_COMPONENT_DEFINE("TcpLpTestSuite");
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief Testing the behaviour common to New Reno
+ * @brief Testing the behaviour common to New Reno
  */
 class TcpLpToNewReno : public TestCase
 {
   public:
     /**
      * Constructor
-     * \param cWnd Congestion window size
-     * \param segmentSize Segment size
-     * \param segmentsAcked Segments acked
-     * \param ssThresh Slow start threshold
-     * \param rtt RTT
-     * \param name Test case name
+     * @param cWnd Congestion window size
+     * @param segmentSize Segment size
+     * @param segmentsAcked Segments acked
+     * @param ssThresh Slow start threshold
+     * @param rtt RTT
+     * @param name Test case name
      */
     TcpLpToNewReno(uint32_t cWnd,
                    uint32_t segmentSize,
@@ -101,20 +101,20 @@ TcpLpToNewReno::DoRun()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief Testing TcpLp when cwd exceeds threshold
+ * @brief Testing TcpLp when cwd exceeds threshold
  */
 class TcpLpInferenceTest1 : public TestCase
 {
   public:
     /**
      * Constructor
-     * \param cWnd Congestion window size
-     * \param segmentSize Segment size
-     * \param segmentsAcked Segments acked
-     * \param rtt RTT
-     * \param name Test case name
+     * @param cWnd Congestion window size
+     * @param segmentSize Segment size
+     * @param segmentsAcked Segments acked
+     * @param rtt RTT
+     * @param name Test case name
      */
     TcpLpInferenceTest1(uint32_t cWnd,
                         uint32_t segmentSize,
@@ -170,20 +170,20 @@ TcpLpInferenceTest1::DoRun()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief Testing TcpLp when it is inference phase
+ * @brief Testing TcpLp when it is inference phase
  */
 class TcpLpInferenceTest2 : public TestCase
 {
   public:
     /**
      * Constructor
-     * \param cWnd Congestion window size
-     * \param segmentSize Segment size
-     * \param segmentsAcked Segments acked
-     * \param rtt RTT
-     * \param name Test case name
+     * @param cWnd Congestion window size
+     * @param segmentSize Segment size
+     * @param segmentsAcked Segments acked
+     * @param rtt RTT
+     * @param name Test case name
      */
     TcpLpInferenceTest2(uint32_t cWnd,
                         uint32_t segmentSize,
@@ -243,7 +243,7 @@ TcpLpInferenceTest2::DoRun()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
  * Test the behaviour common to New Reno
  */

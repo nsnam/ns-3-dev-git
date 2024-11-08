@@ -18,9 +18,9 @@ namespace ns3
 {
 
 /**
- * \ingroup propagation
+ * @ingroup propagation
  *
- * \brief this class implements the Okumura Hata propagation loss model
+ * @brief this class implements the Okumura Hata propagation loss model
  *
  * this class implements the Okumura Hata propagation loss model,
  * which is used to model open area pathloss for distances > 1 Km
@@ -32,8 +32,8 @@ class OkumuraHataPropagationLossModel : public PropagationLossModel
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -45,10 +45,10 @@ class OkumuraHataPropagationLossModel : public PropagationLossModel
     OkumuraHataPropagationLossModel& operator=(const OkumuraHataPropagationLossModel&) = delete;
 
     /**
-     * \param a the first mobility model
-     * \param b the second mobility model
+     * @param a the first mobility model
+     * @param b the second mobility model
      *
-     * \return the loss in dBm for the propagation between
+     * @return the loss in dBm for the propagation between
      * the two given mobility models
      */
     double GetLoss(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;

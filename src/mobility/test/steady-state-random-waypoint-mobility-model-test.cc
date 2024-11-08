@@ -18,9 +18,9 @@
 using namespace ns3;
 
 /**
- * \ingroup mobility-test
+ * @ingroup mobility-test
  *
- * \brief Steady State Random Waypoint Test
+ * @brief Steady State Random Waypoint Test
  */
 class SteadyStateRandomWaypointTest : public TestCase
 {
@@ -138,9 +138,9 @@ SteadyStateRandomWaypointTest::DistribCompare()
 }
 
 /**
- * \ingroup mobility-test
+ * @ingroup mobility-test
  *
- * \brief Steady State Random Waypoint Test Suite
+ * @brief Steady State Random Waypoint Test Suite
  */
 struct SteadyStateRandomWaypointTestSuite : public TestSuite
 {

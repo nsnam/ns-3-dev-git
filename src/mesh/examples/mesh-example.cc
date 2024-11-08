@@ -82,7 +82,7 @@ uint32_t g_udpRxCount = 0; //!< Tx packet counter.
 /**
  * Transmission trace sink.
  *
- * \param p The sent packet.
+ * @param p The sent packet.
  */
 void
 TxTrace(Ptr<const Packet> p)
@@ -94,7 +94,7 @@ TxTrace(Ptr<const Packet> p)
 /**
  * Reception trace sink,
  *
- * \param p The received packet.
+ * @param p The received packet.
  */
 void
 RxTrace(Ptr<const Packet> p)
@@ -104,8 +104,8 @@ RxTrace(Ptr<const Packet> p)
 }
 
 /**
- * \ingroup mesh
- * \brief MeshTest class
+ * @ingroup mesh
+ * @brief MeshTest class
  */
 class MeshTest
 {
@@ -115,13 +115,13 @@ class MeshTest
     /**
      * Configure test from command line arguments
      *
-     * \param argc command line argument count
-     * \param argv command line arguments
+     * @param argc command line argument count
+     * @param argv command line arguments
      */
     void Configure(int argc, char** argv);
     /**
      * Run test
-     * \returns the test status
+     * @returns the test status
      */
     int Run();
 

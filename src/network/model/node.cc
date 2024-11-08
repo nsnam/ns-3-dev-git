@@ -30,9 +30,9 @@ NS_LOG_COMPONENT_DEFINE("Node");
 NS_OBJECT_ENSURE_REGISTERED(Node);
 
 /**
- * \relates Node
- * \anchor GlobalValueChecksumEnabled
- * \brief A global switch to enable all checksums for all protocols.
+ * @relates Node
+ * @anchor GlobalValueChecksumEnabled
+ * @brief A global switch to enable all checksums for all protocols.
  */
 static GlobalValue g_checksumEnabled =
     GlobalValue("ChecksumEnabled",

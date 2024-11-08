@@ -18,7 +18,7 @@ namespace ns3
 {
 
 /**
- * \ingroup http
+ * @ingroup http
  * Container of various random variables to assist in generating web browsing
  * traffic pattern.
  *
@@ -28,20 +28,20 @@ namespace ns3
  *   - delay in generating a main object --- 0 second;
  *   - main object size --- truncated LogNormal distribution with a mean of
  *     10710 bytes;
- *     \image html http-main-object-size.png
+ *     @image html http-main-object-size.png
  *   - delay in generating an embedded object --- 0 second;
  *   - embedded object size (in bytes) --- truncated LogNormal distribution
  *     with a mean of 7758 bytes;
- *     \image html http-embedded-object-size.png
+ *     @image html http-embedded-object-size.png
  *   - number of embedded object per web page --- truncated Pareto distribution
  *     with a mean of approximately 3.95 (after truncation);
- *     \image html http-num-of-embedded-objects.png
+ *     @image html http-num-of-embedded-objects.png
  *   - length of reading time (in seconds) --- unbounded exponential
  *     distribution with a mean of 30 seconds; and
- *     \image html http-reading-time.png
+ *     @image html http-reading-time.png
  *   - length of parsing time (in seconds) --- unbounded exponential
  *     distribution with a mean of 0.13 seconds.
- *     \image html http-parsing-time.png
+ *     @image html http-parsing-time.png
  *
  * Most parameters of the random distributions are configurable via attributes
  * and methods of this class. The default values are according to the following
@@ -62,7 +62,7 @@ class ThreeGppHttpVariables : public Object
 
     /**
      * Returns the object TypeId.
-     * \return The object TypeId.
+     * @return The object TypeId.
      */
     static TypeId GetTypeId();
 
@@ -74,7 +74,7 @@ class ThreeGppHttpVariables : public Object
      * of HTTP servers to send the response packets (both main objects and
      * embedded objects) to the requesting HTTP clients.
      *
-     * \return MTU size in bytes.
+     * @return MTU size in bytes.
      */
     uint32_t GetMtuSize();
 
@@ -86,7 +86,7 @@ class ThreeGppHttpVariables : public Object
      * method. This value applies to requests by HTTP client for main objects
      * and embedded objects alike.
      *
-     * \return Request size in bytes.
+     * @return Request size in bytes.
      */
     uint32_t GetRequestSize();
 
@@ -98,7 +98,7 @@ class ThreeGppHttpVariables : public Object
      * can be modified by setting the `MainObjectGenerationDelay` attribute or by
      * calling the SetMainObjectGenerationDelay() method.
      *
-     * \return The delay for generating a main object.
+     * @return The delay for generating a main object.
      */
     Time GetMainObjectGenerationDelay();
 
@@ -111,7 +111,7 @@ class ThreeGppHttpVariables : public Object
      * then truncated to fit between 100 bytes and 2 MB. These default settings
      * can be modified via attributes or class methods.
      *
-     * \return Main object size in bytes.
+     * @return Main object size in bytes.
      */
     uint32_t GetMainObjectSize();
 
@@ -123,7 +123,7 @@ class ThreeGppHttpVariables : public Object
      * This can be modified by setting the `EmbeddedObjectGenerationDelay`
      * attribute or by calling the SetEmbeddedObjectGenerationDelay() method.
      *
-     * \return The delay for generating an embedded object.
+     * @return The delay for generating an embedded object.
      */
     Time GetEmbeddedObjectGenerationDelay();
 
@@ -137,7 +137,7 @@ class ThreeGppHttpVariables : public Object
      * bytes, and then truncated to fit between 50 bytes and 2 MB. These default
      * settings can be modified via attributes or class methods.
      *
-     * \return Embedded object size in bytes.
+     * @return Embedded object size in bytes.
      */
     uint32_t GetEmbeddedObjectSize();
 
@@ -151,7 +151,7 @@ class ThreeGppHttpVariables : public Object
      * settings produces (after truncation) random integers within [0, 53)
      * interval, with an actual mean of approximately 3.95.
      *
-     * \return The number of embedded objects.
+     * @return The number of embedded objects.
      */
     uint32_t GetNumOfEmbeddedObjects();
 
@@ -164,7 +164,7 @@ class ThreeGppHttpVariables : public Object
      * without any maximum bound. The mean can be modified by setting the
      * `ReadingTimeMean` attribute or by calling the SetReadingTimeMean() method.
      *
-     * \return Time interval for reading a web page.
+     * @return Time interval for reading a web page.
      */
     Time GetReadingTime();
 
@@ -178,7 +178,7 @@ class ThreeGppHttpVariables : public Object
      * any maximum bound. The mean can be modified by setting the
      * `ParsingTimeMean` attribute or by calling the SetParsingTimeMean() method.
      *
-     * \return time interval for parsing a main object
+     * @return time interval for parsing a main object
      */
     Time GetParsingTime();
 
@@ -192,75 +192,75 @@ class ThreeGppHttpVariables : public Object
      * which use the same stream number should produce identical results (the
      * repeatability property of ns-3 simulation).
      *
-     * \param stream The first stream index to use.
-     * \return The number of stream indices assigned by this model.
+     * @param stream The first stream index to use.
+     * @return The number of stream indices assigned by this model.
      */
     int64_t AssignStreams(int64_t stream);
 
     // SETTER METHODS
 
     /**
-     * \param constant Request size in bytes.
+     * @param constant Request size in bytes.
      */
     void SetRequestSize(uint32_t constant);
     /**
-     * \param constant The delay for generating a main object.
+     * @param constant The delay for generating a main object.
      */
     void SetMainObjectGenerationDelay(Time constant);
     /**
-     * \param mean The mean of main object sizes in bytes. Must be greater than
+     * @param mean The mean of main object sizes in bytes. Must be greater than
      *             zero.
      */
     void SetMainObjectSizeMean(uint32_t mean);
     /**
-     * \param stdDev The standard deviation of main object sizes in bytes.
+     * @param stdDev The standard deviation of main object sizes in bytes.
      */
     void SetMainObjectSizeStdDev(uint32_t stdDev);
     /**
-     * \param constant The delay for generating an embedded object.
+     * @param constant The delay for generating an embedded object.
      */
     void SetEmbeddedObjectGenerationDelay(Time constant);
     /**
-     * \param mean The mean of embedded object sizes in bytes. Must be greater
+     * @param mean The mean of embedded object sizes in bytes. Must be greater
      *             than zero.
      */
     void SetEmbeddedObjectSizeMean(uint32_t mean);
     /**
-     * \param stdDev The standard deviation of embedded object sizes in bytes.
+     * @param stdDev The standard deviation of embedded object sizes in bytes.
      */
     void SetEmbeddedObjectSizeStdDev(uint32_t stdDev);
     /**
-     * \param max The upper bound parameter of the Pareto distribution for
+     * @param max The upper bound parameter of the Pareto distribution for
      *            determining the number of embedded objects per web page.
      */
     void SetNumOfEmbeddedObjectsMax(uint32_t max);
     /**
-     * \param shape The shape parameter of the Pareto distribution for
+     * @param shape The shape parameter of the Pareto distribution for
      *              determining the number of embedded objects per web page.
      */
     void SetNumOfEmbeddedObjectsShape(double shape);
     /**
-     * \param scale The scale parameter of the Pareto distribution for
+     * @param scale The scale parameter of the Pareto distribution for
      *              determining the number of embedded objects per web page.
      */
     void SetNumOfEmbeddedObjectsScale(uint32_t scale);
     /**
-     * \param mean The mean length of time needed for reading a web page.
+     * @param mean The mean length of time needed for reading a web page.
      */
     void SetReadingTimeMean(Time mean);
     /**
-     * \param mean The mean length of time needed for parsing a main object.
+     * @param mean The mean length of time needed for parsing a main object.
      */
     void SetParsingTimeMean(Time mean);
 
   private:
     /**
-     * \brief Upon and after object initialization, update random variable
+     * @brief Upon and after object initialization, update random variable
      * Mu and Sigma based on changes to attribute values.
      */
     void UpdateMainObjectMuAndSigma();
     /**
-     * \brief Upon and after object initialization, update random variable
+     * @brief Upon and after object initialization, update random variable
      * Mu and Sigma based on changes to attribute values.
      */
     void UpdateEmbeddedObjectMuAndSigma();

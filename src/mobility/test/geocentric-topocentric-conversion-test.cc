@@ -352,9 +352,9 @@ const std::vector<ns3::Vector> WGS_84_REFP_1 = {
 using namespace ns3;
 
 /**
- * \ingroup mobility-test
+ * @ingroup mobility-test
  *
- * \brief Geographic to/from Topocentric Test Case
+ * @brief Geographic to/from Topocentric Test Case
  *
  * This test verifies the accuracy of the GeographicToTopocentricCoordinates and
  * TopocentricToGeographicCoordinates methods in the GeographicPositions class,
@@ -518,9 +518,9 @@ GeoToAndFromTopocentricTestCase::CheckTestPass(double actual,
 }
 
 /**
- * \ingroup mobility-test
+ * @ingroup mobility-test
  *
- * \brief Geographic cartesian <--> Topocentric conversion test
+ * @brief Geographic cartesian <--> Topocentric conversion test
  */
 class GeoToAndFromTopocentricTestSuite : public TestSuite
 {
@@ -556,7 +556,7 @@ GeoToAndFromTopocentricTestSuite::GeoToAndFromTopocentricTestSuite()
 }
 
 /**
- * \ingroup mobility-test
+ * @ingroup mobility-test
  * Static variable for test initialization
  */
 static GeoToAndFromTopocentricTestSuite g_GeoToAndFromTopocentricTestSuite;

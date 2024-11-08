@@ -16,26 +16,26 @@
 using namespace ns3;
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief TCP Window Scaling option Test
+ * @brief TCP Window Scaling option Test
  */
 class TcpOptionWSTestCase : public TestCase
 {
   public:
     /**
-     * \brief Constructor.
-     * \param name Test description.
-     * \param scale Window scaling.
+     * @brief Constructor.
+     * @param name Test description.
+     * @param scale Window scaling.
      */
     TcpOptionWSTestCase(std::string name, uint8_t scale);
 
     /**
-     * \brief Serialization test.
+     * @brief Serialization test.
      */
     void TestSerialize();
     /**
-     * \brief Deserialization test.
+     * @brief Deserialization test.
      */
     void TestDeserialize();
 
@@ -94,25 +94,25 @@ TcpOptionWSTestCase::DoTeardown()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief TCP TimeStamp option Test
+ * @brief TCP TimeStamp option Test
  */
 class TcpOptionTSTestCase : public TestCase
 {
   public:
     /**
-     * \brief Constructor.
-     * \param name Test description.
+     * @brief Constructor.
+     * @param name Test description.
      */
     TcpOptionTSTestCase(std::string name);
 
     /**
-     * \brief Serialization test.
+     * @brief Serialization test.
      */
     void TestSerialize();
     /**
-     * \brief Deserialization test.
+     * @brief Deserialization test.
      */
     void TestDeserialize();
 
@@ -184,9 +184,9 @@ TcpOptionTSTestCase::DoTeardown()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief TCP options TestSuite
+ * @brief TCP options TestSuite
  */
 class TcpOptionTestSuite : public TestSuite
 {

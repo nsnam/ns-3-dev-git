@@ -70,39 +70,39 @@ class NodeStatistics
   public:
     /**
      * Constructor
-     * \param aps AP devices
-     * \param stas STA devices
+     * @param aps AP devices
+     * @param stas STA devices
      */
     NodeStatistics(NetDeviceContainer aps, NetDeviceContainer stas);
 
     /**
      * RX callback
-     * \param path path
-     * \param packet received packet
-     * \param from sender
+     * @param path path
+     * @param packet received packet
+     * @param from sender
      */
     void RxCallback(std::string path, Ptr<const Packet> packet, const Address& from);
     /**
      * Set node position
-     * \param node the node
-     * \param position the position
+     * @param node the node
+     * @param position the position
      */
     void SetPosition(Ptr<Node> node, Vector position);
     /**
      * Advance node position
-     * \param node the node
-     * \param stepsSize the size of a step
-     * \param stepsTime the time interval between steps
+     * @param node the node
+     * @param stepsSize the size of a step
+     * @param stepsTime the time interval between steps
      */
     void AdvancePosition(Ptr<Node> node, int stepsSize, int stepsTime);
     /**
      * Get node position
-     * \param node the node
-     * \return the position
+     * @param node the node
+     * @return the position
      */
     Vector GetPosition(Ptr<Node> node);
     /**
-     * \return the gnuplot 2d dataset
+     * @return the gnuplot 2d dataset
      */
     Gnuplot2dDataset GetDatafile();
 
@@ -162,8 +162,8 @@ NodeStatistics::GetDatafile()
 /**
  * Callback for 'Rate' trace source
  *
- * \param oldRate old MCS rate (bits/sec)
- * \param newRate new MCS rate (bits/sec)
+ * @param oldRate old MCS rate (bits/sec)
+ * @param newRate new MCS rate (bits/sec)
  */
 void
 RateCallback(uint64_t oldRate, uint64_t newRate)

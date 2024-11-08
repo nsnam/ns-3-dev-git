@@ -19,8 +19,8 @@ namespace ns3
 namespace dot11s
 {
 /**
- * \ingroup dot11s
- * \brief Describes an address unit in PREQ information element
+ * @ingroup dot11s
+ * @brief Describes an address unit in PREQ information element
  * See 7.3.2.96 for more details
  */
 class DestinationAddressUnit : public SimpleRefCount<DestinationAddressUnit>
@@ -29,44 +29,44 @@ class DestinationAddressUnit : public SimpleRefCount<DestinationAddressUnit>
     DestinationAddressUnit();
     /**
      * Set flags function
-     * \param doFlag the DO flag
-     * \param rfFlag the RF flag
-     * \param usnFlag the USN flag
+     * @param doFlag the DO flag
+     * @param rfFlag the RF flag
+     * @param usnFlag the USN flag
      */
     void SetFlags(bool doFlag, bool rfFlag, bool usnFlag);
     /**
      * Set destination address function
-     * \param dest_address the destination MAC address
+     * @param dest_address the destination MAC address
      */
     void SetDestinationAddress(Mac48Address dest_address);
     /**
      * Set destination sequence number
-     * \param dest_seq_number the destination sequence number
+     * @param dest_seq_number the destination sequence number
      */
     void SetDestSeqNumber(uint32_t dest_seq_number);
     /**
      * Is do function
-     * \returns true if DO flag is set
+     * @returns true if DO flag is set
      */
     bool IsDo() const;
     /**
      * is RF function
-     * \returns true if RF flag is set
+     * @returns true if RF flag is set
      */
     bool IsRf() const;
     /**
      * Is USN function
-     * \returns true if USN flag set
+     * @returns true if USN flag set
      */
     bool IsUsn() const;
     /**
      * Get destination address function
-     * \returns the MAC address
+     * @returns the MAC address
      */
     Mac48Address GetDestinationAddress() const;
     /**
      * Get destination sequence number
-     * \returns the destination sequence number
+     * @returns the destination sequence number
      */
     uint32_t GetDestSeqNumber() const;
 
@@ -80,16 +80,16 @@ class DestinationAddressUnit : public SimpleRefCount<DestinationAddressUnit>
     /**
      * equality operator
      *
-     * \param a lhs
-     * \param b rhs
-     * \returns true if equal
+     * @param a lhs
+     * @param b rhs
+     * @returns true if equal
      */
     friend bool operator==(const DestinationAddressUnit& a, const DestinationAddressUnit& b);
 };
 
 /**
- * \ingroup dot11s
- * \brief See 7.3.2.96 of 802.11s draft 2.07
+ * @ingroup dot11s
+ * @brief See 7.3.2.96 of 802.11s draft 2.07
  */
 class IePreq : public WifiInformationElement
 {
@@ -100,10 +100,10 @@ class IePreq : public WifiInformationElement
      * Add a destination address unit: flags, destination and sequence
      * number
      *
-     * \param doFlag
-     * \param rfFlag
-     * \param dest_address
-     * \param dest_seq_number
+     * @param doFlag
+     * @param rfFlag
+     * @param dest_address
+     * @param dest_seq_number
      */
     void AddDestinationAddressElement(bool doFlag,
                                       bool rfFlag,
@@ -111,20 +111,20 @@ class IePreq : public WifiInformationElement
                                       uint32_t dest_seq_number);
     /**
      * Delete a destination address unit by destination
-     * \param dest_address the destination address
+     * @param dest_address the destination address
      */
     void DelDestinationAddressElement(Mac48Address dest_address);
     /// Clear PREQ: remove all destinations
     void ClearDestinationAddressElements();
     /**
      * Get all destinations, which are stored in PREQ:
-     * \returns the list of destination addresses
+     * @returns the list of destination addresses
      */
     std::vector<Ptr<DestinationAddressUnit>> GetDestinationList();
     /// Set flag indicating that PREQ is unicast
     void SetUnicastPreq();
     /**
-     * \brief Set Proactive PREP subfield to off
+     * @brief Set Proactive PREP subfield to off
      */
     void SetNeedNotPrep();
 
@@ -132,94 +132,94 @@ class IePreq : public WifiInformationElement
     /**
      * Set number of hops from originator to mesh STA transmitting this
      * element
-     * \param hopcount the hop count
+     * @param hopcount the hop count
      */
     void SetHopcount(uint8_t hopcount);
     /**
      * Set remaining number of hops allowed for this element
-     * \param ttl the TTL
+     * @param ttl the TTL
      */
     void SetTTL(uint8_t ttl);
     /**
      * Set path discovery id field
-     * \param id some unique id for this path discovery
+     * @param id some unique id for this path discovery
      */
     void SetPreqID(uint32_t id);
     /**
      * Set originator address value
-     * \param originator_address the originator MAC address
+     * @param originator_address the originator MAC address
      */
     void SetOriginatorAddress(Mac48Address originator_address);
     /**
      * Set originator sequence number
-     * \param originator_seq_number
+     * @param originator_seq_number
      */
     void SetOriginatorSeqNumber(uint32_t originator_seq_number);
     /**
      * Set lifetime in TUs for the forwarding information to be considered valid
-     * \param lifetime the lifetime in TUs
+     * @param lifetime the lifetime in TUs
      */
     void SetLifetime(uint32_t lifetime);
     /**
      * Set metric value
-     * \param metric the metric
+     * @param metric the metric
      */
     void SetMetric(uint32_t metric);
     /**
      * Set destination count value
-     * \param dest_count the destination count
+     * @param dest_count the destination count
      */
     void SetDestCount(uint8_t dest_count);
 
     // Getters for fields:
     /**
      * Is unicast PREQ function
-     * \returns true if unicast PREQ
+     * @returns true if unicast PREQ
      */
     bool IsUnicastPreq() const;
     /**
      * Check whether Proactive PREP subfield to off
-     * \returns true if need not Proactive PREP subfield is off
+     * @returns true if need not Proactive PREP subfield is off
      */
     bool IsNeedNotPrep() const;
     /**
      * Get hop count value
-     * \returns the hop count
+     * @returns the hop count
      */
     uint8_t GetHopCount() const;
     /**
      * Get TTL value
-     * \returns the TTL
+     * @returns the TTL
      */
     uint8_t GetTtl() const;
     /**
      * Get path discovery id field
-     * \returns the path discovery ID
+     * @returns the path discovery ID
      */
     uint32_t GetPreqID() const;
     /**
      * Get originator address value
-     * \returns the originator MAC address
+     * @returns the originator MAC address
      */
     Mac48Address GetOriginatorAddress() const;
     /**
      * Get originator sequence number value
-     * \returns the originator sequence number
+     * @returns the originator sequence number
      */
     uint32_t GetOriginatorSeqNumber() const;
     /**
      * Get lifetime value
-     * \returns the lifetime in TUs
+     * @returns the lifetime in TUs
      */
     uint32_t GetLifetime() const;
     /**
      * Get metric value
-     * \returns the metric
+     * @returns the metric
      */
     uint32_t GetMetric() const;
     /**
      * Get destination count
-     * \returns the destination count
+     * @returns the destination count
      */
     uint8_t GetDestCount() const;
 
@@ -227,19 +227,19 @@ class IePreq : public WifiInformationElement
     void DecrementTtl();
     /**
      * Handle Metric:
-     * \param metric the mteric to increment
+     * @param metric the mteric to increment
      */
     void IncrementMetric(uint32_t metric);
     /**
-     * \brief Checks that preq's originator address equals to originator, and
+     * @brief Checks that preq's originator address equals to originator, and
      * this preq is not proactive
-     * \param originator the originator address
-     * \returns true if it may add
+     * @param originator the originator address
+     * @returns true if it may add
      */
     bool MayAddAddress(Mac48Address originator);
     /**
      * Is full function
-     * \returns true if full
+     * @returns true if full
      */
     bool IsFull() const;
 
@@ -253,7 +253,7 @@ class IePreq : public WifiInformationElement
   private:
     /**
      * how many destinations we support
-     * \todo make as an attribute
+     * @todo make as an attribute
      */
     uint8_t m_maxSize;
 
@@ -271,9 +271,9 @@ class IePreq : public WifiInformationElement
     /**
      * equality operator
      *
-     * \param a lhs
-     * \param b rhs
-     * \returns true if equal
+     * @param a lhs
+     * @param b rhs
+     * @returns true if equal
      */
     friend bool operator==(const IePreq& a, const IePreq& b);
 };

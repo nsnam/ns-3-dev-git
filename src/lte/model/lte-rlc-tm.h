@@ -32,8 +32,8 @@ class LteRlcTm : public LteRlc
     LteRlcTm();
     ~LteRlcTm() override;
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     void DoDispose() override;
@@ -41,14 +41,14 @@ class LteRlcTm : public LteRlc
     /**
      * RLC SAP
      *
-     * \param p packet
+     * @param p packet
      */
     void DoTransmitPdcpPdu(Ptr<Packet> p) override;
 
     /**
      * MAC SAP
      *
-     * \param txOpParams the LteMacSapUser::TxOpportunityParameters
+     * @param txOpParams the LteMacSapUser::TxOpportunityParameters
      */
     void DoNotifyTxOpportunity(LteMacSapUser::TxOpportunityParameters txOpParams) override;
     /**
@@ -65,14 +65,14 @@ class LteRlcTm : public LteRlc
 
   private:
     /**
-     * \brief Store an incoming (from layer above us) PDU, waiting to transmit it
+     * @brief Store an incoming (from layer above us) PDU, waiting to transmit it
      */
     struct TxPdu
     {
         /**
-         * \brief TxPdu default constructor
-         * \param pdu the PDU
-         * \param time the arrival time
+         * @brief TxPdu default constructor
+         * @param pdu the PDU
+         * @param time the arrival time
          */
         TxPdu(const Ptr<Packet>& pdu, const Time& time)
             : m_pdu(pdu),

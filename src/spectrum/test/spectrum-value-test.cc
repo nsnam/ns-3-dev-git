@@ -24,18 +24,18 @@ using namespace ns3;
 #define TOLERANCE 1e-6
 
 /**
- * \ingroup spectrum-tests
+ * @ingroup spectrum-tests
  *
- * \brief Spectrum Value Test
+ * @brief Spectrum Value Test
  */
 class SpectrumValueTestCase : public TestCase
 {
   public:
     /**
      * Constructor
-     * \param a first SpectrumValue
-     * \param b second SpectrumValue
-     * \param name test name
+     * @param a first SpectrumValue
+     * @param b second SpectrumValue
+     * @param name test name
      */
     SpectrumValueTestCase(SpectrumValue a, SpectrumValue b, std::string name);
     ~SpectrumValueTestCase() override;
@@ -44,9 +44,9 @@ class SpectrumValueTestCase : public TestCase
   private:
     /**
      * Check that two SpectrumValue are equal within a tolerance
-     * \param x first SpectrumValue
-     * \param y second SpectrumValue
-     * \return true if the two values are within the tolerance
+     * @param x first SpectrumValue
+     * @param y second SpectrumValue
+     * @return true if the two values are within the tolerance
      */
     bool MoreOrLessEqual(SpectrumValue x, SpectrumValue y);
 
@@ -83,9 +83,9 @@ SpectrumValueTestCase::DoRun()
 }
 
 /**
- * \ingroup spectrum-tests
+ * @ingroup spectrum-tests
  *
- * \brief Spectrum Value TestSuite
+ * @brief Spectrum Value TestSuite
  */
 class SpectrumValueTestSuite : public TestSuite
 {
@@ -268,9 +268,9 @@ SpectrumValueTestSuite::SpectrumValueTestSuite()
 }
 
 /**
- * \ingroup spectrum-tests
+ * @ingroup spectrum-tests
  *
- * \brief Spectrum Converter TestSuite
+ * @brief Spectrum Converter TestSuite
  */
 class SpectrumConverterTestSuite : public TestSuite
 {

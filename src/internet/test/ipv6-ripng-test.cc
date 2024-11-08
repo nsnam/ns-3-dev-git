@@ -33,24 +33,24 @@
 using namespace ns3;
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief IPv6 RIPng Test
+ * @brief IPv6 RIPng Test
  */
 class Ipv6RipngTest : public TestCase
 {
     Ptr<Packet> m_receivedPacket; //!< Received packet
 
     /**
-     * \brief Send data.
-     * \param socket The sending socket.
-     * \param to Destination address.
+     * @brief Send data.
+     * @param socket The sending socket.
+     * @param to Destination address.
      */
     void DoSendData(Ptr<Socket> socket, std::string to);
     /**
-     * \brief Send data.
-     * \param socket The sending socket.
-     * \param to Destination address.
+     * @brief Send data.
+     * @param socket The sending socket.
+     * @param to Destination address.
      */
     void SendData(Ptr<Socket> socket, std::string to);
 
@@ -59,8 +59,8 @@ class Ipv6RipngTest : public TestCase
     Ipv6RipngTest();
 
     /**
-     * \brief Receive data.
-     * \param socket The receiving socket.
+     * @brief Receive data.
+     * @param socket The receiving socket.
      */
     void ReceivePkt(Ptr<Socket> socket);
 };
@@ -263,24 +263,24 @@ Ipv6RipngTest::DoRun()
 // Ipv6RipngCountToInfinityTest
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief IPv6 RIPng count to infinity Test
+ * @brief IPv6 RIPng count to infinity Test
  */
 class Ipv6RipngCountToInfinityTest : public TestCase
 {
     Ptr<Packet> m_receivedPacket; //!< Received packet
 
     /**
-     * \brief Send data.
-     * \param socket The sending socket.
-     * \param to Destination address.
+     * @brief Send data.
+     * @param socket The sending socket.
+     * @param to Destination address.
      */
     void DoSendData(Ptr<Socket> socket, std::string to);
     /**
-     * \brief Send data.
-     * \param socket The sending socket.
-     * \param to Destination address.
+     * @brief Send data.
+     * @param socket The sending socket.
+     * @param to Destination address.
      */
     void SendData(Ptr<Socket> socket, std::string to);
 
@@ -289,8 +289,8 @@ class Ipv6RipngCountToInfinityTest : public TestCase
     Ipv6RipngCountToInfinityTest();
 
     /**
-     * \brief Receive data.
-     * \param socket The receiving socket.
+     * @brief Receive data.
+     * @param socket The receiving socket.
      */
     void ReceivePkt(Ptr<Socket> socket);
 };
@@ -495,9 +495,9 @@ Ipv6RipngCountToInfinityTest::DoRun()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief IPv6 RIPng SplitHorizon strategy Test
+ * @brief IPv6 RIPng SplitHorizon strategy Test
  */
 class Ipv6RipngSplitHorizonStrategyTest : public TestCase
 {
@@ -507,14 +507,14 @@ class Ipv6RipngSplitHorizonStrategyTest : public TestCase
   public:
     void DoRun() override;
     /**
-     * \brief Constructor.
-     * \param strategy The SplitHorizon strategy.
+     * @brief Constructor.
+     * @param strategy The SplitHorizon strategy.
      */
     Ipv6RipngSplitHorizonStrategyTest(RipNg::SplitHorizonType_e strategy);
 
     /**
-     * \brief Receive data.
-     * \param socket The receiving socket.
+     * @brief Receive data.
+     * @param socket The receiving socket.
      */
     void ReceivePktProbe(Ptr<Socket> socket);
 };
@@ -683,9 +683,9 @@ Ipv6RipngSplitHorizonStrategyTest::DoRun()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief IPv6 RIPng TestSuite
+ * @brief IPv6 RIPng TestSuite
  */
 class Ipv6RipngTestSuite : public TestSuite
 {

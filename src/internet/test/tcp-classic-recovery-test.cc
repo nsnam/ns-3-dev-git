@@ -21,18 +21,18 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("TcpClassicRecoveryTestSuite");
 
 /**
- * \brief Classic Recovery algorithm test
+ * @brief Classic Recovery algorithm test
  */
 class ClassicRecoveryTest : public TestCase
 {
   public:
     /**
-     * \brief Constructor.
-     * \param cWnd Congestion window.
-     * \param segmentSize Segment size.
-     * \param ssThresh Slow Start Threshold.
-     * \param dupAckCount Duplicate acknowledgement Threshold.
-     * \param name Test description.
+     * @brief Constructor.
+     * @param cWnd Congestion window.
+     * @param segmentSize Segment size.
+     * @param ssThresh Slow Start Threshold.
+     * @param dupAckCount Duplicate acknowledgement Threshold.
+     * @param name Test description.
      */
     ClassicRecoveryTest(uint32_t cWnd,
                         uint32_t segmentSize,
@@ -107,9 +107,9 @@ ClassicRecoveryTest::DoRun()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief Classic Recovery TestSuite
+ * @brief Classic Recovery TestSuite
  */
 class ClassicRecoveryTestSuite : public TestSuite
 {

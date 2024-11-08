@@ -26,9 +26,9 @@
 using namespace ns3;
 
 /**
- * \ingroup sixlowpan-tests
+ * @ingroup sixlowpan-tests
  *
- * \brief 6LoWPAN IPHC Test
+ * @brief 6LoWPAN IPHC Test
  */
 class SixlowpanIphcImplTest : public TestCase
 {
@@ -37,16 +37,16 @@ class SixlowpanIphcImplTest : public TestCase
     /**
      * Send data function.
      *
-     * \param socket The sending socket.
-     * \param to The destination.
+     * @param socket The sending socket.
+     * @param to The destination.
      */
     void DoSendData(Ptr<Socket> socket, std::string to);
 
     /**
      * Send data function.
      *
-     * \param socket The sending socket.
-     * \param to The destination.
+     * @param socket The sending socket.
+     * @param to The destination.
      */
     void SendData(Ptr<Socket> socket, std::string to);
 
@@ -57,15 +57,15 @@ class SixlowpanIphcImplTest : public TestCase
     /**
      * Packet receive function.
      *
-     * \param socket The receiving socket.
-     * \param packet The received packet.
-     * \param from The sender.
+     * @param socket The receiving socket.
+     * @param packet The received packet.
+     * @param from The sender.
      */
     void ReceivePacket(Ptr<Socket> socket, Ptr<Packet> packet, const Address& from);
     /**
      * Packet receive function.
      *
-     * \param socket The receiving socket.
+     * @param socket The receiving socket.
      */
     void ReceivePkt(Ptr<Socket> socket);
 };
@@ -199,9 +199,9 @@ SixlowpanIphcImplTest::DoRun()
 }
 
 /**
- * \ingroup sixlowpan-tests
+ * @ingroup sixlowpan-tests
  *
- * \brief 6LoWPAN IPHC TestSuite
+ * @brief 6LoWPAN IPHC TestSuite
  */
 class SixlowpanIphcTestSuite : public TestSuite
 {

@@ -693,7 +693,7 @@ RedQueueDisc::DropEarly(Ptr<QueueDiscItem> item, uint32_t qSize)
         // DROP or MARK
         m_count = 0;
         m_countBytes = 0;
-        /// \todo Implement set bit to mark
+        /// @todo Implement set bit to mark
 
         return true; // drop
     }

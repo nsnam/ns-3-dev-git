@@ -12,8 +12,8 @@
 #include "object.h"
 
 /**
- * \file
- * \ingroup attribute_Pointer
+ * @file
+ * @ingroup attribute_Pointer
  * ns3::PointerValue attribute value declarations and template implementations.
  */
 
@@ -21,17 +21,17 @@ namespace ns3
 {
 
 /**
- * \ingroup attributes
- * \defgroup attribute_Pointer Pointer Attribute
+ * @ingroup attributes
+ * @defgroup attribute_Pointer Pointer Attribute
  * AttributeValue implementation for Pointer.
  * Hold objects of type Ptr<T>.
  */
 
 /**
- * \ingroup attribute_Pointer
- * \class  ns3::PointerValue "pointer.h"
+ * @ingroup attribute_Pointer
+ * @class  ns3::PointerValue "pointer.h"
  * AttributeValue implementation for Pointer. Hold objects of type Ptr<T>.
- * \see AttributeValue
+ * @see AttributeValue
  */
 class PointerValue : public AttributeValue
 {
@@ -41,58 +41,58 @@ class PointerValue : public AttributeValue
     /**
      * Construct this PointerValue by referencing an explicit Object.
      *
-     * \param [in] object The object to begin with.
+     * @param [in] object The object to begin with.
      */
     PointerValue(const Ptr<Object>& object);
 
     /**
      * Set the value from by reference an Object.
      *
-     * \param [in] object The object to reference.
+     * @param [in] object The object to reference.
      */
     void SetObject(Ptr<Object> object);
 
     /**
      * Get the Object referenced by the PointerValue.
-     * \returns The Object.
+     * @returns The Object.
      */
     Ptr<Object> GetObject() const;
 
     /**
      * Construct this PointerValue by referencing an explicit Object.
      *
-     * \tparam T \deduced The type of the object.
-     * \param [in] object The object to begin with.
+     * @tparam T \deduced The type of the object.
+     * @param [in] object The object to begin with.
      */
     template <typename T>
     PointerValue(const Ptr<T>& object);
 
     /**
      * Cast to an Object of type \c T.
-     * \tparam T \explicit The type to cast to.
+     * @tparam T \explicit The type to cast to.
      */
     template <typename T>
     operator Ptr<T>() const;
 
     /**
      * Set the value.
-     * \param [in] value The value to adopt.
+     * @param [in] value The value to adopt.
      */
     template <typename T>
     void Set(const Ptr<T>& value);
 
     /**
-     * \returns The Pointer value.
-     * \tparam T \explicit The type to cast to.
+     * @returns The Pointer value.
+     * @tparam T \explicit The type to cast to.
      */
     template <typename T>
     Ptr<T> Get() const;
 
     /**
      * Access the Pointer value as type \p T.
-     * \tparam T \explicit The type to cast to.
-     * \param [out] value The Pointer value, as type \p T.
-     * \returns true.
+     * @tparam T \explicit The type to cast to.
+     * @param [out] value The Pointer value, as type \p T.
+     * @returns true.
      */
     template <typename T>
     bool GetAccessor(Ptr<T>& value) const;
@@ -106,25 +106,25 @@ class PointerValue : public AttributeValue
 };
 
 /**
- * \ingroup attribute_Pointer
+ * @ingroup attribute_Pointer
  * AttributeChecker implementation for PointerValue.
- * \see AttributeChecker
+ * @see AttributeChecker
  */
 class PointerChecker : public AttributeChecker
 {
   public:
     /**
      * Get the TypeId of the base type.
-     * \returns The base TypeId.
+     * @returns The base TypeId.
      */
     virtual TypeId GetPointeeTypeId() const = 0;
 };
 
 /**
- * \ingroup attribute_Pointer
+ * @ingroup attribute_Pointer
  * Create a PointerChecker for a type.
- * \tparam T \explicit The underlying type.
- * \returns The PointerChecker.
+ * @tparam T \explicit The underlying type.
+ * @returns The PointerChecker.
  */
 template <typename T>
 Ptr<AttributeChecker> MakePointerChecker();
@@ -142,7 +142,7 @@ namespace internal
 {
 
 /**
- * \ingroup attribute_Pointer
+ * @ingroup attribute_Pointer
  *  PointerChecker implementation.
  */
 template <typename T>
@@ -252,16 +252,16 @@ ATTRIBUTE_ACCESSOR_DEFINE(Pointer);
 // Pointer has custom functions.
 
 /**
- * \ingroup attribute_Pointer
+ * @ingroup attribute_Pointer
  * \fn ns3::Ptr<const ns3::AttributeAccessor> ns3::MakePointerAccessor (T1 a1)
- * \copydoc ns3::MakeAccessorHelper(T1)
- * \see AttributeAccessor
+ * @copydoc ns3::MakeAccessorHelper(T1)
+ * @see AttributeAccessor
  */
 /**
- * \ingroup attribute_Pointer
+ * @ingroup attribute_Pointer
  * \fn ns3::Ptr<const ns3::AttributeAccessor> ns3::MakePointerAccessor (T1 a1, T2 a2)
- * \copydoc ns3::MakeAccessorHelper(T1,T2)
- * \see AttributeAccessor
+ * @copydoc ns3::MakeAccessorHelper(T1,T2)
+ * @see AttributeAccessor
  */
 
 template <typename T>

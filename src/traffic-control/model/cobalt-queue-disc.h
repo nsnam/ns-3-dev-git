@@ -37,9 +37,9 @@ namespace ns3
 class TraceContainer;
 
 /**
- * \ingroup traffic-control
+ * @ingroup traffic-control
  *
- * \brief Cobalt packet queue disc
+ * @brief Cobalt packet queue disc
  *
  * Cobalt uses CoDel and BLUE algorithms in parallel, in order
  * to obtain the best features of each. CoDel is excellent on flows
@@ -50,43 +50,43 @@ class CobaltQueueDisc : public QueueDisc
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
     /**
-     * \brief CobaltQueueDisc Constructor
+     * @brief CobaltQueueDisc Constructor
      *
      * Create a Cobalt queue disc
      */
     CobaltQueueDisc();
 
     /**
-     * \brief Destructor
+     * @brief Destructor
      *
      * Destructor
      */
     ~CobaltQueueDisc() override;
 
     /**
-     * \brief Get the target queue delay
+     * @brief Get the target queue delay
      *
-     * \returns The target queue delay
+     * @returns The target queue delay
      */
     Time GetTarget() const;
 
     /**
-     * \brief Get the interval
+     * @brief Get the interval
      *
-     * \returns The interval
+     * @returns The interval
      */
     Time GetInterval() const;
 
     /**
-     * \brief Get the time for next packet drop while in the dropping state
+     * @brief Get the time for next packet drop while in the dropping state
      *
-     * \returns The time (in microseconds) for next packet drop
+     * @returns The time (in microseconds) for next packet drop
      */
     int64_t GetDropNext() const;
 
@@ -99,9 +99,9 @@ class CobaltQueueDisc : public QueueDisc
         "CE threshold exceeded mark"; //!< Sojourn time above CE threshold
 
     /**
-     * \brief Get the drop probability of Blue
+     * @brief Get the drop probability of Blue
      *
-     * \returns The current value of Blue's drop probability
+     * @returns The current value of Blue's drop probability
      */
     double GetPdrop() const;
 
@@ -110,8 +110,8 @@ class CobaltQueueDisc : public QueueDisc
      * used by this model.  Return the number of streams (possibly zero) that
      * have been assigned.
      *
-     * \param stream first stream index to use
-     * \return the number of stream indices assigned by this model
+     * @param stream first stream index to use
+     * @return the number of stream indices assigned by this model
      */
     int64_t AssignStreams(int64_t stream);
 
@@ -125,7 +125,7 @@ class CobaltQueueDisc : public QueueDisc
 
   protected:
     /**
-     * \brief Dispose of the object
+     * @brief Dispose of the object
      */
     void DoDispose() override;
 
@@ -136,30 +136,30 @@ class CobaltQueueDisc : public QueueDisc
     bool CheckConfig() override;
 
     /**
-     * \brief Initialize the queue parameters.
+     * @brief Initialize the queue parameters.
      */
     void InitializeParams() override;
 
     /**
-     * \brief Calculate the reciprocal square root of m_count by using Newton's method
+     * @brief Calculate the reciprocal square root of m_count by using Newton's method
      *  http://en.wikipedia.org/wiki/Methods_of_computing_square_roots#Iterative_methods_for_reciprocal_square_roots
      * m_recInvSqrt (new) = (m_recInvSqrt (old) / 2) * (3 - m_count * m_recInvSqrt^2)
      */
     void NewtonStep();
 
     /**
-     * \brief Determine the time for next drop
+     * @brief Determine the time for next drop
      * CoDel control law is t + m_interval/sqrt(m_count).
      * Here, we use m_recInvSqrt calculated by Newton's method in NewtonStep() to avoid
      * both sqrt() and divide operations
      *
-     * \param t Current next drop time
-     * \returns The new next drop time:
+     * @param t Current next drop time
+     * @returns The new next drop time:
      */
     int64_t ControlLaw(int64_t t);
 
     /**
-     * \brief Updates the inverse square root
+     * @brief Updates the inverse square root
      */
     void InvSqrt();
 
@@ -194,13 +194,13 @@ class CobaltQueueDisc : public QueueDisc
 
     /**
      * Called when the queue becomes full to alter the drop probabilities of Blue
-     * \param now time in CoDel time units (microseconds)
+     * @param now time in CoDel time units (microseconds)
      */
     void CobaltQueueFull(int64_t now);
 
     /**
      * Called when the queue becomes empty to alter the drop probabilities of Blue
-     * \param now time in CoDel time units (microseconds)
+     * @param now time in CoDel time units (microseconds)
      */
     void CobaltQueueEmpty(int64_t now);
 
@@ -208,9 +208,9 @@ class CobaltQueueDisc : public QueueDisc
      * Called to decide whether the current packet should be dropped based on decisions taken by
      * Blue and Codel working parallelly
      *
-     * \return true if the packet should be dropped, false otherwise
-     * \param item current packet
-     * \param now time in CoDel time units (microseconds)
+     * @return true if the packet should be dropped, false otherwise
+     * @param item current packet
+     * @param now time in CoDel time units (microseconds)
      */
     bool CobaltShouldDrop(Ptr<QueueDiscItem> item, int64_t now);
 

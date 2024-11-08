@@ -32,9 +32,9 @@
 using namespace ns3;
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief IPv6 Duplicate Address Detection Test
+ * @brief IPv6 Duplicate Address Detection Test
  */
 class Ipv6DadTest : public TestCase
 {
@@ -105,9 +105,9 @@ Ipv6DadTest::DoRun()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief IPv6 Duplicate Address Detection TestSuite
+ * @brief IPv6 Duplicate Address Detection TestSuite
  */
 class Ipv6DadTestSuite : public TestSuite
 {

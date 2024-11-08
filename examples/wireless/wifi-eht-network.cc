@@ -59,10 +59,10 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("eht-wifi-network");
 
 /**
- * \param udp true if UDP is used, false if TCP is used
- * \param serverApp a container of server applications
- * \param payloadSize the size in bytes of the packets
- * \return the bytes received by each server application
+ * @param udp true if UDP is used, false if TCP is used
+ * @param serverApp a container of server applications
+ * @param payloadSize the size in bytes of the packets
+ * @return the bytes received by each server application
  */
 std::vector<uint64_t>
 GetRxBytes(bool udp, const ApplicationContainer& serverApp, uint32_t payloadSize)
@@ -87,12 +87,12 @@ GetRxBytes(bool udp, const ApplicationContainer& serverApp, uint32_t payloadSize
 
 /**
  * Print average throughput over an intermediate time interval.
- * \param rxBytes a vector of the amount of bytes received by each server application
- * \param udp true if UDP is used, false if TCP is used
- * \param serverApp a container of server applications
- * \param payloadSize the size in bytes of the packets
- * \param tputInterval the duration of an intermediate time interval
- * \param simulationTime the simulation time in seconds
+ * @param rxBytes a vector of the amount of bytes received by each server application
+ * @param udp true if UDP is used, false if TCP is used
+ * @param serverApp a container of server applications
+ * @param payloadSize the size in bytes of the packets
+ * @param tputInterval the duration of an intermediate time interval
+ * @param simulationTime the simulation time in seconds
  */
 void
 PrintIntermediateTput(std::vector<uint64_t>& rxBytes,

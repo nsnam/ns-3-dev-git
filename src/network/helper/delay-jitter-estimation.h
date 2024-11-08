@@ -15,9 +15,9 @@ namespace ns3
 {
 
 /**
- * \ingroup stats
+ * @ingroup stats
  *
- * \brief Quick and dirty delay and jitter estimation,
+ * @brief Quick and dirty delay and jitter estimation,
  * implementing the jitter algorithm originally from
  * \RFC{1889} (RTP), and unchanged in \RFC{3550}
  *
@@ -38,7 +38,7 @@ class DelayJitterEstimation
      * that it does not use any network resources and is not
      * taken into account in transmission delay calculations.
      *
-     * \param packet the packet to send over a wire
+     * @param packet the packet to send over a wire
      */
     static void PrepareTx(Ptr<const Packet> packet);
 
@@ -47,14 +47,14 @@ class DelayJitterEstimation
      * After a call to this method, \ref GetLastDelay and \ref GetLastJitter
      * will return an updated delay and jitter.
      *
-     * \param packet the packet received
+     * @param packet the packet received
      */
     void RecordRx(Ptr<const Packet> packet);
 
     /**
      * Get the Last Delay object.
      *
-     * \return the updated delay.
+     * @return the updated delay.
      */
     Time GetLastDelay() const;
 
@@ -62,7 +62,7 @@ class DelayJitterEstimation
      * The jitter is calculated using the \RFC{1889} (RTP) jitter
      * definition.
      *
-     * \return the updated jitter.
+     * @return the updated jitter.
      */
     uint64_t GetLastJitter() const;
 

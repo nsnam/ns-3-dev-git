@@ -13,10 +13,10 @@
 #include <iostream>
 
 /**
- * \file
- * \defgroup fatal-example Core example: NS_FATAL error handlers
- * \ingroup core-examples
- * \ingroup fatal
+ * @file
+ * @defgroup fatal-example Core example: NS_FATAL error handlers
+ * @ingroup core-examples
+ * @ingroup fatal
  *
  * Example program illustrating use of the NS_FATAL error handlers.
  */
@@ -24,8 +24,8 @@
 using namespace ns3;
 
 /**
- * \ingroup fatal-example
- * \brief Triggers a fatal error without message, deferring termination.
+ * @ingroup fatal-example
+ * @brief Triggers a fatal error without message, deferring termination.
  */
 void
 FatalNoMsg()
@@ -35,8 +35,8 @@ FatalNoMsg()
 }
 
 /**
- * \ingroup fatal-example
- * \brief Triggers a fatal error with an error message, deferring termination.
+ * @ingroup fatal-example
+ * @brief Triggers a fatal error with an error message, deferring termination.
  */
 void
 FatalCont()
@@ -46,8 +46,8 @@ FatalCont()
 }
 
 /**
- * \ingroup fatal-example
- * \brief Triggers a fatal error with message, and terminating.
+ * @ingroup fatal-example
+ * @brief Triggers a fatal error with message, and terminating.
  */
 void
 Fatal()

@@ -26,10 +26,10 @@ NS_LOG_COMPONENT_DEFINE("WimaxPhyTest");
  */
 
 /**
- * \ingroup wimax-test
- * \ingroup tests
+ * @ingroup wimax-test
+ * @ingroup tests
  *
- * \brief Ns3 Wimax Simple OFDM Test Case
+ * @brief Ns3 Wimax Simple OFDM Test Case
  */
 class Ns3WimaxSimpleOFDMTestCase : public TestCase
 {
@@ -41,8 +41,8 @@ class Ns3WimaxSimpleOFDMTestCase : public TestCase
     void DoRun() override;
     /**
      * Run once function
-     * \param FrameDuration the frame duration
-     * \returns true if successful
+     * @param FrameDuration the frame duration
+     * @returns true if successful
      */
     bool DoRunOnce(double FrameDuration);
 };
@@ -110,10 +110,10 @@ Ns3WimaxSimpleOFDMTestCase::DoRun()
 }
 
 /**
- * \ingroup wimax-test
- * \ingroup tests
+ * @ingroup wimax-test
+ * @ingroup tests
  *
- * \brief Test the SNr tom block error rate module
+ * @brief Test the SNr tom block error rate module
  */
 class Ns3WimaxSNRtoBLERTestCase : public TestCase
 {
@@ -125,8 +125,8 @@ class Ns3WimaxSNRtoBLERTestCase : public TestCase
     void DoRun() override;
     /**
      * Run once function
-     * \param modulationType the modulation type
-     * \returns true if successful
+     * @param modulationType the modulation type
+     * @returns true if successful
      */
     bool DoRunOnce(uint8_t modulationType);
 };
@@ -165,10 +165,10 @@ Ns3WimaxSNRtoBLERTestCase::DoRun()
 }
 
 /**
- * \ingroup wimax-test
- * \ingroup tests
+ * @ingroup wimax-test
+ * @ingroup tests
  *
- * \brief The test suite
+ * @brief The test suite
  */
 class Ns3WimaxPhyTestSuite : public TestSuite
 {

@@ -14,9 +14,9 @@
 #include <vector>
 
 /**
- * \file
- * \ingroup core-examples
- * \ingroup hash
+ * @file
+ * @ingroup core-examples
+ * @ingroup hash
  * Example usage of ns3::Hash.
  *
  * This example reads words from a list of files, creates a dictionary
@@ -26,7 +26,7 @@
  * See \ref hash
  *
  *  Example Output:
- *  \verbatim
+ *  @verbatim
 
 ./ns3 run "hasher-example --time \
   --dict=/usr/share/dict/web2 \
@@ -97,7 +97,7 @@ namespace Hash
 {
 
 /**
- * \ingroup hash
+ * @ingroup hash
  *  Namespace for hasher-example.
  */
 namespace Example
@@ -122,9 +122,9 @@ class Collider
     /**
      * Constructor.
      *
-     * \param [in] name Hash function name.
-     * \param [in] hash Hash function.
-     * \param [in] bits Which hash length to use.
+     * @param [in] name Hash function name.
+     * @param [in] hash Hash function.
+     * @param [in] bits Which hash length to use.
      */
     Collider(const std::string name, Hasher hash, const Bits bits)
         : m_name(name),
@@ -136,8 +136,8 @@ class Collider
     /**
      * Add a string to the Collider.
      *
-     * \param [in] phrase The string to add.
-     * \return \c true If this was a new string.
+     * @param [in] phrase The string to add.
+     * @return \c true If this was a new string.
      */
     bool Add(const std::string phrase)
     {
@@ -174,7 +174,7 @@ class Collider
     } // Add ()
 
     /**
-     * \return The hash name, including the length.
+     * @return The hash name, including the length.
      */
     std::string GetName() const
     {
@@ -214,8 +214,8 @@ class Collider
     /**
      * Get the appropriate hash value.
      *
-     * \param [in] phrase The string to hash.
-     * \return The hash value, using the number of bits set in the constructor.
+     * @param [in] phrase The string to hash.
+     * @return The hash value, using the number of bits set in the constructor.
      */
     uint64_t GetHash(const std::string phrase)
     {
@@ -266,7 +266,7 @@ class Dictionary
     /**
      * Add a Collider containing a hash function.
      *
-     * \param [in] c The Collider to add.
+     * @param [in] c The Collider to add.
      */
     void Add(Collider c)
     {
@@ -276,7 +276,7 @@ class Dictionary
     /**
      * Add a string to the dictionary.
      *
-     * \param [in] phrase The string to add.
+     * @param [in] phrase The string to add.
      */
     void Add(const std::string phrase)
     {
@@ -368,7 +368,7 @@ class Dictionary
     /**
      * Time and report the execution of one hash across the entire Dictionary.
      *
-     * \param [in] collider The hash Collider to use.
+     * @param [in] collider The hash Collider to use.
      */
     void TimeOne(const Collider& collider)
     {
@@ -423,8 +423,8 @@ class DictFiles
     /**
      * CommandLine callback function to add a file argument to the list.
      *
-     * \param [in] file The word file to add.
-     * \return \c true If the file is new to the list.
+     * @param [in] file The word file to add.
+     * @return \c true If the file is new to the list.
      */
     bool Add(const std::string& file)
     {
@@ -436,7 +436,7 @@ class DictFiles
         return true;
     }
 
-    /** \return The default dictionary path. */
+    /** @return The default dictionary path. */
     static std::string GetDefault()
     {
         return "/usr/share/dict/words";
@@ -445,7 +445,7 @@ class DictFiles
     /**
      * Add phrases from the files into the dict.
      *
-     * \param [in,out] dict The Dictionary to add words to.
+     * @param [in,out] dict The Dictionary to add words to.
      */
     void ReadInto(Dictionary& dict)
     {

@@ -13,8 +13,8 @@
 #include <cstdint>
 
 /**
- * \file
- * \ingroup wifi
+ * @file
+ * @ingroup wifi
  * Declaration of the SI units (as weak types aliases) used across wifi module
  */
 

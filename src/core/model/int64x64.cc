@@ -16,8 +16,8 @@
 #include <stdint.h>
 
 /**
- * \file
- * \ingroup highprec
+ * @file
+ * @ingroup highprec
  * Implementation of the streaming input and output operators for
  * the ns3::int64x64_t type.
  */
@@ -31,18 +31,18 @@ namespace ns3
 NS_LOG_COMPONENT_DEFINE_MASK("int64x64", LOG_PREFIX_TIME);
 
 /**
- * \ingroup highprec
+ * @ingroup highprec
  * Print the high and low words of an int64x64 in hex, for debugging.
  *
- * \param [in] hi The high (integer) word.
- * \param [in] lo The low (fractional) work.
+ * @param [in] hi The high (integer) word.
+ * @param [in] lo The low (fractional) work.
  */
 #define HEXHILOW(hi, lo)                                                                           \
     std::hex << std::setfill('0') << std::right << " (0x" << std::setw(16) << hi << " "            \
              << std::setw(16) << lo << std::dec << std::setfill(' ') << std::left << ")"
 
 /**
- * \internal
+ * @internal
  * This algorithm is exact to the precision requested, up to the full
  * 64 decimal digits required to exactly represent a 64-bit fraction.
  *
@@ -158,13 +158,13 @@ operator<<(std::ostream& os, const int64x64_t& value)
 }
 
 /**
- * \ingroup highprec
+ * @ingroup highprec
  * Read the integer portion of a number from a string containing
  * just the integral digits (no decimal point or fractional part).
  *
- * \param [in] str The string representation of the integral part
+ * @param [in] str The string representation of the integral part
  *             of a number, with no fractional part or decimal point.
- * \returns    The integer.
+ * @returns    The integer.
  */
 static uint64_t
 ReadHiDigits(std::string str)
@@ -181,14 +181,14 @@ ReadHiDigits(std::string str)
 }
 
 /**
- * \ingroup highprec
+ * @ingroup highprec
  * Read the fractional part of a number from a string containing
  * just the decimal digits of the fractional part (no integral part
  * or decimal point).
  *
- * \param [in] str The string representation of the fractional part
+ * @param [in] str The string representation of the fractional part
  *             of a number, without integral part or decimal point.
- * \returns    The decimal portion of the input number.
+ * @returns    The decimal portion of the input number.
  */
 static uint64_t
 ReadLoDigits(std::string str)

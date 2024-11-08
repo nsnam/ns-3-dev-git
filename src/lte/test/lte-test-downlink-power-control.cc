@@ -376,7 +376,7 @@ LteDownlinkPowerControlTestSuite::CalculateRbTxPower(double txPower, uint8_t pa)
 }
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  * Static variable for test initialization
  */
 static LteDownlinkPowerControlTestSuite lteDownlinkPowerControlTestSuite;

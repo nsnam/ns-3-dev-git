@@ -42,7 +42,7 @@ class PhyListener : public ns3::WifiPhyListener
     /**
      * Create a PhyListener for the given ChannelAccessManager.
      *
-     * \param cam the ChannelAccessManager
+     * @param cam the ChannelAccessManager
      */
     PhyListener(ns3::ChannelAccessManager* cam)
         : m_cam(cam),
@@ -57,7 +57,7 @@ class PhyListener : public ns3::WifiPhyListener
     /**
      * Set this listener to be active or not.
      *
-     * \param active whether this listener is active or not
+     * @param active whether this listener is active or not
      */
     void SetActive(bool active)
     {
@@ -65,7 +65,7 @@ class PhyListener : public ns3::WifiPhyListener
     }
 
     /**
-     * \return whether this listener is active or not
+     * @return whether this listener is active or not
      */
     bool IsActive() const
     {

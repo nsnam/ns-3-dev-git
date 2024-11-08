@@ -29,9 +29,9 @@ namespace ns3
 class UniformRandomVariable;
 
 /**
- * \ingroup mesh
+ * @ingroup mesh
  *
- * \brief Basic MAC of mesh point Wi-Fi interface. Its function is extendable through plugins
+ * @brief Basic MAC of mesh point Wi-Fi interface. Its function is extendable through plugins
  * mechanism.
  *
  * Now only three output queues are used:
@@ -44,8 +44,8 @@ class MeshWifiInterfaceMac : public WifiMac
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     /// C-tor
@@ -58,53 +58,53 @@ class MeshWifiInterfaceMac : public WifiMac
     void SetLinkUpCallback(Callback<void> linkUp) override;
     bool CanForwardPacketsTo(Mac48Address to) const override;
 
-    /// \name Each mesh point interface must know the mesh point address
+    /// @name Each mesh point interface must know the mesh point address
     ///@{
     /**
      * Set the mesh point address
-     * \param addr the mesh point address
+     * @param addr the mesh point address
      */
     void SetMeshPointAddress(Mac48Address addr);
     /**
      * Get the mesh point address
-     * \return The mesh point address
+     * @return The mesh point address
      */
     Mac48Address GetMeshPointAddress() const;
     ///@}
 
-    /// \name Beacons
+    /// @name Beacons
     ///@{
     /**
      * Set maximum initial random delay before first beacon
-     * \param interval maximum random interval
+     * @param interval maximum random interval
      */
     void SetRandomStartDelay(Time interval);
     /**
      * Set interval between two successive beacons
-     * \param interval beacon interval
+     * @param interval beacon interval
      */
     void SetBeaconInterval(Time interval);
     /**
      * Get beacon interval.
-     * \return interval between two beacons
+     * @return interval between two beacons
      */
     Time GetBeaconInterval() const;
     /**
-     * \brief Next beacon frame time
-     * \return TBTT time
+     * @brief Next beacon frame time
+     * @return TBTT time
      *
      * This is supposed to be used by any entity managing beacon collision avoidance (e.g. Peer
      * management protocol in 802.11s)
      */
     Time GetTbtt() const;
     /**
-     * \brief Shift TBTT.
-     * \param shift Shift
+     * @brief Shift TBTT.
+     * @param shift Shift
      *
      * This is supposed to be used by any entity managing beacon collision avoidance (e.g. Peer
      * management protocol in 802.11s)
      *
-     * \attention User of ShiftTbtt () must take care to not shift it to the past.
+     * @attention User of ShiftTbtt () must take care to not shift it to the past.
      */
     void ShiftTbtt(Time shift);
     ///@}
@@ -112,9 +112,9 @@ class MeshWifiInterfaceMac : public WifiMac
     /**
      * Install plugin.
      *
-     * \param plugin Plugin
+     * @param plugin Plugin
      *
-     * \todo return unique ID to allow user to unregister plugins
+     * @todo return unique ID to allow user to unregister plugins
      */
     void InstallPlugin(Ptr<MeshWifiInterfaceMacPlugin> plugin);
 
@@ -128,55 +128,55 @@ class MeshWifiInterfaceMac : public WifiMac
 
     /**
      * Current channel Id
-     * \returns the frequency channel
+     * @returns the frequency channel
      */
     uint16_t GetFrequencyChannel() const;
     /**
      * Switch frequency channel.
      *
-     * \param new_id New ID.
+     * @param new_id New ID.
      */
     void SwitchFrequencyChannel(uint16_t new_id);
 
     /**
      * To be used by plugins sending management frames.
      *
-     * \param frame the management frame
-     * \param hdr the wifi MAC header
+     * @param frame the management frame
+     * @param hdr the wifi MAC header
      */
     void SendManagementFrame(Ptr<Packet> frame, const WifiMacHeader& hdr);
     /**
      * Check supported rates.
      *
-     * \param rates Rates.
-     * \return true if rates are supported
+     * @param rates Rates.
+     * @return true if rates are supported
      */
     bool CheckSupportedRates(AllSupportedRates rates) const;
 
     /**
      * Get supported rates.
-     * \return list of supported bitrates
+     * @return list of supported bitrates
      */
     AllSupportedRates GetSupportedRates() const;
 
-    /// \name Metric Calculation routines:
+    /// @name Metric Calculation routines:
     ///@{
     /**
      * Set the link metric callback
-     * \param cb the callback
+     * @param cb the callback
      */
     void SetLinkMetricCallback(Callback<uint32_t, Mac48Address, Ptr<MeshWifiInterfaceMac>> cb);
     /**
      * Get the link metric
-     * \param peerAddress the peer address
-     * \return The metric
+     * @param peerAddress the peer address
+     * @return The metric
      */
     uint32_t GetLinkMetric(Mac48Address peerAddress);
     ///@}
 
     /**
-     * \brief Report statistics
-     * \param os the output stream
+     * @brief Report statistics
+     * @param os the output stream
      */
     void Report(std::ostream& os) const;
 
@@ -188,12 +188,12 @@ class MeshWifiInterfaceMac : public WifiMac
     /**
      * Enable/disable beacons
      *
-     * \param enable enable / disable flag
+     * @param enable enable / disable flag
      */
     void SetBeaconGeneration(bool enable);
     /**
-     * \param cwMin the minimum contention window size
-     * \param cwMax the maximum contention window size
+     * @param cwMin the minimum contention window size
+     * @param cwMax the maximum contention window size
      *
      * This method is called to set the minimum and the maximum
      * contention window size.
@@ -205,8 +205,8 @@ class MeshWifiInterfaceMac : public WifiMac
      * used by this model.  Return the number of streams (possibly zero) that
      * have been assigned.
      *
-     * \param stream first stream index to use
-     * \return the number of stream indices assigned by this model
+     * @param stream first stream index to use
+     * @return the number of stream indices assigned by this model
      */
     int64_t AssignStreams(int64_t stream) override;
 
@@ -216,8 +216,8 @@ class MeshWifiInterfaceMac : public WifiMac
     /**
      * Frame receive handler
      *
-     * \param mpdu the received MPDU
-     * \param linkId the ID of the link the frame was received over
+     * @param mpdu the received MPDU
+     * @param linkId the ID of the link the frame was received over
      */
     void Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId) override;
     /**
@@ -231,7 +231,7 @@ class MeshWifiInterfaceMac : public WifiMac
     /**
      * Get current beaconing status
      *
-     * \returns true if beacon active
+     * @returns true if beacon active
      */
     bool GetBeaconGeneration() const;
     /**
@@ -245,7 +245,7 @@ class MeshWifiInterfaceMac : public WifiMac
     void DoInitialize() override;
     void Enqueue(Ptr<WifiMpdu> mpdu, Mac48Address to, Mac48Address from) override;
 
-    /// \name Mesh timing intervals
+    /// @name Mesh timing intervals
     ///@{
     /// Whether beaconing is enabled
     bool m_beaconEnable;
@@ -278,7 +278,7 @@ class MeshWifiInterfaceMac : public WifiMac
         /**
          * Print statistics.
          *
-         * \param os Output stream
+         * @param os Output stream
          */
         void Print(std::ostream& os) const;
         /**

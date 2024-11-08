@@ -21,21 +21,21 @@ namespace ns3
 {
 
 /**
- * \brief Soft Fractional Frequency Reuse algorithm implementation
+ * @brief Soft Fractional Frequency Reuse algorithm implementation
  */
 class LteFfrSoftAlgorithm : public LteFfrAlgorithm
 {
   public:
     /**
-     * \brief Creates a trivial ffr algorithm instance.
+     * @brief Creates a trivial ffr algorithm instance.
      */
     LteFfrSoftAlgorithm();
 
     ~LteFfrSoftAlgorithm() override;
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -79,15 +79,15 @@ class LteFfrSoftAlgorithm : public LteFfrAlgorithm
     /**
      * Set downlink configuration function
      *
-     * \param cellId the cell ID
-     * \param bandwidth the bandwidth
+     * @param cellId the cell ID
+     * @param bandwidth the bandwidth
      */
     void SetDownlinkConfiguration(uint16_t cellId, uint8_t bandwidth);
     /**
      * Set uplink configuration function
      *
-     * \param cellId the cell ID
-     * \param bandwidth the bandwidth
+     * @param cellId the cell ID
+     * @param bandwidth the bandwidth
      */
     void SetUplinkConfiguration(uint16_t cellId, uint8_t bandwidth);
     /**

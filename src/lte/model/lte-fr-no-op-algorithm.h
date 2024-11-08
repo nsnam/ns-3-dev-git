@@ -19,7 +19,7 @@ namespace ns3
 {
 
 /**
- * \brief FR algorithm implementation which simply does nothing.
+ * @brief FR algorithm implementation which simply does nothing.
  *
  * Selecting this FR algorithm is equivalent to disabling FFR.
  * This is the default choice.
@@ -31,15 +31,15 @@ class LteFrNoOpAlgorithm : public LteFfrAlgorithm
 {
   public:
     /**
-     * \brief Creates a NoOP FR algorithm instance.
+     * @brief Creates a NoOP FR algorithm instance.
      */
     LteFrNoOpAlgorithm();
 
     ~LteFrNoOpAlgorithm() override;
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 

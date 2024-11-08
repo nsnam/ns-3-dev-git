@@ -17,9 +17,9 @@ namespace ns3
 {
 
 /**
- * \ingroup antenna
+ * @ingroup antenna
  *
- * \brief  Antenna model based on a parabolic approximation of the main lobe radiation pattern.
+ * @brief  Antenna model based on a parabolic approximation of the main lobe radiation pattern.
  *
  * This class implements the parabolic model as described in some 3GPP document, e.g., R4-092042
  *
@@ -36,8 +36,8 @@ class ParabolicAntennaModel : public AntennaModel
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return The object TypeId.
+     * @brief Get the type ID.
+     * @return The object TypeId.
      */
     static TypeId GetTypeId();
 
@@ -47,22 +47,22 @@ class ParabolicAntennaModel : public AntennaModel
     // attribute getters/setters
     /**
      * Set the Beam width
-     * \param beamwidthDegrees Beam width in degrees
+     * @param beamwidthDegrees Beam width in degrees
      */
     void SetBeamwidth(double beamwidthDegrees);
     /**
      * Get the Beam width
-     * \return beam width in degrees
+     * @return beam width in degrees
      */
     double GetBeamwidth() const;
     /**
      * Set the antenna orientation
-     * \param orientationDegrees antenna orientation in degrees
+     * @param orientationDegrees antenna orientation in degrees
      */
     void SetOrientation(double orientationDegrees);
     /**
      * Get the antenna orientation
-     * \return antenna orientation in degrees
+     * @return antenna orientation in degrees
      */
     double GetOrientation() const;
 

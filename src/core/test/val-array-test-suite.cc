@@ -11,20 +11,20 @@
 #include "ns3/val-array.h"
 
 /**
- * \defgroup valArray-tests ValArray tests
- * \ingroup core-tests
- * \ingroup Matrices
+ * @defgroup valArray-tests ValArray tests
+ * @ingroup core-tests
+ * @ingroup Matrices
  */
 
 /**
- * \file
- * \ingroup valArray-tests
+ * @file
+ * @ingroup valArray-tests
  * ValArray test suite
  */
 
 /**
- * \file
- * \ingroup core-tests
+ * @file
+ * @ingroup core-tests
  */
 
 namespace ns3
@@ -50,32 +50,32 @@ class ValArrayTestCase : public TestCase
     /**
      * Constructor
      *
-     * \param [in] name reference name
+     * @param [in] name reference name
      */
     ValArrayTestCase(const std::string& name);
 
     /** Destructor. */
     ~ValArrayTestCase() override;
     /**
-     * \brief Copy constructor.
+     * @brief Copy constructor.
      * Instruct the compiler to generate the implicitly declared copy constructor
      */
     ValArrayTestCase(const ValArrayTestCase<T>&) = default;
     /**
-     * \brief Copy assignment operator.
+     * @brief Copy assignment operator.
      * Instruct the compiler to generate the implicitly declared copy assignment operator.
-     * \return A reference to this ValArrayTestCase
+     * @return A reference to this ValArrayTestCase
      */
     ValArrayTestCase<T>& operator=(const ValArrayTestCase<T>&) = default;
     /**
-     * \brief Move constructor.
+     * @brief Move constructor.
      * Instruct the compiler to generate the implicitly declared move constructor
      */
     ValArrayTestCase(ValArrayTestCase<T>&&) = default;
     /**
-     * \brief Move assignment operator.
+     * @brief Move assignment operator.
      * Instruct the compiler to generate the implicitly declared copy constructor
-     * \return A reference to this ValArrayTestCase
+     * @return A reference to this ValArrayTestCase
      */
     ValArrayTestCase<T>& operator=(ValArrayTestCase<T>&&) = default;
 
@@ -271,10 +271,10 @@ ValArrayTestCase<T>::DoRun()
 }
 
 /**
- * \ingroup valArray-tests
+ * @ingroup valArray-tests
  * ValArray test suite
  *
- * \brief The test checks the correct behaviour of ValArray class
+ * @brief The test checks the correct behaviour of ValArray class
  */
 class ValArrayTestSuite : public TestSuite
 {
@@ -292,7 +292,7 @@ ValArrayTestSuite::ValArrayTestSuite()
 }
 
 /**
- * \ingroup valArray-tests
+ * @ingroup valArray-tests
  * ValArrayTestSuite instance variable.
  */
 static ValArrayTestSuite g_valArrayTestSuite;

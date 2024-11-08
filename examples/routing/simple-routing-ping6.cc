@@ -30,17 +30,17 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("SimpleRoutingPing6Example");
 
 /**
- * \class StackHelper
- * \brief Helper to set or get some IPv6 information about nodes.
+ * @class StackHelper
+ * @brief Helper to set or get some IPv6 information about nodes.
  */
 class StackHelper
 {
   public:
     /**
-     * \brief Add an address to a IPv6 node.
-     * \param n node
-     * \param interface interface index
-     * \param address IPv6 address to add
+     * @brief Add an address to a IPv6 node.
+     * @param n node
+     * @param interface interface index
+     * @param address IPv6 address to add
      */
     inline void AddAddress(Ptr<Node>& n, uint32_t interface, Ipv6Address address)
     {
@@ -49,8 +49,8 @@ class StackHelper
     }
 
     /**
-     * \brief Print the routing table.
-     * \param n the node
+     * @brief Print the routing table.
+     * @param n the node
      */
     inline void PrintRoutingTable(Ptr<Node>& n)
     {

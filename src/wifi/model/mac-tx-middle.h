@@ -22,7 +22,7 @@ class WifiMacHeader;
 class Mac48Address;
 
 /**
- * \ingroup wifi
+ * @ingroup wifi
  *
  * Handles sequence numbering of IEEE 802.11 data frames
  */
@@ -35,8 +35,8 @@ class MacTxMiddle : public SimpleRefCount<MacTxMiddle>
     /**
      * Return the next sequence number for the given header.
      *
-     * \param hdr Wi-Fi header
-     * \return the next sequence number
+     * @param hdr Wi-Fi header
+     * @return the next sequence number
      */
     uint16_t GetNextSequenceNumberFor(const WifiMacHeader* hdr);
     /**
@@ -44,23 +44,23 @@ class MacTxMiddle : public SimpleRefCount<MacTxMiddle>
      * the current sequence number remains unchanged). This functions is used for A-MPDU
      * aggregation.
      *
-     * \param hdr Wi-Fi header
-     * \return the next sequence number
+     * @param hdr Wi-Fi header
+     * @return the next sequence number
      */
     uint16_t PeekNextSequenceNumberFor(const WifiMacHeader* hdr);
     /**
      * Return the next sequence number for the Traffic ID and destination.
      *
-     * \param tid Traffic ID
-     * \param addr destination address
-     * \return the next sequence number
+     * @param tid Traffic ID
+     * @param addr destination address
+     * @return the next sequence number
      */
     uint16_t GetNextSeqNumberByTidAndAddress(uint8_t tid, Mac48Address addr) const;
     /**
      * Set the sequence number of the given MAC header as the next sequence
      * number for the Traffic ID and destination of the given MAC header.
      *
-     * \param hdr the given MAC header
+     * @param hdr the given MAC header
      */
     void SetSequenceNumberFor(const WifiMacHeader* hdr);
 

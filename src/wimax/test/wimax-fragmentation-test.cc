@@ -19,10 +19,10 @@
 using namespace ns3;
 
 /**
- * \ingroup wimax-test
- * \ingroup tests
+ * @ingroup wimax-test
+ * @ingroup tests
  *
- * \brief Test the wimax packet fragmentation.
+ * @brief Test the wimax packet fragmentation.
  */
 class Ns3WimaxFragmentationTestCase : public TestCase
 {
@@ -132,10 +132,10 @@ Ns3WimaxFragmentationTestCase::DoRun()
 }
 
 /**
- * \ingroup wimax-test
- * \ingroup tests
+ * @ingroup wimax-test
+ * @ingroup tests
  *
- * \brief Ns3 Wimax Fragmentation Test Suite
+ * @brief Ns3 Wimax Fragmentation Test Suite
  */
 class Ns3WimaxFragmentationTestSuite : public TestSuite
 {

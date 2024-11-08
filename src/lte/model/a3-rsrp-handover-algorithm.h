@@ -20,7 +20,7 @@ namespace ns3
 {
 
 /**
- * \brief Implementation of the strongest cell handover algorithm, based on RSRP
+ * @brief Implementation of the strongest cell handover algorithm, based on RSRP
  *        measurements and Event A3.
  *
  * The algorithm utilizes Event A3 (Section 5.5.4.4 of 3GPP TS 36.331) UE
@@ -47,7 +47,7 @@ namespace ns3
  *                                               TimeValue (MilliSeconds (256)));
  *     NetDeviceContainer enbLteDevs = lteHelper->InstallEnbDevice (enbNodes);
  *
- * \note Setting the handover algorithm type and attributes after the call to
+ * @note Setting the handover algorithm type and attributes after the call to
  *       LteHelper::InstallEnbDevice does not have any effect to the devices
  *       that have already been installed.
  */
@@ -60,8 +60,8 @@ class A3RsrpHandoverAlgorithm : public LteHandoverAlgorithm
     ~A3RsrpHandoverAlgorithm() override;
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -85,8 +85,8 @@ class A3RsrpHandoverAlgorithm : public LteHandoverAlgorithm
      * Determines if a neighbour cell is a valid destination for handover.
      * Currently always return true.
      *
-     * \param cellId The cell ID of the neighbour cell.
-     * \return True if the cell is a valid destination for handover.
+     * @param cellId The cell ID of the neighbour cell.
+     * @return True if the cell is a valid destination for handover.
      */
     bool IsValidNeighbour(uint16_t cellId);
 

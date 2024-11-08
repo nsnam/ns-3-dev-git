@@ -25,21 +25,21 @@ NS_LOG_COMPONENT_DEFINE("TcpRateOpsTestSuite");
 class MimicCongControl;
 
 /**
- * \ingroup internet-test
- * \ingroup tests
+ * @ingroup internet-test
+ * @ingroup tests
  *
- * \brief The TcpRateLinux Basic Test
+ * @brief The TcpRateLinux Basic Test
  */
 class TcpRateLinuxBasicTest : public TestCase
 {
   public:
     /**
      * Constructor
-     * \param cWnd Congestion window size
-     * \param tailSeq Tail sequence number
-     * \param nextTx Tx next sequence number
-     * \param testCase test case type
-     * \param testName test name
+     * @param cWnd Congestion window size
+     * @param tailSeq Tail sequence number
+     * @param nextTx Tx next sequence number
+     * @param testCase test case type
+     * @param testName test name
      */
     TcpRateLinuxBasicTest(uint32_t cWnd,
                           SequenceNumber32 tailSeq,
@@ -52,12 +52,12 @@ class TcpRateLinuxBasicTest : public TestCase
 
     /**
      * Send an application packet
-     * \param skb the data to send
+     * @param skb the data to send
      */
     void SendSkb(TcpTxItem* skb);
     /**
      * Deliver an application packet
-     * \param skb the data to deliver
+     * @param skb the data to deliver
      */
     void SkbDelivered(TcpTxItem* skb);
 
@@ -169,16 +169,16 @@ TcpRateLinuxBasicTest::SkbDelivered(TcpTxItem* skb)
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief Behaves as NewReno except HasCongControl returns true
+ * @brief Behaves as NewReno except HasCongControl returns true
  */
 class MimicCongControl : public TcpNewReno
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -203,10 +203,10 @@ MimicCongControl::GetTypeId()
 }
 
 /**
- * \ingroup internet-test
- * \ingroup tests
+ * @ingroup internet-test
+ * @ingroup tests
  *
- * \brief The TcpRateLinux Test uses sender-receiver model to test its functionality.
+ * @brief The TcpRateLinux Test uses sender-receiver model to test its functionality.
  *        This test case uses the bytes inflight trace to check whether rate sample
  *        correctly sets the value of m_deliveredTime and m_firstSentTime. This is
  *        done using rate trace. Further, Using Rx trace, m_isDupAck is maintained to
@@ -217,10 +217,10 @@ class TcpRateLinuxWithSocketsTest : public TcpGeneralTest
 {
   public:
     /**
-     * \brief Constructor.
-     * \param desc Description.
-     * \param sackEnabled To use SACK or not
-     * \param toDrop Packets to drop.
+     * @brief Constructor.
+     * @param desc Description.
+     * @param sackEnabled To use SACK or not
+     * @param toDrop Packets to drop.
      */
     TcpRateLinuxWithSocketsTest(const std::string& desc,
                                 bool sackEnabled,
@@ -228,60 +228,60 @@ class TcpRateLinuxWithSocketsTest : public TcpGeneralTest
 
   protected:
     /**
-     * \brief Create and install the socket to install on the sender
-     * \param node sender node pointer
-     * \return the socket to be installed in the sender
+     * @brief Create and install the socket to install on the sender
+     * @param node sender node pointer
+     * @return the socket to be installed in the sender
      */
     Ptr<TcpSocketMsgBase> CreateSenderSocket(Ptr<Node> node) override;
 
     /**
-     * \brief Create a receiver error model.
-     * \returns The receiver error model.
+     * @brief Create a receiver error model.
+     * @returns The receiver error model.
      */
     Ptr<ErrorModel> CreateReceiverErrorModel() override;
 
     /**
-     * \brief Receive a packet.
-     * \param p The packet.
-     * \param h The TCP header.
-     * \param who Who the socket belongs to (sender or receiver).
+     * @brief Receive a packet.
+     * @param p The packet.
+     * @param h The TCP header.
+     * @param who Who the socket belongs to (sender or receiver).
      */
     void Rx(const Ptr<const Packet> p, const TcpHeader& h, SocketWho who) override;
 
     /**
-     * \brief Track the bytes in flight.
-     * \param oldValue previous value.
-     * \param newValue actual value.
+     * @brief Track the bytes in flight.
+     * @param oldValue previous value.
+     * @param newValue actual value.
      */
     void BytesInFlightTrace(uint32_t oldValue, uint32_t newValue) override;
 
     /**
-     * \brief Called when a packet is dropped.
-     * \param ipH The IP header.
-     * \param tcpH The TCP header.
-     * \param p The packet.
+     * @brief Called when a packet is dropped.
+     * @param ipH The IP header.
+     * @param tcpH The TCP header.
+     * @param p The packet.
      */
     void PktDropped(const Ipv4Header& ipH, const TcpHeader& tcpH, Ptr<const Packet> p);
 
     /**
-     * \brief Configure the test.
+     * @brief Configure the test.
      */
     void ConfigureEnvironment() override;
 
     /**
-     * \brief Do the final checks.
+     * @brief Do the final checks.
      */
     void FinalChecks() override;
 
     /**
-     * \brief Track the rate value of TcpRateLinux.
-     * \param rate updated value of TcpRate.
+     * @brief Track the rate value of TcpRateLinux.
+     * @param rate updated value of TcpRate.
      */
     void RateUpdatedTrace(const TcpRateLinux::TcpRateConnection& rate) override;
 
     /**
-     * \brief Track the rate sample value of TcpRateLinux.
-     * \param sample updated value of TcpRateSample.
+     * @brief Track the rate sample value of TcpRateLinux.
+     * @param sample updated value of TcpRateSample.
      */
     void RateSampleUpdatedTrace(const TcpRateLinux::TcpRateSample& sample) override;
 
@@ -421,19 +421,19 @@ TcpRateLinuxWithSocketsTest::FinalChecks()
 }
 
 /**
- * \ingroup internet-test
- * \ingroup tests
+ * @ingroup internet-test
+ * @ingroup tests
  *
- * \brief The TcpRateLinuxWithBufferTest tests rate sample functionality with arbitrary SACK
+ * @brief The TcpRateLinuxWithBufferTest tests rate sample functionality with arbitrary SACK
  * scenario. Check the value of delivered against a home-made guess
  */
 class TcpRateLinuxWithBufferTest : public TestCase
 {
   public:
     /**
-     * \brief Constructor.
-     * \param segmentSize Segment size to use.
-     * \param desc Description.
+     * @brief Constructor.
+     * @param segmentSize Segment size to use.
+     * @param desc Description.
      */
     TcpRateLinuxWithBufferTest(uint32_t segmentSize, std::string desc);
 
@@ -442,21 +442,21 @@ class TcpRateLinuxWithBufferTest : public TestCase
     void DoTeardown() override;
 
     /**
-     * \brief Track the rate value of TcpRateLinux.
-     * \param rate updated value of TcpRate.
+     * @brief Track the rate value of TcpRateLinux.
+     * @param rate updated value of TcpRate.
      */
     virtual void RateUpdatedTrace(const TcpRateLinux::TcpRateConnection& rate);
 
     /**
-     * \brief Track the rate sample value of TcpRateLinux.
-     * \param sample updated value of TcpRateSample.
+     * @brief Track the rate sample value of TcpRateLinux.
+     * @param sample updated value of TcpRateSample.
      */
     virtual void RateSampleUpdatedTrace(const TcpRateLinux::TcpRateSample& sample);
 
-    /** \brief Test with acks without drop */
+    /** @brief Test with acks without drop */
     void TestWithStraightAcks();
 
-    /** \brief Test with arbitrary SACK scenario */
+    /** @brief Test with arbitrary SACK scenario */
     void TestWithSackBlocks();
 
     uint32_t m_expectedDelivered{0};   //!< Amount of expected delivered data
@@ -579,9 +579,9 @@ TcpRateLinuxWithBufferTest::DoTeardown()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief the TestSuite for the TcpRateLinux test case
+ * @brief the TestSuite for the TcpRateLinux test case
  */
 class TcpRateOpsTestSuite : public TestSuite
 {

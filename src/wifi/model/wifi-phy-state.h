@@ -53,11 +53,11 @@ enum class WifiPhyState
 };
 
 /**
- * \brief Stream insertion operator.
+ * @brief Stream insertion operator.
  *
- * \param os the stream
- * \param state the state
- * \returns a reference to the stream
+ * @param os the stream
+ * @param state the state
+ * @returns a reference to the stream
  */
 inline std::ostream&
 operator<<(std::ostream& os, WifiPhyState state)

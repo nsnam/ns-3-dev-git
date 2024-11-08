@@ -11,8 +11,8 @@
 #define SHOW_PROGRESS_H
 
 /**
- * \file
- * \ingroup core
+ * @file
+ * @ingroup core
  * ns3::ShowProgress declaration.
  */
 
@@ -28,8 +28,8 @@ namespace ns3
 {
 
 /**
- * \ingroup core
- * \ingroup debugging
+ * @ingroup core
+ * @ingroup debugging
  *
  * Periodically print a status message indicating simulator progress.
  *
@@ -46,7 +46,7 @@ namespace ns3
  *
  * Example usage:
  *
- * \code
+ * @code
  *     int main (int arg, char ** argv)
  *     {
  *       // Create your model
@@ -55,11 +55,11 @@ namespace ns3
  *       Simulator::Run ();
  *       Simulator::Destroy ();
  *     }
- * \endcode
+ * @endcode
  *
  * This generates output similar to the following:
  *
- * \code
+ * @code
  *     Start wall clock: Tue May 19 10:24:07 2020
  *     +17.179869183s (   4.937x real time) 29559 events processed
  *     +25.769803775s (   4.965x real time) 45179 events processed
@@ -70,7 +70,7 @@ namespace ns3
  *     +194.339562435s (  12.776x real time) 30957 events processed
  *     End wall clock:  Tue May 19 10:24:23 2020
  *     Elapsed wall clock: 16s
- * \endcode
+ * @endcode
  *
  * A more extensive example of use is provided in sample-show-progress.cc.
  *
@@ -84,8 +84,8 @@ class ShowProgress
   public:
     /**
      * Constructor.
-     * \param [in] interval The target wallclock interval to show progress.
-     * \param [in] os The stream to print on.
+     * @param [in] interval The target wallclock interval to show progress.
+     * @param [in] os The stream to print on.
      */
     ShowProgress(const Time interval = Seconds(1), std::ostream& os = std::cout);
 
@@ -94,7 +94,7 @@ class ShowProgress
 
     /**
      * Set the target update interval, in wallclock time.
-     * \param [in] interval The target wallclock interval to show progress.
+     * @param [in] interval The target wallclock interval to show progress.
      */
     void SetInterval(const Time interval);
 
@@ -104,20 +104,20 @@ class ShowProgress
      *
      * The default is DefaultTimePrinter().
      *
-     * \param [in] lp The TimePrinter function.
+     * @param [in] lp The TimePrinter function.
      */
     void SetTimePrinter(TimePrinter lp);
 
     /**
      * Set the output stream to show progress on.
-     * \param [in] os The output stream; defaults to std::cerr.
+     * @param [in] os The output stream; defaults to std::cerr.
      */
     void SetStream(std::ostream& os);
 
     /**
      * Set verbose mode to print real and virtual time intervals.
      *
-     * \param [in] verbose \c true to turn on verbose mode
+     * @param [in] verbose \c true to turn on verbose mode
      */
     void SetVerbose(bool verbose);
 
@@ -150,22 +150,22 @@ class ShowProgress
     /**
      * Show execution progress.
      * This function actually generates output, when directed by CheckProgress().
-     * \param [in] nEvents The actual number of events processed since the last
+     * @param [in] nEvents The actual number of events processed since the last
      *             progress output.
-     * \param [in] ratio The current ratio of elapsed wall clock time to the
+     * @param [in] ratio The current ratio of elapsed wall clock time to the
      *             target update interval.
-     * \param [in] speed The execution speed relative to wall clock time.
+     * @param [in] speed The execution speed relative to wall clock time.
      */
     void GiveFeedback(uint64_t nEvents, int64x64_t ratio, int64x64_t speed);
 
     /**
      * Hysteresis factor.
-     * \see Feedback()
+     * @see Feedback()
      */
     static const int64x64_t HYSTERESIS;
     /**
      * Maximum growth factor.
-     * \see Feedback()
+     * @see Feedback()
      */
     static const int64x64_t MAXGAIN;
 

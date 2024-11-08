@@ -33,8 +33,8 @@ namespace aodv
 {
 
 /**
- * \ingroup aodv
- * \brief Route record states
+ * @ingroup aodv
+ * @brief Route record states
  */
 enum RouteFlags
 {
@@ -44,8 +44,8 @@ enum RouteFlags
 };
 
 /**
- * \ingroup aodv
- * \brief Routing table entry
+ * @ingroup aodv
+ * @brief Routing table entry
  */
 class RoutingTableEntry
 {
@@ -53,14 +53,14 @@ class RoutingTableEntry
     /**
      * constructor
      *
-     * \param dev the device
-     * \param dst the destination IP address
-     * \param vSeqNo verify sequence number flag
-     * \param seqNo the sequence number
-     * \param iface the interface
-     * \param hops the number of hops
-     * \param nextHop the IP address of the next hop
-     * \param lifetime the lifetime of the entry
+     * @param dev the device
+     * @param dst the destination IP address
+     * @param vSeqNo verify sequence number flag
+     * @param seqNo the sequence number
+     * @param iface the interface
+     * @param hops the number of hops
+     * @param nextHop the IP address of the next hop
+     * @param lifetime the lifetime of the entry
      */
     RoutingTableEntry(Ptr<NetDevice> dev = nullptr,
                       Ipv4Address dst = Ipv4Address(),
@@ -73,50 +73,50 @@ class RoutingTableEntry
 
     ~RoutingTableEntry();
 
-    /// \name Precursors management
+    /// @name Precursors management
     //\{
     /**
      * Insert precursor in precursor list if it doesn't yet exist in the list
-     * \param id precursor address
-     * \return true on success
+     * @param id precursor address
+     * @return true on success
      */
     bool InsertPrecursor(Ipv4Address id);
     /**
      * Lookup precursor by address
-     * \param id precursor address
-     * \return true on success
+     * @param id precursor address
+     * @return true on success
      */
     bool LookupPrecursor(Ipv4Address id);
     /**
-     * \brief Delete precursor
-     * \param id precursor address
-     * \return true on success
+     * @brief Delete precursor
+     * @param id precursor address
+     * @return true on success
      */
     bool DeletePrecursor(Ipv4Address id);
     /// Delete all precursors
     void DeleteAllPrecursors();
     /**
      * Check that precursor list is empty
-     * \return true if precursor list is empty
+     * @return true if precursor list is empty
      */
     bool IsPrecursorListEmpty() const;
     /**
      * Inserts precursors in output parameter prec if they do not yet exist in vector
-     * \param prec vector of precursor addresses
+     * @param prec vector of precursor addresses
      */
     void GetPrecursors(std::vector<Ipv4Address>& prec) const;
     //\}
 
     /**
      * Mark entry as "down" (i.e. disable it)
-     * \param badLinkLifetime duration to keep entry marked as invalid
+     * @param badLinkLifetime duration to keep entry marked as invalid
      */
     void Invalidate(Time badLinkLifetime);
 
     // Fields
     /**
      * Get destination address function
-     * \returns the IPv4 destination address
+     * @returns the IPv4 destination address
      */
     Ipv4Address GetDestination() const
     {
@@ -125,7 +125,7 @@ class RoutingTableEntry
 
     /**
      * Get route function
-     * \returns The IPv4 route
+     * @returns The IPv4 route
      */
     Ptr<Ipv4Route> GetRoute() const
     {
@@ -134,7 +134,7 @@ class RoutingTableEntry
 
     /**
      * Set route function
-     * \param r the IPv4 route
+     * @param r the IPv4 route
      */
     void SetRoute(Ptr<Ipv4Route> r)
     {
@@ -143,7 +143,7 @@ class RoutingTableEntry
 
     /**
      * Set next hop address
-     * \param nextHop the next hop IPv4 address
+     * @param nextHop the next hop IPv4 address
      */
     void SetNextHop(Ipv4Address nextHop)
     {
@@ -152,7 +152,7 @@ class RoutingTableEntry
 
     /**
      * Get next hop address
-     * \returns the next hop address
+     * @returns the next hop address
      */
     Ipv4Address GetNextHop() const
     {
@@ -161,7 +161,7 @@ class RoutingTableEntry
 
     /**
      * Set output device
-     * \param dev The output device
+     * @param dev The output device
      */
     void SetOutputDevice(Ptr<NetDevice> dev)
     {
@@ -170,7 +170,7 @@ class RoutingTableEntry
 
     /**
      * Get output device
-     * \returns the output device
+     * @returns the output device
      */
     Ptr<NetDevice> GetOutputDevice() const
     {
@@ -179,7 +179,7 @@ class RoutingTableEntry
 
     /**
      * Get the Ipv4InterfaceAddress
-     * \returns the Ipv4InterfaceAddress
+     * @returns the Ipv4InterfaceAddress
      */
     Ipv4InterfaceAddress GetInterface() const
     {
@@ -188,7 +188,7 @@ class RoutingTableEntry
 
     /**
      * Set the Ipv4InterfaceAddress
-     * \param iface The Ipv4InterfaceAddress
+     * @param iface The Ipv4InterfaceAddress
      */
     void SetInterface(Ipv4InterfaceAddress iface)
     {
@@ -197,7 +197,7 @@ class RoutingTableEntry
 
     /**
      * Set the valid sequence number
-     * \param s the sequence number
+     * @param s the sequence number
      */
     void SetValidSeqNo(bool s)
     {
@@ -206,7 +206,7 @@ class RoutingTableEntry
 
     /**
      * Get the valid sequence number
-     * \returns the valid sequence number
+     * @returns the valid sequence number
      */
     bool GetValidSeqNo() const
     {
@@ -215,7 +215,7 @@ class RoutingTableEntry
 
     /**
      * Set the sequence number
-     * \param sn the sequence number
+     * @param sn the sequence number
      */
     void SetSeqNo(uint32_t sn)
     {
@@ -224,7 +224,7 @@ class RoutingTableEntry
 
     /**
      * Get the sequence number
-     * \returns the sequence number
+     * @returns the sequence number
      */
     uint32_t GetSeqNo() const
     {
@@ -233,7 +233,7 @@ class RoutingTableEntry
 
     /**
      * Set the number of hops
-     * \param hop the number of hops
+     * @param hop the number of hops
      */
     void SetHop(uint16_t hop)
     {
@@ -242,7 +242,7 @@ class RoutingTableEntry
 
     /**
      * Get the number of hops
-     * \returns the number of hops
+     * @returns the number of hops
      */
     uint16_t GetHop() const
     {
@@ -251,7 +251,7 @@ class RoutingTableEntry
 
     /**
      * Set the lifetime
-     * \param lt The lifetime
+     * @param lt The lifetime
      */
     void SetLifeTime(Time lt)
     {
@@ -260,7 +260,7 @@ class RoutingTableEntry
 
     /**
      * Get the lifetime
-     * \returns the lifetime
+     * @returns the lifetime
      */
     Time GetLifeTime() const
     {
@@ -269,7 +269,7 @@ class RoutingTableEntry
 
     /**
      * Set the route flags
-     * \param flag the route flags
+     * @param flag the route flags
      */
     void SetFlag(RouteFlags flag)
     {
@@ -278,7 +278,7 @@ class RoutingTableEntry
 
     /**
      * Get the route flags
-     * \returns the route flags
+     * @returns the route flags
      */
     RouteFlags GetFlag() const
     {
@@ -287,7 +287,7 @@ class RoutingTableEntry
 
     /**
      * Set the RREQ count
-     * \param n the RREQ count
+     * @param n the RREQ count
      */
     void SetRreqCnt(uint8_t n)
     {
@@ -296,7 +296,7 @@ class RoutingTableEntry
 
     /**
      * Get the RREQ count
-     * \returns the RREQ count
+     * @returns the RREQ count
      */
     uint8_t GetRreqCnt() const
     {
@@ -313,7 +313,7 @@ class RoutingTableEntry
 
     /**
      * Set the unidirectional flag
-     * \param u the uni directional flag
+     * @param u the uni directional flag
      */
     void SetUnidirectional(bool u)
     {
@@ -322,7 +322,7 @@ class RoutingTableEntry
 
     /**
      * Get the unidirectional flag
-     * \returns the unidirectional flag
+     * @returns the unidirectional flag
      */
     bool IsUnidirectional() const
     {
@@ -331,7 +331,7 @@ class RoutingTableEntry
 
     /**
      * Set the blacklist timeout
-     * \param t the blacklist timeout value
+     * @param t the blacklist timeout value
      */
     void SetBlacklistTimeout(Time t)
     {
@@ -340,7 +340,7 @@ class RoutingTableEntry
 
     /**
      * Get the blacklist timeout value
-     * \returns the blacklist timeout value
+     * @returns the blacklist timeout value
      */
     Time GetBlacklistTimeout() const
     {
@@ -351,9 +351,9 @@ class RoutingTableEntry
     Timer m_ackTimer;
 
     /**
-     * \brief Compare destination address
-     * \param dst IP address to compare
-     * \return true if equal
+     * @brief Compare destination address
+     * @param dst IP address to compare
+     * @return true if equal
      */
     bool operator==(const Ipv4Address dst) const
     {
@@ -362,8 +362,8 @@ class RoutingTableEntry
 
     /**
      * Print packet to trace file
-     * \param stream The output stream
-     * \param unit The time unit to use (default Time::S)
+     * @param stream The output stream
+     * @param unit The time unit to use (default Time::S)
      */
     void Print(Ptr<OutputStreamWrapper> stream, Time::Unit unit = Time::S) const;
 
@@ -375,7 +375,7 @@ class RoutingTableEntry
     /// Hop Count (number of hops needed to reach destination)
     uint16_t m_hops;
     /**
-     * \brief Expiration or deletion time of the route
+     * @brief Expiration or deletion time of the route
      * Lifetime field in the routing table plays dual role:
      * for an active route it is the expiration time, and for an invalid route
      * it is the deletion time.
@@ -406,24 +406,24 @@ class RoutingTableEntry
 };
 
 /**
- * \ingroup aodv
- * \brief The Routing table used by AODV protocol
+ * @ingroup aodv
+ * @brief The Routing table used by AODV protocol
  */
 class RoutingTable
 {
   public:
     /**
      * constructor
-     * \param t the routing table entry lifetime
+     * @param t the routing table entry lifetime
      */
     RoutingTable(Time t);
 
-    /// \name Handle lifetime of invalid route
+    /// @name Handle lifetime of invalid route
     //\{
     /**
      * Get the lifetime of a bad link
      *
-     * \return the lifetime of a bad link
+     * @return the lifetime of a bad link
      */
     Time GetBadLinkLifetime() const
     {
@@ -433,7 +433,7 @@ class RoutingTable
     /**
      * Set the lifetime of a bad link
      *
-     * \param t the lifetime of a bad link
+     * @param t the lifetime of a bad link
      */
     void SetBadLinkLifetime(Time t)
     {
@@ -443,48 +443,48 @@ class RoutingTable
     //\}
     /**
      * Add routing table entry if it doesn't yet exist in routing table
-     * \param r routing table entry
-     * \return true in success
+     * @param r routing table entry
+     * @return true in success
      */
     bool AddRoute(RoutingTableEntry& r);
     /**
      * Delete routing table entry with destination address dst, if it exists.
-     * \param dst destination address
-     * \return true on success
+     * @param dst destination address
+     * @return true on success
      */
     bool DeleteRoute(Ipv4Address dst);
     /**
      * Lookup routing table entry with destination address dst
-     * \param dst destination address
-     * \param rt entry with destination address dst, if exists
-     * \return true on success
+     * @param dst destination address
+     * @param rt entry with destination address dst, if exists
+     * @return true on success
      */
     bool LookupRoute(Ipv4Address dst, RoutingTableEntry& rt);
     /**
      * Lookup route in VALID state
-     * \param dst destination address
-     * \param rt entry with destination address dst, if exists
-     * \return true on success
+     * @param dst destination address
+     * @param rt entry with destination address dst, if exists
+     * @return true on success
      */
     bool LookupValidRoute(Ipv4Address dst, RoutingTableEntry& rt);
     /**
      * Update routing table
-     * \param rt entry with destination address dst, if exists
-     * \return true on success
+     * @param rt entry with destination address dst, if exists
+     * @return true on success
      */
     bool Update(RoutingTableEntry& rt);
     /**
      * Set routing table entry flags
-     * \param dst destination address
-     * \param state the routing flags
-     * \return true on success
+     * @param dst destination address
+     * @param state the routing flags
+     * @return true on success
      */
     bool SetEntryState(Ipv4Address dst, RouteFlags state);
     /**
      * Lookup routing entries with next hop Address dst and not empty list of precursors.
      *
-     * \param nextHop the next hop IP address
-     * \param unreachable
+     * @param nextHop the next hop IP address
+     * @param unreachable
      */
     void GetListOfDestinationWithNextHop(Ipv4Address nextHop,
                                          std::map<Ipv4Address, uint32_t>& unreachable);
@@ -494,12 +494,12 @@ class RoutingTable
      *    exists and is valid, is incremented.
      * 2. The entry is invalidated by marking the route entry as invalid
      * 3. The Lifetime field is updated to current time plus DELETE_PERIOD.
-     * \param unreachable routes to invalidate
+     * @param unreachable routes to invalidate
      */
     void InvalidateRoutesWithDst(const std::map<Ipv4Address, uint32_t>& unreachable);
     /**
      * Delete all route from interface with address iface
-     * \param iface the interface IP address
+     * @param iface the interface IP address
      */
     void DeleteAllRoutesFromInterface(Ipv4InterfaceAddress iface);
 
@@ -513,15 +513,15 @@ class RoutingTable
     void Purge();
     /** Mark entry as unidirectional (e.g. add this neighbor to "blacklist" for blacklistTimeout
      * period)
-     * \param neighbor neighbor address link to which assumed to be unidirectional
-     * \param blacklistTimeout time for which the neighboring node is put into the blacklist
-     * \return true on success
+     * @param neighbor neighbor address link to which assumed to be unidirectional
+     * @param blacklistTimeout time for which the neighboring node is put into the blacklist
+     * @return true on success
      */
     bool MarkLinkAsUnidirectional(Ipv4Address neighbor, Time blacklistTimeout);
     /**
      * Print routing table
-     * \param stream the output stream
-     * \param unit The time unit to use (default Time::S)
+     * @param stream the output stream
+     * @param unit The time unit to use (default Time::S)
      */
     void Print(Ptr<OutputStreamWrapper> stream, Time::Unit unit = Time::S) const;
 
@@ -532,7 +532,7 @@ class RoutingTable
     Time m_badLinkLifetime;
     /**
      * const version of Purge, for use by Print() method
-     * \param table the routing table entry to purge
+     * @param table the routing table entry to purge
      */
     void Purge(std::map<Ipv4Address, RoutingTableEntry>& table) const;
 };

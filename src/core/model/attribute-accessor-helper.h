@@ -11,8 +11,8 @@
 #include "attribute.h"
 
 /**
- * \file
- * \ingroup attributeimpl
+ * @file
+ * @ingroup attributeimpl
  * ns3::MakeAccessorHelper declarations and template implementations.
  */
 
@@ -20,23 +20,23 @@ namespace ns3
 {
 
 /**
- * \ingroup attributeimpl
+ * @ingroup attributeimpl
  *
  * Create an AttributeAccessor for a class data member,
  * or a lone class get functor or set method.
  *
  * The get functor method should have a signature like
- * \code
+ * @code
  *   typedef U (T::*getter)() const
- * \endcode
+ * @endcode
  * where \pname{T} is the class and \pname{U} is the type of
  * the return value.
  *
  * The set method should have one of these signatures:
- * \code
+ * @code
  *   typedef void (T::*setter)(U)
  *   typedef bool (T::*setter)(U)
- * \endcode
+ * @endcode
  * where \pname{T} is the class and \pname{U} is the type of the value to set
  * the attribute to, which should be compatible with the
  * specific AttributeValue type \pname{V} which holds the value
@@ -44,37 +44,37 @@ namespace ns3
  * In the case of a \pname{setter} returning \pname{bool,} the return value
  * should be \c true if the value could be set successfully.
  *
- * \tparam V  \explicit (If present) The specific AttributeValue type
+ * @tparam V  \explicit (If present) The specific AttributeValue type
  *            to use to represent the Attribute.  (If not present,
  *            the type \pname{V} is implicit in the name of this function,
  *            as "Make<V>Accessor"
- * \tparam T1 \deduced The type of the class data member,
+ * @tparam T1 \deduced The type of the class data member,
  *            or the type of the class get functor or set method.
- * \param [in] a1 The address of the data member,
+ * @param [in] a1 The address of the data member,
  *            or the get or set method.
- * \returns   The AttributeAccessor
+ * @returns   The AttributeAccessor
  */
 template <typename V, typename T1>
 inline Ptr<const AttributeAccessor> MakeAccessorHelper(T1 a1);
 
 /**
- * \ingroup attributeimpl
+ * @ingroup attributeimpl
  *
  * Create an AttributeAccessor using a pair of get functor
  * and set methods from a class.
  *
  * The get functor method should have a signature like
- * \code
+ * @code
  *   typedef U (T::*getter)() const
- * \endcode
+ * @endcode
  * where \pname{T} is the class and \pname{U} is the type of
  * the return value.
  *
  * The set method should have one of these signatures:
- * \code
+ * @code
  *   typedef void (T::*setter)(U)
  *   typedef bool (T::*setter)(U)
- * \endcode
+ * @endcode
  * where \pname{T} is the class and \pname{U} is the type of the value to set
  * the attribute to, which should be compatible with the
  * specific AttributeValue type \pname{V} which holds the value
@@ -85,17 +85,17 @@ inline Ptr<const AttributeAccessor> MakeAccessorHelper(T1 a1);
  * In practice the setter and getter arguments can appear in either order,
  * but setter first is preferred.
  *
- * \tparam V  \explicit (If present) The specific AttributeValue type to use to represent
+ * @tparam V  \explicit (If present) The specific AttributeValue type to use to represent
  *            the Attribute.  (If not present, the type \pname{V} is implicit
  *            in the name of this function as "Make<V>Accessor"
- * \tparam T1 \deduced The type of the class data member,
+ * @tparam T1 \deduced The type of the class data member,
  *            or the type of the class get functor or set method.
  *
- * \tparam T2 \deduced The type of the getter class functor method.
- * \param [in] a2 The address of the class method to set the attribute.
- * \param [in] a1 The address of the data member,
+ * @tparam T2 \deduced The type of the getter class functor method.
+ * @param [in] a2 The address of the class method to set the attribute.
+ * @param [in] a1 The address of the data member,
  *            or the get or set method.
- * \returns   The AttributeAccessor
+ * @returns   The AttributeAccessor
  */
 template <typename V, typename T1, typename T2>
 inline Ptr<const AttributeAccessor> MakeAccessorHelper(T1 a1, T2 a2);
@@ -112,11 +112,11 @@ namespace ns3
 {
 
 /**
- * \ingroup attributeimpl
+ * @ingroup attributeimpl
  *
  * The non-const and non-reference type equivalent to \pname{T}.
  *
- * \tparam T \explicit The original (possibly qualified) type.
+ * @tparam T \explicit The original (possibly qualified) type.
  */
 template <typename T>
 struct AccessorTrait
@@ -126,13 +126,13 @@ struct AccessorTrait
 };
 
 /**
- * \ingroup attributeimpl
+ * @ingroup attributeimpl
  *
  * Basic functionality for accessing class attributes via
  * class data members, or get functor/set methods.
  *
- * \tparam T \explicit Class of object holding the attribute.
- * \tparam U \explicit AttributeValue type for the underlying class member
+ * @tparam T \explicit Class of object holding the attribute.
+ * @tparam U \explicit AttributeValue type for the underlying class member
  *           which is an attribute.
  */
 template <typename T, typename U>
@@ -152,9 +152,9 @@ class AccessorHelper : public AttributeAccessor
      *
      * Forwards to DoSet method.
      *
-     * \param [in] object Generic object pointer, to upcast to \pname{T}.
-     * \param [in] val Generic AttributeValue, to upcast to \pname{U}.
-     * \returns true if the member was set successfully.
+     * @param [in] object Generic object pointer, to upcast to \pname{T}.
+     * @param [in] val Generic AttributeValue, to upcast to \pname{U}.
+     * @returns true if the member was set successfully.
      */
     bool Set(ObjectBase* object, const AttributeValue& val) const override
     {
@@ -179,9 +179,9 @@ class AccessorHelper : public AttributeAccessor
      *
      * Forwards to DoGet method.
      *
-     * \param [out] object Generic object pointer, to upcast to \pname{T}.
-     * \param [out] val Generic AttributeValue, to upcast to \pname{U}.
-     * \returns true if the member value could be retrieved successfully
+     * @param [out] object Generic object pointer, to upcast to \pname{T}.
+     * @param [out] val Generic AttributeValue, to upcast to \pname{U}.
+     * @returns true if the member value could be retrieved successfully
      */
     bool Get(const ObjectBase* object, AttributeValue& val) const override
     {
@@ -202,35 +202,35 @@ class AccessorHelper : public AttributeAccessor
     /**
      * Setter implementation.
      *
-     * \see Set()
-     * \param [in] object The parent object holding the attribute.
-     * \param [in] v The specific AttributeValue to set.
-     * \returns true if the member was set successfully.
+     * @see Set()
+     * @param [in] object The parent object holding the attribute.
+     * @param [in] v The specific AttributeValue to set.
+     * @returns true if the member was set successfully.
      */
     virtual bool DoSet(T* object, const U* v) const = 0;
     /**
      * Getter implementation.
      *
-     * \see Get()
-     * \param [out] object The parent object holding the attribute.
-     * \param [out] v The specific AttributeValue to set.
-     * \returns true if the member value could be retrieved successfully
+     * @see Get()
+     * @param [out] object The parent object holding the attribute.
+     * @param [out] v The specific AttributeValue to set.
+     * @returns true if the member value could be retrieved successfully
      */
     virtual bool DoGet(const T* object, U* v) const = 0;
 
 }; // class AccessorHelper
 
 /**
- * \ingroup attributeimpl
+ * @ingroup attributeimpl
  *
  * MakeAccessorHelper implementation for a class data member.
  *
- * \tparam V  \explicit The specific AttributeValue type to use to represent
+ * @tparam V  \explicit The specific AttributeValue type to use to represent
  *            the Attribute.
- * \tparam T  \deduced The class holding the data member.
- * \tparam U  \deduced The type of the data member.
- * \param [in]  memberVariable  The address of the data member.
- * \returns The AttributeAccessor.
+ * @tparam T  \deduced The class holding the data member.
+ * @tparam U  \deduced The type of the data member.
+ * @param [in]  memberVariable  The address of the data member.
+ * @returns The AttributeAccessor.
  */
 template <typename V, typename T, typename U>
 inline Ptr<const AttributeAccessor>
@@ -242,7 +242,7 @@ DoMakeAccessorHelperOne(U T::*memberVariable)
       public:
         /*
          * Construct from a class data member address.
-         * \param [in] memberVariable The class data member address.
+         * @param [in] memberVariable The class data member address.
          */
         MemberVariable(U T::*memberVariable)
             : AccessorHelper<T, V>(),
@@ -286,16 +286,16 @@ DoMakeAccessorHelperOne(U T::*memberVariable)
 }
 
 /**
- * \ingroup attributeimpl
+ * @ingroup attributeimpl
  *
  * MakeAccessorHelper implementation for a class get functor method.
  *
- * \tparam V  \explicit The specific AttributeValue type to use to represent
+ * @tparam V  \explicit The specific AttributeValue type to use to represent
  *            the Attribute.
- * \tparam T  \deduced The class holding the get functor method.
- * \tparam U  \deduced The return type of the get functor method.
- * \param [in] getter  The address of the class get functor method.
- * \returns The AttributeAccessor.
+ * @tparam T  \deduced The class holding the get functor method.
+ * @tparam U  \deduced The return type of the get functor method.
+ * @param [in] getter  The address of the class get functor method.
+ * @returns The AttributeAccessor.
  */
 template <typename V, typename T, typename U>
 inline Ptr<const AttributeAccessor>
@@ -307,7 +307,7 @@ DoMakeAccessorHelperOne(U (T::*getter)() const)
       public:
         /*
          * Construct from a class get functor method.
-         * \param [in] getter The class get functor method pointer.
+         * @param [in] getter The class get functor method pointer.
          */
         MemberMethod(U (T::*getter)() const)
             : AccessorHelper<T, V>(),
@@ -344,17 +344,17 @@ DoMakeAccessorHelperOne(U (T::*getter)() const)
 }
 
 /**
- * \ingroup attributeimpl
+ * @ingroup attributeimpl
  *
  * MakeAccessorHelper implementation for a class set method
  * returning void.
  *
- * \tparam V  \explicit The specific AttributeValue type to use to represent
+ * @tparam V  \explicit The specific AttributeValue type to use to represent
  *            the Attribute.
- * \tparam T  \deduced The class holding the set method.
- * \tparam U  \deduced The argument type of the set method.
- * \param [in] setter  The address of the class set method, returning void.
- * \returns The AttributeAccessor.
+ * @tparam T  \deduced The class holding the set method.
+ * @tparam U  \deduced The argument type of the set method.
+ * @param [in] setter  The address of the class set method, returning void.
+ * @returns The AttributeAccessor.
  */
 template <typename V, typename T, typename U>
 inline Ptr<const AttributeAccessor>
@@ -366,7 +366,7 @@ DoMakeAccessorHelperOne(void (T::*setter)(U))
       public:
         /*
          * Construct from a class set method.
-         * \param [in] setter The class set method pointer.
+         * @param [in] setter The class set method pointer.
          */
         MemberMethod(void (T::*setter)(U))
             : AccessorHelper<T, V>(),
@@ -409,21 +409,21 @@ DoMakeAccessorHelperOne(void (T::*setter)(U))
 }
 
 /**
- * \ingroup attributeimpl
+ * @ingroup attributeimpl
  *
  * MakeAccessorHelper implementation with a class get functor method
  * and a class set method returning \pname{void}.
  *
  * The two versions of this function differ only in argument order.
  *
- * \tparam W  \explicit The specific AttributeValue type to use to represent
+ * @tparam W  \explicit The specific AttributeValue type to use to represent
  *            the Attribute.
- * \tparam T  \deduced The class holding the functor methods.
- * \tparam U  \deduced The argument type of the set method.
- * \tparam V  \deduced The return type of the get functor method.
- * \param [in] setter The address of the class set method, returning void.
- * \param [in] getter The address of the class get functor method.
- * \returns The AttributeAccessor.
+ * @tparam T  \deduced The class holding the functor methods.
+ * @tparam U  \deduced The argument type of the set method.
+ * @tparam V  \deduced The return type of the get functor method.
+ * @param [in] setter The address of the class set method, returning void.
+ * @param [in] getter The address of the class get functor method.
+ * @returns The AttributeAccessor.
  */
 template <typename W, typename T, typename U, typename V>
 inline Ptr<const AttributeAccessor>
@@ -438,8 +438,8 @@ DoMakeAccessorHelperTwo(void (T::*setter)(U), V (T::*getter)() const)
       public:
         /*
          * Construct from class get functor and set methods.
-         * \param [in] setter The class set method pointer, returning void.
-         * \param [in] getter The class get functor method pointer.
+         * @param [in] setter The class set method pointer, returning void.
+         * @param [in] getter The class get functor method pointer.
          */
         MemberMethod(void (T::*setter)(U), V (T::*getter)() const)
             : AccessorHelper<T, W>(),
@@ -485,8 +485,8 @@ DoMakeAccessorHelperTwo(void (T::*setter)(U), V (T::*getter)() const)
 }
 
 /**
- * \ingroup attributeimpl
- * \copydoc DoMakeAccessorHelperTwo(void(T::*)(U),V(T::*)()const)
+ * @ingroup attributeimpl
+ * @copydoc DoMakeAccessorHelperTwo(void(T::*)(U),V(T::*)()const)
  */
 template <typename W, typename T, typename U, typename V>
 inline Ptr<const AttributeAccessor>
@@ -496,21 +496,21 @@ DoMakeAccessorHelperTwo(V (T::*getter)() const, void (T::*setter)(U))
 }
 
 /**
- * \ingroup attributeimpl
+ * @ingroup attributeimpl
  *
  * MakeAccessorHelper implementation with a class get functor method
  * and a class set method returning \pname{bool}.
  *
  * The two versions of this function differ only in argument order.
  *
- * \tparam W  \explicit The specific AttributeValue type to use to represent
+ * @tparam W  \explicit The specific AttributeValue type to use to represent
  *            the Attribute.
- * \tparam T  \deduced The class holding the functor methods.
- * \tparam U  \deduced The argument type of the set method.
- * \tparam V  \deduced The return type of the get functor method.
- * \param [in] setter The address of the class set method, returning bool.
- * \param [in] getter The address of the class get functor method.
- * \returns The AttributeAccessor.
+ * @tparam T  \deduced The class holding the functor methods.
+ * @tparam U  \deduced The argument type of the set method.
+ * @tparam V  \deduced The return type of the get functor method.
+ * @param [in] setter The address of the class set method, returning bool.
+ * @param [in] getter The address of the class get functor method.
+ * @returns The AttributeAccessor.
  */
 template <typename W, typename T, typename U, typename V>
 inline Ptr<const AttributeAccessor>
@@ -525,8 +525,8 @@ DoMakeAccessorHelperTwo(bool (T::*setter)(U), V (T::*getter)() const)
       public:
         /*
          * Construct from class get functor and set method, returning bool.
-         * \param [in] setter The class set method pointer, returning bool.
-         * \param [in] getter The class get functor method pointer.
+         * @param [in] setter The class set method pointer, returning bool.
+         * @param [in] getter The class get functor method pointer.
          */
         MemberMethod(bool (T::*setter)(U), V (T::*getter)() const)
             : AccessorHelper<T, W>(),
@@ -572,8 +572,8 @@ DoMakeAccessorHelperTwo(bool (T::*setter)(U), V (T::*getter)() const)
 }
 
 /**
- * \ingroup attributeimpl
- * \copydoc ns3::DoMakeAccessorHelperTwo(bool(T::*)(U),V(T::*)()const)
+ * @ingroup attributeimpl
+ * @copydoc ns3::DoMakeAccessorHelperTwo(bool(T::*)(U),V(T::*)()const)
  */
 template <typename W, typename T, typename U, typename V>
 inline Ptr<const AttributeAccessor>

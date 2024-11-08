@@ -17,8 +17,8 @@ namespace ns3
 class MobilityModel;
 
 /**
- * \ingroup spectrum
- * \brief Friis spectrum propagation loss model
+ * @ingroup spectrum
+ * @brief Friis spectrum propagation loss model
  *
  * The propagation loss is calculated according to a simplified version of Friis'
  * formula in which antenna gains are unitary:
@@ -35,8 +35,8 @@ class FriisSpectrumPropagationLossModel : public SpectrumPropagationLossModel
     ~FriisSpectrumPropagationLossModel() override;
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 

@@ -24,9 +24,9 @@ namespace ns3
 class MobilityModel;
 
 /**
- * \ingroup spectrum
+ * @ingroup spectrum
  *
- * \brief fading loss model based on precalculated fading traces
+ * @brief fading loss model based on precalculated fading traces
  */
 class TraceFadingLossModel : public SpectrumPropagationLossModel
 {
@@ -35,15 +35,15 @@ class TraceFadingLossModel : public SpectrumPropagationLossModel
     ~TraceFadingLossModel() override;
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
     void DoInitialize() override;
 
     /**
-     * \brief The couple of mobility node that form a fading channel realization
+     * @brief The couple of mobility node that form a fading channel realization
      */
     typedef std::pair<Ptr<const MobilityModel>, Ptr<const MobilityModel>> ChannelRealizationId_t;
 
@@ -53,9 +53,9 @@ class TraceFadingLossModel : public SpectrumPropagationLossModel
   private:
     /**
      * @param params the spectrum signal parameters.
-     * \param a sender mobility
-     * \param b receiver mobility
-     * \return set of values vs frequency representing the received
+     * @param a sender mobility
+     * @param b receiver mobility
+     * @return set of values vs frequency representing the received
      *         power in the same units used for the txPsd parameter.
      */
     Ptr<SpectrumValue> DoCalcRxPowerSpectralDensity(Ptr<const SpectrumSignalParameters> params,
@@ -63,21 +63,21 @@ class TraceFadingLossModel : public SpectrumPropagationLossModel
                                                     Ptr<const MobilityModel> b) const override;
 
     /**
-     * \brief Get the value for a particular sub channel and a given speed
-     * \param subChannel the sub channel for which a value is requested
-     * \param speed the relative speed of the two devices
-     * \return the loss for a particular sub channel
+     * @brief Get the value for a particular sub channel and a given speed
+     * @param subChannel the sub channel for which a value is requested
+     * @param speed the relative speed of the two devices
+     * @return the loss for a particular sub channel
      */
     double GetValue(int subChannel, double speed);
 
     /**
-     * \brief Set the trace file name
-     * \param fileName the trace file
+     * @brief Set the trace file name
+     * @param fileName the trace file
      */
     void SetTraceFileName(std::string fileName);
     /**
-     * \brief Set the trace time
-     * \param t the trace time
+     * @brief Set the trace time
+     * @param t the trace time
      */
     void SetTraceLength(Time t);
 

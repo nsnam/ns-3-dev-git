@@ -19,24 +19,24 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("TcpLedbatTestSuite");
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief LEDBAT should be same as NewReno during slow start, and when timestamps are disabled
+ * @brief LEDBAT should be same as NewReno during slow start, and when timestamps are disabled
  */
 class TcpLedbatToNewReno : public TestCase
 {
   public:
     /**
-     * \brief Constructor
+     * @brief Constructor
      *
-     * \param cWnd congestion window
-     * \param segmentSize segment size
-     * \param ssThresh slow start threshold
-     * \param segmentsAcked segments acked
-     * \param highTxMark high tx mark
-     * \param lastAckedSeq last acked seq
-     * \param rtt RTT
-     * \param name Name of the test
+     * @param cWnd congestion window
+     * @param segmentSize segment size
+     * @param ssThresh slow start threshold
+     * @param segmentsAcked segments acked
+     * @param highTxMark high tx mark
+     * @param lastAckedSeq last acked seq
+     * @param rtt RTT
+     * @param name Name of the test
      */
     TcpLedbatToNewReno(uint32_t cWnd,
                        uint32_t segmentSize,
@@ -50,7 +50,7 @@ class TcpLedbatToNewReno : public TestCase
   private:
     void DoRun() override;
     /**
-     * \brief Execute the test
+     * @brief Execute the test
      */
     void ExecuteTest();
 
@@ -120,24 +120,24 @@ TcpLedbatToNewReno::ExecuteTest()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief Test to validate cWnd increment in LEDBAT
+ * @brief Test to validate cWnd increment in LEDBAT
  */
 class TcpLedbatIncrementTest : public TestCase
 {
   public:
     /**
-     * \brief Constructor
+     * @brief Constructor
      *
-     * \param cWnd congestion window
-     * \param segmentSize segment size
-     * \param ssThresh slow start threshold
-     * \param segmentsAcked segments acked
-     * \param highTxMark high tx mark
-     * \param lastAckedSeq last acked seq
-     * \param rtt RTT
-     * \param name Name of the test
+     * @param cWnd congestion window
+     * @param segmentSize segment size
+     * @param ssThresh slow start threshold
+     * @param segmentsAcked segments acked
+     * @param highTxMark high tx mark
+     * @param lastAckedSeq last acked seq
+     * @param rtt RTT
+     * @param name Name of the test
      */
     TcpLedbatIncrementTest(uint32_t cWnd,
                            uint32_t segmentSize,
@@ -151,7 +151,7 @@ class TcpLedbatIncrementTest : public TestCase
   private:
     void DoRun() override;
     /**
-     * \brief Execute the test
+     * @brief Execute the test
      */
     void ExecuteTest();
 
@@ -222,24 +222,24 @@ TcpLedbatIncrementTest::ExecuteTest()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief Test to validate cWnd decrement in LEDBAT
+ * @brief Test to validate cWnd decrement in LEDBAT
  */
 class TcpLedbatDecrementTest : public TestCase
 {
   public:
     /**
-     * \brief Constructor
+     * @brief Constructor
      *
-     * \param cWnd congestion window
-     * \param segmentSize segment size
-     * \param ssThresh slow start threshold
-     * \param segmentsAcked segments acked
-     * \param highTxMark high tx mark
-     * \param lastAckedSeq last acked seq
-     * \param rtt RTT
-     * \param name Name of the test
+     * @param cWnd congestion window
+     * @param segmentSize segment size
+     * @param ssThresh slow start threshold
+     * @param segmentsAcked segments acked
+     * @param highTxMark high tx mark
+     * @param lastAckedSeq last acked seq
+     * @param rtt RTT
+     * @param name Name of the test
      */
     TcpLedbatDecrementTest(uint32_t cWnd,
                            uint32_t segmentSize,
@@ -253,7 +253,7 @@ class TcpLedbatDecrementTest : public TestCase
   private:
     void DoRun() override;
     /**
-     * \brief Execute the test
+     * @brief Execute the test
      */
     void ExecuteTest();
 
@@ -327,9 +327,9 @@ TcpLedbatDecrementTest::ExecuteTest()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief TCP Ledbat TestSuite
+ * @brief TCP Ledbat TestSuite
  */
 class TcpLedbatTestSuite : public TestSuite
 {

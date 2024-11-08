@@ -18,8 +18,8 @@
 namespace ns3
 {
 /**
- * \ingroup aodv
- * \brief Helper class that adds AODV routing to nodes.
+ * @ingroup aodv
+ * @brief Helper class that adds AODV routing to nodes.
  */
 class AodvHelper : public Ipv4RoutingHelper
 {
@@ -27,26 +27,26 @@ class AodvHelper : public Ipv4RoutingHelper
     AodvHelper();
 
     /**
-     * \returns pointer to clone of this AodvHelper
+     * @returns pointer to clone of this AodvHelper
      *
-     * \internal
+     * @internal
      * This method is mainly for internal use by the other helpers;
      * clients are expected to free the dynamic memory allocated by this method
      */
     AodvHelper* Copy() const override;
 
     /**
-     * \param node the node on which the routing protocol will run
-     * \returns a newly-created routing protocol
+     * @param node the node on which the routing protocol will run
+     * @returns a newly-created routing protocol
      *
      * This method will be called by ns3::InternetStackHelper::Install
      *
-     * \todo support installing AODV on the subset of all available IP interfaces
+     * @todo support installing AODV on the subset of all available IP interfaces
      */
     Ptr<Ipv4RoutingProtocol> Create(Ptr<Node> node) const override;
     /**
-     * \param name the name of the attribute to set
-     * \param value the value of the attribute to set.
+     * @param name the name of the attribute to set
+     * @param value the value of the attribute to set.
      *
      * This method controls the attributes of ns3::aodv::RoutingProtocol
      */
@@ -57,10 +57,10 @@ class AodvHelper : public Ipv4RoutingHelper
      * have been assigned.  The Install() method of the InternetStackHelper
      * should have previously been called by the user.
      *
-     * \param stream first stream index to use
-     * \param c NodeContainer of the set of nodes for which AODV
+     * @param stream first stream index to use
+     * @param c NodeContainer of the set of nodes for which AODV
      *          should be modified to use a fixed stream
-     * \return the number of stream indices assigned by this helper
+     * @return the number of stream indices assigned by this helper
      */
     int64_t AssignStreams(NodeContainer c, int64_t stream);
 

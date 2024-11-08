@@ -15,8 +15,8 @@
 #include <tuple>
 
 /**
- * \file
- * \ingroup geometry
+ * @file
+ * @ingroup geometry
  * ns3::Vector, ns3::Vector2D and ns3::Vector3D attribute value implementations.
  */
 

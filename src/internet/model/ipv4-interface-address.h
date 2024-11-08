@@ -17,10 +17,10 @@ namespace ns3
 {
 
 /**
- * \ingroup address
- * \ingroup ipv4
+ * @ingroup address
+ * @ingroup ipv4
  *
- * \brief a class to store IPv4 address information on an interface
+ * @brief a class to store IPv4 address information on an interface
  *
  * Corresponds to Linux struct in_ifaddr.  A list of these addresses
  * is stored in Ipv4Interface.  This class is modelled after how current
@@ -34,8 +34,8 @@ class Ipv4InterfaceAddress
 {
   public:
     /**
-     * \enum InterfaceAddressScope_e
-     * \brief Address scope.
+     * @enum InterfaceAddressScope_e
+     * @brief Address scope.
      */
     enum InterfaceAddressScope_e
     {
@@ -47,109 +47,109 @@ class Ipv4InterfaceAddress
     Ipv4InterfaceAddress();
 
     /**
-     * \brief Configure local address, mask and broadcast address
-     * \param local the local address
-     * \param mask the network mask
+     * @brief Configure local address, mask and broadcast address
+     * @param local the local address
+     * @param mask the network mask
      */
     Ipv4InterfaceAddress(Ipv4Address local, Ipv4Mask mask);
     /**
      * Copy constructor
-     * \param o the object to copy
+     * @param o the object to copy
      */
     Ipv4InterfaceAddress(const Ipv4InterfaceAddress& o);
 
     /**
-     * \brief Set local address
-     * \param local the address
+     * @brief Set local address
+     * @param local the address
      *
-     * \note Functionally identical to `Ipv4InterfaceAddress::SetAddress`.
+     * @note Functionally identical to `Ipv4InterfaceAddress::SetAddress`.
      *       The method corresponds to the linux variable in_ifaddr.ifa_local
      *       `Ipv4InterfaceAddress::SetAddress` is to be preferred.
      */
     void SetLocal(Ipv4Address local);
 
     /**
-     * \brief Set local address
-     * \param address the address
+     * @brief Set local address
+     * @param address the address
      *
-     * \note Functially identical to `Ipv4InterfaceAddress::SetLocal`.
+     * @note Functially identical to `Ipv4InterfaceAddress::SetLocal`.
      *       This function is consistent with `Ipv6InterfaceAddress::SetAddress`.
      */
     void SetAddress(Ipv4Address address);
 
     /**
-     * \brief Get the local address
-     * \returns the local address
+     * @brief Get the local address
+     * @returns the local address
      *
-     * \note Functionally identical to `Ipv4InterfaceAddress::GetAddress`.
+     * @note Functionally identical to `Ipv4InterfaceAddress::GetAddress`.
      *       The method corresponds to the linux variable in_ifaddr.ifa_local
      *       `Ipv4InterfaceAddress::GetAddress` is to be preferred.
      */
     Ipv4Address GetLocal() const;
 
     /**
-     * \brief Get the local address
-     * \returns the local address
+     * @brief Get the local address
+     * @returns the local address
      *
-     * \note Functially identical to `Ipv4InterfaceAddress::GetLocal`.
+     * @note Functially identical to `Ipv4InterfaceAddress::GetLocal`.
      *       This function is consistent with `Ipv6InterfaceAddress::GetAddress`.
      */
     Ipv4Address GetAddress() const;
 
     /**
-     * \brief Set the network mask
-     * \param mask the network mask
+     * @brief Set the network mask
+     * @param mask the network mask
      */
     void SetMask(Ipv4Mask mask);
     /**
-     * \brief Get the network mask
-     * \returns the network mask
+     * @brief Get the network mask
+     * @returns the network mask
      */
     Ipv4Mask GetMask() const;
     /**
-     * \brief Set the broadcast address
-     * \param broadcast the broadcast address
+     * @brief Set the broadcast address
+     * @param broadcast the broadcast address
      */
     void SetBroadcast(Ipv4Address broadcast);
     /**
-     * \brief Get the broadcast address
-     * \returns the broadcast address
+     * @brief Get the broadcast address
+     * @returns the broadcast address
      */
     Ipv4Address GetBroadcast() const;
 
     /**
-     * \brief Set the scope.
-     * \param scope the scope of address
+     * @brief Set the scope.
+     * @param scope the scope of address
      */
     void SetScope(Ipv4InterfaceAddress::InterfaceAddressScope_e scope);
 
     /**
-     * \brief Get address scope.
-     * \return scope
+     * @brief Get address scope.
+     * @return scope
      */
     Ipv4InterfaceAddress::InterfaceAddressScope_e GetScope() const;
 
     /**
-     * \brief Checks if the address is in the same subnet.
-     * \param b the address to check
-     * \return true if the address is in the same subnet.
+     * @brief Checks if the address is in the same subnet.
+     * @param b the address to check
+     * @return true if the address is in the same subnet.
      */
     bool IsInSameSubnet(const Ipv4Address b) const;
 
     /**
-     * \brief Check if the address is a secondary address
+     * @brief Check if the address is a secondary address
      *
      * Secondary address is used for multihoming
-     * \returns true if the address is secondary
+     * @returns true if the address is secondary
      */
     bool IsSecondary() const;
 
     /**
-     * \brief Make the address secondary (used for multihoming)
+     * @brief Make the address secondary (used for multihoming)
      */
     void SetSecondary();
     /**
-     * \brief Make the address primary
+     * @brief Make the address primary
      */
     void SetPrimary();
 
@@ -164,30 +164,30 @@ class Ipv4InterfaceAddress
     bool m_secondary;                //!< For use in multihoming
 
     /**
-     * \brief Equal to operator.
+     * @brief Equal to operator.
      *
-     * \param a the first operand
-     * \param b the first operand
-     * \returns true if the operands are equal
+     * @param a the first operand
+     * @param b the first operand
+     * @returns true if the operands are equal
      */
     friend bool operator==(const Ipv4InterfaceAddress& a, const Ipv4InterfaceAddress& b);
 
     /**
-     * \brief Not equal to operator.
+     * @brief Not equal to operator.
      *
-     * \param a the first operand
-     * \param b the first operand
-     * \returns true if the operands are not equal
+     * @param a the first operand
+     * @param b the first operand
+     * @returns true if the operands are not equal
      */
     friend bool operator!=(const Ipv4InterfaceAddress& a, const Ipv4InterfaceAddress& b);
 };
 
 /**
- * \brief Stream insertion operator.
+ * @brief Stream insertion operator.
  *
- * \param os the reference to the output stream
- * \param addr the Ipv4InterfaceAddress
- * \returns the reference to the output stream
+ * @param os the reference to the output stream
+ * @param addr the Ipv4InterfaceAddress
+ * @returns the reference to the output stream
  */
 std::ostream& operator<<(std::ostream& os, const Ipv4InterfaceAddress& addr);
 

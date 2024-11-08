@@ -24,19 +24,19 @@ namespace ns3
 class Tag;
 
 /**
- * \ingroup packet
+ * @ingroup packet
  *
- * \brief List of the packet tags stored in a packet.
+ * @brief List of the packet tags stored in a packet.
  *
  * This class is mostly private to the Packet implementation and users
  * should never have to access it directly.
  *
- * \internal
+ * @internal
  *
  * The implementation of this class is a bit tricky.  Refer to this
  * diagram in the discussion that follows.
  *
- * \dot
+ * @dot
  *    digraph {
  *        rankdir = "LR";
  *        clusterrank = local;
@@ -66,7 +66,7 @@ class Tag;
  *          T1:n -> NULL ;
  *        };
  *      }
- * \enddot
+ * @enddot
  *
  *   - Tags are stored in serialized form in a tree of TagData
  *     structures. (<tt>T1-T7</tt> in the diagram)
@@ -85,7 +85,7 @@ class Tag;
  *   - Conceptually, therefore, each Packet has a PacketTagList which
  *     points to a singly-linked list of TagData.
  *
- * \par <b> Copy-on-write </b> is implemented as follows:
+ * @par <b> Copy-on-write </b> is implemented as follows:
  *
  *   - #Add prepends the new tag to the list (growing that branch of the tree,
  *     as \c T6). This is a constant time operation, and does not affect
@@ -118,7 +118,7 @@ class PacketTagList
      *
      * See PacketTagList for a discussion of the data structure.
      *
-     * \internal
+     * @internal
      * Unfortunately this has to be public, because
      * PacketTagIterator::Item::GetTag() needs the data and size values.
      * The Item nested class can't be forward declared, so friending isn't
@@ -144,7 +144,7 @@ class PacketTagList
     /**
      * Copy constructor
      *
-     * \param [in] o The PacketTagList to copy.
+     * @param [in] o The PacketTagList to copy.
      *
      * This makes a light-weight copy by #RemoveAll, then
      * pointing to the same \ref TagData as \pname{o}.
@@ -153,8 +153,8 @@ class PacketTagList
     /**
      * Assignment
      *
-     * \param [in] o The PacketTagList to copy.
-     * \returns the copied object
+     * @param [in] o The PacketTagList to copy.
+     * @returns the copied object
      *
      * This makes a light-weight copy by #RemoveAll, then
      * pointing to the same \ref TagData as \pname{o}.
@@ -170,23 +170,23 @@ class PacketTagList
     /**
      * Add a tag to the head of this branch.
      *
-     * \param [in] tag The tag to add
+     * @param [in] tag The tag to add
      */
     void Add(const Tag& tag) const;
     /**
      * Remove (the first instance of) tag from the list.
      *
-     * \param [in,out] tag The tag type to remove.  If found,
+     * @param [in,out] tag The tag type to remove.  If found,
      *          \pname{tag} is set to the value of the tag found.
-     * \returns True if \pname{tag} is found, false otherwise.
+     * @returns True if \pname{tag} is found, false otherwise.
      */
     bool Remove(Tag& tag);
     /**
      * Replace the value of a tag.
      *
-     * \param [in] tag The tag type to replace.  To get the old
+     * @param [in] tag The tag type to replace.  To get the old
      *        value of the tag, use #Peek first.
-     * \returns True if \pname{tag} is found, false otherwise.
+     * @returns True if \pname{tag} is found, false otherwise.
      *        If \pname{tag} wasn't found, Add is performed instead (so
      *        the list is guaranteed to have the new tag value either way).
      */
@@ -194,9 +194,9 @@ class PacketTagList
     /**
      * Find a tag and return its value.
      *
-     * \param [in,out] tag The tag type to find.  If found,
+     * @param [in,out] tag The tag type to find.  If found,
      *          \pname{tag} is set to the value of the tag found.
-     * \returns True if \pname{tag} is found, false otherwise.
+     * @returns True if \pname{tag} is found, false otherwise.
      */
     bool Peek(Tag& tag) const;
     /**
@@ -204,31 +204,31 @@ class PacketTagList
      */
     inline void RemoveAll();
     /**
-     * \returns pointer to head of tag list
+     * @returns pointer to head of tag list
      */
     const PacketTagList::TagData* Head() const;
     /**
      * Returns number of bytes required for packet serialization.
      *
-     * \returns number of bytes required for packet serialization
+     * @returns number of bytes required for packet serialization
      */
     uint32_t GetSerializedSize() const;
     /**
      * Serialize the tag list into a byte buffer.
      *
-     * \param [in,out] buffer The byte buffer to which the tag list will be serialized
-     * \param [in] maxSize Max The max size of the buffer for bounds checking
+     * @param [in,out] buffer The byte buffer to which the tag list will be serialized
+     * @param [in] maxSize Max The max size of the buffer for bounds checking
      *
-     * \returns zero if complete tag list is not serialized
+     * @returns zero if complete tag list is not serialized
      */
     uint32_t Serialize(uint32_t* buffer, uint32_t maxSize) const;
     /**
      * Deserialize tag list from the provided buffer.
      *
-     * \param [in] buffer The buffer to read from.
-     * \param [in] size The number of bytes to deserialize.
+     * @param [in] buffer The buffer to read from.
+     * @param [in] size The number of bytes to deserialize.
      *
-     * \returns zero if complete tag list is not deserialized
+     * @returns zero if complete tag list is not deserialized
      */
     uint32_t Deserialize(const uint32_t* buffer, uint32_t size);
 
@@ -237,21 +237,21 @@ class PacketTagList
      * Allocate and construct a TagData struct, sizing the data area
      * large enough to serialize dataSize bytes from a Tag.
      *
-     * \param [in] dataSize The serialized size of the Tag.
-     * \returns The newly constructed TagData object.
+     * @param [in] dataSize The serialized size of the Tag.
+     * @returns The newly constructed TagData object.
      */
     static TagData* CreateTagData(size_t dataSize);
 
     /**
      * Typedef of method function pointer for copy-on-write operations
      *
-     * \param [in] tag The tag type to operate on.
-     * \param [in] preMerge True if \pname{tag} was found before the first merge,
+     * @param [in] tag The tag type to operate on.
+     * @param [in] preMerge True if \pname{tag} was found before the first merge,
      *             false otherwise.
-     * \param [in] cur Pointer to the tag.
-     * \param [in] prevNext Pointer to the struct TagData.next pointer
+     * @param [in] cur Pointer to the tag.
+     * @param [in] prevNext Pointer to the struct TagData.next pointer
      *          pointing to \pname{cur}.
-     * \returns True if operation successful, false otherwise
+     * @returns True if operation successful, false otherwise
      */
     typedef bool (PacketTagList::*COWWriter)(Tag& tag,
                                              bool preMerge,
@@ -260,33 +260,33 @@ class PacketTagList
     /**
      * Traverse the list implementing copy-on-write, using \pname{Writer}.
      *
-     * \param [in] tag The tag type to operate on.
-     * \param [in] Writer The copy-on-write function to use.
-     * \returns True if \pname{tag} found, false otherwise.
+     * @param [in] tag The tag type to operate on.
+     * @param [in] Writer The copy-on-write function to use.
+     * @returns True if \pname{tag} found, false otherwise.
      */
     bool COWTraverse(Tag& tag, PacketTagList::COWWriter Writer);
     /**
      * Copy-on-write implementing Remove.
      *
-     * \param [in] tag The target tag type to remove.
-     * \param [in] preMerge True if \pname{tag} was found before the first merge,
+     * @param [in] tag The target tag type to remove.
+     * @param [in] preMerge True if \pname{tag} was found before the first merge,
      *             false otherwise.
-     * \param [in] cur Pointer to the tag.
-     * \param [in] prevNext Pointer to the struct TagData.next pointer
+     * @param [in] cur Pointer to the tag.
+     * @param [in] prevNext Pointer to the struct TagData.next pointer
      *          pointing to \pname{cur}.
-     * \returns True, since tag will definitely be removed.
+     * @returns True, since tag will definitely be removed.
      */
     bool RemoveWriter(Tag& tag, bool preMerge, TagData* cur, TagData** prevNext);
     /**
      * Copy-on-write implementing Replace
      *
-     * \param [in] tag The target tag type to replace
-     * \param [in] preMerge True if \pname{tag} was found before the first merge,
+     * @param [in] tag The target tag type to replace
+     * @param [in] preMerge True if \pname{tag} was found before the first merge,
      *          false otherwise.
-     * \param [in] cur Pointer to the tag
-     * \param [in] prevNext Pointer to the struct TagData.next pointer
+     * @param [in] cur Pointer to the tag
+     * @param [in] prevNext Pointer to the struct TagData.next pointer
      *          pointing to \pname{cur}.
-     * \returns True, since tag value will definitely be replaced.
+     * @returns True, since tag value will definitely be replaced.
      */
     bool ReplaceWriter(Tag& tag, bool preMerge, TagData* cur, TagData** prevNext);
 

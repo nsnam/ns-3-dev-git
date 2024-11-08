@@ -12,9 +12,9 @@
 #include "hash-function.h"
 
 /**
- * \file
- * \ingroup hash
- * \brief ns3::Hash::Function::Fnv1a declaration.
+ * @file
+ * @ingroup hash
+ * @brief ns3::Hash::Function::Fnv1a declaration.
  */
 
 namespace ns3
@@ -27,9 +27,9 @@ namespace Function
 {
 
 /**
- *  \ingroup hash
+ *  @ingroup hash
  *
- *  \brief Fnv1a hash function implementation
+ *  @brief Fnv1a hash function implementation
  *
  *  This is the venerable Fowler-Noll-Vo hash, version 1A.  (See the
  *  <a href="http://isthe.com/chongo/tech/comp/fnv/">FNV page</a>.)
@@ -58,9 +58,9 @@ class Fnv1a : public Implementation
      * you can hash successive buffers.  The final return value
      * will be the cumulative hash across all calls.
      *
-     * \param [in] buffer pointer to the beginning of the buffer
-     * \param [in] size length of the buffer, in bytes
-     * \return 32-bit hash of the buffer
+     * @param [in] buffer pointer to the beginning of the buffer
+     * @param [in] size length of the buffer, in bytes
+     * @return 32-bit hash of the buffer
      */
     uint32_t GetHash32(const char* buffer, const size_t size) override;
     /**
@@ -73,9 +73,9 @@ class Fnv1a : public Implementation
      * you can hash successive buffers.  The final return value
      * will be the cumulative hash across all calls.
      *
-     * \param [in] buffer pointer to the beginning of the buffer
-     * \param [in] size length of the buffer, in bytes
-     * \return 64-bit hash of the buffer
+     * @param [in] buffer pointer to the beginning of the buffer
+     * @param [in] size length of the buffer, in bytes
+     * @return 64-bit hash of the buffer
      */
     uint64_t GetHash64(const char* buffer, const size_t size) override;
     /**

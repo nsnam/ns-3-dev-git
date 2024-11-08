@@ -25,15 +25,15 @@
 using namespace ns3;
 
 /**
- * \defgroup nix-vector-routing-test Nix-Vector Routing Tests
+ * @defgroup nix-vector-routing-test Nix-Vector Routing Tests
  */
 
 /**
- * \ingroup nix-vector-routing-test
- * \ingroup tests
+ * @ingroup nix-vector-routing-test
+ * @ingroup tests
  *
  * The topology is of the form:
- * \verbatim
+ * @verbatim
               __________
              /          \
     nSrc -- nA -- nB -- nC -- nDst
@@ -49,39 +49,39 @@ using namespace ns3;
  * (Set down the interface of nC on nB-nC channel.)
  * - Test that routing is not possible from nSrc to nDst.
  *
- * \brief IPv4 Nix-Vector Routing Test
+ * @brief IPv4 Nix-Vector Routing Test
  */
 class NixVectorRoutingTest : public TestCase
 {
     Ptr<Packet> m_receivedPacket; //!< Received packet
 
     /**
-     * \brief Send data immediately after being called.
-     * \param socket The sending socket.
-     * \param to IPv4 Destination address.
+     * @brief Send data immediately after being called.
+     * @param socket The sending socket.
+     * @param to IPv4 Destination address.
      */
     void DoSendDatav4(Ptr<Socket> socket, Ipv4Address to);
 
     /**
-     * \brief Send data immediately after being called.
-     * \param socket The sending socket.
-     * \param to IPv6 Destination address.
+     * @brief Send data immediately after being called.
+     * @param socket The sending socket.
+     * @param to IPv6 Destination address.
      */
     void DoSendDatav6(Ptr<Socket> socket, Ipv6Address to);
 
     /**
-     * \brief Schedules the DoSendData () function to send the data.
-     * \param delay The scheduled time to send data.
-     * \param socket The sending socket.
-     * \param to IPv4 Destination address.
+     * @brief Schedules the DoSendData () function to send the data.
+     * @param delay The scheduled time to send data.
+     * @param socket The sending socket.
+     * @param to IPv4 Destination address.
      */
     void SendData(Time delay, Ptr<Socket> socket, Ipv4Address to);
 
     /**
-     * \brief Schedules the DoSendData () function to send the data.
-     * \param delay The scheduled time to send data.
-     * \param socket The sending socket.
-     * \param to IPv6 Destination address.
+     * @brief Schedules the DoSendData () function to send the data.
+     * @param delay The scheduled time to send data.
+     * @param socket The sending socket.
+     * @param to IPv6 Destination address.
      */
     void SendData(Time delay, Ptr<Socket> socket, Ipv6Address to);
 
@@ -90,8 +90,8 @@ class NixVectorRoutingTest : public TestCase
     NixVectorRoutingTest();
 
     /**
-     * \brief Receive data.
-     * \param socket The receiving socket.
+     * @brief Receive data.
+     * @param socket The receiving socket.
      */
     void ReceivePkt(Ptr<Socket> socket);
 
@@ -383,10 +383,10 @@ NixVectorRoutingTest::DoRun()
 }
 
 /**
- * \ingroup nix-vector-routing-test
- * \ingroup tests
+ * @ingroup nix-vector-routing-test
+ * @ingroup tests
  *
- * \brief IPv4 Nix-Vector Routing TestSuite
+ * @brief IPv4 Nix-Vector Routing TestSuite
  */
 class NixVectorRoutingTestSuite : public TestSuite
 {

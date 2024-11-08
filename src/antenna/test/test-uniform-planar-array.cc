@@ -24,24 +24,24 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("TestUniformPlanarArray");
 
 /**
- * \ingroup antenna-tests
+ * @ingroup antenna-tests
  *
- * \brief UniformPlanarArray Test Case
+ * @brief UniformPlanarArray Test Case
  */
 class UniformPlanarArrayTestCase : public TestCase
 {
   public:
     /**
      * Generate a string containing all relevant parameters
-     * \param element the antenna element
-     * \param rows the number of rows
-     * \param cols the number of columns
-     * \param rowSpace the row spacing
-     * \param colSpace the column spacing
-     * \param alpha the bearing angle
-     * \param beta the tilting angle
-     * \param direction the direction
-     * \return the string containing all relevant parameters
+     * @param element the antenna element
+     * @param rows the number of rows
+     * @param cols the number of columns
+     * @param rowSpace the row spacing
+     * @param colSpace the column spacing
+     * @param alpha the bearing angle
+     * @param beta the tilting angle
+     * @param direction the direction
+     * @return the string containing all relevant parameters
      */
     static std::string BuildNameString(Ptr<AntennaModel> element,
                                        uint32_t rows,
@@ -53,15 +53,15 @@ class UniformPlanarArrayTestCase : public TestCase
                                        Angles direction);
     /**
      * The constructor of the test case
-     * \param element the antenna element
-     * \param rows the number of rows
-     * \param cols the number of columns
-     * \param rowSpace the row spacing
-     * \param colSpace the column spacing
-     * \param alpha the bearing angle
-     * \param beta the tilting angle
-     * \param direction the direction
-     * \param expectedGainDb the expected antenna gain [dB]
+     * @param element the antenna element
+     * @param rows the number of rows
+     * @param cols the number of columns
+     * @param rowSpace the row spacing
+     * @param colSpace the column spacing
+     * @param alpha the bearing angle
+     * @param beta the tilting angle
+     * @param direction the direction
+     * @param expectedGainDb the expected antenna gain [dB]
      */
     UniformPlanarArrayTestCase(Ptr<AntennaModel> element,
                                uint32_t rows,
@@ -80,8 +80,8 @@ class UniformPlanarArrayTestCase : public TestCase
     void DoRun() override;
     /**
      * Compute the gain of the antenna array
-     * \param a the antenna array
-     * \return the gain of the antenna array [dB]
+     * @param a the antenna array
+     * @return the gain of the antenna array [dB]
      */
     double ComputeGain(Ptr<UniformPlanarArray> a);
 
@@ -193,9 +193,9 @@ UniformPlanarArrayTestCase::DoRun()
 }
 
 /**
- * \ingroup antenna-tests
+ * @ingroup antenna-tests
  *
- * \brief UniformPlanarArray Test Suite
+ * @brief UniformPlanarArray Test Suite
  */
 class UniformPlanarArrayTestSuite : public TestSuite
 {

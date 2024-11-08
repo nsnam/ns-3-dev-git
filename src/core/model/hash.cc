@@ -11,9 +11,9 @@
 #include "log.h"
 
 /**
- * \file
- * \ingroup hash
- * \brief ns3::Hasher implementation.
+ * @file
+ * @ingroup hash
+ * @brief ns3::Hasher implementation.
  */
 
 namespace ns3

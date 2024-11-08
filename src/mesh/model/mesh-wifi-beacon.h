@@ -22,7 +22,7 @@ class WifiMacHeader;
 class Time;
 
 /**
- * \brief Beacon is beacon header + list of arbitrary information elements
+ * @brief Beacon is beacon header + list of arbitrary information elements
  *
  * It is supposed that distinct mesh protocols can use beacons to transport
  * their own information elements.
@@ -33,16 +33,16 @@ class MeshWifiBeacon
     /**
      * C-tor
      *
-     * \param ssid is SSID for beacon header
-     * \param rates is a set of supported rates
-     * \param us beacon interval in microseconds
+     * @param ssid is SSID for beacon header
+     * @param rates is a set of supported rates
+     * @param us beacon interval in microseconds
      */
     MeshWifiBeacon(Ssid ssid, AllSupportedRates rates, uint64_t us);
 
     /**
      * Read standard Wifi beacon header
      *
-     * \returns the management beacon header
+     * @returns the management beacon header
      */
     MgtBeaconHeader BeaconHeader() const
     {
@@ -52,28 +52,28 @@ class MeshWifiBeacon
     /**
      * Add information element
      *
-     * \param ie the Wifi information element
+     * @param ie the Wifi information element
      */
     void AddInformationElement(Ptr<WifiInformationElement> ie);
 
     /**
      * Create Wifi header for beacon frame.
      *
-     * \param address is sender address
-     * \param mpAddress is mesh point address
-     * \returns the WifiMacHeader
+     * @param address is sender address
+     * @param mpAddress is mesh point address
+     * @returns the WifiMacHeader
      */
     WifiMacHeader CreateHeader(Mac48Address address, Mac48Address mpAddress);
     /**
      * Returns the beacon interval of Wifi beacon
      *
-     * \returns the beacon interval time
+     * @returns the beacon interval time
      */
     Time GetBeaconInterval() const;
     /**
      * Create frame = { beacon header + all information elements sorted by ElementId () }
      *
-     * \returns the frame
+     * @returns the frame
      */
     Ptr<Packet> CreatePacket();
 

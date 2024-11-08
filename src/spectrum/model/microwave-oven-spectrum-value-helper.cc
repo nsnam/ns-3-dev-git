@@ -21,7 +21,7 @@ static Ptr<SpectrumModel> g_MicrowaveOvenSpectrumModel5Mhz;
 static Ptr<SpectrumModel> g_MicrowaveOvenSpectrumModel6Mhz;
 
 /**
- * \ingroup spectrum
+ * @ingroup spectrum
  * Init a static class containing the MWO #2 model (5Mhz)
  */
 static class MicrowaveOvenSpectrumModel5MhzInitializer
@@ -45,7 +45,7 @@ static class MicrowaveOvenSpectrumModel5MhzInitializer
 } g_MicrowaveOvenSpectrumModel5MhzInitializerInstance; //!< MWO model #2
 
 /**
- * \ingroup spectrum
+ * @ingroup spectrum
  * Init a static class containing the MWO #1 model (6Mhz)
  */
 static class MicrowaveOvenSpectrumModel6MhzInitializer

@@ -23,9 +23,9 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("TestCircularApertureAntennaModel");
 
 /**
- * \ingroup antenna-tests
+ * @ingroup antenna-tests
  *
- * \brief CircularApertureAntennaModel Test Case
+ * @brief CircularApertureAntennaModel Test Case
  *
  * Note: Since Clang libc++ does not support the Mathematical special functions (P0226R1) yet, this
  * class falls back to Boost's implementation of cyl_bessel_j whenever the above standard library is
@@ -37,7 +37,7 @@ class CircularApertureAntennaModelTestCase : public TestCase
     CircularApertureAntennaModelTestCase();
 
     /**
-     * \brief Description of a single test point
+     * @brief Description of a single test point
      *
      * Description of a test point, which is characterized
      * by the CircularApertureAntennaModel parameters,
@@ -85,8 +85,8 @@ class CircularApertureAntennaModelTestCase : public TestCase
 
     /**
      * Generate a string containing all relevant parameters
-     * \param testPoint the parameter configuration to be tested
-     * \return the string containing all relevant parameters
+     * @param testPoint the parameter configuration to be tested
+     * @return the string containing all relevant parameters
      */
     static std::string BuildNameString(TestPoint testPoint);
 
@@ -95,7 +95,7 @@ class CircularApertureAntennaModelTestCase : public TestCase
      * by comparing the antenna gain obtained using CircularApertureAntennaModel::GetGainDb
      * and the one obtained using MATLAB.
      *
-     * \param testPoint the parameter configuration to be tested
+     * @param testPoint the parameter configuration to be tested
      */
     void TestAntennaGain(TestPoint testPoint);
 
@@ -212,9 +212,9 @@ CircularApertureAntennaModelTestCase::DoRun()
 }
 
 /**
- * \ingroup antenna-tests
+ * @ingroup antenna-tests
  *
- * \brief UniformPlanarArray Test Suite
+ * @brief UniformPlanarArray Test Suite
  */
 class CircularApertureAntennaModelTestSuite : public TestSuite
 {

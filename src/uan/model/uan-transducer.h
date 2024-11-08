@@ -24,7 +24,7 @@ class UanPhy;
 class UanChannel;
 
 /**
- * \ingroup uan
+ * @ingroup uan
  *
  * Class consisting of packet arrival information (Time, RxPower, mode, PDP).
  */
@@ -39,11 +39,11 @@ class UanPacketArrival
     /**
      * Constructor.
      *
-     * \param packet Packet arriving.
-     * \param rxPowerDb RX signal power in dB of arriving packet.
-     * \param txMode TX mode of arriving packet.
-     * \param pdp Power delay profile of arriving packet.
-     * \param arrTime Arrival time of packet.
+     * @param packet Packet arriving.
+     * @param rxPowerDb RX signal power in dB of arriving packet.
+     * @param txMode TX mode of arriving packet.
+     * @param pdp Power delay profile of arriving packet.
+     * @param arrTime Arrival time of packet.
      */
     UanPacketArrival(Ptr<Packet> packet,
                      double rxPowerDb,
@@ -67,7 +67,7 @@ class UanPacketArrival
     /**
      * Get the arriving packet.
      *
-     * \return Pointer to packet.
+     * @return Pointer to packet.
      */
     inline Ptr<Packet> GetPacket() const
     {
@@ -77,7 +77,7 @@ class UanPacketArrival
     /**
      * Get the received signal strength.
      *
-     * \return Received signal strength in dB re 1uPa
+     * @return Received signal strength in dB re 1uPa
      */
     inline double GetRxPowerDb() const
     {
@@ -87,7 +87,7 @@ class UanPacketArrival
     /**
      * Get the transmission mode of the packet.
      *
-     * \return UanTxMode.
+     * @return UanTxMode.
      */
     inline const UanTxMode& GetTxMode() const
     {
@@ -97,7 +97,7 @@ class UanPacketArrival
     /**
      * Get the packet arrival time.
      *
-     * \return Arrival time.
+     * @return Arrival time.
      */
     inline Time GetArrivalTime() const
     {
@@ -107,7 +107,7 @@ class UanPacketArrival
     /**
      * Get the propagation delay profile.
      *
-     * \return PDP of arriving signal.
+     * @return PDP of arriving signal.
      */
     inline UanPdp GetPdp() const
     {
@@ -124,7 +124,7 @@ class UanPacketArrival
 }; // class UanPacketArrival
 
 /**
- * \ingroup uan
+ * @ingroup uan
  *
  * Virtual base for Transducer objects.
  *
@@ -137,7 +137,7 @@ class UanTransducer : public Object
   public:
     /**
      * Register this type.
-     * \return The object TypeId.
+     * @return The object TypeId.
      */
     static TypeId GetTypeId();
 
@@ -156,65 +156,65 @@ class UanTransducer : public Object
     /**
      * Get the transducer state.
      *
-     * \return State (TX or RX) of this transducer.
+     * @return State (TX or RX) of this transducer.
      */
     virtual State GetState() const = 0;
 
     /**
      * Is the state receiving (or available for reception)?
      *
-     * \return True if this transducer is available for receiving
+     * @return True if this transducer is available for receiving
      *   an incoming packet.
      */
     virtual bool IsRx() const = 0;
     /**
      * Is the state transmitting?
      *
-     * \return True if there is a packet being transmitted from this transducer.
+     * @return True if there is a packet being transmitted from this transducer.
      */
     virtual bool IsTx() const = 0;
     /**
      * Get the list of overlapped (in time) packets at this transducer.
      *
-     * \return List of all packets currently crossing this node in the water.
+     * @return List of all packets currently crossing this node in the water.
      */
     virtual const ArrivalList& GetArrivalList() const = 0;
     /**
      * Set the receiver gain.
      *
-     * \param gainDb Gain added at receiver, in dB.
+     * @param gainDb Gain added at receiver, in dB.
      */
     virtual void SetRxGainDb(double gainDb) = 0;
     /**
      * Get the receiver gain added to signal at receiver in dB.
      *
-     * \return The gain (in dB).
+     * @return The gain (in dB).
      */
     virtual double GetRxGainDb() = 0;
     /**
      * Apply receiver gain in dB to the received power.
-     * \param rxPowerDb Signal power in dB of arriving packet.
-     * \param mode Mode arriving packet is using.
+     * @param rxPowerDb Signal power in dB of arriving packet.
+     * @param mode Mode arriving packet is using.
      *
-     * \return Updated receive power (in dB) with gain applied.
+     * @return Updated receive power (in dB) with gain applied.
      */
     virtual double ApplyRxGainDb(double rxPowerDb, UanTxMode mode) = 0;
     /**
      * Notify this object that a new packet has arrived at this nodes location
      *
-     * \param packet Packet arriving.
-     * \param rxPowerDb Signal power in dB of arriving packet.
-     * \param txMode Mode arriving packet is using.
-     * \param pdp PDP of arriving signal.
+     * @param packet Packet arriving.
+     * @param rxPowerDb Signal power in dB of arriving packet.
+     * @param txMode Mode arriving packet is using.
+     * @param pdp PDP of arriving signal.
      */
     virtual void Receive(Ptr<Packet> packet, double rxPowerDb, UanTxMode txMode, UanPdp pdp) = 0;
     /**
      * Transmit a packet from this transducer.
      *
-     * \param src Source PHY.
-     * \param packet Packet to transmit.
-     * \param txPowerDb Outgoing Tx power of packet.
-     * \param txMode Mode to transmit packet with.
+     * @param src Source PHY.
+     * @param packet Packet to transmit.
+     * @param txPowerDb Outgoing Tx power of packet.
+     * @param txMode Mode to transmit packet with.
      */
     virtual void Transmit(Ptr<UanPhy> src,
                           Ptr<Packet> packet,
@@ -223,13 +223,13 @@ class UanTransducer : public Object
     /**
      * Attach this transducer to a channel.
      *
-     * \param chan The channel
+     * @param chan The channel
      */
     virtual void SetChannel(Ptr<UanChannel> chan) = 0;
     /**
      * Get the attached channel.
      *
-     * \return The channel.
+     * @return The channel.
      */
     virtual Ptr<UanChannel> GetChannel() const = 0;
     /**
@@ -237,13 +237,13 @@ class UanTransducer : public Object
      *
      * More than one physical layer may be attached.
      *
-     * \param phy The physical layer.
+     * @param phy The physical layer.
      */
     virtual void AddPhy(Ptr<UanPhy> phy) = 0;
     /**
      * Get the list of physical layer above this transducer.
      *
-     * \return List of attached physical layers.
+     * @return List of attached physical layers.
      */
     virtual const UanPhyList& GetPhyList() const = 0;
     /**

@@ -587,7 +587,7 @@ TcpL4Protocol::SendPacketV4(Ptr<Packet> packet,
     // XXX outgoingHeader cannot be logged
 
     TcpHeader outgoingHeader = outgoing;
-    /** \todo UrgentPointer */
+    /** @todo UrgentPointer */
     /* outgoingHeader.SetUrgentPointer (0); */
     if (Node::ChecksumEnabled())
     {
@@ -646,7 +646,7 @@ TcpL4Protocol::SendPacketV6(Ptr<Packet> packet,
                            oif));
     }
     TcpHeader outgoingHeader = outgoing;
-    /** \todo UrgentPointer */
+    /** @todo UrgentPointer */
     /* outgoingHeader.SetUrgentPointer (0); */
     if (Node::ChecksumEnabled())
     {

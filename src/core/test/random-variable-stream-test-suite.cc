@@ -42,13 +42,13 @@ namespace RandomVariable
 {
 
 /**
- * \file
- * \ingroup rng-tests
+ * @file
+ * @ingroup rng-tests
  * Random number generator streams tests.
  */
 
 /**
- * \ingroup rng-tests
+ * @ingroup rng-tests
  * Base class for RandomVariableStream test suites.
  */
 class TestCaseBase : public TestCase
@@ -63,7 +63,7 @@ class TestCaseBase : public TestCase
 
     /**
      * Constructor
-     * \param [in] name The test case name.
+     * @param [in] name The test case name.
      */
     TestCaseBase(std::string name)
         : TestCase(name)
@@ -73,12 +73,12 @@ class TestCaseBase : public TestCase
     /**
      * Configure a GSL histogram with uniform bins, with optional
      * under/over-flow bins.
-     * \param [in,out] h The GSL histogram to configure.
-     * \param [in] start The minimum value of the lowest bin.
-     * \param [in] end The maximum value of the last bin.
-     * \param [in] underflow If \c true the lowest bin should contain the underflow,
-     * \param [in] overflow If \c true the highest bin should contain the overflow.
-     * \returns A vector of the bin edges, including the top of the highest bin.
+     * @param [in,out] h The GSL histogram to configure.
+     * @param [in] start The minimum value of the lowest bin.
+     * @param [in] end The maximum value of the last bin.
+     * @param [in] underflow If \c true the lowest bin should contain the underflow,
+     * @param [in] overflow If \c true the highest bin should contain the overflow.
+     * @returns A vector of the bin edges, including the top of the highest bin.
      * This vector has one more entry than the number of bins in the histogram.
      */
     std::vector<double> UniformHistogramBins(gsl_histogram* h,
@@ -114,8 +114,8 @@ class TestCaseBase : public TestCase
 
     /**
      * Compute the average of a random variable.
-     * \param [in] rng The random variable to sample.
-     * \returns The average of \c N_MEASUREMENTS samples.
+     * @param [in] rng The random variable to sample.
+     * @returns The average of \c N_MEASUREMENTS samples.
      */
     double Average(Ptr<RandomVariableStream> rng) const
     {
@@ -132,9 +132,9 @@ class TestCaseBase : public TestCase
 
     /**
      * Compute the variance of a random variable.
-     * \param [in] rng The random variable to sample.
-     * \param [in] average The previously calculated average value.
-     * \returns The variance of \c N_MEASUREMENTS samples.
+     * @param [in] rng The random variable to sample.
+     * @param [in] average The previously calculated average value.
+     * @returns The variance of \c N_MEASUREMENTS samples.
      */
     double Variance(Ptr<RandomVariableStream> rng, double average) const
     {
@@ -155,7 +155,7 @@ class TestCaseBase : public TestCase
       public:
         /**
          * Create a new instance of a random variable stream
-         * \returns The new random variable stream instance.
+         * @returns The new random variable stream instance.
          */
         virtual Ptr<RandomVariableStream> Create() const = 0;
     };
@@ -163,7 +163,7 @@ class TestCaseBase : public TestCase
     /**
      * Factory class to create new instances of a particular random variable stream.
      *
-     * \tparam RNG The type of random variable generator to create.
+     * @tparam RNG The type of random variable generator to create.
      */
     template <typename RNG>
     class RngGenerator : public RngGeneratorBase
@@ -171,7 +171,7 @@ class TestCaseBase : public TestCase
       public:
         /**
          * Constructor.
-         * \param [in] anti Create antithetic streams if \c true.
+         * @param [in] anti Create antithetic streams if \c true.
          */
         RngGenerator(bool anti = false)
             : m_anti(anti)
@@ -201,10 +201,10 @@ class TestCaseBase : public TestCase
      * The random variable is sampled \c N_MEASUREMENTS times, filling
      * a histogram. The chi square value is formed by comparing to the
      * expected distribution.
-     * \param [in,out] h The histogram, which defines the binning for sampling.
-     * \param [in] expected The expected distribution.
-     * \param [in] rng The random variable to sample.
-     * \returns The chi square value.
+     * @param [in,out] h The histogram, which defines the binning for sampling.
+     * @param [in] expected The expected distribution.
+     * @param [in] rng The random variable to sample.
+     * @returns The chi square value.
      */
     double ChiSquared(gsl_histogram* h,
                       const std::vector<double>& expected,
@@ -263,8 +263,8 @@ class TestCaseBase : public TestCase
      *      return chiSquared;
      *    }
      *
-     * \param [in] rng The random number generator to test.
-     * \returns The chi squared value.
+     * @param [in] rng The random number generator to test.
+     * @returns The chi squared value.
      */
     virtual double ChiSquaredTest(Ptr<RandomVariableStream> rng) const
     {
@@ -274,10 +274,10 @@ class TestCaseBase : public TestCase
     /**
      * Average the chi squared value over some number of runs,
      * each run with a new instance of the random number generator.
-     * \param [in] generator The factory to create instances of the
+     * @param [in] generator The factory to create instances of the
      *             random number generator.
-     * \param [in] nRuns The number of runs to average over.
-     * \returns The average chi square over the number of runs.
+     * @param [in] nRuns The number of runs to average over.
+     * @returns The average chi square over the number of runs.
      */
     double ChiSquaredsAverage(const RngGeneratorBase* generator, std::size_t nRuns) const
     {
@@ -355,7 +355,7 @@ class TestCaseBase : public TestCase
 }; // class TestCaseBase
 
 /**
- * \ingroup rng-tests
+ * @ingroup rng-tests
  * Test case for uniform distribution random variable stream generator.
  */
 class UniformTestCase : public TestCaseBase
@@ -477,7 +477,7 @@ UniformTestCase::DoRun()
 }
 
 /**
- * \ingroup rng-tests
+ * @ingroup rng-tests
  * Test case for antithetic uniform distribution random variable stream generator
  */
 class UniformAntitheticTestCase : public TestCaseBase
@@ -552,7 +552,7 @@ UniformAntitheticTestCase::DoRun()
 }
 
 /**
- * \ingroup rng-tests
+ * @ingroup rng-tests
  * Test case for constant random variable stream generator
  */
 class ConstantTestCase : public TestCaseBase
@@ -603,7 +603,7 @@ ConstantTestCase::DoRun()
 }
 
 /**
- * \ingroup rng-tests
+ * @ingroup rng-tests
  * Test case for sequential random variable stream generator
  */
 class SequentialTestCase : public TestCaseBase
@@ -660,7 +660,7 @@ SequentialTestCase::DoRun()
 }
 
 /**
- * \ingroup rng-tests
+ * @ingroup rng-tests
  * Test case for normal distribution random variable stream generator
  */
 class NormalTestCase : public TestCaseBase
@@ -746,7 +746,7 @@ NormalTestCase::DoRun()
 }
 
 /**
- * \ingroup rng-tests
+ * @ingroup rng-tests
  * Test case for antithetic normal distribution random variable stream generator
  */
 class NormalAntitheticTestCase : public TestCaseBase
@@ -834,7 +834,7 @@ NormalAntitheticTestCase::DoRun()
 }
 
 /**
- * \ingroup rng-tests
+ * @ingroup rng-tests
  * Test case for exponential distribution random variable stream generator
  */
 class ExponentialTestCase : public TestCaseBase
@@ -915,7 +915,7 @@ ExponentialTestCase::DoRun()
 }
 
 /**
- * \ingroup rng-tests
+ * @ingroup rng-tests
  * Test case for antithetic exponential distribution random variable stream generator
  */
 class ExponentialAntitheticTestCase : public TestCaseBase
@@ -999,7 +999,7 @@ ExponentialAntitheticTestCase::DoRun()
 }
 
 /**
- * \ingroup rng-tests
+ * @ingroup rng-tests
  * Test case for Pareto distribution random variable stream generator
  */
 class ParetoTestCase : public TestCaseBase
@@ -1092,7 +1092,7 @@ ParetoTestCase::DoRun()
 }
 
 /**
- * \ingroup rng-tests
+ * @ingroup rng-tests
  * Test case for antithetic Pareto distribution random variable stream generator
  */
 class ParetoAntitheticTestCase : public TestCaseBase
@@ -1189,7 +1189,7 @@ ParetoAntitheticTestCase::DoRun()
 }
 
 /**
- * \ingroup rng-tests
+ * @ingroup rng-tests
  * Test case for Weibull distribution random variable stream generator
  */
 class WeibullTestCase : public TestCaseBase
@@ -1302,7 +1302,7 @@ WeibullTestCase::DoRun()
 }
 
 /**
- * \ingroup rng-tests
+ * @ingroup rng-tests
  * Test case for antithetic Weibull distribution random variable stream generator
  */
 class WeibullAntitheticTestCase : public TestCaseBase
@@ -1413,7 +1413,7 @@ WeibullAntitheticTestCase::DoRun()
 }
 
 /**
- * \ingroup rng-tests
+ * @ingroup rng-tests
  * Test case for log-normal distribution random variable stream generator
  */
 class LogNormalTestCase : public TestCaseBase
@@ -1503,7 +1503,7 @@ LogNormalTestCase::DoRun()
     // Test that values have approximately the right mean value.
     //
     /**
-     * \todo This test fails sometimes if the required tolerance is less
+     * @todo This test fails sometimes if the required tolerance is less
      * than 3%, which may be because there is a bug in the
      * implementation or that the mean of this distribution is more
      * sensitive to its parameters than the others are.
@@ -1515,7 +1515,7 @@ LogNormalTestCase::DoRun()
 }
 
 /**
- * \ingroup rng-tests
+ * @ingroup rng-tests
  * Test case for antithetic log-normal distribution random variable stream generator
  */
 class LogNormalAntitheticTestCase : public TestCaseBase
@@ -1607,7 +1607,7 @@ LogNormalAntitheticTestCase::DoRun()
     // Test that values have approximately the right mean value.
     //
     /**
-     * \todo This test fails sometimes if the required tolerance is less
+     * @todo This test fails sometimes if the required tolerance is less
      * than 3%, which may be because there is a bug in the
      * implementation or that the mean of this distribution is more
      * sensitive to its parameters than the others are.
@@ -1619,7 +1619,7 @@ LogNormalAntitheticTestCase::DoRun()
 }
 
 /**
- * \ingroup rng-tests
+ * @ingroup rng-tests
  * Test case for gamma distribution random variable stream generator
  */
 class GammaTestCase : public TestCaseBase
@@ -1711,7 +1711,7 @@ GammaTestCase::DoRun()
 }
 
 /**
- * \ingroup rng-tests
+ * @ingroup rng-tests
  * Test case for antithetic gamma distribution random variable stream generator
  */
 class GammaAntitheticTestCase : public TestCaseBase
@@ -1807,7 +1807,7 @@ GammaAntitheticTestCase::DoRun()
 }
 
 /**
- * \ingroup rng-tests
+ * @ingroup rng-tests
  * Test case for Erlang distribution random variable stream generator
  */
 class ErlangTestCase : public TestCaseBase
@@ -1902,7 +1902,7 @@ ErlangTestCase::DoRun()
 }
 
 /**
- * \ingroup rng-tests
+ * @ingroup rng-tests
  * Test case for antithetic Erlang distribution random variable stream generator
  */
 class ErlangAntitheticTestCase : public TestCaseBase
@@ -2001,7 +2001,7 @@ ErlangAntitheticTestCase::DoRun()
 }
 
 /**
- * \ingroup rng-tests
+ * @ingroup rng-tests
  * Test case for Zipf distribution random variable stream generator
  */
 class ZipfTestCase : public TestCaseBase
@@ -2081,7 +2081,7 @@ ZipfTestCase::DoRun()
 }
 
 /**
- * \ingroup rng-tests
+ * @ingroup rng-tests
  * Test case for antithetic Zipf distribution random variable stream generator
  */
 class ZipfAntitheticTestCase : public TestCaseBase
@@ -2164,7 +2164,7 @@ ZipfAntitheticTestCase::DoRun()
 }
 
 /**
- * \ingroup rng-tests
+ * @ingroup rng-tests
  * Test case for Zeta distribution random variable stream generator
  */
 class ZetaTestCase : public TestCaseBase
@@ -2227,7 +2227,7 @@ ZetaTestCase::DoRun()
 }
 
 /**
- * \ingroup rng-tests
+ * @ingroup rng-tests
  * Test case for antithetic Zeta distribution random variable stream generator
  */
 class ZetaAntitheticTestCase : public TestCaseBase
@@ -2293,7 +2293,7 @@ ZetaAntitheticTestCase::DoRun()
 }
 
 /**
- * \ingroup rng-tests
+ * @ingroup rng-tests
  * Test case for deterministic random variable stream generator
  */
 class DeterministicTestCase : public TestCaseBase
@@ -2368,7 +2368,7 @@ DeterministicTestCase::DoRun()
 }
 
 /**
- * \ingroup rng-tests
+ * @ingroup rng-tests
  * Test case for empirical distribution random variable stream generator
  */
 class EmpiricalTestCase : public TestCaseBase
@@ -2468,7 +2468,7 @@ EmpiricalTestCase::DoRun()
 }
 
 /**
- * \ingroup rng-tests
+ * @ingroup rng-tests
  * Test case for antithetic empirical distribution random variable stream generator
  */
 class EmpiricalAntitheticTestCase : public TestCaseBase
@@ -2547,7 +2547,7 @@ EmpiricalAntitheticTestCase::DoRun()
 }
 
 /**
- * \ingroup rng-tests
+ * @ingroup rng-tests
  * Test case for caching of Normal RV parameters (see issue #302)
  */
 class NormalCachingTestCase : public TestCaseBase
@@ -2581,7 +2581,7 @@ NormalCachingTestCase::DoRun()
 }
 
 /**
- * \ingroup rng-tests
+ * @ingroup rng-tests
  * Test case for bernoulli distribution random variable stream generator
  */
 class BernoulliTestCase : public TestCaseBase
@@ -2652,7 +2652,7 @@ BernoulliTestCase::DoRun()
 }
 
 /**
- * \ingroup rng-tests
+ * @ingroup rng-tests
  * Test case for antithetic bernoulli distribution random variable stream generator
  */
 class BernoulliAntitheticTestCase : public TestCaseBase
@@ -2726,7 +2726,7 @@ BernoulliAntitheticTestCase::DoRun()
 }
 
 /**
- * \ingroup rng-tests
+ * @ingroup rng-tests
  * Test case for binomial distribution random variable stream generator
  */
 class BinomialTestCase : public TestCaseBase
@@ -2805,7 +2805,7 @@ BinomialTestCase::DoRun()
 }
 
 /**
- * \ingroup rng-tests
+ * @ingroup rng-tests
  * Test case for antithetic binomial distribution random variable stream generator
  */
 class BinomialAntitheticTestCase : public TestCaseBase
@@ -2887,10 +2887,10 @@ BinomialAntitheticTestCase::DoRun()
 }
 
 /**
- * \ingroup rng-test
- * \ingroup tests
+ * @ingroup rng-test
+ * @ingroup tests
  *
- * \brief Test the Shuffle function
+ * @brief Test the Shuffle function
  *
  * Check that the Shuffle function actually shuffles the elements and does so in a portable way.
  */
@@ -2952,7 +2952,7 @@ ShuffleElementsTest::DoRun()
 }
 
 /**
- * \ingroup rng-tests
+ * @ingroup rng-tests
  * Test case for laplacian distribution random variable stream generator
  */
 class LaplacianTestCase : public TestCaseBase
@@ -3032,7 +3032,7 @@ LaplacianTestCase::DoRun()
 }
 
 /**
- * \ingroup rng-tests
+ * @ingroup rng-tests
  * Test case for largest extreme value distribution random variable stream generator
  */
 class LargestExtremeValueTestCase : public TestCaseBase
@@ -3088,7 +3088,7 @@ LargestExtremeValueTestCase::DoRun()
 }
 
 /**
- * \ingroup rng-tests
+ * @ingroup rng-tests
  * RandomVariableStream test suite, covering all random number variable
  * stream generator types.
  */
@@ -3115,14 +3115,14 @@ RandomVariableSuite::RandomVariableSuite()
     AddTestCase(new WeibullTestCase);
     AddTestCase(new WeibullAntitheticTestCase);
     AddTestCase(new LogNormalTestCase);
-    /// \todo This test is currently disabled because it fails sometimes.
+    /// @todo This test is currently disabled because it fails sometimes.
     /// A possible reason for the failure is that the antithetic code is
     /// not implemented properly for this log-normal case.
     /*
     AddTestCase (new LogNormalAntitheticTestCase);
     */
     AddTestCase(new GammaTestCase);
-    /// \todo This test is currently disabled because it fails sometimes.
+    /// @todo This test is currently disabled because it fails sometimes.
     /// A possible reason for the failure is that the antithetic code is
     /// not implemented properly for this gamma case.
     /*

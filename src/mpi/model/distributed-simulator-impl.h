@@ -6,8 +6,8 @@
  */
 
 /**
- * \file
- * \ingroup mpi
+ * @file
+ * @ingroup mpi
  *  Declaration of classes  ns3::LbtsMessage and ns3::DistributedSimulatorImpl.
  */
 
@@ -25,9 +25,9 @@ namespace ns3
 {
 
 /**
- * \ingroup mpi
+ * @ingroup mpi
  *
- * \brief Structure used for all-reduce LBTS computation
+ * @brief Structure used for all-reduce LBTS computation
  */
 class LbtsMessage
 {
@@ -41,11 +41,11 @@ class LbtsMessage
     }
 
     /**
-     * \param rxc received count
-     * \param txc transmitted count
-     * \param id mpi rank
-     * \param isFinished whether message is finished
-     * \param t smallest time
+     * @param rxc received count
+     * @param txc transmitted count
+     * @param id mpi rank
+     * @param isFinished whether message is finished
+     * @param t smallest time
      */
     LbtsMessage(uint32_t rxc, uint32_t txc, uint32_t id, bool isFinished, const Time& t)
         : m_txCount(txc),
@@ -59,23 +59,23 @@ class LbtsMessage
     ~LbtsMessage();
 
     /**
-     * \return smallest time
+     * @return smallest time
      */
     Time GetSmallestTime();
     /**
-     * \return transmitted count
+     * @return transmitted count
      */
     uint32_t GetTxCount() const;
     /**
-     * \return received count
+     * @return received count
      */
     uint32_t GetRxCount() const;
     /**
-     * \return id which corresponds to mpi rank
+     * @return id which corresponds to mpi rank
      */
     uint32_t GetMyId() const;
     /**
-     * \return true if system is finished
+     * @return true if system is finished
      */
     bool IsFinished() const;
 
@@ -88,17 +88,17 @@ class LbtsMessage
 };
 
 /**
- * \ingroup simulator
- * \ingroup mpi
+ * @ingroup simulator
+ * @ingroup mpi
  *
- * \brief Distributed simulator implementation using lookahead
+ * @brief Distributed simulator implementation using lookahead
  */
 class DistributedSimulatorImpl : public SimulatorImpl
 {
   public:
     /**
      *  Register this type.
-     *  \return The object TypeId.
+     *  @return The object TypeId.
      */
     static TypeId GetTypeId();
 
@@ -139,7 +139,7 @@ class DistributedSimulatorImpl : public SimulatorImpl
      * The method may be invoked more than once, the minimum time will
      * be used to constrain lookahead.
      *
-     * \param [in] lookAhead The maximum lookahead; must be > 0.
+     * @param [in] lookAhead The maximum lookahead; must be > 0.
      */
     virtual void BoundLookAhead(const Time lookAhead);
 
@@ -160,7 +160,7 @@ class DistributedSimulatorImpl : public SimulatorImpl
      * Check if this rank is finished.  It's finished when there are
      * no more events or stop has been requested.
      *
-     * \returns \c true when this rank is finished.
+     * @returns \c true when this rank is finished.
      */
     bool IsLocalFinished() const;
 
@@ -171,13 +171,13 @@ class DistributedSimulatorImpl : public SimulatorImpl
      *
      * If there are no more events the timestep is infinity.
      *
-     * \return The next event timestep.
+     * @return The next event timestep.
      */
     uint64_t NextTs() const;
     /**
      * Get the time of the next event, as returned by NextTs().
      *
-     * \return The next event time stamp.
+     * @return The next event time stamp.
      */
     Time Next() const;
 

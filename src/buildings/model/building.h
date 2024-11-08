@@ -20,21 +20,21 @@ namespace ns3
 {
 
 /**
- * \defgroup buildings Buildings
+ * @defgroup buildings Buildings
  *
  * The models to define 3d buildings, associated channel models, and mobility.
  */
 
 /**
- * \ingroup buildings
- * \brief a 3d building block
+ * @ingroup buildings
+ * @brief a 3d building block
  */
 class Building : public Object
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return The object TypeId.
+     * @brief Get the type ID.
+     * @return The object TypeId.
      */
     static TypeId GetTypeId();
     void DoDispose() override;
@@ -63,12 +63,12 @@ class Building : public Object
     /**
      * Construct a simple building with 1 room and 1 floor
      *
-     * \param xMin x coordinates of left boundary.
-     * \param xMax x coordinates of right boundary.
-     * \param yMin y coordinates of bottom boundary.
-     * \param yMax y coordinates of top boundary.
-     * \param zMin z coordinates of down boundary.
-     * \param zMax z coordinates of up boundary.
+     * @param xMin x coordinates of left boundary.
+     * @param xMax x coordinates of right boundary.
+     * @param yMin y coordinates of bottom boundary.
+     * @param yMax y coordinates of top boundary.
+     * @param zMin z coordinates of down boundary.
+     * @param zMax z coordinates of up boundary.
      *
      */
     Building(double xMin, double xMax, double yMin, double yMax, double zMin, double zMax);
@@ -86,7 +86,7 @@ class Building : public Object
     ~Building() override;
 
     /**
-     * \return the unique id of this Building. This unique id happens to
+     * @return the unique id of this Building. This unique id happens to
      * be also the index of the Building into the BuildingList.
      */
     uint32_t GetId() const;
@@ -94,19 +94,19 @@ class Building : public Object
     /**
      * Set the boundaries of the building
      *
-     * \param box the Box defining the boundaries of the building
+     * @param box the Box defining the boundaries of the building
      */
     void SetBoundaries(Box box);
 
     /**
-     * \param t the type of building (i.e., Residential, Office, Commercial)
+     * @param t the type of building (i.e., Residential, Office, Commercial)
      *
      * This method allows to set building type (default is Residential)
      */
     void SetBuildingType(Building::BuildingType_t t);
 
     /**
-     * \param t the type of external walls (i.e., Wood, ConcreteWithWindows,
+     * @param t the type of external walls (i.e., Wood, ConcreteWithWindows,
      * ConcreteWithoutWindows and StoneBlocks), used for evaluating the loss
      * due to the penetration of external walls in outdoor <-> indoor comm.
      *
@@ -115,7 +115,7 @@ class Building : public Object
     void SetExtWallsType(Building::ExtWallsType_t t);
 
     /**
-     * \param nfloors the number of floors in the building
+     * @param nfloors the number of floors in the building
      *
      * This method allows to set the number of floors in the building
      * (default is 1)
@@ -123,14 +123,14 @@ class Building : public Object
     void SetNFloors(uint16_t nfloors);
 
     /**
-     * \param nroomx the number of rooms along the x axis
+     * @param nroomx the number of rooms along the x axis
      *
      * This method allows to set the number of rooms along the x-axis
      */
     void SetNRoomsX(uint16_t nroomx);
 
     /**
-     * \param nroomy the number of floors in the building
+     * @param nroomy the number of floors in the building
      *
      * This method allows to set the number of rooms along the y-axis
      */
@@ -138,50 +138,50 @@ class Building : public Object
 
     /**
      *
-     * \return the boundaries of the building
+     * @return the boundaries of the building
      */
     Box GetBoundaries() const;
 
     /**
-     * \return the type of building
+     * @return the type of building
      */
     BuildingType_t GetBuildingType() const;
 
     /**
-     * \return the type of external walls of the building
+     * @return the type of external walls of the building
      */
     ExtWallsType_t GetExtWallsType() const;
 
     /**
-     * \return the number of floors of the building
+     * @return the number of floors of the building
      */
     uint16_t GetNFloors() const;
 
     /**
-     * \return the number of rooms along the x-axis of the building
+     * @return the number of rooms along the x-axis of the building
      */
     uint16_t GetNRoomsX() const;
 
     /**
-     * \return the number of rooms along the y-axis
+     * @return the number of rooms along the y-axis
      */
     uint16_t GetNRoomsY() const;
 
     /**
      *
      *
-     * \param position some position
+     * @param position some position
      *
-     * \return true if the position fall inside the building, false otherwise
+     * @return true if the position fall inside the building, false otherwise
      */
     bool IsInside(Vector position) const;
 
     /**
      *
      *
-     * \param position a position inside the building
+     * @param position a position inside the building
      *
-     * \return the number of the room along the X axis where the
+     * @return the number of the room along the X axis where the
      * position falls
      */
     uint16_t GetRoomX(Vector position) const;
@@ -189,27 +189,27 @@ class Building : public Object
     /**
      *
      *
-     * \param position a position inside the building
+     * @param position a position inside the building
      *
-     * \return  the number of the room along the Y axis where the
+     * @return  the number of the room along the Y axis where the
      * position falls
      */
     uint16_t GetRoomY(Vector position) const;
 
     /**
      *
-     * \param position a position inside the building
+     * @param position a position inside the building
      *
-     * \return  the floor where the position falls
+     * @return  the floor where the position falls
      */
     uint16_t GetFloor(Vector position) const;
     /**
-     * \brief Checks if a line-segment between position l1 and position l2
+     * @brief Checks if a line-segment between position l1 and position l2
      *        intersects a building.
      *
-     * \param l1 position
-     * \param l2 position
-     * \return true if there is a intersection, false otherwise
+     * @param l1 position
+     * @param l2 position
+     * @return true if there is a intersection, false otherwise
      */
     bool IsIntersect(const Vector& l1, const Vector& l2) const;
 

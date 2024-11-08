@@ -22,7 +22,7 @@ class WifiMac;
 class WifiNetDevice;
 
 /**
- * \brief create MAC layers for a ns3::WifiNetDevice.
+ * @brief create MAC layers for a ns3::WifiNetDevice.
  *
  * This class can create MACs of type ns3::ApWifiMac, ns3::StaWifiMac and ns3::AdhocWifiMac.
  * Its purpose is to allow a WifiHelper to configure and install WifiMac objects on a collection
@@ -50,9 +50,9 @@ class WifiMacHelper
     virtual ~WifiMacHelper();
 
     /**
-     * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
-     * \param type the type of ns3::WifiMac to create.
-     * \param args A sequence of name-value pairs of the attributes to set.
+     * @tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * @param type the type of ns3::WifiMac to create.
+     * @param args A sequence of name-value pairs of the attributes to set.
      *
      * All the attributes specified in this method should exist
      * in the requested MAC.
@@ -63,8 +63,8 @@ class WifiMacHelper
     /**
      * Helper function used to create and set the Txop object.
      *
-     * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
-     * \param args A sequence of name-value pairs of the attributes to set.
+     * @tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * @param args A sequence of name-value pairs of the attributes to set.
      */
     template <typename... Args>
     void SetDcf(Args&&... args);
@@ -72,9 +72,9 @@ class WifiMacHelper
     /**
      * Helper function used to create and set the QosTxop object corresponding to the given AC.
      *
-     * \param aci the AC index
-     * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
-     * \param args A sequence of name-value pairs of the attributes to set.
+     * @param aci the AC index
+     * @tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * @param args A sequence of name-value pairs of the attributes to set.
      */
     template <typename... Args>
     void SetEdca(AcIndex aci, Args&&... args);
@@ -82,8 +82,8 @@ class WifiMacHelper
     /**
      * Helper function used to set the Channel Access Manager object.
      *
-     * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
-     * \param args A sequence of name-value pairs of the attributes to set.
+     * @tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * @param args A sequence of name-value pairs of the attributes to set.
      */
     template <typename... Args>
     void SetChannelAccessManager(Args&&... args);
@@ -91,8 +91,8 @@ class WifiMacHelper
     /**
      * Helper function used to set the Frame Exchange Manager object.
      *
-     * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
-     * \param args A sequence of name-value pairs of the attributes to set.
+     * @tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * @param args A sequence of name-value pairs of the attributes to set.
      */
     template <typename... Args>
     void SetFrameExchangeManager(Args&&... args);
@@ -100,9 +100,9 @@ class WifiMacHelper
     /**
      * Helper function used to set the Association Manager.
      *
-     * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
-     * \param type the type of Association Manager
-     * \param args A sequence of name-value pairs of the attributes to set.
+     * @tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * @param type the type of Association Manager
+     * @param args A sequence of name-value pairs of the attributes to set.
      */
     template <typename... Args>
     void SetAssocManager(std::string type, Args&&... args);
@@ -110,9 +110,9 @@ class WifiMacHelper
     /**
      * Helper function used to set the MAC queue scheduler.
      *
-     * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
-     * \param type the type of MAC queue scheduler
-     * \param args A sequence of name-value pairs of the attributes to set.
+     * @tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * @param type the type of MAC queue scheduler
+     * @param args A sequence of name-value pairs of the attributes to set.
      */
     template <typename... Args>
     void SetMacQueueScheduler(std::string type, Args&&... args);
@@ -120,9 +120,9 @@ class WifiMacHelper
     /**
      * Helper function used to set the Protection Manager.
      *
-     * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
-     * \param type the type of Protection Manager
-     * \param args A sequence of name-value pairs of the attributes to set.
+     * @tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * @param type the type of Protection Manager
+     * @param args A sequence of name-value pairs of the attributes to set.
      */
     template <typename... Args>
     void SetProtectionManager(std::string type, Args&&... args);
@@ -130,9 +130,9 @@ class WifiMacHelper
     /**
      * Helper function used to set the Acknowledgment Manager.
      *
-     * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
-     * \param type the type of Acknowledgment Manager
-     * \param args A sequence of name-value pairs of the attributes to set.
+     * @tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * @param type the type of Acknowledgment Manager
+     * @param args A sequence of name-value pairs of the attributes to set.
      */
     template <typename... Args>
     void SetAckManager(std::string type, Args&&... args);
@@ -141,9 +141,9 @@ class WifiMacHelper
      * Helper function used to set the Multi User Scheduler that can be aggregated
      * to an HE AP's MAC.
      *
-     * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
-     * \param type the type of Multi User Scheduler
-     * \param args A sequence of name-value pairs of the attributes to set.
+     * @tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * @param type the type of Multi User Scheduler
+     * @param args A sequence of name-value pairs of the attributes to set.
      */
     template <typename... Args>
     void SetMultiUserScheduler(std::string type, Args&&... args);
@@ -151,9 +151,9 @@ class WifiMacHelper
     /**
      * Helper function used to set the EMLSR Manager that can be installed on an EHT non-AP MLD.
      *
-     * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
-     * \param type the type of EMLSR Manager
-     * \param args A sequence of name-value pairs of the attributes to set.
+     * @tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * @param type the type of EMLSR Manager
+     * @param args A sequence of name-value pairs of the attributes to set.
      */
     template <typename... Args>
     void SetEmlsrManager(std::string type, Args&&... args);
@@ -161,17 +161,17 @@ class WifiMacHelper
     /**
      * Helper function used to set the AP EMLSR Manager that can be installed on an EHT AP MLD.
      *
-     * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
-     * \param type the type of AP EMLSR Manager
-     * \param args A sequence of name-value pairs of the attributes to set.
+     * @tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * @param type the type of AP EMLSR Manager
+     * @param args A sequence of name-value pairs of the attributes to set.
      */
     template <typename... Args>
     void SetApEmlsrManager(std::string type, Args&&... args);
 
     /**
-     * \param device the device within which the MAC object will reside
-     * \param standard the standard to configure during installation
-     * \returns a new MAC object.
+     * @param device the device within which the MAC object will reside
+     * @param standard the standard to configure during installation
+     * @returns a new MAC object.
      *
      * This allows the ns3::WifiHelper class to create MAC objects from ns3::WifiHelper::Install.
      */

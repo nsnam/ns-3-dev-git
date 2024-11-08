@@ -12,8 +12,8 @@ using namespace ns3;
 
 /**
  * Function called when there is a course change
- * \param context event context
- * \param position a pointer to the mobility model
+ * @param context event context
+ * @param position a pointer to the mobility model
  */
 static void
 CourseChange(std::string context, Ptr<const MobilityModel> position)

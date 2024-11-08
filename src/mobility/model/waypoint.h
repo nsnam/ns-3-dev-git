@@ -17,16 +17,16 @@ namespace ns3
 {
 
 /**
- * \ingroup mobility
- * \brief a (time, location) pair.
- * \see attribute_Waypoint
+ * @ingroup mobility
+ * @brief a (time, location) pair.
+ * @see attribute_Waypoint
  */
 class Waypoint
 {
   public:
     /**
-     * \param waypointTime time of waypoint.
-     * \param waypointPosition position of waypoint corresponding to the given time.
+     * @param waypointTime time of waypoint.
+     * @param waypointPosition position of waypoint corresponding to the given time.
      *
      * Create a waypoint.
      */
@@ -37,11 +37,11 @@ class Waypoint
      */
     Waypoint();
     /**
-     * \brief The waypoint time
+     * @brief The waypoint time
      */
     Time time;
     /**
-     * \brief The position of the waypoint
+     * @brief The position of the waypoint
      */
     Vector position;
 };

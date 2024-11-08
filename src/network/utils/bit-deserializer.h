@@ -17,9 +17,9 @@ namespace ns3
 {
 
 /**
- * \ingroup packet
+ * @ingroup packet
  *
- * \brief Bit deserializer. See also \sa ns3::BitSerializer
+ * @brief Bit deserializer. See also \sa ns3::BitSerializer
  *
  * This class helps converting a variable number, variable sized
  * number of bit-boundary fields stored as byte array representation
@@ -36,20 +36,20 @@ class BitDeserializer
 
     /**
      * Pushes some bytes into the blob to be deserialized.
-     * \param bytes The bytes to add.
+     * @param bytes The bytes to add.
      */
     void PushBytes(std::vector<uint8_t> bytes);
 
     /**
      * Pushes some bytes into the blob to be deserialized.
-     * \param bytes The bytes to add.
-     * \param size The length of the array.
+     * @param bytes The bytes to add.
+     * @param size The length of the array.
      */
     void PushBytes(uint8_t* bytes, uint32_t size);
 
     /**
      * Pushes one byte into the blob to be deserialized.
-     * \param byte The byte to add.
+     * @param byte The byte to add.
      */
     void PushByte(uint8_t byte);
 
@@ -60,8 +60,8 @@ class BitDeserializer
      *
      * The maximum number of bits to be deserialized in one single call is 64.
      *
-     * \param size The number of bits to pop.
-     * \return The popped bits value
+     * @param size The number of bits to pop.
+     * @return The popped bits value
      */
     uint64_t GetBits(uint8_t size);
 

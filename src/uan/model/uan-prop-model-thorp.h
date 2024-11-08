@@ -17,7 +17,7 @@ namespace ns3
 class UanTxMode;
 
 /**
- * \ingroup uan
+ * @ingroup uan
  *
  * Uses Thorp's approximation to compute pathloss.  Assumes implulse PDP.
  */
@@ -31,7 +31,7 @@ class UanPropModelThorp : public UanPropModel
 
     /**
      * Register this type.
-     * \return The object TypeId.
+     * @return The object TypeId.
      */
     static TypeId GetTypeId();
 
@@ -43,14 +43,14 @@ class UanPropModelThorp : public UanPropModel
   private:
     /**
      * Get the attenuation in dB / 1000 yards.
-     * \param freqKhz The channel center frequency, in kHz.
-     * \return The attenuation, in dB / 1000 yards.
+     * @param freqKhz The channel center frequency, in kHz.
+     * @return The attenuation, in dB / 1000 yards.
      */
     double GetAttenDbKyd(double freqKhz);
     /**
      * Get the attenuation in dB / km.
-     * \param freqKhz The channel center frequency, in kHz.
-     * \return The attenuation, in dB/km.
+     * @param freqKhz The channel center frequency, in kHz.
+     * @return The attenuation, in dB/km.
      */
     double GetAttenDbKm(double freqKhz);
 

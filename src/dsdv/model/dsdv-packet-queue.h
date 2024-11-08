@@ -30,8 +30,8 @@ namespace ns3
 namespace dsdv
 {
 /**
- * \ingroup dsdv
- * \brief DSDV Queue Entry
+ * @ingroup dsdv
+ * @brief DSDV Queue Entry
  */
 class QueueEntry
 {
@@ -44,10 +44,10 @@ class QueueEntry
     /**
      * c-tor
      *
-     * \param pa the packet to create the entry
-     * \param h the Ipv4Header
-     * \param ucb the UnicastForwardCallback function
-     * \param ecb the ErrorCallback function
+     * @param pa the packet to create the entry
+     * @param h the Ipv4Header
+     * @param ucb the UnicastForwardCallback function
+     * @param ecb the ErrorCallback function
      */
     QueueEntry(Ptr<const Packet> pa = nullptr,
                const Ipv4Header& h = Ipv4Header(),
@@ -63,8 +63,8 @@ class QueueEntry
 
     /**
      * Compare queue entries
-     * \param o QueueEntry to compare
-     * \return true if equal
+     * @param o QueueEntry to compare
+     * @return true if equal
      */
     bool operator==(const QueueEntry& o) const
     {
@@ -76,7 +76,7 @@ class QueueEntry
     // Fields
     /**
      * Get unicast forward callback function
-     * \returns the unicast forward callback
+     * @returns the unicast forward callback
      */
     UnicastForwardCallback GetUnicastForwardCallback() const
     {
@@ -85,7 +85,7 @@ class QueueEntry
 
     /**
      * Set unicast forward callback function
-     * \param ucb the unicast forward callback
+     * @param ucb the unicast forward callback
      */
     void SetUnicastForwardCallback(UnicastForwardCallback ucb)
     {
@@ -94,7 +94,7 @@ class QueueEntry
 
     /**
      * Get error callback function
-     * \returns the error callback
+     * @returns the error callback
      */
     ErrorCallback GetErrorCallback() const
     {
@@ -103,7 +103,7 @@ class QueueEntry
 
     /**
      * Set error callback function
-     * \param ecb the error callback
+     * @param ecb the error callback
      */
     void SetErrorCallback(ErrorCallback ecb)
     {
@@ -112,7 +112,7 @@ class QueueEntry
 
     /**
      * Get packet
-     * \returns the current packet
+     * @returns the current packet
      */
     Ptr<const Packet> GetPacket() const
     {
@@ -121,7 +121,7 @@ class QueueEntry
 
     /**
      * Set packet
-     * \param p The current packet
+     * @param p The current packet
      */
     void SetPacket(Ptr<const Packet> p)
     {
@@ -130,7 +130,7 @@ class QueueEntry
 
     /**
      * Get IP header
-     * \returns the IPv4 header
+     * @returns the IPv4 header
      */
     Ipv4Header GetIpv4Header() const
     {
@@ -139,7 +139,7 @@ class QueueEntry
 
     /**
      * Set IP header
-     * \param h The IPv4 header
+     * @param h The IPv4 header
      */
     void SetIpv4Header(Ipv4Header h)
     {
@@ -148,7 +148,7 @@ class QueueEntry
 
     /**
      * Set expire time
-     * \param exp
+     * @param exp
      */
     void SetExpireTime(Time exp)
     {
@@ -157,7 +157,7 @@ class QueueEntry
 
     /**
      * Get expire time
-     * \returns the expire time
+     * @returns the expire time
      */
     Time GetExpireTime() const
     {
@@ -178,8 +178,8 @@ class QueueEntry
 };
 
 /**
- * \ingroup dsdv
- * \brief DSDV Packet queue
+ * @ingroup dsdv
+ * @brief DSDV Packet queue
  *
  * When a route is not available, the packets are queued. Every node can buffer up to 5 packets per
  * destination. We have implemented a "drop front on full" queue where the first queued packet will
@@ -196,45 +196,45 @@ class PacketQueue
     /**
      * Push entry in queue, if there is no entry with the same packet and destination address in
      * queue.
-     * \param entry QueueEntry to compare
-     * \return true if successful
+     * @param entry QueueEntry to compare
+     * @return true if successful
      */
     bool Enqueue(QueueEntry& entry);
     /**
      * Return first found (the earliest) entry for given destination
      *
-     * \param dst the destination IP address
-     * \param entry the queue entry
-     * \returns true if successful
+     * @param dst the destination IP address
+     * @param entry the queue entry
+     * @returns true if successful
      */
     bool Dequeue(Ipv4Address dst, QueueEntry& entry);
     /**
      * Remove all packets with destination IP address dst
-     * \param dst the destination IP address
+     * @param dst the destination IP address
      */
     void DropPacketWithDst(Ipv4Address dst);
     /**
      * Finds whether a packet with destination dst exists in the queue
-     * \param dst the destination IP address
-     * \returns true if a packet found
+     * @param dst the destination IP address
+     * @returns true if a packet found
      */
     bool Find(Ipv4Address dst);
     /**
      * Get count of packets with destination dst in the queue
-     * \param dst the destination IP address
-     * \returns the count
+     * @param dst the destination IP address
+     * @returns the count
      */
     uint32_t GetCountForPacketsWithDst(Ipv4Address dst);
     /**
      * Get the number of entries
-     * \returns the number of entries
+     * @returns the number of entries
      */
     uint32_t GetSize();
 
     // Fields
     /**
      * Get maximum queue length
-     * \returns the maximum queue length
+     * @returns the maximum queue length
      */
     uint32_t GetMaxQueueLen() const
     {
@@ -243,7 +243,7 @@ class PacketQueue
 
     /**
      * Set maximum queue length
-     * \param len the maximum queue length
+     * @param len the maximum queue length
      */
     void SetMaxQueueLen(uint32_t len)
     {
@@ -252,7 +252,7 @@ class PacketQueue
 
     /**
      * Get maximum packets per destination
-     * \returns the maximum packets per destination
+     * @returns the maximum packets per destination
      */
     uint32_t GetMaxPacketsPerDst() const
     {
@@ -261,7 +261,7 @@ class PacketQueue
 
     /**
      * Set maximum packets per destination
-     * \param len The maximum packets per destination
+     * @param len The maximum packets per destination
      */
     void SetMaxPacketsPerDst(uint32_t len)
     {
@@ -270,7 +270,7 @@ class PacketQueue
 
     /**
      * Get queue timeout
-     * \returns the queue timeout
+     * @returns the queue timeout
      */
     Time GetQueueTimeout() const
     {
@@ -279,7 +279,7 @@ class PacketQueue
 
     /**
      * Set queue timeout
-     * \param t The queue timeout
+     * @param t The queue timeout
      */
     void SetQueueTimeout(Time t)
     {
@@ -292,8 +292,8 @@ class PacketQueue
     void Purge();
     /**
      * Notify that the packet is dropped from queue due to timeout
-     * \param en the queue entry
-     * \param reason the reason for the packet drop
+     * @param en the queue entry
+     * @param reason the reason for the packet drop
      */
     void Drop(QueueEntry en, std::string reason);
     /// The maximum number of packets that we allow a routing protocol to buffer.

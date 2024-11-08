@@ -19,9 +19,9 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("LteRrcTest");
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief Test rrc connection establishment.
+ * @brief Test rrc connection establishment.
  */
 class LteRrcConnectionEstablishmentTestCase : public TestCase
 {
@@ -29,17 +29,17 @@ class LteRrcConnectionEstablishmentTestCase : public TestCase
     /**
      *
      *
-     * \param nUes number of UEs in the test
-     * \param nBearers number of bearers to be setup in each connection
-     * \param tConnBase connection time base value for all UEs in ms
-     * \param tConnIncrPerUe additional connection time increment for each UE index (0...nUes-1) in
+     * @param nUes number of UEs in the test
+     * @param nBearers number of bearers to be setup in each connection
+     * @param tConnBase connection time base value for all UEs in ms
+     * @param tConnIncrPerUe additional connection time increment for each UE index (0...nUes-1) in
      * ms
-     * \param delayDiscStart expected duration to perform connection establishment in ms
-     * \param errorExpected if true, test case will wait a bit longer to accommodate for
+     * @param delayDiscStart expected duration to perform connection establishment in ms
+     * @param errorExpected if true, test case will wait a bit longer to accommodate for
      * transmission error
-     * \param useIdealRrc If set to false, real RRC protocol model will be used
-     * \param admitRrcConnectionRequest If set to false, eNb will not allow UE connections
-     * \param description additional description of the test case
+     * @param useIdealRrc If set to false, real RRC protocol model will be used
+     * @param admitRrcConnectionRequest If set to false, eNb will not allow UE connections
+     * @param description additional description of the test case
      */
     LteRrcConnectionEstablishmentTestCase(uint32_t nUes,
                                           uint32_t nBearers,
@@ -58,16 +58,16 @@ class LteRrcConnectionEstablishmentTestCase : public TestCase
     /**
      * Build name string function
      *
-     * \param nUes number of UEs in the test
-     * \param nBearers number of bearers to be setup in each connection
-     * \param tConnBase connection time base value for all UEs in ms
-     * \param tConnIncrPerUe additional connection time increment for each UE index (0...nUes-1)
+     * @param nUes number of UEs in the test
+     * @param nBearers number of bearers to be setup in each connection
+     * @param tConnBase connection time base value for all UEs in ms
+     * @param tConnIncrPerUe additional connection time increment for each UE index (0...nUes-1)
      * in ms
-     * \param delayDiscStart expected duration to perform connection establishment in ms
-     * \param useIdealRrc If set to false, real RRC protocol model will be used
-     * \param admitRrcConnectionRequest If set to false, eNb will not allow UE connections
-     * \param description additional description of the test case
-     * \returns the name string
+     * @param delayDiscStart expected duration to perform connection establishment in ms
+     * @param useIdealRrc If set to false, real RRC protocol model will be used
+     * @param admitRrcConnectionRequest If set to false, eNb will not allow UE connections
+     * @param description additional description of the test case
+     * @returns the name string
      */
     static std::string BuildNameString(uint32_t nUes,
                                        uint32_t nBearers,
@@ -79,28 +79,28 @@ class LteRrcConnectionEstablishmentTestCase : public TestCase
                                        std::string description = "");
     /**
      * Connect function
-     * \param ueDevice the UE device
-     * \param enbDevice the ENB device
+     * @param ueDevice the UE device
+     * @param enbDevice the ENB device
      */
     void Connect(Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice);
     /**
      * Check connected function
-     * \param ueDevice the UE device
-     * \param enbDevice the ENB device
+     * @param ueDevice the UE device
+     * @param enbDevice the ENB device
      */
     void CheckConnected(Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice);
     /**
      * Check not connected function
-     * \param ueDevice the UE device
-     * \param enbDevice the ENB device
+     * @param ueDevice the UE device
+     * @param enbDevice the ENB device
      */
     void CheckNotConnected(Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice);
     /**
      * Connection established callback function
-     * \param context the context string
-     * \param imsi the IMSI
-     * \param cellId the cell ID
-     * \param rnti the RNTI
+     * @param context the context string
+     * @param imsi the IMSI
+     * @param cellId the cell ID
+     * @param rnti the RNTI
      */
     void ConnectionEstablishedCallback(std::string context,
                                        uint64_t imsi,
@@ -108,11 +108,11 @@ class LteRrcConnectionEstablishmentTestCase : public TestCase
                                        uint16_t rnti);
     /**
      * Connection timeout callback function
-     * \param context the context string
-     * \param imsi the IMSI
-     * \param cellId the cell ID
-     * \param rnti the RNTI
-     * \param connEstFailCount the T300 timer expiration counter value
+     * @param context the context string
+     * @param imsi the IMSI
+     * @param cellId the cell ID
+     * @param rnti the RNTI
+     * @param connEstFailCount the T300 timer expiration counter value
      */
     void ConnectionTimeoutCallback(std::string context,
                                    uint64_t imsi,
@@ -571,9 +571,9 @@ LteRrcConnectionEstablishmentTestCase::ConnectionTimeoutCallback(std::string con
 }
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief Lte Rrc Connection Establishment Error Test Case
+ * @brief Lte Rrc Connection Establishment Error Test Case
  */
 class LteRrcConnectionEstablishmentErrorTestCase : public LteRrcConnectionEstablishmentTestCase
 {
@@ -581,9 +581,9 @@ class LteRrcConnectionEstablishmentErrorTestCase : public LteRrcConnectionEstabl
     /**
      *
      *
-     * \param jumpAwayTime the time when all the UEs 'teleport' to a pre-defined
+     * @param jumpAwayTime the time when all the UEs 'teleport' to a pre-defined
      *                     high-interference position and stay there for 100 ms
-     * \param description additional description of the test case
+     * @param description additional description of the test case
      */
     LteRrcConnectionEstablishmentErrorTestCase(Time jumpAwayTime, std::string description = "");
 
@@ -751,9 +751,9 @@ LteRrcConnectionEstablishmentErrorTestCase::JumpBack()
 }
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief Lte Rrc Test Suite
+ * @brief Lte Rrc Test Suite
  */
 class LteRrcTestSuite : public TestSuite
 {
@@ -879,7 +879,7 @@ LteRrcTestSuite::LteRrcTestSuite()
 }
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  * Static variable for test initialization
  */
 static LteRrcTestSuite g_lteRrcTestSuiteInstance;

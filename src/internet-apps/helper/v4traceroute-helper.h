@@ -19,8 +19,8 @@ namespace ns3
 class OutputStreamWrapper;
 
 /**
- * \ingroup v4traceroute
- * \brief Create a IPv4 traceroute application and associate it to a node
+ * @ingroup v4traceroute
+ * @brief Create a IPv4 traceroute application and associate it to a node
  *
  * This class creates one or multiple instances of ns3::V4TraceRoute and associates
  * it/them to one/multiple node(s).
@@ -32,14 +32,14 @@ class V4TraceRouteHelper : public ApplicationHelper
      * Create a V4TraceRouteHelper which is used to make life easier for people wanting
      * to use TraceRoute
      *
-     * \param remote The address which should be traced
+     * @param remote The address which should be traced
      */
     V4TraceRouteHelper(const Ipv4Address& remote);
 
     /**
-     * \brief Print the resulting trace routes from given node.
-     * \param node The origin node where the traceroute is initiated.
-     * \param stream The outputstream used to print the resulting traced routes.
+     * @brief Print the resulting trace routes from given node.
+     * @param node The origin node where the traceroute is initiated.
+     * @param stream The outputstream used to print the resulting traced routes.
      */
     static void PrintTraceRouteAt(Ptr<Node> node, Ptr<OutputStreamWrapper> stream);
 };

@@ -26,9 +26,9 @@ using namespace ns3;
  * Round a double number to the given precision. e.g. dround(0.234, 0.1) = 0.2
  * and dround(0.257, 0.1) = 0.3
  *
- * \param number The number to round.
- * \param precision The precision.
- * \return the rounded number
+ * @param number The number to round.
+ * @param precision The precision.
+ * @return the rounded number
  */
 static double
 dround(double number, double precision)
@@ -49,10 +49,10 @@ dround(double number, double precision)
 /**
  * Test the model by sampling over a distance.
  *
- * \param model The model to test.
- * \param targetDistance The target distance.
- * \param step The step.
- * \return a Gnuplot object to be plotted.
+ * @param model The model to test.
+ * @param targetDistance The target distance.
+ * @param step The step.
+ * @return a Gnuplot object to be plotted.
  */
 static Gnuplot
 TestDeterministic(Ptr<PropagationLossModel> model, double targetDistance, double step)
@@ -103,11 +103,11 @@ TestDeterministic(Ptr<PropagationLossModel> model, double targetDistance, double
 /**
  * Test the model by sampling over a distance.
  *
- * \param model The model to test.
- * \param targetDistance The target distance.
- * \param step The step.
- * \param samples Number of samples.
- * \return a Gnuplot object to be plotted.
+ * @param model The model to test.
+ * @param targetDistance The target distance.
+ * @param step The step.
+ * @param samples Number of samples.
+ * @return a Gnuplot object to be plotted.
  */
 static Gnuplot
 TestProbabilistic(Ptr<PropagationLossModel> model,
@@ -183,11 +183,11 @@ TestProbabilistic(Ptr<PropagationLossModel> model,
 /**
  * Test the model by sampling over time.
  *
- * \param model The model to test.
- * \param timeStep The time step.
- * \param timeTotal The total time.
- * \param distance The distance.
- * \return a Gnuplot object to be plotted.
+ * @param model The model to test.
+ * @param timeStep The time step.
+ * @param timeTotal The total time.
+ * @param distance The distance.
+ * @return a Gnuplot object to be plotted.
  */
 static Gnuplot
 TestDeterministicByTime(Ptr<PropagationLossModel> model,

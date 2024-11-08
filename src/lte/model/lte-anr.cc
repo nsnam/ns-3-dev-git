@@ -192,7 +192,7 @@ LteAnr::DoReportUeMeas(LteRrcSap::MeasResults measResults)
         {
             NS_LOG_WARN(
                 this << " Event A4 received without measurement results from neighbouring cells");
-            /// \todo Remove neighbours in the NRT.
+            /// @todo Remove neighbours in the NRT.
         }
 
     } // end of else of if (measId != m_measId)

@@ -39,17 +39,17 @@ namespace ns3
 {
 
 /**
- * \defgroup nix-vector-routing Nix-Vector Routing
+ * @defgroup nix-vector-routing Nix-Vector Routing
  *
  * Nix-vector routing is a simulation specific routing protocol and is
  * intended for large network topologies.
  */
 
 /**
- * \ingroup nix-vector-routing
+ * @ingroup nix-vector-routing
  * Nix-vector routing protocol
  *
- * \internal
+ * @internal
  * Since this class is meant to be specialized only by Ipv4RoutingProtocol or
  * Ipv6RoutingProtocol the implementation of this class doesn't need to be
  * exposed here; it is in nix-vector-routing.cc.
@@ -109,7 +109,7 @@ class NixVectorRouting : public std::enable_if_t<std::is_same_v<Ipv4RoutingProto
      * which iterates through the node list and flushes any
      * nix vector caches
      *
-     * \internal
+     * @internal
      * \c const is used here due to need to potentially flush the cache
      * in const methods such as PrintRoutingTable.  Caches are stored in
      * mutable variables and flushed in const methods.
@@ -118,12 +118,12 @@ class NixVectorRouting : public std::enable_if_t<std::is_same_v<Ipv4RoutingProto
 
     /**
      * @brief Print the Routing Path according to Nix Routing
-     * \param source Source node
-     * \param dest Destination node address
-     * \param stream The ostream the Routing path is printed to
-     * \param unit the time unit to be used in the report
+     * @param source Source node
+     * @param dest Destination node address
+     * @param stream The ostream the Routing path is printed to
+     * @param unit the time unit to be used in the report
      *
-     * \note IpAddress is alias for either Ipv4Address or Ipv6Address
+     * @note IpAddress is alias for either Ipv4Address or Ipv6Address
      *       depending on on whether the network is IPv4 or IPv6 respectively.
      */
     void PrintRoutingPath(Ptr<Node> source,
@@ -156,34 +156,34 @@ class NixVectorRouting : public std::enable_if_t<std::is_same_v<Ipv4RoutingProto
      * BFS, accounting for any output interface specified, and finally
      * BuildNixVector to return the built nix-vector
      *
-     * \param source Source node
-     * \param dest Destination node address
-     * \param oif Preferred output interface
-     * \returns The NixVector to be used in routing.
+     * @param source Source node
+     * @param dest Destination node address
+     * @param oif Preferred output interface
+     * @returns The NixVector to be used in routing.
      */
     Ptr<NixVector> GetNixVector(Ptr<Node> source, IpAddress dest, Ptr<NetDevice> oif) const;
 
     /**
      * Checks the cache based on dest IP for the nix-vector
-     * \param address Address to check
-     * \param foundInCache Address found in cache
-     * \returns The NixVector to be used in routing.
+     * @param address Address to check
+     * @param foundInCache Address found in cache
+     * @returns The NixVector to be used in routing.
      */
     Ptr<NixVector> GetNixVectorInCache(const IpAddress& address, bool& foundInCache) const;
 
     /**
      * Checks the cache based on dest IP for the IpRoute
-     * \param address Address to check
-     * \returns The cached route.
+     * @param address Address to check
+     * @returns The cached route.
      */
     Ptr<IpRoute> GetIpRouteInCache(IpAddress address);
 
     /**
      * Given a net-device returns all the adjacent net-devices,
      * essentially getting the neighbors on that channel
-     * \param [in] netDevice the NetDevice attached to the channel.
-     * \param [in] channel the channel to check
-     * \param [out] netDeviceContainer the NetDeviceContainer of the NetDevices in the channel.
+     * @param [in] netDevice the NetDevice attached to the channel.
+     * @param [in] channel the channel to check
+     * @param [out] netDeviceContainer the NetDeviceContainer of the NetDevices in the channel.
      */
     void GetAdjacentNetDevices(Ptr<NetDevice> netDevice,
                                Ptr<Channel> channel,
@@ -192,26 +192,26 @@ class NixVectorRouting : public std::enable_if_t<std::is_same_v<Ipv4RoutingProto
     /**
      * Iterates through the node list and finds the one
      * corresponding to the given IpAddress
-     * \param dest destination node IP
-     * \return The node with the specified IP.
+     * @param dest destination node IP
+     * @return The node with the specified IP.
      */
     Ptr<Node> GetNodeByIp(IpAddress dest) const;
 
     /**
      * Iterates through the node list and finds the one
      * corresponding to the given IpAddress
-     * \param netDevice NetDevice pointer
-     * \return The node with the specified IP.
+     * @param netDevice NetDevice pointer
+     * @return The node with the specified IP.
      */
     Ptr<IpInterface> GetInterfaceByNetDevice(Ptr<NetDevice> netDevice) const;
 
     /**
      * Recurses the T vector, created by BFS and actually builds the nixvector
-     * \param [in] parentVector Parent vector for retracing routes
-     * \param [in] source Source Node index
-     * \param [in] dest Destination Node index
-     * \param [out] nixVector the NixVector to be used for routing
-     * \returns true on success, false otherwise.
+     * @param [in] parentVector Parent vector for retracing routes
+     * @param [in] source Source Node index
+     * @param [in] dest Destination Node index
+     * @param [out] nixVector the NixVector to be used for routing
+     * @returns true on success, false otherwise.
      */
     bool BuildNixVector(const std::vector<Ptr<Node>>& parentVector,
                         uint32_t source,
@@ -221,38 +221,38 @@ class NixVectorRouting : public std::enable_if_t<std::is_same_v<Ipv4RoutingProto
     /**
      * Simply iterates through the nodes net-devices and determines
      * how many neighbors the node has.
-     * \param [in] node node pointer
-     * \returns the number of neighbors of m_node.
+     * @param [in] node node pointer
+     * @returns the number of neighbors of m_node.
      */
     uint32_t FindTotalNeighbors(Ptr<Node> node) const;
 
     /**
      * Determine if the NetDevice is bridged
-     * \param nd the NetDevice to check
-     * \returns the bridging NetDevice (or null if the NetDevice is not bridged)
+     * @param nd the NetDevice to check
+     * @returns the bridging NetDevice (or null if the NetDevice is not bridged)
      */
     Ptr<BridgeNetDevice> NetDeviceIsBridged(Ptr<NetDevice> nd) const;
 
     /**
      * Nix index is with respect to the neighbors.  The net-device index must be
      * derived from this
-     * \param [in] node the current node under consideration
-     * \param [in] nodeIndex Nix Node index
-     * \param [out] gatewayIp IP address of the gateway
-     * \returns the index of the NetDevice in the node.
+     * @param [in] node the current node under consideration
+     * @param [in] nodeIndex Nix Node index
+     * @param [out] gatewayIp IP address of the gateway
+     * @returns the index of the NetDevice in the node.
      */
     uint32_t FindNetDeviceForNixIndex(Ptr<Node> node,
                                       uint32_t nodeIndex,
                                       IpAddress& gatewayIp) const;
 
     /**
-     * \brief Breadth first search algorithm.
-     * \param [in] numberOfNodes total number of nodes
-     * \param [in] source Source Node
-     * \param [in] dest Destination Node
-     * \param [out] parentVector Parent vector for retracing routes
-     * \param [in] oif specific output interface to use from source node, if not null
-     * \returns false if dest not found, true o.w.
+     * @brief Breadth first search algorithm.
+     * @param [in] numberOfNodes total number of nodes
+     * @param [in] source Source Node
+     * @param [in] dest Destination Node
+     * @param [out] parentVector Parent vector for retracing routes
+     * @param [in] oif specific output interface to use from source node, if not null
+     * @returns false if dest not found, true o.w.
      */
     bool BFS(uint32_t numberOfNodes,
              Ptr<Node> source,
@@ -314,15 +314,15 @@ class NixVectorRouting : public std::enable_if_t<std::is_same_v<Ipv4RoutingProto
 
     /* From Ipv4RoutingProtocol and Ipv6RoutingProtocol */
     /**
-     * \brief Query routing cache for an existing route, for an outbound packet
-     * \param p packet to be routed.  Note that this method may modify the packet.
+     * @brief Query routing cache for an existing route, for an outbound packet
+     * @param p packet to be routed.  Note that this method may modify the packet.
      *          Callers may also pass in a null pointer.
-     * \param header input parameter (used to form key to search for the route)
-     * \param oif Output interface Netdevice.  May be zero, or may be bound via
+     * @param header input parameter (used to form key to search for the route)
+     * @param oif Output interface Netdevice.  May be zero, or may be bound via
      *            socket options to a particular output interface.
-     * \param sockerr Output parameter; socket errno
+     * @param sockerr Output parameter; socket errno
      *
-     * \returns a code that indicates what happened in the lookup
+     * @returns a code that indicates what happened in the lookup
      *
      * \sa Ipv4RoutingProtocol::RouteOutput
      * \sa Ipv6RoutingProtocol::RouteOutput
@@ -333,19 +333,19 @@ class NixVectorRouting : public std::enable_if_t<std::is_same_v<Ipv4RoutingProto
                                      Socket::SocketErrno& sockerr);
 
     /**
-     * \brief Route an input packet (to be forwarded or locally delivered)
-     * \param p received packet
-     * \param header input parameter used to form a search key for a route
-     * \param idev Pointer to ingress network device
-     * \param ucb Callback for the case in which the packet is to be forwarded
+     * @brief Route an input packet (to be forwarded or locally delivered)
+     * @param p received packet
+     * @param header input parameter used to form a search key for a route
+     * @param idev Pointer to ingress network device
+     * @param ucb Callback for the case in which the packet is to be forwarded
      *            as unicast
-     * \param mcb Callback for the case in which the packet is to be forwarded
+     * @param mcb Callback for the case in which the packet is to be forwarded
      *            as multicast
-     * \param lcb Callback for the case in which the packet is to be locally
+     * @param lcb Callback for the case in which the packet is to be locally
      *            delivered
-     * \param ecb Callback to call if there is an error in forwarding
+     * @param ecb Callback to call if there is an error in forwarding
      *
-     * \returns true if NixVectorRouting class takes responsibility for
+     * @returns true if NixVectorRouting class takes responsibility for
      *          forwarding or delivering the packet, false otherwise
      *
      * \sa Ipv4RoutingProtocol::RouteInput
@@ -360,7 +360,7 @@ class NixVectorRouting : public std::enable_if_t<std::is_same_v<Ipv4RoutingProto
                             const ErrorCallback& ecb);
 
     /**
-     * \param interface the index of the interface we are being notified about
+     * @param interface the index of the interface we are being notified about
      *
      * \sa Ipv4RoutingProtocol::NotifyInterfaceUp
      * \sa Ipv6RoutingProtocol::NotifyInterfaceUp
@@ -368,7 +368,7 @@ class NixVectorRouting : public std::enable_if_t<std::is_same_v<Ipv4RoutingProto
     virtual void NotifyInterfaceUp(uint32_t interface);
 
     /**
-     * \param interface the index of the interface we are being notified about
+     * @param interface the index of the interface we are being notified about
      *
      * \sa Ipv4RoutingProtocol::NotifyInterfaceDown
      * \sa Ipv6RoutingProtocol::NotifyInterfaceDown
@@ -376,8 +376,8 @@ class NixVectorRouting : public std::enable_if_t<std::is_same_v<Ipv4RoutingProto
     virtual void NotifyInterfaceDown(uint32_t interface);
 
     /**
-     * \param interface the index of the interface we are being notified about
-     * \param address a new address being added to an interface
+     * @param interface the index of the interface we are being notified about
+     * @param address a new address being added to an interface
      *
      * \sa Ipv4RoutingProtocol::NotifyAddAddress
      * \sa Ipv6RoutingProtocol::NotifyAddAddress
@@ -385,8 +385,8 @@ class NixVectorRouting : public std::enable_if_t<std::is_same_v<Ipv4RoutingProto
     virtual void NotifyAddAddress(uint32_t interface, IpInterfaceAddress address);
 
     /**
-     * \param interface the index of the interface we are being notified about
-     * \param address a new address being added to an interface
+     * @param interface the index of the interface we are being notified about
+     * @param address a new address being added to an interface
      *
      * \sa Ipv4RoutingProtocol::NotifyRemoveAddress
      * \sa Ipv6RoutingProtocol::NotifyRemoveAddress
@@ -394,10 +394,10 @@ class NixVectorRouting : public std::enable_if_t<std::is_same_v<Ipv4RoutingProto
     virtual void NotifyRemoveAddress(uint32_t interface, IpInterfaceAddress address);
 
     /**
-     * \brief Print the Routing Table entries
+     * @brief Print the Routing Table entries
      *
-     * \param stream The ostream the Routing table is printed to
-     * \param unit The time unit to be used in the report
+     * @param stream The ostream the Routing table is printed to
+     * @param unit The time unit to be used in the report
      *
      * \sa Ipv4RoutingProtocol::PrintRoutingTable
      * \sa Ipv6RoutingProtocol::PrintRoutingTable
@@ -407,9 +407,9 @@ class NixVectorRouting : public std::enable_if_t<std::is_same_v<Ipv4RoutingProto
 
     /* From IPv4RoutingProtocol */
     /**
-     * \brief Typically, invoked directly or indirectly from ns3::Ipv4::SetRoutingProtocol
+     * @brief Typically, invoked directly or indirectly from ns3::Ipv4::SetRoutingProtocol
      *
-     * \param ipv4 the ipv4 object this routing protocol is being associated with
+     * @param ipv4 the ipv4 object this routing protocol is being associated with
      *
      * \sa Ipv4RoutingProtocol::SetIpv4
      */
@@ -417,22 +417,22 @@ class NixVectorRouting : public std::enable_if_t<std::is_same_v<Ipv4RoutingProto
 
     /* From IPv6RoutingProtocol */
     /**
-     * \brief Typically, invoked directly or indirectly from ns3::Ipv6::SetRoutingProtocol
+     * @brief Typically, invoked directly or indirectly from ns3::Ipv6::SetRoutingProtocol
      *
-     * \param ipv6 the ipv6 object this routing protocol is being associated with
+     * @param ipv6 the ipv6 object this routing protocol is being associated with
      *
      * \sa Ipv6RoutingProtocol::SetIpv6
      */
     virtual void SetIpv6(Ptr<Ip> ipv6);
 
     /**
-     * \brief Notify a new route.
+     * @brief Notify a new route.
      *
-     * \param dst destination address
-     * \param mask destination mask
-     * \param nextHop nextHop for this destination
-     * \param interface output interface
-     * \param prefixToUse prefix to use as source with this route
+     * @param dst destination address
+     * @param mask destination mask
+     * @param nextHop nextHop for this destination
+     * @param interface output interface
+     * @param prefixToUse prefix to use as source with this route
      *
      * \sa Ipv6RoutingProtocol::NotifyAddRoute
      */
@@ -443,13 +443,13 @@ class NixVectorRouting : public std::enable_if_t<std::is_same_v<Ipv4RoutingProto
                                 IpAddress prefixToUse = IpAddress::GetZero());
 
     /**
-     * \brief Notify route removing.
+     * @brief Notify route removing.
      *
-     * \param dst destination address
-     * \param mask destination mask
-     * \param nextHop nextHop for this destination
-     * \param interface output interface
-     * \param prefixToUse prefix to use as source with this route
+     * @param dst destination address
+     * @param mask destination mask
+     * @param nextHop nextHop for this destination
+     * @param interface output interface
+     * @param prefixToUse prefix to use as source with this route
      *
      * \sa Ipv6RoutingProtocol::NotifyRemoveRoute
      */
@@ -509,7 +509,7 @@ class NixVectorRouting : public std::enable_if_t<std::is_same_v<Ipv4RoutingProto
 };
 
 /**
- * \ingroup nix-vector-routing
+ * @ingroup nix-vector-routing
  * Create the typedef Ipv4NixVectorRouting with T as Ipv4RoutingProtocol
  *
  * Note: This typedef enables also backwards compatibility with original Ipv4NixVectorRouting.
@@ -517,7 +517,7 @@ class NixVectorRouting : public std::enable_if_t<std::is_same_v<Ipv4RoutingProto
 typedef NixVectorRouting<Ipv4RoutingProtocol> Ipv4NixVectorRouting;
 
 /**
- * \ingroup nix-vector-routing
+ * @ingroup nix-vector-routing
  * Create the typedef Ipv6NixVectorRouting with T as Ipv6RoutingProtocol
  */
 typedef NixVectorRouting<Ipv6RoutingProtocol> Ipv6NixVectorRouting;

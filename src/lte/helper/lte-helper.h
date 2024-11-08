@@ -43,7 +43,7 @@ class PropagationLossModel;
 class SpectrumPropagationLossModel;
 
 /**
- * \ingroup lte
+ * @ingroup lte
  *
  * Creation and configuration of LTE entities. One LteHelper instance is
  * typically enough for an LTE simulation. To create it:
@@ -96,7 +96,7 @@ class LteHelper : public Object
 
     /**
      * Register this type.
-     * \return The object TypeId.
+     * @return The object TypeId.
      */
     static TypeId GetTypeId();
     void DoDispose() override;
@@ -105,21 +105,21 @@ class LteHelper : public Object
      * Set the EpcHelper to be used to setup the EPC network in
      * conjunction with the setup of the LTE radio access network.
      *
-     * \note if no EpcHelper is ever set, then LteHelper will default
+     * @note if no EpcHelper is ever set, then LteHelper will default
      * to creating an LTE-only simulation with no EPC, using LteRlcSm as
      * the RLC model, and without supporting any IP networking. In other
      * words, it will be a radio-level simulation involving only LTE PHY
      * and MAC and the FF Scheduler, with a saturation traffic model for
      * the RLC.
      *
-     * \param h a pointer to the EpcHelper to be used
+     * @param h a pointer to the EpcHelper to be used
      */
     void SetEpcHelper(Ptr<EpcHelper> h);
 
     /**
      * Set the type of path loss model to be used for both DL and UL channels.
      *
-     * \param type type of path loss model, must be a type name of any class
+     * @param type type of path loss model, must be a type name of any class
      *             inheriting from ns3::PropagationLossModel, for example:
      *             "ns3::FriisPropagationLossModel"
      */
@@ -128,15 +128,15 @@ class LteHelper : public Object
     /**
      * Set an attribute for the path loss models to be created.
      *
-     * \param n the name of the attribute
-     * \param v the value of the attribute
+     * @param n the name of the attribute
+     * @param v the value of the attribute
      */
     void SetPathlossModelAttribute(std::string n, const AttributeValue& v);
 
     /**
      * Set the type of scheduler to be used by eNodeB devices.
      *
-     * \param type type of scheduler, must be a type name of any class
+     * @param type type of scheduler, must be a type name of any class
      *             inheriting from ns3::FfMacScheduler, for example:
      *             "ns3::PfFfMacScheduler"
      *
@@ -146,22 +146,22 @@ class LteHelper : public Object
 
     /**
      *
-     * \return the scheduler type
+     * @return the scheduler type
      */
     std::string GetSchedulerType() const;
 
     /**
      * Set an attribute for the scheduler to be created.
      *
-     * \param n the name of the attribute
-     * \param v the value of the attribute
+     * @param n the name of the attribute
+     * @param v the value of the attribute
      */
     void SetSchedulerAttribute(std::string n, const AttributeValue& v);
 
     /**
      * Set the type of FFR algorithm to be used by eNodeB devices.
      *
-     * \param type type of FFR algorithm, must be a type name of any class
+     * @param type type of FFR algorithm, must be a type name of any class
      *             inheriting from ns3::LteFfrAlgorithm, for example:
      *             "ns3::LteFrNoOpAlgorithm"
      *
@@ -171,22 +171,22 @@ class LteHelper : public Object
 
     /**
      *
-     * \return the FFR algorithm type
+     * @return the FFR algorithm type
      */
     std::string GetFfrAlgorithmType() const;
 
     /**
      * Set an attribute for the FFR algorithm to be created.
      *
-     * \param n the name of the attribute
-     * \param v the value of the attribute
+     * @param n the name of the attribute
+     * @param v the value of the attribute
      */
     void SetFfrAlgorithmAttribute(std::string n, const AttributeValue& v);
 
     /**
      * Set the type of handover algorithm to be used by eNodeB devices.
      *
-     * \param type type of handover algorithm, must be a type name of any class
+     * @param type type of handover algorithm, must be a type name of any class
      *             inheriting from ns3::LteHandoverAlgorithm, for example:
      *             "ns3::NoOpHandoverAlgorithm"
      *
@@ -196,30 +196,30 @@ class LteHelper : public Object
 
     /**
      *
-     * \return the handover algorithm type
+     * @return the handover algorithm type
      */
     std::string GetHandoverAlgorithmType() const;
 
     /**
      * Set an attribute for the handover algorithm to be created.
      *
-     * \param n the name of the attribute
-     * \param v the value of the attribute
+     * @param n the name of the attribute
+     * @param v the value of the attribute
      */
     void SetHandoverAlgorithmAttribute(std::string n, const AttributeValue& v);
 
     /**
      * Set an attribute for the eNodeB devices (LteEnbNetDevice) to be created.
      *
-     * \param n the name of the attribute.
-     * \param v the value of the attribute
+     * @param n the name of the attribute.
+     * @param v the value of the attribute
      */
     void SetEnbDeviceAttribute(std::string n, const AttributeValue& v);
 
     /**
      * Set the type of antenna model to be used by eNodeB devices.
      *
-     * \param type type of antenna model, must be a type name of any class
+     * @param type type of antenna model, must be a type name of any class
      *             inheriting from ns3::AntennaModel, for example:
      *             "ns3::IsotropicAntennaModel"
      */
@@ -228,23 +228,23 @@ class LteHelper : public Object
     /**
      * Set an attribute for the eNodeB antenna model to be created.
      *
-     * \param n the name of the attribute.
-     * \param v the value of the attribute
+     * @param n the name of the attribute.
+     * @param v the value of the attribute
      */
     void SetEnbAntennaModelAttribute(std::string n, const AttributeValue& v);
 
     /**
      * Set an attribute for the UE devices (LteUeNetDevice) to be created.
      *
-     * \param n the name of the attribute.
-     * \param v the value of the attribute
+     * @param n the name of the attribute.
+     * @param v the value of the attribute
      */
     void SetUeDeviceAttribute(std::string n, const AttributeValue& v);
 
     /**
      * Set the type of antenna model to be used by UE devices.
      *
-     * \param type type of antenna model, must be a type name of any class
+     * @param type type of antenna model, must be a type name of any class
      *             inheriting from ns3::AntennaModel, for example:
      *             "ns3::IsotropicAntennaModel"
      */
@@ -253,15 +253,15 @@ class LteHelper : public Object
     /**
      * Set an attribute for the UE antenna model to be created.
      *
-     * \param n the name of the attribute
-     * \param v the value of the attribute
+     * @param n the name of the attribute
+     * @param v the value of the attribute
      */
     void SetUeAntennaModelAttribute(std::string n, const AttributeValue& v);
 
     /**
      * Set the type of spectrum channel to be used in both DL and UL.
      *
-     * \param type type of spectrum channel model, must be a type name of any
+     * @param type type of spectrum channel model, must be a type name of any
      *             class inheriting from ns3::SpectrumChannel, for example:
      *             "ns3::MultiModelSpectrumChannel"
      */
@@ -270,75 +270,75 @@ class LteHelper : public Object
     /**
      * Set an attribute for the spectrum channel to be created (both DL and UL).
      *
-     * \param n the name of the attribute
-     * \param v the value of the attribute
+     * @param n the name of the attribute
+     * @param v the value of the attribute
      */
     void SetSpectrumChannelAttribute(std::string n, const AttributeValue& v);
 
     /**
      * Set the type of carrier component algorithm to be used by eNodeB devices.
      *
-     * \param type type of carrier component manager
+     * @param type type of carrier component manager
      *
      */
     void SetEnbComponentCarrierManagerType(std::string type);
 
     /**
      *
-     * \return the carrier enb component carrier manager type
+     * @return the carrier enb component carrier manager type
      */
     std::string GetEnbComponentCarrierManagerType() const;
 
     /**
      * Set an attribute for the enb component carrier manager to be created.
      *
-     * \param n the name of the attribute
-     * \param v the value of the attribute
+     * @param n the name of the attribute
+     * @param v the value of the attribute
      */
     void SetEnbComponentCarrierManagerAttribute(std::string n, const AttributeValue& v);
 
     /**
      * Set the type of Component Carrier Manager to be used by Ue devices.
      *
-     * \param type type of UE Component Carrier Manager
+     * @param type type of UE Component Carrier Manager
      *
      */
     void SetUeComponentCarrierManagerType(std::string type);
 
     /**
      *
-     * \return the carrier ue component carrier manager type
+     * @return the carrier ue component carrier manager type
      */
     std::string GetUeComponentCarrierManagerType() const;
 
     /**
      * Set an attribute for the ue component carrier manager to be created.
      *
-     * \param n the name of the attribute
-     * \param v the value of the attribute
+     * @param n the name of the attribute
+     * @param v the value of the attribute
      */
     void SetUeComponentCarrierManagerAttribute(std::string n, const AttributeValue& v);
 
     /**
      * Create a set of eNodeB devices.
      *
-     * \param c the node container where the devices are to be installed
-     * \return the NetDeviceContainer with the newly created devices
+     * @param c the node container where the devices are to be installed
+     * @return the NetDeviceContainer with the newly created devices
      */
     NetDeviceContainer InstallEnbDevice(NodeContainer c);
 
     /**
      * Create a set of UE devices.
      *
-     * \param c the node container where the devices are to be installed
-     * \return the NetDeviceContainer with the newly created devices
+     * @param c the node container where the devices are to be installed
+     * @return the NetDeviceContainer with the newly created devices
      */
     NetDeviceContainer InstallUeDevice(NodeContainer c);
 
     /**
-     * \brief Enables automatic attachment of a set of UE devices to a suitable
+     * @brief Enables automatic attachment of a set of UE devices to a suitable
      *        cell using Idle mode initial cell selection procedure.
-     * \param ueDevices the set of UE devices to be attached
+     * @param ueDevices the set of UE devices to be attached
      *
      * By calling this, the UE will start the initial cell selection procedure at
      * the beginning of simulation. In addition, the function also instructs each
@@ -355,9 +355,9 @@ class LteHelper : public Object
     void Attach(NetDeviceContainer ueDevices);
 
     /**
-     * \brief Enables automatic attachment of a UE device to a suitable cell
+     * @brief Enables automatic attachment of a UE device to a suitable cell
      *        using Idle mode initial cell selection procedure.
-     * \param ueDevice the UE device to be attached
+     * @param ueDevice the UE device to be attached
      *
      * By calling this, the UE will start the initial cell selection procedure at
      * the beginning of simulation. In addition, the function also instructs the
@@ -374,10 +374,10 @@ class LteHelper : public Object
     void Attach(Ptr<NetDevice> ueDevice);
 
     /**
-     * \brief Manual attachment of a set of UE devices to the network via a given
+     * @brief Manual attachment of a set of UE devices to the network via a given
      *        eNodeB.
-     * \param ueDevices the set of UE devices to be attached
-     * \param enbDevice the destination eNodeB device
+     * @param ueDevices the set of UE devices to be attached
+     * @param enbDevice the destination eNodeB device
      *
      * In addition, the function also instructs each UE to immediately enter
      * CONNECTED mode and activates the default EPS bearer.
@@ -389,10 +389,10 @@ class LteHelper : public Object
     void Attach(NetDeviceContainer ueDevices, Ptr<NetDevice> enbDevice);
 
     /**
-     * \brief Manual attachment of a UE device to the network via a given eNodeB.
-     * \param ueDevice the UE device to be attached
-     * \param enbDevice the destination eNodeB device
-     * \param componentCarrierId the destination eNodeB component carrier
+     * @brief Manual attachment of a UE device to the network via a given eNodeB.
+     * @param ueDevice the UE device to be attached
+     * @param enbDevice the destination eNodeB device
+     * @param componentCarrierId the destination eNodeB component carrier
      *
      * In addition, the function also instructs the UE to immediately enter
      * CONNECTED mode and activates the default EPS bearer.
@@ -404,10 +404,10 @@ class LteHelper : public Object
     void Attach(Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice, uint8_t componentCarrierId = 0);
 
     /**
-     * \brief Manual attachment of a set of UE devices to the network via the
+     * @brief Manual attachment of a set of UE devices to the network via the
      *        closest eNodeB (with respect to distance) among those in the set.
-     * \param ueDevices the set of UE devices to be attached
-     * \param enbDevices the set of eNodeB devices to be considered
+     * @param ueDevices the set of UE devices to be attached
+     * @param enbDevices the set of eNodeB devices to be considered
      *
      * This function finds among the eNodeB set the closest eNodeB for each UE,
      * and then invokes manual attachment between the pair.
@@ -420,10 +420,10 @@ class LteHelper : public Object
     void AttachToClosestEnb(NetDeviceContainer ueDevices, NetDeviceContainer enbDevices);
 
     /**
-     * \brief Manual attachment of a UE device to the network via the closest
+     * @brief Manual attachment of a UE device to the network via the closest
      *        eNodeB (with respect to distance) among those in the set.
-     * \param ueDevice the UE device to be attached
-     * \param enbDevices the set of eNodeB devices to be considered
+     * @param ueDevice the UE device to be attached
+     * @param enbDevices the set of eNodeB devices to be considered
      *
      * This function finds among the eNodeB set the closest eNodeB for the UE,
      * and then invokes manual attachment between the pair.
@@ -438,10 +438,10 @@ class LteHelper : public Object
     /**
      * Activate a dedicated EPS bearer on a given set of UE devices.
      *
-     * \param ueDevices the set of UE devices
-     * \param bearer the characteristics of the bearer to be activated
-     * \param tft the Traffic Flow Template that identifies the traffic to go on this bearer
-     * \returns bearer ID
+     * @param ueDevices the set of UE devices
+     * @param bearer the characteristics of the bearer to be activated
+     * @param tft the Traffic Flow Template that identifies the traffic to go on this bearer
+     * @returns bearer ID
      */
     uint8_t ActivateDedicatedEpsBearer(NetDeviceContainer ueDevices,
                                        EpsBearer bearer,
@@ -450,21 +450,21 @@ class LteHelper : public Object
     /**
      * Activate a dedicated EPS bearer on a given UE device.
      *
-     * \param ueDevice the UE device
-     * \param bearer the characteristics of the bearer to be activated
-     * \param tft the Traffic Flow Template that identifies the traffic to go on this bearer.
-     * \returns bearer ID
+     * @param ueDevice the UE device
+     * @param bearer the characteristics of the bearer to be activated
+     * @param tft the Traffic Flow Template that identifies the traffic to go on this bearer.
+     * @returns bearer ID
      */
     uint8_t ActivateDedicatedEpsBearer(Ptr<NetDevice> ueDevice, EpsBearer bearer, Ptr<EpcTft> tft);
 
     /**
-     * \brief Manually trigger dedicated bearer de-activation at specific simulation time
-     * \param ueDevice the UE on which dedicated bearer to be de-activated must be of the type
+     * @brief Manually trigger dedicated bearer de-activation at specific simulation time
+     * @param ueDevice the UE on which dedicated bearer to be de-activated must be of the type
      * LteUeNetDevice
-     * \param enbDevice eNB, must be of the type LteEnbNetDevice
-     * \param bearerId Bearer Identity which is to be de-activated
+     * @param enbDevice eNB, must be of the type LteEnbNetDevice
+     * @param bearerId Bearer Identity which is to be de-activated
      *
-     * \warning Requires the use of EPC mode. See SetEpcHelper() method.
+     * @warning Requires the use of EPC mode. See SetEpcHelper() method.
      */
 
     void DeActivateDedicatedEpsBearer(Ptr<NetDevice> ueDevice,
@@ -473,30 +473,30 @@ class LteHelper : public Object
     /**
      * Create an X2 interface between all the eNBs in a given set.
      *
-     * \param enbNodes the set of eNB nodes
+     * @param enbNodes the set of eNB nodes
      */
     void AddX2Interface(NodeContainer enbNodes);
 
     /**
      * Create an X2 interface between two eNBs.
      *
-     * \param enbNode1 one eNB of the X2 interface
-     * \param enbNode2 the other eNB of the X2 interface
+     * @param enbNode1 one eNB of the X2 interface
+     * @param enbNode2 the other eNB of the X2 interface
      */
     void AddX2Interface(Ptr<Node> enbNode1, Ptr<Node> enbNode2);
 
     /**
      * Manually trigger an X2-based handover.
      *
-     * \param hoTime when the handover shall be initiated
-     * \param ueDev the UE that hands off, must be of the type LteUeNetDevice
-     * \param sourceEnbDev source eNB, must be of the type LteEnbNetDevice
+     * @param hoTime when the handover shall be initiated
+     * @param ueDev the UE that hands off, must be of the type LteUeNetDevice
+     * @param sourceEnbDev source eNB, must be of the type LteEnbNetDevice
      *                     (originally the UE is attached to this eNB)
-     * \param targetEnbDev target eNB, must be of the type LteEnbNetDevice
+     * @param targetEnbDev target eNB, must be of the type LteEnbNetDevice
      *                     (the UE would be connected to this eNB after the
      *                     handover)
      *
-     * \warning Requires the use of EPC mode. See SetEpcHelper() method
+     * @warning Requires the use of EPC mode. See SetEpcHelper() method
      */
     void HandoverRequest(Time hoTime,
                          Ptr<NetDevice> ueDev,
@@ -506,14 +506,14 @@ class LteHelper : public Object
     /**
      * Manually trigger an X2-based handover.
      *
-     * \param hoTime when the handover shall be initiated
-     * \param ueDev the UE that hands off, must be of the type LteUeNetDevice
-     * \param sourceEnbDev source eNB, must be of the type LteEnbNetDevice
+     * @param hoTime when the handover shall be initiated
+     * @param ueDev the UE that hands off, must be of the type LteUeNetDevice
+     * @param sourceEnbDev source eNB, must be of the type LteEnbNetDevice
      *                     (originally the UE is attached to this eNB)
-     * \param targetCellId target CellId (the UE primary component carrier will
+     * @param targetCellId target CellId (the UE primary component carrier will
      *                     be connected to this cell after the handover)
      *
-     * \warning Requires the use of EPC mode. See SetEpcHelper() method
+     * @warning Requires the use of EPC mode. See SetEpcHelper() method
      */
     void HandoverRequest(Time hoTime,
                          Ptr<NetDevice> ueDev,
@@ -523,8 +523,8 @@ class LteHelper : public Object
     /**
      * Activate a Data Radio Bearer on a given UE devices (for LTE-only simulation).
      *
-     * \param ueDevices the set of UE devices
-     * \param bearer the characteristics of the bearer to be activated
+     * @param ueDevices the set of UE devices
+     * @param bearer the characteristics of the bearer to be activated
      */
     void ActivateDataRadioBearer(NetDeviceContainer ueDevices, EpsBearer bearer);
 
@@ -533,15 +533,15 @@ class LteHelper : public Object
      * This method will schedule the actual activation
      * the bearer so that it happens after the UE got connected.
      *
-     * \param ueDevice the UE device
-     * \param bearer the characteristics of the bearer to be activated
+     * @param ueDevice the UE device
+     * @param bearer the characteristics of the bearer to be activated
      */
     void ActivateDataRadioBearer(Ptr<NetDevice> ueDevice, EpsBearer bearer);
 
     /**
      * Set the type of fading model to be used in both DL and UL.
      *
-     * \param type type of fading model, must be a type name of any class
+     * @param type type of fading model, must be a type name of any class
      *             inheriting from ns3::SpectrumPropagationLossModel, for
      *             example: "ns3::TraceFadingLossModel"
      */
@@ -550,8 +550,8 @@ class LteHelper : public Object
     /**
      * Set an attribute for the fading model to be created (both DL and UL).
      *
-     * \param n the name of the attribute
-     * \param v the value of the attribute
+     * @param n the name of the attribute
+     * @param v the value of the attribute
      */
     void SetFadingModelAttribute(std::string n, const AttributeValue& v);
 
@@ -624,7 +624,7 @@ class LteHelper : public Object
 
     /**
      *
-     * \return the RLC stats calculator object
+     * @return the RLC stats calculator object
      */
     Ptr<RadioBearerStatsCalculator> GetRlcStats();
 
@@ -635,7 +635,7 @@ class LteHelper : public Object
 
     /**
      *
-     * \return the PDCP stats calculator object
+     * @return the PDCP stats calculator object
      */
     Ptr<RadioBearerStatsCalculator> GetPdcpStats();
 
@@ -651,20 +651,20 @@ class LteHelper : public Object
      * If an EPC has been configured, streams will be assigned on the EPC
      * nodes as well via EpcHelper::AssignStreams ().
      *
-     * \param c NetDeviceContainer of the set of net devices for which the
+     * @param c NetDeviceContainer of the set of net devices for which the
      *          LteNetDevice should be modified to use a fixed stream
-     * \param stream first stream index to use
-     * \return the number of stream indices (possibly zero) that have been assigned
+     * @param stream first stream index to use
+     * @return the number of stream indices (possibly zero) that have been assigned
      */
     int64_t AssignStreams(NetDeviceContainer c, int64_t stream);
 
     /**
-     * \return a pointer to the SpectrumChannel instance used for the uplink
+     * @return a pointer to the SpectrumChannel instance used for the uplink
      */
     Ptr<SpectrumChannel> GetUplinkSpectrumChannel() const;
 
     /**
-     * \return a pointer to the SpectrumChannel instance used for the downlink
+     * @return a pointer to the SpectrumChannel instance used for the downlink
      */
     Ptr<SpectrumChannel> GetDownlinkSpectrumChannel() const;
 
@@ -676,10 +676,10 @@ class LteHelper : public Object
     /**
      * Configure the component carriers
      *
-     * \param ulEarfcn uplink EARFCN
-     * \param dlEarfcn downlink EARFCN
-     * \param ulbw uplink bandwidth for each CC
-     * \param dlbw downlink bandwidth for each CC
+     * @param ulEarfcn uplink EARFCN
+     * @param dlEarfcn downlink EARFCN
+     * @param ulbw uplink bandwidth for each CC
+     * @param dlbw downlink bandwidth for each CC
      */
     void DoComponentCarrierConfigure(uint32_t ulEarfcn,
                                      uint32_t dlEarfcn,
@@ -687,24 +687,24 @@ class LteHelper : public Object
                                      uint16_t dlbw);
     /**
      * Create an eNodeB device (LteEnbNetDevice) on the given node.
-     * \param n the node where the device is to be installed
-     * \return pointer to the created device
+     * @param n the node where the device is to be installed
+     * @return pointer to the created device
      */
     Ptr<NetDevice> InstallSingleEnbDevice(Ptr<Node> n);
 
     /**
      * Create a UE device (LteUeNetDevice) on the given node
-     * \param n the node where the device is to be installed
-     * \return pointer to the created device
+     * @param n the node where the device is to be installed
+     * @return pointer to the created device
      */
     Ptr<NetDevice> InstallSingleUeDevice(Ptr<Node> n);
 
     /**
      * The actual function to trigger a manual handover.
-     * \param ueDev the UE that hands off, must be of the type LteUeNetDevice
-     * \param sourceEnbDev source eNB, must be of the type LteEnbNetDevice
+     * @param ueDev the UE that hands off, must be of the type LteUeNetDevice
+     * @param sourceEnbDev source eNB, must be of the type LteEnbNetDevice
      *                     (originally the UE is attached to this eNB)
-     * \param targetCellId target CellId (the UE primary component carrier will
+     * @param targetCellId target CellId (the UE primary component carrier will
      *                     be connected to this cell after the handover)
      *
      * This method is normally scheduled by HandoverRequest() to run at a specific
@@ -715,10 +715,10 @@ class LteHelper : public Object
                            uint16_t targetCellId);
 
     /**
-     * \brief The actual function to trigger a manual bearer de-activation
-     * \param ueDevice the UE on which bearer to be de-activated must be of the type LteUeNetDevice
-     * \param enbDevice eNB, must be of the type LteEnbNetDevice
-     * \param bearerId Bearer Identity which is to be de-activated
+     * @brief The actual function to trigger a manual bearer de-activation
+     * @param ueDevice the UE on which bearer to be de-activated must be of the type LteUeNetDevice
+     * @param enbDevice eNB, must be of the type LteEnbNetDevice
+     * @param bearerId Bearer Identity which is to be de-activated
      *
      * This method is normally scheduled by DeActivateDedicatedEpsBearer() to run at a specific
      * time when a manual bearer de-activation is desired by the simulation user.
@@ -731,7 +731,7 @@ class LteHelper : public Object
     void ChannelModelInitialization();
 
     /**
-     * \brief This function create the component carrier based on provided configuration parameters
+     * @brief This function create the component carrier based on provided configuration parameters
      */
 
     /// The downlink LTE channel used in the simulation.

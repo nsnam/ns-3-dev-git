@@ -41,76 +41,76 @@ class EpcUeNas : public Object
     // inherited from Object
     void DoDispose() override;
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
     /**
      *
-     * \param dev the UE NetDevice
+     * @param dev the UE NetDevice
      */
     void SetDevice(Ptr<NetDevice> dev);
 
     /**
      *
      *
-     * \param imsi the unique UE identifier
+     * @param imsi the unique UE identifier
      */
     void SetImsi(uint64_t imsi);
 
     /**
      *
-     * \param csgId Closed Subscriber Group identity
+     * @param csgId Closed Subscriber Group identity
      */
     void SetCsgId(uint32_t csgId);
 
     /**
      *
-     * \return csgId Closed Subscriber Group identity
+     * @return csgId Closed Subscriber Group identity
      */
     uint32_t GetCsgId() const;
 
     /**
      * Set the AS SAP provider to interact with the NAS entity
      *
-     * \param s the AS SAP provider
+     * @param s the AS SAP provider
      */
     void SetAsSapProvider(LteAsSapProvider* s);
 
     /**
      *
      *
-     * \return the AS SAP user exported by this RRC
+     * @return the AS SAP user exported by this RRC
      */
     LteAsSapUser* GetAsSapUser();
 
     /**
      * set the callback used to forward data packets up the stack
      *
-     * \param cb the callback
+     * @param cb the callback
      */
     void SetForwardUpCallback(Callback<void, Ptr<Packet>> cb);
 
     /**
-     * \brief Causes NAS to tell AS to find a suitable cell and camp to it.
+     * @brief Causes NAS to tell AS to find a suitable cell and camp to it.
      *
-     * \param dlEarfcn the DL frequency of the eNB
+     * @param dlEarfcn the DL frequency of the eNB
      */
     void StartCellSelection(uint32_t dlEarfcn);
 
     /**
-     * \brief Causes NAS to tell AS to go to ACTIVE state.
+     * @brief Causes NAS to tell AS to go to ACTIVE state.
      *
      * The end result is equivalent with EMM Registered + ECM Connected states.
      */
     void Connect();
 
     /**
-     * \brief Causes NAS to tell AS to camp to a specific cell and go to ACTIVE
+     * @brief Causes NAS to tell AS to camp to a specific cell and go to ACTIVE
      *        state.
-     * \param cellId the id of the eNB to camp on
-     * \param dlEarfcn the DL frequency of the eNB
+     * @param cellId the id of the eNB to camp on
+     * @param dlEarfcn the DL frequency of the eNB
      *
      * The end result is equivalent with EMM Registered + ECM Connected states.
      * Since RRC Idle Mode cell selection is not supported yet, we force the UE
@@ -127,18 +127,18 @@ class EpcUeNas : public Object
     /**
      * Activate an EPS bearer
      *
-     * \param bearer the characteristics of the bearer to be created
-     * \param tft the TFT identifying the traffic that will go on this bearer
+     * @param bearer the characteristics of the bearer to be created
+     * @param tft the TFT identifying the traffic that will go on this bearer
      */
     void ActivateEpsBearer(EpsBearer bearer, Ptr<EpcTft> tft);
 
     /**
      * Enqueue an IP packet on the proper bearer for uplink transmission
      *
-     * \param p the packet
-     * \param protocolNumber the protocol number of the packet
+     * @param p the packet
+     * @param protocolNumber the protocol number of the packet
      *
-     * \return true if successful, false if an error occurred
+     * @return true if successful, false if an error occurred
      */
     bool Send(Ptr<Packet> p, uint16_t protocolNumber);
 
@@ -158,15 +158,15 @@ class EpcUeNas : public Object
     };
 
     /**
-     * \return The current state
+     * @return The current state
      */
     State GetState() const;
 
     /**
      * TracedCallback signature for state change events.
      *
-     * \param [in] oldState The old State.
-     * \param [in] newState the new State.
+     * @param [in] oldState The old State.
+     * @param [in] newState the new State.
      */
     typedef void (*StateTracedCallback)(const State oldState, const State newState);
 
@@ -180,20 +180,20 @@ class EpcUeNas : public Object
     void DoNotifyConnectionReleased();
     /**
      * Receive data
-     * \param packet the packet
+     * @param packet the packet
      */
     void DoRecvData(Ptr<Packet> packet);
 
     // internal methods
     /**
      * Activate EPS Bearer
-     * \param bearer the EPS bearer
-     * \param tft the EPC TFT
+     * @param bearer the EPS bearer
+     * @param tft the EPC TFT
      */
     void DoActivateEpsBearer(EpsBearer bearer, Ptr<EpcTft> tft);
     /**
      * Switch the UE RRC to the given state.
-     * \param s the destination state
+     * @param s the destination state
      */
     void SwitchToState(State s);
 
@@ -203,7 +203,7 @@ class EpcUeNas : public Object
     /**
      * The `StateTransition` trace source. Fired upon every UE NAS state
      * transition. Exporting old state and new state.
-     * \todo This should be a TracedValue
+     * @todo This should be a TracedValue
      */
     TracedCallback<State, State> m_stateTransitionCallback;
 

@@ -30,10 +30,10 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("WifiAcMappingTest");
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief Test for User priority to Access Category mapping
+ * @brief Test for User priority to Access Category mapping
  */
 class WifiAcMappingTest : public TestCase
 {
@@ -41,8 +41,8 @@ class WifiAcMappingTest : public TestCase
     /**
      * Constructor for WifiAcMappingTest
      *
-     * \param tos the type of service
-     * \param expectedQueue the expected queue disc index
+     * @param tos the type of service
+     * @param expectedQueue the expected queue disc index
      */
     WifiAcMappingTest(uint8_t tos, uint8_t expectedQueue);
     void DoRun() override;
@@ -52,9 +52,9 @@ class WifiAcMappingTest : public TestCase
      * Function called whenever a packet is enqueued in
      * a queue disc.
      *
-     * \param tos the type of service
-     * \param count the pointer to the packet counter
-     * \param item the enqueued item
+     * @param tos the type of service
+     * @param count the pointer to the packet counter
+     * @param item the enqueued item
      */
     static void PacketEnqueuedInQueueDisc(uint8_t tos,
                                           uint16_t* count,
@@ -63,9 +63,9 @@ class WifiAcMappingTest : public TestCase
      * Function called whenever a packet is enqueued in
      * a Wi-Fi MAC queue.
      *
-     * \param tos the type of service
-     * \param count the pointer to the packet counter
-     * \param item the enqueued item
+     * @param tos the type of service
+     * @param count the pointer to the packet counter
+     * @param item the enqueued item
      */
     static void PacketEnqueuedInWifiMacQueue(uint8_t tos,
                                              uint16_t* count,
@@ -310,10 +310,10 @@ WifiAcMappingTest::DoRun()
 }
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief Access category mapping Test Suite
+ * @brief Access category mapping Test Suite
  */
 class WifiAcMappingTestSuite : public TestSuite
 {

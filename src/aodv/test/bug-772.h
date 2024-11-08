@@ -17,9 +17,9 @@
 using namespace ns3;
 
 /**
- * \ingroup aodv
+ * @ingroup aodv
  *
- * \brief AODV deferred route lookup test case (see \bugid{772})
+ * @brief AODV deferred route lookup test case (see \bugid{772})
  *
  * UDP packet transfers are delayed while a route is found and then while
  * ARP completes.  Eight packets should be sent, queued until the path
@@ -31,16 +31,16 @@ class Bug772ChainTest : public TestCase
     /**
      * Create test case
      *
-     * \param prefix              Unique file names prefix
-     * \param proto               ns3::UdpSocketFactory or ns3::TcpSocketFactory
-     * \param size                Number of nodes in the chain
-     * \param time                Simulation time
+     * @param prefix              Unique file names prefix
+     * @param proto               ns3::UdpSocketFactory or ns3::TcpSocketFactory
+     * @param size                Number of nodes in the chain
+     * @param time                Simulation time
      */
     Bug772ChainTest(const char* const prefix, const char* const proto, Time time, uint32_t size);
     ~Bug772ChainTest() override;
 
   private:
-    /// \internal It is important to have pointers here
+    /// @internal It is important to have pointers here
     NodeContainer* m_nodes;
 
     /// PCAP file names prefix
@@ -66,7 +66,7 @@ class Bug772ChainTest : public TestCase
     void DoRun() override;
     /**
      * Receive data function
-     * \param socket the socket to receive from
+     * @param socket the socket to receive from
      */
     void HandleRead(Ptr<Socket> socket);
 
@@ -80,7 +80,7 @@ class Bug772ChainTest : public TestCase
 
     /**
      * Send data
-     * \param socket the sending socket
+     * @param socket the sending socket
      */
     void SendData(Ptr<Socket> socket);
 };

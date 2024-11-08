@@ -11,8 +11,8 @@
 #include <ostream>
 
 /**
- * \file
- * \ingroup time
+ * @file
+ * @ingroup time
  * Declaration of ns3::TimePrinter function pointer type
  * and ns3::DefaultTimePrinter function.
  */
@@ -27,14 +27,14 @@ namespace ns3
  * A TimePrinter should write the current simulation time
  * (Simulator::Now()) on the designated output stream.
  *
- * \param [in,out] os The output stream to print on.
+ * @param [in,out] os The output stream to print on.
  */
 typedef void (*TimePrinter)(std::ostream& os);
 
 /**
  * Default Time printer.
  *
- * \param [in,out] os The output stream to print on.
+ * @param [in,out] os The output stream to print on.
  */
 void DefaultTimePrinter(std::ostream& os);
 

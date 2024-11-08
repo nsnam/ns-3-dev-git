@@ -29,9 +29,9 @@ class LrWpanPhy;
 class LrWpanCsmaCa;
 
 /**
- * \ingroup lr-wpan
+ * @ingroup lr-wpan
  *
- * \brief Network layer to device interface.
+ * @brief Network layer to device interface.
  *
  * The ns3::NetDevice includes IP-specific API such as GetMulticast(), Send()
  * and SendTo() methods, which do not map well the the 802.15.4 MAC MCPS
@@ -46,7 +46,7 @@ class LrWpanNetDevice : public NetDevice
     /**
      * Get the type ID.
      *
-     * \return the object TypeId
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -68,21 +68,21 @@ class LrWpanNetDevice : public NetDevice
     /**
      * Set the MAC to be used by this NetDevice.
      *
-     * \param mac the MAC to be used
+     * @param mac the MAC to be used
      */
     void SetMac(Ptr<LrWpanMac> mac);
 
     /**
      * Set the PHY to be used by the MAC and this NetDevice.
      *
-     * \param phy the PHY to be used
+     * @param phy the PHY to be used
      */
     void SetPhy(Ptr<LrWpanPhy> phy);
 
     /**
      * Set the CSMA/CA implementation to be used by the MAC and this NetDevice.
      *
-     * \param csmaca the CSMA/CA implementation to be used
+     * @param csmaca the CSMA/CA implementation to be used
      */
     void SetCsmaCa(Ptr<LrWpanCsmaCa> csmaca);
 
@@ -90,28 +90,28 @@ class LrWpanNetDevice : public NetDevice
      * Set the channel to which the NetDevice, and therefore the PHY, should be
      * attached to.
      *
-     * \param channel the channel to be used
+     * @param channel the channel to be used
      */
     void SetChannel(Ptr<SpectrumChannel> channel);
 
     /**
      * Get the MAC used by this NetDevice.
      *
-     * \return the MAC object
+     * @return the MAC object
      */
     Ptr<LrWpanMac> GetMac() const;
 
     /**
      * Get the PHY used by this NetDevice.
      *
-     * \return the PHY object
+     * @return the PHY object
      */
     Ptr<LrWpanPhy> GetPhy() const;
 
     /**
      * Get the CSMA/CA implementation used by this NetDevice.
      *
-     * \return the CSMA/CA implementation object
+     * @return the CSMA/CA implementation object
      */
     Ptr<LrWpanCsmaCa> GetCsmaCa() const;
 
@@ -121,12 +121,12 @@ class LrWpanNetDevice : public NetDevice
     Ptr<Channel> GetChannel() const override;
     /**
      * This method indirects to LrWpanMac::SetShortAddress ()
-     * \param address The short address.
+     * @param address The short address.
      */
     void SetAddress(Address address) override;
     /**
      * This method indirects to LrWpanMac::SetShortAddress ()
-     * \returns The short address.
+     * @returns The short address.
      */
     Address GetAddress() const override;
 
@@ -135,19 +135,19 @@ class LrWpanNetDevice : public NetDevice
      * which the device or coordinator is associated. When assigning a short address
      * the extended address must also be present.
      *
-     * \param panId The id of the PAN used by the coordinator device.
+     * @param panId The id of the PAN used by the coordinator device.
      *
-     * \param coordExtAddr The coordinator extended address (EUI-64) through which this
+     * @param coordExtAddr The coordinator extended address (EUI-64) through which this
      *                     device or coordinator is associated.
      *
-     * \param coordShortAddr The coordinator assigned short address through which this
+     * @param coordShortAddr The coordinator assigned short address through which this
      *                       device or coordinator is associated.
      *                       [FF:FF] address indicates that the value is unknown.
      *                       [FF:FE] indicates that the associated coordinator is using only
      *                       its extended address.
      *
      *
-     * \param assignedShortAddr The assigned short address for this device.
+     * @param assignedShortAddr The assigned short address for this device.
      *                          [FF:FF] address indicates that the device have no short address
      *                                  and is not associated.
      *                          [FF:FE] address indicates that the devices has associated but
@@ -188,8 +188,8 @@ class LrWpanNetDevice : public NetDevice
      * NetDevice. This callback will in turn use the ReceiveCallback set by
      * SetReceiveCallback() to notify upper layers.
      *
-     * \param params 802.15.4 specific parameters, including source and destination addresses
-     * \param pkt the packet do be delivered
+     * @param params 802.15.4 specific parameters, including source and destination addresses
+     * @param pkt the packet do be delivered
      */
     void McpsDataIndication(McpsDataIndicationParams params, Ptr<Packet> pkt);
 
@@ -197,8 +197,8 @@ class LrWpanNetDevice : public NetDevice
      * Assign a fixed random variable stream number to the random variables
      * used by this model.  Return the number of streams that have been assigned.
      *
-     * \param stream first stream index to use
-     * \return the number of stream indices assigned by this model
+     * @param stream first stream index to use
+     * @return the number of stream indices assigned by this model
      */
     int64_t AssignStreams(int64_t stream);
 
@@ -220,7 +220,7 @@ class LrWpanNetDevice : public NetDevice
     /**
      * Attribute accessor method for the "Channel" attribute.
      *
-     * \return the channel to which this NetDevice is attached
+     * @return the channel to which this NetDevice is attached
      */
     Ptr<SpectrumChannel> DoGetChannel() const;
 
@@ -242,9 +242,9 @@ class LrWpanNetDevice : public NetDevice
      *
      * As a consequence, here we set it to 1.
      *
-     * \param panId The PanID
-     * \param shortAddr The Short MAC address
-     * \return a Pseudo-Mac48Address
+     * @param panId The PanID
+     * @param shortAddr The Short MAC address
+     * @return a Pseudo-Mac48Address
      */
     Mac48Address BuildPseudoMacAddress(uint16_t panId, Mac16Address shortAddr) const;
 

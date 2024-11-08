@@ -60,7 +60,7 @@ static const std::array<uint64_t, 4> s_dsssRatesBpsList = {1000000, 2000000, 550
 /**
  * Get the array of possible DSSS rates.
  *
- * \return the DSSS rates in bits per second
+ * @return the DSSS rates in bits per second
  */
 const std::array<uint64_t, 4>&
 GetDsssRatesBpsList()

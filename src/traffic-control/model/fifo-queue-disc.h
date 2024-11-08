@@ -15,7 +15,7 @@ namespace ns3
 {
 
 /**
- * \ingroup traffic-control
+ * @ingroup traffic-control
  *
  * Simple queue disc implementing the FIFO (First-In First-Out) policy.
  *
@@ -24,12 +24,12 @@ class FifoQueueDisc : public QueueDisc
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     /**
-     * \brief FifoQueueDisc constructor
+     * @brief FifoQueueDisc constructor
      *
      * Creates a queue with a depth of 1000 packets by default
      */

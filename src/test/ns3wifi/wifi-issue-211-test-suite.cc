@@ -28,10 +28,10 @@
 using namespace ns3;
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief Test for issue 211 (https://gitlab.com/nsnam/ns-3-dev/-/issues/211)
+ * @brief Test for issue 211 (https://gitlab.com/nsnam/ns-3-dev/-/issues/211)
  *
  * This test aims to check that the transmission of data frames (under a
  * Block Ack agreement) resumes after a period in which the connectivity
@@ -48,7 +48,7 @@ class Issue211Test : public TestCase
 {
   public:
     /**
-     * \brief Constructor
+     * @brief Constructor
      */
     Issue211Test();
     ~Issue211Test() override;
@@ -58,7 +58,7 @@ class Issue211Test : public TestCase
   private:
     /**
      * Compute the average throughput since the last check-point
-     * \param server the UDP server
+     * @param server the UDP server
      */
     void CalcThroughput(Ptr<UdpServer> server);
 
@@ -235,10 +235,10 @@ Issue211Test::DoRun()
 }
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief Block Ack Test Suite
+ * @brief Block Ack Test Suite
  */
 class Issue211TestSuite : public TestSuite
 {

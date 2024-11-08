@@ -39,15 +39,15 @@ class EpcTft;
 class LteUeComponentCarrierManager;
 
 /**
- * \ingroup lte
+ * @ingroup lte
  * The LteUeNetDevice class implements the UE net device
  */
 class LteUeNetDevice : public LteNetDevice
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -59,43 +59,43 @@ class LteUeNetDevice : public LteNetDevice
     bool Send(Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber) override;
 
     /**
-     * \brief Get the MAC.
-     * \return the LTE UE MAC
+     * @brief Get the MAC.
+     * @return the LTE UE MAC
      */
     Ptr<LteUeMac> GetMac() const;
 
     /**
-     * \brief Get the RRC.
-     * \return the LTE UE RRC
+     * @brief Get the RRC.
+     * @return the LTE UE RRC
      */
     Ptr<LteUeRrc> GetRrc() const;
 
     /**
-     * \brief Get the Phy.
-     * \return the LTE UE Phy
+     * @brief Get the Phy.
+     * @return the LTE UE Phy
      */
     Ptr<LteUePhy> GetPhy() const;
 
     /**
-     * \brief Get the NAS.
-     * \return the LTE UE NAS
+     * @brief Get the NAS.
+     * @return the LTE UE NAS
      */
     Ptr<EpcUeNas> GetNas() const;
 
     /**
-     * \brief Get the componentn carrier manager.
-     * \return the LTE UE component carrier manager
+     * @brief Get the componentn carrier manager.
+     * @return the LTE UE component carrier manager
      */
     Ptr<LteUeComponentCarrierManager> GetComponentCarrierManager() const;
 
     /**
-     * \brief Get the IMSI.
-     * \return the IMSI
+     * @brief Get the IMSI.
+     * @return the IMSI
      */
     uint64_t GetImsi() const;
 
     /**
-     * \return the downlink carrier frequency (EARFCN)
+     * @return the downlink carrier frequency (EARFCN)
      *
      * Note that real-life handset typically supports more than one EARFCN, but
      * the sake of simplicity we assume only one EARFCN is supported.
@@ -103,7 +103,7 @@ class LteUeNetDevice : public LteNetDevice
     uint32_t GetDlEarfcn() const;
 
     /**
-     * \param earfcn the downlink carrier frequency (EARFCN)
+     * @param earfcn the downlink carrier frequency (EARFCN)
      *
      * Note that real-life handset typically supports more than one EARFCN, but
      * the sake of simplicity we assume only one EARFCN is supported.
@@ -111,45 +111,45 @@ class LteUeNetDevice : public LteNetDevice
     void SetDlEarfcn(uint32_t earfcn);
 
     /**
-     * \brief Returns the CSG ID the UE is currently a member of.
-     * \return the Closed Subscriber Group identity
+     * @brief Returns the CSG ID the UE is currently a member of.
+     * @return the Closed Subscriber Group identity
      */
     uint32_t GetCsgId() const;
 
     /**
-     * \brief Enlist the UE device as a member of a particular CSG.
-     * \param csgId the intended Closed Subscriber Group identity
+     * @brief Enlist the UE device as a member of a particular CSG.
+     * @param csgId the intended Closed Subscriber Group identity
      *
      * UE is associated with a single CSG identity, and thus becoming a member of
      * this particular CSG. As a result, the UE may gain access to cells which
      * belong to this CSG. This does not revoke the UE's access to non-CSG cells.
      *
-     * \note This restriction only applies to initial cell selection and
+     * @note This restriction only applies to initial cell selection and
      *       EPC-enabled simulation.
      */
     void SetCsgId(uint32_t csgId);
 
     /**
-     * \brief Set the target eNB where the UE is registered
-     * \param enb
+     * @brief Set the target eNB where the UE is registered
+     * @param enb
      */
     void SetTargetEnb(Ptr<LteEnbNetDevice> enb);
 
     /**
-     * \brief Get the target eNB where the UE is registered
-     * \return the pointer to the enb
+     * @brief Get the target eNB where the UE is registered
+     * @return the pointer to the enb
      */
     Ptr<LteEnbNetDevice> GetTargetEnb();
 
     /**
-     * \brief Set the ComponentCarrier Map for the UE
-     * \param ccm the map of ComponentCarrierUe
+     * @brief Set the ComponentCarrier Map for the UE
+     * @param ccm the map of ComponentCarrierUe
      */
     void SetCcMap(std::map<uint8_t, Ptr<ComponentCarrierUe>> ccm);
 
     /**
-     * \brief Get the ComponentCarrier Map for the UE
-     * \returns the map of ComponentCarrierUe
+     * @brief Get the ComponentCarrier Map for the UE
+     * @returns the map of ComponentCarrierUe
      */
     std::map<uint8_t, Ptr<ComponentCarrierUe>> GetCcMap();
 
@@ -161,7 +161,7 @@ class LteUeNetDevice : public LteNetDevice
     bool m_isConstructed; ///< is constructed?
 
     /**
-     * \brief Propagate attributes and configuration to sub-modules.
+     * @brief Propagate attributes and configuration to sub-modules.
      *
      * Several attributes (e.g., the IMSI) are exported as the attributes of the
      * LteUeNetDevice from a user perspective, but are actually used also in other

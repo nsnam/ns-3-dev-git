@@ -15,7 +15,7 @@ namespace ns3
 {
 
 /**
- * \brief This class implements a tag that carries the status of a RLC SDU
+ * @brief This class implements a tag that carries the status of a RLC SDU
  * for the fragmentation process
  * Status of RLC SDU
  */
@@ -27,19 +27,19 @@ class LteRlcSduStatusTag : public Tag
     /**
      * Set status function
      *
-     * \param status the status
+     * @param status the status
      */
     void SetStatus(uint8_t status);
     /**
      * Get status function
      *
-     * \returns the status
+     * @returns the status
      */
     uint8_t GetStatus() const;
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     TypeId GetInstanceTypeId() const override;

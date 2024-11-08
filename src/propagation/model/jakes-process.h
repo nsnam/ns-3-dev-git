@@ -20,9 +20,9 @@ class PropagationLossModel;
 class JakesPropagationLossModel;
 
 /**
- * \ingroup propagation
+ * @ingroup propagation
  *
- * \brief Implementation for a single path Stationary Jakes propagation loss model.
+ * @brief Implementation for a single path Stationary Jakes propagation loss model.
  *
  * The Jakes propagation loss model implemented here is
  * described in [1].
@@ -46,8 +46,8 @@ class JakesProcess : public Object
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     JakesProcess();
@@ -55,18 +55,18 @@ class JakesProcess : public Object
 
     /**
      * Get the channel complex gain
-     * \return the channel complex gain
+     * @return the channel complex gain
      */
     std::complex<double> GetComplexGain() const;
     /**
      * Get the channel gain in dB
-     * \return the channel gain [dB]
+     * @return the channel gain [dB]
      */
     double GetChannelGainDb() const;
 
     /**
      * Set the propagation model using this class
-     * \param model the propagation model using this class
+     * @param model the propagation model using this class
      */
     void SetPropagationLossModel(Ptr<const PropagationLossModel> model);
 
@@ -81,15 +81,15 @@ class JakesProcess : public Object
     {
         /**
          * Initiate oscillator with complex amplitude, initial phase and rotation speed
-         * \param amplitude initial complex amplitude
-         * \param initialPhase initial phase
-         * \param omega rotation speed
+         * @param amplitude initial complex amplitude
+         * @param initialPhase initial phase
+         * @param omega rotation speed
          */
         Oscillator(std::complex<double> amplitude, double initialPhase, double omega);
         /**
          * Get the complex amplitude at a given moment
-         * \param t time instant
-         * \returns the complex amplitude
+         * @param t time instant
+         * @returns the complex amplitude
          */
         std::complex<double> GetValueAt(Time t) const;
 

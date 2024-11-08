@@ -18,11 +18,11 @@
 #include <string>
 
 /**
- * \brief Test that a pair of reference/new pcap files are equal
+ * @brief Test that a pair of reference/new pcap files are equal
  *
  * The filename is interpreted as a stream.
  *
- * \param filename The name of the file to read in the reference/temporary
+ * @param filename The name of the file to read in the reference/temporary
  *        directories
  */
 #define NS_PCAP_TEST_EXPECT_EQ(filename)                                                           \
@@ -35,7 +35,7 @@
         uint32_t sec{0};                                                                           \
         uint32_t usec{0};                                                                          \
         uint32_t packets{0};                                                                       \
-        /** \todo support default PcapWriter snap length here */                                   \
+        /** @todo support default PcapWriter snap length here */                                   \
         bool diff = PcapFile::Diff(got, expected, sec, usec, packets);                             \
         NS_TEST_EXPECT_MSG_EQ(diff,                                                                \
                               false,                                                               \

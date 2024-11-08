@@ -252,7 +252,7 @@ LenaTestFdTbfqFfMacSchedulerSuite::LenaTestFdTbfqFfMacSchedulerSuite()
 }
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  * Static variable for test initialization
  */
 static LenaTestFdTbfqFfMacSchedulerSuite lenaTestFdTbfqFfMacSchedulerSuite;

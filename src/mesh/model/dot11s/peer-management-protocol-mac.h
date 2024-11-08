@@ -25,9 +25,9 @@ class IePeerManagement;
 class PeerManagementProtocol;
 
 /**
- * \ingroup dot11s
+ * @ingroup dot11s
  *
- * \brief This is plugin to Mesh WiFi MAC, which implements the
+ * @brief This is plugin to Mesh WiFi MAC, which implements the
  * interface to dot11s peer management protocol: it takes proper
  * frames from MAC-layer, extracts peer link management information
  * element and mesh configuration element and passes it to main part
@@ -39,8 +39,8 @@ class PeerManagementProtocolMac : public MeshWifiInterfaceMacPlugin
     /**
      * Constructor
      *
-     * \param interface interface index
-     * \param protocol peer management protocol
+     * @param interface interface index
+     * @param protocol peer management protocol
      */
     PeerManagementProtocolMac(uint32_t interface, Ptr<PeerManagementProtocol> protocol);
     ~PeerManagementProtocolMac() override;
@@ -48,14 +48,14 @@ class PeerManagementProtocolMac : public MeshWifiInterfaceMacPlugin
     // Inherited from plugin abstract class
     /**
      * Set pointer to parent
-     * \param parent Ptr<MeshWifiInterfaceMac>
+     * @param parent Ptr<MeshWifiInterfaceMac>
      */
     void SetParent(Ptr<MeshWifiInterfaceMac> parent) override;
     /**
      * Receive and process a packet
-     * \param packet the packet received
-     * \param header the header
-     * \returns true if received
+     * @param packet the packet received
+     * @param header the header
+     * @returns true if received
      */
     bool Receive(Ptr<Packet> packet, const WifiMacHeader& header) override;
     /**
@@ -63,11 +63,11 @@ class PeerManagementProtocolMac : public MeshWifiInterfaceMacPlugin
      * it returns true if SELF_PROTECTED.  It then checks if it is either
      * a broadcast or sent on an active link, and returns true if so.
      * Otherwise, it returns false (indicating it is to be dropped)
-     * \param packet the packet
-     * \param header the header
-     * \param from the MAC address of the sender
-     * \param to the MAC address of the receiver
-     * \returns true if successful, false if to be dropped
+     * @param packet the packet
+     * @param header the header
+     * @param from the MAC address of the sender
+     * @param to the MAC address of the receiver
+     * @returns true if successful, false if to be dropped
      */
     bool UpdateOutcomingFrame(Ptr<Packet> packet,
                               WifiMacHeader& header,
@@ -75,29 +75,29 @@ class PeerManagementProtocolMac : public MeshWifiInterfaceMacPlugin
                               Mac48Address to) override;
     /**
      * Add beacon timing and mesh ID information elements, and notify beacon sent
-     * \param beacon the beacon
+     * @param beacon the beacon
      */
     void UpdateBeacon(MeshWifiBeacon& beacon) const override;
     /**
      * Assign the streams
-     * \param stream the stream to assign
-     * \return the assigned stream
+     * @param stream the stream to assign
+     * @return the assigned stream
      */
     int64_t AssignStreams(int64_t stream) override;
 
-    /// \name Statistics
+    /// @name Statistics
     ///@{
     /**
-     * \brief Report statistics
-     * \param os the output stream
+     * @brief Report statistics
+     * @param os the output stream
      */
     void Report(std::ostream&) const;
     /// Reset stats
     void ResetStats();
     /**
      * Get the link metric
-     * \param peerAddress the peer address
-     * \return The metric
+     * @param peerAddress the peer address
+     * @return The metric
      */
     uint32_t GetLinkMetric(Mac48Address peerAddress);
     ///@}
@@ -106,8 +106,8 @@ class PeerManagementProtocolMac : public MeshWifiInterfaceMacPlugin
     /**
      * assignment operator
      *
-     * \param peer the object to assign
-     * \returns the assigned value
+     * @param peer the object to assign
+     * @returns the assigned value
      */
     PeerManagementProtocolMac& operator=(const PeerManagementProtocolMac& peer);
     /// type conversion operator
@@ -118,10 +118,10 @@ class PeerManagementProtocolMac : public MeshWifiInterfaceMacPlugin
     /// allow PeerLink class access friend access
     friend class PeerLink;
 
-    /// \name Create peer link management frames
+    /// @name Create peer link management frames
     // \{
     /**
-     * \brief This structure keeps all fields in peer link management frame,
+     * @brief This structure keeps all fields in peer link management frame,
      * which are not subclasses of WifiInformationElement
      */
     struct PlinkFrameStart
@@ -134,55 +134,55 @@ class PeerManagementProtocolMac : public MeshWifiInterfaceMacPlugin
 
     /**
      * Create peer link open frame function
-     * \returns the packet
+     * @returns the packet
      */
     Ptr<Packet> CreatePeerLinkOpenFrame();
     /**
      * Create peer link confirm frame function
-     * \returns the packet
+     * @returns the packet
      */
     Ptr<Packet> CreatePeerLinkConfirmFrame();
     /**
      * Create peer link clode frame function
-     * \returns the packet
+     * @returns the packet
      */
     Ptr<Packet> CreatePeerLinkCloseFrame();
     /**
      * Parses the start of the frame, where no WifiInformationElements exist
-     * \param packet the packet
-     * \returns PlinkFrameStart
+     * @param packet the packet
+     * @returns PlinkFrameStart
      */
     PlinkFrameStart ParsePlinkFrame(Ptr<const Packet> packet);
     // \}
     /**
      *  Closes link when a proper number of successive transmissions have failed
-     * \param reason the reason why the MPDU was dropped
-     * \param mpdu the dropped MPDU
+     * @param reason the reason why the MPDU was dropped
+     * @param mpdu the dropped MPDU
      */
     void TxError(WifiMacDropReason reason, Ptr<const WifiMpdu> mpdu);
     /**
      * Transmit OK function
-     * \param mpdu the MPDU
+     * @param mpdu the MPDU
      */
     void TxOk(Ptr<const WifiMpdu> mpdu);
     // BCA functionality
     /**
      * Set beacon shift function
-     * \param shift the beacon time shift
+     * @param shift the beacon time shift
      */
     void SetBeaconShift(Time shift);
     /**
      * Set peer manager protocol function
-     * \param protocol the peer manager protocol
+     * @param protocol the peer manager protocol
      */
     void SetPeerManagerProtocol(Ptr<PeerManagementProtocol> protocol);
     /**
      * Send peer link management frame function
-     * \param peerAddress the peer MAC address
-     * \param peerMpAddress the peer MP address
-     * \param aid the AID
-     * \param peerElement IePeerManagement
-     * \param meshConfig IeConfiguration
+     * @param peerAddress the peer MAC address
+     * @param peerMpAddress the peer MP address
+     * @param aid the AID
+     * @param peerElement IePeerManagement
+     * @param meshConfig IeConfiguration
      */
     void SendPeerLinkManagementFrame(Mac48Address peerAddress,
                                      Mac48Address peerMpAddress,
@@ -190,8 +190,8 @@ class PeerManagementProtocolMac : public MeshWifiInterfaceMacPlugin
                                      IePeerManagement peerElement,
                                      IeConfiguration meshConfig);
     /**
-     * \brief debug only, used to print established links
-     * \returns the MAC address
+     * @brief debug only, used to print established links
+     * @returns the MAC address
      */
     Mac48Address GetAddress() const;
 
@@ -216,14 +216,14 @@ class PeerManagementProtocolMac : public MeshWifiInterfaceMacPlugin
         Statistics();
         /**
          * Print function
-         * \param os the output stream
+         * @param os the output stream
          */
         void Print(std::ostream& os) const;
     };
 
   private:
     Statistics m_stats; ///< statistics
-    /// \name Information about MAC and protocol:
+    /// @name Information about MAC and protocol:
     Ptr<MeshWifiInterfaceMac> m_parent;     ///< parent
     uint32_t m_ifIndex;                     ///< IF index
     Ptr<PeerManagementProtocol> m_protocol; ///< protocol

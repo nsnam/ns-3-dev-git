@@ -16,9 +16,9 @@ namespace ns3
 {
 
 /**
- * \ingroup network
+ * @ingroup network
  *
- * \brief Abstract base class for NetDevice queue length controller
+ * @brief Abstract base class for NetDevice queue length controller
  *
  * QueueLimits is an abstract base class providing the interface to
  * the NetDevice queue length controller.
@@ -33,21 +33,21 @@ class QueueLimits : public Object
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
     ~QueueLimits() override;
 
     /**
-     * \brief Reset queue limits state
+     * @brief Reset queue limits state
      */
     virtual void Reset() = 0;
 
     /**
-     * \brief Record number of completed bytes and recalculate the limit
-     * \param count the number of completed bytes
+     * @brief Record number of completed bytes and recalculate the limit
+     * @param count the number of completed bytes
      */
     virtual void Completed(uint32_t count) = 0;
 
@@ -56,14 +56,14 @@ class QueueLimits : public Object
      * number of bytes that can be passed again to the NetDevice.
      * A negative value means that no packets can be passed to the NetDevice.
      * In this case, NotifyTransmittedBytes stops the transmission queue.
-     * \brief Returns how many bytes can be queued
-     * \return the number of bytes that can be queued
+     * @brief Returns how many bytes can be queued
+     * @return the number of bytes that can be queued
      */
     virtual int32_t Available() const = 0;
 
     /**
-     * \brief Record the number of bytes queued
-     * \param count the number of bytes queued
+     * @brief Record the number of bytes queued
+     * @param count the number of bytes queued
      */
     virtual void Queued(uint32_t count) = 0;
 };

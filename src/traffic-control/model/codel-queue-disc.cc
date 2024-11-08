@@ -31,9 +31,9 @@ NS_LOG_COMPONENT_DEFINE("CoDelQueueDisc");
 /**
  * Performs a reciprocal divide, similar to the
  * Linux kernel reciprocal_divide function
- * \param A numerator
- * \param R reciprocal of the denominator B
- * \return the value of A/B
+ * @param A numerator
+ * @param R reciprocal of the denominator B
+ * @return the value of A/B
  */
 /* borrowed from the linux kernel */
 static inline uint32_t
@@ -46,7 +46,7 @@ ReciprocalDivide(uint32_t A, uint32_t R)
 
 /**
  * Returns the current time translated in CoDel time representation
- * \return the current time
+ * @return the current time
  */
 static uint32_t
 CoDelGetTime()

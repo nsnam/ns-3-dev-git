@@ -8,9 +8,9 @@
  */
 
 /**
- * \file
- * \ingroup core-examples
- * \ingroup logging
+ * @file
+ * @ingroup core-examples
+ * @ingroup logging
  * Example program that demonstrates ShowProgress.
  */
 
@@ -45,8 +45,8 @@ class Hold : public SimpleRefCount<Hold>
     /**
      * Create a Hold with mean inter-event time \pname{wait},
      * changing workload every \pname{interval}.
-     * \param wait The mean inter-event time.
-     * \param interval How often to change work load.  This
+     * @param wait The mean inter-event time.
+     * @param interval How often to change work load.  This
      *                 should be an order of magnitude larger than \pname{wait}.
      */
     Hold(Time wait, Time interval)
@@ -61,7 +61,7 @@ class Hold : public SimpleRefCount<Hold>
     /**
      * Create a hold with a specified random number generator for the
      * \pname{wait} time.  The RNG value will be interpreted as seconds.
-     * \param rng The random variable generator to use for the inter-event time.
+     * @param rng The random variable generator to use for the inter-event time.
      */
     Hold(Ptr<RandomVariableStream> rng)
         : m_rng(rng)

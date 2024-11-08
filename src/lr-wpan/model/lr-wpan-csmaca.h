@@ -26,13 +26,13 @@ namespace lrwpan
 {
 
 /**
- * \ingroup lr-wpan
+ * @ingroup lr-wpan
  *
  * This method informs the MAC whether the channel is idle or busy.
  */
 typedef Callback<void, MacState> LrWpanMacStateCallback;
 /**
- * \ingroup lr-wpan
+ * @ingroup lr-wpan
  *
  * This method informs the transaction cost in a slotted CSMA-CA data transmission.
  * i.e. Reports number of symbols (time) it would take slotted CSMA-CA to process the current
@@ -42,7 +42,7 @@ typedef Callback<void, MacState> LrWpanMacStateCallback;
 typedef Callback<void, uint32_t> LrWpanMacTransCostCallback;
 
 /**
- * \ingroup lr-wpan
+ * @ingroup lr-wpan
  *
  * This class is a helper for the LrWpanMac to manage the Csma/CA
  * state machine according to IEEE 802.15.4-2006, section 7.5.1.4.
@@ -53,7 +53,7 @@ class LrWpanCsmaCa : public Object
     /**
      * Get the type ID.
      *
-     * \return the object TypeId
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     /**
@@ -69,13 +69,13 @@ class LrWpanCsmaCa : public Object
     /**
      * Set the MAC to which this CSMA/CA implementation is attached to.
      *
-     * \param mac the used MAC
+     * @param mac the used MAC
      */
     void SetMac(Ptr<LrWpanMac> mac);
     /**
      * Get the MAC to which this CSMA/CA implementation is attached to.
      *
-     * \return the used MAC
+     * @return the used MAC
      */
     Ptr<LrWpanMac> GetMac() const;
 
@@ -90,48 +90,48 @@ class LrWpanCsmaCa : public Object
     /**
      * Check if the slotted CSMA/CA version is being used.
      *
-     * \return true, if slotted CSMA/CA is used, false otherwise.
+     * @return true, if slotted CSMA/CA is used, false otherwise.
      */
     bool IsSlottedCsmaCa() const;
     /**
      * Check if the unslotted CSMA/CA version is being used.
      *
-     * \return true, if unslotted CSMA/CA is used, false otherwise.
+     * @return true, if unslotted CSMA/CA is used, false otherwise.
      */
     bool IsUnSlottedCsmaCa() const;
     /**
      * Set the minimum backoff exponent value.
      * See IEEE 802.15.4-2006, section 7.4.2, Table 86.
      *
-     * \param macMinBE the minimum backoff exponent value
+     * @param macMinBE the minimum backoff exponent value
      */
     void SetMacMinBE(uint8_t macMinBE);
     /**
      * Get the minimum backoff exponent value.
      * See IEEE 802.15.4-2006, section 7.4.2, Table 86.
      *
-     * \return the minimum backoff exponent value
+     * @return the minimum backoff exponent value
      */
     uint8_t GetMacMinBE() const;
     /**
      * Set the maximum backoff exponent value.
      * See IEEE 802.15.4-2006, section 7.4.2, Table 86.
      *
-     * \param macMaxBE the maximum backoff exponent value
+     * @param macMaxBE the maximum backoff exponent value
      */
     void SetMacMaxBE(uint8_t macMaxBE);
     /**
      * Get the maximum backoff exponent value.
      * See IEEE 802.15.4-2006, section 7.4.2, Table 86.
      *
-     * \return the maximum backoff exponent value
+     * @return the maximum backoff exponent value
      */
     uint8_t GetMacMaxBE() const;
     /**
      * Set the maximum number of backoffs.
      * See IEEE 802.15.4-2006, section 7.4.2, Table 86.
      *
-     * \param macMaxCSMABackoffs the maximum number of backoffs
+     * @param macMaxCSMABackoffs the maximum number of backoffs
      */
     void SetMacMaxCSMABackoffs(uint8_t macMaxCSMABackoffs);
 
@@ -139,14 +139,14 @@ class LrWpanCsmaCa : public Object
      * Get the maximum number of backoffs.
      * See IEEE 802.15.4-2006, section 7.4.2, Table 86.
      *
-     * \return the maximum number of backoffs
+     * @return the maximum number of backoffs
      */
     uint8_t GetMacMaxCSMABackoffs() const;
     /**
      * Locates the time to the next backoff period boundary in the SUPERFRAME
      * and returns the amount of time left to this moment.
      *
-     * \return time offset to the next slot
+     * @return time offset to the next slot
      */
     Time GetTimeToNextSlot() const;
     /**
@@ -182,7 +182,7 @@ class LrWpanCsmaCa : public Object
     /**
      * IEEE 802.15.4-2006 section 6.2.2.2
      * PLME-CCA.confirm status
-     * \param status TRX_OFF, BUSY or IDLE
+     * @param status TRX_OFF, BUSY or IDLE
      *
      * When Phy has completed CCA, it calls back here which in turn execute the final steps
      * of the CSMA-CA algorithm.
@@ -196,7 +196,7 @@ class LrWpanCsmaCa : public Object
      * triggered in CanProceed() after calculating the transaction cost (2 CCA checks,transmission
      * cost, turnAroundTime, ifs) in the boundary of an Active Period.
      *
-     * \param trans the transaction cost callback
+     * @param trans the transaction cost callback
      */
     void SetLrWpanMacTransCostCallback(LrWpanMacTransCostCallback trans);
     /**
@@ -204,41 +204,41 @@ class LrWpanCsmaCa : public Object
      * interconnections between the CSMA-CA and the MAC. The callback
      * lets MAC know a channel is either idle or busy.
      *
-     * \param macState the mac state callback
+     * @param macState the mac state callback
      */
     void SetLrWpanMacStateCallback(LrWpanMacStateCallback macState);
     /**
      * Set the value of the Battery Life Extension
      *
-     * \param batteryLifeExtension the Battery Life Extension value active or inactive
+     * @param batteryLifeExtension the Battery Life Extension value active or inactive
      */
     void SetBatteryLifeExtension(bool batteryLifeExtension);
     /**
      * Assign a fixed random variable stream number to the random variables
      * used by this model.  Return the number of streams that have been assigned.
      *
-     * \param stream first stream index to use
-     * \return the number of stream indices assigned by this model
+     * @param stream first stream index to use
+     * @return the number of stream indices assigned by this model
      */
     int64_t AssignStreams(int64_t stream);
     /**
      * Get the number of CSMA retries
      *
-     * \returns the number of CSMA retries
+     * @returns the number of CSMA retries
      */
     uint8_t GetNB() const;
     /**
      * Get the value of the Battery Life Extension
      *
-     * \returns  true or false to Battery Life Extension support
+     * @returns  true or false to Battery Life Extension support
      */
     bool GetBatteryLifeExtension() const;
 
   private:
     void DoDispose() override;
     /**
-     * \brief Get the time left in the CAP portion of the Outgoing or Incoming superframe.
-     * \return the time left in the CAP
+     * @brief Get the time left in the CAP portion of the Outgoing or Incoming superframe.
+     * @return the time left in the CAP
      */
     Time GetTimeLeftInCap();
     /**

@@ -16,9 +16,9 @@ using namespace ns3;
 using namespace flame;
 
 /**
- * \ingroup flame-test
+ * @ingroup flame-test
  *
- * \brief Built-in self test for FlameHeader
+ * @brief Built-in self test for FlameHeader
  */
 struct FlameHeaderTest : public TestCase
 {
@@ -49,9 +49,9 @@ FlameHeaderTest::DoRun()
 //-----------------------------------------------------------------------------
 
 /**
- * \ingroup flame-test
+ * @ingroup flame-test
  *
- * \brief Unit test for FlameRtable
+ * @brief Unit test for FlameRtable
  */
 class FlameRtableTest : public TestCase
 {
@@ -129,9 +129,9 @@ FlameRtableTest::DoRun()
 }
 
 /**
- * \ingroup flame-test
+ * @ingroup flame-test
  *
- * \brief Flame Test Suite
+ * @brief Flame Test Suite
  */
 class FlameTestSuite : public TestSuite
 {

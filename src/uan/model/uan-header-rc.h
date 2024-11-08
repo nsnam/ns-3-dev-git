@@ -19,7 +19,7 @@ namespace ns3
 {
 
 /**
- * \ingroup uan
+ * @ingroup uan
  *
  * Extra data header information.
  *
@@ -34,9 +34,9 @@ class UanHeaderRcData : public Header
     /**
      * Constructor.
      *
-     * \param frameNum Data frame # of reservation being transmitted.
-     * \param propDelay  Measured propagation delay found in handshaking.
-     * \note Prop. delay is transmitted with 16 bits and ms accuracy.
+     * @param frameNum Data frame # of reservation being transmitted.
+     * @param propDelay  Measured propagation delay found in handshaking.
+     * @note Prop. delay is transmitted with 16 bits and ms accuracy.
      */
     UanHeaderRcData(uint8_t frameNum, Time propDelay);
     /** Destructor */
@@ -44,41 +44,41 @@ class UanHeaderRcData : public Header
 
     /**
      * Register this type.
-     * \return The TypeId.
+     * @return The TypeId.
      */
     static TypeId GetTypeId();
 
     /**
      * Set the frame number of the reservation being transmitted.
      *
-     * \param frameNum The data frame number.
+     * @param frameNum The data frame number.
      */
     void SetFrameNo(uint8_t frameNum);
     /**
      * Set the propagation delay as found in handshaking.
      *
-     * \param propDelay The measured propagation delay.
-     * \note Prop. delay is transmitted with 16 bits and ms accuracy.
+     * @param propDelay The measured propagation delay.
+     * @note Prop. delay is transmitted with 16 bits and ms accuracy.
      */
     void SetPropDelay(Time propDelay);
     /**
      * Get the frame number of the reservation being transmitted.
      *
-     * \return The data frame number.
+     * @return The data frame number.
      */
     uint8_t GetFrameNo() const;
     /**
      * Get the propagation delay found in handshaking.
      *
-     * \return The measured propagation delay.
-     * \note Prop. delay is transmitted with 16 bits and ms accuracy
+     * @return The measured propagation delay.
+     * @note Prop. delay is transmitted with 16 bits and ms accuracy
      */
     Time GetPropDelay() const;
     /**
      * Specialized Print with Time::Unit declared.
      *
-     * \param os ostream.
-     * \param unit Time unit.
+     * @param os ostream.
+     * @param unit Time unit.
      */
     void Print(std::ostream& os, Time::Unit unit) const;
 
@@ -96,7 +96,7 @@ class UanHeaderRcData : public Header
 }; // class UanHeaderRcData
 
 /**
- * \ingroup uan
+ * @ingroup uan
  *
  * RTS header.
  *
@@ -110,12 +110,12 @@ class UanHeaderRcRts : public Header
     /**
      * Constructor.
      *
-     * \param frameNo Reservation frame number.
-     * \param retryNo Retry number of RTS packet.
-     * \param noFrames Number of data frames in reservation.
-     * \param length Number of bytes (including headers) in data.
-     * \param ts RTS TX timestamp.
-     * \note Timestamp is serialized into 32 bits with ms accuracy.
+     * @param frameNo Reservation frame number.
+     * @param retryNo Retry number of RTS packet.
+     * @param noFrames Number of data frames in reservation.
+     * @param length Number of bytes (including headers) in data.
+     * @param ts RTS TX timestamp.
+     * @note Timestamp is serialized into 32 bits with ms accuracy.
      */
     UanHeaderRcRts(uint8_t frameNo, uint8_t retryNo, uint8_t noFrames, uint16_t length, Time ts);
     /** Destructor */
@@ -123,33 +123,33 @@ class UanHeaderRcRts : public Header
 
     /**
      * Register this type.
-     * \return The TypeId.
+     * @return The TypeId.
      */
     static TypeId GetTypeId();
 
     /**
      * Set the frame number.
      *
-     * \param fno TX frame number
+     * @param fno TX frame number
      */
     void SetFrameNo(uint8_t fno);
     /**
      * Set the number of data frames included in this reservation request.
      *
-     * \param no Number of frames.
+     * @param no Number of frames.
      */
     void SetNoFrames(uint8_t no);
     /**
      * Set RTS transmission time.
      *
-     * \param timeStamp The RTS transmission time.
+     * @param timeStamp The RTS transmission time.
      */
     void SetTimeStamp(Time timeStamp);
     /**
      * Set the number of data bytes in the reservation.
      *
-     * \param length Total number of data bytes in reservation (including headers).
-     * \note Timestamp is serialized with 32 bits in ms precision.
+     * @param length Total number of data bytes in reservation (including headers).
+     * @note Timestamp is serialized with 32 bits in ms precision.
      */
     void SetLength(uint16_t length);
     /**
@@ -157,46 +157,46 @@ class UanHeaderRcRts : public Header
      *
      * This is used to match timestamp to correctly received RTS.
      *
-     * \param no Retry number.
+     * @param no Retry number.
      */
     void SetRetryNo(uint8_t no);
 
     /**
      * Get the frame number.
      *
-     * \return The frame number.
+     * @return The frame number.
      */
     uint8_t GetFrameNo() const;
     /**
      * Get the number of data frames in the reservation.
      *
-     * \return The number of data frames.
+     * @return The number of data frames.
      */
     uint8_t GetNoFrames() const;
     /**
      * Get the transmit timestamp of this RTS packet.
      *
-     * \return The TX time.
-     * \note Timestamp is serialized with 32 bits in ms precision.
+     * @return The TX time.
+     * @note Timestamp is serialized with 32 bits in ms precision.
      */
     Time GetTimeStamp() const;
     /**
      * Get the total number of bytes in the reservation, including headers.
      *
-     * \return Total number of bytes in data packets for reservation.
+     * @return Total number of bytes in data packets for reservation.
      */
     uint16_t GetLength() const;
     /**
      * Get the retry number of this RTS packet.
      *
-     * \return The retry number.
+     * @return The retry number.
      */
     uint8_t GetRetryNo() const;
     /**
      * Specialized Print with Time::Unit declared.
      *
-     * \param os ostream.
-     * \param unit Time unit.
+     * @param os ostream.
+     * @param unit Time unit.
      */
     void Print(std::ostream& os, Time::Unit unit) const;
 
@@ -217,7 +217,7 @@ class UanHeaderRcRts : public Header
 }; // class UanHeaderRcRts
 
 /**
- * \ingroup uan
+ * @ingroup uan
  *
  * Cycle broadcast information.
  *
@@ -231,10 +231,10 @@ class UanHeaderRcCtsGlobal : public Header
     /**
      * Constructor
      *
-     * \param wt Window time.
-     * \param ts Timestamp.
-     * \param rate Rate number.
-     * \param retryRate  Retry rate value.
+     * @param wt Window time.
+     * @param ts Timestamp.
+     * @param rate Rate number.
+     * @param retryRate  Retry rate value.
      */
     UanHeaderRcCtsGlobal(Time wt, Time ts, uint16_t rate, uint16_t retryRate);
     /** Destructor */
@@ -242,65 +242,65 @@ class UanHeaderRcCtsGlobal : public Header
 
     /**
      * Register this type.
-     * \return The TypeId.
+     * @return The TypeId.
      */
     static TypeId GetTypeId();
 
     /**
      * Set the rate number corresponding to data rate of current cycle.
-     * \param rate The rate number.
+     * @param rate The rate number.
      */
     void SetRateNum(uint16_t rate);
     /**
      * Set the retry rate number for the current cycle.
-     * \param rate The retry rate number
+     * @param rate The retry rate number
      */
     void SetRetryRate(uint16_t rate);
     /**
      * Set the window time (time duration following blocking time
      * to allow RTS transmissions).
      *
-     * \param t The window time.
+     * @param t The window time.
      */
     void SetWindowTime(Time t);
 
     /**
      * Set the CTS timestamp.
      *
-     * \param timeStamp The time of CTS transmission.
+     * @param timeStamp The time of CTS transmission.
      */
     void SetTxTimeStamp(Time timeStamp);
 
     /**
      * Get the data rate number.
      *
-     * \return The rate number.
+     * @return The rate number.
      */
     uint16_t GetRateNum() const;
     /**
      * Get the retry rate number.
      *
-     * \return The retry rate number.
+     * @return The retry rate number.
      */
     uint16_t GetRetryRate() const;
     /**
      * Get the window time (time duration following blocking time
      * to allow RTS transmissions).
      *
-     * \return The window time.
+     * @return The window time.
      */
     Time GetWindowTime() const;
     /**
      * Get the CTS transmit timestamp.
      *
-     * \return The timestamp.
+     * @return The timestamp.
      */
     Time GetTxTimeStamp() const;
     /**
      * Specialized Print with Time::Unit declared.
      *
-     * \param os ostream.
-     * \param unit Time unit.
+     * @param os ostream.
+     * @param unit Time unit.
      */
     void Print(std::ostream& os, Time::Unit unit) const;
 
@@ -320,7 +320,7 @@ class UanHeaderRcCtsGlobal : public Header
 }; // class UanHeaderRcCtsGlobal
 
 /**
- * \ingroup uan
+ * @ingroup uan
  *
  * CTS header
  *
@@ -335,12 +335,12 @@ class UanHeaderRcCts : public Header
     /**
      * Constructor
      *
-     * \param frameNo Reservation frame # being cleared.
-     * \param retryNo Retry # of received RTS packet.
-     * \param rtsTs RX time of RTS packet at gateway.
-     * \param delay Delay until transmission.
-     * \param addr Destination of CTS packet.
-     * \note Times are serialized, with ms precision, into 32 bit fields.
+     * @param frameNo Reservation frame # being cleared.
+     * @param retryNo Retry # of received RTS packet.
+     * @param rtsTs RX time of RTS packet at gateway.
+     * @param delay Delay until transmission.
+     * @param addr Destination of CTS packet.
+     * @note Times are serialized, with ms precision, into 32 bit fields.
      */
     UanHeaderRcCts(uint8_t frameNo, uint8_t retryNo, Time rtsTs, Time delay, Mac8Address addr);
     /** Destructor */
@@ -348,77 +348,77 @@ class UanHeaderRcCts : public Header
 
     /**
      * Register this type.
-     * \return The TypeId.
+     * @return The TypeId.
      */
     static TypeId GetTypeId();
 
     /**
      * Set the RTS frame number being cleared.
      *
-     * \param frameNo The frame number.
+     * @param frameNo The frame number.
      */
     void SetFrameNo(uint8_t frameNo);
     /**
      * Set the timestamp for RTS reception.
      *
-     * \param timeStamp The timestamp.
+     * @param timeStamp The timestamp.
      */
     void SetRtsTimeStamp(Time timeStamp);
     /**
      * Set the time delay from CTS transmission to first data frame arrival.
      *
-     * \param delay The delay time.
+     * @param delay The delay time.
      */
     void SetDelayToTx(Time delay);
     /**
      * Set the retry number of the RTS frame being cleared.
      *
-     * \param no The retry number.
+     * @param no The retry number.
      */
     void SetRetryNo(uint8_t no);
     /**
      * Set the destination address, for scheduling info.
      *
-     * \param addr The destination address.
+     * @param addr The destination address.
      */
     void SetAddress(Mac8Address addr);
 
     /**
      * Get the frame number of the RTS being cleared.
      *
-     * \return The frame number.
+     * @return The frame number.
      */
     uint8_t GetFrameNo() const;
     /**
      * Get the receive time of the RTS being cleared.
      *
-     * \return The RX time.
+     * @return The RX time.
      */
     Time GetRtsTimeStamp() const;
     /**
      * Get the time delay from TX time of CTS packet until
      * arrival of first data frame.
      *
-     * \return The delay time.
+     * @return The delay time.
      */
     Time GetDelayToTx() const;
     /**
      * Get the retry number of the RTS packet being cleared.
      *
-     * \return The retry number
+     * @return The retry number
      */
     uint8_t GetRetryNo() const;
     /**
      * Get the destination address, for scheduling info.
      *
-     * \return The destination address.
+     * @return The destination address.
      */
     Mac8Address GetAddress() const;
     /**
      * Specialized Print with Time::Unit declared.
      *
-     * \param os ostream.
-     * \param unit Time unit.
+     * @param os ostream.
+     * @param unit Time unit.
      */
     void Print(std::ostream& os, Time::Unit unit) const;
 
@@ -439,7 +439,7 @@ class UanHeaderRcCts : public Header
 }; // class UanHeaderRcCts
 
 /**
- * \ingroup uan
+ * @ingroup uan
  *
  * Header used for ACK packets by protocol UanMacRc
  */
@@ -453,39 +453,39 @@ class UanHeaderRcAck : public Header
 
     /**
      * Register this type.
-     * \return The TypeId.
+     * @return The TypeId.
      */
     static TypeId GetTypeId();
 
     /**
      * Set the frame number of the reservation being acknowledged.
      *
-     * \param frameNo The frame number.
+     * @param frameNo The frame number.
      */
     void SetFrameNo(uint8_t frameNo);
     /**
      * NACK a frame.
      *
-     * \param frame The data frame number being NACKed.
+     * @param frame The data frame number being NACKed.
      */
     void AddNackedFrame(uint8_t frame);
 
     /**
      * Get the set of NACK'ed frames.
      *
-     * \return The set of NACK'ed frames.
+     * @return The set of NACK'ed frames.
      */
     const std::set<uint8_t>& GetNackedFrames() const;
     /**
      * Get the reservation frame number being ACKed.
      *
-     * \return The frame number.
+     * @return The frame number.
      */
     uint8_t GetFrameNo() const;
     /**
      * Get the number of data frames being NACKed.
      *
-     * \return The number of NACKed frames.
+     * @return The number of NACKed frames.
      */
     uint8_t GetNoNacks() const;
 

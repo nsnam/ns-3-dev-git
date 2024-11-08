@@ -23,10 +23,10 @@
 using namespace ns3;
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief Throughput test for MsduAggregator
+ * @brief Throughput test for MsduAggregator
  */
 class WifiMsduAggregatorThroughputTest : public TestCase
 {
@@ -191,10 +191,10 @@ WifiMsduAggregatorThroughputTest::DoRun()
 }
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief MsduAggregator Test Suite
+ * @brief MsduAggregator Test Suite
  *
  * For now the MSDU Aggregator Test Suite contains only the one test
  * that is defined in this file, so it's class definition and

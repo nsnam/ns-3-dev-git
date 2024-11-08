@@ -97,10 +97,10 @@ static const FfrEnhancedUplinkDefaultConfiguration g_ffrEnhancedUplinkDefaultCon
     {3, 100, 64, 16, 16},
 };
 
-/** \returns number of downlink configurations */
+/** @returns number of downlink configurations */
 const uint16_t NUM_DOWNLINK_CONFS(sizeof(g_ffrEnhancedDownlinkDefaultConfiguration) /
                                   sizeof(FfrEnhancedDownlinkDefaultConfiguration));
-/** \returns number of uplink configurations */
+/** @returns number of uplink configurations */
 const uint16_t NUM_UPLINK_CONFS(sizeof(g_ffrEnhancedUplinkDefaultConfiguration) /
                                 sizeof(FfrEnhancedUplinkDefaultConfiguration));
 

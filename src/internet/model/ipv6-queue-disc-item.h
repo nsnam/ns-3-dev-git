@@ -16,8 +16,8 @@ namespace ns3
 {
 
 /**
- * \ingroup ipv6
- * \ingroup traffic-control
+ * @ingroup ipv6
+ * @ingroup traffic-control
  *
  * Ipv6QueueDiscItem is a subclass of QueueDiscItem which stores IPv6 packets.
  * Header and payload are kept separate to allow the queue disc to manipulate
@@ -27,11 +27,11 @@ class Ipv6QueueDiscItem : public QueueDiscItem
 {
   public:
     /**
-     * \brief Create an IPv6 queue disc item containing an IPv6 packet.
-     * \param p the packet included in the created item.
-     * \param addr the destination MAC address
-     * \param protocol the protocol number
-     * \param header the IPv6 header
+     * @brief Create an IPv6 queue disc item containing an IPv6 packet.
+     * @param p the packet included in the created item.
+     * @param addr the destination MAC address
+     * @param protocol the protocol number
+     * @param header the IPv6 header
      */
     Ipv6QueueDiscItem(Ptr<Packet> p,
                       const Address& addr,
@@ -46,23 +46,23 @@ class Ipv6QueueDiscItem : public QueueDiscItem
     Ipv6QueueDiscItem& operator=(const Ipv6QueueDiscItem&) = delete;
 
     /**
-     * \return the correct packet size (header plus payload).
+     * @return the correct packet size (header plus payload).
      */
     uint32_t GetSize() const override;
 
     /**
-     * \return the header stored in this item..
+     * @return the header stored in this item..
      */
     const Ipv6Header& GetHeader() const;
 
     /**
-     * \brief Add the header to the packet
+     * @brief Add the header to the packet
      */
     void AddHeader() override;
 
     /**
-     * \brief Print the item contents.
-     * \param os output stream in which the data should be printed.
+     * @brief Print the item contents.
+     * @param os output stream in which the data should be printed.
      */
     void Print(std::ostream& os) const override;
 
@@ -76,21 +76,21 @@ class Ipv6QueueDiscItem : public QueueDiscItem
     bool GetUint8Value(Uint8Values field, uint8_t& value) const override;
 
     /**
-     * \brief Marks the packet by setting ECN_CE bits if the packet has
+     * @brief Marks the packet by setting ECN_CE bits if the packet has
      * ECN_ECT0 or ECN_ECT1 set.  If ECN_CE is already set, returns true.
-     * \return true if the method results in a marked packet, false otherwise
+     * @return true if the method results in a marked packet, false otherwise
      */
     bool Mark() override;
 
     /**
-     * \brief Computes the hash of the packet's 5-tuple
+     * @brief Computes the hash of the packet's 5-tuple
      *
      * Computes the hash of the source and destination IP addresses, protocol
      * number and, if the transport protocol is either UDP or TCP, the source
      * and destination port
      *
-     * \param perturbation hash perturbation value
-     * \return the hash of the packet's 5-tuple
+     * @param perturbation hash perturbation value
+     * @return the hash of the packet's 5-tuple
      */
     uint32_t Hash(uint32_t perturbation) const override;
 

@@ -18,9 +18,9 @@ namespace flame
 class FlameProtocol;
 
 /**
- * \ingroup flame
+ * @ingroup flame
  *
- * \brief Interface MAC plugin for FLAME routing protocol
+ * @brief Interface MAC plugin for FLAME routing protocol
  */
 class FlameProtocolMac : public MeshWifiInterfaceMacPlugin
 {
@@ -28,7 +28,7 @@ class FlameProtocolMac : public MeshWifiInterfaceMacPlugin
     /**
      * Constructor
      *
-     * \param protocol flame protocol object
+     * @param protocol flame protocol object
      */
     FlameProtocolMac(Ptr<FlameProtocol> protocol);
     ~FlameProtocolMac() override;
@@ -36,24 +36,24 @@ class FlameProtocolMac : public MeshWifiInterfaceMacPlugin
     // Inherited from MAC plugin
     /**
      * Set parent of this instance
-     * \param parent pointer to the parent MeshWifiInterfaceMac
+     * @param parent pointer to the parent MeshWifiInterfaceMac
      */
     void SetParent(Ptr<MeshWifiInterfaceMac> parent) override;
     /**
      * Receive and process a packet; packets are given a FlameTag packet tag
-     * \param packet the packet received
-     * \param header the header
-     * \returns true if successful
+     * @param packet the packet received
+     * @param header the header
+     * @returns true if successful
      */
     bool Receive(Ptr<Packet> packet, const WifiMacHeader& header) override;
     /**
      * Process an outgoing frame.  Remove the FlameTag and increment stats
      * counters.
-     * \param packet the packet received
-     * \param header the header
-     * \param from the MAC address of the sender
-     * \param to the MAC address of the receiver
-     * \returns true if successful
+     * @param packet the packet received
+     * @param header the header
+     * @param from the MAC address of the sender
+     * @param to the MAC address of the receiver
+     * @returns true if successful
      */
     bool UpdateOutcomingFrame(Ptr<Packet> packet,
                               WifiMacHeader& header,
@@ -62,7 +62,7 @@ class FlameProtocolMac : public MeshWifiInterfaceMacPlugin
 
     /**
      * Update beacon is empty, because FLAME does not know anything about beacons
-     * \param beacon the beacon
+     * @param beacon the beacon
      */
     void UpdateBeacon(MeshWifiBeacon& beacon) const override
     {
@@ -70,8 +70,8 @@ class FlameProtocolMac : public MeshWifiInterfaceMacPlugin
 
     /**
      * AssignStreams is empty, because this model doesn't use random variables
-     * \param stream
-     * \returns 0 (no streams used)
+     * @param stream
+     * @returns 0 (no streams used)
      */
     int64_t AssignStreams(int64_t stream) override
     {
@@ -80,12 +80,12 @@ class FlameProtocolMac : public MeshWifiInterfaceMacPlugin
 
     /**
      * Get channel ID function
-     * \returns the channel
+     * @returns the channel
      */
     uint16_t GetChannelId() const;
     /**
      * Report statistics
-     * \param os the output stream
+     * @param os the output stream
      */
     void Report(std::ostream& os) const;
     /// Reset statistics function
@@ -108,7 +108,7 @@ class FlameProtocolMac : public MeshWifiInterfaceMacPlugin
 
         /**
          * Print function
-         * \param os the output stream
+         * @param os the output stream
          */
         void Print(std::ostream& os) const;
         /// constructor

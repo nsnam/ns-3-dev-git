@@ -20,9 +20,9 @@ namespace ns3
 struct SpectrumSignalParameters;
 
 /**
- * \ingroup spectrum
+ * @ingroup spectrum
  *
- * \brief spectrum-aware propagation loss model
+ * @brief spectrum-aware propagation loss model
  *
  * Interface for propagation loss models to be adopted when
  * transmissions are modeled with a power spectral density by means of
@@ -36,8 +36,8 @@ class SpectrumPropagationLossModel : public Object
     ~SpectrumPropagationLossModel() override;
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -77,8 +77,8 @@ class SpectrumPropagationLossModel : public Object
      * together, this method will also assign streams to the
      * downstream models.
      *
-     * \param stream the stream index offset start
-     * \return the number of stream indices assigned by this model
+     * @param stream the stream index offset start
+     * @return the number of stream indices assigned by this model
      */
     int64_t AssignStreams(int64_t stream);
 
@@ -89,8 +89,8 @@ class SpectrumPropagationLossModel : public Object
      *
      * Subclasses must implement this; those not using random variables can return zero.
      *
-     * \param stream first stream index to use
-     * \return the number of stream indices assigned by this model
+     * @param stream first stream index to use
+     * @return the number of stream indices assigned by this model
      */
     virtual int64_t DoAssignStreams(int64_t stream) = 0;
 

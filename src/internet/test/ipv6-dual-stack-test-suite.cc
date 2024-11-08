@@ -40,9 +40,9 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("Ipv6DualStackTestSuite");
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief IPv6 dual stack Test
+ * @brief IPv6 dual stack Test
  */
 class DualStackTestCase : public TestCase
 {
@@ -54,7 +54,7 @@ class DualStackTestCase : public TestCase
     void DoTeardown() override;
 
     /**
-     * \brief Setup the test.
+     * @brief Setup the test.
      */
     void SetUpSim();
 
@@ -63,26 +63,26 @@ class DualStackTestCase : public TestCase
 
     /**
      * Handle connection created (1).
-     * \param s The socket.
-     * \param addr The peer address.
+     * @param s The socket.
+     * @param addr The peer address.
      */
     void ServerHandleConnectionCreated1(Ptr<Socket> s, const Address& addr);
     /**
      * Handle connection created (2).
-     * \param s The socket.
-     * \param addr The peer address.
+     * @param s The socket.
+     * @param addr The peer address.
      */
     void ServerHandleConnectionCreated2(Ptr<Socket> s, const Address& addr);
     /**
      * Handle connection created (3).
-     * \param s The socket.
-     * \param addr The peer address.
+     * @param s The socket.
+     * @param addr The peer address.
      */
     void ServerHandleConnectionCreated3(Ptr<Socket> s, const Address& addr);
     /**
      * Handle connection created (4).
-     * \param s The socket.
-     * \param addr The peer address.
+     * @param s The socket.
+     * @param addr The peer address.
      */
     void ServerHandleConnectionCreated4(Ptr<Socket> s, const Address& addr);
 
@@ -341,9 +341,9 @@ DualStackTestCase::DoTeardown()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief IPv6 dual stack TestSuite
+ * @brief IPv6 dual stack TestSuite
  */
 class Ipv6DualStackTestSuite : public TestSuite
 {

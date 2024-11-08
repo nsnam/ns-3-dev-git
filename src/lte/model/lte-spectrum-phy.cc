@@ -59,9 +59,9 @@ TbId_t::TbId_t(const uint16_t a, const uint8_t b)
 /**
  * Equality operator
  *
- * \param a lhs
- * \param b rhs
- * \returns true if rnti and layer are equal
+ * @param a lhs
+ * @param b rhs
+ * @returns true if rnti and layer are equal
  */
 bool
 operator==(const TbId_t& a, const TbId_t& b)
@@ -72,9 +72,9 @@ operator==(const TbId_t& a, const TbId_t& b)
 /**
  * Less than operator
  *
- * \param a lhs
- * \param b rhs
- * \returns true if rnti less than ro rnti equal and layer less than
+ * @param a lhs
+ * @param b rhs
+ * @returns true if rnti less than ro rnti equal and layer less than
  */
 bool
 operator<(const TbId_t& a, const TbId_t& b)
@@ -135,9 +135,9 @@ LteSpectrumPhy::DoDispose()
 /**
  * Output stream output operator
  *
- * \param os output stream
- * \param s state
- * \returns output stream
+ * @param os output stream
+ * @param s state
+ * @returns output stream
  */
 std::ostream&
 operator<<(std::ostream& os, LteSpectrumPhy::State s)

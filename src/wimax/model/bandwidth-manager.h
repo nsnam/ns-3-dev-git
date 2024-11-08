@@ -32,8 +32,8 @@ class UlJob;
 class UplinkScheduler;
 
 /**
- * \ingroup wimax
- * \brief This class manage the bandwidth request and grant mechanism.
+ * @ingroup wimax
+ * @brief This class manage the bandwidth request and grant mechanism.
  * The bandwidth request and grant mechanism is supported by the Bandwidth
  * Manager. Both BS and SS maintain a bandwidth manager. Furthermore BS's
  * bandwidth manager works together with the uplink scheduler to determine
@@ -46,14 +46,14 @@ class BandwidthManager : public Object
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     /**
      * Constructor
      *
-     * \param device WIMAX device
+     * @param device WIMAX device
      */
     BandwidthManager(Ptr<WimaxNetDevice> device);
     ~BandwidthManager() override;
@@ -66,33 +66,33 @@ class BandwidthManager : public Object
 
     /**
      * Calculate allocation size function
-     * \param ssRecord the SS record
-     * \param serviceFlow the service flow
-     * \returns the allocation size
+     * @param ssRecord the SS record
+     * @param serviceFlow the service flow
+     * @returns the allocation size
      */
     uint32_t CalculateAllocationSize(const SSRecord* ssRecord, const ServiceFlow* serviceFlow);
     /**
      * Select flow for request function
-     * \param bytesToRequest bytes to request
-     * \returns a service flow
+     * @param bytesToRequest bytes to request
+     * @returns a service flow
      */
     ServiceFlow* SelectFlowForRequest(uint32_t& bytesToRequest);
     /**
      * Send bandwidth request
-     * \param uiuc the UIUC
-     * \param allocationSize the allocation size
+     * @param uiuc the UIUC
+     * @param allocationSize the allocation size
      */
     void SendBandwidthRequest(uint8_t uiuc, uint16_t allocationSize);
     /**
      * Process bandwidth request
-     * \param bwRequestHdr the bandwidth request
+     * @param bwRequestHdr the bandwidth request
      */
     void ProcessBandwidthRequest(const BandwidthRequestHeader& bwRequestHdr);
     /// Set subframe ratio
     void SetSubframeRatio();
     /**
      * Get symbols per frame allocated
-     * \returns the symbols per the frame allocated
+     * @returns the symbols per the frame allocated
      */
     uint32_t GetSymbolsPerFrameAllocated();
 

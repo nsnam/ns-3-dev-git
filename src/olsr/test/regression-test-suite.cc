@@ -14,8 +14,8 @@ using namespace ns3;
 using namespace olsr;
 
 /**
- * \ingroup olsr-test
- * \ingroup tests
+ * @ingroup olsr-test
+ * @ingroup tests
  *
  * Various olsr regression tests
  */

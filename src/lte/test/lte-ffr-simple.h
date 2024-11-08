@@ -22,9 +22,9 @@ namespace ns3
 {
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief Simple Frequency Reuse algorithm implementation which uses only 1 sub-band.
+ * @brief Simple Frequency Reuse algorithm implementation which uses only 1 sub-band.
  *                Used to test Downlink Power Allocation. When Simple FR receives UE measurements
  *                it immediately call functions to change PdschConfigDedicated (i.e. P_A) value for
  *                this UE.
@@ -33,34 +33,34 @@ class LteFfrSimple : public LteFfrAlgorithm
 {
   public:
     /**
-     * \brief Creates a trivial ffr algorithm instance.
+     * @brief Creates a trivial ffr algorithm instance.
      */
     LteFfrSimple();
 
     ~LteFfrSimple() override;
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
     /**
-     * \brief Callback function that is used to be connected to trace ChangePdschConfigDedicated
-     * \param change trace fired upon change of PdschConfigDedicated if true
+     * @brief Callback function that is used to be connected to trace ChangePdschConfigDedicated
+     * @param change trace fired upon change of PdschConfigDedicated if true
      */
     void ChangePdschConfigDedicated(bool change);
     /**
-     * \brief Set PDSCH config dedicated function
-     * \param pdschConfigDedicated LteRrcSap::PdschConfigDedicated object
+     * @brief Set PDSCH config dedicated function
+     * @param pdschConfigDedicated LteRrcSap::PdschConfigDedicated object
      */
     void SetPdschConfigDedicated(LteRrcSap::PdschConfigDedicated pdschConfigDedicated);
 
     /**
-     * \brief Set transmission power control
-     * \param tpc TPC
-     * \param num number of TPC configurations in the test case
-     * \param accumulatedMode whether TPC accumulated mode is used
+     * @brief Set transmission power control
+     * @param tpc TPC
+     * @param num number of TPC configurations in the test case
+     * @param accumulatedMode whether TPC accumulated mode is used
      */
     void SetTpc(uint32_t tpc, uint32_t num, bool accumulatedMode);
 
@@ -79,8 +79,8 @@ class LteFfrSimple : public LteFfrAlgorithm
     /**
      * TracedCallback signature for change of PdschConfigDedicated.
      *
-     * \param [in] rnti
-     * \param [in] pdschPa PdschConfiDedicated.pa
+     * @param [in] rnti
+     * @param [in] pdschPa PdschConfiDedicated.pa
      */
     typedef void (*PdschTracedCallback)(uint16_t rnti, uint8_t pdschPa);
 

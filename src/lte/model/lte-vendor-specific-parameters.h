@@ -17,23 +17,23 @@ namespace ns3
 {
 
 /**
- * \brief Define the RNTI that has generated the
+ * @brief Define the RNTI that has generated the
  */
 class SrsCqiRntiVsp : public VendorSpecificValue
 {
   public:
     /**
-     * \brief SRS CQI RNTI VSP
+     * @brief SRS CQI RNTI VSP
      *
-     * \param rnti the RNTI
+     * @param rnti the RNTI
      */
     SrsCqiRntiVsp(uint16_t rnti);
     ~SrsCqiRntiVsp() override;
 
     /**
-     * \brief Get RNTI function
+     * @brief Get RNTI function
      *
-     * \returns the RNTI
+     * @returns the RNTI
      */
     uint16_t GetRnti() const;
 

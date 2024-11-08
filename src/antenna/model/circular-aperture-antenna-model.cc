@@ -22,8 +22,8 @@
 #include <math.h>
 
 /**
- * \file
- * \ingroup antenna
+ * @file
+ * @ingroup antenna
  * Class CircularApertureAntennaModel implementation.
  */
 

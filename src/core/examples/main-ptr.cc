@@ -12,9 +12,9 @@
 #include <iostream>
 
 /**
- * \file
- * \ingroup core-examples
- * \ingroup ptr
+ * @file
+ * @ingroup core-examples
+ * @ingroup ptr
  * Example program illustrating use of the ns3::Ptr smart pointer.
  */
 
@@ -60,8 +60,8 @@ static Ptr<PtrExample> g_ptr = nullptr;
  *
  * This function stores it's argument in the global variable \c g_ptr
  * and returns the old value of \c g_ptr.
- * \param [in] p A Ptr.
- * \returns The prior value of \c g_ptr.
+ * @param [in] p A Ptr.
+ * @returns The prior value of \c g_ptr.
  */
 static Ptr<PtrExample>
 StorePtr(Ptr<PtrExample> p)

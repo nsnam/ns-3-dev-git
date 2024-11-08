@@ -23,22 +23,22 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("TcpVenoTestSuite");
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief Testing the additive increase and multiplicative decrease of TcpVeno
+ * @brief Testing the additive increase and multiplicative decrease of TcpVeno
  */
 class TcpVenoTest : public TestCase
 {
   public:
     /**
-     * \brief Constructor.
-     * \param cWnd Congestion window.
-     * \param segmentSize Segment size.
-     * \param ssThresh Slow Start Threshold.
-     * \param rtt The RTT.
-     * \param segmentsAcked Number of segments acked.
-     * \param numRtt Number of RTTs (i.e., rounds) in the test.
-     * \param name Test description.
+     * @brief Constructor.
+     * @param cWnd Congestion window.
+     * @param segmentSize Segment size.
+     * @param ssThresh Slow Start Threshold.
+     * @param rtt The RTT.
+     * @param segmentsAcked Number of segments acked.
+     * @param numRtt Number of RTTs (i.e., rounds) in the test.
+     * @param name Test description.
      */
     TcpVenoTest(uint32_t cWnd,
                 uint32_t segmentSize,
@@ -52,43 +52,43 @@ class TcpVenoTest : public TestCase
     void DoRun() override;
 
     /**
-     * \brief TCP Veno additive increase formula.
-     * \param state The congestion control state.
-     * \param diff The difference between actual and expected throughput.
-     * \param beta TCP Veno beta param.
+     * @brief TCP Veno additive increase formula.
+     * @param state The congestion control state.
+     * @param diff The difference between actual and expected throughput.
+     * @param beta TCP Veno beta param.
      */
     void AdditiveIncrease(Ptr<TcpSocketState> state, uint32_t diff, UintegerValue beta);
 
     /**
-     * \brief TCP Veno multiplicative decrease formula.
-     * \param diff The difference between actual and expected throughput.
-     * \param beta TCP Veno beta param.
-     * \param bytesInFlight Bytes in flight.
-     * \returns The calculated SsThresh.
+     * @brief TCP Veno multiplicative decrease formula.
+     * @param diff The difference between actual and expected throughput.
+     * @param beta TCP Veno beta param.
+     * @param bytesInFlight Bytes in flight.
+     * @returns The calculated SsThresh.
      */
     uint32_t MultiplicativeDecrease(uint32_t diff,
                                     const UintegerValue& beta,
                                     uint32_t bytesInFlight) const;
 
     /**
-     * \brief Mimics the NewReno IncreaseWindow algorithm.
-     * \param state TCP socket state.
-     * \param segmentsAcked Number of segments acked.
+     * @brief Mimics the NewReno IncreaseWindow algorithm.
+     * @param state TCP socket state.
+     * @param segmentsAcked Number of segments acked.
      */
     void NewReno_IncreaseWindow(Ptr<TcpSocketState> state, uint32_t segmentsAcked);
 
     /**
-     * \brief Mimics the NewReno SlowStart algorithm.
-     * \param state TCP socket state.
-     * \param segmentsAcked Number of segments acked.
-     * \returns The number of segments that could be sent.
+     * @brief Mimics the NewReno SlowStart algorithm.
+     * @param state TCP socket state.
+     * @param segmentsAcked Number of segments acked.
+     * @returns The number of segments that could be sent.
      */
     uint32_t NewReno_SlowStart(Ptr<TcpSocketState> state, uint32_t segmentsAcked);
 
     /**
-     * \brief Mimics the NewReno Congestion Avoidance algorithm.
-     * \param state TCP socket state.
-     * \param segmentsAcked Number of segments acked.
+     * @brief Mimics the NewReno Congestion Avoidance algorithm.
+     * @param state TCP socket state.
+     * @param segmentsAcked Number of segments acked.
      */
     void NewReno_CongestionAvoidance(Ptr<TcpSocketState> state, uint32_t segmentsAcked);
 
@@ -287,9 +287,9 @@ TcpVenoTest::NewReno_CongestionAvoidance(Ptr<TcpSocketState> state, uint32_t seg
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief TCP Veno TestSuite
+ * @brief TCP Veno TestSuite
  */
 class TcpVenoTestSuite : public TestSuite
 {

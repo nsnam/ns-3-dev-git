@@ -16,10 +16,10 @@
 using namespace ns3;
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief Test DROP_OLDEST setting.
+ * @brief Test DROP_OLDEST setting.
  *
  * This test verifies the correctness of DROP_OLDEST policy when packets
  * are pushed into the front of the queue. This case is not handled
@@ -29,7 +29,7 @@ class WifiMacQueueDropOldestTest : public TestCase
 {
   public:
     /**
-     * \brief Constructor
+     * @brief Constructor
      */
     WifiMacQueueDropOldestTest();
 
@@ -112,10 +112,10 @@ WifiMacQueueDropOldestTest::DoRun()
 }
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief Test extraction of expired MPDUs from MAC queue container
+ * @brief Test extraction of expired MPDUs from MAC queue container
  *
  * This test verifies the correctness of the WifiMacQueueContainer methods
  * (ExtractExpiredMpdus and ExtractAllExpiredMpdus) that extract MPDUs with
@@ -132,9 +132,9 @@ class WifiExtractExpiredMpdusTest : public TestCase
     /**
      * Enqueue a new MPDU into the container.
      *
-     * \param rxAddr Receiver Address of the MPDU
-     * \param inflight whether the MPDU is inflight
-     * \param expiryTime the expity time for the MPDU
+     * @param rxAddr Receiver Address of the MPDU
+     * @param inflight whether the MPDU is inflight
+     * @param expiryTime the expity time for the MPDU
      */
     void Enqueue(Mac48Address rxAddr, bool inflight, Time expiryTime);
 
@@ -418,10 +418,10 @@ WifiExtractExpiredMpdusTest::DoRun()
 }
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief Wifi MAC Queue Test Suite
+ * @brief Wifi MAC Queue Test Suite
  */
 class WifiMacQueueTestSuite : public TestSuite
 {

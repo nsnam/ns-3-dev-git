@@ -134,7 +134,7 @@ LteCqiGenerationTestSuite::LteCqiGenerationTestSuite()
 }
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  * Static variable for test initialization
  */
 static LteCqiGenerationTestSuite lteCqiGenerationTestSuite;

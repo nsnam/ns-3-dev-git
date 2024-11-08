@@ -9,7 +9,7 @@
  */
 
 ///
-/// \brief Implementation of OLSR agent and related classes.
+/// @brief Implementation of OLSR agent and related classes.
 ///
 /// This is the main file of this software because OLSR's behaviour is
 /// implemented here.
@@ -47,7 +47,7 @@
 /********** Useful macros **********/
 
 ///
-/// \brief Gets the delay between a given time and the current time.
+/// @brief Gets the delay between a given time and the current time.
 ///
 /// If given time is previous to the current one, then this macro returns
 /// a number close to 0. This is used for scheduling events at a certain moment.
@@ -57,7 +57,7 @@
                                    : (time - Simulator::Now() + Seconds(0.000001)))
 
 ///
-/// \brief Period at which a node must cite every link and every neighbor.
+/// @brief Period at which a node must cite every link and every neighbor.
 ///
 /// We only use this value in order to define OLSR_NEIGHB_HOLD_TIME.
 ///
@@ -103,7 +103,7 @@ namespace olsr
 {
 
 /**
- * \ingroup olsr
+ * @ingroup olsr
  *
  * OLSR link types.
  * See \RFC{3626} section 18.5.
@@ -119,9 +119,9 @@ enum class LinkType : uint8_t
 /**
  * Stream insertion operator for OLSR link type.
  *
- * \param os Output stream.
- * \param linkType OLSR link type.
- * \return A reference to the output stream.
+ * @param os Output stream.
+ * @param linkType OLSR link type.
+ * @return A reference to the output stream.
  */
 inline std::ostream&
 operator<<(std::ostream& os, LinkType linkType)
@@ -142,7 +142,7 @@ operator<<(std::ostream& os, LinkType linkType)
 }
 
 /**
- * \ingroup olsr
+ * @ingroup olsr
  *
  * OLSR neighbor types.
  * See \RFC{3626} section 18.6.
@@ -157,9 +157,9 @@ enum class NeighborType : uint8_t
 /**
  * Stream insertion operator for OLSR link type.
  *
- * \param os Output stream.
- * \param neighborType OLSR neighbor type.
- * \return A reference to the output stream.
+ * @param os Output stream.
+ * @param neighborType OLSR neighbor type.
+ * @return A reference to the output stream.
  */
 inline std::ostream&
 operator<<(std::ostream& os, NeighborType neighborType)
@@ -638,11 +638,11 @@ RoutingProtocol::RecvOlsr(Ptr<Socket> socket)
 }
 
 ///
-/// \brief This auxiliary function (defined in \RFC{3626}) is used for calculating the MPR Set.
+/// @brief This auxiliary function (defined in \RFC{3626}) is used for calculating the MPR Set.
 ///
-/// \param tuple the neighbor tuple which has the main address of the node we are going to calculate
+/// @param tuple the neighbor tuple which has the main address of the node we are going to calculate
 /// its degree to.
-/// \return the degree of the node.
+/// @return the degree of the node.
 ///
 int
 RoutingProtocol::Degree(const NeighborTuple& tuple)
@@ -668,11 +668,11 @@ RoutingProtocol::Degree(const NeighborTuple& tuple)
 namespace
 {
 ///
-/// \brief Remove all covered 2-hop neighbors from N2 set.
+/// @brief Remove all covered 2-hop neighbors from N2 set.
 /// This is a helper function used by MprComputation algorithm.
 ///
-/// \param neighborMainAddr Neighbor main address.
-/// \param N2 Reference to the 2-hop neighbor set.
+/// @param neighborMainAddr Neighbor main address.
+/// @param N2 Reference to the 2-hop neighbor set.
 ///
 void
 CoverTwoHopNeighbors(Ipv4Address neighborMainAddr, TwoHopNeighborSet& N2)
@@ -2286,11 +2286,11 @@ RoutingProtocol::PopulateMprSelectorSet(const olsr::MessageHeader& msg,
 
 #if 0
 ///
-/// \brief Drops a given packet because it couldn't be delivered to the corresponding
+/// @brief Drops a given packet because it couldn't be delivered to the corresponding
 /// destination by the MAC layer. This may cause a neighbor loss, and appropriate
 /// actions are then taken.
 ///
-/// \param p the packet which couldn't be delivered by the MAC layer.
+/// @param p the packet which couldn't be delivered by the MAC layer.
 ///
 void
 OLSR::mac_failed(Ptr<Packet> p)
@@ -2902,7 +2902,7 @@ RoutingProtocol::RouteOutput(Ptr<Packet> p,
         }
         else
         {
-            /// \todo Implement IP aliasing and OLSR
+            /// @todo Implement IP aliasing and OLSR
             NS_FATAL_ERROR("XXX Not implemented yet:  IP aliasing and OLSR");
         }
         rtentry->SetSource(ifAddr.GetLocal());
@@ -3013,7 +3013,7 @@ RoutingProtocol::RouteInput(Ptr<const Packet> p,
         }
         else
         {
-            /// \todo Implement IP aliasing and OLSR
+            /// @todo Implement IP aliasing and OLSR
             NS_FATAL_ERROR("XXX Not implemented yet:  IP aliasing and OLSR");
         }
         rtentry->SetSource(ifAddr.GetLocal());

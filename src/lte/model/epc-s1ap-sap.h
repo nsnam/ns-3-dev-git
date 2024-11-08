@@ -22,7 +22,7 @@ namespace ns3
 {
 
 /**
- * \ingroup lte
+ * @ingroup lte
  *
  * Base class that defines EPC S1-AP Service Access Point (SAP) interface.
  */
@@ -33,7 +33,7 @@ class EpcS1apSap
 };
 
 /**
- * \ingroup lte
+ * @ingroup lte
  *
  * MME side of the S1-AP Service Access Point (SAP), provides the MME
  * methods to be called when an S1-AP message is received by the MME.
@@ -44,10 +44,10 @@ class EpcS1apSapMme : public EpcS1apSap
     /**
      * Initial UE message.
      *
-     * \param mmeUeS1Id in practice, we use the IMSI
-     * \param enbUeS1Id in practice, we use the RNTI
-     * \param stmsi in practice, the imsi
-     * \param ecgi in practice, the cell Id
+     * @param mmeUeS1Id in practice, we use the IMSI
+     * @param enbUeS1Id in practice, we use the RNTI
+     * @param stmsi in practice, the imsi
+     * @param ecgi in practice, the cell Id
      */
     virtual void InitialUeMessage(uint64_t mmeUeS1Id,
                                   uint16_t enbUeS1Id,
@@ -63,13 +63,13 @@ class EpcS1apSapMme : public EpcS1apSap
     };
 
     /**
-     * \brief As per 3GPP TS 36.413 version 9.8.0 section 8.2.3.2.2, the eNB
+     * @brief As per 3GPP TS 36.413 version 9.8.0 section 8.2.3.2.2, the eNB
      * indicates bearer release by sending an E-RAB RELEASE INDICATION message
      * towards MME
      *
-     * \param mmeUeS1Id in practice, we use the IMSI
-     * \param enbUeS1Id in practice, we use the RNTI
-     * \param erabToBeReleaseIndication List of bearers to be deactivated
+     * @param mmeUeS1Id in practice, we use the IMSI
+     * @param enbUeS1Id in practice, we use the RNTI
+     * @param erabToBeReleaseIndication List of bearers to be deactivated
      */
     virtual void ErabReleaseIndication(
         uint64_t mmeUeS1Id,
@@ -89,9 +89,9 @@ class EpcS1apSapMme : public EpcS1apSap
     /**
      * INITIAL CONTEXT SETUP RESPONSE message,  see 3GPP TS 36.413 9.1.4.2
      *
-     * \param mmeUeS1Id in practice, we use the IMSI
-     * \param enbUeS1Id in practice, we use the RNTI
-     * \param erabSetupList List of ERAB setup
+     * @param mmeUeS1Id in practice, we use the IMSI
+     * @param enbUeS1Id in practice, we use the RNTI
+     * @param erabSetupList List of ERAB setup
      *
      */
     virtual void InitialContextSetupResponse(uint64_t mmeUeS1Id,
@@ -111,10 +111,10 @@ class EpcS1apSapMme : public EpcS1apSap
     /**
      * PATH SWITCH REQUEST message, see 3GPP TS 36.413 9.1.5.8
      *
-     * \param enbUeS1Id in practice, we use the RNTI
-     * \param mmeUeS1Id in practice, we use the IMSI
-     * \param gci GCI
-     * \param erabToBeSwitchedInDownlinkList List of ERAB to be switched in downlink
+     * @param enbUeS1Id in practice, we use the RNTI
+     * @param mmeUeS1Id in practice, we use the IMSI
+     * @param gci GCI
+     * @param erabToBeSwitchedInDownlinkList List of ERAB to be switched in downlink
      */
     virtual void PathSwitchRequest(
         uint64_t enbUeS1Id,
@@ -124,7 +124,7 @@ class EpcS1apSapMme : public EpcS1apSap
 };
 
 /**
- * \ingroup lte
+ * @ingroup lte
  *
  * eNB side of the S1-AP Service Access Point (SAP), provides the eNB
  * methods to be called when an S1-AP message is received by the eNB.
@@ -144,9 +144,9 @@ class EpcS1apSapEnb : public EpcS1apSap
     /**
      * Initial context setup request
      *
-     * \param mmeUeS1Id in practice, we use the IMSI
-     * \param enbUeS1Id in practice, we use the RNTI
-     * \param erabToBeSetupList List of ERAB to be setup
+     * @param mmeUeS1Id in practice, we use the IMSI
+     * @param enbUeS1Id in practice, we use the RNTI
+     * @param erabToBeSetupList List of ERAB to be setup
      */
     virtual void InitialContextSetupRequest(uint64_t mmeUeS1Id,
                                             uint16_t enbUeS1Id,
@@ -165,10 +165,10 @@ class EpcS1apSapEnb : public EpcS1apSap
     /**
      * PATH SWITCH REQUEST ACKNOWLEDGE message, see 3GPP TS 36.413 9.1.5.9
      *
-     * \param enbUeS1Id in practice, we use the RNTI
-     * \param mmeUeS1Id in practice, we use the IMSI
-     * \param cgi CGI
-     * \param erabToBeSwitchedInUplinkList List of ERAB to be switched in uplink
+     * @param enbUeS1Id in practice, we use the RNTI
+     * @param mmeUeS1Id in practice, we use the IMSI
+     * @param cgi CGI
+     * @param erabToBeSwitchedInUplinkList List of ERAB to be switched in uplink
      */
     virtual void PathSwitchRequestAcknowledge(
         uint64_t enbUeS1Id,
@@ -188,7 +188,7 @@ class MemberEpcS1apSapMme : public EpcS1apSapMme
     /**
      * Constructor
      *
-     * \param owner the owner class
+     * @param owner the owner class
      */
     MemberEpcS1apSapMme(C* owner);
 
@@ -198,10 +198,10 @@ class MemberEpcS1apSapMme : public EpcS1apSapMme
     // inherited from EpcS1apSapMme
     /**
      * Initial UE Message function
-     * \param mmeUeS1Id in practice, we use the IMSI
-     * \param enbUeS1Id in practice, we use the RNTI
-     * \param imsi the IMSI
-     * \param ecgi ECGI
+     * @param mmeUeS1Id in practice, we use the IMSI
+     * @param enbUeS1Id in practice, we use the RNTI
+     * @param imsi the IMSI
+     * @param ecgi ECGI
      */
     void InitialUeMessage(uint64_t mmeUeS1Id,
                           uint16_t enbUeS1Id,
@@ -209,9 +209,9 @@ class MemberEpcS1apSapMme : public EpcS1apSapMme
                           uint16_t ecgi) override;
     /**
      * ERAB Release Indiation function
-     * \param mmeUeS1Id in practice, we use the IMSI
-     * \param enbUeS1Id in practice, we use the RNTI
-     * \param erabToBeReleaseIndication List of ERAB to be release indication
+     * @param mmeUeS1Id in practice, we use the IMSI
+     * @param enbUeS1Id in practice, we use the RNTI
+     * @param erabToBeReleaseIndication List of ERAB to be release indication
      */
     void ErabReleaseIndication(
         uint64_t mmeUeS1Id,
@@ -220,19 +220,19 @@ class MemberEpcS1apSapMme : public EpcS1apSapMme
 
     /**
      * Initial context setup response
-     * \param mmeUeS1Id in practice, we use the IMSI
-     * \param enbUeS1Id in practice, we use the RNTI
-     * \param erabSetupList List of ERAB setup
+     * @param mmeUeS1Id in practice, we use the IMSI
+     * @param enbUeS1Id in practice, we use the RNTI
+     * @param erabSetupList List of ERAB setup
      */
     void InitialContextSetupResponse(uint64_t mmeUeS1Id,
                                      uint16_t enbUeS1Id,
                                      std::list<ErabSetupItem> erabSetupList) override;
     /**
      * Path switch request
-     * \param enbUeS1Id in practice, we use the RNTI
-     * \param mmeUeS1Id in practice, we use the IMSI
-     * \param cgi CGI
-     * \param erabToBeSwitchedInDownlinkList List of ERAB to be switched in downlink
+     * @param enbUeS1Id in practice, we use the RNTI
+     * @param mmeUeS1Id in practice, we use the IMSI
+     * @param cgi CGI
+     * @param erabToBeSwitchedInDownlinkList List of ERAB to be switched in downlink
      */
     void PathSwitchRequest(
         uint64_t enbUeS1Id,
@@ -301,7 +301,7 @@ class MemberEpcS1apSapEnb : public EpcS1apSapEnb
     /**
      * Constructor
      *
-     * \param owner the owner class
+     * @param owner the owner class
      */
     MemberEpcS1apSapEnb(C* owner);
 
@@ -311,19 +311,19 @@ class MemberEpcS1apSapEnb : public EpcS1apSapEnb
     // inherited from EpcS1apSapEnb
     /**
      * Initial context setup request function
-     * \param mmeUeS1Id in practice, we use the IMSI
-     * \param enbUeS1Id in practice, we use the RNTI
-     * \param erabToBeSetupList List of ERAB to be setup
+     * @param mmeUeS1Id in practice, we use the IMSI
+     * @param enbUeS1Id in practice, we use the RNTI
+     * @param erabToBeSetupList List of ERAB to be setup
      */
     void InitialContextSetupRequest(uint64_t mmeUeS1Id,
                                     uint16_t enbUeS1Id,
                                     std::list<ErabToBeSetupItem> erabToBeSetupList) override;
     /**
      * Path switch request acknowledge function
-     * \param enbUeS1Id in practice, we use the RNTI
-     * \param mmeUeS1Id in practice, we use the IMSI
-     * \param cgi CGI
-     * \param erabToBeSwitchedInUplinkList List of ERAB to be switched in uplink
+     * @param enbUeS1Id in practice, we use the RNTI
+     * @param mmeUeS1Id in practice, we use the IMSI
+     * @param cgi CGI
+     * @param erabToBeSwitchedInUplinkList List of ERAB to be switched in uplink
      */
     void PathSwitchRequestAcknowledge(
         uint64_t enbUeS1Id,

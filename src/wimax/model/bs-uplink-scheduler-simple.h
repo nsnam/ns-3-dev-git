@@ -26,7 +26,7 @@ class SSRecord;
 class ServiceFlow;
 
 /**
- * \ingroup wimax
+ * @ingroup wimax
  *
  * Uplink Scheduler - simplified
  */
@@ -37,27 +37,27 @@ class UplinkSchedulerSimple : public UplinkScheduler
     /**
      * Constructor
      *
-     * \param bs base station device
+     * @param bs base station device
      */
     UplinkSchedulerSimple(Ptr<BaseStationNetDevice> bs);
     ~UplinkSchedulerSimple() override;
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
     std::list<OfdmUlMapIe> GetUplinkAllocations() const override;
 
     /**
-     * \brief Determines if channel descriptors sent in the current frame are
+     * @brief Determines if channel descriptors sent in the current frame are
      * required to be updated
      *
-     * \param updateDcd currently unused (assume true)
-     * \param updateUcd currently unused (assume true)
-     * \param [out] sendDcd DCD must be updated
-     * \param [out] sendUcd UCD must be updated
+     * @param updateDcd currently unused (assume true)
+     * @param updateUcd currently unused (assume true)
+     * @param [out] sendDcd DCD must be updated
+     * @param [out] sendUcd UCD must be updated
      *
      */
     void GetChannelDescriptorsToUpdate(bool& updateDcd,
@@ -72,12 +72,12 @@ class UplinkSchedulerSimple : public UplinkScheduler
     void Schedule() override;
     /**
      * Service Unsolicited Grants function
-     * \param ssRecord Subscriber station record
-     * \param schedulingType the scheduling type
-     * \param ulMapIe the UL map IE
-     * \param modulationType the modulation type
-     * \param symbolsToAllocation the symbols to allocation
-     * \param availableSymbols the available symbols
+     * @param ssRecord Subscriber station record
+     * @param schedulingType the scheduling type
+     * @param ulMapIe the UL map IE
+     * @param modulationType the modulation type
+     * @param symbolsToAllocation the symbols to allocation
+     * @param availableSymbols the available symbols
      */
     void ServiceUnsolicitedGrants(const SSRecord* ssRecord,
                                   ServiceFlow::SchedulingType schedulingType,
@@ -87,12 +87,12 @@ class UplinkSchedulerSimple : public UplinkScheduler
                                   uint32_t& availableSymbols) override;
     /**
      * Service Bandwidth Requests function
-     * \param ssRecord Subscriber station record
-     * \param schedulingType the scheduling type
-     * \param ulMapIe the UL map IE
-     * \param modulationType the modulation type
-     * \param symbolsToAllocation the symbols to allocation
-     * \param availableSymbols the available symbols
+     * @param ssRecord Subscriber station record
+     * @param schedulingType the scheduling type
+     * @param ulMapIe the UL map IE
+     * @param modulationType the modulation type
+     * @param symbolsToAllocation the symbols to allocation
+     * @param availableSymbols the available symbols
      */
     void ServiceBandwidthRequests(const SSRecord* ssRecord,
                                   ServiceFlow::SchedulingType schedulingType,
@@ -102,13 +102,13 @@ class UplinkSchedulerSimple : public UplinkScheduler
                                   uint32_t& availableSymbols) override;
     /**
      * Service bandwidth requests function
-     * \param serviceFlow the service flow
-     * \param schedulingType the scheduling type
-     * \param ulMapIe the UL map IE
-     * \param modulationType the modulation type
-     * \param symbolsToAllocation the symbols to allocation
-     * \param availableSymbols the available symbols
-     * \returns true if successful
+     * @param serviceFlow the service flow
+     * @param schedulingType the scheduling type
+     * @param ulMapIe the UL map IE
+     * @param modulationType the modulation type
+     * @param symbolsToAllocation the symbols to allocation
+     * @param availableSymbols the available symbols
+     * @returns true if successful
      */
     bool ServiceBandwidthRequests(ServiceFlow* serviceFlow,
                                   ServiceFlow::SchedulingType schedulingType,
@@ -119,21 +119,21 @@ class UplinkSchedulerSimple : public UplinkScheduler
     /**
      * Allocate Initial Ranging Interval function
      *
-     * \param symbolsToAllocation symbols to allocation for UpLink Subframe
-     * \param availableSymbols available symbols for rtPS flows
+     * @param symbolsToAllocation symbols to allocation for UpLink Subframe
+     * @param availableSymbols available symbols for rtPS flows
      */
     void AllocateInitialRangingInterval(uint32_t& symbolsToAllocation,
                                         uint32_t& availableSymbols) override;
     /**
      * Setup service flow function
-     * \param ssRecord Subscriber station record
-     * \param serviceFlow the service flow
+     * @param ssRecord Subscriber station record
+     * @param serviceFlow the service flow
      */
     void SetupServiceFlow(SSRecord* ssRecord, ServiceFlow* serviceFlow) override;
 
     /**
      * Process bandwidth request function
-     * \param bwRequestHdr the bandwidth request header
+     * @param bwRequestHdr the bandwidth request header
      */
     void ProcessBandwidthRequest(const BandwidthRequestHeader& bwRequestHdr) override;
 
@@ -142,7 +142,7 @@ class UplinkSchedulerSimple : public UplinkScheduler
 
     /**
      * Set requested bandwidth function
-     * \param sfr the service flow record
+     * @param sfr the service flow record
      */
     void OnSetRequestedBandwidth(ServiceFlowRecord* sfr) override;
 

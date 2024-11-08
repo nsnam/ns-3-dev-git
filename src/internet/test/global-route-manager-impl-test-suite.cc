@@ -20,15 +20,15 @@
 using namespace ns3;
 
 /**
- * \ingroup internet
- * \ingroup tests
- * \defgroup internet-test internet module tests
+ * @ingroup internet
+ * @ingroup tests
+ * @defgroup internet-test internet module tests
  */
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief Global Route Manager Test
+ * @brief Global Route Manager Test
  */
 class GlobalRouteManagerImplTestCase : public TestCase
 {
@@ -191,7 +191,7 @@ GlobalRouteManagerImplTestCase::DoRun()
 
     Simulator::Run();
 
-    /// \todo here we should do some verification of the routes built
+    /// @todo here we should do some verification of the routes built
 
     Simulator::Destroy();
 
@@ -199,15 +199,15 @@ GlobalRouteManagerImplTestCase::DoRun()
     // all of the LSAs, which each destroys the attached LinkRecords.
     delete srm;
 
-    /// \todo Testing
+    /// @todo Testing
     // No testing has actually been done other than making sure that this code
     // does not crash
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief Global Route Manager TestSuite
+ * @brief Global Route Manager TestSuite
  */
 class GlobalRouteManagerImplTestSuite : public TestSuite
 {

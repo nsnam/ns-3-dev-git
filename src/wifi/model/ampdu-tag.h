@@ -17,7 +17,7 @@ namespace ns3
 {
 
 /**
- * \ingroup wifi
+ * @ingroup wifi
  *
  * The aim of the AmpduTag is to provide means for a MAC to specify that a packet includes A-MPDU
  * since this is done in HT-SIG and there is no HT-SIG representation in ns-3
@@ -26,8 +26,8 @@ class AmpduTag : public Tag
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -42,26 +42,26 @@ class AmpduTag : public Tag
      */
     AmpduTag();
     /**
-     * \param nbOfMpdus the remaining number of MPDUs
+     * @param nbOfMpdus the remaining number of MPDUs
      *
      * Set the remaining number of MPDUs in the A-MPDU.
      */
     void SetRemainingNbOfMpdus(uint8_t nbOfMpdus);
     /**
-     * \param duration the remaining duration of the A-MPDU
+     * @param duration the remaining duration of the A-MPDU
      *
      * Set the remaining duration of the A-MPDU.
      */
     void SetRemainingAmpduDuration(Time duration);
 
     /**
-     * \return the remaining number of MPDUs in an A-MPDU
+     * @return the remaining number of MPDUs in an A-MPDU
      *
      * Returns the remaining number of MPDUs in an A-MPDU
      */
     uint8_t GetRemainingNbOfMpdus() const;
     /**
-     * \return the remaining duration of an A-MPDU
+     * @return the remaining duration of an A-MPDU
      *
      * Returns the remaining duration of an A-MPDU
      */

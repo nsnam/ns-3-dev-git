@@ -43,8 +43,8 @@ constexpr uint8_t WIFI_DEFAULT_GRP_BU_IND_LIMIT = 0;
 constexpr uint8_t WIFI_DEFAULT_GRP_BU_EXP = 0;
 
 /**
- * \brief EHT Operation Information Element
- * \ingroup wifi
+ * @brief EHT Operation Information Element
+ * @ingroup wifi
  *
  * This class serializes and deserializes
  * the EHT Operation Information Element
@@ -74,14 +74,14 @@ class EhtOperation : public WifiInformationElement
         /**
          * Serialize the EHT Operation Parameters subfield
          *
-         * \param start iterator pointing to where the subfield should be written to
+         * @param start iterator pointing to where the subfield should be written to
          */
         void Serialize(Buffer::Iterator& start) const;
         /**
          * Deserialize the EHT Operation Parameters subfield
          *
-         * \param start iterator pointing to where the subfield should be read from
-         * \return the number of octets read
+         * @param start iterator pointing to where the subfield should be read from
+         * @return the number of octets read
          */
         uint16_t Deserialize(Buffer::Iterator start);
     };
@@ -109,15 +109,15 @@ class EhtOperation : public WifiInformationElement
         /**
          * Serialize the EHT Operation Information subfield
          *
-         * \param start iterator pointing to where the subfield should be written to
+         * @param start iterator pointing to where the subfield should be written to
          */
         void Serialize(Buffer::Iterator& start) const;
         /**
          * Deserialize the EHT Operation Information subfield
          *
-         * \param start iterator pointing to where the subfield should be read from
-         * \param disabledSubchBmPresent EHT Operation Param Disabled Subchannel Bitmap Present
-         * \return the number of octets read
+         * @param start iterator pointing to where the subfield should be read from
+         * @param disabledSubchBmPresent EHT Operation Param Disabled Subchannel Bitmap Present
+         * @return the number of octets read
          */
         uint16_t Deserialize(Buffer::Iterator start, bool disabledSubchBmPresent);
     };
@@ -134,14 +134,14 @@ class EhtOperation : public WifiInformationElement
         /**
          * Serialize the Basic EHT-MCS and NSS Set subfield
          *
-         * \param start iterator pointing to where the subfield should be written to
+         * @param start iterator pointing to where the subfield should be written to
          */
         void Serialize(Buffer::Iterator& start) const;
         /**
          * Deserialize the Basic EHT-MCS and NSS Set subfield
          *
-         * \param start iterator pointing to where the subfield should be read from
-         * \return the number of octets read
+         * @param start iterator pointing to where the subfield should be read from
+         * @return the number of octets read
          */
         uint16_t Deserialize(Buffer::Iterator start);
     };
@@ -153,16 +153,16 @@ class EhtOperation : public WifiInformationElement
 
     /**
      * Set the max Rx NSS for input MCS index range
-     * \param maxNss the maximum supported Rx NSS for MCS group
-     * \param mcsStart MCS index start
-     * \param mcsEnd MCS index end
+     * @param maxNss the maximum supported Rx NSS for MCS group
+     * @param mcsStart MCS index start
+     * @param mcsEnd MCS index end
      */
     void SetMaxRxNss(uint8_t maxNss, uint8_t mcsStart, uint8_t mcsEnd);
     /**
      * Set the max Tx NSS for input MCS index range
-     * \param maxNss the maximum supported Rx NSS for MCS group
-     * \param mcsStart MCS index start
-     * \param mcsEnd MCS index end
+     * @param maxNss the maximum supported Rx NSS for MCS group
+     * @param mcsStart MCS index start
+     * @param mcsEnd MCS index end
      */
     void SetMaxTxNss(uint8_t maxNss, uint8_t mcsStart, uint8_t mcsEnd);
 

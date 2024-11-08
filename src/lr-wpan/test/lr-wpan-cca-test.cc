@@ -28,8 +28,8 @@ using namespace ns3::lrwpan;
 NS_LOG_COMPONENT_DEFINE("lr-wpan-cca-test");
 
 /**
- * \ingroup lr-wpan-test
- * \ingroup tests
+ * @ingroup lr-wpan-test
+ * @ingroup tests
  *
  * LrWpan CCA Test
  */
@@ -349,10 +349,10 @@ LrWpanCcaTestCase::DoRun()
 }
 
 /**
- * \ingroup lr-wpan-test
- * \ingroup tests
+ * @ingroup lr-wpan-test
+ * @ingroup tests
  *
- * \brief Test the sensitivity of the CSMA/CA clear channel assestment (CCA)
+ * @brief Test the sensitivity of the CSMA/CA clear channel assestment (CCA)
  */
 class CCAVulnerableWindowTest : public TestCase
 {
@@ -587,8 +587,8 @@ CCAVulnerableWindowTest::DoRun()
 }
 
 /**
- * \ingroup lr-wpan-test
- * \ingroup tests
+ * @ingroup lr-wpan-test
+ * @ingroup tests
  *
  * LrWpan ACK TestSuite
  */

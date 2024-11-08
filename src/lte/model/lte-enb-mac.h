@@ -60,8 +60,8 @@ class LteEnbMac : public Object
 
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -70,87 +70,87 @@ class LteEnbMac : public Object
     void DoDispose() override;
 
     /**
-     * \brief Set the component carrier ID
-     * \param index the component carrier ID
+     * @brief Set the component carrier ID
+     * @param index the component carrier ID
      */
     void SetComponentCarrierId(uint8_t index);
     /**
-     * \brief Set the scheduler SAP provider
-     * \param s a pointer SAP provider of the FF packet scheduler
+     * @brief Set the scheduler SAP provider
+     * @param s a pointer SAP provider of the FF packet scheduler
      */
     void SetFfMacSchedSapProvider(FfMacSchedSapProvider* s);
     /**
-     * \brief Get the scheduler SAP user
-     * \return a pointer to the SAP user of the scheduler
+     * @brief Get the scheduler SAP user
+     * @return a pointer to the SAP user of the scheduler
      */
     FfMacSchedSapUser* GetFfMacSchedSapUser();
     /**
-     * \brief Set the control scheduler SAP provider
-     * \param s a pointer to the control scheduler SAP provider
+     * @brief Set the control scheduler SAP provider
+     * @param s a pointer to the control scheduler SAP provider
      */
     void SetFfMacCschedSapProvider(FfMacCschedSapProvider* s);
     /**
-     * \brief Get the control scheduler SAP user
-     * \return a pointer to the control scheduler SAP user
+     * @brief Get the control scheduler SAP user
+     * @return a pointer to the control scheduler SAP user
      */
     FfMacCschedSapUser* GetFfMacCschedSapUser();
 
     /**
-     * \brief Set the MAC SAP user
-     * \param s a pointer to the MAC SAP user
+     * @brief Set the MAC SAP user
+     * @param s a pointer to the MAC SAP user
      */
     void SetLteMacSapUser(LteMacSapUser* s);
     /**
-     * \brief Get the MAC SAP provider
-     * \return a pointer to the SAP provider of the MAC
+     * @brief Get the MAC SAP provider
+     * @return a pointer to the SAP provider of the MAC
      */
     LteMacSapProvider* GetLteMacSapProvider();
     /**
-     * \brief Set the control MAC SAP user
-     * \param s a pointer to the control MAC SAP user
+     * @brief Set the control MAC SAP user
+     * @param s a pointer to the control MAC SAP user
      */
     void SetLteEnbCmacSapUser(LteEnbCmacSapUser* s);
     /**
-     * \brief Get the control MAC SAP provider
-     * \return a pointer to the control MAC SAP provider
+     * @brief Get the control MAC SAP provider
+     * @return a pointer to the control MAC SAP provider
      */
     LteEnbCmacSapProvider* GetLteEnbCmacSapProvider();
 
     /**
-     * \brief Get the eNB-PHY SAP User
-     * \return a pointer to the SAP User of the PHY
+     * @brief Get the eNB-PHY SAP User
+     * @return a pointer to the SAP User of the PHY
      */
     LteEnbPhySapUser* GetLteEnbPhySapUser();
 
     /**
-     * \brief Set the PHY SAP Provider
-     * \param s a pointer to the PHY SAP provider
+     * @brief Set the PHY SAP Provider
+     * @param s a pointer to the PHY SAP provider
      */
     void SetLteEnbPhySapProvider(LteEnbPhySapProvider* s);
 
     /**
-     * \brief Get the eNB-ComponentCarrierManager SAP User
-     * \return a pointer to the SAP User of the ComponentCarrierManager
+     * @brief Get the eNB-ComponentCarrierManager SAP User
+     * @return a pointer to the SAP User of the ComponentCarrierManager
      */
     LteCcmMacSapProvider* GetLteCcmMacSapProvider();
 
     /**
-     * \brief Set the ComponentCarrierManager SAP user
-     * \param s a pointer to the ComponentCarrierManager provider
+     * @brief Set the ComponentCarrierManager SAP user
+     * @param s a pointer to the ComponentCarrierManager provider
      */
     void SetLteCcmMacSapUser(LteCcmMacSapUser* s);
 
     /**
      * TracedCallback signature for DL scheduling events.
      *
-     * \param [in] frame Frame number.
-     * \param [in] subframe Subframe number.
-     * \param [in] rnti The C-RNTI identifying the UE.
-     * \param [in] mcs0 The MCS for transport block..
-     * \param [in] tbs0Size
-     * \param [in] mcs1 The MCS for transport block.
-     * \param [in] tbs1Size
-     * \param [in] component carrier id
+     * @param [in] frame Frame number.
+     * @param [in] subframe Subframe number.
+     * @param [in] rnti The C-RNTI identifying the UE.
+     * @param [in] mcs0 The MCS for transport block..
+     * @param [in] tbs0Size
+     * @param [in] mcs1 The MCS for transport block.
+     * @param [in] tbs1Size
+     * @param [in] component carrier id
      */
     typedef void (*DlSchedulingTracedCallback)(const uint32_t frame,
                                                const uint32_t subframe,
@@ -164,11 +164,11 @@ class LteEnbMac : public Object
     /**
      *  TracedCallback signature for UL scheduling events.
      *
-     * \param [in] frame Frame number.
-     * \param [in] subframe Subframe number.
-     * \param [in] rnti The C-RNTI identifying the UE.
-     * \param [in] mcs  The MCS for transport block
-     * \param [in] tbsSize
+     * @param [in] frame Frame number.
+     * @param [in] subframe Subframe number.
+     * @param [in] rnti The C-RNTI identifying the UE.
+     * @param [in] mcs  The MCS for transport block
+     * @param [in] tbsSize
      */
     typedef void (*UlSchedulingTracedCallback)(const uint32_t frame,
                                                const uint32_t subframe,
@@ -178,165 +178,165 @@ class LteEnbMac : public Object
 
   private:
     /**
-     * \brief Receive a DL CQI ideal control message
-     * \param msg the DL CQI message
+     * @brief Receive a DL CQI ideal control message
+     * @param msg the DL CQI message
      */
     void ReceiveDlCqiLteControlMessage(Ptr<DlCqiLteControlMessage> msg);
 
     /**
-     * \brief Receive a DL CQI ideal control message
-     * \param msg the DL CQI message
+     * @brief Receive a DL CQI ideal control message
+     * @param msg the DL CQI message
      */
     void DoReceiveLteControlMessage(Ptr<LteControlMessage> msg);
 
     /**
-     * \brief Receive a CE element containing the buffer status report
-     * \param bsr the BSR message
+     * @brief Receive a CE element containing the buffer status report
+     * @param bsr the BSR message
      */
     void ReceiveBsrMessage(MacCeListElement_s bsr);
 
     /**
-     * \brief UL CQI report
-     * \param ulcqi FfMacSchedSapProvider::SchedUlCqiInfoReqParameters
+     * @brief UL CQI report
+     * @param ulcqi FfMacSchedSapProvider::SchedUlCqiInfoReqParameters
      */
     void DoUlCqiReport(FfMacSchedSapProvider::SchedUlCqiInfoReqParameters ulcqi);
 
     // forwarded from LteEnbCmacSapProvider
     /**
-     * \brief Configure MAC function
-     * \param ulBandwidth the UL bandwidth
-     * \param dlBandwidth the DL bandwidth
+     * @brief Configure MAC function
+     * @param ulBandwidth the UL bandwidth
+     * @param dlBandwidth the DL bandwidth
      */
     void DoConfigureMac(uint16_t ulBandwidth, uint16_t dlBandwidth);
     /**
-     * \brief Add UE function
-     * \param rnti the RNTI
+     * @brief Add UE function
+     * @param rnti the RNTI
      */
     void DoAddUe(uint16_t rnti);
     /**
-     * \brief Remove UE function
-     * \param rnti the RNTI
+     * @brief Remove UE function
+     * @param rnti the RNTI
      */
     void DoRemoveUe(uint16_t rnti);
     /**
-     * \brief Add LC function
-     * \param lcinfo the LC info
-     * \param msu the LTE MAC SAP user
+     * @brief Add LC function
+     * @param lcinfo the LC info
+     * @param msu the LTE MAC SAP user
      */
     void DoAddLc(LteEnbCmacSapProvider::LcInfo lcinfo, LteMacSapUser* msu);
     /**
-     * \brief Reconfigure LC function
-     * \param lcinfo the LC info
+     * @brief Reconfigure LC function
+     * @param lcinfo the LC info
      */
     void DoReconfigureLc(LteEnbCmacSapProvider::LcInfo lcinfo);
     /**
-     * \brief Release LC function
-     * \param rnti the RNTI
-     * \param lcid the LCID
+     * @brief Release LC function
+     * @param rnti the RNTI
+     * @param lcid the LCID
      */
     void DoReleaseLc(uint16_t rnti, uint8_t lcid);
     /**
-     * \brief UE Update configuration request function
-     * \param params LteEnbCmacSapProvider::UeConfig
+     * @brief UE Update configuration request function
+     * @param params LteEnbCmacSapProvider::UeConfig
      */
     void DoUeUpdateConfigurationReq(LteEnbCmacSapProvider::UeConfig params);
     /**
-     * \brief Get RACH configuration function
-     * \returns LteEnbCmacSapProvider::RachConfig
+     * @brief Get RACH configuration function
+     * @returns LteEnbCmacSapProvider::RachConfig
      */
     LteEnbCmacSapProvider::RachConfig DoGetRachConfig() const;
     /**
-     * \brief Allocate NC RA preamble function
-     * \param rnti the RNTI
-     * \returns LteEnbCmacSapProvider::AllocateNcRaPreambleReturnValue
+     * @brief Allocate NC RA preamble function
+     * @param rnti the RNTI
+     * @returns LteEnbCmacSapProvider::AllocateNcRaPreambleReturnValue
      */
     LteEnbCmacSapProvider::AllocateNcRaPreambleReturnValue DoAllocateNcRaPreamble(uint16_t rnti);
 
     // forwarded from LteMacSapProvider
     /**
-     * \brief Transmit PDU function
-     * \param params LteMacSapProvider::TransmitPduParameters
+     * @brief Transmit PDU function
+     * @param params LteMacSapProvider::TransmitPduParameters
      */
     void DoTransmitPdu(LteMacSapProvider::TransmitPduParameters params);
     /**
-     * \brief Report Buffer Status function
-     * \param params LteMacSapProvider::ReportBufferStatusParameters
+     * @brief Report Buffer Status function
+     * @param params LteMacSapProvider::ReportBufferStatusParameters
      */
     void DoReportBufferStatus(LteMacSapProvider::ReportBufferStatusParameters params);
 
     // forwarded from FfMacCchedSapUser
     /**
-     * \brief CSched Cell Config configure function
-     * \param params FfMacCschedSapUser::CschedCellConfigCnfParameters
+     * @brief CSched Cell Config configure function
+     * @param params FfMacCschedSapUser::CschedCellConfigCnfParameters
      */
     void DoCschedCellConfigCnf(FfMacCschedSapUser::CschedCellConfigCnfParameters params);
     /**
-     * \brief CSched UE Config configure function
-     * \param params FfMacCschedSapUser::CschedUeConfigCnfParameters
+     * @brief CSched UE Config configure function
+     * @param params FfMacCschedSapUser::CschedUeConfigCnfParameters
      */
     void DoCschedUeConfigCnf(FfMacCschedSapUser::CschedUeConfigCnfParameters params);
     /**
-     * \brief CSched LC Config configure function
-     * \param params FfMacCschedSapUser::CschedLcConfigCnfParameters
+     * @brief CSched LC Config configure function
+     * @param params FfMacCschedSapUser::CschedLcConfigCnfParameters
      */
     void DoCschedLcConfigCnf(FfMacCschedSapUser::CschedLcConfigCnfParameters params);
     /**
-     * \brief CSched LC Release configure function
-     * \param params FfMacCschedSapUser::CschedLcReleaseCnfParameters
+     * @brief CSched LC Release configure function
+     * @param params FfMacCschedSapUser::CschedLcReleaseCnfParameters
      */
     void DoCschedLcReleaseCnf(FfMacCschedSapUser::CschedLcReleaseCnfParameters params);
     /**
-     * \brief CSched UE Release configure function
-     * \param params FfMacCschedSapUser::CschedUeReleaseCnfParameters
+     * @brief CSched UE Release configure function
+     * @param params FfMacCschedSapUser::CschedUeReleaseCnfParameters
      */
     void DoCschedUeReleaseCnf(FfMacCschedSapUser::CschedUeReleaseCnfParameters params);
     /**
-     * \brief CSched UE Config Update Indication function
-     * \param params FfMacCschedSapUser::CschedUeConfigUpdateIndParameters
+     * @brief CSched UE Config Update Indication function
+     * @param params FfMacCschedSapUser::CschedUeConfigUpdateIndParameters
      */
     void DoCschedUeConfigUpdateInd(FfMacCschedSapUser::CschedUeConfigUpdateIndParameters params);
     /**
-     * \brief CSched Cell Config Update Indication function
-     * \param params FfMacCschedSapUser::CschedCellConfigUpdateIndParameters
+     * @brief CSched Cell Config Update Indication function
+     * @param params FfMacCschedSapUser::CschedCellConfigUpdateIndParameters
      */
     void DoCschedCellConfigUpdateInd(
         FfMacCschedSapUser::CschedCellConfigUpdateIndParameters params);
 
     // forwarded from FfMacSchedSapUser
     /**
-     * \brief Sched DL Config Indication function
-     * \param ind FfMacSchedSapUser::SchedDlConfigIndParameters
+     * @brief Sched DL Config Indication function
+     * @param ind FfMacSchedSapUser::SchedDlConfigIndParameters
      */
     void DoSchedDlConfigInd(FfMacSchedSapUser::SchedDlConfigIndParameters ind);
     /**
-     * \brief Sched UL Config Indication function
-     * \param params FfMacSchedSapUser::SchedUlConfigIndParameters
+     * @brief Sched UL Config Indication function
+     * @param params FfMacSchedSapUser::SchedUlConfigIndParameters
      */
     void DoSchedUlConfigInd(FfMacSchedSapUser::SchedUlConfigIndParameters params);
 
     // forwarded from LteEnbPhySapUser
     /**
-     * \brief Subrame Indication function
-     * \param frameNo frame number
-     * \param subframeNo subframe number
+     * @brief Subrame Indication function
+     * @param frameNo frame number
+     * @param subframeNo subframe number
      */
     void DoSubframeIndication(uint32_t frameNo, uint32_t subframeNo);
     /**
-     * \brief Receive RACH Preamble function
-     * \param prachId PRACH ID number
+     * @brief Receive RACH Preamble function
+     * @param prachId PRACH ID number
      */
     void DoReceiveRachPreamble(uint8_t prachId);
 
     // forwarded by LteCcmMacSapProvider
     /**
      * Report MAC CE to scheduler
-     * \param bsr the BSR
+     * @param bsr the BSR
      */
     void DoReportMacCeToScheduler(MacCeListElement_s bsr);
 
     /**
-     * \brief Report SR to scheduler
-     * \param rnti RNTI of the UE that requested the SR
+     * @brief Report SR to scheduler
+     * @param rnti RNTI of the UE that requested the SR
      *
      * Since SR is not implemented in LTE, this method does nothing.
      */
@@ -347,19 +347,19 @@ class LteEnbMac : public Object
   public:
     /**
      * legacy public for use the Phy callback
-     * \param p packet
+     * @param p packet
      */
     void DoReceivePhyPdu(Ptr<Packet> p);
 
   private:
     /**
-     * \brief UL Info List Elements HARQ Feedback function
-     * \param params UlInfoListElement_s
+     * @brief UL Info List Elements HARQ Feedback function
+     * @param params UlInfoListElement_s
      */
     void DoUlInfoListElementHarqFeedback(UlInfoListElement_s params);
     /**
-     * \brief DL Info List Elements HARQ Feedback function
-     * \param params DlInfoListElement_s
+     * @brief DL Info List Elements HARQ Feedback function
+     * @param params DlInfoListElement_s
      */
     void DoDlInfoListElementHarqFeedback(DlInfoListElement_s params);
 

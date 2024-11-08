@@ -8,8 +8,8 @@
 #include "string.h"
 
 /**
- * \file
- * \ingroup attribute_String
+ * @file
+ * @ingroup attribute_String
  * ns3::StringValue attribute value implementation.
  */
 

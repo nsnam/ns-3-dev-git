@@ -27,14 +27,14 @@ namespace ns3
 NS_LOG_COMPONENT_DEFINE("SimpleNetDevice");
 
 /**
- * \brief SimpleNetDevice tag to store source, destination and protocol of each packet.
+ * @brief SimpleNetDevice tag to store source, destination and protocol of each packet.
  */
 class SimpleTag : public Tag
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     TypeId GetInstanceTypeId() const override;
@@ -45,34 +45,34 @@ class SimpleTag : public Tag
 
     /**
      * Set the source address
-     * \param src source address
+     * @param src source address
      */
     void SetSrc(Mac48Address src);
     /**
      * Get the source address
-     * \return the source address
+     * @return the source address
      */
     Mac48Address GetSrc() const;
 
     /**
      * Set the destination address
-     * \param dst destination address
+     * @param dst destination address
      */
     void SetDst(Mac48Address dst);
     /**
      * Get the destination address
-     * \return the destination address
+     * @return the destination address
      */
     Mac48Address GetDst() const;
 
     /**
      * Set the protocol number
-     * \param proto protocol number
+     * @param proto protocol number
      */
     void SetProto(uint16_t proto);
     /**
      * Get the protocol number
-     * \return the protocol number
+     * @return the protocol number
      */
     uint16_t GetProto() const;
 

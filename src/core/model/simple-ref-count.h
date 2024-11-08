@@ -17,8 +17,8 @@
 #include <stdint.h>
 
 /**
- * \file
- * \ingroup ptr
+ * @file
+ * @ingroup ptr
  * ns3::SimpleRefCount declaration and template implementation.
  */
 
@@ -26,22 +26,22 @@ namespace ns3
 {
 
 /**
- * \ingroup ptr
- * \brief Empty class, used as a default parent class for SimpleRefCount
+ * @ingroup ptr
+ * @brief Empty class, used as a default parent class for SimpleRefCount
  */
 class Empty
 {
 };
 
 /**
- * \ingroup ptr
- * \brief A template-based reference counting class
+ * @ingroup ptr
+ * @brief A template-based reference counting class
  *
  * This template can be used to give reference-counting powers
  * to a class. This template does not require this class to
  * have a virtual destructor or a specific (or any) parent class.
  *
- * \note If you are moving to this template from the RefCountBase class,
+ * @note If you are moving to this template from the RefCountBase class,
  * you need to be careful to mark appropriately your destructor virtual
  * if needed. i.e., if your class has subclasses, _do_ mark your destructor
  * virtual.
@@ -50,15 +50,15 @@ class Empty
  * This template takes 3 arguments but only the first argument is
  * mandatory:
  *
- * \tparam T \explicit The typename of the subclass which derives
+ * @tparam T \explicit The typename of the subclass which derives
  *      from this template class. Yes, this is weird but it's a
  *      common C++ template pattern whose name is CRTP (Curiously
  *      Recursive Template Pattern)
- * \tparam PARENT \explicit The typename of the parent of this template.
+ * @tparam PARENT \explicit The typename of the parent of this template.
  *      By default, this typename is "'ns3::Empty'" which is an empty
  *      class: compilers which implement the EBCO optimization (empty
  *      base class optimization) will make this a no-op
- * \tparam DELETER \explicit The typename of a class which implements
+ * @tparam DELETER \explicit The typename of a class which implements
  *      a public static method named 'Delete'. This method will be called
  *      whenever the SimpleRefCount template detects that no references
  *      to the object it manages exist anymore.
@@ -77,7 +77,7 @@ class SimpleRefCount : public PARENT
 
     /**
      * Copy constructor
-     * \param [in] o The object to copy into this one.
+     * @param [in] o The object to copy into this one.
      */
     SimpleRefCount(const SimpleRefCount& o [[maybe_unused]])
         : m_count(1)
@@ -86,8 +86,8 @@ class SimpleRefCount : public PARENT
 
     /**
      * Assignment operator
-     * \param [in] o The object to copy
-     * \returns The copy of \pname{o}
+     * @param [in] o The object to copy
+     * @returns The copy of \pname{o}
      */
     SimpleRefCount& operator=(const SimpleRefCount& o [[maybe_unused]])
     {
@@ -125,7 +125,7 @@ class SimpleRefCount : public PARENT
      * Get the reference count of the object.
      * Normally not needed; for language bindings.
      *
-     * \return The reference count.
+     * @return The reference count.
      */
     inline uint32_t GetReferenceCount() const
     {
@@ -136,7 +136,7 @@ class SimpleRefCount : public PARENT
     /**
      * The reference count.
      *
-     * \internal
+     * @internal
      * Note we make this mutable so that the const methods can still
      * change it.
      */

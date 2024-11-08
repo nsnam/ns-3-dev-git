@@ -23,9 +23,9 @@ namespace ns3
 class TcpSocketState;
 
 /**
- * \ingroup congestionOps
+ * @ingroup congestionOps
  *
- * \brief An implementation of TCP Vegas
+ * @brief An implementation of TCP Vegas
  *
  * TCP Vegas is a pure delay-based congestion control algorithm implementing a proactive
  * scheme that tries to prevent packet drops by maintaining a small backlog at the
@@ -55,8 +55,8 @@ class TcpVegas : public TcpNewReno
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -66,8 +66,8 @@ class TcpVegas : public TcpNewReno
     TcpVegas();
 
     /**
-     * \brief Copy constructor
-     * \param sock the object to copy
+     * @brief Copy constructor
+     * @param sock the object to copy
      */
     TcpVegas(const TcpVegas& sock);
     ~TcpVegas() override;
@@ -75,7 +75,7 @@ class TcpVegas : public TcpNewReno
     std::string GetName() const override;
 
     /**
-     * \brief Compute RTTs needed to execute Vegas algorithm
+     * @brief Compute RTTs needed to execute Vegas algorithm
      *
      * The function filters RTT samples from the last RTT to find
      * the current smallest propagation delay + queueing delay (minRtt).
@@ -84,39 +84,39 @@ class TcpVegas : public TcpNewReno
      * The function also min-filters all RTT measurements seen to find the
      * propagation delay (baseRtt).
      *
-     * \param tcb internal congestion state
-     * \param segmentsAcked count of segments ACKed
-     * \param rtt last RTT
+     * @param tcb internal congestion state
+     * @param segmentsAcked count of segments ACKed
+     * @param rtt last RTT
      *
      */
     void PktsAcked(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time& rtt) override;
 
     /**
-     * \brief Enable/disable Vegas algorithm depending on the congestion state
+     * @brief Enable/disable Vegas algorithm depending on the congestion state
      *
      * We only start a Vegas cycle when we are in normal congestion state (CA_OPEN state).
      *
-     * \param tcb internal congestion state
-     * \param newState new congestion state to which the TCP is going to switch
+     * @param tcb internal congestion state
+     * @param newState new congestion state to which the TCP is going to switch
      */
     void CongestionStateSet(Ptr<TcpSocketState> tcb,
                             const TcpSocketState::TcpCongState_t newState) override;
 
     /**
-     * \brief Adjust cwnd following Vegas linear increase/decrease algorithm
+     * @brief Adjust cwnd following Vegas linear increase/decrease algorithm
      *
-     * \param tcb internal congestion state
-     * \param segmentsAcked count of segments ACKed
+     * @param tcb internal congestion state
+     * @param segmentsAcked count of segments ACKed
      */
     void IncreaseWindow(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked) override;
 
     /**
-     * \brief Get slow start threshold following Vegas principle
+     * @brief Get slow start threshold following Vegas principle
      *
-     * \param tcb internal congestion state
-     * \param bytesInFlight bytes in flight
+     * @param tcb internal congestion state
+     * @param bytesInFlight bytes in flight
      *
-     * \return the slow start threshold value
+     * @return the slow start threshold value
      */
     uint32_t GetSsThresh(Ptr<const TcpSocketState> tcb, uint32_t bytesInFlight) override;
 
@@ -125,7 +125,7 @@ class TcpVegas : public TcpNewReno
   protected:
   private:
     /**
-     * \brief Enable Vegas algorithm to start taking Vegas samples
+     * @brief Enable Vegas algorithm to start taking Vegas samples
      *
      * Vegas algorithm is enabled in the following situations:
      * 1. at the establishment of a connection
@@ -133,12 +133,12 @@ class TcpVegas : public TcpNewReno
      * 3. after fast recovery
      * 4. when an idle connection is restarted
      *
-     * \param tcb internal congestion state
+     * @param tcb internal congestion state
      */
     void EnableVegas(Ptr<TcpSocketState> tcb);
 
     /**
-     * \brief Stop taking Vegas samples
+     * @brief Stop taking Vegas samples
      */
     void DisableVegas();
 

@@ -80,133 +80,133 @@ namespace dsr
 class DsrOptions;
 
 /**
- * \class DsrRouting
- * \brief Dsr Routing base
+ * @class DsrRouting
+ * @brief Dsr Routing base
  */
 class DsrRouting : public IpL4Protocol
 {
   public:
     /**
-     * \brief Get the type identificator.
-     * \return type identificator
+     * @brief Get the type identificator.
+     * @return type identificator
      */
     static TypeId GetTypeId();
     /**
-     * \brief Define the dsr protocol number.
+     * @brief Define the dsr protocol number.
      */
     static const uint8_t PROT_NUMBER;
     /**
-     * \brief Constructor.
+     * @brief Constructor.
      */
     DsrRouting();
     /**
-     * \brief Destructor.
+     * @brief Destructor.
      */
     ~DsrRouting() override;
     /**
-     * \brief Get the node.
-     * \return the node
+     * @brief Get the node.
+     * @return the node
      */
     Ptr<Node> GetNode() const;
     /**
-     * \brief Set the node.
-     * \param node the node to set
+     * @brief Set the node.
+     * @param node the node to set
      */
     void SetNode(Ptr<Node> node);
     /**
-     * \brief Set the route cache.
-     * \param r the route cache to set
+     * @brief Set the route cache.
+     * @param r the route cache to set
      */
     void SetRouteCache(Ptr<dsr::DsrRouteCache> r);
     /**
-     * \brief Get the route cache.
-     * \return the route cache
+     * @brief Get the route cache.
+     * @return the route cache
      */
     Ptr<dsr::DsrRouteCache> GetRouteCache() const;
     /**
-     * \brief Set the node.
-     * \param r the request table to set
+     * @brief Set the node.
+     * @param r the request table to set
      */
     void SetRequestTable(Ptr<dsr::DsrRreqTable> r);
     /**
-     * \brief Get the request table.
-     * \return the request table
+     * @brief Get the request table.
+     * @return the request table
      */
     Ptr<dsr::DsrRreqTable> GetRequestTable() const;
     /**
-     * \brief Set the node.
-     * \param r the passive buffer to set
+     * @brief Set the node.
+     * @param r the passive buffer to set
      */
     void SetPassiveBuffer(Ptr<dsr::DsrPassiveBuffer> r);
     /**
-     * \brief Get the passive buffer
-     * \return the passive buffer
+     * @brief Get the passive buffer
+     * @return the passive buffer
      */
     Ptr<dsr::DsrPassiveBuffer> GetPassiveBuffer() const;
 
     /**
-     * \brief Checks if the link is cached in the route cache
+     * @brief Checks if the link is cached in the route cache
      * See also DsrRouteCache::IsLinkCache
      *
-     * \return true if the link is cached
+     * @return true if the link is cached
      */
     bool IsLinkCache();
 
     /**
-     * \brief Extends the lifetime of a route cache entry.
+     * @brief Extends the lifetime of a route cache entry.
      * See also DsrRouteCache::UseExtends
      *
-     * \param rt the route to extend
+     * @param rt the route to extend
      */
     void UseExtends(DsrRouteCacheEntry::IP_VECTOR rt);
 
     /**
-     * \brief Lookup route cache entry with destination address dst
+     * @brief Lookup route cache entry with destination address dst
      * See also DsrRouteCache::LookupRoute
      *
-     * \param id destination address
-     * \param rt entry with destination address id, if exists
-     * \return true on success
+     * @param id destination address
+     * @param rt entry with destination address id, if exists
+     * @return true on success
      */
     bool LookupRoute(Ipv4Address id, DsrRouteCacheEntry& rt);
 
     /**
-     * \brief dd route link to cache
+     * @brief dd route link to cache
      * See also DsrRouteCache::AddRoute_Link
      *
-     * \param nodelist vector of nodes
-     * \param source ip address of node to add
-     * \return true if the link is cached
+     * @param nodelist vector of nodes
+     * @param source ip address of node to add
+     * @return true if the link is cached
      */
     bool AddRoute_Link(DsrRouteCacheEntry::IP_VECTOR nodelist, Ipv4Address source);
 
     /**
-     * \brief Add route cache entry if it doesn't yet exist in route cache
+     * @brief Add route cache entry if it doesn't yet exist in route cache
      * See also DsrRouteCache::AddRoute
      *
-     * \param rt route cache entry
-     * \return true on success
+     * @param rt route cache entry
+     * @return true on success
      */
     bool AddRoute(DsrRouteCacheEntry& rt);
 
     /**
-     * \brief Delete all the routes which includes the link from next hop address that has just been
+     * @brief Delete all the routes which includes the link from next hop address that has just been
      * notified as unreachable. See also DsrRouteCache::DeleteAllRoutesIncludeLink
      *
-     * \param errorSrc The error source address
-     * \param unreachNode The unreachable node
-     * \param node This node's ip address
+     * @param errorSrc The error source address
+     * @param unreachNode The unreachable node
+     * @param node This node's ip address
      */
     void DeleteAllRoutesIncludeLink(Ipv4Address errorSrc,
                                     Ipv4Address unreachNode,
                                     Ipv4Address node);
 
     /**
-     * \brief Update route cache entry if it has been recently used and successfully delivered the
+     * @brief Update route cache entry if it has been recently used and successfully delivered the
      * data packet. See also DsrRouteCache::UpdateRouteEntry
      *
-     * \param dst destination address of the route
-     * \return true in success
+     * @param dst destination address of the route
+     * @return true in success
      */
     bool UpdateRouteEntry(Ipv4Address dst);
 
@@ -214,107 +214,107 @@ class DsrRouting : public IpL4Protocol
      * Find the source request entry in the route request queue, return false if not found.
      * See also DsrRreqTable::FindSourceEntry
      *
-     * \param src the source address we just received the source request
-     * \param dst the destination address the request is targeted at
-     * \param id the identification number for this request
-     * \return true if found, false otherwise
+     * @param src the source address we just received the source request
+     * @param dst the destination address the request is targeted at
+     * @param id the identification number for this request
+     * @return true if found, false otherwise
      */
     bool FindSourceEntry(Ipv4Address src, Ipv4Address dst, uint16_t id);
 
     /**
-     * \brief Get the netdevice from the context.
-     * \param context context
-     * \return the netdevice we are looking for
+     * @brief Get the netdevice from the context.
+     * @param context context
+     * @return the netdevice we are looking for
      */
     Ptr<NetDevice> GetNetDeviceFromContext(std::string context);
     /**
-     * \brief Get the elements from the tracing context.
-     * \param context context
-     * \return the elements we are looking for
+     * @brief Get the elements from the tracing context.
+     * @param context context
+     * @return the elements we are looking for
      */
     std::vector<std::string> GetElementsFromContext(std::string context);
     /**
-     * \brief Get the node id from ip address.
-     * \param address IPv4 address
-     * \return the node id
+     * @brief Get the node id from ip address.
+     * @param address IPv4 address
+     * @return the node id
      */
     uint16_t GetIDfromIP(Ipv4Address address);
     /**
-     * \brief Get the ip address from id.
-     * \param id unique ID
-     * \return the ip address for the id
+     * @brief Get the ip address from id.
+     * @param id unique ID
+     * @return the ip address for the id
      */
     Ipv4Address GetIPfromID(uint16_t id);
     /**
-     * \brief Get the Ip address from mac address.
-     * \param address Mac48Address
-     * \return the ip address
+     * @brief Get the Ip address from mac address.
+     * @param address Mac48Address
+     * @return the ip address
      */
     Ipv4Address GetIPfromMAC(Mac48Address address);
     /**
-     * \brief Get the node with give ip address.
-     * \param ipv4Address IPv4 address
-     * \return the node associated with the ip address
+     * @brief Get the node with give ip address.
+     * @param ipv4Address IPv4 address
+     * @return the node associated with the ip address
      */
     Ptr<Node> GetNodeWithAddress(Ipv4Address ipv4Address);
     /**
-     * \brief Print the route vector.
-     * \param vec the vector to print.
+     * @brief Print the route vector.
+     * @param vec the vector to print.
      */
     void PrintVector(std::vector<Ipv4Address>& vec);
     /**
-     * \brief Get the next hop of the route.
-     * \param ipv4Address
-     * \param vec Route
-     * \return the next hop address of the route
+     * @brief Get the next hop of the route.
+     * @param ipv4Address
+     * @param vec Route
+     * @return the next hop address of the route
      */
     Ipv4Address SearchNextHop(Ipv4Address ipv4Address, std::vector<Ipv4Address>& vec);
     /**
-     * \brief Get the dsr protocol number.
-     * \return protocol number
+     * @brief Get the dsr protocol number.
+     * @return protocol number
      */
     int GetProtocolNumber() const override;
     /**
-     * \brief The send buffer timer expire.
+     * @brief The send buffer timer expire.
      */
     void SendBuffTimerExpire();
     /**
-     * \brief Check the send buffer of packets with route when send buffer timer expire.
+     * @brief Check the send buffer of packets with route when send buffer timer expire.
      */
     void CheckSendBuffer();
     /**
-     * \brief When route vector corrupted, originate a new packet, normally not happening.
-     * \param packet to route
-     * \param source address
-     * \param destination address
-     * \param protocol number
+     * @brief When route vector corrupted, originate a new packet, normally not happening.
+     * @param packet to route
+     * @param source address
+     * @param destination address
+     * @param protocol number
      */
     void PacketNewRoute(Ptr<Packet> packet,
                         Ipv4Address source,
                         Ipv4Address destination,
                         uint8_t protocol);
     /**
-     * \brief Set the route to use for data packets,
+     * @brief Set the route to use for data packets,
      *        used by the option headers when sending data/control packets
-     * \param nextHop next hop IPv4 address
-     * \param srcAddress IPv4 address of the source
-     * \return the route
+     * @param nextHop next hop IPv4 address
+     * @param srcAddress IPv4 address of the source
+     * @return the route
      */
     Ptr<Ipv4Route> SetRoute(Ipv4Address nextHop, Ipv4Address srcAddress);
     /**
-     * \brief Set the priority of the packet in network queue
-     * \param messageType Message type
-     * \return the priority value
+     * @brief Set the priority of the packet in network queue
+     * @param messageType Message type
+     * @return the priority value
      */
     uint32_t GetPriority(DsrMessageType messageType);
     /**
-     * \brief This function is responsible for sending error packets in case of break link to next
+     * @brief This function is responsible for sending error packets in case of break link to next
      * hop
-     * \param unreachNode unreachable node
-     * \param destination address
-     * \param originalDst address
-     * \param salvage packet flag
-     * \param protocol number
+     * @param unreachNode unreachable node
+     * @param destination address
+     * @param originalDst address
+     * @param salvage packet flag
+     * @param protocol number
      */
     void SendUnreachError(Ipv4Address unreachNode,
                           Ipv4Address destination,
@@ -323,12 +323,12 @@ class DsrRouting : public IpL4Protocol
                           uint8_t protocol);
 
     /**
-     * \brief This function is responsible for forwarding error packets along the route
-     * \param rerr unreachable header
-     * \param sourceRoute source routing header
-     * \param nextHop IP address of next hop
-     * \param protocol number
-     * \param route IP route
+     * @brief This function is responsible for forwarding error packets along the route
+     * @param rerr unreachable header
+     * @param sourceRoute source routing header
+     * @param nextHop IP address of next hop
+     * @param protocol number
+     * @param route IP route
      */
     void ForwardErrPacket(DsrOptionRerrUnreachHeader& rerr,
                           DsrOptionSRHeader& sourceRoute,
@@ -336,12 +336,12 @@ class DsrRouting : public IpL4Protocol
                           uint8_t protocol,
                           Ptr<Ipv4Route> route);
     /**
-     * \brief This function is called by higher layer protocol when sending packets
-     * \param packet to send
-     * \param source IP address
-     * \param destination IP address
-     * \param protocol number
-     * \param route IP route
+     * @brief This function is called by higher layer protocol when sending packets
+     * @param packet to send
+     * @param source IP address
+     * @param destination IP address
+     * @param protocol number
+     * @param route IP route
      */
     void Send(Ptr<Packet> packet,
               Ipv4Address source,
@@ -349,62 +349,62 @@ class DsrRouting : public IpL4Protocol
               uint8_t protocol,
               Ptr<Ipv4Route> route);
     /**
-     * \brief This function is called to add ack request header for network acknowledgement
-     * \param packet for ack req
-     * \param nextHop IP address of the next hop
-     * \return ack ID
+     * @brief This function is called to add ack request header for network acknowledgement
+     * @param packet for ack req
+     * @param nextHop IP address of the next hop
+     * @return ack ID
      */
     uint16_t AddAckReqHeader(Ptr<Packet>& packet, Ipv4Address nextHop);
     /**
-     * \brief This function is called by when really sending out the packet
-     * \param packet to send
-     * \param source IP address
-     * \param nextHop IP address
-     * \param protocol number
+     * @brief This function is called by when really sending out the packet
+     * @param packet to send
+     * @param source IP address
+     * @param nextHop IP address
+     * @param protocol number
      */
     void SendPacket(Ptr<Packet> packet, Ipv4Address source, Ipv4Address nextHop, uint8_t protocol);
     /**
-     * \brief This function is called to schedule sending packets from the network queue
-     * \param priority for sending
+     * @brief This function is called to schedule sending packets from the network queue
+     * @param priority for sending
      */
     void Scheduler(uint32_t priority);
     /**
-     * \brief This function is called to schedule sending packets from the network queue by priority
-     * \param priority schedule
-     * \param continueWithFirst use all priorities
+     * @brief This function is called to schedule sending packets from the network queue by priority
+     * @param priority schedule
+     * @param continueWithFirst use all priorities
      */
     void PriorityScheduler(uint32_t priority, bool continueWithFirst);
     /**
-     * \brief This function is called to increase the retransmission timer for data packet in the
+     * @brief This function is called to increase the retransmission timer for data packet in the
      * network queue
      */
     void IncreaseRetransTimer();
     /**
-     * \brief This function is called to send packets down stack
-     * \param newEntry queue entry
-     * \return true if success
+     * @brief This function is called to send packets down stack
+     * @param newEntry queue entry
+     * @return true if success
      */
     bool SendRealDown(DsrNetworkQueueEntry& newEntry);
     /**
-     * \brief This function is responsible for sending out data packets when have route, if no route
+     * @brief This function is responsible for sending out data packets when have route, if no route
      * found, it will cache the packet and send out route requests
-     * \param sourceRoute source route
-     * \param nextHop next hop IP address
-     * \param protocol number
+     * @param sourceRoute source route
+     * @param nextHop next hop IP address
+     * @param protocol number
      */
     void SendPacketFromBuffer(const DsrOptionSRHeader& sourceRoute,
                               Ipv4Address nextHop,
                               uint8_t protocol);
     /**
-     * \brief Find the same passive entry
-     * \param packet to process
-     * \param source IP address
-     * \param destination IP address
-     * \param segsLeft segments left
-     * \param fragmentOffset
-     * \param identification
-     * \param saveEntry
-     * \return true if passive buffer entry
+     * @brief Find the same passive entry
+     * @param packet to process
+     * @param source IP address
+     * @param destination IP address
+     * @param segsLeft segments left
+     * @param fragmentOffset
+     * @param identification
+     * @param saveEntry
+     * @return true if passive buffer entry
      */
     bool PassiveEntryCheck(Ptr<Packet> packet,
                            Ipv4Address source,
@@ -415,115 +415,115 @@ class DsrRouting : public IpL4Protocol
                            bool saveEntry);
 
     /**
-     * \brief Cancel all the packet timers
-     * \param mb maintain buffer entry
+     * @brief Cancel all the packet timers
+     * @param mb maintain buffer entry
      */
     void CancelPacketAllTimer(DsrMaintainBuffEntry& mb);
     /**
-     * \brief Cancel the passive timer
-     * \param packet to process
-     * \param source IP address
-     * \param destination IP address
-     * \param segsLeft segments left
-     * \return
+     * @brief Cancel the passive timer
+     * @param packet to process
+     * @param source IP address
+     * @param destination IP address
+     * @param segsLeft segments left
+     * @return
      */
     bool CancelPassiveTimer(Ptr<Packet> packet,
                             Ipv4Address source,
                             Ipv4Address destination,
                             uint8_t segsLeft);
     /**
-     * \brief Call the cancel packet retransmission timer function
-     * \param ackId acknowledge ID
-     * \param ipv4Header header
-     * \param realSrc source IP address
-     * \param realDst destination IP address
+     * @brief Call the cancel packet retransmission timer function
+     * @param ackId acknowledge ID
+     * @param ipv4Header header
+     * @param realSrc source IP address
+     * @param realDst destination IP address
      */
     void CallCancelPacketTimer(uint16_t ackId,
                                const Ipv4Header& ipv4Header,
                                Ipv4Address realSrc,
                                Ipv4Address realDst);
     /**
-     * \brief Cancel the network packet retransmission timer for a specific maintenance entry
-     * \param mb maintain buffer entry
+     * @brief Cancel the network packet retransmission timer for a specific maintenance entry
+     * @param mb maintain buffer entry
      */
     void CancelNetworkPacketTimer(DsrMaintainBuffEntry& mb);
     /**
-     * \brief Cancel the passive packet retransmission timer for a specific maintenance entry
-     * \param mb maintain buffer entry
+     * @brief Cancel the passive packet retransmission timer for a specific maintenance entry
+     * @param mb maintain buffer entry
      */
     void CancelPassivePacketTimer(DsrMaintainBuffEntry& mb);
     /**
-     * \brief Cancel the link packet retransmission timer for a specific maintenance entry
-     * \param mb maintain buffer entry
+     * @brief Cancel the link packet retransmission timer for a specific maintenance entry
+     * @param mb maintain buffer entry
      */
     void CancelLinkPacketTimer(DsrMaintainBuffEntry& mb);
     /**
-     * \brief Cancel the packet retransmission timer for a all maintenance entries with nextHop
+     * @brief Cancel the packet retransmission timer for a all maintenance entries with nextHop
      * address
-     * \param nextHop next hop IP address
-     * \param protocol number
+     * @param nextHop next hop IP address
+     * @param protocol number
      */
     void CancelPacketTimerNextHop(Ipv4Address nextHop, uint8_t protocol);
     /**
-     * \brief Salvage the packet which has been transmitted for 3 times
-     * \param packet to process
-     * \param source IP address
-     * \param dst destination IP address
-     * \param protocol number
+     * @brief Salvage the packet which has been transmitted for 3 times
+     * @param packet to process
+     * @param source IP address
+     * @param dst destination IP address
+     * @param protocol number
      */
     void SalvagePacket(Ptr<const Packet> packet,
                        Ipv4Address source,
                        Ipv4Address dst,
                        uint8_t protocol);
     /**
-     * \brief Schedule the packet retransmission based on link-layer acknowledgment
-     * \param mb maintenance buffer entry
-     * \param protocol the protocol number
+     * @brief Schedule the packet retransmission based on link-layer acknowledgment
+     * @param mb maintenance buffer entry
+     * @param protocol the protocol number
      */
     void ScheduleLinkPacketRetry(DsrMaintainBuffEntry& mb, uint8_t protocol);
     /**
-     * \brief Schedule the packet retransmission based on passive acknowledgment
-     * \param mb maintenance buffer entry
-     * \param protocol the protocol number
+     * @brief Schedule the packet retransmission based on passive acknowledgment
+     * @param mb maintenance buffer entry
+     * @param protocol the protocol number
      */
     void SchedulePassivePacketRetry(DsrMaintainBuffEntry& mb, uint8_t protocol);
     /**
-     * \brief Schedule the packet retransmission based on network layer acknowledgment
-     * \param mb maintenance buffer entry
-     * \param isFirst see if this is the first packet retry or not
-     * \param protocol the protocol number
+     * @brief Schedule the packet retransmission based on network layer acknowledgment
+     * @param mb maintenance buffer entry
+     * @param isFirst see if this is the first packet retry or not
+     * @param protocol the protocol number
      */
     void ScheduleNetworkPacketRetry(DsrMaintainBuffEntry& mb, bool isFirst, uint8_t protocol);
     /**
-     * \brief This function deals with packet retransmission timer expire using link acknowledgment
-     * \param mb maintenance buffer entry
-     * \param protocol the protocol number
+     * @brief This function deals with packet retransmission timer expire using link acknowledgment
+     * @param mb maintenance buffer entry
+     * @param protocol the protocol number
      */
     void LinkScheduleTimerExpire(DsrMaintainBuffEntry& mb, uint8_t protocol);
     /**
-     * \brief This function deals with packet retransmission timer expire using network
+     * @brief This function deals with packet retransmission timer expire using network
      * acknowledgment
-     * \param mb maintenance buffer entry
-     * \param protocol the protocol number
+     * @param mb maintenance buffer entry
+     * @param protocol the protocol number
      */
     void NetworkScheduleTimerExpire(DsrMaintainBuffEntry& mb, uint8_t protocol);
     /**
-     * \brief This function deals with packet retransmission timer expire using passive
+     * @brief This function deals with packet retransmission timer expire using passive
      * acknowledgment
-     * \param mb maintenance buffer entry
-     * \param protocol the protocol number
+     * @param mb maintenance buffer entry
+     * @param protocol the protocol number
      */
     void PassiveScheduleTimerExpire(DsrMaintainBuffEntry& mb, uint8_t protocol);
     /**
-     * \brief Forward the packet using the route saved in the source route option header
-     * \param packet The packet
-     * \param sourceRoute Source route saved in option header
-     * \param ipv4Header IPv4 Header
-     * \param source source address
-     * \param destination destination address
-     * \param targetAddress target address
-     * \param protocol protocol number
-     * \param route route
+     * @brief Forward the packet using the route saved in the source route option header
+     * @param packet The packet
+     * @param sourceRoute Source route saved in option header
+     * @param ipv4Header IPv4 Header
+     * @param source source address
+     * @param destination destination address
+     * @param targetAddress target address
+     * @param protocol protocol number
+     * @param route route
      */
     void ForwardPacket(Ptr<const Packet> packet,
                        DsrOptionSRHeader& sourceRoute,
@@ -534,35 +534,35 @@ class DsrRouting : public IpL4Protocol
                        uint8_t protocol,
                        Ptr<Ipv4Route> route);
     /**
-     * \brief Broadcast the route request packet in subnet
-     * \param source source address
-     * \param destination destination address
-     * \param protocol protocol number
+     * @brief Broadcast the route request packet in subnet
+     * @param source source address
+     * @param destination destination address
+     * @param protocol protocol number
      */
     void SendInitialRequest(Ipv4Address source, Ipv4Address destination, uint8_t protocol);
     /**
-     * \brief Send the error request packet
-     * \param rerr the route error header
-     * \param protocol the protocol number
+     * @brief Send the error request packet
+     * @param rerr the route error header
+     * @param protocol the protocol number
      */
     void SendErrorRequest(DsrOptionRerrUnreachHeader& rerr, uint8_t protocol);
     /**
-     * \brief Forward the route request if the node is not the destination
-     * \param packet the original packet
-     * \param source address
+     * @brief Forward the route request if the node is not the destination
+     * @param packet the original packet
+     * @param source address
      */
     void SendRequest(Ptr<Packet> packet, Ipv4Address source);
     /**
-     * \brief Schedule the intermediate route request
-     * \param packet the original packet
+     * @brief Schedule the intermediate route request
+     * @param packet the original packet
      */
     void ScheduleInterRequest(Ptr<Packet> packet);
     /**
-     * \brief Send the gratuitous reply
-     * \param replyTo The destination address to send the reply to
-     * \param replyFrom The source address sending the reply
-     * \param nodeList Route
-     * \param protocol the protocol number
+     * @brief Send the gratuitous reply
+     * @param replyTo The destination address to send the reply to
+     * @param replyFrom The source address sending the reply
+     * @param nodeList Route
+     * @param protocol the protocol number
      */
     void SendGratuitousReply(Ipv4Address replyTo,
                              Ipv4Address replyFrom,
@@ -571,10 +571,10 @@ class DsrRouting : public IpL4Protocol
     /**
      * Send the route reply back to the request originator with the cumulated route
      *
-     * \param packet the original packet
-     * \param source IPv4 address of the source (i.e. request originator)
-     * \param nextHop IPv4 address of the next hop
-     * \param route Route
+     * @param packet the original packet
+     * @param source IPv4 address of the source (i.e. request originator)
+     * @param nextHop IPv4 address of the next hop
+     * @param route Route
      */
     void SendReply(Ptr<Packet> packet,
                    Ipv4Address source,
@@ -584,10 +584,10 @@ class DsrRouting : public IpL4Protocol
      * this is a generating the initial route reply from the destination address, a random delay
      * time [0, m_broadcastJitter] is used before unicasting back the route reply packet
      *
-     * \param packet the original packet
-     * \param source IPv4 address of the source (i.e. request originator)
-     * \param nextHop IPv4 address of the next hop
-     * \param route Route
+     * @param packet the original packet
+     * @param source IPv4 address of the source (i.e. request originator)
+     * @param nextHop IPv4 address of the next hop
+     * @param route Route
      */
     void ScheduleInitialReply(Ptr<Packet> packet,
                               Ipv4Address source,
@@ -596,11 +596,11 @@ class DsrRouting : public IpL4Protocol
     /**
      * Schedule the cached reply to a random start time to avoid possible route reply storm
      *
-     * \param packet the original packet
-     * \param source IPv4 address of the source (i.e. request originator)
-     * \param destination IPv4 address of the destination
-     * \param route Route
-     * \param hops number of hops
+     * @param packet the original packet
+     * @param source IPv4 address of the source (i.e. request originator)
+     * @param destination IPv4 address of the destination
+     * @param route Route
+     * @param hops number of hops
      */
     void ScheduleCachedReply(Ptr<Packet> packet,
                              Ipv4Address source,
@@ -611,12 +611,12 @@ class DsrRouting : public IpL4Protocol
      * Send network layer acknowledgment back to the earlier hop to notify the receipt of data
      * packet
      *
-     * \param ackId ACK ID
-     * \param destination IPv4 address of the immediate ACK receiver
-     * \param realSrc IPv4 address of the real source
-     * \param realDst IPv4 address of the real destination
-     * \param protocol the protocol number
-     * \param route Route
+     * @param ackId ACK ID
+     * @param destination IPv4 address of the immediate ACK receiver
+     * @param realSrc IPv4 address of the real source
+     * @param realDst IPv4 address of the real destination
+     * @param protocol the protocol number
+     * @param route Route
      */
     void SendAck(uint16_t ackId,
                  Ipv4Address destination,
@@ -625,10 +625,10 @@ class DsrRouting : public IpL4Protocol
                  uint8_t protocol,
                  Ptr<Ipv4Route> route);
     /**
-     * \param p packet to forward up
-     * \param header IPv4 Header information
-     * \param incomingInterface the Ipv4Interface on which the packet arrived
-     * \return receive status
+     * @param p packet to forward up
+     * @param header IPv4 Header information
+     * @param incomingInterface the Ipv4Interface on which the packet arrived
+     * @return receive status
      *
      * Called from lower-level layers to send the packet up
      * in the stack.
@@ -638,10 +638,10 @@ class DsrRouting : public IpL4Protocol
                                    Ptr<Ipv4Interface> incomingInterface) override;
 
     /**
-     * \param p packet to forward up
-     * \param header IPv6 Header information
-     * \param incomingInterface the Ipv6Interface on which the packet arrived
-     * \return receive status
+     * @param p packet to forward up
+     * @param header IPv6 Header information
+     * @param incomingInterface the Ipv6Interface on which the packet arrived
+     * @return receive status
      *
      * Called from lower-level layers to send the packet up
      * in the stack.  Not implemented (IPv6).
@@ -655,16 +655,16 @@ class DsrRouting : public IpL4Protocol
     IpL4Protocol::DownTargetCallback GetDownTarget() const override;
     IpL4Protocol::DownTargetCallback6 GetDownTarget6() const override;
     /**
-     * \brief Process method
+     * @brief Process method
      * Called from Ipv4L3Protocol::Receive.
      *
-     * \param packet the packet
-     * \param ipv4Header IPv4 header of the packet
-     * \param dst destination address of the packet received (i.e. us)
-     * \param nextHeader the next header
-     * \param protocol the protocol number
-     * \param isDropped if the packet must be dropped
-     * \return the size processed
+     * @param packet the packet
+     * @param ipv4Header IPv4 header of the packet
+     * @param dst destination address of the packet received (i.e. us)
+     * @param nextHeader the next header
+     * @param protocol the protocol number
+     * @param isDropped if the packet must be dropped
+     * @return the size processed
      */
     uint8_t Process(Ptr<Packet>& packet,
                     const Ipv4Header& ipv4Header,
@@ -673,29 +673,29 @@ class DsrRouting : public IpL4Protocol
                     uint8_t protocol,
                     bool& isDropped);
     /**
-     * \brief Insert a new Dsr Option.
-     * \param option the option to insert
+     * @brief Insert a new Dsr Option.
+     * @param option the option to insert
      */
     void Insert(Ptr<dsr::DsrOptions> option);
     /**
-     * \brief Get the option corresponding to optionNumber.
-     * \param optionNumber the option number of the option to retrieve
-     * \return a matching Dsr option
+     * @brief Get the option corresponding to optionNumber.
+     * @param optionNumber the option number of the option to retrieve
+     * @return a matching Dsr option
      */
     Ptr<dsr::DsrOptions> GetOption(int optionNumber);
     /**
-     * \brief Cancel the route request timer.
-     * \param dst The dst address of the route request timer
-     * \param isRemove whether to remove the route request entry or not
+     * @brief Cancel the route request timer.
+     * @param dst The dst address of the route request timer
+     * @param isRemove whether to remove the route request entry or not
      */
     void CancelRreqTimer(Ipv4Address dst, bool isRemove);
     /**
-     * \brief Schedule the route request retry.
-     * \param packet the original packet
-     * \param address List of IPv4 addresses
-     * \param nonProp flag if RREQ is non-propagating
-     * \param requestId Unique request ID
-     * \param protocol the protocol number
+     * @brief Schedule the route request retry.
+     * @param packet the original packet
+     * @param address List of IPv4 addresses
+     * @param nonProp flag if RREQ is non-propagating
+     * @param requestId Unique request ID
+     * @param protocol the protocol number
      */
     void ScheduleRreqRetry(Ptr<Packet> packet,
                            std::vector<Ipv4Address> address,
@@ -705,10 +705,10 @@ class DsrRouting : public IpL4Protocol
     /**
      * Handle route discovery timer
      *
-     * \param packet the original packet
-     * \param address List of IPv4 addresses
-     * \param requestId Unique request ID
-     * \param protocol the protocol number
+     * @param packet the original packet
+     * @param address List of IPv4 addresses
+     * @param requestId Unique request ID
+     * @param protocol the protocol number
      */
     void RouteRequestTimerExpire(Ptr<Packet> packet,
                                  std::vector<Ipv4Address> address,
@@ -720,8 +720,8 @@ class DsrRouting : public IpL4Protocol
      * used by this model.  Return the number of streams (possibly zero) that
      * have been assigned.
      *
-     * \param stream first stream index to use
-     * \return the number of stream indices assigned by this model
+     * @param stream first stream index to use
+     * @return the number of stream indices assigned by this model
      */
     int64_t AssignStreams(int64_t stream);
 
@@ -734,7 +734,7 @@ class DsrRouting : public IpL4Protocol
      *          */
     void NotifyNewAggregate() override;
     /**
-     * \brief Drop trace callback.
+     * @brief Drop trace callback.
      */
     void DoDispose() override;
     /**
@@ -746,20 +746,20 @@ class DsrRouting : public IpL4Protocol
   private:
     void Start();
     /**
-     * \brief Send the route error message when the link breaks to the next hop.
-     * \param nextHop next hop address
-     * \param protocol protocol number
+     * @brief Send the route error message when the link breaks to the next hop.
+     * @param nextHop next hop address
+     * @param protocol protocol number
      */
     void SendRerrWhenBreaksLinkToNextHop(Ipv4Address nextHop, uint8_t protocol);
     /**
-     * \brief Promiscuous receive data packets destined to some other node.
-     * \param device The network device
-     * \param packet Data packet we just received
-     * \param protocol The protocol we receive, need to verify it is dsr protocol
-     * \param from The from address we received the packet
-     * \param to The address this packet is destined for
-     * \param packetType The dsr packet type, 0 is for control packet, 1 for data packet
-     * \return true if the packet was processed, false otherwise
+     * @brief Promiscuous receive data packets destined to some other node.
+     * @param device The network device
+     * @param packet Data packet we just received
+     * @param protocol The protocol we receive, need to verify it is dsr protocol
+     * @param from The from address we received the packet
+     * @param to The address this packet is destined for
+     * @param packetType The dsr packet type, 0 is for control packet, 1 for data packet
+     * @return true if the packet was processed, false otherwise
      */
     bool PromiscReceive(Ptr<NetDevice> device,
                         Ptr<const Packet> packet,
@@ -768,11 +768,11 @@ class DsrRouting : public IpL4Protocol
                         const Address& to,
                         NetDevice::PacketType packetType);
     /**
-     * \brief Define the list to hold DSR options.
+     * @brief Define the list to hold DSR options.
      */
     typedef std::list<Ptr<DsrOptions>> DsrOptionList_t;
     /**
-     * \brief List of DSR Options supported.
+     * @brief List of DSR Options supported.
      */
     DsrOptionList_t m_options;
 

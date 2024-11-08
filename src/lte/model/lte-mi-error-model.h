@@ -67,31 +67,31 @@ class LteMiErrorModel
 {
   public:
     /**
-     * \brief find the mmib (mean mutual information per bit) for different modulations of the
+     * @brief find the mmib (mean mutual information per bit) for different modulations of the
      * specified TB
-     * \param sinr the perceived sinr values in the whole bandwidth in Watt
-     * \param map the active RBs for the TB
-     * \param mcs the MCS of the TB
-     * \return the mmib
+     * @param sinr the perceived sinr values in the whole bandwidth in Watt
+     * @param map the active RBs for the TB
+     * @param mcs the MCS of the TB
+     * @return the mmib
      */
     static double Mib(const SpectrumValue& sinr, const std::vector<int>& map, uint8_t mcs);
     /**
-     * \brief map the mmib (mean mutual information per bit) for different MCS
-     * \param mib mean mutual information per bit of a code-block
-     * \param ecrId Effective Code Rate ID
-     * \param cbSize the size of the CB
-     * \return the code block error rate
+     * @brief map the mmib (mean mutual information per bit) for different MCS
+     * @param mib mean mutual information per bit of a code-block
+     * @param ecrId Effective Code Rate ID
+     * @param cbSize the size of the CB
+     * @return the code block error rate
      */
     static double MappingMiBler(double mib, uint8_t ecrId, uint16_t cbSize);
 
     /**
-     * \brief run the error-model algorithm for the specified TB
-     * \param sinr the perceived sinr values in the whole bandwidth in Watt
-     * \param map the active RBs for the TB
-     * \param size the size in bytes of the TB
-     * \param mcs the MCS of the TB
-     * \param miHistory MI of past transmissions (in case of retx)
-     * \return the TB error rate and MI
+     * @brief run the error-model algorithm for the specified TB
+     * @param sinr the perceived sinr values in the whole bandwidth in Watt
+     * @param map the active RBs for the TB
+     * @param size the size in bytes of the TB
+     * @param mcs the MCS of the TB
+     * @param miHistory MI of past transmissions (in case of retx)
+     * @return the TB error rate and MI
      */
     static TbStats_t GetTbDecodificationStats(const SpectrumValue& sinr,
                                               const std::vector<int>& map,
@@ -100,9 +100,9 @@ class LteMiErrorModel
                                               HarqProcessInfoList_t miHistory);
 
     /**
-     * \brief run the error-model algorithm for the specified PCFICH+PDCCH channels
-     * \param sinr the perceived sinr values in the whole bandwidth in Watt
-     * \return the decodification error of the PCFICH+PDCCH channels
+     * @brief run the error-model algorithm for the specified PCFICH+PDCCH channels
+     * @param sinr the perceived sinr values in the whole bandwidth in Watt
+     * @return the decodification error of the PCFICH+PDCCH channels
      */
     static double GetPcfichPdcchError(const SpectrumValue& sinr);
 

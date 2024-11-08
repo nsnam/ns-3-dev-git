@@ -15,9 +15,9 @@
 using namespace ns3;
 
 /**
- * \ingroup mobility-test
+ * @ingroup mobility-test
  *
- * \brief Waypoint Mobility Model Notify Test
+ * @brief Waypoint Mobility Model Notify Test
  */
 class WaypointMobilityModelNotifyTest : public TestCase
 {
@@ -25,7 +25,7 @@ class WaypointMobilityModelNotifyTest : public TestCase
     /**
      * Constructor
      *
-     * \param lazy lazy?
+     * @param lazy lazy?
      */
     WaypointMobilityModelNotifyTest(bool lazy)
         : TestCase(lazy ? "Check Waypoint Mobility Model LAZY notification accuracy"
@@ -51,7 +51,7 @@ class WaypointMobilityModelNotifyTest : public TestCase
     void ForceUpdates();
     /**
      * Course change callback
-     * \param model the mobility model
+     * @param model the mobility model
      */
     void CourseChangeCallback(Ptr<const MobilityModel> model);
 };
@@ -157,9 +157,9 @@ WaypointMobilityModelNotifyTest::CourseChangeCallback(Ptr<const MobilityModel> m
 }
 
 /**
- * \ingroup mobility-test
+ * @ingroup mobility-test
  *
- * \brief Waypoint Mobility Model Add Waypoint Test
+ * @brief Waypoint Mobility Model Add Waypoint Test
  */
 class WaypointMobilityModelAddWaypointTest : public TestCase
 {
@@ -183,7 +183,7 @@ class WaypointMobilityModelAddWaypointTest : public TestCase
     void DoTeardown() override;
     /**
      * Course change callback
-     * \param model the mobility model
+     * @param model the mobility model
      */
     void CourseChangeCallback(Ptr<const MobilityModel> model);
 };
@@ -241,9 +241,9 @@ WaypointMobilityModelAddWaypointTest::CourseChangeCallback(Ptr<const MobilityMod
 }
 
 /**
- * \ingroup mobility-test
+ * @ingroup mobility-test
  *
- * \brief Waypoint Mobility Model Test Suite
+ * @brief Waypoint Mobility Model Test Suite
  */
 static struct WaypointMobilityModelTestSuite : public TestSuite
 {

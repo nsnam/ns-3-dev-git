@@ -24,7 +24,7 @@ namespace ns3
 {
 
 /**
- * \ingroup lte
+ * @ingroup lte
  *
  * Takes care of storing the information generated at PHY layer regarding
  * reception. Metrics saved are:
@@ -54,14 +54,14 @@ class PhyRxStatsCalculator : public LteStatsCalculator
     // Inherited from ns3::Object
     /**
      * Register this type.
-     * \return The object TypeId.
+     * @return The object TypeId.
      */
     static TypeId GetTypeId();
 
     /**
      * Set the name of the file where the UL Rx PHY statistics will be stored.
      *
-     * \param outputFilename string with the name of the file
+     * @param outputFilename string with the name of the file
      */
     void SetUlRxOutputFilename(std::string outputFilename);
 
@@ -99,9 +99,9 @@ class PhyRxStatsCalculator : public LteStatsCalculator
     /**
      * trace sink
      *
-     * \param phyRxStats
-     * \param path
-     * \param params
+     * @param phyRxStats
+     * @param path
+     * @param params
      */
     static void DlPhyReceptionCallback(Ptr<PhyRxStatsCalculator> phyRxStats,
                                        std::string path,
@@ -110,9 +110,9 @@ class PhyRxStatsCalculator : public LteStatsCalculator
     /**
      * trace sink
      *
-     * \param phyRxStats
-     * \param path
-     * \param params
+     * @param phyRxStats
+     * @param path
+     * @param params
      */
     static void UlPhyReceptionCallback(Ptr<PhyRxStatsCalculator> phyRxStats,
                                        std::string path,

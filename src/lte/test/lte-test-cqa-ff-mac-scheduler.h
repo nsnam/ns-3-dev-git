@@ -19,9 +19,9 @@
 using namespace ns3;
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief This is a system test program. The test is based on a scenario with single eNB and several
+ * @brief This is a system test program. The test is based on a scenario with single eNB and several
  * UEs. The goal of the test is validating if the obtained throughput performance is consistent with
  * the definition of CQA scheduler.
  */
@@ -32,13 +32,13 @@ class LenaCqaFfMacSchedulerTestCase1 : public TestCase
     /**
      * Constructor
      *
-     * \param nUser number of UE nodes
-     * \param dist distance between nodes
-     * \param thrRefDl DL throughput reference
-     * \param thrRefUl UL throughput reference
-     * \param packetSize packet size
-     * \param interval time interval
-     * \param errorModelEnabled error model enabled?
+     * @param nUser number of UE nodes
+     * @param dist distance between nodes
+     * @param thrRefDl DL throughput reference
+     * @param thrRefUl UL throughput reference
+     * @param packetSize packet size
+     * @param interval time interval
+     * @param errorModelEnabled error model enabled?
      */
     LenaCqaFfMacSchedulerTestCase1(uint16_t nUser,
                                    double dist,
@@ -53,9 +53,9 @@ class LenaCqaFfMacSchedulerTestCase1 : public TestCase
     /**
      *  Builds the test name string based on provided parameter values
      *
-     * \param nUser number of UE nodes
-     * \param dist distance between nodes
-     * \returns name string
+     * @param nUser number of UE nodes
+     * @param dist distance between nodes
+     * @returns name string
      */
     static std::string BuildNameString(uint16_t nUser, double dist);
     void DoRun() override;
@@ -69,9 +69,9 @@ class LenaCqaFfMacSchedulerTestCase1 : public TestCase
 };
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief This is a system test program. The test is based on a scenario with single eNB and several
+ * @brief This is a system test program. The test is based on a scenario with single eNB and several
  * UEs. The goal of the test is validating if the obtained throughput performance is consistent with
  * the definition of CQA scheduler when the UEs with different SINRs.
  */
@@ -82,11 +82,11 @@ class LenaCqaFfMacSchedulerTestCase2 : public TestCase
     /**
      * Constructor
      *
-     * \param dist distance between nodes
-     * \param estThrCqaDl estimated CQA throughput in the downlink
-     * \param packetSize packet size
-     * \param interval the UDP packet time interval
-     * \param errorModelEnabled whether the error model enabled is enabled in the test case
+     * @param dist distance between nodes
+     * @param estThrCqaDl estimated CQA throughput in the downlink
+     * @param packetSize packet size
+     * @param interval the UDP packet time interval
+     * @param errorModelEnabled whether the error model enabled is enabled in the test case
      */
     LenaCqaFfMacSchedulerTestCase2(std::vector<double> dist,
                                    std::vector<uint32_t> estThrCqaDl,
@@ -99,9 +99,9 @@ class LenaCqaFfMacSchedulerTestCase2 : public TestCase
     /**
      *  Builds the test name string based on provided parameter values
      *
-     * \param nUser number of UE nodes
-     * \param dist distance between nodes
-     * \returns name string
+     * @param nUser number of UE nodes
+     * @param dist distance between nodes
+     * @returns name string
      */
     static std::string BuildNameString(uint16_t nUser, std::vector<double> dist);
     void DoRun() override;
@@ -114,9 +114,9 @@ class LenaCqaFfMacSchedulerTestCase2 : public TestCase
 };
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief The test suite for testing CQA scheduler functionality
+ * @brief The test suite for testing CQA scheduler functionality
  */
 
 class LenaTestCqaFfMacSchedulerSuite : public TestSuite

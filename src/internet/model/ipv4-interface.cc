@@ -211,7 +211,7 @@ Ipv4Interface::Send(Ptr<Packet> p, const Ipv4Header& hdr, Ipv4Address dest)
     // traffic control layer
     if (DynamicCast<LoopbackNetDevice>(m_device))
     {
-        /// \todo additional checks needed here (such as whether multicast
+        /// @todo additional checks needed here (such as whether multicast
         /// goes to loopback)?
         p->AddHeader(hdr);
         m_device->Send(p, m_device->GetBroadcast(), Ipv4L3Protocol::PROT_NUMBER);

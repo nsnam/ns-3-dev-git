@@ -28,9 +28,9 @@ namespace dot11s
 class PeerManagementProtocolMac;
 
 /**
- * \ingroup dot11s
+ * @ingroup dot11s
  *
- * \brief Peer link model for 802.11s Peer Management protocol
+ * @brief Peer link model for 802.11s Peer Management protocol
  */
 class PeerLink : public Object
 {
@@ -38,8 +38,8 @@ class PeerLink : public Object
     /// allow PeerManagementProtocol class friend access
     friend class PeerManagementProtocol;
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     /// C-tor create empty link
@@ -64,93 +64,93 @@ class PeerLink : public Object
     };
 
     /**
-     * \brief Literal names of Mesh Peer Management states for use in log messages
+     * @brief Literal names of Mesh Peer Management states for use in log messages
      */
     static const char* const PeerStateNames[6];
     /**
      * Process beacon received from peer
      *
-     * \param lastBeacon the last beacon
-     * \param BeaconInterval the beacon interval
+     * @param lastBeacon the last beacon
+     * @param BeaconInterval the beacon interval
      */
     void SetBeaconInformation(Time lastBeacon, Time BeaconInterval);
     /**
-     * \brief Method used to detect peer link changes
+     * @brief Method used to detect peer link changes
      *
-     * \param cb is a callback, which notifies, that on interface (uint32_t), peer link
+     * @param cb is a callback, which notifies, that on interface (uint32_t), peer link
      * with address (Mac48Address) was opened (bool is true) or closed (bool is false)
      */
     void SetLinkStatusCallback(Callback<void, uint32_t, Mac48Address, bool> cb);
-    /// \name Peer link getters/setters
+    /// @name Peer link getters/setters
     ///@{
     /**
      * Set the peer address
-     * \param macaddr the peer mac address
+     * @param macaddr the peer mac address
      */
     void SetPeerAddress(Mac48Address macaddr);
     /**
      * Set the peer mesh point address
-     * \param macaddr the peer mesh point address
+     * @param macaddr the peer mesh point address
      */
     void SetPeerMeshPointAddress(Mac48Address macaddr);
     /**
      * Set the interface
-     * \param interface the interface
+     * @param interface the interface
      */
     void SetInterface(uint32_t interface);
     /**
      * Set the local link ID
-     * \param id the local link ID
+     * @param id the local link ID
      */
     void SetLocalLinkId(uint16_t id);
     /**
      * Set the local association ID
-     * \param aid the local association ID
+     * @param aid the local association ID
      */
     void SetLocalAid(uint16_t aid);
     /**
      * Set the peer association ID
-     * \return The peer association ID
+     * @return The peer association ID
      */
     uint16_t GetPeerAid() const;
     /**
      * Set the beacon timing element
-     * \param beaconTiming the beacon timing element
+     * @param beaconTiming the beacon timing element
      */
     void SetBeaconTimingElement(IeBeaconTiming beaconTiming);
     /**
      * Get the peer address
-     * \return The peer address
+     * @return The peer address
      */
     Mac48Address GetPeerAddress() const;
     /**
      * Get the local association ID
-     * \return The local association ID
+     * @return The local association ID
      */
     uint16_t GetLocalAid() const;
     /**
      * Get the time of the last received beacon
-     * \return The time of the last received beacon
+     * @return The time of the last received beacon
      */
     Time GetLastBeacon() const;
     /**
      * Get the beacon interval
-     * \return The beacon interval
+     * @return The beacon interval
      */
     Time GetBeaconInterval() const;
     /**
      * Get the beacon timing element
-     * \return The beacon timing element
+     * @return The beacon timing element
      */
     IeBeaconTiming GetBeaconTimingElement() const;
     // IePeerManagement GetPeerLinkDescriptorElement ()const;
     ///@}
 
-    /// \name MLME
+    /// @name MLME
     ///@{
     /**
      * MLME-CancelPeerLink.request
-     * \param reason the reason for the request
+     * @param reason the reason for the request
      */
     void MLMECancelPeerLink(PmpReasonCode reason);
     /// MLME-ActivePeerLinkOpen.request
@@ -167,7 +167,7 @@ class PeerLink : public Object
         SignalStatusCallback;
     /**
      * Set callback
-     * \param cb the callback function
+     * @param cb the callback function
      */
     void MLMESetSignalStatusCallback(SignalStatusCallback cb);
     /// Reports about transmission success/failure
@@ -176,8 +176,8 @@ class PeerLink : public Object
     ///@}
 
     /**
-     * \brief Statistics
-     * \param os the output stream
+     * @brief Statistics
+     * @param os the output stream
      */
     void Report(std::ostream& os) const;
 
@@ -202,14 +202,14 @@ class PeerLink : public Object
     /**
      * State transition
      *
-     * \param event the event to update the state machine
-     * \param reasoncode the reason for the state transition
+     * @param event the event to update the state machine
+     * @param reasoncode the reason for the state transition
      */
     void StateMachine(PeerEvent event, PmpReasonCode = REASON11S_RESERVED);
     /**
-     * \name Link response to received management frames
+     * @name Link response to received management frames
      *
-     * \attention In all this methods {local/peer}LinkID correspond to _peer_ station, as written in
+     * @attention In all this methods {local/peer}LinkID correspond to _peer_ station, as written in
      * received frame, e.g. I am peerLinkID and peer link is localLinkID .
      *
      */
@@ -217,26 +217,26 @@ class PeerLink : public Object
     /**
      * Close link
      *
-     * \param localLinkID the local link ID
-     * \param peerLinkID the peer link ID
-     * \param reason the reason to close
+     * @param localLinkID the local link ID
+     * @param peerLinkID the peer link ID
+     * @param reason the reason to close
      */
     void Close(uint16_t localLinkID, uint16_t peerLinkID, PmpReasonCode reason);
     /**
      * Accept open link
      *
-     * \param localLinkId the local link ID
-     * \param conf the IE configuration
-     * \param peerMp the peer MP
+     * @param localLinkId the local link ID
+     * @param conf the IE configuration
+     * @param peerMp the peer MP
      */
     void OpenAccept(uint16_t localLinkId, IeConfiguration conf, Mac48Address peerMp);
     /**
      * Reject open link
      *
-     * \param localLinkId the local link ID
-     * \param conf the IE configuration
-     * \param peerMp the peer MP
-     * \param reason the reason to close
+     * @param localLinkId the local link ID
+     * @param conf the IE configuration
+     * @param peerMp the peer MP
+     * @param reason the reason to close
      */
     void OpenReject(uint16_t localLinkId,
                     IeConfiguration conf,
@@ -245,11 +245,11 @@ class PeerLink : public Object
     /**
      * Confirm accept
      *
-     * \param localLinkId the local link ID
-     * \param peerLinkId the peer link ID
-     * \param peerAid the peer AID
-     * \param conf the IE configuration
-     * \param peerMp the peer MP
+     * @param localLinkId the local link ID
+     * @param peerLinkId the peer link ID
+     * @param peerAid the peer AID
+     * @param conf the IE configuration
+     * @param peerMp the peer MP
      */
     void ConfirmAccept(uint16_t localLinkId,
                        uint16_t peerLinkId,
@@ -259,11 +259,11 @@ class PeerLink : public Object
     /**
      * Confirm reject
      *
-     * \param localLinkId the local link ID
-     * \param peerLinkId the peer link ID
-     * \param conf the IE configuration
-     * \param peerMp the peer MP
-     * \param reason the reason to close
+     * @param localLinkId the local link ID
+     * @param peerLinkId the peer link ID
+     * @param conf the IE configuration
+     * @param peerMp the peer MP
+     * @param reason the reason to close
      */
     void ConfirmReject(uint16_t localLinkId,
                        uint16_t peerLinkId,
@@ -273,21 +273,21 @@ class PeerLink : public Object
     ///@}
 
     /**
-     * \returns True if link is established
+     * @returns True if link is established
      */
     bool LinkIsEstab() const;
     /**
-     * \returns True if link is idle. Link can be deleted in this state
+     * @returns True if link is idle. Link can be deleted in this state
      */
     bool LinkIsIdle() const;
     /**
      * Set pointer to MAC-plugin, which is responsible for sending peer
      * link management frames
-     * \param plugin the peer management protocol MAC
+     * @param plugin the peer management protocol MAC
      */
     void SetMacPlugin(Ptr<PeerManagementProtocolMac> plugin);
     /**
-     * \name Event handlers
+     * @name Event handlers
      */
     ///@{
     /// Clear the retry timer
@@ -305,12 +305,12 @@ class PeerLink : public Object
     ///@}
 
     /**
-     * \name Work with management frames
+     * @name Work with management frames
      */
     ///@{
     /**
      * Send a peer link close
-     * \param reasoncode reason for closing the line
+     * @param reasoncode reason for closing the line
      */
     void SendPeerLinkClose(PmpReasonCode reasoncode);
     /// Send a peer link open
@@ -320,7 +320,7 @@ class PeerLink : public Object
     ///@}
 
     /**
-     * \name Timeout handlers
+     * @name Timeout handlers
      */
     ///@{
     /// Holding Timeout event handler
@@ -363,15 +363,15 @@ class PeerLink : public Object
     /// Current state
     PeerState m_state;
     /**
-     * \brief Mesh interface configuration
-     * \attention Is not used now, nothing to configure :)
+     * @brief Mesh interface configuration
+     * @attention Is not used now, nothing to configure :)
      */
     IeConfiguration m_configuration;
     /// Beacon timing element received from the peer. Needed by BCA
     IeBeaconTiming m_beaconTiming;
 
     /**
-     * \name Timers & counters used for internal state transitions
+     * @name Timers & counters used for internal state transitions
      */
     ///@{
     uint16_t m_dot11MeshMaxRetries; //!< Maximum number of retries

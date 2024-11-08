@@ -28,17 +28,17 @@ class Packet;
 class RandomVariableStream;
 
 /**
- * \ingroup dhcp
+ * @ingroup dhcp
  *
- * \class DhcpClient
- * \brief Implements the functionality of a DHCP client
+ * @class DhcpClient
+ * @brief Implements the functionality of a DHCP client
  */
 class DhcpClient : public Application
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -46,26 +46,26 @@ class DhcpClient : public Application
     ~DhcpClient() override;
 
     /**
-     * \brief Constructor
-     * \param netDevice the NetDevice DHCP should work on
+     * @brief Constructor
+     * @param netDevice the NetDevice DHCP should work on
      */
     DhcpClient(Ptr<NetDevice> netDevice);
 
     /**
-     * \brief Get the the NetDevice DHCP should work on
-     * \return the NetDevice DHCP should work on
+     * @brief Get the the NetDevice DHCP should work on
+     * @return the NetDevice DHCP should work on
      */
     Ptr<NetDevice> GetDhcpClientNetDevice();
 
     /**
-     * \brief Set the NetDevice DHCP should work on
-     * \param netDevice the NetDevice DHCP should work on
+     * @brief Set the NetDevice DHCP should work on
+     * @param netDevice the NetDevice DHCP should work on
      */
     void SetDhcpClientNetDevice(Ptr<NetDevice> netDevice);
 
     /**
-     * \brief Get the IPv4Address of current DHCP server
-     * \return Ipv4Address of current DHCP server
+     * @brief Get the IPv4Address of current DHCP server
+     * @return Ipv4Address of current DHCP server
      */
     Ipv4Address GetDhcpServer();
 
@@ -89,47 +89,47 @@ class DhcpClient : public Application
     static const int DHCP_PEER_PORT = 67; //!< DHCP server port
 
     /**
-     * \brief Handles changes in LinkState
+     * @brief Handles changes in LinkState
      */
     void LinkStateHandler();
 
     /**
-     * \brief Handles incoming packets from the network
-     * \param socket Socket bound to port 68 of the DHCP client
+     * @brief Handles incoming packets from the network
+     * @param socket Socket bound to port 68 of the DHCP client
      */
     void NetHandler(Ptr<Socket> socket);
 
     /**
-     * \brief Sends DHCP DISCOVER and changes the client state to WAIT_OFFER
+     * @brief Sends DHCP DISCOVER and changes the client state to WAIT_OFFER
      */
     void Boot();
 
     /**
-     * \brief Stores DHCP offers in m_offerList
-     * \param header DhcpHeader of the DHCP OFFER message
+     * @brief Stores DHCP offers in m_offerList
+     * @param header DhcpHeader of the DHCP OFFER message
      */
     void OfferHandler(DhcpHeader header);
 
     /**
-     * \brief Selects an OFFER from m_offerList
+     * @brief Selects an OFFER from m_offerList
      */
     void Select();
 
     /**
-     * \brief Sends the DHCP REQUEST message and changes the client state to WAIT_ACK
+     * @brief Sends the DHCP REQUEST message and changes the client state to WAIT_ACK
      */
     void Request();
 
     /**
-     * \brief Receives the DHCP ACK and configures IP address of the client.
+     * @brief Receives the DHCP ACK and configures IP address of the client.
      *        It also triggers the timeout, renew and rebind events.
-     * \param header DhcpHeader of the DHCP ACK message
-     * \param from   Address of DHCP server that sent the DHCP ACK
+     * @param header DhcpHeader of the DHCP ACK message
+     * @param from   Address of DHCP server that sent the DHCP ACK
      */
     void AcceptAck(DhcpHeader header, Address from);
 
     /**
-     * \brief Remove the current DHCP information and restart the process
+     * @brief Remove the current DHCP information and restart the process
      */
     void RemoveAndStart();
 

@@ -24,8 +24,8 @@ class PositionAllocator;
 class MobilityModel;
 
 /**
- * \ingroup mobility
- * \brief Helper class used to assign positions and mobility models to nodes.
+ * @ingroup mobility
+ * @brief Helper class used to assign positions and mobility models to nodes.
  *
  * MobilityHelper::Install is the most important method here.
  */
@@ -47,22 +47,22 @@ class MobilityHelper
      * Set the position allocator which will be used to allocate the initial
      * position of every node initialized during MobilityModel::Install.
      *
-     * \param allocator allocate initial node positions
+     * @param allocator allocate initial node positions
      */
     void SetPositionAllocator(Ptr<PositionAllocator> allocator);
 
     /**
-     * \tparam Ts \deduced Argument types
-     * \param type the type of mobility model to use.
-     * \param [in] args Name and AttributeValue pairs to set.
+     * @tparam Ts \deduced Argument types
+     * @param type the type of mobility model to use.
+     * @param [in] args Name and AttributeValue pairs to set.
      */
     template <typename... Ts>
     void SetPositionAllocator(std::string type, Ts&&... args);
 
     /**
-     * \tparam Ts \deduced Argument types
-     * \param type the type of mobility model to use.
-     * \param [in] args Name and AttributeValue pairs to set.
+     * @tparam Ts \deduced Argument types
+     * @param type the type of mobility model to use.
+     * @param [in] args Name and AttributeValue pairs to set.
      *
      * Calls to MobilityHelper::Install will create an instance of a matching
      * mobility model for each node.
@@ -71,7 +71,7 @@ class MobilityHelper
     void SetMobilityModel(std::string type, Ts&&... args);
 
     /**
-     * \param reference item to push.
+     * @param reference item to push.
      *
      * Push an item on the top of the stack of "reference mobility models".
      * The input item should be a node instance to which a mobility model
@@ -90,7 +90,7 @@ class MobilityHelper
      */
     void PushReferenceMobilityModel(Ptr<Object> reference);
     /**
-     * \param referenceName named item to push.
+     * @param referenceName named item to push.
      *
      * Push an item on the top of the stack of "reference mobility models".
      * The input item should be a node instance to which a mobility model
@@ -115,36 +115,36 @@ class MobilityHelper
     void PopReferenceMobilityModel();
 
     /**
-     * \return a string which contains the TypeId of the currently-selected
+     * @return a string which contains the TypeId of the currently-selected
      *          mobility model.
      */
     std::string GetMobilityModelType() const;
 
     /**
-     * \brief "Layout" a single node according to the current position allocator type.
+     * @brief "Layout" a single node according to the current position allocator type.
      *
      * This method creates an instance of a ns3::MobilityModel subclass (the
      * type of which was set with MobilityHelper::SetMobilityModel), aggregates
      * it to the provided node, and sets an initial position based on the current
      * position allocator (set through MobilityHelper::SetPositionAllocator).
      *
-     * \param node The node to "layout."
+     * @param node The node to "layout."
      */
     void Install(Ptr<Node> node) const;
     /**
-     * \brief "Layout" a single node according to the current position allocator type.
+     * @brief "Layout" a single node according to the current position allocator type.
      *
      * This method creates an instance of a ns3::MobilityModel subclass (the
      * type of which was set with MobilityHelper::SetMobilityModel), aggregates
      * it to the provided node, and sets an initial position based on the current
      * position allocator (set through MobilityHelper::SetPositionAllocator).
      *
-     * \param nodeName The name of the node to "layout."
+     * @param nodeName The name of the node to "layout."
      */
     void Install(std::string nodeName) const;
 
     /**
-     * \brief Layout a collection of nodes according to the current position allocator type.
+     * @brief Layout a collection of nodes according to the current position allocator type.
      *
      * For each node in the provided NodeContainer, this method creates an instance
      * of a ns3::MobilityModel subclass (the type of which was set with
@@ -152,7 +152,7 @@ class MobilityHelper
      * initial position based on the current position allocator (set through
      * MobilityHelper::SetPositionAllocator).
      *
-     * \param container The set of nodes to layout.
+     * @param container The set of nodes to layout.
      */
     void Install(NodeContainer container) const;
 
@@ -163,8 +163,8 @@ class MobilityHelper
     void InstallAll() const;
 
     /**
-     * \param stream an output stream wrapper
-     * \param nodeid the id of the node to generate ascii output for.
+     * @param stream an output stream wrapper
+     * @param nodeid the id of the node to generate ascii output for.
      *
      * Enable ascii output to record course changes from the mobility model
      * associated with the specified nodeid and dump that to the specified output
@@ -173,8 +173,8 @@ class MobilityHelper
      */
     static void EnableAscii(Ptr<OutputStreamWrapper> stream, uint32_t nodeid);
     /**
-     * \param stream an output stream wrapper
-     * \param n node container
+     * @param stream an output stream wrapper
+     * @param n node container
      *
      * Enable ascii output to record course changes from the mobility models
      * associated to the the nodes in the input container and dump that to the
@@ -183,7 +183,7 @@ class MobilityHelper
      */
     static void EnableAscii(Ptr<OutputStreamWrapper> stream, NodeContainer n);
     /**
-     * \param stream an output stream wrapper
+     * @param stream an output stream wrapper
      *
      * Enable ascii output to record course changes from the mobility models
      * associated to every node in the system and dump that to the specified
@@ -197,32 +197,32 @@ class MobilityHelper
      * streams (possibly zero) that have been assigned. The Install()
      * method should have previously been called by the user.
      *
-     * \note If the PositionAllocator used contains random variables, they
+     * @note If the PositionAllocator used contains random variables, they
      * will not be affected by this call to AssignStreams because they are
      * used earlier during Install() time.  If the user needs to assign a fixed
      * stream number to a PositionAllocator used with this helper, the user
      * should instantiate it outside of the helper, call AssignStreams() on
      * it, and then pass the pointer of it to this helper.
      *
-     * \param c NodeContainer of the set of nodes for which the MobilityModels
+     * @param c NodeContainer of the set of nodes for which the MobilityModels
      * should be modified to use a fixed stream
-     * \param stream first stream index to use
-     * \return the number of stream indices assigned by this helper
+     * @param stream first stream index to use
+     * @return the number of stream indices assigned by this helper
      */
     int64_t AssignStreams(NodeContainer c, int64_t stream);
 
     /**
-     * \param n1 node 1
-     * \param n2 node 2
-     * \return the distance (squared), in meters, between two nodes
+     * @param n1 node 1
+     * @param n2 node 2
+     * @return the distance (squared), in meters, between two nodes
      */
     static double GetDistanceSquaredBetween(Ptr<Node> n1, Ptr<Node> n2);
 
   private:
     /**
      * Output course change events from mobility model to output stream
-     * \param stream output stream
-     * \param mobility mobility model
+     * @param stream output stream
+     * @param mobility mobility model
      */
     static void CourseChanged(Ptr<OutputStreamWrapper> stream, Ptr<const MobilityModel> mobility);
     std::vector<Ptr<MobilityModel>> m_mobilityStack; //!< Internal stack of mobility models

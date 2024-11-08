@@ -14,8 +14,8 @@
 #include <sstream>
 
 /**
- * \file
- * \ingroup mpi
+ * @file
+ * @ingroup mpi
  *
  * Common methods for MPI examples.
  *
@@ -39,12 +39,12 @@ class Address;
 class Packet;
 
 /**
- * \ingroup mpi
+ * @ingroup mpi
  *
  * Write to std::cout only from rank 0.
  * Number line for sorting output of parallel runs.
  *
- * \param x The output operators.
+ * @param x The output operators.
  */
 #define RANK0COUT(x)                                                                               \
     do                                                                                             \
@@ -59,12 +59,12 @@ class Packet;
     while (false)
 
 /**
- * \ingroup mpi
+ * @ingroup mpi
  *
  * Append to std::cout only from rank 0.
  * Number line for sorting output of parallel runs.
  *
- * \param x The output operators.
+ * @param x The output operators.
  */
 #define RANK0COUTAPPEND(x)                                                                         \
     do                                                                                             \
@@ -75,7 +75,7 @@ class Packet;
     while (false)
 
 /**
- * \ingroup mpi
+ * @ingroup mpi
  *
  * Collects data about incoming packets.
  */
@@ -89,7 +89,7 @@ class SinkTracer
 
     /**
      * PacketSink receive trace callback.
-     * \copydetails ns3::Packet::TwoAddressTracedCallback
+     * @copydetails ns3::Packet::TwoAddressTracedCallback
      */
     static void SinkTrace(const ns3::Ptr<const ns3::Packet> packet,
                           const ns3::Address& srcAddress,
@@ -99,22 +99,22 @@ class SinkTracer
      * Verify the sink trace count observed matches the expected count.
      * Prints message to std::cout indicating success or fail.
      *
-     * \param expectedCount Expected number of packet received.
+     * @param expectedCount Expected number of packet received.
      */
     static void Verify(unsigned long expectedCount);
 
     /**
      * Get the source address and port, as a formatted string.
      *
-     * \param [in] address The ns3::Address.
-     * \return A string with the formatted address and port number.
+     * @param [in] address The ns3::Address.
+     * @return A string with the formatted address and port number.
      */
     static std::string FormatAddress(const ns3::Address address);
 
     /**
      * Get the MPI rank in the world communicator.
      *
-     * \return MPI world rank.
+     * @return MPI world rank.
      */
     static int GetWorldRank()
     {
@@ -124,7 +124,7 @@ class SinkTracer
     /**
      * Get the MPI size of the world communicator.
      *
-     * \return MPI world size.
+     * @return MPI world size.
      */
     static int GetWorldSize()
     {
@@ -133,7 +133,7 @@ class SinkTracer
 
     /**
      * Get current line count and increment it.
-     * \return the line count.
+     * @return the line count.
      */
     static int GetLineCount()
     {

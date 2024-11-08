@@ -19,8 +19,8 @@ namespace ns3
 {
 
 /**
- * \ingroup energy
- * \brief Creates a LiIonEnergySource  object.
+ * @ingroup energy
+ * @brief Creates a LiIonEnergySource  object.
  *
  */
 class LiIonEnergySourceHelper : public EnergySourceHelper

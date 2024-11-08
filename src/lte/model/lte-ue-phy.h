@@ -33,7 +33,7 @@ class LteEnbPhy;
 class LteHarqPhy;
 
 /**
- * \ingroup lte
+ * @ingroup lte
  *
  * The LteSpectrumPhy models the physical layer of LTE
  */
@@ -46,7 +46,7 @@ class LteUePhy : public LtePhy
 
   public:
     /**
-     * \brief The states of the UE PHY entity
+     * @brief The states of the UE PHY entity
      */
     enum State
     {
@@ -62,16 +62,16 @@ class LteUePhy : public LtePhy
 
     /**
      *
-     * \param dlPhy the downlink LteSpectrumPhy instance
-     * \param ulPhy the uplink LteSpectrumPhy instance
+     * @param dlPhy the downlink LteSpectrumPhy instance
+     * @param ulPhy the uplink LteSpectrumPhy instance
      */
     LteUePhy(Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy);
 
     ~LteUePhy() override;
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     // inherited from Object
@@ -79,128 +79,128 @@ class LteUePhy : public LtePhy
     void DoDispose() override;
 
     /**
-     * \brief Get the PHY SAP provider
+     * @brief Get the PHY SAP provider
      *
-     * \return a pointer to the SAP Provider
+     * @return a pointer to the SAP Provider
      */
     LteUePhySapProvider* GetLteUePhySapProvider();
 
     /**
-     * \brief Set the PHY SAP User
+     * @brief Set the PHY SAP User
      *
-     * \param s a pointer to the SAP user
+     * @param s a pointer to the SAP user
      */
     void SetLteUePhySapUser(LteUePhySapUser* s);
 
     /**
-     * \brief Get the CPHY SAP provider
+     * @brief Get the CPHY SAP provider
      *
-     * \return a pointer to the SAP Provider
+     * @return a pointer to the SAP Provider
      */
     LteUeCphySapProvider* GetLteUeCphySapProvider();
 
     /**
-     * \brief Set the CPHY SAP User
+     * @brief Set the CPHY SAP User
      *
-     * \param s a pointer to the SAP user
+     * @param s a pointer to the SAP user
      */
     void SetLteUeCphySapUser(LteUeCphySapUser* s);
 
     /**
-     * \brief Set transmit power
+     * @brief Set transmit power
      *
-     * \param pow the transmission power in dBm
+     * @param pow the transmission power in dBm
      */
     void SetTxPower(double pow);
 
     /**
-     * \brief Get transmit power
+     * @brief Get transmit power
      *
-     * \return the transmission power in dBm
+     * @return the transmission power in dBm
      */
     double GetTxPower() const;
 
     /**
-     * \brief Get Uplink power control
+     * @brief Get Uplink power control
      *
-     * \return ptr to UE Uplink Power Control entity
+     * @return ptr to UE Uplink Power Control entity
      */
     Ptr<LteUePowerControl> GetUplinkPowerControl() const;
 
     /**
-     * \brief Set noise figure
+     * @brief Set noise figure
      *
-     * \param nf the noise figure in dB
+     * @param nf the noise figure in dB
      */
     void SetNoiseFigure(double nf);
 
     /**
-     * \brief Get noise figure
+     * @brief Get noise figure
      *
-     * \return the noise figure in dB
+     * @return the noise figure in dB
      */
     double GetNoiseFigure() const;
 
     /**
-     * \brief Get MAC to Channel delay
+     * @brief Get MAC to Channel delay
      *
-     * \returns the TTI delay between MAC and channel
+     * @returns the TTI delay between MAC and channel
      */
     uint8_t GetMacChDelay() const;
 
     /**
-     * \brief Get Downlink spectrum phy
+     * @brief Get Downlink spectrum phy
      *
-     * \return a pointer to the LteSpectrumPhy instance relative to the downlink
+     * @return a pointer to the LteSpectrumPhy instance relative to the downlink
      */
     Ptr<LteSpectrumPhy> GetDlSpectrumPhy() const;
 
     /**
-     * \brief Get Uplink spectrum phy
+     * @brief Get Uplink spectrum phy
      *
-     * \return a pointer to the LteSpectrumPhy instance relative to the uplink
+     * @return a pointer to the LteSpectrumPhy instance relative to the uplink
      */
     Ptr<LteSpectrumPhy> GetUlSpectrumPhy() const;
 
     /**
-     * \brief Create the PSD for the TX
+     * @brief Create the PSD for the TX
      *
-     * \return the pointer to the PSD
+     * @return the pointer to the PSD
      */
     Ptr<SpectrumValue> CreateTxPowerSpectralDensity() override;
 
     /**
-     * \brief Set a list of sub channels to use in TX
+     * @brief Set a list of sub channels to use in TX
      *
-     * \param mask a list of sub channels
+     * @param mask a list of sub channels
      */
     void SetSubChannelsForTransmission(std::vector<int> mask);
     /**
-     * \brief Get a list of sub channels to use in RX
+     * @brief Get a list of sub channels to use in RX
      *
-     * \return a list of sub channels
+     * @return a list of sub channels
      */
     std::vector<int> GetSubChannelsForTransmission();
 
     /**
-     * \brief Get a list of sub channels to use in RX
+     * @brief Get a list of sub channels to use in RX
      *
-     * \param mask list of sub channels
+     * @param mask list of sub channels
      */
     void SetSubChannelsForReception(std::vector<int> mask);
     /**
-     * \brief Get a list of sub channels to use in RX
+     * @brief Get a list of sub channels to use in RX
      *
-     * \return a list of sub channels
+     * @return a list of sub channels
      */
     std::vector<int> GetSubChannelsForReception();
 
     /**
-     * \brief Create the DL CQI feedback from SINR values perceived at
+     * @brief Create the DL CQI feedback from SINR values perceived at
      * the physical layer with the signal received from eNB
      *
-     * \param sinr SINR values vector
-     * \return a DL CQI control message containing the CQI feedback
+     * @param sinr SINR values vector
+     * @return a DL CQI control message containing the CQI feedback
      */
     Ptr<DlCqiLteControlMessage> CreateDlCqiFeedbackMessage(const SpectrumValue& sinr);
 
@@ -208,83 +208,83 @@ class LteUePhy : public LtePhy
     void GenerateCtrlCqiReport(const SpectrumValue& sinr) override;
     void GenerateDataCqiReport(const SpectrumValue& sinr) override;
     /**
-     * \brief Create the mixed CQI report
+     * @brief Create the mixed CQI report
      *
-     * \param sinr SINR values vector
+     * @param sinr SINR values vector
      */
     virtual void GenerateMixedCqiReport(const SpectrumValue& sinr);
     void ReportInterference(const SpectrumValue& interf) override;
     /**
-     * \brief Create the mixed CQI report
+     * @brief Create the mixed CQI report
      *
-     * \param interf interference values vector
+     * @param interf interference values vector
      */
     virtual void ReportDataInterference(const SpectrumValue& interf);
     void ReportRsReceivedPower(const SpectrumValue& power) override;
 
     // callbacks for LteSpectrumPhy
     /**
-     * \brief Receive LTE control message list function
+     * @brief Receive LTE control message list function
      *
-     * \param msgList LTE control message list
+     * @param msgList LTE control message list
      */
     virtual void ReceiveLteControlMessageList(std::list<Ptr<LteControlMessage>> msgList);
     /**
-     * \brief Receive PSS function
+     * @brief Receive PSS function
      *
-     * \param cellId the cell ID
-     * \param p PSS list
+     * @param cellId the cell ID
+     * @param p PSS list
      */
     virtual void ReceivePss(uint16_t cellId, Ptr<SpectrumValue> p);
 
     /**
-     * \brief PhySpectrum received a new PHY-PDU
+     * @brief PhySpectrum received a new PHY-PDU
      *
-     * \param p the packet received
+     * @param p the packet received
      */
     void PhyPduReceived(Ptr<Packet> p);
 
     /**
-     * \brief trigger from eNB the start from a new frame
+     * @brief trigger from eNB the start from a new frame
      *
-     * \param frameNo frame number
-     * \param subframeNo subframe number
+     * @param frameNo frame number
+     * @param subframeNo subframe number
      */
     void SubframeIndication(uint32_t frameNo, uint32_t subframeNo);
 
     /**
-     * \brief Send the SRS signal in the last symbols of the frame
+     * @brief Send the SRS signal in the last symbols of the frame
      */
     void SendSrs();
 
     /**
-     * \brief Enqueue the downlink HARQ feedback generated by LteSpectrumPhy
+     * @brief Enqueue the downlink HARQ feedback generated by LteSpectrumPhy
      *
-     * \param mes the DlInfoListElement_s
+     * @param mes the DlInfoListElement_s
      */
     virtual void EnqueueDlHarqFeedback(DlInfoListElement_s mes);
 
     /**
-     * \brief Set the HARQ PHY module
+     * @brief Set the HARQ PHY module
      *
-     * \param harq the HARQ PHY module
+     * @param harq the HARQ PHY module
      */
     void SetHarqPhyModule(Ptr<LteHarqPhy> harq);
 
     /**
-     * \brief Get state of the UE physical layer
+     * @brief Get state of the UE physical layer
      *
-     * \return The current state
+     * @return The current state
      */
     State GetState() const;
 
     /**
      * TracedCallback signature for state transition events.
      *
-     * \param [in] cellId
-     * \param [in] rnti
-     * \param [in] oldState
-     * \param [in] newState
+     * @param [in] cellId
+     * @param [in] rnti
+     * @param [in] oldState
+     * @param [in] newState
      */
     typedef void (*StateTracedCallback)(uint16_t cellId,
                                         uint16_t rnti,
@@ -294,11 +294,11 @@ class LteUePhy : public LtePhy
     /**
      * TracedCallback signature for cell RSRP and SINR report.
      *
-     * \param [in] cellId
-     * \param [in] rnti
-     * \param [in] rsrp
-     * \param [in] sinr
-     * \param [in] componentCarrierId
+     * @param [in] cellId
+     * @param [in] rnti
+     * @param [in] rsrp
+     * @param [in] sinr
+     * @param [in] componentCarrierId
      */
     typedef void (*RsrpSinrTracedCallback)(uint16_t cellId,
                                            uint16_t rnti,
@@ -309,12 +309,12 @@ class LteUePhy : public LtePhy
     /**
      * TracedCallback signature for cell RSRP and RSRQ.
      *
-     * \param [in] rnti
-     * \param [in] cellId
-     * \param [in] rsrp
-     * \param [in] rsrq
-     * \param [in] isServingCell
-     * \param [in] componentCarrierId
+     * @param [in] rnti
+     * @param [in] cellId
+     * @param [in] rsrp
+     * @param [in] rsrq
+     * @param [in] isServingCell
+     * @param [in] componentCarrierId
      */
     typedef void (*RsrpRsrqTracedCallback)(uint16_t rnti,
                                            uint16_t cellId,
@@ -326,86 +326,86 @@ class LteUePhy : public LtePhy
     /**
      * TracedCallback signature for UL Phy resource blocks.
      *
-     * \param [in] rnti
-     * \param [in] rbs Vector of resource blocks allocated for UL.
+     * @param [in] rnti
+     * @param [in] rbs Vector of resource blocks allocated for UL.
      */
     typedef void (*UlPhyResourceBlocksTracedCallback)(uint16_t rnti, const std::vector<int>& rbs);
 
     /**
      * TracedCallback signature for spectral value.
      *
-     * \param [in] rnti
-     * \param [in] psd The spectral power density.
+     * @param [in] rnti
+     * @param [in] psd The spectral power density.
      */
     typedef void (*PowerSpectralDensityTracedCallback)(uint16_t rnti, Ptr<SpectrumValue> psd);
 
   private:
     /**
-     * \brief Set transmit mode 1 gain function
+     * @brief Set transmit mode 1 gain function
      *
-     * \param [in] gain
+     * @param [in] gain
      */
     void SetTxMode1Gain(double gain);
     /**
      * Set transmit mode 2 gain function
      *
-     * \param [in] gain
+     * @param [in] gain
      */
     void SetTxMode2Gain(double gain);
     /**
-     * \brief Set transmit mode 3 gain function
+     * @brief Set transmit mode 3 gain function
      *
-     * \param [in] gain
+     * @param [in] gain
      */
     void SetTxMode3Gain(double gain);
     /**
-     * \brief Set transmit mode 4 gain function
+     * @brief Set transmit mode 4 gain function
      *
-     * \param [in] gain
+     * @param [in] gain
      */
     void SetTxMode4Gain(double gain);
     /**
-     * \brief Set transmit mode 5 gain function
+     * @brief Set transmit mode 5 gain function
      *
-     * \param [in] gain
+     * @param [in] gain
      */
     void SetTxMode5Gain(double gain);
     /**
-     * \brief Set transmit mode 6 gain function
+     * @brief Set transmit mode 6 gain function
      *
-     * \param [in] gain
+     * @param [in] gain
      */
     void SetTxMode6Gain(double gain);
     /**
-     * \brief Set transmit mode 7 gain function
+     * @brief Set transmit mode 7 gain function
      *
-     * \param [in] gain
+     * @param [in] gain
      */
     void SetTxMode7Gain(double gain);
     /**
-     * \brief Set transmit mode gain function
+     * @brief Set transmit mode gain function
      *
-     * \param [in] txMode
-     * \param [in] gain
+     * @param [in] txMode
+     * @param [in] gain
      */
     void SetTxModeGain(uint8_t txMode, double gain);
     /**
-     * \brief Queue subchannels for transmission function
+     * @brief Queue subchannels for transmission function
      *
-     * \param [in] rbMap
+     * @param [in] rbMap
      */
     void QueueSubChannelsForTransmission(std::vector<int> rbMap);
     /**
-     * \brief Get CQI, RSRP, and RSRQ
+     * @brief Get CQI, RSRP, and RSRQ
      *
      * internal method that takes care of generating CQI reports,
      * calculating the RSRP and RSRQ metrics, and generating RSRP+SINR traces
      *
-     * \param sinr
+     * @param sinr
      */
     void GenerateCqiRsrpRsrq(const SpectrumValue& sinr);
     /**
-     * \brief Layer-1 filtering of RSRP and RSRQ measurements and reporting to
+     * @brief Layer-1 filtering of RSRP and RSRQ measurements and reporting to
      *        the RRC entity.
      *
      * Initially executed at +0.200s, and then repeatedly executed with
@@ -413,138 +413,138 @@ class LteUePhy : public LtePhy
      */
     void ReportUeMeasurements();
     /**
-     * \brief Set the periodicty for the downlink periodic
+     * @brief Set the periodicty for the downlink periodic
      * wideband and aperiodic subband CQI reporting.
      *
-     * \param cqiPeriodicity The downlink CQI reporting periodicity in milliseconds
+     * @param cqiPeriodicity The downlink CQI reporting periodicity in milliseconds
      */
     void SetDownlinkCqiPeriodicity(Time cqiPeriodicity);
     /**
-     * \brief Switch the UE PHY to the given state.
-     * \param s the destination state
+     * @brief Switch the UE PHY to the given state.
+     * @param s the destination state
      */
     void SwitchToState(State s);
     /**
-     * \brief Set number of Qout evaluation subframes
+     * @brief Set number of Qout evaluation subframes
      *
      * The number passed to this method should be multiple
      * of 10. This number specifies the total number of consecutive
      * subframes, which corresponds to the Qout evaluation period.
      *
-     * \param numSubframes the number of subframes
+     * @param numSubframes the number of subframes
      */
     void SetNumQoutEvalSf(uint16_t numSubframes);
     /**
-     * \brief Set number of Qin evaluation subframes
+     * @brief Set number of Qin evaluation subframes
      *
      * The number passed to this method should be multiple
      * of 10. This number specifies the total number of consecutive
      * subframes, which corresponds to the Qin evaluation period.
      *
-     * \param numSubframes the number of subframes
+     * @param numSubframes the number of subframes
      */
     void SetNumQinEvalSf(uint16_t numSubframes);
     /**
-     * \brief Get number of Qout evaluation subframes
+     * @brief Get number of Qout evaluation subframes
      *
      * The number returned by this method specifies the
      * total number of consecutive subframes, which corresponds
      * to the Qout evaluation period.
      *
-     * \return the number of consecutive subframes used for Qout evaluation
+     * @return the number of consecutive subframes used for Qout evaluation
      */
     uint16_t GetNumQoutEvalSf() const;
     /**
-     * \brief Get number of Qin evaluation subframes
+     * @brief Get number of Qin evaluation subframes
      *
      * The number returned by this method specifies the
      * total number of consecutive subframes, which corresponds
      * to the Qin evaluation period.
      *
-     * \return the number of consecutive subframes used for Qin evaluation
+     * @return the number of consecutive subframes used for Qin evaluation
      */
     uint16_t GetNumQinEvalSf() const;
 
     // UE CPHY SAP methods
     /**
-     * \brief Do Reset function
+     * @brief Do Reset function
      */
     void DoReset();
     /**
-     * \brief Start the cell search function
+     * @brief Start the cell search function
      *
-     * \param dlEarfcn the DL EARFCN
+     * @param dlEarfcn the DL EARFCN
      */
     void DoStartCellSearch(uint32_t dlEarfcn);
     /**
-     * \brief Synchronize with ENB function
+     * @brief Synchronize with ENB function
      *
-     * \param cellId the cell ID
+     * @param cellId the cell ID
      */
     void DoSynchronizeWithEnb(uint16_t cellId);
     /**
-     * \brief Synchronize with ENB function
+     * @brief Synchronize with ENB function
      *
-     * \param cellId the cell ID
-     * \param dlEarfcn the DL EARFCN
+     * @param cellId the cell ID
+     * @param dlEarfcn the DL EARFCN
      */
     void DoSynchronizeWithEnb(uint16_t cellId, uint32_t dlEarfcn);
     /**
      *
      * Get cell ID
-     * \returns cell ID
+     * @returns cell ID
      */
     uint16_t DoGetCellId();
     /**
      * Get DL EARFCN
-     * \returns DL EARFCN
+     * @returns DL EARFCN
      */
     uint32_t DoGetDlEarfcn();
     /**
      * Set DL bandwidth function
      *
-     * \param dlBandwidth the DL bandwidth
+     * @param dlBandwidth the DL bandwidth
      */
     void DoSetDlBandwidth(uint16_t dlBandwidth);
     /**
-     * \brief Configure UL uplink function
+     * @brief Configure UL uplink function
      *
-     * \param ulEarfcn UL EARFCN
-     * \param ulBandwidth the UL bandwidth
+     * @param ulEarfcn UL EARFCN
+     * @param ulBandwidth the UL bandwidth
      */
     void DoConfigureUplink(uint32_t ulEarfcn, uint16_t ulBandwidth);
     /**
-     * \brief Configure reference signal power function
+     * @brief Configure reference signal power function
      *
-     * \param referenceSignalPower reference signal power in dBm
+     * @param referenceSignalPower reference signal power in dBm
      */
     void DoConfigureReferenceSignalPower(int8_t referenceSignalPower);
     /**
-     * \brief Set RNTI function
+     * @brief Set RNTI function
      *
-     * \param rnti the RNTI
+     * @param rnti the RNTI
      */
     void DoSetRnti(uint16_t rnti);
     /**
-     * \brief Set transmission mode function
+     * @brief Set transmission mode function
      *
-     * \param txMode the transmission mode
+     * @param txMode the transmission mode
      */
     void DoSetTransmissionMode(uint8_t txMode);
     /**
-     * \brief Set SRS configuration index function
+     * @brief Set SRS configuration index function
      *
-     * \param srcCi the SRS configuration index
+     * @param srcCi the SRS configuration index
      */
     void DoSetSrsConfigurationIndex(uint16_t srcCi);
     /**
-     * \brief Set PA function
+     * @brief Set PA function
      *
-     * \param pa the PA value
+     * @param pa the PA value
      */
     void DoSetPa(double pa);
     /**
-     * \brief Reset Phy after radio link failure function
+     * @brief Reset Phy after radio link failure function
      *
      * It resets the physical layer parameters of the
      * UE after RLF.
@@ -552,7 +552,7 @@ class LteUePhy : public LtePhy
      */
     void DoResetPhyAfterRlf();
     /**
-     * \brief Reset radio link failure parameters
+     * @brief Reset radio link failure parameters
      *
      * Upon receiving N311 in Sync indications from the UE
      * PHY, the UE RRC instructs the UE PHY to reset the
@@ -562,7 +562,7 @@ class LteUePhy : public LtePhy
     void DoResetRlfParams();
 
     /**
-     * \brief Start in Sync detection function
+     * @brief Start in Sync detection function
      *
      * When T310 timer is started, it indicates that physical layer
      * problems are detected at the UE and the recovery process is
@@ -573,7 +573,7 @@ class LteUePhy : public LtePhy
     void DoStartInSyncDetection();
 
     /**
-     * \brief Radio link failure detection function
+     * @brief Radio link failure detection function
      *
      * Radio link monitoring is started to detect downlink radio link
      * quality when the UE is both uplink and downlink synchronized
@@ -586,13 +586,13 @@ class LteUePhy : public LtePhy
      * downlink radio link quality estimated over the last 100 ms period becomes
      * better than the threshold Qin, an in-sync indication is sent to RRC.
      *
-     * \param sinrdB the average SINR value in dB measured across
+     * @param sinrdB the average SINR value in dB measured across
      * all resource blocks
      *
      */
     void RlfDetection(double sinrdB);
     /**
-     * \brief Initialize radio link failure parameters
+     * @brief Initialize radio link failure parameters
      *
      * Upon receiving the notification about the successful RRC connection
      * establishment, the UE phy initialize the RLF parameters to be
@@ -603,43 +603,43 @@ class LteUePhy : public LtePhy
     /**
      * Set IMSI
      *
-     * \param imsi the IMSI of the UE
+     * @param imsi the IMSI of the UE
      */
     void DoSetImsi(uint64_t imsi);
     /**
-     * \brief Do set RSRP filter coefficient
+     * @brief Do set RSRP filter coefficient
      *
-     * \param rsrpFilterCoefficient value. Determines the strength of
+     * @param rsrpFilterCoefficient value. Determines the strength of
      * smoothing effect induced by layer 3 filtering of RSRP
      * used for uplink power control in all attached UE.
      * If equals to 0, no layer 3 filtering is applicable.
      */
     void DoSetRsrpFilterCoefficient(uint8_t rsrpFilterCoefficient);
     /**
-     * \brief Compute average SINR among the RBs
+     * @brief Compute average SINR among the RBs
      *
-     * \param sinr
-     * \return the average SINR value
+     * @param sinr
+     * @return the average SINR value
      */
     double ComputeAvgSinr(const SpectrumValue& sinr);
 
     // UE PHY SAP methods
     void DoSendMacPdu(Ptr<Packet> p) override;
     /**
-     * \brief Send LTE control message function
+     * @brief Send LTE control message function
      *
-     * \param msg the LTE control message
+     * @param msg the LTE control message
      */
     virtual void DoSendLteControlMessage(Ptr<LteControlMessage> msg);
     /**
-     * \brief Send RACH preamble function
+     * @brief Send RACH preamble function
      *
-     * \param prachId the RACH preamble ID
-     * \param raRnti the rnti
+     * @param prachId the RACH preamble ID
+     * @param raRnti the rnti
      */
     virtual void DoSendRachPreamble(uint32_t prachId, uint32_t raRnti);
     /**
-     * \brief Notify PHY about the successful RRC connection
+     * @brief Notify PHY about the successful RRC connection
      * establishment.
      */
     virtual void DoNotifyConnectionSuccessful();
@@ -669,7 +669,7 @@ class LteUePhy : public LtePhy
     /**
      * SubBand Aperiodic CQI. Activated by DCI format 0 or Random Access Response
      * Grant.
-     * \note Defines a periodicity for academic studies.
+     * @note Defines a periodicity for academic studies.
      */
     Time m_a30CqiPeriodicity;
     Time m_a30CqiLast; ///< last aperiodic CQI
@@ -703,7 +703,7 @@ class LteUePhy : public LtePhy
      */
     TracedCallback<uint16_t, uint16_t, State, State> m_stateTransitionTrace;
 
-    /// \todo Can be removed.
+    /// @todo Can be removed.
     uint8_t m_subframeNo;
 
     bool m_rsReceivedPowerUpdated;   ///< RS receive power updated?
@@ -752,7 +752,7 @@ class LteUePhy : public LtePhy
      * measurements, i.e., the length of layer-1 filtering (default 200 ms).
      */
     Time m_ueMeasurementsFilterPeriod;
-    /// \todo Can be removed.
+    /// @todo Can be removed.
     Time m_ueMeasurementsFilterLast;
 
     Ptr<LteHarqPhy> m_harqPhyModule; ///< HARQ phy module

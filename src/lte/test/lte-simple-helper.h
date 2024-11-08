@@ -26,9 +26,9 @@ class LteTestRrc;
 class LteTestMac;
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief A simplified version of LteHelper, that
+ * @brief A simplified version of LteHelper, that
  * is used for creation and configuration of LTE entities for testing purposes
  * when just a limited LteHelper functionality is wanted.
  *
@@ -40,8 +40,8 @@ class LteSimpleHelper : public Object
     ~LteSimpleHelper() override;
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     void DoDispose() override;
@@ -49,18 +49,18 @@ class LteSimpleHelper : public Object
     /**
      * create a set of eNB devices
      *
-     * \param c the node container where the devices are to be installed
+     * @param c the node container where the devices are to be installed
      *
-     * \return the NetDeviceContainer with the newly created devices
+     * @return the NetDeviceContainer with the newly created devices
      */
     NetDeviceContainer InstallEnbDevice(NodeContainer c);
 
     /**
      * create a set of UE devices
      *
-     * \param c the node container where the devices are to be installed
+     * @param c the node container where the devices are to be installed
      *
-     * \return the NetDeviceContainer with the newly created devices
+     * @return the NetDeviceContainer with the newly created devices
      */
     NetDeviceContainer InstallUeDevice(NodeContainer c);
 
@@ -113,15 +113,15 @@ class LteSimpleHelper : public Object
     /**
      * Install single ENB device
      *
-     * \param n the node
-     * \returns the device
+     * @param n the node
+     * @returns the device
      */
     Ptr<NetDevice> InstallSingleEnbDevice(Ptr<Node> n);
     /**
      * Install single UE device
      *
-     * \param n the node
-     * \returns the device
+     * @param n the node
+     * @returns the device
      */
     Ptr<NetDevice> InstallSingleUeDevice(Ptr<Node> n);
 

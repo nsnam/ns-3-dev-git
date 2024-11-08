@@ -16,7 +16,7 @@ namespace ns3
 {
 
 /**
- * \ingroup ipv4Helpers
+ * @ingroup ipv4Helpers
  *
  * @brief A helper class to make life easier while doing simple IPv4 address
  * assignment in scripts.
@@ -169,9 +169,9 @@ class Ipv4AddressHelper
 
   private:
     /**
-     * \brief Returns the number of address bits (hostpart) for a given netmask
-     * \param maskbits the netmask
-     * \returns the number of bits in the hostpart
+     * @brief Returns the number of address bits (hostpart) for a given netmask
+     * @param maskbits the netmask
+     * @returns the number of bits in the hostpart
      */
     uint32_t NumAddressBits(uint32_t maskbits) const;
 

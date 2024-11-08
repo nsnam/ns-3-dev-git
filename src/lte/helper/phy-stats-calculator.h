@@ -22,7 +22,7 @@ namespace ns3
 {
 
 /**
- * \ingroup lte
+ * @ingroup lte
  *
  * Takes care of storing the information generated at PHY layer. Metrics saved are:
  * - RSRP and average SINR for DL
@@ -144,13 +144,13 @@ class PhyStatsCalculator : public LteStatsCalculator
     /**
      * trace sink
      *
-     * \param phyStats
-     * \param path
-     * \param cellId
-     * \param rnti
-     * \param rsrp
-     * \param sinr
-     * \param componentCarrierId
+     * @param phyStats
+     * @param path
+     * @param cellId
+     * @param rnti
+     * @param rsrp
+     * @param sinr
+     * @param componentCarrierId
      */
     static void ReportCurrentCellRsrpSinrCallback(Ptr<PhyStatsCalculator> phyStats,
                                                   std::string path,
@@ -163,12 +163,12 @@ class PhyStatsCalculator : public LteStatsCalculator
     /**
      * trace sink
      *
-     * \param phyStats
-     * \param path
-     * \param cellId
-     * \param rnti
-     * \param sinrLinear
-     * \param componentCarrierId
+     * @param phyStats
+     * @param path
+     * @param cellId
+     * @param rnti
+     * @param sinrLinear
+     * @param componentCarrierId
      */
     static void ReportUeSinr(Ptr<PhyStatsCalculator> phyStats,
                              std::string path,
@@ -180,10 +180,10 @@ class PhyStatsCalculator : public LteStatsCalculator
     /**
      * trace sink
      *
-     * \param phyStats
-     * \param path
-     * \param cellId
-     * \param interference
+     * @param phyStats
+     * @param path
+     * @param cellId
+     * @param interference
      */
     static void ReportInterference(Ptr<PhyStatsCalculator> phyStats,
                                    std::string path,

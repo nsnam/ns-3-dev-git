@@ -19,9 +19,9 @@ namespace ns3
 {
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief Class for inserting callbacks special points of the flow of TCP sockets
+ * @brief Class for inserting callbacks special points of the flow of TCP sockets
  *
  * This subclass is born to extend TcpSocketBase, inserting callbacks in certain
  * points of the flow, to be used in testing to check certain values or flow
@@ -32,17 +32,17 @@ namespace ns3
  *
  * To be fair with testing, this class should NOT modify the behavior of TcpSocketBase.
  *
- * \see SetRcvAckCb
- * \see SetProcessedAckCb
- * \see SetAfterRetransmitCb
- * \see SetBeforeRetransmitCb
+ * @see SetRcvAckCb
+ * @see SetProcessedAckCb
+ * @see SetAfterRetransmitCb
+ * @see SetBeforeRetransmitCb
  */
 class TcpSocketMsgBase : public ns3::TcpSocketBase
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -52,8 +52,8 @@ class TcpSocketMsgBase : public ns3::TcpSocketBase
     }
 
     /**
-     * \brief Constructor.
-     * \param other The object to copy from.
+     * @brief Constructor.
+     * @param other The object to copy from.
      */
     TcpSocketMsgBase(const TcpSocketMsgBase& other)
         : TcpSocketBase(other)
@@ -76,45 +76,45 @@ class TcpSocketMsgBase : public ns3::TcpSocketBase
         UpdateRttCallback;
 
     /**
-     * \brief Set the callback invoked when an ACK is received (at the beginning
+     * @brief Set the callback invoked when an ACK is received (at the beginning
      * of the processing)
      *
-     * \param cb callback
+     * @param cb callback
      */
     void SetRcvAckCb(AckManagementCb cb);
 
     /**
-     * \brief Set the callback invoked when an ACK is received and processed
+     * @brief Set the callback invoked when an ACK is received and processed
      * (at the end of the processing)
      *
-     * \param cb callback
+     * @param cb callback
      */
     void SetProcessedAckCb(AckManagementCb cb);
 
     /**
-     * \brief Set the callback invoked after the processing of a retransmit timeout
+     * @brief Set the callback invoked after the processing of a retransmit timeout
      *
-     * \param cb callback
+     * @param cb callback
      */
     void SetAfterRetransmitCb(RetrCb cb);
 
     /**
-     * \brief Set the callback invoked before the processing of a retransmit timeout
+     * @brief Set the callback invoked before the processing of a retransmit timeout
      *
-     * \param cb callback
+     * @param cb callback
      */
     void SetBeforeRetransmitCb(RetrCb cb);
 
     /**
-     * \brief Set the callback invoked after the forking
-     * \param cb callback
+     * @brief Set the callback invoked after the forking
+     * @param cb callback
      */
     void SetForkCb(Callback<void, Ptr<TcpSocketMsgBase>> cb);
 
     /**
-     * \brief Set the callback invoked when we update rtt history
+     * @brief Set the callback invoked when we update rtt history
      *
-     * \param cb callback
+     * @param cb callback
      */
     void SetUpdateRttHistoryCb(UpdateRttCallback cb);
 
@@ -138,9 +138,9 @@ class TcpSocketMsgBase : public ns3::TcpSocketBase
 };
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief A TCP socket which sends ACKs smaller than the segment received.
+ * @brief A TCP socket which sends ACKs smaller than the segment received.
  *
  * Usually, a TCP socket which receives the sequence number "x" replies with
  * an ACK to "x+1". What happen if a malicious socket sends smaller ACKs
@@ -151,14 +151,14 @@ class TcpSocketMsgBase : public ns3::TcpSocketBase
  * Set the number of bytes that should be acked in each ACK packet with
  * SetBytesToAck.
  *
- * \see TcpSlowStartAttackerTest
+ * @see TcpSlowStartAttackerTest
  */
 class TcpSocketSmallAcks : public TcpSocketMsgBase
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -171,8 +171,8 @@ class TcpSocketSmallAcks : public TcpSocketMsgBase
     }
 
     /**
-     * \brief Constructor.
-     * \param other The object to copy from.
+     * @brief Constructor.
+     * @param other The object to copy from.
      */
     TcpSocketSmallAcks(const TcpSocketSmallAcks& other)
         : TcpSocketMsgBase(other),
@@ -183,8 +183,8 @@ class TcpSocketSmallAcks : public TcpSocketMsgBase
     }
 
     /**
-     * \brief Set the bytes to be ACKed.
-     * \param bytes The number of bytes.
+     * @brief Set the bytes to be ACKed.
+     * @param bytes The number of bytes.
      */
     void SetBytesToAck(uint32_t bytes)
     {
@@ -201,9 +201,9 @@ class TcpSocketSmallAcks : public TcpSocketMsgBase
 };
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief General infrastructure for TCP testing
+ * @brief General infrastructure for TCP testing
  *
  * The class provides a simple setup for a connection testing. Implement
  * or modify the virtual methods in order to install a specified
@@ -237,25 +237,25 @@ class TcpSocketSmallAcks : public TcpSocketMsgBase
  * isn't passed by inheritance, so the way to go is to write a Getters (like
  * GetSegSize) and call it in the subclass.
  *
- * \see DoRun
- * \see TcpSocketMsgBase
+ * @see DoRun
+ * @see TcpSocketMsgBase
  */
 class TcpGeneralTest : public TestCase
 {
   public:
     /**
-     * \brief TcpGeneralTest constructor
+     * @brief TcpGeneralTest constructor
      *
      * Please use the method ConfigureEnvironment () to configure other
      * parameters than the test description.
      *
-     * \param desc description of the test
+     * @param desc description of the test
      */
     TcpGeneralTest(const std::string& desc);
     ~TcpGeneralTest() override;
 
     /**
-     * \brief Used as parameter of methods, specifies on what node
+     * @brief Used as parameter of methods, specifies on what node
      * the caller is interested (e.g. GetSegSize).
      */
     enum SocketWho
@@ -266,60 +266,60 @@ class TcpGeneralTest : public TestCase
 
   protected:
     /**
-     * \brief Create and return the channel installed between the two socket
+     * @brief Create and return the channel installed between the two socket
      *
-     * \return A SimpleChannel subclass
+     * @return A SimpleChannel subclass
      */
     virtual Ptr<SimpleChannel> CreateChannel();
 
     /**
-     * \brief Create and return the error model to install in the sender node
+     * @brief Create and return the error model to install in the sender node
      *
-     * \return sender error model
+     * @return sender error model
      */
     virtual Ptr<ErrorModel> CreateSenderErrorModel();
 
     /**
-     * \brief Create and return the error model to install in the receiver node
+     * @brief Create and return the error model to install in the receiver node
      *
-     * \return receiver error model
+     * @return receiver error model
      */
     virtual Ptr<ErrorModel> CreateReceiverErrorModel();
 
     /**
-     * \brief Create and install the socket to install on the receiver
-     * \param node receiver node pointer
-     * \return the socket to be installed in the receiver
+     * @brief Create and install the socket to install on the receiver
+     * @param node receiver node pointer
+     * @return the socket to be installed in the receiver
      */
     virtual Ptr<TcpSocketMsgBase> CreateReceiverSocket(Ptr<Node> node);
 
     /**
-     * \brief Create and install the socket to install on the sender
-     * \param node sender node pointer
-     * \return the socket to be installed in the sender
+     * @brief Create and install the socket to install on the sender
+     * @param node sender node pointer
+     * @return the socket to be installed in the sender
      */
     virtual Ptr<TcpSocketMsgBase> CreateSenderSocket(Ptr<Node> node);
 
     /**
-     * \brief Create a socket
+     * @brief Create a socket
      *
-     * \param node associated node
-     * \param socketType Type of the TCP socket
-     * \param congControl congestion control
-     * \return a pointer to the newer created socket
+     * @param node associated node
+     * @param socketType Type of the TCP socket
+     * @param congControl congestion control
+     * @return a pointer to the newer created socket
      */
     virtual Ptr<TcpSocketMsgBase> CreateSocket(Ptr<Node> node,
                                                TypeId socketType,
                                                TypeId congControl);
 
     /**
-     * \brief Create a socket
+     * @brief Create a socket
      *
-     * \param node associated node
-     * \param socketType Type of the TCP socket
-     * \param congControl congestion control
-     * \param recoveryAlgorithm recovery algorithm
-     * \return a pointer to the newer created socket
+     * @param node associated node
+     * @param socketType Type of the TCP socket
+     * @param congControl congestion control
+     * @param recoveryAlgorithm recovery algorithm
+     * @return a pointer to the newer created socket
      */
     virtual Ptr<TcpSocketMsgBase> CreateSocket(Ptr<Node> node,
                                                TypeId socketType,
@@ -327,8 +327,8 @@ class TcpGeneralTest : public TestCase
                                                TypeId recoveryAlgorithm);
 
     /**
-     * \brief Get the pointer to a previously created sender socket
-     * \return ptr to sender socket or 0
+     * @brief Get the pointer to a previously created sender socket
+     * @return ptr to sender socket or 0
      */
     Ptr<TcpSocketMsgBase> GetSenderSocket()
     {
@@ -336,8 +336,8 @@ class TcpGeneralTest : public TestCase
     }
 
     /**
-     * \brief Get the pointer to a previously created receiver socket
-     * \return ptr to receiver socket or 0
+     * @brief Get the pointer to a previously created receiver socket
+     * @return ptr to receiver socket or 0
      */
     Ptr<TcpSocketMsgBase> GetReceiverSocket()
     {
@@ -345,7 +345,7 @@ class TcpGeneralTest : public TestCase
     }
 
     /**
-     * \brief Execute the tcp test
+     * @brief Execute the tcp test
      *
      * As environment, two socket are connected through a SimpleChannel. Each device
      * has an MTU of 1500 bytes, and the application starts to send packet at
@@ -358,274 +358,274 @@ class TcpGeneralTest : public TestCase
      *
      * Please do not use any Config:: statements.
      *
-     * \see ConfigureEnvironment
+     * @see ConfigureEnvironment
      */
     void DoRun() override;
 
     /**
-     * \brief Change the configuration of the environment
+     * @brief Change the configuration of the environment
      */
     virtual void ConfigureEnvironment();
 
     /**
-     * \brief Change the configuration of the socket properties
+     * @brief Change the configuration of the socket properties
      */
     virtual void ConfigureProperties();
 
     /**
-     * \brief Teardown the TCP test
+     * @brief Teardown the TCP test
      */
     void DoTeardown() override;
 
     /**
-     * \brief Scheduled at 0.0, SENDER starts the connection to RECEIVER
+     * @brief Scheduled at 0.0, SENDER starts the connection to RECEIVER
      */
     void DoConnect();
 
     /**
-     * \brief Packet received
+     * @brief Packet received
      *
      * The method processes the packet (application-layer)
-     * \param socket socket which has received the packet
+     * @param socket socket which has received the packet
      */
     virtual void ReceivePacket(Ptr<Socket> socket);
 
     /**
-     * \brief Send packets to other endpoint
+     * @brief Send packets to other endpoint
      *
-     * \param socket Socket
-     * \param pktSize size of the packet
-     * \param pktCount number of packets to send
-     * \param pktInterval interval between packet (application-level)
+     * @param socket Socket
+     * @param pktSize size of the packet
+     * @param pktCount number of packets to send
+     * @param pktInterval interval between packet (application-level)
      */
     void SendPacket(Ptr<Socket> socket, uint32_t pktSize, uint32_t pktCount, Time pktInterval);
 
     /**
-     * \brief Get the segment size of the node specified
+     * @brief Get the segment size of the node specified
      *
-     * \param who node to get the parameter from
+     * @param who node to get the parameter from
      *
-     * \return segment size of the specified node
+     * @return segment size of the specified node
      */
     uint32_t GetSegSize(SocketWho who);
 
     /**
-     * \brief Get the highest tx mark of the node specified
+     * @brief Get the highest tx mark of the node specified
      *
-     * \param who node to get the parameter from
+     * @param who node to get the parameter from
      *
-     * \return mark of the specified node
+     * @return mark of the specified node
      */
     SequenceNumber32 GetHighestTxMark(SocketWho who);
 
     /**
-     * \brief Get the retransmission threshold
-     * \param who node to get the parameter from
-     * \return retransmission threshold
+     * @brief Get the retransmission threshold
+     * @param who node to get the parameter from
+     * @return retransmission threshold
      */
     uint32_t GetReTxThreshold(SocketWho who);
 
     /**
-     * \brief Get the initial slow start threshold
-     * \param who node to get the parameter from
-     * \return initial slow start threshold
+     * @brief Get the initial slow start threshold
+     * @param who node to get the parameter from
+     * @return initial slow start threshold
      */
     uint32_t GetInitialSsThresh(SocketWho who);
 
     /**
-     * \brief Get the initial congestion window
-     * \param who node to get the parameter from
-     * \return initial cwnd
+     * @brief Get the initial congestion window
+     * @param who node to get the parameter from
+     * @return initial cwnd
      */
     uint32_t GetInitialCwnd(SocketWho who);
 
     /**
-     * \brief Get the number of dupack received
-     * \param who node to get the parameter from
-     * \return number of dupack
+     * @brief Get the number of dupack received
+     * @param who node to get the parameter from
+     * @return number of dupack
      */
     uint32_t GetDupAckCount(SocketWho who);
 
     /**
-     * \brief Get the number of delayed ack (if present)
-     * \param who node to get the parameter from
-     * \return number of ack we will wait before sending an ACK
+     * @brief Get the number of delayed ack (if present)
+     * @param who node to get the parameter from
+     * @return number of ack we will wait before sending an ACK
      */
     uint32_t GetDelAckCount(SocketWho who);
 
     /**
-     * \brief Get the timeout of delayed ack (if present)
-     * \param who node to get the parameter from
-     * \return time we will wait before sending an ACK
+     * @brief Get the timeout of delayed ack (if present)
+     * @param who node to get the parameter from
+     * @return time we will wait before sending an ACK
      */
     Time GetDelAckTimeout(SocketWho who);
 
     /**
-     * \brief Get the retransmission time
+     * @brief Get the retransmission time
      *
-     * \param who node to get the parameter from
-     * \return calculated RTO time
+     * @param who node to get the parameter from
+     * @return calculated RTO time
      */
     Time GetRto(SocketWho who);
 
     /**
-     * \brief Get the minimum RTO attribute
+     * @brief Get the minimum RTO attribute
      *
-     * \param who node to get the parameter from
-     * \return minimum RTO time
+     * @param who node to get the parameter from
+     * @return minimum RTO time
      */
     Time GetMinRto(SocketWho who);
 
     /**
-     * \brief Get the retransmission time for the SYN segments
+     * @brief Get the retransmission time for the SYN segments
      *
-     * \param who node to get the parameter from
-     * \return SYN segments RTO time
+     * @param who node to get the parameter from
+     * @return SYN segments RTO time
      */
     Time GetConnTimeout(SocketWho who);
 
     /**
-     * \brief Get the Rtt estimator of the socket
+     * @brief Get the Rtt estimator of the socket
      *
-     * \param who node to get the parameter from
-     * \return Rtt estimator
+     * @param who node to get the parameter from
+     * @return Rtt estimator
      */
     Ptr<RttEstimator> GetRttEstimator(SocketWho who);
 
     /**
-     * \brief Get the clock granularity attribute
+     * @brief Get the clock granularity attribute
      *
-     * \param who node to get the parameter from
-     * \return clock granularity
+     * @param who node to get the parameter from
+     * @return clock granularity
      */
     Time GetClockGranularity(SocketWho who);
 
     /**
-     * \brief Get the state of the TCP state machine
+     * @brief Get the state of the TCP state machine
      *
-     * \param who socket where check the parameter
-     * \return the state of the socket
+     * @param who socket where check the parameter
+     * @return the state of the socket
      */
     TcpSocket::TcpStates_t GetTcpState(SocketWho who);
 
     /**
-     * \brief Get the TCB from selected socket
+     * @brief Get the TCB from selected socket
      *
-     * \param who socket where get the TCB
-     * \return the transmission control block
+     * @param who socket where get the TCB
+     * @return the transmission control block
      */
     Ptr<TcpSocketState> GetTcb(SocketWho who);
 
     /**
-     * \brief Get the Rx buffer from selected socket
+     * @brief Get the Rx buffer from selected socket
      *
-     * \param who socket where get the TCB
-     * \return the rx buffer
+     * @param who socket where get the TCB
+     * @return the rx buffer
      */
     Ptr<TcpRxBuffer> GetRxBuffer(SocketWho who);
 
     /**
-     * \brief Get the Tx buffer from selected socket
+     * @brief Get the Tx buffer from selected socket
      *
-     * \param who socket where get the TCB
-     * \return the tx buffer
+     * @param who socket where get the TCB
+     * @return the tx buffer
      */
     Ptr<TcpTxBuffer> GetTxBuffer(SocketWho who);
 
     /**
-     * \brief Get the rWnd of the selected socket
+     * @brief Get the rWnd of the selected socket
      *
-     * \param who socket where check the parameter
-     * \return the received advertised window
+     * @param who socket where check the parameter
+     * @return the received advertised window
      */
     uint32_t GetRWnd(SocketWho who);
 
     /**
-     * \brief Get the persistent event of the selected socket
+     * @brief Get the persistent event of the selected socket
      *
-     * \param who socket where check the parameter
-     * \return the persistent event in the selected socket
+     * @param who socket where check the parameter
+     * @return the persistent event in the selected socket
      */
     EventId GetPersistentEvent(SocketWho who);
 
     /**
-     * \brief Get the persistent timeout of the selected socket
+     * @brief Get the persistent timeout of the selected socket
      *
-     * \param who socket where check the parameter
-     * \return the persistent timeout in the selected socket
+     * @param who socket where check the parameter
+     * @return the persistent timeout in the selected socket
      */
     Time GetPersistentTimeout(SocketWho who);
 
     /**
-     * \brief Forcefully set a defined size for rx buffer
+     * @brief Forcefully set a defined size for rx buffer
      *
-     * \param who socket to force
-     * \param size size of the rx buffer
+     * @param who socket to force
+     * @param size size of the rx buffer
      */
     void SetRcvBufSize(SocketWho who, uint32_t size);
 
     /**
-     * \brief Forcefully set the segment size
+     * @brief Forcefully set the segment size
      *
-     * \param who socket to force
-     * \param segmentSize segmentSize
+     * @param who socket to force
+     * @param segmentSize segmentSize
      */
     void SetSegmentSize(SocketWho who, uint32_t segmentSize);
 
     /**
-     * \brief Forcefully set the initial cwnd
+     * @brief Forcefully set the initial cwnd
      *
-     * \param who socket to force
-     * \param initialCwnd size of the initial cwnd (segments)
+     * @param who socket to force
+     * @param initialCwnd size of the initial cwnd (segments)
      */
     void SetInitialCwnd(SocketWho who, uint32_t initialCwnd);
 
     /**
-     * \brief Forcefully set the delayed acknowledgement count
+     * @brief Forcefully set the delayed acknowledgement count
      *
-     * \param who socket to force
-     * \param count value of delayed ACKs
+     * @param who socket to force
+     * @param count value of delayed ACKs
      */
     void SetDelAckMaxCount(SocketWho who, uint32_t count);
 
     /**
-     * \brief Forcefully set the ECN mode of use
+     * @brief Forcefully set the ECN mode of use
      *
-     * \param who socket to force
-     * \param useEcn Value representing the mode of ECN usage requested
+     * @param who socket to force
+     * @param useEcn Value representing the mode of ECN usage requested
      */
     void SetUseEcn(SocketWho who, TcpSocketState::UseEcn_t useEcn);
 
     /**
-     * \brief Enable or disable pacing in the TCP socket
+     * @brief Enable or disable pacing in the TCP socket
      *
-     * \param who socket
-     * \param pacing Boolean to enable or disable pacing
+     * @param who socket
+     * @param pacing Boolean to enable or disable pacing
      */
     void SetPacingStatus(SocketWho who, bool pacing);
 
     /**
-     * \brief Enable or disable pacing of the initial window
+     * @brief Enable or disable pacing of the initial window
      *
-     * \param who socket
-     * \param paceWindow Boolean to enable or disable pacing of initial window
+     * @param who socket
+     * @param paceWindow Boolean to enable or disable pacing of initial window
      */
     void SetPaceInitialWindow(SocketWho who, bool paceWindow);
 
     /**
-     * \brief Forcefully set the initial ssthresh
+     * @brief Forcefully set the initial ssthresh
      *
-     * \param who socket to force
-     * \param initialSsThresh Initial slow start threshold (bytes)
+     * @param who socket to force
+     * @param initialSsThresh Initial slow start threshold (bytes)
      */
     void SetInitialSsThresh(SocketWho who, uint32_t initialSsThresh);
 
     /**
-     * \brief Set app packet size
+     * @brief Set app packet size
      *
      * The application will generate packet of this size.
      *
-     * \param pktSize size of the packet
+     * @param pktSize size of the packet
      */
     void SetAppPktSize(uint32_t pktSize)
     {
@@ -633,11 +633,11 @@ class TcpGeneralTest : public TestCase
     }
 
     /**
-     * \brief Set app packet count
+     * @brief Set app packet count
      *
      * The application will generate this count of packets.
      *
-     * \param pktCount count of packets to generate
+     * @param pktCount count of packets to generate
      */
     void SetAppPktCount(uint32_t pktCount)
     {
@@ -645,9 +645,9 @@ class TcpGeneralTest : public TestCase
     }
 
     /**
-     * \brief Interval between app-generated packet
+     * @brief Interval between app-generated packet
      *
-     * \param pktInterval interval
+     * @param pktInterval interval
      */
     void SetAppPktInterval(Time pktInterval)
     {
@@ -655,9 +655,9 @@ class TcpGeneralTest : public TestCase
     }
 
     /**
-     * \brief Propagation delay of the bottleneck link
+     * @brief Propagation delay of the bottleneck link
      *
-     * \param propDelay propagation delay
+     * @param propDelay propagation delay
      */
     void SetPropagationDelay(Time propDelay)
     {
@@ -665,9 +665,9 @@ class TcpGeneralTest : public TestCase
     }
 
     /**
-     * \brief Set the initial time at which the application sends the first data packet
+     * @brief Set the initial time at which the application sends the first data packet
      *
-     * \param startTime start time
+     * @param startTime start time
      */
     void SetTransmitStart(Time startTime)
     {
@@ -675,9 +675,9 @@ class TcpGeneralTest : public TestCase
     }
 
     /**
-     * \brief Congestion control of the sender socket
+     * @brief Congestion control of the sender socket
      *
-     * \param congControl typeid of the congestion control algorithm
+     * @param congControl typeid of the congestion control algorithm
      */
     void SetCongestionControl(TypeId congControl)
     {
@@ -685,9 +685,9 @@ class TcpGeneralTest : public TestCase
     }
 
     /**
-     * \brief recovery algorithm of the sender socket
+     * @brief recovery algorithm of the sender socket
      *
-     * \param recovery typeid of the recovery algorithm
+     * @param recovery typeid of the recovery algorithm
      */
     void SetRecoveryAlgorithm(TypeId recovery)
     {
@@ -695,9 +695,9 @@ class TcpGeneralTest : public TestCase
     }
 
     /**
-     * \brief MTU of the bottleneck link
+     * @brief MTU of the bottleneck link
      *
-     * \param mtu MTU
+     * @param mtu MTU
      */
     void SetMTU(uint32_t mtu)
     {
@@ -705,9 +705,9 @@ class TcpGeneralTest : public TestCase
     }
 
     /**
-     * \brief State on Ack state machine changes
-     * \param oldValue old value
-     * \param newValue new value
+     * @brief State on Ack state machine changes
+     * @param oldValue old value
+     * @param newValue new value
      */
     virtual void CongStateTrace(const TcpSocketState::TcpCongState_t oldValue [[maybe_unused]],
                                 const TcpSocketState::TcpCongState_t newValue [[maybe_unused]])
@@ -715,20 +715,20 @@ class TcpGeneralTest : public TestCase
     }
 
     /**
-     * \brief Tracks the congestion window changes
+     * @brief Tracks the congestion window changes
      *
-     * \param oldValue old value
-     * \param newValue new value
+     * @param oldValue old value
+     * @param newValue new value
      */
     virtual void CWndTrace(uint32_t oldValue [[maybe_unused]], uint32_t newValue [[maybe_unused]])
     {
     }
 
     /**
-     * \brief Tracks the inflated congestion window changes
+     * @brief Tracks the inflated congestion window changes
      *
-     * \param oldValue old value
-     * \param newValue new value
+     * @param oldValue old value
+     * @param newValue new value
      */
     virtual void CWndInflTrace(uint32_t oldValue [[maybe_unused]],
                                uint32_t newValue [[maybe_unused]])
@@ -736,24 +736,24 @@ class TcpGeneralTest : public TestCase
     }
 
     /**
-     * \brief Rtt changes
+     * @brief Rtt changes
      *
      * This applies only for sender socket.
      *
-     * \param oldTime old value
-     * \param newTime new value
+     * @param oldTime old value
+     * @param newTime new value
      */
     virtual void RttTrace(Time oldTime [[maybe_unused]], Time newTime [[maybe_unused]])
     {
     }
 
     /**
-     * \brief Slow start threshold changes
+     * @brief Slow start threshold changes
      *
      * This applies only for sender socket.
      *
-     * \param oldValue old value
-     * \param newValue new value
+     * @param oldValue old value
+     * @param newValue new value
      */
     virtual void SsThreshTrace(uint32_t oldValue [[maybe_unused]],
                                uint32_t newValue [[maybe_unused]])
@@ -761,12 +761,12 @@ class TcpGeneralTest : public TestCase
     }
 
     /**
-     * \brief Bytes in flight changes
+     * @brief Bytes in flight changes
      *
      * This applies only for sender socket.
      *
-     * \param oldValue old value
-     * \param newValue new value
+     * @param oldValue old value
+     * @param newValue new value
      */
     virtual void BytesInFlightTrace(uint32_t oldValue [[maybe_unused]],
                                     uint32_t newValue [[maybe_unused]])
@@ -774,24 +774,24 @@ class TcpGeneralTest : public TestCase
     }
 
     /**
-     * \brief RTO changes
+     * @brief RTO changes
      *
      * This applies only for sender socket.
      *
-     * \param oldValue old value
-     * \param newValue new value
+     * @param oldValue old value
+     * @param newValue new value
      */
     virtual void RtoTrace(Time oldValue [[maybe_unused]], Time newValue [[maybe_unused]])
     {
     }
 
     /**
-     * \brief Next tx seq changes
+     * @brief Next tx seq changes
      *
      * This applies only for sender socket.
      *
-     * \param oldValue old value
-     * \param newValue new value
+     * @param oldValue old value
+     * @param newValue new value
      */
     virtual void NextTxSeqTrace(SequenceNumber32 oldValue [[maybe_unused]],
                                 SequenceNumber32 newValue [[maybe_unused]])
@@ -799,12 +799,12 @@ class TcpGeneralTest : public TestCase
     }
 
     /**
-     * \brief Highest tx seq changes
+     * @brief Highest tx seq changes
      *
      * This applies only for sender socket.
      *
-     * \param oldValue old value
-     * \param newValue new value
+     * @param oldValue old value
+     * @param newValue new value
      */
     virtual void HighestTxSeqTrace(SequenceNumber32 oldValue [[maybe_unused]],
                                    SequenceNumber32 newValue [[maybe_unused]])
@@ -812,63 +812,63 @@ class TcpGeneralTest : public TestCase
     }
 
     /**
-     * \brief Track the rate value of TcpRateLinux.
-     * \param rate updated value of TcpRate.
+     * @brief Track the rate value of TcpRateLinux.
+     * @param rate updated value of TcpRate.
      */
     virtual void RateUpdatedTrace(const TcpRateLinux::TcpRateConnection& rate [[maybe_unused]])
     {
     }
 
     /**
-     * \brief Track the rate sample value of TcpRateLinux.
-     * \param sample updated value of TcpRateSample.
+     * @brief Track the rate sample value of TcpRateLinux.
+     * @param sample updated value of TcpRateSample.
      */
     virtual void RateSampleUpdatedTrace(const TcpRateLinux::TcpRateSample& sample [[maybe_unused]])
     {
     }
 
     /**
-     * \brief Socket closed normally
-     * \param who the socket closed (SENDER or RECEIVER)
+     * @brief Socket closed normally
+     * @param who the socket closed (SENDER or RECEIVER)
      */
     virtual void NormalClose(SocketWho who [[maybe_unused]])
     {
     }
 
     /**
-     * \brief Socket closed with an error
+     * @brief Socket closed with an error
      *
-     * \param who the socket closed (SENDER or RECEIVER)
+     * @param who the socket closed (SENDER or RECEIVER)
      */
     virtual void ErrorClose(SocketWho who [[maybe_unused]])
     {
-        /** \todo indicate the error */
+        /** @todo indicate the error */
     }
 
     /**
-     * \brief Drop on the queue
-     * \param who where the drop occurred (SENDER or RECEIVER)
+     * @brief Drop on the queue
+     * @param who where the drop occurred (SENDER or RECEIVER)
      */
     virtual void QueueDrop(SocketWho who [[maybe_unused]])
     {
     }
 
     /**
-     * \brief Link drop
-     * \param who where the drop occurred (SENDER or RECEIVER)
+     * @brief Link drop
+     * @param who where the drop occurred (SENDER or RECEIVER)
      */
     virtual void PhyDrop(SocketWho who [[maybe_unused]])
     {
     }
 
     /**
-     * \brief Received ack
+     * @brief Received ack
      *
      * Invoked when an ACK is received (no processing is done yet)
      *
-     * \param tcb Transmission Control Block
-     * \param h the header of segment
-     * \param who the socket which has received the ACK (SENDER or RECEIVER)
+     * @param tcb Transmission Control Block
+     * @param h the header of segment
+     * @param who the socket which has received the ACK (SENDER or RECEIVER)
      */
     virtual void RcvAck(const Ptr<const TcpSocketState> tcb [[maybe_unused]],
                         const TcpHeader& h [[maybe_unused]],
@@ -877,13 +877,13 @@ class TcpGeneralTest : public TestCase
     }
 
     /**
-     * \brief Processed ack
+     * @brief Processed ack
      *
      * Invoked after the processing of the ACK
      *
-     * \param tcb Transmission Control Block
-     * \param h the header of segment
-     * \param who the socket which has processed the ACK (SENDER or RECEIVER)
+     * @param tcb Transmission Control Block
+     * @param h the header of segment
+     * @param who the socket which has processed the ACK (SENDER or RECEIVER)
      */
     virtual void ProcessedAck(const Ptr<const TcpSocketState> tcb [[maybe_unused]],
                               const TcpHeader& h [[maybe_unused]],
@@ -892,28 +892,28 @@ class TcpGeneralTest : public TestCase
     }
 
     /**
-     * \brief Packet transmitted down to IP layer
+     * @brief Packet transmitted down to IP layer
      *
-     * \param p packet
-     * \param h header
-     * \param who the socket which has received the packet (SENDER or RECEIVER)
+     * @param p packet
+     * @param h header
+     * @param who the socket which has received the packet (SENDER or RECEIVER)
      */
     virtual void Tx(const Ptr<const Packet> p, const TcpHeader& h, SocketWho who);
 
     /**
-     * \brief Packet received from IP layer
+     * @brief Packet received from IP layer
      *
-     * \param p packet
-     * \param h header
-     * \param who  the socket which has received the packet (SENDER or RECEIVER)
+     * @param p packet
+     * @param h header
+     * @param who  the socket which has received the packet (SENDER or RECEIVER)
      */
     virtual void Rx(const Ptr<const Packet> p, const TcpHeader& h, SocketWho who);
 
     /**
-     * \brief Rto has expired
+     * @brief Rto has expired
      *
-     * \param tcb Transmission control block
-     * \param who where the RTO has expired (SENDER or RECEIVER)
+     * @param tcb Transmission control block
+     * @param who where the RTO has expired (SENDER or RECEIVER)
      */
     virtual void AfterRTOExpired(const Ptr<const TcpSocketState> tcb [[maybe_unused]],
                                  SocketWho who [[maybe_unused]])
@@ -921,10 +921,10 @@ class TcpGeneralTest : public TestCase
     }
 
     /**
-     * \brief Rto has expired
+     * @brief Rto has expired
      *
-     * \param tcb Transmission control block
-     * \param who where the RTO has expired (SENDER or RECEIVER)
+     * @param tcb Transmission control block
+     * @param who where the RTO has expired (SENDER or RECEIVER)
      */
     virtual void BeforeRTOExpired(const Ptr<const TcpSocketState> tcb [[maybe_unused]],
                                   SocketWho who [[maybe_unused]])
@@ -932,11 +932,11 @@ class TcpGeneralTest : public TestCase
     }
 
     /**
-     * \brief Updated the Rtt history
-     * \param seq Sequence inserted
-     * \param sz size
-     * \param isRetransmission self-explanatory
-     * \param who where the rtt history was updated
+     * @brief Updated the Rtt history
+     * @param seq Sequence inserted
+     * @param sz size
+     * @param isRetransmission self-explanatory
+     * @param who where the rtt history was updated
      */
     virtual void UpdatedRttHistory(const SequenceNumber32& seq [[maybe_unused]],
                                    uint32_t sz [[maybe_unused]],
@@ -946,25 +946,25 @@ class TcpGeneralTest : public TestCase
     }
 
     /**
-     * \brief Notifying application for sent data
+     * @brief Notifying application for sent data
      *
-     * \param size the amount of bytes transmitted
-     * \param who where the RTO has expired (SENDER or RECEIVER)
+     * @param size the amount of bytes transmitted
+     * @param who where the RTO has expired (SENDER or RECEIVER)
      */
     virtual void DataSent(uint32_t size [[maybe_unused]], SocketWho who [[maybe_unused]])
     {
     }
 
     /**
-     * \brief Performs the (eventual) final checks through test asserts
+     * @brief Performs the (eventual) final checks through test asserts
      */
     virtual void FinalChecks()
     {
     }
 
     /**
-     * \brief Get the channel Propagation Delay
-     * \return propagation delay of the channel
+     * @brief Get the channel Propagation Delay
+     * @return propagation delay of the channel
      */
     Time GetPropagationDelay() const
     {
@@ -972,8 +972,8 @@ class TcpGeneralTest : public TestCase
     }
 
     /**
-     * \brief Get the data start time
-     * \return start time of data packets
+     * @brief Get the data start time
+     * @return start time of data packets
      */
     Time GetStartTime() const
     {
@@ -981,8 +981,8 @@ class TcpGeneralTest : public TestCase
     }
 
     /**
-     * \brief Get the MTU of the environment
-     * \return MTU of the environment
+     * @brief Get the MTU of the environment
+     * @return MTU of the environment
      */
     uint32_t GetMtu() const
     {
@@ -990,8 +990,8 @@ class TcpGeneralTest : public TestCase
     }
 
     /**
-     * \brief Get the application packet size
-     * \return application packet size
+     * @brief Get the application packet size
+     * @return application packet size
      */
     uint32_t GetPktSize() const
     {
@@ -999,8 +999,8 @@ class TcpGeneralTest : public TestCase
     }
 
     /**
-     * \brief Get the number of application packets
-     * \return count of application packets to be generated
+     * @brief Get the number of application packets
+     * @return count of application packets to be generated
      */
     uint32_t GetPktCount() const
     {
@@ -1008,9 +1008,9 @@ class TcpGeneralTest : public TestCase
     }
 
     /**
-     * \brief Get the interval to wait for each packet sent down from application
+     * @brief Get the interval to wait for each packet sent down from application
      * to TCP
-     * \return interval between packet
+     * @return interval between packet
      */
     Time GetPktInterval() const
     {
@@ -1039,71 +1039,71 @@ class TcpGeneralTest : public TestCase
     // De-multiplexing callbacks.
 
     /**
-     * \brief Normal Close Callback.
-     * \param socket The socket.
+     * @brief Normal Close Callback.
+     * @param socket The socket.
      */
     void NormalCloseCb(Ptr<Socket> socket);
     /**
-     * \brief Error Close Callback.
-     * \param socket The socket.
+     * @brief Error Close Callback.
+     * @param socket The socket.
      */
     void ErrorCloseCb(Ptr<Socket> socket);
     /**
-     * \brief Queue Drop Callback.
-     * \param context The context.
-     * \param p The packet.
+     * @brief Queue Drop Callback.
+     * @param context The context.
+     * @param p The packet.
      */
     void QueueDropCb(std::string context, Ptr<const Packet> p);
     /**
-     * \brief Drop at Phy layer Callback.
-     * \param context The context.
-     * \param p The packet.
+     * @brief Drop at Phy layer Callback.
+     * @param context The context.
+     * @param p The packet.
      */
     void PhyDropCb(std::string context, Ptr<const Packet> p);
     /**
-     * \brief Receive ACK Callback.
-     * \param p The packet.
-     * \param h TCP header.
-     * \param tcp The TCP socket.
+     * @brief Receive ACK Callback.
+     * @param p The packet.
+     * @param h TCP header.
+     * @param tcp The TCP socket.
      */
     void RcvAckCb(Ptr<const Packet> p, const TcpHeader& h, Ptr<const TcpSocketBase> tcp);
     /**
-     * \brief ACK processed Callback.
-     * \param p The packet.
-     * \param h TCP header.
-     * \param tcp The TCP socket.
+     * @brief ACK processed Callback.
+     * @param p The packet.
+     * @param h TCP header.
+     * @param tcp The TCP socket.
      */
     void ProcessedAckCb(Ptr<const Packet> p, const TcpHeader& h, Ptr<const TcpSocketBase> tcp);
     /**
-     * \brief Tx packet Callback.
-     * \param p The packet.
-     * \param h TCP header.
-     * \param tcp The TCP socket.
+     * @brief Tx packet Callback.
+     * @param p The packet.
+     * @param h TCP header.
+     * @param tcp The TCP socket.
      */
     void TxPacketCb(const Ptr<const Packet> p,
                     const TcpHeader& h,
                     const Ptr<const TcpSocketBase> tcp);
     /**
-     * \brief Rx packet Callback.
-     * \param p The packet.
-     * \param h TCP header.
-     * \param tcp The TCP socket.
+     * @brief Rx packet Callback.
+     * @param p The packet.
+     * @param h TCP header.
+     * @param tcp The TCP socket.
      */
     void RxPacketCb(const Ptr<const Packet> p,
                     const TcpHeader& h,
                     const Ptr<const TcpSocketBase> tcp);
     /**
-     * \brief RTO expired Callback.
-     * \param tcb Transmission control block.
-     * \param tcp The TCP socket.
+     * @brief RTO expired Callback.
+     * @param tcb Transmission control block.
+     * @param tcp The TCP socket.
      */
     void RtoExpiredCb(const Ptr<const TcpSocketState> tcb, const Ptr<const TcpSocketBase> tcp);
     /**
-     * \brief Update RTT with new data.
-     * \param tcp The TCP socket.
-     * \param seq The sequence number.
-     * \param sz The segment size.
-     * \param isRetransmission True if packet is a retransmission.
+     * @brief Update RTT with new data.
+     * @param tcp The TCP socket.
+     * @param seq The sequence number.
+     * @param sz The segment size.
+     * @param isRetransmission True if packet is a retransmission.
      */
     void UpdateRttHistoryCb(Ptr<const TcpSocketBase> tcp,
                             const SequenceNumber32& seq,
@@ -1111,35 +1111,35 @@ class TcpGeneralTest : public TestCase
                             bool isRetransmission);
 
     /**
-     * \brief Invoked after a retransmit event.
-     * \param tcb Transmission control block.
-     * \param tcp The TCP socket.
+     * @brief Invoked after a retransmit event.
+     * @param tcb Transmission control block.
+     * @param tcp The TCP socket.
      */
     void AfterRetransmitCb(const Ptr<const TcpSocketState> tcb, const Ptr<const TcpSocketBase> tcp);
 
     /**
-     * \brief Invoked before a retransmit event.
-     * \param tcb Transmission control block.
-     * \param tcp The TCP socket.
+     * @brief Invoked before a retransmit event.
+     * @param tcb Transmission control block.
+     * @param tcp The TCP socket.
      */
     void BeforeRetransmitCb(const Ptr<const TcpSocketState> tcb,
                             const Ptr<const TcpSocketBase> tcp);
 
     /**
-     * \brief Data sent Callback.
-     * \param socket The socket.
-     * \param size The data size.
+     * @brief Data sent Callback.
+     * @param socket The socket.
+     * @param size The data size.
      */
     void DataSentCb(Ptr<Socket> socket, uint32_t size);
     /**
-     * \brief Fork Callback.
-     * \param tcp The TCP socket.
+     * @brief Fork Callback.
+     * @param tcp The TCP socket.
      */
     void ForkCb(Ptr<TcpSocketMsgBase> tcp);
     /**
-     * \brief Handle an accept connection.
-     * \param socket The socket.
-     * \param from The sender.
+     * @brief Handle an accept connection.
+     * @param socket The socket.
+     * @param from The sender.
      */
     void HandleAccept(Ptr<Socket> socket, const Address& from);
 

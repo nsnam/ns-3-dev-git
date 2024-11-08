@@ -24,9 +24,9 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("LteX2HandoverMeasuresTest");
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief CheckPointEvent structure
+ * @brief CheckPointEvent structure
  */
 struct CheckPointEvent
 {
@@ -39,11 +39,11 @@ struct CheckPointEvent
     /**
      *  Constructor
      *
-     * \param start the start time
-     * \param stop the stop time
-     * \param interval the interval time
-     * \param ueIndex the UE index
-     * \param enbIndex the ENB index
+     * @param start the start time
+     * @param stop the stop time
+     * @param interval the interval time
+     * @param ueIndex the UE index
+     * @param enbIndex the ENB index
      */
     CheckPointEvent(Time start, Time stop, Time interval, uint32_t ueIndex, uint32_t enbIndex)
         : checkStartTime(start),
@@ -56,9 +56,9 @@ struct CheckPointEvent
 };
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief Test different X2 handover measures and algorithms, e.g. A2A4RsrqHandoverAlgorithm and
+ * @brief Test different X2 handover measures and algorithms, e.g. A2A4RsrqHandoverAlgorithm and
  * A3RsrpHandoverAlgorithm. Test defines different handover parameters and scenario configurations.
  */
 class LteX2HandoverMeasuresTestCase : public TestCase
@@ -67,17 +67,17 @@ class LteX2HandoverMeasuresTestCase : public TestCase
     /**
      * Constructor.
      *
-     * \param nEnbs number of eNBs in the test
-     * \param nUes number of UEs in the test
-     * \param nDedicatedBearers number of bearers to be activated per UE
-     * \param checkPointEventList list of check point events
-     * \param checkPointEventListName name of check point event list
-     * \param useUdp true if UDP is to be used, false if TCP is to be used
-     * \param schedulerType type of scheduler to be used (e.g. "ns3::PfFfMacScheduler")
-     * \param handoverAlgorithmType type of handover algorithm to be used (e.g.
+     * @param nEnbs number of eNBs in the test
+     * @param nUes number of UEs in the test
+     * @param nDedicatedBearers number of bearers to be activated per UE
+     * @param checkPointEventList list of check point events
+     * @param checkPointEventListName name of check point event list
+     * @param useUdp true if UDP is to be used, false if TCP is to be used
+     * @param schedulerType type of scheduler to be used (e.g. "ns3::PfFfMacScheduler")
+     * @param handoverAlgorithmType type of handover algorithm to be used (e.g.
      * "ns3::A3RsrpHandoverAlgorithm")
-     * \param admitHo true if Ho is admitted, false if it is not admitted
-     * \param useIdealRrc true if ideal RRC is to be used, false if real RRC is to be used
+     * @param admitHo true if Ho is admitted, false if it is not admitted
+     * @param useIdealRrc true if ideal RRC is to be used, false if real RRC is to be used
      */
     LteX2HandoverMeasuresTestCase(uint32_t nEnbs,
                                   uint32_t nUes,
@@ -93,17 +93,17 @@ class LteX2HandoverMeasuresTestCase : public TestCase
   private:
     /**
      * Build name string
-     * \param nEnbs number of eNBs in the test
-     * \param nUes number of UEs in the test
-     * \param nDedicatedBearers number of bearers to be activated per UE
-     * \param checkPointEventListName name of check point event list
-     * \param useUdp true if UDP is to be used, false if TCP is to be used
-     * \param schedulerType the scheduler type
-     * \param handoverAlgorithmType type of handover algorithm to be used (e.g.
+     * @param nEnbs number of eNBs in the test
+     * @param nUes number of UEs in the test
+     * @param nDedicatedBearers number of bearers to be activated per UE
+     * @param checkPointEventListName name of check point event list
+     * @param useUdp true if UDP is to be used, false if TCP is to be used
+     * @param schedulerType the scheduler type
+     * @param handoverAlgorithmType type of handover algorithm to be used (e.g.
      * "ns3::A3RsrpHandoverAlgorithm")
-     * \param admitHo true if Ho is admitted, false if it is not admitted
-     * \param useIdealRrc true if the ideal RRC should be used
-     * \returns the name string
+     * @param admitHo true if Ho is admitted, false if it is not admitted
+     * @param useIdealRrc true if the ideal RRC should be used
+     * @returns the name string
      */
     static std::string BuildNameString(uint32_t nEnbs,
                                        uint32_t nUes,
@@ -117,8 +117,8 @@ class LteX2HandoverMeasuresTestCase : public TestCase
     void DoRun() override;
     /**
      * Check connected function
-     * \param ueDevice the UE device
-     * \param enbDevice the ENB device
+     * @param ueDevice the UE device
+     * @param enbDevice the ENB device
      */
     void CheckConnected(Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice);
 
@@ -137,9 +137,9 @@ class LteX2HandoverMeasuresTestCase : public TestCase
     Ptr<PointToPointEpcHelper> m_epcHelper;           ///< EPC helper
 
     /**
-     * \ingroup lte-test
+     * @ingroup lte-test
      *
-     * \brief BearerData structure
+     * @brief BearerData structure
      */
     struct BearerData
     {
@@ -151,9 +151,9 @@ class LteX2HandoverMeasuresTestCase : public TestCase
     };
 
     /**
-     * \ingroup lte-test
+     * @ingroup lte-test
      *
-     * \brief UeData structure
+     * @brief UeData structure
      */
     struct UeData
     {
@@ -162,13 +162,13 @@ class LteX2HandoverMeasuresTestCase : public TestCase
     };
 
     /**
-     * \brief Save stats  function
-     * \param ueIndex the index of the UE
+     * @brief Save stats  function
+     * @param ueIndex the index of the UE
      */
     void SaveStats(uint32_t ueIndex);
     /**
-     * \brief Check stats  function
-     * \param ueIndex the index of the UE
+     * @brief Check stats  function
+     * @param ueIndex the index of the UE
      */
     void CheckStats(uint32_t ueIndex);
 
@@ -727,9 +727,9 @@ LteX2HandoverMeasuresTestCase::CheckStats(uint32_t ueIndex)
 }
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief Lte X2 Handover Measures Test Suite
+ * @brief Lte X2 Handover Measures Test Suite
  */
 class LteX2HandoverMeasuresTestSuite : public TestSuite
 {
@@ -990,7 +990,7 @@ LteX2HandoverMeasuresTestSuite::LteX2HandoverMeasuresTestSuite()
 } // end of LteX2HandoverMeasuresTestSuite ()
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  * Static variable for test initialization
  */
 static LteX2HandoverMeasuresTestSuite g_lteX2HandoverMeasuresTestSuiteInstance;

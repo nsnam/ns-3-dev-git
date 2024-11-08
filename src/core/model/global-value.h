@@ -15,8 +15,8 @@
 #include <vector>
 
 /**
- * \file
- * \ingroup core
+ * @file
+ * @ingroup core
  * ns3::GlobalValue declaration.
  */
 
@@ -30,9 +30,9 @@ class GlobalValueTestCase;
 }
 
 /**
- * \ingroup core
+ * @ingroup core
  *
- * \brief Hold a so-called 'global value'.
+ * @brief Hold a so-called 'global value'.
  *
  * A GlobalValue will get its value from (in order):
  *   - The initial value configured where it is defined,
@@ -43,13 +43,13 @@ class GlobalValueTestCase;
  * Instances of this class are expected to be allocated as static
  * global variables and should be used to store configurable global state.
  * For example:
- * \code
+ * @code
  *   // source.cc:
  *   static GlobalValue g_myGlobal =
  *     GlobalValue ("myGlobal", "My global value for ...",
  *                  IntegerValue (12),
  *                  MakeIntegerChecker ());
- * \endcode
+ * @endcode
  *
  * GlobalValues can be set directly by calling GlobalValue::SetValue()
  * but they can also be set through the \c NS_GLOBAL_VALUE environment variable.
@@ -72,12 +72,12 @@ class GlobalValue
 
     /**
      * Constructor.
-     * \param [in] name the name of this global value.
-     * \param [in] help some help text which describes the purpose of this
+     * @param [in] name the name of this global value.
+     * @param [in] help some help text which describes the purpose of this
      *        global value.
-     * \param [in] initialValue the value to assign to this global value
+     * @param [in] initialValue the value to assign to this global value
      *        during construction.
-     * \param [in] checker a pointer to an AttributeChecker which can verify
+     * @param [in] checker a pointer to an AttributeChecker which can verify
      *        that any user-supplied value to override the initial
      *        value matches the requested type constraints.
      */
@@ -88,29 +88,29 @@ class GlobalValue
 
     /**
      * Get the name.
-     * \returns The name of this GlobalValue.
+     * @returns The name of this GlobalValue.
      */
     std::string GetName() const;
     /**
      * Get the help string.
-     * \returns The help text of this GlobalValue.
+     * @returns The help text of this GlobalValue.
      */
     std::string GetHelp() const;
     /**
      * Get the value.
-     * \param [out] value The AttributeValue to set to the value
+     * @param [out] value The AttributeValue to set to the value
      *                    of this GlobalValue
      */
     void GetValue(AttributeValue& value) const;
     /**
      * Get the AttributeChecker.
-     * \returns The checker associated to this GlobalValue.
+     * @returns The checker associated to this GlobalValue.
      */
     Ptr<const AttributeChecker> GetChecker() const;
     /**
      * Set the value of this GlobalValue.
-     * \param [in] value the new value to set in this GlobalValue.
-     * \returns \c true if the Global Value was set successfully.
+     * @param [in] value the new value to set in this GlobalValue.
+     * @returns \c true if the Global Value was set successfully.
      */
     bool SetValue(const AttributeValue& value);
 
@@ -121,8 +121,8 @@ class GlobalValue
      * Iterate over the set of GlobalValues until a matching name is found
      * and then set its value with GlobalValue::SetValue.
      *
-     * \param [in] name the name of the global value
-     * \param [in] value the value to set in the requested global value.
+     * @param [in] name the name of the global value
+     * @param [in] value the value to set in the requested global value.
      *
      * This method cannot fail. It will crash if the input is not valid.
      */
@@ -132,31 +132,31 @@ class GlobalValue
      * Iterate over the set of GlobalValues until a matching name is found
      * and then set its value with GlobalValue::SetValue.
      *
-     * \param [in] name the name of the global value
-     * \param [in] value the value to set in the requested global value.
-     * \returns \c true if the value could be set successfully,
+     * @param [in] name the name of the global value
+     * @param [in] value the value to set in the requested global value.
+     * @returns \c true if the value could be set successfully,
      *          \c false otherwise.
      */
     static bool BindFailSafe(std::string name, const AttributeValue& value);
 
     /**
      * The Begin iterator.
-     * \returns An iterator which represents a pointer to the first GlobalValue registered.
+     * @returns An iterator which represents a pointer to the first GlobalValue registered.
      */
     static Iterator Begin();
     /**
      * The End iterator.
-     * \returns An iterator which represents a pointer to the last GlobalValue registered.
+     * @returns An iterator which represents a pointer to the last GlobalValue registered.
      */
     static Iterator End();
 
     /**
      * Finds the GlobalValue with the given name and returns its value
      *
-     * \param [in] name the name of the GlobalValue to be found
-     * \param [out] value where to store the value of the found GlobalValue
+     * @param [in] name the name of the GlobalValue to be found
+     * @param [out] value where to store the value of the found GlobalValue
      *
-     * \return \c true if the GlobalValue was found, \c false otherwise
+     * @return \c true if the GlobalValue was found, \c false otherwise
      */
     static bool GetValueByNameFailSafe(std::string name, AttributeValue& value);
 
@@ -167,8 +167,8 @@ class GlobalValue
      * This method cannot fail, i.e., it will trigger a
      * NS_FATAL_ERROR if the requested GlobalValue is not found.
      *
-     * \param [in] name the name of the GlobalValue to be found
-     * \param [out] value where to store the value of the found GlobalValue
+     * @param [in] name the name of the GlobalValue to be found
+     * @param [out] value where to store the value of the found GlobalValue
      */
     static void GetValueByName(std::string name, AttributeValue& value);
 
@@ -179,7 +179,7 @@ class GlobalValue
     /**
      * Get the static vector of all GlobalValues.
      *
-     * \returns The vector.
+     * @returns The vector.
      */
     static Vector* GetVector();
     /** Initialize from the \c NS_GLOBAL_VALUE environment variable. */

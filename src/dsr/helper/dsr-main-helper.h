@@ -31,9 +31,9 @@ namespace ns3
 {
 
 /**
- * \ingroup dsr
+ * @ingroup dsr
  *
- * \brief Helper class that adds DSR routing to nodes.
+ * @brief Helper class that adds DSR routing to nodes.
  */
 class DsrMainHelper
 {
@@ -45,34 +45,34 @@ class DsrMainHelper
     DsrMainHelper();
     ~DsrMainHelper();
     /**
-     * \brief Construct an DsrMainHelper from another previously initialized instance
+     * @brief Construct an DsrMainHelper from another previously initialized instance
      * (Copy Constructor).
-     * \param o object to copy from
+     * @param o object to copy from
      */
     DsrMainHelper(const DsrMainHelper& o);
     /**
      * Install routing to the nodes
-     * \param dsrHelper The DSR helper class
-     * \param nodes the collection of nodes
+     * @param dsrHelper The DSR helper class
+     * @param nodes the collection of nodes
      */
     void Install(DsrHelper& dsrHelper, NodeContainer nodes);
     /**
      * Set the helper class
-     * \param dsrHelper the DSR helper class
+     * @param dsrHelper the DSR helper class
      */
     void SetDsrHelper(DsrHelper& dsrHelper);
 
   private:
     /**
      * Install routing to a node
-     * \param node the node to install DSR routing
+     * @param node the node to install DSR routing
      */
     void Install(Ptr<Node> node);
     /**
-     * \brief Assignment operator declared private and not implemented to disallow
+     * @brief Assignment operator declared private and not implemented to disallow
      * assignment and prevent the compiler from happily inserting its own.
-     * \param o source object to assign
-     * \return DsrHelper object
+     * @param o source object to assign
+     * @return DsrHelper object
      */
     DsrMainHelper& operator=(const DsrMainHelper& o);
     const DsrHelper* m_dsrHelper; ///< helper class

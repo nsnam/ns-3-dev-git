@@ -26,20 +26,20 @@ using namespace ns3;
 constexpr int MAXTHREADS = 64;
 
 /**
- * \file
- * \ingroup threaded-tests
+ * @file
+ * @ingroup threaded-tests
  * Threaded events test suite
  */
 
 /**
- * \ingroup core-tests
- * \defgroup threaded-tests Threaded events tests
+ * @ingroup core-tests
+ * @defgroup threaded-tests Threaded events tests
  */
 
 /**
- * \ingroup threaded-tests
+ * @ingroup threaded-tests
  *
- * \brief Check threaded event handling with various thread number, schedulers, and  simulator
+ * @brief Check threaded event handling with various thread number, schedulers, and  simulator
  * types.
  */
 class ThreadedSimulatorEventsTestCase : public TestCase
@@ -48,41 +48,41 @@ class ThreadedSimulatorEventsTestCase : public TestCase
     /**
      * Constructor.
      *
-     * \param schedulerFactory The scheduler factory.
-     * \param simulatorType The simulator type.
-     * \param threads The number of threads.
+     * @param schedulerFactory The scheduler factory.
+     * @param simulatorType The simulator type.
+     * @param threads The number of threads.
      */
     ThreadedSimulatorEventsTestCase(ObjectFactory schedulerFactory,
                                     const std::string& simulatorType,
                                     unsigned int threads);
     /**
      * Event A
-     * \param a The Event parameter.
+     * @param a The Event parameter.
      */
     void EventA(int a);
     /**
      * Event B
-     * \param b The Event parameter.
+     * @param b The Event parameter.
      */
     void EventB(int b);
     /**
      * Event C
-     * \param c The Event parameter.
+     * @param c The Event parameter.
      */
     void EventC(int c);
     /**
      * Event D
-     * \param d The Event parameter.
+     * @param d The Event parameter.
      */
     void EventD(int d);
     /**
      * No-op function, records the thread that called it.
-     * \param threadno The thread number.
+     * @param threadno The thread number.
      */
     void DoNothing(unsigned int threadno);
     /**
      * Schedule a thread.
-     * \param context The context.
+     * @param context The context.
      */
     static void SchedulingThread(std::pair<ThreadedSimulatorEventsTestCase*, unsigned int> context);
     /**
@@ -268,9 +268,9 @@ ThreadedSimulatorEventsTestCase::DoRun()
 }
 
 /**
- * \ingroup threaded-tests
+ * @ingroup threaded-tests
  *
- * \brief The threaded simulator Test Suite.
+ * @brief The threaded simulator Test Suite.
  */
 class ThreadedSimulatorTestSuite : public TestSuite
 {

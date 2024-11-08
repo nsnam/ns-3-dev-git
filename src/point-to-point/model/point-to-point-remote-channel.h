@@ -19,9 +19,9 @@ namespace ns3
 {
 
 /**
- * \ingroup point-to-point
+ * @ingroup point-to-point
  *
- * \brief A Remote Point-To-Point Channel
+ * @brief A Remote Point-To-Point Channel
  *
  * This object connects two point-to-point net devices where at least one
  * is not local to this simulator object. It simply override the transmit
@@ -31,29 +31,29 @@ class PointToPointRemoteChannel : public PointToPointChannel
 {
   public:
     /**
-     * \brief Get the TypeId
+     * @brief Get the TypeId
      *
-     * \return The TypeId for this class
+     * @return The TypeId for this class
      */
     static TypeId GetTypeId();
 
     /**
-     * \brief Constructor
+     * @brief Constructor
      */
     PointToPointRemoteChannel();
 
     /**
-     * \brief Deconstructor
+     * @brief Deconstructor
      */
     ~PointToPointRemoteChannel() override;
 
     /**
-     * \brief Transmit the packet
+     * @brief Transmit the packet
      *
-     * \param p Packet to transmit
-     * \param src Source PointToPointNetDevice
-     * \param txTime Transmit time to apply
-     * \returns true if successful (currently always true)
+     * @param p Packet to transmit
+     * @param src Source PointToPointNetDevice
+     * @param txTime Transmit time to apply
+     * @returns true if successful (currently always true)
      */
     bool TransmitStart(Ptr<const Packet> p, Ptr<PointToPointNetDevice> src, Time txTime) override;
 };

@@ -17,7 +17,7 @@ namespace ns3
 {
 
 /**
- * \ingroup spectrum
+ * @ingroup spectrum
  *  Header for the AlohaNoack NetDevice
  *
  */
@@ -25,8 +25,8 @@ class AlohaNoackMacHeader : public Header
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     TypeId GetInstanceTypeId() const override;
@@ -37,23 +37,23 @@ class AlohaNoackMacHeader : public Header
 
     /**
      * Set the source address
-     * \param source the source address
+     * @param source the source address
      */
     void SetSource(Mac48Address source);
     /**
      * Set the destination address
-     * \param destination the destination address
+     * @param destination the destination address
      */
     void SetDestination(Mac48Address destination);
 
     /**
      * Get the source address
-     * \returns the source address
+     * @returns the source address
      */
     Mac48Address GetSource() const;
     /**
      * Get the destination address
-     * \returns the destination address
+     * @returns the destination address
      */
     Mac48Address GetDestination() const;
 

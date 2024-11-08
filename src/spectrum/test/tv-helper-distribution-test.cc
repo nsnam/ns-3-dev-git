@@ -15,7 +15,7 @@ NS_LOG_COMPONENT_DEFINE("TvHelperDistributionTest");
 using namespace ns3;
 
 /**
- * \ingroup spectrum-tests
+ * @ingroup spectrum-tests
  *
  * This test verifies the accuracy of the private GetRandomNumTransmitters()
  * method in the TvSpectrumTransmitterHelper class. The method generates a
@@ -40,7 +40,7 @@ class TvHelperDistributionTestCase : public TestCase
     /**
      * Constructor
      *
-     * \param maxNumTransmitters maximum number of transmitters.
+     * @param maxNumTransmitters maximum number of transmitters.
      */
     TvHelperDistributionTestCase(uint32_t maxNumTransmitters);
     ~TvHelperDistributionTestCase() override;
@@ -49,8 +49,8 @@ class TvHelperDistributionTestCase : public TestCase
     void DoRun() override;
     /**
      * Build the test name
-     * \param maxNumTransmitters maximum number of transmitters.
-     * \return The test name
+     * @param maxNumTransmitters maximum number of transmitters.
+     * @return The test name
      */
     static std::string Name(uint32_t maxNumTransmitters);
     uint32_t m_maxNumTransmitters; //!< Maximum number of transmitters.
@@ -122,7 +122,7 @@ TvHelperDistributionTestCase::DoRun()
 }
 
 /**
- * \ingroup spectrum-tests
+ * @ingroup spectrum-tests
  *
  * Test suite for the TvSpectrumTransmitterHelper class
  */

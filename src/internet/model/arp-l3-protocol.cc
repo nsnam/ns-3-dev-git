@@ -202,7 +202,7 @@ ArpL3Protocol::Receive(Ptr<NetDevice> device,
     }
 
     /**
-     * \internal
+     * @internal
      * Note: we do not update the ARP cache when we receive an ARP request
      *  from an unknown node. See \bugid{107}
      */

@@ -45,9 +45,9 @@ struct GraReplyEntry
     /**
      * Constructor
      *
-     * \param t IPv4 address to reply to
-     * \param f IPv4 address to hear from
-     * \param h gratuitous hold off time
+     * @param t IPv4 address to reply to
+     * @param f IPv4 address to hear from
+     * @param h gratuitous hold off time
      */
     GraReplyEntry(Ipv4Address t, Ipv4Address f, Time h)
         : m_replyTo(t),
@@ -58,15 +58,15 @@ struct GraReplyEntry
 };
 
 /**
- * \ingroup dsr
- * \brief maintain the gratuitous reply
+ * @ingroup dsr
+ * @brief maintain the gratuitous reply
  */
 class DsrGraReply : public Object
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -74,28 +74,28 @@ class DsrGraReply : public Object
     ~DsrGraReply() override;
 
     /// Set the gratuitous reply table size
-    /// \param g The gratuitous reply table size
+    /// @param g The gratuitous reply table size
     void SetGraTableSize(uint32_t g)
     {
         GraReplyTableSize = g;
     }
 
     /// Get the gratuitous reply table size
-    /// \returns The gratuitous reply table size
+    /// @returns The gratuitous reply table size
     uint32_t GetGraTableSize() const
     {
         return GraReplyTableSize;
     }
 
     /// Add a new gratuitous reply entry
-    /// \param graTableEntry The gratuitous reply entry
-    /// \return true on success
+    /// @param graTableEntry The gratuitous reply entry
+    /// @return true on success
     bool AddEntry(GraReplyEntry& graTableEntry);
     /// Update the route entry if found
-    /// \param replyTo Entry directed to
-    /// \param replyFrom Entry heard from
-    /// \param gratReplyHoldoff New gratuitous reply holdoff time
-    /// \return true on success
+    /// @param replyTo Entry directed to
+    /// @param replyFrom Entry heard from
+    /// @param gratReplyHoldoff New gratuitous reply holdoff time
+    /// @return true on success
     bool FindAndUpdate(Ipv4Address replyTo, Ipv4Address replyFrom, Time gratReplyHoldoff);
     /// Remove all expired entries
     void Purge();
@@ -118,8 +118,8 @@ class DsrGraReply : public Object
         /**
          * Check if the entry is expired
          *
-         * \param b GraReplyEntry entry
-         * \return true if expired, false otherwise
+         * @param b GraReplyEntry entry
+         * @return true if expired, false otherwise
          */
         bool operator()(const GraReplyEntry& b) const
         {

@@ -44,13 +44,13 @@ extern bool gVerbose;
     }
 
 /**
- * \ingroup fd-net-device
- * \brief Send the file descriptor back to the code that invoked the creation.
+ * @ingroup fd-net-device
+ * @brief Send the file descriptor back to the code that invoked the creation.
  *
- * \param path The socket address information from the Unix socket we use
+ * @param path The socket address information from the Unix socket we use
  * to send the created socket back to.
- * \param fd The file descriptor we're going to send.
- * \param magic_number A verification number to verify the caller is talking to the
+ * @param fd The file descriptor we're going to send.
+ * @param magic_number A verification number to verify the caller is talking to the
  * right process.
  */
 void SendSocket(const char* path, int fd, const int magic_number);

@@ -30,14 +30,14 @@
 using namespace ns3;
 
 /**
- * \ingroup sixlowpan-tests
+ * @ingroup sixlowpan-tests
  *
- * \brief 6LoWPAN IPHC stateful compression Test
+ * @brief 6LoWPAN IPHC stateful compression Test
  */
 class SixlowpanIphcStatefulImplTest : public TestCase
 {
     /**
-     * \brief Structure to hold the Rx/Tx packets.
+     * @brief Structure to hold the Rx/Tx packets.
      */
     struct Data
     {
@@ -51,13 +51,13 @@ class SixlowpanIphcStatefulImplTest : public TestCase
 
     /**
      * Receive from a MockDevice.
-     * \param device a pointer to the net device which is calling this function
-     * \param packet the packet received
-     * \param protocol the 16 bit protocol number associated with this packet.
-     * \param source the address of the sender
-     * \param destination the address of the receiver
-     * \param packetType type of packet received (broadcast/multicast/unicast/otherhost)
-     * \returns true.
+     * @param device a pointer to the net device which is calling this function
+     * @param packet the packet received
+     * @param protocol the 16 bit protocol number associated with this packet.
+     * @param source the address of the sender
+     * @param destination the address of the receiver
+     * @param packetType type of packet received (broadcast/multicast/unicast/otherhost)
+     * @returns true.
      */
     bool ReceiveFromMockDevice(Ptr<NetDevice> device,
                                Ptr<const Packet> packet,
@@ -68,13 +68,13 @@ class SixlowpanIphcStatefulImplTest : public TestCase
 
     /**
      * Promiscuous receive from a SixLowPanNetDevice.
-     * \param device a pointer to the net device which is calling this function
-     * \param packet the packet received
-     * \param protocol the 16 bit protocol number associated with this packet.
-     * \param source the address of the sender
-     * \param destination the address of the receiver
-     * \param packetType type of packet received (broadcast/multicast/unicast/otherhost)
-     * \returns true.
+     * @param device a pointer to the net device which is calling this function
+     * @param packet the packet received
+     * @param protocol the 16 bit protocol number associated with this packet.
+     * @param source the address of the sender
+     * @param destination the address of the receiver
+     * @param packetType type of packet received (broadcast/multicast/unicast/otherhost)
+     * @returns true.
      */
     bool PromiscReceiveFromSixLowPanDevice(Ptr<NetDevice> device,
                                            Ptr<const Packet> packet,
@@ -85,9 +85,9 @@ class SixlowpanIphcStatefulImplTest : public TestCase
 
     /**
      * Send one packet.
-     * \param device the device to send from
-     * \param from sender address
-     * \param to destination address
+     * @param device the device to send from
+     * @param from sender address
+     * @param to destination address
      */
     void SendOnePacket(Ptr<NetDevice> device, Ipv6Address from, Ipv6Address to);
 
@@ -366,9 +366,9 @@ SixlowpanIphcStatefulImplTest::DoRun()
 }
 
 /**
- * \ingroup sixlowpan-tests
+ * @ingroup sixlowpan-tests
  *
- * \brief 6LoWPAN IPHC TestSuite
+ * @brief 6LoWPAN IPHC TestSuite
  */
 class SixlowpanIphcStatefulTestSuite : public TestSuite
 {

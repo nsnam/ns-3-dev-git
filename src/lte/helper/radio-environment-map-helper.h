@@ -24,7 +24,7 @@ class SpectrumChannel;
 class MobilityModel;
 
 /**
- * \ingroup lte
+ * @ingroup lte
  *
  * Generates a 2D map of the SINR from the strongest transmitter in the
  * downlink of an LTE FDD system. For instructions on usage, please refer to
@@ -40,18 +40,18 @@ class RadioEnvironmentMapHelper : public Object
     void DoDispose() override;
     /**
      * Register this type.
-     * \return The object TypeId.
+     * @return The object TypeId.
      */
     static TypeId GetTypeId();
 
     /**
-     * \return the bandwidth (in num of RBs) over which SINR is calculated
+     * @return the bandwidth (in num of RBs) over which SINR is calculated
      */
     uint16_t GetBandwidth() const;
 
     /**
      *
-     * \param bw  the bandwidth (in num of RBs) over which SINR is calculated
+     * @param bw  the bandwidth (in num of RBs) over which SINR is calculated
      */
     void SetBandwidth(uint16_t bw);
 
@@ -80,10 +80,10 @@ class RadioEnvironmentMapHelper : public Object
      * Mobilize all the listeners to a specified area. Afterwards, schedule a
      * call to PrintAndReset() in 0.5 milliseconds.
      *
-     * \param xMin X coordinate of the first SINR listening point to deploy.
-     * \param xMax X coordinate of the last SINR listening point to deploy.
-     * \param yMin Y coordinate of the first SINR listening point to deploy.
-     * \param yMax Y coordinate of the last SINR listening point to deploy.
+     * @param xMin X coordinate of the first SINR listening point to deploy.
+     * @param xMax X coordinate of the last SINR listening point to deploy.
+     * @param yMin Y coordinate of the first SINR listening point to deploy.
+     * @param yMax Y coordinate of the last SINR listening point to deploy.
      */
     void RunOneIteration(double xMin, double xMax, double yMin, double yMax);
 

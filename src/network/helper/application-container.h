@@ -19,7 +19,7 @@ namespace ns3
 {
 
 /**
- * \brief holds a vector of ns3::Application pointers.
+ * @brief holds a vector of ns3::Application pointers.
  *
  * Typically ns-3 Applications are installed on nodes using an Application
  * helper.  The helper Install method takes a NodeContainer which holds
@@ -42,7 +42,7 @@ class ApplicationContainer
      * been previously instantiated.  The single application is specified
      * by a smart pointer.
      *
-     * \param application The Ptr<Application> to add to the container.
+     * @param application The Ptr<Application> to add to the container.
      */
     ApplicationContainer(Ptr<Application> application);
 
@@ -51,7 +51,7 @@ class ApplicationContainer
      * been previously instantiated and assigned a name using the Object Name
      * Service.  This Application is then specified by its assigned name.
      *
-     * \param name The name of the Application Object to add to the container.
+     * @param name The name of the Application Object to add to the container.
      */
     ApplicationContainer(std::string name);
 
@@ -59,7 +59,7 @@ class ApplicationContainer
     typedef std::vector<Ptr<Application>>::const_iterator Iterator;
 
     /**
-     * \brief Get an iterator which refers to the first Application in the
+     * @brief Get an iterator which refers to the first Application in the
      * container.
      *
      * Applications can be retrieved from the container in two ways.  First,
@@ -67,20 +67,20 @@ class ApplicationContainer
      * This method is used in the iterator method and is typically used in a
      * for-loop to run through the Applications
      *
-     * \code
+     * @code
      *   ApplicationContainer::Iterator i;
      *   for (i = container.Begin (); i != container.End (); ++i)
      *     {
      *       (*i)->method ();  // some Application method
      *     }
-     * \endcode
+     * @endcode
      *
-     * \returns an iterator which refers to the first Application in the container.
+     * @returns an iterator which refers to the first Application in the container.
      */
     Iterator Begin() const;
 
     /**
-     * \brief Get an iterator which indicates past-the-last Application in the
+     * @brief Get an iterator which indicates past-the-last Application in the
      * container.
      *
      * Applications can be retrieved from the container in two ways.  First,
@@ -88,20 +88,20 @@ class ApplicationContainer
      * This method is used in the iterator method and is typically used in a
      * for-loop to run through the Applications
      *
-     * \code
+     * @code
      *   ApplicationContainer::Iterator i;
      *   for (i = container.Begin (); i != container.End (); ++i)
      *     {
      *       (*i)->method ();  // some Application method
      *     }
-     * \endcode
+     * @endcode
      *
-     * \returns an iterator which indicates an ending condition for a loop.
+     * @returns an iterator which indicates an ending condition for a loop.
      */
     Iterator End() const;
 
     /**
-     * \brief Get the number of Ptr<Application> stored in this container.
+     * @brief Get the number of Ptr<Application> stored in this container.
      *
      * Applications can be retrieved from the container in two ways.  First,
      * directly by an index into the container, and second, using an iterator.
@@ -109,21 +109,21 @@ class ApplicationContainer
      * define an ending condition in a for-loop that runs through the stored
      * Applications
      *
-     * \code
+     * @code
      *   uint32_t nApplications = container.GetN ();
      *   for (uint32_t i = 0 i < nApplications; ++i)
      *     {
      *       Ptr<Application> p = container.Get (i)
      *       i->method ();  // some Application method
      *     }
-     * \endcode
+     * @endcode
      *
-     * \returns the number of Ptr<Application> stored in this container.
+     * @returns the number of Ptr<Application> stored in this container.
      */
     uint32_t GetN() const;
 
     /**
-     * \brief Get the Ptr<Application> stored in this container at a given
+     * @brief Get the Ptr<Application> stored in this container at a given
      * index.
      *
      * Applications can be retrieved from the container in two ways.  First,
@@ -131,45 +131,45 @@ class ApplicationContainer
      * This method is used in the direct method and is used to retrieve the
      * indexed Ptr<Application>.
      *
-     * \code
+     * @code
      *   uint32_t nApplications = container.GetN ();
      *   for (uint32_t i = 0 i < nApplications; ++i)
      *     {
      *       Ptr<Application> p = container.Get (i)
      *       i->method ();  // some Application method
      *     }
-     * \endcode
+     * @endcode
      *
-     * \param i the index of the requested application pointer.
-     * \returns the requested application pointer.
+     * @param i the index of the requested application pointer.
+     * @returns the requested application pointer.
      */
     Ptr<Application> Get(uint32_t i) const;
 
     /**
-     * \brief Append the contents of another ApplicationContainer to the end of
+     * @brief Append the contents of another ApplicationContainer to the end of
      * this container.
      *
-     * \param other The ApplicationContainer to append.
+     * @param other The ApplicationContainer to append.
      */
     void Add(ApplicationContainer other);
 
     /**
-     * \brief Append a single Ptr<Application> to this container.
+     * @brief Append a single Ptr<Application> to this container.
      *
-     * \param application The Ptr<Application> to append.
+     * @param application The Ptr<Application> to append.
      */
     void Add(Ptr<Application> application);
 
     /**
-     * \brief Append to this container the single Ptr<Application> referred to
+     * @brief Append to this container the single Ptr<Application> referred to
      * via its object name service registered name.
      *
-     * \param name The name of the Application Object to add to the container.
+     * @param name The name of the Application Object to add to the container.
      */
     void Add(std::string name);
 
     /**
-     * \brief Start all of the Applications in this container at the start time
+     * @brief Start all of the Applications in this container at the start time
      * given as a parameter.
      *
      * All Applications need to be provided with a starting simulation time and
@@ -180,25 +180,25 @@ class ApplicationContainer
      * This method simply iterates through the contained Applications and calls
      * their Application::SetStartTime() methods with the provided Time.
      *
-     * \param start The Time at which each of the applications should start.
+     * @param start The Time at which each of the applications should start.
      */
     void Start(Time start) const;
 
     /**
-     * \brief Start all of the Applications in this container at the start time
+     * @brief Start all of the Applications in this container at the start time
      * given as a parameter, plus some jitter.
      *
      * This method iterates through the contained Applications and calls
      * their Application::SetStartTime() methods with the provided start Time, plus
      * a jitter value drawn from the provided random variable.
      *
-     * \param start The Time at which each of the applications should start.
-     * \param rv The random variable that adds jitter (units of seconds)
+     * @param start The Time at which each of the applications should start.
+     * @param rv The random variable that adds jitter (units of seconds)
      */
     void StartWithJitter(Time start, Ptr<RandomVariableStream> rv) const;
 
     /**
-     * \brief Arrange for all of the Applications in this container to Stop()
+     * @brief Arrange for all of the Applications in this container to Stop()
      * at the Time given as a parameter.
      *
      * All Applications need to be provided with a starting simulation time and
@@ -209,7 +209,7 @@ class ApplicationContainer
      * This method simply iterates through the contained Applications and calls
      * their Application::SetStopTime() methods with the provided Time.
      *
-     * \param stop The Time at which each of the applications should stop.
+     * @param stop The Time at which each of the applications should stop.
      */
     void Stop(Time stop) const;
 

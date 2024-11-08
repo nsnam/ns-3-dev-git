@@ -26,7 +26,7 @@ namespace energy
 {
 
 /**
- * \ingroup energy
+ * @ingroup energy
  * BasicEnergyHarvester increases remaining energy stored in an associated
  * Energy Source. The BasicEnergyHarvester implements a simple model in which
  * the amount of power provided by the harvester varies over time according
@@ -40,15 +40,15 @@ class BasicEnergyHarvester : public EnergyHarvester
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return The object TypeId.
+     * @brief Get the type ID.
+     * @return The object TypeId.
      */
     static TypeId GetTypeId();
 
     BasicEnergyHarvester();
 
     /**
-     * \param updateInterval Energy harvesting update interval.
+     * @param updateInterval Energy harvesting update interval.
      *
      * BasicEnergyHarvester constructor function that sets the interval
      * between each update of the value of the power harvested by this
@@ -59,7 +59,7 @@ class BasicEnergyHarvester : public EnergyHarvester
     ~BasicEnergyHarvester() override;
 
     /**
-     * \param updateInterval Energy harvesting update interval.
+     * @param updateInterval Energy harvesting update interval.
      *
      * This function sets the interval between each update of the value of the
      * power harvested by this energy harvester.
@@ -67,7 +67,7 @@ class BasicEnergyHarvester : public EnergyHarvester
     void SetHarvestedPowerUpdateInterval(Time updateInterval);
 
     /**
-     * \returns The interval between each update of the harvested power.
+     * @returns The interval between each update of the harvested power.
      *
      * This function returns the interval between each update of the value of the
      * power harvested by this energy harvester.
@@ -75,8 +75,8 @@ class BasicEnergyHarvester : public EnergyHarvester
     Time GetHarvestedPowerUpdateInterval() const;
 
     /**
-     * \param stream Random variable stream number.
-     * \returns The number of stream indices assigned by this model.
+     * @param stream Random variable stream number.
+     * @returns The number of stream indices assigned by this model.
      *
      * This function sets the stream number to be used by the random variable that
      * determines the amount of power that can be harvested by this energy harvester.
@@ -96,7 +96,7 @@ class BasicEnergyHarvester : public EnergyHarvester
     void CalculateHarvestedPower();
 
     /**
-     * \returns m_harvestedPower The power currently provided by the Basic Energy Harvester.
+     * @returns m_harvestedPower The power currently provided by the Basic Energy Harvester.
      * Implements DoGetPower defined in EnergyHarvester.
      */
     double DoGetPower() const override;

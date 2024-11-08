@@ -17,9 +17,9 @@ using namespace ns3;
 const double TOLERANCE = 1e-13;
 
 /**
- * \ingroup stats-tests
+ * @ingroup stats-tests
  *
- * \brief MinMaxAvgTotalCalculator class - Test case for a single integer.
+ * @brief MinMaxAvgTotalCalculator class - Test case for a single integer.
  */
 class OneIntegerTestCase : public TestCase
 {
@@ -91,9 +91,9 @@ OneIntegerTestCase::DoRun()
 }
 
 /**
- * \ingroup stats-tests
+ * @ingroup stats-tests
  *
- * \brief MinMaxAvgTotalCalculator class - Test case for five integers.
+ * @brief MinMaxAvgTotalCalculator class - Test case for five integers.
  */
 class FiveIntegersTestCase : public TestCase
 {
@@ -165,9 +165,9 @@ FiveIntegersTestCase::DoRun()
 }
 
 /**
- * \ingroup stats-tests
+ * @ingroup stats-tests
  *
- * \brief MinMaxAvgTotalCalculator class - Test case for five double values.
+ * @brief MinMaxAvgTotalCalculator class - Test case for five double values.
  */
 class FiveDoublesTestCase : public TestCase
 {
@@ -239,9 +239,9 @@ FiveDoublesTestCase::DoRun()
 }
 
 /**
- * \ingroup stats-tests
+ * @ingroup stats-tests
  *
- * \brief MinMaxAvgTotalCalculator class TestSuite
+ * @brief MinMaxAvgTotalCalculator class TestSuite
  */
 class BasicDataCalculatorsTestSuite : public TestSuite
 {

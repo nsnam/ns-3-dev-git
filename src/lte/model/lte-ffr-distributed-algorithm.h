@@ -19,7 +19,7 @@ namespace ns3
 {
 
 /**
- * \brief Distributed Fractional Frequency Reuse algorithm implementation.
+ * @brief Distributed Fractional Frequency Reuse algorithm implementation.
  */
 class LteFfrDistributedAlgorithm : public LteFfrAlgorithm
 {
@@ -28,8 +28,8 @@ class LteFfrDistributedAlgorithm : public LteFfrAlgorithm
     ~LteFfrDistributedAlgorithm() override;
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -73,15 +73,15 @@ class LteFfrDistributedAlgorithm : public LteFfrAlgorithm
     /**
      * Set down link configuration function
      *
-     * \param cellId cell ID
-     * \param bandwidth the bandwidth
+     * @param cellId cell ID
+     * @param bandwidth the bandwidth
      */
     void SetDownlinkConfiguration(uint16_t cellId, uint8_t bandwidth);
     /**
      * Set up link configuration function
      *
-     * \param cellId cell ID
-     * \param bandwidth the bandwidth
+     * @param cellId cell ID
+     * @param bandwidth the bandwidth
      */
     void SetUplinkConfiguration(uint16_t cellId, uint8_t bandwidth);
     /**
@@ -96,10 +96,10 @@ class LteFfrDistributedAlgorithm : public LteFfrAlgorithm
     /**
      * Initialize up link RBG maps function
      *
-     * \param rnti the RNTI
-     * \param cellId the cell ID
-     * \param rsrp the RSRP
-     * \param rsrq the RSRQ
+     * @param rnti the RNTI
+     * @param cellId the cell ID
+     * @param rsrp the RSRP
+     * @param rsrq the RSRQ
      */
     void UpdateNeighbourMeasurements(uint16_t rnti, uint16_t cellId, uint8_t rsrp, uint8_t rsrq);
 
@@ -108,7 +108,7 @@ class LteFfrDistributedAlgorithm : public LteFfrAlgorithm
     /**
      * Send load information function
      *
-     * \param targetCellId the cell ID
+     * @param targetCellId the cell ID
      */
     void SendLoadInformation(uint16_t targetCellId);
 
@@ -153,7 +153,7 @@ class LteFfrDistributedAlgorithm : public LteFfrAlgorithm
     uint8_t m_rsrpMeasId; ///< RSRP measurement ID
 
     /**
-     * \brief Measurements reported by a UE for a cell ID.
+     * @brief Measurements reported by a UE for a cell ID.
      *
      * The values are quantized according 3GPP TS 36.133 section 9.1.4 and 9.1.7.
      */

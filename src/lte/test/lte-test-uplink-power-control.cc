@@ -59,7 +59,7 @@ LteUplinkPowerControlTestSuite::LteUplinkPowerControlTestSuite()
 }
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  * Static variable for test initialization
  */
 static LteUplinkPowerControlTestSuite lteUplinkPowerControlTestSuite;

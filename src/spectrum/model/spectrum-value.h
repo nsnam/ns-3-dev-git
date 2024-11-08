@@ -24,9 +24,9 @@ namespace ns3
 typedef std::vector<double> Values;
 
 /**
- * \ingroup spectrum
+ * @ingroup spectrum
  *
- * \brief Set of values corresponding to a given SpectrumModel
+ * @brief Set of values corresponding to a given SpectrumModel
  *
  * This class implements a Function Space which can represent any
  * function \f$ g: F \in {\sf
@@ -143,14 +143,14 @@ class SpectrumValue : public SimpleRefCount<SpectrumValue>
     Values::iterator ValuesEnd();
 
     /**
-     * \brief Get the number of values stored in the array
-     * \return the values array size
+     * @brief Get the number of values stored in the array
+     * @return the values array size
      */
     uint32_t GetValuesN() const;
 
     /**
      * Directly set the values using the std::vector<double>
-     * \param values a reference to the std::vector<double>
+     * @param values a reference to the std::vector<double>
      */
     inline void SetValues(Values& values)
     {
@@ -162,7 +162,7 @@ class SpectrumValue : public SimpleRefCount<SpectrumValue>
 
     /**
      * Directly set the values by moving the values from the input std::vector<double>
-     * \param values a reference to the std::vector<double> to be moved
+     * @param values a reference to the std::vector<double> to be moved
      */
     inline void SetValues(Values&& values)
     {
@@ -173,9 +173,9 @@ class SpectrumValue : public SimpleRefCount<SpectrumValue>
     }
 
     /**
-     * \brief Provides the direct access to the underlying std::vector<double>
+     * @brief Provides the direct access to the underlying std::vector<double>
      * that stores the spectrum values.
-     * \return a reference to the stored values
+     * @return a reference to the stored values
      */
     inline Values& GetValues()
     {
@@ -183,9 +183,9 @@ class SpectrumValue : public SimpleRefCount<SpectrumValue>
     }
 
     /**
-     * \brief Provides the direct read-only access to the underlying std::vector<double>
+     * @brief Provides the direct read-only access to the underlying std::vector<double>
      * that stores the spectrum values.
-     * \return a const reference to the stored values
+     * @return a const reference to the stored values
      */
     inline const Values& GetValues() const
     {
@@ -193,9 +193,9 @@ class SpectrumValue : public SimpleRefCount<SpectrumValue>
     }
 
     /**
-     * \brief Get the value element at the position
-     * \param pos position
-     * \return the value element in that position (with bounds checking)
+     * @brief Get the value element at the position
+     * @param pos position
+     * @return the value element in that position (with bounds checking)
      */
     const double& ValuesAt(uint32_t pos) const;
 
@@ -553,8 +553,8 @@ class SpectrumValue : public SimpleRefCount<SpectrumValue>
     /**
      *  TracedCallback signature for SpectrumValue.
      *
-     * \param [in] value Value of the traced variable.
-     * \deprecated The non-const \c Ptr<SpectrumPhy> argument
+     * @param [in] value Value of the traced variable.
+     * @deprecated The non-const \c Ptr<SpectrumPhy> argument
      * is deprecated and will be changed to \c Ptr<const SpectrumPhy>
      * in a future release.
      */
@@ -564,42 +564,42 @@ class SpectrumValue : public SimpleRefCount<SpectrumValue>
   private:
     /**
      * Add a SpectrumValue (element to element addition)
-     * \param x SpectrumValue
+     * @param x SpectrumValue
      */
     void Add(const SpectrumValue& x);
     /**
      * Add a flat value to all the current elements
-     * \param s flat value
+     * @param s flat value
      */
     void Add(double s);
     /**
      * Subtracts a SpectrumValue (element by element subtraction)
-     * \param x SpectrumValue
+     * @param x SpectrumValue
      */
     void Subtract(const SpectrumValue& x);
     /**
      * Subtracts a flat value to all the current elements
-     * \param s flat value
+     * @param s flat value
      */
     void Subtract(double s);
     /**
      * Multiplies for a SpectrumValue (element to element multiplication)
-     * \param x SpectrumValue
+     * @param x SpectrumValue
      */
     void Multiply(const SpectrumValue& x);
     /**
      * Multiplies for a flat value to all the current elements
-     * \param s flat value
+     * @param s flat value
      */
     void Multiply(double s);
     /**
      * Divides by a SpectrumValue (element to element division)
-     * \param x SpectrumValue
+     * @param x SpectrumValue
      */
     void Divide(const SpectrumValue& x);
     /**
      * Divides by a flat value to all the current elements
-     * \param s flat value
+     * @param s flat value
      */
     void Divide(double s);
     /**
@@ -608,25 +608,25 @@ class SpectrumValue : public SimpleRefCount<SpectrumValue>
     void ChangeSign();
     /**
      * Shift the values to the left
-     * \param n number of positions to shift
+     * @param n number of positions to shift
      */
     void ShiftLeft(int n);
     /**
      * Shift the values to the right
-     * \param n number of positions to shift
+     * @param n number of positions to shift
      */
     void ShiftRight(int n);
     /**
      * Modifies each element so that it each element is raised to the exponent
      *
-     * \param exp the exponent
+     * @param exp the exponent
      */
     void Pow(double exp);
     /**
      * Modifies each element so that it is
      * the base raised to each element value
      *
-     * \param base the base
+     * @param base the base
      */
     void Exp(double base);
     /**

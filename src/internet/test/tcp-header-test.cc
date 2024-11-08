@@ -29,16 +29,16 @@ using namespace ns3;
     static_cast<uint8_t>(RandomVariable->GetInteger(0, UINT8_MAX >> 2))
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief TCP header Get/Set test.
+ * @brief TCP header Get/Set test.
  */
 class TcpHeaderGetSetTestCase : public TestCase
 {
   public:
     /**
      * Constructor.
-     * \param name Test description.
+     * @param name Test description.
      */
     TcpHeaderGetSetTestCase(std::string name);
 
@@ -146,16 +146,16 @@ TcpHeaderGetSetTestCase::DoTeardown()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief TCP header with RFC793 Options test.
+ * @brief TCP header with RFC793 Options test.
  */
 class TcpHeaderWithRFC793OptionTestCase : public TestCase
 {
   public:
     /**
      * Constructor.
-     * \param name Test description.
+     * @param name Test description.
      */
     TcpHeaderWithRFC793OptionTestCase(std::string name);
 
@@ -164,15 +164,15 @@ class TcpHeaderWithRFC793OptionTestCase : public TestCase
     void DoTeardown() override;
 
     /**
-     * \brief Check an header with only one kind of option.
+     * @brief Check an header with only one kind of option.
      */
     void OneOptionAtTime();
     /**
-     * \brief Check an header for the correct padding.
+     * @brief Check an header for the correct padding.
      */
     void CheckNoPadding();
     /**
-     * \brief Check the correct header deserialization.
+     * @brief Check the correct header deserialization.
      */
     void CheckCorrectDeserialize();
 };
@@ -372,16 +372,16 @@ TcpHeaderWithRFC793OptionTestCase::DoTeardown()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief TCP header Flags to String test.
+ * @brief TCP header Flags to String test.
  */
 class TcpHeaderFlagsToString : public TestCase
 {
   public:
     /**
      * Constructor.
-     * \param name Test description.
+     * @param name Test description.
      */
     TcpHeaderFlagsToString(std::string name);
 
@@ -441,9 +441,9 @@ TcpHeaderFlagsToString::DoRun()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief TCP header TestSuite
+ * @brief TCP header TestSuite
  */
 class TcpHeaderTestSuite : public TestSuite
 {

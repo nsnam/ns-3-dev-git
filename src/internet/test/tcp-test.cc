@@ -40,21 +40,21 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("TcpTestSuite");
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief TCP Test - send string data from client to server and back.
+ * @brief TCP Test - send string data from client to server and back.
  */
 class TcpTestCase : public TestCase
 {
   public:
     /**
-     * \brief Constructor.
-     * \param totalStreamSize Total stream size (in bytes).
-     * \param sourceWriteSize Client data size when sending.
-     * \param sourceReadSize Client data size when receiving.
-     * \param serverWriteSize Server data size when sending.
-     * \param serverReadSize Server data size when receiving.
-     * \param useIpv6 Use IPv6 instead of IPv4.
+     * @brief Constructor.
+     * @param totalStreamSize Total stream size (in bytes).
+     * @param sourceWriteSize Client data size when sending.
+     * @param sourceReadSize Client data size when receiving.
+     * @param serverWriteSize Server data size when sending.
+     * @param serverReadSize Server data size when receiving.
+     * @param useIpv6 Use IPv6 instead of IPv4.
      */
     TcpTestCase(uint32_t totalStreamSize,
                 uint32_t sourceWriteSize,
@@ -68,70 +68,70 @@ class TcpTestCase : public TestCase
     void DoTeardown() override;
 
     /**
-     * \brief Setup the test (IPv4 version).
+     * @brief Setup the test (IPv4 version).
      */
     void SetupDefaultSim();
     /**
-     * \brief Setup the test (IPv6 version).
+     * @brief Setup the test (IPv6 version).
      */
     void SetupDefaultSim6();
 
     /**
-     * \brief Create a node with the Internet stack (IPv4 version).
-     * \returns The new node.
+     * @brief Create a node with the Internet stack (IPv4 version).
+     * @returns The new node.
      */
     Ptr<Node> CreateInternetNode();
     /**
-     * \brief Create a node with the Internet stack (IPv6 version).
-     * \returns The new node.
+     * @brief Create a node with the Internet stack (IPv6 version).
+     * @returns The new node.
      */
     Ptr<Node> CreateInternetNode6();
 
     /**
-     * \brief Add a SimpleNetDevice to a node (IPv4 version).
-     * \param node The target node.
-     * \param ipaddr the SimpleNetDevice IPv4 address.
-     * \param netmask the SimpleNetDevice IPv4 address netmask.
-     * \returns The new SimpleNetDevice.
+     * @brief Add a SimpleNetDevice to a node (IPv4 version).
+     * @param node The target node.
+     * @param ipaddr the SimpleNetDevice IPv4 address.
+     * @param netmask the SimpleNetDevice IPv4 address netmask.
+     * @returns The new SimpleNetDevice.
      */
     Ptr<SimpleNetDevice> AddSimpleNetDevice(Ptr<Node> node,
                                             const char* ipaddr,
                                             const char* netmask);
     /**
-     * \brief Add a SimpleNetDevice to a node (IPv6 version).
-     * \param node The target node.
-     * \param ipaddr the SimpleNetDevice IPv6 address.
-     * \param prefix the SimpleNetDevice IP6 address prefix.
-     * \returns The new SimpleNetDevice.
+     * @brief Add a SimpleNetDevice to a node (IPv6 version).
+     * @param node The target node.
+     * @param ipaddr the SimpleNetDevice IPv6 address.
+     * @param prefix the SimpleNetDevice IP6 address prefix.
+     * @returns The new SimpleNetDevice.
      */
     Ptr<SimpleNetDevice> AddSimpleNetDevice6(Ptr<Node> node, Ipv6Address ipaddr, Ipv6Prefix prefix);
 
     /**
-     * \brief Server: Handle connection created.
-     * \param s The socket.
-     * \param addr The other party address.
+     * @brief Server: Handle connection created.
+     * @param s The socket.
+     * @param addr The other party address.
      */
     void ServerHandleConnectionCreated(Ptr<Socket> s, const Address& addr);
     /**
-     * \brief Server: Receive data.
-     * \param sock The socket.
+     * @brief Server: Receive data.
+     * @param sock The socket.
      */
     void ServerHandleRecv(Ptr<Socket> sock);
     /**
-     * \brief Server: Send data.
-     * \param sock The socket.
-     * \param available Unused in the test.
+     * @brief Server: Send data.
+     * @param sock The socket.
+     * @param available Unused in the test.
      */
     void ServerHandleSend(Ptr<Socket> sock, uint32_t available);
     /**
-     * \brief Client: Send data.
-     * \param sock The socket.
-     * \param available Unused in the test.
+     * @brief Client: Send data.
+     * @param sock The socket.
+     * @param available Unused in the test.
      */
     void SourceHandleSend(Ptr<Socket> sock, uint32_t available);
     /**
-     * \brief Client: Receive data.
-     * \param sock The socket.
+     * @brief Client: Receive data.
+     * @param sock The socket.
      */
     void SourceHandleRecv(Ptr<Socket> sock);
 
@@ -524,9 +524,9 @@ TcpTestCase::AddSimpleNetDevice6(Ptr<Node> node, Ipv6Address ipaddr, Ipv6Prefix 
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief TCP TestSuite - send string data from client to server and back.
+ * @brief TCP TestSuite - send string data from client to server and back.
  */
 class TcpTestSuite : public TestSuite
 {

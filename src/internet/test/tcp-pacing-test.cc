@@ -18,9 +18,9 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("TcpPacingTestSuite");
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief Test the behavior of TCP pacing
+ * @brief Test the behavior of TCP pacing
  *
  * This test checks that packets are paced at correct intervals.  The test
  * uses a shadow pacing rate calculation assumed to match the internal
@@ -79,17 +79,17 @@ class TcpPacingTest : public TcpGeneralTest
 {
   public:
     /**
-     * \brief Constructor.
-     * \param segmentSize Segment size at the TCP layer (bytes).
-     * \param packetSize Size of packets sent at the application layer (bytes).
-     * \param packets Number of packets.
-     * \param pacingSsRatio Pacing Ratio during Slow Start (multiplied by 100)
-     * \param pacingCaRatio Pacing Ratio during Congestion Avoidance (multiplied by 100)
-     * \param ssThresh slow start threshold (bytes)
-     * \param paceInitialWindow whether to pace the initial window
-     * \param delAckMaxCount Delayed ACK max count parameter
-     * \param congControl Type of congestion control.
-     * \param desc The test description.
+     * @brief Constructor.
+     * @param segmentSize Segment size at the TCP layer (bytes).
+     * @param packetSize Size of packets sent at the application layer (bytes).
+     * @param packets Number of packets.
+     * @param pacingSsRatio Pacing Ratio during Slow Start (multiplied by 100)
+     * @param pacingCaRatio Pacing Ratio during Congestion Avoidance (multiplied by 100)
+     * @param ssThresh slow start threshold (bytes)
+     * @param paceInitialWindow whether to pace the initial window
+     * @param delAckMaxCount Delayed ACK max count parameter
+     * @param congControl Type of congestion control.
+     * @param desc The test description.
      */
     TcpPacingTest(uint32_t segmentSize,
                   uint32_t packetSize,
@@ -113,7 +113,7 @@ class TcpPacingTest : public TcpGeneralTest
     void NormalClose(SocketWho who) override;
 
     /**
-     * \brief Update the expected interval at which next packet will be sent
+     * @brief Update the expected interval at which next packet will be sent
      */
     virtual void UpdateExpectedInterval();
 
@@ -353,9 +353,9 @@ TcpPacingTest::NormalClose(SocketWho who)
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief TestSuite for the behavior of TCP pacing
+ * @brief TestSuite for the behavior of TCP pacing
  */
 class TcpPacingTestSuite : public TestSuite
 {

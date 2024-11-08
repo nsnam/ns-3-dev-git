@@ -16,15 +16,15 @@
 #include <string>
 
 /**
- * \file
- * \ingroup object
+ * @file
+ * @ingroup object
  * ns3::ObjectBase declaration and
  * NS_OBJECT_ENSURE_REGISTERED() macro definition.
  */
 
 /**
- * \ingroup object
- * \brief Register an Object subclass with the TypeId system.
+ * @ingroup object
+ * @brief Register an Object subclass with the TypeId system.
  *
  * This macro should be invoked once for every class which
  * defines a new GetTypeId method.
@@ -46,8 +46,8 @@
     } Object##type##RegistrationVariable
 
 /**
- * \ingroup object
- * \brief Explicitly instantiate a template class with one template parameter
+ * @ingroup object
+ * @brief Explicitly instantiate a template class with one template parameter
  *        and register the resulting instance with the TypeId system.
  *
  * This macro should be invoked once for every required instance of a template
@@ -57,12 +57,12 @@
  * If the template class is in a namespace, then the macro call should also be
  * in the namespace.
  *
- * \note The type names used as arguments for this macro, being used to form a
+ * @note The type names used as arguments for this macro, being used to form a
  * class name and a variable name, CANNOT contain the scope resolution
  * operator (::)
  *
- * \tparam type the template class
- * \tparam param the first template parameter
+ * @tparam type the template class
+ * @tparam param the first template parameter
  */
 #define NS_OBJECT_TEMPLATE_CLASS_DEFINE(type, param)                                               \
     template class type<param>;                                                                    \
@@ -83,8 +83,8 @@
     } Object##type##param##RegistrationVariable
 
 /**
- * \ingroup object
- * \brief Explicitly instantiate a template class with two template parameters
+ * @ingroup object
+ * @brief Explicitly instantiate a template class with two template parameters
  *        and register the resulting instance with the TypeId system.
  *
  * This macro should be invoked once for every required instance of a template
@@ -94,13 +94,13 @@
  * If the template class is in a namespace, then the macro call should also be
  * in the namespace.
  *
- * \note The type names used as arguments for this macro, being used to form a
+ * @note The type names used as arguments for this macro, being used to form a
  * class name and a variable name, CANNOT contain the scope resolution
  * operator (::)
  *
- * \tparam type the template class
- * \tparam param1 the first template parameter
- * \tparam param2 the second template parameter
+ * @tparam type the template class
+ * @tparam param1 the first template parameter
+ * @tparam param2 the second template parameter
  */
 #define NS_OBJECT_TEMPLATE_CLASS_TWO_DEFINE(type, param1, param2)                                  \
     template class type<param1, param2>;                                                           \
@@ -124,9 +124,9 @@ namespace ns3
 {
 
 /**
- * \brief Helper function to get the name (as a string) of the type
+ * @brief Helper function to get the name (as a string) of the type
  *        of a template class
- * \return the name of the type of a template class as a string
+ * @return the name of the type of a template class as a string
  *
  * A specialization of this function is defined by the
  * NS_OBJECT_TEMPLATE_CLASS_DEFINE macro.
@@ -135,9 +135,9 @@ template <typename T>
 std::string DoGetTemplateClassName();
 
 /**
- * \brief Helper function to get the name (as a string) of the type
+ * @brief Helper function to get the name (as a string) of the type
  *        of a template class
- * \return the name of the type of a template class as a string
+ * @return the name of the type of a template class as a string
  */
 template <typename T>
 std::string
@@ -149,9 +149,9 @@ GetTemplateClassName()
 class AttributeConstructionList;
 
 /**
- * \ingroup object
+ * @ingroup object
  *
- * \brief Anchor the ns-3 type and attribute system.
+ * @brief Anchor the ns-3 type and attribute system.
  *
  * Every class which wants to integrate in the ns-3 type and attribute
  * system should derive from this base class. This base class provides:
@@ -163,7 +163,7 @@ class ObjectBase
   public:
     /**
      * Get the type ID.
-     * \return The object TypeId.
+     * @return The object TypeId.
      */
     static TypeId GetTypeId();
 
@@ -179,7 +179,7 @@ class ObjectBase
      * but some classes which derive from ns3::ObjectBase directly
      * have to implement it themselves.
      *
-     * \return The TypeId associated to the most-derived type
+     * @return The TypeId associated to the most-derived type
      *          of this instance.
      */
     virtual TypeId GetInstanceTypeId() const = 0;
@@ -195,8 +195,8 @@ class ObjectBase
      *   - The attribute can't be set (no Setter).
      *   - The attribute couldn't be deserialized from the AttributeValue.
      *
-     * \param [in] name The name of the attribute to set.
-     * \param [in] value The name of the attribute to set.
+     * @param [in] name The name of the attribute to set.
+     * @param [in] value The name of the attribute to set.
      */
     void SetAttribute(std::string name, const AttributeValue& value);
     /**
@@ -205,9 +205,9 @@ class ObjectBase
      * If the attribute could not be set this will return \c false,
      * but not raise any errors.
      *
-     * \param [in] name The name of the attribute to set.
-     * \param [in] value The value to set it to.
-     * \return \c true if the requested attribute exists and could be set,
+     * @param [in] name The name of the attribute to set.
+     * @param [in] value The value to set it to.
+     * @return \c true if the requested attribute exists and could be set,
      *         \c false otherwise.
      */
     bool SetAttributeFailSafe(std::string name, const AttributeValue& value);
@@ -222,9 +222,9 @@ class ObjectBase
      *   - The attribute doesn't support string formatting.
      *   - The attribute couldn't be serialized into the AttributeValue.
      *
-     * \param [in]  name The name of the attribute to read.
-     * \param [out] value Where the result should be stored.
-     * \param [in] permissive If false (by default), will generate warnings and errors for
+     * @param [in]  name The name of the attribute to read.
+     * @param [out] value Where the result should be stored.
+     * @param [in] permissive If false (by default), will generate warnings and errors for
      * deprecated and obsolete attributes, respectively. If set to true, warnings for deprecated
      * attributes will be suppressed.
      */
@@ -235,9 +235,9 @@ class ObjectBase
      * If the attribute could not be read this will return \c false,
      * but not raise any errors.
      *
-     * \param [in]  name The name of the attribute to read.
-     * \param [out] value Where the result value should be stored.
-     * \return \c true if the requested attribute was found, \c false otherwise.
+     * @param [in]  name The name of the attribute to read.
+     * @param [out] value Where the result value should be stored.
+     * @return \c true if the requested attribute was found, \c false otherwise.
      */
     bool GetAttributeFailSafe(std::string name, AttributeValue& value) const;
 
@@ -246,10 +246,10 @@ class ObjectBase
      *
      * The target trace source should be registered with TypeId::AddTraceSource.
      *
-     * \param [in] name The name of the target trace source.
-     * \param [in] context The trace context associated to the callback.
-     * \param [in] cb The callback to connect to the trace source.
-     * \returns \c true on success, \c false if TraceSource was not found.
+     * @param [in] name The name of the target trace source.
+     * @param [in] context The trace context associated to the callback.
+     * @param [in] cb The callback to connect to the trace source.
+     * @returns \c true on success, \c false if TraceSource was not found.
      */
     bool TraceConnect(std::string name, std::string context, const CallbackBase& cb);
     /**
@@ -257,9 +257,9 @@ class ObjectBase
      *
      * The target trace source should be registered with TypeId::AddTraceSource.
      *
-     * \param [in] name The name of the target trace source.
-     * \param [in] cb The callback to connect to the trace source.
-     * \returns \c true on success, \c false if TraceSource was not found.
+     * @param [in] name The name of the target trace source.
+     * @param [in] cb The callback to connect to the trace source.
+     * @returns \c true on success, \c false if TraceSource was not found.
      */
     bool TraceConnectWithoutContext(std::string name, const CallbackBase& cb);
     /**
@@ -268,10 +268,10 @@ class ObjectBase
      *
      * The target trace source should be registered with TypeId::AddTraceSource.
      *
-     * \param [in] name The name of the target trace source.
-     * \param [in] context The trace context associated to the callback.
-     * \param [in] cb The callback to disconnect from the trace source.
-     * \returns \c true on success, \c false if TraceSource was not found.
+     * @param [in] name The name of the target trace source.
+     * @param [in] context The trace context associated to the callback.
+     * @param [in] cb The callback to disconnect from the trace source.
+     * @returns \c true on success, \c false if TraceSource was not found.
      */
     bool TraceDisconnect(std::string name, std::string context, const CallbackBase& cb);
     /**
@@ -280,9 +280,9 @@ class ObjectBase
      *
      * The target trace source should be registered with TypeId::AddTraceSource.
      *
-     * \param [in] name The name of the target trace source.
-     * \param [in] cb The callback to disconnect from the trace source.
-     * \returns \c true on success, \c false if TraceSource was not found.
+     * @param [in] name The name of the target trace source.
+     * @param [in] cb The callback to disconnect from the trace source.
+     * @returns \c true on success, \c false if TraceSource was not found.
      */
     bool TraceDisconnectWithoutContext(std::string name, const CallbackBase& cb);
 
@@ -306,7 +306,7 @@ class ObjectBase
      * you should make sure that you invoke this method from
      * your most-derived constructor.
      *
-     * \param [in] attributes The attribute values used to initialize
+     * @param [in] attributes The attribute values used to initialize
      *        the member variables of this object's instance.
      */
     void ConstructSelf(const AttributeConstructionList& attributes);
@@ -316,10 +316,10 @@ class ObjectBase
      * Attempt to set the value referenced by the accessor \pname{spec}
      * to a valid value according to the \c checker, based on \pname{value}.
      *
-     * \param [in] spec The accessor for the storage location.
-     * \param [in] checker The checker to use in validating the value.
-     * \param [in] value The value to attempt to store.
-     * \returns \c true if the \c value could be validated by the \pname{checker}
+     * @param [in] spec The accessor for the storage location.
+     * @param [in] checker The checker to use in validating the value.
+     * @param [in] value The value to attempt to store.
+     * @returns \c true if the \c value could be validated by the \pname{checker}
      *          and written to the storage location.
      */
     bool DoSet(Ptr<const AttributeAccessor> spec,

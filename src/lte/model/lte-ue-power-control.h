@@ -20,7 +20,7 @@ namespace ns3
 {
 
 /**
- * \brief This class realizes Uplink Power Control functionality
+ * @brief This class realizes Uplink Power Control functionality
  *
  * When LteUePhy is about sending PUSCH/PUCCH/SRS it should ask
  * LteUePowerControl for current channel TX power level and then
@@ -47,8 +47,8 @@ class LteUePowerControl : public Object
     ~LteUePowerControl() override;
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     // inherited from Object
@@ -56,82 +56,82 @@ class LteUePowerControl : public Object
     void DoDispose() override;
 
     /**
-     * \brief Set PC maximum function
+     * @brief Set PC maximum function
      *
-     * \param value the PC maximum value
+     * @param value the PC maximum value
      */
     void SetPcmax(double value);
     /**
-     * \brief Get PC maximum function
+     * @brief Get PC maximum function
      *
-     * \returns the PC maximum value
+     * @returns the PC maximum value
      */
     double GetPcmax();
 
     /**
-     * \brief Set transmit power function
+     * @brief Set transmit power function
      *
-     * \param value the transmit power value
+     * @param value the transmit power value
      */
     void SetTxPower(double value);
     /**
-     * \brief Configure reference signal power (dBm) function
+     * @brief Configure reference signal power (dBm) function
      *
-     * \param referenceSignalPower the reference signal power
+     * @param referenceSignalPower the reference signal power
      */
     void ConfigureReferenceSignalPower(int8_t referenceSignalPower);
 
     /**
-     * \brief Set the cell ID function
+     * @brief Set the cell ID function
      *
-     * \param cellId the cell ID
+     * @param cellId the cell ID
      */
     void SetCellId(uint16_t cellId);
     /**
-     * \brief Set the RNTI function
+     * @brief Set the RNTI function
      *
-     * \param rnti the RNTI
+     * @param rnti the RNTI
      */
     void SetRnti(uint16_t rnti);
 
     /**
-     * \brief Set PO nominal PUSCH function
+     * @brief Set PO nominal PUSCH function
      *
-     * \param value the value to set
+     * @param value the value to set
      */
     void SetPoNominalPusch(int16_t value);
     /**
-     * \brief Set PO UE PUSCH function
+     * @brief Set PO UE PUSCH function
      *
-     * \param value the value to set
+     * @param value the value to set
      */
     void SetPoUePusch(int16_t value);
     /**
-     * \brief Set alpha function
+     * @brief Set alpha function
      *
-     * \param value the alpha value to set
+     * @param value the alpha value to set
      */
     void SetAlpha(double value);
 
     /**
-     * \brief Set RSRP function
+     * @brief Set RSRP function
      *
-     * \param value the RSRP (dBm) value to set
+     * @param value the RSRP (dBm) value to set
      */
     void SetRsrp(double value);
     /**
-     * \brief Set RSRP function
+     * @brief Set RSRP function
      *
-     * \param rsrpFilterCoefficient value. Determines the strength of
+     * @param rsrpFilterCoefficient value. Determines the strength of
      * smoothing effect induced by layer 3 filtering of RSRP
      * used for uplink power control in all attached UE.
      * If equals to 0, no layer 3 filtering is applicable.
      */
     void SetRsrpFilterCoefficient(uint8_t rsrpFilterCoefficient);
     /**
-     * \brief Set RSRP function
+     * @brief Set RSRP function
      *
-     * \param tpc the TPC to report
+     * @param tpc the TPC to report
      */
     void ReportTpc(uint8_t tpc);
 
@@ -143,33 +143,33 @@ class LteUePowerControl : public Object
     void CalculateSrsTxPower();
 
     /**
-     * \brief Get PUSCH transmit power function
+     * @brief Get PUSCH transmit power function
      *
-     * \param rb the DL RB list
-     * \returns the PUSCH transmit power
+     * @param rb the DL RB list
+     * @returns the PUSCH transmit power
      */
     double GetPuschTxPower(std::vector<int> rb);
     /**
-     * \brief Get PUCCH transmit power function
+     * @brief Get PUCCH transmit power function
      *
-     * \param rb unused
-     * \returns the PUCCH transmit power
+     * @param rb unused
+     * @returns the PUCCH transmit power
      */
     double GetPucchTxPower(std::vector<int> rb);
     /**
-     * \brief Get SRS transmit power function
+     * @brief Get SRS transmit power function
      *
-     * \param rb the DL RB list
-     * \returns the SRS transmit power
+     * @param rb the DL RB list
+     * @returns the SRS transmit power
      */
     double GetSrsTxPower(std::vector<int> rb);
 
     /**
      * TracedCallback signature for uplink transmit power.
      *
-     * \param [in] cellId Cell identifier.
-     * \param [in] rnti The C-RNTI identifying the UE.
-     * \param [in] power The current TX power.
+     * @param [in] cellId Cell identifier.
+     * @param [in] rnti The C-RNTI identifying the UE.
+     * @param [in] power The current TX power.
      */
     typedef void (*TxPowerTracedCallback)(uint16_t cellId, uint16_t rnti, double power);
 
@@ -177,7 +177,7 @@ class LteUePowerControl : public Object
     /**
      * Set subchannel mask function
      *
-     * \param [in] mask the subchannel mask
+     * @param [in] mask the subchannel mask
      */
     void SetSubChannelMask(std::vector<int> mask);
 

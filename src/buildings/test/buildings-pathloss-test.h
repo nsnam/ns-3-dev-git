@@ -15,7 +15,7 @@
 using namespace ns3;
 
 /**
- * \ingroup building-test
+ * @ingroup building-test
  *
  * Test 1.1 BuildingsPathlossModel Pathloss compound test
  *
@@ -29,7 +29,7 @@ class BuildingsPathlossTestSuite : public TestSuite
 };
 
 /**
- * \ingroup building-test
+ * @ingroup building-test
  *
  * Test 1.1 BuildingsPathlossModel Pathloss test
  *
@@ -39,13 +39,13 @@ class BuildingsPathlossTestCase : public TestCase
   public:
     /**
      * Constructor
-     * \param freq Communication frequency
-     * \param m1 First MobilityModel Index
-     * \param m2 Second MobilityModel Index
-     * \param env Environment type
-     * \param city City size
-     * \param refValue Theoretical loss
-     * \param name Test name
+     * @param freq Communication frequency
+     * @param m1 First MobilityModel Index
+     * @param m2 Second MobilityModel Index
+     * @param env Environment type
+     * @param city City size
+     * @param refValue Theoretical loss
+     * @param name Test name
      */
     BuildingsPathlossTestCase(double freq,
                               uint16_t m1,
@@ -60,8 +60,8 @@ class BuildingsPathlossTestCase : public TestCase
     void DoRun() override;
     /**
      * Create a mobility model based on its index
-     * \param index MobilityModel index
-     * \return The MobilityModel
+     * @param index MobilityModel index
+     * @return The MobilityModel
      */
     Ptr<MobilityModel> CreateMobilityModel(uint16_t index);
 

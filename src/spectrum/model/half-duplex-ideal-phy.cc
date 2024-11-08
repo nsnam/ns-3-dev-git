@@ -61,10 +61,10 @@ HalfDuplexIdealPhy::DoDispose()
 }
 
 /**
- * \brief Output stream operator
- * \param os output stream
- * \param s the state to print
- * \return an output stream
+ * @brief Output stream operator
+ * @param os output stream
+ * @param s the state to print
+ * @return an output stream
  */
 std::ostream&
 operator<<(std::ostream& os, HalfDuplexIdealPhy::State s)

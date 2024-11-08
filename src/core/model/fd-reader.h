@@ -25,8 +25,8 @@ typedef SSIZE_T ssize_t;
 #endif
 
 /**
- * \file
- * \ingroup system
+ * @file
+ * @ingroup system
  * ns3::FdReader declaration.
  */
 
@@ -34,8 +34,8 @@ namespace ns3
 {
 
 /**
- * \ingroup system
- * \brief A class that asynchronously reads from a file descriptor.
+ * @ingroup system
+ * @brief A class that asynchronously reads from a file descriptor.
  *
  * This class can be used to start a system thread that reads from a
  * given file descriptor and invokes a given callback when data is
@@ -53,9 +53,9 @@ class FdReader : public SimpleRefCount<FdReader>
     /**
      * Start a new read thread.
      *
-     * \param [in] fd A valid file descriptor open for reading.
+     * @param [in] fd A valid file descriptor open for reading.
      *
-     * \param [in] readCallback A callback to invoke when new data is
+     * @param [in] readCallback A callback to invoke when new data is
      * available.
      */
     void Start(int fd, Callback<void, uint8_t*, ssize_t> readCallback);
@@ -74,7 +74,7 @@ class FdReader : public SimpleRefCount<FdReader>
 #endif
   protected:
     /**
-     * \brief A structure representing data read.
+     * @brief A structure representing data read.
      */
     struct Data
     {
@@ -88,8 +88,8 @@ class FdReader : public SimpleRefCount<FdReader>
         /**
          * Construct from a buffer of a given length.
          *
-         * \param [in] buf The buffer.
-         * \param [in] len The size of the buffer, in bytes.
+         * @param [in] buf The buffer.
+         * @param [in] len The size of the buffer, in bytes.
          */
         Data(uint8_t* buf, ssize_t len)
             : m_buf(buf),
@@ -104,7 +104,7 @@ class FdReader : public SimpleRefCount<FdReader>
     };
 
     /**
-     * \brief The read implementation.
+     * @brief The read implementation.
      *
      * The value of \pname{m_len} returned controls further processing.  The
      * callback function is only invoked when \pname{m_len} is positive; any
@@ -114,12 +114,12 @@ class FdReader : public SimpleRefCount<FdReader>
      * The management of memory associated with \pname{m_buf} must be
      * compatible with the read callback.
      *
-     * \return A structure representing what was read.
+     * @return A structure representing what was read.
      */
     virtual FdReader::Data DoRead() = 0;
 
     /**
-     * \brief The file descriptor to read from.
+     * @brief The file descriptor to read from.
      */
     int m_fd;
 

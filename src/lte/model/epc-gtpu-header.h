@@ -19,7 +19,7 @@ namespace ns3
 class Packet;
 
 /**
- * \ingroup lte
+ * @ingroup lte
  *
  * Implementation of the GPRS Tunnelling Protocol header according to
  * GTPv1-U Release 10 as per 3Gpp TS 29.281 document
@@ -29,8 +29,8 @@ class GtpuHeader : public Header
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     GtpuHeader();
@@ -43,120 +43,120 @@ class GtpuHeader : public Header
 
     /**
      * Get extension header flag function
-     * \returns the extension header flag
+     * @returns the extension header flag
      */
     bool GetExtensionHeaderFlag() const;
     /**
      * Get length function
-     * \returns the length
+     * @returns the length
      */
     uint16_t GetLength() const;
     /**
      * Get message type function
-     * \returns the message type
+     * @returns the message type
      */
     uint8_t GetMessageType() const;
     /**
      * Get NPDU number function
-     * \returns the NPDU number
+     * @returns the NPDU number
      */
     uint8_t GetNPduNumber() const;
     /**
      * Get type of GTP-U message function
-     * \returns the NPDU number flag
+     * @returns the NPDU number flag
      */
     bool GetNPduNumberFlag() const;
     /**
      * Get next extension type function
-     * \returns the next extension type
+     * @returns the next extension type
      */
     uint8_t GetNextExtensionType() const;
     /**
      * Get protocol type function
-     * \returns the protocol type
+     * @returns the protocol type
      */
     bool GetProtocolType() const;
     /**
      * Get protocol type function
-     * \returns the sequence number
+     * @returns the sequence number
      */
     uint16_t GetSequenceNumber() const;
     /**
      * Get sequence number flag function
-     * \returns the sequence number flag
+     * @returns the sequence number flag
      */
     bool GetSequenceNumberFlag() const;
     /**
      * Get a tunnel endpoint identificator (TEID)
-     * \returns the TEID
+     * @returns the TEID
      */
     uint32_t GetTeid() const;
     /**
      * Get version function
-     * \returns the version
+     * @returns the version
      */
     uint8_t GetVersion() const;
     /**
      * Set extension header flag function
-     * \param extensionHeaderFlag
+     * @param extensionHeaderFlag
      */
     void SetExtensionHeaderFlag(bool extensionHeaderFlag);
     /**
      * Set the length in octets of the payload
-     * \param length the length
+     * @param length the length
      */
     void SetLength(uint16_t length);
     /**
      * Set message type function
-     * \param messageType the message type
+     * @param messageType the message type
      */
     void SetMessageType(uint8_t messageType);
     /**
      * Set NPDU number function
-     * \param nPduNumber the NPDU number
+     * @param nPduNumber the NPDU number
      */
     void SetNPduNumber(uint8_t nPduNumber);
     /**
      * Sets the flag that indicates the presence of a meaningful value of the N-PDU Number field.
-     * \param nPduNumberFlag the NPDU number flag
+     * @param nPduNumberFlag the NPDU number flag
      */
     void SetNPduNumberFlag(bool nPduNumberFlag);
     /**
      * Set next extension type function
-     * \param nextExtensionType the next extension type
+     * @param nextExtensionType the next extension type
      */
     void SetNextExtensionType(uint8_t nextExtensionType);
     /**
      * Set protocol type function
-     * \param protocolType the protocol type
+     * @param protocolType the protocol type
      */
     void SetProtocolType(bool protocolType);
     /**
      * Set sequence number function
-     * \param sequenceNumber the sequence number
+     * @param sequenceNumber the sequence number
      */
     void SetSequenceNumber(uint16_t sequenceNumber);
     /**
      * Set sequence number flag function
-     * \param sequenceNumberFlag the sequence number flag
+     * @param sequenceNumberFlag the sequence number flag
      */
     void SetSequenceNumberFlag(bool sequenceNumberFlag);
     /**
      * Set TEID function
-     * \param teid the TEID
+     * @param teid the TEID
      */
     void SetTeid(uint32_t teid);
     /**
      * Set version function
-     * \param version the version
+     * @param version the version
      */
     void SetVersion(uint8_t version);
 
     /**
      * Equality operator.
      *
-     * \param b GtpuHeader object to compare
-     * \returns true of equal
+     * @param b GtpuHeader object to compare
+     * @returns true of equal
      */
     bool operator==(const GtpuHeader& b) const;
 

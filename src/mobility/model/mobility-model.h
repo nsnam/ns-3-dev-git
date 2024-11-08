@@ -16,8 +16,8 @@ namespace ns3
 {
 
 /**
- * \ingroup mobility
- * \brief Keep track of the current position and velocity of an object.
+ * @ingroup mobility
+ * @brief Keep track of the current position and velocity of an object.
  *
  * All space coordinates in this class and its subclasses are
  * understood to be meters or meters/s. i.e., they are all
@@ -30,14 +30,14 @@ class MobilityModel : public Object
   public:
     /**
      * Register this type with the TypeId system.
-     * \return the object TypeId
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     MobilityModel();
     ~MobilityModel() override = 0;
 
     /**
-     * \return the current position
+     * @return the current position
      */
     Vector GetPosition() const;
     /**
@@ -47,27 +47,27 @@ class MobilityModel : public Object
      * to determine if it is inside or outside of a building unless it knows
      * the parent position.
      *
-     * \param referencePosition reference position to consider
-     * \return the current position based on the provided referencePosition
+     * @param referencePosition reference position to consider
+     * @return the current position based on the provided referencePosition
      * \sa ns3::MobilityModel::DoGetPositionWithReference
      */
     Vector GetPositionWithReference(const Vector& referencePosition) const;
     /**
-     * \param position the position to set.
+     * @param position the position to set.
      */
     void SetPosition(const Vector& position);
     /**
-     * \return the current velocity.
+     * @return the current velocity.
      */
     Vector GetVelocity() const;
     /**
-     * \param position a reference to another mobility model
-     * \return the distance between the two objects. Unit is meters.
+     * @param position a reference to another mobility model
+     * @return the distance between the two objects. Unit is meters.
      */
     double GetDistanceFrom(Ptr<const MobilityModel> position) const;
     /**
-     * \param other reference to another object's mobility model
-     * \return the relative speed between the two objects. Unit is meters/s.
+     * @param other reference to another object's mobility model
+     * @return the relative speed between the two objects. Unit is meters/s.
      */
     double GetRelativeSpeed(Ptr<const MobilityModel> other) const;
     /**
@@ -75,15 +75,15 @@ class MobilityModel : public Object
      * used by this model. Return the number of streams (possibly zero) that
      * have been assigned.
      *
-     * \param stream first stream index to use
-     * \return the number of stream indices assigned by this model
+     * @param stream first stream index to use
+     * @return the number of stream indices assigned by this model
      */
     int64_t AssignStreams(int64_t stream);
 
     /**
      *  TracedCallback signature.
      *
-     * \param [in] model Value of the MobilityModel.
+     * @param [in] model Value of the MobilityModel.
      */
     typedef void (*TracedCallback)(Ptr<const MobilityModel> model);
 
@@ -96,29 +96,29 @@ class MobilityModel : public Object
 
   private:
     /**
-     * \return the current position.
+     * @return the current position.
      *
      * Concrete subclasses of this base class must
      * implement this method.
      */
     virtual Vector DoGetPosition() const = 0;
     /**
-     * \param referencePosition the reference position to consider
-     * \return the current position.
+     * @param referencePosition the reference position to consider
+     * @return the current position.
      *
      * Unless subclasses override, this method will disregard the reference
      * position and return "DoGetPosition ()".
      */
     virtual Vector DoGetPositionWithReference(const Vector& referencePosition) const;
     /**
-     * \param position the position to set.
+     * @param position the position to set.
      *
      * Concrete subclasses of this base class must
      * implement this method.
      */
     virtual void DoSetPosition(const Vector& position) = 0;
     /**
-     * \return the current velocity.
+     * @return the current velocity.
      *
      * Concrete subclasses of this base class must
      * implement this method.
@@ -128,8 +128,8 @@ class MobilityModel : public Object
      * The default implementation does nothing but return the passed-in
      * parameter.  Subclasses using random variables are expected to
      * override this.
-     * \param start  starting stream index
-     * \return the number of streams used
+     * @param start  starting stream index
+     * @return the number of streams used
      */
     virtual int64_t DoAssignStreams(int64_t start);
 

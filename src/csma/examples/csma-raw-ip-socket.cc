@@ -33,8 +33,8 @@ NS_LOG_COMPONENT_DEFINE("CsmaRawIpSocketExample");
 /**
  * Receive sink function
  *
- * \param p the packet.
- * \param ad the sender's address.
+ * @param p the packet.
+ * @param ad the sender's address.
  */
 static void
 SinkRx(Ptr<const Packet> p, const Address& ad)

@@ -19,15 +19,15 @@
 using namespace ns3;
 
 /**
- * \ingroup traffic-control
- * \ingroup tests
- * \defgroup traffic-control-test traffic-control module tests
+ * @ingroup traffic-control
+ * @ingroup tests
+ * @defgroup traffic-control-test traffic-control module tests
  */
 
 /**
- * \ingroup traffic-control-test
+ * @ingroup traffic-control-test
  *
- * \brief Ared Queue Disc Test Item
+ * @brief Ared Queue Disc Test Item
  */
 class AredQueueDiscTestItem : public QueueDiscItem
 {
@@ -35,8 +35,8 @@ class AredQueueDiscTestItem : public QueueDiscItem
     /**
      * Constructor
      *
-     * \param p packet
-     * \param addr address
+     * @param p packet
+     * @param addr address
      */
     AredQueueDiscTestItem(Ptr<Packet> p, const Address& addr);
     ~AredQueueDiscTestItem() override;
@@ -71,9 +71,9 @@ AredQueueDiscTestItem::Mark()
 }
 
 /**
- * \ingroup traffic-control-test
+ * @ingroup traffic-control-test
  *
- * \brief Ared Queue Disc Test Case
+ * @brief Ared Queue Disc Test Case
  */
 class AredQueueDiscTestCase : public TestCase
 {
@@ -84,21 +84,21 @@ class AredQueueDiscTestCase : public TestCase
   private:
     /**
      * Enqueue function
-     * \param queue the queue disc
-     * \param size the size
-     * \param nPkt the number of packets
+     * @param queue the queue disc
+     * @param size the size
+     * @param nPkt the number of packets
      */
     void Enqueue(Ptr<RedQueueDisc> queue, uint32_t size, uint32_t nPkt);
     /**
      * Enqueue with delay function
-     * \param queue the queue disc
-     * \param size the size
-     * \param nPkt the number of packets
+     * @param queue the queue disc
+     * @param size the size
+     * @param nPkt the number of packets
      */
     void EnqueueWithDelay(Ptr<RedQueueDisc> queue, uint32_t size, uint32_t nPkt);
     /**
      * Run ARED queue disc test function
-     * \param mode the test mode
+     * @param mode the test mode
      */
     void RunAredDiscTest(QueueSizeUnit mode);
 };
@@ -400,9 +400,9 @@ AredQueueDiscTestCase::DoRun()
 }
 
 /**
- * \ingroup traffic-control-test
+ * @ingroup traffic-control-test
  *
- * \brief Ared Queue Disc Test Suite
+ * @brief Ared Queue Disc Test Suite
  */
 static class AredQueueDiscTestSuite : public TestSuite
 {

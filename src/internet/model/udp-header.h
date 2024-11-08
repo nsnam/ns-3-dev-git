@@ -19,8 +19,8 @@
 namespace ns3
 {
 /**
- * \ingroup udp
- * \brief Packet header for UDP packets
+ * @ingroup udp
+ * @brief Packet header for UDP packets
  *
  * This class has fields corresponding to those in a network UDP header
  * (port numbers, payload size, checksum) as well as methods for serialization
@@ -30,32 +30,32 @@ class UdpHeader : public Header
 {
   public:
     /**
-     * \brief Enable checksum calculation for UDP
+     * @brief Enable checksum calculation for UDP
      */
     void EnableChecksums();
     /**
-     * \param port the destination port for this UdpHeader
+     * @param port the destination port for this UdpHeader
      */
     void SetDestinationPort(uint16_t port);
     /**
-     * \param port The source port for this UdpHeader
+     * @param port The source port for this UdpHeader
      */
     void SetSourcePort(uint16_t port);
     /**
-     * \return The source port for this UdpHeader
+     * @return The source port for this UdpHeader
      */
     uint16_t GetSourcePort() const;
     /**
-     * \return the destination port for this UdpHeader
+     * @return the destination port for this UdpHeader
      */
     uint16_t GetDestinationPort() const;
 
     /**
-     * \param source the ip source to use in the underlying
+     * @param source the ip source to use in the underlying
      *        ip packet.
-     * \param destination the ip destination to use in the
+     * @param destination the ip destination to use in the
      *        underlying ip packet.
-     * \param protocol the protocol number to use in the underlying
+     * @param protocol the protocol number to use in the underlying
      *        ip packet.
      *
      * If you want to use udp checksums, you should call this
@@ -64,11 +64,11 @@ class UdpHeader : public Header
     void InitializeChecksum(Address source, Address destination, uint8_t protocol);
 
     /**
-     * \param source the ip source to use in the underlying
+     * @param source the ip source to use in the underlying
      *        ip packet.
-     * \param destination the ip destination to use in the
+     * @param destination the ip destination to use in the
      *        underlying ip packet.
-     * \param protocol the protocol number to use in the underlying
+     * @param protocol the protocol number to use in the underlying
      *        ip packet.
      *
      * If you want to use udp checksums, you should call this
@@ -77,11 +77,11 @@ class UdpHeader : public Header
     void InitializeChecksum(Ipv4Address source, Ipv4Address destination, uint8_t protocol);
 
     /**
-     * \param source the ip source to use in the underlying
+     * @param source the ip source to use in the underlying
      *        ip packet.
-     * \param destination the ip destination to use in the
+     * @param destination the ip destination to use in the
      *        underlying ip packet.
-     * \param protocol the protocol number to use in the underlying
+     * @param protocol the protocol number to use in the underlying
      *        ip packet.
      *
      * If you want to use udp checksums, you should call this
@@ -90,8 +90,8 @@ class UdpHeader : public Header
     void InitializeChecksum(Ipv6Address source, Ipv6Address destination, uint8_t protocol);
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     TypeId GetInstanceTypeId() const override;
@@ -101,13 +101,13 @@ class UdpHeader : public Header
     uint32_t Deserialize(Buffer::Iterator start) override;
 
     /**
-     * \brief Is the UDP checksum correct ?
-     * \returns true if the checksum is correct, false otherwise.
+     * @brief Is the UDP checksum correct ?
+     * @returns true if the checksum is correct, false otherwise.
      */
     bool IsChecksumOk() const;
 
     /**
-     * \brief Force the UDP checksum to a given value.
+     * @brief Force the UDP checksum to a given value.
      *
      * This might be useful for test purposes or to
      * restore the UDP checksum when the UDP header
@@ -119,33 +119,33 @@ class UdpHeader : public Header
      * When this option is used, the UDP checksum is written in
      * the header, regardless of the global ChecksumEnabled option.
      *
-     * \note The checksum value must be a big endian number.
+     * @note The checksum value must be a big endian number.
      *
-     * \param checksum the checksum to use (big endian).
+     * @param checksum the checksum to use (big endian).
      */
     void ForceChecksum(uint16_t checksum);
 
     /**
-     * \brief Force the UDP payload length to a given value.
+     * @brief Force the UDP payload length to a given value.
      *
      * This might be useful when forging a packet for test
      * purposes.
      *
-     * \param payloadSize the payload length to use.
+     * @param payloadSize the payload length to use.
      */
     void ForcePayloadSize(uint16_t payloadSize);
 
     /**
-     * \brief Return the checksum (only known after a Deserialize)
-     * \return The checksum for this UdpHeader
+     * @brief Return the checksum (only known after a Deserialize)
+     * @return The checksum for this UdpHeader
      */
     uint16_t GetChecksum() const;
 
   private:
     /**
-     * \brief Calculate the header checksum
-     * \param size packet size
-     * \returns the checksum
+     * @brief Calculate the header checksum
+     * @param size packet size
+     * @returns the checksum
      */
     uint16_t CalculateHeaderChecksum(uint16_t size) const;
 

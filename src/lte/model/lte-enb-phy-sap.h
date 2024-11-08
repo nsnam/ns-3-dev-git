@@ -31,20 +31,20 @@ class LteEnbPhySapProvider
     virtual ~LteEnbPhySapProvider();
 
     /**
-     * \brief Send the MAC PDU to the channel
-     * \param p the MAC PDU to send
+     * @brief Send the MAC PDU to the channel
+     * @param p the MAC PDU to send
      */
     virtual void SendMacPdu(Ptr<Packet> p) = 0;
 
     /**
-     * \brief Send SendLteControlMessage (PDCCH map, CQI feedbacks) using the ideal control channel
-     * \param msg the Ideal Control Message to send
+     * @brief Send SendLteControlMessage (PDCCH map, CQI feedbacks) using the ideal control channel
+     * @param msg the Ideal Control Message to send
      */
     virtual void SendLteControlMessage(Ptr<LteControlMessage> msg) = 0;
 
     /**
-     * \brief Get the delay from MAC to Channel expressed in TTIs
-     * \returns MAC channel TTI delay
+     * @brief Get the delay from MAC to Channel expressed in TTIs
+     * @returns MAC channel TTI delay
      */
     virtual uint8_t GetMacChTtiDelay() = 0;
 };
@@ -63,48 +63,48 @@ class LteEnbPhySapUser
     /**
      * Called by the Phy to notify the MAC of the reception of a new PHY-PDU
      *
-     * \param p
+     * @param p
      */
     virtual void ReceivePhyPdu(Ptr<Packet> p) = 0;
 
     /**
-     * \brief Trigger the start from a new frame (input from Phy layer)
-     * \param frameNo frame number
-     * \param subframeNo subframe number
+     * @brief Trigger the start from a new frame (input from Phy layer)
+     * @param frameNo frame number
+     * @param subframeNo subframe number
      */
     virtual void SubframeIndication(uint32_t frameNo, uint32_t subframeNo) = 0;
 
     /**
-     * \brief Receive SendLteControlMessage (PDCCH map, CQI feedbacks) using the ideal control
+     * @brief Receive SendLteControlMessage (PDCCH map, CQI feedbacks) using the ideal control
      * channel
-     * \param msg the Ideal Control Message to receive
+     * @param msg the Ideal Control Message to receive
      */
     virtual void ReceiveLteControlMessage(Ptr<LteControlMessage> msg) = 0;
 
     /**
      * notify the reception of a RACH preamble on the PRACH
      *
-     * \param prachId the ID of the preamble
+     * @param prachId the ID of the preamble
      */
     virtual void ReceiveRachPreamble(uint32_t prachId) = 0;
 
     /**
-     * \brief Returns to MAC level the UL-CQI evaluated
-     * \param ulcqi the UL-CQI (see FF MAC API 4.3.29)
+     * @brief Returns to MAC level the UL-CQI evaluated
+     * @param ulcqi the UL-CQI (see FF MAC API 4.3.29)
      */
     virtual void UlCqiReport(FfMacSchedSapProvider::SchedUlCqiInfoReqParameters ulcqi) = 0;
 
     /**
      * Notify the HARQ on the UL transmission status
      *
-     * \param params
+     * @param params
      */
     virtual void UlInfoListElementHarqFeedback(UlInfoListElement_s params) = 0;
 
     /**
      * Notify the HARQ on the DL transmission status
      *
-     * \param params
+     * @param params
      */
     virtual void DlInfoListElementHarqFeedback(DlInfoListElement_s params) = 0;
 };

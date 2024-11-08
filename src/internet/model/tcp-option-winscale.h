@@ -16,9 +16,9 @@ namespace ns3
 {
 
 /**
- * \ingroup tcp
+ * @ingroup tcp
  *
- * \brief Defines the TCP option of kind 3 (window scale option) as in \RFC{1323}
+ * @brief Defines the TCP option of kind 3 (window scale option) as in \RFC{1323}
  *
  * For more efficient use of high bandwidth networks, a larger TCP window size
  * may be used. The TCP window size field controls the flow of data and its
@@ -40,8 +40,8 @@ class TcpOptionWinScale : public TcpOption
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     TypeId GetInstanceTypeId() const override;
@@ -57,17 +57,17 @@ class TcpOptionWinScale : public TcpOption
     uint32_t GetSerializedSize() const override;
 
     /**
-     * \brief Get the scale value (uint8_t)
-     * \return The scale value
+     * @brief Get the scale value (uint8_t)
+     * @return The scale value
      */
     uint8_t GetScale() const;
 
     /**
-     * \brief Set the scale option
+     * @brief Set the scale option
      *
      * The scale option SHOULD be <= 14 (as \RFC{1323}).
      *
-     * \param scale Scale factor
+     * @param scale Scale factor
      */
     void SetScale(uint8_t scale);
 

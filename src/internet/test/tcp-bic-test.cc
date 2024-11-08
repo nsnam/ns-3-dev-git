@@ -16,21 +16,21 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("TcpBicTestSuite");
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief Testing the congestion avoidance increment on TcpBic
+ * @brief Testing the congestion avoidance increment on TcpBic
  */
 class TcpBicIncrementTest : public TestCase
 {
   public:
     /**
-     * \brief Constructor.
-     * \param cWnd Congestion window.
-     * \param segmentSize Segment size.
-     * \param ssThresh Slow Start Threshold.
-     * \param segmentsAcked Number of segments acked.
-     * \param lastMaxCwnd Last max Cwnd.
-     * \param name Test description.
+     * @brief Constructor.
+     * @param cWnd Congestion window.
+     * @param segmentSize Segment size.
+     * @param ssThresh Slow Start Threshold.
+     * @param segmentsAcked Number of segments acked.
+     * @param lastMaxCwnd Last max Cwnd.
+     * @param name Test description.
      */
     TcpBicIncrementTest(uint32_t cWnd,
                         uint32_t segmentSize,
@@ -43,14 +43,14 @@ class TcpBicIncrementTest : public TestCase
     void DoRun() override;
 
     /**
-     * \brief Update the TCP socket state.
-     * \param tcb The TCP socket state.
-     * \returns The ack counter.
+     * @brief Update the TCP socket state.
+     * @param tcb The TCP socket state.
+     * @returns The ack counter.
      */
     uint32_t Update(Ptr<TcpSocketState> tcb);
 
     /**
-     * \brief Execute the test.
+     * @brief Execute the test.
      */
     void ExecuteTest();
 
@@ -178,20 +178,20 @@ TcpBicIncrementTest::Update(Ptr<TcpSocketState> tcb)
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief Testing the congestion avoidance decrement on TcpBic
+ * @brief Testing the congestion avoidance decrement on TcpBic
  */
 class TcpBicDecrementTest : public TestCase
 {
   public:
     /**
-     * \brief Constructor.
-     * \param cWnd Congestion window.
-     * \param segmentSize Segment size.
-     * \param fastConvergence Fast convergence.
-     * \param lastMaxCwnd Last max Cwnd.
-     * \param name Test description.
+     * @brief Constructor.
+     * @param cWnd Congestion window.
+     * @param segmentSize Segment size.
+     * @param fastConvergence Fast convergence.
+     * @param lastMaxCwnd Last max Cwnd.
+     * @param name Test description.
      */
     TcpBicDecrementTest(uint32_t cWnd,
                         uint32_t segmentSize,
@@ -203,7 +203,7 @@ class TcpBicDecrementTest : public TestCase
     void DoRun() override;
 
     /**
-     * \brief Execute the test.
+     * @brief Execute the test.
      */
     void ExecuteTest();
 
@@ -291,9 +291,9 @@ TcpBicDecrementTest::ExecuteTest()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief TCP Bic TestSuite
+ * @brief TCP Bic TestSuite
  */
 class TcpBicTestSuite : public TestSuite
 {

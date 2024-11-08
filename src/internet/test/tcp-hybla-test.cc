@@ -16,20 +16,20 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("TcpHyblaTestSuite");
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief Testing the congestion avoidance increment on TcpHybla
+ * @brief Testing the congestion avoidance increment on TcpHybla
  */
 class TcpHyblaIncrementTest : public TestCase
 {
   public:
     /**
-     * \brief Constructor.
-     * \param cWnd Congestion window.
-     * \param ssThresh Slow Start Threshold.
-     * \param segmentSize Segment size.
-     * \param rtt Round trip time.
-     * \param name Test description.
+     * @brief Constructor.
+     * @param cWnd Congestion window.
+     * @param ssThresh Slow Start Threshold.
+     * @param segmentSize Segment size.
+     * @param rtt Round trip time.
+     * @param name Test description.
      */
     TcpHyblaIncrementTest(uint32_t cWnd,
                           uint32_t ssThresh,
@@ -41,9 +41,9 @@ class TcpHyblaIncrementTest : public TestCase
     void DoRun() override;
 
     /**
-     * \brief Tracks TCP Hybla rho parameter changes.
-     * \param oldVal Previous value.
-     * \param newVal Actual value.
+     * @brief Tracks TCP Hybla rho parameter changes.
+     * @param oldVal Previous value.
+     * @param newVal Actual value.
      */
     void RhoUpdated(double oldVal, double newVal);
 
@@ -136,9 +136,9 @@ TcpHyblaIncrementTest::DoRun()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief TCP Hybla TestSuite
+ * @brief TCP Hybla TestSuite
  */
 class TcpHyblaTestSuite : public TestSuite
 {

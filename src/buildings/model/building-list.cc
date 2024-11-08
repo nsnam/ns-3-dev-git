@@ -23,14 +23,14 @@ namespace ns3
 NS_LOG_COMPONENT_DEFINE("BuildingList");
 
 /**
- * \brief private implementation detail of the BuildingList API.
+ * @brief private implementation detail of the BuildingList API.
  */
 class BuildingListPriv : public Object
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return The object TypeId.
+     * @brief Get the type ID.
+     * @return The object TypeId.
      */
     static TypeId GetTypeId();
     BuildingListPriv();
@@ -39,37 +39,37 @@ class BuildingListPriv : public Object
     /**
      * Add a Building to the list.
      *
-     * \param building building to add
-     * \returns index of building in list.
+     * @param building building to add
+     * @returns index of building in list.
      */
     uint32_t Add(Ptr<Building> building);
     /**
      * Returns an iterator to the start of the list.
      *
-     * \returns iterator to the begin of the container.
+     * @returns iterator to the begin of the container.
      */
     BuildingList::Iterator Begin() const;
     /**
      * Returns an iterator to the end of the list.
      *
-     * \returns iterator to the end of the container.
+     * @returns iterator to the end of the container.
      */
     BuildingList::Iterator End() const;
     /**
      * Gets the n-th Building in the container
-     * \param n Building position
-     * \returns a pointer to the Building
+     * @param n Building position
+     * @returns a pointer to the Building
      */
     Ptr<Building> GetBuilding(uint32_t n);
     /**
      * Gets the number of Building in the container
-     * \returns the container size
+     * @returns the container size
      */
     uint32_t GetNBuildings();
 
     /**
      * Get the Singleton instance of BuildingListPriv (or create one)
-     * \return the BuildingListPriv instance
+     * @return the BuildingListPriv instance
      */
     static Ptr<BuildingListPriv> Get();
 
@@ -77,7 +77,7 @@ class BuildingListPriv : public Object
     void DoDispose() override;
     /**
      * Get the Singleton instance of BuildingListPriv (or create one)
-     * \return the BuildingListPriv instance
+     * @return the BuildingListPriv instance
      */
     static Ptr<BuildingListPriv>* DoGet();
     /**

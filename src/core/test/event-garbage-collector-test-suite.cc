@@ -10,16 +10,16 @@
 #include "ns3/test.h"
 
 /**
- * \file
- * \ingroup core-tests
- * \ingroup events
- * \ingroup event-garbage-tests
+ * @file
+ * @ingroup core-tests
+ * @ingroup events
+ * @ingroup event-garbage-tests
  * EventGarbageCollector test suite.
  */
 
 /**
- * \ingroup core-tests
- * \defgroup event-garbage-tests EventGarbageCollector test suite
+ * @ingroup core-tests
+ * @defgroup event-garbage-tests EventGarbageCollector test suite
  */
 
 namespace ns3
@@ -29,7 +29,7 @@ namespace tests
 {
 
 /**
- * \ingroup event-garbage-tests
+ * @ingroup event-garbage-tests
  * Event garbage collector test.
  */
 class EventGarbageCollectorTestCase : public TestCase
@@ -90,7 +90,7 @@ EventGarbageCollectorTestCase::DoRun()
 }
 
 /**
- * \ingroup event-garbage-tests
+ * @ingroup event-garbage-tests
  * Event garbage collector test suite.
  */
 class EventGarbageCollectorTestSuite : public TestSuite
@@ -104,7 +104,7 @@ class EventGarbageCollectorTestSuite : public TestSuite
 };
 
 /**
- * \ingroup event-garbage-tests
+ * @ingroup event-garbage-tests
  * EventGarbageCollectorTestSuite instance variable.
  */
 static EventGarbageCollectorTestSuite g_eventGarbageCollectorTestSuite;

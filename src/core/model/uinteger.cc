@@ -13,8 +13,8 @@
 #include <sstream>
 
 /**
- * \file
- * \ingroup attribute_Uinteger
+ * @file
+ * @ingroup attribute_Uinteger
  * ns3::UintegerValue attribute value implementations.
  */
 
@@ -29,13 +29,13 @@ namespace internal
 {
 
 /**
- * \ingroup attribute_Uinteger
+ * @ingroup attribute_Uinteger
  * Make an Uinteger attribute checker with embedded numeric type name.
  *
- * \param [in] min The minimum allowed value.
- * \param [in] max The maximum allowed value.
- * \param [in] name The original type name ("uint8_t", "uint16_t", _etc_.).
- * \returns The AttributeChecker.
+ * @param [in] min The minimum allowed value.
+ * @param [in] max The maximum allowed value.
+ * @param [in] name The original type name ("uint8_t", "uint16_t", _etc_.).
+ * @returns The AttributeChecker.
  */
 Ptr<const AttributeChecker>
 MakeUintegerChecker(uint64_t min, uint64_t max, std::string name)

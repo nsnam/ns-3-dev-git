@@ -31,7 +31,7 @@ class LteNetDevice;
 class LteControlMessage;
 
 /**
- * \ingroup lte
+ * @ingroup lte
  *
  * The LtePhy models the physical layer of LTE. It is composed by two
  * LteSpectrumPhy, one for the downlink and one for the uplink.
@@ -46,63 +46,63 @@ class LtePhy : public Object
 
     /**
      *
-     * \param dlPhy the downlink LteSpectrumPhy instance
-     * \param ulPhy the uplink LteSpectrumPhy instance
+     * @param dlPhy the downlink LteSpectrumPhy instance
+     * @param ulPhy the uplink LteSpectrumPhy instance
      */
     LtePhy(Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy);
 
     ~LtePhy() override;
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
     /**
-     * \brief Set the device where the phy layer is attached
-     * \param d the device
+     * @brief Set the device where the phy layer is attached
+     * @param d the device
      */
     void SetDevice(Ptr<LteNetDevice> d);
     /**
-     * \brief Get the device where the phy layer is attached
-     * \return the pointer to the device
+     * @brief Get the device where the phy layer is attached
+     * @return the pointer to the device
      */
     Ptr<LteNetDevice> GetDevice() const;
 
     /**
      *
-     * \return a pointer to the LteSpectrumPhy instance that manages the downlink
+     * @return a pointer to the LteSpectrumPhy instance that manages the downlink
      */
     Ptr<LteSpectrumPhy> GetDownlinkSpectrumPhy();
 
     /**
      *
-     * \return a pointer to the LteSpectrumPhy instance that manages the uplink
+     * @return a pointer to the LteSpectrumPhy instance that manages the uplink
      */
     Ptr<LteSpectrumPhy> GetUplinkSpectrumPhy();
 
     /**
-     * \brief Queue the MAC PDU to be sent (according to m_macChTtiDelay)
-     * \param p the MAC PDU to sent
+     * @brief Queue the MAC PDU to be sent (according to m_macChTtiDelay)
+     * @param p the MAC PDU to sent
      */
     virtual void DoSendMacPdu(Ptr<Packet> p) = 0;
 
     /**
      * Set the downlink channel
-     * \param c the downlink channel
+     * @param c the downlink channel
      */
     void SetDownlinkChannel(Ptr<SpectrumChannel> c);
 
     /**
      * Set the uplink channel
-     * \param c the uplink channel
+     * @param c the uplink channel
      */
     void SetUplinkChannel(Ptr<SpectrumChannel> c);
 
     /**
-     * \brief Compute the TX Power Spectral Density
-     * \return a pointer to a newly allocated SpectrumValue representing the TX Power Spectral
+     * @brief Compute the TX Power Spectral Density
+     * @return a pointer to a newly allocated SpectrumValue representing the TX Power Spectral
      * Density in W/Hz for each Resource Block
      */
     virtual Ptr<SpectrumValue> CreateTxPowerSpectralDensity() = 0;
@@ -110,61 +110,61 @@ class LtePhy : public Object
     void DoDispose() override;
 
     /**
-     * \param tti transmission time interval
+     * @param tti transmission time interval
      */
     void SetTti(double tti);
     /**
-     * \returns transmission time interval
+     * @returns transmission time interval
      */
     double GetTti() const;
 
     /**
      *
-     * \param cellId the Cell Identifier
+     * @param cellId the Cell Identifier
      */
     void DoSetCellId(uint16_t cellId);
 
     /**
-     * \returns the RB group size according to the bandwidth
+     * @returns the RB group size according to the bandwidth
      */
     uint8_t GetRbgSize() const;
 
     /**
-     * \returns the SRS periodicity (see Table 8.2-1 of 36.213)
-     * \param srcCi the SRS Configuration Index
+     * @returns the SRS periodicity (see Table 8.2-1 of 36.213)
+     * @param srcCi the SRS Configuration Index
      */
     uint16_t GetSrsPeriodicity(uint16_t srcCi) const;
 
     /**
-     * \returns the SRS Subframe offset (see Table 8.2-1 of 36.213)
-     * \param srcCi the SRS Configuration Index
+     * @returns the SRS Subframe offset (see Table 8.2-1 of 36.213)
+     * @param srcCi the SRS Configuration Index
      */
     uint16_t GetSrsSubframeOffset(uint16_t srcCi) const;
 
     /**
-     * \param p queue MAC PDU to be sent
+     * @param p queue MAC PDU to be sent
      */
     void SetMacPdu(Ptr<Packet> p);
 
     /**
-     * \returns the packet burst to be sent
+     * @returns the packet burst to be sent
      */
     Ptr<PacketBurst> GetPacketBurst();
 
     /**
-     * \param m the control message to be sent
+     * @param m the control message to be sent
      */
     void SetControlMessages(Ptr<LteControlMessage> m);
 
     /**
-     * \returns the list of control messages to be sent
+     * @returns the list of control messages to be sent
      */
     std::list<Ptr<LteControlMessage>> GetControlMessages();
 
     /**
      * generate a CQI report based on the given SINR of Ctrl frame
      *
-     * \param sinr the SINR vs frequency measured by the device
+     * @param sinr the SINR vs frequency measured by the device
      */
     virtual void GenerateCtrlCqiReport(const SpectrumValue& sinr) = 0;
 
@@ -172,7 +172,7 @@ class LtePhy : public Object
      * generate a CQI report based on the given SINR of Data frame
      * (used for PUSCH CQIs)
      *
-     * \param sinr the SINR vs frequency measured by the device
+     * @param sinr the SINR vs frequency measured by the device
      */
     virtual void GenerateDataCqiReport(const SpectrumValue& sinr) = 0;
 
@@ -181,7 +181,7 @@ class LtePhy : public Object
      * perceived during DATA frame
      * NOTE: used only by eNB
      *
-     * \param interf the interference + noise power measured by the device
+     * @param interf the interference + noise power measured by the device
      */
     virtual void ReportInterference(const SpectrumValue& interf) = 0;
 
@@ -190,21 +190,21 @@ class LtePhy : public Object
      * frame
      * NOTE: used only by UE for evaluating RSRP
      *
-     * \param power the RS power measured by the device
+     * @param power the RS power measured by the device
      */
     virtual void ReportRsReceivedPower(const SpectrumValue& power) = 0;
 
     /**
      * Set the component carrier ID
      *
-     * \param index the component carrier ID index
+     * @param index the component carrier ID index
      */
     void SetComponentCarrierId(uint8_t index);
 
     /**
      * Get the component carrier ID
      *
-     * \returns the component carrier ID index
+     * @returns the component carrier ID index
      */
     uint8_t GetComponentCarrierId() const;
 

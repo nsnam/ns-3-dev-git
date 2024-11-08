@@ -12,8 +12,8 @@
 #include "attribute.h"
 
 /**
- * \file
- * \ingroup attribute_Boolean
+ * @file
+ * @ingroup attribute_Boolean
  * ns3::BooleanValue attribute value declarations.
  */
 
@@ -34,7 +34,7 @@ class BooleanValue : public AttributeValue
 
     /**
      * Functor returning the value.
-     * \returns The value.
+     * @returns The value.
      */
     operator bool() const;
 
@@ -55,14 +55,14 @@ BooleanValue::GetAccessor(T& v) const
 }
 
 /**
- * \ingroup attribute_Boolean
+ * @ingroup attribute_Boolean
  * Output streamer.
  *
  * The value is printed as "true" or "false".
  *
- * \param [in,out] os The stream.
- * \param [in] value The BooleanValue to print.
- * \returns The stream.
+ * @param [in,out] os The stream.
+ * @param [in] value The BooleanValue to print.
+ * @returns The stream.
  */
 std::ostream& operator<<(std::ostream& os, const BooleanValue& value);
 

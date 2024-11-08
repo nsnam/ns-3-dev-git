@@ -6,22 +6,22 @@
 using namespace ns3;
 
 /**
- * \defgroup configstore-examples Config Store examples
- * \ingroup configstore
- * \ingroup examples
+ * @defgroup configstore-examples Config Store examples
+ * @ingroup configstore
+ * @ingroup examples
  */
 
 /**
- * \ingroup configstore-examples
+ * @ingroup configstore-examples
  *
- * \brief Example class to demonstrate use of the ns-3 Config Store
+ * @brief Example class to demonstrate use of the ns-3 Config Store
  */
 class ConfigExample : public Object
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId()
     {

@@ -26,9 +26,9 @@ class LtePdcpSapProvider;
 class Packet;
 
 /**
- * \ingroup lte
+ * @ingroup lte
  *
- * \brief Class holding definition common to all UE/eNodeB SAP Users/Providers.
+ * @brief Class holding definition common to all UE/eNodeB SAP Users/Providers.
  *
  * See 3GPP TS 36.331 for reference.
  *
@@ -172,8 +172,8 @@ class LteRrcSap
     /**
      * Convert PDSCH config dedicated function
      *
-     * \param pdschConfigDedicated PdschConfigDedicated
-     * \returns double value
+     * @param pdschConfigDedicated PdschConfigDedicated
+     * @returns double value
      */
     static double ConvertPdschConfigDedicated2Double(PdschConfigDedicated pdschConfigDedicated)
     {
@@ -337,7 +337,7 @@ class LteRrcSap
     };
 
     /**
-     * \brief Threshold for event evaluation.
+     * @brief Threshold for event evaluation.
      *
      * For RSRP-based threshold, the actual value is (value - 140) dBm. While for
      * RSRQ-based threshold, the actual value is (value - 40) / 2 dB. This is in
@@ -940,7 +940,7 @@ class LteRrcSap
 };
 
 /**
- * \brief Part of the RRC protocol. This Service Access Point (SAP) is used by
+ * @brief Part of the RRC protocol. This Service Access Point (SAP) is used by
  *        the UE RRC to send messages to the eNB. Each method defined in this
  *        class corresponds to the transmission of a message that is defined in
  *        Section 6.2.2 of TS 36.331.
@@ -956,76 +956,76 @@ class LteUeRrcSapUser : public LteRrcSap
     };
 
     /**
-     * \brief Setup function
-     * \param params the setup parameters
+     * @brief Setup function
+     * @param params the setup parameters
      */
     virtual void Setup(SetupParameters params) = 0;
 
     /**
-     * \brief Send an _RRCConnectionRequest message to the serving eNodeB
+     * @brief Send an _RRCConnectionRequest message to the serving eNodeB
      *        during an RRC connection establishment procedure
      *        (Section 5.3.3 of TS 36.331).
-     * \param msg the message
+     * @param msg the message
      */
     virtual void SendRrcConnectionRequest(RrcConnectionRequest msg) = 0;
 
     /**
-     * \brief Send an _RRCConnectionSetupComplete_ message to the serving eNodeB
+     * @brief Send an _RRCConnectionSetupComplete_ message to the serving eNodeB
      *        during an RRC connection establishment procedure
      *        (Section 5.3.3 of TS 36.331).
-     * \param msg the message
+     * @param msg the message
      */
     virtual void SendRrcConnectionSetupCompleted(RrcConnectionSetupCompleted msg) = 0;
 
     /**
-     * \brief Send an _RRCConnectionReconfigurationComplete_ message to the serving eNodeB
+     * @brief Send an _RRCConnectionReconfigurationComplete_ message to the serving eNodeB
      *        during an RRC connection reconfiguration procedure
      *        (Section 5.3.5 of TS 36.331).
-     * \param msg the message
+     * @param msg the message
      */
     virtual void SendRrcConnectionReconfigurationCompleted(
         RrcConnectionReconfigurationCompleted msg) = 0;
 
     /**
-     * \brief Send an _RRCConnectionReestablishmentRequest_ message to the serving eNodeB
+     * @brief Send an _RRCConnectionReestablishmentRequest_ message to the serving eNodeB
      *        during an RRC connection re-establishment procedure
      *        (Section 5.3.7 of TS 36.331).
-     * \param msg the message
+     * @param msg the message
      */
     virtual void SendRrcConnectionReestablishmentRequest(
         RrcConnectionReestablishmentRequest msg) = 0;
 
     /**
-     * \brief Send an _RRCConnectionReestablishmentComplete_ message to the serving eNodeB
+     * @brief Send an _RRCConnectionReestablishmentComplete_ message to the serving eNodeB
      *        during an RRC connection re-establishment procedure
      *        (Section 5.3.7 of TS 36.331).
-     * \param msg the message
+     * @param msg the message
      */
     virtual void SendRrcConnectionReestablishmentComplete(
         RrcConnectionReestablishmentComplete msg) = 0;
 
     /**
-     * \brief Send a _MeasurementReport_ message to the serving eNodeB
+     * @brief Send a _MeasurementReport_ message to the serving eNodeB
      *        during a measurement reporting procedure
      *        (Section 5.5.5 of TS 36.331).
-     * \param msg the message
+     * @param msg the message
      */
     virtual void SendMeasurementReport(MeasurementReport msg) = 0;
 
     /**
-     * \brief Send UE context remove request function
+     * @brief Send UE context remove request function
      *
      * Request eNodeB to remove UE context once radio link failure or
      * random access failure is detected. It is needed since no RLF
      * detection mechanism at eNodeB is implemented.
      *
-     * \param rnti the C-RNTI of the UE
+     * @param rnti the C-RNTI of the UE
      */
     virtual void SendIdealUeContextRemoveRequest(uint16_t rnti) = 0;
 };
 
 /**
- * \brief Part of the RRC protocol. This Service Access Point (SAP) is used to
+ * @brief Part of the RRC protocol. This Service Access Point (SAP) is used to
  *        let the UE RRC receive a message from the eNB RRC. Each method defined
  *        in this class corresponds to the reception of a message that is
  *        defined in Section 6.2.2 of TS 36.331.
@@ -1041,70 +1041,70 @@ class LteUeRrcSapProvider : public LteRrcSap
     };
 
     /**
-     * \brief Complete setup function
-     * \param params the complete setup parameters
+     * @brief Complete setup function
+     * @param params the complete setup parameters
      */
     virtual void CompleteSetup(CompleteSetupParameters params) = 0;
 
     /**
-     * \brief Receive a _SystemInformation_ message from the serving eNodeB
+     * @brief Receive a _SystemInformation_ message from the serving eNodeB
      *        during a system information acquisition procedure
      *        (Section 5.2.2 of TS 36.331).
-     * \param msg the message
+     * @param msg the message
      */
     virtual void RecvSystemInformation(SystemInformation msg) = 0;
 
     /**
-     * \brief Receive an _RRCConnectionSetup_ message from the serving eNodeB
+     * @brief Receive an _RRCConnectionSetup_ message from the serving eNodeB
      *        during an RRC connection establishment procedure
      *        (Section 5.3.3 of TS 36.331).
-     * \param msg the message
+     * @param msg the message
      */
     virtual void RecvRrcConnectionSetup(RrcConnectionSetup msg) = 0;
 
     /**
-     * \brief Receive an _RRCConnectionReconfiguration_ message from the serving eNodeB
+     * @brief Receive an _RRCConnectionReconfiguration_ message from the serving eNodeB
      *        during an RRC connection reconfiguration procedure
      *        (Section 5.3.5 of TS 36.331).
-     * \param msg the message
+     * @param msg the message
      */
     virtual void RecvRrcConnectionReconfiguration(RrcConnectionReconfiguration msg) = 0;
 
     /**
-     * \brief Receive an _RRCConnectionReestablishment_ message from the serving eNodeB
+     * @brief Receive an _RRCConnectionReestablishment_ message from the serving eNodeB
      *        during an RRC connection re-establishment procedure
      *        (Section 5.3.7 of TS 36.331).
-     * \param msg the message
+     * @param msg the message
      */
     virtual void RecvRrcConnectionReestablishment(RrcConnectionReestablishment msg) = 0;
 
     /**
-     * \brief Receive an _RRCConnectionReestablishmentReject_ message from the serving eNodeB
+     * @brief Receive an _RRCConnectionReestablishmentReject_ message from the serving eNodeB
      *        during an RRC connection re-establishment procedure
      *        (Section 5.3.7 of TS 36.331).
-     * \param msg the message
+     * @param msg the message
      */
     virtual void RecvRrcConnectionReestablishmentReject(RrcConnectionReestablishmentReject msg) = 0;
 
     /**
-     * \brief Receive an _RRCConnectionRelease_ message from the serving eNodeB
+     * @brief Receive an _RRCConnectionRelease_ message from the serving eNodeB
      *        during an RRC connection release procedure
      *        (Section 5.3.8 of TS 36.331).
-     * \param msg the message
+     * @param msg the message
      */
     virtual void RecvRrcConnectionRelease(RrcConnectionRelease msg) = 0;
 
     /**
-     * \brief Receive an _RRCConnectionReject_ message from the serving eNodeB
+     * @brief Receive an _RRCConnectionReject_ message from the serving eNodeB
      *        during an RRC connection establishment procedure
      *        (Section 5.3.3 of TS 36.331).
-     * \param msg the message
+     * @param msg the message
      */
     virtual void RecvRrcConnectionReject(RrcConnectionReject msg) = 0;
 };
 
 /**
- * \brief Part of the RRC protocol. This Service Access Point (SAP) is used by
+ * @brief Part of the RRC protocol. This Service Access Point (SAP) is used by
  *        the eNB RRC to send messages to the UE RRC.  Each method defined in
  *        this class corresponds to the transmission of a message that is
  *        defined in Section 6.2.2 of TS 36.331.
@@ -1120,111 +1120,111 @@ class LteEnbRrcSapUser : public LteRrcSap
     };
 
     /**
-     * \brief Setup UE function
-     * \param rnti the RNTI
-     * \param params the setup UE parameters
+     * @brief Setup UE function
+     * @param rnti the RNTI
+     * @param params the setup UE parameters
      */
     virtual void SetupUe(uint16_t rnti, SetupUeParameters params) = 0;
     /**
-     * \brief Remove UE function
-     * \param rnti the RNTI
+     * @brief Remove UE function
+     * @param rnti the RNTI
      */
     virtual void RemoveUe(uint16_t rnti) = 0;
 
     /**
-     * \brief Send a _SystemInformation_ message to all attached UEs
+     * @brief Send a _SystemInformation_ message to all attached UEs
      *        during a system information acquisition procedure
      *        (Section 5.2.2 of TS 36.331).
-     * \param cellId cell ID
-     * \param msg the message
+     * @param cellId cell ID
+     * @param msg the message
      */
     virtual void SendSystemInformation(uint16_t cellId, SystemInformation msg) = 0;
 
     /**
-     * \brief Send an _RRCConnectionSetup_ message to a UE
+     * @brief Send an _RRCConnectionSetup_ message to a UE
      *        during an RRC connection establishment procedure
      *        (Section 5.3.3 of TS 36.331).
-     * \param rnti the RNTI of the destination UE
-     * \param msg the message
+     * @param rnti the RNTI of the destination UE
+     * @param msg the message
      */
     virtual void SendRrcConnectionSetup(uint16_t rnti, RrcConnectionSetup msg) = 0;
 
     /**
-     * \brief Send an _RRCConnectionReconfiguration_ message to a UE
+     * @brief Send an _RRCConnectionReconfiguration_ message to a UE
      *        during an RRC connection reconfiguration procedure
      *        (Section 5.3.5 of TS 36.331).
-     * \param rnti the RNTI of the destination UE
-     * \param msg the message
+     * @param rnti the RNTI of the destination UE
+     * @param msg the message
      */
     virtual void SendRrcConnectionReconfiguration(uint16_t rnti,
                                                   RrcConnectionReconfiguration msg) = 0;
 
     /**
-     * \brief Send an _RRCConnectionReestablishment_ message to a UE
+     * @brief Send an _RRCConnectionReestablishment_ message to a UE
      *        during an RRC connection re-establishment procedure
      *        (Section 5.3.7 of TS 36.331).
-     * \param rnti the RNTI of the destination UE
-     * \param msg the message
+     * @param rnti the RNTI of the destination UE
+     * @param msg the message
      */
     virtual void SendRrcConnectionReestablishment(uint16_t rnti,
                                                   RrcConnectionReestablishment msg) = 0;
 
     /**
-     * \brief Send an _RRCConnectionReestablishmentReject_ message to a UE
+     * @brief Send an _RRCConnectionReestablishmentReject_ message to a UE
      *        during an RRC connection re-establishment procedure
      *        (Section 5.3.7 of TS 36.331).
-     * \param rnti the RNTI of the destination UE
-     * \param msg the message
+     * @param rnti the RNTI of the destination UE
+     * @param msg the message
      */
     virtual void SendRrcConnectionReestablishmentReject(uint16_t rnti,
                                                         RrcConnectionReestablishmentReject msg) = 0;
 
     /**
-     * \brief Send an _RRCConnectionRelease_ message to a UE
+     * @brief Send an _RRCConnectionRelease_ message to a UE
      *        during an RRC connection release procedure
      *        (Section 5.3.8 of TS 36.331).
-     * \param rnti the RNTI of the destination UE
-     * \param msg the message
+     * @param rnti the RNTI of the destination UE
+     * @param msg the message
      */
     virtual void SendRrcConnectionRelease(uint16_t rnti, RrcConnectionRelease msg) = 0;
 
     /**
-     * \brief Send an _RRCConnectionReject_ message to a UE
+     * @brief Send an _RRCConnectionReject_ message to a UE
      *        during an RRC connection establishment procedure
      *        (Section 5.3.3 of TS 36.331).
-     * \param rnti the RNTI of the destination UE
-     * \param msg the message
+     * @param rnti the RNTI of the destination UE
+     * @param msg the message
      */
     virtual void SendRrcConnectionReject(uint16_t rnti, RrcConnectionReject msg) = 0;
 
     /**
-     * \brief Encode handover prepration information
-     * \param msg HandoverPreparationInfo
-     * \returns the packet
+     * @brief Encode handover prepration information
+     * @param msg HandoverPreparationInfo
+     * @returns the packet
      */
     virtual Ptr<Packet> EncodeHandoverPreparationInformation(HandoverPreparationInfo msg) = 0;
     /**
-     * \brief Decode handover prepration information
-     * \param p the packet
-     * \returns HandoverPreparationInfo
+     * @brief Decode handover prepration information
+     * @param p the packet
+     * @returns HandoverPreparationInfo
      */
     virtual HandoverPreparationInfo DecodeHandoverPreparationInformation(Ptr<Packet> p) = 0;
     /**
-     * \brief Encode handover command
-     * \param msg RrcConnectionReconfiguration
-     * \returns the packet
+     * @brief Encode handover command
+     * @param msg RrcConnectionReconfiguration
+     * @returns the packet
      */
     virtual Ptr<Packet> EncodeHandoverCommand(RrcConnectionReconfiguration msg) = 0;
     /**
-     * \brief Decode handover command
-     * \param p the packet
-     * \returns RrcConnectionReconfiguration
+     * @brief Decode handover command
+     * @param p the packet
+     * @returns RrcConnectionReconfiguration
      */
     virtual RrcConnectionReconfiguration DecodeHandoverCommand(Ptr<Packet> p) = 0;
 };
 
 /**
- * \brief Part of the RRC protocol. This Service Access Point (SAP) is used to
+ * @brief Part of the RRC protocol. This Service Access Point (SAP) is used to
  *        let the eNB RRC receive a message from a UE RRC.  Each method defined
  *        in this class corresponds to the reception of a message that is
  *        defined in Section 6.2.2 of TS 36.331.
@@ -1240,81 +1240,81 @@ class LteEnbRrcSapProvider : public LteRrcSap
     };
 
     /**
-     * \brief Complete setup UE function
-     * \param rnti the RNTI of UE which sent the message
-     * \param params CompleteSetupUeParameters
+     * @brief Complete setup UE function
+     * @param rnti the RNTI of UE which sent the message
+     * @param params CompleteSetupUeParameters
      */
     virtual void CompleteSetupUe(uint16_t rnti, CompleteSetupUeParameters params) = 0;
 
     /**
-     * \brief Receive an _RRCConnectionRequest_ message from a UE
+     * @brief Receive an _RRCConnectionRequest_ message from a UE
      *        during an RRC connection establishment procedure
      *        (Section 5.3.3 of TS 36.331).
-     * \param rnti the RNTI of UE which sent the message
-     * \param msg the message
+     * @param rnti the RNTI of UE which sent the message
+     * @param msg the message
      */
     virtual void RecvRrcConnectionRequest(uint16_t rnti, RrcConnectionRequest msg) = 0;
 
     /**
-     * \brief Receive an _RRCConnectionSetupComplete_ message from a UE
+     * @brief Receive an _RRCConnectionSetupComplete_ message from a UE
      *        during an RRC connection establishment procedure
      *        (Section 5.3.3 of TS 36.331).
-     * \param rnti the RNTI of UE which sent the message
-     * \param msg the message
+     * @param rnti the RNTI of UE which sent the message
+     * @param msg the message
      */
     virtual void RecvRrcConnectionSetupCompleted(uint16_t rnti,
                                                  RrcConnectionSetupCompleted msg) = 0;
 
     /**
-     * \brief Receive an _RRCConnectionReconfigurationComplete_ message from a UE
+     * @brief Receive an _RRCConnectionReconfigurationComplete_ message from a UE
      *        during an RRC connection reconfiguration procedure
      *        (Section 5.3.5 of TS 36.331).
-     * \param rnti the RNTI of UE which sent the message
-     * \param msg the message
+     * @param rnti the RNTI of UE which sent the message
+     * @param msg the message
      */
     virtual void RecvRrcConnectionReconfigurationCompleted(
         uint16_t rnti,
         RrcConnectionReconfigurationCompleted msg) = 0;
 
     /**
-     * \brief Receive an _RRCConnectionReestablishmentRequest_ message from a UE
+     * @brief Receive an _RRCConnectionReestablishmentRequest_ message from a UE
      *        during an RRC connection re-establishment procedure
      *        (Section 5.3.7 of TS 36.331).
-     * \param rnti the RNTI of UE which sent the message
-     * \param msg the message
+     * @param rnti the RNTI of UE which sent the message
+     * @param msg the message
      */
     virtual void RecvRrcConnectionReestablishmentRequest(
         uint16_t rnti,
         RrcConnectionReestablishmentRequest msg) = 0;
 
     /**
-     * \brief Receive an _RRCConnectionReestablishmentComplete_ message from a UE
+     * @brief Receive an _RRCConnectionReestablishmentComplete_ message from a UE
      *        during an RRC connection re-establishment procedure
      *        (Section 5.3.7 of TS 36.331).
-     * \param rnti the RNTI of UE which sent the message
-     * \param msg the message
+     * @param rnti the RNTI of UE which sent the message
+     * @param msg the message
      */
     virtual void RecvRrcConnectionReestablishmentComplete(
         uint16_t rnti,
         RrcConnectionReestablishmentComplete msg) = 0;
 
     /**
-     * \brief Receive a _MeasurementReport_ message from a UE
+     * @brief Receive a _MeasurementReport_ message from a UE
      *        during a measurement reporting procedure
      *        (Section 5.5.5 of TS 36.331).
-     * \param rnti the RNTI of UE which sent the message
-     * \param msg the message
+     * @param rnti the RNTI of UE which sent the message
+     * @param msg the message
      */
     virtual void RecvMeasurementReport(uint16_t rnti, MeasurementReport msg) = 0;
 
     /**
-     * \brief Receive ideal UE context remove request from the UE RRC.
+     * @brief Receive ideal UE context remove request from the UE RRC.
      *
      * Receive the notification from UE to remove the UE context
      * once radio link failure or random access failure is detected.
      * It is needed since no RLF detection mechanism at eNodeB is implemented.
      *
-     * \param rnti the C-RNTI of the UE
+     * @param rnti the C-RNTI of the UE
      */
     virtual void RecvIdealUeContextRemoveRequest(uint16_t rnti) = 0;
 };
@@ -1335,7 +1335,7 @@ class MemberLteUeRrcSapUser : public LteUeRrcSapUser
     /**
      * Constructor
      *
-     * \param owner the owner class
+     * @param owner the owner class
      */
     MemberLteUeRrcSapUser(C* owner);
 
@@ -1434,7 +1434,7 @@ class MemberLteUeRrcSapProvider : public LteUeRrcSapProvider
     /**
      * Constructor
      *
-     * \param owner the owner class
+     * @param owner the owner class
      */
     MemberLteUeRrcSapProvider(C* owner);
 
@@ -1530,7 +1530,7 @@ class MemberLteEnbRrcSapUser : public LteEnbRrcSapUser
     /**
      * Constructor
      *
-     * \param owner the owner class
+     * @param owner the owner class
      */
     MemberLteEnbRrcSapUser(C* owner);
 
@@ -1669,7 +1669,7 @@ class MemberLteEnbRrcSapProvider : public LteEnbRrcSapProvider
     /**
      * Constructor
      *
-     * \param owner
+     * @param owner
      */
     MemberLteEnbRrcSapProvider(C* owner);
 

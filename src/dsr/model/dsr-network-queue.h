@@ -40,8 +40,8 @@ enum DsrMessageType
 };
 
 /**
- * \ingroup dsr
- * \brief DSR Network Queue Entry
+ * @ingroup dsr
+ * @brief DSR Network Queue Entry
  */
 class DsrNetworkQueueEntry
 {
@@ -49,11 +49,11 @@ class DsrNetworkQueueEntry
     /**
      * Construct a DsrNetworkQueueEntry with the given parameters
      *
-     * \param pa packet
-     * \param s IPv4 address of the source
-     * \param n IPv4 address of the next hop node
-     * \param exp expiration time
-     * \param r Route
+     * @param pa packet
+     * @param s IPv4 address of the source
+     * @param n IPv4 address of the next hop node
+     * @param exp expiration time
+     * @param r Route
      */
     DsrNetworkQueueEntry(Ptr<const Packet> pa = nullptr,
                          Ipv4Address s = Ipv4Address(),
@@ -70,8 +70,8 @@ class DsrNetworkQueueEntry
 
     /**
      * Compare send buffer entries
-     * \param o entry to compare
-     * \return true if equal
+     * @param o entry to compare
+     * @return true if equal
      */
     bool operator==(const DsrNetworkQueueEntry& o) const
     {
@@ -83,7 +83,7 @@ class DsrNetworkQueueEntry
     // Fields
     /**
      * Get packet function
-     * \returns the current packet
+     * @returns the current packet
      */
     Ptr<const Packet> GetPacket() const
     {
@@ -92,7 +92,7 @@ class DsrNetworkQueueEntry
 
     /**
      * Set packet function
-     * \param p the current packet
+     * @param p the current packet
      */
     void SetPacket(Ptr<const Packet> p)
     {
@@ -101,7 +101,7 @@ class DsrNetworkQueueEntry
 
     /**
      * Get IP route function
-     * \returns the IP route
+     * @returns the IP route
      */
     Ptr<Ipv4Route> GetIpv4Route() const
     {
@@ -110,7 +110,7 @@ class DsrNetworkQueueEntry
 
     /**
      * Set IP route function
-     * \param route
+     * @param route
      */
     void SetIpv4Route(Ptr<Ipv4Route> route)
     {
@@ -119,7 +119,7 @@ class DsrNetworkQueueEntry
 
     /**
      * Get source address function
-     * \returns the source IP address
+     * @returns the source IP address
      */
     Ipv4Address GetSourceAddress() const
     {
@@ -128,7 +128,7 @@ class DsrNetworkQueueEntry
 
     /**
      * Set source address function
-     * \param addr the source IP address
+     * @param addr the source IP address
      */
     void SetSourceAddress(Ipv4Address addr)
     {
@@ -137,7 +137,7 @@ class DsrNetworkQueueEntry
 
     /**
      * Get next hop address function
-     * \returns the next hop IP address
+     * @returns the next hop IP address
      */
     Ipv4Address GetNextHopAddress() const
     {
@@ -146,7 +146,7 @@ class DsrNetworkQueueEntry
 
     /**
      * Set next hop address function
-     * \param addr the next hop IP address
+     * @param addr the next hop IP address
      */
     void SetNextHopAddress(Ipv4Address addr)
     {
@@ -155,7 +155,7 @@ class DsrNetworkQueueEntry
 
     /**
      * Get inserted time stamp function
-     * \returns the inserted time stamp
+     * @returns the inserted time stamp
      */
     Time GetInsertedTimeStamp() const
     {
@@ -164,7 +164,7 @@ class DsrNetworkQueueEntry
 
     /**
      * Set inserted time stamp function
-     * \param time the inserted timestamp
+     * @param time the inserted timestamp
      */
     void SetInsertedTimeStamp(Time time)
     {
@@ -185,8 +185,8 @@ class DsrNetworkQueue : public Object
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -195,71 +195,71 @@ class DsrNetworkQueue : public Object
      * Construct a DsrNetworkQueue with the given
      * maximum length and maximum delay.
      *
-     * \param maxLen Maximum queue size
-     * \param maxDelay Maximum entry lifetime in the queue
+     * @param maxLen Maximum queue size
+     * @param maxDelay Maximum entry lifetime in the queue
      */
     DsrNetworkQueue(uint32_t maxLen, Time maxDelay);
     ~DsrNetworkQueue() override;
 
     /**
      * Find the packet entry with a given next hop
-     * \param nextHop the IP address of the next hop
-     * \param entry the DSR queue entry
-     * \returns true if found
+     * @param nextHop the IP address of the next hop
+     * @param entry the DSR queue entry
+     * @returns true if found
      */
     bool FindPacketWithNexthop(Ipv4Address nextHop, DsrNetworkQueueEntry& entry);
     /**
      * Try to find an entry with a particular next hop, and return true if found
-     * \param nextHop the next hop IP address
-     * \returns true if found
+     * @param nextHop the next hop IP address
+     * @returns true if found
      */
     bool Find(Ipv4Address nextHop);
     /**
      * Push entry in queue, if there is no entry with the same
      * packet and destination address in queue.
      *
-     * \param entry packet entry
-     * \return true if the given entry was put in the queue,
+     * @param entry packet entry
+     * @return true if the given entry was put in the queue,
      *         false otherwise
      */
     bool Enqueue(DsrNetworkQueueEntry& entry);
     /**
      * Return first found (the earliest) entry for given destination
      *
-     * \param entry pointer to the return entry
-     * \return true if an entry is returned,
+     * @param entry pointer to the return entry
+     * @return true if an entry is returned,
      *         false otherwise
      */
     bool Dequeue(DsrNetworkQueueEntry& entry);
     /**
      * Number of entries
      *
-     * \return the current queue size/length
+     * @return the current queue size/length
      */
     uint32_t GetSize();
 
     /**
      * Set the maximum queue size
      *
-     * \param maxSize the maximum queue size
+     * @param maxSize the maximum queue size
      */
     void SetMaxNetworkSize(uint32_t maxSize);
     /**
      * Set the maximum entry lifetime in the queue
      *
-     * \param delay the maximum entry lifetime
+     * @param delay the maximum entry lifetime
      */
     void SetMaxNetworkDelay(Time delay);
     /**
      * Return the maximum queue size
      *
-     * \return the maximum queue size
+     * @return the maximum queue size
      */
     uint32_t GetMaxNetworkSize() const;
     /**
      * Return the maximum entry lifetime for this queue
      *
-     * \return the maximum entry lifetime for this queue
+     * @return the maximum entry lifetime for this queue
      */
     Time GetMaxNetworkDelay() const;
     /**
@@ -270,7 +270,7 @@ class DsrNetworkQueue : public Object
     /**
      * Return the current queue entry
      *
-     * \return the current queue entry
+     * @return the current queue entry
      */
     std::vector<DsrNetworkQueueEntry>& GetQueue()
     {

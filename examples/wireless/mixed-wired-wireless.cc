@@ -72,8 +72,8 @@ NS_LOG_COMPONENT_DEFINE("MixedWireless");
  * This function will be used below as a trace sink, if the command-line
  * argument or default value "useCourseChangeCallback" is set to true
  *
- * \param path The callback path.
- * \param model The mobility model.
+ * @param path The callback path.
+ * @param model The mobility model.
  */
 static void
 CourseChangeCallback(std::string path, Ptr<const MobilityModel> model)

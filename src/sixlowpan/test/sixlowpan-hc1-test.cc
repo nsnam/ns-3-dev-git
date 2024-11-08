@@ -26,9 +26,9 @@
 using namespace ns3;
 
 /**
- * \ingroup sixlowpan-tests
+ * @ingroup sixlowpan-tests
  *
- * \brief 6LoWPAN HC1 Test
+ * @brief 6LoWPAN HC1 Test
  */
 class SixlowpanHc1ImplTest : public TestCase
 {
@@ -37,16 +37,16 @@ class SixlowpanHc1ImplTest : public TestCase
     /**
      * Send data function.
      *
-     * \param socket The sending socket.
-     * \param to The destination.
+     * @param socket The sending socket.
+     * @param to The destination.
      */
     void DoSendData(Ptr<Socket> socket, std::string to);
 
     /**
      * Send data function.
      *
-     * \param socket The sending socket.
-     * \param to The destination.
+     * @param socket The sending socket.
+     * @param to The destination.
      */
     void SendData(Ptr<Socket> socket, std::string to);
 
@@ -57,15 +57,15 @@ class SixlowpanHc1ImplTest : public TestCase
     /**
      * Packet receive function.
      *
-     * \param socket The receiving socket.
-     * \param packet The received packet.
-     * \param from The sender.
+     * @param socket The receiving socket.
+     * @param packet The received packet.
+     * @param from The sender.
      */
     void ReceivePacket(Ptr<Socket> socket, Ptr<Packet> packet, const Address& from);
     /**
      * Packet receive function.
      *
-     * \param socket The receiving socket.
+     * @param socket The receiving socket.
      */
     void ReceivePkt(Ptr<Socket> socket);
 };
@@ -201,9 +201,9 @@ SixlowpanHc1ImplTest::DoRun()
 }
 
 /**
- * \ingroup sixlowpan-tests
+ * @ingroup sixlowpan-tests
  *
- * \brief 6LoWPAN HC1 TestSuite
+ * @brief 6LoWPAN HC1 TestSuite
  */
 class SixlowpanHc1TestSuite : public TestSuite
 {

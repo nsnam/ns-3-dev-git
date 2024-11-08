@@ -12,17 +12,17 @@
 #include "fatal-error.h"
 
 /**
- * \file
- * \ingroup fatal
- * \brief \c NS_ABORT_x macro definitions.
+ * @file
+ * @ingroup fatal
+ * @brief \c NS_ABORT_x macro definitions.
  */
 
 /**
- * \ingroup fatal
+ * @ingroup fatal
  *
- * \brief Unconditional abnormal program termination with a message.
+ * @brief Unconditional abnormal program termination with a message.
  *
- * \param [in] msg The message to output when this macro is hit.
+ * @param [in] msg The message to output when this macro is hit.
  *
  * This macro is essentially equivalent to NS_FATAL_ERROR,
  * except it prepends the error message with the string
@@ -33,7 +33,7 @@
  * This macro is enabled unconditionally in all builds,
  * including debug and optimized builds.
  *
- * \see NS_FATAL_ERROR
+ * @see NS_FATAL_ERROR
  */
 #define NS_ABORT_MSG(msg)                                                                          \
     do                                                                                             \
@@ -43,11 +43,11 @@
     } while (false)
 
 /**
- * \ingroup fatal
+ * @ingroup fatal
  *
- * \brief Abnormal program termination if a condition is \c true.
+ * @brief Abnormal program termination if a condition is \c true.
  *
- * \param [in] cond The condition to be evaluated.
+ * @param [in] cond The condition to be evaluated.
  *
  * This is similar to \c NS_ASSERT(!(cond)), except this check
  * is enabled in all builds. If \c cond is evaluated to \c true,
@@ -73,13 +73,13 @@
     } while (false)
 
 /**
- * \ingroup fatal
+ * @ingroup fatal
  *
- * \brief Abnormal program termination if a condition is \c true,
+ * @brief Abnormal program termination if a condition is \c true,
  * with a message.
  *
- * \param [in] cond The condition to be evaluated.
- * \param [in] msg The message to output when cond is \c true.
+ * @param [in] cond The condition to be evaluated.
+ * @param [in] msg The message to output when cond is \c true.
  *
  * This is similar to NS_ASSERT_MSG(!(cond)), except this
  * check is enabled in all builds. If \c cond is evaluated to
@@ -105,30 +105,30 @@
     } while (false)
 
 /**
- * \ingroup fatal
+ * @ingroup fatal
  *
- * \brief Abnormal program termination if a condition is \c false.
+ * @brief Abnormal program termination if a condition is \c false.
  *
- * \param [in] cond The condition to be evaluated.
+ * @param [in] cond The condition to be evaluated.
  *
  * This is an alias for NS_ABORT_IF(!(cond))
  *
- * \see NS_ABORT_IF
+ * @see NS_ABORT_IF
  */
 #define NS_ABORT_UNLESS(cond) NS_ABORT_IF(!(cond))
 
 /**
- * \ingroup fatal
+ * @ingroup fatal
  *
- * \brief Abnormal program termination if a condition is \c false,
+ * @brief Abnormal program termination if a condition is \c false,
  * with a message.
  *
- * \param [in] cond The condition to be evaluated.
- * \param [in] msg The message to output if cond is false.
+ * @param [in] cond The condition to be evaluated.
+ * @param [in] msg The message to output if cond is false.
  *
  * This is an alias for NS_ABORT_MSG_IF(!(cond))
  *
- * \see NS_ABORT_MSG_IF
+ * @see NS_ABORT_MSG_IF
  */
 #define NS_ABORT_MSG_UNLESS(cond, msg) NS_ABORT_MSG_IF(!(cond), msg)
 

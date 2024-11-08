@@ -40,7 +40,7 @@ LteRlcAmTransmitterTestSuite::LteRlcAmTransmitterTestSuite()
 }
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  * Static variable for test initialization
  */
 static LteRlcAmTransmitterTestSuite lteRlcAmTransmitterTestSuite;

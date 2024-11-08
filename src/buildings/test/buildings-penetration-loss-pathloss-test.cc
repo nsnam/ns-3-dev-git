@@ -25,7 +25,7 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("BuildingsPenetrationLossesTest");
 
 /**
- * \ingroup propagation-tests
+ * @ingroup propagation-tests
  *
  * Test case for the 3GPP channel O2I building penetration losses.
  * It considers pre-determined scenarios and based on the outdoor/indoor
@@ -248,7 +248,7 @@ BuildingsPenetrationLossesTestCase::DoRun()
 }
 
 /**
- * \ingroup propagation-tests
+ * @ingroup propagation-tests
  *
  * Test suite for the buildings penetration losses
  */

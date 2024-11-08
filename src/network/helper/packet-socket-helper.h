@@ -15,7 +15,7 @@ namespace ns3
 {
 
 /**
- * \brief Give ns3::PacketSocket powers to ns3::Node.
+ * @brief Give ns3::PacketSocket powers to ns3::Node.
  */
 class PacketSocketHelper
 {
@@ -24,7 +24,7 @@ class PacketSocketHelper
      * Aggregate an instance of a ns3::PacketSocketFactory onto the provided
      * node.
      *
-     * \param node Node on which to aggregate the ns3::PacketSocketFactory.
+     * @param node Node on which to aggregate the ns3::PacketSocketFactory.
      */
     void Install(Ptr<Node> node) const;
 
@@ -32,7 +32,7 @@ class PacketSocketHelper
      * Aggregate an instance of a ns3::PacketSocketFactory onto the provided
      * node.
      *
-     * \param nodeName The name of the node on which to aggregate the ns3::PacketSocketFactory.
+     * @param nodeName The name of the node on which to aggregate the ns3::PacketSocketFactory.
      */
     void Install(std::string nodeName) const;
 
@@ -40,7 +40,7 @@ class PacketSocketHelper
      * For each node in the provided container, aggregate an instance of a
      * ns3::PacketSocketFactory.
      *
-     * \param c NodeContainer of the set of nodes to aggregate the
+     * @param c NodeContainer of the set of nodes to aggregate the
      * ns3::PacketSocketFactory on.
      */
     void Install(NodeContainer c) const;

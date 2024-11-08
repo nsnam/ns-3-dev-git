@@ -13,7 +13,7 @@
 using namespace ns3;
 
 /**
- * \ingroup mpi-tests
+ * @ingroup mpi-tests
  *
  * This version of ns3::ExampleTestCase is specialized for MPI
  * by accepting the number of ranks as a parameter,
@@ -24,9 +24,9 @@ class MpiTestCase : public ExampleAsTestCase
 {
   public:
     /**
-     * \copydoc ns3::ExampleAsTestCase::ExampleAsTestCase
+     * @copydoc ns3::ExampleAsTestCase::ExampleAsTestCase
      *
-     * \param [in] ranks The number of ranks to use
+     * @param [in] ranks The number of ranks to use
      */
     MpiTestCase(const std::string name,
                 const std::string program,
@@ -44,7 +44,7 @@ class MpiTestCase : public ExampleAsTestCase
      * Produce the `--command-template` argument which will invoke
      * `mpiexec` with the requested number of ranks.
      *
-     * \returns The `--command-template` string.
+     * @returns The `--command-template` string.
      */
     std::string GetCommandTemplate() const override;
 
@@ -52,7 +52,7 @@ class MpiTestCase : public ExampleAsTestCase
      * Sort the output from parallel execution.
      * stdout from multiple ranks is not ordered.
      *
-     * \returns Sort command
+     * @returns Sort command
      */
     std::string GetPostProcessingCommand() const override;
 
@@ -88,16 +88,16 @@ MpiTestCase::GetPostProcessingCommand() const
 }
 
 /**
- * \ingroup mpi-tests
+ * @ingroup mpi-tests
  * MPI specialization of ns3::ExampleTestSuite.
  */
 class MpiTestSuite : public TestSuite
 {
   public:
     /**
-     * \copydoc MpiTestCase::MpiTestCase
+     * @copydoc MpiTestCase::MpiTestCase
      *
-     * \param [in] duration Amount of time this test takes to execute
+     * @param [in] duration Amount of time this test takes to execute
      *             (defaults to QUICK).
      */
     MpiTestSuite(const std::string name,

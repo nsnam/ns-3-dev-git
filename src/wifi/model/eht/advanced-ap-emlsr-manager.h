@@ -24,7 +24,7 @@ class WifiPsdu;
 class WifiTxVector;
 
 /**
- * \ingroup wifi
+ * @ingroup wifi
  *
  * AdvancedApEmlsrManager is an advanced AP EMLSR manager.
  */
@@ -32,8 +32,8 @@ class AdvancedApEmlsrManager : public DefaultApEmlsrManager
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -54,10 +54,10 @@ class AdvancedApEmlsrManager : public DefaultApEmlsrManager
     /**
      * Store information about the MAC header of the MPDU being received on the given link.
      *
-     * \param linkId the ID of the given link
-     * \param macHdr the MAC header of the MPDU being received
-     * \param txVector the TXVECTOR used to transmit the PSDU
-     * \param psduDuration the remaining duration of the PSDU
+     * @param linkId the ID of the given link
+     * @param macHdr the MAC header of the MPDU being received
+     * @param txVector the TXVECTOR used to transmit the PSDU
+     * @param psduDuration the remaining duration of the PSDU
      */
     void ReceivedMacHdr(uint8_t linkId,
                         const WifiMacHeader& macHdr,

@@ -22,8 +22,8 @@ class Packet;
 class CsmaNetDevice;
 
 /**
- * \ingroup csma
- * \brief CsmaNetDevice Record
+ * @ingroup csma
+ * @brief CsmaNetDevice Record
  *
  * Stores the information related to each net device that is
  * connected to the channel.
@@ -37,21 +37,21 @@ class CsmaDeviceRec
     CsmaDeviceRec();
 
     /**
-     * \brief Constructor
+     * @brief Constructor
      * Builds a record of the given NetDevice, its status is initialized to enabled.
      *
-     * \param device the device to record
+     * @param device the device to record
      */
     CsmaDeviceRec(Ptr<CsmaNetDevice> device);
 
     /**
      * Copy constructor
-     * \param o the object to copy
+     * @param o the object to copy
      */
     CsmaDeviceRec(const CsmaDeviceRec& o);
 
     /**
-     * \return If the net device pointed to by the devicePtr is active
+     * @return If the net device pointed to by the devicePtr is active
      * and ready to RX/TX.
      */
     bool IsActive() const;
@@ -68,8 +68,8 @@ enum WireState
 };
 
 /**
- * \ingroup csma
- * \brief Csma Channel.
+ * @ingroup csma
+ * @brief Csma Channel.
  *
  * This class represents a simple Csma channel that can be used
  * when many nodes are connected to one wire. It uses a single busy
@@ -81,17 +81,17 @@ class CsmaChannel : public Channel
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
     /**
-     * \brief Create a CsmaChannel
+     * @brief Create a CsmaChannel
      */
     CsmaChannel();
     /**
-     * \brief Destroy a CsmaChannel
+     * @brief Destroy a CsmaChannel
      */
     ~CsmaChannel() override;
 
@@ -100,87 +100,87 @@ class CsmaChannel : public Channel
     CsmaChannel& operator=(const CsmaChannel&) = delete;
 
     /**
-     * \brief Attach a given netdevice to this channel
+     * @brief Attach a given netdevice to this channel
      *
-     * \param device Device pointer to the netdevice to attach to the channel
-     * \return The assigned device number
+     * @param device Device pointer to the netdevice to attach to the channel
+     * @return The assigned device number
      */
     int32_t Attach(Ptr<CsmaNetDevice> device);
 
     /**
-     * \brief Detach a given netdevice from this channel
+     * @brief Detach a given netdevice from this channel
      *
      * The net device is marked as inactive and it is not allowed to
      * receive or transmit packets
      *
-     * \param device Device pointer to the netdevice to detach from the channel
-     * \return True if the device is found and attached to the channel,
+     * @param device Device pointer to the netdevice to detach from the channel
+     * @return True if the device is found and attached to the channel,
      * false if the device is not currently connected to the channel or
      * can't be found.
      */
     bool Detach(Ptr<CsmaNetDevice> device);
 
     /**
-     * \brief Detach a given netdevice from this channel
+     * @brief Detach a given netdevice from this channel
      *
      * The net device is marked as inactive and it is not allowed to
      * receive or transmit packets
      *
-     * \param deviceId The deviceID assigned to the net device when it
+     * @param deviceId The deviceID assigned to the net device when it
      * was connected to the channel
-     * \return True if the device is found and attached to the channel,
+     * @return True if the device is found and attached to the channel,
      * false if the device is not currently connected to the channel or
      * can't be found.
      */
     bool Detach(uint32_t deviceId);
 
     /**
-     * \brief Reattach a previously detached net device to the channel
+     * @brief Reattach a previously detached net device to the channel
      *
      * The net device is marked as active. It is now allowed to receive
      * or transmit packets. The net device must have been previously
      * attached to the channel using the attach function.
      *
-     * \param deviceId The device ID assigned to the net device when it
+     * @param deviceId The device ID assigned to the net device when it
      * was connected to the channel
-     * \return True if the device is found and is not attached to the
+     * @return True if the device is found and is not attached to the
      * channel, false if the device is currently connected to the
      * channel or can't be found.
      */
     bool Reattach(uint32_t deviceId);
 
     /**
-     * \brief Reattach a previously detached net device to the channel
+     * @brief Reattach a previously detached net device to the channel
      *
      * The net device is marked as active. It is now allowed to receive
      * or transmit packets. The net device must have been previously
      * attached to the channel using the attach function.
      *
-     * \param device Device pointer to the netdevice to detach from the channel
-     * \return True if the device is found and is not attached to the
+     * @param device Device pointer to the netdevice to detach from the channel
+     * @return True if the device is found and is not attached to the
      * channel, false if the device is currently connected to the
      * channel or can't be found.
      */
     bool Reattach(Ptr<CsmaNetDevice> device);
 
     /**
-     * \brief Start transmitting a packet over the channel
+     * @brief Start transmitting a packet over the channel
      *
      * If the srcId belongs to a net device that is connected to the
      * channel, packet transmission begins, and the channel becomes busy
      * until the packet has completely reached all destinations.
      *
-     * \param p A reference to the packet that will be transmitted over
+     * @param p A reference to the packet that will be transmitted over
      * the channel
-     * \param srcId The device Id of the net device that wants to
+     * @param srcId The device Id of the net device that wants to
      * transmit on the channel.
-     * \return True if the channel is not busy and the transmitting net
+     * @return True if the channel is not busy and the transmitting net
      * device is currently active.
      */
     bool TransmitStart(Ptr<const Packet> p, uint32_t srcId);
 
     /**
-     * \brief Indicates that the net device has finished transmitting
+     * @brief Indicates that the net device has finished transmitting
      * the packet over the channel
      *
      * The channel will stay busy until the packet has completely
@@ -190,13 +190,13 @@ class CsmaChannel : public Channel
      * packet p as the m_currentPkt, the packet being currently
      * transmitting.
      *
-     * \return Returns true unless the source was detached before it
+     * @return Returns true unless the source was detached before it
      * completed its transmission.
      */
     bool TransmitEnd();
 
     /**
-     * \brief Indicates that the channel has finished propagating the
+     * @brief Indicates that the channel has finished propagating the
      * current packet. The channel is released and becomes free.
      *
      * Calls the receive function of every active net device that is
@@ -205,67 +205,67 @@ class CsmaChannel : public Channel
     void PropagationCompleteEvent();
 
     /**
-     * \return Returns the device number assigned to a net device by the
+     * @return Returns the device number assigned to a net device by the
      * channel
      *
-     * \param device Device pointer to the netdevice for which the device
+     * @param device Device pointer to the netdevice for which the device
      * number is needed
      */
     int32_t GetDeviceNum(Ptr<CsmaNetDevice> device);
 
     /**
-     * \return Returns the state of the channel (IDLE -- free,
+     * @return Returns the state of the channel (IDLE -- free,
      * TRANSMITTING -- busy, PROPAGATING - busy )
      */
     WireState GetState();
 
     /**
-     * \brief Indicates if the channel is busy. The channel will only
+     * @brief Indicates if the channel is busy. The channel will only
      * accept new packets for transmission if it is not busy.
      *
-     * \return Returns true if the channel is busy and false if it is
+     * @return Returns true if the channel is busy and false if it is
      * free.
      */
     bool IsBusy();
 
     /**
-     * \brief Indicates if a net device is currently attached or
+     * @brief Indicates if a net device is currently attached or
      * detached from the channel.
      *
-     * \param deviceId The ID that was assigned to the net device when
+     * @param deviceId The ID that was assigned to the net device when
      * it was attached to the channel.
-     * \return Returns true if the net device is attached to the
+     * @return Returns true if the net device is attached to the
      * channel, false otherwise.
      */
     bool IsActive(uint32_t deviceId);
 
     /**
-     * \return Returns the number of net devices that are currently
+     * @return Returns the number of net devices that are currently
      * attached to the channel.
      */
     uint32_t GetNumActDevices();
 
     /**
-     * \return Returns the total number of devices including devices
+     * @return Returns the total number of devices including devices
      * that have been detached from the channel.
      */
     std::size_t GetNDevices() const override;
 
     /**
-     * \return Get a NetDevice pointer to a connected network device.
+     * @return Get a NetDevice pointer to a connected network device.
      *
-     * \param i The index of the net device.
-     * \return Returns the pointer to the net device that is associated
+     * @param i The index of the net device.
+     * @return Returns the pointer to the net device that is associated
      * with deviceId i.
      */
     Ptr<NetDevice> GetDevice(std::size_t i) const override;
 
     /**
-     * \return Get a CsmaNetDevice pointer to a connected network device.
+     * @return Get a CsmaNetDevice pointer to a connected network device.
      *
-     * \param i The deviceId of the net device for which we want the
+     * @param i The deviceId of the net device for which we want the
      * pointer.
-     * \return Returns the pointer to the net device that is associated
+     * @return Returns the pointer to the net device that is associated
      * with deviceId i.
      */
     Ptr<CsmaNetDevice> GetCsmaDevice(std::size_t i) const;
@@ -273,7 +273,7 @@ class CsmaChannel : public Channel
     /**
      * Get the assigned data rate of the channel
      *
-     * \return Returns the DataRate to be used by device transmitters.
+     * @return Returns the DataRate to be used by device transmitters.
      * with deviceId i.
      */
     DataRate GetDataRate();
@@ -281,7 +281,7 @@ class CsmaChannel : public Channel
     /**
      * Get the assigned speed-of-light delay of the channel
      *
-     * \return Returns the delay used by the channel.
+     * @return Returns the delay used by the channel.
      */
     Time GetDelay();
 

@@ -24,8 +24,8 @@ namespace ns3
 class Building;
 
 /**
- * \ingroup buildings
- * \brief Allocate buildings on a rectangular 2d grid.
+ * @ingroup buildings
+ * @brief Allocate buildings on a rectangular 2d grid.
  *
  * This class allows to create a set of buildings positioned on a
  * rectangular 2D grid. Under the hood, this class uses two instances
@@ -38,25 +38,25 @@ class GridBuildingAllocator : public Object
     ~GridBuildingAllocator() override;
 
     /**
-     * \brief Get the type ID.
-     * \return The object TypeId.
+     * @brief Get the type ID.
+     * @return The object TypeId.
      */
     static TypeId GetTypeId();
 
     /**
      * Set an attribute to be used for each new building to be created
      *
-     * \param n attribute name
-     * \param v attribute value
+     * @param n attribute name
+     * @param v attribute value
      */
     void SetBuildingAttribute(std::string n, const AttributeValue& v);
 
     /**
      * Create a set of buildings allocated on a grid
      *
-     * \param n the number of buildings to create
+     * @param n the number of buildings to create
      *
-     * \return the BuildingContainer that contains the newly created buildings
+     * @return the BuildingContainer that contains the newly created buildings
      */
     BuildingContainer Create(uint32_t n) const;
 

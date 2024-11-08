@@ -18,9 +18,9 @@ namespace ns3
 {
 
 /**
- * \ingroup stats
- * \class MinMaxAvgTotalCalculator
- * \brief Template class MinMaxAvgTotalCalculator
+ * @ingroup stats
+ * @class MinMaxAvgTotalCalculator
+ * @brief Template class MinMaxAvgTotalCalculator
  *
  */
 //------------------------------------------------------------
@@ -34,13 +34,13 @@ class MinMaxAvgTotalCalculator : public DataCalculator, public StatisticalSummar
 
     /**
      * Register this type.
-     * \return The TypeId.
+     * @return The TypeId.
      */
     static TypeId GetTypeId();
 
     /**
      * Updates all variables of MinMaxAvgTotalCalculator
-     * \param i value of type T to use for updating the calculator
+     * @param i value of type T to use for updating the calculator
      */
     void Update(const T i);
     /**
@@ -50,13 +50,13 @@ class MinMaxAvgTotalCalculator : public DataCalculator, public StatisticalSummar
 
     /**
      * Outputs the data based on the provided callback
-     * \param callback
+     * @param callback
      */
     void Output(DataOutputCallback& callback) const override;
 
     /**
      * Returns the count
-     * \return Count
+     * @return Count
      */
     long getCount() const override
     {
@@ -65,7 +65,7 @@ class MinMaxAvgTotalCalculator : public DataCalculator, public StatisticalSummar
 
     /**
      * Returns the sum
-     * \return Total
+     * @return Total
      */
     double getSum() const override
     {
@@ -74,7 +74,7 @@ class MinMaxAvgTotalCalculator : public DataCalculator, public StatisticalSummar
 
     /**
      * Returns the minimum value
-     * \return Min
+     * @return Min
      */
     double getMin() const override
     {
@@ -83,7 +83,7 @@ class MinMaxAvgTotalCalculator : public DataCalculator, public StatisticalSummar
 
     /**
      * Returns the maximum value
-     * \return Max
+     * @return Max
      */
     double getMax() const override
     {
@@ -92,7 +92,7 @@ class MinMaxAvgTotalCalculator : public DataCalculator, public StatisticalSummar
 
     /**
      * Returns the mean value
-     * \return Mean
+     * @return Mean
      */
     double getMean() const override
     {
@@ -101,7 +101,7 @@ class MinMaxAvgTotalCalculator : public DataCalculator, public StatisticalSummar
 
     /**
      * Returns the standard deviation
-     * \return Standard deviation
+     * @return Standard deviation
      */
     double getStddev() const override
     {
@@ -110,7 +110,7 @@ class MinMaxAvgTotalCalculator : public DataCalculator, public StatisticalSummar
 
     /**
      * Returns the current variance
-     * \return Variance
+     * @return Variance
      */
     double getVariance() const override
     {
@@ -119,7 +119,7 @@ class MinMaxAvgTotalCalculator : public DataCalculator, public StatisticalSummar
 
     /**
      * Returns the sum of squares
-     * \return Sum of squares
+     * @return Sum of squares
      */
     double getSqrSum() const override
     {
@@ -278,9 +278,9 @@ MinMaxAvgTotalCalculator<T>::Output(DataOutputCallback& callback) const
 }
 
 /**
- * \ingroup stats
- * \class CounterCalculator
- * \brief Template class CounterCalculator
+ * @ingroup stats
+ * @class CounterCalculator
+ * @brief Template class CounterCalculator
  *
  */
 //------------------------------------------------------------
@@ -294,7 +294,7 @@ class CounterCalculator : public DataCalculator
 
     /**
      * Register this type.
-     * \return The TypeId.
+     * @return The TypeId.
      */
     static TypeId GetTypeId();
 
@@ -304,19 +304,19 @@ class CounterCalculator : public DataCalculator
     void Update();
     /**
      * Increments count by i
-     * \param i value of type T to increment count
+     * @param i value of type T to increment count
      */
     void Update(const T i);
 
     /**
      * Returns the count of the CounterCalculator
-     * \return Count as a value of type T
+     * @return Count as a value of type T
      */
     T GetCount() const;
 
     /**
      * Outputs the data based on the provided callback
-     * \param callback
+     * @param callback
      */
     void Output(DataOutputCallback& callback) const override;
 

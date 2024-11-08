@@ -16,9 +16,9 @@
 using namespace ns3;
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief This system test program creates different test cases with a single eNB and
+ * @brief This system test program creates different test cases with a single eNB and
  * several UEs, all having the same Radio Bearer specification. In each test
  * case, the UEs see the same SINR from the eNB; different test cases are
  * implemented obtained by using different SINR values and different numbers of
@@ -30,12 +30,12 @@ class LenaDataPhyErrorModelTestCase : public TestCase
     /**
      * Constructor
      *
-     * \param nUser the number of UE nodes
-     * \param dist the distance between nodes
-     * \param blerRef expected BLER
-     * \param toleranceRxPackets receive packet loss tolerance
-     * \param statsStartTime the start time for collecting statistics
-     * \param rngRun rng run
+     * @param nUser the number of UE nodes
+     * @param dist the distance between nodes
+     * @param blerRef expected BLER
+     * @param toleranceRxPackets receive packet loss tolerance
+     * @param statsStartTime the start time for collecting statistics
+     * @param rngRun rng run
      */
     LenaDataPhyErrorModelTestCase(uint16_t nUser,
                                   uint16_t dist,
@@ -49,10 +49,10 @@ class LenaDataPhyErrorModelTestCase : public TestCase
     void DoRun() override;
     /**
      * Builds the test name string based on provided parameter values
-     * \param nUser the number of UE nodes
-     * \param dist the distance between nodes
-     * \param rngRun the rng run
-     * \returns the name string
+     * @param nUser the number of UE nodes
+     * @param dist the distance between nodes
+     * @param rngRun the rng run
+     * @returns the name string
      */
     static std::string BuildNameString(uint16_t nUser, uint16_t dist, uint32_t rngRun);
     uint16_t m_nUser;              ///< number of UE nodes
@@ -65,9 +65,9 @@ class LenaDataPhyErrorModelTestCase : public TestCase
 };
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief Lena Dl Ctrl Phy Error Model Test Case
+ * @brief Lena Dl Ctrl Phy Error Model Test Case
  */
 class LenaDlCtrlPhyErrorModelTestCase : public TestCase
 {
@@ -75,12 +75,12 @@ class LenaDlCtrlPhyErrorModelTestCase : public TestCase
     /**
      * Constructor
      *
-     * \param nEnb the number of ENB nodes
-     * \param dist the distance between nodes
-     * \param blerRef expected BLER
-     * \param toleranceRxPackets receive packet loss tolerance
-     * \param statsStartTime the start time for collecting statistics
-     * \param rngRun rng number
+     * @param nEnb the number of ENB nodes
+     * @param dist the distance between nodes
+     * @param blerRef expected BLER
+     * @param toleranceRxPackets receive packet loss tolerance
+     * @param statsStartTime the start time for collecting statistics
+     * @param rngRun rng number
      */
     LenaDlCtrlPhyErrorModelTestCase(uint16_t nEnb,
                                     uint16_t dist,
@@ -94,10 +94,10 @@ class LenaDlCtrlPhyErrorModelTestCase : public TestCase
     void DoRun() override;
     /**
      * Build name string
-     * \param nUser the number of UE nodes
-     * \param dist the distance between nodes
-     * \param rngRun the rng run
-     * \returns the name string
+     * @param nUser the number of UE nodes
+     * @param dist the distance between nodes
+     * @param rngRun the rng run
+     * @returns the name string
      */
     static std::string BuildNameString(uint16_t nUser, uint16_t dist, uint32_t rngRun);
     uint16_t m_nEnb;               ///< the number of ENB nodes
@@ -110,9 +110,9 @@ class LenaDlCtrlPhyErrorModelTestCase : public TestCase
 };
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief Lena Test Phy Error Model Suite
+ * @brief Lena Test Phy Error Model Suite
  */
 class LenaTestPhyErrorModelSuite : public TestSuite
 {

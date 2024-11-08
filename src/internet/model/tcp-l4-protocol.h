@@ -33,8 +33,8 @@ class Ipv6EndPoint;
 class NetDevice;
 
 /**
- * \ingroup internet
- * \defgroup tcp TCP
+ * @ingroup internet
+ * @defgroup tcp TCP
  *
  * This is an implementation of various Transmission Control Protocol flavors.
  *
@@ -45,8 +45,8 @@ class NetDevice;
  */
 
 /**
- * \ingroup tcp
- * \brief TCP socket creation and multiplexing/demultiplexing
+ * @ingroup tcp
+ * @brief TCP socket creation and multiplexing/demultiplexing
  *
  * A single instance of this class is held by one instance of class Node.
  *
@@ -61,17 +61,17 @@ class NetDevice;
  * and SHOULD checksum packets its receives from the socket layer going down
  * the stack, but currently checksumming is disabled.
  *
- * \see CreateSocket
- * \see NotifyNewAggregate
- * \see SendPacket
+ * @see CreateSocket
+ * @see NotifyNewAggregate
+ * @see SendPacket
  */
 
 class TcpL4Protocol : public IpL4Protocol
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     static const uint8_t PROT_NUMBER; //!< protocol number (0x6)
@@ -85,77 +85,77 @@ class TcpL4Protocol : public IpL4Protocol
 
     /**
      * Set node associated with this stack
-     * \param node the node
+     * @param node the node
      */
     void SetNode(Ptr<Node> node);
 
     // NOTE: API from here should not be removed, only added. Be backward-compatible!
 
     /**
-     * \brief Create a TCP socket using the TypeId set by SocketType attribute
+     * @brief Create a TCP socket using the TypeId set by SocketType attribute
      *
-     * \return A smart Socket pointer to a TcpSocket allocated by this instance
+     * @return A smart Socket pointer to a TcpSocket allocated by this instance
      * of the TCP protocol
      */
     Ptr<Socket> CreateSocket();
 
     /**
-     * \brief Create a TCP socket using the specified congestion control algorithm TypeId
+     * @brief Create a TCP socket using the specified congestion control algorithm TypeId
      *
-     * \return A smart Socket pointer to a TcpSocket allocated by this instance
+     * @return A smart Socket pointer to a TcpSocket allocated by this instance
      * of the TCP protocol
      *
-     * \warning using a congestionTypeId other than TCP is a bad idea.
+     * @warning using a congestionTypeId other than TCP is a bad idea.
      *
-     * \param congestionTypeId the congestion control algorithm TypeId
-     * \param recoveryTypeId the recovery algorithm TypeId
+     * @param congestionTypeId the congestion control algorithm TypeId
+     * @param recoveryTypeId the recovery algorithm TypeId
      */
     Ptr<Socket> CreateSocket(TypeId congestionTypeId, TypeId recoveryTypeId);
 
     /**
-     * \brief Create a TCP socket using the specified congestion control algorithm
-     * \return A smart Socket pointer to a TcpSocket allocated by this instance
+     * @brief Create a TCP socket using the specified congestion control algorithm
+     * @return A smart Socket pointer to a TcpSocket allocated by this instance
      * of the TCP protocol
      *
-     * \param congestionTypeId the congestion control algorithm TypeId
+     * @param congestionTypeId the congestion control algorithm TypeId
      *
      */
     Ptr<Socket> CreateSocket(TypeId congestionTypeId);
 
     /**
-     * \brief Allocate an IPv4 Endpoint
-     * \return the Endpoint
+     * @brief Allocate an IPv4 Endpoint
+     * @return the Endpoint
      */
     Ipv4EndPoint* Allocate();
     /**
-     * \brief Allocate an IPv4 Endpoint
-     * \param address address to use
-     * \return the Endpoint
+     * @brief Allocate an IPv4 Endpoint
+     * @param address address to use
+     * @return the Endpoint
      */
     Ipv4EndPoint* Allocate(Ipv4Address address);
     /**
-     * \brief Allocate an IPv4 Endpoint
-     * \param boundNetDevice Bound NetDevice (if any)
-     * \param port port to use
-     * \return the Endpoint
+     * @brief Allocate an IPv4 Endpoint
+     * @param boundNetDevice Bound NetDevice (if any)
+     * @param port port to use
+     * @return the Endpoint
      */
     Ipv4EndPoint* Allocate(Ptr<NetDevice> boundNetDevice, uint16_t port);
     /**
-     * \brief Allocate an IPv4 Endpoint
-     * \param boundNetDevice Bound NetDevice (if any)
-     * \param address address to use
-     * \param port port to use
-     * \return the Endpoint
+     * @brief Allocate an IPv4 Endpoint
+     * @param boundNetDevice Bound NetDevice (if any)
+     * @param address address to use
+     * @param port port to use
+     * @return the Endpoint
      */
     Ipv4EndPoint* Allocate(Ptr<NetDevice> boundNetDevice, Ipv4Address address, uint16_t port);
     /**
-     * \brief Allocate an IPv4 Endpoint
-     * \param boundNetDevice Bound NetDevice (if any)
-     * \param localAddress local address to use
-     * \param localPort local port to use
-     * \param peerAddress remote address to use
-     * \param peerPort remote port to use
-     * \return the Endpoint
+     * @brief Allocate an IPv4 Endpoint
+     * @param boundNetDevice Bound NetDevice (if any)
+     * @param localAddress local address to use
+     * @param localPort local port to use
+     * @param peerAddress remote address to use
+     * @param peerPort remote port to use
+     * @return the Endpoint
      */
     Ipv4EndPoint* Allocate(Ptr<NetDevice> boundNetDevice,
                            Ipv4Address localAddress,
@@ -163,39 +163,39 @@ class TcpL4Protocol : public IpL4Protocol
                            Ipv4Address peerAddress,
                            uint16_t peerPort);
     /**
-     * \brief Allocate an IPv6 Endpoint
-     * \return the Endpoint
+     * @brief Allocate an IPv6 Endpoint
+     * @return the Endpoint
      */
     Ipv6EndPoint* Allocate6();
     /**
-     * \brief Allocate an IPv6 Endpoint
-     * \param address address to use
-     * \return the Endpoint
+     * @brief Allocate an IPv6 Endpoint
+     * @param address address to use
+     * @return the Endpoint
      */
     Ipv6EndPoint* Allocate6(Ipv6Address address);
     /**
-     * \brief Allocate an IPv6 Endpoint
-     * \param boundNetDevice Bound NetDevice (if any)
-     * \param port port to use
-     * \return the Endpoint
+     * @brief Allocate an IPv6 Endpoint
+     * @param boundNetDevice Bound NetDevice (if any)
+     * @param port port to use
+     * @return the Endpoint
      */
     Ipv6EndPoint* Allocate6(Ptr<NetDevice> boundNetDevice, uint16_t port);
     /**
-     * \brief Allocate an IPv6 Endpoint
-     * \param boundNetDevice Bound NetDevice (if any)
-     * \param address address to use
-     * \param port port to use
-     * \return the Endpoint
+     * @brief Allocate an IPv6 Endpoint
+     * @param boundNetDevice Bound NetDevice (if any)
+     * @param address address to use
+     * @param port port to use
+     * @return the Endpoint
      */
     Ipv6EndPoint* Allocate6(Ptr<NetDevice> boundNetDevice, Ipv6Address address, uint16_t port);
     /**
-     * \brief Allocate an IPv6 Endpoint
-     * \param boundNetDevice Bound NetDevice (if any)
-     * \param localAddress local address to use
-     * \param localPort local port to use
-     * \param peerAddress remote address to use
-     * \param peerPort remote port to use
-     * \return the Endpoint
+     * @brief Allocate an IPv6 Endpoint
+     * @param boundNetDevice Bound NetDevice (if any)
+     * @param localAddress local address to use
+     * @param localPort local port to use
+     * @param peerAddress remote address to use
+     * @param peerPort remote port to use
+     * @return the Endpoint
      */
     Ipv6EndPoint* Allocate6(Ptr<NetDevice> boundNetDevice,
                             Ipv6Address localAddress,
@@ -204,13 +204,13 @@ class TcpL4Protocol : public IpL4Protocol
                             uint16_t peerPort);
 
     /**
-     * \brief Send a packet via TCP (IP-agnostic)
+     * @brief Send a packet via TCP (IP-agnostic)
      *
-     * \param pkt The packet to send
-     * \param outgoing The packet header
-     * \param saddr The source Ipv4Address
-     * \param daddr The destination Ipv4Address
-     * \param oif The output interface bound. Defaults to null (unspecified).
+     * @param pkt The packet to send
+     * @param outgoing The packet header
+     * @param saddr The source Ipv4Address
+     * @param daddr The destination Ipv4Address
+     * @param oif The output interface bound. Defaults to null (unspecified).
      */
     void SendPacket(Ptr<Packet> pkt,
                     const TcpHeader& outgoing,
@@ -219,30 +219,30 @@ class TcpL4Protocol : public IpL4Protocol
                     Ptr<NetDevice> oif = nullptr) const;
 
     /**
-     * \brief Make a socket fully operational
+     * @brief Make a socket fully operational
      *
      * Called after a socket has been bound, it is inserted in an internal vector.
      *
-     * \param socket Socket to be added
+     * @param socket Socket to be added
      */
     void AddSocket(Ptr<TcpSocketBase> socket);
 
     /**
-     * \brief Remove a socket from the internal list
+     * @brief Remove a socket from the internal list
      *
-     * \param socket socket to Remove
-     * \return true if the socket has been removed
+     * @param socket socket to Remove
+     * @return true if the socket has been removed
      */
     bool RemoveSocket(Ptr<TcpSocketBase> socket);
 
     /**
-     * \brief Remove an IPv4 Endpoint.
-     * \param endPoint the end point to remove
+     * @brief Remove an IPv4 Endpoint.
+     * @param endPoint the end point to remove
      */
     void DeAllocate(Ipv4EndPoint* endPoint);
     /**
-     * \brief Remove an IPv6 Endpoint.
-     * \param endPoint the end point to remove
+     * @brief Remove an IPv6 Endpoint.
+     * @param endPoint the end point to remove
      */
     void DeAllocate(Ipv6EndPoint* endPoint);
 
@@ -281,7 +281,7 @@ class TcpL4Protocol : public IpL4Protocol
     void DoDispose() override;
 
     /**
-     * \brief Setup socket factory and callbacks when aggregated to a node
+     * @brief Setup socket factory and callbacks when aggregated to a node
      *
      * This function will notify other components connected to the node that a
      * new stack member is now connected. This will be used to notify Layer 3
@@ -292,14 +292,14 @@ class TcpL4Protocol : public IpL4Protocol
     void NotifyNewAggregate() override;
 
     /**
-     * \brief Get the tcp header of the incoming packet and checks its checksum if needed
+     * @brief Get the tcp header of the incoming packet and checks its checksum if needed
      *
-     * \param packet Received packet
-     * \param incomingTcpHeader Overwritten with the tcp header of the packet
-     * \param source Source address (an underlying Ipv4Address or Ipv6Address)
-     * \param destination Destination address (an underlying Ipv4Address or Ipv6Address)
+     * @param packet Received packet
+     * @param incomingTcpHeader Overwritten with the tcp header of the packet
+     * @param source Source address (an underlying Ipv4Address or Ipv6Address)
+     * @param destination Destination address (an underlying Ipv4Address or Ipv6Address)
      *
-     * \return RX_CSUM_FAILED if the checksum check fails, RX_OK otherwise
+     * @return RX_CSUM_FAILED if the checksum check fails, RX_OK otherwise
      */
     IpL4Protocol::RxStatus PacketReceived(Ptr<Packet> packet,
                                           TcpHeader& incomingTcpHeader,
@@ -307,16 +307,16 @@ class TcpL4Protocol : public IpL4Protocol
                                           const Address& destination);
 
     /**
-     * \brief Check if RST packet should be sent, and in case, send it
+     * @brief Check if RST packet should be sent, and in case, send it
      *
      * The function is called when no endpoint is found for the received
      * packet. So TcpL4Protocol do not know to who the packet should be
      * given to. An RST packet is sent out as reply unless the received packet
      * has the RST flag set.
      *
-     * \param incomingHeader TCP header of the incoming packet
-     * \param incomingSAddr Source address of the incoming packet
-     * \param incomingDAddr Destination address of the incoming packet
+     * @param incomingHeader TCP header of the incoming packet
+     * @param incomingSAddr Source address of the incoming packet
+     * @param incomingDAddr Destination address of the incoming packet
      *
      */
     void NoEndPointsFound(const TcpHeader& incomingHeader,
@@ -337,13 +337,13 @@ class TcpL4Protocol : public IpL4Protocol
     IpL4Protocol::DownTargetCallback6 m_downTarget6; //!< Callback to send packets over IPv6
 
     /**
-     * \brief Send a packet via TCP (IPv4)
+     * @brief Send a packet via TCP (IPv4)
      *
-     * \param pkt The packet to send
-     * \param outgoing The packet header
-     * \param saddr The source Ipv4Address
-     * \param daddr The destination Ipv4Address
-     * \param oif The output interface bound. Defaults to null (unspecified).
+     * @param pkt The packet to send
+     * @param outgoing The packet header
+     * @param saddr The source Ipv4Address
+     * @param daddr The destination Ipv4Address
+     * @param oif The output interface bound. Defaults to null (unspecified).
      */
     void SendPacketV4(Ptr<Packet> pkt,
                       const TcpHeader& outgoing,
@@ -352,13 +352,13 @@ class TcpL4Protocol : public IpL4Protocol
                       Ptr<NetDevice> oif = nullptr) const;
 
     /**
-     * \brief Send a packet via TCP (IPv6)
+     * @brief Send a packet via TCP (IPv6)
      *
-     * \param pkt The packet to send
-     * \param outgoing The packet header
-     * \param saddr The source Ipv4Address
-     * \param daddr The destination Ipv4Address
-     * \param oif The output interface bound. Defaults to null (unspecified).
+     * @param pkt The packet to send
+     * @param outgoing The packet header
+     * @param saddr The source Ipv4Address
+     * @param daddr The destination Ipv4Address
+     * @param oif The output interface bound. Defaults to null (unspecified).
      */
     void SendPacketV6(Ptr<Packet> pkt,
                       const TcpHeader& outgoing,

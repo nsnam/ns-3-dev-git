@@ -24,7 +24,7 @@ namespace ns3
 {
 
 /**
- * \ingroup probes
+ * @ingroup probes
  *
  * This class is designed to probe an underlying ns3 TraceSource exporting
  * a double.  This probe exports a trace source "Output" of type double.
@@ -38,44 +38,44 @@ class DoubleProbe : public Probe
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     DoubleProbe();
     ~DoubleProbe() override;
 
     /**
-     * \return the most recent value
+     * @return the most recent value
      */
     double GetValue() const;
 
     /**
-     * \param value set the traced double to a new value
+     * @param value set the traced double to a new value
      */
     void SetValue(double value);
 
     /**
-     * \brief Set a probe value by its name in the Config system
+     * @brief Set a probe value by its name in the Config system
      *
-     * \param path Config path to access the probe
-     * \param value set the traced double to a new value
+     * @param path Config path to access the probe
+     * @param value set the traced double to a new value
      */
     static void SetValueByPath(std::string path, double value);
 
     /**
-     * \brief connect to a trace source attribute provided by a given object
+     * @brief connect to a trace source attribute provided by a given object
      *
-     * \param traceSource the name of the attribute TraceSource to connect to
-     * \param obj ns3::Object to connect to
-     * \return true if the trace source was successfully connected
+     * @param traceSource the name of the attribute TraceSource to connect to
+     * @param obj ns3::Object to connect to
+     * @return true if the trace source was successfully connected
      */
     bool ConnectByObject(std::string traceSource, Ptr<Object> obj) override;
 
     /**
-     * \brief connect to a trace source provided by a config path
+     * @brief connect to a trace source provided by a config path
      *
-     * \param path Config path to bind to
+     * @param path Config path to bind to
      *
      * Note, if an invalid path is provided, the probe will not be connected
      * to anything.
@@ -84,10 +84,10 @@ class DoubleProbe : public Probe
 
   private:
     /**
-     * \brief Method to connect to an underlying ns3::TraceSource of type double
+     * @brief Method to connect to an underlying ns3::TraceSource of type double
      *
-     * \param oldData previous value of the double
-     * \param newData new value of the double
+     * @param oldData previous value of the double
+     * @param newData new value of the double
      */
     void TraceSink(double oldData, double newData);
 

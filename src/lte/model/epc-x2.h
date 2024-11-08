@@ -30,9 +30,9 @@ class X2IfaceInfo : public SimpleRefCount<X2IfaceInfo>
     /**
      * Constructor
      *
-     * \param remoteIpAddr remote IP address
-     * \param localCtrlPlaneSocket control plane socket
-     * \param localUserPlaneSocket user plane socket
+     * @param remoteIpAddr remote IP address
+     * @param localCtrlPlaneSocket control plane socket
+     * @param localUserPlaneSocket user plane socket
      */
     X2IfaceInfo(Ipv4Address remoteIpAddr,
                 Ptr<Socket> localCtrlPlaneSocket,
@@ -41,8 +41,8 @@ class X2IfaceInfo : public SimpleRefCount<X2IfaceInfo>
 
     /**
      * Assignment operator
-     * \param value value to assign
-     * \returns X2IfaceInfo&
+     * @param value value to assign
+     * @returns X2IfaceInfo&
      */
     X2IfaceInfo& operator=(const X2IfaceInfo& value);
 
@@ -61,16 +61,16 @@ class X2CellInfo : public SimpleRefCount<X2CellInfo>
     /**
      * Constructor
      *
-     * \param localCellIds local cell IDs
-     * \param remoteCellIds remote cell IDs
+     * @param localCellIds local cell IDs
+     * @param remoteCellIds remote cell IDs
      */
     X2CellInfo(std::vector<uint16_t> localCellIds, std::vector<uint16_t> remoteCellIds);
     virtual ~X2CellInfo();
 
     /**
      * Assignment operator
-     * \param value value to assign
-     * \returns X2CellInfo&
+     * @param value value to assign
+     * @returns X2CellInfo&
      */
     X2CellInfo& operator=(const X2CellInfo& value);
 
@@ -80,7 +80,7 @@ class X2CellInfo : public SimpleRefCount<X2CellInfo>
 };
 
 /**
- * \ingroup lte
+ * @ingroup lte
  *
  * This entity is installed inside an eNB and provides the functionality for the X2 interface
  */
@@ -101,28 +101,28 @@ class EpcX2 : public Object
     ~EpcX2() override;
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     void DoDispose() override;
 
     /**
-     * \param s the X2 SAP User to be used by this EPC X2 entity
+     * @param s the X2 SAP User to be used by this EPC X2 entity
      */
     void SetEpcX2SapUser(EpcX2SapUser* s);
 
     /**
-     * \return the X2 SAP Provider interface offered by this EPC X2 entity
+     * @return the X2 SAP Provider interface offered by this EPC X2 entity
      */
     EpcX2SapProvider* GetEpcX2SapProvider();
 
     /**
      * Add an X2 interface to this EPC X2 entity
-     * \param enb1CellId the cell ID of the current eNodeB
-     * \param enb1X2Address the address of the current eNodeB
-     * \param enb2CellIds the cell IDs of the neighbouring eNodeB
-     * \param enb2X2Address the address of the neighbouring eNodeB
+     * @param enb1CellId the cell ID of the current eNodeB
+     * @param enb1X2Address the address of the current eNodeB
+     * @param enb2CellIds the cell IDs of the neighbouring eNodeB
+     * @param enb2X2Address the address of the neighbouring eNodeB
      */
     void AddX2Interface(uint16_t enb1CellId,
                         Ipv4Address enb1X2Address,
@@ -133,7 +133,7 @@ class EpcX2 : public Object
      * Method to be assigned to the recv callback of the X2-C (X2 Control Plane) socket.
      * It is called when the eNB receives a packet from the peer eNB of the X2-C interface
      *
-     * \param socket socket of the X2-C interface
+     * @param socket socket of the X2-C interface
      */
     void RecvFromX2cSocket(Ptr<Socket> socket);
 
@@ -141,7 +141,7 @@ class EpcX2 : public Object
      * Method to be assigned to the recv callback of the X2-U (X2 User Plane) socket.
      * It is called when the eNB receives a packet from the peer eNB of the X2-U interface
      *
-     * \param socket socket of the X2-U interface
+     * @param socket socket of the X2-U interface
      */
     void RecvFromX2uSocket(Ptr<Socket> socket);
 
@@ -149,49 +149,49 @@ class EpcX2 : public Object
     // Interface provided by EpcX2SapProvider
     /**
      * Send handover request function
-     * \param params the send handover request parameters
+     * @param params the send handover request parameters
      */
     virtual void DoSendHandoverRequest(EpcX2SapProvider::HandoverRequestParams params);
     /**
      * Send handover request ack function
-     * \param params the send handover request ack parameters
+     * @param params the send handover request ack parameters
      */
     virtual void DoSendHandoverRequestAck(EpcX2SapProvider::HandoverRequestAckParams params);
     /**
      * Send handover preparation failure function
-     * \param params the handover preparation failure parameters
+     * @param params the handover preparation failure parameters
      */
     virtual void DoSendHandoverPreparationFailure(
         EpcX2SapProvider::HandoverPreparationFailureParams params);
     /**
      * Send SN status transfer function
-     * \param params the SN status transfer parameters
+     * @param params the SN status transfer parameters
      */
     virtual void DoSendSnStatusTransfer(EpcX2SapProvider::SnStatusTransferParams params);
     /**
      * Send UE context release function
-     * \param params the UE context release parameters
+     * @param params the UE context release parameters
      */
     virtual void DoSendUeContextRelease(EpcX2SapProvider::UeContextReleaseParams params);
     /**
      * Send load information function
-     * \param params the send load information parameters
+     * @param params the send load information parameters
      */
     virtual void DoSendLoadInformation(EpcX2SapProvider::LoadInformationParams params);
     /**
      * Send resource status update function
-     * \param params the send resource status update parameters
+     * @param params the send resource status update parameters
      */
     virtual void DoSendResourceStatusUpdate(EpcX2SapProvider::ResourceStatusUpdateParams params);
     /**
      * Send UE data function
      *
-     * \param params EpcX2SapProvider::UeDataParams
+     * @param params EpcX2SapProvider::UeDataParams
      */
     virtual void DoSendUeData(EpcX2SapProvider::UeDataParams params);
     /**
-     * \brief Send Handover Cancel function
-     * \param params the handover cancel parameters
+     * @brief Send Handover Cancel function
+     * @param params the handover cancel parameters
      *
      */
     virtual void DoSendHandoverCancel(EpcX2SapProvider::HandoverCancelParams params);

@@ -22,16 +22,16 @@
 #include <vector>
 
 /**
- * \file
- * \ingroup logging
+ * @file
+ * @ingroup logging
  * Debug message logging
  */
 
 /**
- * \ingroup debugging
- * \defgroup logging Logging
+ * @ingroup debugging
+ * @defgroup logging Logging
  *
- * \brief Logging functions and macros
+ * @brief Logging functions and macros
  *
  * LOG functionality: macros which allow developers to
  * send information to the \c std::clog output stream.
@@ -42,21 +42,21 @@
  *
  * Use the environment variable NS_LOG to define a ':'-separated list of
  * logging components to enable. For example (using bash syntax),
- * \code
+ * @code
  *   $ NS_LOG="OlsrAgent" ./ns3 run ...
- * \endcode
+ * @endcode
  * would enable one component at all log levels.
- * \code
+ * @code
  *   $NS_LOG="OlsrAgent:Ipv4L3Protocol" ./ns3 run ...
- * \endcode
+ * @endcode
  * would enable two components, at all log levels, etc.
  * \c NS_LOG="*" will enable all available log components at all levels.
  *
  * To control more selectively the log levels for each component, use
  * this syntax:
- * \code
+ * @code
  *   $ NS_LOG='Component1=func|warn:Component2=error|debug'
- * \endcode
+ * @endcode
  * This example would enable the \c func, and \c warn log
  * levels for 'Component1' and the \c error and \c debug log levels
  * for 'Component2'.  The wildcard '*' can be used here as well.  For example
@@ -66,9 +66,9 @@
  * A note on NS_LOG_FUNCTION() and NS_LOG_FUNCTION_NOARGS():
  * generally, use of (at least) NS_LOG_FUNCTION(this) is preferred,
  * with the any function parameters added:
- * \code
+ * @code
  *   NS_LOG_FUNCTION (this << arg1 << args);
- * \endcode
+ * @endcode
  * Use NS_LOG_FUNCTION_NOARGS() only in static functions with no arguments.
  */
 /** @{ */
@@ -120,8 +120,8 @@ enum LogLevel
  * Same as running your program with the NS_LOG environment
  * variable set as NS_LOG='name=level'.
  *
- * \param [in] name The log component name.
- * \param [in] level The logging level.
+ * @param [in] name The log component name.
+ * @param [in] level The logging level.
  */
 void LogComponentEnable(const std::string& name, LogLevel level);
 
@@ -131,7 +131,7 @@ void LogComponentEnable(const std::string& name, LogLevel level);
  * Same as running your program with the NS_LOG environment
  * variable set as NS_LOG='*=level'
  *
- * \param [in] level The logging level.
+ * @param [in] level The logging level.
  */
 void LogComponentEnableAll(LogLevel level);
 
@@ -141,15 +141,15 @@ void LogComponentEnableAll(LogLevel level);
  * The logging output can be later re-enabled with a call
  * to LogComponentEnable.
  *
- * \param [in] name The log component name.
- * \param [in] level The logging level.
+ * @param [in] name The log component name.
+ * @param [in] level The logging level.
  */
 void LogComponentDisable(const std::string& name, LogLevel level);
 
 /**
  * Disable all logging for all components.
  *
- * \param [in] level The logging level.
+ * @param [in] level The logging level.
  */
 void LogComponentDisableAll(LogLevel level);
 
@@ -173,7 +173,7 @@ void LogComponentDisableAll(LogLevel level);
  * solution is to add the following 'using' directive at file scope,
  * outside of namespace ns3, and after the inclusion of
  * NS_LOG_COMPONENT_DEFINE, such as follows:
- * \code
+ * @code
  *   namespace ns3 {
  *     NS_LOG_COMPONENT_DEFINE ("...");
  *
@@ -184,9 +184,9 @@ void LogComponentDisableAll(LogLevel level);
  *   using ns3::g_log;
  *
  *   // Further definitions outside of the ns3 namespace
- * \endcode
+ * @endcode
  *
- * \param [in] name The log component name.
+ * @param [in] name The log component name.
  */
 #define NS_LOG_COMPONENT_DEFINE(name)                                                              \
     static ns3::LogComponent g_log = ns3::LogComponent(name, __FILE__)
@@ -196,8 +196,8 @@ void LogComponentDisableAll(LogLevel level);
  *
  * See LogComponent().
  *
- * \param [in] name The log component name.
- * \param [in] mask The default mask.
+ * @param [in] name The log component name.
+ * @param [in] mask The default mask.
  */
 #define NS_LOG_COMPONENT_DEFINE_MASK(name, mask)                                                   \
     static ns3::LogComponent g_log = ns3::LogComponent(name, __FILE__, mask)
@@ -220,7 +220,7 @@ void LogComponentDisableAll(LogLevel level);
  * to allow their methods (defined in an header file) to make use of
  * the NS_LOG_* macros.
  *
- * \param [in] name The log component name.
+ * @param [in] name The log component name.
  */
 #define NS_LOG_TEMPLATE_DEFINE(name) g_log(GetLogComponent(name))
 
@@ -230,7 +230,7 @@ void LogComponentDisableAll(LogLevel level);
  * This macro should be used in static template methods to allow their
  * methods (defined in an header file) to make use of the NS_LOG_* macros.
  *
- * \param [in] name The log component name.
+ * @param [in] name The log component name.
  */
 #define NS_LOG_STATIC_TEMPLATE_DEFINE(name)                                                        \
     static LogComponent& g_log [[maybe_unused]] = GetLogComponent(name)
@@ -238,35 +238,35 @@ void LogComponentDisableAll(LogLevel level);
 /**
  * Use \ref NS_LOG to output a message of level LOG_ERROR.
  *
- * \param [in] msg The message to log.
+ * @param [in] msg The message to log.
  */
 #define NS_LOG_ERROR(msg) NS_LOG(ns3::LOG_ERROR, msg)
 
 /**
  * Use \ref NS_LOG to output a message of level LOG_WARN.
  *
- * \param [in] msg The message to log.
+ * @param [in] msg The message to log.
  */
 #define NS_LOG_WARN(msg) NS_LOG(ns3::LOG_WARN, msg)
 
 /**
  * Use \ref NS_LOG to output a message of level LOG_DEBUG.
  *
- * \param [in] msg The message to log.
+ * @param [in] msg The message to log.
  */
 #define NS_LOG_DEBUG(msg) NS_LOG(ns3::LOG_DEBUG, msg)
 
 /**
  * Use \ref NS_LOG to output a message of level LOG_INFO.
  *
- * \param [in] msg The message to log.
+ * @param [in] msg The message to log.
  */
 #define NS_LOG_INFO(msg) NS_LOG(ns3::LOG_INFO, msg)
 
 /**
  * Use \ref NS_LOG to output a message of level LOG_LOGIC
  *
- * \param [in] msg The message to log.
+ * @param [in] msg The message to log.
  */
 #define NS_LOG_LOGIC(msg) NS_LOG(ns3::LOG_LOGIC, msg)
 
@@ -286,12 +286,12 @@ void LogComponentPrintList();
  *
  * The default is DefaultTimePrinter().
  *
- * \param [in] lp The TimePrinter function.
+ * @param [in] lp The TimePrinter function.
  */
 void LogSetTimePrinter(TimePrinter lp);
 /**
  * Get the LogTimePrinter function currently in use.
- * \returns The current LogTimePrinter function.
+ * @returns The current LogTimePrinter function.
  */
 TimePrinter LogGetTimePrinter();
 
@@ -301,12 +301,12 @@ TimePrinter LogGetTimePrinter();
  *
  * The default is DefaultNodePrinter().
  *
- * \param [in] np The LogNodePrinter function.
+ * @param [in] np The LogNodePrinter function.
  */
 void LogSetNodePrinter(NodePrinter np);
 /**
  * Get the LogNodePrinter function currently in use.
- * \returns The current LogNodePrinter function.
+ * @returns The current LogNodePrinter function.
  */
 NodePrinter LogGetNodePrinter();
 
@@ -319,9 +319,9 @@ class LogComponent
     /**
      * Constructor.
      *
-     * \param [in] name The user-visible name for this component.
-     * \param [in] file The source code file which defined this LogComponent.
-     * \param [in] mask LogLevels blocked for this LogComponent.  Blocking
+     * @param [in] name The user-visible name for this component.
+     * @param [in] file The source code file which defined this LogComponent.
+     * @param [in] mask LogLevels blocked for this LogComponent.  Blocking
      *                  a log level helps prevent recursion by logging in
      *                  functions which help implement the logging facility.
      */
@@ -329,57 +329,57 @@ class LogComponent
     /**
      * Check if this LogComponent is enabled for \c level
      *
-     * \param [in] level The level to check for.
-     * \return \c true if we are enabled at \c level.
+     * @param [in] level The level to check for.
+     * @return \c true if we are enabled at \c level.
      */
     bool IsEnabled(const LogLevel level) const;
     /**
      * Check if all levels are disabled.
      *
-     * \return \c true if all levels are disabled.
+     * @return \c true if all levels are disabled.
      */
     bool IsNoneEnabled() const;
     /**
      * Enable this LogComponent at \c level
      *
-     * \param [in] level The LogLevel to enable.
+     * @param [in] level The LogLevel to enable.
      */
     void Enable(const LogLevel level);
     /**
      * Disable logging at \c level for this LogComponent.
      *
-     * \param [in] level The LogLevel to disable.
+     * @param [in] level The LogLevel to disable.
      */
     void Disable(const LogLevel level);
     /**
      * Get the name of this LogComponent.
      *
-     * \return The name of this LogComponent.
+     * @return The name of this LogComponent.
      */
     std::string Name() const;
     /**
      * Get the compilation unit defining this LogComponent.
-     * \returns The file name.
+     * @returns The file name.
      */
     std::string File() const;
     /**
      * Get the string label for the given LogLevel.
      *
-     * \param [in] level The LogLevel to get the label for.
-     * \return The string label for \c level.
+     * @param [in] level The LogLevel to get the label for.
+     * @return The string label for \c level.
      */
     static std::string GetLevelLabel(const LogLevel level);
     /**
      * Prevent the enabling of a specific LogLevel.
      *
-     * \param [in] level The LogLevel to block.
+     * @param [in] level The LogLevel to block.
      */
     void SetMask(const LogLevel level);
 
     /**
      * LogComponent name map.
      *
-     * \internal
+     * @internal
      * This should really be considered an internal API.
      * It is exposed here to allow print-introspected-doxygen.cc
      * to generate a list of all LogComponents.
@@ -389,12 +389,12 @@ class LogComponent
     /**
      * Get the list of LogComponents.
      *
-     * \internal
+     * @internal
      * This should really be considered an internal API.
      * It is exposed here to allow print-introspected-doxygen.cc
      * to generate a list of all LogComponents.
      *
-     * \returns The list of LogComponents.
+     * @returns The list of LogComponents.
      */
     static ComponentList* GetComponentList();
 
@@ -415,8 +415,8 @@ class LogComponent
 /**
  * Get the LogComponent registered with the given name.
  *
- * \param [in] name The name of the LogComponent.
- * \return a reference to the requested LogComponent
+ * @param [in] name The name of the LogComponent.
+ * @return a reference to the requested LogComponent
  */
 LogComponent& GetLogComponent(const std::string name);
 
@@ -429,7 +429,7 @@ class ParameterLogger
     /**
      * Constructor.
      *
-     * \param [in] os Underlying output stream.
+     * @param [in] os Underlying output stream.
      */
     ParameterLogger(std::ostream& os);
 
@@ -437,8 +437,8 @@ class ParameterLogger
      * Write a function parameter on the output stream,
      * separating parameters after the first by `,` strings.
      *
-     * \param [in] param The function parameter.
-     * \return This ParameterLogger, so it's chainable.
+     * @param [in] param The function parameter.
+     * @return This ParameterLogger, so it's chainable.
      */
     template <typename T>
     ParameterLogger& operator<<(const T& param);
@@ -446,8 +446,8 @@ class ParameterLogger
     /**
      * Overload for vectors, to print each element.
      *
-     * \param [in] vector The vector of parameters
-     * \return This ParameterLogger, so it's chainable.
+     * @param [in] vector The vector of parameters
+     * @return This ParameterLogger, so it's chainable.
      */
     template <typename T>
     ParameterLogger& operator<<(const std::vector<T>& vector);

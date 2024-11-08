@@ -17,10 +17,10 @@ namespace ns3
 {
 
 /**
- * \ingroup seq-counters
- * \class LollipopCounter
+ * @ingroup seq-counters
+ * @class LollipopCounter
  *
- * \brief Template class implementing a Lollipop counter as defined in \RFC{8505}, \RFC{6550}, and
+ * @brief Template class implementing a Lollipop counter as defined in \RFC{8505}, \RFC{6550}, and
  * [Perlman83].
  *
  * A Lollipop counter is a counter that solves initialization and
@@ -50,7 +50,7 @@ namespace ns3
  * Computer Networks 7: pp. 395-405, DOI 10.1016/0376-5075(83)90034-X, 1983,
  * <https://web.archive.org/web/20180723135334/http://pbg.cs.illinois.edu/courses/cs598fa09/readings/p83.pdf>.
  *
- * \tparam T \explicit The type being used for the counter.
+ * @tparam T \explicit The type being used for the counter.
  */
 template <class T>
 class LollipopCounter
@@ -78,8 +78,8 @@ class LollipopCounter
      *
      * The Sequence Window is set to the default value.
      *
-     * \param val the initial value of the Lollipop Counter
-     * \tparam T \deduced The type being used for the counter.
+     * @param val the initial value of the Lollipop Counter
+     * @tparam T \deduced The type being used for the counter.
      */
     LollipopCounter(T val)
     {
@@ -92,8 +92,8 @@ class LollipopCounter
     /**
      * Assignment.
      *
-     * \param [in] o Value to assign to this LollipopCounter.
-     * \returns This LollipopCounter.
+     * @param [in] o Value to assign to this LollipopCounter.
+     * @returns This LollipopCounter.
      */
     inline LollipopCounter& operator=(const LollipopCounter& o)
     {
@@ -116,7 +116,7 @@ class LollipopCounter
      * The counter is reset to maxValue - m_sequenceWindow +1, where
      * maxValue is the maximum number allowed by the underlying type.
      *
-     * \param numberOfBits number of bits to use in the Sequence Window
+     * @param numberOfBits number of bits to use in the Sequence Window
      */
     void SetSequenceWindowSize(uint16_t numberOfBits)
     {
@@ -143,8 +143,8 @@ class LollipopCounter
      * Sequence Window is equal to 2^N where N is (by default) half the number
      * of digits of the underlying type.
      *
-     * \param val counter to compare
-     * \returns true if the counters are comparable.
+     * @param val counter to compare
+     * @returns true if the counters are comparable.
      */
     bool IsComparable(const LollipopCounter& val) const
     {
@@ -167,7 +167,7 @@ class LollipopCounter
     /**
      * Checks if a counter is in its starting region.
      *
-     * \returns true if a counter is in its starting region.
+     * @returns true if a counter is in its starting region.
      */
     bool IsInit() const
     {
@@ -176,9 +176,9 @@ class LollipopCounter
 
     /**
      * Arithmetic operator equal-to
-     * \param [in] lhs Left hand argument
-     * \param [in] rhs Right hand argument
-     * \return The result of the operator.
+     * @param [in] lhs Left hand argument
+     * @param [in] rhs Right hand argument
+     * @return The result of the operator.
      */
     friend bool operator==(const LollipopCounter& lhs, const LollipopCounter& rhs)
     {
@@ -190,9 +190,9 @@ class LollipopCounter
 
     /**
      * Arithmetic operator greater-than
-     * \param [in] lhs Left hand argument
-     * \param [in] rhs Right hand argument
-     * \return The result of the operator.
+     * @param [in] lhs Left hand argument
+     * @param [in] rhs Right hand argument
+     * @return The result of the operator.
      */
     friend bool operator>(const LollipopCounter& lhs, const LollipopCounter& rhs)
     {
@@ -257,9 +257,9 @@ class LollipopCounter
 
     /**
      * Arithmetic operator less-than
-     * \param [in] lhs Left hand argument
-     * \param [in] rhs Right hand argument
-     * \return The result of the operator.
+     * @param [in] lhs Left hand argument
+     * @param [in] rhs Right hand argument
+     * @return The result of the operator.
      */
     friend bool operator<(const LollipopCounter& lhs, const LollipopCounter& rhs)
     {
@@ -278,8 +278,8 @@ class LollipopCounter
 
     /**
      * Prefix increment operator
-     * \param [in] val LollipopCounter to be incremented
-     * \return The result of the Prefix increment.
+     * @param [in] val LollipopCounter to be incremented
+     * @return The result of the Prefix increment.
      */
     friend LollipopCounter operator++(LollipopCounter& val) // prefix ++
     {
@@ -295,9 +295,9 @@ class LollipopCounter
 
     /**
      * Postfix increment operator
-     * \param [in] val LollipopCounter to be incremented
-     * \param [in] noop ignored argument (used to mark it as a postfix, blame c++).
-     * \return The result of the Postfix increment.
+     * @param [in] val LollipopCounter to be incremented
+     * @param [in] noop ignored argument (used to mark it as a postfix, blame c++).
+     * @return The result of the Postfix increment.
      */
     friend LollipopCounter operator++(LollipopCounter& val, int noop) // postfix ++
     {
@@ -309,7 +309,7 @@ class LollipopCounter
     /**
      * Get the counter value.
      *
-     * \return the counter value.
+     * @return the counter value.
      */
     T GetValue() const
     {
@@ -319,9 +319,9 @@ class LollipopCounter
     /**
      * Output streamer for LollipopCounter.
      *
-     * \param [in,out] os The output stream.
-     * \param [in] counter The LollipopCounter to print.
-     * \returns The stream.
+     * @param [in,out] os The output stream.
+     * @param [in] counter The LollipopCounter to print.
+     * @returns The stream.
      */
     friend std::ostream& operator<<(std::ostream& os, const LollipopCounter& counter)
     {
@@ -338,8 +338,8 @@ class LollipopCounter
      * the smallest circular distance between two numbers.
      *
      * Arithmetic operator.
-     * \param [in] val Counter to compute the difference against
-     * \return The result of the difference.
+     * @param [in] val Counter to compute the difference against
+     * @return The result of the difference.
      */
     T AbsoluteMagnitudeOfDifference(const LollipopCounter& val) const
     {
@@ -365,12 +365,12 @@ class LollipopCounter
 };
 
 /**
- * \ingroup seq-counters
+ * @ingroup seq-counters
  * 8 bit Lollipop Counter.
  */
 typedef LollipopCounter<uint8_t> LollipopCounter8;
 /**
- * \ingroup seq-counters
+ * @ingroup seq-counters
  * 16 bit Lollipop Counter.
  */
 typedef LollipopCounter<uint16_t> LollipopCounter16;

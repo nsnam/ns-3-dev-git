@@ -27,7 +27,7 @@ class LteNetDevice;
 class LteUePhy;
 
 /**
- * \ingroup lte
+ * @ingroup lte
  * LteEnbPhy models the physical layer for the eNodeB
  */
 class LteEnbPhy : public LtePhy
@@ -45,16 +45,16 @@ class LteEnbPhy : public LtePhy
 
     /**
      *
-     * \param dlPhy the downlink LteSpectrumPhy instance
-     * \param ulPhy the uplink LteSpectrumPhy instance
+     * @param dlPhy the downlink LteSpectrumPhy instance
+     * @param ulPhy the uplink LteSpectrumPhy instance
      */
     LteEnbPhy(Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy);
 
     ~LteEnbPhy() override;
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     // inherited from Object
@@ -62,79 +62,79 @@ class LteEnbPhy : public LtePhy
     void DoDispose() override;
 
     /**
-     * \brief Get the PHY SAP provider
-     * \return a pointer to the SAP Provider of the PHY
+     * @brief Get the PHY SAP provider
+     * @return a pointer to the SAP Provider of the PHY
      */
     LteEnbPhySapProvider* GetLteEnbPhySapProvider();
 
     /**
-     * \brief Set the PHY SAP User
-     * \param s a pointer to the PHY SAP user
+     * @brief Set the PHY SAP User
+     * @param s a pointer to the PHY SAP user
      */
     void SetLteEnbPhySapUser(LteEnbPhySapUser* s);
 
     /**
-     * \brief Get the CPHY SAP provider
-     * \return a pointer to the SAP Provider
+     * @brief Get the CPHY SAP provider
+     * @return a pointer to the SAP Provider
      */
     LteEnbCphySapProvider* GetLteEnbCphySapProvider();
 
     /**
-     * \brief Set the CPHY SAP User
-     * \param s a pointer to the SAP user
+     * @brief Set the CPHY SAP User
+     * @param s a pointer to the SAP user
      */
     void SetLteEnbCphySapUser(LteEnbCphySapUser* s);
 
     /**
-     * \param pow the transmission power in dBm
+     * @param pow the transmission power in dBm
      */
     void SetTxPower(double pow);
 
     /**
-     * \return the transmission power in dBm
+     * @return the transmission power in dBm
      */
     double GetTxPower() const;
 
     /**
-     * \return the transmission power in dBm
+     * @return the transmission power in dBm
      */
     int8_t DoGetReferenceSignalPower() const;
 
     /**
-     * \param pow the noise figure in dB
+     * @param pow the noise figure in dB
      */
     void SetNoiseFigure(double pow);
 
     /**
-     * \return the noise figure in dB
+     * @return the noise figure in dB
      */
     double GetNoiseFigure() const;
 
     /**
-     * \param delay the TTI delay between MAC and channel
+     * @param delay the TTI delay between MAC and channel
      */
     void SetMacChDelay(uint8_t delay);
 
     /**
-     * \returns the TTI delay between MAC and channel
+     * @returns the TTI delay between MAC and channel
      */
     uint8_t GetMacChDelay() const;
 
     /**
-     * \return a pointer to the LteSpectrumPhy instance relative to the downlink
+     * @return a pointer to the LteSpectrumPhy instance relative to the downlink
      */
     Ptr<LteSpectrumPhy> GetDlSpectrumPhy() const;
 
     /**
-     * \return a pointer to the LteSpectrumPhy instance relative to the uplink
+     * @return a pointer to the LteSpectrumPhy instance relative to the uplink
      */
     Ptr<LteSpectrumPhy> GetUlSpectrumPhy() const;
 
     /**
-     * \brief set the resource blocks (a.k.a. sub channels) to be used in the downlink for
+     * @brief set the resource blocks (a.k.a. sub channels) to be used in the downlink for
      * transmission
      *
-     * \param mask a vector of integers, if the i-th value is j it means
+     * @param mask a vector of integers, if the i-th value is j it means
      * that the j-th resource block is used for transmission in the
      * downlink. If there is no i such that the value of the i-th
      * element is j, it means that RB j is not used.
@@ -142,10 +142,10 @@ class LteEnbPhy : public LtePhy
     void SetDownlinkSubChannels(std::vector<int> mask);
 
     /**
-     * \brief set the resource blocks (a.k.a. sub channels) and its power
+     * @brief set the resource blocks (a.k.a. sub channels) and its power
      * to be used in the downlink for transmission
      *
-     * \param mask a vector of integers, if the i-th value is j it means
+     * @param mask a vector of integers, if the i-th value is j it means
      * that the j-th resource block is used for transmission in the
      * downlink. If there is no i such that the value of the i-th
      * element is j, it means that RB j is not used.
@@ -153,7 +153,7 @@ class LteEnbPhy : public LtePhy
     void SetDownlinkSubChannelsWithPowerAllocation(std::vector<int> mask);
     /**
      *
-     * \return  a vector of integers, if the i-th value is j it means
+     * @return  a vector of integers, if the i-th value is j it means
      * that the j-th resource block is used for transmission in the
      * downlink. If there is no i such that the value of the i-th
      * element is j, it means that RB j is not used.
@@ -161,105 +161,105 @@ class LteEnbPhy : public LtePhy
     std::vector<int> GetDownlinkSubChannels();
 
     /**
-     * \brief Generate power allocation map (i.e. tx power level for each RB)
+     * @brief Generate power allocation map (i.e. tx power level for each RB)
      *
-     * \param rnti indicates which UE will occupy this RB
-     * \param rbId indicates which RB UE is using,
+     * @param rnti indicates which UE will occupy this RB
+     * @param rbId indicates which RB UE is using,
      * power level for this RB is power level of UE
      */
     void GeneratePowerAllocationMap(uint16_t rnti, int rbId);
 
     /**
-     * \brief Create the PSD for TX
-     * \returns the PSD
+     * @brief Create the PSD for TX
+     * @returns the PSD
      */
     Ptr<SpectrumValue> CreateTxPowerSpectralDensity() override;
 
     /**
-     * \brief Create the PSD for TX with power allocation for each RB
-     * \return the PSD
+     * @brief Create the PSD for TX with power allocation for each RB
+     * @return the PSD
      */
     virtual Ptr<SpectrumValue> CreateTxPowerSpectralDensityWithPowerAllocation();
 
     /**
-     * \brief Calculate the channel quality for a given UE
-     * \param sinr a list of computed SINR
-     * \param ue the UE
+     * @brief Calculate the channel quality for a given UE
+     * @param sinr a list of computed SINR
+     * @param ue the UE
      */
     void CalcChannelQualityForUe(std::vector<double> sinr, Ptr<LteSpectrumPhy> ue);
 
     /**
-     * \brief Receive the control message
-     * \param msg the received message
+     * @brief Receive the control message
+     * @param msg the received message
      */
     virtual void ReceiveLteControlMessage(Ptr<LteControlMessage> msg);
 
     /**
-     * \brief Create the UL CQI feedback from SINR values perceived at
+     * @brief Create the UL CQI feedback from SINR values perceived at
      * the physical layer with the PUSCH signal received from eNB
-     * \param sinr SINR values vector
-     * \return UL CQI feedback in the format usable by an FF MAC scheduler
+     * @param sinr SINR values vector
+     * @return UL CQI feedback in the format usable by an FF MAC scheduler
      */
     FfMacSchedSapProvider::SchedUlCqiInfoReqParameters CreatePuschCqiReport(
         const SpectrumValue& sinr);
 
     /**
-     * \brief Create the UL CQI feedback from SINR values perceived at
+     * @brief Create the UL CQI feedback from SINR values perceived at
      * the physical layer with the SRS signal received from eNB
-     * \param sinr SINR values vector
-     * \return UL CQI feedback in the format usable by an FF MAC scheduler
+     * @param sinr SINR values vector
+     * @return UL CQI feedback in the format usable by an FF MAC scheduler
      */
     FfMacSchedSapProvider::SchedUlCqiInfoReqParameters CreateSrsCqiReport(
         const SpectrumValue& sinr);
 
     /**
-     * \brief Send the PDCCH and PCFICH in the first 3 symbols
-     * \param ctrlMsgList the list of control messages of PDCCH
+     * @brief Send the PDCCH and PCFICH in the first 3 symbols
+     * @param ctrlMsgList the list of control messages of PDCCH
      */
     void SendControlChannels(std::list<Ptr<LteControlMessage>> ctrlMsgList);
 
     /**
-     * \brief Send the PDSCH
-     * \param pb the PacketBurst to be sent
+     * @brief Send the PDSCH
+     * @param pb the PacketBurst to be sent
      */
     void SendDataChannels(Ptr<PacketBurst> pb);
 
     /**
-     * \param m the UL-CQI to be queued
+     * @param m the UL-CQI to be queued
      */
     void QueueUlDci(UlDciLteControlMessage m);
 
     /**
-     * \returns the list of UL-CQI to be processed
+     * @returns the list of UL-CQI to be processed
      */
     std::list<UlDciLteControlMessage> DequeueUlDci();
 
     /**
-     * \brief Start a LTE frame
+     * @brief Start a LTE frame
      */
     void StartFrame();
     /**
-     * \brief Start a LTE sub frame
+     * @brief Start a LTE sub frame
      */
     void StartSubFrame();
     /**
-     * \brief End a LTE sub frame
+     * @brief End a LTE sub frame
      */
     void EndSubFrame();
     /**
-     * \brief End a LTE frame
+     * @brief End a LTE frame
      */
     void EndFrame();
 
     /**
-     * \brief PhySpectrum received a new PHY-PDU
-     * \param p the packet received
+     * @brief PhySpectrum received a new PHY-PDU
+     * @param p the packet received
      */
     void PhyPduReceived(Ptr<Packet> p);
 
     /**
-     * \brief PhySpectrum received a new list of LteControlMessage
-     * \param msgList List of control messages
+     * @brief PhySpectrum received a new list of LteControlMessage
+     * @param msgList List of control messages
      */
     virtual void ReceiveLteControlMessageList(std::list<Ptr<LteControlMessage>> msgList);
 
@@ -270,25 +270,25 @@ class LteEnbPhy : public LtePhy
     void ReportRsReceivedPower(const SpectrumValue& power) override;
 
     /**
-     * \brief Report the uplink HARQ feedback generated by LteSpectrumPhy to MAC
+     * @brief Report the uplink HARQ feedback generated by LteSpectrumPhy to MAC
      *
-     * \param mes UlInfoListElement_s
+     * @param mes UlInfoListElement_s
      */
     virtual void ReportUlHarqFeedback(UlInfoListElement_s mes);
 
     /**
-     * \brief Set the HARQ Phy module
+     * @brief Set the HARQ Phy module
      *
-     * \param harq the HARQ Phy
+     * @param harq the HARQ Phy
      */
     void SetHarqPhyModule(Ptr<LteHarqPhy> harq);
 
     /**
      * TracedCallback signature for the linear average of SRS SINRs.
      *
-     * \param [in] cellId
-     * \param [in] rnti
-     * \param [in] sinrLinear
+     * @param [in] cellId
+     * @param [in] rnti
+     * @param [in] sinrLinear
      */
     typedef void (*ReportUeSinrTracedCallback)(uint16_t cellId,
                                                uint16_t rnti,
@@ -298,9 +298,9 @@ class LteEnbPhy : public LtePhy
     /**
      * TracedCallback signature for the linear average of SRS SINRs.
      *
-     * \param [in] cellId
-     * \param [in] spectrumValue
-     * \deprecated The non-const \c Ptr<SpectrumValue> argument is deprecated
+     * @param [in] cellId
+     * @param [in] spectrumValue
+     * @deprecated The non-const \c Ptr<SpectrumValue> argument is deprecated
      * and will be changed to \c Ptr<const SpectrumValue> in a future release.
      */
     // NS_DEPRECATED() - tag for future removal
@@ -312,60 +312,60 @@ class LteEnbPhy : public LtePhy
     /**
      * Set bandwidth function
      *
-     * \param ulBandwidth UL bandwidth
-     * \param dlBandwidth DL bandwidth
+     * @param ulBandwidth UL bandwidth
+     * @param dlBandwidth DL bandwidth
      */
     void DoSetBandwidth(uint16_t ulBandwidth, uint16_t dlBandwidth);
     /**
      * Set EARFCN
      *
-     * \param dlEarfcn DL EARFCN
-     * \param ulEarfcn UL EARFCN
+     * @param dlEarfcn DL EARFCN
+     * @param ulEarfcn UL EARFCN
      */
     void DoSetEarfcn(uint32_t dlEarfcn, uint32_t ulEarfcn);
     /**
      * Add UE
      *
-     * \param rnti RNTI
+     * @param rnti RNTI
      */
     void DoAddUe(uint16_t rnti);
     /**
      * Remove UE
      *
-     * \param rnti RNTI
+     * @param rnti RNTI
      */
     void DoRemoveUe(uint16_t rnti);
     /**
      * Set PA
      *
-     * \param rnti RNTI
-     * \param pa PA
+     * @param rnti RNTI
+     * @param pa PA
      */
     void DoSetPa(uint16_t rnti, double pa);
     /**
      * Set transmission mode
      *
-     * \param rnti RNTI
-     * \param txMode transmit mode
+     * @param rnti RNTI
+     * @param txMode transmit mode
      */
     void DoSetTransmissionMode(uint16_t rnti, uint8_t txMode);
     /**
      * Set source configuration index
      *
-     * \param rnti RNTI
-     * \param srcCi source configuration index
+     * @param rnti RNTI
+     * @param srcCi source configuration index
      */
     void DoSetSrsConfigurationIndex(uint16_t rnti, uint16_t srcCi);
     /**
      * Set master information block
      *
-     * \param mib LteRrcSap::MasterInformationBlock
+     * @param mib LteRrcSap::MasterInformationBlock
      */
     void DoSetMasterInformationBlock(LteRrcSap::MasterInformationBlock mib);
     /**
      * Set system information block
      *
-     * \param sib1 LteRrcSap::SystemInformationBlockType1
+     * @param sib1 LteRrcSap::SystemInformationBlockType1
      */
     void DoSetSystemInformationBlockType1(LteRrcSap::SystemInformationBlockType1 sib1);
 
@@ -374,34 +374,34 @@ class LteEnbPhy : public LtePhy
     /**
      * Send LTE Control Message function
      *
-     * \param msg LTE control message
+     * @param msg LTE control message
      */
     void DoSendLteControlMessage(Ptr<LteControlMessage> msg);
     /**
      * Get MAC ch TTI delay function
      *
-     * \returns delay value
+     * @returns delay value
      */
     uint8_t DoGetMacChTtiDelay();
 
     /**
      * Add the given RNTI to the list of attached UE #m_ueAttached.
-     * \param rnti RNTI of a UE
-     * \return true if the RNTI has _not_ existed before, or false otherwise.
+     * @param rnti RNTI of a UE
+     * @return true if the RNTI has _not_ existed before, or false otherwise.
      */
     bool AddUePhy(uint16_t rnti);
     /**
      * Remove the given RNTI from the list of attached UE #m_ueAttached.
-     * \param rnti RNTI of a UE
-     * \return true if the RNTI has existed before, or false otherwise.
+     * @param rnti RNTI of a UE
+     * @return true if the RNTI has existed before, or false otherwise.
      */
     bool DeleteUePhy(uint16_t rnti);
 
     /**
      * Create SRS report function
      *
-     * \param rnti the RNTI
-     * \param srs the SRS
+     * @param rnti the RNTI
+     * @param srs the SRS
      */
     void CreateSrsReport(uint16_t rnti, double srs);
 
@@ -484,7 +484,7 @@ class LteEnbPhy : public LtePhy
      * The `ReportInterference` trace source. Reporting the interference per PHY
      * RB (TS 36.214 section 5.2.2, measured on DATA). Exporting cell ID and
      * interference linear power per RB basis.
-     * \deprecated The non-const \c Ptr<SpectrumValue> argument is deprecated
+     * @deprecated The non-const \c Ptr<SpectrumValue> argument is deprecated
      * and will be changed to \c Ptr<const SpectrumValue> in a future release.
      */
     // NS_DEPRECATED() - tag for future removal
@@ -492,7 +492,7 @@ class LteEnbPhy : public LtePhy
     /**
      * The `InterferenceSamplePeriod` attribute. The sampling period for
      * reporting interference stats.
-     * \todo In what unit is this?
+     * @todo In what unit is this?
      */
     uint16_t m_interferenceSamplePeriod;
     uint16_t m_interferenceSampleCounter; ///< interference sample counter

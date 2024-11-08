@@ -19,8 +19,8 @@ namespace ns3
 {
 
 /**
- * \ingroup energy
- * \brief Creates a BasicEnergyHarvester object.
+ * @ingroup energy
+ * @brief Creates a BasicEnergyHarvester object.
  */
 class BasicEnergyHarvesterHelper : public EnergyHarvesterHelper
 {

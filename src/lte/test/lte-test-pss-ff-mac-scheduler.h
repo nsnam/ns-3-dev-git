@@ -17,9 +17,9 @@
 using namespace ns3;
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief This system test program creates different test cases with a single eNB and
+ * @brief This system test program creates different test cases with a single eNB and
  * several UEs, all having the same Radio Bearer specification. In each test
  * case, the UEs see the same SINR from the eNB; different test cases are
  * implemented obtained by using different SINR values and different numbers of
@@ -33,13 +33,13 @@ class LenaPssFfMacSchedulerTestCase1 : public TestCase
     /**
      * Constructor
      *
-     * \param nUser the number of UE nodes
-     * \param dist the distance between nodes
-     * \param thrRefDl the DL throughput reference
-     * \param thrRefUl the UL throughput reference
-     * \param packetSize the packet size
-     * \param interval the interval time
-     * \param errorModelEnabled if true the error model is enabled
+     * @param nUser the number of UE nodes
+     * @param dist the distance between nodes
+     * @param thrRefDl the DL throughput reference
+     * @param thrRefUl the UL throughput reference
+     * @param packetSize the packet size
+     * @param interval the interval time
+     * @param errorModelEnabled if true the error model is enabled
      */
     LenaPssFfMacSchedulerTestCase1(uint16_t nUser,
                                    double dist,
@@ -53,9 +53,9 @@ class LenaPssFfMacSchedulerTestCase1 : public TestCase
   private:
     /**
      * Builds the test name string based on provided parameter values
-     * \param nUser the number of UE nodes
-     * \param dist the distance between nodes
-     * \returns the name string
+     * @param nUser the number of UE nodes
+     * @param dist the distance between nodes
+     * @returns the name string
      */
     static std::string BuildNameString(uint16_t nUser, double dist);
     void DoRun() override;
@@ -69,9 +69,9 @@ class LenaPssFfMacSchedulerTestCase1 : public TestCase
 };
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief Similar to the LenaPssFfMacSchedulerTestCase1 with the difference that
+ * @brief Similar to the LenaPssFfMacSchedulerTestCase1 with the difference that
  * UEs are places in such a way to experience different SINRs. Test checks if the
  * achieved throughput in such conditions has expected value.
  */
@@ -81,11 +81,11 @@ class LenaPssFfMacSchedulerTestCase2 : public TestCase
     /**
      * Constructor
      *
-     * \param dist the distance between nodes
-     * \param estThrPssDl the estimated DL throughput PSS
-     * \param packetSize the packet size
-     * \param interval the interval time
-     * \param errorModelEnabled if true the error model is enabled
+     * @param dist the distance between nodes
+     * @param estThrPssDl the estimated DL throughput PSS
+     * @param packetSize the packet size
+     * @param interval the interval time
+     * @param errorModelEnabled if true the error model is enabled
      */
     LenaPssFfMacSchedulerTestCase2(std::vector<double> dist,
                                    std::vector<uint32_t> estThrPssDl,
@@ -97,9 +97,9 @@ class LenaPssFfMacSchedulerTestCase2 : public TestCase
   private:
     /**
      * Builds the test name string based on provided parameter values
-     * \param nUser the number of UE nodes
-     * \param dist the distance between nodes
-     * \returns the name string
+     * @param nUser the number of UE nodes
+     * @param dist the distance between nodes
+     * @returns the name string
      */
     static std::string BuildNameString(uint16_t nUser, std::vector<double> dist);
     void DoRun() override;
@@ -112,9 +112,9 @@ class LenaPssFfMacSchedulerTestCase2 : public TestCase
 };
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief Lena Pss Ff Mac Scheduler Test Suite
+ * @brief Lena Pss Ff Mac Scheduler Test Suite
  */
 class LenaTestPssFfMacSchedulerSuite : public TestSuite
 {

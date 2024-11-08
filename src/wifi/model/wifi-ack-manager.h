@@ -25,7 +25,7 @@ class WifiMac;
 class WifiRemoteStationManager;
 
 /**
- * \ingroup wifi
+ * @ingroup wifi
  *
  * WifiAckManager is an abstract base class. Each subclass defines a logic
  * to select the acknowledgment method for a given frame.
@@ -34,8 +34,8 @@ class WifiAckManager : public Object
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     WifiAckManager();
@@ -44,29 +44,29 @@ class WifiAckManager : public Object
     /**
      * Set the MAC which is using this Acknowledgment Manager
      *
-     * \param mac a pointer to the MAC
+     * @param mac a pointer to the MAC
      */
     void SetWifiMac(Ptr<WifiMac> mac);
     /**
      * Set the ID of the link this Acknowledgment Manager is associated with.
      *
-     * \param linkId the ID of the link this Acknowledgment Manager is associated with
+     * @param linkId the ID of the link this Acknowledgment Manager is associated with
      */
     void SetLinkId(uint8_t linkId);
 
     /**
      * Set the QoS Ack policy for the given MPDU, which must be a QoS data frame.
      *
-     * \param item the MPDU
-     * \param acknowledgment the WifiAcknowledgment object storing the QoS Ack policy to set
+     * @param item the MPDU
+     * @param acknowledgment the WifiAcknowledgment object storing the QoS Ack policy to set
      */
     static void SetQosAckPolicy(Ptr<WifiMpdu> item, const WifiAcknowledgment* acknowledgment);
 
     /**
      * Set the QoS Ack policy for the given PSDU, which must include at least a QoS data frame.
      *
-     * \param psdu the PSDU
-     * \param acknowledgment the WifiAcknowledgment object storing the QoS Ack policy to set
+     * @param psdu the PSDU
+     * @param acknowledgment the WifiAcknowledgment object storing the QoS Ack policy to set
      */
     static void SetQosAckPolicy(Ptr<WifiPsdu> psdu, const WifiAcknowledgment* acknowledgment);
 
@@ -75,9 +75,9 @@ class WifiAckManager : public Object
      * frame. Return a null pointer if the acknowledgment method is unchanged or the new
      * acknowledgment method otherwise.
      *
-     * \param mpdu the MPDU to be added to the current frame
-     * \param txParams the current TX parameters for the current frame
-     * \return a null pointer if the acknowledgment method is unchanged or the new
+     * @param mpdu the MPDU to be added to the current frame
+     * @param txParams the current TX parameters for the current frame
+     * @return a null pointer if the acknowledgment method is unchanged or the new
      *         acknowledgment method otherwise
      */
     virtual std::unique_ptr<WifiAcknowledgment> TryAddMpdu(Ptr<const WifiMpdu> mpdu,
@@ -88,9 +88,9 @@ class WifiAckManager : public Object
      * frame. Return a null pointer if the acknowledgment method is unchanged or the new
      * acknowledgment method otherwise.
      *
-     * \param msdu the MSDU to be aggregated to the current frame
-     * \param txParams the current TX parameters for the current frame
-     * \return a null pointer if the acknowledgment method is unchanged or the new
+     * @param msdu the MSDU to be aggregated to the current frame
+     * @param txParams the current TX parameters for the current frame
+     * @return a null pointer if the acknowledgment method is unchanged or the new
      *         acknowledgment method otherwise
      */
     virtual std::unique_ptr<WifiAcknowledgment> TryAggregateMsdu(
@@ -101,7 +101,7 @@ class WifiAckManager : public Object
     void DoDispose() override;
 
     /**
-     * \return the remote station manager operating on our link
+     * @return the remote station manager operating on our link
      */
     Ptr<WifiRemoteStationManager> GetWifiRemoteStationManager() const;
 

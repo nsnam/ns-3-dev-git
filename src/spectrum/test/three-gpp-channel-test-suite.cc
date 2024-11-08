@@ -34,7 +34,7 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("ThreeGppChannelTestSuite");
 
 /**
- * \ingroup spectrum-tests
+ * @ingroup spectrum-tests
  *
  * Test case for the ThreeGppChannelModel class.
  * 1) check if the channel matrix has the correct dimensions
@@ -45,12 +45,12 @@ class ThreeGppChannelMatrixComputationTest : public TestCase
   public:
     /**
      *Constructor
-     * \param txAntennaElements the number of rows and columns of the antenna array of the
+     * @param txAntennaElements the number of rows and columns of the antenna array of the
      * transmitter
-     * \param rxAntennaElements the number of rows and columns of the antenna array of
-     * \param txPorts the number of vertical and horizontal ports of the antenna array
+     * @param rxAntennaElements the number of rows and columns of the antenna array of
+     * @param txPorts the number of vertical and horizontal ports of the antenna array
      * of the transmitter
-     * \param rxPorts the number of vertical and horizontal ports of the antenna
+     * @param rxPorts the number of vertical and horizontal ports of the antenna
      * array of the receiver
      */
     ThreeGppChannelMatrixComputationTest(uint32_t txAntennaElements = 2,
@@ -71,11 +71,11 @@ class ThreeGppChannelMatrixComputationTest : public TestCase
 
     /**
      * Compute the Frobenius norm of the channel matrix and stores it in m_normVector
-     * \param channelModel the ThreeGppChannelModel object used to generate the channel matrix
-     * \param txMob the mobility model of the first node
-     * \param rxMob the mobility model of the second node
-     * \param txAntenna the antenna object associated to the first node
-     * \param rxAntenna the antenna object associated to the second node
+     * @param channelModel the ThreeGppChannelModel object used to generate the channel matrix
+     * @param txMob the mobility model of the first node
+     * @param rxMob the mobility model of the second node
+     * @param txAntenna the antenna object associated to the first node
+     * @param rxAntenna the antenna object associated to the second node
      */
     void DoComputeNorm(Ptr<ThreeGppChannelModel> channelModel,
                        Ptr<MobilityModel> txMob,
@@ -272,7 +272,7 @@ ThreeGppChannelMatrixComputationTest::DoRun()
 }
 
 /**
- * \ingroup spectrum-tests
+ * @ingroup spectrum-tests
  *
  * Test case for the ThreeGppChannelModel class.
  * It checks if the channel realizations are correctly updated during the
@@ -283,12 +283,12 @@ class ThreeGppChannelMatrixUpdateTest : public TestCase
   public:
     /**
      *Constructor
-     * \param txAntennaElements the number of rows and columns of the antenna array of the
+     * @param txAntennaElements the number of rows and columns of the antenna array of the
      * transmitter
-     * \param rxAntennaElements the number of rows and columns of the antenna array of
-     * \param txPorts the number of vertical and horizontal ports of the antenna array
+     * @param rxAntennaElements the number of rows and columns of the antenna array of
+     * @param txPorts the number of vertical and horizontal ports of the antenna array
      * of the transmitter
-     * \param rxPorts the number of vertical and horizontal ports of the antenna
+     * @param rxPorts the number of vertical and horizontal ports of the antenna
      * array of the receiver
      */
     ThreeGppChannelMatrixUpdateTest(uint32_t txAntennaElements = 2,
@@ -310,12 +310,12 @@ class ThreeGppChannelMatrixUpdateTest : public TestCase
     /**
      * This method is used to schedule the channel matrix computation at different
      * time instants and to check if it correctly updated
-     * \param channelModel the ThreeGppChannelModel object used to generate the channel matrix
-     * \param txMob the mobility model of the first node
-     * \param rxMob the mobility model of the second node
-     * \param txAntenna the antenna object associated to the first node
-     * \param rxAntenna the antenna object associated to the second node
-     * \param update whether if the channel matrix should be updated or not
+     * @param channelModel the ThreeGppChannelModel object used to generate the channel matrix
+     * @param txMob the mobility model of the first node
+     * @param rxMob the mobility model of the second node
+     * @param txAntenna the antenna object associated to the first node
+     * @param rxAntenna the antenna object associated to the second node
+     * @param update whether if the channel matrix should be updated or not
      */
     void DoGetChannel(Ptr<ThreeGppChannelModel> channelModel,
                       Ptr<MobilityModel> txMob,
@@ -486,7 +486,7 @@ ThreeGppChannelMatrixUpdateTest::DoRun()
 }
 
 /**
- * \ingroup spectrum-tests
+ * @ingroup spectrum-tests
  *
  * Test case for the ThreeGppChannelModel class.
  * It checks if the channel realizations are correctly
@@ -514,12 +514,12 @@ class ThreeGppAntennaSetupChangedTest : public TestCase
     /**
      * This method is used to schedule the channel matrix computation at different
      * time instants and to check if it correctly updated
-     * \param channelModel the ThreeGppChannelModel object used to generate the channel matrix
-     * \param txMob the mobility model of the first node
-     * \param rxMob the mobility model of the second node
-     * \param txAntenna the antenna object associated to the first node
-     * \param rxAntenna the antenna object associated to the second node
-     * \param update whether if the channel matrix should be updated or not
+     * @param channelModel the ThreeGppChannelModel object used to generate the channel matrix
+     * @param txMob the mobility model of the first node
+     * @param rxMob the mobility model of the second node
+     * @param txAntenna the antenna object associated to the first node
+     * @param rxAntenna the antenna object associated to the second node
+     * @param update whether if the channel matrix should be updated or not
      */
     void DoGetChannel(Ptr<ThreeGppChannelModel> channelModel,
                       Ptr<MobilityModel> txMob,
@@ -714,8 +714,8 @@ ThreeGppAntennaSetupChangedTest::DoRun()
 }
 
 /**
- * \ingroup spectrum-tests
- * \brief A structure that holds the parameters for the function
+ * @ingroup spectrum-tests
+ * @brief A structure that holds the parameters for the function
  * CheckLongTermUpdate. In this way the problem with the limited
  * number of parameters of method Schedule is avoided.
  */
@@ -732,7 +732,7 @@ struct CheckLongTermUpdateParams
 };
 
 /**
- * \ingroup spectrum-tests
+ * @ingroup spectrum-tests
  *
  * Test case for the ThreeGppSpectrumPropagationLossModelTest class.
  * 1) checks if the long term components for the direct and the reverse link
@@ -746,13 +746,13 @@ class ThreeGppSpectrumPropagationLossModelTest : public TestCase
   public:
     /**
      * Constructor
-     * \param txAntennaElements the number of rows and columns of the antenna array of the
+     * @param txAntennaElements the number of rows and columns of the antenna array of the
      * transmitter
-     * \param rxAntennaElements the number of rows and columns of the antenna array of
+     * @param rxAntennaElements the number of rows and columns of the antenna array of
      * the receiver
-     * \param txPorts the number of vertical and horizontal ports of the antenna array
+     * @param txPorts the number of vertical and horizontal ports of the antenna array
      * of the transmitter
-     * \param rxPorts the number of vertical and horizontal ports of the antenna
+     * @param rxPorts the number of vertical and horizontal ports of the antenna
      * array of the receiver
      */
     ThreeGppSpectrumPropagationLossModelTest(uint32_t txAntennaElements = 4,
@@ -772,10 +772,10 @@ class ThreeGppSpectrumPropagationLossModelTest : public TestCase
 
     /**
      * Points the beam of thisDevice towards otherDevice
-     * \param thisDevice the device to configure
-     * \param thisAntenna the antenna object associated to thisDevice
-     * \param otherDevice the device to communicate with
-     * \param otherAntenna the antenna object associated to otherDevice
+     * @param thisDevice the device to configure
+     * @param thisAntenna the antenna object associated to thisDevice
+     * @param otherDevice the device to communicate with
+     * @param otherAntenna the antenna object associated to otherDevice
      */
     void DoBeamforming(Ptr<NetDevice> thisDevice,
                        Ptr<PhasedArrayModel> thisAntenna,
@@ -785,7 +785,7 @@ class ThreeGppSpectrumPropagationLossModelTest : public TestCase
     /**
      * Test of the long term component is correctly updated when the channel
      * matrix is recomputed
-     * \param params a structure that contains the set of parameters needed by CheckLongTermUpdate
+     * @param params a structure that contains the set of parameters needed by CheckLongTermUpdate
      * in order to perform calculations
      */
     void CheckLongTermUpdate(const CheckLongTermUpdateParams& params);
@@ -972,7 +972,7 @@ ThreeGppSpectrumPropagationLossModelTest::DoRun()
 }
 
 /**
- * \ingroup spectrum-tests
+ * @ingroup spectrum-tests
  *
  * Test case that test the correct use of the multi-port antennas in spectrum.
  * The test does the following:
@@ -1203,9 +1203,9 @@ struct MimoPolarizationAntennaParams
     /**
      * Constructor
      * Currently only configurable through constructor are polSlantAngle and bearingAngle.
-     * \param isotropic whether the antenna elements are isotropic, or 3GPP
-     * \param polSlantAngle the polarization slant angle
-     * \param bearingAngle the bearing angle
+     * @param isotropic whether the antenna elements are isotropic, or 3GPP
+     * @param polSlantAngle the polarization slant angle
+     * @param bearingAngle the bearing angle
      */
     MimoPolarizationAntennaParams(bool isotropic, double polSlantAngle = 0, double bearingAngle = 0)
         : m_isotropic(isotropic),
@@ -1216,7 +1216,7 @@ struct MimoPolarizationAntennaParams
 };
 
 /**
- * \ingroup spectrum-tests
+ * @ingroup spectrum-tests
  * This test tests that the channel matrix is correctly generated when dual-polarized
  * antennas are being used at TX and RX. In the conditions in which the channel between
  * the TX and Rx device is LOS channel, and the beams of the transmitter and the
@@ -1249,13 +1249,13 @@ class ThreeGppMimoPolarizationTest : public TestCase
     /**
      * Constructor that receives MIMO polarization parameters of TX and RX
      * devices
-     * \param testCaseName the test case name
-     * \param txLoc the position of the transmitter
-     * \param txAntennaParams the antenna parameters of the transmitter
-     * \param rxLoc the position of the receiver
-     * \param rxAntennaParams the antenna parameters of the receiver
-     * \param testChannel the test matrix that represent the strongest cluster
-     * \param tolerance the tolerance to be used when testing
+     * @param testCaseName the test case name
+     * @param txLoc the position of the transmitter
+     * @param txAntennaParams the antenna parameters of the transmitter
+     * @param rxLoc the position of the receiver
+     * @param rxAntennaParams the antenna parameters of the receiver
+     * @param testChannel the test matrix that represent the strongest cluster
+     * @param tolerance the tolerance to be used when testing
      */
     ThreeGppMimoPolarizationTest(std::string testCaseName,
                                  Vector txLoc,
@@ -1431,7 +1431,7 @@ ThreeGppMimoPolarizationTest::DoRun()
 }
 
 /**
- * \ingroup spectrum-tests
+ * @ingroup spectrum-tests
  *
  * Test suite for the ThreeGppChannelModel class
  */

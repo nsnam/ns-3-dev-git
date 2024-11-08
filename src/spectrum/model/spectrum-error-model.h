@@ -20,7 +20,7 @@ namespace ns3
 {
 
 /**
- * \ingroup spectrum
+ * @ingroup spectrum
  *
  */
 class SpectrumErrorModel : public Object
@@ -28,33 +28,33 @@ class SpectrumErrorModel : public Object
   public:
     /**
      * Register this type.
-     * \return The TypeId.
+     * @return The TypeId.
      */
     static TypeId GetTypeId();
     ~SpectrumErrorModel() override;
 
     /**
      * Start a packet reception
-     * \param p the packet
+     * @param p the packet
      */
     virtual void StartRx(Ptr<const Packet> p) = 0;
 
     /**
      * Evaluates a chunk
-     * \param sinr the SpectrumValue experienced by the Chunk
-     * \param duration the Chunk length
+     * @param sinr the SpectrumValue experienced by the Chunk
+     * @param duration the Chunk length
      */
     virtual void EvaluateChunk(const SpectrumValue& sinr, Time duration) = 0;
 
     /**
      * Checks if the packet being received is correct
-     * \returns true if the packet is correct.
+     * @returns true if the packet is correct.
      */
     virtual bool IsRxCorrect() = 0;
 };
 
 /**
- * \ingroup spectrum
+ * @ingroup spectrum
  *
  * This class implements the error model described in this paper:
  * N. Baldo and M. Miozzo, "Spectrum-aware Channel and PHY layer modeling
@@ -69,7 +69,7 @@ class ShannonSpectrumErrorModel : public SpectrumErrorModel
   public:
     /**
      * Register this type.
-     * \return The TypeId.
+     * @return The TypeId.
      */
     static TypeId GetTypeId();
     // inherited from SpectrumErrorModel

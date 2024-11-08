@@ -15,8 +15,8 @@
 #include <stdint.h>
 
 /**
- * \file
- * \ingroup tracing
+ * @file
+ * @ingroup tracing
  * ns3::TraceSourceAccessor and ns3::MakeTraceSourceAccessor declarations.
  */
 
@@ -26,9 +26,9 @@ namespace ns3
 class ObjectBase;
 
 /**
- * \ingroup tracing
+ * @ingroup tracing
  *
- * \brief Control access to objects' trace sources.
+ * @brief Control access to objects' trace sources.
  *
  * This class abstracts the kind of trace source to which we want to connect
  * and provides services to Connect and Disconnect a sink to a trace source.
@@ -44,9 +44,9 @@ class TraceSourceAccessor : public SimpleRefCount<TraceSourceAccessor>
     /**
      * Connect a Callback to a TraceSource (without context.)
      *
-     * \param [in] obj The object instance which contains the target trace source.
-     * \param [in] cb The callback to connect to the target trace source.
-     * \return \c true unless the connection could not be made, typically because
+     * @param [in] obj The object instance which contains the target trace source.
+     * @param [in] cb The callback to connect to the target trace source.
+     * @return \c true unless the connection could not be made, typically because
      *         the \c obj couldn't be cast to the correct type.
      */
     virtual bool ConnectWithoutContext(ObjectBase* obj, const CallbackBase& cb) const = 0;
@@ -56,19 +56,19 @@ class TraceSourceAccessor : public SimpleRefCount<TraceSourceAccessor>
      * The context string will be provided as the first argument to the
      * Callback function.
      *
-     * \param [in] obj The object instance which contains the target trace source.
-     * \param [in] context The context to bind to the user callback.
-     * \param [in] cb The callback to connect to the target trace source.
-     * \return \c true unless the connection could not be made, typically because
+     * @param [in] obj The object instance which contains the target trace source.
+     * @param [in] context The context to bind to the user callback.
+     * @param [in] cb The callback to connect to the target trace source.
+     * @return \c true unless the connection could not be made, typically because
      *         the \c obj couldn't be cast to the correct type.
      */
     virtual bool Connect(ObjectBase* obj, std::string context, const CallbackBase& cb) const = 0;
     /**
      * Disconnect a Callback from a TraceSource (without context).
      *
-     * \param [in] obj The object instance which contains the target trace source.
-     * \param [in] cb The callback to disconnect from the target trace source.
-     * \return \c true unless the connection could not be made, typically because
+     * @param [in] obj The object instance which contains the target trace source.
+     * @param [in] cb The callback to disconnect from the target trace source.
+     * @return \c true unless the connection could not be made, typically because
      *         the \c obj couldn't be cast to the correct type.
      */
     virtual bool DisconnectWithoutContext(ObjectBase* obj, const CallbackBase& cb) const = 0;
@@ -78,17 +78,17 @@ class TraceSourceAccessor : public SimpleRefCount<TraceSourceAccessor>
      * The context string will be provided as the first argument to the
      * Callback function.
      *
-     * \param [in] obj the object instance which contains the target trace source.
-     * \param [in] context the context which was bound to the user callback.
-     * \param [in] cb the callback to disconnect from the target trace source.
-     * \return \c true unless the connection could not be made, typically because
+     * @param [in] obj the object instance which contains the target trace source.
+     * @param [in] context the context which was bound to the user callback.
+     * @param [in] cb the callback to disconnect from the target trace source.
+     * @return \c true unless the connection could not be made, typically because
      *         the \c obj couldn't be cast to the correct type.
      */
     virtual bool Disconnect(ObjectBase* obj, std::string context, const CallbackBase& cb) const = 0;
 };
 
 /**
- * \ingroup tracing
+ * @ingroup tracing
  *
  * Create a TraceSourceAccessor which will control access to the underlying
  * trace source.
@@ -99,18 +99,18 @@ class TraceSourceAccessor : public SimpleRefCount<TraceSourceAccessor>
  * static-polymorphic class.  This functionality is typically provided
  * by wrapping an object data member in a TracedCallback or TracedValue.
  *
- * \param [in] a The trace source
- * \returns The TraceSourceAccessor
+ * @param [in] a The trace source
+ * @returns The TraceSourceAccessor
  */
 template <typename T>
 Ptr<const TraceSourceAccessor> MakeTraceSourceAccessor(T a);
 
 /**
- * \ingroup tracing
+ * @ingroup tracing
  *
  * Create an empty TraceSourceAccessor.
  *
- * \returns The empty TraceSourceAccessor (runtime exception if used)
+ * @returns The empty TraceSourceAccessor (runtime exception if used)
  */
 static inline Ptr<const TraceSourceAccessor>
 MakeEmptyTraceSourceAccessor()
@@ -128,13 +128,13 @@ namespace ns3
 {
 
 /**
- * \ingroup tracing
+ * @ingroup tracing
  * MakeTraceSourceAccessor() implementation.
  *
- * \tparam T \deduced Class type of the TracedCallback
- * \tparam SOURCE \deduced Type of the underlying value.
- * \param [in] a The underlying data value.
- * \returns The TraceSourceAccessor
+ * @tparam T \deduced Class type of the TracedCallback
+ * @tparam SOURCE \deduced Type of the underlying value.
+ * @param [in] a The underlying data value.
+ * @returns The TraceSourceAccessor
  */
 template <typename T, typename SOURCE>
 Ptr<const TraceSourceAccessor>

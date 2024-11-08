@@ -27,17 +27,17 @@ namespace energy
 class EnergySource;
 
 /**
- * \ingroup energy
+ * @ingroup energy
  *
- * \brief Energy harvester base class.
+ * @brief Energy harvester base class.
  */
 
 class EnergyHarvester : public Object
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return The object TypeId.
+     * @brief Get the type ID.
+     * @return The object TypeId.
      */
     static TypeId GetTypeId();
 
@@ -46,14 +46,14 @@ class EnergyHarvester : public Object
     ~EnergyHarvester() override;
 
     /**
-     * \brief Sets pointer to node containing this EnergyHarvester.
+     * @brief Sets pointer to node containing this EnergyHarvester.
      *
-     * \param node Pointer to node containing this EnergyHarvester.
+     * @param node Pointer to node containing this EnergyHarvester.
      */
     void SetNode(Ptr<Node> node);
 
     /**
-     * \returns Pointer to node containing this EnergyHarvester.
+     * @returns Pointer to node containing this EnergyHarvester.
      *
      * When a subclass needs to get access to the underlying node base class to
      * print the nodeId for example, it can invoke this method.
@@ -61,7 +61,7 @@ class EnergyHarvester : public Object
     Ptr<Node> GetNode() const;
 
     /**
-     * \param source Pointer to energy source to which this EnergyHarvester is
+     * @param source Pointer to energy source to which this EnergyHarvester is
      * installed.
      *
      * This function sets the pointer to the energy source connected to the energy
@@ -70,7 +70,7 @@ class EnergyHarvester : public Object
     void SetEnergySource(Ptr<EnergySource> source);
 
     /**
-     * \returns Pointer to energy source connected to the harvester.
+     * @returns Pointer to energy source connected to the harvester.
      *
      * When a subclass needs to get access to the connected energy source,
      * it can invoke this method.
@@ -78,7 +78,7 @@ class EnergyHarvester : public Object
     Ptr<EnergySource> GetEnergySource() const;
 
     /**
-     * \returns Amount of power currently provided by the harvester.
+     * @returns Amount of power currently provided by the harvester.
      *
      * This method is called by the energy source connected to the harvester in order
      * to determine the amount of energy that the harvester provided since last update.
@@ -100,7 +100,7 @@ class EnergyHarvester : public Object
      * This method should be used to connect the logic behind the particular implementation
      * of the energy harvester with the energy source.
      *
-     * \returns Amount of power currently provided by the harvester.
+     * @returns Amount of power currently provided by the harvester.
      */
     virtual double DoGetPower() const;
 

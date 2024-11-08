@@ -23,21 +23,21 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("TcpVegasTestSuite");
 
 /**
- * \brief TcpVegas congestion control algorithm test
+ * @brief TcpVegas congestion control algorithm test
  */
 class TcpVegasTest : public TestCase
 {
   public:
     /**
-     * \brief Constructor.
-     * \param cWnd Congestion window.
-     * \param segmentSize Segment size.
-     * \param ssThresh Slow Start Threshold.
-     * \param rtt The RTT.
-     * \param segmentsAcked Number of segments ACKed.
-     * \param nextTxSeq Next Tx sequence number.
-     * \param lastAckedSeq Last ACKed sequence number.
-     * \param name Test description.
+     * @brief Constructor.
+     * @param cWnd Congestion window.
+     * @param segmentSize Segment size.
+     * @param ssThresh Slow Start Threshold.
+     * @param rtt The RTT.
+     * @param segmentsAcked Number of segments ACKed.
+     * @param nextTxSeq Next Tx sequence number.
+     * @param lastAckedSeq Last ACKed sequence number.
+     * @param name Test description.
      */
     TcpVegasTest(uint32_t cWnd,
                  uint32_t segmentSize,
@@ -51,13 +51,13 @@ class TcpVegasTest : public TestCase
   private:
     void DoRun() override;
     /**
-     * \brief Increases the TCP window.
-     * \param cong The congestion control.
+     * @brief Increases the TCP window.
+     * @param cong The congestion control.
      */
     void IncreaseWindow(Ptr<TcpVegas> cong);
     /**
      * brief Get and check the SSH threshold.
-     * \param cong The congestion control.
+     * @param cong The congestion control.
      */
     void GetSsThresh(Ptr<TcpVegas> cong);
 
@@ -190,9 +190,9 @@ TcpVegasTest::GetSsThresh(Ptr<TcpVegas> cong)
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief TCP Vegas TestSuite
+ * @brief TCP Vegas TestSuite
  */
 class TcpVegasTestSuite : public TestSuite
 {

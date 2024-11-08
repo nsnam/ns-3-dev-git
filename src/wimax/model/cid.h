@@ -18,9 +18,9 @@ namespace ns3
 {
 
 /**
- * \ingroup wimax
- * \class Cid
- * \brief Cid class
+ * @ingroup wimax
+ * @class Cid
+ * @brief Cid class
  */
 class Cid
 {
@@ -42,40 +42,40 @@ class Cid
     /**
      * Constructor
      *
-     * \param cid
+     * @param cid
      */
     Cid(uint16_t cid);
     ~Cid();
     /**
-     * \return the identifier of the cid
+     * @return the identifier of the cid
      */
     uint16_t GetIdentifier() const;
     /**
-     * \return true if the cid is a multicast cid, false otherwise
+     * @return true if the cid is a multicast cid, false otherwise
      */
     bool IsMulticast() const;
     /**
-     * \return true if the cid is a broadcast cid, false otherwise
+     * @return true if the cid is a broadcast cid, false otherwise
      */
     bool IsBroadcast() const;
     /**
-     * \return true if the cid is a padding cid, false otherwise
+     * @return true if the cid is a padding cid, false otherwise
      */
     bool IsPadding() const;
     /**
-     * \return true if the cid is an initial ranging cid, false otherwise
+     * @return true if the cid is an initial ranging cid, false otherwise
      */
     bool IsInitialRanging() const;
     /**
-     * \return the broadcast cid
+     * @return the broadcast cid
      */
     static Cid Broadcast();
     /**
-     * \return the padding cid
+     * @return the padding cid
      */
     static Cid Padding();
     /**
-     * \return the initial ranging cid
+     * @return the initial ranging cid
      */
     static Cid InitialRanging();
 

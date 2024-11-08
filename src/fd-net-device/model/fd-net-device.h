@@ -30,14 +30,14 @@ namespace ns3
 {
 
 /**
- * \defgroup fd-net-device File Descriptor Network Device
+ * @defgroup fd-net-device File Descriptor Network Device
  * This section documents the API of the ns-3 fd-net-device module.
  * For a generic functional description, please refer to the ns-3 manual.
  */
 
 /**
- * \ingroup fd-net-device
- * \brief This class performs the actual data reading from the sockets.
+ * @ingroup fd-net-device
+ * @brief This class performs the actual data reading from the sockets.
  */
 class FdNetDeviceFdReader : public FdReader
 {
@@ -46,7 +46,7 @@ class FdNetDeviceFdReader : public FdReader
 
     /**
      * Set size of the read buffer.
-     * \param bufferSize the buffer size
+     * @param bufferSize the buffer size
      */
     void SetBufferSize(uint32_t bufferSize);
 
@@ -59,9 +59,9 @@ class FdNetDeviceFdReader : public FdReader
 class Node;
 
 /**
- * \ingroup fd-net-device
+ * @ingroup fd-net-device
  *
- * \brief a NetDevice to read/write network traffic from/into a file descriptor.
+ * @brief a NetDevice to read/write network traffic from/into a file descriptor.
  *
  * A FdNetDevice object will read and write frames/packets from/to a file descriptor.
  * This file descriptor might be associated to a Linux TAP/TUN device, to a socket
@@ -73,8 +73,8 @@ class FdNetDevice : public NetDevice
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -109,7 +109,7 @@ class FdNetDevice : public NetDevice
     /**
      * Set the link layer encapsulation mode of this device.
      *
-     * \param mode The link layer encapsulation mode of this device.
+     * @param mode The link layer encapsulation mode of this device.
      *
      */
     void SetEncapsulationMode(FdNetDevice::EncapsulationMode mode);
@@ -117,13 +117,13 @@ class FdNetDevice : public NetDevice
     /**
      * Get the link layer encapsulation mode of this device.
      *
-     * \returns The link layer encapsulation mode of this device.
+     * @returns The link layer encapsulation mode of this device.
      */
     FdNetDevice::EncapsulationMode GetEncapsulationMode() const;
 
     /**
      * Set the associated file descriptor.
-     * \param fd the file descriptor
+     * @param fd the file descriptor
      */
     void SetFileDescriptor(int fd);
 
@@ -172,20 +172,20 @@ class FdNetDevice : public NetDevice
 
     /**
      * Set if the NetDevice is able to send Broadcast messages
-     * \param broadcast true if the NetDevice can send Broadcast
+     * @param broadcast true if the NetDevice can send Broadcast
      */
     virtual void SetIsBroadcast(bool broadcast);
     /**
      * Set if the NetDevice is able to send Multicast messages
-     * \param multicast true if the NetDevice can send Multicast
+     * @param multicast true if the NetDevice can send Multicast
      */
     virtual void SetIsMulticast(bool multicast);
 
     /**
      * Write packet data to device.
-     * \param buffer The data.
-     * \param length The data length.
-     * \return The size of data written.
+     * @param buffer The data.
+     * @param length The data length.
+     * @return The size of data written.
      */
     virtual ssize_t Write(uint8_t* buffer, size_t length);
 
@@ -199,27 +199,27 @@ class FdNetDevice : public NetDevice
 
     /**
      * Get the associated file descriptor.
-     * \return the associated file descriptor
+     * @return the associated file descriptor
      */
     int GetFileDescriptor() const;
 
     /**
      * Allocate packet buffer.
-     * \param len the length of the buffer
-     * \return A pointer to the newly allocated buffer.
+     * @param len the length of the buffer
+     * @return A pointer to the newly allocated buffer.
      */
     virtual uint8_t* AllocateBuffer(size_t len);
 
     /**
      * Free the given packet buffer.
-     * \param buf the buffer to free
+     * @param buf the buffer to free
      */
     virtual void FreeBuffer(uint8_t* buf);
 
     /**
      * Callback to invoke when a new frame is received
-     * \param buf a buffer containing the received frame
-     * \param len the length of the frame
+     * @param buf a buffer containing the received frame
+     * @param len the length of the frame
      */
     void ReceiveCallback(uint8_t* buf, ssize_t len);
 
@@ -246,7 +246,7 @@ class FdNetDevice : public NetDevice
 
     /**
      * Create the FdReader object
-     * \return the created FdReader object
+     * @return the created FdReader object
      */
     virtual Ptr<FdReader> DoCreateFdReader();
 
@@ -382,7 +382,7 @@ class FdNetDevice : public NetDevice
      * The trace source fired when packets come into the "top" of the device
      * at the L3/L2 transition, before being queued for transmission.
      *
-     * \see class CallBackTraceSource
+     * @see class CallBackTraceSource
      */
     TracedCallback<Ptr<const Packet>> m_macTxTrace;
 
@@ -390,7 +390,7 @@ class FdNetDevice : public NetDevice
      * The trace source fired when packets coming into the "top" of the device
      * at the L3/L2 transition are dropped before being queued for transmission.
      *
-     * \see class CallBackTraceSource
+     * @see class CallBackTraceSource
      */
     TracedCallback<Ptr<const Packet>> m_macTxDropTrace;
 
@@ -399,7 +399,7 @@ class FdNetDevice : public NetDevice
      * immediately before being forwarded up to higher layers (at the L2/L3
      * transition).  This is a promiscuous trace.
      *
-     * \see class CallBackTraceSource
+     * @see class CallBackTraceSource
      */
     TracedCallback<Ptr<const Packet>> m_macPromiscRxTrace;
 
@@ -408,7 +408,7 @@ class FdNetDevice : public NetDevice
      * immediately before being forwarded up to higher layers (at the L2/L3
      * transition).  This is a non-promiscuous trace.
      *
-     * \see class CallBackTraceSource
+     * @see class CallBackTraceSource
      */
     TracedCallback<Ptr<const Packet>> m_macRxTrace;
 
@@ -417,7 +417,7 @@ class FdNetDevice : public NetDevice
      * but which are dropped before being forwarded up to higher layers (at the
      * L2/L3 transition).
      *
-     * \see class CallBackTraceSource
+     * @see class CallBackTraceSource
      */
     TracedCallback<Ptr<const Packet>> m_macRxDropTrace;
 
@@ -425,16 +425,16 @@ class FdNetDevice : public NetDevice
      * The trace source fired when the phy layer drops a packet as it tries
      * to transmit it.
      *
-     * \todo Remove: this TracedCallback is never invoked.
+     * @todo Remove: this TracedCallback is never invoked.
      *
-     * \see class CallBackTraceSource
+     * @see class CallBackTraceSource
      */
     TracedCallback<Ptr<const Packet>> m_phyTxDropTrace;
 
     /**
      * The trace source fired when the phy layer drops a packet it has received.
      *
-     * \see class CallBackTraceSource
+     * @see class CallBackTraceSource
      */
     TracedCallback<Ptr<const Packet>> m_phyRxDropTrace;
 
@@ -454,7 +454,7 @@ class FdNetDevice : public NetDevice
      * this would correspond to the point at which the packet is dispatched to
      * packet sniffers in netif_receive_skb.
      *
-     * \see class CallBackTraceSource
+     * @see class CallBackTraceSource
      */
     TracedCallback<Ptr<const Packet>> m_snifferTrace;
 
@@ -474,7 +474,7 @@ class FdNetDevice : public NetDevice
      * this would correspond to the point at which the packet is dispatched to
      * packet sniffers in netif_receive_skb.
      *
-     * \see class CallBackTraceSource
+     * @see class CallBackTraceSource
      */
     TracedCallback<Ptr<const Packet>> m_promiscSnifferTrace;
 };

@@ -16,16 +16,16 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("TcpZeroWindowTestSuite");
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief Testing the congestion avoidance increment on TCP ZeroWindow
+ * @brief Testing the congestion avoidance increment on TCP ZeroWindow
  */
 class TcpZeroWindowTest : public TcpGeneralTest
 {
   public:
     /**
-     * \brief Constructor.
-     * \param desc Test description.
+     * @brief Constructor.
+     * @param desc Test description.
      */
     TcpZeroWindowTest(const std::string& desc);
 
@@ -45,7 +45,7 @@ class TcpZeroWindowTest : public TcpGeneralTest
     void ConfigureProperties() override;
 
     /**
-     * \brief Increase the receiver buffer size.
+     * @brief Increase the receiver buffer size.
      */
     void IncreaseBufSize();
 
@@ -236,9 +236,9 @@ TcpZeroWindowTest::ProcessedAck(const Ptr<const TcpSocketState> tcb,
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief TCP ZeroWindow TestSuite
+ * @brief TCP ZeroWindow TestSuite
  */
 class TcpZeroWindowTestSuite : public TestSuite
 {

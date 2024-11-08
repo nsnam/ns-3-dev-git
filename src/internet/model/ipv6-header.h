@@ -16,16 +16,16 @@ namespace ns3
 {
 
 /**
- * \ingroup ipv6
+ * @ingroup ipv6
  *
- * \brief Packet header for IPv6
+ * @brief Packet header for IPv6
  */
 class Ipv6Header : public Header
 {
   public:
     /**
-     * \enum DscpType
-     * \brief DiffServ Code Points
+     * @enum DscpType
+     * @brief DiffServ Code Points
      * Code Points defined in
      * Assured Forwarding (AF) \RFC{2597}
      * Expedited Forwarding (EF) \RFC{2598}
@@ -64,8 +64,8 @@ class Ipv6Header : public Header
     };
 
     /**
-     * \enum NextHeader_e
-     * \brief IPv6 next-header value
+     * @enum NextHeader_e
+     * @brief IPv6 next-header value
      */
     enum NextHeader_e
     {
@@ -87,54 +87,54 @@ class Ipv6Header : public Header
     };
 
     /**
-     * \brief Get the type identifier.
-     * \return type identifier
+     * @brief Get the type identifier.
+     * @return type identifier
      */
     static TypeId GetTypeId();
 
     /**
-     * \brief Return the instance type identifier.
-     * \return instance type ID
+     * @brief Return the instance type identifier.
+     * @return instance type ID
      */
     TypeId GetInstanceTypeId() const override;
 
     /**
-     * \brief Constructor.
+     * @brief Constructor.
      */
     Ipv6Header();
 
     /**
-     * \brief Set the "Traffic class" field.
-     * \param traffic the 8-bit value
+     * @brief Set the "Traffic class" field.
+     * @param traffic the 8-bit value
      */
     void SetTrafficClass(uint8_t traffic);
 
     /**
-     * \brief Get the "Traffic class" field.
-     * \return the traffic value
+     * @brief Get the "Traffic class" field.
+     * @return the traffic value
      */
     uint8_t GetTrafficClass() const;
 
     /**
-     * \brief Set DSCP Field
-     * \param dscp DSCP value
+     * @brief Set DSCP Field
+     * @param dscp DSCP value
      */
     void SetDscp(DscpType dscp);
 
     /**
-     * \returns the DSCP field of this packet.
+     * @returns the DSCP field of this packet.
      */
     DscpType GetDscp() const;
 
     /**
-     * \param dscp the dscp
-     * \returns std::string of DSCPType
+     * @param dscp the dscp
+     * @returns std::string of DSCPType
      */
     std::string DscpTypeToString(DscpType dscp) const;
 
     /**
-     * \enum EcnType
-     * \brief ECN field bits
+     * @enum EcnType
+     * @brief ECN field bits
      */
     enum EcnType
     {
@@ -146,153 +146,153 @@ class Ipv6Header : public Header
     };
 
     /**
-     * \brief Set ECN field bits
-     * \param ecn ECN field bits
+     * @brief Set ECN field bits
+     * @param ecn ECN field bits
      */
     void SetEcn(EcnType ecn);
 
     /**
-     * \return the ECN field bits of this packet.
+     * @return the ECN field bits of this packet.
      */
     EcnType GetEcn() const;
 
     /**
-     * \param ecn the ECNType
-     * \return std::string of ECNType
+     * @param ecn the ECNType
+     * @return std::string of ECNType
      */
     std::string EcnTypeToString(EcnType ecn) const;
 
     /**
-     * \brief Set the "Flow label" field.
-     * \param flow the 20-bit value
+     * @brief Set the "Flow label" field.
+     * @param flow the 20-bit value
      */
     void SetFlowLabel(uint32_t flow);
 
     /**
-     * \brief Get the "Flow label" field.
-     * \return the flow label value
+     * @brief Get the "Flow label" field.
+     * @return the flow label value
      */
     uint32_t GetFlowLabel() const;
 
     /**
-     * \brief Set the "Payload length" field.
-     * \param len the length of the payload in bytes
+     * @brief Set the "Payload length" field.
+     * @param len the length of the payload in bytes
      */
     void SetPayloadLength(uint16_t len);
 
     /**
-     * \brief Get the "Payload length" field.
-     * \return the payload length
+     * @brief Get the "Payload length" field.
+     * @return the payload length
      */
     uint16_t GetPayloadLength() const;
 
     /**
-     * \brief Set the "Next header" field.
-     * \param next the next header number
+     * @brief Set the "Next header" field.
+     * @param next the next header number
      */
     void SetNextHeader(uint8_t next);
 
     /**
-     * \brief Get the next header.
-     * \return the next header number
+     * @brief Get the next header.
+     * @return the next header number
      */
     uint8_t GetNextHeader() const;
 
     /**
-     * \brief Set the "Hop limit" field (TTL).
-     * \param limit the 8-bit value
+     * @brief Set the "Hop limit" field (TTL).
+     * @param limit the 8-bit value
      */
     void SetHopLimit(uint8_t limit);
 
     /**
-     * \brief Get the "Hop limit" field (TTL).
-     * \return the hop limit value
+     * @brief Get the "Hop limit" field (TTL).
+     * @return the hop limit value
      */
     uint8_t GetHopLimit() const;
 
     /**
-     * \brief Set the "Source address" field.
-     * \param src the source address
+     * @brief Set the "Source address" field.
+     * @param src the source address
      */
     void SetSource(Ipv6Address src);
 
     /**
-     * \brief Get the "Source address" field.
-     * \return the source address
+     * @brief Get the "Source address" field.
+     * @return the source address
      */
     Ipv6Address GetSource() const;
 
     /**
-     * \brief Set the "Destination address" field.
-     * \param dst the destination address
+     * @brief Set the "Destination address" field.
+     * @param dst the destination address
      */
     void SetDestination(Ipv6Address dst);
 
     /**
-     * \brief Get the "Destination address" field.
-     * \return the destination address
+     * @brief Get the "Destination address" field.
+     * @return the destination address
      */
     Ipv6Address GetDestination() const;
 
     /**
-     * \brief Print some information about the packet.
-     * \param os output stream
+     * @brief Print some information about the packet.
+     * @param os output stream
      */
     void Print(std::ostream& os) const override;
 
     /**
-     * \brief Get the serialized size of the packet.
-     * \return size
+     * @brief Get the serialized size of the packet.
+     * @return size
      */
     uint32_t GetSerializedSize() const override;
 
     /**
-     * \brief Serialize the packet.
-     * \param start Buffer iterator
+     * @brief Serialize the packet.
+     * @param start Buffer iterator
      */
     void Serialize(Buffer::Iterator start) const override;
 
     /**
-     * \brief Deserialize the packet.
-     * \param start Buffer iterator
-     * \return size of the packet
+     * @brief Deserialize the packet.
+     * @param start Buffer iterator
+     * @return size of the packet
      */
     uint32_t Deserialize(Buffer::Iterator start) override;
 
   private:
     /**
-     * \brief The traffic class.
+     * @brief The traffic class.
      */
     uint32_t m_trafficClass : 8;
 
     /**
-     * \brief The flow label.
-     * \note This is 20-bit value.
+     * @brief The flow label.
+     * @note This is 20-bit value.
      */
     uint32_t m_flowLabel : 20;
 
     /**
-     * \brief The payload length.
+     * @brief The payload length.
      */
     uint16_t m_payloadLength;
 
     /**
-     * \brief The Next header number.
+     * @brief The Next header number.
      */
     uint8_t m_nextHeader;
 
     /**
-     * \brief The Hop limit value.
+     * @brief The Hop limit value.
      */
     uint8_t m_hopLimit;
 
     /**
-     * \brief The source address.
+     * @brief The source address.
      */
     Ipv6Address m_sourceAddress;
 
     /**
-     * \brief The destination address.
+     * @brief The destination address.
      */
     Ipv6Address m_destinationAddress;
 };

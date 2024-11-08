@@ -38,11 +38,11 @@ NS_LOG_COMPONENT_DEFINE("UanHelper");
 /**
  * Ascii trace callback on Phy transmit events.
  *
- * \param os The output stream.
- * \param context The node and device ids.
- * \param packet The transmitted packet.
- * \param txPowerDb The transmission power.
- * \param mode The transmission mode.
+ * @param os The output stream.
+ * @param context The node and device ids.
+ * @param packet The transmitted packet.
+ * @param txPowerDb The transmission power.
+ * @param mode The transmission mode.
  */
 static void
 AsciiPhyTxEvent(std::ostream* os,
@@ -57,11 +57,11 @@ AsciiPhyTxEvent(std::ostream* os,
 /**
  * Ascii trace callback on successful packet reception.
  *
- * \param os The output stream.
- * \param context The node and device ids.
- * \param packet The received packet.
- * \param snr The received signal to noise ratio.
- * \param mode The channel transmission mode.
+ * @param os The output stream.
+ * @param context The node and device ids.
+ * @param packet The received packet.
+ * @param snr The received signal to noise ratio.
+ * @param mode The channel transmission mode.
  */
 static void
 AsciiPhyRxOkEvent(std::ostream* os,

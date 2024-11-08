@@ -35,10 +35,10 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("WifiTxopTest");
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief Test TXOP rules
+ * @brief Test TXOP rules
  *
  * A BSS consisting of an AP and 3 non-AP STAs is considered in this test. Both non-HT (802.11a)
  * and HE devices are tested. Two TXOPs are simulated in this test:
@@ -75,24 +75,24 @@ class WifiTxopTest : public TestCase
 
     /**
      * Constructor
-     * \param params parameters for the Wi-Fi TXOP test
+     * @param params parameters for the Wi-Fi TXOP test
      */
     WifiTxopTest(const Params& params);
 
     /**
      * Function to trace packets received by the server application
-     * \param context the context
-     * \param p the packet
-     * \param addr the address
+     * @param context the context
+     * @param p the packet
+     * @param addr the address
      */
     void L7Receive(std::string context, Ptr<const Packet> p, const Address& addr);
 
     /**
      * Callback invoked when PHY receives a PSDU to transmit
-     * \param context the context
-     * \param psduMap the PSDU map
-     * \param txVector the TX vector
-     * \param txPowerW the tx power in Watts
+     * @param context the context
+     * @param psduMap the PSDU map
+     * @param txVector the TX vector
+     * @param txPowerW the tx power in Watts
      */
     void Transmit(std::string context,
                   WifiConstPsduMap psduMap,
@@ -115,11 +115,11 @@ class WifiTxopTest : public TestCase
     };
 
     /**
-     * \param dir the traffic direction (downlink/uplink)
-     * \param staId the index (starting at 0) of the non-AP STA generating/receiving packets
-     * \param count the number of packets to generate
-     * \param pktSize the size of the packets to generate
-     * \return an application generating the given number packets of the given size from/to the
+     * @param dir the traffic direction (downlink/uplink)
+     * @param staId the index (starting at 0) of the non-AP STA generating/receiving packets
+     * @param count the number of packets to generate
+     * @param pktSize the size of the packets to generate
+     * @return an application generating the given number packets of the given size from/to the
      *         AP to/from the given non-AP STA
      */
     Ptr<PacketSocketClient> GetApplication(TrafficDirection dir,
@@ -1308,10 +1308,10 @@ WifiTxopTest::CheckResults()
 }
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief wifi TXOP Test Suite
+ * @brief wifi TXOP Test Suite
  */
 class WifiTxopTestSuite : public TestSuite
 {

@@ -23,9 +23,9 @@ class SQLiteOutput;
 //------------------------------------------------------------
 //--------------------------------------------
 /**
- * \ingroup dataoutput
- * \class SqliteDataOutput
- * \brief Outputs data in a format compatible with SQLite
+ * @ingroup dataoutput
+ * @class SqliteDataOutput
+ * @brief Outputs data in a format compatible with SQLite
  */
 class SqliteDataOutput : public DataOutputInterface
 {
@@ -35,7 +35,7 @@ class SqliteDataOutput : public DataOutputInterface
 
     /**
      * Register this type.
-     * \return The TypeId.
+     * @return The TypeId.
      */
     static TypeId GetTypeId();
 
@@ -43,17 +43,17 @@ class SqliteDataOutput : public DataOutputInterface
 
   private:
     /**
-     * \ingroup dataoutput
+     * @ingroup dataoutput
      *
-     * \brief Class to generate OMNeT output
+     * @brief Class to generate OMNeT output
      */
     class SqliteOutputCallback : public DataOutputCallback
     {
       public:
         /**
          * Constructor
-         * \param db pointer to the instance this object belongs to
-         * \param run experiment descriptor
+         * @param db pointer to the instance this object belongs to
+         * @param run experiment descriptor
          */
         SqliteOutputCallback(const Ptr<SQLiteOutput>& db, std::string run);
 
@@ -63,52 +63,52 @@ class SqliteDataOutput : public DataOutputInterface
         ~SqliteOutputCallback() override;
 
         /**
-         * \brief Generates data statistics
-         * \param key the SQL key to use
-         * \param variable the variable name
-         * \param statSum the stats to print
+         * @brief Generates data statistics
+         * @param key the SQL key to use
+         * @param variable the variable name
+         * @param statSum the stats to print
          */
         void OutputStatistic(std::string key,
                              std::string variable,
                              const StatisticalSummary* statSum) override;
 
         /**
-         * \brief Generates a single data output
-         * \param key the SQL key to use
-         * \param variable the variable name
-         * \param val the value
+         * @brief Generates a single data output
+         * @param key the SQL key to use
+         * @param variable the variable name
+         * @param val the value
          */
         void OutputSingleton(std::string key, std::string variable, int val) override;
 
         /**
-         * \brief Generates a single data output
-         * \param key the SQL key to use
-         * \param variable the variable name
-         * \param val the value
+         * @brief Generates a single data output
+         * @param key the SQL key to use
+         * @param variable the variable name
+         * @param val the value
          */
         void OutputSingleton(std::string key, std::string variable, uint32_t val) override;
 
         /**
-         * \brief Generates a single data output
-         * \param key the SQL key to use
-         * \param variable the variable name
-         * \param val the value
+         * @brief Generates a single data output
+         * @param key the SQL key to use
+         * @param variable the variable name
+         * @param val the value
          */
         void OutputSingleton(std::string key, std::string variable, double val) override;
 
         /**
-         * \brief Generates a single data output
-         * \param key the SQL key to use
-         * \param variable the variable name
-         * \param val the value
+         * @brief Generates a single data output
+         * @param key the SQL key to use
+         * @param variable the variable name
+         * @param val the value
          */
         void OutputSingleton(std::string key, std::string variable, std::string val) override;
 
         /**
-         * \brief Generates a single data output
-         * \param key the SQL key to use
-         * \param variable the variable name
-         * \param val the value
+         * @brief Generates a single data output
+         * @param key the SQL key to use
+         * @param variable the variable name
+         * @param val the value
          */
         void OutputSingleton(std::string key, std::string variable, Time val) override;
 

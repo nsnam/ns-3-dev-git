@@ -89,22 +89,22 @@ class RoutingExperiment
 
     /**
      * Handles the command-line parameters.
-     * \param argc The argument count.
-     * \param argv The argument vector.
+     * @param argc The argument count.
+     * @param argv The argument vector.
      */
     void CommandSetup(int argc, char** argv);
 
   private:
     /**
      * Setup the receiving socket in a Sink Node.
-     * \param addr The address of the node.
-     * \param node The node pointer.
-     * \return the socket.
+     * @param addr The address of the node.
+     * @param node The node pointer.
+     * @return the socket.
      */
     Ptr<Socket> SetupPacketReceive(Ipv4Address addr, Ptr<Node> node);
     /**
      * Receive a packet.
-     * \param socket The receiving socket.
+     * @param socket The receiving socket.
      */
     void ReceivePacket(Ptr<Socket> socket);
     /**

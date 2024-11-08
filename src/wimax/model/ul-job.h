@@ -32,8 +32,8 @@ enum ReqType
 };
 
 /**
- * \ingroup wimax
- * \brief this class implements a structure to compute the priority of service flows
+ * @ingroup wimax
+ * @brief this class implements a structure to compute the priority of service flows
  */
 class UlJob : public Object
 {
@@ -50,87 +50,87 @@ class UlJob : public Object
     ~UlJob() override;
     /**
      * Get SS record
-     * \returns the SS record
+     * @returns the SS record
      */
     SSRecord* GetSsRecord() const;
     /**
      * Set SS record
-     * \param ssRecord the SS record
+     * @param ssRecord the SS record
      */
     void SetSsRecord(SSRecord* ssRecord);
     /**
      * Get scheduling type
-     * \returns the scheduling type
+     * @returns the scheduling type
      */
     ServiceFlow::SchedulingType GetSchedulingType() const;
     /**
      * Set scheduling type
-     * \param schedulingType the scheduling type
+     * @param schedulingType the scheduling type
      */
     void SetSchedulingType(ServiceFlow::SchedulingType schedulingType);
     /**
      * Get service flow
-     * \returns the service flow
+     * @returns the service flow
      */
     ServiceFlow* GetServiceFlow() const;
     /**
      * Set service flow
-     * \param serviceFlow
+     * @param serviceFlow
      */
     void SetServiceFlow(ServiceFlow* serviceFlow);
 
     /**
      * Get type
-     * \returns the request type
+     * @returns the request type
      */
     ReqType GetType() const;
     /**
      * Set type
-     * \param type the type
+     * @param type the type
      */
     void SetType(ReqType type);
 
     /**
      * Get release time
-     * \returns the release time
+     * @returns the release time
      */
     Time GetReleaseTime() const;
     /**
      * Set release time
-     * \param releaseTime the release time
+     * @param releaseTime the release time
      */
     void SetReleaseTime(Time releaseTime);
 
     /**
      * Get period
-     * \returns the period time
+     * @returns the period time
      */
     Time GetPeriod() const;
     /**
      * Set period
-     * \param period the period
+     * @param period the period
      */
     void SetPeriod(Time period);
 
     /**
      * Get deadline
-     * \returns the deadline time
+     * @returns the deadline time
      */
     Time GetDeadline() const;
     /**
      * Set deadline
-     * \param deadline the dead line
+     * @param deadline the dead line
      */
     void SetDeadline(Time deadline);
 
     /**
      * Get size
-     * \returns the size
+     * @returns the size
      */
     uint32_t GetSize() const;
     /**
      * Set size
-     * \param size the size
+     * @param size the size
      */
     void SetSize(uint32_t size);
 
@@ -156,30 +156,30 @@ class UlJob : public Object
 class PriorityUlJob : public Object
 {
     /**
-     * \brief this class implements an auxiliary struct to compute the priority of the rtPS and
+     * @brief this class implements an auxiliary struct to compute the priority of the rtPS and
      * nrtPS in the intermediate queue
      */
   public:
     PriorityUlJob();
     /**
      * Get priority
-     * \returns the priority
+     * @returns the priority
      */
     int GetPriority() const;
     /**
      * Set priority
-     * \param priority the priority
+     * @param priority the priority
      */
     void SetPriority(int priority);
 
     /**
      * Get UL job function
-     * \returns the UL job
+     * @returns the UL job
      */
     Ptr<UlJob> GetUlJob() const;
     /**
      * Set UL job
-     * \param job the UL job
+     * @param job the UL job
      */
     void SetUlJob(Ptr<UlJob> job);
 
@@ -192,10 +192,10 @@ class PriorityUlJob : public Object
 struct SortProcess
 {
     /**
-     * \brief comparison operator
-     * \param left left side input
-     * \param right right side input
-     * \returns true if left is logically less then right for given comparison
+     * @brief comparison operator
+     * @param left left side input
+     * @param right right side input
+     * @returns true if left is logically less then right for given comparison
      */
     bool operator()(PriorityUlJob& left, PriorityUlJob& right) const
     {
@@ -222,10 +222,10 @@ struct SortProcess
 struct SortProcessPtr
 {
     /**
-     * \brief comparison operator
-     * \param left left side input
-     * \param right right side input
-     * \returns true if left is logically less then right for given comparison
+     * @brief comparison operator
+     * @param left left side input
+     * @param right right side input
+     * @returns true if left is logically less then right for given comparison
      */
     bool operator()(Ptr<PriorityUlJob>& left, Ptr<PriorityUlJob>& right) const
     {

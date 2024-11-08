@@ -51,15 +51,15 @@ NS_OBJECT_ENSURE_REGISTERED(RoutingProtocol);
 const uint32_t RoutingProtocol::AODV_PORT = 654;
 
 /**
- * \ingroup aodv
- * \brief Tag used by AODV implementation
+ * @ingroup aodv
+ * @brief Tag used by AODV implementation
  */
 class DeferredRouteOutputTag : public Tag
 {
   public:
     /**
-     * \brief Constructor
-     * \param o the output interface
+     * @brief Constructor
+     * @param o the output interface
      */
     DeferredRouteOutputTag(int32_t o = -1)
         : Tag(),
@@ -68,8 +68,8 @@ class DeferredRouteOutputTag : public Tag
     }
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId()
     {
@@ -86,8 +86,8 @@ class DeferredRouteOutputTag : public Tag
     }
 
     /**
-     * \brief Get the output interface
-     * \return the output interface
+     * @brief Get the output interface
+     * @return the output interface
      */
     int32_t GetInterface() const
     {
@@ -95,8 +95,8 @@ class DeferredRouteOutputTag : public Tag
     }
 
     /**
-     * \brief Set the output interface
-     * \param oif the output interface
+     * @brief Set the output interface
+     * @param oif the output interface
      */
     void SetInterface(int32_t oif)
     {

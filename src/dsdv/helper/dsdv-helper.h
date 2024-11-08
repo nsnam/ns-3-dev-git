@@ -29,8 +29,8 @@
 namespace ns3
 {
 /**
- * \ingroup dsdv
- * \brief Helper class that adds DSDV routing to nodes.
+ * @ingroup dsdv
+ * @brief Helper class that adds DSDV routing to nodes.
  */
 class DsdvHelper : public Ipv4RoutingHelper
 {
@@ -38,7 +38,7 @@ class DsdvHelper : public Ipv4RoutingHelper
     DsdvHelper();
     ~DsdvHelper() override;
     /**
-     * \returns pointer to clone of this DsdvHelper
+     * @returns pointer to clone of this DsdvHelper
      *
      * This method is mainly for internal use by the other helpers;
      * clients are expected to free the dynamic memory allocated by this method
@@ -46,16 +46,16 @@ class DsdvHelper : public Ipv4RoutingHelper
     DsdvHelper* Copy() const override;
 
     /**
-     * \param node the node on which the routing protocol will run
-     * \returns a newly-created routing protocol
+     * @param node the node on which the routing protocol will run
+     * @returns a newly-created routing protocol
      *
      * This method will be called by ns3::InternetStackHelper::Install
      *
      */
     Ptr<Ipv4RoutingProtocol> Create(Ptr<Node> node) const override;
     /**
-     * \param name the name of the attribute to set
-     * \param value the value of the attribute to set.
+     * @param name the name of the attribute to set
+     * @param value the value of the attribute to set.
      *
      * This method controls the attributes of ns3::dsdv::RoutingProtocol
      */

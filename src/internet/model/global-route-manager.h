@@ -16,7 +16,7 @@ namespace ns3
 {
 
 /**
- * \ingroup globalrouting
+ * @ingroup globalrouting
  *
  * @brief A global global router
  *

@@ -24,8 +24,8 @@ namespace ns3
 class Packet;
 
 /**
- * \ingroup csma
- * \brief build a set of CsmaNetDevice objects
+ * @ingroup csma
+ * @brief build a set of CsmaNetDevice objects
  *
  * Normally we eschew multiple inheritance, however, the classes
  * PcapUserHelperForDevice and AsciiTraceUserHelperForDevice are
@@ -46,9 +46,9 @@ class CsmaHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevice
     }
 
     /**
-     * \tparam Ts \deduced Argument types
-     * \param type the type of queue
-     * \param [in] args Name and AttributeValue pairs to set.
+     * @tparam Ts \deduced Argument types
+     * @param type the type of queue
+     * @param [in] args Name and AttributeValue pairs to set.
      *
      * Set the type of queue to create and associated to each
      * CsmaNetDevice created through CsmaHelper::Install.
@@ -57,8 +57,8 @@ class CsmaHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevice
     void SetQueue(std::string type, Ts&&... args);
 
     /**
-     * \param n1 the name of the attribute to set
-     * \param v1 the value of the attribute to set
+     * @param n1 the name of the attribute to set
+     * @param v1 the value of the attribute to set
      *
      * Set these attributes on each ns3::CsmaNetDevice created
      * by CsmaHelper::Install
@@ -66,8 +66,8 @@ class CsmaHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevice
     void SetDeviceAttribute(std::string n1, const AttributeValue& v1);
 
     /**
-     * \param n1 the name of the attribute to set
-     * \param v1 the value of the attribute to set
+     * @param n1 the name of the attribute to set
+     * @param v1 the value of the attribute to set
      *
      * Set these attributes on each ns3::CsmaChannel created
      * by CsmaHelper::Install
@@ -90,8 +90,8 @@ class CsmaHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevice
      * configured by CsmaHelper::SetDeviceAttribute and then adds the device
      * to the node and attaches the channel to the device.
      *
-     * \param node The node to install the device in
-     * \returns A container holding the added net device.
+     * @param node The node to install the device in
+     * @returns A container holding the added net device.
      */
     NetDeviceContainer Install(Ptr<Node> node) const;
 
@@ -101,8 +101,8 @@ class CsmaHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevice
      * configured by CsmaHelper::SetDeviceAttribute and then adds the device
      * to the node and attaches the channel to the device.
      *
-     * \param name The name of the node to install the device in
-     * \returns A container holding the added net device.
+     * @param name The name of the node to install the device in
+     * @returns A container holding the added net device.
      */
     NetDeviceContainer Install(std::string name) const;
 
@@ -111,9 +111,9 @@ class CsmaHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevice
      * CsmaHelper::SetDeviceAttribute and then adds the device to the node and
      * attaches the provided channel to the device.
      *
-     * \param node The node to install the device in
-     * \param channel The channel to attach to the device.
-     * \returns A container holding the added net device.
+     * @param node The node to install the device in
+     * @param channel The channel to attach to the device.
+     * @returns A container holding the added net device.
      */
     NetDeviceContainer Install(Ptr<Node> node, Ptr<CsmaChannel> channel) const;
 
@@ -122,9 +122,9 @@ class CsmaHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevice
      * CsmaHelper::SetDeviceAttribute and then adds the device to the node and
      * attaches the provided channel to the device.
      *
-     * \param node The node to install the device in
-     * \param channelName The name of the channel to attach to the device.
-     * \returns A container holding the added net device.
+     * @param node The node to install the device in
+     * @param channelName The name of the channel to attach to the device.
+     * @returns A container holding the added net device.
      */
     NetDeviceContainer Install(Ptr<Node> node, std::string channelName) const;
 
@@ -133,9 +133,9 @@ class CsmaHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevice
      * CsmaHelper::SetDeviceAttribute and then adds the device to the node and
      * attaches the provided channel to the device.
      *
-     * \param nodeName The name of the node to install the device in
-     * \param channel The channel to attach to the device.
-     * \returns A container holding the added net device.
+     * @param nodeName The name of the node to install the device in
+     * @param channel The channel to attach to the device.
+     * @returns A container holding the added net device.
      */
     NetDeviceContainer Install(std::string nodeName, Ptr<CsmaChannel> channel) const;
 
@@ -144,9 +144,9 @@ class CsmaHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevice
      * CsmaHelper::SetDeviceAttribute and then adds the device to the node and
      * attaches the provided channel to the device.
      *
-     * \param nodeName The name of the node to install the device in
-     * \param channelName The name of the channel to attach to the device.
-     * \returns A container holding the added net device.
+     * @param nodeName The name of the node to install the device in
+     * @param channelName The name of the channel to attach to the device.
+     * @returns A container holding the added net device.
      */
     NetDeviceContainer Install(std::string nodeName, std::string channelName) const;
 
@@ -157,8 +157,8 @@ class CsmaHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevice
      * configured by CsmaHelper::SetDeviceAttribute); adds the device to the
      * node; and attaches the channel to the device.
      *
-     * \param c The NodeContainer holding the nodes to be changed.
-     * \returns A container holding the added net devices.
+     * @param c The NodeContainer holding the nodes to be changed.
+     * @returns A container holding the added net devices.
      */
     NetDeviceContainer Install(const NodeContainer& c) const;
 
@@ -168,9 +168,9 @@ class CsmaHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevice
      * CsmaHelper::SetDeviceAttribute); adds the device to the node; and attaches
      * the provided channel to the device.
      *
-     * \param c The NodeContainer holding the nodes to be changed.
-     * \param channel The channel to attach to the devices.
-     * \returns A container holding the added net devices.
+     * @param c The NodeContainer holding the nodes to be changed.
+     * @param channel The channel to attach to the devices.
+     * @returns A container holding the added net devices.
      */
     NetDeviceContainer Install(const NodeContainer& c, Ptr<CsmaChannel> channel) const;
 
@@ -180,9 +180,9 @@ class CsmaHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevice
      * CsmaHelper::SetDeviceAttribute); adds the device to the node; and attaches
      * the provided channel to the device.
      *
-     * \param c The NodeContainer holding the nodes to be changed.
-     * \param channelName The name of the channel to attach to the devices.
-     * \returns A container holding the added net devices.
+     * @param c The NodeContainer holding the nodes to be changed.
+     * @param channelName The name of the channel to attach to the devices.
+     * @returns A container holding the added net devices.
      */
     NetDeviceContainer Install(const NodeContainer& c, std::string channelName) const;
 
@@ -192,10 +192,10 @@ class CsmaHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevice
      * have been assigned. The Install() method should have previously been
      * called by the user.
      *
-     * \param c NetDeviceContainer of the set of net devices for which the
+     * @param c NetDeviceContainer of the set of net devices for which the
      *          CsmaNetDevice should be modified to use a fixed stream
-     * \param stream first stream index to use
-     * \return the number of stream indices assigned by this helper
+     * @param stream first stream index to use
+     * @return the number of stream indices assigned by this helper
      */
     int64_t AssignStreams(NetDeviceContainer c, int64_t stream);
 
@@ -205,22 +205,22 @@ class CsmaHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevice
      * CsmaHelper::SetDeviceAttribute and then adds the device to the node and
      * attaches the provided channel to the device.
      *
-     * \param node The node to install the device in
-     * \param channel The channel to attach to the device.
-     * \returns A container holding the added net device.
+     * @param node The node to install the device in
+     * @param channel The channel to attach to the device.
+     * @returns A container holding the added net device.
      */
     Ptr<NetDevice> InstallPriv(Ptr<Node> node, Ptr<CsmaChannel> channel) const;
 
     /**
-     * \brief Enable pcap output on the indicated net device.
+     * @brief Enable pcap output on the indicated net device.
      *
      * NetDevice-specific implementation mechanism for hooking the trace and
      * writing to the trace file.
      *
-     * \param prefix Filename prefix to use for pcap files.
-     * \param nd Net device for which you want to enable tracing.
-     * \param promiscuous If true capture all possible packets available at the device.
-     * \param explicitFilename Treat the prefix as an explicit filename if true
+     * @param prefix Filename prefix to use for pcap files.
+     * @param nd Net device for which you want to enable tracing.
+     * @param promiscuous If true capture all possible packets available at the device.
+     * @param explicitFilename Treat the prefix as an explicit filename if true
      */
     void EnablePcapInternal(std::string prefix,
                             Ptr<NetDevice> nd,
@@ -228,15 +228,15 @@ class CsmaHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevice
                             bool explicitFilename) override;
 
     /**
-     * \brief Enable ascii trace output on the indicated net device.
+     * @brief Enable ascii trace output on the indicated net device.
      *
      * NetDevice-specific implementation mechanism for hooking the trace and
      * writing to the trace file.
      *
-     * \param stream The output stream object to use when logging ascii traces.
-     * \param prefix Filename prefix to use for ascii trace files.
-     * \param nd Net device for which you want to enable tracing.
-     * \param explicitFilename Treat the prefix as an explicit filename if true
+     * @param stream The output stream object to use when logging ascii traces.
+     * @param prefix Filename prefix to use for ascii trace files.
+     * @param nd Net device for which you want to enable tracing.
+     * @param explicitFilename Treat the prefix as an explicit filename if true
      */
     void EnableAsciiInternal(Ptr<OutputStreamWrapper> stream,
                              std::string prefix,

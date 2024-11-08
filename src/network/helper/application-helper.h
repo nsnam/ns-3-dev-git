@@ -22,7 +22,7 @@ namespace ns3
 {
 
 /**
- * \brief A helper to make it easier to instantiate an application on a set of nodes.
+ * @brief A helper to make it easier to instantiate an application on a set of nodes.
  */
 class ApplicationHelper
 {

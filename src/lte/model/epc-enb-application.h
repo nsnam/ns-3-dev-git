@@ -31,7 +31,7 @@ class EpcEnbS1SapUser;
 class EpcEnbS1SapProvider;
 
 /**
- * \ingroup lte
+ * @ingroup lte
  *
  * This application is installed inside eNBs and provides the bridge functionality for user data
  * plane packets between the radio interface and the S1-U interface.
@@ -45,8 +45,8 @@ class EpcEnbApplication : public Application
 
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -57,21 +57,21 @@ class EpcEnbApplication : public Application
     /**
      * Constructor
      *
-     * \param lteSocket the socket to be used to send/receive IPv4 packets to/from the
+     * @param lteSocket the socket to be used to send/receive IPv4 packets to/from the
      * LTE radio interface
-     * \param lteSocket6 the socket to be used to send/receive IPv6 packets to/from the
+     * @param lteSocket6 the socket to be used to send/receive IPv6 packets to/from the
      * LTE radio interface
-     * \param cellId the identifier of the eNB
+     * @param cellId the identifier of the eNB
      */
     EpcEnbApplication(Ptr<Socket> lteSocket, Ptr<Socket> lteSocket6, uint16_t cellId);
 
     /**
      * Add a S1-U interface to the eNB
      *
-     * \param s1uSocket the socket to be used to send/receive packets to/from the S1-U interface
+     * @param s1uSocket the socket to be used to send/receive packets to/from the S1-U interface
      * connected with the SGW
-     * \param enbS1uAddress the IPv4 address of the S1-U interface of this eNB
-     * \param sgwS1uAddress the IPv4 address at which this eNB will be able to reach its SGW for
+     * @param enbS1uAddress the IPv4 address of the S1-U interface of this eNB
+     * @param sgwS1uAddress the IPv4 address at which this eNB will be able to reach its SGW for
      * S1-U communications
      */
     void AddS1Interface(Ptr<Socket> s1uSocket,
@@ -87,26 +87,26 @@ class EpcEnbApplication : public Application
     /**
      * Set the S1 SAP User
      *
-     * \param s the S1 SAP User
+     * @param s the S1 SAP User
      */
     void SetS1SapUser(EpcEnbS1SapUser* s);
 
     /**
      *
-     * \return the S1 SAP Provider
+     * @return the S1 SAP Provider
      */
     EpcEnbS1SapProvider* GetS1SapProvider();
 
     /**
      * Set the MME side of the S1-AP SAP
      *
-     * \param s the MME side of the S1-AP SAP
+     * @param s the MME side of the S1-AP SAP
      */
     void SetS1apSapMme(EpcS1apSapMme* s);
 
     /**
      *
-     * \return the ENB side of the S1-AP SAP
+     * @return the ENB side of the S1-AP SAP
      */
     EpcS1apSapEnb* GetS1apSapEnb();
 
@@ -114,7 +114,7 @@ class EpcEnbApplication : public Application
      * Method to be assigned to the recv callback of the LTE socket. It is called when the eNB
      * receives a data packet from the radio interface that is to be forwarded to the SGW.
      *
-     * \param socket pointer to the LTE socket
+     * @param socket pointer to the LTE socket
      */
     void RecvFromLteSocket(Ptr<Socket> socket);
 
@@ -122,14 +122,14 @@ class EpcEnbApplication : public Application
      * Method to be assigned to the recv callback of the S1-U socket. It is called when the eNB
      * receives a data packet from the SGW that is to be forwarded to the UE.
      *
-     * \param socket pointer to the S1-U socket
+     * @param socket pointer to the S1-U socket
      */
     void RecvFromS1uSocket(Ptr<Socket> socket);
 
     /**
      * TracedCallback signature for data Packet reception event.
      *
-     * \param [in] packet The data packet sent from the internet.
+     * @param [in] packet The data packet sent from the internet.
      */
     typedef void (*RxTracedCallback)(Ptr<Packet> packet);
 
@@ -146,25 +146,25 @@ class EpcEnbApplication : public Application
         /**
          * Constructor
          *
-         * \param a RNTI
-         * \param b bid
+         * @param a RNTI
+         * @param b bid
          */
         EpsFlowId_t(const uint16_t a, const uint8_t b);
 
         /**
          * Comparison operator
          *
-         * \param a first application
-         * \param b second application
-         * \returns true is the applications are "equal"
+         * @param a first application
+         * @param b second application
+         * @returns true is the applications are "equal"
          */
         friend bool operator==(const EpsFlowId_t& a, const EpsFlowId_t& b);
         /**
          * Less than operator
          *
-         * \param a first application
-         * \param b second application
-         * \returns true is the applications are "equal"
+         * @param a first application
+         * @param b second application
+         * @returns true is the applications are "equal"
          */
         friend bool operator<(const EpsFlowId_t& a, const EpsFlowId_t& b);
     };
@@ -173,27 +173,27 @@ class EpcEnbApplication : public Application
     // ENB S1 SAP provider methods
     /**
      * Initial UE message function
-     * \param imsi the IMSI
-     * \param rnti the RNTI
+     * @param imsi the IMSI
+     * @param rnti the RNTI
      */
     void DoInitialUeMessage(uint64_t imsi, uint16_t rnti);
     /**
      * Path switch request function
-     * \param params PathSwitchRequestParameters
+     * @param params PathSwitchRequestParameters
      */
     void DoPathSwitchRequest(EpcEnbS1SapProvider::PathSwitchRequestParameters params);
     /**
      * UE Context Release function
-     * \param rnti the RNTI
+     * @param rnti the RNTI
      */
     void DoUeContextRelease(uint16_t rnti);
 
     // S1-AP SAP ENB methods
     /**
      * Initial Context Setup Request
-     * \param mmeUeS1Id the MME UE S1 ID
-     * \param enbUeS1Id the ENB UE S1 ID
-     * \param erabToBeSetupList the ERAB setup list
+     * @param mmeUeS1Id the MME UE S1 ID
+     * @param enbUeS1Id the ENB UE S1 ID
+     * @param erabToBeSetupList the ERAB setup list
      */
     void DoInitialContextSetupRequest(
         uint64_t mmeUeS1Id,
@@ -201,10 +201,10 @@ class EpcEnbApplication : public Application
         std::list<EpcS1apSapEnb::ErabToBeSetupItem> erabToBeSetupList);
     /**
      * Path Switch Request Acknowledge
-     * \param mmeUeS1Id the MME UE S1 ID
-     * \param enbUeS1Id the ENB UE S1 ID
-     * \param cgi the CGI
-     * \param erabToBeSwitchedInUplinkList the ERAB switched in uplink list
+     * @param mmeUeS1Id the MME UE S1 ID
+     * @param enbUeS1Id the ENB UE S1 ID
+     * @param cgi the CGI
+     * @param erabToBeSwitchedInUplinkList the ERAB switched in uplink list
      */
     void DoPathSwitchRequestAcknowledge(
         uint64_t enbUeS1Id,
@@ -213,37 +213,37 @@ class EpcEnbApplication : public Application
         std::list<EpcS1apSapEnb::ErabSwitchedInUplinkItem> erabToBeSwitchedInUplinkList);
 
     /**
-     * \brief This function accepts bearer id corresponding to a particular UE and schedules
+     * @brief This function accepts bearer id corresponding to a particular UE and schedules
      * indication of bearer release towards MME
-     * \param imsi maps to mmeUeS1Id
-     * \param rnti maps to enbUeS1Id
-     * \param bearerId Bearer Identity which is to be de-activated
+     * @param imsi maps to mmeUeS1Id
+     * @param rnti maps to enbUeS1Id
+     * @param bearerId Bearer Identity which is to be de-activated
      */
     void DoReleaseIndication(uint64_t imsi, uint16_t rnti, uint8_t bearerId);
 
     /**
      * Send a packet to the UE via the LTE radio interface of the eNB
      *
-     * \param packet t
-     * \param rnti maps to enbUeS1Id
-     * \param bid the EPS Bearer Identifier
+     * @param packet t
+     * @param rnti maps to enbUeS1Id
+     * @param bid the EPS Bearer Identifier
      */
     void SendToLteSocket(Ptr<Packet> packet, uint16_t rnti, uint8_t bid);
 
     /**
      * Send a packet to the SGW via the S1-U interface
      *
-     * \param packet packet to be sent
-     * \param teid the Tunnel Endpoint Identifier
+     * @param packet packet to be sent
+     * @param teid the Tunnel Endpoint Identifier
      */
     void SendToS1uSocket(Ptr<Packet> packet, uint32_t teid);
 
     /**
      * internal method used for the actual setup of the S1 Bearer
      *
-     * \param teid the Tunnel Endpoint Identifier
-     * \param rnti maps to enbUeS1Id
-     * \param bid the S1-U Bearer Identifier
+     * @param teid the Tunnel Endpoint Identifier
+     * @param rnti maps to enbUeS1Id
+     * @param bid the S1-U Bearer Identifier
      */
     void SetupS1Bearer(uint32_t teid, uint16_t rnti, uint8_t bid);
 
@@ -320,12 +320,12 @@ class EpcEnbApplication : public Application
     uint16_t m_cellId; ///< cell ID
 
     /**
-     * \brief Callback to trace RX (reception) data packets from LTE Socket.
+     * @brief Callback to trace RX (reception) data packets from LTE Socket.
      */
     TracedCallback<Ptr<Packet>> m_rxLteSocketPktTrace;
 
     /**
-     * \brief Callback to trace RX (reception) data packets from S1-U Socket.
+     * @brief Callback to trace RX (reception) data packets from S1-U Socket.
      */
     TracedCallback<Ptr<Packet>> m_rxS1uSocketPktTrace;
 };

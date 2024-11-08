@@ -9,8 +9,8 @@
 #define SINGLETON_H
 
 /**
- * \file
- * \ingroup singleton
+ * @file
+ * @ingroup singleton
  * ns3::Singleton declaration and template implementation.
  */
 
@@ -18,15 +18,15 @@ namespace ns3
 {
 
 /**
- * \ingroup core
- * \defgroup singleton Singleton
+ * @ingroup core
+ * @defgroup singleton Singleton
  *
  * Template class implementing the Singleton design pattern.
  */
 
 /**
- * \ingroup singleton
- * \brief A template singleton
+ * @ingroup singleton
+ * @brief A template singleton
  *
  * This template class can be used to implement the singleton pattern.
  * The underlying object will be destroyed automatically when the process
@@ -36,16 +36,16 @@ namespace ns3
  * not the process, see SimulationSingleton.
  *
  * To force your `class ExampleS` to be a singleton, inherit from Singleton:
- * \code
+ * @code
  *   class ExampleS : public Singleton<ExampleS> { ... };
- * \endcode
+ * @endcode
  *
  * Then, to reach the singleton instance, just do
- * \code
+ * @code
  *   ExampleS::Get ()->...;
- * \endcode
+ * @endcode
  *
- * \note
+ * @note
  * If you call Get() again after the object has
  * been destroyed, the object will be re-created which will result in a
  * memory leak as reported by most memory leak checkers. It is up to the
@@ -66,7 +66,7 @@ class Singleton
      * The instance will be automatically deleted when
      * the process exits.
      *
-     * \return A pointer to the singleton instance.
+     * @return A pointer to the singleton instance.
      */
     static T* Get();
 

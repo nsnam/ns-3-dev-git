@@ -36,10 +36,10 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("WifiMacOfdmaTestSuite");
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief Dummy Multi User Scheduler used to test OFDMA ack sequences
+ * @brief Dummy Multi User Scheduler used to test OFDMA ack sequences
  *
  * This Multi User Scheduler returns SU_TX until the simulation time reaches 1.5 seconds
  * (when all BA agreements have been established). Afterwards, it cycles through UL_MU_TX
@@ -51,8 +51,8 @@ class TestMultiUserScheduler : public MultiUserScheduler
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     TestMultiUserScheduler();
@@ -355,7 +355,7 @@ TestMultiUserScheduler::ComputeUlMuInfo()
 }
 
 /**
- * \ingroup wifi-test
+ * @ingroup wifi-test
  * The scenarios
  */
 enum class WifiOfdmaScenario : uint8_t
@@ -366,10 +366,10 @@ enum class WifiOfdmaScenario : uint8_t
 };
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief Test OFDMA acknowledgment sequences
+ * @brief Test OFDMA acknowledgment sequences
  *
  * Run this test with:
  *
@@ -415,30 +415,30 @@ class OfdmaAckSequenceTest : public TestCase
     /**
      * Constructor
      *
-     * \param params parameters for the OFDMA acknowledgment sequences test
+     * @param params parameters for the OFDMA acknowledgment sequences test
      */
     OfdmaAckSequenceTest(const Params& params);
     ~OfdmaAckSequenceTest() override;
 
     /**
      * Function to trace packets received by the server application
-     * \param context the context
-     * \param p the packet
-     * \param addr the address
+     * @param context the context
+     * @param p the packet
+     * @param addr the address
      */
     void L7Receive(std::string context, Ptr<const Packet> p, const Address& addr);
     /**
      * Function to trace CW value used by the given station after the MU exchange
-     * \param staIndex the index of the given station
-     * \param cw the current Contention Window value
+     * @param staIndex the index of the given station
+     * @param cw the current Contention Window value
      */
     void TraceCw(uint32_t staIndex, uint32_t cw, uint8_t /* linkId */);
     /**
      * Callback invoked when FrameExchangeManager passes PSDUs to the PHY
-     * \param context the context
-     * \param psduMap the PSDU map
-     * \param txVector the TX vector
-     * \param txPowerW the tx power in Watts
+     * @param context the context
+     * @param psduMap the PSDU map
+     * @param txVector the TX vector
+     * @param txPowerW the tx power in Watts
      */
     void Transmit(std::string context,
                   WifiConstPsduMap psduMap,
@@ -446,9 +446,9 @@ class OfdmaAckSequenceTest : public TestCase
                   double txPowerW);
     /**
      * Check correctness of transmitted frames
-     * \param sifs the SIFS duration
-     * \param slotTime a slot duration
-     * \param aifsn the AIFSN
+     * @param sifs the SIFS duration
+     * @param slotTime a slot duration
+     * @param aifsn the AIFSN
      */
     void CheckResults(Time sifs, Time slotTime, uint8_t aifsn);
 
@@ -2336,10 +2336,10 @@ OfdmaAckSequenceTest::DoRun()
 }
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief wifi MAC OFDMA Test Suite
+ * @brief wifi MAC OFDMA Test Suite
  */
 class WifiMacOfdmaTestSuite : public TestSuite
 {

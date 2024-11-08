@@ -37,41 +37,41 @@ class PacketProbe : public Probe
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     PacketProbe();
     ~PacketProbe() override;
 
     /**
-     * \brief Set a probe value
+     * @brief Set a probe value
      *
-     * \param packet set the traced packet equal to this
+     * @param packet set the traced packet equal to this
      */
     void SetValue(Ptr<const Packet> packet);
 
     /**
-     * \brief Set a probe value by its name in the Config system
+     * @brief Set a probe value by its name in the Config system
      *
-     * \param path config path to access the probe
-     * \param packet set the traced packet equal to this
+     * @param path config path to access the probe
+     * @param packet set the traced packet equal to this
      */
     static void SetValueByPath(std::string path, Ptr<const Packet> packet);
 
     /**
-     * \brief connect to a trace source attribute provided by a given object
+     * @brief connect to a trace source attribute provided by a given object
      *
-     * \param traceSource the name of the attribute TraceSource to connect to
-     * \param obj ns3::Object to connect to
-     * \return true if the trace source was successfully connected
+     * @param traceSource the name of the attribute TraceSource to connect to
+     * @param obj ns3::Object to connect to
+     * @return true if the trace source was successfully connected
      */
     bool ConnectByObject(std::string traceSource, Ptr<Object> obj) override;
 
     /**
-     * \brief connect to a trace source provided by a config path
+     * @brief connect to a trace source provided by a config path
      *
-     * \param path Config path to bind to
+     * @param path Config path to bind to
      *
      * Note, if an invalid path is provided, the probe will not be connected
      * to anything.
@@ -80,10 +80,10 @@ class PacketProbe : public Probe
 
   private:
     /**
-     * \brief Method to connect to an underlying ns3::TraceSource with
+     * @brief Method to connect to an underlying ns3::TraceSource with
      * arguments of type Ptr<const Packet>
      *
-     * \param packet the traced packet
+     * @param packet the traced packet
      */
     void TraceSink(Ptr<const Packet> packet);
 

@@ -87,7 +87,7 @@ LteRlcAmE2eTestSuite::LteRlcAmE2eTestSuite()
 }
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  * Static variable for test initialization
  */
 static LteRlcAmE2eTestSuite lteRlcAmE2eTestSuite;

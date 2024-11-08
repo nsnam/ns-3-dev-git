@@ -87,8 +87,8 @@ NS_LOG_COMPONENT_DEFINE("WifiSimpleInterference");
 /**
  * Print a packer that has been received.
  *
- * \param socket The receiving socket.
- * \return a string with the packet details.
+ * @param socket The receiving socket.
+ * @return a string with the packet details.
  */
 static inline std::string
 PrintReceivedPacket(Ptr<Socket> socket)
@@ -111,7 +111,7 @@ PrintReceivedPacket(Ptr<Socket> socket)
 /**
  * Function called when a packet is received.
  *
- * \param socket The receiving socket.
+ * @param socket The receiving socket.
  */
 static void
 ReceivePacket(Ptr<Socket> socket)
@@ -122,10 +122,10 @@ ReceivePacket(Ptr<Socket> socket)
 /**
  * Generate traffic
  *
- * \param socket The seding socket.
- * \param pktSize The packet size.
- * \param pktCount The packet counter.
- * \param pktInterval The interval between two packets.
+ * @param socket The seding socket.
+ * @param pktSize The packet size.
+ * @param pktCount The packet counter.
+ * @param pktInterval The interval between two packets.
  */
 static void
 GenerateTraffic(Ptr<Socket> socket, uint32_t pktSize, uint32_t pktCount, Time pktInterval)

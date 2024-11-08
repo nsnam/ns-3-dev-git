@@ -21,21 +21,21 @@ namespace ns3
 {
 
 /**
- * \ingroup network
- * \defgroup datarate Data Rate
+ * @ingroup network
+ * @defgroup datarate Data Rate
  */
 /**
- * \ingroup datarate
- * \brief Class for representing data rates
+ * @ingroup datarate
+ * @brief Class for representing data rates
  *
  * Allows for natural and familiar use of data rates.  Allows construction
  * from strings, natural multiplication e.g.:
- * \code
+ * @code
  *   DataRate x("56kbps");
  *   double nBits = x*ns3::Seconds (19.2);
  *   uint32_t nBytes = 20;
  *   Time txtime = x.CalculateBytesTxTime (nBytes);
- * \endcode
+ * @endcode
  * This class also supports the regular comparison operators \c <, \c >,
  * \c <=, \c >=, \c ==, and \c !=
  *
@@ -72,23 +72,23 @@ namespace ns3
  * * "8Kib/s" = 1 KiB/s = 8192 bits/s
  * * "1kB/s" = 8000 bits/s
  *
- * \see attribute_DataRate
+ * @see attribute_DataRate
  */
 class DataRate
 {
   public:
     DataRate();
     /**
-     * \brief Integer constructor
+     * @brief Integer constructor
      *
      * Construct a data rate from an integer.  This class only supports positive
      * integer data rates in units of bits/s, meaning 1bit/s is the smallest
      * non-trivial bitrate available.
-     * \param bps bit/s value
+     * @param bps bit/s value
      */
     DataRate(uint64_t bps);
     /**
-     * \brief String constructor
+     * @brief String constructor
      *
      * Construct a data rate from a string.  Many different unit strings are supported
      * Supported unit strings:
@@ -103,147 +103,147 @@ class DataRate
      * "8Kib/s" = 1 KiB/s = 8192 bits/s \n
      * "1kB/s" = 8000 bits/s
      *
-     * \param rate string representing the desired rate
+     * @param rate string representing the desired rate
      */
     DataRate(std::string rate);
 
     /**
-     * \return the DataRate representing the sum of this object with rhs
+     * @return the DataRate representing the sum of this object with rhs
      *
-     * \param rhs the DataRate to add to this DataRate
+     * @param rhs the DataRate to add to this DataRate
      */
     DataRate operator+(DataRate rhs) const;
 
     /**
-     * \return the DataRate representing the sum of this object with rhs
+     * @return the DataRate representing the sum of this object with rhs
      *
-     * \param rhs the DataRate to add to this DataRate
+     * @param rhs the DataRate to add to this DataRate
      */
     DataRate& operator+=(DataRate rhs);
 
     /**
-     * \return the DataRate representing the difference of this object with rhs
+     * @return the DataRate representing the difference of this object with rhs
      *
-     * \param rhs the DataRate to subtract from this DataRate
+     * @param rhs the DataRate to subtract from this DataRate
      */
     DataRate operator-(DataRate rhs) const;
 
     /**
-     * \return the DataRate representing the difference of this object with rhs
+     * @return the DataRate representing the difference of this object with rhs
      *
-     * \param rhs the DataRate to subtract from this DataRate
+     * @param rhs the DataRate to subtract from this DataRate
      */
     DataRate& operator-=(DataRate rhs);
 
     /**
-     * \brief Scales the DataRate
+     * @brief Scales the DataRate
      *
      * Multiplies with double and is re-casted to an int
      *
-     * \return DataRate object representing the product of this object with rhs
+     * @return DataRate object representing the product of this object with rhs
      *
-     * \param rhs the double to multiply to this datarate
+     * @param rhs the double to multiply to this datarate
      */
     DataRate operator*(double rhs) const;
 
     /**
-     * \brief Scales the DataRate
+     * @brief Scales the DataRate
      *
      * Multiplies with double and is re-casted to an int
      *
-     * \return DataRate object representing the product of this object with rhs
+     * @return DataRate object representing the product of this object with rhs
      *
-     * \param rhs the double to multiply to this datarate
+     * @param rhs the double to multiply to this datarate
      */
     DataRate& operator*=(double rhs);
 
     /**
-     * \brief Scales the DataRate
+     * @brief Scales the DataRate
      *
-     * \return DataRate object representing the product of this object with rhs
+     * @return DataRate object representing the product of this object with rhs
      *
-     * \param rhs the uint64_t to multiply to this datarate
+     * @param rhs the uint64_t to multiply to this datarate
      */
     DataRate operator*(uint64_t rhs) const;
 
     /**
-     * \brief Scales the DataRate
+     * @brief Scales the DataRate
      *
-     * \return DataRate object representing the product of this object with rhs
+     * @return DataRate object representing the product of this object with rhs
      *
-     * \param rhs the uint64_t to multiply to this datarate
+     * @param rhs the uint64_t to multiply to this datarate
      */
     DataRate& operator*=(uint64_t rhs);
 
     /**
-     * \return true if this rate is less than rhs
+     * @return true if this rate is less than rhs
      *
-     * \param rhs the datarate to compare to this datarate
+     * @param rhs the datarate to compare to this datarate
      */
     bool operator<(const DataRate& rhs) const;
 
     /**
-     * \return true if this rate is less than or equal to rhs
+     * @return true if this rate is less than or equal to rhs
      *
-     * \param rhs the datarate to compare to this datarate
+     * @param rhs the datarate to compare to this datarate
      */
     bool operator<=(const DataRate& rhs) const;
 
     /**
-     * \return true if this rate is greater than rhs
+     * @return true if this rate is greater than rhs
      *
-     * \param rhs the datarate to compare to this datarate
+     * @param rhs the datarate to compare to this datarate
      */
     bool operator>(const DataRate& rhs) const;
 
     /**
-     * \return true if this rate is greater than or equal to rhs
+     * @return true if this rate is greater than or equal to rhs
      *
-     * \param rhs the datarate to compare to this datarate
+     * @param rhs the datarate to compare to this datarate
      */
     bool operator>=(const DataRate& rhs) const;
 
     /**
-     * \return true if this rate is equal to rhs
+     * @return true if this rate is equal to rhs
      *
-     * \param rhs the datarate to compare to this datarate
+     * @param rhs the datarate to compare to this datarate
      */
     bool operator==(const DataRate& rhs) const;
 
     /**
-     * \return true if this rate is not equal to rhs
+     * @return true if this rate is not equal to rhs
      *
-     * \param rhs the datarate to compare to this datarate
+     * @param rhs the datarate to compare to this datarate
      */
     bool operator!=(const DataRate& rhs) const;
 
     /**
-     * \brief Calculate transmission time
+     * @brief Calculate transmission time
      *
      * Calculates the transmission time at this data rate
-     * \param bytes The number of bytes (not bits) for which to calculate
-     * \return The transmission time for the number of bytes specified
+     * @param bytes The number of bytes (not bits) for which to calculate
+     * @return The transmission time for the number of bytes specified
      */
     Time CalculateBytesTxTime(uint32_t bytes) const;
 
     /**
-     * \brief Calculate transmission time
+     * @brief Calculate transmission time
      *
      * Calculates the transmission time at this data rate
-     * \param bits The number of bits (not bytes) for which to calculate
-     * \return The transmission time for the number of bits specified
+     * @param bits The number of bits (not bytes) for which to calculate
+     * @return The transmission time for the number of bits specified
      */
     Time CalculateBitsTxTime(uint32_t bits) const;
 
     /**
      * Get the underlying bitrate
-     * \return The underlying bitrate in bits per second
+     * @return The underlying bitrate in bits per second
      */
     uint64_t GetBitRate() const;
 
   private:
     /**
-     * \brief Parse a string representing a DataRate into an uint64_t
+     * @brief Parse a string representing a DataRate into an uint64_t
      *
      * Allowed unit representations include all combinations of
      *
@@ -252,9 +252,9 @@ class DataRate
      * * Bits or bytes (8 bits)
      * * "bps" or "/s"
      *
-     * \param [in] s The string representation, including unit
-     * \param [in,out] v The location to put the value, in bits/sec.
-     * \return true if parsing was successful.
+     * @param [in] s The string representation, including unit
+     * @param [in,out] v The location to put the value, in bits/sec.
+     * @return true if parsing was successful.
      */
     static bool DoParse(const std::string s, uint64_t* v);
 
@@ -265,41 +265,41 @@ class DataRate
 };
 
 /**
- * \brief Stream insertion operator.
+ * @brief Stream insertion operator.
  *
- * \param os the stream
- * \param rate the data rate
- * \returns a reference to the stream
+ * @param os the stream
+ * @param rate the data rate
+ * @returns a reference to the stream
  */
 std::ostream& operator<<(std::ostream& os, const DataRate& rate);
 
 /**
- * \brief Stream extraction operator.
+ * @brief Stream extraction operator.
  *
- * \param is the stream
- * \param rate the data rate
- * \returns a reference to the stream
+ * @param is the stream
+ * @param rate the data rate
+ * @returns a reference to the stream
  */
 std::istream& operator>>(std::istream& is, DataRate& rate);
 
 ATTRIBUTE_HELPER_HEADER(DataRate);
 
 /**
- * \brief Multiply datarate by a time value
+ * @brief Multiply datarate by a time value
  *
  * Calculates the number of bits that have been transmitted over a period of time
- * \param lhs rate
- * \param rhs time
- * \return the number of bits over the period of time
+ * @param lhs rate
+ * @param rhs time
+ * @return the number of bits over the period of time
  */
 double operator*(const DataRate& lhs, const Time& rhs);
 /**
- * \brief Multiply time value by a data rate
+ * @brief Multiply time value by a data rate
  *
  * Calculates the number of bits that have been transmitted over a period of time
- * \param lhs time
- * \param rhs rate
- * \return the number of bits over the period of time
+ * @param lhs time
+ * @param rhs rate
+ * @return the number of bits over the period of time
  */
 double operator*(const Time& lhs, const DataRate& rhs);
 
@@ -307,11 +307,11 @@ namespace TracedValueCallback
 {
 
 /**
- * \ingroup network
+ * @ingroup network
  * TracedValue callback signature for DataRate
  *
- * \param [in] oldValue original value of the traced variable
- * \param [in] newValue new value of the traced variable
+ * @param [in] oldValue original value of the traced variable
+ * @param [in] newValue new value of the traced variable
  */
 typedef void (*DataRate)(DataRate oldValue, DataRate newValue);
 

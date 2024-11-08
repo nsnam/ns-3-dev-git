@@ -23,8 +23,8 @@ class LteRadioBearerTag : public Tag
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     TypeId GetInstanceTypeId() const override;
@@ -36,16 +36,16 @@ class LteRadioBearerTag : public Tag
 
     /**
      * Create a LteRadioBearerTag with the given RNTI and LC id
-     * \param rnti the RNTI
-     * \param lcId the LCID
+     * @param rnti the RNTI
+     * @param lcId the LCID
      */
     LteRadioBearerTag(uint16_t rnti, uint8_t lcId);
 
     /**
      * Create a LteRadioBearerTag with the given RNTI, LC id and layer
-     * \param rnti the RNTI
-     * \param lcId the LCID
-     * \param layer the layer
+     * @param rnti the RNTI
+     * @param lcId the LCID
+     * @param layer the layer
      */
     LteRadioBearerTag(uint16_t rnti, uint8_t lcId, uint8_t layer);
 
@@ -78,19 +78,19 @@ class LteRadioBearerTag : public Tag
     /**
      * Get RNTI function
      *
-     * \returns RNTI
+     * @returns RNTI
      */
     uint16_t GetRnti() const;
     /**
      * Get LCID function
      *
-     * \returns LCID
+     * @returns LCID
      */
     uint8_t GetLcid() const;
     /**
      * Get layer function
      *
-     * \returns layer
+     * @returns layer
      */
     uint8_t GetLayer() const;
 

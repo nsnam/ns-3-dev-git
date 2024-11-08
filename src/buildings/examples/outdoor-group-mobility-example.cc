@@ -65,7 +65,7 @@ std::ofstream g_timeSeries;
 /**
  * Print the node position to the time series file.
  *
- * \param node The node.
+ * @param node The node.
  */
 void
 PrintPosition(Ptr<Node> node)
@@ -87,7 +87,7 @@ PrintPosition(Ptr<Node> node)
 /**
  * Print the buildings list in a format that can be used by Gnuplot to draw them.
  *
- * \param filename The output filename.
+ * @param filename The output filename.
  */
 void
 PrintGnuplottableBuildingListToFile(std::string filename)

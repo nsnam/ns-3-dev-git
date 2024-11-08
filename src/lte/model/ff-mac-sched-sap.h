@@ -18,8 +18,8 @@ namespace ns3
 {
 
 /**
- * \ingroup ff-api
- * \brief Provides the SCHED SAP
+ * @ingroup ff-api
+ * @brief Provides the SCHED SAP
  *
  * This abstract class defines the MAC Scheduler interface specified in the
  * Femto Forum Technical Document:
@@ -184,80 +184,80 @@ class FfMacSchedSapProvider
     //
 
     /**
-     * \brief SCHED_DL_RLC_BUFFER_REQ
+     * @brief SCHED_DL_RLC_BUFFER_REQ
      *
-     * \param params SchedDlRlcBufferReqParameters
+     * @param params SchedDlRlcBufferReqParameters
      */
     virtual void SchedDlRlcBufferReq(const SchedDlRlcBufferReqParameters& params) = 0;
 
     /**
-     * \brief SCHED_DL_PAGING_BUFFER_REQ
+     * @brief SCHED_DL_PAGING_BUFFER_REQ
      *
-     * \param params SchedDlPagingBufferReqParameters
+     * @param params SchedDlPagingBufferReqParameters
      */
     virtual void SchedDlPagingBufferReq(const SchedDlPagingBufferReqParameters& params) = 0;
 
     /**
-     * \brief SCHED_DL_MAC_BUFFER_REQ
+     * @brief SCHED_DL_MAC_BUFFER_REQ
      *
-     * \param params SchedDlMacBufferReqParameters
+     * @param params SchedDlMacBufferReqParameters
      */
     virtual void SchedDlMacBufferReq(const SchedDlMacBufferReqParameters& params) = 0;
 
     /**
-     * \brief SCHED_DL_TRIGGER_REQ
+     * @brief SCHED_DL_TRIGGER_REQ
      *
-     * \param params SchedDlTriggerReqParameters
+     * @param params SchedDlTriggerReqParameters
      */
     virtual void SchedDlTriggerReq(const SchedDlTriggerReqParameters& params) = 0;
 
     /**
-     * \brief SCHED_DL_RACH_INFO_REQ
+     * @brief SCHED_DL_RACH_INFO_REQ
      *
-     * \param params SchedDlRachInfoReqParameters
+     * @param params SchedDlRachInfoReqParameters
      */
     virtual void SchedDlRachInfoReq(const SchedDlRachInfoReqParameters& params) = 0;
 
     /**
-     * \brief SCHED_DL_CQI_INFO_REQ
+     * @brief SCHED_DL_CQI_INFO_REQ
      *
-     * \param params SchedDlCqiInfoReqParameters
+     * @param params SchedDlCqiInfoReqParameters
      */
     virtual void SchedDlCqiInfoReq(const SchedDlCqiInfoReqParameters& params) = 0;
 
     /**
-     * \brief SCHED_UL_TRIGGER_REQ
+     * @brief SCHED_UL_TRIGGER_REQ
      *
-     * \param params SchedUlTriggerReqParameters
+     * @param params SchedUlTriggerReqParameters
      */
     virtual void SchedUlTriggerReq(const SchedUlTriggerReqParameters& params) = 0;
 
     /**
-     * \brief SCHED_UL_NOISE_INTERFERENCE_REQ
+     * @brief SCHED_UL_NOISE_INTERFERENCE_REQ
      *
-     * \param params SchedUlNoiseInterferenceReqParameters
+     * @param params SchedUlNoiseInterferenceReqParameters
      */
     virtual void SchedUlNoiseInterferenceReq(
         const SchedUlNoiseInterferenceReqParameters& params) = 0;
 
     /**
-     * \brief SCHED_UL_SR_INFO_REQ
+     * @brief SCHED_UL_SR_INFO_REQ
      *
-     * \param params SchedUlSrInfoReqParameters
+     * @param params SchedUlSrInfoReqParameters
      */
     virtual void SchedUlSrInfoReq(const SchedUlSrInfoReqParameters& params) = 0;
 
     /**
-     * \brief SCHED_UL_MAC_CTRL_INFO_REQ
+     * @brief SCHED_UL_MAC_CTRL_INFO_REQ
      *
-     * \param params SchedUlMacCtrlInfoReqParameters
+     * @param params SchedUlMacCtrlInfoReqParameters
      */
     virtual void SchedUlMacCtrlInfoReq(const SchedUlMacCtrlInfoReqParameters& params) = 0;
 
     /**
-     * \brief SCHED_UL_CQI_INFO_REQ
+     * @brief SCHED_UL_CQI_INFO_REQ
      *
-     * \param params SchedUlCqiInfoReqParameters
+     * @param params SchedUlCqiInfoReqParameters
      */
     virtual void SchedUlCqiInfoReq(const SchedUlCqiInfoReqParameters& params) = 0;
 
@@ -307,16 +307,16 @@ class FfMacSchedSapUser
     //
 
     /**
-     * \brief SCHED_DL_CONFIG_IND
+     * @brief SCHED_DL_CONFIG_IND
      *
-     * \param params SchedDlConfigIndParameters
+     * @param params SchedDlConfigIndParameters
      */
     virtual void SchedDlConfigInd(const SchedDlConfigIndParameters& params) = 0;
 
     /**
-     * \brief SCHED_UL_CONFIG_IND
+     * @brief SCHED_UL_CONFIG_IND
      *
-     * \param params SchedUlConfigIndParameters
+     * @param params SchedUlConfigIndParameters
      */
     virtual void SchedUlConfigInd(const SchedUlConfigIndParameters& params) = 0;
 
@@ -331,7 +331,7 @@ class MemberSchedSapProvider : public FfMacSchedSapProvider
     /**
      * Constructor
      *
-     * \param scheduler the scheduler class
+     * @param scheduler the scheduler class
      */
     MemberSchedSapProvider(C* scheduler);
 

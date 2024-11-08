@@ -18,9 +18,9 @@ namespace ns3
 {
 
 /**
- * \ingroup congestionOps
+ * @ingroup congestionOps
  *
- * \brief Reno congestion control algorithm
+ * @brief Reno congestion control algorithm
  *
  * This class implement the Reno congestion control type
  * and it mimics the one implemented in the Linux kernel.
@@ -29,16 +29,16 @@ class TcpLinuxReno : public TcpCongestionOps
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
     TcpLinuxReno();
 
     /**
-     * \brief Copy constructor.
-     * \param sock object to copy.
+     * @brief Copy constructor.
+     * @param sock object to copy.
      */
     TcpLinuxReno(const TcpLinuxReno& sock);
 
@@ -53,15 +53,15 @@ class TcpLinuxReno : public TcpCongestionOps
   protected:
     /**
      * Slow start phase handler
-     * \param tcb Transmission Control Block of the connection
-     * \param segmentsAcked count of segments acked
-     * \return Number of segments acked minus the difference between the receiver and sender Cwnd
+     * @param tcb Transmission Control Block of the connection
+     * @param segmentsAcked count of segments acked
+     * @return Number of segments acked minus the difference between the receiver and sender Cwnd
      */
     virtual uint32_t SlowStart(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked);
     /**
      * Congestion avoidance phase handler
-     * \param tcb Transmission Control Block of the connection
-     * \param segmentsAcked count of segments acked
+     * @param tcb Transmission Control Block of the connection
+     * @param segmentsAcked count of segments acked
      */
     virtual void CongestionAvoidance(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked);
 
@@ -72,7 +72,7 @@ class TcpLinuxReno : public TcpCongestionOps
      * derived classes using the IncreaseWindow() method may not want this
      * behavior, so this method exists to allow subclasses to set it to false.
      *
-     * \param value Value to set whether the isCwndLimited condition
+     * @param value Value to set whether the isCwndLimited condition
      *        suppresses window updates
      */
     void SetSuppressIncreaseIfCwndLimited(bool value);

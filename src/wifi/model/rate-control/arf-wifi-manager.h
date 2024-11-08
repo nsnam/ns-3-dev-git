@@ -16,8 +16,8 @@ namespace ns3
 {
 
 /**
- * \ingroup wifi
- * \brief ARF Rate control algorithm
+ * @ingroup wifi
+ * @brief ARF Rate control algorithm
  *
  * This class implements the so-called ARF algorithm which was
  * initially described in <i>WaveLAN-II: A High-performance wireless
@@ -38,8 +38,8 @@ class ArfWifiManager : public WifiRemoteStationManager
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     ArfWifiManager();

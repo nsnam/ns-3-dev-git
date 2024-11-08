@@ -16,8 +16,8 @@
 #include <cmath>
 
 /**
- * \file
- * \ingroup simulator
+ * @file
+ * @ingroup simulator
  * ns3::DefaultSimulatorImpl implementation.
  */
 

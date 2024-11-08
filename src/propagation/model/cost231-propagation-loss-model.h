@@ -18,9 +18,9 @@ namespace ns3
 {
 
 /**
- * \ingroup propagation
+ * @ingroup propagation
  *
- *  \brief The COST-Hata-Model is the most often cited of the COST 231 models.
+ *  @brief The COST-Hata-Model is the most often cited of the COST 231 models.
  *
  *  Also called the Hata Model PCS Extension, it is a radio propagation model
  *  that extends the Hata Model (which in turn is based on the Okumura Model)
@@ -41,8 +41,8 @@ class Cost231PropagationLossModel : public PropagationLossModel
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     Cost231PropagationLossModel();
@@ -53,67 +53,67 @@ class Cost231PropagationLossModel : public PropagationLossModel
 
     /**
      * Get the propagation loss
-     * \param a the mobility model of the source
-     * \param b the mobility model of the destination
-     * \returns the propagation loss (in dBm)
+     * @param a the mobility model of the source
+     * @param b the mobility model of the destination
+     * @returns the propagation loss (in dBm)
      */
     double GetLoss(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
 
     /**
      * Set the BS antenna height
-     * \param height BS antenna height [m]
+     * @param height BS antenna height [m]
      */
     void SetBSAntennaHeight(double height);
     /**
      * Set the SS antenna height
-     * \param height SS antenna height [m]
+     * @param height SS antenna height [m]
      */
     void SetSSAntennaHeight(double height);
 
     /**
      * Set the wavelength
-     * \param lambda the wavelength
+     * @param lambda the wavelength
      */
     void SetLambda(double lambda);
     /**
      * Set the wavelength
-     * \param frequency the signal frequency [Hz]
-     * \param speed the signal speed [m/s]
+     * @param frequency the signal frequency [Hz]
+     * @param speed the signal speed [m/s]
      */
     void SetLambda(double frequency, double speed);
     /**
      * Set the minimum model distance
-     * \param minDistance the minimum model distance
+     * @param minDistance the minimum model distance
      */
     void SetMinDistance(double minDistance);
     /**
      * Get the BS antenna height
-     * \returns BS antenna height [m]
+     * @returns BS antenna height [m]
      */
     double GetBSAntennaHeight() const;
     /**
      * Get the SS antenna height
-     * \returns SS antenna height [m]
+     * @returns SS antenna height [m]
      */
     double GetSSAntennaHeight() const;
     /**
      * Get the minimum model distance
-     * \returns the minimum model distance
+     * @returns the minimum model distance
      */
     double GetMinDistance() const;
     /**
      * Get the wavelength
-     * \returns the wavelength
+     * @returns the wavelength
      */
     double GetLambda() const;
     /**
      * Get the shadowing value
-     * \returns the shadowing value
+     * @returns the shadowing value
      */
     double GetShadowing() const;
     /**
      * Set the shadowing value
-     * \param shadowing the shadowing value
+     * @param shadowing the shadowing value
      */
     void SetShadowing(double shadowing);
 

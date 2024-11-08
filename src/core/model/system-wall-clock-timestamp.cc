@@ -9,8 +9,8 @@
 #include "system-wall-clock-timestamp.h"
 
 /**
- * \file
- * \ingroup system
+ * @file
+ * @ingroup system
  * ns3::SystemWallClockTimestamp implementation.
  */
 

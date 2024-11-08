@@ -17,12 +17,12 @@
  * into an eps file, by running:
  * \code{.sh}
  *   gnuplot throughput-parf.plt
- * \endcode
+ * @endcode
  * Also, to enable logging of rate and power changes to the terminal, set this
  * environment variable:
  * \code{.sh}
  *   export NS_LOG=PowerAdaptationDistance=level_info
- * \endcode
+ * @endcode
  *
  * This simulation consist of 2 nodes, one AP and one STA.
  * The AP generates UDP traffic with a CBR of 54 Mbps to the STA.
@@ -55,7 +55,7 @@
  * To display all the possible arguments and their defaults:
  * \code{.sh}
  *   ./ns3 run "wifi-power-adaptation-distance --help"
- * \endcode
+ * @endcode
  *
  * Example usage (selecting Aparf rather than Parf):
  * \code{.sh}
@@ -70,7 +70,7 @@
  * To enable the log of rate and power changes:
  * \code{.sh}
  *   export NS_LOG=PowerAdaptationDistance=level_info
- * \endcode
+ * @endcode
  */
 
 #include "ns3/command-line.h"
@@ -100,85 +100,85 @@ NS_LOG_COMPONENT_DEFINE("PowerAdaptationDistance");
 static const uint32_t packetSize = 1420;
 
 /**
- * \brief Class to collect node statistics.
+ * @brief Class to collect node statistics.
  */
 class NodeStatistics
 {
   public:
     /**
-     * \brief Constructor.
+     * @brief Constructor.
      *
-     * \param aps Access points
-     * \param stas WiFi Stations.
+     * @param aps Access points
+     * @param stas WiFi Stations.
      */
     NodeStatistics(NetDeviceContainer aps, NetDeviceContainer stas);
 
     /**
-     * \brief Callback called by WifiNetDevice/Phy/PhyTxBegin.
+     * @brief Callback called by WifiNetDevice/Phy/PhyTxBegin.
      *
-     * \param path The trace path.
-     * \param packet The sent packet.
-     * \param powerW The Tx power.
+     * @param path The trace path.
+     * @param packet The sent packet.
+     * @param powerW The Tx power.
      */
     void PhyCallback(std::string path, Ptr<const Packet> packet, double powerW);
     /**
-     * \brief Callback called by PacketSink/Rx.
+     * @brief Callback called by PacketSink/Rx.
      *
-     * \param path The trace path.
-     * \param packet The received packet.
-     * \param from The sender address.
+     * @param path The trace path.
+     * @param packet The received packet.
+     * @param from The sender address.
      */
     void RxCallback(std::string path, Ptr<const Packet> packet, const Address& from);
     /**
-     * \brief Callback called by WifiNetDevice/RemoteStationManager/x/PowerChange.
+     * @brief Callback called by WifiNetDevice/RemoteStationManager/x/PowerChange.
      *
-     * \param path The trace path.
-     * \param oldPower Old Tx power.
-     * \param newPower Actual Tx power.
-     * \param dest Destination of the transmission.
+     * @param path The trace path.
+     * @param oldPower Old Tx power.
+     * @param newPower Actual Tx power.
+     * @param dest Destination of the transmission.
      */
     void PowerCallback(std::string path, double oldPower, double newPower, Mac48Address dest);
     /**
-     * \brief Callback called by WifiNetDevice/RemoteStationManager/x/RateChange.
+     * @brief Callback called by WifiNetDevice/RemoteStationManager/x/RateChange.
      *
-     * \param path The trace path.
-     * \param oldRate Old rate.
-     * \param newRate Actual rate.
-     * \param dest Destination of the transmission.
+     * @param path The trace path.
+     * @param oldRate Old rate.
+     * @param newRate Actual rate.
+     * @param dest Destination of the transmission.
      */
     void RateCallback(std::string path, DataRate oldRate, DataRate newRate, Mac48Address dest);
     /**
-     * \brief Set the Position of a node.
+     * @brief Set the Position of a node.
      *
-     * \param node The node.
-     * \param position The position.
+     * @param node The node.
+     * @param position The position.
      */
     void SetPosition(Ptr<Node> node, Vector position);
     /**
      * Move a node.
-     * \param node The node.
-     * \param stepsSize The step size.
-     * \param stepsTime Time on each step.
+     * @param node The node.
+     * @param stepsSize The step size.
+     * @param stepsTime Time on each step.
      */
     void AdvancePosition(Ptr<Node> node, int stepsSize, Time stepsTime);
     /**
-     * \brief Get the Position of a node.
+     * @brief Get the Position of a node.
      *
-     * \param node The node.
-     * \return the position of the node.
+     * @param node The node.
+     * @return the position of the node.
      */
     Vector GetPosition(Ptr<Node> node);
 
     /**
-     * \brief Get the Throughput output data
+     * @brief Get the Throughput output data
      *
-     * \return the Throughput output data.
+     * @return the Throughput output data.
      */
     Gnuplot2dDataset GetDatafile();
     /**
-     * \brief Get the Power output data.
+     * @brief Get the Power output data.
      *
-     * \return the Power output data.
+     * @return the Power output data.
      */
     Gnuplot2dDataset GetPowerDatafile();
 
@@ -186,16 +186,16 @@ class NodeStatistics
     /// Time, DataRate pair vector.
     typedef std::vector<std::pair<Time, DataRate>> TxTime;
     /**
-     * \brief Setup the WifiPhy object.
+     * @brief Setup the WifiPhy object.
      *
-     * \param phy The WifiPhy to setup.
+     * @param phy The WifiPhy to setup.
      */
     void SetupPhy(Ptr<WifiPhy> phy);
     /**
-     * \brief Get the time at which a given datarate has been recorded.
+     * @brief Get the time at which a given datarate has been recorded.
      *
-     * \param rate The datarate to search.
-     * \return the time.
+     * @param rate The datarate to search.
+     * @return the time.
      */
     Time GetCalcTxTime(DataRate rate);
 
@@ -351,10 +351,10 @@ NodeStatistics::GetPowerDatafile()
 /**
  * Callback called by WifiNetDevice/RemoteStationManager/x/PowerChange.
  *
- * \param path The trace path.
- * \param oldPower Old Tx power.
- * \param newPower Actual Tx power.
- * \param dest Destination of the transmission.
+ * @param path The trace path.
+ * @param oldPower Old Tx power.
+ * @param newPower Actual Tx power.
+ * @param dest Destination of the transmission.
  */
 void
 PowerCallback(std::string path, double oldPower, double newPower, Mac48Address dest)
@@ -364,12 +364,12 @@ PowerCallback(std::string path, double oldPower, double newPower, Mac48Address d
 }
 
 /**
- * \brief Callback called by WifiNetDevice/RemoteStationManager/x/RateChange.
+ * @brief Callback called by WifiNetDevice/RemoteStationManager/x/RateChange.
  *
- * \param path The trace path.
- * \param oldRate Old rate.
- * \param newRate Actual rate.
- * \param dest Destination of the transmission.
+ * @param path The trace path.
+ * @param oldRate Old rate.
+ * @param newRate Actual rate.
+ * @param dest Destination of the transmission.
  */
 void
 RateCallback(std::string path, DataRate oldRate, DataRate newRate, Mac48Address dest)

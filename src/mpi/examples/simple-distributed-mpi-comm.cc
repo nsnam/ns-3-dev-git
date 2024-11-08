@@ -7,8 +7,8 @@
  */
 
 /**
- * \file
- * \ingroup mpi
+ * @file
+ * @ingroup mpi
  *
  * This test is equivalent to simple-distributed with the addition of
  * initialization of MPI by user code (this script) and providing
@@ -78,8 +78,8 @@ const int NOT_NS_COLOR = NS_COLOR + 1;
 /**
  * Report my rank, in both MPI_COMM_WORLD and the split communicator.
  *
- * \param [in] color My role, either ns-3 rank or other rank.
- * \param [in] splitComm The split communicator.
+ * @param [in] color My role, either ns-3 rank or other rank.
+ * @param [in] splitComm The split communicator.
  */
 void
 ReportRank(int color, MPI_Comm splitComm)

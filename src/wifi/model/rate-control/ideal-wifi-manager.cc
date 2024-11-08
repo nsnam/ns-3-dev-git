@@ -19,7 +19,7 @@ namespace ns3
 {
 
 /**
- * \brief hold per-remote-station state for Ideal Wifi manager.
+ * @brief hold per-remote-station state for Ideal Wifi manager.
  *
  * This struct extends from WifiRemoteStation struct to hold additional
  * information required by the Ideal Wifi manager

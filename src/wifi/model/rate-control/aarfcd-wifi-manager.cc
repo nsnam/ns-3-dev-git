@@ -21,7 +21,7 @@ namespace ns3
 NS_LOG_COMPONENT_DEFINE("AarfcdWifiManager");
 
 /**
- * \brief hold per-remote-station state for AARF-CD Wifi manager.
+ * @brief hold per-remote-station state for AARF-CD Wifi manager.
  *
  * This struct extends from WifiRemoteStation struct to hold additional
  * information required by the AARF-CD Wifi manager
@@ -346,7 +346,7 @@ WifiTxVector
 AarfcdWifiManager::DoGetRtsTxVector(WifiRemoteStation* st)
 {
     NS_LOG_FUNCTION(this << st);
-    /// \todo we could/should implement the AARF algorithm for
+    /// @todo we could/should implement the AARF algorithm for
     /// RTS only by picking a single rate within the BasicRateSet.
     auto station = static_cast<AarfcdWifiRemoteStation*>(st);
     auto channelWidth = GetChannelWidth(station);

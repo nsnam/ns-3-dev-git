@@ -21,14 +21,14 @@ namespace ns3
 {
 
 /**
- * \defgroup csmalayout CSMA Layout Helpers
+ * @defgroup csmalayout CSMA Layout Helpers
  *
  */
 
 /**
- * \ingroup csmalayout
+ * @ingroup csmalayout
  *
- * \brief A helper to make it easier to create a star topology
+ * @brief A helper to make it easier to create a star topology
  * with Csma links
  */
 class CsmaStarHelper
@@ -38,11 +38,11 @@ class CsmaStarHelper
      * Create a CsmaStarHelper in order to easily create
      * star topologies using Csma links
      *
-     * \param numSpokes the number of links attached to
+     * @param numSpokes the number of links attached to
      *        the hub node, creating a total of
      *        numSpokes + 1 nodes
      *
-     * \param csmaHelper the link helper for Csma links,
+     * @param csmaHelper the link helper for Csma links,
      *        used to link nodes together
      */
     CsmaStarHelper(uint32_t numSpokes, CsmaHelper csmaHelper);
@@ -51,80 +51,80 @@ class CsmaStarHelper
 
   public:
     /**
-     * \returns a node pointer to the hub node in the
+     * @returns a node pointer to the hub node in the
      *          star, i.e., the center node
      */
     Ptr<Node> GetHub() const;
 
     /**
-     * \param i an index into the spokes of the star
+     * @param i an index into the spokes of the star
      *
-     * \returns a node pointer to the node at the indexed spoke
+     * @returns a node pointer to the node at the indexed spoke
      */
     Ptr<Node> GetSpokeNode(uint32_t i) const;
 
     /**
-     * \returns the net-device container which contains all of
+     * @returns the net-device container which contains all of
      *          the devices on the hub node
      */
     NetDeviceContainer GetHubDevices() const;
 
     /**
-     * \returns the net-device container which contains all of
+     * @returns the net-device container which contains all of
      *          the spoke node devices
      */
     NetDeviceContainer GetSpokeDevices() const;
 
     /**
-     * \param i index into the hub interfaces
+     * @param i index into the hub interfaces
      *
-     * \returns Ipv4Address according to indexed hub interface
+     * @returns Ipv4Address according to indexed hub interface
      */
     Ipv4Address GetHubIpv4Address(uint32_t i) const;
 
     /**
-     * \param i index into the hub interfaces
+     * @param i index into the hub interfaces
      *
-     * \returns Ipv6Address according to indexed hub interface
+     * @returns Ipv6Address according to indexed hub interface
      */
     Ipv6Address GetHubIpv6Address(uint32_t i) const;
 
     /**
-     * \param i index into the spoke interfaces
+     * @param i index into the spoke interfaces
      *
-     * \returns Ipv4Address according to indexed spoke interface
+     * @returns Ipv4Address according to indexed spoke interface
      */
     Ipv4Address GetSpokeIpv4Address(uint32_t i) const;
 
     /**
-     * \param i index into the spoke interfaces
+     * @param i index into the spoke interfaces
      *
-     * \returns Ipv6Address according to indexed spoke interface
+     * @returns Ipv6Address according to indexed spoke interface
      */
     Ipv6Address GetSpokeIpv6Address(uint32_t i) const;
 
     /**
-     * \returns the total number of spokes in the star
+     * @returns the total number of spokes in the star
      */
     uint32_t SpokeCount() const;
 
     /**
-     * \param stack an InternetStackHelper which is used to install
+     * @param stack an InternetStackHelper which is used to install
      *              on every node in the star
      */
     void InstallStack(InternetStackHelper stack);
 
     /**
-     * \param address an Ipv4AddressHelper which is used to install
+     * @param address an Ipv4AddressHelper which is used to install
      *                Ipv4 addresses on all the node interfaces in
      *                the star
      */
     void AssignIpv4Addresses(Ipv4AddressHelper address);
 
     /**
-     * \param network an IPv6 Address representing the network portion
+     * @param network an IPv6 Address representing the network portion
      *                of the Ipv6 Address
-     * \param prefix the prefix length
+     * @param prefix the prefix length
      */
     void AssignIpv6Addresses(Ipv6Address network, Ipv6Prefix prefix);
 

@@ -17,10 +17,10 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("WifiHeInfoElemsTest");
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief Test HE Operation information element serialization and deserialization
+ * @brief Test HE Operation information element serialization and deserialization
  */
 class HeOperationElementTest : public HeaderSerializationTestCase
 {
@@ -71,10 +71,10 @@ HeOperationElementTest::DoRun()
 }
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief Test HE 6 GHz Band Capabilities information element serialization and deserialization
+ * @brief Test HE 6 GHz Band Capabilities information element serialization and deserialization
  */
 class He6GhzBandCapabilitiesTest : public HeaderSerializationTestCase
 {
@@ -108,10 +108,10 @@ He6GhzBandCapabilitiesTest::DoRun()
 }
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief wifi HE Information Elements Test Suite
+ * @brief wifi HE Information Elements Test Suite
  */
 class WifiHeInfoElemsTestSuite : public TestSuite
 {

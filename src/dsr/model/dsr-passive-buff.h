@@ -30,8 +30,8 @@ namespace ns3
 namespace dsr
 {
 /**
- * \ingroup dsr
- * \brief DSR Passive Buffer Entry
+ * @ingroup dsr
+ * @brief DSR Passive Buffer Entry
  */
 class DsrPassiveBuffEntry
 {
@@ -39,15 +39,15 @@ class DsrPassiveBuffEntry
     /**
      * Construct a DsrPassiveBuffEntry with the given parameters
      *
-     * \param pa packet
-     * \param d IPv4 address of the destination
-     * \param s IPv4 address of the source
-     * \param n IPv4 address of the next hop node
-     * \param i ID
-     * \param f fragment offset
-     * \param seg number of segments left
-     * \param exp expiration time
-     * \param p protocol number
+     * @param pa packet
+     * @param d IPv4 address of the destination
+     * @param s IPv4 address of the source
+     * @param n IPv4 address of the next hop node
+     * @param i ID
+     * @param f fragment offset
+     * @param seg number of segments left
+     * @param exp expiration time
+     * @param p protocol number
      */
     DsrPassiveBuffEntry(Ptr<const Packet> pa = nullptr,
                         Ipv4Address d = Ipv4Address(),
@@ -72,8 +72,8 @@ class DsrPassiveBuffEntry
 
     /**
      * Compare send buffer entries
-     * \param o passive buffer entry to compare
-     * \return true if equal
+     * @param o passive buffer entry to compare
+     * @return true if equal
      */
     bool operator==(const DsrPassiveBuffEntry& o) const
     {
@@ -84,7 +84,7 @@ class DsrPassiveBuffEntry
     // Fields
     /**
      * Get packet function
-     * \returns the current packet
+     * @returns the current packet
      */
     Ptr<const Packet> GetPacket() const
     {
@@ -93,7 +93,7 @@ class DsrPassiveBuffEntry
 
     /**
      * Set packet function
-     * \param p the current packet
+     * @param p the current packet
      */
     void SetPacket(Ptr<const Packet> p)
     {
@@ -102,7 +102,7 @@ class DsrPassiveBuffEntry
 
     /**
      * Get destination address function
-     * \returns the destination IP address
+     * @returns the destination IP address
      */
     Ipv4Address GetDestination() const
     {
@@ -111,7 +111,7 @@ class DsrPassiveBuffEntry
 
     /**
      * Set destination address function
-     * \param d the destination IP address
+     * @param d the destination IP address
      */
     void SetDestination(Ipv4Address d)
     {
@@ -120,7 +120,7 @@ class DsrPassiveBuffEntry
 
     /**
      * Get source address function
-     * \returns the source IP address
+     * @returns the source IP address
      */
     Ipv4Address GetSource() const
     {
@@ -129,7 +129,7 @@ class DsrPassiveBuffEntry
 
     /**
      * Set surce address function
-     * \param s the source IP address
+     * @param s the source IP address
      */
     void SetSource(Ipv4Address s)
     {
@@ -138,7 +138,7 @@ class DsrPassiveBuffEntry
 
     /**
      * Get next hop address function
-     * \returns the next hop IP address
+     * @returns the next hop IP address
      */
     Ipv4Address GetNextHop() const
     {
@@ -147,7 +147,7 @@ class DsrPassiveBuffEntry
 
     /**
      * Set next hop address function
-     * \param n the next hop address
+     * @param n the next hop address
      */
     void SetNextHop(Ipv4Address n)
     {
@@ -156,7 +156,7 @@ class DsrPassiveBuffEntry
 
     /**
      * Get identification function
-     * \returns the identification
+     * @returns the identification
      */
     uint16_t GetIdentification() const
     {
@@ -165,7 +165,7 @@ class DsrPassiveBuffEntry
 
     /**
      * Set identification function
-     * \param i the identification
+     * @param i the identification
      */
     void SetIdentification(uint16_t i)
     {
@@ -174,7 +174,7 @@ class DsrPassiveBuffEntry
 
     /**
      * Get fragment offset function
-     * \returns the fragment offset
+     * @returns the fragment offset
      */
     uint16_t GetFragmentOffset() const
     {
@@ -183,7 +183,7 @@ class DsrPassiveBuffEntry
 
     /**
      * Set fragment offset function
-     * \param f the fragment offset
+     * @param f the fragment offset
      */
     void SetFragmentOffset(uint16_t f)
     {
@@ -192,7 +192,7 @@ class DsrPassiveBuffEntry
 
     /**
      * Get segments left function
-     * \returns the number of segments left
+     * @returns the number of segments left
      */
     uint8_t GetSegsLeft() const
     {
@@ -201,7 +201,7 @@ class DsrPassiveBuffEntry
 
     /**
      * Set segments left
-     * \param seg the number of segments left
+     * @param seg the number of segments left
      */
     void SetSegsLeft(uint8_t seg)
     {
@@ -210,7 +210,7 @@ class DsrPassiveBuffEntry
 
     /**
      * Set expire time
-     * \param exp the expire time
+     * @param exp the expire time
      */
     void SetExpireTime(Time exp)
     {
@@ -219,7 +219,7 @@ class DsrPassiveBuffEntry
 
     /**
      * Get expire time
-     * \returns the expire time
+     * @returns the expire time
      */
     Time GetExpireTime() const
     {
@@ -228,7 +228,7 @@ class DsrPassiveBuffEntry
 
     /**
      * Set protocol function
-     * \param p the protocol
+     * @param p the protocol
      */
     void SetProtocol(uint8_t p)
     {
@@ -237,7 +237,7 @@ class DsrPassiveBuffEntry
 
     /**
      * Get protocol
-     * \returns the protocol number
+     * @returns the protocol number
      */
     uint8_t GetProtocol() const
     {
@@ -266,17 +266,17 @@ class DsrPassiveBuffEntry
 };
 
 /**
- * \ingroup dsr
- * \class DsrPassiveBuffer
- * \brief DSR passive buffer
+ * @ingroup dsr
+ * @class DsrPassiveBuffer
+ * @brief DSR passive buffer
  */
 /************************************************************************************************************************/
 class DsrPassiveBuffer : public Object
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -285,32 +285,32 @@ class DsrPassiveBuffer : public Object
 
     /// Push entry in queue, if there is no entry with the same packet and destination address in
     /// queue.
-    /// \param entry Buffer Entry
-    /// \return true on success adding the Entry.
+    /// @param entry Buffer Entry
+    /// @return true on success adding the Entry.
     bool Enqueue(DsrPassiveBuffEntry& entry);
     /// Return first found (the earliest) entry for given destination
-    /// \param [in] dst Entry destination
-    /// \param [out] entry The Entry found (if any).
-    /// \return true on success
+    /// @param [in] dst Entry destination
+    /// @param [out] entry The Entry found (if any).
+    /// @return true on success
     bool Dequeue(Ipv4Address dst, DsrPassiveBuffEntry& entry);
     /// Finds whether a packet with destination dst exists in the queue
-    /// \param dst Destination.
-    /// \return true if there is a packet.
+    /// @param dst Destination.
+    /// @return true if there is a packet.
     bool Find(Ipv4Address dst);
     /// Check if all the entries in passive buffer entry is all equal or not
-    /// \note For real this function checks if at most one entry is equal. If it is,
+    /// @note For real this function checks if at most one entry is equal. If it is,
     /// that entry is removed. Further entries are NOT checked. This could be a bug.
-    /// \param entry The Entry to check
-    /// \return true if an Entry was found and removed.
+    /// @param entry The Entry to check
+    /// @return true if an Entry was found and removed.
     bool AllEqual(DsrPassiveBuffEntry& entry);
     /// Number of entries
-    /// \return The number of entries.
+    /// @return The number of entries.
     uint32_t GetSize();
 
     // Fields
     /**
      * Get maximum queue length
-     * \returns the maximum queue length
+     * @returns the maximum queue length
      */
     uint32_t GetMaxQueueLen() const
     {
@@ -319,7 +319,7 @@ class DsrPassiveBuffer : public Object
 
     /**
      * Set maximum queue length
-     * \param len the maximum queue length
+     * @param len the maximum queue length
      */
     void SetMaxQueueLen(uint32_t len)
     {
@@ -328,7 +328,7 @@ class DsrPassiveBuffer : public Object
 
     /**
      * Get passive buffer timeout
-     * \returns the passive buffer timeout
+     * @returns the passive buffer timeout
      */
     Time GetPassiveBufferTimeout() const
     {
@@ -337,7 +337,7 @@ class DsrPassiveBuffer : public Object
 
     /**
      * Set passive buffer timeout
-     * \param t the passive buffer timeout
+     * @param t the passive buffer timeout
      */
     void SetPassiveBufferTimeout(Time t)
     {
@@ -350,12 +350,12 @@ class DsrPassiveBuffer : public Object
     /// Remove all expired entries
     void Purge();
     /// Notify that packet is dropped from queue by timeout
-    /// \param en BuffEntry Buffer entry
-    /// \param reason Drop reason
+    /// @param en BuffEntry Buffer entry
+    /// @param reason Drop reason
     void Drop(DsrPassiveBuffEntry en, std::string reason);
     /// Notify that packet is dropped from queue by timeout
-    /// \param en BuffEntry Buffer entry
-    /// \param reason Drop reason
+    /// @param en BuffEntry Buffer entry
+    /// @param reason Drop reason
     void DropLink(DsrPassiveBuffEntry en, std::string reason);
     /// The maximum number of packets that we allow a routing protocol to buffer.
     uint32_t m_maxLen;
@@ -364,9 +364,9 @@ class DsrPassiveBuffer : public Object
     Time m_passiveBufferTimeout;
 
     /// Check if the send buffer entry is the same or not
-    /// \param en The Entry to check
-    /// \param link The link to check
-    /// \return true if an Entry source and Next hop are equal to the Link parameters
+    /// @param en The Entry to check
+    /// @param link The link to check
+    /// @return true if an Entry source and Next hop are equal to the Link parameters
     static bool LinkEqual(DsrPassiveBuffEntry en, const std::vector<Ipv4Address> link)
     {
         return ((en.GetSource() == link[0]) && (en.GetNextHop() == link[1]));

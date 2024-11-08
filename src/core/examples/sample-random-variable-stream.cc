@@ -11,9 +11,9 @@
 #include <iostream>
 
 /**
- * \file
- * \ingroup core-examples
- * \ingroup randomvariable
+ * @file
+ * @ingroup core-examples
+ * @ingroup randomvariable
  * Example program illustrating use of ns3::RandomVariableStream
  *
  * This program can be run from ns3 such as

@@ -29,8 +29,8 @@ class LteRlcAm : public LteRlc
     LteRlcAm();
     ~LteRlcAm() override;
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     void DoDispose() override;
@@ -38,14 +38,14 @@ class LteRlcAm : public LteRlc
     /**
      * RLC SAP
      *
-     * \param p packet
+     * @param p packet
      */
     void DoTransmitPdcpPdu(Ptr<Packet> p) override;
 
     /**
      * MAC SAP
      *
-     * \param txOpParams the LteMacSapUser::TxOpportunityParameters
+     * @param txOpParams the LteMacSapUser::TxOpportunityParameters
      */
     void DoNotifyTxOpportunity(LteMacSapUser::TxOpportunityParameters txOpParams) override;
     /**
@@ -75,8 +75,8 @@ class LteRlcAm : public LteRlc
     /**
      * method called when the T_status_prohibit timer expires
      *
-     * \param seqNumber SequenceNumber10
-     * \returns true is inside receiving window
+     * @param seqNumber SequenceNumber10
+     * @returns true is inside receiving window
      */
     bool IsInsideReceivingWindow(SequenceNumber10 seqNumber);
     //
@@ -87,7 +87,7 @@ class LteRlcAm : public LteRlc
     /**
      * Reassemble and deliver
      *
-     * \param packet the packet
+     * @param packet the packet
      */
     void ReassembleAndDeliver(Ptr<Packet> packet);
 
@@ -98,14 +98,14 @@ class LteRlcAm : public LteRlc
 
   private:
     /**
-     * \brief Store an incoming (from layer above us) PDU, waiting to transmit it
+     * @brief Store an incoming (from layer above us) PDU, waiting to transmit it
      */
     struct TxPdu
     {
         /**
-         * \brief TxPdu default constructor
-         * \param pdu the PDU
-         * \param time the arrival time
+         * @brief TxPdu default constructor
+         * @param pdu the PDU
+         * @param time the arrival time
          */
         TxPdu(const Ptr<Packet>& pdu, const Time& time)
             : m_pdu(pdu),

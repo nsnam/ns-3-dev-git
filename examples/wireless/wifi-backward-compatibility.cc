@@ -44,8 +44,8 @@ NS_LOG_COMPONENT_DEFINE("wifi-backward-compatibility");
 /**
  * Convert a string (e.g., "80211a") to a pair {WifiStandard, WifiPhyBand}
  *
- * \param version The WiFi standard version.
- * \return a pair of WifiStandard, WifiPhyBand
+ * @param version The WiFi standard version.
+ * @return a pair of WifiStandard, WifiPhyBand
  */
 std::pair<WifiStandard, WifiPhyBand>
 ConvertStringToStandardAndBand(std::string version)

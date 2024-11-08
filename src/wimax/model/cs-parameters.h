@@ -18,8 +18,8 @@ namespace ns3
 {
 
 /**
- * \ingroup wimax
- * \brief CsParameters class
+ * @ingroup wimax
+ * @brief CsParameters class
  */
 class CsParameters
 {
@@ -35,38 +35,38 @@ class CsParameters
     CsParameters();
     ~CsParameters();
     /**
-     * \brief creates a convergence sub-layer parameters from a tlv
-     * \param tlv the TLV
+     * @brief creates a convergence sub-layer parameters from a tlv
+     * @param tlv the TLV
      */
     CsParameters(Tlv tlv);
     /**
-     * \brief creates a convergence sub-layer parameters from an ipcs classifier record
-     * \param classifierDscAction the DCS action type
-     * \param classifier the IPCS classifier record
+     * @brief creates a convergence sub-layer parameters from an ipcs classifier record
+     * @param classifierDscAction the DCS action type
+     * @param classifier the IPCS classifier record
      */
     CsParameters(Action classifierDscAction, IpcsClassifierRecord classifier);
     /**
-     * \brief sets the dynamic service classifier action to ADD, Change or delete. Only ADD is
+     * @brief sets the dynamic service classifier action to ADD, Change or delete. Only ADD is
      * supported
-     * \param action the action enumeration
+     * @param action the action enumeration
      */
     void SetClassifierDscAction(Action action);
     /**
-     * \brief sets the packet classifier rules
-     * \param packetClassifierRule the IPCS classifier record
+     * @brief sets the packet classifier rules
+     * @param packetClassifierRule the IPCS classifier record
      */
     void SetPacketClassifierRule(IpcsClassifierRecord packetClassifierRule);
     /**
-     * \return the  dynamic service classifier action
+     * @return the  dynamic service classifier action
      */
     Action GetClassifierDscAction() const;
     /**
-     * \return the  the packet classifier rules
+     * @return the  the packet classifier rules
      */
     IpcsClassifierRecord GetPacketClassifierRule() const;
     /**
-     * \brief creates a tlv from the classifier record
-     * \return the created tlv
+     * @brief creates a tlv from the classifier record
+     * @return the created tlv
      */
     Tlv ToTlv() const;
 

@@ -57,8 +57,8 @@ NS_LOG_COMPONENT_DEFINE("TrafficControlExample");
 /**
  * Number of packets in TX queue trace.
  *
- * \param oldValue Old velue.
- * \param newValue New value.
+ * @param oldValue Old velue.
+ * @param newValue New value.
  */
 void
 TcPacketsInQueueTrace(uint32_t oldValue, uint32_t newValue)
@@ -69,8 +69,8 @@ TcPacketsInQueueTrace(uint32_t oldValue, uint32_t newValue)
 /**
  * Packets in the device queue trace.
  *
- * \param oldValue Old velue.
- * \param newValue New value.
+ * @param oldValue Old velue.
+ * @param newValue New value.
  */
 void
 DevicePacketsInQueueTrace(uint32_t oldValue, uint32_t newValue)
@@ -81,7 +81,7 @@ DevicePacketsInQueueTrace(uint32_t oldValue, uint32_t newValue)
 /**
  * TC Soujoun time trace.
  *
- * \param sojournTime The soujourn time.
+ * @param sojournTime The soujourn time.
  */
 void
 SojournTimeTrace(Time sojournTime)

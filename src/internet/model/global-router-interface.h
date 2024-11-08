@@ -31,7 +31,7 @@ class GlobalRouter;
 class Ipv4GlobalRouting;
 
 /**
- * \ingroup globalrouting
+ * @ingroup globalrouting
  *
  * @brief A single link record for a link state advertisement.
  *
@@ -564,11 +564,11 @@ class GlobalRoutingLSA
 };
 
 /**
- * \brief Stream insertion operator.
+ * @brief Stream insertion operator.
  *
- * \param os the reference to the output stream
- * \param lsa the LSA
- * \returns the reference to the output stream
+ * @param os the reference to the output stream
+ * @param lsa the LSA
+ * @returns the reference to the output stream
  */
 std::ostream& operator<<(std::ostream& os, GlobalRoutingLSA& lsa);
 
@@ -585,8 +585,8 @@ class GlobalRouter : public Object
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -600,14 +600,14 @@ class GlobalRouter : public Object
     GlobalRouter& operator=(const GlobalRouter&) = delete;
 
     /**
-     * \brief Set the specific Global Routing Protocol to be used
-     * \param routing the routing protocol
+     * @brief Set the specific Global Routing Protocol to be used
+     * @param routing the routing protocol
      */
     void SetRoutingProtocol(Ptr<Ipv4GlobalRouting> routing);
 
     /**
-     * \brief Get the specific Global Routing Protocol used
-     * \returns the routing protocol
+     * @brief Get the specific Global Routing Protocol used
+     * @returns the routing protocol
      */
     Ptr<Ipv4GlobalRouting> GetRoutingProtocol();
 
@@ -730,95 +730,95 @@ class GlobalRouter : public Object
     ~GlobalRouter() override;
 
     /**
-     * \brief Clear list of LSAs
+     * @brief Clear list of LSAs
      */
     void ClearLSAs();
 
     /**
-     * \brief Link through the given channel and find the net device that's on the other end.
+     * @brief Link through the given channel and find the net device that's on the other end.
      *
      * This only makes sense with a point-to-point channel.
      *
-     * \param nd outgoing NetDevice
-     * \param ch channel
-     * \returns the NetDevice on the other end
+     * @param nd outgoing NetDevice
+     * @param ch channel
+     * @returns the NetDevice on the other end
      */
     Ptr<NetDevice> GetAdjacent(Ptr<NetDevice> nd, Ptr<Channel> ch) const;
 
     /**
-     * \brief Finds a designated router
+     * @brief Finds a designated router
      *
      * Given a local net device, we need to walk the channel to which the net device is
      * attached and look for nodes with GlobalRouter interfaces on them (one of them
      * will be us).  Of these, the router with the lowest IP address on the net device
      * connecting to the channel becomes the designated router for the link.
      *
-     * \param ndLocal local NetDevice to scan
-     * \returns the IP address of the designated router
+     * @param ndLocal local NetDevice to scan
+     * @returns the IP address of the designated router
      */
     Ipv4Address FindDesignatedRouterForLink(Ptr<NetDevice> ndLocal) const;
 
     /**
-     * \brief Checks for the presence of another router on the NetDevice
+     * @brief Checks for the presence of another router on the NetDevice
      *
      * Given a node and an attached net device, take a look off in the channel to
      * which the net device is attached and look for a node on the other side
      * that has a GlobalRouter interface aggregated.
      *
-     * \param nd NetDevice to scan
-     * \returns true if a router is found
+     * @param nd NetDevice to scan
+     * @returns true if a router is found
      */
     bool AnotherRouterOnLink(Ptr<NetDevice> nd) const;
 
     /**
-     * \brief Process a generic broadcast link
+     * @brief Process a generic broadcast link
      *
-     * \param nd the NetDevice
-     * \param pLSA the Global LSA
-     * \param c the returned NetDevice container
+     * @param nd the NetDevice
+     * @param pLSA the Global LSA
+     * @param c the returned NetDevice container
      */
     void ProcessBroadcastLink(Ptr<NetDevice> nd, GlobalRoutingLSA* pLSA, NetDeviceContainer& c);
 
     /**
-     * \brief Process a single broadcast link
+     * @brief Process a single broadcast link
      *
-     * \param nd the NetDevice
-     * \param pLSA the Global LSA
-     * \param c the returned NetDevice container
+     * @param nd the NetDevice
+     * @param pLSA the Global LSA
+     * @param c the returned NetDevice container
      */
     void ProcessSingleBroadcastLink(Ptr<NetDevice> nd,
                                     GlobalRoutingLSA* pLSA,
                                     NetDeviceContainer& c);
 
     /**
-     * \brief Process a bridged broadcast link
+     * @brief Process a bridged broadcast link
      *
-     * \param nd the NetDevice
-     * \param pLSA the Global LSA
-     * \param c the returned NetDevice container
+     * @param nd the NetDevice
+     * @param pLSA the Global LSA
+     * @param c the returned NetDevice container
      */
     void ProcessBridgedBroadcastLink(Ptr<NetDevice> nd,
                                      GlobalRoutingLSA* pLSA,
                                      NetDeviceContainer& c);
 
     /**
-     * \brief Process a point to point link
+     * @brief Process a point to point link
      *
-     * \param ndLocal the NetDevice
-     * \param pLSA the Global LSA
+     * @param ndLocal the NetDevice
+     * @param pLSA the Global LSA
      */
     void ProcessPointToPointLink(Ptr<NetDevice> ndLocal, GlobalRoutingLSA* pLSA);
 
     /**
-     * \brief Build one NetworkLSA for each net device talking to a network that we are the
+     * @brief Build one NetworkLSA for each net device talking to a network that we are the
      * designated router for.
      *
-     * \param c the devices.
+     * @param c the devices.
      */
     void BuildNetworkLSAs(NetDeviceContainer c);
 
     /**
-     * \brief Return a container of all non-bridged NetDevices on a link
+     * @brief Return a container of all non-bridged NetDevices on a link
      *
      * This method will recursively find all of the 'edge' devices in an
      * L2 broadcast domain.  If there are no bridged devices, then the
@@ -828,16 +828,16 @@ class GlobalRouter : public Object
      * bridges), the method will find all of the non-bridged devices
      * in the L2 broadcast domain.
      *
-     * \param ch a channel from the link
-     * \returns the NetDeviceContainer.
+     * @param ch a channel from the link
+     * @returns the NetDeviceContainer.
      */
     NetDeviceContainer FindAllNonBridgedDevicesOnLink(Ptr<Channel> ch) const;
 
     /**
-     * \brief Decide whether or not a given net device is being bridged by a BridgeNetDevice.
+     * @brief Decide whether or not a given net device is being bridged by a BridgeNetDevice.
      *
-     * \param nd the NetDevice
-     * \returns the BridgeNetDevice smart pointer or null if not found
+     * @param nd the NetDevice
+     * @returns the BridgeNetDevice smart pointer or null if not found
      */
     Ptr<BridgeNetDevice> NetDeviceIsBridged(Ptr<NetDevice> nd) const;
 
@@ -869,15 +869,15 @@ class GlobalRouter : public Object
      * When recursively checking for devices on the link, check whether a
      * given device has already been visited.
      *
-     * \param device the bridge device to check
-     * \return true if bridge has already been visited
+     * @param device the bridge device to check
+     * @return true if bridge has already been visited
      */
     bool BridgeHasAlreadyBeenVisited(Ptr<BridgeNetDevice> device) const;
     /**
      * When recursively checking for devices on the link, mark a given device
      * as having been visited.
      *
-     * \param device the bridge device to mark
+     * @param device the bridge device to mark
      */
     void MarkBridgeAsVisited(Ptr<BridgeNetDevice> device) const;
 

@@ -18,9 +18,9 @@ namespace ns3
 {
 
 /**
- * \ingroup lte
+ * @ingroup lte
  *
- * \brief Header of the GTPv2-C protocol
+ * @brief Header of the GTPv2-C protocol
  *
  * Implementation of the GPRS Tunnelling Protocol for Control Plane (GTPv2-C) header
  * according to the 3GPP TS 29.274 document
@@ -31,8 +31,8 @@ class GtpcHeader : public Header
     GtpcHeader();
     ~GtpcHeader() override;
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     TypeId GetInstanceTypeId() const override;
@@ -46,54 +46,54 @@ class GtpcHeader : public Header
      *
      * Subclasses are supposed to have a message size greater than zero.
      *
-     * \returns the message size
+     * @returns the message size
      */
     virtual uint32_t GetMessageSize() const;
 
     /**
      * Get message type
-     * \returns the message type
+     * @returns the message type
      */
     uint8_t GetMessageType() const;
     /**
      * Get message length
-     * \returns the message length
+     * @returns the message length
      */
     uint16_t GetMessageLength() const;
     /**
      * Get TEID
-     * \returns the TEID
+     * @returns the TEID
      */
     uint32_t GetTeid() const;
     /**
      * Get sequence number
-     * \returns the sequence number
+     * @returns the sequence number
      */
     uint32_t GetSequenceNumber() const;
 
     /**
      * Set message type
-     * \param messageType the message type
+     * @param messageType the message type
      */
     void SetMessageType(uint8_t messageType);
     /**
      * Set message length
-     * \param messageLength the message length
+     * @param messageLength the message length
      */
     void SetMessageLength(uint16_t messageLength);
     /**
      * Set TEID
-     * \param teid the TEID
+     * @param teid the TEID
      */
     void SetTeid(uint32_t teid);
     /**
      * Set sequence number
-     * \param sequenceNumber the sequence number
+     * @param sequenceNumber the sequence number
      */
     void SetSequenceNumber(uint32_t sequenceNumber);
     /**
      * Set IEs length. It is used to compute the message length
-     * \param iesLength the IEs length
+     * @param iesLength the IEs length
      */
     void SetIesLength(uint16_t iesLength);
 
@@ -165,19 +165,19 @@ class GtpcHeader : public Header
   protected:
     /**
      * Serialize the GTP-C header in the GTP-C messages
-     * \param i the buffer iterator
+     * @param i the buffer iterator
      */
     void PreSerialize(Buffer::Iterator& i) const;
     /**
      * Deserialize the GTP-C header in the GTP-C messages
-     * \param i the buffer iterator
-     * \return number of bytes deserialized
+     * @param i the buffer iterator
+     * @return number of bytes deserialized
      */
     uint32_t PreDeserialize(Buffer::Iterator& i);
 };
 
 /**
- * \ingroup lte
+ * @ingroup lte
  * GTP-C Information Elements
  */
 class GtpcIes
@@ -199,8 +199,8 @@ class GtpcIes
     const uint32_t serializedSizePacketFilter =
         3 + 9 + 9 + 5 + 5 + 3; //!< Packet filter serialized size
     /**
-     * \return the BearerTft serialized size
-     * \param packetFilters The packet filter
+     * @return the BearerTft serialized size
+     * @param packetFilters The packet filter
      */
     uint32_t GetSerializedSizeBearerTft(std::list<EpcTft::PacketFilter> packetFilters) const;
     const uint32_t serializedSizeUliEcgi = 12;            //!< UliEcgi serialized size
@@ -209,49 +209,49 @@ class GtpcIes
 
     /**
      * Serialize the IMSI
-     * \param i Buffer iterator
-     * \param imsi The IMSI
+     * @param i Buffer iterator
+     * @param imsi The IMSI
      */
     void SerializeImsi(Buffer::Iterator& i, uint64_t imsi) const;
     /**
      * Deserialize the IMSI
-     * \param i Buffer iterator
-     * \param [out] imsi The IMSI
-     * \return the number of deserialized bytes
+     * @param i Buffer iterator
+     * @param [out] imsi The IMSI
+     * @return the number of deserialized bytes
      */
     uint32_t DeserializeImsi(Buffer::Iterator& i, uint64_t& imsi) const;
 
     /**
      * Serialize the Cause
-     * \param i Buffer iterator
-     * \param cause The Cause
+     * @param i Buffer iterator
+     * @param cause The Cause
      */
     void SerializeCause(Buffer::Iterator& i, Cause_t cause) const;
     /**
      * Deserialize the Cause
-     * \param i Buffer iterator
-     * \param [out] cause The cause
-     * \return the number of deserialized bytes
+     * @param i Buffer iterator
+     * @param [out] cause The cause
+     * @return the number of deserialized bytes
      */
     uint32_t DeserializeCause(Buffer::Iterator& i, Cause_t& cause) const;
 
     /**
      * Serialize the eps Bearer Id
-     * \param i Buffer iterator
-     * \param  epsBearerId The eps Bearer Id
+     * @param i Buffer iterator
+     * @param  epsBearerId The eps Bearer Id
      */
     void SerializeEbi(Buffer::Iterator& i, uint8_t epsBearerId) const;
     /**
      * Deserialize the eps Bearer Id
-     * \param i Buffer iterator
-     * \param [out] epsBearerId The eps Bearer Id
-     * \return the number of deserialized bytes
+     * @param i Buffer iterator
+     * @param [out] epsBearerId The eps Bearer Id
+     * @return the number of deserialized bytes
      */
     uint32_t DeserializeEbi(Buffer::Iterator& i, uint8_t& epsBearerId) const;
 
     /**
-     * \param i Buffer iterator
-     * \param data data to write in buffer
+     * @param i Buffer iterator
+     * @param data data to write in buffer
      *
      * Write the data in buffer and advance the iterator position
      * by five bytes. The data is written in network order and the
@@ -259,8 +259,8 @@ class GtpcIes
      */
     void WriteHtonU40(Buffer::Iterator& i, uint64_t data) const;
     /**
-     * \param i Buffer iterator
-     * \return the five bytes read in the buffer.
+     * @param i Buffer iterator
+     * @return the five bytes read in the buffer.
      *
      * Read data and advance the Iterator by the number of bytes
      * read.
@@ -270,78 +270,78 @@ class GtpcIes
 
     /**
      * Serialize the eps Bearer QoS
-     * \param i Buffer iterator
-     * \param bearerQos The Bearer QoS
+     * @param i Buffer iterator
+     * @param bearerQos The Bearer QoS
      */
     void SerializeBearerQos(Buffer::Iterator& i, EpsBearer bearerQos) const;
     /**
      * Deserialize the eps Bearer QoS
-     * \param i Buffer iterator
-     * \param [out] bearerQos The Bearer QoS
-     * \return the number of deserialized bytes
+     * @param i Buffer iterator
+     * @param [out] bearerQos The Bearer QoS
+     * @return the number of deserialized bytes
      */
     uint32_t DeserializeBearerQos(Buffer::Iterator& i, EpsBearer& bearerQos);
 
     /**
      * Serialize the Bearer TFT
-     * \param i Buffer iterator
-     * \param packetFilters The Packet filters
+     * @param i Buffer iterator
+     * @param packetFilters The Packet filters
      */
     void SerializeBearerTft(Buffer::Iterator& i,
                             std::list<EpcTft::PacketFilter> packetFilters) const;
     /**
      * Deserialize the Bearer TFT
-     * \param i Buffer iterator
-     * \param [out] epcTft The Bearer TFT
-     * \return the number of deserialized bytes
+     * @param i Buffer iterator
+     * @param [out] epcTft The Bearer TFT
+     * @return the number of deserialized bytes
      */
     uint32_t DeserializeBearerTft(Buffer::Iterator& i, Ptr<EpcTft> epcTft) const;
 
     /**
      * Serialize the UliEcgi
-     * \param i Buffer iterator
-     * \param uliEcgi The UliEcgi
+     * @param i Buffer iterator
+     * @param uliEcgi The UliEcgi
      */
     void SerializeUliEcgi(Buffer::Iterator& i, uint32_t uliEcgi) const;
     /**
      * Deserialize the UliEcgi
-     * \param i Buffer iterator
-     * \param [out] uliEcgi UliEcgi
-     * \return the number of deserialized bytes
+     * @param i Buffer iterator
+     * @param [out] uliEcgi UliEcgi
+     * @return the number of deserialized bytes
      */
     uint32_t DeserializeUliEcgi(Buffer::Iterator& i, uint32_t& uliEcgi) const;
 
     /**
      * Serialize the Fteid_t
-     * \param i Buffer iterator
-     * \param fteid The Fteid_t
+     * @param i Buffer iterator
+     * @param fteid The Fteid_t
      */
     void SerializeFteid(Buffer::Iterator& i, GtpcHeader::Fteid_t fteid) const;
     /**
      * Deserialize the Fteid
-     * \param i Buffer iterator
-     * \param [out] fteid Fteid
-     * \return the number of deserialized bytes
+     * @param i Buffer iterator
+     * @param [out] fteid Fteid
+     * @return the number of deserialized bytes
      */
     uint32_t DeserializeFteid(Buffer::Iterator& i, GtpcHeader::Fteid_t& fteid) const;
 
     /**
      * Serialize the Bearer Context Header
-     * \param i Buffer iterator
-     * \param length The length
+     * @param i Buffer iterator
+     * @param length The length
      */
     void SerializeBearerContextHeader(Buffer::Iterator& i, uint16_t length) const;
     /**
      * Deserialize the Bearer Context Header
-     * \param i Buffer iterator
-     * \param [out] length length
-     * \return the number of deserialized bytes
+     * @param i Buffer iterator
+     * @param [out] length length
+     * @return the number of deserialized bytes
      */
     uint32_t DeserializeBearerContextHeader(Buffer::Iterator& i, uint16_t& length) const;
 };
 
 /**
- * \ingroup lte
+ * @ingroup lte
  * GTP-C Create Session Request Message
  */
 class GtpcCreateSessionRequestMessage : public GtpcHeader, public GtpcIes
@@ -350,8 +350,8 @@ class GtpcCreateSessionRequestMessage : public GtpcHeader, public GtpcIes
     GtpcCreateSessionRequestMessage();
     ~GtpcCreateSessionRequestMessage() override;
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     TypeId GetInstanceTypeId() const override;
@@ -363,34 +363,34 @@ class GtpcCreateSessionRequestMessage : public GtpcHeader, public GtpcIes
 
     /**
      * Get the IMSI
-     * \return IMSI
+     * @return IMSI
      */
     uint64_t GetImsi() const;
     /**
      * Set the IMSI
-     * \param imsi IMSI
+     * @param imsi IMSI
      */
     void SetImsi(uint64_t imsi);
 
     /**
      * Get the UliEcgi
-     * \return UliEcgi
+     * @return UliEcgi
      */
     uint32_t GetUliEcgi() const;
     /**
      * Set the UliEcgi
-     * \param uliEcgi UliEcgi
+     * @param uliEcgi UliEcgi
      */
     void SetUliEcgi(uint32_t uliEcgi);
 
     /**
      * Get the Sender CpFteid
-     * \return Sender CpFteid
+     * @return Sender CpFteid
      */
     GtpcHeader::Fteid_t GetSenderCpFteid() const;
     /**
      * Set the Sender CpFteid
-     * \param fteid Sender CpFteid
+     * @param fteid Sender CpFteid
      */
     void SetSenderCpFteid(GtpcHeader::Fteid_t fteid);
 
@@ -407,12 +407,12 @@ class GtpcCreateSessionRequestMessage : public GtpcHeader, public GtpcIes
 
     /**
      * Get the Bearer Contexts
-     * \return the Bearer Context list
+     * @return the Bearer Context list
      */
     std::list<BearerContextToBeCreated> GetBearerContextsToBeCreated() const;
     /**
      * Set the Bearer Contexts
-     * \param bearerContexts the Bearer Context list
+     * @param bearerContexts the Bearer Context list
      */
     void SetBearerContextsToBeCreated(std::list<BearerContextToBeCreated> bearerContexts);
 
@@ -426,7 +426,7 @@ class GtpcCreateSessionRequestMessage : public GtpcHeader, public GtpcIes
 };
 
 /**
- * \ingroup lte
+ * @ingroup lte
  * GTP-C Create Session Response Message
  */
 class GtpcCreateSessionResponseMessage : public GtpcHeader, public GtpcIes
@@ -435,8 +435,8 @@ class GtpcCreateSessionResponseMessage : public GtpcHeader, public GtpcIes
     GtpcCreateSessionResponseMessage();
     ~GtpcCreateSessionResponseMessage() override;
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     TypeId GetInstanceTypeId() const override;
@@ -448,23 +448,23 @@ class GtpcCreateSessionResponseMessage : public GtpcHeader, public GtpcIes
 
     /**
      * Get the Cause
-     * \return the Cause
+     * @return the Cause
      */
     Cause_t GetCause() const;
     /**
      * Set the Cause
-     * \param cause The cause
+     * @param cause The cause
      */
     void SetCause(Cause_t cause);
 
     /**
      * Get the Sender CpFteid
-     * \return the Sender CpFteid
+     * @return the Sender CpFteid
      */
     GtpcHeader::Fteid_t GetSenderCpFteid() const;
     /**
      * Set the Sender CpFteid
-     * \param fteid the Sender CpFteid
+     * @param fteid the Sender CpFteid
      */
     void SetSenderCpFteid(GtpcHeader::Fteid_t fteid);
 
@@ -482,12 +482,12 @@ class GtpcCreateSessionResponseMessage : public GtpcHeader, public GtpcIes
 
     /**
      * Get the Container of Bearer Contexts
-     * \return a list of Bearer Contexts
+     * @return a list of Bearer Contexts
      */
     std::list<BearerContextCreated> GetBearerContextsCreated() const;
     /**
      * Set the Bearer Contexts
-     * \param bearerContexts a list of Bearer Contexts
+     * @param bearerContexts a list of Bearer Contexts
      */
     void SetBearerContextsCreated(std::list<BearerContextCreated> bearerContexts);
 
@@ -499,7 +499,7 @@ class GtpcCreateSessionResponseMessage : public GtpcHeader, public GtpcIes
 };
 
 /**
- * \ingroup lte
+ * @ingroup lte
  * GTP-C Modify Bearer Request Message
  */
 class GtpcModifyBearerRequestMessage : public GtpcHeader, public GtpcIes
@@ -508,8 +508,8 @@ class GtpcModifyBearerRequestMessage : public GtpcHeader, public GtpcIes
     GtpcModifyBearerRequestMessage();
     ~GtpcModifyBearerRequestMessage() override;
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     TypeId GetInstanceTypeId() const override;
@@ -521,23 +521,23 @@ class GtpcModifyBearerRequestMessage : public GtpcHeader, public GtpcIes
 
     /**
      * Get the IMSI
-     * \return IMSI
+     * @return IMSI
      */
     uint64_t GetImsi() const;
     /**
      * Set the IMSI
-     * \param imsi IMSI
+     * @param imsi IMSI
      */
     void SetImsi(uint64_t imsi);
 
     /**
      * Get the UliEcgi
-     * \return UliEcgi
+     * @return UliEcgi
      */
     uint32_t GetUliEcgi() const;
     /**
      * Set the UliEcgi
-     * \param uliEcgi UliEcgi
+     * @param uliEcgi UliEcgi
      */
     void SetUliEcgi(uint32_t uliEcgi);
 
@@ -552,12 +552,12 @@ class GtpcModifyBearerRequestMessage : public GtpcHeader, public GtpcIes
 
     /**
      * Get the Bearer Contexts
-     * \return the Bearer Context list
+     * @return the Bearer Context list
      */
     std::list<BearerContextToBeModified> GetBearerContextsToBeModified() const;
     /**
      * Set the Bearer Contexts
-     * \param bearerContexts the Bearer Context list
+     * @param bearerContexts the Bearer Context list
      */
     void SetBearerContextsToBeModified(std::list<BearerContextToBeModified> bearerContexts);
 
@@ -570,7 +570,7 @@ class GtpcModifyBearerRequestMessage : public GtpcHeader, public GtpcIes
 };
 
 /**
- * \ingroup lte
+ * @ingroup lte
  * GTP-C Modify Bearer Response Message
  */
 class GtpcModifyBearerResponseMessage : public GtpcHeader, public GtpcIes
@@ -579,8 +579,8 @@ class GtpcModifyBearerResponseMessage : public GtpcHeader, public GtpcIes
     GtpcModifyBearerResponseMessage();
     ~GtpcModifyBearerResponseMessage() override;
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     TypeId GetInstanceTypeId() const override;
@@ -592,12 +592,12 @@ class GtpcModifyBearerResponseMessage : public GtpcHeader, public GtpcIes
 
     /**
      * Get the Cause
-     * \return the Cause
+     * @return the Cause
      */
     Cause_t GetCause() const;
     /**
      * Set the Cause
-     * \param cause The cause
+     * @param cause The cause
      */
     void SetCause(Cause_t cause);
 
@@ -606,7 +606,7 @@ class GtpcModifyBearerResponseMessage : public GtpcHeader, public GtpcIes
 };
 
 /**
- * \ingroup lte
+ * @ingroup lte
  * GTP-C Delete Bearer Command Message
  */
 class GtpcDeleteBearerCommandMessage : public GtpcHeader, public GtpcIes
@@ -615,8 +615,8 @@ class GtpcDeleteBearerCommandMessage : public GtpcHeader, public GtpcIes
     GtpcDeleteBearerCommandMessage();
     ~GtpcDeleteBearerCommandMessage() override;
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     TypeId GetInstanceTypeId() const override;
@@ -634,12 +634,12 @@ class GtpcDeleteBearerCommandMessage : public GtpcHeader, public GtpcIes
 
     /**
      * Get the Bearer contexts
-     * \return container of beraer contexts
+     * @return container of beraer contexts
      */
     std::list<BearerContext> GetBearerContexts() const;
     /**
      * Set the Bearer contexts
-     * \param bearerContexts container of beraer contexts
+     * @param bearerContexts container of beraer contexts
      */
     void SetBearerContexts(std::list<BearerContext> bearerContexts);
 
@@ -648,7 +648,7 @@ class GtpcDeleteBearerCommandMessage : public GtpcHeader, public GtpcIes
 };
 
 /**
- * \ingroup lte
+ * @ingroup lte
  * GTP-C Delete Bearer Request Message
  */
 class GtpcDeleteBearerRequestMessage : public GtpcHeader, public GtpcIes
@@ -657,8 +657,8 @@ class GtpcDeleteBearerRequestMessage : public GtpcHeader, public GtpcIes
     GtpcDeleteBearerRequestMessage();
     ~GtpcDeleteBearerRequestMessage() override;
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     TypeId GetInstanceTypeId() const override;
@@ -670,12 +670,12 @@ class GtpcDeleteBearerRequestMessage : public GtpcHeader, public GtpcIes
 
     /**
      * Get the Bearers IDs
-     * \return a container of Bearers IDs
+     * @return a container of Bearers IDs
      */
     std::list<uint8_t> GetEpsBearerIds() const;
     /**
      * Set the Bearers IDs
-     * \param epsBearerIds The container of Bearers IDs
+     * @param epsBearerIds The container of Bearers IDs
      */
     void SetEpsBearerIds(std::list<uint8_t> epsBearerIds);
 
@@ -684,7 +684,7 @@ class GtpcDeleteBearerRequestMessage : public GtpcHeader, public GtpcIes
 };
 
 /**
- * \ingroup lte
+ * @ingroup lte
  * GTP-C Delete Bearer Response Message
  */
 class GtpcDeleteBearerResponseMessage : public GtpcHeader, public GtpcIes
@@ -693,8 +693,8 @@ class GtpcDeleteBearerResponseMessage : public GtpcHeader, public GtpcIes
     GtpcDeleteBearerResponseMessage();
     ~GtpcDeleteBearerResponseMessage() override;
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     TypeId GetInstanceTypeId() const override;
@@ -706,23 +706,23 @@ class GtpcDeleteBearerResponseMessage : public GtpcHeader, public GtpcIes
 
     /**
      * Get the Cause
-     * \return the Cause
+     * @return the Cause
      */
     Cause_t GetCause() const;
     /**
      * Set the Cause
-     * \param cause The cause
+     * @param cause The cause
      */
     void SetCause(Cause_t cause);
 
     /**
      * Get the Bearers IDs
-     * \return a container of Bearers IDs
+     * @return a container of Bearers IDs
      */
     std::list<uint8_t> GetEpsBearerIds() const;
     /**
      * Set the Bearers IDs
-     * \param epsBearerIds The container of Bearers IDs
+     * @param epsBearerIds The container of Bearers IDs
      */
     void SetEpsBearerIds(std::list<uint8_t> epsBearerIds);
 

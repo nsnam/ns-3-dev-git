@@ -27,7 +27,7 @@ class SSRecord;
 class WimaxConnection;
 
 /**
- * \ingroup wimax
+ * @ingroup wimax
  * The same service flow manager class serves both for BS and SS though some functions are exclusive
  * to only one of them.
  */
@@ -42,8 +42,8 @@ class ServiceFlowManager : public Object
     };
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -53,60 +53,60 @@ class ServiceFlowManager : public Object
 
     /**
      * Add service flow function
-     * \param serviceFlow the service flow
+     * @param serviceFlow the service flow
      */
     void AddServiceFlow(ServiceFlow* serviceFlow);
     /**
      * Get service flow by flow id
-     * \param sfid the service flow id
-     * \returns pointer to the service flow object corresponding to the flow id
+     * @param sfid the service flow id
+     * @returns pointer to the service flow object corresponding to the flow id
      */
     ServiceFlow* GetServiceFlow(uint32_t sfid) const;
     /**
      * Get service flow by CID
-     * \param cid the CID
-     * \returns pointer to the service flow object corresponding to the CID
+     * @param cid the CID
+     * @returns pointer to the service flow object corresponding to the CID
      */
     ServiceFlow* GetServiceFlow(Cid cid) const;
     /**
      * Get service flows function
-     * \param schedulingType the scheduling type
-     * \returns vector of pointers to service flows corresponding to the scheduling type
+     * @param schedulingType the scheduling type
+     * @returns vector of pointers to service flows corresponding to the scheduling type
      */
     std::vector<ServiceFlow*> GetServiceFlows(ServiceFlow::SchedulingType schedulingType) const;
 
     /**
-     * \return true if all service flows are allocated, false otherwise
+     * @return true if all service flows are allocated, false otherwise
      */
     bool AreServiceFlowsAllocated();
     /**
-     * \param  serviceFlows vector of pointers to service flows to be checked
-     * \return true if all service flows are allocated, false otherwise
+     * @param  serviceFlows vector of pointers to service flows to be checked
+     * @return true if all service flows are allocated, false otherwise
      */
     bool AreServiceFlowsAllocated(std::vector<ServiceFlow*>* serviceFlows);
     /**
-     * \param  serviceFlows vector of pointers to service flows to be checked
-     * \return true if all service flows are allocated, false otherwise
+     * @param  serviceFlows vector of pointers to service flows to be checked
+     * @return true if all service flows are allocated, false otherwise
      */
     bool AreServiceFlowsAllocated(std::vector<ServiceFlow*> serviceFlows);
     /**
-     * \return pointer to the next service flow to be allocated
+     * @return pointer to the next service flow to be allocated
      */
     ServiceFlow* GetNextServiceFlowToAllocate();
 
     /**
-     * \return the number of all service flows
+     * @return the number of all service flows
      */
     uint32_t GetNrServiceFlows() const;
 
     /**
-     * \param SrcAddress the source ip address
-     * \param DstAddress the destination ip address
-     * \param SrcPort the source port
-     * \param DstPort the destination port
-     * \param Proto the protocol
-     * \param dir the direction of the service flow
-     * \return the service flow to which this ip flow is associated
+     * @param SrcAddress the source ip address
+     * @param DstAddress the destination ip address
+     * @param SrcPort the source port
+     * @param DstPort the destination port
+     * @param Proto the protocol
+     * @param dir the direction of the service flow
+     * @return the service flow to which this ip flow is associated
      */
     ServiceFlow* DoClassify(Ipv4Address SrcAddress,
                             Ipv4Address DstAddress,

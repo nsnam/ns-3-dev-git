@@ -23,9 +23,9 @@ namespace ns3
 NS_LOG_COMPONENT_DEFINE("ByteTagList");
 
 /**
- * \ingroup packet
+ * @ingroup packet
  *
- * \brief Internal representation of the byte tags stored in a packet.
+ * @brief Internal representation of the byte tags stored in a packet.
  *
  * This structure is only used by ByteTagList and should not be accessed directly.
  */
@@ -39,9 +39,9 @@ struct ByteTagListData
 
 #ifdef USE_FREE_LIST
 /**
- * \ingroup packet
+ * @ingroup packet
  *
- * \brief Container class for struct ByteTagListData
+ * @brief Container class for struct ByteTagListData
  *
  * Internal use only.
  */

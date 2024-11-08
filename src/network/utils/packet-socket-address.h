@@ -21,9 +21,9 @@ namespace ns3
 class NetDevice;
 
 /**
- * \ingroup address
+ * @ingroup address
  *
- * \brief an address for a packet socket
+ * @brief an address for a packet socket
  */
 class PacketSocketAddress
 {
@@ -31,83 +31,83 @@ class PacketSocketAddress
     PacketSocketAddress();
 
     /**
-     * \brief Set the protocol
-     * \param protocol the protocol
+     * @brief Set the protocol
+     * @param protocol the protocol
      */
     void SetProtocol(uint16_t protocol);
 
     /**
-     * \brief Set the address to match all the outgoing NetDevice
+     * @brief Set the address to match all the outgoing NetDevice
      */
     void SetAllDevices();
 
     /**
-     * \brief Set the address to match only a specified NetDevice
-     * \param device the NetDevice index
+     * @brief Set the address to match only a specified NetDevice
+     * @param device the NetDevice index
      */
     void SetSingleDevice(uint32_t device);
 
     /**
-     * \brief Set the destination address
-     * \param address the destination address
+     * @brief Set the destination address
+     * @param address the destination address
      */
     void SetPhysicalAddress(const Address address);
 
     /**
-     * \brief Get the protocol
-     * \return the protocol
+     * @brief Get the protocol
+     * @return the protocol
      */
     uint16_t GetProtocol() const;
 
     /**
-     * \brief Get the device this address is bound to
-     * \return the device index
+     * @brief Get the device this address is bound to
+     * @return the device index
      */
     uint32_t GetSingleDevice() const;
 
     /**
-     * \brief Checks if the address is bound to a specified NetDevice
-     * \return true if the address is bound to a NetDevice
+     * @brief Checks if the address is bound to a specified NetDevice
+     * @return true if the address is bound to a NetDevice
      */
     bool IsSingleDevice() const;
 
     /**
-     * \brief Get the destination address
-     * \returns The destination address
+     * @brief Get the destination address
+     * @returns The destination address
      */
     Address GetPhysicalAddress() const;
 
     /**
-     * \returns a new Address instance
+     * @returns a new Address instance
      *
      * Convert an instance of this class to a polymorphic Address instance.
      */
     operator Address() const;
 
     /**
-     * \param address a polymorphic address
-     * \returns an Address
+     * @param address a polymorphic address
+     * @returns an Address
      * Convert a polymorphic address to an Mac48Address instance.
      * The conversion performs a type check.
      */
     static PacketSocketAddress ConvertFrom(const Address& address);
 
     /**
-     * \brief Convert an instance of this class to a polymorphic Address instance.
-     * \returns a new Address instance
+     * @brief Convert an instance of this class to a polymorphic Address instance.
+     * @returns a new Address instance
      */
     Address ConvertTo() const;
 
     /**
-     * \param address address to test
-     * \returns true if the address matches, false otherwise.
+     * @param address address to test
+     * @returns true if the address matches, false otherwise.
      */
     static bool IsMatchingType(const Address& address);
 
   private:
     /**
-     * \brief Return the Type of address.
-     * \return type of address
+     * @brief Return the Type of address.
+     * @return type of address
      */
     static uint8_t GetType();
 

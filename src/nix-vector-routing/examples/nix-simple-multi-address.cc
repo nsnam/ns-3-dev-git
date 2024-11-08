@@ -22,7 +22,7 @@
  * addresses.
  *
  * Simple point-to-point links:
- * \verbatim
+ * @verbatim
     n0 -- n1 -- n2 -- n3
 
     From t = 0s onwards,
@@ -51,7 +51,7 @@
  *  - At t = +7s, Path from n0 to n3 (10.2.3.2).
  *
  * Logging output:
- * \verbatim
+ * @verbatim
    At time +2s client sent 1024 bytes to 10.1.3.2 port 9
    At time +2.01106s server received 1024 bytes from 10.1.1.1 port 49153
    At time +2.01106s server sent 1024 bytes to 10.1.1.1 port 49153
@@ -59,7 +59,7 @@
   \endverbatim
  *
  * Output in nix-simple-multi-address.routes:
- * \verbatim
+ * @verbatim
   Time: +3s, Nix Routing
   Route path from Node 0 to Node 1, Nix Vector: 0 (1 bits left)
   10.2.1.1                 (Node 0)  ---->   10.2.1.2                 (Node 1)

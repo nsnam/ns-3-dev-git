@@ -20,21 +20,21 @@
 using namespace ns3;
 
 /**
- * \ingroup click
- * \defgroup click-tests click module tests
+ * @ingroup click
+ * @defgroup click-tests click module tests
  */
 
 /**
- * \file
- * \ingroup click-tests
+ * @file
+ * @ingroup click-tests
  * Click test suite.
  */
 
 /**
- * \ingroup click-tests
+ * @ingroup click-tests
  * Add Click Internet stack.
  *
- * \param node Node.
+ * @param node Node.
  */
 static void
 AddClickInternetStack(Ptr<Node> node)
@@ -45,13 +45,13 @@ AddClickInternetStack(Ptr<Node> node)
 }
 
 /**
- * \ingroup click-tests
+ * @ingroup click-tests
  * Add network device.
  *
- * \param node Node.
- * \param macaddr MAC address.
- * \param ipv4addr IPv4 address.
- * \param ipv4mask IPv4 mask.
+ * @param node Node.
+ * @param macaddr MAC address.
+ * @param ipv4addr IPv4 address.
+ * @param ipv4mask IPv4 mask.
  */
 static void
 AddNetworkDevice(Ptr<Node> node, Mac48Address macaddr, Ipv4Address ipv4addr, Ipv4Mask ipv4mask)
@@ -70,7 +70,7 @@ AddNetworkDevice(Ptr<Node> node, Mac48Address macaddr, Ipv4Address ipv4addr, Ipv
 }
 
 /**
- * \ingroup click-tests
+ * @ingroup click-tests
  * Click interface ID from name test.
  */
 class ClickIfidFromNameTest : public TestCase
@@ -120,7 +120,7 @@ ClickIfidFromNameTest::DoRun()
 }
 
 /**
- * \ingroup click-tests
+ * @ingroup click-tests
  * Click IP MAC address from name test.
  */
 class ClickIpMacAddressFromNameTest : public TestCase
@@ -184,7 +184,7 @@ ClickIpMacAddressFromNameTest::DoRun()
 }
 
 /**
- * \ingroup click-tests
+ * @ingroup click-tests
  * Click trivial test.
  */
 class ClickTrivialTest : public TestCase
@@ -232,7 +232,7 @@ ClickTrivialTest::DoRun()
 }
 
 /**
- * \ingroup click-tests
+ * @ingroup click-tests
  * Click interface ID from name test.
  */
 class ClickIfidFromNameTestSuite : public TestSuite

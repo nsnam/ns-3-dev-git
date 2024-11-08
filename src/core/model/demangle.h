@@ -16,8 +16,8 @@
 namespace ns3
 {
 /**
- * \param [in] mangled The mangled string
- * \return The demangled form of mangled
+ * @param [in] mangled The mangled string
+ * @return The demangled form of mangled
  */
 std::string Demangle(const std::string& mangled);
 }; // namespace ns3

@@ -14,8 +14,8 @@
 #include "random-variable-stream.h"
 
 /**
- * \file
- * \ingroup timer
+ * @file
+ * @ingroup timer
  * ns3::TrickleTimer timer class declaration.
  */
 
@@ -30,8 +30,8 @@ class TimerImpl;
 } // namespace internal
 
 /**
- * \ingroup timer
- * \brief A Trickle Timer following \RFC{6206}.
+ * @ingroup timer
+ * @brief A Trickle Timer following \RFC{6206}.
  *
  * A Trickle Timer is a timer that varies its frequency between a minimum
  * and a maximum, depending on events. It is typically used to exchange
@@ -75,9 +75,9 @@ class TrickleTimer
      *
      * The maximum interval is set to std::exp2 (doublings) * minInterval.
      *
-     * \param minInterval Minimum interval.
-     * \param doublings Number of doublings to reach the maximum interval.
-     * \param redundancy Redundancy constant.
+     * @param minInterval Minimum interval.
+     * @param doublings Number of doublings to reach the maximum interval.
+     * @param redundancy Redundancy constant.
      *
      * A zero value in the redundancy constant means that the suppression
      * algorithm is disabled.
@@ -91,19 +91,19 @@ class TrickleTimer
     /**
      * Assigns the stream number for the uniform random number generator to use
      *
-     * \param streamNum first stream index to use
-     * \return the number of stream indices assigned by this helper
+     * @param streamNum first stream index to use
+     * @return the number of stream indices assigned by this helper
      */
     int64_t AssignStreams(int64_t streamNum);
 
     /**
-     * \brief Set the timer parameters.
+     * @brief Set the timer parameters.
      *
      * The maximum interval is set to std::exp2 (doublings) * minInterval.
      *
-     * \param minInterval Minimum interval.
-     * \param doublings Number of doublings to reach the maximum interval.
-     * \param redundancy Redundancy constant.
+     * @param minInterval Minimum interval.
+     * @param doublings Number of doublings to reach the maximum interval.
+     * @param redundancy Redundancy constant.
      *
      * A zero value in the redundancy constant means that the suppression
      * algorithm is disabled.
@@ -112,67 +112,67 @@ class TrickleTimer
     void SetParameters(Time minInterval, uint8_t doublings, uint16_t redundancy);
 
     /**
-     * \brief Get the MinInterval of the timer.
-     * \return The MinInterval
+     * @brief Get the MinInterval of the timer.
+     * @return The MinInterval
      */
     Time GetMinInterval() const;
 
     /**
-     * \brief Get the MaxInterval of the timer.
+     * @brief Get the MaxInterval of the timer.
      *
      * The timer MaxInterval is always std::exp2 (doublings) * minInterval
-     * \return The MaxInterval
+     * @return The MaxInterval
      */
     Time GetMaxInterval() const;
 
     /**
-     * \brief Get the doublings of the timer.
-     * \return The doublings
+     * @brief Get the doublings of the timer.
+     * @return The doublings
      */
     uint8_t GetDoublings() const;
 
     /**
-     * \brief Get the Redundancy constant of the timer.
-     * \return The Redundancy
+     * @brief Get the Redundancy constant of the timer.
+     * @return The Redundancy
      */
     uint16_t GetRedundancy() const;
 
     /**
-     * \returns The amount of time left until this timer expires.
+     * @returns The amount of time left until this timer expires.
      *
      * This method returns zero if the timer has never been started.
      */
     Time GetDelayLeft() const;
 
     /**
-     * \returns The amount of time left until this timer interval expires.
+     * @returns The amount of time left until this timer interval expires.
      *
      * This method returns zero if the timer has never been started.
      */
     Time GetIntervalLeft() const;
 
     /**
-     * \brief Enable the timer.
+     * @brief Enable the timer.
      */
     void Enable();
 
     /**
-     * \brief Records a consistent event.
+     * @brief Records a consistent event.
      */
     void ConsistentEvent();
 
     /**
-     * \brief Records an inconsistent event.
+     * @brief Records an inconsistent event.
      */
     void InconsistentEvent();
 
     /**
-     * \brief Reset the timer.
+     * @brief Reset the timer.
      */
     void Reset();
 
     /**
-     * \brief Stop the timer.
+     * @brief Stop the timer.
      *
      * This will reset the timer and cancel all the pending events.
      */
@@ -181,8 +181,8 @@ class TrickleTimer
     /**
      * Set the function to execute when the timer expires.
      *
-     * \tparam FN \deduced The type of the function.
-     * \param [in] fn The function
+     * @tparam FN \deduced The type of the function.
+     * @param [in] fn The function
      *
      * Store this function in this Timer for later use by Timer::Schedule.
      */
@@ -192,10 +192,10 @@ class TrickleTimer
     /**
      * Set the function to execute when the timer expires.
      *
-     * \tparam MEM_PTR \deduced Class method function type.
-     * \tparam OBJ_PTR \deduced Class type containing the function.
-     * \param [in] memPtr The member function pointer
-     * \param [in] objPtr The pointer to object
+     * @tparam MEM_PTR \deduced Class method function type.
+     * @tparam OBJ_PTR \deduced Class type containing the function.
+     * @param [in] memPtr The member function pointer
+     * @param [in] objPtr The pointer to object
      *
      * Store this function and object in this Timer for later use by Timer::Schedule.
      */
@@ -207,8 +207,8 @@ class TrickleTimer
      */
     /**@{*/
     /**
-     * \tparam Ts \deduced Argument types.
-     * \param [in] args arguments
+     * @tparam Ts \deduced Argument types.
+     * @param [in] args arguments
      */
     template <typename... Ts>
     void SetArguments(Ts&&... args);

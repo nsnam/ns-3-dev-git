@@ -22,9 +22,9 @@ namespace ns3
 {
 
 /**
- * \ingroup point-to-point-layout
+ * @ingroup point-to-point-layout
  *
- * \brief A helper to make it easier to create a dumbbell topology
+ * @brief A helper to make it easier to create a dumbbell topology
  * with p2p links
  */
 class PointToPointDumbbellHelper
@@ -34,19 +34,19 @@ class PointToPointDumbbellHelper
      * Create a PointToPointDumbbellHelper in order to easily create
      * dumbbell topologies using p2p links
      *
-     * \param nLeftLeaf number of left side leaf nodes in the dumbbell
+     * @param nLeftLeaf number of left side leaf nodes in the dumbbell
      *
-     * \param leftHelper PointToPointHelper used to install the links
+     * @param leftHelper PointToPointHelper used to install the links
      *                   between the left leaf nodes and the left-most
      *                   router
      *
-     * \param nRightLeaf number of right side leaf nodes in the dumbbell
+     * @param nRightLeaf number of right side leaf nodes in the dumbbell
      *
-     * \param rightHelper PointToPointHelper used to install the links
+     * @param rightHelper PointToPointHelper used to install the links
      *                    between the right leaf nodes and the right-most
      *                    router
      *
-     * \param bottleneckHelper PointToPointHelper used to install the link
+     * @param bottleneckHelper PointToPointHelper used to install the link
      *                         between the inner-routers, usually known as
      *                         the bottleneck link
      */
@@ -60,77 +60,77 @@ class PointToPointDumbbellHelper
 
   public:
     /**
-     * \returns pointer to the node of the left side bottleneck
+     * @returns pointer to the node of the left side bottleneck
      *          router
      */
     Ptr<Node> GetLeft() const;
 
     /**
-     * \returns pointer to the i'th left side leaf node
-     * \param i node number
+     * @returns pointer to the i'th left side leaf node
+     * @param i node number
      */
     Ptr<Node> GetLeft(uint32_t i) const;
 
     /**
-     * \returns pointer to the node of the right side bottleneck
+     * @returns pointer to the node of the right side bottleneck
      *          router
      */
     Ptr<Node> GetRight() const;
 
     /**
-     * \returns pointer to the i'th right side leaf node
-     * \param i node number
+     * @returns pointer to the i'th right side leaf node
+     * @param i node number
      */
     Ptr<Node> GetRight(uint32_t i) const;
 
     /**
-     * \returns an Ipv4Address of the i'th left leaf
-     * \param i node number
+     * @returns an Ipv4Address of the i'th left leaf
+     * @param i node number
      */
     Ipv4Address GetLeftIpv4Address(uint32_t i) const; // Get left leaf address
 
     /**
-     * \returns an Ipv4Address of the i'th right leaf
-     * \param i node number
+     * @returns an Ipv4Address of the i'th right leaf
+     * @param i node number
      */
     Ipv4Address GetRightIpv4Address(uint32_t i) const; // Get right leaf address
 
     /**
-     * \returns an Ipv6Address of the i'th left leaf
-     * \param i node number
+     * @returns an Ipv6Address of the i'th left leaf
+     * @param i node number
      */
     Ipv6Address GetLeftIpv6Address(uint32_t i) const; // Get left leaf address
 
     /**
-     * \returns an Ipv6Address of the i'th right leaf
-     * \param i node number
+     * @returns an Ipv6Address of the i'th right leaf
+     * @param i node number
      */
     Ipv6Address GetRightIpv6Address(uint32_t i) const; // Get right leaf address
 
     /**
-     * \returns total number of left side leaf nodes
+     * @returns total number of left side leaf nodes
      */
     uint32_t LeftCount() const;
 
     /**
-     * \returns total number of right side leaf nodes
+     * @returns total number of right side leaf nodes
      */
     uint32_t RightCount() const;
 
     /**
-     * \param stack an InternetStackHelper which is used to install
+     * @param stack an InternetStackHelper which is used to install
      *              on every node in the dumbbell
      */
     void InstallStack(InternetStackHelper stack);
 
     /**
-     * \param leftIp Ipv4AddressHelper to assign Ipv4 addresses to the
+     * @param leftIp Ipv4AddressHelper to assign Ipv4 addresses to the
      *               interfaces on the left side of the dumbbell
      *
-     * \param rightIp Ipv4AddressHelper to assign Ipv4 addresses to the
+     * @param rightIp Ipv4AddressHelper to assign Ipv4 addresses to the
      *                interfaces on the right side of the dumbbell
      *
-     * \param routerIp Ipv4AddressHelper to assign Ipv4 addresses to the
+     * @param routerIp Ipv4AddressHelper to assign Ipv4 addresses to the
      *                 interfaces on the bottleneck link
      */
     void AssignIpv4Addresses(Ipv4AddressHelper leftIp,
@@ -138,9 +138,9 @@ class PointToPointDumbbellHelper
                              Ipv4AddressHelper routerIp);
 
     /**
-     * \param network an IPv6 address representing the network portion
+     * @param network an IPv6 address representing the network portion
      *                of the IPv6 Address
-     * \param prefix the prefix length
+     * @param prefix the prefix length
      */
     void AssignIpv6Addresses(Ipv6Address network, Ipv6Prefix prefix);
 
@@ -148,10 +148,10 @@ class PointToPointDumbbellHelper
      * Sets up the node canvas locations for every node in the dumbbell.
      * This is needed for use with the animation interface
      *
-     * \param ulx upper left x value
-     * \param uly upper left y value
-     * \param lrx lower right x value
-     * \param lry lower right y value
+     * @param ulx upper left x value
+     * @param uly upper left y value
+     * @param lrx lower right x value
+     * @param lry lower right y value
      */
     void BoundingBox(double ulx, double uly, double lrx, double lry) const;
 

@@ -22,20 +22,20 @@ namespace ns3
 {
 
 /**
- * \ingroup internet-apps
- * \defgroup dhcp DHCPv4 Client and Server
+ * @ingroup internet-apps
+ * @defgroup dhcp DHCPv4 Client and Server
  */
 
 /**
- * \ingroup dhcp
+ * @ingroup dhcp
  *
- * \class DhcpHeader
- * \brief BOOTP header with DHCP messages.  This supports the following options:
+ * @class DhcpHeader
+ * @brief BOOTP header with DHCP messages.  This supports the following options:
  *        Subnet Mask (1), Address Request (50), Refresh Lease Time (51),
  *        DHCP Message Type (53), DHCP Server ID (54), Renew Time (58),
  *        Rebind Time (59) and End (255) of BOOTP
  *
- * \verbatim
+ * @verbatim
    0                   1                   2                   3
    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -73,18 +73,18 @@ class DhcpHeader : public Header
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
     /**
-     * \brief Constructor
+     * @brief Constructor
      */
     DhcpHeader();
 
     /**
-     * \brief Destructor
+     * @brief Destructor
      */
     ~DhcpHeader() override;
 
@@ -113,164 +113,164 @@ class DhcpHeader : public Header
     };
 
     /**
-     * \brief Set the type of BOOTP and DHCP messages
-     * \param type The type of message
+     * @brief Set the type of BOOTP and DHCP messages
+     * @param type The type of message
      */
     void SetType(uint8_t type);
 
     /**
-     * \brief Return the type of DHCP message
-     * \return The type of message
+     * @brief Return the type of DHCP message
+     * @return The type of message
      */
     uint8_t GetType() const;
 
     /**
-     * \brief Set the hardware information
-     * \param htype Hardware type
-     * \param hlen Hardware length
+     * @brief Set the hardware information
+     * @param htype Hardware type
+     * @param hlen Hardware length
      */
     void SetHWType(uint8_t htype, uint8_t hlen);
 
     /**
-     * \brief Set the transaction ID
-     * \param tran The transaction number
+     * @brief Set the transaction ID
+     * @param tran The transaction number
      */
     void SetTran(uint32_t tran);
 
     /**
-     * \brief Get the transaction id
-     * \return The transaction id
+     * @brief Get the transaction id
+     * @return The transaction id
      */
     uint32_t GetTran() const;
 
     /**
-     * \brief Set the time when message is sent
+     * @brief Set the time when message is sent
      */
     void SetTime();
 
     /**
-     * \brief Set the Address of the device.
+     * @brief Set the Address of the device.
      *
      * Only the relevant bits are considered (i.e., not the type and length)
      *
-     * \param addr Address of the device
+     * @param addr Address of the device
      */
     void SetChaddr(Address addr);
 
     /**
-     * \brief Set the Address of the device
-     * \param addr Address of the device
-     * \param len Address length
+     * @brief Set the Address of the device
+     * @param addr Address of the device
+     * @param len Address length
      */
     void SetChaddr(uint8_t* addr, uint8_t len);
 
     /**
-     * \brief Get the Address of the client.
+     * @brief Get the Address of the client.
      *
      * Note: the address is always 16-bytes long.
      *
-     * \return Address of the client
+     * @return Address of the client
      */
     Address GetChaddr();
 
     /**
-     * \brief Set the IPv4Address of the client
-     * \param addr The client Ipv4Address
+     * @brief Set the IPv4Address of the client
+     * @param addr The client Ipv4Address
      */
     void SetYiaddr(Ipv4Address addr);
 
     /**
-     * \brief Get the IPv4Address of the client
-     * \return IPv4Address of the client
+     * @brief Get the IPv4Address of the client
+     * @return IPv4Address of the client
      */
     Ipv4Address GetYiaddr() const;
 
     /**
-     * \brief Set the DHCP server information
-     * \param addr IPv4Address of the server
+     * @brief Set the DHCP server information
+     * @param addr IPv4Address of the server
      */
     void SetDhcps(Ipv4Address addr);
 
     /**
-     * \brief Get the information about the DHCP server
-     * \return IPv4Address of DHCP server
+     * @brief Get the information about the DHCP server
+     * @return IPv4Address of DHCP server
      */
     Ipv4Address GetDhcps() const;
 
     /**
-     * \brief Set the Ipv4Address requested by the client
-     * \param addr Ipv4Address requested by the client
+     * @brief Set the Ipv4Address requested by the client
+     * @param addr Ipv4Address requested by the client
      */
     void SetReq(Ipv4Address addr);
 
     /**
-     * \brief Get the IPv4Address requested by the client
-     * \return IPv4Address requested by the client
+     * @brief Get the IPv4Address requested by the client
+     * @return IPv4Address requested by the client
      */
     Ipv4Address GetReq() const;
 
     /**
-     * \brief Set the mask of the IPv4Address
-     * \param addr 32 bit mask
+     * @brief Set the mask of the IPv4Address
+     * @param addr 32 bit mask
      */
     void SetMask(uint32_t addr);
 
     /**
-     * \brief Return the mask of the network
-     * \return 32 bit mask
+     * @brief Return the mask of the network
+     * @return 32 bit mask
      */
     uint32_t GetMask() const;
 
     /**
-     * \brief Set the Ipv4Address of gateway to be used
-     * \param addr The Ipv4Address of the gateway
+     * @brief Set the Ipv4Address of gateway to be used
+     * @param addr The Ipv4Address of the gateway
      */
     void SetRouter(Ipv4Address addr);
 
     /**
-     * \brief Return the Ipv4Address of gateway to be used
-     * \return The Ipv4Address of the gateway
+     * @brief Return the Ipv4Address of gateway to be used
+     * @return The Ipv4Address of the gateway
      */
     Ipv4Address GetRouter() const;
 
     /**
-     * \brief Set the lease time of the IPv4Address
-     * \param time 32 bit time
+     * @brief Set the lease time of the IPv4Address
+     * @param time 32 bit time
      */
     void SetLease(uint32_t time);
 
     /**
-     * \brief Return the lease time of the IPv4Address
-     * \return 32 bit time
+     * @brief Return the lease time of the IPv4Address
+     * @return 32 bit time
      */
     uint32_t GetLease() const;
 
     /**
-     * \brief Set the Renewal time of the IPv4Address
-     * \param time 32 bit time
+     * @brief Set the Renewal time of the IPv4Address
+     * @param time 32 bit time
      */
     void SetRenew(uint32_t time);
 
     /**
-     * \brief Return the Renewal time of the address
-     * \return 32 bit time
+     * @brief Return the Renewal time of the address
+     * @return 32 bit time
      */
     uint32_t GetRenew() const;
 
     /**
-     * \brief Set the Rebind time of the IPv4Address
-     * \param time 32 bit time
+     * @brief Set the Rebind time of the IPv4Address
+     * @param time 32 bit time
      */
     void SetRebind(uint32_t time);
 
     /**
-     * \brief Return the Rebind time of the address
-     * \return 32 bit time
+     * @brief Return the Rebind time of the address
+     * @return 32 bit time
      */
     uint32_t GetRebind() const;
 
     /**
-     * \brief Reset the BOOTP options
+     * @brief Reset the BOOTP options
      */
     void ResetOpt();
 

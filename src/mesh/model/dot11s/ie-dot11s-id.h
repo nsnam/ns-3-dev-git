@@ -20,7 +20,7 @@ namespace dot11s
 {
 
 /**
- * \brief a IEEE 802.11 Mesh ID element (Section 8.4.2.101 of IEEE 802.11-2012)
+ * @brief a IEEE 802.11 Mesh ID element (Section 8.4.2.101 of IEEE 802.11-2012)
  */
 class IeMeshId : public WifiInformationElement
 {
@@ -30,25 +30,25 @@ class IeMeshId : public WifiInformationElement
     /**
      * Constructor
      *
-     * \param s reference id
+     * @param s reference id
      */
     IeMeshId(std::string s);
 
     /**
      * Equality test
-     * \param o another IeMeshId
-     * \returns true if equal
+     * @param o another IeMeshId
+     * @returns true if equal
      */
     bool IsEqual(const IeMeshId& o) const;
     /**
      * Return true if broadcast (if first octet of Mesh ID is zero)
-     * \returns true if broadcast
+     * @returns true if broadcast
      */
     bool IsBroadcast() const;
     // uint32_t GetLength () const;
     /**
      * Peek the IeMeshId as a string value
-     * \returns the mesh ID as a string
+     * @returns the mesh ID as a string
      */
     char* PeekString() const;
 
@@ -64,19 +64,19 @@ class IeMeshId : public WifiInformationElement
     /**
      * equality operator
      *
-     * \param a lhs
-     * \param b lhs
-     * \returns true if equal
+     * @param a lhs
+     * @param b lhs
+     * @returns true if equal
      */
     friend bool operator==(const IeMeshId& a, const IeMeshId& b);
 };
 
 /**
- * \brief Stream insertion operator.
+ * @brief Stream insertion operator.
  *
- * \param [in] os The reference to the output stream.
- * \param [in] meshId The IeMeshId object.
- * \returns The reference to the output stream.
+ * @param [in] os The reference to the output stream.
+ * @param [in] meshId The IeMeshId object.
+ * @returns The reference to the output stream.
  */
 std::ostream& operator<<(std::ostream& os, const IeMeshId& meshId);
 

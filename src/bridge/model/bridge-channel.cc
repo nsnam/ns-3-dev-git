@@ -9,8 +9,8 @@
 #include "ns3/log.h"
 
 /**
- * \file
- * \ingroup bridge
+ * @file
+ * @ingroup bridge
  * ns3::BridgeChannel implementation.
  */
 

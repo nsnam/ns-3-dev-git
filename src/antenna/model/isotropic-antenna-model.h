@@ -17,9 +17,9 @@ namespace ns3
 {
 
 /**
- * \ingroup antenna
+ * @ingroup antenna
  *
- * \brief Isotropic antenna model
+ * @brief Isotropic antenna model
  *
  * This is the simplest antenna model. The gain of this antenna is the same in all directions.
  */
@@ -29,8 +29,8 @@ class IsotropicAntennaModel : public AntennaModel
     IsotropicAntennaModel();
 
     /**
-     * \brief Get the type ID.
-     * \return The object TypeId.
+     * @brief Get the type ID.
+     * @return The object TypeId.
      */
     static TypeId GetTypeId();
 

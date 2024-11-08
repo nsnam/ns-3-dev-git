@@ -18,8 +18,8 @@
 #include <sstream>
 
 /**
- * \file
- * \ingroup topology
+ * @file
+ * @ingroup topology
  * ns3::OrbisTopologyReader implementation.
  */
 

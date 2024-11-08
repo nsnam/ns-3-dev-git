@@ -618,9 +618,9 @@ WimaxHelper::EnableAsciiInternal(Ptr<OutputStreamWrapper> stream,
 }
 
 /**
- * \brief print pcap record
- * \param file pcap file
- * \param burst packet burst to print
+ * @brief print pcap record
+ * @param file pcap file
+ * @param burst packet burst to print
  */
 static void
 PcapSniffTxRxEvent(Ptr<PcapFileWrapper> file, Ptr<const PacketBurst> burst)

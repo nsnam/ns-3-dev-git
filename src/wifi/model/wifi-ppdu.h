@@ -20,8 +20,8 @@
 #include <vector>
 
 /**
- * \file
- * \ingroup wifi
+ * @file
+ * @ingroup wifi
  * Declaration of ns3::WifiPpdu class
  * and ns3::WifiConstPsduMap.
  */
@@ -38,7 +38,7 @@ class WifiPhyOperatingChannel;
 typedef std::unordered_map<uint16_t /* STA-ID */, Ptr<const WifiPsdu> /* PSDU */> WifiConstPsduMap;
 
 /**
- * \ingroup wifi
+ * @ingroup wifi
  *
  * WifiPpdu stores a preamble, a modulation class, PHY headers and a PSDU.
  * This class should be subclassed for each amendment.
@@ -49,10 +49,10 @@ class WifiPpdu : public SimpleRefCount<WifiPpdu>
     /**
      * Create a PPDU storing a PSDU.
      *
-     * \param psdu the PHY payload (PSDU)
-     * \param txVector the TXVECTOR that was used for this PPDU
-     * \param channel the operating channel of the PHY used to transmit this PPDU
-     * \param uid the unique ID of this PPDU
+     * @param psdu the PHY payload (PSDU)
+     * @param txVector the TXVECTOR that was used for this PPDU
+     * @param channel the operating channel of the PHY used to transmit this PPDU
+     * @param uid the unique ID of this PPDU
      */
     WifiPpdu(Ptr<const WifiPsdu> psdu,
              const WifiTxVector& txVector,
@@ -61,10 +61,10 @@ class WifiPpdu : public SimpleRefCount<WifiPpdu>
     /**
      * Create a PPDU storing a map of PSDUs.
      *
-     * \param psdus the PHY payloads (PSDUs)
-     * \param txVector the TXVECTOR that was used for this PPDU
-     * \param channel the operating channel of the PHY used to transmit this PPDU
-     * \param uid the unique ID of this PPDU
+     * @param psdus the PHY payloads (PSDUs)
+     * @param txVector the TXVECTOR that was used for this PPDU
+     * @param channel the operating channel of the PHY used to transmit this PPDU
+     * @param uid the unique ID of this PPDU
      */
     WifiPpdu(const WifiConstPsduMap& psdus,
              const WifiTxVector& txVector,
@@ -78,7 +78,7 @@ class WifiPpdu : public SimpleRefCount<WifiPpdu>
     /**
      * Get the TXVECTOR used to send the PPDU.
      *
-     * \return the TXVECTOR of the PPDU.
+     * @return the TXVECTOR of the PPDU.
      */
     const WifiTxVector& GetTxVector() const;
 
@@ -90,19 +90,19 @@ class WifiPpdu : public SimpleRefCount<WifiPpdu>
     /**
      * Update the TXVECTOR based on some information known at the receiver.
      *
-     * \param updatedTxVector the updated TXVECTOR.
+     * @param updatedTxVector the updated TXVECTOR.
      */
     void UpdateTxVector(const WifiTxVector& updatedTxVector) const;
 
     /**
      * Get the payload of the PPDU.
      *
-     * \return the PSDU
+     * @return the PSDU
      */
     Ptr<const WifiPsdu> GetPsdu() const;
 
     /**
-     * \return c\ true if the PPDU's transmission was aborted due to transmitter switch off
+     * @return c\ true if the PPDU's transmission was aborted due to transmitter switch off
      */
     bool IsTruncatedTx() const;
 
@@ -114,7 +114,7 @@ class WifiPpdu : public SimpleRefCount<WifiPpdu>
     /**
      * Get the total transmission duration of the PPDU.
      *
-     * \return the transmission duration of the PPDU
+     * @return the transmission duration of the PPDU
      */
     virtual Time GetTxDuration() const;
 
@@ -122,70 +122,70 @@ class WifiPpdu : public SimpleRefCount<WifiPpdu>
      * Get the channel width over which the PPDU will effectively be
      * transmitted.
      *
-     * \return the effective channel width used for the tranmsission
+     * @return the effective channel width used for the tranmsission
      */
     virtual MHz_u GetTxChannelWidth() const;
 
     /**
-     * \return the center frequency per segment used for the transmission of this PPDU
+     * @return the center frequency per segment used for the transmission of this PPDU
      */
     std::vector<MHz_u> GetTxCenterFreqs() const;
 
     /**
      * Check whether the given PPDU overlaps a given channel.
      *
-     * \param minFreq the minimum frequency of the channel
-     * \param maxFreq the maximum frequency of the channel
-     * \return true if this PPDU overlaps the channel, false otherwise
+     * @param minFreq the minimum frequency of the channel
+     * @param maxFreq the maximum frequency of the channel
+     * @return true if this PPDU overlaps the channel, false otherwise
      */
     bool DoesOverlapChannel(MHz_u minFreq, MHz_u maxFreq) const;
 
     /**
      * Get the modulation used for the PPDU.
-     * \return the modulation used for the PPDU
+     * @return the modulation used for the PPDU
      */
     WifiModulationClass GetModulation() const;
 
     /**
      * Get the UID of the PPDU.
-     * \return the UID of the PPDU
+     * @return the UID of the PPDU
      */
     uint64_t GetUid() const;
 
     /**
      * Get the preamble of the PPDU.
-     * \return the preamble of the PPDU
+     * @return the preamble of the PPDU
      */
     WifiPreamble GetPreamble() const;
 
     /**
-     * \brief Print the PPDU contents.
-     * \param os output stream in which the data should be printed.
+     * @brief Print the PPDU contents.
+     * @param os output stream in which the data should be printed.
      */
     void Print(std::ostream& os) const;
     /**
-     * \brief Copy this instance.
-     * \return a Ptr to a copy of this instance.
+     * @brief Copy this instance.
+     * @return a Ptr to a copy of this instance.
      */
     virtual Ptr<WifiPpdu> Copy() const;
 
     /**
      * Return the PPDU type (\see WifiPpduType)
-     * \return the PPDU type
+     * @return the PPDU type
      */
     virtual WifiPpduType GetType() const;
 
     /**
      * Get the ID of the STA that transmitted the PPDU for UL MU,
      * SU_STA_ID otherwise.
-     * \return the ID of the STA that transmitted the PPDU for UL MU, SU_STA_ID otherwise
+     * @return the ID of the STA that transmitted the PPDU for UL MU, SU_STA_ID otherwise
      */
     virtual uint16_t GetStaId() const;
 
   protected:
     /**
-     * \brief Print the payload of the PPDU.
-     * \return information on the payload part of the PPDU
+     * @brief Print the payload of the PPDU.
+     * @return information on the payload part of the PPDU
      */
     virtual std::string PrintPayload() const;
 
@@ -204,7 +204,7 @@ class WifiPpdu : public SimpleRefCount<WifiPpdu>
     /**
      * Get the TXVECTOR used to send the PPDU.
      *
-     * \return the TXVECTOR of the PPDU.
+     * @return the TXVECTOR of the PPDU.
      */
     virtual WifiTxVector DoGetTxVector() const;
 
@@ -222,20 +222,20 @@ class WifiPpdu : public SimpleRefCount<WifiPpdu>
 };                          // class WifiPpdu
 
 /**
- * \brief Stream insertion operator.
+ * @brief Stream insertion operator.
  *
- * \param os the stream
- * \param ppdu the const pointer to the PPDU
- * \returns a reference to the stream
+ * @param os the stream
+ * @param ppdu the const pointer to the PPDU
+ * @returns a reference to the stream
  */
 std::ostream& operator<<(std::ostream& os, const Ptr<const WifiPpdu>& ppdu);
 
 /**
- * \brief Stream insertion operator.
+ * @brief Stream insertion operator.
  *
- * \param os the stream
- * \param psdus the PSDUs
- * \returns a reference to the stream
+ * @param os the stream
+ * @param psdus the PSDUs
+ * @returns a reference to the stream
  */
 std::ostream& operator<<(std::ostream& os, const WifiConstPsduMap& psdus);
 

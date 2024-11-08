@@ -53,8 +53,8 @@ struct BlackList
     /**
      * Construct a BlackList with the given parameters
      *
-     * \param ip IPv4 address of the neighbor
-     * \param t expire time for the black list entry
+     * @param ip IPv4 address of the neighbor
+     * @param t expire time for the black list entry
      */
     BlackList(Ipv4Address ip, Time t)
         : m_neighborAddress(ip),
@@ -83,8 +83,8 @@ class DsrReceivedRreqEntry
     /**
      * Construct a DsrReceivedRreqEntry with the given parameters
      *
-     * \param d IPv4 address of the destination
-     * \param i identification
+     * @param d IPv4 address of the destination
+     * @param i identification
      */
     DsrReceivedRreqEntry(Ipv4Address d = Ipv4Address(), uint16_t i = 0)
         : m_destination(d),
@@ -93,9 +93,9 @@ class DsrReceivedRreqEntry
     }
 
     /**
-     * \brief Compare send buffer entries (destination address and identification)
-     * \param o another DsrReceivedRreqEntry
-     * \return true if equal
+     * @brief Compare send buffer entries (destination address and identification)
+     * @param o another DsrReceivedRreqEntry
+     * @return true if equal
      */
     bool operator==(const DsrReceivedRreqEntry& o) const
     {
@@ -105,7 +105,7 @@ class DsrReceivedRreqEntry
     /**
      * Return IPv4 address of the destination
      *
-     * \return IPv4 address of the destination
+     * @return IPv4 address of the destination
      */
     Ipv4Address GetDestination() const
     {
@@ -115,7 +115,7 @@ class DsrReceivedRreqEntry
     /**
      * Set IPv4 address of the destination
      *
-     * \param d IPv4 address of the destination
+     * @param d IPv4 address of the destination
      */
     void SetDestination(Ipv4Address d)
     {
@@ -125,7 +125,7 @@ class DsrReceivedRreqEntry
     /**
      * Return IPv4 address of the source
      *
-     * \return IPv4 address of the source
+     * @return IPv4 address of the source
      */
     Ipv4Address GetSource() const
     {
@@ -135,7 +135,7 @@ class DsrReceivedRreqEntry
     /**
      * Set IPv4 address of the source
      *
-     * \param s IPv4 address of the source
+     * @param s IPv4 address of the source
      */
     void SetSource(Ipv4Address s)
     {
@@ -145,7 +145,7 @@ class DsrReceivedRreqEntry
     /**
      * Return identification
      *
-     * \return identification
+     * @return identification
      */
     uint16_t GetIdentification() const
     {
@@ -155,7 +155,7 @@ class DsrReceivedRreqEntry
     /**
      * Set identification
      *
-     * \param i identification
+     * @param i identification
      */
     void SetIdentification(uint16_t i)
     {
@@ -167,7 +167,7 @@ class DsrReceivedRreqEntry
      * Note that the parameter is duration but
      * the stored value is the absolute time.
      *
-     * \param exp duration before expire
+     * @param exp duration before expire
      */
     void SetExpireTime(Time exp)
     {
@@ -179,7 +179,7 @@ class DsrReceivedRreqEntry
      * Note that we return the remaining time but the stored
      * value is the absolute time.
      *
-     * \return the remaining time before the RREQ entry expires
+     * @return the remaining time before the RREQ entry expires
      */
     Time GetExpireTime() const
     {
@@ -195,15 +195,15 @@ class DsrReceivedRreqEntry
 };
 
 /**
- * \ingroup dsr
- * \brief maintain list of DsrRreqTable entry
+ * @ingroup dsr
+ * @brief maintain list of DsrRreqTable entry
  */
 class DsrRreqTable : public Object
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -213,7 +213,7 @@ class DsrRreqTable : public Object
     /**
      * Set the initial discovert hop limit
      *
-     * \param hl the initial discovert hop limit
+     * @param hl the initial discovert hop limit
      */
     void SetInitHopLimit(uint32_t hl)
     {
@@ -223,7 +223,7 @@ class DsrRreqTable : public Object
     /**
      * Return the initial discovert hop limit
      *
-     * \return the initial discovert hop limit
+     * @return the initial discovert hop limit
      */
     uint32_t GetInitHopLimit() const
     {
@@ -234,7 +234,7 @@ class DsrRreqTable : public Object
      * Set the maximum number of request entries in
      * the request table.
      *
-     * \param rt the maximum number of request entries
+     * @param rt the maximum number of request entries
      */
     void SetRreqTableSize(uint32_t rt)
     {
@@ -245,7 +245,7 @@ class DsrRreqTable : public Object
      * Return the maximum number of request entries in
      * the request table.
      *
-     * \return the maximum number of request entries
+     * @return the maximum number of request entries
      */
     uint32_t GetRreqTableSize() const
     {
@@ -256,7 +256,7 @@ class DsrRreqTable : public Object
      * Set the maximum number of request source Ids in
      * the request table
      *
-     * \param id the maximum number of request source Ids
+     * @param id the maximum number of request source Ids
      */
     void SetRreqIdSize(uint32_t id)
     {
@@ -267,7 +267,7 @@ class DsrRreqTable : public Object
      * Return the maximum number of request source Ids in
      * the request table
      *
-     * \return the maximum number of request source Ids
+     * @return the maximum number of request source Ids
      */
     uint32_t GetRreqIdSize() const
     {
@@ -278,7 +278,7 @@ class DsrRreqTable : public Object
      * Set the maximum number of request Ids in
      * the request table for a single destination.
      *
-     * \param uid the maximum number of request Ids
+     * @param uid the maximum number of request Ids
      */
     void SetUniqueRreqIdSize(uint32_t uid)
     {
@@ -289,7 +289,7 @@ class DsrRreqTable : public Object
      * Return the maximum number of request Ids in
      * the request table for a single destination.
      *
-     * \return the maximum number of request Ids
+     * @return the maximum number of request Ids
      */
     uint32_t GetUniqueRreqIdSize() const
     {
@@ -299,28 +299,28 @@ class DsrRreqTable : public Object
     /// Remove the least used entry
     void RemoveLeastExpire();
     /// Find the entry in the route request queue to see if already exists
-    /// \param dst Destination IP
+    /// @param dst Destination IP
     void FindAndUpdate(Ipv4Address dst);
     /// Remove route request entry for dst
-    /// \param dst Destination IP
+    /// @param dst Destination IP
     void RemoveRreqEntry(Ipv4Address dst);
     /// Get the request count number for one destination address
-    /// \param dst Destination IP
-    /// \return the route request counter
+    /// @param dst Destination IP
+    /// @return the route request counter
     uint32_t GetRreqCnt(Ipv4Address dst);
 
     /**
      * The following code generates new request id for each destination.
      * Check for duplicate ids and save new entries if the id is not present in the table.
      *
-     * \param dst IPv4 address of the destination
-     * \return id
+     * @param dst IPv4 address of the destination
+     * @return id
      */
     uint32_t CheckUniqueRreqId(Ipv4Address dst);
     /**
      * Get the request id size
      *
-     * \return the request id size
+     * @return the request id size
      */
     uint32_t GetRreqSize();
 
@@ -329,18 +329,18 @@ class DsrRreqTable : public Object
      */
     void Invalidate();
     /**
-     * \brief Verify if entry is unidirectional or not(e.g. add this neighbor to "blacklist" for
+     * @brief Verify if entry is unidirectional or not(e.g. add this neighbor to "blacklist" for
      * blacklistTimeout period)
-     * \param neighbor neighbor address link to which assumed to be unidirectional
-     * \return true on success
+     * @param neighbor neighbor address link to which assumed to be unidirectional
+     * @return true on success
      */
     BlackList* FindUnidirectional(Ipv4Address neighbor);
     /**
-     * \brief Mark entry as unidirectional (e.g. add this neighbor to "blacklist" for
+     * @brief Mark entry as unidirectional (e.g. add this neighbor to "blacklist" for
      * blacklistTimeout period)
-     * \param neighbor neighbor address link to which assumed to be unidirectional
-     * \param blacklistTimeout time for which the neighboring node is put into the blacklist
-     * \return true on success
+     * @param neighbor neighbor address link to which assumed to be unidirectional
+     * @param blacklistTimeout time for which the neighboring node is put into the blacklist
+     * @return true on success
      */
     bool MarkLinkAsUnidirectional(Ipv4Address neighbor, Time blacklistTimeout);
     /**
@@ -350,10 +350,10 @@ class DsrRreqTable : public Object
 
     /**
      * Find the source request entry in the route request queue, return false if not found
-     * \param src the source address we just received the source request
-     * \param dst the destination address the request is targeted at
-     * \param id the identification number for this request
-     * \return true if found, false otherwise
+     * @param src the source address we just received the source request
+     * @param dst the destination address the request is targeted at
+     * @param id the identification number for this request
+     * @return true if found, false otherwise
      */
     bool FindSourceEntry(Ipv4Address src, Ipv4Address dst, uint16_t id);
 
@@ -394,8 +394,8 @@ class DsrRreqTable : public Object
         /**
          * Check if the entry is expired
          *
-         * \param b BlackList entry
-         * \return true if expired, false otherwise
+         * @param b BlackList entry
+         * @return true if expired, false otherwise
          */
         bool operator()(const BlackList& b) const
         {

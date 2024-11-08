@@ -518,7 +518,7 @@ Ipv4ClickRouting::RouteOutput(Ptr<Packet> p,
         }
         else
         {
-            /** \todo Implement IP aliasing and Click */
+            /** @todo Implement IP aliasing and Click */
             NS_FATAL_ERROR("XXX Not implemented yet:  IP aliasing and Click");
         }
         rtentry->SetSource(ifAddr.GetLocal());

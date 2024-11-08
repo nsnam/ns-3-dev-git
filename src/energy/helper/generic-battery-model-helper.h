@@ -18,8 +18,8 @@ namespace ns3
 {
 
 /**
- * \ingroup energy
- * \brief Creates and assign an assortment of BatteryModels to Nodes.
+ * @ingroup energy
+ * @brief Creates and assign an assortment of BatteryModels to Nodes.
  *
  */
 class GenericBatteryModelHelper : public EnergySourceHelper
@@ -31,8 +31,8 @@ class GenericBatteryModelHelper : public EnergySourceHelper
     /**
      * Sets one of the attributes of underlying EnergySource.
      *
-     * \param name Name of attribute to set.
-     * \param v Value of the attribute.
+     * @param name Name of attribute to set.
+     * @param v Value of the attribute.
      */
     void Set(std::string name, const AttributeValue& v) override;
 
@@ -41,17 +41,17 @@ class GenericBatteryModelHelper : public EnergySourceHelper
      * node container. An energy source (Li-Ion battery) with default values
      * is used on each node.
      *
-     * \param c The node container
-     * \returns An EnergySourceContainer which contains all the EnergySources.
+     * @param c The node container
+     * @returns An EnergySourceContainer which contains all the EnergySources.
      */
     Ptr<energy::EnergySourceContainer> Install(NodeContainer c) const;
 
     /**
      * This function installs an energy source (battery) into a node.
      *
-     * \param node The node object.
-     * \param bm The battery model that will be install to the node.
-     * \returns A pointer to the energy source object used.
+     * @param node The node object.
+     * @param bm The battery model that will be install to the node.
+     * @returns A pointer to the energy source object used.
      */
     Ptr<energy::EnergySource> Install(Ptr<Node> node, energy::BatteryModel bm) const;
 
@@ -59,9 +59,9 @@ class GenericBatteryModelHelper : public EnergySourceHelper
      * This function installs energy sources in a group of nodes in a
      * node container.
      *
-     * \param c The node container.
-     * \param bm The battery model that will be install to the nodes in the node container.
-     * \returns An EnergySourceContainer which contains all the EnergySources.
+     * @param c The node container.
+     * @param bm The battery model that will be install to the nodes in the node container.
+     * @returns An EnergySourceContainer which contains all the EnergySources.
      */
     energy::EnergySourceContainer Install(NodeContainer c, energy::BatteryModel bm) const;
 
@@ -71,9 +71,9 @@ class GenericBatteryModelHelper : public EnergySourceHelper
      * depends on the connection of the cells defined by the user
      * (number of cells connected in series, number of cells connected in parallel).
      *
-     * \param energySource The energy source used.
-     * \param series The number of cells connected in series.
-     * \param parallel The number of cells connected in parallel.
+     * @param energySource The energy source used.
+     * @param series The number of cells connected in series.
+     * @param parallel The number of cells connected in parallel.
      */
     void SetCellPack(Ptr<energy::EnergySource> energySource,
                      uint8_t series,
@@ -86,9 +86,9 @@ class GenericBatteryModelHelper : public EnergySourceHelper
      * depends on the connection of the cells defined by the user
      * (number of cells connected in series, number of cells connected in parallel).
      *
-     * \param energySourceContainer The energy source container used.
-     * \param series The number of cells connected in series.
-     * \param parallel The number of cells connected in parallel.
+     * @param energySourceContainer The energy source container used.
+     * @param series The number of cells connected in series.
+     * @param parallel The number of cells connected in parallel.
      */
     void SetCellPack(energy::EnergySourceContainer energySourceContainer,
                      uint8_t series,
@@ -101,8 +101,8 @@ class GenericBatteryModelHelper : public EnergySourceHelper
      * the installation process (eg. installing EnergySource on set of nodes) is
      * implemented in the EnergySourceHelper base class.
      *
-     * \param node Pointer to node where the energy source is to be installed.
-     * \returns Pointer to the created EnergySource.
+     * @param node Pointer to node where the energy source is to be installed.
+     * @returns Pointer to the created EnergySource.
      */
     Ptr<energy::EnergySource> DoInstall(Ptr<Node> node) const override;
 

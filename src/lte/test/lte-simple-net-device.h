@@ -20,7 +20,7 @@ namespace ns3
 {
 
 /**
- * \ingroup lte
+ * @ingroup lte
  * The LteSimpleNetDevice class implements the LTE simple net device.
  * This class is used to provide a limited LteNetDevice functionalities that
  * are necessary for testing purposes.
@@ -29,8 +29,8 @@ class LteSimpleNetDevice : public SimpleNetDevice
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -38,7 +38,7 @@ class LteSimpleNetDevice : public SimpleNetDevice
     /**
      * Constructor
      *
-     * \param node the Node
+     * @param node the Node
      */
     LteSimpleNetDevice(Ptr<Node> node);
 

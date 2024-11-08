@@ -15,9 +15,9 @@ namespace ns3
 {
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief A general (TCP-aware) error model.
+ * @brief A general (TCP-aware) error model.
  *
  * The class is responsible to take away the IP and TCP header from the packet,
  * and then to interrogate the method ShouldDrop, dropping the packet accordingly
@@ -27,15 +27,15 @@ class TcpGeneralErrorModel : public ErrorModel
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     TcpGeneralErrorModel();
 
     /**
-     * \brief Set the drop callback.
-     * \param cb The callback to be set.
+     * @brief Set the drop callback.
+     * @param cb The callback to be set.
      */
     void SetDropCallback(Callback<void, const Ipv4Header&, const TcpHeader&, Ptr<const Packet>> cb)
     {
@@ -44,11 +44,11 @@ class TcpGeneralErrorModel : public ErrorModel
 
   protected:
     /**
-     * \brief Check if the packet should be dropped.
-     * \param ipHeader The packet IPv4 header.
-     * \param tcpHeader The packet TCP header.
-     * \param packetSize The packet size.
-     * \returns True if the packet should be dropped.
+     * @brief Check if the packet should be dropped.
+     * @param ipHeader The packet IPv4 header.
+     * @param tcpHeader The packet TCP header.
+     * @param packetSize The packet size.
+     * @returns True if the packet should be dropped.
      */
     virtual bool ShouldDrop(const Ipv4Header& ipHeader,
                             const TcpHeader& tcpHeader,
@@ -61,18 +61,18 @@ class TcpGeneralErrorModel : public ErrorModel
 };
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief An error model TCP aware: it drops the sequence number declared.
+ * @brief An error model TCP aware: it drops the sequence number declared.
  *
- * \see AddSeqToKill
+ * @see AddSeqToKill
  */
 class TcpSeqErrorModel : public TcpGeneralErrorModel
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -82,12 +82,12 @@ class TcpSeqErrorModel : public TcpGeneralErrorModel
     }
 
     /**
-     * \brief Add the sequence number to the list of segments to be killed
+     * @brief Add the sequence number to the list of segments to be killed
      *
      * Calling x times this function indicates that you want to kill
      * the segment x times.
      *
-     * \param seq sequence number to be killed
+     * @param seq sequence number to be killed
      */
     void AddSeqToKill(const SequenceNumber32& seq)
     {
@@ -107,31 +107,31 @@ class TcpSeqErrorModel : public TcpGeneralErrorModel
 };
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief Error model which drop packets with specified TCP flags.
+ * @brief Error model which drop packets with specified TCP flags.
  *
  * Set the flags with SetFlagToKill and the number of the packets with such flags
  * which should be killed.
  *
- * \see SetFlagToKill
- * \see SetKillRepeat
+ * @see SetFlagToKill
+ * @see SetKillRepeat
  *
  */
 class TcpFlagErrorModel : public TcpGeneralErrorModel
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     TcpFlagErrorModel();
 
     /**
-     * \brief Set the flags of the segment that should be killed
+     * @brief Set the flags of the segment that should be killed
      *
-     * \param flags Flags
+     * @param flags Flags
      */
     void SetFlagToKill(TcpHeader::Flags_t flags)
     {
@@ -139,7 +139,7 @@ class TcpFlagErrorModel : public TcpGeneralErrorModel
     }
 
     /**
-     * \brief Set how many packets should be killed
+     * @brief Set how many packets should be killed
      *
      * If the flags are the same, this specified the numbers of drops:
      *
@@ -147,7 +147,7 @@ class TcpFlagErrorModel : public TcpGeneralErrorModel
      * # 0  for no drops
      * # >1 the number of drops
      *
-     * \param killNumber Specifies the number of times the packet should be killed
+     * @param killNumber Specifies the number of times the packet should be killed
      */
     void SetKillRepeat(int16_t killNumber)
     {

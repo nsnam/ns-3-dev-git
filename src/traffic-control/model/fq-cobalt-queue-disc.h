@@ -27,29 +27,29 @@ namespace ns3
 {
 
 /**
- * \ingroup traffic-control
+ * @ingroup traffic-control
  *
- * \brief A flow queue used by the FqCobalt queue disc
+ * @brief A flow queue used by the FqCobalt queue disc
  */
 
 class FqCobaltFlow : public QueueDiscClass
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     /**
-     * \brief FqCobaltFlow constructor
+     * @brief FqCobaltFlow constructor
      */
     FqCobaltFlow();
 
     ~FqCobaltFlow() override;
 
     /**
-     * \enum FlowStatus
-     * \brief Used to determine the status of this flow queue
+     * @enum FlowStatus
+     * @brief Used to determine the status of this flow queue
      */
     enum FlowStatus
     {
@@ -59,38 +59,38 @@ class FqCobaltFlow : public QueueDiscClass
     };
 
     /**
-     * \brief Set the deficit for this flow
-     * \param deficit the deficit for this flow
+     * @brief Set the deficit for this flow
+     * @param deficit the deficit for this flow
      */
     void SetDeficit(uint32_t deficit);
     /**
-     * \brief Get the deficit for this flow
-     * \return the deficit for this flow
+     * @brief Get the deficit for this flow
+     * @return the deficit for this flow
      */
     int32_t GetDeficit() const;
     /**
-     * \brief Increase the deficit for this flow
-     * \param deficit the amount by which the deficit is to be increased
+     * @brief Increase the deficit for this flow
+     * @param deficit the amount by which the deficit is to be increased
      */
     void IncreaseDeficit(int32_t deficit);
     /**
-     * \brief Set the status for this flow
-     * \param status the status for this flow
+     * @brief Set the status for this flow
+     * @param status the status for this flow
      */
     void SetStatus(FlowStatus status);
     /**
-     * \brief Get the status of this flow
-     * \return the status of this flow
+     * @brief Get the status of this flow
+     * @return the status of this flow
      */
     FlowStatus GetStatus() const;
     /**
-     * \brief Set the index for this flow
-     * \param index the index for this flow
+     * @brief Set the index for this flow
+     * @param index the index for this flow
      */
     void SetIndex(uint32_t index);
     /**
-     * \brief Get the index of this flow
-     * \return the index of this flow
+     * @brief Get the index of this flow
+     * @return the index of this flow
      */
     uint32_t GetIndex() const;
 
@@ -101,38 +101,38 @@ class FqCobaltFlow : public QueueDiscClass
 };
 
 /**
- * \ingroup traffic-control
+ * @ingroup traffic-control
  *
- * \brief A FqCobalt packet queue disc
+ * @brief A FqCobalt packet queue disc
  */
 
 class FqCobaltQueueDisc : public QueueDisc
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     /**
-     * \brief FqCobaltQueueDisc constructor
+     * @brief FqCobaltQueueDisc constructor
      */
     FqCobaltQueueDisc();
 
     ~FqCobaltQueueDisc() override;
 
     /**
-     * \brief Set the quantum value.
+     * @brief Set the quantum value.
      *
-     * \param quantum The number of bytes each queue gets to dequeue on each round of the scheduling
+     * @param quantum The number of bytes each queue gets to dequeue on each round of the scheduling
      * algorithm
      */
     void SetQuantum(uint32_t quantum);
 
     /**
-     * \brief Get the quantum value.
+     * @brief Get the quantum value.
      *
-     * \returns The number of bytes each queue gets to dequeue on each round of the scheduling
+     * @returns The number of bytes each queue gets to dequeue on each round of the scheduling
      * algorithm
      */
     uint32_t GetQuantum() const;
@@ -149,8 +149,8 @@ class FqCobaltQueueDisc : public QueueDisc
     void InitializeParams() override;
 
     /**
-     * \brief Drop a packet from the head of the queue with the largest current byte count
-     * \return the index of the queue with the largest current byte count
+     * @brief Drop a packet from the head of the queue with the largest current byte count
+     * @return the index of the queue with the largest current byte count
      */
     uint32_t FqCobaltDrop();
 
@@ -158,8 +158,8 @@ class FqCobaltQueueDisc : public QueueDisc
      * Compute the index of the queue for the flow having the given flowHash,
      * according to the set associative hash approach.
      *
-     * \param flowHash the hash of the flow 5-tuple
-     * \return the index of the queue for the given flow
+     * @param flowHash the hash of the flow 5-tuple
+     * @return the index of the queue for the given flow
      */
     uint32_t SetAssociativeHash(uint32_t flowHash);
 

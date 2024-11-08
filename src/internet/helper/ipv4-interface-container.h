@@ -19,9 +19,9 @@ namespace ns3
 {
 
 /**
- * \ingroup ipv4
+ * @ingroup ipv4
  *
- * \brief holds a vector of std::pair of Ptr<Ipv4> and interface index.
+ * @brief holds a vector of std::pair of Ptr<Ipv4> and interface index.
  *
  * Typically ns-3 Ipv4Interfaces are installed on devices using an Ipv4 address
  * helper.  The helper's Assign() method takes a NetDeviceContainer which holds
@@ -45,7 +45,7 @@ class Ipv4InterfaceContainer
 {
   public:
     /**
-     * \brief Container Const Iterator for pairs of Ipv4 smart pointer / Interface Index.
+     * @brief Container Const Iterator for pairs of Ipv4 smart pointer / Interface Index.
      */
     typedef std::vector<std::pair<Ptr<Ipv4>, uint32_t>>::const_iterator Iterator;
 
@@ -56,12 +56,12 @@ class Ipv4InterfaceContainer
 
     /**
      * Concatenate the entries in the other container with ours.
-     * \param other container
+     * @param other container
      */
     void Add(const Ipv4InterfaceContainer& other);
 
     /**
-     * \brief Get an iterator which refers to the first pair in the
+     * @brief Get an iterator which refers to the first pair in the
      * container.
      *
      * Pairs can be retrieved from the container in two ways.  First,
@@ -69,21 +69,21 @@ class Ipv4InterfaceContainer
      * This method is used in the iterator method and is typically used in a
      * for-loop to run through the pairs
      *
-     * \code
+     * @code
      *   Ipv4InterfaceContainer::Iterator i;
      *   for (i = container.Begin (); i != container.End (); ++i)
      *     {
      *       std::pair<Ptr<Ipv4>, uint32_t> pair = *i;
      *       method (pair.first, pair.second);  // use the pair
      *     }
-     * \endcode
+     * @endcode
      *
-     * \returns an iterator which refers to the first pair in the container.
+     * @returns an iterator which refers to the first pair in the container.
      */
     Iterator Begin() const;
 
     /**
-     * \brief Get an iterator which indicates past-the-last Node in the
+     * @brief Get an iterator which indicates past-the-last Node in the
      * container.
      *
      * Nodes can be retrieved from the container in two ways.  First,
@@ -91,21 +91,21 @@ class Ipv4InterfaceContainer
      * This method is used in the iterator method and is typically used in a
      * for-loop to run through the Nodes
      *
-     * \code
+     * @code
      *   NodeContainer::Iterator i;
      *   for (i = container.Begin (); i != container.End (); ++i)
      *     {
      *       std::pair<Ptr<Ipv4>, uint32_t> pair = *i;
      *       method (pair.first, pair.second);  // use the pair
      *     }
-     * \endcode
+     * @endcode
      *
-     * \returns an iterator which indicates an ending condition for a loop.
+     * @returns an iterator which indicates an ending condition for a loop.
      */
     Iterator End() const;
 
     /**
-     * \returns the number of Ptr<Ipv4> and interface pairs stored in this
+     * @returns the number of Ptr<Ipv4> and interface pairs stored in this
      * Ipv4InterfaceContainer.
      *
      * Pairs can be retrieved from the container in two ways.  First,
@@ -114,23 +114,23 @@ class Ipv4InterfaceContainer
      * define an ending condition in a for-loop that runs through the stored
      * Nodes
      *
-     * \code
+     * @code
      *   uint32_t nNodes = container.GetN ();
      *   for (uint32_t i = 0 i < nNodes; ++i)
      *     {
      *       std::pair<Ptr<Ipv4>, uint32_t> pair = container.Get (i);
      *       method (pair.first, pair.second);  // use the pair
      *     }
-     * \endcode
+     * @endcode
      *
-     * \returns the number of Ptr<Node> stored in this container.
+     * @returns the number of Ptr<Node> stored in this container.
      */
     uint32_t GetN() const;
 
     /**
-     * \param i index of ipInterfacePair in container
-     * \param j interface address index (if interface has multiple addresses)
-     * \returns the IPv4 address of the j'th address of the interface
+     * @param i index of ipInterfacePair in container
+     * @param j interface address index (if interface has multiple addresses)
+     * @returns the IPv4 address of the j'th address of the interface
      *  corresponding to index i.
      *
      * If the second parameter is omitted, the zeroth indexed address of
@@ -140,9 +140,9 @@ class Ipv4InterfaceContainer
     Ipv4Address GetAddress(uint32_t i, uint32_t j = 0) const;
 
     /**
-     * \brief Set a metric for the given interface
-     * \param i Interface index
-     * \param metric the interface metric
+     * @brief Set a metric for the given interface
+     * @param i Interface index
+     * @param metric the interface metric
      */
     void SetMetric(uint32_t i, uint16_t metric);
 
@@ -150,8 +150,8 @@ class Ipv4InterfaceContainer
      * Manually add an entry to the container consisting of the individual parts
      * of an entry std::pair.
      *
-     * \param ipv4 pointer to Ipv4 object
-     * \param interface interface index of the Ipv4Interface to add to the container
+     * @param ipv4 pointer to Ipv4 object
+     * @param interface interface index of the Ipv4Interface to add to the container
      */
     void Add(Ptr<Ipv4> ipv4, uint32_t interface);
 
@@ -159,7 +159,7 @@ class Ipv4InterfaceContainer
      * Manually add an entry to the container consisting of a previously composed
      * entry std::pair.
      *
-     * \param ipInterfacePair the pair of a pointer to Ipv4 object and interface index of the
+     * @param ipInterfacePair the pair of a pointer to Ipv4 object and interface index of the
      * Ipv4Interface to add to the container
      */
     void Add(std::pair<Ptr<Ipv4>, uint32_t> ipInterfacePair);
@@ -168,9 +168,9 @@ class Ipv4InterfaceContainer
      * Manually add an entry to the container consisting of the individual parts
      * of an entry std::pair.
      *
-     * \param ipv4Name std:string referring to the saved name of an Ipv4 Object that
+     * @param ipv4Name std:string referring to the saved name of an Ipv4 Object that
      *        has been previously named using the Object Name Service.
-     * \param interface interface index of the Ipv4Interface to add to the container
+     * @param interface interface index of the Ipv4Interface to add to the container
      */
     void Add(std::string ipv4Name, uint32_t interface);
 
@@ -178,33 +178,33 @@ class Ipv4InterfaceContainer
      * Get the std::pair of an Ptr<Ipv4> and interface stored at the location
      * specified by the index.
      *
-     * \param i the index of the container entry to retrieve.
-     * \return the std::pair of a Ptr<Ipv4> and an interface index
+     * @param i the index of the container entry to retrieve.
+     * @return the std::pair of a Ptr<Ipv4> and an interface index
      *
-     * \note The returned Ptr<Ipv4> cannot be used directly to fetch the
+     * @note The returned Ptr<Ipv4> cannot be used directly to fetch the
      *       Ipv4Interface using the returned index (the GetInterface () method
      *       is provided in class Ipv4L3Protocol, and not class Ipv4). An
      *       example usage is provided below.
      *
-     * \code
+     * @code
      *   Ipv4InterfaceContainer c;
      *   ...
      *   std::pair<Ptr<Ipv4>, uint32_t> returnValue = c.Get (0);
      *   Ptr<Ipv4> ipv4 = returnValue.first;
      *   uint32_t index = returnValue.second;
      *   Ptr<Ipv4Interface> iface =  DynamicCast<Ipv4L3Protocol> (ipv4)->GetInterface (index);
-     * \endcode
+     * @endcode
      */
     std::pair<Ptr<Ipv4>, uint32_t> Get(uint32_t i) const;
 
   private:
     /**
-     * \brief Container for pairs of Ipv4 smart pointer / Interface Index.
+     * @brief Container for pairs of Ipv4 smart pointer / Interface Index.
      */
     typedef std::vector<std::pair<Ptr<Ipv4>, uint32_t>> InterfaceVector;
 
     /**
-     * \brief List of IPv4 stack and interfaces index.
+     * @brief List of IPv4 stack and interfaces index.
      */
     InterfaceVector m_interfaces;
 };

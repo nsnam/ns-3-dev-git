@@ -18,8 +18,8 @@ namespace ns3
 {
 
 /**
- * \ingroup buildings
- * \ingroup propagation
+ * @ingroup buildings
+ * @ingroup propagation
  *
  * This class implements the ITU-R 1238 propagation loss model.
  *
@@ -28,18 +28,18 @@ class ItuR1238PropagationLossModel : public PropagationLossModel
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return The object TypeId.
+     * @brief Get the type ID.
+     * @return The object TypeId.
      */
     static TypeId GetTypeId();
 
     /**
      *
      *
-     * \param a the first mobility model
-     * \param b the second mobility model
+     * @param a the first mobility model
+     * @param b the second mobility model
      *
-     * \return the loss in dBm for the propagation between
+     * @return the loss in dBm for the propagation between
      * the two given mobility models
      */
     double GetLoss(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;

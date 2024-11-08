@@ -20,14 +20,14 @@ namespace std
 {
 
 /**
- * \brief Stream insertion operator.
+ * @brief Stream insertion operator.
  *
- * \note This function scope is strictly local, and can not be
+ * @note This function scope is strictly local, and can not be
  * used in other source files.
  *
- * \param [in] os The reference to the output stream.
- * \param [in] v The std::vector<int>.
- * \returns The reference to the output stream.
+ * @param [in] os The reference to the output stream.
+ * @param [in] v The std::vector<int>.
+ * @returns The reference to the output stream.
  */
 ostream&
 operator<<(ostream& os, const vector<int>& v)
@@ -205,8 +205,8 @@ struct LteSpectrumModelId
     /**
      * Constructor
      *
-     * \param f earfcn
-     * \param b bandwidth
+     * @param f earfcn
+     * @param b bandwidth
      */
     LteSpectrumModelId(uint32_t f, uint8_t b);
     uint32_t earfcn;    ///< EARFCN
@@ -222,9 +222,9 @@ LteSpectrumModelId::LteSpectrumModelId(uint32_t f, uint8_t b)
 /**
  * Constructor
  *
- * \param a lhs
- * \param b rhs
- * \returns true if earfcn less than of if earfcn equal and bandwidth less than
+ * @param a lhs
+ * @param b rhs
+ * @returns true if earfcn less than of if earfcn equal and bandwidth less than
  */
 bool
 operator<(const LteSpectrumModelId& a, const LteSpectrumModelId& b)

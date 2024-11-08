@@ -24,15 +24,15 @@ class SimpleNetDevice;
 class Packet;
 
 /**
- * \ingroup channel
- * \brief A Error channel, introducing deterministic delays on even/odd packets. Used for testing
+ * @ingroup channel
+ * @brief A Error channel, introducing deterministic delays on even/odd packets. Used for testing
  */
 class ErrorChannel : public SimpleChannel
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     ErrorChannel();
@@ -51,26 +51,26 @@ class ErrorChannel : public SimpleChannel
     Ptr<NetDevice> GetDevice(std::size_t i) const override;
 
     /**
-     * \brief Set the delay for the odd packets (even ones are not delayed)
-     * \param delay Delay for the odd packets.
+     * @brief Set the delay for the odd packets (even ones are not delayed)
+     * @param delay Delay for the odd packets.
      */
     void SetJumpingTime(Time delay);
 
     /**
-     * \brief Set if the odd packets are delayed (even ones are not delayed ever)
-     * \param mode true if the odd packets should be delayed.
+     * @brief Set if the odd packets are delayed (even ones are not delayed ever)
+     * @param mode true if the odd packets should be delayed.
      */
     void SetJumpingMode(bool mode);
 
     /**
-     * \brief Set the delay for the odd duplicate packets (even ones are not duplicated)
-     * \param delay Delay for the odd packets.
+     * @brief Set the delay for the odd duplicate packets (even ones are not duplicated)
+     * @param delay Delay for the odd packets.
      */
     void SetDuplicateTime(Time delay);
 
     /**
-     * \brief Set if the odd packets are duplicated (even ones are not duplicated ever)
-     * \param mode true if the odd packets should be duplicated.
+     * @brief Set if the odd packets are duplicated (even ones are not duplicated ever)
+     * @param mode true if the odd packets should be duplicated.
      */
     void SetDuplicateMode(bool mode);
 

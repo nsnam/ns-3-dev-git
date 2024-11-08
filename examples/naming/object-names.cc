@@ -27,8 +27,8 @@ uint32_t bytesReceived = 0;
 /**
  * Function called when a packet is received.
  *
- * \param context The context.
- * \param packet The received packet.
+ * @param context The context.
+ * @param packet The received packet.
  */
 void
 RxEvent(std::string context, Ptr<const Packet> packet)

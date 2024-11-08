@@ -15,9 +15,9 @@
 using namespace ns3;
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief Test for bug 2211.
+ * @brief Test for bug 2211.
  *
  * https://www.nsnam.org/bugzilla/show_bug.cgi?id=2211
  *
@@ -41,25 +41,25 @@ class TcpEndPointBug2211Test : public TestCase
   public:
     /**
      * Constructor.
-     * \param desc Test description.
-     * \param ipVersion True to use IPv6.
+     * @param desc Test description.
+     * @param ipVersion True to use IPv6.
      */
     TcpEndPointBug2211Test(std::string desc, bool ipVersion);
 
     /**
-     * \brief Receive a packet.
-     * \param socket The receiving socket.
+     * @brief Receive a packet.
+     * @param socket The receiving socket.
      */
     void Recv(Ptr<Socket> socket);
     /**
-     * \brief Handle an incoming connection.
-     * \param s The receiving socket.
-     * \param from The other node IP address.
+     * @brief Handle an incoming connection.
+     * @param s The receiving socket.
+     * @param from The other node IP address.
      */
     void HandleAccept(Ptr<Socket> s, const Address& from);
     /**
-     * \brief Handle a connection establishment.
-     * \param socket The receiving socket.
+     * @brief Handle a connection establishment.
+     * @param socket The receiving socket.
      */
     void HandleConnect(Ptr<Socket> socket);
     void DoRun() override;
@@ -138,9 +138,9 @@ TcpEndPointBug2211Test::DoRun()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief TestSuite for bug 2211 - It must be used with valgrind.
+ * @brief TestSuite for bug 2211 - It must be used with valgrind.
  */
 class TcpEndpointBug2211TestSuite : public TestSuite
 {

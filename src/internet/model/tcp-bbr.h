@@ -24,9 +24,9 @@ namespace ns3
 {
 
 /**
- * \ingroup congestionOps
+ * @ingroup congestionOps
  *
- * \brief BBR congestion control algorithm
+ * @brief BBR congestion control algorithm
  *
  * This class implement the BBR (Bottleneck Bandwidth and Round-trip propagation time)
  * congestion control type.
@@ -35,34 +35,34 @@ class TcpBbr : public TcpCongestionOps
 {
   public:
     /**
-     * \brief The number of phases in the BBR ProbeBW gain cycle.
+     * @brief The number of phases in the BBR ProbeBW gain cycle.
      */
     static const uint8_t GAIN_CYCLE_LENGTH = 8;
 
     /**
-     * \brief BBR uses an eight-phase cycle with the given pacing_gain value
+     * @brief BBR uses an eight-phase cycle with the given pacing_gain value
      * in the BBR ProbeBW gain cycle.
      */
     const static double PACING_GAIN_CYCLE[];
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
     /**
-     * \brief Constructor
+     * @brief Constructor
      */
     TcpBbr();
 
     /**
      * Copy constructor.
-     * \param sock The socket to copy from.
+     * @param sock The socket to copy from.
      */
     TcpBbr(const TcpBbr& sock);
 
     /**
-     * \brief BBR has the following 4 modes for deciding how fast to send:
+     * @brief BBR has the following 4 modes for deciding how fast to send:
      */
     enum BbrMode_t
     {
@@ -79,7 +79,7 @@ class TcpBbr : public TcpCongestionOps
         MaxBandwidthFilter_t; //!< Definition of max bandwidth filter.
 
     /**
-     * \brief Literal names of BBR mode for use in log messages
+     * @brief Literal names of BBR mode for use in log messages
      */
     static const char* const BbrModeName[BBR_PROBE_RTT + 1];
 
@@ -87,7 +87,7 @@ class TcpBbr : public TcpCongestionOps
      * Assign a fixed random variable stream number to the random variables
      * used by this model.
      *
-     * \param stream first stream index to use
+     * @param stream first stream index to use
      */
     virtual void SetStream(uint32_t stream);
 
@@ -104,235 +104,235 @@ class TcpBbr : public TcpCongestionOps
 
   protected:
     /**
-     * \brief TcpBbrCheckGainValuesTest friend class (for tests).
-     * \relates TcpBbrCheckGainValuesTest
+     * @brief TcpBbrCheckGainValuesTest friend class (for tests).
+     * @relates TcpBbrCheckGainValuesTest
      */
     friend class TcpBbrCheckGainValuesTest;
 
     /**
-     * \brief Advances pacing gain using cycle gain algorithm, while in BBR_PROBE_BW state
+     * @brief Advances pacing gain using cycle gain algorithm, while in BBR_PROBE_BW state
      */
     void AdvanceCyclePhase();
 
     /**
-     * \brief Checks whether to advance pacing gain in BBR_PROBE_BW state,
+     * @brief Checks whether to advance pacing gain in BBR_PROBE_BW state,
      *  and if allowed calls AdvanceCyclePhase ()
-     * \param tcb the socket state.
-     * \param rs rate sample.
+     * @param tcb the socket state.
+     * @param rs rate sample.
      */
     void CheckCyclePhase(Ptr<TcpSocketState> tcb, const TcpRateOps::TcpRateSample& rs);
 
     /**
-     * \brief Checks whether its time to enter BBR_DRAIN or BBR_PROBE_BW state
-     * \param tcb the socket state.
+     * @brief Checks whether its time to enter BBR_DRAIN or BBR_PROBE_BW state
+     * @param tcb the socket state.
      */
     void CheckDrain(Ptr<TcpSocketState> tcb);
 
     /**
-     * \brief Identifies whether pipe or BDP is already full
-     * \param rs rate sample.
+     * @brief Identifies whether pipe or BDP is already full
+     * @param rs rate sample.
      */
     void CheckFullPipe(const TcpRateOps::TcpRateSample& rs);
 
     /**
-     * \brief This method handles the steps related to the ProbeRTT state
-     * \param tcb the socket state.
-     * \param rs rate sample.
+     * @brief This method handles the steps related to the ProbeRTT state
+     * @param tcb the socket state.
+     * @param rs rate sample.
      */
     void CheckProbeRTT(Ptr<TcpSocketState> tcb, const TcpRateOps::TcpRateSample& rs);
 
     /**
-     * \brief Updates variables specific to BBR_DRAIN state
+     * @brief Updates variables specific to BBR_DRAIN state
      */
     void EnterDrain();
 
     /**
-     * \brief Updates variables specific to BBR_PROBE_BW state
+     * @brief Updates variables specific to BBR_PROBE_BW state
      */
     void EnterProbeBW();
 
     /**
-     * \brief Updates variables specific to BBR_PROBE_RTT state
+     * @brief Updates variables specific to BBR_PROBE_RTT state
      */
     void EnterProbeRTT();
 
     /**
-     * \brief Updates variables specific to BBR_STARTUP state
+     * @brief Updates variables specific to BBR_STARTUP state
      */
     void EnterStartup();
 
     /**
-     * \brief Called on exiting from BBR_PROBE_RTT state, it eithers invoke EnterProbeBW () or
+     * @brief Called on exiting from BBR_PROBE_RTT state, it eithers invoke EnterProbeBW () or
      * EnterStartup ()
      */
     void ExitProbeRTT();
 
     /**
-     * \brief Gets BBR state.
-     * \return returns BBR state.
+     * @brief Gets BBR state.
+     * @return returns BBR state.
      */
     uint32_t GetBbrState();
 
     /**
-     * \brief Gets current pacing gain.
-     * \return returns current pacing gain.
+     * @brief Gets current pacing gain.
+     * @return returns current pacing gain.
      */
     double GetPacingGain();
 
     /**
-     * \brief Gets current cwnd gain.
-     * \return returns current cwnd gain.
+     * @brief Gets current cwnd gain.
+     * @return returns current cwnd gain.
      */
     double GetCwndGain();
 
     /**
-     * \brief Handles the steps for BBR_PROBE_RTT state.
-     * \param tcb the socket state.
+     * @brief Handles the steps for BBR_PROBE_RTT state.
+     * @param tcb the socket state.
      */
     void HandleProbeRTT(Ptr<TcpSocketState> tcb);
 
     /**
-     * \brief Updates pacing rate if socket is restarting from idle state.
-     * \param tcb the socket state.
-     * \param rs rate sample.
+     * @brief Updates pacing rate if socket is restarting from idle state.
+     * @param tcb the socket state.
+     * @param rs rate sample.
      */
     void HandleRestartFromIdle(Ptr<TcpSocketState> tcb, const TcpRateOps::TcpRateSample& rs);
 
     /**
-     * \brief Estimates the target value for congestion window
-     * \param tcb  the socket state.
-     * \param gain cwnd gain.
-     * \return returns congestion window based on max bandwidth and min RTT.
+     * @brief Estimates the target value for congestion window
+     * @param tcb  the socket state.
+     * @param gain cwnd gain.
+     * @return returns congestion window based on max bandwidth and min RTT.
      */
     uint32_t InFlight(Ptr<TcpSocketState> tcb, double gain);
 
     /**
-     * \brief Initializes the full pipe estimator.
+     * @brief Initializes the full pipe estimator.
      */
     void InitFullPipe();
 
     /**
-     * \brief Initializes the pacing rate.
-     * \param tcb  the socket state.
+     * @brief Initializes the pacing rate.
+     * @param tcb  the socket state.
      */
     void InitPacingRate(Ptr<TcpSocketState> tcb);
 
     /**
-     * \brief Initializes the round counting related variables.
+     * @brief Initializes the round counting related variables.
      */
     void InitRoundCounting();
 
     /**
-     * \brief Checks whether to move to next value of pacing gain while in BBR_PROBE_BW.
-     * \param tcb the socket state.
-     * \param rs  rate sample.
-     * \returns true if want to move to next value otherwise false.
+     * @brief Checks whether to move to next value of pacing gain while in BBR_PROBE_BW.
+     * @param tcb the socket state.
+     * @param rs  rate sample.
+     * @returns true if want to move to next value otherwise false.
      */
     bool IsNextCyclePhase(Ptr<TcpSocketState> tcb, const TcpRateOps::TcpRateSample& rs);
 
     /**
-     * \brief Modulates congestion window in BBR_PROBE_RTT.
-     * \param tcb the socket state.
+     * @brief Modulates congestion window in BBR_PROBE_RTT.
+     * @param tcb the socket state.
      */
     void ModulateCwndForProbeRTT(Ptr<TcpSocketState> tcb);
 
     /**
-     * \brief Modulates congestion window in CA_RECOVERY.
-     * \param tcb the socket state.
-     * \param rs rate sample.
-     * \return true if congestion window is updated in CA_RECOVERY.
+     * @brief Modulates congestion window in CA_RECOVERY.
+     * @param tcb the socket state.
+     * @param rs rate sample.
+     * @return true if congestion window is updated in CA_RECOVERY.
      */
     bool ModulateCwndForRecovery(Ptr<TcpSocketState> tcb, const TcpRateOps::TcpRateSample& rs);
 
     /**
-     * \brief Helper to restore the last-known good congestion window
-     * \param tcb the socket state.
+     * @brief Helper to restore the last-known good congestion window
+     * @param tcb the socket state.
      */
     void RestoreCwnd(Ptr<TcpSocketState> tcb);
 
     /**
-     * \brief Helper to remember the last-known good congestion window or
+     * @brief Helper to remember the last-known good congestion window or
      *        the latest congestion window unmodulated by loss recovery or ProbeRTT.
-     * \param tcb the socket state.
+     * @param tcb the socket state.
      */
     void SaveCwnd(Ptr<const TcpSocketState> tcb);
 
     /**
-     * \brief Updates congestion window based on the network model.
-     * \param tcb the socket state.
-     * \param rs  rate sample
+     * @brief Updates congestion window based on the network model.
+     * @param tcb the socket state.
+     * @param rs  rate sample
      */
     void SetCwnd(Ptr<TcpSocketState> tcb, const TcpRateOps::TcpRateSample& rs);
 
     /**
-     * \brief Updates pacing rate based on network model.
-     * \param tcb the socket state.
-     * \param gain pacing gain.
+     * @brief Updates pacing rate based on network model.
+     * @param tcb the socket state.
+     * @param gain pacing gain.
      */
     void SetPacingRate(Ptr<TcpSocketState> tcb, double gain);
 
     /**
-     * \brief Updates send quantum based on the network model.
-     * \param tcb the socket state.
+     * @brief Updates send quantum based on the network model.
+     * @param tcb the socket state.
      */
     void SetSendQuantum(Ptr<TcpSocketState> tcb);
 
     /**
-     * \brief Updates maximum bottleneck.
-     * \param tcb the socket state.
-     * \param rs rate sample.
+     * @brief Updates maximum bottleneck.
+     * @param tcb the socket state.
+     * @param rs rate sample.
      */
     void UpdateBottleneckBandwidth(Ptr<TcpSocketState> tcb, const TcpRateOps::TcpRateSample& rs);
 
     /**
-     * \brief Updates control parameters congestion windowm, pacing rate, send quantum.
-     * \param tcb the socket state.
-     * \param rs rate sample.
+     * @brief Updates control parameters congestion windowm, pacing rate, send quantum.
+     * @param tcb the socket state.
+     * @param rs rate sample.
      */
     void UpdateControlParameters(Ptr<TcpSocketState> tcb, const TcpRateOps::TcpRateSample& rs);
 
     /**
-     * \brief Updates BBR network model (Maximum bandwidth and minimum RTT).
-     * \param tcb the socket state.
-     * \param rs rate sample.
+     * @brief Updates BBR network model (Maximum bandwidth and minimum RTT).
+     * @param tcb the socket state.
+     * @param rs rate sample.
      */
     void UpdateModelAndState(Ptr<TcpSocketState> tcb, const TcpRateOps::TcpRateSample& rs);
 
     /**
-     * \brief Updates round counting related variables.
-     * \param tcb the socket state.
-     * \param rs rate sample.
+     * @brief Updates round counting related variables.
+     * @param tcb the socket state.
+     * @param rs rate sample.
      */
     void UpdateRound(Ptr<TcpSocketState> tcb, const TcpRateOps::TcpRateSample& rs);
 
     /**
-     * \brief Updates minimum RTT.
-     * \param tcb the socket state.
+     * @brief Updates minimum RTT.
+     * @param tcb the socket state.
      */
     void UpdateRTprop(Ptr<TcpSocketState> tcb);
 
     /**
-     * \brief Updates target congestion window.
-     * \param tcb the socket state.
+     * @brief Updates target congestion window.
+     * @param tcb the socket state.
      */
     void UpdateTargetCwnd(Ptr<TcpSocketState> tcb);
 
     /**
-     * \brief Sets BBR state.
-     * \param state BBR state.
+     * @brief Sets BBR state.
+     * @param state BBR state.
      */
     void SetBbrState(BbrMode_t state);
 
     /**
-     * \brief Find Cwnd increment based on ack aggregation.
-     * \return uint32_t aggregate cwnd.
+     * @brief Find Cwnd increment based on ack aggregation.
+     * @return uint32_t aggregate cwnd.
      */
     uint32_t AckAggregationCwnd();
 
     /**
-     * \brief Estimates max degree of aggregation.
-     * \param tcb the socket state.
-     * \param rs rate sample.
+     * @brief Estimates max degree of aggregation.
+     * @param tcb the socket state.
+     * @param rs rate sample.
      */
     void UpdateAckAggregation(Ptr<TcpSocketState> tcb, const TcpRateOps::TcpRateSample& rs);
 

@@ -17,11 +17,11 @@
 #include <stdint.h>
 
 /**
- * \brief Test that a pair of new/reference ascii files are equal
+ * @brief Test that a pair of new/reference ascii files are equal
  *
- * \param gotFilename The name of the new file to read in including
+ * @param gotFilename The name of the new file to read in including
  * its path
- * \param expectedFilename The name of the reference file to read in
+ * @param expectedFilename The name of the reference file to read in
  * including its path
  */
 #define NS_ASCII_TEST_EXPECT_EQ(gotFilename, expectedFilename)                                     \

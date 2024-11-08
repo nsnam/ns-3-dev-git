@@ -27,17 +27,17 @@ struct FunctionParameters
 /**
  * Integral function using GSL library
  *
- * \param x the input x variable
- * \param params a pointer to FunctionParameters struct
+ * @param x the input x variable
+ * @param params a pointer to FunctionParameters struct
  *
- * \return the integral function
+ * @return the integral function
  */
 double IntegralFunction(double x, void* params);
 #endif
 
 /**
- * \brief an implementation of DSSS error rate model
- * \ingroup wifi
+ * @brief an implementation of DSSS error rate model
+ * @ingroup wifi
  *
  * The 802.11b modulations:
  *    - 1 Mbps mode is based on DBPSK. BER is from equation 5.2-69 from John G. Proakis
@@ -64,47 +64,47 @@ class DsssErrorRateModel
     /**
      * A function DQPSK
      *
-     * \param x the input variable
+     * @param x the input variable
      *
-     * \return DQPSK (x)
+     * @return DQPSK (x)
      */
     static double DqpskFunction(double x);
     /**
      * Return the chunk success rate of the differential BPSK.
      *
-     * \param sinr the SINR ratio (not dB) of the chunk
-     * \param nbits the size of the chunk
+     * @param sinr the SINR ratio (not dB) of the chunk
+     * @param nbits the size of the chunk
      *
-     * \return the chunk success rate of the differential BPSK
+     * @return the chunk success rate of the differential BPSK
      */
     static double GetDsssDbpskSuccessRate(double sinr, uint64_t nbits);
     /**
      * Return the chunk success rate of the differential encoded QPSK.
      *
-     * \param sinr the SINR ratio (not dB) of the chunk
-     * \param nbits the size of the chunk
+     * @param sinr the SINR ratio (not dB) of the chunk
+     * @param nbits the size of the chunk
      *
-     * \return the chunk success rate of the differential encoded QPSK.
+     * @return the chunk success rate of the differential encoded QPSK.
      */
     static double GetDsssDqpskSuccessRate(double sinr, uint64_t nbits);
     /**
      * Return the chunk success rate of the differential encoded QPSK for
      * 5.5Mbps data rate.
      *
-     * \param sinr the SINR ratio (not dB) of the chunk
-     * \param nbits the size of the chunk
+     * @param sinr the SINR ratio (not dB) of the chunk
+     * @param nbits the size of the chunk
      *
-     * \return the chunk success rate of the differential encoded QPSK for
+     * @return the chunk success rate of the differential encoded QPSK for
      */
     static double GetDsssDqpskCck5_5SuccessRate(double sinr, uint64_t nbits);
     /**
      * Return the chunk success rate of the differential encoded QPSK for
      * 11Mbps data rate.
      *
-     * \param sinr the SINR ratio (not dB) of the chunk
-     * \param nbits the size of the chunk
+     * @param sinr the SINR ratio (not dB) of the chunk
+     * @param nbits the size of the chunk
      *
-     * \return the chunk success rate of the differential encoded QPSK for
+     * @return the chunk success rate of the differential encoded QPSK for
      */
     static double GetDsssDqpskCck11SuccessRate(double sinr, uint64_t nbits);
 #ifdef HAVE_GSL

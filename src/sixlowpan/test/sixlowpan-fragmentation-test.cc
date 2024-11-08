@@ -36,9 +36,9 @@
 using namespace ns3;
 
 /**
- * \ingroup sixlowpan-tests
+ * @ingroup sixlowpan-tests
  *
- * \brief 6LoWPAN Fragmentation Test
+ * @brief 6LoWPAN Fragmentation Test
  */
 class SixlowpanFragmentationTest : public TestCase
 {
@@ -63,12 +63,12 @@ class SixlowpanFragmentationTest : public TestCase
 
     /**
      * Start the server node.
-     * \param serverNode The server node.
+     * @param serverNode The server node.
      */
     void StartServer(Ptr<Node> serverNode);
     /**
      * Handles incoming packets in the server.
-     * \param socket The receiving socket.
+     * @param socket The receiving socket.
      */
     void HandleReadServer(Ptr<Socket> socket);
 
@@ -76,21 +76,21 @@ class SixlowpanFragmentationTest : public TestCase
 
     /**
      * Start the client node.
-     * \param clientNode The client node.
+     * @param clientNode The client node.
      */
     void StartClient(Ptr<Node> clientNode);
     /**
      * Handles incoming packets in the client.
-     * \param socket The receiving socket.
+     * @param socket The receiving socket.
      */
     void HandleReadClient(Ptr<Socket> socket);
     /**
      * Handles incoming ICMP packets in the client.
-     * \param icmpSource ICMP sender address.
-     * \param icmpTtl ICMP TTL.
-     * \param icmpType ICMP type.
-     * \param icmpCode ICMP code.
-     * \param icmpInfo ICMP info.
+     * @param icmpSource ICMP sender address.
+     * @param icmpTtl ICMP TTL.
+     * @param icmpType ICMP type.
+     * @param icmpCode ICMP code.
+     * @param icmpInfo ICMP info.
      */
     void HandleReadIcmpClient(Ipv6Address icmpSource,
                               uint8_t icmpTtl,
@@ -99,14 +99,14 @@ class SixlowpanFragmentationTest : public TestCase
                               uint32_t icmpInfo);
     /**
      * Set the packet optional content.
-     * \param fill Pointer to an array of data.
-     * \param fillSize Size of the array of data.
-     * \param dataSize Size of the packet - if fillSize is less than dataSize, the data is repeated.
+     * @param fill Pointer to an array of data.
+     * @param fillSize Size of the array of data.
+     * @param dataSize Size of the packet - if fillSize is less than dataSize, the data is repeated.
      */
     void SetFill(uint8_t* fill, uint32_t fillSize, uint32_t dataSize);
     /**
      * Send a packet to the server.
-     * \returns The packet sent.
+     * @returns The packet sent.
      */
     Ptr<Packet> SendClient();
 };
@@ -468,9 +468,9 @@ SixlowpanFragmentationTest::DoRun()
 }
 
 /**
- * \ingroup sixlowpan-tests
+ * @ingroup sixlowpan-tests
  *
- * \brief 6LoWPAN Fragmentation TestSuite
+ * @brief 6LoWPAN Fragmentation TestSuite
  */
 class SixlowpanFragmentationTestSuite : public TestSuite
 {

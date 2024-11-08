@@ -15,8 +15,8 @@
 #include <string>
 
 /**
- * \file
- * \ingroup bridge
+ * @file
+ * @ingroup bridge
  * ns3::BridgeHelper declaration.
  */
 
@@ -27,8 +27,8 @@ class Node;
 class AttributeValue;
 
 /**
- * \ingroup bridge
- * \brief Add capability to bridge multiple LAN segments (IEEE 802.1D bridging)
+ * @ingroup bridge
+ * @brief Add capability to bridge multiple LAN segments (IEEE 802.1D bridging)
  */
 class BridgeHelper
 {
@@ -41,8 +41,8 @@ class BridgeHelper
      * Set an attribute on each ns3::BridgeNetDevice created by
      * BridgeHelper::Install
      *
-     * \param n1 the name of the attribute to set
-     * \param v1 the value of the attribute to set
+     * @param n1 the name of the attribute to set
+     * @param v1 the value of the attribute to set
      */
     void SetDeviceAttribute(std::string n1, const AttributeValue& v1);
     /**
@@ -51,9 +51,9 @@ class BridgeHelper
      * to the node, and attaches the given NetDevices as ports of the
      * bridge.
      *
-     * \param node The node to install the device in
-     * \param c Container of NetDevices to add as bridge ports
-     * \returns A container holding the added net device.
+     * @param node The node to install the device in
+     * @param c Container of NetDevices to add as bridge ports
+     * @returns A container holding the added net device.
      */
     NetDeviceContainer Install(Ptr<Node> node, NetDeviceContainer c);
     /**
@@ -62,9 +62,9 @@ class BridgeHelper
      * to the node, and attaches the given NetDevices as ports of the
      * bridge.
      *
-     * \param nodeName The name of the node to install the device in
-     * \param c Container of NetDevices to add as bridge ports
-     * \returns A container holding the added net device.
+     * @param nodeName The name of the node to install the device in
+     * @param c Container of NetDevices to add as bridge ports
+     * @returns A container holding the added net device.
      */
     NetDeviceContainer Install(std::string nodeName, NetDeviceContainer c);
 

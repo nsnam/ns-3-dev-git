@@ -26,7 +26,7 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("ThreeGppV2vChannelConditionModelsTest");
 
 /**
- * \ingroup building-test
+ * @ingroup building-test
  *
  * Test case for the classes ThreeGppV2vUrbanChannelConditionModel,
  * and ThreeGppV2vHighwayChannelConditionModel to test their code to
@@ -201,8 +201,8 @@ class ThreeGppV2vUrbanLosNlosvChCondModelTestCase : public TestCase
      * Evaluates the channel condition between two nodes by calling the method
      * GetChannelCondition on m_condModel. If the channel condition is LOS it
      * increments m_numLos
-     * \param a the mobility model of the first node
-     * \param b the mobility model of the second node
+     * @param a the mobility model of the first node
+     * @param b the mobility model of the second node
      */
     void EvaluateChannelCondition(Ptr<MobilityModel> a, Ptr<MobilityModel> b);
 
@@ -366,8 +366,8 @@ class ThreeGppV2vHighwayLosNlosvChCondModelTestCase : public TestCase
      * Evaluates the channel condition between two nodes by calling the method
      * GetChannelCondition on m_condModel. If the channel condition is LOS it
      * increments m_numLos
-     * \param a the mobility model of the first node
-     * \param b the mobility model of the second node
+     * @param a the mobility model of the first node
+     * @param b the mobility model of the second node
      */
     void EvaluateChannelCondition(Ptr<MobilityModel> a, Ptr<MobilityModel> b);
 
@@ -498,7 +498,7 @@ ThreeGppV2vHighwayLosNlosvChCondModelTestCase::DoRun()
 }
 
 /**
- * \ingroup building-test
+ * @ingroup building-test
  *
  * Test suite for the 3GPP V2V channel condition model
  *
@@ -511,7 +511,7 @@ ThreeGppV2vHighwayLosNlosvChCondModelTestCase::DoRun()
  * The test ThreeGppV2vBuildingsChCondModelTestCase checks the
  * 1st step of the procedure, the deterministic one, using buildings for
  * both \link ns3::ThreeGppV2vUrbanChannelConditionModel \endlink and
- * \link ns3::ThreeGppV2vHighwayChannelConditionModel \endlink .
+ * @link ns3::ThreeGppV2vHighwayChannelConditionModel \endlink .
  *
  * The tests ThreeGppV2vUrbanLosNlosvChCondModelTestCase and
  * ThreeGppV2vHighwayLosNlosvChCondModelTestCase check the

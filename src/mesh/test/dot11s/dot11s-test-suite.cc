@@ -18,14 +18,14 @@ using namespace ns3;
 using namespace dot11s;
 
 /**
- * \ingroup mesh-test
- * \defgroup dot11s-test dot11s sub-module tests
+ * @ingroup mesh-test
+ * @defgroup dot11s-test dot11s sub-module tests
  */
 
 /**
- * \ingroup dot11s-test
+ * @ingroup dot11s-test
  *
- * \brief Built-in self test for MeshHeader
+ * @brief Built-in self test for MeshHeader
  */
 struct MeshHeaderTest : public TestCase
 {
@@ -82,9 +82,9 @@ MeshHeaderTest::DoRun()
 }
 
 /**
- * \ingroup mesh-test
+ * @ingroup mesh-test
  *
- * \brief Unit test for HwmpRtable
+ * @brief Unit test for HwmpRtable
  */
 class HwmpRtableTest : public TestCase
 {
@@ -263,9 +263,9 @@ PeerLinkFrameStartTest::DoRun()
 }
 
 /**
- * \ingroup mesh-test
+ * @ingroup mesh-test
  *
- * \brief Dot11s Test Suite
+ * @brief Dot11s Test Suite
  */
 class Dot11sTestSuite : public TestSuite
 {

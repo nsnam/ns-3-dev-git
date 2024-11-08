@@ -25,9 +25,9 @@
 using namespace ns3;
 
 /**
- * \ingroup traffic-control-test
+ * @ingroup traffic-control-test
  *
- * \brief Tbf Queue Disc Test Item
+ * @brief Tbf Queue Disc Test Item
  */
 class TbfQueueDiscTestItem : public QueueDiscItem
 {
@@ -35,8 +35,8 @@ class TbfQueueDiscTestItem : public QueueDiscItem
     /**
      * Constructor
      *
-     * \param p the packet
-     * \param addr the address
+     * @param p the packet
+     * @param addr the address
      */
     TbfQueueDiscTestItem(Ptr<Packet> p, const Address& addr);
     ~TbfQueueDiscTestItem() override;
@@ -71,9 +71,9 @@ TbfQueueDiscTestItem::Mark()
 }
 
 /**
- * \ingroup traffic-control-test
+ * @ingroup traffic-control-test
  *
- * \brief Tbf Queue Disc Test Case
+ * @brief Tbf Queue Disc Test Case
  */
 class TbfQueueDiscTestCase : public TestCase
 {
@@ -84,23 +84,23 @@ class TbfQueueDiscTestCase : public TestCase
   private:
     /**
      * Enqueue function
-     * \param queue the queue disc into which enqueue needs to be done
-     * \param dest the destination address
-     * \param size the size of the packet in bytes to be enqueued
+     * @param queue the queue disc into which enqueue needs to be done
+     * @param dest the destination address
+     * @param size the size of the packet in bytes to be enqueued
      */
     void Enqueue(Ptr<TbfQueueDisc> queue, Address dest, uint32_t size);
     /**
      * DequeueAndCheck function to check if a packet is blocked or not after dequeuing and verify
      * against expected result
-     * \param queue the queue disc on which DequeueAndCheck needs to be done
-     * \param flag the boolean value against which the return value of dequeue ()
+     * @param queue the queue disc on which DequeueAndCheck needs to be done
+     * @param flag the boolean value against which the return value of dequeue ()
      * has to be compared with
-     * \param printStatement the string to be printed in the NS_TEST_EXPECT_MSG_EQ
+     * @param printStatement the string to be printed in the NS_TEST_EXPECT_MSG_EQ
      */
     void DequeueAndCheck(Ptr<TbfQueueDisc> queue, bool flag, std::string printStatement);
     /**
      * Run TBF test function
-     * \param mode the mode
+     * @param mode the mode
      */
     void RunTbfTest(QueueSizeUnit mode);
 };
@@ -527,9 +527,9 @@ TbfQueueDiscTestCase::DoRun()
 }
 
 /**
- * \ingroup traffic-control-test
+ * @ingroup traffic-control-test
  *
- * \brief Tbf Queue Disc Test Suite
+ * @brief Tbf Queue Disc Test Suite
  */
 static class TbfQueueDiscTestSuite : public TestSuite
 {

@@ -28,17 +28,17 @@ class Socket;
 class Packet;
 
 /**
- * \ingroup dhcp
+ * @ingroup dhcp
  *
- * \class DhcpServer
- * \brief Implements the functionality of a DHCP server
+ * @class DhcpServer
+ * @brief Implements the functionality of a DHCP server
  */
 class DhcpServer : public Application
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -46,10 +46,10 @@ class DhcpServer : public Application
     ~DhcpServer() override;
 
     /**
-     * \brief Add a static entry to the pool.
+     * @brief Add a static entry to the pool.
      *
-     * \param chaddr The client chaddr.
-     * \param addr The address to handle to the client.
+     * @param chaddr The client chaddr.
+     * @param addr The address to handle to the client.
      */
     void AddStaticDhcpEntry(Address chaddr, Ipv4Address addr);
 
@@ -63,29 +63,29 @@ class DhcpServer : public Application
     static const int PORT = 67; //!< Port number of DHCP server
 
     /**
-     * \brief Handles incoming packets from the network
-     * \param socket Socket bound to port 67 of the DHCP server
+     * @brief Handles incoming packets from the network
+     * @param socket Socket bound to port 67 of the DHCP server
      */
     void NetHandler(Ptr<Socket> socket);
 
     /**
-     * \brief Sends DHCP offer after receiving DHCP Discover
-     * \param iDev incoming NetDevice
-     * \param header DHCP header of the received message
-     * \param from Address of the DHCP client
+     * @brief Sends DHCP offer after receiving DHCP Discover
+     * @param iDev incoming NetDevice
+     * @param header DHCP header of the received message
+     * @param from Address of the DHCP client
      */
     void SendOffer(Ptr<NetDevice> iDev, DhcpHeader header, InetSocketAddress from);
 
     /**
-     * \brief Sends DHCP ACK (or NACK) after receiving Request
-     * \param iDev incoming NetDevice
-     * \param header DHCP header of the received message
-     * \param from Address of the DHCP client
+     * @brief Sends DHCP ACK (or NACK) after receiving Request
+     * @param iDev incoming NetDevice
+     * @param header DHCP header of the received message
+     * @param from Address of the DHCP client
      */
     void SendAck(Ptr<NetDevice> iDev, DhcpHeader header, InetSocketAddress from);
 
     /**
-     * \brief Modifies the remaining lease time of addresses
+     * @brief Modifies the remaining lease time of addresses
      */
     void TimerHandler();
 

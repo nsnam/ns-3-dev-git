@@ -8,7 +8,7 @@
 using namespace ns3;
 
 /**
- * \ingroup network
+ * @ingroup network
  * A simple example of an Header implementation
  */
 class MyHeader : public Header
@@ -19,18 +19,18 @@ class MyHeader : public Header
 
     /**
      * Set the header data.
-     * \param data The data.
+     * @param data The data.
      */
     void SetData(uint16_t data);
     /**
      * Get the header data.
-     * \return The data.
+     * @return The data.
      */
     uint16_t GetData() const;
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     TypeId GetInstanceTypeId() const override;

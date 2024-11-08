@@ -34,13 +34,13 @@ namespace ns3
 namespace dsr
 {
 /**
- * \class DsrHeader
- * \brief Header for Dsr Routing.
+ * @class DsrHeader
+ * @brief Header for Dsr Routing.
  */
 
 /**
-* \ingroup dsr
-* \brief Dsr fixed size header Format
+* @ingroup dsr
+* @brief Dsr fixed size header Format
   \verbatim
    |      0        |      1        |      2        |      3        |
    0 1 2 3 4 5 6 7 0 1 2 3 4 5 6 7 0 1 2 3 4 5 6 7 0 1 2 3 4 5 6 7
@@ -53,8 +53,8 @@ namespace dsr
 */
 
 /**
-* \ingroup dsr
-* \brief The modified version of Dsr fixed size header Format
+* @ingroup dsr
+* @brief The modified version of Dsr fixed size header Format
   \verbatim
    |      0        |      1        |      2        |      3        |
    0 1 2 3 4 5 6 7 0 1 2 3 4 5 6 7 0 1 2 3 4 5 6 7 0 1 2 3 4 5 6 7
@@ -71,125 +71,125 @@ class DsrFsHeader : public Header
 {
   public:
     /**
-     * \brief Get the type identificator.
-     * \return type identificator
+     * @brief Get the type identificator.
+     * @return type identificator
      */
     static TypeId GetTypeId();
     /**
-     * \brief Get the instance type ID.
-     * \return instance type ID
+     * @brief Get the instance type ID.
+     * @return instance type ID
      */
     TypeId GetInstanceTypeId() const override;
     /**
-     * \brief Constructor.
+     * @brief Constructor.
      */
     DsrFsHeader();
     /**
-     * \brief Destructor.
+     * @brief Destructor.
      */
     ~DsrFsHeader() override;
     /**
-     * \brief Set the "Next header" field.
-     * \param protocol the next header number
+     * @brief Set the "Next header" field.
+     * @param protocol the next header number
      */
     void SetNextHeader(uint8_t protocol);
     /**
-     * \brief Get the next header.
-     * \return the next header number
+     * @brief Get the next header.
+     * @return the next header number
      */
     uint8_t GetNextHeader() const;
     /**
      * brief Set the message type of the header.
-     * \param messageType the message type of the header
+     * @param messageType the message type of the header
      */
     void SetMessageType(uint8_t messageType);
     /**
      * brief Get the message type of the header.
-     * \return message type the message type of the header
+     * @return message type the message type of the header
      */
     uint8_t GetMessageType() const;
     /**
      * brief Set the source ID of the header.
-     * \param sourceId the source ID of the header
+     * @param sourceId the source ID of the header
      */
     void SetSourceId(uint16_t sourceId);
     /**
      * brief Get the source ID of the header.
-     * \return source ID the source ID of the header
+     * @return source ID the source ID of the header
      */
     uint16_t GetSourceId() const;
     /**
      * brief Set the dest ID of the header.
-     * \param destId the destination ID of the header
+     * @param destId the destination ID of the header
      */
     void SetDestId(uint16_t destId);
     /**
      * brief Get the dest ID of the header.
-     * \return dest ID the dest ID of the header
+     * @return dest ID the dest ID of the header
      */
     uint16_t GetDestId() const;
     /**
      * brief Set the payload length of the header.
-     * \param length the payload length of the header in bytes
+     * @param length the payload length of the header in bytes
      */
     void SetPayloadLength(uint16_t length);
     /**
-     * \brief Get the payload length of the header.
-     * \return the payload length of the header
+     * @brief Get the payload length of the header.
+     * @return the payload length of the header
      */
     uint16_t GetPayloadLength() const;
     /**
-     * \brief Print some information about the packet.
-     * \param os output stream
+     * @brief Print some information about the packet.
+     * @param os output stream
      */
     void Print(std::ostream& os) const override;
     /**
-     * \brief Get the serialized size of the packet.
-     * \return size
+     * @brief Get the serialized size of the packet.
+     * @return size
      */
     uint32_t GetSerializedSize() const override;
     /**
-     * \brief Serialize the packet.
-     * \param start Buffer iterator
+     * @brief Serialize the packet.
+     * @param start Buffer iterator
      */
     void Serialize(Buffer::Iterator start) const override;
     /**
-     * \brief Deserialize the packet.
-     * \param start Buffer iterator
-     * \return size of the packet
+     * @brief Deserialize the packet.
+     * @param start Buffer iterator
+     * @return size of the packet
      */
     uint32_t Deserialize(Buffer::Iterator start) override;
 
   private:
     /**
-     * \brief The "next header" field.
+     * @brief The "next header" field.
      */
     uint8_t m_nextHeader;
     /**
-     * \brief The type of the message.
+     * @brief The type of the message.
      */
     uint8_t m_messageType;
     /**
-     * \brief The "payload length" field.
+     * @brief The "payload length" field.
      */
     uint16_t m_payloadLen;
     /**
-     * \brief The source node id
+     * @brief The source node id
      */
     uint16_t m_sourceId;
     /**
-     * \brief The destination node id
+     * @brief The destination node id
      */
     uint16_t m_destId;
     /**
-     * \brief The data of the extension.
+     * @brief The data of the extension.
      */
     Buffer m_data;
 };
 
 /**
- * \class DsrOptionField
- * \brief Option field for an DsrFsHeader
+ * @class DsrOptionField
+ * @brief Option field for an DsrFsHeader
  * Enables adding options to an DsrFsHeader
  *
  * Implementor's note: Make sure to add the result of
@@ -201,109 +201,109 @@ class DsrOptionField
 {
   public:
     /**
-     * \brief Constructor.
-     * \param optionsOffset option offset
+     * @brief Constructor.
+     * @param optionsOffset option offset
      */
     DsrOptionField(uint32_t optionsOffset);
     /**
-     * \brief Destructor.
+     * @brief Destructor.
      */
     ~DsrOptionField();
     /**
-     * \brief Get the serialized size of the packet.
-     * \return size
+     * @brief Get the serialized size of the packet.
+     * @return size
      */
     uint32_t GetSerializedSize() const;
     /**
-     * \brief Serialize all added options.
-     * \param start Buffer iterator
+     * @brief Serialize all added options.
+     * @param start Buffer iterator
      */
     void Serialize(Buffer::Iterator start) const;
     /**
-     * \brief Deserialize the packet.
-     * \param start Buffer iterator
-     * \param length length
-     * \return size of the packet
+     * @brief Deserialize the packet.
+     * @param start Buffer iterator
+     * @param length length
+     * @return size of the packet
      */
     uint32_t Deserialize(Buffer::Iterator start, uint32_t length);
     /**
-     * \brief Serialize the option, prepending pad1 or padn option as necessary
-     * \param option the option header to serialize
+     * @brief Serialize the option, prepending pad1 or padn option as necessary
+     * @param option the option header to serialize
      */
     void AddDsrOption(const DsrOptionHeader& option);
     /**
-     * \brief Get the offset where the options begin, measured from the start of
+     * @brief Get the offset where the options begin, measured from the start of
      * the extension header.
-     * \return the offset from the start of the extension header
+     * @return the offset from the start of the extension header
      */
     uint32_t GetDsrOptionsOffset() const;
     /**
-     * \brief Get the buffer.
-     * \return buffer
+     * @brief Get the buffer.
+     * @return buffer
      */
     Buffer GetDsrOptionBuffer();
 
   private:
     /**
-     * \brief Calculate padding.
-     * \param alignment alignment
-     * \return the number of bytes required to pad
+     * @brief Calculate padding.
+     * @param alignment alignment
+     * @return the number of bytes required to pad
      */
     uint32_t CalculatePad(DsrOptionHeader::Alignment alignment) const;
     /**
-     * \brief Data payload.
+     * @brief Data payload.
      */
     Buffer m_optionData;
     /**
-     * \brief Offset.
+     * @brief Offset.
      */
     uint32_t m_optionsOffset;
 };
 
 /**
- * \class DsrRoutingHeader
- * \brief Header of Dsr Routing
+ * @class DsrRoutingHeader
+ * @brief Header of Dsr Routing
  */
 class DsrRoutingHeader : public DsrFsHeader, public DsrOptionField
 {
   public:
     /**
-     * \brief Get the type identificator.
-     * \return type identificator
+     * @brief Get the type identificator.
+     * @return type identificator
      */
     static TypeId GetTypeId();
     /**
-     * \brief Get the instance type ID.
-     * \return instance type ID
+     * @brief Get the instance type ID.
+     * @return instance type ID
      */
     TypeId GetInstanceTypeId() const override;
     /**
-     * \brief Constructor.
+     * @brief Constructor.
      */
     DsrRoutingHeader();
     /**
-     * \brief Destructor.
+     * @brief Destructor.
      */
     ~DsrRoutingHeader() override;
     /**
-     * \brief Print some information about the packet.
-     * \param os output stream
+     * @brief Print some information about the packet.
+     * @param os output stream
      */
     void Print(std::ostream& os) const override;
     /**
-     * \brief Get the serialized size of the packet.
-     * \return size
+     * @brief Get the serialized size of the packet.
+     * @return size
      */
     uint32_t GetSerializedSize() const override;
     /**
-     * \brief Serialize the packet.
-     * \param start Buffer iterator
+     * @brief Serialize the packet.
+     * @param start Buffer iterator
      */
     void Serialize(Buffer::Iterator start) const override;
     /**
-     * \brief Deserialize the packet.
-     * \param start Buffer iterator
-     * \return size of the packet
+     * @brief Deserialize the packet.
+     * @param start Buffer iterator
+     * @return size of the packet
      */
     uint32_t Deserialize(Buffer::Iterator start) override;
 };

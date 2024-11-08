@@ -53,7 +53,7 @@ TcpHighSpeed::Fork()
 }
 
 /**
- * \brief Congestion avoidance of TcpHighSpeed
+ * @brief Congestion avoidance of TcpHighSpeed
  *
  * As implementation choice, we increment cWnd only by MSS, when the right
  * number of ACK has been received. At this point, the important question is:
@@ -81,8 +81,8 @@ TcpHighSpeed::Fork()
  * acked. More weight, less ACK are necessary to increment cWnd, which is
  * exactly the Highspeed principle.
  *
- * \param tcb internal congestion state
- * \param segmentsAcked count of segments acked
+ * @param tcb internal congestion state
+ * @param segmentsAcked count of segments acked
  */
 void
 TcpHighSpeed::CongestionAvoidance(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
@@ -119,12 +119,12 @@ TcpHighSpeed::GetName() const
 }
 
 /**
- * \brief Get slow start threshold following HighSpeed principles
+ * @brief Get slow start threshold following HighSpeed principles
  *
- * \param tcb internal congestion state
- * \param bytesInFlight Bytes in flight
+ * @param tcb internal congestion state
+ * @param bytesInFlight Bytes in flight
  *
- * \return the slow start threshold value
+ * @return the slow start threshold value
  */
 uint32_t
 TcpHighSpeed::GetSsThresh(Ptr<const TcpSocketState> tcb, uint32_t bytesInFlight)

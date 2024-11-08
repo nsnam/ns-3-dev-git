@@ -19,9 +19,9 @@
 #include <map>
 
 /**
- * \file
- * \ingroup core-examples
- * \ingroup randomvariable
+ * @file
+ * @ingroup core-examples
+ * @ingroup randomvariable
  * Example program illustrating use of RandomVariableStream
  */
 
@@ -34,9 +34,9 @@ namespace
  * Round a double number to the given precision.
  * For example, `dround(0.234, 0.1) = 0.2`
  * and `dround(0.257, 0.1) = 0.3`
- * \param [in] number The number to round.
- * \param [in] precision The least significant digit to keep in the rounding.
- * \returns \pname{number} rounded to \pname{precision}.
+ * @param [in] number The number to round.
+ * @param [in] precision The least significant digit to keep in the rounding.
+ * @returns \pname{number} rounded to \pname{precision}.
  */
 double
 dround(double number, double precision)
@@ -56,12 +56,12 @@ dround(double number, double precision)
 
 /**
  * Generate a histogram from a RandomVariableStream.
- * \param [in] rndvar The RandomVariableStream to sample.
- * \param [in] probes The number of samples.
- * \param [in] precision The precision to round samples to.
- * \param [in] title The title for the histogram.
- * \param [in] impulses Set the plot style to IMPULSES.
- * \return The histogram as a GnuPlot data set.
+ * @param [in] rndvar The RandomVariableStream to sample.
+ * @param [in] probes The number of samples.
+ * @param [in] precision The precision to round samples to.
+ * @param [in] title The title for the histogram.
+ * @param [in] impulses Set the plot style to IMPULSES.
+ * @return The histogram as a GnuPlot data set.
  */
 GnuplotDataset
 Histogram(Ptr<RandomVariableStream> rndvar,

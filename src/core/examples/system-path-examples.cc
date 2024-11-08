@@ -13,9 +13,9 @@
 #include <string>
 
 /**
- * \file
- * \ingroup core-examples
- * \ingroup systempath
+ * @file
+ * @ingroup core-examples
+ * @ingroup systempath
  * Example program illustrating use of ns3::SystemPath
  */
 

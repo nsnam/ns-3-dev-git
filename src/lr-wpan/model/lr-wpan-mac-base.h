@@ -25,7 +25,7 @@ namespace lrwpan
 {
 
 /**
- * \ingroup lr-wpan
+ * @ingroup lr-wpan
  *
  * The status of a confirm or an indication primitive as a result of a previous request.
  * Represent the value of status in IEEE 802.15.4-2011 primitives.
@@ -79,7 +79,7 @@ enum class MacStatus : std::uint8_t
 };
 
 /**
- * \ingroup lr-wpan
+ * @ingroup lr-wpan
  *
  * table 80 of 802.15.4
  */
@@ -92,7 +92,7 @@ enum AddressMode
 };
 
 /**
- * \ingroup lr-wpan
+ * @ingroup lr-wpan
  *
  * Table 30 of IEEE 802.15.4-2011
  */
@@ -105,7 +105,7 @@ enum MlmeScanType
 };
 
 /**
- * \ingroup lr-wpan
+ * @ingroup lr-wpan
  *
  * MCPS-DATA.request params. See 7.1.1.1
  */
@@ -121,7 +121,7 @@ struct McpsDataRequestParams
 };
 
 /**
- * \ingroup lr-wpan
+ * @ingroup lr-wpan
  *
  * MLME-START.request params. See 802.15.4-2011  Section 6.2.12.1
  */
@@ -145,7 +145,7 @@ struct MlmeStartRequestParams
 };
 
 /**
- * \ingroup lr-wpan
+ * @ingroup lr-wpan
  *
  * MLME-SCAN.request params. See IEEE 802.15.4-2011  Section 6.2.10.1 Table 30
  */
@@ -164,7 +164,7 @@ struct MlmeScanRequestParams
 };
 
 /**
- * \ingroup lr-wpan
+ * @ingroup lr-wpan
  *
  * MLME-ASSOCIATE.request params. See 802.15.4-2011  Section 6.2.2.1
  */
@@ -184,7 +184,7 @@ struct MlmeAssociateRequestParams
 };
 
 /**
- * \ingroup lr-wpan
+ * @ingroup lr-wpan
  *
  * MLME-ASSOCIATE.response params. See 802.15.4-2011 6.2.2.3.
  */
@@ -199,7 +199,7 @@ struct MlmeAssociateResponseParams
 };
 
 /**
- * \ingroup lr-wpan
+ * @ingroup lr-wpan
  *
  * MLME-ORPHAN.response params. See  802.15.4-2011   Section 6.2.7.2
  */
@@ -211,7 +211,7 @@ struct MlmeOrphanResponseParams
 };
 
 /**
- * \ingroup lr-wpan
+ * @ingroup lr-wpan
  *
  * MLME-SYNC.request params. See 802.15.4-2011  Section 6.2.13.1
  */
@@ -223,7 +223,7 @@ struct MlmeSyncRequestParams
 };
 
 /**
- * \ingroup lr-wpan
+ * @ingroup lr-wpan
  *
  * MLME-POLL.request params. See 802.15.4-2011  Section 6.2.14.1
  */
@@ -237,7 +237,7 @@ struct MlmePollRequestParams
 };
 
 /**
- * \ingroup lr-wpan
+ * @ingroup lr-wpan
  *
  * IEEE 802.15.4-2006 PHY and MAC PIB Attribute Identifiers Table 23 and Table 86.
  * Note: Attribute identifiers use standardized values.
@@ -294,7 +294,7 @@ enum MacPibAttributeIdentifier
 };
 
 /**
- * \ingroup lr-wpan
+ * @ingroup lr-wpan
  *
  * IEEE802.15.4-2011 PHY PIB Attributes Table 52 in section 6.4.2
  */
@@ -316,7 +316,7 @@ struct MacPibAttributes : public SimpleRefCount<MacPibAttributes>
 };
 
 /**
- * \ingroup lr-wpan
+ * @ingroup lr-wpan
  *
  * MCPS-DATA.confirm params. See 7.1.1.2
  */
@@ -328,7 +328,7 @@ struct McpsDataConfirmParams
 };
 
 /**
- * \ingroup lr-wpan
+ * @ingroup lr-wpan
  *
  * MCPS-DATA.indication params. See 7.1.1.3
  */
@@ -347,7 +347,7 @@ struct McpsDataIndicationParams
 };
 
 /**
- * \ingroup lr-wpan
+ * @ingroup lr-wpan
  *
  * MLME-ASSOCIATE.indication params. See 802.15.4-2011 6.2.2.2.
  */
@@ -361,7 +361,7 @@ struct MlmeAssociateIndicationParams
 };
 
 /**
- * \ingroup lr-wpan
+ * @ingroup lr-wpan
  *
  * MLME-COMM-STATUS.indication params. See  802.15.4-2011   Section 6.2.4.2 Table 18
  */
@@ -383,7 +383,7 @@ struct MlmeCommStatusIndicationParams
 };
 
 /**
- * \ingroup lr-wpan
+ * @ingroup lr-wpan
  *
  * MLME-ORPHAN.indication params. See  802.15.4-2011   Section 6.2.7.1
  */
@@ -393,7 +393,7 @@ struct MlmeOrphanIndicationParams
 };
 
 /**
- * \ingroup lr-wpan
+ * @ingroup lr-wpan
  *
  * MLME-START.confirm params. See  802.15.4-2011   Section 6.2.12.2
  */
@@ -404,7 +404,7 @@ struct MlmeStartConfirmParams
 };
 
 /**
- * \ingroup lr-wpan
+ * @ingroup lr-wpan
  *
  * PAN Descriptor, Table 17 IEEE 802.15.4-2011
  */
@@ -431,7 +431,7 @@ struct PanDescriptor
 };
 
 /**
- * \ingroup lr-wpan
+ * @ingroup lr-wpan
  *
  * MLME-SCAN.confirm params. See IEEE 802.15.4-2011 Section 6.2.10.2
  */
@@ -453,7 +453,7 @@ struct MlmeScanConfirmParams
 };
 
 /**
- * \ingroup lr-wpan
+ * @ingroup lr-wpan
  *
  * MLME-ASSOCIATE.confirm params. See 802.15.4-2011  Section 6.2.2.4
  */
@@ -465,7 +465,7 @@ struct MlmeAssociateConfirmParams
 };
 
 /**
- * \ingroup lr-wpan
+ * @ingroup lr-wpan
  *
  * MLME-BEACON-NOTIFY.indication params. See  802.15.4-2011   Section 6.2.4.1, Table 16
  */
@@ -478,7 +478,7 @@ struct MlmeBeaconNotifyIndicationParams
 };
 
 /**
- * \ingroup lr-wpan
+ * @ingroup lr-wpan
  *
  * MLME-SYNC-LOSS.indication params. See  802.15.4-2011   Section 6.2.13.2, Table 37
  */
@@ -493,7 +493,7 @@ struct MlmeSyncLossIndicationParams
 };
 
 /**
- * \ingroup lr-wpan
+ * @ingroup lr-wpan
  *
  * MLME-SET.confirm params. See  802.15.4-2011   Section 6.2.11.2
  */
@@ -506,7 +506,7 @@ struct MlmeSetConfirmParams
 };
 
 /**
- * \ingroup lr-wpan
+ * @ingroup lr-wpan
  *
  * MLME-START.confirm params. See  802.15.4-2011   Section 6.2.14.2
  */
@@ -518,7 +518,7 @@ struct MlmePollConfirmParams
 };
 
 /**
- * \ingroup lr-wpan
+ * @ingroup lr-wpan
  *
  * This callback is called after a McpsDataRequest has been called from
  * the higher layer.  It returns a status of the outcome of the
@@ -527,18 +527,18 @@ struct MlmePollConfirmParams
 using McpsDataConfirmCallback = Callback<void, McpsDataConfirmParams>;
 
 /**
- * \ingroup lr-wpan
+ * @ingroup lr-wpan
  *
  * This callback is called after a Mcps has successfully received a
  *  frame and wants to deliver it to the higher layer.
  *
- *  \todo for now, we do not deliver all of the parameters in section
+ *  @todo for now, we do not deliver all of the parameters in section
  *  802.15.4-2006 7.1.1.3.1 but just send up the packet.
  */
 using McpsDataIndicationCallback = Callback<void, McpsDataIndicationParams, Ptr<Packet>>;
 
 /**
- * \ingroup lr-wpan
+ * @ingroup lr-wpan
  *
  * This callback is called after a Mlme has successfully received a command
  *  frame and wants to deliver it to the higher layer.
@@ -549,7 +549,7 @@ using McpsDataIndicationCallback = Callback<void, McpsDataIndicationParams, Ptr<
 using MlmeAssociateIndicationCallback = Callback<void, MlmeAssociateIndicationParams>;
 
 /**
- * \ingroup lr-wpan
+ * @ingroup lr-wpan
  *
  * This callback is called by the MLME and issued to its next higher layer following
  * a transmission instigated through a response primitive.
@@ -560,7 +560,7 @@ using MlmeAssociateIndicationCallback = Callback<void, MlmeAssociateIndicationPa
 using MlmeCommStatusIndicationCallback = Callback<void, MlmeCommStatusIndicationParams>;
 
 /**
- * \ingroup lr-wpan
+ * @ingroup lr-wpan
  *
  * This callback is called by the MLME and issued to its next higher layer following
  * the reception of a orphan notification.
@@ -571,7 +571,7 @@ using MlmeCommStatusIndicationCallback = Callback<void, MlmeCommStatusIndication
 using MlmeOrphanIndicationCallback = Callback<void, MlmeOrphanIndicationParams>;
 
 /**
- * \ingroup lr-wpan
+ * @ingroup lr-wpan
  *
  * This callback is called after a MlmeStartRequest has been called from
  * the higher layer.  It returns a status of the outcome of the
@@ -580,7 +580,7 @@ using MlmeOrphanIndicationCallback = Callback<void, MlmeOrphanIndicationParams>;
 using MlmeStartConfirmCallback = Callback<void, MlmeStartConfirmParams>;
 
 /**
- * \ingroup lr-wpan
+ * @ingroup lr-wpan
  *
  * This callback is called after a MlmeScanRequest has been called from
  * the higher layer.  It returns a status of the outcome of the scan.
@@ -588,7 +588,7 @@ using MlmeStartConfirmCallback = Callback<void, MlmeStartConfirmParams>;
 using MlmeScanConfirmCallback = Callback<void, MlmeScanConfirmParams>;
 
 /**
- * \ingroup lr-wpan
+ * @ingroup lr-wpan
  *
  * This callback is called after a MlmeAssociateRequest has been called from
  * the higher layer. It returns a status of the outcome of the
@@ -597,29 +597,29 @@ using MlmeScanConfirmCallback = Callback<void, MlmeScanConfirmParams>;
 using MlmeAssociateConfirmCallback = Callback<void, MlmeAssociateConfirmParams>;
 
 /**
- * \ingroup lr-wpan
+ * @ingroup lr-wpan
  *
  * This callback is called after a Mlme has successfully received a
  *  beacon frame and wants to deliver it to the higher layer.
  *
- *  \todo for now, we do not deliver all of the parameters in section
+ *  @todo for now, we do not deliver all of the parameters in section
  *  802.15.4-2006 6.2.4.1 but just send up the packet.
  */
 using MlmeBeaconNotifyIndicationCallback = Callback<void, MlmeBeaconNotifyIndicationParams>;
 
 /**
- * \ingroup lr-wpan
+ * @ingroup lr-wpan
  *
  * This callback is called to indicate the loss of synchronization with
  * a coordinator.
  *
- * \todo for now, we do not deliver all of the parameters in section
+ * @todo for now, we do not deliver all of the parameters in section
  *  See IEEE 802.15.4-2011 6.2.13.2.
  */
 using MlmeSyncLossIndicationCallback = Callback<void, MlmeSyncLossIndicationParams>;
 
 /**
- * \ingroup lr-wpan
+ * @ingroup lr-wpan
  *
  * This callback is called after a MlmeSetRequest has been called from
  * the higher layer to set a PIB. It returns a status of the outcome of the
@@ -628,7 +628,7 @@ using MlmeSyncLossIndicationCallback = Callback<void, MlmeSyncLossIndicationPara
 using MlmeSetConfirmCallback = Callback<void, MlmeSetConfirmParams>;
 
 /**
- * \ingroup lr-wpan
+ * @ingroup lr-wpan
  *
  * This callback is called after a MlmeGetRequest has been called from
  * the higher layer to get a PIB. It returns a status of the outcome of the
@@ -638,7 +638,7 @@ using MlmeGetConfirmCallback =
     Callback<void, MacStatus, MacPibAttributeIdentifier, Ptr<MacPibAttributes>>;
 
 /**
- * \ingroup lr-wpan
+ * @ingroup lr-wpan
  *
  * This callback is called after a Mlme-Poll.Request has been called from
  * the higher layer.  It returns a status of the outcome of the
@@ -647,9 +647,9 @@ using MlmeGetConfirmCallback =
 using MlmePollConfirmCallback = Callback<void, MlmePollConfirmParams>;
 
 /**
- * \ingroup netdevice
+ * @ingroup netdevice
  *
- * \brief Lr-wpan MAC layer abstraction
+ * @brief Lr-wpan MAC layer abstraction
  *
  * This class defines the interface functions (primitives) used by a IEEE 802.15.4-2011 compliant
  * MAC layer. Any lr-wpan MAC should extend from this class and implement the
@@ -660,8 +660,8 @@ class LrWpanMacBase : public Object
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     ~LrWpanMacBase() override;
@@ -671,8 +671,8 @@ class LrWpanMacBase : public Object
      * MCPS-DATA.request
      * Request to transfer a MSDU.
      *
-     * \param params the request parameters
-     * \param p the packet to be transmitted
+     * @param params the request parameters
+     * @param p the packet to be transmitted
      */
     virtual void McpsDataRequest(McpsDataRequestParams params, Ptr<Packet> p) = 0;
 
@@ -682,7 +682,7 @@ class LrWpanMacBase : public Object
      * Request to allow a PAN coordinator to initiate
      * a new PAN or beginning a new superframe configuration.
      *
-     * \param params the request parameters
+     * @param params the request parameters
      */
     virtual void MlmeStartRequest(MlmeStartRequestParams params) = 0;
 
@@ -691,7 +691,7 @@ class LrWpanMacBase : public Object
      * MLME-SCAN.request
      * Request primitive used to initiate a channel scan over a given list of channels.
      *
-     * \param params the scan request parameters
+     * @param params the scan request parameters
      */
     virtual void MlmeScanRequest(MlmeScanRequestParams params) = 0;
 
@@ -701,7 +701,7 @@ class LrWpanMacBase : public Object
      * Request primitive used by a device to request an association with
      * a coordinator.
      *
-     * \param params the request parameters
+     * @param params the request parameters
      */
     virtual void MlmeAssociateRequest(MlmeAssociateRequestParams params) = 0;
 
@@ -711,7 +711,7 @@ class LrWpanMacBase : public Object
      * Primitive used to initiate a response to an MLME-ASSOCIATE.indication
      * primitive.
      *
-     * \param params the associate response parameters
+     * @param params the associate response parameters
      */
     virtual void MlmeAssociateResponse(MlmeAssociateResponseParams params) = 0;
 
@@ -721,7 +721,7 @@ class LrWpanMacBase : public Object
      * Request to synchronize with the coordinator by acquiring and,
      * if specified, tracking beacons.
      *
-     * \param params the request parameters
+     * @param params the request parameters
      */
     virtual void MlmeSyncRequest(MlmeSyncRequestParams params) = 0;
 
@@ -730,7 +730,7 @@ class LrWpanMacBase : public Object
      * MLME-POLL.request
      * Prompts the device to request data from the coordinator.
      *
-     * \param params the request parameters
+     * @param params the request parameters
      */
     virtual void MlmePollRequest(MlmePollRequestParams params) = 0;
 
@@ -740,7 +740,7 @@ class LrWpanMacBase : public Object
      * Primitive used to initiatte a response to an MLME-ORPHAN.indication
      * primitive.
      *
-     * \param params the orphan response parameters
+     * @param params the orphan response parameters
      */
     virtual void MlmeOrphanResponse(MlmeOrphanResponseParams params) = 0;
 
@@ -749,8 +749,8 @@ class LrWpanMacBase : public Object
      * MLME-SET.request
      * Attempts to write the given value to the indicated PIB attribute.
      *
-     * \param id the attributed identifier
-     * \param attribute the attribute value
+     * @param id the attributed identifier
+     * @param attribute the attribute value
      */
     virtual void MlmeSetRequest(MacPibAttributeIdentifier id, Ptr<MacPibAttributes> attribute) = 0;
 
@@ -761,7 +761,7 @@ class LrWpanMacBase : public Object
      * Note: The PibAttributeIndex parameter is not included because
      * attributes that represent tables are not supported.
      *
-     * \param id the attribute identifier
+     * @param id the attribute identifier
      */
     virtual void MlmeGetRequest(MacPibAttributeIdentifier id) = 0;
 
@@ -770,7 +770,7 @@ class LrWpanMacBase : public Object
      * The callback implements MCPS-DATA.confirm SAP of IEEE 802.15.4-2006,
      * section 7.1.1.2.
      *
-     * \param c the callback
+     * @param c the callback
      */
     void SetMcpsDataConfirmCallback(McpsDataConfirmCallback c);
 
@@ -779,7 +779,7 @@ class LrWpanMacBase : public Object
      * The callback implements MCPS-DATA.indication SAP of IEEE 802.15.4-2006,
      * section 7.1.1.3.
      *
-     * \param c the callback
+     * @param c the callback
      */
     void SetMcpsDataIndicationCallback(McpsDataIndicationCallback c);
 
@@ -788,7 +788,7 @@ class LrWpanMacBase : public Object
      * The callback implements MLME-ASSOCIATE.indication SAP of IEEE 802.15.4-2011,
      * section 6.2.2.2.
      *
-     * \param c the callback
+     * @param c the callback
      */
     void SetMlmeAssociateIndicationCallback(MlmeAssociateIndicationCallback c);
 
@@ -797,7 +797,7 @@ class LrWpanMacBase : public Object
      * The callback implements MLME-COMM-STATUS.indication SAP of IEEE 802.15.4-2011,
      * section 6.2.4.2.
      *
-     * \param c the callback
+     * @param c the callback
      */
     void SetMlmeCommStatusIndicationCallback(MlmeCommStatusIndicationCallback c);
 
@@ -806,7 +806,7 @@ class LrWpanMacBase : public Object
      * The callback implements MLME-ORPHAN.indication SAP of IEEE 802.15.4-2011,
      * section 6.2.7.1.
      *
-     * \param c the callback
+     * @param c the callback
      */
     void SetMlmeOrphanIndicationCallback(MlmeOrphanIndicationCallback c);
 
@@ -815,7 +815,7 @@ class LrWpanMacBase : public Object
      * The callback implements MLME-START.confirm SAP of IEEE 802.15.4-2006,
      * section 7.1.14.2.
      *
-     * \param c the callback
+     * @param c the callback
      */
     void SetMlmeStartConfirmCallback(MlmeStartConfirmCallback c);
 
@@ -824,7 +824,7 @@ class LrWpanMacBase : public Object
      * The callback implements MLME-SCAN.confirm SAP of IEEE 802.15.4-2011,
      * section 6.2.10.2.
      *
-     * \param c the callback
+     * @param c the callback
      */
     void SetMlmeScanConfirmCallback(MlmeScanConfirmCallback c);
 
@@ -833,7 +833,7 @@ class LrWpanMacBase : public Object
      * The callback implements MLME-ASSOCIATE.confirm SAP of IEEE 802.15.4-2011,
      * section 6.2.2.4.
      *
-     * \param c the callback
+     * @param c the callback
      */
     void SetMlmeAssociateConfirmCallback(MlmeAssociateConfirmCallback c);
 
@@ -842,7 +842,7 @@ class LrWpanMacBase : public Object
      * The callback implements MLME-BEACON-NOTIFY.indication SAP of IEEE 802.15.4-2011,
      * section 6.2.4.1.
      *
-     * \param c the callback
+     * @param c the callback
      */
     void SetMlmeBeaconNotifyIndicationCallback(MlmeBeaconNotifyIndicationCallback c);
 
@@ -851,7 +851,7 @@ class LrWpanMacBase : public Object
      * The callback implements MLME-SYNC-LOSS.indication SAP of IEEE 802.15.4-2011,
      * section 6.2.13.2.
      *
-     * \param c the callback
+     * @param c the callback
      */
     void SetMlmeSyncLossIndicationCallback(MlmeSyncLossIndicationCallback c);
 
@@ -860,7 +860,7 @@ class LrWpanMacBase : public Object
      * The callback implements MLME-SET.confirm SAP of IEEE 802.15.4-2011,
      * section 6.2.11.2
      *
-     * \param c the callback
+     * @param c the callback
      */
     void SetMlmeSetConfirmCallback(MlmeSetConfirmCallback c);
 
@@ -869,7 +869,7 @@ class LrWpanMacBase : public Object
      * The callback implements MLME-GET.confirm SAP of IEEE 802.15.4-2011,
      * section 6.2.5.2
      *
-     * \param c the callback
+     * @param c the callback
      */
     void SetMlmeGetConfirmCallback(MlmeGetConfirmCallback c);
 
@@ -878,7 +878,7 @@ class LrWpanMacBase : public Object
      * The callback implements MLME-POLL.confirm SAP of IEEE 802.15.4-2011,
      * section 6.2.14.2
      *
-     * \param c the callback
+     * @param c the callback
      */
     void SetMlmePollConfirmCallback(MlmePollConfirmCallback c);
 

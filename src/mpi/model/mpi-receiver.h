@@ -5,8 +5,8 @@
  */
 
 /**
- * \file
- * \ingroup mpi
+ * @file
+ * @ingroup mpi
  * ns3::MpiReceiver declaration,
  * provides an interface to aggregate to MPI-compatible NetDevices.
  */
@@ -21,9 +21,9 @@ namespace ns3
 {
 
 /**
- * \ingroup mpi
+ * @ingroup mpi
  *
- * \brief Class to aggregate to a NetDevice if it supports MPI capability
+ * @brief Class to aggregate to a NetDevice if it supports MPI capability
  *
  * MpiInterface::ReceiveMessages () needs to send packets to a NetDevice
  * Receive() method.  Since each NetDevice's Receive() method is specific
@@ -38,19 +38,19 @@ class MpiReceiver : public Object
   public:
     /**
      * Register this type.
-     * \return The object TypeId.
+     * @return The object TypeId.
      */
     static TypeId GetTypeId();
     ~MpiReceiver() override;
 
     /**
-     * \brief Direct an incoming packet to the device Receive() method
-     * \param p Packet to receive
+     * @brief Direct an incoming packet to the device Receive() method
+     * @param p Packet to receive
      */
     void Receive(Ptr<Packet> p);
     /**
-     * \brief Set the receive callback to get packets to net devices
-     * \param callback the callback itself
+     * @brief Set the receive callback to get packets to net devices
+     * @param callback the callback itself
      */
     void SetReceiveCallback(Callback<void, Ptr<Packet>> callback);
 

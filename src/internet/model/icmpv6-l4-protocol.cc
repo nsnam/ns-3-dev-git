@@ -265,7 +265,7 @@ Icmpv6L4Protocol::DoDAD(Ipv6Address target, Ptr<Ipv6Interface> interface)
         return;
     }
 
-    /** \todo disable multicast loopback to prevent NS probing to be received by the sender */
+    /** @todo disable multicast loopback to prevent NS probing to be received by the sender */
 
     NdiscCache::Ipv6PayloadHeaderPair p = ForgeNS("::",
                                                   Ipv6Address::MakeSolicitedAddress(target),
@@ -333,7 +333,7 @@ Icmpv6L4Protocol::Receive(Ptr<Packet> packet,
     case Icmpv6Header::ICMPV6_ECHO_REPLY:
         // EchoReply does not contain any info about L4
         // so we can not forward it up.
-        /// \todo implement request / reply consistency check.
+        /// @todo implement request / reply consistency check.
         break;
     case Icmpv6Header::ICMPV6_ERROR_DESTINATION_UNREACHABLE:
         HandleDestinationUnreachable(p, header.GetSource(), header.GetDestination(), interface);
@@ -366,7 +366,7 @@ Icmpv6L4Protocol::Forward(Ipv6Address source,
 
     Ptr<Ipv6L3Protocol> ipv6 = m_node->GetObject<Ipv6L3Protocol>();
 
-    /// \todo assuming the ICMP is carrying a extensionless IP packet
+    /// @todo assuming the ICMP is carrying a extensionless IP packet
 
     uint8_t nextHeader = ipHeader.GetNextHeader();
 
@@ -476,7 +476,7 @@ Icmpv6L4Protocol::HandleRA(Ptr<Packet> packet,
             {
                 p->RemoveHeader(mtuHdr);
                 hasMtu = true;
-                /** \todo case of multiple prefix on single interface */
+                /** @todo case of multiple prefix on single interface */
                 /* interface->GetDevice ()->SetMtu (m.GetMtu ()); */
             }
             break;

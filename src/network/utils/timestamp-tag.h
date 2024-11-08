@@ -28,20 +28,20 @@ class TimestampTag : public Tag
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     TypeId GetInstanceTypeId() const override;
 
     /**
-     * \brief Construct a new TimestampTag object
+     * @brief Construct a new TimestampTag object
      */
     TimestampTag();
 
     /**
-     * \brief Construct a new TimestampTag object with the given timestamp
-     * \param timestamp The timestamp
+     * @brief Construct a new TimestampTag object with the given timestamp
+     * @param timestamp The timestamp
      */
     TimestampTag(Time timestamp);
 
@@ -51,14 +51,14 @@ class TimestampTag : public Tag
     void Print(std::ostream& os) const override;
 
     /**
-     * \brief Get the Timestamp object
-     * \return Time for this tag
+     * @brief Get the Timestamp object
+     * @return Time for this tag
      */
     Time GetTimestamp() const;
 
     /**
-     * \brief Set the Timestamp object
-     * \param timestamp Timestamp to assign to tag
+     * @brief Set the Timestamp object
+     * @param timestamp Timestamp to assign to tag
      */
     void SetTimestamp(Time timestamp);
 

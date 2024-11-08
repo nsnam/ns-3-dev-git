@@ -19,8 +19,8 @@ namespace ns3
 {
 
 /**
- * \ingroup lte
- * \brief Create an EPC network with PointToPoint links in the backhaul network.
+ * @ingroup lte
+ * @brief Create an EPC network with PointToPoint links in the backhaul network.
  *
  * This Helper extends NoBackhaulEpcHelper creating PointToPoint links in the
  * backhaul network (i.e. in the S1-U and S1-MME interfaces)
@@ -41,7 +41,7 @@ class PointToPointEpcHelper : public NoBackhaulEpcHelper
     // inherited from Object
     /**
      * Register this type.
-     * \return The object TypeId.
+     * @return The object TypeId.
      */
     static TypeId GetTypeId();
     TypeId GetInstanceTypeId() const override;

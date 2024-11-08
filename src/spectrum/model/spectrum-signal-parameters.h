@@ -20,7 +20,7 @@ class SpectrumValue;
 class AntennaModel;
 
 /**
- * \ingroup spectrum
+ * @ingroup spectrum
  *
  * This struct provides the generic signal representation to be used by
  * all wireless technologies. Any specific wireless technology is
@@ -35,7 +35,7 @@ class AntennaModel;
  * directly from this struct, each PHY can test (by using a dynamic
  * cast) if a signal being received belongs to a given technology or not.
  *
- * \note when inheriting from this class, make sure that the assignment operator and the copy
+ * @note when inheriting from this class, make sure that the assignment operator and the copy
  * constructor work properly, making deep copies if needed.
  */
 struct SpectrumSignalParameters : public SimpleRefCount<SpectrumSignalParameters>
@@ -52,7 +52,7 @@ struct SpectrumSignalParameters : public SimpleRefCount<SpectrumSignalParameters
 
     /**
      * copy constructor
-     * \param p object to copy
+     * @param p object to copy
      */
     SpectrumSignalParameters(const SpectrumSignalParameters& p);
 
@@ -65,7 +65,7 @@ struct SpectrumSignalParameters : public SimpleRefCount<SpectrumSignalParameters
      * SpectrumSignalParameters should override this method and use it
      * to call the copy constructor of the derived class.
      *
-     * \return a copy of the (possibly derived) class
+     * @return a copy of the (possibly derived) class
      */
     virtual Ptr<SpectrumSignalParameters> Copy() const;
 
@@ -76,7 +76,7 @@ struct SpectrumSignalParameters : public SimpleRefCount<SpectrumSignalParameters
      * underwater acoustic communications. Other transmission media to
      * be defined.
      *
-     * \note when SpectrumSignalParameters is copied, only the pointer to the PSD will be copied.
+     * @note when SpectrumSignalParameters is copied, only the pointer to the PSD will be copied.
      * This is because SpectrumChannel objects normally overwrite the psd anyway, so there is no
      * point in making a copy.
      */

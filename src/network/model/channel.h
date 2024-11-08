@@ -17,12 +17,12 @@ namespace ns3
 class NetDevice;
 
 /**
- * \ingroup network
- * \defgroup channel Channel
+ * @ingroup network
+ * @defgroup channel Channel
  */
 /**
- * \ingroup channel
- * \brief Abstract Channel Base Class.
+ * @ingroup channel
+ * @brief Abstract Channel Base Class.
  *
  * A channel is a logical path over which information flows.  The path can
  * be as simple as a short piece of wire, or as complicated as space-time.
@@ -34,8 +34,8 @@ class Channel : public Object
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -43,7 +43,7 @@ class Channel : public Object
     ~Channel() override;
 
     /**
-     * \returns the unique id of this channel
+     * @returns the unique id of this channel
      *
      * This unique id happens to be also the index of the Channel into
      * the ChannelList.
@@ -51,14 +51,14 @@ class Channel : public Object
     uint32_t GetId() const;
 
     /**
-     * \returns the number of NetDevices connected to this Channel.
+     * @returns the number of NetDevices connected to this Channel.
      *
      * This method must be implemented by subclasses.
      */
     virtual std::size_t GetNDevices() const = 0;
     /**
-     * \param i index of NetDevice to retrieve
-     * \returns one of the NetDevices connected to this channel.
+     * @param i index of NetDevice to retrieve
+     * @returns one of the NetDevices connected to this channel.
      *
      * This method must be implemented by subclasses.
      */

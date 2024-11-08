@@ -3,9 +3,9 @@
  */
 
 /**
- * \file
- * \ingroup core-examples
- * \ingroup logging
+ * @file
+ * @ingroup core-examples
+ * @ingroup logging
  * Example program that demonstrates how to replace the time printer.
  */
 
@@ -15,7 +15,7 @@
  * This program creates a sample object and schedules some methods to
  * occur at future times.  When run with no arguments, it prints out
  * something like this:
- * \code
+ * @code
  * $ ./ns3 run sample-log-time-format
  * RandomVariableStream:RandomVariableStream(0x184e3a0)
  * RandomVariableStream:UniformRandomVariable(0x184e3a0)
@@ -26,15 +26,15 @@
  * +0.000123456s RandomVariableStream:SetAntithetic(0x184e3a0, 0)
  * +0.123456789s RandomVariableStream:SetAntithetic(0x184e3a0, 0)
  * RandomVariableStream:~RandomVariableStream(0x184e3a0)
- * \endcode
+ * @endcode
  *
  * These statements are printed out because of these two program
  * statements:
  *
- * \code
+ * @code
  * LogComponentEnable ("RandomVariableStream", LOG_LEVEL_ALL);
  * LogComponentEnableAll (LOG_PREFIX_TIME);
- * \endcode
+ * @endcode
  *
  * The first statement enables logging on the methods found in
  * random-variable-stream.cc.  The second prepends a time prefix
@@ -47,7 +47,7 @@
  * To change the format, one can schedule (at simulation time 0) a
  * replacement function for printing time.  This can be demonstrated
  * by setting the 'replace-time-printer' parameter to true:
- * \code
+ * @code
  * ./ns3 run 'sample-log-time-format --replaceTimePrinter=1'
  * RandomVariableStream:RandomVariableStream(0x15fb080)
  * RandomVariableStream:UniformRandomVariable(0x15fb080)
@@ -59,7 +59,7 @@
  * 0.000123456s RandomVariableStream:SetAntithetic(0x15fb080, 0)
  * 0.123457s RandomVariableStream:SetAntithetic(0x15fb080, 0)
  * RandomVariableStream:~RandomVariableStream(0x15fb080)
- * \endcode
+ * @endcode
  *
  * In the above, the default C++ iostream precision is instead used
  * (which was the default for ns-3 versions 3.26 and earlier).
@@ -91,7 +91,7 @@ namespace
  * Prior to ns-3.26, the time printer used default C++ iostream precision
  * This function sets it back to the format used before ns-3.26
  *
- * \param [in] os The stream to print on.
+ * @param [in] os The stream to print on.
  */
 void
 ReplacementTimePrinter(std::ostream& os)

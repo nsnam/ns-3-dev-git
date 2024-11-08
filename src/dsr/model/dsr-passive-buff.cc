@@ -176,8 +176,8 @@ struct IsExpired
 {
     /**
      * Check for an expired entry
-     * \param e passive buffer entry
-     * \return true if equal
+     * @param e passive buffer entry
+     * @return true if equal
      */
     bool operator()(const DsrPassiveBuffEntry& e) const
     {

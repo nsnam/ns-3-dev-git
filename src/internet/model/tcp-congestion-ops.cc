@@ -107,7 +107,7 @@ TcpNewReno::~TcpNewReno()
 }
 
 /**
- * \brief Tcp NewReno slow start algorithm
+ * @brief Tcp NewReno slow start algorithm
  *
  * Defined in RFC 5681 as
  *
@@ -144,9 +144,9 @@ TcpNewReno::~TcpNewReno()
  * than a segment size, but we keep count of how many segments we have ignored,
  * and return them.
  *
- * \param tcb internal congestion state
- * \param segmentsAcked count of segments acked
- * \return the number of segments not considered for increasing the cWnd
+ * @param tcb internal congestion state
+ * @param segmentsAcked count of segments acked
+ * @return the number of segments not considered for increasing the cWnd
  */
 uint32_t
 TcpNewReno::SlowStart(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
@@ -165,13 +165,13 @@ TcpNewReno::SlowStart(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
 }
 
 /**
- * \brief NewReno congestion avoidance
+ * @brief NewReno congestion avoidance
  *
  * During congestion avoidance, cwnd is incremented by roughly 1 full-sized
  * segment per round-trip time (RTT).
  *
- * \param tcb internal congestion state
- * \param segmentsAcked count of segments acked
+ * @param tcb internal congestion state
+ * @param segmentsAcked count of segments acked
  */
 void
 TcpNewReno::CongestionAvoidance(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
@@ -190,13 +190,13 @@ TcpNewReno::CongestionAvoidance(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
 }
 
 /**
- * \brief Try to increase the cWnd following the NewReno specification
+ * @brief Try to increase the cWnd following the NewReno specification
  *
- * \see SlowStart
- * \see CongestionAvoidance
+ * @see SlowStart
+ * @see CongestionAvoidance
  *
- * \param tcb internal congestion state
- * \param segmentsAcked count of segments acked
+ * @param tcb internal congestion state
+ * @param segmentsAcked count of segments acked
  */
 void
 TcpNewReno::IncreaseWindow(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)

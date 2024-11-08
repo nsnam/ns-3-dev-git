@@ -16,8 +16,8 @@ namespace ns3
 {
 
 /**
- * \ingroup mobility
- * \brief Allocate a set of positions. The allocation strategy is implemented in subclasses.
+ * @ingroup mobility
+ * @brief Allocate a set of positions. The allocation strategy is implemented in subclasses.
  *
  * This is a pure abstract base class.
  */
@@ -26,13 +26,13 @@ class PositionAllocator : public Object
   public:
     /**
      * Register this type with the TypeId system.
-     * \return the object TypeId
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     PositionAllocator();
     ~PositionAllocator() override;
     /**
-     * \return the next chosen position.
+     * @return the next chosen position.
      *
      * This method _must_ be implement in subclasses.
      */
@@ -44,15 +44,15 @@ class PositionAllocator : public Object
      *
      * This method _must_ be implement in subclasses.
      *
-     * \param stream first stream index to use
-     * \return the number of stream indices assigned by this model
+     * @param stream first stream index to use
+     * @return the number of stream indices assigned by this model
      */
     virtual int64_t AssignStreams(int64_t stream) = 0;
 };
 
 /**
- * \ingroup mobility
- * \brief Allocate positions from a deterministic list specified by the user.
+ * @ingroup mobility
+ * @brief Allocate positions from a deterministic list specified by the user.
  *
  * The first call to ListPositionAllocator::GetNext  will return the
  * first element of the list, the second call, the second element, and so on.
@@ -62,19 +62,19 @@ class ListPositionAllocator : public PositionAllocator
   public:
     /**
      * Register this type with the TypeId system.
-     * \return the object TypeId
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     ListPositionAllocator();
 
     /**
-     * \brief Add a position to the list of positions
-     * \param v the position to append at the end of the list of positions to return from GetNext.
+     * @brief Add a position to the list of positions
+     * @param v the position to append at the end of the list of positions to return from GetNext.
      */
     void Add(Vector v);
 
     /**
-     * \brief Add the positions listed in a file.
+     * @brief Add the positions listed in a file.
      * The file should be a simple text file, with one position per line,
      * either X and Y, or X, Y and Z, in meters.  The delimiter can
      * be any character, such as ',' or '\\t'; the default is a comma ','.
@@ -82,10 +82,10 @@ class ListPositionAllocator : public PositionAllocator
      * The file is read using CsvReader, which explains how comments
      * and whitespace are handled.
      *
-     * \param [in] filePath The path to the input file.
-     * \param [in] defaultZ The default Z value to use when reading files
+     * @param [in] filePath The path to the input file.
+     * @param [in] defaultZ The default Z value to use when reading files
      *             with only X and Y positions.
-     * \param [in] delimiter The delimiter character; see CsvReader.
+     * @param [in] delimiter The delimiter character; see CsvReader.
      */
     void Add(const std::string filePath, double defaultZ = 0, char delimiter = ',');
 
@@ -94,7 +94,7 @@ class ListPositionAllocator : public PositionAllocator
      * based on calling GetNext(), as the number of positions is not altered
      * by calling GetNext ().
      *
-     * \return the number of positions stored
+     * @return the number of positions stored
      */
     uint32_t GetSize() const;
     Vector GetNext() const override;
@@ -106,15 +106,15 @@ class ListPositionAllocator : public PositionAllocator
 };
 
 /**
- * \ingroup mobility
- * \brief Allocate positions on a rectangular 2d grid.
+ * @ingroup mobility
+ * @brief Allocate positions on a rectangular 2d grid.
  */
 class GridPositionAllocator : public PositionAllocator
 {
   public:
     /**
      * Register this type with the TypeId system.
-     * \return the object TypeId
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -140,57 +140,57 @@ class GridPositionAllocator : public PositionAllocator
     GridPositionAllocator();
 
     /**
-     * \param xMin the x coordinate where layout will start.
+     * @param xMin the x coordinate where layout will start.
      */
     void SetMinX(double xMin);
     /**
-     * \param yMin the y coordinate where layout will start
+     * @param yMin the y coordinate where layout will start
      */
     void SetMinY(double yMin);
     /**
-     * \param z   the Z coordinate of all the positions allocated
+     * @param z   the Z coordinate of all the positions allocated
      */
     void SetZ(double z);
     /**
-     * \param deltaX the x interval between two x-consecutive positions.
+     * @param deltaX the x interval between two x-consecutive positions.
      */
     void SetDeltaX(double deltaX);
     /**
-     * \param deltaY the y interval between two y-consecutive positions.
+     * @param deltaY the y interval between two y-consecutive positions.
      */
     void SetDeltaY(double deltaY);
     /**
-     * \param n the number of positions allocated on each row (or each column)
+     * @param n the number of positions allocated on each row (or each column)
      *        before switching to the next column (or row).
      */
     void SetN(uint32_t n);
     /**
-     * \param layoutType the type of layout to use (row first or column first).
+     * @param layoutType the type of layout to use (row first or column first).
      */
     void SetLayoutType(LayoutType layoutType);
 
     /**
-     * \return the x coordinate of the first allocated position.
+     * @return the x coordinate of the first allocated position.
      */
     double GetMinX() const;
     /**
-     * \return the y coordinate of the first allocated position.
+     * @return the y coordinate of the first allocated position.
      */
     double GetMinY() const;
     /**
-     * \return the x interval between two consecutive x-positions.
+     * @return the x interval between two consecutive x-positions.
      */
     double GetDeltaX() const;
     /**
-     * \return the y interval between two consecutive y-positions.
+     * @return the y interval between two consecutive y-positions.
      */
     double GetDeltaY() const;
     /**
-     * \return the number of positions to allocate on each row or each column.
+     * @return the number of positions to allocate on each row or each column.
      */
     uint32_t GetN() const;
     /**
-     * \return the currently-selected layout type.
+     * @return the currently-selected layout type.
      */
     LayoutType GetLayoutType() const;
 
@@ -209,32 +209,32 @@ class GridPositionAllocator : public PositionAllocator
 };
 
 /**
- * \ingroup mobility
- * \brief Allocate random positions within a rectangle according to a pair of random variables.
+ * @ingroup mobility
+ * @brief Allocate random positions within a rectangle according to a pair of random variables.
  */
 class RandomRectanglePositionAllocator : public PositionAllocator
 {
   public:
     /**
      * Register this type with the TypeId system.
-     * \return the object TypeId
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     RandomRectanglePositionAllocator();
     ~RandomRectanglePositionAllocator() override;
 
     /**
-     * \brief Set the random variable stream object that generates x-positions
-     * \param x pointer to a RandomVariableStream object
+     * @brief Set the random variable stream object that generates x-positions
+     * @param x pointer to a RandomVariableStream object
      */
     void SetX(Ptr<RandomVariableStream> x);
     /**
-     * \brief Set the random variable stream object that generates y-positions
-     * \param y pointer to a RandomVariableStream object
+     * @brief Set the random variable stream object that generates y-positions
+     * @param y pointer to a RandomVariableStream object
      */
     void SetY(Ptr<RandomVariableStream> y);
     /**
-     * \param z   the Z coordinate of all the positions allocated
+     * @param z   the Z coordinate of all the positions allocated
      */
     void SetZ(double z);
 
@@ -248,33 +248,33 @@ class RandomRectanglePositionAllocator : public PositionAllocator
 };
 
 /**
- * \ingroup mobility
- * \brief Allocate random positions within a 3D box according to a set of three random variables.
+ * @ingroup mobility
+ * @brief Allocate random positions within a 3D box according to a set of three random variables.
  */
 class RandomBoxPositionAllocator : public PositionAllocator
 {
   public:
     /**
      * Register this type with the TypeId system.
-     * \return the object TypeId
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     RandomBoxPositionAllocator();
     ~RandomBoxPositionAllocator() override;
 
     /**
-     * \brief Set the random variable stream object that generates x-positions
-     * \param x pointer to a RandomVariableStream object
+     * @brief Set the random variable stream object that generates x-positions
+     * @param x pointer to a RandomVariableStream object
      */
     void SetX(Ptr<RandomVariableStream> x);
     /**
-     * \brief Set the random variable stream object that generates y-positions
-     * \param y pointer to a RandomVariableStream object
+     * @brief Set the random variable stream object that generates y-positions
+     * @param y pointer to a RandomVariableStream object
      */
     void SetY(Ptr<RandomVariableStream> y);
     /**
-     * \brief Set the random variable stream object that generates z-positions
-     * \param z pointer to a RandomVariableStream object
+     * @brief Set the random variable stream object that generates z-positions
+     * @param z pointer to a RandomVariableStream object
      */
     void SetZ(Ptr<RandomVariableStream> z);
 
@@ -288,12 +288,12 @@ class RandomBoxPositionAllocator : public PositionAllocator
 };
 
 /**
- * \ingroup mobility
- * \brief Allocate random positions within a disc according to
+ * @ingroup mobility
+ * @brief Allocate random positions within a disc according to
  * a given distribution for the polar coordinates of each node
  * with respect to the provided center of the disc.
  *
- * \note With the default uniform distribution over \f$2 \pi\f$ in \c theta and a
+ * @note With the default uniform distribution over \f$2 \pi\f$ in \c theta and a
  * uniform distribution for \c rho this position allocator will *not*
  * uniformly populate the disc.  The radial distribution will be proportional
  * to \f$\frac{1}{r^2}\f$.
@@ -305,34 +305,34 @@ class RandomDiscPositionAllocator : public PositionAllocator
   public:
     /**
      * Register this type with the TypeId system.
-     * \return the object TypeId
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     RandomDiscPositionAllocator();
     ~RandomDiscPositionAllocator() override;
 
     /**
-     * \brief Set the random variable that generates position angle, in radians.
-     * \param theta Random variable that represents the angle in radians of a position in a random
+     * @brief Set the random variable that generates position angle, in radians.
+     * @param theta Random variable that represents the angle in radians of a position in a random
      * disc.
      */
     void SetTheta(Ptr<RandomVariableStream> theta);
     /**
-     * \brief Set the random variable that generates position radius, in meters
-     * \param rho Random variable that represents the radius of a position, in meters, in a random
+     * @brief Set the random variable that generates position radius, in meters
+     * @param rho Random variable that represents the radius of a position, in meters, in a random
      * disc.
      */
     void SetRho(Ptr<RandomVariableStream> rho);
     /**
-     * \param x  the X coordinate of the center of the disc
+     * @param x  the X coordinate of the center of the disc
      */
     void SetX(double x);
     /**
-     * \param y   the Y coordinate of the center of the disc
+     * @param y   the Y coordinate of the center of the disc
      */
     void SetY(double y);
     /**
-     * \param z   the Z coordinate of all the positions allocated
+     * @param z   the Z coordinate of all the positions allocated
      */
     void SetZ(double z);
 
@@ -348,8 +348,8 @@ class RandomDiscPositionAllocator : public PositionAllocator
 };
 
 /**
- * \ingroup mobility
- * \brief Allocate the positions uniformly (with constant density) randomly within a disc.
+ * @ingroup mobility
+ * @brief Allocate the positions uniformly (with constant density) randomly within a disc.
  *
  * UniformDiscPositionAllocator allocates the positions randomly within a disc \f$ D \f$ lying on
  * the plane \f$ z\f$ and having center at coordinates \f$ (x,y,z) \f$ and radius \f$ \rho \f$. The
@@ -357,7 +357,7 @@ class RandomDiscPositionAllocator : public PositionAllocator
  * the fraction of points which fall into \f$ S \subset D \f$ corresponds to \f$ \frac{|S|}{|D|}
  * \f$, i.e., to the ratio of the area of the subset to the area of the whole disc.
  *
- * \note using UniformDiscPositionAllocator is not equivalent to using
+ * @note using UniformDiscPositionAllocator is not equivalent to using
  * a RandomDiscPositionAllocator with a uniformly-distributed radius,
  * since doing that would result in a point distribution which is
  * more dense towards the center of the disc.
@@ -367,29 +367,29 @@ class UniformDiscPositionAllocator : public PositionAllocator
   public:
     /**
      * Register this type with the TypeId system.
-     * \return the object TypeId
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     UniformDiscPositionAllocator();
     ~UniformDiscPositionAllocator() override;
 
     /**
-     * \param rho the value of the radius of the disc
+     * @param rho the value of the radius of the disc
      */
     void SetRho(double rho);
 
     /**
-     * \param x  the X coordinate of the center of the disc
+     * @param x  the X coordinate of the center of the disc
      */
     void SetX(double x);
 
     /**
-     * \param y   the Y coordinate of the center of the disc
+     * @param y   the Y coordinate of the center of the disc
      */
     void SetY(double y);
 
     /**
-     * \param z   the Z coordinate of all the positions allocated
+     * @param z   the Z coordinate of all the positions allocated
      */
     void SetZ(double z);
 

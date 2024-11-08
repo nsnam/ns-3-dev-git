@@ -18,7 +18,7 @@ namespace ns3
 {
 
 /**
- * \brief receive notifications about PHY events.
+ * @brief receive notifications about PHY events.
  */
 class WifiPhyListener
 {
@@ -32,7 +32,7 @@ class WifiPhyListener
     }
 
     /**
-     * \param duration the expected duration of the packet reception.
+     * @param duration the expected duration of the packet reception.
      *
      * We have received the first bit of a packet. We decided
      * that we could synchronize on this packet. It does not mean
@@ -57,8 +57,8 @@ class WifiPhyListener
      */
     virtual void NotifyRxEndError() = 0;
     /**
-     * \param duration the expected transmission duration.
-     * \param txPower the nominal TX power
+     * @param duration the expected transmission duration.
+     * @param txPower the nominal TX power
      *
      * We are about to send the first bit of the packet.
      * We do not send any event to notify the end of
@@ -68,9 +68,9 @@ class WifiPhyListener
      */
     virtual void NotifyTxStart(Time duration, dBm_u txPower) = 0;
     /**
-     * \param duration the expected busy duration.
-     * \param channelType the channel type for which the CCA busy state is reported.
-     * \param per20MhzDurations vector that indicates for how long each 20 MHz subchannel
+     * @param duration the expected busy duration.
+     * @param channelType the channel type for which the CCA busy state is reported.
+     * @param per20MhzDurations vector that indicates for how long each 20 MHz subchannel
      *        (corresponding to the index of the element in the vector) is busy and where a zero
      * duration indicates that the subchannel is idle. The vector is non-empty if  the PHY supports
      * 802.11ax or later and if the operational channel width is larger than 20 MHz.
@@ -91,7 +91,7 @@ class WifiPhyListener
                                     WifiChannelListType channelType,
                                     const std::vector<Time>& per20MhzDurations) = 0;
     /**
-     * \param duration the expected channel switching duration.
+     * @param duration the expected channel switching duration.
      *
      * We do not send any event to notify the end of
      * channel switching. Listeners should assume that the

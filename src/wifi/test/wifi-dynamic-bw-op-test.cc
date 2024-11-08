@@ -27,8 +27,8 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("WifiDynamicBwOpTestSuite");
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
  * Two BSSes, each with one AP and one non-AP STA, are configured to operate on
  * different channels. Specifically, the operating channel of BSS 1 is the secondary<X>
@@ -42,25 +42,25 @@ class WifiUseAvailBwTest : public TestCase
     /**
      * Constructor
      *
-     * \param channelStr channel setting strings for BSS 0 and BSS 1
-     * \param bss0Width width of the transmission in BSS 0 started when BSS 1 is transmitting
+     * @param channelStr channel setting strings for BSS 0 and BSS 1
+     * @param bss0Width width of the transmission in BSS 0 started when BSS 1 is transmitting
      */
     WifiUseAvailBwTest(std::initializer_list<std::string> channelStr, MHz_u bss0Width);
     ~WifiUseAvailBwTest() override;
 
     /**
      * Function to trace packets received by the server application in the given BSS
-     * \param bss the given BSS
-     * \param p the packet
-     * \param addr the address
+     * @param bss the given BSS
+     * @param p the packet
+     * @param addr the address
      */
     void L7Receive(uint8_t bss, Ptr<const Packet> p, const Address& addr);
     /**
      * Callback invoked when a PHY receives a PSDU to transmit
-     * \param bss the BSS the PSDU belongs to
-     * \param psduMap the PSDU map
-     * \param txVector the TX vector
-     * \param txPowerW the tx power in Watts
+     * @param bss the BSS the PSDU belongs to
+     * @param psduMap the PSDU map
+     * @param txVector the TX vector
+     * @param txPowerW the tx power in Watts
      */
     void Transmit(uint8_t bss, WifiConstPsduMap psduMap, WifiTxVector txVector, double txPowerW);
     /**
@@ -407,10 +407,10 @@ WifiUseAvailBwTest::CheckResults()
 }
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief wifi dynamic bandwidth operation Test Suite
+ * @brief wifi dynamic bandwidth operation Test Suite
  */
 class WifiDynamicBwOpTestSuite : public TestSuite
 {

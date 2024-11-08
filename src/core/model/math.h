@@ -13,8 +13,8 @@
 #define MATH_H
 
 /**
- * \file
- * \ingroup core
+ * @file
+ * @ingroup core
  * log2() macro definition; to deal with \bugid{1467}.
  */
 

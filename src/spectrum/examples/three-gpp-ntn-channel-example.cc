@@ -6,7 +6,7 @@
  */
 
 /**
- * \file
+ * @file
  * This example is a modified version of "three-gpp-channel-example", to include
  * the 3GPP NTN channel model.
  * Specifically, most changes (which are also highlighted throughout the code)
@@ -143,7 +143,7 @@ CreateNoisePowerSpectralDensity(double fcHz, double noiseFigureDb, double bwHz, 
 }
 
 /**
- * \brief A structure that holds the parameters for the
+ * @brief A structure that holds the parameters for the
  * ComputeSnr function. In this way the problem with the limited
  * number of parameters of method Schedule is avoided.
  */
@@ -160,16 +160,16 @@ struct ComputeSnrParams
     double resourceBlockBandwidth;   //!< the Resource Block bandwidth in Hz
 
     /**
-     * \brief Constructor
-     * \param pTxMob the tx mobility model
-     * \param pRxMob the rx mobility model
-     * \param pTxPow the tx power in dBm
-     * \param pNoiseFigure the noise figure in dB
-     * \param pTxAntenna the tx antenna array
-     * \param pRxAntenna the rx antenna array
-     * \param pFrequency the carrier frequency in Hz
-     * \param pBandwidth the total bandwidth in Hz
-     * \param pResourceBlockBandwidth the Resource Block bandwidth in Hz
+     * @brief Constructor
+     * @param pTxMob the tx mobility model
+     * @param pRxMob the rx mobility model
+     * @param pTxPow the tx power in dBm
+     * @param pNoiseFigure the noise figure in dB
+     * @param pTxAntenna the tx antenna array
+     * @param pRxAntenna the rx antenna array
+     * @param pFrequency the carrier frequency in Hz
+     * @param pBandwidth the total bandwidth in Hz
+     * @param pResourceBlockBandwidth the Resource Block bandwidth in Hz
      */
     ComputeSnrParams(Ptr<MobilityModel> pTxMob,
                      Ptr<MobilityModel> pRxMob,
@@ -195,9 +195,9 @@ struct ComputeSnrParams
 
 /**
  * Perform the beamforming using the DFT beamforming method
- * \param thisDevice the device performing the beamforming
- * \param thisAntenna the antenna object associated to thisDevice
- * \param otherDevice the device towards which point the beam
+ * @param thisDevice the device performing the beamforming
+ * @param thisAntenna the antenna object associated to thisDevice
+ * @param otherDevice the device towards which point the beam
  */
 static void
 DoBeamforming(Ptr<NetDevice> thisDevice,
@@ -241,7 +241,7 @@ DoBeamforming(Ptr<NetDevice> thisDevice,
 
 /**
  * Compute the average SNR
- * \param params A structure that holds the parameters that are needed to perform calculations in
+ * @param params A structure that holds the parameters that are needed to perform calculations in
  * ComputeSnr
  */
 static void

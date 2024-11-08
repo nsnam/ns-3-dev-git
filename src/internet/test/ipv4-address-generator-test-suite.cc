@@ -11,9 +11,9 @@
 using namespace ns3;
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief IPv4 network number Test
+ * @brief IPv4 network number Test
  */
 class NetworkNumberAllocatorTestCase : public TestCase
 {
@@ -71,9 +71,9 @@ NetworkNumberAllocatorTestCase::DoRun()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief IPv4 address allocator Test
+ * @brief IPv4 address allocator Test
  */
 class AddressAllocatorTestCase : public TestCase
 {
@@ -128,9 +128,9 @@ AddressAllocatorTestCase::DoTeardown()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief IPv4 network and address allocator Test
+ * @brief IPv4 network and address allocator Test
  */
 class NetworkAndAddressTestCase : public TestCase
 {
@@ -199,9 +199,9 @@ NetworkAndAddressTestCase::DoRun()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief IPv4 AddressGenerator example (sort of) Test
+ * @brief IPv4 AddressGenerator example (sort of) Test
  */
 class ExampleAddressGeneratorTestCase : public TestCase
 {
@@ -257,9 +257,9 @@ ExampleAddressGeneratorTestCase::DoRun()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief IPv4 address collision Test
+ * @brief IPv4 address collision Test
  */
 class AddressCollisionTestCase : public TestCase
 {
@@ -339,9 +339,9 @@ AddressCollisionTestCase::DoRun()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief IPv4 Address Generator TestSuite
+ * @brief IPv4 Address Generator TestSuite
  */
 class Ipv4AddressGeneratorTestSuite : public TestSuite
 {

@@ -15,8 +15,8 @@
 #include <stdint.h>
 
 /**
- * \file
- * \ingroup attribute_Uinteger
+ * @file
+ * @ingroup attribute_Uinteger
  * ns3::UintegerValue attribute value declarations and template implementations.
  */
 
@@ -42,9 +42,9 @@ Ptr<const AttributeChecker> MakeUintegerChecker();
  *
  * The minimum value is included in the allowed range.
  *
- * \param [in] min The minimum value.
- * \returns The AttributeChecker.
- * \see AttributeChecker
+ * @param [in] min The minimum value.
+ * @returns The AttributeChecker.
+ * @see AttributeChecker
  */
 template <typename T>
 Ptr<const AttributeChecker> MakeUintegerChecker(uint64_t min);
@@ -54,10 +54,10 @@ Ptr<const AttributeChecker> MakeUintegerChecker(uint64_t min);
  *
  * The minimum and maximum values are included in the allowed range.
  *
- * \param [in] min The minimum value.
- * \param [in] max The maximum value.
- * \returns The AttributeChecker.
- * \see AttributeChecker
+ * @param [in] min The minimum value.
+ * @param [in] max The maximum value.
+ * @returns The AttributeChecker.
+ * @see AttributeChecker
  */
 template <typename T>
 Ptr<const AttributeChecker> MakeUintegerChecker(uint64_t min, uint64_t max);

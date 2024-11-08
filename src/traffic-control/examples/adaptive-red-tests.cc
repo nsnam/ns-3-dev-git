@@ -93,7 +93,7 @@ std::stringstream filePlotQueueDiscAvg; //!< Output file name for queue disc ave
 /**
  * Check the queue disc size and write its stats to the output files.
  *
- * \param queue The queue to check.
+ * @param queue The queue to check.
  */
 void
 CheckQueueDiscSize(Ptr<QueueDisc> queue)
@@ -119,7 +119,7 @@ CheckQueueDiscSize(Ptr<QueueDisc> queue)
 /**
  * Setup the apps.
  *
- * \param test The test number.
+ * @param test The test number.
  */
 void
 BuildAppsTest(uint32_t test)

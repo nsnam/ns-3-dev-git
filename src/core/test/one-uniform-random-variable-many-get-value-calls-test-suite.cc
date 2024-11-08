@@ -14,10 +14,10 @@
 #include <vector>
 
 /**
- * \file
- * \ingroup core-tests
- * \ingroup randomvariable
- * \ingroup rng-tests
+ * @file
+ * @ingroup core-tests
+ * @ingroup randomvariable
+ * @ingroup rng-tests
  * Test for one uniform random variable stream.
  */
 
@@ -28,7 +28,7 @@ namespace tests
 {
 
 /**
- * \ingroup rng-tests
+ * @ingroup rng-tests
  * Test case for one uniform distribution random variable stream generator
  */
 class OneUniformRandomVariableManyGetValueCallsTestCase : public TestCase
@@ -76,7 +76,7 @@ OneUniformRandomVariableManyGetValueCallsTestCase::DoRun()
 }
 
 /**
- * \ingroup rng-tests
+ * @ingroup rng-tests
  * Test suite for one uniform distribution random variable stream generator
  */
 class OneUniformRandomVariableManyGetValueCallsTestSuite : public TestSuite
@@ -93,7 +93,7 @@ OneUniformRandomVariableManyGetValueCallsTestSuite::
 }
 
 /**
- * \ingroup rng-tests
+ * @ingroup rng-tests
  * OneUniformRandomVariableManyGetValueCallsTestSuite instance variable.
  */
 static OneUniformRandomVariableManyGetValueCallsTestSuite

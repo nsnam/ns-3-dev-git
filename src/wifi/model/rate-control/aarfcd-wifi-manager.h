@@ -18,8 +18,8 @@ namespace ns3
 struct AarfcdWifiRemoteStation;
 
 /**
- * \brief an implementation of the AARF-CD algorithm
- * \ingroup wifi
+ * @brief an implementation of the AARF-CD algorithm
+ * @ingroup wifi
  *
  * This algorithm was first described in "Efficient Collision Detection for Auto Rate Fallback
  * Algorithm". The implementation available here was done by Federico Maguolo for a very early
@@ -34,8 +34,8 @@ class AarfcdWifiManager : public WifiRemoteStationManager
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     AarfcdWifiManager();
@@ -56,7 +56,7 @@ class AarfcdWifiManager : public WifiRemoteStationManager
      * The fundamental reason for this is that there is a backoff between each data
      * transmission, be it an initial transmission or a retransmission.
      *
-     * \param station the station that we failed to send Data
+     * @param station the station that we failed to send Data
      */
     void DoReportDataFailed(WifiRemoteStation* station) override;
     void DoReportRtsOk(WifiRemoteStation* station,
@@ -78,31 +78,31 @@ class AarfcdWifiManager : public WifiRemoteStationManager
     /**
      * Check if the use of RTS for the given station can be turned off.
      *
-     * \param station the station that we are checking
+     * @param station the station that we are checking
      */
     void CheckRts(AarfcdWifiRemoteStation* station);
     /**
      * Increase the RTS window size of the given station.
      *
-     * \param station the station to increase RTS window
+     * @param station the station to increase RTS window
      */
     void IncreaseRtsWnd(AarfcdWifiRemoteStation* station);
     /**
      * Reset the RTS window of the given station.
      *
-     * \param station the station to reset RTS window
+     * @param station the station to reset RTS window
      */
     void ResetRtsWnd(AarfcdWifiRemoteStation* station);
     /**
      * Turn off RTS for the given station.
      *
-     * \param station the station to turn RTS off
+     * @param station the station to turn RTS off
      */
     void TurnOffRts(AarfcdWifiRemoteStation* station);
     /**
      * Turn on RTS for the given station.
      *
-     * \param station the station to turn RTS on
+     * @param station the station to turn RTS on
      */
     void TurnOnRts(AarfcdWifiRemoteStation* station);
 

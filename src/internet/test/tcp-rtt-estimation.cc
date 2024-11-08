@@ -17,9 +17,9 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("TcpRttEstimationTestSuite");
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief Check Rtt calculations
+ * @brief Check Rtt calculations
  *
  * First check is that, for each ACK, we have a valid estimation of the RTT.
  * The second check is that, when updating RTT history, we should consider
@@ -30,10 +30,10 @@ class TcpRttEstimationTest : public TcpGeneralTest
 {
   public:
     /**
-     * \brief Constructor.
-     * \param desc Test description.
-     * \param enableTs Enable TimeStamp option.
-     * \param pktCount Packet number.
+     * @brief Constructor.
+     * @param desc Test description.
+     * @param enableTs Enable TimeStamp option.
+     * @param pktCount Packet number.
      */
     TcpRttEstimationTest(const std::string& desc, bool enableTs, uint32_t pktCount);
 
@@ -179,21 +179,21 @@ TcpRttEstimationTest::FinalChecks()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief Check Rtt calculations with packet losses.
+ * @brief Check Rtt calculations with packet losses.
  *
- * \see TcpRttEstimationTest
+ * @see TcpRttEstimationTest
  */
 class TcpRttEstimationWithLossTest : public TcpRttEstimationTest
 {
   public:
     /**
-     * \brief Constructor.
-     * \param desc Test description.
-     * \param enableTs Enable TimeStamp option.
-     * \param pktCount Packet number.
-     * \param toDrop List of packet to drop.
+     * @brief Constructor.
+     * @param desc Test description.
+     * @param enableTs Enable TimeStamp option.
+     * @param pktCount Packet number.
+     * @param toDrop List of packet to drop.
      */
     TcpRttEstimationWithLossTest(const std::string& desc,
                                  bool enableTs,
@@ -230,9 +230,9 @@ TcpRttEstimationWithLossTest::CreateReceiverErrorModel()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief TCP RTT estimation TestSuite
+ * @brief TCP RTT estimation TestSuite
  */
 class TcpRttEstimationTestSuite : public TestSuite
 {

@@ -21,8 +21,8 @@ namespace olsr
 {
 
 /**
- * \ingroup olsr-test
- * \ingroup tests
+ * @ingroup olsr-test
+ * @ingroup tests
  *
  * See \bugid{780}
  */
@@ -42,7 +42,7 @@ class Bug780Test : public TestCase
     void SendPing();
     /**
      * Receive echo reply
-     * \param socket the socket
+     * @param socket the socket
      */
     void Receive(Ptr<Socket> socket);
     /// Socket

@@ -16,10 +16,10 @@ class NetDevice;
 class Node;
 
 /**
- * \ingroup socket
- * \ingroup ipv4
+ * @ingroup socket
+ * @ingroup ipv4
  *
- * \brief IPv4 raw socket.
+ * @brief IPv4 raw socket.
  *
  * A RAW Socket typically is used to access specific IP layers not usually
  * available through L4 sockets, e.g., ICMP. The implementer should take
@@ -30,24 +30,24 @@ class Ipv4RawSocketImpl : public Socket
 {
   public:
     /**
-     * \brief Get the type ID of this class.
-     * \return type ID
+     * @brief Get the type ID of this class.
+     * @return type ID
      */
     static TypeId GetTypeId();
 
     Ipv4RawSocketImpl();
 
     /**
-     * \brief Set the node associated with this socket.
-     * \param node node to set
+     * @brief Set the node associated with this socket.
+     * @param node node to set
      */
     void SetNode(Ptr<Node> node);
 
     Socket::SocketErrno GetErrno() const override;
 
     /**
-     * \brief Get socket type (NS3_SOCK_RAW)
-     * \return socket type
+     * @brief Get socket type (NS3_SOCK_RAW)
+     * @return socket type
      */
     Socket::SocketType GetSocketType() const override;
 
@@ -70,17 +70,17 @@ class Ipv4RawSocketImpl : public Socket
     Ptr<Packet> RecvFrom(uint32_t maxSize, uint32_t flags, Address& fromAddress) override;
 
     /**
-     * \brief Set protocol field.
-     * \param protocol protocol to set
+     * @brief Set protocol field.
+     * @param protocol protocol to set
      */
     void SetProtocol(uint16_t protocol);
 
     /**
-     * \brief Forward up to receive method.
-     * \param p packet
-     * \param ipHeader IPv4 header
-     * \param incomingInterface incoming interface
-     * \return true if forwarded, false otherwise
+     * @brief Forward up to receive method.
+     * @param p packet
+     * @param ipHeader IPv4 header
+     * @param incomingInterface incoming interface
+     * @return true if forwarded, false otherwise
      */
     bool ForwardUp(Ptr<const Packet> p, Ipv4Header ipHeader, Ptr<Ipv4Interface> incomingInterface);
     bool SetAllowBroadcast(bool allowBroadcast) override;
@@ -90,8 +90,8 @@ class Ipv4RawSocketImpl : public Socket
     void DoDispose() override;
 
     /**
-     * \struct Data
-     * \brief IPv4 raw data and additional information.
+     * @struct Data
+     * @brief IPv4 raw data and additional information.
      */
     struct Data
     {

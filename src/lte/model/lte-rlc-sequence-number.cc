@@ -13,9 +13,9 @@ namespace ns3
 
 /**
  * Ostream output function
- * \param os the output stream
- * \param val the sequence number
- * \returns the os
+ * @param os the output stream
+ * @param val the sequence number
+ * @returns the os
  */
 std::ostream&
 operator<<(std::ostream& os, const SequenceNumber10& val)

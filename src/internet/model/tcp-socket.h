@@ -25,10 +25,10 @@ class Node;
 class Packet;
 
 /**
- * \ingroup socket
- * \ingroup tcp
+ * @ingroup socket
+ * @ingroup tcp
  *
- * \brief (abstract) base class of all TcpSockets
+ * @brief (abstract) base class of all TcpSockets
  *
  * This class exists solely for hosting TcpSocket attributes that can
  * be reused across different implementations.
@@ -38,8 +38,8 @@ class TcpSocket : public Socket
   public:
     /**
      * Get the type ID.
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -47,8 +47,8 @@ class TcpSocket : public Socket
     ~TcpSocket() override;
 
     /**
-     * \ingroup tcp
-     * \brief Names of the 11 TCP states
+     * @ingroup tcp
+     * @brief Names of the 11 TCP states
      *
      */
     enum TcpStates_t
@@ -79,7 +79,7 @@ class TcpSocket : public Socket
     };
 
     /**
-     * \brief Literal names of TCP states for use in log messages
+     * @brief Literal names of TCP states for use in log messages
      */
     static const char* const TcpStateName[TcpSocket::LAST_STATE];
 
@@ -87,166 +87,166 @@ class TcpSocket : public Socket
     // Indirect the attribute setting and getting through private virtual methods
 
     /**
-     * \brief Set the send buffer size.
-     * \param size the buffer size (in bytes)
+     * @brief Set the send buffer size.
+     * @param size the buffer size (in bytes)
      */
     virtual void SetSndBufSize(uint32_t size) = 0;
 
     /**
-     * \brief Get the send buffer size.
-     * \returns the buffer size (in bytes)
+     * @brief Get the send buffer size.
+     * @returns the buffer size (in bytes)
      */
     virtual uint32_t GetSndBufSize() const = 0;
 
     /**
-     * \brief Set the receive buffer size.
-     * \param size the buffer size (in bytes)
+     * @brief Set the receive buffer size.
+     * @param size the buffer size (in bytes)
      */
     virtual void SetRcvBufSize(uint32_t size) = 0;
 
     /**
-     * \brief Get the receive buffer size.
-     * \returns the buffer size (in bytes)
+     * @brief Get the receive buffer size.
+     * @returns the buffer size (in bytes)
      */
     virtual uint32_t GetRcvBufSize() const = 0;
 
     /**
-     * \brief Set the segment size.
-     * \param size the segment size (in bytes)
+     * @brief Set the segment size.
+     * @param size the segment size (in bytes)
      */
     virtual void SetSegSize(uint32_t size) = 0;
 
     /**
-     * \brief Get the segment size.
-     * \returns the segment size (in bytes)
+     * @brief Get the segment size.
+     * @returns the segment size (in bytes)
      */
     virtual uint32_t GetSegSize() const = 0;
 
     /**
-     * \brief Set the initial Slow Start Threshold.
-     * \param threshold the Slow Start Threshold (in bytes)
+     * @brief Set the initial Slow Start Threshold.
+     * @param threshold the Slow Start Threshold (in bytes)
      */
     virtual void SetInitialSSThresh(uint32_t threshold) = 0;
 
     /**
-     * \brief Get the initial Slow Start Threshold.
-     * \returns the Slow Start Threshold (in bytes)
+     * @brief Get the initial Slow Start Threshold.
+     * @returns the Slow Start Threshold (in bytes)
      */
     virtual uint32_t GetInitialSSThresh() const = 0;
 
     /**
-     * \brief Set the initial Congestion Window.
-     * \param cwnd the initial congestion window (in segments)
+     * @brief Set the initial Congestion Window.
+     * @param cwnd the initial congestion window (in segments)
      */
     virtual void SetInitialCwnd(uint32_t cwnd) = 0;
 
     /**
-     * \brief Get the initial Congestion Window.
-     * \returns the initial congestion window (in segments)
+     * @brief Get the initial Congestion Window.
+     * @returns the initial congestion window (in segments)
      */
     virtual uint32_t GetInitialCwnd() const = 0;
 
     /**
-     * \brief Set the connection timeout.
-     * \param timeout the connection timeout
+     * @brief Set the connection timeout.
+     * @param timeout the connection timeout
      */
     virtual void SetConnTimeout(Time timeout) = 0;
 
     /**
-     * \brief Get the connection timeout.
-     * \returns the connection timeout
+     * @brief Get the connection timeout.
+     * @returns the connection timeout
      */
     virtual Time GetConnTimeout() const = 0;
 
     /**
-     * \brief Set the number of connection retries before giving up.
-     * \param count the number of connection retries
+     * @brief Set the number of connection retries before giving up.
+     * @param count the number of connection retries
      */
     virtual void SetSynRetries(uint32_t count) = 0;
 
     /**
-     * \brief Get the number of connection retries before giving up.
-     * \returns the number of connection retries
+     * @brief Get the number of connection retries before giving up.
+     * @returns the number of connection retries
      */
     virtual uint32_t GetSynRetries() const = 0;
 
     /**
-     * \brief Set the number of data transmission retries before giving up.
-     * \param retries the number of data transmission retries
+     * @brief Set the number of data transmission retries before giving up.
+     * @param retries the number of data transmission retries
      */
     virtual void SetDataRetries(uint32_t retries) = 0;
 
     /**
-     * \brief Get the number of data transmission retries before giving up.
-     * \returns the number of data transmission retries
+     * @brief Get the number of data transmission retries before giving up.
+     * @returns the number of data transmission retries
      */
     virtual uint32_t GetDataRetries() const = 0;
 
     /**
-     * \brief Set the time to delay an ACK.
-     * \param timeout the time to delay an ACK
+     * @brief Set the time to delay an ACK.
+     * @param timeout the time to delay an ACK
      */
     virtual void SetDelAckTimeout(Time timeout) = 0;
 
     /**
-     * \brief Get the time to delay an ACK.
-     * \returns the time to delay an ACK
+     * @brief Get the time to delay an ACK.
+     * @returns the time to delay an ACK
      */
     virtual Time GetDelAckTimeout() const = 0;
 
     /**
-     * \brief Set the number of packet to fire an ACK before delay timeout.
-     * \param count the umber of packet to fire an ACK before delay timeout
+     * @brief Set the number of packet to fire an ACK before delay timeout.
+     * @param count the umber of packet to fire an ACK before delay timeout
      */
     virtual void SetDelAckMaxCount(uint32_t count) = 0;
 
     /**
-     * \brief Get the number of packet to fire an ACK before delay timeout.
-     * \returns the number of packet to fire an ACK before delay timeout
+     * @brief Get the number of packet to fire an ACK before delay timeout.
+     * @returns the number of packet to fire an ACK before delay timeout
      */
     virtual uint32_t GetDelAckMaxCount() const = 0;
 
     /**
-     * \brief Enable/Disable Nagle's algorithm.
-     * \param noDelay true to DISABLE Nagle's algorithm
+     * @brief Enable/Disable Nagle's algorithm.
+     * @param noDelay true to DISABLE Nagle's algorithm
      */
     virtual void SetTcpNoDelay(bool noDelay) = 0;
 
     /**
-     * \brief Check if Nagle's algorithm is enabled or not.
-     * \returns true if Nagle's algorithm is DISABLED
+     * @brief Check if Nagle's algorithm is enabled or not.
+     * @returns true if Nagle's algorithm is DISABLED
      */
     virtual bool GetTcpNoDelay() const = 0;
 
     /**
-     * \brief Set the timeout for persistent connection
+     * @brief Set the timeout for persistent connection
      *
      * When the timeout expires, send 1-byte data to probe for the window
      * size at the receiver when the local knowledge tells that the
      * receiver has zero window size
      *
-     * \param timeout the persistent timeout
+     * @param timeout the persistent timeout
      */
     virtual void SetPersistTimeout(Time timeout) = 0;
 
     /**
-     * \brief Get the timeout for persistent connection
+     * @brief Get the timeout for persistent connection
      *
      * When the timeout expires, send 1-byte data to probe for the window
      * size at the receiver when the local knowledge tells that the
      * receiver has zero window size
      *
-     * \returns the persistent timeout
+     * @returns the persistent timeout
      */
     virtual Time GetPersistTimeout() const = 0;
 };
 
 /**
- * \ingroup tcp
+ * @ingroup tcp
  * TracedValue Callback signature for TcpStates_t
  *
- * \param [in] oldValue original value of the traced variable
- * \param [in] newValue new value of the traced variable
+ * @param [in] oldValue original value of the traced variable
+ * @param [in] newValue new value of the traced variable
  */
 typedef void (*TcpStatesTracedValueCallback)(const TcpSocket::TcpStates_t oldValue,
                                              const TcpSocket::TcpStates_t newValue);

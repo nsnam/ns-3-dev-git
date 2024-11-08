@@ -23,8 +23,8 @@ namespace ns3
 class ConstantVelocityMobilityModel;
 
 /**
- * \ingroup mobility
- * \brief Helper class which can read ns-2 movement files and configure nodes mobility.
+ * @ingroup mobility
+ * @brief Helper class which can read ns-2 movement files and configure nodes mobility.
  *
  * This implementation is based on the ns2 movement documentation of ns2
  * as described in http://www.isi.edu/nsnam/ns/doc/node172.html
@@ -59,7 +59,7 @@ class ConstantVelocityMobilityModel;
  *
  *  See usage example in examples/mobility/ns2-mobility-trace.cc
  *
- * \bug Rounding errors may cause movement to diverge from the mobility
+ * @bug Rounding errors may cause movement to diverge from the mobility
  * pattern in ns-2 (using the same trace).
  * See https://www.nsnam.org/bugzilla/show_bug.cgi?id=1316
  */
@@ -67,7 +67,7 @@ class Ns2MobilityHelper
 {
   public:
     /**
-     * \param filename filename of file which contains the
+     * @param filename filename of file which contains the
      *        ns2 movement trace.
      */
     Ns2MobilityHelper(std::string filename);
@@ -81,9 +81,9 @@ class Ns2MobilityHelper
     void Install() const;
 
     /**
-     * \param begin an iterator which points to the start of the input
+     * @param begin an iterator which points to the start of the input
      *        object array.
-     * \param end an iterator which points to the end of the input
+     * @param end an iterator which points to the end of the input
      *        object array.
      *
      * Read the ns2 trace file and configure the movement
@@ -96,7 +96,7 @@ class Ns2MobilityHelper
 
   private:
     /**
-     * \brief a class to hold input objects internally
+     * @brief a class to hold input objects internally
      */
     class ObjectStore
     {
@@ -107,22 +107,22 @@ class Ns2MobilityHelper
 
         /**
          * Return ith object in store
-         * \param i index
-         * \return pointer to object
+         * @param i index
+         * @return pointer to object
          */
         virtual Ptr<Object> Get(uint32_t i) const = 0;
     };
 
     /**
      * Parses ns-2 mobility file to create ns-3 mobility events
-     * \param store Object store containing ns-3 mobility models
+     * @param store Object store containing ns-3 mobility models
      */
     void ConfigNodesMovements(const ObjectStore& store) const;
     /**
      * Get or create a ConstantVelocityMobilityModel corresponding to idString
-     * \param idString string name for a node
-     * \param store Object store containing ns-3 mobility models
-     * \return pointer to a ConstantVelocityMobilityModel
+     * @param idString string name for a node
+     * @param store Object store containing ns-3 mobility models
+     * @return pointer to a ConstantVelocityMobilityModel
      */
     Ptr<ConstantVelocityMobilityModel> GetMobilityModel(std::string idString,
                                                         const ObjectStore& store) const;

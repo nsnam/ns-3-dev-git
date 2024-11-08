@@ -22,44 +22,44 @@ namespace ns3
 class TcpSocketState;
 
 /**
- * \ingroup congestionOps
+ * @ingroup congestionOps
  *
- * \brief TCP-LP (Low Priority) congestion control algorithm
+ * @brief TCP-LP (Low Priority) congestion control algorithm
  */
 class TcpLp : public TcpNewReno
 {
   public:
     /**
-     * \brief Get the type ID.
+     * @brief Get the type ID.
      *
-     * \return the object TypeId
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
     /**
-     * \brief Creates an unbound tcp socket.
+     * @brief Creates an unbound tcp socket.
      *
      */
     TcpLp();
 
     /**
-     * \brief Copy constructor
+     * @brief Copy constructor
      *
-     * \param sock the object to copy
+     * @param sock the object to copy
      */
     TcpLp(const TcpLp& sock);
 
     ~TcpLp() override;
 
     /**
-     * \brief Timing information on received ACK
+     * @brief Timing information on received ACK
      *
      * The function is called every time an ACK is received.
      * It determines the state of TcpLp and adjusts the congestion window accordingly.
      *
-     * \param tcb internal congestion state
-     * \param segmentsAcked count of segments acked
-     * \param rtt last rtt
+     * @param tcb internal congestion state
+     * @param segmentsAcked count of segments acked
+     * @param rtt last rtt
      */
     void PktsAcked(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time& rtt) override;
 
@@ -69,16 +69,16 @@ class TcpLp : public TcpNewReno
 
   protected:
     /**
-     * \brief Invokes Congestion Avoidance of TcpNewReno if TcpLp is not within inference.
+     * @brief Invokes Congestion Avoidance of TcpNewReno if TcpLp is not within inference.
      *
-     * \param tcb internal congestion state
-     * \param segmentsAcked count of segments acked
+     * @param tcb internal congestion state
+     * @param segmentsAcked count of segments acked
      */
     void CongestionAvoidance(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked) override;
 
   private:
     /**
-     * \brief Describes the state of TcpLp.
+     * @brief Describes the state of TcpLp.
      *
      */
     enum State
@@ -98,18 +98,18 @@ class TcpLp : public TcpNewReno
 
   private:
     /**
-     * \brief Calculates One-Way Delay using Sender and Receiver timestamps.
+     * @brief Calculates One-Way Delay using Sender and Receiver timestamps.
      *
-     * \param tcb internal congestion state
-     * \return One-Way Delay
+     * @param tcb internal congestion state
+     * @return One-Way Delay
      */
     uint32_t OwdCalculator(Ptr<TcpSocketState> tcb);
 
     /**
-     * \brief Estimates minimum and maximum One-Way Delays and calculates the smoothed One-Way
+     * @brief Estimates minimum and maximum One-Way Delays and calculates the smoothed One-Way
      * Delay.
      *
-     * \param tcb internal congestion state
+     * @param tcb internal congestion state
      */
     void RttSample(Ptr<TcpSocketState> tcb);
 };

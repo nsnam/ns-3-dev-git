@@ -43,7 +43,7 @@ class Emitter : public Object
   public:
     /**
      * Register this type.
-     * \return The TypeId.
+     * @return The TypeId.
      */
     static TypeId GetTypeId();
     Emitter();

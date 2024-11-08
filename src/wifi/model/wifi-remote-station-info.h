@@ -16,7 +16,7 @@ namespace ns3
 {
 
 /**
- * \brief TID independent remote station statistics
+ * @brief TID independent remote station statistics
  *
  * Structure is similar to struct sta_info in Linux kernel (see
  * net/mac80211/sta_info.h)
@@ -28,9 +28,9 @@ class WifiRemoteStationInfo
     virtual ~WifiRemoteStationInfo();
 
     /**
-     * \brief Updates average frame error rate when data or RTS was transmitted successfully.
+     * @brief Updates average frame error rate when data or RTS was transmitted successfully.
      *
-     * \param retryCounter is SLRC or SSRC value at the moment of success transmission.
+     * @param retryCounter is SLRC or SSRC value at the moment of success transmission.
      */
     void NotifyTxSuccess(uint32_t retryCounter);
     /**
@@ -39,19 +39,19 @@ class WifiRemoteStationInfo
     void NotifyTxFailed();
     /**
      * Return frame error rate (probability that frame is corrupted due to transmission error).
-     * \returns the frame error rate
+     * @returns the frame error rate
      */
     double GetFrameErrorRate() const;
 
   private:
     /**
-     * \brief Calculate averaging coefficient for frame error rate. Depends on time of the last
+     * @brief Calculate averaging coefficient for frame error rate. Depends on time of the last
      * update.
      *
-     * \attention Calling this method twice gives different results,
+     * @attention Calling this method twice gives different results,
      * because it resets time of last update.
      *
-     * \return average coefficient for frame error rate
+     * @return average coefficient for frame error rate
      */
     double CalculateAveragingCoefficient();
 

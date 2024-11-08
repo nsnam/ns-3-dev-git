@@ -17,9 +17,9 @@ namespace ns3
 {
 
 /**
- * \ingroup wimax
- * \brief This class implements  the DL Frame Prefix IE as described by IEEE-802.16 standard
- * \brief The DL Frame Prefix IE is contained in DLFP (Downlink Frame Prefix) in OFDM PHY
+ * @ingroup wimax
+ * @brief This class implements  the DL Frame Prefix IE as described by IEEE-802.16 standard
+ * @brief The DL Frame Prefix IE is contained in DLFP (Downlink Frame Prefix) in OFDM PHY
  */
 class DlFramePrefixIe
 {
@@ -29,72 +29,72 @@ class DlFramePrefixIe
 
     /**
      * Set rate ID field
-     * \param rateId the rate ID
+     * @param rateId the rate ID
      */
     void SetRateId(uint8_t rateId);
     /**
      * Set DIUC field
-     * \param diuc the DIUC
+     * @param diuc the DIUC
      */
     void SetDiuc(uint8_t diuc);
     /**
      * Set preamble present field
-     * \param preamblePresent the preambel present
+     * @param preamblePresent the preambel present
      */
     void SetPreamblePresent(uint8_t preamblePresent);
     /**
      * Set length field
-     * \param length the length
+     * @param length the length
      */
     void SetLength(uint16_t length);
     /**
      * Set start time field
-     * \param startTime the start time
+     * @param startTime the start time
      */
     void SetStartTime(uint16_t startTime);
 
     /**
      * Get rate ID field
-     * \returns the rate ID
+     * @returns the rate ID
      */
     uint8_t GetRateId() const;
     /**
      * Get DIUC field
-     * \returns the DIUC
+     * @returns the DIUC
      */
     uint8_t GetDiuc() const;
     /**
      * Get preamble present field
-     * \returns the preamble present
+     * @returns the preamble present
      */
     uint8_t GetPreamblePresent() const;
     /**
      * Get length field
-     * \returns the length
+     * @returns the length
      */
     uint16_t GetLength() const;
     /**
      * Get start time field
-     * \returns the start time
+     * @returns the start time
      */
     uint16_t GetStartTime() const;
 
     /**
      * Get size field
-     * \returns the size
+     * @returns the size
      */
     uint16_t GetSize() const;
 
     /**
      * Write item function
-     * \param start the iterator
-     * \returns the updated iterator
+     * @param start the iterator
+     * @returns the updated iterator
      */
     Buffer::Iterator Write(Buffer::Iterator start) const;
     /**
      * Read item function
-     * \param start the iterator
-     * \returns the updated iterator
+     * @param start the iterator
+     * @returns the updated iterator
      */
     Buffer::Iterator Read(Buffer::Iterator start);
 
@@ -134,65 +134,65 @@ class OfdmDownlinkFramePrefix : public Header
 
     /**
      * Register this type.
-     * \return The TypeId.
+     * @return The TypeId.
      */
     static TypeId GetTypeId();
 
     /**
      * Set base station ID field
-     * \param baseStationId the base station ID
+     * @param baseStationId the base station ID
      */
     void SetBaseStationId(Mac48Address baseStationId);
     /**
      * Set frame number field
-     * \param frameNumber the frame number
+     * @param frameNumber the frame number
      */
     void SetFrameNumber(uint32_t frameNumber);
     /**
      * Set configuration change count field
-     * \param configurationChangeCount the configuration change count
+     * @param configurationChangeCount the configuration change count
      */
     void SetConfigurationChangeCount(uint8_t configurationChangeCount);
     /**
      * Add DL frame prefix element field
-     * \param dlFramePrefixElement the DL frame prefix element
+     * @param dlFramePrefixElement the DL frame prefix element
      */
     void AddDlFramePrefixElement(DlFramePrefixIe dlFramePrefixElement);
     /**
      * Set HCS field
-     * \param hcs the HCS
+     * @param hcs the HCS
      */
     void SetHcs(uint8_t hcs);
 
     /**
      * Get base station ID field
-     * \returns the base station ID
+     * @returns the base station ID
      */
     Mac48Address GetBaseStationId() const;
     /**
      * Get frame number field
-     * \returns the frame number
+     * @returns the frame number
      */
     uint32_t GetFrameNumber() const;
     /**
      * Get configuration change count field
-     * \returns the configuration change count
+     * @returns the configuration change count
      */
     uint8_t GetConfigurationChangeCount() const;
     /**
      * Get DL frame prefix elements
-     * \returns the DL frame prefix elements
+     * @returns the DL frame prefix elements
      */
     std::vector<DlFramePrefixIe> GetDlFramePrefixElements() const;
     /**
      * Get HCS field
-     * \returns the HCS
+     * @returns the HCS
      */
     uint8_t GetHcs() const;
 
     /**
      * Get name field
-     * \returns the name
+     * @returns the name
      */
     std::string GetName() const;
     void Print(std::ostream& os) const override;

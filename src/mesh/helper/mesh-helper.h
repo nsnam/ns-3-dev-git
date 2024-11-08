@@ -25,9 +25,9 @@ class WifiNetDevice;
 class NodeContainer;
 
 /**
- * \ingroup dot11s
+ * @ingroup dot11s
  *
- * \brief Helper to create IEEE 802.11s mesh networks
+ * @brief Helper to create IEEE 802.11s mesh networks
  */
 class MeshHelper
 {
@@ -43,45 +43,45 @@ class MeshHelper
     ~MeshHelper();
 
     /**
-     * \brief Set the helper to the default values for the MAC type,  remote
+     * @brief Set the helper to the default values for the MAC type,  remote
      * station manager and channel policy.
-     * \returns the default MeshHelper
+     * @returns the default MeshHelper
      */
     static MeshHelper Default();
 
     /**
-     * \brief Set the Mac Attributes.
+     * @brief Set the Mac Attributes.
      *
      * All the attributes specified in this method should exist
      * in the requested mac.
      *
-     * \tparam Ts \deduced Argument types
-     * \param [in] args Name and AttributeValue pairs to set.
+     * @tparam Ts \deduced Argument types
+     * @param [in] args Name and AttributeValue pairs to set.
      */
     template <typename... Ts>
     void SetMacType(Ts&&... args);
     /**
-     * \brief Set the remote station manager type and Attributes.
+     * @brief Set the remote station manager type and Attributes.
      *
      * All the attributes specified in this method should exist
      * in the requested station manager.
      *
-     * \tparam Ts \deduced Argument types
-     * \param type the type of remote station manager to use.
-     * \param [in] args Name and AttributeValue pairs to set.
+     * @tparam Ts \deduced Argument types
+     * @param type the type of remote station manager to use.
+     * @param [in] args Name and AttributeValue pairs to set.
      */
     template <typename... Ts>
     void SetRemoteStationManager(std::string type, Ts&&... args);
     /**
      * Set standard
-     * \param standard the wifi phy standard
+     * @param standard the wifi phy standard
      */
     void SetStandard(WifiStandard standard);
 
-    /// \todo SetMeshId
+    /// @todo SetMeshId
     // void SetMeshId (std::string s);
     /**
-     *  \brief Spread/not spread frequency channels of MP interfaces.
+     *  @brief Spread/not spread frequency channels of MP interfaces.
      *
      *  If set to true different non-overlapping 20MHz frequency
      *  channels will be assigned to different mesh point interfaces.
@@ -93,46 +93,46 @@ class MeshHelper
     };
 
     /**
-     * \brief set the channel policy
-     * \param policy the channel policy
+     * @brief set the channel policy
+     * @param policy the channel policy
      */
     void SetSpreadInterfaceChannels(ChannelPolicy policy);
     /**
-     * \brief Set a number of interfaces in a mesh network
-     * \param nInterfaces is the number of interfaces
+     * @brief Set a number of interfaces in a mesh network
+     * @param nInterfaces is the number of interfaces
      */
     void SetNumberOfInterfaces(uint32_t nInterfaces);
 
     /**
-     * \brief Install 802.11s mesh device & protocols on given node list
+     * @brief Install 802.11s mesh device & protocols on given node list
      *
-     * \param phyHelper           Wifi PHY helper
-     * \param c               List of nodes to install
+     * @param phyHelper           Wifi PHY helper
+     * @param c               List of nodes to install
      *
-     * \return list of created mesh point devices, see MeshPointDevice
+     * @return list of created mesh point devices, see MeshPointDevice
      */
     NetDeviceContainer Install(const WifiPhyHelper& phyHelper, NodeContainer c) const;
     /**
-     * \brief Set the MeshStack type to use.
+     * @brief Set the MeshStack type to use.
      *
-     * \tparam Ts \deduced Argument types
-     * \param type the type of ns3::MeshStack.
-     * \param [in] args Name and AttributeValue pairs to set.
+     * @tparam Ts \deduced Argument types
+     * @param type the type of ns3::MeshStack.
+     * @param [in] args Name and AttributeValue pairs to set.
      */
     template <typename... Ts>
     void SetStackInstaller(std::string type, Ts&&... args);
 
     /**
-     * \brief Print statistics.
+     * @brief Print statistics.
      *
-     * \param device the net device
-     * \param os the output stream
+     * @param device the net device
+     * @param os the output stream
      */
     void Report(const ns3::Ptr<ns3::NetDevice>& device, std::ostream& os);
 
     /**
-     * \brief Reset statistics.
-     * \param device the net device
+     * @brief Reset statistics.
+     * @param device the net device
      */
     void ResetStats(const ns3::Ptr<ns3::NetDevice>& device);
     /**
@@ -141,10 +141,10 @@ class MeshHelper
      * have been assigned.  The Install() method of this helper
      * should have previously been called by the user.
      *
-     * \param stream first stream index to use
-     * \param c NetDeviceContainer of the set of devices for which the mesh devices
+     * @param stream first stream index to use
+     * @param c NetDeviceContainer of the set of devices for which the mesh devices
      *          should be modified to use a fixed stream
-     * \return the number of stream indices assigned by this helper
+     * @return the number of stream indices assigned by this helper
      */
     int64_t AssignStreams(NetDeviceContainer c, int64_t stream);
 
@@ -155,10 +155,10 @@ class MeshHelper
 
   private:
     /**
-     * \param phyHelper
-     * \param node
-     * \param channelId
-     * \returns a WifiNetDevice with ready-to-use interface
+     * @param phyHelper
+     * @param node
+     * @param channelId
+     * @returns a WifiNetDevice with ready-to-use interface
      */
     Ptr<WifiNetDevice> CreateInterface(const WifiPhyHelper& phyHelper,
                                        Ptr<Node> node,

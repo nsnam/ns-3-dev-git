@@ -23,9 +23,9 @@ class Socket;
 class Packet;
 
 /**
- * \ingroup socket
+ * @ingroup socket
  *
- * \brief A simple client.
+ * @brief A simple client.
  *
  * Sends packets using PacketSocket. It does not require (or use) IP.
  *
@@ -44,8 +44,8 @@ class PacketSocketClient : public Application
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -54,14 +54,14 @@ class PacketSocketClient : public Application
     ~PacketSocketClient() override;
 
     /**
-     * \brief set the remote address and protocol to be used
-     * \param addr remote address
+     * @brief set the remote address and protocol to be used
+     * @param addr remote address
      */
     void SetRemote(PacketSocketAddress addr);
 
     /**
-     * \brief Query the priority value of this socket
-     * \return The priority value
+     * @brief Query the priority value of this socket
+     * @return The priority value
      */
     uint8_t GetPriority() const;
 
@@ -73,13 +73,13 @@ class PacketSocketClient : public Application
     void StopApplication() override;
 
     /**
-     * \brief Manually set the socket priority
-     * \param priority The socket priority (in the range 0..6)
+     * @brief Manually set the socket priority
+     * @param priority The socket priority (in the range 0..6)
      */
     void SetPriority(uint8_t priority);
 
     /**
-     * \brief Send a packet
+     * @brief Send a packet
      *
      * Either <i>Interval</i> and <i>MaxPackets</i> may be zero, but not both.  If <i>Interval</i>
      * is zero, the PacketSocketClient will send <i>MaxPackets</i> packets without any delay into

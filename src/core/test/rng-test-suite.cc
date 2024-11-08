@@ -16,24 +16,24 @@
 using namespace ns3;
 
 /**
- * \file
- * \ingroup rng-tests
+ * @file
+ * @ingroup rng-tests
  * Random number generators tests.
  */
 
 /**
- * \ingroup core-tests
- * \defgroup rng-tests Random number generators tests
+ * @ingroup core-tests
+ * @defgroup rng-tests Random number generators tests
  */
 
 /**
- * \ingroup rng-tests
+ * @ingroup rng-tests
  *
  * Fill an array with increasing values, in the [start, end] range.
- * \param array The array to fill.
- * \param n The size of the array.
- * \param start The start value.
- * \param end The end value.
+ * @param array The array to fill.
+ * @param n The size of the array.
+ * @param start The start value.
+ * @param end The end value.
  */
 void
 FillHistoRangeUniformly(double* array, uint32_t n, double start, double end)
@@ -49,7 +49,7 @@ FillHistoRangeUniformly(double* array, uint32_t n, double start, double end)
 }
 
 /**
- * \ingroup core-tests
+ * @ingroup core-tests
  *
  * Test case for uniform distribution random number generator.
  */
@@ -68,8 +68,8 @@ class RngUniformTestCase : public TestCase
 
     /**
      * Run a chi-squared test on the results of the random number generator.
-     * \param u The random number generator.
-     * \return the chi-squared test result.
+     * @param u The random number generator.
+     * @return the chi-squared test result.
      */
     double ChiSquaredTest(Ptr<UniformRandomVariable> u);
 
@@ -142,7 +142,7 @@ RngUniformTestCase::DoRun()
 }
 
 /**
- * \ingroup rng-tests
+ * @ingroup rng-tests
  *
  * Test case for normal distribution random number generator.
  */
@@ -161,8 +161,8 @@ class RngNormalTestCase : public TestCase
 
     /**
      * Run a chi-squared test on the results of the random number generator.
-     * \param n The random number generator.
-     * \return the chi-squared test result.
+     * @param n The random number generator.
+     * @return the chi-squared test result.
      */
     double ChiSquaredTest(Ptr<NormalRandomVariable> n);
 
@@ -249,7 +249,7 @@ RngNormalTestCase::DoRun()
 }
 
 /**
- * \ingroup rng-tests
+ * @ingroup rng-tests
  *
  * Test case for exponential distribution random number generator.
  */
@@ -268,8 +268,8 @@ class RngExponentialTestCase : public TestCase
 
     /**
      * Run a chi-squared test on the results of the random number generator.
-     * \param n The random number generator.
-     * \return the chi-squared test result.
+     * @param n The random number generator.
+     * @return the chi-squared test result.
      */
     double ChiSquaredTest(Ptr<ExponentialRandomVariable> n);
 
@@ -355,7 +355,7 @@ RngExponentialTestCase::DoRun()
 }
 
 /**
- * \ingroup rng-tests
+ * @ingroup rng-tests
  *
  * Test case for pareto distribution random number generator.
  */
@@ -374,8 +374,8 @@ class RngParetoTestCase : public TestCase
 
     /**
      * Run a chi-squared test on the results of the random number generator.
-     * \param p The random number generator.
-     * \return the chi-squared test result.
+     * @param p The random number generator.
+     * @return the chi-squared test result.
      */
     double ChiSquaredTest(Ptr<ParetoRandomVariable> p);
 
@@ -466,9 +466,9 @@ RngParetoTestCase::DoRun()
 }
 
 /**
- * \ingroup rng-tests
+ * @ingroup rng-tests
  *
- * \brief The random number generators Test Suite.
+ * @brief The random number generators Test Suite.
  */
 class RngTestSuite : public TestSuite
 {

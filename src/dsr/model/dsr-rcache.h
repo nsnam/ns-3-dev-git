@@ -74,8 +74,8 @@ namespace dsr
   \endverbatim
  */
 /**
- * \ingroup dsr
- * \brief DSR Route Cache Entry
+ * @ingroup dsr
+ * @brief DSR Route Cache Entry
  */
 struct Link
 {
@@ -85,8 +85,8 @@ struct Link
     /**
      * Constructor
      *
-     * \param ip1 first IP address
-     * \param ip2 second IP address
+     * @param ip1 first IP address
+     * @param ip2 second IP address
      */
     Link(Ipv4Address ip1, Ipv4Address ip2)
     {
@@ -103,9 +103,9 @@ struct Link
     }
 
     /**
-     * \brief less than comparison operator
-     * \param L link to compare
-     * \return true if less than
+     * @brief less than comparison operator
+     * @param L link to compare
+     * @return true if less than
      */
     bool operator<(const Link& L) const
     {
@@ -128,25 +128,25 @@ struct Link
 };
 
 /**
- * \class DsrLinkStab
- * \brief DsrLinkStab class (DSR link stability)
+ * @class DsrLinkStab
+ * @brief DsrLinkStab class (DSR link stability)
  */
 class DsrLinkStab
 {
   public:
     /**
-     * \brief Constructor
-     * \param linkStab duration of the link stability
+     * @brief Constructor
+     * @param linkStab duration of the link stability
      */
     DsrLinkStab(Time linkStab = Simulator::Now());
     /**
-     * \brief Destructor
+     * @brief Destructor
      */
     virtual ~DsrLinkStab();
 
     /**
-     * \brief set the link stability
-     * \param linkStab duration of the link stability
+     * @brief set the link stability
+     * @param linkStab duration of the link stability
      */
     void SetLinkStability(Time linkStab)
     {
@@ -154,8 +154,8 @@ class DsrLinkStab
     }
 
     /**
-     * \brief get the link stability
-     * \returns remaining duration of the link stability
+     * @brief get the link stability
+     * @returns remaining duration of the link stability
      */
     Time GetLinkStability() const
     {
@@ -174,8 +174,8 @@ class DsrLinkStab
 };
 
 /**
- * \class DsrNodeStab
- * \brief DsrNodeStab class (DSR node stability)
+ * @class DsrNodeStab
+ * @brief DsrNodeStab class (DSR node stability)
  */
 class DsrNodeStab
 {
@@ -183,14 +183,14 @@ class DsrNodeStab
     /**
      * Constructor
      *
-     * \param nodeStab duration of stable node time
+     * @param nodeStab duration of stable node time
      */
     DsrNodeStab(Time nodeStab = Simulator::Now());
     virtual ~DsrNodeStab();
 
     /**
      * Set node stability
-     * \param nodeStab duration of the node stability
+     * @param nodeStab duration of the node stability
      */
     void SetNodeStability(Time nodeStab)
     {
@@ -199,7 +199,7 @@ class DsrNodeStab
 
     /**
      * Get node stability
-     * \returns the remaining time for node stability
+     * @returns the remaining time for node stability
      */
     Time GetNodeStability() const
     {
@@ -211,8 +211,8 @@ class DsrNodeStab
 };
 
 /**
- * \class DsrRouteCacheEntry
- * \brief DsrRouteCacheEntry class for entries in the route cache
+ * @class DsrRouteCacheEntry
+ * @brief DsrRouteCacheEntry class for entries in the route cache
  */
 class DsrRouteCacheEntry
 {
@@ -223,9 +223,9 @@ class DsrRouteCacheEntry
     /**
      * Constructor
      *
-     * \param ip IP_VECTOR
-     * \param dst destination IPv4 address
-     * \param exp expiration time
+     * @param ip IP_VECTOR
+     * @param dst destination IPv4 address
+     * @param exp expiration time
      */
     DsrRouteCacheEntry(IP_VECTOR const& ip = IP_VECTOR(),
                        Ipv4Address dst = Ipv4Address(),
@@ -233,13 +233,13 @@ class DsrRouteCacheEntry
     virtual ~DsrRouteCacheEntry();
 
     /// Mark entry as "down" (i.e. disable it)
-    /// \param badLinkLifetime Time before purging the link for real.
+    /// @param badLinkLifetime Time before purging the link for real.
     void Invalidate(Time badLinkLifetime);
 
     // Fields
     /**
      * Set unidirectional flag
-     * \param u the unidirectional flag
+     * @param u the unidirectional flag
      */
     void SetUnidirectional(bool u)
     {
@@ -248,7 +248,7 @@ class DsrRouteCacheEntry
 
     /**
      * Get unidirectional flag
-     * \returns the unidirectional flag
+     * @returns the unidirectional flag
      */
     bool IsUnidirectional() const
     {
@@ -257,7 +257,7 @@ class DsrRouteCacheEntry
 
     /**
      * Set blacklist timeout
-     * \param t the blacklist timeout
+     * @param t the blacklist timeout
      */
     void SetBlacklistTimeout(Time t)
     {
@@ -266,7 +266,7 @@ class DsrRouteCacheEntry
 
     /**
      * Get blacklist timeout
-     * \returns the blacklist timeout
+     * @returns the blacklist timeout
      */
     Time GetBlacklistTimeout() const
     {
@@ -275,7 +275,7 @@ class DsrRouteCacheEntry
 
     /**
      * Get destination address
-     * \returns the destination IP address
+     * @returns the destination IP address
      */
     Ipv4Address GetDestination() const
     {
@@ -284,7 +284,7 @@ class DsrRouteCacheEntry
 
     /**
      * Set destination address
-     * \param d the destination IP address
+     * @param d the destination IP address
      */
     void SetDestination(Ipv4Address d)
     {
@@ -293,7 +293,7 @@ class DsrRouteCacheEntry
 
     /**
      * Get the IP vector
-     * \returns the IP vector
+     * @returns the IP vector
      */
     IP_VECTOR GetVector() const
     {
@@ -302,7 +302,7 @@ class DsrRouteCacheEntry
 
     /**
      * Sets the IP vector
-     * \param v the IP vector
+     * @param v the IP vector
      */
     void SetVector(IP_VECTOR v)
     {
@@ -311,7 +311,7 @@ class DsrRouteCacheEntry
 
     /**
      * Set expire time
-     * \param exp the expire time
+     * @param exp the expire time
      */
     void SetExpireTime(Time exp)
     {
@@ -320,7 +320,7 @@ class DsrRouteCacheEntry
 
     /**
      * Get expire time
-     * \returns the expire time
+     * @returns the expire time
      */
     Time GetExpireTime() const
     {
@@ -328,15 +328,15 @@ class DsrRouteCacheEntry
     }
 
     /**
-     * \brief Print necessary fields
-     * \param os the output stream
+     * @brief Print necessary fields
+     * @param os the output stream
      */
     void Print(std::ostream& os) const;
 
     /**
-     * \brief Compare the route cache entry. Only the paths are compared.
-     * \param o entry to compare
-     * \return true if both route cache entries are equal
+     * @brief Compare the route cache entry. Only the paths are compared.
+     * @param o entry to compare
+     * @return true if both route cache entries are equal
      */
     bool operator==(const DsrRouteCacheEntry& o) const
     {
@@ -357,16 +357,16 @@ class DsrRouteCacheEntry
 };
 
 /**
- * \ingroup dsr
- * \brief DSR route request queue
+ * @ingroup dsr
+ * @brief DSR route request queue
  * Since DSR is an on demand routing we queue requests while looking for route.
  */
 class DsrRouteCache : public Object
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -377,19 +377,19 @@ class DsrRouteCache : public Object
     DsrRouteCache& operator=(const DsrRouteCache&) = delete;
 
     /**
-     * \brief Remove the aged route cache entries when the route cache is full
-     * \param rtVector the route cache to scan.
+     * @brief Remove the aged route cache entries when the route cache is full
+     * @param rtVector the route cache to scan.
      */
     void RemoveLastEntry(std::list<DsrRouteCacheEntry>& rtVector);
     /**
-     * \brief Define the vector of route entries.
+     * @brief Define the vector of route entries.
      */
     typedef std::list<DsrRouteCacheEntry::IP_VECTOR> routeVector;
 
     // Fields
     /**
      * Get subroute indicator
-     * \returns true if a subroute exists
+     * @returns true if a subroute exists
      */
     bool GetSubRoute() const
     {
@@ -398,7 +398,7 @@ class DsrRouteCache : public Object
 
     /**
      * Set subroute indicator
-     * \param subRoute the subroute indicator
+     * @param subRoute the subroute indicator
      */
     void SetSubRoute(bool subRoute)
     {
@@ -407,7 +407,7 @@ class DsrRouteCache : public Object
 
     /**
      * Get the max queue length
-     * \returns the maximum queue length
+     * @returns the maximum queue length
      */
     uint32_t GetMaxCacheLen() const
     {
@@ -416,7 +416,7 @@ class DsrRouteCache : public Object
 
     /**
      * Set the max queue length
-     * \param len the maximum queue length
+     * @param len the maximum queue length
      */
     void SetMaxCacheLen(uint32_t len)
     {
@@ -425,7 +425,7 @@ class DsrRouteCache : public Object
 
     /**
      * Get cache timeout value
-     * \returns the cache timeout time
+     * @returns the cache timeout time
      */
     Time GetCacheTimeout() const
     {
@@ -434,7 +434,7 @@ class DsrRouteCache : public Object
 
     /**
      * Set cache timeout value
-     * \param t the cache timeout time
+     * @param t the cache timeout time
      */
     void SetCacheTimeout(Time t)
     {
@@ -443,7 +443,7 @@ class DsrRouteCache : public Object
 
     /**
      * Get max entries for each destination
-     * \returns the maximum entries for each destination
+     * @returns the maximum entries for each destination
      */
     uint32_t GetMaxEntriesEachDst() const
     {
@@ -452,7 +452,7 @@ class DsrRouteCache : public Object
 
     /**
      * Set max entries for each destination
-     * \param entries the maximum entries for each destination
+     * @param entries the maximum entries for each destination
      */
     void SetMaxEntriesEachDst(uint32_t entries)
     {
@@ -461,7 +461,7 @@ class DsrRouteCache : public Object
 
     /**
      * Get bad link lifetime function
-     * \returns the bad link lifetime
+     * @returns the bad link lifetime
      */
     Time GetBadLinkLifetime() const
     {
@@ -470,7 +470,7 @@ class DsrRouteCache : public Object
 
     /**
      * Set bad link lifetime function
-     * \param t the bad link lifetime
+     * @param t the bad link lifetime
      */
     void SetBadLinkLifetime(Time t)
     {
@@ -479,7 +479,7 @@ class DsrRouteCache : public Object
 
     /**
      * Get stability decrease factor
-     * \returns the stability decrease factor
+     * @returns the stability decrease factor
      */
     uint64_t GetStabilityDecrFactor() const
     {
@@ -488,7 +488,7 @@ class DsrRouteCache : public Object
 
     /**
      * Set stability decrease factor
-     * \param decrFactor the stability decrease factor
+     * @param decrFactor the stability decrease factor
      */
     void SetStabilityDecrFactor(uint64_t decrFactor)
     {
@@ -497,7 +497,7 @@ class DsrRouteCache : public Object
 
     /**
      * Get stability increase factor
-     * \returns the stability increase factor
+     * @returns the stability increase factor
      */
     uint64_t GetStabilityIncrFactor() const
     {
@@ -506,7 +506,7 @@ class DsrRouteCache : public Object
 
     /**
      * Set stability increase factor
-     * \param incrFactor the stability increase factor
+     * @param incrFactor the stability increase factor
      */
     void SetStabilityIncrFactor(uint64_t incrFactor)
     {
@@ -515,7 +515,7 @@ class DsrRouteCache : public Object
 
     /**
      * Get initial stability
-     * \returns the initial stability
+     * @returns the initial stability
      */
     Time GetInitStability() const
     {
@@ -524,7 +524,7 @@ class DsrRouteCache : public Object
 
     /**
      * Set initial stability
-     * \param initStability the initial stability
+     * @param initStability the initial stability
      */
     void SetInitStability(Time initStability)
     {
@@ -533,7 +533,7 @@ class DsrRouteCache : public Object
 
     /**
      * Get minimum lifetime
-     * \returns the minimum lifetime
+     * @returns the minimum lifetime
      */
     Time GetMinLifeTime() const
     {
@@ -542,7 +542,7 @@ class DsrRouteCache : public Object
 
     /**
      * Set minimum lifetime
-     * \param minLifeTime the minimum lifetime
+     * @param minLifeTime the minimum lifetime
      */
     void SetMinLifeTime(Time minLifeTime)
     {
@@ -551,7 +551,7 @@ class DsrRouteCache : public Object
 
     /**
      * Get use extends
-     * \returns the use extends time
+     * @returns the use extends time
      */
     Time GetUseExtends() const
     {
@@ -560,7 +560,7 @@ class DsrRouteCache : public Object
 
     /**
      * Set use extends
-     * \param useExtends the use extends time
+     * @param useExtends the use extends time
      */
     void SetUseExtends(Time useExtends)
     {
@@ -568,55 +568,55 @@ class DsrRouteCache : public Object
     }
 
     /**
-     * \brief Update route cache entry if it has been recently used and successfully delivered the
+     * @brief Update route cache entry if it has been recently used and successfully delivered the
      * data packet
-     * \param dst destination address of the route
-     * \return true in success
+     * @param dst destination address of the route
+     * @return true in success
      */
     bool UpdateRouteEntry(Ipv4Address dst);
     /**
-     * \brief Add route cache entry if it doesn't yet exist in route cache
-     * \param rt route cache entry
-     * \return true on success
+     * @brief Add route cache entry if it doesn't yet exist in route cache
+     * @param rt route cache entry
+     * @return true on success
      */
     bool AddRoute(DsrRouteCacheEntry& rt);
     /**
-     * \brief Lookup route cache entry with destination address dst
-     * \param id destination address
-     * \param rt entry with destination address id, if exists
-     * \return true on success
+     * @brief Lookup route cache entry with destination address dst
+     * @param id destination address
+     * @param rt entry with destination address id, if exists
+     * @return true on success
      */
     bool LookupRoute(Ipv4Address id, DsrRouteCacheEntry& rt);
     /**
-     * \brief Print the route vector elements
-     * \param vec the route vector
+     * @brief Print the route vector elements
+     * @param vec the route vector
      */
     void PrintVector(std::vector<Ipv4Address>& vec);
     /**
-     * \brief Print all the route vector elements from the route list
-     * \param route the route list
+     * @brief Print all the route vector elements from the route list
+     * @param route the route list
      */
     void PrintRouteVector(std::list<DsrRouteCacheEntry> route);
     /**
-     * \brief Find the same route in the route cache
-     * \param rt entry with destination address dst, if exists
-     * \param rtVector the route vector
-     * \return true if same
+     * @brief Find the same route in the route cache
+     * @param rt entry with destination address dst, if exists
+     * @param rtVector the route vector
+     * @return true if same
      */
     bool FindSameRoute(DsrRouteCacheEntry& rt, std::list<DsrRouteCacheEntry>& rtVector);
     /**
-     * \brief Delete the route with certain destination address
-     * \param dst the destination address of the routes that should be deleted
-     * \return true if the route was deleted
+     * @brief Delete the route with certain destination address
+     * @param dst the destination address of the routes that should be deleted
+     * @return true if the route was deleted
      */
     bool DeleteRoute(Ipv4Address dst);
     /**
-     * \brief Delete all the routes which includes the link from next hop address that has just been
+     * @brief Delete all the routes which includes the link from next hop address that has just been
      * notified as unreachable
      *
-     * \param errorSrc The error source address
-     * \param unreachNode The unreachable node
-     * \param node This node's ip address
+     * @param errorSrc The error source address
+     * @param unreachNode The unreachable node
+     * @param node This node's ip address
      */
     void DeleteAllRoutesIncludeLink(Ipv4Address errorSrc,
                                     Ipv4Address unreachNode,
@@ -631,19 +631,19 @@ class DsrRouteCache : public Object
     /// Delete all outdated entries and invalidate valid entry if Lifetime is expired
     void Purge();
     /// Print route cache
-    /// \param os the output stream
+    /// @param os the output stream
     void Print(std::ostream& os);
 
     //------------------------------------------------------------------------------------------
     /**
-     * \brief Check for duplicate ids and save new entries if the id is not present in the table
-     * \param nextHop to check for in cache
-     * \return ack ID
+     * @brief Check for duplicate ids and save new entries if the id is not present in the table
+     * @param nextHop to check for in cache
+     * @return ack ID
      */
     uint16_t CheckUniqueAckId(Ipv4Address nextHop);
     /**
-     * \brief Get the ack table size
-     * \return ack size
+     * @brief Get the ack table size
+     * @return ack size
      */
     uint16_t GetAckSize();
 
@@ -659,9 +659,9 @@ class DsrRouteCache : public Object
         /**
          * Constructor
          *
-         * \param ip IP address of neighbor
-         * \param mac MAC address of neighbor
-         * \param t expiration time
+         * @param ip IP address of neighbor
+         * @param mac MAC address of neighbor
+         * @param t expiration time
          */
         Neighbor(Ipv4Address ip, Mac48Address mac, Time t)
             : m_neighborAddress(ip),
@@ -677,41 +677,41 @@ class DsrRouteCache : public Object
     };
 
     /**
-     * \brief Return expire time for neighbor node with address addr, if exists, else return 0.
-     * \param addr IP address
-     * \return expire time
+     * @brief Return expire time for neighbor node with address addr, if exists, else return 0.
+     * @param addr IP address
+     * @return expire time
      */
     Time GetExpireTime(Ipv4Address addr);
     /**
-     * \brief Check that node with address addr is neighbor
-     * \param addr IP address
-     * \return true if neighbor
+     * @brief Check that node with address addr is neighbor
+     * @param addr IP address
+     * @return true if neighbor
      */
     bool IsNeighbor(Ipv4Address addr);
     /**
-     * \brief Update expire time for entry with address addr, if it exists, else add new entry
-     * \param nodeList list of addresses
-     * \param expire expiration time
+     * @brief Update expire time for entry with address addr, if it exists, else add new entry
+     * @param nodeList list of addresses
+     * @param expire expiration time
      */
     void UpdateNeighbor(std::vector<Ipv4Address> nodeList, Time expire);
     /**
-     * \brief Add to the neighbor list
-     * \param nodeList neighbor list
-     * \param ownAddress local address
-     * \param expire expiration time
+     * @brief Add to the neighbor list
+     * @param nodeList neighbor list
+     * @param ownAddress local address
+     * @param expire expiration time
      */
     void AddNeighbor(std::vector<Ipv4Address> nodeList, Ipv4Address ownAddress, Time expire);
     /**
-     * \brief Remove all expired mac entries
+     * @brief Remove all expired mac entries
      */
     void PurgeMac();
     /**
-     * \brief Schedule m_ntimer.
+     * @brief Schedule m_ntimer.
      */
     void ScheduleTimer();
 
     /**
-     * \brief Remove all entries
+     * @brief Remove all entries
      */
     void ClearMac()
     {
@@ -719,19 +719,19 @@ class DsrRouteCache : public Object
     }
 
     /**
-     * \brief Add ARP cache to be used to allow layer 2 notifications processing
-     * \param a ARP cache
+     * @brief Add ARP cache to be used to allow layer 2 notifications processing
+     * @param a ARP cache
      */
     void AddArpCache(Ptr<ArpCache> a);
     /**
-     * \brief Don't use the provided ARP cache any more (interface is down)
-     * \param a ARP cache
+     * @brief Don't use the provided ARP cache any more (interface is down)
+     * @param a ARP cache
      */
     void DelArpCache(Ptr<ArpCache>);
 
     /**
      * Handle link failure callback
-     * \param cb the callback to be set
+     * @param cb the callback to be set
      */
     void SetCallback(Callback<void, Ipv4Address, uint8_t> cb)
     {
@@ -740,7 +740,7 @@ class DsrRouteCache : public Object
 
     /**
      * Handle link failure callback
-     * \return The callback to LinkFailure
+     * @return The callback to LinkFailure
      */
     Callback<void, Ipv4Address, uint8_t> GetCallback() const
     {
@@ -797,53 +797,53 @@ class DsrRouteCache : public Object
     std::map<Link, DsrLinkStab> m_linkCache;        ///< The data structure to store link info
     std::map<Ipv4Address, DsrNodeStab> m_nodeCache; ///< The data structure to store node info
     /**
-     * \brief used by LookupRoute when LinkCache
-     * \param id the ip address we are looking for
-     * \param rt the route cache entry to store the found one
-     * \return true if route route found
+     * @brief used by LookupRoute when LinkCache
+     * @param id the ip address we are looking for
+     * @param rt the route cache entry to store the found one
+     * @return true if route route found
      */
     bool LookupRoute_Link(Ipv4Address id, DsrRouteCacheEntry& rt);
     /**
-     * \brief increase the stability of the node
-     * \param node the ip address of the node we want to increase stability
-     * \return true if success
+     * @brief increase the stability of the node
+     * @param node the ip address of the node we want to increase stability
+     * @return true if success
      */
     bool IncStability(Ipv4Address node);
     /**
-     * \brief decrease the stability of the node
-     * \param node the ip address of the node we want to decrease stability
-     * \return true if success
+     * @brief decrease the stability of the node
+     * @param node the ip address of the node we want to decrease stability
+     * @return true if success
      */
     bool DecStability(Ipv4Address node);
 
   public:
     /**
-     * \brief Dijsktra algorithm to get the best route from m_netGraph and update the
+     * @brief Dijsktra algorithm to get the best route from m_netGraph and update the
      * m_bestRoutesTable_link when current graph information has changed
-     * \param type The type of the cache
+     * @param type The type of the cache
      */
     void SetCacheType(std::string type);
     /**
-     * \brief is link cached
-     * \return true if the link is cached
+     * @brief is link cached
+     * @return true if the link is cached
      */
     bool IsLinkCache();
     /**
-     * \brief dd route link to cache
-     * \param nodelist vector of nodes
-     * \param node ip address of node to add
-     * \return true if the link is cached
+     * @brief dd route link to cache
+     * @param nodelist vector of nodes
+     * @param node ip address of node to add
+     * @return true if the link is cached
      */
     bool AddRoute_Link(DsrRouteCacheEntry::IP_VECTOR nodelist, Ipv4Address node);
     /**
-     * \brief Rebuild the best route table
-     * \note Use MAXWEIGHT to represent maximum weight, use the IPv4 broadcast
+     * @brief Rebuild the best route table
+     * @note Use MAXWEIGHT to represent maximum weight, use the IPv4 broadcast
      *       address of 255.255.255.255 to represent a null preceding address
-     * \param source The source address used for computing the routes
+     * @param source The source address used for computing the routes
      */
     void RebuildBestRouteTable(Ipv4Address source);
     /**
-     * \brief Purge from the cache if the stability time expired
+     * @brief Purge from the cache if the stability time expired
      */
     void PurgeLinkNode();
     /**
@@ -852,11 +852,11 @@ class DsrRouteCache : public Object
      * incremented by the amount of time since that link was last used. When a link is used in a
      * route chosen for a packet originated or salvaged by this node, the link's lifetime is set to
      * be at least UseExtends into the future
-     * \param rt cache entry
+     * @param rt cache entry
      */
     void UseExtends(DsrRouteCacheEntry::IP_VECTOR rt);
     /**
-     * \brief Update the Net Graph for the link and node cache has changed
+     * @brief Update the Net Graph for the link and node cache has changed
      */
     void UpdateNetGraph();
     //---------------------------------------------------------------------------------------
@@ -875,12 +875,12 @@ class DsrRouteCache : public Object
     Time m_delay; ///< This timeout deals with the passive ack
 
     /// Find MAC address by IP using list of ARP caches
-    /// \param addr the IPv4 address to look for
-    /// \return The MAC address
+    /// @param addr the IPv4 address to look for
+    /// @return The MAC address
     Mac48Address LookupMacAddress(Ipv4Address addr);
 
     /// Process layer 2 TX error notification
-    /// \param hdr Wi-Fi Mac Header
+    /// @param hdr Wi-Fi Mac Header
     void ProcessTxError(const WifiMacHeader& hdr);
 };
 } // namespace dsr

@@ -29,9 +29,9 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("LteAntennaTest");
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief Tests that the propagation model and the antenna parameters are
+ * @brief Tests that the propagation model and the antenna parameters are
  * generate the correct values. Different test cases are created by specifying different
  * antenna configurations and it is tested if for the given information the pathloss
  * value is as expected.
@@ -41,11 +41,11 @@ class LteEnbAntennaTestCase : public TestCase
   public:
     /**
      * Build name string
-     * \param orientationDegrees the orientation in degrees
-     * \param beamwidthDegrees the beam width in degrees
-     * \param x position of UE
-     * \param y position of UE
-     * \returns the name string
+     * @param orientationDegrees the orientation in degrees
+     * @param beamwidthDegrees the beam width in degrees
+     * @param x position of UE
+     * @param y position of UE
+     * @returns the name string
      */
     static std::string BuildNameString(double orientationDegrees,
                                        double beamwidthDegrees,
@@ -54,11 +54,11 @@ class LteEnbAntennaTestCase : public TestCase
     /**
      * Constructor
      *
-     * \param orientationDegrees the orientation in degrees
-     * \param beamwidthDegrees the beam width in degrees
-     * \param x position of UE
-     * \param y position of UE
-     * \param antennaGainDb the antenna gain in dB
+     * @param orientationDegrees the orientation in degrees
+     * @param beamwidthDegrees the beam width in degrees
+     * @param x position of UE
+     * @param y position of UE
+     * @param antennaGainDb the antenna gain in dB
      */
     LteEnbAntennaTestCase(double orientationDegrees,
                           double beamwidthDegrees,
@@ -251,9 +251,9 @@ LteEnbAntennaTestCase::DoRun()
 }
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  *
- * \brief Lte Enb Antenna Test Suite
+ * @brief Lte Enb Antenna Test Suite
  */
 class LteAntennaTestSuite : public TestSuite
 {
@@ -310,7 +310,7 @@ LteAntennaTestSuite::LteAntennaTestSuite()
 }
 
 /**
- * \ingroup lte-test
+ * @ingroup lte-test
  * Static variable for test initialization
  */
 static LteAntennaTestSuite g_lteAntennaTestSuite;

@@ -64,41 +64,41 @@ constexpr bool USEIPV6_FALSE = false;
 constexpr bool USEIPV6_TRUE = true;
 
 /**
- * \ingroup ping
- * \defgroup ping-test ping tests
+ * @ingroup ping
+ * @defgroup ping-test ping tests
  */
 
 /**
- * \ingroup ping-test
- * \ingroup tests
+ * @ingroup ping-test
+ * @ingroup tests
  *
- * \brief ping basic tests
+ * @brief ping basic tests
  */
 class PingTestCase : public TestCase
 {
   public:
     /**
      * Constructor.
-     * \param name TestCase name.
-     * \param useIpv6 Use IPv6.
+     * @param name TestCase name.
+     * @param useIpv6 Use IPv6.
      */
     PingTestCase(std::string name, bool useIpv6);
 
     /**
      * Set the Simulation stop time.
-     * \param stopTime The simulation stop time.
+     * @param stopTime The simulation stop time.
      */
     void SetSimulatorStopTime(Time stopTime);
 
     /**
      * Set the destination address (either IPv4 or IPv6).
-     * \param address The destination address.
+     * @param address The destination address.
      */
     void SetDestinationAddress(Address address);
 
     /**
      * Set the PING start time.
-     * \param startTime Ping start time.
+     * @param startTime Ping start time.
      */
     void SetStartTime(Time startTime)
     {
@@ -107,7 +107,7 @@ class PingTestCase : public TestCase
 
     /**
      * Set the PING stop time.
-     * \param stopTime Ping stop time.
+     * @param stopTime Ping stop time.
      */
     void SetStopTime(Time stopTime)
     {
@@ -116,7 +116,7 @@ class PingTestCase : public TestCase
 
     /**
      * Set the number of pings to send.
-     * \param count Number of pings to send.
+     * @param count Number of pings to send.
      */
     void SetCount(uint32_t count)
     {
@@ -125,7 +125,7 @@ class PingTestCase : public TestCase
 
     /**
      * Set the size of pings.
-     * \param size Size of pings.
+     * @param size Size of pings.
      */
     void SetSize(uint32_t size)
     {
@@ -134,7 +134,7 @@ class PingTestCase : public TestCase
 
     /**
      * Set the interval of pings.
-     * \param interval Interval of pings.
+     * @param interval Interval of pings.
      */
     void SetInterval(Time interval)
     {
@@ -143,7 +143,7 @@ class PingTestCase : public TestCase
 
     /**
      * Set the packet drop list on the Ping node's interface
-     * \param dropList packet drop list
+     * @param dropList packet drop list
      */
     void SetDropList(const std::list<uint32_t>& dropList)
     {
@@ -152,37 +152,37 @@ class PingTestCase : public TestCase
 
     /**
      * Enable the check on Tx pings counted in Tx trace source.
-     * \param expectedTx Expected Tx.
+     * @param expectedTx Expected Tx.
      */
     void CheckTraceTx(uint32_t expectedTx);
 
     /**
      * Enable the check on Rtt event count in Rtt trace source.
-     * \param expectedRtt Expected Rtt.
+     * @param expectedRtt Expected Rtt.
      */
     void CheckTraceRtt(uint32_t expectedRtt);
 
     /**
      * Enable the check on Tx pings.
-     * \param expectedReportTx Expected Tx.
+     * @param expectedReportTx Expected Tx.
      */
     void CheckReportTransmitted(uint32_t expectedReportTx);
 
     /**
      * Enable the check on Rx pings.
-     * \param expectedReportRx Expected Rx.
+     * @param expectedReportRx Expected Rx.
      */
     void CheckReportReceived(uint32_t expectedReportRx);
 
     /**
      * Enable the check on Lost pings.
-     * \param expectedReportLoss Expected Lost.
+     * @param expectedReportLoss Expected Lost.
      */
     void CheckReportLoss(uint16_t expectedReportLoss);
 
     /**
      * Enable the check on average RTT.
-     * \param expectedTime Expected RTT.
+     * @param expectedTime Expected RTT.
      */
     void CheckReportTime(Time expectedTime);
 
@@ -193,28 +193,28 @@ class PingTestCase : public TestCase
 
     /**
      * Trace TX events.
-     * \param seq Sequence number.
-     * \param p Tx packet.
+     * @param seq Sequence number.
+     * @param p Tx packet.
      */
     void TxTraceSink(uint16_t seq, Ptr<Packet> p);
 
     /**
      * Trace RTT events.
-     * \param seq Sequence number.
-     * \param rttSample RTT sample.
+     * @param seq Sequence number.
+     * @param rttSample RTT sample.
      */
     void RttTraceSink(uint16_t seq, Time rttSample);
 
     /**
      * Trace Drop events.
-     * \param seq Sequence number.
-     * \param reason Drop reason.
+     * @param seq Sequence number.
+     * @param reason Drop reason.
      */
     void DropTraceSink(uint16_t seq, Ping::DropReason reason);
 
     /**
      * Trace Report generation events.
-     * \param report The report sample.
+     * @param report The report sample.
      */
     void ReportTraceSink(const Ping::PingReport& report);
 
@@ -544,10 +544,10 @@ PingTestCase::DoRun()
 }
 
 /**
- * \ingroup ping-test
- * \ingroup tests
+ * @ingroup ping-test
+ * @ingroup tests
  *
- * \brief ping TestSuite
+ * @brief ping TestSuite
  */
 class PingTestSuite : public TestSuite
 {

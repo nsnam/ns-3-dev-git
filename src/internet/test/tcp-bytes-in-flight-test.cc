@@ -17,83 +17,83 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("TcpBytesInFlightTestSuite");
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief Check the value of BytesInFlight against a home-made guess
+ * @brief Check the value of BytesInFlight against a home-made guess
  *
  * The guess is made wrt to segments that travel the network; we have,
  * in theory, the possibility to know the real amount of bytes in flight. However
  * this value is useless, since the sender bases its guess on the received ACK.
  *
- * \see Tx
- * \see BytesInFlightTrace
+ * @see Tx
+ * @see BytesInFlightTrace
  */
 class TcpBytesInFlightTest : public TcpGeneralTest
 {
   public:
     /**
-     * \brief Constructor.
-     * \param desc Description.
-     * \param toDrop Packets to drop.
+     * @brief Constructor.
+     * @param desc Description.
+     * @param toDrop Packets to drop.
      */
     TcpBytesInFlightTest(const std::string& desc, std::vector<uint32_t>& toDrop);
 
   protected:
     /**
-     * \brief Create a receiver error model.
-     * \returns The receiver error model.
+     * @brief Create a receiver error model.
+     * @returns The receiver error model.
      */
     Ptr<ErrorModel> CreateReceiverErrorModel() override;
     /**
-     * \brief Receive a packet.
-     * \param p The packet.
-     * \param h The TCP header.
-     * \param who Who the socket belongs to (sender or receiver).
+     * @brief Receive a packet.
+     * @param p The packet.
+     * @param h The TCP header.
+     * @param who Who the socket belongs to (sender or receiver).
      */
     void Rx(const Ptr<const Packet> p, const TcpHeader& h, SocketWho who) override;
     /**
-     * \brief Transmit a packet.
-     * \param p The packet.
-     * \param h The TCP header.
-     * \param who Who the socket belongs to (sender or receiver).
+     * @brief Transmit a packet.
+     * @param p The packet.
+     * @param h The TCP header.
+     * @param who Who the socket belongs to (sender or receiver).
      */
     void Tx(const Ptr<const Packet> p, const TcpHeader& h, SocketWho who) override;
     /**
-     * \brief Track the bytes in flight.
-     * \param oldValue previous value.
-     * \param newValue actual value.
+     * @brief Track the bytes in flight.
+     * @param oldValue previous value.
+     * @param newValue actual value.
      */
     void BytesInFlightTrace(uint32_t oldValue, uint32_t newValue) override;
 
     /**
-     * \brief Called when a packet is dropped.
-     * \param ipH The IP header.
-     * \param tcpH The TCP header.
-     * \param p The packet.
+     * @brief Called when a packet is dropped.
+     * @param ipH The IP header.
+     * @param tcpH The TCP header.
+     * @param p The packet.
      */
     void PktDropped(const Ipv4Header& ipH, const TcpHeader& tcpH, Ptr<const Packet> p);
 
     /**
-     * \brief Configure the test.
+     * @brief Configure the test.
      */
     void ConfigureEnvironment() override;
 
     /**
-     * \brief Do the checks before the RTO expires.
-     * \param tcb The TcpSocketState.
-     * \param who The socket.
+     * @brief Do the checks before the RTO expires.
+     * @param tcb The TcpSocketState.
+     * @param who The socket.
      */
     void BeforeRTOExpired(const Ptr<const TcpSocketState> tcb, SocketWho who) override;
 
     /**
-     * \brief Update when RTO expires
-     * \param oldVal old time value
-     * \param newVal new time value
+     * @brief Update when RTO expires
+     * @param oldVal old time value
+     * @param newVal new time value
      */
     void RTOExpired(Time oldVal, Time newVal);
 
     /**
-     * \brief Do the final checks.
+     * @brief Do the final checks.
      */
     void FinalChecks() override;
 
@@ -270,9 +270,9 @@ TcpBytesInFlightTest::FinalChecks()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief TestSuite: Check the value of BytesInFlight against a home-made guess
+ * @brief TestSuite: Check the value of BytesInFlight against a home-made guess
  */
 class TcpBytesInFlightTestSuite : public TestSuite
 {

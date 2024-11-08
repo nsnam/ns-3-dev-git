@@ -42,10 +42,10 @@ constexpr MHz_u DEFAULT_FREQUENCY = 5180;
 constexpr MHz_u DEFAULT_CHANNEL_WIDTH = 20;
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief DL MU TX-VECTOR test
+ * @brief DL MU TX-VECTOR test
  */
 class TestDlMuTxVector : public TestCase
 {
@@ -58,10 +58,10 @@ class TestDlMuTxVector : public TestCase
     /**
      * Build a TXVECTOR for DL MU with the given bandwidth and user information.
      *
-     * \param bw the channel width of the PPDU
-     * \param userInfos the list of HE MU specific user transmission parameters
+     * @param bw the channel width of the PPDU
+     * @param userInfos the list of HE MU specific user transmission parameters
      *
-     * \return the configured MU TXVECTOR
+     * @return the configured MU TXVECTOR
      */
     static WifiTxVector BuildTxVector(MHz_u bw, const std::list<HeMuUserInfo>& userInfos);
 };
@@ -181,7 +181,7 @@ class MuMimoTestHePhy : public HePhy
     /**
      * Constructor
      *
-     * \param staId the ID of the STA to which this PHY belongs to
+     * @param staId the ID of the STA to which this PHY belongs to
      */
     MuMimoTestHePhy(uint16_t staId);
 
@@ -189,15 +189,15 @@ class MuMimoTestHePhy : public HePhy
      * Return the STA ID that has been assigned to the station this PHY belongs to.
      * This is typically called for MU PPDUs, in order to pick the correct PSDU.
      *
-     * \param ppdu the PPDU for which the STA ID is requested
-     * \return the STA ID
+     * @param ppdu the PPDU for which the STA ID is requested
+     * @return the STA ID
      */
     uint16_t GetStaId(const Ptr<const WifiPpdu> ppdu) const override;
 
     /**
      * Set the global PPDU UID counter.
      *
-     * \param uid the value to which the global PPDU UID counter should be set
+     * @param uid the value to which the global PPDU UID counter should be set
      */
     void SetGlobalPpduUid(uint64_t uid);
 
@@ -234,14 +234,14 @@ class MuMimoSpectrumWifiPhy : public SpectrumWifiPhy
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     /**
      * Constructor
      *
-     * \param staId the ID of the STA to which this PHY belongs to
+     * @param staId the ID of the STA to which this PHY belongs to
      */
     MuMimoSpectrumWifiPhy(uint16_t staId);
     ~MuMimoSpectrumWifiPhy() override;
@@ -249,19 +249,19 @@ class MuMimoSpectrumWifiPhy : public SpectrumWifiPhy
     /**
      * Set the global PPDU UID counter.
      *
-     * \param uid the value to which the global PPDU UID counter should be set
+     * @param uid the value to which the global PPDU UID counter should be set
      */
     void SetPpduUid(uint64_t uid);
 
     /**
      * Since we assume trigger frame was previously received from AP, this is used to set its UID
      *
-     * \param uid the PPDU UID of the trigger frame
+     * @param uid the PPDU UID of the trigger frame
      */
     void SetTriggerFrameUid(uint64_t uid);
 
     /**
-     * \return the current event
+     * @return the current event
      */
     Ptr<Event> GetCurrentEvent();
 
@@ -326,10 +326,10 @@ MuMimoSpectrumWifiPhy::GetCurrentEvent()
 }
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief DL MU-MIMO PHY test
+ * @brief DL MU-MIMO PHY test
  */
 class TestDlMuMimoPhyTransmission : public TestCase
 {
@@ -343,10 +343,10 @@ class TestDlMuMimoPhyTransmission : public TestCase
 
     /**
      * Receive success function for STA 1
-     * \param psdu the PSDU
-     * \param rxSignalInfo the info on the received signal (\see RxSignalInfo)
-     * \param txVector the transmit vector
-     * \param statusPerMpdu reception status per MPDU
+     * @param psdu the PSDU
+     * @param rxSignalInfo the info on the received signal (\see RxSignalInfo)
+     * @param txVector the transmit vector
+     * @param statusPerMpdu reception status per MPDU
      */
     void RxSuccessSta1(Ptr<const WifiPsdu> psdu,
                        RxSignalInfo rxSignalInfo,
@@ -354,10 +354,10 @@ class TestDlMuMimoPhyTransmission : public TestCase
                        const std::vector<bool>& statusPerMpdu);
     /**
      * Receive success function for STA 2
-     * \param psdu the PSDU
-     * \param rxSignalInfo the info on the received signal (\see RxSignalInfo)
-     * \param txVector the transmit vector
-     * \param statusPerMpdu reception status per MPDU
+     * @param psdu the PSDU
+     * @param rxSignalInfo the info on the received signal (\see RxSignalInfo)
+     * @param txVector the transmit vector
+     * @param statusPerMpdu reception status per MPDU
      */
     void RxSuccessSta2(Ptr<const WifiPsdu> psdu,
                        RxSignalInfo rxSignalInfo,
@@ -365,10 +365,10 @@ class TestDlMuMimoPhyTransmission : public TestCase
                        const std::vector<bool>& statusPerMpdu);
     /**
      * Receive success function for STA 3
-     * \param psdu the PSDU
-     * \param rxSignalInfo the info on the received signal (\see RxSignalInfo)
-     * \param txVector the transmit vector
-     * \param statusPerMpdu reception status per MPDU
+     * @param psdu the PSDU
+     * @param rxSignalInfo the info on the received signal (\see RxSignalInfo)
+     * @param txVector the transmit vector
+     * @param statusPerMpdu reception status per MPDU
      */
     void RxSuccessSta3(Ptr<const WifiPsdu> psdu,
                        RxSignalInfo rxSignalInfo,
@@ -377,43 +377,43 @@ class TestDlMuMimoPhyTransmission : public TestCase
 
     /**
      * Receive failure function for STA 1
-     * \param psdu the PSDU
+     * @param psdu the PSDU
      */
     void RxFailureSta1(Ptr<const WifiPsdu> psdu);
     /**
      * Receive failure function for STA 2
-     * \param psdu the PSDU
+     * @param psdu the PSDU
      */
     void RxFailureSta2(Ptr<const WifiPsdu> psdu);
     /**
      * Receive failure function for STA 3
-     * \param psdu the PSDU
+     * @param psdu the PSDU
      */
     void RxFailureSta3(Ptr<const WifiPsdu> psdu);
 
     /**
      * Check the results for STA 1
-     * \param expectedRxSuccess the expected number of RX success
-     * \param expectedRxFailure the expected number of RX failures
-     * \param expectedRxBytes the expected number of RX bytes
+     * @param expectedRxSuccess the expected number of RX success
+     * @param expectedRxFailure the expected number of RX failures
+     * @param expectedRxBytes the expected number of RX bytes
      */
     void CheckResultsSta1(uint32_t expectedRxSuccess,
                           uint32_t expectedRxFailure,
                           uint32_t expectedRxBytes);
     /**
      * Check the results for STA 2
-     * \param expectedRxSuccess the expected number of RX success
-     * \param expectedRxFailure the expected number of RX failures
-     * \param expectedRxBytes the expected number of RX bytes
+     * @param expectedRxSuccess the expected number of RX success
+     * @param expectedRxFailure the expected number of RX failures
+     * @param expectedRxBytes the expected number of RX bytes
      */
     void CheckResultsSta2(uint32_t expectedRxSuccess,
                           uint32_t expectedRxFailure,
                           uint32_t expectedRxBytes);
     /**
      * Check the results for STA 3
-     * \param expectedRxSuccess the expected number of RX success
-     * \param expectedRxFailure the expected number of RX failures
-     * \param expectedRxBytes the expected number of RX bytes
+     * @param expectedRxSuccess the expected number of RX success
+     * @param expectedRxFailure the expected number of RX failures
+     * @param expectedRxBytes the expected number of RX bytes
      */
     void CheckResultsSta3(uint32_t expectedRxSuccess,
                           uint32_t expectedRxFailure,
@@ -435,14 +435,14 @@ class TestDlMuMimoPhyTransmission : public TestCase
 
     /**
      * Send DL MU-MIMO PPDU function
-     * \param staInfos the STAs infos
+     * @param staInfos the STAs infos
      */
     void SendMuPpdu(const std::vector<StaInfo>& staInfos);
 
     /**
      * Generate interference function
-     * \param interferencePsd the PSD of the interference to be generated
-     * \param duration the duration of the interference
+     * @param interferencePsd the PSD of the interference to be generated
+     * @param duration the duration of the interference
      */
     void GenerateInterference(Ptr<SpectrumValue> interferencePsd, Time duration);
     /**
@@ -457,14 +457,14 @@ class TestDlMuMimoPhyTransmission : public TestCase
 
     /**
      * Schedule now to check  the PHY state
-     * \param phy the PHY
-     * \param expectedState the expected state of the PHY
+     * @param phy the PHY
+     * @param expectedState the expected state of the PHY
      */
     void CheckPhyState(Ptr<MuMimoSpectrumWifiPhy> phy, WifiPhyState expectedState);
     /**
      * Check the PHY state now
-     * \param phy the PHY
-     * \param expectedState the expected state of the PHY
+     * @param phy the PHY
+     * @param expectedState the expected state of the PHY
      */
     void DoCheckPhyState(Ptr<MuMimoSpectrumWifiPhy> phy, WifiPhyState expectedState);
 
@@ -1111,10 +1111,10 @@ TestDlMuMimoPhyTransmission::DoRun()
 }
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief UL MU-MIMO PHY test
+ * @brief UL MU-MIMO PHY test
  */
 class TestUlMuMimoPhyTransmission : public TestCase
 {
@@ -1128,26 +1128,26 @@ class TestUlMuMimoPhyTransmission : public TestCase
 
     /**
      * Get TXVECTOR for HE TB PPDU.
-     * \param txStaId the ID of the TX STA
-     * \param nss the number of spatial streams used for the transmission
-     * \param bssColor the BSS color of the TX STA
-     * \return the TXVECTOR for HE TB PPDU
+     * @param txStaId the ID of the TX STA
+     * @param nss the number of spatial streams used for the transmission
+     * @param bssColor the BSS color of the TX STA
+     * @return the TXVECTOR for HE TB PPDU
      */
     WifiTxVector GetTxVectorForHeTbPpdu(uint16_t txStaId, uint8_t nss, uint8_t bssColor) const;
     /**
      * Set TRIGVECTOR for HE TB PPDU
      *
-     * \param staIds the IDs of the STAs sollicited for the HE TB transmission
-     * \param bssColor the BSS color of the TX STA
+     * @param staIds the IDs of the STAs sollicited for the HE TB transmission
+     * @param bssColor the BSS color of the TX STA
      */
     void SetTrigVector(const std::vector<uint16_t>& staIds, uint8_t bssColor);
     /**
      * Send HE TB PPDU function
-     * \param txStaId the ID of the TX STA
-     * \param nss the number of spatial streams used for the transmission
-     * \param payloadSize the size of the payload in bytes
-     * \param uid the UID of the trigger frame that is initiating this transmission
-     * \param bssColor the BSS color of the TX STA
+     * @param txStaId the ID of the TX STA
+     * @param nss the number of spatial streams used for the transmission
+     * @param payloadSize the size of the payload in bytes
+     * @param uid the UID of the trigger frame that is initiating this transmission
+     * @param bssColor the BSS color of the TX STA
      */
     void SendHeTbPpdu(uint16_t txStaId,
                       uint8_t nss,
@@ -1157,17 +1157,17 @@ class TestUlMuMimoPhyTransmission : public TestCase
 
     /**
      * Send HE SU PPDU function
-     * \param txStaId the ID of the TX STA
-     * \param payloadSize the size of the payload in bytes
-     * \param uid the UID of the trigger frame that is initiating this transmission
-     * \param bssColor the BSS color of the TX STA
+     * @param txStaId the ID of the TX STA
+     * @param payloadSize the size of the payload in bytes
+     * @param uid the UID of the trigger frame that is initiating this transmission
+     * @param bssColor the BSS color of the TX STA
      */
     void SendHeSuPpdu(uint16_t txStaId, std::size_t payloadSize, uint64_t uid, uint8_t bssColor);
 
     /**
      * Set the BSS color
-     * \param phy the PHY
-     * \param bssColor the BSS color
+     * @param phy the PHY
+     * @param bssColor the BSS color
      */
     void SetBssColor(Ptr<WifiPhy> phy, uint8_t bssColor);
 
@@ -1178,10 +1178,10 @@ class TestUlMuMimoPhyTransmission : public TestCase
 
     /**
      * Check the received PSDUs from a given STA
-     * \param staId the ID of the STA to check
-     * \param expectedSuccess the expected number of success
-     * \param expectedFailures the expected number of failures
-     * \param expectedBytes the expected number of bytes
+     * @param staId the ID of the STA to check
+     * @param expectedSuccess the expected number of success
+     * @param expectedFailures the expected number of failures
+     * @param expectedBytes the expected number of bytes
      */
     void CheckRxFromSta(uint16_t staId,
                         uint32_t expectedSuccess,
@@ -1195,11 +1195,11 @@ class TestUlMuMimoPhyTransmission : public TestCase
 
     /**
      * Check the PHY state
-     * \param phy the PHY
-     * \param expectedState the expected state of the PHY
+     * @param phy the PHY
+     * @param expectedState the expected state of the PHY
      */
     void CheckPhyState(Ptr<MuMimoSpectrumWifiPhy> phy, WifiPhyState expectedState);
-    /// \copydoc CheckPhyState
+    /// @copydoc CheckPhyState
     void DoCheckPhyState(Ptr<MuMimoSpectrumWifiPhy> phy, WifiPhyState expectedState);
 
     /**
@@ -1209,10 +1209,10 @@ class TestUlMuMimoPhyTransmission : public TestCase
 
     /**
      * Receive success function
-     * \param psdu the PSDU
-     * \param rxSignalInfo the info on the received signal (\see RxSignalInfo)
-     * \param txVector the transmit vector
-     * \param statusPerMpdu reception status per MPDU
+     * @param psdu the PSDU
+     * @param rxSignalInfo the info on the received signal (\see RxSignalInfo)
+     * @param txVector the transmit vector
+     * @param statusPerMpdu reception status per MPDU
      */
     void RxSuccess(Ptr<const WifiPsdu> psdu,
                    RxSignalInfo rxSignalInfo,
@@ -1221,7 +1221,7 @@ class TestUlMuMimoPhyTransmission : public TestCase
 
     /**
      * Receive failure function
-     * \param psdu the PSDU
+     * @param psdu the PSDU
      */
     void RxFailure(Ptr<const WifiPsdu> psdu);
 
@@ -1229,10 +1229,10 @@ class TestUlMuMimoPhyTransmission : public TestCase
      * Schedule test to perform.
      * The interference generation should be scheduled apart.
      *
-     * \param delay the reference delay to schedule the events
-     * \param txStaIds the IDs of the STAs planned to transmit an HE TB PPDU
-     * \param expectedStateAtEnd the expected state of the PHY at the end of the reception
-     * \param expectedCountersPerSta the expected counters per STA
+     * @param delay the reference delay to schedule the events
+     * @param txStaIds the IDs of the STAs planned to transmit an HE TB PPDU
+     * @param expectedStateAtEnd the expected state of the PHY at the end of the reception
+     * @param expectedCountersPerSta the expected counters per STA
      */
     void ScheduleTest(
         Time delay,
@@ -1243,7 +1243,7 @@ class TestUlMuMimoPhyTransmission : public TestCase
     /**
      * Log scenario description
      *
-     * \param log the scenario description to add to log
+     * @param log the scenario description to add to log
      */
     void LogScenario(const std::string& log) const;
 
@@ -1843,10 +1843,10 @@ TestUlMuMimoPhyTransmission::DoRun()
 }
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief wifi PHY MU-MIMO Test Suite
+ * @brief wifi PHY MU-MIMO Test Suite
  */
 class WifiPhyMuMimoTestSuite : public TestSuite
 {

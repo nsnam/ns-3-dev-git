@@ -8,8 +8,8 @@
  */
 
 /**
- * \file
- * \ingroup core
+ * @file
+ * @ingroup core
  * ns3::ShowProgress implementation.
  */
 
@@ -161,7 +161,7 @@ ShowProgress::CheckProgress()
     uint64_t events = Simulator::GetEventCount();
     uint64_t nEvents = events - m_eventCount;
     /**
-     * \internal Update algorithm
+     * @internal Update algorithm
      *
      * We steer \c m_vtime to obtain updates approximately every
      * \c m_interval in wall clock time.  To smooth things out a little
@@ -176,7 +176,7 @@ ShowProgress::CheckProgress()
      *
      * Graphically, the windows in ratio value and the corresponding
      * updates to \c m_vtime are sketched in this figure:
-     * \verbatim
+     * @verbatim
                         ^
                         |
                 ratio   |   vtime update
@@ -215,7 +215,7 @@ ShowProgress::CheckProgress()
      * half the ratio.  This reduces "hunting" for a stable update
      * period.
      *
-     * \todo Evaluate if simple exponential averaging would be
+     * @todo Evaluate if simple exponential averaging would be
      * more effective, simpler.
      */
     if (ratio > HYSTERESIS)

@@ -15,8 +15,8 @@
 #include <stdint.h>
 
 /**
- * \file
- * \ingroup attribute_Integer
+ * @file
+ * @ingroup attribute_Integer
  * ns3::IntegerValue attribute value declarations and template implementations.
  */
 
@@ -42,9 +42,9 @@ Ptr<const AttributeChecker> MakeIntegerChecker();
  *
  * The minimum value is included in the allowed range.
  *
- * \param [in] min The minimum value.
- * \returns The AttributeChecker.
- * \see AttributeChecker
+ * @param [in] min The minimum value.
+ * @returns The AttributeChecker.
+ * @see AttributeChecker
  */
 template <typename T>
 Ptr<const AttributeChecker> MakeIntegerChecker(int64_t min);
@@ -54,10 +54,10 @@ Ptr<const AttributeChecker> MakeIntegerChecker(int64_t min);
  *
  * The minimum and maximum values are included in the allowed range.
  *
- * \param [in] min The minimum value.
- * \param [in] max The maximum value.
- * \returns The AttributeChecker.
- * \see AttributeChecker
+ * @param [in] min The minimum value.
+ * @param [in] max The maximum value.
+ * @returns The AttributeChecker.
+ * @see AttributeChecker
  */
 template <typename T>
 Ptr<const AttributeChecker> MakeIntegerChecker(int64_t min, int64_t max);

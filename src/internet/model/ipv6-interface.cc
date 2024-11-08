@@ -408,7 +408,7 @@ Ipv6Interface::Send(Ptr<Packet> p, const Ipv6Header& hdr, Ipv6Address dest)
      * traffic control layer */
     if (DynamicCast<LoopbackNetDevice>(m_device))
     {
-        /** \todo additional checks needed here (such as whether multicast
+        /** @todo additional checks needed here (such as whether multicast
          * goes to loopback)?
          */
         p->AddHeader(hdr);

@@ -40,7 +40,7 @@ class LteRlcSapProvider
      * Send a PDCP PDU to the RLC for transmission
      * This method is to be called
      * when upper PDCP entity has a PDCP PDU ready to send
-     * \param params the TransmitPdcpPduParameters
+     * @param params the TransmitPdcpPduParameters
      */
     virtual void TransmitPdcpPdu(TransmitPdcpPduParameters params) = 0;
 };
@@ -60,7 +60,7 @@ class LteRlcSapUser
     /**
      * Called by the RLC entity to notify the PDCP entity of the reception of a new PDCP PDU
      *
-     * \param p the PDCP PDU
+     * @param p the PDCP PDU
      */
     virtual void ReceivePdcpPdu(Ptr<Packet> p) = 0;
 };
@@ -73,7 +73,7 @@ class LteRlcSpecificLteRlcSapProvider : public LteRlcSapProvider
     /**
      * Constructor
      *
-     * \param rlc the RLC
+     * @param rlc the RLC
      */
     LteRlcSpecificLteRlcSapProvider(C* rlc);
 
@@ -82,7 +82,7 @@ class LteRlcSpecificLteRlcSapProvider : public LteRlcSapProvider
 
     /**
      * Interface implemented from LteRlcSapProvider
-     * \param params the TransmitPdcpPduParameters
+     * @param params the TransmitPdcpPduParameters
      */
     void TransmitPdcpPdu(TransmitPdcpPduParameters params) override;
 
@@ -111,7 +111,7 @@ class LteRlcSpecificLteRlcSapUser : public LteRlcSapUser
     /**
      * Constructor
      *
-     * \param pdcp the PDCP
+     * @param pdcp the PDCP
      */
     LteRlcSpecificLteRlcSapUser(C* pdcp);
 

@@ -18,10 +18,10 @@ namespace ns3
 {
 
 /**
- * \ingroup wimax
+ * @ingroup wimax
  * This class Represents the HT (Header Type) field of generic MAC and bandwidth request headers
- * \see GenericMacHeader
- * \see BandwidthRequestHeader
+ * @see GenericMacHeader
+ * @see BandwidthRequestHeader
  */
 class MacHeaderType : public Header
 {
@@ -40,29 +40,29 @@ class MacHeaderType : public Header
     /**
      * Constructor
      *
-     * \param type MAC header type
+     * @param type MAC header type
      */
     MacHeaderType(uint8_t type);
     ~MacHeaderType() override;
     /**
      * Set type field
-     * \param type the type
+     * @param type the type
      */
     void SetType(uint8_t type);
     /**
      * Get type field
-     * \returns the type
+     * @returns the type
      */
     uint8_t GetType() const;
 
     /**
      * Get name field
-     * \returns the name
+     * @returns the name
      */
     std::string GetName() const;
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     TypeId GetInstanceTypeId() const override;
@@ -94,7 +94,7 @@ namespace ns3
 {
 
 /**
- * \ingroup wimax
+ * @ingroup wimax
  * This class implements the Generic mac Header as described by IEEE Standard for
  * Local and metropolitan area networks Part 16: Air Interface for Fixed Broadband Wireless Access
  * Systems 6.3.2.1.1 Generic MAC header, page 36
@@ -107,93 +107,93 @@ class GenericMacHeader : public Header
 
     /**
      * Set EC field
-     * \param ec the EC
+     * @param ec the EC
      */
     void SetEc(uint8_t ec);
     /**
      * Set type field
-     * \param type the type
+     * @param type the type
      */
     void SetType(uint8_t type);
     /**
      * Set CI field
-     * \param ci the CI
+     * @param ci the CI
      */
     void SetCi(uint8_t ci);
     /**
      * Set EKS field
-     * \param eks the EKS
+     * @param eks the EKS
      */
     void SetEks(uint8_t eks);
     /**
      * Set length field
-     * \param len the length
+     * @param len the length
      */
     void SetLen(uint16_t len);
     /**
      * Set CID field
-     * \param cid the CID
+     * @param cid the CID
      */
     void SetCid(Cid cid);
     /**
      * Set HCS field
-     * \param hcs the HCS
+     * @param hcs the HCS
      */
     void SetHcs(uint8_t hcs);
     /**
      * Set HT field
-     * \param ht the HT
+     * @param ht the HT
      */
     void SetHt(uint8_t ht);
 
     /**
      * Get EC field
-     * \returns the EC
+     * @returns the EC
      */
     uint8_t GetEc() const;
     /**
      * Get type field
-     * \returns the type
+     * @returns the type
      */
     uint8_t GetType() const;
     /**
      * Get CI field
-     * \returns the CI
+     * @returns the CI
      */
     uint8_t GetCi() const;
     /**
      * Get EKS field
-     * \returns the EKS
+     * @returns the EKS
      */
     uint8_t GetEks() const;
     /**
      * Get length field
-     * \returns the length
+     * @returns the length
      */
     uint16_t GetLen() const;
     /**
      * Get CID field
-     * \returns the CID
+     * @returns the CID
      */
     Cid GetCid() const;
     /**
      * Get HCS field
-     * \returns the HCS
+     * @returns the HCS
      */
     uint8_t GetHcs() const;
     /**
      * Get HT field
-     * \returns the HT
+     * @returns the HT
      */
     uint8_t GetHt() const;
     /**
      * Get name field
-     * \returns the name
+     * @returns the name
      */
     std::string GetName() const;
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     TypeId GetInstanceTypeId() const override;
@@ -203,7 +203,7 @@ class GenericMacHeader : public Header
     uint32_t Deserialize(Buffer::Iterator start) override;
     /**
      * Check HCS
-     * \returns true if HCS is validated
+     * @returns true if HCS is validated
      */
     bool check_hcs() const;
 
@@ -240,7 +240,7 @@ class GenericMacHeader : public Header
 namespace ns3
 {
 /**
- * \ingroup wimax
+ * @ingroup wimax
  * This class implements the bandwidth-request mac Header as described by IEEE Standard for
  * Local and metropolitan area networks Part 16: Air Interface for Fixed Broadband Wireless Access
  * Systems 6.3.2.1.2 Bandwidth request header, page 38
@@ -260,74 +260,74 @@ class BandwidthRequestHeader : public Header
 
     /**
      * Set HT field
-     * \param ht the HT
+     * @param ht the HT
      */
     void SetHt(uint8_t ht);
     /**
      * Set EC field
-     * \param ec the EC
+     * @param ec the EC
      */
     void SetEc(uint8_t ec);
     /**
      * Set type field
-     * \param type the type
+     * @param type the type
      */
     void SetType(uint8_t type);
     /**
      * Set BR field
-     * \param br the BR
+     * @param br the BR
      */
     void SetBr(uint32_t br);
     /**
      * Set CID field
-     * \param cid the CID
+     * @param cid the CID
      */
     void SetCid(Cid cid);
     /**
      * Set HCS field
-     * \param hcs the HCS
+     * @param hcs the HCS
      */
     void SetHcs(uint8_t hcs);
 
     /**
      * Get HT field
-     * \returns the HT
+     * @returns the HT
      */
     uint8_t GetHt() const;
     /**
      * Get EC field
-     * \returns the EC
+     * @returns the EC
      */
     uint8_t GetEc() const;
     /**
      * Get type field
-     * \returns the type
+     * @returns the type
      */
     uint8_t GetType() const;
     /**
      * Get BR field
-     * \returns the BR
+     * @returns the BR
      */
     uint32_t GetBr() const;
     /**
      * Get CID field
-     * \returns the CID
+     * @returns the CID
      */
     Cid GetCid() const;
     /**
      * Get HCS field
-     * \returns the HCS
+     * @returns the HCS
      */
     uint8_t GetHcs() const;
 
     /**
      * Get name field
-     * \returns the name
+     * @returns the name
      */
     std::string GetName() const;
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     TypeId GetInstanceTypeId() const override;
@@ -337,7 +337,7 @@ class BandwidthRequestHeader : public Header
     uint32_t Deserialize(Buffer::Iterator start) override;
     /**
      * Check HCS
-     * \returns true if HCS is validated
+     * @returns true if HCS is validated
      */
     bool check_hcs() const;
 
@@ -369,7 +369,7 @@ namespace ns3
 {
 
 /**
- * \ingroup wimax
+ * @ingroup wimax
  * This class implements the grant management sub-header as described by IEEE Standard for
  * Local and metropolitan area networks Part 16: Air Interface for Fixed Broadband Wireless Access
  * Systems 6.3.2.2.2 Grant Management subheader, page 40
@@ -382,44 +382,44 @@ class GrantManagementSubheader : public Header
 
     /**
      * Set SI field
-     * \param si the SI
+     * @param si the SI
      */
     void SetSi(uint8_t si);
     /**
      * Set PM field
-     * \param pm the PM
+     * @param pm the PM
      */
     void SetPm(uint8_t pm);
     /**
      * Set PRR field
-     * \param pbr the PBR
+     * @param pbr the PBR
      */
     void SetPbr(uint16_t pbr);
 
     /**
      * Get SI field
-     * \returns the SI
+     * @returns the SI
      */
     uint8_t GetSi() const;
     /**
      * Get PM field
-     * \returns the PM
+     * @returns the PM
      */
     uint8_t GetPm() const;
     /**
      * Get PBR field
-     * \returns the PBR
+     * @returns the PBR
      */
     uint16_t GetPbr() const;
 
     /**
      * Get name field
-     * \returns the name
+     * @returns the name
      */
     std::string GetName() const;
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     TypeId GetInstanceTypeId() const override;
@@ -452,7 +452,7 @@ class GrantManagementSubheader : public Header
 namespace ns3
 {
 /**
- * \ingroup wimax
+ * @ingroup wimax
  * This class implements the fragmentation sub-header as described by IEEE Standard for
  * Local and metropolitan area networks Part 16: Air Interface for Fixed Broadband Wireless Access
  * Systems 6.3.2.2.1 Fragmentation subheader, page 39
@@ -465,34 +465,34 @@ class FragmentationSubheader : public Header
 
     /**
      * Set FC field
-     * \param fc the FC
+     * @param fc the FC
      */
     void SetFc(uint8_t fc);
     /**
      * Set FSN field
-     * \param fsn the FSN
+     * @param fsn the FSN
      */
     void SetFsn(uint8_t fsn);
 
     /**
      * Get FC field
-     * \returns the FC
+     * @returns the FC
      */
     uint8_t GetFc() const;
     /**
      * Get FSN field
-     * \returns the FSN
+     * @returns the FSN
      */
     uint8_t GetFsn() const;
 
     /**
      * Get name field
-     * \returns the name
+     * @returns the name
      */
     std::string GetName() const;
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     TypeId GetInstanceTypeId() const override;

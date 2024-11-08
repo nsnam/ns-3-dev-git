@@ -26,7 +26,7 @@ namespace ns3
 {
 
 /**
- * \ingroup tap-bridge
+ * @ingroup tap-bridge
  * Class to perform the actual reading from a socket
  */
 class TapBridgeFdReader : public FdReader
@@ -38,9 +38,9 @@ class TapBridgeFdReader : public FdReader
 class Node;
 
 /**
- * \ingroup tap-bridge
+ * @ingroup tap-bridge
  *
- * \brief A bridge to make it appear that a real host process is connected to
+ * @brief A bridge to make it appear that a real host process is connected to
  * an ns-3 net device.
  *
  * The Tap Bridge lives in a kind of a gray world somewhere between a
@@ -98,8 +98,8 @@ class TapBridge : public NetDevice
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -119,30 +119,30 @@ class TapBridge : public NetDevice
     ~TapBridge() override;
 
     /**
-     * \brief Get the bridged net device.
+     * @brief Get the bridged net device.
      *
      * The bridged net device is the ns-3 device to which this bridge is connected,
      *
-     * \returns the bridged net device.
+     * @returns the bridged net device.
      */
     Ptr<NetDevice> GetBridgedNetDevice();
 
     /**
-     * \brief Set the ns-3 net device to bridge.
+     * @brief Set the ns-3 net device to bridge.
      *
      * This method tells the bridge which ns-3 net device it should use to connect
      * the simulation side of the bridge.
      *
-     * \param bridgedDevice device to set
+     * @param bridgedDevice device to set
      *
-     * \attention The ns-3 net device that is being set as the device must have an
+     * @attention The ns-3 net device that is being set as the device must have an
      * an IP address assigned to it before the simulation is run.  This address
      * will be used to set the hardware address of the host Linux device.
      */
     void SetBridgedNetDevice(Ptr<NetDevice> bridgedDevice);
 
     /**
-     * \brief Set a start time for the device.
+     * @brief Set a start time for the device.
      *
      * The tap bridge consumes a non-trivial amount of time to start.  It starts
      * up in the context of a scheduled event to ensure that all configuration
@@ -151,7 +151,7 @@ class TapBridge : public NetDevice
      * herd of devices, the time at which each device starts is also configurable
      * bot via the Attribute system and via this call.
      *
-     * \param tStart the start time
+     * @param tStart the start time
      */
     void Start(Time tStart);
 
@@ -160,21 +160,21 @@ class TapBridge : public NetDevice
      *
      * @param tStop the stop time
      *
-     * \see TapBridge::Start
+     * @see TapBridge::Start
      */
     void Stop(Time tStop);
 
     /**
      * Set the operating mode of this device.
      *
-     * \param mode The operating mode of this device.
+     * @param mode The operating mode of this device.
      */
     void SetMode(TapBridge::Mode mode);
 
     /**
      * Get the operating mode of this device.
      *
-     * \returns The operating mode of this device.
+     * @returns The operating mode of this device.
      */
     TapBridge::Mode GetMode();
 
@@ -221,13 +221,13 @@ class TapBridge : public NetDevice
 
     /**
      * Receives a packet from a bridged Device
-     * \param device the originating port
-     * \param packet the received packet
-     * \param protocol the packet protocol (e.g., Ethertype)
-     * \param src the packet source
-     * \param dst the packet destination
-     * \param packetType the packet type (e.g., host, broadcast, etc.)
-     * \returns true on success
+     * @param device the originating port
+     * @param packet the received packet
+     * @param protocol the packet protocol (e.g., Ethertype)
+     * @param src the packet source
+     * @param dst the packet destination
+     * @param packetType the packet type (e.g., host, broadcast, etc.)
+     * @returns true on success
      */
     bool ReceiveFromBridgedDevice(Ptr<NetDevice> device,
                                   Ptr<const Packet> packet,
@@ -238,11 +238,11 @@ class TapBridge : public NetDevice
 
     /**
      * Receives a packet from a bridged Device
-     * \param device the originating port
-     * \param packet the received packet
-     * \param protocol the packet protocol (e.g., Ethertype)
-     * \param src the packet source
-     * \returns true on success
+     * @param device the originating port
+     * @param packet the received packet
+     * @param protocol the packet protocol (e.g., Ethertype)
+     * @param src the packet source
+     * @returns true on success
      */
     bool DiscardFromBridgedDevice(Ptr<NetDevice> device,
                                   Ptr<const Packet> packet,
@@ -270,8 +270,8 @@ class TapBridge : public NetDevice
 
     /**
      * Callback to process packets that are read
-     * \param buf input buffer
-     * \param len input buffer length
+     * @param buf input buffer
+     * @param len input buffer length
      */
     void ReadCallback(uint8_t* buf, ssize_t len);
 
@@ -279,9 +279,9 @@ class TapBridge : public NetDevice
      * Forward a packet received from the tap device to the bridged ns-3
      * device
      *
-     * \param buf A character buffer containing the actual packet bits that were
+     * @param buf A character buffer containing the actual packet bits that were
      *            received from the host.
-     * \param len The length of the buffer.
+     * @param len The length of the buffer.
      */
     void ForwardToBridgedDevice(uint8_t* buf, ssize_t len);
 
@@ -290,19 +290,19 @@ class TapBridge : public NetDevice
      * checking on a received packet to make sure it isn't too evil for our
      * poor naive virginal simulator to handle.
      *
-     * \param packet The packet we received from the host, and which we need
+     * @param packet The packet we received from the host, and which we need
      *               to check.
-     * \param src    A pointer to the data structure that will get the source
+     * @param src    A pointer to the data structure that will get the source
      *               MAC address of the packet (extracted from the packet Ethernet
      *               header).
-     * \param dst    A pointer to the data structure that will get the destination
+     * @param dst    A pointer to the data structure that will get the destination
      *               MAC address of the packet (extracted from the packet Ethernet
      *               header).
-     * \param type   A pointer to the variable that will get the packet type from
+     * @param type   A pointer to the variable that will get the packet type from
      *               either the Ethernet header in the case of type interpretation
      *               (DIX framing) or from the 802.2 LLC header in the case of
      *               length interpretation (802.3 framing).
-     * \returns the packet, or null if the packet has been filtered.
+     * @returns the packet, or null if the packet has been filtered.
      */
     Ptr<Packet> Filter(Ptr<Packet> packet, Address* src, Address* dst, uint16_t* type);
 

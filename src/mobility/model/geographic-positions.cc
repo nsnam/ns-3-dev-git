@@ -29,7 +29,7 @@ namespace
  */
 
 /**
- * \brief  Lambda function for computing the curvature
+ * @brief  Lambda function for computing the curvature
  */
 auto curvature = [](double e, double ph) { return sqrt(1 - e * e * sin(ph) * sin(ph)); };
 } // namespace

@@ -30,8 +30,8 @@ NS_LOG_COMPONENT_DEFINE("CsmaPingExample");
 /**
  * Rx sink
  *
- * \param p The packer.
- * \param ad The sender address.
+ * @param p The packer.
+ * @param ad The sender address.
  */
 static void
 SinkRx(Ptr<const Packet> p, const Address& ad)
@@ -42,9 +42,9 @@ SinkRx(Ptr<const Packet> p, const Address& ad)
 /**
  * Ping RTT trace sink
  *
- * \param context The context.
- * \param seqNo The Sequence Number.
- * \param rtt The RTT.
+ * @param context The context.
+ * @param seqNo The Sequence Number.
+ * @param rtt The RTT.
  */
 static void
 PingRtt(std::string context, uint16_t seqNo, Time rtt)

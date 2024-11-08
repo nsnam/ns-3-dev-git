@@ -22,8 +22,8 @@ namespace ns3
 {
 
 /**
- * \ingroup mobility
- * \brief Waypoint-based mobility model.
+ * @ingroup mobility
+ * @brief Waypoint-based mobility model.
  *
  * Each object determines its velocity and position at a given time
  * from a set of ns3::Waypoint objects.  Past waypoints are discarded
@@ -79,7 +79,7 @@ class WaypointMobilityModel : public MobilityModel
   public:
     /**
      * Register this type with the TypeId system.
-     * \return the object TypeId
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -90,7 +90,7 @@ class WaypointMobilityModel : public MobilityModel
     ~WaypointMobilityModel() override;
 
     /**
-     * \param waypoint waypoint to append to the object path.
+     * @param waypoint waypoint to append to the object path.
      *
      * Add a waypoint to the path of the object. The time must
      * be greater than the previous waypoint added, otherwise
@@ -102,14 +102,14 @@ class WaypointMobilityModel : public MobilityModel
 
     /**
      * Get the waypoint that this object is traveling towards.
-     * \returns The waypoint
+     * @returns The waypoint
      */
     Waypoint GetNextWaypoint() const;
 
     /**
      * Get the number of waypoints left for this object, excluding
      * the next one.
-     * \returns The number of waypoints left
+     * @returns The number of waypoints left
      */
     uint32_t WaypointsLeft() const;
 
@@ -130,59 +130,59 @@ class WaypointMobilityModel : public MobilityModel
      */
     virtual void Update() const;
     /**
-     * \brief The dispose method.
+     * @brief The dispose method.
      *
      * Subclasses must override this method.
      */
     void DoDispose() override;
     /**
-     * \brief Get current position.
-     * \return A vector with the current position of the node.
+     * @brief Get current position.
+     * @return A vector with the current position of the node.
      */
     Vector DoGetPosition() const override;
     /**
-     * \brief Sets a new position for the node
-     * \param position A vector to be added as the new position
+     * @brief Sets a new position for the node
+     * @param position A vector to be added as the new position
      */
     void DoSetPosition(const Vector& position) override;
     /**
-     * \brief Returns the current velocity of a node
-     * \return The velocity vector of a node.
+     * @brief Returns the current velocity of a node
+     * @return The velocity vector of a node.
      */
     Vector DoGetVelocity() const override;
 
   protected:
     /**
-     * \brief This variable is set to true if there are no waypoints in the std::deque
+     * @brief This variable is set to true if there are no waypoints in the std::deque
      */
     bool m_first;
     /**
-     * \brief If true, course change updates are only notified when position
+     * @brief If true, course change updates are only notified when position
      * is calculated.
      */
     bool m_lazyNotify;
     /**
-     * \brief If true, calling SetPosition with no waypoints creates a waypoint
+     * @brief If true, calling SetPosition with no waypoints creates a waypoint
      */
     bool m_initialPositionIsWaypoint;
     /**
-     * \brief The double ended queue containing the ns3::Waypoint objects
+     * @brief The double ended queue containing the ns3::Waypoint objects
      */
     mutable std::deque<Waypoint> m_waypoints;
     /**
-     * \brief The ns3::Waypoint currently being used
+     * @brief The ns3::Waypoint currently being used
      */
     mutable Waypoint m_current;
     /**
-     * \brief The next ns3::Waypoint in the deque
+     * @brief The next ns3::Waypoint in the deque
      */
     mutable Waypoint m_next;
     /**
-     * \brief The current velocity vector
+     * @brief The current velocity vector
      */
     mutable Vector m_velocity;
     /**
-     * \brief Update event
+     * @brief Update event
      */
     EventId m_event;
 };

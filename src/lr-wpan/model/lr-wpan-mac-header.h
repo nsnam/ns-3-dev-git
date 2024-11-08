@@ -36,7 +36,7 @@ namespace lrwpan
 {
 
 /**
- * \ingroup lr-wpan
+ * @ingroup lr-wpan
  * Represent the Mac Header with the Frame Control and Sequence Number fields
  */
 class LrWpanMacHeader : public Header
@@ -80,10 +80,10 @@ class LrWpanMacHeader : public Header
 
     /**
      * Constructor
-     * \param wpanMacType the header MAC type
-     * \param seqNum the sequence number
+     * @param wpanMacType the header MAC type
+     * @param seqNum the sequence number
      *
-     * \internal
+     * @internal
      * Data, ACK, Control MAC Header must have frame control and sequence number.
      * Beacon MAC Header must have frame control, sequence number, source PAN Id, source address.
      */
@@ -93,158 +93,158 @@ class LrWpanMacHeader : public Header
 
     /**
      * Get the header type
-     * \return the header type
+     * @return the header type
      */
     LrWpanMacType GetType() const;
     /**
      * Get the Frame control field
-     * \return the Frame control field
+     * @return the Frame control field
      */
     uint16_t GetFrameControl() const;
     /**
      * Check if Security Enabled bit of Frame Control is enabled
-     * \return true if Security Enabled bit is enabled
+     * @return true if Security Enabled bit is enabled
      */
     bool IsSecEnable() const;
     /**
      * Check if Frame Pending bit of Frame Control is enabled
-     * \return true if Frame Pending bit is enabled
+     * @return true if Frame Pending bit is enabled
      */
     bool IsFrmPend() const;
     /**
      * Check if Ack. Request bit of Frame Control is enabled
-     * \return true if Ack. Request bit is enabled
+     * @return true if Ack. Request bit is enabled
      */
     bool IsAckReq() const;
     /**
      * Check if PAN ID Compression bit of Frame Control is enabled
-     * \return true if PAN ID Compression bit is enabled
+     * @return true if PAN ID Compression bit is enabled
      */
     bool IsPanIdComp() const;
     /**
      * Get the Reserved bits of Frame control field
-     * \return the Reserved bits
+     * @return the Reserved bits
      */
     uint8_t GetFrmCtrlRes() const;
     /**
      * Get the Dest. Addressing Mode of Frame control field
-     * \return the Dest. Addressing Mode bits
+     * @return the Dest. Addressing Mode bits
      */
     uint8_t GetDstAddrMode() const;
     /**
      * Get the Frame Version of Frame control field
-     * \return the Frame Version bits
+     * @return the Frame Version bits
      */
     uint8_t GetFrameVer() const;
     /**
      * Get the Source Addressing Mode of Frame control field
-     * \return the Source Addressing Mode bits
+     * @return the Source Addressing Mode bits
      */
     uint8_t GetSrcAddrMode() const;
     /**
      * Get the frame Sequence number
-     * \return the sequence number
+     * @return the sequence number
      */
     uint8_t GetSeqNum() const;
     /**
      * Get the Destination PAN ID
-     * \return the Destination PAN ID
+     * @return the Destination PAN ID
      */
     uint16_t GetDstPanId() const;
     /**
      * Get the Destination Short address
-     * \return the Destination Short address
+     * @return the Destination Short address
      */
     Mac16Address GetShortDstAddr() const;
     /**
      * Get the Destination Extended address
-     * \return the Destination Extended address
+     * @return the Destination Extended address
      */
     Mac64Address GetExtDstAddr() const;
     /**
      * Get the Source PAN ID
-     * \return the Source PAN ID
+     * @return the Source PAN ID
      */
     uint16_t GetSrcPanId() const;
     /**
      * Get the Source Short address
-     * \return the Source Short address
+     * @return the Source Short address
      */
     Mac16Address GetShortSrcAddr() const;
     /**
      * Get the Source Extended address
-     * \return the Source Extended address
+     * @return the Source Extended address
      */
     Mac64Address GetExtSrcAddr() const;
     /**
      * Get the Auxiliary Security Header - Security Control Octet
-     * \return the Auxiliary Security Header - Security Control Octet
+     * @return the Auxiliary Security Header - Security Control Octet
      */
     uint8_t GetSecControl() const;
     /**
      * Get the Auxiliary Security Header - Frame Counter Octets
-     * \return the Auxiliary Security Header - Frame Counter Octets
+     * @return the Auxiliary Security Header - Frame Counter Octets
      */
     uint32_t GetFrmCounter() const;
 
     /**
      * Get the Auxiliary Security Header - Security Control - Security Level bits
-     * \return the Auxiliary Security Header - Security Control - Security Level bits
+     * @return the Auxiliary Security Header - Security Control - Security Level bits
      */
     uint8_t GetSecLevel() const;
     /**
      * Get the Auxiliary Security Header - Security Control - Key Identifier Mode bits
-     * \return the Auxiliary Security Header - Security Control - Key Identifier Mode bits
+     * @return the Auxiliary Security Header - Security Control - Key Identifier Mode bits
      */
     uint8_t GetKeyIdMode() const;
     /**
      * Get the Auxiliary Security Header - Security Control - Reserved bits
-     * \return the Auxiliary Security Header - Security Control - Reserved bits
+     * @return the Auxiliary Security Header - Security Control - Reserved bits
      */
     uint8_t GetSecCtrlReserved() const;
     /**
      * Get the Auxiliary Security Header - Key Identifier - Key Source (2 Octets)
-     * \return the Auxiliary Security Header - Key Identifier - Key Source  (2 Octets)
+     * @return the Auxiliary Security Header - Key Identifier - Key Source  (2 Octets)
      */
     uint32_t GetKeyIdSrc32() const;
     /**
      * Get the Auxiliary Security Header - Key Identifier - Key Source (4 Octets)
-     * \return the Auxiliary Security Header - Key Identifier - Key Source  (4 Octets)
+     * @return the Auxiliary Security Header - Key Identifier - Key Source  (4 Octets)
      */
     uint64_t GetKeyIdSrc64() const;
     /**
      * Get the Auxiliary Security Header - Key Identifier - Key Index
-     * \return the Auxiliary Security Header - Key Identifier - Key Index
+     * @return the Auxiliary Security Header - Key Identifier - Key Index
      */
     uint8_t GetKeyIdIndex() const;
     /**
      * Returns true if the header is a beacon
-     * \return true if the header is a beacon
+     * @return true if the header is a beacon
      */
     bool IsBeacon() const;
     /**
      * Returns true if the header is a data
-     * \return true if the header is a data
+     * @return true if the header is a data
      */
     bool IsData() const;
     /**
      * Returns true if the header is an ack
-     * \return true if the header is an ack
+     * @return true if the header is an ack
      */
     bool IsAcknowledgment() const;
     /**
      * Returns true if the header is a command
-     * \return true if the header is a command
+     * @return true if the header is a command
      */
     bool IsCommand() const;
     /**
      * Set the Frame Control field "Frame Type" bits
-     * \param wpanMacType the frame type
+     * @param wpanMacType the frame type
      */
     void SetType(LrWpanMacType wpanMacType);
     /**
      * Set the whole Frame Control field
-     * \param frameControl the Frame Control field
+     * @param frameControl the Frame Control field
      */
     void SetFrameControl(uint16_t frameControl);
     /**
@@ -281,102 +281,102 @@ class LrWpanMacHeader : public Header
     void SetNoPanIdComp();
     /**
      * Set the Frame Control field "Reserved" bits
-     * \param res reserved bits
+     * @param res reserved bits
      */
     void SetFrmCtrlRes(uint8_t res);
     /**
      * Set the Destination address mode
-     * \param addrMode Destination address mode
+     * @param addrMode Destination address mode
      */
     void SetDstAddrMode(uint8_t addrMode);
     /**
      * Set the Frame version
-     * \param ver frame version
+     * @param ver frame version
      */
     void SetFrameVer(uint8_t ver);
     /**
      * Set the Source address mode
-     * \param addrMode Source address mode
+     * @param addrMode Source address mode
      */
     void SetSrcAddrMode(uint8_t addrMode);
     /**
      * Set the Sequence number
-     * \param seqNum sequence number
+     * @param seqNum sequence number
      */
     void SetSeqNum(uint8_t seqNum);
     /* The Source/Destination Addressing fields are only set if SrcAddrMode/DstAddrMode are set */
     /**
      * Set Source address fields
-     * \param panId source PAN ID
-     * \param addr source address (16 bit)
+     * @param panId source PAN ID
+     * @param addr source address (16 bit)
      */
     void SetSrcAddrFields(uint16_t panId, Mac16Address addr);
     /**
      * Set Source address fields
-     * \param panId source PAN ID
-     * \param addr source address (64 bit)
+     * @param panId source PAN ID
+     * @param addr source address (64 bit)
      */
     void SetSrcAddrFields(uint16_t panId, Mac64Address addr);
     /**
      * Set Destination address fields
-     * \param panId destination PAN ID
-     * \param addr destination address (16 bit)
+     * @param panId destination PAN ID
+     * @param addr destination address (16 bit)
      */
     void SetDstAddrFields(uint16_t panId, Mac16Address addr);
     /**
      * Set Destination address fields
-     * \param panId destination PAN ID
-     * \param addr destination address (64 bit)
+     * @param panId destination PAN ID
+     * @param addr destination address (64 bit)
      */
     void SetDstAddrFields(uint16_t panId, Mac64Address addr);
 
     /* Auxiliary Security Header is only set if Sec Enable (SecU) field is set to 1 */
     /**
      * Set the auxiliary security header "Security Control" octet
-     * \param secLevel the "Security Control" octet
+     * @param secLevel the "Security Control" octet
      */
     void SetSecControl(uint8_t secLevel);
     /**
      * Set the auxiliary security header "Frame Counter" octet
-     * \param frmCntr the "Frame Counter" octet
+     * @param frmCntr the "Frame Counter" octet
      */
     void SetFrmCounter(uint32_t frmCntr);
     /**
      * Set the Security Control field "Security Level" bits (3 bits)
-     * \param secLevel the "Security Level" bits
+     * @param secLevel the "Security Level" bits
      */
     void SetSecLevel(uint8_t secLevel);
     /**
      * Set the Security Control field "Key Identifier Mode" bits (2 bits)
-     * \param keyIdMode the "Key Identifier Mode" bits
+     * @param keyIdMode the "Key Identifier Mode" bits
      */
     void SetKeyIdMode(uint8_t keyIdMode);
     /**
      * Set the Security Control field "Reserved" bits (3 bits)
-     * \param res the "Reserved" bits
+     * @param res the "Reserved" bits
      */
     void SetSecCtrlReserved(uint8_t res);
     /* Variable length will be dependent on Key Id Mode*/
     /**
      * Set the Key Index
-     * \param keyIndex the Key index
+     * @param keyIndex the Key index
      */
     void SetKeyId(uint8_t keyIndex);
     /**
      * Set the Key Index and originator
-     * \param keySrc the originator of a group key
-     * \param keyIndex the Key index
+     * @param keySrc the originator of a group key
+     * @param keyIndex the Key index
      */
     void SetKeyId(uint32_t keySrc, uint8_t keyIndex);
     /**
      * Set the Key Index and originator
-     * \param keySrc the originator of a group key
-     * \param keyIndex the Key index
+     * @param keySrc the originator of a group key
+     * @param keyIndex the Key index
      */
     void SetKeyId(uint64_t keySrc, uint8_t keyIndex);
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     TypeId GetInstanceTypeId() const override;

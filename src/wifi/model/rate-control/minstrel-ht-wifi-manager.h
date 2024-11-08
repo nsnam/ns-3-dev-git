@@ -28,8 +28,8 @@ namespace ns3
 typedef std::map<WifiMode, Time> TxTime;
 
 /**
- * \enum McsGroupType
- * \brief Available MCS group types
+ * @enum McsGroupType
+ * @brief Available MCS group types
  */
 enum McsGroupType
 {
@@ -39,11 +39,11 @@ enum McsGroupType
 };
 
 /**
- * \brief Stream insertion operator.
+ * @brief Stream insertion operator.
  *
- * \param os the stream
- * \param type the MCS group type
- * \returns a reference to the stream
+ * @param os the stream
+ * @param type the MCS group type
+ * @returns a reference to the stream
  */
 inline std::ostream&
 operator<<(std::ostream& os, McsGroupType type)
@@ -179,8 +179,8 @@ static const MHz_u MAX_VHT_WIDTH = 160;        //!< Maximal channel width.
 static const MHz_u MAX_HE_WIDTH = 160;         //!< Maximal channel width.
 
 /**
- * \brief Implementation of Minstrel-HT Rate Control Algorithm
- * \ingroup wifi
+ * @brief Implementation of Minstrel-HT Rate Control Algorithm
+ * @ingroup wifi
  *
  * Minstrel-HT is a rate adaptation mechanism for the 802.11n/ac/ax standards
  * based on Minstrel, and is based on the approach of probing the channel
@@ -226,8 +226,8 @@ class MinstrelHtWifiManager : public WifiRemoteStationManager
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     MinstrelHtWifiManager();
@@ -240,8 +240,8 @@ class MinstrelHtWifiManager : public WifiRemoteStationManager
     /**
      * TracedCallback signature for rate change events.
      *
-     * \param [in] rate The new rate.
-     * \param [in] address The remote station MAC address.
+     * @param [in] rate The new rate.
+     * @param [in] address The remote station MAC address.
      */
     typedef void (*RateChangeTracedCallback)(const uint64_t rate, const Mac48Address remoteAddress);
 
@@ -279,11 +279,11 @@ class MinstrelHtWifiManager : public WifiRemoteStationManager
     /**
      * Check the validity of a combination of number of streams, chWidth and mode.
      *
-     * \param phy pointer to the wifi PHY
-     * \param streams the number of streams
-     * \param chWidth the channel width
-     * \param mode the wifi mode
-     * \returns true if the combination is valid
+     * @param phy pointer to the wifi PHY
+     * @param streams the number of streams
+     * @param chWidth the channel width
+     * @param mode the wifi mode
+     * @returns true if the combination is valid
      */
     bool IsValidMcs(Ptr<WifiPhy> phy, uint8_t streams, MHz_u chWidth, WifiMode mode);
 
@@ -291,13 +291,13 @@ class MinstrelHtWifiManager : public WifiRemoteStationManager
      * Estimates the TxTime of a frame with a given mode and group (stream, guard interval and
      * channel width).
      *
-     * \param phy pointer to the wifi PHY
-     * \param streams the number of streams
-     * \param gi guard interval duration
-     * \param chWidth the channel width
-     * \param mode the wifi mode
-     * \param mpduType the type of the MPDU
-     * \returns the transmit time
+     * @param phy pointer to the wifi PHY
+     * @param streams the number of streams
+     * @param gi guard interval duration
+     * @param chWidth the channel width
+     * @param mode the wifi mode
+     * @param mpduType the type of the MPDU
+     * @returns the transmit time
      */
     Time CalculateMpduTxDuration(Ptr<WifiPhy> phy,
                                  uint8_t streams,
@@ -309,51 +309,51 @@ class MinstrelHtWifiManager : public WifiRemoteStationManager
     /**
      * Obtain the TxTime saved in the group information.
      *
-     * \param groupId the group ID
-     * \param mode the wifi mode
-     * \returns the transmit time
+     * @param groupId the group ID
+     * @param mode the wifi mode
+     * @returns the transmit time
      */
     Time GetMpduTxTime(uint8_t groupId, WifiMode mode) const;
 
     /**
      * Save a TxTime to the vector of groups.
      *
-     * \param groupId the group ID
-     * \param mode the wifi mode
-     * \param t the transmit time
+     * @param groupId the group ID
+     * @param mode the wifi mode
+     * @param t the transmit time
      */
     void AddMpduTxTime(uint8_t groupId, WifiMode mode, Time t);
 
     /**
      * Obtain the TxTime saved in the group information.
      *
-     * \param groupId the group ID
-     * \param mode the wifi mode
-     * \returns the transmit time
+     * @param groupId the group ID
+     * @param mode the wifi mode
+     * @returns the transmit time
      */
     Time GetFirstMpduTxTime(uint8_t groupId, WifiMode mode) const;
 
     /**
      * Save a TxTime to the vector of groups.
      *
-     * \param groupId the group ID
-     * \param mode the wifi mode
-     * \param t the transmit time
+     * @param groupId the group ID
+     * @param mode the wifi mode
+     * @param t the transmit time
      */
     void AddFirstMpduTxTime(uint8_t groupId, WifiMode mode, Time t);
 
     /**
      * Update the number of retries and reset accordingly.
-     * \param station the wifi remote station
+     * @param station the wifi remote station
      */
     void UpdateRetry(MinstrelHtWifiRemoteStation* station);
 
     /**
      * Update the number of sample count variables.
      *
-     * \param station the wifi remote station
-     * \param nSuccessfulMpdus the number of successfully received MPDUs
-     * \param nFailedMpdus the number of failed MPDUs
+     * @param station the wifi remote station
+     * @param nSuccessfulMpdus the number of successfully received MPDUs
+     * @param nFailedMpdus the number of failed MPDUs
      */
     void UpdatePacketCounters(MinstrelHtWifiRemoteStation* station,
                               uint16_t nSuccessfulMpdus,
@@ -362,48 +362,48 @@ class MinstrelHtWifiManager : public WifiRemoteStationManager
     /**
      * Getting the next sample from Sample Table.
      *
-     * \param station the wifi remote station
-     * \returns the next sample
+     * @param station the wifi remote station
+     * @returns the next sample
      */
     uint16_t GetNextSample(MinstrelHtWifiRemoteStation* station);
 
     /**
      * Set the next sample from Sample Table.
      *
-     * \param station the wifi remote station
+     * @param station the wifi remote station
      */
     void SetNextSample(MinstrelHtWifiRemoteStation* station);
 
     /**
      * Find a rate to use from Minstrel Table.
      *
-     * \param station the Minstrel-HT wifi remote station
-     * \returns the rate in bps
+     * @param station the Minstrel-HT wifi remote station
+     * @returns the rate in bps
      */
     uint16_t FindRate(MinstrelHtWifiRemoteStation* station);
 
     /**
      * Update the Minstrel Table.
      *
-     * \param station the Minstrel-HT wifi remote station
+     * @param station the Minstrel-HT wifi remote station
      */
     void UpdateStats(MinstrelHtWifiRemoteStation* station);
 
     /**
      * Initialize Minstrel Table.
      *
-     * \param station the Minstrel-HT wifi remote station
+     * @param station the Minstrel-HT wifi remote station
      */
     void RateInit(MinstrelHtWifiRemoteStation* station);
 
     /**
      * Return the average throughput of the MCS defined by groupId and rateId.
      *
-     * \param station the Minstrel-HT wifi remote station
-     * \param groupId the group ID
-     * \param rateId the rate ID
-     * \param ewmaProb the EWMA probability
-     * \returns the throughput in bps
+     * @param station the Minstrel-HT wifi remote station
+     * @param groupId the group ID
+     * @param rateId the rate ID
+     * @param ewmaProb the EWMA probability
+     * @returns the throughput in bps
      */
     double CalculateThroughput(MinstrelHtWifiRemoteStation* station,
                                uint8_t groupId,
@@ -413,33 +413,33 @@ class MinstrelHtWifiManager : public WifiRemoteStationManager
     /**
      * Set index rate as maxTpRate or maxTp2Rate if is better than current values.
      *
-     * \param station the Minstrel-HT wifi remote station
-     * \param index the index
+     * @param station the Minstrel-HT wifi remote station
+     * @param index the index
      */
     void SetBestStationThRates(MinstrelHtWifiRemoteStation* station, uint16_t index);
 
     /**
      * Set index rate as maxProbRate if it is better than current value.
      *
-     * \param station the Minstrel-HT wifi remote station
-     * \param index the index
+     * @param station the Minstrel-HT wifi remote station
+     * @param index the index
      */
     void SetBestProbabilityRate(MinstrelHtWifiRemoteStation* station, uint16_t index);
 
     /**
      * Calculate the number of retransmissions to set for the index rate.
      *
-     * \param station the Minstrel-HT wifi remote station
-     * \param index the index
+     * @param station the Minstrel-HT wifi remote station
+     * @param index the index
      */
     void CalculateRetransmits(MinstrelHtWifiRemoteStation* station, uint16_t index);
 
     /**
      * Calculate the number of retransmissions to set for the (groupId, rateId) rate.
      *
-     * \param station the Minstrel-HT wifi remote station
-     * \param groupId the group ID
-     * \param rateId the rate ID
+     * @param station the Minstrel-HT wifi remote station
+     * @param groupId the group ID
+     * @param rateId the rate ID
      */
     void CalculateRetransmits(MinstrelHtWifiRemoteStation* station,
                               uint8_t groupId,
@@ -461,10 +461,10 @@ class MinstrelHtWifiManager : public WifiRemoteStationManager
      *  - Data transmission
      *  - backoffs according to CW
      *
-     * \param dataTransmissionTime the data transmission time
-     * \param shortRetries the short retries
-     * \param longRetries the long retries
-     * \returns the unicast packet time
+     * @param dataTransmissionTime the data transmission time
+     * @param shortRetries the short retries
+     * @param longRetries the long retries
+     * @returns the unicast packet time
      */
     Time CalculateTimeUnicastPacket(Time dataTransmissionTime,
                                     uint32_t shortRetries,
@@ -473,79 +473,79 @@ class MinstrelHtWifiManager : public WifiRemoteStationManager
     /**
      * Perform EWMSD (Exponentially Weighted Moving Standard Deviation) calculation.
      *
-     * \param oldEwmsd the old EWMSD
-     * \param currentProb the current probability
-     * \param ewmaProb the EWMA probability
-     * \param weight the weight
-     * \returns the EWMSD
+     * @param oldEwmsd the old EWMSD
+     * @param currentProb the current probability
+     * @param ewmaProb the EWMA probability
+     * @param weight the weight
+     * @returns the EWMSD
      */
     double CalculateEwmsd(double oldEwmsd, double currentProb, double ewmaProb, double weight);
 
     /**
      * Initialize Sample Table.
      *
-     * \param station the Minstrel-HT wifi remote station
+     * @param station the Minstrel-HT wifi remote station
      */
     void InitSampleTable(MinstrelHtWifiRemoteStation* station);
 
     /**
      * Printing Sample Table.
      *
-     * \param station the Minstrel-HT wifi remote station
+     * @param station the Minstrel-HT wifi remote station
      */
     void PrintSampleTable(MinstrelHtWifiRemoteStation* station);
 
     /**
      * Printing Minstrel Table.
      *
-     * \param station the Minstrel-HT wifi remote station
+     * @param station the Minstrel-HT wifi remote station
      */
     void PrintTable(MinstrelHtWifiRemoteStation* station);
 
     /**
      * Print group statistics.
      *
-     * \param station the Minstrel-HT wifi remote station
-     * \param groupId the group ID
-     * \param of the output file stream
+     * @param station the Minstrel-HT wifi remote station
+     * @param groupId the group ID
+     * @param of the output file stream
      */
     void StatsDump(MinstrelHtWifiRemoteStation* station, uint8_t groupId, std::ofstream& of);
 
     /**
      * Check for initializations.
      *
-     * \param station the Minstrel-HT wifi remote station
+     * @param station the Minstrel-HT wifi remote station
      */
     void CheckInit(MinstrelHtWifiRemoteStation* station);
 
     /**
      * Count retries.
      *
-     * \param station the Minstrel-HT wifi remote station
-     * \returns the count of retries
+     * @param station the Minstrel-HT wifi remote station
+     * @returns the count of retries
      */
     uint32_t CountRetries(MinstrelHtWifiRemoteStation* station);
 
     /**
      * Update rate.
      *
-     * \param station the Minstrel-HT wifi remote station
+     * @param station the Minstrel-HT wifi remote station
      */
     void UpdateRate(MinstrelHtWifiRemoteStation* station);
 
     /**
      * Return the rateId inside a group, from the global index.
      *
-     * \param index the index
-     * \returns the rate ID
+     * @param index the index
+     * @returns the rate ID
      */
     uint8_t GetRateId(uint16_t index);
 
     /**
      * Return the groupId from the global index.
      *
-     * \param index the index
-     * \returns the group ID
+     * @param index the index
+     * @returns the group ID
      */
     uint8_t GetGroupId(uint16_t index);
 
@@ -556,74 +556,74 @@ class MinstrelHtWifiManager : public WifiRemoteStationManager
      * all rates in all groups is used.
      * The group order is fixed by BW -> SGI -> streams.
      *
-     * \param groupId the group ID
-     * \param rateId the rate ID
-     * \returns the index
+     * @param groupId the group ID
+     * @param rateId the rate ID
+     * @returns the index
      */
     uint16_t GetIndex(uint8_t groupId, uint8_t rateId);
 
     /**
      * Returns the groupId of an HT MCS with the given number of streams, GI and channel width used.
      *
-     * \param txstreams the number of streams
-     * \param guardInterval guard interval duration
-     * \param chWidth the channel width
-     * \returns the HT group ID
+     * @param txstreams the number of streams
+     * @param guardInterval guard interval duration
+     * @param chWidth the channel width
+     * @returns the HT group ID
      */
     uint8_t GetHtGroupId(uint8_t txstreams, Time guardInterval, MHz_u chWidth);
 
     /**
      * Returns the groupId of a VHT MCS with the given number of streams, GI and channel width used.
      *
-     * \param txstreams the number of streams
-     * \param guardInterval guard interval duration
-     * \param chWidth the channel width
-     * \returns the VHT group ID
+     * @param txstreams the number of streams
+     * @param guardInterval guard interval duration
+     * @param chWidth the channel width
+     * @returns the VHT group ID
      */
     uint8_t GetVhtGroupId(uint8_t txstreams, Time guardInterval, MHz_u chWidth);
 
     /**
      * Returns the groupId of an HE MCS with the given number of streams, GI and channel width used.
      *
-     * \param txstreams the number of streams
-     * \param guardInterval guard interval duration
-     * \param chWidth the channel width
-     * \returns the HE group ID
+     * @param txstreams the number of streams
+     * @param guardInterval guard interval duration
+     * @param chWidth the channel width
+     * @returns the HE group ID
      */
     uint8_t GetHeGroupId(uint8_t txstreams, Time guardInterval, MHz_u chWidth);
 
     /**
      * Returns the lowest global index of the rates supported by the station.
      *
-     * \param station the Minstrel-HT wifi remote station
-     * \returns the lowest global index
+     * @param station the Minstrel-HT wifi remote station
+     * @returns the lowest global index
      */
     uint16_t GetLowestIndex(MinstrelHtWifiRemoteStation* station);
 
     /**
      * Returns the lowest global index of the rates supported by in the group.
      *
-     * \param station the Minstrel-HT wifi remote station
-     * \param groupId the group ID
-     * \returns the lowest global index
+     * @param station the Minstrel-HT wifi remote station
+     * @param groupId the group ID
+     * @returns the lowest global index
      */
     uint16_t GetLowestIndex(MinstrelHtWifiRemoteStation* station, uint8_t groupId);
 
     /**
      * Returns a list of only the HE MCS supported by the device.
-     * \returns the list of the HE MCS supported
+     * @returns the list of the HE MCS supported
      */
     WifiModeList GetHeDeviceMcsList() const;
 
     /**
      * Returns a list of only the VHT MCS supported by the device.
-     * \returns the list of the VHT MCS supported
+     * @returns the list of the VHT MCS supported
      */
     WifiModeList GetVhtDeviceMcsList() const;
 
     /**
      * Returns a list of only the HT MCS supported by the device.
-     * \returns the list of the HT MCS supported
+     * @returns the list of the HT MCS supported
      */
     WifiModeList GetHtDeviceMcsList() const;
 
@@ -636,9 +636,9 @@ class MinstrelHtWifiManager : public WifiRemoteStationManager
      * group with the same MCS as the given TX rate. If no supported MCS group is
      * found, the simulation aborts.
      *
-     * \param txRate the index of the current TX rate
-     * \param allowedWidth the allowed width
-     * \return the index of a TX rate whose channel width is not greater than the
+     * @param txRate the index of the current TX rate
+     * @param allowedWidth the allowed width
+     * @return the index of a TX rate whose channel width is not greater than the
      *         allowed width, if found (otherwise, the simulation aborts)
      */
     uint16_t UpdateRateAfterAllowedWidth(uint16_t txRate, MHz_u allowedWidth);

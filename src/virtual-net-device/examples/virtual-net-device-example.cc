@@ -47,7 +47,7 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("VirtualNetDeviceExample");
 
 /**
- * \ingroup virtual-net-device
+ * @ingroup virtual-net-device
  *
  * Tunnel class - its goal is to create and manage the tunnels between endpoints.
  */
@@ -66,11 +66,11 @@ class Tunnel
 
     /**
      * Send a packet through the N0 VirtualNetDevice
-     * \param packet Packet to send
-     * \param source Source IPv4 address
-     * \param dest Destination IPv4 address
-     * \param protocolNumber Protocol number
-     * \return true (always)
+     * @param packet Packet to send
+     * @param source Source IPv4 address
+     * @param dest Destination IPv4 address
+     * @param protocolNumber Protocol number
+     * @return true (always)
      */
     bool N0VirtualSend(Ptr<Packet> packet,
                        const Address& source,
@@ -84,11 +84,11 @@ class Tunnel
 
     /**
      * Send a packet through the N1 VirtualNetDevice
-     * \param packet Packet to send
-     * \param source Source IPv4 address
-     * \param dest Destination IPv4 address
-     * \param protocolNumber Protocol number
-     * \return true (always)
+     * @param packet Packet to send
+     * @param source Source IPv4 address
+     * @param dest Destination IPv4 address
+     * @param protocolNumber Protocol number
+     * @return true (always)
      */
     bool N1VirtualSend(Ptr<Packet> packet,
                        const Address& source,
@@ -102,11 +102,11 @@ class Tunnel
 
     /**
      * Send a packet through the N3 VirtualNetDevice
-     * \param packet Packet to send
-     * \param source Source IPv4 address
-     * \param dest Destination IPv4 address
-     * \param protocolNumber Protocol number
-     * \return true (always)
+     * @param packet Packet to send
+     * @param source Source IPv4 address
+     * @param dest Destination IPv4 address
+     * @param protocolNumber Protocol number
+     * @return true (always)
      */
     bool N3VirtualSend(Ptr<Packet> packet,
                        const Address& source,
@@ -128,7 +128,7 @@ class Tunnel
 
     /**
      * Receive a packet on the N3 VirtualNetDevice
-     * \param socket Receiving socket
+     * @param socket Receiving socket
      */
     void N3SocketRecv(Ptr<Socket> socket)
     {
@@ -143,7 +143,7 @@ class Tunnel
 
     /**
      * Receive a packet on the N0 VirtualNetDevice
-     * \param socket Receiving socket
+     * @param socket Receiving socket
      */
     void N0SocketRecv(Ptr<Socket> socket)
     {
@@ -158,7 +158,7 @@ class Tunnel
 
     /**
      * Receive a packet on the N1 VirtualNetDevice
-     * \param socket Receiving socket
+     * @param socket Receiving socket
      */
     void N1SocketRecv(Ptr<Socket> socket)
     {
@@ -174,12 +174,12 @@ class Tunnel
   public:
     /**
      * Constructor
-     * \param n3 Pointer of Node 3
-     * \param n0 Pointer of Node 0
-     * \param n1 Pointer of Node 1
-     * \param n3Addr IPv4 address of Node 3
-     * \param n0Addr IPv4 address of Node 0
-     * \param n1Addr IPv4 address of Node 1
+     * @param n3 Pointer of Node 3
+     * @param n0 Pointer of Node 0
+     * @param n1 Pointer of Node 1
+     * @param n3Addr IPv4 address of Node 3
+     * @param n0Addr IPv4 address of Node 0
+     * @param n1Addr IPv4 address of Node 1
      */
     Tunnel(Ptr<Node> n3,
            Ptr<Node> n0,

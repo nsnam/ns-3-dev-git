@@ -18,15 +18,15 @@ namespace ns3
 NS_LOG_COMPONENT_DEFINE("TcpCloseTestSuite");
 
 /**
- * \brief Check if the TCP correctly close the connection after receiving
+ * @brief Check if the TCP correctly close the connection after receiving
  * previously lost data
  */
 class TcpCloseWithLossTestCase : public TcpGeneralTest
 {
   public:
     /**
-     * \brief Constructor
-     * \param sackEnabled Enable or disable SACK
+     * @brief Constructor
+     * @param sackEnabled Enable or disable SACK
      */
     TcpCloseWithLossTestCase(bool sackEnabled);
 
@@ -51,9 +51,9 @@ class TcpCloseWithLossTestCase : public TcpGeneralTest
 
     /**
      * Called when a packet is dropped.
-     * \param ipH IP header
-     * \param tcpH TCP header
-     * \param pkt packet
+     * @param ipH IP header
+     * @param tcpH TCP header
+     * @param pkt packet
      */
     void PktDropped(const Ipv4Header& ipH, const TcpHeader& tcpH, Ptr<const Packet> pkt);
 

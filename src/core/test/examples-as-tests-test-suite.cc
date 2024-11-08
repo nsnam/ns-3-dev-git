@@ -14,15 +14,15 @@
 using namespace ns3;
 
 /**
- * \file
- * \ingroup examples-as-tests
+ * @file
+ * @ingroup examples-as-tests
  * Examples-as-tests test suite
  */
 
 /**
- * \ingroup core-tests
- * \ingroup testing
- * \defgroup examples-as-tests Examples as tests test suite
+ * @ingroup core-tests
+ * @ingroup testing
+ * @defgroup examples-as-tests Examples as tests test suite
  *
  * Runs several examples as tests in order to test ExampleAsTestSuite and ExampleAsTestCase.
  */
@@ -33,7 +33,7 @@ namespace tests
 {
 
 /**
- * \ingroup examples-as-tests
+ * @ingroup examples-as-tests
  * Run command line example as a test case
  */
 class CommandLineExampleTestCase : public ExampleAsTestCase
@@ -55,7 +55,7 @@ class CommandLineExampleTestCase : public ExampleAsTestCase
      * Since the version changes each time a commit is made it shouldn't
      * be tested as part of the command-line-example output.
      *
-     * \returns The string of post-processing commands.
+     * @returns The string of post-processing commands.
      */
     std::string GetPostProcessingCommand() const override;
 };
@@ -81,7 +81,7 @@ CommandLineExampleTestCase::GetPostProcessingCommand() const
 }
 
 /**
- * \ingroup examples-as-tests
+ * @ingroup examples-as-tests
  * Run examples as tests, checking stdout for regressions.
  */
 class ExamplesAsTestsTestSuite : public TestSuite
@@ -104,14 +104,14 @@ ExamplesAsTestsTestSuite::ExamplesAsTestsTestSuite()
 }
 
 /**
- * \ingroup examples-as-tests
+ * @ingroup examples-as-tests
  * ExampleAsTestsTestSuite instance variable.
  * Tests multiple examples in a single TestSuite using AddTestCase to add the examples to the suite.
  */
 static ExamplesAsTestsTestSuite g_examplesAsTestsTestSuite;
 
 /**
- * \ingroup examples-as-tests
+ * @ingroup examples-as-tests
  * ExampleTestSuite instance variables.
  *
  * Tests ExampleTestSuite which runs a single example as test suite as specified in constructor

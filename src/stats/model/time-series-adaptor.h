@@ -19,9 +19,9 @@ namespace ns3
 {
 
 /**
- * \ingroup aggregator
+ * @ingroup aggregator
  *
- * \brief Takes probed values of different types and outputs the
+ * @brief Takes probed values of different types and outputs the
  * current time plus the value with both converted to doubles.
  *
  * The role of the TimeSeriesAdaptor class is that of an adaptor
@@ -39,8 +39,8 @@ class TimeSeriesAdaptor : public DataCollectionObject
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -48,10 +48,10 @@ class TimeSeriesAdaptor : public DataCollectionObject
     ~TimeSeriesAdaptor() override;
 
     /**
-     * \brief Trace sink for receiving data from double valued trace
+     * @brief Trace sink for receiving data from double valued trace
      * sources.
-     * \param oldData the original value.
-     * \param newData the new value.
+     * @param oldData the original value.
+     * @param newData the new value.
      *
      * This method serves as a trace sink to double valued trace
      * sources.
@@ -59,10 +59,10 @@ class TimeSeriesAdaptor : public DataCollectionObject
     void TraceSinkDouble(double oldData, double newData);
 
     /**
-     * \brief Trace sink for receiving data from bool valued trace
+     * @brief Trace sink for receiving data from bool valued trace
      * sources.
-     * \param oldData the original value.
-     * \param newData the new value.
+     * @param oldData the original value.
+     * @param newData the new value.
      *
      * This method serves as a trace sink to bool valued trace
      * sources.
@@ -70,10 +70,10 @@ class TimeSeriesAdaptor : public DataCollectionObject
     void TraceSinkBoolean(bool oldData, bool newData);
 
     /**
-     * \brief Trace sink for receiving data from uint8_t valued trace
+     * @brief Trace sink for receiving data from uint8_t valued trace
      * sources.
-     * \param oldData the original value.
-     * \param newData the new value.
+     * @param oldData the original value.
+     * @param newData the new value.
      *
      * This method serves as a trace sink to uint8_t valued trace
      * sources.
@@ -81,10 +81,10 @@ class TimeSeriesAdaptor : public DataCollectionObject
     void TraceSinkUinteger8(uint8_t oldData, uint8_t newData);
 
     /**
-     * \brief Trace sink for receiving data from uint16_t valued trace
+     * @brief Trace sink for receiving data from uint16_t valued trace
      * sources.
-     * \param oldData the original value.
-     * \param newData the new value.
+     * @param oldData the original value.
+     * @param newData the new value.
      *
      * This method serves as a trace sink to uint16_t valued trace
      * sources.
@@ -92,10 +92,10 @@ class TimeSeriesAdaptor : public DataCollectionObject
     void TraceSinkUinteger16(uint16_t oldData, uint16_t newData);
 
     /**
-     * \brief Trace sink for receiving data from uint32_t valued trace
+     * @brief Trace sink for receiving data from uint32_t valued trace
      * sources.
-     * \param oldData the original value.
-     * \param newData the new value.
+     * @param oldData the original value.
+     * @param newData the new value.
      *
      * This method serves as a trace sink to uint32_t valued trace
      * sources.
@@ -105,8 +105,8 @@ class TimeSeriesAdaptor : public DataCollectionObject
     /**
      * TracedCallback signature for output trace.
      *
-     * \param [in] now The current time, in seconds.
-     * \param [in] data The new data value.
+     * @param [in] now The current time, in seconds.
+     * @param [in] data The new data value.
      */
     typedef void (*OutputTracedCallback)(const double now, const double data);
 

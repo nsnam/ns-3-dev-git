@@ -16,8 +16,8 @@ namespace ns3
 {
 
 /**
- * \ingroup wifi
- * \brief Headers for A-MSDU subframes
+ * @ingroup wifi
+ * @brief Headers for A-MSDU subframes
  */
 class AmsduSubframeHeader : public Header
 {
@@ -26,8 +26,8 @@ class AmsduSubframeHeader : public Header
     ~AmsduSubframeHeader() override;
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -39,32 +39,32 @@ class AmsduSubframeHeader : public Header
 
     /**
      * Set destination address function
-     * \param to the destination MAC address
+     * @param to the destination MAC address
      */
     void SetDestinationAddr(Mac48Address to);
     /**
      * Set source address function
-     * \param to the source MAC address
+     * @param to the source MAC address
      */
     void SetSourceAddr(Mac48Address to);
     /**
      * Set length function
-     * \param length the length in bytes
+     * @param length the length in bytes
      */
     void SetLength(uint16_t length);
     /**
      * Get destination address function
-     * \returns the destination MAC address
+     * @returns the destination MAC address
      */
     Mac48Address GetDestinationAddr() const;
     /**
      * Get source address function
-     * \returns the source MAC address
+     * @returns the source MAC address
      */
     Mac48Address GetSourceAddr() const;
     /**
      * Get length function
-     * \returns the length in bytes
+     * @returns the length in bytes
      */
     uint16_t GetLength() const;
 

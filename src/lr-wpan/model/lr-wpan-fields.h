@@ -27,7 +27,7 @@ namespace lrwpan
 {
 
 /**
- * \ingroup lr-wpan
+ * @ingroup lr-wpan
  * The device Capabilities.
  */
 enum DeviceType
@@ -37,7 +37,7 @@ enum DeviceType
 };
 
 /**
- * \ingroup lr-wpan
+ * @ingroup lr-wpan
  * Represent the Superframe Specification information field.
  * See IEEE 802.15.4-2011   Section 5.2.2.1.2 Figure 41
  */
@@ -50,80 +50,80 @@ class SuperframeField
      * Create a superframe Specification Information field with
      * the information specified in the bitmap.
      *
-     * \param bitmap The superframe in bitmap form
+     * @param bitmap The superframe in bitmap form
      */
     SuperframeField(uint16_t bitmap);
     /**
      * Set the whole Superframe Specification Information field.
-     * \param superFrm The Superframe Specification information field.
+     * @param superFrm The Superframe Specification information field.
      */
     void SetSuperframe(uint16_t superFrm);
     /**
      * Set the superframe specification Beacon Order field.
-     * \param bcnOrder The beacon order value to set in the superframe.
+     * @param bcnOrder The beacon order value to set in the superframe.
      */
     void SetBeaconOrder(uint8_t bcnOrder);
     /**
      * Set the superframe specification Superframe Order field.
-     * \param frmOrder The frame Order value to set on the superframe.
+     * @param frmOrder The frame Order value to set on the superframe.
      */
     void SetSuperframeOrder(uint8_t frmOrder);
     /**
      * Set the superframe specification Final CAP slot field.
-     * \param capSlot Set the final slot of the Contention Access Period (CAP).
+     * @param capSlot Set the final slot of the Contention Access Period (CAP).
      */
     void SetFinalCapSlot(uint8_t capSlot);
     /**
      * Set the Superframe Specification Battery Life Extension (BLE).
-     * \param battLifeExt Sets true or false the value of the Battery Life Extension flag of the
+     * @param battLifeExt Sets true or false the value of the Battery Life Extension flag of the
      * superframe field.
      */
     void SetBattLifeExt(bool battLifeExt);
     /**
      * Set the Superframe Specification PAN coordinator field.
-     * \param panCoor set true or false the value for the PAN Coordinator flag of the superframe
+     * @param panCoor set true or false the value for the PAN Coordinator flag of the superframe
      * field.
      */
     void SetPanCoor(bool panCoor);
     /**
      * Set the Superframe Specification Association Permit field.
-     * \param assocPermit set true or false the value of the Association Permit flag of the
+     * @param assocPermit set true or false the value of the Association Permit flag of the
      * superframe field.
      */
     void SetAssocPermit(bool assocPermit);
     /**
      * Get the Superframe Specification Beacon Order field.
-     * \return the Superframe Specification Beacon Order field.
+     * @return the Superframe Specification Beacon Order field.
      */
     uint8_t GetBeaconOrder() const;
     /**
      * Get the Superframe Specification Frame Order field.
-     * \return The Superframe Specification Frame Order field.
+     * @return The Superframe Specification Frame Order field.
      */
     uint8_t GetFrameOrder() const;
     /**
      * Get the the Final CAP Slot.
-     * \returns The Final CAP Slot
+     * @returns The Final CAP Slot
      */
     uint8_t GetFinalCapSlot() const;
     /**
      * Check if the Battery Life Extension bit is enabled.
-     * \returns true if the Battery Life Extension bit is enabled
+     * @returns true if the Battery Life Extension bit is enabled
      */
     bool IsBattLifeExt() const;
     /**
      * Check if the PAN Coordinator bit is enabled.
-     * \returns true if the PAN Coordinator bit is enabled
+     * @returns true if the PAN Coordinator bit is enabled
      */
     bool IsPanCoor() const;
     /**
      * Check if the Association Permit bit is enabled.
-     * \returns true if the Association Permit bit is enabled
+     * @returns true if the Association Permit bit is enabled
      */
     bool IsAssocPermit() const;
     /**
      * Get the Superframe specification information field.
-     * \return the Superframe Specification Information field bits.
+     * @return the Superframe Specification Information field bits.
      */
     uint16_t GetSuperframe() const;
 
@@ -140,16 +140,16 @@ class SuperframeField
 };
 
 /**
- * \brief Stream insertion operator.
+ * @brief Stream insertion operator.
  *
- * \param [in] os The reference to the output stream.
- * \param [in] superframeField The Superframe fields.
- * \returns The reference to the output stream.
+ * @param [in] os The reference to the output stream.
+ * @param [in] superframeField The Superframe fields.
+ * @returns The reference to the output stream.
  */
 std::ostream& operator<<(std::ostream& os, const SuperframeField& superframeField);
 
 /**
- * \ingroup lr-wpan
+ * @ingroup lr-wpan
  * Represent the GTS information fields.
  * See IEEE 802.15.4-2011   Section 5.2.2 Figure 39
  */
@@ -159,45 +159,45 @@ class GtsFields
     GtsFields();
     /**
      * Get the GTS Specification Field from the GTS Fields
-     * \return The GTS Specification Field
+     * @return The GTS Specification Field
      */
     uint8_t GetGtsSpecField() const;
     /**
      * Get the GTS Direction Field from the GTS Fields
-     * \return The GTS Direction Field
+     * @return The GTS Direction Field
      */
     uint8_t GetGtsDirectionField() const;
     /**
      * Set the GTS Specification Field to the GTS Fields
-     * \param gtsSpec The GTS Specification Field to set.
+     * @param gtsSpec The GTS Specification Field to set.
      */
     void SetGtsSpecField(uint8_t gtsSpec);
     /**
      * Set the GTS direction field to the GTS Fields
-     * \param gtsDir The GTS Direction Field to set
+     * @param gtsDir The GTS Direction Field to set
      */
     void SetGtsDirectionField(uint8_t gtsDir);
     /**
      * Get the GTS Specification Permit. TRUE if coordinator is accepting GTS requests.
-     * \return True if the coordinator is accepting GTS request.
+     * @return True if the coordinator is accepting GTS request.
      */
     bool GetGtsPermit() const;
     /**
      * Get the size of the serialized GTS fields.
-     * \return the size of the serialized fields.
+     * @return the size of the serialized fields.
      */
     uint32_t GetSerializedSize() const;
     /**
      * Serialize the entire GTS fields.
-     * \param i an iterator which points to where the superframe specification field should be
+     * @param i an iterator which points to where the superframe specification field should be
      * written.
-     * \return an iterator.
+     * @return an iterator.
      */
     Buffer::Iterator Serialize(Buffer::Iterator i) const;
     /**
      * Deserialize the entire GTS fields.
-     * \param i an iterator which points to where the superframe specification field should be read.
-     * \return an iterator.
+     * @param i an iterator which points to where the superframe specification field should be read.
+     * @return an iterator.
      */
     Buffer::Iterator Deserialize(Buffer::Iterator i);
 
@@ -224,16 +224,16 @@ class GtsFields
 };
 
 /**
- * \brief Stream insertion operator.
+ * @brief Stream insertion operator.
  *
- * \param [in] os The reference to the output stream.
- * \param [in] gtsFields The GTS fields.
- * \returns The reference to the output stream.
+ * @param [in] os The reference to the output stream.
+ * @param [in] gtsFields The GTS fields.
+ * @returns The reference to the output stream.
  */
 std::ostream& operator<<(std::ostream& os, const GtsFields& gtsFields);
 
 /**
- * \ingroup lr-wpan
+ * @ingroup lr-wpan
  * Represent the Pending Address Specification field.
  * See IEEE 802.15.4-2011   Section 5.2.2.1.6. Figure 45
  */
@@ -243,64 +243,64 @@ class PendingAddrFields
     PendingAddrFields();
     /**
      * Add a short Pending Address to the Address List.
-     * \param shortAddr The extended Pending Address List.
+     * @param shortAddr The extended Pending Address List.
      */
     void AddAddress(Mac16Address shortAddr);
     /**
      * Add a extended Pending Address to the Address List.
-     * \param extAddr The extended Pending Address List.
+     * @param extAddr The extended Pending Address List.
      */
     void AddAddress(Mac64Address extAddr);
     /**
      * Search for the short Pending Address in the Address List.
-     * \param shortAddr The extended Address to look in the Address List.
-     * \return True if the address exist in the extended Address List.
+     * @param shortAddr The extended Address to look in the Address List.
+     * @return True if the address exist in the extended Address List.
      */
     bool SearchAddress(Mac16Address shortAddr);
     /**
      * Search for the extended Pending Address in the Address List.
-     * \param extAddr The extended Address to look in the Address List.
-     * \return True if the address exist in the extended Address List.
+     * @param extAddr The extended Address to look in the Address List.
+     * @return True if the address exist in the extended Address List.
      */
     bool SearchAddress(Mac64Address extAddr);
     /**
      * Get the whole Pending Address Specification Field from the Pending Address Fields.
-     * \return The Pending Address Specification Field.
+     * @return The Pending Address Specification Field.
      */
     uint8_t GetPndAddrSpecField() const;
     /**
      * Get the number of Short Pending Address indicated in the Pending Address Specification Field.
-     * \return The number Short Pending Address.
+     * @return The number Short Pending Address.
      */
     uint8_t GetNumShortAddr() const;
     /**
      * Get the number of Extended Pending Address indicated in the Pending Address Specification
      * Field.
-     * \return The number Short Pending Address.
+     * @return The number Short Pending Address.
      */
     uint8_t GetNumExtAddr() const;
 
     /**
      * Set the whole Pending Address Specification field. This field is part of the
      * Pending Address Fields header.
-     * \param pndAddrSpecField The Pending Address Specification Field
+     * @param pndAddrSpecField The Pending Address Specification Field
      */
     void SetPndAddrSpecField(uint8_t pndAddrSpecField);
     /**
      * Get the size of the serialized Pending Address Fields.
-     * \return the size of the serialized fields.
+     * @return the size of the serialized fields.
      */
     uint32_t GetSerializedSize() const;
     /**
      * Serialize the entire Pending Address Fields.
-     * \param i an iterator which points to where the Pending Address Fields should be written.
-     * \return an iterator.
+     * @param i an iterator which points to where the Pending Address Fields should be written.
+     * @return an iterator.
      */
     Buffer::Iterator Serialize(Buffer::Iterator i) const;
     /**
      * Deserialize the all the Pending Address Fields.
-     * \param i an iterator which points to where the Pending Address Fields should be read.
-     * \return an iterator.
+     * @param i an iterator which points to where the Pending Address Fields should be read.
+     * @return an iterator.
      */
     Buffer::Iterator Deserialize(Buffer::Iterator i);
 
@@ -318,16 +318,16 @@ class PendingAddrFields
 };
 
 /**
- * \brief Stream insertion operator.
+ * @brief Stream insertion operator.
  *
- * \param [in] os The reference to the output stream.
- * \param [in] pendingAddrFields The Pending Address fields.
- * \returns The reference to the output stream.
+ * @param [in] os The reference to the output stream.
+ * @param [in] pendingAddrFields The Pending Address fields.
+ * @returns The reference to the output stream.
  */
 std::ostream& operator<<(std::ostream& os, const PendingAddrFields& pendingAddrFields);
 
 /**
- * \ingroup lr-wpan
+ * @ingroup lr-wpan
  *
  * Represent the Capability Information Field.
  * See IEEE 802.15.4-2011   Section 5.3.1.2 Figure 50
@@ -340,21 +340,21 @@ class CapabilityField
     /**
      * Construct a Capability field based on a bitmap.
      *
-     * \param bitmap The bitmap representing the capability
+     * @param bitmap The bitmap representing the capability
      */
     CapabilityField(uint8_t bitmap);
 
     /**
      * Get the bitmap representing the device capability.
      *
-     * \return The bitmap representing the device capability.
+     * @return The bitmap representing the device capability.
      */
     uint8_t GetCapability() const;
 
     /**
      * Set the bitmap representing the device capability.
      *
-     * \param bitmap The bitmap representing the capability
+     * @param bitmap The bitmap representing the capability
      */
     void SetCapability(uint8_t bitmap);
 
@@ -362,7 +362,7 @@ class CapabilityField
      * True if the device type is a Full Functional Device (FFD) false if is a Reduced Functional
      * Device (RFD).
      *
-     * \return True if the device type is a Full Functional Device (FFD) false if is a Reduced
+     * @return True if the device type is a Full Functional Device (FFD) false if is a Reduced
      * Functional Device (RFD).
      */
     bool IsDeviceTypeFfd() const;
@@ -370,14 +370,14 @@ class CapabilityField
     /**
      * True if the device is receiving power from alternating current mains.
      *
-     * \return True if the device is receiving power from alternating current mains.
+     * @return True if the device is receiving power from alternating current mains.
      */
     bool IsPowSrcAvailable() const;
 
     /**
      * True if the device does not disable its receiver to conserve power during idle periods.
      *
-     * \return True if the device does not disable its receiver to conserve power during idle
+     * @return True if the device does not disable its receiver to conserve power during idle
      * periods.
      */
     bool IsReceiverOnWhenIdle() const;
@@ -386,7 +386,7 @@ class CapabilityField
      * True if the device is capable of sending and receiving cryptographically protected MAC
      * frames.
      *
-     * \return True if the device is capable of sending and receiving cryptographically protected
+     * @return True if the device is capable of sending and receiving cryptographically protected
      * MAC frames.
      */
     bool IsSecurityCapability() const;
@@ -395,7 +395,7 @@ class CapabilityField
      * True if the device wishes the coordinator to allocate a short address as result of the
      * association procedure.
      *
-     * \return True if the device wishes the coordinator to allocate a short address as result of
+     * @return True if the device wishes the coordinator to allocate a short address as result of
      * the association procedure.
      */
     bool IsShortAddrAllocOn() const;
@@ -404,35 +404,35 @@ class CapabilityField
      * Set the Device type in the Capability Information Field.
      * True = full functional device (FFD)  False = reduced functional device (RFD).
      *
-     * \param devType The device type described in the Capability Information Field.
+     * @param devType The device type described in the Capability Information Field.
      */
     void SetFfdDevice(bool devType);
 
     /**
      * Set the Power Source available flag in the Capability Information Field.
      *
-     * \param pow Set true if a Power Source is available in the Capability Information Field.
+     * @param pow Set true if a Power Source is available in the Capability Information Field.
      */
     void SetPowSrcAvailable(bool pow);
 
     /**
      * Indicate if the receiver is On on Idle
      *
-     * \param rxIdle Set true if the receiver is on when Idle
+     * @param rxIdle Set true if the receiver is on when Idle
      */
     void SetRxOnWhenIdle(bool rxIdle);
 
     /**
      * Set the Security Capability flag in the Capability Information Field.
      *
-     * \param sec Set true if the device have Security Capabilities.
+     * @param sec Set true if the device have Security Capabilities.
      */
     void SetSecurityCap(bool sec);
 
     /**
      * Set the Short Address Flag in the Capability Information Field.
      *
-     * \param addrAlloc Describes whether or not the coordinator should allocate a short
+     * @param addrAlloc Describes whether or not the coordinator should allocate a short
      *                  address in the association process.
      */
     void SetShortAddrAllocOn(bool addrAlloc);

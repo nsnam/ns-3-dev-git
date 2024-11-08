@@ -20,13 +20,13 @@ namespace ns3
 {
 
 /**
- * \ingroup network
- * \defgroup queuesize Queue size
+ * @ingroup network
+ * @defgroup queuesize Queue size
  */
 
 /**
- * \ingroup queuesize
- * \brief Enumeration of the operating modes of queues.
+ * @ingroup queuesize
+ * @brief Enumeration of the operating modes of queues.
  *
  */
 enum QueueSizeUnit
@@ -36,16 +36,16 @@ enum QueueSizeUnit
 };
 
 /**
- * \ingroup queuesize
- * \brief Class for representing queue sizes
+ * @ingroup queuesize
+ * @brief Class for representing queue sizes
  *
  * Allows for natural and familiar use of queue sizes.  Allows construction
  * from strings, natural sum e.g.:
- * \code
+ * @code
  *   QueueSize x("7kB");
  *   Ptr<Packet> p = Create<Packet> (1000);
  *   QueueSize y = x + p;    // 8kB
- * \endcode
+ * @endcode
  * This class also supports the regular comparison operators \c <, \c >,
  * \c <=, \c >=, \c ==, and \c !=
  *
@@ -79,22 +79,22 @@ enum QueueSizeUnit
  * * "8KiB" = 8,192 bytes
  * * "1000p" = 1,000 packets
  *
- * \see attribute_QueueSize
+ * @see attribute_QueueSize
  */
 class QueueSize
 {
   public:
     QueueSize();
     /**
-     * \brief Integer constructor
+     * @brief Integer constructor
      *
      * Construct a queue size from a mode and a value.
-     * \param unit whether the value is expressed in terms of packets or bytes
-     * \param value the value
+     * @param unit whether the value is expressed in terms of packets or bytes
+     * @param value the value
      */
     QueueSize(QueueSizeUnit unit, uint32_t value);
     /**
-     * \brief String constructor
+     * @brief String constructor
      *
      * Construct a queue size from a string.  Many different unit strings are supported
      * Supported unit strings:
@@ -108,77 +108,77 @@ class QueueSize
      * "8KiB" = 8,192 bytes
      * "1000p" = 1,000 packets
      *
-     * \param size string representing the size
+     * @param size string representing the size
      */
     QueueSize(std::string size);
 
     /**
-     * \return true if this size is less than rhs
+     * @return true if this size is less than rhs
      *
-     * \param rhs the queue size to compare to this queue size
+     * @param rhs the queue size to compare to this queue size
      */
     bool operator<(const QueueSize& rhs) const;
 
     /**
-     * \return true if this size is less than or equal to rhs
+     * @return true if this size is less than or equal to rhs
      *
-     * \param rhs the queue size to compare to this queue size
+     * @param rhs the queue size to compare to this queue size
      */
     bool operator<=(const QueueSize& rhs) const;
 
     /**
-     * \return true if this size is greater than rhs
+     * @return true if this size is greater than rhs
      *
-     * \param rhs the queue size to compare to this queue size
+     * @param rhs the queue size to compare to this queue size
      */
     bool operator>(const QueueSize& rhs) const;
 
     /**
-     * \return true if this size is greater than or equal to rhs
+     * @return true if this size is greater than or equal to rhs
      *
-     * \param rhs the queue size to compare to this queue size
+     * @param rhs the queue size to compare to this queue size
      */
     bool operator>=(const QueueSize& rhs) const;
 
     /**
-     * \return true if this size is equal to rhs
+     * @return true if this size is equal to rhs
      *
-     * \param rhs the queue size to compare to this queue size
+     * @param rhs the queue size to compare to this queue size
      */
     bool operator==(const QueueSize& rhs) const;
 
     /**
-     * \return true if this size is not equal to rhs
+     * @return true if this size is not equal to rhs
      *
-     * \param rhs the queue size to compare to this queue size
+     * @param rhs the queue size to compare to this queue size
      */
     bool operator!=(const QueueSize& rhs) const;
 
     /**
      * Get the underlying unit
-     * \return The underlying unit
+     * @return The underlying unit
      */
     QueueSizeUnit GetUnit() const;
 
     /**
      * Get the underlying value
-     * \return The underlying value
+     * @return The underlying value
      */
     uint32_t GetValue() const;
 
   private:
     /**
-     * \brief Parse a string representing a QueueSize
+     * @brief Parse a string representing a QueueSize
      *
      * Allowed unit representations include all combinations of
      *
      * * An SI prefix: k, K, M
      * * Bytes (8 bits) or packets
      *
-     * \param [in] s The string representation, including unit
-     * \param [in,out] unit The location to put the unit.
-     * \param [in,out] value The location to put the value, in bytes or packets.
-     * \return true if parsing was successful.
+     * @param [in] s The string representation, including unit
+     * @param [in,out] unit The location to put the unit.
+     * @param [in,out] value The location to put the value, in bytes or packets.
+     * @return true if parsing was successful.
      */
     static bool DoParse(const std::string s, QueueSizeUnit* unit, uint32_t* value);
 
@@ -190,20 +190,20 @@ class QueueSize
 };
 
 /**
- * \brief Stream insertion operator.
+ * @brief Stream insertion operator.
  *
- * \param os the stream
- * \param size the queue size
- * \returns a reference to the stream
+ * @param os the stream
+ * @param size the queue size
+ * @returns a reference to the stream
  */
 std::ostream& operator<<(std::ostream& os, const QueueSize& size);
 
 /**
- * \brief Stream extraction operator.
+ * @brief Stream extraction operator.
  *
- * \param is the stream
- * \param size the queue size
- * \returns a reference to the stream
+ * @param is the stream
+ * @param size the queue size
+ * @returns a reference to the stream
  */
 std::istream& operator>>(std::istream& is, QueueSize& size);
 
@@ -213,9 +213,9 @@ ATTRIBUTE_HELPER_HEADER(QueueSize);
  * Increase the queue size by a packet size, if the queue size is in bytes,
  * or by one, otherwise.
  *
- * \param lhs queue size
- * \param rhs packet
- * \return the queue size increased by the packet size
+ * @param lhs queue size
+ * @param rhs packet
+ * @return the queue size increased by the packet size
  */
 template <typename Item>
 QueueSize operator+(const QueueSize& lhs, const Ptr<Item>& rhs);
@@ -223,9 +223,9 @@ QueueSize operator+(const QueueSize& lhs, const Ptr<Item>& rhs);
  * Increase the queue size by a packet size, if the queue size is in bytes,
  * or by one, otherwise.
  *
- * \param lhs packet
- * \param rhs queue size
- * \return the queue size increased by the packet size
+ * @param lhs packet
+ * @param rhs queue size
+ * @return the queue size increased by the packet size
  */
 template <typename Item>
 QueueSize operator+(const Ptr<Item>& lhs, const QueueSize& rhs);
@@ -234,9 +234,9 @@ QueueSize operator+(const Ptr<Item>& lhs, const QueueSize& rhs);
  * Decrease the queue size by a packet size, if the queue size is in bytes,
  * or by one, otherwise.
  *
- * \param lhs queue size
- * \param rhs packet
- * \return the queue size decreased by the packet size
+ * @param lhs queue size
+ * @param rhs packet
+ * @return the queue size decreased by the packet size
  */
 template <typename Item>
 QueueSize operator-(const QueueSize& lhs, const Ptr<Item>& rhs);
@@ -244,9 +244,9 @@ QueueSize operator-(const QueueSize& lhs, const Ptr<Item>& rhs);
  * Decrease the queue size by a packet size, if the queue size is in bytes,
  * or by one, otherwise.
  *
- * \param lhs packet
- * \param rhs queue size
- * \return the queue size decreased by the packet size
+ * @param lhs packet
+ * @param rhs queue size
+ * @return the queue size decreased by the packet size
  */
 template <typename Item>
 QueueSize operator-(const Ptr<Item>& lhs, const QueueSize& rhs);

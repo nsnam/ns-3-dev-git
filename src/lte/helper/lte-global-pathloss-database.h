@@ -21,7 +21,7 @@ namespace ns3
 class SpectrumPhy;
 
 /**
- * \ingroup lte
+ * @ingroup lte
  *
  * Store the last pathloss value for each TX-RX pair. This is an
  * example of how the PathlossTrace (provided by some SpectrumChannel
@@ -36,10 +36,10 @@ class LteGlobalPathlossDatabase
     /**
      * update the pathloss value
      *
-     * \param context
-     * \param txPhy the transmitting PHY
-     * \param rxPhy the receiving PHY
-     * \param lossDb the loss in dB
+     * @param context
+     * @param txPhy the transmitting PHY
+     * @param rxPhy the receiving PHY
+     * @param lossDb the loss in dB
      */
     virtual void UpdatePathloss(std::string context,
                                 Ptr<const SpectrumPhy> txPhy,
@@ -49,10 +49,10 @@ class LteGlobalPathlossDatabase
     /**
      *
      *
-     * \param cellId the id of the eNB
-     * \param imsi the id of the UE
+     * @param cellId the id of the eNB
+     * @param imsi the id of the UE
      *
-     * \return the pathloss value between the UE and the eNB
+     * @return the pathloss value between the UE and the eNB
      */
     double GetPathloss(uint16_t cellId, uint64_t imsi);
 
@@ -71,7 +71,7 @@ class LteGlobalPathlossDatabase
 };
 
 /**
- * \ingroup lte
+ * @ingroup lte
  * Store the last pathloss value for each TX-RX pair for downlink
  */
 class DownlinkLteGlobalPathlossDatabase : public LteGlobalPathlossDatabase
@@ -85,7 +85,7 @@ class DownlinkLteGlobalPathlossDatabase : public LteGlobalPathlossDatabase
 };
 
 /**
- * \ingroup lte
+ * @ingroup lte
  * Store the last pathloss value for each TX-RX pair for uplink
  */
 class UplinkLteGlobalPathlossDatabase : public LteGlobalPathlossDatabase

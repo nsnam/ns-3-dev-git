@@ -61,7 +61,7 @@ std::ofstream g_timeSeries;
 /**
  * Print the node position to the time series file.
  *
- * \param node The node.
+ * @param node The node.
  */
 void
 PrintPosition(Ptr<Node> node)

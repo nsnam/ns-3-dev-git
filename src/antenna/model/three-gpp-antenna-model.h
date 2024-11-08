@@ -15,7 +15,7 @@ namespace ns3
 {
 
 /**
- * \brief  Antenna model based on a parabolic approximation of the main lobe radiation pattern.
+ * @brief  Antenna model based on a parabolic approximation of the main lobe radiation pattern.
  *
  * This class implements the parabolic model as described in 3GPP TR 38.901 v15.0.0
  */
@@ -26,8 +26,8 @@ class ThreeGppAntennaModel : public AntennaModel
     ~ThreeGppAntennaModel() override;
 
     /**
-     * \brief Get the type ID.
-     * \return The object TypeId.
+     * @brief Get the type ID.
+     * @return The object TypeId.
      */
     static TypeId GetTypeId();
 
@@ -36,31 +36,31 @@ class ThreeGppAntennaModel : public AntennaModel
 
     /**
      * Get the vertical beamwidth of the antenna element.
-     * \return the vertical beamwidth in degrees
+     * @return the vertical beamwidth in degrees
      */
     double GetVerticalBeamwidth() const;
 
     /**
      * Get the horizontal beamwidth of the antenna element.
-     * \return the horizontal beamwidth in degrees
+     * @return the horizontal beamwidth in degrees
      */
     double GetHorizontalBeamwidth() const;
 
     /**
      * Get the side-lobe attenuation in the vertical direction of the antenna element.
-     * \return side-lobe attenuation in the vertical direction in dB
+     * @return side-lobe attenuation in the vertical direction in dB
      */
     double GetSlaV() const;
 
     /**
      * Get the maximum attenuation of the antenna element.
-     * \return the maximum attenuation in dB
+     * @return the maximum attenuation in dB
      */
     double GetMaxAttenuation() const;
 
     /**
      * Get the maximum directional gain of the antenna element.
-     * \return the maximum directional gain in dBi
+     * @return the maximum directional gain in dBi
      */
     double GetAntennaElementGain() const;
 

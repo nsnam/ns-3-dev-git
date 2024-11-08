@@ -20,9 +20,9 @@ NS_LOG_COMPONENT_DEFINE("WScalingTestSuite");
 
 // TODO: Check the buffer size and scaling option value
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief TCP Window Scaling enabling Test.
+ * @brief TCP Window Scaling enabling Test.
  */
 class WScalingTestCase : public TcpGeneralTest
 {
@@ -39,11 +39,11 @@ class WScalingTestCase : public TcpGeneralTest
     };
 
     /**
-     * \brief Constructor.
-     * \param conf Test configuration.
-     * \param maxRcvBufferSize Maximum receiver buffer size.
-     * \param maxSndBufferSize Maximum sender buffer size.
-     * \param name Test description.
+     * @brief Constructor.
+     * @param conf Test configuration.
+     * @param maxRcvBufferSize Maximum receiver buffer size.
+     * @param maxSndBufferSize Maximum sender buffer size.
+     * @param name Test description.
      */
     WScalingTestCase(WScalingTestCase::Configuration conf,
                      uint32_t maxRcvBufferSize,
@@ -207,9 +207,9 @@ WScalingTestCase::Tx(const Ptr<const Packet> p, const TcpHeader& h, SocketWho wh
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief TCP Window Scaling TestSuite.
+ * @brief TCP Window Scaling TestSuite.
  */
 class TcpWScalingTestSuite : public TestSuite
 {

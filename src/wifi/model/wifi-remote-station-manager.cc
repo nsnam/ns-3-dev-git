@@ -890,7 +890,7 @@ WifiRemoteStationManager::GetControlAnswerMode(WifiMode reqMode) const
      *   unless they conflict with the requirement to use the
      *   BSSBasicRateSet parameter.
      *
-     * \todo Note that we're ignoring the last sentence for now, because
+     * @todo Note that we're ignoring the last sentence for now, because
      * there is not yet any manipulation here of PHY options.
      */
     for (const auto& thismode : m_wifiPhy->GetModeList())

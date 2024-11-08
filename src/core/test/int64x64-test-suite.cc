@@ -37,18 +37,18 @@ namespace test
 {
 
 /**
- * \file
- * \ingroup int64x64-tests
+ * @file
+ * @ingroup int64x64-tests
  * int64x46 test suite
  */
 
 /**
- * \ingroup core-tests
- * \defgroup int64x64-tests int64x64 tests
+ * @ingroup core-tests
+ * @defgroup int64x64-tests int64x64 tests
  */
 
 /**
- * \ingroup int64x64-tests
+ * @ingroup int64x64-tests
  *
  * Pretty printer for test cases.
  */
@@ -58,8 +58,8 @@ class Printer
     /**
      * Construct from high and low words of Q64.64 representation.
      *
-     * \param [in] high The integer portion.
-     * \param [in] low The fractional portion.
+     * @param [in] high The integer portion.
+     * @param [in] low The fractional portion.
      */
     Printer(const int64_t high, const uint64_t low)
         : m_haveInt(false),
@@ -72,7 +72,7 @@ class Printer
     /**
      * Construct from an \c int64x64_t Q64.64 value.
      *
-     * \param [in] value The value.
+     * @param [in] value The value.
      */
     Printer(const int64x64_t value)
         : m_haveInt(true),
@@ -86,9 +86,9 @@ class Printer
     /**
      * Output streamer, the main reason for this class.
      *
-     * \param [in] os The stream.
-     * \param [in] p The value to print.
-     * \returns The stream.
+     * @param [in] os The stream.
+     * @param [in] p The value to print.
+     * @returns The stream.
      */
     friend std::ostream& operator<<(std::ostream& os, const Printer& p);
 
@@ -112,7 +112,7 @@ operator<<(std::ostream& os, const Printer& p)
 }
 
 /**
- * \ingroup int64x64-tests
+ * @ingroup int64x64-tests
  *
  * Test: manipulate the high and low part of every number.
  */
@@ -123,8 +123,8 @@ class Int64x64HiLoTestCase : public TestCase
     void DoRun() override;
     /**
      * Check the high and low parts for correctness.
-     * \param hi The high part of the int64x64_t.
-     * \param lo The low part of the int64x64_t.
+     * @param hi The high part of the int64x64_t.
+     * @param lo The low part of the int64x64_t.
      */
     void Check(const int64_t hi, const uint64_t lo);
 };
@@ -188,7 +188,7 @@ Int64x64HiLoTestCase::DoRun()
 }
 
 /**
- * \ingroup int64x64-tests
+ * @ingroup int64x64-tests
  *
  * Test: check GetInt and Round.
  */
@@ -199,9 +199,9 @@ class Int64x64IntRoundTestCase : public TestCase
     void DoRun() override;
     /**
      * Check the int64x64 value for correctness.
-     * \param value The int64x64_t value.
-     * \param expectInt The expected integer value.
-     * \param expectRnd The expected rounding value.
+     * @param value The int64x64_t value.
+     * @param expectInt The expected integer value.
+     * @param expectRnd The expected rounding value.
      */
     void Check(const int64x64_t value, const int64_t expectInt, const int64_t expectRnd);
 };
@@ -253,7 +253,7 @@ Int64x64IntRoundTestCase::DoRun()
 }
 
 /**
- * \ingroup int64x64-tests
+ * @ingroup int64x64-tests
  *
  * Test: parse int64x64_t numbers as strings.
  */
@@ -264,10 +264,10 @@ class Int64x64InputTestCase : public TestCase
     void DoRun() override;
     /**
      * Check the iont64x64 for correctness.
-     * \param str String representation of a number.
-     * \param hi The expected high part of the int64x64_t.
-     * \param lo The expected low part of the int64x64_t.
-     * \param tolerance The allowed tolerance.
+     * @param str String representation of a number.
+     * @param hi The expected high part of the int64x64_t.
+     * @param lo The expected low part of the int64x64_t.
+     * @param tolerance The allowed tolerance.
      */
     void Check(const std::string& str,
                const int64_t hi,
@@ -339,7 +339,7 @@ Int64x64InputTestCase::DoRun()
 }
 
 /**
- * \ingroup int64x64-tests
+ * @ingroup int64x64-tests
  *
  * Test: roundtrip int64x64_t numbers as strings.
  *
@@ -352,8 +352,8 @@ class Int64x64InputOutputTestCase : public TestCase
     void DoRun() override;
     /**
      * Check the iont64x64 for correctness.
-     * \param str String representation of a number.
-     * \param tolerance The allowed tolerance.
+     * @param str String representation of a number.
+     * @param tolerance The allowed tolerance.
      */
     void Check(const std::string& str, const int64_t tolerance = 0);
 };
@@ -426,7 +426,7 @@ Int64x64InputOutputTestCase::DoRun()
 }
 
 /**
- * \ingroup int64x64-tests
+ * @ingroup int64x64-tests
  *
  * Test: basic arithmetic operations.
  */
@@ -437,10 +437,10 @@ class Int64x64ArithmeticTestCase : public TestCase
     void DoRun() override;
     /**
      * Check the int64x64 for correctness.
-     * \param test The test number.
-     * \param value The actual value.
-     * \param expect The expected value.
-     * \param tolerance The allowed tolerance.
+     * @param test The test number.
+     * @param value The actual value.
+     * @param expect The expected value.
+     * @param tolerance The allowed tolerance.
      */
     void Check(const int test,
                const int64x64_t value,
@@ -596,7 +596,7 @@ Int64x64ArithmeticTestCase::DoRun()
 }
 
 /**
- * \ingroup int64x64-tests
+ * @ingroup int64x64-tests
  *
  * Test case for bug 455.
  *
@@ -609,9 +609,9 @@ class Int64x64Bug455TestCase : public TestCase
     void DoRun() override;
     /**
      * Check the int64x64 for correctness.
-     * \param result The actual value.
-     * \param expect The expected value.
-     * \param msg The error message to print.
+     * @param result The actual value.
+     * @param expect The expected value.
+     * @param msg The error message to print.
      */
     void Check(const double result, const double expect, const std::string& msg);
 };
@@ -660,7 +660,7 @@ Int64x64Bug455TestCase::DoRun()
 }
 
 /**
- * \ingroup int64x64-tests
+ * @ingroup int64x64-tests
  *
  * Test case for bug 455.
  *
@@ -673,9 +673,9 @@ class Int64x64Bug863TestCase : public TestCase
     void DoRun() override;
     /**
      * Check the int64x64 for correctness.
-     * \param result The actual value.
-     * \param expect The expected value.
-     * \param msg The error message to print.
+     * @param result The actual value.
+     * @param expect The expected value.
+     * @param msg The error message to print.
      */
     void Check(const double result, const double expect, const std::string& msg);
 };
@@ -726,7 +726,7 @@ Int64x64Bug863TestCase::DoRun()
 }
 
 /**
- * \ingroup int64x64-tests
+ * @ingroup int64x64-tests
  *
  * Test case for bug 455.
  *
@@ -739,9 +739,9 @@ class Int64x64Bug1786TestCase : public TestCase
     void DoRun() override;
     /**
      * Check the int64x64 for correctness.
-     * \param low The actual low value.
-     * \param value The expected low part printed value.
-     * \param tolerance The allowed tolerance.
+     * @param low The actual low value.
+     * @param value The expected low part printed value.
+     * @param tolerance The allowed tolerance.
      */
     void Check(const uint64_t low, const std::string& value, const int64_t tolerance = 0);
 };
@@ -870,7 +870,7 @@ Int64x64Bug1786TestCase::DoRun()
 }
 
 /**
- * \ingroup int64x64-tests
+ * @ingroup int64x64-tests
  *
  * Test: basic compare operations.
  */
@@ -882,9 +882,9 @@ class Int64x64CompareTestCase : public TestCase
 
     /**
      * Check the int64x64 for correctness.
-     * \param result The actual value.
-     * \param expect The expected value.
-     * \param msg The error message to print.
+     * @param result The actual value.
+     * @param expect The expected value.
+     * @param msg The error message to print.
      */
     void Check(const bool result, const bool expect, const std::string& msg);
 };
@@ -985,7 +985,7 @@ Int64x64CompareTestCase::DoRun()
 }
 
 /**
- * \ingroup int64x64-tests
+ * @ingroup int64x64-tests
  *
  * Test: Invert and MulByInvert.
  */
@@ -996,16 +996,16 @@ class Int64x64InvertTestCase : public TestCase
     void DoRun() override;
     /**
      * Check the int64x64 for correctness.
-     * \param factor The factor used to invert the number.
+     * @param factor The factor used to invert the number.
      */
     void Check(const int64_t factor);
     /**
      * Check the int64x64 for correctness.
-     * \param factor The factor used to invert the number.
-     * \param result The value.
-     * \param expect The expected value.
-     * \param msg The error message to print.
-     * \param tolerance The allowed tolerance.
+     * @param factor The factor used to invert the number.
+     * @param result The value.
+     * @param expect The expected value.
+     * @param msg The error message to print.
+     * @param tolerance The allowed tolerance.
      */
     void CheckCase(const uint64_t factor,
                    const int64x64_t result,
@@ -1107,7 +1107,7 @@ Int64x64InvertTestCase::DoRun()
 }
 
 /**
- * \ingroup int64x64-tests
+ * @ingroup int64x64-tests
  *
  * Test: construct from floating point.
  */
@@ -1119,15 +1119,15 @@ class Int64x64DoubleTestCase : public TestCase
 
     /**
      * Check the int64x64 for correctness.
-     * \param intPart The expected integer part value of the int64x64.
+     * @param intPart The expected integer part value of the int64x64.
      */
     void Check(const int64_t intPart);
     /**
      * Check the int64x64 for correctness.
-     * \param dec The integer part of the value to test.
-     * \param frac The fractional part of the value to test.x
-     * \param intPart The expected integer part value of the int64x64.
-     * \param lo The expected low part value of the int64x64.
+     * @param dec The integer part of the value to test.
+     * @param frac The fractional part of the value to test.x
+     * @param intPart The expected integer part value of the int64x64.
+     * @param lo The expected low part value of the int64x64.
      */
     void Check(const long double dec,
                const long double frac,
@@ -1500,7 +1500,7 @@ Int64x64DoubleTestCase::DoRun()
 }
 
 /**
- * \ingroup int64x64-tests
+ * @ingroup int64x64-tests
  *
  * Test: print the implementation
  */
@@ -1551,8 +1551,8 @@ Int64x64ImplTestCase::DoRun()
 }
 
 /**
- * \ingroup int64x64-tests
- * \internal
+ * @ingroup int64x64-tests
+ * @internal
  *
  * The int64x64 Test Suite.
  *
@@ -1564,12 +1564,12 @@ Int64x64ImplTestCase::DoRun()
  * test comparisons.  If you need to increase the tolerance,
  * please append the system and compiler version.  For example:
  *
- * \code
+ * @code
  *   // Darwin 12.5.0 (Mac 10.8.5) g++ 4.2.1
  *   tolerance = 1;
  *   // System Foo gcc 3.9
  *   tolerance = 3;
- * \endcode
+ * @endcode
  */
 class Int64x64TestSuite : public TestSuite
 {

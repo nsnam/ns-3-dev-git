@@ -16,18 +16,18 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("TcpHighSpeedTestSuite");
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief Testing the congestion avoidance increment on TcpHighSpeed
+ * @brief Testing the congestion avoidance increment on TcpHighSpeed
  */
 class TcpHighSpeedIncrementTest : public TestCase
 {
   public:
     /**
-     * \brief Constructor.
-     * \param cWnd Congestion window.
-     * \param segmentSize Segment size.
-     * \param name Test description.
+     * @brief Constructor.
+     * @param cWnd Congestion window.
+     * @param segmentSize Segment size.
+     * @param name Test description.
      */
     TcpHighSpeedIncrementTest(uint32_t cWnd, uint32_t segmentSize, const std::string& name);
 
@@ -70,18 +70,18 @@ TcpHighSpeedIncrementTest::DoRun()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief Testing the congestion avoidance decrement on TcpHighSpeed
+ * @brief Testing the congestion avoidance decrement on TcpHighSpeed
  */
 class TcpHighSpeedDecrementTest : public TestCase
 {
   public:
     /**
-     * \brief Constructor.
-     * \param cWnd Congestion window.
-     * \param segmentSize Segment size.
-     * \param name Test description.
+     * @brief Constructor.
+     * @param cWnd Congestion window.
+     * @param segmentSize Segment size.
+     * @param name Test description.
      */
     TcpHighSpeedDecrementTest(uint32_t cWnd, uint32_t segmentSize, const std::string& name);
 
@@ -123,9 +123,9 @@ TcpHighSpeedDecrementTest::DoRun()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief TcpHighSpeed Congestion window values to test.
+ * @brief TcpHighSpeed Congestion window values to test.
  */
 struct HighSpeedImportantValues
 {
@@ -164,9 +164,9 @@ static const HighSpeedImportantValues highSpeedImportantValues[]{
 #define HIGHSPEED_VALUES_N 71
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief TCP HighSpeed TestSuite
+ * @brief TCP HighSpeed TestSuite
  */
 class TcpHighSpeedTestSuite : public TestSuite
 {

@@ -29,8 +29,8 @@ class WimaxConnection;
 class BaseStationNetDevice;
 
 /**
- * \ingroup wimax
- * \brief BsServiceFlowManager
+ * @ingroup wimax
+ * @brief BsServiceFlowManager
  */
 class BsServiceFlowManager : public ServiceFlowManager
 {
@@ -45,90 +45,90 @@ class BsServiceFlowManager : public ServiceFlowManager
     /**
      * Constructor
      *
-     * \param device base station device
+     * @param device base station device
      */
     BsServiceFlowManager(Ptr<BaseStationNetDevice> device);
     ~BsServiceFlowManager() override;
     void DoDispose() override;
     /**
      * Register this type.
-     * \return The TypeId.
+     * @return The TypeId.
      */
     static TypeId GetTypeId();
 
     /**
-     * \brief Add a new service flow
-     * \param serviceFlow the service flow to add
+     * @brief Add a new service flow
+     * @param serviceFlow the service flow to add
      */
     void AddServiceFlow(ServiceFlow* serviceFlow);
     /**
-     * \param sfid the service flow identifier
-     * \return the service flow which has as identifier sfid
+     * @param sfid the service flow identifier
+     * @return the service flow which has as identifier sfid
      */
     ServiceFlow* GetServiceFlow(uint32_t sfid) const;
     /**
-     * \param cid the connection identifier
-     * \return the service flow which has as connection identifier cid
+     * @param cid the connection identifier
+     * @return the service flow which has as connection identifier cid
      */
     ServiceFlow* GetServiceFlow(Cid cid) const;
     /**
-     * \param schedulingType the scheduling type
-     * \return the list of service flows configured with schedulingType as a QoS class
+     * @param schedulingType the scheduling type
+     * @return the list of service flows configured with schedulingType as a QoS class
      */
     std::vector<ServiceFlow*> GetServiceFlows(ServiceFlow::SchedulingType schedulingType) const;
     /**
-     * \brief set the maximum Dynamic ServiceFlow Add (DSA) retries
-     * \param maxDsaRspRetries the maximum DSA response retries
+     * @brief set the maximum Dynamic ServiceFlow Add (DSA) retries
+     * @param maxDsaRspRetries the maximum DSA response retries
      */
     void SetMaxDsaRspRetries(uint8_t maxDsaRspRetries);
 
     /**
-     * \return the DSA ack timeout event
+     * @return the DSA ack timeout event
      */
     EventId GetDsaAckTimeoutEvent() const;
     /**
-     * \brief allocate service flows
-     * \param dsaReq the DSA request
-     * \param cid the connection identifier
+     * @brief allocate service flows
+     * @param dsaReq the DSA request
+     * @param cid the connection identifier
      */
     void AllocateServiceFlows(const DsaReq& dsaReq, Cid cid);
     /**
-     * \brief add a multicast service flow
-     * \param sf the service flow
-     * \param modulation the wimax phy modulation type
+     * @brief add a multicast service flow
+     * @param sf the service flow
+     * @param modulation the wimax phy modulation type
      */
     void AddMulticastServiceFlow(ServiceFlow sf, WimaxPhy::ModulationType modulation);
     /**
-     * \brief process a DSA-ACK message
-     * \param dsaAck the message to process
-     * \param cid the identifier of the connection on which the message was received
+     * @brief process a DSA-ACK message
+     * @param dsaAck the message to process
+     * @param cid the identifier of the connection on which the message was received
      */
     void ProcessDsaAck(const DsaAck& dsaAck, Cid cid);
 
     /**
-     * \brief process a DSA-Req message
-     * \param dsaReq the message to process
-     * \param cid the identifier of the connection on which the message was received
-     * \return a pointer to the service flow
+     * @brief process a DSA-Req message
+     * @param dsaReq the message to process
+     * @param cid the identifier of the connection on which the message was received
+     * @return a pointer to the service flow
      */
     ServiceFlow* ProcessDsaReq(const DsaReq& dsaReq, Cid cid);
 
   private:
     /**
      * Create DSA response function
-     * \param serviceFlow service flow
-     * \param transactionId transaction ID
-     * \return the DSA response
+     * @param serviceFlow service flow
+     * @param transactionId transaction ID
+     * @return the DSA response
      */
     DsaRsp CreateDsaRsp(const ServiceFlow* serviceFlow, uint16_t transactionId);
     /**
-     * \return the maximum DSA response retries
+     * @return the maximum DSA response retries
      */
     uint8_t GetMaxDsaRspRetries() const;
     /**
      * Create DSA response function
-     * \param serviceFlow service flow
-     * \param cid the identifier of the connection on which the message was received
+     * @param serviceFlow service flow
+     * @param cid the identifier of the connection on which the message was received
      */
     void ScheduleDsaRsp(ServiceFlow* serviceFlow, Cid cid);
     Ptr<WimaxNetDevice> m_device; ///< the device

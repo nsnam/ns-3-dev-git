@@ -15,7 +15,7 @@
 using namespace ns3;
 
 /**
- * \brief Test suite for
+ * @brief Test suite for
  *
  * \sa ns3::BoxLineIntersectionTestSuite
  */
@@ -29,29 +29,29 @@ class BoxLineIntersectionTestSuite : public TestSuite
 };
 
 /**
- * \brief TestCase to check the box line intersection
+ * @brief TestCase to check the box line intersection
  */
 class BoxLineIntersectionTestCase : public TestCase
 {
   public:
     /**
-     * \brief Create BoxLineIntersectionTestCase
-     * \param indexPos1 Index of the first position to generate
-     * \param indexPos2 Index of the second position to generate
-     * \param box The 3D box
-     * \param intersect The expected result of the test. True for intersection,
+     * @brief Create BoxLineIntersectionTestCase
+     * @param indexPos1 Index of the first position to generate
+     * @param indexPos2 Index of the second position to generate
+     * @param box The 3D box
+     * @param intersect The expected result of the test. True for intersection,
      *        false otherwise
      */
     BoxLineIntersectionTestCase(uint16_t indexPos1, uint16_t indexPos2, Box box, bool intersect);
     /**
-     * \brief Builds the test name string based on provided parameter values
-     * \param indexPos1 Index of the first position to generate
-     * \param indexPos2 Index of the second position to generate
-     * \param box The 3D box
-     * \param intersect The expected result of the test. True for intersection,
+     * @brief Builds the test name string based on provided parameter values
+     * @param indexPos1 Index of the first position to generate
+     * @param indexPos2 Index of the second position to generate
+     * @param box The 3D box
+     * @param intersect The expected result of the test. True for intersection,
      *        false otherwise
      *
-     * \return The name string
+     * @return The name string
      */
     std::string BuildNameString(uint16_t indexPos1, uint16_t indexPos2, Box box, bool intersect);
     /**
@@ -61,17 +61,17 @@ class BoxLineIntersectionTestCase : public TestCase
 
   private:
     /**
-     * \brief Setup the simulation according to the configuration set by the
+     * @brief Setup the simulation according to the configuration set by the
      *        class constructor, run it, and verify the result.
      */
     void DoRun() override;
     /**
-     * \brief Create the position as per the given index
+     * @brief Create the position as per the given index
      *
-     * \param index The index of the position to be created
-     * \param boxHeight The height if the box. It is used to place the position
+     * @param index The index of the position to be created
+     * @param boxHeight The height if the box. It is used to place the position
      *        above the height of the box
-     * \returns The ns-3 3D Vector specifying the position
+     * @returns The ns-3 3D Vector specifying the position
      */
     Vector CreatePosition(uint16_t index, double boxHeight);
 

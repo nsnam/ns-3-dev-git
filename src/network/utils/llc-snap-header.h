@@ -23,9 +23,9 @@ namespace ns3
 static const uint16_t LLC_SNAP_HEADER_LENGTH = 8;
 
 /**
- * \ingroup network
+ * @ingroup network
  *
- * \brief Header for the LLC/SNAP encapsulation
+ * @brief Header for the LLC/SNAP encapsulation
  *
  * For a list of EtherTypes, see
  * http://www.iana.org/assignments/ieee-802-numbers/ieee-802-numbers.xhtml
@@ -36,19 +36,19 @@ class LlcSnapHeader : public Header
     LlcSnapHeader();
 
     /**
-     * \brief Set the Ethertype.
-     * \param type the Ethertype
+     * @brief Set the Ethertype.
+     * @param type the Ethertype
      */
     void SetType(uint16_t type);
     /**
-     * \brief Return the Ethertype.
-     * \return Ethertype
+     * @brief Return the Ethertype.
+     * @return Ethertype
      */
     uint16_t GetType();
 
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     TypeId GetInstanceTypeId() const override;

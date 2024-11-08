@@ -38,8 +38,8 @@ using namespace ns3;
 /**
  * Run single 10 seconds experiment
  *
- * \param enableCtsRts if true, enable RTS/CTS for packets larger than 100 bytes.
- * \param wifiManager WiFi manager to use.
+ * @param enableCtsRts if true, enable RTS/CTS for packets larger than 100 bytes.
+ * @param wifiManager WiFi manager to use.
  */
 void
 experiment(bool enableCtsRts, std::string wifiManager)
@@ -115,7 +115,7 @@ experiment(bool enableCtsRts, std::string wifiManager)
 
     // flow 2:  node 2 -> node 1
     /**
-     * \internal
+     * @internal
      * The slightly different start times and data rates are a workaround
      * for \bugid{388} and \bugid{912}
      */
@@ -124,7 +124,7 @@ experiment(bool enableCtsRts, std::string wifiManager)
     cbrApps.Add(onOffHelper.Install(nodes.Get(2)));
 
     /**
-     * \internal
+     * @internal
      * We also use separate UDP applications that will send a single
      * packet before the CBR flows start.
      * This is a workaround for the lack of perfect ARP, see \bugid{187}

@@ -45,11 +45,11 @@ struct BoundCallbackArgument : public SimpleRefCount<BoundCallbackArgument>
 
 /**
  * Callback function for DL TX statistics for both RLC and PDCP
- * \param arg
- * \param path
- * \param rnti
- * \param lcid
- * \param packetSize
+ * @param arg
+ * @param path
+ * @param rnti
+ * @param lcid
+ * @param packetSize
  */
 void
 DlTxPduCallback(Ptr<BoundCallbackArgument> arg,
@@ -64,12 +64,12 @@ DlTxPduCallback(Ptr<BoundCallbackArgument> arg,
 
 /**
  * Callback function for DL RX statistics for both RLC and PDCP
- * \param arg
- * \param path
- * \param rnti
- * \param lcid
- * \param packetSize
- * \param delay
+ * @param arg
+ * @param path
+ * @param rnti
+ * @param lcid
+ * @param packetSize
+ * @param delay
  */
 void
 DlRxPduCallback(Ptr<BoundCallbackArgument> arg,
@@ -85,11 +85,11 @@ DlRxPduCallback(Ptr<BoundCallbackArgument> arg,
 
 /**
  * Callback function for UL TX statistics for both RLC and PDCP
- * \param arg
- * \param path
- * \param rnti
- * \param lcid
- * \param packetSize
+ * @param arg
+ * @param path
+ * @param rnti
+ * @param lcid
+ * @param packetSize
  */
 void
 UlTxPduCallback(Ptr<BoundCallbackArgument> arg,
@@ -104,12 +104,12 @@ UlTxPduCallback(Ptr<BoundCallbackArgument> arg,
 
 /**
  * Callback function for UL RX statistics for both RLC and PDCP
- * \param arg
- * \param path
- * \param rnti
- * \param lcid
- * \param packetSize
- * \param delay
+ * @param arg
+ * @param path
+ * @param rnti
+ * @param lcid
+ * @param packetSize
+ * @param delay
  */
 void
 UlRxPduCallback(Ptr<BoundCallbackArgument> arg,

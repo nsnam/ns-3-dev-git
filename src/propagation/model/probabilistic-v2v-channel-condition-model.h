@@ -16,9 +16,9 @@ namespace ns3
 class MobilityModel;
 
 /**
- * \ingroup propagation
+ * @ingroup propagation
  *
- * \brief Computes the channel condition for the V2V Urban scenario
+ * @brief Computes the channel condition for the V2V Urban scenario
  *
  * Computes the channel condition following the probabilistic model described in
  * M. Boban,  X.Gong, and  W. Xu, “Modeling the evolution of line-of-sight
@@ -30,8 +30,8 @@ class ProbabilisticV2vUrbanChannelConditionModel : public ThreeGppChannelConditi
   public:
     /**
      * Get the type ID.
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -49,18 +49,18 @@ class ProbabilisticV2vUrbanChannelConditionModel : public ThreeGppChannelConditi
     /**
      * Compute the LOS probability
      *
-     * \param a tx mobility model
-     * \param b rx mobility model
-     * \return the LOS probability
+     * @param a tx mobility model
+     * @param b rx mobility model
+     * @return the LOS probability
      */
     double ComputePlos(Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
 
     /**
      * Compute the NLOS probability
      *
-     * \param a tx mobility model
-     * \param b rx mobility model
-     * \return the NLOS probability
+     * @param a tx mobility model
+     * @param b rx mobility model
+     * @return the NLOS probability
      */
     double ComputePnlos(Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
 
@@ -68,9 +68,9 @@ class ProbabilisticV2vUrbanChannelConditionModel : public ThreeGppChannelConditi
 };
 
 /**
- * \ingroup propagation
+ * @ingroup propagation
  *
- * \brief Computes the channel condition for the V2V Highway scenario
+ * @brief Computes the channel condition for the V2V Highway scenario
  *
  * Computes the channel condition following the probabilistic model described in
  * M. Boban,  X.Gong, and  W. Xu, “Modeling the evolution of line-of-sight
@@ -82,8 +82,8 @@ class ProbabilisticV2vHighwayChannelConditionModel : public ThreeGppChannelCondi
   public:
     /**
      * Get the type ID.
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -101,18 +101,18 @@ class ProbabilisticV2vHighwayChannelConditionModel : public ThreeGppChannelCondi
     /**
      * Compute the LOS probability
      *
-     * \param a tx mobility model
-     * \param b rx mobility model
-     * \return the LOS probability
+     * @param a tx mobility model
+     * @param b rx mobility model
+     * @return the LOS probability
      */
     double ComputePlos(Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
 
     /**
      * Compute the NLOS probability
      *
-     * \param a tx mobility model
-     * \param b rx mobility model
-     * \return the NLOS probability
+     * @param a tx mobility model
+     * @param b rx mobility model
+     * @return the NLOS probability
      */
     double ComputePnlos(Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
 

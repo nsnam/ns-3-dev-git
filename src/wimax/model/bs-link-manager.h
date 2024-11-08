@@ -24,7 +24,7 @@ namespace ns3
 {
 
 /**
- * \ingroup wimax
+ * @ingroup wimax
  *
  * BaseStation Link Manager
  */
@@ -32,14 +32,14 @@ class BSLinkManager : public Object
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
     /**
      * Constructor
      *
-     * \param bs base station device
+     * @param bs base station device
      */
     BSLinkManager(Ptr<BaseStationNetDevice> bs);
     ~BSLinkManager() override;
@@ -49,106 +49,106 @@ class BSLinkManager : public Object
     BSLinkManager& operator=(const BSLinkManager&) = delete;
 
     /**
-     * \return the ranging opportunities to allocate
+     * @return the ranging opportunities to allocate
      */
     uint8_t CalculateRangingOppsToAllocate();
     /**
-     * \return an available downlink channel
+     * @return an available downlink channel
      */
     uint64_t SelectDlChannel();
     /**
-     * \brief process a ranging request message
-     * \param cid the connection identifier in which the ranging message was received
-     * \param rngreq the ranging request message
+     * @brief process a ranging request message
+     * @param cid the connection identifier in which the ranging message was received
+     * @param rngreq the ranging request message
      */
 
     void ProcessRangingRequest(Cid cid, RngReq rngreq);
     /**
-     * \brief Verifies at the end of an invited ranging interval if SS sent ranging message in it or
+     * @brief Verifies at the end of an invited ranging interval if SS sent ranging message in it or
      * not
-     * \param cid the connection identifier in which the ranging message was received
-     * \param uiuc the ranging
+     * @param cid the connection identifier in which the ranging message was received
+     * @param uiuc the ranging
      */
     void VerifyInvitedRanging(Cid cid, uint8_t uiuc);
 
   private:
     /**
      * Perform ranging function
-     * \param cid the CID
-     * \param rngreq the ranging request
+     * @param cid the CID
+     * @param rngreq the ranging request
      */
     void PerformRanging(Cid cid, RngReq rngreq);
     /**
      * Perform initial ranging function
-     * \param cid the CID
-     * \param rngreq the ranging request
-     * \param rngrsp the ranging response
+     * @param cid the CID
+     * @param rngreq the ranging request
+     * @param rngrsp the ranging response
      */
     void PerformInitialRanging(Cid cid, RngReq* rngreq, RngRsp* rngrsp);
     /**
      * Perform inivted ranging function
-     * \param cid the CID
-     * \param rngrsp the ranging response
+     * @param cid the CID
+     * @param rngrsp the ranging response
      */
     void PerformInvitedRanging(Cid cid, RngRsp* rngrsp);
 
     /**
      * Set parameters to adjust function
-     * \param rngrsp the ranging response
+     * @param rngrsp the ranging response
      */
     void SetParametersToAdjust(RngRsp* rngrsp);
     /**
      * Abort ranging function
-     * \param cid the CID
-     * \param rngrsp the ranging response
-     * \param ssRecord the SS record
-     * \param isNewSS true if a new SS
+     * @param cid the CID
+     * @param rngrsp the ranging response
+     * @param ssRecord the SS record
+     * @param isNewSS true if a new SS
      */
     void AbortRanging(Cid cid, RngRsp* rngrsp, SSRecord* ssRecord, bool isNewSS);
     /**
      * Accept ranging function
-     * \param cid the CID
-     * \param rngrsp the ranging response
-     * \param ssRecord the SS record
+     * @param cid the CID
+     * @param rngrsp the ranging response
+     * @param ssRecord the SS record
      */
     void AcceptRanging(Cid cid, RngRsp* rngrsp, SSRecord* ssRecord);
     /**
      * Continue ranging function
-     * \param cid the CID
-     * \param rngrsp the ranging response
-     * \param ssRecord the SS record
+     * @param cid the CID
+     * @param rngrsp the ranging response
+     * @param ssRecord the SS record
      */
     void ContinueRanging(Cid cid, RngRsp* rngrsp, SSRecord* ssRecord);
     /**
      * Schedule range response message function
-     * \param cid the CID
-     * \param rngrsp the ranging response
+     * @param cid the CID
+     * @param rngrsp the ranging response
      */
     void ScheduleRngRspMessage(Cid cid, RngRsp* rngrsp);
     /**
      * Deallocate CIDs function
-     * \param cid the CID
+     * @param cid the CID
      */
     void DeallocateCids(Cid cid);
 
     /**
      * Change DL channel function
-     * \returns true if the DL channel changed
+     * @returns true if the DL channel changed
      */
     bool ChangeDlChannel();
     /**
      * Get new DL channel function
-     * \returns the new DL channel
+     * @returns the new DL channel
      */
     uint32_t GetNewDlChannel();
     /**
      * Get signal quality function
-     * \returns the signal quality
+     * @returns the signal quality
      */
     uint8_t GetSignalQuality();
     /**
      * Is ranging acceptable function
-     * \returns true if ranging is acceptable
+     * @returns true if ranging is acceptable
      */
     bool IsRangingAcceptable();
 

@@ -35,7 +35,7 @@ class UanPhyCalcSinrDual : public UanPhyCalcSinr
 
     /**
      * Register this type.
-     * \return The TypeId.
+     * @return The TypeId.
      */
     static TypeId GetTypeId();
 
@@ -50,7 +50,7 @@ class UanPhyCalcSinrDual : public UanPhyCalcSinr
 }; // class UanPhyCalcSinrDual
 
 /**
- * \ingroup uan
+ * @ingroup uan
  *
  * Two channel Phy.
  *
@@ -74,7 +74,7 @@ class UanPhyDual : public UanPhy
 
     /**
      * Register this type.
-     * \return The TypeId.
+     * @return The TypeId.
      */
     static TypeId GetTypeId();
 
@@ -87,9 +87,9 @@ class UanPhyDual : public UanPhy
     /**
      * Register a UanPhyListener to be notified of common UanPhy events.
      *
-     * \param listener New listener to register.
+     * @param listener New listener to register.
      *
-     * \note You may receive duplicate
+     * @note You may receive duplicate
      * messages as underneath there are two generic phys here.
      * Each will notify of state changes independently.
      */
@@ -124,101 +124,101 @@ class UanPhyDual : public UanPhy
 
     void SetSleepMode(bool /* sleep */) override
     {
-        /// \todo This method has to be implemented
+        /// @todo This method has to be implemented
     }
 
     int64_t AssignStreams(int64_t stream) override;
     Ptr<Packet> GetPacketRx() const override;
 
-    /** \copydoc UanPhy::IsStateIdle */
+    /** @copydoc UanPhy::IsStateIdle */
     bool IsPhy1Idle();
-    /** \copydoc UanPhy::IsStateIdle */
+    /** @copydoc UanPhy::IsStateIdle */
     bool IsPhy2Idle();
-    /** \copydoc UanPhy::IsStateRx */
+    /** @copydoc UanPhy::IsStateRx */
     bool IsPhy1Rx();
-    /** \copydoc UanPhy::IsStateRx */
+    /** @copydoc UanPhy::IsStateRx */
     bool IsPhy2Rx();
-    /** \copydoc UanPhy::IsStateTx */
+    /** @copydoc UanPhy::IsStateTx */
     bool IsPhy1Tx();
-    /** \copydoc UanPhy::IsStateTx */
+    /** @copydoc UanPhy::IsStateTx */
     bool IsPhy2Tx();
 
     // Attribute getters and setters
-    /** \copydoc ns3::UanPhy::GetCcaThresholdDb() */
+    /** @copydoc ns3::UanPhy::GetCcaThresholdDb() */
     double GetCcaThresholdPhy1() const;
-    /** \copydoc UanPhy::GetCcaThresholdDb() */
+    /** @copydoc UanPhy::GetCcaThresholdDb() */
     double GetCcaThresholdPhy2() const;
-    /** \copydoc UanPhy::SetCcaThresholdDb */
+    /** @copydoc UanPhy::SetCcaThresholdDb */
     void SetCcaThresholdPhy1(double thresh);
-    /** \copydoc UanPhy::SetCcaThresholdDb */
+    /** @copydoc UanPhy::SetCcaThresholdDb */
     void SetCcaThresholdPhy2(double thresh);
 
-    /** \copydoc UanPhy::GetTxPowerDb */
+    /** @copydoc UanPhy::GetTxPowerDb */
     double GetTxPowerDbPhy1() const;
-    /** \copydoc UanPhy::GetTxPowerDb */
+    /** @copydoc UanPhy::GetTxPowerDb */
     double GetTxPowerDbPhy2() const;
-    /** \copydoc UanPhy::SetTxPowerDb */
+    /** @copydoc UanPhy::SetTxPowerDb */
     void SetTxPowerDbPhy1(double txpwr);
-    /** \copydoc UanPhy::SetTxPowerDb */
+    /** @copydoc UanPhy::SetTxPowerDb */
     void SetTxPowerDbPhy2(double txpwr);
 
     /**
      * Get the list of available modes.
      *
-     * \return The mode list.
+     * @return The mode list.
      */
     UanModesList GetModesPhy1() const;
-    /** \copydoc GetModesPhy1 */
+    /** @copydoc GetModesPhy1 */
     UanModesList GetModesPhy2() const;
 
     /**
      * Set the available modes.
      *
-     * \param modes List of modes.
+     * @param modes List of modes.
      */
     void SetModesPhy1(UanModesList modes);
-    /** \copydoc SetModesPhy1 */
+    /** @copydoc SetModesPhy1 */
     void SetModesPhy2(UanModesList modes);
 
     /**
      * Get the error probability model.
      *
-     * \return The error model.
+     * @return The error model.
      */
     Ptr<UanPhyPer> GetPerModelPhy1() const;
-    /** \copydoc GetPerModelPhy1() */
+    /** @copydoc GetPerModelPhy1() */
     Ptr<UanPhyPer> GetPerModelPhy2() const;
 
     /**
      * Set the error probability model.
      *
-     * \param per The error model.
+     * @param per The error model.
      */
     void SetPerModelPhy1(Ptr<UanPhyPer> per);
-    /** \copydoc SetPerModelPhy1 */
+    /** @copydoc SetPerModelPhy1 */
     void SetPerModelPhy2(Ptr<UanPhyPer> per);
 
     /**
      * Get the SINR calculator.
      *
-     * \return The SINR calculator.
+     * @return The SINR calculator.
      */
     Ptr<UanPhyCalcSinr> GetSinrModelPhy1() const;
-    /** \copydoc GetSinrModelPhy1 */
+    /** @copydoc GetSinrModelPhy1 */
     Ptr<UanPhyCalcSinr> GetSinrModelPhy2() const;
 
     /**
      * Set the SINR calculator.
      *
-     * \param calcSinr The SINR calculator.
+     * @param calcSinr The SINR calculator.
      */
     void SetSinrModelPhy1(Ptr<UanPhyCalcSinr> calcSinr);
-    /** \copydoc SetSinrModelPhy1 */
+    /** @copydoc SetSinrModelPhy1 */
     void SetSinrModelPhy2(Ptr<UanPhyCalcSinr> calcSinr);
 
-    /** \copydoc UanPhy::GetPacketRx */
+    /** @copydoc UanPhy::GetPacketRx */
     Ptr<Packet> GetPhy1PacketRx() const;
-    /** \copydoc UanPhy::GetPacketRx */
+    /** @copydoc UanPhy::GetPacketRx */
     Ptr<Packet> GetPhy2PacketRx() const;
 
   private:
@@ -241,16 +241,16 @@ class UanPhyDual : public UanPhy
     /**
      * Handle callback and logger for packets received without error.
      *
-     * \param pkt The packet.
-     * \param sinr The SINR.
-     * \param mode The channel mode.
+     * @param pkt The packet.
+     * @param sinr The SINR.
+     * @param mode The channel mode.
      */
     void RxOkFromSubPhy(Ptr<Packet> pkt, double sinr, UanTxMode mode);
     /**
      * Handle callback and logger for packets received with error.
      *
-     * \param pkt The packet.
-     * \param sinr The SINR.
+     * @param pkt The packet.
+     * @param sinr The SINR.
      */
     void RxErrFromSubPhy(Ptr<Packet> pkt, double sinr);
 

@@ -34,9 +34,9 @@ NS_LOG_COMPONENT_DEFINE("LenaDualStripe");
 /**
  * Check if two boxes are overlapping.
  *
- * \param a First box.
- * \param b Second box.
- * \return true if the boxes are overlapping, false otherwise.
+ * @param a First box.
+ * @param b Second box.
+ * @return true if the boxes are overlapping, false otherwise.
  */
 bool
 AreOverlapping(Box a, Box b)
@@ -54,14 +54,14 @@ class FemtocellBlockAllocator
   public:
     /**
      * Constructor
-     * \param area the total area
-     * \param nApartmentsX the number of apartments in the X direction
-     * \param nFloors the number of floors
+     * @param area the total area
+     * @param nApartmentsX the number of apartments in the X direction
+     * @param nFloors the number of floors
      */
     FemtocellBlockAllocator(Box area, uint32_t nApartmentsX, uint32_t nFloors);
     /**
      * Function that creates building blocks.
-     * \param n the number of blocks to create
+     * @param n the number of blocks to create
      */
     void Create(uint32_t n);
     /// Create function
@@ -71,8 +71,8 @@ class FemtocellBlockAllocator
     /**
      * Function that checks if the box area is overlapping with some of previously created building
      * blocks.
-     * \param box the area to check
-     * \returns true if there is an overlap
+     * @param box the area to check
+     * @returns true if there is an overlap
      */
     bool OverlapsWithAnyPrevious(Box box);
     Box m_area;                           ///< Area
@@ -160,7 +160,7 @@ FemtocellBlockAllocator::OverlapsWithAnyPrevious(Box box)
 /**
  * Print a list of buildings that can be plotted using Gnuplot.
  *
- * \param filename the output file name.
+ * @param filename the output file name.
  */
 void
 PrintGnuplottableBuildingListToFile(std::string filename)
@@ -185,7 +185,7 @@ PrintGnuplottableBuildingListToFile(std::string filename)
 /**
  * Print a list of UEs that can be plotted using Gnuplot.
  *
- * \param filename the output file name.
+ * @param filename the output file name.
  */
 void
 PrintGnuplottableUeListToFile(std::string filename)
@@ -219,7 +219,7 @@ PrintGnuplottableUeListToFile(std::string filename)
 /**
  * Print a list of ENBs that can be plotted using Gnuplot.
  *
- * \param filename the output file name.
+ * @param filename the output file name.
  */
 void
 PrintGnuplottableEnbListToFile(std::string filename)

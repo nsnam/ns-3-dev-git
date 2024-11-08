@@ -17,66 +17,66 @@ namespace ns3
 {
 
 /**
- * \brief converts degrees to radians
+ * @brief converts degrees to radians
  *
- * \param degrees the angle in degrees
- * \return the angle in radians
+ * @param degrees the angle in degrees
+ * @return the angle in radians
  */
 double DegreesToRadians(double degrees);
 
 /**
- * \brief converts degrees to radians
+ * @brief converts degrees to radians
  *
- * \param degrees the angles in degrees
- * \return the angles in radians
+ * @param degrees the angles in degrees
+ * @return the angles in radians
  */
 std::vector<double> DegreesToRadians(const std::vector<double>& degrees);
 
 /**
- * \brief converts radians to degrees
+ * @brief converts radians to degrees
  *
- * \param radians the angle in radians
- * \return the angle in degrees
+ * @param radians the angle in radians
+ * @return the angle in degrees
  */
 double RadiansToDegrees(double radians);
 
 /**
- * \brief converts radians to degrees
+ * @brief converts radians to degrees
  *
- * \param radians the angles in radians
- * \return the angles in degrees
+ * @param radians the angles in radians
+ * @return the angles in degrees
  */
 std::vector<double> RadiansToDegrees(const std::vector<double>& radians);
 
 /**
- * \brief Wrap angle in [0, 360)
+ * @brief Wrap angle in [0, 360)
  *
- * \param a the angle in degrees
- * \return the wrapped angle in degrees
+ * @param a the angle in degrees
+ * @return the wrapped angle in degrees
  */
 double WrapTo360(double a);
 
 /**
- * \brief Wrap angle in [-180, 180)
+ * @brief Wrap angle in [-180, 180)
  *
- * \param a the angle in degrees
- * \return the wrapped angle in degrees
+ * @param a the angle in degrees
+ * @return the wrapped angle in degrees
  */
 double WrapTo180(double a);
 
 /**
- * \brief Wrap angle in [0, 2*M_PI)
+ * @brief Wrap angle in [0, 2*M_PI)
  *
- * \param a the angle in radians
- * \return the wrapped angle in radians
+ * @param a the angle in radians
+ * @return the wrapped angle in radians
  */
 double WrapTo2Pi(double a);
 
 /**
- * \brief Wrap angle in [-M_PI, M_PI)
+ * @brief Wrap angle in [-M_PI, M_PI)
  *
- * \param a the angle in radians
- * \return the wrapped angle in radians
+ * @param a the angle in radians
+ * @return the wrapped angle in radians
  */
 double WrapToPi(double a);
 
@@ -111,8 +111,8 @@ class Angles
      * Inclination must be in [0, M_PI], while azimuth is
      * automatically normalized in [-M_PI, M_PI)
      *
-     * \param azimuth the azimuth angle in radians
-     * \param inclination the inclination angle in radians
+     * @param azimuth the azimuth angle in radians
+     * @param inclination the inclination angle in radians
      */
     Angles(double azimuth, double inclination);
 
@@ -122,7 +122,7 @@ class Angles
      * Note: azimuth and inclination angles for a zero-length vector are not defined
      * and are thus initialized to NAN
      *
-     * \param v the 3D vector in cartesian coordinates
+     * @param v the 3D vector in cartesian coordinates
      *
      */
     Angles(Vector v);
@@ -131,8 +131,8 @@ class Angles
      * This constructor initializes an Angles instance with the angles
      * of the spherical coordinates of point v respect to point o
      *
-     * \param v the point (in cartesian coordinates) for which the angles are determined
-     * \param o the origin (in cartesian coordinates) of the spherical coordinate system
+     * @param v the point (in cartesian coordinates) for which the angles are determined
+     * @param o the origin (in cartesian coordinates) of the spherical coordinate system
      *
      */
     Angles(Vector v, Vector o);
@@ -140,46 +140,46 @@ class Angles
     /**
      * Setter for azimuth angle
      *
-     * \param azimuth angle in radians
+     * @param azimuth angle in radians
      */
     void SetAzimuth(double azimuth);
 
     /**
      * Setter for inclination angle
      *
-     * \param inclination angle in radians. Must be in [0, M_PI]
+     * @param inclination angle in radians. Must be in [0, M_PI]
      */
     void SetInclination(double inclination);
 
     /**
      * Getter for azimuth angle
      *
-     * \return azimuth angle in radians
+     * @return azimuth angle in radians
      */
     double GetAzimuth() const;
 
     /**
      * Getter for inclination angle
      *
-     * \return inclination angle in radians
+     * @return inclination angle in radians
      */
     double GetInclination() const;
 
     // friend methods
     /**
-     * \brief Stream insertion operator.
+     * @brief Stream insertion operator.
      *
-     * \param [in] os The reference to the output stream.
-     * \param [in] a The angle.
-     * \returns The reference to the output stream.
+     * @param [in] os The reference to the output stream.
+     * @param [in] a The angle.
+     * @returns The reference to the output stream.
      */
     friend std::ostream& operator<<(std::ostream& os, const Angles& a);
     /**
-     * \brief Stream extraction operator.
+     * @brief Stream extraction operator.
      *
-     * \param [in] is The reference to the input stream.
-     * \param [out] a The angle.
-     * \returns The reference to the input stream.
+     * @param [in] is The reference to the input stream.
+     * @param [out] a The angle.
+     * @returns The reference to the input stream.
      */
     friend std::istream& operator>>(std::istream& is, Angles& a);
 

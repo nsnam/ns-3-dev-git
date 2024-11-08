@@ -17,8 +17,8 @@
 #include "ns3/core-config.h"
 
 /**
- * \file
- * \ingroup core
+ * @file
+ * @ingroup core
  * ns3::GlobalValue implementation.
  */
 
