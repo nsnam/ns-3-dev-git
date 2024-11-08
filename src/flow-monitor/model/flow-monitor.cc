@@ -225,7 +225,7 @@ FlowMonitor::ReportLastRx(Ptr<FlowProbe> probe,
     if (stats.rxPackets > 0)
     {
         Time jitter = stats.lastDelay - delay;
-        if (jitter > Seconds(0))
+        if (jitter.IsStrictlyPositive())
         {
             stats.jitterSum += jitter;
             stats.jitterHistogram.AddValue(jitter.GetSeconds());

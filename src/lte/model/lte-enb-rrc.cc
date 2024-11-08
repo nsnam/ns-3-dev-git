@@ -2344,7 +2344,7 @@ LteEnbRrc::AddUeMeasReportConfig(LteRrcSap::ReportConfigEutra config)
             m_ueMeasConfig.reportConfigToAddModList.size() * m_numberOfComponentCarriers,
         "Measurement identities and reporting configuration should not have different quantity");
 
-    if (Simulator::Now() != Seconds(0))
+    if (!Simulator::Now().IsZero())
     {
         NS_FATAL_ERROR("AddUeMeasReportConfig may not be called after the simulation has run");
     }

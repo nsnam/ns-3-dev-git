@@ -210,8 +210,7 @@ class Ns2MobilityHelperTest : public TestCase
     bool CheckInitialPositions()
     {
         std::stable_sort(m_reference.begin(), m_reference.end());
-        while (m_nextRefPoint < m_reference.size() &&
-               m_reference[m_nextRefPoint].time == Seconds(0))
+        while (m_nextRefPoint < m_reference.size() && m_reference[m_nextRefPoint].time.IsZero())
         {
             const ReferencePoint& rp = m_reference[m_nextRefPoint];
             Ptr<Node> node = Names::Find<Node>(rp.node);

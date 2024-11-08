@@ -383,7 +383,7 @@ RoutingTable::Purge()
     }
     for (auto i = m_ipv4AddressEntry.begin(); i != m_ipv4AddressEntry.end();)
     {
-        if (i->second.GetLifeTime() < Seconds(0))
+        if (i->second.GetLifeTime().IsStrictlyNegative())
         {
             if (i->second.GetFlag() == INVALID)
             {
@@ -419,7 +419,7 @@ RoutingTable::Purge(std::map<Ipv4Address, RoutingTableEntry>& table) const
     }
     for (auto i = table.begin(); i != table.end();)
     {
-        if (i->second.GetLifeTime() < Seconds(0))
+        if (i->second.GetLifeTime().IsStrictlyNegative())
         {
             if (i->second.GetFlag() == INVALID)
             {

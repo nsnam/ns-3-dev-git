@@ -262,7 +262,7 @@ DistributedSimulatorImpl::CalculateLookAhead()
 void
 DistributedSimulatorImpl::BoundLookAhead(const Time lookAhead)
 {
-    if (lookAhead > Time(0))
+    if (lookAhead.IsStrictlyPositive())
     {
         NS_LOG_FUNCTION(this << lookAhead);
         m_lookAhead = Min(m_lookAhead, lookAhead);

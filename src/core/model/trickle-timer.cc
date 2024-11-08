@@ -150,7 +150,7 @@ TrickleTimer::Enable()
     uint64_t randomInt;
     double random;
 
-    NS_ASSERT_MSG(m_minInterval != Time(0), "Timer not initialized");
+    NS_ASSERT_MSG(!m_minInterval.IsZero(), "Timer not initialized");
 
     randomInt = m_uniRand->GetInteger(1, m_ticks);
     random = randomInt;

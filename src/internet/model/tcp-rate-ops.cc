@@ -69,7 +69,7 @@ TcpRateLinux::GenerateSample(uint32_t delivered,
      * a SACK reneging event may overestimate bw by including packets that
      * were SACKed before the reneg.
      */
-    if (m_rateSample.m_priorTime == Seconds(0) || is_sack_reneg)
+    if (m_rateSample.m_priorTime.IsZero() || is_sack_reneg)
     {
         NS_LOG_INFO("PriorTime is zero, invalidating sample");
         m_rateSample.m_delivered = -1;

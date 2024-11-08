@@ -1931,7 +1931,7 @@ RoutingProtocol::HelloTimerExpire()
 {
     NS_LOG_FUNCTION(this);
     Time offset = Time(Seconds(0));
-    if (m_lastBcastTime > Time(Seconds(0)))
+    if (m_lastBcastTime.IsStrictlyPositive())
     {
         offset = Simulator::Now() - m_lastBcastTime;
         NS_LOG_DEBUG("Hello deferred due to last bcast at:" << m_lastBcastTime);

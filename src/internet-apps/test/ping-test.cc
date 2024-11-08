@@ -381,7 +381,7 @@ PingTestCase::TxTraceSink(uint16_t seq, Ptr<Packet> p)
 {
     NS_LOG_FUNCTION(this << seq << p);
     m_countTraceTx++;
-    if (m_lastTx == Seconds(0))
+    if (m_lastTx.IsZero())
     {
         m_lastTx = Simulator::Now();
     }

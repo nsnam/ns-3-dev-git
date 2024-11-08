@@ -2732,7 +2732,7 @@ SixLowPanNetDevice::AddContext(uint8_t contextId,
         return;
     }
 
-    if (validLifetime == Time(0))
+    if (validLifetime.IsZero())
     {
         NS_LOG_LOGIC("Context (" << +contextId << "), removed (validity time is zero)");
         m_contextTable.erase(contextId);

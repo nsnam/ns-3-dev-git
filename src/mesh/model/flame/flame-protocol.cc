@@ -296,8 +296,7 @@ FlameProtocol::RemoveRoutingStuff(uint32_t fromIface,
     // Start PATH_UPDATE procedure if destination is our own address and last broadcast was sent
     // more than broadcast interval ago or was not sent at all
     if ((destination == GetAddress()) &&
-        ((m_lastBroadcast + m_broadcastInterval < Simulator::Now()) ||
-         (m_lastBroadcast == Seconds(0))))
+        ((m_lastBroadcast + m_broadcastInterval < Simulator::Now()) || m_lastBroadcast.IsZero()))
     {
         Ptr<Packet> packet = Create<Packet>();
         m_mp->Send(packet, Mac48Address::GetBroadcast(), 0);

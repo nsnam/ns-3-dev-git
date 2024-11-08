@@ -174,7 +174,7 @@ void
 LteTestRrc::Start()
 {
     NS_LOG_FUNCTION(this);
-    NS_ASSERT_MSG(m_arrivalTime != Time(0), "Arrival time must be different from 0");
+    NS_ASSERT_MSG(!m_arrivalTime.IsZero(), "Arrival time must be different from 0");
 
     // Stats
     m_txPdus++;
@@ -485,7 +485,7 @@ LteTestMac::SendTxOpportunity(Time time, uint32_t bytes)
 
     if (m_txOpportunityMode == RANDOM_MODE)
     {
-        if (m_txOppTime != Seconds(0))
+        if (!m_txOppTime.IsZero())
         {
             Simulator::Schedule(m_txOppTime,
                                 &LteTestMac::SendTxOpportunity,
@@ -518,7 +518,7 @@ LteTestMac::SetTxOpportunityMode(uint8_t mode)
 
     if (m_txOpportunityMode == RANDOM_MODE)
     {
-        if (m_txOppTime != Seconds(0.0))
+        if (!m_txOppTime.IsZero())
         {
             SendTxOpportunity(m_txOppTime, m_txOppSize);
         }

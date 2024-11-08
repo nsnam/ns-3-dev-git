@@ -515,7 +515,7 @@ PieQueueDisc::DoDequeue()
             if (m_dqCount >= m_dqThreshold)
             {
                 Time dqTime = Now() - m_dqStart;
-                if (dqTime > Seconds(0))
+                if (dqTime.IsStrictlyPositive())
                 {
                     if (m_avgDqRate == 0)
                     {

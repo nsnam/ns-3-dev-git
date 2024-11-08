@@ -277,12 +277,14 @@ LrWpanAckTestCase::DoRun()
     }
     traceFile.close();
 
-    // Note: the packet being correctly sent includes receiving an ACK in case of for unicact
+    // Note: the packet being correctly sent includes receiving an ACK in case of for unicast
     // packets.
     NS_TEST_EXPECT_MSG_LT(m_requestTime,
                           m_replyTime,
                           "Sent the request before the reply (as expected)");
-    NS_TEST_EXPECT_MSG_GT(m_requestSentTime, Time(0), "The request was sent (as expected)");
+    NS_TEST_EXPECT_MSG_EQ(m_requestSentTime.IsStrictlyPositive(),
+                          true,
+                          "The request was sent (as expected)");
     NS_TEST_EXPECT_MSG_LT(m_requestSentTime,
                           m_replyArrivalTime,
                           "The request was sent before the reply arrived (as expected)");

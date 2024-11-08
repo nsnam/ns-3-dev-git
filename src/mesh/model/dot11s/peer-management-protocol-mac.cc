@@ -361,7 +361,7 @@ PeerManagementProtocolMac::GetAddress() const
 void
 PeerManagementProtocolMac::SetBeaconShift(Time shift)
 {
-    if (shift != Seconds(0))
+    if (!shift.IsZero())
     {
         m_stats.beaconShift++;
     }

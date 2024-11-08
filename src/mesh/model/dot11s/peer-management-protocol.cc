@@ -149,7 +149,7 @@ PeerManagementProtocol::GetBeaconTimingElement(uint32_t interface)
     {
         // If we do not know peer Assoc Id, we shall not add any info
         // to a beacon timing element
-        if ((*i)->GetBeaconInterval() == Seconds(0))
+        if ((*i)->GetBeaconInterval().IsZero())
         {
             // No beacon was received, do not include to the beacon timing element
             continue;

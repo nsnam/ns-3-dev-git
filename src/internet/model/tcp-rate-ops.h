@@ -149,7 +149,7 @@ class TcpRateOps : public Object
          */
         bool IsValid() const
         {
-            return (m_priorTime != Seconds(0.0) || m_interval != Seconds(0.0));
+            return (!m_priorTime.IsZero() || !m_interval.IsZero());
         }
     };
 

@@ -187,7 +187,7 @@ UanPdp::GetResolution() const
 std::complex<double>
 UanPdp::SumTapsFromMaxC(Time delay, Time duration) const
 {
-    if (m_resolution <= Seconds(0))
+    if (m_resolution.IsNegative())
     {
         NS_ASSERT_MSG(GetNTaps() == 1,
                       "Attempted to sum taps over time interval in "
@@ -225,7 +225,7 @@ UanPdp::SumTapsFromMaxC(Time delay, Time duration) const
 double
 UanPdp::SumTapsFromMaxNc(Time delay, Time duration) const
 {
-    if (m_resolution <= Seconds(0))
+    if (m_resolution.IsNegative())
     {
         NS_ASSERT_MSG(GetNTaps() == 1,
                       "Attempted to sum taps over time interval in "
@@ -265,13 +265,13 @@ UanPdp::SumTapsFromMaxNc(Time delay, Time duration) const
 double
 UanPdp::SumTapsNc(Time begin, Time end) const
 {
-    if (m_resolution <= Seconds(0))
+    if (m_resolution.IsNegative())
     {
         NS_ASSERT_MSG(GetNTaps() == 1,
                       "Attempted to sum taps over time interval in "
                       "UanPdp with resolution 0 and multiple taps");
 
-        if (begin <= Seconds(0.0) && end >= Seconds(0.0))
+        if (begin.IsNegative() && end.IsPositive())
         {
             return std::abs(m_taps[0].GetAmp());
         }
@@ -296,13 +296,13 @@ UanPdp::SumTapsNc(Time begin, Time end) const
 std::complex<double>
 UanPdp::SumTapsC(Time begin, Time end) const
 {
-    if (m_resolution <= Seconds(0))
+    if (m_resolution.IsNegative())
     {
         NS_ASSERT_MSG(GetNTaps() == 1,
                       "Attempted to sum taps over time interval in "
                       "UanPdp with resolution 0 and multiple taps");
 
-        if (begin <= Seconds(0.0) && end >= Seconds(0.0))
+        if (begin.IsNegative() && end.IsPositive())
         {
             return m_taps[0].GetAmp();
         }

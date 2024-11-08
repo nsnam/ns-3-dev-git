@@ -2020,7 +2020,7 @@ RoutingProtocol::LinkSensing(const olsr::MessageHeader& msg,
                      << ": LinkSensing(receiverIface=" << receiverIface
                      << ", senderIface=" << senderIface << ") BEGIN");
 
-    NS_ASSERT(msg.GetVTime() > Seconds(0));
+    NS_ASSERT(msg.GetVTime().IsStrictlyPositive());
     LinkTuple* link_tuple = m_state.FindLinkTuple(senderIface);
     if (link_tuple == nullptr)
     {

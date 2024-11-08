@@ -179,7 +179,7 @@ FdNetDevice::DoInitialize()
 {
     NS_LOG_FUNCTION(this);
     Start(m_tStart);
-    if (m_tStop != Seconds(0))
+    if (!m_tStop.IsZero())
     {
         Stop(m_tStop);
     }

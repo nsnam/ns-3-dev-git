@@ -454,7 +454,7 @@ DsrRouteCache::PurgeLinkNode()
     {
         NS_LOG_DEBUG("The link stability " << i->second.GetLinkStability().As(Time::S));
         auto itmp = i;
-        if (i->second.GetLinkStability() <= Seconds(0))
+        if (i->second.GetLinkStability().IsNegative())
         {
             ++i;
             m_linkCache.erase(itmp);
@@ -469,7 +469,7 @@ DsrRouteCache::PurgeLinkNode()
     {
         NS_LOG_DEBUG("The node stability " << i->second.GetNodeStability().As(Time::S));
         auto itmp = i;
-        if (i->second.GetNodeStability() <= Seconds(0))
+        if (i->second.GetNodeStability().IsNegative())
         {
             ++i;
             m_nodeCache.erase(itmp);
@@ -686,7 +686,7 @@ DsrRouteCache::AddRoute(DsrRouteCacheEntry& rt)
     else
     {
         // Check if the expire time for the new route has expired or not
-        if (rt.GetExpireTime() > Time(0))
+        if (rt.GetExpireTime().IsStrictlyPositive())
         {
             rtVector.push_back(rt);
             // This sort function will sort the route cache entries based on the size of route
@@ -982,7 +982,7 @@ DsrRouteCache::Purge()
                 /*
                  * First verify if the route has expired or not
                  */
-                if (j->GetExpireTime() <= Seconds(0))
+                if (j->GetExpireTime().IsNegative())
                 {
                     /*
                      * When the expire time has passed, erase the certain route

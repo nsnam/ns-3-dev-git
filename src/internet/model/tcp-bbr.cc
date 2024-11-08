@@ -359,7 +359,7 @@ TcpBbr::UpdateRTprop(Ptr<TcpSocketState> tcb)
 {
     NS_LOG_FUNCTION(this << tcb);
     m_minRttExpired = Simulator::Now() > (m_minRttStamp + m_minRttFilterLen);
-    if (tcb->m_lastRtt >= Seconds(0) && (tcb->m_lastRtt <= m_minRtt || m_minRttExpired))
+    if (tcb->m_lastRtt.Get().IsPositive() && (tcb->m_lastRtt <= m_minRtt || m_minRttExpired))
     {
         m_minRtt = tcb->m_lastRtt;
         m_minRttStamp = Simulator::Now();
@@ -418,13 +418,13 @@ TcpBbr::HandleProbeRTT(Ptr<TcpSocketState> tcb)
     uint32_t totalBytes = m_delivered + tcb->m_bytesInFlight.Get();
     m_appLimited = (totalBytes > 0 ? totalBytes : 1);
 
-    if (m_probeRttDoneStamp == Seconds(0) && tcb->m_bytesInFlight <= m_minPipeCwnd)
+    if (m_probeRttDoneStamp.IsZero() && tcb->m_bytesInFlight <= m_minPipeCwnd)
     {
         m_probeRttDoneStamp = Simulator::Now() + m_probeRttDuration;
         m_probeRttRoundDone = false;
         m_nextRoundDelivered = m_delivered;
     }
-    else if (m_probeRttDoneStamp != Seconds(0))
+    else if (!m_probeRttDoneStamp.IsZero())
     {
         if (m_roundStart)
         {

@@ -182,7 +182,7 @@ struct IsExpired
     bool operator()(const DsrPassiveBuffEntry& e) const
     {
         // NS_LOG_DEBUG("Expire time for packet in req queue: "<<e.GetExpireTime ());
-        return (e.GetExpireTime() < Seconds(0));
+        return (e.GetExpireTime().IsStrictlyNegative());
     }
 };
 

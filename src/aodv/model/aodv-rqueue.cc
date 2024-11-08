@@ -118,7 +118,7 @@ struct IsExpired
      */
     bool operator()(const QueueEntry& e) const
     {
-        return (e.GetExpireTime() < Seconds(0));
+        return (e.GetExpireTime().IsStrictlyNegative());
     }
 };
 

@@ -142,7 +142,7 @@ ShowProgress::CheckProgress()
     NS_LOG_FUNCTION(this << m_elapsed);
 
     // Don't do anything unless the elapsed time is positive.
-    if (m_elapsed <= Time(0))
+    if (m_elapsed.IsNegative())
     {
         m_vtime = m_vtime * MAXGAIN;
         ++m_repCount;

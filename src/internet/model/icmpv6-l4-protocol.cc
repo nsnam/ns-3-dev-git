@@ -1431,7 +1431,7 @@ Icmpv6L4Protocol::HandleRsTimeout(Ipv6Address src, Ipv6Address dst, Address hard
         }
     }
 
-    if (m_rsMaxRetransmissionDuration != Time(0) &&
+    if (!m_rsMaxRetransmissionDuration.IsZero() &&
         Simulator::Now() - m_rsInitialRetransmissionTime > m_rsMaxRetransmissionDuration)
     {
         NS_LOG_LOGIC("Maximum RS retransmission time reached, giving up.");

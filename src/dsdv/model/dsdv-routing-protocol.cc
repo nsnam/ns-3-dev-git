@@ -1213,7 +1213,7 @@ RoutingProtocol::GetSettlingTime(Ipv4Address address)
     m_routingTable.LookupRoute(address, mainrt);
     if (EnableWST)
     {
-        if (mainrt.GetSettlingTime() == Seconds(0))
+        if (mainrt.GetSettlingTime().IsZero())
         {
             return Seconds(0);
         }

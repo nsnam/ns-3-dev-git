@@ -54,7 +54,7 @@ bool
 Probe::IsEnabled() const
 {
     return (DataCollectionObject::IsEnabled() && Simulator::Now() >= m_start &&
-            (m_stop == Seconds(0) || Simulator::Now() < m_stop));
+            (m_stop.IsZero() || Simulator::Now() < m_stop));
 }
 
 } // namespace ns3
