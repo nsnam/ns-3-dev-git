@@ -388,7 +388,7 @@ RrMultiUserScheduler::TrySendingBsrpTf()
     }
 
     // Compute the time taken by each station to transmit 8 QoS Null frames
-    Time qosNullTxDuration = Seconds(0);
+    Time qosNullTxDuration;
     for (const auto& userInfo : m_trigger)
     {
         Time duration = WifiPhy::CalculateTxDuration(GetMaxSizeOfQosNullAmpdu(m_trigger),
@@ -542,7 +542,7 @@ RrMultiUserScheduler::TrySendingBasicTf()
     }
 
     // Compute the time taken by each station to transmit a frame of maxBufferSize size
-    Time bufferTxTime = Seconds(0);
+    Time bufferTxTime;
     for (const auto& userInfo : m_trigger)
     {
         Time duration = WifiPhy::CalculateTxDuration(maxBufferSize,
@@ -561,7 +561,7 @@ RrMultiUserScheduler::TrySendingBasicTf()
     {
         // maxDuration may be a too short time. If it does not allow any station to
         // transmit at least m_ulPsduSize bytes, give up the UL MU transmission for now
-        Time minDuration = Seconds(0);
+        Time minDuration;
         for (const auto& userInfo : m_trigger)
         {
             Time duration =

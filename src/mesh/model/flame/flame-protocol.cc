@@ -120,7 +120,7 @@ FlameProtocol::GetTypeId()
 FlameProtocol::FlameProtocol()
     : m_address(Mac48Address()),
       m_broadcastInterval(Seconds(5)),
-      m_lastBroadcast(Seconds(0)),
+      m_lastBroadcast(),
       m_maxCost(32),
       m_myLastSeqno(1),
       m_rtable(CreateObject<FlameRtable>())

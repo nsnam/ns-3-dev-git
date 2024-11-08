@@ -23,7 +23,7 @@ NS_LOG_COMPONENT_DEFINE("Watchdog");
 Watchdog::Watchdog()
     : m_impl(nullptr),
       m_event(),
-      m_end(MicroSeconds(0))
+      m_end()
 {
     NS_LOG_FUNCTION_NOARGS();
 }

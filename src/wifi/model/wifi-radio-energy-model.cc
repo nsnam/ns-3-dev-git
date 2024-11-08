@@ -82,7 +82,7 @@ WifiRadioEnergyModel::GetTypeId()
 WifiRadioEnergyModel::WifiRadioEnergyModel()
     : m_source(nullptr),
       m_currentState(WifiPhyState::IDLE),
-      m_lastUpdateTime(Seconds(0.0)),
+      m_lastUpdateTime(),
       m_nPendingChangeState(0)
 {
     NS_LOG_FUNCTION(this);

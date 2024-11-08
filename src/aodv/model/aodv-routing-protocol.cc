@@ -167,7 +167,7 @@ RoutingProtocol::RoutingProtocol()
       m_htimer(Timer::CANCEL_ON_DESTROY),
       m_rreqRateLimitTimer(Timer::CANCEL_ON_DESTROY),
       m_rerrRateLimitTimer(Timer::CANCEL_ON_DESTROY),
-      m_lastBcastTime(Seconds(0))
+      m_lastBcastTime()
 {
     m_nb.SetCallback(MakeCallback(&RoutingProtocol::SendRerrWhenBreaksLinkToNextHop, this));
 }
@@ -1930,7 +1930,7 @@ void
 RoutingProtocol::HelloTimerExpire()
 {
     NS_LOG_FUNCTION(this);
-    Time offset = Time(Seconds(0));
+    Time offset;
     if (m_lastBcastTime.IsStrictlyPositive())
     {
         offset = Simulator::Now() - m_lastBcastTime;

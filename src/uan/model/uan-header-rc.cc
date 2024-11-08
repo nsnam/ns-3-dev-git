@@ -24,7 +24,7 @@ NS_OBJECT_ENSURE_REGISTERED(UanHeaderRcAck);
 UanHeaderRcData::UanHeaderRcData()
     : Header(),
       m_frameNo(0),
-      m_propDelay(Seconds(0))
+      m_propDelay()
 {
 }
 
@@ -120,7 +120,7 @@ UanHeaderRcRts::UanHeaderRcRts()
       m_frameNo(0),
       m_noFrames(0),
       m_length(0),
-      m_timeStamp(Seconds(0)),
+      m_timeStamp(),
       m_retryNo(0)
 {
 }
@@ -389,9 +389,9 @@ UanHeaderRcCtsGlobal::GetInstanceTypeId() const
 UanHeaderRcCts::UanHeaderRcCts()
     : Header(),
       m_frameNo(0),
-      m_timeStampRts(Seconds(0)),
+      m_timeStampRts(),
       m_retryNo(0),
-      m_delay(Seconds(0)),
+      m_delay(),
       m_address(Mac8Address::GetBroadcast())
 {
 }

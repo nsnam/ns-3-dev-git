@@ -59,7 +59,7 @@ std::ofstream throughput;
 std::ofstream queueSize;
 
 uint32_t prev = 0;
-Time prevTime = Seconds(0);
+Time prevTime;
 
 // Calculate throughput
 static void

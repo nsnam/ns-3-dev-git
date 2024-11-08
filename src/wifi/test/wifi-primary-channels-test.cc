@@ -880,7 +880,7 @@ WifiPrimaryChannelsTest::DoSendHeTbPpdu(uint8_t bss,
     hdr.SetAddr3(apDev->GetMac()->GetBssid(0));
     hdr.SetSequenceNumber(1);
 
-    Time duration = Seconds(0);
+    Time duration;
     uint16_t length = 0;
     WifiTxVector trigVector(HePhy::GetHeMcs8(),
                             0,

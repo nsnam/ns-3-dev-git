@@ -83,7 +83,7 @@ TcpRateLinuxBasicTest::TcpRateLinuxBasicTest(uint32_t cWnd,
       m_inFlight(0),
       m_segmentSize(1),
       m_delivered(0),
-      m_deliveredTime(Seconds(0)),
+      m_deliveredTime(),
       m_tailSeq(tailSeq),
       m_nextTx(nextTx),
       m_testCase(testCase)

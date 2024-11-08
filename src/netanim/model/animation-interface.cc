@@ -71,11 +71,11 @@ AnimationInterface::AnimationInterface(const std::string fn)
       m_writeCallback(nullptr),
       m_started(false),
       m_enablePacketMetadata(false),
-      m_startTime(Seconds(0)),
+      m_startTime(),
       m_stopTime(Seconds(3600 * 1000)),
       m_maxPktsPerFile(MAX_PKTS_PER_TRACE_FILE),
       m_originalFileName(fn),
-      m_routingStopTime(Seconds(0)),
+      m_routingStopTime(),
       m_routingFileName(""),
       m_routingPollInterval(Seconds(5)),
       m_trackPackets(true)

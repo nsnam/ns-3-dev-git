@@ -543,7 +543,7 @@ LteX2HandoverMeasuresTestCase::DoRun()
 
     // schedule the checkpoint events
 
-    Time stopTime = Seconds(0);
+    Time stopTime;
     for (auto checkPointEventIt = m_checkPointEventList.begin();
          checkPointEventIt != m_checkPointEventList.end();
          ++checkPointEventIt)

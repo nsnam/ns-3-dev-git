@@ -1105,7 +1105,7 @@ WifiPhyCcaIndicationTest::RunOne()
         WifiPhy::ChannelTuple{channelNum, m_channelWidth, WIFI_PHY_BAND_5GHZ, 0});
 
     std::vector<Time> expectedPer20MhzCcaBusyDurations{};
-    Time delay = Seconds(0.0);
+    Time delay;
     Simulator::Schedule(delay, &WifiPhyCcaIndicationTest::Reset, this);
     delay += Seconds(1.0);
 

@@ -1113,7 +1113,7 @@ HeFrameExchangeManager::CalculateAcknowledgmentTime(WifiAcknowledgment* acknowle
     {
         auto dlMuBarBaAcknowledgment = static_cast<WifiDlMuBarBaSequence*>(acknowledgment);
 
-        Time duration = Seconds(0);
+        Time duration;
 
         // normal ack or implicit BAR policy can be used for (no more than) one receiver
         NS_ABORT_IF(dlMuBarBaAcknowledgment->stationsReplyingWithNormalAck.size() +
@@ -1161,7 +1161,7 @@ HeFrameExchangeManager::CalculateAcknowledgmentTime(WifiAcknowledgment* acknowle
     {
         auto dlMuTfMuBarAcknowledgment = static_cast<WifiDlMuTfMuBar*>(acknowledgment);
 
-        Time duration = Seconds(0);
+        Time duration;
 
         for (const auto& stations : dlMuTfMuBarAcknowledgment->stationsReplyingWithBlockAck)
         {
@@ -1207,7 +1207,7 @@ HeFrameExchangeManager::CalculateAcknowledgmentTime(WifiAcknowledgment* acknowle
     {
         auto dlMuAggrTfAcknowledgment = static_cast<WifiDlMuAggregateTf*>(acknowledgment);
 
-        Time duration = Seconds(0);
+        Time duration;
 
         for (const auto& stations : dlMuAggrTfAcknowledgment->stationsReplyingWithBlockAck)
         {

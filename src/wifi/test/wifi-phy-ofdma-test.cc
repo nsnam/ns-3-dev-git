@@ -4132,7 +4132,7 @@ TestUlOfdmaPhyTransmission::RunOne()
     m_phySta3->SetOperatingChannel(
         WifiPhy::ChannelTuple{channelNum, m_channelWidth, WIFI_PHY_BAND_5GHZ, 0});
 
-    Time delay = Seconds(0.0);
+    Time delay;
     Simulator::Schedule(delay, &TestUlOfdmaPhyTransmission::Reset, this);
     delay += Seconds(1.0);
 

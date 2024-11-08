@@ -510,7 +510,7 @@ OfdmaAckSequenceTest::OfdmaAckSequenceTest(const Params& params)
       m_ulPktsGenerated(false),
       m_received(0),
       m_flushed(0),
-      m_edcaDisabledStartTime(Seconds(0)),
+      m_edcaDisabledStartTime(),
       m_cwValues(std::vector<uint32_t>(m_nStations, 2)), // 2 is an invalid CW value
       m_defaultTbPpduDuration(MilliSeconds(2))
 {

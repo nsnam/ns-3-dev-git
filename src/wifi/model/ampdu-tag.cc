@@ -30,7 +30,7 @@ AmpduTag::GetInstanceTypeId() const
 
 AmpduTag::AmpduTag()
     : m_nbOfMpdus(0),
-      m_duration(Seconds(0))
+      m_duration()
 {
 }
 

@@ -146,7 +146,7 @@ LteUePhy::LteUePhy(Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy)
       m_dataInterferencePowerUpdated(false),
       m_pssReceived(false),
       m_ueMeasurementsFilterPeriod(MilliSeconds(200)),
-      m_ueMeasurementsFilterLast(MilliSeconds(0)),
+      m_ueMeasurementsFilterLast(),
       m_rsrpSinrSampleCounter(0),
       m_imsi(0)
 {

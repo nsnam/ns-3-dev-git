@@ -73,8 +73,8 @@ WimaxPhy::WimaxPhy()
       m_frameDuration(Seconds(0.01)),
       m_frequency(5000000),
       m_channelBandwidth(10000000),
-      m_psDuration(Seconds(0)),
-      m_symbolDuration(Seconds(0)),
+      m_psDuration(),
+      m_symbolDuration(),
       m_psPerSymbol(0),
       m_psPerFrame(0),
       m_symbolsPerFrame(0)

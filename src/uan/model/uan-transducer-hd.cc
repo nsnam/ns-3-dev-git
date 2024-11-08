@@ -27,7 +27,7 @@ NS_OBJECT_ENSURE_REGISTERED(UanTransducerHd);
 UanTransducerHd::UanTransducerHd()
     : UanTransducer(),
       m_state(RX),
-      m_endTxTime(Seconds(0)),
+      m_endTxTime(),
       m_cleared(false),
       m_rxGainDb(0)
 {

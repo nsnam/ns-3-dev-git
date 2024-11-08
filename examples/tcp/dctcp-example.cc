@@ -287,7 +287,7 @@ main(int argc, char* argv[])
 
     Config::SetDefault("ns3::TcpL4Protocol::SocketType", StringValue("ns3::" + tcpTypeId));
 
-    Time startTime = Seconds(0);
+    Time startTime{0};
     Time stopTime = flowStartupWindow + convergenceTime + measurementWindow;
 
     rxS1R1Bytes.reserve(10);

@@ -75,8 +75,8 @@ Emitter::GetTypeId()
 }
 
 Emitter::Emitter()
-    : m_interval(Seconds(0)),
-      m_last(Seconds(0))
+    : m_interval(),
+      m_last()
 {
     m_var = CreateObject<ExponentialRandomVariable>();
 }

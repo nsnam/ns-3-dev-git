@@ -1537,7 +1537,7 @@ HePhy::CalculateTxDuration(const WifiConstPsduMap& psduMap,
         return ConvertLSigLengthToHeTbPpduDuration(txVector.GetLength(), txVector, band);
     }
 
-    Time maxDuration = Seconds(0);
+    Time maxDuration;
     for (auto& staIdPsdu : psduMap)
     {
         if (txVector.IsDlMu())

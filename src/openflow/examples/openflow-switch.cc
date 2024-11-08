@@ -41,7 +41,7 @@ NS_LOG_COMPONENT_DEFINE("OpenFlowCsmaSwitchExample");
 
 bool verbose = false;
 bool use_drop = false;
-ns3::Time timeout = ns3::Seconds(0);
+ns3::Time timeout;
 
 bool
 SetVerbose(const std::string& value)

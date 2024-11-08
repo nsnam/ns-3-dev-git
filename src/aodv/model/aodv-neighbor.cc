@@ -61,7 +61,7 @@ Neighbors::GetExpireTime(Ipv4Address addr)
             return (i->m_expireTime - Simulator::Now());
         }
     }
-    return Seconds(0);
+    return Time(0);
 }
 
 void

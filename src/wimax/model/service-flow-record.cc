@@ -13,8 +13,8 @@ namespace ns3
 
 ServiceFlowRecord::ServiceFlowRecord()
     : m_grantSize(0),
-      m_grantTimeStamp(Seconds(0)),
-      m_dlTimeStamp(Seconds(0)),
+      m_grantTimeStamp(),
+      m_dlTimeStamp(),
       m_pktsSent(0),
       m_pktsRcvd(0),
       m_bytesSent(0),

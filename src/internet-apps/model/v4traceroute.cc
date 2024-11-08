@@ -85,7 +85,7 @@ V4TraceRoute::GetTypeId()
 }
 
 V4TraceRoute::V4TraceRoute()
-    : m_interval(Seconds(0)),
+    : m_interval(),
       m_size(56),
       m_socket(nullptr),
       m_seq(0),

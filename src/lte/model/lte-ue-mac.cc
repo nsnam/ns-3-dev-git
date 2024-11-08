@@ -227,7 +227,7 @@ LteUeMac::GetTypeId()
 
 LteUeMac::LteUeMac()
     : m_bsrPeriodicity(MilliSeconds(1)), // ideal behavior
-      m_bsrLast(MilliSeconds(0)),
+      m_bsrLast(),
       m_freshUlBsr(false),
       m_harqProcessId(0),
       m_rnti(0),

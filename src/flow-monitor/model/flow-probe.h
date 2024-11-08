@@ -49,7 +49,7 @@ class FlowProbe : public Object
     struct FlowStats
     {
         FlowStats()
-            : delayFromFirstProbeSum(Seconds(0)),
+            : delayFromFirstProbeSum(),
               bytes(0),
               packets(0)
         {

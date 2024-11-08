@@ -226,7 +226,7 @@ LteCellSelectionTestCase::DoRun()
     enbDevs.Add(lteHelper->InstallEnbDevice(enbNodes.Get(3)));
 
     NetDeviceContainer ueDevs;
-    Time lastCheckPoint = MilliSeconds(0);
+    Time lastCheckPoint;
     NS_ASSERT(m_ueSetupList.size() == ueNodes.GetN());
     NodeContainer::Iterator itNode;
     for (itSetup = m_ueSetupList.begin(), itNode = ueNodes.Begin();

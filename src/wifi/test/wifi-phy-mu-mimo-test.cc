@@ -1713,7 +1713,7 @@ TestUlMuMimoPhyTransmission::RunOne()
             WifiPhy::ChannelTuple{channelNum, m_channelWidth, WIFI_PHY_BAND_5GHZ, 0});
     }
 
-    Time delay = Seconds(0.0);
+    Time delay;
     Simulator::Schedule(delay, &TestUlMuMimoPhyTransmission::Reset, this);
     delay += Seconds(1.0);
 

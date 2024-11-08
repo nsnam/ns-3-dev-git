@@ -57,7 +57,7 @@ class QueueEntry
           m_header(h),
           m_ucb(ucb),
           m_ecb(ecb),
-          m_expire(Seconds(0))
+          m_expire()
     {
     }
 

@@ -1365,12 +1365,12 @@ class TcpSocketBase : public TcpSocket
     uint32_t m_dataRetries{0};   //!< Number of data retransmission attempts
 
     // Timeouts
-    TracedValue<Time> m_rto{Seconds(0.0)};   //!< Retransmit timeout
+    TracedValue<Time> m_rto;                 //!< Retransmit timeout
     Time m_minRto{Time::Max()};              //!< minimum value of the Retransmit timeout
     Time m_clockGranularity{Seconds(0.001)}; //!< Clock Granularity used in RTO calcs
-    Time m_delAckTimeout{Seconds(0.0)};      //!< Time to delay an ACK
-    Time m_persistTimeout{Seconds(0.0)};     //!< Time between sending 1-byte probes
-    Time m_cnTimeout{Seconds(0.0)};          //!< Timeout for connection retry
+    Time m_delAckTimeout;                    //!< Time to delay an ACK
+    Time m_persistTimeout;                   //!< Time between sending 1-byte probes
+    Time m_cnTimeout;                        //!< Timeout for connection retry
 
     // History of RTT
     std::deque<RttHistory> m_history; //!< List of sent packet

@@ -19,7 +19,7 @@ Waypoint::Waypoint(const Time& waypointTime, const Vector& waypointPosition)
 }
 
 Waypoint::Waypoint()
-    : time(Seconds(0.0)),
+    : time(),
       position(0, 0, 0)
 {
 }

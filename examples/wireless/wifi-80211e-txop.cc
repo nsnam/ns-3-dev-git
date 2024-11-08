@@ -68,7 +68,7 @@ struct TxopDurationTracer
      * \param linkId the ID of the link
      */
     void Trace(Time startTime, Time duration, uint8_t linkId);
-    Time m_max{Seconds(0)}; //!< maximum TXOP duration
+    Time m_max; //!< maximum TXOP duration
 };
 
 void

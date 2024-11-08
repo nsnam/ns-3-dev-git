@@ -237,7 +237,7 @@ NdiscCache::Entry::Entry(NdiscCache* nd)
       m_waiting(),
       m_router(false),
       m_nudTimer(Timer::CANCEL_ON_DESTROY),
-      m_lastReachabilityConfirmation(Seconds(0.0)),
+      m_lastReachabilityConfirmation(),
       m_nsRetransmit(0)
 {
     NS_LOG_FUNCTION(this);

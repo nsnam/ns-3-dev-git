@@ -149,7 +149,7 @@ SimpleOfdmWimaxChannel::Send(Time BlockTime,
     SimpleOfdmSendParam* param;
     for (auto iter = m_phyList.begin(); iter != m_phyList.end(); ++iter)
     {
-        Time delay = Seconds(0);
+        Time delay;
         if (phy != *iter)
         {
             double distance = 0;

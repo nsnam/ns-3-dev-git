@@ -28,7 +28,7 @@ namespace ns3
 NS_LOG_COMPONENT_DEFINE("LteRrcProtocolReal");
 
 /// RRC real message delay
-const Time RRC_REAL_MSG_DELAY = MilliSeconds(0);
+const Time RRC_REAL_MSG_DELAY;
 
 NS_OBJECT_ENSURE_REGISTERED(LteUeRrcProtocolReal);
 

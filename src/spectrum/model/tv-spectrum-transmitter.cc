@@ -38,7 +38,7 @@ TvSpectrumTransmitter::TvSpectrumTransmitter()
       m_channelBandwidth(6e6),
       m_basePsd(20),
       m_txPsd(nullptr),
-      m_startingTime(Seconds(0)),
+      m_startingTime(),
       m_transmitDuration(Seconds(0.2)),
       m_active(false)
 {

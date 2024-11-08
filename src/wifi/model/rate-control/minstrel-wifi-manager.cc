@@ -1009,7 +1009,7 @@ MinstrelWifiManager::RateInit(MinstrelWifiRemoteStation* station)
         // Emulating minstrel.c::ath_rate_ctl_reset
         // We only check from 2 to 10 retries. This guarantee that
         // at least one retry is permitted.
-        Time totalTxTimeWithGivenRetries = Seconds(0.0); // tx_time in minstrel.c
+        Time totalTxTimeWithGivenRetries; // tx_time in minstrel.c
         NS_LOG_DEBUG(" Calculating the number of retries");
         for (uint32_t retries = 2; retries < 11; retries++)
         {

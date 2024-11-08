@@ -128,16 +128,14 @@ class TcpRateOps : public Object
     struct TcpRateSample
     {
         DataRate m_deliveryRate{DataRate("0bps")}; //!< The delivery rate sample
-        bool m_isAppLimited{false};    //!< Indicates whether the rate sample is application-limited
-        Time m_interval{Seconds(0.0)}; //!< The length of the sampling interval
+        bool m_isAppLimited{false}; //!< Indicates whether the rate sample is application-limited
+        Time m_interval;            //!< The length of the sampling interval
         int32_t m_delivered{
             0}; //!< The amount of data marked as delivered over the sampling interval
-        uint32_t m_priorDelivered{0};   //!< The delivered count of the most recent packet delivered
-        Time m_priorTime{Seconds(0.0)}; //!< The delivered time of the most recent packet delivered
-        Time m_sendElapsed{
-            Seconds(0.0)}; //!< Send time interval calculated from the most recent packet delivered
-        Time m_ackElapsed{
-            Seconds(0.0)}; //!< ACK time interval calculated from the most recent packet delivered
+        uint32_t m_priorDelivered{0}; //!< The delivered count of the most recent packet delivered
+        Time m_priorTime;             //!< The delivered time of the most recent packet delivered
+        Time m_sendElapsed; //!< Send time interval calculated from the most recent packet delivered
+        Time m_ackElapsed;  //!< ACK time interval calculated from the most recent packet delivered
         uint32_t m_bytesLoss{
             0}; //!< The amount of data marked as lost from the most recent ack received
         uint32_t m_priorInFlight{0}; //!< The value if bytes in flight prior to last received ack
@@ -161,17 +159,16 @@ class TcpRateOps : public Object
      */
     struct TcpRateConnection
     {
-        uint64_t m_delivered{0};          //!< The total amount of data in bytes delivered so far
-        Time m_deliveredTime{Seconds(0)}; //!< Simulator time when m_delivered was last updated
-        Time m_firstSentTime{
-            Seconds(0)}; //!< The send time of the packet that was most recently marked as delivered
+        uint64_t m_delivered{0}; //!< The total amount of data in bytes delivered so far
+        Time m_deliveredTime;    //!< Simulator time when m_delivered was last updated
+        Time m_firstSentTime;    //!< The send time of the packet that was most recently marked as
+                                 //!< delivered
         uint32_t m_appLimited{
             0}; //!< The index of the last transmitted packet marked as application-limited
         uint32_t m_txItemDelivered{0}; //!< The value of delivered when the acked item was sent
         int32_t m_rateDelivered{
             0}; //!< The amount of data delivered considered to calculate delivery rate.
-        Time m_rateInterval{
-            Seconds(0)}; //!< The value of interval considered to calculate delivery rate.
+        Time m_rateInterval; //!< The value of interval considered to calculate delivery rate.
         bool m_rateAppLimited{false}; //!< Was sample was taken when data is app limited?
     };
 };

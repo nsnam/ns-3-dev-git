@@ -63,8 +63,8 @@ class LteHandoverDelayTestCase : public TestCase
           m_handoverTime(handoverTime),
           m_delayThreshold(delayThreshold),
           m_simulationDuration(simulationDuration),
-          m_ueHandoverStart(Seconds(0)),
-          m_enbHandoverStart(Seconds(0))
+          m_ueHandoverStart(),
+          m_enbHandoverStart()
     {
     }
 

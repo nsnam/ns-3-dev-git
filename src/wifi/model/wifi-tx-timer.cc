@@ -23,7 +23,7 @@ WifiTxTimer::WifiTxTimer()
     : m_timeoutEvent(),
       m_reason(NOT_RUNNING),
       m_impl(nullptr),
-      m_end(Seconds(0))
+      m_end()
 {
 }
 

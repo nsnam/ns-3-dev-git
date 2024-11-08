@@ -136,7 +136,7 @@ SingleModelSpectrumChannel::StartTx(Ptr<SpectrumSignalParameters> txParams)
 
         if ((*rxPhyIterator) != txParams->txPhy)
         {
-            Time delay = MicroSeconds(0);
+            Time delay;
 
             Ptr<MobilityModel> receiverMobility = (*rxPhyIterator)->GetMobility();
             NS_LOG_LOGIC("copying signal parameters " << txParams);

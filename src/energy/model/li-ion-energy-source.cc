@@ -105,7 +105,7 @@ LiIonEnergySource::GetTypeId()
 
 LiIonEnergySource::LiIonEnergySource()
     : m_drainedCapacity(0.0),
-      m_lastUpdateTime(Seconds(0.0))
+      m_lastUpdateTime()
 {
     NS_LOG_FUNCTION(this);
 }

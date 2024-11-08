@@ -68,7 +68,7 @@ operator>>(std::istream& is, UanPdp& pdp)
 
 Tap::Tap()
     : m_amplitude(0.0),
-      m_delay(Seconds(0))
+      m_delay()
 {
 }
 
@@ -104,7 +104,7 @@ UanPdp::UanPdp(std::vector<std::complex<double>> amps, Time resolution)
     : m_resolution(resolution)
 {
     m_taps.resize(amps.size());
-    Time arrTime = Seconds(0);
+    Time arrTime;
     for (uint32_t index = 0; index < amps.size(); index++)
     {
         m_taps[index] = Tap(arrTime, amps[index]);
@@ -116,7 +116,7 @@ UanPdp::UanPdp(std::vector<double> amps, Time resolution)
     : m_resolution(resolution)
 {
     m_taps.resize(amps.size());
-    Time arrTime = Seconds(0);
+    Time arrTime;
     for (uint32_t index = 0; index < amps.size(); index++)
     {
         m_taps[index] = Tap(arrTime, amps[index]);

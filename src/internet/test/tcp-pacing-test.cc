@@ -174,11 +174,11 @@ TcpPacingTest::TcpPacingTest(uint32_t segmentSize,
       m_paceInitialWindow(paceInitialWindow),
       m_delAckMaxCount(delAckMaxCount),
       m_isConnAboutToEnd(false),
-      m_transmissionStartTime(Seconds(0)),
-      m_expectedInterval(Seconds(0)),
+      m_transmissionStartTime(),
+      m_expectedInterval(),
       m_packetsSent(0),
-      m_nextPacketInterval(Seconds(0)),
-      m_tracedRtt(Seconds(0))
+      m_nextPacketInterval(),
+      m_tracedRtt()
 {
     m_congControlTypeId = typeId;
 }

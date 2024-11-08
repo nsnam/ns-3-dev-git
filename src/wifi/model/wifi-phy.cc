@@ -385,17 +385,17 @@ WifiPhy::WifiPhy()
       m_standard(WIFI_STANDARD_UNSPECIFIED),
       m_maxModClassSupported(WIFI_MOD_CLASS_UNKNOWN),
       m_band(WIFI_PHY_BAND_UNSPECIFIED),
-      m_sifs(Seconds(0)),
-      m_slot(Seconds(0)),
-      m_pifs(Seconds(0)),
-      m_ackTxTime(Seconds(0)),
-      m_blockAckTxTime(Seconds(0)),
+      m_sifs(),
+      m_slot(),
+      m_pifs(),
+      m_ackTxTime(),
+      m_blockAckTxTime(),
       m_powerRestricted(false),
       m_channelAccessRequested(false),
       m_txSpatialStreams(1),
       m_rxSpatialStreams(1),
       m_wifiRadioEnergyModel(nullptr),
-      m_timeLastPreambleDetected(Seconds(0))
+      m_timeLastPreambleDetected()
 {
     NS_LOG_FUNCTION(this);
     m_random = CreateObject<UniformRandomVariable>();

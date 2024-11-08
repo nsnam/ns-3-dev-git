@@ -27,7 +27,7 @@ WimaxMacQueue::QueueElement::QueueElement()
     : m_packet(Create<Packet>()),
       m_hdrType(MacHeaderType()),
       m_hdr(GenericMacHeader()),
-      m_timeStamp(Seconds(0)),
+      m_timeStamp(),
       m_fragmentation(false),
       m_fragmentNumber(0),
       m_fragmentOffset(0)

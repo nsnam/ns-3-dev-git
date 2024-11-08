@@ -37,11 +37,11 @@ NS_OBJECT_ENSURE_REGISTERED(NoBackhaulEpcHelper);
 NoBackhaulEpcHelper::NoBackhaulEpcHelper()
     : m_gtpuUdpPort(2152), // fixed by the standard
       m_s11LinkDataRate(DataRate("10Gb/s")),
-      m_s11LinkDelay(Seconds(0)),
+      m_s11LinkDelay(),
       m_s11LinkMtu(3000),
       m_gtpcUdpPort(2123), // fixed by the standard
       m_s5LinkDataRate(DataRate("10Gb/s")),
-      m_s5LinkDelay(Seconds(0)),
+      m_s5LinkDelay(),
       m_s5LinkMtu(3000)
 {
     NS_LOG_FUNCTION(this);

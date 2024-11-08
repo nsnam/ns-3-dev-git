@@ -140,7 +140,7 @@ LteEnbPhy::LteEnbPhy(Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy)
       m_nrFrames(0),
       m_nrSubFrames(0),
       m_srsPeriodicity(0),
-      m_srsStartTime(Seconds(0)),
+      m_srsStartTime(),
       m_currentSrsOffset(0),
       m_interferenceSampleCounter(0)
 {

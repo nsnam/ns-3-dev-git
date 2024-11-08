@@ -47,7 +47,7 @@ PointToPointChannel::GetTypeId()
 // has an "infitely" fast transmission speed and zero delay.
 PointToPointChannel::PointToPointChannel()
     : Channel(),
-      m_delay(Seconds(0.)),
+      m_delay(),
       m_nDevices(0)
 {
     NS_LOG_FUNCTION_NOARGS();

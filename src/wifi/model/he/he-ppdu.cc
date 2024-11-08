@@ -302,7 +302,7 @@ HePpdu::SetHeMuUserInfos(WifiTxVector& txVector,
 Time
 HePpdu::GetTxDuration() const
 {
-    Time ppduDuration = Seconds(0);
+    Time ppduDuration;
     const auto& txVector = GetTxVector();
     const auto length = m_lSig.GetLength();
     const auto tSymbol = HePhy::GetSymbolDuration(txVector.GetGuardInterval());

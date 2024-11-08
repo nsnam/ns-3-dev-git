@@ -439,7 +439,7 @@ UanMacRc::ScheduleData(const UanHeaderRcCts& ctsh,
 
     Time startDelay = txTime - Simulator::Now();
 
-    Time frameDelay = Seconds(0);
+    Time frameDelay;
 
     const std::list<std::pair<Ptr<Packet>, Mac8Address>> l = it->GetPktList();
     auto pit = l.begin();

@@ -293,7 +293,7 @@ TxDurationTest::CheckMuTxDuration(std::list<uint32_t> sizes,
             knownDuration +=
                 MicroSeconds(6); // 2.4 GHz band should be at the end of the bands to test
         }
-        Time calculatedDuration = NanoSeconds(0);
+        Time calculatedDuration;
         uint32_t longestSize = 0;
         auto iterStaId = staIds.begin();
         for (auto& size : sizes)

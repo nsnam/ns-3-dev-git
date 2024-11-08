@@ -31,7 +31,7 @@ NS_OBJECT_ENSURE_REGISTERED(UplinkScheduler);
 
 UplinkScheduler::UplinkScheduler()
     : m_bs(nullptr),
-      m_timeStampIrInterval(Seconds(0)),
+      m_timeStampIrInterval(),
       m_nrIrOppsAllocated(0),
       m_isIrIntrvlAllocated(false),
       m_isInvIrIntrvlAllocated(false),
@@ -42,7 +42,7 @@ UplinkScheduler::UplinkScheduler()
 
 UplinkScheduler::UplinkScheduler(Ptr<BaseStationNetDevice> bs)
     : m_bs(bs),
-      m_timeStampIrInterval(Seconds(0)),
+      m_timeStampIrInterval(),
       m_nrIrOppsAllocated(0),
       m_isIrIntrvlAllocated(false),
       m_isInvIrIntrvlAllocated(false),

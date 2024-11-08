@@ -868,7 +868,7 @@ StaWifiMac::MissedBeacons()
     // until the RX is completed (otherwise, crashes may occur if we are receiving a MU frame
     // because its reception requires the STA-ID). We need to check that a PHY is operating on
     // the given link, because this may (temporarily) not be the case for EMLSR clients.
-    Time delay = Seconds(0);
+    Time delay;
     for (const auto& [id, link] : GetLinks())
     {
         if (link->phy && link->phy->IsStateRx())

@@ -15,7 +15,7 @@ namespace ns3
 {
 
 UlJob::UlJob()
-    : m_deadline(Seconds(0)),
+    : m_deadline(),
       m_size(0)
 {
 }

@@ -59,7 +59,7 @@ DsrRreqTable::RemoveLeastExpire()
 {
     NS_LOG_FUNCTION(this);
     Ipv4Address firstExpire;
-    Time max = Seconds(0.0);
+    Time max;
     for (auto i = m_rreqDstMap.begin(); i != m_rreqDstMap.end(); ++i)
     {
         Ipv4Address dst = i->first;

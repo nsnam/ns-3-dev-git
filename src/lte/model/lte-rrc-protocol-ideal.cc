@@ -31,7 +31,7 @@ NS_LOG_COMPONENT_DEFINE("LteRrcProtocolIdeal");
  */
 
 /// RRC ideal message delay
-static const Time RRC_IDEAL_MSG_DELAY = MilliSeconds(0);
+static const Time RRC_IDEAL_MSG_DELAY;
 
 NS_OBJECT_ENSURE_REGISTERED(LteUeRrcProtocolIdeal);
 

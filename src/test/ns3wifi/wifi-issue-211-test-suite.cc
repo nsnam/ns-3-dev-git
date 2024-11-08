@@ -71,7 +71,7 @@ class Issue211Test : public TestCase
 Issue211Test::Issue211Test()
     : TestCase("Test case for resuming data transmission when the recipient moves back"),
       m_lastRxBytes(0),
-      m_lastCheckPointTime(Seconds(0)),
+      m_lastCheckPointTime(),
       m_payloadSize(2000)
 {
 }

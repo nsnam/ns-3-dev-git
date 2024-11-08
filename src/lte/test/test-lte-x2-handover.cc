@@ -440,7 +440,7 @@ LteX2HandoverTestCase::DoRun()
 
     // schedule handover events and corresponding checks
 
-    Time stopTime = Seconds(0);
+    Time stopTime;
     for (auto hoEventIt = m_handoverEventList.begin(); hoEventIt != m_handoverEventList.end();
          ++hoEventIt)
     {

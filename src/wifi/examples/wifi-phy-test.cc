@@ -253,7 +253,7 @@ CollisionExperiment::CollisionExperiment()
 }
 
 CollisionExperiment::Input::Input()
-    : interval(MicroSeconds(0)),
+    : interval(),
       xA(-5),
       xB(5),
       txModeA("OfdmRate6Mbps"),

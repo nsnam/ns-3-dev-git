@@ -25,10 +25,10 @@ NS_LOG_COMPONENT_DEFINE("LenaRadioLinkFailure");
 
 // Global values to check the simulation
 // behavior during and after the simulation.
-uint16_t counterN310FirsteNB = 0;        //!< Counter of N310 indications.
-Time t310StartTimeFirstEnb = Seconds(0); //!< Time of first N310 indication.
-uint32_t ByteCounter = 0;                //!< Byte counter.
-uint32_t oldByteCounter = 0;             //!< Old Byte counter,
+uint16_t counterN310FirsteNB = 0; //!< Counter of N310 indications.
+Time t310StartTimeFirstEnb;       //!< Time of first N310 indication.
+uint32_t ByteCounter = 0;         //!< Byte counter.
+uint32_t oldByteCounter = 0;      //!< Old Byte counter,
 
 /**
  * Print the position of a UE with given IMSI.

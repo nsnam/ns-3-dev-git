@@ -260,7 +260,7 @@ NodeStatistics::GetCalcTxTime(DataRate rate)
         }
     }
     NS_ASSERT(false);
-    return Seconds(0);
+    return Time(0);
 }
 
 void

@@ -352,13 +352,13 @@ class TcpBbr : public TcpCongestionOps
     uint32_t m_nextRoundDelivered{0};           //!< Denotes the end of a packet-timed round trip
     Time m_probeRttDuration{MilliSeconds(200)}; //!< A constant specifying the minimum duration for
                                                 //!< which ProbeRTT state, default 200 millisecs
-    Time m_probeRtPropStamp{
-        Seconds(0)}; //!< The wall clock time at which the current BBR.RTProp sample was obtained.
-    Time m_probeRttDoneStamp{Seconds(0)}; //!< Time to exit from BBR_PROBE_RTT state
-    bool m_probeRttRoundDone{false};      //!< True when it is time to exit BBR_PROBE_RTT
-    bool m_packetConservation{false};     //!< Enable/Disable packet conservation mode
-    uint32_t m_priorCwnd{0};              //!< The last-known good congestion window
-    bool m_idleRestart{false};            //!< When restarting from idle, set it true
+    Time m_probeRtPropStamp;  //!< The wall clock time at which the current BBR.RTProp sample was
+                              //!< obtained.
+    Time m_probeRttDoneStamp; //!< Time to exit from BBR_PROBE_RTT state
+    bool m_probeRttRoundDone{false};  //!< True when it is time to exit BBR_PROBE_RTT
+    bool m_packetConservation{false}; //!< Enable/Disable packet conservation mode
+    uint32_t m_priorCwnd{0};          //!< The last-known good congestion window
+    bool m_idleRestart{false};        //!< When restarting from idle, set it true
     uint32_t m_targetCWnd{0}; //!< Target value for congestion window, adapted to the estimated BDP
     DataRate m_fullBandwidth{0};      //!< Value of full bandwidth recorded
     uint32_t m_fullBandwidthCount{0}; //!< Count of full bandwidth recorded consistently
@@ -366,14 +366,13 @@ class TcpBbr : public TcpCongestionOps
         Time::Max()}; //!< Estimated two-way round-trip propagation delay of the path, estimated
                       //!< from the windowed minimum recent round-trip delay sample.
     uint32_t m_sendQuantum{
-        0}; //!< The maximum size of a data aggregate scheduled and transmitted together
-    Time m_cycleStamp{Seconds(0)};       //!< Last time gain cycle updated
+        0};            //!< The maximum size of a data aggregate scheduled and transmitted together
+    Time m_cycleStamp; //!< Last time gain cycle updated
     uint32_t m_cycleIndex{0};            //!< Current index of gain cycle
     bool m_minRttExpired{false};         //!< A boolean recording whether the BBR.RTprop has expired
     Time m_minRttFilterLen{Seconds(10)}; //!< A constant specifying the length of the RTProp min
                                          //!< filter window, default 10 secs.
-    Time m_minRttStamp{
-        Seconds(0)}; //!< The wall clock time at which the current BBR.RTProp sample was obtained
+    Time m_minRttStamp; //!< The wall clock time at which the current BBR.RTProp sample was obtained
     bool m_isInitialized{false}; //!< Set to true after first time initialization variables
     Ptr<UniformRandomVariable> m_uv{nullptr}; //!< Uniform Random Variable
     uint64_t m_delivered{0}; //!< The total amount of data in bytes delivered so far
@@ -385,10 +384,10 @@ class TcpBbr : public TcpCongestionOps
     uint32_t m_extraAckedWinRttLength{5}; //!< Window length of extra acked window
     uint32_t m_ackEpochAckedResetThresh{
         1 << 17}; //!< Max allowed val for m_ackEpochAcked, after which sampling epoch is reset
-    uint32_t m_extraAckedIdx{0};     //!< Current index in extra acked array
-    Time m_ackEpochTime{Seconds(0)}; //!< Starting of ACK sampling epoch time
-    uint32_t m_ackEpochAcked{0};     //!< Bytes ACked in sampling epoch
-    bool m_hasSeenRtt{false};        //!< Have we seen RTT sample yet?
+    uint32_t m_extraAckedIdx{0}; //!< Current index in extra acked array
+    Time m_ackEpochTime;         //!< Starting of ACK sampling epoch time
+    uint32_t m_ackEpochAcked{0}; //!< Bytes ACked in sampling epoch
+    bool m_hasSeenRtt{false};    //!< Have we seen RTT sample yet?
     double m_pacingMargin{0.01}; //!< BBR intentionally reduces the pacing rate by 1% to drain any
                                  //!< standing queues. See `bbr_rate_bytes_per_sec` in Linux.
 };

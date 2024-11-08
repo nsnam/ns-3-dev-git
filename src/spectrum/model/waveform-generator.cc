@@ -27,7 +27,7 @@ WaveformGenerator::WaveformGenerator()
       m_netDevice(nullptr),
       m_channel(nullptr),
       m_txPowerSpectralDensity(nullptr),
-      m_startTime(Seconds(0))
+      m_startTime()
 {
 }
 
