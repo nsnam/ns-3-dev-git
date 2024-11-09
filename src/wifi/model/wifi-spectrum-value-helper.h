@@ -125,9 +125,8 @@ class WifiSpectrumValueHelper
         const std::vector<bool>& puncturedSubchannels = {});
 
     /**
-     * Create a transmit power spectral density corresponding to OFDM
-     * High Throughput (HT) (802.11n/ac).  Channel width may vary between
-     * 20, 40, 80, and 160 MHz.
+     * Create a transmit power spectral density corresponding to OFDM High Throughput (HT/VHT)
+     * (802.11n/ac). Channel width may vary between 20, 40, 80, and 160 MHz.
      *
      * @param centerFrequencies center frequency per segment
      * @param channelWidth total allocated channel width over all segments
@@ -149,9 +148,9 @@ class WifiSpectrumValueHelper
         dBr_u lowestPoint = dBr_u{-40});
 
     /**
-     * Create a transmit power spectral density corresponding to OFDM
-     * High Efficiency (HE) (802.11ax) for contiguous channels.
-     * Channel width may vary between 20, 40, 80, and 160 MHz.
+     * Create a transmit power spectral density corresponding to OFDM High Efficiency (HE/EHT)
+     * (802.11ax/be) for contiguous channels. Channel width may vary between 20, 40, 80, 160 and 320
+     * MHz.
      *
      * @param centerFrequency center frequency
      * @param channelWidth channel width
