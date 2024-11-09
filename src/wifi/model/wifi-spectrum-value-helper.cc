@@ -489,6 +489,9 @@ WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity(
     NS_ASSERT_MSG(
         centerFrequencies.size() == 1 || channelWidth == MHz_u{160},
         "PSD for non-contiguous channels is only possible when the total width is 160 MHz");
+    NS_ASSERT_MSG(
+        (channelWidth != 160) || (centerFrequencies.size() <= 2),
+        "It is not possible to create a PSD made of more than 2 segments for a width of 160 MHz");
     NS_LOG_FUNCTION(printFrequencies(centerFrequencies)
                     << channelWidth << txPower << guardBandwidth << minInnerBand << minOuterBand
                     << lowestPoint);
@@ -511,14 +514,6 @@ WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity(
                       (nAllocatedBands + nGuardBands + nUnallocatedBands + 1),
                   "Unexpected number of bands " << c->GetSpectrumModel()->GetNumBands());
     Watt_u txPowerPerBand{0.0};
-    uint32_t start1;
-    uint32_t stop1;
-    uint32_t start2;
-    uint32_t stop2;
-    uint32_t start3;
-    uint32_t stop3;
-    uint32_t start4;
-    uint32_t stop4;
     // Prepare spectrum mask specific variables
     auto innerSlopeWidth =
         static_cast<uint32_t>((MHzToHz(MHz_u{1}) / carrierSpacing) +
@@ -526,6 +521,9 @@ WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity(
     std::vector<std::vector<WifiSpectrumBandIndices>> subBandsPerSegment(
         centerFrequencies.size()); // list of data/pilot-containing subBands (sent at 0dBr)
     WifiSpectrumBandIndices maskBand(0, nAllocatedBands + nGuardBands + nUnallocatedBands);
+    std::size_t skippedSubbands{0};
+    std::size_t numAllocatedSubbands{0};
+    std::size_t numDc{0};
     switch (static_cast<uint16_t>(channelWidth))
     {
     case 20:
@@ -533,65 +531,52 @@ WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity(
         txPowerPerBand = txPower / 242;
         innerSlopeWidth = static_cast<uint32_t>((Hz_u{5e5} / carrierSpacing) +
                                                 0.5); // [-10.25;-9.75] & [9.75;10.25]
-        // skip the guard band and 6 subbands, then place power in 121 subbands, then
-        // skip 3 DC, then place power in 121 subbands, then skip
-        // the final 5 subbands and the guard band.
-        start1 = (nGuardBands / 2) + 6;
-        stop1 = start1 + 121 - 1;
-        start2 = stop1 + 4;
-        stop2 = start2 + 121 - 1;
-        subBandsPerSegment.at(0).emplace_back(start1, stop1);
-        subBandsPerSegment.at(0).emplace_back(start2, stop2);
+        skippedSubbands = 6;
+        numAllocatedSubbands = 121;
+        numDc = 3;
         break;
     case 40:
         // 484 subcarriers (468 data + 16 pilot)
         txPowerPerBand = txPower / 484;
-        // skip the guard band and 12 subbands, then place power in 242 subbands, then
-        // skip 5 DC, then place power in 242 subbands, then skip
-        // the final 11 subbands and the guard band.
-        start1 = (nGuardBands / 2) + 12;
-        stop1 = start1 + 242 - 1;
-        start2 = stop1 + 6;
-        stop2 = start2 + 242 - 1;
-        subBandsPerSegment.at(0).emplace_back(start1, stop1);
-        subBandsPerSegment.at(0).emplace_back(start2, stop2);
+        skippedSubbands = 12;
+        numAllocatedSubbands = 242;
+        numDc = 5;
         break;
     case 80:
-        // 996 subcarriers (980 data + 16 pilot)
-        txPowerPerBand = txPower / 996;
-        // skip the guard band and 12 subbands, then place power in 498 subbands, then
-        // skip 5 DC, then place power in 498 subbands, then skip
-        // the final 11 subbands and the guard band.
-        start1 = (nGuardBands / 2) + 12;
-        stop1 = start1 + 498 - 1;
-        start2 = stop1 + 6;
-        stop2 = start2 + 498 - 1;
-        subBandsPerSegment.at(0).emplace_back(start1, stop1);
-        subBandsPerSegment.at(0).emplace_back(start2, stop2);
+    case 160: // 2 x 80 MHz
+    case 320: // 4 x 80 MHz
+        // 996 subcarriers (980 data + 16 pilot) per 80 MHz band
+        txPowerPerBand = txPower / (996 * (channelWidth / 80));
+        skippedSubbands = 12;
+        numAllocatedSubbands = 498;
+        numDc = 5;
         break;
-    case 160: {
-        NS_ASSERT_MSG(centerFrequencies.size() <= 2,
-                      "It is not possible to create a PSD made of more than 2 segments for a width "
-                      "of 160 MHz");
-        // 2 x 996 subcarriers (2 x 80 MHZ bands)
-        txPowerPerBand = txPower / (2 * 996);
-        start1 = (nGuardBands / 2) + 12;
-        stop1 = start1 + 498 - 1;
-        start2 = stop1 + 6;
-        stop2 = start2 + 498 - 1;
-        start3 = stop2 + (2 * 12) + nUnallocatedBands;
-        stop3 = start3 + 498 - 1;
-        start4 = stop3 + 6;
-        stop4 = start4 + 498 - 1;
-        subBandsPerSegment.at(0).emplace_back(start1, stop1);
-        subBandsPerSegment.at(0).emplace_back(start2, stop2);
-        subBandsPerSegment.at(subBandsPerSegment.size() - 1).emplace_back(start3, stop3);
-        subBandsPerSegment.at(subBandsPerSegment.size() - 1).emplace_back(start4, stop4);
-        break;
-    }
     default:
         NS_FATAL_ERROR("ChannelWidth " << channelWidth << " unsupported");
         break;
+    }
+
+    // skip the guard band and skipped subbands, then place power in allocated subbands, then skip
+    // DC subbands, then place power in allocated subbands, then skip the final 11 subbands and the
+    // guard band.
+    auto start = (nGuardBands / 2) + skippedSubbands;
+    auto stop = start + numAllocatedSubbands - 1;
+    subBandsPerSegment.at(0).emplace_back(start, stop);
+    start = stop + numDc + 1;
+    stop = start + numAllocatedSubbands - 1;
+    subBandsPerSegment.at(0).emplace_back(start, stop);
+    if (channelWidth >= 160)
+    {
+        for (std::size_t i = 1; i < (channelWidth / 80); ++i)
+        {
+            start = subBandsPerSegment.front().back().second + (2 * skippedSubbands) +
+                    nUnallocatedBands;
+            auto stop = start + numAllocatedSubbands - 1;
+            subBandsPerSegment.back().emplace_back(start, stop);
+            start = stop + numDc + 1;
+            stop = start + numAllocatedSubbands - 1;
+            subBandsPerSegment.back().emplace_back(start, stop);
+        }
     }
 
     // Create punctured bands
@@ -600,8 +585,8 @@ WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity(
                               0.5); // size in number of subcarriers of the punctured slope band
     std::vector<std::vector<WifiSpectrumBandIndices>> puncturedBandsPerSegment;
     std::size_t subcarriersPerSuband = (MHzToHz(MHz_u{20}) / carrierSpacing);
-    uint32_t start = (nGuardBands / 2);
-    uint32_t stop = start + subcarriersPerSuband - 1;
+    start = (nGuardBands / 2);
+    stop = start + subcarriersPerSuband - 1;
     if (!puncturedSubchannels.empty())
     {
         for (std::size_t i = 0; i < subBandsPerSegment.size(); ++i)
