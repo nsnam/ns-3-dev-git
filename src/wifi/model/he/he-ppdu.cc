@@ -674,7 +674,7 @@ HePpdu::GetHeSigBContentChannels(const WifiTxVector& txVector, uint8_t p20Index)
     std::optional<HeSigBUserSpecificField> cc2Central26ToneRu;
 
     const auto& orderedMap = txVector.GetUserInfoMapOrderedByRus(p20Index);
-    std::optional<HeRu::RuType> prevRuType;
+    HeRu::RuType prevRuType{HeRu::RuType::RU_TYPE_MAX};
     std::size_t prevRuIndex{0};
     std::size_t prevCcIndex{0};
     for (const auto& [ru, staIds] : orderedMap)
@@ -698,9 +698,9 @@ HePpdu::GetHeSigBContentChannels(const WifiTxVector& txVector, uint8_t p20Index)
         }
 
         const auto ruIndex = ru.GetPhyIndex(channelWidth, p20Index);
-        if (prevRuType && (*prevRuType != ruType))
+        if ((prevRuType < HeRu::RuType::RU_TYPE_MAX) && (prevRuType != ruType))
         {
-            prevRuIndex *= HeRu::GetBandwidth(*prevRuType) / HeRu::GetBandwidth(ruType);
+            prevRuIndex *= HeRu::GetBandwidth(prevRuType) / HeRu::GetBandwidth(ruType);
         }
         if (ruType >= HeRu::RU_484_TONE)
         {
@@ -735,7 +735,7 @@ HePpdu::GetHeSigBContentChannels(const WifiTxVector& txVector, uint8_t p20Index)
             {
                 ccIndex = ((prevRuIndex / numRus) % 2 == 0) ? 0 : 1;
             }
-            const auto central26TonesRus = HeRu::GetCentral26TonesRus(channelWidth, *prevRuType);
+            const auto central26TonesRus = HeRu::GetCentral26TonesRus(channelWidth, prevRuType);
             if (ruType < HeRu::RuType::RU_242_TONE && (prevCcIndex == ccIndex) &&
                 ((ruType != HeRu::RuType::RU_26_TONE) ||
                  std::none_of(central26TonesRus.cbegin(),

@@ -36,7 +36,8 @@ class HeRu
         RU_242_TONE,
         RU_484_TONE,
         RU_996_TONE,
-        RU_2x996_TONE
+        RU_2x996_TONE,
+        RU_TYPE_MAX
     };
 
     /// (lowest index, highest index) pair defining a subcarrier range
