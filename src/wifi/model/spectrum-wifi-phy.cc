@@ -153,6 +153,11 @@ SpectrumWifiPhy::GetHeRuBands(Ptr<WifiSpectrumPhyInterface> spectrumPhyInterface
     const auto channelWidth = spectrumPhyInterface->GetChannelWidth();
     for (MHz_u bw = channelWidth; bw >= MHz_u{20}; bw = bw / 2)
     {
+        if (bw >= 320)
+        {
+            // FIXME: OFDMA not supported with 320 MHz yet
+            continue;
+        }
         for (uint32_t i = 0; i < (channelWidth / bw); ++i)
         {
             for (uint32_t type = 0; type < 7; type++)
