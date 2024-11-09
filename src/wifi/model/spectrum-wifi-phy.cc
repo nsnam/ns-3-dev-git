@@ -152,7 +152,7 @@ SpectrumWifiPhy::GetHeRuBands(Ptr<WifiSpectrumPhyInterface> spectrumPhyInterface
     {
         for (uint32_t i = 0; i < (channelWidth / bw); ++i)
         {
-            for (uint32_t type = 0; type < 7; type++)
+            for (uint32_t type = 0; type < HeRu::RuType::RU_TYPE_MAX; type++)
             {
                 auto ruType = static_cast<HeRu::RuType>(type);
                 std::size_t nRus = HeRu::GetNRus(bw, ruType);
