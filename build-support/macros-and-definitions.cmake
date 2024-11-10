@@ -696,6 +696,12 @@ macro(process_options)
         set(ENABLE_PYTHON_BINDINGS_REASON
             "missing dependency: ${missing_packages}"
         )
+      elseif(${NS3_MPI})
+        message(
+          ${HIGHLIGHTED_STATUS}
+          "Bindings: python bindings disabled due to an incompatibility with the MPI module"
+        )
+        set(ENABLE_PYTHON_BINDINGS_REASON "incompatible module enabled: mpi")
       else()
         set(ENABLE_PYTHON_BINDINGS ON)
       endif()
