@@ -38,10 +38,86 @@ If a user is not interested in Python, no action is needed; the Python bindings
 are only built on-demand by Cppyy, and only if the user enables them in the
 configuration of |ns3|.
 
-Due to an `upstream limitation with Cppyy <https://github.com/wlav/cppyy/issues/150>`_, Python bindings do not work on macOS machines with Apple silicon (M1 and M2 processors).
-
 Prior to ns-3.37, the previous Python bindings framework was based on
 `Pybindgen <https://github.com/gjcarneiro/pybindgen>`_.
+
+Python virtual environment
+**************************
+
+According to `PEP 668 <https://peps.python.org/pep-0668/>`_ it is a best practice
+to create a virtual environment for each new Python project. This isolates and
+simplifies dependency management. This is done via Python virtual environments (VENV).
+
+Trying to pip install cppyy, required for ns-3 python bindings, system-wide will
+likely result in the following error message:
+
+.. sourcecode:: console
+
+  ~$ pip install cppyy
+  error: externally-managed-environment
+
+  x This environment is externally managed
+  └─> To install Python packages system-wide, try apt install
+      python3-xyz, where xyz is the package you are trying to
+      install.
+
+      If you wish to install a non-Debian-packaged Python package,
+      create a virtual environment using python3 -m venv path/to/venv.
+      Then use path/to/venv/bin/python and path/to/venv/bin/pip. Make
+      sure you have python3-full installed.
+
+      If you wish to install a non-Debian packaged Python application,
+      it may be easiest to use pipx install xyz, which will manage a
+      virtual environment for you. Make sure you have pipx installed.
+
+      See /usr/share/doc/python3.12/README.venv for more information.
+
+  note: If you believe this is a mistake, please contact your Python
+        installation or OS distribution provider. You can override this,
+        at the risk of breaking your Python installation or OS, by
+        passing --break-system-packages.
+  hint: See PEP 668 for the detailed specification.
+
+While it is possible to ignore it via the ``--break-system-packages``
+that can cause packages required by **your operating system to fail**.
+You can check this is actually the case by running pip freeze, which
+will list multiple pip packages installed along the OS.
+
+.. sourcecode:: console
+
+   ~$ pip freeze
+   ...
+   ubuntu-pro-client==8001
+   ...
+
+Therefore, it is recommended you create a virtual environment and use it.
+This can be done with the following command:
+
+.. sourcecode:: console
+
+   ~$ python3 -m venv myEnv
+
+Note: if you don't have it installed, you will need to install it either
+either via the system package manager, or via pip itself.
+
+After creating the venv, it is necessary to activate it, to properly
+set environment variables that will treat it as the active python installation.
+
+.. sourcecode:: console
+
+   ~$ source ~/myEnv/bin/activate
+   (myEnv) ~$ whereis python
+   python: ~/myEnv/bin/python
+   (myEnv) ~$ pip freeze
+   (myEnv) ~$
+
+From this point onwards, it is assumed all python commands are executed
+from within a virtual environment (venv).
+
+Note: When configuring ns-3 python bindings from source, make sure to
+activate the venv before configuring. The appropriate Python venv will be
+passed to CMake for proper configuration and used by the ns-3 script to
+execute scripts. This includes python scripts called by C++ programs.
 
 An Example Python Script that Runs |ns3|
 ****************************************
@@ -177,6 +253,26 @@ To run your own Python script that calls |ns3| and that has this path, ``/path/t
 
   $ ./ns3 shell
   $ python3 /path/to/your/example/my-script.py
+
+
+Debugging bindings build from source in IDEs
+############################################
+
+In many cases, you may want to debug your python script using an IDE.
+To properly configure ns-3 python bindings from source, you will need to do one of two:
+
+1. Setup ``PATH`` and ``PYTHONPATH`` environment variables to point to
+   ``ns-3-dev/build/lib`` and ``ns-3-dev/build/bindings/python`` respectively.
+2. Add the following Python code snipped before importing the ns-3 bindings
+
+.. sourcecode:: python
+
+  import sys
+  # paths assume the current python script (__file__)
+  # is executed from outside the ns-3-dev directory
+  sys.path.append("./ns-3-dev/build/bindings/python")
+  sys.path.append("./ns-3-dev/build/lib")
+  from ns import ns
 
 
 Using the pip wheel
@@ -388,7 +484,7 @@ no bounds checking in CommandLine::AddValue variant for ``char*``.
 
   cmd = ns.CommandLine(__file__)
   # in the real implementation, the buffer size of 21+1 bytes containing SHORT_STRING_CONTENTS\0 is passed
-  # we use the entire size of the memory contents for demonstration purposses
+  # we use the entire size of the memory contents for demonstration purposes
   cmd.AddValue("shortString", "", shortStringBuffer, 75)
 
   print("Memory contents before the memory corruption")
