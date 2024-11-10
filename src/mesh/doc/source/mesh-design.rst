@@ -78,25 +78,25 @@ The tasks of the peer management protocol are the following:
 
 If a peer link between the sender and receiver does not exist, a frame will be
 dropped. So, the plug-in to the peer management protocol (PMP) is the first
-in the list of ``ns3::MeshWifiInterfaceMacPlugins`` to be used.
+in the list of ``ns3::MeshWifiInterfaceMacPlugins`` to be used.
 
 Peer management protocol
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 The peer management protocol consists of three main parts:
 
-* the protocol itself, ``ns3::dot11s::PeerManagementProtocol``, which keeps all active peer links on interfaces, handles all changes of their states and notifies the routing protocol about link failures.
-* the MAC plug-in, ``ns3::dot11s::PeerManagementProtocolMac``, which drops frames if there is no peer link, and peeks all needed information from management frames and information elements from beacons.
-* the peer link, ``ns3::dot11s::PeerLink``, which keeps finite state machine of each peer link, keeps beacon loss counter and counter of successive transmission failures.
+* the protocol itself, ``ns3::dot11s::PeerManagementProtocol``, which keeps all active peer links on interfaces, handles all changes of their states and notifies the routing protocol about link failures.
+* the MAC plug-in, ``ns3::dot11s::PeerManagementProtocolMac``, which drops frames if there is no peer link, and peeks all needed information from management frames and information elements from beacons.
+* the peer link, ``ns3::dot11s::PeerLink``, which keeps finite state machine of each peer link, keeps beacon loss counter and counter of successive transmission failures.
 
 The procedure of closing a peer link is not described in detail in the
 standard, so in the model the link may be closed by:
 
-* beacon loss (see an appropriate attribute of ns3::dot11s::PeerLink class)
+* beacon loss (see an appropriate attribute of ns3::dot11s::PeerLink class)
 * transmission failure – when a predefined number of successive packets have failed to transmit, the link will be closed.
 
-The peer management protocol is also responsible for beacon collision avoidance, because it keeps beacon timing elements from all neighbours. Note that the PeerManagementProtocol is not attached to the MeshPointDevice as a routing protocol, but the structure is similar: the upper tier of the protocol is
-``ns3::dot11s::PeerManagementProtocol`` and its plug-in is
+The peer management protocol is also responsible for beacon collision avoidance, because it keeps beacon timing elements from all neighbours. Note that the PeerManagementProtocol is not attached to the MeshPointDevice as a routing protocol, but the structure is similar: the upper tier of the protocol is
+``ns3::dot11s::PeerManagementProtocol`` and its plug-in is
 ``ns3::dot11s::PeerManagementProtocolMac``.
 
 Hybrid Wireless Mesh Protocol

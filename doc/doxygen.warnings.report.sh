@@ -251,7 +251,7 @@ REappend filter_blacklistRE "cairo-wideint"
 # REappend filter_blacklistRE "MakeCallback< ObjectBase \\* >(ObjectBase \\*"
 
 #   ATTRIBUTE_HELPER_CPP( and _HEADER(
-# REappend filter_blacklistRE "ATTRIBUTE_HELPER_\\(CPP\\|HEADER\\)"
+# REappend filter_blacklistRE "ATTRIBUTE_HELPER_\\(CPP\\|HEADER\\)"
 
 # Filter out regular expression for black list, -e, -t and -F
 filter_outRE=""
@@ -453,7 +453,7 @@ misplacedWarns=$(                             \
 # This is to catch LaTeX formula errors.
 # In this case the output is of the form:
 # "error: Problems running latex." followed by
-# "Check your installation or look for typos in _formulas.tex and check _formulas.log!"
+# "Check your installation or look for typos in _formulas.tex and check _formulas.log!"
 # and
 # "Check your installation or look for typos in _formulas_dark.tex and check _formulas_dark.log!"
 # Hence, the count can be two.

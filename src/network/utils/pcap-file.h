@@ -269,7 +269,7 @@ class PcapFile
      * differ.
      * @param usec [out] Time stamp of first different packet, microseconds. Undefined if files
      * don't differ.
-     * @param packets [out] Number of first different packet. Total number of parsed packets if
+     * @param packets [out] Number of first different packet. Total number of parsed packets if
      * files don't differ.
      * @param snapLen Snap length (if used)
      * @return true if files are different, false otherwise

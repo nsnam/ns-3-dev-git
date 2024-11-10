@@ -222,7 +222,7 @@ static std::map<TvSpectrumModelId, Ptr<SpectrumModel>> g_tvSpectrumModelMap;
  * <http://www.ieeeghn.org/wiki/index.php/First-Hand:Digital_Television:_The_Digital_Terrestrial_Television_Broadcasting_(DTTB)_Standard>.
  *
  * COFDM PSD approximated from Figure 12 (8k mode) of the following article:
- * Kopp, Carlo. "High Definition Television." High Definition Television. Air
+ * Kopp, Carlo. "High Definition Television." High Definition Television. Air
  * Power Australia. <http://www.ausairpower.net/AC-1100.html>.
  *
  * Analog PSD approximated from Figure 4 of the following paper:

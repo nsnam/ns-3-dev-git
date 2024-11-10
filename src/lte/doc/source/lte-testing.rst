@@ -1521,7 +1521,7 @@ Uplink Power Control Tests
 
 UE uses Uplink Power Control to automatically change Tx Power level for Uplink
 Physical Channels. Tx Power is computed based on path-loss, number of RB used for transmission,
-some configurable parameters and TPC command from eNB.
+some configurable parameters and TPC command from eNB.
 
 The test suite ``lte-uplink-power-control`` verifies if Tx Power is computed correctly.
 There are three different test cases:

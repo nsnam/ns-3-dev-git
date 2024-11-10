@@ -1169,7 +1169,7 @@ a traffic flow of user :math:`i` is characterized by following parameters:
 
  * :math:`t_{i}`: packet arrival rate (byte/sec )
  * :math:`r_{i}`: token generation rate (byte/sec)
- * :math:`p_{i}`: token pool size (byte)
+ * :math:`p_{i}`: token pool size (byte)
  * :math:`E_{i}`: counter that records the number of token borrowed from or given to the token bank by flow :math:`i` ;
    :math:`E_{i}` can be smaller than zero
 
@@ -2893,7 +2893,7 @@ the procedure.
    |            |          |            | COMPLETE    |          |            |
    +------------+----------+------------+-------------+----------+------------+
    | Connection | eNodeB   | Send RRC   | Never       | 30 ms    | Remove UE  |
-   | rejected   | RRC      | CONNECTION |             |          | context    |
+   | rejected   | RRC      | CONNECTION |             |          | context    |
    | timeout    |          | REJECT     |             |          |            |
    +------------+----------+------------+-------------+----------+------------+
 

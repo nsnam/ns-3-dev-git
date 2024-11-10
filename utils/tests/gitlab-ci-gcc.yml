@@ -6,7 +6,7 @@
 
 # We support from 10 to the latest version. Check if everything builds fine
 # under debug, default, and optimized, on Linux.
-# The distro used is Ubuntu - the logic is:
+# The distro used is Ubuntu - the logic is:
 # - Test minimum and maximum GCC version
 # - Do not test if it's the default version installed (already tested as Ubuntu test)
 # Note: the following is the list of default gcc versions on Ubuntu:
