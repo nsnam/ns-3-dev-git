@@ -80,6 +80,18 @@ class UniformPlanarArray : public PhasedArrayModel
     bool IsDualPol() const override;
 
     /**
+     *  Returns bearing angle of first polarization
+     *  @return bearing angle in radians
+     */
+    double GetAlpha() const;
+
+    /**
+     *  Returns downtilt angle of first polarization
+     *  @return downtilt angle in radians
+     */
+    double GetBeta() const;
+
+    /**
      *  Returns polarization angle of first polarization
      *  @return polarization angle in radians
      */

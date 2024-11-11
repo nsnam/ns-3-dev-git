@@ -60,16 +60,18 @@ UniformPlanarArray::GetTypeId()
                           MakeUintegerAccessor(&UniformPlanarArray::SetNumRows,
                                                &UniformPlanarArray::GetNumRows),
                           MakeUintegerChecker<uint32_t>(1))
-            .AddAttribute("BearingAngle",
-                          "The bearing angle in radians",
-                          DoubleValue(0.0),
-                          MakeDoubleAccessor(&UniformPlanarArray::SetAlpha),
-                          MakeDoubleChecker<double>(-M_PI, M_PI))
-            .AddAttribute("DowntiltAngle",
-                          "The downtilt angle in radians",
-                          DoubleValue(0.0),
-                          MakeDoubleAccessor(&UniformPlanarArray::SetBeta),
-                          MakeDoubleChecker<double>(-M_PI, M_PI))
+            .AddAttribute(
+                "BearingAngle",
+                "The bearing angle in radians",
+                DoubleValue(0.0),
+                MakeDoubleAccessor(&UniformPlanarArray::SetAlpha, &UniformPlanarArray::GetAlpha),
+                MakeDoubleChecker<double>(-M_PI, M_PI))
+            .AddAttribute(
+                "DowntiltAngle",
+                "The downtilt angle in radians",
+                DoubleValue(0.0),
+                MakeDoubleAccessor(&UniformPlanarArray::SetBeta, &UniformPlanarArray::GetBeta),
+                MakeDoubleChecker<double>(-M_PI, M_PI))
             .AddAttribute("PolSlantAngle",
                           "The polarization slant angle in radians",
                           DoubleValue(0.0),
@@ -378,6 +380,18 @@ UniformPlanarArray::SetDualPol(bool isDualPol)
         m_cosPolSlant[1] = cos(m_polSlant - M_PI / 2);
         m_sinPolSlant[1] = sin(m_polSlant - M_PI / 2);
     }
+}
+
+double
+UniformPlanarArray::GetAlpha() const
+{
+    return m_alpha;
+}
+
+double
+UniformPlanarArray::GetBeta() const
+{
+    return m_beta;
 }
 
 double
