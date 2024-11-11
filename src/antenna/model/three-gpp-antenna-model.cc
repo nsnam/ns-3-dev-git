@@ -9,6 +9,7 @@
 #include "antenna-model.h"
 
 #include <ns3/double.h>
+#include <ns3/enum.h>
 #include <ns3/log.h>
 
 #include <cmath>
@@ -23,20 +24,34 @@ NS_OBJECT_ENSURE_REGISTERED(ThreeGppAntennaModel);
 TypeId
 ThreeGppAntennaModel::GetTypeId()
 {
-    static TypeId tid = TypeId("ns3::ThreeGppAntennaModel")
-                            .SetParent<AntennaModel>()
-                            .SetGroupName("Antenna")
-                            .AddConstructor<ThreeGppAntennaModel>();
+    static TypeId tid =
+        TypeId("ns3::ThreeGppAntennaModel")
+            .SetParent<AntennaModel>()
+            .SetGroupName("Antenna")
+            .AddConstructor<ThreeGppAntennaModel>()
+            .AddAttribute(
+                "RadiationPattern",
+                "Radiation pattern of 3GPP antenna model",
+                EnumValue<RadiationPattern>(RadiationPattern::OUTDOOR),
+                MakeEnumAccessor<RadiationPattern>(&ThreeGppAntennaModel::SetRadiationPattern,
+                                                   &ThreeGppAntennaModel::GetRadiationPattern),
+                MakeEnumChecker<RadiationPattern>(RadiationPattern::OUTDOOR,
+                                                  "Outdoor",
+                                                  RadiationPattern::INDOOR,
+                                                  "Indoor"));
     return tid;
 }
 
 ThreeGppAntennaModel::ThreeGppAntennaModel()
-    : m_verticalBeamwidthDegrees{65},
-      m_horizontalBeamwidthDegrees{65},
-      m_aMax{30},
-      m_slaV{30},
-      m_geMax{8.0}
 {
+    SetRadiationPattern(RadiationPattern::OUTDOOR);
+}
+
+void
+ThreeGppAntennaModel::DoInitialize()
+{
+    NS_LOG_FUNCTION(this);
+    SetRadiationPattern(m_radiationPattern);
 }
 
 ThreeGppAntennaModel::~ThreeGppAntennaModel()
@@ -53,6 +68,49 @@ double
 ThreeGppAntennaModel::GetHorizontalBeamwidth() const
 {
     return m_horizontalBeamwidthDegrees;
+}
+
+void
+ThreeGppAntennaModel::SetRadiationPattern(RadiationPattern pattern)
+{
+    m_radiationPattern = pattern;
+    switch (pattern)
+    {
+    case RadiationPattern::OUTDOOR:
+        SetOutdoorAntennaPattern();
+        break;
+    case RadiationPattern::INDOOR:
+        SetIndoorAntennaPattern();
+        break;
+    default:
+        NS_ABORT_MSG("Unknown radiation pattern");
+    }
+}
+
+ThreeGppAntennaModel::RadiationPattern
+ThreeGppAntennaModel::GetRadiationPattern() const
+{
+    return m_radiationPattern;
+}
+
+void
+ThreeGppAntennaModel::SetOutdoorAntennaPattern()
+{
+    m_verticalBeamwidthDegrees = 65;
+    m_horizontalBeamwidthDegrees = 65;
+    m_aMax = 30;
+    m_slaV = 30;
+    m_geMax = 8;
+}
+
+void
+ThreeGppAntennaModel::SetIndoorAntennaPattern()
+{
+    m_verticalBeamwidthDegrees = 90;
+    m_horizontalBeamwidthDegrees = 90;
+    m_aMax = 25;
+    m_slaV = 25;
+    m_geMax = 5;
 }
 
 double
