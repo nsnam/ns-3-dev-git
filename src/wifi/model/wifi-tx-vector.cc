@@ -10,6 +10,7 @@
 #include "wifi-tx-vector.h"
 
 #include "wifi-phy-common.h"
+#include "wifi-utils.h"
 
 #include "ns3/abort.h"
 #include "ns3/eht-phy.h"
@@ -659,9 +660,8 @@ WifiTxVector::SetInactiveSubchannels(const std::vector<bool>& inactiveSubchannel
     NS_ABORT_MSG_IF(
         m_channelWidth < 80,
         "Preamble puncturing only possible for transmission bandwidth of 80 MHz or larger");
-    [[maybe_unused]] const std::size_t num20MhzSubchannels = m_channelWidth / 20;
     NS_ABORT_MSG_IF(!inactiveSubchannels.empty() &&
-                        inactiveSubchannels.size() != num20MhzSubchannels,
+                        inactiveSubchannels.size() != Count20MHzSubchannels(m_channelWidth),
                     "The size of the inactive subchannnels bitmap should be equal to the number of "
                     "20 MHz subchannels");
     m_inactiveSubchannels = inactiveSubchannels;
@@ -786,7 +786,7 @@ WifiTxVector::GetUserInfoMapOrderedByRus(uint8_t p20Index) const
 RuAllocation
 WifiTxVector::DeriveRuAllocation(uint8_t p20Index) const
 {
-    RuAllocation ruAllocations(m_channelWidth / 20, HeRu::EMPTY_242_TONE_RU);
+    RuAllocation ruAllocations(Count20MHzSubchannels(m_channelWidth), HeRu::EMPTY_242_TONE_RU);
     std::vector<HeRu::RuType> ruTypes{};
     ruTypes.resize(ruAllocations.size());
     const auto& orderedMap = GetUserInfoMapOrderedByRus(p20Index);
@@ -815,11 +815,10 @@ WifiTxVector::DeriveRuAllocation(uint8_t p20Index) const
             // the primary 80 MHz
             ruIndex += HeRu::GetRusOfType(80, ruType).size();
         }
-        const auto index =
-            (ruBw < 20) ? ((ruIndex - 1) / rusPerSubchannel.size()) : ((ruIndex - 1) * (ruBw / 20));
-        const auto numSubchannelsForRu = (ruBw < 20) ? 1 : (ruBw / 20);
-        [[maybe_unused]] const std::size_t num20MhzSubchannels = m_channelWidth / 20;
-        NS_ABORT_IF(index >= num20MhzSubchannels);
+        const auto numSubchannelsForRu = (ruBw < 20) ? 1 : Count20MHzSubchannels(ruBw);
+        const auto index = (ruBw < 20) ? ((ruIndex - 1) / rusPerSubchannel.size())
+                                       : ((ruIndex - 1) * numSubchannelsForRu);
+        NS_ABORT_IF(index >= Count20MHzSubchannels(m_channelWidth));
         auto ruAlloc = HeRu::GetEqualizedRuAllocation(ruType, false);
         if (ruAllocations.at(index) != HeRu::EMPTY_242_TONE_RU)
         {
@@ -840,7 +839,7 @@ WifiTxVector::DeriveRuAllocation(uint8_t p20Index) const
                 NS_ASSERT_MSG(false, "unsupported RU combination");
             }
         }
-        for (auto i = 0; i < numSubchannelsForRu; ++i)
+        for (std::size_t i = 0; i < numSubchannelsForRu; ++i)
         {
             ruTypes.at(index + i) = ruType;
             ruAllocations.at(index + i) = ruAlloc;

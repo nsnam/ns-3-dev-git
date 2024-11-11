@@ -383,8 +383,9 @@ ChannelAccessManager::ResizeLastBusyStructs()
     m_lastIdle.emplace(WIFI_CHANLIST_PRIMARY, Timespan{now, now});
 
     const auto width = m_phy ? m_phy->GetChannelWidth() : 0;
-    std::size_t size =
-        (width > 20 && m_phy->GetStandard() >= WIFI_STANDARD_80211ax) ? width / 20 : 0;
+    std::size_t size = (width > 20 && m_phy->GetStandard() >= WIFI_STANDARD_80211ax)
+                           ? Count20MHzSubchannels(width)
+                           : 0;
     m_lastPer20MHzBusyEnd.resize(size, now);
 
     if (!m_phy || !m_phy->GetOperatingChannel().IsOfdm())

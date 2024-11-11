@@ -10,6 +10,7 @@
 #include "wifi-phy-operating-channel.h"
 
 #include "wifi-phy-common.h"
+#include "wifi-utils.h"
 
 #include "ns3/assert.h"
 #include "ns3/log.h"
@@ -644,7 +645,8 @@ WifiPhyOperatingChannel::SetPrimary20Index(uint8_t index)
 {
     NS_LOG_FUNCTION(this << +index);
 
-    NS_ABORT_MSG_IF(index > 0 && index >= GetTotalWidth() / 20, "Primary20 index out of range");
+    NS_ABORT_MSG_IF(index > 0 && index >= Count20MHzSubchannels(GetTotalWidth()),
+                    "Primary20 index out of range");
     m_primary20Index = index;
 }
 
@@ -737,7 +739,7 @@ WifiPhyOperatingChannel::GetPrimaryChannel(MHz_u primaryChannelWidth) const
     WifiPhyOperatingChannel primaryChannel(primaryChanIt);
 
     const auto primaryIndex = m_primary20Index - (GetPrimaryChannelIndex(primaryChannelWidth) *
-                                                  (primaryChannelWidth / 20));
+                                                  Count20MHzSubchannels(primaryChannelWidth));
     primaryChannel.SetPrimary20Index(primaryIndex);
 
     return primaryChannel;
@@ -904,7 +906,7 @@ WifiPhyOperatingChannel::Get20MHzIndicesCoveringRu(HeRu::RuSpec ru, MHz_u width)
     }
 
     // finally, add the appropriate offset if width is less than the operational channel width
-    auto offset = GetPrimaryChannelIndex(width) * width / 20;
+    auto offset = GetPrimaryChannelIndex(width) * Count20MHzSubchannels(width);
 
     if (offset > 0)
     {

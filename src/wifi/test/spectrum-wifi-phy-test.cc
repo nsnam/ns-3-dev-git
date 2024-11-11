@@ -589,7 +589,7 @@ SpectrumWifiPhyFilterTest::RxCallback(Ptr<const Packet> p, RxPowerWattPerChannel
                                                          << " dBm)");
         const auto rxPowerPrimaryChannel20 = static_cast<int>(WToDbm(it->second) + 0.5);
         const auto expectedRxPowerPrimaryChannel20 =
-            16 - static_cast<int>(RatioToDb(channelWidth / 20));
+            16 - static_cast<int>(RatioToDb(Count20MHzSubchannels(channelWidth)));
         NS_TEST_ASSERT_MSG_EQ(rxPowerPrimaryChannel20,
                               expectedRxPowerPrimaryChannel20,
                               "Received power in the primary 20 MHz band is not correct");
@@ -914,14 +914,14 @@ SpectrumWifiPhyGetBandTest::DoRun()
     for (bool contiguous160Mhz : {true /* 160 MHz */, false /* 80+80MHz */})
     {
         MHz_u guardWidth = contiguous160Mhz ? channelWidth : (channelWidth / 2);
-        uint32_t guardStopIndice = (indicesPer20MhzBand * (guardWidth / 20)) - 1;
+        uint32_t guardStopIndice = (indicesPer20MhzBand * Count20MHzSubchannels(guardWidth)) - 1;
         std::vector<WifiSpectrumBandIndices> previousExpectedIndices{};
         std::vector<WifiSpectrumBandFrequencies> previousExpectedFrequencies{};
         for (auto bandWidth : {20, 40, 80, 160})
         {
             const uint32_t expectedStartIndice = guardStopIndice + 1;
             const uint32_t expectedStopIndice =
-                expectedStartIndice + (indicesPer20MhzBand * (bandWidth / 20)) - 1;
+                expectedStartIndice + (indicesPer20MhzBand * Count20MHzSubchannels(bandWidth)) - 1;
             std::vector<WifiSpectrumBandIndices> expectedIndices{
                 {expectedStartIndice, expectedStopIndice}};
             const Hz_u expectedStartFrequency = MHzToHz(5170);
@@ -945,8 +945,10 @@ SpectrumWifiPhyGetBandTest::DoRun()
                 }
                 else if ((i == (numBands / 2)) && !contiguous160Mhz)
                 {
-                    expectedIndices.at(0).first += (indicesPer20MhzBand * (separationWidth / 20));
-                    expectedIndices.at(0).second += (indicesPer20MhzBand * (separationWidth / 20));
+                    expectedIndices.at(0).first +=
+                        (indicesPer20MhzBand * Count20MHzSubchannels(separationWidth));
+                    expectedIndices.at(0).second +=
+                        (indicesPer20MhzBand * Count20MHzSubchannels(separationWidth));
                     expectedFrequencies.at(0).first += MHzToHz(separationWidth);
                     expectedFrequencies.at(0).second += MHzToHz(separationWidth);
                 }
@@ -963,7 +965,8 @@ SpectrumWifiPhyGetBandTest::DoRun()
                 }
                 expectedIndices.at(0).first = expectedIndices.at(0).second + 1;
                 expectedIndices.at(0).second =
-                    expectedIndices.at(0).first + (indicesPer20MhzBand * (bandWidth / 20)) - 1;
+                    expectedIndices.at(0).first +
+                    (indicesPer20MhzBand * Count20MHzSubchannels(bandWidth)) - 1;
                 expectedFrequencies.at(0).first += MHzToHz(bandWidth);
                 expectedFrequencies.at(0).second += MHzToHz(bandWidth);
             }

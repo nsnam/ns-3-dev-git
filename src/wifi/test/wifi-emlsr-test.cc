@@ -2655,7 +2655,7 @@ EmlsrUlTxopTest::DoSetup()
         while (bw < width)
         {
             bw *= 2;
-            number += bw / 20;
+            number += Count20MHzSubchannels(bw);
         }
 
         for (auto mac : std::initializer_list<Ptr<WifiMac>>{m_apMac, m_staMacs[0]})

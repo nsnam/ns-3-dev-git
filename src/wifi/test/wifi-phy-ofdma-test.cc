@@ -1735,7 +1735,7 @@ TestDlOfdmaPhyPuncturing::RunOne()
     // Send MU PPDU with two PSDUs addressed to STA 1 and STA 2 with preamble puncturing:
     // the punctured 20 MHz subchannel is the one that has interference
     std::vector<bool> puncturedSubchannels;
-    const std::size_t num20MhzSubchannels = m_channelWidth / 20;
+    const auto num20MhzSubchannels = Count20MHzSubchannels(m_channelWidth);
     for (std::size_t i = 0; i < num20MhzSubchannels; ++i)
     {
         if (i == m_indexSubchannel)

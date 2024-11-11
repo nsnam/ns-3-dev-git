@@ -805,7 +805,7 @@ RrMultiUserScheduler::TrySendingDlMuPpdu()
     m_candidates.clear();
 
     std::vector<uint8_t> ruAllocations;
-    const std::size_t numRuAllocs = m_txParams.m_txVector.GetChannelWidth() / 20;
+    const auto numRuAllocs = Count20MHzSubchannels(m_txParams.m_txVector.GetChannelWidth());
     ruAllocations.resize(numRuAllocs);
     NS_ASSERT((m_candidates.size() % numRuAllocs) == 0);
 

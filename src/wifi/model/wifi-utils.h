@@ -125,6 +125,37 @@ HzToMHz(Hz_u val)
 }
 
 /**
+ * Return the number of 20 MHz subchannels covering the channel width.
+ *
+ * @param channelWidth the channel width
+ * @return the number of 20 MHz subchannels
+ */
+inline std::size_t
+Count20MHzSubchannels(MHz_u channelWidth)
+{
+    NS_ASSERT(static_cast<uint16_t>(channelWidth) % 20 == 0);
+    return channelWidth / MHz_u{20};
+}
+
+/**
+ * Return the number of 20 MHz subchannels covering the channel width between a lower frequency and
+ * an upper frequency. This function should only be called when the channel width between the lower
+ * frequency and the upper frequency is a multiple of 20 MHz.
+ *
+ * @param lower the lower frequency
+ * @param upper the upper frequency
+ * @return the number of 20 MHz subchannels
+ */
+inline std::size_t
+Count20MHzSubchannels(MHz_u lower, MHz_u upper)
+{
+    NS_ASSERT(upper >= lower);
+    const auto width = upper - lower;
+    NS_ASSERT((static_cast<uint16_t>(width) % 20 == 0));
+    return Count20MHzSubchannels(width);
+}
+
+/**
  * Return the total Ack size (including FCS trailer).
  *
  * @return the total Ack size in bytes

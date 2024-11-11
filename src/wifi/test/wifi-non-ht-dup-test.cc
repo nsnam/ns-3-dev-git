@@ -468,8 +468,7 @@ TestNonHtDuplicatePhyReception::DoSetup()
                                                                        0,
                                                                        m_apStandard,
                                                                        WIFI_PHY_BAND_5GHZ));
-        [[maybe_unused]] const std::size_t num20MhzSubchannels = channelInfo.width / 20;
-        NS_ASSERT(m_per20MhzInterference.size() == num20MhzSubchannels);
+        NS_ASSERT(m_per20MhzInterference.size() == Count20MHzSubchannels(channelInfo.width));
         for (std::size_t i = 0; i < m_per20MhzInterference.size(); ++i)
         {
             auto interfererNode = CreateObject<Node>();
@@ -588,7 +587,8 @@ TestNonHtDuplicatePhyReception::DoRun()
             bool expectSuccess = true;
             if (!m_per20MhzInterference.empty())
             {
-                const auto index20MhzSubBand = ((staP20Freq - minApCenterFrequency) / 20);
+                const auto index20MhzSubBand =
+                    Count20MHzSubchannels(staP20Freq - minApCenterFrequency);
                 expectSuccess = !m_per20MhzInterference.at(index20MhzSubBand);
             }
             Simulator::Schedule(Seconds(index + 0.5),

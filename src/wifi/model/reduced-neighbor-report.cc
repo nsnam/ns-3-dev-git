@@ -9,6 +9,7 @@
 #include "reduced-neighbor-report.h"
 
 #include "wifi-phy-operating-channel.h"
+#include "wifi-utils.h"
 
 #include "ns3/abort.h"
 #include "ns3/address-utils.h"
@@ -326,7 +327,7 @@ ReducedNeighborReport::GetOperatingChannel(std::size_t nbrApInfoId) const
 
     MHz_u channelLowestFreq = frequency - width / 2;
     MHz_u primaryChannelLowestFreq = primaryChannelCenterFrequency - 10;
-    channel.SetPrimary20Index((primaryChannelLowestFreq - channelLowestFreq) / 20);
+    channel.SetPrimary20Index(Count20MHzSubchannels(channelLowestFreq, primaryChannelLowestFreq));
 
     return channel;
 }

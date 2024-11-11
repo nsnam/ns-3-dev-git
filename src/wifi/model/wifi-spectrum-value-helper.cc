@@ -292,7 +292,7 @@ WifiSpectrumValueHelper::CreateDuplicated20MhzTxPowerSpectralDensity(
     NS_ASSERT_MSG(c->GetSpectrumModel()->GetNumBands() ==
                       (nAllocatedBands + nGuardBands + nUnallocatedBands + 1),
                   "Unexpected number of bands " << c->GetSpectrumModel()->GetNumBands());
-    std::size_t num20MhzBands = channelWidth / 20;
+    auto num20MhzBands = Count20MHzSubchannels(channelWidth);
     std::size_t numAllocatedSubcarriersPer20MHz = 52;
     NS_ASSERT(puncturedSubchannels.empty() || (puncturedSubchannels.size() == num20MhzBands));
     const auto txPowerPerBand = (txPower / numAllocatedSubcarriersPer20MHz) / num20MhzBands;
@@ -396,7 +396,7 @@ WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity(
     NS_ASSERT_MSG(c->GetSpectrumModel()->GetNumBands() ==
                       (nAllocatedBands + nGuardBands + nUnallocatedBands + 1),
                   "Unexpected number of bands " << c->GetSpectrumModel()->GetNumBands());
-    std::size_t num20MhzBands = channelWidth / 20;
+    auto num20MhzBands = Count20MHzSubchannels(channelWidth);
     std::size_t numAllocatedSubcarriersPer20MHz = 56;
     const auto txPowerPerBand = (txPower / numAllocatedSubcarriersPer20MHz) / num20MhzBands;
     NS_LOG_DEBUG("Power per band " << txPowerPerBand << "W");

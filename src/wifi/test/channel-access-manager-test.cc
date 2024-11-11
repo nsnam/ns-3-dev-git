@@ -1391,12 +1391,13 @@ LargestIdlePrimaryChannelTest::RunOne(MHz_u chWidth, WifiChannelListType busyCha
     // After 1ms, we are notified of CCA_BUSY for 1ms on the given channel
     Time ccaBusyStartDelay = MilliSeconds(1);
     Time ccaBusyDuration = MilliSeconds(1);
-    Simulator::Schedule(ccaBusyStartDelay,
-                        &ChannelAccessManager::NotifyCcaBusyStartNow,
-                        m_cam,
-                        ccaBusyDuration,
-                        busyChannel,
-                        std::vector<Time>(chWidth == 20 ? 0 : chWidth / 20, Seconds(0)));
+    Simulator::Schedule(
+        ccaBusyStartDelay,
+        &ChannelAccessManager::NotifyCcaBusyStartNow,
+        m_cam,
+        ccaBusyDuration,
+        busyChannel,
+        std::vector<Time>(chWidth == 20 ? 0 : Count20MHzSubchannels(chWidth), Seconds(0)));
 
     // During any interval ending within CCA_BUSY period, the idle channel is the
     // primary channel contiguous to the busy secondary channel, if the busy channel

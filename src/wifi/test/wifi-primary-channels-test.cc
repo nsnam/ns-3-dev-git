@@ -343,7 +343,7 @@ WifiPrimaryChannelsTest::DoSetup()
     }
 
     // we create as many BSSes as the number of 20 MHz subchannels
-    m_nBss = m_channelWidth / 20;
+    m_nBss = Count20MHzSubchannels(m_channelWidth);
 
     NodeContainer wifiApNodes;
     wifiApNodes.Create(m_nBss);
@@ -608,7 +608,9 @@ WifiPrimaryChannelsTest::DoRun()
     // To have simultaneous transmissions on adjacent channels, just initialize
     // nRounds to 1 and nApsPerRound to m_channelWidth / 20. Of course, the test
     // will fail because some stations will not receive some frames due to interfence
-    for (MHz_u txChannelWidth = 20, nRounds = 2, nApsPerRound = m_channelWidth / 20 / 2;
+    for (MHz_u txChannelWidth = 20,
+               nRounds = 2,
+               nApsPerRound = Count20MHzSubchannels(m_channelWidth) / 2;
          txChannelWidth <= m_channelWidth;
          txChannelWidth *= 2, nRounds *= 2, nApsPerRound /= 2)
     {
@@ -644,7 +646,9 @@ WifiPrimaryChannelsTest::DoRun()
      * channel width, every round is repeated as many times as the number of ways in
      * which we can partition the transmission channel width in equal sized RUs.
      */
-    for (MHz_u txChannelWidth = 20, nRounds = 2, nApsPerRound = m_channelWidth / 20 / 2;
+    for (MHz_u txChannelWidth = 20,
+               nRounds = 2,
+               nApsPerRound = Count20MHzSubchannels(m_channelWidth) / 2;
          txChannelWidth <= m_channelWidth;
          txChannelWidth *= 2, nRounds *= 2, nApsPerRound /= 2)
     {
@@ -692,7 +696,9 @@ WifiPrimaryChannelsTest::DoRun()
      * channel width, every round is repeated as many times as the number of ways in
      * which we can partition the transmission channel width in equal sized RUs.
      */
-    for (MHz_u txChannelWidth = 20, nRounds = 2, nApsPerRound = m_channelWidth / 20 / 2;
+    for (MHz_u txChannelWidth = 20,
+               nRounds = 2,
+               nApsPerRound = Count20MHzSubchannels(m_channelWidth) / 2;
          txChannelWidth <= m_channelWidth;
          txChannelWidth *= 2, nRounds *= 2, nApsPerRound /= 2)
     {
@@ -830,7 +836,7 @@ WifiPrimaryChannelsTest::SendDlMuPpdu(uint8_t bss,
     }
     txVector.SetSigBMode(VhtPhy::GetVhtMcs5());
     RuAllocation ruAllocations;
-    const std::size_t numRuAllocs = txChannelWidth / 20;
+    const auto numRuAllocs = Count20MHzSubchannels(txChannelWidth);
     ruAllocations.resize(numRuAllocs);
     auto IsOddNum = (nRus / numRuAllocs) % 2 == 1;
     auto ruAlloc = HeRu::GetEqualizedRuAllocation(ruType, IsOddNum);
