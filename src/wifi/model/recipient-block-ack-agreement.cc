@@ -159,8 +159,10 @@ RecipientBlockAckAgreement::NotifyReceivedMpdu(Ptr<const WifiMpdu> mpdu)
         // MAC process in order of increasing Sequence Number subfield value. Gaps may
         // exist in the Sequence Number subfield values of the MSDUs or A-MSDUs that are
         // passed up to the next MAC process.
-        PassBufferedMpdusWithSeqNumberLessThan(mpdu->GetHeader().GetSequenceNumber() - m_winSizeB +
-                                               1);
+        const uint16_t newWinStartB =
+            (mpdu->GetHeader().GetSequenceNumber() - m_winSizeB + 1 + SEQNO_SPACE_SIZE) %
+            SEQNO_SPACE_SIZE;
+        PassBufferedMpdusWithSeqNumberLessThan(newWinStartB);
 
         // 5. Pass MSDUs or A-MSDUs stored in the buffer up to the next MAC process in
         // order of increasing value of the Sequence Number subfield starting with
