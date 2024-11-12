@@ -1218,15 +1218,15 @@ class CtrlTriggerHeader : public Header
      */
     bool GetCsRequired() const;
     /**
-     * Set the bandwidth of the solicited HE TB PPDU.
+     * Set the bandwidth of the solicited HE/EHT TB PPDU.
      *
-     * @param bw bandwidth (allowed values: 20, 40, 80, 160)
+     * @param bw bandwidth (allowed values: 20, 40, 80, 160, 320)
      */
     void SetUlBandwidth(MHz_u bw);
     /**
-     * Get the bandwidth of the solicited HE TB PPDU.
+     * Get the bandwidth of the solicited HE/EHT TB PPDU.
      *
-     * @return the bandwidth (20, 40, 80 or 160)
+     * @return the bandwidth (20, 40, 80, 160 or 320)
      */
     MHz_u GetUlBandwidth() const;
     /**
@@ -1241,15 +1241,15 @@ class CtrlTriggerHeader : public Header
      */
     void SetGiAndLtfType(Time guardInterval, uint8_t ltfType);
     /**
-     * Get the guard interval duration of the solicited HE TB PPDU.
+     * Get the guard interval duration of the solicited HE/EHT TB PPDU.
      *
-     * @return the guard interval duration  of the solicited HE TB PPDU
+     * @return the guard interval duration of the solicited HE/EHT TB PPDU
      */
     Time GetGuardInterval() const;
     /**
-     * Get the LTF type of the solicited HE TB PPDU.
+     * Get the LTF type of the solicited HE/EHT TB PPDU.
      *
-     * @return the LTF type of the solicited HE TB PPDU
+     * @return the LTF type of the solicited HE/EHT TB PPDU
      */
     uint8_t GetLtfType() const;
     /**
