@@ -2334,17 +2334,39 @@ CtrlTriggerHeader::SetUlBandwidth(MHz_t bw)
         m_ulBandwidth = 2;
         break;
     case 160:
+    case 320:
         m_ulBandwidth = 3;
         break;
     default:
         NS_FATAL_ERROR("Bandwidth value not allowed.");
         break;
     }
+    if (bw > MHz_t{160})
+    {
+        NS_ASSERT(m_variant == TriggerFrameVariant::EHT);
+        if (!m_specialUserInfoField)
+        {
+            m_specialUserInfoField.emplace(m_triggerType);
+        }
+    }
+    if (m_specialUserInfoField)
+    {
+        NS_ASSERT(m_variant == TriggerFrameVariant::EHT);
+        m_specialUserInfoField->SetUlBwExt(bw);
+    }
 }
 
 MHz_t
 CtrlTriggerHeader::GetUlBandwidth() const
 {
+    if (m_specialUserInfoField)
+    {
+        NS_ASSERT(m_variant == TriggerFrameVariant::EHT);
+        if (m_specialUserInfoField->GetUlBwExt() > 1)
+        {
+            return MHz_t{320};
+        }
+    }
     return (1 << m_ulBandwidth) * MHz_t{20};
 }
 
