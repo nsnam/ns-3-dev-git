@@ -33,10 +33,10 @@ struct percent_t
 
     percent_t() = default; ///< Default constructor
 
-    /// Constructor from double
+    /// Constructor
     /// @param val Value in percent
-    percent_t(double val)
-        : val(val) // NOLINT(google-explicit-constructor,hicpp-explicit-conversions)
+    constexpr explicit percent_t(double val)
+        : val(val)
     {
     }
 

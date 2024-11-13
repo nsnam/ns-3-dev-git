@@ -25,6 +25,15 @@ struct Hz_t
     // If there is a need of sub-Hertz, such as mHz, define struct mHz and build Hz_t on top of it.
     double val{}; ///< Value in Hz
 
+    Hz_t() = default; ///< Default constructor
+
+    /// Constructor
+    /// @param val Value in Hz
+    constexpr explicit Hz_t(double val)
+        : val(val)
+    {
+    }
+
     /// @brief Stringify with metric prefix
     /// Sub-Hertz not supported
     /// @return String with metric prefix

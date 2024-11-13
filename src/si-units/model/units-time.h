@@ -20,7 +20,16 @@ namespace ns3
 /// Nanoseconds
 struct nSEC_t
 {
-    long long v{}; ///< Value in nSEC
+    long long v{}; ///< Value in nanoseconds
+
+    nSEC_t() = default; ///< Default constructor
+
+    /// Constructor
+    /// @param val Value in percent
+    constexpr explicit nSEC_t(long long val)
+        : v(val)
+    {
+    }
 
     /// Represents in a human-readable string
     /// @returns A string representation of the value in the most easy to read unit scale

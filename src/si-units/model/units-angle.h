@@ -28,7 +28,16 @@ struct radian_t;
 /// Degree (angle)
 struct degree_t
 {
-    double val{}; ///< Value stored
+    double val{}; ///< Value in degree
+
+    degree_t() = default; ///< Default constructor
+
+    /// Constructor
+    /// @param val Value in degree
+    constexpr explicit degree_t(double val)
+        : val(val)
+    {
+    }
 
     /// Conversion from radian
     /// @param input radian
@@ -188,7 +197,16 @@ struct degree_t
 /// Radians (angle)
 struct radian_t
 {
-    double val{}; ///< Value stored
+    double val{}; ///< Value in radian
+
+    radian_t() = default; ///< Default constructor
+
+    /// Constructor
+    /// @param val Value in radian
+    constexpr explicit radian_t(double val)
+        : val(val)
+    {
+    }
 
     /// Conversion from degree
     /// @param input degree

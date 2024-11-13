@@ -765,7 +765,7 @@ class AttributeMock : public Object
                 .AddAttribute(
                     "dBm_per_Hz",
                     "help message for dBm_per_Hz",
-                    dBm_per_Hz_tValue(0.0004),
+                    dBm_per_Hz_tValue(0.0004_dBm_per_Hz),
                     MakedBm_per_Hz_tAccessor(&AttributeMock::m_dBm_per_Hz),
                     MakedBm_per_Hz_tChecker())
                 .AddAttribute("Hz",

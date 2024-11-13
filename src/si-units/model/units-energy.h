@@ -47,14 +47,14 @@ ToLinearScale(double val)
 /// dB type
 struct dB_t
 {
-    double val{}; ///< Value in dB.
+    double val{}; ///< Value in dB
 
-    dB_t() = default; ///< Default constructor.
+    dB_t() = default; ///< Default constructor
 
-    /// Constructor.
-    /// @param val Value in dB.
-    dB_t(double val)
-        : val(val) // NOLINT(google-explicit-constructor,hicpp-explicit-conversions)
+    /// Constructor
+    /// @param val Value in dB
+    constexpr explicit dB_t(double val)
+        : val(val)
     {
     }
 
@@ -231,12 +231,12 @@ struct dBm_t
 {
     double val{}; ///< Value in dBm
 
-    dBm_t() = default; ///< default constructor
+    dBm_t() = default; ///< Default constructor
 
-    /// Constructor.
-    /// @param val Value in dBm.
-    dBm_t(double val)
-        : val(val) // NOLINT(google-explicit-constructor,hicpp-explicit-conversions)
+    /// Constructor
+    /// @param val Value in dBm
+    constexpr explicit dBm_t(double val)
+        : val(val)
     {
     }
 
@@ -434,12 +434,12 @@ struct mWatt_t
 {
     double val{}; ///< Value in mWatt
 
-    mWatt_t() = default; ///< default constructor
+    mWatt_t() = default; ///< Default constructor
 
-    /// Constructor from double
+    /// Constructor
     /// @param val Value in mWatt
-    mWatt_t(double val)
-        : val(val) // NOLINT(google-explicit-constructor,hicpp-explicit-conversions)
+    constexpr explicit mWatt_t(double val)
+        : val(val)
     {
     }
 
@@ -680,13 +680,14 @@ mWatt_t operator*(const double& lfs, const mWatt_t& rhs);
 /// Watt_t power unit structure
 struct Watt_t
 {
-    double val{};       ///< Value in Watt_t
-    Watt_t() = default; ///< Default Empty Constructor
+    double val{}; ///< Value in Watt
 
-    /// Constructor to set the power value in Watt_t
-    /// @param val the power value in Watt_t to set
-    Watt_t(double val)
-        : val(val) // NOLINT(google-explicit-constructor,hicpp-explicit-conversions)
+    Watt_t() = default; ///< Default constructor
+
+    /// Constructor
+    /// @param val Value in Watt
+    constexpr explicit Watt_t(double val)
+        : val(val)
     {
     }
 
@@ -918,10 +919,10 @@ struct dBm_per_Hz_t // NOLINT(readability-identifier-naming)
 
     dBm_per_Hz_t() = default; ///< Default constructor
 
-    /// Constructor from double
-    /// @param val value in dBm/Hz
-    dBm_per_Hz_t(double val)
-        : val(val) // NOLINT(google-explicit-constructor,hicpp-explicit-conversions)
+    /// Constructor
+    /// @param val Value in dBm/Hz
+    constexpr explicit dBm_per_Hz_t(double val)
+        : val(val)
     {
     }
 
