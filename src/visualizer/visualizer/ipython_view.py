@@ -138,7 +138,7 @@ class IterableIPShell:
         sys.excepthook = excepthook
         self.iter_more = 0
         self.history_level = 0
-        self.complete_sep = re.compile("[\s\{\}\[\]\(\)]")
+        self.complete_sep = re.compile(r"[\s\{\}\[\]\(\)]")
         self.updateNamespace({"exit": lambda: None})
         self.updateNamespace({"quit": lambda: None})
         # Workaround for updating namespace with sys.modules
@@ -433,7 +433,7 @@ class ConsoleView(Gtk.TextView):
             )
         self.text_buffer.create_tag("0")
         self.text_buffer.create_tag("notouch", editable=False)
-        self.color_pat = re.compile("\x01?\x1b\[(.*?)m\x02?")
+        self.color_pat = re.compile(r"\x01?\x1b\[(.*?)m\x02?")
         self.line_start = self.text_buffer.create_mark(
             "line_start", self.text_buffer.get_end_iter(), True
         )
