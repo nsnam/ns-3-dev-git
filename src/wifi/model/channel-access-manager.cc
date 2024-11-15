@@ -219,8 +219,6 @@ ChannelAccessManager::ChannelAccessManager()
       m_lastRxReceivedOk(true),
       m_lastTxEnd(0),
       m_lastSwitchingEnd(0),
-      m_sleeping(false),
-      m_off(false),
       m_linkId(0)
 {
     NS_LOG_FUNCTION(this);
@@ -485,7 +483,7 @@ ChannelAccessManager::NeedBackoffUponAccess(Ptr<Txop> txop,
 
     // No backoff needed if in sleep mode or off. Checking if m_phy is nullptr is a workaround
     // needed for EMLSR and may be removed in the future
-    if (m_sleeping || m_off || !m_phy)
+    if (!m_phy || m_phy->IsStateSleep() || m_phy->IsStateOff())
     {
         return false;
     }
@@ -546,7 +544,7 @@ ChannelAccessManager::RequestAccess(Ptr<Txop> txop)
     }
     // Deny access if in sleep mode or off. Checking if m_phy is nullptr is a workaround
     // needed for EMLSR and may be removed in the future
-    if (m_sleeping || m_off || !m_phy)
+    if (!m_phy || m_phy->IsStateSleep() || m_phy->IsStateOff())
     {
         return;
     }
@@ -1118,7 +1116,6 @@ void
 ChannelAccessManager::NotifySleepNow()
 {
     NS_LOG_FUNCTION(this);
-    m_sleeping = true;
     // Reset backoffs
     ResetAllBackoffs();
     m_feManager->NotifySleepNow();
@@ -1132,7 +1129,6 @@ void
 ChannelAccessManager::NotifyOffNow()
 {
     NS_LOG_FUNCTION(this);
-    m_off = true;
     // Cancel timeout
     if (m_accessTimeout.IsPending())
     {
@@ -1150,7 +1146,6 @@ void
 ChannelAccessManager::NotifyWakeupNow()
 {
     NS_LOG_FUNCTION(this);
-    m_sleeping = false;
     for (auto txop : m_txops)
     {
         ResetBackoff(txop);
@@ -1162,7 +1157,6 @@ void
 ChannelAccessManager::NotifyOnNow()
 {
     NS_LOG_FUNCTION(this);
-    m_off = false;
     for (auto txop : m_txops)
     {
         ResetBackoff(txop);
