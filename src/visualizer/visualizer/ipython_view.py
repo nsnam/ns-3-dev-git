@@ -24,7 +24,7 @@ from functools import reduce
 from io import StringIO
 
 from gi.repository import Gdk, GLib, Gtk, Pango
-from pkg_resources import parse_version
+from packaging.version import Version
 
 ## Try to import IPython
 try:
@@ -148,7 +148,7 @@ class IterableIPShell:
         # Avoid using input splitter when not really needed.
         # Perhaps it could work even before 5.8.0
         # But it definitely does not work any more with >= 7.0.0
-        self.no_input_splitter = parse_version(IPython.release.version) >= parse_version("5.8.0")
+        self.no_input_splitter = Version(IPython.release.version) >= Version("5.8.0")
         self.lines = []
         self.indent_spaces = ""
 
