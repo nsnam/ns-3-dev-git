@@ -214,8 +214,8 @@ WifiExtractExpiredMpdusTest::DoRun()
     Enqueue(rxAddr2, false, MilliSeconds(70));
     Enqueue(rxAddr2, false, MilliSeconds(75));
 
-    WifiContainerQueueId queueId1{WIFI_QOSDATA_QUEUE, WIFI_UNICAST, rxAddr1, 0};
-    WifiContainerQueueId queueId2{WIFI_QOSDATA_QUEUE, WIFI_UNICAST, rxAddr2, 0};
+    WifiContainerQueueId queueId1{WIFI_QOSDATA_QUEUE, WifiRcvAddr::UNICAST, rxAddr1, 0};
+    WifiContainerQueueId queueId2{WIFI_QOSDATA_QUEUE, WifiRcvAddr::UNICAST, rxAddr2, 0};
 
     Simulator::Schedule(MilliSeconds(25), [&]() {
         /**

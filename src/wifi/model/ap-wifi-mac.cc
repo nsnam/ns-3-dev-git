@@ -618,7 +618,10 @@ ApWifiMac::GetBufferedDataFor(Mac48Address address, uint8_t linkId) const
 {
     if (!GetQosSupported())
     {
-        const WifiContainerQueueId queueId(WIFI_DATA_QUEUE, WIFI_UNICAST, address, std::nullopt);
+        const WifiContainerQueueId queueId(WIFI_DATA_QUEUE,
+                                           WifiRcvAddr::UNICAST,
+                                           address,
+                                           std::nullopt);
         return GetTxopQueue(AC_BE_NQOS)->PeekByQueueId(queueId);
     }
 
@@ -683,7 +686,7 @@ ApWifiMac::GetBufferedMmpduFor(Mac48Address address, uint8_t linkId) const
         {
             WifiContainerQueueId queueId(
                 WIFI_MGT_QUEUE,
-                WIFI_UNICAST,
+                WifiRcvAddr::UNICAST,
                 link.stationManager->GetAffiliatedStaAddress(address).value_or(address),
                 std::nullopt);
 
@@ -710,7 +713,7 @@ ApWifiMac::HasBufferedGroupcast(uint8_t linkId) const
         {
             const auto addrType = std::get<1>(*queueId);
             const auto& address = std::get<2>(*queueId);
-            if ((addrType == WIFI_BROADCAST || addrType == WIFI_GROUPCAST) &&
+            if ((addrType == WifiRcvAddr::BROADCAST || addrType == WifiRcvAddr::GROUPCAST) &&
                 address == GetFrameExchangeManager(linkId)->GetAddress())
             {
                 NS_LOG_DEBUG("Found some group addressed frames for link " << +linkId);
@@ -800,7 +803,10 @@ ApWifiMac::HasMoreDataAfter(Ptr<const WifiMpdu> mpdu, uint8_t linkId) const
     // look for buffered data frames
     if (!GetQosSupported())
     {
-        const WifiContainerQueueId queueId(WIFI_DATA_QUEUE, WIFI_UNICAST, receiver, std::nullopt);
+        const WifiContainerQueueId queueId(WIFI_DATA_QUEUE,
+                                           WifiRcvAddr::UNICAST,
+                                           receiver,
+                                           std::nullopt);
         auto start = hdr.IsData() ? mpdu : nullptr;
         if (auto bu = GetTxopQueue(AC_BE_NQOS)->PeekByQueueId(queueId, start))
         {
@@ -834,7 +840,10 @@ ApWifiMac::HasMoreDataAfter(Ptr<const WifiMpdu> mpdu, uint8_t linkId) const
 
     for (const auto aci : acList)
     {
-        const WifiContainerQueueId queueId(WIFI_MGT_QUEUE, WIFI_UNICAST, addr1, std::nullopt);
+        const WifiContainerQueueId queueId(WIFI_MGT_QUEUE,
+                                           WifiRcvAddr::UNICAST,
+                                           addr1,
+                                           std::nullopt);
         auto start = (hdr.IsMgt() && mpdu->GetQueueAc() == aci) ? mpdu : nullptr;
 
         if (auto bu = GetTxopQueue(aci)->PeekByQueueId(queueId, start))
