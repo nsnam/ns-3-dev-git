@@ -480,8 +480,6 @@ class ChannelAccessManager : public Object
     std::map<WifiChannelListType, Timespan>
         m_lastIdle;               //!< the last idle start and end time for each channel type
     Time m_lastSwitchingEnd;      //!< the last switching end time
-    bool m_sleeping;              //!< flag whether it is in sleeping state
-    bool m_off;                   //!< flag whether it is in off state
     Time m_eifsNoDifs;            //!< EIFS no DIFS time
     EventId m_accessTimeout;      //!< the access timeout ID
     bool m_generateBackoffOnNoTx; //!< whether the backoff should be invoked when the AC gains the
