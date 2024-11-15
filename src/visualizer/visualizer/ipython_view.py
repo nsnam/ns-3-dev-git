@@ -418,7 +418,7 @@ class ConsoleView(Gtk.TextView):
         Initialize console view.
         """
         Gtk.TextView.__init__(self)
-        self.modify_font(Pango.FontDescription("Mono"))
+        self.set_monospace(True)
         self.set_cursor_visible(True)
         self.text_buffer = self.get_buffer()
         self.mark = self.text_buffer.create_mark(
