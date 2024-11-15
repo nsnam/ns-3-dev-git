@@ -152,7 +152,8 @@ WifiDefaultAckManager::IsResponseNeeded(Ptr<const WifiMpdu> mpdu,
     }
     // * no other frame belonging to this BA agreement is queued (because, in such
     //   a case, a Block Ack is not going to be requested anytime soon)
-    if (auto queueId = WifiContainerQueueId(WIFI_QOSDATA_QUEUE, WIFI_UNICAST, origReceiver, tid);
+    if (auto queueId =
+            WifiContainerQueueId(WIFI_QOSDATA_QUEUE, WifiRcvAddr::UNICAST, origReceiver, tid);
         edca->GetWifiMacQueue()->GetNPackets(queueId) -
             edca->GetBaManager()->GetNBufferedPackets(origReceiver, tid) - seqNumbers.size() <
         1)

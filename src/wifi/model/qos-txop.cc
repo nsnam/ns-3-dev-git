@@ -177,7 +177,7 @@ QosTxop::GetLink(uint8_t linkId) const
 uint8_t
 QosTxop::GetQosQueueSize(uint8_t tid, Mac48Address receiver) const
 {
-    WifiContainerQueueId queueId{WIFI_QOSDATA_QUEUE, WIFI_UNICAST, receiver, tid};
+    WifiContainerQueueId queueId{WIFI_QOSDATA_QUEUE, WifiRcvAddr::UNICAST, receiver, tid};
     uint32_t bufferSize = m_queue->GetNBytes(queueId);
     // A queue size value of 254 is used for all sizes greater than 64 768 octets.
     uint8_t queueSize = static_cast<uint8_t>(std::ceil(std::min(bufferSize, 64769U) / 256.0));
@@ -393,7 +393,8 @@ QosTxop::PeekNextMpdu(uint8_t linkId, uint8_t tid, Mac48Address recipient, Ptr<c
             return m_queue->PeekFirstAvailable(linkId, mpdu);
         }
         WifiContainerQueueId queueId(WIFI_QOSDATA_QUEUE,
-                                     recipient.IsGroup() ? WIFI_GROUPCAST : WIFI_UNICAST,
+                                     recipient.IsGroup() ? WifiRcvAddr::GROUPCAST
+                                                         : WifiRcvAddr::UNICAST,
                                      recipient,
                                      tid);
         if (auto mask = m_mac->GetMacQueueScheduler()->GetQueueLinkMask(m_ac, queueId, linkId);

@@ -309,7 +309,7 @@ WifiRetransmitTest::CheckValues(const std::map<uint16_t, uint32_t>& seqNoRetryCo
 {
     const auto psduNumber = std::distance(m_events.cbegin(), m_eventIt);
     const auto apAddr = Mac48Address::ConvertFrom(m_apDevice.Get(0)->GetAddress());
-    WifiContainerQueueId queueId{WIFI_QOSDATA_QUEUE, WIFI_UNICAST, apAddr, 0};
+    WifiContainerQueueId queueId{WIFI_QOSDATA_QUEUE, WifiRcvAddr::UNICAST, apAddr, 0};
     const auto staQueue = m_staMac->GetTxopQueue(AC_BE);
     NS_TEST_EXPECT_MSG_EQ(seqNoRetryCountMap.size(),
                           staQueue->GetNPackets(queueId),

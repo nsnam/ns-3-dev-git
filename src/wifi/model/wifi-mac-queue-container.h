@@ -30,13 +30,28 @@ enum WifiContainerQueueType
     WIFI_DATA_QUEUE = 3
 };
 
-/// enumeration of frame directions
-enum WifiReceiverAddressType : uint8_t
+/// enumeration of frame types based on receiver address
+enum class WifiRcvAddr : uint8_t
 {
-    WIFI_UNICAST = 0,
-    WIFI_BROADCAST,
-    WIFI_GROUPCAST
+    UNICAST = 0,
+    BROADCAST,
+    GROUPCAST,
+    COUNT
 };
+
+/**
+ * Deprecated frame types enums.
+ *
+ * Use `WifiRcvAddr` class enum values instead.
+ * @{
+ */
+NS_DEPRECATED_3_46("Use WifiRcvAddr::UNICAST instead")
+static constexpr auto WIFI_UNICAST = WifiRcvAddr::UNICAST;
+NS_DEPRECATED_3_46("Use WifiRcvAddr::BROADCAST instead")
+static constexpr auto WIFI_BROADCAST = WifiRcvAddr::BROADCAST;
+NS_DEPRECATED_3_46("Use WifiRcvAddr::GROUPCAST instead")
+static constexpr auto WIFI_GROUPCAST = WifiRcvAddr::GROUPCAST;
+/**@}*/
 
 /**
  * Tuple (queue type, receiver address type, Address, TID) identifying a container queue.
@@ -65,8 +80,8 @@ enum WifiReceiverAddressType : uint8_t
  *
  * The TID is only specified for container queue types holding QoS data frames.
  */
-using WifiContainerQueueId = std::
-    tuple<WifiContainerQueueType, WifiReceiverAddressType, Mac48Address, std::optional<uint8_t>>;
+using WifiContainerQueueId =
+    std::tuple<WifiContainerQueueType, WifiRcvAddr, Mac48Address, std::optional<uint8_t>>;
 
 } // namespace ns3
 

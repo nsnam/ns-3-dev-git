@@ -126,7 +126,7 @@ HtFrameExchangeManager::NeedSetupBlockAck(Mac48Address recipient, uint8_t tid)
     // NOLINTEND(bugprone-branch-clone)
     else
     {
-        WifiContainerQueueId queueId{WIFI_QOSDATA_QUEUE, WIFI_UNICAST, recipient, tid};
+        WifiContainerQueueId queueId{WIFI_QOSDATA_QUEUE, WifiRcvAddr::UNICAST, recipient, tid};
         uint32_t packets = qosTxop->GetWifiMacQueue()->GetNPackets(queueId);
         establish =
             (m_mac->Is6GhzBand(m_linkId) ||
@@ -152,7 +152,7 @@ HtFrameExchangeManager::NeedSetupGcrBlockAck(const WifiMacHeader& header)
         m_mpduAggregator->GetMaxAmpduSize(groupAddress, tid, WIFI_MOD_CLASS_HT);
     const auto isGcrBa = (m_apMac->GetGcrManager()->GetRetransmissionPolicy() ==
                           GroupAddressRetransmissionPolicy::GCR_BLOCK_ACK);
-    WifiContainerQueueId queueId{WIFI_QOSDATA_QUEUE, WIFI_GROUPCAST, groupAddress, tid};
+    WifiContainerQueueId queueId{WIFI_QOSDATA_QUEUE, WifiRcvAddr::GROUPCAST, groupAddress, tid};
 
     for (const auto& recipients =
              m_apMac->GetGcrManager()->GetMemberStasForGroupAddress(groupAddress);
@@ -570,7 +570,7 @@ HtFrameExchangeManager::GetBar(AcIndex ac,
             if (bar->GetHeader().GetAddr2() == m_self && recipientMld)
             {
                 WifiContainerQueueId queueId{WIFI_CTL_QUEUE,
-                                             WIFI_UNICAST,
+                                             WifiRcvAddr::UNICAST,
                                              *recipientMld,
                                              std::nullopt};
                 Ptr<WifiMpdu> otherBar;
@@ -606,7 +606,7 @@ HtFrameExchangeManager::GetBar(AcIndex ac,
         {
             WifiContainerQueueId queueId(
                 WIFI_QOSDATA_QUEUE,
-                WIFI_UNICAST,
+                WifiRcvAddr::UNICAST,
                 GetWifiRemoteStationManager()->GetMldAddress(recipient).value_or(recipient),
                 tid);
             // check if data is queued and can be transmitted on this link

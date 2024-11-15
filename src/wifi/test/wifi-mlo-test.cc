@@ -1581,7 +1581,7 @@ MultiLinkSetupTest::CheckDisabledLinks()
             (legacyAssoc
                  ? m_staMacs[0]->GetFrameExchangeManager(m_staSetupLinks.front())->GetAddress()
                  : m_staMacs[0]->GetAddress());
-        WifiContainerQueueId queueId(WIFI_QOSDATA_QUEUE, WIFI_UNICAST, addr, 0);
+        WifiContainerQueueId queueId(WIFI_QOSDATA_QUEUE, WifiRcvAddr::UNICAST, addr, 0);
 
         // the queue on the AP should have a mask if and only if the link has been setup
         auto mask = m_apMac->GetMacQueueScheduler()->GetQueueLinkMask(AC_BE, queueId, linkId);

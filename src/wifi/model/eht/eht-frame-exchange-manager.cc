@@ -213,7 +213,10 @@ EhtFrameExchangeManager::StartTransmission(Ptr<Txop> edca, MHz_u allowedWidth)
                 }
 
                 // check that this link is blocked as expected
-                WifiContainerQueueId queueId(WIFI_QOSDATA_QUEUE, WIFI_UNICAST, *mldAddress, 0);
+                WifiContainerQueueId queueId(WIFI_QOSDATA_QUEUE,
+                                             WifiRcvAddr::UNICAST,
+                                             *mldAddress,
+                                             0);
                 auto mask =
                     m_apMac->GetMacQueueScheduler()->GetQueueLinkMask(AC_BE, queueId, m_linkId);
                 NS_ASSERT_MSG(mask,
@@ -1109,7 +1112,10 @@ EhtFrameExchangeManager::SendCtsAfterRts(const WifiMacHeader& rtsHdr,
                 m_mac->GetWifiRemoteStationManager(linkId)->GetEmlsrEnabled(*mldAddress))
             {
                 // check that other links are blocked as expected
-                WifiContainerQueueId queueId(WIFI_QOSDATA_QUEUE, WIFI_UNICAST, *mldAddress, 0);
+                WifiContainerQueueId queueId(WIFI_QOSDATA_QUEUE,
+                                             WifiRcvAddr::UNICAST,
+                                             *mldAddress,
+                                             0);
                 auto mask =
                     m_apMac->GetMacQueueScheduler()->GetQueueLinkMask(AC_BE, queueId, linkId);
                 NS_ASSERT_MSG(mask, "No mask for client " << *mldAddress << " on link " << +linkId);

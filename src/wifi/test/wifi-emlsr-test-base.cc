@@ -626,7 +626,7 @@ EmlsrOperationsTestBase::CheckBlockedLink(Ptr<WifiMac> mac,
                                           std::string description,
                                           bool testUnblockedForOtherReasons)
 {
-    WifiContainerQueueId queueId(WIFI_QOSDATA_QUEUE, WIFI_UNICAST, dest, 0);
+    WifiContainerQueueId queueId(WIFI_QOSDATA_QUEUE, WifiRcvAddr::UNICAST, dest, 0);
     auto mask = mac->GetMacQueueScheduler()->GetQueueLinkMask(AC_BE, queueId, linkId);
     NS_TEST_EXPECT_MSG_EQ(mask.has_value(),
                           true,

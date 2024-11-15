@@ -320,11 +320,11 @@ RrMultiUserScheduler::CanSolicitStaInBsrpTf(const MasterInfo& info) const
     // check if the station is an EMLSR client that is using another link
     if (GetWifiRemoteStationManager(m_linkId)->GetEmlsrEnabled(info.address) &&
         (m_apMac->GetTxBlockedOnLink(AC_BE,
-                                     {WIFI_QOSDATA_QUEUE, WIFI_UNICAST, *mldAddr, 0},
+                                     {WIFI_QOSDATA_QUEUE, WifiRcvAddr::UNICAST, *mldAddr, 0},
                                      m_linkId,
                                      WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK) ||
          m_apMac->GetTxBlockedOnLink(AC_BE,
-                                     {WIFI_QOSDATA_QUEUE, WIFI_UNICAST, *mldAddr, 0},
+                                     {WIFI_QOSDATA_QUEUE, WifiRcvAddr::UNICAST, *mldAddr, 0},
                                      m_linkId,
                                      WifiQueueBlockedReason::WAITING_EMLSR_TRANSITION_DELAY)))
     {

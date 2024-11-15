@@ -318,7 +318,7 @@ WifiMacQueue::PeekByTidAndAddress(uint8_t tid, Mac48Address dest, Ptr<const Wifi
     NS_LOG_FUNCTION(this << +tid << dest << item);
     NS_ABORT_IF(dest.IsBroadcast());
     WifiContainerQueueId queueId(WIFI_QOSDATA_QUEUE,
-                                 dest.IsGroup() ? WIFI_GROUPCAST : WIFI_UNICAST,
+                                 dest.IsGroup() ? WifiRcvAddr::GROUPCAST : WifiRcvAddr::UNICAST,
                                  dest,
                                  tid);
     return PeekByQueueId(queueId, item);
