@@ -108,8 +108,20 @@ static constexpr uint16_t SU_STA_ID{65535};
 /// Empty 242-tone RU identifier for HE (Section 26.11.7 802.11ax-2021)
 static constexpr uint8_t EMPTY_242_TONE_HE_RU{113};
 
+/// The minimum value for the association ID (Sec. 9.4.1.8 of 802.11-2020)
+static constexpr uint16_t MIN_AID{1};
+
+/// The maximum value for the association ID (Sec. 9.4.1.8 of 802.11-2020)
+static constexpr uint16_t MAX_AID{2007};
+
 /// STA_ID for a RU that is intended for no user (Section 26.11.1 802.11ax-2021)
 static constexpr uint16_t NO_USER_STA_ID{2046};
+
+/// The maximum value for the association ID updated since 802.11be (Sec. 9.4.1.8 of 802.11be D7.0)
+static constexpr uint16_t EHT_MAX_AID{2006};
+
+/// AID value for Special User Info field in trigger frames (Sec. 9.3.1.22.3 of 802.11be D7.0)
+static constexpr uint16_t AID_SPECIAL_USER{2007};
 
 /// BSS Parameters Change Count max value for APs part of AP MLD
 /// IEEE 802.11be D5.0 35.3.10
