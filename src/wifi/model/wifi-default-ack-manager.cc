@@ -703,7 +703,10 @@ WifiDefaultAckManager::GetAckInfoIfAggregatedMuBar(Ptr<const WifiMpdu> mpdu,
         acknowledgment->stationsReplyingWithBlockAck.emplace(
             receiver,
             WifiDlMuAggregateTf::BlockAckInfo{
-                GetMuBarSize({m_mac->GetBarTypeAsOriginator(receiver, tid)}),
+                GetMuBarSize(IsEht(txParams.m_txVector.GetPreambleType()) ? TriggerFrameVariant::EHT
+                                                                          : TriggerFrameVariant::HE,
+                             txParams.m_txVector.GetChannelWidth(),
+                             {m_mac->GetBarTypeAsOriginator(receiver, tid)}),
                 edca->GetBaManager()->GetBlockAckReqHeader(
                     mpdu->GetOriginal()->GetHeader().GetAddr1(),
                     tid),
