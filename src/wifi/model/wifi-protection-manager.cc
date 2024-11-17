@@ -85,11 +85,11 @@ WifiProtectionManager::AddUserInfoToMuRts(CtrlTriggerHeader& muRts,
     auto phy = m_mac->GetWifiPhy(m_linkId);
     std::size_t primaryIdx = phy->GetOperatingChannel().GetPrimaryChannelIndex(ctsTxWidth);
     std::size_t idx80MHz = MHz_u{80} / ctsTxWidth;
-    if ((phy->GetChannelWidth() == MHz_u{160}) && (ctsTxWidth <= MHz_u{40}) &&
+    if ((phy->GetChannelWidth() > MHz_u{80}) && (ctsTxWidth <= MHz_u{40}) &&
         (primaryIdx >= idx80MHz))
     {
-        // the primary80 is in the higher part of the 160 MHz channel
-        primaryIdx -= idx80MHz;
+        // get the index of the primary within the primary80
+        primaryIdx %= idx80MHz;
     }
     switch (static_cast<uint16_t>(ctsTxWidth))
     {
@@ -104,6 +104,9 @@ WifiProtectionManager::AddUserInfoToMuRts(CtrlTriggerHeader& muRts,
         break;
     case 160:
         ui.SetMuRtsRuAllocation(68);
+        break;
+    case 320:
+        ui.SetMuRtsRuAllocation(69);
         break;
     default:
         NS_ABORT_MSG("Unhandled TX width: " << ctsTxWidth << " MHz");

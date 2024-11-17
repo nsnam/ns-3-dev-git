@@ -1547,16 +1547,21 @@ CtrlTriggerUserInfoField::SetMuRtsRuAllocation(uint8_t value)
     NS_ABORT_MSG_IF(m_triggerType != TriggerFrameType::MU_RTS_TRIGGER,
                     "SetMuRtsRuAllocation() can only be used for MU-RTS");
     NS_ABORT_MSG_IF(
-        value < 61 || value > 68,
+        value < 61 || value > 69,
         "Value "
             << +value
             << " is not admitted for B7-B1 of the RU Allocation subfield of MU-RTS Trigger Frames");
 
     m_ruAllocation = (value << 1);
-    if (value == 68)
+    if (value >= 68)
     {
-        // set B0 for 160 MHz and 80+80 MHz indication
+        // set B0 for 160 MHz, 80+80 MHz and 320 MHz indication
         m_ruAllocation++;
+    }
+    if (value == 69)
+    {
+        // set 160 for 320 MHz indication
+        m_ps160 = true;
     }
 }
 
@@ -1567,7 +1572,7 @@ CtrlTriggerUserInfoField::GetMuRtsRuAllocation() const
                     "GetMuRtsRuAllocation() can only be used for MU-RTS");
     uint8_t value = (m_ruAllocation >> 1);
     NS_ABORT_MSG_IF(
-        value < 61 || value > 68,
+        value < 61 || value > 69,
         "Value "
             << +value
             << " is not admitted for B7-B1 of the RU Allocation subfield of MU-RTS Trigger Frames");
