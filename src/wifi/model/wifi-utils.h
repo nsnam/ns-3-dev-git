@@ -29,6 +29,8 @@ class Packet;
 class WifiMac;
 class WifiTxVector;
 
+enum class TriggerFrameVariant : uint8_t;
+
 /**
  * Wifi direction. Values are those defined for the TID-to-Link Mapping Control Direction
  * field in IEEE 802.11be D3.1 Figure 9-1002ap
@@ -180,10 +182,14 @@ uint32_t GetBlockAckRequestSize(BlockAckReqType type);
 /**
  * Return the total MU-BAR size (including FCS trailer).
  *
+ * @param variant the Common Info field variant of the MU-BAR
+ * @param bw the bandwidth over which the MU-BAR is transmitted
  * @param types the list of Block Ack Request types of the individual BARs
  * @return the total MU-BAR size in bytes
  */
-uint32_t GetMuBarSize(std::list<BlockAckReqType> types);
+uint32_t GetMuBarSize(TriggerFrameVariant variant,
+                      MHz_u bw,
+                      const std::list<BlockAckReqType>& types);
 /**
  * Return the total RTS size (including FCS trailer).
  *

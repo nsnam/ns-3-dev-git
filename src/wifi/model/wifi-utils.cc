@@ -76,12 +76,14 @@ GetBlockAckRequestSize(BlockAckReqType type)
 }
 
 uint32_t
-GetMuBarSize(std::list<BlockAckReqType> types)
+GetMuBarSize(TriggerFrameVariant variant, MHz_u bw, const std::list<BlockAckReqType>& types)
 {
     WifiMacHeader hdr;
     hdr.SetType(WIFI_MAC_CTL_TRIGGER);
     CtrlTriggerHeader trigger;
     trigger.SetType(TriggerFrameType::MU_BAR_TRIGGER);
+    trigger.SetVariant(variant);
+    trigger.SetUlBandwidth(bw);
     for (auto& t : types)
     {
         auto userInfo = trigger.AddUserInfoField();
