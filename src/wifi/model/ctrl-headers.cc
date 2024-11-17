@@ -1391,6 +1391,9 @@ CtrlTriggerUserInfoField::GetPreambleType() const
 void
 CtrlTriggerUserInfoField::SetAid12(uint16_t aid)
 {
+    NS_ASSERT_MSG((m_variant == TriggerFrameVariant::HE) || (aid != AID_SPECIAL_USER),
+                  std::to_string(AID_SPECIAL_USER)
+                      << " is reserved for Special User Info Field in EHT variant");
     m_aid12 = aid & 0x0fff;
 }
 
@@ -1730,6 +1733,176 @@ CtrlTriggerUserInfoField::GetMuBarTriggerDepUserInfo() const
     return m_muBarTriggerDependentUserInfo;
 }
 
+/*****************************************
+ * Trigger frame - Special User Info field
+ *****************************************/
+
+CtrlTriggerSpecialUserInfoField::CtrlTriggerSpecialUserInfoField(TriggerFrameType triggerType)
+    : m_triggerType(triggerType)
+{
+}
+
+CtrlTriggerSpecialUserInfoField&
+CtrlTriggerSpecialUserInfoField::operator=(const CtrlTriggerSpecialUserInfoField& other)
+{
+    // check for self-assignment
+    if (&other == this)
+    {
+        return *this;
+    }
+
+    m_triggerType = other.m_triggerType;
+    m_ulBwExt = other.m_ulBwExt;
+    m_muBarTriggerDependentUserInfo = other.m_muBarTriggerDependentUserInfo;
+
+    return *this;
+}
+
+uint32_t
+CtrlTriggerSpecialUserInfoField::GetSerializedSize() const
+{
+    uint32_t size = 0;
+    size += 5; // User Info (excluding Trigger Dependent User Info)
+
+    switch (m_triggerType)
+    {
+    case TriggerFrameType::BASIC_TRIGGER:
+    case TriggerFrameType::BFRP_TRIGGER:
+        size += 1;
+        break;
+    case TriggerFrameType::MU_BAR_TRIGGER:
+        size +=
+            m_muBarTriggerDependentUserInfo.GetSerializedSize(); // BAR Control and BAR Information
+        break;
+    default:;
+        // The Trigger Dependent User Info subfield is not present in the other variants
+    }
+
+    return size;
+}
+
+Buffer::Iterator
+CtrlTriggerSpecialUserInfoField::Serialize(Buffer::Iterator start) const
+{
+    NS_ABORT_MSG_IF(m_triggerType == TriggerFrameType::BFRP_TRIGGER,
+                    "BFRP Trigger frame is not supported");
+    NS_ABORT_MSG_IF(m_triggerType == TriggerFrameType::GCR_MU_BAR_TRIGGER,
+                    "GCR-MU-BAR Trigger frame is not supported");
+    NS_ABORT_MSG_IF(m_triggerType == TriggerFrameType::NFRP_TRIGGER,
+                    "NFRP Trigger frame is not supported");
+
+    Buffer::Iterator i = start;
+
+    uint32_t userInfo = 0;
+    userInfo |= (AID_SPECIAL_USER & 0x0fff);
+    userInfo |= (static_cast<uint32_t>(m_ulBwExt) << 15);
+    i.WriteHtolsbU32(userInfo);
+    i.WriteU8(0);
+    // TODO: EHT Spatial Reuse and U-SIG Disregard And Validate
+
+    if (m_triggerType == TriggerFrameType::BASIC_TRIGGER)
+    {
+        // The length is one octet and all the subfields are reserved in a Basic Trigger frame and
+        // in a BFRP Trigger frame
+        i.WriteU8(0);
+    }
+    else if (m_triggerType == TriggerFrameType::MU_BAR_TRIGGER)
+    {
+        m_muBarTriggerDependentUserInfo.Serialize(i);
+        i.Next(m_muBarTriggerDependentUserInfo.GetSerializedSize());
+    }
+
+    return i;
+}
+
+Buffer::Iterator
+CtrlTriggerSpecialUserInfoField::Deserialize(Buffer::Iterator start)
+{
+    NS_ABORT_MSG_IF(m_triggerType == TriggerFrameType::BFRP_TRIGGER,
+                    "BFRP Trigger frame is not supported");
+    NS_ABORT_MSG_IF(m_triggerType == TriggerFrameType::GCR_MU_BAR_TRIGGER,
+                    "GCR-MU-BAR Trigger frame is not supported");
+    NS_ABORT_MSG_IF(m_triggerType == TriggerFrameType::NFRP_TRIGGER,
+                    "NFRP Trigger frame is not supported");
+
+    Buffer::Iterator i = start;
+
+    const auto userInfo = i.ReadLsbtohU32();
+    i.ReadU8();
+    // TODO: EHT Spatial Reuse and U-SIG Disregard And Validate
+
+    const uint16_t aid12 = userInfo & 0x0fff;
+    NS_ABORT_MSG_IF(aid12 != AID_SPECIAL_USER, "Failed to deserialize Special User Info field");
+    m_ulBwExt = (userInfo >> 15) & 0x03;
+
+    if (m_triggerType == TriggerFrameType::BASIC_TRIGGER)
+    {
+        i.ReadU8();
+    }
+    else if (m_triggerType == TriggerFrameType::MU_BAR_TRIGGER)
+    {
+        const auto len = m_muBarTriggerDependentUserInfo.Deserialize(i);
+        i.Next(len);
+    }
+
+    return i;
+}
+
+TriggerFrameType
+CtrlTriggerSpecialUserInfoField::GetType() const
+{
+    return m_triggerType;
+}
+
+void
+CtrlTriggerSpecialUserInfoField::SetUlBwExt(MHz_u bw)
+{
+    switch (static_cast<uint16_t>(bw))
+    {
+    case 20:
+    case 40:
+    case 80:
+        m_ulBwExt = 0;
+        break;
+    case 160:
+        m_ulBwExt = 1;
+        break;
+    case 320:
+        m_ulBwExt = 2;
+        // TODO: differentiate channelization 1 from channelization 2
+        break;
+    default:
+        NS_FATAL_ERROR("Bandwidth value not allowed.");
+        break;
+    }
+}
+
+uint8_t
+CtrlTriggerSpecialUserInfoField::GetUlBwExt() const
+{
+    return m_ulBwExt;
+}
+
+void
+CtrlTriggerSpecialUserInfoField::SetMuBarTriggerDepUserInfo(const CtrlBAckRequestHeader& bar)
+{
+    NS_ABORT_MSG_IF(m_triggerType != TriggerFrameType::MU_BAR_TRIGGER,
+                    "Not a MU-BAR Trigger frame");
+    NS_ABORT_MSG_IF(bar.GetType().m_variant != BlockAckReqType::COMPRESSED &&
+                        bar.GetType().m_variant != BlockAckReqType::MULTI_TID,
+                    "BAR Control indicates it is neither the Compressed nor the Multi-TID variant");
+    m_muBarTriggerDependentUserInfo = bar;
+}
+
+const CtrlBAckRequestHeader&
+CtrlTriggerSpecialUserInfoField::GetMuBarTriggerDepUserInfo() const
+{
+    NS_ABORT_MSG_IF(m_triggerType != TriggerFrameType::MU_BAR_TRIGGER,
+                    "Not a MU-BAR Trigger frame");
+
+    return m_muBarTriggerDependentUserInfo;
+}
+
 /***********************************
  *       Trigger frame
  ***********************************/
@@ -1753,6 +1926,7 @@ CtrlTriggerHeader::CtrlTriggerHeader()
 CtrlTriggerHeader::CtrlTriggerHeader(TriggerFrameType type, const WifiTxVector& txVector)
     : CtrlTriggerHeader()
 {
+    m_triggerType = type;
     NS_ABORT_MSG_IF(m_triggerType == TriggerFrameType::MU_RTS_TRIGGER,
                     "This constructor cannot be used for MU-RTS");
 
@@ -1769,7 +1943,13 @@ CtrlTriggerHeader::CtrlTriggerHeader(TriggerFrameType type, const WifiTxVector& 
                      << txVector.GetPreambleType());
     }
 
-    m_triggerType = type;
+    // special user is always present if solicited TB PPDU format is EHT or later
+    if (txVector.GetModulationClass() >= WifiModulationClass::WIFI_MOD_CLASS_EHT)
+    {
+        NS_ASSERT(m_variant == TriggerFrameVariant::EHT);
+        m_specialUserInfoField.emplace(m_triggerType);
+    }
+
     SetUlBandwidth(txVector.GetChannelWidth());
     SetUlLength(txVector.GetLength());
     const auto gi = txVector.GetGuardInterval().GetNanoSeconds();
@@ -1781,6 +1961,7 @@ CtrlTriggerHeader::CtrlTriggerHeader(TriggerFrameType type, const WifiTxVector& 
     {
         m_giAndLtfType = 2;
     }
+
     for (auto& userInfo : txVector.GetHeMuUserInfoMap())
     {
         CtrlTriggerUserInfoField& ui = AddUserInfoField();
@@ -1814,6 +1995,8 @@ CtrlTriggerHeader::operator=(const CtrlTriggerHeader& trigger)
     m_apTxPower = trigger.m_apTxPower;
     m_ulSpatialReuse = trigger.m_ulSpatialReuse;
     m_padding = trigger.m_padding;
+    m_specialUserInfoField.reset();
+    m_specialUserInfoField = trigger.m_specialUserInfoField;
     m_userInfoFields.clear();
     m_userInfoFields = trigger.m_userInfoFields;
     return *this;
@@ -1853,6 +2036,11 @@ CtrlTriggerHeader::SetVariant(TriggerFrameVariant variant)
     NS_ABORT_MSG_IF(!m_userInfoFields.empty(),
                     "Cannot change Common Info field variant if User Info fields are present");
     m_variant = variant;
+    // special user is always present if User Info field variant is EHT or later
+    if (!m_specialUserInfoField && (m_variant >= TriggerFrameVariant::EHT))
+    {
+        m_specialUserInfoField.emplace(m_triggerType);
+    }
 }
 
 TriggerFrameVariant
@@ -1871,6 +2059,12 @@ CtrlTriggerHeader::GetSerializedSize() const
     if (m_triggerType == TriggerFrameType::GCR_MU_BAR_TRIGGER)
     {
         size += 4;
+    }
+
+    if (m_specialUserInfoField)
+    {
+        NS_ASSERT(m_variant == TriggerFrameVariant::EHT);
+        size += m_specialUserInfoField->GetSerializedSize();
     }
 
     for (auto& ui : m_userInfoFields)
@@ -1912,6 +2106,12 @@ CtrlTriggerHeader::Serialize(Buffer::Iterator start) const
 
     i.WriteHtolsbU64(commonInfo);
 
+    if (m_specialUserInfoField)
+    {
+        NS_ASSERT(m_variant == TriggerFrameVariant::EHT);
+        i = m_specialUserInfoField->Serialize(i);
+    }
+
     for (auto& ui : m_userInfoFields)
     {
         i = ui.Serialize(i);
@@ -1949,6 +2149,18 @@ CtrlTriggerHeader::Deserialize(Buffer::Iterator start)
                     "GCR-MU-BAR Trigger frame is not supported");
     NS_ABORT_MSG_IF(m_triggerType == TriggerFrameType::NFRP_TRIGGER,
                     "NFRP Trigger frame is not supported");
+
+    if (m_variant == TriggerFrameVariant::EHT)
+    {
+        m_specialUserInfoField.reset();
+        const auto userInfo = i.ReadLsbtohU16();
+        i.Prev(2);
+        if (const auto aid12 = userInfo & 0x0fff; aid12 == AID_SPECIAL_USER)
+        {
+            m_specialUserInfoField.emplace(m_triggerType);
+            i = m_specialUserInfoField->Deserialize(i);
+        }
+    }
 
     while (i.GetRemainingSize() >= 2)
     {
@@ -2246,8 +2458,10 @@ CtrlTriggerHeader::GetPaddingSize() const
 CtrlTriggerHeader
 CtrlTriggerHeader::GetCommonInfoField() const
 {
-    // make a copy of this Trigger Frame and remove the User Info fields from the copy
+    // make a copy of this Trigger Frame and remove the User Info fields (including the Special User
+    // Info field) from the copy
     CtrlTriggerHeader trigger(*this);
+    trigger.m_specialUserInfoField.reset();
     trigger.m_userInfoFields.clear();
     return trigger;
 }

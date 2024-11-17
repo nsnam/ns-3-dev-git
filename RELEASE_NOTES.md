@@ -97,6 +97,7 @@ The minimum clang-format version is version 15.
 - (wifi) 2009! - Added WifiTxStatsHelper for Wi-Fi MAC-level tracing.
 - (wifi) - Added support for 802.11aa groupcast with retries (GCR). Both unsolicited retries (GCR-UR) and Block Ack (GCR-BA) mechanisms are implemented.
 - (zigbee) Added a new Zigbee module.
+- (wifi) Trigger frames have been extended to support Special User Info field
 
 ### Bugs fixed
 

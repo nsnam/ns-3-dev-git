@@ -17,6 +17,7 @@
 #include "ns3/mac48-address.h"
 
 #include <list>
+#include <optional>
 #include <vector>
 
 namespace ns3
@@ -912,6 +913,107 @@ class CtrlTriggerUserInfoField
 
 /**
  * @ingroup wifi
+ * @brief Special User Info field of Trigger frames.
+ *
+ * Trigger frames have been extended by 802.11be amendment and may include one Special User Info
+ * field for a solicited EHT TB PPDU (see Section 9.3.1.22.3 of D7.0). The Special User Info field
+ * is located immediately after the Common Info field, it does not carry user specific information
+ * but carries extended common information not provided in the Common Info field.
+ */
+class CtrlTriggerSpecialUserInfoField
+{
+  public:
+    /**
+     * Constructor
+     *
+     * @param triggerType the Trigger frame type
+     */
+    explicit CtrlTriggerSpecialUserInfoField(TriggerFrameType triggerType);
+
+    /**
+     * Copy assignment operator.
+     *
+     * @param other the Special User Info field to copy
+     * @return a reference to the copied object
+     *
+     * Checks that the given Special User Info fields is included in the same type of Trigger Frame.
+     */
+    CtrlTriggerSpecialUserInfoField& operator=(const CtrlTriggerSpecialUserInfoField& other);
+
+    /**
+     * Get the expected size of this Special User Info field
+     *
+     * @return the expected size of this Special User Info field.
+     */
+    uint32_t GetSerializedSize() const;
+
+    /**
+     * Serialize the Special User Info field to the given buffer.
+     *
+     * @param start an iterator which points to where the header should
+     *        be written
+     * @return Buffer::Iterator to the next available buffer
+     */
+    Buffer::Iterator Serialize(Buffer::Iterator start) const;
+
+    /**
+     * Deserialize the Special User Info field from the given buffer.
+     *
+     * @param start an iterator which points to where the header should
+     *        read from
+     * @return Buffer::Iterator to the next available buffer
+     */
+    Buffer::Iterator Deserialize(Buffer::Iterator start);
+
+    /**
+     * Get the type of the Trigger Frame this Special User Info field belongs to.
+     *
+     * @return the type of the Trigger Frame this Special User Info field belongs to
+     */
+    TriggerFrameType GetType() const;
+
+    /**
+     * Set the UL Bandwidth Extension subfield value of the solicited EHT TB PPDU.
+     *
+     * @param bw bandwidth (allowed values: 20 MHz, 40 MHz, 80 MHz, 160 MHz, 320 MHz)
+     */
+    void SetUlBwExt(MHz_u bw);
+
+    /**
+     * Get the UL Bandwidth Extension subfield value of the solicited EHT TB PPDU.
+     *
+     * @return the UL Bandwidth Extension subfield value
+     */
+    uint8_t GetUlBwExt() const;
+
+    /**
+     * Set the Trigger Dependent Special User Info subfield for the MU-BAR variant of Trigger
+     * frames, which includes the BAR Type subfield. The BAR Type subfield must indicate a
+     * Compressed BAR in an MU BAR Trigger frame.
+     *
+     * @param bar the BlockAckRequest header object including the BAR Control
+     *            subfield and the BAR Information subfield
+     */
+    void SetMuBarTriggerDepUserInfo(const CtrlBAckRequestHeader& bar);
+
+    /**
+     * Get the Trigger Dependent Special User Info subfield for the MU-BAR variant of
+     * Trigger frames, which includes a BAR Type subfield.
+     *
+     * @return the BlockAckRequest header object including the BAR Control
+     *         subfield and the BAR Information subfield
+     */
+    const CtrlBAckRequestHeader& GetMuBarTriggerDepUserInfo() const;
+
+  private:
+    TriggerFrameType m_triggerType{};                        //!< Trigger type
+    uint8_t m_ulBwExt{};                                     //!< UL Bandwidth Extension
+    CtrlBAckRequestHeader m_muBarTriggerDependentUserInfo{}; //!< MU-BAR variant of Trigger
+                                                             //!< Dependent User Info subfield
+};
+
+/**
+ * @ingroup wifi
  * @brief Headers for Trigger frames.
  *
  * 802.11ax amendment defines eight types of Trigger frames (see Section 9.3.1.23 of D3.0):
@@ -1338,6 +1440,9 @@ class CtrlTriggerHeader : public Header
     uint8_t m_apTxPower;            //!< Tx Power used by AP to transmit the Trigger Frame
     uint16_t m_ulSpatialReuse;      //!< Value for the Spatial Reuse field in HE-SIG-A
     std::size_t m_padding;          //!< the size in bytes of the Padding field
+
+    std::optional<CtrlTriggerSpecialUserInfoField>
+        m_specialUserInfoField; //!< Special User Info field (EHT variant only)
 
     /**
      * List of User Info fields
