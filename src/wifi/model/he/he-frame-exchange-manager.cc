@@ -1265,10 +1265,14 @@ HeFrameExchangeManager::GetCtsTxVectorAfterMuRts(const CtrlTriggerHeader& trigge
     {
         bw = MHz_t{80};
     }
+    else if (ru == 68)
+    {
+        bw = MHz_t{160};
+    }
     else
     {
-        NS_ASSERT(ru == 68);
-        bw = MHz_t{160};
+        NS_ASSERT(ru == 69);
+        bw = MHz_t{320};
     }
 
     auto txVector = GetWifiRemoteStationManager()->GetCtsTxVector(m_bssid, GetCtsModeAfterMuRts());
