@@ -1127,7 +1127,6 @@ WifiPhyCcaIndicationTest::DoCheckPhyState(WifiPhyState expectedState)
     m_rxPhy->GetAttribute("State", ptr);
     Ptr<WifiPhyStateHelper> state = DynamicCast<WifiPhyStateHelper>(ptr.Get<WifiPhyStateHelper>());
     currentState = state->GetState();
-    NS_ASSERT(currentState == expectedState);
     NS_TEST_ASSERT_MSG_EQ(currentState,
                           expectedState,
                           "PHY State " << currentState << " does not match expected state "
