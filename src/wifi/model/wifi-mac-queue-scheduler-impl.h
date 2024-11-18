@@ -14,6 +14,7 @@
 #include "wifi-mac.h"
 
 #include <algorithm>
+#include <array>
 #include <functional>
 #include <iterator>
 #include <list>
@@ -88,11 +89,17 @@ class WifiMacQueueSchedulerImpl : public WifiMacQueueScheduler
                        const std::set<uint8_t>& tids,
                        const std::set<uint8_t>& linkIds) final;
     /** @copydoc ns3::WifiMacQueueScheduler::BlockAllQueues */
-    void BlockAllQueues(WifiQueueBlockedReason reason, const std::set<uint8_t>& linkIds) final;
+    void BlockAllQueues(WifiQueueBlockedReason reason,
+                        const std::set<uint8_t>& linkIds,
+                        const std::set<WifiRcvAddr>& addrTypes) final;
     /** @copydoc ns3::WifiMacQueueScheduler::UnblockAllQueues */
-    void UnblockAllQueues(WifiQueueBlockedReason reason, const std::set<uint8_t>& linkIds) final;
+    void UnblockAllQueues(WifiQueueBlockedReason reason,
+                          const std::set<uint8_t>& linkIds,
+                          const std::set<WifiRcvAddr>& addrTypes) final;
     /** @copydoc ns3::WifiMacQueueScheduler::GetAllQueuesBlockedOnLink */
-    bool GetAllQueuesBlockedOnLink(uint8_t linkId, WifiQueueBlockedReason reason) final;
+    bool GetAllQueuesBlockedOnLink(uint8_t linkId,
+                                   WifiRcvAddr addrType,
+                                   WifiQueueBlockedReason reason) final;
     /** @copydoc ns3::WifiMacQueueScheduler::GetQueueLinkMask */
     std::optional<Mask> GetQueueLinkMask(AcIndex ac,
                                          const WifiContainerQueueId& queueId,
@@ -274,22 +281,29 @@ class WifiMacQueueSchedulerImpl : public WifiMacQueueScheduler
                        const std::set<uint8_t>& linkIds);
 
     /**
-     * Block or unblock the given set of links for all the container queues for the given reason.
+     * Block or unblock the given set of links for all the container queues of the given receiver
+     * address types for the given reason.
      *
      * @param block true to block the queues, false to unblock
      * @param reason the reason for blocking the queues
+     * @param addrTypes set of receiver address types (empty to block all types)
      * @param linkIds set of links to block (empty to block all setup links)
      */
     void DoBlockAllQueues(bool block,
                           WifiQueueBlockedReason reason,
+                          const std::set<WifiRcvAddr>& addrTypes,
                           const std::set<uint8_t>& linkIds);
 
+    /// Map a given reason to the set of links to be (un)blocked for that reason
+    using ReasonLinksMap = std::map<WifiQueueBlockedReason, std::set<uint8_t>>;
+
     /**
-     * When it is requested to block all the queues, an entry is added to this map to store the
-     * reason and the IDs of the links to block. This information is used to block queues that
-     * will be created afterwards.
+     * When it is requested to block all the queues of given receiver address types, the reason and
+     * the IDs of the links to block are stored in the elements of the array corresponding to the
+     * receiver address types. This information is used to block queues that will be created
+     * afterwards.
      */
-    std::map<WifiQueueBlockedReason, std::set<uint8_t>> m_blockAllInfo;
+    std::array<ReasonLinksMap, static_cast<std::size_t>(WifiRcvAddr::COUNT)> m_blockAllInfo;
 
     std::vector<PerAcInfo> m_perAcInfo{AC_UNDEF}; //!< vector of per-AC information
     NS_LOG_TEMPLATE_DECLARE;                      //!< the log component
@@ -395,7 +409,8 @@ WifiMacQueueSchedulerImpl<Priority, Compare>::InitQueueInfo(AcIndex ac, Ptr<cons
                 if (inserted)
                 {
                     // linkId was not in the map, set the mask if all queues are blocked
-                    for (const auto& [reason, linkIds] : m_blockAllInfo)
+                    for (const auto& [reason, linkIds] :
+                         m_blockAllInfo[static_cast<std::size_t>(std::get<WifiRcvAddr>(queueId))])
                     {
                         if (linkIds.contains(linkId))
                         {
@@ -427,7 +442,8 @@ WifiMacQueueSchedulerImpl<Priority, Compare>::InitQueueInfo(AcIndex ac, Ptr<cons
         if (linkIdsMap.empty() || linkIdsMap.cbegin()->first != *linkId)
         {
             Mask mask;
-            for (const auto& [reason, linkIds] : m_blockAllInfo)
+            for (const auto& [reason, linkIds] :
+                 m_blockAllInfo[static_cast<std::size_t>(std::get<WifiRcvAddr>(queueId))])
             {
                 if (linkIds.contains(*linkId))
                 {
@@ -600,19 +616,24 @@ WifiMacQueueSchedulerImpl<Priority, Compare>::UnblockQueues(
 
 template <class Priority, class Compare>
 void
-WifiMacQueueSchedulerImpl<Priority, Compare>::DoBlockAllQueues(bool block,
-                                                               WifiQueueBlockedReason reason,
-                                                               const std::set<uint8_t>& linkIds)
+WifiMacQueueSchedulerImpl<Priority, Compare>::DoBlockAllQueues(
+    bool block,
+    WifiQueueBlockedReason reason,
+    const std::set<WifiRcvAddr>& addrTypes,
+    const std::set<uint8_t>& linkIds)
 {
     for (auto& perAcInfo : m_perAcInfo)
     {
         for (auto& [queueId, queueInfo] : perAcInfo.queueInfoMap)
         {
-            for (auto& [linkId, mask] : queueInfo.linkIds)
+            if (addrTypes.empty() || addrTypes.contains(std::get<WifiRcvAddr>(queueId)))
             {
-                if (linkIds.empty() || linkIds.contains(linkId))
+                for (auto& [linkId, mask] : queueInfo.linkIds)
                 {
-                    mask.set(static_cast<std::size_t>(reason), block);
+                    if (linkIds.empty() || linkIds.contains(linkId))
+                    {
+                        mask.set(static_cast<std::size_t>(reason), block);
+                    }
                 }
             }
         }
@@ -622,40 +643,61 @@ WifiMacQueueSchedulerImpl<Priority, Compare>::DoBlockAllQueues(bool block,
 template <class Priority, class Compare>
 void
 WifiMacQueueSchedulerImpl<Priority, Compare>::BlockAllQueues(WifiQueueBlockedReason reason,
-                                                             const std::set<uint8_t>& linkIds)
+                                                             const std::set<uint8_t>& linkIds,
+                                                             const std::set<WifiRcvAddr>& addrTypes)
 {
-    DoBlockAllQueues(true, reason, linkIds);
+    DoBlockAllQueues(true, reason, addrTypes, linkIds);
 
-    if (linkIds.empty())
+    const auto rcvAddrTypes =
+        (addrTypes.empty()
+             ? std::set{WifiRcvAddr::UNICAST, WifiRcvAddr::BROADCAST, WifiRcvAddr::GROUPCAST}
+             : addrTypes);
+
+    for (const auto addrType : rcvAddrTypes)
     {
-        m_blockAllInfo[reason] = GetMac()->GetLinkIds(); // all links blocked
-    }
-    else
-    {
-        m_blockAllInfo[reason].merge(std::set{linkIds});
+        const auto index = static_cast<std::size_t>(addrType);
+        if (linkIds.empty())
+        {
+            m_blockAllInfo[index][reason] = GetMac()->GetLinkIds(); // all links blocked
+        }
+        else
+        {
+            m_blockAllInfo[index][reason].merge(std::set{linkIds});
+        }
     }
 }
 
 template <class Priority, class Compare>
 void
-WifiMacQueueSchedulerImpl<Priority, Compare>::UnblockAllQueues(WifiQueueBlockedReason reason,
-                                                               const std::set<uint8_t>& linkIds)
+WifiMacQueueSchedulerImpl<Priority, Compare>::UnblockAllQueues(
+    WifiQueueBlockedReason reason,
+    const std::set<uint8_t>& linkIds,
+    const std::set<WifiRcvAddr>& addrTypes)
 {
-    DoBlockAllQueues(false, reason, linkIds);
+    DoBlockAllQueues(false, reason, addrTypes, linkIds);
 
-    auto infoIt = m_blockAllInfo.find(reason);
+    const auto rcvAddrTypes =
+        (addrTypes.empty()
+             ? std::set{WifiRcvAddr::UNICAST, WifiRcvAddr::BROADCAST, WifiRcvAddr::GROUPCAST}
+             : addrTypes);
 
-    if (infoIt == m_blockAllInfo.end())
+    for (const auto addrType : rcvAddrTypes)
     {
-        return; // all queues were not blocked for the given reason
-    }
-    std::erase_if(infoIt->second,
-                  [&](uint8_t id) { return linkIds.empty() || linkIds.contains(id); });
+        auto& blockAllInfo = m_blockAllInfo[static_cast<std::size_t>(addrType)];
+        auto infoIt = blockAllInfo.find(reason);
 
-    if (infoIt->second.empty())
-    {
-        // no more links blocked for the given reason
-        m_blockAllInfo.erase(infoIt);
+        if (infoIt == blockAllInfo.end())
+        {
+            continue; // all queues were not blocked for the given reason
+        }
+        std::erase_if(infoIt->second,
+                      [&](uint8_t id) { return linkIds.empty() || linkIds.contains(id); });
+
+        if (infoIt->second.empty())
+        {
+            // no more links blocked for the given reason
+            blockAllInfo.erase(infoIt);
+        }
     }
 }
 
@@ -663,17 +705,30 @@ template <class Priority, class Compare>
 bool
 WifiMacQueueSchedulerImpl<Priority, Compare>::GetAllQueuesBlockedOnLink(
     uint8_t linkId,
+    WifiRcvAddr addrType,
     WifiQueueBlockedReason reason)
 {
-    for (const auto& [r, linkIds] : m_blockAllInfo)
-    {
-        if ((reason == WifiQueueBlockedReason::REASONS_COUNT || reason == r) &&
-            linkIds.contains(linkId))
-        {
-            return true;
-        }
-    }
-    return false;
+    const auto rcvAddrTypes =
+        (addrType == WifiRcvAddr::COUNT
+             ? std::set{WifiRcvAddr::UNICAST, WifiRcvAddr::BROADCAST, WifiRcvAddr::GROUPCAST}
+             : std::set{addrType});
+
+    return std::all_of(
+        rcvAddrTypes.cbegin(),
+        rcvAddrTypes.cend(),
+        // lambda returning whether all the container queues of the given receiver address type are
+        // blocked for the given reason (or for any reason)
+        [=, this](const auto rcvAddrType) {
+            for (const auto& [r, linkIds] : m_blockAllInfo[static_cast<std::size_t>(rcvAddrType)])
+            {
+                if ((reason == WifiQueueBlockedReason::REASONS_COUNT || reason == r) &&
+                    linkIds.contains(linkId))
+                {
+                    return true;
+                }
+            }
+            return false;
+        });
 }
 
 template <class Priority, class Compare>

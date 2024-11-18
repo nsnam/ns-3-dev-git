@@ -167,6 +167,7 @@ EhtFrameExchangeManager::UsingOtherEmlsrLink() const
     }
     return m_staMac->GetMacQueueScheduler()->GetAllQueuesBlockedOnLink(
         m_linkId,
+        WifiRcvAddr::COUNT,
         WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK);
 }
 
