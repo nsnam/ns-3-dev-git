@@ -700,7 +700,6 @@ WifiPhyChannel80Plus80Test::DoRun()
         auto ppdu80MHz = CreateDummyHePpdu(80, m_channel);
         auto txCenterFreqs80MHz = ppdu80MHz->GetTxCenterFreqs();
         NS_TEST_ASSERT_MSG_EQ(txCenterFreqs80MHz.size(), 1, "1 segment is covered by 80 MHz");
-        NS_ASSERT(txCenterFreqs80MHz.front() == 5530);
         NS_TEST_ASSERT_MSG_EQ(txCenterFreqs80MHz.front(),
                               5530,
                               "Center frequency for 80 MHz shall be 5530 MHz");
@@ -899,7 +898,6 @@ WifiPhyChannel80Plus80Test::DoRun()
         auto ppdu80MHz = CreateDummyHePpdu(80, m_channel);
         auto txCenterFreqs80MHz = ppdu80MHz->GetTxCenterFreqs();
         NS_TEST_ASSERT_MSG_EQ(txCenterFreqs80MHz.size(), 1, "1 segment is covered by 80 MHz");
-        NS_ASSERT(txCenterFreqs80MHz.front() == 5530);
         NS_TEST_ASSERT_MSG_EQ(txCenterFreqs80MHz.front(),
                               5530,
                               "Center frequency for 80 MHz shall be 5530 MHz");

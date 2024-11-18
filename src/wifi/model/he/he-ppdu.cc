@@ -264,7 +264,6 @@ HePpdu::SetHeMuUserInfos(WifiTxVector& txVector,
                      contentChannel.cend(),
                      [&userInfo](const auto& item) { return userInfo.staId == item.staId; })))
             {
-                NS_ASSERT(txVector.GetChannelWidth() == 160);
                 ruType = HeRu::RU_2x996_TONE;
             }
             const auto ruBw = HeRu::GetBandwidth(ruType);
