@@ -61,7 +61,7 @@ class Ipv6L3Protocol : public Ipv6
     /**
      * @brief The protocol number for IPv6 (0x86DD).
      */
-    static const uint16_t PROT_NUMBER;
+    static constexpr uint16_t PROT_NUMBER = 0x86DD;
 
     /**
      * @enum DropReason

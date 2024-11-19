@@ -40,7 +40,8 @@ class Icmpv4L4Protocol : public IpL4Protocol
      * @return the object TypeId
      */
     static TypeId GetTypeId();
-    static const uint8_t PROT_NUMBER; //!< ICMP protocol number (0x1)
+
+    static constexpr uint8_t PROT_NUMBER = 1; //!< ICMP protocol number (see \RFC{792})
 
     Icmpv4L4Protocol();
     ~Icmpv4L4Protocol() override;

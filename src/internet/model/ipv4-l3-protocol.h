@@ -77,7 +77,8 @@ class Ipv4L3Protocol : public Ipv4
      * @return the object TypeId
      */
     static TypeId GetTypeId();
-    static const uint16_t PROT_NUMBER; //!< Protocol number (0x0800)
+
+    static constexpr uint16_t PROT_NUMBER = 0x0800; //!< Protocol number
 
     Ipv4L3Protocol();
     ~Ipv4L3Protocol() override;

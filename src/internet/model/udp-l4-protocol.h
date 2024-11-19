@@ -57,7 +57,9 @@ class UdpL4Protocol : public IpL4Protocol
      * @return the object TypeId
      */
     static TypeId GetTypeId();
-    static const uint8_t PROT_NUMBER; //!< protocol number (0x11)
+
+    /// Protocol number (see http://www.iana.org/assignments/protocol-numbers)
+    static constexpr uint8_t PROT_NUMBER = 17;
 
     UdpL4Protocol();
     ~UdpL4Protocol() override;

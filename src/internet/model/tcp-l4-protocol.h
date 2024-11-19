@@ -74,7 +74,9 @@ class TcpL4Protocol : public IpL4Protocol
      * @return the object TypeId
      */
     static TypeId GetTypeId();
-    static const uint8_t PROT_NUMBER; //!< protocol number (0x6)
+
+    /// Protocol number (see http://www.iana.org/assignments/protocol-numbers)
+    static constexpr uint8_t PROT_NUMBER = 6;
 
     TcpL4Protocol();
     ~TcpL4Protocol() override;
