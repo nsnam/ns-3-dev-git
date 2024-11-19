@@ -50,6 +50,7 @@ if(APPLE)
   set(CMAKE_FIND_APPBUNDLE "LAST")
 endif()
 
+set(cat_command cat)
 if(WIN32)
   set(NS3_PRECOMPILE_HEADERS OFF
       CACHE BOOL "Precompile module headers to speed up compilation" FORCE
@@ -59,9 +60,8 @@ if(WIN32)
   # requires this definition
   # https://docs.microsoft.com/en-us/cpp/c-runtime-library/math-constants?view=vs-2019
   add_definitions(/D_USE_MATH_DEFINES)
+  set(cat_command type) # required until we move to CMake >= 3.18
 endif()
-
-set(cat_command cat)
 
 if(CMAKE_XCODE_BUILD_SYSTEM)
   set(XCODE True)
@@ -69,7 +69,15 @@ else()
   set(XCODE False)
 endif()
 
-if(${XCODE})
+if("${CMAKE_CXX_COMPILER_ID}" MATCHES "MSVC" OR "${CMAKE_CXX_SIMULATE_ID}"
+                                                MATCHES "MSVC"
+)
+  set(MSVC True)
+else()
+  set(MSVC False)
+endif()
+
+if(${MSVC} OR ${XCODE})
   # Prevent multi-config generators from placing output files into per
   # configuration directory
   foreach(OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES})
@@ -83,5 +91,23 @@ if(${XCODE})
     set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUTCONFIG}
         ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}
     )
-  endforeach()
+  endforeach(OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES)
+endif()
+
+if(${MSVC})
+  set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+
+  # Enable exceptions
+  add_definitions(/EHs)
+
+  # Account for lack of valgrind and binary compatibility restrictions on
+  # Windows https://github.com/microsoft/STL/wiki/Changelog#vs-2022-1710
+  add_compile_definitions(
+    __WIN32__ NVALGRIND _DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR
+    _CRT_SECURE_NO_WARNINGS NS_MSVC NOMINMAX
+  )
+
+  # Allow unresolved symbols as in most cases they are simply in other ns-3
+  # libraries
+  add_link_options("/FORCE:UNRESOLVED")
 endif()

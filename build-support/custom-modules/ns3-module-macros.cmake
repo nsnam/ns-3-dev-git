@@ -233,6 +233,10 @@ function(build_lib)
     "${BLIB_LIBNAME}" "${BLIB_IGNORE_PCH}" "${FOLDER}" "${BLIB_TEST_SOURCES}"
   )
 
+  if(${MSVC})
+    target_link_options(${lib${BLIB_LIBNAME}} PUBLIC "/OPT:NOREF")
+  endif()
+
   # Handle package export
   install(
     TARGETS ${BLIB_LIBNAME}

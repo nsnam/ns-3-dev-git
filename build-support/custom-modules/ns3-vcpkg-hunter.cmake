@@ -62,7 +62,7 @@ function(setup_vcpkg)
     )
   endif()
 
-  if(DEFINED MSVC)
+  if(${MSVC})
     message(FATAL_ERROR "vcpkg: Visual Studio is unsupported")
   else()
     # Check if required packages are installed (unzip curl tar)
