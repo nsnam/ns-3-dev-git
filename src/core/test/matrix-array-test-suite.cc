@@ -10,6 +10,8 @@
 #include "ns3/matrix-array.h"
 #include "ns3/test.h"
 
+#include <algorithm>
+
 /**
  * @defgroup matrixArray-tests MatrixArray tests
  * @ingroup core-tests
