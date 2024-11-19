@@ -102,12 +102,12 @@ class TcpBbr : public TcpCongestionOps
     uint32_t GetSsThresh(Ptr<const TcpSocketState> tcb, uint32_t bytesInFlight) override;
     Ptr<TcpCongestionOps> Fork() override;
 
-  protected:
+  public:
     /**
      * @brief TcpBbrCheckGainValuesTest friend class (for tests).
      * @relates TcpBbrCheckGainValuesTest
      */
-    friend class TcpBbrCheckGainValuesTest;
+    friend class ::TcpBbrCheckGainValuesTest;
 
     /**
      * @brief Advances pacing gain using cycle gain algorithm, while in BBR_PROBE_BW state
