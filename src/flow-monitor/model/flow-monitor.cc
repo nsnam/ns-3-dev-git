@@ -116,7 +116,7 @@ FlowMonitor::GetStatsForFlow(FlowId flowId)
         ref.jitterSum = Seconds(0);
         ref.lastDelay = Seconds(0);
         ref.maxDelay = Seconds(0);
-        ref.minDelay = Seconds(std::numeric_limits<double>::max());
+        ref.minDelay = Time::Max();
         ref.txBytes = 0;
         ref.rxBytes = 0;
         ref.txPackets = 0;
