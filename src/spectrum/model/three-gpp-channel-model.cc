@@ -18,6 +18,7 @@
 #include "ns3/node.h"
 #include "ns3/phased-array-model.h"
 #include "ns3/pointer.h"
+#include "ns3/shuffle.h"
 #include "ns3/simulator.h"
 #include "ns3/string.h"
 
@@ -3039,10 +3040,10 @@ ThreeGppChannelModel::GenerateChannelParameters(const Ptr<const ChannelCondition
 
     for (uint8_t cIndex = 0; cIndex < channelParams->m_reducedClusterNumber; cIndex++)
     {
-        Shuffle(&rayAodRadian[cIndex][0], &rayAodRadian[cIndex][table3gpp->m_raysPerCluster]);
-        Shuffle(&rayAoaRadian[cIndex][0], &rayAoaRadian[cIndex][table3gpp->m_raysPerCluster]);
-        Shuffle(&rayZodRadian[cIndex][0], &rayZodRadian[cIndex][table3gpp->m_raysPerCluster]);
-        Shuffle(&rayZoaRadian[cIndex][0], &rayZoaRadian[cIndex][table3gpp->m_raysPerCluster]);
+        Shuffle(rayAodRadian[cIndex].begin(), rayAodRadian[cIndex].end(), m_uniformRvShuffle);
+        Shuffle(rayAoaRadian[cIndex].begin(), rayAoaRadian[cIndex].end(), m_uniformRvShuffle);
+        Shuffle(rayZodRadian[cIndex].begin(), rayZodRadian[cIndex].end(), m_uniformRvShuffle);
+        Shuffle(rayZoaRadian[cIndex].begin(), rayZoaRadian[cIndex].end(), m_uniformRvShuffle);
     }
 
     // store values
@@ -3866,15 +3867,6 @@ ThreeGppChannelModel::CalcAttenuationOfBlockage(
         }
     }
     return powerAttenuation;
-}
-
-void
-ThreeGppChannelModel::Shuffle(double* first, double* last) const
-{
-    for (auto i = (last - first) - 1; i > 0; --i)
-    {
-        std::swap(first[i], first[m_uniformRvShuffle->GetInteger(0, i)]);
-    }
 }
 
 int64_t

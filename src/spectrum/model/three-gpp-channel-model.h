@@ -144,13 +144,6 @@ class ThreeGppChannelModel : public MatrixBasedChannelModel
     static std::pair<double, double> WrapAngles(double azimuthRad, double inclinationRad);
 
     /**
-     * @brief Shuffle the elements of a simple sequence container of type double
-     * @param first Pointer to the first element among the elements to be shuffled
-     * @param last Pointer to the last element among the elements to be shuffled
-     */
-    void Shuffle(double* first, double* last) const;
-
-    /**
      * Extends the struct ChannelParams by including information that is used
      * within the ThreeGppChannelModel class
      */
