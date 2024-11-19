@@ -9,6 +9,7 @@
 #include "tcp-rx-buffer.h"
 
 #include "ns3/data-rate.h"
+#include "ns3/internet-export.h"
 #include "ns3/object.h"
 #include "ns3/sequence-number.h"
 #include "ns3/traced-value.h"
@@ -148,12 +149,12 @@ class TcpSocketState : public Object
     /**
      * @brief Literal names of TCP states for use in log messages
      */
-    static const char* const TcpCongStateName[TcpSocketState::CA_LAST_STATE];
+    INTERNET_EXPORT static const char* const TcpCongStateName[TcpSocketState::CA_LAST_STATE];
 
     /**
      * @brief Literal names of ECN states for use in log messages
      */
-    static const char* const EcnStateName[TcpSocketState::ECN_CWR_SENT + 1];
+    INTERNET_EXPORT static const char* const EcnStateName[TcpSocketState::ECN_CWR_SENT + 1];
 
     // Congestion control
     TracedValue<uint32_t> m_cWnd{0}; //!< Congestion window

@@ -13,6 +13,7 @@
 #include "tcp-option-sack.h"
 #include "tcp-tx-item.h"
 
+#include "ns3/internet-export.h"
 #include "ns3/object.h"
 #include "ns3/sequence-number.h"
 #include "ns3/traced-value.h"
@@ -612,7 +613,8 @@ class TcpTxBuffer : public Object
     bool m_sackEnabled{true};   //!< Indicates if SACK is enabled on this connection
     bool m_sackSeen{false};     //!< Indicates if a SACK was received
 
-    static Callback<void, TcpTxItem*> m_nullCb; //!< Null callback for an item
+    INTERNET_EXPORT static inline Callback<void, TcpTxItem*> m_nullCb =
+        MakeNullCallback<void, TcpTxItem*>(); //!< Null callback for an item
 };
 
 /**

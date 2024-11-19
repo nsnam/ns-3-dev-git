@@ -343,4 +343,5 @@ build_lib(
   LIBRARIES_TO_LINK ${libbridge}
                     ${libtraffic-control}
   TEST_SOURCES ${test_sources}
+  GENERATE_EXPORT_HEADER
 )
