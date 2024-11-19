@@ -25,7 +25,6 @@
 #include <fstream>
 #include <iostream>
 #include <string>
-#include <unistd.h>
 
 namespace ns3
 {
