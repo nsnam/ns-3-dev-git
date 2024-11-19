@@ -6,7 +6,9 @@
  * http://wiki.osll.ru/doku.php/start)
  */
 
+#ifndef __WIN32__
 #include "unistd.h"
+#endif
 
 #include "ns3/basic-energy-source.h"
 #include "ns3/core-module.h"
@@ -97,7 +99,7 @@ AbstractAnimationInterfaceTestCase::CheckFileExistence()
     FILE* fp = fopen(m_traceFileName, "r");
     NS_TEST_ASSERT_MSG_NE(fp, nullptr, "Trace file was not created");
     fclose(fp);
-    unlink(m_traceFileName);
+    remove(m_traceFileName);
 }
 
 /**
