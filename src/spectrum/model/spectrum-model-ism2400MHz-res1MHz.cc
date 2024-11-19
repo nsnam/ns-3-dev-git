@@ -16,35 +16,16 @@ namespace ns3
  * Spectrum model logger for frequencies in the 2.4 GHz ISM band
  * with 1 MHz resolution.
  */
-Ptr<SpectrumModel> SpectrumModelIsm2400MhzRes1Mhz;
-
-/**
- * @ingroup spectrum
- *
- * Static initializer class for Spectrum model logger for
- * frequencies in the 2.4 GHz ISM band with 1 MHz resolution.
- */
-class static_SpectrumModelIsm2400MhzRes1Mhz_initializer
+Ptr<SpectrumModel>
+SpectrumModelIsm2400MhzRes1Mhz()
 {
-  public:
-    static_SpectrumModelIsm2400MhzRes1Mhz_initializer()
+    std::vector<double> freqs(100);
+    for (int i = 0; i < 100; ++i)
     {
-        std::vector<double> freqs;
-        freqs.reserve(100);
-        for (int i = 0; i < 100; ++i)
-        {
-            freqs.push_back((i + 2400) * 1e6);
-        }
-
-        SpectrumModelIsm2400MhzRes1Mhz = Create<SpectrumModel>(freqs);
+        freqs[i] = ((i + 2400) * 1e6);
     }
-};
-
-/**
- * @ingroup spectrum
- * Static variable for analyzer initialization
- */
-static_SpectrumModelIsm2400MhzRes1Mhz_initializer
-    g_static_SpectrumModelIsm2400MhzRes1Mhz_initializer_instance;
+    static Ptr<SpectrumModel> model = Create<SpectrumModel>(freqs);
+    return model;
+}
 
 } // namespace ns3

@@ -13,35 +13,18 @@ namespace ns3
 
 /**
  * @ingroup spectrum
- * Spectrum model logger for frequencies between 300 Khz 300 Ghz
+ * Spectrum model logger for frequencies between 300 KHz 300 GHz
  */
-Ptr<SpectrumModel> SpectrumModel300Khz300GhzLog;
-
-/**
- * @ingroup spectrum
- *
- * Static initializer class for Spectrum model logger
- * for frequencies between 300 Khz 300 Ghz
- */
-class static_SpectrumModel300Khz300GhzLog_initializer
+Ptr<SpectrumModel>
+SpectrumModel300Khz300GhzLog()
 {
-  public:
-    static_SpectrumModel300Khz300GhzLog_initializer()
+    std::vector<double> freqs;
+    for (double f = 3e5; f < 3e11; f = f * 2)
     {
-        std::vector<double> freqs;
-        for (double f = 3e5; f < 3e11; f = f * 2)
-        {
-            freqs.push_back(f);
-        }
-        SpectrumModel300Khz300GhzLog = Create<SpectrumModel>(freqs);
+        freqs.push_back(f);
     }
-};
-
-/**
- * @ingroup spectrum
- * Static variable for analyzer initialization
- */
-static_SpectrumModel300Khz300GhzLog_initializer
-    g_static_SpectrumModel300Khz300GhzLog_initializer_instance;
+    static Ptr<SpectrumModel> model = Create<SpectrumModel>(freqs);
+    return model;
+}
 
 } // namespace ns3
