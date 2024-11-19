@@ -142,9 +142,9 @@ MeshWifiInterfaceMac::AssignStreams(int64_t stream)
     NS_LOG_FUNCTION(this << stream);
     int64_t currentStream = stream + WifiMac::AssignStreams(stream);
     m_coefficient->SetStream(currentStream++);
-    for (auto i = m_plugins.begin(); i < m_plugins.end(); i++)
+    for (auto& plugin : m_plugins)
     {
-        currentStream += (*i)->AssignStreams(currentStream);
+        currentStream += plugin->AssignStreams(currentStream);
     }
     return (currentStream - stream);
 }
@@ -213,7 +213,7 @@ MeshWifiInterfaceMac::Enqueue(Ptr<WifiMpdu> mpdu, Mac48Address to, Mac48Address 
     // Address 1 is unknown here. Routing plugin is responsible to correctly set it.
     hdr.SetAddr1(Mac48Address());
     // Filter packet through all installed plugins
-    for (auto i = m_plugins.end() - 1; i != m_plugins.begin() - 1; i--)
+    for (auto i = m_plugins.rbegin(); i != m_plugins.rend(); ++i)
     {
         bool drop = !((*i)->UpdateOutcomingFrame(packet, hdr, from, to));
         if (drop)
@@ -247,7 +247,7 @@ MeshWifiInterfaceMac::SendManagementFrame(Ptr<Packet> packet, const WifiMacHeade
 {
     // Filter management frames:
     WifiMacHeader header = hdr;
-    for (auto i = m_plugins.end() - 1; i != m_plugins.begin() - 1; i--)
+    for (auto i = m_plugins.rbegin(); i != m_plugins.rend(); ++i)
     {
         bool drop = !((*i)->UpdateOutcomingFrame(packet, header, Mac48Address(), Mac48Address()));
         if (drop)
