@@ -771,7 +771,7 @@ class Packet : public SimpleRefCount<Packet>
      * @brief Deserializes a packet.
      * @param [in] buffer the input buffer.
      * @param [in] size the buffer size.
-     * @returns the number of deserialized bytes.
+     * @return number of deserialized bytes on success, 0 on failure
      */
     uint32_t Deserialize(const uint8_t* buffer, uint32_t size);
 

@@ -119,16 +119,15 @@ class NixVector : public SimpleRefCount<NixVector>
     uint32_t Serialize(uint32_t* buffer, uint32_t maxSize) const;
 
     /**
-     * @return zero if a complete nix-vector is not deserialized
-     *
-     * @param buffer points to buffer for deserialization
-     *
-     * @param size number of bytes to deserialize
-     *
      * The raw character buffer containing all the nix-vector
      * information is deserialized into this nix-vector.
+     *
+     * @param buffer points to buffer for deserialization
+     * @param size number of bytes to deserialize
+     * @return number of deerialized bytes on success, 0 on failure
      */
     uint32_t Deserialize(const uint32_t* buffer, uint32_t size);
+
     /**
      * @return number of bits of numberOfNeighbors
      *

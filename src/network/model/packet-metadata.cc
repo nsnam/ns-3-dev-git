@@ -1308,7 +1308,7 @@ PacketMetadata::Deserialize(const uint8_t* buffer, uint32_t size)
         UpdateTail(tmp);
     }
     NS_ASSERT(desSize == 0);
-    return (desSize != 0) ? 0 : 1;
+    return (desSize != 0) ? 0 : size;
 }
 
 uint8_t*

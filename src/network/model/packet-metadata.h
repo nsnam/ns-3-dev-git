@@ -271,7 +271,7 @@ class PacketMetadata
      * @brief Deserialization from raw uint8_t*
      * @param buffer the buffer to deserialize from
      * @param size the size
-     * @return 1 on success, 0 on failure
+     * @return number of deserialized bytes on success, 0 on failure
      */
     uint32_t Deserialize(const uint8_t* buffer, uint32_t size);
 

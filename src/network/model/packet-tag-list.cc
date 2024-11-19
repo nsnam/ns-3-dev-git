@@ -441,7 +441,7 @@ PacketTagList::Deserialize(const uint32_t* buffer, uint32_t size)
 
     // return zero if buffer did not
     // contain a complete message
-    return (sizeCheck != 0) ? 0 : 1;
+    return (sizeCheck != 0) ? 0 : size;
 }
 
 } /* namespace ns3 */

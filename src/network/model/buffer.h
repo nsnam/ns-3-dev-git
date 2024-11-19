@@ -602,12 +602,12 @@ class Buffer
     uint32_t Serialize(uint8_t* buffer, uint32_t maxSize) const;
 
     /**
-     * @return zero if a complete buffer is not deserialized
-     * @param buffer points to buffer for deserialization
-     * @param size number of bytes to deserialize
-     *
      * The raw character buffer is deserialized and all the
      * data is placed into this buffer.
+     *
+     * @param buffer points to buffer for deserialization
+     * @param size number of bytes to deserialize
+     * @return number of deserialized bytes on success, 0 on failure
      */
     uint32_t Deserialize(const uint8_t* buffer, uint32_t size);
 

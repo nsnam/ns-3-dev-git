@@ -673,7 +673,7 @@ Buffer::Deserialize(const uint8_t* buffer, uint32_t size)
     NS_ASSERT(sizeCheck == 0);
     // return zero if buffer did not
     // contain a complete message
-    return (sizeCheck != 0) ? 0 : 1;
+    return (sizeCheck != 0) ? 0 : size;
 }
 
 void

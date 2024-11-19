@@ -247,8 +247,7 @@ class ByteTagList
      *
      * @param [in] buffer The buffer to read from.
      * @param [in] size The number of bytes to deserialize.
-     *
-     * @returns zero if complete tag list is not deserialized
+     * @return number of serialized bytes on success, 0 on failure
      */
     uint32_t Deserialize(const uint32_t* buffer, uint32_t size);
 
