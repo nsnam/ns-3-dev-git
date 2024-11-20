@@ -166,14 +166,16 @@ WifiMacQueueContainer::DoExtractExpiredMpdus(ContainerQueue& queue) const
             ++lastExpiredIt;
         }
 
-        if (lastExpiredIt != firstExpiredIt)
+        if (lastExpiredIt == firstExpiredIt)
         {
-            // transfer non-inflight MPDUs with expired lifetime to the tail of m_expiredQueue
-            m_expiredQueue.splice(m_expiredQueue.end(), queue, firstExpiredIt, lastExpiredIt);
-            ret->second = m_expiredQueue.end();
+            break;
         }
 
-    } while (lastExpiredIt != firstExpiredIt);
+        // transfer non-inflight MPDUs with expired lifetime to the tail of m_expiredQueue
+        m_expiredQueue.splice(m_expiredQueue.end(), queue, firstExpiredIt, lastExpiredIt);
+        ret->second = m_expiredQueue.end();
+
+    } while (true);
 
     return *ret;
 }
