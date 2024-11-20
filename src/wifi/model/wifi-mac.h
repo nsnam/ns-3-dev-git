@@ -261,7 +261,17 @@ class WifiMac : public Object
      * @return the wifi MAC queue of the (Qos)Txop associated with the given AC,
      *         if such (Qos)Txop is installed, or a null pointer, otherwise
      */
-    virtual Ptr<WifiMacQueue> GetTxopQueue(AcIndex ac) const;
+    Ptr<WifiMacQueue> GetTxopQueue(AcIndex ac) const;
+
+    /**
+     * Get the (Qos)Txop associated with the given AC, if such (Qos)Txop is installed, or a null
+     * pointer, otherwise.
+     *
+     * @param ac the given Access Category
+     * @return the (Qos)Txop associated with the given AC, if such (Qos)Txop is installed, or a
+     *         null pointer, otherwise
+     */
+    virtual Ptr<Txop> GetTxopFor(AcIndex ac) const;
 
     /**
      * Check if the MAC has frames to transmit over the given link

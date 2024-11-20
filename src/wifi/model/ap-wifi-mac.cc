@@ -366,14 +366,14 @@ ApWifiMac::DoCompleteConfig()
     }
 }
 
-Ptr<WifiMacQueue>
-ApWifiMac::GetTxopQueue(AcIndex ac) const
+Ptr<Txop>
+ApWifiMac::GetTxopFor(AcIndex ac) const
 {
     if (ac == AC_BEACON)
     {
-        return m_beaconTxop->GetWifiMacQueue();
+        return m_beaconTxop;
     }
-    return WifiMac::GetTxopQueue(ac);
+    return WifiMac::GetTxopFor(ac);
 }
 
 void
@@ -747,7 +747,10 @@ ApWifiMac::GetTim(uint8_t linkId) const
     // Check for group addressed frames, but only if this is a DTIM
     if (tim.m_dtimCount == 0)
     {
-        tim.m_hasMulticastPending = HasBufferedGroupcast(linkId);
+        if (GetLink(linkId).nStationsInPsMode > 0)
+        {
+            tim.m_hasMulticastPending = HasBufferedGroupcast(linkId);
+        }
 
         /**
          * Sec. 35.3.15.1 of 802.11be D7.0:
@@ -763,7 +766,7 @@ ApWifiMac::GetTim(uint8_t linkId) const
             uint16_t aid = MIN_AID;
             for (uint8_t id = 0; id < GetNLinks(); ++id)
             {
-                if (id == linkId)
+                if (id == linkId || GetLink(id).nStationsInPsMode == 0)
                 {
                     continue;
                 }
@@ -1918,6 +1921,144 @@ ApWifiMac::SendOneBeacon(uint8_t linkId)
     // Update the DTIM Count
     auto& dtimCount = GetLink(linkId).beaconDtimCount;
     dtimCount = dtimCount == 0 ? (m_dtimPeriod - 1) : (dtimCount - 1);
+
+    const auto& tim = beacon.Get<Tim>();
+    NS_ASSERT(tim);
+    if (tim->m_dtimCount == 0 && tim->m_hasMulticastPending)
+    {
+        // connect a callback to intercept the transmission of the Beacon frame and start
+        // transmitting the pending group addressed frames
+        link.phy->TraceConnectWithoutContext(
+            "PhyTxPsduBegin",
+            MakeCallback(&ApWifiMac::TxGroupAddrFramesAfterDtim, this).Bind(linkId));
+    }
+}
+
+void
+ApWifiMac::TxGroupAddrFramesAfterDtim(uint8_t linkId,
+                                      WifiConstPsduMap psduMap,
+                                      WifiTxVector /* txVector */,
+                                      Watt_u /* txPower */)
+{
+    NS_LOG_FUNCTION(this << linkId);
+
+    if (psduMap.size() > 1 || !psduMap.cbegin()->second->GetHeader(0).IsBeacon())
+    {
+        return;
+    }
+
+    const auto acList = GetQosSupported() ? edcaAcIndices : std::list<AcIndex>{AC_BE_NQOS};
+
+    std::map<AcIndex, bool> hasFramesToTransmit;
+    for (const auto aci : acList)
+    {
+        // save the status of the AC queues before unblocking the queues
+        hasFramesToTransmit[aci] = GetTxopFor(aci)->HasFramesToTransmit(linkId);
+    }
+
+    NS_LOG_DEBUG("Unblock transmission of group addressed frames on link " << +linkId);
+    GetMacQueueScheduler()->UnblockAllQueues(WifiQueueBlockedReason::WAIT_UNTIL_DTIM,
+                                             {linkId},
+                                             {WifiRcvAddr::BROADCAST, WifiRcvAddr::GROUPCAST});
+
+    NS_LOG_DEBUG("Block transmission of unicast frames on link " << +linkId);
+    GetMacQueueScheduler()->BlockAllQueues(WifiQueueBlockedReason::TX_GROUP_AFTER_DTIM,
+                                           {linkId},
+                                           {WifiRcvAddr::UNICAST});
+
+    for (const auto aci : acList)
+    {
+        GetTxopFor(aci)->StartAccessAfterEvent(linkId,
+                                               hasFramesToTransmit[aci],
+                                               Txop::CHECK_MEDIUM_BUSY);
+    }
+
+    // the Beacon frame has been intercepted, we can disconnect the callback (right after all
+    // callbacks connected to the trace source are called)
+    Simulator::ScheduleNow([=, this]() {
+        GetLink(linkId).phy->TraceDisconnectWithoutContext(
+            "PhyTxPsduBegin",
+            MakeCallback(&ApWifiMac::TxGroupAddrFramesAfterDtim, this).Bind(linkId));
+    });
+
+    // connect another callback to be notified of packets removed from the MAC queues; this is
+    // needed to detect that all pending group addressed frames have been transmitted
+    for (const auto aci : acList)
+    {
+        GetTxopQueue(aci)->TraceConnectWithoutContext(
+            "Dequeue",
+            MakeCallback(&ApWifiMac::CheckGroupAddrFramesAfterDtimDone, this).Bind(linkId));
+        GetTxopQueue(aci)->TraceConnectWithoutContext(
+            "Drop",
+            MakeCallback(&ApWifiMac::CheckGroupAddrFramesAfterDtimDone, this).Bind(linkId));
+    }
+
+    // check that the AP actually has group addressed frames to transmit
+    CheckGroupAddrFramesAfterDtimDone(linkId);
+}
+
+void
+ApWifiMac::CheckGroupAddrFramesAfterDtimDone(uint8_t linkId, Ptr<const WifiMpdu> /* mpdu */) const
+{
+    NS_LOG_FUNCTION(this << linkId);
+
+    if (!GetMacQueueScheduler()->GetAllQueuesBlockedOnLink(
+            linkId,
+            WifiRcvAddr::UNICAST,
+            WifiQueueBlockedReason::TX_GROUP_AFTER_DTIM))
+    {
+        NS_LOG_DEBUG("Unicast frames are not blocked on link " << +linkId << ", nothing to do");
+        return;
+    }
+
+    const auto acList = GetQosSupported() ? edcaAcIndices : std::list<AcIndex>{AC_BE_NQOS};
+
+    if (std::all_of(acList.cbegin(), acList.cend(), [=, this](const auto aci) {
+            return (GetTxopQueue(aci)->PeekFirstAvailable(linkId) == nullptr);
+        }))
+    {
+        NS_LOG_DEBUG("No group addressed frames queued for link " << +linkId);
+
+        std::map<AcIndex, bool> hasFramesToTransmit;
+        for (const auto aci : acList)
+        {
+            // save the status of the AC queues before unblocking the queues
+            hasFramesToTransmit[aci] = GetTxopFor(aci)->HasFramesToTransmit(linkId);
+        }
+
+        GetMacQueueScheduler()->UnblockAllQueues(WifiQueueBlockedReason::TX_GROUP_AFTER_DTIM,
+                                                 {linkId},
+                                                 {WifiRcvAddr::UNICAST});
+        GetMacQueueScheduler()->BlockAllQueues(WifiQueueBlockedReason::WAIT_UNTIL_DTIM,
+                                               {linkId},
+                                               {WifiRcvAddr::BROADCAST, WifiRcvAddr::GROUPCAST});
+        // do not block transmission of Beacon frames
+        GetMacQueueScheduler()->UnblockQueues(WifiQueueBlockedReason::WAIT_UNTIL_DTIM,
+                                              AC_BEACON,
+                                              {WifiContainerQueueType::WIFI_MGT_QUEUE},
+                                              Mac48Address::GetBroadcast(),
+                                              GetFrameExchangeManager(linkId)->GetAddress());
+
+        for (const auto aci : acList)
+        {
+            GetTxopFor(aci)->StartAccessAfterEvent(linkId,
+                                                   hasFramesToTransmit[aci],
+                                                   Txop::CHECK_MEDIUM_BUSY);
+        }
+
+        // disconnect callbacks (right after all callbacks connected to the trace source are called)
+        Simulator::ScheduleNow([=, this]() {
+            for (const auto aci : acList)
+            {
+                GetTxopQueue(aci)->TraceDisconnectWithoutContext(
+                    "Dequeue",
+                    MakeCallback(&ApWifiMac::CheckGroupAddrFramesAfterDtimDone, this).Bind(linkId));
+                GetTxopQueue(aci)->TraceDisconnectWithoutContext(
+                    "Drop",
+                    MakeCallback(&ApWifiMac::CheckGroupAddrFramesAfterDtimDone, this).Bind(linkId));
+            }
+        });
+    }
 }
 
 Ptr<WifiMpdu>
@@ -2159,6 +2300,22 @@ ApWifiMac::StaSwitchingToPsMode(const Mac48Address& staAddr, uint8_t linkId)
     NS_LOG_DEBUG("Block destination " << staAddr << " on link " << +linkId);
     auto staMldAddr = GetWifiRemoteStationManager(linkId)->GetMldAddress(staAddr).value_or(staAddr);
     BlockUnicastTxOnLinks(WifiQueueBlockedReason::POWER_SAVE_MODE, staMldAddr, {linkId});
+
+    if (GetLink(linkId).nStationsInPsMode++ == 0)
+    {
+        // this is the first associated STA switching to PS mode. Group addressed frames shall be
+        // sent after Beacon frames including a DTIM
+        NS_LOG_DEBUG("Block transmission of group addressed frames on link " << +linkId);
+        GetMacQueueScheduler()->BlockAllQueues(WifiQueueBlockedReason::WAIT_UNTIL_DTIM,
+                                               {linkId},
+                                               {WifiRcvAddr::BROADCAST, WifiRcvAddr::GROUPCAST});
+        // do not block transmission of Beacon frames
+        GetMacQueueScheduler()->UnblockQueues(WifiQueueBlockedReason::WAIT_UNTIL_DTIM,
+                                              AC_BEACON,
+                                              {WifiContainerQueueType::WIFI_MGT_QUEUE},
+                                              Mac48Address::GetBroadcast(),
+                                              GetFrameExchangeManager(linkId)->GetAddress());
+    }
 }
 
 void
@@ -2172,6 +2329,16 @@ ApWifiMac::StaSwitchingToActiveModeOrDeassociated(const Mac48Address& staAddr, u
     NS_LOG_DEBUG("Unblock destination " << staAddr << " on link " << +linkId);
     auto staMldAddr = GetWifiRemoteStationManager(linkId)->GetMldAddress(staAddr).value_or(staAddr);
     UnblockUnicastTxOnLinks(WifiQueueBlockedReason::POWER_SAVE_MODE, staMldAddr, {linkId});
+
+    if (--GetLink(linkId).nStationsInPsMode == 0)
+    {
+        // the last STA in PS mode switched back to active mode or deassociated. No need to
+        // keep blocking group addressed frames
+        NS_LOG_DEBUG("Unblock transmission of group addressed frames on link " << +linkId);
+        GetMacQueueScheduler()->UnblockAllQueues(WifiQueueBlockedReason::WAIT_UNTIL_DTIM,
+                                                 {linkId},
+                                                 {WifiRcvAddr::BROADCAST, WifiRcvAddr::GROUPCAST});
+    }
 }
 
 std::optional<uint8_t>

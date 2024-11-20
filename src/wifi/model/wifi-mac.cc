@@ -672,8 +672,18 @@ WifiMac::GetBKQueue() const
 Ptr<WifiMacQueue>
 WifiMac::GetTxopQueue(AcIndex ac) const
 {
-    Ptr<Txop> txop = (ac == AC_BE_NQOS ? m_txop : StaticCast<Txop>(GetQosTxop(ac)));
+    auto txop = GetTxopFor(ac);
     return (txop ? txop->GetWifiMacQueue() : nullptr);
+}
+
+Ptr<Txop>
+WifiMac::GetTxopFor(AcIndex ac) const
+{
+    if (auto txop = (ac == AC_BE_NQOS ? m_txop : StaticCast<Txop>(GetQosTxop(ac))))
+    {
+        return txop;
+    }
+    return nullptr;
 }
 
 bool

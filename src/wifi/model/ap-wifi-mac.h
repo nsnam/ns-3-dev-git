@@ -14,6 +14,7 @@
 #include "tim.h"
 #include "wifi-mac-header.h"
 #include "wifi-mac.h"
+#include "wifi-psdu.h"
 
 #include "ns3/attribute-container.h"
 #include "ns3/enum.h"
@@ -72,7 +73,7 @@ class ApWifiMac : public WifiMac
     void SetLinkUpCallback(Callback<void> linkUp) override;
     bool CanForwardPacketsTo(Mac48Address to) const override;
     bool SupportsSendFrom() const override;
-    Ptr<WifiMacQueue> GetTxopQueue(AcIndex ac) const override;
+    Ptr<Txop> GetTxopFor(AcIndex ac) const override;
     int64_t AssignStreams(int64_t stream) override;
 
     /**
@@ -329,6 +330,7 @@ class ApWifiMac : public WifiMac
             false}; //!< Flag whether short slot time is enabled within the BSS
         bool shortPreambleEnabled{false}; //!< Flag whether short preamble is enabled in the BSS
         uint8_t beaconDtimCount{0};       ///< Number of beacons to DTIM
+        std::size_t nStationsInPsMode{0}; //!< Number of associated stations in PS mode
         uint8_t paramsChgCount{0};        ///< BSS Parameters Change count
         bool criticalUpdate{false};       ///< Critical Update flag
     };
@@ -499,6 +501,33 @@ class ApWifiMac : public WifiMac
      * @param linkId the ID of the given link
      */
     void SendOneBeacon(uint8_t linkId);
+
+    /**
+     * This function is connected to the PhyTxPsduBegin PHY trace source when enqueuing a Beacon
+     * frame containing a DTIM that indicates that group addressed frames are queued. This function
+     * intercepts the Beacon frame, unblock the transmission of group addressed frames on the given
+     * link and block the transmission of unicast frames on the given link (so that group addressed
+     * frames are transmitted first).
+     *
+     * @param linkId the ID of the link on which the frame is transmitted
+     * @param psduMap the transmitted PSDU map
+     */
+    void TxGroupAddrFramesAfterDtim(uint8_t linkId,
+                                    WifiConstPsduMap psduMap,
+                                    WifiTxVector /* txVector */,
+                                    Watt_u /* txPower */);
+
+    /**
+     * Check whether the AP is done with the transmission of group addressed frames after a DTIM
+     * transmitted on the given link. If so, transmission of group addressed frames on the given
+     * link is blocked and transmission of unicast frames on the given link is unblocked.
+     *
+     * @param linkId the ID of the given link
+     * @param mpdu the MPDU (if any) that triggered a call to this function after being removed
+     *             from a MAC queue
+     */
+    void CheckGroupAddrFramesAfterDtimDone(uint8_t linkId,
+                                           Ptr<const WifiMpdu> mpdu = nullptr) const;
 
     /**
      * Get the FILS Discovery frame to send on the given link.

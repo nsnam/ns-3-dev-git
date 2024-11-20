@@ -35,6 +35,8 @@ enum class WifiQueueBlockedReason : uint8_t
     USING_OTHER_EMLSR_LINK,
     WAITING_EMLSR_TRANSITION_DELAY,
     TID_NOT_MAPPED,
+    WAIT_UNTIL_DTIM,
+    TX_GROUP_AFTER_DTIM,
     REASONS_COUNT
 };
 
