@@ -309,11 +309,11 @@ if(${ENABLE_FDNETDEV})
 
   if(${ENABLE_DPDKDEVNET})
     target_include_directories(
-      ${libfd-net-device-obj}
+      ${libfd-net-device}
       PRIVATE ${DPDK_INCLUDE_DIRS}
     )
     target_compile_options(
-      ${libfd-net-device-obj}
+      ${libfd-net-device}
       PRIVATE ${DPDK_CFLAGS}
     )
   endif()
