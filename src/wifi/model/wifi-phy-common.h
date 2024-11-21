@@ -89,11 +89,15 @@ inline std::ostream&
 operator<<(std::ostream& os, const WifiSpectrumBandInfo& band)
 {
     NS_ASSERT(band.indices.size() == band.frequencies.size());
+    bool printSegment = band.indices.size() > 1;
     for (std::size_t segmentIndex = 0; segmentIndex < band.indices.size(); ++segmentIndex)
     {
-        os << "indices segment" << segmentIndex << ": [" << band.indices.at(segmentIndex).first
-           << "-" << band.indices.at(segmentIndex).second << "], frequencies segment"
-           << segmentIndex << ": [" << band.frequencies.at(segmentIndex).first << "Hz-"
+        os << "indices"
+           << (printSegment ? std::string(" segment") + std::to_string(segmentIndex) : "") << ": ["
+           << band.indices.at(segmentIndex).first << "-" << band.indices.at(segmentIndex).second
+           << "], frequencies"
+           << (printSegment ? std::string(" segment") + std::to_string(segmentIndex) : "") << ": ["
+           << band.frequencies.at(segmentIndex).first << "Hz-"
            << band.frequencies.at(segmentIndex).second << "Hz] ";
     }
     return os;
