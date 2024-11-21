@@ -220,13 +220,16 @@ class ApWifiMac : public WifiMac
 
     /**
      * Return whether at least one additional buffered unit is present for the same STA after
-     * transmitting the given MPDU.
+     * transmitting the given MPDU, if the given MPDU is a unicast frame, or whether one additional
+     * group addressed buffered unit is present after transmitting the given MPDU, if the given
+     * MPDU is a group addressed frame.
      *
      * @param mpdu an individually addressed Data or Management frame transmitted to a STA in
-     *             PS mode
+     *             PS mode or a group addressed frame transmitted after a DTIM (i.e., while
+     *             transmission of unicast frames is blocked)
      * @param linkId the ID of the link on which the MPDU is transmitted
-     * @return whether at least one additional buffered unit is present for the same STA after
-     *         transmitting the given MPDU
+     * @return whether at least one additional buffered unit is present after transmitting the
+     *         given MPDU
      */
     bool HasMoreDataAfter(Ptr<const WifiMpdu> mpdu, uint8_t linkId) const;
 

@@ -787,9 +787,23 @@ ApWifiMac::HasMoreDataAfter(Ptr<const WifiMpdu> mpdu, uint8_t linkId) const
 {
     NS_LOG_FUNCTION(this << *mpdu << linkId);
 
+    const auto acList = GetQosSupported() ? edcaAcIndices : std::list<AcIndex>{AC_BE_NQOS};
     const auto& hdr = mpdu->GetHeader();
     const auto addr1 = hdr.GetAddr1();
-    NS_ASSERT_MSG(!addr1.IsGroup(), "Cannot get a group addressed MPDU");
+
+    if (addr1.IsGroup())
+    {
+        NS_ASSERT_MSG(GetMacQueueScheduler()->GetAllQueuesBlockedOnLink(
+                          linkId,
+                          WifiRcvAddr::UNICAST,
+                          WifiQueueBlockedReason::TX_GROUP_AFTER_DTIM),
+                      "Expected unicast transmissions to be blocked");
+
+        return std::any_of(acList.cbegin(), acList.cend(), [=, this](const auto aci) {
+            auto item = mpdu->IsQueued() && mpdu->GetQueueAc() == aci ? mpdu : nullptr;
+            return GetTxopQueue(aci)->PeekFirstAvailable(linkId, item) != nullptr;
+        });
+    }
 
     // Sec. 9.2.4.1.8 802.11be D6.0:
     // A non-DMG and non-S1G STA uses the More Data subfield to indicate to a STA that is not
@@ -839,8 +853,6 @@ ApWifiMac::HasMoreDataAfter(Ptr<const WifiMpdu> mpdu, uint8_t linkId) const
     }
 
     // look for buffered management frames
-    auto acList = GetQosSupported() ? edcaAcIndices : std::list<AcIndex>{AC_BE_NQOS};
-
     for (const auto aci : acList)
     {
         const WifiContainerQueueId queueId(WIFI_MGT_QUEUE,

@@ -625,18 +625,31 @@ FrameExchangeManager::FinalizeMacHeader(Ptr<const WifiPsdu> psdu)
 
     // The More Data subfield is valid in individually addressed Data or Management frames
     // transmitted by an AP to a STA in PS mode (Sec. 9.2.4.1.8 of 802.11-2020)
-    if (const auto& hdr = psdu->GetHeader(0);
-        !hdr.GetAddr1().IsGroup() && (hdr.IsData() || hdr.IsMgt() || hdr.IsBlockAckReq()) &&
-        m_apMac && GetWifiRemoteStationManager()->IsInPsMode(hdr.GetAddr1()))
+    // The More Data subfield of each group addressed frame shall be set to indicate the presence
+    // of further buffered non-GCR-SP group addressed BUs that will be delivered using MPDUs with
+    // an RA other than a SYNRA (Sec. 11.2.3.6 of 802.11-2020)
+    if (m_apMac)
     {
-        // All MPDUs but the last one certainly have the More Data flag set.
-        for (const auto& mpdu : *PeekPointer(psdu))
+        const auto& hdr = psdu->GetHeader(0);
+        const auto staInPsModeOrGroupDest =
+            hdr.GetAddr1().IsGroup() || GetWifiRemoteStationManager()->IsInPsMode(hdr.GetAddr1());
+        const auto txGroupAddrFramesAfterDtimOrUnicastDest =
+            !hdr.GetAddr1().IsGroup() || m_apMac->GetMacQueueScheduler()->GetAllQueuesBlockedOnLink(
+                                             m_linkId,
+                                             WifiRcvAddr::UNICAST,
+                                             WifiQueueBlockedReason::TX_GROUP_AFTER_DTIM);
+        if ((hdr.IsData() || hdr.IsMgt() || hdr.IsBlockAckReq()) && staInPsModeOrGroupDest &&
+            txGroupAddrFramesAfterDtimOrUnicastDest)
         {
-            mpdu->GetHeader().SetMoreData(true);
+            // All MPDUs but the last one certainly have the More Data flag set.
+            for (const auto& mpdu : *PeekPointer(psdu))
+            {
+                mpdu->GetHeader().SetMoreData(true);
+            }
+            // set the More Data flag of the last MPDU if there are other queued frames
+            auto mpdu = *std::prev(psdu->end());
+            mpdu->GetHeader().SetMoreData(m_apMac->HasMoreDataAfter(mpdu, m_linkId));
         }
-        // set the More Data flag of the last MPDU if there are other queued frames
-        auto mpdu = *std::prev(psdu->end());
-        mpdu->GetHeader().SetMoreData(m_apMac->HasMoreDataAfter(mpdu, m_linkId));
     }
 
     if (m_mac->GetTypeOfStation() != STA)
