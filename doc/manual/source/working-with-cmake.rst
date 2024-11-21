@@ -2855,7 +2855,7 @@ followed by a header configuration:
     else()
       # If it is false, we add necessary C++ definitions (e.g. NS3_MPI)
       message(STATUS "MPI was found.")
-      add_definitions(-DNS3_MPI)
+      target_compile_definitions(MPI::MPI_CXX INTERFACE NS3_MPI)
 
       # Then set ENABLE_MPI to TRUE, which can be used to check
       # if NS3_MPI is enabled AND MPI was found
