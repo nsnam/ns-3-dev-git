@@ -846,6 +846,10 @@ macro(process_options)
     endif()
   endif()
 
+  # Use upstream boost package config with CMake 3.30 and above
+  if(POLICY CMP0167)
+    cmake_policy(SET CMP0167 NEW)
+  endif()
   mark_as_advanced(Boost_INCLUDE_DIR)
   find_package(Boost)
   if(${Boost_FOUND})
