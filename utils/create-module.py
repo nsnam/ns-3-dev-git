@@ -583,7 +583,7 @@ def main(argv):
     #
 
     # Alphanumeric and '-' only
-    allowedRE = re.compile("^(\w|-)+$")
+    allowedRE = re.compile(r"^(\w|-)+$")
 
     project_path = None
 
