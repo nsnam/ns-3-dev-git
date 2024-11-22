@@ -140,7 +140,6 @@ main(int argc, char* argv[])
 
 
 TEST_CC_TEMPLATE = """\
-
 // Include a header file from your module to test.
 #include "ns3/{MODULE}.h"
 
