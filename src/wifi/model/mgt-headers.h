@@ -338,6 +338,30 @@ class MgtAssocResponseHeader
 
 /**
  * @ingroup wifi
+ * Implement the header for management frames of type reassociation request.
+ */
+class MgtDisassociationHeader : public Header
+{
+  public:
+    /**
+     * Register this type.
+     * @return The TypeId.
+     */
+    static TypeId GetTypeId();
+
+    /** @copydoc Header::GetInstanceTypeId */
+    TypeId GetInstanceTypeId() const override;
+
+    uint16_t m_reasonCode{1}; //!< defaults to "Unspecified reason"
+
+    uint32_t GetSerializedSize() const override;
+    void Serialize(Buffer::Iterator start) const override;
+    uint32_t Deserialize(Buffer::Iterator start) override;
+    void Print(std::ostream& os) const override;
+};
+
+/**
+ * @ingroup wifi
  * Implement the header for management frames of type probe request.
  */
 class MgtProbeRequestHeader : public WifiMgtHeader<MgtProbeRequestHeader, ProbeRequestElems>

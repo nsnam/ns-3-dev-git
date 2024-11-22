@@ -515,4 +515,52 @@ MgtAssocResponseHeader::DeserializeFromPerStaProfileImpl(Buffer::Iterator start,
                           DeserializeFromPerStaProfileImpl(i, length - distance, frame);
 }
 
+/***********************************************************
+ *          Disassociation
+ ***********************************************************/
+
+NS_OBJECT_ENSURE_REGISTERED(MgtDisassociationHeader);
+
+TypeId
+MgtDisassociationHeader::GetTypeId()
+{
+    static TypeId tid = TypeId("ns3::MgtDisassociationHeader")
+                            .SetParent<Header>()
+                            .SetGroupName("Wifi")
+                            .AddConstructor<MgtDisassociationHeader>();
+    return tid;
+}
+
+TypeId
+MgtDisassociationHeader::GetInstanceTypeId() const
+{
+    return GetTypeId();
+}
+
+uint32_t
+MgtDisassociationHeader::GetSerializedSize() const
+{
+    return 2; // reason code size
+}
+
+void
+MgtDisassociationHeader::Serialize(Buffer::Iterator start) const
+{
+    start.WriteHtolsbU16(m_reasonCode);
+}
+
+uint32_t
+MgtDisassociationHeader::Deserialize(Buffer::Iterator start)
+{
+    auto i = start;
+    m_reasonCode = i.ReadLsbtohU16();
+    return i.GetDistanceFrom(start);
+}
+
+void
+MgtDisassociationHeader::Print(std::ostream& os) const
+{
+    os << "reason code=" << m_reasonCode;
+}
+
 } // namespace ns3

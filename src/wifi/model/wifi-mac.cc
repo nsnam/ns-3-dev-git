@@ -1836,6 +1836,22 @@ WifiMac::EnqueueMgt(const WifiMacHeader& macHdr,
 }
 
 void
+WifiMac::EnqueueDisassociation(Mac48Address addr1, uint8_t linkId)
+{
+    NS_LOG_FUNCTION(this << addr1 << linkId);
+
+    WifiMacHeader hdr(WIFI_MAC_MGT_DISASSOCIATION);
+    hdr.SetAddr1(addr1);
+    hdr.SetAddr2(GetLink(linkId).feManager->GetAddress());
+    hdr.SetAddr3(GetBssid(linkId));
+    hdr.SetDsNotTo();
+    hdr.SetDsNotFrom();
+
+    MgtDisassociationHeader disassoc;
+    EnqueueMgt(hdr, {disassoc}, linkId);
+}
+
+void
 WifiMac::NotifyDropPacketToEnqueue(Ptr<Packet> packet, Mac48Address to)
 {
     NS_LOG_FUNCTION(this << packet << to);

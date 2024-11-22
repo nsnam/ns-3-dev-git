@@ -438,6 +438,15 @@ class WifiMac : public Object
                     uint8_t linkId);
 
     /**
+     * Prepare and enqueue a Disassociation frame. This function shall only be called by an AP
+     * or by a non-AP station associated with an AP.
+     *
+     * @param addr1 the receiver address for the Disassociation frame
+     * @param linkId the ID of the link on which the frame is transmitted
+     */
+    void EnqueueDisassociation(Mac48Address addr1, uint8_t linkId);
+
+    /**
      * @return if this MAC supports sending from arbitrary address.
      *
      * The interface may or may not support sending from arbitrary address.
