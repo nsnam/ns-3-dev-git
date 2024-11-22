@@ -427,6 +427,17 @@ class WifiMac : public Object
     void Enqueue(Ptr<Packet> packet, Mac48Address to, Mac48Address from, uint8_t tid);
 
     /**
+     * Enqueue a management frame.
+     *
+     * @param macHdr the MAC header
+     * @param headers a sorted list of headers to serialize in the body of the management frame
+     * @param linkId the ID of the link on which the management frame has to be sent
+     */
+    void EnqueueMgt(const WifiMacHeader& macHdr,
+                    const std::list<std::reference_wrapper<const Header>>& headers,
+                    uint8_t linkId);
+
+    /**
      * @return if this MAC supports sending from arbitrary address.
      *
      * The interface may or may not support sending from arbitrary address.

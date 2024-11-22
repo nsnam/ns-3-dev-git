@@ -1800,6 +1800,42 @@ WifiMac::Enqueue(Ptr<Packet> packet, Mac48Address to, Mac48Address from, uint8_t
 }
 
 void
+WifiMac::EnqueueMgt(const WifiMacHeader& macHdr,
+                    const std::list<std::reference_wrapper<const Header>>& headers,
+                    uint8_t linkId)
+{
+    NS_LOG_FUNCTION(this << macHdr << linkId);
+
+    auto packet = Create<Packet>();
+    for (const auto& hdr : headers)
+    {
+        packet->AddHeader(hdr.get());
+    }
+    auto mpdu = Create<WifiMpdu>(packet, macHdr);
+
+    if (!m_qosSupported)
+    {
+        m_txop->Queue(mpdu);
+    }
+    // "A QoS STA that transmits a Management frame determines access category used
+    // for medium access in transmission of the Management frame as follows
+    // (If dot11QMFActivated is false or not present)
+    // — If the Management frame is individually addressed to a non-QoS STA, category
+    //   AC_BE should be selected.
+    // — If category AC_BE was not selected by the previous step, category AC_VO
+    //   shall be selected." (Sec. 10.2.3.2 of 802.11-2020)
+    else if (const auto addr1 = macHdr.GetAddr1();
+             !addr1.IsGroup() && !GetWifiRemoteStationManager(linkId)->GetQosSupported(addr1))
+    {
+        GetQosTxop(AC_BE)->Queue(mpdu);
+    }
+    else
+    {
+        GetQosTxop(AC_VO)->Queue(mpdu);
+    }
+}
+
+void
 WifiMac::NotifyDropPacketToEnqueue(Ptr<Packet> packet, Mac48Address to)
 {
     NS_LOG_FUNCTION(this << packet << to);

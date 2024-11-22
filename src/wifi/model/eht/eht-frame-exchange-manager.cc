@@ -950,12 +950,7 @@ EhtFrameExchangeManager::SendEmlOmn(const Mac48Address& dest, const MgtEmlOmn& f
     action.protectedEhtAction = WifiActionHeader::PROTECTED_EHT_EML_OPERATING_MODE_NOTIFICATION;
     actionHdr.SetAction(WifiActionHeader::PROTECTED_EHT, action);
 
-    auto packet = Create<Packet>();
-    packet->AddHeader(frame);
-    packet->AddHeader(actionHdr);
-
-    // Use AC_VO to send management frame addressed to a QoS STA (Sec. 10.2.3.2 of 802.11-2020)
-    m_mac->GetQosTxop(AC_VO)->Queue(Create<WifiMpdu>(packet, hdr));
+    m_mac->EnqueueMgt(hdr, {frame, actionHdr}, m_linkId);
 }
 
 std::optional<dBm_u>

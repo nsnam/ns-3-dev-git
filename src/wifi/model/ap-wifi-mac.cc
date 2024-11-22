@@ -1201,28 +1201,8 @@ ApWifiMac::EnqueueProbeResp(const MgtProbeResponseHeader& probeResp,
     hdr.SetAddr3(GetLink(linkId).feManager->GetAddress());
     hdr.SetDsNotFrom();
     hdr.SetDsNotTo();
-    Ptr<Packet> packet = Create<Packet>();
-    packet->AddHeader(probeResp);
 
-    if (!GetQosSupported())
-    {
-        GetTxop()->Queue(Create<WifiMpdu>(packet, hdr));
-    }
-    // "A QoS STA that transmits a Management frame determines access category used
-    // for medium access in transmission of the Management frame as follows
-    // (If dot11QMFActivated is false or not present)
-    // — If the Management frame is individually addressed to a non-QoS STA, category
-    //   AC_BE should be selected.
-    // — If category AC_BE was not selected by the previous step, category AC_VO
-    //   shall be selected." (Sec. 10.2.3.2 of 802.11-2020)
-    else if (!GetWifiRemoteStationManager(linkId)->GetQosSupported(to))
-    {
-        GetBEQueue()->Queue(Create<WifiMpdu>(packet, hdr));
-    }
-    else
-    {
-        GetVOQueue()->Queue(Create<WifiMpdu>(packet, hdr));
-    }
+    EnqueueMgt(hdr, {probeResp}, linkId);
 }
 
 MgtProbeResponseHeader
@@ -1538,28 +1518,7 @@ ApWifiMac::SendAssocResp(Mac48Address to, bool isReassoc, uint8_t linkId)
     auto linkIdStaAddrMap = GetLinkIdStaAddrMap(assoc, to, linkId);
     SetAid(assoc, linkIdStaAddrMap);
 
-    Ptr<Packet> packet = Create<Packet>();
-    packet->AddHeader(assoc);
-
-    if (!GetQosSupported())
-    {
-        GetTxop()->Queue(Create<WifiMpdu>(packet, hdr));
-    }
-    // "A QoS STA that transmits a Management frame determines access category used
-    // for medium access in transmission of the Management frame as follows
-    // (If dot11QMFActivated is false or not present)
-    // — If the Management frame is individually addressed to a non-QoS STA, category
-    //   AC_BE should be selected.
-    // — If category AC_BE was not selected by the previous step, category AC_VO
-    //   shall be selected." (Sec. 10.2.3.2 of 802.11-2020)
-    else if (!GetWifiRemoteStationManager(linkId)->GetQosSupported(to))
-    {
-        GetBEQueue()->Queue(Create<WifiMpdu>(packet, hdr));
-    }
-    else
-    {
-        GetVOQueue()->Queue(Create<WifiMpdu>(packet, hdr));
-    }
+    EnqueueMgt(hdr, {assoc}, linkId);
 }
 
 void
