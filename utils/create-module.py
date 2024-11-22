@@ -193,7 +193,7 @@ void
 {CAPITALIZED}TestCase1::DoRun()
 {{
     // A wide variety of test macros are available in src/core/test.h
-    NS_TEST_ASSERT_MSG_EQ(true, true, "true doesn\'t equal true for some reason");
+    NS_TEST_ASSERT_MSG_EQ(true, true, "true doesn't equal true for some reason");
     // Use this one for floating point comparisons
     NS_TEST_ASSERT_MSG_EQ_TOL(0.01, 0.01, 0.001, "Numbers are not equal within tolerance");
 }}
