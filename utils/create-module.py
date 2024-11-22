@@ -40,7 +40,7 @@ namespace ns3
 
 /* ... */
 
-}}
+}} // namespace ns3
 """
 
 
@@ -62,9 +62,9 @@ namespace ns3
 
 /* ... */
 
-}}
+}} // namespace ns3
 
-#endif /* {INCLUDE_GUARD} */
+#endif // {INCLUDE_GUARD}
 """
 
 
@@ -76,7 +76,7 @@ namespace ns3
 
 /* ... */
 
-}}
+}} // namespace ns3
 """
 
 
@@ -94,9 +94,9 @@ namespace ns3
 
 /* ... */
 
-}}
+}} // namespace ns3
 
-#endif /* {INCLUDE_GUARD} */
+#endif // {INCLUDE_GUARD}
 """
 
 
