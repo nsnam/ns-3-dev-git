@@ -10,6 +10,8 @@
 #include "ppp-header.h"
 
 #include "ns3/error-model.h"
+#include "ns3/iana-ieee802-numbers.h"
+#include "ns3/iana-ppp-numbers.h"
 #include "ns3/llc-snap-header.h"
 #include "ns3/log.h"
 #include "ns3/mac48-address.h"
@@ -643,10 +645,10 @@ PointToPointNetDevice::PppToEther(uint16_t proto)
     NS_LOG_FUNCTION_NOARGS();
     switch (proto)
     {
-    case 0x0021:
-        return 0x0800; // IPv4
-    case 0x0057:
-        return 0x86DD; // IPv6
+    case iana::PppDllNumbers::IPV4_DLL:
+        return iana::Ieee802Numbers::IPV4;
+    case iana::PppDllNumbers::IPV6_DLL:
+        return iana::Ieee802Numbers::IPV6;
     default:
         NS_ASSERT_MSG(false, "PPP Protocol number not defined!");
     }
@@ -659,10 +661,10 @@ PointToPointNetDevice::EtherToPpp(uint16_t proto)
     NS_LOG_FUNCTION_NOARGS();
     switch (proto)
     {
-    case 0x0800:
-        return 0x0021; // IPv4
-    case 0x86DD:
-        return 0x0057; // IPv6
+    case iana::Ieee802Numbers::IPV4:
+        return iana::PppDllNumbers::IPV4_DLL;
+    case iana::Ieee802Numbers::IPV6:
+        return iana::PppDllNumbers::IPV6_DLL;
     default:
         NS_ASSERT_MSG(false, "PPP Protocol number not defined!");
     }

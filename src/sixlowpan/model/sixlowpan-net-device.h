@@ -11,6 +11,7 @@
 #ifndef SIXLOWPAN_NET_DEVICE_H
 #define SIXLOWPAN_NET_DEVICE_H
 
+#include "ns3/iana-ieee802-numbers.h"
 #include "ns3/net-device.h"
 #include "ns3/nstime.h"
 #include "ns3/random-variable-stream.h"
@@ -85,9 +86,9 @@ class SixLowPanNetDevice : public NetDevice
     };
 
     /**
-     * @brief The protocol number for 6LoWPAN (0xA0ED) - see \RFC{7973}.
+     * @brief The protocol number for 6LoWPAN (ns3::iana::Ieee802Numbers::LoWPAN) - see \RFC{7973}.
      */
-    static constexpr uint16_t PROT_NUMBER{0xA0ED};
+    static constexpr uint16_t PROT_NUMBER{iana::Ieee802Numbers::LoWPAN};
 
     /**
      * @brief Get the type ID.

@@ -12,6 +12,7 @@
 #include "epc-gtpu-header.h"
 
 #include "ns3/abort.h"
+#include "ns3/iana-ieee802-numbers.h"
 #include "ns3/inet-socket-address.h"
 #include "ns3/ipv4-l3-protocol.h"
 #include "ns3/ipv4.h"
@@ -438,11 +439,11 @@ EpcPgwApplication::SendToTunDevice(Ptr<Packet> packet, uint32_t teid)
     uint16_t protocol = 0;
     if (ipType == 0x04)
     {
-        protocol = 0x0800;
+        protocol = iana::Ieee802Numbers::IPV4;
     }
     else if (ipType == 0x06)
     {
-        protocol = 0x86DD;
+        protocol = iana::Ieee802Numbers::IPV6;
     }
     else
     {

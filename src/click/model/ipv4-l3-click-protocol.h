@@ -11,6 +11,7 @@
 #define IPV4_L3_CLICK_PROTOCOL_H
 
 #include "ns3/deprecated.h"
+#include "ns3/iana-ieee802-numbers.h"
 #include "ns3/ipv4-interface.h"
 #include "ns3/ipv4-routing-protocol.h"
 #include "ns3/ipv4.h"
@@ -59,9 +60,9 @@ class Ipv4L3ClickProtocol : public Ipv4
     static TypeId GetTypeId();
 
     /**
-     * Protocol number for Ipv4 L3 (0x0800).
+     * Protocol number for Ipv4 L3
      */
-    static const uint16_t PROT_NUMBER;
+    static constexpr uint16_t PROT_NUMBER = iana::ieee802::IPV4;
 
     Ipv4L3ClickProtocol();
     ~Ipv4L3ClickProtocol() override;

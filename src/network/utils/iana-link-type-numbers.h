@@ -40,7 +40,7 @@ enum LinkType : uint16_t
     IEEE802_15_4_WITHFCS = 195, //!< IEEE 802.15.4 packets with FCS.
     IEEE802_15_4_NOFCS = 230,   //!< IEEE 802.15.4 packets without FCS.
     NETLINK = 253,              //!< Linux Netlink capture encapsulation [RFC3549].
-    LORATAP = 270               //!< LoRaTap pseudo-header.
+    LORATAP = 270,              //!< LoRaTap pseudo-header.
 };
 } // namespace iana
 } // namespace ns3

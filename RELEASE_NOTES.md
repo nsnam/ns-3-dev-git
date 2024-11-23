@@ -36,6 +36,8 @@ been tested on Linux. As of this release, the latest known version to work with 
 
 ### New user-visible features
 
+- (network) IANA protocol and link types are now centralized in network module headers.
+
 ### Bugs fixed
 
 - (lr-wpan) !2916 Pcap files are now correctly generated with and without FCS cases.

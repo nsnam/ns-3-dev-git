@@ -8,12 +8,8 @@
 
 #include "uan-header-common.h"
 
+#include "ns3/iana-ieee802-numbers.h"
 #include "ns3/mac8-address.h"
-
-static const uint16_t ARP_PROT_NUMBER = 0x0806;
-static const uint16_t IPV4_PROT_NUMBER = 0x0800;
-static const uint16_t IPV6_PROT_NUMBER = 0x86DD;
-static const uint16_t SIXLOWPAN_PROT_NUMBER = 0xA0ED;
 
 namespace ns3
 {
@@ -81,19 +77,19 @@ UanHeaderCommon::SetProtocolNumber(uint16_t protocolNumber)
     {
         m_uanProtocolBits.m_protocolNumber = 0;
     }
-    else if (protocolNumber == IPV4_PROT_NUMBER)
+    else if (protocolNumber == iana::Ieee802Numbers::IPV4)
     {
         m_uanProtocolBits.m_protocolNumber = 1;
     }
-    else if (protocolNumber == ARP_PROT_NUMBER)
+    else if (protocolNumber == iana::Ieee802Numbers::ARP)
     {
         m_uanProtocolBits.m_protocolNumber = 2;
     }
-    else if (protocolNumber == IPV6_PROT_NUMBER)
+    else if (protocolNumber == iana::Ieee802Numbers::IPV6)
     {
         m_uanProtocolBits.m_protocolNumber = 3;
     }
-    else if (protocolNumber == SIXLOWPAN_PROT_NUMBER)
+    else if (protocolNumber == iana::Ieee802Numbers::LoWPAN)
     {
         m_uanProtocolBits.m_protocolNumber = 4;
     }
@@ -126,19 +122,19 @@ UanHeaderCommon::GetProtocolNumber() const
 {
     if (m_uanProtocolBits.m_protocolNumber == 1)
     {
-        return IPV4_PROT_NUMBER;
+        return iana::Ieee802Numbers::IPV4;
     }
     if (m_uanProtocolBits.m_protocolNumber == 2)
     {
-        return ARP_PROT_NUMBER;
+        return iana::Ieee802Numbers::ARP;
     }
     if (m_uanProtocolBits.m_protocolNumber == 3)
     {
-        return IPV6_PROT_NUMBER;
+        return iana::Ieee802Numbers::IPV6;
     }
     if (m_uanProtocolBits.m_protocolNumber == 4)
     {
-        return SIXLOWPAN_PROT_NUMBER;
+        return iana::Ieee802Numbers::LoWPAN;
     }
     return 0;
 }

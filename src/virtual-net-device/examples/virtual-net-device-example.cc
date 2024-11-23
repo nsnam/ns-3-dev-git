@@ -32,6 +32,7 @@
 
 #include "ns3/applications-module.h"
 #include "ns3/core-module.h"
+#include "ns3/iana-ieee802-numbers.h"
 #include "ns3/internet-module.h"
 #include "ns3/network-module.h"
 #include "ns3/point-to-point-module.h"
@@ -135,7 +136,7 @@ class Tunnel
         Ptr<Packet> packet = socket->Recv(65535, 0);
         NS_LOG_DEBUG("N3SocketRecv: " << *packet);
         m_n3Tap->Receive(packet,
-                         0x0800,
+                         iana::Ieee802Numbers::IPV4,
                          m_n3Tap->GetAddress(),
                          m_n3Tap->GetAddress(),
                          NetDevice::PACKET_HOST);
@@ -150,7 +151,7 @@ class Tunnel
         Ptr<Packet> packet = socket->Recv(65535, 0);
         NS_LOG_DEBUG("N0SocketRecv: " << *packet);
         m_n0Tap->Receive(packet,
-                         0x0800,
+                         iana::Ieee802Numbers::IPV4,
                          m_n0Tap->GetAddress(),
                          m_n0Tap->GetAddress(),
                          NetDevice::PACKET_HOST);
@@ -165,7 +166,7 @@ class Tunnel
         Ptr<Packet> packet = socket->Recv(65535, 0);
         NS_LOG_DEBUG("N1SocketRecv: " << *packet);
         m_n1Tap->Receive(packet,
-                         0x0800,
+                         iana::Ieee802Numbers::IPV4,
                          m_n1Tap->GetAddress(),
                          m_n1Tap->GetAddress(),
                          NetDevice::PACKET_HOST);

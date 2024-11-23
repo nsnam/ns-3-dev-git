@@ -10,6 +10,7 @@
 
 #include "ns3/address-utils.h"
 #include "ns3/assert.h"
+#include "ns3/iana-ieee802-numbers.h"
 #include "ns3/log.h"
 
 namespace ns3
@@ -180,7 +181,7 @@ ArpHeader::Serialize(Buffer::Iterator start) const
 
     i.WriteHtonU16(static_cast<uint16_t>(m_hardwareType));
     /* ipv4 */
-    i.WriteHtonU16(0x0800);
+    i.WriteHtonU16(iana::Ieee802Numbers::IPV4);
     i.WriteU8(m_macSource.GetLength());
     i.WriteU8(4);
     i.WriteHtonU16(m_type);

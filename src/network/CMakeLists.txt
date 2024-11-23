@@ -116,6 +116,8 @@ set(header_files
     utils/generic-phy.h
     utils/header-serialization-test.h
     utils/iana-link-type-numbers.h
+    utils/iana-ieee802-numbers.h
+    utils/iana-ppp-numbers.h
     utils/inet-socket-address.h
     utils/inet6-socket-address.h
     utils/ipv4-address.h

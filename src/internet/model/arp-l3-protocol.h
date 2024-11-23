@@ -11,6 +11,7 @@
 #include "ipv4-header.h"
 
 #include "ns3/address.h"
+#include "ns3/iana-ieee802-numbers.h"
 #include "ns3/internet-export.h"
 #include "ns3/net-device.h"
 #include "ns3/ptr.h"
@@ -50,7 +51,7 @@ class INTERNET_EXPORT ArpL3Protocol : public Object
      * @return the object TypeId
      */
     static TypeId GetTypeId();
-    static const uint16_t PROT_NUMBER; //!< ARP protocol number (0x0806)
+    static constexpr uint16_t PROT_NUMBER = iana::Ieee802Numbers::ARP; //!< ARP protocol number
 
     ArpL3Protocol();
     ~ArpL3Protocol() override;

@@ -21,6 +21,7 @@ This file is a best-effort approach to solving this issue; we will do our best b
 ### Changes to existing API
 
 * Pcap helpers now use ``LinkType`` enum contained in the ``iana`` namespace (``iana-link-type-numbers.h``).
+* Centralization of ``PPP`` and ``IEEE802`` numbers. These are now contained in network model in ``iana-ppp-numbers.h`` and ``iana-ieee802-numbers.h`` respectively.
 
 ### Changes to build system
 
