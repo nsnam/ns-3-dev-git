@@ -54,6 +54,8 @@ class EhtPhy : public HePhy
                             const WifiTxVector& txVector,
                             Time ppduDuration) override;
     WifiMode GetSigBMode(const WifiTxVector& txVector) const override;
+    Time CalculateNonHeDurationForHeTb(const WifiTxVector& txVector) const override;
+    Time CalculateNonHeDurationForHeMu(const WifiTxVector& txVector) const override;
 
     /**
      * Initialize all EHT modes.
@@ -249,8 +251,6 @@ class EhtPhy : public HePhy
                                 PhyFieldRxStatus status,
                                 WifiPpduField field) override;
     WifiPhyRxfailureReason GetFailureReason(WifiPpduField field) const override;
-    Time CalculateNonHeDurationForHeTb(const WifiTxVector& txVector) const override;
-    Time CalculateNonHeDurationForHeMu(const WifiTxVector& txVector) const override;
     uint32_t GetSigBSize(const WifiTxVector& txVector) const override;
 
     /**
