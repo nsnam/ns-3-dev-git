@@ -1219,7 +1219,7 @@ WifiRemoteStationManager::NeedRts(const WifiMacHeader& header, const WifiTxParam
 }
 
 bool
-WifiRemoteStationManager::NeedCtsToSelf(WifiTxVector txVector)
+WifiRemoteStationManager::NeedCtsToSelf(const WifiTxVector& txVector)
 {
     WifiMode mode = txVector.GetMode();
     NS_LOG_FUNCTION(this << mode);
@@ -1529,7 +1529,8 @@ WifiRemoteStationManager::SetEmlsrEnabled(const Mac48Address& from, bool emlsrEn
 }
 
 void
-WifiRemoteStationManager::AddStationHtCapabilities(Mac48Address from, HtCapabilities htCapabilities)
+WifiRemoteStationManager::AddStationHtCapabilities(Mac48Address from,
+                                                   const HtCapabilities& htCapabilities)
 {
     // Used by all stations to record HT capabilities of remote stations
     NS_LOG_FUNCTION(this << from << htCapabilities);
@@ -1555,7 +1556,7 @@ WifiRemoteStationManager::AddStationHtCapabilities(Mac48Address from, HtCapabili
 
 void
 WifiRemoteStationManager::AddStationVhtCapabilities(Mac48Address from,
-                                                    VhtCapabilities vhtCapabilities)
+                                                    const VhtCapabilities& vhtCapabilities)
 {
     // Used by all stations to record VHT capabilities of remote stations
     NS_LOG_FUNCTION(this << from << vhtCapabilities);
@@ -1582,7 +1583,8 @@ WifiRemoteStationManager::AddStationVhtCapabilities(Mac48Address from,
 }
 
 void
-WifiRemoteStationManager::AddStationHeCapabilities(Mac48Address from, HeCapabilities heCapabilities)
+WifiRemoteStationManager::AddStationHeCapabilities(Mac48Address from,
+                                                   const HeCapabilities& heCapabilities)
 {
     // Used by all stations to record HE capabilities of remote stations
     NS_LOG_FUNCTION(this << from << heCapabilities);
@@ -1645,7 +1647,7 @@ WifiRemoteStationManager::AddStationHe6GhzCapabilities(
 
 void
 WifiRemoteStationManager::AddStationEhtCapabilities(Mac48Address from,
-                                                    EhtCapabilities ehtCapabilities)
+                                                    const EhtCapabilities& ehtCapabilities)
 {
     // Used by all stations to record EHT capabilities of remote stations
     NS_LOG_FUNCTION(this << from << ehtCapabilities);

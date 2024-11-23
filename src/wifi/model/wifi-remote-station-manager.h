@@ -249,21 +249,21 @@ class WifiRemoteStationManager : public Object
      * @param from the address of the station being recorded
      * @param htCapabilities the HT capabilities of the station
      */
-    void AddStationHtCapabilities(Mac48Address from, HtCapabilities htCapabilities);
+    void AddStationHtCapabilities(Mac48Address from, const HtCapabilities& htCapabilities);
     /**
      * Records VHT capabilities of the remote station.
      *
      * @param from the address of the station being recorded
      * @param vhtCapabilities the VHT capabilities of the station
      */
-    void AddStationVhtCapabilities(Mac48Address from, VhtCapabilities vhtCapabilities);
+    void AddStationVhtCapabilities(Mac48Address from, const VhtCapabilities& vhtCapabilities);
     /**
      * Records HE capabilities of the remote station.
      *
      * @param from the address of the station being recorded
      * @param heCapabilities the HE capabilities of the station
      */
-    void AddStationHeCapabilities(Mac48Address from, HeCapabilities heCapabilities);
+    void AddStationHeCapabilities(Mac48Address from, const HeCapabilities& heCapabilities);
     /**
      * Records HE 6 GHz Band Capabilities of a remote station
      *
@@ -278,7 +278,7 @@ class WifiRemoteStationManager : public Object
      * @param from the address of the station being recorded
      * @param ehtCapabilities the EHT capabilities of the station
      */
-    void AddStationEhtCapabilities(Mac48Address from, EhtCapabilities ehtCapabilities);
+    void AddStationEhtCapabilities(Mac48Address from, const EhtCapabilities& ehtCapabilities);
     /**
      * Records the Common Info field advertised by the given remote station in a Multi-Link
      * Element. It includes the MLD address of the remote station.
@@ -1000,7 +1000,7 @@ class WifiRemoteStationManager : public Object
      * @return true if CTS-to-self is needed,
      *         false otherwise
      */
-    bool NeedCtsToSelf(WifiTxVector txVector);
+    bool NeedCtsToSelf(const WifiTxVector& txVector);
 
     /**
      * @param mpdu the MPDU to send
