@@ -292,6 +292,9 @@ WifiDefaultProtectionManager::TryAddMpduToMuPpdu(Ptr<const WifiMpdu> mpdu,
             // PE Disambiguity, UL Spatial Reuse, Doppler and UL HE-SIG-A2 Reserved subfields in
             // the Common Info field are reserved. (Sec. 9.3.1.22.5 of 802.11ax)
             protection->muRts.SetType(TriggerFrameType::MU_RTS_TRIGGER);
+            protection->muRts.SetVariant(IsEht(txParams.m_txVector.GetPreambleType())
+                                             ? TriggerFrameVariant::EHT
+                                             : TriggerFrameVariant::HE);
             protection->muRts.SetUlBandwidth(txWidth);
 
             // Add a User Info field for each of the receivers already in the TX params
@@ -352,6 +355,7 @@ WifiDefaultProtectionManager::TryUlMuTransmission(Ptr<const WifiMpdu> mpdu,
     // PE Disambiguity, UL Spatial Reuse, Doppler and UL HE-SIG-A2 Reserved subfields in
     // the Common Info field are reserved. (Sec. 9.3.1.22.5 of 802.11ax)
     protection->muRts.SetType(TriggerFrameType::MU_RTS_TRIGGER);
+    protection->muRts.SetVariant(trigger.GetVariant());
     protection->muRts.SetUlBandwidth(txWidth);
 
     NS_ABORT_MSG_IF(m_mac->GetTypeOfStation() != AP, "HE APs only can send DL MU PPDUs");
