@@ -291,6 +291,24 @@ WifiDefaultProtectionManager::TryAddMpduToMuPpdu(Ptr<const WifiMpdu> mpdu,
             // PE Disambiguity, UL Spatial Reuse, Doppler and UL HE-SIG-A2 Reserved subfields in
             // the Common Info field are reserved. (Sec. 9.3.1.22.5 of 802.11ax)
             protection->muRts.SetType(TriggerFrameType::MU_RTS_TRIGGER);
+            /* 35.2.2.1 MU-RTS Trigger frame transmission (IEEE P802.11be/D7.0):
+             * If a non-AP EHT STA is addressed in an MU-RTS Trigger frame from an EHT AP and any of
+             * the following conditions is met, the User Info field addressed to an EHT STA in the
+             * MU-RTS Trigger frame shall be an EHT variant User Info field:
+             * - The bandwidth of the EHT MU PPDU or non-HT duplicate PPDU carrying the MU-RTS
+             * Trigger frame is 320 MHz.
+             * - The EHT MU PPDU or non-HT duplicate PPDU carrying the MU-RTS Trigger frame is
+             * punctured. Otherwise, the EHT AP may decide whether the User Info field in the MU-RTS
+             * Trigger frame is an HE variant User Info field or an EHT variant User Info field.
+             */
+            const auto& inactiveSubchannels = txParams.m_txVector.GetInactiveSubchannels();
+            const auto isPunctured =
+                std::find(inactiveSubchannels.cbegin(), inactiveSubchannels.cend(), true) !=
+                inactiveSubchannels.cend();
+            const auto muRtsVariant = ((txWidth == MHz_u{320}) || isPunctured)
+                                          ? TriggerFrameVariant::EHT
+                                          : TriggerFrameVariant::HE;
+            protection->muRts.SetVariant(muRtsVariant);
             protection->muRts.SetUlBandwidth(txWidth);
 
             // Add a User Info field for each of the receivers already in the TX params
@@ -351,6 +369,7 @@ WifiDefaultProtectionManager::TryUlMuTransmission(Ptr<const WifiMpdu> mpdu,
     // PE Disambiguity, UL Spatial Reuse, Doppler and UL HE-SIG-A2 Reserved subfields in
     // the Common Info field are reserved. (Sec. 9.3.1.22.5 of 802.11ax)
     protection->muRts.SetType(TriggerFrameType::MU_RTS_TRIGGER);
+    protection->muRts.SetVariant(trigger.GetVariant());
     protection->muRts.SetUlBandwidth(txWidth);
 
     NS_ABORT_MSG_IF(m_mac->GetTypeOfStation() != AP, "HE APs only can send DL MU PPDUs");
