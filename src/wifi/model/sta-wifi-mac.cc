@@ -950,6 +950,7 @@ StaWifiMac::Disassociated()
             apAddr = GetWifiRemoteStationManager(id)->GetMldAddress(*bssid).value_or(*bssid);
         }
         bssid = std::nullopt; // link is no longer setup
+        link->phy->ResumeFromOff();
     }
 
     NS_LOG_DEBUG("Set state to UNASSOCIATED and start scanning");
@@ -1949,6 +1950,12 @@ StaWifiMac::TxOk(Ptr<const WifiMpdu> mpdu)
     else if (!hdr.IsPowerManagement() && link.pmMode == WIFI_PM_SWITCHING_TO_ACTIVE)
     {
         link.pmMode = WIFI_PM_ACTIVE;
+    }
+
+    if (hdr.IsDisassociation())
+    {
+        // the AP has acknowledged our disassociation frame, now try to associate again
+        Disassociated();
     }
 }
 
