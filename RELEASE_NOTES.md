@@ -37,6 +37,9 @@ been tested on Linux. As of this release, the latest known version to work with 
 
 ### Bugs fixed
 
+- (wifi) APs unblock transmissions to stations that are in power save mode when they disassociate, otherwise they will not be able to associate again
+- (wifi) APs record disassociation on all links setup with a non-AP MLD
+
 ## Release 3.44
 
 This release adds the zigbee module and otherwise contains maintenance and small feature updates

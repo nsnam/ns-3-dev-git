@@ -1901,14 +1901,10 @@ ApWifiMac::StaSwitchingToActiveModeOrDeassociated(const Mac48Address& staAddr, u
 
     GetWifiRemoteStationManager(linkId)->SetPsMode(staAddr, false);
 
-    if (GetWifiRemoteStationManager(linkId)->IsAssociated(staAddr))
-    {
-        // the station is still associated, unblock its frames
-        NS_LOG_DEBUG("Unblock destination " << staAddr << " on link " << +linkId);
-        auto staMldAddr =
-            GetWifiRemoteStationManager(linkId)->GetMldAddress(staAddr).value_or(staAddr);
-        UnblockUnicastTxOnLinks(WifiQueueBlockedReason::POWER_SAVE_MODE, staMldAddr, {linkId});
-    }
+    // unblock transmissions to the station
+    NS_LOG_DEBUG("Unblock destination " << staAddr << " on link " << +linkId);
+    auto staMldAddr = GetWifiRemoteStationManager(linkId)->GetMldAddress(staAddr).value_or(staAddr);
+    UnblockUnicastTxOnLinks(WifiQueueBlockedReason::POWER_SAVE_MODE, staMldAddr, {linkId});
 }
 
 std::optional<uint8_t>
@@ -2090,34 +2086,47 @@ ApWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
             }
             case WIFI_MAC_MGT_DISASSOCIATION: {
                 NS_LOG_DEBUG("Disassociation received from " << from);
-                GetWifiRemoteStationManager(linkId)->RecordDisassociated(from);
-                auto& staList = GetLink(linkId).staList;
-                for (auto it = staList.begin(); it != staList.end(); ++it)
+                const auto aid = GetAssociationId(from, linkId);
+                if (aid == SU_STA_ID)
                 {
-                    if (it->second == from)
+                    NS_LOG_DEBUG("Station " << from << " is not associated");
+                    return;
+                }
+                const auto address =
+                    GetWifiRemoteStationManager(linkId)->GetMldAddress(from).value_or(from);
+                m_deAssocLogger(aid, address);
+                if (m_gcrManager)
+                {
+                    m_gcrManager->NotifyStaDeassociated(address);
+                }
+
+                for (const auto& [id, lnk] : GetLinks())
+                {
+                    auto& link = GetLink(id);
+                    auto it = link.staList.find(aid);
+
+                    if (it == link.staList.cend())
                     {
-                        staList.erase(it);
-                        m_deAssocLogger(it->first, it->second);
-                        if (GetWifiRemoteStationManager(linkId)->GetDsssSupported(from) &&
-                            !GetWifiRemoteStationManager(linkId)->GetErpOfdmSupported(from))
-                        {
-                            GetLink(linkId).numNonErpStations--;
-                        }
-                        if (!GetWifiRemoteStationManager(linkId)->GetHtSupported(from) &&
-                            !GetWifiRemoteStationManager(linkId)->GetStationHe6GhzCapabilities(
-                                from))
-                        {
-                            GetLink(linkId).numNonHtStations--;
-                        }
-                        UpdateShortSlotTimeEnabled(linkId);
-                        UpdateShortPreambleEnabled(linkId);
-                        StaSwitchingToActiveModeOrDeassociated(from, linkId);
-                        if (m_gcrManager)
-                        {
-                            m_gcrManager->NotifyStaDeassociated(from);
-                        }
-                        break;
+                        continue; // STA has not setup this link
                     }
+
+                    // a STA operating on this link is associated with the AP
+                    StaSwitchingToActiveModeOrDeassociated(address, id);
+                    link.staList.erase(it);
+                    m_aidToMldOrLinkAddress.erase(aid);
+                    GetWifiRemoteStationManager(id)->RecordDisassociated(address);
+                    if (GetWifiRemoteStationManager(id)->GetDsssSupported(address) &&
+                        !GetWifiRemoteStationManager(id)->GetErpOfdmSupported(address))
+                    {
+                        link.numNonErpStations--;
+                    }
+                    if (!GetWifiRemoteStationManager(id)->GetHtSupported(address) &&
+                        !GetWifiRemoteStationManager(id)->GetStationHe6GhzCapabilities(address))
+                    {
+                        link.numNonHtStations--;
+                    }
+                    UpdateShortSlotTimeEnabled(id);
+                    UpdateShortPreambleEnabled(id);
                 }
                 return;
             }
