@@ -364,8 +364,8 @@ AidAssignmentTest::DoSetup()
             MakeCallback(&AidAssignmentTest::SetSsid, this).Bind(DynamicCast<StaWifiMac>(mac)));
     }
 
-    auto apMac = StaticCast<ApWifiMac>(StaticCast<WifiNetDevice>(apDevice.Get(0))->GetMac());
-    m_expectedAid = m_startAid = apMac->GetNextAssociationId();
+    m_apMac = StaticCast<ApWifiMac>(StaticCast<WifiNetDevice>(apDevice.Get(0))->GetMac());
+    m_expectedAid = m_startAid = m_apMac->GetNextAssociationId();
 }
 
 void
@@ -381,7 +381,10 @@ AidAssignmentTest::SetSsid(Ptr<StaWifiMac> staMac, Mac48Address /* apAddr */)
     NS_LOG_INFO("STA " << staMac->GetAddress() << " associated with AID " << aid << " links "
                        << linksStr.str());
 
-    NS_TEST_EXPECT_MSG_EQ(aid, m_expectedAid, "Unexpected AID for STA " << staMac->GetAddress());
+    NS_TEST_EXPECT_MSG_EQ(aid,
+                          m_expectedAid,
+                          "Unexpected AID for STA " << staMac->GetAddress() << " at time "
+                                                    << Simulator::Now().GetTimeStep());
 
     // if ML setup is performed, check that the requested links have been setup; otherwise, link 0
     // only is setup
@@ -393,6 +396,14 @@ AidAssignmentTest::SetSsid(Ptr<StaWifiMac> staMac, Mac48Address /* apAddr */)
                           true,
                           "Unexpected set of setup links " << linksStr.str());
 
+    // this function is a callback called within the for loop of the operator() of the "Assoc"
+    // traced callback, so disconnecting this callback now would change the list of callbacks over
+    // which the for loop is iterating
+    Simulator::ScheduleNow(&StaWifiMac::TraceDisconnectWithoutContext,
+                           staMac,
+                           "Assoc",
+                           MakeCallback(&AidAssignmentTest::SetSsid, this).Bind(staMac));
+
     if (++index < m_staDevices.GetN())
     {
         // let the next STA associate with the AP
@@ -401,7 +412,147 @@ AidAssignmentTest::SetSsid(Ptr<StaWifiMac> staMac, Mac48Address /* apAddr */)
     }
     else
     {
-        Simulator::Stop(MilliSeconds(5)); // allow sending Ack response to Association Response
+        // wait 5ms to allow sending Ack response to Association Response
+        Simulator::Schedule(MilliSeconds(5),
+                            &AidAssignmentTest::SwitchToPsModeAndDisassociate,
+                            this,
+                            true);
+    }
+}
+
+void
+AidAssignmentTest::SwitchToPsModeAndDisassociate(bool multiLink)
+{
+    // find an associated non-AP MLD, if multiLink is true, or non-AP STA, otherwise
+    Ptr<StaWifiMac> staMac;
+
+    for (uint32_t i = 0; i < m_staDevices.GetN(); ++i)
+    {
+        auto mac = StaticCast<WifiNetDevice>(m_staDevices.Get(i))->GetMac();
+        if ((mac->GetNLinks() > 1) == multiLink)
+        {
+            staMac = DynamicCast<StaWifiMac>(mac);
+            break;
+        }
+    }
+
+    NS_TEST_ASSERT_MSG_NE(staMac,
+                          nullptr,
+                          "Did not find a " << (multiLink ? "multi-link" : "single-link")
+                                            << " station");
+
+    const auto aid = staMac->GetAssociationId();
+    const auto staLinkId = *staMac->GetSetupLinkIds().cbegin();
+    const auto staAddress = staMac->GetFrameExchangeManager(staLinkId)->GetAddress();
+    const auto apLinkId =
+        m_assocType == WifiAssocType::ML_SETUP
+            ? staLinkId
+            : m_apMac->GetLinkIdByAddress(m_apMac->GetLocalAddress(staAddress)).value();
+
+    staMac->SetPowerSaveMode({true, staLinkId});
+
+    // after 5ms, check that the STA is in powersave mode and have it disassociate
+    Simulator::Schedule(MilliSeconds(5), [=, this]() {
+        NS_TEST_EXPECT_MSG_EQ(
+            m_apMac->GetWifiRemoteStationManager(apLinkId)->IsInPsMode(staAddress),
+            true,
+            "Expected STA with address " << staAddress << " to be in PS mode");
+
+        NS_LOG_INFO("STA " << staAddress << " disassociating");
+        staMac->EnqueueDisassociation(m_apMac->GetFrameExchangeManager(apLinkId)->GetAddress(),
+                                      staLinkId);
+
+        // be notified when the STA disassociates
+        staMac->TraceConnectWithoutContext(
+            "DeAssoc",
+            MakeCallback(&AidAssignmentTest::CheckDisassociation, this).Bind(aid, staMac));
+    });
+}
+
+void
+AidAssignmentTest::CheckDisassociation(uint16_t aid,
+                                       Ptr<StaWifiMac> staMac,
+                                       Mac48Address /* apAddress */)
+{
+    // check disassociation on STA side
+    NS_TEST_EXPECT_MSG_EQ(staMac->IsAssociated(),
+                          false,
+                          "Expected STA " << staMac->GetAddress() << " to be disassociated");
+
+    // check disassociation on AP side
+    NS_TEST_EXPECT_MSG_EQ(m_apMac->IsAssociated(staMac->GetAddress()).has_value(),
+                          false,
+                          "Expected STA with address " << staMac->GetAddress()
+                                                       << " to be disassociated");
+    NS_TEST_EXPECT_MSG_EQ(m_apMac->GetNextAssociationId(),
+                          aid,
+                          "Expected that AID " << aid << " had been released");
+    for (uint8_t id = 0; id < m_apMac->GetNLinks(); ++id)
+    {
+        NS_TEST_EXPECT_MSG_EQ(m_apMac->GetStaList(id).contains(aid),
+                              false,
+                              "AID " << aid << " should no longer be in STA list on link " << +id);
+    }
+
+    NS_TEST_EXPECT_MSG_EQ(m_apMac->GetMldOrLinkAddressByAid(aid).has_value(),
+                          false,
+                          "AID " << aid << " should have been released by the AP");
+
+    // this function is a callback called within the for loop of the operator() of the "DeAssoc"
+    // traced callback, so disconnecting this callback now would change the list of callbacks over
+    // which the for loop is iterating
+    Simulator::ScheduleNow(
+        &StaWifiMac::TraceDisconnectWithoutContext,
+        staMac,
+        "DeAssoc",
+        MakeCallback(&AidAssignmentTest::CheckDisassociation, this).Bind(aid, staMac));
+
+    // when the STA associates again, we want the CheckReassociation function to be called
+    staMac->TraceConnectWithoutContext(
+        "Assoc",
+        MakeCallback(&AidAssignmentTest::CheckReassociation, this).Bind(aid, staMac));
+}
+
+void
+AidAssignmentTest::CheckReassociation(uint16_t aid,
+                                      Ptr<StaWifiMac> staMac,
+                                      Mac48Address /* apAddress */)
+{
+    ++m_nReassociations;
+
+    NS_TEST_EXPECT_MSG_EQ(staMac->GetAssociationId(),
+                          aid,
+                          "Unexpected AID for STA " << staMac->GetAddress() << " at time "
+                                                    << Simulator::Now().GetTimeStep());
+
+    std::stringstream linksStr;
+    const auto setupLinks = staMac->GetSetupLinkIds();
+    std::copy(setupLinks.cbegin(), setupLinks.cend(), std::ostream_iterator<int>(linksStr, " "));
+
+    NS_LOG_INFO("STA " << staMac->GetAddress() << " associated with AID " << aid << " links "
+                       << linksStr.str());
+
+    // this function is a callback called within the for loop of the operator() of the "Assoc"
+    // traced callback, so disconnecting this callback now would change the list of callbacks over
+    // which the for loop is iterating
+    Simulator::ScheduleNow(
+        &StaWifiMac::TraceDisconnectWithoutContext,
+        staMac,
+        "Assoc",
+        MakeCallback(&AidAssignmentTest::CheckReassociation, this).Bind(aid, staMac));
+
+    if (staMac->GetNLinks() > 1)
+    {
+        // let's now test disassociation of a single-link device (after waiting 5ms to allow sending
+        // Ack response to Association Response)
+        Simulator::Schedule(MilliSeconds(5),
+                            &AidAssignmentTest::SwitchToPsModeAndDisassociate,
+                            this,
+                            false);
+    }
+    else
+    {
+        Simulator::Stop(Time{0}); // we're done
     }
 }
 
@@ -415,13 +566,7 @@ AidAssignmentTest::DoRun()
                           m_startAid + m_staDevices.GetN() - 1,
                           "Not all STAs completed association");
 
-    for (uint32_t i = 0; i < m_staDevices.GetN(); ++i)
-    {
-        auto mac = StaticCast<WifiNetDevice>(m_staDevices.Get(i))->GetMac();
-        mac->TraceDisconnectWithoutContext(
-            "Assoc",
-            MakeCallback(&AidAssignmentTest::SetSsid, this).Bind(DynamicCast<StaWifiMac>(mac)));
-    }
+    NS_TEST_EXPECT_MSG_EQ(m_nReassociations, 2, "Unexpected number of reassociations");
 
     Simulator::Destroy();
 }

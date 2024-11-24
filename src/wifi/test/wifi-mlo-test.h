@@ -140,7 +140,9 @@ class MldSwapLinksTest : public TestCase
  * @ingroup wifi-test
  * @ingroup tests
  *
- * Test that the AIDs that an AP MLD assigns to SLDs and MLDs are all unique.
+ * Test that the AIDs that an AP MLD assigns to SLDs and MLDs are all unique. Also, check that
+ * a non-AP STA in powersave mode and a non-AP MLD with an affiliated non-AP STA in powersave mode
+ * are able to disassociate and then associate again with the AP MLD.
  */
 class AidAssignmentTest : public TestCase
 {
@@ -165,12 +167,37 @@ class AidAssignmentTest : public TestCase
      */
     void SetSsid(Ptr<StaWifiMac> staMac, Mac48Address /* apAddr */);
 
+    /**
+     * Have a non-AP STA (MLD) switch to powersave mode and disassociate.
+     *
+     * @param multiLink true to test a non-AP MLD, false to test a non-AP STA
+     */
+    void SwitchToPsModeAndDisassociate(bool multiLink);
+
+    /**
+     * Check that the station that had the given AID assigned is now disassociated.
+     *
+     * @param aid the given AID
+     * @param staMac the MAC of the station that is now disassociated
+     */
+    void CheckDisassociation(uint16_t aid, Ptr<StaWifiMac> staMac, Mac48Address /* apAddress */);
+
+    /**
+     * Check that the station that had disassociated is now associated again.
+     *
+     * @param aid the AID of the station that associated again
+     * @param staMac the MAC of the station that associated again
+     */
+    void CheckReassociation(uint16_t aid, Ptr<StaWifiMac> staMac, Mac48Address /* apAddress */);
+
     const std::vector<std::string> m_linkChannels;  //!< channels for all AP links
     const std::vector<std::set<uint8_t>> m_linkIds; //!< link IDs for all non-AP STAs/MLDs
     WifiAssocType m_assocType;                      //!< association type
+    Ptr<ApWifiMac> m_apMac;                         //!< AP MAC
     NetDeviceContainer m_staDevices;                //!< non-AP STAs/MLDs devices
     uint16_t m_startAid;                            //!< first AID to allocate to stations
     uint16_t m_expectedAid;                         //!< expected AID for current non-AP STA/MLD
+    std::size_t m_nReassociations{0};               //!< re-associations counter
 };
 
 /**
