@@ -1601,7 +1601,7 @@ WifiMac::BlockUnicastTxOnLinks(WifiQueueBlockedReason reason,
                                      acIndex,
                                      {WIFI_QOSDATA_QUEUE, WIFI_CTL_QUEUE},
                                      address,
-                                     GetAddress(),
+                                     GetLocalAddress(address),
                                      {ac.GetLowTid(), ac.GetHighTid()},
                                      {linkId});
             // block queues storing management and control frames that use link addresses
@@ -1657,7 +1657,7 @@ WifiMac::UnblockUnicastTxOnLinks(WifiQueueBlockedReason reason,
                                        acIndex,
                                        {WIFI_QOSDATA_QUEUE, WIFI_CTL_QUEUE},
                                        address,
-                                       GetAddress(),
+                                       GetLocalAddress(address),
                                        {ac.GetLowTid(), ac.GetHighTid()},
                                        {linkId});
             // unblock queues storing management and control frames that use link addresses
