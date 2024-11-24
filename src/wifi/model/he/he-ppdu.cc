@@ -413,8 +413,8 @@ HePpdu::GetTxChannelWidth() const
         const auto ruWidth = HeRu::GetBandwidth(txVector.GetRu(GetStaId()).GetRuType());
         MHz_u channelWidth =
             (flag == PSD_NON_HE_PORTION && ruWidth < MHz_u{20}) ? MHz_u{20} : ruWidth;
-        NS_LOG_INFO("Use channelWidth=" << channelWidth << " MHz for HE TB from " << GetStaId()
-                                        << " for " << flag);
+        NS_LOG_INFO("Use " << channelWidth << " MHz for TB PPDU from " << GetStaId() << " for "
+                           << flag);
         return channelWidth;
     }
     else
