@@ -150,22 +150,22 @@ Hz_t::from_str(const std::string& input)
     auto res = StringToDouble(input, "THz");
     if (res.has_value())
     {
-        return THz(res.value());
+        return THz_t(res.value());
     }
     res = StringToDouble(input, "GHz");
     if (res.has_value())
     {
-        return GHz(res.value());
+        return GHz_t(res.value());
     }
     res = StringToDouble(input, "MHz");
     if (res.has_value())
     {
-        return MHz(res.value());
+        return MHz_t(res.value());
     }
     res = StringToDouble(input, "kHz");
     if (res.has_value())
     {
-        return kHz(res.value());
+        return kHz_t(res.value());
     }
     res = StringToDouble(input, "Hz");
     return res.has_value() ? std::optional(Hz_t{res.value()}) : std::nullopt;

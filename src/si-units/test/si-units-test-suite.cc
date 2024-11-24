@@ -461,19 +461,19 @@ class TestCaseSiUnits : public TestCase
         NS_TEST_EXPECT_MSG_EQ((123.45e6_kHz).in_MHz(), 123450, "");
         NS_TEST_EXPECT_MSG_EQ((123.456789e6_kHz).in_MHz(), 123456.789, "");
 
-        NS_TEST_EXPECT_MSG_EQ(kHz(123.4), 123.4_kHz, "");
-        NS_TEST_EXPECT_MSG_EQ(MHz(123.4), 123.4_MHz, "");
-        NS_TEST_EXPECT_MSG_EQ(GHz(123.4), 123.4_GHz, "");
-        NS_TEST_EXPECT_MSG_EQ(THz(123.4), 123.4_THz, "");
-        NS_TEST_EXPECT_MSG_EQ(kHz(123), 123_kHz, "");
-        NS_TEST_EXPECT_MSG_EQ(MHz(123), 123_MHz, "");
-        NS_TEST_EXPECT_MSG_EQ(GHz(123), 123_GHz, "");
-        NS_TEST_EXPECT_MSG_EQ(THz(123), 123_THz, "");
+        NS_TEST_EXPECT_MSG_EQ(kHz_t(123.4), 123.4_kHz, "");
+        NS_TEST_EXPECT_MSG_EQ(MHz_t(123.4), 123.4_MHz, "");
+        NS_TEST_EXPECT_MSG_EQ(GHz_t(123.4), 123.4_GHz, "");
+        NS_TEST_EXPECT_MSG_EQ(THz_t(123.4), 123.4_THz, "");
+        NS_TEST_EXPECT_MSG_EQ(kHz_t(123), 123_kHz, "");
+        NS_TEST_EXPECT_MSG_EQ(MHz_t(123), 123_MHz, "");
+        NS_TEST_EXPECT_MSG_EQ(GHz_t(123), 123_GHz, "");
+        NS_TEST_EXPECT_MSG_EQ(THz_t(123), 123_THz, "");
 
-        NS_TEST_EXPECT_MSG_EQ(kHz(123.4), 123400_Hz, "");
-        NS_TEST_EXPECT_MSG_EQ(MHz(123.4), 123400000_Hz, "");
-        NS_TEST_EXPECT_MSG_EQ(GHz(123.4), 123400000000_Hz, "");
-        NS_TEST_EXPECT_MSG_EQ(THz(123.4), 123400000000000_Hz, "");
+        NS_TEST_EXPECT_MSG_EQ(kHz_t(123.4), 123400_Hz, "");
+        NS_TEST_EXPECT_MSG_EQ(MHz_t(123.4), 123400000_Hz, "");
+        NS_TEST_EXPECT_MSG_EQ(GHz_t(123.4), 123400000000_Hz, "");
+        NS_TEST_EXPECT_MSG_EQ(THz_t(123.4), 123400000000000_Hz, "");
 
         // Conversion from string
         NS_TEST_EXPECT_MSG_EQ(Hz_t::from_str("3.14Hz").value(), 3.14_Hz, "");

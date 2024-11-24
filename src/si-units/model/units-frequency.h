@@ -250,7 +250,7 @@ double operator*(Time nstime, const Hz_t& rhs);
 /// @param val Value in kHz
 /// @return Value in Hz_t
 inline Hz_t
-kHz(double val)
+kHz_t(double val)
 {
     return Hz_t{val * ONE_KILO};
 }
@@ -259,7 +259,7 @@ kHz(double val)
 /// @param val Value in MHz
 /// @return Value in Hz_t
 inline Hz_t
-MHz(double val)
+MHz_t(double val)
 {
     return Hz_t{val * ONE_MEGA};
 }
@@ -268,7 +268,7 @@ MHz(double val)
 /// @param val Value in GHz
 /// @return Value in Hz_t
 inline Hz_t
-GHz(double val)
+GHz_t(double val)
 {
     return Hz_t{val * ONE_GIGA};
 }
@@ -277,7 +277,7 @@ GHz(double val)
 /// @param val Value in THz
 /// @return Value in Hz_t
 inline Hz_t
-THz(double val)
+THz_t(double val)
 {
     return Hz_t{val * ONE_TERA};
 }
