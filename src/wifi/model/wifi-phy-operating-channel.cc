@@ -975,18 +975,23 @@ operator<<(std::ostream& os, const WifiPhyOperatingChannel& channel)
         {
             if (numSegments > 1)
             {
-                os << "segment " << segmentId << " ";
+                os << "segment " << segmentId << " {";
             }
-            os << "channel " << +channel.GetNumber() << " frequency " << channel.GetFrequency()
-               << " width " << channel.GetWidth() << " band " << channel.GetPhyBand();
-            if ((segmentId == 0) && (static_cast<uint16_t>(channel.GetTotalWidth()) % 20 == 0))
+            os << "channel " << +channel.GetNumber(segmentId) << " frequency "
+               << channel.GetFrequency(segmentId) << " width " << channel.GetWidth(segmentId);
+            if (numSegments > 1)
             {
-                os << " primary20 " << +channel.GetPrimaryChannelIndex(MHz_u{20});
+                os << "}";
             }
             if (segmentId < numSegments - 1)
             {
                 os << " ";
             }
+        }
+        os << " band " << channel.GetPhyBand();
+        if (static_cast<uint16_t>(channel.GetTotalWidth()) % 20 == 0)
+        {
+            os << " primary20 " << +channel.GetPrimaryChannelIndex(MHz_u{20});
         }
     }
     else
