@@ -363,13 +363,22 @@ class WifiPhyOperatingChannel
                                    ConstIterator start = m_frequencyChannels.begin());
 
     /**
-     * Get channel number of the primary channel
+     * Get channel number of the primary channel of the given width
      * @param primaryChannelWidth the width of the primary channel
      * @param standard the standard
      *
      * @return channel number of the primary channel
      */
     uint8_t GetPrimaryChannelNumber(MHz_u primaryChannelWidth, WifiStandard standard) const;
+
+    /**
+     * Get channel number of the secondary channel of the given width
+     * @param secondaryChannelWidth the width of the secondary channel
+     * @param standard the standard
+     *
+     * @return channel number of the secondary channel
+     */
+    uint8_t GetSecondaryChannelNumber(MHz_u secondaryChannelWidth, WifiStandard standard) const;
 
     /**
      * Get a WifiPhyOperatingChannel object corresponding to the primary channel of the given width.
