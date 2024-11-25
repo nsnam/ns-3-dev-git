@@ -1116,8 +1116,12 @@ ApWifiMac::GetHeOperation(uint8_t linkId) const
         op6Ghz.m_chCntrFreqSeg0 = (bw == MHz_u{160})
                                       ? ch.GetPrimaryChannelNumber(MHz_u{80}, WIFI_STANDARD_80211ax)
                                       : ch.GetNumber();
-        // TODO: for 80+80 MHz channels, set this field to the secondary 80 MHz segment number
-        op6Ghz.m_chCntrFreqSeg1 = (bw == MHz_u{160}) ? ch.GetNumber() : 0;
+        op6Ghz.m_chCntrFreqSeg1 =
+            (bw == MHz_u{160})
+                ? ((ch.GetWidthType() == WifiChannelWidthType::CW_80_PLUS_80MHZ)
+                       ? ch.GetSecondaryChannelNumber(MHz_u{80}, WIFI_STANDARD_80211ax)
+                       : ch.GetNumber())
+                : 0;
 
         operation.m_6GHzOpInfo = op6Ghz;
     }

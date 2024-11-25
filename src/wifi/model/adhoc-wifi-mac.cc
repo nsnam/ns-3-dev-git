@@ -637,12 +637,17 @@ AdhocWifiMac::GetHeOperation() const
         HeOperation::OpInfo6GHz op6Ghz;
         const auto bw = GetWifiPhy()->GetChannelWidth();
         const auto ch = GetWifiPhy()->GetOperatingChannel();
-        op6Ghz.m_chWid = (bw == 20) ? 0 : (bw == 40) ? 1 : (bw == 80) ? 2 : 3;
-        op6Ghz.m_primCh = ch.GetPrimaryChannelNumber(20, WIFI_STANDARD_80211ax);
-        op6Ghz.m_chCntrFreqSeg0 =
-            (bw == 160) ? ch.GetPrimaryChannelNumber(80, WIFI_STANDARD_80211ax) : ch.GetNumber();
-        // TODO: for 80+80 MHz channels, set this field to the secondary 80 MHz segment number
-        op6Ghz.m_chCntrFreqSeg1 = (bw == 160) ? ch.GetNumber() : 0;
+        op6Ghz.m_chWid = (bw == MHz_u{20}) ? 0 : (bw == MHz_u{40}) ? 1 : (bw == MHz_u{80}) ? 2 : 3;
+        op6Ghz.m_primCh = ch.GetPrimaryChannelNumber(MHz_u{20}, WIFI_STANDARD_80211ax);
+        op6Ghz.m_chCntrFreqSeg0 = (bw == MHz_u{160})
+                                      ? ch.GetPrimaryChannelNumber(MHz_u{80}, WIFI_STANDARD_80211ax)
+                                      : ch.GetNumber();
+        op6Ghz.m_chCntrFreqSeg1 =
+            (bw == MHz_u{160})
+                ? ((ch.GetWidthType() == WifiChannelWidthType::CW_80_PLUS_80MHZ)
+                       ? ch.GetSecondaryChannelNumber(MHz_u{80}, WIFI_STANDARD_80211ax)
+                       : ch.GetNumber())
+                : 0;
 
         operation.m_6GHzOpInfo = op6Ghz;
     }
