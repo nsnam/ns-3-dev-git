@@ -107,6 +107,10 @@ BlockAckManager::CreateOriginatorAgreement(const MgtAddBaRequestHeader& reqHdr,
     {
         agreement.SetDelayedBlockAck();
     }
+    if (const auto gcrGroupAddr = reqHdr.GetGcrGroupAddress())
+    {
+        agreement.SetGcrGroupAddress(*gcrGroupAddr);
+    }
     agreement.SetState(OriginatorBlockAckAgreement::PENDING);
     m_originatorAgreementState(Simulator::Now(),
                                recipient,
@@ -157,6 +161,10 @@ BlockAckManager::UpdateOriginatorAgreement(const MgtAddBaResponseHeader& respHdr
         {
             agreement.SetDelayedBlockAck();
         }
+        if (const auto gcrGroupAddr = respHdr.GetGcrGroupAddress())
+        {
+            agreement.SetGcrGroupAddress(*gcrGroupAddr);
+        }
         if (!it->second.first.IsEstablished())
         {
             m_originatorAgreementState(Simulator::Now(),
@@ -203,6 +211,10 @@ BlockAckManager::CreateRecipientAgreement(const MgtAddBaResponseHeader& respHdr,
     else
     {
         agreement.SetDelayedBlockAck();
+    }
+    if (const auto gcrGroupAddr = respHdr.GetGcrGroupAddress())
+    {
+        agreement.SetGcrGroupAddress(*gcrGroupAddr);
     }
 
     m_recipientAgreements.insert_or_assign({originator, tid}, agreement);

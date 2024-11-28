@@ -14,6 +14,8 @@
 #include "ns3/event-id.h"
 #include "ns3/mac48-address.h"
 
+#include <optional>
+
 namespace ns3
 {
 /**
@@ -161,18 +163,31 @@ class BlockAckAgreement
      * @return the distance of the given sequence number from the given starting sequence number
      */
     static std::size_t GetDistance(uint16_t seqNumber, uint16_t startingSeqNumber);
+    /**
+     * Set the GCR group address for this agreement.
+     *
+     * @param gcrGroupAddress the GCR group address
+     */
+    void SetGcrGroupAddress(const Mac48Address& gcrGroupAddress);
+    /**
+     * Get the GCR group address of this agreement if it is a GCR Block Ack agreement.
+     *
+     * @return the GCR group address of this agreement if it is a GCR Block Ack agreement
+     */
+    const std::optional<Mac48Address>& GetGcrGroupAddress() const;
 
   protected:
-    Mac48Address m_peer;               //!< Peer address
-    bool m_amsduSupported;             //!< Flag whether MSDU aggregation is supported
-    uint8_t m_blockAckPolicy;          //!< Type of block ack: immediate or delayed
-    uint8_t m_tid;                     //!< Traffic ID
-    uint16_t m_bufferSize;             //!< Buffer size
-    uint16_t m_timeout;                //!< Timeout
-    uint16_t m_startingSeq;            //!< Starting sequence control
-    uint16_t m_winEnd;                 //!< Ending sequence number
-    bool m_htSupported;                //!< Flag whether HT is supported
-    mutable EventId m_inactivityEvent; //!< inactivity event
+    Mac48Address m_peer;                           //!< Peer address
+    bool m_amsduSupported;                         //!< Flag whether MSDU aggregation is supported
+    uint8_t m_blockAckPolicy;                      //!< Type of block ack: immediate or delayed
+    uint8_t m_tid;                                 //!< Traffic ID
+    uint16_t m_bufferSize;                         //!< Buffer size
+    uint16_t m_timeout;                            //!< Timeout
+    uint16_t m_startingSeq;                        //!< Starting sequence control
+    uint16_t m_winEnd;                             //!< Ending sequence number
+    bool m_htSupported;                            //!< Flag whether HT is supported
+    std::optional<Mac48Address> m_gcrGroupAddress; //!< the optional GCR group address
+    mutable EventId m_inactivityEvent;             //!< inactivity event
 };
 
 } // namespace ns3

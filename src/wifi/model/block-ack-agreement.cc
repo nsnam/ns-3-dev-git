@@ -190,4 +190,16 @@ BlockAckAgreement::GetDistance(uint16_t seqNumber, uint16_t startingSeqNumber)
     return (seqNumber - startingSeqNumber + SEQNO_SPACE_SIZE) % SEQNO_SPACE_SIZE;
 }
 
+void
+BlockAckAgreement::SetGcrGroupAddress(const Mac48Address& gcrGroupAddress)
+{
+    m_gcrGroupAddress = gcrGroupAddress;
+}
+
+const std::optional<Mac48Address>&
+BlockAckAgreement::GetGcrGroupAddress() const
+{
+    return m_gcrGroupAddress;
+}
+
 } // namespace ns3
