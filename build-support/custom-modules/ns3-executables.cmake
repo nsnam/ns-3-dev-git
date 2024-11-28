@@ -137,6 +137,17 @@ function(build_exec)
     )
   endif()
 
+  # Handle ns-3-external-contrib/module (which will have output binaries mapped
+  # to contrib/module)
+  if(${BEXEC_EXECUTABLE_DIRECTORY_PATH} MATCHES "ns-3-external-contrib")
+    string(
+      REGEX
+      REPLACE ".*ns-3-external-contrib" "${PROJECT_SOURCE_DIR}/build/contrib"
+              BEXEC_EXECUTABLE_DIRECTORY_PATH
+              "${BEXEC_EXECUTABLE_DIRECTORY_PATH}"
+    )
+  endif()
+
   set_runtime_outputdirectory(
     "${BEXEC_EXECNAME}" "${BEXEC_EXECUTABLE_DIRECTORY_PATH}/"
     "${BEXEC_EXECNAME_PREFIX}"

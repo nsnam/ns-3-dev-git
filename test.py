@@ -142,7 +142,14 @@ def parse_examples_to_run_file(
 ):
     # Look for the examples-to-run file exists.
     if not os.path.exists(examples_to_run_path):
-        return
+        # Also tests for contribs OUTSIDE the ns-3-dev directory
+        possible_external_contrib_path = examples_to_run_path.replace(
+            "contrib", f"{os.path.dirname(os.path.dirname(__file__))}/ns-3-external-contrib"
+        )
+        if os.path.exists(possible_external_contrib_path):
+            examples_to_run_path = possible_external_contrib_path
+        else:
+            return
 
     # Each tuple in the C++ list of examples to run contains
     #
