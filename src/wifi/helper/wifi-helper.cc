@@ -610,6 +610,7 @@ WifiPhyHelper::GetRadiotapHeader(Ptr<Packet> packet,
         header.SetHeMuOtherUserFields(heMuOtherUserFields);
     }
 
+    const auto isLowP80 = p20Index < (channelWidth / 40);
     if (IsEht(preamble))
     {
         RadiotapHeader::UsigFields usigFields{};
@@ -773,7 +774,6 @@ WifiPhyHelper::GetRadiotapHeader(Ptr<Packet> packet,
                 RadiotapHeader::EHT_DATA4_RU_ALLOC_CC_2_2_2_KNOWN |
                 GetRadiotapField(RadiotapHeader::EHT_DATA4_RU_ALLOC_CC_2_2_2, ruAllocation.at(7));
             ehtFields.known |= RadiotapHeader::EHT_KNOWN_PRIMARY_80;
-            const auto isLowP80 = p20Index < (channelWidth / MHz_u{40});
             ehtFields.data.at(1) |=
                 GetRadiotapField(RadiotapHeader::EHT_DATA1_PRIMARY_80,
                                  (isLowP80 ? RadiotapHeader::EHT_DATA1_PRIMARY_80_LOWEST
