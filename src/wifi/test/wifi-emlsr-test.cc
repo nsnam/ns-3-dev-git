@@ -301,7 +301,7 @@ EmlsrOperationsTestBase::DoSetup()
 {
     RngSeedManager::SetSeed(1);
     RngSeedManager::SetRun(1);
-    int64_t streamNumber = 100;
+    int64_t streamNumber = 11;
 
     Config::SetDefault("ns3::WifiMac::MpduBufferSize", UintegerValue(64));
     Config::SetDefault("ns3::EmlsrManager::InDeviceInterference", BooleanValue(true));

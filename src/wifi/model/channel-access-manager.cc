@@ -219,6 +219,8 @@ ChannelAccessManager::ChannelAccessManager()
       m_lastRxReceivedOk(true),
       m_lastTxEnd(0),
       m_lastSwitchingEnd(0),
+      m_lastSleepEnd(0),
+      m_lastOffEnd(0),
       m_linkId(0)
 {
     NS_LOG_FUNCTION(this);
@@ -683,14 +685,18 @@ ChannelAccessManager::GetAccessGrantStart(bool ignoreNav) const
                                               navAccessStart,
                                               m_lastAckTimeoutEnd,
                                               m_lastCtsTimeoutEnd,
-                                              m_lastSwitchingEnd});
+                                              m_lastSwitchingEnd,
+                                              m_lastSleepEnd,
+                                              m_lastOffEnd});
 
     NS_LOG_INFO("access grant start="
                 << accessGrantedStart.As(Time::US)
                 << ", rx access start=" << rxAccessStart.As(Time::US) << ", busy access start="
                 << busyAccessStart.As(Time::US) << ", tx access start=" << m_lastTxEnd.As(Time::US)
                 << ", nav access start=" << navAccessStart.As(Time::US)
-                << ", switching access start=" << m_lastSwitchingEnd.As(Time::US));
+                << ", switching access start=" << m_lastSwitchingEnd.As(Time::US)
+                << ", sleep access start=" << m_lastSleepEnd.As(Time::US)
+                << ", off access start=" << m_lastOffEnd.As(Time::US));
     return accessGrantedStart + GetSifs();
 }
 
@@ -1146,6 +1152,7 @@ void
 ChannelAccessManager::NotifyWakeupNow()
 {
     NS_LOG_FUNCTION(this);
+    m_lastSleepEnd = Simulator::Now();
     for (auto txop : m_txops)
     {
         ResetBackoff(txop);
@@ -1157,6 +1164,7 @@ void
 ChannelAccessManager::NotifyOnNow()
 {
     NS_LOG_FUNCTION(this);
+    m_lastOffEnd = Simulator::Now();
     for (auto txop : m_txops)
     {
         ResetBackoff(txop);
@@ -1232,7 +1240,8 @@ void
 ChannelAccessManager::UpdateLastIdlePeriod()
 {
     NS_LOG_FUNCTION(this);
-    Time idleStart = std::max({m_lastTxEnd, m_lastRx.end, m_lastSwitchingEnd});
+    Time idleStart =
+        std::max({m_lastTxEnd, m_lastRx.end, m_lastSwitchingEnd, m_lastSleepEnd, m_lastOffEnd});
     Time now = Simulator::Now();
 
     if (idleStart >= now)
