@@ -753,15 +753,14 @@ AdvancedEmlsrManager::SwitchMainPhyIfTxopGainedByAuxPhy(uint8_t linkId, AcIndex 
     }
 
     NS_LOG_DEBUG("Main PHY state is " << mainPhy->GetState()->GetState());
+    auto edca = GetStaMac()->GetQosTxop(aci);
+    edca->NotifyChannelReleased(linkId); // to set access to NOT_REQUESTED
 
     if (delay.IsZero())
     {
         NS_LOG_DEBUG("Do nothing");
         return;
     }
-
-    auto edca = GetStaMac()->GetQosTxop(aci);
-    edca->NotifyChannelReleased(linkId); // to set access to NOT_REQUESTED
 
     NS_LOG_DEBUG("Schedule channel access request on link "
                  << +linkId << " at time " << (Simulator::Now() + delay).As(Time::NS));
