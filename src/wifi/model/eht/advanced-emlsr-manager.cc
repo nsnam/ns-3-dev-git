@@ -435,8 +435,10 @@ AdvancedEmlsrManager::CheckNavAndCcaLastPifs(Ptr<WifiPhy> phy, uint8_t linkId, P
     }
     else
     {
-        // medium busy, check when access may be granted
-        if (!GetExpectedAccessWithinDelay(linkId,
+        // medium busy, check when access may be granted to determine whether to switch the
+        // main PHY back to the preferred link (if aux PHYs do not switch link)
+        if (!m_switchAuxPhy &&
+            !GetExpectedAccessWithinDelay(linkId,
                                           m_switchMainPhyBackDelay + phy->GetChannelSwitchDelay()))
         {
             NS_LOG_DEBUG("No AC is expected to get backoff soon, switch main PHY back");
@@ -454,6 +456,11 @@ AdvancedEmlsrManager::CheckNavAndCcaLastPifs(Ptr<WifiPhy> phy, uint8_t linkId, P
         edca->StartAccessAfterEvent(linkId,
                                     Txop::DIDNT_HAVE_FRAMES_TO_TRANSMIT,
                                     Txop::CHECK_MEDIUM_BUSY);
+
+        if (m_switchAuxPhy)
+        {
+            return;
+        }
 
         // the main PHY must stay for some time on this link to check if it gets channel access.
         // The timer is stopped if a DL or UL TXOP is started. When the timer expires, the main PHY
@@ -891,6 +898,10 @@ AdvancedEmlsrManager::SwitchMainPhyIfTxopToBeGainedByAuxPhy(uint8_t linkId,
                                                 mainPhy,
                                                 linkId,
                                                 edca);
+        }
+        else if (m_switchAuxPhy)
+        {
+            return;
         }
         else if (!GetExpectedAccessWithinDelay(linkId,
                                                accessDelay + m_switchMainPhyBackDelay +
