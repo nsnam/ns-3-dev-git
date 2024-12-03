@@ -112,6 +112,19 @@ def parse_args(argv):
         default=None,
         dest="main_help",
     )
+    parser.add_argument(
+        "--compile-or-die",
+        help=(
+            "Build and test each individual commit between a base and an head commits.\n"
+            "This is especially useful when preparing MRs or rewriting git history, and ensuring refactor-or-die "
+            "principle is being followed"
+        ),
+        action="store",
+        nargs=2,
+        type=str,
+        default=[None, None],
+        metavar="compile_or_die",
+    )
     parser_help = sub_parser.add_parser("help", help="Print a summary of available commands")
     parser_help.add_argument(
         "help", help="Print a summary of available commands", action="store_true", default=False
@@ -1654,6 +1667,121 @@ def show_build_version(build_version_string, exit_early=True):
         exit(0)
 
 
+def compile_or_die(base_commit, head_commit):
+    try:
+        import git.exc
+        from git import Repo
+    except ImportError:
+        raise Exception("Missing pip package 'GitPython'.")
+
+    if shutil.which("git") is None:
+        raise Exception("Missing program 'git'.")
+
+    # Load ns-3 and module git repositories
+    NS3_DIR = os.path.abspath(os.path.dirname(__file__))
+    SRC_DIR = os.path.join(NS3_DIR, "src")
+    CONTRIB_DIR = os.path.join(NS3_DIR, "contrib")
+    git_repos_dirs = [NS3_DIR]
+    git_repos_dirs.extend(map(lambda x: os.path.join(SRC_DIR, x), os.listdir(SRC_DIR)))
+    git_repos_dirs.extend(map(lambda x: os.path.join(CONTRIB_DIR, x), os.listdir(CONTRIB_DIR)))
+    git_repos_dirs = list(filter(lambda x: os.path.isdir(x), git_repos_dirs))
+    git_repos_dirs = list(filter(lambda x: os.path.exists(os.path.join(x, ".git")), git_repos_dirs))
+    git_repos = []
+    for repo_dir in git_repos_dirs:
+        try:
+            git_repos.append(Repo(repo_dir))
+        except Exception as e:
+            raise Exception(f"Failed to load git repository in {repo_dir}: {e}")
+
+    # Check which particular repo we are testing (contain both base and top commits)
+    tested_repo = None
+    commits = None
+    for git_repo in git_repos:
+        commits = list(git_repo.iter_commits(all=True))
+        base_commit_object = list(filter(lambda x: x.hexsha == base_commit, commits))
+        head_commit_object = list(filter(lambda x: x.hexsha == head_commit, commits))
+        if base_commit_object and head_commit_object:
+            tested_repo = git_repo
+            break
+
+    if not tested_repo:
+        raise Exception("Base and head commits were not found in any of the git repositories")
+
+    # Filter commits we want to test
+    commits_sha = list(map(lambda x: x.hexsha, commits))
+    commits = commits[commits_sha.index(head_commit) : commits_sha.index(base_commit) + 1]
+
+    # Check if there are uncommitted changes, that will be lost if we proceed
+    diff = tested_repo.git.diff()
+    if diff:
+        print(
+            "Interrupted compile-or-die testing to prevent data loss."
+            "Uncommitted changes were found. Commit them or remove them before proceeding."
+        )
+        exit(-1)
+
+    # Check if head commit has a branch attached to it
+    branches_with_head_commit = list(
+        filter(
+            lambda x: x.commit.hexsha == head_commit and x.name != "compileOrDieTest",
+            list(tested_repo.branches),
+        )
+    )
+    if not branches_with_head_commit:
+        # If not, then create one (compileOrDieBackup), otherwise we could lose data
+        compile_or_die_backup_branch = list(
+            filter(lambda x: x.name == "compileOrDieBackup", list(tested_repo.branches))
+        )
+        if not compile_or_die_backup_branch:
+            # If the backup branch does not exist, we can safely create it
+            tested_repo.create_head("compileOrDieBackup", commits[0]).checkout()
+        else:
+            # If the backup branch already exist, we actually need to check if there
+            # is another branch attached to it, otherwise we could lose data
+            branches_of_backup = list(
+                filter(
+                    lambda x: x.commit.hexsha == compile_or_die_backup_branch.commit.hexsha,
+                    list(tested_repo.branches),
+                )
+            )
+            if len(branches_of_backup) == 1:
+                print(
+                    "Interrupted compile-or-die testing to prevent data loss."
+                    "Make sure the head commit of the compileOrDieBackup branch has a second branch attached to it."
+                )
+                exit(-1)
+            compile_or_die_backup_branch[0].set_commit(commits[0])
+            compile_or_die_backup_branch[0].checkout()
+            compile_or_die_backup_branch[0].repo.git.reset("--hard")
+
+    # Checkout the test branch
+    compile_or_die_test_branch = tested_repo.create_head("compileOrDieTest")
+
+    # Reset the test branch to a specific commit, then hard reset it
+    # From oldest to newest
+    commits = list(reversed(commits))
+    print(f"Compile-or-die with commits: {list(map(lambda x: x.hexsha, commits))}")
+    for commit in commits:
+        print(f"\tTesting commit {commit.hexsha}")
+        compile_or_die_test_branch.set_commit(commit)
+        compile_or_die_test_branch.checkout()
+        compile_or_die_test_branch.repo.git.reset("--hard")
+        try:
+            ret = subprocess.run(
+                [sys.executable, "./test.py", "--verbose-failed"],
+                cwd=ns3_path,
+                capture_output=True,
+                shell=False,
+            )
+            if ret.returncode != 0:
+                print("\t\t" + ret.stdout.decode().replace("\n", "\n\t\t"))
+        except Exception as e:
+            tested_repo.checkout("compileOrDieBackup")  # Revert to head commit
+            print(f"Failed compile-or-die testing in commit {commit}")
+            exit(1)
+    exit(0)
+
+
 # Debugging this with PyCharm is a no no. It refuses to work hanging indefinitely
 def sudo_command(command: list, password: str):
     # Run command and feed the sudo password
@@ -1876,6 +2004,10 @@ def main():
 
     if ns3_modules is None:
         project_not_configured()
+
+    # Entry point for compile-or-die
+    if args.compile_or_die[0] and args.compile_or_die[1]:
+        compile_or_die(*args.compile_or_die)
 
     # We could also replace the "ns3-" prefix used in .lock-ns3 with the "lib" prefix currently used in cmake
     ns3_modules = [module.replace("ns3-", "") for module in ns3_modules]
