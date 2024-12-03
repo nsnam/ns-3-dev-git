@@ -52,7 +52,7 @@ static constexpr uint32_t ALL_CHANNELS = 0x07FFF800; //!< Bitmap representing al
  *
  * Indicates a pending NWK primitive
  */
-enum PendingPrimitiveNwk
+enum PendingPrimitiveNwk : std::uint8_t
 {
     NLDE_NLME_NONE = 0,         //!< No pending primitive
     NLME_NETWORK_FORMATION = 1, //!< Pending NLME-NETWORK-FORMATION.request primitive
@@ -1046,6 +1046,7 @@ class ZigbeeNwk : public Object
   protected:
     void DoInitialize() override;
     void DoDispose() override;
+    void NotifyConstructionCompleted() override;
 
   private:
     Ptr<lrwpan::LrWpanMacBase> m_mac; //!< Pointer to the underlying MAC

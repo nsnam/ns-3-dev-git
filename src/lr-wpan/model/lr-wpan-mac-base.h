@@ -300,13 +300,13 @@ enum MacPibAttributeIdentifier
  */
 struct MacPibAttributes : public SimpleRefCount<MacPibAttributes>
 {
-    std::vector<uint8_t> macBeaconPayload; //!< The set with the contents of the beacon payload.
-    uint8_t macBeaconPayloadLength{0};     //!< The length in octets of the beacon payload.
-    Mac16Address macShortAddress;          //!< The 16 bit mac short address
-    Mac64Address macExtendedAddress;       //!< The EUI-64 bit address
-    uint16_t macPanId{0xffff};             //!< The identifier of the PAN
-    bool macAssociationPermit{true};       //!< Indication of whether the coordinator is allowing
-                                           //!< association.
+    std::vector<uint8_t> macBeaconPayload{}; //!< The set with the contents of the beacon payload.
+    uint8_t macBeaconPayloadLength{0};       //!< The length in octets of the beacon payload.
+    Mac16Address macShortAddress;            //!< The 16 bit mac short address
+    Mac64Address macExtendedAddress;         //!< The EUI-64 bit address
+    uint16_t macPanId{0xffff};               //!< The identifier of the PAN
+    bool macAssociationPermit{true};         //!< Indication of whether the coordinator is allowing
+                                             //!< association.
     bool macRxOnWhenIdle{true}; //!< Indication of whether the MAC is enabled during idle periods.
     bool macPromiscuousMode{false}; //!< Indication of whether the mac is in promiscuous mode
                                     //!<  (Receive all mode).
@@ -502,7 +502,9 @@ struct MlmeSetConfirmParams
     MacStatus m_status{MacStatus::UNSUPPORTED_ATTRIBUTE}; //!< The result of
                                                           //!< the request to write
                                                           //!< the PIB attribute.
-    MacPibAttributeIdentifier id; //!< The id of the PIB attribute that was written.
+    MacPibAttributeIdentifier id{
+        MacPibAttributeIdentifier::unsupported}; //!< The id of the
+                                                 //!< PIB attribute that was written.
 };
 
 /**

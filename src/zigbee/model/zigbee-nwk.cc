@@ -104,12 +104,21 @@ ZigbeeNwk::GetTypeId()
 
 ZigbeeNwk::ZigbeeNwk()
 {
-    // Collects the values from Attributes before initializing
-    // objects in the constructor (Requires GetInstanceTypeId and GetTypeId)
-    ObjectBase::ConstructSelf(AttributeConstructionList());
+    NS_LOG_FUNCTION(this);
+}
+
+void
+ZigbeeNwk::NotifyConstructionCompleted()
+{
+    NS_LOG_FUNCTION(this);
+
+    m_pendPrimitiveNwk = PendingPrimitiveNwk::NLDE_NLME_NONE;
+    m_uniformRandomVariable = CreateObject<UniformRandomVariable>();
+    m_uniformRandomVariable->SetAttribute("Min", DoubleValue(0.0));
+    m_uniformRandomVariable->SetAttribute("Max", DoubleValue(255.0));
 
     m_scanEnergyThreshold = 127;
-    m_pendPrimitiveNwk = NLDE_NLME_NONE;
+
     m_netFormParams = {};
     m_netFormParamsGen = nullptr;
     m_nwkNetworkAddress = Mac16Address("ff:ff");
@@ -138,9 +147,6 @@ ZigbeeNwk::ZigbeeNwk()
     // TODO, set according to equation 3.5.2.1?
     m_nwkNetworkBroadcastDeliveryTime = Seconds(9);
 
-    m_uniformRandomVariable = CreateObject<UniformRandomVariable>();
-    m_uniformRandomVariable->SetAttribute("Min", DoubleValue(0.0));
-    m_uniformRandomVariable->SetAttribute("Max", DoubleValue(255.0));
     m_nwkSequenceNumber = SequenceNumber8(m_uniformRandomVariable->GetValue());
     m_routeRequestId = SequenceNumber8(m_uniformRandomVariable->GetValue());
     m_macHandle = SequenceNumber8(m_uniformRandomVariable->GetValue());
@@ -155,17 +161,20 @@ ZigbeeNwk::ZigbeeNwk()
 
 ZigbeeNwk::~ZigbeeNwk()
 {
+    NS_LOG_FUNCTION(this);
 }
 
 void
 ZigbeeNwk::DoInitialize()
 {
+    NS_LOG_FUNCTION(this);
     Object::DoInitialize();
 }
 
 void
 ZigbeeNwk::DoDispose()
 {
+    NS_LOG_FUNCTION(this);
     m_panIdTable.Dispose();
     m_nwkNeighborTable.Dispose();
     m_nwkRoutingTable.Dispose();
@@ -1535,7 +1544,7 @@ ZigbeeNwk::MlmeGetConfirm(MacStatus status,
                           MacPibAttributeIdentifier id,
                           Ptr<MacPibAttributes> attribute)
 {
-    if (m_pendPrimitiveNwk == NLME_NETWORK_FORMATION)
+    if (m_pendPrimitiveNwk == PendingPrimitiveNwk::NLME_NETWORK_FORMATION)
     {
         if (id == MacPibAttributeIdentifier::macExtendedAddress && status == MacStatus::SUCCESS)
         {
@@ -1569,7 +1578,7 @@ ZigbeeNwk::MlmeGetConfirm(MacStatus status,
             }
         }
     }
-    else if (m_pendPrimitiveNwk == NLME_JOIN && status == MacStatus::SUCCESS)
+    else if (m_pendPrimitiveNwk == PendingPrimitiveNwk::NLME_JOIN && status == MacStatus::SUCCESS)
     {
         if (id == MacPibAttributeIdentifier::macShortAddress)
         {
@@ -3032,14 +3041,11 @@ ZigbeeNwk::UpdateBeaconPayload()
     Ptr<Packet> payload = Create<Packet>();
     payload->AddHeader(beaconPayloadHeader);
 
-    // Extract octets from payload
-    auto octetsPtr = new uint8_t[payload->GetSize()];
-    payload->CopyData(octetsPtr, payload->GetSize());
-
-    // Add octets to macBeaconPayload vector
+    // Extract octets from payload and copy them into the macBeaconPayload attribute
     Ptr<MacPibAttributes> pibAttr = Create<MacPibAttributes>();
-    pibAttr->macBeaconPayload = std::vector<uint8_t>(octetsPtr, octetsPtr + payload->GetSize());
-    // pibAttr->macBeaconPayloadLength = payload->GetSize();
+    pibAttr->macBeaconPayload.resize(payload->GetSize());
+    payload->CopyData(pibAttr->macBeaconPayload.data(), payload->GetSize());
+
     m_mac->MlmeSetRequest(MacPibAttributeIdentifier::macBeaconPayload, pibAttr);
 }
 
