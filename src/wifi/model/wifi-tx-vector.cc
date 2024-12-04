@@ -840,7 +840,7 @@ WifiTxVector::DeriveRuAllocation(uint8_t p20Index) const
         const auto index = (ruBw < MHz_t{20}) ? ((ruIndex - 1) / rusPerSubchannel.size())
                                               : ((ruIndex - 1) * numSubchannelsForRu);
         NS_ABORT_IF(index >= Count20MHzSubchannels(m_channelWidth));
-        auto ruAlloc = HeRu::GetEqualizedRuAllocation(ruType, false);
+        auto ruAlloc = HeRu::GetEqualizedRuAllocation(ruType, false, true);
         if (ruAllocations.at(index) != EMPTY_242_TONE_HE_RU)
         {
             if (ruType == ruTypes.at(index))
@@ -849,11 +849,11 @@ WifiTxVector::DeriveRuAllocation(uint8_t p20Index) const
             }
             if (ruType == HeRu::RU_26_TONE)
             {
-                ruAlloc = HeRu::GetEqualizedRuAllocation(ruTypes.at(index), true);
+                ruAlloc = HeRu::GetEqualizedRuAllocation(ruTypes.at(index), true, true);
             }
             else if (ruTypes.at(index) == HeRu::RU_26_TONE)
             {
-                ruAlloc = HeRu::GetEqualizedRuAllocation(ruType, true);
+                ruAlloc = HeRu::GetEqualizedRuAllocation(ruType, true, true);
             }
             else
             {
