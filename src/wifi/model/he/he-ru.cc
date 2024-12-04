@@ -411,7 +411,7 @@ HeRu::GetRuSpecs(uint8_t ruAllocation)
 }
 
 uint8_t
-HeRu::GetEqualizedRuAllocation(RuType ruType, bool isOdd)
+HeRu::GetEqualizedRuAllocation(RuType ruType, bool isOdd, bool hasUsers)
 {
     switch (ruType)
     {
@@ -422,11 +422,11 @@ HeRu::GetEqualizedRuAllocation(RuType ruType, bool isOdd)
     case HeRu::RU_106_TONE:
         return isOdd ? 128 : 96;
     case HeRu::RU_242_TONE:
-        return 192;
+        return hasUsers ? 192 : 113;
     case HeRu::RU_484_TONE:
-        return 200;
+        return hasUsers ? 200 : 114;
     default:
-        return 208;
+        return hasUsers ? 208 : 115;
     }
 }
 
