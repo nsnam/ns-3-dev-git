@@ -832,13 +832,6 @@ WifiPrimaryChannelsTest::SendDlMuPpdu(uint8_t bss,
         psduMap[staId] = Create<const WifiPsdu>(Create<Packet>(1000), hdr);
     }
     txVector.SetSigBMode(VhtPhy::GetVhtMcs5());
-    RuAllocation ruAllocations;
-    const auto numRuAllocs = Count20MHzSubchannels(txChannelWidth);
-    ruAllocations.resize(numRuAllocs);
-    auto IsOddNum = (nRus / numRuAllocs) % 2 == 1;
-    auto ruAlloc = HeRu::GetEqualizedRuAllocation(ruType, IsOddNum);
-    std::fill_n(ruAllocations.begin(), numRuAllocs, ruAlloc);
-    txVector.SetRuAllocation(ruAllocations, 0);
 
     apDev->GetPhy()->Send(psduMap, txVector);
 }
