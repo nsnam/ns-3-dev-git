@@ -184,6 +184,7 @@ class HePpdu : public OfdmPpdu
      *
      * @param channelWidth the channel width occupied by the PPDU
      * @param ruAllocation 8 bit RU_ALLOCATION per 20 MHz
+     * @param center26ToneRuIndication the center 26 tone RU indication
      * @param sigBCompression flag whether SIG-B compression is used by the PPDU
      * @param numMuMimoUsers the number of MU-MIMO users addressed by the PPDU
      * @return a pair containing the number of RUs in each HE-SIG-B content channel (resp. 1 and 2)
@@ -191,6 +192,7 @@ class HePpdu : public OfdmPpdu
     static std::pair<std::size_t, std::size_t> GetNumRusPerHeSigBContentChannel(
         MHz_u channelWidth,
         const RuAllocation& ruAllocation,
+        std::optional<Center26ToneRuIndication> center26ToneRuIndication,
         bool sigBCompression,
         uint8_t numMuMimoUsers);
 
@@ -209,14 +211,17 @@ class HePpdu : public OfdmPpdu
      * Get variable length HE SIG-B field size
      * @param channelWidth the channel width occupied by the PPDU
      * @param ruAllocation 8 bit RU_ALLOCATION per 20 MHz
+     * @param center26ToneRuIndication the center 26 tone RU indication
      * @param sigBCompression flag whether SIG-B compression is used by the PPDU
      * @param numMuMimoUsers the number of MU-MIMO users addressed by the PPDU
      * @return field size in bytes
      */
-    static uint32_t GetSigBFieldSize(MHz_u channelWidth,
-                                     const RuAllocation& ruAllocation,
-                                     bool sigBCompression,
-                                     std::size_t numMuMimoUsers);
+    static uint32_t GetSigBFieldSize(
+        MHz_u channelWidth,
+        const RuAllocation& ruAllocation,
+        std::optional<Center26ToneRuIndication> center26ToneRuIndication,
+        bool sigBCompression,
+        std::size_t numMuMimoUsers);
 
   protected:
     /**
@@ -231,15 +236,33 @@ class HePpdu : public OfdmPpdu
      *
      * @param txVector the TXVECTOR to set its HeMuUserInfoMap
      * @param ruAllocation the RU_ALLOCATION per 20 MHz
+     * @param center26ToneRuIndication the center 26 tone RU indication
      * @param contentChannels the HE-SIG-B content channels
      * @param sigBCompression flag whether SIG-B compression is used by the PPDU
      * @param numMuMimoUsers the number of MU-MIMO users addressed by the PPDU
      */
     void SetHeMuUserInfos(WifiTxVector& txVector,
                           const RuAllocation& ruAllocation,
+                          std::optional<Center26ToneRuIndication> center26ToneRuIndication,
                           const HeSigBContentChannels& contentChannels,
                           bool sigBCompression,
                           uint8_t numMuMimoUsers) const;
+
+    /**
+     * Get the RU specification that has been assigned a given user.
+     *
+     * @param ruAllocIndex the index of the RU allocation
+     * @param ruSpecs RU specs deduced from the RU allocation
+     * @param ruType RU type of the user to be assigned
+     * @param ruIndex RU index of the user to be assigned
+     * @param bw the total bandwidth used for the transmission
+     * @return the value used to encode the bandwidth field in HE-SIG-A
+     */
+    virtual HeRu::RuSpec GetRuSpec(std::size_t ruAllocIndex,
+                                   const std::vector<HeRu::RuSpec>& ruSpecs,
+                                   HeRu::RuType ruType,
+                                   std::size_t ruIndex,
+                                   MHz_u bw) const;
 
     /**
      * Convert channel width expressed in MHz to bandwidth field encoding in HE-SIG-A.

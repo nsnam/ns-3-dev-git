@@ -1550,6 +1550,7 @@ HeSigBDurationTest::DoRun()
     const auto& numUsersPerCc = HePpdu::GetNumRusPerHeSigBContentChannel(
         txVector.GetChannelWidth(),
         txVector.GetRuAllocation(0),
+        txVector.GetCenter26ToneRuIndication(),
         txVector.IsSigBCompression(),
         txVector.IsSigBCompression() ? txVector.GetHeMuUserInfoMap().size() : 0);
     const auto contentChannels = HePpdu::GetHeSigBContentChannels(txVector, 0);
@@ -1957,12 +1958,12 @@ TxDurationTestSuite::TxDurationTestSuite()
 
     // 40 MHz band, HeSigBDurationTest::OFDMA, even number of users per HE-SIG-B content channel
     AddTestCase(
-        new HeSigBDurationTest({{{HeRu::RU_106_TONE, 1, true}, 11, 1},
-                                {{HeRu::RU_106_TONE, 2, true}, 10, 4},
-                                {{HeRu::RU_52_TONE, 5, true}, 4, 1},
-                                {{HeRu::RU_52_TONE, 6, true}, 6, 2},
-                                {{HeRu::RU_52_TONE, 7, true}, 5, 3},
-                                {{HeRu::RU_52_TONE, 8, true}, 6, 2}},
+        new HeSigBDurationTest({{{HeRu::RU_106_TONE, 1, true}, 11, 1}, // CC1
+                                {{HeRu::RU_106_TONE, 2, true}, 10, 4}, // CC1
+                                {{HeRu::RU_52_TONE, 5, true}, 4, 1},   // CC2
+                                {{HeRu::RU_52_TONE, 6, true}, 6, 2},   // CC2
+                                {{HeRu::RU_52_TONE, 7, true}, 5, 3},   // CC2
+                                {{HeRu::RU_52_TONE, 8, true}, 6, 2}},  // CC2
                                VhtPhy::GetVhtMcs4(),
                                MHz_u{40},
                                HeSigBDurationTest::OFDMA,
@@ -1974,13 +1975,13 @@ TxDurationTestSuite::TxDurationTestSuite()
 
     // 40 MHz band, HeSigBDurationTest::OFDMA, odd number of users per HE-SIG-B content channel
     AddTestCase(
-        new HeSigBDurationTest({{{HeRu::RU_106_TONE, 1, true}, 11, 1},
-                                {{HeRu::RU_106_TONE, 2, true}, 10, 4},
-                                {{HeRu::RU_52_TONE, 5, true}, 4, 1},
-                                {{HeRu::RU_52_TONE, 6, true}, 6, 2},
-                                {{HeRu::RU_52_TONE, 7, true}, 5, 3},
-                                {{HeRu::RU_52_TONE, 8, true}, 6, 2},
-                                {{HeRu::RU_26_TONE, 14, true}, 3, 1}},
+        new HeSigBDurationTest({{{HeRu::RU_106_TONE, 1, true}, 11, 1}, // CC1
+                                {{HeRu::RU_106_TONE, 2, true}, 10, 4}, // CC1
+                                {{HeRu::RU_52_TONE, 5, true}, 4, 1},   // CC2
+                                {{HeRu::RU_52_TONE, 6, true}, 6, 2},   // CC2
+                                {{HeRu::RU_52_TONE, 7, true}, 5, 3},   // CC2
+                                {{HeRu::RU_52_TONE, 8, true}, 6, 2},   // CC2
+                                {{HeRu::RU_26_TONE, 14, true}, 3, 1}}, // CC2
                                VhtPhy::GetVhtMcs3(),
                                MHz_u{40},
                                HeSigBDurationTest::OFDMA,
@@ -1992,15 +1993,15 @@ TxDurationTestSuite::TxDurationTestSuite()
 
     // 80 MHz band, OFDMA
     AddTestCase(
-        new HeSigBDurationTest({{{HeRu::RU_106_TONE, 1, true}, 11, 1},
-                                {{HeRu::RU_106_TONE, 2, true}, 10, 4},
-                                {{HeRu::RU_52_TONE, 5, true}, 4, 1},
-                                {{HeRu::RU_52_TONE, 6, true}, 6, 2},
-                                {{HeRu::RU_52_TONE, 7, true}, 5, 3},
-                                {{HeRu::RU_52_TONE, 8, true}, 6, 2},
-                                {{HeRu::RU_26_TONE, 14, true}, 3, 1},
-                                {{HeRu::RU_242_TONE, 3, true}, 1, 1},
-                                {{HeRu::RU_242_TONE, 4, true}, 4, 1}},
+        new HeSigBDurationTest({{{HeRu::RU_106_TONE, 1, true}, 11, 1}, // CC1
+                                {{HeRu::RU_106_TONE, 2, true}, 10, 4}, // CC1
+                                {{HeRu::RU_52_TONE, 5, true}, 4, 1},   // CC2
+                                {{HeRu::RU_52_TONE, 6, true}, 6, 2},   // CC2
+                                {{HeRu::RU_52_TONE, 7, true}, 5, 3},   // CC2
+                                {{HeRu::RU_52_TONE, 8, true}, 6, 2},   // CC2
+                                {{HeRu::RU_26_TONE, 14, true}, 3, 1},  // CC2
+                                {{HeRu::RU_242_TONE, 3, true}, 1, 1},  // CC1
+                                {{HeRu::RU_242_TONE, 4, true}, 4, 1}}, // CC2
                                VhtPhy::GetVhtMcs1(),
                                MHz_u{80},
                                HeSigBDurationTest::OFDMA,
@@ -2011,91 +2012,98 @@ TxDurationTestSuite::TxDurationTestSuite()
         TestCase::Duration::QUICK);
 
     // 160 MHz band, OFDMA
-    AddTestCase(
-        new HeSigBDurationTest({{{HeRu::RU_106_TONE, 1, true}, 11, 1},
-                                {{HeRu::RU_106_TONE, 2, true}, 10, 4},
-                                {{HeRu::RU_52_TONE, 5, true}, 4, 1},
-                                {{HeRu::RU_52_TONE, 6, true}, 6, 2},
-                                {{HeRu::RU_52_TONE, 7, true}, 5, 3},
-                                {{HeRu::RU_52_TONE, 8, true}, 6, 2},
-                                {{HeRu::RU_26_TONE, 14, true}, 3, 1},
-                                {{HeRu::RU_242_TONE, 3, true}, 1, 1},
-                                {{HeRu::RU_242_TONE, 4, true}, 4, 1},
-                                {{HeRu::RU_996_TONE, 1, false}, 1, 1}},
-                               VhtPhy::GetVhtMcs1(),
-                               MHz_u{160},
-                               HeSigBDurationTest::OFDMA,
-                               {96, 15, 192, 192, 208, 208, 208, 208},
-                               std::make_pair(4, 7), // four users in HE-SIG-B content channel 1 and
-                                                     // seven users in HE-SIG-B content channel 2
-                               MicroSeconds(20)),    // five OFDM symbols
-        TestCase::Duration::QUICK);
+    AddTestCase(new HeSigBDurationTest(
+                    {{{HeRu::RU_106_TONE, 1, true}, 11, 1},  // CC1
+                     {{HeRu::RU_106_TONE, 2, true}, 10, 4},  // CC1
+                     {{HeRu::RU_52_TONE, 5, true}, 4, 1},    // CC2
+                     {{HeRu::RU_52_TONE, 6, true}, 6, 2},    // CC2
+                     {{HeRu::RU_52_TONE, 7, true}, 5, 3},    // CC2
+                     {{HeRu::RU_52_TONE, 8, true}, 6, 2},    // CC2
+                     {{HeRu::RU_26_TONE, 14, true}, 3, 1},   // CC2
+                     {{HeRu::RU_242_TONE, 3, true}, 1, 1},   // CC1
+                     {{HeRu::RU_242_TONE, 4, true}, 4, 1},   // CC2
+                     {{HeRu::RU_996_TONE, 1, false}, 1, 1}}, // CC1 or CC2 => CC1 for better split
+                    VhtPhy::GetVhtMcs1(),
+                    MHz_u{160},
+                    HeSigBDurationTest::OFDMA,
+                    {96, 15, 192, 192, 208, 115, 208, 115},
+                    std::make_pair(4, 6), // four users in HE-SIG-B content channel 1 and
+                                          // seven users in HE-SIG-B content channel 2
+                    MicroSeconds(16)),    // four OFDM symbols
+                TestCase::Duration::QUICK);
 
     // 20 MHz band, HeSigBDurationTest::OFDMA, one unallocated RU at the middle
     AddTestCase(
-        new HeSigBDurationTest({{{HeRu::RU_26_TONE, 1, true}, 11, 1},
-                                {{HeRu::RU_26_TONE, 2, true}, 11, 1},
-                                {{HeRu::RU_26_TONE, 3, true}, 11, 1},
-                                {{HeRu::RU_26_TONE, 4, true}, 11, 1},
-                                {{HeRu::RU_26_TONE, 6, true}, 11, 1},
-                                {{HeRu::RU_26_TONE, 7, true}, 11, 1},
-                                {{HeRu::RU_26_TONE, 8, true}, 11, 1},
-                                {{HeRu::RU_26_TONE, 9, true}, 11, 1}},
-                               VhtPhy::GetVhtMcs5(),
-                               MHz_u{20},
-                               HeSigBDurationTest::OFDMA,
-                               {0},
-                               std::make_pair(9, 0), // 9 users in HE-SIG-B content channel 1
-                               MicroSeconds(8)),     // two OFDM symbols
+        new HeSigBDurationTest(
+            {{{HeRu::RU_26_TONE, 1, true}, 11, 1},  // CC1
+             {{HeRu::RU_26_TONE, 2, true}, 11, 1},  // CC1
+             {{HeRu::RU_26_TONE, 3, true}, 11, 1},  // CC1
+             {{HeRu::RU_26_TONE, 4, true}, 11, 1},  // CC1
+             {{HeRu::RU_26_TONE, 6, true}, 11, 1},  // CC1
+             {{HeRu::RU_26_TONE, 7, true}, 11, 1},  // CC1
+             {{HeRu::RU_26_TONE, 8, true}, 11, 1},  // CC1
+             {{HeRu::RU_26_TONE, 9, true}, 11, 1}}, // CC1
+            VhtPhy::GetVhtMcs5(),
+            MHz_u{20},
+            HeSigBDurationTest::OFDMA,
+            {0},
+            std::make_pair(9, 0), // 9 users (8 users + 1 empty user) in HE-SIG-B content channel 1
+            MicroSeconds(8)),     // two OFDM symbols
         TestCase::Duration::QUICK);
 
     // 40 MHz band, HeSigBDurationTest::OFDMA, unallocated RUs at the begin and at the end of the
     // first 20 MHz subband and in the middle of the second 20 MHz subband
     AddTestCase(
-        new HeSigBDurationTest({{{HeRu::RU_52_TONE, 2, true}, 10, 1},
-                                {{HeRu::RU_52_TONE, 3, true}, 10, 2},
-                                {{HeRu::RU_52_TONE, 5, true}, 11, 1},
-                                {{HeRu::RU_52_TONE, 8, true}, 11, 2}},
-                               VhtPhy::GetVhtMcs5(),
-                               MHz_u{40},
-                               HeSigBDurationTest::OFDMA,
-                               {112, 112},
-                               std::make_pair(4, 4), // 4 users in both HE-SIG-B content channels
-                               MicroSeconds(4)),     // two OFDM symbols
+        new HeSigBDurationTest(
+            {{{HeRu::RU_52_TONE, 2, true}, 10, 1},  // CC1
+             {{HeRu::RU_52_TONE, 3, true}, 10, 2},  // CC1
+             {{HeRu::RU_52_TONE, 5, true}, 11, 1},  // CC2
+             {{HeRu::RU_52_TONE, 8, true}, 11, 2}}, // CC2
+            VhtPhy::GetVhtMcs5(),
+            MHz_u{40},
+            HeSigBDurationTest::OFDMA,
+            {112, 112},
+            std::make_pair(4,
+                           4), // 4 users (2 users + 2 empty users) in each HE-SIG-B content channel
+            MicroSeconds(4)),  // one OFDM symbol
         TestCase::Duration::QUICK);
 
     // 40 MHz band, HeSigBDurationTest::OFDMA, one unallocated RUs in the first 20 MHz subband and
     // two unallocated RUs in second 20 MHz subband
     AddTestCase(
-        new HeSigBDurationTest({{{HeRu::RU_52_TONE, 1, true}, 10, 1},
-                                {{HeRu::RU_52_TONE, 2, true}, 10, 2},
-                                {{HeRu::RU_52_TONE, 3, true}, 11, 1},
-                                {{HeRu::RU_52_TONE, 5, true}, 11, 2},
-                                {{HeRu::RU_52_TONE, 6, true}, 11, 3}},
-                               VhtPhy::GetVhtMcs5(),
-                               MHz_u{40},
-                               HeSigBDurationTest::OFDMA,
-                               {112, 112},
-                               std::make_pair(4, 4), // 4 users in both HE-SIG-B content channels
-                               MicroSeconds(4)),     // two OFDM symbols
+        new HeSigBDurationTest(
+            {{{HeRu::RU_52_TONE, 1, true}, 10, 1},  // CC1
+             {{HeRu::RU_52_TONE, 2, true}, 10, 2},  // CC1
+             {{HeRu::RU_52_TONE, 3, true}, 11, 1},  // CC1
+             {{HeRu::RU_52_TONE, 5, true}, 11, 2},  // CC2
+             {{HeRu::RU_52_TONE, 6, true}, 11, 3}}, // CC2
+            VhtPhy::GetVhtMcs5(),
+            MHz_u{40},
+            HeSigBDurationTest::OFDMA,
+            {112, 112},
+            std::make_pair(4,
+                           4), // 4 users (3 users + 1 empty user) in HE-SIG-B content channel 1 and
+                               // 4 users (2 users + 2 empty users) in HE-SIG-B content channel 2
+            MicroSeconds(4)),  // one OFDM symbol
         TestCase::Duration::QUICK);
 
     // 20 MHz band, MU-MIMO, 2 users
-    AddTestCase(new HeSigBDurationTest(
-                    {{{HeRu::RU_242_TONE, 1, true}, 11, 1}, {{HeRu::RU_242_TONE, 1, true}, 10, 4}},
-                    VhtPhy::GetVhtMcs5(),
-                    MHz_u{20},
-                    HeSigBDurationTest::MU_MIMO,
-                    {192},
-                    std::make_pair(2, 0), // both users in HE-SIG-B content channel 1
-                    MicroSeconds(4)),     // one OFDM symbol
-                TestCase::Duration::QUICK);
+    AddTestCase(
+        new HeSigBDurationTest({{{HeRu::RU_242_TONE, 1, true}, 11, 1},  // CC1
+                                {{HeRu::RU_242_TONE, 1, true}, 10, 4}}, // CC1
+                               VhtPhy::GetVhtMcs5(),
+                               MHz_u{20},
+                               HeSigBDurationTest::MU_MIMO,
+                               {192},
+                               std::make_pair(2, 0), // both users in HE-SIG-B content channel 1
+                               MicroSeconds(4)),     // one OFDM symbol
+        TestCase::Duration::QUICK);
 
     // 20 MHz band, MU-MIMO, 3 users
     AddTestCase(
-        new HeSigBDurationTest({{{HeRu::RU_242_TONE, 1, true}, 4, 3},
-                                {{HeRu::RU_242_TONE, 1, true}, 5, 2},
-                                {{HeRu::RU_242_TONE, 1, true}, 6, 1}},
+        new HeSigBDurationTest({{{HeRu::RU_242_TONE, 1, true}, 4, 3},  // CC1
+                                {{HeRu::RU_242_TONE, 1, true}, 5, 2},  // CC1
+                                {{HeRu::RU_242_TONE, 1, true}, 6, 1}}, // CC1
                                VhtPhy::GetVhtMcs4(),
                                MHz_u{20},
                                HeSigBDurationTest::MU_MIMO,
@@ -2106,10 +2114,10 @@ TxDurationTestSuite::TxDurationTestSuite()
 
     // 20 MHz band, MU-MIMO, 4 users
     AddTestCase(
-        new HeSigBDurationTest({{{HeRu::RU_242_TONE, 1, true}, 4, 1},
-                                {{HeRu::RU_242_TONE, 1, true}, 5, 2},
-                                {{HeRu::RU_242_TONE, 1, true}, 6, 3},
-                                {{HeRu::RU_242_TONE, 1, true}, 7, 2}},
+        new HeSigBDurationTest({{{HeRu::RU_242_TONE, 1, true}, 4, 1},  // CC1
+                                {{HeRu::RU_242_TONE, 1, true}, 5, 2},  // CC1
+                                {{HeRu::RU_242_TONE, 1, true}, 6, 3},  // CC1
+                                {{HeRu::RU_242_TONE, 1, true}, 7, 2}}, // CC1
                                VhtPhy::GetVhtMcs4(),
                                MHz_u{20},
                                HeSigBDurationTest::MU_MIMO,
@@ -2120,12 +2128,12 @@ TxDurationTestSuite::TxDurationTestSuite()
 
     // 20 MHz band, MU-MIMO, 6 users
     AddTestCase(
-        new HeSigBDurationTest({{{HeRu::RU_242_TONE, 1, true}, 4, 1},
-                                {{HeRu::RU_242_TONE, 1, true}, 5, 1},
-                                {{HeRu::RU_242_TONE, 1, true}, 6, 2},
-                                {{HeRu::RU_242_TONE, 1, true}, 7, 2},
-                                {{HeRu::RU_242_TONE, 1, true}, 8, 1},
-                                {{HeRu::RU_242_TONE, 1, true}, 9, 1}},
+        new HeSigBDurationTest({{{HeRu::RU_242_TONE, 1, true}, 4, 1},  // CC1
+                                {{HeRu::RU_242_TONE, 1, true}, 5, 1},  // CC1
+                                {{HeRu::RU_242_TONE, 1, true}, 6, 2},  // CC1
+                                {{HeRu::RU_242_TONE, 1, true}, 7, 2},  // CC1
+                                {{HeRu::RU_242_TONE, 1, true}, 8, 1},  // CC1
+                                {{HeRu::RU_242_TONE, 1, true}, 9, 1}}, // CC1
                                VhtPhy::GetVhtMcs4(),
                                MHz_u{20},
                                HeSigBDurationTest::MU_MIMO,
@@ -2136,14 +2144,14 @@ TxDurationTestSuite::TxDurationTestSuite()
 
     // 20 MHz band, MU-MIMO, 8 users
     AddTestCase(
-        new HeSigBDurationTest({{{HeRu::RU_242_TONE, 1, true}, 4, 1},
-                                {{HeRu::RU_242_TONE, 1, true}, 5, 1},
-                                {{HeRu::RU_242_TONE, 1, true}, 6, 1},
-                                {{HeRu::RU_242_TONE, 1, true}, 7, 1},
-                                {{HeRu::RU_242_TONE, 1, true}, 8, 1},
-                                {{HeRu::RU_242_TONE, 1, true}, 9, 1},
-                                {{HeRu::RU_242_TONE, 1, true}, 10, 1},
-                                {{HeRu::RU_242_TONE, 1, true}, 11, 1}},
+        new HeSigBDurationTest({{{HeRu::RU_242_TONE, 1, true}, 4, 1},   // CC1
+                                {{HeRu::RU_242_TONE, 1, true}, 5, 1},   // CC1
+                                {{HeRu::RU_242_TONE, 1, true}, 6, 1},   // CC1
+                                {{HeRu::RU_242_TONE, 1, true}, 7, 1},   // CC1
+                                {{HeRu::RU_242_TONE, 1, true}, 8, 1},   // CC1
+                                {{HeRu::RU_242_TONE, 1, true}, 9, 1},   // CC1
+                                {{HeRu::RU_242_TONE, 1, true}, 10, 1},  // CC1
+                                {{HeRu::RU_242_TONE, 1, true}, 11, 1}}, // CC1
                                VhtPhy::GetVhtMcs4(),
                                MHz_u{20},
                                HeSigBDurationTest::MU_MIMO,
@@ -2154,7 +2162,8 @@ TxDurationTestSuite::TxDurationTestSuite()
 
     // 40 MHz band, MU-MIMO, 2 users
     AddTestCase(new HeSigBDurationTest(
-                    {{{HeRu::RU_484_TONE, 1, true}, 11, 1}, {{HeRu::RU_484_TONE, 1, true}, 10, 4}},
+                    {{{HeRu::RU_484_TONE, 1, true}, 11, 1},  // CC1
+                     {{HeRu::RU_484_TONE, 1, true}, 10, 4}}, // CC2
                     VhtPhy::GetVhtMcs5(),
                     MHz_u{40},
                     HeSigBDurationTest::MU_MIMO,
@@ -2166,9 +2175,9 @@ TxDurationTestSuite::TxDurationTestSuite()
     // 40 MHz band, MU-MIMO, 3 users
     AddTestCase(
         new HeSigBDurationTest(
-            {{{HeRu::RU_484_TONE, 1, true}, 4, 3},
-             {{HeRu::RU_484_TONE, 1, true}, 5, 2},
-             {{HeRu::RU_484_TONE, 1, true}, 6, 1}},
+            {{{HeRu::RU_484_TONE, 1, true}, 4, 3},  // CC1
+             {{HeRu::RU_484_TONE, 1, true}, 5, 2},  // CC2
+             {{HeRu::RU_484_TONE, 1, true}, 6, 1}}, // CC1
             VhtPhy::GetVhtMcs4(),
             MHz_u{40},
             HeSigBDurationTest::MU_MIMO,
@@ -2179,10 +2188,10 @@ TxDurationTestSuite::TxDurationTestSuite()
 
     // 40 MHz band, MU-MIMO, 4 users
     AddTestCase(new HeSigBDurationTest(
-                    {{{HeRu::RU_484_TONE, 1, true}, 4, 1},
-                     {{HeRu::RU_484_TONE, 1, true}, 5, 2},
-                     {{HeRu::RU_484_TONE, 1, true}, 6, 3},
-                     {{HeRu::RU_484_TONE, 1, true}, 7, 2}},
+                    {{{HeRu::RU_484_TONE, 1, true}, 4, 1},  // CC1
+                     {{HeRu::RU_484_TONE, 1, true}, 5, 2},  // CC2
+                     {{HeRu::RU_484_TONE, 1, true}, 6, 3},  // CC1
+                     {{HeRu::RU_484_TONE, 1, true}, 7, 2}}, // CC2
                     VhtPhy::GetVhtMcs4(),
                     MHz_u{40},
                     HeSigBDurationTest::MU_MIMO,
@@ -2193,12 +2202,12 @@ TxDurationTestSuite::TxDurationTestSuite()
 
     // 40 MHz band, MU-MIMO, 6 users
     AddTestCase(new HeSigBDurationTest(
-                    {{{HeRu::RU_484_TONE, 1, true}, 4, 1},
-                     {{HeRu::RU_484_TONE, 1, true}, 5, 1},
-                     {{HeRu::RU_484_TONE, 1, true}, 6, 2},
-                     {{HeRu::RU_484_TONE, 1, true}, 7, 2},
-                     {{HeRu::RU_484_TONE, 1, true}, 8, 1},
-                     {{HeRu::RU_484_TONE, 1, true}, 9, 1}},
+                    {{{HeRu::RU_484_TONE, 1, true}, 4, 1},  // CC1
+                     {{HeRu::RU_484_TONE, 1, true}, 5, 1},  // CC2
+                     {{HeRu::RU_484_TONE, 1, true}, 6, 2},  // CC1
+                     {{HeRu::RU_484_TONE, 1, true}, 7, 2},  // CC2
+                     {{HeRu::RU_484_TONE, 1, true}, 8, 1},  // CC1
+                     {{HeRu::RU_484_TONE, 1, true}, 9, 1}}, // CC2
                     VhtPhy::GetVhtMcs4(),
                     MHz_u{40},
                     HeSigBDurationTest::MU_MIMO,
@@ -2209,14 +2218,14 @@ TxDurationTestSuite::TxDurationTestSuite()
 
     // 40 MHz band, MU-MIMO, 8 users
     AddTestCase(new HeSigBDurationTest(
-                    {{{HeRu::RU_484_TONE, 1, true}, 4, 1},
-                     {{HeRu::RU_484_TONE, 1, true}, 5, 1},
-                     {{HeRu::RU_484_TONE, 1, true}, 6, 1},
-                     {{HeRu::RU_484_TONE, 1, true}, 7, 1},
-                     {{HeRu::RU_484_TONE, 1, true}, 8, 1},
-                     {{HeRu::RU_484_TONE, 1, true}, 9, 1},
-                     {{HeRu::RU_484_TONE, 1, true}, 10, 1},
-                     {{HeRu::RU_484_TONE, 1, true}, 11, 1}},
+                    {{{HeRu::RU_484_TONE, 1, true}, 4, 1},   // CC1
+                     {{HeRu::RU_484_TONE, 1, true}, 5, 1},   // CC2
+                     {{HeRu::RU_484_TONE, 1, true}, 6, 1},   // CC1
+                     {{HeRu::RU_484_TONE, 1, true}, 7, 1},   // CC2
+                     {{HeRu::RU_484_TONE, 1, true}, 8, 1},   // CC1
+                     {{HeRu::RU_484_TONE, 1, true}, 9, 1},   // CC2
+                     {{HeRu::RU_484_TONE, 1, true}, 10, 1},  // CC1
+                     {{HeRu::RU_484_TONE, 1, true}, 11, 1}}, // CC2
                     VhtPhy::GetVhtMcs4(),
                     MHz_u{40},
                     HeSigBDurationTest::MU_MIMO,
@@ -2227,7 +2236,8 @@ TxDurationTestSuite::TxDurationTestSuite()
 
     // 80 MHz band, MU-MIMO, 2 users
     AddTestCase(new HeSigBDurationTest(
-                    {{{HeRu::RU_996_TONE, 1, true}, 11, 1}, {{HeRu::RU_996_TONE, 1, true}, 10, 4}},
+                    {{{HeRu::RU_996_TONE, 1, true}, 11, 1},  // CC1
+                     {{HeRu::RU_996_TONE, 1, true}, 10, 4}}, // CC2
                     VhtPhy::GetVhtMcs5(),
                     MHz_u{80},
                     HeSigBDurationTest::MU_MIMO,
@@ -2239,9 +2249,9 @@ TxDurationTestSuite::TxDurationTestSuite()
     // 80 MHz band, MU-MIMO, 3 users
     AddTestCase(
         new HeSigBDurationTest(
-            {{{HeRu::RU_996_TONE, 1, true}, 4, 3},
-             {{HeRu::RU_996_TONE, 1, true}, 5, 2},
-             {{HeRu::RU_996_TONE, 1, true}, 6, 1}},
+            {{{HeRu::RU_996_TONE, 1, true}, 4, 3},  // CC1
+             {{HeRu::RU_996_TONE, 1, true}, 5, 2},  // CC2
+             {{HeRu::RU_996_TONE, 1, true}, 6, 1}}, // CC1
             VhtPhy::GetVhtMcs4(),
             MHz_u{80},
             HeSigBDurationTest::MU_MIMO,
@@ -2252,10 +2262,10 @@ TxDurationTestSuite::TxDurationTestSuite()
 
     // 80 MHz band, MU-MIMO, 4 users
     AddTestCase(new HeSigBDurationTest(
-                    {{{HeRu::RU_996_TONE, 1, true}, 4, 1},
-                     {{HeRu::RU_996_TONE, 1, true}, 5, 2},
-                     {{HeRu::RU_996_TONE, 1, true}, 6, 3},
-                     {{HeRu::RU_996_TONE, 1, true}, 7, 2}},
+                    {{{HeRu::RU_996_TONE, 1, true}, 4, 1},  // CC1
+                     {{HeRu::RU_996_TONE, 1, true}, 5, 2},  // CC2
+                     {{HeRu::RU_996_TONE, 1, true}, 6, 3},  // CC1
+                     {{HeRu::RU_996_TONE, 1, true}, 7, 2}}, // CC2
                     VhtPhy::GetVhtMcs4(),
                     MHz_u{80},
                     HeSigBDurationTest::MU_MIMO,
@@ -2266,12 +2276,12 @@ TxDurationTestSuite::TxDurationTestSuite()
 
     // 80 MHz band, MU-MIMO, 6 users
     AddTestCase(new HeSigBDurationTest(
-                    {{{HeRu::RU_996_TONE, 1, true}, 4, 1},
-                     {{HeRu::RU_996_TONE, 1, true}, 5, 1},
-                     {{HeRu::RU_996_TONE, 1, true}, 6, 2},
-                     {{HeRu::RU_996_TONE, 1, true}, 7, 2},
-                     {{HeRu::RU_996_TONE, 1, true}, 8, 1},
-                     {{HeRu::RU_996_TONE, 1, true}, 9, 1}},
+                    {{{HeRu::RU_996_TONE, 1, true}, 4, 1},  // CC1
+                     {{HeRu::RU_996_TONE, 1, true}, 5, 1},  // CC2
+                     {{HeRu::RU_996_TONE, 1, true}, 6, 2},  // CC1
+                     {{HeRu::RU_996_TONE, 1, true}, 7, 2},  // CC2
+                     {{HeRu::RU_996_TONE, 1, true}, 8, 1},  // CC1
+                     {{HeRu::RU_996_TONE, 1, true}, 9, 1}}, // CC2
                     VhtPhy::GetVhtMcs4(),
                     MHz_u{80},
                     HeSigBDurationTest::MU_MIMO,
@@ -2282,14 +2292,14 @@ TxDurationTestSuite::TxDurationTestSuite()
 
     // 80 MHz band, MU-MIMO, 8 users
     AddTestCase(new HeSigBDurationTest(
-                    {{{HeRu::RU_996_TONE, 1, true}, 4, 1},
-                     {{HeRu::RU_996_TONE, 1, true}, 5, 1},
-                     {{HeRu::RU_996_TONE, 1, true}, 6, 1},
-                     {{HeRu::RU_996_TONE, 1, true}, 7, 1},
-                     {{HeRu::RU_996_TONE, 1, true}, 8, 1},
-                     {{HeRu::RU_996_TONE, 1, true}, 9, 1},
-                     {{HeRu::RU_996_TONE, 1, true}, 10, 1},
-                     {{HeRu::RU_996_TONE, 1, true}, 11, 1}},
+                    {{{HeRu::RU_996_TONE, 1, true}, 4, 1},   // CC1
+                     {{HeRu::RU_996_TONE, 1, true}, 5, 1},   // CC2
+                     {{HeRu::RU_996_TONE, 1, true}, 6, 1},   // CC1
+                     {{HeRu::RU_996_TONE, 1, true}, 7, 1},   // CC2
+                     {{HeRu::RU_996_TONE, 1, true}, 8, 1},   // CC1
+                     {{HeRu::RU_996_TONE, 1, true}, 9, 1},   // CC2
+                     {{HeRu::RU_996_TONE, 1, true}, 10, 1},  // CC1
+                     {{HeRu::RU_996_TONE, 1, true}, 11, 1}}, // CC2
                     VhtPhy::GetVhtMcs4(),
                     MHz_u{80},
                     HeSigBDurationTest::MU_MIMO,
@@ -2299,23 +2309,23 @@ TxDurationTestSuite::TxDurationTestSuite()
                 TestCase::Duration::QUICK);
 
     // 160 MHz band, MU-MIMO, 2 users
-    AddTestCase(
-        new HeSigBDurationTest(
-            {{{HeRu::RU_2x996_TONE, 1, true}, 11, 1}, {{HeRu::RU_2x996_TONE, 1, true}, 10, 4}},
-            VhtPhy::GetVhtMcs5(),
-            MHz_u{160},
-            HeSigBDurationTest::MU_MIMO,
-            {208, 208, 208, 208, 208, 208, 208, 208},
-            std::make_pair(1, 1), // users equally split between the two content channels
-            MicroSeconds(4)),     // one OFDM symbol
-        TestCase::Duration::QUICK);
+    AddTestCase(new HeSigBDurationTest(
+                    {{{HeRu::RU_2x996_TONE, 1, true}, 11, 1},  // CC1
+                     {{HeRu::RU_2x996_TONE, 1, true}, 10, 4}}, // CC2
+                    VhtPhy::GetVhtMcs5(),
+                    MHz_u{160},
+                    HeSigBDurationTest::MU_MIMO,
+                    {208, 208, 208, 208, 208, 208, 208, 208},
+                    std::make_pair(1, 1), // users equally split between the two content channels
+                    MicroSeconds(4)),     // one OFDM symbol
+                TestCase::Duration::QUICK);
 
     // 160 MHz band, MU-MIMO, 3 users
     AddTestCase(
         new HeSigBDurationTest(
-            {{{HeRu::RU_2x996_TONE, 1, true}, 4, 3},
-             {{HeRu::RU_2x996_TONE, 1, true}, 5, 2},
-             {{HeRu::RU_2x996_TONE, 1, true}, 6, 1}},
+            {{{HeRu::RU_2x996_TONE, 1, true}, 4, 3},  // CC1
+             {{HeRu::RU_2x996_TONE, 1, true}, 5, 2},  // CC2
+             {{HeRu::RU_2x996_TONE, 1, true}, 6, 1}}, // CC1
             VhtPhy::GetVhtMcs4(),
             MHz_u{160},
             HeSigBDurationTest::MU_MIMO,
@@ -2326,10 +2336,10 @@ TxDurationTestSuite::TxDurationTestSuite()
 
     // 160 MHz band, MU-MIMO, 4 users
     AddTestCase(new HeSigBDurationTest(
-                    {{{HeRu::RU_2x996_TONE, 1, true}, 4, 1},
-                     {{HeRu::RU_2x996_TONE, 1, true}, 5, 2},
-                     {{HeRu::RU_2x996_TONE, 1, true}, 6, 3},
-                     {{HeRu::RU_2x996_TONE, 1, true}, 7, 2}},
+                    {{{HeRu::RU_2x996_TONE, 1, true}, 4, 1},  // CC1
+                     {{HeRu::RU_2x996_TONE, 1, true}, 5, 2},  // CC2
+                     {{HeRu::RU_2x996_TONE, 1, true}, 6, 3},  // CC1
+                     {{HeRu::RU_2x996_TONE, 1, true}, 7, 2}}, // CC2
                     VhtPhy::GetVhtMcs4(),
                     MHz_u{160},
                     HeSigBDurationTest::MU_MIMO,
@@ -2340,12 +2350,12 @@ TxDurationTestSuite::TxDurationTestSuite()
 
     // 160 MHz band, MU-MIMO, 6 users
     AddTestCase(new HeSigBDurationTest(
-                    {{{HeRu::RU_2x996_TONE, 1, true}, 4, 1},
-                     {{HeRu::RU_2x996_TONE, 1, true}, 5, 1},
-                     {{HeRu::RU_2x996_TONE, 1, true}, 6, 2},
-                     {{HeRu::RU_2x996_TONE, 1, true}, 7, 2},
-                     {{HeRu::RU_2x996_TONE, 1, true}, 8, 1},
-                     {{HeRu::RU_2x996_TONE, 1, true}, 9, 1}},
+                    {{{HeRu::RU_2x996_TONE, 1, true}, 4, 1},  // CC1
+                     {{HeRu::RU_2x996_TONE, 1, true}, 5, 1},  // CC2
+                     {{HeRu::RU_2x996_TONE, 1, true}, 6, 2},  // CC1
+                     {{HeRu::RU_2x996_TONE, 1, true}, 7, 2},  // CC2
+                     {{HeRu::RU_2x996_TONE, 1, true}, 8, 1},  // CC1
+                     {{HeRu::RU_2x996_TONE, 1, true}, 9, 1}}, // CC2
                     VhtPhy::GetVhtMcs4(),
                     MHz_u{160},
                     HeSigBDurationTest::MU_MIMO,
@@ -2356,14 +2366,14 @@ TxDurationTestSuite::TxDurationTestSuite()
 
     // 160 MHz band, MU-MIMO, 8 users
     AddTestCase(new HeSigBDurationTest(
-                    {{{HeRu::RU_2x996_TONE, 1, true}, 4, 1},
-                     {{HeRu::RU_2x996_TONE, 1, true}, 5, 1},
-                     {{HeRu::RU_2x996_TONE, 1, true}, 6, 1},
-                     {{HeRu::RU_2x996_TONE, 1, true}, 7, 1},
-                     {{HeRu::RU_2x996_TONE, 1, true}, 8, 1},
-                     {{HeRu::RU_2x996_TONE, 1, true}, 9, 1},
-                     {{HeRu::RU_2x996_TONE, 1, true}, 10, 1},
-                     {{HeRu::RU_2x996_TONE, 1, true}, 11, 1}},
+                    {{{HeRu::RU_2x996_TONE, 1, true}, 4, 1},   // CC1
+                     {{HeRu::RU_2x996_TONE, 1, true}, 5, 1},   // CC2
+                     {{HeRu::RU_2x996_TONE, 1, true}, 6, 1},   // CC1
+                     {{HeRu::RU_2x996_TONE, 1, true}, 7, 1},   // CC2
+                     {{HeRu::RU_2x996_TONE, 1, true}, 8, 1},   // CC1
+                     {{HeRu::RU_2x996_TONE, 1, true}, 9, 1},   // CC2
+                     {{HeRu::RU_2x996_TONE, 1, true}, 10, 1},  // CC1
+                     {{HeRu::RU_2x996_TONE, 1, true}, 11, 1}}, // CC2
                     VhtPhy::GetVhtMcs4(),
                     MHz_u{160},
                     HeSigBDurationTest::MU_MIMO,

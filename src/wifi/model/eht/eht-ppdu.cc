@@ -151,6 +151,7 @@ EhtPpdu::SetTxVectorFromPhyHeaders(WifiTxVector& txVector) const
                     : 0;
             SetHeMuUserInfos(txVector,
                              ruAllocation.value(),
+                             std::nullopt,
                              ehtPhyHeader->m_contentChannels,
                              ehtPhyHeader->m_ppduType == 2,
                              muMimoUsers);
@@ -195,6 +196,7 @@ EhtPpdu::GetNumRusPerEhtSigBContentChannel(MHz_u channelWidth,
     }
     return HePpdu::GetNumRusPerHeSigBContentChannel(channelWidth,
                                                     ruAllocation,
+                                                    std::nullopt,
                                                     compression,
                                                     numMuMimoUsers);
 }

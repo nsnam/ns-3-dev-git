@@ -549,12 +549,24 @@ TestDlOfdmaPhyTransmission::SendMuPpdu(uint16_t rxStaId1, uint16_t rxStaId2)
     else if (m_channelWidth == MHz_u{80})
     {
         ruType = HeRu::RU_484_TONE;
-        txVector.SetRuAllocation({200, 200, 200, 200}, 0);
+        const uint16_t ruAllocUser = 200;
+        const uint16_t ruAllocNoUser = 114;
+        txVector.SetRuAllocation({ruAllocUser, ruAllocNoUser, ruAllocNoUser, ruAllocUser}, 0);
     }
     else if (m_channelWidth == MHz_u{160})
     {
         ruType = HeRu::RU_996_TONE;
-        txVector.SetRuAllocation({208, 208, 208, 208, 208, 208, 208, 208}, 0);
+        const uint16_t ruAllocUser = 208;
+        const uint16_t ruAllocNoUser = 115;
+        txVector.SetRuAllocation({ruAllocUser,
+                                  ruAllocNoUser,
+                                  ruAllocUser,
+                                  ruAllocNoUser,
+                                  ruAllocNoUser,
+                                  ruAllocUser,
+                                  ruAllocNoUser,
+                                  ruAllocUser},
+                                 0);
     }
     else
     {
@@ -1436,14 +1448,17 @@ TestDlOfdmaPhyPuncturing::SendMuPpdu(uint16_t rxStaId1,
     RuAllocation ruAlloc;
     if (puncturedSubchannels.empty())
     {
-        std::fill_n(std::back_inserter(ruAlloc), 4, 200);
+        ruAlloc.push_back(200);
+        ruAlloc.push_back(114);
+        ruAlloc.push_back(114);
+        ruAlloc.push_back(200);
     }
     else
     {
         ruAlloc.push_back(puncturedSubchannels.at(1) ? 192 : 200);
-        ruAlloc.push_back(puncturedSubchannels.at(1) ? 113 : 200);
+        ruAlloc.push_back(puncturedSubchannels.at(1) ? 113 : 114);
         ruAlloc.push_back(puncturedSubchannels.at(2) ? 113
-                                                     : (puncturedSubchannels.at(3) ? 192 : 200));
+                                                     : (puncturedSubchannels.at(3) ? 192 : 114));
         ruAlloc.push_back(puncturedSubchannels.at(2) ? 192
                                                      : (puncturedSubchannels.at(3) ? 113 : 200));
     }

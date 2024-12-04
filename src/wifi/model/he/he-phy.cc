@@ -218,6 +218,7 @@ HePhy::GetSigBSize(const WifiTxVector& txVector) const
             txVector.GetChannelWidth(),
             txVector.GetRuAllocation(
                 m_wifiPhy ? m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(MHz_u{20}) : 0),
+            txVector.GetCenter26ToneRuIndication(),
             txVector.IsSigBCompression(),
             txVector.IsSigBCompression() ? txVector.GetHeMuUserInfoMap().size() : 0);
     }

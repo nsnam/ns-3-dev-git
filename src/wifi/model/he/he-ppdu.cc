@@ -19,6 +19,7 @@
 #include "ns3/wifi-utils.h"
 
 #include <algorithm>
+#include <numeric>
 
 namespace ns3
 {
@@ -192,6 +193,7 @@ HePpdu::SetTxVectorFromPhyHeaders(WifiTxVector& txVector) const
         txVector.SetBssColor(heSigHeader->m_bssColor);
         SetHeMuUserInfos(txVector,
                          heSigHeader->m_ruAllocation,
+                         heSigHeader->m_center26ToneRuIndication,
                          heSigHeader->m_contentChannels,
                          heSigHeader->m_sigBCompression,
                          GetMuMimoUsersFromEncoding(heSigHeader->m_muMimoUsers));
@@ -210,33 +212,107 @@ HePpdu::SetTxVectorFromPhyHeaders(WifiTxVector& txVector) const
     }
 }
 
+HeRu::RuSpec
+HePpdu::GetRuSpec(std::size_t ruAllocIndex,
+                  const std::vector<HeRu::RuSpec>& ruSpecs,
+                  HeRu::RuType ruType,
+                  std::size_t ruIndex,
+                  MHz_u bw) const
+{
+    const auto ruBw = HeRu::GetBandwidth(ruType);
+    const uint8_t num20MhzSubchannelsInRu = (ruBw < MHz_u{20}) ? 1 : Count20MHzSubchannels(ruBw);
+    const std::size_t numRus = (ruBw > MHz_u{20}) ? 1 : HeRu::GetNRus(MHz_u{20}, ruType);
+    const std::size_t ruIndexOffset =
+        (ruBw < MHz_u{20}) ? (numRus * ruAllocIndex) : (ruAllocIndex / num20MhzSubchannelsInRu);
+    std::size_t index = ruSpecs.at(ruIndex).GetIndex() + ruIndexOffset;
+    auto isPrimary80 = true;
+    if (bw > MHz_u{80})
+    {
+        const auto isLow80 = ruAllocIndex < 4;
+        const auto p20Index = m_operatingChannel.GetPrimaryChannelIndex(MHz_u{20});
+        const auto primary80IsLower80 = (p20Index < bw / MHz_u{40});
+        if (!isLow80)
+        {
+            const auto numRusP80 = HeRu::GetRusOfType(MHz_u{80}, ruType).size();
+            index -= (ruType == HeRu::RU_26_TONE) ? (numRusP80 - 1) : numRusP80;
+        }
+        isPrimary80 = ((primary80IsLower80 && isLow80) || (!primary80IsLower80 && !isLow80));
+    }
+    if ((ruType == HeRu::RU_26_TONE) && (ruAllocIndex >= 2) && (index >= 19))
+    {
+        index++;
+    }
+    return {ruType, index, isPrimary80};
+}
+
 void
 HePpdu::SetHeMuUserInfos(WifiTxVector& txVector,
                          const RuAllocation& ruAllocation,
+                         std::optional<Center26ToneRuIndication> center26ToneRuIndication,
                          const HeSigBContentChannels& contentChannels,
                          bool sigBcompression,
                          uint8_t numMuMimoUsers) const
 {
+    NS_ASSERT(ruAllocation.size() == Count20MHzSubchannels(txVector.GetChannelWidth()));
+    std::vector<uint8_t> remainingRuAllocIndices(ruAllocation.size());
+    std::iota(remainingRuAllocIndices.begin(), remainingRuAllocIndices.end(), 0);
     std::size_t contentChannelIndex = 0;
+    std::size_t ruAllocIndex = 0;
     for (const auto& contentChannel : contentChannels)
     {
         std::size_t numRusLeft = 0;
         std::size_t numUsersLeft = 0;
-        std::size_t ruAllocIndex = contentChannelIndex;
+        ruAllocIndex = remainingRuAllocIndices.front();
+        std::size_t numUsersLeftInCc = contentChannel.size();
+        if (contentChannel.empty())
+        {
+            const auto pos = std::find(remainingRuAllocIndices.cbegin(),
+                                       remainingRuAllocIndices.cend(),
+                                       ruAllocIndex);
+            remainingRuAllocIndices.erase(pos);
+            ++contentChannelIndex;
+            continue;
+        }
         for (const auto& userInfo : contentChannel)
         {
-            if (userInfo.staId == NO_USER_STA_ID)
+            if (*center26ToneRuIndication && (numUsersLeftInCc == 1))
             {
-                continue;
+                // handle central 26 tones
+                if ((contentChannelIndex == 0) &&
+                    ((*center26ToneRuIndication ==
+                      Center26ToneRuIndication::CENTER_26_TONE_RU_LOW_80_MHZ_ALLOCATED) ||
+                     (*center26ToneRuIndication ==
+                      Center26ToneRuIndication::CENTER_26_TONE_RU_LOW_AND_HIGH_80_MHZ_ALLOCATED)))
+                {
+                    txVector.SetHeMuUserInfo(
+                        userInfo.staId,
+                        {HeRu::RuSpec{HeRu::RU_26_TONE, 19, true}, userInfo.mcs, userInfo.nss});
+                    continue;
+                }
+                else if ((contentChannelIndex == 1) &&
+                         ((*center26ToneRuIndication ==
+                           Center26ToneRuIndication::CENTER_26_TONE_RU_HIGH_80_MHZ_ALLOCATED) ||
+                          (*center26ToneRuIndication ==
+                           Center26ToneRuIndication::
+                               CENTER_26_TONE_RU_LOW_AND_HIGH_80_MHZ_ALLOCATED)))
+                {
+                    txVector.SetHeMuUserInfo(
+                        userInfo.staId,
+                        {HeRu::RuSpec{HeRu::RU_26_TONE, 19, false}, userInfo.mcs, userInfo.nss});
+                    continue;
+                }
             }
-            if (ruAllocIndex >= ruAllocation.size())
-            {
-                break;
-            }
+            NS_ASSERT(ruAllocIndex < ruAllocation.size());
             auto ruSpecs = HeRu::GetRuSpecs(ruAllocation.at(ruAllocIndex));
-            if (ruSpecs.empty())
+            while (ruSpecs.empty() && (ruAllocIndex < ruAllocation.size()))
             {
-                continue;
+                const auto pos = std::find(remainingRuAllocIndices.cbegin(),
+                                           remainingRuAllocIndices.cend(),
+                                           ruAllocIndex);
+                remainingRuAllocIndices.erase(pos);
+                ruAllocIndex += 2;
+                NS_ASSERT(ruAllocIndex < ruAllocation.size());
+                ruSpecs = HeRu::GetRuSpecs(ruAllocation.at(ruAllocIndex));
             }
             if (numRusLeft == 0)
             {
@@ -255,44 +331,35 @@ HePpdu::SetHeMuUserInfos(WifiTxVector& txVector,
                 }
             }
             auto ruIndex = (ruSpecs.size() - numRusLeft);
-            auto ruSpec = ruSpecs.at(ruIndex);
+            const auto ruSpec = ruSpecs.at(ruIndex);
             auto ruType = ruSpec.GetRuType();
-            if ((ruAllocation.size() == 8) && (ruType == HeRu::RU_996_TONE) &&
-                (((txVector.GetChannelWidth() == MHz_u{160}) && sigBcompression) ||
-                 std::all_of(
-                     contentChannel.cbegin(),
-                     contentChannel.cend(),
-                     [&userInfo](const auto& item) { return userInfo.staId == item.staId; })))
+            if (sigBcompression)
             {
-                ruType = HeRu::RU_2x996_TONE;
+                ruType = HeRu::GetRuType(ruAllocation.size() * MHz_u{20});
             }
-            const auto ruBw = HeRu::GetBandwidth(ruType);
-            auto primary80 = ruAllocIndex < 4;
-            const uint8_t num20MhzSubchannelsInRu =
-                (ruBw < MHz_u{20}) ? 1 : Count20MHzSubchannels(ruBw);
-            auto numRuAllocsInContentChannel = std::max(1, num20MhzSubchannelsInRu / 2);
-            auto ruIndexOffset = (ruBw < MHz_u{20}) ? (ruSpecs.size() * ruAllocIndex)
-                                                    : (ruAllocIndex / num20MhzSubchannelsInRu);
-            if (!primary80)
+            if (userInfo.staId != NO_USER_STA_ID)
             {
-                ruIndexOffset -= HeRu::GetRusOfType(MHz_u{80}, ruType).size();
-            }
-            if (!txVector.IsAllocated(userInfo.staId))
-            {
-                txVector.SetHeMuUserInfo(userInfo.staId,
-                                         {{ruType, ruSpec.GetIndex() + ruIndexOffset, primary80},
-                                          userInfo.mcs,
-                                          userInfo.nss});
-            }
-            if ((ruType == HeRu::RU_2x996_TONE) && !sigBcompression)
-            {
-                return;
+                const auto ru{
+                    GetRuSpec(ruAllocIndex, ruSpecs, ruType, ruIndex, txVector.GetChannelWidth())};
+                txVector.SetHeMuUserInfo(userInfo.staId, {ru, userInfo.mcs, userInfo.nss});
             }
             numRusLeft--;
             numUsersLeft--;
+            numUsersLeftInCc--;
             if (numRusLeft == 0 && numUsersLeft == 0)
             {
-                ruAllocIndex += (2 * numRuAllocsInContentChannel);
+                const auto ruBw = HeRu::GetBandwidth(ruType);
+                const uint8_t num20MhzSubchannelsInRu =
+                    (ruBw < MHz_u{20}) ? 1 : Count20MHzSubchannels(ruBw);
+                const auto pos = std::find(remainingRuAllocIndices.cbegin(),
+                                           remainingRuAllocIndices.cend(),
+                                           ruAllocIndex);
+                remainingRuAllocIndices.erase(pos);
+                ruAllocIndex += num20MhzSubchannelsInRu;
+                if (ruAllocIndex % 2 != contentChannelIndex)
+                {
+                    ++ruAllocIndex;
+                }
             }
         }
         contentChannelIndex++;
@@ -473,10 +540,12 @@ HePpdu::UpdateTxVectorForUlMu(const std::optional<WifiTxVector>& trigVector) con
 }
 
 std::pair<std::size_t, std::size_t>
-HePpdu::GetNumRusPerHeSigBContentChannel(MHz_u channelWidth,
-                                         const RuAllocation& ruAllocation,
-                                         bool sigBCompression,
-                                         uint8_t numMuMimoUsers)
+HePpdu::GetNumRusPerHeSigBContentChannel(
+    MHz_u channelWidth,
+    const RuAllocation& ruAllocation,
+    std::optional<Center26ToneRuIndication> center26ToneRuIndication,
+    bool sigBCompression,
+    uint8_t numMuMimoUsers)
 {
     std::pair<std::size_t /* number of RUs in content channel 1 */,
               std::size_t /* number of RUs in content channel 2 */>
@@ -515,27 +584,63 @@ HePpdu::GetNumRusPerHeSigBContentChannel(MHz_u channelWidth,
     default:
         for (std::size_t n = 0; n < Count20MHzSubchannels(channelWidth);)
         {
-            chSize.first += HeRu::GetRuSpecs(ruAllocation[n]).size();
-            if (ruAllocation[n] >= 208)
+            std::size_t ccIndex;
+            const auto ruAlloc = ruAllocation.at(n);
+            const auto ruSpecs = HeRu::GetRuSpecs(ruAlloc);
+            if (ruSpecs.empty())
             {
-                // 996 tone RU occupies 80 MHz
-                n += 4;
+                ++n;
                 continue;
             }
-            n += 2;
-        }
-        for (std::size_t n = 0; n < Count20MHzSubchannels(channelWidth);)
-        {
-            chSize.second += HeRu::GetRuSpecs(ruAllocation[n + 1]).size();
-            if (ruAllocation[n + 1] >= 208)
+            if (ruSpecs.front().GetRuType() >= HeRu::RU_484_TONE)
             {
-                // 996 tone RU occupies 80 MHz
-                n += 4;
-                continue;
+                ccIndex = (chSize.first <= chSize.second) ? 0 : 1;
             }
-            n += 2;
+            else
+            {
+                ccIndex = (n % 2 == 0) ? 0 : 1;
+            }
+            const auto nRuSpecs = HeRu::GetRuSpecs(ruAlloc).size();
+            if (ccIndex == 0)
+            {
+                chSize.first += nRuSpecs;
+            }
+            else
+            {
+                chSize.second += nRuSpecs;
+            }
+            const auto ruBw = HeRu::GetBandwidth(ruSpecs.at(0).GetRuType());
+            if (ruBw <= MHz_u{20})
+            {
+                ++n;
+            }
+            else
+            {
+                const auto num20MHz = Count20MHzSubchannels(ruBw);
+                const auto skipNumIndices = (ccIndex == 0) ? num20MHz : num20MHz - 1;
+                n += skipNumIndices;
+            }
         }
         break;
+    }
+    if (center26ToneRuIndication)
+    {
+        switch (*center26ToneRuIndication)
+        {
+        case Center26ToneRuIndication::CENTER_26_TONE_RU_LOW_80_MHZ_ALLOCATED:
+            chSize.first++;
+            break;
+        case Center26ToneRuIndication::CENTER_26_TONE_RU_HIGH_80_MHZ_ALLOCATED:
+            chSize.second++;
+            break;
+        case Center26ToneRuIndication::CENTER_26_TONE_RU_LOW_AND_HIGH_80_MHZ_ALLOCATED:
+            chSize.first++;
+            chSize.second++;
+            break;
+        case Center26ToneRuIndication::CENTER_26_TONE_RU_UNALLOCATED:
+        default:
+            break;
+        }
     }
     return chSize;
 }
@@ -551,21 +656,48 @@ HePpdu::GetHeSigBContentChannels(const WifiTxVector& txVector, uint8_t p20Index)
         contentChannels.emplace_back();
     }
 
+    std::optional<HeSigBUserSpecificField> cc1Central26ToneRu;
+    std::optional<HeSigBUserSpecificField> cc2Central26ToneRu;
+
     const auto& orderedMap = txVector.GetUserInfoMapOrderedByRus(p20Index);
+    std::optional<HeRu::RuType> prevRuType;
+    std::size_t prevRuIndex{0};
+    std::size_t prevCcIndex{0};
     for (const auto& [ru, staIds] : orderedMap)
     {
         const auto ruType = ru.GetRuType();
-        if ((ruType > HeRu::RU_242_TONE) && !txVector.IsSigBCompression())
+        if ((ruType == HeRu::RU_26_TONE) && (ru.GetIndex() == 19))
         {
-            for (auto i = 0; i < ((ruType == HeRu::RU_2x996_TONE) ? 2 : 1); ++i)
+            const auto staId = *staIds.cbegin();
+            const auto& userInfo = txVector.GetHeMuUserInfo(staId);
+            if (ru.GetPrimary80MHz())
             {
-                for (auto staId : staIds)
-                {
-                    const auto& userInfo = txVector.GetHeMuUserInfo(staId);
-                    NS_ASSERT(ru == userInfo.ru);
-                    contentChannels[0].push_back({staId, userInfo.nss, userInfo.mcs});
-                    contentChannels[1].push_back({staId, userInfo.nss, userInfo.mcs});
-                }
+                NS_ASSERT(!cc1Central26ToneRu);
+                cc1Central26ToneRu = HeSigBUserSpecificField{staId, userInfo.nss, userInfo.mcs};
+            }
+            else
+            {
+                NS_ASSERT(!cc2Central26ToneRu);
+                cc2Central26ToneRu = HeSigBUserSpecificField{staId, userInfo.nss, userInfo.mcs};
+            }
+            continue;
+        }
+
+        const auto ruIndex = ru.GetPhyIndex(channelWidth, p20Index);
+        if (prevRuType && (*prevRuType != ruType))
+        {
+            prevRuIndex *= HeRu::GetBandwidth(*prevRuType) / HeRu::GetBandwidth(ruType);
+        }
+        if (ruType >= HeRu::RU_484_TONE)
+        {
+            for (auto staId : staIds)
+            {
+                // equal split
+                const auto ccIndex =
+                    (contentChannels.at(0).size() <= contentChannels.at(1).size()) ? 0 : 1;
+                const auto& userInfo = txVector.GetHeMuUserInfo(staId);
+                NS_ASSERT(ru == userInfo.ru);
+                contentChannels[ccIndex].push_back({staId, userInfo.nss, userInfo.mcs});
             }
             continue;
         }
@@ -573,7 +705,40 @@ HePpdu::GetHeSigBContentChannels(const WifiTxVector& txVector, uint8_t p20Index)
         std::size_t numRus = (ruType >= HeRu::RU_242_TONE)
                                  ? 1
                                  : HeRu::m_heRuSubcarrierGroups.at({MHz_u{20}, ruType}).size();
-        const auto ruIdx = ru.GetIndex();
+        auto ruIdx = ru.GetIndex();
+        while (prevRuIndex < ruIndex - 1)
+        {
+            std::size_t ccIndex{0};
+            if (channelWidth < MHz_u{40})
+            {
+                // only one content channel
+                ccIndex = 0;
+            }
+            else if (txVector.IsSigBCompression())
+            {
+                // equal split
+                ccIndex = (contentChannels.at(0).size() <= contentChannels.at(1).size()) ? 0 : 1;
+            }
+            else
+            {
+                ccIndex = ((prevRuIndex / numRus) % 2 == 0) ? 0 : 1;
+            }
+            const auto central26TonesRus = HeRu::GetCentral26TonesRus(channelWidth, *prevRuType);
+            if (ruType < HeRu::RuType::RU_242_TONE && (prevCcIndex == ccIndex) &&
+                ((ruType != HeRu::RuType::RU_26_TONE) ||
+                 std::none_of(central26TonesRus.cbegin(),
+                              central26TonesRus.cend(),
+                              [ruIndex, channelWidth, p20Index](const auto& ruSpec) {
+                                  return ruSpec.GetPhyIndex(channelWidth, p20Index) == ruIndex;
+                              })))
+            {
+                contentChannels[ccIndex].push_back({NO_USER_STA_ID, 0, 0});
+            }
+            ++prevRuIndex;
+            prevCcIndex = ccIndex;
+        }
+        prevRuIndex = ruIndex;
+        prevRuType = ruType;
         for (auto staId : staIds)
         {
             const auto& userInfo = txVector.GetHeMuUserInfo(staId);
@@ -586,15 +751,30 @@ HePpdu::GetHeSigBContentChannels(const WifiTxVector& txVector, uint8_t p20Index)
             }
             else if (txVector.IsSigBCompression())
             {
-                // equal split
+                // MU-MIMO: equal split
                 ccIndex = (contentChannels.at(0).size() <= contentChannels.at(1).size()) ? 0 : 1;
             }
-            else // MU-MIMO
+            else
             {
+                if (ruType == HeRu::RU_26_TONE && ruIdx > 19)
+                {
+                    // "ignore" the center 26-tone RUs in 80 MHz channels
+                    ruIdx--;
+                }
                 ccIndex = (((ruIdx - 1) / numRus) % 2 == 0) ? 0 : 1;
             }
             contentChannels.at(ccIndex).push_back({staId, userInfo.nss, userInfo.mcs});
+            prevCcIndex = ccIndex;
         }
+    }
+
+    if (cc1Central26ToneRu)
+    {
+        contentChannels.at(0).push_back(*cc1Central26ToneRu);
+    }
+    if (cc2Central26ToneRu)
+    {
+        contentChannels.at(1).push_back(*cc2Central26ToneRu);
     }
 
     const auto isSigBCompression = txVector.IsSigBCompression();
@@ -604,6 +784,7 @@ HePpdu::GetHeSigBContentChannels(const WifiTxVector& txVector, uint8_t p20Index)
         auto numNumRusPerHeSigBContentChannel = GetNumRusPerHeSigBContentChannel(
             channelWidth,
             txVector.GetRuAllocation(p20Index),
+            txVector.GetCenter26ToneRuIndication(),
             isSigBCompression,
             isSigBCompression ? txVector.GetHeMuUserInfoMap().size() : 0);
         std::size_t contentChannelIndex = 1;
@@ -628,6 +809,7 @@ HePpdu::GetHeSigBContentChannels(const WifiTxVector& txVector, uint8_t p20Index)
 uint32_t
 HePpdu::GetSigBFieldSize(MHz_u channelWidth,
                          const RuAllocation& ruAllocation,
+                         std::optional<Center26ToneRuIndication> center26ToneRuIndication,
                          bool sigBCompression,
                          std::size_t numMuMimoUsers)
 {
@@ -650,6 +832,7 @@ HePpdu::GetSigBFieldSize(MHz_u channelWidth,
 
     auto numRusPerContentChannel = GetNumRusPerHeSigBContentChannel(channelWidth,
                                                                     ruAllocation,
+                                                                    center26ToneRuIndication,
                                                                     sigBCompression,
                                                                     numMuMimoUsers);
     auto maxNumRusPerContentChannel =
