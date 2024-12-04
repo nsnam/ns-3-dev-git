@@ -165,13 +165,13 @@ SpectrumWifiPhy::GetRuBands(Ptr<WifiSpectrumPhyInterface> spectrumPhyInterface,
                     SubcarrierRange subcarrierRange =
                         std::make_pair(group.front().first, group.back().second);
                     const auto bandIndices =
-                        HePhy::ConvertHeRuSubcarriers(bw,
-                                                      guardBandwidth,
-                                                      spectrumPhyInterface->GetCenterFrequencies(),
-                                                      spectrumPhyInterface->GetChannelWidth(),
-                                                      GetSubcarrierSpacing(),
-                                                      subcarrierRange,
-                                                      i);
+                        HePhy::ConvertRuSubcarriers(bw,
+                                                    guardBandwidth,
+                                                    spectrumPhyInterface->GetCenterFrequencies(),
+                                                    spectrumPhyInterface->GetChannelWidth(),
+                                                    GetSubcarrierSpacing(),
+                                                    subcarrierRange,
+                                                    i);
 
                     WifiSpectrumBandInfo band{};
                     for (const auto& indicesPerSegment : bandIndices)
