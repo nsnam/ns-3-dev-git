@@ -991,13 +991,13 @@ HePhy::GetRuBandForTx(const WifiTxVector& txVector, uint16_t staId) const
         WIFI_MOD_CLASS_HE);
     // for a TX spectrum, the guard bandwidth is a function of the transmission channel width
     // and the spectrum width equals the transmission channel width (hence bandIndex equals 0)
-    const auto indices = ConvertHeRuSubcarriers(channelWidth,
-                                                GetGuardBandwidth(channelWidth),
-                                                m_wifiPhy->GetOperatingChannel().GetFrequencies(),
-                                                m_wifiPhy->GetChannelWidth(),
-                                                m_wifiPhy->GetSubcarrierSpacing(),
-                                                {group.front().first, group.back().second},
-                                                0);
+    const auto indices = ConvertRuSubcarriers(channelWidth,
+                                              GetGuardBandwidth(channelWidth),
+                                              m_wifiPhy->GetOperatingChannel().GetFrequencies(),
+                                              m_wifiPhy->GetChannelWidth(),
+                                              m_wifiPhy->GetSubcarrierSpacing(),
+                                              {group.front().first, group.back().second},
+                                              0);
     WifiSpectrumBandInfo ruBandForTx{};
     for (const auto& indicesPerSegment : indices)
     {
@@ -1024,14 +1024,14 @@ HePhy::GetRuBandForRx(const WifiTxVector& txVector, uint16_t staId) const
         WIFI_MOD_CLASS_HE);
     // for an RX spectrum, the guard bandwidth is a function of the operating channel width
     // and the spectrum width equals the operating channel width
-    const auto indices = ConvertHeRuSubcarriers(
-        channelWidth,
-        GetGuardBandwidth(m_wifiPhy->GetChannelWidth()),
-        m_wifiPhy->GetOperatingChannel().GetFrequencies(),
-        m_wifiPhy->GetChannelWidth(),
-        m_wifiPhy->GetSubcarrierSpacing(),
-        {group.front().first, group.back().second},
-        m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(channelWidth));
+    const auto indices =
+        ConvertRuSubcarriers(channelWidth,
+                             GetGuardBandwidth(m_wifiPhy->GetChannelWidth()),
+                             m_wifiPhy->GetOperatingChannel().GetFrequencies(),
+                             m_wifiPhy->GetChannelWidth(),
+                             m_wifiPhy->GetSubcarrierSpacing(),
+                             {group.front().first, group.back().second},
+                             m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(channelWidth));
     WifiSpectrumBandInfo ruBandForRx{};
     for (const auto& indicesPerSegment : indices)
     {
@@ -1819,13 +1819,13 @@ HePhy::GetRxPpduFromTxPpdu(Ptr<const WifiPpdu> ppdu)
 }
 
 std::vector<WifiSpectrumBandIndices>
-HePhy::ConvertHeRuSubcarriers(MHz_t bandWidth,
-                              MHz_t guardBandwidth,
-                              const std::vector<MHz_t>& centerFrequencies,
-                              MHz_t totalWidth,
-                              Hz_t subcarrierSpacing,
-                              SubcarrierRange subcarrierRange,
-                              uint8_t bandIndex)
+HePhy::ConvertRuSubcarriers(MHz_t bandWidth,
+                            MHz_t guardBandwidth,
+                            const std::vector<MHz_t>& centerFrequencies,
+                            MHz_t totalWidth,
+                            Hz_t subcarrierSpacing,
+                            SubcarrierRange subcarrierRange,
+                            uint8_t bandIndex)
 {
     NS_ASSERT_MSG(bandWidth <= totalWidth,
                   "Bandwidth (" << bandWidth << ") cannot exceed total operating channel width ("
@@ -1839,26 +1839,13 @@ HePhy::ConvertHeRuSubcarriers(MHz_t bandWidth,
         NS_ASSERT(bandIndex == 0);
         bandWidth /= centerFrequencies.size();
     }
-    uint32_t centerFrequencyIndex = 0;
-    switch (static_cast<uint16_t>(bandWidth.in_MHz()))
-    {
-    case 20:
-        centerFrequencyIndex = (nGuardBands / 2) + 6 + 122;
-        break;
-    case 40:
-        centerFrequencyIndex = (nGuardBands / 2) + 12 + 244;
-        break;
-    case 80:
-        centerFrequencyIndex = (nGuardBands / 2) + 12 + 500;
-        break;
-    case 160:
-        centerFrequencyIndex = (nGuardBands / 2) + 12 + 1012;
-        break;
-    default:
-        NS_FATAL_ERROR("ChannelWidth " << bandWidth << " unsupported");
-        break;
-    }
-
+    // Figures 27-5 to 27-7 of IEEE 802.11ax-2021: the number of guard subcarriers is 6 for 20 MHz
+    // MHz HE PPDUs and 12 for 40/80/160 MHz HE PPDUs
+    const uint32_t guardSubcarriers = (bandWidth < MHz_t{40}) ? 6 : 12;
+    const auto refRu = WifiRu::GetRuType(bandWidth);
+    const auto mc{WIFI_MOD_CLASS_HE};
+    const auto offset = WifiRu::GetSubcarrierGroup(bandWidth, refRu, 1, mc).back().second;
+    uint32_t centerFrequencyIndex = (nGuardBands / 2) + guardSubcarriers + offset;
     const auto numBandsInBand = static_cast<size_t>(bandWidth / subcarrierSpacing);
     centerFrequencyIndex += numBandsInBand * bandIndex;
     // start and stop subcarriers might be in different frequency segments, hence define a low and a
