@@ -642,19 +642,12 @@ WifiMacQueueSchedulerImpl<Priority, Compare>::DoGetNext(
                                                           : m_perAcInfo[ac].sortedQueues.begin());
                 continue;
             }
-            break;
+            return queueInfoPair.first;
         }
 
         sortedQueuesIt++;
     }
-
-    std::optional<WifiContainerQueueId> queueId;
-
-    if (sortedQueuesIt != m_perAcInfo[ac].sortedQueues.end())
-    {
-        queueId = sortedQueuesIt->second.get().first;
-    }
-    return queueId;
+    return {};
 }
 
 template <class Priority, class Compare>
