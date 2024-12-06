@@ -100,6 +100,7 @@ SOURCES = \
 	$(SRC)/flow-monitor/doc/flow-monitor.rst \
 	$(SRC)/sixlowpan/doc/sixlowpan.rst \
 	$(SRC)/lr-wpan/doc/lr-wpan.rst \
+	$(SRC)/zigbee/doc/zigbee.rst \
 
 # list all model library figure files that need to be copied to
 # $SOURCETEMP/figures.  For each figure to be included in all
@@ -370,7 +371,9 @@ SOURCEFIGS = \
 	$(SRC)/energy/doc/figures/leadacid.png \
 	$(SRC)/energy/doc/figures/liion.png \
 	$(SRC)/energy/doc/figures/nicd.png \
-	$(SRC)/energy/doc/figures/nimh.png
+	$(SRC)/energy/doc/figures/nimh.png \
+	$(SRC)/zigbee/doc/figures/manyToOne.png \
+	$(SRC)/zigbee/doc/zigbeeStackArch.dia
 
 # specify figures from which .png and .pdf figures need to be
 # generated (all dia and eps figures)
@@ -492,6 +495,7 @@ IMAGES_EPS = \
 	$(FIGURES)/lte-test-rlf-two-enb.eps \
 	$(FIGURES)/lena-radio-link-failure-one-enb.eps \
 	$(FIGURES)/lena-radio-link-failure-two-enb.eps \
+	$(FIGURES)/zigbeeStackArch.eps
 
 # rescale pdf figures as necessary
 $(FIGURES)/testbed.pdf_width = 5in
@@ -554,6 +558,7 @@ $(FIGURES)/nist-frame-success-rate-ax.pdf_width = 12cm
 $(FIGURES)/assoc-manager.pdf_width = 12cm
 $(FIGURES)/emlsr-dl-txop.pdf_width = 12cm
 $(FIGURES)/emlsr-ul-txop.pdf_width = 12cm
+$(FIGURES)/zigbeeStackArch.pdf_width = 8cm
 
 IMAGES_PNG = ${IMAGES_EPS:.eps=.png}
 IMAGES_PDF = ${IMAGES_EPS:.eps=.pdf}
