@@ -100,6 +100,11 @@ function(check_for_missing_libraries output_variable_name libraries)
       continue()
     endif()
 
+    # Match external imported targets out
+    if(lib MATCHES "^(ns3::)?[^:]+::.+$")
+      continue()
+    endif()
+
     # check if the example depends on disabled modules
     remove_lib_prefix("${lib}" lib)
 
