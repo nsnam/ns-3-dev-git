@@ -93,8 +93,8 @@ enum class FrequencyChannelType : uint8_t
  */
 struct FrequencyRange
 {
-    double minFrequency{0.0}; ///< the minimum frequency in MHz
-    double maxFrequency{0.0}; ///< the maximum frequency in MHz
+    MHz_u minFrequency{0.0}; ///< the minimum frequency
+    MHz_u maxFrequency{0.0}; ///< the maximum frequency
 
     /**
      * @brief spaceship operator.
