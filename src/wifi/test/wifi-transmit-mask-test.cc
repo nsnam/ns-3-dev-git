@@ -261,9 +261,9 @@ WifiOfdmMaskSlopesTestCase::InterpolateAndAppendValues(IndexPowerVect& vect,
     double slope = (stop.second - start.second) / (stop.first - start.first);
     for (uint32_t i = start.first; i <= stop.first; i++)
     {
-        double val = start.second + slope * (i - start.first);
+        dB_u val = start.second + slope * (i - start.first);
         double multiplier = std::round(std::pow(10.0, static_cast<double>(m_precision)));
-        val = std::floor(val * multiplier + 0.5) / multiplier;
+        val = dB_u{std::floor(val * multiplier + 0.5) / multiplier};
         vect.emplace_back(i, val);
         NS_LOG_LOGIC("Append (" << i << ", " << val << ")");
     }
@@ -282,13 +282,13 @@ WifiOfdmMaskSlopesTestCase::DoRun()
          vit != m_actualSpectrum->ConstValuesEnd();
          ++vit)
     {
-        maxPower = std::max(maxPower, *vit);
+        maxPower = std::max(maxPower, Watt_u{*vit});
     }
 
     NS_LOG_INFO("Compare expected PSD");
     for (const auto& [subcarrier, expectedValue] : m_expectedPsd)
     {
-        currentPower = 10.0 * std::log10((*m_actualSpectrum)[subcarrier] / maxPower);
+        currentPower = dBr_u{10.0 * std::log10((*m_actualSpectrum)[subcarrier] / maxPower)};
         NS_LOG_LOGIC("For " << subcarrier << ", expected: " << expectedValue
                             << " vs obtained: " << currentPower);
         NS_TEST_EXPECT_MSG_EQ_TOL(currentPower,

@@ -987,7 +987,8 @@ class WifiPhy : public Object
      * @return the bandwidth for the transmission
      */
     MHz_u GetTxBandwidth(WifiMode mode,
-                         MHz_u maxAllowedBandWidth = std::numeric_limits<MHz_u>::max()) const;
+                         MHz_u maxAllowedBandWidth = MHz_u{
+                             std::numeric_limits<double>::max()}) const;
     /**
      * @param antennas the number of antennas on this node.
      */

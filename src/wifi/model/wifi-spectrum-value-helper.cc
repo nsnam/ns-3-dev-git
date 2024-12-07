@@ -892,7 +892,7 @@ WifiSpectrumValueHelper::CreateSpectrumMaskForOfdm(
                  (i <= betweenPsdsBand->second && i >= betweenPsdsBand->first))
         {
             // value for PSD mask 1
-            std::vector<double> txPowerWPsds(2);
+            std::vector<Watt_u> txPowerWPsds(2);
             if (i <= middleBandsRight.at(0).second && i >= middleBandsRight.at(0).first)
             {
                 txPowerWPsds.at(0) =

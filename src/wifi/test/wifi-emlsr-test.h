@@ -817,7 +817,7 @@ class EmlsrLinkSwitchTest : public EmlsrOperationsTestBase
                                               //!< with the link on which the main PHY has just
                                               //!< switched to, the second value controls whether
                                               //!< a main PHY channel switch can be interrupted
-        MHz_u auxPhyMaxChWidth;               //!< max channel width (MHz) supported by aux PHYs
+        MHz_u auxPhyMaxChWidth;               //!< max channel width supported by aux PHYs
     };
 
     /**
@@ -886,7 +886,7 @@ class EmlsrLinkSwitchTest : public EmlsrOperationsTestBase
         m_resetCamStateAndInterruptSwitch; /**< whether to reset the state of the
                               ChannelAccessManager associated with the link on which the main PHY
                               has just switched to and whether main PHY switch can be interrupted */
-    MHz_u m_auxPhyMaxChWidth;              //!< max channel width (MHz) supported by aux PHYs
+    MHz_u m_auxPhyMaxChWidth;              //!< max channel width supported by aux PHYs
     std::size_t m_countQoSframes;          //!< counter for QoS data frames
     std::size_t m_countIcfFrames;          //!< counter for ICF frames
     std::size_t m_countRtsFrames;          //!< counter for RTS frames
@@ -931,9 +931,9 @@ class EmlsrCcaBusyTest : public EmlsrOperationsTestBase
     /**
      * Constructor
      *
-     * @param auxPhyMaxChWidth max channel width (MHz) supported by aux PHYs
+     * @param auxPhyMaxChWidth max channel width supported by aux PHYs
      */
-    EmlsrCcaBusyTest(uint16_t auxPhyMaxChWidth);
+    EmlsrCcaBusyTest(MHz_u auxPhyMaxChWidth);
 
     ~EmlsrCcaBusyTest() override = default;
 
@@ -966,7 +966,7 @@ class EmlsrCcaBusyTest : public EmlsrOperationsTestBase
      */
     void CheckPoint3();
 
-    uint16_t m_auxPhyMaxChWidth; //!< max channel width (MHz) supported by aux PHYs
+    MHz_u m_auxPhyMaxChWidth;    //!< max channel width supported by aux PHYs
     Time m_channelSwitchDelay;   //!< the PHY channel switch delay
     uint8_t m_currMainPhyLinkId; //!< the ID of the link the main PHY switches from
     uint8_t m_nextMainPhyLinkId; //!< the ID of the link the main PHY switches to

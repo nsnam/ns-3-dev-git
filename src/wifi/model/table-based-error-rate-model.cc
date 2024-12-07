@@ -70,7 +70,7 @@ TableBasedErrorRateModel::RoundSnr(dB_u snr, double precision) const
 {
     NS_LOG_FUNCTION(this << snr);
     const auto multiplier = std::round(std::pow(10.0, precision));
-    return std::floor(snr * multiplier + 0.5) / multiplier;
+    return dB_u{std::floor(snr * multiplier + 0.5) / multiplier};
 }
 
 std::optional<uint8_t>

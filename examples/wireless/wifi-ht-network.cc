@@ -267,8 +267,10 @@ main(int argc, char* argv[])
                 apNodeInterface = address.Assign(apDevice);
 
                 /* Setting applications */
-                const auto maxLoad =
-                    HtPhy::GetDataRate(mcs, width, NanoSeconds(sgi ? 400 : 800), 1);
+                const auto maxLoad = HtPhy::GetDataRate(mcs,
+                                                        MHz_u{static_cast<double>(width)},
+                                                        NanoSeconds(sgi ? 400 : 800),
+                                                        1);
                 ApplicationContainer serverApp;
                 if (udp)
                 {

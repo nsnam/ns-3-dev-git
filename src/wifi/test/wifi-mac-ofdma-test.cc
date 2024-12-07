@@ -400,7 +400,7 @@ class OfdmaAckSequenceTest : public TestCase
      */
     struct Params
     {
-        MHz_u channelWidth;                     ///< PHY channel bandwidth in MHz
+        MHz_u channelWidth;                     ///< PHY channel bandwidth
         WifiAcknowledgment::Method dlMuAckType; ///< DL MU ack sequence type
         uint32_t maxAmpduSize;                  ///< maximum A-MPDU size in bytes
         uint16_t txopLimit;                     ///< TXOP limit in microseconds

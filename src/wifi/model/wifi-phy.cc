@@ -724,7 +724,7 @@ WifiPhy::GetPower(uint8_t powerLevel) const
     dBm_u dbm;
     if (m_nTxPower > 1)
     {
-        dbm = m_txPowerBase + powerLevel * (m_txPowerEnd - m_txPowerBase) / (m_nTxPower - 1);
+        dbm = m_txPowerBase + dB_u{powerLevel * (m_txPowerEnd - m_txPowerBase) / (m_nTxPower - 1)};
     }
     else
     {

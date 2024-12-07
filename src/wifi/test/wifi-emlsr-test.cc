@@ -4693,7 +4693,7 @@ EmlsrLinkSwitchTest::CheckResults()
     }
 }
 
-EmlsrCcaBusyTest::EmlsrCcaBusyTest(uint16_t auxPhyMaxChWidth)
+EmlsrCcaBusyTest::EmlsrCcaBusyTest(MHz_u auxPhyMaxChWidth)
     : EmlsrOperationsTestBase(std::string("Check EMLSR link switching (auxPhyMaxChWidth=") +
                               std::to_string(auxPhyMaxChWidth) + "MHz )"),
       m_auxPhyMaxChWidth(auxPhyMaxChWidth),

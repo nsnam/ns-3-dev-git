@@ -177,7 +177,7 @@ class SpectrumWifiPhy : public WifiPhy
      */
     static uint32_t GetNumBandsBetweenSegments(const std::vector<MHz_u>& centerFrequencies,
                                                MHz_u totalWidth,
-                                               uint32_t subcarrierSpacing);
+                                               Hz_u subcarrierSpacing);
 
     /**
      * @param callback the callback to invoke when operating channel has switched.

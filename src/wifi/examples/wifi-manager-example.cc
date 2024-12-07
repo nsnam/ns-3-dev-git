@@ -210,8 +210,8 @@ main(int argc, char* argv[])
     uint16_t clientNss = 1;
     uint16_t serverShortGuardInterval = 800;
     uint16_t clientShortGuardInterval = 800;
-    uint16_t serverChannelWidth = 0; // use default for standard and band
-    uint16_t clientChannelWidth = 0; // use default for standard and band
+    MHz_u serverChannelWidth{0}; // use default for standard and band
+    MHz_u clientChannelWidth{0}; // use default for standard and band
     std::string wifiManager("Ideal");
     std::string standard("802.11a");
     StandardInfo serverSelectedStandard;

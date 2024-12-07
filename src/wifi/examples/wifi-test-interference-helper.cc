@@ -77,8 +77,8 @@ class InterferenceExperiment
         meter_u xB;            ///< x B
         std::string txModeA;   ///< transmit mode A
         std::string txModeB;   ///< transmit mode B
-        double txPowerLevelA;  ///< transmit power level A
-        double txPowerLevelB;  ///< transmit power level B
+        dBm_u txPowerLevelA;   ///< transmit power level A
+        dBm_u txPowerLevelB;   ///< transmit power level B
         uint32_t packetSizeA;  ///< packet size A
         uint32_t packetSizeB;  ///< packet size B
         uint16_t channelA;     ///< channel number A
@@ -89,7 +89,7 @@ class InterferenceExperiment
         WifiPhyBand band;      ///< band
         WifiPreamble preamble; ///< preamble
         bool captureEnabled;   ///< whether physical layer capture is enabled
-        double captureMargin;  ///< margin used for physical layer capture
+        dB_u captureMargin;    ///< margin used for physical layer capture
     };
 
     InterferenceExperiment();

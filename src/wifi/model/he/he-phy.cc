@@ -1228,7 +1228,7 @@ HePhy::GetPer20MHzDurations(const Ptr<const WifiPpdu> ppdu)
             if (ppduBw <= m_wifiPhy->GetChannelWidth() &&
                 ppdu->DoesOverlapChannel(subchannelMinFreq, subchannelMaxFreq))
             {
-                std::optional<double> obssPdLevel{std::nullopt};
+                std::optional<dBm_u> obssPdLevel{std::nullopt};
                 if (m_obssPdAlgorithm)
                 {
                     obssPdLevel = m_obssPdAlgorithm->GetObssPdLevel();

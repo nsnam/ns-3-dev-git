@@ -684,7 +684,7 @@ SpectrumWifiPhy::GetGuardBandwidth(MHz_u currentChannelWidth) const
 uint32_t
 SpectrumWifiPhy::GetNumBandsBetweenSegments(const std::vector<MHz_u>& centerFrequencies,
                                             MHz_u totalWidth,
-                                            uint32_t subcarrierSpacing)
+                                            Hz_u subcarrierSpacing)
 {
     const auto numSegments = centerFrequencies.size();
     NS_ABORT_MSG_IF(numSegments > 2, "Only 2 non-contiguous frequency segments are supported");
@@ -789,7 +789,7 @@ SpectrumWifiPhy::ConvertIndicesToFrequenciesForInterface(
     auto startGuardBand = rxSpectrumModel->Begin();
     auto startChannel = std::next(startGuardBand, indices.first);
     auto endChannel = std::next(startGuardBand, indices.second + 1);
-    return {startChannel->fc, endChannel->fc};
+    return {Hz_u{startChannel->fc}, Hz_u{endChannel->fc}};
 }
 
 std::tuple<dBr_u, dBr_u, dBr_u>

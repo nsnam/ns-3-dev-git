@@ -302,7 +302,7 @@ NodeStatistics::PhyCallback(std::string path, Ptr<const Packet> packet, double p
 void
 NodeStatistics::PowerCallback(std::string path, double oldPower, double newPower, Mac48Address dest)
 {
-    m_currentPower[dest] = newPower;
+    m_currentPower[dest] = dBm_u{newPower};
 }
 
 void

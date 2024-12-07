@@ -665,31 +665,32 @@ TestInterBssConstantObssPdAlgo::NotifyPhyTxBegin(std::string context,
 {
     uint32_t idx = ConvertContextToNodeId(context);
     uint32_t pktSize = p->GetSize() - 38;
+    Watt_u txPower{txPowerW};
     if ((idx == 0) && ((pktSize == m_payloadSize1) || (pktSize == (m_payloadSize1 / 10))))
     {
         m_numSta1PacketsSent++;
-        NS_TEST_EXPECT_MSG_EQ(TestDoubleIsEqual(WToDbm(txPowerW), m_expectedTxPower, 1e-12),
+        NS_TEST_EXPECT_MSG_EQ(TestDoubleIsEqual(WToDbm(txPower), m_expectedTxPower, 1e-12),
                               true,
                               "Tx power is not correct!");
     }
     else if ((idx == 1) && ((pktSize == m_payloadSize2) || (pktSize == (m_payloadSize2 / 10))))
     {
         m_numSta2PacketsSent++;
-        NS_TEST_EXPECT_MSG_EQ(TestDoubleIsEqual(WToDbm(txPowerW), m_expectedTxPower, 1e-12),
+        NS_TEST_EXPECT_MSG_EQ(TestDoubleIsEqual(WToDbm(txPower), m_expectedTxPower, 1e-12),
                               true,
                               "Tx power is not correct!");
     }
     else if ((idx == 3) && ((pktSize == m_payloadSize1) || (pktSize == (m_payloadSize1 / 10))))
     {
         m_numAp1PacketsSent++;
-        NS_TEST_EXPECT_MSG_EQ(TestDoubleIsEqual(WToDbm(txPowerW), m_expectedTxPower, 1e-12),
+        NS_TEST_EXPECT_MSG_EQ(TestDoubleIsEqual(WToDbm(txPower), m_expectedTxPower, 1e-12),
                               true,
                               "Tx power is not correct!");
     }
     else if ((idx == 4) && ((pktSize == m_payloadSize2) || (pktSize == (m_payloadSize2 / 10))))
     {
         m_numAp2PacketsSent++;
-        NS_TEST_EXPECT_MSG_EQ(TestDoubleIsEqual(WToDbm(txPowerW), m_expectedTxPower, 1e-12),
+        NS_TEST_EXPECT_MSG_EQ(TestDoubleIsEqual(WToDbm(txPower), m_expectedTxPower, 1e-12),
                               true,
                               "Tx power is not correct!");
     }

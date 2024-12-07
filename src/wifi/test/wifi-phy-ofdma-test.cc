@@ -3555,7 +3555,7 @@ TestUlOfdmaPhyTransmission::CheckOfdmaRxPower(Ptr<OfdmaSpectrumWifiPhy> phy,
      * duration when calling GetEnergyDuration.
      */
     NS_LOG_FUNCTION(this << band << expectedRxPower);
-    double step = 5e-3;
+    Watt_u step{5e-3};
     if (expectedRxPower > 0.0)
     {
         NS_TEST_ASSERT_MSG_EQ(
