@@ -324,9 +324,9 @@ OnoeWifiManager::DoGetDataTxVector(WifiRemoteStation* st, MHz_u allowedWidth)
         }
     }
     auto channelWidth = GetChannelWidth(station);
-    if (channelWidth > 20 && channelWidth != 22)
+    if (channelWidth > MHz_u{20} && channelWidth != MHz_u{22})
     {
-        channelWidth = 20;
+        channelWidth = MHz_u{20};
     }
     WifiMode mode = GetSupported(station, rateIndex);
     uint64_t rate = mode.GetDataRate(channelWidth);
@@ -353,9 +353,9 @@ OnoeWifiManager::DoGetRtsTxVector(WifiRemoteStation* st)
     NS_LOG_FUNCTION(this << st);
     auto station = static_cast<OnoeWifiRemoteStation*>(st);
     auto channelWidth = GetChannelWidth(station);
-    if (channelWidth > 20 && channelWidth != 22)
+    if (channelWidth > MHz_u{20} && channelWidth != MHz_u{22})
     {
-        channelWidth = 20;
+        channelWidth = MHz_u{20};
     }
     UpdateMode(station);
     WifiMode mode;

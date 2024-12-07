@@ -33,7 +33,7 @@ void
 ErpOfdmPpdu::SetTxVectorFromLSigHeader(WifiTxVector& txVector, const LSigHeader& lSig) const
 {
     txVector.SetMode(ErpOfdmPhy::GetErpOfdmRate(lSig.GetRate()));
-    txVector.SetChannelWidth(20);
+    txVector.SetChannelWidth(MHz_u{20});
 }
 
 Ptr<WifiPpdu>

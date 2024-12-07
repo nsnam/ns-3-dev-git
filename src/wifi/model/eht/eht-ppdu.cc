@@ -48,18 +48,19 @@ EhtPpdu::SetEhtPhyHeader(const WifiTxVector& txVector)
     NS_ASSERT(bssColor < 64);
     if (ns3::IsDlMu(m_preamble))
     {
-        const auto p20Index = m_operatingChannel.GetPrimaryChannelIndex(20);
+        const auto p20Index = m_operatingChannel.GetPrimaryChannelIndex(MHz_u{20});
         m_ehtPhyHeader.emplace<EhtMuPhyHeader>(EhtMuPhyHeader{
             .m_bandwidth = GetChannelWidthEncodingFromMhz(txVector.GetChannelWidth()),
             .m_bssColor = bssColor,
             .m_ppduType = txVector.GetEhtPpduType(),
             // TODO: EHT PPDU should store U-SIG per 20 MHz band, assume it is the lowest 20 MHz
             // band for now
-            .m_puncturedChannelInfo = GetPuncturedInfo(
-                txVector.GetInactiveSubchannels(),
-                txVector.GetEhtPpduType(),
-                (txVector.IsDlMu() && (txVector.GetChannelWidth() > 80)) ? std::optional{true}
-                                                                         : std::nullopt),
+            .m_puncturedChannelInfo =
+                GetPuncturedInfo(txVector.GetInactiveSubchannels(),
+                                 txVector.GetEhtPpduType(),
+                                 (txVector.IsDlMu() && (txVector.GetChannelWidth() > MHz_u{80}))
+                                     ? std::optional{true}
+                                     : std::nullopt),
             .m_ehtSigMcs = txVector.GetSigBMode().GetMcsValue(),
             .m_giLtfSize = GetGuardIntervalAndNltfEncoding(txVector.GetGuardInterval(),
                                                            2 /*NLTF currently unused*/),
@@ -127,7 +128,7 @@ EhtPpdu::SetTxVectorFromPhyHeaders(WifiTxVector& txVector) const
         txVector.SetChannelWidth(bw);
         txVector.SetBssColor(ehtPhyHeader->m_bssColor);
         txVector.SetEhtPpduType(ehtPhyHeader->m_ppduType);
-        if (bw > 80)
+        if (bw > MHz_u{80})
         {
             // TODO: use punctured channel information
         }
@@ -135,7 +136,7 @@ EhtPpdu::SetTxVectorFromPhyHeaders(WifiTxVector& txVector) const
         txVector.SetGuardInterval(GetGuardIntervalFromEncoding(ehtPhyHeader->m_giLtfSize));
         const auto ruAllocation = ehtPhyHeader->m_ruAllocationA; // RU Allocation-B not supported
                                                                  // yet
-        if (const auto p20Index = m_operatingChannel.GetPrimaryChannelIndex(20);
+        if (const auto p20Index = m_operatingChannel.GetPrimaryChannelIndex(MHz_u{20});
             ruAllocation.has_value())
         {
             txVector.SetRuAllocation(ruAllocation.value(), p20Index);
@@ -213,14 +214,15 @@ EhtPpdu::GetEhtSigFieldSize(MHz_u channelWidth,
     if (!compression)
     {
         commonFieldSize = 4 /* CRC */ + 6 /* tail */;
-        if (channelWidth <= 40)
+        if (channelWidth <= MHz_u{40})
         {
             commonFieldSize += 8; // only one allocation subfield
         }
         else
         {
             commonFieldSize +=
-                8 * (channelWidth / 40) /* one allocation field per 40 MHz */ + 1 /* center RU */;
+                8 * (channelWidth / MHz_u{40}) /* one allocation field per 40 MHz */ +
+                1 /* center RU */;
         }
     }
 

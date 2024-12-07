@@ -916,7 +916,7 @@ void
 WifiPhy::Configure80211p()
 {
     NS_LOG_FUNCTION(this);
-    if (GetChannelWidth() == 10)
+    if (GetChannelWidth() == MHz_u{10})
     {
         AddPhyEntity(WIFI_MOD_CLASS_OFDM, Create<OfdmPhy>(OFDM_PHY_10_MHZ));
 
@@ -926,7 +926,7 @@ WifiPhy::Configure80211p()
         SetPifs(GetSifs() + GetSlot());
         m_ackTxTime = MicroSeconds(88);
     }
-    else if (GetChannelWidth() == 5)
+    else if (GetChannelWidth() == MHz_u{5})
     {
         AddPhyEntity(WIFI_MOD_CLASS_OFDM, Create<OfdmPhy>(OFDM_PHY_5_MHZ));
 
@@ -1104,7 +1104,7 @@ WifiPhy::GetChannelWidth() const
 uint8_t
 WifiPhy::GetPrimary20Index() const
 {
-    return m_operatingChannel.GetPrimaryChannelIndex(20);
+    return m_operatingChannel.GetPrimaryChannelIndex(MHz_u{20});
 }
 
 void
@@ -1125,7 +1125,7 @@ WifiPhy::GetTxBandwidth(WifiMode mode, MHz_u maxAllowedWidth) const
     auto modulation = mode.GetModulationClass();
     if (modulation == WIFI_MOD_CLASS_DSSS || modulation == WIFI_MOD_CLASS_HR_DSSS)
     {
-        return 22;
+        return MHz_u{22};
     }
 
     return std::min({GetChannelWidth(), GetMaximumChannelWidth(modulation), maxAllowedWidth});
@@ -1141,7 +1141,7 @@ WifiPhy::SetOperatingChannel(const WifiPhyOperatingChannel& channel)
         segments.emplace_back(channel.GetNumber(segmentId),
                               channel.GetWidth(segmentId),
                               channel.GetPhyBand(),
-                              channel.GetPrimaryChannelIndex(20));
+                              channel.GetPrimaryChannelIndex(MHz_u{20}));
     }
     SetOperatingChannel(segments);
 }
@@ -1246,7 +1246,7 @@ WifiPhy::DoChannelSwitch()
         {
             band = GetDefaultPhyBand(m_standard);
         }
-        if (width == 0 && number == 0)
+        if (width == MHz_u{0} && number == 0)
         {
             width = GetDefaultChannelWidth(m_standard, static_cast<WifiPhyBand>(band));
         }
@@ -1279,7 +1279,7 @@ WifiPhy::DoChannelSwitch()
                    std::back_inserter(segments),
                    [this](const auto& channelTuple) {
                        return FrequencyChannelInfo{std::get<0>(channelTuple),
-                                                   0,
+                                                   MHz_u{0},
                                                    std::get<1>(channelTuple),
                                                    m_band};
                    });
@@ -1292,7 +1292,7 @@ WifiPhy::DoChannelSwitch()
     if (m_device)
     {
         if (auto htConfig = m_device->GetHtConfiguration();
-            htConfig && !htConfig->m_40MHzSupported && chWidth > 20)
+            htConfig && !htConfig->m_40MHzSupported && chWidth > MHz_u{20})
         {
             NS_ABORT_MSG("Attempting to set a " << chWidth
                                                 << " MHz channel on"
@@ -1300,7 +1300,7 @@ WifiPhy::DoChannelSwitch()
         }
 
         if (auto vhtConfig = m_device->GetVhtConfiguration();
-            vhtConfig && !vhtConfig->m_160MHzSupported && chWidth > 80)
+            vhtConfig && !vhtConfig->m_160MHzSupported && chWidth > MHz_u{80})
         {
             NS_ABORT_MSG("Attempting to set a " << chWidth
                                                 << " MHz channel on"
@@ -2376,21 +2376,21 @@ WifiPhy::GetSubcarrierSpacing() const
     case WIFI_STANDARD_80211b:
     case WIFI_STANDARD_80211n:
     case WIFI_STANDARD_80211ac:
-        subcarrierSpacing = 312500;
+        subcarrierSpacing = Hz_u{312500};
         break;
     case WIFI_STANDARD_80211p:
-        if (GetChannelWidth() == 5)
+        if (GetChannelWidth() == MHz_u{5})
         {
-            subcarrierSpacing = 78125;
+            subcarrierSpacing = Hz_u{78125};
         }
         else
         {
-            subcarrierSpacing = 156250;
+            subcarrierSpacing = Hz_u{156250};
         }
         break;
     case WIFI_STANDARD_80211ax:
     case WIFI_STANDARD_80211be:
-        subcarrierSpacing = 78125;
+        subcarrierSpacing = Hz_u{78125};
         break;
     default:
         NS_FATAL_ERROR("Standard unknown: " << GetStandard());

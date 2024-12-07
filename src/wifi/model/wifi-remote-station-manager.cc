@@ -1502,7 +1502,7 @@ WifiRemoteStationManager::Lookup(Mac48Address address) const
 
     WifiRemoteStation* station = DoCreateStation();
     station->m_state = LookupState(address).get();
-    station->m_rssiAndUpdateTimePair = std::make_pair(0, Seconds(0));
+    station->m_rssiAndUpdateTimePair = std::make_pair(dBm_u{0}, Seconds(0));
     const_cast<WifiRemoteStationManager*>(this)->m_stations.insert({address, station});
     return station;
 }
@@ -1537,11 +1537,11 @@ WifiRemoteStationManager::AddStationHtCapabilities(Mac48Address from,
     auto state = LookupState(from);
     if (htCapabilities.GetSupportedChannelWidth() == 1)
     {
-        state->m_channelWidth = 40;
+        state->m_channelWidth = MHz_u{40};
     }
     else
     {
-        state->m_channelWidth = 20;
+        state->m_channelWidth = MHz_u{20};
     }
     SetQosSupport(from, true);
     for (const auto& mcs : m_wifiPhy->GetMcsList(WIFI_MOD_CLASS_HT))
@@ -1573,11 +1573,11 @@ WifiRemoteStationManager::AddStationVhtCapabilities(Mac48Address from,
     auto state = LookupState(from);
     if (vhtCapabilities.GetSupportedChannelWidthSet() == 1)
     {
-        state->m_channelWidth = 160;
+        state->m_channelWidth = MHz_u{160};
     }
     else
     {
-        state->m_channelWidth = 80;
+        state->m_channelWidth = MHz_u{80};
     }
     for (uint8_t i = 1; i <= m_wifiPhy->GetMaxSupportedTxSpatialStreams(); i++)
     {
@@ -1604,11 +1604,11 @@ WifiRemoteStationManager::AddStationHeCapabilities(Mac48Address from,
     {
         if (heCapabilities.GetChannelWidthSet() & 0x04)
         {
-            state->m_channelWidth = 160;
+            state->m_channelWidth = MHz_u{160};
         }
         else if (heCapabilities.GetChannelWidthSet() & 0x02)
         {
-            state->m_channelWidth = 80;
+            state->m_channelWidth = MHz_u{80};
         }
         // For other cases at 5 GHz, the supported channel width is set by the VHT capabilities
     }
@@ -1616,11 +1616,11 @@ WifiRemoteStationManager::AddStationHeCapabilities(Mac48Address from,
     {
         if (heCapabilities.GetChannelWidthSet() & 0x01)
         {
-            state->m_channelWidth = 40;
+            state->m_channelWidth = MHz_u{40};
         }
         else
         {
-            state->m_channelWidth = 20;
+            state->m_channelWidth = MHz_u{20};
         }
     }
     if (heCapabilities.GetHeSuPpdu1xHeLtf800nsGi())

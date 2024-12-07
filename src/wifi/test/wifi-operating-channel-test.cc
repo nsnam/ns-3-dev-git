@@ -134,82 +134,89 @@ SetWifiOperatingChannelTest::DoRun()
            true);
 
     RunOne("default 20 MHz OFDM channel operating on channel 36",
-           {{36, 0, 20, WIFI_PHY_BAND_5GHZ}},
+           {{36, MHz_u{0}, MHz_u{20}, WIFI_PHY_BAND_5GHZ}},
            WIFI_STANDARD_UNSPECIFIED,
            WIFI_PHY_BAND_UNSPECIFIED,
            false,
            WifiChannelWidthType::CW_20MHZ,
-           {{36, 5180, 20, WIFI_PHY_BAND_5GHZ, FrequencyChannelType::OFDM}});
+           {{36, MHz_u{5180}, MHz_u{20}, WIFI_PHY_BAND_5GHZ, FrequencyChannelType::OFDM}});
 
     RunOne("default 40 MHz OFDM channel operating on channel 38",
-           {{38, 0, 40, WIFI_PHY_BAND_5GHZ}},
+           {{38, MHz_u{0}, MHz_u{40}, WIFI_PHY_BAND_5GHZ}},
            WIFI_STANDARD_UNSPECIFIED,
            WIFI_PHY_BAND_UNSPECIFIED,
            false,
            WifiChannelWidthType::CW_40MHZ,
-           {{38, 5190, 40, WIFI_PHY_BAND_5GHZ, FrequencyChannelType::OFDM}});
+           {{38, MHz_u{5190}, MHz_u{40}, WIFI_PHY_BAND_5GHZ, FrequencyChannelType::OFDM}});
 
     RunOne("default 80 MHz OFDM channel operating on channel 42",
-           {{42, 0, 80, WIFI_PHY_BAND_5GHZ}},
+           {{42, MHz_u{0}, MHz_u{80}, WIFI_PHY_BAND_5GHZ}},
            WIFI_STANDARD_UNSPECIFIED,
            WIFI_PHY_BAND_UNSPECIFIED,
            false,
            WifiChannelWidthType::CW_80MHZ,
-           {{42, 5210, 80, WIFI_PHY_BAND_5GHZ, FrequencyChannelType::OFDM}});
+           {{42, MHz_u{5210}, MHz_u{80}, WIFI_PHY_BAND_5GHZ, FrequencyChannelType::OFDM}});
 
     RunOne("default 160 MHz (contiguous) OFDM channel operating on channel 50",
-           {{50, 0, 160, WIFI_PHY_BAND_5GHZ}},
+           {{50, MHz_u{0}, MHz_u{160}, WIFI_PHY_BAND_5GHZ}},
            WIFI_STANDARD_UNSPECIFIED,
            WIFI_PHY_BAND_UNSPECIFIED,
            false,
            WifiChannelWidthType::CW_160MHZ,
-           {{50, 5250, 160, WIFI_PHY_BAND_5GHZ, FrequencyChannelType::OFDM}});
+           {{50, MHz_u{5250}, MHz_u{160}, WIFI_PHY_BAND_5GHZ, FrequencyChannelType::OFDM}});
 
     RunOne("valid 80+80 MHz (non-contiguous) OFDM channel operating on channels 42 and 106",
-           {{42, 0, 80, WIFI_PHY_BAND_5GHZ}, {106, 0, 80, WIFI_PHY_BAND_5GHZ}},
+           {{42, MHz_u{0}, MHz_u{80}, WIFI_PHY_BAND_5GHZ},
+            {106, MHz_u{0}, MHz_u{80}, WIFI_PHY_BAND_5GHZ}},
            WIFI_STANDARD_UNSPECIFIED,
            WIFI_PHY_BAND_UNSPECIFIED,
            false,
            WifiChannelWidthType::CW_80_PLUS_80MHZ,
-           {{42, 5210, 80, WIFI_PHY_BAND_5GHZ, FrequencyChannelType::OFDM},
-            {106, 5530, 80, WIFI_PHY_BAND_5GHZ, FrequencyChannelType::OFDM}});
+           {{42, MHz_u{5210}, MHz_u{80}, WIFI_PHY_BAND_5GHZ, FrequencyChannelType::OFDM},
+            {106, MHz_u{5530}, MHz_u{80}, WIFI_PHY_BAND_5GHZ, FrequencyChannelType::OFDM}});
 
     RunOne("invalid 80+80 MHz (non-contiguous) OFDM channel higher channel not being 80 MHz",
-           {{42, 0, 80, WIFI_PHY_BAND_5GHZ}, {102, 0, 80, WIFI_PHY_BAND_5GHZ}},
+           {{42, MHz_u{0}, MHz_u{80}, WIFI_PHY_BAND_5GHZ},
+            {102, MHz_u{0}, MHz_u{80}, WIFI_PHY_BAND_5GHZ}},
            WIFI_STANDARD_UNSPECIFIED,
            WIFI_PHY_BAND_UNSPECIFIED,
            true);
 
     RunOne("invalid 80+80 MHz (non-contiguous) OFDM channel lower channel not being 80 MHz",
-           {{36, 0, 20, WIFI_PHY_BAND_5GHZ}, {106, 0, 80, WIFI_PHY_BAND_5GHZ}},
+           {{36, MHz_u{0}, MHz_u{20}, WIFI_PHY_BAND_5GHZ},
+            {106, MHz_u{0}, MHz_u{80}, WIFI_PHY_BAND_5GHZ}},
            WIFI_STANDARD_UNSPECIFIED,
            WIFI_PHY_BAND_UNSPECIFIED,
            true);
 
     RunOne("invalid 80+80 MHz (non-contiguous) OFDM channel with both segments configured on the "
            "same channel",
-           {{42, 0, 80, WIFI_PHY_BAND_5GHZ}, {42, 0, 80, WIFI_PHY_BAND_5GHZ}},
+           {{42, MHz_u{0}, MHz_u{80}, WIFI_PHY_BAND_5GHZ},
+            {42, MHz_u{0}, MHz_u{80}, WIFI_PHY_BAND_5GHZ}},
            WIFI_STANDARD_UNSPECIFIED,
            WIFI_PHY_BAND_UNSPECIFIED,
            true);
 
     RunOne("invalid 80+80 MHz (non-contiguous) OFDM channel with segments configured to be "
            "contiguous (lower before higher)",
-           {{42, 0, 80, WIFI_PHY_BAND_5GHZ}, {58, 0, 80, WIFI_PHY_BAND_5GHZ}},
+           {{42, MHz_u{0}, MHz_u{80}, WIFI_PHY_BAND_5GHZ},
+            {58, MHz_u{0}, MHz_u{80}, WIFI_PHY_BAND_5GHZ}},
            WIFI_STANDARD_UNSPECIFIED,
            WIFI_PHY_BAND_UNSPECIFIED,
            true);
 
     RunOne("invalid 80+80 MHz (non-contiguous) OFDM channel with segments configured to be "
            "contiguous (higher before lower)",
-           {{58, 0, 80, WIFI_PHY_BAND_5GHZ}, {42, 0, 80, WIFI_PHY_BAND_5GHZ}},
+           {{58, MHz_u{0}, MHz_u{80}, WIFI_PHY_BAND_5GHZ},
+            {42, MHz_u{0}, MHz_u{80}, WIFI_PHY_BAND_5GHZ}},
            WIFI_STANDARD_UNSPECIFIED,
            WIFI_PHY_BAND_UNSPECIFIED,
            true);
 
     RunOne("invalid 80+80 MHz (non-contiguous) OFDM channel with each segments configured on a "
            "different band",
-           {{42, 0, 80, WIFI_PHY_BAND_5GHZ}, {215, 0, 80, WIFI_PHY_BAND_6GHZ}},
+           {{42, MHz_u{0}, MHz_u{80}, WIFI_PHY_BAND_5GHZ},
+            {215, MHz_u{0}, MHz_u{80}, WIFI_PHY_BAND_6GHZ}},
            WIFI_STANDARD_UNSPECIFIED,
            WIFI_PHY_BAND_UNSPECIFIED,
            true);
@@ -340,7 +347,7 @@ PhyChannelSettingsToOperatingChannelTest::RunOne(
                                   << channelSettings);
     }
 
-    NS_TEST_ASSERT_MSG_EQ(m_phy->GetOperatingChannel().GetPrimaryChannelIndex(20),
+    NS_TEST_ASSERT_MSG_EQ(m_phy->GetOperatingChannel().GetPrimaryChannelIndex(MHz_u{20}),
                           expectedP20Index,
                           "Operating channel has an incorrect P20 index for channel settings "
                               << channelSettings);
@@ -355,19 +362,21 @@ PhyChannelSettingsToOperatingChannelTest::DoRun()
     // Test default with a single frequency segment
     RunOne("{0, 0, BAND_UNSPECIFIED, 0}",
            WifiChannelWidthType::CW_80MHZ,
-           {{42, 5210, 80, WIFI_PHY_BAND_5GHZ}},
+           {{42, MHz_u{5210}, MHz_u{80}, WIFI_PHY_BAND_5GHZ}},
            0);
 
     // Test default with two frequency segments unspecified
     RunOne("{0, 0, BAND_UNSPECIFIED, 0};{0, 0, BAND_UNSPECIFIED, 0}",
            WifiChannelWidthType::CW_80_PLUS_80MHZ,
-           {{42, 5210, 80, WIFI_PHY_BAND_5GHZ}, {106, 5530, 80, WIFI_PHY_BAND_5GHZ}},
+           {{42, MHz_u{5210}, MHz_u{80}, WIFI_PHY_BAND_5GHZ},
+            {106, MHz_u{5530}, MHz_u{80}, WIFI_PHY_BAND_5GHZ}},
            0);
 
     // Test default with two frequency segments and first is specified (but equals default)
     RunOne("{42, 0, BAND_UNSPECIFIED, 0};{0, 0, BAND_UNSPECIFIED, 0}",
            WifiChannelWidthType::CW_80_PLUS_80MHZ,
-           {{42, 5210, 80, WIFI_PHY_BAND_5GHZ}, {106, 5530, 80, WIFI_PHY_BAND_5GHZ}},
+           {{42, MHz_u{5210}, MHz_u{80}, WIFI_PHY_BAND_5GHZ},
+            {106, MHz_u{5530}, MHz_u{80}, WIFI_PHY_BAND_5GHZ}},
            0);
 
     // Test default with second segment specified to be at the first available 80 MHz segment
@@ -379,73 +388,77 @@ PhyChannelSettingsToOperatingChannelTest::DoRun()
     // Test default with two frequency segments and first is specified (and differs from default)
     RunOne("{106, 0, BAND_UNSPECIFIED, 0};{0, 0, BAND_UNSPECIFIED, 0}",
            WifiChannelWidthType::CW_80_PLUS_80MHZ,
-           {{106, 5530, 80, WIFI_PHY_BAND_5GHZ}, {138, 5690, 80, WIFI_PHY_BAND_5GHZ}},
+           {{106, MHz_u{5530}, MHz_u{80}, WIFI_PHY_BAND_5GHZ},
+            {138, MHz_u{5690}, MHz_u{80}, WIFI_PHY_BAND_5GHZ}},
            0);
 
     // Test unique channel 36 (20 MHz)
     RunOne("{36, 0, BAND_UNSPECIFIED, 0}",
            WifiChannelWidthType::CW_20MHZ,
-           {{36, 5180, 20, WIFI_PHY_BAND_5GHZ}},
+           {{36, MHz_u{5180}, MHz_u{20}, WIFI_PHY_BAND_5GHZ}},
            0);
 
     // Test unique channel 38 (40 MHz)
     RunOne("{38, 0, BAND_UNSPECIFIED, 0}",
            WifiChannelWidthType::CW_40MHZ,
-           {{38, 5190, 40, WIFI_PHY_BAND_5GHZ}},
+           {{38, MHz_u{5190}, MHz_u{40}, WIFI_PHY_BAND_5GHZ}},
            0);
 
     // Test unique channel 42 (80 MHz)
     RunOne("{42, 0, BAND_UNSPECIFIED, 0}",
            WifiChannelWidthType::CW_80MHZ,
-           {{42, 5210, 80, WIFI_PHY_BAND_5GHZ}},
+           {{42, MHz_u{5210}, MHz_u{80}, WIFI_PHY_BAND_5GHZ}},
            0);
 
     // Test unique channel 50 (160 MHz)
     RunOne("{50, 0, BAND_UNSPECIFIED, 0}",
            WifiChannelWidthType::CW_160MHZ,
-           {{50, 5250, 160, WIFI_PHY_BAND_5GHZ}},
+           {{50, MHz_u{5250}, MHz_u{160}, WIFI_PHY_BAND_5GHZ}},
            0);
 
     // Test 80+80 MHz
     RunOne("{42, 0, BAND_UNSPECIFIED, 0};{106, 0, BAND_UNSPECIFIED, 0}",
            WifiChannelWidthType::CW_80_PLUS_80MHZ,
-           {{42, 5210, 80, WIFI_PHY_BAND_5GHZ}, {106, 5530, 80, WIFI_PHY_BAND_5GHZ}},
+           {{42, MHz_u{5210}, MHz_u{80}, WIFI_PHY_BAND_5GHZ},
+            {106, MHz_u{5530}, MHz_u{80}, WIFI_PHY_BAND_5GHZ}},
            0);
 
     // Test P20 for 80+80 MHz: second value shall be ignored
     RunOne("{42, 0, BAND_UNSPECIFIED, 1};{106, 0, BAND_UNSPECIFIED, 2}",
            WifiChannelWidthType::CW_80_PLUS_80MHZ,
-           {{42, 5210, 80, WIFI_PHY_BAND_5GHZ}, {106, 5530, 80, WIFI_PHY_BAND_5GHZ}},
+           {{42, MHz_u{5210}, MHz_u{80}, WIFI_PHY_BAND_5GHZ},
+            {106, MHz_u{5530}, MHz_u{80}, WIFI_PHY_BAND_5GHZ}},
            1);
 
     // Test default 20 MHz channel
     RunOne("{0, 20, BAND_UNSPECIFIED, 0}",
            WifiChannelWidthType::CW_20MHZ,
-           {{36, 5180, 20, WIFI_PHY_BAND_5GHZ}},
+           {{36, MHz_u{5180}, MHz_u{20}, WIFI_PHY_BAND_5GHZ}},
            0);
 
     // Test default 40 MHz channel
     RunOne("{0, 40, BAND_UNSPECIFIED, 0}",
            WifiChannelWidthType::CW_40MHZ,
-           {{38, 5190, 40, WIFI_PHY_BAND_5GHZ}},
+           {{38, MHz_u{5190}, MHz_u{40}, WIFI_PHY_BAND_5GHZ}},
            0);
 
     // Test default 80 MHz channel
     RunOne("{0, 80, BAND_UNSPECIFIED, 0}",
            WifiChannelWidthType::CW_80MHZ,
-           {{42, 5210, 80, WIFI_PHY_BAND_5GHZ}},
+           {{42, MHz_u{5210}, MHz_u{80}, WIFI_PHY_BAND_5GHZ}},
            0);
 
     // Test default 160 MHz channel
     RunOne("{0, 160, BAND_UNSPECIFIED, 0}",
            WifiChannelWidthType::CW_160MHZ,
-           {{50, 5250, 160, WIFI_PHY_BAND_5GHZ}},
+           {{50, MHz_u{5250}, MHz_u{160}, WIFI_PHY_BAND_5GHZ}},
            0);
 
     // Test default 80+80 MHz channel
     RunOne("{0, 80, BAND_UNSPECIFIED, 0};{0, 80, BAND_UNSPECIFIED, 0}",
            WifiChannelWidthType::CW_80_PLUS_80MHZ,
-           {{42, 5210, 80, WIFI_PHY_BAND_5GHZ}, {106, 5530, 80, WIFI_PHY_BAND_5GHZ}},
+           {{42, MHz_u{5210}, MHz_u{80}, WIFI_PHY_BAND_5GHZ},
+            {106, MHz_u{5530}, MHz_u{80}, WIFI_PHY_BAND_5GHZ}},
            0);
 }
 
@@ -521,397 +534,425 @@ WifiPhyChannel80Plus80Test::DoRun()
 {
     // P20 is in first segment and segments are provided in increasing frequency order
     {
-        m_channel.Set({{42, 0, 80, WIFI_PHY_BAND_5GHZ}, {106, 0, 80, WIFI_PHY_BAND_5GHZ}},
+        m_channel.Set({{42, MHz_u{0}, MHz_u{80}, WIFI_PHY_BAND_5GHZ},
+                       {106, MHz_u{0}, MHz_u{80}, WIFI_PHY_BAND_5GHZ}},
                       WIFI_STANDARD_UNSPECIFIED);
         m_channel.SetPrimary20Index(3);
 
-        const auto indexPrimary160Mhz = m_channel.GetPrimaryChannelIndex(160);
+        const auto indexPrimary160Mhz = m_channel.GetPrimaryChannelIndex(MHz_u{160});
         NS_TEST_ASSERT_MSG_EQ(indexPrimary160Mhz, 0, "Primary 160 MHz channel shall have index 0");
-        const auto indexPrimary80Mhz = m_channel.GetPrimaryChannelIndex(80);
+        const auto indexPrimary80Mhz = m_channel.GetPrimaryChannelIndex(MHz_u{80});
         NS_TEST_ASSERT_MSG_EQ(indexPrimary80Mhz, 0, "Primary 80 MHz channel shall have index 0");
-        const auto indexPrimary40Mhz = m_channel.GetPrimaryChannelIndex(40);
+        const auto indexPrimary40Mhz = m_channel.GetPrimaryChannelIndex(MHz_u{40});
         NS_TEST_ASSERT_MSG_EQ(indexPrimary40Mhz, 1, "Primary 40 MHz channel shall have index 1");
-        const auto indexPrimary20Mhz = m_channel.GetPrimaryChannelIndex(20);
+        const auto indexPrimary20Mhz = m_channel.GetPrimaryChannelIndex(MHz_u{20});
         NS_TEST_ASSERT_MSG_EQ(indexPrimary20Mhz, 3, "Primary 20 MHz channel shall have index 3");
 
-        const auto indexSecondary80Mhz = m_channel.GetSecondaryChannelIndex(80);
+        const auto indexSecondary80Mhz = m_channel.GetSecondaryChannelIndex(MHz_u{80});
         NS_TEST_ASSERT_MSG_EQ(indexSecondary80Mhz,
                               1,
                               "Secondary 80 MHz channel shall have index 1");
-        const auto indexSecondary40Mhz = m_channel.GetSecondaryChannelIndex(40);
+        const auto indexSecondary40Mhz = m_channel.GetSecondaryChannelIndex(MHz_u{40});
         NS_TEST_ASSERT_MSG_EQ(indexSecondary40Mhz,
                               0,
                               "Secondary 40 MHz channel shall have index 0");
-        const auto indexSecondary20Mhz = m_channel.GetSecondaryChannelIndex(20);
+        const auto indexSecondary20Mhz = m_channel.GetSecondaryChannelIndex(MHz_u{20});
         NS_TEST_ASSERT_MSG_EQ(indexSecondary20Mhz,
                               2,
                               "Secondary 20 MHz channel shall have index 2");
 
-        const auto primary80MhzCenterFrequency = m_channel.GetPrimaryChannelCenterFrequency(80);
+        const auto primary80MhzCenterFrequency =
+            m_channel.GetPrimaryChannelCenterFrequency(MHz_u{80});
         NS_TEST_ASSERT_MSG_EQ(primary80MhzCenterFrequency,
-                              5210,
+                              MHz_u{5210},
                               "Primary 80 MHz channel center frequency shall be 5210 MHz");
-        const auto primary40MhzCenterFrequency = m_channel.GetPrimaryChannelCenterFrequency(40);
+        const auto primary40MhzCenterFrequency =
+            m_channel.GetPrimaryChannelCenterFrequency(MHz_u{40});
         NS_TEST_ASSERT_MSG_EQ(primary40MhzCenterFrequency,
-                              5230,
+                              MHz_u{5230},
                               "Primary 40 MHz channel center frequency shall be 5230 MHz");
-        const auto primary20MhzCenterFrequency = m_channel.GetPrimaryChannelCenterFrequency(20);
+        const auto primary20MhzCenterFrequency =
+            m_channel.GetPrimaryChannelCenterFrequency(MHz_u{20});
         NS_TEST_ASSERT_MSG_EQ(primary20MhzCenterFrequency,
-                              5240,
+                              MHz_u{5240},
                               "Primary 20 MHz channel center frequency shall be 5240 MHz");
 
-        const auto secondary80MhzCenterFrequency = m_channel.GetSecondaryChannelCenterFrequency(80);
+        const auto secondary80MhzCenterFrequency =
+            m_channel.GetSecondaryChannelCenterFrequency(MHz_u{80});
         NS_TEST_ASSERT_MSG_EQ(secondary80MhzCenterFrequency,
-                              5530,
+                              MHz_u{5530},
                               "Secondary 80 MHz channel center frequency shall be 5530 MHz");
-        const auto secondary40MhzCenterFrequency = m_channel.GetSecondaryChannelCenterFrequency(40);
+        const auto secondary40MhzCenterFrequency =
+            m_channel.GetSecondaryChannelCenterFrequency(MHz_u{40});
         NS_TEST_ASSERT_MSG_EQ(secondary40MhzCenterFrequency,
-                              5190,
+                              MHz_u{5190},
                               "Secondary 40 MHz channel center frequency shall be 5190 MHz");
-        const auto secondary20MhzCenterFrequency = m_channel.GetSecondaryChannelCenterFrequency(20);
+        const auto secondary20MhzCenterFrequency =
+            m_channel.GetSecondaryChannelCenterFrequency(MHz_u{20});
         NS_TEST_ASSERT_MSG_EQ(secondary20MhzCenterFrequency,
-                              5220,
+                              MHz_u{5220},
                               "Secondary 20 MHz channel center frequency shall be 5220 MHz");
 
         const auto primary80MhzChannelNumber =
-            m_channel.GetPrimaryChannelNumber(80, WIFI_STANDARD_80211ax);
+            m_channel.GetPrimaryChannelNumber(MHz_u{80}, WIFI_STANDARD_80211ax);
         NS_TEST_ASSERT_MSG_EQ(primary80MhzChannelNumber,
                               42,
                               "Primary 80 MHz channel number shall be 42");
         const auto primary40MhzChannelNumber =
-            m_channel.GetPrimaryChannelNumber(40, WIFI_STANDARD_80211ax);
+            m_channel.GetPrimaryChannelNumber(MHz_u{40}, WIFI_STANDARD_80211ax);
         NS_TEST_ASSERT_MSG_EQ(primary40MhzChannelNumber,
                               46,
                               "Primary 40 MHz channel number shall be 46");
         const auto primary20MhzChannelNumber =
-            m_channel.GetPrimaryChannelNumber(20, WIFI_STANDARD_80211ax);
+            m_channel.GetPrimaryChannelNumber(MHz_u{20}, WIFI_STANDARD_80211ax);
         NS_TEST_ASSERT_MSG_EQ(primary20MhzChannelNumber,
                               48,
                               "Primary 20 MHz channel number shall be 48");
 
-        auto ppdu160MHz = CreateDummyHePpdu(160, m_channel);
+        auto ppdu160MHz = CreateDummyHePpdu(MHz_u{160}, m_channel);
         auto txCenterFreqs160MHz = ppdu160MHz->GetTxCenterFreqs();
         NS_TEST_ASSERT_MSG_EQ(txCenterFreqs160MHz.size(), 2, "2 segments are covered by 160 MHz");
         NS_TEST_ASSERT_MSG_EQ(txCenterFreqs160MHz.front(),
-                              5210,
+                              MHz_u{5210},
                               "Center frequency of first segment shall be 5210 MHz");
         NS_TEST_ASSERT_MSG_EQ(txCenterFreqs160MHz.back(),
-                              5530,
+                              MHz_u{5530},
                               "Center frequency of second segment shall be 5530 MHz");
-        auto ppdu80MHz = CreateDummyHePpdu(80, m_channel);
+        auto ppdu80MHz = CreateDummyHePpdu(MHz_u{80}, m_channel);
         auto txCenterFreqs80MHz = ppdu80MHz->GetTxCenterFreqs();
         NS_TEST_ASSERT_MSG_EQ(txCenterFreqs80MHz.size(), 1, "1 segment is covered by 80 MHz");
         NS_TEST_ASSERT_MSG_EQ(txCenterFreqs80MHz.front(),
-                              5210,
+                              MHz_u{5210},
                               "Center frequency for 80 MHz shall be 5210 MHz");
-        auto ppdu40MHz = CreateDummyHePpdu(40, m_channel);
+        auto ppdu40MHz = CreateDummyHePpdu(MHz_u{40}, m_channel);
         auto txCenterFreqs40MHz = ppdu40MHz->GetTxCenterFreqs();
         NS_TEST_ASSERT_MSG_EQ(txCenterFreqs40MHz.size(), 1, "1 segment is covered by 40 MHz");
         NS_TEST_ASSERT_MSG_EQ(txCenterFreqs40MHz.front(),
-                              5230,
+                              MHz_u{5230},
                               "Center frequency for 40 MHz shall be 5230 MHz");
-        auto ppdu20MHz = CreateDummyHePpdu(20, m_channel);
+        auto ppdu20MHz = CreateDummyHePpdu(MHz_u{20}, m_channel);
         auto txCenterFreqs20MHz = ppdu20MHz->GetTxCenterFreqs();
         NS_TEST_ASSERT_MSG_EQ(txCenterFreqs20MHz.size(), 1, "1 segment is covered by 20 MHz");
         NS_TEST_ASSERT_MSG_EQ(txCenterFreqs20MHz.front(),
-                              5240,
+                              MHz_u{5240},
                               "Center frequency for 20 MHz shall be 5240 MHz");
     }
 
     // P20 is in second segment and segments are provided in increasing frequency order
     {
-        m_channel.Set({{42, 0, 80, WIFI_PHY_BAND_5GHZ}, {106, 0, 80, WIFI_PHY_BAND_5GHZ}},
+        m_channel.Set({{42, MHz_u{0}, MHz_u{80}, WIFI_PHY_BAND_5GHZ},
+                       {106, MHz_u{0}, MHz_u{80}, WIFI_PHY_BAND_5GHZ}},
                       WIFI_STANDARD_UNSPECIFIED);
         m_channel.SetPrimary20Index(4);
 
-        const auto indexPrimary160Mhz = m_channel.GetPrimaryChannelIndex(160);
+        const auto indexPrimary160Mhz = m_channel.GetPrimaryChannelIndex(MHz_u{160});
         NS_TEST_ASSERT_MSG_EQ(indexPrimary160Mhz, 0, "Primary 160 MHz channel shall have index 0");
-        const auto indexPrimary80Mhz = m_channel.GetPrimaryChannelIndex(80);
+        const auto indexPrimary80Mhz = m_channel.GetPrimaryChannelIndex(MHz_u{80});
         NS_TEST_ASSERT_MSG_EQ(indexPrimary80Mhz, 1, "Primary 80 MHz channel shall have index 1");
-        const auto indexPrimary40Mhz = m_channel.GetPrimaryChannelIndex(40);
+        const auto indexPrimary40Mhz = m_channel.GetPrimaryChannelIndex(MHz_u{40});
         NS_TEST_ASSERT_MSG_EQ(indexPrimary40Mhz, 2, "Primary 40 MHz channel shall have index 2");
-        const auto indexPrimary20Mhz = m_channel.GetPrimaryChannelIndex(20);
+        const auto indexPrimary20Mhz = m_channel.GetPrimaryChannelIndex(MHz_u{20});
         NS_TEST_ASSERT_MSG_EQ(indexPrimary20Mhz, 4, "Primary 20 MHz channel shall have index 4");
 
-        const auto indexSecondary80Mhz = m_channel.GetSecondaryChannelIndex(80);
+        const auto indexSecondary80Mhz = m_channel.GetSecondaryChannelIndex(MHz_u{80});
         NS_TEST_ASSERT_MSG_EQ(indexSecondary80Mhz,
                               0,
                               "Secondary 80 MHz channel shall have index 0");
-        const auto indexSecondary40Mhz = m_channel.GetSecondaryChannelIndex(40);
+        const auto indexSecondary40Mhz = m_channel.GetSecondaryChannelIndex(MHz_u{40});
         NS_TEST_ASSERT_MSG_EQ(indexSecondary40Mhz,
                               3,
                               "Secondary 40 MHz channel shall have index 3");
-        const auto indexSecondary20Mhz = m_channel.GetSecondaryChannelIndex(20);
+        const auto indexSecondary20Mhz = m_channel.GetSecondaryChannelIndex(MHz_u{20});
         NS_TEST_ASSERT_MSG_EQ(indexSecondary20Mhz,
                               5,
                               "Secondary 20 MHz channel shall have index 5");
 
-        const auto primary80MhzCenterFrequency = m_channel.GetPrimaryChannelCenterFrequency(80);
+        const auto primary80MhzCenterFrequency =
+            m_channel.GetPrimaryChannelCenterFrequency(MHz_u{80});
         NS_TEST_ASSERT_MSG_EQ(primary80MhzCenterFrequency,
-                              5530,
+                              MHz_u{5530},
                               "Primary 80 MHz channel center frequency shall be 5530 MHz");
-        const auto primary40MhzCenterFrequency = m_channel.GetPrimaryChannelCenterFrequency(40);
+        const auto primary40MhzCenterFrequency =
+            m_channel.GetPrimaryChannelCenterFrequency(MHz_u{40});
         NS_TEST_ASSERT_MSG_EQ(primary40MhzCenterFrequency,
-                              5510,
+                              MHz_u{5510},
                               "Primary 40 MHz channel center frequency shall be 5510 MHz");
-        const auto primary20MhzCenterFrequency = m_channel.GetPrimaryChannelCenterFrequency(20);
+        const auto primary20MhzCenterFrequency =
+            m_channel.GetPrimaryChannelCenterFrequency(MHz_u{20});
         NS_TEST_ASSERT_MSG_EQ(primary20MhzCenterFrequency,
-                              5500,
+                              MHz_u{5500},
                               "Primary 20 MHz channel center frequency shall be 5500 MHz");
 
-        const auto secondary80MhzCenterFrequency = m_channel.GetSecondaryChannelCenterFrequency(80);
+        const auto secondary80MhzCenterFrequency =
+            m_channel.GetSecondaryChannelCenterFrequency(MHz_u{80});
         NS_TEST_ASSERT_MSG_EQ(secondary80MhzCenterFrequency,
-                              5210,
+                              MHz_u{5210},
                               "Secondary 80 MHz channel center frequency shall be 5210 MHz");
-        const auto secondary40MhzCenterFrequency = m_channel.GetSecondaryChannelCenterFrequency(40);
+        const auto secondary40MhzCenterFrequency =
+            m_channel.GetSecondaryChannelCenterFrequency(MHz_u{40});
         NS_TEST_ASSERT_MSG_EQ(secondary40MhzCenterFrequency,
-                              5550,
+                              MHz_u{5550},
                               "Secondary 40 MHz channel center frequency shall be 5550 MHz");
-        const auto secondary20MhzCenterFrequency = m_channel.GetSecondaryChannelCenterFrequency(20);
+        const auto secondary20MhzCenterFrequency =
+            m_channel.GetSecondaryChannelCenterFrequency(MHz_u{20});
         NS_TEST_ASSERT_MSG_EQ(secondary20MhzCenterFrequency,
-                              5520,
+                              MHz_u{5520},
                               "Secondary 20 MHz channel center frequency shall be 5520 MHz");
 
         const auto primary80MhzChannelNumber =
-            m_channel.GetPrimaryChannelNumber(80, WIFI_STANDARD_80211ax);
+            m_channel.GetPrimaryChannelNumber(MHz_u{80}, WIFI_STANDARD_80211ax);
         NS_TEST_ASSERT_MSG_EQ(primary80MhzChannelNumber,
                               106,
                               "Primary 80 MHz channel number shall be 106");
         const auto primary40MhzChannelNumber =
-            m_channel.GetPrimaryChannelNumber(40, WIFI_STANDARD_80211ax);
+            m_channel.GetPrimaryChannelNumber(MHz_u{40}, WIFI_STANDARD_80211ax);
         NS_TEST_ASSERT_MSG_EQ(primary40MhzChannelNumber,
                               102,
                               "Primary 40 MHz channel number shall be 102");
         const auto primary20MhzChannelNumber =
-            m_channel.GetPrimaryChannelNumber(20, WIFI_STANDARD_80211ax);
+            m_channel.GetPrimaryChannelNumber(MHz_u{20}, WIFI_STANDARD_80211ax);
         NS_TEST_ASSERT_MSG_EQ(primary20MhzChannelNumber,
                               100,
                               "Primary 20 MHz channel number shall be 100");
 
-        auto ppdu160MHz = CreateDummyHePpdu(160, m_channel);
+        auto ppdu160MHz = CreateDummyHePpdu(MHz_u{160}, m_channel);
         auto txCenterFreqs160MHz = ppdu160MHz->GetTxCenterFreqs();
         NS_TEST_ASSERT_MSG_EQ(txCenterFreqs160MHz.size(), 2, "2 segments are covered by 160 MHz");
         NS_TEST_ASSERT_MSG_EQ(txCenterFreqs160MHz.front(),
-                              5530,
+                              MHz_u{5530},
                               "Center frequency of first segment shall be 5530 MHz");
         NS_TEST_ASSERT_MSG_EQ(txCenterFreqs160MHz.back(),
-                              5210,
+                              MHz_u{5210},
                               "Center frequency of second segment shall be 5210 MHz");
-        auto ppdu80MHz = CreateDummyHePpdu(80, m_channel);
+        auto ppdu80MHz = CreateDummyHePpdu(MHz_u{80}, m_channel);
         auto txCenterFreqs80MHz = ppdu80MHz->GetTxCenterFreqs();
         NS_TEST_ASSERT_MSG_EQ(txCenterFreqs80MHz.size(), 1, "1 segment is covered by 80 MHz");
         NS_TEST_ASSERT_MSG_EQ(txCenterFreqs80MHz.front(),
-                              5530,
+                              MHz_u{5530},
                               "Center frequency for 80 MHz shall be 5530 MHz");
-        auto ppdu40MHz = CreateDummyHePpdu(40, m_channel);
+        auto ppdu40MHz = CreateDummyHePpdu(MHz_u{40}, m_channel);
         auto txCenterFreqs40MHz = ppdu40MHz->GetTxCenterFreqs();
         NS_TEST_ASSERT_MSG_EQ(txCenterFreqs40MHz.size(), 1, "1 segment is covered by 40 MHz");
         NS_TEST_ASSERT_MSG_EQ(txCenterFreqs40MHz.front(),
-                              5510,
+                              MHz_u{5510},
                               "Center frequency for 40 MHz shall be 5510 MHz");
-        auto ppdu20MHz = CreateDummyHePpdu(20, m_channel);
+        auto ppdu20MHz = CreateDummyHePpdu(MHz_u{20}, m_channel);
         auto txCenterFreqs20MHz = ppdu20MHz->GetTxCenterFreqs();
         NS_TEST_ASSERT_MSG_EQ(txCenterFreqs20MHz.size(), 1, "1 segment is covered by 20 MHz");
         NS_TEST_ASSERT_MSG_EQ(txCenterFreqs20MHz.front(),
-                              5500,
+                              MHz_u{5500},
                               "Center frequency for 20 MHz shall be 5500 MHz");
     }
 
     // P20 is in first segment and segments are provided in decreasing frequency order
     {
-        m_channel.Set({{106, 0, 80, WIFI_PHY_BAND_5GHZ}, {42, 0, 80, WIFI_PHY_BAND_5GHZ}},
+        m_channel.Set({{106, MHz_u{0}, MHz_u{80}, WIFI_PHY_BAND_5GHZ},
+                       {42, MHz_u{0}, MHz_u{80}, WIFI_PHY_BAND_5GHZ}},
                       WIFI_STANDARD_UNSPECIFIED);
         m_channel.SetPrimary20Index(3);
 
-        const auto indexPrimary160Mhz = m_channel.GetPrimaryChannelIndex(160);
+        const auto indexPrimary160Mhz = m_channel.GetPrimaryChannelIndex(MHz_u{160});
         NS_TEST_ASSERT_MSG_EQ(indexPrimary160Mhz, 0, "Primary 160 MHz channel shall have index 0");
-        const auto indexPrimary80Mhz = m_channel.GetPrimaryChannelIndex(80);
+        const auto indexPrimary80Mhz = m_channel.GetPrimaryChannelIndex(MHz_u{80});
         NS_TEST_ASSERT_MSG_EQ(indexPrimary80Mhz, 0, "Primary 80 MHz channel shall have index 0");
-        const auto indexPrimary40Mhz = m_channel.GetPrimaryChannelIndex(40);
+        const auto indexPrimary40Mhz = m_channel.GetPrimaryChannelIndex(MHz_u{40});
         NS_TEST_ASSERT_MSG_EQ(indexPrimary40Mhz, 1, "Primary 40 MHz channel shall have index 1");
-        const auto indexPrimary20Mhz = m_channel.GetPrimaryChannelIndex(20);
+        const auto indexPrimary20Mhz = m_channel.GetPrimaryChannelIndex(MHz_u{20});
         NS_TEST_ASSERT_MSG_EQ(indexPrimary20Mhz, 3, "Primary 20 MHz channel shall have index 3");
 
-        const auto indexSecondary80Mhz = m_channel.GetSecondaryChannelIndex(80);
+        const auto indexSecondary80Mhz = m_channel.GetSecondaryChannelIndex(MHz_u{80});
         NS_TEST_ASSERT_MSG_EQ(indexSecondary80Mhz,
                               1,
                               "Secondary 80 MHz channel shall have index 1");
-        const auto indexSecondary40Mhz = m_channel.GetSecondaryChannelIndex(40);
+        const auto indexSecondary40Mhz = m_channel.GetSecondaryChannelIndex(MHz_u{40});
         NS_TEST_ASSERT_MSG_EQ(indexSecondary40Mhz,
                               0,
                               "Secondary 40 MHz channel shall have index 0");
-        const auto indexSecondary20Mhz = m_channel.GetSecondaryChannelIndex(20);
+        const auto indexSecondary20Mhz = m_channel.GetSecondaryChannelIndex(MHz_u{20});
         NS_TEST_ASSERT_MSG_EQ(indexSecondary20Mhz,
                               2,
                               "Secondary 20 MHz channel shall have index 2");
 
-        const auto primary80MhzCenterFrequency = m_channel.GetPrimaryChannelCenterFrequency(80);
+        const auto primary80MhzCenterFrequency =
+            m_channel.GetPrimaryChannelCenterFrequency(MHz_u{80});
         NS_TEST_ASSERT_MSG_EQ(primary80MhzCenterFrequency,
-                              5210,
+                              MHz_u{5210},
                               "Primary 80 MHz channel center frequency shall be 5210 MHz");
-        const auto primary40MhzCenterFrequency = m_channel.GetPrimaryChannelCenterFrequency(40);
+        const auto primary40MhzCenterFrequency =
+            m_channel.GetPrimaryChannelCenterFrequency(MHz_u{40});
         NS_TEST_ASSERT_MSG_EQ(primary40MhzCenterFrequency,
-                              5230,
+                              MHz_u{5230},
                               "Primary 40 MHz channel center frequency shall be 5230 MHz");
-        const auto primary20MhzCenterFrequency = m_channel.GetPrimaryChannelCenterFrequency(20);
+        const auto primary20MhzCenterFrequency =
+            m_channel.GetPrimaryChannelCenterFrequency(MHz_u{20});
         NS_TEST_ASSERT_MSG_EQ(primary20MhzCenterFrequency,
-                              5240,
+                              MHz_u{5240},
                               "Primary 20 MHz channel center frequency shall be 5240 MHz");
 
-        const auto secondary80MhzCenterFrequency = m_channel.GetSecondaryChannelCenterFrequency(80);
+        const auto secondary80MhzCenterFrequency =
+            m_channel.GetSecondaryChannelCenterFrequency(MHz_u{80});
         NS_TEST_ASSERT_MSG_EQ(secondary80MhzCenterFrequency,
-                              5530,
+                              MHz_u{5530},
                               "Secondary 80 MHz channel center frequency shall be 5530 MHz");
-        const auto secondary40MhzCenterFrequency = m_channel.GetSecondaryChannelCenterFrequency(40);
+        const auto secondary40MhzCenterFrequency =
+            m_channel.GetSecondaryChannelCenterFrequency(MHz_u{40});
         NS_TEST_ASSERT_MSG_EQ(secondary40MhzCenterFrequency,
-                              5190,
+                              MHz_u{5190},
                               "Secondary 40 MHz channel center frequency shall be 5190 MHz");
-        const auto secondary20MhzCenterFrequency = m_channel.GetSecondaryChannelCenterFrequency(20);
+        const auto secondary20MhzCenterFrequency =
+            m_channel.GetSecondaryChannelCenterFrequency(MHz_u{20});
         NS_TEST_ASSERT_MSG_EQ(secondary20MhzCenterFrequency,
-                              5220,
+                              MHz_u{5220},
                               "Secondary 20 MHz channel center frequency shall be 5220 MHz");
 
         const auto primary80MhzChannelNumber =
-            m_channel.GetPrimaryChannelNumber(80, WIFI_STANDARD_80211ax);
+            m_channel.GetPrimaryChannelNumber(MHz_u{80}, WIFI_STANDARD_80211ax);
         NS_TEST_ASSERT_MSG_EQ(primary80MhzChannelNumber,
                               42,
                               "Primary 80 MHz channel number shall be 42");
         const auto primary40MhzChannelNumber =
-            m_channel.GetPrimaryChannelNumber(40, WIFI_STANDARD_80211ax);
+            m_channel.GetPrimaryChannelNumber(MHz_u{40}, WIFI_STANDARD_80211ax);
         NS_TEST_ASSERT_MSG_EQ(primary40MhzChannelNumber,
                               46,
                               "Primary 40 MHz channel number shall be 46");
         const auto primary20MhzChannelNumber =
-            m_channel.GetPrimaryChannelNumber(20, WIFI_STANDARD_80211ax);
+            m_channel.GetPrimaryChannelNumber(MHz_u{20}, WIFI_STANDARD_80211ax);
         NS_TEST_ASSERT_MSG_EQ(primary20MhzChannelNumber,
                               48,
                               "Primary 20 MHz channel number shall be 48");
 
-        auto ppdu160MHz = CreateDummyHePpdu(160, m_channel);
+        auto ppdu160MHz = CreateDummyHePpdu(MHz_u{160}, m_channel);
         auto txCenterFreqs160MHz = ppdu160MHz->GetTxCenterFreqs();
         NS_TEST_ASSERT_MSG_EQ(txCenterFreqs160MHz.size(), 2, "2 segments are covered by 160 MHz");
         NS_TEST_ASSERT_MSG_EQ(txCenterFreqs160MHz.front(),
-                              5210,
+                              MHz_u{5210},
                               "Center frequency of first segment shall be 5210 MHz");
         NS_TEST_ASSERT_MSG_EQ(txCenterFreqs160MHz.back(),
-                              5530,
+                              MHz_u{5530},
                               "Center frequency of second segment shall be 5530 MHz");
-        auto ppdu80MHz = CreateDummyHePpdu(80, m_channel);
+        auto ppdu80MHz = CreateDummyHePpdu(MHz_u{80}, m_channel);
         auto txCenterFreqs80MHz = ppdu80MHz->GetTxCenterFreqs();
         NS_TEST_ASSERT_MSG_EQ(txCenterFreqs80MHz.size(), 1, "1 segment is covered by 80 MHz");
         NS_TEST_ASSERT_MSG_EQ(txCenterFreqs80MHz.front(),
-                              5210,
+                              MHz_u{5210},
                               "Center frequency for 80 MHz shall be 5210 MHz");
-        auto ppdu40MHz = CreateDummyHePpdu(40, m_channel);
+        auto ppdu40MHz = CreateDummyHePpdu(MHz_u{40}, m_channel);
         auto txCenterFreqs40MHz = ppdu40MHz->GetTxCenterFreqs();
         NS_TEST_ASSERT_MSG_EQ(txCenterFreqs40MHz.size(), 1, "1 segment is covered by 40 MHz");
         NS_TEST_ASSERT_MSG_EQ(txCenterFreqs40MHz.front(),
-                              5230,
+                              MHz_u{5230},
                               "Center frequency for 40 MHz shall be 5230 MHz");
-        auto ppdu20MHz = CreateDummyHePpdu(20, m_channel);
+        auto ppdu20MHz = CreateDummyHePpdu(MHz_u{20}, m_channel);
         auto txCenterFreqs20MHz = ppdu20MHz->GetTxCenterFreqs();
         NS_TEST_ASSERT_MSG_EQ(txCenterFreqs20MHz.size(), 1, "1 segment is covered by 20 MHz");
         NS_TEST_ASSERT_MSG_EQ(txCenterFreqs20MHz.front(),
-                              5240,
+                              MHz_u{5240},
                               "Center frequency for 20 MHz shall be 5240 MHz");
     }
 
     // P20 is in second segment and segments are provided in decreasing frequency order
     {
-        m_channel.Set({{106, 0, 80, WIFI_PHY_BAND_5GHZ}, {42, 0, 80, WIFI_PHY_BAND_5GHZ}},
+        m_channel.Set({{106, MHz_u{0}, MHz_u{80}, WIFI_PHY_BAND_5GHZ},
+                       {42, MHz_u{0}, MHz_u{80}, WIFI_PHY_BAND_5GHZ}},
                       WIFI_STANDARD_UNSPECIFIED);
         m_channel.SetPrimary20Index(4);
 
-        const auto indexPrimary160Mhz = m_channel.GetPrimaryChannelIndex(160);
+        const auto indexPrimary160Mhz = m_channel.GetPrimaryChannelIndex(MHz_u{160});
         NS_TEST_ASSERT_MSG_EQ(indexPrimary160Mhz, 0, "Primary 160 MHz channel shall have index 0");
-        const auto indexPrimary80Mhz = m_channel.GetPrimaryChannelIndex(80);
+        const auto indexPrimary80Mhz = m_channel.GetPrimaryChannelIndex(MHz_u{80});
         NS_TEST_ASSERT_MSG_EQ(indexPrimary80Mhz, 1, "Primary 80 MHz channel shall have index 1");
-        const auto indexPrimary40Mhz = m_channel.GetPrimaryChannelIndex(40);
+        const auto indexPrimary40Mhz = m_channel.GetPrimaryChannelIndex(MHz_u{40});
         NS_TEST_ASSERT_MSG_EQ(indexPrimary40Mhz, 2, "Primary 40 MHz channel shall have index 2");
-        const auto indexPrimary20Mhz = m_channel.GetPrimaryChannelIndex(20);
+        const auto indexPrimary20Mhz = m_channel.GetPrimaryChannelIndex(MHz_u{20});
         NS_TEST_ASSERT_MSG_EQ(indexPrimary20Mhz, 4, "Primary 20 MHz channel shall have index 4");
 
-        const auto indexSecondary80Mhz = m_channel.GetSecondaryChannelIndex(80);
+        const auto indexSecondary80Mhz = m_channel.GetSecondaryChannelIndex(MHz_u{80});
         NS_TEST_ASSERT_MSG_EQ(indexSecondary80Mhz,
                               0,
                               "Secondary 80 MHz channel shall have index 0");
-        const auto indexSecondary40Mhz = m_channel.GetSecondaryChannelIndex(40);
+        const auto indexSecondary40Mhz = m_channel.GetSecondaryChannelIndex(MHz_u{40});
         NS_TEST_ASSERT_MSG_EQ(indexSecondary40Mhz,
                               3,
                               "Secondary 40 MHz channel shall have index 3");
-        const auto indexSecondary20Mhz = m_channel.GetSecondaryChannelIndex(20);
+        const auto indexSecondary20Mhz = m_channel.GetSecondaryChannelIndex(MHz_u{20});
         NS_TEST_ASSERT_MSG_EQ(indexSecondary20Mhz,
                               5,
                               "Secondary 20 MHz channel shall have index 5");
 
-        const auto primary80MhzCenterFrequency = m_channel.GetPrimaryChannelCenterFrequency(80);
+        const auto primary80MhzCenterFrequency =
+            m_channel.GetPrimaryChannelCenterFrequency(MHz_u{80});
         NS_TEST_ASSERT_MSG_EQ(primary80MhzCenterFrequency,
-                              5530,
+                              MHz_u{5530},
                               "Primary 80 MHz channel center frequency shall be 5530 MHz");
-        const auto primary40MhzCenterFrequency = m_channel.GetPrimaryChannelCenterFrequency(40);
+        const auto primary40MhzCenterFrequency =
+            m_channel.GetPrimaryChannelCenterFrequency(MHz_u{40});
         NS_TEST_ASSERT_MSG_EQ(primary40MhzCenterFrequency,
-                              5510,
+                              MHz_u{5510},
                               "Primary 40 MHz channel center frequency shall be 5510 MHz");
-        const auto primary20MhzCenterFrequency = m_channel.GetPrimaryChannelCenterFrequency(20);
+        const auto primary20MhzCenterFrequency =
+            m_channel.GetPrimaryChannelCenterFrequency(MHz_u{20});
         NS_TEST_ASSERT_MSG_EQ(primary20MhzCenterFrequency,
-                              5500,
+                              MHz_u{5500},
                               "Primary 20 MHz channel center frequency shall be 5500 MHz");
 
-        const auto secondary80MhzCenterFrequency = m_channel.GetSecondaryChannelCenterFrequency(80);
+        const auto secondary80MhzCenterFrequency =
+            m_channel.GetSecondaryChannelCenterFrequency(MHz_u{80});
         NS_TEST_ASSERT_MSG_EQ(secondary80MhzCenterFrequency,
-                              5210,
+                              MHz_u{5210},
                               "Secondary 80 MHz channel center frequency shall be 5210 MHz");
-        const auto secondary40MhzCenterFrequency = m_channel.GetSecondaryChannelCenterFrequency(40);
+        const auto secondary40MhzCenterFrequency =
+            m_channel.GetSecondaryChannelCenterFrequency(MHz_u{40});
         NS_TEST_ASSERT_MSG_EQ(secondary40MhzCenterFrequency,
-                              5550,
+                              MHz_u{5550},
                               "Secondary 40 MHz channel center frequency shall be 5550 MHz");
-        const auto secondary20MhzCenterFrequency = m_channel.GetSecondaryChannelCenterFrequency(20);
+        const auto secondary20MhzCenterFrequency =
+            m_channel.GetSecondaryChannelCenterFrequency(MHz_u{20});
         NS_TEST_ASSERT_MSG_EQ(secondary20MhzCenterFrequency,
-                              5520,
+                              MHz_u{5520},
                               "Secondary 20 MHz channel center frequency shall be 5520 MHz");
 
         const auto primary80MhzChannelNumber =
-            m_channel.GetPrimaryChannelNumber(80, WIFI_STANDARD_80211ax);
+            m_channel.GetPrimaryChannelNumber(MHz_u{80}, WIFI_STANDARD_80211ax);
         NS_TEST_ASSERT_MSG_EQ(primary80MhzChannelNumber,
                               106,
                               "Primary 80 MHz channel number shall be 106");
         const auto primary40MhzChannelNumber =
-            m_channel.GetPrimaryChannelNumber(40, WIFI_STANDARD_80211ax);
+            m_channel.GetPrimaryChannelNumber(MHz_u{40}, WIFI_STANDARD_80211ax);
         NS_TEST_ASSERT_MSG_EQ(primary40MhzChannelNumber,
                               102,
                               "Primary 40 MHz channel number shall be 102");
         const auto primary20MhzChannelNumber =
-            m_channel.GetPrimaryChannelNumber(20, WIFI_STANDARD_80211ax);
+            m_channel.GetPrimaryChannelNumber(MHz_u{20}, WIFI_STANDARD_80211ax);
         NS_TEST_ASSERT_MSG_EQ(primary20MhzChannelNumber,
                               100,
                               "Primary 20 MHz channel number shall be 100");
 
-        auto ppdu160MHz = CreateDummyHePpdu(160, m_channel);
+        auto ppdu160MHz = CreateDummyHePpdu(MHz_u{160}, m_channel);
         auto txCenterFreqs160MHz = ppdu160MHz->GetTxCenterFreqs();
         NS_TEST_ASSERT_MSG_EQ(txCenterFreqs160MHz.size(), 2, "2 segments are covered by 160 MHz");
         NS_TEST_ASSERT_MSG_EQ(txCenterFreqs160MHz.front(),
-                              5530,
+                              MHz_u{5530},
                               "Center frequency of first segment shall be 5530 MHz");
         NS_TEST_ASSERT_MSG_EQ(txCenterFreqs160MHz.back(),
-                              5210,
+                              MHz_u{5210},
                               "Center frequency of second segment shall be 5210 MHz");
-        auto ppdu80MHz = CreateDummyHePpdu(80, m_channel);
+        auto ppdu80MHz = CreateDummyHePpdu(MHz_u{80}, m_channel);
         auto txCenterFreqs80MHz = ppdu80MHz->GetTxCenterFreqs();
         NS_TEST_ASSERT_MSG_EQ(txCenterFreqs80MHz.size(), 1, "1 segment is covered by 80 MHz");
         NS_TEST_ASSERT_MSG_EQ(txCenterFreqs80MHz.front(),
-                              5530,
+                              MHz_u{5530},
                               "Center frequency for 80 MHz shall be 5530 MHz");
-        auto ppdu40MHz = CreateDummyHePpdu(40, m_channel);
+        auto ppdu40MHz = CreateDummyHePpdu(MHz_u{40}, m_channel);
         auto txCenterFreqs40MHz = ppdu40MHz->GetTxCenterFreqs();
         NS_TEST_ASSERT_MSG_EQ(txCenterFreqs40MHz.size(), 1, "1 segment is covered by 40 MHz");
         NS_TEST_ASSERT_MSG_EQ(txCenterFreqs40MHz.front(),
-                              5510,
+                              MHz_u{5510},
                               "Center frequency for 40 MHz shall be 5510 MHz");
-        auto ppdu20MHz = CreateDummyHePpdu(20, m_channel);
+        auto ppdu20MHz = CreateDummyHePpdu(MHz_u{20}, m_channel);
         auto txCenterFreqs20MHz = ppdu20MHz->GetTxCenterFreqs();
         NS_TEST_ASSERT_MSG_EQ(txCenterFreqs20MHz.size(), 1, "1 segment is covered by 20 MHz");
         NS_TEST_ASSERT_MSG_EQ(txCenterFreqs20MHz.front(),
-                              5500,
+                              MHz_u{5500},
                               "Center frequency for 20 MHz shall be 5500 MHz");
     }
 

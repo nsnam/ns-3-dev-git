@@ -1763,11 +1763,11 @@ FilsDiscHeader::FdCapability::Deserialize(Buffer::Iterator start)
 void
 FilsDiscHeader::FdCapability::SetOpChannelWidth(MHz_u width)
 {
-    m_chWidth = (width == 20 || width == 22) ? 0
-                : (width == 40)              ? 1
-                : (width == 80)              ? 2
-                : (width == 160)             ? 3
-                                             : 4;
+    m_chWidth = (width == MHz_u{20} || width == MHz_u{22}) ? 0
+                : (width == MHz_u{40})                     ? 1
+                : (width == MHz_u{80})                     ? 2
+                : (width == MHz_u{160})                    ? 3
+                                                           : 4;
 }
 
 MHz_u
@@ -1776,17 +1776,17 @@ FilsDiscHeader::FdCapability::GetOpChannelWidth() const
     switch (m_chWidth)
     {
     case 0:
-        return m_phyIdx == 0 ? 22 : 20; // PHY Index 0 indicates 802.11b
+        return m_phyIdx == 0 ? MHz_u{22} : MHz_u{20}; // PHY Index 0 indicates 802.11b
     case 1:
-        return 40;
+        return MHz_u{40};
     case 2:
-        return 80;
+        return MHz_u{80};
     case 3:
-        return 160;
+        return MHz_u{160};
     default:
         NS_ABORT_MSG("Reserved value: " << +m_chWidth);
     }
-    return 0;
+    return MHz_u{0};
 }
 
 void

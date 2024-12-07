@@ -239,22 +239,23 @@ GetMaximumChannelWidth(WifiModulationClass modulation)
     {
     case WIFI_MOD_CLASS_DSSS:
     case WIFI_MOD_CLASS_HR_DSSS:
-        return 22;
+        return MHz_u{22};
     case WIFI_MOD_CLASS_OFDM:
     case WIFI_MOD_CLASS_ERP_OFDM:
-        return 20;
+        return MHz_u{20};
     case WIFI_MOD_CLASS_HT:
-        return 40;
+        return MHz_u{40};
     // NOLINTBEGIN(bugprone-branch-clone)
     case WIFI_MOD_CLASS_VHT:
     case WIFI_MOD_CLASS_HE:
-        return 160;
+        return MHz_u{160};
     case WIFI_MOD_CLASS_EHT:
-        return 160; // TODO update when 320 MHz channels are supported and remove clang-tidy guards
+        return MHz_u{
+            160}; // TODO update when 320 MHz channels are supported and remove clang-tidy guards
     // NOLINTEND(bugprone-branch-clone)
     default:
         NS_ABORT_MSG("Unknown modulation class: " << modulation);
-        return 0;
+        return MHz_u{0};
     }
 }
 
@@ -264,27 +265,27 @@ GetChannelWidthInMhz(WifiChannelWidthType width)
     switch (width)
     {
     case WifiChannelWidthType::UNKNOWN:
-        return 0;
+        return MHz_u{0};
     case WifiChannelWidthType::CW_20MHZ:
-        return 20;
+        return MHz_u{20};
     case WifiChannelWidthType::CW_22MHZ:
-        return 22;
+        return MHz_u{22};
     case WifiChannelWidthType::CW_5MHZ:
-        return 5;
+        return MHz_u{5};
     case WifiChannelWidthType::CW_10MHZ:
-        return 10;
+        return MHz_u{10};
     case WifiChannelWidthType::CW_40MHZ:
-        return 40;
+        return MHz_u{40};
     case WifiChannelWidthType::CW_80MHZ:
-        return 80;
+        return MHz_u{80};
     case WifiChannelWidthType::CW_160MHZ:
     case WifiChannelWidthType::CW_80_PLUS_80MHZ:
-        return 160;
+        return MHz_u{160};
     case WifiChannelWidthType::CW_2160MHZ:
-        return 2160;
+        return MHz_u{2160};
     default:
         NS_FATAL_ERROR("Unknown wifi channel width type " << width);
-        return 0;
+        return MHz_u{0};
     }
 }
 

@@ -217,7 +217,7 @@ HePhy::GetSigBSize(const WifiTxVector& txVector) const
         return HePpdu::GetSigBFieldSize(
             txVector.GetChannelWidth(),
             txVector.GetRuAllocation(
-                m_wifiPhy ? m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(20) : 0),
+                m_wifiPhy ? m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(MHz_u{20}) : 0),
             txVector.IsSigBCompression(),
             txVector.IsSigBCompression() ? txVector.GetHeMuUserInfoMap().size() : 0);
     }
@@ -232,7 +232,7 @@ HePhy::GetSigBDuration(const WifiTxVector& txVector) const
         const auto symbolDuration = MicroSeconds(4);
         // Number of data bits per symbol
         const auto ndbps =
-            GetSigBMode(txVector).GetDataRate(20) * symbolDuration.GetNanoSeconds() / 1e9;
+            GetSigBMode(txVector).GetDataRate(MHz_u{20}) * symbolDuration.GetNanoSeconds() / 1e9;
         const auto numSymbols = ceil((sigBSize) / ndbps);
 
         return FemtoSeconds(static_cast<uint64_t>(numSymbols * symbolDuration.GetFemtoSeconds()));
@@ -985,7 +985,8 @@ HePhy::GetRuBandForTx(const WifiTxVector& txVector, uint16_t staId) const
     HeRu::SubcarrierGroup group = HeRu::GetSubcarrierGroup(
         channelWidth,
         ru.GetRuType(),
-        ru.GetPhyIndex(channelWidth, m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(20)));
+        ru.GetPhyIndex(channelWidth,
+                       m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(MHz_u{20})));
     // for a TX spectrum, the guard bandwidth is a function of the transmission channel width
     // and the spectrum width equals the transmission channel width (hence bandIndex equals 0)
     const auto indices = ConvertHeRuSubcarriers(channelWidth,
@@ -1015,7 +1016,8 @@ HePhy::GetRuBandForRx(const WifiTxVector& txVector, uint16_t staId) const
     HeRu::SubcarrierGroup group = HeRu::GetSubcarrierGroup(
         channelWidth,
         ru.GetRuType(),
-        ru.GetPhyIndex(channelWidth, m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(20)));
+        ru.GetPhyIndex(channelWidth,
+                       m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(MHz_u{20})));
     // for an RX spectrum, the guard bandwidth is a function of the operating channel width
     // and the spectrum width equals the operating channel width
     const auto indices = ConvertHeRuSubcarriers(
@@ -1054,7 +1056,7 @@ HePhy::GetNonOfdmaBand(const WifiTxVector& txVector, uint16_t staId) const
         channelWidth,
         nonOfdmaRu.GetRuType(),
         nonOfdmaRu.GetPhyIndex(channelWidth,
-                               m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(20)));
+                               m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(MHz_u{20})));
     const auto indices = ConvertHeRuSubcarriers(
         channelWidth,
         GetGuardBandwidth(m_wifiPhy->GetChannelWidth()),
@@ -1080,9 +1082,9 @@ HePhy::GetNonOfdmaWidth(HeRu::RuSpec ru) const
     {
         // the center 26-tone RU in an 80 MHz channel is not fully covered by
         // any 20 MHz channel, but only by an 80 MHz channel
-        return 80;
+        return MHz_u{80};
     }
-    return std::max<MHz_u>(HeRu::GetBandwidth(ru.GetRuType()), 20);
+    return std::max(HeRu::GetBandwidth(ru.GetRuType()), MHz_u{20});
 }
 
 uint64_t
@@ -1102,9 +1104,9 @@ HePhy::GetMeasurementChannelWidth(const Ptr<const WifiPpdu> ppdu) const
      * primitive for a PPDU received in the primary or at the secondary 20 MHz channel, the
      * secondary 40 MHz channel, or the secondary 80 MHz channel.
      */
-    if (channelWidth >= 40 && ppdu->GetUid() != m_previouslyTxPpduUid)
+    if (channelWidth >= MHz_u{40} && ppdu->GetUid() != m_previouslyTxPpduUid)
     {
-        channelWidth = 20;
+        channelWidth = MHz_u{20};
     }
     return channelWidth;
 }
@@ -1130,9 +1132,9 @@ HePhy::GetCcaThreshold(const Ptr<const WifiPpdu> ppdu, WifiChannelListType chann
     const auto ppduBw = ppdu->GetTxVector().GetChannelWidth();
     auto obssPdLevel = m_obssPdAlgorithm->GetObssPdLevel();
     auto bw = ppduBw;
-    while (bw > 20)
+    while (bw > MHz_u{20})
     {
-        obssPdLevel += 3;
+        obssPdLevel += dB_u{3};
         bw /= 2;
     }
 
@@ -1198,7 +1200,7 @@ HePhy::GetPer20MHzDurations(const Ptr<const WifiPpdu> ppdu)
      * primitive, the PHY shall set the per20bitmap to indicate the busy/idle status of each 20 MHz
      * subchannel.
      */
-    if (m_wifiPhy->GetChannelWidth() < 40)
+    if (m_wifiPhy->GetChannelWidth() < MHz_u{40})
     {
         return {};
     }
@@ -1208,7 +1210,7 @@ HePhy::GetPer20MHzDurations(const Ptr<const WifiPpdu> ppdu)
         m_wifiPhy->GetChannelWidth());
     for (auto index : indices)
     {
-        auto band = m_wifiPhy->GetBand(20, index);
+        auto band = m_wifiPhy->GetBand(MHz_u{20}, index);
         /**
          * A signal is present on the 20 MHz subchannel at or above a threshold of –62 dBm at the
          * receiver's antenna(s). The PHY shall indicate that the 20 MHz subchannel is busy a period
@@ -1220,9 +1222,10 @@ HePhy::GetPer20MHzDurations(const Ptr<const WifiPpdu> ppdu)
 
         if (ppdu)
         {
-            const MHz_u subchannelMinFreq =
-                m_wifiPhy->GetFrequency() - (m_wifiPhy->GetChannelWidth() / 2) + (index * 20);
-            const MHz_u subchannelMaxFreq = subchannelMinFreq + 20;
+            const MHz_u subchannelMinFreq = m_wifiPhy->GetFrequency() -
+                                            (m_wifiPhy->GetChannelWidth() / 2) +
+                                            (index * MHz_u{20});
+            const MHz_u subchannelMaxFreq = subchannelMinFreq + MHz_u{20};
             const auto ppduBw = ppdu->GetTxVector().GetChannelWidth();
 
             if (ppduBw <= m_wifiPhy->GetChannelWidth() &&
@@ -1243,9 +1246,10 @@ HePhy::GetPer20MHzDurations(const Ptr<const WifiPpdu> ppdu)
                      * The PHY shall indicate that the 20 MHz subchannel is busy with > 90%
                      * probability within a period aCCAMidTime.
                      */
-                    ccaThreshold =
-                        obssPdLevel.has_value() ? std::max(-72.0, obssPdLevel.value()) : -72.0;
-                    band = m_wifiPhy->GetBand(20, index);
+                    ccaThreshold = obssPdLevel.has_value()
+                                       ? std::max(dBm_u{-72.0}, obssPdLevel.value())
+                                       : dBm_u{-72.0};
+                    band = m_wifiPhy->GetBand(MHz_u{20}, index);
                     break;
                 case 40:
                     /**
@@ -1254,9 +1258,10 @@ HePhy::GetPer20MHzDurations(const Ptr<const WifiPpdu> ppdu)
                      * the receiver's antenna(s) is present. The PHY shall indicate that the 20 MHz
                      * subchannel is busy with > 90% probability within a period aCCAMidTime.
                      */
-                    ccaThreshold =
-                        obssPdLevel.has_value() ? std::max(-72.0, obssPdLevel.value() + 3) : -72.0;
-                    band = m_wifiPhy->GetBand(40, std::floor(index / 2));
+                    ccaThreshold = obssPdLevel.has_value()
+                                       ? std::max(dBm_u{-72.0}, obssPdLevel.value() + dB_u{3})
+                                       : dBm_u{-72.0};
+                    band = m_wifiPhy->GetBand(MHz_u{40}, std::floor(index / 2));
                     break;
                 case 80:
                     /**
@@ -1265,9 +1270,10 @@ HePhy::GetPer20MHzDurations(const Ptr<const WifiPpdu> ppdu)
                      * receiver's antenna(s) is present. The PHY shall indicate that the 20 MHz
                      * subchannel is busy with > 90% probability within a period aCCAMidTime.
                      */
-                    ccaThreshold =
-                        obssPdLevel.has_value() ? std::max(-69.0, obssPdLevel.value() + 6) : -69.0;
-                    band = m_wifiPhy->GetBand(80, std::floor(index / 4));
+                    ccaThreshold = obssPdLevel.has_value()
+                                       ? std::max(dBm_u{-69.0}, obssPdLevel.value() + dB_u{6})
+                                       : dBm_u{-69.0};
+                    band = m_wifiPhy->GetBand(MHz_u{80}, std::floor(index / 4));
                     break;
                 case 160:
                     // Not defined in the standard: keep -62 dBm
@@ -1354,7 +1360,7 @@ HePhy::GetTxPowerSpectralDensity(Watt_u txPower,
     const auto& puncturedSubchannels = txVector.GetInactiveSubchannels();
     if (!puncturedSubchannels.empty())
     {
-        const auto p20Index = m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(20);
+        const auto p20Index = m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(MHz_u{20});
         const auto& indices =
             m_wifiPhy->GetOperatingChannel().GetAll20MHzChannelIndicesInPrimary(channelWidth);
         const auto p20IndexInBitmap = p20Index - *(indices.cbegin());
@@ -1370,7 +1376,7 @@ HePhy::GetTxPowerSpectralDensity(Watt_u txPower,
             // non-HE portion is sent only on the 20 MHz channels covering the RU
             const auto staId = GetStaId(ppdu);
             const auto ruWidth = HeRu::GetBandwidth(txVector.GetRu(staId).GetRuType());
-            channelWidth = (ruWidth < 20) ? 20 : ruWidth;
+            channelWidth = (ruWidth < MHz_u{20}) ? MHz_u{20} : ruWidth;
             return WifiSpectrumValueHelper::CreateDuplicated20MhzTxPowerSpectralDensity(
                 GetCenterFrequenciesForNonHePart(ppdu, staId),
                 channelWidth,
@@ -1453,10 +1459,11 @@ HePhy::GetCenterFrequenciesForNonHePart(Ptr<const WifiPpdu> ppdu, uint16_t staId
         const MHz_u startingFrequency = centerFrequencies.front() - (currentWidth / 2);
         centerFrequencies.front() =
             startingFrequency +
-            nonOfdmaWidth * (nonOfdmaRu.GetPhyIndex(
-                                 currentWidth,
-                                 m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(20)) -
-                             1) +
+            nonOfdmaWidth *
+                (nonOfdmaRu.GetPhyIndex(
+                     currentWidth,
+                     m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(MHz_u{20})) -
+                 1) +
             nonOfdmaWidth / 2;
     }
     return centerFrequencies;

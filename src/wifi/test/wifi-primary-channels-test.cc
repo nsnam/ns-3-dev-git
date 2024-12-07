@@ -463,7 +463,7 @@ WifiPrimaryChannelsTest::DoSetup()
                                      1,
                                      1,
                                      0,
-                                     20,
+                                     MHz_u{20},
                                      false,
                                      false,
                                      false);
@@ -825,7 +825,7 @@ WifiPrimaryChannelsTest::SendDlMuPpdu(uint8_t bss,
 
     for (std::size_t i = 1; i <= nRus; i++)
     {
-        bool primary80 = !(txChannelWidth == 160 && i > nRus / 2);
+        bool primary80 = !(txChannelWidth == MHz_u{160} && i > nRus / 2);
         std::size_t index = (primary80 ? i : i - nRus / 2);
 
         auto staDev = DynamicCast<WifiNetDevice>(m_staDevices[bss].Get(i - 1));
@@ -907,7 +907,7 @@ WifiPrimaryChannelsTest::DoSendHeTbPpdu(uint8_t bss,
                                << txChannelWidth
                                << " MHz channel an HE TB PPDU (RU type: " << ruType << ")");
 
-        bool primary80 = !(txChannelWidth == 160 && i > nRus / 2);
+        bool primary80 = !(txChannelWidth == MHz_u{160} && i > nRus / 2);
         std::size_t index = (primary80 ? i : i - nRus / 2);
 
         auto staDev = DynamicCast<WifiNetDevice>(m_staDevices[bss].Get(i - 1));
@@ -1280,7 +1280,7 @@ Wifi20MHzChannelIndicesTest::RunOne(uint8_t primary20,
 
     m_channel.SetPrimary20Index(primary20);
 
-    auto actualPrimary20 = m_channel.GetAll20MHzChannelIndicesInPrimary(20);
+    auto actualPrimary20 = m_channel.GetAll20MHzChannelIndicesInPrimary(MHz_u{20});
     NS_TEST_ASSERT_MSG_EQ((actualPrimary20 == std::set<uint8_t>{primary20}),
                           true,
                           "Expected Primary20 {" << +primary20 << "}"
@@ -1294,7 +1294,7 @@ Wifi20MHzChannelIndicesTest::RunOne(uint8_t primary20,
                                                   << " differs from actual "
                                                   << printToStr(actualSecondary20));
 
-    auto actualPrimary40 = m_channel.GetAll20MHzChannelIndicesInPrimary(40);
+    auto actualPrimary40 = m_channel.GetAll20MHzChannelIndicesInPrimary(MHz_u{40});
     NS_TEST_ASSERT_MSG_EQ((actualPrimary40 == primary40),
                           true,
                           "Expected Primary40 " << printToStr(primary40) << " differs from actual "
@@ -1307,7 +1307,7 @@ Wifi20MHzChannelIndicesTest::RunOne(uint8_t primary20,
                                                   << " differs from actual "
                                                   << printToStr(actualSecondary40));
 
-    auto actualPrimary80 = m_channel.GetAll20MHzChannelIndicesInPrimary(80);
+    auto actualPrimary80 = m_channel.GetAll20MHzChannelIndicesInPrimary(MHz_u{80});
     NS_TEST_ASSERT_MSG_EQ((actualPrimary80 == primary80),
                           true,
                           "Expected Primary80 " << printToStr(primary80) << " differs from actual "
@@ -1325,23 +1325,23 @@ void
 Wifi20MHzChannelIndicesTest::DoRun()
 {
     /* 20 MHz channel */
-    m_channel.SetDefault(20, WIFI_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ);
+    m_channel.SetDefault(MHz_u{20}, WIFI_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ);
     RunOne(0, {}, {}, {}, {}, {});
 
     /* 40 MHz channel */
-    m_channel.SetDefault(40, WIFI_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ);
+    m_channel.SetDefault(MHz_u{40}, WIFI_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ);
     RunOne(0, {1}, {0, 1}, {}, {}, {});
     RunOne(1, {0}, {0, 1}, {}, {}, {});
 
     /* 80 MHz channel */
-    m_channel.SetDefault(80, WIFI_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ);
+    m_channel.SetDefault(MHz_u{80}, WIFI_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ);
     RunOne(0, {1}, {0, 1}, {2, 3}, {0, 1, 2, 3}, {});
     RunOne(1, {0}, {0, 1}, {2, 3}, {0, 1, 2, 3}, {});
     RunOne(2, {3}, {2, 3}, {0, 1}, {0, 1, 2, 3}, {});
     RunOne(3, {2}, {2, 3}, {0, 1}, {0, 1, 2, 3}, {});
 
     /* 160 MHz channel */
-    m_channel.SetDefault(160, WIFI_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ);
+    m_channel.SetDefault(MHz_u{160}, WIFI_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ);
     RunOne(0, {1}, {0, 1}, {2, 3}, {0, 1, 2, 3}, {4, 5, 6, 7});
     RunOne(1, {0}, {0, 1}, {2, 3}, {0, 1, 2, 3}, {4, 5, 6, 7});
     RunOne(2, {3}, {2, 3}, {0, 1}, {0, 1, 2, 3}, {4, 5, 6, 7});
@@ -1368,14 +1368,14 @@ WifiPrimaryChannelsTestSuite::WifiPrimaryChannelsTestSuite()
     : TestSuite("wifi-primary-channels", Type::UNIT)
 {
     // Test cases for 20 MHz can be added, but are not that useful (there would be a single BSS)
-    AddTestCase(new WifiPrimaryChannelsTest(40, true), TestCase::Duration::QUICK);
-    AddTestCase(new WifiPrimaryChannelsTest(40, false), TestCase::Duration::QUICK);
+    AddTestCase(new WifiPrimaryChannelsTest(MHz_u{40}, true), TestCase::Duration::QUICK);
+    AddTestCase(new WifiPrimaryChannelsTest(MHz_u{40}, false), TestCase::Duration::QUICK);
 #if 0
     // Tests disabled until issue #776 resolved
-    AddTestCase(new WifiPrimaryChannelsTest(80, true), TestCase::Duration::EXTENSIVE);
-    AddTestCase(new WifiPrimaryChannelsTest(80, false), TestCase::Duration::EXTENSIVE);
-    AddTestCase(new WifiPrimaryChannelsTest(160, true), TestCase::Duration::TAKES_FOREVER);
-    AddTestCase(new WifiPrimaryChannelsTest(160, false), TestCase::Duration::TAKES_FOREVER);
+    AddTestCase(new WifiPrimaryChannelsTest(MHz_u{80}, true), TestCase::Duration::EXTENSIVE);
+    AddTestCase(new WifiPrimaryChannelsTest(MHz_u{80}, false), TestCase::Duration::EXTENSIVE);
+    AddTestCase(new WifiPrimaryChannelsTest(MHz_u{160}, true), TestCase::Duration::TAKES_FOREVER);
+    AddTestCase(new WifiPrimaryChannelsTest(MHz_u{160}, false), TestCase::Duration::TAKES_FOREVER);
 #endif
     AddTestCase(new Wifi20MHzChannelIndicesTest(), TestCase::Duration::QUICK);
 }

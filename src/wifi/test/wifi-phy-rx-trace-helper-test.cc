@@ -263,7 +263,7 @@ TestWifiPhyRxTraceHelper::SendPpduWithTwoMpdus(dBm_u rxPower,
                                          1,
                                          1,
                                          0,
-                                         20,
+                                         MHz_u{20},
                                          true);
 
     std::vector<Ptr<WifiMpdu>> mpduList;
@@ -303,7 +303,7 @@ TestWifiPhyRxTraceHelper::SendPpduWithOneMpdu(dBm_u rxPower,
                                          1,
                                          1,
                                          0,
-                                         20,
+                                         MHz_u{20},
                                          true);
 
     std::vector<Ptr<WifiMpdu>> mpduList;
@@ -1135,7 +1135,7 @@ TestWifiPhyRxTraceHelperMloStr::SendPpduWithTwoMpdus(dBm_u rxPower,
                                          1,
                                          1,
                                          0,
-                                         20,
+                                         MHz_u{20},
                                          true);
 
     std::vector<Ptr<WifiMpdu>> mpduList;
@@ -1176,7 +1176,7 @@ TestWifiPhyRxTraceHelperMloStr::SendPpduWithOneMpdu(dBm_u rxPower,
                      1,
                      1,
                      0,
-                     20,
+                     MHz_u{20},
                      true); // for some reason needs to be set to true even though only one MPDU
 
     std::vector<Ptr<WifiMpdu>> mpduList;
@@ -1896,7 +1896,7 @@ TestWifiPhyRxTraceHelperYans::SendPpduWithTwoMpdus(dBm_u rxPower,
                                          1,
                                          1,
                                          0,
-                                         20,
+                                         MHz_u{20},
                                          true);
 
     std::vector<Ptr<WifiMpdu>> mpduList;
@@ -1942,7 +1942,7 @@ TestWifiPhyRxTraceHelperYans::SendPpduWithOneMpdu(dBm_u rxPower,
                                  1,
                                  1,
                                  0,
-                                 20,
+                                 MHz_u{20},
                                  true);
 
     std::vector<Ptr<WifiMpdu>> mpduList;

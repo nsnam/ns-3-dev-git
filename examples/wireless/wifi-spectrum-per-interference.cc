@@ -578,18 +578,18 @@ main(int argc, char* argv[])
         Ptr<WifiPhy> wifiPhyPtr = staDevicePtr->GetObject<WifiNetDevice>()->GetPhy();
         if (i <= 15)
         {
-            NS_ABORT_MSG_IF(wifiPhyPtr->GetChannelWidth() != 20,
+            NS_ABORT_MSG_IF(wifiPhyPtr->GetChannelWidth() != MHz_u{20},
                             "Error: Channel width must be 20 MHz if MCS index <= 15");
             NS_ABORT_MSG_IF(
-                wifiPhyPtr->GetFrequency() != 5180,
+                wifiPhyPtr->GetFrequency() != MHz_u{5180},
                 "Error:  Wi-Fi nodes must be tuned to 5180 MHz to match the waveform generator");
         }
         else
         {
-            NS_ABORT_MSG_IF(wifiPhyPtr->GetChannelWidth() != 40,
+            NS_ABORT_MSG_IF(wifiPhyPtr->GetChannelWidth() != MHz_u{40},
                             "Error: Channel width must be 40 MHz if MCS index > 15");
             NS_ABORT_MSG_IF(
-                wifiPhyPtr->GetFrequency() != 5190,
+                wifiPhyPtr->GetFrequency() != MHz_u{5190},
                 "Error:  Wi-Fi nodes must be tuned to 5190 MHz to match the waveform generator");
         }
 

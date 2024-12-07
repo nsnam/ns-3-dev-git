@@ -190,194 +190,194 @@ WifiErrorRateModelsTestCaseNist::DoRun()
                                         std::pow(10.0, snr / 10.0),
                                         frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 2.04e-10, 1e-10, "Not equal within tolerance");
-    snr = 3.0;
+    snr = dB_u{3.0};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate6Mbps"),
                                    txVector,
                                    std::pow(10.0, snr / 10.0),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 0.020, 0.001, "Not equal within tolerance");
-    snr = 4.0;
+    snr = dB_u{4.0};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate6Mbps"),
                                    txVector,
                                    std::pow(10.0, snr / 10.0),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 0.885, 0.001, "Not equal within tolerance");
-    snr = 5.0;
+    snr = dB_u{5.0};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate6Mbps"),
                                    txVector,
                                    std::pow(10.0, snr / 10.0),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 0.997, 0.001, "Not equal within tolerance");
 
-    snr = 6.0;
+    snr = dB_u{6.0};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate9Mbps"),
                                    txVector,
                                    std::pow(10.0, snr / 10.0),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 0.097, 0.001, "Not equal within tolerance");
-    snr = 7.0;
+    snr = dB_u{7.0};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate9Mbps"),
                                    txVector,
                                    std::pow(10.0, snr / 10.0),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 0.918, 0.001, "Not equal within tolerance");
-    snr = 8.0;
+    snr = dB_u{8.0};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate9Mbps"),
                                    txVector,
                                    std::pow(10.0, snr / 10.0),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 0.998, 0.001, "Not equal within tolerance");
-    snr = 9.0;
+    snr = dB_u{9.0};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate9Mbps"),
                                    txVector,
                                    std::pow(10.0, snr / 10.0),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 0.999, 0.001, "Not equal within tolerance");
 
-    snr = 6.0;
+    snr = dB_u{6.0};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate12Mbps"),
                                    txVector,
                                    std::pow(10.0, snr / 10.0),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 0.0174, 0.001, "Not equal within tolerance");
-    snr = 7.0;
+    snr = dB_u{7.0};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate12Mbps"),
                                    txVector,
                                    std::pow(10.0, snr / 10.0),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 0.881, 0.001, "Not equal within tolerance");
-    snr = 8.0;
+    snr = dB_u{8.0};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate12Mbps"),
                                    txVector,
                                    std::pow(10.0, snr / 10.0),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 0.997, 0.001, "Not equal within tolerance");
-    snr = 9.0;
+    snr = dB_u{9.0};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate12Mbps"),
                                    txVector,
                                    std::pow(10.0, snr / 10.0),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 0.999, 0.001, "Not equal within tolerance");
 
-    snr = 8.5;
+    snr = dB_u{8.5};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate18Mbps"),
                                    txVector,
                                    std::pow(10.0, snr / 10.0),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 2.85e-6, 1e-6, "Not equal within tolerance");
-    snr = 9.5;
+    snr = dB_u{9.5};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate18Mbps"),
                                    txVector,
                                    std::pow(10.0, snr / 10.0),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 0.623, 0.001, "Not equal within tolerance");
-    snr = 10.5;
+    snr = dB_u{10.5};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate18Mbps"),
                                    txVector,
                                    std::pow(10.0, snr / 10.0),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 0.985, 0.001, "Not equal within tolerance");
-    snr = 11.5;
+    snr = dB_u{11.5};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate18Mbps"),
                                    txVector,
                                    std::pow(10.0, snr / 10.0),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 0.999, 0.001, "Not equal within tolerance");
 
-    snr = 12.0;
+    snr = dB_u{12.0};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate24Mbps"),
                                    txVector,
                                    std::pow(10.0, snr / 10.0),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 2.22e-7, 1e-7, "Not equal within tolerance");
-    snr = 13.0;
+    snr = dB_u{13.0};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate24Mbps"),
                                    txVector,
                                    std::pow(10.0, snr / 10.0),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 0.495, 0.001, "Not equal within tolerance");
-    snr = 14.0;
+    snr = dB_u{14.0};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate24Mbps"),
                                    txVector,
                                    std::pow(10.0, snr / 10.0),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 0.974, 0.001, "Not equal within tolerance");
-    snr = 15.0;
+    snr = dB_u{15.0};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate24Mbps"),
                                    txVector,
                                    std::pow(10.0, snr / 10.0),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 0.999, 0.001, "Not equal within tolerance");
 
-    snr = 15.5;
+    snr = dB_u{15.5};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate36Mbps"),
                                    txVector,
                                    std::pow(10.0, snr / 10.0),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 0.012, 0.001, "Not equal within tolerance");
-    snr = 16.5;
+    snr = dB_u{16.5};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate36Mbps"),
                                    txVector,
                                    std::pow(10.0, snr / 10.0),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 0.818, 0.001, "Not equal within tolerance");
-    snr = 17.5;
+    snr = dB_u{17.5};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate36Mbps"),
                                    txVector,
                                    std::pow(10.0, snr / 10.0),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 0.993, 0.001, "Not equal within tolerance");
-    snr = 18.5;
+    snr = dB_u{18.5};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate36Mbps"),
                                    txVector,
                                    std::pow(10.0, snr / 10.0),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 0.999, 0.001, "Not equal within tolerance");
 
-    snr = 20.0;
+    snr = dB_u{20.0};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate48Mbps"),
                                    txVector,
                                    std::pow(10.0, snr / 10.0),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 1.3e-4, 1e-4, "Not equal within tolerance");
-    snr = 21.0;
+    snr = dB_u{21.0};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate48Mbps"),
                                    txVector,
                                    std::pow(10.0, snr / 10.0),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 0.649, 0.001, "Not equal within tolerance");
-    snr = 22.0;
+    snr = dB_u{22.0};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate48Mbps"),
                                    txVector,
                                    std::pow(10.0, snr / 10.0),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 0.983, 0.001, "Not equal within tolerance");
-    snr = 23.0;
+    snr = dB_u{23.0};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate48Mbps"),
                                    txVector,
                                    std::pow(10.0, snr / 10.0),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 0.999, 0.001, "Not equal within tolerance");
 
-    snr = 21.0;
+    snr = dB_u{21.0};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate54Mbps"),
                                    txVector,
                                    std::pow(10.0, snr / 10.0),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 5.44e-8, 1e-8, "Not equal within tolerance");
-    snr = 22.0;
+    snr = dB_u{22.0};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate54Mbps"),
                                    txVector,
                                    std::pow(10.0, snr / 10.0),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 0.410, 0.001, "Not equal within tolerance");
-    snr = 23.0;
+    snr = dB_u{23.0};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate54Mbps"),
                                    txVector,
                                    std::pow(10.0, snr / 10.0),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 0.958, 0.001, "Not equal within tolerance");
-    snr = 24.0;
+    snr = dB_u{24.0};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate54Mbps"),
                                    txVector,
                                    std::pow(10.0, snr / 10.0),
@@ -427,7 +427,7 @@ WifiErrorRateModelsTestCaseMimo::DoRun()
 
     txVector.SetMode(mode);
     txVector.SetTxPowerLevel(0);
-    txVector.SetChannelWidth(20);
+    txVector.SetChannelWidth(MHz_u{20});
     txVector.SetNss(1);
     txVector.SetNTx(1);
 
@@ -438,8 +438,8 @@ WifiErrorRateModelsTestCaseMimo::DoRun()
     // SISO: initial SNR set to 4dB
     dB_u initialSnr{4.0};
     dB_u tol{0.1};
-    auto snr = interference.CalculateSnr(0.001,
-                                         0.001 / DbToRatio(initialSnr),
+    auto snr = interference.CalculateSnr(Watt_u{0.001},
+                                         Watt_u{0.001} / DbToRatio(initialSnr),
                                          txVector.GetChannelWidth(),
                                          txVector.GetNss());
     NS_TEST_ASSERT_MSG_EQ_TOL(RatioToDb(snr),
@@ -457,8 +457,8 @@ WifiErrorRateModelsTestCaseMimo::DoRun()
     // MIMO 2x1:2: expect no SNR gain in AWGN channel
     txVector.SetNss(2);
     txVector.SetNTx(2);
-    snr = interference.CalculateSnr(0.001,
-                                    0.001 / DbToRatio(initialSnr),
+    snr = interference.CalculateSnr(Watt_u{0.001},
+                                    Watt_u{0.001} / DbToRatio(initialSnr),
                                     txVector.GetChannelWidth(),
                                     txVector.GetNss());
     NS_TEST_ASSERT_MSG_EQ_TOL(RatioToDb(snr),
@@ -476,8 +476,8 @@ WifiErrorRateModelsTestCaseMimo::DoRun()
     txVector.SetNss(1);
     txVector.SetNTx(1);
     interference.SetNumberOfReceiveAntennas(2);
-    snr = interference.CalculateSnr(0.001,
-                                    0.001 / DbToRatio(initialSnr),
+    snr = interference.CalculateSnr(Watt_u{0.001},
+                                    Watt_u{0.001} / DbToRatio(initialSnr),
                                     txVector.GetChannelWidth(),
                                     txVector.GetNss());
     NS_TEST_ASSERT_MSG_EQ_TOL(RatioToDb(snr),
@@ -494,8 +494,8 @@ WifiErrorRateModelsTestCaseMimo::DoRun()
     txVector.SetNss(1);
     txVector.SetNTx(2);
     interference.SetNumberOfReceiveAntennas(2);
-    snr = interference.CalculateSnr(0.001,
-                                    0.001 / DbToRatio(initialSnr),
+    snr = interference.CalculateSnr(Watt_u{0.001},
+                                    Watt_u{0.001} / DbToRatio(initialSnr),
                                     txVector.GetChannelWidth(),
                                     txVector.GetNss());
     NS_TEST_ASSERT_MSG_EQ_TOL(RatioToDb(snr),
@@ -511,8 +511,8 @@ WifiErrorRateModelsTestCaseMimo::DoRun()
     txVector.SetNss(2);
     txVector.SetNTx(2);
     interference.SetNumberOfReceiveAntennas(2);
-    snr = interference.CalculateSnr(0.001,
-                                    0.001 / DbToRatio(initialSnr),
+    snr = interference.CalculateSnr(Watt_u{0.001},
+                                    Watt_u{0.001} / DbToRatio(initialSnr),
                                     txVector.GetChannelWidth(),
                                     txVector.GetNss());
     NS_TEST_ASSERT_MSG_EQ_TOL(RatioToDb(snr),
@@ -530,8 +530,8 @@ WifiErrorRateModelsTestCaseMimo::DoRun()
     txVector.SetNss(1);
     txVector.SetNTx(3);
     interference.SetNumberOfReceiveAntennas(3);
-    snr = interference.CalculateSnr(0.001,
-                                    0.001 / DbToRatio(initialSnr),
+    snr = interference.CalculateSnr(Watt_u{0.001},
+                                    Watt_u{0.001} / DbToRatio(initialSnr),
                                     txVector.GetChannelWidth(),
                                     txVector.GetNss());
     NS_TEST_ASSERT_MSG_EQ_TOL(RatioToDb(snr),
@@ -548,8 +548,8 @@ WifiErrorRateModelsTestCaseMimo::DoRun()
     txVector.SetNss(2);
     txVector.SetNTx(3);
     interference.SetNumberOfReceiveAntennas(3);
-    snr = interference.CalculateSnr(0.001,
-                                    0.001 / DbToRatio(initialSnr),
+    snr = interference.CalculateSnr(Watt_u{0.001},
+                                    Watt_u{0.001} / DbToRatio(initialSnr),
                                     txVector.GetChannelWidth(),
                                     txVector.GetNss());
     NS_TEST_ASSERT_MSG_EQ_TOL(RatioToDb(snr),
@@ -565,8 +565,8 @@ WifiErrorRateModelsTestCaseMimo::DoRun()
     txVector.SetNss(3);
     txVector.SetNTx(3);
     interference.SetNumberOfReceiveAntennas(3);
-    snr = interference.CalculateSnr(0.001,
-                                    0.001 / DbToRatio(initialSnr),
+    snr = interference.CalculateSnr(Watt_u{0.001},
+                                    Watt_u{0.001} / DbToRatio(initialSnr),
                                     txVector.GetChannelWidth(),
                                     txVector.GetNss());
     NS_TEST_ASSERT_MSG_EQ_TOL(RatioToDb(snr),
@@ -584,8 +584,8 @@ WifiErrorRateModelsTestCaseMimo::DoRun()
     txVector.SetNss(1);
     txVector.SetNTx(4);
     interference.SetNumberOfReceiveAntennas(4);
-    snr = interference.CalculateSnr(0.001,
-                                    0.001 / DbToRatio(initialSnr),
+    snr = interference.CalculateSnr(Watt_u{0.001},
+                                    Watt_u{0.001} / DbToRatio(initialSnr),
                                     txVector.GetChannelWidth(),
                                     txVector.GetNss());
     NS_TEST_ASSERT_MSG_EQ_TOL(RatioToDb(snr),
@@ -602,8 +602,8 @@ WifiErrorRateModelsTestCaseMimo::DoRun()
     txVector.SetNss(2);
     txVector.SetNTx(4);
     interference.SetNumberOfReceiveAntennas(4);
-    snr = interference.CalculateSnr(0.001,
-                                    0.001 / DbToRatio(initialSnr),
+    snr = interference.CalculateSnr(Watt_u{0.001},
+                                    Watt_u{0.001} / DbToRatio(initialSnr),
                                     txVector.GetChannelWidth(),
                                     txVector.GetNss());
     NS_TEST_ASSERT_MSG_EQ_TOL(RatioToDb(snr),
@@ -620,8 +620,8 @@ WifiErrorRateModelsTestCaseMimo::DoRun()
     txVector.SetNss(3);
     txVector.SetNTx(4);
     interference.SetNumberOfReceiveAntennas(4);
-    snr = interference.CalculateSnr(0.001,
-                                    0.001 / DbToRatio(initialSnr),
+    snr = interference.CalculateSnr(Watt_u{0.001},
+                                    Watt_u{0.001} / DbToRatio(initialSnr),
                                     txVector.GetChannelWidth(),
                                     txVector.GetNss());
     NS_TEST_ASSERT_MSG_EQ_TOL(RatioToDb(snr),
@@ -637,8 +637,8 @@ WifiErrorRateModelsTestCaseMimo::DoRun()
     txVector.SetNss(4);
     txVector.SetNTx(4);
     interference.SetNumberOfReceiveAntennas(4);
-    snr = interference.CalculateSnr(0.001,
-                                    0.001 / DbToRatio(initialSnr),
+    snr = interference.CalculateSnr(Watt_u{0.001},
+                                    Watt_u{0.001} / DbToRatio(initialSnr),
                                     txVector.GetChannelWidth(),
                                     txVector.GetNss());
     NS_TEST_ASSERT_MSG_EQ_TOL(RatioToDb(snr),
@@ -662,275 +662,352 @@ std::map<std::pair<uint8_t /* mcs */, uint32_t /* size */>,
         /* MCS 0 - 1458 bytes */
         {std::make_pair(0, 1458),
          {
-             {-4.00, 1.00000}, {-3.75, 1.00000}, {-3.50, 1.00000}, {-3.25, 1.00000},
-             {-3.00, 1.00000}, {-2.75, 1.00000}, {-2.50, 1.00000}, {-2.25, 1.00000},
-             {-2.00, 1.00000}, {-1.75, 1.00000}, {-1.50, 1.00000}, {-1.25, 1.00000},
-             {-1.00, 1.00000}, {-0.75, 0.99700}, {-0.50, 0.99400}, {-0.25, 0.90625},
-             {0.00, 0.81850},  {0.25, 0.55465},  {0.50, 0.29080},  {0.75, 0.17855},
-             {1.00, 0.06630},  {1.25, 0.03875},  {1.50, 0.01120},  {1.75, 0.00635},
-             {2.00, 0.00150},  {2.25, 0.00083},  {2.50, 0.00015},  {2.75, 0.00008},
-             {3.00, 0.00001},  {3.25, 0.00000},  {3.50, 0.00000},  {3.75, 0.00000},
-             {4.00, 0.00000},  {4.25, 0.00000},  {4.50, 0.00000},  {4.75, 0.00000},
-             {5.00, 0.00000},  {5.25, 0.00000},  {5.50, 0.00000},  {5.75, 0.00000},
-             {6.00, 0.00000},  {6.25, 0.00000},  {6.50, 0.00000},  {6.75, 0.00000},
-             {7.00, 0.00000},  {7.25, 0.00000},  {7.50, 0.00000},  {7.75, 0.00000},
-             {8.00, 0.00000},  {8.25, 0.00000},  {8.50, 0.00000},  {8.75, 0.00000},
-             {9.00, 0.00000},  {9.25, 0.00000},  {9.50, 0.00000},  {9.75, 0.00000},
-             {10.00, 0.00000}, {10.25, 0.00000}, {10.50, 0.00000}, {10.75, 0.00000},
-             {11.00, 0.00000}, {11.25, 0.00000}, {11.50, 0.00000}, {11.75, 0.00000},
-             {12.00, 0.00000}, {12.25, 0.00000}, {12.50, 0.00000}, {12.75, 0.00000},
-             {13.00, 0.00000}, {13.25, 0.00000}, {13.50, 0.00000}, {13.75, 0.00000},
-             {14.00, 0.00000}, {14.25, 0.00000}, {14.50, 0.00000}, {14.75, 0.00000},
-             {15.00, 0.00000}, {15.25, 0.00000}, {15.50, 0.00000}, {15.75, 0.00000},
-             {16.00, 0.00000}, {16.25, 0.00000}, {16.50, 0.00000}, {16.75, 0.00000},
-             {17.00, 0.00000}, {17.25, 0.00000}, {17.50, 0.00000}, {17.75, 0.00000},
-             {18.00, 0.00000}, {18.25, 0.00000}, {18.50, 0.00000}, {18.75, 0.00000},
-             {19.00, 0.00000}, {19.25, 0.00000}, {19.50, 0.00000}, {19.75, 0.00000},
-             {20.00, 0.00000}, {20.25, 0.00000}, {20.50, 0.00000}, {20.75, 0.00000},
-             {21.00, 0.00000}, {21.25, 0.00000}, {21.50, 0.00000}, {21.75, 0.00000},
-             {22.00, 0.00000}, {22.25, 0.00000}, {22.50, 0.00000}, {22.75, 0.00000},
-             {23.00, 0.00000}, {23.25, 0.00000}, {23.50, 0.00000}, {23.75, 0.00000},
-             {24.00, 0.00000}, {24.25, 0.00000}, {24.50, 0.00000}, {24.75, 0.00000},
-             {25.00, 0.00000}, {25.25, 0.00000}, {25.50, 0.00000}, {25.75, 0.00000},
-             {26.00, 0.00000}, {26.25, 0.00000}, {26.50, 0.00000}, {26.75, 0.00000},
-             {27.00, 0.00000}, {27.25, 0.00000}, {27.50, 0.00000}, {27.75, 0.00000},
-             {28.00, 0.00000}, {28.25, 0.00000}, {28.50, 0.00000}, {28.75, 0.00000},
-             {29.00, 0.00000}, {29.25, 0.00000}, {29.50, 0.00000}, {29.75, 0.00000},
-             {30.00, 0.00000},
+             {dB_u{-4.00}, 1.00000}, {dB_u{-3.75}, 1.00000}, {dB_u{-3.50}, 1.00000},
+             {dB_u{-3.25}, 1.00000}, {dB_u{-3.00}, 1.00000}, {dB_u{-2.75}, 1.00000},
+             {dB_u{-2.50}, 1.00000}, {dB_u{-2.25}, 1.00000}, {dB_u{-2.00}, 1.00000},
+             {dB_u{-1.75}, 1.00000}, {dB_u{-1.50}, 1.00000}, {dB_u{-1.25}, 1.00000},
+             {dB_u{-1.00}, 1.00000}, {dB_u{-0.75}, 0.99700}, {dB_u{-0.50}, 0.99400},
+             {dB_u{-0.25}, 0.90625}, {dB_u{0.00}, 0.81850},  {dB_u{0.25}, 0.55465},
+             {dB_u{0.50}, 0.29080},  {dB_u{0.75}, 0.17855},  {dB_u{1.00}, 0.06630},
+             {dB_u{1.25}, 0.03875},  {dB_u{1.50}, 0.01120},  {dB_u{1.75}, 0.00635},
+             {dB_u{2.00}, 0.00150},  {dB_u{2.25}, 0.00083},  {dB_u{2.50}, 0.00015},
+             {dB_u{2.75}, 0.00008},  {dB_u{3.00}, 0.00001},  {dB_u{3.25}, 0.00000},
+             {dB_u{3.50}, 0.00000},  {dB_u{3.75}, 0.00000},  {dB_u{4.00}, 0.00000},
+             {dB_u{4.25}, 0.00000},  {dB_u{4.50}, 0.00000},  {dB_u{4.75}, 0.00000},
+             {dB_u{5.00}, 0.00000},  {dB_u{5.25}, 0.00000},  {dB_u{5.50}, 0.00000},
+             {dB_u{5.75}, 0.00000},  {dB_u{6.00}, 0.00000},  {dB_u{6.25}, 0.00000},
+             {dB_u{6.50}, 0.00000},  {dB_u{6.75}, 0.00000},  {dB_u{7.00}, 0.00000},
+             {dB_u{7.25}, 0.00000},  {dB_u{7.50}, 0.00000},  {dB_u{7.75}, 0.00000},
+             {dB_u{8.00}, 0.00000},  {dB_u{8.25}, 0.00000},  {dB_u{8.50}, 0.00000},
+             {dB_u{8.75}, 0.00000},  {dB_u{9.00}, 0.00000},  {dB_u{9.25}, 0.00000},
+             {dB_u{9.50}, 0.00000},  {dB_u{9.75}, 0.00000},  {dB_u{10.00}, 0.00000},
+             {dB_u{10.25}, 0.00000}, {dB_u{10.50}, 0.00000}, {dB_u{10.75}, 0.00000},
+             {dB_u{11.00}, 0.00000}, {dB_u{11.25}, 0.00000}, {dB_u{11.50}, 0.00000},
+             {dB_u{11.75}, 0.00000}, {dB_u{12.00}, 0.00000}, {dB_u{12.25}, 0.00000},
+             {dB_u{12.50}, 0.00000}, {dB_u{12.75}, 0.00000}, {dB_u{13.00}, 0.00000},
+             {dB_u{13.25}, 0.00000}, {dB_u{13.50}, 0.00000}, {dB_u{13.75}, 0.00000},
+             {dB_u{14.00}, 0.00000}, {dB_u{14.25}, 0.00000}, {dB_u{14.50}, 0.00000},
+             {dB_u{14.75}, 0.00000}, {dB_u{15.00}, 0.00000}, {dB_u{15.25}, 0.00000},
+             {dB_u{15.50}, 0.00000}, {dB_u{15.75}, 0.00000}, {dB_u{16.00}, 0.00000},
+             {dB_u{16.25}, 0.00000}, {dB_u{16.50}, 0.00000}, {dB_u{16.75}, 0.00000},
+             {dB_u{17.00}, 0.00000}, {dB_u{17.25}, 0.00000}, {dB_u{17.50}, 0.00000},
+             {dB_u{17.75}, 0.00000}, {dB_u{18.00}, 0.00000}, {dB_u{18.25}, 0.00000},
+             {dB_u{18.50}, 0.00000}, {dB_u{18.75}, 0.00000}, {dB_u{19.00}, 0.00000},
+             {dB_u{19.25}, 0.00000}, {dB_u{19.50}, 0.00000}, {dB_u{19.75}, 0.00000},
+             {dB_u{20.00}, 0.00000}, {dB_u{20.25}, 0.00000}, {dB_u{20.50}, 0.00000},
+             {dB_u{20.75}, 0.00000}, {dB_u{21.00}, 0.00000}, {dB_u{21.25}, 0.00000},
+             {dB_u{21.50}, 0.00000}, {dB_u{21.75}, 0.00000}, {dB_u{22.00}, 0.00000},
+             {dB_u{22.25}, 0.00000}, {dB_u{22.50}, 0.00000}, {dB_u{22.75}, 0.00000},
+             {dB_u{23.00}, 0.00000}, {dB_u{23.25}, 0.00000}, {dB_u{23.50}, 0.00000},
+             {dB_u{23.75}, 0.00000}, {dB_u{24.00}, 0.00000}, {dB_u{24.25}, 0.00000},
+             {dB_u{24.50}, 0.00000}, {dB_u{24.75}, 0.00000}, {dB_u{25.00}, 0.00000},
+             {dB_u{25.25}, 0.00000}, {dB_u{25.50}, 0.00000}, {dB_u{25.75}, 0.00000},
+             {dB_u{26.00}, 0.00000}, {dB_u{26.25}, 0.00000}, {dB_u{26.50}, 0.00000},
+             {dB_u{26.75}, 0.00000}, {dB_u{27.00}, 0.00000}, {dB_u{27.25}, 0.00000},
+             {dB_u{27.50}, 0.00000}, {dB_u{27.75}, 0.00000}, {dB_u{28.00}, 0.00000},
+             {dB_u{28.25}, 0.00000}, {dB_u{28.50}, 0.00000}, {dB_u{28.75}, 0.00000},
+             {dB_u{29.00}, 0.00000}, {dB_u{29.25}, 0.00000}, {dB_u{29.50}, 0.00000},
+             {dB_u{29.75}, 0.00000}, {dB_u{30.00}, 0.00000},
          }},
         /* MCS 0 - 32 bytes */
         {std::make_pair(0, 32),
          {
-             {-4.00, 1.00000}, {-3.75, 1.00000}, {-3.50, 1.00000}, {-3.25, 0.99750},
-             {-3.00, 0.99500}, {-2.75, 0.96790}, {-2.50, 0.94080}, {-2.25, 0.88335},
-             {-2.00, 0.82590}, {-1.75, 0.70770}, {-1.50, 0.58950}, {-1.25, 0.44890},
-             {-1.00, 0.30830}, {-0.75, 0.21685}, {-0.50, 0.12540}, {-0.25, 0.07990},
-             {0.00, 0.03440},  {0.25, 0.02145},  {0.50, 0.00850},  {0.75, 0.00500},
-             {1.00, 0.00150},  {1.25, 0.00087},  {1.50, 0.00024},  {1.75, 0.00017},
-             {2.00, 0.00009},  {2.25, 0.00005},  {2.50, 0.00000},  {2.75, 0.00000},
-             {3.00, 0.00000},  {3.25, 0.00000},  {3.50, 0.00000},  {3.75, 0.00000},
-             {4.00, 0.00000},  {4.25, 0.00000},  {4.50, 0.00000},  {4.75, 0.00000},
-             {5.00, 0.00000},  {5.25, 0.00000},  {5.50, 0.00000},  {5.75, 0.00000},
-             {6.00, 0.00000},  {6.25, 0.00000},  {6.50, 0.00000},  {6.75, 0.00000},
-             {7.00, 0.00000},  {7.25, 0.00000},  {7.50, 0.00000},  {7.75, 0.00000},
-             {8.00, 0.00000},  {8.25, 0.00000},  {8.50, 0.00000},  {8.75, 0.00000},
-             {9.00, 0.00000},  {9.25, 0.00000},  {9.50, 0.00000},  {9.75, 0.00000},
-             {10.00, 0.00000}, {10.25, 0.00000}, {10.50, 0.00000}, {10.75, 0.00000},
-             {11.00, 0.00000}, {11.25, 0.00000}, {11.50, 0.00000}, {11.75, 0.00000},
-             {12.00, 0.00000}, {12.25, 0.00000}, {12.50, 0.00000}, {12.75, 0.00000},
-             {13.00, 0.00000}, {13.25, 0.00000}, {13.50, 0.00000}, {13.75, 0.00000},
-             {14.00, 0.00000}, {14.25, 0.00000}, {14.50, 0.00000}, {14.75, 0.00000},
-             {15.00, 0.00000}, {15.25, 0.00000}, {15.50, 0.00000}, {15.75, 0.00000},
-             {16.00, 0.00000}, {16.25, 0.00000}, {16.50, 0.00000}, {16.75, 0.00000},
-             {17.00, 0.00000}, {17.25, 0.00000}, {17.50, 0.00000}, {17.75, 0.00000},
-             {18.00, 0.00000}, {18.25, 0.00000}, {18.50, 0.00000}, {18.75, 0.00000},
-             {19.00, 0.00000}, {19.25, 0.00000}, {19.50, 0.00000}, {19.75, 0.00000},
-             {20.00, 0.00000}, {20.25, 0.00000}, {20.50, 0.00000}, {20.75, 0.00000},
-             {21.00, 0.00000}, {21.25, 0.00000}, {21.50, 0.00000}, {21.75, 0.00000},
-             {22.00, 0.00000}, {22.25, 0.00000}, {22.50, 0.00000}, {22.75, 0.00000},
-             {23.00, 0.00000}, {23.25, 0.00000}, {23.50, 0.00000}, {23.75, 0.00000},
-             {24.00, 0.00000}, {24.25, 0.00000}, {24.50, 0.00000}, {24.75, 0.00000},
-             {25.00, 0.00000}, {25.25, 0.00000}, {25.50, 0.00000}, {25.75, 0.00000},
-             {26.00, 0.00000}, {26.25, 0.00000}, {26.50, 0.00000}, {26.75, 0.00000},
-             {27.00, 0.00000}, {27.25, 0.00000}, {27.50, 0.00000}, {27.75, 0.00000},
-             {28.00, 0.00000}, {28.25, 0.00000}, {28.50, 0.00000}, {28.75, 0.00000},
-             {29.00, 0.00000}, {29.25, 0.00000}, {29.50, 0.00000}, {29.75, 0.00000},
-             {30.00, 0.00000},
+             {dB_u{-4.00}, 1.00000}, {dB_u{-3.75}, 1.00000}, {dB_u{-3.50}, 1.00000},
+             {dB_u{-3.25}, 0.99750}, {dB_u{-3.00}, 0.99500}, {dB_u{-2.75}, 0.96790},
+             {dB_u{-2.50}, 0.94080}, {dB_u{-2.25}, 0.88335}, {dB_u{-2.00}, 0.82590},
+             {dB_u{-1.75}, 0.70770}, {dB_u{-1.50}, 0.58950}, {dB_u{-1.25}, 0.44890},
+             {dB_u{-1.00}, 0.30830}, {dB_u{-0.75}, 0.21685}, {dB_u{-0.50}, 0.12540},
+             {dB_u{-0.25}, 0.07990}, {dB_u{0.00}, 0.03440},  {dB_u{0.25}, 0.02145},
+             {dB_u{0.50}, 0.00850},  {dB_u{0.75}, 0.00500},  {dB_u{1.00}, 0.00150},
+             {dB_u{1.25}, 0.00087},  {dB_u{1.50}, 0.00024},  {dB_u{1.75}, 0.00017},
+             {dB_u{2.00}, 0.00009},  {dB_u{2.25}, 0.00005},  {dB_u{2.50}, 0.00000},
+             {dB_u{2.75}, 0.00000},  {dB_u{3.00}, 0.00000},  {dB_u{3.25}, 0.00000},
+             {dB_u{3.50}, 0.00000},  {dB_u{3.75}, 0.00000},  {dB_u{4.00}, 0.00000},
+             {dB_u{4.25}, 0.00000},  {dB_u{4.50}, 0.00000},  {dB_u{4.75}, 0.00000},
+             {dB_u{5.00}, 0.00000},  {dB_u{5.25}, 0.00000},  {dB_u{5.50}, 0.00000},
+             {dB_u{5.75}, 0.00000},  {dB_u{6.00}, 0.00000},  {dB_u{6.25}, 0.00000},
+             {dB_u{6.50}, 0.00000},  {dB_u{6.75}, 0.00000},  {dB_u{7.00}, 0.00000},
+             {dB_u{7.25}, 0.00000},  {dB_u{7.50}, 0.00000},  {dB_u{7.75}, 0.00000},
+             {dB_u{8.00}, 0.00000},  {dB_u{8.25}, 0.00000},  {dB_u{8.50}, 0.00000},
+             {dB_u{8.75}, 0.00000},  {dB_u{9.00}, 0.00000},  {dB_u{9.25}, 0.00000},
+             {dB_u{9.50}, 0.00000},  {dB_u{9.75}, 0.00000},  {dB_u{10.00}, 0.00000},
+             {dB_u{10.25}, 0.00000}, {dB_u{10.50}, 0.00000}, {dB_u{10.75}, 0.00000},
+             {dB_u{11.00}, 0.00000}, {dB_u{11.25}, 0.00000}, {dB_u{11.50}, 0.00000},
+             {dB_u{11.75}, 0.00000}, {dB_u{12.00}, 0.00000}, {dB_u{12.25}, 0.00000},
+             {dB_u{12.50}, 0.00000}, {dB_u{12.75}, 0.00000}, {dB_u{13.00}, 0.00000},
+             {dB_u{13.25}, 0.00000}, {dB_u{13.50}, 0.00000}, {dB_u{13.75}, 0.00000},
+             {dB_u{14.00}, 0.00000}, {dB_u{14.25}, 0.00000}, {dB_u{14.50}, 0.00000},
+             {dB_u{14.75}, 0.00000}, {dB_u{15.00}, 0.00000}, {dB_u{15.25}, 0.00000},
+             {dB_u{15.50}, 0.00000}, {dB_u{15.75}, 0.00000}, {dB_u{16.00}, 0.00000},
+             {dB_u{16.25}, 0.00000}, {dB_u{16.50}, 0.00000}, {dB_u{16.75}, 0.00000},
+             {dB_u{17.00}, 0.00000}, {dB_u{17.25}, 0.00000}, {dB_u{17.50}, 0.00000},
+             {dB_u{17.75}, 0.00000}, {dB_u{18.00}, 0.00000}, {dB_u{18.25}, 0.00000},
+             {dB_u{18.50}, 0.00000}, {dB_u{18.75}, 0.00000}, {dB_u{19.00}, 0.00000},
+             {dB_u{19.25}, 0.00000}, {dB_u{19.50}, 0.00000}, {dB_u{19.75}, 0.00000},
+             {dB_u{20.00}, 0.00000}, {dB_u{20.25}, 0.00000}, {dB_u{20.50}, 0.00000},
+             {dB_u{20.75}, 0.00000}, {dB_u{21.00}, 0.00000}, {dB_u{21.25}, 0.00000},
+             {dB_u{21.50}, 0.00000}, {dB_u{21.75}, 0.00000}, {dB_u{22.00}, 0.00000},
+             {dB_u{22.25}, 0.00000}, {dB_u{22.50}, 0.00000}, {dB_u{22.75}, 0.00000},
+             {dB_u{23.00}, 0.00000}, {dB_u{23.25}, 0.00000}, {dB_u{23.50}, 0.00000},
+             {dB_u{23.75}, 0.00000}, {dB_u{24.00}, 0.00000}, {dB_u{24.25}, 0.00000},
+             {dB_u{24.50}, 0.00000}, {dB_u{24.75}, 0.00000}, {dB_u{25.00}, 0.00000},
+             {dB_u{25.25}, 0.00000}, {dB_u{25.50}, 0.00000}, {dB_u{25.75}, 0.00000},
+             {dB_u{26.00}, 0.00000}, {dB_u{26.25}, 0.00000}, {dB_u{26.50}, 0.00000},
+             {dB_u{26.75}, 0.00000}, {dB_u{27.00}, 0.00000}, {dB_u{27.25}, 0.00000},
+             {dB_u{27.50}, 0.00000}, {dB_u{27.75}, 0.00000}, {dB_u{28.00}, 0.00000},
+             {dB_u{28.25}, 0.00000}, {dB_u{28.50}, 0.00000}, {dB_u{28.75}, 0.00000},
+             {dB_u{29.00}, 0.00000}, {dB_u{29.25}, 0.00000}, {dB_u{29.50}, 0.00000},
+             {dB_u{29.75}, 0.00000}, {dB_u{30.00}, 0.00000},
          }},
         /* MCS 0 - 1000 bytes */
         {std::make_pair(0, 1000),
          {
-             {-4.00, 1.00000}, {-3.75, 1.00000}, {-3.50, 1.00000}, {-3.25, 1.00000},
-             {-3.00, 1.00000}, {-2.75, 1.00000}, {-2.50, 1.00000}, {-2.25, 1.00000},
-             {-2.00, 1.00000}, {-1.75, 1.00000}, {-1.50, 1.00000}, {-1.25, 1.00000},
-             {-1.00, 1.00000}, {-0.75, 0.98140}, {-0.50, 0.97007}, {-0.25, 0.80280},
-             {0.00, 0.68977},  {0.25, 0.42581},  {0.50, 0.20997},  {0.75, 0.12620},
-             {1.00, 0.04596},  {1.25, 0.02674},  {1.50, 0.00770},  {1.75, 0.00436},
-             {2.00, 0.00103},  {2.25, 0.00057},  {2.50, 0.00010},  {2.75, 0.00005},
-             {3.00, 0.00001},  {3.25, 0.00000},  {3.50, 0.00000},  {3.75, 0.00000},
-             {4.00, 0.00000},  {4.25, 0.00000},  {4.50, 0.00000},  {4.75, 0.00000},
-             {5.00, 0.00000},  {5.25, 0.00000},  {5.50, 0.00000},  {5.75, 0.00000},
-             {6.00, 0.00000},  {6.25, 0.00000},  {6.50, 0.00000},  {6.75, 0.00000},
-             {7.00, 0.00000},  {7.25, 0.00000},  {7.50, 0.00000},  {7.75, 0.00000},
-             {8.00, 0.00000},  {8.25, 0.00000},  {8.50, 0.00000},  {8.75, 0.00000},
-             {9.00, 0.00000},  {9.25, 0.00000},  {9.50, 0.00000},  {9.75, 0.00000},
-             {10.00, 0.00000}, {10.25, 0.00000}, {10.50, 0.00000}, {10.75, 0.00000},
-             {11.00, 0.00000}, {11.25, 0.00000}, {11.50, 0.00000}, {11.75, 0.00000},
-             {12.00, 0.00000}, {12.25, 0.00000}, {12.50, 0.00000}, {12.75, 0.00000},
-             {13.00, 0.00000}, {13.25, 0.00000}, {13.50, 0.00000}, {13.75, 0.00000},
-             {14.00, 0.00000}, {14.25, 0.00000}, {14.50, 0.00000}, {14.75, 0.00000},
-             {15.00, 0.00000}, {15.25, 0.00000}, {15.50, 0.00000}, {15.75, 0.00000},
-             {16.00, 0.00000}, {16.25, 0.00000}, {16.50, 0.00000}, {16.75, 0.00000},
-             {17.00, 0.00000}, {17.25, 0.00000}, {17.50, 0.00000}, {17.75, 0.00000},
-             {18.00, 0.00000}, {18.25, 0.00000}, {18.50, 0.00000}, {18.75, 0.00000},
-             {19.00, 0.00000}, {19.25, 0.00000}, {19.50, 0.00000}, {19.75, 0.00000},
-             {20.00, 0.00000}, {20.25, 0.00000}, {20.50, 0.00000}, {20.75, 0.00000},
-             {21.00, 0.00000}, {21.25, 0.00000}, {21.50, 0.00000}, {21.75, 0.00000},
-             {22.00, 0.00000}, {22.25, 0.00000}, {22.50, 0.00000}, {22.75, 0.00000},
-             {23.00, 0.00000}, {23.25, 0.00000}, {23.50, 0.00000}, {23.75, 0.00000},
-             {24.00, 0.00000}, {24.25, 0.00000}, {24.50, 0.00000}, {24.75, 0.00000},
-             {25.00, 0.00000}, {25.25, 0.00000}, {25.50, 0.00000}, {25.75, 0.00000},
-             {26.00, 0.00000}, {26.25, 0.00000}, {26.50, 0.00000}, {26.75, 0.00000},
-             {27.00, 0.00000}, {27.25, 0.00000}, {27.50, 0.00000}, {27.75, 0.00000},
-             {28.00, 0.00000}, {28.25, 0.00000}, {28.50, 0.00000}, {28.75, 0.00000},
-             {29.00, 0.00000}, {29.25, 0.00000}, {29.50, 0.00000}, {29.75, 0.00000},
-             {30.00, 0.00000},
+             {dB_u{-4.00}, 1.00000}, {dB_u{-3.75}, 1.00000}, {dB_u{-3.50}, 1.00000},
+             {dB_u{-3.25}, 1.00000}, {dB_u{-3.00}, 1.00000}, {dB_u{-2.75}, 1.00000},
+             {dB_u{-2.50}, 1.00000}, {dB_u{-2.25}, 1.00000}, {dB_u{-2.00}, 1.00000},
+             {dB_u{-1.75}, 1.00000}, {dB_u{-1.50}, 1.00000}, {dB_u{-1.25}, 1.00000},
+             {dB_u{-1.00}, 1.00000}, {dB_u{-0.75}, 0.98140}, {dB_u{-0.50}, 0.97007},
+             {dB_u{-0.25}, 0.80280}, {dB_u{0.00}, 0.68977},  {dB_u{0.25}, 0.42581},
+             {dB_u{0.50}, 0.20997},  {dB_u{0.75}, 0.12620},  {dB_u{1.00}, 0.04596},
+             {dB_u{1.25}, 0.02674},  {dB_u{1.50}, 0.00770},  {dB_u{1.75}, 0.00436},
+             {dB_u{2.00}, 0.00103},  {dB_u{2.25}, 0.00057},  {dB_u{2.50}, 0.00010},
+             {dB_u{2.75}, 0.00005},  {dB_u{3.00}, 0.00001},  {dB_u{3.25}, 0.00000},
+             {dB_u{3.50}, 0.00000},  {dB_u{3.75}, 0.00000},  {dB_u{4.00}, 0.00000},
+             {dB_u{4.25}, 0.00000},  {dB_u{4.50}, 0.00000},  {dB_u{4.75}, 0.00000},
+             {dB_u{5.00}, 0.00000},  {dB_u{5.25}, 0.00000},  {dB_u{5.50}, 0.00000},
+             {dB_u{5.75}, 0.00000},  {dB_u{6.00}, 0.00000},  {dB_u{6.25}, 0.00000},
+             {dB_u{6.50}, 0.00000},  {dB_u{6.75}, 0.00000},  {dB_u{7.00}, 0.00000},
+             {dB_u{7.25}, 0.00000},  {dB_u{7.50}, 0.00000},  {dB_u{7.75}, 0.00000},
+             {dB_u{8.00}, 0.00000},  {dB_u{8.25}, 0.00000},  {dB_u{8.50}, 0.00000},
+             {dB_u{8.75}, 0.00000},  {dB_u{9.00}, 0.00000},  {dB_u{9.25}, 0.00000},
+             {dB_u{9.50}, 0.00000},  {dB_u{9.75}, 0.00000},  {dB_u{10.00}, 0.00000},
+             {dB_u{10.25}, 0.00000}, {dB_u{10.50}, 0.00000}, {dB_u{10.75}, 0.00000},
+             {dB_u{11.00}, 0.00000}, {dB_u{11.25}, 0.00000}, {dB_u{11.50}, 0.00000},
+             {dB_u{11.75}, 0.00000}, {dB_u{12.00}, 0.00000}, {dB_u{12.25}, 0.00000},
+             {dB_u{12.50}, 0.00000}, {dB_u{12.75}, 0.00000}, {dB_u{13.00}, 0.00000},
+             {dB_u{13.25}, 0.00000}, {dB_u{13.50}, 0.00000}, {dB_u{13.75}, 0.00000},
+             {dB_u{14.00}, 0.00000}, {dB_u{14.25}, 0.00000}, {dB_u{14.50}, 0.00000},
+             {dB_u{14.75}, 0.00000}, {dB_u{15.00}, 0.00000}, {dB_u{15.25}, 0.00000},
+             {dB_u{15.50}, 0.00000}, {dB_u{15.75}, 0.00000}, {dB_u{16.00}, 0.00000},
+             {dB_u{16.25}, 0.00000}, {dB_u{16.50}, 0.00000}, {dB_u{16.75}, 0.00000},
+             {dB_u{17.00}, 0.00000}, {dB_u{17.25}, 0.00000}, {dB_u{17.50}, 0.00000},
+             {dB_u{17.75}, 0.00000}, {dB_u{18.00}, 0.00000}, {dB_u{18.25}, 0.00000},
+             {dB_u{18.50}, 0.00000}, {dB_u{18.75}, 0.00000}, {dB_u{19.00}, 0.00000},
+             {dB_u{19.25}, 0.00000}, {dB_u{19.50}, 0.00000}, {dB_u{19.75}, 0.00000},
+             {dB_u{20.00}, 0.00000}, {dB_u{20.25}, 0.00000}, {dB_u{20.50}, 0.00000},
+             {dB_u{20.75}, 0.00000}, {dB_u{21.00}, 0.00000}, {dB_u{21.25}, 0.00000},
+             {dB_u{21.50}, 0.00000}, {dB_u{21.75}, 0.00000}, {dB_u{22.00}, 0.00000},
+             {dB_u{22.25}, 0.00000}, {dB_u{22.50}, 0.00000}, {dB_u{22.75}, 0.00000},
+             {dB_u{23.00}, 0.00000}, {dB_u{23.25}, 0.00000}, {dB_u{23.50}, 0.00000},
+             {dB_u{23.75}, 0.00000}, {dB_u{24.00}, 0.00000}, {dB_u{24.25}, 0.00000},
+             {dB_u{24.50}, 0.00000}, {dB_u{24.75}, 0.00000}, {dB_u{25.00}, 0.00000},
+             {dB_u{25.25}, 0.00000}, {dB_u{25.50}, 0.00000}, {dB_u{25.75}, 0.00000},
+             {dB_u{26.00}, 0.00000}, {dB_u{26.25}, 0.00000}, {dB_u{26.50}, 0.00000},
+             {dB_u{26.75}, 0.00000}, {dB_u{27.00}, 0.00000}, {dB_u{27.25}, 0.00000},
+             {dB_u{27.50}, 0.00000}, {dB_u{27.75}, 0.00000}, {dB_u{28.00}, 0.00000},
+             {dB_u{28.25}, 0.00000}, {dB_u{28.50}, 0.00000}, {dB_u{28.75}, 0.00000},
+             {dB_u{29.00}, 0.00000}, {dB_u{29.25}, 0.00000}, {dB_u{29.50}, 0.00000},
+             {dB_u{29.75}, 0.00000}, {dB_u{30.00}, 0.00000},
          }},
         /* MCS 0 - 1 byte */
         {std::make_pair(0, 1),
          {
-             {-4.00, 1.00000}, {-3.75, 1.00000}, {-3.50, 1.00000}, {-3.25, 0.17075},
-             {-3.00, 0.15260}, {-2.75, 0.10190}, {-2.50, 0.08455}, {-2.25, 0.06494},
-             {-2.00, 0.05316}, {-1.75, 0.03771}, {-1.50, 0.02744}, {-1.25, 0.01845},
-             {-1.00, 0.01145}, {-0.75, 0.00761}, {-0.50, 0.00418}, {-0.25, 0.00260},
-             {0.00, 0.00110},  {0.25, 0.00068},  {0.50, 0.00027},  {0.75, 0.00016},
-             {1.00, 0.00005},  {1.25, 0.00003},  {1.50, 0.00000},  {1.75, 0.00000},
-             {2.00, 0.00000},  {2.25, 0.00000},  {2.50, 0.00000},  {2.75, 0.00000},
-             {3.00, 0.00000},  {3.25, 0.00000},  {3.50, 0.00000},  {3.75, 0.00000},
-             {4.00, 0.00000},  {4.25, 0.00000},  {4.50, 0.00000},  {4.75, 0.00000},
-             {5.00, 0.00000},  {5.25, 0.00000},  {5.50, 0.00000},  {5.75, 0.00000},
-             {6.00, 0.00000},  {6.25, 0.00000},  {6.50, 0.00000},  {6.75, 0.00000},
-             {7.00, 0.00000},  {7.25, 0.00000},  {7.50, 0.00000},  {7.75, 0.00000},
-             {8.00, 0.00000},  {8.25, 0.00000},  {8.50, 0.00000},  {8.75, 0.00000},
-             {9.00, 0.00000},  {9.25, 0.00000},  {9.50, 0.00000},  {9.75, 0.00000},
-             {10.00, 0.00000}, {10.25, 0.00000}, {10.50, 0.00000}, {10.75, 0.00000},
-             {11.00, 0.00000}, {11.25, 0.00000}, {11.50, 0.00000}, {11.75, 0.00000},
-             {12.00, 0.00000}, {12.25, 0.00000}, {12.50, 0.00000}, {12.75, 0.00000},
-             {13.00, 0.00000}, {13.25, 0.00000}, {13.50, 0.00000}, {13.75, 0.00000},
-             {14.00, 0.00000}, {14.25, 0.00000}, {14.50, 0.00000}, {14.75, 0.00000},
-             {15.00, 0.00000}, {15.25, 0.00000}, {15.50, 0.00000}, {15.75, 0.00000},
-             {16.00, 0.00000}, {16.25, 0.00000}, {16.50, 0.00000}, {16.75, 0.00000},
-             {17.00, 0.00000}, {17.25, 0.00000}, {17.50, 0.00000}, {17.75, 0.00000},
-             {18.00, 0.00000}, {18.25, 0.00000}, {18.50, 0.00000}, {18.75, 0.00000},
-             {19.00, 0.00000}, {19.25, 0.00000}, {19.50, 0.00000}, {19.75, 0.00000},
-             {20.00, 0.00000}, {20.25, 0.00000}, {20.50, 0.00000}, {20.75, 0.00000},
-             {21.00, 0.00000}, {21.25, 0.00000}, {21.50, 0.00000}, {21.75, 0.00000},
-             {22.00, 0.00000}, {22.25, 0.00000}, {22.50, 0.00000}, {22.75, 0.00000},
-             {23.00, 0.00000}, {23.25, 0.00000}, {23.50, 0.00000}, {23.75, 0.00000},
-             {24.00, 0.00000}, {24.25, 0.00000}, {24.50, 0.00000}, {24.75, 0.00000},
-             {25.00, 0.00000}, {25.25, 0.00000}, {25.50, 0.00000}, {25.75, 0.00000},
-             {26.00, 0.00000}, {26.25, 0.00000}, {26.50, 0.00000}, {26.75, 0.00000},
-             {27.00, 0.00000}, {27.25, 0.00000}, {27.50, 0.00000}, {27.75, 0.00000},
-             {28.00, 0.00000}, {28.25, 0.00000}, {28.50, 0.00000}, {28.75, 0.00000},
-             {29.00, 0.00000}, {29.25, 0.00000}, {29.50, 0.00000}, {29.75, 0.00000},
-             {30.00, 0.00000},
+             {dB_u{-4.00}, 1.00000}, {dB_u{-3.75}, 1.00000}, {dB_u{-3.50}, 1.00000},
+             {dB_u{-3.25}, 0.17075}, {dB_u{-3.00}, 0.15260}, {dB_u{-2.75}, 0.10190},
+             {dB_u{-2.50}, 0.08455}, {dB_u{-2.25}, 0.06494}, {dB_u{-2.00}, 0.05316},
+             {dB_u{-1.75}, 0.03771}, {dB_u{-1.50}, 0.02744}, {dB_u{-1.25}, 0.01845},
+             {dB_u{-1.00}, 0.01145}, {dB_u{-0.75}, 0.00761}, {dB_u{-0.50}, 0.00418},
+             {dB_u{-0.25}, 0.00260}, {dB_u{0.00}, 0.00110},  {dB_u{0.25}, 0.00068},
+             {dB_u{0.50}, 0.00027},  {dB_u{0.75}, 0.00016},  {dB_u{1.00}, 0.00005},
+             {dB_u{1.25}, 0.00003},  {dB_u{1.50}, 0.00000},  {dB_u{1.75}, 0.00000},
+             {dB_u{2.00}, 0.00000},  {dB_u{2.25}, 0.00000},  {dB_u{2.50}, 0.00000},
+             {dB_u{2.75}, 0.00000},  {dB_u{3.00}, 0.00000},  {dB_u{3.25}, 0.00000},
+             {dB_u{3.50}, 0.00000},  {dB_u{3.75}, 0.00000},  {dB_u{4.00}, 0.00000},
+             {dB_u{4.25}, 0.00000},  {dB_u{4.50}, 0.00000},  {dB_u{4.75}, 0.00000},
+             {dB_u{5.00}, 0.00000},  {dB_u{5.25}, 0.00000},  {dB_u{5.50}, 0.00000},
+             {dB_u{5.75}, 0.00000},  {dB_u{6.00}, 0.00000},  {dB_u{6.25}, 0.00000},
+             {dB_u{6.50}, 0.00000},  {dB_u{6.75}, 0.00000},  {dB_u{7.00}, 0.00000},
+             {dB_u{7.25}, 0.00000},  {dB_u{7.50}, 0.00000},  {dB_u{7.75}, 0.00000},
+             {dB_u{8.00}, 0.00000},  {dB_u{8.25}, 0.00000},  {dB_u{8.50}, 0.00000},
+             {dB_u{8.75}, 0.00000},  {dB_u{9.00}, 0.00000},  {dB_u{9.25}, 0.00000},
+             {dB_u{9.50}, 0.00000},  {dB_u{9.75}, 0.00000},  {dB_u{10.00}, 0.00000},
+             {dB_u{10.25}, 0.00000}, {dB_u{10.50}, 0.00000}, {dB_u{10.75}, 0.00000},
+             {dB_u{11.00}, 0.00000}, {dB_u{11.25}, 0.00000}, {dB_u{11.50}, 0.00000},
+             {dB_u{11.75}, 0.00000}, {dB_u{12.00}, 0.00000}, {dB_u{12.25}, 0.00000},
+             {dB_u{12.50}, 0.00000}, {dB_u{12.75}, 0.00000}, {dB_u{13.00}, 0.00000},
+             {dB_u{13.25}, 0.00000}, {dB_u{13.50}, 0.00000}, {dB_u{13.75}, 0.00000},
+             {dB_u{14.00}, 0.00000}, {dB_u{14.25}, 0.00000}, {dB_u{14.50}, 0.00000},
+             {dB_u{14.75}, 0.00000}, {dB_u{15.00}, 0.00000}, {dB_u{15.25}, 0.00000},
+             {dB_u{15.50}, 0.00000}, {dB_u{15.75}, 0.00000}, {dB_u{16.00}, 0.00000},
+             {dB_u{16.25}, 0.00000}, {dB_u{16.50}, 0.00000}, {dB_u{16.75}, 0.00000},
+             {dB_u{17.00}, 0.00000}, {dB_u{17.25}, 0.00000}, {dB_u{17.50}, 0.00000},
+             {dB_u{17.75}, 0.00000}, {dB_u{18.00}, 0.00000}, {dB_u{18.25}, 0.00000},
+             {dB_u{18.50}, 0.00000}, {dB_u{18.75}, 0.00000}, {dB_u{19.00}, 0.00000},
+             {dB_u{19.25}, 0.00000}, {dB_u{19.50}, 0.00000}, {dB_u{19.75}, 0.00000},
+             {dB_u{20.00}, 0.00000}, {dB_u{20.25}, 0.00000}, {dB_u{20.50}, 0.00000},
+             {dB_u{20.75}, 0.00000}, {dB_u{21.00}, 0.00000}, {dB_u{21.25}, 0.00000},
+             {dB_u{21.50}, 0.00000}, {dB_u{21.75}, 0.00000}, {dB_u{22.00}, 0.00000},
+             {dB_u{22.25}, 0.00000}, {dB_u{22.50}, 0.00000}, {dB_u{22.75}, 0.00000},
+             {dB_u{23.00}, 0.00000}, {dB_u{23.25}, 0.00000}, {dB_u{23.50}, 0.00000},
+             {dB_u{23.75}, 0.00000}, {dB_u{24.00}, 0.00000}, {dB_u{24.25}, 0.00000},
+             {dB_u{24.50}, 0.00000}, {dB_u{24.75}, 0.00000}, {dB_u{25.00}, 0.00000},
+             {dB_u{25.25}, 0.00000}, {dB_u{25.50}, 0.00000}, {dB_u{25.75}, 0.00000},
+             {dB_u{26.00}, 0.00000}, {dB_u{26.25}, 0.00000}, {dB_u{26.50}, 0.00000},
+             {dB_u{26.75}, 0.00000}, {dB_u{27.00}, 0.00000}, {dB_u{27.25}, 0.00000},
+             {dB_u{27.50}, 0.00000}, {dB_u{27.75}, 0.00000}, {dB_u{28.00}, 0.00000},
+             {dB_u{28.25}, 0.00000}, {dB_u{28.50}, 0.00000}, {dB_u{28.75}, 0.00000},
+             {dB_u{29.00}, 0.00000}, {dB_u{29.25}, 0.00000}, {dB_u{29.50}, 0.00000},
+             {dB_u{29.75}, 0.00000}, {dB_u{30.00}, 0.00000},
          }},
         /* MCS 0 - 2000 bytes */
         {std::make_pair(0, 2000),
          {
-             {-4.00, 1.00000}, {-3.75, 1.00000}, {-3.50, 1.00000}, {-3.25, 1.00000},
-             {-3.00, 1.00000}, {-2.75, 1.00000}, {-2.50, 1.00000}, {-2.25, 1.00000},
-             {-2.00, 1.00000}, {-1.75, 1.00000}, {-1.50, 1.00000}, {-1.25, 1.00000},
-             {-1.00, 1.00000}, {-0.75, 0.99965}, {-0.50, 0.99910}, {-0.25, 0.96111},
-             {0.00, 0.90376},  {0.25, 0.67031},  {0.50, 0.37584},  {0.75, 0.23647},
-             {1.00, 0.08981},  {1.25, 0.05277},  {1.50, 0.01533},  {1.75, 0.00870},
-             {2.00, 0.00206},  {2.25, 0.00113},  {2.50, 0.00021},  {2.75, 0.00011},
-             {3.00, 0.00001},  {3.25, 0.00000},  {3.50, 0.00000},  {3.75, 0.00000},
-             {4.00, 0.00000},  {4.25, 0.00000},  {4.50, 0.00000},  {4.75, 0.00000},
-             {5.00, 0.00000},  {5.25, 0.00000},  {5.50, 0.00000},  {5.75, 0.00000},
-             {6.00, 0.00000},  {6.25, 0.00000},  {6.50, 0.00000},  {6.75, 0.00000},
-             {7.00, 0.00000},  {7.25, 0.00000},  {7.50, 0.00000},  {7.75, 0.00000},
-             {8.00, 0.00000},  {8.25, 0.00000},  {8.50, 0.00000},  {8.75, 0.00000},
-             {9.00, 0.00000},  {9.25, 0.00000},  {9.50, 0.00000},  {9.75, 0.00000},
-             {10.00, 0.00000}, {10.25, 0.00000}, {10.50, 0.00000}, {10.75, 0.00000},
-             {11.00, 0.00000}, {11.25, 0.00000}, {11.50, 0.00000}, {11.75, 0.00000},
-             {12.00, 0.00000}, {12.25, 0.00000}, {12.50, 0.00000}, {12.75, 0.00000},
-             {13.00, 0.00000}, {13.25, 0.00000}, {13.50, 0.00000}, {13.75, 0.00000},
-             {14.00, 0.00000}, {14.25, 0.00000}, {14.50, 0.00000}, {14.75, 0.00000},
-             {15.00, 0.00000}, {15.25, 0.00000}, {15.50, 0.00000}, {15.75, 0.00000},
-             {16.00, 0.00000}, {16.25, 0.00000}, {16.50, 0.00000}, {16.75, 0.00000},
-             {17.00, 0.00000}, {17.25, 0.00000}, {17.50, 0.00000}, {17.75, 0.00000},
-             {18.00, 0.00000}, {18.25, 0.00000}, {18.50, 0.00000}, {18.75, 0.00000},
-             {19.00, 0.00000}, {19.25, 0.00000}, {19.50, 0.00000}, {19.75, 0.00000},
-             {20.00, 0.00000}, {20.25, 0.00000}, {20.50, 0.00000}, {20.75, 0.00000},
-             {21.00, 0.00000}, {21.25, 0.00000}, {21.50, 0.00000}, {21.75, 0.00000},
-             {22.00, 0.00000}, {22.25, 0.00000}, {22.50, 0.00000}, {22.75, 0.00000},
-             {23.00, 0.00000}, {23.25, 0.00000}, {23.50, 0.00000}, {23.75, 0.00000},
-             {24.00, 0.00000}, {24.25, 0.00000}, {24.50, 0.00000}, {24.75, 0.00000},
-             {25.00, 0.00000}, {25.25, 0.00000}, {25.50, 0.00000}, {25.75, 0.00000},
-             {26.00, 0.00000}, {26.25, 0.00000}, {26.50, 0.00000}, {26.75, 0.00000},
-             {27.00, 0.00000}, {27.25, 0.00000}, {27.50, 0.00000}, {27.75, 0.00000},
-             {28.00, 0.00000}, {28.25, 0.00000}, {28.50, 0.00000}, {28.75, 0.00000},
-             {29.00, 0.00000}, {29.25, 0.00000}, {29.50, 0.00000}, {29.75, 0.00000},
-             {30.00, 0.00000},
+             {dB_u{-4.00}, 1.00000}, {dB_u{-3.75}, 1.00000}, {dB_u{-3.50}, 1.00000},
+             {dB_u{-3.25}, 1.00000}, {dB_u{-3.00}, 1.00000}, {dB_u{-2.75}, 1.00000},
+             {dB_u{-2.50}, 1.00000}, {dB_u{-2.25}, 1.00000}, {dB_u{-2.00}, 1.00000},
+             {dB_u{-1.75}, 1.00000}, {dB_u{-1.50}, 1.00000}, {dB_u{-1.25}, 1.00000},
+             {dB_u{-1.00}, 1.00000}, {dB_u{-0.75}, 0.99965}, {dB_u{-0.50}, 0.99910},
+             {dB_u{-0.25}, 0.96111}, {dB_u{0.00}, 0.90376},  {dB_u{0.25}, 0.67031},
+             {dB_u{0.50}, 0.37584},  {dB_u{0.75}, 0.23647},  {dB_u{1.00}, 0.08981},
+             {dB_u{1.25}, 0.05277},  {dB_u{1.50}, 0.01533},  {dB_u{1.75}, 0.00870},
+             {dB_u{2.00}, 0.00206},  {dB_u{2.25}, 0.00113},  {dB_u{2.50}, 0.00021},
+             {dB_u{2.75}, 0.00011},  {dB_u{3.00}, 0.00001},  {dB_u{3.25}, 0.00000},
+             {dB_u{3.50}, 0.00000},  {dB_u{3.75}, 0.00000},  {dB_u{4.00}, 0.00000},
+             {dB_u{4.25}, 0.00000},  {dB_u{4.50}, 0.00000},  {dB_u{4.75}, 0.00000},
+             {dB_u{5.00}, 0.00000},  {dB_u{5.25}, 0.00000},  {dB_u{5.50}, 0.00000},
+             {dB_u{5.75}, 0.00000},  {dB_u{6.00}, 0.00000},  {dB_u{6.25}, 0.00000},
+             {dB_u{6.50}, 0.00000},  {dB_u{6.75}, 0.00000},  {dB_u{7.00}, 0.00000},
+             {dB_u{7.25}, 0.00000},  {dB_u{7.50}, 0.00000},  {dB_u{7.75}, 0.00000},
+             {dB_u{8.00}, 0.00000},  {dB_u{8.25}, 0.00000},  {dB_u{8.50}, 0.00000},
+             {dB_u{8.75}, 0.00000},  {dB_u{9.00}, 0.00000},  {dB_u{9.25}, 0.00000},
+             {dB_u{9.50}, 0.00000},  {dB_u{9.75}, 0.00000},  {dB_u{10.00}, 0.00000},
+             {dB_u{10.25}, 0.00000}, {dB_u{10.50}, 0.00000}, {dB_u{10.75}, 0.00000},
+             {dB_u{11.00}, 0.00000}, {dB_u{11.25}, 0.00000}, {dB_u{11.50}, 0.00000},
+             {dB_u{11.75}, 0.00000}, {dB_u{12.00}, 0.00000}, {dB_u{12.25}, 0.00000},
+             {dB_u{12.50}, 0.00000}, {dB_u{12.75}, 0.00000}, {dB_u{13.00}, 0.00000},
+             {dB_u{13.25}, 0.00000}, {dB_u{13.50}, 0.00000}, {dB_u{13.75}, 0.00000},
+             {dB_u{14.00}, 0.00000}, {dB_u{14.25}, 0.00000}, {dB_u{14.50}, 0.00000},
+             {dB_u{14.75}, 0.00000}, {dB_u{15.00}, 0.00000}, {dB_u{15.25}, 0.00000},
+             {dB_u{15.50}, 0.00000}, {dB_u{15.75}, 0.00000}, {dB_u{16.00}, 0.00000},
+             {dB_u{16.25}, 0.00000}, {dB_u{16.50}, 0.00000}, {dB_u{16.75}, 0.00000},
+             {dB_u{17.00}, 0.00000}, {dB_u{17.25}, 0.00000}, {dB_u{17.50}, 0.00000},
+             {dB_u{17.75}, 0.00000}, {dB_u{18.00}, 0.00000}, {dB_u{18.25}, 0.00000},
+             {dB_u{18.50}, 0.00000}, {dB_u{18.75}, 0.00000}, {dB_u{19.00}, 0.00000},
+             {dB_u{19.25}, 0.00000}, {dB_u{19.50}, 0.00000}, {dB_u{19.75}, 0.00000},
+             {dB_u{20.00}, 0.00000}, {dB_u{20.25}, 0.00000}, {dB_u{20.50}, 0.00000},
+             {dB_u{20.75}, 0.00000}, {dB_u{21.00}, 0.00000}, {dB_u{21.25}, 0.00000},
+             {dB_u{21.50}, 0.00000}, {dB_u{21.75}, 0.00000}, {dB_u{22.00}, 0.00000},
+             {dB_u{22.25}, 0.00000}, {dB_u{22.50}, 0.00000}, {dB_u{22.75}, 0.00000},
+             {dB_u{23.00}, 0.00000}, {dB_u{23.25}, 0.00000}, {dB_u{23.50}, 0.00000},
+             {dB_u{23.75}, 0.00000}, {dB_u{24.00}, 0.00000}, {dB_u{24.25}, 0.00000},
+             {dB_u{24.50}, 0.00000}, {dB_u{24.75}, 0.00000}, {dB_u{25.00}, 0.00000},
+             {dB_u{25.25}, 0.00000}, {dB_u{25.50}, 0.00000}, {dB_u{25.75}, 0.00000},
+             {dB_u{26.00}, 0.00000}, {dB_u{26.25}, 0.00000}, {dB_u{26.50}, 0.00000},
+             {dB_u{26.75}, 0.00000}, {dB_u{27.00}, 0.00000}, {dB_u{27.25}, 0.00000},
+             {dB_u{27.50}, 0.00000}, {dB_u{27.75}, 0.00000}, {dB_u{28.00}, 0.00000},
+             {dB_u{28.25}, 0.00000}, {dB_u{28.50}, 0.00000}, {dB_u{28.75}, 0.00000},
+             {dB_u{29.00}, 0.00000}, {dB_u{29.25}, 0.00000}, {dB_u{29.50}, 0.00000},
+             {dB_u{29.75}, 0.00000}, {dB_u{30.00}, 0.00000},
          }},
         /* MCS 7 - 1500 bytes */
         {std::make_pair(7, 1500),
          {
-             {-4.00, 1.00000}, {-3.75, 1.00000}, {-3.50, 1.00000}, {-3.25, 1.00000},
-             {-3.00, 1.00000}, {-2.75, 1.00000}, {-2.50, 1.00000}, {-2.25, 1.00000},
-             {-2.00, 1.00000}, {-1.75, 1.00000}, {-1.50, 1.00000}, {-1.25, 1.00000},
-             {-1.00, 1.00000}, {-0.75, 1.00000}, {-0.50, 1.00000}, {-0.25, 1.00000},
-             {0.00, 1.00000},  {0.25, 1.00000},  {0.50, 1.00000},  {0.75, 1.00000},
-             {1.00, 1.00000},  {1.25, 1.00000},  {1.50, 1.00000},  {1.75, 1.00000},
-             {2.00, 1.00000},  {2.25, 1.00000},  {2.50, 1.00000},  {2.75, 1.00000},
-             {3.00, 1.00000},  {3.25, 1.00000},  {3.50, 1.00000},  {3.75, 1.00000},
-             {4.00, 1.00000},  {4.25, 1.00000},  {4.50, 1.00000},  {4.75, 1.00000},
-             {5.00, 1.00000},  {5.25, 1.00000},  {5.50, 1.00000},  {5.75, 1.00000},
-             {6.00, 1.00000},  {6.25, 1.00000},  {6.50, 1.00000},  {6.75, 1.00000},
-             {7.00, 1.00000},  {7.25, 1.00000},  {7.50, 1.00000},  {7.75, 1.00000},
-             {8.00, 1.00000},  {8.25, 1.00000},  {8.50, 1.00000},  {8.75, 1.00000},
-             {9.00, 1.00000},  {9.25, 1.00000},  {9.50, 1.00000},  {9.75, 1.00000},
-             {10.00, 1.00000}, {10.25, 1.00000}, {10.50, 1.00000}, {10.75, 1.00000},
-             {11.00, 1.00000}, {11.25, 1.00000}, {11.50, 1.00000}, {11.75, 1.00000},
-             {12.00, 1.00000}, {12.25, 1.00000}, {12.50, 1.00000}, {12.75, 1.00000},
-             {13.00, 1.00000}, {13.25, 1.00000}, {13.50, 1.00000}, {13.75, 1.00000},
-             {14.00, 1.00000}, {14.25, 1.00000}, {14.50, 1.00000}, {14.75, 1.00000},
-             {15.00, 1.00000}, {15.25, 1.00000}, {15.50, 1.00000}, {15.75, 1.00000},
-             {16.00, 1.00000}, {16.25, 1.00000}, {16.50, 1.00000}, {16.75, 1.00000},
-             {17.00, 1.00000}, {17.25, 1.00000}, {17.50, 1.00000}, {17.75, 0.99057},
-             {18.00, 0.98075}, {18.25, 0.86664}, {18.50, 0.74920}, {18.75, 0.54857},
-             {19.00, 0.34531}, {19.25, 0.23624}, {19.50, 0.12672}, {19.75, 0.08164},
-             {20.00, 0.03650}, {20.25, 0.02340}, {20.50, 0.01029}, {20.75, 0.00653},
-             {21.00, 0.00278}, {21.25, 0.00165}, {21.50, 0.00051}, {21.75, 0.00030},
-             {22.00, 0.00009}, {22.25, 0.00005}, {22.50, 0.00001}, {22.75, 0.00000},
-             {23.00, 0.00000}, {23.25, 0.00000}, {23.50, 0.00000}, {23.75, 0.00000},
-             {24.00, 0.00000}, {24.25, 0.00000}, {24.50, 0.00000}, {24.75, 0.00000},
-             {25.00, 0.00000}, {25.25, 0.00000}, {25.50, 0.00000}, {25.75, 0.00000},
-             {26.00, 0.00000}, {26.25, 0.00000}, {26.50, 0.00000}, {26.75, 0.00000},
-             {27.00, 0.00000}, {27.25, 0.00000}, {27.50, 0.00000}, {27.75, 0.00000},
-             {28.00, 0.00000}, {28.25, 0.00000}, {28.50, 0.00000}, {28.75, 0.00000},
-             {29.00, 0.00000}, {29.25, 0.00000}, {29.50, 0.00000}, {29.75, 0.00000},
-             {30.00, 0.00000},
+             {dB_u{-4.00}, 1.00000}, {dB_u{-3.75}, 1.00000}, {dB_u{-3.50}, 1.00000},
+             {dB_u{-3.25}, 1.00000}, {dB_u{-3.00}, 1.00000}, {dB_u{-2.75}, 1.00000},
+             {dB_u{-2.50}, 1.00000}, {dB_u{-2.25}, 1.00000}, {dB_u{-2.00}, 1.00000},
+             {dB_u{-1.75}, 1.00000}, {dB_u{-1.50}, 1.00000}, {dB_u{-1.25}, 1.00000},
+             {dB_u{-1.00}, 1.00000}, {dB_u{-0.75}, 1.00000}, {dB_u{-0.50}, 1.00000},
+             {dB_u{-0.25}, 1.00000}, {dB_u{0.00}, 1.00000},  {dB_u{0.25}, 1.00000},
+             {dB_u{0.50}, 1.00000},  {dB_u{0.75}, 1.00000},  {dB_u{1.00}, 1.00000},
+             {dB_u{1.25}, 1.00000},  {dB_u{1.50}, 1.00000},  {dB_u{1.75}, 1.00000},
+             {dB_u{2.00}, 1.00000},  {dB_u{2.25}, 1.00000},  {dB_u{2.50}, 1.00000},
+             {dB_u{2.75}, 1.00000},  {dB_u{3.00}, 1.00000},  {dB_u{3.25}, 1.00000},
+             {dB_u{3.50}, 1.00000},  {dB_u{3.75}, 1.00000},  {dB_u{4.00}, 1.00000},
+             {dB_u{4.25}, 1.00000},  {dB_u{4.50}, 1.00000},  {dB_u{4.75}, 1.00000},
+             {dB_u{5.00}, 1.00000},  {dB_u{5.25}, 1.00000},  {dB_u{5.50}, 1.00000},
+             {dB_u{5.75}, 1.00000},  {dB_u{6.00}, 1.00000},  {dB_u{6.25}, 1.00000},
+             {dB_u{6.50}, 1.00000},  {dB_u{6.75}, 1.00000},  {dB_u{7.00}, 1.00000},
+             {dB_u{7.25}, 1.00000},  {dB_u{7.50}, 1.00000},  {dB_u{7.75}, 1.00000},
+             {dB_u{8.00}, 1.00000},  {dB_u{8.25}, 1.00000},  {dB_u{8.50}, 1.00000},
+             {dB_u{8.75}, 1.00000},  {dB_u{9.00}, 1.00000},  {dB_u{9.25}, 1.00000},
+             {dB_u{9.50}, 1.00000},  {dB_u{9.75}, 1.00000},  {dB_u{10.00}, 1.00000},
+             {dB_u{10.25}, 1.00000}, {dB_u{10.50}, 1.00000}, {dB_u{10.75}, 1.00000},
+             {dB_u{11.00}, 1.00000}, {dB_u{11.25}, 1.00000}, {dB_u{11.50}, 1.00000},
+             {dB_u{11.75}, 1.00000}, {dB_u{12.00}, 1.00000}, {dB_u{12.25}, 1.00000},
+             {dB_u{12.50}, 1.00000}, {dB_u{12.75}, 1.00000}, {dB_u{13.00}, 1.00000},
+             {dB_u{13.25}, 1.00000}, {dB_u{13.50}, 1.00000}, {dB_u{13.75}, 1.00000},
+             {dB_u{14.00}, 1.00000}, {dB_u{14.25}, 1.00000}, {dB_u{14.50}, 1.00000},
+             {dB_u{14.75}, 1.00000}, {dB_u{15.00}, 1.00000}, {dB_u{15.25}, 1.00000},
+             {dB_u{15.50}, 1.00000}, {dB_u{15.75}, 1.00000}, {dB_u{16.00}, 1.00000},
+             {dB_u{16.25}, 1.00000}, {dB_u{16.50}, 1.00000}, {dB_u{16.75}, 1.00000},
+             {dB_u{17.00}, 1.00000}, {dB_u{17.25}, 1.00000}, {dB_u{17.50}, 1.00000},
+             {dB_u{17.75}, 0.99057}, {dB_u{18.00}, 0.98075}, {dB_u{18.25}, 0.86664},
+             {dB_u{18.50}, 0.74920}, {dB_u{18.75}, 0.54857}, {dB_u{19.00}, 0.34531},
+             {dB_u{19.25}, 0.23624}, {dB_u{19.50}, 0.12672}, {dB_u{19.75}, 0.08164},
+             {dB_u{20.00}, 0.03650}, {dB_u{20.25}, 0.02340}, {dB_u{20.50}, 0.01029},
+             {dB_u{20.75}, 0.00653}, {dB_u{21.00}, 0.00278}, {dB_u{21.25}, 0.00165},
+             {dB_u{21.50}, 0.00051}, {dB_u{21.75}, 0.00030}, {dB_u{22.00}, 0.00009},
+             {dB_u{22.25}, 0.00005}, {dB_u{22.50}, 0.00001}, {dB_u{22.75}, 0.00000},
+             {dB_u{23.00}, 0.00000}, {dB_u{23.25}, 0.00000}, {dB_u{23.50}, 0.00000},
+             {dB_u{23.75}, 0.00000}, {dB_u{24.00}, 0.00000}, {dB_u{24.25}, 0.00000},
+             {dB_u{24.50}, 0.00000}, {dB_u{24.75}, 0.00000}, {dB_u{25.00}, 0.00000},
+             {dB_u{25.25}, 0.00000}, {dB_u{25.50}, 0.00000}, {dB_u{25.75}, 0.00000},
+             {dB_u{26.00}, 0.00000}, {dB_u{26.25}, 0.00000}, {dB_u{26.50}, 0.00000},
+             {dB_u{26.75}, 0.00000}, {dB_u{27.00}, 0.00000}, {dB_u{27.25}, 0.00000},
+             {dB_u{27.50}, 0.00000}, {dB_u{27.75}, 0.00000}, {dB_u{28.00}, 0.00000},
+             {dB_u{28.25}, 0.00000}, {dB_u{28.50}, 0.00000}, {dB_u{28.75}, 0.00000},
+             {dB_u{29.00}, 0.00000}, {dB_u{29.25}, 0.00000}, {dB_u{29.50}, 0.00000},
+             {dB_u{29.75}, 0.00000}, {dB_u{30.00}, 0.00000},
          }},
         /* MCS 8 - 1500 bytes */
         {std::make_pair(8, 1500),
          {
-             {-4.00, 1.00000}, {-3.75, 1.00000}, {-3.50, 1.00000}, {-3.25, 1.00000},
-             {-3.00, 1.00000}, {-2.75, 1.00000}, {-2.50, 1.00000}, {-2.25, 1.00000},
-             {-2.00, 1.00000}, {-1.75, 1.00000}, {-1.50, 1.00000}, {-1.25, 1.00000},
-             {-1.00, 1.00000}, {-0.75, 1.00000}, {-0.50, 1.00000}, {-0.25, 1.00000},
-             {0.00, 1.00000},  {0.25, 1.00000},  {0.50, 1.00000},  {0.75, 1.00000},
-             {1.00, 1.00000},  {1.25, 1.00000},  {1.50, 1.00000},  {1.75, 1.00000},
-             {2.00, 1.00000},  {2.25, 1.00000},  {2.50, 1.00000},  {2.75, 1.00000},
-             {3.00, 1.00000},  {3.25, 1.00000},  {3.50, 1.00000},  {3.75, 1.00000},
-             {4.00, 1.00000},  {4.25, 1.00000},  {4.50, 1.00000},  {4.75, 1.00000},
-             {5.00, 1.00000},  {5.25, 1.00000},  {5.50, 1.00000},  {5.75, 1.00000},
-             {6.00, 1.00000},  {6.25, 1.00000},  {6.50, 1.00000},  {6.75, 1.00000},
-             {7.00, 1.00000},  {7.25, 1.00000},  {7.50, 1.00000},  {7.75, 1.00000},
-             {8.00, 1.00000},  {8.25, 1.00000},  {8.50, 1.00000},  {8.75, 1.00000},
-             {9.00, 1.00000},  {9.25, 1.00000},  {9.50, 1.00000},  {9.75, 1.00000},
-             {10.00, 1.00000}, {10.25, 1.00000}, {10.50, 1.00000}, {10.75, 1.00000},
-             {11.00, 1.00000}, {11.25, 1.00000}, {11.50, 1.00000}, {11.75, 1.00000},
-             {12.00, 1.00000}, {12.25, 1.00000}, {12.50, 1.00000}, {12.75, 1.00000},
-             {13.00, 1.00000}, {13.25, 1.00000}, {13.50, 1.00000}, {13.75, 1.00000},
-             {14.00, 1.00000}, {14.25, 1.00000}, {14.50, 1.00000}, {14.75, 1.00000},
-             {15.00, 1.00000}, {15.25, 1.00000}, {15.50, 1.00000}, {15.75, 1.00000},
-             {16.00, 1.00000}, {16.25, 1.00000}, {16.50, 1.00000}, {16.75, 1.00000},
-             {17.00, 1.00000}, {17.25, 1.00000}, {17.50, 1.00000}, {17.75, 1.00000},
-             {18.00, 1.00000}, {18.25, 1.00000}, {18.50, 1.00000}, {18.75, 1.00000},
-             {19.00, 1.00000}, {19.25, 1.00000}, {19.50, 1.00000}, {19.75, 1.00000},
-             {20.00, 1.00000}, {20.25, 1.00000}, {20.50, 1.00000}, {20.75, 1.00000},
-             {21.00, 1.00000}, {21.25, 0.99918}, {21.50, 0.99833}, {21.75, 0.97191},
-             {22.00, 0.94458}, {22.25, 0.81436}, {22.50, 0.68127}, {22.75, 0.52168},
-             {23.00, 0.36056}, {23.25, 0.25114}, {23.50, 0.14127}, {23.75, 0.09509},
-             {24.00, 0.04883}, {24.25, 0.03234}, {24.50, 0.01584}, {24.75, 0.01060},
-             {25.00, 0.00535}, {25.25, 0.00345}, {25.50, 0.00154}, {25.75, 0.00096},
-             {26.00, 0.00037}, {26.25, 0.00022}, {26.50, 0.00007}, {26.75, 0.00004},
-             {27.00, 0.00000}, {27.25, 0.00000}, {27.50, 0.00000}, {27.75, 0.00000},
-             {28.00, 0.00000}, {28.25, 0.00000}, {28.50, 0.00000}, {28.75, 0.00000},
-             {29.00, 0.00000}, {29.25, 0.00000}, {29.50, 0.00000}, {29.75, 0.00000},
-             {30.00, 0.00000},
+             {dB_u{-4.00}, 1.00000}, {dB_u{-3.75}, 1.00000}, {dB_u{-3.50}, 1.00000},
+             {dB_u{-3.25}, 1.00000}, {dB_u{-3.00}, 1.00000}, {dB_u{-2.75}, 1.00000},
+             {dB_u{-2.50}, 1.00000}, {dB_u{-2.25}, 1.00000}, {dB_u{-2.00}, 1.00000},
+             {dB_u{-1.75}, 1.00000}, {dB_u{-1.50}, 1.00000}, {dB_u{-1.25}, 1.00000},
+             {dB_u{-1.00}, 1.00000}, {dB_u{-0.75}, 1.00000}, {dB_u{-0.50}, 1.00000},
+             {dB_u{-0.25}, 1.00000}, {dB_u{0.00}, 1.00000},  {dB_u{0.25}, 1.00000},
+             {dB_u{0.50}, 1.00000},  {dB_u{0.75}, 1.00000},  {dB_u{1.00}, 1.00000},
+             {dB_u{1.25}, 1.00000},  {dB_u{1.50}, 1.00000},  {dB_u{1.75}, 1.00000},
+             {dB_u{2.00}, 1.00000},  {dB_u{2.25}, 1.00000},  {dB_u{2.50}, 1.00000},
+             {dB_u{2.75}, 1.00000},  {dB_u{3.00}, 1.00000},  {dB_u{3.25}, 1.00000},
+             {dB_u{3.50}, 1.00000},  {dB_u{3.75}, 1.00000},  {dB_u{4.00}, 1.00000},
+             {dB_u{4.25}, 1.00000},  {dB_u{4.50}, 1.00000},  {dB_u{4.75}, 1.00000},
+             {dB_u{5.00}, 1.00000},  {dB_u{5.25}, 1.00000},  {dB_u{5.50}, 1.00000},
+             {dB_u{5.75}, 1.00000},  {dB_u{6.00}, 1.00000},  {dB_u{6.25}, 1.00000},
+             {dB_u{6.50}, 1.00000},  {dB_u{6.75}, 1.00000},  {dB_u{7.00}, 1.00000},
+             {dB_u{7.25}, 1.00000},  {dB_u{7.50}, 1.00000},  {dB_u{7.75}, 1.00000},
+             {dB_u{8.00}, 1.00000},  {dB_u{8.25}, 1.00000},  {dB_u{8.50}, 1.00000},
+             {dB_u{8.75}, 1.00000},  {dB_u{9.00}, 1.00000},  {dB_u{9.25}, 1.00000},
+             {dB_u{9.50}, 1.00000},  {dB_u{9.75}, 1.00000},  {dB_u{10.00}, 1.00000},
+             {dB_u{10.25}, 1.00000}, {dB_u{10.50}, 1.00000}, {dB_u{10.75}, 1.00000},
+             {dB_u{11.00}, 1.00000}, {dB_u{11.25}, 1.00000}, {dB_u{11.50}, 1.00000},
+             {dB_u{11.75}, 1.00000}, {dB_u{12.00}, 1.00000}, {dB_u{12.25}, 1.00000},
+             {dB_u{12.50}, 1.00000}, {dB_u{12.75}, 1.00000}, {dB_u{13.00}, 1.00000},
+             {dB_u{13.25}, 1.00000}, {dB_u{13.50}, 1.00000}, {dB_u{13.75}, 1.00000},
+             {dB_u{14.00}, 1.00000}, {dB_u{14.25}, 1.00000}, {dB_u{14.50}, 1.00000},
+             {dB_u{14.75}, 1.00000}, {dB_u{15.00}, 1.00000}, {dB_u{15.25}, 1.00000},
+             {dB_u{15.50}, 1.00000}, {dB_u{15.75}, 1.00000}, {dB_u{16.00}, 1.00000},
+             {dB_u{16.25}, 1.00000}, {dB_u{16.50}, 1.00000}, {dB_u{16.75}, 1.00000},
+             {dB_u{17.00}, 1.00000}, {dB_u{17.25}, 1.00000}, {dB_u{17.50}, 1.00000},
+             {dB_u{17.75}, 1.00000}, {dB_u{18.00}, 1.00000}, {dB_u{18.25}, 1.00000},
+             {dB_u{18.50}, 1.00000}, {dB_u{18.75}, 1.00000}, {dB_u{19.00}, 1.00000},
+             {dB_u{19.25}, 1.00000}, {dB_u{19.50}, 1.00000}, {dB_u{19.75}, 1.00000},
+             {dB_u{20.00}, 1.00000}, {dB_u{20.25}, 1.00000}, {dB_u{20.50}, 1.00000},
+             {dB_u{20.75}, 1.00000}, {dB_u{21.00}, 1.00000}, {dB_u{21.25}, 0.99918},
+             {dB_u{21.50}, 0.99833}, {dB_u{21.75}, 0.97191}, {dB_u{22.00}, 0.94458},
+             {dB_u{22.25}, 0.81436}, {dB_u{22.50}, 0.68127}, {dB_u{22.75}, 0.52168},
+             {dB_u{23.00}, 0.36056}, {dB_u{23.25}, 0.25114}, {dB_u{23.50}, 0.14127},
+             {dB_u{23.75}, 0.09509}, {dB_u{24.00}, 0.04883}, {dB_u{24.25}, 0.03234},
+             {dB_u{24.50}, 0.01584}, {dB_u{24.75}, 0.01060}, {dB_u{25.00}, 0.00535},
+             {dB_u{25.25}, 0.00345}, {dB_u{25.50}, 0.00154}, {dB_u{25.75}, 0.00096},
+             {dB_u{26.00}, 0.00037}, {dB_u{26.25}, 0.00022}, {dB_u{26.50}, 0.00007},
+             {dB_u{26.75}, 0.00004}, {dB_u{27.00}, 0.00000}, {dB_u{27.25}, 0.00000},
+             {dB_u{27.50}, 0.00000}, {dB_u{27.75}, 0.00000}, {dB_u{28.00}, 0.00000},
+             {dB_u{28.25}, 0.00000}, {dB_u{28.50}, 0.00000}, {dB_u{28.75}, 0.00000},
+             {dB_u{29.00}, 0.00000}, {dB_u{29.25}, 0.00000}, {dB_u{29.50}, 0.00000},
+             {dB_u{29.75}, 0.00000}, {dB_u{30.00}, 0.00000},
          }},
 };
 

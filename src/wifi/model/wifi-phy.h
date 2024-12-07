@@ -1107,7 +1107,9 @@ class WifiPhy : public Object
      * @param txPowerMaxSiso the SISO transmit power restriction for the next transmission
      * @param txPowerMaxMimo the MIMO transmit power restriction for the next transmission
      */
-    void ResetCca(bool powerRestricted, dBm_u txPowerMaxSiso = 0, dBm_u txPowerMaxMimo = 0);
+    void ResetCca(bool powerRestricted,
+                  dBm_u txPowerMaxSiso = dBm_u{0},
+                  dBm_u txPowerMaxMimo = dBm_u{0});
     /**
      * Compute the transmit power for the next transmission.
      * The returned power will satisfy the power density constraints

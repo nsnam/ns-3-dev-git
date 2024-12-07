@@ -216,10 +216,10 @@ TestInterBssConstantObssPdAlgo::TestInterBssConstantObssPdAlgo(WifiStandard stan
       m_payloadSize1(1000),
       m_payloadSize2(1500),
       m_payloadSize3(2000),
-      m_txPower(15),
-      m_obssPdLevel(-72),
-      m_obssRxPower(-82),
-      m_expectedTxPower(15),
+      m_txPower(dBm_u{15}),
+      m_obssPdLevel(dBm_u{-72}),
+      m_obssRxPower(dBm_u{-82}),
+      m_expectedTxPower(dBm_u{15}),
       m_bssColor1(1),
       m_bssColor2(2),
       m_bssColor3(3),
@@ -932,24 +932,24 @@ void
 TestInterBssConstantObssPdAlgo::DoRun()
 {
     // Test case 1: CCA CS Threshold = m_obssRxPower < m_obssPdLevel
-    m_obssPdLevel = -72;
-    m_obssRxPower = -82;
+    m_obssPdLevel = dBm_u{-72};
+    m_obssRxPower = dBm_u{-82};
     m_bssColor1 = 1;
     m_bssColor2 = 2;
     m_bssColor3 = 3;
     RunOne();
 
     // Test case 2: CCA CS Threshold < m_obssPdLevel < m_obssRxPower
-    m_obssPdLevel = -72;
-    m_obssRxPower = -62;
+    m_obssPdLevel = dBm_u{-72};
+    m_obssRxPower = dBm_u{-62};
     m_bssColor1 = 1;
     m_bssColor2 = 2;
     m_bssColor3 = 3;
     RunOne();
 
     // Test case 3: CCA CS Threshold < m_obssPdLevel = m_obssRxPower
-    m_obssPdLevel = -72;
-    m_obssRxPower = -72;
+    m_obssPdLevel = dBm_u{-72};
+    m_obssRxPower = dBm_u{-72};
     m_bssColor1 = 1;
     m_bssColor2 = 2;
     m_bssColor3 = 3;
@@ -957,16 +957,16 @@ TestInterBssConstantObssPdAlgo::DoRun()
 
     // Test case 4: CCA CS Threshold = m_obssRxPower < m_obssPdLevel with BSS color 2 and 3
     // set to 0
-    m_obssPdLevel = -72;
-    m_obssRxPower = -82;
+    m_obssPdLevel = dBm_u{-72};
+    m_obssRxPower = dBm_u{-82};
     m_bssColor1 = 1;
     m_bssColor2 = 0;
     m_bssColor3 = 0;
     RunOne();
 
     // Test case 5: CCA CS Threshold = m_obssRxPower < m_obssPdLevel with BSS color 1 set to 0
-    m_obssPdLevel = -72;
-    m_obssRxPower = -82;
+    m_obssPdLevel = dBm_u{-72};
+    m_obssRxPower = dBm_u{-82};
     m_bssColor1 = 0;
     m_bssColor2 = 2;
     m_bssColor3 = 3;

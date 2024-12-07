@@ -151,11 +151,11 @@ ThompsonSamplingWifiManager::InitializeStation(WifiRemoteStation* st) const
             if (stats.mode.GetModulationClass() == WIFI_MOD_CLASS_DSSS ||
                 stats.mode.GetModulationClass() == WIFI_MOD_CLASS_HR_DSSS)
             {
-                stats.channelWidth = 22;
+                stats.channelWidth = MHz_u{22};
             }
             else
             {
-                stats.channelWidth = 20;
+                stats.channelWidth = MHz_u{20};
             }
             stats.nss = 1;
             station->m_mcsStats.push_back(stats);

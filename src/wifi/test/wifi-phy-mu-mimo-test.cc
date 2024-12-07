@@ -94,7 +94,7 @@ TestDlMuTxVector::DoRun()
     std::list<HeMuUserInfo> userInfos;
     userInfos.push_back({{HeRu::RU_106_TONE, 1, true}, 11, 1});
     userInfos.push_back({{HeRu::RU_106_TONE, 2, true}, 10, 2});
-    WifiTxVector txVector = BuildTxVector(20, userInfos);
+    WifiTxVector txVector = BuildTxVector(MHz_u{20}, userInfos);
     NS_TEST_EXPECT_MSG_EQ(txVector.IsDlOfdma(),
                           true,
                           "TX-VECTOR should indicate an OFDMA transmission");
@@ -112,7 +112,7 @@ TestDlMuTxVector::DoRun()
     // Verify TxVector is a full BW MU-MIMO
     userInfos.push_back({{HeRu::RU_242_TONE, 1, true}, 11, 1});
     userInfos.push_back({{HeRu::RU_242_TONE, 1, true}, 10, 2});
-    txVector = BuildTxVector(20, userInfos);
+    txVector = BuildTxVector(MHz_u{20}, userInfos);
     NS_TEST_EXPECT_MSG_EQ(txVector.IsDlOfdma(),
                           false,
                           "TX-VECTOR should indicate a MU-MIMO transmission");
@@ -137,7 +137,7 @@ TestDlMuTxVector::DoRun()
     userInfos.push_back({{HeRu::RU_242_TONE, 1, true}, 5, 1});
     userInfos.push_back({{HeRu::RU_242_TONE, 1, true}, 4, 1});
     userInfos.push_back({{HeRu::RU_242_TONE, 1, true}, 3, 1});
-    txVector = BuildTxVector(20, userInfos);
+    txVector = BuildTxVector(MHz_u{20}, userInfos);
     NS_TEST_EXPECT_MSG_EQ(txVector.IsDlOfdma(),
                           false,
                           "TX-VECTOR should indicate a MU-MIMO transmission");
@@ -156,7 +156,7 @@ TestDlMuTxVector::DoRun()
     userInfos.push_back({{HeRu::RU_242_TONE, 1, true}, 10, 2});
     userInfos.push_back({{HeRu::RU_242_TONE, 1, true}, 9, 3});
     userInfos.push_back({{HeRu::RU_242_TONE, 1, true}, 8, 3});
-    txVector = BuildTxVector(20, userInfos);
+    txVector = BuildTxVector(MHz_u{20}, userInfos);
     NS_TEST_EXPECT_MSG_EQ(txVector.IsDlOfdma(),
                           false,
                           "TX-VECTOR should indicate a MU-MIMO transmission");
@@ -1084,23 +1084,23 @@ TestDlMuMimoPhyTransmission::DoRun()
     for (auto nss : nssToTest)
     {
         m_nss = nss;
-        m_frequency = 5180;
-        m_channelWidth = 20;
+        m_frequency = MHz_u{5180};
+        m_channelWidth = MHz_u{20};
         m_expectedPpduDuration = (nss > 1) ? NanoSeconds(110400) : NanoSeconds(156800);
         RunOne();
 
-        m_frequency = 5190;
-        m_channelWidth = 40;
+        m_frequency = MHz_u{5190};
+        m_channelWidth = MHz_u{40};
         m_expectedPpduDuration = (nss > 1) ? NanoSeconds(83200) : NanoSeconds(102400);
         RunOne();
 
-        m_frequency = 5210;
-        m_channelWidth = 80;
+        m_frequency = MHz_u{5210};
+        m_channelWidth = MHz_u{80};
         m_expectedPpduDuration = (nss > 1) ? NanoSeconds(69600) : NanoSeconds(75200);
         RunOne();
 
-        m_frequency = 5250;
-        m_channelWidth = 160;
+        m_frequency = MHz_u{5250};
+        m_channelWidth = MHz_u{160};
         m_expectedPpduDuration = (nss > 1) ? NanoSeconds(69600) : NanoSeconds(61600);
         RunOne();
     }
@@ -1806,32 +1806,32 @@ TestUlMuMimoPhyTransmission::DoRun()
     {
         m_delayStart = delayStart;
 
-        m_frequency = 5180;
-        m_channelWidth = 20;
+        m_frequency = MHz_u{5180};
+        m_channelWidth = MHz_u{20};
         m_expectedPpduDuration = NanoSeconds(163200);
         NS_LOG_DEBUG("Run UL MU-MIMO PHY transmission test for "
                      << m_channelWidth << " MHz with delay between each HE TB PPDUs of "
                      << m_delayStart);
         RunOne();
 
-        m_frequency = 5190;
-        m_channelWidth = 40;
+        m_frequency = MHz_u{5190};
+        m_channelWidth = MHz_u{40};
         m_expectedPpduDuration = NanoSeconds(105600);
         NS_LOG_DEBUG("Run UL MU-MIMO PHY transmission test for "
                      << m_channelWidth << " MHz with delay between each HE TB PPDUs of "
                      << m_delayStart);
         RunOne();
 
-        m_frequency = 5210;
-        m_channelWidth = 80;
+        m_frequency = MHz_u{5210};
+        m_channelWidth = MHz_u{80};
         m_expectedPpduDuration = NanoSeconds(76800);
         NS_LOG_DEBUG("Run UL MU-MIMO PHY transmission test for "
                      << m_channelWidth << " MHz with delay between each HE TB PPDUs of "
                      << m_delayStart);
         RunOne();
 
-        m_frequency = 5250;
-        m_channelWidth = 160;
+        m_frequency = MHz_u{5250};
+        m_channelWidth = MHz_u{160};
         m_expectedPpduDuration = NanoSeconds(62400);
         NS_LOG_DEBUG("Run UL MU-MIMO PHY transmission test for "
                      << m_channelWidth << " MHz with delay between each HE TB PPDUs of "

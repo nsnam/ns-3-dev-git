@@ -84,7 +84,7 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
     /******************
      * 20 MHz channel *
      ******************/
-    m_channel.SetDefault(20, WIFI_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ);
+    m_channel.SetDefault(MHz_u{20}, WIFI_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ);
 
     /* 20 MHz PPDU */
     {
@@ -113,7 +113,7 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
     /******************
      * 40 MHz channel *
      ******************/
-    m_channel.SetDefault(40, WIFI_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ);
+    m_channel.SetDefault(MHz_u{40}, WIFI_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ);
 
     /* 20 MHz PPDU */
     for (uint8_t p20Index = 0; p20Index < 2; p20Index++)
@@ -185,7 +185,7 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
     /******************
      * 80 MHz channel *
      ******************/
-    m_channel.SetDefault(80, WIFI_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ);
+    m_channel.SetDefault(MHz_u{80}, WIFI_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ);
 
     /* 20 MHz PPDU */
     for (uint8_t p20Index = 0; p20Index < 4; p20Index++)
@@ -345,7 +345,7 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
     /******************
      * 160 MHz channel *
      ******************/
-    m_channel.SetDefault(160, WIFI_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ);
+    m_channel.SetDefault(MHz_u{160}, WIFI_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ);
 
     /* 20 MHz PPDU */
     for (uint8_t p20Index = 0; p20Index < 8; p20Index++)

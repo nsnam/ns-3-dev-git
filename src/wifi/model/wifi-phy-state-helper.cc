@@ -578,7 +578,7 @@ WifiPhyStateHelper::SwitchFromRxAbort(MHz_u operatingWidth)
     DoSwitchFromRx();
     m_endCcaBusy = Simulator::Now();
     std::vector<Time> per20MhzDurations;
-    if (operatingWidth >= 40)
+    if (operatingWidth >= MHz_u{40})
     {
         std::fill_n(std::back_inserter(per20MhzDurations),
                     Count20MHzSubchannels(operatingWidth),

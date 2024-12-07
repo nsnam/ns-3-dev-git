@@ -47,7 +47,11 @@ YansWifiPhy::SetInterferenceHelper(const Ptr<InterferenceHelper> helper)
 {
     WifiPhy::SetInterferenceHelper(helper);
     // add dummy band for Yans
-    m_interference->AddBand({{{0, 0}}, {{0, 0}}});
+    m_interference->AddBand({{{0, 0}},
+                             {{
+                                 Hz_u{0},
+                                 Hz_u{0},
+                             }}});
 }
 
 YansWifiPhy::~YansWifiPhy()
@@ -98,20 +102,24 @@ MHz_u
 YansWifiPhy::GetGuardBandwidth(MHz_u currentChannelWidth) const
 {
     NS_ABORT_MSG("Guard bandwidth not relevant for Yans");
-    return 0;
+    return MHz_u{0};
 }
 
 std::tuple<dBr_u, dBr_u, dBr_u>
 YansWifiPhy::GetTxMaskRejectionParams() const
 {
     NS_ABORT_MSG("Tx mask rejection params not relevant for Yans");
-    return std::make_tuple(0.0, 0.0, 0.0);
+    return std::make_tuple(dBr_u{0.0}, dBr_u{0.0}, dBr_u{0.0});
 }
 
 WifiSpectrumBandInfo
 YansWifiPhy::GetBand(MHz_u /*bandWidth*/, uint8_t /*bandIndex*/)
 {
-    return {{{0, 0}}, {{0, 0}}};
+    return {{{0, 0}},
+            {{
+                Hz_u{0},
+                Hz_u{0},
+            }}};
 }
 
 FrequencyRange
@@ -123,7 +131,7 @@ YansWifiPhy::GetCurrentFrequencyRange() const
 WifiSpectrumBandFrequencies
 YansWifiPhy::ConvertIndicesToFrequencies(const WifiSpectrumBandIndices& /*indices*/) const
 {
-    return {0, 0};
+    return {Hz_u{0}, Hz_u{0}};
 }
 
 void

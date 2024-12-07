@@ -382,8 +382,8 @@ ChannelAccessManager::ResizeLastBusyStructs()
     m_lastBusyEnd.emplace(WIFI_CHANLIST_PRIMARY, now);
     m_lastIdle.emplace(WIFI_CHANLIST_PRIMARY, Timespan{now, now});
 
-    const auto width = m_phy ? m_phy->GetChannelWidth() : 0;
-    std::size_t size = (width > 20 && m_phy->GetStandard() >= WIFI_STANDARD_80211ax)
+    const auto width = m_phy ? m_phy->GetChannelWidth() : MHz_u{0};
+    std::size_t size = (width > MHz_u{20} && m_phy->GetStandard() >= WIFI_STANDARD_80211ax)
                            ? Count20MHzSubchannels(width)
                            : 0;
     m_lastPer20MHzBusyEnd.resize(size, now);
@@ -393,7 +393,7 @@ ChannelAccessManager::ResizeLastBusyStructs()
         return;
     }
 
-    if (width >= 40)
+    if (width >= MHz_u{40})
     {
         m_lastBusyEnd.emplace(WIFI_CHANLIST_SECONDARY, now);
         m_lastIdle.emplace(WIFI_CHANLIST_SECONDARY, Timespan{now, now});
@@ -404,7 +404,7 @@ ChannelAccessManager::ResizeLastBusyStructs()
         m_lastIdle.erase(WIFI_CHANLIST_SECONDARY);
     }
 
-    if (width >= 80)
+    if (width >= MHz_u{80})
     {
         m_lastBusyEnd.emplace(WIFI_CHANLIST_SECONDARY40, now);
         m_lastIdle.emplace(WIFI_CHANLIST_SECONDARY40, Timespan{now, now});
@@ -415,7 +415,7 @@ ChannelAccessManager::ResizeLastBusyStructs()
         m_lastIdle.erase(WIFI_CHANLIST_SECONDARY40);
     }
 
-    if (width >= 160)
+    if (width >= MHz_u{160})
     {
         m_lastBusyEnd.emplace(WIFI_CHANLIST_SECONDARY80, now);
         m_lastIdle.emplace(WIFI_CHANLIST_SECONDARY80, Timespan{now, now});
@@ -620,9 +620,10 @@ ChannelAccessManager::DoGrantDcfAccess()
             auto interval = (m_phy->GetPhyBand() == WIFI_PHY_BAND_2_4GHZ)
                                 ? GetSifs() + 2 * GetSlot()
                                 : m_phy->GetPifs();
-            auto width = (m_phy->GetOperatingChannel().IsOfdm() && m_phy->GetChannelWidth() > 20)
-                             ? GetLargestIdlePrimaryChannel(interval, now)
-                             : m_phy->GetChannelWidth();
+            auto width =
+                (m_phy->GetOperatingChannel().IsOfdm() && m_phy->GetChannelWidth() > MHz_u{20})
+                    ? GetLargestIdlePrimaryChannel(interval, now)
+                    : m_phy->GetChannelWidth();
             if (m_feManager->StartTransmission(txop, width))
             {
                 for (auto& collidingTxop : internalCollisionTxops)
@@ -848,7 +849,7 @@ ChannelAccessManager::GetLargestIdlePrimaryChannel(Time interval, Time end)
         if (lastIdle.second.start <= end - interval && lastIdle.second.end >= end)
         {
             // channel idle, update width
-            width = (width == 0) ? 20 : (2 * width);
+            width = (width == MHz_u{0}) ? MHz_u{20} : (2 * width);
         }
         else
         {
@@ -863,7 +864,7 @@ ChannelAccessManager::GetPer20MHzBusy(const std::set<uint8_t>& indices) const
 {
     const auto now = Simulator::Now();
 
-    if (m_phy->GetChannelWidth() < 40)
+    if (m_phy->GetChannelWidth() < MHz_u{40})
     {
         NS_ASSERT_MSG(indices.size() == 1 && *indices.cbegin() == 0,
                       "Index 0 only can be specified if the channel width is less than 40 MHz");

@@ -968,7 +968,7 @@ PhyEntity::StartPreambleDetectionPeriod(Ptr<Event> event)
 {
     NS_LOG_FUNCTION(this << *event);
     const auto rxPower = GetRxPowerForPpdu(event);
-    NS_LOG_DEBUG("Sync to signal (power=" << (rxPower > 0.0
+    NS_LOG_DEBUG("Sync to signal (power=" << (rxPower > Watt_u{0.0}
                                                   ? std::to_string(WToDbm(rxPower)) + "dBm)"
                                                   : std::to_string(rxPower) + "W)"));
     m_wifiPhy->m_interference->NotifyRxStart(
@@ -1036,8 +1036,8 @@ PhyEntity::EndPreambleDetectionPeriod(Ptr<Event> event)
     NS_LOG_DEBUG("SNR(dB)=" << RatioToDb(snr) << " at end of preamble detection period");
 
     if (const auto power = m_wifiPhy->m_currentEvent->GetRxPower(measurementBand);
-        (!m_wifiPhy->m_preambleDetectionModel && maxRxPower && (*maxRxPower > 0.0)) ||
-        (m_wifiPhy->m_preambleDetectionModel && power > 0.0 &&
+        (!m_wifiPhy->m_preambleDetectionModel && maxRxPower && (*maxRxPower > Watt_u{0.0})) ||
+        (m_wifiPhy->m_preambleDetectionModel && power > Watt_u{0.0} &&
          m_wifiPhy->m_preambleDetectionModel->IsPreambleDetected(WToDbm(power),
                                                                  snr,
                                                                  measurementChannelWidth)))
@@ -1251,7 +1251,7 @@ PhyEntity::GetPrimaryBand(MHz_u bandWidth) const
 WifiSpectrumBandInfo
 PhyEntity::GetSecondaryBand(MHz_u bandWidth) const
 {
-    NS_ASSERT(m_wifiPhy->GetChannelWidth() >= 40);
+    NS_ASSERT(m_wifiPhy->GetChannelWidth() >= MHz_u{40});
     return m_wifiPhy->GetBand(bandWidth,
                               m_wifiPhy->GetOperatingChannel().GetSecondaryChannelIndex(bandWidth));
 }
@@ -1404,7 +1404,7 @@ PhyEntity::CanStartRx(Ptr<const WifiPpdu> ppdu) const
     // not overlap the primary channel
     const auto channelWidth = m_wifiPhy->GetChannelWidth();
     const auto primaryWidth = ((static_cast<uint16_t>(channelWidth) % 20 == 0)
-                                   ? 20
+                                   ? MHz_u{20}
                                    : channelWidth); // if the channel width is a multiple of 20 MHz,
                                                     // then we consider the primary20 channel
     const auto p20CenterFreq =

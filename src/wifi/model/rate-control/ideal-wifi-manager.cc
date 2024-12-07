@@ -89,11 +89,11 @@ IdealWifiManager::GetChannelWidthForNonHtMode(WifiMode mode) const
     if (mode.GetModulationClass() == WIFI_MOD_CLASS_DSSS ||
         mode.GetModulationClass() == WIFI_MOD_CLASS_HR_DSSS)
     {
-        return 22;
+        return MHz_u{22};
     }
     else
     {
-        return 20;
+        return MHz_u{20};
     }
 }
 
@@ -243,11 +243,11 @@ IdealWifiManager::Reset(WifiRemoteStation* station) const
     NS_LOG_FUNCTION(this << station);
     auto st = static_cast<IdealWifiRemoteStation*>(station);
     st->m_lastSnrObserved = 0.0;
-    st->m_lastChannelWidthObserved = 0;
+    st->m_lastChannelWidthObserved = MHz_u{0};
     st->m_lastNssObserved = 1;
     st->m_lastSnrCached = CACHE_INITIAL_VALUE;
     st->m_lastMode = GetDefaultMode();
-    st->m_lastChannelWidth = 0;
+    st->m_lastChannelWidth = MHz_u{0};
     st->m_lastNss = 1;
 }
 
@@ -279,7 +279,7 @@ IdealWifiManager::DoReportRtsOk(WifiRemoteStation* st,
     auto station = static_cast<IdealWifiRemoteStation*>(st);
     station->m_lastSnrObserved = rtsSnr;
     station->m_lastChannelWidthObserved =
-        GetPhy()->GetChannelWidth() >= 40 ? 20 : GetPhy()->GetChannelWidth();
+        GetPhy()->GetChannelWidth() >= MHz_u{42} ? MHz_u{20} : GetPhy()->GetChannelWidth();
     station->m_lastNssObserved = 1;
 }
 

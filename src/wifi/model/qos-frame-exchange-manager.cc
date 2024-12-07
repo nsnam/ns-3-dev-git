@@ -121,7 +121,7 @@ QosFrameExchangeManager::PifsRecovery(bool forceCurrentCw)
         m_allowedWidth,
         m_channelAccessManager->GetLargestIdlePrimaryChannel(m_phy->GetPifs(), Simulator::Now()));
 
-    if (m_allowedWidth == 0)
+    if (m_allowedWidth == MHz_u{0})
     {
         // PIFS recovery failed, TXOP is terminated
         NotifyChannelReleased(m_edca);

@@ -62,7 +62,7 @@ ErrorRateModel::GetChunkSuccessRate(WifiMode mode,
     if (mode.GetModulationClass() == WIFI_MOD_CLASS_DSSS ||
         mode.GetModulationClass() == WIFI_MOD_CLASS_HR_DSSS)
     {
-        switch (mode.GetDataRate(22))
+        switch (mode.GetDataRate(MHz_u{22}))
         {
         case 1000000:
             return DsssErrorRateModel::GetDsssDbpskSuccessRate(snr, nbits);

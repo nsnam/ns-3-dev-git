@@ -84,11 +84,12 @@ WifiProtectionManager::AddUserInfoToMuRts(CtrlTriggerHeader& muRts,
         std::min(txWidth, GetWifiRemoteStationManager()->GetChannelWidthSupported(receiver));
     auto phy = m_mac->GetWifiPhy(m_linkId);
     std::size_t primaryIdx = phy->GetOperatingChannel().GetPrimaryChannelIndex(ctsTxWidth);
-    std::size_t idx80MHz = 80 / ctsTxWidth;
-    if ((phy->GetChannelWidth() == 160) && (ctsTxWidth <= 40) && (primaryIdx >= idx80MHz))
+    std::size_t idx80MHz = MHz_u{80} / ctsTxWidth;
+    if ((phy->GetChannelWidth() == MHz_u{160}) && (ctsTxWidth <= MHz_u{40}) &&
+        (primaryIdx >= idx80MHz))
     {
         // the primary80 is in the higher part of the 160 MHz channel
-        primaryIdx -= 80 / ctsTxWidth;
+        primaryIdx -= idx80MHz;
     }
     switch (static_cast<uint16_t>(ctsTxWidth))
     {

@@ -1181,7 +1181,7 @@ EmlsrManager::ComputeOperatingChannels()
                       "Primary" << auxPhyMaxWidth << " channel not found");
         m_auxPhyChannels.emplace(linkId, chIt);
         // find the P20 index for the channel used by the aux PHYs
-        auto p20Index = channel.GetPrimaryChannelIndex(20);
+        auto p20Index = channel.GetPrimaryChannelIndex(MHz_u{20});
         while (mainPhyChWidth > auxPhyMaxWidth)
         {
             mainPhyChWidth /= 2;

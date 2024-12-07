@@ -1453,12 +1453,12 @@ MultiLinkSetupTest::CheckMlSetup()
         const auto& apChannel = m_apMac->GetWifiPhy(apLinkId)->GetOperatingChannel();
 
         auto width = apChannel.GetTotalWidth();
-        auto primary20 = apChannel.GetPrimaryChannelIndex(20);
+        auto primary20 = apChannel.GetPrimaryChannelIndex(MHz_u{20});
 
-        if (width > 80 && !m_support160MHzOp)
+        if (width > MHz_u{80} && !m_support160MHzOp)
         {
-            width = 80;
-            primary20 -= apChannel.GetPrimaryChannelIndex(80) * 4;
+            width = MHz_u{80};
+            primary20 -= apChannel.GetPrimaryChannelIndex(MHz_u{80}) * 4;
         }
 
         NS_TEST_EXPECT_MSG_EQ(+staChannel.GetNumber(),
@@ -1474,7 +1474,7 @@ MultiLinkSetupTest::CheckMlSetup()
         NS_TEST_EXPECT_MSG_EQ(+staChannel.GetPhyBand(),
                               +apChannel.GetPhyBand(),
                               "Incorrect operating PHY band for STA on link " << +staLinkId);
-        NS_TEST_EXPECT_MSG_EQ(+staChannel.GetPrimaryChannelIndex(20),
+        NS_TEST_EXPECT_MSG_EQ(+staChannel.GetPrimaryChannelIndex(MHz_u{20}),
                               +primary20,
                               "Incorrect operating primary channel index for STA on link "
                                   << +staLinkId);
@@ -1606,9 +1606,9 @@ MultiLinkSetupTest::CheckQosData(Ptr<WifiMpdu> mpdu,
                                                                      << hdr.IsFromDs() << ")");
     }
 
-    if (width > 80 && !m_support160MHzOp)
+    if (width > MHz_u{80} && !m_support160MHzOp)
     {
-        width = 80;
+        width = MHz_u{80};
     }
     NS_TEST_EXPECT_MSG_EQ(txvector.GetChannelWidth(), width, "Unexpected TX width");
 

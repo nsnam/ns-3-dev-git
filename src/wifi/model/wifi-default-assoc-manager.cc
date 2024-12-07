@@ -206,10 +206,10 @@ WifiDefaultAssocManager::EndScanning()
                 // switch this link to using the channel used by a reported AP (or its primary80
                 // in case the reported AP is using a 160 MHz and the non-AP MLD does not support
                 // 160 MHz operations)
-                if (apChannel.GetTotalWidth() > 80 &&
+                if (apChannel.GetTotalWidth() > MHz_u{80} &&
                     !phy->GetDevice()->GetVhtConfiguration()->m_160MHzSupported)
                 {
-                    apChannel = apChannel.GetPrimaryChannel(80);
+                    apChannel = apChannel.GetPrimaryChannel(MHz_u{80});
                 }
 
                 NS_LOG_DEBUG("Switch link " << +linkId << " to using " << apChannel);

@@ -95,9 +95,9 @@ class WifiSpectrumValueHelper
                                                                MHz_u channelWidth,
                                                                Watt_u txPower,
                                                                MHz_u guardBandwidth,
-                                                               dBr_u minInnerBand = -20,
-                                                               dBr_u minOuterband = -28,
-                                                               dBr_u lowestPoint = -40);
+                                                               dBr_u minInnerBand = dBr_u{-20},
+                                                               dBr_u minOuterband = dBr_u{-28},
+                                                               dBr_u lowestPoint = dBr_u{-40});
 
     /**
      * Create a transmit power spectral density corresponding to OFDM duplicated over multiple 20
@@ -119,9 +119,9 @@ class WifiSpectrumValueHelper
         MHz_u channelWidth,
         Watt_u txPower,
         MHz_u guardBandwidth,
-        dBr_u minInnerBand = -20,
-        dBr_u minOuterband = -28,
-        dBr_u lowestPoint = -40,
+        dBr_u minInnerBand = dBr_u{-20},
+        dBr_u minOuterband = dBr_u{-28},
+        dBr_u lowestPoint = dBr_u{-40},
         const std::vector<bool>& puncturedSubchannels = {});
 
     /**
@@ -144,9 +144,9 @@ class WifiSpectrumValueHelper
         MHz_u channelWidth,
         Watt_u txPower,
         MHz_u guardBandwidth,
-        dBr_u minInnerBand = -20,
-        dBr_u minOuterband = -28,
-        dBr_u lowestPoint = -40);
+        dBr_u minInnerBand = dBr_u{-20},
+        dBr_u minOuterband = dBr_u{-28},
+        dBr_u lowestPoint = dBr_u{-40});
 
     /**
      * Create a transmit power spectral density corresponding to OFDM
@@ -169,9 +169,9 @@ class WifiSpectrumValueHelper
         MHz_u channelWidth,
         Watt_u txPower,
         MHz_u guardBandwidth,
-        dBr_u minInnerBand = -20,
-        dBr_u minOuterband = -28,
-        dBr_u lowestPoint = -40,
+        dBr_u minInnerBand = dBr_u{-20},
+        dBr_u minOuterband = dBr_u{-28},
+        dBr_u lowestPoint = dBr_u{-40},
         const std::vector<bool>& puncturedSubchannels = {});
 
     /**
@@ -195,9 +195,9 @@ class WifiSpectrumValueHelper
         MHz_u channelWidth,
         Watt_u txPower,
         MHz_u guardBandwidth,
-        dBr_u minInnerBand = -20,
-        dBr_u minOuterband = -28,
-        dBr_u lowestPoint = -40,
+        dBr_u minInnerBand = dBr_u{-20},
+        dBr_u minOuterband = dBr_u{-28},
+        dBr_u lowestPoint = dBr_u{-40},
         const std::vector<bool>& puncturedSubchannels = {});
 
     /**
@@ -354,16 +354,16 @@ bool operator!=(const FrequencyRange& lhs, const FrequencyRange& rhs);
 std::ostream& operator<<(std::ostream& os, const FrequencyRange& freqRange);
 
 /// Identifier for the frequency range covering the whole wifi spectrum
-constexpr FrequencyRange WHOLE_WIFI_SPECTRUM = {2401, 7125};
+constexpr FrequencyRange WHOLE_WIFI_SPECTRUM = {MHz_u{2401}, MHz_u{7125}};
 
 /// Identifier for the frequency range covering the wifi spectrum in the 2.4 GHz band
-constexpr FrequencyRange WIFI_SPECTRUM_2_4_GHZ = {2401, 2483};
+constexpr FrequencyRange WIFI_SPECTRUM_2_4_GHZ = {MHz_u{2401}, MHz_u{2483}};
 
 /// Identifier for the frequency range covering the wifi spectrum in the 5 GHz band
-constexpr FrequencyRange WIFI_SPECTRUM_5_GHZ = {5170, 5915};
+constexpr FrequencyRange WIFI_SPECTRUM_5_GHZ = {MHz_u{5170}, MHz_u{5915}};
 
 /// Identifier for the frequency range covering the wifi spectrum in the 6 GHz band
-constexpr FrequencyRange WIFI_SPECTRUM_6_GHZ = {5945, 7125};
+constexpr FrequencyRange WIFI_SPECTRUM_6_GHZ = {MHz_u{5945}, MHz_u{7125}};
 
 } // namespace ns3
 

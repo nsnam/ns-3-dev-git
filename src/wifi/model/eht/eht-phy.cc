@@ -129,7 +129,7 @@ EhtPhy::GetSigBSize(const WifiTxVector& txVector) const
         return EhtPpdu::GetEhtSigFieldSize(
             txVector.GetChannelWidth(),
             txVector.GetRuAllocation(
-                m_wifiPhy ? m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(20) : 0),
+                m_wifiPhy ? m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(MHz_u{20}) : 0),
             txVector.GetEhtPpduType(),
             txVector.IsSigBCompression(),
             txVector.IsSigBCompression() ? txVector.GetHeMuUserInfoMap().size() : 0);

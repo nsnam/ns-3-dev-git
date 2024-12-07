@@ -77,8 +77,8 @@ main(int argc, char** argv)
         channelBand = "BAND_5GHZ";
         ssid = Ssid("ns380211a");
         dataRate = "OfdmRate6Mbps";
-        freq = 5180;
-        if (bw != 20)
+        freq = MHz_u{5180};
+        if (bw != MHz_u{20})
         {
             std::cout << "Bandwidth is not compatible with standard" << std::endl;
             return 1;
@@ -91,10 +91,10 @@ main(int argc, char** argv)
         channelBand = "BAND_5GHZ";
         ssid = Ssid("ns380211p_10MHZ");
         dataRate = "OfdmRate3MbpsBW10MHz";
-        freq = 5860;
+        freq = MHz_u{5860};
         dataStartTime = MicroSeconds(1400);
         dataDuration = MicroSeconds(600);
-        if (bw != 10)
+        if (bw != MHz_u{10})
         {
             std::cout << "Bandwidth is not compatible with standard" << std::endl;
             return 1;
@@ -107,10 +107,10 @@ main(int argc, char** argv)
         channelBand = "BAND_5GHZ";
         ssid = Ssid("ns380211p_5MHZ");
         dataRate = "OfdmRate1_5MbpsBW5MHz";
-        freq = 5860;
+        freq = MHz_u{5860};
         dataStartTime = MicroSeconds(2500);
         dataDuration = MicroSeconds(1200);
-        if (bw != 5)
+        if (bw != MHz_u{5})
         {
             std::cout << "Bandwidth is not compatible with standard" << std::endl;
             return 1;
@@ -123,10 +123,10 @@ main(int argc, char** argv)
         channelBand = "BAND_2_4GHZ";
         ssid = Ssid("ns380211n_2_4GHZ");
         dataRate = "HtMcs0";
-        freq = 2402 + (bw / 2); // so as to have 2412/2422 for 20/40
+        freq = MHz_u{2402} + (bw / 2); // so as to have 2412/2422 for 20/40
         dataStartTime = MicroSeconds(4700);
         dataDuration = MicroSeconds(400);
-        if (bw != 20 && bw != 40)
+        if (bw != MHz_u{20} && bw != MHz_u{40})
         {
             std::cout << "Bandwidth is not compatible with standard" << std::endl;
             return 1;
@@ -139,9 +139,9 @@ main(int argc, char** argv)
         channelBand = "BAND_5GHZ";
         ssid = Ssid("ns380211n_5GHZ");
         dataRate = "HtMcs0";
-        freq = 5170 + (bw / 2); // so as to have 5180/5190 for 20/40
+        freq = MHz_u{5170} + (bw / 2); // so as to have 5180/5190 for 20/40
         dataStartTime = MicroSeconds(1000);
-        if (bw != 20 && bw != 40)
+        if (bw != MHz_u{20} && bw != MHz_u{40})
         {
             std::cout << "Bandwidth is not compatible with standard" << std::endl;
             return 1;
@@ -154,10 +154,10 @@ main(int argc, char** argv)
         channelBand = "BAND_5GHZ";
         ssid = Ssid("ns380211ac");
         dataRate = "VhtMcs0";
-        freq = 5170 + (bw / 2); // so as to have 5180/5190/5210/5250 for 20/40/80/160
+        freq = MHz_u{5170} + (bw / 2); // so as to have 5180/5190/5210/5250 for 20/40/80/160
         dataStartTime = MicroSeconds(1100);
         dataDuration += MicroSeconds(400); // account for ADDBA procedure
-        if (bw != 20 && bw != 40 && bw != 80 && bw != 160)
+        if (bw != MHz_u{20} && bw != MHz_u{40} && bw != MHz_u{80} && bw != MHz_u{160})
         {
             std::cout << "Bandwidth is not compatible with standard" << std::endl;
             return 1;
@@ -170,10 +170,10 @@ main(int argc, char** argv)
         channelBand = "BAND_2_4GHZ";
         ssid = Ssid("ns380211ax_2_4GHZ");
         dataRate = "HeMcs0";
-        freq = 2402 + (bw / 2); // so as to have 2412/2422/2442 for 20/40/80
+        freq = MHz_u{2402} + (bw / 2); // so as to have 2412/2422/2442 for 20/40/80
         dataStartTime = MicroSeconds(5500);
         dataDuration += MicroSeconds(2000); // account for ADDBA procedure
-        if (bw != 20 && bw != 40 && bw != 80)
+        if (bw != MHz_u{20} && bw != MHz_u{40} && bw != MHz_u{80})
         {
             std::cout << "Bandwidth is not compatible with standard" << std::endl;
             return 1;
@@ -186,10 +186,10 @@ main(int argc, char** argv)
         channelBand = "BAND_5GHZ";
         ssid = Ssid("ns380211ax_5GHZ");
         dataRate = "HeMcs0";
-        freq = 5170 + (bw / 2); // so as to have 5180/5190/5210/5250 for 20/40/80/160
+        freq = MHz_u{5170} + (bw / 2); // so as to have 5180/5190/5210/5250 for 20/40/80/160
         dataStartTime = MicroSeconds(1200);
         dataDuration += MicroSeconds(500); // account for ADDBA procedure
-        if (bw != 20 && bw != 40 && bw != 80 && bw != 160)
+        if (bw != MHz_u{20} && bw != MHz_u{40} && bw != MHz_u{80} && bw != MHz_u{160})
         {
             std::cout << "Bandwidth is not compatible with standard" << std::endl;
             return 1;
@@ -279,12 +279,13 @@ main(int argc, char** argv)
 
     /* frequency range for spectrum analyzer */
     std::vector<double> freqs;
-    int margin = 2; // 1MHz margin on each side
+    MHz_u margin = 2; // 1MHz margin on each side
     int band = (bw + margin);
     freqs.reserve(4 * 10 * band);
+    const MHz_u scale{0.1};
     for (int i = 0; i < (4 * 10 * band); ++i) // conversion to 100kHz scale
     {
-        freqs.push_back(i * MHzToHz(0.1) + MHzToHz(freq - 2 * band));
+        freqs.push_back(MHzToHz((i * scale) + (freq - 2 * band)));
     }
     Ptr<SpectrumModel> spectrumAnalyzerFreqModel = Create<SpectrumModel>(freqs);
 

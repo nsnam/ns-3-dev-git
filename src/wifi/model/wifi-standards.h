@@ -113,18 +113,18 @@ GetDefaultChannelWidth(WifiStandard standard, WifiPhyBand band)
     switch (standard)
     {
     case WIFI_STANDARD_80211b:
-        return 22;
+        return MHz_u{22};
     case WIFI_STANDARD_80211p:
-        return 10;
+        return MHz_u{10};
     case WIFI_STANDARD_80211ac:
-        return 80;
+        return MHz_u{80};
     case WIFI_STANDARD_80211ad:
-        return 2160;
+        return MHz_u{2160};
     case WIFI_STANDARD_80211ax:
     case WIFI_STANDARD_80211be:
-        return (band == WIFI_PHY_BAND_2_4GHZ ? 20 : 80);
+        return (band == WIFI_PHY_BAND_2_4GHZ ? MHz_u{20} : MHz_u{80});
     default:
-        return 20;
+        return MHz_u{20};
     }
 }
 

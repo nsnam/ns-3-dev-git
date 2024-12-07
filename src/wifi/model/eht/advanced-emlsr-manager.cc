@@ -379,7 +379,7 @@ AdvancedEmlsrManager::CheckNavAndCcaLastPifs(Ptr<WifiPhy> phy, uint8_t linkId, P
     // check CCA on the entire channel
     auto width = caManager->GetLargestIdlePrimaryChannel(pifs, Simulator::Now());
 
-    if (!isBusy && width > 0)
+    if (!isBusy && width > MHz_u{0})
     {
         // medium idle, start TXOP
         width = std::min(width, GetChannelForMainPhy(linkId).GetTotalWidth());

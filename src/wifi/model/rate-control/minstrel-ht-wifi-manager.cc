@@ -939,7 +939,7 @@ MinstrelHtWifiManager::UpdateRateAfterAllowedWidth(uint16_t txRate, MHz_u allowe
     // the width becomes lower than 20 MHz
     auto width = group.chWidth / 2;
 
-    while (width >= 20)
+    while (width >= MHz_u{20})
     {
         if (width > allowedWidth)
         {
@@ -955,7 +955,7 @@ MinstrelHtWifiManager::UpdateRateAfterAllowedWidth(uint16_t txRate, MHz_u allowe
         width /= 2;
     }
 
-    NS_ABORT_MSG_IF(width < 20, "No rate compatible with the allowed width found");
+    NS_ABORT_MSG_IF(width < MHz_u{20}, "No rate compatible with the allowed width found");
 
     return GetIndex(groupId, GetRateId(txRate));
 }
@@ -1076,7 +1076,7 @@ MinstrelHtWifiManager::DoGetRtsTxVector(WifiRemoteStation* st)
 
         for (uint8_t i = 0; i < nBasicRates; i++)
         {
-            const auto rate = GetBasicMode(i).GetDataRate(20);
+            const auto rate = GetBasicMode(i).GetDataRate(MHz_u{20});
             if (rate <= lastDataRate)
             {
                 rtsRate = GetBasicMode(i);
@@ -1088,7 +1088,7 @@ MinstrelHtWifiManager::DoGetRtsTxVector(WifiRemoteStation* st)
         {
             for (const auto& mode : GetPhy()->GetModeList())
             {
-                const auto rate = mode.GetDataRate(20);
+                const auto rate = mode.GetDataRate(MHz_u{20});
                 if (rate <= lastDataRate)
                 {
                     rtsRate = mode;
@@ -2057,7 +2057,7 @@ MinstrelHtWifiManager::GetIdInGroup(WifiModulationClass mc,
                               standardInfos.guardIntervals.cend(),
                               guardInterval);
     const auto giIndex = std::distance(standardInfos.guardIntervals.cbegin(), it);
-    const auto widthIndex = std::log2(chWidth / 20);
+    const auto widthIndex = std::log2(chWidth / MHz_u{20});
     return (standardInfos.maxStreams * standardInfos.guardIntervals.size() * widthIndex) +
            (standardInfos.maxStreams * giIndex) + streams - 1;
 }
@@ -2066,7 +2066,7 @@ std::size_t
 MinstrelHtWifiManager::GetNumGroups(WifiModulationClass mc)
 {
     const auto& standardInfos = minstrelHtStandardInfos.at(mc);
-    const auto numWidths = std::log2(standardInfos.maxWidth / 20) + 1;
+    const auto numWidths = std::log2(standardInfos.maxWidth / MHz_u{20}) + 1;
     return numWidths * standardInfos.guardIntervals.size() * standardInfos.maxStreams;
 }
 

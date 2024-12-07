@@ -304,7 +304,7 @@ WifiTxopTest::DoRun()
     {
         Config::SetDefault("ns3::WifiRemoteStationManager::RtsCtsTxDurationThresh",
                            TimeValue(Seconds(m_payloadSizeRtsOn * (m_nonHt ? 1 : 2) * 8.0 /
-                                             m_mode.GetDataRate(20))));
+                                             m_mode.GetDataRate(MHz_u{20}))));
     }
     Config::SetDefault("ns3::FrameExchangeManager::ProtectedIfResponded",
                        BooleanValue(m_protectedIfResponded));

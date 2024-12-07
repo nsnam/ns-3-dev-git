@@ -71,13 +71,13 @@ const PhyEntity::ModulationLookupTable OfdmPhy::m_ofdmModulationLookupTable {
 
 /// OFDM rates in bits per second for each bandwidth
 const std::map<MHz_u, std::array<uint64_t, 8> > s_ofdmRatesBpsList =
-   {{ 20, // MHz
+   {{ MHz_u{20},
      {  6000000,  9000000, 12000000, 18000000,
        24000000, 36000000, 48000000, 54000000 }},
-   { 10, // MHz
+   { MHz_u{10},
      {  3000000,  4500000,  6000000,  9000000,
        12000000, 18000000, 24000000, 27000000 }},
-   { 5, // MHz
+   { MHz_u{5},
      {  1500000,  2250000,  3000000,  4500000,
         6000000,  9000000, 12000000, 13500000 }},
 };
@@ -106,25 +106,25 @@ OfdmPhy::OfdmPhy(OfdmPhyVariant variant /* = OFDM_PHY_DEFAULT */, bool buildMode
         switch (variant)
         {
         case OFDM_PHY_DEFAULT:
-            for (const auto& rate : bwRatesMap.at(20))
+            for (const auto& rate : bwRatesMap.at(MHz_u{20}))
             {
-                WifiMode mode = GetOfdmRate(rate, 20);
+                WifiMode mode = GetOfdmRate(rate, MHz_u{20});
                 NS_LOG_LOGIC("Add " << mode << " to list");
                 m_modeList.emplace_back(mode);
             }
             break;
         case OFDM_PHY_10_MHZ:
-            for (const auto& rate : bwRatesMap.at(10))
+            for (const auto& rate : bwRatesMap.at(MHz_u{10}))
             {
-                WifiMode mode = GetOfdmRate(rate, 10);
+                WifiMode mode = GetOfdmRate(rate, MHz_u{10});
                 NS_LOG_LOGIC("Add " << mode << " to list");
                 m_modeList.emplace_back(mode);
             }
             break;
         case OFDM_PHY_5_MHZ:
-            for (const auto& rate : bwRatesMap.at(5))
+            for (const auto& rate : bwRatesMap.at(MHz_u{5}))
             {
-                WifiMode mode = GetOfdmRate(rate, 5);
+                WifiMode mode = GetOfdmRate(rate, MHz_u{5});
                 NS_LOG_LOGIC("Add " << mode << " to list");
                 m_modeList.emplace_back(mode);
             }
@@ -334,7 +334,7 @@ bool
 OfdmPhy::IsChannelWidthSupported(Ptr<const WifiPpdu> ppdu) const
 {
     const auto channelWidth = ppdu->GetTxVector().GetChannelWidth();
-    if ((channelWidth >= 40) && (channelWidth > m_wifiPhy->GetChannelWidth()))
+    if ((channelWidth >= MHz_u{40}) && (channelWidth > m_wifiPhy->GetChannelWidth()))
     {
         NS_LOG_DEBUG("Packet reception could not be started because not enough channel width ("
                      << channelWidth << " vs " << m_wifiPhy->GetChannelWidth() << ")");
@@ -631,11 +631,11 @@ OfdmPhy::GetSymbolDuration(MHz_u channelWidth)
 {
     Time symbolDuration = MicroSeconds(4);
     uint8_t bwFactor = 1;
-    if (channelWidth == 10)
+    if (channelWidth == MHz_u{10})
     {
         bwFactor = 2;
     }
-    else if (channelWidth == 5)
+    else if (channelWidth == MHz_u{5})
     {
         bwFactor = 4;
     }
@@ -659,7 +659,7 @@ OfdmPhy::GetMeasurementChannelWidth(const Ptr<const WifiPpdu> ppdu) const
 {
     if (!ppdu)
     {
-        return std::min<MHz_u>(m_wifiPhy->GetChannelWidth(), 20);
+        return std::min(m_wifiPhy->GetChannelWidth(), MHz_u{20});
     }
     return GetRxChannelWidth(ppdu->GetTxVector());
 }
@@ -667,11 +667,11 @@ OfdmPhy::GetMeasurementChannelWidth(const Ptr<const WifiPpdu> ppdu) const
 dBm_u
 OfdmPhy::GetCcaThreshold(const Ptr<const WifiPpdu> ppdu, WifiChannelListType channelType) const
 {
-    if (ppdu && ppdu->GetTxVector().GetChannelWidth() < 20)
+    if (ppdu && ppdu->GetTxVector().GetChannelWidth() < MHz_u{20})
     {
         // scale CCA sensitivity threshold for BW of 5 and 10 MHz
         const auto bw = GetRxChannelWidth(ppdu->GetTxVector());
-        const auto thresholdW = DbmToW(m_wifiPhy->GetCcaSensitivityThreshold()) * (bw / 20.0);
+        const auto thresholdW = DbmToW(m_wifiPhy->GetCcaSensitivityThreshold()) * (bw / MHz_u{20});
         return WToDbm(thresholdW);
     }
     return PhyEntity::GetCcaThreshold(ppdu, channelType);

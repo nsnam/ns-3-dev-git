@@ -50,19 +50,19 @@ const PhyEntity::PpduFormats VhtPhy::m_vhtPpduFormats {
 
 const VhtPhy::NesExceptionMap VhtPhy::m_exceptionsMap {
                     /* {BW,Nss,MCS} Nes */
-    { std::make_tuple ( 80, 7, 2),  3 }, // instead of 2
-    { std::make_tuple ( 80, 7, 7),  6 }, // instead of 4
-    { std::make_tuple ( 80, 7, 8),  6 }, // instead of 5
-    { std::make_tuple ( 80, 8, 7),  6 }, // instead of 5
-    { std::make_tuple (160, 4, 7),  6 }, // instead of 5
-    { std::make_tuple (160, 5, 8),  8 }, // instead of 7
-    { std::make_tuple (160, 6, 7),  8 }, // instead of 7
-    { std::make_tuple (160, 7, 3),  4 }, // instead of 3
-    { std::make_tuple (160, 7, 4),  6 }, // instead of 5
-    { std::make_tuple (160, 7, 5),  7 }, // instead of 6
-    { std::make_tuple (160, 7, 7),  9 }, // instead of 8
-    { std::make_tuple (160, 7, 8), 12 }, // instead of 9
-    { std::make_tuple (160, 7, 9), 12 }, // instead of 10
+    { std::make_tuple (MHz_u{80}, 7, 2),  3 }, // instead of 2
+    { std::make_tuple (MHz_u{80}, 7, 7),  6 }, // instead of 4
+    { std::make_tuple (MHz_u{80}, 7, 8),  6 }, // instead of 5
+    { std::make_tuple (MHz_u{80}, 8, 7),  6 }, // instead of 5
+    { std::make_tuple (MHz_u{160}, 4, 7),  6 }, // instead of 5
+    { std::make_tuple (MHz_u{160}, 5, 8),  8 }, // instead of 7
+    { std::make_tuple (MHz_u{160}, 6, 7),  8 }, // instead of 7
+    { std::make_tuple (MHz_u{160}, 7, 3),  4 }, // instead of 3
+    { std::make_tuple (MHz_u{160}, 7, 4),  6 }, // instead of 5
+    { std::make_tuple (MHz_u{160}, 7, 5),  7 }, // instead of 6
+    { std::make_tuple (MHz_u{160}, 7, 7),  9 }, // instead of 8
+    { std::make_tuple (MHz_u{160}, 7, 8), 12 }, // instead of 9
+    { std::make_tuple (MHz_u{160}, 7, 9), 12 }, // instead of 10
 };
 
 // clang-format on
@@ -71,19 +71,19 @@ const VhtPhy::NesExceptionMap VhtPhy::m_exceptionsMap {
  * @brief map a given channel list type to the corresponding scaling factor
  */
 const std::map<WifiChannelListType, dBm_u> channelTypeToScalingFactor{
-    {WIFI_CHANLIST_PRIMARY, 0.0},
-    {WIFI_CHANLIST_SECONDARY, 0.0},
-    {WIFI_CHANLIST_SECONDARY40, 3.0},
-    {WIFI_CHANLIST_SECONDARY80, 6.0},
+    {WIFI_CHANLIST_PRIMARY, dBm_u{0.0}},
+    {WIFI_CHANLIST_SECONDARY, dBm_u{0.0}},
+    {WIFI_CHANLIST_SECONDARY40, dBm_u{3.0}},
+    {WIFI_CHANLIST_SECONDARY80, dBm_u{6.0}},
 };
 
 /**
  * @brief map a given secondary channel width to its channel list type
  */
 const std::map<MHz_u, WifiChannelListType> secondaryChannels{
-    {20, WIFI_CHANLIST_SECONDARY},
-    {40, WIFI_CHANLIST_SECONDARY40},
-    {80, WIFI_CHANLIST_SECONDARY80},
+    {MHz_u{20}, WIFI_CHANLIST_SECONDARY},
+    {MHz_u{40}, WIFI_CHANLIST_SECONDARY40},
+    {MHz_u{80}, WIFI_CHANLIST_SECONDARY80},
 };
 
 VhtPhy::VhtPhy(bool buildModeList /* = true */)
@@ -516,11 +516,11 @@ VhtPhy::IsAllowed(const WifiTxVector& txVector)
 bool
 VhtPhy::IsCombinationAllowed(uint8_t mcsValue, MHz_u channelWidth, uint8_t nss)
 {
-    if (mcsValue == 9 && channelWidth == 20 && nss != 3)
+    if (mcsValue == 9 && channelWidth == MHz_u{20} && nss != 3)
     {
         return false;
     }
-    if (mcsValue == 6 && channelWidth == 80 && nss == 3)
+    if (mcsValue == 6 && channelWidth == MHz_u{80} && nss == 3)
     {
         return false;
     }
@@ -547,13 +547,13 @@ VhtPhy::GetCcaThreshold(const Ptr<const WifiPpdu> ppdu, WifiChannelListType chan
             return m_wifiPhy->GetCcaSensitivityThreshold();
         }
         case WIFI_CHANLIST_SECONDARY:
-            NS_ASSERT_MSG(ppduBw == 20, "Invalid channel width " << ppduBw);
+            NS_ASSERT_MSG(ppduBw == MHz_u{20}, "Invalid channel width " << ppduBw);
             break;
         case WIFI_CHANLIST_SECONDARY40:
-            NS_ASSERT_MSG(ppduBw <= 40, "Invalid channel width " << ppduBw);
+            NS_ASSERT_MSG(ppduBw <= MHz_u{40}, "Invalid channel width " << ppduBw);
             break;
         case WIFI_CHANLIST_SECONDARY80:
-            NS_ASSERT_MSG(ppduBw <= 80, "Invalid channel width " << ppduBw);
+            NS_ASSERT_MSG(ppduBw <= MHz_u{80}, "Invalid channel width " << ppduBw);
             break;
         default:
             NS_ASSERT_MSG(false, "Invalid channel list type");

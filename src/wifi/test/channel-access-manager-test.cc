@@ -268,7 +268,7 @@ class ChannelAccessManagerTest : public TestCase
                    uint64_t sifs,
                    uint64_t eifsNoDifsNoSifs,
                    uint32_t ackTimeoutValue = 20,
-                   MHz_u chWidth = 20);
+                   MHz_u chWidth = MHz_u{20});
     /**
      * Add Txop function
      * @param aifsn the AIFSN
@@ -1216,7 +1216,7 @@ ChannelAccessManagerTest<QosTxop>::DoRun()
     //     |  rx  | sifs | aifsn |  tx  |
     //                |
     //               52 request access
-    StartTest(4, 6, 10, 20, 40);
+    StartTest(4, 6, 10, 20, MHz_u{40});
     AddTxop(1);
     AddRxOkEvt(20, 30);
     AddCcaBusyEvt(50, 10, WIFI_CHANLIST_SECONDARY);
@@ -1230,7 +1230,7 @@ ChannelAccessManagerTest<QosTxop>::DoRun()
     //     |  rx  | sifs | aifsn |  tx  |
     //                       |
     //                      58 request access
-    StartTest(4, 6, 10, 20, 80);
+    StartTest(4, 6, 10, 20, MHz_u{80});
     AddTxop(1);
     AddRxOkEvt(20, 30);
     AddCcaBusyEvt(50, 10, WIFI_CHANLIST_SECONDARY);
@@ -1244,7 +1244,7 @@ ChannelAccessManagerTest<QosTxop>::DoRun()
     //     |  rx  | sifs | aifsn | idle |  tx  |
     //                               |
     //                              62 request access
-    StartTest(4, 6, 10, 20, 80);
+    StartTest(4, 6, 10, 20, MHz_u{80});
     AddTxop(1);
     AddRxOkEvt(20, 30);
     AddCcaBusyEvt(50, 14, WIFI_CHANLIST_SECONDARY40);
@@ -1259,7 +1259,7 @@ ChannelAccessManagerTest<QosTxop>::DoRun()
     //   |    rx    | sifs | acktxttime | sifs + aifsn |  tx  |
     //                   |
     //                  55 request access
-    StartTest(4, 6, 10, 20, 160);
+    StartTest(4, 6, 10, 20, MHz_u{160});
     AddTxop(1);
     AddRxErrorEvt(20, 30);
     AddCcaBusyEvt(50, 26, WIFI_CHANLIST_SECONDARY);
@@ -1274,7 +1274,7 @@ ChannelAccessManagerTest<QosTxop>::DoRun()
     //   |    rx    | sifs | acktxttime | sifs + aifsn |  tx  |
     //                                        |
     //                                       70 request access
-    StartTest(4, 6, 10, 20, 160);
+    StartTest(4, 6, 10, 20, MHz_u{160});
     AddTxop(1);
     AddRxErrorEvt(20, 30);
     AddCcaBusyEvt(50, 26, WIFI_CHANLIST_SECONDARY40);
@@ -1289,7 +1289,7 @@ ChannelAccessManagerTest<QosTxop>::DoRun()
     //   |    rx    | sifs | acktxttime | sifs + aifsn | idle |  tx  |
     //                                                     |
     //                                                    82 request access
-    StartTest(4, 6, 10, 20, 160);
+    StartTest(4, 6, 10, 20, MHz_u{160});
     AddTxop(1);
     AddRxErrorEvt(20, 30);
     AddCcaBusyEvt(50, 34, WIFI_CHANLIST_SECONDARY80);
@@ -1397,14 +1397,14 @@ LargestIdlePrimaryChannelTest::RunOne(MHz_u chWidth, WifiChannelListType busyCha
         m_cam,
         ccaBusyDuration,
         busyChannel,
-        std::vector<Time>(chWidth == 20 ? 0 : Count20MHzSubchannels(chWidth), Seconds(0)));
+        std::vector<Time>(chWidth == MHz_u{20} ? 0 : Count20MHzSubchannels(chWidth), Seconds(0)));
 
     // During any interval ending within CCA_BUSY period, the idle channel is the
     // primary channel contiguous to the busy secondary channel, if the busy channel
     // is a secondary channel, or there is no idle channel, otherwise.
-    MHz_u idleWidth = (busyChannel == WifiChannelListType::WIFI_CHANLIST_PRIMARY)
-                          ? 0
-                          : ((1 << (busyChannel - 1)) * 20);
+    const auto idleWidth = (busyChannel == WifiChannelListType::WIFI_CHANLIST_PRIMARY)
+                               ? MHz_u{0}
+                               : ((1 << (busyChannel - 1)) * MHz_u{20});
 
     Time checkTime1 = start + ccaBusyStartDelay + ccaBusyDuration / 2;
     Simulator::Schedule(checkTime1 - start, [=, this]() {
@@ -1481,7 +1481,7 @@ LargestIdlePrimaryChannelTest::RunOne(MHz_u chWidth, WifiChannelListType busyCha
     Simulator::Schedule(checkTime6 - start, [=, this]() {
         Time interval6 = interval5 + rxDuration / 2;
         NS_TEST_EXPECT_MSG_EQ(m_cam->GetLargestIdlePrimaryChannel(interval6, checkTime6),
-                              0,
+                              MHz_u{0},
                               "Incorrect width of the idle channel in an interval "
                                   << "overlapping RX (channel width: " << chWidth
                                   << " MHz, busy channel: " << busyChannel << ")");
@@ -1496,7 +1496,7 @@ LargestIdlePrimaryChannelTest::DoRun()
     uint8_t channel = 0;
     std::list<WifiChannelListType> busyChannels;
 
-    for (MHz_u chWidth : {20, 40, 80, 160})
+    for (auto chWidth : {MHz_u{20}, MHz_u{40}, MHz_u{80}, MHz_u{160}})
     {
         busyChannels.push_back(static_cast<WifiChannelListType>(channel));
 
@@ -1998,7 +1998,7 @@ BackoffGenerationTest::GenerateInterference()
     NS_LOG_FUNCTION(this);
     auto phy = DynamicCast<SpectrumWifiPhy>(m_apMac->GetWifiPhy(SINGLE_LINK_OP_ID));
     auto psd = Create<SpectrumValue>(phy->GetCurrentInterface()->GetRxSpectrumModel());
-    *psd = DbmToW(20) / 80e6; // PSD spread across 80 MHz to generate some noise
+    *psd = DbmToW(dBm_u{20}) / 80e6; // PSD spread across 80 MHz to generate some noise
 
     auto spectrumSignalParams = Create<SpectrumSignalParameters>();
     spectrumSignalParams->duration = m_interferenceDuration;

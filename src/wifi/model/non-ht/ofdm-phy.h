@@ -93,7 +93,7 @@ class OfdmPhy : public PhyEntity
      * @param bw the bandwidth
      * @return a WifiMode for OFDM
      */
-    static WifiMode GetOfdmRate(uint64_t rate, MHz_u bw = 20);
+    static WifiMode GetOfdmRate(uint64_t rate, MHz_u bw = MHz_u{20});
     /**
      * Return a WifiMode for OFDM at 6 Mbps.
      *

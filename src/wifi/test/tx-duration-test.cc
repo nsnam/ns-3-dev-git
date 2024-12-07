@@ -253,7 +253,7 @@ TxDurationTest::CheckMuTxDuration(std::list<uint32_t> sizes,
         channelWidth < std::accumulate(
                            std::begin(userInfos),
                            std::end(userInfos),
-                           0,
+                           MHz_u{0},
                            [](const MHz_u prevBw, const HeMuUserInfo& info) {
                                return prevBw + HeRu::GetBandwidth(info.ru.GetRuType());
                            }),
@@ -357,25 +357,25 @@ TxDurationTest::DoRun()
     retval = retval &&
              CheckPayloadDuration(1023,
                                   DsssPhy::GetDsssRate11Mbps(),
-                                  22,
+                                  MHz_u{22},
                                   NanoSeconds(800),
                                   WIFI_PREAMBLE_LONG,
                                   MicroSeconds(744)) &&
              CheckPayloadDuration(1024,
                                   DsssPhy::GetDsssRate11Mbps(),
-                                  22,
+                                  MHz_u{22},
                                   NanoSeconds(800),
                                   WIFI_PREAMBLE_LONG,
                                   MicroSeconds(745)) &&
              CheckPayloadDuration(1025,
                                   DsssPhy::GetDsssRate11Mbps(),
-                                  22,
+                                  MHz_u{22},
                                   NanoSeconds(800),
                                   WIFI_PREAMBLE_LONG,
                                   MicroSeconds(746)) &&
              CheckPayloadDuration(1026,
                                   DsssPhy::GetDsssRate11Mbps(),
-                                  22,
+                                  MHz_u{22},
                                   NanoSeconds(800),
                                   WIFI_PREAMBLE_LONG,
                                   MicroSeconds(747));
@@ -389,193 +389,193 @@ TxDurationTest::DoRun()
     retval = retval &&
              CheckTxDuration(1023,
                              DsssPhy::GetDsssRate11Mbps(),
-                             22,
+                             MHz_u{22},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_SHORT,
                              MicroSeconds(744 + 96)) &&
              CheckTxDuration(1024,
                              DsssPhy::GetDsssRate11Mbps(),
-                             22,
+                             MHz_u{22},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_SHORT,
                              MicroSeconds(745 + 96)) &&
              CheckTxDuration(1025,
                              DsssPhy::GetDsssRate11Mbps(),
-                             22,
+                             MHz_u{22},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_SHORT,
                              MicroSeconds(746 + 96)) &&
              CheckTxDuration(1026,
                              DsssPhy::GetDsssRate11Mbps(),
-                             22,
+                             MHz_u{22},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_SHORT,
                              MicroSeconds(747 + 96)) &&
              CheckTxDuration(1023,
                              DsssPhy::GetDsssRate11Mbps(),
-                             22,
+                             MHz_u{22},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_LONG,
                              MicroSeconds(744 + 192)) &&
              CheckTxDuration(1024,
                              DsssPhy::GetDsssRate11Mbps(),
-                             22,
+                             MHz_u{22},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_LONG,
                              MicroSeconds(745 + 192)) &&
              CheckTxDuration(1025,
                              DsssPhy::GetDsssRate11Mbps(),
-                             22,
+                             MHz_u{22},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_LONG,
                              MicroSeconds(746 + 192)) &&
              CheckTxDuration(1026,
                              DsssPhy::GetDsssRate11Mbps(),
-                             22,
+                             MHz_u{22},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_LONG,
                              MicroSeconds(747 + 192)) &&
              CheckTxDuration(1023,
                              DsssPhy::GetDsssRate5_5Mbps(),
-                             22,
+                             MHz_u{22},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_SHORT,
                              MicroSeconds(1488 + 96)) &&
              CheckTxDuration(1024,
                              DsssPhy::GetDsssRate5_5Mbps(),
-                             22,
+                             MHz_u{22},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_SHORT,
                              MicroSeconds(1490 + 96)) &&
              CheckTxDuration(1025,
                              DsssPhy::GetDsssRate5_5Mbps(),
-                             22,
+                             MHz_u{22},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_SHORT,
                              MicroSeconds(1491 + 96)) &&
              CheckTxDuration(1026,
                              DsssPhy::GetDsssRate5_5Mbps(),
-                             22,
+                             MHz_u{22},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_SHORT,
                              MicroSeconds(1493 + 96)) &&
              CheckTxDuration(1023,
                              DsssPhy::GetDsssRate5_5Mbps(),
-                             22,
+                             MHz_u{22},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_LONG,
                              MicroSeconds(1488 + 192)) &&
              CheckTxDuration(1024,
                              DsssPhy::GetDsssRate5_5Mbps(),
-                             22,
+                             MHz_u{22},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_LONG,
                              MicroSeconds(1490 + 192)) &&
              CheckTxDuration(1025,
                              DsssPhy::GetDsssRate5_5Mbps(),
-                             22,
+                             MHz_u{22},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_LONG,
                              MicroSeconds(1491 + 192)) &&
              CheckTxDuration(1026,
                              DsssPhy::GetDsssRate5_5Mbps(),
-                             22,
+                             MHz_u{22},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_LONG,
                              MicroSeconds(1493 + 192)) &&
              CheckTxDuration(1023,
                              DsssPhy::GetDsssRate2Mbps(),
-                             22,
+                             MHz_u{22},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_SHORT,
                              MicroSeconds(4092 + 96)) &&
              CheckTxDuration(1024,
                              DsssPhy::GetDsssRate2Mbps(),
-                             22,
+                             MHz_u{22},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_SHORT,
                              MicroSeconds(4096 + 96)) &&
              CheckTxDuration(1025,
                              DsssPhy::GetDsssRate2Mbps(),
-                             22,
+                             MHz_u{22},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_SHORT,
                              MicroSeconds(4100 + 96)) &&
              CheckTxDuration(1026,
                              DsssPhy::GetDsssRate2Mbps(),
-                             22,
+                             MHz_u{22},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_SHORT,
                              MicroSeconds(4104 + 96)) &&
              CheckTxDuration(1023,
                              DsssPhy::GetDsssRate2Mbps(),
-                             22,
+                             MHz_u{22},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_LONG,
                              MicroSeconds(4092 + 192)) &&
              CheckTxDuration(1024,
                              DsssPhy::GetDsssRate2Mbps(),
-                             22,
+                             MHz_u{22},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_LONG,
                              MicroSeconds(4096 + 192)) &&
              CheckTxDuration(1025,
                              DsssPhy::GetDsssRate2Mbps(),
-                             22,
+                             MHz_u{22},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_LONG,
                              MicroSeconds(4100 + 192)) &&
              CheckTxDuration(1026,
                              DsssPhy::GetDsssRate2Mbps(),
-                             22,
+                             MHz_u{22},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_LONG,
                              MicroSeconds(4104 + 192)) &&
              CheckTxDuration(1023,
                              DsssPhy::GetDsssRate1Mbps(),
-                             22,
+                             MHz_u{22},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_SHORT,
                              MicroSeconds(8184 + 192)) &&
              CheckTxDuration(1024,
                              DsssPhy::GetDsssRate1Mbps(),
-                             22,
+                             MHz_u{22},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_SHORT,
                              MicroSeconds(8192 + 192)) &&
              CheckTxDuration(1025,
                              DsssPhy::GetDsssRate1Mbps(),
-                             22,
+                             MHz_u{22},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_SHORT,
                              MicroSeconds(8200 + 192)) &&
              CheckTxDuration(1026,
                              DsssPhy::GetDsssRate1Mbps(),
-                             22,
+                             MHz_u{22},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_SHORT,
                              MicroSeconds(8208 + 192)) &&
              CheckTxDuration(1023,
                              DsssPhy::GetDsssRate1Mbps(),
-                             22,
+                             MHz_u{22},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_LONG,
                              MicroSeconds(8184 + 192)) &&
              CheckTxDuration(1024,
                              DsssPhy::GetDsssRate1Mbps(),
-                             22,
+                             MHz_u{22},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_LONG,
                              MicroSeconds(8192 + 192)) &&
              CheckTxDuration(1025,
                              DsssPhy::GetDsssRate1Mbps(),
-                             22,
+                             MHz_u{22},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_LONG,
                              MicroSeconds(8200 + 192)) &&
              CheckTxDuration(1026,
                              DsssPhy::GetDsssRate1Mbps(),
-                             22,
+                             MHz_u{22},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_LONG,
                              MicroSeconds(8208 + 192));
@@ -584,7 +584,7 @@ TxDurationTest::DoRun()
     // https://web.archive.org/web/20100711002639/http://mailman.isi.edu/pipermail/ns-developers/2009-July/006226.html
     retval = retval && CheckTxDuration(14,
                                        DsssPhy::GetDsssRate1Mbps(),
-                                       22,
+                                       MHz_u{22},
                                        NanoSeconds(800),
                                        WIFI_PREAMBLE_LONG,
                                        MicroSeconds(304));
@@ -593,19 +593,19 @@ TxDurationTest::DoRun()
     retval = retval &&
              CheckTxDuration(1536,
                              DsssPhy::GetDsssRate11Mbps(),
-                             22,
+                             MHz_u{22},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_LONG,
                              MicroSeconds(1310)) &&
              CheckTxDuration(76,
                              DsssPhy::GetDsssRate11Mbps(),
-                             22,
+                             MHz_u{22},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_LONG,
                              MicroSeconds(248)) &&
              CheckTxDuration(14,
                              DsssPhy::GetDsssRate11Mbps(),
-                             22,
+                             MHz_u{22},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_LONG,
                              MicroSeconds(203));
@@ -617,19 +617,19 @@ TxDurationTest::DoRun()
     retval = retval &&
              CheckTxDuration(1536,
                              OfdmPhy::GetOfdmRate54Mbps(),
-                             20,
+                             MHz_u{20},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_LONG,
                              MicroSeconds(248)) &&
              CheckTxDuration(76,
                              OfdmPhy::GetOfdmRate54Mbps(),
-                             20,
+                             MHz_u{20},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_LONG,
                              MicroSeconds(32)) &&
              CheckTxDuration(14,
                              OfdmPhy::GetOfdmRate54Mbps(),
-                             20,
+                             MHz_u{20},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_LONG,
                              MicroSeconds(24));
@@ -640,19 +640,19 @@ TxDurationTest::DoRun()
     retval = retval &&
              CheckTxDuration(1536,
                              ErpOfdmPhy::GetErpOfdmRate54Mbps(),
-                             20,
+                             MHz_u{20},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_LONG,
                              MicroSeconds(254)) &&
              CheckTxDuration(76,
                              ErpOfdmPhy::GetErpOfdmRate54Mbps(),
-                             20,
+                             MHz_u{20},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_LONG,
                              MicroSeconds(38)) &&
              CheckTxDuration(14,
                              ErpOfdmPhy::GetErpOfdmRate54Mbps(),
-                             20,
+                             MHz_u{20},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_LONG,
                              MicroSeconds(30));
@@ -663,91 +663,91 @@ TxDurationTest::DoRun()
     retval = retval &&
              CheckTxDuration(1536,
                              HtPhy::GetHtMcs7(),
-                             20,
+                             MHz_u{20},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_HT_MF,
                              MicroSeconds(228)) &&
              CheckTxDuration(76,
                              HtPhy::GetHtMcs7(),
-                             20,
+                             MHz_u{20},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_HT_MF,
                              MicroSeconds(48)) &&
              CheckTxDuration(14,
                              HtPhy::GetHtMcs7(),
-                             20,
+                             MHz_u{20},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_HT_MF,
                              MicroSeconds(40)) &&
              CheckTxDuration(1536,
                              HtPhy::GetHtMcs0(),
-                             20,
+                             MHz_u{20},
                              NanoSeconds(400),
                              WIFI_PREAMBLE_HT_MF,
                              NanoSeconds(1742400)) &&
              CheckTxDuration(76,
                              HtPhy::GetHtMcs0(),
-                             20,
+                             MHz_u{20},
                              NanoSeconds(400),
                              WIFI_PREAMBLE_HT_MF,
                              MicroSeconds(126)) &&
              CheckTxDuration(14,
                              HtPhy::GetHtMcs0(),
-                             20,
+                             MHz_u{20},
                              NanoSeconds(400),
                              WIFI_PREAMBLE_HT_MF,
                              NanoSeconds(57600)) &&
              CheckTxDuration(1536,
                              HtPhy::GetHtMcs6(),
-                             20,
+                             MHz_u{20},
                              NanoSeconds(400),
                              WIFI_PREAMBLE_HT_MF,
                              NanoSeconds(226800)) &&
              CheckTxDuration(76,
                              HtPhy::GetHtMcs6(),
-                             20,
+                             MHz_u{20},
                              NanoSeconds(400),
                              WIFI_PREAMBLE_HT_MF,
                              NanoSeconds(46800)) &&
              CheckTxDuration(14,
                              HtPhy::GetHtMcs6(),
-                             20,
+                             MHz_u{20},
                              NanoSeconds(400),
                              WIFI_PREAMBLE_HT_MF,
                              NanoSeconds(39600)) &&
              CheckTxDuration(1536,
                              HtPhy::GetHtMcs7(),
-                             40,
+                             MHz_u{40},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_HT_MF,
                              MicroSeconds(128)) &&
              CheckTxDuration(76,
                              HtPhy::GetHtMcs7(),
-                             40,
+                             MHz_u{40},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_HT_MF,
                              MicroSeconds(44)) &&
              CheckTxDuration(14,
                              HtPhy::GetHtMcs7(),
-                             40,
+                             MHz_u{40},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_HT_MF,
                              MicroSeconds(40)) &&
              CheckTxDuration(1536,
                              HtPhy::GetHtMcs7(),
-                             40,
+                             MHz_u{40},
                              NanoSeconds(400),
                              WIFI_PREAMBLE_HT_MF,
                              NanoSeconds(118800)) &&
              CheckTxDuration(76,
                              HtPhy::GetHtMcs7(),
-                             40,
+                             MHz_u{40},
                              NanoSeconds(400),
                              WIFI_PREAMBLE_HT_MF,
                              NanoSeconds(43200)) &&
              CheckTxDuration(14,
                              HtPhy::GetHtMcs7(),
-                             40,
+                             MHz_u{40},
                              NanoSeconds(400),
                              WIFI_PREAMBLE_HT_MF,
                              NanoSeconds(39600));
@@ -758,181 +758,181 @@ TxDurationTest::DoRun()
     retval = retval &&
              CheckTxDuration(1536,
                              VhtPhy::GetVhtMcs8(),
-                             20,
+                             MHz_u{20},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_VHT_SU,
                              MicroSeconds(196)) &&
              CheckTxDuration(76,
                              VhtPhy::GetVhtMcs8(),
-                             20,
+                             MHz_u{20},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_VHT_SU,
                              MicroSeconds(48)) &&
              CheckTxDuration(14,
                              VhtPhy::GetVhtMcs8(),
-                             20,
+                             MHz_u{20},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_VHT_SU,
                              MicroSeconds(40)) &&
              CheckTxDuration(1536,
                              VhtPhy::GetVhtMcs8(),
-                             20,
+                             MHz_u{20},
                              NanoSeconds(400),
                              WIFI_PREAMBLE_VHT_SU,
                              MicroSeconds(180)) &&
              CheckTxDuration(76,
                              VhtPhy::GetVhtMcs8(),
-                             20,
+                             MHz_u{20},
                              NanoSeconds(400),
                              WIFI_PREAMBLE_VHT_SU,
                              NanoSeconds(46800)) &&
              CheckTxDuration(14,
                              VhtPhy::GetVhtMcs8(),
-                             20,
+                             MHz_u{20},
                              NanoSeconds(400),
                              WIFI_PREAMBLE_VHT_SU,
                              NanoSeconds(39600)) &&
              CheckTxDuration(1536,
                              VhtPhy::GetVhtMcs9(),
-                             40,
+                             MHz_u{40},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_VHT_SU,
                              MicroSeconds(108)) &&
              CheckTxDuration(76,
                              VhtPhy::GetVhtMcs9(),
-                             40,
+                             MHz_u{40},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_VHT_SU,
                              MicroSeconds(40)) &&
              CheckTxDuration(14,
                              VhtPhy::GetVhtMcs9(),
-                             40,
+                             MHz_u{40},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_VHT_SU,
                              MicroSeconds(40)) &&
              CheckTxDuration(1536,
                              VhtPhy::GetVhtMcs9(),
-                             40,
+                             MHz_u{40},
                              NanoSeconds(400),
                              WIFI_PREAMBLE_VHT_SU,
                              NanoSeconds(100800)) &&
              CheckTxDuration(76,
                              VhtPhy::GetVhtMcs9(),
-                             40,
+                             MHz_u{40},
                              NanoSeconds(400),
                              WIFI_PREAMBLE_VHT_SU,
                              NanoSeconds(39600)) &&
              CheckTxDuration(14,
                              VhtPhy::GetVhtMcs9(),
-                             40,
+                             MHz_u{40},
                              NanoSeconds(400),
                              WIFI_PREAMBLE_VHT_SU,
                              NanoSeconds(39600)) &&
              CheckTxDuration(1536,
                              VhtPhy::GetVhtMcs0(),
-                             80,
+                             MHz_u{80},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_VHT_SU,
                              MicroSeconds(460)) &&
              CheckTxDuration(76,
                              VhtPhy::GetVhtMcs0(),
-                             80,
+                             MHz_u{80},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_VHT_SU,
                              MicroSeconds(60)) &&
              CheckTxDuration(14,
                              VhtPhy::GetVhtMcs0(),
-                             80,
+                             MHz_u{80},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_VHT_SU,
                              MicroSeconds(44)) &&
              CheckTxDuration(1536,
                              VhtPhy::GetVhtMcs0(),
-                             80,
+                             MHz_u{80},
                              NanoSeconds(400),
                              WIFI_PREAMBLE_VHT_SU,
                              NanoSeconds(417600)) &&
              CheckTxDuration(76,
                              VhtPhy::GetVhtMcs0(),
-                             80,
+                             MHz_u{80},
                              NanoSeconds(400),
                              WIFI_PREAMBLE_VHT_SU,
                              NanoSeconds(57600)) &&
              CheckTxDuration(14,
                              VhtPhy::GetVhtMcs0(),
-                             80,
+                             MHz_u{80},
                              NanoSeconds(400),
                              WIFI_PREAMBLE_VHT_SU,
                              NanoSeconds(43200)) &&
              CheckTxDuration(1536,
                              VhtPhy::GetVhtMcs9(),
-                             80,
+                             MHz_u{80},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_VHT_SU,
                              MicroSeconds(68)) &&
              CheckTxDuration(76,
                              VhtPhy::GetVhtMcs9(),
-                             80,
+                             MHz_u{80},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_VHT_SU,
                              MicroSeconds(40)) &&
              CheckTxDuration(14,
                              VhtPhy::GetVhtMcs9(),
-                             80,
+                             MHz_u{80},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_VHT_SU,
                              MicroSeconds(40)) &&
              CheckTxDuration(1536,
                              VhtPhy::GetVhtMcs9(),
-                             80,
+                             MHz_u{80},
                              NanoSeconds(400),
                              WIFI_PREAMBLE_VHT_SU,
                              NanoSeconds(64800)) &&
              CheckTxDuration(76,
                              VhtPhy::GetVhtMcs9(),
-                             80,
+                             MHz_u{80},
                              NanoSeconds(400),
                              WIFI_PREAMBLE_VHT_SU,
                              NanoSeconds(39600)) &&
              CheckTxDuration(14,
                              VhtPhy::GetVhtMcs9(),
-                             80,
+                             MHz_u{80},
                              NanoSeconds(400),
                              WIFI_PREAMBLE_VHT_SU,
                              NanoSeconds(39600)) &&
              CheckTxDuration(1536,
                              VhtPhy::GetVhtMcs8(),
-                             160,
+                             MHz_u{160},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_VHT_SU,
                              MicroSeconds(56)) &&
              CheckTxDuration(76,
                              VhtPhy::GetVhtMcs8(),
-                             160,
+                             MHz_u{160},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_VHT_SU,
                              MicroSeconds(40)) &&
              CheckTxDuration(14,
                              VhtPhy::GetVhtMcs8(),
-                             160,
+                             MHz_u{160},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_VHT_SU,
                              MicroSeconds(40)) &&
              CheckTxDuration(1536,
                              VhtPhy::GetVhtMcs8(),
-                             160,
+                             MHz_u{160},
                              NanoSeconds(400),
                              WIFI_PREAMBLE_VHT_SU,
                              MicroSeconds(54)) &&
              CheckTxDuration(76,
                              VhtPhy::GetVhtMcs8(),
-                             160,
+                             MHz_u{160},
                              NanoSeconds(400),
                              WIFI_PREAMBLE_VHT_SU,
                              NanoSeconds(39600)) &&
              CheckTxDuration(14,
                              VhtPhy::GetVhtMcs8(),
-                             160,
+                             MHz_u{160},
                              NanoSeconds(400),
                              WIFI_PREAMBLE_VHT_SU,
                              NanoSeconds(39600));
@@ -943,433 +943,433 @@ TxDurationTest::DoRun()
     retval = retval &&
              CheckTxDuration(1536,
                              HePhy::GetHeMcs0(),
-                             20,
+                             MHz_u{20},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_HE_SU,
                              NanoSeconds(1485600)) &&
              CheckTxDuration(76,
                              HePhy::GetHeMcs0(),
-                             20,
+                             MHz_u{20},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_HE_SU,
                              NanoSeconds(125600)) &&
              CheckTxDuration(14,
                              HePhy::GetHeMcs0(),
-                             20,
+                             MHz_u{20},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_HE_SU,
                              NanoSeconds(71200)) &&
              CheckTxDuration(1536,
                              HePhy::GetHeMcs0(),
-                             40,
+                             MHz_u{40},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_HE_SU,
                              NanoSeconds(764800)) &&
              CheckTxDuration(76,
                              HePhy::GetHeMcs0(),
-                             40,
+                             MHz_u{40},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_HE_SU,
                              NanoSeconds(84800)) &&
              CheckTxDuration(14,
                              HePhy::GetHeMcs0(),
-                             40,
+                             MHz_u{40},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_HE_SU,
                              NanoSeconds(57600)) &&
              CheckTxDuration(1536,
                              HePhy::GetHeMcs0(),
-                             80,
+                             MHz_u{80},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_HE_SU,
                              NanoSeconds(397600)) &&
              CheckTxDuration(76,
                              HePhy::GetHeMcs0(),
-                             80,
+                             MHz_u{80},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_HE_SU,
                              NanoSeconds(71200)) &&
              CheckTxDuration(14,
                              HePhy::GetHeMcs0(),
-                             80,
+                             MHz_u{80},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_HE_SU,
                              NanoSeconds(57600)) &&
              CheckTxDuration(1536,
                              HePhy::GetHeMcs0(),
-                             160,
+                             MHz_u{160},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_HE_SU,
                              NanoSeconds(220800)) &&
              CheckTxDuration(76,
                              HePhy::GetHeMcs0(),
-                             160,
+                             MHz_u{160},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_HE_SU,
                              NanoSeconds(57600)) &&
              CheckTxDuration(14,
                              HePhy::GetHeMcs0(),
-                             160,
+                             MHz_u{160},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_HE_SU,
                              NanoSeconds(57600)) &&
              CheckTxDuration(1536,
                              HePhy::GetHeMcs0(),
-                             20,
+                             MHz_u{20},
                              NanoSeconds(1600),
                              WIFI_PREAMBLE_HE_SU,
                              NanoSeconds(1570400)) &&
              CheckTxDuration(76,
                              HePhy::GetHeMcs0(),
-                             20,
+                             MHz_u{20},
                              NanoSeconds(1600),
                              WIFI_PREAMBLE_HE_SU,
                              NanoSeconds(130400)) &&
              CheckTxDuration(14,
                              HePhy::GetHeMcs0(),
-                             20,
+                             MHz_u{20},
                              NanoSeconds(1600),
                              WIFI_PREAMBLE_HE_SU,
                              NanoSeconds(72800)) &&
              CheckTxDuration(1536,
                              HePhy::GetHeMcs0(),
-                             40,
+                             MHz_u{40},
                              NanoSeconds(1600),
                              WIFI_PREAMBLE_HE_SU,
                              NanoSeconds(807200)) &&
              CheckTxDuration(76,
                              HePhy::GetHeMcs0(),
-                             40,
+                             MHz_u{40},
                              NanoSeconds(1600),
                              WIFI_PREAMBLE_HE_SU,
                              NanoSeconds(87200)) &&
              CheckTxDuration(14,
                              HePhy::GetHeMcs0(),
-                             40,
+                             MHz_u{40},
                              NanoSeconds(1600),
                              WIFI_PREAMBLE_HE_SU,
                              NanoSeconds(58400)) &&
              CheckTxDuration(1536,
                              HePhy::GetHeMcs0(),
-                             80,
+                             MHz_u{80},
                              NanoSeconds(1600),
                              WIFI_PREAMBLE_HE_SU,
                              NanoSeconds(418400)) &&
              CheckTxDuration(76,
                              HePhy::GetHeMcs0(),
-                             80,
+                             MHz_u{80},
                              NanoSeconds(1600),
                              WIFI_PREAMBLE_HE_SU,
                              NanoSeconds(72800)) &&
              CheckTxDuration(14,
                              HePhy::GetHeMcs0(),
-                             80,
+                             MHz_u{80},
                              NanoSeconds(1600),
                              WIFI_PREAMBLE_HE_SU,
                              NanoSeconds(58400)) &&
              CheckTxDuration(1536,
                              HePhy::GetHeMcs0(),
-                             160,
+                             MHz_u{160},
                              NanoSeconds(1600),
                              WIFI_PREAMBLE_HE_SU,
                              NanoSeconds(231200)) &&
              CheckTxDuration(76,
                              HePhy::GetHeMcs0(),
-                             160,
+                             MHz_u{160},
                              NanoSeconds(1600),
                              WIFI_PREAMBLE_HE_SU,
                              NanoSeconds(58400)) &&
              CheckTxDuration(14,
                              HePhy::GetHeMcs0(),
-                             160,
+                             MHz_u{160},
                              NanoSeconds(1600),
                              WIFI_PREAMBLE_HE_SU,
                              NanoSeconds(58400)) &&
              CheckTxDuration(1536,
                              HePhy::GetHeMcs0(),
-                             20,
+                             MHz_u{20},
                              NanoSeconds(3200),
                              WIFI_PREAMBLE_HE_SU,
                              MicroSeconds(1740)) &&
              CheckTxDuration(76,
                              HePhy::GetHeMcs0(),
-                             20,
+                             MHz_u{20},
                              NanoSeconds(3200),
                              WIFI_PREAMBLE_HE_SU,
                              MicroSeconds(140)) &&
              CheckTxDuration(14,
                              HePhy::GetHeMcs0(),
-                             20,
+                             MHz_u{20},
                              NanoSeconds(3200),
                              WIFI_PREAMBLE_HE_SU,
                              MicroSeconds(76)) &&
              CheckTxDuration(1536,
                              HePhy::GetHeMcs0(),
-                             40,
+                             MHz_u{40},
                              NanoSeconds(3200),
                              WIFI_PREAMBLE_HE_SU,
                              MicroSeconds(892)) &&
              CheckTxDuration(76,
                              HePhy::GetHeMcs0(),
-                             40,
+                             MHz_u{40},
                              NanoSeconds(3200),
                              WIFI_PREAMBLE_HE_SU,
                              MicroSeconds(92)) &&
              CheckTxDuration(14,
                              HePhy::GetHeMcs0(),
-                             40,
+                             MHz_u{40},
                              NanoSeconds(3200),
                              WIFI_PREAMBLE_HE_SU,
                              MicroSeconds(60)) &&
              CheckTxDuration(1536,
                              HePhy::GetHeMcs0(),
-                             80,
+                             MHz_u{80},
                              NanoSeconds(3200),
                              WIFI_PREAMBLE_HE_SU,
                              MicroSeconds(460)) &&
              CheckTxDuration(76,
                              HePhy::GetHeMcs0(),
-                             80,
+                             MHz_u{80},
                              NanoSeconds(3200),
                              WIFI_PREAMBLE_HE_SU,
                              MicroSeconds(76)) &&
              CheckTxDuration(14,
                              HePhy::GetHeMcs0(),
-                             80,
+                             MHz_u{80},
                              NanoSeconds(3200),
                              WIFI_PREAMBLE_HE_SU,
                              MicroSeconds(60)) &&
              CheckTxDuration(1536,
                              HePhy::GetHeMcs0(),
-                             160,
+                             MHz_u{160},
                              NanoSeconds(3200),
                              WIFI_PREAMBLE_HE_SU,
                              MicroSeconds(252)) &&
              CheckTxDuration(76,
                              HePhy::GetHeMcs0(),
-                             160,
+                             MHz_u{160},
                              NanoSeconds(3200),
                              WIFI_PREAMBLE_HE_SU,
                              MicroSeconds(60)) &&
              CheckTxDuration(14,
                              HePhy::GetHeMcs0(),
-                             160,
+                             MHz_u{160},
                              NanoSeconds(3200),
                              WIFI_PREAMBLE_HE_SU,
                              MicroSeconds(60)) &&
              CheckTxDuration(1536,
                              HePhy::GetHeMcs11(),
-                             20,
+                             MHz_u{20},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_HE_SU,
                              NanoSeconds(139200)) &&
              CheckTxDuration(76,
                              HePhy::GetHeMcs11(),
-                             20,
+                             MHz_u{20},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_HE_SU,
                              NanoSeconds(57600)) &&
              CheckTxDuration(14,
                              HePhy::GetHeMcs11(),
-                             20,
+                             MHz_u{20},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_HE_SU,
                              NanoSeconds(57600)) &&
              CheckTxDuration(1536,
                              HePhy::GetHeMcs11(),
-                             40,
+                             MHz_u{40},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_HE_SU,
                              NanoSeconds(98400)) &&
              CheckTxDuration(76,
                              HePhy::GetHeMcs11(),
-                             40,
+                             MHz_u{40},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_HE_SU,
                              NanoSeconds(57600)) &&
              CheckTxDuration(14,
                              HePhy::GetHeMcs11(),
-                             40,
+                             MHz_u{40},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_HE_SU,
                              NanoSeconds(57600)) &&
              CheckTxDuration(1536,
                              HePhy::GetHeMcs11(),
-                             80,
+                             MHz_u{80},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_HE_SU,
                              NanoSeconds(71200)) &&
              CheckTxDuration(76,
                              HePhy::GetHeMcs11(),
-                             80,
+                             MHz_u{80},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_HE_SU,
                              NanoSeconds(57600)) &&
              CheckTxDuration(14,
                              HePhy::GetHeMcs11(),
-                             80,
+                             MHz_u{80},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_HE_SU,
                              NanoSeconds(57600)) &&
              CheckTxDuration(1536,
                              HePhy::GetHeMcs11(),
-                             160,
+                             MHz_u{160},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_HE_SU,
                              NanoSeconds(57600)) &&
              CheckTxDuration(76,
                              HePhy::GetHeMcs11(),
-                             160,
+                             MHz_u{160},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_HE_SU,
                              NanoSeconds(57600)) &&
              CheckTxDuration(14,
                              HePhy::GetHeMcs11(),
-                             160,
+                             MHz_u{160},
                              NanoSeconds(800),
                              WIFI_PREAMBLE_HE_SU,
                              NanoSeconds(57600)) &&
              CheckTxDuration(1536,
                              HePhy::GetHeMcs11(),
-                             20,
+                             MHz_u{20},
                              NanoSeconds(1600),
                              WIFI_PREAMBLE_HE_SU,
                              NanoSeconds(144800)) &&
              CheckTxDuration(76,
                              HePhy::GetHeMcs11(),
-                             20,
+                             MHz_u{20},
                              NanoSeconds(1600),
                              WIFI_PREAMBLE_HE_SU,
                              NanoSeconds(58400)) &&
              CheckTxDuration(14,
                              HePhy::GetHeMcs11(),
-                             20,
+                             MHz_u{20},
                              NanoSeconds(1600),
                              WIFI_PREAMBLE_HE_SU,
                              NanoSeconds(58400)) &&
              CheckTxDuration(1536,
                              HePhy::GetHeMcs11(),
-                             40,
+                             MHz_u{40},
                              NanoSeconds(1600),
                              WIFI_PREAMBLE_HE_SU,
                              NanoSeconds(101600)) &&
              CheckTxDuration(76,
                              HePhy::GetHeMcs11(),
-                             40,
+                             MHz_u{40},
                              NanoSeconds(1600),
                              WIFI_PREAMBLE_HE_SU,
                              NanoSeconds(58400)) &&
              CheckTxDuration(14,
                              HePhy::GetHeMcs11(),
-                             40,
+                             MHz_u{40},
                              NanoSeconds(1600),
                              WIFI_PREAMBLE_HE_SU,
                              NanoSeconds(58400)) &&
              CheckTxDuration(1536,
                              HePhy::GetHeMcs11(),
-                             80,
+                             MHz_u{80},
                              NanoSeconds(1600),
                              WIFI_PREAMBLE_HE_SU,
                              NanoSeconds(72800)) &&
              CheckTxDuration(76,
                              HePhy::GetHeMcs11(),
-                             80,
+                             MHz_u{80},
                              NanoSeconds(1600),
                              WIFI_PREAMBLE_HE_SU,
                              NanoSeconds(58400)) &&
              CheckTxDuration(14,
                              HePhy::GetHeMcs11(),
-                             80,
+                             MHz_u{80},
                              NanoSeconds(1600),
                              WIFI_PREAMBLE_HE_SU,
                              NanoSeconds(58400)) &&
              CheckTxDuration(1536,
                              HePhy::GetHeMcs11(),
-                             160,
+                             MHz_u{160},
                              NanoSeconds(1600),
                              WIFI_PREAMBLE_HE_SU,
                              NanoSeconds(58400)) &&
              CheckTxDuration(76,
                              HePhy::GetHeMcs11(),
-                             160,
+                             MHz_u{160},
                              NanoSeconds(1600),
                              WIFI_PREAMBLE_HE_SU,
                              NanoSeconds(58400)) &&
              CheckTxDuration(14,
                              HePhy::GetHeMcs11(),
-                             160,
+                             MHz_u{160},
                              NanoSeconds(1600),
                              WIFI_PREAMBLE_HE_SU,
                              NanoSeconds(58400)) &&
              CheckTxDuration(1536,
                              HePhy::GetHeMcs11(),
-                             20,
+                             MHz_u{20},
                              NanoSeconds(3200),
                              WIFI_PREAMBLE_HE_SU,
                              MicroSeconds(156)) &&
              CheckTxDuration(76,
                              HePhy::GetHeMcs11(),
-                             20,
+                             MHz_u{20},
                              NanoSeconds(3200),
                              WIFI_PREAMBLE_HE_SU,
                              MicroSeconds(60)) &&
              CheckTxDuration(14,
                              HePhy::GetHeMcs11(),
-                             20,
+                             MHz_u{20},
                              NanoSeconds(3200),
                              WIFI_PREAMBLE_HE_SU,
                              MicroSeconds(60)) &&
              CheckTxDuration(1536,
                              HePhy::GetHeMcs11(),
-                             40,
+                             MHz_u{40},
                              NanoSeconds(3200),
                              WIFI_PREAMBLE_HE_SU,
                              MicroSeconds(108)) &&
              CheckTxDuration(76,
                              HePhy::GetHeMcs11(),
-                             40,
+                             MHz_u{40},
                              NanoSeconds(3200),
                              WIFI_PREAMBLE_HE_SU,
                              MicroSeconds(60)) &&
              CheckTxDuration(14,
                              HePhy::GetHeMcs11(),
-                             40,
+                             MHz_u{40},
                              NanoSeconds(3200),
                              WIFI_PREAMBLE_HE_SU,
                              MicroSeconds(60)) &&
              CheckTxDuration(1536,
                              HePhy::GetHeMcs11(),
-                             80,
+                             MHz_u{80},
                              NanoSeconds(3200),
                              WIFI_PREAMBLE_HE_SU,
                              MicroSeconds(76)) &&
              CheckTxDuration(76,
                              HePhy::GetHeMcs11(),
-                             80,
+                             MHz_u{80},
                              NanoSeconds(3200),
                              WIFI_PREAMBLE_HE_SU,
                              MicroSeconds(60)) &&
              CheckTxDuration(14,
                              HePhy::GetHeMcs11(),
-                             80,
+                             MHz_u{80},
                              NanoSeconds(3200),
                              WIFI_PREAMBLE_HE_SU,
                              MicroSeconds(60)) &&
              CheckTxDuration(1536,
                              HePhy::GetHeMcs11(),
-                             160,
+                             MHz_u{160},
                              NanoSeconds(3200),
                              WIFI_PREAMBLE_HE_SU,
                              MicroSeconds(60)) &&
              CheckTxDuration(76,
                              HePhy::GetHeMcs11(),
-                             160,
+                             MHz_u{160},
                              NanoSeconds(3200),
                              WIFI_PREAMBLE_HE_SU,
                              MicroSeconds(60)) &&
              CheckTxDuration(14,
                              HePhy::GetHeMcs11(),
-                             160,
+                             MHz_u{160},
                              NanoSeconds(3200),
                              WIFI_PREAMBLE_HE_SU,
                              MicroSeconds(60));
@@ -1382,7 +1382,7 @@ TxDurationTest::DoRun()
                  std::list<uint32_t>{1536, 1536},
                  std::list<HeMuUserInfo>{{{HeRu::RU_242_TONE, 1, true}, 0, 1},
                                          {{HeRu::RU_242_TONE, 2, true}, 0, 1}},
-                 40,
+                 MHz_u{40},
                  NanoSeconds(800),
                  WIFI_PREAMBLE_HE_MU,
                  NanoSeconds(
@@ -1390,14 +1390,14 @@ TxDurationTest::DoRun()
              && CheckMuTxDuration(std::list<uint32_t>{1536, 1536},
                                   std::list<HeMuUserInfo>{{{HeRu::RU_242_TONE, 1, true}, 1, 1},
                                                           {{HeRu::RU_242_TONE, 2, true}, 0, 1}},
-                                  40,
+                                  MHz_u{40},
                                   NanoSeconds(800),
                                   WIFI_PREAMBLE_HE_MU,
                                   NanoSeconds(1493600)) // shouldn't change if first PSDU is shorter
              && CheckMuTxDuration(std::list<uint32_t>{1536, 76},
                                   std::list<HeMuUserInfo>{{{HeRu::RU_242_TONE, 1, true}, 0, 1},
                                                           {{HeRu::RU_242_TONE, 2, true}, 0, 1}},
-                                  40,
+                                  MHz_u{40},
                                   NanoSeconds(800),
                                   WIFI_PREAMBLE_HE_MU,
                                   NanoSeconds(1493600));
@@ -1409,21 +1409,21 @@ TxDurationTest::DoRun()
              CheckMuTxDuration(std::list<uint32_t>{1536, 1536},
                                std::list<HeMuUserInfo>{{{HeRu::RU_242_TONE, 1, true}, 0, 1},
                                                        {{HeRu::RU_242_TONE, 2, true}, 0, 1}},
-                               40,
+                               MHz_u{40},
                                NanoSeconds(800),
                                WIFI_PREAMBLE_EHT_MU,
                                NanoSeconds(1493600)) // equivalent to 802.11ax MU
              && CheckMuTxDuration(std::list<uint32_t>{1536, 1536},
                                   std::list<HeMuUserInfo>{{{HeRu::RU_242_TONE, 1, true}, 1, 1},
                                                           {{HeRu::RU_242_TONE, 2, true}, 0, 1}},
-                                  40,
+                                  MHz_u{40},
                                   NanoSeconds(800),
                                   WIFI_PREAMBLE_EHT_MU,
                                   NanoSeconds(1493600)) // shouldn't change if first PSDU is shorter
              && CheckMuTxDuration(std::list<uint32_t>{1536, 76},
                                   std::list<HeMuUserInfo>{{{HeRu::RU_242_TONE, 1, true}, 0, 1},
                                                           {{HeRu::RU_242_TONE, 2, true}, 0, 1}},
-                                  40,
+                                  MHz_u{40},
                                   NanoSeconds(800),
                                   WIFI_PREAMBLE_EHT_MU,
                                   NanoSeconds(1493600));
@@ -1662,7 +1662,7 @@ PhyHeaderSectionsTest::DoRun()
     // 11b (HR/DSSS)
     phyEntity = Create<DsssPhy>();
     txVector.SetMode(DsssPhy::GetDsssRate1Mbps());
-    txVector.SetChannelWidth(22);
+    txVector.SetChannelWidth(MHz_u{22});
 
     // -> long PPDU format
     txVector.SetPreambleType(WIFI_PREAMBLE_LONG);
@@ -1704,7 +1704,7 @@ PhyHeaderSectionsTest::DoRun()
     {
         phyEntity = Create<OfdmPhy>(variant.first);
         std::size_t ratio = variant.second;
-        MHz_u bw = 20 / ratio;
+        const auto bw = MHz_u{20} / ratio;
         txVector.SetChannelWidth(bw);
         txVector.SetMode(OfdmPhy::GetOfdmRate(12000000 / ratio, bw));
         nonHtMode = OfdmPhy::GetOfdmRate(6000000 / ratio, bw);
@@ -1721,7 +1721,7 @@ PhyHeaderSectionsTest::DoRun()
     // ==================================================================================
     // 11g (ERP-OFDM)
     phyEntity = Create<ErpOfdmPhy>();
-    txVector.SetChannelWidth(20);
+    txVector.SetChannelWidth(MHz_u{20});
     txVector.SetMode(ErpOfdmPhy::GetErpOfdmRate(54000000));
     nonHtMode = ErpOfdmPhy::GetErpOfdmRate6Mbps();
     sections = {
@@ -1734,7 +1734,7 @@ PhyHeaderSectionsTest::DoRun()
     // ==================================================================================
     // 11n (HT)
     phyEntity = Create<HtPhy>(4);
-    txVector.SetChannelWidth(20);
+    txVector.SetChannelWidth(MHz_u{20});
     txVector.SetMode(HtPhy::GetHtMcs6());
     nonHtMode = OfdmPhy::GetOfdmRate6Mbps();
     WifiMode htSigMode = nonHtMode;
@@ -1754,7 +1754,7 @@ PhyHeaderSectionsTest::DoRun()
           htSigMode}},
     };
     CheckPhyHeaderSections(phyEntity->GetPhyHeaderSections(txVector, ppduStart), sections);
-    txVector.SetChannelWidth(20); // shouldn't have any impact
+    txVector.SetChannelWidth(MHz_u{20}); // shouldn't have any impact
     CheckPhyHeaderSections(phyEntity->GetPhyHeaderSections(txVector, ppduStart), sections);
 
     // -> HT-mixed format for 3 SS and 1 ESS
@@ -1769,7 +1769,7 @@ PhyHeaderSectionsTest::DoRun()
     // ==================================================================================
     // 11ac (VHT)
     phyEntity = Create<VhtPhy>();
-    txVector.SetChannelWidth(20);
+    txVector.SetChannelWidth(MHz_u{20});
     txVector.SetNess(0);
     txVector.SetMode(VhtPhy::GetVhtMcs7());
     WifiMode sigAMode = nonHtMode;
@@ -1806,13 +1806,13 @@ PhyHeaderSectionsTest::DoRun()
     sections[WIFI_PPDU_FIELD_SIG_B] = {{ppduStart + MicroSeconds(48), ppduStart + MicroSeconds(52)},
                                        sigBMode};
     CheckPhyHeaderSections(phyEntity->GetPhyHeaderSections(txVector, ppduStart), sections);
-    txVector.SetChannelWidth(80); // shouldn't have any impact
+    txVector.SetChannelWidth(MHz_u{80}); // shouldn't have any impact
     CheckPhyHeaderSections(phyEntity->GetPhyHeaderSections(txVector, ppduStart), sections);
 
     // ==================================================================================
     // 11ax (HE)
     phyEntity = Create<HePhy>();
-    txVector.SetChannelWidth(20);
+    txVector.SetChannelWidth(MHz_u{20});
     txVector.SetNss(2); // HE-LTF duration assumed to be always 8 us for the time being (see note in
                         // HePhy::GetTrainingDuration)
     txVector.SetMode(HePhy::GetHeMcs9());
@@ -1874,7 +1874,7 @@ PhyHeaderSectionsTest::DoRun()
          ppduStart + MicroSeconds(56)}, // 1 HE-STF (@ 4 us) + 2 HE-LTFs (@ 8 us)
         sigBMode};
     CheckPhyHeaderSections(phyEntity->GetPhyHeaderSections(txVector, ppduStart), sections);
-    txVector.SetChannelWidth(160); // shouldn't have any impact
+    txVector.SetChannelWidth(MHz_u{160}); // shouldn't have any impact
     txVector.SetRuAllocation({96, 113, 113, 113, 113, 113, 113, 113}, 0);
 
     CheckPhyHeaderSections(phyEntity->GetPhyHeaderSections(txVector, ppduStart), sections);
@@ -1884,7 +1884,7 @@ PhyHeaderSectionsTest::DoRun()
     sections.erase(WIFI_PPDU_FIELD_SIG_A); // FIXME: do we keep using separate type for 11be?
     sections.erase(WIFI_PPDU_FIELD_SIG_B); // FIXME: do we keep using separate type for 11be?
     phyEntity = Create<EhtPhy>();
-    txVector.SetChannelWidth(20);
+    txVector.SetChannelWidth(MHz_u{20});
     txVector.SetNss(2); // EHT-LTF duration assumed to be always 8 us for the time being (see note
                         // in HePhy::GetTrainingDuration)
     txVector.SetMode(EhtPhy::GetEhtMcs9());
@@ -1919,7 +1919,7 @@ PhyHeaderSectionsTest::DoRun()
          ppduStart + MicroSeconds(56)}, // 1 HE-STF (@ 4 us) + 2 HE-LTFs (@ 8 us)
         ehtSigMode};
     CheckPhyHeaderSections(phyEntity->GetPhyHeaderSections(txVector, ppduStart), sections);
-    txVector.SetChannelWidth(160); // shouldn't have any impact
+    txVector.SetChannelWidth(MHz_u{160}); // shouldn't have any impact
     txVector.SetRuAllocation({96, 113, 113, 113, 113, 113, 113, 113}, 0);
 
     CheckPhyHeaderSections(phyEntity->GetPhyHeaderSections(txVector, ppduStart), sections);
@@ -1948,7 +1948,7 @@ TxDurationTestSuite::TxDurationTestSuite()
     AddTestCase(new HeSigBDurationTest(
                     {{{HeRu::RU_106_TONE, 1, true}, 11, 1}, {{HeRu::RU_106_TONE, 2, true}, 10, 4}},
                     VhtPhy::GetVhtMcs5(),
-                    20,
+                    MHz_u{20},
                     HeSigBDurationTest::OFDMA,
                     {96},
                     std::make_pair(2, 0), // both users in HE-SIG-B content channel 1
@@ -1964,7 +1964,7 @@ TxDurationTestSuite::TxDurationTestSuite()
                                 {{HeRu::RU_52_TONE, 7, true}, 5, 3},
                                 {{HeRu::RU_52_TONE, 8, true}, 6, 2}},
                                VhtPhy::GetVhtMcs4(),
-                               40,
+                               MHz_u{40},
                                HeSigBDurationTest::OFDMA,
                                {96, 112},
                                std::make_pair(2, 4), // two users in HE-SIG-B content channel 1 and
@@ -1982,7 +1982,7 @@ TxDurationTestSuite::TxDurationTestSuite()
                                 {{HeRu::RU_52_TONE, 8, true}, 6, 2},
                                 {{HeRu::RU_26_TONE, 14, true}, 3, 1}},
                                VhtPhy::GetVhtMcs3(),
-                               40,
+                               MHz_u{40},
                                HeSigBDurationTest::OFDMA,
                                {96, 15},
                                std::make_pair(2, 5), // two users in HE-SIG-B content channel 1 and
@@ -2002,7 +2002,7 @@ TxDurationTestSuite::TxDurationTestSuite()
                                 {{HeRu::RU_242_TONE, 3, true}, 1, 1},
                                 {{HeRu::RU_242_TONE, 4, true}, 4, 1}},
                                VhtPhy::GetVhtMcs1(),
-                               80,
+                               MHz_u{80},
                                HeSigBDurationTest::OFDMA,
                                {96, 15, 192, 192},
                                std::make_pair(3, 6), // three users in HE-SIG-B content channel 1
@@ -2023,7 +2023,7 @@ TxDurationTestSuite::TxDurationTestSuite()
                                 {{HeRu::RU_242_TONE, 4, true}, 4, 1},
                                 {{HeRu::RU_996_TONE, 1, false}, 1, 1}},
                                VhtPhy::GetVhtMcs1(),
-                               160,
+                               MHz_u{160},
                                HeSigBDurationTest::OFDMA,
                                {96, 15, 192, 192, 208, 208, 208, 208},
                                std::make_pair(4, 7), // four users in HE-SIG-B content channel 1 and
@@ -2042,7 +2042,7 @@ TxDurationTestSuite::TxDurationTestSuite()
                                 {{HeRu::RU_26_TONE, 8, true}, 11, 1},
                                 {{HeRu::RU_26_TONE, 9, true}, 11, 1}},
                                VhtPhy::GetVhtMcs5(),
-                               20,
+                               MHz_u{20},
                                HeSigBDurationTest::OFDMA,
                                {0},
                                std::make_pair(9, 0), // 9 users in HE-SIG-B content channel 1
@@ -2057,7 +2057,7 @@ TxDurationTestSuite::TxDurationTestSuite()
                                 {{HeRu::RU_52_TONE, 5, true}, 11, 1},
                                 {{HeRu::RU_52_TONE, 8, true}, 11, 2}},
                                VhtPhy::GetVhtMcs5(),
-                               40,
+                               MHz_u{40},
                                HeSigBDurationTest::OFDMA,
                                {112, 112},
                                std::make_pair(4, 4), // 4 users in both HE-SIG-B content channels
@@ -2073,7 +2073,7 @@ TxDurationTestSuite::TxDurationTestSuite()
                                 {{HeRu::RU_52_TONE, 5, true}, 11, 2},
                                 {{HeRu::RU_52_TONE, 6, true}, 11, 3}},
                                VhtPhy::GetVhtMcs5(),
-                               40,
+                               MHz_u{40},
                                HeSigBDurationTest::OFDMA,
                                {112, 112},
                                std::make_pair(4, 4), // 4 users in both HE-SIG-B content channels
@@ -2084,7 +2084,7 @@ TxDurationTestSuite::TxDurationTestSuite()
     AddTestCase(new HeSigBDurationTest(
                     {{{HeRu::RU_242_TONE, 1, true}, 11, 1}, {{HeRu::RU_242_TONE, 1, true}, 10, 4}},
                     VhtPhy::GetVhtMcs5(),
-                    20,
+                    MHz_u{20},
                     HeSigBDurationTest::MU_MIMO,
                     {192},
                     std::make_pair(2, 0), // both users in HE-SIG-B content channel 1
@@ -2097,7 +2097,7 @@ TxDurationTestSuite::TxDurationTestSuite()
                                 {{HeRu::RU_242_TONE, 1, true}, 5, 2},
                                 {{HeRu::RU_242_TONE, 1, true}, 6, 1}},
                                VhtPhy::GetVhtMcs4(),
-                               20,
+                               MHz_u{20},
                                HeSigBDurationTest::MU_MIMO,
                                {192},
                                std::make_pair(3, 0), // all users in HE-SIG-B content channel 1
@@ -2111,7 +2111,7 @@ TxDurationTestSuite::TxDurationTestSuite()
                                 {{HeRu::RU_242_TONE, 1, true}, 6, 3},
                                 {{HeRu::RU_242_TONE, 1, true}, 7, 2}},
                                VhtPhy::GetVhtMcs4(),
-                               20,
+                               MHz_u{20},
                                HeSigBDurationTest::MU_MIMO,
                                {192},
                                std::make_pair(4, 0), // all users in HE-SIG-B content channel 1
@@ -2127,7 +2127,7 @@ TxDurationTestSuite::TxDurationTestSuite()
                                 {{HeRu::RU_242_TONE, 1, true}, 8, 1},
                                 {{HeRu::RU_242_TONE, 1, true}, 9, 1}},
                                VhtPhy::GetVhtMcs4(),
-                               20,
+                               MHz_u{20},
                                HeSigBDurationTest::MU_MIMO,
                                {192},
                                std::make_pair(6, 0), // all users in HE-SIG-B content channel 1
@@ -2145,7 +2145,7 @@ TxDurationTestSuite::TxDurationTestSuite()
                                 {{HeRu::RU_242_TONE, 1, true}, 10, 1},
                                 {{HeRu::RU_242_TONE, 1, true}, 11, 1}},
                                VhtPhy::GetVhtMcs4(),
-                               20,
+                               MHz_u{20},
                                HeSigBDurationTest::MU_MIMO,
                                {192},
                                std::make_pair(8, 0), // all users in HE-SIG-B content channel 1
@@ -2156,7 +2156,7 @@ TxDurationTestSuite::TxDurationTestSuite()
     AddTestCase(new HeSigBDurationTest(
                     {{{HeRu::RU_484_TONE, 1, true}, 11, 1}, {{HeRu::RU_484_TONE, 1, true}, 10, 4}},
                     VhtPhy::GetVhtMcs5(),
-                    40,
+                    MHz_u{40},
                     HeSigBDurationTest::MU_MIMO,
                     {200, 200},
                     std::make_pair(1, 1), // users equally split between the two content channels
@@ -2170,7 +2170,7 @@ TxDurationTestSuite::TxDurationTestSuite()
              {{HeRu::RU_484_TONE, 1, true}, 5, 2},
              {{HeRu::RU_484_TONE, 1, true}, 6, 1}},
             VhtPhy::GetVhtMcs4(),
-            40,
+            MHz_u{40},
             HeSigBDurationTest::MU_MIMO,
             {200, 200},
             std::make_pair(2, 1), // 2 users in content channel 1 and 1 user in content channel 2
@@ -2184,7 +2184,7 @@ TxDurationTestSuite::TxDurationTestSuite()
                      {{HeRu::RU_484_TONE, 1, true}, 6, 3},
                      {{HeRu::RU_484_TONE, 1, true}, 7, 2}},
                     VhtPhy::GetVhtMcs4(),
-                    40,
+                    MHz_u{40},
                     HeSigBDurationTest::MU_MIMO,
                     {200, 200},
                     std::make_pair(2, 2), // users equally split between the two content channels
@@ -2200,7 +2200,7 @@ TxDurationTestSuite::TxDurationTestSuite()
                      {{HeRu::RU_484_TONE, 1, true}, 8, 1},
                      {{HeRu::RU_484_TONE, 1, true}, 9, 1}},
                     VhtPhy::GetVhtMcs4(),
-                    40,
+                    MHz_u{40},
                     HeSigBDurationTest::MU_MIMO,
                     {200, 200},
                     std::make_pair(3, 3), // users equally split between the two content channels
@@ -2218,7 +2218,7 @@ TxDurationTestSuite::TxDurationTestSuite()
                      {{HeRu::RU_484_TONE, 1, true}, 10, 1},
                      {{HeRu::RU_484_TONE, 1, true}, 11, 1}},
                     VhtPhy::GetVhtMcs4(),
-                    40,
+                    MHz_u{40},
                     HeSigBDurationTest::MU_MIMO,
                     {200, 200},
                     std::make_pair(4, 4), // users equally split between the two content channels
@@ -2229,7 +2229,7 @@ TxDurationTestSuite::TxDurationTestSuite()
     AddTestCase(new HeSigBDurationTest(
                     {{{HeRu::RU_996_TONE, 1, true}, 11, 1}, {{HeRu::RU_996_TONE, 1, true}, 10, 4}},
                     VhtPhy::GetVhtMcs5(),
-                    80,
+                    MHz_u{80},
                     HeSigBDurationTest::MU_MIMO,
                     {208, 208, 208, 208},
                     std::make_pair(1, 1), // users equally split between the two content channels
@@ -2243,7 +2243,7 @@ TxDurationTestSuite::TxDurationTestSuite()
              {{HeRu::RU_996_TONE, 1, true}, 5, 2},
              {{HeRu::RU_996_TONE, 1, true}, 6, 1}},
             VhtPhy::GetVhtMcs4(),
-            80,
+            MHz_u{80},
             HeSigBDurationTest::MU_MIMO,
             {208, 208, 208, 208},
             std::make_pair(2, 1), // 2 users in content channel 1 and 1 user in content channel 2
@@ -2257,7 +2257,7 @@ TxDurationTestSuite::TxDurationTestSuite()
                      {{HeRu::RU_996_TONE, 1, true}, 6, 3},
                      {{HeRu::RU_996_TONE, 1, true}, 7, 2}},
                     VhtPhy::GetVhtMcs4(),
-                    80,
+                    MHz_u{80},
                     HeSigBDurationTest::MU_MIMO,
                     {208, 208, 208, 208},
                     std::make_pair(2, 2), // users equally split between the two content channels
@@ -2273,7 +2273,7 @@ TxDurationTestSuite::TxDurationTestSuite()
                      {{HeRu::RU_996_TONE, 1, true}, 8, 1},
                      {{HeRu::RU_996_TONE, 1, true}, 9, 1}},
                     VhtPhy::GetVhtMcs4(),
-                    80,
+                    MHz_u{80},
                     HeSigBDurationTest::MU_MIMO,
                     {208, 208, 208, 208},
                     std::make_pair(3, 3), // users equally split between the two content channels
@@ -2291,7 +2291,7 @@ TxDurationTestSuite::TxDurationTestSuite()
                      {{HeRu::RU_996_TONE, 1, true}, 10, 1},
                      {{HeRu::RU_996_TONE, 1, true}, 11, 1}},
                     VhtPhy::GetVhtMcs4(),
-                    80,
+                    MHz_u{80},
                     HeSigBDurationTest::MU_MIMO,
                     {208, 208, 208, 208},
                     std::make_pair(4, 4), // users equally split between the two content channels
@@ -2303,7 +2303,7 @@ TxDurationTestSuite::TxDurationTestSuite()
         new HeSigBDurationTest(
             {{{HeRu::RU_2x996_TONE, 1, true}, 11, 1}, {{HeRu::RU_2x996_TONE, 1, true}, 10, 4}},
             VhtPhy::GetVhtMcs5(),
-            160,
+            MHz_u{160},
             HeSigBDurationTest::MU_MIMO,
             {208, 208, 208, 208, 208, 208, 208, 208},
             std::make_pair(1, 1), // users equally split between the two content channels
@@ -2317,7 +2317,7 @@ TxDurationTestSuite::TxDurationTestSuite()
              {{HeRu::RU_2x996_TONE, 1, true}, 5, 2},
              {{HeRu::RU_2x996_TONE, 1, true}, 6, 1}},
             VhtPhy::GetVhtMcs4(),
-            160,
+            MHz_u{160},
             HeSigBDurationTest::MU_MIMO,
             {208, 208, 208, 208, 208, 208, 208, 208},
             std::make_pair(2, 1), // 2 users in content channel 1 and 1 user in content channel 2
@@ -2331,7 +2331,7 @@ TxDurationTestSuite::TxDurationTestSuite()
                      {{HeRu::RU_2x996_TONE, 1, true}, 6, 3},
                      {{HeRu::RU_2x996_TONE, 1, true}, 7, 2}},
                     VhtPhy::GetVhtMcs4(),
-                    160,
+                    MHz_u{160},
                     HeSigBDurationTest::MU_MIMO,
                     {208, 208, 208, 208, 208, 208, 208, 208},
                     std::make_pair(2, 2), // users equally split between the two content channels
@@ -2347,7 +2347,7 @@ TxDurationTestSuite::TxDurationTestSuite()
                      {{HeRu::RU_2x996_TONE, 1, true}, 8, 1},
                      {{HeRu::RU_2x996_TONE, 1, true}, 9, 1}},
                     VhtPhy::GetVhtMcs4(),
-                    160,
+                    MHz_u{160},
                     HeSigBDurationTest::MU_MIMO,
                     {208, 208, 208, 208, 208, 208, 208, 208},
                     std::make_pair(3, 3), // users equally split between the two content channels
@@ -2365,7 +2365,7 @@ TxDurationTestSuite::TxDurationTestSuite()
                      {{HeRu::RU_2x996_TONE, 1, true}, 10, 1},
                      {{HeRu::RU_2x996_TONE, 1, true}, 11, 1}},
                     VhtPhy::GetVhtMcs4(),
-                    160,
+                    MHz_u{160},
                     HeSigBDurationTest::MU_MIMO,
                     {208, 208, 208, 208, 208, 208, 208, 208},
                     std::make_pair(4, 4), // users equally split between the two content channels

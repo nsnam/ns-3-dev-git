@@ -2136,7 +2136,7 @@ CtrlTriggerHeader::SetUlBandwidth(MHz_u bw)
 MHz_u
 CtrlTriggerHeader::GetUlBandwidth() const
 {
-    return (1 << m_ulBandwidth) * 20;
+    return (1 << m_ulBandwidth) * MHz_u{20};
 }
 
 void

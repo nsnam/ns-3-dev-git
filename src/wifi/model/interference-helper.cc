@@ -246,8 +246,8 @@ InterferenceHelper::AddBand(const WifiSpectrumBandInfo& band)
     auto result = m_niChanges.insert({band, niChanges});
     NS_ASSERT(result.second);
     // Always have a zero power noise event in the list
-    AddNiChangeEvent(Time(0), NiChange(0.0, nullptr), result.first);
-    m_firstPowers.insert({band, 0.0});
+    AddNiChangeEvent(Time(0), NiChange(Watt_u{0}, nullptr), result.first);
+    m_firstPowers.insert({band, Watt_u{0}});
 }
 
 void
@@ -448,7 +448,7 @@ InterferenceHelper::CalculateNoiseInterferenceW(Ptr<Event> event,
     auto it = niIt->second.find(event->GetStartTime());
     const auto muMimoPower = (event->GetPpdu()->GetType() == WIFI_PPDU_TYPE_UL_MU)
                                  ? CalculateMuMimoPowerW(event, band)
-                                 : 0.0;
+                                 : Watt_u{0.0};
     for (; it != niIt->second.end() && it->first < now; ++it)
     {
         if (IsSameMuMimoTransmission(event, it->second.GetEvent()) &&
@@ -462,7 +462,7 @@ InterferenceHelper::CalculateNoiseInterferenceW(Ptr<Event> event,
         if (std::abs(noiseInterference) < std::numeric_limits<double>::epsilon())
         {
             // fix some possible rounding issues with double values
-            noiseInterference = 0.0;
+            noiseInterference = Watt_u{0.0};
         }
     }
     it = niIt->second.find(event->GetStartTime());
@@ -472,14 +472,14 @@ InterferenceHelper::CalculateNoiseInterferenceW(Ptr<Event> event,
         ;
     }
     NiChanges ni;
-    ni.emplace(event->GetStartTime(), NiChange(0, event));
+    ni.emplace(event->GetStartTime(), NiChange(Watt_u{0}, event));
     while (++it != niIt->second.end() && it->second.GetEvent() != event)
     {
         ni.insert(*it);
     }
-    ni.emplace(event->GetEndTime(), NiChange(0, event));
+    ni.emplace(event->GetEndTime(), NiChange(Watt_u{0}, event));
     nis.insert({band, ni});
-    NS_ASSERT_MSG(noiseInterference >= 0.0,
+    NS_ASSERT_MSG(noiseInterference >= Watt_u{0.0},
                   "CalculateNoiseInterferenceW returns negative value " << noiseInterference);
     return noiseInterference;
 }

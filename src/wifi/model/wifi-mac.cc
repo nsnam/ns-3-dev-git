@@ -2223,9 +2223,10 @@ WifiMac::GetHtCapabilities(uint8_t linkId) const
         capabilities.SetRxMcsBitmask(mcs.GetMcsValue());
         uint8_t nss = (mcs.GetMcsValue() / 8) + 1;
         NS_ASSERT(nss > 0 && nss < 5);
-        uint64_t dataRate = mcs.GetDataRate(htConfiguration->m_40MHzSupported ? 40 : 20,
-                                            NanoSeconds(sgiSupported ? 400 : 800),
-                                            nss);
+        uint64_t dataRate =
+            mcs.GetDataRate(htConfiguration->m_40MHzSupported ? MHz_u{40} : MHz_u{20},
+                            NanoSeconds(sgiSupported ? 400 : 800),
+                            nss);
         if (dataRate > maxSupportedRate)
         {
             maxSupportedRate = dataRate;
@@ -2299,7 +2300,7 @@ WifiMac::GetVhtCapabilities(uint8_t linkId) const
         capabilities.SetTxMcsMap(maxMcs, nss);
     }
     uint64_t maxSupportedRateLGI = 0; // in bit/s
-    MHz_u maxWidth = vhtConfiguration->m_160MHzSupported ? 160 : 80;
+    const auto maxWidth = vhtConfiguration->m_160MHzSupported ? MHz_u{160} : MHz_u{80};
     for (const auto& mcs : phy->GetMcsList(WIFI_MOD_CLASS_VHT))
     {
         if (!mcs.IsAllowed(maxWidth, 1))

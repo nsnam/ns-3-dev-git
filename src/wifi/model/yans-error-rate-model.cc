@@ -197,8 +197,8 @@ YansErrorRateModel::DoGetChunkSuccessRate(WifiMode mode,
         uint64_t phyRate;
         if ((txVector.IsMu() && (staId == SU_STA_ID)) || (mode != txVector.GetMode(staId)))
         {
-            phyRate = mode.GetPhyRate(txVector.GetChannelWidth() >= 40
-                                          ? 20
+            phyRate = mode.GetPhyRate(txVector.GetChannelWidth() >= MHz_u{40}
+                                          ? MHz_u{20}
                                           : txVector.GetChannelWidth()); // This is the PHY header
         }
         else

@@ -185,19 +185,19 @@ InterferenceExperiment::Input::Input()
       xB(5),
       txModeA("OfdmRate54Mbps"),
       txModeB("OfdmRate54Mbps"),
-      txPowerLevelA(16.0206),
-      txPowerLevelB(16.0206),
+      txPowerLevelA(dBm_u{16.0206}),
+      txPowerLevelB(dBm_u{16.0206}),
       packetSizeA(1500),
       packetSizeB(1500),
       channelA(36),
       channelB(36),
-      widthA(20),
-      widthB(20),
+      widthA(MHz_u{20}),
+      widthB(MHz_u{20}),
       standard(WIFI_STANDARD_80211a),
       band(WIFI_PHY_BAND_5GHZ),
       preamble(WIFI_PREAMBLE_LONG),
       captureEnabled(false),
-      captureMargin(0)
+      captureMargin(dB_u{0})
 {
 }
 

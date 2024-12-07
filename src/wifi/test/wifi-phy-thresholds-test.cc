@@ -291,7 +291,7 @@ WifiPhyThresholdsWeakWifiSignalTest::WifiPhyThresholdsWeakWifiSignalTest()
 void
 WifiPhyThresholdsWeakWifiSignalTest::DoRun()
 {
-    const auto txPower = DbmToW(-110);
+    const auto txPower = DbmToW(dBm_u{-110});
 
     Simulator::Schedule(Seconds(1),
                         &WifiPhyThresholdsWeakWifiSignalTest::SendSignal,
@@ -341,7 +341,7 @@ WifiPhyThresholdsWeakForeignSignalTest::~WifiPhyThresholdsWeakForeignSignalTest(
 void
 WifiPhyThresholdsWeakForeignSignalTest::DoRun()
 {
-    const auto txPower = DbmToW(-90);
+    const auto txPower = DbmToW(dBm_u{-90});
 
     Simulator::Schedule(Seconds(1),
                         &WifiPhyThresholdsWeakForeignSignalTest::SendSignal,
@@ -390,7 +390,7 @@ WifiPhyThresholdsStrongWifiSignalTest::~WifiPhyThresholdsStrongWifiSignalTest()
 void
 WifiPhyThresholdsStrongWifiSignalTest::DoRun()
 {
-    const auto txPower = DbmToW(-60);
+    const auto txPower = DbmToW(dBm_u{-60});
 
     Simulator::Schedule(Seconds(1),
                         &WifiPhyThresholdsStrongWifiSignalTest::SendSignal,
@@ -443,7 +443,7 @@ WifiPhyThresholdsStrongForeignSignalTest::~WifiPhyThresholdsStrongForeignSignalT
 void
 WifiPhyThresholdsStrongForeignSignalTest::DoRun()
 {
-    const auto txPower = DbmToW(-60);
+    const auto txPower = DbmToW(dBm_u{-60});
 
     Simulator::Schedule(Seconds(1),
                         &WifiPhyThresholdsStrongForeignSignalTest::SendSignal,

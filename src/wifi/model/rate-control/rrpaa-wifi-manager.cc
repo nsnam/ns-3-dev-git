@@ -391,9 +391,9 @@ RrpaaWifiManager::DoGetDataTxVector(WifiRemoteStation* st, MHz_u allowedWidth)
     NS_LOG_FUNCTION(this << st << allowedWidth);
     auto station = static_cast<RrpaaWifiRemoteStation*>(st);
     auto channelWidth = GetChannelWidth(station);
-    if (channelWidth > 20 && channelWidth != 22)
+    if (channelWidth > MHz_u{20} && channelWidth != MHz_u{22})
     {
-        channelWidth = 20;
+        channelWidth = MHz_u{20};
     }
     CheckInit(station);
     WifiMode mode = GetSupported(station, station->m_rateIndex);
@@ -429,9 +429,9 @@ RrpaaWifiManager::DoGetRtsTxVector(WifiRemoteStation* st)
     NS_LOG_FUNCTION(this << st);
     auto station = static_cast<RrpaaWifiRemoteStation*>(st);
     auto channelWidth = GetChannelWidth(station);
-    if (channelWidth > 20 && channelWidth != 22)
+    if (channelWidth > MHz_u{20} && channelWidth != MHz_u{22})
     {
-        channelWidth = 20;
+        channelWidth = MHz_u{20};
     }
     WifiMode mode;
     if (!GetUseNonErpProtection())
