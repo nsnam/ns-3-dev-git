@@ -174,15 +174,6 @@ class HePhy : public VhtPhy
      */
     WifiSpectrumBandInfo GetRuBandForRx(const WifiTxVector& txVector, uint16_t staId) const;
     /**
-     * Get the band used to transmit the non-OFDMA part of an HE TB PPDU.
-     *
-     * @param txVector the TXVECTOR used for the transmission
-     * @param staId the STA-ID of the station taking part of the UL MU
-     *
-     * @return the spectrum band used to transmit the non-OFDMA part of an HE TB PPDU
-     */
-    WifiSpectrumBandInfo GetNonOfdmaBand(const WifiTxVector& txVector, uint16_t staId) const;
-    /**
      * Get the width of the non-OFDMA portion of an HE TB PPDU
      *
      * @param ru the RU in which the HE TB PPDU is sent
