@@ -282,6 +282,9 @@ WifiTxVector::SetMode(WifiMode mode, uint16_t staId)
 {
     NS_ABORT_MSG_IF(!IsMu(), "Not a MU transmission");
     NS_ABORT_MSG_IF(staId > 2048, "STA-ID should be correctly set for MU");
+    NS_ASSERT_MSG(m_muUserInfos.empty() || (mode.GetModulationClass() == GetModulationClass()),
+                  "Cannot add mode " << mode << " because the modulation class is "
+                                     << GetModulationClass());
     m_muUserInfos[staId].mcs = mode.GetMcsValue();
     m_modeInitialized = true;
 }
