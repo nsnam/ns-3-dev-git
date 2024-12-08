@@ -1038,43 +1038,6 @@ HePhy::GetRuBandForRx(const WifiTxVector& txVector, uint16_t staId) const
     return ruBandForRx;
 }
 
-WifiSpectrumBandInfo
-HePhy::GetNonOfdmaBand(const WifiTxVector& txVector, uint16_t staId) const
-{
-    NS_ASSERT(txVector.IsUlMu() && (txVector.GetModulationClass() >= WIFI_MOD_CLASS_HE));
-    const auto channelWidth = txVector.GetChannelWidth();
-    NS_ASSERT(channelWidth <= m_wifiPhy->GetChannelWidth());
-
-    HeRu::RuSpec ru = txVector.GetRu(staId);
-    const auto nonOfdmaWidth = GetNonOfdmaWidth(ru);
-
-    // Find the RU that encompasses the non-OFDMA part of the HE TB PPDU for the STA-ID
-    HeRu::RuSpec nonOfdmaRu =
-        HeRu::FindOverlappingRu(channelWidth, ru, HeRu::GetRuType(nonOfdmaWidth));
-
-    HeRu::SubcarrierGroup groupPreamble = HeRu::GetSubcarrierGroup(
-        channelWidth,
-        nonOfdmaRu.GetRuType(),
-        nonOfdmaRu.GetPhyIndex(channelWidth,
-                               m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(MHz_u{20})));
-    const auto indices = ConvertHeRuSubcarriers(
-        channelWidth,
-        GetGuardBandwidth(m_wifiPhy->GetChannelWidth()),
-        m_wifiPhy->GetOperatingChannel().GetFrequencies(),
-        m_wifiPhy->GetChannelWidth(),
-        m_wifiPhy->GetSubcarrierSpacing(),
-        {groupPreamble.front().first, groupPreamble.back().second},
-        m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(channelWidth));
-    WifiSpectrumBandInfo nonOfdmaBand{};
-    for (const auto& indicesPerSegment : indices)
-    {
-        nonOfdmaBand.indices.emplace_back(indicesPerSegment);
-        nonOfdmaBand.frequencies.emplace_back(
-            m_wifiPhy->ConvertIndicesToFrequencies(indicesPerSegment));
-    }
-    return nonOfdmaBand;
-}
-
 MHz_u
 HePhy::GetNonOfdmaWidth(HeRu::RuSpec ru) const
 {

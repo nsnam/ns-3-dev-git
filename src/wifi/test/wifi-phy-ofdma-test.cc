@@ -87,6 +87,16 @@ class OfdmaTestHePhy : public HePhy
      */
     void SetGlobalPpduUid(uint64_t uid);
 
+    /**
+     * Get the band used to transmit the non-OFDMA part of an HE TB PPDU.
+     *
+     * @param txVector the TXVECTOR used for the transmission
+     * @param staId the STA-ID of the station taking part of the UL MU
+     *
+     * @return the spectrum band used to transmit the non-OFDMA part of an HE TB PPDU
+     */
+    WifiSpectrumBandInfo GetNonOfdmaBand(const WifiTxVector& txVector, uint16_t staId) const;
+
   private:
     uint16_t m_staId; ///< ID of the STA to which this PHY belongs to
 
@@ -117,6 +127,43 @@ void
 OfdmaTestHePhy::SetGlobalPpduUid(uint64_t uid)
 {
     m_globalPpduUid = uid;
+}
+
+WifiSpectrumBandInfo
+OfdmaTestHePhy::GetNonOfdmaBand(const WifiTxVector& txVector, uint16_t staId) const
+{
+    NS_ASSERT(txVector.IsUlMu() && (txVector.GetModulationClass() >= WIFI_MOD_CLASS_HE));
+    const auto channelWidth = txVector.GetChannelWidth();
+    NS_ASSERT(channelWidth <= m_wifiPhy->GetChannelWidth());
+
+    HeRu::RuSpec ru = txVector.GetRu(staId);
+    const auto nonOfdmaWidth = GetNonOfdmaWidth(ru);
+
+    // Find the RU that encompasses the non-OFDMA part of the HE TB PPDU for the STA-ID
+    HeRu::RuSpec nonOfdmaRu =
+        HeRu::FindOverlappingRu(channelWidth, ru, HeRu::GetRuType(nonOfdmaWidth));
+
+    HeRu::SubcarrierGroup groupPreamble = HeRu::GetSubcarrierGroup(
+        channelWidth,
+        nonOfdmaRu.GetRuType(),
+        nonOfdmaRu.GetPhyIndex(channelWidth,
+                               m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(MHz_u{20})));
+    const auto indices = ConvertHeRuSubcarriers(
+        channelWidth,
+        GetGuardBandwidth(m_wifiPhy->GetChannelWidth()),
+        m_wifiPhy->GetOperatingChannel().GetFrequencies(),
+        m_wifiPhy->GetChannelWidth(),
+        m_wifiPhy->GetSubcarrierSpacing(),
+        {groupPreamble.front().first, groupPreamble.back().second},
+        m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(channelWidth));
+    WifiSpectrumBandInfo nonOfdmaBand{};
+    for (const auto& indicesPerSegment : indices)
+    {
+        nonOfdmaBand.indices.emplace_back(indicesPerSegment);
+        nonOfdmaBand.frequencies.emplace_back(
+            m_wifiPhy->ConvertIndicesToFrequencies(indicesPerSegment));
+    }
+    return nonOfdmaBand;
 }
 
 /**
@@ -193,7 +240,7 @@ class OfdmaSpectrumWifiPhy : public SpectrumWifiPhy
 
   private:
     /// Pointer to HE PHY instance used for OFDMA test
-    Ptr<OfdmaTestHePhy> m_ofdmTestHePhy;
+    Ptr<OfdmaTestHePhy> m_ofdmaTestHePhy;
 
     /// Callback providing UID of the PPDU that is about to be transmitted
     TracedCallback<uint64_t> m_phyTxPpduUidTrace;
@@ -218,8 +265,8 @@ OfdmaSpectrumWifiPhy::GetTypeId()
 OfdmaSpectrumWifiPhy::OfdmaSpectrumWifiPhy(uint16_t staId)
     : SpectrumWifiPhy()
 {
-    m_ofdmTestHePhy = Create<OfdmaTestHePhy>(staId);
-    m_ofdmTestHePhy->SetOwner(this);
+    m_ofdmaTestHePhy = Create<OfdmaTestHePhy>(staId);
+    m_ofdmaTestHePhy->SetOwner(this);
 }
 
 OfdmaSpectrumWifiPhy::~OfdmaSpectrumWifiPhy()
@@ -230,21 +277,21 @@ void
 OfdmaSpectrumWifiPhy::DoInitialize()
 {
     // Replace HE PHY instance with test instance
-    m_phyEntities[WIFI_MOD_CLASS_HE] = m_ofdmTestHePhy;
+    m_phyEntities[WIFI_MOD_CLASS_HE] = m_ofdmaTestHePhy;
     SpectrumWifiPhy::DoInitialize();
 }
 
 void
 OfdmaSpectrumWifiPhy::DoDispose()
 {
-    m_ofdmTestHePhy = nullptr;
+    m_ofdmaTestHePhy = nullptr;
     SpectrumWifiPhy::DoDispose();
 }
 
 void
 OfdmaSpectrumWifiPhy::SetPpduUid(uint64_t uid)
 {
-    m_ofdmTestHePhy->SetGlobalPpduUid(uid);
+    m_ofdmaTestHePhy->SetGlobalPpduUid(uid);
     m_previouslyRxPpduUid = uid;
 }
 
@@ -282,7 +329,7 @@ OfdmaSpectrumWifiPhy::GetEnergyDuration(Watt_u energy, WifiSpectrumBandInfo band
 Ptr<const HePhy>
 OfdmaSpectrumWifiPhy::GetHePhy() const
 {
-    return DynamicCast<const HePhy>(GetLatestPhyEntity());
+    return DynamicCast<const HePhy>(m_ofdmaTestHePhy);
 }
 
 /**
@@ -3990,7 +4037,7 @@ TestUlOfdmaPhyTransmission::SchedulePowerMeasurementChecks(Time delay,
     const auto detectionDuration = WifiPhy::GetPreambleDetectionDuration();
     const auto txVectorSta1 = GetTxVectorForHeTbPpdu(1, 1, 0);
     const auto txVectorSta2 = GetTxVectorForHeTbPpdu(2, 2, 0);
-    const auto hePhy = m_phyAp->GetHePhy();
+    const auto hePhy = DynamicCast<const OfdmaTestHePhy>(m_phyAp->GetHePhy());
     const auto nonOfdmaDuration = hePhy->CalculateNonHeDurationForHeTb(txVectorSta2);
     NS_ASSERT(nonOfdmaDuration == hePhy->CalculateNonHeDurationForHeTb(txVectorSta1));
 
