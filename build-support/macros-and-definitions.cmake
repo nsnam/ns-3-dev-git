@@ -827,12 +827,6 @@ macro(process_options)
     endif()
   endif()
 
-  # Process config-store-config
-  configure_file(
-    ${PROJECT_SOURCE_DIR}/build-support/config-store-config-template.h
-    ${CMAKE_HEADER_OUTPUT_DIRECTORY}/config-store-config.h
-  )
-
   set(ENABLE_MPI FALSE)
   if(${NS3_MPI})
     find_package(MPI QUIET)

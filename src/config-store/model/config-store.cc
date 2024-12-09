@@ -13,7 +13,6 @@
 #include "ns3/abort.h"
 #include "ns3/attribute-construction-list.h"
 #include "ns3/boolean.h"
-#include "ns3/config-store-config.h"
 #include "ns3/enum.h"
 #include "ns3/log.h"
 #include "ns3/simulator.h"
