@@ -10,7 +10,6 @@
 #include "zigbee-helper.h"
 
 #include "ns3/log.h"
-#include "ns3/lr-wpan-net-device.h"
 #include "ns3/names.h"
 #include "ns3/net-device.h"
 #include "ns3/node.h"
@@ -45,16 +44,14 @@ ZigbeeHelper::Install(const NetDeviceContainer c)
     {
         Ptr<NetDevice> device = c.Get(i);
 
-        NS_ASSERT_MSG(device != nullptr, "No LrWpanNetDevice found in the node " << i);
-        Ptr<lrwpan::LrWpanNetDevice> lrwpanNetdevice = DynamicCast<lrwpan::LrWpanNetDevice>(device);
+        NS_ASSERT_MSG(device, "NetDevice not found in the node " << i);
 
-        Ptr<Node> node = lrwpanNetdevice->GetNode();
-        NS_LOG_LOGIC("**** Install Zigbee on node " << node->GetId());
+        NS_LOG_LOGIC("Installing Zigbee on node " << device->GetNode()->GetId());
 
         Ptr<zigbee::ZigbeeStack> zigbeeStack = m_stackFactory.Create<zigbee::ZigbeeStack>();
         zigbeeStackContainer.Add(zigbeeStack);
-        node->AggregateObject(zigbeeStack);
-        zigbeeStack->SetLrWpanNetDevice(lrwpanNetdevice);
+        device->GetNode()->AggregateObject(zigbeeStack);
+        zigbeeStack->SetNetDevice(device);
     }
     return zigbeeStackContainer;
 }

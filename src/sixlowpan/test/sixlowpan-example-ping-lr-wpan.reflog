@@ -1,15 +1,15 @@
 Device 0: pseudo-Mac-48 02:00:00:00:00:01, IPv6 Address 2001:2::ff:fe00:1
 Device 1: pseudo-Mac-48 02:00:00:00:00:02, IPv6 Address 2001:2::ff:fe00:2
 PING 2001:2::ff:fe00:2 - 16 bytes of data; 64 bytes including ICMP and IPv6 headers.
-24 bytes from (2001:2::ff:fe00:2): icmp_seq=0 ttl=64 time=21.536 ms
-24 bytes from (2001:2::ff:fe00:2): icmp_seq=1 ttl=64 time=9.312 ms
-24 bytes from (2001:2::ff:fe00:2): icmp_seq=2 ttl=64 time=8.992 ms
-24 bytes from (2001:2::ff:fe00:2): icmp_seq=3 ttl=64 time=9.952 ms
-24 bytes from (2001:2::ff:fe00:2): icmp_seq=4 ttl=64 time=6.752 ms
+24 bytes from (2001:2::ff:fe00:2): icmp_seq=0 ttl=64 time=21.216 ms
+24 bytes from (2001:2::ff:fe00:2): icmp_seq=1 ttl=64 time=7.712 ms
+24 bytes from (2001:2::ff:fe00:2): icmp_seq=2 ttl=64 time=7.712 ms
+24 bytes from (2001:2::ff:fe00:2): icmp_seq=3 ttl=64 time=7.392 ms
+24 bytes from (2001:2::ff:fe00:2): icmp_seq=4 ttl=64 time=10.592 ms
 
 --- 2001:2::ff:fe00:2 ping statistics ---
-5 packets transmitted, 5 received, 0% packet loss, time 4006ms
-rtt min/avg/max/mdev = 6/10.6/21/5.941 ms
+5 packets transmitted, 5 received, 0% packet loss, time 4010ms
+rtt min/avg/max/mdev = 7/10.4/21/6.066 ms
 NDISC Cache of node 0 at time +9s
 2001:2::ff:fe00:2 dev 2 lladdr 00-06-02:00:00:00:00:02 REACHABLE
 NDISC Cache of node 1 at time +9s

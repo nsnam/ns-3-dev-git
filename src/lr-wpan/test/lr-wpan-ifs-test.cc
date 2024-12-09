@@ -391,6 +391,20 @@ LrWpanDataIfsTestCase::DoRun()
 
     //////////////////////////////////////////////////////////////////////////////////
 
+    // Disconnect traces to eliminate Valgrid errors
+    dev0->GetMac()->TraceDisconnectWithoutContext(
+        "IfsEnd",
+        MakeBoundCallback(&LrWpanDataIfsTestCase::IfsEnd, this, dev0));
+    dev0->GetMac()->TraceDisconnectWithoutContext(
+        "MacRx",
+        MakeBoundCallback(&LrWpanDataIfsTestCase::DataReceivedDev0, this, dev0));
+    dev0->GetPhy()->TraceDisconnectWithoutContext(
+        "PhyRxBegin",
+        MakeBoundCallback(&LrWpanDataIfsTestCase::PhyDataRxStart, this, dev0));
+    dev1->GetMac()->TraceDisconnectWithoutContext(
+        "MacRx",
+        MakeBoundCallback(&LrWpanDataIfsTestCase::DataReceivedDev1, this, dev1));
+
     Simulator::Destroy();
 }
 

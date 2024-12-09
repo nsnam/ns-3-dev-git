@@ -76,10 +76,10 @@ LrWpanNetDevice::LrWpanNetDevice()
     : m_configComplete(false)
 {
     NS_LOG_FUNCTION(this);
-    m_mac = CreateObject<LrWpanMac>();
+
     m_phy = CreateObject<LrWpanPhy>();
     m_csmaca = CreateObject<LrWpanCsmaCa>();
-    CompleteConfig();
+    m_mac = CreateObject<LrWpanMac>();
 }
 
 LrWpanNetDevice::~LrWpanNetDevice()
@@ -91,7 +91,6 @@ void
 LrWpanNetDevice::DoDispose()
 {
     NS_LOG_FUNCTION(this);
-    m_mac->Dispose();
     m_phy->Dispose();
     m_csmaca->Dispose();
     m_phy = nullptr;
@@ -106,19 +105,22 @@ void
 LrWpanNetDevice::DoInitialize()
 {
     NS_LOG_FUNCTION(this);
-    m_phy->Initialize();
-    m_mac->Initialize();
+
+    AggregateObject(m_mac);
+    CompleteConfig();
+
     NetDevice::DoInitialize();
 }
 
 void
 LrWpanNetDevice::CompleteConfig()
 {
-    NS_LOG_FUNCTION(this);
     if (!m_mac || !m_phy || !m_csmaca || !m_node || m_configComplete)
     {
         return;
     }
+
+    NS_LOG_FUNCTION(this);
     m_mac->SetPhy(m_phy);
     m_mac->SetCsmaCa(m_csmaca);
     m_mac->SetMcpsDataIndicationCallback(MakeCallback(&LrWpanNetDevice::McpsDataIndication, this));
@@ -146,75 +148,68 @@ LrWpanNetDevice::CompleteConfig()
 void
 LrWpanNetDevice::SetMac(Ptr<LrWpanMac> mac)
 {
-    NS_LOG_FUNCTION(this);
+    NS_ABORT_MSG_IF(LrWpanNetDevice::IsInitialized(),
+                    "MAC layer cannot be set after initialization");
     m_mac = mac;
-    CompleteConfig();
 }
 
 void
 LrWpanNetDevice::SetPhy(Ptr<LrWpanPhy> phy)
 {
-    NS_LOG_FUNCTION(this);
+    NS_ABORT_MSG_IF(LrWpanNetDevice::IsInitialized(),
+                    "PHY layer cannot be set after initialization");
     m_phy = phy;
-    CompleteConfig();
 }
 
 void
 LrWpanNetDevice::SetCsmaCa(Ptr<LrWpanCsmaCa> csmaca)
 {
-    NS_LOG_FUNCTION(this);
+    NS_ABORT_MSG_IF(LrWpanNetDevice::IsInitialized(), "CSMA/CA cannot be set after initialization");
     m_csmaca = csmaca;
-    CompleteConfig();
 }
 
 void
 LrWpanNetDevice::SetChannel(Ptr<SpectrumChannel> channel)
 {
-    NS_LOG_FUNCTION(this << channel);
+    NS_ABORT_MSG_IF(LrWpanNetDevice::IsInitialized(),
+                    "Spectrum channel cannot be set after initialization");
     m_phy->SetChannel(channel);
     channel->AddRx(m_phy);
-    CompleteConfig();
 }
 
 Ptr<LrWpanMac>
 LrWpanNetDevice::GetMac() const
 {
-    // NS_LOG_FUNCTION (this);
     return m_mac;
 }
 
 Ptr<LrWpanPhy>
 LrWpanNetDevice::GetPhy() const
 {
-    NS_LOG_FUNCTION(this);
     return m_phy;
 }
 
 Ptr<LrWpanCsmaCa>
 LrWpanNetDevice::GetCsmaCa() const
 {
-    NS_LOG_FUNCTION(this);
     return m_csmaca;
 }
 
 void
 LrWpanNetDevice::SetIfIndex(const uint32_t index)
 {
-    NS_LOG_FUNCTION(this << index);
     m_ifIndex = index;
 }
 
 uint32_t
 LrWpanNetDevice::GetIfIndex() const
 {
-    NS_LOG_FUNCTION(this);
     return m_ifIndex;
 }
 
 Ptr<Channel>
 LrWpanNetDevice::GetChannel() const
 {
-    NS_LOG_FUNCTION(this);
     return m_phy->GetChannel();
 }
 
@@ -449,14 +444,12 @@ LrWpanNetDevice::SendFrom(Ptr<Packet> packet,
 Ptr<Node>
 LrWpanNetDevice::GetNode() const
 {
-    NS_LOG_FUNCTION(this);
     return m_node;
 }
 
 void
 LrWpanNetDevice::SetNode(Ptr<Node> node)
 {
-    NS_LOG_FUNCTION(this);
     m_node = node;
     CompleteConfig();
 }

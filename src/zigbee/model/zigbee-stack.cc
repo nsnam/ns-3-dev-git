@@ -29,7 +29,7 @@ TypeId
 ZigbeeStack::GetTypeId()
 {
     static TypeId tid = TypeId("ns3::zigbee::ZigbeeStack")
-                            .SetParent<NetDevice>()
+                            .SetParent<Object>()
                             .SetGroupName("Zigbee")
                             .AddConstructor<ZigbeeStack>();
     return tid;
@@ -38,13 +38,10 @@ ZigbeeStack::GetTypeId()
 ZigbeeStack::ZigbeeStack()
 {
     NS_LOG_FUNCTION(this);
-    m_lrwpanNetDevice = nullptr;
+
     m_nwk = CreateObject<zigbee::ZigbeeNwk>();
     // TODO: Create  APS layer here.
-    //  m_aps = CreateObject<ZigbeeAps> ();
-
-    // Automatically calls m_nwk initialize and dispose functions
-    AggregateObject(m_nwk);
+    //  m_aps = CreateObject<zigbee::ZigbeeAps> ();
 }
 
 ZigbeeStack::~ZigbeeStack()
@@ -53,21 +50,36 @@ ZigbeeStack::~ZigbeeStack()
 }
 
 void
-ZigbeeStack::CompleteConfig()
+ZigbeeStack::DoDispose()
 {
     NS_LOG_FUNCTION(this);
 
-    // TODO: Set APS callback hooks with NWK when support for APS layer is added.
-    //       For example:
-    // m_aps->SetNwk (m_nwk);
-    // m_nwk->SetNldeDataIndicationCallback (MakeCallback (&ZigbeeAps::NldeDataIndication, m_aps));
+    m_netDevice = nullptr;
+    m_node = nullptr;
+    m_nwk = nullptr;
+    m_mac = nullptr;
+    Object::DoDispose();
+}
+
+void
+ZigbeeStack::DoInitialize()
+{
+    NS_LOG_FUNCTION(this);
+
+    AggregateObject(m_nwk);
+
+    NS_ABORT_MSG_UNLESS(m_netDevice,
+                        "Invalid NetDevice found when attempting to install ZigbeeStack");
+
+    // Make sure the NetDevice is previously initialized
+    // before using ZigbeeStack
+    m_netDevice->Initialize();
+
+    m_mac = m_netDevice->GetObject<lrwpan::LrWpanMacBase>();
+    NS_ABORT_MSG_UNLESS(m_mac,
+                        "No valid LrWpanMacBase found in this NetDevice, cannot use ZigbeeStack");
 
     // Set NWK callback hooks with the MAC
-    if (m_lrwpanNetDevice != nullptr)
-    {
-        m_mac = m_lrwpanNetDevice->GetMac();
-    }
-
     m_nwk->SetMac(m_mac);
     m_mac->SetMcpsDataIndicationCallback(MakeCallback(&ZigbeeNwk::McpsDataIndication, m_nwk));
     m_mac->SetMlmeOrphanIndicationCallback(MakeCallback(&ZigbeeNwk::MlmeOrphanIndication, m_nwk));
@@ -87,57 +99,44 @@ ZigbeeStack::CompleteConfig()
 
     // Obtain Extended address as soon as NWK is set to begin operations
     m_mac->MlmeGetRequest(MacPibAttributeIdentifier::macExtendedAddress);
-}
 
-void
-ZigbeeStack::DoDispose()
-{
-    NS_LOG_FUNCTION(this);
+    // TODO: Set APS callback hooks with NWK when support for APS layer is added.
+    //       For example:
+    // m_aps->SetNwk (m_nwk);
+    // m_nwk->SetNldeDataIndicationCallback (MakeCallback (&ZigbeeAps::NldeDataIndication, m_aps));
 
-    m_lrwpanNetDevice = nullptr;
-    m_node = nullptr;
-    m_nwk = nullptr;
-    m_mac = nullptr;
-    Object::DoDispose();
-}
-
-void
-ZigbeeStack::DoInitialize()
-{
-    NS_LOG_FUNCTION(this);
     Object::DoInitialize();
 }
 
 Ptr<Channel>
 ZigbeeStack::GetChannel() const
 {
-    NS_LOG_FUNCTION(this);
-    // TODO
-    // NS_ABORT_MSG_UNLESS(m_lrwpanNetDevice != 0,
-    //                   "Zigbee: can't find any lower-layer protocol " << m_lrwpanNetDevice);
-    return m_lrwpanNetDevice->GetChannel();
+    return m_netDevice->GetChannel();
 }
 
 Ptr<Node>
 ZigbeeStack::GetNode() const
 {
-    NS_LOG_FUNCTION(this);
     return m_node;
 }
 
-void
-ZigbeeStack::SetLrWpanNetDevice(Ptr<LrWpanNetDevice> lrwpanDevice)
+Ptr<NetDevice>
+ZigbeeStack::GetNetDevice() const
 {
-    NS_LOG_FUNCTION(this << lrwpanDevice);
-    m_lrwpanNetDevice = lrwpanDevice;
-    m_node = lrwpanDevice->GetNode();
-    CompleteConfig();
+    return m_netDevice;
+}
+
+void
+ZigbeeStack::SetNetDevice(Ptr<NetDevice> netDevice)
+{
+    NS_LOG_FUNCTION(this << netDevice);
+    m_netDevice = netDevice;
+    m_node = m_netDevice->GetNode();
 }
 
 Ptr<zigbee::ZigbeeNwk>
 ZigbeeStack::GetNwk() const
 {
-    NS_LOG_FUNCTION(this);
     return m_nwk;
 }
 
@@ -145,8 +144,8 @@ void
 ZigbeeStack::SetNwk(Ptr<zigbee::ZigbeeNwk> nwk)
 {
     NS_LOG_FUNCTION(this);
+    NS_ABORT_MSG_IF(ZigbeeStack::IsInitialized(), "NWK layer cannot be set after initialization");
     m_nwk = nwk;
-    CompleteConfig();
 }
 
 } // namespace zigbee

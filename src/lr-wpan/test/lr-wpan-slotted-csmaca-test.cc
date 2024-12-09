@@ -324,6 +324,11 @@ LrWpanSlottedCsmacaTestCase::DoRun()
                           (m_apBoundary + transactionTime),
                           "Error, the transaction time is not the expected value");
 
+    // Disconnect traces to eliminate valgrid errors
+    dev1->GetMac()->TraceDisconnectWithoutContext(
+        "MacIncSuperframeStatus",
+        MakeBoundCallback(&LrWpanSlottedCsmacaTestCase::IncomingSuperframeStatus, this, dev1));
+
     Simulator::Destroy();
 }
 

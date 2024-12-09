@@ -24,8 +24,12 @@ The source code for the new module lives in the directory ``src/zigbee``.
 
     Zigbee Stack Architecture in ns-3
 
-The Zigbee stack implementation is meant to be use on top of a |ns3| NetDevice with a valid lr-wpan MAC layer implementation.
-This is in essence, a Netdevice that contains a ``LrWpanMacBase`` object which enforces a IEEE 802.15.4-2011 compliant MAC.
+The Zigbee stack implementation is designed to operate on top of an existing |ns3| NetDevice that incorporates at least one object derived from ``LrWpanMacBase`` (which is compliant with IEEE 802.15.4-2011 MAC standards).
+This device should have been previously aggregated, such as in the case of ``LrWpanNetDevice``.
+
+While other technologies like 6loWPAN can interact with the underlying MAC layer through general-purpose NetDevice interfaces, Zigbee has specific requirements that necessitate certain features from a lr-wpan MAC.
+Consequently, the |ns3| Zigbee implementation directly accesses the aggregated ``LrWpanMacBase`` and interfaces with it accordingly.
+
 The current scope of the project includes **only the NWK layer in the Zigbee stack**. However, the project can be later extended
 to support higher layers like the Application Sublayer (APS) and the Zigbee Cluster Library (ZCL).
 

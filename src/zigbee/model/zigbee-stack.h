@@ -51,16 +51,19 @@ class ZigbeeStack : public Object
      * @return the object TypeId
      */
     static TypeId GetTypeId();
+
     /**
      * Default constructor
      */
     ZigbeeStack();
     ~ZigbeeStack() override;
+
     /**
      * Get the Channel object of the underlying LrWpanNetDevice
      * @return The LrWpanNetDevice Channel Object
      */
     Ptr<Channel> GetChannel() const;
+
     /**
      * Get the node currently using this ZigbeeStack.
      * @return The reference to the node object using this ZigbeeStack.
@@ -73,26 +76,29 @@ class ZigbeeStack : public Object
      * @return the NWK object
      */
     Ptr<ZigbeeNwk> GetNwk() const;
+
     /**
      * Set the NWK layer used by this ZigbeeStack.
      *
      * @param nwk The NWK layer object
      */
     void SetNwk(Ptr<ZigbeeNwk> nwk);
+
     /**
-     *  Returns a smart pointer to the underlying LrWpanNetDevice.
+     *  Returns a smart pointer to the underlying NetDevice.
      *
-     * @return A smart pointer to the underlying LrWpanNetDevice.
+     * @return A smart pointer to the underlying NetDevice.
      */
-    Ptr<lrwpan::LrWpanNetDevice> GetLrWpanNetDevice() const;
+    Ptr<NetDevice> GetNetDevice() const;
+
     /**
-     *  Setup Zigbee to be the next set of higher layers for the specified LrWpanNetDevice.
-     * All the packets incoming and outgoing from the LrWpanNetDevice will be
-     * processed ZigbeeNetDevice.
+     * Setup Zigbee to be the next set of higher layers for the specified NetDevice.
+     * All the packets incoming and outgoing from the NetDevice will be
+     * processed by ZigbeeStack.
      *
-     * @param [in] lrwpanDevice A smart pointer to the LrWpanNetDevice used by Zigbee.
+     * @param netDevice A smart pointer to the NetDevice used by Zigbee.
      */
-    void SetLrWpanNetDevice(Ptr<lrwpan::LrWpanNetDevice> lrwpanDevice);
+    void SetNetDevice(Ptr<NetDevice> netDevice);
 
   protected:
     /**
@@ -106,16 +112,10 @@ class ZigbeeStack : public Object
     void DoInitialize() override;
 
   private:
-    /**
-     * Configure NWK, APS layers, connect to the underlying MAC layer.
-     */
-    void CompleteConfig();
-
     Ptr<lrwpan::LrWpanMacBase> m_mac; //!< The underlying LrWpan MAC connected to this Zigbee Stack.
     Ptr<ZigbeeNwk> m_nwk;             //!< The Zigbee Network layer.
     Ptr<Node> m_node;                 //!< The node associated with this NetDevice.
-    Ptr<lrwpan::LrWpanNetDevice>
-        m_lrwpanNetDevice; //!< Smart pointer to the underlying LrWpanNetDevice.
+    Ptr<NetDevice> m_netDevice;       //!< Smart pointer to the underlying NetDevice.
 };
 
 } // namespace zigbee

@@ -252,11 +252,14 @@ LrWpanMac::LrWpanMac()
 
 LrWpanMac::~LrWpanMac()
 {
+    NS_LOG_FUNCTION(this);
 }
 
 void
 LrWpanMac::DoInitialize()
 {
+    NS_LOG_FUNCTION(this);
+
     if (m_macRxOnWhenIdle)
     {
         m_phy->PlmeSetTRXStateRequest(IEEE_802_15_4_PHY_RX_ON);
@@ -272,6 +275,8 @@ LrWpanMac::DoInitialize()
 void
 LrWpanMac::DoDispose()
 {
+    NS_LOG_FUNCTION(this);
+
     if (m_csmaCa)
     {
         m_csmaCa->Dispose();
@@ -291,6 +296,7 @@ LrWpanMac::DoDispose()
     }
     m_indTxQueue.clear();
 
+    m_uniformVar = nullptr;
     m_phy = nullptr;
     m_mcpsDataConfirmCallback = MakeNullCallback<void, McpsDataConfirmParams>();
     m_mcpsDataIndicationCallback = MakeNullCallback<void, McpsDataIndicationParams, Ptr<Packet>>();

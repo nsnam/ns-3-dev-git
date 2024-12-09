@@ -8,12 +8,12 @@ IEEE 802.15.4: Low-Rate Wireless Personal Area Network (LR-WPAN)
 This chapter describes the implementation of |ns3| models for the
 low-rate, wireless personal area network (LR-WPAN) as specified by
 IEEE standard 802.15.4 (2003,2006,2011). The current emphasis is on direct transmissions running on both,
-slotted and unslotted mode (CSMA/CA) of IEEE 802.15.4 operation for use in Zigbee and 6loWPAN networks.
+slotted and unslotted mode (CSMA/CA) of IEEE 802.15.4 operation for use in Zigbee (TM) and 6loWPAN networks.
 
 Both beacon and non-beacon modes are supported as well as the bootstrap mechanism (scan and association).
 
-In general, this document describes what is modeled and how it is modeled; the following section [Scope and
-Limitations]() provides more details about what is not covered or what is missing in the model.
+In general, this document describes what is modeled and how it is modeled; the following section Scope and
+Limitations provides more details about what is not covered or what is missing in the model.
 
 The model is implemented into the ``src/lrwpan/`` folder.
 
@@ -110,10 +110,13 @@ The PHY primitives currently supported by the |ns3| model are:
 
 For more information on primitives, See IEEE 802.15.4-2011, Table 8.
 
-Although it is expected that other technology profiles (such as
-6LoWPAN and ZigBee) will write their own NetDevice classes, a basic
-``LrWpanNetDevice`` is provided, which encapsulates the common operations
-of creating a generic LrWpan device and hooking things together.
+In addition, this module provides a configuration for connecting various components.
+The current design of the ``LrWpanNetDevice`` allows for the configuration of different instances of ``LrWpanMac``, which can only be set before the initialization of the NetDevice.
+This design can be extended in the future to support other subclasses of ``LrWpanMacBase``, enabling the configuration of different types of MAC layers using the same ``LrWpanNetDevice``.
+
+The ``LrWpanNetDevice`` presented in this module is intended to be used with other technology profiles, such as the 6LoWPAN and ZigBee stack.
+
+
 
 
 Scope and Limitations
@@ -226,18 +229,18 @@ The implemented |ns3| MAC layer supports scanning. Typically, a scanning request
 by an association request but these can be used independently.
 |ns3| IEEE 802.15.4 MAC layer supports 4 types of scanning:
 
-* *Energy Detection (ED) Scan:* In an energy scan, a device or a coordinator scan a set number of channels looking for traces of energy. The maximum energy registered during a given amount of time is stored. Energy scan is typically used to measure the quality of a channel at any given time. For this reason, coordinators often use this scan before initiating a PAN on a channel.
+* **Energy Detection (ED) Scan:** In an energy scan, a device or a coordinator scan a set number of channels looking for traces of energy. The maximum energy registered during a given amount of time is stored. Energy scan is typically used to measure the quality of a channel at any given time. For this reason, coordinators often use this scan before initiating a PAN on a channel.
 
-* *Active Scan:* A device sends ``beacon request commands`` on a set number of channels looking for a PAN coordinator. The receiving coordinator must be configured on non-beacon mode. Coordinators on beacon-mode ignore these requests. The coordinators who accept the request, respond with a beacon. After an active scan take place, during the association process devices extract the information in the PAN descriptors from the collected beacons and based on this information (e.g. channel, LQI level), choose a coordinator to associate with.
+* **Active Scan:** A device sends ``beacon request commands`` on a set number of channels looking for a PAN coordinator. The receiving coordinator must be configured on non-beacon mode. Coordinators on beacon-mode ignore these requests. The coordinators who accept the request, respond with a beacon. After an active scan take place, during the association process devices extract the information in the PAN descriptors from the collected beacons and based on this information (e.g. channel, LQI level), choose a coordinator to associate with.
 
-* *Passive Scan:* In a passive scan, no ``beacon requests commands`` are sent. Devices scan a set number of channels looking for beacons currently being transmitted (coordinators in beacon-mode). Like in the active scan, the information from beacons is stored in PAN descriptors and used by the device to choose a coordinator to associate with.
+* **Passive Scan:** In a passive scan, no ``beacon requests commands`` are sent. Devices scan a set number of channels looking for beacons currently being transmitted (coordinators in beacon-mode). Like in the active scan, the information from beacons is stored in PAN descriptors and used by the device to choose a coordinator to associate with.
 
-* *Orphan Scan:* Orphan scan is used typically by device as a result of repeated communication failure attempts with a coordinator. In other words, an orphan scan represents the intent of a device to relocate its coordinator. In some situations, it can be used by devices higher layers to not only rejoin a network but also join a network for the first time. In an orphan scan, a device send a ``orphan notification command`` to a given list of channels. If a coordinator receives this notification, it responds to the device with a ``coordinator realignment command``.
+* **Orphan Scan:** Orphan scan is used typically by device as a result of repeated communication failure attempts with a coordinator. In other words, an orphan scan represents the intent of a device to relocate its coordinator. In some situations, it can be used by devices higher layers to not only rejoin a network but also join a network for the first time. In an orphan scan, a device send a ``orphan notification command`` to a given list of channels. If a coordinator receives this notification, it responds to the device with a ``coordinator realignment command``.
 
 In active and passive scans, the link quality indicator (LQI) is the main parameter used to
 determine the optimal coordinator. LQI values range from 0 to 255. Where 255 is the highest quality link value and 0 the lowest. Typically, a link lower than 127 is considered a link with poor quality.
 
-In LR-WPAN, association is used to join  PANs. All devices in LR-WPAN must belong to a PAN to communicate. |ns3| uses a classic association procedure described in the standard. The standard also covers a more effective association procedure known as fast association (See IEEE 802.15.4-2015, fastA) but this association is currently not supported by |ns3|. Alternatively, |ns3| can do a "quick and dirty" association using either ```LrWpanHelper::AssociateToPan``` or ```LrWpanHelper::AssociateToBeaconPan```. These functions are used when a preset association can be done. For example, when the relationships between existing nodes and coordinators are known and can be set before the beginning of the simulation. In other situations, like in many networks in real deployments or in large networks, it is desirable that devices "associate themselves" with the best possible available coordinator candidates. This is a process known as bootstrap, and simulating this process makes it possible to demonstrate the kind of situations a node would face in which large networks to associate in real environment.
+In LR-WPAN, association is used to join PANs. All devices in LR-WPAN must belong to a PAN to communicate. |ns3| uses a classic association procedure described in the standard. The standard also covers a more effective association procedure known as fast association (See IEEE 802.15.4-2015, fastA) but this association is currently not supported by |ns3|. Alternatively, |ns3| can do a "quick and dirty" association using either ```LrWpanHelper::AssociateToPan``` or ```LrWpanHelper::AssociateToBeaconPan```. These functions are used when a preset association can be done. For example, when the relationships between existing nodes and coordinators are known and can be set before the beginning of the simulation. In other situations, like in many networks in real deployments or in large networks, it is desirable that devices "associate themselves" with the best possible available coordinator candidates. This is a process known as bootstrap, and simulating this process makes it possible to demonstrate the kind of situations a node would face in which large networks to associate in real environment.
 
 Bootstrap (a.k.a. network initialization) is possible with a combination of scan and association MAC primitives. Details on the general process for this network initialization is described in the standard. Bootstrap is a complex process that not only requires the scanning networks, but also the exchange of command frames and the use of a pending transaction list (indirect transmissions) in the coordinator to store command frames. The following summarizes the whole process:
 
@@ -250,8 +253,8 @@ Examples such as  ``lr-wpan-bootstrap.cc`` demonstrate the whole bootstrap proce
 
 A key element to remember is that bootstrap have 2 objectives:
 
-1- Enable devices to join a new formed network (associate).
-2- Assign short addresses and PAN ID.
+1. Enable devices to join a new formed network (associate).
+2. Assign short addresses and PAN ID.
 
 Devices that have the short address ``FF:FF`` are not associated an cannot participate in any unicast communication in the network.
 Devices that have the short address ``FF:FE`` and have a valid PAN ID can communicate with other devices in the network using the
