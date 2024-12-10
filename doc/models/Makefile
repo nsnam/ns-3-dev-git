@@ -372,8 +372,9 @@ SOURCEFIGS = \
 	$(SRC)/energy/doc/figures/liion.png \
 	$(SRC)/energy/doc/figures/nicd.png \
 	$(SRC)/energy/doc/figures/nimh.png \
-	$(SRC)/zigbee/doc/figures/manyToOne.png \
-	$(SRC)/zigbee/doc/zigbeeStackArch.dia
+	$(SRC)/zigbee/doc/figures/zigbeeStackArch.dia \
+	$(SRC)/zigbee/doc/figures/manyToOne.dia \
+	$(SRC)/zigbee/doc/figures/mesh.dia
 
 # specify figures from which .png and .pdf figures need to be
 # generated (all dia and eps figures)
@@ -495,7 +496,9 @@ IMAGES_EPS = \
 	$(FIGURES)/lte-test-rlf-two-enb.eps \
 	$(FIGURES)/lena-radio-link-failure-one-enb.eps \
 	$(FIGURES)/lena-radio-link-failure-two-enb.eps \
-	$(FIGURES)/zigbeeStackArch.eps
+	$(FIGURES)/zigbeeStackArch.eps \
+	$(FIGURES)/manyToOne.eps \
+	$(FIGURES)/mesh.eps
 
 # rescale pdf figures as necessary
 $(FIGURES)/testbed.pdf_width = 5in
@@ -559,6 +562,8 @@ $(FIGURES)/assoc-manager.pdf_width = 12cm
 $(FIGURES)/emlsr-dl-txop.pdf_width = 12cm
 $(FIGURES)/emlsr-ul-txop.pdf_width = 12cm
 $(FIGURES)/zigbeeStackArch.pdf_width = 8cm
+$(FIGURES)/manyToOne.pdf_width = 8cm
+$(FIGURES)/mesh.pdf_width = 8cm
 
 IMAGES_PNG = ${IMAGES_EPS:.eps=.png}
 IMAGES_PDF = ${IMAGES_EPS:.eps=.pdf}
