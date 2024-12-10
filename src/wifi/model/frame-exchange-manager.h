@@ -441,6 +441,12 @@ class FrameExchangeManager : public Object
     virtual void NotifyReceivedNormalAck(Ptr<WifiMpdu> mpdu);
 
     /**
+     * Take actions required when a frame is received from the associated AP after sending a
+     * PS-Poll frame.
+     */
+    void ReceiveFrameAfterPsPoll();
+
+    /**
      * Retransmit an MPDU that was not acknowledged.
      *
      * @param mpdu the MPDU to retransmit

@@ -1379,6 +1379,16 @@ HtFrameExchangeManager::ForwardPsduDown(Ptr<const WifiPsdu> psdu, WifiTxVector& 
     const auto txDuration = WifiPhy::CalculateTxDuration(psdu, txVector, m_phy->GetPhyBand());
     SetTxNav(*psdu->begin(), txDuration);
 
+    const auto& hdr = psdu->GetHeader(0);
+    // if this is an Ack or BlockAck sent to acknowledge a frame in response to a PS-Poll that we
+    // sent, we need to take the actions required to conclude a frame exchange
+    if (m_txTimer.IsRunning() && m_txTimer.GetReason() == WifiTxTimer::WAIT_DATA_AFTER_PS_POLL &&
+        (hdr.IsAck() || hdr.IsBlockAck()) && hdr.GetAddr1() == m_bssid)
+    {
+        ReceiveFrameAfterPsPoll();
+        Simulator::Schedule(txDuration, &HtFrameExchangeManager::TransmissionSucceeded, this);
+    }
+
     m_phy->Send(psdu, txVector);
 }
 

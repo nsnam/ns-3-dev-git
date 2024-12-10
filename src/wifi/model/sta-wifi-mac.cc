@@ -468,6 +468,31 @@ StaWifiMac::EnqueueProbeRequest(const MgtProbeRequestHeader& probeReq,
     EnqueueMgt(hdr, {probeReq}, linkId);
 }
 
+void
+StaWifiMac::EnqueuePsPoll(uint8_t linkId)
+{
+    NS_LOG_FUNCTION(this << linkId);
+
+    WifiMacHeader psPoll(WIFI_MAC_CTL_PSPOLL);
+    psPoll.SetDsNotFrom();
+    psPoll.SetDsTo();
+    psPoll.SetNoRetry();
+    psPoll.SetNoMoreFragments();
+    psPoll.SetPowerManagement();
+    // The Duration/ID field contains the AID value assigned to the STA transmitting the frame by
+    // the AP in the (Re)Association Response frame that established that STA’s current association,
+    // with the two MSBs set to 1 (Sec. 9.3.1.5.2 of 802.11-2020)
+    psPoll.SetId(GetAssociationId() | 0xC000);
+    auto fem = GetLink(linkId).feManager;
+    psPoll.SetAddr1(fem->GetBssid());
+    psPoll.SetAddr2(fem->GetAddress());
+
+    // A non-S1G STA shall send PS-Poll frames using the access category AC_BE. This reduces the
+    // likelihood of collisions following a Beacon frame. (802.11-2020 Section 10.2.3.2)
+    auto txop = GetQosSupported() ? StaticCast<Txop>(GetQosTxop(AC_BE)) : GetTxop();
+    txop->Queue(Create<WifiMpdu>(Create<Packet>(), psPoll));
+}
+
 std::variant<MgtAssocRequestHeader, MgtReassocRequestHeader>
 StaWifiMac::GetAssociationRequest(bool isReassoc, uint8_t linkId) const
 {

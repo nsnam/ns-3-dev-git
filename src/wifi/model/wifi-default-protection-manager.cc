@@ -73,12 +73,19 @@ WifiDefaultProtectionManager::TryAddMpdu(Ptr<const WifiMpdu> mpdu, const WifiTxP
 {
     NS_LOG_FUNCTION(this << *mpdu << &txParams);
 
+    const auto& hdr = mpdu->GetHeader();
+
+    if (hdr.IsPsPoll())
+    {
+        NS_ASSERT(!txParams.m_protection);
+        return std::make_unique<WifiNoProtection>();
+    }
+
     // Call a separate method that handles MU-RTS/CTS protection in case of DL MU PPDU containing
     // more than one PSDU or in case the MPDU being added is addressed to an EMLSR client or in
     // case the protection method is already MU-RTS/CTS.
     const auto& psduInfoMap = txParams.GetPsduInfoMap();
     auto dlMuPpdu = txParams.m_txVector.IsDlMu() && psduInfoMap.size() > 1;
-    const auto& hdr = mpdu->GetHeader();
     auto isEmlsrDestination = GetWifiRemoteStationManager()->GetEmlsrEnabled(hdr.GetAddr1());
 
     if (dlMuPpdu || isEmlsrDestination ||

@@ -410,7 +410,7 @@ QosTxop::PeekNextMpdu(uint8_t linkId, uint8_t tid, Mac48Address recipient, Ptr<c
     // not get a sequence number assigned)
     while (item && !item->IsFragment())
     {
-        if (item->GetHeader().IsCtl())
+        if (item->GetHeader().IsCtl() && !item->GetHeader().IsPsPoll())
         {
             NS_LOG_DEBUG("Skipping control frame: " << *item);
             mpdu = item;

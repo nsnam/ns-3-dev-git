@@ -302,9 +302,20 @@ FrameExchangeManager::RxStartIndication(WifiTxVector txVector, Time psduDuration
     {
         // we are waiting for a response and something arrived
         NS_LOG_DEBUG("Rescheduling timeout event");
-        m_txTimer.Reschedule(psduDuration + NanoSeconds(PSDU_DURATION_SAFEGUARD));
-        // PHY has switched to RX, so we can reset the ack timeout
-        m_channelAccessManager->NotifyAckTimeoutResetNow();
+        if (m_txTimer.GetReason() == WifiTxTimer::WAIT_DATA_AFTER_PS_POLL)
+        {
+            // postpone the timer expiration by an additional SIFS, so that SendNormalAck() and
+            // SendBlockAck() detect that this is a frame exchange initiated by us and take usual
+            // actions in case of successful transmission
+            m_txTimer.Reschedule(psduDuration + m_phy->GetSifs() +
+                                 NanoSeconds(PSDU_DURATION_SAFEGUARD));
+        }
+        else
+        {
+            m_txTimer.Reschedule(psduDuration + NanoSeconds(PSDU_DURATION_SAFEGUARD));
+            // PHY has switched to RX, so we can reset the ack timeout
+            m_channelAccessManager->NotifyAckTimeoutResetNow();
+        }
     }
 
     if (m_navResetEvent.IsPending())
@@ -376,19 +387,19 @@ FrameExchangeManager::StartTransmission(Ptr<Txop> dcf, MHz_t allowedWidth)
     }
 
     m_dcf->NotifyChannelAccessed(m_linkId);
+    const auto& hdr = mpdu->GetHeader();
 
-    NS_ASSERT(mpdu->GetHeader().IsData() || mpdu->GetHeader().IsMgt());
+    NS_ASSERT(hdr.IsData() || hdr.IsMgt() || hdr.IsPsPoll());
 
     // assign a sequence number if this is not a fragment nor a retransmission
-    if (!mpdu->IsFragment() && !mpdu->GetHeader().IsRetry())
+    if (!mpdu->IsFragment() && !hdr.IsRetry())
     {
-        uint16_t sequence = m_txMiddle->GetNextSequenceNumberFor(&mpdu->GetHeader());
+        const auto sequence = m_txMiddle->GetNextSequenceNumberFor(&hdr);
         mpdu->AssignSeqNo(sequence);
     }
 
-    NS_LOG_DEBUG("MPDU payload size=" << mpdu->GetPacketSize()
-                                      << ", to=" << mpdu->GetHeader().GetAddr1()
-                                      << ", seq=" << mpdu->GetHeader().GetSequenceControl());
+    NS_LOG_DEBUG("MPDU payload size=" << mpdu->GetPacketSize() << ", to=" << hdr.GetAddr1()
+                                      << ", seq=" << hdr.GetSequenceControl());
 
     // check if the MSDU needs to be fragmented
     mpdu = GetFirstFragmentIfNeeded(mpdu);
@@ -396,10 +407,9 @@ FrameExchangeManager::StartTransmission(Ptr<Txop> dcf, MHz_t allowedWidth)
     NS_ASSERT(m_protectionManager);
     NS_ASSERT(m_ackManager);
     WifiTxParameters txParams;
-    txParams.m_txVector =
-        GetWifiRemoteStationManager()->GetDataTxVector(mpdu->GetHeader(), m_allowedWidth);
+    txParams.m_txVector = GetWifiRemoteStationManager()->GetDataTxVector(hdr, m_allowedWidth);
     txParams.AddMpdu(mpdu);
-    UpdateTxDuration(mpdu->GetHeader().GetAddr1(), txParams);
+    UpdateTxDuration(hdr.GetAddr1(), txParams);
     txParams.m_protection = m_protectionManager->TryAddMpdu(mpdu, txParams);
     txParams.m_acknowledgment = m_ackManager->TryAddMpdu(mpdu, txParams);
 
@@ -551,6 +561,23 @@ FrameExchangeManager::SendMpdu()
                 DequeueMpdu(m_mpdu);
             }
         }
+        else if (m_mpdu->GetHeader().IsPsPoll())
+        {
+            // the Duration/ID field has been already set to the AID of the STA. We assume that the
+            // AP will use the same modulation class as the PS-Poll frame to send us a data frame
+            const auto timeout =
+                txDuration + m_phy->GetSifs() + m_phy->GetSlot() +
+                WifiPhy::CalculatePhyPreambleAndHeaderDuration(m_txParams.m_txVector);
+            NS_ASSERT(!m_txTimer.IsRunning());
+            m_txTimer.Set(WifiTxTimer::WAIT_DATA_AFTER_PS_POLL,
+                          timeout,
+                          {m_mpdu->GetHeader().GetAddr1()},
+                          &FrameExchangeManager::NormalAckTimeout,
+                          this,
+                          m_mpdu,
+                          m_txParams.m_txVector);
+            m_channelAccessManager->NotifyAckTimeoutStartNow(timeout);
+        }
         else if (!m_mpdu->GetHeader().IsQosData() ||
                  m_mpdu->GetHeader().GetQosAckPolicy() == WifiMacHeader::NO_ACK)
         {
@@ -558,10 +585,13 @@ FrameExchangeManager::SendMpdu()
             DequeueMpdu(m_mpdu);
         }
 
-        Simulator::Schedule(txDuration, [=, this]() {
-            TransmissionSucceeded();
-            m_mpdu = nullptr;
-        });
+        if (!m_mpdu->GetHeader().IsPsPoll())
+        {
+            Simulator::Schedule(txDuration, [=, this]() {
+                TransmissionSucceeded();
+                m_mpdu = nullptr;
+            });
+        }
     }
     else if (m_txParams.m_acknowledgment->method == WifiAcknowledgment::NORMAL_ACK)
     {
@@ -615,6 +645,17 @@ FrameExchangeManager::ForwardMpduDown(Ptr<WifiMpdu> mpdu, WifiTxVector& txVector
     m_allowedWidth = std::min(m_allowedWidth, txVector.GetChannelWidth());
     const auto txDuration = WifiPhy::CalculateTxDuration(psdu, txVector, m_phy->GetPhyBand());
     SetTxNav(mpdu, txDuration);
+
+    const auto& hdr = psdu->GetHeader(0);
+    // if this is an Ack sent to acknowledge a frame in response to a PS-Poll that we
+    // sent, we need to take the actions required to conclude a frame exchange
+    if (m_txTimer.IsRunning() && m_txTimer.GetReason() == WifiTxTimer::WAIT_DATA_AFTER_PS_POLL &&
+        hdr.IsAck() && hdr.GetAddr1() == m_bssid)
+    {
+        ReceiveFrameAfterPsPoll();
+        Simulator::Schedule(txDuration, &FrameExchangeManager::TransmissionSucceeded, this);
+    }
+
     m_phy->Send(psdu, txVector);
 }
 
@@ -1313,6 +1354,37 @@ FrameExchangeManager::Receive(Ptr<const WifiPsdu> psdu,
         // for A-MPDUs, we get here only once
         PostProcessFrame(psdu, txVector);
     }
+
+    // if the received frame is an Ack in response to a PS-Poll that we sent, we
+    // need to take the actions required to conclude a frame exchange
+    if (m_staMac && (psdu->GetHeader(0).IsAck() || psdu->GetAddr2() == m_bssid) &&
+        addr1 == m_self && m_txTimer.IsRunning() &&
+        m_txTimer.GetReason() == WifiTxTimer::WAIT_DATA_AFTER_PS_POLL)
+    {
+        if (psdu->GetHeader(0).IsAck())
+        {
+            ReceiveFrameAfterPsPoll();
+            TransmissionSucceeded();
+        }
+    }
+}
+
+void
+FrameExchangeManager::ReceiveFrameAfterPsPoll()
+{
+    NS_LOG_FUNCTION(this);
+    NS_ASSERT(m_staMac && m_txTimer.IsRunning() &&
+              m_txTimer.GetReason() == WifiTxTimer::WAIT_DATA_AFTER_PS_POLL);
+
+    m_txTimer.Cancel();
+    m_channelAccessManager->NotifyAckTimeoutResetNow();
+
+    NS_ASSERT(m_dcf != nullptr);
+    m_dcf->ResetCw(m_linkId);
+
+    NS_ASSERT(m_mpdu != nullptr);
+    NS_ASSERT(m_mpdu->GetHeader().IsPsPoll());
+    DequeueMpdu(m_mpdu);
 }
 
 void

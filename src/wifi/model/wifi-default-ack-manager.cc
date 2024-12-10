@@ -224,6 +224,14 @@ WifiDefaultAckManager::TryAddMpdu(Ptr<const WifiMpdu> mpdu, const WifiTxParamete
 {
     NS_LOG_FUNCTION(this << *mpdu << &txParams);
 
+    const auto& hdr = mpdu->GetHeader();
+
+    if (hdr.IsPsPoll())
+    {
+        NS_ASSERT(!txParams.m_acknowledgment);
+        return std::make_unique<WifiNoAck>();
+    }
+
     // If the TXVECTOR indicates a DL MU PPDU, call a separate method
     if (txParams.m_txVector.IsDlMu())
     {
@@ -241,7 +249,6 @@ WifiDefaultAckManager::TryAddMpdu(Ptr<const WifiMpdu> mpdu, const WifiTxParamete
         }
     }
 
-    const WifiMacHeader& hdr = mpdu->GetHeader();
     Mac48Address receiver = hdr.GetAddr1();
 
     // Acknowledgment for TB PPDUs

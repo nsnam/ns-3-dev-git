@@ -53,6 +53,7 @@ class WifiTxTimer
         WAIT_TB_PPDU_AFTER_BASIC_TF,
         WAIT_QOS_NULL_AFTER_BSRP_TF,
         WAIT_BLOCK_ACK_AFTER_TB_PPDU,
+        WAIT_DATA_AFTER_PS_POLL,
     };
 
     /** Default constructor */

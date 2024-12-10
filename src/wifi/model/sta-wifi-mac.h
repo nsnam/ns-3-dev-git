@@ -301,6 +301,13 @@ class StaWifiMac : public WifiMac
     void SetPmModeAfterAssociation(uint8_t linkId);
 
     /**
+     * Enqueue a PS-Poll frame to be sent on the given link.
+     *
+     * @param linkId the ID of the link on which the PS-Poll frame must be sent
+     */
+    void EnqueuePsPoll(uint8_t linkId);
+
+    /**
      * Notify that the MPDU we sent was successfully received by the receiver
      * (i.e. we received an Ack from the receiver).
      *
