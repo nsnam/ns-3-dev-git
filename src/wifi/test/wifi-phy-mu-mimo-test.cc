@@ -543,7 +543,7 @@ TestDlMuMimoPhyTransmission::SendMuPpdu(const std::vector<StaInfo>& staInfos)
                                          false);
 
     WifiConstPsduMap psdus;
-    HeRu::RuSpec ru(HeRu::GetRuType(m_channelWidth), 1, true); // full BW MU-MIMO
+    HeRu::RuSpec ru(WifiRu::GetRuType(m_channelWidth), 1, true); // full BW MU-MIMO
     for (const auto& staInfo : staInfos)
     {
         txVector.SetRu(ru, staInfo.staId);
@@ -1333,7 +1333,7 @@ TestUlMuMimoPhyTransmission::GetTxVectorForHeTbPpdu(uint16_t txStaId,
                                          false,
                                          bssColor);
 
-    HeRu::RuSpec ru(HeRu::GetRuType(m_channelWidth), 1, true); // full BW MU-MIMO
+    HeRu::RuSpec ru(WifiRu::GetRuType(m_channelWidth), 1, true); // full BW MU-MIMO
     txVector.SetRu(ru, txStaId);
     txVector.SetMode(HePhy::GetHeMcs7(), txStaId);
     txVector.SetNss(nss, txStaId);
@@ -1357,7 +1357,7 @@ TestUlMuMimoPhyTransmission::SetTrigVector(const std::vector<uint16_t>& staIds, 
                           false,
                           bssColor);
 
-    HeRu::RuSpec ru(HeRu::GetRuType(m_channelWidth), 1, true); // full BW MU-MIMO
+    HeRu::RuSpec ru(WifiRu::GetRuType(m_channelWidth), 1, true); // full BW MU-MIMO
     for (auto staId : staIds)
     {
         txVector.SetRu(ru, staId);

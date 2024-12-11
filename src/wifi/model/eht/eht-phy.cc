@@ -339,7 +339,7 @@ EhtPhy::GetPhyRateFromTxVector(const WifiTxVector& txVector, uint16_t staId /* =
     auto bw = txVector.GetChannelWidth();
     if (txVector.IsMu())
     {
-        bw = HeRu::GetBandwidth(txVector.GetRu(staId).GetRuType());
+        bw = WifiRu::GetBandwidth(txVector.GetRu(staId).GetRuType());
     }
     return EhtPhy::GetPhyRate(txVector.GetMode(staId).GetMcsValue(),
                               bw,
@@ -353,7 +353,7 @@ EhtPhy::GetDataRateFromTxVector(const WifiTxVector& txVector, uint16_t staId /* 
     auto bw = txVector.GetChannelWidth();
     if (txVector.IsMu())
     {
-        bw = HeRu::GetBandwidth(txVector.GetRu(staId).GetRuType());
+        bw = WifiRu::GetBandwidth(txVector.GetRu(staId).GetRuType());
     }
     return EhtPhy::GetDataRate(txVector.GetMode(staId).GetMcsValue(),
                                bw,

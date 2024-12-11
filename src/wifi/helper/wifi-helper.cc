@@ -690,7 +690,7 @@ WifiPhyHelper::GetRadiotapHeader(RadiotapHeader& header,
             break;
         }
         ehtFields.data.at(1) = RadiotapHeader::EHT_DATA1_RU_ALLOC_CC_1_1_1_KNOWN;
-        const auto ruType = (txVector.GetEhtPpduType() == 1) ? HeRu::GetRuType(channelWidth)
+        const auto ruType = (txVector.GetEhtPpduType() == 1) ? WifiRu::GetRuType(channelWidth)
                                                              : txVector.GetRu(staId).GetRuType();
         switch (ruType)
         {

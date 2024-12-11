@@ -12,8 +12,7 @@
 
 #include "wifi-phy-band.h"
 #include "wifi-phy-common.h"
-
-#include "ns3/he-ru.h"
+#include "wifi-ru.h"
 
 #include <optional>
 #include <set>

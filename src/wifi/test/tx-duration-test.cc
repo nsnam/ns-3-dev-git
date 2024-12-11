@@ -255,7 +255,7 @@ TxDurationTest::CheckMuTxDuration(std::list<uint32_t> sizes,
                            std::end(userInfos),
                            MHz_u{0},
                            [](const MHz_u prevBw, const HeMuUserInfo& info) {
-                               return prevBw + HeRu::GetBandwidth(info.ru.GetRuType());
+                               return prevBw + WifiRu::GetBandwidth(info.ru.GetRuType());
                            }),
         "Cannot accommodate all the RUs in the provided band"); // MU-MIMO (for which allocations
                                                                 // use the same RU) is not supported

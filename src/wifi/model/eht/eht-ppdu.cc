@@ -166,7 +166,7 @@ EhtPpdu::SetTxVectorFromPhyHeaders(WifiTxVector& txVector) const
         }
         else
         {
-            const auto fullBwRu{HeRu::RuSpec(HeRu::GetRuType(bw), 1, true)};
+            const auto fullBwRu{HeRu::RuSpec(WifiRu::GetRuType(bw), 1, true)};
             txVector.SetHeMuUserInfo(ehtPhyHeader->m_contentChannels.front().front().staId,
                                      {fullBwRu,
                                       ehtPhyHeader->m_contentChannels.front().front().mcs,

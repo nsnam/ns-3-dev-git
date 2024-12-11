@@ -967,7 +967,7 @@ HePhy::GetChannelWidthAndBand(const WifiTxVector& txVector, uint16_t staId) cons
 {
     if (txVector.IsMu())
     {
-        return {HeRu::GetBandwidth(txVector.GetRu(staId).GetRuType()),
+        return {WifiRu::GetBandwidth(txVector.GetRu(staId).GetRuType()),
                 GetRuBandForRx(txVector, staId)};
     }
     else
@@ -1048,7 +1048,7 @@ HePhy::GetNonOfdmaWidth(HeRu::RuSpec ru) const
         // any 20 MHz channel, but only by an 80 MHz channel
         return MHz_u{80};
     }
-    return std::max(HeRu::GetBandwidth(ru.GetRuType()), MHz_u{20});
+    return std::max(WifiRu::GetBandwidth(ru.GetRuType()), MHz_u{20});
 }
 
 uint64_t
@@ -1338,7 +1338,7 @@ HePhy::GetTxPowerSpectralDensity(Watt_u txPower,
         {
             // non-HE portion is sent only on the 20 MHz channels covering the RU
             const auto staId = GetStaId(ppdu);
-            const auto ruWidth = HeRu::GetBandwidth(txVector.GetRu(staId).GetRuType());
+            const auto ruWidth = WifiRu::GetBandwidth(txVector.GetRu(staId).GetRuType());
             channelWidth = (ruWidth < MHz_u{20}) ? MHz_u{20} : ruWidth;
             return WifiSpectrumValueHelper::CreateDuplicated20MhzTxPowerSpectralDensity(
                 GetCenterFrequenciesForNonHePart(ppdu, staId),
@@ -1417,7 +1417,7 @@ HePhy::GetCenterFrequenciesForNonHePart(Ptr<const WifiPpdu> ppdu, uint16_t staId
     {
         // Obtain the index of the non-OFDMA portion
         HeRu::RuSpec nonOfdmaRu =
-            HeRu::FindOverlappingRu(currentWidth, ru, HeRu::GetRuType(nonOfdmaWidth));
+            HeRu::FindOverlappingRu(currentWidth, ru, WifiRu::GetRuType(nonOfdmaWidth));
 
         const MHz_u startingFrequency = centerFrequencies.front() - (currentWidth / 2);
         centerFrequencies.front() =
@@ -1646,7 +1646,7 @@ HePhy::GetPhyRateFromTxVector(const WifiTxVector& txVector, uint16_t staId /* = 
     auto bw = txVector.GetChannelWidth();
     if (txVector.IsMu())
     {
-        bw = HeRu::GetBandwidth(txVector.GetRu(staId).GetRuType());
+        bw = WifiRu::GetBandwidth(txVector.GetRu(staId).GetRuType());
     }
     return HePhy::GetPhyRate(txVector.GetMode(staId).GetMcsValue(),
                              bw,
@@ -1660,7 +1660,7 @@ HePhy::GetDataRateFromTxVector(const WifiTxVector& txVector, uint16_t staId /* =
     auto bw = txVector.GetChannelWidth();
     if (txVector.IsMu())
     {
-        bw = HeRu::GetBandwidth(txVector.GetRu(staId).GetRuType());
+        bw = WifiRu::GetBandwidth(txVector.GetRu(staId).GetRuType());
     }
     return HePhy::GetDataRate(txVector.GetMode(staId).GetMcsValue(),
                               bw,

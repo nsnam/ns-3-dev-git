@@ -814,7 +814,7 @@ WifiPhyOperatingChannel::Get20MHzIndicesCoveringRu(HeRu::RuSpec ru, MHz_u width)
 {
     auto ruType = ru.GetRuType();
 
-    NS_ASSERT_MSG(HeRu::GetBandwidth(ruType) <= width,
+    NS_ASSERT_MSG(WifiRu::GetBandwidth(ruType) <= width,
                   "No RU of type " << ruType << " is contained in a " << width << " MHz channel");
     NS_ASSERT_MSG(width <= GetTotalWidth(),
                   "The given width (" << width << " MHz) exceeds the operational width ("

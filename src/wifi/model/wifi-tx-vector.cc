@@ -651,7 +651,7 @@ WifiTxVector::IsSigBCompression() const
     // bandwidth (27.3.11.8.3 Common field in IEEE802.11ax-2021)
     return (IsDlMuMimo() && !IsDlOfdma()) ||
            ((m_muUserInfos.size() == 1) && (m_channelWidth >= MHz_u{160}) &&
-            (m_muUserInfos.cbegin()->second.ru.GetRuType() == HeRu::GetRuType(m_channelWidth)));
+            (m_muUserInfos.cbegin()->second.ru.GetRuType() == WifiRu::GetRuType(m_channelWidth)));
 }
 
 void
@@ -802,7 +802,7 @@ WifiTxVector::DeriveRuAllocation(uint8_t p20Index) const
             continue;
         }
         const auto ruType = ru.GetRuType();
-        const auto ruBw = HeRu::GetBandwidth(ruType);
+        const auto ruBw = WifiRu::GetBandwidth(ruType);
         const auto rusPerSubchannel =
             HeRu::GetRusOfType(ruBw > MHz_u{20} ? ruBw : MHz_u{20}, ruType);
         auto ruIndex = ru.GetIndex();
@@ -820,7 +820,8 @@ WifiTxVector::DeriveRuAllocation(uint8_t p20Index) const
             // take into account the center 26-tone RU in the high 80 MHz
             ruIndex--;
         }
-        if ((m_channelWidth > MHz_u{80}) && !isLow80 && (ruType != HeRu::GetRuType(m_channelWidth)))
+        if ((m_channelWidth > MHz_u{80}) && !isLow80 &&
+            (ruType != WifiRu::GetRuType(m_channelWidth)))
         {
             // adjust RU index for the high 80 MHz: in that case index is restarting at 1,
             // hence we need to add an offset corresponding to the number of RUs of the same type in

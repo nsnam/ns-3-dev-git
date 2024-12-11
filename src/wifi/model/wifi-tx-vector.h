@@ -13,8 +13,8 @@
 #include "wifi-mode.h"
 #include "wifi-phy-band.h"
 #include "wifi-phy-common.h"
+#include "wifi-ru.h"
 
-#include "ns3/he-ru.h"
 #include "ns3/nstime.h"
 
 #include <list>

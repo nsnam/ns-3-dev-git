@@ -141,7 +141,7 @@ OfdmaTestHePhy::GetNonOfdmaBand(const WifiTxVector& txVector, uint16_t staId) co
 
     // Find the RU that encompasses the non-OFDMA part of the HE TB PPDU for the STA-ID
     HeRu::RuSpec nonOfdmaRu =
-        HeRu::FindOverlappingRu(channelWidth, ru, HeRu::GetRuType(nonOfdmaWidth));
+        HeRu::FindOverlappingRu(channelWidth, ru, WifiRu::GetRuType(nonOfdmaWidth));
 
     const auto groupPreamble = HeRu::GetSubcarrierGroup(
         channelWidth,
@@ -2499,7 +2499,7 @@ TestMultipleHeTbPreambles::RxHeTbPpdu(uint64_t uid,
     const auto nonOfdmaDuration = m_phy->GetHePhy()->CalculateNonHeDurationForHeTb(txVector);
     const auto centerFrequency =
         m_phy->GetHePhy()->GetCenterFrequenciesForNonHePart(ppdu, staId).front();
-    MHz_u ruWidth = HeRu::GetBandwidth(txVector.GetRu(staId).GetRuType());
+    MHz_u ruWidth = WifiRu::GetBandwidth(txVector.GetRu(staId).GetRuType());
     MHz_u channelWidth = ruWidth < MHz_u{20} ? MHz_u{20} : ruWidth;
     Ptr<SpectrumValue> rxPsd = WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity(
         centerFrequency,
