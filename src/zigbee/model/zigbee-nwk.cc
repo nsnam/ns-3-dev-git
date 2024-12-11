@@ -2900,8 +2900,7 @@ ZigbeeNwk::SendRREQ(ZigbeeNwkHeader nwkHeader,
         nwkHeader.GetRadius() != 0)
     {
         // Set RREQ RETRIES
-        Time rreqRetryTime =
-            Simulator::Now() + m_nwkcRREQRetryInterval + MilliSeconds(m_rreqJitter->GetValue());
+        Time rreqRetryTime = m_nwkcRREQRetryInterval + MilliSeconds(m_rreqJitter->GetValue());
 
         Ptr<RreqRetryTableEntry> rreqRetryTableEntry;
         if (m_rreqRetryTable.LookUpEntry(payload.GetRouteReqId(), rreqRetryTableEntry))
