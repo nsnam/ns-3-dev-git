@@ -65,14 +65,14 @@ ThreeGppHttpServer::GetTypeId()
                           AddressValue(),
                           MakeAddressAccessor(&ThreeGppHttpServer::SetLocal),
                           MakeAddressChecker(),
-                          TypeId::DEPRECATED,
+                          TypeId::SupportLevel::DEPRECATED,
                           "Replaced by Local in ns-3.44.")
             .AddAttribute("LocalPort",
                           "Port on which the application listen for incoming packets.",
                           UintegerValue(80), // the default HTTP port
                           MakeUintegerAccessor(&ThreeGppHttpServer::SetPort),
                           MakeUintegerChecker<uint16_t>(),
-                          TypeId::DEPRECATED,
+                          TypeId::SupportLevel::DEPRECATED,
                           "Replaced by Port in ns-3.44.")
             .AddAttribute("Tos",
                           "The Type of Service used to send packets. "

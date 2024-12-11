@@ -12,6 +12,7 @@
 #include "attribute-helper.h"
 #include "attribute.h"
 #include "callback.h"
+#include "deprecated.h"
 #include "hash.h"
 #include "trace-source-accessor.h"
 
@@ -58,12 +59,27 @@ class TypeId
     };
 
     /** The level of support or deprecation for attributes or trace sources. */
-    enum SupportLevel
+    enum class SupportLevel
     {
         SUPPORTED,  /**< Attribute or trace source is currently used. */
         DEPRECATED, /**< Attribute or trace source is deprecated; user is warned. */
         OBSOLETE    /**< Attribute or trace source is not used anymore; simulation fails. */
     };
+
+    /**
+     * Deprecated support level simple enums.
+     *
+     * Use the `TypeId::SupportLevel` enum class symbols instead.
+     * @{
+     */
+    NS_DEPRECATED_3_44("Use SupportLevel::SUPPORTED instead")
+    static constexpr auto SUPPORTED = SupportLevel::SUPPORTED;
+    NS_DEPRECATED_3_44("Use SupportLevel::DEPRECATED instead")
+    static constexpr auto DEPRECATED = SupportLevel::DEPRECATED;
+    NS_DEPRECATED_3_44("Use SupportLevel::OBSOLETE instead")
+    static constexpr auto OBSOLETE = SupportLevel::OBSOLETE;
+
+    /**@}*/
 
     /** Attribute implementation. */
     struct AttributeInformation
@@ -389,7 +405,7 @@ class TypeId
                         const AttributeValue& initialValue,
                         Ptr<const AttributeAccessor> accessor,
                         Ptr<const AttributeChecker> checker,
-                        SupportLevel supportLevel = SUPPORTED,
+                        SupportLevel supportLevel = SupportLevel::SUPPORTED,
                         const std::string& supportMsg = "");
 
     /**
@@ -429,7 +445,7 @@ class TypeId
                         const AttributeValue& initialValue,
                         Ptr<const AttributeAccessor> accessor,
                         Ptr<const AttributeChecker> checker,
-                        SupportLevel supportLevel = SUPPORTED,
+                        SupportLevel supportLevel = SupportLevel::SUPPORTED,
                         const std::string& supportMsg = "");
 
     /**
@@ -458,7 +474,7 @@ class TypeId
                           std::string help,
                           Ptr<const TraceSourceAccessor> accessor,
                           std::string callback,
-                          SupportLevel supportLevel = SUPPORTED,
+                          SupportLevel supportLevel = SupportLevel::SUPPORTED,
                           const std::string& supportMsg = "");
 
     /**
@@ -601,6 +617,14 @@ std::ostream& operator<<(std::ostream& os, TypeId tid);
  * @returns The input stream.
  */
 std::istream& operator>>(std::istream& is, TypeId& tid);
+
+/**
+ * @brief Stream insertion operator.
+ * @param [in] os The reference to the output stream.
+ * @param [in] level The TypeId::SupportLevel.
+ * @return The reference to the output stream.
+ */
+std::ostream& operator<<(std::ostream& os, TypeId::SupportLevel level);
 
 /**
  * Comparison operator.

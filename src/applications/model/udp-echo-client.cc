@@ -51,14 +51,14 @@ UdpEchoClient::GetTypeId()
                                                   // function overload to use
                     &UdpEchoClient::GetRemote),
                 MakeAddressChecker(),
-                TypeId::DEPRECATED,
+                TypeId::SupportLevel::DEPRECATED,
                 "Replaced by Remote in ns-3.44.")
             .AddAttribute("RemotePort",
                           "The destination port of the outbound packets",
                           UintegerValue(UdpEchoClient::DEFAULT_PORT),
                           MakeUintegerAccessor(&UdpEchoClient::SetPort, &UdpEchoClient::GetPort),
                           MakeUintegerChecker<uint16_t>(),
-                          TypeId::DEPRECATED,
+                          TypeId::SupportLevel::DEPRECATED,
                           "Replaced by Remote in ns-3.44.")
             .AddAttribute(
                 "PacketSize",

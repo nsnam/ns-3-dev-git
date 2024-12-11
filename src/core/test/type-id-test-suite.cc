@@ -237,7 +237,7 @@ class DeprecatedAttribute : public Object
                               IntegerValue(1),
                               MakeIntegerAccessor(&DeprecatedAttribute::m_attr),
                               MakeIntegerChecker<int>(),
-                              TypeId::DEPRECATED,
+                              TypeId::SupportLevel::DEPRECATED,
                               "use 'attribute' instead")
                 // Obsolete attribute, as an example
                 .AddAttribute("obsoleteAttribute",
@@ -245,7 +245,7 @@ class DeprecatedAttribute : public Object
                               EmptyAttributeValue(),
                               MakeEmptyAttributeAccessor(),
                               MakeEmptyAttributeChecker(),
-                              TypeId::OBSOLETE,
+                              TypeId::SupportLevel::OBSOLETE,
                               "refactor to use 'attribute'")
 
                 // The new trace source
@@ -258,14 +258,14 @@ class DeprecatedAttribute : public Object
                                 "the old trace source",
                                 MakeTraceSourceAccessor(&DeprecatedAttribute::m_trace),
                                 "ns3::TracedValueCallback::Double",
-                                TypeId::DEPRECATED,
+                                TypeId::SupportLevel::DEPRECATED,
                                 "use 'trace' instead")
                 // Obsolete trace source, as an example
                 .AddTraceSource("obsoleteTraceSource",
                                 "the obsolete trace source",
                                 MakeEmptyTraceSourceAccessor(),
                                 "ns3::TracedValueCallback::Void",
-                                TypeId::OBSOLETE,
+                                TypeId::SupportLevel::OBSOLETE,
                                 "refactor to use 'trace'");
 
         return tid;
@@ -311,25 +311,29 @@ DeprecatedAttributeTestCase::DoRun()
                           true,
                           "lookup new attribute");
     std::cerr << suite << "lookup new attribute:"
-              << (ainfo.supportLevel == TypeId::SUPPORTED ? "supported" : "error") << std::endl;
+              << (ainfo.supportLevel == TypeId::SupportLevel::SUPPORTED ? "supported" : "error")
+              << std::endl;
 
     NS_TEST_ASSERT_MSG_EQ(tid.LookupAttributeByName("oldAttribute", &ainfo),
                           true,
                           "lookup old attribute");
     std::cerr << suite << "lookup old attribute:"
-              << (ainfo.supportLevel == TypeId::DEPRECATED ? "deprecated" : "error") << std::endl;
+              << (ainfo.supportLevel == TypeId::SupportLevel::DEPRECATED ? "deprecated" : "error")
+              << std::endl;
 
     TypeId::TraceSourceInformation tinfo;
     Ptr<const TraceSourceAccessor> acc;
     acc = tid.LookupTraceSourceByName("trace", &tinfo);
     NS_TEST_ASSERT_MSG_NE(acc, nullptr, "lookup new trace source");
     std::cerr << suite << "lookup new trace source:"
-              << (tinfo.supportLevel == TypeId::SUPPORTED ? "supported" : "error") << std::endl;
+              << (tinfo.supportLevel == TypeId::SupportLevel::SUPPORTED ? "supported" : "error")
+              << std::endl;
 
     acc = tid.LookupTraceSourceByName("oldTrace", &tinfo);
     NS_TEST_ASSERT_MSG_NE(acc, nullptr, "lookup old trace source");
     std::cerr << suite << "lookup old trace source:"
-              << (tinfo.supportLevel == TypeId::DEPRECATED ? "deprecated" : "error") << std::endl;
+              << (tinfo.supportLevel == TypeId::SupportLevel::DEPRECATED ? "deprecated" : "error")
+              << std::endl;
 }
 
 /**

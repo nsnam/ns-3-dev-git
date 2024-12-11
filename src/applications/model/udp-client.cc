@@ -58,14 +58,14 @@ UdpClient::GetTypeId()
                                                         // of the function overload to use
                               &UdpClient::GetRemote),
                           MakeAddressChecker(),
-                          TypeId::DEPRECATED,
+                          TypeId::SupportLevel::DEPRECATED,
                           "Replaced by Remote in ns-3.44.")
             .AddAttribute("RemotePort",
                           "The destination port of the outbound packets",
                           UintegerValue(UdpClient::DEFAULT_PORT),
                           MakeUintegerAccessor(&UdpClient::SetPort, &UdpClient::GetPort),
                           MakeUintegerChecker<uint16_t>(),
-                          TypeId::DEPRECATED,
+                          TypeId::SupportLevel::DEPRECATED,
                           "Replaced by Remote in ns-3.44.")
             .AddAttribute("PacketSize",
                           "Size of packets generated. The minimum packet size is 12 bytes which is "

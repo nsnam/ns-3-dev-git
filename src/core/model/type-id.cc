@@ -207,7 +207,7 @@ class IidManager : public Singleton<IidManager>
                       Ptr<const AttributeValue> initialValue,
                       Ptr<const AttributeAccessor> accessor,
                       Ptr<const AttributeChecker> checker,
-                      TypeId::SupportLevel supportLevel = TypeId::SUPPORTED,
+                      TypeId::SupportLevel supportLevel = TypeId::SupportLevel::SUPPORTED,
                       const std::string& supportMsg = "");
     /**
      * Set the initial value of an Attribute.
@@ -250,7 +250,7 @@ class IidManager : public Singleton<IidManager>
                         std::string help,
                         Ptr<const TraceSourceAccessor> accessor,
                         std::string callback,
-                        TypeId::SupportLevel supportLevel = TypeId::SUPPORTED,
+                        TypeId::SupportLevel supportLevel = TypeId::SupportLevel::SUPPORTED,
                         const std::string& supportMsg = "");
     /**
      * Get the number of Trace sources.
@@ -444,7 +444,7 @@ IidManager::AllocateUid(std::string name)
     information.size = (std::size_t)(-1);
     information.hasConstructor = false;
     information.mustHideFromDocumentation = false;
-    information.supportLevel = TypeId::SUPPORTED;
+    information.supportLevel = TypeId::SupportLevel::SUPPORTED;
     m_information.push_back(information);
     std::size_t tuid = m_information.size();
     NS_ASSERT(tuid <= 0xffff);
@@ -973,12 +973,12 @@ TypeId::LookupAttributeByName(std::string name,
     auto [found, tid, attribute] = FindAttribute(*this, name);
     if (found)
     {
-        if (attribute.supportLevel == TypeId::SUPPORTED)
+        if (attribute.supportLevel == SupportLevel::SUPPORTED)
         {
             *info = attribute;
             return true;
         }
-        else if (attribute.supportLevel == TypeId::DEPRECATED)
+        else if (attribute.supportLevel == SupportLevel::DEPRECATED)
         {
             if (!permissive)
             {
@@ -988,7 +988,7 @@ TypeId::LookupAttributeByName(std::string name,
             *info = attribute;
             return true;
         }
-        else if (attribute.supportLevel == TypeId::OBSOLETE)
+        else if (attribute.supportLevel == SupportLevel::OBSOLETE)
         {
             NS_FATAL_ERROR("Attribute '"
                            << name << "' is obsolete, with no fallback: " << attribute.supportMsg);
@@ -1240,19 +1240,19 @@ TypeId::LookupTraceSourceByName(std::string name, TraceSourceInformation* info) 
             tmp = tid.GetTraceSource(i);
             if (tmp.name == name)
             {
-                if (tmp.supportLevel == TypeId::SUPPORTED)
+                if (tmp.supportLevel == SupportLevel::SUPPORTED)
                 {
                     *info = tmp;
                     return tmp.accessor;
                 }
-                else if (tmp.supportLevel == TypeId::DEPRECATED)
+                else if (tmp.supportLevel == SupportLevel::DEPRECATED)
                 {
                     std::cerr << "TraceSource '" << name << "' is deprecated: " << tmp.supportMsg
                               << std::endl;
                     *info = tmp;
                     return tmp.accessor;
                 }
-                else if (tmp.supportLevel == TypeId::OBSOLETE)
+                else if (tmp.supportLevel == SupportLevel::OBSOLETE)
                 {
                     NS_FATAL_ERROR("TraceSource '" << name << "' is obsolete, with no fallback: "
                                                    << tmp.supportMsg);
@@ -1315,6 +1315,21 @@ operator>>(std::istream& is, TypeId& tid)
         is.setstate(std::ios_base::badbit);
     }
     return is;
+}
+
+std::ostream&
+operator<<(std::ostream& os, TypeId::SupportLevel level)
+{
+    switch (level)
+    {
+    case TypeId::SupportLevel::SUPPORTED:
+        return os << "SUPPORTED";
+    case TypeId::SupportLevel::DEPRECATED:
+        return os << "DEPRECATED";
+    case TypeId::SupportLevel::OBSOLETE:
+        return os << "OBSOLETE";
+    };
+    return os << "UNKNOWN(" << static_cast<uint32_t>(level) << ")";
 }
 
 ATTRIBUTE_HELPER_CPP(TypeId);

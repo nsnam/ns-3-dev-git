@@ -68,7 +68,7 @@ ConfigStore::GetTypeId()
                 BooleanValue(true),
                 MakeBooleanAccessor(&ConfigStore::SetSaveDeprecated),
                 MakeBooleanChecker(),
-                TypeId::OBSOLETE,
+                TypeId::SupportLevel::OBSOLETE,
                 "OBSOLETE since ns-3.43 as it is no longer needed; deprecated attributes are saved "
                 "only if their value differs from their respective original initial value");
     return tid;

@@ -64,7 +64,7 @@ UdpTraceClient::GetTypeId()
                               UdpTraceClient::SetRemote), // this is needed to indicate which
                                                           // version of the function overload to use
                           MakeAddressChecker(),
-                          TypeId::DEPRECATED,
+                          TypeId::SupportLevel::DEPRECATED,
                           "Replaced by Remote in ns-3.44.")
             .AddAttribute(
                 "RemotePort",
@@ -76,7 +76,7 @@ UdpTraceClient::GetTypeId()
                                                    // the function overload to use
                     &UdpTraceClient::GetRemote),
                 MakeUintegerChecker<uint16_t>(),
-                TypeId::DEPRECATED,
+                TypeId::SupportLevel::DEPRECATED,
                 "Replaced by Remote in ns-3.44.")
             .AddAttribute("MaxPacketSize",
                           "The maximum size of a packet (including the SeqTsHeader, 12 bytes).",

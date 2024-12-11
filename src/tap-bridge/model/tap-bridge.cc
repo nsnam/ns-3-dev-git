@@ -90,7 +90,7 @@ TapBridge::GetTypeId()
                           Ipv4AddressValue("255.255.255.255"),
                           MakeIpv4AddressAccessor(&TapBridge::m_tapGateway),
                           MakeIpv4AddressChecker(),
-                          TypeId::OBSOLETE)
+                          TypeId::SupportLevel::OBSOLETE)
             .AddAttribute(
                 "IpAddress",
                 "The IP address to assign to the tap device, when in ConfigureLocal mode.  "

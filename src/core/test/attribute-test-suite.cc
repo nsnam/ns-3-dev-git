@@ -339,7 +339,7 @@ class AttributeObjectTest : public Object
                               BooleanValue(false),
                               MakeBooleanAccessor(&AttributeObjectTest::m_boolTestDeprecated),
                               MakeBooleanChecker(),
-                              TypeId::DEPRECATED,
+                              TypeId::SupportLevel::DEPRECATED,
                               "DEPRECATED test working.");
 
         return tid;

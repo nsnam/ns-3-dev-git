@@ -694,22 +694,8 @@ void
 PrintSupportLevel(std::ostream& os, TypeId::SupportLevel supportLevel, std::string supportMsg)
 {
     os << "    " << listLineStart << "Support level: ";
-    os << flagSpanStart;
-    switch (supportLevel)
-    {
-    case TypeId::SUPPORTED:
-        os << "SUPPORTED";
-        break;
-    case TypeId::DEPRECATED:
-        os << "DEPRECATED";
-        break;
-    case TypeId::OBSOLETE:
-        os << "OBSOLETE";
-        break;
-    default:
-        os << "UNKNOWN";
-    }
-    os << flagSpanStop;
+    os << flagSpanStart << supportLevel << flagSpanStop;
+
     if (!supportMsg.empty())
     {
         os << ": " << supportMsg;

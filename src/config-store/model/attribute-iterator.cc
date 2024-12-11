@@ -220,8 +220,8 @@ AttributeIterator::DoIterate(Ptr<Object> object)
             if (ptrChecker != nullptr)
             {
                 NS_LOG_DEBUG("pointer attribute " << info.name);
-                if (info.supportLevel == TypeId::DEPRECATED ||
-                    info.supportLevel == TypeId::OBSOLETE)
+                if (info.supportLevel == TypeId::SupportLevel::DEPRECATED ||
+                    info.supportLevel == TypeId::SupportLevel::OBSOLETE)
                 {
                     continue;
                 }

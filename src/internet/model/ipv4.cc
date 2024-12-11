@@ -41,7 +41,7 @@ Ipv4::GetTypeId()
                           BooleanValue(true),
                           MakeBooleanAccessor(&Ipv4::SetWeakEsModel, &Ipv4::GetWeakEsModel),
                           MakeBooleanChecker(),
-                          TypeId::DEPRECATED,
+                          TypeId::SupportLevel::DEPRECATED,
                           "DEPRECATED since ns-3.41. Use the StrongEndSystemModel attribute.")
             .AddAttribute(
                 "StrongEndSystemModel",

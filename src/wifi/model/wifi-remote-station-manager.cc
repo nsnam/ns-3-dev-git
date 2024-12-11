@@ -51,7 +51,7 @@ WifiRemoteStationManager::GetTypeId()
                           UintegerValue(7),
                           MakeUintegerAccessor(&WifiRemoteStationManager::SetMaxSsrc),
                           MakeUintegerChecker<uint32_t>(),
-                          TypeId::OBSOLETE,
+                          TypeId::SupportLevel::OBSOLETE,
                           "Use WifiMac::FrameRetryLimit instead")
             .AddAttribute("MaxSlrc",
                           "The maximum number of retransmission attempts for any packet with size "
@@ -60,7 +60,7 @@ WifiRemoteStationManager::GetTypeId()
                           UintegerValue(4),
                           MakeUintegerAccessor(&WifiRemoteStationManager::SetMaxSlrc),
                           MakeUintegerChecker<uint32_t>(),
-                          TypeId::OBSOLETE,
+                          TypeId::SupportLevel::OBSOLETE,
                           "Use WifiMac::FrameRetryLimit instead")
             .AddAttribute(
                 "IncrementRetryCountUnderBa",

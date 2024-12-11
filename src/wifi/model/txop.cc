@@ -73,7 +73,7 @@ Txop::GetTypeId()
                           MakeUintegerAccessor((void(Txop::*)(uint32_t)) & Txop::SetMinCw,
                                                (uint32_t(Txop::*)() const) & Txop::GetMinCw),
                           MakeUintegerChecker<uint32_t>(),
-                          TypeId::OBSOLETE,
+                          TypeId::SupportLevel::OBSOLETE,
                           "Use MinCws attribute instead of MinCw")
             .AddAttribute(
                 "MinCws",
@@ -93,7 +93,7 @@ Txop::GetTypeId()
                           MakeUintegerAccessor((void(Txop::*)(uint32_t)) & Txop::SetMaxCw,
                                                (uint32_t(Txop::*)() const) & Txop::GetMaxCw),
                           MakeUintegerChecker<uint32_t>(),
-                          TypeId::OBSOLETE,
+                          TypeId::SupportLevel::OBSOLETE,
                           "Use MaxCws attribute instead of MaxCw")
             .AddAttribute(
                 "MaxCws",
@@ -114,7 +114,7 @@ Txop::GetTypeId()
                 MakeUintegerAccessor((void(Txop::*)(uint8_t)) & Txop::SetAifsn,
                                      (uint8_t(Txop::*)() const) & Txop::GetAifsn),
                 MakeUintegerChecker<uint8_t>(),
-                TypeId::OBSOLETE,
+                TypeId::SupportLevel::OBSOLETE,
                 "Use Aifsns attribute instead of Aifsn")
             .AddAttribute(
                 "Aifsns",
@@ -134,7 +134,7 @@ Txop::GetTypeId()
                           MakeTimeAccessor((void(Txop::*)(Time)) & Txop::SetTxopLimit,
                                            (Time(Txop::*)() const) & Txop::GetTxopLimit),
                           MakeTimeChecker(),
-                          TypeId::OBSOLETE,
+                          TypeId::SupportLevel::OBSOLETE,
                           "Use TxopLimits attribute instead of TxopLimit")
             .AddAttribute(
                 "TxopLimits",

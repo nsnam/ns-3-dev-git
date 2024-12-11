@@ -64,14 +64,14 @@ ThreeGppHttpClient::GetTypeId()
                           AddressValue(),
                           MakeAddressAccessor(&ThreeGppHttpClient::SetRemote),
                           MakeAddressChecker(),
-                          TypeId::DEPRECATED,
+                          TypeId::SupportLevel::DEPRECATED,
                           "Replaced by Remote in ns-3.44.")
             .AddAttribute("RemoteServerPort",
                           "The destination port of the outbound packets.",
                           UintegerValue(80), // the default HTTP port
                           MakeUintegerAccessor(&ThreeGppHttpClient::SetPort),
                           MakeUintegerChecker<uint16_t>(),
-                          TypeId::DEPRECATED,
+                          TypeId::SupportLevel::DEPRECATED,
                           "Replaced by Remote in ns-3.44.")
             .AddTraceSource("RxPage",
                             "A page has been received.",
