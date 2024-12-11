@@ -44,6 +44,7 @@ set(source_files
     model/eht/tid-to-link-mapping-element.cc
     model/eht/eht-phy.cc
     model/eht/eht-ppdu.cc
+    model/eht/eht-ru.cc
     model/eht/emlsr-manager.cc
     model/eht/multi-link-element.cc
     model/error-rate-model.cc
@@ -215,6 +216,7 @@ set(header_files
     model/eht/tid-to-link-mapping-element.h
     model/eht/eht-phy.h
     model/eht/eht-ppdu.h
+    model/eht/eht-ru.h
     model/eht/emlsr-manager.h
     model/eht/multi-link-element.h
     model/error-rate-model.h
