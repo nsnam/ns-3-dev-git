@@ -934,9 +934,18 @@ ThreeGppSpectrumPropagationLossModelTest::DoRun()
     // 1) check that the rx PSD is equal for both the direct and the reverse channel
     auto rxParamsNew =
         lossModel->DoCalcRxPowerSpectralDensity(txParams, rxMob, txMob, rxAntenna, txAntenna);
-    NS_TEST_ASSERT_MSG_EQ((*rxParamsOld->psd == *rxParamsNew->psd),
-                          true,
-                          "The long term for the direct and the reverse channel are different");
+    if ((rxParamsOld->spectrumChannelMatrix->GetNumCols() ==
+         rxParamsNew->spectrumChannelMatrix->GetNumCols()) &&
+        (rxParamsOld->spectrumChannelMatrix->GetNumRows() ==
+         rxParamsNew->spectrumChannelMatrix->GetNumRows()) &&
+        (rxParamsOld->spectrumChannelMatrix->GetNumCols() == 1) &&
+        (rxParamsOld->spectrumChannelMatrix->GetNumRows() == 1))
+    {
+        // this is only really true in case of SISO (1x1 non-polarized port array)
+        NS_TEST_ASSERT_MSG_EQ((*rxParamsOld->psd == *rxParamsNew->psd),
+                              true,
+                              "The long term for the direct and the reverse channel are different");
+    }
 
     // 2) check if the long term is updated when changing the BF vector
     // change the position of the rx device and recompute the beamforming vectors
