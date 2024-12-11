@@ -28,6 +28,7 @@ This file is a best-effort approach to solving this issue; we will do our best b
 * (lr-wpan) ``LrWpanMac`` is now also aggregated to ``LrWpanNetDevice``.
 * (stats) Deprecated ns3::NaN and ns3::isNaN to use std::nan and std::isnan in their place
 * (tap-bridge) Deprecated "Gateway" attribute.
+* (tap-bridge) Removed unused gateway option from tap-creator.
 * (wifi) Added a new **ProtectedIfResponded** attribute to `FrameExchangeManager` to disable RTS/CTS protection for stations that have already responded to a frame requiring acknowledgment in the same TXOP, even if such frame had not been protected by RTS/CTS. The default value is true, even though it represents a change with respect to the previous behavior, because it is likely a more realistic choice.
 * (wifi) Deprecated setters/getters of the {Ht,Vht,He}Configuration classes that trivially set/get member variables, which have been made public and hence accessible to users.
 
