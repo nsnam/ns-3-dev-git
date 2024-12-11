@@ -11,9 +11,9 @@
 #include "ns3/boolean.h"
 #include "ns3/config.h"
 #include "ns3/ctrl-headers.h"
+#include "ns3/eht-phy.h"
 #include "ns3/enum.h"
 #include "ns3/he-configuration.h"
-#include "ns3/he-phy.h"
 #include "ns3/mobility-helper.h"
 #include "ns3/multi-model-spectrum-channel.h"
 #include "ns3/rng-seed-manager.h"
@@ -54,11 +54,11 @@ class WifiPrimaryChannelsTest : public TestCase
     /**
      * Constructor
      *
+     * @param standard the standard
      * @param channelWidth the operating channel width
      * @param useDistinctBssColors whether to set distinct BSS colors to BSSes
      */
-    WifiPrimaryChannelsTest(MHz_u channelWidth, bool useDistinctBssColors);
-    ~WifiPrimaryChannelsTest() override;
+    WifiPrimaryChannelsTest(WifiStandard standard, MHz_u channelWidth, bool useDistinctBssColors);
 
     /**
      * Callback invoked when PHY receives a PSDU to transmit. Used to print
@@ -190,6 +190,7 @@ class WifiPrimaryChannelsTest : public TestCase
     void DoSetup() override;
     void DoRun() override;
 
+    WifiStandard m_standard;                      ///< standard
     MHz_u m_channelWidth;                         ///< operating channel width
     bool m_useDistinctBssColors;                  ///< true to set distinct BSS colors to BSSes
     uint8_t m_nBss;                               ///< number of BSSes
@@ -206,14 +207,13 @@ class WifiPrimaryChannelsTest : public TestCase
     Time m_triggerTxDuration;                 ///< TX duration for Basic Trigger Frame
 };
 
-WifiPrimaryChannelsTest::WifiPrimaryChannelsTest(MHz_u channelWidth, bool useDistinctBssColors)
+WifiPrimaryChannelsTest::WifiPrimaryChannelsTest(WifiStandard standard,
+                                                 MHz_u channelWidth,
+                                                 bool useDistinctBssColors)
     : TestCase("Check correct transmissions for various primary channel settings"),
+      m_standard(standard),
       m_channelWidth(channelWidth),
       m_useDistinctBssColors(useDistinctBssColors)
-{
-}
-
-WifiPrimaryChannelsTest::~WifiPrimaryChannelsTest()
 {
 }
 
@@ -324,19 +324,23 @@ WifiPrimaryChannelsTest::DoSetup()
     {
     case 20:
         m_nStationsPerBss = 9;
-        channelNum = 36;
+        channelNum = 1;
         break;
     case 40:
         m_nStationsPerBss = 18;
-        channelNum = 38;
+        channelNum = 3;
         break;
     case 80:
-        m_nStationsPerBss = 37;
-        channelNum = 42;
+        m_nStationsPerBss = (m_standard == WIFI_STANDARD_80211ax) ? 37 : 36;
+        channelNum = 7;
         break;
     case 160:
-        m_nStationsPerBss = 74;
-        channelNum = 50;
+        m_nStationsPerBss = (m_standard == WIFI_STANDARD_80211ax) ? 74 : 72;
+        channelNum = 15;
+        break;
+    case 320:
+        m_nStationsPerBss = 144;
+        channelNum = 31;
         break;
     default:
         NS_ABORT_MSG("Channel width (" << m_channelWidth << ") not allowed");
@@ -365,7 +369,7 @@ WifiPrimaryChannelsTest::DoSetup()
     phy.SetChannel(spectrumChannel);
 
     WifiHelper wifi;
-    wifi.SetStandard(WIFI_STANDARD_80211ax);
+    wifi.SetStandard(m_standard);
     wifi.SetRemoteStationManager("ns3::ConstantRateWifiManager");
 
     WifiMacHelper mac;
@@ -386,7 +390,7 @@ WifiPrimaryChannelsTest::DoSetup()
     for (uint8_t bss = 0; bss < m_nBss; bss++)
     {
         channelValue.Set(
-            WifiPhy::ChannelSegments{{channelNum, m_channelWidth, WIFI_PHY_BAND_5GHZ, bss}});
+            WifiPhy::ChannelSegments{{channelNum, m_channelWidth, WIFI_PHY_BAND_6GHZ, bss}});
         phy.Set("ChannelSettings", channelValue);
 
         m_staDevices.push_back(wifi.Install(phy, mac, wifiStaNodes[bss]));
@@ -395,7 +399,7 @@ WifiPrimaryChannelsTest::DoSetup()
     for (uint8_t bss = 0; bss < m_nBss; bss++)
     {
         channelValue.Set(
-            WifiPhy::ChannelSegments{{channelNum, m_channelWidth, WIFI_PHY_BAND_5GHZ, bss}});
+            WifiPhy::ChannelSegments{{channelNum, m_channelWidth, WIFI_PHY_BAND_6GHZ, bss}});
         phy.Set("ChannelSettings", channelValue);
 
         mac.SetType("ns3::ApWifiMac",
@@ -655,7 +659,9 @@ WifiPrimaryChannelsTest::DoRun()
 
         for (uint16_t round = 0; round < nRounds; round++)
         {
-            for (unsigned int type = 0; type < 7; type++)
+            for (uint32_t type = 0; type < static_cast<uint32_t>(WifiRu::GetMaxRuType(
+                                               GetModulationClassForStandard(m_standard)));
+                 ++type)
             {
                 auto ruType = static_cast<RuType>(type);
                 std::size_t nRus = HeRu::GetNRus(txChannelWidth, ruType);
@@ -704,7 +710,9 @@ WifiPrimaryChannelsTest::DoRun()
 
         for (uint16_t round = 0; round < nRounds; round++)
         {
-            for (unsigned int type = 0; type < 7; type++)
+            for (uint32_t type = 0; type < static_cast<uint32_t>(WifiRu::GetMaxRuType(
+                                               GetModulationClassForStandard(m_standard)));
+                 ++type)
             {
                 auto ruType = static_cast<RuType>(type);
                 std::size_t nRus = HeRu::GetNRus(txChannelWidth, ruType);
@@ -763,18 +771,19 @@ WifiPrimaryChannelsTest::SendDlSuPpdu(uint8_t bss, MHz_u txChannelWidth)
     auto staDev = DynamicCast<WifiNetDevice>(m_staDevices[bss].Get(0));
 
     uint8_t bssColor = apDev->GetHeConfiguration()->m_bssColor;
-    WifiTxVector txVector = WifiTxVector(HePhy::GetHeMcs8(),
-                                         0,
-                                         WIFI_PREAMBLE_HE_SU,
-                                         NanoSeconds(800),
-                                         1,
-                                         1,
-                                         0,
-                                         txChannelWidth,
-                                         false,
-                                         false,
-                                         false,
-                                         bssColor);
+    auto txVector = WifiTxVector(
+        (m_standard == WIFI_STANDARD_80211ax) ? HePhy::GetHeMcs8() : EhtPhy::GetEhtMcs8(),
+        0,
+        (m_standard == WIFI_STANDARD_80211ax) ? WIFI_PREAMBLE_HE_SU : WIFI_PREAMBLE_EHT_MU,
+        NanoSeconds(800),
+        1,
+        1,
+        0,
+        txChannelWidth,
+        false,
+        false,
+        false,
+        bssColor);
     WifiMacHeader hdr;
     hdr.SetType(WIFI_MAC_QOSDATA);
     hdr.SetQosTid(0);
@@ -799,18 +808,23 @@ WifiPrimaryChannelsTest::SendDlMuPpdu(uint8_t bss,
     auto apDev = DynamicCast<WifiNetDevice>(m_apDevices.Get(bss));
     uint8_t bssColor = apDev->GetHeConfiguration()->m_bssColor;
 
-    WifiTxVector txVector = WifiTxVector(HePhy::GetHeMcs8(),
-                                         0,
-                                         WIFI_PREAMBLE_HE_MU,
-                                         NanoSeconds(800),
-                                         1,
-                                         1,
-                                         0,
-                                         txChannelWidth,
-                                         false,
-                                         false,
-                                         false,
-                                         bssColor);
+    auto txVector = WifiTxVector(
+        (m_standard == WIFI_STANDARD_80211ax) ? HePhy::GetHeMcs8() : EhtPhy::GetEhtMcs8(),
+        0,
+        (m_standard == WIFI_STANDARD_80211ax) ? WIFI_PREAMBLE_HE_MU : WIFI_PREAMBLE_EHT_MU,
+        NanoSeconds(800),
+        1,
+        1,
+        0,
+        txChannelWidth,
+        false,
+        false,
+        false,
+        bssColor);
+    if (m_standard == WIFI_STANDARD_80211be)
+    {
+        txVector.SetEhtPpduType(0);
+    }
     WifiMacHeader hdr;
     hdr.SetType(WIFI_MAC_QOSDATA);
     hdr.SetQosTid(0);
@@ -822,20 +836,39 @@ WifiPrimaryChannelsTest::SendDlMuPpdu(uint8_t bss,
 
     for (std::size_t i = 1; i <= nRus; i++)
     {
-        auto primary80{true};
+        auto primary80OrLow80{true};
+        auto primary160{true};
         auto index{i};
-        if ((txChannelWidth == MHz_u{160}) && (i > nRus / 2))
+        if (txChannelWidth > MHz_u{80})
         {
-            index = HeRu::GetIndexIn80MHzSegment(txChannelWidth, ruType, i);
-            primary80 = HeRu::GetPrimary80MHzFlag(txChannelWidth,
-                                                  ruType,
-                                                  i,
-                                                  apDev->GetPhy()->GetPrimary20Index());
+            if (m_standard == WIFI_STANDARD_80211ax)
+            {
+                index = HeRu::GetIndexIn80MHzSegment(txChannelWidth, ruType, i);
+                primary80OrLow80 = HeRu::GetPrimary80MHzFlag(txChannelWidth,
+                                                             ruType,
+                                                             i,
+                                                             apDev->GetPhy()->GetPrimary20Index());
+            }
+            else
+            {
+                index = EhtRu::GetIndexIn80MHzSegment(txChannelWidth, ruType, i);
+                const auto& [p160, p80OrLow80] =
+                    EhtRu::GetPrimaryFlags(txChannelWidth,
+                                           ruType,
+                                           i,
+                                           apDev->GetPhy()->GetPrimary20Index());
+                primary160 = p160;
+                primary80OrLow80 = p80OrLow80;
+            }
         }
+        const auto ru =
+            (m_standard == WIFI_STANDARD_80211ax)
+                ? WifiRu::RuSpec(HeRu::RuSpec{ruType, index, primary80OrLow80})
+                : WifiRu::RuSpec(EhtRu::RuSpec{ruType, index, primary160, primary80OrLow80});
 
         auto staDev = DynamicCast<WifiNetDevice>(m_staDevices[bss].Get(i - 1));
         uint16_t staId = DynamicCast<StaWifiMac>(staDev->GetMac())->GetAssociationId();
-        txVector.SetHeMuUserInfo(staId, {HeRu::RuSpec{ruType, index, primary80}, 8, 1});
+        txVector.SetHeMuUserInfo(staId, {ru, 8, 1});
         hdr.SetAddr1(staDev->GetMac()->GetAddress());
         psduMap[staId] = Create<const WifiPsdu>(Create<Packet>(1000), hdr);
     }
@@ -886,18 +919,19 @@ WifiPrimaryChannelsTest::DoSendHeTbPpdu(uint8_t bss,
 
     Time duration;
     uint16_t length = 0;
-    WifiTxVector trigVector(HePhy::GetHeMcs8(),
-                            0,
-                            WIFI_PREAMBLE_HE_TB,
-                            NanoSeconds(3200),
-                            1,
-                            1,
-                            0,
-                            txChannelWidth,
-                            false,
-                            false,
-                            false,
-                            bssColor);
+    WifiTxVector trigVector(
+        (m_standard == WIFI_STANDARD_80211ax) ? HePhy::GetHeMcs8() : EhtPhy::GetEhtMcs8(),
+        0,
+        (m_standard == WIFI_STANDARD_80211ax) ? WIFI_PREAMBLE_HE_TB : WIFI_PREAMBLE_EHT_TB,
+        NanoSeconds(3200),
+        1,
+        1,
+        0,
+        txChannelWidth,
+        false,
+        false,
+        false,
+        bssColor);
 
     for (std::size_t i = 1; i <= nRus; i++)
     {
@@ -905,34 +939,54 @@ WifiPrimaryChannelsTest::DoSendHeTbPpdu(uint8_t bss,
                                << txChannelWidth
                                << " MHz channel an HE TB PPDU (RU type: " << ruType << ")");
 
-        auto primary80{true};
+        auto primary80OrLow80{true};
+        auto primary160{true};
         auto index{i};
-        if ((txChannelWidth == MHz_u{160}) && (i > nRus / 2))
+        if (txChannelWidth > MHz_u{80})
         {
-            index = HeRu::GetIndexIn80MHzSegment(txChannelWidth, ruType, i);
-            primary80 = HeRu::GetPrimary80MHzFlag(txChannelWidth,
-                                                  ruType,
-                                                  i,
-                                                  apDev->GetPhy()->GetPrimary20Index());
+            if (m_standard == WIFI_STANDARD_80211ax)
+            {
+                index = HeRu::GetIndexIn80MHzSegment(txChannelWidth, ruType, i);
+                primary80OrLow80 = HeRu::GetPrimary80MHzFlag(txChannelWidth,
+                                                             ruType,
+                                                             i,
+                                                             apDev->GetPhy()->GetPrimary20Index());
+            }
+            else
+            {
+                index = EhtRu::GetIndexIn80MHzSegment(txChannelWidth, ruType, i);
+                const auto& [p160, p80OrLow80] =
+                    EhtRu::GetPrimaryFlags(txChannelWidth,
+                                           ruType,
+                                           i,
+                                           apDev->GetPhy()->GetPrimary20Index());
+                primary160 = p160;
+                primary80OrLow80 = p80OrLow80;
+            }
         }
+        const auto ru =
+            (m_standard == WIFI_STANDARD_80211ax)
+                ? WifiRu::RuSpec(HeRu::RuSpec{ruType, index, primary80OrLow80})
+                : WifiRu::RuSpec(EhtRu::RuSpec{ruType, index, primary160, primary80OrLow80});
 
         auto staDev = DynamicCast<WifiNetDevice>(m_staDevices[bss].Get(i - 1));
         uint16_t staId = DynamicCast<StaWifiMac>(staDev->GetMac())->GetAssociationId();
 
-        WifiTxVector txVector(HePhy::GetHeMcs8(),
-                              0,
-                              WIFI_PREAMBLE_HE_TB,
-                              NanoSeconds(3200),
-                              1,
-                              1,
-                              0,
-                              txChannelWidth,
-                              false,
-                              false,
-                              false,
-                              bssColor);
-        txVector.SetHeMuUserInfo(staId, {HeRu::RuSpec{ruType, index, primary80}, 8, 1});
-        trigVector.SetHeMuUserInfo(staId, {HeRu::RuSpec{ruType, index, primary80}, 8, 1});
+        WifiTxVector txVector(
+            (m_standard == WIFI_STANDARD_80211ax) ? HePhy::GetHeMcs8() : EhtPhy::GetEhtMcs8(),
+            0,
+            (m_standard == WIFI_STANDARD_80211ax) ? WIFI_PREAMBLE_HE_TB : WIFI_PREAMBLE_EHT_TB,
+            NanoSeconds(3200),
+            1,
+            1,
+            0,
+            txChannelWidth,
+            false,
+            false,
+            false,
+            bssColor);
+        txVector.SetHeMuUserInfo(staId, {ru, 8, 1});
+        trigVector.SetHeMuUserInfo(staId, {ru, 8, 1});
 
         hdr.SetAddr2(staDev->GetMac()->GetAddress());
         Ptr<const WifiPsdu> psdu = Create<const WifiPsdu>(Create<Packet>(1000), hdr);
@@ -1246,13 +1300,17 @@ class Wifi20MHzChannelIndicesTest : public TestCase
      * @param secondary40 the expected indices of the 20 MHz channels in the secondary40 channel
      * @param primary80 the expected indices of the 20 MHz channels in the primary80 channel
      * @param secondary80 the expected indices of the 20 MHz channels in the secondary80 channel
+     * @param primary160 the expected indices of the 20 MHz channels in the primary160 channel
+     * @param secondary160 the expected indices of the 20 MHz channels in the secondary160 channel
      */
     void RunOne(uint8_t primary20,
                 const std::set<uint8_t>& secondary20,
                 const std::set<uint8_t>& primary40,
                 const std::set<uint8_t>& secondary40,
                 const std::set<uint8_t>& primary80,
-                const std::set<uint8_t>& secondary80);
+                const std::set<uint8_t>& secondary80,
+                const std::set<uint8_t>& primary160,
+                const std::set<uint8_t>& secondary160);
 
   private:
     void DoRun() override;
@@ -1271,7 +1329,9 @@ Wifi20MHzChannelIndicesTest::RunOne(uint8_t primary20,
                                     const std::set<uint8_t>& primary40,
                                     const std::set<uint8_t>& secondary40,
                                     const std::set<uint8_t>& primary80,
-                                    const std::set<uint8_t>& secondary80)
+                                    const std::set<uint8_t>& secondary80,
+                                    const std::set<uint8_t>& primary160,
+                                    const std::set<uint8_t>& secondary160)
 {
     auto printToStr = [](const std::set<uint8_t>& s) {
         std::stringstream ss;
@@ -1325,37 +1385,182 @@ Wifi20MHzChannelIndicesTest::RunOne(uint8_t primary20,
                           "Expected Secondary80 " << printToStr(secondary80)
                                                   << " differs from actual "
                                                   << printToStr(actualSecondary80));
+
+    auto actualPrimary160 = m_channel.GetAll20MHzChannelIndicesInPrimary(MHz_u{160});
+    NS_TEST_ASSERT_MSG_EQ((actualPrimary160 == primary160),
+                          true,
+                          "Expected Primary160 " << printToStr(primary160)
+                                                 << " differs from actual "
+                                                 << printToStr(actualPrimary160));
+
+    auto actualSecondary160 = m_channel.GetAll20MHzChannelIndicesInSecondary(primary160);
+    NS_TEST_ASSERT_MSG_EQ((actualSecondary160 == secondary160),
+                          true,
+                          "Expected Secondary160 " << printToStr(secondary160)
+                                                   << " differs from actual "
+                                                   << printToStr(actualSecondary160));
 }
 
 void
 Wifi20MHzChannelIndicesTest::DoRun()
 {
     /* 20 MHz channel */
-    m_channel.SetDefault(MHz_u{20}, WIFI_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ);
-    RunOne(0, {}, {}, {}, {}, {});
+    m_channel.SetDefault(MHz_u{20}, WIFI_STANDARD_80211be, WIFI_PHY_BAND_6GHZ);
+    RunOne(0, {}, {}, {}, {}, {}, {}, {});
 
     /* 40 MHz channel */
-    m_channel.SetDefault(MHz_u{40}, WIFI_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ);
-    RunOne(0, {1}, {0, 1}, {}, {}, {});
-    RunOne(1, {0}, {0, 1}, {}, {}, {});
+    m_channel.SetDefault(MHz_u{40}, WIFI_STANDARD_80211be, WIFI_PHY_BAND_6GHZ);
+    RunOne(0, {1}, {0, 1}, {}, {}, {}, {}, {});
+    RunOne(1, {0}, {0, 1}, {}, {}, {}, {}, {});
 
     /* 80 MHz channel */
-    m_channel.SetDefault(MHz_u{80}, WIFI_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ);
-    RunOne(0, {1}, {0, 1}, {2, 3}, {0, 1, 2, 3}, {});
-    RunOne(1, {0}, {0, 1}, {2, 3}, {0, 1, 2, 3}, {});
-    RunOne(2, {3}, {2, 3}, {0, 1}, {0, 1, 2, 3}, {});
-    RunOne(3, {2}, {2, 3}, {0, 1}, {0, 1, 2, 3}, {});
+    m_channel.SetDefault(MHz_u{80}, WIFI_STANDARD_80211be, WIFI_PHY_BAND_6GHZ);
+    RunOne(0, {1}, {0, 1}, {2, 3}, {0, 1, 2, 3}, {}, {}, {});
+    RunOne(1, {0}, {0, 1}, {2, 3}, {0, 1, 2, 3}, {}, {}, {});
+    RunOne(2, {3}, {2, 3}, {0, 1}, {0, 1, 2, 3}, {}, {}, {});
+    RunOne(3, {2}, {2, 3}, {0, 1}, {0, 1, 2, 3}, {}, {}, {});
 
     /* 160 MHz channel */
-    m_channel.SetDefault(MHz_u{160}, WIFI_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ);
-    RunOne(0, {1}, {0, 1}, {2, 3}, {0, 1, 2, 3}, {4, 5, 6, 7});
-    RunOne(1, {0}, {0, 1}, {2, 3}, {0, 1, 2, 3}, {4, 5, 6, 7});
-    RunOne(2, {3}, {2, 3}, {0, 1}, {0, 1, 2, 3}, {4, 5, 6, 7});
-    RunOne(3, {2}, {2, 3}, {0, 1}, {0, 1, 2, 3}, {4, 5, 6, 7});
-    RunOne(4, {5}, {4, 5}, {6, 7}, {4, 5, 6, 7}, {0, 1, 2, 3});
-    RunOne(5, {4}, {4, 5}, {6, 7}, {4, 5, 6, 7}, {0, 1, 2, 3});
-    RunOne(6, {7}, {6, 7}, {4, 5}, {4, 5, 6, 7}, {0, 1, 2, 3});
-    RunOne(7, {6}, {6, 7}, {4, 5}, {4, 5, 6, 7}, {0, 1, 2, 3});
+    m_channel.SetDefault(MHz_u{160}, WIFI_STANDARD_80211be, WIFI_PHY_BAND_6GHZ);
+    RunOne(0, {1}, {0, 1}, {2, 3}, {0, 1, 2, 3}, {4, 5, 6, 7}, {0, 1, 2, 3, 4, 5, 6, 7}, {});
+    RunOne(1, {0}, {0, 1}, {2, 3}, {0, 1, 2, 3}, {4, 5, 6, 7}, {0, 1, 2, 3, 4, 5, 6, 7}, {});
+    RunOne(2, {3}, {2, 3}, {0, 1}, {0, 1, 2, 3}, {4, 5, 6, 7}, {0, 1, 2, 3, 4, 5, 6, 7}, {});
+    RunOne(3, {2}, {2, 3}, {0, 1}, {0, 1, 2, 3}, {4, 5, 6, 7}, {0, 1, 2, 3, 4, 5, 6, 7}, {});
+    RunOne(4, {5}, {4, 5}, {6, 7}, {4, 5, 6, 7}, {0, 1, 2, 3}, {0, 1, 2, 3, 4, 5, 6, 7}, {});
+    RunOne(5, {4}, {4, 5}, {6, 7}, {4, 5, 6, 7}, {0, 1, 2, 3}, {0, 1, 2, 3, 4, 5, 6, 7}, {});
+    RunOne(6, {7}, {6, 7}, {4, 5}, {4, 5, 6, 7}, {0, 1, 2, 3}, {0, 1, 2, 3, 4, 5, 6, 7}, {});
+    RunOne(7, {6}, {6, 7}, {4, 5}, {4, 5, 6, 7}, {0, 1, 2, 3}, {0, 1, 2, 3, 4, 5, 6, 7}, {});
+
+    /* 320 MHz channel */
+    m_channel.SetDefault(MHz_u{320}, WIFI_STANDARD_80211be, WIFI_PHY_BAND_6GHZ);
+    RunOne(0,
+           {1},
+           {0, 1},
+           {2, 3},
+           {0, 1, 2, 3},
+           {4, 5, 6, 7},
+           {0, 1, 2, 3, 4, 5, 6, 7},
+           {8, 9, 10, 11, 12, 13, 14, 15});
+    RunOne(1,
+           {0},
+           {0, 1},
+           {2, 3},
+           {0, 1, 2, 3},
+           {4, 5, 6, 7},
+           {0, 1, 2, 3, 4, 5, 6, 7},
+           {8, 9, 10, 11, 12, 13, 14, 15});
+    RunOne(2,
+           {3},
+           {2, 3},
+           {0, 1},
+           {0, 1, 2, 3},
+           {4, 5, 6, 7},
+           {0, 1, 2, 3, 4, 5, 6, 7},
+           {8, 9, 10, 11, 12, 13, 14, 15});
+    RunOne(3,
+           {2},
+           {2, 3},
+           {0, 1},
+           {0, 1, 2, 3},
+           {4, 5, 6, 7},
+           {0, 1, 2, 3, 4, 5, 6, 7},
+           {8, 9, 10, 11, 12, 13, 14, 15});
+    RunOne(4,
+           {5},
+           {4, 5},
+           {6, 7},
+           {4, 5, 6, 7},
+           {0, 1, 2, 3},
+           {0, 1, 2, 3, 4, 5, 6, 7},
+           {8, 9, 10, 11, 12, 13, 14, 15});
+    RunOne(5,
+           {4},
+           {4, 5},
+           {6, 7},
+           {4, 5, 6, 7},
+           {0, 1, 2, 3},
+           {0, 1, 2, 3, 4, 5, 6, 7},
+           {8, 9, 10, 11, 12, 13, 14, 15});
+    RunOne(6,
+           {7},
+           {6, 7},
+           {4, 5},
+           {4, 5, 6, 7},
+           {0, 1, 2, 3},
+           {0, 1, 2, 3, 4, 5, 6, 7},
+           {8, 9, 10, 11, 12, 13, 14, 15});
+    RunOne(7,
+           {6},
+           {6, 7},
+           {4, 5},
+           {4, 5, 6, 7},
+           {0, 1, 2, 3},
+           {0, 1, 2, 3, 4, 5, 6, 7},
+           {8, 9, 10, 11, 12, 13, 14, 15});
+    RunOne(8,
+           {9},
+           {8, 9},
+           {10, 11},
+           {8, 9, 10, 11},
+           {12, 13, 14, 15},
+           {8, 9, 10, 11, 12, 13, 14, 15},
+           {0, 1, 2, 3, 4, 5, 6, 7});
+    RunOne(9,
+           {8},
+           {8, 9},
+           {10, 11},
+           {8, 9, 10, 11},
+           {12, 13, 14, 15},
+           {8, 9, 10, 11, 12, 13, 14, 15},
+           {0, 1, 2, 3, 4, 5, 6, 7});
+    RunOne(10,
+           {11},
+           {10, 11},
+           {8, 9},
+           {8, 9, 10, 11},
+           {12, 13, 14, 15},
+           {8, 9, 10, 11, 12, 13, 14, 15},
+           {0, 1, 2, 3, 4, 5, 6, 7});
+    RunOne(11,
+           {10},
+           {10, 11},
+           {8, 9},
+           {8, 9, 10, 11},
+           {12, 13, 14, 15},
+           {8, 9, 10, 11, 12, 13, 14, 15},
+           {0, 1, 2, 3, 4, 5, 6, 7});
+    RunOne(12,
+           {13},
+           {12, 13},
+           {14, 15},
+           {12, 13, 14, 15},
+           {8, 9, 10, 11},
+           {8, 9, 10, 11, 12, 13, 14, 15},
+           {0, 1, 2, 3, 4, 5, 6, 7});
+    RunOne(13,
+           {12},
+           {12, 13},
+           {14, 15},
+           {12, 13, 14, 15},
+           {8, 9, 10, 11},
+           {8, 9, 10, 11, 12, 13, 14, 15},
+           {0, 1, 2, 3, 4, 5, 6, 7});
+    RunOne(14,
+           {15},
+           {14, 15},
+           {12, 13},
+           {12, 13, 14, 15},
+           {8, 9, 10, 11},
+           {8, 9, 10, 11, 12, 13, 14, 15},
+           {0, 1, 2, 3, 4, 5, 6, 7});
+    RunOne(15,
+           {14},
+           {14, 15},
+           {12, 13},
+           {12, 13, 14, 15},
+           {8, 9, 10, 11},
+           {8, 9, 10, 11, 12, 13, 14, 15},
+           {0, 1, 2, 3, 4, 5, 6, 7});
 }
 
 /**
@@ -1373,13 +1578,26 @@ class WifiPrimaryChannelsTestSuite : public TestSuite
 WifiPrimaryChannelsTestSuite::WifiPrimaryChannelsTestSuite()
     : TestSuite("wifi-primary-channels", Type::UNIT)
 {
-    // Test cases for 20 MHz can be added, but are not that useful (there would be a single BSS)
-    AddTestCase(new WifiPrimaryChannelsTest(MHz_u{40}, true), TestCase::Duration::QUICK);
-    AddTestCase(new WifiPrimaryChannelsTest(MHz_u{40}, false), TestCase::Duration::QUICK);
-    AddTestCase(new WifiPrimaryChannelsTest(MHz_u{80}, true), TestCase::Duration::EXTENSIVE);
-    AddTestCase(new WifiPrimaryChannelsTest(MHz_u{80}, false), TestCase::Duration::EXTENSIVE);
-    AddTestCase(new WifiPrimaryChannelsTest(MHz_u{160}, true), TestCase::Duration::TAKES_FOREVER);
-    AddTestCase(new WifiPrimaryChannelsTest(MHz_u{160}, false), TestCase::Duration::TAKES_FOREVER);
+    for (const auto standard : {WIFI_STANDARD_80211ax, WIFI_STANDARD_80211be})
+    {
+        // Test cases for 20 MHz can be added, but are not that useful (there would be a single BSS)
+        AddTestCase(new WifiPrimaryChannelsTest(standard, MHz_u{40}, true),
+                    TestCase::Duration::QUICK);
+        AddTestCase(new WifiPrimaryChannelsTest(standard, MHz_u{40}, false),
+                    TestCase::Duration::QUICK);
+        AddTestCase(new WifiPrimaryChannelsTest(standard, MHz_u{80}, true),
+                    TestCase::Duration::EXTENSIVE);
+        AddTestCase(new WifiPrimaryChannelsTest(standard, MHz_u{80}, false),
+                    TestCase::Duration::EXTENSIVE);
+        AddTestCase(new WifiPrimaryChannelsTest(standard, MHz_u{160}, true),
+                    TestCase::Duration::TAKES_FOREVER);
+        AddTestCase(new WifiPrimaryChannelsTest(standard, MHz_u{160}, false),
+                    TestCase::Duration::TAKES_FOREVER);
+    }
+    AddTestCase(new WifiPrimaryChannelsTest(WIFI_STANDARD_80211be, MHz_u{320}, true),
+                TestCase::Duration::TAKES_FOREVER);
+    AddTestCase(new WifiPrimaryChannelsTest(WIFI_STANDARD_80211be, MHz_u{320}, false),
+                TestCase::Duration::TAKES_FOREVER);
     AddTestCase(new Wifi20MHzChannelIndicesTest(), TestCase::Duration::QUICK);
 }
 
