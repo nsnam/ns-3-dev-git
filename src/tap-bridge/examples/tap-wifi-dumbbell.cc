@@ -158,7 +158,7 @@ main(int argc, char* argv[])
     ipv4Left.SetBase("10.1.1.0", "255.255.255.0");
     Ipv4InterfaceContainer interfacesLeft = ipv4Left.Assign(devicesLeft);
 
-    TapBridgeHelper tapBridge(interfacesLeft.GetAddress(1));
+    TapBridgeHelper tapBridge;
     tapBridge.SetAttribute("Mode", StringValue(mode));
     tapBridge.SetAttribute("DeviceName", StringValue(tapName));
     tapBridge.Install(nodesLeft.Get(0), devicesLeft.Get(0));

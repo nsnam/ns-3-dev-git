@@ -41,6 +41,7 @@ class TapBridgeHelper
      * @param gateway An Ipv4Address to be used as the default gateway for
      * the created bridges,
      */
+    NS_DEPRECATED_3_44("Use TapBridgeHelper()")
     TapBridgeHelper(Ipv4Address gateway);
 
     /**

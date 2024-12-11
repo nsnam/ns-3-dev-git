@@ -401,7 +401,7 @@ class TapBridge : public NetDevice
     /**
      * The IP address to use as the device default gateway on the host.
      */
-    Ipv4Address m_tapGateway;
+    Ipv4Address m_tapGateway; // NS_DEPRECATED_3_44
 
     /**
      * The IP address to use as the device IP on the host.
