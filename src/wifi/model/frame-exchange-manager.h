@@ -333,6 +333,23 @@ class FrameExchangeManager : public Object
     Ptr<WifiMpdu> GetFirstFragmentIfNeeded(Ptr<WifiMpdu> mpdu);
 
     /**
+     * Set the sequence number, determine the transmission parameters and transmit the given MPDU,
+     * which has been likely peeked from a TXOP queue.
+     *
+     * @param peekedItem the MPDU to transmit
+     */
+    virtual void PrepareFrameToSend(Ptr<WifiMpdu> peekedItem);
+
+    /**
+     * Send a buffered unit to the given sender, if any. Note that the sender must be a STA in
+     * powersave mode.
+     *
+     * @param sender the (link) address of the sender
+     * @return true if a buffered unit is sent, false otherwise
+     */
+    virtual bool SendBufferedUnit(Mac48Address sender);
+
+    /**
      * Send an MPDU with the given TX parameters (with the specified protection).
      * Note that <i>txParams</i> is moved to m_txParams and hence is left in an
      * undefined state.

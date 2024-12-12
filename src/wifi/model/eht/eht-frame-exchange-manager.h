@@ -206,6 +206,7 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
     void TbPpduTimeout(WifiPsduMap* psduMap, std::size_t nSolicitedStations) override;
     void BlockAcksInTbPpduTimeout(WifiPsduMap* psduMap, std::size_t nSolicitedStations) override;
     void ProtectionCompleted() override;
+    void PrepareFrameToSend(Ptr<WifiMpdu> peekedItem) override;
 
     /**
      * @return whether this is an EMLSR client that cannot respond to an ICF received a SIFS before

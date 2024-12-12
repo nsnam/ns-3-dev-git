@@ -391,31 +391,59 @@ FrameExchangeManager::StartTransmission(Ptr<Txop> dcf, MHz_t allowedWidth)
 
     NS_ASSERT(hdr.IsData() || hdr.IsMgt() || hdr.IsPsPoll());
 
-    // assign a sequence number if this is not a fragment nor a retransmission
-    if (!mpdu->IsFragment() && !hdr.IsRetry())
+    PrepareFrameToSend(mpdu);
+    return true;
+}
+
+void
+FrameExchangeManager::PrepareFrameToSend(Ptr<WifiMpdu> peekedItem)
+{
+    NS_ASSERT(peekedItem);
+
+    if (!peekedItem->IsFragment() && !peekedItem->HasSeqNoAssigned())
     {
-        const auto sequence = m_txMiddle->GetNextSequenceNumberFor(&hdr);
-        mpdu->AssignSeqNo(sequence);
+        // in case of 11be MLDs, sequence numbers refer to the MLD address
+        uint16_t sequence =
+            m_txMiddle->GetNextSequenceNumberFor(&peekedItem->GetOriginal()->GetHeader());
+        peekedItem->AssignSeqNo(sequence);
     }
 
-    NS_LOG_DEBUG("MPDU payload size=" << mpdu->GetPacketSize() << ", to=" << hdr.GetAddr1()
-                                      << ", seq=" << hdr.GetSequenceControl());
+    NS_LOG_FUNCTION(this << *peekedItem);
 
     // check if the MSDU needs to be fragmented
-    mpdu = GetFirstFragmentIfNeeded(mpdu);
+    auto mpdu = GetFirstFragmentIfNeeded(peekedItem);
 
     NS_ASSERT(m_protectionManager);
     NS_ASSERT(m_ackManager);
     WifiTxParameters txParams;
-    txParams.m_txVector = GetWifiRemoteStationManager()->GetDataTxVector(hdr, m_allowedWidth);
+    txParams.m_txVector =
+        GetWifiRemoteStationManager()->GetDataTxVector(mpdu->GetHeader(), m_allowedWidth);
     txParams.AddMpdu(mpdu);
-    UpdateTxDuration(hdr.GetAddr1(), txParams);
+    UpdateTxDuration(mpdu->GetHeader().GetAddr1(), txParams);
     txParams.m_protection = m_protectionManager->TryAddMpdu(mpdu, txParams);
     txParams.m_acknowledgment = m_ackManager->TryAddMpdu(mpdu, txParams);
 
     SendMpduWithProtection(mpdu, txParams);
+}
 
-    return true;
+bool
+FrameExchangeManager::SendBufferedUnit(Mac48Address sender)
+{
+    NS_ASSERT_MSG(GetWifiRemoteStationManager()->IsInPsMode(sender),
+                  sender << " is not in powersave mode");
+
+    auto senderMld = GetWifiRemoteStationManager()->GetMldAddress(sender).value_or(sender);
+    auto bu = m_apMac->GetBufferedDataFor(senderMld, m_linkId);
+    if (!bu)
+    {
+        bu = m_apMac->GetBufferedMmpduFor(senderMld, m_linkId);
+    }
+    if (bu)
+    {
+        PrepareFrameToSend(bu);
+        return true;
+    }
+    return false;
 }
 
 Ptr<WifiMpdu>
@@ -1004,9 +1032,13 @@ FrameExchangeManager::SendNormalAck(const WifiMacHeader& hdr,
     ack.SetNoMoreFragments();
     ack.SetAddr1(hdr.GetAddr2());
     // 802.11-2016, Section 9.2.5.7: Duration/ID is received duration value
-    // minus the time to transmit the Ack frame and its SIFS interval
-    Time duration = hdr.GetDuration() - m_phy->GetSifs() -
-                    WifiPhy::CalculateTxDuration(GetAckSize(), ackTxVector, m_phy->GetPhyBand());
+    // minus the time to transmit the Ack frame and its SIFS interval, unless this Ack follows a
+    // PS-Poll frame, whose Duration/ID contains the AID of the STA
+    auto duration =
+        hdr.IsPsPoll()
+            ? Time{0}
+            : hdr.GetDuration() - m_phy->GetSifs() -
+                  WifiPhy::CalculateTxDuration(GetAckSize(), ackTxVector, m_phy->GetPhyBand());
     // The TXOP holder may exceed the TXOP limit in some situations (Sec. 10.22.2.8 of 802.11-2016)
     if (duration.IsStrictlyNegative())
     {
@@ -1140,7 +1172,17 @@ FrameExchangeManager::NormalAckTimeout(Ptr<WifiMpdu> mpdu, const WifiTxVector& t
     }
 
     m_mpdu = nullptr;
-    TransmissionFailed();
+    // m_dcf is null if we were given the right to transmit a frame (e.g., we received a PS-Poll
+    // frame), we transmitted a frame but we did not receive an Ack; in such a case, we shall not
+    // take usual actions, such as updating the CW.
+    if (m_dcf)
+    {
+        TransmissionFailed();
+    }
+    else
+    {
+        m_sentFrameTo.clear();
+    }
 }
 
 void
@@ -1565,6 +1607,35 @@ FrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
             ReceivedNormalAck(m_mpdu, m_txParams.m_txVector, txVector, rxSignalInfo, tag.Get());
             m_mpdu = nullptr;
         }
+        else if (hdr.IsPsPoll())
+        {
+            NS_ABORT_MSG_IF(inAmpdu, "Received PS-Poll as part of an A-MPDU");
+            NS_ABORT_MSG_IF(hdr.GetAddr1().IsGroup(), "Received group addressed PS-Poll");
+
+            if (!m_apMac)
+            {
+                NS_LOG_WARN("Ignoring PS-Poll addressed to us, as we are not an AP");
+                return;
+            }
+
+            auto sender = hdr.GetAddr2();
+
+            if (!GetWifiRemoteStationManager()->IsInPsMode(sender))
+            {
+                NS_LOG_WARN("Ignoring PS-Poll as the sender is not in PowerSave mode");
+                return;
+            }
+
+            NS_LOG_DEBUG("Check in a SIFS if we have a buffered unit to send to the sender");
+            Simulator::Schedule(m_phy->GetSifs(), [=, this]() {
+                if (!SendBufferedUnit(sender))
+                {
+                    NS_LOG_DEBUG(
+                        "No frame to send to the sender of the PS-Poll; send a Normal Ack");
+                    SendNormalAck(hdr, txVector, rxSnr);
+                }
+            });
+        }
     }
     else if (hdr.IsMgt())
     {
@@ -1641,7 +1712,17 @@ FrameExchangeManager::ReceivedNormalAck(Ptr<WifiMpdu> mpdu,
 
     // The CW shall be reset to aCWmin after every successful attempt to transmit
     // a frame containing all or part of an MSDU or MMPDU (sec. 10.3.3 of 802.11-2016)
-    m_dcf->ResetCw(m_linkId);
+    // m_dcf is null if we were given the right to transmit a frame (e.g., we received a PS-Poll
+    // frame), we transmitted a frame and we are now receiving the Ack; in such a case, we shall
+    // not take usual actions, such as updating the CW.
+    if (m_dcf)
+    {
+        m_dcf->ResetCw(m_linkId);
+    }
+    else
+    {
+        m_sentFrameTo.clear();
+    }
 
     if (mpdu->GetHeader().IsMoreFragments())
     {
@@ -1655,7 +1736,10 @@ FrameExchangeManager::ReceivedNormalAck(Ptr<WifiMpdu> mpdu,
         DequeueMpdu(mpdu);
     }
 
-    TransmissionSucceeded();
+    if (m_dcf)
+    {
+        TransmissionSucceeded();
+    }
 }
 
 void

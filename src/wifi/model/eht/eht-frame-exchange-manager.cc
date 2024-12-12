@@ -158,6 +158,14 @@ EhtFrameExchangeManager::CreateAliasIfNeeded(Ptr<WifiMpdu> mpdu) const
     return mpdu;
 }
 
+void
+EhtFrameExchangeManager::PrepareFrameToSend(Ptr<WifiMpdu> peekedItem)
+{
+    // Override FrameExchangeManager::PrepareFrameToSend to create an MPDU alias in case of
+    // frame exchange between two MLDs.
+    HeFrameExchangeManager::PrepareFrameToSend(CreateAliasIfNeeded(peekedItem));
+}
+
 bool
 EhtFrameExchangeManager::UsingOtherEmlsrLink() const
 {

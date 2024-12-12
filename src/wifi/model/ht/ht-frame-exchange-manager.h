@@ -190,6 +190,7 @@ class HtFrameExchangeManager : public QosFrameExchangeManager
     void TransmissionSucceeded() override;
     void ProtectionCompleted() override;
     void NotifyLastGcrUrTx(Ptr<const WifiMpdu> mpdu) override;
+    bool SendBufferedUnit(Mac48Address sender) override;
 
     /**
      * Process a received management action frame that relates to Block Ack agreement.
