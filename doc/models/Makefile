@@ -561,9 +561,9 @@ $(FIGURES)/nist-frame-success-rate-ax.pdf_width = 12cm
 $(FIGURES)/assoc-manager.pdf_width = 12cm
 $(FIGURES)/emlsr-dl-txop.pdf_width = 12cm
 $(FIGURES)/emlsr-ul-txop.pdf_width = 12cm
-$(FIGURES)/zigbeeStackArch.pdf_width = 8cm
-$(FIGURES)/manyToOne.pdf_width = 8cm
-$(FIGURES)/mesh.pdf_width = 8cm
+$(FIGURES)/zigbeeStackArch.pdf_width = 6cm
+$(FIGURES)/manyToOne.pdf_width = 6cm
+$(FIGURES)/mesh.pdf_width = 6cm
 
 IMAGES_PNG = ${IMAGES_EPS:.eps=.png}
 IMAGES_PDF = ${IMAGES_EPS:.eps=.pdf}

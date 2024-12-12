@@ -78,21 +78,65 @@ The following is a brief explanation of how users can interact with the NWK and 
 Network joining
 ~~~~~~~~~~~~~~~
 
-In a Zigbee network, devices must be organized and related to one another based on their specific roles.
+In a Zigbee network, before devices attempt to exchange data with one another, they must first be organized and related to one another based on their specific roles.
 There are three primary roles in a Zigbee network:
 
-- **Coordinator:** This is the initiating device in the network, and there can only be one coordinator at a time.
-- **Router:** This device is capable of relaying data and commands on behalf of other devices.
-- **End Device:** These are devices with limited capabilities (for example, they cannot route messages) that serve as endpoints within the network.
+- **Coordinator (ZC):** This is the initiating device in the network, and there can only be one coordinator at a time.
+- **Router (ZR):** This device is capable of relaying data and commands on behalf of other devices.
+- **End Device (ZE):** These are devices with limited capabilities (for example, they cannot route messages) that serve as endpoints within the network.
 
 Devices can join a Zigbee network as either routers or end devices.
 They can do this through one of two methods: by using the MAC association process or by joining the network directly.
 
-**Direct Join (a.k.a. Orphaning process)**
-
 
 **Mac Association Join**
 
+
+
+**Direct Join (a.k.a. Orphaning process)**
+
+Direct Join is employed when the number of nodes in the network and their relationships are known in advance.
+As the name suggests, this method involves registering devices directly with a coordinator or router.
+Subsequently, these devices confirm their registration with the coordinator to receive a network address.
+
+This process is simpler than the association method of joining a network, but it is less flexible since it requires manual intervention.
+Below is a summary of the direct join process:
+
+1. If a coordinator device or router is already operational, devices that can communicate with this coordinator must be manually registered using the primitive `NLME-DIRECT-JOIN.request`.
+2. After this registration, the devices registered in step 1 will send a `NLME-JOIN.request` with the rejoin network parameter set to `DIRECT_OR_REJOIN`. This action triggers a MAC orphaning request message, which is used to confirm the device's existence with the coordinator.
+3. The coordinator or router will respond to the orphaning message by providing an assigned short address.
+4. The device accepts this short address and successfully joins the network.
+
+Note: The process described above outlines the steps for joining the network using a direct join method.
+However, devices that are required to act as routers must also issue an additional `NLME-START-ROUTER.request` primitive after joining the network in order to begin functioning as routers.
+
+In |ns3|, a direct join primitive is used as follows::
+
+    CapabilityInformation capaInfo;
+    capaInfo.SetDeviceType(zigbee::MacDeviceType::ROUTER); // The joining device capability is defined here
+    capaInfo.SetAllocateAddrOn(true); // If false, an extended address mode will be used instead
+    // zstack is an instance of a ZigbeeStack object installed in node that is the
+    // coordinator or router where the joining device is being registered
+    NlmeDirectJoinRequestParams directParams;
+    directParams.m_capabilityInfo = capaInfo.GetCapability();
+    directParams.m_deviceAddr = Mac64Address("00:00:00:00:00:00:00:01"); // The device IEEE address (Ext address)
+    zstack->GetNwk()->NlmeDirectJoinRequest(directParams);
+
+The device joining the network must issue a primitive similar to this one::
+
+    // zstack is an instance of a ZigbeeStack object installed in the node joining the network
+    // The orphaning message will be sent to every channel and interface specified.
+    // The rejoin network parameter must be DIRECT_OR_REJOIN
+    NlmeJoinRequestParams joinParams;
+    joinParams.m_rejoinNetwork = zigbee::JoiningMethod::DIRECT_OR_REJOIN;
+    joinParams.m_scanChannelList.channelPageCount = 1;
+    joinParams.m_scanChannelList.channelsField[0] = zigbee::ALL_CHANNELS;
+    joinParams.m_capabilityInfo = capaInfo.GetCapability();
+    joinParams.m_extendedPanId = Mac64Address("00:00:00:00:00:00:CA:FE").ConvertToInt();
+    zstack->GetNwk()->NlmeJoinRequest(joinParams);
+
+
+See zigbee/examples for detailed examples using network joining.
 
 Routing
 ~~~~~~~
