@@ -11,9 +11,9 @@
 
 #include "wifi-phy-band.h"
 #include "wifi-types.h"
-#include "wifi-units.h"
 
 #include "ns3/abort.h"
+#include "ns3/si-units.h"
 
 #include <list>
 #include <map>

@@ -9,7 +9,7 @@
 #ifndef WIFI_TYPES_H
 #define WIFI_TYPES_H
 
-#include "wifi-units.h"
+#include "ns3/si-units.h"
 
 #include <ostream>
 

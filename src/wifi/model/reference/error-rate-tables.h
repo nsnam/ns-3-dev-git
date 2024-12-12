@@ -14,7 +14,7 @@
 #ifndef ERROR_RATE_TABLES_H
 #define ERROR_RATE_TABLES_H
 
-#include "ns3/wifi-units.h"
+#include "ns3/si-units.h"
 
 #include <utility>
 #include <vector>

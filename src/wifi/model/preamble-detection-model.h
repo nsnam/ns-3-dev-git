@@ -9,9 +9,8 @@
 #ifndef PREAMBLE_DETECTION_MODEL_H
 #define PREAMBLE_DETECTION_MODEL_H
 
-#include "wifi-units.h"
-
 #include "ns3/object.h"
+#include "ns3/si-units.h"
 
 namespace ns3
 {

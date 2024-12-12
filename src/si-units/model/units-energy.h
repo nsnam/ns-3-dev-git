@@ -1,0 +1,1124 @@
+#ifndef UNITS_ENERGY_H
+#define UNITS_ENERGY_H
+
+#include "format-string.h"
+#include "units-aliases.h"
+#include "units-frequency.h"
+#include "units-time.h"
+
+#include <ns3/abort.h>
+#include <ns3/attribute-helper.h>
+
+#include <algorithm>
+#include <cinttypes>
+#include <cmath>
+#include <iostream>
+#include <math.h> // To support Linux. <cmath> lacks log10l().
+#include <optional>
+
+// clang-format off
+namespace ns3
+{
+
+struct dB_t;
+struct dBm_t;
+struct mWatt_t;
+struct Watt_t;
+
+/// Convert energy value in linear scale into log scale.
+/// @param val Energy value in linear scale.
+/// @return Energy value in log scale.
+inline double
+ToLogScale(double val)
+{
+    NS_ABORT_IF(val <= 0.);
+    return 10.0 * log10l(val); // NOLINT
+}
+
+/// Convert energy value in log scale into linear scale.
+/// @param val Energy value in log scale.
+/// @return Energy value in linear scale.
+inline double
+ToLinearScale(double val)
+{
+    return std::pow(10.0, val / 10.0); // NOLINT
+}
+
+/// dB type
+struct dB_t
+{
+    double val{}; ///< Value in dB.
+
+    dB_t() = default; ///< Default constructor.
+
+    /// Constructor.
+    /// @param val Value in dB.
+    dB_t(double val)
+        : val(val) // NOLINT(google-explicit-constructor,hicpp-explicit-conversions)
+    {
+    }
+
+    /// Converts to string.
+    /// @return String representation of dB_t object.
+    std::string str() const // NOLINT(readability-identifier-naming)
+    {
+        return sformat("%.1f dB", val);
+    }
+
+    /// Converts from linear scale.
+    /// @param input Value in linear scale.
+    /// @return dB_t object.
+    static dB_t from_linear(double input) // NOLINT(readability-identifier-naming)
+    {
+        return dB_t{ToLogScale(input)};
+    }
+
+    /// Converts to linear scale.
+    /// @return Value in linear scale.
+    double to_linear() const // NOLINT(readability-identifier-naming)
+    {
+        return ToLinearScale(val);
+    }
+
+    /// Get value in dB.
+    /// @return Value in dB.
+    double in_dB() const // NOLINT(readability-identifier-naming)
+    {
+        return val;
+    }
+
+    /// Get value in linear scale.
+    /// @return Value in linear scale.
+    double in_linear() const // NOLINT(readability-identifier-naming)
+    {
+        return to_linear();
+    }
+
+    /// Converts from vector of linear scale.
+    /// @param input Vector of linear scale.
+    /// @return Vector of dB_t objects.
+    static std::vector<dB_t> from_doubles(
+        std::vector<double>& input) // NOLINT(readability-identifier-naming)
+    {
+        std::vector<dB_t> output(input.size());
+        std::transform(input.cbegin(), input.cend(), output.begin(), [](double f) {
+            return dB_t{f};
+        });
+        return output;
+    }
+
+    /// Converts to vector of linear scale.
+    /// @param input Vector of dB_t objects.
+    /// @return Vector of linear scale.
+    static std::vector<double> to_doubles(
+        std::vector<dB_t>& input) // NOLINT(readability-identifier-naming)
+    {
+        std::vector<double> output(input.size());
+        std::transform(input.cbegin(), input.cend(), output.begin(), [](dB_t f) {
+            return static_cast<double>(f.val);
+        });
+        return output;
+    }
+
+    /// Equality operator.
+    /// @param rhs value to compare
+    /// @return True if equal.
+    inline bool operator==(const dB_t& rhs) const
+    {
+        return val == rhs.val;
+    }
+
+    /// Inequality operator.
+    /// @param rhs value to compare
+    /// @return True if not equal.
+    inline bool operator!=(const dB_t& rhs) const
+    {
+        return !(operator==(rhs));
+    }
+
+    /// Less than operator.
+    /// @param rhs value to compare
+    /// @return True if less than.
+    inline bool operator<(const dB_t& rhs) const
+    {
+        return val < rhs.val;
+    }
+
+    /// Greater than operator.
+    /// @param rhs value to compare
+    /// @return True if greater than.
+    inline bool operator>(const dB_t& rhs) const
+    {
+        return val > rhs.val;
+    }
+
+    /// Less than or equal operator.
+    /// @param rhs value to compare
+    /// @return True if less than or equal.
+    inline bool operator<=(const dB_t& rhs) const
+    {
+        return val <= rhs.val;
+    }
+
+    /// Greater than or equal operator.
+    /// @param rhs value to compare
+    /// @return True if greater than or equal.
+    inline bool operator>=(const dB_t& rhs) const
+    {
+        return val >= rhs.val;
+    }
+
+    /// Negation operator.
+    /// @return Negated value.
+    inline dB_t operator-() const // Negation
+    {
+        return dB_t{-val};
+    }
+
+    /// Addition operator.
+    /// @param rhs value to add
+    /// @return Sum of values.
+    inline dB_t operator+(const dB_t& rhs) const
+    {
+        return dB_t{val + rhs.val};
+    }
+
+    /// Subtraction operator.
+    /// @param rhs value to subtract
+    /// @return Difference of values.
+    inline dB_t operator-(const dB_t& rhs) const
+    {
+        return dB_t{val - rhs.val};
+    }
+
+    /// Addition assignment operator.
+    /// @param rhs value to add
+    /// @return Reference to self.
+    inline dB_t& operator+=(const dB_t& rhs)
+    {
+        val += rhs.val;
+        return *this;
+    }
+
+    /// Subtraction assignment operator.
+    /// @param rhs value to subtract
+    /// @return Reference to self.
+    inline dB_t& operator-=(const dB_t& rhs)
+    {
+        val -= rhs.val;
+        return *this;
+    }
+
+    /// Addition of dBms
+    /// @param rhs value to add
+    /// @return Sum of values.
+    dBm_t operator+(const dBm_t& rhs) const;
+
+    /// Subtraction of dBms
+    /// @param rhs value to subtract
+    /// @return Difference of values.
+    dBm_t operator-(const dBm_t& rhs) const;
+
+    /// Convert from string.
+    /// @param input string to convert
+    /// @return Optional dB value.
+    static std::optional<dB_t> from_str( // NOLINT(readability-identifier-naming)
+        const std::string& input);
+};
+
+/// dBm type
+struct dBm_t
+{
+    double val{}; ///< Value in dBm
+
+    dBm_t() = default; ///< default constructor
+
+    /// Constructor.
+    /// @param val Value in dBm.
+    dBm_t(double val)
+        : val(val) // NOLINT(google-explicit-constructor,hicpp-explicit-conversions)
+    {
+    }
+
+    /// Converts from mWatt
+    /// @param input input power struct in mWatt_t
+    /// @return dBm_t object
+    static dBm_t from_mWatt(const mWatt_t& input); // NOLINT(readability-identifier-naming)
+
+    /// Converts to mWatt
+    /// @return power unit struct in mWatt_t
+    mWatt_t to_mWatt() const;                      // NOLINT(readability-identifier-naming)
+
+    /// Gets power unit in mWatt
+    /// @return power unit in mWatt
+    double in_mWatt() const; // NOLINT(readability-identifier-naming). Return quantity only
+
+    /// Sets power unit in dBm_t from Watt_t
+    /// @param input input power struct in Watt_t
+    /// @returns power unit struct in dBm_t
+    static dBm_t from_Watt(const Watt_t& input); // NOLINT(readability-identifier-naming)
+
+    /// Converts a dBm_t power unit struct to Watt_t
+    /// @returns power unit struct in Watt_t
+    Watt_t to_Watt() const; // NOLINT(readability-identifier-naming)
+
+    /// Returns a dBm_t power unit struct value in Watt_t
+    /// @returns a power unit value in Watt_t
+    double in_Watt() const; // NOLINT(readability-identifier-naming). Return quantity only
+
+    /// Returns a dBm_t power unit struct value in dBm_t
+    /// @returns a power unit value in dBm_t
+    double in_dBm() const; // NOLINT(readability-identifier-naming). Return quantity only
+
+    /// Represents the power unit as a string
+    /// @returns a string representation of the power unit
+    std::string str() const // NOLINT(readability-identifier-naming)
+    {
+        return sformat("%.1f dBm", val);
+    }
+
+    /// Converts a vector of doubles representing in dBm to a vector of dBm_t
+    /// @param input input power values in dBm
+    /// @returns a vector of dBm_t
+    static std::vector<dBm_t> from_doubles(
+        std::vector<double>& input) // NOLINT(readability-identifier-naming)
+    {
+        std::vector<dBm_t> output(input.size());
+        std::transform(input.cbegin(), input.cend(), output.begin(), [](double f) {
+            return dBm_t{f};
+        });
+        return output;
+    }
+
+    /// Converts a vector of dBm_t to a vector of doubles
+    /// @param input input power values in dBm_t
+    /// @returns a vector of doubles
+    static std::vector<double> to_doubles(
+        std::vector<dBm_t>& input) // NOLINT(readability-identifier-naming)
+    {
+        std::vector<double> output(input.size());
+        std::transform(input.cbegin(), input.cend(), output.begin(), [](dBm_t f) {
+            return static_cast<double>(f.val);
+        });
+        return output;
+    }
+
+    /// Equality operator.
+    /// @param rhs value to compare
+    /// @returns true if the two values are equal, false otherwise
+    inline bool operator==(const dBm_t& rhs) const
+    {
+        return val == rhs.val;
+    }
+
+    /// Inequality operator.
+    /// @param rhs value to compare
+    /// @returns true if the two values are not equal, false otherwise
+    inline bool operator!=(const dBm_t& rhs) const
+    {
+        return !(operator==(rhs));
+    }
+
+    /// Less than operator.
+    /// @param rhs value to compare
+    /// @returns true if the value is less than the rhs value, false otherwise
+    inline bool operator<(const dBm_t& rhs) const
+    {
+        return val < rhs.val;
+    }
+
+    /// Greater than operator.
+    /// @param rhs value to compare
+    /// @returns true if the value is greater than the rhs value, false otherwise
+    inline bool operator>(const dBm_t& rhs) const
+    {
+        return val > rhs.val;
+    }
+
+    /// Less than or equal to operator.
+    /// @param rhs value to compare
+    /// @returns true if the value is less than or equal to the rhs value, false otherwise
+    inline bool operator<=(const dBm_t& rhs) const
+    {
+        return val <= rhs.val;
+    }
+
+    /// Greater than or equal to operator.
+    /// @param rhs value to compare
+    /// @returns true if the value is greater than or equal to the rhs value, false otherwise
+    inline bool operator>=(const dBm_t& rhs) const
+    {
+        return val >= rhs.val;
+    }
+
+    /// Negation operator.
+    /// @returns a new dBm_t value with the value negated
+    inline dBm_t operator-() const
+    {
+        return dBm_t{-val};
+    }
+
+    /// Addition operator.
+    /// @param rhs value to add
+    /// @returns a new dBm_t value with the value added
+    inline dBm_t operator+(const dB_t& rhs) const
+    {
+        return dBm_t{val + rhs.val};
+    }
+
+    /// Addition assignment operator.
+    /// @param rhs value to add
+    /// @returns a reference to this object
+    inline dBm_t& operator+=(const dB_t& rhs)
+    {
+        val += rhs.val;
+        return *this;
+    }
+
+    /// Subtraction operator.
+    /// @param rhs value to subtract
+    /// @returns a new dBm_t value with the value subtracted
+    inline dBm_t operator-(const dB_t& rhs) const
+    {
+        return dBm_t{val - rhs.val};
+    }
+
+    /// Subtraction assignment operator.
+    /// @param rhs value to subtract
+    /// @returns a reference to this object
+    inline dBm_t& operator-=(const dB_t& rhs)
+    {
+        val -= rhs.val;
+        return *this;
+    }
+
+    // Disallow addition/subtraction between dBm_t and mWatt_t.
+    // Convert operands to the same unit first before addition or subtraction operation
+
+// Energy's addition and subtraction in dBm_t
+// are prohibited due to the fact that those operators have conflicting meanings.
+// While energy may be added or separated/consumed, + and - have the meanings of
+// multiplication and division respectively in log scale. In order to avoid this confusion
+// and potential harm, addition and subtraction of energy is allowed only in the linear scale.
+#if false // IMPLEMENTED BUT NOT ALLOWED TO BE USED
+    inline dBm_t operator+(const dBm_t& rhs) const
+  {
+        return dBm_t{ToLogScale(ToLinearScale(val) + ToLinearScale(rhs.val))};
+  }
+
+  // Subtraction in energy may mean consumption
+    inline dBm_t operator-(const dBm_t& rhs) const
+  {
+        return dBm_t{ToLogScale(ToLinearScale(val) - ToLinearScale(rhs.val))};
+  }
+
+    inline dBm_t& operator+=(const dBm_t& rhs)
+  {
+        val = ToLogScale(ToLinearScale(val) + ToLinearScale(rhs.val));
+    return *this;
+  }
+
+    inline dBm_t& operator-=(const dBm_t& rhs)
+  {
+        val = ToLogScale(ToLinearScale(val) - ToLinearScale(rhs.val));
+    return *this;
+  }
+#endif    // IMPLEMENTED BUT NOT ALLOWED TO BE USED
+
+    static std::optional<dBm_t> from_str( // NOLINT(readability-identifier-naming)
+        const std::string& input);
+};
+
+/// mWatt
+struct mWatt_t
+{
+    double val{}; ///< Value in mWatt
+
+    mWatt_t() = default; ///< default constructor
+
+    /// Constructor from double
+    /// @param val Value in mWatt
+    mWatt_t(double val)
+        : val(val) // NOLINT(google-explicit-constructor,hicpp-explicit-conversions)
+    {
+    }
+
+    // Note these are exceptions to method naming rules in order output be consistent. dBm_t,
+    // mWatt_t, and Watt_t conversion method names.
+
+    /// Conversion from dBm_t
+    /// @param input input power struct in dBm_t
+    /// @returns power unit struct in mWatt_t
+    static mWatt_t from_dBm(const dBm_t& input); // NOLINT(readability-identifier-naming)
+
+    /// Conversion to dBm_t
+    /// @returns power unit struct in dBm_t
+    dBm_t to_dBm() const;                        // NOLINT(readability-identifier-naming)
+
+    /// Get the value in dBm
+    /// @returns power unit in dBm
+    double in_dBm() const; // NOLINT(readability-identifier-naming). Return quantity only
+
+    /// Sets power unit in mWatt_t from Watt_t
+    /// @param input input power struct in Watt_t
+    /// @returns power unit struct in mWatt_t
+    static mWatt_t from_Watt(const Watt_t& input); // NOLINT(readability-identifier-naming)
+
+    /// Converts a mWatt_t power unit struct to Watt_t
+    /// @returns power unit struct in Watt_t
+    Watt_t to_Watt() const; // NOLINT(readability-identifier-naming)
+
+    /// Returns a mWatt_t power unit struct value in Watt_t
+    /// @returns a power unit value in Watt_t
+    double in_Watt() const; // NOLINT(readability-identifier-naming). Return quantity only
+
+    /// Returns a mWatt_t power unit struct value in mWatt_t
+    /// @returns a power unit value in mWatt_t
+    double in_mWatt() const; // NOLINT(readability-identifier-naming). Return quantity only
+
+    /// Returns a string representation of the power unit
+    /// @returns a string representation of the power unit
+    std::string str() const // NOLINT(readability-identifier-naming)
+    {
+        return sformat("%.1f mWatt", val);
+    }
+
+    /// Converts a vector of double values represented in mWatt to a vector of mWatt_t
+    /// @param input vector of double values in mWatt
+    /// @returns vector of mWatt_t values
+    static std::vector<mWatt_t> from_doubles(
+        std::vector<double>& input) // NOLINT(readability-identifier-naming)
+    {
+        std::vector<mWatt_t> output(input.size());
+        std::transform(input.cbegin(), input.cend(), output.begin(), [](double f) {
+            return mWatt_t{f};
+        });
+        return output;
+    }
+
+    /// Converts a vector of mWatt_t values to a vector of double values
+    /// @param input vector of mWatt_t values
+    /// @returns vector of double values in mWatt
+    static std::vector<double> to_doubles(
+        std::vector<mWatt_t>& input) // NOLINT(readability-identifier-naming)
+    {
+        std::vector<double> output(input.size());
+        std::transform(input.cbegin(), input.cend(), output.begin(), [](mWatt_t f) {
+            return static_cast<double>(f.val);
+        });
+        return output;
+    }
+
+    /// Equality operator
+    /// @param rhs value to compare
+    /// @returns true if the two values are equal
+    inline bool operator==(const mWatt_t& rhs) const
+    {
+        return val == rhs.val;
+    }
+
+    /// Inequality operator
+    /// @param rhs value to compare
+    /// @returns true if the two values are not equal
+    inline bool operator!=(const mWatt_t& rhs) const
+    {
+        return !(operator==(rhs));
+    }
+
+    /// Less than operator
+    /// @param rhs value to compare
+    /// @returns true if the left value is less than the right value
+    inline bool operator<(const mWatt_t& rhs) const
+    {
+        return val < rhs.val;
+    }
+
+    /// Greater than operator
+    /// @param rhs value to compare
+    /// @returns true if the left value is greater than the right value
+    inline bool operator>(const mWatt_t& rhs) const
+    {
+        return val > rhs.val;
+    }
+
+    /// Less than or equal to operator
+    /// @param rhs value to compare
+    /// @returns true if the left value is less than or equal to the right value
+    inline bool operator<=(const mWatt_t& rhs) const
+    {
+        return val <= rhs.val;
+    }
+
+    /// Greater than or equal to operator
+    /// @param rhs value to compare
+    /// @returns true if the left value is greater than or equal to the right value
+    inline bool operator>=(const mWatt_t& rhs) const
+    {
+        return val >= rhs.val;
+    }
+
+    /// Negation Operator
+    /// @returns a mWatt_t power unit struct with value equals to -val
+    inline mWatt_t operator-() const
+    {
+        return mWatt_t{-val};
+    }
+
+    /// Addition Operator
+    /// @param rhs value to add
+    /// @returns a mWatt_t power unit struct with value equals to val + rhs.val
+    inline mWatt_t operator+(const mWatt_t& rhs) const
+    {
+        return mWatt_t{val + rhs.val};
+    }
+
+    /// Subtraction Operator
+    /// @param rhs value to subtract
+    /// @returns a mWatt_t power unit struct with value equals to val - rhs.val
+    inline mWatt_t operator-(const mWatt_t& rhs) const
+    {
+        return mWatt_t{val - rhs.val};
+    }
+
+    /// Addition Assignment Operator
+    /// @param rhs value to add
+    /// @returns a reference to the current mWatt_t power unit struct
+    inline mWatt_t& operator+=(const mWatt_t& rhs)
+    {
+        val += rhs.val;
+        return *this;
+    }
+
+    /// Subtraction Assignment Operator
+    /// @param rhs value to subtract
+    /// @returns a reference to the current mWatt_t power unit struct
+    inline mWatt_t& operator-=(const mWatt_t& rhs)
+    {
+        val -= rhs.val;
+        return *this;
+    }
+
+    /// Multiplier Operator
+    /// @param rhs right-hand side operand in double type
+    /// @returns a mWatt_t power unit struct with value equals to val * rhs
+    inline mWatt_t operator*(const double& rhs) const
+    {
+        return mWatt_t{val * rhs};
+    }
+
+    /// Divider Operator
+    /// @param rhs right-hand side operand in double type
+    /// @returns a mWatt_t power unit struct with value equals to val / rhs
+    inline mWatt_t operator/(const double& rhs) const
+    {
+        return mWatt_t{val / rhs};
+    }
+
+    // mWatt_t - Watt_t Cross Operations
+    // Keeping classes simple, even if duplication is present. Preferring faster runtime.
+
+    /// Equality Operator
+    /// @param rhs right-hand side operand
+    /// @returns true if the two power values are equal
+    bool operator==(const Watt_t& rhs) const;
+
+    /// Inequality Operator
+    /// @param rhs right-hand side operand
+    /// @returns true if the two power values are not equal
+    bool operator!=(const Watt_t& rhs) const;
+
+    /// Less Than Comparison Operator
+    /// @param rhs right-hand side operand
+    /// @returns true if the power value is less than the rhs value
+    bool operator<(const Watt_t& rhs) const;
+
+    /// Greater Than Comparison Operator
+    /// @param rhs input Watt_t power unit struct to compare to
+    /// @returns true if the power value is greater than the rhs value
+    bool operator>(const Watt_t& rhs) const;
+
+    /// Less Than or Equal Comparison Operator
+    /// @param rhs right-hand side operand
+    /// @returns true if the power value is less than or equal rhs value
+    bool operator<=(const Watt_t& rhs) const;
+
+    /// Greater Than or Equal Comparison Operator
+    /// @param rhs right-hand side operand
+    /// @returns true if the power value is greater than or equal the rhs value
+    bool operator>=(const Watt_t& rhs) const;
+
+    /// Addition Operator
+    /// @param rhs right-hand side operand
+    /// @returns a mWatt_t power unit struct with value equals the sum of the two
+    mWatt_t operator+(const Watt_t& rhs) const;
+
+    /// Subtraction Operator
+    /// @param rhs right-hand side operand
+    /// @returns a mWatt_t power unit struct with value equals val - rhs.val
+    mWatt_t operator-(const Watt_t& rhs) const;
+
+    /// Addition Assignment Operator
+    /// @param rhs right-hand side operand
+    /// @returns a mWatt_t power unit struct with value equals to val + rhs.val
+    mWatt_t& operator+=(const Watt_t& rhs);
+
+    /// Subtraction Assignment Operator
+    /// @param rhs right-hand side operand
+    /// @returns a mWatt_t power unit struct with value equals to val - rhs.val
+    mWatt_t& operator-=(const Watt_t& rhs);
+
+    static std::optional<mWatt_t> from_str( // NOLINT(readability-identifier-naming)
+        const std::string& input);
+};
+
+/// Multiplier Operator for mWatt_t
+/// @param lfs left-hand side operand in double type
+/// @param rhs right-hand side operand in mWatt_t type
+/// @returns a mWatt_t power unit struct with value equals to lfs * rhs.val
+mWatt_t operator*(const double& lfs, const mWatt_t& rhs);
+
+/// Watt_t power unit structure
+struct Watt_t
+{
+    double val{};       ///< Value in Watt_t
+    Watt_t() = default; ///< Default Empty Constructor
+
+    /// Constructor to set the power value in Watt_t
+    /// @param val the power value in Watt_t to set
+    Watt_t(double val)
+        : val(val) // NOLINT(google-explicit-constructor,hicpp-explicit-conversions)
+    {
+    }
+
+    // mWatt_t-Watt_t-dBm_t Conversion Operators
+    /// Sets power unit in Watt_t from dBm_t
+    /// @param input input power struct in dBm_t
+    /// @returns power unit struct in Watt_t
+    static Watt_t from_dBm(const dBm_t& input); // NOLINT(readability-identifier-naming)
+
+    /// Converts a Watt_t power unit struct to dBm_t
+    /// @returns power unit struct in dBm_t
+    dBm_t to_dBm() const; // NOLINT(readability-identifier-naming)
+
+    /// Returns a Watt_t power unit struct value in dBm_t
+    /// @returns a power unit value in dBm_t
+    double in_dBm() const; // NOLINT(readability-identifier-naming). Return quantity only
+
+    /// Sets power unit in Watt_t from mWatt_t
+    /// @param input input power struct in mWatt_t
+    /// @returns power unit struct in Watt_t
+    static Watt_t from_mWatt(const mWatt_t& input); // NOLINT(readability-identifier-naming)
+
+    /// Converts a Watt_t power unit struct to mWatt_t
+    /// @returns power unit struct in mWatt_t
+    mWatt_t to_mWatt() const; // NOLINT(readability-identifier-naming)
+
+    /// Returns a Watt_t power unit struct value in mWatt_t
+    /// @returns a power unit value in mWatt_t
+    double in_mWatt() const; // NOLINT(readability-identifier-naming). Return quantity only
+
+    /// Returns Watt_t power unit struct value
+    /// @returns power unit value in Watt_t
+    double in_Watt() const; // NOLINT(readability-identifier-naming). Return quantity only
+
+    /// Returns Watt_t power unit value in floating point string representations
+    /// @returns a string of format "%.1f Watt" representing the power value in Watt_t
+    std::string str() const // NOLINT(readability-identifier-naming)
+    {
+        return sformat("%.1f Watt", val);
+    }
+
+    /// Rerturns a vector of Watt_t power unit structs from an input vector values
+    /// @param input a vector of input power values in Watt_t
+    /// @returns  a vector of Watt_t power unit structs
+    static std::vector<Watt_t> from_doubles(
+        std::vector<double>& input) // NOLINT(readability-identifier-naming)
+    {
+        std::vector<Watt_t> output(input.size());
+        std::transform(input.cbegin(), input.cend(), output.begin(), [](double f) {
+            return Watt_t{f};
+        });
+        return output;
+    }
+
+    /// Converts a vector of Watt_t power unit structs to a output vector values
+    /// @param input a vector of Watt_t power unit structs
+    /// @returns a vector of output power values in Watt_t
+    static std::vector<double> to_doubles(
+        std::vector<Watt_t>& input) // NOLINT(readability-identifier-naming)
+    {
+        std::vector<double> output(input.size());
+        std::transform(input.cbegin(), input.cend(), output.begin(), [](Watt_t f) {
+            return static_cast<double>(f.val);
+        });
+        return output;
+    }
+
+    // Watt_t-Watt_t Operators
+    // Keeping classes simple, even if duplication is present. Preferring faster runtime.
+
+    /// Equality Operator
+    /// @param rhs right-hand side operand
+    /// @returns true if the two power values are equal
+    inline bool operator==(const Watt_t& rhs) const
+    {
+        return val == rhs.val;
+    }
+
+    /// Inequality Operator
+    /// @param rhs right-hand side operand
+    /// @returns true if the two power values are not equal
+    inline bool operator!=(const Watt_t& rhs) const
+    {
+        return !(operator==(rhs));
+    }
+
+    /// Less Than Comparison Operator
+    /// @param rhs right-hand side operand
+    /// @returns true if the power value is less than the rhs value
+    inline bool operator<(const Watt_t& rhs) const
+    {
+        return val < rhs.val;
+    }
+
+    /// Greater Than Comparison Operator
+    /// @param rhs right-hand side operand
+    /// @returns true if the power value is greater than the rhs value
+    inline bool operator>(const Watt_t& rhs) const
+    {
+        return val > rhs.val;
+    }
+
+    /// Less Than or Equal Comparison Operator
+    /// @param rhs right-hand side operand
+    /// @returns true if the power value is less than or equal the rhs value
+    inline bool operator<=(const Watt_t& rhs) const
+    {
+        return val <= rhs.val;
+    }
+
+    /// Greater Than or Equal Comparison Operator
+    /// @param rhs right-hand side operand
+    /// @returns true if the power value is greater than or equal the rhs value
+    inline bool operator>=(const Watt_t& rhs) const
+    {
+        return val >= rhs.val;
+    }
+
+    /// Arithmetic Negation Operator
+    /// @returns negated power value
+    inline Watt_t operator-() const
+    {
+        return Watt_t{-val};
+    }
+
+    /// Addition Operator
+    /// @param rhs right-hand side operand
+    /// @returns a Watt_t power unit struct with value equals the sum of the two
+    inline Watt_t operator+(const Watt_t& rhs) const
+    {
+        return Watt_t{val + rhs.val};
+    }
+
+    /// Subtraction Operator
+    /// @param rhs right-hand side operand
+    /// @returns a Watt_t power unit struct with value equals val - rhs.val
+    inline Watt_t operator-(const Watt_t& rhs) const
+    {
+        return Watt_t{val - rhs.val};
+    }
+
+    /// Addition Assignment Operator
+    /// @param rhs right-hand side operand
+    /// @returns a Watt_t power unit struct with value equals to val + rhs.val
+    inline Watt_t& operator+=(const Watt_t& rhs)
+    {
+        val += rhs.val;
+        return *this;
+    }
+
+    /// Subtraction Assignment Operator
+    /// @param rhs right-hand side operand
+    /// @returns a Watt_t power unit struct with value equals to val - rhs.val
+    inline Watt_t& operator-=(const Watt_t& rhs)
+    {
+        val -= rhs.val;
+        return *this;
+    }
+
+    /// Multiplication Assignment Operator
+    /// @param rhs right-hand side operand
+    /// @returns a Watt_t power unit struct with value equals to val * rhs.val
+    inline Watt_t operator*(const Watt_t& rhs) const
+    {
+        return Watt_t{val * rhs.val};
+    }
+
+    // Watt_t-mWatt_t Cross-operators
+    // Keeping classes simple, even if duplication is present. Preferring faster runtime.
+
+    /// Equality Operator
+    /// @param rhs right-hand side operand
+    /// @returns true if the two power values are equal
+    bool operator==(const mWatt_t& rhs) const;
+
+    /// Inequality Operator
+    /// @param rhs right-hand side operand
+    /// @returns true if the two power values are not equal
+    bool operator!=(const mWatt_t& rhs) const;
+
+    /// Less Than Comparison Operator
+    /// @param rhs right-hand side operand
+    /// @returns true if the power value is less than the rhs value
+    bool operator<(const mWatt_t& rhs) const;
+
+    /// Greater Than Comparison Operator
+    /// @param rhs right-hand side operand
+    /// @returns true if the power value is greater than the rhs value
+    bool operator>(const mWatt_t& rhs) const;
+
+    /// Less Than or Equal Comparison Operator
+    /// @param rhs right-hand side operand
+    /// @returns true if the power value is less than or equal the rhs value
+    bool operator<=(const mWatt_t& rhs) const;
+
+    /// Greater Than or Equal Comparison Operator
+    /// @param rhs right-hand side operand
+    /// @returns true if the power value is greater than or equal the rhs value
+    bool operator>=(const mWatt_t& rhs) const;
+
+    /// Addition Operator
+    /// @param rhs right-hand side operand
+    /// @returns a mWatt_t power unit struct with value equals the sum of the two values
+    mWatt_t operator+(const mWatt_t& rhs) const;
+
+    /// Subtraction Operator
+    /// @param rhs right-hand side operand
+    /// @returns a mWatt_t power unit struct with value equals val - rhs.val
+    mWatt_t operator-(const mWatt_t& rhs) const;
+
+    /// Addition Assignment Operator
+    /// @param rhs right-hand side operand
+    /// @returns a Watt_t power unit struct with value equals to val + rhs.val
+    Watt_t& operator+=(const mWatt_t& rhs);
+
+    /// Subtraction Assignment Operator
+    /// @param rhs right-hand side operand
+    /// @returns a Watt_t power unit struct with value equals to val - rhs.val
+    Watt_t& operator-=(const mWatt_t& rhs);
+
+    static std::optional<Watt_t> from_str( // NOLINT(readability-identifier-naming)
+        const std::string& input);
+};
+
+/// Power spectral density
+struct dBm_per_Hz_t // NOLINT(readability-identifier-naming)
+{
+    double val{}; ///< Value in dBm/Hz
+
+    dBm_per_Hz_t() = default; ///< Default constructor
+
+    /// Constructor from double
+    /// @param val value in dBm/Hz
+    dBm_per_Hz_t(double val)
+        : val(val) // NOLINT(google-explicit-constructor,hicpp-explicit-conversions)
+    {
+    }
+
+    /// Get value in dBm
+    /// @returns a double value in dBm
+    double in_dBm() const; // NOLINT(readability-identifier-naming). Return quantity only
+
+    /// Convert to dBm
+    /// @returns a dBm_t power unit struct with value equals to val
+    dBm_t to_dBm() const // NOLINT(readability-identifier-naming)
+    {
+        return dBm_t{val};
+    }
+
+    /// Converts from a vector of double values represented in dBm/Hz to a vector of dBm_per_Hz_t
+    /// @param input vector of double values represented in dBm/Hz
+    /// @returns a vector of dBm_per_Hz_t values
+    static std::vector<dBm_per_Hz_t> from_doubles(
+        std::vector<double>& input) // NOLINT(readability-identifier-naming)
+    {
+        std::vector<dBm_per_Hz_t> output(input.size());
+        std::transform(input.cbegin(), input.cend(), output.begin(), [](double f) {
+            return dBm_per_Hz_t{f};
+        });
+        return output;
+    }
+
+    /// Converts from a vector of dBm_per_Hz_t values to a vector of double values represented in
+    /// dBm/Hz
+    /// @param input vector of dBm_per_Hz_t values
+    /// @returns a vector of double values represented in dBm/Hz
+    static std::vector<double> to_doubles(
+        std::vector<dBm_per_Hz_t>& input) // NOLINT(readability-identifier-naming)
+    {
+        std::vector<double> output(input.size());
+        std::transform(input.cbegin(), input.cend(), output.begin(), [](dBm_per_Hz_t f) {
+            return static_cast<double>(f.val);
+        });
+        return output;
+    }
+
+    /// Represents a value in dBm/Hz as a string
+    /// @returns a string representation of the value
+    std::string str() const // NOLINT(readability-identifier-naming)
+    {
+        return sformat("%.1Lf dBm/Hz", val);
+    }
+
+    /// Calculate average PSD
+    /// @param power power in dBm
+    /// @param bandwidth bandwidth in Hz
+    /// @returns average PSD in dBm/Hz
+    static dBm_per_Hz_t AveragePsd(dBm_t power, Hz_t bandwidth)
+    {
+        return dBm_per_Hz_t{power.val - ToLogScale(static_cast<double>(bandwidth.val))};
+    }
+
+    /// Calculate power over bandwidth
+    /// @param rhs bandwidth in Hz
+    /// @returns power over bandwidth in dBm
+    inline dBm_t OverBandwidth(const Hz_t& rhs) const
+    {
+        return dBm_t{val + ToLogScale(static_cast<double>(rhs.val))};
+    }
+
+    /// Equality operator
+    /// @param rhs value to compare
+    /// @returns true if equal
+    inline bool operator==(const dBm_per_Hz_t& rhs) const
+    {
+        return val == rhs.val;
+    }
+
+    /// Inequality operator
+    /// @param rhs value to compare
+    /// @returns true if not equal
+    inline bool operator!=(const dBm_per_Hz_t& rhs) const
+    {
+        return !(operator==(rhs));
+    }
+
+    /// Less than operator
+    /// @param rhs value to compare
+    /// @returns true if less than
+    inline bool operator<(const dBm_per_Hz_t& rhs) const
+    {
+        return val < rhs.val;
+    }
+
+    /// Greater than operator
+    /// @param rhs value to compare
+    /// @returns true if greater than
+    inline bool operator>(const dBm_per_Hz_t& rhs) const
+    {
+        return val > rhs.val;
+    }
+
+    /// Less than or equal to operator
+    /// @param rhs value to compare
+    /// @returns true if less than or equal to
+    inline bool operator<=(const dBm_per_Hz_t& rhs) const
+    {
+        return val <= rhs.val;
+    }
+
+    /// Greater than or equal to operator
+    /// @param rhs value to compare
+    /// @returns true if greater than or equal to
+    inline bool operator>=(const dBm_per_Hz_t& rhs) const
+    {
+        return val >= rhs.val;
+    }
+
+    /// Negation operator
+    /// @returns negated value
+    inline dBm_per_Hz_t operator-() const
+    {
+        return dBm_per_Hz_t{-val};
+    }
+
+    /// Addition operator
+    /// @param rhs value to add
+    /// @returns sum
+    inline dBm_per_Hz_t operator+(const dB_t& rhs) const
+    {
+        return dBm_per_Hz_t{val + rhs.val};
+    }
+
+    /// Addition assignment operator
+    /// @param rhs value to add
+    /// @returns sum
+    inline dBm_per_Hz_t& operator+=(const dB_t& rhs)
+    {
+        val += rhs.val;
+        return *this;
+    }
+
+    /// Subtraction operator
+    /// @param rhs value to subtract
+    /// @returns difference
+    inline dBm_per_Hz_t operator-(const dB_t& rhs) const
+    {
+        return dBm_per_Hz_t{val - rhs.val};
+    }
+
+    /// Subtraction assignment operator
+    /// @param rhs value to subtract
+    /// @returns difference
+    inline dBm_per_Hz_t& operator-=(const dB_t& rhs)
+    {
+        val -= rhs.val;
+        return *this;
+    }
+
+    /// Converts from string
+    /// @param input string to convert
+    /// @returns converted value or empty optional if conversion failed
+    static std::optional<dBm_per_Hz_t> from_str( // NOLINT(readability-identifier-naming)
+        const std::string& input);
+};
+
+dB_t operator""_dB(long double val);
+dB_t operator""_dB(unsigned long long val);
+dBm_t operator""_dBm(long double val);
+dBm_t operator""_dBm(unsigned long long val);
+mWatt_t operator""_mWatt(long double val);
+mWatt_t operator""_mWatt(unsigned long long val);
+mWatt_t operator""_pWatt(long double val);
+mWatt_t operator""_pWatt(unsigned long long val);
+Watt_t operator""_Watt(long double val);
+Watt_t operator""_Watt(unsigned long long val);
+dBm_per_Hz_t operator""_dBm_per_Hz(long double val);
+
+std::ostream& operator<<(std::ostream& os, const dB_t& rhs);
+std::ostream& operator<<(std::ostream& os, const dBm_t& rhs);
+std::ostream& operator<<(std::ostream& os, const mWatt_t& rhs);
+std::ostream& operator<<(std::ostream& os, const Watt_t& rhs);
+std::ostream& operator<<(std::ostream& os, const dBm_per_Hz_t& rhs);
+
+std::istream& operator>>(std::istream& is, dB_t& q);
+std::istream& operator>>(std::istream& is, dBm_t& q);
+std::istream& operator>>(std::istream& is, mWatt_t& q);
+std::istream& operator>>(std::istream& is, Watt_t& q);
+std::istream& operator>>(std::istream& is, dBm_per_Hz_t& q);
+
+// Related physical constants
+const auto THERMAL_NOISE_AT_290K = -173.9763_dBm_per_Hz; ///< Thermal noise reference
+
+/// @cond Doxygen warning against the internal of the macro
+ATTRIBUTE_HELPER_HEADER(dB_t);  // See si-units-test-suite.cc for usages
+ATTRIBUTE_HELPER_HEADER(dBm_t);  // See si-units-test-suite.cc for usages
+ATTRIBUTE_HELPER_HEADER(mWatt_t);  // See si-units-test-suite.cc for usages
+ATTRIBUTE_HELPER_HEADER(Watt_t);  // See si-units-test-suite.cc for usages
+ATTRIBUTE_HELPER_HEADER(dBm_per_Hz_t);  // See si-units-test-suite.cc for usages
+/// @endcond
+
+} // namespace ns3
+
+// clang-format on
+#endif // UNITS_ENERGY_H

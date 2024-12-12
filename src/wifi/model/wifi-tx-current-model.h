@@ -9,9 +9,8 @@
 #ifndef WIFI_TX_CURRENT_MODEL_H
 #define WIFI_TX_CURRENT_MODEL_H
 
-#include "wifi-units.h"
-
 #include "ns3/object.h"
+#include "ns3/si-units.h"
 
 namespace ns3
 {

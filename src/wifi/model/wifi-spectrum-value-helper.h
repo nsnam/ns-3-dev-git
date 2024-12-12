@@ -11,8 +11,7 @@
 #ifndef WIFI_SPECTRUM_VALUE_HELPER_H
 #define WIFI_SPECTRUM_VALUE_HELPER_H
 
-#include "wifi-units.h"
-
+#include "ns3/si-units.h"
 #include "ns3/spectrum-value.h"
 
 #include <vector>

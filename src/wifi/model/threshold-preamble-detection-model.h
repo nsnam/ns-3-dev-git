@@ -10,7 +10,8 @@
 #define THRESHOLD_PREAMBLE_DETECTION_MODEL_H
 
 #include "preamble-detection-model.h"
-#include "wifi-units.h"
+
+#include "ns3/si-units.h"
 
 namespace ns3
 {

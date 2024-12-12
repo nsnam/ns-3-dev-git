@@ -11,7 +11,7 @@
 
 #include "ns3/deprecated.h"
 #include "ns3/object.h"
-#include "ns3/wifi-units.h"
+#include "ns3/si-units.h"
 
 #include <map>
 #include <tuple>

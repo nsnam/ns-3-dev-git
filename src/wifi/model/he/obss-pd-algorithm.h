@@ -12,8 +12,8 @@
 #include "he-configuration.h"
 
 #include "ns3/object.h"
+#include "ns3/si-units.h"
 #include "ns3/traced-callback.h"
-#include "ns3/wifi-units.h"
 
 namespace ns3
 {

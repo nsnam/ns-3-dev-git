@@ -348,7 +348,6 @@ set(header_files
     model/wifi-tx-timer.h
     model/wifi-tx-vector.h
     model/wifi-types.h
-    model/wifi-units.h
     model/wifi-utils.h
     model/yans-error-rate-model.h
     model/yans-wifi-channel.h
@@ -364,6 +363,7 @@ build_lib(
   LIBRARIES_TO_LINK
     ${libenergy}
     ${libspectrum}
+    ${libsi-units}
     ${gsl_libraries}
   TEST_SOURCES
     test/block-ack-test-suite.cc

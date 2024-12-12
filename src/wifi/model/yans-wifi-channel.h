@@ -9,9 +9,8 @@
 #ifndef YANS_WIFI_CHANNEL_H
 #define YANS_WIFI_CHANNEL_H
 
-#include "wifi-units.h"
-
 #include "ns3/channel.h"
+#include "ns3/si-units.h"
 
 namespace ns3
 {

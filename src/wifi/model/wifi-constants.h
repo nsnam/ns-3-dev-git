@@ -10,6 +10,7 @@
 #define WIFI_CONSTANTS_H
 
 #include "ns3/nstime.h"
+#include "ns3/si-units.h"
 
 /**
  * @file

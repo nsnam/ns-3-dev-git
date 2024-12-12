@@ -10,7 +10,8 @@
 #define SIMPLE_FRAME_CAPTURE_MODEL_H
 
 #include "frame-capture-model.h"
-#include "wifi-units.h"
+
+#include "ns3/si-units.h"
 
 namespace ns3
 {
