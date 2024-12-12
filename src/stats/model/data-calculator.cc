@@ -15,8 +15,8 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE("DataCalculator");
 
-static double zero = 0;
-const double ns3::NaN = zero / zero;
+// NS_DEPRECATED_3_44
+const double ns3::NaN = std::nan("");
 
 //--------------------------------------------------------------
 //----------------------------------------------

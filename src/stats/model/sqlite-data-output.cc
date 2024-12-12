@@ -158,23 +158,23 @@ SqliteDataOutput::SqliteOutputCallback::OutputStatistic(std::string key,
     NS_LOG_FUNCTION(this << key << variable << statSum);
 
     OutputSingleton(key, variable + "-count", static_cast<double>(statSum->getCount()));
-    if (!isNaN(statSum->getSum()))
+    if (!std::isnan(statSum->getSum()))
     {
         OutputSingleton(key, variable + "-total", statSum->getSum());
     }
-    if (!isNaN(statSum->getMax()))
+    if (!std::isnan(statSum->getMax()))
     {
         OutputSingleton(key, variable + "-max", statSum->getMax());
     }
-    if (!isNaN(statSum->getMin()))
+    if (!std::isnan(statSum->getMin()))
     {
         OutputSingleton(key, variable + "-min", statSum->getMin());
     }
-    if (!isNaN(statSum->getSqrSum()))
+    if (!std::isnan(statSum->getSqrSum()))
     {
         OutputSingleton(key, variable + "-sqrsum", statSum->getSqrSum());
     }
-    if (!isNaN(statSum->getStddev()))
+    if (!std::isnan(statSum->getStddev()))
     {
         OutputSingleton(key, variable + "-stddev", statSum->getStddev());
     }

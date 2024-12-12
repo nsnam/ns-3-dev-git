@@ -9,12 +9,14 @@
 #ifndef DATA_CALCULATOR_H
 #define DATA_CALCULATOR_H
 
+#include "ns3/deprecated.h"
 #include "ns3/nstime.h"
 #include "ns3/object.h"
 #include "ns3/simulator.h"
 
 namespace ns3
 {
+NS_DEPRECATED_3_44("Use std::nan(\"\") instead")
 extern const double NaN; //!< Stored representation of NaN
 
 /**
@@ -22,10 +24,12 @@ extern const double NaN; //!< Stored representation of NaN
  * @param x
  * @return whether x is NaN
  */
+NS_DEPRECATED_3_44("Use std::isnan() instead")
+
 inline bool
 isNaN(double x)
 {
-    return x != x;
+    return std::isnan(x);
 }
 
 class DataOutputCallback;

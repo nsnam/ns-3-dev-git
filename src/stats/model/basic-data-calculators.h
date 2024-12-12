@@ -158,12 +158,12 @@ MinMaxAvgTotalCalculator<T>::MinMaxAvgTotalCalculator()
     m_total = 0;
     m_squareTotal = 0;
 
-    m_meanCurr = NaN;
-    m_sCurr = NaN;
-    m_varianceCurr = NaN;
+    m_meanCurr = std::nan("");
+    m_sCurr = std::nan("");
+    m_varianceCurr = std::nan("");
 
-    m_meanPrev = NaN;
-    m_sPrev = NaN;
+    m_meanPrev = std::nan("");
+    m_sPrev = std::nan("");
 }
 
 template <typename T>
@@ -261,12 +261,12 @@ MinMaxAvgTotalCalculator<T>::Reset()
     m_total = 0;
     m_squareTotal = 0;
 
-    m_meanCurr = NaN;
-    m_sCurr = NaN;
-    m_varianceCurr = NaN;
+    m_meanCurr = std::nan("");
+    m_sCurr = std::nan("");
+    m_varianceCurr = std::nan("");
 
-    m_meanPrev = NaN;
-    m_sPrev = NaN;
+    m_meanPrev = std::nan("");
+    m_sPrev = std::nan("");
     // end MinMaxAvgTotalCalculator::Reset
 }
 
