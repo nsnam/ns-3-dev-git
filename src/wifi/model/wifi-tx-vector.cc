@@ -652,7 +652,12 @@ WifiTxVector::GetHeMuUserInfoMap()
 bool
 WifiTxVector::IsSigBCompression() const
 {
-    return IsDlMuMimo() && !IsDlOfdma();
+    // SIG-B compression is used in case of full-bandwidth MU-MIMO transmission (27.3.11.8.2
+    // HE-SIG-B content channels in IEEE802.11ax-2021) or if a single RU occupies the whole 160 MHz
+    // bandwidth (27.3.11.8.3 Common field in IEEE802.11ax-2021)
+    return (IsDlMuMimo() && !IsDlOfdma()) ||
+           ((m_muUserInfos.size() == 1) && (m_channelWidth >= MHz_u{160}) &&
+            (m_muUserInfos.cbegin()->second.ru.GetRuType() == HeRu::GetRuType(m_channelWidth)));
 }
 
 void
