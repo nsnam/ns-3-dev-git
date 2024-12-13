@@ -390,7 +390,7 @@ class for details.
 * ``TotalEnergyHarvested``: Total energy harvested by the BasicEnergyHarvester.
 
 Examples and Tests
-~~~~~~~~~~~~~~~~~~
+------------------
 
 The following examples have been written.
 
