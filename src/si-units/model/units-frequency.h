@@ -141,7 +141,7 @@ struct Hz_t
     /// Addition operator
     /// @param rhs value to add
     /// @return Sum of the two values
-    inline Hz_t operator+(const Hz_t& rhs) const
+    inline constexpr Hz_t operator+(const Hz_t& rhs) const
     {
         return Hz_t{val + rhs.val};
     }
@@ -149,7 +149,7 @@ struct Hz_t
     /// Subtraction operator
     /// @param rhs value to subtract
     /// @return Difference of the two values
-    inline Hz_t operator-(const Hz_t& rhs) const
+    inline constexpr Hz_t operator-(const Hz_t& rhs) const
     {
         return Hz_t{val - rhs.val};
     }
