@@ -70,8 +70,9 @@ EhtPpdu::SetEhtPhyHeader(const WifiTxVector& txVector)
              * sounding NDP, the Common field of the EHT-SIG content channel is encoded together
              * with the first User field and this encoding block contains a CRC and Tail, referred
              * to as a common encoding block. */
-            .m_ruAllocationA =
-                txVector.IsMu() ? std::optional{txVector.GetRuAllocation(p20Index)} : std::nullopt,
+            .m_ruAllocationA = txVector.IsMu() && !txVector.IsSigBCompression()
+                                   ? std::optional{txVector.GetRuAllocation(p20Index)}
+                                   : std::nullopt,
             // TODO: RU Allocation-B not supported yet
             .m_contentChannels = GetEhtSigContentChannels(txVector, p20Index)});
     }
@@ -154,13 +155,21 @@ EhtPpdu::SetTxVectorFromPhyHeaders(WifiTxVector& txVector) const
                              ehtPhyHeader->m_ppduType == 2,
                              muMimoUsers);
         }
-        if (ehtPhyHeader->m_ppduType == 1) // EHT SU
+        else if (ehtPhyHeader->m_ppduType == 1) // EHT SU
         {
             NS_ASSERT(ehtPhyHeader->m_contentChannels.size() == 1 &&
                       ehtPhyHeader->m_contentChannels.front().size() == 1);
             txVector.SetMode(
                 EhtPhy::GetEhtMcs(ehtPhyHeader->m_contentChannels.front().front().mcs));
             txVector.SetNss(ehtPhyHeader->m_contentChannels.front().front().nss);
+        }
+        else
+        {
+            const auto fullBwRu{HeRu::RuSpec(HeRu::GetRuType(bw), 1, true)};
+            txVector.SetHeMuUserInfo(ehtPhyHeader->m_contentChannels.front().front().staId,
+                                     {fullBwRu,
+                                      ehtPhyHeader->m_contentChannels.front().front().mcs,
+                                      ehtPhyHeader->m_contentChannels.front().front().nss});
         }
     }
     else if (ns3::IsUlMu(m_preamble))
