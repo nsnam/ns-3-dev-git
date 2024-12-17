@@ -17,6 +17,7 @@
 #include "ns3/gcr-manager.h"
 #include "ns3/multi-user-scheduler.h"
 #include "ns3/pointer.h"
+#include "ns3/power-save-manager.h"
 #include "ns3/wifi-ack-manager.h"
 #include "ns3/wifi-assoc-manager.h"
 #include "ns3/wifi-mac-queue-scheduler.h"
@@ -147,6 +148,14 @@ WifiMacHelper::Create(Ptr<WifiNetDevice> device, WifiStandard standard) const
     {
         Ptr<WifiAssocManager> assocManager = m_assocManager.Create<WifiAssocManager>();
         staMac->SetAssocManager(assocManager);
+    }
+
+    // create and install a Power Save Manager if this is a STA and a Power Save Manager typeid
+    // has been set
+    if (staMac && m_powerSaveManager.IsTypeIdSet())
+    {
+        auto powerSaveManager = m_powerSaveManager.Create<PowerSaveManager>();
+        staMac->SetPowerSaveManager(powerSaveManager);
     }
 
     // create and install the EMLSR Manager if this is an EHT non-AP device with EMLSR activated

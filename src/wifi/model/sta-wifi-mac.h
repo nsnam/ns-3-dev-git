@@ -28,6 +28,7 @@ namespace ns3
 class SupportedRates;
 class CapabilityInformation;
 class RandomVariableStream;
+class PowerSaveManager;
 class WifiAssocManager;
 class EmlsrManager;
 
@@ -199,6 +200,13 @@ class StaWifiMac : public WifiMac
      * @param assocManager the Association Manager
      */
     void SetAssocManager(Ptr<WifiAssocManager> assocManager);
+
+    /**
+     * Set the Power Save Manager.
+     *
+     * @param powerSaveManager the Power Save Manager
+     */
+    void SetPowerSaveManager(Ptr<PowerSaveManager> powerSaveManager);
 
     /**
      * Set the EMLSR Manager.
@@ -661,6 +669,7 @@ class StaWifiMac : public WifiMac
     MacState m_state;                             ///< MAC state
     uint16_t m_aid;                               ///< Association AID
     Ptr<WifiAssocManager> m_assocManager;         ///< Association Manager
+    Ptr<PowerSaveManager> m_powerSaveManager;     ///< Power Save Manager
     WifiAssocType m_assocType;                    ///< type of association
     Ptr<EmlsrManager> m_emlsrManager;             ///< EMLSR Manager
     Time m_waitBeaconTimeout;                     ///< wait beacon timeout

@@ -138,6 +138,16 @@ class WifiMacHelper
     void SetAckManager(std::string type, Args&&... args);
 
     /**
+     * Helper function used to set the Power Save Manager.
+     *
+     * @tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * @param type the type of Power Save Manager
+     * @param args A sequence of name-value pairs of the attributes to set.
+     */
+    template <typename... Args>
+    void SetPowerSaveManager(std::string type, Args&&... args);
+
+    /**
      * Helper function used to set the Multi User Scheduler that can be aggregated
      * to an HE AP's MAC.
      *
@@ -197,6 +207,7 @@ class WifiMacHelper
     ObjectFactory m_queueScheduler;       ///< MAC queue scheduler
     ObjectFactory m_protectionManager;    ///< Factory to create a protection manager
     ObjectFactory m_ackManager;           ///< Factory to create an acknowledgment manager
+    ObjectFactory m_powerSaveManager;     ///< Factory to create a power save manager
     ObjectFactory m_muScheduler;          ///< Multi-user Scheduler object factory
     ObjectFactory m_emlsrManager;         ///< EMLSR Manager object factory
     ObjectFactory m_apEmlsrManager;       ///< AP EMLSR Manager object factory
@@ -280,6 +291,14 @@ WifiMacHelper::SetAckManager(std::string type, Args&&... args)
 {
     m_ackManager.SetTypeId(type);
     m_ackManager.Set(args...);
+}
+
+template <typename... Args>
+void
+WifiMacHelper::SetPowerSaveManager(std::string type, Args&&... args)
+{
+    m_powerSaveManager.SetTypeId(type);
+    m_powerSaveManager.Set(args...);
 }
 
 template <typename... Args>

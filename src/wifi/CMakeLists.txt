@@ -94,6 +94,7 @@ set(source_files
     model/non-inheritance.cc
     model/originator-block-ack-agreement.cc
     model/phy-entity.cc
+    model/power-save-manager.cc
     model/preamble-detection-model.cc
     model/qos-frame-exchange-manager.cc
     model/qos-txop.cc
@@ -272,6 +273,7 @@ set(header_files
     model/non-inheritance.h
     model/originator-block-ack-agreement.h
     model/phy-entity.h
+    model/power-save-manager.h
     model/preamble-detection-model.h
     model/qos-frame-exchange-manager.h
     model/qos-txop.h

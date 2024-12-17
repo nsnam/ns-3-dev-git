@@ -13,6 +13,7 @@
 #include "channel-access-manager.h"
 #include "frame-exchange-manager.h"
 #include "mgt-action-headers.h"
+#include "power-save-manager.h"
 #include "qos-txop.h"
 #include "snr-tag.h"
 #include "wifi-assoc-manager.h"
@@ -105,6 +106,11 @@ StaWifiMac::GetTypeId()
                                           "LEGACY",
                                           WifiAssocType::ML_SETUP,
                                           "ML_SETUP"))
+            .AddAttribute("PowerSaveManager",
+                          "The Power Save manager object.",
+                          PointerValue(),
+                          MakePointerAccessor(&StaWifiMac::m_powerSaveManager),
+                          MakePointerChecker<PowerSaveManager>())
             .AddAttribute(
                 "PowerSaveMode",
                 "Enable/disable power save mode on the given link. The power management mode is "
@@ -209,6 +215,11 @@ StaWifiMac::DoDispose()
         m_assocManager->Dispose();
     }
     m_assocManager = nullptr;
+    if (m_powerSaveManager)
+    {
+        m_powerSaveManager->Dispose();
+    }
+    m_powerSaveManager = nullptr;
     if (m_emlsrManager)
     {
         m_emlsrManager->Dispose();
@@ -279,6 +290,14 @@ StaWifiMac::GetAssocType() const
 {
     // non-EHT devices can only perform legacy association
     return GetEhtConfiguration() ? m_assocType : WifiAssocType::LEGACY;
+}
+
+void
+StaWifiMac::SetPowerSaveManager(Ptr<PowerSaveManager> powerSaveManager)
+{
+    NS_LOG_FUNCTION(this << powerSaveManager);
+    m_powerSaveManager = powerSaveManager;
+    m_powerSaveManager->SetWifiMac(this);
 }
 
 void
