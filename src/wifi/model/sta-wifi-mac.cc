@@ -1015,6 +1015,10 @@ StaWifiMac::Disassociated()
     m_assocRequestEvent.Cancel();
     m_deAssocLogger(apAddr);
     m_aid = 0; // reset AID
+    if (m_powerSaveManager)
+    {
+        m_powerSaveManager->NotifyDisassociation();
+    }
     TryToEnsureAssociated();
 }
 
@@ -1267,6 +1271,10 @@ StaWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
             NotifyRxDrop(packet);
             return;
         }
+        if (m_powerSaveManager && hdr.GetAddr1().IsGroup())
+        {
+            m_powerSaveManager->NotifyReceivedGroupcast(mpdu, linkId);
+        }
         if (hdr.IsQosData())
         {
             if (hdr.IsQosAmsdu())
@@ -1403,6 +1411,10 @@ StaWifiMac::ReceiveBeacon(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
                                   m_maxMissedBeacons);
         RestartBeaconWatchdog(delay);
         UpdateApInfo(apInfo.m_frame, from, bssid, linkId);
+        if (m_powerSaveManager)
+        {
+            m_powerSaveManager->NotifyReceivedBeacon(mpdu, linkId);
+        }
     }
     else
     {
@@ -1627,7 +1639,30 @@ StaWifiMac::ReceiveAssocResp(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
         }
     }
 
+    if (m_powerSaveManager)
+    {
+        m_powerSaveManager->NotifyAssocCompleted();
+    }
+
     SetPmModeAfterAssociation(linkId);
+}
+
+void
+StaWifiMac::NotifyReceivedFrameAfterPsPoll(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
+{
+    if (m_powerSaveManager)
+    {
+        m_powerSaveManager->NotifyReceivedFrameAfterPsPoll(mpdu, linkId);
+    }
+}
+
+void
+StaWifiMac::NotifyRequestAccess(Ptr<Txop> txop, uint8_t linkId)
+{
+    if (m_powerSaveManager)
+    {
+        m_powerSaveManager->NotifyRequestAccess(txop, linkId);
+    }
 }
 
 void
@@ -2010,10 +2045,18 @@ StaWifiMac::TxOk(Ptr<const WifiMpdu> mpdu)
     if (hdr.IsPowerManagement() && link.pmMode == WIFI_PM_SWITCHING_TO_PS)
     {
         link.pmMode = WIFI_PM_POWERSAVE;
+        if (m_powerSaveManager)
+        {
+            m_powerSaveManager->NotifyPmModeChanged(link.pmMode, *linkId);
+        }
     }
     else if (!hdr.IsPowerManagement() && link.pmMode == WIFI_PM_SWITCHING_TO_ACTIVE)
     {
         link.pmMode = WIFI_PM_ACTIVE;
+        if (m_powerSaveManager)
+        {
+            m_powerSaveManager->NotifyPmModeChanged(link.pmMode, *linkId);
+        }
     }
 
     if (hdr.IsDisassociation())

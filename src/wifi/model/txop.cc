@@ -734,7 +734,7 @@ Txop::StartAccessAfterEvent(uint8_t linkId, bool hadFramesToTransmit, bool check
         GenerateBackoff(linkId);
     }
 
-    m_mac->GetChannelAccessManager(linkId)->RequestAccess(this);
+    RequestAccess(linkId);
 }
 
 void
@@ -784,6 +784,14 @@ void
 Txop::RequestAccess(uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << linkId);
+    if (GetLink(linkId).access == NOT_REQUESTED)
+    {
+        m_mac->NotifyRequestAccess(this, linkId);
+    }
+    // if the PHY is in sleep state, the notification of access requested may lead the power save
+    // manager to wake up the STA, which may cause a channel access request. Hence, we have to
+    // check again whether the channel access has not been already requested before calling
+    // ChannelAccessManager::RequestAccess().
     if (GetLink(linkId).access == NOT_REQUESTED)
     {
         m_mac->GetChannelAccessManager(linkId)->RequestAccess(this);

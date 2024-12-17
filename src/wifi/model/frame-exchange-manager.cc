@@ -1403,6 +1403,8 @@ FrameExchangeManager::Receive(Ptr<const WifiPsdu> psdu,
         addr1 == m_self && m_txTimer.IsRunning() &&
         m_txTimer.GetReason() == WifiTxTimer::WAIT_DATA_AFTER_PS_POLL)
     {
+        m_staMac->NotifyReceivedFrameAfterPsPoll(*(psdu->begin()), m_linkId);
+
         if (psdu->GetHeader(0).IsAck())
         {
             ReceiveFrameAfterPsPoll();

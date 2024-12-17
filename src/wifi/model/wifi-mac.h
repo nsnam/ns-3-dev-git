@@ -567,6 +567,14 @@ class WifiMac : public Object
     void NotifyRxDrop(Ptr<const Packet> packet);
 
     /**
+     * Notify that the given TXOP is requesting channel access on the given link.
+     *
+     * @param txop the DCF/EDCAF requesting channel access
+     * @param linkId the ID of the given link
+     */
+    virtual void NotifyRequestAccess(Ptr<Txop> txop, uint8_t linkId);
+
+    /**
      * @return pointer to HtConfiguration if it exists
      */
     Ptr<HtConfiguration> GetHtConfiguration() const;

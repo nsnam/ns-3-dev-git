@@ -316,6 +316,14 @@ class StaWifiMac : public WifiMac
     void EnqueuePsPoll(uint8_t linkId);
 
     /**
+     * Notify the reception of a frame in response to a PS-Poll frame on the given link.
+     *
+     * @param mpdu the received MPDU
+     * @param linkId the ID of the given link
+     */
+    void NotifyReceivedFrameAfterPsPoll(Ptr<const WifiMpdu> mpdu, uint8_t linkId);
+
+    /**
      * Notify that the MPDU we sent was successfully received by the receiver
      * (i.e. we received an Ack from the receiver).
      *
@@ -324,6 +332,7 @@ class StaWifiMac : public WifiMac
     void TxOk(Ptr<const WifiMpdu> mpdu);
 
     void NotifyChannelSwitching(uint8_t linkId) override;
+    void NotifyRequestAccess(Ptr<Txop> txop, uint8_t linkId) override;
 
     /**
      * Notify the MAC that EMLSR mode has changed on the given set of links.
