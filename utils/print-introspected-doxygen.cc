@@ -1540,6 +1540,17 @@ PrintAttributeImplementations(std::ostream& os)
       { "Vector3D",       "Vector3D",       true,  "vector.h"           },
       { "Waypoint",       "Waypoint",       true,  "waypoint.h"         },
       { "WifiMode",       "WifiMode",       true,  "wifi-mode.h"        },
+      { "Hz",             "Hz",             true,  "units-frequency.h"  },
+      { "MHz",            "MHz",            true,  "units-frequency.h"  },
+      { "dB",             "dB",             true,  "units-energy.h"     },
+      { "dBr",            "dBr",            true,  "units-energy.h"     },
+      { "dBm",            "dBm",            true,  "units-energy.h"     },
+      { "dBm_per_Hz",     "dBm_per_Hz",     true,  "units-energy.h"     },
+      { "dBm_per_MHz",    "dBm_per_MHz",    true,  "units-energy.h"     },
+      { "degree",         "degree",         true,  "units-angle.h"      },
+      { "radian",         "radian",         true,  "units-angle.h"      },
+      { "percent",        "percent",        true,  "units-ratio.h"      },
+      { "nSEC",           "nSEC",           true,  "units-time.h"       },
 
       // All three (Value, Access and Checkers) defined, but custom
       { "Boolean",        "bool",           false, "boolean.h"          },
