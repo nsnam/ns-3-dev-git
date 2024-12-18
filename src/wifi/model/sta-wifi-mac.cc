@@ -544,7 +544,7 @@ StaWifiMac::GetAssociationRequest(bool isReassoc, uint8_t linkId) const
         frame.template Get<SupportedRates>() = supportedRates.rates;
         frame.template Get<ExtendedSupportedRatesIE>() = supportedRates.extendedRates;
         frame.m_capability = GetCapabilities(linkId);
-        frame.m_listenInterval = 0;
+        frame.m_listenInterval = m_powerSaveManager ? m_powerSaveManager->GetListenInterval() : 1;
         if (GetHtSupported(linkId))
         {
             frame.template Get<ExtendedCapabilities>() = GetExtendedCapabilities();

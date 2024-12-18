@@ -11,6 +11,7 @@
 #include "mgt-headers.h"
 #include "sta-wifi-mac.h"
 #include "txop.h"
+#include "wifi-mac-queue.h"
 #include "wifi-mpdu.h"
 #include "wifi-phy.h"
 
@@ -47,7 +48,13 @@ PowerSaveManager::GetTypeId()
                     &PowerSaveManager::SetPowerSaveMode),
                 MakeAttributeContainerChecker<PairValue<UintegerValue, BooleanValue>>(
                     MakePairChecker<UintegerValue, BooleanValue>(MakeUintegerChecker<uint8_t>(),
-                                                                 MakeBooleanChecker())));
+                                                                 MakeBooleanChecker())))
+            .AddAttribute("ListenInterval",
+                          "Interval (in beacon periods) between successive switches from sleep to "
+                          "listen for a PS STAs",
+                          UintegerValue(1),
+                          MakeUintegerAccessor(&PowerSaveManager::m_listenInterval),
+                          MakeUintegerChecker<uint32_t>(1));
     return tid;
 }
 
@@ -93,11 +100,33 @@ PowerSaveManager::GetStaMac() const
     return m_staMac;
 }
 
+uint32_t
+PowerSaveManager::GetListenInterval() const
+{
+    return m_listenInterval;
+}
+
 PowerSaveManager::StaInfo&
 PowerSaveManager::GetStaInfo(uint8_t linkId)
 {
     NS_ASSERT(m_staInfo.contains(linkId));
     return m_staInfo.at(linkId);
+}
+
+bool
+PowerSaveManager::HasFramesToSend(uint8_t linkId) const
+{
+    const auto acList =
+        GetStaMac()->GetQosSupported() ? edcaAcIndices : std::list<AcIndex>{AC_BE_NQOS};
+
+    for (const auto aci : acList)
+    {
+        if (GetStaMac()->GetTxopQueue(aci)->Peek(linkId))
+        {
+            return true;
+        }
+    }
+    return false;
 }
 
 void
@@ -178,6 +207,8 @@ PowerSaveManager::NotifyReceivedBeacon(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
     auto& tim = beacon.Get<Tim>();
     staInfo.pendingUnicast = tim->HasAid(m_staMac->GetAssociationId());
     staInfo.pendingGroupcast = tim->m_hasMulticastPending;
+
+    DoNotifyReceivedBeacon(beacon, linkId);
 }
 
 void

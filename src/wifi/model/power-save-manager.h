@@ -19,6 +19,7 @@ namespace ns3
 
 class StaWifiMac;
 class Txop;
+class MgtBeaconHeader;
 class WifiMpdu;
 enum WifiMacDropReason : uint8_t;
 enum WifiPowerManagementMode : uint8_t;
@@ -54,6 +55,9 @@ class PowerSaveManager : public Object
      *                        mode on the link with the given ID
      */
     void SetPowerSaveMode(const std::map<uint8_t, bool>& linkIdEnableMap);
+
+    /// @return the Listen interval
+    uint32_t GetListenInterval() const;
 
     /**
      * Notify that the non-AP STA/MLD has completed association with an AP.
@@ -144,12 +148,30 @@ class PowerSaveManager : public Object
      */
     StaInfo& GetStaInfo(uint8_t linkId);
 
+    /**
+     * Get whether the STA has frames to send on the given link.
+     *
+     * @param linkId the ID of the given link
+     * @return whether the STA has frames to send on the given link
+     */
+    bool HasFramesToSend(uint8_t linkId) const;
+
+    /**
+     * Notify subclasses that a Beacon frame has been received from the associated AP on the given
+     * link.
+     *
+     * @param beacon the Beacon frame
+     * @param linkId the ID of the given link
+     */
+    virtual void DoNotifyReceivedBeacon(const MgtBeaconHeader& beacon, uint8_t linkId) = 0;
+
   private:
     Ptr<StaWifiMac> m_staMac;             //!< MAC which is using this Power Save Manager
     std::map<uint8_t, StaInfo> m_staInfo; ///< link ID-indexed map of STA infos
     std::map<uint8_t, bool>
         m_linkIdEnableMap; ///< a link ID-indexed map indicating whether to enable or not power save
                            ///< mode on the link with the given ID (used before initialization)
+    uint32_t m_listenInterval; ///< beacon listen interval
 };
 
 } // namespace ns3
