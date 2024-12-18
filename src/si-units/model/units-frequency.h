@@ -19,6 +19,7 @@
 // clang-format off
 namespace ns3
 {
+struct MHz_t;
 
 /// Frequency unit in Hz
 struct Hz_t
@@ -267,6 +268,10 @@ struct Hz_t
         return val / ONE_GIGA;
     }
 
+    /// Converts a Hz_t unit struct to MHz_t
+    /// @returns frequency unit struct in MHz_t
+    MHz_t to_MHz() const; // NOLINT(readability-identifier-naming)
+
     /// Converts from a string
     /// @param input String to convert from
     /// @return Optional Hz_t value
@@ -274,13 +279,266 @@ struct Hz_t
         const std::string& input);
 };
 
+/// Frequency unit in MHz
+struct MHz_t
+{
+    double val{}; ///< Value in MHz
+
+    MHz_t() = default; ///< Default constructor
+
+    /// Constructor
+    /// @param val Value in MHz
+    constexpr explicit MHz_t(double val)
+        : val(val)
+    {
+    }
+
+    /// Constructor
+    /// @param val Value in MHz
+    constexpr explicit MHz_t(int32_t val)
+        : val(static_cast<double>(val))
+    {
+    }
+
+    /// Constructor
+    /// @param val Value in MHz
+    constexpr explicit MHz_t(uint64_t val)
+        : val(static_cast<double>(val))
+    {
+    }
+
+    /// @brief Stringify with metric prefix
+    /// Sub-Hertz not supported
+    /// @return String with metric prefix
+    std::string str() const // NOLINT(readability-identifier-naming)
+    {
+        return to_Hz().str();
+    }
+
+    /// Equality operator
+    /// @param rhs Right-hand side of the equality operator
+    /// @return True if the two values are equal, false otherwise
+    inline bool operator==(const MHz_t& rhs) const
+    {
+        return val == rhs.val;
+    }
+
+    /// Inequality operator
+    /// @param rhs value to compare
+    /// @return True if the two values are not equal, false otherwise
+    inline bool operator!=(const MHz_t& rhs) const
+    {
+        return !(operator==(rhs));
+    }
+
+    /// Less-than operator
+    /// @param rhs value to compare
+    /// @return True if the left-hand side value is less than the right-hand side value, false otherwise
+    inline bool operator<(const MHz_t& rhs) const
+    {
+        return val < rhs.val;
+    }
+
+    /// Greater-than operator
+    /// @param rhs value to compare
+    /// @return True if the left-hand side value is greater than the right-hand side value, false otherwise
+    inline bool operator>(const MHz_t& rhs) const
+    {
+        return val > rhs.val;
+    }
+
+    /// Less-than-or-equal-to operator
+    /// @param rhs value to compare
+    /// @return True if the left-hand side value is less than or equal to the right-hand side value, false otherwise
+    inline bool operator<=(const MHz_t& rhs) const
+    {
+        return val <= rhs.val;
+    }
+
+    /// Greater-than-or-equal-to operator
+    /// @param rhs value to compare
+    /// @return True if the left-hand side value is greater than or equal to the right-hand side value, false otherwise
+    inline bool operator>=(const MHz_t& rhs) const
+    {
+        return val >= rhs.val;
+    }
+
+    /// Arithmetic Negation Operator
+    /// @returns negated power value
+    inline MHz_t operator-() const
+    {
+        return MHz_t{-val};
+    }
+
+    /// Addition operator
+    /// @param rhs value to add
+    /// @return Sum of the two values
+    inline constexpr MHz_t operator+(const MHz_t& rhs) const
+    {
+        return MHz_t{val + rhs.val};
+    }
+
+    /// Subtraction operator
+    /// @param rhs value to subtract
+    /// @return Difference of the two values
+    inline constexpr MHz_t operator-(const MHz_t& rhs) const
+    {
+        return MHz_t{val - rhs.val};
+    }
+
+    /// Remainder (modulus) from the quotient of two MHz_t
+    /// @param rhs the right-hand side MHz_t value
+    /// @return The remainder from the quotient of the two values
+    inline MHz_t operator%(const MHz_t& rhs) const
+    {
+        return MHz_t{static_cast<double>(static_cast<uint64_t>(in_Hz()) %
+                                         static_cast<uint64_t>(rhs.in_Hz()))};
+    }
+
+    /// Addition assignment operator
+    /// @param rhs value to add
+    /// @return Reference to this object
+    inline MHz_t& operator+=(const MHz_t& rhs)
+    {
+        val += rhs.val;
+        return *this;
+    }
+
+    /// Subtraction assignment operator
+    /// @param rhs value to subtract
+    /// @return Reference to this object
+    inline MHz_t& operator-=(const MHz_t& rhs)
+    {
+        val -= rhs.val;
+        return *this;
+    }
+
+    /// Division operator
+    /// @param rhs value to divide by
+    /// @return Quotient of the two values
+    inline MHz_t operator/(double rhs) const
+    {
+        return MHz_t{val / rhs};
+    }
+
+    /// Division operator
+    /// @param rhs value to divide by
+    /// @return Quotient of the two values
+    inline double operator/(const MHz_t& rhs) const
+    {
+        return val / rhs.val;
+    }
+
+    /// Multiplication operator
+    /// @param rhs value to multiply by
+    /// @return Product of the two values
+    inline MHz_t operator*(double rhs) const
+    {
+        return MHz_t{val * rhs};
+    }
+
+    /// Multiplication assignment operator
+    /// @param rhs value to multiply by
+    /// @return Reference to this object
+    inline MHz_t& operator*=(double rhs)
+    {
+        val *= rhs;
+        return *this;
+    }
+
+    /// Division assignment operator
+    /// @param rhs value to divide by
+    /// @return Reference to this object
+    inline MHz_t& operator/=(double rhs)
+    {
+        val /= rhs;
+        return *this;
+    }
+
+    /// Addition assignment operator
+    /// @param rhs value to add
+    /// @return Reference to this object
+    inline MHz_t& operator+=(const Hz_t& rhs)
+    {
+        val += rhs.in_MHz();
+        return *this;
+    }
+
+    /// Subtraction assignment operator
+    /// @param rhs value to subtract
+    /// @return Reference to this object
+    inline MHz_t& operator-=(const Hz_t& rhs)
+    {
+        val -= rhs.in_MHz();
+        return *this;
+    }
+
+    /// Multiplication operator
+    /// @param nstime time
+    /// @return Unitless value
+    inline double operator*(Time nstime) const
+    {
+        return to_Hz() * nstime;
+    }
+
+    /// Conversion operator
+    /// @return the object converted in Hz_t
+    inline operator Hz_t() const
+    {
+        return to_Hz();
+    }
+
+    /// Equality operator
+    /// @param rhs Right-hand side of the equality operator
+    /// @return True if the two values are equal, false otherwise
+    inline bool operator==(const Hz_t& rhs) const
+    {
+        return to_Hz() == rhs;
+    }
+
+    /// Get the value of the MHz_t in Hz
+    /// @return Value in Hz
+    inline double in_Hz() const // NOLINT(readability-identifier-naming)
+    {
+        return to_Hz().in_Hz();
+    }
+
+    /// Get the value of the MHz_t in kHz
+    /// @return Value in kHz
+    inline double in_kHz() const // NOLINT(readability-identifier-naming)
+    {
+        return to_Hz().in_kHz();
+    }
+
+    /// Get the value of the MHz_t in MHz
+    /// @return Value in MHz
+    inline double in_MHz() const // NOLINT(readability-identifier-naming)
+    {
+        return to_Hz().in_MHz();
+    }
+
+    /// Get the value of the MHz_t in GHz
+    /// @return Value in GHz
+    inline double in_GHz() const // NOLINT(readability-identifier-naming)
+    {
+        return to_Hz().in_GHz();
+    }
+
+    /// Converts a MHz_t unit struct to Hz
+    /// @returns frequency unit struct in Hz
+    inline Hz_t to_Hz() const // NOLINT(readability-identifier-naming)
+    {
+        return Hz_t{val * ONE_MEGA};
+    }
+};
+
 // User defined literals
 Hz_t operator""_Hz(unsigned long long val);
 Hz_t operator""_Hz(long double val);
 Hz_t operator""_kHz(unsigned long long val);
 Hz_t operator""_kHz(long double val);
-Hz_t operator""_MHz(unsigned long long val);
-Hz_t operator""_MHz(long double val);
+MHz_t operator""_MHz(unsigned long long val);
+MHz_t operator""_MHz(long double val);
 Hz_t operator""_GHz(unsigned long long val);
 Hz_t operator""_GHz(long double val);
 Hz_t operator""_THz(unsigned long long val);
@@ -289,8 +547,23 @@ Hz_t operator""_THz(long double val);
 std::ostream& operator<<(std::ostream& os, const Hz_t& rhs);
 std::istream& operator>>(std::istream& is, Hz_t& rhs);
 
+std::ostream& operator<<(std::ostream& os, const MHz_t& rhs);
+std::istream& operator>>(std::istream& is, MHz_t& rhs);
+
 Hz_t operator*(double lfs, const Hz_t& rhs);
 double operator*(Time nstime, const Hz_t& rhs);
+
+MHz_t operator*(double lfs, const MHz_t& rhs);
+double operator*(Time nstime, const MHz_t& rhs);
+
+Hz_t operator+(const Hz_t& lhs, const MHz_t& rhs);
+MHz_t operator+(const MHz_t& lhs, const Hz_t& rhs);
+
+Hz_t operator-(const Hz_t& lhs, const MHz_t& rhs);
+MHz_t operator-(const MHz_t& lhs, const Hz_t& rhs);
+
+double operator/(const Hz_t& lhs, const MHz_t& rhs);
+double operator/(const MHz_t& lhs, const Hz_t& rhs);
 
 /// Converts a value represented in kHz to Hz_t
 /// @param val Value in kHz
@@ -299,15 +572,6 @@ inline Hz_t
 kHz_t(double val)
 {
     return Hz_t{val * ONE_KILO};
-}
-
-/// Converts a value represented in MHz to Hz_t
-/// @param val Value in MHz
-/// @return Value in Hz_t
-inline Hz_t
-MHz_t(double val)
-{
-    return Hz_t{val * ONE_MEGA};
 }
 
 /// Converts a value represented in GHz to Hz_t
@@ -332,6 +596,10 @@ THz_t(double val)
 ATTRIBUTE_VALUE_DEFINE_WITH_NAME(Hz_t, Hz); // See si-units-test-suite.cc for usages
 ATTRIBUTE_ACCESSOR_DEFINE(Hz);
 ATTRIBUTE_CHECKER_DEFINE_WITH_CONVERTER(Hz_t, Hz, Uinteger);
+
+ATTRIBUTE_VALUE_DEFINE_WITH_NAME(MHz_t, MHz); // See si-units-test-suite.cc for usages
+ATTRIBUTE_ACCESSOR_DEFINE(MHz);
+ATTRIBUTE_CHECKER_DEFINE_WITH_CONVERTER(MHz_t, MHz, Uinteger);
 /// @endcond
 } // namespace ns3
 

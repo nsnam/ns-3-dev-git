@@ -1041,12 +1041,29 @@ struct dBm_per_Hz_t // NOLINT(readability-identifier-naming)
         return dBm_per_Hz_t{power.val - ToLogScale(static_cast<double>(bandwidth.val))};
     }
 
+    /// Calculate average PSD
+    /// @param power power in dBm
+    /// @param bandwidth bandwidth in MHz
+    /// @returns average PSD in dBm/Hz
+    static dBm_per_Hz_t AveragePsd(dBm_t power, MHz_t bandwidth)
+    {
+        return AveragePsd(power, bandwidth.to_Hz());
+    }
+
     /// Calculate power over bandwidth
     /// @param rhs bandwidth in Hz
     /// @returns power over bandwidth in dBm
     inline dBm_t OverBandwidth(const Hz_t& rhs) const
     {
         return dBm_t{val + ToLogScale(static_cast<double>(rhs.val))};
+    }
+
+    /// Calculate power over bandwidth
+    /// @param rhs bandwidth in MHz
+    /// @returns power over bandwidth in dBm
+    inline dBm_t OverBandwidth(const MHz_t& rhs) const
+    {
+        return OverBandwidth(rhs.to_Hz());
     }
 
     /// Equality operator

@@ -47,19 +47,19 @@ operator""_kHz(long double val)
 /// User-defined literals for MHz
 /// @param val The value in MHz
 /// @return Hz_t object
-Hz_t
+MHz_t
 operator""_MHz(unsigned long long val)
 {
-    return Hz_t{static_cast<double>(val * ONE_MEGA)};
+    return MHz_t{static_cast<double>(val)};
 }
 
 /// User-defined literals for MHz
 /// @param val The value in MHz
 /// @return Hz_t object
-Hz_t
+MHz_t
 operator""_MHz(long double val)
 {
-    return Hz_t{static_cast<double>(val * ONE_MEGA)};
+    return MHz_t{static_cast<double>(val)};
 }
 
 /// User-defined literals for GHz
@@ -119,6 +119,27 @@ operator>>(std::istream& is, Hz_t& rhs)
     return is;
 }
 
+/// Output stream for MHz_t
+/// @param os The output stream
+/// @param rhs The MHz_t object to output
+/// @return The output stream
+std::ostream&
+operator<<(std::ostream& os, const MHz_t& rhs)
+{
+    return os << rhs.str();
+}
+
+/// Input stream for MHz_t
+/// @param is The input stream
+/// @param rhs The MHz_t object to input
+/// @return The input stream
+std::istream&
+operator>>(std::istream& is, MHz_t& rhs)
+{
+    is >> rhs.val;
+    return is;
+}
+
 /// Multiply Hz_t by double
 /// @param lfs The double to multiply by
 /// @param rhs The Hz_t object to multiply
@@ -137,6 +158,94 @@ double
 operator*(Time nstime, const Hz_t& rhs)
 {
     return rhs * nstime;
+}
+
+/// Multiply MHz_t by double
+/// @param lfs The double to multiply by
+/// @param rhs The MHz_t object to multiply
+/// @return The MHz_t object
+MHz_t
+operator*(double lfs, const MHz_t& rhs)
+{
+    return rhs * lfs;
+}
+
+/// Multiply MHz_t by Time
+/// @param nstime The Time to multiply by
+/// @param rhs The MHz_t object to multiply
+/// @return unitless value
+double
+operator*(Time nstime, const MHz_t& rhs)
+{
+    return rhs * nstime;
+}
+
+/// Addition operator
+/// @param lhs the left value
+/// @param rhs the right value
+/// @return Sum of the two values
+Hz_t
+operator+(const Hz_t& lhs, const MHz_t& rhs)
+{
+    return lhs + rhs.to_Hz();
+}
+
+/// Addition operator
+/// @param lhs the left value
+/// @param rhs the right value
+/// @return Sum of the two values
+MHz_t
+operator+(const MHz_t& lhs, const Hz_t& rhs)
+{
+    return lhs + rhs.to_MHz();
+}
+
+/// Subtraction operator
+/// @param lhs the left value
+/// @param rhs the right value
+/// @return Difference of the two values
+Hz_t
+operator-(const Hz_t& lhs, const MHz_t& rhs)
+{
+    return lhs - rhs.to_Hz();
+}
+
+/// Subtraction operator
+/// @param lhs the left value
+/// @param rhs the right value
+/// @return Difference of the two values
+MHz_t
+operator-(const MHz_t& lhs, const Hz_t& rhs)
+{
+    return lhs - rhs.to_MHz();
+}
+
+/// Division operator
+/// @param lhs the left value
+/// @param rhs the right value
+/// @return Quotient of the two values
+double
+operator/(const Hz_t& lhs, const MHz_t& rhs)
+{
+    return lhs / rhs.to_Hz();
+}
+
+/// Division operator
+/// @param lhs the left value
+/// @param rhs the right value
+/// @return Quotient of the two values
+double
+operator/(const MHz_t& lhs, const Hz_t& rhs)
+{
+    return lhs.to_Hz() / rhs;
+}
+
+/// Conversion to MHz_t object
+/// @return the object converted in MHz_t
+MHz_t
+Hz_t::to_MHz() const
+{
+    return MHz_t{val / ONE_MEGA};
 }
 
 /// @cond Doxygen bug: multiple @param
@@ -160,7 +269,7 @@ Hz_t::from_str(const std::string& input)
     res = StringToDouble(input, "MHz");
     if (res.has_value())
     {
-        return MHz_t(res.value());
+        return MHz_t{res.value()}.to_Hz();
     }
     res = StringToDouble(input, "kHz");
     if (res.has_value())
@@ -171,8 +280,12 @@ Hz_t::from_str(const std::string& input)
     return res.has_value() ? std::optional(Hz_t{res.value()}) : std::nullopt;
 }
 
+/// @cond Doxygen warning against macro internasl
 ATTRIBUTE_CHECKER_IMPLEMENT_WITH_CONVERTER(Hz_t, Hz);
 ATTRIBUTE_VALUE_IMPLEMENT_WITH_NAME(Hz_t, Hz);
+
+ATTRIBUTE_CHECKER_IMPLEMENT_WITH_CONVERTER(MHz_t, MHz);
+ATTRIBUTE_VALUE_IMPLEMENT_WITH_NAME(MHz_t, MHz);
 /// @endcond
 
 } // namespace ns3
