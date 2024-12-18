@@ -219,6 +219,29 @@ void
 PowerSaveManager::NotifyReceivedFrameAfterPsPoll(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << *mpdu << linkId);
+
+    auto& staInfo = GetStaInfo(linkId);
+
+    if (!staInfo.pendingUnicast)
+    {
+        NS_LOG_DEBUG("Not expecting a buffered unit on link " << +linkId);
+        return;
+    }
+
+    // use More Data flag
+    staInfo.pendingUnicast = mpdu->GetHeader().IsMoreData();
+
+    if (GetStaMac()->GetPmMode(linkId) == WIFI_PM_POWERSAVE)
+    {
+        // The PS-Poll is dequeued when the Ack transmission starts. In order to avoid that the STA
+        // is not put to sleep because a frame (the PS-Poll) is queued, notify subclasses after
+        // that the Ack transmission has started.
+        Simulator::Schedule(m_staMac->GetWifiPhy(linkId)->GetSifs() + TimeStep(1),
+                            &PowerSaveManager::DoNotifyReceivedFrameAfterPsPoll,
+                            this,
+                            mpdu,
+                            linkId);
+    }
 }
 
 void
