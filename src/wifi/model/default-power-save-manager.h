@@ -43,6 +43,7 @@ class DefaultPowerSaveManager : public PowerSaveManager
     void DoNotifyDisassociation() override;
     void DoNotifyReceivedBeacon(const MgtBeaconHeader& beacon, uint8_t linkId) override;
     void DoNotifyReceivedFrameAfterPsPoll(Ptr<const WifiMpdu> mpdu, uint8_t linkId) override;
+    void DoNotifyReceivedGroupcast(Ptr<const WifiMpdu> mpdu, uint8_t linkId) override;
 
     std::map<uint8_t, EventId> m_wakeUpEvents; ///< events scheduled to wake up PHYs
 };

@@ -248,6 +248,22 @@ void
 PowerSaveManager::NotifyReceivedGroupcast(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << *mpdu << linkId);
+
+    auto& staInfo = GetStaInfo(linkId);
+
+    if (!staInfo.pendingGroupcast)
+    {
+        NS_LOG_DEBUG("Not expecting a group addressed frame on link " << +linkId);
+        return;
+    }
+
+    // use More Data flag
+    staInfo.pendingGroupcast = mpdu->GetHeader().IsMoreData();
+
+    if (GetStaMac()->GetPmMode(linkId) == WIFI_PM_POWERSAVE)
+    {
+        DoNotifyReceivedGroupcast(mpdu, linkId);
+    }
 }
 
 void
