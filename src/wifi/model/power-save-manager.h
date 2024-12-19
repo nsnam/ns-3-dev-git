@@ -193,6 +193,14 @@ class PowerSaveManager : public Object
      */
     virtual void DoNotifyReceivedGroupcast(Ptr<const WifiMpdu> mpdu, uint8_t linkId) = 0;
 
+    /**
+     * Notify subclasses that the given TXOP is requesting channel access on the given link.
+     *
+     * @param txop the DCF/EDCAF requesting channel access
+     * @param linkId the ID of the given link
+     */
+    virtual void DoNotifyRequestAccess(Ptr<Txop> txop, uint8_t linkId) = 0;
+
   private:
     Ptr<StaWifiMac> m_staMac;             //!< MAC which is using this Power Save Manager
     std::map<uint8_t, StaInfo> m_staInfo; ///< link ID-indexed map of STA infos

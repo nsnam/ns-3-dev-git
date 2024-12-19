@@ -9,6 +9,7 @@
 #include "default-power-save-manager.h"
 
 #include "sta-wifi-mac.h"
+#include "wifi-mpdu.h"
 #include "wifi-phy.h"
 
 #include "ns3/log.h"
@@ -157,6 +158,24 @@ DefaultPowerSaveManager::DoNotifyReceivedGroupcast(Ptr<const WifiMpdu> mpdu, uin
     NS_LOG_FUNCTION(this << mpdu << linkId);
 
     GoToSleepIfPossible(linkId);
+}
+
+void
+DefaultPowerSaveManager::DoNotifyRequestAccess(Ptr<Txop> txop, uint8_t linkId)
+{
+    NS_LOG_FUNCTION(this << txop << linkId);
+
+    // if channel access is being requested, it means that the MAC has frames to transmit on the
+    // given link, hence wake up the PHY if it is in sleep state
+    if (auto phy = GetStaMac()->GetWifiPhy(linkId); phy->IsStateSleep())
+    {
+        NS_LOG_DEBUG("Resume from sleep STA operating on link " << +linkId);
+        phy->ResumeFromSleep();
+        if (auto it = m_wakeUpEvents.find(linkId); it != m_wakeUpEvents.cend())
+        {
+            it->second.Cancel();
+        }
+    }
 }
 
 } // namespace ns3
