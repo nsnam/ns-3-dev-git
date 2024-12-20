@@ -201,6 +201,14 @@ class PowerSaveManager : public Object
      */
     virtual void DoNotifyRequestAccess(Ptr<Txop> txop, uint8_t linkId) = 0;
 
+    /**
+     * Notify subclasses that the given MPDU has been discarded for the given reason.
+     *
+     * @param reason the reason why the MPDU was dropped
+     * @param mpdu the dropped MPDU
+     */
+    virtual void DoTxDropped(WifiMacDropReason reason, Ptr<const WifiMpdu> mpdu) = 0;
+
   private:
     Ptr<StaWifiMac> m_staMac;             //!< MAC which is using this Power Save Manager
     std::map<uint8_t, StaInfo> m_staInfo; ///< link ID-indexed map of STA infos

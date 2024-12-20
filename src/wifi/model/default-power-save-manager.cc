@@ -178,4 +178,29 @@ DefaultPowerSaveManager::DoNotifyRequestAccess(Ptr<Txop> txop, uint8_t linkId)
     }
 }
 
+void
+DefaultPowerSaveManager::DoTxDropped(WifiMacDropReason reason, Ptr<const WifiMpdu> mpdu)
+{
+    NS_LOG_FUNCTION(this << reason << *mpdu);
+
+    if (mpdu->GetHeader().IsPsPoll())
+    {
+        auto addr2 = mpdu->GetHeader().GetAddr2();
+        const auto linkId = GetStaMac()->GetLinkIdByAddress(addr2);
+        NS_ASSERT_MSG(linkId.has_value(), addr2 << " is not a link address");
+
+        NS_LOG_DEBUG("PS-Poll dropped. Give up polling the AP on link " << +linkId.value());
+
+        if (auto& staInfo = GetStaInfo(*linkId); staInfo.pendingUnicast)
+        {
+            staInfo.pendingUnicast = false;
+        }
+    }
+
+    for (const auto& id : GetStaMac()->GetLinkIds())
+    {
+        GoToSleepIfPossible(id);
+    }
+}
+
 } // namespace ns3

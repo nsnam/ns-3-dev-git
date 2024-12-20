@@ -278,6 +278,14 @@ void
 PowerSaveManager::TxDropped(WifiMacDropReason reason, Ptr<const WifiMpdu> mpdu)
 {
     NS_LOG_FUNCTION(this << reason << *mpdu);
+
+    // make sure the PS Poll is not in the queue, which could prevent the STA from going to sleep
+    if (mpdu->GetHeader().IsPsPoll() && mpdu->IsQueued())
+    {
+        GetStaMac()->GetTxopQueue(mpdu->GetQueueAc())->DequeueIfQueued({mpdu});
+    }
+
+    DoTxDropped(reason, mpdu);
 }
 
 } // namespace ns3
