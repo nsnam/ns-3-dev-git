@@ -412,14 +412,14 @@ class TestCaseSiUnits : public TestCase
     /// Test Hz_t
     void Unit_Hz() // NOLINT
     {
-        NS_TEST_EXPECT_MSG_EQ(Hz_t{123}, 123_Hz, "");
+        NS_TEST_EXPECT_MSG_EQ(Hz_t{123.}, 123_Hz, "");
         NS_TEST_EXPECT_MSG_EQ(Hz_t{123.45}, 123.45_Hz, "");
         NS_TEST_EXPECT_MSG_EQ((-123_Hz), Hz_t{-123}, "");
-        NS_TEST_EXPECT_MSG_EQ(Hz_t{123000}, 123_kHz, "");
-        NS_TEST_EXPECT_MSG_EQ(Hz_t{123000000}, 123_MHz, "");
-        NS_TEST_EXPECT_MSG_EQ(Hz_t{123000000000}, 123_GHz, "");
-        NS_TEST_EXPECT_MSG_EQ(Hz_t{123000000000000}, 123_THz, "");
-        NS_TEST_EXPECT_MSG_EQ(Hz_t{123000000000000}, 123000000000000_Hz, "");
+        NS_TEST_EXPECT_MSG_EQ(Hz_t{123000.}, 123_kHz, "");
+        NS_TEST_EXPECT_MSG_EQ(Hz_t{123000000.}, 123_MHz, "");
+        NS_TEST_EXPECT_MSG_EQ(Hz_t{123000000000.}, 123_GHz, "");
+        NS_TEST_EXPECT_MSG_EQ(Hz_t{123000000000000.}, 123_THz, "");
+        NS_TEST_EXPECT_MSG_EQ(Hz_t{123000000000000.}, 123000000000000_Hz, "");
 
         NS_TEST_EXPECT_MSG_EQ(10_Hz + 20_Hz, 30_Hz, "");
         NS_TEST_EXPECT_MSG_EQ(10_MHz - 20_MHz, -10_MHz, "");

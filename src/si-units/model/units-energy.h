@@ -240,6 +240,13 @@ struct dBm_t
     {
     }
 
+    /// Constructor
+    /// @param val Value in dBm
+    constexpr explicit dBm_t(int32_t val)
+        : val(static_cast<double>(val))
+    {
+    }
+
     /// Converts from mWatt
     /// @param input input power struct in mWatt_t
     /// @return dBm_t object

@@ -34,6 +34,13 @@ struct Hz_t
     {
     }
 
+    /// Constructor
+    /// @param val Value in Hz
+    constexpr explicit Hz_t(int32_t val)
+        : val(static_cast<double>(val))
+    {
+    }
+
     /// @brief Stringify with metric prefix
     /// Sub-Hertz not supported
     /// @return String with metric prefix
