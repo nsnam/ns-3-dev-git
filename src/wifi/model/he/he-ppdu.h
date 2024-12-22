@@ -260,7 +260,7 @@ class HePpdu : public OfdmPpdu
      */
     virtual HeRu::RuSpec GetRuSpec(std::size_t ruAllocIndex,
                                    const std::vector<HeRu::RuSpec>& ruSpecs,
-                                   HeRu::RuType ruType,
+                                   RuType ruType,
                                    std::size_t ruIndex,
                                    MHz_u bw) const;
 

@@ -26,27 +26,6 @@ class HeRu
 {
   public:
     /**
-     * The different HE Resource Unit (RU) types.
-     */
-    enum RuType
-    {
-        RU_26_TONE = 0,
-        RU_52_TONE,
-        RU_106_TONE,
-        RU_242_TONE,
-        RU_484_TONE,
-        RU_996_TONE,
-        RU_2x996_TONE,
-        RU_TYPE_MAX
-    };
-
-    /// (lowest index, highest index) pair defining a subcarrier range
-    using SubcarrierRange = std::pair<int16_t, int16_t>;
-
-    /// a vector of subcarrier ranges defining a subcarrier group
-    using SubcarrierGroup = std::vector<SubcarrierRange>;
-
-    /**
      * RU Specification. Stores the information carried by the RU Allocation subfield
      * of the User Info field of Trigger frames (see 9.3.1.22.1 of 802.11ax D8.0).
      * Note that primary80MHz must be true if ruType is RU_2x996_TONE.
@@ -257,12 +236,6 @@ class HeRu
                                               std::size_t& nStations,
                                               std::size_t& nCentral26TonesRus);
 
-    /// (bandwidth, number of tones) pair
-    using BwTonesPair = std::pair<MHz_u, RuType>;
-
-    /// map (bandwidth, number of tones) pairs to the group of subcarrier ranges
-    using SubcarrierGroups = std::map<BwTonesPair, std::vector<SubcarrierGroup>>;
-
     /// Subcarrier groups for all RUs (with indices being applicable to primary 80 MHz channel)
     static const SubcarrierGroups m_heRuSubcarrierGroups;
 
@@ -299,15 +272,6 @@ class HeRu
      */
     static uint8_t GetNumCentral26TonesRus(MHz_u bw, RuType ruType);
 };
-
-/**
- * @brief Stream insertion operator.
- *
- * @param os the stream
- * @param ruType the RU type
- * @returns a reference to the stream
- */
-std::ostream& operator<<(std::ostream& os, const HeRu::RuType& ruType);
 
 /**
  * @brief Stream insertion operator.

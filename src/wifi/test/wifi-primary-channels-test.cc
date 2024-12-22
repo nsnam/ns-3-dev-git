@@ -90,7 +90,7 @@ class WifiPrimaryChannelsTest : public TestCase
      * @param ruType the given RU type
      * @param nRus the number of RUs
      */
-    void SendDlMuPpdu(uint8_t bss, MHz_u txChannelWidth, HeRu::RuType ruType, std::size_t nRus);
+    void SendDlMuPpdu(uint8_t bss, MHz_u txChannelWidth, RuType ruType, std::size_t nRus);
     /**
      * Have the AP of the given BSS transmit a Basic Trigger Frame. This method calls
      * DoSendHeTbPpdu to actually have STAs transmit HE TB PPDUs using the given
@@ -101,7 +101,7 @@ class WifiPrimaryChannelsTest : public TestCase
      * @param ruType the given RU type
      * @param nRus the number of RUs
      */
-    void SendHeTbPpdu(uint8_t bss, MHz_u txChannelWidth, HeRu::RuType ruType, std::size_t nRus);
+    void SendHeTbPpdu(uint8_t bss, MHz_u txChannelWidth, RuType ruType, std::size_t nRus);
     /**
      * Have the STAs of the given BSS transmit an HE TB PPDU using the given
      * transmission channel width and RU type
@@ -111,7 +111,7 @@ class WifiPrimaryChannelsTest : public TestCase
      * @param ruType the given RU type
      * @param nRus the number of RUs
      */
-    void DoSendHeTbPpdu(uint8_t bss, MHz_u txChannelWidth, HeRu::RuType ruType, std::size_t nRus);
+    void DoSendHeTbPpdu(uint8_t bss, MHz_u txChannelWidth, RuType ruType, std::size_t nRus);
     /**
      * Callback invoked when a station receives a DL PPDU.
      *
@@ -172,7 +172,7 @@ class WifiPrimaryChannelsTest : public TestCase
      */
     void CheckReceivedMuPpdus(std::set<uint8_t> txBss,
                               MHz_u txChannelWidth,
-                              HeRu::RuType ruType,
+                              RuType ruType,
                               std::size_t nRus,
                               bool isDlMu);
     /**
@@ -657,7 +657,7 @@ WifiPrimaryChannelsTest::DoRun()
         {
             for (unsigned int type = 0; type < 7; type++)
             {
-                auto ruType = static_cast<HeRu::RuType>(type);
+                auto ruType = static_cast<RuType>(type);
                 std::size_t nRus = HeRu::GetNRus(txChannelWidth, ruType);
                 std::set<uint8_t> txBss;
                 if (nRus > 0)
@@ -706,7 +706,7 @@ WifiPrimaryChannelsTest::DoRun()
         {
             for (unsigned int type = 0; type < 7; type++)
             {
-                auto ruType = static_cast<HeRu::RuType>(type);
+                auto ruType = static_cast<RuType>(type);
                 std::size_t nRus = HeRu::GetNRus(txChannelWidth, ruType);
                 std::set<uint8_t> txBss;
                 if (nRus > 0)
@@ -789,7 +789,7 @@ WifiPrimaryChannelsTest::SendDlSuPpdu(uint8_t bss, MHz_u txChannelWidth)
 void
 WifiPrimaryChannelsTest::SendDlMuPpdu(uint8_t bss,
                                       MHz_u txChannelWidth,
-                                      HeRu::RuType ruType,
+                                      RuType ruType,
                                       std::size_t nRus)
 {
     NS_LOG_INFO("*** BSS " << +bss << " transmits on primary " << txChannelWidth
@@ -839,7 +839,7 @@ WifiPrimaryChannelsTest::SendDlMuPpdu(uint8_t bss,
 void
 WifiPrimaryChannelsTest::SendHeTbPpdu(uint8_t bss,
                                       MHz_u txChannelWidth,
-                                      HeRu::RuType ruType,
+                                      RuType ruType,
                                       std::size_t nRus)
 {
     NS_LOG_INFO("*** BSS " << +bss << " transmits a Basic Trigger Frame");
@@ -863,7 +863,7 @@ WifiPrimaryChannelsTest::SendHeTbPpdu(uint8_t bss,
 void
 WifiPrimaryChannelsTest::DoSendHeTbPpdu(uint8_t bss,
                                         MHz_u txChannelWidth,
-                                        HeRu::RuType ruType,
+                                        RuType ruType,
                                         std::size_t nRus)
 {
     auto apDev = DynamicCast<WifiNetDevice>(m_apDevices.Get(bss));
@@ -1038,7 +1038,7 @@ WifiPrimaryChannelsTest::CheckReceivedSuPpdus(std::set<uint8_t> txBss, MHz_u txC
 void
 WifiPrimaryChannelsTest::CheckReceivedMuPpdus(std::set<uint8_t> txBss,
                                               MHz_u txChannelWidth,
-                                              HeRu::RuType ruType,
+                                              RuType ruType,
                                               std::size_t nRus,
                                               bool isDlMu)
 {

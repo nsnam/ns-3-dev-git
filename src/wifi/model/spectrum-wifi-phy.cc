@@ -152,14 +152,14 @@ SpectrumWifiPhy::GetHeRuBands(Ptr<WifiSpectrumPhyInterface> spectrumPhyInterface
     {
         for (uint32_t i = 0; i < (channelWidth / bw); ++i)
         {
-            for (uint32_t type = 0; type < HeRu::RuType::RU_TYPE_MAX; type++)
+            for (uint32_t type = 0; type < static_cast<uint32_t>(RuType::RU_TYPE_MAX); ++type)
             {
-                auto ruType = static_cast<HeRu::RuType>(type);
+                auto ruType = static_cast<RuType>(type);
                 std::size_t nRus = HeRu::GetNRus(bw, ruType);
                 for (std::size_t phyIndex = 1; phyIndex <= nRus; phyIndex++)
                 {
-                    HeRu::SubcarrierGroup group = HeRu::GetSubcarrierGroup(bw, ruType, phyIndex);
-                    HeRu::SubcarrierRange subcarrierRange =
+                    const auto group = HeRu::GetSubcarrierGroup(bw, ruType, phyIndex);
+                    SubcarrierRange subcarrierRange =
                         std::make_pair(group.front().first, group.back().second);
                     const auto bandIndices =
                         HePhy::ConvertHeRuSubcarriers(bw,
@@ -181,7 +181,7 @@ SpectrumWifiPhy::GetHeRuBands(Ptr<WifiSpectrumPhyInterface> spectrumPhyInterface
                     std::size_t index =
                         (bw == MHz_u{160} && phyIndex > nRus / 2 ? phyIndex - nRus / 2 : phyIndex);
                     bool primary80IsLower80 = (p20Index < bw / MHz_u{40});
-                    bool primary80 = (bw < MHz_u{160} || ruType == HeRu::RU_2x996_TONE ||
+                    bool primary80 = (bw < MHz_u{160} || ruType == RuType::RU_2x996_TONE ||
                                       (primary80IsLower80 && phyIndex <= nRus / 2) ||
                                       (!primary80IsLower80 && phyIndex > nRus / 2));
                     HeRu::RuSpec ru(ruType, index, primary80);

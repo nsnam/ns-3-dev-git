@@ -789,7 +789,7 @@ RuAllocation
 WifiTxVector::DeriveRuAllocation(uint8_t p20Index) const
 {
     RuAllocation ruAllocations(Count20MHzSubchannels(m_channelWidth), HeRu::EMPTY_242_TONE_RU);
-    std::vector<HeRu::RuType> ruTypes{};
+    std::vector<RuType> ruTypes{};
     ruTypes.resize(ruAllocations.size());
     const auto& orderedMap = GetUserInfoMapOrderedByRus(p20Index);
     std::pair<std::size_t /* number of RUs in content channel 1 */,
@@ -797,7 +797,7 @@ WifiTxVector::DeriveRuAllocation(uint8_t p20Index) const
         ccSizes{0, 0};
     for (const auto& [ru, staIds] : orderedMap)
     {
-        if ((ru.GetRuType() == HeRu::RU_26_TONE) && (ru.GetIndex() == 19))
+        if ((ru.GetRuType() == RuType::RU_26_TONE) && (ru.GetIndex() == 19))
         {
             continue;
         }
@@ -838,11 +838,11 @@ WifiTxVector::DeriveRuAllocation(uint8_t p20Index) const
             {
                 continue;
             }
-            if (ruType == HeRu::RU_26_TONE)
+            if (ruType == RuType::RU_26_TONE)
             {
                 ruAlloc = HeRu::GetEqualizedRuAllocation(ruTypes.at(index), true, true);
             }
-            else if (ruTypes.at(index) == HeRu::RU_26_TONE)
+            else if (ruTypes.at(index) == RuType::RU_26_TONE)
             {
                 ruAlloc = HeRu::GetEqualizedRuAllocation(ruType, true, true);
             }
@@ -852,7 +852,7 @@ WifiTxVector::DeriveRuAllocation(uint8_t p20Index) const
             }
         }
         std::size_t ccIndex;
-        if (ruType >= HeRu::RU_484_TONE)
+        if (ruType >= RuType::RU_484_TONE)
         {
             ccIndex = (ccSizes.first <= ccSizes.second) ? 0 : 1;
         }
@@ -885,7 +885,7 @@ WifiTxVector::DeriveCenter26ToneRuIndication() const
     uint8_t center26ToneRuIndication{0};
     for (const auto& userInfo : m_muUserInfos)
     {
-        if ((userInfo.second.ru.GetRuType() == HeRu::RU_26_TONE) &&
+        if ((userInfo.second.ru.GetRuType() == RuType::RU_26_TONE) &&
             (userInfo.second.ru.GetIndex() == 19))
         {
             center26ToneRuIndication |= (userInfo.second.ru.GetPrimary80MHz())

@@ -983,7 +983,7 @@ HePhy::GetRuBandForTx(const WifiTxVector& txVector, uint16_t staId) const
     HeRu::RuSpec ru = txVector.GetRu(staId);
     const auto channelWidth = txVector.GetChannelWidth();
     NS_ASSERT(channelWidth <= m_wifiPhy->GetChannelWidth());
-    HeRu::SubcarrierGroup group = HeRu::GetSubcarrierGroup(
+    const auto group = HeRu::GetSubcarrierGroup(
         channelWidth,
         ru.GetRuType(),
         ru.GetPhyIndex(channelWidth,
@@ -1014,7 +1014,7 @@ HePhy::GetRuBandForRx(const WifiTxVector& txVector, uint16_t staId) const
     HeRu::RuSpec ru = txVector.GetRu(staId);
     const auto channelWidth = txVector.GetChannelWidth();
     NS_ASSERT(channelWidth <= m_wifiPhy->GetChannelWidth());
-    HeRu::SubcarrierGroup group = HeRu::GetSubcarrierGroup(
+    const auto group = HeRu::GetSubcarrierGroup(
         channelWidth,
         ru.GetRuType(),
         ru.GetPhyIndex(channelWidth,
@@ -1042,7 +1042,7 @@ HePhy::GetRuBandForRx(const WifiTxVector& txVector, uint16_t staId) const
 MHz_u
 HePhy::GetNonOfdmaWidth(HeRu::RuSpec ru) const
 {
-    if (ru.GetRuType() == HeRu::RU_26_TONE && ru.GetIndex() == 19)
+    if (ru.GetRuType() == RuType::RU_26_TONE && ru.GetIndex() == 19)
     {
         // the center 26-tone RU in an 80 MHz channel is not fully covered by
         // any 20 MHz channel, but only by an 80 MHz channel
@@ -1818,7 +1818,7 @@ HePhy::ConvertHeRuSubcarriers(MHz_u bandWidth,
                               const std::vector<MHz_u>& centerFrequencies,
                               MHz_u totalWidth,
                               Hz_u subcarrierSpacing,
-                              HeRu::SubcarrierRange subcarrierRange,
+                              SubcarrierRange subcarrierRange,
                               uint8_t bandIndex)
 {
     NS_ASSERT_MSG(bandWidth <= totalWidth,

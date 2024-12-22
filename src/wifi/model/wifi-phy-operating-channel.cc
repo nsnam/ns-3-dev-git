@@ -821,13 +821,13 @@ WifiPhyOperatingChannel::Get20MHzIndicesCoveringRu(HeRu::RuSpec ru, MHz_u width)
                                       << GetTotalWidth() << ")");
 
     // trivial case: 2x996-tone RU
-    if (ruType == HeRu::RU_2x996_TONE)
+    if (ruType == RuType::RU_2x996_TONE)
     {
         return {0, 1, 2, 3, 4, 5, 6, 7};
     }
 
     // handle first the special case of center 26-tone RUs
-    if (ruType == HeRu::RU_26_TONE && ru.GetIndex() == 19)
+    if (ruType == RuType::RU_26_TONE && ru.GetIndex() == 19)
     {
         NS_ASSERT_MSG(width >= MHz_u{80},
                       "26-tone RU with index 19 is only present in channels of at least 80 MHz");
@@ -842,7 +842,7 @@ WifiPhyOperatingChannel::Get20MHzIndicesCoveringRu(HeRu::RuSpec ru, MHz_u width)
 
     auto ruIndex = ru.GetIndex();
 
-    if (ruType == HeRu::RU_26_TONE && ruIndex > 19)
+    if (ruType == RuType::RU_26_TONE && ruIndex > 19)
     {
         // "ignore" the center 26-tone RU in an 80 MHz channel
         ruIndex--;
@@ -857,7 +857,7 @@ WifiPhyOperatingChannel::Get20MHzIndicesCoveringRu(HeRu::RuSpec ru, MHz_u width)
         {
             auto nRusIn80MHz = HeRu::GetNRus(MHz_u{80}, ruType);
             // "ignore" the center 26-tone RU in an 80 MHz channel
-            if (ruType == HeRu::RU_26_TONE)
+            if (ruType == RuType::RU_26_TONE)
             {
                 nRusIn80MHz--;
             }
@@ -869,16 +869,16 @@ WifiPhyOperatingChannel::Get20MHzIndicesCoveringRu(HeRu::RuSpec ru, MHz_u width)
 
     switch (ruType)
     {
-    case HeRu::RU_26_TONE:
-    case HeRu::RU_52_TONE:
-    case HeRu::RU_106_TONE:
-    case HeRu::RU_242_TONE:
+    case RuType::RU_26_TONE:
+    case RuType::RU_52_TONE:
+    case RuType::RU_106_TONE:
+    case RuType::RU_242_TONE:
         n20MHzChannels = 1;
         break;
-    case HeRu::RU_484_TONE:
+    case RuType::RU_484_TONE:
         n20MHzChannels = 2;
         break;
-    case HeRu::RU_996_TONE:
+    case RuType::RU_996_TONE:
         n20MHzChannels = 4;
         break;
     default:

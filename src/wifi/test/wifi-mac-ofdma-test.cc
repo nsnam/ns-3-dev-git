@@ -302,23 +302,23 @@ TestMultiUserScheduler::ComputeWifiTxVector()
     }
     NS_ABORT_MSG_IF(staList.size() != 4, "There must be 4 associated stations");
 
-    HeRu::RuType ruType;
+    RuType ruType;
     switch (static_cast<uint16_t>(bw))
     {
     case 20:
-        ruType = HeRu::RU_52_TONE;
+        ruType = RuType::RU_52_TONE;
         m_txVector.SetRuAllocation({112}, 0);
         break;
     case 40:
-        ruType = HeRu::RU_106_TONE;
+        ruType = RuType::RU_106_TONE;
         m_txVector.SetRuAllocation({96, 96}, 0);
         break;
     case 80:
-        ruType = HeRu::RU_242_TONE;
+        ruType = RuType::RU_242_TONE;
         m_txVector.SetRuAllocation({192, 192, 192, 192}, 0);
         break;
     case 160:
-        ruType = HeRu::RU_484_TONE;
+        ruType = RuType::RU_484_TONE;
         m_txVector.SetRuAllocation({200, 200, 200, 200, 200, 200, 200, 200}, 0);
         break;
     default:

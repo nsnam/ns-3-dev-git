@@ -448,7 +448,7 @@ class HePhy : public VhtPhy
         const std::vector<MHz_u>& centerFrequencies,
         MHz_u totalWidth,
         Hz_u subcarrierSpacing,
-        HeRu::SubcarrierRange subcarrierRange,
+        SubcarrierRange subcarrierRange,
         uint8_t bandIndex = 0);
 
   protected:
