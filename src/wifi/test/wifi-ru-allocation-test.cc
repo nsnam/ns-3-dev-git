@@ -94,20 +94,20 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
         // All the 9 26-tone RUs are covered by the unique 20 MHz channel
         for (std::size_t idx = 1; idx <= 9; idx++)
         {
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_26_TONE, idx, true), width, {p20Index});
+            RunOne(p20Index, HeRu::RuSpec(RuType::RU_26_TONE, idx, true), width, {p20Index});
         }
         // All the 4 52-tone RUs are covered by the unique 20 MHz channel
         for (std::size_t idx = 1; idx <= 4; idx++)
         {
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_52_TONE, idx, true), width, {p20Index});
+            RunOne(p20Index, HeRu::RuSpec(RuType::RU_52_TONE, idx, true), width, {p20Index});
         }
         // Both 106-tone RUs are covered by the unique 20 MHz channel
         for (std::size_t idx = 1; idx <= 2; idx++)
         {
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_106_TONE, idx, true), width, {p20Index});
+            RunOne(p20Index, HeRu::RuSpec(RuType::RU_106_TONE, idx, true), width, {p20Index});
         }
         // The 242-tone RU is covered by the unique 20 MHz channel
-        RunOne(p20Index, HeRu::RuSpec(HeRu::RU_242_TONE, 1, true), width, {p20Index});
+        RunOne(p20Index, HeRu::RuSpec(RuType::RU_242_TONE, 1, true), width, {p20Index});
     }
 
     /******************
@@ -123,20 +123,20 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
         // All the 9 26-tone RUs are covered by the primary 20 MHz channel
         for (std::size_t idx = 1; idx <= 9; idx++)
         {
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_26_TONE, idx, true), width, {p20Index});
+            RunOne(p20Index, HeRu::RuSpec(RuType::RU_26_TONE, idx, true), width, {p20Index});
         }
         // All the 4 52-tone RUs are covered by the primary 20 MHz channel
         for (std::size_t idx = 1; idx <= 4; idx++)
         {
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_52_TONE, idx, true), width, {p20Index});
+            RunOne(p20Index, HeRu::RuSpec(RuType::RU_52_TONE, idx, true), width, {p20Index});
         }
         // Both 106-tone RUs are covered by the primary 20 MHz channel
         for (std::size_t idx = 1; idx <= 2; idx++)
         {
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_106_TONE, idx, true), width, {p20Index});
+            RunOne(p20Index, HeRu::RuSpec(RuType::RU_106_TONE, idx, true), width, {p20Index});
         }
         // The 242-tone RU is covered by the primary 20 MHz channel
-        RunOne(p20Index, HeRu::RuSpec(HeRu::RU_242_TONE, 1, true), width, {p20Index});
+        RunOne(p20Index, HeRu::RuSpec(RuType::RU_242_TONE, 1, true), width, {p20Index});
     }
 
     /* 40 MHz PPDU */
@@ -147,39 +147,39 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
         // The first 9 26-tone RUs are covered by the first 20 MHz channel
         for (std::size_t idx = 1; idx <= 9; idx++)
         {
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_26_TONE, idx, true), width, {0});
+            RunOne(p20Index, HeRu::RuSpec(RuType::RU_26_TONE, idx, true), width, {0});
         }
         // The second 9 26-tone RUs are covered by the second 20 MHz channel
         for (std::size_t idx = 10; idx <= 18; idx++)
         {
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_26_TONE, idx, true), width, {1});
+            RunOne(p20Index, HeRu::RuSpec(RuType::RU_26_TONE, idx, true), width, {1});
         }
         // The first 4 52-tone RUs are covered by the first 20 MHz channel
         for (std::size_t idx = 1; idx <= 4; idx++)
         {
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_52_TONE, idx, true), width, {0});
+            RunOne(p20Index, HeRu::RuSpec(RuType::RU_52_TONE, idx, true), width, {0});
         }
         // The second 4 52-tone RUs are covered by the second 20 MHz channel
         for (std::size_t idx = 5; idx <= 8; idx++)
         {
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_52_TONE, idx, true), width, {1});
+            RunOne(p20Index, HeRu::RuSpec(RuType::RU_52_TONE, idx, true), width, {1});
         }
         // The first 2 106-tone RUs are covered by the first 20 MHz channel
         for (std::size_t idx = 1; idx <= 2; idx++)
         {
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_106_TONE, idx, true), width, {0});
+            RunOne(p20Index, HeRu::RuSpec(RuType::RU_106_TONE, idx, true), width, {0});
         }
         // The second 2 106-tone RUs are covered by the second 20 MHz channel
         for (std::size_t idx = 3; idx <= 4; idx++)
         {
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_106_TONE, idx, true), width, {1});
+            RunOne(p20Index, HeRu::RuSpec(RuType::RU_106_TONE, idx, true), width, {1});
         }
         // The first 242-tone RU is covered by the first 20 MHz channel
-        RunOne(p20Index, HeRu::RuSpec(HeRu::RU_242_TONE, 1, true), width, {0});
+        RunOne(p20Index, HeRu::RuSpec(RuType::RU_242_TONE, 1, true), width, {0});
         // The second 242-tone RU is covered by the second 20 MHz channel
-        RunOne(p20Index, HeRu::RuSpec(HeRu::RU_242_TONE, 2, true), width, {1});
+        RunOne(p20Index, HeRu::RuSpec(RuType::RU_242_TONE, 2, true), width, {1});
         // The 484-tone RU is covered by both 20 MHz channels
-        RunOne(p20Index, HeRu::RuSpec(HeRu::RU_484_TONE, 1, true), width, {0, 1});
+        RunOne(p20Index, HeRu::RuSpec(RuType::RU_484_TONE, 1, true), width, {0, 1});
     }
 
     /******************
@@ -195,20 +195,20 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
         // All the 9 26-tone RUs are covered by the primary 20 MHz channel
         for (std::size_t idx = 1; idx <= 9; idx++)
         {
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_26_TONE, idx, true), width, {p20Index});
+            RunOne(p20Index, HeRu::RuSpec(RuType::RU_26_TONE, idx, true), width, {p20Index});
         }
         // All the 4 52-tone RUs are covered by the primary 20 MHz channel
         for (std::size_t idx = 1; idx <= 4; idx++)
         {
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_52_TONE, idx, true), width, {p20Index});
+            RunOne(p20Index, HeRu::RuSpec(RuType::RU_52_TONE, idx, true), width, {p20Index});
         }
         // Both 106-tone RUs are covered by the primary 20 MHz channel
         for (std::size_t idx = 1; idx <= 2; idx++)
         {
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_106_TONE, idx, true), width, {p20Index});
+            RunOne(p20Index, HeRu::RuSpec(RuType::RU_106_TONE, idx, true), width, {p20Index});
         }
         // The 242-tone RU is covered by the primary 20 MHz channel
-        RunOne(p20Index, HeRu::RuSpec(HeRu::RU_242_TONE, 1, true), width, {p20Index});
+        RunOne(p20Index, HeRu::RuSpec(RuType::RU_242_TONE, 1, true), width, {p20Index});
     }
 
     /* 40 MHz PPDU */
@@ -224,39 +224,42 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
         // The first 9 26-tone RUs are in the lower 20 MHz of the PPDU bandwidth
         for (std::size_t idx = 1; idx <= 9; idx++)
         {
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_26_TONE, idx, true), width, {ch20Index0});
+            RunOne(p20Index, HeRu::RuSpec(RuType::RU_26_TONE, idx, true), width, {ch20Index0});
         }
         // The second 9 26-tone RUs are in the higher 20 MHz of the PPDU bandwidth
         for (std::size_t idx = 10; idx <= 18; idx++)
         {
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_26_TONE, idx, true), width, {ch20Index1});
+            RunOne(p20Index, HeRu::RuSpec(RuType::RU_26_TONE, idx, true), width, {ch20Index1});
         }
         // The first 4 52-tone RUs are in the lower 20 MHz of the PPDU bandwidth
         for (std::size_t idx = 1; idx <= 4; idx++)
         {
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_52_TONE, idx, true), width, {ch20Index0});
+            RunOne(p20Index, HeRu::RuSpec(RuType::RU_52_TONE, idx, true), width, {ch20Index0});
         }
         // The second 4 52-tone RUs are in the higher 20 MHz of the PPDU bandwidth
         for (std::size_t idx = 5; idx <= 8; idx++)
         {
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_52_TONE, idx, true), width, {ch20Index1});
+            RunOne(p20Index, HeRu::RuSpec(RuType::RU_52_TONE, idx, true), width, {ch20Index1});
         }
         // The first 2 106-tone RUs are in the lower 20 MHz of the PPDU bandwidth
         for (std::size_t idx = 1; idx <= 2; idx++)
         {
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_106_TONE, idx, true), width, {ch20Index0});
+            RunOne(p20Index, HeRu::RuSpec(RuType::RU_106_TONE, idx, true), width, {ch20Index0});
         }
         // The second 2 106-tone RUs are in the higher 20 MHz of the PPDU bandwidth
         for (std::size_t idx = 3; idx <= 4; idx++)
         {
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_106_TONE, idx, true), width, {ch20Index1});
+            RunOne(p20Index, HeRu::RuSpec(RuType::RU_106_TONE, idx, true), width, {ch20Index1});
         }
         // The first 242-tone RU is in the lower 20 MHz of the PPDU bandwidth
-        RunOne(p20Index, HeRu::RuSpec(HeRu::RU_242_TONE, 1, true), width, {ch20Index0});
+        RunOne(p20Index, HeRu::RuSpec(RuType::RU_242_TONE, 1, true), width, {ch20Index0});
         // The second 242-tone RU is in the higher 20 MHz of the PPDU bandwidth
-        RunOne(p20Index, HeRu::RuSpec(HeRu::RU_242_TONE, 2, true), width, {ch20Index1});
+        RunOne(p20Index, HeRu::RuSpec(RuType::RU_242_TONE, 2, true), width, {ch20Index1});
         // The 484-tone RU is covered by both 20 MHz channels
-        RunOne(p20Index, HeRu::RuSpec(HeRu::RU_484_TONE, 1, true), width, {ch20Index0, ch20Index1});
+        RunOne(p20Index,
+               HeRu::RuSpec(RuType::RU_484_TONE, 1, true),
+               width,
+               {ch20Index0, ch20Index1});
     }
 
     /* 80 MHz PPDU */
@@ -267,79 +270,79 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
         // The first 9 26-tone RUs are in the first 20 MHz channel
         for (std::size_t idx = 1; idx <= 9; idx++)
         {
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_26_TONE, idx, true), width, {0});
+            RunOne(p20Index, HeRu::RuSpec(RuType::RU_26_TONE, idx, true), width, {0});
         }
         // The second 9 26-tone RUs are in the second 20 MHz channel
         for (std::size_t idx = 10; idx <= 18; idx++)
         {
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_26_TONE, idx, true), width, {1});
+            RunOne(p20Index, HeRu::RuSpec(RuType::RU_26_TONE, idx, true), width, {1});
         }
         // The center 26-tone RU is covered by the central 20 MHz channels
-        RunOne(p20Index, HeRu::RuSpec(HeRu::RU_26_TONE, 19, true), width, {1, 2});
+        RunOne(p20Index, HeRu::RuSpec(RuType::RU_26_TONE, 19, true), width, {1, 2});
         // The following 9 26-tone RUs are in the third 20 MHz channel
         for (std::size_t idx = 20; idx <= 28; idx++)
         {
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_26_TONE, idx, true), width, {2});
+            RunOne(p20Index, HeRu::RuSpec(RuType::RU_26_TONE, idx, true), width, {2});
         }
         // The last 9 26-tone RUs are in the fourth 20 MHz channel
         for (std::size_t idx = 29; idx <= 37; idx++)
         {
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_26_TONE, idx, true), width, {3});
+            RunOne(p20Index, HeRu::RuSpec(RuType::RU_26_TONE, idx, true), width, {3});
         }
         // The first 4 52-tone RUs are in the first 20 MHz channel
         for (std::size_t idx = 1; idx <= 4; idx++)
         {
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_52_TONE, idx, true), width, {0});
+            RunOne(p20Index, HeRu::RuSpec(RuType::RU_52_TONE, idx, true), width, {0});
         }
         // The second 4 52-tone RUs are in the second 20 MHz channel
         for (std::size_t idx = 5; idx <= 8; idx++)
         {
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_52_TONE, idx, true), width, {1});
+            RunOne(p20Index, HeRu::RuSpec(RuType::RU_52_TONE, idx, true), width, {1});
         }
         // The third 4 52-tone RUs are in the third 20 MHz channel
         for (std::size_t idx = 9; idx <= 12; idx++)
         {
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_52_TONE, idx, true), width, {2});
+            RunOne(p20Index, HeRu::RuSpec(RuType::RU_52_TONE, idx, true), width, {2});
         }
         // The fourth 4 52-tone RUs are in the fourth 20 MHz channel
         for (std::size_t idx = 13; idx <= 16; idx++)
         {
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_52_TONE, idx, true), width, {3});
+            RunOne(p20Index, HeRu::RuSpec(RuType::RU_52_TONE, idx, true), width, {3});
         }
         // The first 2 106-tone RUs are in the first 20 MHz channel
         for (std::size_t idx = 1; idx <= 2; idx++)
         {
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_106_TONE, idx, true), width, {0});
+            RunOne(p20Index, HeRu::RuSpec(RuType::RU_106_TONE, idx, true), width, {0});
         }
         // The second 2 106-tone RUs are in the second 20 MHz channel
         for (std::size_t idx = 3; idx <= 4; idx++)
         {
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_106_TONE, idx, true), width, {1});
+            RunOne(p20Index, HeRu::RuSpec(RuType::RU_106_TONE, idx, true), width, {1});
         }
         // The third 2 106-tone RUs are in the third 20 MHz channel
         for (std::size_t idx = 5; idx <= 6; idx++)
         {
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_106_TONE, idx, true), width, {2});
+            RunOne(p20Index, HeRu::RuSpec(RuType::RU_106_TONE, idx, true), width, {2});
         }
         // The fourth 2 106-tone RUs are in the fourth 20 MHz channel
         for (std::size_t idx = 7; idx <= 8; idx++)
         {
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_106_TONE, idx, true), width, {3});
+            RunOne(p20Index, HeRu::RuSpec(RuType::RU_106_TONE, idx, true), width, {3});
         }
         // The first 242-tone RU is in the first 20 MHz channel
-        RunOne(p20Index, HeRu::RuSpec(HeRu::RU_242_TONE, 1, true), width, {0});
+        RunOne(p20Index, HeRu::RuSpec(RuType::RU_242_TONE, 1, true), width, {0});
         // The second 242-tone RU is in the second 20 MHz channel
-        RunOne(p20Index, HeRu::RuSpec(HeRu::RU_242_TONE, 2, true), width, {1});
+        RunOne(p20Index, HeRu::RuSpec(RuType::RU_242_TONE, 2, true), width, {1});
         // The third 242-tone RU is in the third 20 MHz channel
-        RunOne(p20Index, HeRu::RuSpec(HeRu::RU_242_TONE, 3, true), width, {2});
+        RunOne(p20Index, HeRu::RuSpec(RuType::RU_242_TONE, 3, true), width, {2});
         // The fourth 242-tone RU is in the fourth 20 MHz channel
-        RunOne(p20Index, HeRu::RuSpec(HeRu::RU_242_TONE, 4, true), width, {3});
+        RunOne(p20Index, HeRu::RuSpec(RuType::RU_242_TONE, 4, true), width, {3});
         // The first 484-tone RU is covered by the first two 20 MHz channels
-        RunOne(p20Index, HeRu::RuSpec(HeRu::RU_484_TONE, 1, true), width, {0, 1});
+        RunOne(p20Index, HeRu::RuSpec(RuType::RU_484_TONE, 1, true), width, {0, 1});
         // The second 484-tone RU is covered by the last two 20 MHz channels
-        RunOne(p20Index, HeRu::RuSpec(HeRu::RU_484_TONE, 2, true), width, {2, 3});
+        RunOne(p20Index, HeRu::RuSpec(RuType::RU_484_TONE, 2, true), width, {2, 3});
         // The 996-tone RU is covered by all the 20 MHz channels
-        RunOne(p20Index, HeRu::RuSpec(HeRu::RU_996_TONE, 1, true), width, {0, 1, 2, 3});
+        RunOne(p20Index, HeRu::RuSpec(RuType::RU_996_TONE, 1, true), width, {0, 1, 2, 3});
     }
 
     /******************
@@ -355,20 +358,20 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
         // All the 9 26-tone RUs are covered by the primary 20 MHz channel
         for (std::size_t idx = 1; idx <= 9; idx++)
         {
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_26_TONE, idx, true), width, {p20Index});
+            RunOne(p20Index, HeRu::RuSpec(RuType::RU_26_TONE, idx, true), width, {p20Index});
         }
         // All the 4 52-tone RUs are covered by the primary 20 MHz channel
         for (std::size_t idx = 1; idx <= 4; idx++)
         {
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_52_TONE, idx, true), width, {p20Index});
+            RunOne(p20Index, HeRu::RuSpec(RuType::RU_52_TONE, idx, true), width, {p20Index});
         }
         // Both 106-tone RUs are covered by the primary 20 MHz channel
         for (std::size_t idx = 1; idx <= 2; idx++)
         {
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_106_TONE, idx, true), width, {p20Index});
+            RunOne(p20Index, HeRu::RuSpec(RuType::RU_106_TONE, idx, true), width, {p20Index});
         }
         // The 242-tone RU is covered by the primary 20 MHz channel
-        RunOne(p20Index, HeRu::RuSpec(HeRu::RU_242_TONE, 1, true), width, {p20Index});
+        RunOne(p20Index, HeRu::RuSpec(RuType::RU_242_TONE, 1, true), width, {p20Index});
     }
 
     /* 40 MHz PPDU */
@@ -384,39 +387,42 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
         // The first 9 26-tone RUs are in the lower 20 MHz of the PPDU bandwidth
         for (std::size_t idx = 1; idx <= 9; idx++)
         {
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_26_TONE, idx, true), width, {ch20Index0});
+            RunOne(p20Index, HeRu::RuSpec(RuType::RU_26_TONE, idx, true), width, {ch20Index0});
         }
         // The second 9 26-tone RUs are in the higher 20 MHz of the PPDU bandwidth
         for (std::size_t idx = 10; idx <= 18; idx++)
         {
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_26_TONE, idx, true), width, {ch20Index1});
+            RunOne(p20Index, HeRu::RuSpec(RuType::RU_26_TONE, idx, true), width, {ch20Index1});
         }
         // The first 4 52-tone RUs are in the lower 20 MHz of the PPDU bandwidth
         for (std::size_t idx = 1; idx <= 4; idx++)
         {
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_52_TONE, idx, true), width, {ch20Index0});
+            RunOne(p20Index, HeRu::RuSpec(RuType::RU_52_TONE, idx, true), width, {ch20Index0});
         }
         // The second 4 52-tone RUs are in the higher 20 MHz of the PPDU bandwidth
         for (std::size_t idx = 5; idx <= 8; idx++)
         {
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_52_TONE, idx, true), width, {ch20Index1});
+            RunOne(p20Index, HeRu::RuSpec(RuType::RU_52_TONE, idx, true), width, {ch20Index1});
         }
         // The first 2 106-tone RUs are in the lower 20 MHz of the PPDU bandwidth
         for (std::size_t idx = 1; idx <= 2; idx++)
         {
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_106_TONE, idx, true), width, {ch20Index0});
+            RunOne(p20Index, HeRu::RuSpec(RuType::RU_106_TONE, idx, true), width, {ch20Index0});
         }
         // The second 2 106-tone RUs are in the higher 20 MHz of the PPDU bandwidth
         for (std::size_t idx = 3; idx <= 4; idx++)
         {
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_106_TONE, idx, true), width, {ch20Index1});
+            RunOne(p20Index, HeRu::RuSpec(RuType::RU_106_TONE, idx, true), width, {ch20Index1});
         }
         // The first 242-tone RU is in the lower 20 MHz of the PPDU bandwidth
-        RunOne(p20Index, HeRu::RuSpec(HeRu::RU_242_TONE, 1, true), width, {ch20Index0});
+        RunOne(p20Index, HeRu::RuSpec(RuType::RU_242_TONE, 1, true), width, {ch20Index0});
         // The second 242-tone RU is in the higher 20 MHz of the PPDU bandwidth
-        RunOne(p20Index, HeRu::RuSpec(HeRu::RU_242_TONE, 2, true), width, {ch20Index1});
+        RunOne(p20Index, HeRu::RuSpec(RuType::RU_242_TONE, 2, true), width, {ch20Index1});
         // The 484-tone RU is covered by both 20 MHz channels
-        RunOne(p20Index, HeRu::RuSpec(HeRu::RU_484_TONE, 1, true), width, {ch20Index0, ch20Index1});
+        RunOne(p20Index,
+               HeRu::RuSpec(RuType::RU_484_TONE, 1, true),
+               width,
+               {ch20Index0, ch20Index1});
     }
 
     /* 80 MHz PPDU */
@@ -434,80 +440,89 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
         // The first 9 26-tone RUs are in the first 20 MHz channel
         for (std::size_t idx = 1; idx <= 9; idx++)
         {
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_26_TONE, idx, true), width, {ch20Index0});
+            RunOne(p20Index, HeRu::RuSpec(RuType::RU_26_TONE, idx, true), width, {ch20Index0});
         }
         // The second 9 26-tone RUs are in the second 20 MHz channel
         for (std::size_t idx = 10; idx <= 18; idx++)
         {
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_26_TONE, idx, true), width, {ch20Index1});
+            RunOne(p20Index, HeRu::RuSpec(RuType::RU_26_TONE, idx, true), width, {ch20Index1});
         }
         // The center 26-tone RU is covered by the central 20 MHz channels
-        RunOne(p20Index, HeRu::RuSpec(HeRu::RU_26_TONE, 19, true), width, {ch20Index1, ch20Index2});
+        RunOne(p20Index,
+               HeRu::RuSpec(RuType::RU_26_TONE, 19, true),
+               width,
+               {ch20Index1, ch20Index2});
         // The following 9 26-tone RUs are in the third 20 MHz channel
         for (std::size_t idx = 20; idx <= 28; idx++)
         {
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_26_TONE, idx, true), width, {ch20Index2});
+            RunOne(p20Index, HeRu::RuSpec(RuType::RU_26_TONE, idx, true), width, {ch20Index2});
         }
         // The last 9 26-tone RUs are in the fourth 20 MHz channel
         for (std::size_t idx = 29; idx <= 37; idx++)
         {
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_26_TONE, idx, true), width, {ch20Index3});
+            RunOne(p20Index, HeRu::RuSpec(RuType::RU_26_TONE, idx, true), width, {ch20Index3});
         }
         // The first 4 52-tone RUs are in the first 20 MHz channel
         for (std::size_t idx = 1; idx <= 4; idx++)
         {
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_52_TONE, idx, true), width, {ch20Index0});
+            RunOne(p20Index, HeRu::RuSpec(RuType::RU_52_TONE, idx, true), width, {ch20Index0});
         }
         // The second 4 52-tone RUs are in the second 20 MHz channel
         for (std::size_t idx = 5; idx <= 8; idx++)
         {
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_52_TONE, idx, true), width, {ch20Index1});
+            RunOne(p20Index, HeRu::RuSpec(RuType::RU_52_TONE, idx, true), width, {ch20Index1});
         }
         // The third 4 52-tone RUs are in the third 20 MHz channel
         for (std::size_t idx = 9; idx <= 12; idx++)
         {
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_52_TONE, idx, true), width, {ch20Index2});
+            RunOne(p20Index, HeRu::RuSpec(RuType::RU_52_TONE, idx, true), width, {ch20Index2});
         }
         // The fourth 4 52-tone RUs are in the fourth 20 MHz channel
         for (std::size_t idx = 13; idx <= 16; idx++)
         {
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_52_TONE, idx, true), width, {ch20Index3});
+            RunOne(p20Index, HeRu::RuSpec(RuType::RU_52_TONE, idx, true), width, {ch20Index3});
         }
         // The first 2 106-tone RUs are in the first 20 MHz channel
         for (std::size_t idx = 1; idx <= 2; idx++)
         {
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_106_TONE, idx, true), width, {ch20Index0});
+            RunOne(p20Index, HeRu::RuSpec(RuType::RU_106_TONE, idx, true), width, {ch20Index0});
         }
         // The second 2 106-tone RUs are in the second 20 MHz channel
         for (std::size_t idx = 3; idx <= 4; idx++)
         {
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_106_TONE, idx, true), width, {ch20Index1});
+            RunOne(p20Index, HeRu::RuSpec(RuType::RU_106_TONE, idx, true), width, {ch20Index1});
         }
         // The third 2 106-tone RUs are in the third 20 MHz channel
         for (std::size_t idx = 5; idx <= 6; idx++)
         {
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_106_TONE, idx, true), width, {ch20Index2});
+            RunOne(p20Index, HeRu::RuSpec(RuType::RU_106_TONE, idx, true), width, {ch20Index2});
         }
         // The fourth 2 106-tone RUs are in the fourth 20 MHz channel
         for (std::size_t idx = 7; idx <= 8; idx++)
         {
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_106_TONE, idx, true), width, {ch20Index3});
+            RunOne(p20Index, HeRu::RuSpec(RuType::RU_106_TONE, idx, true), width, {ch20Index3});
         }
         // The first 242-tone RU is in the first 20 MHz channel
-        RunOne(p20Index, HeRu::RuSpec(HeRu::RU_242_TONE, 1, true), width, {ch20Index0});
+        RunOne(p20Index, HeRu::RuSpec(RuType::RU_242_TONE, 1, true), width, {ch20Index0});
         // The second 242-tone RU is in the second 20 MHz channel
-        RunOne(p20Index, HeRu::RuSpec(HeRu::RU_242_TONE, 2, true), width, {ch20Index1});
+        RunOne(p20Index, HeRu::RuSpec(RuType::RU_242_TONE, 2, true), width, {ch20Index1});
         // The third 242-tone RU is in the third 20 MHz channel
-        RunOne(p20Index, HeRu::RuSpec(HeRu::RU_242_TONE, 3, true), width, {ch20Index2});
+        RunOne(p20Index, HeRu::RuSpec(RuType::RU_242_TONE, 3, true), width, {ch20Index2});
         // The fourth 242-tone RU is in the fourth 20 MHz channel
-        RunOne(p20Index, HeRu::RuSpec(HeRu::RU_242_TONE, 4, true), width, {ch20Index3});
+        RunOne(p20Index, HeRu::RuSpec(RuType::RU_242_TONE, 4, true), width, {ch20Index3});
         // The first 484-tone RU is covered by the first two 20 MHz channels
-        RunOne(p20Index, HeRu::RuSpec(HeRu::RU_484_TONE, 1, true), width, {ch20Index0, ch20Index1});
+        RunOne(p20Index,
+               HeRu::RuSpec(RuType::RU_484_TONE, 1, true),
+               width,
+               {ch20Index0, ch20Index1});
         // The second 484-tone RU is covered by the last two 20 MHz channels
-        RunOne(p20Index, HeRu::RuSpec(HeRu::RU_484_TONE, 2, true), width, {ch20Index2, ch20Index3});
+        RunOne(p20Index,
+               HeRu::RuSpec(RuType::RU_484_TONE, 2, true),
+               width,
+               {ch20Index2, ch20Index3});
         // The 996-tone RU is covered by all the 20 MHz channels
         RunOne(p20Index,
-               HeRu::RuSpec(HeRu::RU_996_TONE, 1, true),
+               HeRu::RuSpec(RuType::RU_996_TONE, 1, true),
                width,
                {ch20Index0, ch20Index1, ch20Index2, ch20Index3});
     }
@@ -531,7 +546,7 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
             for (std::size_t idx = 1; idx <= 9; idx++)
             {
                 RunOne(p20Index,
-                       HeRu::RuSpec(HeRu::RU_26_TONE, idx, primary80MHz),
+                       HeRu::RuSpec(RuType::RU_26_TONE, idx, primary80MHz),
                        width,
                        {ch20Index0});
             }
@@ -539,20 +554,20 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
             for (std::size_t idx = 10; idx <= 18; idx++)
             {
                 RunOne(p20Index,
-                       HeRu::RuSpec(HeRu::RU_26_TONE, idx, primary80MHz),
+                       HeRu::RuSpec(RuType::RU_26_TONE, idx, primary80MHz),
                        width,
                        {ch20Index1});
             }
             // The center 26-tone RU is covered by the central 20 MHz channels
             RunOne(p20Index,
-                   HeRu::RuSpec(HeRu::RU_26_TONE, 19, primary80MHz),
+                   HeRu::RuSpec(RuType::RU_26_TONE, 19, primary80MHz),
                    width,
                    {ch20Index1, ch20Index2});
             // The following 9 26-tone RUs are in the third 20 MHz channel
             for (std::size_t idx = 20; idx <= 28; idx++)
             {
                 RunOne(p20Index,
-                       HeRu::RuSpec(HeRu::RU_26_TONE, idx, primary80MHz),
+                       HeRu::RuSpec(RuType::RU_26_TONE, idx, primary80MHz),
                        width,
                        {ch20Index2});
             }
@@ -560,7 +575,7 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
             for (std::size_t idx = 29; idx <= 37; idx++)
             {
                 RunOne(p20Index,
-                       HeRu::RuSpec(HeRu::RU_26_TONE, idx, primary80MHz),
+                       HeRu::RuSpec(RuType::RU_26_TONE, idx, primary80MHz),
                        width,
                        {ch20Index3});
             }
@@ -568,7 +583,7 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
             for (std::size_t idx = 1; idx <= 4; idx++)
             {
                 RunOne(p20Index,
-                       HeRu::RuSpec(HeRu::RU_52_TONE, idx, primary80MHz),
+                       HeRu::RuSpec(RuType::RU_52_TONE, idx, primary80MHz),
                        width,
                        {ch20Index0});
             }
@@ -576,7 +591,7 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
             for (std::size_t idx = 5; idx <= 8; idx++)
             {
                 RunOne(p20Index,
-                       HeRu::RuSpec(HeRu::RU_52_TONE, idx, primary80MHz),
+                       HeRu::RuSpec(RuType::RU_52_TONE, idx, primary80MHz),
                        width,
                        {ch20Index1});
             }
@@ -584,7 +599,7 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
             for (std::size_t idx = 9; idx <= 12; idx++)
             {
                 RunOne(p20Index,
-                       HeRu::RuSpec(HeRu::RU_52_TONE, idx, primary80MHz),
+                       HeRu::RuSpec(RuType::RU_52_TONE, idx, primary80MHz),
                        width,
                        {ch20Index2});
             }
@@ -592,7 +607,7 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
             for (std::size_t idx = 13; idx <= 16; idx++)
             {
                 RunOne(p20Index,
-                       HeRu::RuSpec(HeRu::RU_52_TONE, idx, primary80MHz),
+                       HeRu::RuSpec(RuType::RU_52_TONE, idx, primary80MHz),
                        width,
                        {ch20Index3});
             }
@@ -600,7 +615,7 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
             for (std::size_t idx = 1; idx <= 2; idx++)
             {
                 RunOne(p20Index,
-                       HeRu::RuSpec(HeRu::RU_106_TONE, idx, primary80MHz),
+                       HeRu::RuSpec(RuType::RU_106_TONE, idx, primary80MHz),
                        width,
                        {ch20Index0});
             }
@@ -608,7 +623,7 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
             for (std::size_t idx = 3; idx <= 4; idx++)
             {
                 RunOne(p20Index,
-                       HeRu::RuSpec(HeRu::RU_106_TONE, idx, primary80MHz),
+                       HeRu::RuSpec(RuType::RU_106_TONE, idx, primary80MHz),
                        width,
                        {ch20Index1});
             }
@@ -616,7 +631,7 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
             for (std::size_t idx = 5; idx <= 6; idx++)
             {
                 RunOne(p20Index,
-                       HeRu::RuSpec(HeRu::RU_106_TONE, idx, primary80MHz),
+                       HeRu::RuSpec(RuType::RU_106_TONE, idx, primary80MHz),
                        width,
                        {ch20Index2});
             }
@@ -624,37 +639,49 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
             for (std::size_t idx = 7; idx <= 8; idx++)
             {
                 RunOne(p20Index,
-                       HeRu::RuSpec(HeRu::RU_106_TONE, idx, primary80MHz),
+                       HeRu::RuSpec(RuType::RU_106_TONE, idx, primary80MHz),
                        width,
                        {ch20Index3});
             }
             // The first 242-tone RU is in the first 20 MHz channel
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_242_TONE, 1, primary80MHz), width, {ch20Index0});
+            RunOne(p20Index,
+                   HeRu::RuSpec(RuType::RU_242_TONE, 1, primary80MHz),
+                   width,
+                   {ch20Index0});
             // The second 242-tone RU is in the second 20 MHz channel
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_242_TONE, 2, primary80MHz), width, {ch20Index1});
+            RunOne(p20Index,
+                   HeRu::RuSpec(RuType::RU_242_TONE, 2, primary80MHz),
+                   width,
+                   {ch20Index1});
             // The third 242-tone RU is in the third 20 MHz channel
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_242_TONE, 3, primary80MHz), width, {ch20Index2});
+            RunOne(p20Index,
+                   HeRu::RuSpec(RuType::RU_242_TONE, 3, primary80MHz),
+                   width,
+                   {ch20Index2});
             // The fourth 242-tone RU is in the fourth 20 MHz channel
-            RunOne(p20Index, HeRu::RuSpec(HeRu::RU_242_TONE, 4, primary80MHz), width, {ch20Index3});
+            RunOne(p20Index,
+                   HeRu::RuSpec(RuType::RU_242_TONE, 4, primary80MHz),
+                   width,
+                   {ch20Index3});
             // The first 484-tone RU is covered by the first two 20 MHz channels
             RunOne(p20Index,
-                   HeRu::RuSpec(HeRu::RU_484_TONE, 1, primary80MHz),
+                   HeRu::RuSpec(RuType::RU_484_TONE, 1, primary80MHz),
                    width,
                    {ch20Index0, ch20Index1});
             // The second 484-tone RU is covered by the last two 20 MHz channels
             RunOne(p20Index,
-                   HeRu::RuSpec(HeRu::RU_484_TONE, 2, primary80MHz),
+                   HeRu::RuSpec(RuType::RU_484_TONE, 2, primary80MHz),
                    width,
                    {ch20Index2, ch20Index3});
             // The 996-tone RU is covered by all the 20 MHz channels
             RunOne(p20Index,
-                   HeRu::RuSpec(HeRu::RU_996_TONE, 1, primary80MHz),
+                   HeRu::RuSpec(RuType::RU_996_TONE, 1, primary80MHz),
                    width,
                    {ch20Index0, ch20Index1, ch20Index2, ch20Index3});
         }
         // The 2x996-tone RU is covered by all the eight 20 MHz channels
         RunOne(p20Index,
-               HeRu::RuSpec(HeRu::RU_2x996_TONE, 1, true),
+               HeRu::RuSpec(RuType::RU_2x996_TONE, 1, true),
                width,
                {0, 1, 2, 3, 4, 5, 6, 7});
     }

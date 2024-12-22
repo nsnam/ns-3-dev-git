@@ -542,28 +542,28 @@ WifiPhyHelper::GetRadiotapHeader(RadiotapHeader& header,
         heFields.data5 = 0;
         if (preamble == WIFI_PREAMBLE_HE_MU || preamble == WIFI_PREAMBLE_HE_TB)
         {
-            HeRu::RuType ruType = txVector.GetHeMuUserInfo(staId).ru.GetRuType();
+            const auto ruType = txVector.GetHeMuUserInfo(staId).ru.GetRuType();
             switch (ruType)
             {
-            case HeRu::RU_26_TONE:
+            case RuType::RU_26_TONE:
                 heFields.data5 |= RadiotapHeader::HE_DATA5_DATA_BW_RU_ALLOC_26T;
                 break;
-            case HeRu::RU_52_TONE:
+            case RuType::RU_52_TONE:
                 heFields.data5 |= RadiotapHeader::HE_DATA5_DATA_BW_RU_ALLOC_52T;
                 break;
-            case HeRu::RU_106_TONE:
+            case RuType::RU_106_TONE:
                 heFields.data5 |= RadiotapHeader::HE_DATA5_DATA_BW_RU_ALLOC_106T;
                 break;
-            case HeRu::RU_242_TONE:
+            case RuType::RU_242_TONE:
                 heFields.data5 |= RadiotapHeader::HE_DATA5_DATA_BW_RU_ALLOC_242T;
                 break;
-            case HeRu::RU_484_TONE:
+            case RuType::RU_484_TONE:
                 heFields.data5 |= RadiotapHeader::HE_DATA5_DATA_BW_RU_ALLOC_484T;
                 break;
-            case HeRu::RU_996_TONE:
+            case RuType::RU_996_TONE:
                 heFields.data5 |= RadiotapHeader::HE_DATA5_DATA_BW_RU_ALLOC_996T;
                 break;
-            case HeRu::RU_2x996_TONE:
+            case RuType::RU_2x996_TONE:
                 heFields.data5 |= RadiotapHeader::HE_DATA5_DATA_BW_RU_ALLOC_2x996T;
                 break;
             default:
@@ -694,31 +694,31 @@ WifiPhyHelper::GetRadiotapHeader(RadiotapHeader& header,
                                                              : txVector.GetRu(staId).GetRuType();
         switch (ruType)
         {
-        case HeRu::RU_26_TONE:
+        case RuType::RU_26_TONE:
             ehtFields.data.at(1) |= GetRadiotapField(RadiotapHeader::EHT_DATA1_RU_MRU_SIZE,
                                                      RadiotapHeader::EHT_DATA1_RU_MRU_SIZE_26);
             break;
-        case HeRu::RU_52_TONE:
+        case RuType::RU_52_TONE:
             ehtFields.data.at(1) |= GetRadiotapField(RadiotapHeader::EHT_DATA1_RU_MRU_SIZE,
                                                      RadiotapHeader::EHT_DATA1_RU_MRU_SIZE_52);
             break;
-        case HeRu::RU_106_TONE:
+        case RuType::RU_106_TONE:
             ehtFields.data.at(1) |= GetRadiotapField(RadiotapHeader::EHT_DATA1_RU_MRU_SIZE,
                                                      RadiotapHeader::EHT_DATA1_RU_MRU_SIZE_106);
             break;
-        case HeRu::RU_242_TONE:
+        case RuType::RU_242_TONE:
             ehtFields.data.at(1) |= GetRadiotapField(RadiotapHeader::EHT_DATA1_RU_MRU_SIZE,
                                                      RadiotapHeader::EHT_DATA1_RU_MRU_SIZE_242);
             break;
-        case HeRu::RU_484_TONE:
+        case RuType::RU_484_TONE:
             ehtFields.data.at(1) |= GetRadiotapField(RadiotapHeader::EHT_DATA1_RU_MRU_SIZE,
                                                      RadiotapHeader::EHT_DATA1_RU_MRU_SIZE_484);
             break;
-        case HeRu::RU_996_TONE:
+        case RuType::RU_996_TONE:
             ehtFields.data.at(1) |= GetRadiotapField(RadiotapHeader::EHT_DATA1_RU_MRU_SIZE,
                                                      RadiotapHeader::EHT_DATA1_RU_MRU_SIZE_996);
             break;
-        case HeRu::RU_2x996_TONE:
+        case RuType::RU_2x996_TONE:
             ehtFields.data.at(1) |= GetRadiotapField(RadiotapHeader::EHT_DATA1_RU_MRU_SIZE,
                                                      RadiotapHeader::EHT_DATA1_RU_MRU_SIZE_2x996);
             break;

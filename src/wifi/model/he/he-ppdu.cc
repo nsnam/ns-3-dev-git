@@ -225,7 +225,7 @@ HePpdu::SetTxVectorFromPhyHeaders(WifiTxVector& txVector) const
 HeRu::RuSpec
 HePpdu::GetRuSpec(std::size_t ruAllocIndex,
                   const std::vector<HeRu::RuSpec>& ruSpecs,
-                  HeRu::RuType ruType,
+                  RuType ruType,
                   std::size_t ruIndex,
                   MHz_t bw) const
 {
@@ -244,11 +244,11 @@ HePpdu::GetRuSpec(std::size_t ruAllocIndex,
         if (!isLow80)
         {
             const auto numRusP80 = HeRu::GetRusOfType(MHz_t{80}, ruType).size();
-            index -= (ruType == HeRu::RU_26_TONE) ? (numRusP80 - 1) : numRusP80;
+            index -= (ruType == RuType::RU_26_TONE) ? (numRusP80 - 1) : numRusP80;
         }
         isPrimary80 = ((primary80IsLower80 && isLow80) || (!primary80IsLower80 && !isLow80));
     }
-    if ((ruType == HeRu::RU_26_TONE) && (ruAllocIndex >= 2) && (index >= 19))
+    if ((ruType == RuType::RU_26_TONE) && (ruAllocIndex >= 2) && (index >= 19))
     {
         index++;
     }
@@ -296,7 +296,7 @@ HePpdu::SetHeMuUserInfos(WifiTxVector& txVector,
                 {
                     txVector.SetHeMuUserInfo(
                         userInfo.staId,
-                        {HeRu::RuSpec{HeRu::RU_26_TONE, 19, true}, userInfo.mcs, userInfo.nss});
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 19, true}, userInfo.mcs, userInfo.nss});
                     continue;
                 }
                 else if ((contentChannelIndex == 1) &&
@@ -308,7 +308,7 @@ HePpdu::SetHeMuUserInfos(WifiTxVector& txVector,
                 {
                     txVector.SetHeMuUserInfo(
                         userInfo.staId,
-                        {HeRu::RuSpec{HeRu::RU_26_TONE, 19, false}, userInfo.mcs, userInfo.nss});
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 19, false}, userInfo.mcs, userInfo.nss});
                     continue;
                 }
             }
@@ -674,13 +674,13 @@ HePpdu::GetHeSigBContentChannels(const WifiTxVector& txVector, uint8_t p20Index)
     std::optional<HeSigBUserSpecificField> cc2Central26ToneRu;
 
     const auto& orderedMap = txVector.GetUserInfoMapOrderedByRus(p20Index);
-    HeRu::RuType prevRuType{HeRu::RuType::RU_TYPE_MAX};
+    RuType prevRuType{RuType::RU_TYPE_MAX};
     std::size_t prevRuIndex{0};
     std::size_t prevCcIndex{0};
     for (const auto& [ru, staIds] : orderedMap)
     {
         const auto ruType = ru.GetRuType();
-        if ((ruType == HeRu::RU_26_TONE) && (ru.GetIndex() == 19))
+        if ((ruType == RuType::RU_26_TONE) && (ru.GetIndex() == 19))
         {
             const auto staId = *staIds.cbegin();
             const auto& userInfo = txVector.GetHeMuUserInfo(staId);
@@ -698,11 +698,11 @@ HePpdu::GetHeSigBContentChannels(const WifiTxVector& txVector, uint8_t p20Index)
         }
 
         const auto ruIndex = ru.GetPhyIndex(channelWidth, p20Index);
-        if ((prevRuType < HeRu::RuType::RU_TYPE_MAX) && (prevRuType != ruType))
+        if ((prevRuType < RuType::RU_TYPE_MAX) && (prevRuType != ruType))
         {
             prevRuIndex *= HeRu::GetBandwidth(prevRuType) / HeRu::GetBandwidth(ruType);
         }
-        if (ruType >= HeRu::RU_484_TONE)
+        if (ruType >= RuType::RU_484_TONE)
         {
             for (auto staId : staIds)
             {
@@ -736,8 +736,8 @@ HePpdu::GetHeSigBContentChannels(const WifiTxVector& txVector, uint8_t p20Index)
                 ccIndex = ((prevRuIndex / numRus) % 2 == 0) ? 0 : 1;
             }
             const auto central26TonesRus = HeRu::GetCentral26TonesRus(channelWidth, prevRuType);
-            if (ruType < HeRu::RuType::RU_242_TONE && (prevCcIndex == ccIndex) &&
-                ((ruType != HeRu::RuType::RU_26_TONE) ||
+            if (ruType < RuType::RU_242_TONE && (prevCcIndex == ccIndex) &&
+                ((ruType != RuType::RU_26_TONE) ||
                  std::none_of(central26TonesRus.cbegin(),
                               central26TonesRus.cend(),
                               [ruIndex, channelWidth, p20Index](const auto& ruSpec) {
@@ -768,7 +768,7 @@ HePpdu::GetHeSigBContentChannels(const WifiTxVector& txVector, uint8_t p20Index)
             }
             else
             {
-                if (ruType == HeRu::RU_26_TONE && ruIdx > 19)
+                if (ruType == RuType::RU_26_TONE && ruIdx > 19)
                 {
                     // "ignore" the center 26-tone RUs in 80 MHz channels
                     ruIdx--;

@@ -750,8 +750,7 @@ RrMultiUserScheduler::TrySendingDlMuPpdu()
     std::size_t count =
         std::min(static_cast<std::size_t>(m_nStations), m_staListDl[primaryAc].size());
     std::size_t nCentral26TonesRus;
-    HeRu::RuType ruType =
-        HeRu::GetEqualSizedRusForStations(m_allowedWidth, count, nCentral26TonesRus);
+    RuType ruType = HeRu::GetEqualSizedRusForStations(m_allowedWidth, count, nCentral26TonesRus);
     NS_ASSERT(count >= 1);
 
     if (!m_useCentral26TonesRus)
@@ -823,7 +822,7 @@ RrMultiUserScheduler::TrySendingDlMuPpdu()
             continue;
         }
 
-        HeRu::RuType currRuType = (m_candidates.size() < count ? ruType : HeRu::RU_26_TONE);
+        RuType currRuType = (m_candidates.size() < count ? ruType : RuType::RU_26_TONE);
 
         // check if the AP has at least one frame to be sent to the current station
         for (uint8_t tid : tids)
@@ -915,7 +914,7 @@ RrMultiUserScheduler::FinalizeTxVector(WifiTxVector& txVector)
     // compute how many stations can be granted an RU and the RU size
     std::size_t nRusAssigned = m_candidates.size();
     std::size_t nCentral26TonesRus;
-    HeRu::RuType ruType =
+    RuType ruType =
         HeRu::GetEqualSizedRusForStations(m_allowedWidth, nRusAssigned, nCentral26TonesRus);
 
     NS_LOG_DEBUG(nRusAssigned << " stations are being assigned a " << ruType << " RU");
@@ -965,7 +964,7 @@ RrMultiUserScheduler::UpdateCredits(std::list<MasterInfo>& staList,
     NS_LOG_FUNCTION(this << txDuration.As(Time::US) << txVector);
 
     // find how many RUs have been allocated for each RU type
-    std::map<HeRu::RuType, std::size_t> ruMap;
+    std::map<RuType, std::size_t> ruMap;
     for (const auto& userInfo : txVector.GetHeMuUserInfoMap())
     {
         ruMap.insert({userInfo.second.ru.GetRuType(), 0}).first->second++;

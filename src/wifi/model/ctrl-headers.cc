@@ -1421,25 +1421,25 @@ CtrlTriggerUserInfoField::SetRuAllocation(HeRu::RuSpec ru)
 
     switch (ru.GetRuType())
     {
-    case HeRu::RU_26_TONE:
+    case RuType::RU_26_TONE:
         m_ruAllocation = ru.GetIndex() - 1;
         break;
-    case HeRu::RU_52_TONE:
+    case RuType::RU_52_TONE:
         m_ruAllocation = ru.GetIndex() + 36;
         break;
-    case HeRu::RU_106_TONE:
+    case RuType::RU_106_TONE:
         m_ruAllocation = ru.GetIndex() + 52;
         break;
-    case HeRu::RU_242_TONE:
+    case RuType::RU_242_TONE:
         m_ruAllocation = ru.GetIndex() + 60;
         break;
-    case HeRu::RU_484_TONE:
+    case RuType::RU_484_TONE:
         m_ruAllocation = ru.GetIndex() + 64;
         break;
-    case HeRu::RU_996_TONE:
+    case RuType::RU_996_TONE:
         m_ruAllocation = 67;
         break;
-    case HeRu::RU_2x996_TONE:
+    case RuType::RU_2x996_TONE:
         m_ruAllocation = 68;
         break;
     default:
@@ -1462,7 +1462,7 @@ CtrlTriggerUserInfoField::GetRuAllocation() const
     NS_ABORT_MSG_IF(m_triggerType == TriggerFrameType::MU_RTS_TRIGGER,
                     "GetMuRtsRuAllocation() must be used for MU-RTS");
 
-    HeRu::RuType ruType;
+    RuType ruType;
     std::size_t index;
 
     bool primary80MHz = ((m_ruAllocation & 0x01) == 0);
@@ -1471,37 +1471,37 @@ CtrlTriggerUserInfoField::GetRuAllocation() const
 
     if (val < 37)
     {
-        ruType = HeRu::RU_26_TONE;
+        ruType = RuType::RU_26_TONE;
         index = val + 1;
     }
     else if (val < 53)
     {
-        ruType = HeRu::RU_52_TONE;
+        ruType = RuType::RU_52_TONE;
         index = val - 36;
     }
     else if (val < 61)
     {
-        ruType = HeRu::RU_106_TONE;
+        ruType = RuType::RU_106_TONE;
         index = val - 52;
     }
     else if (val < 65)
     {
-        ruType = HeRu::RU_242_TONE;
+        ruType = RuType::RU_242_TONE;
         index = val - 60;
     }
     else if (val < 67)
     {
-        ruType = HeRu::RU_484_TONE;
+        ruType = RuType::RU_484_TONE;
         index = val - 64;
     }
     else if (val == 67)
     {
-        ruType = HeRu::RU_996_TONE;
+        ruType = RuType::RU_996_TONE;
         index = 1;
     }
     else if (val == 68)
     {
-        ruType = HeRu::RU_2x996_TONE;
+        ruType = RuType::RU_2x996_TONE;
         index = 1;
     }
     else
