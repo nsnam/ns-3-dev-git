@@ -608,10 +608,9 @@ WifiPrimaryChannelsTest::DoRun()
     // To have simultaneous transmissions on adjacent channels, just initialize
     // nRounds to 1 and nApsPerRound to m_channelWidth / 20. Of course, the test
     // will fail because some stations will not receive some frames due to interfence
-    for (MHz_u txChannelWidth = 20,
-               nRounds = 2,
-               nApsPerRound = Count20MHzSubchannels(m_channelWidth) / 2;
-         txChannelWidth <= m_channelWidth;
+    uint16_t nRounds = 2;
+    uint16_t nApsPerRound = Count20MHzSubchannels(m_channelWidth) / 2;
+    for (MHz_u txChannelWidth{20}; txChannelWidth <= m_channelWidth;
          txChannelWidth *= 2, nRounds *= 2, nApsPerRound /= 2)
     {
         nRounds = std::min<uint16_t>(nRounds, m_nBss);
@@ -646,10 +645,9 @@ WifiPrimaryChannelsTest::DoRun()
      * channel width, every round is repeated as many times as the number of ways in
      * which we can partition the transmission channel width in equal sized RUs.
      */
-    for (MHz_u txChannelWidth = 20,
-               nRounds = 2,
-               nApsPerRound = Count20MHzSubchannels(m_channelWidth) / 2;
-         txChannelWidth <= m_channelWidth;
+    nRounds = 2;
+    nApsPerRound = Count20MHzSubchannels(m_channelWidth) / 2;
+    for (MHz_u txChannelWidth{20}; txChannelWidth <= m_channelWidth;
          txChannelWidth *= 2, nRounds *= 2, nApsPerRound /= 2)
     {
         nRounds = std::min<uint16_t>(nRounds, m_nBss);
@@ -696,10 +694,9 @@ WifiPrimaryChannelsTest::DoRun()
      * channel width, every round is repeated as many times as the number of ways in
      * which we can partition the transmission channel width in equal sized RUs.
      */
-    for (MHz_u txChannelWidth = 20,
-               nRounds = 2,
-               nApsPerRound = Count20MHzSubchannels(m_channelWidth) / 2;
-         txChannelWidth <= m_channelWidth;
+    nRounds = 2;
+    nApsPerRound = Count20MHzSubchannels(m_channelWidth) / 2;
+    for (MHz_u txChannelWidth{20}; txChannelWidth <= m_channelWidth;
          txChannelWidth *= 2, nRounds *= 2, nApsPerRound /= 2)
     {
         nRounds = std::min<uint16_t>(nRounds, m_nBss);
