@@ -1323,7 +1323,13 @@ class ZigbeeNwk : public Object
     Mac16Address AllocateNetworkAddress();
 
     /**
-     * Updates the contents of the MAC beacon payload with information of the NWK.
+     * Create and store a MAC beacon payload, then updates its registered size in the MAC.
+     * This is typically followed by updating the content of the beacon payload.
+     */
+    void UpdateBeaconPayloadLength();
+
+    /**
+     * Updates the content of the beacon payload with the most recent information in the NWK.
      */
     void UpdateBeaconPayload();
 
@@ -1494,6 +1500,11 @@ class ZigbeeNwk : public Object
      * during a network-discovery process.
      */
     std::vector<NetworkDescriptor> m_networkDescriptorList;
+
+    /**
+     * Points to the beacon payload used during the network formation process.
+     */
+    Ptr<Packet> m_beaconPayload;
 
     /**
      * Used to store the value of the PHY current channel.

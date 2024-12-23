@@ -106,14 +106,18 @@ ZigbeeRreqRetryTestCase::NwkNetworkDiscoveryConfirm(ZigbeeRreqRetryTestCase* tes
 
     if (params.m_status == NwkStatus::SUCCESS)
     {
-        std::cout << " Network discovery confirm Received. Networks found:\n";
+        std::cout << " Network discovery confirm Received. Networks found ("
+                  << params.m_netDescList.size() << "):\n";
 
         for (const auto& netDescriptor : params.m_netDescList)
         {
-            std::cout << " ExtPanID: 0x" << std::hex << netDescriptor.m_extPanId << std::dec
-                      << " CH:  " << static_cast<uint32_t>(netDescriptor.m_logCh) << std::hex
-                      << " Pan Id: 0x" << netDescriptor.m_panId << " stackprofile " << std::dec
-                      << static_cast<uint32_t>(netDescriptor.m_stackProfile) << "\n";
+            std::cout << " ExtPanID: 0x" << std::hex << netDescriptor.m_extPanId << "\n"
+                      << std::dec << " CH:  " << static_cast<uint32_t>(netDescriptor.m_logCh)
+                      << "\n"
+                      << std::hex << " Pan ID: 0x" << netDescriptor.m_panId << "\n"
+                      << " Stack profile: " << std::dec
+                      << static_cast<uint32_t>(netDescriptor.m_stackProfile) << "\n"
+                      << "--------------------\n";
         }
 
         NlmeJoinRequestParams joinParams;

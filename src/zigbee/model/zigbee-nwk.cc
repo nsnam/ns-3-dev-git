@@ -121,6 +121,7 @@ ZigbeeNwk::NotifyConstructionCompleted()
 
     m_netFormParams = {};
     m_netFormParamsGen = nullptr;
+    m_beaconPayload = nullptr;
     m_nwkNetworkAddress = Mac16Address("ff:ff");
     m_nwkPanId = 0xffff;
     m_nwkExtendedPanId = 0xffffffffffffffff;
@@ -1461,7 +1462,7 @@ ZigbeeNwk::MlmeStartConfirm(MlmeStartConfirmParams params)
         }
         else
         {
-            UpdateBeaconPayload();
+            UpdateBeaconPayloadLength();
         }
     }
 }
@@ -1469,6 +1470,8 @@ ZigbeeNwk::MlmeStartConfirm(MlmeStartConfirmParams params)
 void
 ZigbeeNwk::MlmeSetConfirm(MlmeSetConfirmParams params)
 {
+    NS_LOG_FUNCTION(this << params.id);
+
     if (m_pendPrimitiveNwk == NLME_NETWORK_FORMATION)
     {
         if (params.m_status == MacStatus::SUCCESS &&
@@ -1493,6 +1496,11 @@ ZigbeeNwk::MlmeSetConfirm(MlmeSetConfirmParams params)
             startParams.m_panCoor = true;
             m_mac->MlmeStartRequest(startParams);
         }
+        else if (params.m_status == MacStatus::SUCCESS &&
+                 params.id == MacPibAttributeIdentifier::macBeaconPayloadLength)
+        {
+            UpdateBeaconPayload();
+        }
         else
         {
             m_pendPrimitiveNwk = NLDE_NLME_NONE;
@@ -1509,20 +1517,33 @@ ZigbeeNwk::MlmeSetConfirm(MlmeSetConfirmParams params)
     }
     else if (m_pendPrimitiveNwk == NLME_JOIN_INDICATION)
     {
-        NlmeJoinIndicationParams joinIndParams = m_joinIndParams;
-
-        m_pendPrimitiveNwk = NLDE_NLME_NONE;
-        m_joinIndParams = {};
-
-        if (!m_nlmeJoinIndicationCallback.IsNull())
+        if (params.m_status == MacStatus::SUCCESS &&
+            params.id == MacPibAttributeIdentifier::macBeaconPayloadLength)
         {
-            m_nlmeJoinIndicationCallback(joinIndParams);
+            UpdateBeaconPayload();
+        }
+        else
+        {
+            NlmeJoinIndicationParams joinIndParams = m_joinIndParams;
+
+            m_pendPrimitiveNwk = NLDE_NLME_NONE;
+            m_joinIndParams = {};
+
+            if (!m_nlmeJoinIndicationCallback.IsNull())
+            {
+                m_nlmeJoinIndicationCallback(joinIndParams);
+            }
         }
     }
     else if (m_pendPrimitiveNwk == NLME_START_ROUTER)
     {
         if (params.m_status == MacStatus::SUCCESS &&
-            params.id == MacPibAttributeIdentifier::macBeaconPayload)
+            params.id == MacPibAttributeIdentifier::macBeaconPayloadLength)
+        {
+            UpdateBeaconPayload();
+        }
+        else if (params.m_status == MacStatus::SUCCESS &&
+                 params.id == MacPibAttributeIdentifier::macBeaconPayload)
         {
             m_pendPrimitiveNwk = NLDE_NLME_NONE;
             if (!m_nlmeStartRouterConfirmCallback.IsNull())
@@ -1559,10 +1580,11 @@ ZigbeeNwk::MlmeGetConfirm(MacStatus status,
             capaInfo.SetDeviceType(zigbee::MacDeviceType::ROUTER);
             m_nwkCapabilityInformation = capaInfo.GetCapability();
 
-            // Set Beacon payload before starting a network
+            // Set Beacon payload size followed by the beacon payload content
+            // before starting a network
             // See Figure 3-37 Establishing a Network
             // See also 3.6.7.
-            UpdateBeaconPayload();
+            UpdateBeaconPayloadLength();
         }
         else
         {
@@ -1687,7 +1709,7 @@ ZigbeeNwk::MlmeCommStatusIndication(MlmeCommStatusIndicationParams params)
                  m_joinIndParams.m_rejoinNetwork == ASSOCIATION)
         {
             m_pendPrimitiveNwk = NLME_JOIN_INDICATION;
-            UpdateBeaconPayload();
+            UpdateBeaconPayloadLength();
         }
         else
         {
@@ -3025,7 +3047,7 @@ ZigbeeNwk::AssignStreams(int64_t stream)
 }
 
 void
-ZigbeeNwk::UpdateBeaconPayload()
+ZigbeeNwk::UpdateBeaconPayloadLength()
 {
     NS_LOG_FUNCTION(this);
 
@@ -3037,14 +3059,27 @@ ZigbeeNwk::UpdateBeaconPayload()
     beaconPayloadHeader.SetExtPanId(m_nwkExtendedPanId);
     beaconPayloadHeader.SetTxOffset(0xFFFFFF);
     // TODO: beaconPayload.SetNwkUpdateId(m_nwkUpdateId);
-    Ptr<Packet> payload = Create<Packet>();
-    payload->AddHeader(beaconPayloadHeader);
 
-    // Extract octets from payload and copy them into the macBeaconPayload attribute
+    // Set the beacon payload length in the MAC PIBs and then proceed to
+    // update the beacon payload
+    m_beaconPayload = Create<Packet>();
+    m_beaconPayload->AddHeader(beaconPayloadHeader);
     Ptr<MacPibAttributes> pibAttr = Create<MacPibAttributes>();
-    pibAttr->macBeaconPayload.resize(payload->GetSize());
-    payload->CopyData(pibAttr->macBeaconPayload.data(), payload->GetSize());
+    pibAttr->macBeaconPayloadLength = m_beaconPayload->GetSize();
+    m_mac->MlmeSetRequest(MacPibAttributeIdentifier::macBeaconPayloadLength, pibAttr);
+}
 
+void
+ZigbeeNwk::UpdateBeaconPayload()
+{
+    NS_LOG_FUNCTION(this);
+
+    // Extract octets from m_beaconPayload and copy them into the
+    // macBeaconPayload attribute
+    Ptr<MacPibAttributes> pibAttr = Create<MacPibAttributes>();
+    pibAttr->macBeaconPayload.resize(m_beaconPayload->GetSize());
+    m_beaconPayload->CopyData(pibAttr->macBeaconPayload.data(), m_beaconPayload->GetSize());
+    m_beaconPayload = nullptr;
     m_mac->MlmeSetRequest(MacPibAttributeIdentifier::macBeaconPayload, pibAttr);
 }
 

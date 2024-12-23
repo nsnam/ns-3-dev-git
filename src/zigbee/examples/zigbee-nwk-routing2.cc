@@ -18,20 +18,10 @@
  *  Network Extended PAN id: 0X000000000000CA:FE (based on the PAN coordinator address)
  *
  *
- *  [Coordinator] ZC  (dev0): [00:00:00:00:00:00:CA:FE]  [00:00]
- *  [Router 1]    ZR1 (dev1): [00:00:00:00:00:00:00:01]  [short addr assigned by ZC]
- *  [Router 2]    ZR2 (dev2): [00:00:00:00:00:00:00:02]  [short addr assigned by ZR1]
- *  [Router 3]    ZR3 (dev3): [00:00:00:00:00:00:00:03]  [short addr assigned by ZR2]
- *  [Router 4]    ZR4 (dev4): [00:00:00:00:00:00:00:04]  [short addr assigned by ZR4]
  *
  *  Topology:
  *
- *  ZC--------ZR1------------ZR2----------ZR3
- *              |
- *              |
- *             ZR4
- *
- *
+ * Grid Topology
  *
  *
  *
@@ -202,7 +192,7 @@ int
 main(int argc, char* argv[])
 {
     LogComponentEnableAll(LogLevel(LOG_PREFIX_TIME | LOG_PREFIX_FUNC | LOG_PREFIX_NODE));
-    // LogComponentEnable("ZigbeeNwk", LOG_LEVEL_DEBUG);
+    LogComponentEnable("ZigbeeNwk", LOG_LEVEL_DEBUG);
     //  LogComponentEnable("LrWpanCsmaCa", LOG_LEVEL_DEBUG);
     //  LogComponentEnable("LrWpanMac", LOG_LEVEL_DEBUG);
     //  LogComponentEnable("LrWpanPhy", LOG_LEVEL_DEBUG);
