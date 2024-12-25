@@ -170,7 +170,7 @@ main(int argc, char* argv[])
     uint16_t transitionDelayUsec{128};
     Time channelSwitchDelay{"100us"};
     bool switchAuxPhy{true};
-    uint16_t auxPhyChWidth{20};
+    MHz_t auxPhyChWidth{20};
     bool auxPhyTxCapable{true};
     Time simulationTime{"10s"};
     meter_u distance{1.0};
@@ -553,7 +553,7 @@ main(int argc, char* argv[])
                                     "AuxPhyTxCapable",
                                     BooleanValue(auxPhyTxCapable),
                                     "AuxPhyChannelWidth",
-                                    MHzValue(MHz_t{auxPhyChWidth}));
+                                    MHzValue(auxPhyChWidth));
                 for (uint8_t linkId = 0; linkId < nLinks; linkId++)
                 {
                     phy.Set(linkId, "ChannelSettings", StringValue(channelStr[linkId]));

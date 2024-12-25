@@ -40,7 +40,7 @@ main(int argc, char* argv[])
     Time simulationTime{"10s"};
     meter_u distance{1.0};
     uint16_t mcs{7};
-    uint8_t channelWidth{20}; // MHz
+    MHz_t channelWidth{20};
     bool useShortGuardInterval{false};
     bool useRts{false};
 
@@ -95,7 +95,8 @@ main(int argc, char* argv[])
 
     // Set channel width
     Config::Set("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/ChannelSettings",
-                StringValue("{0, " + std::to_string(channelWidth) + ", BAND_2_4GHZ, 0}"));
+                StringValue("{0, " + std::to_string(static_cast<uint16_t>(channelWidth.in_MHz())) +
+                            ", BAND_2_4GHZ, 0}"));
 
     // Set guard interval
     Config::Set(

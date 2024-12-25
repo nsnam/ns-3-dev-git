@@ -158,7 +158,7 @@ main(int argc, char* argv[])
     dBm_t ccaEdTrAp1{-62};
     dBm_t ccaEdTrAp2{-62};
     dBm_t minimumRssi{-82};
-    int channelWidth{20};       // MHz
+    MHz_t channelWidth{20};
     uint32_t payloadSize{1500}; // bytes
     uint32_t mcs{0};            // MCS value
     Time interval{"1ms"};
@@ -207,7 +207,7 @@ main(int argc, char* argv[])
 
     spectrumPhy.SetChannel(spectrumChannel);
     spectrumPhy.SetErrorRateModel("ns3::YansErrorRateModel");
-    switch (channelWidth)
+    switch (static_cast<uint16_t>(channelWidth.in_MHz()))
     {
     case 20:
         spectrumPhy.Set("ChannelSettings", StringValue("{36, 20, BAND_5GHZ, 0}"));
