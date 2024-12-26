@@ -106,34 +106,6 @@ class HeRu
     };
 
     /**
-     * Struct providing a function call operator to compare two RUs.
-     */
-    struct RuSpecCompare
-    {
-        /**
-         * Constructor.
-         *
-         * @param channelWidth the channel width
-         * @param p20Index the index of the primary20 channel
-         */
-        RuSpecCompare(MHz_u channelWidth, uint8_t p20Index);
-        /**
-         * Function call operator.
-         *
-         * @param lhs left hand side RU
-         * @param rhs right hand side RU
-         * @return true if the left hand side RU has its leftmost tone at a lower
-         *         frequency than the leftmost tone of the right hand side RU,
-         *         false otherwise
-         */
-        bool operator()(const RuSpec& lhs, const RuSpec& rhs) const;
-
-      private:
-        MHz_u m_channelWidth; ///< The channel width
-        uint8_t m_p20Index;   ///< Primary20 channel index
-    };
-
-    /**
      * Get the number of distinct RUs of the given type (number of tones)
      * available in a HE PPDU of the given bandwidth.
      *

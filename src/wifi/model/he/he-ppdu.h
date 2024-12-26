@@ -258,11 +258,11 @@ class HePpdu : public OfdmPpdu
      * @param bw the total bandwidth used for the transmission
      * @return the value used to encode the bandwidth field in HE-SIG-A
      */
-    virtual HeRu::RuSpec GetRuSpec(std::size_t ruAllocIndex,
-                                   const std::vector<HeRu::RuSpec>& ruSpecs,
-                                   RuType ruType,
-                                   std::size_t ruIndex,
-                                   MHz_u bw) const;
+    virtual WifiRu::RuSpec GetRuSpec(std::size_t ruAllocIndex,
+                                     const std::vector<WifiRu::RuSpec>& ruSpecs,
+                                     RuType ruType,
+                                     std::size_t ruIndex,
+                                     MHz_u bw) const;
 
     /**
      * Convert channel width expressed in MHz to bandwidth field encoding in HE-SIG-A.

@@ -522,13 +522,13 @@ WifiPhyHelper::GetRadiotapHeader(RadiotapHeader& header,
         heFields.data2 = RadiotapHeader::HE_DATA2_GI_KNOWN;
         if (preamble == WIFI_PREAMBLE_HE_MU || preamble == WIFI_PREAMBLE_HE_TB)
         {
+            NS_ASSERT(WifiRu::IsHe(txVector.GetHeMuUserInfo(staId).ru));
+            auto heRu = std::get<HeRu::RuSpec>(txVector.GetHeMuUserInfo(staId).ru);
             heFields.data2 |=
                 RadiotapHeader::HE_DATA2_RU_OFFSET_KNOWN |
                 // HeRu indices start at 1 whereas RadioTap starts at 0
-                GetRadiotapField(RadiotapHeader::HE_DATA2_RU_OFFSET,
-                                 txVector.GetHeMuUserInfo(staId).ru.GetIndex() - 1) |
-                GetRadiotapField(RadiotapHeader::HE_DATA2_PRISEC_80_SEC,
-                                 !txVector.GetHeMuUserInfo(staId).ru.GetPrimary80MHz());
+                GetRadiotapField(RadiotapHeader::HE_DATA2_RU_OFFSET, heRu.GetIndex() - 1) |
+                GetRadiotapField(RadiotapHeader::HE_DATA2_PRISEC_80_SEC, !heRu.GetPrimary80MHz());
         }
 
         heFields.data3 =
@@ -542,7 +542,7 @@ WifiPhyHelper::GetRadiotapHeader(RadiotapHeader& header,
         heFields.data5 = 0;
         if (preamble == WIFI_PREAMBLE_HE_MU || preamble == WIFI_PREAMBLE_HE_TB)
         {
-            const auto ruType = txVector.GetHeMuUserInfo(staId).ru.GetRuType();
+            const auto ruType = WifiRu::GetRuType(txVector.GetHeMuUserInfo(staId).ru);
             switch (ruType)
             {
             case RuType::RU_26_TONE:
@@ -646,9 +646,8 @@ WifiPhyHelper::GetRadiotapHeader(RadiotapHeader& header,
             std::optional<bool> isLow80MHz;
             if (txVector.IsDlMu() && channelWidth > MHz_u{80})
             {
-                const auto isLowP80 = p20Index < (channelWidth / MHz_u{40});
-                const auto isP80 = txVector.GetHeMuUserInfo(staId).ru.GetPrimary80MHz();
-                isLow80MHz = (isLowP80 && isP80) || (!isLowP80 && !isP80);
+                isLow80MHz = true;
+                // TODO: fix once EHT RUs are used
             }
             const auto puncturedChannelInfo =
                 EhtPpdu::GetPuncturedInfo(txVector.GetInactiveSubchannels(),
@@ -690,8 +689,9 @@ WifiPhyHelper::GetRadiotapHeader(RadiotapHeader& header,
             break;
         }
         ehtFields.data.at(1) = RadiotapHeader::EHT_DATA1_RU_ALLOC_CC_1_1_1_KNOWN;
-        const auto ruType = (txVector.GetEhtPpduType() == 1) ? WifiRu::GetRuType(channelWidth)
-                                                             : txVector.GetRu(staId).GetRuType();
+        const auto ruType = (txVector.GetEhtPpduType() == 1)
+                                ? WifiRu::GetRuType(channelWidth)
+                                : WifiRu::GetRuType(txVector.GetRu(staId));
         switch (ruType)
         {
         case RuType::RU_26_TONE:
@@ -727,7 +727,7 @@ WifiPhyHelper::GetRadiotapHeader(RadiotapHeader& header,
             break;
         }
         const auto ruIndex =
-            (txVector.GetEhtPpduType() == 1) ? 1 : txVector.GetRu(staId).GetIndex();
+            (txVector.GetEhtPpduType() == 1) ? 1 : WifiRu::GetIndex(txVector.GetRu(staId));
         const auto& ruAllocation = txVector.GetRuAllocation(p20Index);
         ehtFields.data.at(1) |=
             GetRadiotapField(RadiotapHeader::EHT_DATA1_RU_MRU_INDEX, ruIndex) |

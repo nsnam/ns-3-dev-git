@@ -387,7 +387,7 @@ class WifiPhyOperatingChannel
      *              it is the width of the PPDU for which the RU is allocated
      * @return the channel indices of the minimum subset of 20 MHz channels containing the given RU
      */
-    std::set<uint8_t> Get20MHzIndicesCoveringRu(HeRu::RuSpec ru, MHz_u width) const;
+    std::set<uint8_t> Get20MHzIndicesCoveringRu(WifiRu::RuSpec ru, MHz_u width) const;
 
     /**
      * Get the index of the segment that contains a given primary channel.

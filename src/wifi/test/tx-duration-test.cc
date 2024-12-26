@@ -255,7 +255,7 @@ TxDurationTest::CheckMuTxDuration(std::list<uint32_t> sizes,
                            std::end(userInfos),
                            MHz_u{0},
                            [](const MHz_u prevBw, const HeMuUserInfo& info) {
-                               return prevBw + WifiRu::GetBandwidth(info.ru.GetRuType());
+                               return prevBw + WifiRu::GetBandwidth(WifiRu::GetRuType(info.ru));
                            }),
         "Cannot accommodate all the RUs in the provided band"); // MU-MIMO (for which allocations
                                                                 // use the same RU) is not supported
@@ -1380,53 +1380,58 @@ TxDurationTest::DoRun()
     retval = retval &&
              CheckMuTxDuration(
                  std::list<uint32_t>{1536, 1536},
-                 std::list<HeMuUserInfo>{{{RuType::RU_242_TONE, 1, true}, 0, 1},
-                                         {{RuType::RU_242_TONE, 2, true}, 0, 1}},
+                 std::list<HeMuUserInfo>{{HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 0, 1},
+                                         {HeRu::RuSpec{RuType::RU_242_TONE, 2, true}, 0, 1}},
                  MHz_u{40},
                  NanoSeconds(800),
                  WIFI_PREAMBLE_HE_MU,
                  NanoSeconds(
                      1493600)) // equivalent to HE_SU for 20 MHz with 2 extra HE-SIG-B (i.e. 8 us)
-             && CheckMuTxDuration(std::list<uint32_t>{1536, 1536},
-                                  std::list<HeMuUserInfo>{{{RuType::RU_242_TONE, 1, true}, 1, 1},
-                                                          {{RuType::RU_242_TONE, 2, true}, 0, 1}},
-                                  MHz_u{40},
-                                  NanoSeconds(800),
-                                  WIFI_PREAMBLE_HE_MU,
-                                  NanoSeconds(1493600)) // shouldn't change if first PSDU is shorter
-             && CheckMuTxDuration(std::list<uint32_t>{1536, 76},
-                                  std::list<HeMuUserInfo>{{{RuType::RU_242_TONE, 1, true}, 0, 1},
-                                                          {{RuType::RU_242_TONE, 2, true}, 0, 1}},
-                                  MHz_u{40},
-                                  NanoSeconds(800),
-                                  WIFI_PREAMBLE_HE_MU,
-                                  NanoSeconds(1493600));
+             && CheckMuTxDuration(
+                    std::list<uint32_t>{1536, 1536},
+                    std::list<HeMuUserInfo>{{HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 1, 1},
+                                            {HeRu::RuSpec{RuType::RU_242_TONE, 2, true}, 0, 1}},
+                    MHz_u{40},
+                    NanoSeconds(800),
+                    WIFI_PREAMBLE_HE_MU,
+                    NanoSeconds(1493600)) // shouldn't change if first PSDU is shorter
+             && CheckMuTxDuration(
+                    std::list<uint32_t>{1536, 76},
+                    std::list<HeMuUserInfo>{{HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 0, 1},
+                                            {HeRu::RuSpec{RuType::RU_242_TONE, 2, true}, 0, 1}},
+                    MHz_u{40},
+                    NanoSeconds(800),
+                    WIFI_PREAMBLE_HE_MU,
+                    NanoSeconds(1493600));
 
     NS_TEST_EXPECT_MSG_EQ(retval, true, "an 802.11ax MU duration failed");
 
     // 802.11be MU durations
     retval = retval &&
-             CheckMuTxDuration(std::list<uint32_t>{1536, 1536},
-                               std::list<HeMuUserInfo>{{{RuType::RU_242_TONE, 1, true}, 0, 1},
-                                                       {{RuType::RU_242_TONE, 2, true}, 0, 1}},
-                               MHz_u{40},
-                               NanoSeconds(800),
-                               WIFI_PREAMBLE_EHT_MU,
-                               NanoSeconds(1493600)) // equivalent to 802.11ax MU
-             && CheckMuTxDuration(std::list<uint32_t>{1536, 1536},
-                                  std::list<HeMuUserInfo>{{{RuType::RU_242_TONE, 1, true}, 1, 1},
-                                                          {{RuType::RU_242_TONE, 2, true}, 0, 1}},
-                                  MHz_u{40},
-                                  NanoSeconds(800),
-                                  WIFI_PREAMBLE_EHT_MU,
-                                  NanoSeconds(1493600)) // shouldn't change if first PSDU is shorter
-             && CheckMuTxDuration(std::list<uint32_t>{1536, 76},
-                                  std::list<HeMuUserInfo>{{{RuType::RU_242_TONE, 1, true}, 0, 1},
-                                                          {{RuType::RU_242_TONE, 2, true}, 0, 1}},
-                                  MHz_u{40},
-                                  NanoSeconds(800),
-                                  WIFI_PREAMBLE_EHT_MU,
-                                  NanoSeconds(1493600));
+             CheckMuTxDuration(
+                 std::list<uint32_t>{1536, 1536},
+                 std::list<HeMuUserInfo>{{HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 0, 1},
+                                         {HeRu::RuSpec{RuType::RU_242_TONE, 2, true}, 0, 1}},
+                 MHz_u{40},
+                 NanoSeconds(800),
+                 WIFI_PREAMBLE_EHT_MU,
+                 NanoSeconds(1493600)) // equivalent to 802.11ax MU
+             && CheckMuTxDuration(
+                    std::list<uint32_t>{1536, 1536},
+                    std::list<HeMuUserInfo>{{HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 1, 1},
+                                            {HeRu::RuSpec{RuType::RU_242_TONE, 2, true}, 0, 1}},
+                    MHz_u{40},
+                    NanoSeconds(800),
+                    WIFI_PREAMBLE_EHT_MU,
+                    NanoSeconds(1493600)) // shouldn't change if first PSDU is shorter
+             && CheckMuTxDuration(
+                    std::list<uint32_t>{1536, 76},
+                    std::list<HeMuUserInfo>{{HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 0, 1},
+                                            {HeRu::RuSpec{RuType::RU_242_TONE, 2, true}, 0, 1}},
+                    MHz_u{40},
+                    NanoSeconds(800),
+                    WIFI_PREAMBLE_EHT_MU,
+                    NanoSeconds(1493600));
 
     NS_TEST_EXPECT_MSG_EQ(retval, true, "an 802.11be MU duration failed");
 
@@ -1864,8 +1869,9 @@ PhyHeaderSectionsTest::DoRun()
     txVector.SetNss(2); // HE-LTF duration assumed to be always 8 us for the time being (see note in
                         // HePhy::GetTrainingDuration)
     txVector.SetMode(HePhy::GetHeMcs9());
-    std::map<uint16_t, HeMuUserInfo> userInfoMap = {{1, {{RuType::RU_106_TONE, 1, true}, 4, 2}},
-                                                    {2, {{RuType::RU_106_TONE, 1, true}, 9, 1}}};
+    std::map<uint16_t, HeMuUserInfo> userInfoMap = {
+        {1, {HeRu::RuSpec{RuType::RU_106_TONE, 1, true}, 4, 2}},
+        {2, {HeRu::RuSpec{RuType::RU_106_TONE, 1, true}, 9, 1}}};
     sigAMode = HePhy::GetVhtMcs0();
     sigBMode = HePhy::GetVhtMcs4(); // because of first user info map
 
@@ -1936,8 +1942,8 @@ PhyHeaderSectionsTest::DoRun()
     txVector.SetNss(2); // EHT-LTF duration assumed to be always 8 us for the time being (see note
                         // in HePhy::GetTrainingDuration)
     txVector.SetMode(EhtPhy::GetEhtMcs9());
-    userInfoMap = {{1, {{RuType::RU_106_TONE, 1, true}, 4, 2}},
-                   {2, {{RuType::RU_106_TONE, 1, true}, 9, 1}}};
+    userInfoMap = {{1, {HeRu::RuSpec{RuType::RU_106_TONE, 1, true}, 4, 2}},
+                   {2, {HeRu::RuSpec{RuType::RU_106_TONE, 1, true}, 9, 1}}};
     WifiMode uSigMode = EhtPhy::GetVhtMcs0();
     WifiMode ehtSigMode = EhtPhy::GetVhtMcs4(); // because of first user info map
 
@@ -1994,25 +2000,25 @@ TxDurationTestSuite::TxDurationTestSuite()
 
     // 20 MHz band, OFDMA, even number of users in HE-SIG-B content channel
     AddTestCase(
-        new HeSigBDurationTest(
-            {{{RuType::RU_106_TONE, 1, true}, 11, 1}, {{RuType::RU_106_TONE, 2, true}, 10, 4}},
-            VhtPhy::GetVhtMcs5(),
-            MHz_u{20},
-            0,
-            HeSigBDurationTest::OFDMA,
-            {96},
-            std::make_pair(2, 0), // both users in HE-SIG-B content channel 1
-            MicroSeconds(4)),     // one OFDM symbol;
+        new HeSigBDurationTest({{HeRu::RuSpec{RuType::RU_106_TONE, 1, true}, 11, 1},
+                                {HeRu::RuSpec{RuType::RU_106_TONE, 2, true}, 10, 4}},
+                               VhtPhy::GetVhtMcs5(),
+                               MHz_u{20},
+                               0,
+                               HeSigBDurationTest::OFDMA,
+                               {96},
+                               std::make_pair(2, 0), // both users in HE-SIG-B content channel 1
+                               MicroSeconds(4)),     // one OFDM symbol;
         TestCase::Duration::QUICK);
 
     // 40 MHz band, OFDMA, even number of users per HE-SIG-B content channel
     AddTestCase(
-        new HeSigBDurationTest({{{RuType::RU_106_TONE, 1, true}, 11, 1}, // CC1
-                                {{RuType::RU_106_TONE, 2, true}, 10, 4}, // CC1
-                                {{RuType::RU_52_TONE, 5, true}, 4, 1},   // CC2
-                                {{RuType::RU_52_TONE, 6, true}, 6, 2},   // CC2
-                                {{RuType::RU_52_TONE, 7, true}, 5, 3},   // CC2
-                                {{RuType::RU_52_TONE, 8, true}, 6, 2}},  // CC2
+        new HeSigBDurationTest({{HeRu::RuSpec{RuType::RU_106_TONE, 1, true}, 11, 1}, // CC1
+                                {HeRu::RuSpec{RuType::RU_106_TONE, 2, true}, 10, 4}, // CC1
+                                {HeRu::RuSpec{RuType::RU_52_TONE, 5, true}, 4, 1},   // CC2
+                                {HeRu::RuSpec{RuType::RU_52_TONE, 6, true}, 6, 2},   // CC2
+                                {HeRu::RuSpec{RuType::RU_52_TONE, 7, true}, 5, 3},   // CC2
+                                {HeRu::RuSpec{RuType::RU_52_TONE, 8, true}, 6, 2}},  // CC2
                                VhtPhy::GetVhtMcs4(),
                                MHz_u{40},
                                0,
@@ -2025,13 +2031,13 @@ TxDurationTestSuite::TxDurationTestSuite()
 
     // 40 MHz band, OFDMA, odd number of users in second HE-SIG-B content channel
     AddTestCase(
-        new HeSigBDurationTest({{{RuType::RU_106_TONE, 1, true}, 11, 1}, // CC1
-                                {{RuType::RU_106_TONE, 2, true}, 10, 4}, // CC1
-                                {{RuType::RU_52_TONE, 5, true}, 4, 1},   // CC2
-                                {{RuType::RU_52_TONE, 6, true}, 6, 2},   // CC2
-                                {{RuType::RU_52_TONE, 7, true}, 5, 3},   // CC2
-                                {{RuType::RU_52_TONE, 8, true}, 6, 2},   // CC2
-                                {{RuType::RU_26_TONE, 14, true}, 3, 1}}, // CC2
+        new HeSigBDurationTest({{HeRu::RuSpec{RuType::RU_106_TONE, 1, true}, 11, 1}, // CC1
+                                {HeRu::RuSpec{RuType::RU_106_TONE, 2, true}, 10, 4}, // CC1
+                                {HeRu::RuSpec{RuType::RU_52_TONE, 5, true}, 4, 1},   // CC2
+                                {HeRu::RuSpec{RuType::RU_52_TONE, 6, true}, 6, 2},   // CC2
+                                {HeRu::RuSpec{RuType::RU_52_TONE, 7, true}, 5, 3},   // CC2
+                                {HeRu::RuSpec{RuType::RU_52_TONE, 8, true}, 6, 2},   // CC2
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 14, true}, 3, 1}}, // CC2
                                VhtPhy::GetVhtMcs3(),
                                MHz_u{40},
                                0,
@@ -2044,15 +2050,15 @@ TxDurationTestSuite::TxDurationTestSuite()
 
     // 80 MHz band, OFDMA
     AddTestCase(
-        new HeSigBDurationTest({{{RuType::RU_106_TONE, 1, true}, 11, 1}, // CC1
-                                {{RuType::RU_106_TONE, 2, true}, 10, 4}, // CC1
-                                {{RuType::RU_52_TONE, 5, true}, 4, 1},   // CC2
-                                {{RuType::RU_52_TONE, 6, true}, 6, 2},   // CC2
-                                {{RuType::RU_52_TONE, 7, true}, 5, 3},   // CC2
-                                {{RuType::RU_52_TONE, 8, true}, 6, 2},   // CC2
-                                {{RuType::RU_26_TONE, 14, true}, 3, 1},  // CC2
-                                {{RuType::RU_242_TONE, 3, true}, 1, 1},  // CC1
-                                {{RuType::RU_242_TONE, 4, true}, 4, 1}}, // CC2
+        new HeSigBDurationTest({{HeRu::RuSpec{RuType::RU_106_TONE, 1, true}, 11, 1}, // CC1
+                                {HeRu::RuSpec{RuType::RU_106_TONE, 2, true}, 10, 4}, // CC1
+                                {HeRu::RuSpec{RuType::RU_52_TONE, 5, true}, 4, 1},   // CC2
+                                {HeRu::RuSpec{RuType::RU_52_TONE, 6, true}, 6, 2},   // CC2
+                                {HeRu::RuSpec{RuType::RU_52_TONE, 7, true}, 5, 3},   // CC2
+                                {HeRu::RuSpec{RuType::RU_52_TONE, 8, true}, 6, 2},   // CC2
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 14, true}, 3, 1},  // CC2
+                                {HeRu::RuSpec{RuType::RU_242_TONE, 3, true}, 1, 1},  // CC1
+                                {HeRu::RuSpec{RuType::RU_242_TONE, 4, true}, 4, 1}}, // CC2
                                VhtPhy::GetVhtMcs1(),
                                MHz_u{80},
                                0,
@@ -2065,42 +2071,42 @@ TxDurationTestSuite::TxDurationTestSuite()
 
     // 80 MHz band, OFDMA, no central 26-tones RU
     AddTestCase(new HeSigBDurationTest(
-                    {{{RuType::RU_26_TONE, 1, true}, 8, 1},   // CC1
-                     {{RuType::RU_26_TONE, 2, true}, 8, 1},   // CC1
-                     {{RuType::RU_26_TONE, 3, true}, 8, 1},   // CC1
-                     {{RuType::RU_26_TONE, 4, true}, 8, 1},   // CC1
-                     {{RuType::RU_26_TONE, 5, true}, 8, 1},   // CC1
-                     {{RuType::RU_26_TONE, 6, true}, 8, 1},   // CC1
-                     {{RuType::RU_26_TONE, 7, true}, 8, 1},   // CC1
-                     {{RuType::RU_26_TONE, 8, true}, 8, 1},   // CC1
-                     {{RuType::RU_26_TONE, 9, true}, 8, 1},   // CC1
-                     {{RuType::RU_26_TONE, 10, true}, 8, 1},  // CC2
-                     {{RuType::RU_26_TONE, 11, true}, 8, 1},  // CC2
-                     {{RuType::RU_26_TONE, 12, true}, 8, 1},  // CC2
-                     {{RuType::RU_26_TONE, 13, true}, 8, 1},  // CC2
-                     {{RuType::RU_26_TONE, 14, true}, 8, 1},  // CC2
-                     {{RuType::RU_26_TONE, 15, true}, 8, 1},  // CC2
-                     {{RuType::RU_26_TONE, 16, true}, 8, 1},  // CC2
-                     {{RuType::RU_26_TONE, 17, true}, 8, 1},  // CC2
-                     {{RuType::RU_26_TONE, 18, true}, 8, 1},  // CC2
-                     {{RuType::RU_26_TONE, 20, true}, 8, 1},  // CC1
-                     {{RuType::RU_26_TONE, 21, true}, 8, 1},  // CC1
-                     {{RuType::RU_26_TONE, 22, true}, 8, 1},  // CC1
-                     {{RuType::RU_26_TONE, 23, true}, 8, 1},  // CC1
-                     {{RuType::RU_26_TONE, 24, true}, 8, 1},  // CC1
-                     {{RuType::RU_26_TONE, 25, true}, 8, 1},  // CC1
-                     {{RuType::RU_26_TONE, 26, true}, 8, 1},  // CC1
-                     {{RuType::RU_26_TONE, 27, true}, 8, 1},  // CC1
-                     {{RuType::RU_26_TONE, 28, true}, 8, 1},  // CC2
-                     {{RuType::RU_26_TONE, 29, true}, 8, 1},  // CC2
-                     {{RuType::RU_26_TONE, 30, true}, 8, 1},  // CC2
-                     {{RuType::RU_26_TONE, 31, true}, 8, 1},  // CC2
-                     {{RuType::RU_26_TONE, 32, true}, 8, 1},  // CC2
-                     {{RuType::RU_26_TONE, 33, true}, 8, 1},  // CC2
-                     {{RuType::RU_26_TONE, 34, true}, 8, 1},  // CC2
-                     {{RuType::RU_26_TONE, 35, true}, 8, 1},  // CC2
-                     {{RuType::RU_26_TONE, 36, true}, 8, 1},  // CC2
-                     {{RuType::RU_26_TONE, 37, true}, 8, 1}}, // CC2
+                    {{HeRu::RuSpec{RuType::RU_26_TONE, 1, true}, 8, 1},   // CC1
+                     {HeRu::RuSpec{RuType::RU_26_TONE, 2, true}, 8, 1},   // CC1
+                     {HeRu::RuSpec{RuType::RU_26_TONE, 3, true}, 8, 1},   // CC1
+                     {HeRu::RuSpec{RuType::RU_26_TONE, 4, true}, 8, 1},   // CC1
+                     {HeRu::RuSpec{RuType::RU_26_TONE, 5, true}, 8, 1},   // CC1
+                     {HeRu::RuSpec{RuType::RU_26_TONE, 6, true}, 8, 1},   // CC1
+                     {HeRu::RuSpec{RuType::RU_26_TONE, 7, true}, 8, 1},   // CC1
+                     {HeRu::RuSpec{RuType::RU_26_TONE, 8, true}, 8, 1},   // CC1
+                     {HeRu::RuSpec{RuType::RU_26_TONE, 9, true}, 8, 1},   // CC1
+                     {HeRu::RuSpec{RuType::RU_26_TONE, 10, true}, 8, 1},  // CC2
+                     {HeRu::RuSpec{RuType::RU_26_TONE, 11, true}, 8, 1},  // CC2
+                     {HeRu::RuSpec{RuType::RU_26_TONE, 12, true}, 8, 1},  // CC2
+                     {HeRu::RuSpec{RuType::RU_26_TONE, 13, true}, 8, 1},  // CC2
+                     {HeRu::RuSpec{RuType::RU_26_TONE, 14, true}, 8, 1},  // CC2
+                     {HeRu::RuSpec{RuType::RU_26_TONE, 15, true}, 8, 1},  // CC2
+                     {HeRu::RuSpec{RuType::RU_26_TONE, 16, true}, 8, 1},  // CC2
+                     {HeRu::RuSpec{RuType::RU_26_TONE, 17, true}, 8, 1},  // CC2
+                     {HeRu::RuSpec{RuType::RU_26_TONE, 18, true}, 8, 1},  // CC2
+                     {HeRu::RuSpec{RuType::RU_26_TONE, 20, true}, 8, 1},  // CC1
+                     {HeRu::RuSpec{RuType::RU_26_TONE, 21, true}, 8, 1},  // CC1
+                     {HeRu::RuSpec{RuType::RU_26_TONE, 22, true}, 8, 1},  // CC1
+                     {HeRu::RuSpec{RuType::RU_26_TONE, 23, true}, 8, 1},  // CC1
+                     {HeRu::RuSpec{RuType::RU_26_TONE, 24, true}, 8, 1},  // CC1
+                     {HeRu::RuSpec{RuType::RU_26_TONE, 25, true}, 8, 1},  // CC1
+                     {HeRu::RuSpec{RuType::RU_26_TONE, 26, true}, 8, 1},  // CC1
+                     {HeRu::RuSpec{RuType::RU_26_TONE, 27, true}, 8, 1},  // CC1
+                     {HeRu::RuSpec{RuType::RU_26_TONE, 28, true}, 8, 1},  // CC2
+                     {HeRu::RuSpec{RuType::RU_26_TONE, 29, true}, 8, 1},  // CC2
+                     {HeRu::RuSpec{RuType::RU_26_TONE, 30, true}, 8, 1},  // CC2
+                     {HeRu::RuSpec{RuType::RU_26_TONE, 31, true}, 8, 1},  // CC2
+                     {HeRu::RuSpec{RuType::RU_26_TONE, 32, true}, 8, 1},  // CC2
+                     {HeRu::RuSpec{RuType::RU_26_TONE, 33, true}, 8, 1},  // CC2
+                     {HeRu::RuSpec{RuType::RU_26_TONE, 34, true}, 8, 1},  // CC2
+                     {HeRu::RuSpec{RuType::RU_26_TONE, 35, true}, 8, 1},  // CC2
+                     {HeRu::RuSpec{RuType::RU_26_TONE, 36, true}, 8, 1},  // CC2
+                     {HeRu::RuSpec{RuType::RU_26_TONE, 37, true}, 8, 1}}, // CC2
                     VhtPhy::GetVhtMcs5(),
                     MHz_u{80},
                     0,
@@ -2113,43 +2119,43 @@ TxDurationTestSuite::TxDurationTestSuite()
     // 80 MHz band, OFDMA, central 26-tones RU
     AddTestCase(
         new HeSigBDurationTest(
-            {{{RuType::RU_26_TONE, 1, true}, 8, 1},   // CC1
-             {{RuType::RU_26_TONE, 2, true}, 8, 1},   // CC1
-             {{RuType::RU_26_TONE, 3, true}, 8, 1},   // CC1
-             {{RuType::RU_26_TONE, 4, true}, 8, 1},   // CC1
-             {{RuType::RU_26_TONE, 5, true}, 8, 1},   // CC1
-             {{RuType::RU_26_TONE, 6, true}, 8, 1},   // CC1
-             {{RuType::RU_26_TONE, 7, true}, 8, 1},   // CC1
-             {{RuType::RU_26_TONE, 8, true}, 8, 1},   // CC1
-             {{RuType::RU_26_TONE, 9, true}, 8, 1},   // CC1
-             {{RuType::RU_26_TONE, 10, true}, 8, 1},  // CC2
-             {{RuType::RU_26_TONE, 11, true}, 8, 1},  // CC2
-             {{RuType::RU_26_TONE, 12, true}, 8, 1},  // CC2
-             {{RuType::RU_26_TONE, 13, true}, 8, 1},  // CC2
-             {{RuType::RU_26_TONE, 14, true}, 8, 1},  // CC2
-             {{RuType::RU_26_TONE, 15, true}, 8, 1},  // CC2
-             {{RuType::RU_26_TONE, 16, true}, 8, 1},  // CC2
-             {{RuType::RU_26_TONE, 17, true}, 8, 1},  // CC2
-             {{RuType::RU_26_TONE, 18, true}, 8, 1},  // CC2
-             {{RuType::RU_26_TONE, 19, true}, 8, 1},  // CC1
-             {{RuType::RU_26_TONE, 20, true}, 8, 1},  // CC1
-             {{RuType::RU_26_TONE, 21, true}, 8, 1},  // CC1
-             {{RuType::RU_26_TONE, 22, true}, 8, 1},  // CC1
-             {{RuType::RU_26_TONE, 23, true}, 8, 1},  // CC1
-             {{RuType::RU_26_TONE, 24, true}, 8, 1},  // CC1
-             {{RuType::RU_26_TONE, 25, true}, 8, 1},  // CC1
-             {{RuType::RU_26_TONE, 26, true}, 8, 1},  // CC1
-             {{RuType::RU_26_TONE, 27, true}, 8, 1},  // CC1
-             {{RuType::RU_26_TONE, 28, true}, 8, 1},  // CC2
-             {{RuType::RU_26_TONE, 29, true}, 8, 1},  // CC2
-             {{RuType::RU_26_TONE, 30, true}, 8, 1},  // CC2
-             {{RuType::RU_26_TONE, 31, true}, 8, 1},  // CC2
-             {{RuType::RU_26_TONE, 32, true}, 8, 1},  // CC2
-             {{RuType::RU_26_TONE, 33, true}, 8, 1},  // CC2
-             {{RuType::RU_26_TONE, 34, true}, 8, 1},  // CC2
-             {{RuType::RU_26_TONE, 35, true}, 8, 1},  // CC2
-             {{RuType::RU_26_TONE, 36, true}, 8, 1},  // CC2
-             {{RuType::RU_26_TONE, 37, true}, 8, 1}}, // CC2
+            {{HeRu::RuSpec{RuType::RU_26_TONE, 1, true}, 8, 1},   // CC1
+             {HeRu::RuSpec{RuType::RU_26_TONE, 2, true}, 8, 1},   // CC1
+             {HeRu::RuSpec{RuType::RU_26_TONE, 3, true}, 8, 1},   // CC1
+             {HeRu::RuSpec{RuType::RU_26_TONE, 4, true}, 8, 1},   // CC1
+             {HeRu::RuSpec{RuType::RU_26_TONE, 5, true}, 8, 1},   // CC1
+             {HeRu::RuSpec{RuType::RU_26_TONE, 6, true}, 8, 1},   // CC1
+             {HeRu::RuSpec{RuType::RU_26_TONE, 7, true}, 8, 1},   // CC1
+             {HeRu::RuSpec{RuType::RU_26_TONE, 8, true}, 8, 1},   // CC1
+             {HeRu::RuSpec{RuType::RU_26_TONE, 9, true}, 8, 1},   // CC1
+             {HeRu::RuSpec{RuType::RU_26_TONE, 10, true}, 8, 1},  // CC2
+             {HeRu::RuSpec{RuType::RU_26_TONE, 11, true}, 8, 1},  // CC2
+             {HeRu::RuSpec{RuType::RU_26_TONE, 12, true}, 8, 1},  // CC2
+             {HeRu::RuSpec{RuType::RU_26_TONE, 13, true}, 8, 1},  // CC2
+             {HeRu::RuSpec{RuType::RU_26_TONE, 14, true}, 8, 1},  // CC2
+             {HeRu::RuSpec{RuType::RU_26_TONE, 15, true}, 8, 1},  // CC2
+             {HeRu::RuSpec{RuType::RU_26_TONE, 16, true}, 8, 1},  // CC2
+             {HeRu::RuSpec{RuType::RU_26_TONE, 17, true}, 8, 1},  // CC2
+             {HeRu::RuSpec{RuType::RU_26_TONE, 18, true}, 8, 1},  // CC2
+             {HeRu::RuSpec{RuType::RU_26_TONE, 19, true}, 8, 1},  // CC1
+             {HeRu::RuSpec{RuType::RU_26_TONE, 20, true}, 8, 1},  // CC1
+             {HeRu::RuSpec{RuType::RU_26_TONE, 21, true}, 8, 1},  // CC1
+             {HeRu::RuSpec{RuType::RU_26_TONE, 22, true}, 8, 1},  // CC1
+             {HeRu::RuSpec{RuType::RU_26_TONE, 23, true}, 8, 1},  // CC1
+             {HeRu::RuSpec{RuType::RU_26_TONE, 24, true}, 8, 1},  // CC1
+             {HeRu::RuSpec{RuType::RU_26_TONE, 25, true}, 8, 1},  // CC1
+             {HeRu::RuSpec{RuType::RU_26_TONE, 26, true}, 8, 1},  // CC1
+             {HeRu::RuSpec{RuType::RU_26_TONE, 27, true}, 8, 1},  // CC1
+             {HeRu::RuSpec{RuType::RU_26_TONE, 28, true}, 8, 1},  // CC2
+             {HeRu::RuSpec{RuType::RU_26_TONE, 29, true}, 8, 1},  // CC2
+             {HeRu::RuSpec{RuType::RU_26_TONE, 30, true}, 8, 1},  // CC2
+             {HeRu::RuSpec{RuType::RU_26_TONE, 31, true}, 8, 1},  // CC2
+             {HeRu::RuSpec{RuType::RU_26_TONE, 32, true}, 8, 1},  // CC2
+             {HeRu::RuSpec{RuType::RU_26_TONE, 33, true}, 8, 1},  // CC2
+             {HeRu::RuSpec{RuType::RU_26_TONE, 34, true}, 8, 1},  // CC2
+             {HeRu::RuSpec{RuType::RU_26_TONE, 35, true}, 8, 1},  // CC2
+             {HeRu::RuSpec{RuType::RU_26_TONE, 36, true}, 8, 1},  // CC2
+             {HeRu::RuSpec{RuType::RU_26_TONE, 37, true}, 8, 1}}, // CC2
             VhtPhy::GetVhtMcs5(),
             MHz_u{80},
             0,
@@ -2162,61 +2168,65 @@ TxDurationTestSuite::TxDurationTestSuite()
         TestCase::Duration::QUICK);
 
     // 160 MHz band, OFDMA, no central 26-tones RU
-    AddTestCase(new HeSigBDurationTest(
-                    {{{RuType::RU_106_TONE, 1, true}, 11, 1},  // CC1
-                     {{RuType::RU_106_TONE, 2, true}, 10, 4},  // CC1
-                     {{RuType::RU_52_TONE, 5, true}, 4, 1},    // CC2
-                     {{RuType::RU_52_TONE, 6, true}, 6, 2},    // CC2
-                     {{RuType::RU_52_TONE, 7, true}, 5, 3},    // CC2
-                     {{RuType::RU_52_TONE, 8, true}, 6, 2},    // CC2
-                     {{RuType::RU_26_TONE, 14, true}, 3, 1},   // CC2
-                     {{RuType::RU_242_TONE, 3, true}, 1, 1},   // CC1
-                     {{RuType::RU_242_TONE, 4, true}, 4, 1},   // CC2
-                     {{RuType::RU_996_TONE, 1, false}, 1, 1}}, // CC1 or CC2 => CC1 for better split
-                    VhtPhy::GetVhtMcs1(),
-                    MHz_u{160},
-                    0,
-                    HeSigBDurationTest::OFDMA,
-                    {96, 15, 192, 192, 208, 115, 208, 115},
-                    std::make_pair(4, 6), // four users in HE-SIG-B content channel 1 and
-                                          // seven users in HE-SIG-B content channel 2
-                    MicroSeconds(16)),    // four OFDM symbols
-                TestCase::Duration::QUICK);
+    AddTestCase(
+        new HeSigBDurationTest({{HeRu::RuSpec{RuType::RU_106_TONE, 1, true}, 11, 1}, // CC1
+                                {HeRu::RuSpec{RuType::RU_106_TONE, 2, true}, 10, 4}, // CC1
+                                {HeRu::RuSpec{RuType::RU_52_TONE, 5, true}, 4, 1},   // CC2
+                                {HeRu::RuSpec{RuType::RU_52_TONE, 6, true}, 6, 2},   // CC2
+                                {HeRu::RuSpec{RuType::RU_52_TONE, 7, true}, 5, 3},   // CC2
+                                {HeRu::RuSpec{RuType::RU_52_TONE, 8, true}, 6, 2},   // CC2
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 14, true}, 3, 1},  // CC2
+                                {HeRu::RuSpec{RuType::RU_242_TONE, 3, true}, 1, 1},  // CC1
+                                {HeRu::RuSpec{RuType::RU_242_TONE, 4, true}, 4, 1},  // CC2
+                                {HeRu::RuSpec{RuType::RU_996_TONE, 1, false},
+                                 1,
+                                 1}}, // CC1 or CC2 => CC1 for better split
+                               VhtPhy::GetVhtMcs1(),
+                               MHz_u{160},
+                               0,
+                               HeSigBDurationTest::OFDMA,
+                               {96, 15, 192, 192, 208, 115, 208, 115},
+                               std::make_pair(4, 6), // four users in HE-SIG-B content channel 1 and
+                                                     // seven users in HE-SIG-B content channel 2
+                               MicroSeconds(16)),    // four OFDM symbols
+        TestCase::Duration::QUICK);
 
     // 160 MHz band, OFDMA, central 26-tones RU in low 80 MHz
-    AddTestCase(new HeSigBDurationTest(
-                    {{{RuType::RU_106_TONE, 1, true}, 11, 1},  // CC1
-                     {{RuType::RU_106_TONE, 2, true}, 10, 4},  // CC1
-                     {{RuType::RU_52_TONE, 5, true}, 4, 1},    // CC2
-                     {{RuType::RU_52_TONE, 6, true}, 6, 2},    // CC2
-                     {{RuType::RU_52_TONE, 7, true}, 5, 3},    // CC2
-                     {{RuType::RU_52_TONE, 8, true}, 6, 2},    // CC2
-                     {{RuType::RU_26_TONE, 14, true}, 3, 1},   // CC2
-                     {{RuType::RU_26_TONE, 19, true}, 8, 2},   // CC1
-                     {{RuType::RU_242_TONE, 3, true}, 1, 1},   // CC1
-                     {{RuType::RU_242_TONE, 4, true}, 4, 1},   // CC2
-                     {{RuType::RU_996_TONE, 1, false}, 1, 1}}, // CC1 or CC2 => CC1 for better split
-                    VhtPhy::GetVhtMcs1(),
-                    MHz_u{160},
-                    0,
-                    HeSigBDurationTest::OFDMA,
-                    {96, 15, 192, 192, 208, 115, 208, 115},
-                    std::make_pair(5, 6), // five users in HE-SIG-B content channel 1 and
-                                          // seven users in HE-SIG-B content channel 2
-                    MicroSeconds(16)),    // four OFDM symbols
-                TestCase::Duration::QUICK);
+    AddTestCase(
+        new HeSigBDurationTest({{HeRu::RuSpec{RuType::RU_106_TONE, 1, true}, 11, 1}, // CC1
+                                {HeRu::RuSpec{RuType::RU_106_TONE, 2, true}, 10, 4}, // CC1
+                                {HeRu::RuSpec{RuType::RU_52_TONE, 5, true}, 4, 1},   // CC2
+                                {HeRu::RuSpec{RuType::RU_52_TONE, 6, true}, 6, 2},   // CC2
+                                {HeRu::RuSpec{RuType::RU_52_TONE, 7, true}, 5, 3},   // CC2
+                                {HeRu::RuSpec{RuType::RU_52_TONE, 8, true}, 6, 2},   // CC2
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 14, true}, 3, 1},  // CC2
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 19, true}, 8, 2},  // CC1
+                                {HeRu::RuSpec{RuType::RU_242_TONE, 3, true}, 1, 1},  // CC1
+                                {HeRu::RuSpec{RuType::RU_242_TONE, 4, true}, 4, 1},  // CC2
+                                {HeRu::RuSpec{RuType::RU_996_TONE, 1, false},
+                                 1,
+                                 1}}, // CC1 or CC2 => CC1 for better split
+                               VhtPhy::GetVhtMcs1(),
+                               MHz_u{160},
+                               0,
+                               HeSigBDurationTest::OFDMA,
+                               {96, 15, 192, 192, 208, 115, 208, 115},
+                               std::make_pair(5, 6), // five users in HE-SIG-B content channel 1 and
+                                                     // seven users in HE-SIG-B content channel 2
+                               MicroSeconds(16)),    // four OFDM symbols
+        TestCase::Duration::QUICK);
 
     // 160 MHz band, OFDMA, central 26-tones RU in high 80 MHz
     AddTestCase(
-        new HeSigBDurationTest({{{RuType::RU_106_TONE, 1, true}, 11, 1},  // CC1
-                                {{RuType::RU_106_TONE, 2, true}, 10, 4},  // CC1
-                                {{RuType::RU_106_TONE, 3, true}, 11, 1},  // CC2
-                                {{RuType::RU_106_TONE, 4, true}, 10, 4},  // CC2
-                                {{RuType::RU_242_TONE, 3, true}, 10, 1},  // CC1
-                                {{RuType::RU_242_TONE, 4, true}, 11, 1},  // CC2
-                                {{RuType::RU_484_TONE, 1, false}, 7, 1},  // CC1 or CC2
-                                {{RuType::RU_26_TONE, 19, false}, 8, 2},  // CC2
-                                {{RuType::RU_484_TONE, 2, false}, 9, 1}}, // CC1 or CC2
+        new HeSigBDurationTest({{HeRu::RuSpec{RuType::RU_106_TONE, 1, true}, 11, 1},  // CC1
+                                {HeRu::RuSpec{RuType::RU_106_TONE, 2, true}, 10, 4},  // CC1
+                                {HeRu::RuSpec{RuType::RU_106_TONE, 3, true}, 11, 1},  // CC2
+                                {HeRu::RuSpec{RuType::RU_106_TONE, 4, true}, 10, 4},  // CC2
+                                {HeRu::RuSpec{RuType::RU_242_TONE, 3, true}, 10, 1},  // CC1
+                                {HeRu::RuSpec{RuType::RU_242_TONE, 4, true}, 11, 1},  // CC2
+                                {HeRu::RuSpec{RuType::RU_484_TONE, 1, false}, 7, 1},  // CC1 or CC2
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 19, false}, 8, 2},  // CC2
+                                {HeRu::RuSpec{RuType::RU_484_TONE, 2, false}, 9, 1}}, // CC1 or CC2
                                VhtPhy::GetVhtMcs5(),
                                MHz_u{160},
                                0,
@@ -2229,16 +2239,16 @@ TxDurationTestSuite::TxDurationTestSuite()
 
     // 160 MHz band, OFDMA, central 26-tones RU in both 80 MHz
     AddTestCase(
-        new HeSigBDurationTest({{{RuType::RU_106_TONE, 1, true}, 11, 1},  // CC1
-                                {{RuType::RU_106_TONE, 2, true}, 10, 4},  // CC1
-                                {{RuType::RU_106_TONE, 3, true}, 11, 1},  // CC2
-                                {{RuType::RU_106_TONE, 4, true}, 10, 4},  // CC2
-                                {{RuType::RU_26_TONE, 19, true}, 8, 2},   // CC1
-                                {{RuType::RU_242_TONE, 3, true}, 10, 1},  // CC1
-                                {{RuType::RU_242_TONE, 4, true}, 11, 1},  // CC2
-                                {{RuType::RU_484_TONE, 1, false}, 7, 1},  // CC1 or CC2
-                                {{RuType::RU_26_TONE, 19, false}, 8, 2},  // CC2
-                                {{RuType::RU_484_TONE, 2, false}, 9, 1}}, // CC1 or CC2
+        new HeSigBDurationTest({{HeRu::RuSpec{RuType::RU_106_TONE, 1, true}, 11, 1},  // CC1
+                                {HeRu::RuSpec{RuType::RU_106_TONE, 2, true}, 10, 4},  // CC1
+                                {HeRu::RuSpec{RuType::RU_106_TONE, 3, true}, 11, 1},  // CC2
+                                {HeRu::RuSpec{RuType::RU_106_TONE, 4, true}, 10, 4},  // CC2
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 19, true}, 8, 2},   // CC1
+                                {HeRu::RuSpec{RuType::RU_242_TONE, 3, true}, 10, 1},  // CC1
+                                {HeRu::RuSpec{RuType::RU_242_TONE, 4, true}, 11, 1},  // CC2
+                                {HeRu::RuSpec{RuType::RU_484_TONE, 1, false}, 7, 1},  // CC1 or CC2
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 19, false}, 8, 2},  // CC2
+                                {HeRu::RuSpec{RuType::RU_484_TONE, 2, false}, 9, 1}}, // CC1 or CC2
                                VhtPhy::GetVhtMcs5(),
                                MHz_u{160},
                                0,
@@ -2251,80 +2261,80 @@ TxDurationTestSuite::TxDurationTestSuite()
 
     // 160 MHz band, OFDMA, maximum number of users
     AddTestCase(
-        new HeSigBDurationTest({{{RuType::RU_26_TONE, 1, true}, 8, 1},    // CC1
-                                {{RuType::RU_26_TONE, 2, true}, 8, 1},    // CC1
-                                {{RuType::RU_26_TONE, 3, true}, 8, 1},    // CC1
-                                {{RuType::RU_26_TONE, 4, true}, 8, 1},    // CC1
-                                {{RuType::RU_26_TONE, 5, true}, 8, 1},    // CC1
-                                {{RuType::RU_26_TONE, 6, true}, 8, 1},    // CC1
-                                {{RuType::RU_26_TONE, 7, true}, 8, 1},    // CC1
-                                {{RuType::RU_26_TONE, 8, true}, 8, 1},    // CC1
-                                {{RuType::RU_26_TONE, 9, true}, 8, 1},    // CC1
-                                {{RuType::RU_26_TONE, 10, true}, 8, 1},   // CC2
-                                {{RuType::RU_26_TONE, 11, true}, 8, 1},   // CC2
-                                {{RuType::RU_26_TONE, 12, true}, 8, 1},   // CC2
-                                {{RuType::RU_26_TONE, 13, true}, 8, 1},   // CC2
-                                {{RuType::RU_26_TONE, 14, true}, 8, 1},   // CC2
-                                {{RuType::RU_26_TONE, 15, true}, 8, 1},   // CC2
-                                {{RuType::RU_26_TONE, 16, true}, 8, 1},   // CC2
-                                {{RuType::RU_26_TONE, 17, true}, 8, 1},   // CC2
-                                {{RuType::RU_26_TONE, 18, true}, 8, 1},   // CC2
-                                {{RuType::RU_26_TONE, 19, true}, 8, 1},   // CC1
-                                {{RuType::RU_26_TONE, 20, true}, 8, 1},   // CC1
-                                {{RuType::RU_26_TONE, 21, true}, 8, 1},   // CC1
-                                {{RuType::RU_26_TONE, 22, true}, 8, 1},   // CC1
-                                {{RuType::RU_26_TONE, 23, true}, 8, 1},   // CC1
-                                {{RuType::RU_26_TONE, 24, true}, 8, 1},   // CC1
-                                {{RuType::RU_26_TONE, 25, true}, 8, 1},   // CC1
-                                {{RuType::RU_26_TONE, 26, true}, 8, 1},   // CC1
-                                {{RuType::RU_26_TONE, 27, true}, 8, 1},   // CC1
-                                {{RuType::RU_26_TONE, 28, true}, 8, 1},   // CC2
-                                {{RuType::RU_26_TONE, 29, true}, 8, 1},   // CC2
-                                {{RuType::RU_26_TONE, 30, true}, 8, 1},   // CC2
-                                {{RuType::RU_26_TONE, 31, true}, 8, 1},   // CC2
-                                {{RuType::RU_26_TONE, 32, true}, 8, 1},   // CC2
-                                {{RuType::RU_26_TONE, 33, true}, 8, 1},   // CC2
-                                {{RuType::RU_26_TONE, 34, true}, 8, 1},   // CC2
-                                {{RuType::RU_26_TONE, 35, true}, 8, 1},   // CC2
-                                {{RuType::RU_26_TONE, 36, true}, 8, 1},   // CC2
-                                {{RuType::RU_26_TONE, 37, true}, 8, 1},   // CC2
-                                {{RuType::RU_26_TONE, 1, false}, 8, 1},   // CC1
-                                {{RuType::RU_26_TONE, 2, false}, 8, 1},   // CC1
-                                {{RuType::RU_26_TONE, 3, false}, 8, 1},   // CC1
-                                {{RuType::RU_26_TONE, 4, false}, 8, 1},   // CC1
-                                {{RuType::RU_26_TONE, 5, false}, 8, 1},   // CC1
-                                {{RuType::RU_26_TONE, 6, false}, 8, 1},   // CC1
-                                {{RuType::RU_26_TONE, 7, false}, 8, 1},   // CC1
-                                {{RuType::RU_26_TONE, 8, false}, 8, 1},   // CC1
-                                {{RuType::RU_26_TONE, 9, false}, 8, 1},   // CC1
-                                {{RuType::RU_26_TONE, 10, false}, 8, 1},  // CC2
-                                {{RuType::RU_26_TONE, 11, false}, 8, 1},  // CC2
-                                {{RuType::RU_26_TONE, 12, false}, 8, 1},  // CC2
-                                {{RuType::RU_26_TONE, 13, false}, 8, 1},  // CC2
-                                {{RuType::RU_26_TONE, 14, false}, 8, 1},  // CC2
-                                {{RuType::RU_26_TONE, 15, false}, 8, 1},  // CC2
-                                {{RuType::RU_26_TONE, 16, false}, 8, 1},  // CC2
-                                {{RuType::RU_26_TONE, 17, false}, 8, 1},  // CC2
-                                {{RuType::RU_26_TONE, 18, false}, 8, 1},  // CC2
-                                {{RuType::RU_26_TONE, 19, false}, 8, 1},  // CC1
-                                {{RuType::RU_26_TONE, 20, false}, 8, 1},  // CC1
-                                {{RuType::RU_26_TONE, 21, false}, 8, 1},  // CC1
-                                {{RuType::RU_26_TONE, 22, false}, 8, 1},  // CC1
-                                {{RuType::RU_26_TONE, 23, false}, 8, 1},  // CC1
-                                {{RuType::RU_26_TONE, 24, false}, 8, 1},  // CC1
-                                {{RuType::RU_26_TONE, 25, false}, 8, 1},  // CC1
-                                {{RuType::RU_26_TONE, 26, false}, 8, 1},  // CC1
-                                {{RuType::RU_26_TONE, 27, false}, 8, 1},  // CC1
-                                {{RuType::RU_26_TONE, 28, false}, 8, 1},  // CC2
-                                {{RuType::RU_26_TONE, 29, false}, 8, 1},  // CC2
-                                {{RuType::RU_26_TONE, 30, false}, 8, 1},  // CC2
-                                {{RuType::RU_26_TONE, 31, false}, 8, 1},  // CC2
-                                {{RuType::RU_26_TONE, 32, false}, 8, 1},  // CC2
-                                {{RuType::RU_26_TONE, 33, false}, 8, 1},  // CC2
-                                {{RuType::RU_26_TONE, 34, false}, 8, 1},  // CC2
-                                {{RuType::RU_26_TONE, 35, false}, 8, 1},  // CC2
-                                {{RuType::RU_26_TONE, 36, false}, 8, 1},  // CC2
-                                {{RuType::RU_26_TONE, 37, false}, 8, 1}}, // CC2
+        new HeSigBDurationTest({{HeRu::RuSpec{RuType::RU_26_TONE, 1, true}, 8, 1},    // CC1
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 2, true}, 8, 1},    // CC1
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 3, true}, 8, 1},    // CC1
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 4, true}, 8, 1},    // CC1
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 5, true}, 8, 1},    // CC1
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 6, true}, 8, 1},    // CC1
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 7, true}, 8, 1},    // CC1
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 8, true}, 8, 1},    // CC1
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 9, true}, 8, 1},    // CC1
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 10, true}, 8, 1},   // CC2
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 11, true}, 8, 1},   // CC2
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 12, true}, 8, 1},   // CC2
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 13, true}, 8, 1},   // CC2
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 14, true}, 8, 1},   // CC2
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 15, true}, 8, 1},   // CC2
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 16, true}, 8, 1},   // CC2
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 17, true}, 8, 1},   // CC2
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 18, true}, 8, 1},   // CC2
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 19, true}, 8, 1},   // CC1
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 20, true}, 8, 1},   // CC1
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 21, true}, 8, 1},   // CC1
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 22, true}, 8, 1},   // CC1
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 23, true}, 8, 1},   // CC1
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 24, true}, 8, 1},   // CC1
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 25, true}, 8, 1},   // CC1
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 26, true}, 8, 1},   // CC1
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 27, true}, 8, 1},   // CC1
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 28, true}, 8, 1},   // CC2
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 29, true}, 8, 1},   // CC2
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 30, true}, 8, 1},   // CC2
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 31, true}, 8, 1},   // CC2
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 32, true}, 8, 1},   // CC2
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 33, true}, 8, 1},   // CC2
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 34, true}, 8, 1},   // CC2
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 35, true}, 8, 1},   // CC2
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 36, true}, 8, 1},   // CC2
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 37, true}, 8, 1},   // CC2
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 1, false}, 8, 1},   // CC1
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 2, false}, 8, 1},   // CC1
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 3, false}, 8, 1},   // CC1
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 4, false}, 8, 1},   // CC1
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 5, false}, 8, 1},   // CC1
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 6, false}, 8, 1},   // CC1
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 7, false}, 8, 1},   // CC1
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 8, false}, 8, 1},   // CC1
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 9, false}, 8, 1},   // CC1
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 10, false}, 8, 1},  // CC2
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 11, false}, 8, 1},  // CC2
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 12, false}, 8, 1},  // CC2
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 13, false}, 8, 1},  // CC2
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 14, false}, 8, 1},  // CC2
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 15, false}, 8, 1},  // CC2
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 16, false}, 8, 1},  // CC2
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 17, false}, 8, 1},  // CC2
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 18, false}, 8, 1},  // CC2
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 19, false}, 8, 1},  // CC1
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 20, false}, 8, 1},  // CC1
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 21, false}, 8, 1},  // CC1
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 22, false}, 8, 1},  // CC1
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 23, false}, 8, 1},  // CC1
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 24, false}, 8, 1},  // CC1
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 25, false}, 8, 1},  // CC1
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 26, false}, 8, 1},  // CC1
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 27, false}, 8, 1},  // CC1
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 28, false}, 8, 1},  // CC2
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 29, false}, 8, 1},  // CC2
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 30, false}, 8, 1},  // CC2
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 31, false}, 8, 1},  // CC2
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 32, false}, 8, 1},  // CC2
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 33, false}, 8, 1},  // CC2
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 34, false}, 8, 1},  // CC2
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 35, false}, 8, 1},  // CC2
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 36, false}, 8, 1},  // CC2
+                                {HeRu::RuSpec{RuType::RU_26_TONE, 37, false}, 8, 1}}, // CC2
                                VhtPhy::GetVhtMcs5(),
                                MHz_u{160},
                                0,
@@ -2338,7 +2348,7 @@ TxDurationTestSuite::TxDurationTestSuite()
 
     // 160 MHz band, OFDMA, single-user using 2x996 tones RU
     AddTestCase(
-        new HeSigBDurationTest({{{RuType::RU_2x996_TONE, 1, true}, 8, 1}}, // CC1
+        new HeSigBDurationTest({{HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 8, 1}}, // CC1
                                VhtPhy::GetVhtMcs5(),
                                MHz_u{160},
                                0,
@@ -2350,8 +2360,8 @@ TxDurationTestSuite::TxDurationTestSuite()
 
     // 160 MHz band, OFDMA, primary80 is in the high 80 MHz band
     AddTestCase(
-        new HeSigBDurationTest({{{RuType::RU_996_TONE, 1, false}, 8, 1}, // CC2
-                                {{RuType::RU_996_TONE, 1, true}, 8, 1}}, // CC1
+        new HeSigBDurationTest({{HeRu::RuSpec{RuType::RU_996_TONE, 1, false}, 8, 1}, // CC2
+                                {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 8, 1}}, // CC1
                                VhtPhy::GetVhtMcs5(),
                                MHz_u{160},
                                4,
@@ -2364,14 +2374,14 @@ TxDurationTestSuite::TxDurationTestSuite()
     // 20 MHz band, OFDMA, one unallocated RU at the middle
     AddTestCase(
         new HeSigBDurationTest(
-            {{{RuType::RU_26_TONE, 1, true}, 11, 1},  // CC1
-             {{RuType::RU_26_TONE, 2, true}, 11, 1},  // CC1
-             {{RuType::RU_26_TONE, 3, true}, 11, 1},  // CC1
-             {{RuType::RU_26_TONE, 4, true}, 11, 1},  // CC1
-             {{RuType::RU_26_TONE, 6, true}, 11, 1},  // CC1
-             {{RuType::RU_26_TONE, 7, true}, 11, 1},  // CC1
-             {{RuType::RU_26_TONE, 8, true}, 11, 1},  // CC1
-             {{RuType::RU_26_TONE, 9, true}, 11, 1}}, // CC1
+            {{HeRu::RuSpec{RuType::RU_26_TONE, 1, true}, 11, 1},  // CC1
+             {HeRu::RuSpec{RuType::RU_26_TONE, 2, true}, 11, 1},  // CC1
+             {HeRu::RuSpec{RuType::RU_26_TONE, 3, true}, 11, 1},  // CC1
+             {HeRu::RuSpec{RuType::RU_26_TONE, 4, true}, 11, 1},  // CC1
+             {HeRu::RuSpec{RuType::RU_26_TONE, 6, true}, 11, 1},  // CC1
+             {HeRu::RuSpec{RuType::RU_26_TONE, 7, true}, 11, 1},  // CC1
+             {HeRu::RuSpec{RuType::RU_26_TONE, 8, true}, 11, 1},  // CC1
+             {HeRu::RuSpec{RuType::RU_26_TONE, 9, true}, 11, 1}}, // CC1
             VhtPhy::GetVhtMcs5(),
             MHz_u{20},
             0,
@@ -2385,10 +2395,10 @@ TxDurationTestSuite::TxDurationTestSuite()
     // first 20 MHz subband and in the middle of the second 20 MHz subband
     AddTestCase(
         new HeSigBDurationTest(
-            {{{RuType::RU_52_TONE, 2, true}, 10, 1},  // CC1
-             {{RuType::RU_52_TONE, 3, true}, 10, 2},  // CC1
-             {{RuType::RU_52_TONE, 5, true}, 11, 1},  // CC2
-             {{RuType::RU_52_TONE, 8, true}, 11, 2}}, // CC2
+            {{HeRu::RuSpec{RuType::RU_52_TONE, 2, true}, 10, 1},  // CC1
+             {HeRu::RuSpec{RuType::RU_52_TONE, 3, true}, 10, 2},  // CC1
+             {HeRu::RuSpec{RuType::RU_52_TONE, 5, true}, 11, 1},  // CC2
+             {HeRu::RuSpec{RuType::RU_52_TONE, 8, true}, 11, 2}}, // CC2
             VhtPhy::GetVhtMcs5(),
             MHz_u{40},
             0,
@@ -2403,11 +2413,11 @@ TxDurationTestSuite::TxDurationTestSuite()
     // two unallocated RUs in second 20 MHz subband
     AddTestCase(
         new HeSigBDurationTest(
-            {{{RuType::RU_52_TONE, 1, true}, 10, 1},  // CC1
-             {{RuType::RU_52_TONE, 2, true}, 10, 2},  // CC1
-             {{RuType::RU_52_TONE, 3, true}, 11, 1},  // CC1
-             {{RuType::RU_52_TONE, 5, true}, 11, 2},  // CC2
-             {{RuType::RU_52_TONE, 6, true}, 11, 3}}, // CC2
+            {{HeRu::RuSpec{RuType::RU_52_TONE, 1, true}, 10, 1},  // CC1
+             {HeRu::RuSpec{RuType::RU_52_TONE, 2, true}, 10, 2},  // CC1
+             {HeRu::RuSpec{RuType::RU_52_TONE, 3, true}, 11, 1},  // CC1
+             {HeRu::RuSpec{RuType::RU_52_TONE, 5, true}, 11, 2},  // CC2
+             {HeRu::RuSpec{RuType::RU_52_TONE, 6, true}, 11, 3}}, // CC2
             VhtPhy::GetVhtMcs5(),
             MHz_u{40},
             0,
@@ -2421,7 +2431,7 @@ TxDurationTestSuite::TxDurationTestSuite()
 
     // 40 MHz band, OFDMA, first 20 MHz is punctured
     AddTestCase(
-        new HeSigBDurationTest({{{RuType::RU_242_TONE, 2, true}, 11, 1}}, // CC2
+        new HeSigBDurationTest({{HeRu::RuSpec{RuType::RU_242_TONE, 2, true}, 11, 1}}, // CC2
                                VhtPhy::GetVhtMcs5(),
                                MHz_u{40},
                                1,
@@ -2433,8 +2443,8 @@ TxDurationTestSuite::TxDurationTestSuite()
 
     // 20 MHz band, MU-MIMO, 2 users
     AddTestCase(
-        new HeSigBDurationTest({{{RuType::RU_242_TONE, 1, true}, 11, 1},  // CC1
-                                {{RuType::RU_242_TONE, 1, true}, 10, 4}}, // CC1
+        new HeSigBDurationTest({{HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 11, 1},  // CC1
+                                {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 10, 4}}, // CC1
                                VhtPhy::GetVhtMcs5(),
                                MHz_u{20},
                                0,
@@ -2446,9 +2456,9 @@ TxDurationTestSuite::TxDurationTestSuite()
 
     // 20 MHz band, MU-MIMO, 3 users
     AddTestCase(
-        new HeSigBDurationTest({{{RuType::RU_242_TONE, 1, true}, 4, 3},  // CC1
-                                {{RuType::RU_242_TONE, 1, true}, 5, 2},  // CC1
-                                {{RuType::RU_242_TONE, 1, true}, 6, 1}}, // CC1
+        new HeSigBDurationTest({{HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 4, 3},  // CC1
+                                {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 5, 2},  // CC1
+                                {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 6, 1}}, // CC1
                                VhtPhy::GetVhtMcs4(),
                                MHz_u{20},
                                0,
@@ -2460,10 +2470,10 @@ TxDurationTestSuite::TxDurationTestSuite()
 
     // 20 MHz band, MU-MIMO, 4 users
     AddTestCase(
-        new HeSigBDurationTest({{{RuType::RU_242_TONE, 1, true}, 4, 1},  // CC1
-                                {{RuType::RU_242_TONE, 1, true}, 5, 2},  // CC1
-                                {{RuType::RU_242_TONE, 1, true}, 6, 3},  // CC1
-                                {{RuType::RU_242_TONE, 1, true}, 7, 2}}, // CC1
+        new HeSigBDurationTest({{HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 4, 1},  // CC1
+                                {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 5, 2},  // CC1
+                                {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 6, 3},  // CC1
+                                {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 7, 2}}, // CC1
                                VhtPhy::GetVhtMcs4(),
                                MHz_u{20},
                                0,
@@ -2475,12 +2485,12 @@ TxDurationTestSuite::TxDurationTestSuite()
 
     // 20 MHz band, MU-MIMO, 6 users
     AddTestCase(
-        new HeSigBDurationTest({{{RuType::RU_242_TONE, 1, true}, 4, 1},  // CC1
-                                {{RuType::RU_242_TONE, 1, true}, 5, 1},  // CC1
-                                {{RuType::RU_242_TONE, 1, true}, 6, 2},  // CC1
-                                {{RuType::RU_242_TONE, 1, true}, 7, 2},  // CC1
-                                {{RuType::RU_242_TONE, 1, true}, 8, 1},  // CC1
-                                {{RuType::RU_242_TONE, 1, true}, 9, 1}}, // CC1
+        new HeSigBDurationTest({{HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 4, 1},  // CC1
+                                {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 5, 1},  // CC1
+                                {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 6, 2},  // CC1
+                                {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 7, 2},  // CC1
+                                {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 8, 1},  // CC1
+                                {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 9, 1}}, // CC1
                                VhtPhy::GetVhtMcs4(),
                                MHz_u{20},
                                0,
@@ -2492,14 +2502,14 @@ TxDurationTestSuite::TxDurationTestSuite()
 
     // 20 MHz band, MU-MIMO, 8 users
     AddTestCase(
-        new HeSigBDurationTest({{{RuType::RU_242_TONE, 1, true}, 4, 1},   // CC1
-                                {{RuType::RU_242_TONE, 1, true}, 5, 1},   // CC1
-                                {{RuType::RU_242_TONE, 1, true}, 6, 1},   // CC1
-                                {{RuType::RU_242_TONE, 1, true}, 7, 1},   // CC1
-                                {{RuType::RU_242_TONE, 1, true}, 8, 1},   // CC1
-                                {{RuType::RU_242_TONE, 1, true}, 9, 1},   // CC1
-                                {{RuType::RU_242_TONE, 1, true}, 10, 1},  // CC1
-                                {{RuType::RU_242_TONE, 1, true}, 11, 1}}, // CC1
+        new HeSigBDurationTest({{HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 4, 1},   // CC1
+                                {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 5, 1},   // CC1
+                                {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 6, 1},   // CC1
+                                {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 7, 1},   // CC1
+                                {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 8, 1},   // CC1
+                                {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 9, 1},   // CC1
+                                {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 10, 1},  // CC1
+                                {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 11, 1}}, // CC1
                                VhtPhy::GetVhtMcs4(),
                                MHz_u{20},
                                0,
@@ -2511,8 +2521,8 @@ TxDurationTestSuite::TxDurationTestSuite()
 
     // 40 MHz band, MU-MIMO, 2 users
     AddTestCase(new HeSigBDurationTest(
-                    {{{RuType::RU_484_TONE, 1, true}, 11, 1},  // CC1
-                     {{RuType::RU_484_TONE, 1, true}, 10, 4}}, // CC2
+                    {{HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 11, 1},  // CC1
+                     {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 10, 4}}, // CC2
                     VhtPhy::GetVhtMcs5(),
                     MHz_u{40},
                     0,
@@ -2525,9 +2535,9 @@ TxDurationTestSuite::TxDurationTestSuite()
     // 40 MHz band, MU-MIMO, 3 users
     AddTestCase(
         new HeSigBDurationTest(
-            {{{RuType::RU_484_TONE, 1, true}, 4, 3},  // CC1
-             {{RuType::RU_484_TONE, 1, true}, 5, 2},  // CC2
-             {{RuType::RU_484_TONE, 1, true}, 6, 1}}, // CC1
+            {{HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 4, 3},  // CC1
+             {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 5, 2},  // CC2
+             {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 6, 1}}, // CC1
             VhtPhy::GetVhtMcs4(),
             MHz_u{40},
             0,
@@ -2539,10 +2549,10 @@ TxDurationTestSuite::TxDurationTestSuite()
 
     // 40 MHz band, MU-MIMO, 4 users
     AddTestCase(new HeSigBDurationTest(
-                    {{{RuType::RU_484_TONE, 1, true}, 4, 1},  // CC1
-                     {{RuType::RU_484_TONE, 1, true}, 5, 2},  // CC2
-                     {{RuType::RU_484_TONE, 1, true}, 6, 3},  // CC1
-                     {{RuType::RU_484_TONE, 1, true}, 7, 2}}, // CC2
+                    {{HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 4, 1},  // CC1
+                     {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 5, 2},  // CC2
+                     {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 6, 3},  // CC1
+                     {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 7, 2}}, // CC2
                     VhtPhy::GetVhtMcs4(),
                     MHz_u{40},
                     0,
@@ -2554,12 +2564,12 @@ TxDurationTestSuite::TxDurationTestSuite()
 
     // 40 MHz band, MU-MIMO, 6 users
     AddTestCase(new HeSigBDurationTest(
-                    {{{RuType::RU_484_TONE, 1, true}, 4, 1},  // CC1
-                     {{RuType::RU_484_TONE, 1, true}, 5, 1},  // CC2
-                     {{RuType::RU_484_TONE, 1, true}, 6, 2},  // CC1
-                     {{RuType::RU_484_TONE, 1, true}, 7, 2},  // CC2
-                     {{RuType::RU_484_TONE, 1, true}, 8, 1},  // CC1
-                     {{RuType::RU_484_TONE, 1, true}, 9, 1}}, // CC2
+                    {{HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 4, 1},  // CC1
+                     {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 5, 1},  // CC2
+                     {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 6, 2},  // CC1
+                     {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 7, 2},  // CC2
+                     {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 8, 1},  // CC1
+                     {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 9, 1}}, // CC2
                     VhtPhy::GetVhtMcs4(),
                     MHz_u{40},
                     0,
@@ -2571,14 +2581,14 @@ TxDurationTestSuite::TxDurationTestSuite()
 
     // 40 MHz band, MU-MIMO, 8 users
     AddTestCase(new HeSigBDurationTest(
-                    {{{RuType::RU_484_TONE, 1, true}, 4, 1},   // CC1
-                     {{RuType::RU_484_TONE, 1, true}, 5, 1},   // CC2
-                     {{RuType::RU_484_TONE, 1, true}, 6, 1},   // CC1
-                     {{RuType::RU_484_TONE, 1, true}, 7, 1},   // CC2
-                     {{RuType::RU_484_TONE, 1, true}, 8, 1},   // CC1
-                     {{RuType::RU_484_TONE, 1, true}, 9, 1},   // CC2
-                     {{RuType::RU_484_TONE, 1, true}, 10, 1},  // CC1
-                     {{RuType::RU_484_TONE, 1, true}, 11, 1}}, // CC2
+                    {{HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 4, 1},   // CC1
+                     {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 5, 1},   // CC2
+                     {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 6, 1},   // CC1
+                     {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 7, 1},   // CC2
+                     {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 8, 1},   // CC1
+                     {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 9, 1},   // CC2
+                     {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 10, 1},  // CC1
+                     {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 11, 1}}, // CC2
                     VhtPhy::GetVhtMcs4(),
                     MHz_u{40},
                     0,
@@ -2590,8 +2600,8 @@ TxDurationTestSuite::TxDurationTestSuite()
 
     // 80 MHz band, MU-MIMO, 2 users
     AddTestCase(new HeSigBDurationTest(
-                    {{{RuType::RU_996_TONE, 1, true}, 11, 1},  // CC1
-                     {{RuType::RU_996_TONE, 1, true}, 10, 4}}, // CC2
+                    {{HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 11, 1},  // CC1
+                     {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 10, 4}}, // CC2
                     VhtPhy::GetVhtMcs5(),
                     MHz_u{80},
                     0,
@@ -2604,9 +2614,9 @@ TxDurationTestSuite::TxDurationTestSuite()
     // 80 MHz band, MU-MIMO, 3 users
     AddTestCase(
         new HeSigBDurationTest(
-            {{{RuType::RU_996_TONE, 1, true}, 4, 3},  // CC1
-             {{RuType::RU_996_TONE, 1, true}, 5, 2},  // CC2
-             {{RuType::RU_996_TONE, 1, true}, 6, 1}}, // CC1
+            {{HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 4, 3},  // CC1
+             {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 5, 2},  // CC2
+             {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 6, 1}}, // CC1
             VhtPhy::GetVhtMcs4(),
             MHz_u{80},
             0,
@@ -2618,10 +2628,10 @@ TxDurationTestSuite::TxDurationTestSuite()
 
     // 80 MHz band, MU-MIMO, 4 users
     AddTestCase(new HeSigBDurationTest(
-                    {{{RuType::RU_996_TONE, 1, true}, 4, 1},  // CC1
-                     {{RuType::RU_996_TONE, 1, true}, 5, 2},  // CC2
-                     {{RuType::RU_996_TONE, 1, true}, 6, 3},  // CC1
-                     {{RuType::RU_996_TONE, 1, true}, 7, 2}}, // CC2
+                    {{HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 4, 1},  // CC1
+                     {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 5, 2},  // CC2
+                     {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 6, 3},  // CC1
+                     {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 7, 2}}, // CC2
                     VhtPhy::GetVhtMcs4(),
                     MHz_u{80},
                     0,
@@ -2633,12 +2643,12 @@ TxDurationTestSuite::TxDurationTestSuite()
 
     // 80 MHz band, MU-MIMO, 6 users
     AddTestCase(new HeSigBDurationTest(
-                    {{{RuType::RU_996_TONE, 1, true}, 4, 1},  // CC1
-                     {{RuType::RU_996_TONE, 1, true}, 5, 1},  // CC2
-                     {{RuType::RU_996_TONE, 1, true}, 6, 2},  // CC1
-                     {{RuType::RU_996_TONE, 1, true}, 7, 2},  // CC2
-                     {{RuType::RU_996_TONE, 1, true}, 8, 1},  // CC1
-                     {{RuType::RU_996_TONE, 1, true}, 9, 1}}, // CC2
+                    {{HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 4, 1},  // CC1
+                     {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 5, 1},  // CC2
+                     {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 6, 2},  // CC1
+                     {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 7, 2},  // CC2
+                     {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 8, 1},  // CC1
+                     {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 9, 1}}, // CC2
                     VhtPhy::GetVhtMcs4(),
                     MHz_u{80},
                     0,
@@ -2650,14 +2660,14 @@ TxDurationTestSuite::TxDurationTestSuite()
 
     // 80 MHz band, MU-MIMO, 8 users
     AddTestCase(new HeSigBDurationTest(
-                    {{{RuType::RU_996_TONE, 1, true}, 4, 1},   // CC1
-                     {{RuType::RU_996_TONE, 1, true}, 5, 1},   // CC2
-                     {{RuType::RU_996_TONE, 1, true}, 6, 1},   // CC1
-                     {{RuType::RU_996_TONE, 1, true}, 7, 1},   // CC2
-                     {{RuType::RU_996_TONE, 1, true}, 8, 1},   // CC1
-                     {{RuType::RU_996_TONE, 1, true}, 9, 1},   // CC2
-                     {{RuType::RU_996_TONE, 1, true}, 10, 1},  // CC1
-                     {{RuType::RU_996_TONE, 1, true}, 11, 1}}, // CC2
+                    {{HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 4, 1},   // CC1
+                     {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 5, 1},   // CC2
+                     {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 6, 1},   // CC1
+                     {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 7, 1},   // CC2
+                     {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 8, 1},   // CC1
+                     {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 9, 1},   // CC2
+                     {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 10, 1},  // CC1
+                     {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 11, 1}}, // CC2
                     VhtPhy::GetVhtMcs4(),
                     MHz_u{80},
                     0,
@@ -2669,8 +2679,8 @@ TxDurationTestSuite::TxDurationTestSuite()
 
     // 160 MHz band, MU-MIMO, 2 users
     AddTestCase(new HeSigBDurationTest(
-                    {{{RuType::RU_2x996_TONE, 1, true}, 11, 1},  // CC1
-                     {{RuType::RU_2x996_TONE, 1, true}, 10, 4}}, // CC2
+                    {{HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 11, 1},  // CC1
+                     {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 10, 4}}, // CC2
                     VhtPhy::GetVhtMcs5(),
                     MHz_u{160},
                     0,
@@ -2683,9 +2693,9 @@ TxDurationTestSuite::TxDurationTestSuite()
     // 160 MHz band, MU-MIMO, 3 users
     AddTestCase(
         new HeSigBDurationTest(
-            {{{RuType::RU_2x996_TONE, 1, true}, 4, 3},  // CC1
-             {{RuType::RU_2x996_TONE, 1, true}, 5, 2},  // CC2
-             {{RuType::RU_2x996_TONE, 1, true}, 6, 1}}, // CC1
+            {{HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 4, 3},  // CC1
+             {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 5, 2},  // CC2
+             {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 6, 1}}, // CC1
             VhtPhy::GetVhtMcs4(),
             MHz_u{160},
             0,
@@ -2697,10 +2707,10 @@ TxDurationTestSuite::TxDurationTestSuite()
 
     // 160 MHz band, MU-MIMO, 4 users
     AddTestCase(new HeSigBDurationTest(
-                    {{{RuType::RU_2x996_TONE, 1, true}, 4, 1},  // CC1
-                     {{RuType::RU_2x996_TONE, 1, true}, 5, 2},  // CC2
-                     {{RuType::RU_2x996_TONE, 1, true}, 6, 3},  // CC1
-                     {{RuType::RU_2x996_TONE, 1, true}, 7, 2}}, // CC2
+                    {{HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 4, 1},  // CC1
+                     {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 5, 2},  // CC2
+                     {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 6, 3},  // CC1
+                     {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 7, 2}}, // CC2
                     VhtPhy::GetVhtMcs4(),
                     MHz_u{160},
                     0,
@@ -2712,12 +2722,12 @@ TxDurationTestSuite::TxDurationTestSuite()
 
     // 160 MHz band, MU-MIMO, 6 users
     AddTestCase(new HeSigBDurationTest(
-                    {{{RuType::RU_2x996_TONE, 1, true}, 4, 1},  // CC1
-                     {{RuType::RU_2x996_TONE, 1, true}, 5, 1},  // CC2
-                     {{RuType::RU_2x996_TONE, 1, true}, 6, 2},  // CC1
-                     {{RuType::RU_2x996_TONE, 1, true}, 7, 2},  // CC2
-                     {{RuType::RU_2x996_TONE, 1, true}, 8, 1},  // CC1
-                     {{RuType::RU_2x996_TONE, 1, true}, 9, 1}}, // CC2
+                    {{HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 4, 1},  // CC1
+                     {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 5, 1},  // CC2
+                     {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 6, 2},  // CC1
+                     {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 7, 2},  // CC2
+                     {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 8, 1},  // CC1
+                     {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 9, 1}}, // CC2
                     VhtPhy::GetVhtMcs4(),
                     MHz_u{160},
                     0,
@@ -2729,14 +2739,14 @@ TxDurationTestSuite::TxDurationTestSuite()
 
     // 160 MHz band, MU-MIMO, 8 users
     AddTestCase(new HeSigBDurationTest(
-                    {{{RuType::RU_2x996_TONE, 1, true}, 4, 1},   // CC1
-                     {{RuType::RU_2x996_TONE, 1, true}, 5, 1},   // CC2
-                     {{RuType::RU_2x996_TONE, 1, true}, 6, 1},   // CC1
-                     {{RuType::RU_2x996_TONE, 1, true}, 7, 1},   // CC2
-                     {{RuType::RU_2x996_TONE, 1, true}, 8, 1},   // CC1
-                     {{RuType::RU_2x996_TONE, 1, true}, 9, 1},   // CC2
-                     {{RuType::RU_2x996_TONE, 1, true}, 10, 1},  // CC1
-                     {{RuType::RU_2x996_TONE, 1, true}, 11, 1}}, // CC2
+                    {{HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 4, 1},   // CC1
+                     {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 5, 1},   // CC2
+                     {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 6, 1},   // CC1
+                     {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 7, 1},   // CC2
+                     {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 8, 1},   // CC1
+                     {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 9, 1},   // CC2
+                     {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 10, 1},  // CC1
+                     {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 11, 1}}, // CC2
                     VhtPhy::GetVhtMcs4(),
                     MHz_u{160},
                     0,

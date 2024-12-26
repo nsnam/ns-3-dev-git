@@ -31,9 +31,9 @@ static constexpr uint16_t NO_USER_STA_ID = 2046;
 /// HE MU specific user transmission parameters.
 struct HeMuUserInfo
 {
-    HeRu::RuSpec ru; ///< RU specification
-    uint8_t mcs;     ///< MCS index
-    uint8_t nss;     ///< number of spatial streams
+    WifiRu::RuSpec ru; ///< RU specification
+    uint8_t mcs;       ///< MCS index
+    uint8_t nss;       ///< number of spatial streams
 
     /**
      * Compare this user info to the given user info.
@@ -387,7 +387,7 @@ class WifiTxVector
      * @param staId the station ID
      * @return the RU specification for the STA-ID
      */
-    HeRu::RuSpec GetRu(uint16_t staId) const;
+    WifiRu::RuSpec GetRu(uint16_t staId) const;
     /**
      * Set the RU specification for the STA-ID.
      * This is applicable only for MU.
@@ -395,7 +395,7 @@ class WifiTxVector
      * @param ru the RU specification
      * @param staId the station ID
      */
-    void SetRu(HeRu::RuSpec ru, uint16_t staId);
+    void SetRu(WifiRu::RuSpec ru, uint16_t staId);
     /**
      * Get the HE MU user-specific transmission information for the given STA-ID.
      * This is applicable only for HE MU.
@@ -428,7 +428,8 @@ class WifiTxVector
     HeMuUserInfoMap& GetHeMuUserInfoMap();
 
     /// map of specific user info parameters ordered per increasing frequency RUs
-    using UserInfoMapOrderedByRus = std::map<HeRu::RuSpec, std::set<uint16_t>, HeRu::RuSpecCompare>;
+    using UserInfoMapOrderedByRus =
+        std::map<WifiRu::RuSpec, std::set<uint16_t>, WifiRu::RuSpecCompare>;
 
     /**
      * Get the map of specific user info parameters ordered per increasing frequency RUs.
@@ -540,7 +541,7 @@ class WifiTxVector
      * @param ru the RU specification
      * @return the number of STAs in the RU
      */
-    uint8_t GetNumStasInRu(const HeRu::RuSpec& ru) const;
+    uint8_t GetNumStasInRu(const WifiRu::RuSpec& ru) const;
 
     WifiMode m_mode;          /**< The DATARATE parameter in Table 15-4.
                               It is the value that will be passed

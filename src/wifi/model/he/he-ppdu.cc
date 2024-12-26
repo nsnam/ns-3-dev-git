@@ -212,9 +212,9 @@ HePpdu::SetTxVectorFromPhyHeaders(WifiTxVector& txVector) const
     }
 }
 
-HeRu::RuSpec
+WifiRu::RuSpec
 HePpdu::GetRuSpec(std::size_t ruAllocIndex,
-                  const std::vector<HeRu::RuSpec>& ruSpecs,
+                  const std::vector<WifiRu::RuSpec>& ruSpecs,
                   RuType ruType,
                   std::size_t ruIndex,
                   MHz_u bw) const
@@ -224,7 +224,7 @@ HePpdu::GetRuSpec(std::size_t ruAllocIndex,
     const std::size_t numRus = (ruBw > MHz_u{20}) ? 1 : HeRu::GetNRus(MHz_u{20}, ruType);
     const std::size_t ruIndexOffset =
         (ruBw < MHz_u{20}) ? (numRus * ruAllocIndex) : (ruAllocIndex / num20MhzSubchannelsInRu);
-    std::size_t index = ruSpecs.at(ruIndex).GetIndex() + ruIndexOffset;
+    std::size_t index = WifiRu::GetIndex(ruSpecs.at(ruIndex)) + ruIndexOffset;
     auto isPrimary80 = true;
     if (bw > MHz_u{80})
     {
@@ -242,7 +242,7 @@ HePpdu::GetRuSpec(std::size_t ruAllocIndex,
     {
         index++;
     }
-    return {ruType, index, isPrimary80};
+    return HeRu::RuSpec{ruType, index, isPrimary80};
 }
 
 void
@@ -303,7 +303,8 @@ HePpdu::SetHeMuUserInfos(WifiTxVector& txVector,
                 }
             }
             NS_ASSERT(ruAllocIndex < ruAllocation.size());
-            auto ruSpecs = HeRu::GetRuSpecs(ruAllocation.at(ruAllocIndex));
+            const auto mc{WIFI_MOD_CLASS_HE};
+            auto ruSpecs = WifiRu::GetRuSpecs(ruAllocation.at(ruAllocIndex), mc);
             while (ruSpecs.empty() && (ruAllocIndex < ruAllocation.size()))
             {
                 const auto pos = std::find(remainingRuAllocIndices.cbegin(),
@@ -312,7 +313,7 @@ HePpdu::SetHeMuUserInfos(WifiTxVector& txVector,
                 remainingRuAllocIndices.erase(pos);
                 ruAllocIndex += 2;
                 NS_ASSERT(ruAllocIndex < ruAllocation.size());
-                ruSpecs = HeRu::GetRuSpecs(ruAllocation.at(ruAllocIndex));
+                ruSpecs = WifiRu::GetRuSpecs(ruAllocation.at(ruAllocIndex), mc);
             }
             if (numRusLeft == 0)
             {
@@ -332,7 +333,7 @@ HePpdu::SetHeMuUserInfos(WifiTxVector& txVector,
             }
             auto ruIndex = (ruSpecs.size() - numRusLeft);
             const auto ruSpec = ruSpecs.at(ruIndex);
-            auto ruType = ruSpec.GetRuType();
+            auto ruType = WifiRu::GetRuType(ruSpec);
             if (sigBcompression)
             {
                 ruType = WifiRu::GetRuType(ruAllocation.size() * MHz_u{20});
@@ -477,7 +478,7 @@ HePpdu::GetTxChannelWidth() const
         txVector.IsValid() && txVector.IsUlMu() && GetStaId() != SU_STA_ID)
     {
         TxPsdFlag flag = GetTxPsdFlag();
-        const auto ruWidth = WifiRu::GetBandwidth(txVector.GetRu(GetStaId()).GetRuType());
+        const auto ruWidth = WifiRu::GetBandwidth(WifiRu::GetRuType(txVector.GetRu(GetStaId())));
         MHz_u channelWidth =
             (flag == PSD_NON_HE_PORTION && ruWidth < MHz_u{20}) ? MHz_u{20} : ruWidth;
         NS_LOG_INFO("Use " << channelWidth << " MHz for TB PPDU from " << GetStaId() << " for "
@@ -535,7 +536,7 @@ HePpdu::UpdateTxVectorForUlMu(const std::optional<WifiTxVector>& trigVector) con
         // Set dummy user info, PPDU will be dropped later after decoding PHY headers.
         m_txVector->SetHeMuUserInfo(
             staId,
-            {{WifiRu::GetRuType(m_txVector->GetChannelWidth()), 1, true}, 0, 1});
+            {HeRu::RuSpec{(WifiRu::GetRuType(m_txVector->GetChannelWidth())), 1, true}, 0, 1});
     }
 }
 
@@ -573,13 +574,14 @@ HePpdu::GetNumRusPerHeSigBContentChannel(
     NS_ASSERT_MSG(ruAllocation.size() == Count20MHzSubchannels(channelWidth),
                   "RU allocation is not consistent with packet bandwidth");
 
+    const auto mc{WIFI_MOD_CLASS_HE};
     switch (static_cast<uint16_t>(channelWidth))
     {
     case 40:
-        chSize.second += HeRu::GetRuSpecs(ruAllocation[1]).size();
+        chSize.second += WifiRu::GetRuSpecs(ruAllocation[1], mc).size();
         [[fallthrough]];
     case 20:
-        chSize.first += HeRu::GetRuSpecs(ruAllocation[0]).size();
+        chSize.first += WifiRu::GetRuSpecs(ruAllocation[0], mc).size();
         break;
     default:
         for (std::size_t n = 0; n < Count20MHzSubchannels(channelWidth);)
@@ -587,11 +589,11 @@ HePpdu::GetNumRusPerHeSigBContentChannel(
             std::size_t ccIndex;
             const auto ruAlloc = ruAllocation.at(n);
             std::size_t num20MHz{1};
-            const auto ruSpecs = HeRu::GetRuSpecs(ruAlloc);
+            const auto ruSpecs = WifiRu::GetRuSpecs(ruAlloc, mc);
             const auto nRuSpecs = ruSpecs.size();
             if (nRuSpecs == 1)
             {
-                const auto ruBw = WifiRu::GetBandwidth(ruSpecs.front().GetRuType());
+                const auto ruBw = WifiRu::GetBandwidth(WifiRu::GetRuType(ruSpecs.front()));
                 num20MHz = Count20MHzSubchannels(ruBw);
             }
             if (nRuSpecs == 0)
@@ -669,12 +671,14 @@ HePpdu::GetHeSigBContentChannels(const WifiTxVector& txVector, uint8_t p20Index)
     std::size_t prevCcIndex{0};
     for (const auto& [ru, staIds] : orderedMap)
     {
-        const auto ruType = ru.GetRuType();
-        if ((ruType == RuType::RU_26_TONE) && (ru.GetIndex() == 19))
+        const auto ruType = WifiRu::GetRuType(ru);
+        auto ruIdx = WifiRu::GetIndex(ru);
+        if ((ruType == RuType::RU_26_TONE) && (ruIdx == 19))
         {
+            NS_ASSERT(WifiRu::IsHe(ru));
             const auto staId = *staIds.cbegin();
             const auto& userInfo = txVector.GetHeMuUserInfo(staId);
-            if (ru.GetPrimary80MHz())
+            if (std::get<HeRu::RuSpec>(ru).GetPrimary80MHz())
             {
                 NS_ASSERT(!cc1Central26ToneRu);
                 cc1Central26ToneRu = HeSigBUserSpecificField{staId, userInfo.nss, userInfo.mcs};
@@ -687,7 +691,7 @@ HePpdu::GetHeSigBContentChannels(const WifiTxVector& txVector, uint8_t p20Index)
             continue;
         }
 
-        const auto ruIndex = ru.GetPhyIndex(channelWidth, p20Index);
+        const auto ruIndex = WifiRu::GetPhyIndex(ru, channelWidth, p20Index);
         if ((prevRuType < RuType::RU_TYPE_MAX) && (prevRuType != ruType))
         {
             prevRuIndex *= WifiRu::GetBandwidth(prevRuType) / WifiRu::GetBandwidth(ruType);
@@ -706,8 +710,8 @@ HePpdu::GetHeSigBContentChannels(const WifiTxVector& txVector, uint8_t p20Index)
             continue;
         }
 
-        const auto numRus = HeRu::GetNRus(MHz_u{20}, ruType);
-        auto ruIdx = ru.GetIndex();
+        const auto mc{WIFI_MOD_CLASS_HE};
+        const auto numRus = WifiRu::GetNRus(MHz_u{20}, ruType, mc);
         while (prevRuIndex < ruIndex - 1)
         {
             std::size_t ccIndex{0};
@@ -725,13 +729,14 @@ HePpdu::GetHeSigBContentChannels(const WifiTxVector& txVector, uint8_t p20Index)
             {
                 ccIndex = ((prevRuIndex / numRus) % 2 == 0) ? 0 : 1;
             }
-            const auto central26TonesRus = HeRu::GetCentral26TonesRus(channelWidth, prevRuType);
-            const auto isCentral26ToneRu =
-                std::none_of(central26TonesRus.cbegin(),
-                             central26TonesRus.cend(),
-                             [ruIndex, channelWidth, p20Index](const auto& ruSpec) {
-                                 return ruSpec.GetPhyIndex(channelWidth, p20Index) == ruIndex;
-                             });
+            const auto central26TonesRus =
+                WifiRu::GetCentral26TonesRus(channelWidth, prevRuType, mc);
+            const auto isCentral26ToneRu = std::none_of(
+                central26TonesRus.cbegin(),
+                central26TonesRus.cend(),
+                [ruIndex, channelWidth, p20Index](const auto& ruSpec) {
+                    return WifiRu::GetPhyIndex(ruSpec, channelWidth, p20Index) == ruIndex;
+                });
             if (ruType < RuType::RU_242_TONE && prevCcIndex == ccIndex &&
                 (ruType != RuType::RU_26_TONE || isCentral26ToneRu))
             {

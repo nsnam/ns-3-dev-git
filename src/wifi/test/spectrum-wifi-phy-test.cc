@@ -550,9 +550,9 @@ SpectrumWifiPhyFilterTest::RxCallback(Ptr<const Packet> p, RxPowerWattPerChannel
     expectedNumBands += (m_rxChannelWidth / MHz_u{80});
     expectedNumBands += (m_rxChannelWidth / MHz_u{160});
     expectedNumBands += m_rxPhy
-                            ->GetHeRuBands(m_rxPhy->GetCurrentInterface(),
-                                           m_rxPhy->GetGuardBandwidth(
-                                               m_rxPhy->GetCurrentInterface()->GetChannelWidth()))
+                            ->GetRuBands(m_rxPhy->GetCurrentInterface(),
+                                         m_rxPhy->GetGuardBandwidth(
+                                             m_rxPhy->GetCurrentInterface()->GetChannelWidth()))
                             .size();
 
     NS_TEST_ASSERT_MSG_EQ(numBands,

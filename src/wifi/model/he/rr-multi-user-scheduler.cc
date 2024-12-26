@@ -177,7 +177,10 @@ RrMultiUserScheduler::GetTxVectorForUlMu(std::function<bool(const MasterInfo&)> 
     // determine RUs to allocate to stations
     auto count = std::min<std::size_t>(m_nStations, m_staListUl.size());
     std::size_t nCentral26TonesRus;
-    HeRu::GetEqualSizedRusForStations(m_allowedWidth, count, nCentral26TonesRus);
+    WifiRu::GetEqualSizedRusForStations(m_allowedWidth,
+                                        count,
+                                        nCentral26TonesRus,
+                                        WIFI_MOD_CLASS_HE);
     NS_ASSERT(count >= 1);
 
     if (!m_useCentral26TonesRus)
@@ -750,7 +753,10 @@ RrMultiUserScheduler::TrySendingDlMuPpdu()
     std::size_t count =
         std::min(static_cast<std::size_t>(m_nStations), m_staListDl[primaryAc].size());
     std::size_t nCentral26TonesRus;
-    RuType ruType = HeRu::GetEqualSizedRusForStations(m_allowedWidth, count, nCentral26TonesRus);
+    const auto ruType = WifiRu::GetEqualSizedRusForStations(m_allowedWidth,
+                                                            count,
+                                                            nCentral26TonesRus,
+                                                            WIFI_MOD_CLASS_HE);
     NS_ASSERT(count >= 1);
 
     if (!m_useCentral26TonesRus)
@@ -859,7 +865,7 @@ RrMultiUserScheduler::TrySendingDlMuPpdu()
                     }
 
                     m_txParams.m_txVector.SetHeMuUserInfo(staIt->aid,
-                                                          {{currRuType, 1, true},
+                                                          {HeRu::RuSpec{currRuType, 1, true},
                                                            suTxVector.GetMode().GetMcsValue(),
                                                            suTxVector.GetNss()});
 
@@ -914,8 +920,10 @@ RrMultiUserScheduler::FinalizeTxVector(WifiTxVector& txVector)
     // compute how many stations can be granted an RU and the RU size
     std::size_t nRusAssigned = m_candidates.size();
     std::size_t nCentral26TonesRus;
-    RuType ruType =
-        HeRu::GetEqualSizedRusForStations(m_allowedWidth, nRusAssigned, nCentral26TonesRus);
+    const auto ruType = WifiRu::GetEqualSizedRusForStations(m_allowedWidth,
+                                                            nRusAssigned,
+                                                            nCentral26TonesRus,
+                                                            WIFI_MOD_CLASS_HE);
 
     NS_LOG_DEBUG(nRusAssigned << " stations are being assigned a " << ruType << " RU");
 
@@ -934,9 +942,10 @@ RrMultiUserScheduler::FinalizeTxVector(WifiTxVector& txVector)
     std::swap(heMuUserInfoMap, txVector.GetHeMuUserInfoMap());
 
     auto candidateIt = m_candidates.begin(); // iterator over the list of candidate receivers
-    auto ruSet = HeRu::GetRusOfType(m_allowedWidth, ruType);
+    auto ruSet = WifiRu::GetRusOfType(m_allowedWidth, ruType, WIFI_MOD_CLASS_HE);
     auto ruSetIt = ruSet.begin();
-    auto central26TonesRus = HeRu::GetCentral26TonesRus(m_allowedWidth, ruType);
+    auto central26TonesRus =
+        WifiRu::GetCentral26TonesRus(m_allowedWidth, ruType, WIFI_MOD_CLASS_HE);
     auto central26TonesRusIt = central26TonesRus.begin();
 
     for (std::size_t i = 0; i < nRusAssigned + nCentral26TonesRus; i++)
@@ -967,7 +976,7 @@ RrMultiUserScheduler::UpdateCredits(std::list<MasterInfo>& staList,
     std::map<RuType, std::size_t> ruMap;
     for (const auto& userInfo : txVector.GetHeMuUserInfoMap())
     {
-        ruMap.insert({userInfo.second.ru.GetRuType(), 0}).first->second++;
+        ruMap.insert({WifiRu::GetRuType(userInfo.second.ru), 0}).first->second++;
     }
 
     // The amount of credits received by each station equals the TX duration (in
@@ -995,7 +1004,7 @@ RrMultiUserScheduler::UpdateCredits(std::list<MasterInfo>& staList,
         NS_ASSERT(mapIt != txVector.GetHeMuUserInfoMap().end());
 
         candidate.first->credits -=
-            debitsPerMhz * WifiRu::GetBandwidth(mapIt->second.ru.GetRuType());
+            debitsPerMhz * WifiRu::GetBandwidth(WifiRu::GetRuType(mapIt->second.ru));
     }
 
     // sort the list in decreasing order of credits
