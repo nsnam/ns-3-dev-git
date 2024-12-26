@@ -360,24 +360,6 @@ const HeRu::RuAllocationMap HeRu::m_heRuAllocations = {
     // clang-format on
 };
 
-HeRu::RuSpecCompare::RuSpecCompare(MHz_t channelWidth, uint8_t p20Index)
-    : m_channelWidth(channelWidth),
-      m_p20Index(p20Index)
-{
-}
-
-bool
-HeRu::RuSpecCompare::operator()(const HeRu::RuSpec& lhs, const HeRu::RuSpec& rhs) const
-{
-    const auto lhsIndex = lhs.GetPhyIndex(m_channelWidth, m_p20Index);
-    const auto rhsIndex = rhs.GetPhyIndex(m_channelWidth, m_p20Index);
-    const auto lhsStartTone =
-        HeRu::GetSubcarrierGroup(m_channelWidth, lhs.GetRuType(), lhsIndex).front().first;
-    const auto rhsStartTone =
-        HeRu::GetSubcarrierGroup(m_channelWidth, rhs.GetRuType(), rhsIndex).front().first;
-    return lhsStartTone < rhsStartTone;
-}
-
 std::vector<HeRu::RuSpec>
 HeRu::GetRuSpecs(uint16_t ruAllocation)
 {
@@ -694,56 +676,6 @@ operator<<(std::ostream& os, const HeRu::RuSpec& ru)
     os << "RU{" << ru.GetRuType() << "/" << ru.GetIndex() << "/"
        << (ru.GetPrimary80MHz() ? "primary80MHz" : "secondary80MHz") << "}";
     return os;
-}
-
-MHz_t
-HeRu::GetBandwidth(RuType ruType)
-{
-    switch (ruType)
-    {
-    case RuType::RU_26_TONE:
-        return MHz_t{2};
-    case RuType::RU_52_TONE:
-        return MHz_t{4};
-    case RuType::RU_106_TONE:
-        return MHz_t{8};
-    case RuType::RU_242_TONE:
-        return MHz_t{20};
-    case RuType::RU_484_TONE:
-        return MHz_t{40};
-    case RuType::RU_996_TONE:
-        return MHz_t{80};
-    case RuType::RU_2x996_TONE:
-        return MHz_t{160};
-    default:
-        NS_ABORT_MSG("RU type " << ruType << " not found");
-        return MHz_t{0};
-    }
-}
-
-RuType
-HeRu::GetRuType(MHz_t bandwidth)
-{
-    switch (static_cast<uint16_t>(bandwidth.in_MHz()))
-    {
-    case 2:
-        return RuType::RU_26_TONE;
-    case 4:
-        return RuType::RU_52_TONE;
-    case 8:
-        return RuType::RU_106_TONE;
-    case 20:
-        return RuType::RU_242_TONE;
-    case 40:
-        return RuType::RU_484_TONE;
-    case 80:
-        return RuType::RU_996_TONE;
-    case 160:
-        return RuType::RU_2x996_TONE;
-    default:
-        NS_ABORT_MSG(bandwidth << " bandwidth not found");
-        return RuType::RU_242_TONE;
-    }
 }
 
 RuType

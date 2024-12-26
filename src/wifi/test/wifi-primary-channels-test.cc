@@ -827,7 +827,7 @@ WifiPrimaryChannelsTest::SendDlMuPpdu(uint8_t bss,
 
         auto staDev = DynamicCast<WifiNetDevice>(m_staDevices[bss].Get(i - 1));
         uint16_t staId = DynamicCast<StaWifiMac>(staDev->GetMac())->GetAssociationId();
-        txVector.SetHeMuUserInfo(staId, {{ruType, index, primary80}, 8, 1});
+        txVector.SetHeMuUserInfo(staId, {HeRu::RuSpec{ruType, index, primary80}, 8, 1});
         hdr.SetAddr1(staDev->GetMac()->GetAddress());
         psduMap[staId] = Create<const WifiPsdu>(Create<Packet>(1000), hdr);
     }
@@ -915,8 +915,8 @@ WifiPrimaryChannelsTest::DoSendHeTbPpdu(uint8_t bss,
                               false,
                               false,
                               bssColor);
-        txVector.SetHeMuUserInfo(staId, {{ruType, index, primary80}, 8, 1});
-        trigVector.SetHeMuUserInfo(staId, {{ruType, index, primary80}, 8, 1});
+        txVector.SetHeMuUserInfo(staId, {HeRu::RuSpec{ruType, index, primary80}, 8, 1});
+        trigVector.SetHeMuUserInfo(staId, {HeRu::RuSpec{ruType, index, primary80}, 8, 1});
 
         hdr.SetAddr2(staDev->GetMac()->GetAddress());
         Ptr<const WifiPsdu> psdu = Create<const WifiPsdu>(Create<Packet>(1000), hdr);

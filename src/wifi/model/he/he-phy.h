@@ -179,7 +179,7 @@ class HePhy : public VhtPhy
      * @param ru the RU in which the HE TB PPDU is sent
      * @return the width of the non-OFDMA portion of an HE TB PPDU
      */
-    MHz_t GetNonOfdmaWidth(HeRu::RuSpec ru) const;
+    MHz_t GetNonOfdmaWidth(WifiRu::RuSpec ru) const;
 
     /**
      * @return the UID of the HE TB PPDU being received

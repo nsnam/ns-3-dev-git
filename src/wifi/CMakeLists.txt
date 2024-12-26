@@ -164,6 +164,7 @@ set(source_files
     model/wifi-radio-energy-model.cc
     model/wifi-remote-station-info.cc
     model/wifi-remote-station-manager.cc
+    model/wifi-ru.cc
     model/wifi-spectrum-phy-interface.cc
     model/wifi-spectrum-signal-parameters.cc
     model/wifi-standards.cc
@@ -342,6 +343,7 @@ set(header_files
     model/wifi-radio-energy-model.h
     model/wifi-remote-station-info.h
     model/wifi-remote-station-manager.h
+    model/wifi-ru.h
     model/wifi-spectrum-phy-interface.h
     model/wifi-spectrum-signal-parameters.h
     model/wifi-standards.h

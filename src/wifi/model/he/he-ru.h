@@ -106,34 +106,6 @@ class HeRu
     };
 
     /**
-     * Struct providing a function call operator to compare two RUs.
-     */
-    struct RuSpecCompare
-    {
-        /**
-         * Constructor.
-         *
-         * @param channelWidth the channel width
-         * @param p20Index the index of the primary20 channel
-         */
-        RuSpecCompare(MHz_t channelWidth, uint8_t p20Index);
-        /**
-         * Function call operator.
-         *
-         * @param lhs left hand side RU
-         * @param rhs right hand side RU
-         * @return true if the left hand side RU has its leftmost tone at a lower
-         *         frequency than the leftmost tone of the right hand side RU,
-         *         false otherwise
-         */
-        bool operator()(const RuSpec& lhs, const RuSpec& rhs) const;
-
-      private:
-        MHz_t m_channelWidth; ///< The channel width
-        uint8_t m_p20Index;   ///< Primary20 channel index
-    };
-
-    /**
      * Get the number of distinct RUs of the given type (number of tones)
      * available in a HE PPDU of the given bandwidth.
      *
@@ -202,22 +174,6 @@ class HeRu
      * @return the searched RU allocation.
      */
     static RuSpec FindOverlappingRu(MHz_t bw, RuSpec referenceRu, RuType searchedRuType);
-
-    /**
-     * Get the approximate bandwidth occupied by a RU.
-     *
-     * @param ruType the RU type
-     * @return the approximate bandwidth occupied by the RU
-     */
-    static MHz_t GetBandwidth(RuType ruType);
-
-    /**
-     * Get the RU corresponding to the approximate bandwidth.
-     *
-     * @param bandwidth the approximate bandwidth occupied by the RU
-     * @return the RU type
-     */
-    static RuType GetRuType(MHz_t bandwidth);
 
     /**
      * Given the channel bandwidth and the number of stations candidate for being

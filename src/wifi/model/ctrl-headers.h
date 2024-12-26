@@ -11,8 +11,8 @@
 
 #include "block-ack-type.h"
 #include "wifi-phy-common.h"
+#include "wifi-ru.h"
 
-#include "ns3/he-ru.h"
 #include "ns3/header.h"
 #include "ns3/mac48-address.h"
 
@@ -674,14 +674,14 @@ class CtrlTriggerUserInfoField
      *
      * @param ru the RU this User Info field is allocating
      */
-    void SetRuAllocation(HeRu::RuSpec ru);
+    void SetRuAllocation(WifiRu::RuSpec ru);
     /**
      * Get the RU specified by the RU Allocation subfield.
      * This method cannot be called on MU-RTS Trigger Frames (call GetMuRtsRuAllocation instead).
      *
      * @return the RU this User Info field is allocating
      */
-    HeRu::RuSpec GetRuAllocation() const;
+    WifiRu::RuSpec GetRuAllocation() const;
     /**
      * Set the RU Allocation subfield based on the given value for the B7-B1 bits.
      * This method can only be called on MU-RTS Trigger Frames.
