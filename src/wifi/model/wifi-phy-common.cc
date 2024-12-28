@@ -237,6 +237,9 @@ GetModulationClassForStandard(WifiStandard standard)
     case WIFI_STANDARD_80211be:
         modulationClass = WIFI_MOD_CLASS_EHT;
         break;
+    case WIFI_STANDARD_80211bn:
+        modulationClass = WIFI_MOD_CLASS_UHR;
+        break;
     case WIFI_STANDARD_UNSPECIFIED:
         [[fallthrough]];
     default:

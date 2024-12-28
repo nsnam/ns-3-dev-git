@@ -206,6 +206,7 @@ IsValidGuardInterval(Time gi, WifiStandard standard)
         return (gi.GetPicoSeconds() == 48485) || (gi.GetPicoSeconds() == 96970);
     case WIFI_STANDARD_80211ax:
     case WIFI_STANDARD_80211be:
+    case WIFI_STANDARD_80211bn:
         return (gi.GetNanoSeconds() == 800) || (gi.GetNanoSeconds() == 1600) ||
                (gi.GetNanoSeconds() == 3200);
     default:

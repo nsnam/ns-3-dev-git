@@ -37,6 +37,7 @@ enum WifiStandard
     WIFI_STANDARD_80211ad,
     WIFI_STANDARD_80211ax,
     WIFI_STANDARD_80211be,
+    WIFI_STANDARD_80211bn,
     WIFI_STANDARD_COUNT
 };
 
@@ -70,6 +71,8 @@ operator<<(std::ostream& os, WifiStandard standard)
         return (os << "802.11ax");
     case WIFI_STANDARD_80211be:
         return (os << "802.11be");
+    case WIFI_STANDARD_80211bn:
+        return (os << "802.11bn");
     default:
         return (os << "UNSPECIFIED");
     }
@@ -122,6 +125,7 @@ GetDefaultChannelWidth(WifiStandard standard, WifiPhyBand band)
         return MHz_t{2160};
     case WIFI_STANDARD_80211ax:
     case WIFI_STANDARD_80211be:
+    case WIFI_STANDARD_80211bn:
         return (band == WIFI_PHY_BAND_2_4GHZ ? MHz_t{20} : MHz_t{80});
     default:
         return MHz_t{20};
@@ -144,6 +148,7 @@ GetDefaultPhyBand(WifiStandard standard)
     case WIFI_STANDARD_80211ac:
     case WIFI_STANDARD_80211ax:
     case WIFI_STANDARD_80211be:
+    case WIFI_STANDARD_80211bn:
         return WIFI_PHY_BAND_5GHZ;
     case WIFI_STANDARD_80211ad:
         return WIFI_PHY_BAND_60GHZ;

@@ -2425,6 +2425,7 @@ WifiPhy::GetSubcarrierSpacing() const
         break;
     case WIFI_STANDARD_80211ax:
     case WIFI_STANDARD_80211be:
+    case WIFI_STANDARD_80211bn:
         subcarrierSpacing = SUBCARRIER_FREQUENCY_SPACING_HE;
         break;
     default:
