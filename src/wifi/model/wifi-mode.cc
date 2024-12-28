@@ -11,7 +11,6 @@
 
 #include "wifi-tx-vector.h"
 
-#include "ns3/he-ru.h"
 #include "ns3/log.h"
 
 #include <cmath>
