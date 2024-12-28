@@ -22,7 +22,6 @@
 
 #include "ns3/channel.h"
 #include "ns3/dsss-phy.h"
-#include "ns3/eht-phy.h" //also includes OFDM, HT, VHT and HE
 #include "ns3/erp-ofdm-phy.h"
 #include "ns3/error-model.h"
 #include "ns3/log.h"
@@ -31,6 +30,7 @@
 #include "ns3/random-variable-stream.h"
 #include "ns3/simulator.h"
 #include "ns3/string.h"
+#include "ns3/uhr-phy.h" //also includes OFDM, HT, VHT, HE and EHT
 
 #include <algorithm>
 #include <numeric>
@@ -994,6 +994,14 @@ WifiPhy::Configure80211be()
 }
 
 void
+WifiPhy::Configure80211bn()
+{
+    NS_LOG_FUNCTION(this);
+    Configure80211be();
+    AddPhyEntity(WIFI_MOD_CLASS_UHR, std::make_shared<UhrPhy>());
+}
+
+void
 WifiPhy::SetMaxModulationClassSupported(WifiModulationClass modClass)
 {
     NS_LOG_FUNCTION(this << modClass);
@@ -1058,6 +1066,9 @@ WifiPhy::ConfigureStandard(WifiStandard standard)
         break;
     case WIFI_STANDARD_80211be:
         Configure80211be();
+        break;
+    case WIFI_STANDARD_80211bn:
+        Configure80211bn();
         break;
     case WIFI_STANDARD_UNSPECIFIED:
     default:

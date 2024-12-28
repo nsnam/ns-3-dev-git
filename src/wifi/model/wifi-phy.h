@@ -1531,6 +1531,11 @@ class WIFI_EXPORT WifiPhy : public Object
      */
     void Configure80211be();
     /**
+     * Configure WifiPhy with appropriate channel frequency and
+     * supported rates for 802.11bn standard.
+     */
+    void Configure80211bn();
+    /**
      * Configure the device MCS set with the appropriate HtMcs modes for
      * the number of available transmit spatial streams
      */

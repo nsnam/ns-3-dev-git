@@ -8,6 +8,8 @@
 
 #include "uhr-ppdu.h"
 
+#include "uhr-phy.h"
+
 #include "ns3/log.h"
 #include "ns3/wifi-phy-operating-channel.h"
 #include "ns3/wifi-psdu.h"
@@ -59,6 +61,12 @@ bool
 UhrPpdu::IsUlMu() const
 {
     return (m_preamble == WIFI_PREAMBLE_UHR_TB) && !m_psdus.contains(SU_STA_ID);
+}
+
+WifiMode
+UhrPpdu::GetMcs(uint8_t mcs) const
+{
+    return UhrPhy::GetUhrMcs(mcs);
 }
 
 Ptr<WifiPpdu>
