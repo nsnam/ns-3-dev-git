@@ -1278,6 +1278,7 @@ WifiHelper::EnableLogComponents(LogLevel logLevel)
     LogComponentEnable("ThresholdPreambleDetectionModel", logLevel);
     LogComponentEnable("Txop", logLevel);
     LogComponentEnable("UhrConfiguration", logLevel);
+    LogComponentEnable("UhrPpdu", logLevel);
     LogComponentEnable("VhtConfiguration", logLevel);
     LogComponentEnable("VhtFrameExchangeManager", logLevel);
     LogComponentEnable("VhtPhy", logLevel);
