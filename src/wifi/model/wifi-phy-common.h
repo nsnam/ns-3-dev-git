@@ -344,6 +344,9 @@ enum WifiPpduField
     WIFI_PPDU_FIELD_SIG_B,    //!< SIG-B field
     WIFI_PPDU_FIELD_U_SIG,    //!< U-SIG field
     WIFI_PPDU_FIELD_EHT_SIG,  //!< EHT-SIG field
+    WIFI_PPDU_FIELD_UHR_SIG,  //!< UHR-SIG field
+    WIFI_PPDU_FIELD_ELR_MARK, //!< ELR-MARK field
+    WIFI_PPDU_FIELD_ELR_SIG,  //!< ELR-SIG field
     WIFI_PPDU_FIELD_DATA      //!< data field
 };
 
@@ -375,6 +378,12 @@ operator<<(std::ostream& os, const WifiPpduField& field)
         return (os << "U-SIG");
     case WIFI_PPDU_FIELD_EHT_SIG:
         return (os << "EHT-SIG");
+    case WIFI_PPDU_FIELD_UHR_SIG:
+        return (os << "UHR-SIG");
+    case WIFI_PPDU_FIELD_ELR_MARK:
+        return (os << "ELR-MARK");
+    case WIFI_PPDU_FIELD_ELR_SIG:
+        return (os << "ELR-SIG");
     case WIFI_PPDU_FIELD_DATA:
         return (os << "data");
     default:
@@ -441,6 +450,9 @@ enum WifiPhyRxfailureReason
     SIG_B_FAILURE,
     U_SIG_FAILURE,
     EHT_SIG_FAILURE,
+    UHR_SIG_FAILURE,
+    ELR_MARK_FAILURE,
+    ELR_SIG_FAILURE,
     PREAMBLE_DETECTION_PACKET_SWITCH,
     FRAME_CAPTURE_PACKET_SWITCH,
     OBSS_PD_CCA_RESET,
