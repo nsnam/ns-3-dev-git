@@ -52,6 +52,7 @@ class UhrPpdu : public EhtPpdu
   private:
     bool IsDlMu() const override;
     bool IsUlMu() const override;
+    WifiMode GetMcs(uint8_t mcs) const override;
 }; // class UhrPpdu
 
 } // namespace ns3

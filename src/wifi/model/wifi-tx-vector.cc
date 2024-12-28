@@ -13,7 +13,7 @@
 #include "wifi-utils.h"
 
 #include "ns3/abort.h"
-#include "ns3/eht-phy.h"
+#include "ns3/uhr-phy.h"
 
 #include <algorithm>
 #include <iterator>
@@ -136,6 +136,8 @@ WifiTxVector::GetMode(uint16_t staId) const
     NS_ASSERT(userInfoIt != m_muUserInfos.cend());
     switch (GetModulationClassForPreamble(m_preamble))
     {
+    case WIFI_MOD_CLASS_UHR:
+        return UhrPhy::GetUhrMcs(userInfoIt->second.mcs);
     case WIFI_MOD_CLASS_EHT:
         return EhtPhy::GetEhtMcs(userInfoIt->second.mcs);
     case WIFI_MOD_CLASS_HE:
