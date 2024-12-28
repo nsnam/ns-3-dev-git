@@ -164,6 +164,9 @@ GetPpduMaxTime(WifiPreamble preamble)
     case WIFI_PREAMBLE_HE_TB:
     case WIFI_PREAMBLE_EHT_MU:
     case WIFI_PREAMBLE_EHT_TB:
+    case WIFI_PREAMBLE_UHR_MU:
+    case WIFI_PREAMBLE_UHR_TB:
+    case WIFI_PREAMBLE_UHR_ELR:
         duration = MicroSeconds(5484);
         break;
     default:
@@ -182,13 +185,15 @@ IsMu(WifiPreamble preamble)
 bool
 IsDlMu(WifiPreamble preamble)
 {
-    return ((preamble == WIFI_PREAMBLE_HE_MU) || (preamble == WIFI_PREAMBLE_EHT_MU));
+    return ((preamble == WIFI_PREAMBLE_HE_MU) || (preamble == WIFI_PREAMBLE_EHT_MU) ||
+            (preamble == WIFI_PREAMBLE_UHR_MU));
 }
 
 bool
 IsUlMu(WifiPreamble preamble)
 {
-    return ((preamble == WIFI_PREAMBLE_HE_TB) || (preamble == WIFI_PREAMBLE_EHT_TB));
+    return ((preamble == WIFI_PREAMBLE_HE_TB) || (preamble == WIFI_PREAMBLE_EHT_TB) ||
+            (preamble == WIFI_PREAMBLE_UHR_TB));
 }
 
 WifiModulationClass
@@ -292,6 +297,13 @@ bool
 IsEht(WifiPreamble preamble)
 {
     return ((preamble == WIFI_PREAMBLE_EHT_MU) || (preamble == WIFI_PREAMBLE_EHT_TB));
+}
+
+bool
+IsUhr(WifiPreamble preamble)
+{
+    return ((preamble == WIFI_PREAMBLE_UHR_MU) || (preamble == WIFI_PREAMBLE_UHR_TB) ||
+            (preamble == WIFI_PREAMBLE_UHR_ELR));
 }
 
 } // namespace ns3

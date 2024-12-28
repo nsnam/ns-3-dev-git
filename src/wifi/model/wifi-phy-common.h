@@ -190,7 +190,10 @@ enum WifiPreamble
     WIFI_PREAMBLE_HE_MU,
     WIFI_PREAMBLE_HE_TB,
     WIFI_PREAMBLE_EHT_MU,
-    WIFI_PREAMBLE_EHT_TB
+    WIFI_PREAMBLE_EHT_TB,
+    WIFI_PREAMBLE_UHR_MU,
+    WIFI_PREAMBLE_UHR_TB,
+    WIFI_PREAMBLE_UHR_ELR
 };
 
 /**
@@ -233,6 +236,12 @@ operator<<(std::ostream& os, const WifiPreamble& preamble)
         return (os << "EHT_MU");
     case WIFI_PREAMBLE_EHT_TB:
         return (os << "EHT_TB");
+    case WIFI_PREAMBLE_UHR_MU:
+        return (os << "UHR_MU");
+    case WIFI_PREAMBLE_UHR_TB:
+        return (os << "UHR_TB");
+    case WIFI_PREAMBLE_UHR_ELR:
+        return (os << "UHR_ELR");
     default:
         NS_FATAL_ERROR("Invalid preamble");
         return (os << "INVALID");
@@ -710,6 +719,14 @@ MHz_t GetChannelWidthInMhz(WifiChannelWidthType width);
  * @return true if the provided preamble corresponds to an EHT transmission
  */
 bool IsEht(WifiPreamble preamble);
+
+/**
+ * Return true if a preamble corresponds to an UHR transmission.
+ *
+ * @param preamble the preamble
+ * @return true if the provided preamble corresponds to an UHR transmission
+ */
+bool IsUhr(WifiPreamble preamble);
 
 /**
  * @brief map a given channel list type to the corresponding scaling factor
