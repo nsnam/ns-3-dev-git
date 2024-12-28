@@ -167,6 +167,10 @@ GetDefaultPhyBand(WifiStandard standard)
 inline std::string
 GetFrameExchangeManagerTypeIdName(WifiStandard standard, bool qosSupported)
 {
+    if (standard >= WIFI_STANDARD_80211bn)
+    {
+        return "ns3::UhrFrameExchangeManager";
+    }
     if (standard >= WIFI_STANDARD_80211be)
     {
         return "ns3::EhtFrameExchangeManager";
