@@ -237,6 +237,9 @@ GetModulationClassForStandard(WifiStandard standard)
     case WIFI_STANDARD_80211be:
         modulationClass = WIFI_MOD_CLASS_EHT;
         break;
+    case WIFI_STANDARD_80211bn:
+        modulationClass = WIFI_MOD_CLASS_UHR;
+        break;
     case WIFI_STANDARD_UNSPECIFIED:
         [[fallthrough]];
     default:
@@ -267,6 +270,7 @@ GetSupportedChannelWidthSet(WifiStandard standard, WifiPhyBand band)
                    ? std::set<MHz_u>{MHz_u{20}, MHz_u{40}}
                    : std::set<MHz_u>{MHz_u{20}, MHz_u{80}, MHz_u{160}};
     case WIFI_STANDARD_80211be:
+    case WIFI_STANDARD_80211bn:
         switch (band)
         {
         case WifiPhyBand::WIFI_PHY_BAND_2_4GHZ:
