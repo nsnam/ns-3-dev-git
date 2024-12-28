@@ -9,8 +9,6 @@
 #ifndef MULTI_USER_SCHEDULER_H
 #define MULTI_USER_SCHEDULER_H
 
-#include "he-ru.h"
-
 #include "ns3/ap-wifi-mac.h"
 #include "ns3/ctrl-headers.h"
 #include "ns3/object.h"
