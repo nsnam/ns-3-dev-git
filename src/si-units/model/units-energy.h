@@ -924,7 +924,7 @@ struct dBm_per_Hz_t // NOLINT(readability-identifier-naming)
     /// @returns average PSD in dBm/Hz
     static dBm_per_Hz_t AveragePsd(dBm_t power, Hz_t bandwidth)
     {
-        return dBm_per_Hz_t{power.val - ToLogScale(static_cast<double>(bandwidth.val))};
+        return dBm_per_Hz_t{power.val - ToLogScale(static_cast<double>(bandwidth.in_Hz()))};
     }
 
     /// Calculate average PSD
@@ -941,7 +941,7 @@ struct dBm_per_Hz_t // NOLINT(readability-identifier-naming)
     /// @returns power over bandwidth in dBm
     inline dBm_t OverBandwidth(const Hz_t& rhs) const
     {
-        return dBm_t{val + ToLogScale(static_cast<double>(rhs.val))};
+        return dBm_t{val + ToLogScale(static_cast<double>(rhs.in_Hz()))};
     }
 
     /// Calculate power over bandwidth
@@ -1081,7 +1081,7 @@ struct dBm_per_MHz_t // NOLINT(readability-identifier-naming)
     /// @returns average PSD in dBm/MHz
     static dBm_per_MHz_t AveragePsd(dBm_t power, MHz_t bandwidth)
     {
-        return dBm_per_MHz_t{power.val - ToLogScale(static_cast<double>(bandwidth.val))};
+        return dBm_per_MHz_t{power.val - ToLogScale(static_cast<double>(bandwidth.in_MHz()))};
     }
 
     /// Calculate average PSD
@@ -1098,7 +1098,7 @@ struct dBm_per_MHz_t // NOLINT(readability-identifier-naming)
     /// @returns power over bandwidth in dBm
     inline dBm_t OverBandwidth(const MHz_t& rhs) const
     {
-        return dBm_t{val + ToLogScale(static_cast<double>(rhs.val))};
+        return dBm_t{val + ToLogScale(static_cast<double>(rhs.in_MHz()))};
     }
 
     /// Calculate power over bandwidth
