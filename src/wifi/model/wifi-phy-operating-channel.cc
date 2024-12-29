@@ -821,12 +821,6 @@ WifiPhyOperatingChannel::Get20MHzIndicesCoveringRu(WifiRu::RuSpec ru, MHz_u widt
                   "The given width (" << width << " MHz) exceeds the operational width ("
                                       << GetTotalWidth() << ")");
 
-    // trivial case: 2x996-tone RU
-    if (ruType == RuType::RU_2x996_TONE)
-    {
-        return {0, 1, 2, 3, 4, 5, 6, 7};
-    }
-
     // handle first the special case of center 26-tone RUs
     if (ruType == RuType::RU_26_TONE && ruIndex == 19)
     {
@@ -845,8 +839,13 @@ WifiPhyOperatingChannel::Get20MHzIndicesCoveringRu(WifiRu::RuSpec ru, MHz_u widt
 
     if (ruType == RuType::RU_26_TONE && ruIndex > 19)
     {
-        // "ignore" the center 26-tone RU in an 80 MHz channel
+        // "ignore" the center 26-tone RUs in 80 MHz channels
         ruIndex--;
+        if (ruIndex > 37)
+        {
+            NS_ASSERT(WifiRu::IsEht(ru));
+            ruIndex -= (ruIndex - 19) / 37;
+        }
     }
 
     // if the HE RU refers to a 160 MHz channel, we have to update the RU index (which refers to an
@@ -882,18 +881,26 @@ WifiPhyOperatingChannel::Get20MHzIndicesCoveringRu(WifiRu::RuSpec ru, MHz_u widt
     case RuType::RU_996_TONE:
         n20MHzChannels = 4;
         break;
+    case RuType::RU_2x996_TONE:
+        n20MHzChannels = 8;
+        break;
+    case RuType::RU_4x996_TONE:
+        n20MHzChannels = 16;
+        break;
     default:
         NS_ABORT_MSG("Unhandled RU type: " << ruType);
     }
 
     auto nRusInCoveringChannel =
-        WifiRu::GetNRus(n20MHzChannels * MHz_u{20}, ruType, WIFI_MOD_CLASS_HE);
+        WifiRu::GetNRus(n20MHzChannels * MHz_u{20},
+                        ruType,
+                        WifiRu::IsHe(ru) ? WIFI_MOD_CLASS_HE : WIFI_MOD_CLASS_EHT);
     // compute the index (starting at 0) of the covering channel within the given width
     std::size_t indexOfCoveringChannelInGivenWidth = (ruIndex - 1) / nRusInCoveringChannel;
 
     // expand the index of the covering channel in the indices of its constituent
     // 20 MHz channels (within the given width)
-    NS_ASSERT(indexOfCoveringChannelInGivenWidth < 8); // max number of 20 MHz channels
+    NS_ASSERT(indexOfCoveringChannelInGivenWidth < 16); // max number of 20 MHz channels
     std::set<uint8_t> indices({static_cast<uint8_t>(indexOfCoveringChannelInGivenWidth)});
 
     while (n20MHzChannels > 1)
