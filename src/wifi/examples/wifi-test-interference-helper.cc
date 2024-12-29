@@ -323,8 +323,8 @@ main(int argc, char* argv[])
     cmd.AddValue("txModeB", "Wifi mode used for payload transmission of sender B", input.txModeB);
     cmd.AddValue("channelA", "The selected channel number of sender A", input.channelA);
     cmd.AddValue("channelB", "The selected channel number of sender B", input.channelB);
-    cmd.AddValue("widthA", "The selected channel width (MHz) of sender A", input.widthA);
-    cmd.AddValue("widthB", "The selected channel width (MHz) of sender B", input.widthB);
+    cmd.AddValue("widthA", "The selected channel width of sender A", input.widthA);
+    cmd.AddValue("widthB", "The selected channel width of sender B", input.widthB);
     cmd.AddValue("standard", "IEEE 802.11 flavor", str_standard);
     cmd.AddValue("preamble", "Type of preamble", str_preamble);
     cmd.AddValue("enableCapture", "Enable/disable physical layer capture", input.captureEnabled);

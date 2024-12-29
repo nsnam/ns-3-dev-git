@@ -229,7 +229,7 @@ main(int argc, char* argv[])
                  maxRetryCount);
     cmd.AddValue("rtsThreshold", "RTS threshold", rtsThreshold);
     cmd.AddValue("maxAmpduSize", "Max A-MPDU size", maxAmpduSize);
-    cmd.AddValue("stepSize", "Power between steps (dB)", stepSize);
+    cmd.AddValue("stepSize", "Power between steps", stepSize);
     cmd.AddValue("stepTime", "Time on each step", stepTime);
     cmd.AddValue("broadcast", "Send broadcast instead of unicast", broadcast);
     cmd.AddValue("serverChannelWidth",

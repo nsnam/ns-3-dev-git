@@ -467,8 +467,8 @@ main(int argc, char* argv[])
     cmd.AddValue("rtsThreshold", "RTS threshold", rtsThreshold);
     cmd.AddValue("outputFileName", "Output filename", outputFileName);
     cmd.AddValue("simuTime", "Total simulation time (sec)", simuTime);
-    cmd.AddValue("maxPower", "Maximum available transmission level (dbm).", maxPower);
-    cmd.AddValue("minPower", "Minimum available transmission level (dbm).", minPower);
+    cmd.AddValue("maxPower", "Maximum available transmission level.", maxPower);
+    cmd.AddValue("minPower", "Minimum available transmission level.", minPower);
     cmd.AddValue("powerLevels",
                  "Number of transmission power levels available between "
                  "TxPowerStart and TxPowerEnd included.",

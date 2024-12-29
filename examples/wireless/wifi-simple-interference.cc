@@ -167,8 +167,8 @@ main(int argc, char* argv[])
                        // transmit power, based on other configuration
     CommandLine cmd(__FILE__);
     cmd.AddValue("phyMode", "Wifi Phy mode", phyMode);
-    cmd.AddValue("Prss", "Intended primary received signal strength (dBm)", prss);
-    cmd.AddValue("Irss", "Intended interfering received signal strength (dBm)", irss);
+    cmd.AddValue("Prss", "Intended primary received signal strength", prss);
+    cmd.AddValue("Irss", "Intended interfering received signal strength", irss);
     cmd.AddValue("delta", "time offset for interfering signal", delta);
     cmd.AddValue("PpacketSize", "size of application packet sent", pPacketSize);
     cmd.AddValue("IpacketSize", "size of interfering packet sent", iPacketSize);

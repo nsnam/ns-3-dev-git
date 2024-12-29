@@ -403,8 +403,8 @@ main(int argc, char* argv[])
     cmd.AddValue("steps", "How many different distances to try", steps);
     cmd.AddValue("stepsTime", "Time on each step", stepsTime);
     cmd.AddValue("stepsSize", "Distance between steps", stepsSize);
-    cmd.AddValue("maxPower", "Maximum available transmission level (dbm).", maxPower);
-    cmd.AddValue("minPower", "Minimum available transmission level (dbm).", minPower);
+    cmd.AddValue("maxPower", "Maximum available transmission level.", maxPower);
+    cmd.AddValue("minPower", "Minimum available transmission level.", minPower);
     cmd.AddValue("powerLevels",
                  "Number of transmission power levels available between "
                  "TxPowerStart and TxPowerEnd included.",

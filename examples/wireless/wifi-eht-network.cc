@@ -227,7 +227,7 @@ main(int argc, char* argv[])
                  "the Main PHY was operating before moving to the link of the Aux PHY. ",
                  switchAuxPhy);
     cmd.AddValue("emlsrAuxChWidth",
-                 "The maximum channel width (MHz) supported by Aux PHYs.",
+                 "The maximum channel width supported by Aux PHYs.",
                  auxPhyChWidth);
     cmd.AddValue("emlsrAuxTxCapable",
                  "Whether Aux PHYs are capable of transmitting.",

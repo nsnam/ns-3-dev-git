@@ -52,7 +52,7 @@ main(int argc, char* argv[])
     cmd.AddValue("simulationTime", "Simulation time", simulationTime);
     cmd.AddValue("useRts", "Enable/disable RTS/CTS", useRts);
     cmd.AddValue("mcs", "MCS value (0 - 7)", mcs);
-    cmd.AddValue("channelWidth", "Channel width in MHz", channelWidth);
+    cmd.AddValue("channelWidth", "Channel width", channelWidth);
     cmd.AddValue("useShortGuardInterval",
                  "Enable/disable short guard interval",
                  useShortGuardInterval);

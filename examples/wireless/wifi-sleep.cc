@@ -118,8 +118,8 @@ main(int argc, char* argv[])
     cmd.AddValue("duration", "duration of the experiment", duration);
     cmd.AddValue("initialEnergy", "Initial Energy (Joule) of each node", initialEnergy);
     cmd.AddValue("voltage", "Supply voltage (Joule)", voltage);
-    cmd.AddValue("txPowerStart", "Minimum available transmission level (dbm)", txPowerStart);
-    cmd.AddValue("txPowerEnd", "Maximum available transmission level (dbm)", txPowerEnd);
+    cmd.AddValue("txPowerStart", "Minimum available transmission level", txPowerStart);
+    cmd.AddValue("txPowerEnd", "Maximum available transmission level", txPowerEnd);
     cmd.AddValue("nTxPowerLevels",
                  "Number of transmission power levels available between txPowerStart and "
                  "txPowerEnd included",

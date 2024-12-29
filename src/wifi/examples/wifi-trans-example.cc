@@ -52,8 +52,8 @@ main(int argc, char** argv)
                  "OFDM-based Wi-Fi standard [11a, 11p_10MHZ, 11p_5MHZ, 11n_2_4GHZ, 11n_5GHZ, 11ac, "
                  "11ax_2_4GHZ, 11ax_5GHZ]",
                  standardStr);
-    cmd.AddValue("bw", "Bandwidth (consistent with standard, in MHz)", bw);
-    cmd.AddValue("txPower", "Transmit power (dBm)", pow);
+    cmd.AddValue("bw", "Bandwidth (consistent with standard)", bw);
+    cmd.AddValue("txPower", "Transmit power", pow);
     cmd.AddValue("verbose",
                  "Display log messages for WifiSpectrumValueHelper and SpectrumWifiPhy",
                  verbose);

@@ -172,18 +172,20 @@ main(int argc, char* argv[])
     cmd.AddValue("d1", "Distance between STA1 and AP1 (m)", d1);
     cmd.AddValue("d2", "Distance between STA2 and AP2 (m)", d2);
     cmd.AddValue("d3", "Distance between AP1 and AP2 (m)", d3);
-    cmd.AddValue("powSta1", "Power of STA1 (dBm)", powSta1);
-    cmd.AddValue("powSta2", "Power of STA2 (dBm)", powSta2);
-    cmd.AddValue("powAp1", "Power of AP1 (dBm)", powAp1);
-    cmd.AddValue("powAp2", "Power of AP2 (dBm)", powAp2);
-    cmd.AddValue("ccaEdTrSta1", "CCA-ED Threshold of STA1 (dBm)", ccaEdTrSta1);
-    cmd.AddValue("ccaEdTrSta2", "CCA-ED Threshold of STA2 (dBm)", ccaEdTrSta2);
-    cmd.AddValue("ccaEdTrAp1", "CCA-ED Threshold of AP1 (dBm)", ccaEdTrAp1);
-    cmd.AddValue("ccaEdTrAp2", "CCA-ED Threshold of AP2 (dBm)", ccaEdTrAp2);
+    cmd.AddValue("powSta1", "Power of STA1", powSta1);
+    cmd.AddValue("powSta2", "Power of STA2", powSta2);
+    cmd.AddValue("powAp1", "Power of AP1", powAp1);
+    cmd.AddValue("powAp2", "Power of AP2", powAp2);
+    cmd.AddValue("ccaEdTrSta1", "CCA-ED Threshold of STA1", ccaEdTrSta1);
+    cmd.AddValue("ccaEdTrSta2", "CCA-ED Threshold of STA2", ccaEdTrSta2);
+    cmd.AddValue("ccaEdTrAp1", "CCA-ED Threshold of AP1", ccaEdTrAp1);
+    cmd.AddValue("ccaEdTrAp2", "CCA-ED Threshold of AP2", ccaEdTrAp2);
     cmd.AddValue("minimumRssi",
                  "Minimum RSSI for the ThresholdPreambleDetectionModel",
                  minimumRssi);
-    cmd.AddValue("channelWidth", "Bandwidth of the channel in MHz [20, 40, or 80]", channelWidth);
+    cmd.AddValue("channelWidth",
+                 "Bandwidth of the channel [20, 40, or 80 MHz are supported]",
+                 channelWidth);
     cmd.AddValue("obssPdThreshold", "Threshold for the OBSS PD Algorithm", obssPdThreshold);
     cmd.AddValue("mcs", "The constant MCS value to transmit HE PPDUs", mcs);
     cmd.Parse(argc, argv);
