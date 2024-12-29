@@ -586,13 +586,20 @@ HePpdu::GetNumRusPerHeSigBContentChannel(
         {
             std::size_t ccIndex;
             const auto ruAlloc = ruAllocation.at(n);
+            std::size_t num20MHz{1};
             const auto ruSpecs = HeRu::GetRuSpecs(ruAlloc);
-            if (ruSpecs.empty())
+            const auto nRuSpecs = ruSpecs.size();
+            if (nRuSpecs == 1)
+            {
+                const auto ruBw = HeRu::GetBandwidth(ruSpecs.front().GetRuType());
+                num20MHz = Count20MHzSubchannels(ruBw);
+            }
+            if (nRuSpecs == 0)
             {
                 ++n;
                 continue;
             }
-            if (ruSpecs.front().GetRuType() >= HeRu::RU_484_TONE)
+            if (num20MHz > 1)
             {
                 ccIndex = (chSize.first <= chSize.second) ? 0 : 1;
             }
@@ -600,7 +607,6 @@ HePpdu::GetNumRusPerHeSigBContentChannel(
             {
                 ccIndex = (n % 2 == 0) ? 0 : 1;
             }
-            const auto nRuSpecs = HeRu::GetRuSpecs(ruAlloc).size();
             if (ccIndex == 0)
             {
                 chSize.first += nRuSpecs;
@@ -609,16 +615,14 @@ HePpdu::GetNumRusPerHeSigBContentChannel(
             {
                 chSize.second += nRuSpecs;
             }
-            const auto ruBw = HeRu::GetBandwidth(ruSpecs.at(0).GetRuType());
-            if (ruBw <= MHz_u{20})
+            if (num20MHz > 1)
             {
-                ++n;
+                const auto skipNumIndices = (ccIndex == 0) ? num20MHz : num20MHz - 1;
+                n += skipNumIndices;
             }
             else
             {
-                const auto num20MHz = Count20MHzSubchannels(ruBw);
-                const auto skipNumIndices = (ccIndex == 0) ? num20MHz : num20MHz - 1;
-                n += skipNumIndices;
+                ++n;
             }
         }
         break;
