@@ -94,8 +94,8 @@ RateChange(uint64_t oldVal, uint64_t newVal)
 /// Step structure
 struct Step
 {
-    dB_t stepSize;   ///< step size
-    double stepTime; ///< step size in seconds
+    dB_t stepSize; ///< step size
+    Time stepTime; ///< step time
 };
 
 /// StandardInfo structure
@@ -173,7 +173,7 @@ ChangeSignalAndReportRate(Ptr<FixedRssLossModel> rssModel,
     dB_t snr{rss.in_dBm() - noise.in_dBm()};
     rateDataset.Add(snr.in_dB(), g_intervalRate / 1e6);
     // Calculate received rate since last interval
-    double currentRate = ((g_intervalBytes * 8) / step.stepTime) / 1e6; // Mb/s
+    double currentRate = ((g_intervalBytes * 8) / step.stepTime.GetMicroSeconds()); // Mb/s
     actualDataset.Add(snr.in_dB(), currentRate);
     const dBm_t newRss{rss.in_dBm() - step.stepSize.in_dB()};
     rssModel->SetRss(newRss.in_dBm());
@@ -181,7 +181,7 @@ ChangeSignalAndReportRate(Ptr<FixedRssLossModel> rssModel,
                            << (g_intervalRate / 1e6) << "; observed rate " << currentRate
                            << "; setting new power to " << newRss);
     g_intervalBytes = 0;
-    Simulator::Schedule(Seconds(step.stepTime),
+    Simulator::Schedule(step.stepTime,
                         &ChangeSignalAndReportRate,
                         rssModel,
                         step,
@@ -200,7 +200,7 @@ main(int argc, char* argv[])
     uint32_t rtsThreshold = 999999; // disabled even for large A-MPDU
     uint32_t maxAmpduSize = 65535;
     dB_t stepSize{1};
-    double stepTime = 1;        // seconds
+    Time stepTime{"1s"};
     uint32_t packetSize = 1024; // bytes
     bool broadcast = false;
     int ap1_x = 0;
@@ -230,7 +230,7 @@ main(int argc, char* argv[])
     cmd.AddValue("rtsThreshold", "RTS threshold", rtsThreshold);
     cmd.AddValue("maxAmpduSize", "Max A-MPDU size", maxAmpduSize);
     cmd.AddValue("stepSize", "Power between steps (dB)", stepSize);
-    cmd.AddValue("stepTime", "Time on each step (seconds)", stepTime);
+    cmd.AddValue("stepTime", "Time on each step", stepTime);
     cmd.AddValue("broadcast", "Send broadcast instead of unicast", broadcast);
     cmd.AddValue("serverChannelWidth",
                  "Set channel width of the server (valid only for 802.11n or ac)",
@@ -866,7 +866,7 @@ main(int argc, char* argv[])
     rssLossModel->SetRss(rssCurrent.in_dBm());
     NS_LOG_INFO("Setting initial Rss to " << rssCurrent);
     // Move the STA by stepsSize meters every stepTime seconds
-    Simulator::Schedule(Seconds(0.5 + stepTime),
+    Simulator::Schedule(Seconds(0.5) + stepTime,
                         &ChangeSignalAndReportRate,
                         rssLossModel,
                         step,
@@ -914,7 +914,7 @@ main(int argc, char* argv[])
     server->TraceConnectWithoutContext("Rx", MakeCallback(&PacketRx));
     serverNode->AddApplication(server);
 
-    Simulator::Stop(Seconds((steps + 1) * stepTime));
+    Simulator::Stop((steps + 1) * stepTime);
     Simulator::Run();
 
     if (serverSelectedStandard.m_standard >= WIFI_STANDARD_80211n)
