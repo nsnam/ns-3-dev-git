@@ -103,6 +103,7 @@ enum class RuType : uint8_t
     RU_484_TONE,
     RU_996_TONE,
     RU_2x996_TONE,
+    RU_4x996_TONE,
     RU_TYPE_MAX
 };
 
@@ -138,6 +139,9 @@ operator<<(std::ostream& os, const RuType& ruType)
         break;
     case RuType::RU_2x996_TONE:
         os << "2x996-tones";
+        break;
+    case RuType::RU_4x996_TONE:
+        os << "4x996-tones";
         break;
     default:
         NS_FATAL_ERROR("Unknown RU type");
