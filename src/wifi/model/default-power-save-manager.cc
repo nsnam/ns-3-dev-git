@@ -98,6 +98,24 @@ DefaultPowerSaveManager::GoToSleepIfPossible(uint8_t linkId)
 }
 
 void
+DefaultPowerSaveManager::DoNotifyAssocCompleted()
+{
+    NS_LOG_FUNCTION(this);
+}
+
+void
+DefaultPowerSaveManager::DoNotifyDisassociation()
+{
+    NS_LOG_FUNCTION(this);
+
+    // base class has resumed PHYs from sleep; here we have to cancel timers
+    for (auto& [linkId, event] : m_wakeUpEvents)
+    {
+        event.Cancel();
+    }
+}
+
+void
 DefaultPowerSaveManager::DoNotifyReceivedBeacon(const MgtBeaconHeader& beacon, uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << beacon << linkId);

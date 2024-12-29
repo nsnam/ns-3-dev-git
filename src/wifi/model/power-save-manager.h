@@ -157,6 +157,16 @@ class PowerSaveManager : public Object
     bool HasFramesToSend(uint8_t linkId) const;
 
     /**
+     * Notify subclasses that the non-AP STA/MLD has completed association with an AP.
+     */
+    virtual void DoNotifyAssocCompleted() = 0;
+
+    /**
+     * Notify subclasses that the non-AP STA/MLD has disassociated.
+     */
+    virtual void DoNotifyDisassociation() = 0;
+
+    /**
      * Notify subclasses that a Beacon frame has been received from the associated AP on the given
      * link.
      *
