@@ -1831,6 +1831,10 @@ FilsDiscHeader::FdCapability::SetStandard(WifiStandard standard)
     case WIFI_STANDARD_80211be:
         m_phyIdx = 5;
         break;
+    case WIFI_STANDARD_80211bn:
+        m_phyIdx = 6;
+        // TODO: not defined yet
+        break;
     default:
         NS_ABORT_MSG("Unsupported standard: " << standard);
     }
@@ -1855,6 +1859,8 @@ FilsDiscHeader::FdCapability::GetStandard(WifiPhyBand band) const
         return WIFI_STANDARD_80211ax;
     case 5:
         return WIFI_STANDARD_80211be;
+    case 6:
+        return WIFI_STANDARD_80211bn;
     default:
         NS_ABORT_MSG("Invalid PHY index: " << m_phyIdx);
     }
