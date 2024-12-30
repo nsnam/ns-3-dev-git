@@ -634,12 +634,27 @@ WifiMacQueueSchedulerImpl<Priority, Compare>::DoGetNext(
                 prevQueueIt = std::prev(sortedQueuesIt);
             }
 
-            GetWifiMacQueue(ac)->ExtractExpiredMpdus(queueInfoPair.first);
+            const auto queueId = queueInfoPair.first;
+            GetWifiMacQueue(ac)->ExtractExpiredMpdus(queueId);
 
-            if (GetWifiMacQueue(ac)->GetNBytes(queueInfoPair.first) == 0)
+            if (GetWifiMacQueue(ac)->GetNBytes(queueId) == 0)
             {
-                sortedQueuesIt = (prevQueueIt.has_value() ? std::next(prevQueueIt.value())
-                                                          : m_perAcInfo[ac].sortedQueues.begin());
+                auto nextQueueIt = (prevQueueIt.has_value() ? std::next(prevQueueIt.value())
+                                                            : m_perAcInfo[ac].sortedQueues.begin());
+                // the container queue may be empty but it may not have been removed yet from the
+                // sorted list. This may happen because the scheduler is notified after that packets
+                // are dequeued and there may be a callback connected to the Dequeue trace source
+                // that calls this function. In such a case, nextQueueIt actually points to the same
+                // queue as sortedQueuesIt. The iterator is advanced to avoid an infinite loop.
+                if (nextQueueIt != m_perAcInfo[ac].sortedQueues.end() &&
+                    nextQueueIt->second.get().first == queueId)
+                {
+                    sortedQueuesIt = std::next(nextQueueIt);
+                }
+                else
+                {
+                    sortedQueuesIt = nextQueueIt;
+                }
                 continue;
             }
             return queueInfoPair.first;
