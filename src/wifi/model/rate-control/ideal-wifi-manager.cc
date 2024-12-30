@@ -609,6 +609,8 @@ IdealWifiManager::IsModulationClassSupported(WifiModulationClass mc,
         return (GetHeSupported() && GetHeSupported(station));
     case WIFI_MOD_CLASS_EHT:
         return (GetEhtSupported() && GetEhtSupported(station));
+    case WIFI_MOD_CLASS_UHR:
+        return (GetUhrSupported() && GetUhrSupported(station));
     default:
         NS_ABORT_MSG("Unknown modulation class: " << mc);
     }
@@ -646,6 +648,13 @@ IdealWifiManager::IsCandidateModulationClass(WifiModulationClass mc,
         }
         break;
     case WIFI_MOD_CLASS_EHT:
+        // If the node and peer are both UHR capable, skip non-UHR modes
+        if (GetUhrSupported() && GetUhrSupported(station))
+        {
+            return false;
+        }
+        break;
+    case WIFI_MOD_CLASS_UHR:
         break;
     default:
         NS_ABORT_MSG("Unknown modulation class: " << mc);

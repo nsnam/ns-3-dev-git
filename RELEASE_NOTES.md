@@ -47,6 +47,7 @@ but other contemporaneous versions may also work.
 - (wifi) - Added support for Timestamp radiotap field.
 - (visualizer) !3061 PyViz was rewritten as a browser based visualizer with no GTK dependencies. It adds a recursive object inspector with attribute editing, a TypeId browser, multi-node selection, movable and minimizable panel windows, optional FlowMonitor plots with zoom for IPv4 and IPv6 flows, battery indicators for nodes with an energy source, mobility trails, transmissions of every device with `MacTx` and `MacRx` trace sources as well as LTE and NR, links from LTE and NR UEs to their serving cell, and restart of C++ programs. The GTK visualizer was removed.
 - (wifi) Added initial support for 802.11bn.
+- (wifi) Extend Ideal rate manager to support UHR rates
 
 ### Bugs fixed
 
