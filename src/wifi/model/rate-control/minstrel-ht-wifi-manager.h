@@ -39,6 +39,7 @@ enum McsGroupType
     WIFI_MINSTREL_GROUP_VHT,
     WIFI_MINSTREL_GROUP_HE,
     WIFI_MINSTREL_GROUP_EHT,
+    WIFI_MINSTREL_GROUP_UHR,
     WIFI_MINSTREL_GROUP_COUNT
 };
 
@@ -62,6 +63,8 @@ operator<<(std::ostream& os, McsGroupType type)
         return (os << "HE");
     case WIFI_MINSTREL_GROUP_EHT:
         return (os << "EHT");
+    case WIFI_MINSTREL_GROUP_UHR:
+        return (os << "UHR");
     default:
     case WIFI_MINSTREL_GROUP_INVALID:
         return (os << "INVALID");
@@ -643,6 +646,17 @@ class WIFI_EXPORT MinstrelHtWifiManager : public WifiRemoteStationManager
      * @returns the EHT group ID
      */
     std::size_t GetEhtGroupId(uint8_t streams, Time guardInterval, MHz_u chWidth);
+
+    /**
+     * Returns the groupId of an UHR MCS with the given number of streams, GI and channel width
+     * used.
+     *
+     * @param streams the number of streams
+     * @param guardInterval guard interval duration
+     * @param chWidth the channel width
+     * @returns the UHR group ID
+     */
+    std::size_t GetUhrGroupId(uint8_t streams, const Time& guardInterval, MHz_u chWidth);
 
     /**
      * Returns the group ID of an MCS of a given group type with the given number of streams, GI and
