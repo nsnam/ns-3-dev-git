@@ -1704,8 +1704,9 @@ WifiRemoteStationManager::AddStationMleCommonInfo(
     auto state = LookupState(from);
     state->m_mleCommonInfo = mleCommonInfo;
     // insert another entry in m_states indexed by the MLD address and pointing to the same state
-    const_cast<WifiRemoteStationManager*>(this)->m_states.insert(
-        {mleCommonInfo->m_mldMacAddress, state});
+    const_cast<WifiRemoteStationManager*>(this)->m_states.insert_or_assign(
+        mleCommonInfo->m_mldMacAddress,
+        state);
 }
 
 Ptr<const HtCapabilities>
