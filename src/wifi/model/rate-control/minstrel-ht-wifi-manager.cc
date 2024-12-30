@@ -89,6 +89,16 @@ const std::map<WifiModulationClass, MinstrelHtWifiManager::StandardInfo> minstre
             .maxStreams = 8,
         },
     },
+    {
+        WIFI_MOD_CLASS_UHR,
+        {
+            .groupType = WIFI_MINSTREL_GROUP_UHR,
+            .maxMcs = 13,
+            .maxWidth = MHz_t{320},
+            .guardIntervals = {NanoSeconds(3200), NanoSeconds(1600), NanoSeconds(800)},
+            .maxStreams = 8,
+        },
+    },
 };
 
 /// MinstrelHtWifiRemoteStation structure
@@ -322,11 +332,16 @@ MinstrelHtWifiManager::DoInitialize()
         m_numGroups += GetNumGroups(WIFI_MOD_CLASS_EHT);
         m_numRates = minstrelHtStandardInfos.at(WIFI_MOD_CLASS_EHT).maxMcs + 1;
     }
+    if (GetUhrSupported())
+    {
+        m_numGroups += GetNumGroups(WIFI_MOD_CLASS_UHR);
+        m_numRates = minstrelHtStandardInfos.at(WIFI_MOD_CLASS_UHR).maxMcs + 1;
+    }
 
     /**
      *  Initialize the groups array.
-     *  The HT groups come first, then the VHT ones, then the HE ones, and finally the EHT ones.
-     *  Minstrel maintains different types of indexes:
+     *  The HT groups come first, then the VHT ones, then the HE ones, then the EHT ones, and
+     * finally the UHR ones. Minstrel maintains different types of indexes:
      *  - A global continuous index, which identifies all rates within all groups, in [0,
      * m_numGroups * m_numRates]
      *  - A groupId, which indexes a group in the array, in [0, m_numGroups]
@@ -360,6 +375,12 @@ MinstrelHtWifiManager::DoInitialize()
     {
         // Initialize all EHT groups
         InitializeGroups(WIFI_MOD_CLASS_EHT);
+    }
+
+    if (GetUhrSupported())
+    {
+        // Initialize all UHR groups
+        InitializeGroups(WIFI_MOD_CLASS_UHR);
     }
 }
 
@@ -1691,6 +1712,12 @@ MinstrelHtWifiManager::RateInit(MinstrelHtWifiRemoteStation* station)
         {
             station->m_groupsTable[groupId].m_supported = false;
 
+            if ((m_minstrelGroups[groupId].type == WIFI_MINSTREL_GROUP_UHR) &&
+                !GetUhrSupported(station))
+            {
+                // It is a UHR group but the receiver does not support UHR: skip
+                continue;
+            }
             if ((m_minstrelGroups[groupId].type == WIFI_MINSTREL_GROUP_EHT) &&
                 !GetEhtSupported(station))
             {
@@ -1707,6 +1734,21 @@ MinstrelHtWifiManager::RateInit(MinstrelHtWifiRemoteStation* station)
                 !GetVhtSupported(station))
             {
                 // It is a VHT group but the receiver does not support VHT: skip
+                continue;
+            }
+            if ((m_minstrelGroups[groupId].type != WIFI_MINSTREL_GROUP_UHR) &&
+                GetUhrSupported(station) && m_useLatestAmendmentOnly)
+            {
+                // It is not a UHR group and the receiver supports UHR: skip since
+                // UseLatestAmendmentOnly attribute is enabled
+                continue;
+            }
+            if (!GetUhrSupported(station) &&
+                (m_minstrelGroups[groupId].type != WIFI_MINSTREL_GROUP_EHT) &&
+                GetEhtSupported(station) && m_useLatestAmendmentOnly)
+            {
+                // It is not a EHT group and the receiver supports EHT (but not UHR): skip since
+                // UseLatestAmendmentOnly attribute is enabled
                 continue;
             }
             if ((m_minstrelGroups[groupId].type != WIFI_MINSTREL_GROUP_EHT) &&
@@ -2141,6 +2183,20 @@ MinstrelHtWifiManager::GetEhtGroupId(uint8_t streams, Time guardInterval, MHz_t 
 }
 
 std::size_t
+MinstrelHtWifiManager::GetUhrGroupId(uint8_t streams, Time guardInterval, MHz_t chWidth)
+{
+    NS_LOG_FUNCTION(this << streams << guardInterval << chWidth);
+    // This check is needed since HT is not supported in 6 GHz band
+    std::size_t allHtGroups = (GetHtSupported()) ? GetNumGroups(WIFI_MOD_CLASS_HT) : 0;
+    // This check is needed since VHT is not supported in 2.4 and 6 GHz bands
+    std::size_t allVhtGroups = (GetVhtSupported()) ? GetNumGroups(WIFI_MOD_CLASS_VHT) : 0;
+    const auto allHeGroups = GetNumGroups(WIFI_MOD_CLASS_HE);
+    const auto allEhtGroups = GetNumGroups(WIFI_MOD_CLASS_EHT);
+    const auto uhrGroupId = GetIdInGroup(WIFI_MOD_CLASS_UHR, streams, guardInterval, chWidth);
+    return allHtGroups + allVhtGroups + allHeGroups + allEhtGroups + uhrGroupId;
+}
+
+std::size_t
 MinstrelHtWifiManager::GetGroupIdForType(McsGroupType type,
                                          uint8_t streams,
                                          Time guardInterval,
@@ -2156,6 +2212,8 @@ MinstrelHtWifiManager::GetGroupIdForType(McsGroupType type,
         return GetHeGroupId(streams, guardInterval, chWidth);
     case WIFI_MINSTREL_GROUP_EHT:
         return GetEhtGroupId(streams, guardInterval, chWidth);
+    case WIFI_MINSTREL_GROUP_UHR:
+        return GetUhrGroupId(streams, guardInterval, chWidth);
     default:
         NS_ABORT_MSG("Unknown group type: " << type);
     }
