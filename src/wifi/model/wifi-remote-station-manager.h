@@ -24,6 +24,7 @@
 #include "ns3/mac48-address.h"
 #include "ns3/object.h"
 #include "ns3/traced-callback.h"
+#include "ns3/uhr-capabilities.h"
 #include "ns3/vht-capabilities.h"
 
 #include <array>
@@ -116,7 +117,8 @@ struct WifiRemoteStationState
     Ptr<const EhtCapabilities> m_ehtCapabilities; //!< remote station EHT capabilities
     /// remote station Multi-Link Element Common Info
     std::shared_ptr<CommonInfoBasicMle> m_mleCommonInfo;
-    bool m_emlsrEnabled; //!< whether EMLSR mode is enabled on this link
+    bool m_emlsrEnabled;                          //!< whether EMLSR mode is enabled on this link
+    Ptr<const UhrCapabilities> m_uhrCapabilities; //!< remote station UHR capabilities
 
     MHz_t m_channelWidth; //!< Channel width supported by the remote station
     Time m_guardInterval; //!< HE Guard interval durationsupported by the remote station
@@ -301,6 +303,14 @@ class WifiRemoteStationManager : public Object
     void AddStationMleCommonInfo(Mac48Address from,
                                  const std::shared_ptr<CommonInfoBasicMle>& mleCommonInfo);
     /**
+     * Records UHR capabilities of the remote station.
+     *
+     * @param from the address of the station being recorded
+     * @param uhrCapabilities the UHR capabilities of the station
+     */
+    void AddStationUhrCapabilities(const Mac48Address& from,
+                                   const UhrCapabilities& uhrCapabilities);
+    /**
      * Return the HT capabilities sent by the remote station.
      *
      * @param from the address of the remote station
@@ -355,6 +365,13 @@ class WifiRemoteStationManager : public Object
     std::optional<std::reference_wrapper<CommonInfoBasicMle::MldCapabilities>>
     GetStationMldCapabilities(const Mac48Address& from);
     /**
+     * Return the UHR capabilities sent by the remote station.
+     *
+     * @param from the address of the remote station
+     * @return the UHR capabilities sent by the remote station
+     */
+    Ptr<const UhrCapabilities> GetStationUhrCapabilities(const Mac48Address& from);
+    /**
      * Return whether the device has HT capability support enabled on the link this manager is
      * associated with. Note that this means that this function returns false if this is a
      * 6 GHz link.
@@ -382,6 +399,12 @@ class WifiRemoteStationManager : public Object
      * @return true if EHT capability support is enabled, false otherwise
      */
     bool GetEhtSupported() const;
+    /**
+     * Return whether the device has UHR capability support enabled.
+     *
+     * @return true if UHR capability support is enabled, false otherwise
+     */
+    bool GetUhrSupported() const;
     /**
      * Return whether the device has LDPC support enabled.
      *
@@ -680,6 +703,15 @@ class WifiRemoteStationManager : public Object
      *         false otherwise
      */
     bool GetEhtSupported(Mac48Address address) const;
+    /**
+     * Return whether the station supports UHR or not.
+     *
+     * @param address the address of the station
+     *
+     * @return true if UHR is supported by the station,
+     *         false otherwise
+     */
+    bool GetUhrSupported(Mac48Address address) const;
     /**
      * @param address the (MLD or link) address of the non-AP MLD
      * @return whether the non-AP MLD supports EMLSR
@@ -1225,6 +1257,15 @@ class WifiRemoteStationManager : public Object
      *         false otherwise
      */
     bool GetEhtSupported(const WifiRemoteStation* station) const;
+    /**
+     * Return whether the given station is UHR capable.
+     *
+     * @param station the station being queried
+     *
+     * @return true if the station has UHR capabilities,
+     *         false otherwise
+     */
+    bool GetUhrSupported(const WifiRemoteStation* station) const;
     /**
      * @param station the station of a non-AP MLD
      * @return whether the non-AP MLD supports EMLSR

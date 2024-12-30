@@ -1270,7 +1270,10 @@ ApWifiMac::GetProbeRespProfile(uint8_t linkId) const
         probe.Get<EhtCapabilities>() = GetEhtCapabilities(linkId);
         probe.Get<EhtOperation>() = GetEhtOperation(linkId);
     }
-
+    if (GetUhrSupported())
+    {
+        probe.Get<UhrCapabilities>() = GetUhrCapabilities(linkId);
+    }
     return probe;
 }
 
@@ -1369,6 +1372,10 @@ ApWifiMac::GetAssocResp(Mac48Address to, uint8_t linkId)
         // (Re)Association Response frame the TID-to-link Mapping element.
         // (Sec. 35.3.7.1.8 of 802.11be D3.1).
         // For now, we assume that AP MLDs always accept requested TID-to-link mappings.
+    }
+    if (GetUhrSupported())
+    {
+        assoc.Get<UhrCapabilities>() = GetUhrCapabilities(linkId);
     }
     return assoc;
 }
@@ -1624,6 +1631,10 @@ ApWifiMac::SendOneBeacon(uint8_t linkId)
              */
             beacon.Get<MultiLinkElement>() = GetMultiLinkElement(linkId, WIFI_MAC_MGT_BEACON);
         }
+    }
+    if (GetUhrSupported())
+    {
+        beacon.Get<UhrCapabilities>() = GetUhrCapabilities(linkId);
     }
     packet->AddHeader(beacon);
 

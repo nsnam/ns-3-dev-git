@@ -127,6 +127,7 @@ set(source_files
     model/threshold-preamble-detection-model.cc
     model/tim.cc
     model/txop.cc
+    model/uhr/uhr-capabilities.cc
     model/uhr/uhr-configuration.cc
     model/uhr/uhr-frame-exchange-manager.cc
     model/uhr/uhr-phy.cc
@@ -304,6 +305,7 @@ set(header_files
     model/threshold-preamble-detection-model.h
     model/tim.h
     model/txop.h
+    model/uhr/uhr-capabilities.h
     model/uhr/uhr-configuration.h
     model/uhr/uhr-frame-exchange-manager.h
     model/uhr/uhr-phy.h

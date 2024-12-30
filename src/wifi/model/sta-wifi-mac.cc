@@ -426,6 +426,10 @@ StaWifiMac::GetProbeRequest(uint8_t linkId) const
     {
         probe.Get<EhtCapabilities>() = GetEhtCapabilities(linkId);
     }
+    if (GetUhrSupported())
+    {
+        probe.Get<UhrCapabilities>() = GetUhrCapabilities(linkId);
+    }
     return probe;
 }
 
@@ -510,6 +514,10 @@ StaWifiMac::GetAssociationRequest(bool isReassoc, uint8_t linkId) const
         if (GetEhtSupported())
         {
             frame.template Get<EhtCapabilities>() = GetEhtCapabilities(linkId);
+        }
+        if (GetUhrSupported())
+        {
+            frame.template Get<UhrCapabilities>() = GetUhrCapabilities(linkId);
         }
     };
 
