@@ -4,11 +4,11 @@
  * Author: Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
-// This example is used to validate Nist, Yans and Table-based error rate models for VHT rates.
-//
-// It outputs plots of the Frame Success Rate versus the Signal-to-noise ratio for
-// Nist, Yans and Table-based error rate models and for every VHT MCS value (MCS 9 is not
-// included since it is forbidden for 20 MHz channels).
+// This example is used to generate plots of the Frame Success Rate (FSR) versus the Signal-to-noise
+// ratio (SNR) for NIST, YANS and Table-based error rate models and for every VHT MCS value (MCS 9
+// is not included since it is forbidden for 20 MHz channels). It also performs a boundary check to
+// ensure that the FSR is between 0 and 1. The results are finally saved in files (.plt) per model
+// which can be processed by gnuplot to generate the plots.
 
 #include "ns3/command-line.h"
 #include "ns3/gnuplot.h"
