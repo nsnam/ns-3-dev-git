@@ -926,6 +926,11 @@ RrMultiUserScheduler::TrySendingDlMuPpdu()
                     NS_LOG_DEBUG("No frames to send to " << staIt->address << " with TID=" << +tid);
                 }
             }
+            else
+            {
+                NS_LOG_DEBUG("No BA agreement established with " << staIt->address
+                                                                 << " for TID=" << +tid);
+            }
         }
 
         // move to the next station in the list
@@ -962,7 +967,8 @@ RrMultiUserScheduler::FinalizeTxVector(WifiTxVector& txVector)
                                                             nCentral26TonesRus,
                                                             txVector.GetModulationClass());
 
-    NS_LOG_DEBUG(nRusAssigned << " stations are being assigned a " << ruType << " RU");
+    NS_LOG_DEBUG(nRusAssigned << " station" << ((nRusAssigned > 1) ? "s are" : " is")
+                              << " being assigned a " << ruType << " RU");
 
     if (!m_useCentral26TonesRus || m_candidates.size() == nRusAssigned)
     {
