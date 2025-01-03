@@ -742,7 +742,7 @@ CommandLine::AddValue(const std::string& name, const std::string& help, T& value
 
     std::stringstream ss;
     ss << value;
-    ss >> item->m_default;
+    item->m_default = ss.str(); // Including white spaces
 
     m_options.push_back(item);
 }
