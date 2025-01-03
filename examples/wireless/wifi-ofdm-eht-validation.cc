@@ -135,7 +135,6 @@ set yrange [0:1]\n";
         plotExtra << "set style line " << (i + 1) << " linewidth 5 linecolor rgb \"" << colors[i]
                   << "\" \n";
     }
-    plotExtra << "set style increment user";
 
     yansplot.SetTerminal("postscript eps color enh \"Times-BoldItalic\"");
     yansplot.SetLegend("SNR(dB)", "Frame Success Rate");
