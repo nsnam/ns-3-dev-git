@@ -200,8 +200,7 @@ EhtPpdu::SetTxVectorFromPhyHeaders(WifiTxVector& txVector) const
         {
             NS_ASSERT(ehtPhyHeader->m_contentChannels.size() == 1 &&
                       ehtPhyHeader->m_contentChannels.front().size() == 1);
-            txVector.SetMode(
-                EhtPhy::GetEhtMcs(ehtPhyHeader->m_contentChannels.front().front().mcs));
+            txVector.SetMode(GetMcs(ehtPhyHeader->m_contentChannels.front().front().mcs));
             txVector.SetNss(ehtPhyHeader->m_contentChannels.front().front().nss);
         }
         else
@@ -410,6 +409,12 @@ EhtPpdu::GetRuSpec(std::size_t ruAllocIndex, MHz_t bw, RuType ruType, std::size_
         EhtRu::GetPrimaryFlags(bw, ruType, phyIndex, p20Index);
     const auto index = EhtRu::GetIndexIn80MHzSegment(bw, ruType, phyIndex);
     return EhtRu::RuSpec{ruType, index, primary160, primary80OrLow80};
+}
+
+WifiMode
+EhtPpdu::GetMcs(uint8_t mcs) const
+{
+    return EhtPhy::GetEhtMcs(mcs);
 }
 
 Ptr<WifiPpdu>

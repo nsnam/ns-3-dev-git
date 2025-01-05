@@ -23,7 +23,7 @@ namespace ns3
 /**
  * This defines the BSS membership value for EHT PHY.
  */
-#define EHT_PHY 121 // FIXME: not defined yet as of 802.11be D1.5
+#define EHT_PHY 121
 
 /**
  * @brief PHY entity for EHT (11be)

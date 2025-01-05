@@ -132,12 +132,13 @@ EhtPhy::GetDuration(WifiPpduField field, const WifiTxVector& txVector) const
     switch (field)
     {
     case WIFI_PPDU_FIELD_U_SIG:
-        return GetSigADuration(txVector.GetPreambleType()); // U-SIG is similar to SIG-A
+        return HePhy::GetDuration(WIFI_PPDU_FIELD_SIG_A, txVector); // U-SIG is similar to HE-SIG-A
     case WIFI_PPDU_FIELD_EHT_SIG:
-        return GetSigBDuration(txVector); // EHT-SIG is similar to SIG-B
+        return HePhy::GetDuration(WIFI_PPDU_FIELD_SIG_B,
+                                  txVector); // EHT-SIG is similar to HE-SIG-B
     case WIFI_PPDU_FIELD_SIG_A:
-        [[fallthrough]];
     case WIFI_PPDU_FIELD_SIG_B:
+        // not present in EHT PPDUs
         return NanoSeconds(0);
     default:
         return HePhy::GetDuration(field, txVector);
@@ -147,7 +148,8 @@ EhtPhy::GetDuration(WifiPpduField field, const WifiTxVector& txVector) const
 uint32_t
 EhtPhy::GetSigBSize(const WifiTxVector& txVector) const
 {
-    if (ns3::IsDlMu(txVector.GetPreambleType()) && ns3::IsEht(txVector.GetPreambleType()))
+    if (ns3::IsDlMu(txVector.GetPreambleType()) &&
+        (txVector.GetPreambleType() >= WIFI_PREAMBLE_EHT_MU))
     {
         return EhtPpdu::GetEhtSigFieldSize(
             txVector.GetChannelWidth(),
