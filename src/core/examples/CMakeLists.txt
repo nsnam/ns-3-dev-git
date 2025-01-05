@@ -53,7 +53,7 @@ build_lib_example(
   NAME empirical-random-variable-example
   SOURCE_FILES empirical-random-variable-example.cc
   LIBRARIES_TO_LINK ${libcore}
-                    ${libflow-monitor}
+                    ${libstats}
 )
 
 build_lib_example(
