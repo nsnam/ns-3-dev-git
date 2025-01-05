@@ -180,9 +180,11 @@ main(int argc, char* argv[])
     GHz_t frequency3{
         0}; // whether the third link operates in the 2.4, 5 or 6 GHz (0 means no third link exists)
     std::size_t nStations{1};
+    std::size_t maxMuStas{4};
     std::string dlAckSeqType{"NO-OFDMA"};
     bool enableUlOfdma{false};
     bool enableBsrp{false};
+    bool useCentral26TonesRus{false};
     std::string mcsStr;
     std::vector<uint64_t> mcsValues;
     MHz_t channelWidth;
@@ -247,6 +249,9 @@ main(int argc, char* argv[])
                  "Size (in number of MPDUs) of the BlockAck buffer",
                  mpduBufferSize);
     cmd.AddValue("nStations", "Number of non-AP EHT stations", nStations);
+    cmd.AddValue("maxMuStas",
+                 "Maximum number of stations that can participate in an OFDMA transmission",
+                 maxMuStas);
     cmd.AddValue("dlAckType",
                  "Ack sequence type for DL OFDMA (NO-OFDMA, ACK-SU-FORMAT, MU-BAR, AGGR-MU-BAR)",
                  dlAckSeqType);
@@ -256,6 +261,7 @@ main(int argc, char* argv[])
     cmd.AddValue("enableBsrp",
                  "Enable BSRP (useful if DL and UL OFDMA are enabled and TCP is used)",
                  enableBsrp);
+    cmd.AddValue("useCentral26TonesRus", "Allow to use central 26-tones RUs", useCentral26TonesRus);
     cmd.AddValue(
         "muSchedAccessReqInterval",
         "Duration of the interval between two requests for channel access made by the MU scheduler",
@@ -578,7 +584,11 @@ main(int argc, char* argv[])
                                               "EnableBsrp",
                                               BooleanValue(enableBsrp),
                                               "AccessReqInterval",
-                                              TimeValue(accessReqInterval));
+                                              TimeValue(accessReqInterval),
+                                              "NStations",
+                                              UintegerValue(maxMuStas),
+                                              "UseCentral26TonesRus",
+                                              BooleanValue(useCentral26TonesRus));
                 }
                 mac.SetType("ns3::ApWifiMac",
                             "EnableBeaconJitter",
