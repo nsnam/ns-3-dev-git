@@ -26,8 +26,6 @@ namespace ns3
 /**
  * @brief EHT PPDU (11be)
  * @ingroup wifi
- *
- * EhtPpdu is currently identical to HePpdu
  */
 class WIFI_EXPORT EhtPpdu : public HePpdu
 {
@@ -162,6 +160,14 @@ class WIFI_EXPORT EhtPpdu : public HePpdu
     bool IsDlMu() const override;
     bool IsUlMu() const override;
     void SetTxVectorFromPhyHeaders(WifiTxVector& txVector) const override;
+
+    /**
+     * Get the WifiMode corresponding to a given MCS index to use for this PPDU.
+     *
+     * @param mcs the MCS index
+     * @return the WifiMode corresponding to the MCS index
+     */
+    virtual WifiMode GetMcs(uint8_t mcs) const;
 
     /**
      * Fill in the PHY headers.
