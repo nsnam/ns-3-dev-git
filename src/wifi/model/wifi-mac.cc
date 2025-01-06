@@ -29,6 +29,7 @@
 #include "ns3/shuffle.h"
 #include "ns3/socket.h"
 #include "ns3/string.h"
+#include "ns3/uhr-configuration.h"
 #include "ns3/vht-configuration.h"
 
 #include <algorithm>
@@ -2265,6 +2266,12 @@ WifiMac::GetEhtConfiguration() const
     return GetDevice()->GetEhtConfiguration();
 }
 
+Ptr<UhrConfiguration>
+WifiMac::GetUhrConfiguration() const
+{
+    return GetDevice()->GetUhrConfiguration();
+}
+
 bool
 WifiMac::GetHtSupported(uint8_t linkId) const
 {
@@ -2290,6 +2297,12 @@ bool
 WifiMac::GetEhtSupported() const
 {
     return bool(GetDevice()->GetEhtConfiguration());
+}
+
+bool
+WifiMac::GetUhrSupported() const
+{
+    return bool(GetDevice()->GetUhrConfiguration());
 }
 
 bool

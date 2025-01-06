@@ -23,6 +23,7 @@
 #include "ns3/node.h"
 #include "ns3/object-vector.h"
 #include "ns3/pointer.h"
+#include "ns3/uhr-configuration.h"
 #include "ns3/uinteger.h"
 #include "ns3/vht-configuration.h"
 
@@ -104,6 +105,11 @@ WifiNetDevice::GetTypeId()
                           PointerValue(),
                           MakePointerAccessor(&WifiNetDevice::GetEhtConfiguration),
                           MakePointerChecker<EhtConfiguration>())
+            .AddAttribute("UhrConfiguration",
+                          "The UhrConfiguration object.",
+                          PointerValue(),
+                          MakePointerAccessor(&WifiNetDevice::GetUhrConfiguration),
+                          MakePointerChecker<UhrConfiguration>())
             .AddTraceSource("MacRxDrop",
                             "A packet has been dropped because no protocol handler consumed it.",
                             MakeTraceSourceAccessor(&WifiNetDevice::m_macRxDropTrace),
@@ -175,6 +181,11 @@ WifiNetDevice::DoDispose()
     {
         m_ehtConfiguration->Dispose();
         m_ehtConfiguration = nullptr;
+    }
+    if (m_uhrConfiguration)
+    {
+        m_uhrConfiguration->Dispose();
+        m_uhrConfiguration = nullptr;
     }
     NetDevice::DoDispose();
 }
@@ -713,6 +724,18 @@ WifiNetDevice::IsEmlsrActivated() const
         return false;
     }
     return emlsrActivated.Get();
+}
+
+void
+WifiNetDevice::SetUhrConfiguration(Ptr<UhrConfiguration> uhrConfiguration)
+{
+    m_uhrConfiguration = uhrConfiguration;
+}
+
+Ptr<UhrConfiguration>
+WifiNetDevice::GetUhrConfiguration() const
+{
+    return (m_standard >= WIFI_STANDARD_80211bn ? m_uhrConfiguration : nullptr);
 }
 
 } // namespace ns3

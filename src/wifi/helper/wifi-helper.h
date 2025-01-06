@@ -539,6 +539,16 @@ class WIFI_EXPORT WifiHelper
     void ConfigEhtOptions(Args&&... args);
 
     /**
+     * Helper function used to configure the UHR options listed as attributes of
+     * the UhrConfiguration class.
+     *
+     * @tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * @param args A sequence of name-value pairs of the attributes to set.
+     */
+    template <typename... Args>
+    void ConfigUhrOptions(Args&&... args);
+
+    /**
      * Helper to enable all WifiNetDevice log components with one statement
      * @param logLevel (optional) log level setting
      */
@@ -568,6 +578,7 @@ class WIFI_EXPORT WifiHelper
     ObjectFactory m_vhtConfig;                           ///< VHT configuration
     ObjectFactory m_heConfig;                            ///< HE configuration
     ObjectFactory m_ehtConfig;                           ///< EHT configuration
+    ObjectFactory m_uhrConfig;                           ///< UHR configuration
     SelectQueueCallback m_selectQueueCallback;           ///< select queue callback
     ObjectFactory m_obssPdAlgorithm;                     ///< OBSS_PD algorithm
     bool m_enableFlowControl;                            //!< whether to enable flow control
@@ -699,6 +710,13 @@ void
 WifiHelper::ConfigEhtOptions(Args&&... args)
 {
     m_ehtConfig.Set(args...);
+}
+
+template <typename... Args>
+void
+WifiHelper::ConfigUhrOptions(Args&&... args)
+{
+    m_uhrConfig.Set(args...);
 }
 
 template <typename... Args>
