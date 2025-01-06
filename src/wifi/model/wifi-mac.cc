@@ -2651,7 +2651,8 @@ WifiMac::GetUhrCapabilities(uint8_t linkId) const
 {
     NS_ASSERT(GetUhrSupported());
     UhrCapabilities capabilities;
-    // TODO: fill in fields
+    capabilities.m_macCapabilities.dsoSupport = GetUhrConfiguration()->GetDsoActivated();
+    // TODO: fill in other fields
     return capabilities;
 }
 
