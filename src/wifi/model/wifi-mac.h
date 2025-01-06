@@ -43,6 +43,7 @@ class HtConfiguration;
 class VhtConfiguration;
 class HeConfiguration;
 class EhtConfiguration;
+class UhrConfiguration;
 class FrameExchangeManager;
 class ChannelAccessManager;
 class ExtendedCapabilities;
@@ -573,6 +574,11 @@ class WifiMac : public Object
     Ptr<EhtConfiguration> GetEhtConfiguration() const;
 
     /**
+     * @return pointer to UhrConfiguration if it exists
+     */
+    Ptr<UhrConfiguration> GetUhrConfiguration() const;
+
+    /**
      * Return the extended capabilities of the device.
      *
      * @return the extended capabilities that we support
@@ -660,6 +666,13 @@ class WifiMac : public Object
      * @return true if EHT is supported, false otherwise
      */
     bool GetEhtSupported() const;
+
+    /**
+     * Return whether the device supports UHR.
+     *
+     * @return true if UHR is supported, false otherwise
+     */
+    bool GetUhrSupported() const;
 
     /**
      * @param address the (link or MLD) address of a remote station

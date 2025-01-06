@@ -27,6 +27,7 @@ class HtConfiguration;
 class VhtConfiguration;
 class HeConfiguration;
 class EhtConfiguration;
+class UhrConfiguration;
 
 /**
  * @defgroup wifi Wifi Models
@@ -168,6 +169,14 @@ class WifiNetDevice : public NetDevice
      * @return pointer to EhtConfiguration if it exists
      */
     Ptr<EhtConfiguration> GetEhtConfiguration() const;
+    /**
+     * @param uhrConfiguration pointer to UhrConfiguration
+     */
+    void SetUhrConfiguration(Ptr<UhrConfiguration> uhrConfiguration);
+    /**
+     * @return pointer to UhrConfiguration if it exists
+     */
+    Ptr<UhrConfiguration> GetUhrConfiguration() const;
 
     void SetIfIndex(const uint32_t index) override;
     uint32_t GetIfIndex() const override;
@@ -249,6 +258,7 @@ class WifiNetDevice : public NetDevice
     Ptr<VhtConfiguration> m_vhtConfiguration;                     //!< the VhtConfiguration
     Ptr<HeConfiguration> m_heConfiguration;                       //!< the HeConfiguration
     Ptr<EhtConfiguration> m_ehtConfiguration;                     //!< the EhtConfiguration
+    Ptr<UhrConfiguration> m_uhrConfiguration;                     //!< the UhrConfiguration
     NetDevice::ReceiveCallback m_forwardUp;                       //!< forward up callback
     NetDevice::PromiscReceiveCallback m_promiscRx;                //!< promiscuous receive callback
 

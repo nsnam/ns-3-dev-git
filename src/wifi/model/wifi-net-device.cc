@@ -21,6 +21,7 @@
 #include "ns3/node.h"
 #include "ns3/object-vector.h"
 #include "ns3/pointer.h"
+#include "ns3/uhr-configuration.h"
 #include "ns3/uinteger.h"
 #include "ns3/vht-configuration.h"
 
@@ -104,7 +105,12 @@ WifiNetDevice::GetTypeId()
                           "The EhtConfiguration object.",
                           PointerValue(),
                           MakePointerAccessor(&WifiNetDevice::GetEhtConfiguration),
-                          MakePointerChecker<EhtConfiguration>());
+                          MakePointerChecker<EhtConfiguration>())
+            .AddAttribute("UhrConfiguration",
+                          "The UhrConfiguration object.",
+                          PointerValue(),
+                          MakePointerAccessor(&WifiNetDevice::GetUhrConfiguration),
+                          MakePointerChecker<UhrConfiguration>());
     return tid;
 }
 
@@ -167,6 +173,11 @@ WifiNetDevice::DoDispose()
     {
         m_ehtConfiguration->Dispose();
         m_ehtConfiguration = nullptr;
+    }
+    if (m_uhrConfiguration)
+    {
+        m_uhrConfiguration->Dispose();
+        m_uhrConfiguration = nullptr;
     }
     NetDevice::DoDispose();
 }
@@ -669,6 +680,18 @@ Ptr<EhtConfiguration>
 WifiNetDevice::GetEhtConfiguration() const
 {
     return (m_standard >= WIFI_STANDARD_80211be ? m_ehtConfiguration : nullptr);
+}
+
+void
+WifiNetDevice::SetUhrConfiguration(Ptr<UhrConfiguration> uhrConfiguration)
+{
+    m_uhrConfiguration = uhrConfiguration;
+}
+
+Ptr<UhrConfiguration>
+WifiNetDevice::GetUhrConfiguration() const
+{
+    return (m_standard >= WIFI_STANDARD_80211bn ? m_uhrConfiguration : nullptr);
 }
 
 } // namespace ns3

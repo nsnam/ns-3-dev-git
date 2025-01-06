@@ -27,6 +27,7 @@
 #include "ns3/qos-utils.h"
 #include "ns3/radiotap-header.h"
 #include "ns3/sta-wifi-mac.h"
+#include "ns3/uhr-configuration.h"
 #include "ns3/vht-configuration.h"
 #include "ns3/wifi-mac-queue.h"
 #include "ns3/wifi-mac-trailer.h"
@@ -1012,6 +1013,7 @@ WifiHelper::WifiHelper()
     m_vhtConfig.SetTypeId("ns3::VhtConfiguration");
     m_heConfig.SetTypeId("ns3::HeConfiguration");
     m_ehtConfig.SetTypeId("ns3::EhtConfiguration");
+    m_uhrConfig.SetTypeId("ns3::UhrConfiguration");
 }
 
 namespace
@@ -1125,6 +1127,11 @@ WifiHelper::Install(const WifiPhyHelper& phyHelper,
         {
             auto ehtConfiguration = m_ehtConfig.Create<EhtConfiguration>();
             device->SetEhtConfiguration(ehtConfiguration);
+        }
+        if (m_standard >= WIFI_STANDARD_80211bn)
+        {
+            auto uhrConfiguration = m_uhrConfig.Create<UhrConfiguration>();
+            device->SetUhrConfiguration(uhrConfiguration);
         }
         std::vector<Ptr<WifiRemoteStationManager>> managers;
         std::vector<Ptr<WifiPhy>> phys = phyHelper.Create(node, device);
@@ -1281,6 +1288,7 @@ WifiHelper::EnableLogComponents(LogLevel logLevel)
     LogComponentEnable("ThompsonSamplingWifiManager", logLevel);
     LogComponentEnable("ThresholdPreambleDetectionModel", logLevel);
     LogComponentEnable("Txop", logLevel);
+    LogComponentEnable("UhrConfiguration", logLevel);
     LogComponentEnable("VhtConfiguration", logLevel);
     LogComponentEnable("VhtFrameExchangeManager", logLevel);
     LogComponentEnable("VhtPhy", logLevel);
