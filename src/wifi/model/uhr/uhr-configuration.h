@@ -33,6 +33,16 @@ class UhrConfiguration : public Object
      * @return the object TypeId
      */
     static TypeId GetTypeId();
+
+    /**
+     * Get whether DSO option is activated
+     *
+     * @return true if DSO option is activated, false otherwise
+     */
+    bool GetDsoActivated() const;
+
+  private:
+    bool m_dsoActivated; //!< whether DSO option is activated
 };
 
 } // namespace ns3
