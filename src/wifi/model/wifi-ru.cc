@@ -67,6 +67,7 @@ WifiRu::GetMaxRuType(WifiModulationClass mc)
     case WIFI_MOD_CLASS_HE:
         return RuType::RU_2x996_TONE;
     case WIFI_MOD_CLASS_EHT:
+    case WIFI_MOD_CLASS_UHR:
         return RuType::RU_4x996_TONE;
     default:
         NS_ABORT_MSG("Unknown modulation class: " << mc);

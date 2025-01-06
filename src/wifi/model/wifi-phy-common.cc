@@ -58,7 +58,11 @@ GetGuardIntervalForMode(WifiMode mode, bool htShortGuardInterval, Time heGuardIn
 WifiPreamble
 GetPreambleForTransmission(WifiModulationClass modulation, bool useShortPreamble /* = false */)
 {
-    if (modulation == WIFI_MOD_CLASS_EHT)
+    if (modulation == WIFI_MOD_CLASS_UHR)
+    {
+        return WIFI_PREAMBLE_UHR_MU;
+    }
+    else if (modulation == WIFI_MOD_CLASS_EHT)
     {
         return WIFI_PREAMBLE_EHT_MU;
     }
@@ -116,6 +120,10 @@ GetModulationClassForPreamble(WifiPreamble preamble)
     case WIFI_PREAMBLE_EHT_MU:
     case WIFI_PREAMBLE_EHT_TB:
         return WIFI_MOD_CLASS_EHT;
+    case WIFI_PREAMBLE_UHR_MU:
+    case WIFI_PREAMBLE_UHR_TB:
+    case WIFI_PREAMBLE_UHR_ELR:
+        return WIFI_MOD_CLASS_UHR;
     default:
         NS_ABORT_MSG("Unsupported preamble type: " << preamble);
     }
@@ -141,6 +149,7 @@ IsAllowedControlAnswerModulationClass(WifiModulationClass modClassReq,
     case WIFI_MOD_CLASS_VHT:
     case WIFI_MOD_CLASS_HE:
     case WIFI_MOD_CLASS_EHT:
+    case WIFI_MOD_CLASS_UHR:
         return true;
     default:
         NS_FATAL_ERROR("Modulation class not defined");
@@ -254,6 +263,7 @@ GetMaximumChannelWidth(WifiModulationClass modulation)
     case WIFI_MOD_CLASS_HE:
         return MHz_t{160};
     case WIFI_MOD_CLASS_EHT:
+    case WIFI_MOD_CLASS_UHR:
         return MHz_t{320};
     default:
         NS_ABORT_MSG("Unknown modulation class: " << modulation);

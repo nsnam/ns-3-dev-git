@@ -686,7 +686,11 @@ WifiRemoteStationManager::GetCtsToSelfTxVector()
 {
     WifiMode defaultMode = GetDefaultMode();
     WifiPreamble defaultPreamble;
-    if (defaultMode.GetModulationClass() == WIFI_MOD_CLASS_EHT)
+    if (defaultMode.GetModulationClass() == WIFI_MOD_CLASS_UHR)
+    {
+        defaultPreamble = WIFI_PREAMBLE_UHR_MU;
+    }
+    else if (defaultMode.GetModulationClass() == WIFI_MOD_CLASS_EHT)
     {
         defaultPreamble = WIFI_PREAMBLE_EHT_MU;
     }
@@ -1236,7 +1240,7 @@ WifiRemoteStationManager::NeedRts(const WifiMacHeader& header, const WifiTxParam
     if (m_erpProtectionMode == RTS_CTS &&
         ((modulationClass == WIFI_MOD_CLASS_ERP_OFDM) || (modulationClass == WIFI_MOD_CLASS_HT) ||
          (modulationClass == WIFI_MOD_CLASS_VHT) || (modulationClass == WIFI_MOD_CLASS_HE) ||
-         (modulationClass == WIFI_MOD_CLASS_EHT)) &&
+         (modulationClass == WIFI_MOD_CLASS_EHT) || (modulationClass == WIFI_MOD_CLASS_UHR)) &&
         m_useNonErpProtection)
     {
         NS_LOG_DEBUG(
@@ -1267,7 +1271,8 @@ WifiRemoteStationManager::NeedCtsToSelf(const WifiTxVector& txVector, const Wifi
          (txVector.GetModulationClass() == WIFI_MOD_CLASS_HT) ||
          (txVector.GetModulationClass() == WIFI_MOD_CLASS_VHT) ||
          (txVector.GetModulationClass() == WIFI_MOD_CLASS_HE) ||
-         (txVector.GetModulationClass() == WIFI_MOD_CLASS_EHT)))
+         (txVector.GetModulationClass() == WIFI_MOD_CLASS_EHT) ||
+         (txVector.GetModulationClass() == WIFI_MOD_CLASS_UHR)))
     {
         NS_LOG_DEBUG(
             "WifiRemoteStationManager::NeedCtsToSelf returning true to protect non-ERP stations");
@@ -2057,9 +2062,10 @@ WifiRemoteStationManager::GetGroupcastTxVector(const WifiMacHeader& header, MHz_
         /* HT/VHT: short or long GI */
         {WIFI_MOD_CLASS_HT, WIFI_MOD_CLASS_HT},
         {WIFI_MOD_CLASS_VHT, WIFI_MOD_CLASS_HT},
-        /* HE/EHT: 3 possible GIs */
+        /* HE/EHT/UHR: 3 possible GIs */
         {WIFI_MOD_CLASS_HE, WIFI_MOD_CLASS_HE},
-        {WIFI_MOD_CLASS_EHT, WIFI_MOD_CLASS_HE}};
+        {WIFI_MOD_CLASS_EHT, WIFI_MOD_CLASS_HE},
+        {WIFI_MOD_CLASS_UHR, WIFI_MOD_CLASS_HE}};
     for (const auto& staAddress : groupStas)
     {
         // Get the equivalent TXVECTOR if the frame would be a unicast frame to that STA in order to
