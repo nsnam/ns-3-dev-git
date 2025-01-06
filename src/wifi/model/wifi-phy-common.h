@@ -575,7 +575,8 @@ enum WifiModulationClass
     WIFI_MOD_CLASS_DMG_SC,    //!< DMG (Clause 21)
     WIFI_MOD_CLASS_DMG_LP_SC, //!< DMG (Clause 21)
     WIFI_MOD_CLASS_HE,        //!< HE (Clause 27)
-    WIFI_MOD_CLASS_EHT        //!< EHT (Clause 36)
+    WIFI_MOD_CLASS_EHT,       //!< EHT (Clause 36)
+    WIFI_MOD_CLASS_UHR        //!< UHR (Clause 38)
 };
 
 /**
@@ -614,6 +615,8 @@ operator<<(std::ostream& os, const WifiModulationClass& modulation)
         return (os << "HE");
     case WIFI_MOD_CLASS_EHT:
         return (os << "EHT");
+    case WIFI_MOD_CLASS_UHR:
+        return (os << "UHR");
     default:
         NS_FATAL_ERROR("Unknown modulation");
         return (os << "unknown");
