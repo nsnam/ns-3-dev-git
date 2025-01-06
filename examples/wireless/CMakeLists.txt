@@ -355,3 +355,10 @@ build_example(
     ${libapplications}
     ${libflow-monitor}
 )
+
+build_example(
+  NAME wifi-dso
+  SOURCE_FILES wifi-dso.cc
+  LIBRARIES_TO_LINK ${libwifi}
+                    ${libapplications}
+)
