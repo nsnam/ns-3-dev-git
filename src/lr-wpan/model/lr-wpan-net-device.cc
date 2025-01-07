@@ -106,6 +106,7 @@ LrWpanNetDevice::DoInitialize()
 {
     NS_LOG_FUNCTION(this);
 
+    m_phy->Initialize();
     AggregateObject(m_mac);
     CompleteConfig();
 
