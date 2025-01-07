@@ -51,6 +51,8 @@ Scope and Limitations
    - Zigbee Device Object (ZDO)
    - Application Framework (AF)
 
+To see a list of |ns3| Zigbee undergoing development efforts check issue `#1165 <https://gitlab.com/nsnam/ns-3-dev/-/issues/1165>`_
+
 The network layer (NWK)
 -----------------------
 
@@ -301,7 +303,7 @@ All the examples listed here shows scenarios in which a quasi-layer implementati
 * ``zigbee-direct-join.cc``:  An example showing the NWK layer join process of devices using the orphaning procedure (Direct join).
 * ``zigbee-association-join.cc``:  An example showing the NWK layer join process of 3 devices in a zigbee network (MAC association).
 * ``zigbee-nwk-routing.cc``: Shows a simple topology of 5 router devices sequentially joining a network. Data transmission and/or route discovery also shown in this example
-* ``zigbee-nwk-routing2.cc``: Shows a complex grid topology of 50 router devices sequentially joining a network. Data transmission and/or route discovery also shown in this example.
+* ``zigbee-nwk-routing-grid.cc``: Shows a complex grid topology of 50 router devices sequentially joining a network. Data transmission and/or route discovery also shown in this example.
 
 The following unit test have been developed to ensure the correct behavior of the module:
 

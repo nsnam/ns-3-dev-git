@@ -1346,13 +1346,12 @@ ZigbeeNwk::MlmeAssociateConfirm(MlmeAssociateConfirmParams params)
                 if (m_nwkNeighborTable.LookUpEntry(m_associateParams.extAddress, entry))
                 {
                     entry->SetPotentialParent(false);
-                    // m_nwkNeighborTable.Update(m_associateParams.extAddress, entry);
                 }
                 else
                 {
                     NS_LOG_ERROR("Neighbor not found when discarding as potential parent");
                 }
-                joinConfirmParams.m_status = NwkStatus::NOT_PERMITED;
+                joinConfirmParams.m_status = NwkStatus::NEIGHBOR_TABLE_FULL;
                 break;
             case MacStatus::NO_ACK:
                 joinConfirmParams.m_status = NwkStatus::NO_ACK;
@@ -1565,6 +1564,8 @@ ZigbeeNwk::MlmeGetConfirm(MacStatus status,
                           MacPibAttributeIdentifier id,
                           Ptr<MacPibAttributes> attribute)
 {
+    NS_LOG_FUNCTION(this);
+
     if (m_pendPrimitiveNwk == PendingPrimitiveNwk::NLME_NETWORK_FORMATION)
     {
         if (id == MacPibAttributeIdentifier::macExtendedAddress && status == MacStatus::SUCCESS)
@@ -1651,6 +1652,8 @@ ZigbeeNwk::MlmeGetConfirm(MacStatus status,
 void
 ZigbeeNwk::MlmeOrphanIndication(MlmeOrphanIndicationParams params)
 {
+    NS_LOG_FUNCTION(this);
+
     Ptr<NeighborTableEntry> entry;
     MlmeOrphanResponseParams respParams;
 
@@ -1690,6 +1693,8 @@ ZigbeeNwk::MlmeOrphanIndication(MlmeOrphanIndicationParams params)
 void
 ZigbeeNwk::MlmeCommStatusIndication(MlmeCommStatusIndicationParams params)
 {
+    NS_LOG_FUNCTION(this);
+
     // Return the results to the next layer of the router or coordinator
     // only after a SUCCESSFUL join to the network.
     if (params.m_status == MacStatus::SUCCESS)
@@ -1711,11 +1716,10 @@ ZigbeeNwk::MlmeCommStatusIndication(MlmeCommStatusIndicationParams params)
             m_pendPrimitiveNwk = NLME_JOIN_INDICATION;
             UpdateBeaconPayloadLength();
         }
-        else
-        {
-            NS_FATAL_ERROR("MLME-COMM-Status.Indication: params do not match");
-        }
     }
+
+    // TODO: Handle other situations for MlmeCommStatusIndication according
+    // to the status and primitive in use.
 }
 
 void
@@ -2818,6 +2822,8 @@ ZigbeeNwk::GetNwkStatus(MacStatus macStatus) const
 Mac16Address
 ZigbeeNwk::AllocateNetworkAddress()
 {
+    NS_LOG_FUNCTION(this);
+
     if (m_nwkAddrAlloc == DISTRIBUTED_ALLOC)
     {
         NS_FATAL_ERROR("Distributed allocation not supported");
@@ -2855,6 +2861,8 @@ ZigbeeNwk::AllocateNetworkAddress()
 uint8_t
 ZigbeeNwk::GetLQINonLinearValue(uint8_t lqi) const
 {
+    NS_LOG_FUNCTION(this);
+
     uint8_t mappedValue;
 
     if (lqi > 50)
@@ -2892,6 +2900,8 @@ ZigbeeNwk::GetLQINonLinearValue(uint8_t lqi) const
 uint8_t
 ZigbeeNwk::GetLinkCost(uint8_t lqi) const
 {
+    NS_LOG_FUNCTION(this);
+
     if (m_nwkReportConstantCost)
     {
         // Hop count based. Report constant value
