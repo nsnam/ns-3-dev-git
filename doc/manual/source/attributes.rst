@@ -801,10 +801,13 @@ follows::
       // continue on with constructor.
     }
 
-Beware that the object and all its derived classes must also implement
-a :cpp:func:`GetInstanceTypeId()` method. Otherwise
-the :cpp:func:`ObjectBase::ConstructSelf()` will not be able to read
-the attributes.
+Classes that derive from :cpp:class:`Object` can not implement (i.e., specialize)
+a :cpp:func:`GetInstanceTypeId()` method; this method is marked `final`
+in :cpp:class:`Object`.  However, classes that instead derive from
+:cpp:class:`ObjectBase` directly (in ns-3, this is usually packet headers and tags),
+must implement :cpp:func:`GetInstanceTypeId()`.  It is recommended that this
+method simply return the value provided by :cpp:func:`GetTypeId()`; see the class
+:cpp:class:`EthernetHeader` in `src/network/utils` directory as an example.
 
 Adding Attributes
 +++++++++++++++++
