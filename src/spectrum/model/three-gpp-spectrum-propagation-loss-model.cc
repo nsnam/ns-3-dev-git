@@ -285,7 +285,6 @@ ThreeGppSpectrumPropagationLossModel::CalcBeamformingGain(
 
     // Calculate RX PSD from the spectrum channel matrix H and
     // the precoding matrix P as: PSD = (H*P)^h * (H*P)
-    MatrixBasedChannelModel::Complex3DVector psd;
     MatrixBasedChannelModel::Complex3DVector p;
     if (!rxParams->precodingMatrix)
     {
@@ -307,23 +306,27 @@ ThreeGppSpectrumPropagationLossModel::CalcBeamformingGain(
     // When we have the precoding matrix P, we first do
     // H(rxPorts,txPorts,numRbs) x P(txPorts,txStreams,numRbs) = HxP(rxPorts,txStreams,numRbs)
     MatrixBasedChannelModel::Complex3DVector hP = *rxParams->spectrumChannelMatrix * p;
+
     // Then (HxP)^h dimensions are (txStreams, rxPorts, numRbs)
-    MatrixBasedChannelModel::Complex3DVector hPHerm = hP.HermitianTranspose();
+    // MatrixBasedChannelModel::Complex3DVector hPHerm = hP.HermitianTranspose();
 
     // Finally, (HxP)^h x (HxP) = PSD(txStreams, txStreams, numRbs)
-    psd = hPHerm * hP;
+    // MatrixBasedChannelModel::Complex3DVector psd = hPHerm * hP;
 
-    // Update rxParams->Psd
+    // And the received psd is the Trace(PSD).
+    // To avoid wasting computations, we only compute the main diagonal of hPHerm*hP
     for (uint32_t rbIdx = 0; rbIdx < rxParams->psd->GetValuesN(); ++rbIdx)
     {
         (*rxParams->psd)[rbIdx] = 0.0;
-
-        for (size_t txStream = 0; txStream < psd.GetNumRows(); ++txStream)
+        for (size_t rxPort = 0; rxPort < hP.GetNumRows(); ++rxPort)
         {
-            (*rxParams->psd)[rbIdx] += std::real(psd(txStream, txStream, rbIdx));
+            for (size_t txStream = 0; txStream < hP.GetNumCols(); ++txStream)
+            {
+                (*rxParams->psd)[rbIdx] +=
+                    std::real(std::conj(hP(rxPort, txStream, rbIdx)) * hP(rxPort, txStream, rbIdx));
+            }
         }
     }
-
     return rxParams;
 }
 
