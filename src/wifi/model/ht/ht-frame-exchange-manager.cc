@@ -943,10 +943,20 @@ HtFrameExchangeManager::ReleaseSequenceNumbers(Ptr<const WifiPsdu> psdu) const
 {
     NS_LOG_FUNCTION(this << *psdu);
 
-    auto tids = psdu->GetTids();
+    const auto tids = psdu->GetTids();
+    const auto isGcr = IsGcr(m_mac, psdu->GetHeader(0));
+    auto agreementEstablished =
+        !tids.empty() /* no QoS data frame included */ &&
+        (isGcr ? GetBaManager(*tids.begin())
+                     ->IsGcrAgreementEstablished(
+                         psdu->GetHeader(0).GetAddr1(),
+                         *tids.begin(),
+                         m_apMac->GetGcrManager()->GetMemberStasForGroupAddress(
+                             psdu->GetHeader(0).GetAddr1()))
+               : m_mac->GetBaAgreementEstablishedAsOriginator(psdu->GetAddr1(), *tids.begin())
+                     .has_value());
 
-    if (tids.empty() || // no QoS data frames included
-        !m_mac->GetBaAgreementEstablishedAsOriginator(psdu->GetAddr1(), *tids.begin()))
+    if (!agreementEstablished)
     {
         QosFrameExchangeManager::ReleaseSequenceNumbers(psdu);
         return;
@@ -963,7 +973,15 @@ HtFrameExchangeManager::ReleaseSequenceNumbers(Ptr<const WifiPsdu> psdu) const
         if (hdr.IsQosData())
         {
             uint8_t tid = hdr.GetQosTid();
-            NS_ASSERT(m_mac->GetBaAgreementEstablishedAsOriginator(hdr.GetAddr1(), tid));
+            agreementEstablished =
+                isGcr ? GetBaManager(tid)->IsGcrAgreementEstablished(
+                            psdu->GetHeader(0).GetAddr1(),
+                            tid,
+                            m_apMac->GetGcrManager()->GetMemberStasForGroupAddress(
+                                psdu->GetHeader(0).GetAddr1()))
+                      : m_mac->GetBaAgreementEstablishedAsOriginator(psdu->GetAddr1(), tid)
+                            .has_value();
+            NS_ASSERT(agreementEstablished);
 
             if (!hdr.IsRetry() && !(*mpduIt)->IsInFlight())
             {

@@ -9,6 +9,7 @@
 #include "frame-exchange-manager.h"
 
 #include "ap-wifi-mac.h"
+#include "gcr-manager.h"
 #include "snr-tag.h"
 #include "sta-wifi-mac.h"
 #include "wifi-mac-queue.h"
@@ -523,8 +524,18 @@ FrameExchangeManager::SendMpdu()
 
     if (m_txParams.m_acknowledgment->method == WifiAcknowledgment::NONE)
     {
-        if (!m_mpdu->GetHeader().IsQosData() ||
-            m_mpdu->GetHeader().GetQosAckPolicy() == WifiMacHeader::NO_ACK)
+        const auto isGcr = m_mac->GetTypeOfStation() == AP && m_apMac->UseGcr(m_mpdu->GetHeader());
+        if (isGcr && m_apMac->GetGcrManager()->KeepGroupcastQueued(m_mpdu))
+        {
+            // keep the groupcast frame in the queue for future retransmission
+            Simulator::Schedule(txDuration + m_phy->GetSifs(), [=, this, mpdu = m_mpdu]() {
+                NS_LOG_DEBUG("Prepare groupcast MPDU for retry");
+                mpdu->ResetInFlight(m_linkId);
+                mpdu->GetHeader().SetRetry();
+            });
+        }
+        else if (!m_mpdu->GetHeader().IsQosData() ||
+                 m_mpdu->GetHeader().GetQosAckPolicy() == WifiMacHeader::NO_ACK)
         {
             // No acknowledgment, hence dequeue the MPDU if it is stored in a queue
             DequeueMpdu(m_mpdu);

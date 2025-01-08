@@ -1121,7 +1121,7 @@ WifiRemoteStationManager::GetMpdusToDropOnTxFailure(Ptr<WifiPsdu> psdu)
 {
     NS_LOG_FUNCTION(this << *psdu);
 
-    auto* station = Lookup(psdu->GetHeader(0).GetAddr1());
+    auto* station = Lookup(GetIndividuallyAddressedRecipient(m_wifiMac, psdu->GetHeader(0)));
 
     DoIncrementRetryCountOnTxFailure(station, psdu);
     return DoGetMpdusToDropOnTxFailure(station, psdu);
