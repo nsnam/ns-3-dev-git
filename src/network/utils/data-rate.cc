@@ -24,7 +24,7 @@ bool
 DataRate::DoParse(const std::string s, uint64_t* v)
 {
     NS_LOG_FUNCTION(s << v);
-    std::string::size_type n = s.find_first_not_of("0123456789.");
+    std::string::size_type n = s.find_first_not_of("0123456789. ");
     if (n != std::string::npos)
     { // Found non-numeric
         std::istringstream iss;
@@ -260,7 +260,7 @@ std::istream&
 operator>>(std::istream& is, DataRate& rate)
 {
     std::string value;
-    is >> value;
+    std::getline(is, value);
     uint64_t v;
     bool ok = DataRate::DoParse(value, &v);
     if (!ok)
