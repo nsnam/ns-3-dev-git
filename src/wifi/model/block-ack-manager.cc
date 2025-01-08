@@ -378,6 +378,10 @@ BlockAckManager::NotifyGotAck(uint8_t linkId, Ptr<const WifiMpdu> mpdu)
     NS_ASSERT(it->second.first.IsEstablished());
 
     it->second.first.NotifyAckedMpdu(mpdu);
+    if (!m_txOkCallback.IsNull())
+    {
+        m_txOkCallback(mpdu);
+    }
 
     // remove the acknowledged frame from the queue of outstanding packets
     for (auto queueIt = it->second.second.begin(); queueIt != it->second.second.end(); ++queueIt)
