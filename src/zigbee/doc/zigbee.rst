@@ -45,6 +45,8 @@ Scope and Limitations
 - Traces are not implemented yet.
 - Data broadcast do not support retries or passive acknowledgment.
 - Data broadcast to low power routers is not supported as the underlying lr-wpan netdevice has no concept of energy consumption.
+- Address duplication detection is not supported.
+- Beacon mode is not througly tested.
 - The following Zigbee layers are not supported yet:
    - Zigbee Application Support Sub-Layer (APS)
    - Zigbee Cluster Library (ZCL)
@@ -87,13 +89,55 @@ There are three primary roles in a Zigbee network:
 - **Router (ZR):** This device is capable of relaying data and commands on behalf of other devices.
 - **End Device (ZE):** These are devices with limited capabilities (for example, they cannot route messages) that serve as endpoints within the network.
 
-Devices can join a Zigbee network as either routers or end devices.
-They can do this through one of two methods: by using the MAC association process or by joining the network directly.
+Devices must first join a Zigbee network before they can upgrade their roles to either routers or remain as end devices.
+There are two ways for devices to join a Zigbee network: they can either go through the MAC association process or directly join the network.
 
+**MAC Association Join**
 
-**Mac Association Join**
+This method is the default approach used by Zigbee. As the name suggests, it utilizes the underlying MAC layer association mechanism to connect to the Zigbee network.
+For a comprehensive explanation of the association mechanism occurring in the MAC, please refer to the lr-wpan model documentation.
 
+When employing the association mechanism, devices communicate with each other to join an existing network via the network coordinator or a designated router within the network.
+As a result of this joining process, devices are assigned a short address (16-bit address) that they use for routing and data exchange operations. Below is a summary of the MAC association join process:
 
+1. At least one coordinator must be operational and capable of receiving join requests (i.e. A device successfully completed a `NLME-NETWORK-FORMATION.request` primitive).
+2. Devices must issue a `NLME-NETWORK-DISCOVERY.request` to look for candidate coordinators/routers to join. The parameters channel numbers (represented by a bitmap for channels 11-26) and scan duration (ranging from 0 to 14) must also be specified to define the channel in which the device will search for a coordinator or router and the duration of that search.
+3. If a coordinator (or a capable router) is found on the designated channel and within communication range, it will respond to the device's request with a beacon that contains both a PAN descriptor and a beacon payload describing the capabilities of the coordinator or router.
+4. Upon receiving these beacons, the device will select "the most ideal coordinator or router candidate" to join.
+5. After selecting the candidate, devices must issue a `NLME-JOIN.request` primitive with the network parameter set to `ASSOCIATION`. This will initiate the join process.
+6. If the association is successful, the device will receive a confirmation from the coordinator or router, along with a short address that the device will use for its operations within the Zigbee network.
+7. Short addresses are assigned by the coordinator randomly, which means there could be instances of address duplication. Although the Zigbee specification includes a mechanism for detecting address duplication, this feature is not currently supported in this implementation.
+8. If the association request fails, the device will receive a confirmation with a status indicating failure, rather than `SUCCESSFUL`, and the short address FF:FF will be received (indicating that the device is not associated).
+
+Note: The process described above outlines the steps for joining the network using a MAC association join.
+However, devices that are required to act as routers must also issue an additional `NLME-START-ROUTER.request` primitive after joining the network in order to begin functioning as routers.
+
+In |ns3|, Zigbee NWK, coordinators or routers can be found using the following primitive::
+
+    // zstack is an instance of a ZigbeeStack object installed in the node looking
+    // for coordinator or routers
+    NlmeNetworkDiscoveryRequestParams netDiscParams;
+    netDiscParams.m_scanChannelList.channelPageCount = 1; // only one page structure is supported
+    netDiscParams.m_scanChannelList.channelsField[0] = 0x7800; // Bitmap representing channels 11-14
+    netDiscParams.m_scanDuration = 14; // (Ranging 0-14) See lr-wpan documentation for time equivalency
+    zstack->GetNwk()->NlmeNetworkDiscoveryRequest(netDiscParams);
+
+In |ns3| a Zigbee NWK join request (using MAC association) is used as follows::
+
+        // zstack is an instance of a ZigbeeStack object installed in the node sending
+        // the join request. The extendedPANId value is typically obtained from the network descriptor
+        // received from a previous network discovery request step.
+        zigbee::CapabilityInformation capaInfo; // define the capabilities and
+        capaInfo.SetDeviceType(ROUTER);         // requirements of the current device
+        capaInfo.SetAllocateAddrOn(true);
+
+        NlmeJoinRequestParams joinParams;
+        joinParams.m_rejoinNetwork = zigbee::JoiningMethod::ASSOCIATION; // Must be set to ASSOCIATION
+        joinParams.m_capabilityInfo = capaInfo.GetCapability(); // Set the capabilities (bitmap)
+        joinParams.m_extendedPanId = 0xCAFE0000BEEF0000; // The 64 bits representing the extended PAN ID
+        zstack->GetNwk()->NlmeJoinRequest(joinParams);
+
+See zigbee/examples for detailed examples using network joining.
 
 **Direct Join (a.k.a. Orphaning process)**
 
@@ -109,8 +153,7 @@ Below is a summary of the direct join process:
 3. The coordinator or router will respond to the orphaning message by providing an assigned short address.
 4. The device accepts this short address and successfully joins the network.
 
-Note: The process described above outlines the steps for joining the network using a direct join method.
-However, devices that are required to act as routers must also issue an additional `NLME-START-ROUTER.request` primitive after joining the network in order to begin functioning as routers.
+Similar to the MAC association mechanism, devices that want to function as routers must issue an additional `NLME-START-ROUTER.request` once the joining process is completed.
 
 In |ns3|, a direct join primitive is used as follows::
 
@@ -259,6 +302,27 @@ on top of an existing Lr-wpan MAC layer. In essence, ``ZigbeeHelper`` creates a 
 wraps it in a ``ZigbeeStack`` and connects this stack to another existing
 ``LrwpanNetDevice``. All the necessary callback hooks are taken care of to ensure communication between
 the Zigbee NWK layer and the Lr-wpan MAC layer is possible.
+The following demonstrates a simple scenario in which a ``LrwpanNetDevice`` devices are set and a ``ZigbeeHelper``
+is used to establish a Zigbee stack on top of these devices::
+
+    NodeContainer nodes;
+    nodes.Create(2);
+
+    // Create the Lr-wpan (IEEE 802.15.4) Netdevices and install them in each node
+    LrWpanHelper lrWpanHelper;
+    NetDeviceContainer lrwpanDevices = lrWpanHelper.Install(nodes);
+
+    // Important: NetDevices MAC extended addresses (EUI-64) must always be set
+    // either manually or using other methods. Short address assignation is not
+    // required as this is later done by the Zigbee join mechanisms.
+    Ptr<LrWpanNetDevice> dev0 = lrwpanDevices.Get(0)->GetObject<LrWpanNetDevice>();
+    Ptr<LrWpanNetDevice> dev1 = lrwpanDevices.Get(1)->GetObject<LrWpanNetDevice>();
+    dev0->GetMac()->SetExtendedAddress("00:00:00:00:00:00:CA:FE");
+    dev1->GetMac()->SetExtendedAddress("00:00:00:00:00:00:00:01");
+
+    // Install a zigbee stack on a set of devices using the helper
+    ZigbeeHelper zigbee;
+    ZigbeeStackContainer zigbeeStackContainer = zigbee.Install(lrwpanDevices);
 
 Attributes
 ~~~~~~~~~~
