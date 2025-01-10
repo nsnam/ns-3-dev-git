@@ -309,7 +309,7 @@ class WifiPhyStateHelper : public Object
     /**
      * TracedCallback signature for the outcome of a received packet.
      *
-     * @param [in] psdu The received PSDU (Physical Layer Service Data Unit).
+     * @param [in] ppdu The received PPDU (Physical Layer Protocol Data Unit).
      * @param [in] signalInfo Information about the received signal, including its power and other
      * characteristics.
      * @param [in] txVector The transmission vector used for the packet, detailing
@@ -317,7 +317,7 @@ class WifiPhyStateHelper : public Object
      * @param [in] outcomes A vector of boolean values indicating the
      * success or failure of receiving individual MPDUs within the PSDU.
      */
-    typedef void (*RxOutcomeTracedCallback)(Ptr<const WifiPsdu> psdu,
+    typedef void (*RxOutcomeTracedCallback)(Ptr<const WifiPpdu> ppdu,
                                             RxSignalInfo signalInfo,
                                             const WifiTxVector& txVector,
                                             const std::vector<bool>& outcomes);
