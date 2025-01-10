@@ -130,12 +130,13 @@ endfunction()
 #
 # DEPRECATED_HEADER_FILES = "list;of;deprecated;.h;files", copy won't get triggered if DEPRECATED_HEADER_FILES isn't set
 # IGNORE_PCH = TRUE or FALSE, prevents the PCH from including undesired system libraries (e.g. custom GLIBC for DCE)
+# GENERATE_EXPORT_HEADER = TRUE or FALSE, auto-generate a header file to set *_EXPORT symbols for Windows builds
 # MODULE_ENABLED_FEATURES = "list;of;enabled;features;for;this;module" (used by fd-net-device)
 # cmake-format: on
 
 function(build_lib)
   # Argument parsing
-  set(options IGNORE_PCH)
+  set(options IGNORE_PCH GENERATE_EXPORT_HEADER)
   set(oneValueArgs LIBNAME)
   set(multiValueArgs
       SOURCE_FILES
@@ -171,6 +172,29 @@ function(build_lib)
 
   # Set alias
   add_library(ns3::${BLIB_LIBNAME} ALIAS ${BLIB_LIBNAME})
+
+  if(${BLIB_GENERATE_EXPORT_HEADER})
+    include(GenerateExportHeader)
+    string(TOUPPER "${BLIB_LIBNAME}" uppercase_libname)
+    string(
+      CONCAT force_undef_export
+             "\n// Undefine the *_EXPORT symbols for non-Windows based builds"
+             "\n#ifndef NS_MSVC"
+             "\n#undef ${uppercase_libname}_EXPORT"
+             "\n#define ${uppercase_libname}_EXPORT"
+             "\n#undef ${uppercase_libname}_NO_EXPORT"
+             "\n#define ${uppercase_libname}_NO_EXPORT"
+             "\n#endif"
+    )
+    generate_export_header(
+      ${BLIB_LIBNAME} EXPORT_FILE_NAME ${BLIB_LIBNAME}-export.h
+      CUSTOM_CONTENT_FROM_VARIABLE force_undef_export
+    )
+    set(export_file ${CMAKE_CURRENT_BINARY_DIR}/${BLIB_LIBNAME}-export.h)
+    set(export_dest ${CMAKE_HEADER_OUTPUT_DIRECTORY}/${BLIB_LIBNAME}-export.h)
+    file(COPY_FILE ${export_file} ${export_dest})
+    install(FILES ${export_file} DESTINATION include/ns3 COMPONENT Headers)
+  endif()
 
   # Reuse PCH
   if(${PRECOMPILE_HEADERS_ENABLED} AND (NOT ${BLIB_IGNORE_PCH}))
