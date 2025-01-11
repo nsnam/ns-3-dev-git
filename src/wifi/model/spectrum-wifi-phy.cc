@@ -369,7 +369,8 @@ SpectrumWifiPhy::FinalizeChannelSwitch()
         {
             ss << "(" << frequenciesAfter.at(i) << ", " << widthsAfter.at(i) << ") ";
         }
-        NS_LOG_DEBUG("Switch to existing RF interface with frequency/width "
+        NS_LOG_DEBUG("Switch to existing RF interface covering range "
+                     << newSpectrumPhyInterface->GetFrequencyRange() << " with frequency/width "
                      << (numSegments > 1 ? "pair" : "pairs") << " of " << ss.str());
         if (m_currentSpectrumPhyInterface && !m_trackSignalsInactiveInterfaces)
         {
@@ -414,6 +415,7 @@ SpectrumWifiPhy::FinalizeChannelSwitch()
 void
 SpectrumWifiPhy::NotifyChannelSwitched()
 {
+    NS_LOG_FUNCTION(this);
     if (!m_channelSwitchedCallback.IsNull())
     {
         m_channelSwitchedCallback();
