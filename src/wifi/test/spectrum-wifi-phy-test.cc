@@ -1620,6 +1620,7 @@ class SpectrumWifiPhyMultipleInterfacesTest : public TestCase
      * @param expectedNumRx the expected number of RX events for that PHY
      * @param expectedNumRxSuccess the expected amount of successfully received packets
      * @param expectedRxBytes the expected amount of received bytes
+     * @param expectedNumDroppedPpdus the expected amount of dropped PPDUs
      * @param expectedFrequencyRangeActiveRfInterface the expected frequency range (in MHz) of the
      * active RF interface
      * @param expectedConnectedPhyInterfacesPerChannel the expected number of PHY interfaces
@@ -1629,6 +1630,7 @@ class SpectrumWifiPhyMultipleInterfacesTest : public TestCase
                       uint32_t expectedNumRx,
                       uint32_t expectedNumRxSuccess,
                       uint32_t expectedRxBytes,
+                      uint32_t expectedNumDroppedPpdus,
                       FrequencyRange expectedFrequencyRangeActiveRfInterface,
                       const std::vector<std::size_t>& expectedConnectedPhyInterfacesPerChannel);
 
@@ -1651,6 +1653,14 @@ class SpectrumWifiPhyMultipleInterfacesTest : public TestCase
     void RxBeginCallback(std::size_t index,
                          Ptr<const Packet> packet,
                          RxPowerWattPerChannelBand rxPowersW);
+
+    /**
+     * Callback triggered when a received PPDU is dropped by a PHY
+     * @param index the index to identify the RX PHY
+     * @param ppdu the received PPDU
+     * @param reason the reason for dropping the PPDU
+     */
+    void RxDropCallback(std::size_t index, Ptr<const WifiPpdu> ppdu, WifiPhyRxfailureReason reason);
 
     /**
      * Receive success function
@@ -1745,6 +1755,7 @@ class SpectrumWifiPhyMultipleInterfacesTest : public TestCase
     std::vector<uint32_t>
         m_countRxFailure;            //!< count number of packets unsuccessfully received by PHYs
     std::vector<uint32_t> m_rxBytes; //!< count number of received bytes
+    std::vector<uint32_t> m_drops;   //!< count number of PPDUs dropped by PHYs
 
     Time m_lastTxStart{0}; //!< hold the time at which the last transmission started
     Time m_lastTxEnd{0};   //!< hold the time at which the last transmission ended
@@ -1830,6 +1841,17 @@ SpectrumWifiPhyMultipleInterfacesTest::RxBeginCallback(std::size_t index,
 }
 
 void
+SpectrumWifiPhyMultipleInterfacesTest::RxDropCallback(std::size_t index,
+                                                      Ptr<const WifiPpdu> ppdu,
+                                                      WifiPhyRxfailureReason reason)
+{
+    auto phy = m_rxPhys.at(index);
+    NS_LOG_FUNCTION(this << index << ppdu << reason << phy->GetCurrentFrequencyRange()
+                         << phy->GetChannelWidth() << phy->GetChannelNumber());
+    m_drops.at(index)++;
+}
+
+void
 SpectrumWifiPhyMultipleInterfacesTest::RxSuccess(std::size_t index,
                                                  Ptr<const WifiPsdu> psdu,
                                                  RxSignalInfo rxSignalInfo,
@@ -1890,6 +1912,7 @@ SpectrumWifiPhyMultipleInterfacesTest::CheckResults(
     uint32_t expectedNumRx,
     uint32_t expectedNumRxSuccess,
     uint32_t expectedRxBytes,
+    uint32_t expectedNumDroppedPpdus,
     FrequencyRange expectedFrequencyRangeActiveRfInterface,
     const std::vector<std::size_t>& expectedConnectedPhyInterfacesPerChannel)
 {
@@ -1927,6 +1950,9 @@ SpectrumWifiPhyMultipleInterfacesTest::CheckResults(
     NS_TEST_EXPECT_MSG_EQ(m_listeners.at(index)->m_notifyRxStart,
                           expectedNumRxSuccess,
                           "Unexpected amount of RX payload start indication");
+    NS_TEST_EXPECT_MSG_EQ(m_drops.at(index),
+                          expectedNumDroppedPpdus,
+                          "Unexpected amount of dropped PPDUs");
 }
 
 void
@@ -1969,6 +1995,10 @@ SpectrumWifiPhyMultipleInterfacesTest::Reset()
     for (auto& count : m_counts)
     {
         count = 0;
+    }
+    for (auto& drop : m_drops)
+    {
+        drop = 0;
     }
     for (auto& listener : m_listeners)
     {
@@ -2093,6 +2123,9 @@ SpectrumWifiPhyMultipleInterfacesTest::DoSetup()
             "PhyRxBegin",
             MakeCallback(&SpectrumWifiPhyMultipleInterfacesTest::RxBeginCallback, this)
                 .Bind(index));
+        rxPhy->TraceConnectWithoutContext(
+            "PhyRxPpduDrop",
+            MakeCallback(&SpectrumWifiPhyMultipleInterfacesTest::RxDropCallback, this).Bind(index));
 
         rxPhy->SetReceiveOkCallback(
             MakeCallback(&SpectrumWifiPhyMultipleInterfacesTest::RxSuccess, this).Bind(index));
@@ -2108,6 +2141,7 @@ SpectrumWifiPhyMultipleInterfacesTest::DoSetup()
         m_countRxSuccess.push_back(0);
         m_countRxFailure.push_back(0);
         m_rxBytes.push_back(0);
+        m_drops.push_back(0);
     }
 }
 
@@ -2172,6 +2206,7 @@ SpectrumWifiPhyMultipleInterfacesTest::DoRun()
                                 (i == j) ? 1 : 0,
                                 (i == j) ? 1 : 0,
                                 (i == j) ? 1000 : 0,
+                                0,
                                 expectedFreqRange,
                                 expectedConnectedPhyInterfacesPerChannel);
         }
@@ -2225,6 +2260,7 @@ SpectrumWifiPhyMultipleInterfacesTest::DoRun()
                                 1,
                                 1,
                                 1000,
+                                0,
                                 expectedFreqRange,
                                 expectedConnectedPhyInterfacesPerChannel);
         }
@@ -2273,6 +2309,7 @@ SpectrumWifiPhyMultipleInterfacesTest::DoRun()
                                 (i == secondSpectrumChannelIndex) ? 1 : 0,
                                 (i == secondSpectrumChannelIndex) ? 1 : 0,
                                 (i == secondSpectrumChannelIndex) ? 1000 : 0,
+                                0,
                                 expectedFreqRange,
                                 expectedConnectedPhyInterfacesPerChannel);
         }
@@ -2497,6 +2534,7 @@ EmlsrSpectrumPhyInterfacesTest::DoRun()
                             2, // 2 packets should have been successfully received, 1 packet should
                                // have been interrupted (switch during PHY header reception)
                             2000, // 500 bytes (firstpacket) and 1500 bytes (third packet)
+                            0,    // no dropped PPDUs
                             txPpduPhy->GetCurrentFrequencyRange(),
                             expectedConnectedPhyInterfacesPerChannel);
 
@@ -2616,8 +2654,161 @@ EmlsrSpectrumPhyInterfacesTest::DoRun()
                             1,    // 1 RX event
                             1,    // last transmitted packet should have been successfully received
                             1500, // 1500 bytes (payload of last transmitted packet)
+                            0,    // no dropped PPDUs
                             txPpduPhy->GetCurrentFrequencyRange(),
                             expectedConnectedPhyInterfacesPerChannel);
+
+        // reset
+        Simulator::Schedule(delay + m_flushResultsDelay,
+                            &SpectrumWifiPhyMultipleInterfacesTest::Reset,
+                            this);
+    }
+}
+
+/**
+ * @brief Spectrum Wifi Phy Multiple Spectrum Test for DSO use cases
+ *
+ * This test extends SpectrumWifiPhyMultipleInterfacesTest to reproduce DSO use cases.
+ */
+class DsoSpectrumPhyInterfacesTest : public SpectrumWifiPhyMultipleInterfacesTest
+{
+  public:
+    DsoSpectrumPhyInterfacesTest();
+
+  protected:
+    void DoSetup() override;
+    void DoRun() override;
+};
+
+DsoSpectrumPhyInterfacesTest::DsoSpectrumPhyInterfacesTest()
+    : SpectrumWifiPhyMultipleInterfacesTest("Check PHY interfaces creation helper for DSO",
+                                            true) // track signals from inactive interfaces
+{
+}
+
+void
+DsoSpectrumPhyInterfacesTest::DoSetup()
+{
+    Config::SetDefault("ns3::UhrConfiguration::DsoActivated", BooleanValue(true));
+    SpectrumWifiPhyMultipleInterfacesTest::DoSetup();
+    for (auto& phy : m_txPhys)
+    {
+        phy->SetAttribute("ChannelSwitchDelay", TimeValue(NanoSeconds(1)));
+    }
+    for (auto& phy : m_rxPhys)
+    {
+        phy->SetAttribute("ChannelSwitchDelay", TimeValue(NanoSeconds(1)));
+    }
+}
+
+void
+DsoSpectrumPhyInterfacesTest::DoRun()
+{
+    NS_LOG_FUNCTION(this);
+
+    /*
+     * Expected number of connected PHY interfaces per channel after DSO activation
+     * channel 0 @ 2.4 GHz: 1 TX PHY interface + 4 RX PHY interfaces
+     * channel 1 @ 5 GHz low band: 1 TX PHY interface + 4 RX PHY interfaces + TX PHY interface
+     * operating on channel 2 switched to channel 1 + 1 RX PHY interface covering the DSO subchannel
+     * channel 2 @ 5 GHz mid band: 1 TX PHY interface + 4 RX PHY interfaces - 1 TX PHY interface
+     * that switched to channel 1 channel 3 @ 6 GHz band: 1 TX PHY interface + 4 RX PHY interfaces
+     */
+    const std::vector<std::size_t> expectedConnectedPhyInterfacesPerChannel{5, 7, 4, 5};
+
+    // ensure bands are created and tracked for the DSO subchannel
+    auto delay = Seconds(1);
+    Simulator::Schedule(delay,
+                        &SpectrumWifiPhyMultipleInterfacesTest::SwitchChannel,
+                        this,
+                        m_rxPhys.at(1),
+                        WIFI_PHY_BAND_5GHZ,
+                        58, // the channel number of the DSO subchannel
+                        MHz_t{80},
+                        0);
+
+    /* verify we can detect interference on DSO subchannel */
+    for (const auto withInterference : {false, true})
+    {
+        // switch to the active subchannel
+        delay += Seconds(1);
+        Simulator::Schedule(delay,
+                            &SpectrumWifiPhyMultipleInterfacesTest::SwitchChannel,
+                            this,
+                            m_rxPhys.at(1),
+                            WIFI_PHY_BAND_5GHZ,
+                            42,
+                            MHz_t{80},
+                            0);
+
+        // place one TX in the DSO subchannel
+        Simulator::Schedule(delay,
+                            &SpectrumWifiPhyMultipleInterfacesTest::SwitchChannel,
+                            this,
+                            m_txPhys.at(2),
+                            WIFI_PHY_BAND_5GHZ,
+                            58,
+                            MHz_t{80},
+                            0);
+
+        delay += Seconds(1);
+        if (withInterference)
+        {
+            // start interference in the DSO subchannel
+            Simulator::Schedule(delay,
+                                &SpectrumWifiPhyMultipleInterfacesTest::SendPpdu,
+                                this,
+                                m_txPhys.at(2),
+                                dBm_t{0},
+                                1500);
+        }
+
+        // switch to the DSO subchannel during the ongoing interference
+        delay += MicroSeconds(50);
+        Simulator::Schedule(delay,
+                            &SpectrumWifiPhyMultipleInterfacesTest::SwitchChannel,
+                            this,
+                            m_rxPhys.at(1),
+                            WIFI_PHY_BAND_5GHZ,
+                            58,
+                            MHz_t{80},
+                            0);
+
+        // place another TX in the DSO subchannel
+        Simulator::Schedule(delay,
+                            &SpectrumWifiPhyMultipleInterfacesTest::SwitchChannel,
+                            this,
+                            m_txPhys.at(1),
+                            WIFI_PHY_BAND_5GHZ,
+                            58,
+                            MHz_t{80},
+                            0);
+
+        // start transmission in the DSO subchannel while the interference is still ongoing
+        delay += MicroSeconds(5);
+        Simulator::Schedule(delay,
+                            &SpectrumWifiPhyMultipleInterfacesTest::SendPpdu,
+                            this,
+                            m_txPhys.at(1),
+                            dBm_t{0},
+                            1000);
+
+        Simulator::Schedule(
+            delay + m_checkResultsDelay,
+            &SpectrumWifiPhyMultipleInterfacesTest::CheckResults,
+            this,
+            1,                        // PHY index
+            withInterference ? 0 : 1, // no RX event if interference on DSO subchannel (preamble
+                                      // detection should fail)
+            withInterference
+                ? 0
+                : 1, // packet should be received only if no interference on DSO subchannel
+            withInterference ? 0 : 1000, // 1000 bytes (payload of last transmitted packet)
+            withInterference ? 1 : 0,    // 1 dropped PPDU if interference on DSO subchannel
+                                         // (because of failed preamble detection)
+            FrequencyRange{.minFrequency = MHz_t{5250},
+                           .maxFrequency = MHz_t{5330}}, // frequency range of the DSO subchannel
+            expectedConnectedPhyInterfacesPerChannel);
 
         // reset
         Simulator::Schedule(delay + m_flushResultsDelay,
@@ -2640,10 +2831,16 @@ class SpectrumWifiPhyInterfacesHelperTest : public TestCase
   public:
     /**
      * Constructor
-     *
-     * Default constructor for the test case without subchannels.
      */
     SpectrumWifiPhyInterfacesHelperTest();
+    /**
+     * Constructor
+     *
+     * @param dsoActivated flag whether DSO is activated for the test
+     * @param maxSupportedBw the maximum support bandwidth considered for the test (only used if
+     * DSO)
+     */
+    SpectrumWifiPhyInterfacesHelperTest(bool dsoActivated, MHz_t maxSupportedBw);
     /**
      * Constructor
      *
@@ -2681,6 +2878,8 @@ class SpectrumWifiPhyInterfacesHelperTest : public TestCase
     void CheckResults(std::size_t nodeId,
                       const std::map<FrequencyRange, std::size_t>& expectedNumAttachedInterfaces);
 
+    bool m_dsoActivated{false};  //!< flag whether DSO is activated
+    MHz_t m_maxSupportedBw{160}; //!< the maximum supported BWs (only matters for DSO)
     std::map<FrequencyRange, std::vector<SpectrumWifiPhyHelper::SpectrumSubchannel>>
         m_subchannels{}; //!< Subchannels to track at the beginning of the simulation
     std::map<FrequencyRange, Ptr<MultiModelSpectrumChannel>>
@@ -2700,7 +2899,17 @@ class SpectrumWifiPhyInterfacesHelperTest : public TestCase
 };
 
 SpectrumWifiPhyInterfacesHelperTest::SpectrumWifiPhyInterfacesHelperTest()
-    : TestCase{"Check PHY interfaces added to PHY instances using helper"}
+    : SpectrumWifiPhyInterfacesHelperTest(false, MHz_t{0})
+{
+}
+
+SpectrumWifiPhyInterfacesHelperTest::SpectrumWifiPhyInterfacesHelperTest(bool dsoActivated,
+                                                                         MHz_t maxSupportedBw)
+    : TestCase("Check PHY interfaces added to PHY instances using helper: DSO=" +
+               std::to_string(dsoActivated) +
+               (dsoActivated ? std::string(" BW=") + maxSupportedBw.str() : std::string(""))),
+      m_dsoActivated{dsoActivated},
+      m_maxSupportedBw{maxSupportedBw}
 {
 }
 
@@ -2732,6 +2941,7 @@ SpectrumWifiPhyInterfacesHelperTest::InstallDevice(std::size_t nodeId,
             m_expectedMapping[linkId].insert(freqRange);
         }
     }
+    m_wifiHelper.ConfigUhrOptions("DsoActivated", BooleanValue(m_dsoActivated));
     m_devices.Add(m_wifiHelper.Install(m_phyHelper, m_macHelper, m_nodes.Get(nodeId)));
 }
 
@@ -2742,11 +2952,43 @@ SpectrumWifiPhyInterfacesHelperTest::CheckResults(
 {
     NS_LOG_FUNCTION(this << nodeId << expectedNumAttachedInterfaces.size());
 
+    const std::size_t num80MHzSubchannelsIn5GHzRange{7};
+    const std::size_t num80MHzSubchannelsIn6GHzRange{14};
+    const std::size_t num160MHzSubchannelsIn5GHzRange{3};
+    const std::size_t num160MHzSubchannelsIn6GHzRange{7};
+    const std::size_t numSubchannelsIn2_4GHzRange{
+        1}; // DSO cannot be used for 2.4 GHz, there is no 80 nor 160 MHz subchannels
+    const std::size_t numBands{3}; // 2.4 GHz, 5 GHz and 6 GHz
+
     for (uint8_t i = 0; i < 3; ++i)
     {
         auto phyLink = DynamicCast<SpectrumWifiPhy>(
             DynamicCast<WifiNetDevice>(m_devices.Get(nodeId))->GetPhy(i));
-        auto expectedNumInterfaces = m_expectedMapping.empty() ? 3 : m_expectedMapping.at(i).size();
+        auto expectedNumInterfaces =
+            m_expectedMapping.empty() ? numBands : m_expectedMapping.at(i).size();
+        if (m_dsoActivated && (i != 0) &&
+            ((i == 1) || (m_maxSupportedBw < MHz_t{320}))) // DSO PHYs @ 5 or 6 GHz (no slit for DSO
+                                                           // needed if channel width is 320 MHz)
+        {
+            expectedNumInterfaces = 0;
+            if (m_expectedMapping.empty() ||
+                m_expectedMapping.at(i).contains(WIFI_SPECTRUM_2_4_GHZ))
+            {
+                expectedNumInterfaces += numSubchannelsIn2_4GHzRange;
+            }
+            if (m_expectedMapping.empty() || m_expectedMapping.at(i).contains(WIFI_SPECTRUM_5_GHZ))
+            {
+                expectedNumInterfaces += (m_maxSupportedBw >= MHz_t{160})
+                                             ? num160MHzSubchannelsIn5GHzRange
+                                             : num80MHzSubchannelsIn5GHzRange;
+            }
+            if (m_expectedMapping.empty() || m_expectedMapping.at(i).contains(WIFI_SPECTRUM_6_GHZ))
+            {
+                expectedNumInterfaces += (m_maxSupportedBw >= MHz_t{160})
+                                             ? num160MHzSubchannelsIn6GHzRange
+                                             : num80MHzSubchannelsIn6GHzRange;
+            }
+        }
         for (const auto& [freqRange, channel] : m_spectrumChannels)
         {
             if (!m_expectedMapping.empty() && (!m_expectedMapping.at(i).contains(freqRange)))
@@ -2764,12 +3006,16 @@ SpectrumWifiPhyInterfacesHelperTest::CheckResults(
             const auto& spectrumPhyInterfaces = phyLink->GetSpectrumPhyInterfaces();
             if (!m_subchannels.contains(freqRange))
             {
-                NS_TEST_ASSERT_MSG_EQ(
-                    spectrumPhyInterfaces.count(freqRange),
-                    1,
-                    "No PHY interface for PHY link ID " + std::to_string(i)
-                        << " and node ID " << std::to_string(nodeId) << " covering frequency range "
-                        << freqRange.minFrequency.str() << " - " + freqRange.maxFrequency.str());
+                if (!m_dsoActivated)
+                {
+                    NS_TEST_ASSERT_MSG_EQ(spectrumPhyInterfaces.count(freqRange),
+                                          1,
+                                          "No PHY interface for PHY link ID " + std::to_string(i)
+                                              << " and node ID " << std::to_string(nodeId)
+                                              << " covering frequency range "
+                                              << freqRange.minFrequency.str()
+                                              << " - " + freqRange.maxFrequency.str());
+                }
             }
             else
             {
@@ -2829,11 +3075,19 @@ SpectrumWifiPhyInterfacesHelperTest::DoSetup()
 {
     m_nodes = NodeContainer(4);
 
-    m_wifiHelper.SetStandard(WIFI_STANDARD_80211be);
+    m_wifiHelper.SetStandard(WIFI_STANDARD_80211bn);
+
+    const uint8_t channelNumber5GHz = (m_maxSupportedBw >= MHz_t{160}) ? 50 : 42;
+    const uint8_t channelNumber6GHz =
+        (m_maxSupportedBw == MHz_t{320}) ? 31 : ((m_maxSupportedBw == MHz_t{160}) ? 15 : 7);
 
     m_phyHelper.Set(0, "ChannelSettings", StringValue("{2, 0, BAND_2_4GHZ, 0}"));
-    m_phyHelper.Set(1, "ChannelSettings", StringValue("{36, 0, BAND_5GHZ, 0}"));
-    m_phyHelper.Set(2, "ChannelSettings", StringValue("{1, 0, BAND_6GHZ, 0}"));
+    m_phyHelper.Set(1,
+                    "ChannelSettings",
+                    StringValue("{" + std::to_string(channelNumber5GHz) + ", 0, BAND_5GHZ, 0}"));
+    m_phyHelper.Set(2,
+                    "ChannelSettings",
+                    StringValue("{" + std::to_string(channelNumber6GHz) + ", 0, BAND_6GHZ, 0}"));
 
     m_spectrumChannels[WIFI_SPECTRUM_2_4_GHZ] = CreateObject<MultiModelSpectrumChannel>();
     m_spectrumChannels[WIFI_SPECTRUM_5_GHZ] = CreateObject<MultiModelSpectrumChannel>();
@@ -2968,7 +3222,14 @@ SpectrumWifiPhyTestSuite::SpectrumWifiPhyTestSuite()
     AddTestCase(new EmlsrSpectrumPhyInterfacesTest(
                     EmlsrSpectrumPhyInterfacesTest::ChannelSwitchScenario::BETWEEN_TX_RX),
                 TestCase::Duration::QUICK);
-    AddTestCase(new SpectrumWifiPhyInterfacesHelperTest, TestCase::Duration::QUICK);
+    AddTestCase(new DsoSpectrumPhyInterfacesTest(), TestCase::Duration::QUICK);
+    AddTestCase(new SpectrumWifiPhyInterfacesHelperTest(), TestCase::Duration::QUICK);
+    AddTestCase(new SpectrumWifiPhyInterfacesHelperTest(true, MHz_t{80}),
+                TestCase::Duration::QUICK);
+    AddTestCase(new SpectrumWifiPhyInterfacesHelperTest(true, MHz_t{160}),
+                TestCase::Duration::QUICK);
+    AddTestCase(new SpectrumWifiPhyInterfacesHelperTest(true, MHz_t{320}),
+                TestCase::Duration::QUICK);
     AddTestCase(new SpectrumWifiPhyInterfacesHelperTest("2 x 80 MHz subchannels @ 6 GHz",
                                                         {{WIFI_SPECTRUM_6_GHZ,
                                                           {
