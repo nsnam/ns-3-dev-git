@@ -1320,7 +1320,6 @@ Ipv6L3Protocol::IpForward(Ptr<const NetDevice> idev,
     // Forwarding
     Ipv6Header ipHeader = header;
     Ptr<Packet> packet = p->Copy();
-    ipHeader.SetHopLimit(ipHeader.GetHopLimit() - 1);
 
     if (ipHeader.GetSource().IsLinkLocal())
     {
@@ -1328,7 +1327,9 @@ Ipv6L3Protocol::IpForward(Ptr<const NetDevice> idev,
         return;
     }
 
-    if (ipHeader.GetHopLimit() == 0)
+    // RFC 8200: When forwarding, the packet is discarded if Hop
+    // Limit was zero when received or is decremented to zero.
+    if (ipHeader.GetHopLimit() <= 1)
     {
         NS_LOG_WARN("TTL exceeded.  Drop.");
         m_dropTrace(ipHeader, packet, DROP_TTL_EXPIRED, this, 0);
@@ -1342,6 +1343,7 @@ Ipv6L3Protocol::IpForward(Ptr<const NetDevice> idev,
         }
         return;
     }
+    ipHeader.SetHopLimit(ipHeader.GetHopLimit() - 1);
 
     /* ICMPv6 Redirect */
 

@@ -1017,13 +1017,13 @@ Ipv4L3Protocol::IpMulticastForward(Ptr<Ipv4MulticastRoute> mrtentry,
 
         Ptr<Packet> packet = p->Copy();
         Ipv4Header ipHeader = header;
-        ipHeader.SetTtl(header.GetTtl() - 1);
-        if (ipHeader.GetTtl() == 0)
+        if (ipHeader.GetTtl() <= 1)
         {
             NS_LOG_WARN("TTL exceeded.  Drop.");
             m_dropTrace(header, packet, DROP_TTL_EXPIRED, this, interface);
             return;
         }
+        ipHeader.SetTtl(header.GetTtl() - 1);
         NS_LOG_LOGIC("Forward multicast via interface " << interface);
         Ptr<Ipv4Route> rtentry = Create<Ipv4Route>();
         rtentry->SetSource(ipHeader.GetSource());
@@ -1046,8 +1046,7 @@ Ipv4L3Protocol::IpForward(Ptr<Ipv4Route> rtentry, Ptr<const Packet> p, const Ipv
     Ipv4Header ipHeader = header;
     Ptr<Packet> packet = p->Copy();
     int32_t interface = GetInterfaceForDevice(rtentry->GetOutputDevice());
-    ipHeader.SetTtl(ipHeader.GetTtl() - 1);
-    if (ipHeader.GetTtl() == 0)
+    if (ipHeader.GetTtl() <= 1)
     {
         // Do not reply to multicast/broadcast IP address
         if (!ipHeader.GetDestination().IsBroadcast() && !ipHeader.GetDestination().IsMulticast())
@@ -1059,6 +1058,7 @@ Ipv4L3Protocol::IpForward(Ptr<Ipv4Route> rtentry, Ptr<const Packet> p, const Ipv
         m_dropTrace(header, packet, DROP_TTL_EXPIRED, this, interface);
         return;
     }
+    ipHeader.SetTtl(ipHeader.GetTtl() - 1);
     // in case the packet still has a priority tag attached, remove it
     SocketPriorityTag priorityTag;
     packet->RemovePacketTag(priorityTag);
