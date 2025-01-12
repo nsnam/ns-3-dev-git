@@ -916,9 +916,9 @@ GcrTestBase::DoSetup()
         }
         if (m_params.stas.at(i).standard >= WIFI_STANDARD_80211ac)
         {
-            auto staVhtConfiguration = CreateObject<VhtConfiguration>();
-            staVhtConfiguration->m_160MHzSupported =
-                (m_params.stas.at(i).maxChannelWidth >= MHz_t{160});
+            auto staVhtConfiguration = CreateObjectWithAttributes<VhtConfiguration>(
+                "Support160MHzOperation",
+                BooleanValue(m_params.stas.at(i).maxChannelWidth >= MHz_t{160}));
             staNetDevice->SetVhtConfiguration(staVhtConfiguration);
         }
         if (m_params.stas.at(i).standard >= WIFI_STANDARD_80211ax)

@@ -6,6 +6,7 @@
  * Author: Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
+#include "ns3/boolean.h"
 #include "ns3/constant-obss-pd-algorithm.h"
 #include "ns3/eht-configuration.h"
 #include "ns3/eht-phy.h"
@@ -301,8 +302,8 @@ WifiPhyCcaThresholdsTest::DoSetup()
     m_device->SetStandard(WIFI_STANDARD_80211be);
     m_vhtConfiguration = CreateObject<VhtConfiguration>();
     m_device->SetVhtConfiguration(m_vhtConfiguration);
-    m_ehtConfiguration = CreateObject<EhtConfiguration>();
-    m_ehtConfiguration->m_320MHzSupported = true;
+    m_ehtConfiguration =
+        CreateObjectWithAttributes<EhtConfiguration>("Support320MHzOperation", BooleanValue(true));
     m_device->SetEhtConfiguration(m_ehtConfiguration);
 
     m_phy = CreateObject<SpectrumWifiPhy>();
@@ -1333,8 +1334,9 @@ WifiPhyCcaIndicationTest::DoSetup()
     rxDev->SetVhtConfiguration(vhtConfiguration);
     if (m_standard > WIFI_STANDARD_80211ax)
     {
-        auto ehtConfiguration = CreateObject<EhtConfiguration>();
-        ehtConfiguration->m_320MHzSupported = true;
+        auto ehtConfiguration =
+            CreateObjectWithAttributes<EhtConfiguration>("Support320MHzOperation",
+                                                         BooleanValue(true));
         rxDev->SetEhtConfiguration(ehtConfiguration);
     }
     m_rxPhy = CreateObject<SpectrumWifiPhy>();

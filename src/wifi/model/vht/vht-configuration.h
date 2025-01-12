@@ -52,7 +52,6 @@ class VhtConfiguration : public Object
      * @return true if 20 MHz, 40 MHz, 80 MHz and 160 MHz operation is supported,
      *         false if 20 MHz, 40 MHz and 80 MHz operation is supported
      */
-    NS_DEPRECATED_3_44("Get the m_160MHzSupported member variable instead")
     bool Get160MHzOperationSupported() const;
 
     using SecondaryCcaSensitivityThresholds =
@@ -78,9 +77,8 @@ class VhtConfiguration : public Object
      */
     const std::map<MHz_t, dBm_t>& GetSecondaryCcaSensitivityThresholdsPerBw() const;
 
-    bool m_160MHzSupported; ///< whether 160 MHz operation is supported
-
   private:
+    bool m_160MHzSupported; ///< whether 160 MHz operation is supported
     std::map<MHz_t, dBm_t>
         m_secondaryCcaSensitivityThresholds; ///< CCA sensitivity thresholds for signals that do not
                                              ///< occupy the primary channel, indexed by signal

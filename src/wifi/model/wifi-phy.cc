@@ -1311,7 +1311,7 @@ WifiPhy::DoChannelSwitch()
         }
 
         if (auto vhtConfig = m_device->GetVhtConfiguration();
-            vhtConfig && !vhtConfig->m_160MHzSupported && chWidth > MHz_t{80})
+            vhtConfig && !vhtConfig->Get160MHzOperationSupported() && chWidth > MHz_t{80})
         {
             NS_ABORT_MSG("Attempting to set a " << chWidth
                                                 << " channel on"
@@ -1319,7 +1319,7 @@ WifiPhy::DoChannelSwitch()
         }
 
         if (auto ehtConfig = m_device->GetEhtConfiguration();
-            ehtConfig && !ehtConfig->m_320MHzSupported && chWidth > MHz_t{160})
+            ehtConfig && !ehtConfig->Get320MHzOperationSupported() && chWidth > MHz_t{160})
         {
             NS_ABORT_MSG("Attempting to set a " << chWidth
                                                 << " channel on"

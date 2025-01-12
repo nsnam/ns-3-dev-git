@@ -2321,7 +2321,8 @@ WifiMac::GetVhtCapabilities(uint8_t linkId) const
                     "VHT stations have to support 40 MHz operation");
     Ptr<VhtConfiguration> vhtConfiguration = GetVhtConfiguration();
     bool sgiSupported = htConfiguration->m_sgiSupported;
-    capabilities.SetSupportedChannelWidthSet(vhtConfiguration->m_160MHzSupported ? 1 : 0);
+    capabilities.SetSupportedChannelWidthSet(vhtConfiguration->Get160MHzOperationSupported() ? 1
+                                                                                             : 0);
     // Set Maximum MPDU Length subfield
     uint16_t maxAmsduSize =
         std::max({m_voMaxAmsduSize, m_viMaxAmsduSize, m_beMaxAmsduSize, m_bkMaxAmsduSize});
@@ -2365,7 +2366,7 @@ WifiMac::GetVhtCapabilities(uint8_t linkId) const
         capabilities.SetTxMcsMap(maxMcs, nss);
     }
     uint64_t maxSupportedRateLGI = 0; // in bit/s
-    const auto maxWidth = vhtConfiguration->m_160MHzSupported ? MHz_t{160} : MHz_t{80};
+    const auto maxWidth = vhtConfiguration->Get160MHzOperationSupported() ? MHz_t{160} : MHz_t{80};
     for (const auto& mcs : phy->GetMcsList(WIFI_MOD_CLASS_VHT))
     {
         if (!mcs.IsAllowed(maxWidth, 1))
@@ -2409,7 +2410,7 @@ WifiMac::GetHeCapabilities(uint8_t linkId) const
     {
         channelWidthSet |= 0x02;
     }
-    if ((vhtConfiguration->m_160MHzSupported) &&
+    if ((vhtConfiguration->Get160MHzOperationSupported()) &&
         ((phy->GetPhyBand() == WIFI_PHY_BAND_5GHZ) || (phy->GetPhyBand() == WIFI_PHY_BAND_6GHZ)))
     {
         channelWidthSet |= 0x04;
@@ -2553,7 +2554,7 @@ WifiMac::GetEhtCapabilities(uint8_t linkId) const
                 phy->IsMcsSupported(WIFI_MOD_CLASS_EHT, maxMcs) ? maxTxNss : 0);
         }
     }
-    if (auto vhtConfig = GetVhtConfiguration(); vhtConfig->m_160MHzSupported)
+    if (auto vhtConfig = GetVhtConfiguration(); vhtConfig->Get160MHzOperationSupported())
     {
         for (auto maxMcs : {9, 11, 13})
         {
@@ -2567,7 +2568,7 @@ WifiMac::GetEhtCapabilities(uint8_t linkId) const
                 phy->IsMcsSupported(WIFI_MOD_CLASS_EHT, maxMcs) ? maxTxNss : 0);
         }
     }
-    if (auto ehtConfig = GetEhtConfiguration(); ehtConfig->m_320MHzSupported)
+    if (auto ehtConfig = GetEhtConfiguration(); ehtConfig->Get320MHzOperationSupported())
     {
         capabilities.m_phyCapabilities.support320MhzIn6Ghz = true;
         for (auto maxMcs : {9, 11, 13})

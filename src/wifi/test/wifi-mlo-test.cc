@@ -1104,7 +1104,10 @@ MultiLinkSetupTest::DoSetup()
     // are compatible
     for (auto staMac : m_staMacs)
     {
-        staMac->GetVhtConfiguration()->m_160MHzSupported = m_support160MHzOp;
+        auto vhtConfiguration =
+            CreateObjectWithAttributes<VhtConfiguration>("Support160MHzOperation",
+                                                         BooleanValue(m_support160MHzOp));
+        staMac->GetDevice()->SetVhtConfiguration(vhtConfiguration);
         uint8_t linkId = 0;
         for (const auto& str : m_staChannels)
         {

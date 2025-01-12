@@ -625,8 +625,8 @@ SpectrumWifiPhyFilterTest::DoSetup()
     txDev->SetPhy(m_txPhy);
     txNode->AggregateObject(apMobility);
     txNode->AddDevice(txDev);
-    auto txEhtConfiguration = CreateObject<EhtConfiguration>();
-    txEhtConfiguration->m_320MHzSupported = true;
+    auto txEhtConfiguration =
+        CreateObjectWithAttributes<EhtConfiguration>("Support320MHzOperation", BooleanValue(true));
     txDev->SetEhtConfiguration(txEhtConfiguration);
 
     auto rxNode = CreateObject<Node>();
@@ -645,8 +645,8 @@ SpectrumWifiPhyFilterTest::DoSetup()
     rxDev->SetPhy(m_rxPhy);
     rxNode->AggregateObject(sta1Mobility);
     rxNode->AddDevice(rxDev);
-    auto rxEhtConfiguration = CreateObject<EhtConfiguration>();
-    rxEhtConfiguration->m_320MHzSupported = true;
+    auto rxEhtConfiguration =
+        CreateObjectWithAttributes<EhtConfiguration>("Support320MHzOperation", BooleanValue(true));
     rxDev->SetEhtConfiguration(rxEhtConfiguration);
     m_rxPhy->TraceConnectWithoutContext("PhyRxBegin",
                                         MakeCallback(&SpectrumWifiPhyFilterTest::RxCallback, this));

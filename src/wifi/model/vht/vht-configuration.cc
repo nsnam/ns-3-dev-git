@@ -42,6 +42,8 @@ VhtConfiguration::GetTypeId()
             .AddConstructor<VhtConfiguration>()
             .AddAttribute("Support160MHzOperation",
                           "Whether or not 160 MHz operation is to be supported.",
+                          TypeId::ATTR_GET |
+                              TypeId::ATTR_CONSTRUCT, // prevent setting after construction
                           BooleanValue(true),
                           MakeBooleanAccessor(&VhtConfiguration::m_160MHzSupported),
                           MakeBooleanChecker())

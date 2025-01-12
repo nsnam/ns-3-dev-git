@@ -107,7 +107,12 @@ class EhtConfiguration : public Object
      */
     bool GetEmlsrActivated() const;
 
-    bool m_320MHzSupported;      //!< whether 320 MHz operation is supported
+    /**
+     * @return true if 20 MHz, 40 MHz, 80 MHz, 160 MHz and 320 MHz operation is supported,
+     *         false if 20 MHz, 40 MHz, 80 MHz and 160 MHz operation is supported
+     */
+    bool Get320MHzOperationSupported() const;
+
     Time m_transitionTimeout;    //!< Transition timeout
     Time m_mediumSyncDuration;   //!< duration of the MediumSyncDelay timer
     int8_t m_msdOfdmEdThreshold; //!< MediumSyncDelay OFDM ED threshold
@@ -121,7 +126,8 @@ class EhtConfiguration : public Object
     dBm_t m_per20CcaSensitivityThreshold; //!< CCA threshold for Per 20MHz check
 
   private:
-    bool m_emlsrActivated; //!< whether EMLSR option is activated
+    bool m_emlsrActivated;  //!< whether EMLSR option is activated
+    bool m_320MHzSupported; //!< whether 320 MHz operation is supported
 };
 
 } // namespace ns3
