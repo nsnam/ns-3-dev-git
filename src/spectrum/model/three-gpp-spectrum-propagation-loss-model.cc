@@ -44,7 +44,6 @@ void
 ThreeGppSpectrumPropagationLossModel::DoDispose()
 {
     m_longTermMap.clear();
-    m_channelModel->Dispose();
     m_channelModel = nullptr;
 }
 
