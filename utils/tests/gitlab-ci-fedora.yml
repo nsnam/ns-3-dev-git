@@ -14,8 +14,8 @@
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
       allow_failure: true
   before_script:
-    - dnf update --assumeyes
-    - dnf install --assumeyes
+    - dnf update -y
+    - dnf install -y
       gcc-c++ cmake ccache ninja-build
       boost-devel
       eigen3-devel
@@ -23,14 +23,14 @@
       gsl gsl-devel
       sqlite sqlite-devel
       libxml2 libxml2-devel
-      openmpi openmpi-devel
+      openmpi openmpi-devel openssh
       goocanvas2-devel
       python python-devel
-      pygobject3-devel python3-gobject gobject-introspection-devel
+      python3-gobject-devel gobject-introspection-devel
       graphviz-devel graphviz ipython
       git
     - source /etc/profile.d/modules.sh
-    - module load mpi/openmpi-x86_64
+    - module load mpi/openmpi-$(uname -m)
   variables:
     COMPILER: g++
 
@@ -44,140 +44,94 @@ weekly-fedora:
   script:
     - echo "Starting Fedora jobs"
 
-# Fedora 36
-# weekly-build-fedora-36-debug:
-#   extends: .weekly-build-fedora
-#   needs: ["weekly-fedora"]
-#   image: fedora:36
-#   stage: build
-#   variables:
-#     MODE: debug
-
-# weekly-build-fedora-36-default:
-#   extends: .weekly-build-fedora
-#   needs: ["weekly-fedora"]
-#   image: fedora:36
-#   stage: build
-#   variables:
-#     MODE: default
-
-# weekly-build-fedora-36-optimized:
-#   extends: .weekly-build-fedora
-#   needs: ["weekly-fedora"]
-#   image: fedora:36
-#   stage: build
-#   variables:
-#     MODE: optimized
-
-# Fedora 36 test
-# weekly-test-fedora-36-default:
-#   extends: .weekly-build-fedora
-#   image: fedora:36
-#   stage: test
-#   needs: ["weekly-build-fedora-36-default"]
-#   dependencies:
-#     - weekly-build-fedora-36-default
-#   variables:
-#     MODE: default
-
-# weekly-test-fedora-36-optimized:
-#   extends: .weekly-build-fedora
-#   image: fedora:36
-#   stage: test
-#   needs: ["weekly-build-fedora-36-optimized"]
-#   dependencies:
-#     - weekly-build-fedora-36-optimized
-#   variables:
-#     MODE: optimized
-
-# Fedora 37
-weekly-build-fedora-37-debug:
+# Fedora 40
+weekly-build-fedora-40-debug:
   extends: .weekly-build-fedora
   needs: ["weekly-fedora"]
-  image: fedora:37
+  image: fedora:40
   stage: build
   variables:
     MODE: debug
 
-weekly-build-fedora-37-default:
+weekly-build-fedora-40-default:
   extends: .weekly-build-fedora
   needs: ["weekly-fedora"]
-  image: fedora:37
+  image: fedora:40
   stage: build
   variables:
     MODE: default
 
-weekly-build-fedora-37-optimized:
+weekly-build-fedora-40-optimized:
   extends: .weekly-build-fedora
   needs: ["weekly-fedora"]
-  image: fedora:37
+  image: fedora:40
   stage: build
   variables:
     MODE: optimized
 
-# Fedora 37 test
-weekly-test-fedora-37-default:
+# Fedora 40 test
+weekly-test-fedora-40-default:
   extends: .weekly-build-fedora
-  image: fedora:37
+  image: fedora:40
   stage: test
-  needs: ["weekly-build-fedora-37-default"]
+  needs: ["weekly-build-fedora-40-default"]
   dependencies:
-    - weekly-build-fedora-37-default
+    - weekly-build-fedora-40-default
   variables:
     MODE: default
 
-weekly-test-fedora-37-optimized:
+weekly-test-fedora-40-optimized:
   extends: .weekly-build-fedora
-  image: fedora:37
+  image: fedora:40
   stage: test
-  needs: ["weekly-build-fedora-37-optimized"]
+  needs: ["weekly-build-fedora-40-optimized"]
   dependencies:
-    - weekly-build-fedora-37-optimized
+    - weekly-build-fedora-40-optimized
   variables:
     MODE: optimized
 
-# Fedora 38
-weekly-build-fedora-38-debug:
+# Fedora 41
+weekly-build-fedora-41-debug:
   extends: .weekly-build-fedora
   needs: ["weekly-fedora"]
-  image: fedora:38
+  image: fedora:41
   stage: build
   variables:
     MODE: debug
 
-weekly-build-fedora-38-default:
+weekly-build-fedora-41-default:
   extends: .weekly-build-fedora
   needs: ["weekly-fedora"]
-  image: fedora:38
+  image: fedora:41
   stage: build
   variables:
     MODE: default
 
-weekly-build-fedora-38-optimized:
+weekly-build-fedora-41-optimized:
   extends: .weekly-build-fedora
   needs: ["weekly-fedora"]
-  image: fedora:38
+  image: fedora:41
   stage: build
   variables:
     MODE: optimized
 
-# Fedora 38 test
-weekly-test-fedora-38-default:
+# Fedora 41 test
+weekly-test-fedora-41-default:
   extends: .weekly-build-fedora
-  image: fedora:38
+  image: fedora:41
   stage: test
-  needs: ["weekly-build-fedora-38-default"]
+  needs: ["weekly-build-fedora-41-default"]
   dependencies:
-    - weekly-build-fedora-38-default
+    - weekly-build-fedora-41-default
   variables:
     MODE: default
 
-weekly-test-fedora-38-optimized:
+weekly-test-fedora-41-optimized:
   extends: .weekly-build-fedora
-  image: fedora:38
+  image: fedora:41
   stage: test
-  needs: ["weekly-build-fedora-38-optimized"]
+  needs: ["weekly-build-fedora-41-optimized"]
   dependencies:
-    - weekly-build-fedora-38-optimized
+    - weekly-build-fedora-41-optimized
   variables:
     MODE: optimized
