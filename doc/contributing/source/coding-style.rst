@@ -777,7 +777,7 @@ For standard headers, use the C++ style of inclusion:
 
   .. sourcecode:: cpp
 
-    #include <ns3/header.h>
+    #include "ns3/header.h"
 
 - inside .cc files, use
 
@@ -789,7 +789,7 @@ For standard headers, use the C++ style of inclusion:
 
   .. sourcecode:: cpp
 
-    #include <ns3/header.h>
+    #include "ns3/header.h"
 
 Variables and constants
 =======================
