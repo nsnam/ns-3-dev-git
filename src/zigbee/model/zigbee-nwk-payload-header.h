@@ -10,9 +10,9 @@
 #ifndef ZIGBEE_PAYLOAD_HEADERS_H
 #define ZIGBEE_PAYLOAD_HEADERS_H
 
-#include <ns3/header.h>
-#include <ns3/mac16-address.h>
-#include <ns3/mac64-address.h>
+#include "ns3/header.h"
+#include "ns3/mac16-address.h"
+#include "ns3/mac64-address.h"
 
 namespace ns3
 {

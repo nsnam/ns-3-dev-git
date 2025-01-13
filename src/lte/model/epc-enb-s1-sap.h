@@ -11,7 +11,7 @@
 
 #include "eps-bearer.h"
 
-#include <ns3/ipv4-address.h>
+#include "ns3/ipv4-address.h"
 
 #include <list>
 

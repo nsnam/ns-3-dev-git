@@ -10,7 +10,7 @@
 #ifndef ZIGBEE_STACK_CONTAINER_H
 #define ZIGBEE_STACK_CONTAINER_H
 
-#include <ns3/zigbee-stack.h>
+#include "ns3/zigbee-stack.h"
 
 #include <stdint.h>
 #include <vector>

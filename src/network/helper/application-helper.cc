@@ -8,9 +8,9 @@
 
 #include "application-helper.h"
 
-#include <ns3/data-rate.h>
-#include <ns3/names.h>
-#include <ns3/string.h>
+#include "ns3/data-rate.h"
+#include "ns3/names.h"
+#include "ns3/string.h"
 
 namespace ns3
 {

@@ -21,7 +21,7 @@
 #include "lte-ue-phy-sap.h"
 #include "lte-ue-power-control.h"
 
-#include <ns3/ptr.h>
+#include "ns3/ptr.h"
 
 #include <set>
 

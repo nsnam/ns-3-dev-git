@@ -10,7 +10,7 @@
 #include "spectrum-phy.h"
 #include "spectrum-signal-parameters.h"
 
-#include <ns3/log.h>
+#include "ns3/log.h"
 
 namespace ns3
 {

@@ -8,9 +8,9 @@
 
 #include "on-off-helper.h"
 
-#include <ns3/onoff-application.h>
-#include <ns3/string.h>
-#include <ns3/uinteger.h>
+#include "ns3/onoff-application.h"
+#include "ns3/string.h"
+#include "ns3/uinteger.h"
 
 namespace ns3
 {

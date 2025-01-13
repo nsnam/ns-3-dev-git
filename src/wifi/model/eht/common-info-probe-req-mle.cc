@@ -8,7 +8,7 @@
 
 #include "common-info-probe-req-mle.h"
 
-#include <ns3/abort.h>
+#include "ns3/abort.h"
 
 namespace ns3
 {

@@ -8,8 +8,8 @@
 
 #include "half-duplex-ideal-phy-signal-parameters.h"
 
-#include <ns3/log.h>
-#include <ns3/packet.h>
+#include "ns3/log.h"
+#include "ns3/packet.h"
 
 namespace ns3
 {

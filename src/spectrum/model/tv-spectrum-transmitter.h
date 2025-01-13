@@ -14,9 +14,9 @@
 #include "spectrum-signal-parameters.h"
 #include "spectrum-value.h"
 
-#include <ns3/antenna-model.h>
-#include <ns3/mobility-model.h>
-#include <ns3/net-device.h>
+#include "ns3/antenna-model.h"
+#include "ns3/mobility-model.h"
+#include "ns3/net-device.h"
 
 namespace ns3
 {

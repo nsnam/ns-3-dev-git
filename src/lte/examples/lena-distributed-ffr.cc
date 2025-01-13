@@ -8,6 +8,7 @@
  */
 
 #include "ns3/applications-module.h"
+#include "ns3/buildings-helper.h"
 #include "ns3/core-module.h"
 #include "ns3/internet-module.h"
 #include "ns3/log.h"
@@ -17,7 +18,6 @@
 #include "ns3/point-to-point-epc-helper.h"
 #include "ns3/point-to-point-module.h"
 #include "ns3/spectrum-module.h"
-#include <ns3/buildings-helper.h>
 
 using namespace ns3;
 

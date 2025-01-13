@@ -13,9 +13,9 @@
 
 #include "zigbee-nwk-tables.h"
 
-#include <ns3/log.h>
-#include <ns3/packet.h>
-#include <ns3/simulator.h>
+#include "ns3/log.h"
+#include "ns3/packet.h"
+#include "ns3/simulator.h"
 
 using namespace ns3::lrwpan;
 

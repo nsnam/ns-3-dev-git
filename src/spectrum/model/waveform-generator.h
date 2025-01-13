@@ -13,12 +13,12 @@
 #include "spectrum-phy.h"
 #include "spectrum-value.h"
 
-#include <ns3/event-id.h>
-#include <ns3/mobility-model.h>
-#include <ns3/net-device.h>
-#include <ns3/nstime.h>
-#include <ns3/packet.h>
-#include <ns3/trace-source-accessor.h>
+#include "ns3/event-id.h"
+#include "ns3/mobility-model.h"
+#include "ns3/net-device.h"
+#include "ns3/nstime.h"
+#include "ns3/packet.h"
+#include "ns3/trace-source-accessor.h"
 
 namespace ns3
 {

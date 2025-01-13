@@ -7,8 +7,8 @@
  */
 #include "lr-wpan-spectrum-value-helper.h"
 
-#include <ns3/log.h>
-#include <ns3/spectrum-value.h>
+#include "ns3/log.h"
+#include "ns3/spectrum-value.h"
 
 #include <cmath>
 

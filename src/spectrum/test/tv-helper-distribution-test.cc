@@ -6,9 +6,9 @@
  * Author: Benjamin Cizdziel <ben.cizdziel@gmail.com>
  */
 
-#include <ns3/log.h>
-#include <ns3/test.h>
-#include <ns3/tv-spectrum-transmitter-helper.h>
+#include "ns3/log.h"
+#include "ns3/test.h"
+#include "ns3/tv-spectrum-transmitter-helper.h"
 
 NS_LOG_COMPONENT_DEFINE("TvHelperDistributionTest");
 

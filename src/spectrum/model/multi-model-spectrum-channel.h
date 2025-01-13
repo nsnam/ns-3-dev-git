@@ -14,7 +14,7 @@
 #include "spectrum-propagation-loss-model.h"
 #include "spectrum-value.h"
 
-#include <ns3/propagation-delay-model.h>
+#include "ns3/propagation-delay-model.h"
 
 #include <map>
 #include <set>

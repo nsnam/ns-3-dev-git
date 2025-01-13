@@ -7,8 +7,8 @@
  */
 #include "lr-wpan-spectrum-signal-parameters.h"
 
-#include <ns3/log.h>
-#include <ns3/packet-burst.h>
+#include "ns3/log.h"
+#include "ns3/packet-burst.h"
 
 namespace ns3
 {

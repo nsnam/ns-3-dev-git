@@ -6,8 +6,8 @@
  * Author: Benjamin Cizdziel <ben.cizdziel@gmail.com>
  */
 
-#include <ns3/random-variable-stream.h>
-#include <ns3/vector.h>
+#include "ns3/random-variable-stream.h"
+#include "ns3/vector.h"
 
 #ifndef GEOGRAPHIC_POSITIONS_H
 #define GEOGRAPHIC_POSITIONS_H

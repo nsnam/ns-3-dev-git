@@ -9,8 +9,8 @@
 
 #include "spectrum-signal-parameters.h"
 
-#include <ns3/log.h>
-#include <ns3/phased-array-model.h>
+#include "ns3/log.h"
+#include "ns3/phased-array-model.h"
 
 namespace ns3
 {

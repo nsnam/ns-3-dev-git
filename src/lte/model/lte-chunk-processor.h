@@ -14,9 +14,9 @@
 #ifndef LTE_CHUNK_PROCESSOR_H
 #define LTE_CHUNK_PROCESSOR_H
 
-#include <ns3/nstime.h>
-#include <ns3/object.h>
-#include <ns3/ptr.h>
+#include "ns3/nstime.h"
+#include "ns3/object.h"
+#include "ns3/ptr.h"
 
 namespace ns3
 {

@@ -9,13 +9,13 @@
 #ifndef LTE_TEST_ENTITIES_H
 #define LTE_TEST_ENTITIES_H
 
+#include "ns3/epc-enb-s1-sap.h"
 #include "ns3/lte-mac-sap.h"
 #include "ns3/lte-pdcp-sap.h"
 #include "ns3/lte-rlc-sap.h"
 #include "ns3/net-device.h"
 #include "ns3/simulator.h"
 #include "ns3/test.h"
-#include <ns3/epc-enb-s1-sap.h>
 
 namespace ns3
 {

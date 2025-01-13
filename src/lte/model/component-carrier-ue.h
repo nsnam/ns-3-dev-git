@@ -13,9 +13,9 @@
 #include "lte-phy.h"
 #include "lte-ue-phy.h"
 
-#include <ns3/nstime.h>
-#include <ns3/object.h>
-#include <ns3/packet.h>
+#include "ns3/nstime.h"
+#include "ns3/object.h"
+#include "ns3/packet.h"
 
 namespace ns3
 {

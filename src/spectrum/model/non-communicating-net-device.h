@@ -9,13 +9,13 @@
 #ifndef NON_COMMUNICATING_NET_DEVICE_H
 #define NON_COMMUNICATING_NET_DEVICE_H
 
-#include <ns3/address.h>
-#include <ns3/callback.h>
-#include <ns3/net-device.h>
-#include <ns3/node.h>
-#include <ns3/packet.h>
-#include <ns3/ptr.h>
-#include <ns3/traced-callback.h>
+#include "ns3/address.h"
+#include "ns3/callback.h"
+#include "ns3/net-device.h"
+#include "ns3/node.h"
+#include "ns3/packet.h"
+#include "ns3/ptr.h"
+#include "ns3/traced-callback.h"
 
 #include <cstring>
 

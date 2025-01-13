@@ -8,9 +8,9 @@
 #ifndef BOX_LINE_INTERSECTION_TEST_H
 #define BOX_LINE_INTERSECTION_TEST_H
 
-#include <ns3/box.h>
-#include <ns3/test.h>
-#include <ns3/vector.h>
+#include "ns3/box.h"
+#include "ns3/test.h"
+#include "ns3/vector.h"
 
 using namespace ns3;
 

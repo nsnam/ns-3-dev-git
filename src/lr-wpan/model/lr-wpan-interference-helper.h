@@ -9,8 +9,8 @@
 #ifndef LR_WPAN_INTERFERENCE_HELPER_H
 #define LR_WPAN_INTERFERENCE_HELPER_H
 
-#include <ns3/ptr.h>
-#include <ns3/simple-ref-count.h>
+#include "ns3/ptr.h"
+#include "ns3/simple-ref-count.h"
 
 #include <set>
 

@@ -9,8 +9,8 @@
 
 #include "three-gpp-http-header.h"
 
-#include <ns3/log.h>
-#include <ns3/packet.h>
+#include "ns3/log.h"
+#include "ns3/packet.h"
 
 #include <sstream>
 

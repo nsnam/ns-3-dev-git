@@ -10,7 +10,7 @@
 #ifndef LTE_ENB_CMAC_SAP_H
 #define LTE_ENB_CMAC_SAP_H
 
-#include <ns3/packet.h>
+#include "ns3/packet.h"
 
 namespace ns3
 {

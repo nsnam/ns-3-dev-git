@@ -13,8 +13,8 @@
 #include "eps-bearer.h"
 #include "lte-as-sap.h"
 
-#include <ns3/object.h>
-#include <ns3/traced-callback.h>
+#include "ns3/object.h"
+#include "ns3/traced-callback.h"
 
 namespace ns3
 {

@@ -12,10 +12,10 @@
 #include "component-carrier.h"
 #include "lte-enb-phy.h"
 
-#include <ns3/nstime.h>
-#include <ns3/object.h>
-#include <ns3/packet.h>
-#include <ns3/pointer.h>
+#include "ns3/nstime.h"
+#include "ns3/object.h"
+#include "ns3/packet.h"
+#include "ns3/pointer.h"
 
 namespace ns3
 {

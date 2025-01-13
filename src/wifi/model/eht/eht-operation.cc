@@ -8,7 +8,7 @@
 
 #include "eht-operation.h"
 
-#include <ns3/assert.h>
+#include "ns3/assert.h"
 
 #include <algorithm>
 

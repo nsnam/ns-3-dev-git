@@ -9,14 +9,14 @@
  */
 #include "lr-wpan-helper.h"
 
+#include "ns3/log.h"
+#include "ns3/lr-wpan-csmaca.h"
+#include "ns3/lr-wpan-error-model.h"
+#include "ns3/lr-wpan-net-device.h"
+#include "ns3/mobility-model.h"
+#include "ns3/multi-model-spectrum-channel.h"
 #include "ns3/names.h"
-#include <ns3/log.h>
-#include <ns3/lr-wpan-csmaca.h>
-#include <ns3/lr-wpan-error-model.h>
-#include <ns3/lr-wpan-net-device.h>
-#include <ns3/mobility-model.h>
-#include <ns3/multi-model-spectrum-channel.h>
-#include <ns3/single-model-spectrum-channel.h>
+#include "ns3/single-model-spectrum-channel.h"
 
 namespace ns3
 {

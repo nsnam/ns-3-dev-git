@@ -12,12 +12,12 @@
 
 #include "lte-spectrum-signal-parameters.h"
 
-#include <ns3/antenna-model.h>
-#include <ns3/double.h>
-#include <ns3/log.h>
-#include <ns3/object-factory.h>
-#include <ns3/simulator.h>
-#include <ns3/trace-source-accessor.h>
+#include "ns3/antenna-model.h"
+#include "ns3/double.h"
+#include "ns3/log.h"
+#include "ns3/object-factory.h"
+#include "ns3/simulator.h"
+#include "ns3/trace-source-accessor.h"
 
 namespace ns3
 {

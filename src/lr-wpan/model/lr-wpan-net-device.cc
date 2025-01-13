@@ -14,13 +14,13 @@
 #include "lr-wpan-error-model.h"
 #include "lr-wpan-phy.h"
 
-#include <ns3/abort.h>
-#include <ns3/boolean.h>
-#include <ns3/log.h>
-#include <ns3/node.h>
-#include <ns3/packet.h>
-#include <ns3/pointer.h>
-#include <ns3/spectrum-channel.h>
+#include "ns3/abort.h"
+#include "ns3/boolean.h"
+#include "ns3/log.h"
+#include "ns3/node.h"
+#include "ns3/packet.h"
+#include "ns3/pointer.h"
+#include "ns3/spectrum-channel.h"
 
 namespace ns3
 {

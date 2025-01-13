@@ -10,7 +10,7 @@
 #ifndef LTE_AGGREGATION_THROUGHPUT_SCALE_H
 #define LTE_AGGREGATION_THROUGHPUT_SCALE_H
 
-#include <ns3/test.h>
+#include "ns3/test.h"
 
 using namespace ns3;
 

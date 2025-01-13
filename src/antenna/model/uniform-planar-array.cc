@@ -6,10 +6,10 @@
 
 #include "uniform-planar-array.h"
 
-#include <ns3/boolean.h>
-#include <ns3/double.h>
-#include <ns3/log.h>
-#include <ns3/uinteger.h>
+#include "ns3/boolean.h"
+#include "ns3/double.h"
+#include "ns3/log.h"
+#include "ns3/uinteger.h"
 
 namespace ns3
 {

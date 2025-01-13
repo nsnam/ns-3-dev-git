@@ -10,7 +10,7 @@
 
 #include "bulk-send-helper.h"
 
-#include <ns3/string.h>
+#include "ns3/string.h"
 
 namespace ns3
 {

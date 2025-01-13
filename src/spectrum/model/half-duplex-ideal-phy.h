@@ -15,13 +15,13 @@
 #include "spectrum-signal-parameters.h"
 #include "spectrum-value.h"
 
-#include <ns3/data-rate.h>
-#include <ns3/event-id.h>
-#include <ns3/generic-phy.h>
-#include <ns3/mobility-model.h>
-#include <ns3/net-device.h>
-#include <ns3/nstime.h>
-#include <ns3/packet.h>
+#include "ns3/data-rate.h"
+#include "ns3/event-id.h"
+#include "ns3/generic-phy.h"
+#include "ns3/mobility-model.h"
+#include "ns3/net-device.h"
+#include "ns3/nstime.h"
+#include "ns3/packet.h"
 
 namespace ns3
 {

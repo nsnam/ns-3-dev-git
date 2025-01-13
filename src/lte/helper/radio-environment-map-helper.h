@@ -9,7 +9,7 @@
 #ifndef RADIO_ENVIRONMENT_MAP_HELPER_H
 #define RADIO_ENVIRONMENT_MAP_HELPER_H
 
-#include <ns3/object.h>
+#include "ns3/object.h"
 
 #include <fstream>
 

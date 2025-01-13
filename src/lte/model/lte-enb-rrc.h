@@ -30,10 +30,10 @@
 #include "lte-pdcp-sap.h"
 #include "lte-rrc-sap.h"
 
-#include <ns3/event-id.h>
-#include <ns3/nstime.h>
-#include <ns3/object.h>
-#include <ns3/traced-callback.h>
+#include "ns3/event-id.h"
+#include "ns3/nstime.h"
+#include "ns3/object.h"
+#include "ns3/traced-callback.h"
 
 #include <map>
 #include <set>

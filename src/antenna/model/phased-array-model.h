@@ -10,8 +10,8 @@
 #include "angles.h"
 #include "antenna-model.h"
 
-#include <ns3/matrix-array.h>
-#include <ns3/object.h>
+#include "ns3/matrix-array.h"
+#include "ns3/object.h"
 
 #include <complex>
 

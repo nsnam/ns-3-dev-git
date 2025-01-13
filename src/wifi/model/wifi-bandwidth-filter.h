@@ -7,7 +7,7 @@
 #ifndef WIFI_BANDWIDTH_FILTER_H
 #define WIFI_BANDWIDTH_FILTER_H
 
-#include <ns3/spectrum-transmit-filter.h>
+#include "ns3/spectrum-transmit-filter.h"
 
 namespace ns3
 {

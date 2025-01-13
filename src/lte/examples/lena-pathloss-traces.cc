@@ -9,12 +9,12 @@
 
 #include "ns3/config-store.h"
 #include "ns3/core-module.h"
+#include "ns3/log.h"
 #include "ns3/lte-global-pathloss-database.h"
 #include "ns3/lte-module.h"
 #include "ns3/mobility-module.h"
 #include "ns3/network-module.h"
 #include "ns3/radio-bearer-stats-calculator.h"
-#include <ns3/log.h>
 
 #include <iomanip>
 #include <string>

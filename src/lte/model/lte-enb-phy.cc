@@ -15,19 +15,19 @@
 #include "lte-spectrum-value-helper.h"
 #include "lte-vendor-specific-parameters.h"
 
-#include <ns3/attribute-accessor-helper.h>
-#include <ns3/double.h>
-#include <ns3/log.h>
-#include <ns3/object-factory.h>
-#include <ns3/simulator.h>
+#include "ns3/attribute-accessor-helper.h"
+#include "ns3/double.h"
+#include "ns3/log.h"
+#include "ns3/object-factory.h"
+#include "ns3/simulator.h"
 
 #include <cfloat>
 #include <cmath>
 
 // WILD HACK for the initialization of direct eNB-UE ctrl messaging
-#include <ns3/node-list.h>
-#include <ns3/node.h>
-#include <ns3/pointer.h>
+#include "ns3/node-list.h"
+#include "ns3/node.h"
+#include "ns3/pointer.h"
 
 namespace ns3
 {

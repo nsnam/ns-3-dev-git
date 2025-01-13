@@ -11,7 +11,7 @@
 #include "three-gpp-propagation-loss-model.h"
 
 #include "ns3/deprecated.h"
-#include <ns3/mobility-model.h>
+#include "ns3/mobility-model.h"
 
 namespace ns3
 {

@@ -12,7 +12,7 @@
 #ifndef LR_WPAN_MAC_TRAILER_H
 #define LR_WPAN_MAC_TRAILER_H
 
-#include <ns3/trailer.h>
+#include "ns3/trailer.h"
 
 namespace ns3
 {

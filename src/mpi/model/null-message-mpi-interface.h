@@ -17,8 +17,8 @@
 
 #include "parallel-communication-interface.h"
 
-#include <ns3/buffer.h>
-#include <ns3/nstime.h>
+#include "ns3/buffer.h"
+#include "ns3/nstime.h"
 
 #include <list>
 #include <mpi.h>

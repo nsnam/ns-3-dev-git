@@ -16,7 +16,7 @@
 #include "lte-common.h"
 #include "lte-ffr-sap.h"
 
-#include <ns3/nstime.h>
+#include "ns3/nstime.h"
 
 #include <map>
 #include <vector>

@@ -9,7 +9,7 @@
 #ifndef COMMON_INFO_PROBE_REQ_MLE_H
 #define COMMON_INFO_PROBE_REQ_MLE_H
 
-#include <ns3/buffer.h>
+#include "ns3/buffer.h"
 
 #include <cstdint>
 #include <optional>

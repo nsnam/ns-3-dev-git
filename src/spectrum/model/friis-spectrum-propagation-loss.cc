@@ -10,7 +10,7 @@
 
 #include "spectrum-signal-parameters.h"
 
-#include <ns3/mobility-model.h>
+#include "ns3/mobility-model.h"
 
 #include <cmath> // for M_PI
 

@@ -21,7 +21,11 @@
 #include "ns3/inet-socket-address.h"
 #include "ns3/internet-stack-helper.h"
 #include "ns3/ipv4-address-helper.h"
+#include "ns3/ipv4-interface.h"
+#include "ns3/ipv4-static-routing-helper.h"
+#include "ns3/ipv4-static-routing.h"
 #include "ns3/log.h"
+#include "ns3/mac48-address.h"
 #include "ns3/packet-sink-helper.h"
 #include "ns3/packet-sink.h"
 #include "ns3/point-to-point-epc-helper.h"
@@ -30,10 +34,6 @@
 #include "ns3/simulator.h"
 #include "ns3/test.h"
 #include "ns3/uinteger.h"
-#include <ns3/ipv4-interface.h>
-#include <ns3/ipv4-static-routing-helper.h>
-#include <ns3/ipv4-static-routing.h>
-#include <ns3/mac48-address.h>
 
 using namespace ns3;
 

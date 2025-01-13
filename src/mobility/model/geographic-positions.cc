@@ -8,8 +8,8 @@
 
 #include "geographic-positions.h"
 
-#include <ns3/angles.h>
-#include <ns3/log.h>
+#include "ns3/angles.h"
+#include "ns3/log.h"
 
 #include <cmath>
 

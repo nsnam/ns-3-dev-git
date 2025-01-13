@@ -8,10 +8,10 @@
 
 #include "spectrum-channel.h"
 
-#include <ns3/abort.h>
-#include <ns3/double.h>
-#include <ns3/log.h>
-#include <ns3/pointer.h>
+#include "ns3/abort.h"
+#include "ns3/double.h"
+#include "ns3/log.h"
+#include "ns3/pointer.h"
 
 namespace ns3
 {

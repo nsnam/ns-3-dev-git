@@ -18,7 +18,7 @@
 #include "null-message-mpi-interface.h"
 #include "null-message-simulator-impl.h"
 
-#include <ns3/simulator.h>
+#include "ns3/simulator.h"
 
 namespace ns3
 {

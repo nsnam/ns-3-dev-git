@@ -1,4 +1,4 @@
-#include <ns3/contrib-header.h>
+#include "ns3/contrib-header.h"
 
 void
 testPrint2()

@@ -17,9 +17,9 @@
 #include "granted-time-window-mpi-interface.h"
 #include "null-message-mpi-interface.h"
 
-#include <ns3/global-value.h>
-#include <ns3/log.h>
-#include <ns3/string.h>
+#include "ns3/global-value.h"
+#include "ns3/log.h"
+#include "ns3/string.h"
 
 namespace ns3
 {

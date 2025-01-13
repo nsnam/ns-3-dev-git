@@ -10,8 +10,8 @@
 #ifndef THREE_GPP_HTTP_HEADER_H
 #define THREE_GPP_HTTP_HEADER_H
 
-#include <ns3/header.h>
-#include <ns3/nstime.h>
+#include "ns3/header.h"
+#include "ns3/nstime.h"
 
 namespace ns3
 {

@@ -9,8 +9,8 @@
 #ifndef LTE_AS_SAP_H
 #define LTE_AS_SAP_H
 
-#include <ns3/packet.h>
-#include <ns3/ptr.h>
+#include "ns3/packet.h"
+#include "ns3/ptr.h"
 
 #include <stdint.h>
 

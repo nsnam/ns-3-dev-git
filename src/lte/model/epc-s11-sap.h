@@ -12,9 +12,9 @@
 #include "epc-tft.h"
 #include "eps-bearer.h"
 
-#include <ns3/address.h>
-#include <ns3/object.h>
-#include <ns3/ptr.h>
+#include "ns3/address.h"
+#include "ns3/object.h"
+#include "ns3/ptr.h"
 
 #include <list>
 

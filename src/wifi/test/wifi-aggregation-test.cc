@@ -6,6 +6,7 @@
  * Author: Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
+#include "ns3/attribute-container.h"
 #include "ns3/config.h"
 #include "ns3/eht-configuration.h"
 #include "ns3/fcfs-wifi-queue-scheduler.h"
@@ -36,7 +37,6 @@
 #include "ns3/wifi-psdu.h"
 #include "ns3/yans-wifi-helper.h"
 #include "ns3/yans-wifi-phy.h"
-#include <ns3/attribute-container.h>
 
 #include <algorithm>
 #include <iterator>

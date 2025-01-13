@@ -8,8 +8,8 @@
 
 #include "lr-wpan-mac-pl-headers.h"
 
-#include <ns3/address-utils.h>
-#include <ns3/simulator.h>
+#include "ns3/address-utils.h"
+#include "ns3/simulator.h"
 
 namespace ns3
 {

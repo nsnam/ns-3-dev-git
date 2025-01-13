@@ -13,8 +13,8 @@
 
 #include "lr-wpan-mac.h"
 
-#include <ns3/net-device.h>
-#include <ns3/traced-callback.h>
+#include "ns3/net-device.h"
+#include "ns3/traced-callback.h"
 
 namespace ns3
 {

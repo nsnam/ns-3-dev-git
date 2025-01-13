@@ -22,11 +22,11 @@
 #include "lte-rlc-um.h"
 #include "lte-rlc.h"
 
-#include <ns3/fatal-error.h>
-#include <ns3/log.h>
-#include <ns3/object-factory.h>
-#include <ns3/object-map.h>
-#include <ns3/simulator.h>
+#include "ns3/fatal-error.h"
+#include "ns3/log.h"
+#include "ns3/object-factory.h"
+#include "ns3/object-map.h"
+#include "ns3/simulator.h"
 
 #include <cmath>
 

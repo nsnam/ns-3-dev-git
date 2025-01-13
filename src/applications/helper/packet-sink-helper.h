@@ -9,7 +9,7 @@
 #ifndef PACKET_SINK_HELPER_H
 #define PACKET_SINK_HELPER_H
 
-#include <ns3/application-helper.h>
+#include "ns3/application-helper.h"
 
 namespace ns3
 {

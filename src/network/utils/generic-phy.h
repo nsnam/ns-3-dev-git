@@ -9,7 +9,7 @@
 #ifndef GENERIC_PHY_H
 #define GENERIC_PHY_H
 
-#include <ns3/callback.h>
+#include "ns3/callback.h"
 
 namespace ns3
 {

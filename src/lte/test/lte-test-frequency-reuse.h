@@ -10,12 +10,12 @@
 #ifndef LTE_TEST_DOWNLINK_FR_H
 #define LTE_TEST_DOWNLINK_FR_H
 
+#include "ns3/lte-rrc-sap.h"
 #include "ns3/lte-spectrum-value-helper.h"
 #include "ns3/node.h"
 #include "ns3/spectrum-test.h"
 #include "ns3/spectrum-value.h"
 #include "ns3/test.h"
-#include <ns3/lte-rrc-sap.h>
 
 namespace ns3
 {

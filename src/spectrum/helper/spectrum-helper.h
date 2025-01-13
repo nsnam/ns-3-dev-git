@@ -9,12 +9,12 @@
 #ifndef SPECTRUM_HELPER_H
 #define SPECTRUM_HELPER_H
 
-#include <ns3/attribute.h>
-#include <ns3/net-device-container.h>
-#include <ns3/node-container.h>
-#include <ns3/object-factory.h>
-#include <ns3/propagation-loss-model.h>
-#include <ns3/spectrum-propagation-loss-model.h>
+#include "ns3/attribute.h"
+#include "ns3/net-device-container.h"
+#include "ns3/node-container.h"
+#include "ns3/object-factory.h"
+#include "ns3/propagation-loss-model.h"
+#include "ns3/spectrum-propagation-loss-model.h"
 
 #include <string>
 

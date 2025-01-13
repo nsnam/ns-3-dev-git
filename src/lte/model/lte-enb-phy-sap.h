@@ -12,7 +12,7 @@
 #include "ff-mac-common.h"
 #include "ff-mac-sched-sap.h"
 
-#include <ns3/packet.h>
+#include "ns3/packet.h"
 
 namespace ns3
 {

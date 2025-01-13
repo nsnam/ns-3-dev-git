@@ -14,9 +14,9 @@
 
 #include "energy-source.h"
 
-#include <ns3/event-id.h>
-#include <ns3/nstime.h>
-#include <ns3/traced-value.h>
+#include "ns3/event-id.h"
+#include "ns3/nstime.h"
+#include "ns3/traced-value.h"
 
 namespace ns3
 {

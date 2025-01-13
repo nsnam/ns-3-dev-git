@@ -11,8 +11,8 @@
 
 #include "spectrum-model.h"
 
-#include <ns3/ptr.h>
-#include <ns3/simple-ref-count.h>
+#include "ns3/ptr.h"
+#include "ns3/simple-ref-count.h"
 
 #include <ostream>
 #include <vector>

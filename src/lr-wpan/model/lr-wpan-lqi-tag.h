@@ -9,7 +9,7 @@
 #ifndef LR_WPAN_LQI_TAG_H
 #define LR_WPAN_LQI_TAG_H
 
-#include <ns3/tag.h>
+#include "ns3/tag.h"
 
 namespace ns3
 {

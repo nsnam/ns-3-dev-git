@@ -11,8 +11,8 @@
 
 #include "lte-common.h"
 
-#include <ns3/double.h>
-#include <ns3/log.h>
+#include "ns3/double.h"
+#include "ns3/log.h"
 
 #include <algorithm>
 #include <list>

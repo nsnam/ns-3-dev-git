@@ -19,8 +19,8 @@
 
 #include "lte-mi-error-model.h"
 
-#include <ns3/log.h>
-#include <ns3/pointer.h>
+#include "ns3/log.h"
+#include "ns3/pointer.h"
 
 #include <cmath>
 #include <list>

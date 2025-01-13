@@ -15,7 +15,7 @@
 #ifndef THREE_GPP_HTTP_HELPER_H
 #define THREE_GPP_HTTP_HELPER_H
 
-#include <ns3/application-helper.h>
+#include "ns3/application-helper.h"
 
 namespace ns3
 {

@@ -15,10 +15,10 @@
 #ifndef NULLMESSAGE_SIMULATOR_IMPL_H
 #define NULLMESSAGE_SIMULATOR_IMPL_H
 
-#include <ns3/event-impl.h>
-#include <ns3/ptr.h>
-#include <ns3/scheduler.h>
-#include <ns3/simulator-impl.h>
+#include "ns3/event-impl.h"
+#include "ns3/ptr.h"
+#include "ns3/scheduler.h"
+#include "ns3/simulator-impl.h"
 
 #include <fstream>
 #include <iostream>

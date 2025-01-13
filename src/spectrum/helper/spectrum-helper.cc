@@ -7,14 +7,14 @@
  */
 #include "spectrum-helper.h"
 
-#include <ns3/config.h>
-#include <ns3/half-duplex-ideal-phy.h>
-#include <ns3/multi-model-spectrum-channel.h>
-#include <ns3/names.h>
-#include <ns3/simulator.h>
-#include <ns3/single-model-spectrum-channel.h>
-#include <ns3/spectrum-channel.h>
-#include <ns3/spectrum-phy.h>
+#include "ns3/config.h"
+#include "ns3/half-duplex-ideal-phy.h"
+#include "ns3/multi-model-spectrum-channel.h"
+#include "ns3/names.h"
+#include "ns3/simulator.h"
+#include "ns3/single-model-spectrum-channel.h"
+#include "ns3/spectrum-channel.h"
+#include "ns3/spectrum-phy.h"
 
 namespace ns3
 {

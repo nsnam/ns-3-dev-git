@@ -12,9 +12,9 @@
 
 #include "zigbee-nwk.h"
 
-#include <ns3/lr-wpan-mac-base.h>
-#include <ns3/lr-wpan-net-device.h>
-#include <ns3/traced-callback.h>
+#include "ns3/lr-wpan-mac-base.h"
+#include "ns3/lr-wpan-net-device.h"
+#include "ns3/traced-callback.h"
 
 #include <stdint.h>
 #include <string>

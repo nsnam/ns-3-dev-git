@@ -16,8 +16,8 @@
 #define LR_WPAN_FIELDS_H
 
 #include "ns3/buffer.h"
-#include <ns3/mac16-address.h>
-#include <ns3/mac64-address.h>
+#include "ns3/mac16-address.h"
+#include "ns3/mac64-address.h"
 
 #include <array>
 

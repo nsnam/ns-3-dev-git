@@ -22,10 +22,10 @@
 #include "lte-ue-cmac-sap.h"
 #include "lte-ue-cphy-sap.h"
 
-#include <ns3/deprecated.h>
-#include <ns3/object.h>
-#include <ns3/packet.h>
-#include <ns3/traced-callback.h>
+#include "ns3/deprecated.h"
+#include "ns3/object.h"
+#include "ns3/packet.h"
+#include "ns3/traced-callback.h"
 
 #include <map>
 #include <set>

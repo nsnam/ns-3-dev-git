@@ -18,8 +18,8 @@
 #include "ns3/node.h"
 #include "ns3/phased-array-model.h"
 #include "ns3/pointer.h"
+#include "ns3/simulator.h"
 #include "ns3/string.h"
-#include <ns3/simulator.h>
 
 #include <algorithm>
 #include <array>

@@ -14,11 +14,11 @@
 
 #include "ns3/nstime.h"
 #include "ns3/object.h"
+#include "ns3/packet.h"
+#include "ns3/simple-ref-count.h"
 #include "ns3/trace-source-accessor.h"
 #include "ns3/traced-value.h"
 #include "ns3/uinteger.h"
-#include <ns3/packet.h>
-#include <ns3/simple-ref-count.h>
 
 namespace ns3
 {

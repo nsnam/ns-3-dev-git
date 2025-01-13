@@ -6,9 +6,9 @@
  * Author: Benjamin Cizdziel <ben.cizdziel@gmail.com>
  */
 
-#include <ns3/geographic-positions.h>
-#include <ns3/log.h>
-#include <ns3/test.h>
+#include "ns3/geographic-positions.h"
+#include "ns3/log.h"
+#include "ns3/test.h"
 
 #include <cmath>
 

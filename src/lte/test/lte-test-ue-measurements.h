@@ -13,9 +13,9 @@
 #ifndef LTE_TEST_UE_MEASUREMENTS_H
 #define LTE_TEST_UE_MEASUREMENTS_H
 
-#include <ns3/lte-rrc-sap.h>
-#include <ns3/nstime.h>
-#include <ns3/test.h>
+#include "ns3/lte-rrc-sap.h"
+#include "ns3/nstime.h"
+#include "ns3/test.h"
 
 #include <list>
 #include <set>

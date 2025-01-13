@@ -12,7 +12,7 @@
 #include "spectrum-channel.h"
 #include "spectrum-model.h"
 
-#include <ns3/traced-callback.h>
+#include "ns3/traced-callback.h"
 
 namespace ns3
 {

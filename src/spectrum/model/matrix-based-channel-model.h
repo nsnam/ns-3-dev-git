@@ -11,11 +11,11 @@
 #define MATRIX_BASED_CHANNEL_H
 
 // #include <complex>
-#include <ns3/matrix-array.h>
-#include <ns3/nstime.h>
-#include <ns3/object.h>
-#include <ns3/phased-array-model.h>
-#include <ns3/vector.h>
+#include "ns3/matrix-array.h"
+#include "ns3/nstime.h"
+#include "ns3/object.h"
+#include "ns3/phased-array-model.h"
+#include "ns3/vector.h"
 
 #include <tuple>
 

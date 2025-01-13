@@ -10,7 +10,7 @@
  */
 #include "lr-wpan-mac-trailer.h"
 
-#include <ns3/packet.h>
+#include "ns3/packet.h"
 
 namespace ns3
 {

@@ -12,6 +12,8 @@
 #include "ns3/inet-socket-address.h"
 #include "ns3/internet-stack-helper.h"
 #include "ns3/ipv4-address-helper.h"
+#include "ns3/ipv4-static-routing-helper.h"
+#include "ns3/ipv4-static-routing.h"
 #include "ns3/log.h"
 #include "ns3/lte-helper.h"
 #include "ns3/mobility-helper.h"
@@ -24,8 +26,6 @@
 #include "ns3/udp-client-server-helper.h"
 #include "ns3/udp-echo-helper.h"
 #include "ns3/uinteger.h"
-#include <ns3/ipv4-static-routing-helper.h>
-#include <ns3/ipv4-static-routing.h>
 
 using namespace ns3;
 

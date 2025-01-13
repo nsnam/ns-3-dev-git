@@ -12,7 +12,7 @@
 
 #include "lte-rrc-sap.h"
 
-#include <ns3/ptr.h>
+#include "ns3/ptr.h"
 
 #include <stdint.h>
 

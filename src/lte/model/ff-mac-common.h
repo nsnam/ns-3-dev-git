@@ -9,8 +9,8 @@
 #ifndef FF_MAC_COMMON_H
 #define FF_MAC_COMMON_H
 
-#include <ns3/ptr.h>
-#include <ns3/simple-ref-count.h>
+#include "ns3/ptr.h"
+#include "ns3/simple-ref-count.h"
 
 #include <vector>
 

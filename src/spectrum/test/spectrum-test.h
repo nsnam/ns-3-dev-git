@@ -11,8 +11,8 @@
 #ifndef SPECTRUM_TEST_H
 #define SPECTRUM_TEST_H
 
-#include <ns3/spectrum-value.h>
-#include <ns3/test.h>
+#include "ns3/spectrum-value.h"
+#include "ns3/test.h"
 
 /**
  * @ingroup spectrum

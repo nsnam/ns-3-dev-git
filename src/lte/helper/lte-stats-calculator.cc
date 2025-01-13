@@ -8,12 +8,12 @@
 
 #include "lte-stats-calculator.h"
 
-#include <ns3/config.h>
-#include <ns3/log.h>
-#include <ns3/lte-enb-net-device.h>
-#include <ns3/lte-enb-rrc.h>
-#include <ns3/lte-ue-net-device.h>
-#include <ns3/lte-ue-rrc.h>
+#include "ns3/config.h"
+#include "ns3/log.h"
+#include "ns3/lte-enb-net-device.h"
+#include "ns3/lte-enb-rrc.h"
+#include "ns3/lte-ue-net-device.h"
+#include "ns3/lte-ue-rrc.h"
 
 namespace ns3
 {

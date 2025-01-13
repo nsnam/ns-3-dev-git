@@ -13,15 +13,15 @@
 
 #include "lte-spectrum-phy.h"
 
-#include <ns3/generic-phy.h>
-#include <ns3/mobility-model.h>
-#include <ns3/nstime.h>
-#include <ns3/packet.h>
-#include <ns3/spectrum-channel.h>
-#include <ns3/spectrum-interference.h>
-#include <ns3/spectrum-phy.h>
-#include <ns3/spectrum-signal-parameters.h>
-#include <ns3/spectrum-value.h>
+#include "ns3/generic-phy.h"
+#include "ns3/mobility-model.h"
+#include "ns3/nstime.h"
+#include "ns3/packet.h"
+#include "ns3/spectrum-channel.h"
+#include "ns3/spectrum-interference.h"
+#include "ns3/spectrum-phy.h"
+#include "ns3/spectrum-signal-parameters.h"
+#include "ns3/spectrum-value.h"
 
 namespace ns3
 {

@@ -6,12 +6,12 @@
  * Author: Benjamin Cizdziel <ben.cizdziel@gmail.com>
  */
 
-#include <ns3/double.h>
-#include <ns3/enum.h>
-#include <ns3/log.h>
-#include <ns3/spectrum-value.h>
-#include <ns3/test.h>
-#include <ns3/tv-spectrum-transmitter.h>
+#include "ns3/double.h"
+#include "ns3/enum.h"
+#include "ns3/log.h"
+#include "ns3/spectrum-value.h"
+#include "ns3/test.h"
+#include "ns3/tv-spectrum-transmitter.h"
 
 NS_LOG_COMPONENT_DEFINE("TvSpectrumTransmitterTest");
 

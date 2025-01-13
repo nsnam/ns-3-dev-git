@@ -26,12 +26,12 @@
  *
  */
 
-#include <ns3/core-module.h>
-#include <ns3/energy-module.h>
-#include <ns3/internet-module.h>
-#include <ns3/mobility-module.h>
-#include <ns3/network-module.h>
-#include <ns3/wifi-module.h>
+#include "ns3/core-module.h"
+#include "ns3/energy-module.h"
+#include "ns3/internet-module.h"
+#include "ns3/mobility-module.h"
+#include "ns3/network-module.h"
+#include "ns3/wifi-module.h"
 
 #include <sstream>
 #include <string>

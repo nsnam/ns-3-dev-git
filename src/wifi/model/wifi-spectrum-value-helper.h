@@ -13,7 +13,7 @@
 
 #include "wifi-units.h"
 
-#include <ns3/spectrum-value.h>
+#include "ns3/spectrum-value.h"
 
 #include <vector>
 

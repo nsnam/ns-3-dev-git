@@ -12,8 +12,8 @@
 #include "wifi-spectrum-phy-interface.h"
 #include "wifi-spectrum-signal-parameters.h"
 
-#include <ns3/boolean.h>
-#include <ns3/spectrum-transmit-filter.h>
+#include "ns3/boolean.h"
+#include "ns3/spectrum-transmit-filter.h"
 
 namespace ns3
 {

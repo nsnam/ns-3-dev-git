@@ -10,10 +10,10 @@
 #ifndef LR_WPAN_HELPER_H
 #define LR_WPAN_HELPER_H
 
-#include <ns3/lr-wpan-mac.h>
-#include <ns3/lr-wpan-phy.h>
-#include <ns3/node-container.h>
-#include <ns3/trace-helper.h>
+#include "ns3/lr-wpan-mac.h"
+#include "ns3/lr-wpan-phy.h"
+#include "ns3/node-container.h"
+#include "ns3/trace-helper.h"
 
 namespace ns3
 {

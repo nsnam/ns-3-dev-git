@@ -16,10 +16,10 @@
 #ifndef NS3_PARALLEL_COMMUNICATION_INTERFACE_H
 #define NS3_PARALLEL_COMMUNICATION_INTERFACE_H
 
-#include <ns3/buffer.h>
-#include <ns3/nstime.h>
-#include <ns3/object.h>
-#include <ns3/packet.h>
+#include "ns3/buffer.h"
+#include "ns3/nstime.h"
+#include "ns3/object.h"
+#include "ns3/packet.h"
 
 #include <list>
 #include <mpi.h>

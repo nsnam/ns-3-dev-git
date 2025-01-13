@@ -14,8 +14,8 @@
 
 #include "lr-wpan-mac.h"
 
-#include <ns3/event-id.h>
-#include <ns3/object.h>
+#include "ns3/event-id.h"
+#include "ns3/object.h"
 
 namespace ns3
 {

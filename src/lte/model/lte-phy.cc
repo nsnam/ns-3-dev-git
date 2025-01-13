@@ -12,11 +12,11 @@
 #include "lte-control-messages.h"
 #include "lte-net-device.h"
 
+#include "ns3/log.h"
+#include "ns3/object-factory.h"
+#include "ns3/simulator.h"
 #include "ns3/spectrum-error-model.h"
-#include <ns3/log.h>
-#include <ns3/object-factory.h>
-#include <ns3/simulator.h>
-#include <ns3/waveform-generator.h>
+#include "ns3/waveform-generator.h"
 
 #include <cmath>
 

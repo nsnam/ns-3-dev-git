@@ -9,8 +9,8 @@
 #ifndef EPS_BEARER
 #define EPS_BEARER
 
-#include <ns3/object-base.h>
-#include <ns3/uinteger.h>
+#include "ns3/object-base.h"
+#include "ns3/uinteger.h"
 
 #include <unordered_map>
 

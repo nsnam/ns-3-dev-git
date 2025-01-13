@@ -7,7 +7,7 @@
  */
 #include "geocentric-constant-position-mobility-model.h"
 
-#include <ns3/angles.h>
+#include "ns3/angles.h"
 
 #include <math.h>
 

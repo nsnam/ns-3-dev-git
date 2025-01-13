@@ -26,9 +26,9 @@
 #ifndef LR_WPAN_MAC_HEADER_H
 #define LR_WPAN_MAC_HEADER_H
 
-#include <ns3/header.h>
-#include <ns3/mac16-address.h>
-#include <ns3/mac64-address.h>
+#include "ns3/header.h"
+#include "ns3/mac16-address.h"
+#include "ns3/mac64-address.h"
 
 namespace ns3
 {

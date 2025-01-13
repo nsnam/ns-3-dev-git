@@ -16,8 +16,8 @@
 #ifndef NS3_REMOTE_CHANNEL_BUNDLE_MANAGER
 #define NS3_REMOTE_CHANNEL_BUNDLE_MANAGER
 
-#include <ns3/nstime.h>
-#include <ns3/ptr.h>
+#include "ns3/nstime.h"
+#include "ns3/ptr.h"
 
 #include <unordered_map>
 

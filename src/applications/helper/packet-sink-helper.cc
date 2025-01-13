@@ -8,7 +8,7 @@
 
 #include "packet-sink-helper.h"
 
-#include <ns3/string.h>
+#include "ns3/string.h"
 
 namespace ns3
 {

@@ -1,6 +1,6 @@
 #include "contrib-header.h"
 
-#include <ns3/simulator.h>
+#include "ns3/simulator.h"
 
 void
 testPrint()

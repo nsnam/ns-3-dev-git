@@ -20,6 +20,7 @@
  * The result is the SNR of the signal and the path loss, saved in the ntn-snr-trace.txt file.
  */
 
+#include "ns3/antenna-model.h"
 #include "ns3/channel-condition-model.h"
 #include "ns3/constant-position-mobility-model.h"
 #include "ns3/core-module.h"
@@ -36,7 +37,6 @@
 #include "ns3/three-gpp-propagation-loss-model.h"
 #include "ns3/three-gpp-spectrum-propagation-loss-model.h"
 #include "ns3/uniform-planar-array.h"
-#include <ns3/antenna-model.h>
 
 #include <fstream>
 

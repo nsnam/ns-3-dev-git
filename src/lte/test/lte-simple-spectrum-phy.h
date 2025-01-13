@@ -10,13 +10,13 @@
 #ifndef LTE_SIMPLE_SPECTRUM_PHY_H
 #define LTE_SIMPLE_SPECTRUM_PHY_H
 
-#include <ns3/event-id.h>
-#include <ns3/mobility-model.h>
-#include <ns3/net-device.h>
-#include <ns3/spectrum-channel.h>
-#include <ns3/spectrum-phy.h>
-#include <ns3/spectrum-value.h>
-#include <ns3/traced-callback.h>
+#include "ns3/event-id.h"
+#include "ns3/mobility-model.h"
+#include "ns3/net-device.h"
+#include "ns3/spectrum-channel.h"
+#include "ns3/spectrum-phy.h"
+#include "ns3/spectrum-value.h"
+#include "ns3/traced-callback.h"
 
 namespace ns3
 {

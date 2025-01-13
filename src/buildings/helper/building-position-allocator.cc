@@ -17,12 +17,12 @@
 #include "ns3/double.h"
 #include "ns3/enum.h"
 #include "ns3/log.h"
+#include "ns3/mobility-building-info.h"
 #include "ns3/mobility-model.h"
 #include "ns3/pointer.h"
 #include "ns3/random-variable-stream.h"
 #include "ns3/string.h"
 #include "ns3/uinteger.h"
-#include <ns3/mobility-building-info.h>
 
 #include <cmath>
 

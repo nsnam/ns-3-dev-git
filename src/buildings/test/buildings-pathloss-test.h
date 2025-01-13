@@ -9,8 +9,8 @@
 #ifndef BUILDINGS_PATHLOSS_TEST_H
 #define BUILDINGS_PATHLOSS_TEST_H
 
-#include <ns3/hybrid-buildings-propagation-loss-model.h>
-#include <ns3/test.h>
+#include "ns3/hybrid-buildings-propagation-loss-model.h"
+#include "ns3/test.h"
 
 using namespace ns3;
 

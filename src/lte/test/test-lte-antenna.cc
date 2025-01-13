@@ -12,6 +12,7 @@
 #include "ns3/enum.h"
 #include "ns3/ff-mac-scheduler.h"
 #include "ns3/log.h"
+#include "ns3/lte-chunk-processor.h"
 #include "ns3/lte-enb-net-device.h"
 #include "ns3/lte-enb-phy.h"
 #include "ns3/lte-global-pathloss-database.h"
@@ -22,7 +23,6 @@
 #include "ns3/simulator.h"
 #include "ns3/string.h"
 #include "ns3/test.h"
-#include <ns3/lte-chunk-processor.h>
 
 using namespace ns3;
 

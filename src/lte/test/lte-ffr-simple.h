@@ -10,11 +10,11 @@
 #ifndef LTE_FFR_SIMPLE_H
 #define LTE_FFR_SIMPLE_H
 
-#include <ns3/lte-ffr-algorithm.h>
-#include <ns3/lte-ffr-rrc-sap.h>
-#include <ns3/lte-ffr-sap.h>
-#include <ns3/lte-rrc-sap.h>
-#include <ns3/traced-callback.h>
+#include "ns3/lte-ffr-algorithm.h"
+#include "ns3/lte-ffr-rrc-sap.h"
+#include "ns3/lte-ffr-sap.h"
+#include "ns3/lte-rrc-sap.h"
+#include "ns3/traced-callback.h"
 
 #include <map>
 

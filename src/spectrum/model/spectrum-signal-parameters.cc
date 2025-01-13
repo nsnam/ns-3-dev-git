@@ -11,8 +11,8 @@
 #include "spectrum-phy.h"
 #include "spectrum-value.h"
 
-#include <ns3/antenna-model.h>
-#include <ns3/log.h>
+#include "ns3/antenna-model.h"
+#include "ns3/log.h"
 
 namespace ns3
 {

@@ -10,11 +10,11 @@
 #ifndef LTE_NET_DEVICE_H
 #define LTE_NET_DEVICE_H
 
-#include <ns3/event-id.h>
-#include <ns3/mac64-address.h>
-#include <ns3/net-device.h>
-#include <ns3/nstime.h>
-#include <ns3/traced-callback.h>
+#include "ns3/event-id.h"
+#include "ns3/mac64-address.h"
+#include "ns3/net-device.h"
+#include "ns3/nstime.h"
+#include "ns3/traced-callback.h"
 
 namespace ns3
 {

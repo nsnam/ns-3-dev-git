@@ -9,10 +9,10 @@
 #ifndef BUILDING_POSITION_ALLOCATOR_H
 #define BUILDING_POSITION_ALLOCATOR_H
 
+#include "ns3/node-container.h"
+#include "ns3/position-allocator.h"
+#include "ns3/ptr.h"
 #include "ns3/random-variable-stream.h"
-#include <ns3/node-container.h>
-#include <ns3/position-allocator.h>
-#include <ns3/ptr.h>
 
 namespace ns3
 {

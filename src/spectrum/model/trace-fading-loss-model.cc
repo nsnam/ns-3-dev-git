@@ -12,12 +12,12 @@
 #include "spectrum-signal-parameters.h"
 #include "spectrum-value.h"
 
+#include "ns3/double.h"
+#include "ns3/log.h"
+#include "ns3/mobility-model.h"
+#include "ns3/simulator.h"
+#include "ns3/string.h"
 #include "ns3/uinteger.h"
-#include <ns3/double.h>
-#include <ns3/log.h>
-#include <ns3/mobility-model.h>
-#include <ns3/simulator.h>
-#include <ns3/string.h>
 
 #include <fstream>
 

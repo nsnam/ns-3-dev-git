@@ -18,10 +18,10 @@
 #include "lr-wpan-mac-base.h"
 #include "lr-wpan-phy.h"
 
-#include <ns3/event-id.h>
-#include <ns3/sequence-number.h>
-#include <ns3/traced-callback.h>
-#include <ns3/traced-value.h>
+#include "ns3/event-id.h"
+#include "ns3/sequence-number.h"
+#include "ns3/traced-callback.h"
+#include "ns3/traced-value.h"
 
 #include <deque>
 #include <memory>

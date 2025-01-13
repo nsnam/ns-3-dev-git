@@ -17,7 +17,7 @@
 #include "lte-mac-sap.h"
 #include "lte-rrc-sap.h"
 
-#include <ns3/object.h>
+#include "ns3/object.h"
 
 #include <map>
 #include <vector>

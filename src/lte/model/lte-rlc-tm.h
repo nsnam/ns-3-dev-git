@@ -12,7 +12,7 @@
 
 #include "lte-rlc.h"
 
-#include <ns3/event-id.h>
+#include "ns3/event-id.h"
 
 #include <map>
 

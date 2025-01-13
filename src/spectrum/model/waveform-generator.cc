@@ -8,12 +8,12 @@
 
 #include "waveform-generator.h"
 
-#include <ns3/antenna-model.h>
-#include <ns3/double.h>
-#include <ns3/log.h>
-#include <ns3/object-factory.h>
-#include <ns3/packet-burst.h>
-#include <ns3/simulator.h>
+#include "ns3/antenna-model.h"
+#include "ns3/double.h"
+#include "ns3/log.h"
+#include "ns3/object-factory.h"
+#include "ns3/packet-burst.h"
+#include "ns3/simulator.h"
 
 namespace ns3
 {

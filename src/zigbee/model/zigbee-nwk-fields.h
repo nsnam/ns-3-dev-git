@@ -10,7 +10,7 @@
 #ifndef ZIGBEE_NWK_FIELDS_H
 #define ZIGBEE_NWK_FIELDS_H
 
-#include <ns3/buffer.h>
+#include "ns3/buffer.h"
 
 #include <array>
 

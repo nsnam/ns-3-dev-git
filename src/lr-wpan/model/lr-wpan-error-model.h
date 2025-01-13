@@ -8,7 +8,7 @@
 #ifndef LR_WPAN_ERROR_MODEL_H
 #define LR_WPAN_ERROR_MODEL_H
 
-#include <ns3/object.h>
+#include "ns3/object.h"
 
 namespace ns3
 {
