@@ -134,8 +134,7 @@ ZigbeeRreqRetryTestCase::NwkNetworkDiscoveryConfirm(ZigbeeRreqRetryTestCase* tes
     }
     else
     {
-        NS_ABORT_MSG(
-            "Unable to discover networks | status: " << static_cast<uint32_t>(params.m_status));
+        NS_ABORT_MSG("Unable to discover networks | status: " << params.m_status);
     }
 }
 

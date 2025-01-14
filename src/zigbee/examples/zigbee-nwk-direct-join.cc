@@ -59,14 +59,13 @@ NwkDataIndication(Ptr<ZigbeeStack> stack, NldeDataIndicationParams params, Ptr<P
 static void
 NwkNetworkFormationConfirm(Ptr<ZigbeeStack> stack, NlmeNetworkFormationConfirmParams params)
 {
-    std::cout << "NlmeNetworkFormationConfirmStatus = " << static_cast<uint32_t>(params.m_status)
-              << "\n";
+    std::cout << "NlmeNetworkFormationConfirmStatus = " << params.m_status << "\n";
 }
 
 static void
 NwkDirectJoinConfirm(Ptr<ZigbeeStack> stack, NlmeDirectJoinConfirmParams params)
 {
-    std::cout << "NlmeDirectJoinConfirmStatus = " << static_cast<uint32_t>(params.m_status) << "\n";
+    std::cout << "NlmeDirectJoinConfirmStatus = " << params.m_status << "\n";
 }
 
 static void
@@ -79,8 +78,8 @@ NwkJoinConfirm(Ptr<ZigbeeStack> stack, NlmeJoinConfirmParams params)
     }
     else
     {
-        std::cout << " The device FAILED to join the network with status "
-                  << static_cast<uint32_t>(params.m_status) << "\n";
+        std::cout << " The device FAILED to join the network with status " << params.m_status
+                  << "\n";
     }
 }
 

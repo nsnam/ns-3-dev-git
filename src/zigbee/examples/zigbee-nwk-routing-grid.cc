@@ -109,8 +109,7 @@ NwkDataIndication(Ptr<ZigbeeStack> stack, NldeDataIndicationParams params, Ptr<P
 static void
 NwkNetworkFormationConfirm(Ptr<ZigbeeStack> stack, NlmeNetworkFormationConfirmParams params)
 {
-    std::cout << "NlmeNetworkFormationConfirmStatus = " << static_cast<uint32_t>(params.m_status)
-              << "\n";
+    std::cout << "NlmeNetworkFormationConfirmStatus = " << params.m_status << "\n";
 }
 
 static void
@@ -152,8 +151,7 @@ NwkNetworkDiscoveryConfirm(Ptr<ZigbeeStack> stack, NlmeNetworkDiscoveryConfirmPa
     }
     else
     {
-        std::cout << " WARNING: Unable to discover networks | status: "
-                  << static_cast<uint32_t>(params.m_status) << "\n";
+        std::cout << " WARNING: Unable to discover networks | status: " << params.m_status << "\n";
     }
 }
 
@@ -178,16 +176,15 @@ NwkJoinConfirm(Ptr<ZigbeeStack> stack, NlmeJoinConfirmParams params)
     else
     {
         std::cout << Simulator::Now().As(Time::S)
-                  << " The device FAILED to join the network with status "
-                  << static_cast<uint32_t>(params.m_status) << "\n";
+                  << " The device FAILED to join the network with status " << params.m_status
+                  << "\n";
     }
 }
 
 static void
 NwkRouteDiscoveryConfirm(Ptr<ZigbeeStack> stack, NlmeRouteDiscoveryConfirmParams params)
 {
-    std::cout << "NlmeRouteDiscoveryConfirmStatus = " << static_cast<uint32_t>(params.m_status)
-              << "\n";
+    std::cout << "NlmeRouteDiscoveryConfirmStatus = " << params.m_status << "\n";
 }
 
 int

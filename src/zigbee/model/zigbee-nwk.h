@@ -207,6 +207,15 @@ enum NwkStatus : std::uint8_t
 };
 
 /**
+ *  Overloaded operator to print the value of a NwkStatus.
+ *
+ *  @param os The output stream
+ *  @param state The text value of the NWK state
+ *  @return The output stream with text value of the NWK state
+ */
+std::ostream& operator<<(std::ostream& os, const NwkStatus& state);
+
+/**
  * @ingroup zigbee
  *
  *  Status codes for network status command frame and route discovery failures.

@@ -3093,5 +3093,176 @@ ZigbeeNwk::UpdateBeaconPayload()
     m_mac->MlmeSetRequest(MacPibAttributeIdentifier::macBeaconPayload, pibAttr);
 }
 
+std::ostream&
+operator<<(std::ostream& os, const NwkStatus& state)
+{
+    switch (state)
+    {
+    case NwkStatus::SUCCESS:
+        os << "SUCCESS";
+        break;
+    case NwkStatus::FULL_CAPACITY:
+        os << "FULL CAPACITY";
+        break;
+    case NwkStatus::ACCESS_DENIED:
+        os << "ACCESS DENIED";
+        break;
+    case NwkStatus::COUNTER_ERROR:
+        os << "COUNTER ERROR";
+        break;
+    case NwkStatus::IMPROPER_KEY_TYPE:
+        os << "IMPROPER KEY TYPE";
+        break;
+    case NwkStatus::IMPROPER_SECURITY_LEVEL:
+        os << "IMPROPER SECURITY LEVEL";
+        break;
+    case NwkStatus::UNSUPPORTED_LEGACY:
+        os << "UNSUPPORTED LEGACY";
+        break;
+    case NwkStatus::UNSUPPORTED_SECURITY:
+        os << "UNSUPPORTED SECURITY";
+        break;
+    case NwkStatus::BEACON_LOSS:
+        os << "BEACON LOSS";
+        break;
+    case NwkStatus::CHANNEL_ACCESS_FAILURE:
+        os << "CHANNEL ACCESS FAILURE";
+        break;
+    case NwkStatus::DENIED:
+        os << "DENIED";
+        break;
+    case NwkStatus::DISABLE_TRX_FAILURE:
+        os << "DISABLE TRX FAILURE";
+        break;
+    case NwkStatus::SECURITY_ERROR:
+        os << "SECURITY ERROR";
+        break;
+    case NwkStatus::FRAME_TOO_LONG:
+        os << "FRAME TOO LONG";
+        break;
+    case NwkStatus::INVALID_GTS:
+        os << "INVALID GTS";
+        break;
+    case NwkStatus::INVALID_HANDLE:
+        os << "INVALID HANDLE";
+        break;
+    case NwkStatus::NO_ACK:
+        os << "NO ACKNOLEDGMENT";
+        break;
+    case NwkStatus::NO_BEACON:
+        os << "NO BEACON";
+        break;
+    case NwkStatus::NO_DATA:
+        os << "NO DATA";
+        break;
+    case NwkStatus::NO_SHORT_ADDRESS:
+        os << "NO SHORT ADDRESS";
+        break;
+    case NwkStatus::OUT_OF_CAP:
+        os << "OUT OF CAP";
+        break;
+    case NwkStatus::PAN_ID_CONFLICT:
+        os << "PAN ID CONFLICT";
+        break;
+    case NwkStatus::REALIGMENT:
+        os << "REALIGMENT";
+        break;
+    case NwkStatus::TRANSACTION_EXPIRED:
+        os << "TRANSACTION EXPIRED";
+        break;
+    case NwkStatus::TRANSACTION_OVERFLOW:
+        os << "TRANSACTION OVERFLOW";
+        break;
+    case NwkStatus::TX_ACTIVE:
+        os << "TX ACTIVE";
+        break;
+    case NwkStatus::UNAVAILABLE_KEY:
+        os << "UNAVAILABLE KEY";
+        break;
+    case NwkStatus::INVALID_ADDRESS:
+        os << "INVALID ADDRESS";
+        break;
+    case NwkStatus::ON_TIME_TOO_LONG:
+        os << "ON TIME TOO LONG";
+        break;
+    case NwkStatus::PAST_TIME:
+        os << "PAST TIME";
+        break;
+    case NwkStatus::TRACKING_OFF:
+        os << "TRACKING OFF";
+        break;
+    case NwkStatus::INVALID_INDEX:
+        os << "INVALID INDEX";
+        break;
+    case NwkStatus::READ_ONLY:
+        os << "READ ONLY";
+        break;
+    case NwkStatus::SUPERFRAME_OVERLAP:
+        os << "SUPERFRAME OVERLAP";
+        break;
+    case NwkStatus::INVALID_PARAMETER:
+        os << "INVALID PARAMETER";
+        break;
+    case NwkStatus::INVALID_REQUEST:
+        os << "INVALID REQUEST";
+        break;
+    case NwkStatus::NOT_PERMITED:
+        os << "NO PERMITED";
+        break;
+    case NwkStatus::STARTUP_FAILURE:
+        os << "STARTUP FAILURE";
+        break;
+    case NwkStatus::ALREADY_PRESENT:
+        os << "ALREADY PRESENT";
+        break;
+    case NwkStatus::SYNC_FAILURE:
+        os << "SYNC FAILURE";
+        break;
+    case NwkStatus::NEIGHBOR_TABLE_FULL:
+        os << "NEIGHBOR TABLE FULL";
+        break;
+    case NwkStatus::UNKNOWN_DEVICE:
+        os << "UNKNOWN DEVICE";
+        break;
+    case NwkStatus::UNSUPPORTED_ATTRIBUTE:
+        os << "UNSUPPORTED ATTRIBUTE";
+        break;
+    case NwkStatus::NO_NETWORKS:
+        os << "NO NETWORKS";
+        break;
+    case NwkStatus::MAX_FRM_COUNTER:
+        os << "MAX FRAME COUNTER";
+        break;
+    case NwkStatus::NO_KEY:
+        os << "NO KEY";
+        break;
+    case NwkStatus::BAD_CCM_OUTPUT:
+        os << "BAD CCM OUTPUT";
+        break;
+    case NwkStatus::ROUTE_DISCOVERY_FAILED:
+        os << "ROUTE DISCOVERY FAILED";
+        break;
+    case NwkStatus::ROUTE_ERROR:
+        os << "ROUTE ERROR";
+        break;
+    case NwkStatus::BT_TABLE_FULL:
+        os << "BT TABLE FULL";
+        break;
+    case NwkStatus::FRAME_NOT_BUFFERED:
+        os << "FRAME NOT BUFFERED";
+        break;
+    case NwkStatus::INVALID_INTERFACE:
+        os << "INVALID INTERFACE";
+        break;
+    case NwkStatus::LIMIT_REACHED:
+        os << "LIMIT REACHED";
+        break;
+    case NwkStatus::SCAN_IN_PROGRESS:
+        os << "SCAN IN PROGRESS";
+        break;
+    }
+    return os;
+}
+
 } // namespace zigbee
 } // namespace ns3
