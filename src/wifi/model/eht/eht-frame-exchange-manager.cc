@@ -408,18 +408,7 @@ EhtFrameExchangeManager::ForwardPsduDown(Ptr<const WifiPsdu> psdu, WifiTxVector&
     {
         NS_ASSERT(m_staMac->GetEmlsrManager());
         m_staMac->GetEmlsrManager()->NotifyInDeviceInterferenceStart(m_linkId, txDuration);
-
-        for (const auto linkId : m_staMac->GetLinkIds())
-        {
-            if (auto phy = m_mac->GetWifiPhy(linkId);
-                phy && linkId != m_linkId && m_staMac->IsEmlsrLink(linkId))
-            {
-                const auto txPower = phy->GetPower(txVector.GetTxPowerLevel()) + phy->GetTxGain();
-                // generate in-device interference on the other EMLSR link for the duration of this
-                // transmission
-                GenerateInDeviceInterference(linkId, txDuration, DbmToW(txPower));
-            }
-        }
+        GenerateInDeviceInterferenceForAll(txDuration, txVector);
     }
 }
 
@@ -497,31 +486,46 @@ EhtFrameExchangeManager::ForwardPsduMapDown(WifiConstPsduMap psduMap, WifiTxVect
     {
         NS_ASSERT(m_staMac->GetEmlsrManager());
         m_staMac->GetEmlsrManager()->NotifyInDeviceInterferenceStart(m_linkId, txDuration);
+        GenerateInDeviceInterferenceForAll(txDuration, txVector);
+    }
+}
 
-        for (const auto linkId : m_staMac->GetLinkIds())
+void
+EhtFrameExchangeManager::GenerateInDeviceInterferenceForAll(const Time& txDuration,
+                                                            const WifiTxVector& txVector)
+{
+    NS_LOG_FUNCTION(this << txDuration.As(Time::MS) << txVector);
+
+    NS_ASSERT(m_staMac);
+    NS_ASSERT(m_staMac->GetEmlsrManager());
+
+    for (const auto& phy : m_staMac->GetDevice()->GetPhys())
+    {
+        // generate in-device interference for a PHY provided that:
+        // - the PHY is not the one the client is using to transmit
+        // - either the PHY is not operating on any link or it is operating on an EMLSR link
+        // Interference is generated for the duration of this transmission
+        if (auto id = m_staMac->GetLinkForPhy(phy);
+            phy != m_phy && (!id || m_staMac->IsEmlsrLink(*id)))
         {
-            if (auto phy = m_mac->GetWifiPhy(linkId);
-                phy && linkId != m_linkId && m_staMac->IsEmlsrLink(linkId))
-            {
-                const auto txPower = phy->GetPower(txVector.GetTxPowerLevel()) + phy->GetTxGain();
-                // generate in-device interference on the other EMLSR link for the duration of this
-                // transmission
-                GenerateInDeviceInterference(linkId, txDuration, DbmToW(txPower));
-            }
+            const auto txPower = phy->GetPower(txVector.GetTxPowerLevel()) + phy->GetTxGain();
+            GenerateInDeviceInterference(phy, txDuration, DbmToW(txPower));
         }
     }
 }
 
 void
-EhtFrameExchangeManager::GenerateInDeviceInterference(uint8_t linkId, Time duration, Watt_u txPower)
+EhtFrameExchangeManager::GenerateInDeviceInterference(Ptr<WifiPhy> phy,
+                                                      Time duration,
+                                                      Watt_u txPower)
 {
-    NS_LOG_FUNCTION(this << linkId << duration.As(Time::US) << txPower);
+    NS_LOG_FUNCTION(this << phy << duration.As(Time::US) << txPower);
 
-    auto rxPhy = DynamicCast<SpectrumWifiPhy>(m_mac->GetWifiPhy(linkId));
+    auto rxPhy = DynamicCast<SpectrumWifiPhy>(phy);
 
     if (!rxPhy)
     {
-        NS_LOG_DEBUG("No spectrum PHY operating on link " << +linkId);
+        NS_LOG_DEBUG("No spectrum PHY");
         return;
     }
 
