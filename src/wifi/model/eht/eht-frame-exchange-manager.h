@@ -278,14 +278,23 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
     Time StaUseGenieInformation();
 
     /**
-     * Generate an in-device interference of the given power on the given link for the given
-     * duration.
+     * Generate an in-device interference of the given power for the given duration for the given
+     * PHY.
      *
-     * @param linkId the ID of the link on which in-device interference is generated
+     * @param phy the PHY for which in-device interference is generated
      * @param duration the duration of the in-device interference
      * @param txPower the TX power
      */
-    void GenerateInDeviceInterference(uint8_t linkId, Time duration, Watt_t txPower);
+    void GenerateInDeviceInterference(Ptr<WifiPhy> phy, Time duration, Watt_t txPower);
+
+    /**
+     * Generate in-device interference caused by a transmission on this link for all the other PHYs
+     * of this EMLSR client.
+     *
+     * @param txDuration the duration of the transmission
+     * @param txVector the TXVECTOR used to transmit the frame
+     */
+    void GenerateInDeviceInterferenceForAll(const Time& txDuration, const WifiTxVector& txVector);
 
     /**
      * Update the TXOP end timer when starting a frame transmission.
