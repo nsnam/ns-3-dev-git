@@ -122,7 +122,7 @@ ExampleAsTestCase::DoRun()
     if (m_shouldNotErr)
     {
         // Make sure the example didn't outright crash
-        NS_TEST_ASSERT_MSG_EQ(status, 0, "example " + m_program + " failed");
+        NS_TEST_ASSERT_MSG_EQ(status, 0, "example " + m_program + " exited abnormally");
     }
 
     // If we're just introspecting the command-line
