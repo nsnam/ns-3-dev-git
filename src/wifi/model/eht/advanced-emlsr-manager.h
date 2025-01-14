@@ -35,6 +35,8 @@ class AdvancedEmlsrManager : public DefaultEmlsrManager
     AdvancedEmlsrManager();
     ~AdvancedEmlsrManager() override;
 
+    std::optional<WifiIcfDrop> CheckMainPhyTakesOverDlTxop(uint8_t linkId) const override;
+
     /**
      * This method is called by the PHY listener attached to the main PHY when a switch main PHY
      * back timer is started to notify of events that may delay the channel access for the main

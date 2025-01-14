@@ -1458,7 +1458,7 @@ of the AC involved in the Channel Access Manager notification is expected to exp
 The Advanced EMLSR Manager has the ``InterruptSwitch`` attribute that can be set to true to
 interrupt a main PHY switch when it is determined that the main PHY shall switch to a different
 link while still completing the previous switch; in such cases, the previous switch is interrupted
-and the new channel switch starts. This opportunity is exploited in two situations:
+and the new channel switch starts. This opportunity is exploited in some situations:
 
 * If the main PHY is switching while a TX capable aux PHY transmits an RTS to start an UL TXOP,
   the main PHY switch can be interrupted and the main PHY can start switching to the link on
@@ -1468,6 +1468,9 @@ and the new channel switch starts. This opportunity is exploited in two situatio
   a CTS timeout occurs while the main PHY is switching. If the aux PHYs do not switch link, the
   main PHY switch is interrupted and the main PHY returns to the preferred link; if the aux PHYs
   switch link, the main PHY switch is interrupted and the main PHY returns to the link it just left.
+* If the main PHY is switching while an aux PHY is receiving an ICF, the switch can be interrupted
+  so that the main PHY can start switching to the aux PHY link and be ready to operate on that link
+  upon reception of the ICF.
 
 AP EMLSR Manager
 ----------------

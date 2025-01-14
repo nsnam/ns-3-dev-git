@@ -344,6 +344,16 @@ class EmlsrManager : public Object
      */
     std::pair<bool, Time> CheckPossiblyReceivingIcf(uint8_t linkId) const;
 
+    /**
+     * This method is called when an aux PHY has completed reception of an ICF to determine whether
+     * there is any reason preventing the main PHY from switching link and be on the aux PHY link
+     * by the time the ICF reception is completed to take over the DL TXOP.
+     *
+     * @param linkId the ID of the link on which ICF has been received
+     * @return the reason, if any, preventing the main PHY from switching link
+     */
+    virtual std::optional<WifiIcfDrop> CheckMainPhyTakesOverDlTxop(uint8_t linkId) const;
+
   protected:
     void DoDispose() override;
 

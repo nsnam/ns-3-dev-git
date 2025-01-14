@@ -365,6 +365,19 @@ AdvancedEmlsrManager::DoNotifyTxopEnd(uint8_t linkId)
     }
 }
 
+std::optional<WifiIcfDrop>
+AdvancedEmlsrManager::CheckMainPhyTakesOverDlTxop(uint8_t linkId) const
+{
+    auto reason = DefaultEmlsrManager::CheckMainPhyTakesOverDlTxop(linkId);
+
+    // if the switching can be interrupted, do not drop an ICF due to not enough time for switching
+    if (reason == WifiIcfDrop::NOT_ENOUGH_TIME_SWITCH && m_interruptSwitching)
+    {
+        return std::nullopt;
+    }
+    return reason;
+}
+
 std::pair<bool, Time>
 AdvancedEmlsrManager::GetDelayUnlessMainPhyTakesOverUlTxop(uint8_t linkId)
 {

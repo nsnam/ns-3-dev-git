@@ -632,6 +632,38 @@ EmlsrManager::CheckPossiblyReceivingIcf(uint8_t linkId) const
     return {false, Time{0}};
 }
 
+std::optional<WifiIcfDrop>
+EmlsrManager::CheckMainPhyTakesOverDlTxop(uint8_t linkId) const
+{
+    auto mainPhy = m_staMac->GetDevice()->GetPhy(m_mainPhyId);
+
+    const auto delay = mainPhy->GetChannelSwitchDelay();
+    auto lastTime = mainPhy->GetState()->GetLastTime({WifiPhyState::TX});
+    auto reason = WifiIcfDrop::NOT_ENOUGH_TIME_TX;
+
+    if (auto lastSwitch = mainPhy->GetState()->GetLastTime({WifiPhyState::SWITCHING});
+        m_mainPhySwitchInfo.to != linkId && lastSwitch > lastTime)
+    {
+        lastTime = lastSwitch;
+        reason = WifiIcfDrop::NOT_ENOUGH_TIME_SWITCH;
+    }
+    if (auto lastSleep = mainPhy->GetState()->GetLastTime({WifiPhyState::SLEEP});
+        lastSleep > lastTime)
+    {
+        lastTime = lastSleep;
+        reason = WifiIcfDrop::NOT_ENOUGH_TIME_SLEEP;
+    }
+    // ignore RX state for now
+
+    if (lastTime > Simulator::Now() - delay)
+    {
+        NS_LOG_DEBUG("Not enough time for the main PHY to switch link; reason = "
+                     << reason << " lastTime = " << lastTime.As(Time::US));
+        return reason;
+    }
+    return std::nullopt;
+}
+
 void
 EmlsrManager::NotifyUlTxopStart(uint8_t linkId)
 {

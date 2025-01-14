@@ -1648,30 +1648,14 @@ EhtFrameExchangeManager::DropReceivedIcf()
     else if (auto mainPhy = m_staMac->GetDevice()->GetPhy(emlsrManager->GetMainPhyId());
              mainPhy != m_phy)
     {
-        const auto delay = mainPhy->GetChannelSwitchDelay();
-        auto lastTime = mainPhy->GetState()->GetLastTime({WifiPhyState::TX});
-        auto reason = WifiIcfDrop::NOT_ENOUGH_TIME_TX;
+        auto reason = emlsrManager->CheckMainPhyTakesOverDlTxop(m_linkId);
 
-        if (auto lastSwitch = mainPhy->GetState()->GetLastTime({WifiPhyState::SWITCHING});
-            lastSwitch > lastTime)
-        {
-            lastTime = lastSwitch;
-            reason = WifiIcfDrop::NOT_ENOUGH_TIME_SWITCH;
-        }
-        if (auto lastSleep = mainPhy->GetState()->GetLastTime({WifiPhyState::SLEEP});
-            lastSleep > lastTime)
-        {
-            lastTime = lastSleep;
-            reason = WifiIcfDrop::NOT_ENOUGH_TIME_SLEEP;
-        }
-        // ignore RX state for now
-
-        if (lastTime > Simulator::Now() - delay)
+        if (reason.has_value())
         {
             NS_LOG_DEBUG(
                 "Drop ICF due to not enough time for the main PHY to switch link; reason = "
-                << reason);
-            m_icfDropCallback(reason, m_linkId);
+                << *reason);
+            m_icfDropCallback(*reason, m_linkId);
             return true;
         }
     }
