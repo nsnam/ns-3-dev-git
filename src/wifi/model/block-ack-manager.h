@@ -218,12 +218,15 @@ class BlockAckManager : public Object
      * @param originator MAC address of the sender of the Block Ack Request
      * @param tid Traffic ID
      * @param startingSeq the starting sequence number in the Block Ack Request
+     * @param gcrGroupAddr the GCR Group Address (only if it is a GCR Block Ack Request frame)
      *
      * Perform required actions upon receiving a Block Ack Request frame.
      */
     void NotifyGotBlockAckRequest(const Mac48Address& originator,
                                   uint8_t tid,
-                                  uint16_t startingSeq);
+                                  uint16_t startingSeq,
+                                  std::optional<Mac48Address> gcrGroupAddr = std::nullopt);
+
     /**
      * @param mpdu the received MPDU
      *

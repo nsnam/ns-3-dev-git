@@ -717,10 +717,12 @@ BlockAckManager::NotifyDiscardedMpdu(Ptr<const WifiMpdu> mpdu)
 void
 BlockAckManager::NotifyGotBlockAckRequest(const Mac48Address& originator,
                                           uint8_t tid,
-                                          uint16_t startingSeq)
+                                          uint16_t startingSeq,
+                                          std::optional<Mac48Address> gcrGroupAddr)
 {
-    NS_LOG_FUNCTION(this << originator << tid << startingSeq);
-    if (auto it = GetRecipientBaAgreement(originator, tid); it != m_recipientAgreements.end())
+    NS_LOG_FUNCTION(this << originator << tid << startingSeq << gcrGroupAddr.has_value());
+    if (auto it = GetRecipientBaAgreement(originator, tid, gcrGroupAddr);
+        it != m_recipientAgreements.end())
     {
         it->second.NotifyReceivedBar(startingSeq);
     }
