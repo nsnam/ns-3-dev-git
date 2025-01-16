@@ -687,15 +687,18 @@ class WifiMac : public Object
         std::optional<Mac48Address> gcrGroupAddr = std::nullopt) const;
     /**
      * @param originator (link or device) MAC address of the originator
-     * @param tid traffic ID.
+     * @param tid traffic ID
+     * @param gcrGroupAddr the GCR Group Address (only if it is a GCR Block Ack agreement)
      *
      * @return the recipient block ack agreement, if one has been established
      *
      * Checks if a recipient block ack agreement is established with station addressed by
      * <i>originator</i> for TID <i>tid</i>.
      */
-    RecipientAgreementOptConstRef GetBaAgreementEstablishedAsRecipient(Mac48Address originator,
-                                                                       uint8_t tid) const;
+    RecipientAgreementOptConstRef GetBaAgreementEstablishedAsRecipient(
+        Mac48Address originator,
+        uint8_t tid,
+        std::optional<Mac48Address> gcrGroupAddr = std::nullopt) const;
 
     /**
      * @param recipient MAC address

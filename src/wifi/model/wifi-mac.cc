@@ -1912,11 +1912,13 @@ WifiMac::GetBaAgreementEstablishedAsOriginator(Mac48Address recipient,
 }
 
 WifiMac::RecipientAgreementOptConstRef
-WifiMac::GetBaAgreementEstablishedAsRecipient(Mac48Address originator, uint8_t tid) const
+WifiMac::GetBaAgreementEstablishedAsRecipient(Mac48Address originator,
+                                              uint8_t tid,
+                                              std::optional<Mac48Address> gcrGroupAddr) const
 {
     // BA agreements are indexed by the MLD address if ML setup was performed
     originator = GetMldAddress(originator).value_or(originator);
-    return GetQosTxop(tid)->GetBaManager()->GetAgreementAsRecipient(originator, tid);
+    return GetQosTxop(tid)->GetBaManager()->GetAgreementAsRecipient(originator, tid, gcrGroupAddr);
 }
 
 BlockAckType
