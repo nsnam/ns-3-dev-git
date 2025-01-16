@@ -38,8 +38,8 @@ using namespace ns3;
  * The test eventually corrupts some MPDUs based on a provided list of groupcast MPDUs in a given
  * PSDU (indices are starting from 1) that should not be successfully received by a given STA or by
  * all STA (s). It may also corrupts specific frames, such as RTS/CTS or action frames that are used
- * to establish or teardown Block Ack agreements. The latter is needed is needed when A-MPDU is
- * used.
+ * to establish or teardown Block Ack agreements. The latter is needed is needed for GCR-BA or for
+ * GCR-UR when A-MPDU is used.
  *
  * It is checked that:
  *
@@ -56,6 +56,8 @@ using namespace ns3;
  * frames has been received and they all contain the GCR group address
  * - when Block Ack agreement timeout is used, the expected amount of DELBA frames has been received
  * and they all contain the GCR group address
+ * - The expected buffer size is being selected for the GCR Block Ack agreement, depending on what
+ * is supported by each member
  */
 class GcrTestBase : public TestCase
 {
@@ -65,7 +67,7 @@ class GcrTestBase : public TestCase
     {
         bool gcrCapable{false};                           ///< flag whether the STA is GCR capable
         WifiStandard standard{WIFI_STANDARD_UNSPECIFIED}; ///< standard configured for the STA
-        MHz_u maxChannelWidth{20};    ///< maximum channel width in MHz supported by the STA
+        MHz_u maxChannelWidth{20};    ///< maximum channel width supported by the STA
         uint8_t maxNumStreams{1};     ///< maximum number of spatial streams supported by the STA
         Time minGi{NanoSeconds(800)}; ///< minimum guard interval duration supported by the STA
     };
@@ -302,6 +304,80 @@ class GcrUrTest : public GcrTestBase
 
     Ptr<WifiMpdu> m_currentMpdu; ///< current MPDU
     uint64_t m_currentUid;       ///< current UID
+};
+
+/**
+ * @ingroup wifi-test
+ * @ingroup tests
+ *
+ * @brief Test the implementation of GCR Block Ack.
+ *
+ * GCR-BA tests consider an AP and multiple STAs (with different capabilities) using GCR-BA.
+ * During tests, besides frames that can be corrupted by the base class, transmitted MPDUs
+ * can be corrupted, either for all STAs or for a particular STA. These tests eventually corrupt
+ * Block Ack Requests and Block Acks frames.
+ *
+ * Besides what is verified in the base class, it is checked that:
+ * - The expected amount of packets has been forwarded up to upper layer
+ * - When the GCR-BA service is used, the expected amount of Block Ack request and Block Acks frames
+ * have been received and they all contain the GCR group address
+ * - MPDUs are properly discarded when their lifetime expires, and TX window as well as receiver
+ * scoreboard are properly advanced if this occurs
+ * - When the GCR-BA service is used, the exchange of GCR Block Ack Request and GCR Block Acks
+ * frames might be spread over multiple TXOPs
+ * - A-MPDU is only used if TXOP limit duration permits it
+ */
+class GcrBaTest : public GcrTestBase
+{
+  public:
+    /// Parameters for GCR-BA tests
+    struct GcrBaParameters
+    {
+        std::set<uint8_t> barsToCorrupt{}; ///< list of GCR BARs (starting from 1) to corrupt
+        std::set<uint8_t>
+            blockAcksToCorrupt{}; ///< list of GCR Block ACKs (starting from 1) to corrupt
+        std::vector<uint8_t>
+            expectedNTxBarsPerTxop{}; ///< the expected number of BAR frames transmitted by the AP
+                                      ///< per TXOP (only takes into account TXOPs with BARs
+                                      ///< transmitted)
+    };
+
+    /**
+     * Constructor
+     *
+     * @param testName the name of the test
+     * @param commonParams the common GCR parameters for the test to run
+     * @param gcrBaParams the GCR-BA parameters for the test to run
+     */
+    GcrBaTest(const std::string& testName,
+              const GcrParameters& commonParams,
+              const GcrBaParameters& gcrBaParams);
+    ~GcrBaTest() override = default;
+
+  private:
+    void ConfigureGcrManager(WifiMacHelper& macHelper) override;
+    void CheckResults() override;
+    void PacketGenerated(std::string context, Ptr<const Packet> p, const Address& adr) override;
+    void Transmit(std::string context,
+                  WifiConstPsduMap psduMap,
+                  WifiTxVector txVector,
+                  double txPowerW) override;
+    void Receive(std::string context, Ptr<const Packet> p, const Address& adr) override;
+    void NotifyTxopTerminated(Time startTime, Time duration, uint8_t linkId) override;
+
+    GcrBaParameters m_gcrBaParams; ///< GCR-BA parameters for the test to run
+
+    uint8_t m_nTxGcrBar;      ///< number of GCR Block Ack Request frames sent by the AP
+    uint8_t m_nTxGcrBlockAck; ///< number of GCR Block Ack Response frames sent to the AP
+    uint8_t m_nTxBlockAck;    ///< number of Block Ack Response frames sent to the AP
+    uint16_t m_firstTxSeq;    ///< sequence number of the first in-flight groupcast MPDU
+    int m_lastTxSeq;          ///< sequence number of the last in-flight groupcast MPDU
+
+    std::vector<uint8_t>
+        m_nTxGcrBarsPerTxop; ///< number of GCR BAR frames transmitted by the AP per TXOP (only
+                             ///< takes into account TXOPs with BARs transmitted)
+    uint8_t m_nTxGcrBarsInCurrentTxop; ///< number of GCR BAR frames transmitted by the AP in the
+                                       ///< current TXOP
 };
 
 /**

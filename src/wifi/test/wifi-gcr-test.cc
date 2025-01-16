@@ -353,9 +353,13 @@ GcrTestBase::Transmit(std::string context,
                             ? it->second.at(0)
                             : ((it->second.count(staId + 1) != 0) ? it->second.at(staId + 1)
                                                                   : std::set<uint8_t>{});
+                    auto corruptIndex = (m_apWifiMac->GetGcrManager()->GetRetransmissionPolicy() ==
+                                         GroupAddressRetransmissionPolicy::GCR_BLOCK_ACK)
+                                            ? psdu->GetHeader(i).GetSequenceNumber()
+                                            : i;
                     if (std::find(corruptedMpdusForSta.cbegin(),
                                   corruptedMpdusForSta.cend(),
-                                  i + 1) != std::end(corruptedMpdusForSta))
+                                  corruptIndex + 1) != std::end(corruptedMpdusForSta))
                     {
                         NS_LOG_INFO("STA " << staId + 1 << ": corrupted MPDU #" << i + 1 << " (seq="
                                            << psdu->GetHeader(i).GetSequenceNumber() << ")"
@@ -710,7 +714,9 @@ GcrTestBase::CheckResults()
         std::count_if(m_params.stas.cbegin(), m_params.stas.cend(), [](const auto& staInfo) {
             return staInfo.gcrCapable;
         });
-    if (m_params.numGroupcastPackets > 0 && (m_params.maxNumMpdusInPsdu > 1))
+    const auto isGcrBa = m_apWifiMac->GetGcrManager()->GetRetransmissionPolicy() ==
+                         GroupAddressRetransmissionPolicy::GCR_BLOCK_ACK;
+    if (m_params.numGroupcastPackets > 0 && (isGcrBa || (m_params.maxNumMpdusInPsdu > 1)))
     {
         NS_TEST_EXPECT_MSG_EQ(+m_nTxGcrAddbaReq,
                               gcrCapableStas + m_params.addbaReqsToCorrupt.size(),
@@ -904,14 +910,15 @@ GcrTestBase::DoSetup()
             auto staHtConfiguration = CreateObject<HtConfiguration>();
             staHtConfiguration->m_40MHzSupported =
                 (m_params.stas.at(i).standard >= WIFI_STANDARD_80211ac ||
-                 m_params.stas.at(i).maxChannelWidth >= 40);
+                 m_params.stas.at(i).maxChannelWidth >= MHz_u{40});
             staHtConfiguration->m_sgiSupported = (m_params.stas.at(i).minGi == NanoSeconds(400));
             staNetDevice->SetHtConfiguration(staHtConfiguration);
         }
         if (m_params.stas.at(i).standard >= WIFI_STANDARD_80211ac)
         {
             auto staVhtConfiguration = CreateObject<VhtConfiguration>();
-            staVhtConfiguration->m_160MHzSupported = (m_params.stas.at(i).maxChannelWidth >= 160);
+            staVhtConfiguration->m_160MHzSupported =
+                (m_params.stas.at(i).maxChannelWidth >= MHz_u{160});
             staNetDevice->SetVhtConfiguration(staVhtConfiguration);
         }
         if (m_params.stas.at(i).standard >= WIFI_STANDARD_80211ax)
@@ -1354,6 +1361,444 @@ GcrUrTest::CheckResults()
     }
 }
 
+GcrBaTest::GcrBaTest(const std::string& testName,
+                     const GcrParameters& commonParams,
+                     const GcrBaParameters& gcrBaParams)
+    : GcrTestBase(testName, commonParams),
+      m_gcrBaParams{gcrBaParams},
+      m_nTxGcrBar{0},
+      m_nTxGcrBlockAck{0},
+      m_nTxBlockAck{0},
+      m_firstTxSeq{0},
+      m_lastTxSeq{-1},
+      m_nTxGcrBarsInCurrentTxop{0}
+{
+}
+
+void
+GcrBaTest::PacketGenerated(std::string context, Ptr<const Packet> p, const Address& addr)
+{
+    if (m_params.rtsFramesToCorrupt.empty() && m_params.ctsFramesToCorrupt.empty())
+    {
+        return;
+    }
+    GcrTestBase::PacketGenerated(context, p, addr);
+}
+
+void
+GcrBaTest::Transmit(std::string context,
+                    WifiConstPsduMap psduMap,
+                    WifiTxVector txVector,
+                    double txPowerW)
+{
+    auto psdu = psduMap.cbegin()->second;
+    auto mpdu = *psdu->begin();
+    const auto nodeId = ConvertContextToNodeId(context);
+    auto addr1 = mpdu->GetHeader().GetAddr1();
+    if (addr1.IsGroup() && !addr1.IsBroadcast() && mpdu->GetHeader().IsQosData())
+    {
+        NS_TEST_EXPECT_MSG_EQ(nodeId, 0, "Groupcast transmission from unexpected node");
+        NS_LOG_INFO("AP: groupcast transmission (#MPDUs=" << psdu->GetNMpdus() << ")");
+        const auto txopLimitAllowsAggregation =
+            (m_params.txopLimit.IsZero() || m_params.txopLimit > MicroSeconds(320));
+        const uint16_t prevTxMpdus = m_totalTx * m_expectedMaxNumMpdusInPsdu;
+        const uint16_t remainingMpdus = m_params.numGroupcastPackets - prevTxMpdus;
+        const auto expectedNumAggregates =
+            (GetNumNonHtStas(m_params.stas) == 0) && txopLimitAllowsAggregation
+                ? (((m_totalTx == 0) || m_params.mpdusToCorruptPerPsdu.empty() ||
+                    (!m_params.mpdusToCorruptPerPsdu.empty() &&
+                     m_params.mpdusToCorruptPerPsdu.cbegin()->second.size() > 1))
+                       ? ((m_params.mpdusToCorruptPerPsdu.empty() &&
+                           (GetNumNonGcrStas(m_params.stas) == 0))
+                              ? std::min(m_expectedMaxNumMpdusInPsdu, remainingMpdus)
+                              : m_expectedMaxNumMpdusInPsdu)
+                       : ((!m_params.expectedDroppedGroupcastMpdus.empty() &&
+                           m_totalTx <= m_expectedMaxNumMpdusInPsdu)
+                              ? m_expectedMaxNumMpdusInPsdu
+                              : m_params.mpdusToCorruptPerPsdu.cbegin()
+                                    ->second.cbegin()
+                                    ->second.size()))
+                : 1;
+        NS_TEST_EXPECT_MSG_EQ(psdu->GetNMpdus(),
+                              expectedNumAggregates,
+                              "Incorrect number of aggregated MPDUs");
+        const uint16_t maxLastSeqNum = (((m_totalTx + 1) * m_expectedMaxNumMpdusInPsdu) - 1);
+        const uint16_t limitLastSeqNum = (m_params.numGroupcastPackets - 1);
+        uint16_t expectedLastSeqNum =
+            (m_expectGcrUsed && (GetNumNonHtStas(m_params.stas) > 0))
+                ? (m_totalTx / 2)
+                : (((GetNumNonHtStas(m_params.stas) == 0) && txopLimitAllowsAggregation)
+                       ? std::min(maxLastSeqNum, limitLastSeqNum)
+                       : m_totalTx);
+        for (std::size_t i = 0; i < psdu->GetNMpdus(); ++i)
+        {
+            const auto isNewTx = (m_lastTxSeq < psdu->GetHeader(i).GetSequenceNumber());
+            NS_TEST_EXPECT_MSG_EQ(
+                psdu->GetHeader(i).IsRetry(),
+                !isNewTx,
+                "retry flag should not be set for the first groupcast transmission");
+        }
+        if (m_expectGcrUsed)
+        {
+            auto expectedStartSeq = std::min_element(m_rxGroupcastPerSta.cbegin(),
+                                                     m_rxGroupcastPerSta.cend(),
+                                                     [](const auto& v1, const auto& v2) {
+                                                         return v1.size() < v2.size();
+                                                     })
+                                        ->size();
+            if (psdu->GetHeader(0).IsRetry() && GetNumNonGcrStas(m_params.stas) > 0)
+            {
+                expectedStartSeq -= psdu->GetNMpdus();
+            }
+            m_firstTxSeq = psdu->GetHeader(0).GetSequenceNumber();
+            NS_TEST_EXPECT_MSG_EQ(m_firstTxSeq,
+                                  expectedStartSeq,
+                                  "Incorrect starting sequence number");
+            m_lastTxSeq = psdu->GetHeader(psdu->GetNMpdus() - 1).GetSequenceNumber();
+            if (m_totalTx > 0)
+            {
+                if (!m_params.mpdusToCorruptPerPsdu.empty())
+                {
+                    expectedLastSeqNum = 0;
+                    for (const auto& mpduNumToCorruptPerSta :
+                         m_params.mpdusToCorruptPerPsdu.cbegin()->second)
+                    {
+                        for (const auto mpduNumToCorrupt : mpduNumToCorruptPerSta.second)
+                        {
+                            const uint16_t mpduSeqNum = mpduNumToCorrupt - 1;
+                            expectedLastSeqNum = std::max(mpduSeqNum, expectedLastSeqNum);
+                        }
+                    }
+                    if (!m_params.expectedDroppedGroupcastMpdus.empty() &&
+                        m_totalTx <= m_expectedMaxNumMpdusInPsdu)
+                    {
+                        expectedLastSeqNum += m_totalTx;
+                    }
+                }
+            }
+            NS_TEST_EXPECT_MSG_EQ(m_lastTxSeq,
+                                  expectedLastSeqNum,
+                                  "Incorrect last sequence number");
+        }
+    }
+    else if (!mpdu->GetHeader().GetAddr1().IsBroadcast() && mpdu->GetHeader().IsQosData())
+    {
+        NS_TEST_EXPECT_MSG_EQ(nodeId, 0, "Unicast transmission from unexpected node");
+        NS_LOG_INFO("AP: unicast transmission (#MPDUs=" << psdu->GetNMpdus() << ")");
+    }
+    else if (mpdu->GetHeader().IsBlockAckReq())
+    {
+        CtrlBAckRequestHeader blockAckReq;
+        mpdu->GetPacket()->PeekHeader(blockAckReq);
+        NS_TEST_EXPECT_MSG_EQ(nodeId, 0, "Groupcast transmission from unexpected node");
+        uint8_t staId = 0;
+        uint8_t numStas = m_params.stas.size();
+        for (uint8_t i = 0; i < numStas; ++i)
+        {
+            if (mpdu->GetHeader().GetAddr1() == m_stasWifiMac.at(i)->GetAddress())
+            {
+                staId = i + 1;
+                break;
+            }
+        }
+        NS_ASSERT(staId != 0);
+        NS_LOG_INFO("AP: send " << (blockAckReq.IsGcr() ? "GCR " : "") << "BAR to STA " << +staId);
+        m_nTxGcrBar++;
+        m_nTxGcrBarsInCurrentTxop++;
+        const auto expectedGcr =
+            m_expectGcrUsed && ((m_params.numUnicastPackets == 0) ||
+                                ((m_params.startUnicast < m_params.startGroupcast) &&
+                                 (Simulator::Now() > m_params.startGroupcast)) ||
+                                ((m_params.startGroupcast < m_params.startUnicast) &&
+                                 (Simulator::Now() < m_params.startUnicast)));
+        NS_ASSERT(blockAckReq.IsGcr() == expectedGcr);
+        NS_TEST_EXPECT_MSG_EQ(blockAckReq.IsGcr(),
+                              expectedGcr,
+                              "Expected GCR Block Ack request type sent to STA " << +staId);
+        if (blockAckReq.IsGcr())
+        {
+            const auto expectedStartingSequence =
+                ((!m_params.mpdusToCorruptPerPsdu.empty() &&
+                  !m_params.expectedDroppedGroupcastMpdus.empty() &&
+                  m_nTxGcrBar > m_params.mpdusToCorruptPerPsdu.size())
+                     ? m_params.numGroupcastPackets
+                     : m_firstTxSeq);
+            NS_ASSERT(blockAckReq.GetStartingSequence() == expectedStartingSequence);
+            NS_TEST_EXPECT_MSG_EQ(
+                blockAckReq.GetStartingSequence(),
+                expectedStartingSequence,
+                "Incorrect starting sequence in GCR Block Ack request sent to STA " << +staId);
+            bool isBarRetry = (m_gcrBaParams.barsToCorrupt.count(m_nTxGcrBar - 1) != 0) ||
+                              (m_gcrBaParams.blockAcksToCorrupt.count(m_nTxGcrBlockAck) != 0);
+            NS_TEST_EXPECT_MSG_EQ(mpdu->GetHeader().IsRetry(),
+                                  isBarRetry,
+                                  "Incorrect retry flag set for GCR Block Ack Request");
+            if (const auto it = m_gcrBaParams.barsToCorrupt.find(m_nTxGcrBar);
+                it != m_gcrBaParams.barsToCorrupt.cend())
+            {
+                NS_LOG_INFO("Corrupt BAR #" << +m_nTxGcrBar);
+                const auto uid = mpdu->GetPacket()->GetUid();
+                for (auto& errorModel : m_errorModels)
+                {
+                    errorModel->SetList({uid});
+                }
+            }
+            else
+            {
+                NS_LOG_INFO("Do not corrupt BAR #" << +m_nTxGcrBar);
+                for (auto& errorModel : m_errorModels)
+                {
+                    errorModel->SetList({});
+                }
+            }
+        }
+    }
+    else if (mpdu->GetHeader().IsBlockAck())
+    {
+        CtrlBAckResponseHeader blockAck;
+        mpdu->GetPacket()->PeekHeader(blockAck);
+        NS_TEST_EXPECT_MSG_NE(nodeId, 0, "BlockAck transmission from unexpected node");
+        NS_LOG_INFO("STA" << nodeId << ": send " << (blockAck.IsGcr() ? "GCR " : "")
+                          << "Block ACK");
+        const auto expectedGcr = ((m_params.numUnicastPackets == 0) ||
+                                  ((m_params.startUnicast < m_params.startGroupcast) &&
+                                   (Simulator::Now() > m_params.startGroupcast)) ||
+                                  ((m_params.startGroupcast < m_params.startUnicast) &&
+                                   (Simulator::Now() < m_params.startUnicast)));
+        NS_TEST_EXPECT_MSG_EQ(blockAck.IsGcr(),
+                              expectedGcr,
+                              "Expected " << (expectedGcr ? "GCR " : "")
+                                          << "Block Ack type sent from STA " << nodeId);
+        if (expectedGcr)
+        {
+            m_nTxGcrBlockAck++;
+            const auto& corruptedMpdusForSta =
+                (m_params.mpdusToCorruptPerPsdu.empty() ||
+                 (m_params.mpdusToCorruptPerPsdu.size() < m_totalTx))
+                    ? std::set<uint8_t>{}
+                    : ((m_params.mpdusToCorruptPerPsdu.at(m_totalTx).count(0) != 0)
+                           ? m_params.mpdusToCorruptPerPsdu.at(m_totalTx).at(0)
+                           : ((m_params.mpdusToCorruptPerPsdu.at(m_totalTx).count(nodeId) != 0)
+                                  ? m_params.mpdusToCorruptPerPsdu.at(m_totalTx).at(nodeId)
+                                  : std::set<uint8_t>{}));
+            for (int seq = m_firstTxSeq; seq <= m_lastTxSeq; ++seq)
+            {
+                auto expectedReceived =
+                    (corruptedMpdusForSta.empty() || corruptedMpdusForSta.count(seq + 1) == 0);
+                NS_TEST_EXPECT_MSG_EQ(
+                    blockAck.IsPacketReceived(seq, 0),
+                    expectedReceived,
+                    "Incorrect bitmap filled in GCR Block Ack response sent from STA " << nodeId);
+            }
+        }
+        else
+        {
+            m_nTxBlockAck++;
+        }
+        if (blockAck.IsGcr())
+        {
+            if (m_gcrBaParams.blockAcksToCorrupt.count(m_nTxGcrBlockAck))
+            {
+                NS_LOG_INFO("Corrupt Block ACK #" << +m_nTxGcrBlockAck);
+                const auto uid = mpdu->GetPacket()->GetUid();
+                m_apErrorModel->SetList({uid});
+            }
+            else
+            {
+                NS_LOG_INFO("Do not corrupt Block ACK #" << +m_nTxGcrBlockAck);
+                m_apErrorModel->SetList({});
+            }
+        }
+    }
+    GcrTestBase::Transmit(context, psduMap, txVector, txPowerW);
+}
+
+void
+GcrBaTest::NotifyTxopTerminated(Time startTime, Time duration, uint8_t linkId)
+{
+    GcrTestBase::NotifyTxopTerminated(startTime, duration, linkId);
+    if (m_nTxGcrBarsInCurrentTxop > 0)
+    {
+        m_nTxGcrBarsPerTxop.push_back(m_nTxGcrBarsInCurrentTxop);
+    }
+    m_nTxGcrBarsInCurrentTxop = 0;
+}
+
+void
+GcrBaTest::Receive(std::string context, Ptr<const Packet> p, const Address& adr)
+{
+    const auto staId = ConvertContextToNodeId(context) - 1;
+    const auto socketAddress = PacketSocketAddress::ConvertFrom(adr);
+    if (socketAddress.GetProtocol() == MULTICAST_PROTOCOL)
+    {
+        NS_LOG_INFO("STA" << staId + 1 << ": multicast packet forwarded up");
+        const auto txopLimitAllowsAggregation =
+            (m_params.txopLimit.IsZero() || m_params.txopLimit > MicroSeconds(320));
+        m_rxGroupcastPerSta.at(staId).push_back(
+            (GetNumNonHtStas(m_params.stas) == 0) && txopLimitAllowsAggregation
+                ? (m_totalTx - (m_lastTxSeq / m_expectedMaxNumMpdusInPsdu))
+                : 1);
+    }
+    else if (socketAddress.GetProtocol() == UNICAST_PROTOCOL)
+    {
+        NS_LOG_INFO("STA" << staId + 1 << ": unicast packet forwarded up");
+        m_rxUnicastPerSta.at(staId)++;
+    }
+}
+
+void
+GcrBaTest::ConfigureGcrManager(WifiMacHelper& macHelper)
+{
+    macHelper.SetGcrManager("ns3::WifiDefaultGcrManager",
+                            "RetransmissionPolicy",
+                            StringValue("GCR_BA"),
+                            "GcrProtectionMode",
+                            EnumValue(m_params.gcrProtectionMode));
+}
+
+void
+GcrBaTest::CheckResults()
+{
+    GcrTestBase::CheckResults();
+
+    if (m_params.numUnicastPackets > 0)
+    {
+        NS_TEST_EXPECT_MSG_EQ(+m_nTxBlockAck,
+                              ((m_params.numUnicastPackets > 1) ? GetNumGcrStas(m_params.stas) : 0),
+                              "Incorrect number of transmitted BlockAck frames");
+    }
+
+    const auto txopLimitAllowsAggregation =
+        (m_params.txopLimit.IsZero() || m_params.txopLimit > MicroSeconds(320));
+    auto expectedTotalTx =
+        m_expectGcrUsed && txopLimitAllowsAggregation && (GetNumNonHtStas(m_params.stas) == 0)
+            ? m_params.mpdusToCorruptPerPsdu.empty()
+                  ? std::ceil(static_cast<double>(m_params.numGroupcastPackets -
+                                                  m_params.expectedDroppedGroupcastMpdus.size()) /
+                              m_expectedMaxNumMpdusInPsdu)
+                  : (std::ceil(static_cast<double>(m_params.numGroupcastPackets) /
+                               m_expectedMaxNumMpdusInPsdu) +
+                     std::ceil(static_cast<double>(m_params.mpdusToCorruptPerPsdu.size()) /
+                               m_expectedMaxNumMpdusInPsdu))
+            : m_params.numGroupcastPackets;
+
+    const uint8_t numExpectedBars =
+        m_expectGcrUsed
+            ? (m_params.mpdusToCorruptPerPsdu.empty()
+                   ? ((GetNumGcrStas(m_params.stas) * expectedTotalTx) +
+                      m_gcrBaParams.barsToCorrupt.size() + m_gcrBaParams.blockAcksToCorrupt.size())
+                   : ((GetNumGcrStas(m_params.stas) * expectedTotalTx) +
+                      m_gcrBaParams.barsToCorrupt.size() + m_gcrBaParams.blockAcksToCorrupt.size() +
+                      m_params.expectedDroppedGroupcastMpdus.size()))
+            : 0;
+    const uint8_t numExpectedBlockAcks =
+        m_expectGcrUsed ? (m_params.mpdusToCorruptPerPsdu.empty()
+                               ? ((GetNumGcrStas(m_params.stas) * expectedTotalTx) +
+                                  m_gcrBaParams.blockAcksToCorrupt.size())
+                               : ((GetNumGcrStas(m_params.stas) * expectedTotalTx) +
+                                  m_gcrBaParams.blockAcksToCorrupt.size() +
+                                  m_params.expectedDroppedGroupcastMpdus.size()))
+                        : 0;
+    uint8_t numNonConcealedTx = 0;
+    if (m_expectGcrUsed && (GetNumNonHtStas(m_params.stas) > 0))
+    {
+        numNonConcealedTx = expectedTotalTx;
+    }
+    else if (m_expectGcrUsed && (GetNumNonGcrStas(m_params.stas) > 0))
+    {
+        numNonConcealedTx = 1;
+    }
+    NS_TEST_EXPECT_MSG_EQ(+m_totalTx,
+                          expectedTotalTx + numNonConcealedTx,
+                          "Incorrect number of transmitted packets");
+    NS_TEST_EXPECT_MSG_EQ(+m_nTxGcrBar,
+                          +numExpectedBars,
+                          "Incorrect number of transmitted GCR BARs");
+    NS_TEST_EXPECT_MSG_EQ(+m_nTxGcrBlockAck,
+                          +numExpectedBlockAcks,
+                          "Incorrect number of transmitted GCR Block ACKs");
+
+    if (!m_gcrBaParams.expectedNTxBarsPerTxop.empty())
+    {
+        NS_TEST_EXPECT_MSG_EQ(m_nTxGcrBarsPerTxop.size(),
+                              m_gcrBaParams.expectedNTxBarsPerTxop.size(),
+                              "Incorrect number of TXOPs containing transmission of BAR frame(s)");
+        for (std::size_t i = 0; i < m_gcrBaParams.expectedNTxBarsPerTxop.size(); ++i)
+        {
+            NS_TEST_EXPECT_MSG_EQ(+m_nTxGcrBarsPerTxop.at(i),
+                                  +m_gcrBaParams.expectedNTxBarsPerTxop.at(i),
+                                  "Incorrect number of BAR(s) transmitted in TXOP");
+        }
+    }
+
+    uint8_t numStas = m_params.stas.size();
+    for (uint8_t i = 0; i < numStas; ++i)
+    {
+        // calculate the amount of corrupted PSDUs and the expected number of retransmission per
+        // MPDU
+        uint8_t prevExpectedNumAttempt = 1;
+        uint8_t prevPsduNum = 1;
+        uint8_t droppedPsdus = 0;
+        auto prevDropped = false;
+        for (uint16_t j = 0; j < m_params.numGroupcastPackets; ++j)
+        {
+            uint8_t expectedNumAttempt = 1;
+            const auto psduNum = ((j / m_params.maxNumMpdusInPsdu) + 1);
+            const auto packetInAmpdu =
+                (m_params.maxNumMpdusInPsdu > 1) ? ((j % m_params.maxNumMpdusInPsdu) + 1) : 1;
+            if (psduNum > prevPsduNum)
+            {
+                prevExpectedNumAttempt = 1;
+            }
+            prevPsduNum = psduNum;
+            for (auto& mpduToCorruptPerPsdu : m_params.mpdusToCorruptPerPsdu)
+            {
+                if (mpduToCorruptPerPsdu.first <= (psduNum - 1))
+                {
+                    continue;
+                }
+                const auto& corruptedMpdusForSta =
+                    (mpduToCorruptPerPsdu.second.count(0) != 0)
+                        ? mpduToCorruptPerPsdu.second.at(0)
+                        : ((mpduToCorruptPerPsdu.second.count(i + 1) != 0)
+                               ? mpduToCorruptPerPsdu.second.at(i + 1)
+                               : std::set<uint8_t>{});
+                if (corruptedMpdusForSta.count(packetInAmpdu) == 0)
+                {
+                    break;
+                }
+                expectedNumAttempt++;
+            }
+            if ((!m_expectGcrUsed && (expectedNumAttempt > 1)) ||
+                (m_params.expectedDroppedGroupcastMpdus.count(j + 1) != 0))
+            {
+                droppedPsdus++;
+                prevDropped = true;
+                continue;
+            }
+            expectedNumAttempt = (prevDropped && !m_params.mpdusToCorruptPerPsdu.empty())
+                                     ? m_params.mpdusToCorruptPerPsdu.size()
+                                     : std::max(expectedNumAttempt, prevExpectedNumAttempt);
+            prevExpectedNumAttempt = expectedNumAttempt;
+            const std::size_t rxPsdus = (j - droppedPsdus);
+            NS_TEST_EXPECT_MSG_EQ(+m_rxGroupcastPerSta.at(i).at(rxPsdus),
+                                  +expectedNumAttempt,
+                                  "Packet has not been forwarded up at the expected TX attempt");
+        }
+        const std::size_t rxPackets = (m_params.numGroupcastPackets - droppedPsdus);
+        NS_TEST_EXPECT_MSG_EQ(+m_rxGroupcastPerSta.at(i).size(),
+                              rxPackets,
+                              "STA" + std::to_string(i + 1) +
+                                  " did not receive the expected number of groupcast packets");
+    }
+
+    auto rsm = DynamicCast<IdealWifiManagerForGcrTest>(m_apWifiMac->GetWifiRemoteStationManager());
+    NS_ASSERT(rsm);
+    NS_TEST_EXPECT_MSG_EQ(rsm->m_blockAckSenders.size(),
+                          GetNumGcrStas(m_params.stas),
+                          "RSM have not received Block ACK from all members");
+}
+
 WifiGcrTestSuite::WifiGcrTestSuite()
     : TestSuite("wifi-gcr", Type::UNIT)
 {
@@ -1372,15 +1817,15 @@ WifiGcrTestSuite::WifiGcrTestSuite()
         {
             for (const auto& stasInfo : StationsScenarios{
                      {{{GCR_INCAPABLE_STA, WIFI_STANDARD_80211a}}},
-                     {{{GCR_CAPABLE_STA, WIFI_STANDARD_80211n, 40, 2, NanoSeconds(400)}}},
+                     {{{GCR_CAPABLE_STA, WIFI_STANDARD_80211n, MHz_u{40}, 2, NanoSeconds(400)}}},
                      {{{GCR_CAPABLE_STA, WIFI_STANDARD_80211ac}}},
                      {{{GCR_CAPABLE_STA, WIFI_STANDARD_80211ax}}},
                      {{{GCR_CAPABLE_STA, WIFI_STANDARD_80211be}}},
-                     {{{GCR_CAPABLE_STA, WIFI_STANDARD_80211ax, 80, 1, NanoSeconds(800)},
-                       {GCR_CAPABLE_STA, WIFI_STANDARD_80211be, 80, 1, NanoSeconds(3200)}}},
-                     {{{GCR_CAPABLE_STA, WIFI_STANDARD_80211n, 20, 1},
-                       {GCR_CAPABLE_STA, WIFI_STANDARD_80211ac, 80, 2},
-                       {GCR_CAPABLE_STA, WIFI_STANDARD_80211ax, 160, 3}}},
+                     {{{GCR_CAPABLE_STA, WIFI_STANDARD_80211ax, MHz_u{80}, 1, NanoSeconds(800)},
+                       {GCR_CAPABLE_STA, WIFI_STANDARD_80211be, MHz_u{80}, 1, NanoSeconds(3200)}}},
+                     {{{GCR_CAPABLE_STA, WIFI_STANDARD_80211n, MHz_u{20}, 1},
+                       {GCR_CAPABLE_STA, WIFI_STANDARD_80211ac, MHz_u{80}, 2},
+                       {GCR_CAPABLE_STA, WIFI_STANDARD_80211ax, MHz_u{160}, 3}}},
                      {{{GCR_INCAPABLE_STA, WIFI_STANDARD_80211a},
                        {GCR_CAPABLE_STA, WIFI_STANDARD_80211n}}},
                      {{{GCR_INCAPABLE_STA, WIFI_STANDARD_80211n},
@@ -1695,10 +2140,10 @@ WifiGcrTestSuite::WifiGcrTestSuite()
                               {}),
                 TestCase::Duration::QUICK);
     AddTestCase(new GcrUrTest("GCR-UR with buffer size limit to 1024 MPDUs",
-                              {.stas = {{GCR_CAPABLE_STA, WIFI_STANDARD_80211be, 40},
-                                        {GCR_CAPABLE_STA, WIFI_STANDARD_80211be, 40},
-                                        {GCR_CAPABLE_STA, WIFI_STANDARD_80211be, 40},
-                                        {GCR_CAPABLE_STA, WIFI_STANDARD_80211be, 40}},
+                              {.stas = {{GCR_CAPABLE_STA, WIFI_STANDARD_80211be, MHz_u{40}},
+                                        {GCR_CAPABLE_STA, WIFI_STANDARD_80211be, MHz_u{40}},
+                                        {GCR_CAPABLE_STA, WIFI_STANDARD_80211be, MHz_u{40}},
+                                        {GCR_CAPABLE_STA, WIFI_STANDARD_80211be, MHz_u{40}}},
                                .numGroupcastPackets = 1200,
                                .packetSize = 100,
                                .maxNumMpdusInPsdu = 1024,
@@ -1743,6 +2188,383 @@ WifiGcrTestSuite::WifiGcrTestSuite()
                               {.expectedSkippedRetries = 4,
                                .packetsPauzeAggregation = 4,
                                .packetsResumeAggregation = 100}),
+                TestCase::Duration::QUICK);
+
+    // GCR Block ACKs
+    for (auto& [groupcastPackets, groupcastStartTime, unicastPackets, unicastStartTime] :
+         std::vector<std::tuple<uint16_t, Time, uint16_t, Time>>{
+             {2, Seconds(1.0), 0, Seconds(0.0)},  // no unicast
+             {2, Seconds(0.5), 1, Seconds(1.0)},  // groupcast then unicast
+             {2, Seconds(1.0), 1, Seconds(0.5)}}) // unicast then groupcast
+    {
+        for (auto& [corruptedBars, corruptedBlockAcks] :
+             std::vector<std::pair<std::set<uint8_t>, std::set<uint8_t>>>{{{}, {}},
+                                                                          {{1}, {}},
+                                                                          {{}, {1}},
+                                                                          {{1}, {1}}})
+        {
+            for (auto& [rtsThreshold, gcrPotection, protectionName] :
+                 std::vector<std::tuple<uint32_t, GroupcastProtectionMode, std::string>>{
+                     {maxRtsCtsThreshold, GroupcastProtectionMode::RTS_CTS, "no protection"},
+                     {500, GroupcastProtectionMode::RTS_CTS, "RTS-CTS"},
+                     {1500, GroupcastProtectionMode::CTS_TO_SELF, "CTS-TO-SELF"}})
+            {
+                for (const auto& stasInfo : StationsScenarios{
+                         {{{GCR_INCAPABLE_STA, WIFI_STANDARD_80211a}}},
+                         {{{GCR_CAPABLE_STA,
+                            WIFI_STANDARD_80211n,
+                            MHz_u{40},
+                            2,
+                            NanoSeconds(400)}}},
+                         {{{GCR_CAPABLE_STA, WIFI_STANDARD_80211ac}}},
+                         {{{GCR_CAPABLE_STA, WIFI_STANDARD_80211ax}}},
+                         {{{GCR_CAPABLE_STA, WIFI_STANDARD_80211be}}},
+                         {{{GCR_CAPABLE_STA, WIFI_STANDARD_80211ax, MHz_u{80}, 1, NanoSeconds(800)},
+                           {GCR_CAPABLE_STA,
+                            WIFI_STANDARD_80211be,
+                            MHz_u{80},
+                            1,
+                            NanoSeconds(3200)}}},
+                         {{{GCR_CAPABLE_STA, WIFI_STANDARD_80211n, MHz_u{20}, 1},
+                           {GCR_CAPABLE_STA, WIFI_STANDARD_80211ac, MHz_u{80}, 2},
+                           {GCR_CAPABLE_STA, WIFI_STANDARD_80211ax, MHz_u{160}, 3}}},
+                         {{{GCR_INCAPABLE_STA, WIFI_STANDARD_80211a},
+                           {GCR_CAPABLE_STA, WIFI_STANDARD_80211n}}},
+                         {{{GCR_INCAPABLE_STA, WIFI_STANDARD_80211n},
+                           {GCR_CAPABLE_STA, WIFI_STANDARD_80211n}}}})
+                {
+                    const auto maxChannelWidth =
+                        std::max_element(stasInfo.cbegin(),
+                                         stasInfo.cend(),
+                                         [](const auto& lhs, const auto& rhs) {
+                                             return lhs.maxChannelWidth < rhs.maxChannelWidth;
+                                         })
+                            ->maxChannelWidth;
+                    const auto useSpectrum =
+                        std::any_of(stasInfo.cbegin(),
+                                    stasInfo.cend(),
+                                    [maxChannelWidth](const auto& staInfo) {
+                                        return (staInfo.maxChannelWidth != maxChannelWidth);
+                                    });
+                    std::string scenario =
+                        "STAs=" + printStasInfo(stasInfo) + ", protection=" + protectionName +
+                        ", corruptBARs=" + std::to_string(!corruptedBars.empty()) +
+                        ", corruptBACKs=" + std::to_string(!corruptedBlockAcks.empty());
+                    if (unicastPackets > 0)
+                    {
+                        scenario += ", mixedGroupcastUnicast";
+                        if (unicastStartTime > groupcastStartTime)
+                        {
+                            scenario += " (groupcast before unicast)";
+                        }
+                        else
+                        {
+                            scenario += " (unicast before groupcast)";
+                        }
+                    }
+                    AddTestCase(new GcrBaTest("GCR-BA without any corrupted MPDUs: " + scenario,
+                                              {.stas = stasInfo,
+                                               .numGroupcastPackets = groupcastPackets,
+                                               .numUnicastPackets = unicastPackets,
+                                               .maxNumMpdusInPsdu = 2,
+                                               .startGroupcast = groupcastStartTime,
+                                               .startUnicast = unicastStartTime,
+                                               .rtsThreshold = rtsThreshold,
+                                               .gcrProtectionMode = gcrPotection},
+                                              {corruptedBars, corruptedBlockAcks}),
+                                useSpectrum ? TestCase::Duration::EXTENSIVE
+                                            : TestCase::Duration::QUICK);
+                    if (GetNumNonGcrStas(stasInfo) == 0)
+                    {
+                        AddTestCase(new GcrBaTest("GCR-BA with second MPDU corrupted: " + scenario,
+                                                  {.stas = stasInfo,
+                                                   .numGroupcastPackets = groupcastPackets,
+                                                   .numUnicastPackets = unicastPackets,
+                                                   .maxNumMpdusInPsdu = 2,
+                                                   .startGroupcast = groupcastStartTime,
+                                                   .startUnicast = unicastStartTime,
+                                                   .rtsThreshold = rtsThreshold,
+                                                   .gcrProtectionMode = gcrPotection,
+                                                   .mpdusToCorruptPerPsdu = {{1, {{0, {2}}}}}},
+                                                  {corruptedBars, corruptedBlockAcks}),
+                                    useSpectrum ? TestCase::Duration::EXTENSIVE
+                                                : TestCase::Duration::QUICK);
+                        AddTestCase(new GcrBaTest("GCR-BA with first MPDU corrupted: " + scenario,
+                                                  {.stas = stasInfo,
+                                                   .numGroupcastPackets = groupcastPackets,
+                                                   .numUnicastPackets = unicastPackets,
+                                                   .maxNumMpdusInPsdu = 2,
+                                                   .startGroupcast = groupcastStartTime,
+                                                   .startUnicast = unicastStartTime,
+                                                   .rtsThreshold = rtsThreshold,
+                                                   .gcrProtectionMode = gcrPotection,
+                                                   .mpdusToCorruptPerPsdu = {{1, {{0, {1}}}}}},
+                                                  {corruptedBars, corruptedBlockAcks}),
+                                    useSpectrum ? TestCase::Duration::EXTENSIVE
+                                                : TestCase::Duration::QUICK);
+                        AddTestCase(new GcrBaTest("GCR-BA with both MPDUs corrupted: " + scenario,
+                                                  {.stas = stasInfo,
+                                                   .numGroupcastPackets = groupcastPackets,
+                                                   .numUnicastPackets = unicastPackets,
+                                                   .maxNumMpdusInPsdu = 2,
+                                                   .startGroupcast = groupcastStartTime,
+                                                   .startUnicast = unicastStartTime,
+                                                   .rtsThreshold = rtsThreshold,
+                                                   .gcrProtectionMode = gcrPotection,
+                                                   .mpdusToCorruptPerPsdu = {{1, {{0, {1, 2}}}}}},
+                                                  {corruptedBars, corruptedBlockAcks}),
+                                    useSpectrum ? TestCase::Duration::EXTENSIVE
+                                                : TestCase::Duration::QUICK);
+                        if (GetNumGcrStas(stasInfo) > 1)
+                        {
+                            AddTestCase(
+                                new GcrBaTest("GCR-BA with second MPDU corrupted for first STA: " +
+                                                  scenario,
+                                              {.stas = stasInfo,
+                                               .numGroupcastPackets = groupcastPackets,
+                                               .numUnicastPackets = unicastPackets,
+                                               .maxNumMpdusInPsdu = 2,
+                                               .startGroupcast = groupcastStartTime,
+                                               .startUnicast = unicastStartTime,
+                                               .rtsThreshold = rtsThreshold,
+                                               .gcrProtectionMode = gcrPotection,
+                                               .mpdusToCorruptPerPsdu = {{1, {{1, {2}}}}}},
+                                              {corruptedBars, corruptedBlockAcks}),
+                                useSpectrum ? TestCase::Duration::EXTENSIVE
+                                            : TestCase::Duration::QUICK);
+                            AddTestCase(
+                                new GcrBaTest("GCR-BA with first MPDU corrupted for first STA: " +
+                                                  scenario,
+                                              {.stas = stasInfo,
+                                               .numGroupcastPackets = groupcastPackets,
+                                               .numUnicastPackets = unicastPackets,
+                                               .maxNumMpdusInPsdu = 2,
+                                               .startGroupcast = groupcastStartTime,
+                                               .startUnicast = unicastStartTime,
+                                               .rtsThreshold = rtsThreshold,
+                                               .gcrProtectionMode = gcrPotection,
+                                               .mpdusToCorruptPerPsdu = {{1, {{1, {1}}}}}},
+                                              {corruptedBars, corruptedBlockAcks}),
+                                useSpectrum ? TestCase::Duration::EXTENSIVE
+                                            : TestCase::Duration::QUICK);
+                            AddTestCase(
+                                new GcrBaTest(
+                                    "GCR-BA with first different MPDUs corrupted for each STA: " +
+                                        scenario,
+                                    {.stas = stasInfo,
+                                     .numGroupcastPackets = groupcastPackets,
+                                     .numUnicastPackets = unicastPackets,
+                                     .maxNumMpdusInPsdu = 2,
+                                     .startGroupcast = groupcastStartTime,
+                                     .startUnicast = unicastStartTime,
+                                     .rtsThreshold = rtsThreshold,
+                                     .gcrProtectionMode = gcrPotection,
+                                     .mpdusToCorruptPerPsdu = {{1, {{1, {1}}, {2, {2}}}}}},
+                                    {corruptedBars, corruptedBlockAcks}),
+                                useSpectrum ? TestCase::Duration::EXTENSIVE
+                                            : TestCase::Duration::QUICK);
+                            AddTestCase(new GcrBaTest(
+                                            "GCR-BA with first different MPDUs corrupted for each "
+                                            "STA with different order: " +
+                                                scenario,
+                                            {.stas = stasInfo,
+                                             .numGroupcastPackets = groupcastPackets,
+                                             .numUnicastPackets = unicastPackets,
+                                             .maxNumMpdusInPsdu = 2,
+                                             .startGroupcast = groupcastStartTime,
+                                             .startUnicast = unicastStartTime,
+                                             .rtsThreshold = rtsThreshold,
+                                             .gcrProtectionMode = gcrPotection,
+                                             .mpdusToCorruptPerPsdu = {{1, {{1, {2}}, {2, {1}}}}}},
+                                            {corruptedBars, corruptedBlockAcks}),
+                                        useSpectrum ? TestCase::Duration::EXTENSIVE
+                                                    : TestCase::Duration::QUICK);
+                        }
+                    }
+                }
+            }
+        }
+        std::string scenario = "GCR-BA with dropped MPDU because of lifetime expiry";
+        if (unicastPackets > 0)
+        {
+            scenario += ", mixedGroupcastUnicast";
+            if (unicastStartTime > groupcastStartTime)
+            {
+                scenario += " (groupcast before unicast)";
+            }
+            else
+            {
+                scenario += " (unicast before groupcast)";
+            }
+        }
+        AddTestCase(
+            new GcrBaTest(scenario,
+                          {.stas = {{GCR_CAPABLE_STA, WIFI_STANDARD_80211n}},
+                           .numGroupcastPackets =
+                               uint16_t(groupcastPackets *
+                                        2), // consider more packets to verify TX window is advanced
+                           .numUnicastPackets = unicastPackets,
+                           .maxNumMpdusInPsdu = 2,
+                           .startGroupcast = groupcastStartTime,
+                           .startUnicast = unicastStartTime,
+                           .maxLifetime = MilliSeconds(2),
+                           .rtsThreshold = maxRtsCtsThreshold,
+                           .mpdusToCorruptPerPsdu =
+                               {{1, {{0, {2}}}}, {2, {{0, {2}}}}, {3, {{0, {2}}}}, {4, {{0, {2}}}}},
+                           .expectedDroppedGroupcastMpdus = {2}},
+                          {}),
+            TestCase::Duration::QUICK);
+        scenario = "";
+        if (unicastPackets > 0)
+        {
+            if (unicastStartTime > groupcastStartTime)
+            {
+                scenario += "Groupcast followed by unicast";
+            }
+            else
+            {
+                scenario += "Unicast followed by groupcast";
+            }
+        }
+        else
+        {
+            scenario += "GCR-BA";
+        }
+        scenario += " with ";
+        AddTestCase(new GcrBaTest(scenario + "ADDBA request corrupted",
+                                  {.stas = {{GCR_CAPABLE_STA, WIFI_STANDARD_80211n}},
+                                   .numGroupcastPackets = groupcastPackets,
+                                   .numUnicastPackets = unicastPackets,
+                                   .maxNumMpdusInPsdu = 2,
+                                   .startGroupcast = groupcastStartTime,
+                                   .startUnicast = unicastStartTime,
+                                   .rtsThreshold = maxRtsCtsThreshold,
+                                   .addbaReqsToCorrupt = {1}},
+                                  {}),
+                    TestCase::Duration::QUICK);
+        AddTestCase(new GcrBaTest(scenario + "ADDBA response corrupted",
+                                  {.stas = {{GCR_CAPABLE_STA, WIFI_STANDARD_80211n}},
+                                   .numGroupcastPackets = groupcastPackets,
+                                   .numUnicastPackets = unicastPackets,
+                                   .maxNumMpdusInPsdu = 2,
+                                   .startGroupcast = groupcastStartTime,
+                                   .startUnicast = unicastStartTime,
+                                   .rtsThreshold = maxRtsCtsThreshold,
+                                   .addbaRespsToCorrupt = {1}},
+                                  {}),
+                    TestCase::Duration::QUICK);
+        AddTestCase(new GcrBaTest(scenario + "ADDBA timeout",
+                                  {.stas = {{GCR_CAPABLE_STA, WIFI_STANDARD_80211n}},
+                                   .numGroupcastPackets = groupcastPackets,
+                                   .numUnicastPackets = unicastPackets,
+                                   .maxNumMpdusInPsdu = 2,
+                                   .startGroupcast = groupcastStartTime,
+                                   .startUnicast = unicastStartTime,
+                                   .rtsThreshold = maxRtsCtsThreshold,
+                                   .addbaReqsToCorrupt = {1, 2, 3, 4, 5, 6, 7, 8}},
+                                  {}),
+                    TestCase::Duration::QUICK);
+        AddTestCase(new GcrBaTest(scenario + "DELBA frames after timeout expires",
+                                  {.stas = {{GCR_CAPABLE_STA, WIFI_STANDARD_80211n}},
+                                   .numGroupcastPackets = groupcastPackets,
+                                   .numUnicastPackets = uint16_t(unicastPackets * 2),
+                                   .maxNumMpdusInPsdu = 2,
+                                   .startGroupcast = groupcastStartTime,
+                                   .startUnicast = unicastStartTime,
+                                   .rtsThreshold = maxRtsCtsThreshold,
+                                   .baInactivityTimeout = 10},
+                                  {}),
+                    TestCase::Duration::QUICK);
+    }
+    AddTestCase(new GcrBaTest(
+                    "GCR-BA with BARs sent over 2 TXOPs because of TXOP limit",
+                    {.stas = {{GCR_CAPABLE_STA, WIFI_STANDARD_80211n},
+                              {GCR_CAPABLE_STA, WIFI_STANDARD_80211ac},
+                              {GCR_CAPABLE_STA, WIFI_STANDARD_80211ax}},
+                     .numGroupcastPackets = 2,
+                     .maxNumMpdusInPsdu = 2,
+                     .maxLifetime = Seconds(1.0),
+                     .rtsThreshold = maxRtsCtsThreshold,
+                     .txopLimit = MicroSeconds(480)},
+                    {.expectedNTxBarsPerTxop = {1, 2}}), // 1 BAR in first TXOP, 2 BARs in next TXOP
+                TestCase::Duration::QUICK);
+    AddTestCase(new GcrBaTest("GCR-BA with TXOP limit not allowing aggregation",
+                              {.stas = {{GCR_CAPABLE_STA, WIFI_STANDARD_80211n},
+                                        {GCR_CAPABLE_STA, WIFI_STANDARD_80211ac},
+                                        {GCR_CAPABLE_STA, WIFI_STANDARD_80211ax}},
+                               .numGroupcastPackets = 2,
+                               .maxNumMpdusInPsdu = 2,
+                               .maxLifetime = Seconds(1.0),
+                               .rtsThreshold = maxRtsCtsThreshold,
+                               .txopLimit = MicroSeconds(320)},
+                              {.expectedNTxBarsPerTxop = {1, 2, 1, 2}}),
+                TestCase::Duration::QUICK);
+    AddTestCase(new GcrBaTest("GCR-BA with number of packets larger than MPDU buffer size",
+                              {.stas = {{GCR_CAPABLE_STA, WIFI_STANDARD_80211n}},
+                               .numGroupcastPackets = 300,
+                               .maxNumMpdusInPsdu = 2,
+                               .rtsThreshold = maxRtsCtsThreshold},
+                              {}),
+                TestCase::Duration::QUICK);
+    AddTestCase(new GcrBaTest("GCR-BA with buffer size limit to 64 MPDUs",
+                              {.stas = {{GCR_CAPABLE_STA, WIFI_STANDARD_80211n},
+                                        {GCR_CAPABLE_STA, WIFI_STANDARD_80211ac},
+                                        {GCR_CAPABLE_STA, WIFI_STANDARD_80211ax},
+                                        {GCR_CAPABLE_STA, WIFI_STANDARD_80211be}},
+                               .numGroupcastPackets = 300,
+                               .packetSize = 500,
+                               .maxNumMpdusInPsdu = 1024, // capped to 64 because not lowest is HT
+                               .rtsThreshold = maxRtsCtsThreshold},
+                              {}),
+                TestCase::Duration::QUICK);
+    AddTestCase(new GcrBaTest("GCR-BA with buffer size limit to 256 MPDUs",
+                              {.stas = {{GCR_CAPABLE_STA, WIFI_STANDARD_80211ax},
+                                        {GCR_CAPABLE_STA, WIFI_STANDARD_80211ax},
+                                        {GCR_CAPABLE_STA, WIFI_STANDARD_80211be},
+                                        {GCR_CAPABLE_STA, WIFI_STANDARD_80211be}},
+                               .numGroupcastPackets = 300,
+                               .packetSize = 150,
+                               .maxNumMpdusInPsdu = 1024, // capped to 256 because not lowest is HE
+                               .rtsThreshold = maxRtsCtsThreshold},
+                              {}),
+
+                TestCase::Duration::QUICK);
+    AddTestCase(new GcrBaTest("GCR-BA with buffer size limit to 1024 MPDUs",
+                              {.stas = {{GCR_CAPABLE_STA, WIFI_STANDARD_80211be, MHz_u{40}},
+                                        {GCR_CAPABLE_STA, WIFI_STANDARD_80211be, MHz_u{40}},
+                                        {GCR_CAPABLE_STA, WIFI_STANDARD_80211be, MHz_u{40}},
+                                        {GCR_CAPABLE_STA, WIFI_STANDARD_80211be, MHz_u{40}}},
+                               .numGroupcastPackets = 1200,
+                               .packetSize = 100,
+                               .maxNumMpdusInPsdu = 1024,
+                               .rtsThreshold = maxRtsCtsThreshold},
+                              {}),
+                TestCase::Duration::QUICK);
+    AddTestCase(new GcrBaTest("GCR-BA with corrupted RTS frames to verify previously assigned "
+                              "sequence numbers are properly released",
+                              {.stas = {{GCR_CAPABLE_STA, WIFI_STANDARD_80211n}},
+                               .numGroupcastPackets = 6,
+                               .packetSize = 500,
+                               .maxNumMpdusInPsdu = 2,
+                               .maxLifetime = MilliSeconds(
+                                   1), // reduce lifetime to make sure packets get dropped
+                               .rtsThreshold = 500,
+                               .rtsFramesToCorrupt = {2, 3, 4},
+                               .expectedDroppedGroupcastMpdus = {3, 4}},
+                              {}),
+                TestCase::Duration::QUICK);
+    AddTestCase(new GcrBaTest("GCR-BA with corrupted CTS frames to verify previously assigned "
+                              "sequence numbers are properly released",
+                              {.stas = {{GCR_CAPABLE_STA, WIFI_STANDARD_80211n}},
+                               .numGroupcastPackets = 6,
+                               .packetSize = 500,
+                               .maxNumMpdusInPsdu = 2,
+                               .maxLifetime = MilliSeconds(
+                                   1), // reduce lifetime to make sure packets get dropped
+                               .rtsThreshold = 500,
+                               .ctsFramesToCorrupt = {2, 3, 4},
+                               .expectedDroppedGroupcastMpdus = {3, 4}},
+                              {}),
                 TestCase::Duration::QUICK);
 }
 
