@@ -17,8 +17,8 @@
 namespace ns3
 {
 
-const HeRu::SubcarrierGroups HeRu::m_heRuSubcarrierGroups = {
-    // RUs in a 20 MHz HE PPDU (Table 28-6)
+const HeRu::SubcarrierGroups HeRu::m_heRuSubcarrierGroups{
+    // RUs in a 20 MHz HE PPDU (Table 27-7 IEEE802.11ax-2021)
     {{MHz_t{20}, HeRu::RU_26_TONE},
      {/* 1 */ {{-121, -96}},
       /* 2 */ {{-95, -70}},
@@ -38,7 +38,7 @@ const HeRu::SubcarrierGroups HeRu::m_heRuSubcarrierGroups = {
      {/* 1 */ {{-122, -17}},
       /* 2 */ {{17, 122}}}},
     {{MHz_t{20}, HeRu::RU_242_TONE}, {/* 1 */ {{-122, -2}, {2, 122}}}},
-    // RUs in a 40 MHz HE PPDU (Table 28-7)
+    // RUs in a 40 MHz HE PPDU (Table 27-8 IEEE802.11ax-2021)
     {{MHz_t{40}, HeRu::RU_26_TONE},
      {/* 1 */ {{-243, -218}},
       /* 2 */ {{-217, -192}},
@@ -76,7 +76,7 @@ const HeRu::SubcarrierGroups HeRu::m_heRuSubcarrierGroups = {
      {/* 1 */ {{-244, -3}},
       /* 2 */ {{3, 244}}}},
     {{MHz_t{40}, HeRu::RU_484_TONE}, {/* 1 */ {{-244, -3}, {3, 244}}}},
-    // RUs in an 80 MHz HE PPDU (Table 28-8)
+    // RUs in an 80 MHz HE PPDU (Table 27-9 IEEE802.11ax-2021)
     {{MHz_t{80}, HeRu::RU_26_TONE},
      {/* 1 */ {{-499, -474}},
       /* 2 */ {{-473, -448}},
@@ -382,7 +382,7 @@ std::vector<HeRu::RuSpec>
 HeRu::GetRuSpecs(uint16_t ruAllocation)
 {
     std::optional<std::size_t> idx;
-    if (((ruAllocation >= 0) && (ruAllocation <= 15)) || (ruAllocation == 112))
+    if ((ruAllocation <= 15) || (ruAllocation == 112))
     {
         idx = ruAllocation;
     }
@@ -430,11 +430,6 @@ HeRu::GetEqualizedRuAllocation(RuType ruType, bool isOdd, bool hasUsers)
     }
 }
 
-HeRu::RuSpec::RuSpec()
-    : m_index(0) // indicates undefined RU
-{
-}
-
 HeRu::RuSpec::RuSpec(RuType ruType, std::size_t index, bool primary80MHz)
     : m_ruType(ruType),
       m_index(index),
@@ -469,8 +464,8 @@ HeRu::RuSpec::GetPhyIndex(MHz_t bw, uint8_t p20Index) const
 {
     bool primary80IsLower80 = (p20Index < bw / MHz_t{40});
 
-    if (bw < MHz_t{160} || m_ruType == HeRu::RU_2x996_TONE ||
-        (primary80IsLower80 && m_primary80MHz) || (!primary80IsLower80 && !m_primary80MHz))
+    if (bw < MHz_t{160} || m_ruType == RU_2x996_TONE || (primary80IsLower80 && m_primary80MHz) ||
+        (!primary80IsLower80 && !m_primary80MHz))
     {
         return m_index;
     }
@@ -503,7 +498,12 @@ HeRu::GetNRus(MHz_t bw, RuType ruType)
 std::vector<HeRu::RuSpec>
 HeRu::GetRusOfType(MHz_t bw, HeRu::RuType ruType)
 {
-    if (ruType == HeRu::RU_2x996_TONE)
+    if (GetNRus(bw, ruType) == 0)
+    {
+        return {};
+    }
+
+    if (ruType == RU_2x996_TONE)
     {
         NS_ASSERT(bw >= MHz_t{160});
         return {{ruType, 1, true}};
@@ -651,29 +651,6 @@ HeRu::DoesOverlap(MHz_t bw, RuSpec ru, const std::vector<RuSpec>& v)
     return false;
 }
 
-bool
-HeRu::DoesOverlap(MHz_t bw, RuSpec ru, const SubcarrierGroup& toneRanges, uint8_t p20Index)
-{
-    for (const auto& range : toneRanges)
-    {
-        if (bw == MHz_t{160} && ru.GetRuType() == RU_2x996_TONE)
-        {
-            return true;
-        }
-
-        SubcarrierGroup rangesRu =
-            GetSubcarrierGroup(bw, ru.GetRuType(), ru.GetPhyIndex(bw, p20Index));
-        for (auto& r : rangesRu)
-        {
-            if (range.second >= r.first && r.second >= range.first)
-            {
-                return true;
-            }
-        }
-    }
-    return false;
-}
-
 HeRu::RuSpec
 HeRu::FindOverlappingRu(MHz_t bw, RuSpec referenceRu, RuType searchedRuType)
 {
@@ -747,8 +724,7 @@ std::ostream&
 operator<<(std::ostream& os, const HeRu::RuSpec& ru)
 {
     os << "RU{" << ru.GetRuType() << "/" << ru.GetIndex() << "/"
-       << (ru.GetPrimary80MHz() ? "primary80MHz" : "secondary80MHz");
-    os << "}";
+       << (ru.GetPrimary80MHz() ? "primary80MHz" : "secondary80MHz") << "}";
     return os;
 }
 
@@ -835,7 +811,15 @@ HeRu::GetEqualSizedRusForStations(MHz_t bandwidth,
     }
 
     nStations = nRusAssigned;
+    nCentral26TonesRus = GetNumCentral26TonesRus(bandwidth, ruType);
 
+    return ruType;
+}
+
+uint8_t
+HeRu::GetNumCentral26TonesRus(MHz_t bandwidth, HeRu::RuType ruType)
+{
+    uint8_t nCentral26TonesRus{0};
     switch (ruType)
     {
     case RU_52_TONE:
@@ -866,7 +850,7 @@ HeRu::GetEqualSizedRusForStations(MHz_t bandwidth,
         nCentral26TonesRus *= 2;
     }
 
-    return ruType;
+    return nCentral26TonesRus;
 }
 
 bool
@@ -875,8 +859,8 @@ HeRu::RuSpec::operator==(const RuSpec& other) const
     // we do not compare the RU PHY indices because they may be uninitialized for
     // one of the compared RUs. This event should not cause the comparison to evaluate
     // to false
-    return m_ruType == other.m_ruType && m_index == other.m_index &&
-           m_primary80MHz == other.m_primary80MHz;
+    return std::tie(m_ruType, m_index, m_primary80MHz) ==
+           std::tie(other.m_ruType, other.m_index, m_primary80MHz);
 }
 
 bool
