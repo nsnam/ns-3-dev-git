@@ -961,4 +961,42 @@ BlockAckManager::GetOriginatorStartingSequence(const Mac48Address& recipient, ui
     return (it != m_originatorAgreements.cend()) ? it->second.first.GetStartingSequence() : 0;
 }
 
+uint16_t
+BlockAckManager::GetGcrStartingSequence(const Mac48Address& groupAddress, uint8_t tid) const
+{
+    uint16_t seqNum = 0;
+    for (const auto& [key, pair] : m_originatorAgreements)
+    {
+        if (key.second != tid)
+        {
+            continue;
+        }
+        if (pair.first.GetGcrGroupAddress() == groupAddress)
+        {
+            seqNum = pair.first.GetStartingSequence();
+            break;
+        }
+    }
+    return seqNum;
+}
+
+uint16_t
+BlockAckManager::GetGcrBufferSize(const Mac48Address& groupAddress, uint8_t tid) const
+{
+    /* The AP shall maintain a set of the most recently received values of the
+       Buffer Size subfield from the Block Ack Parameter Set field in the ADDBA
+       Response frame received from each member of a specific group address.
+       The minimum of that set of values is defined to be the GCR buffer size
+       for that group address. */
+    uint16_t gcrBufferSize = std::numeric_limits<uint16_t>::max();
+    for (const auto& [key, pair] : m_originatorAgreements)
+    {
+        if ((key.second == tid) && (pair.first.GetGcrGroupAddress() == groupAddress))
+        {
+            gcrBufferSize = std::min(pair.first.GetBufferSize(), gcrBufferSize);
+        }
+    }
+    return gcrBufferSize;
+}
+
 } // namespace ns3

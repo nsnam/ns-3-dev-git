@@ -425,6 +425,29 @@ class BlockAckManager : public Object
      */
     void RemoveFromSendBarIfDataQueuedList(const Mac48Address& recipient, uint8_t tid);
 
+    /**
+     * This function returns the minimum buffer size from ADDBA Response frames sent by all members
+     * of a group address <i>groupAddress</i> for a given TID <i>tid</i>.
+     *
+     * @param groupAddress the group address
+     * @param tid the traffic ID.
+     *
+     * @return the GCR buffer size.
+     */
+    uint16_t GetGcrBufferSize(const Mac48Address& groupAddress, uint8_t tid) const;
+
+    /**
+     * This function returns the starting sequence number of the transmit window for a given GCR
+     * Block Ack agreement established with all members of a group address <i>groupAddress</i> for a
+     * given TID <i>tid</i>.
+     *
+     * @param groupAddress the group address
+     * @param tid Traffic ID
+     *
+     * @returns the starting sequence number of the transmit window (WinStartO)
+     */
+    uint16_t GetGcrStartingSequence(const Mac48Address& groupAddress, uint8_t tid) const;
+
   protected:
     void DoDispose() override;
 

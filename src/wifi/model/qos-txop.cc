@@ -286,15 +286,17 @@ QosTxop::GetBaManager()
 }
 
 uint16_t
-QosTxop::GetBaBufferSize(Mac48Address address, uint8_t tid) const
+QosTxop::GetBaBufferSize(Mac48Address address, uint8_t tid, bool isGcr) const
 {
-    return m_baManager->GetRecipientBufferSize(address, tid);
+    return isGcr ? m_baManager->GetGcrBufferSize(address, tid)
+                 : m_baManager->GetRecipientBufferSize(address, tid);
 }
 
 uint16_t
-QosTxop::GetBaStartingSequence(Mac48Address address, uint8_t tid) const
+QosTxop::GetBaStartingSequence(Mac48Address address, uint8_t tid, bool isGcr) const
 {
-    return m_baManager->GetOriginatorStartingSequence(address, tid);
+    return isGcr ? m_baManager->GetGcrStartingSequence(address, tid)
+                 : m_baManager->GetOriginatorStartingSequence(address, tid);
 }
 
 std::pair<CtrlBAckRequestHeader, WifiMacHeader>
