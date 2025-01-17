@@ -111,13 +111,15 @@ class EmlsrOperationsTestBase : public TestCase
      * @param staId the index (starting at 0) of the non-AP MLD generating/receiving packets
      * @param count the number of packets to generate
      * @param pktSize the size of the packets to generate
+     * @param priority user priority for generated packets
      * @return an application generating the given number packets of the given size from/to the
      *         AP MLD to/from the given non-AP MLD
      */
     Ptr<PacketSocketClient> GetApplication(TrafficDirection dir,
                                            std::size_t staId,
                                            std::size_t count,
-                                           std::size_t pktSize) const;
+                                           std::size_t pktSize,
+                                           uint8_t priority = 0) const;
 
     /**
      * Check whether QoS data unicast transmissions addressed to the given destination on the
@@ -219,11 +221,11 @@ class EmlsrOperationsTestBase : public TestCase
     std::vector<Time> m_paddingDelay{
         {MicroSeconds(32)}}; ///< Padding Delay advertised by the non-AP MLD
     std::vector<Time> m_transitionDelay{
-        {MicroSeconds(16)}};          ///< Transition Delay advertised by the non-AP MLD
-    bool m_establishBaDl{false};      /**< whether BA needs to be established (for TID 0)
-                                           with the AP as originator */
-    bool m_establishBaUl{false};      /**< whether BA needs to be established (for TID 0)
-                                           with the AP as recipient */
+        {MicroSeconds(16)}};                ///< Transition Delay advertised by the non-AP MLD
+    std::vector<uint8_t> m_establishBaDl{}; /**< the TIDs for which BA needs to be established
+                                                 with the AP as originator */
+    std::vector<uint8_t> m_establishBaUl{}; /**< the TIDs for which BA needs to be established
+                                                 with the AP as recipient */
     bool m_putAuxPhyToSleep{false};   //!< whether aux PHYs are put to sleep during DL/UL TXOPs
     std::vector<FrameInfo> m_txPsdus; ///< transmitted PSDUs
     Ptr<ApWifiMac> m_apMac;           ///< AP wifi MAC
@@ -237,13 +239,42 @@ class EmlsrOperationsTestBase : public TestCase
 
   private:
     /**
-     * Set the SSID on the next station that needs to start the association procedure.
-     * This method is connected to the ApWifiMac's AssociatedSta trace source.
+     * Callback connected to the ApWifiMac's AssociatedSta trace source.
      * Start generating traffic (if needed) when all stations are associated.
      *
      * @param aid the AID assigned to the previous associated STA
      */
-    void SetSsid(uint16_t aid, Mac48Address /* addr */);
+    void StaAssociated(uint16_t aid, Mac48Address /* addr */);
+
+    /**
+     * Callback connected to the QosTxop's BaEstablished trace source of the AP's BE AC.
+     *
+     * @param recipient the recipient of the established Block Ack agreement
+     * @param tid the TID
+     */
+    void BaEstablishedDl(Mac48Address recipient,
+                         uint8_t tid,
+                         std::optional<Mac48Address> /* gcrGroup */);
+
+    /**
+     * Callback connected to the QosTxop's BaEstablished trace source of a STA's BE AC.
+     *
+     * @param index the index of the STA which the callback is connected to
+     * @param recipient the recipient of the established Block Ack agreement
+     * @param tid the TID
+     */
+    void BaEstablishedUl(std::size_t index,
+                         Mac48Address recipient,
+                         uint8_t tid,
+                         std::optional<Mac48Address> /* gcrGroup */);
+
+    /**
+     * Set the SSID on the next station that needs to start the association procedure, or start
+     * traffic if no other station left.
+     *
+     * @param count the number of STAs that completed the association procedure
+     */
+    void SetSsid(std::size_t count);
 
     /**
      * Start the generation of traffic (needs to be overridden)

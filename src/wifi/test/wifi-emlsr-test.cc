@@ -486,8 +486,18 @@ EmlsrOperationsTestBase::DoSetup()
     }
 
     // schedule ML setup for one station at a time
-    m_apMac->TraceConnectWithoutContext("AssociatedSta",
-                                        MakeCallback(&EmlsrOperationsTestBase::SetSsid, this));
+    m_apMac->TraceConnectWithoutContext(
+        "AssociatedSta",
+        MakeCallback(&EmlsrOperationsTestBase::StaAssociated, this));
+    m_apMac->GetQosTxop(AC_BE)->TraceConnectWithoutContext(
+        "BaEstablished",
+        MakeCallback(&EmlsrOperationsTestBase::BaEstablishedDl, this));
+    for (std::size_t id = 0; id < m_nEmlsrStations + m_nNonEmlsrStations; ++id)
+    {
+        m_staMacs[id]->GetQosTxop(AC_BE)->TraceConnectWithoutContext(
+            "BaEstablished",
+            MakeCallback(&EmlsrOperationsTestBase::BaEstablishedUl, this).Bind(id));
+    }
     Simulator::Schedule(Seconds(0), [&]() { m_staMacs[0]->SetSsid(Ssid("ns-3-ssid")); });
 }
 
@@ -495,12 +505,14 @@ Ptr<PacketSocketClient>
 EmlsrOperationsTestBase::GetApplication(TrafficDirection dir,
                                         std::size_t staId,
                                         std::size_t count,
-                                        std::size_t pktSize) const
+                                        std::size_t pktSize,
+                                        uint8_t priority) const
 {
     auto client = CreateObject<PacketSocketClient>();
     client->SetAttribute("PacketSize", UintegerValue(pktSize));
     client->SetAttribute("MaxPackets", UintegerValue(count));
     client->SetAttribute("Interval", TimeValue(MicroSeconds(0)));
+    client->SetAttribute("Priority", UintegerValue(priority));
     client->SetRemote(dir == DOWNLINK ? m_dlSockets.at(staId) : m_ulSockets.at(staId));
     client->SetStartTime(Seconds(0)); // now
     client->SetStopTime(m_duration - Simulator::Now());
@@ -509,7 +521,7 @@ EmlsrOperationsTestBase::GetApplication(TrafficDirection dir,
 }
 
 void
-EmlsrOperationsTestBase::SetSsid(uint16_t aid, Mac48Address /* addr */)
+EmlsrOperationsTestBase::StaAssociated(uint16_t aid, Mac48Address /* addr */)
 {
     if (m_lastAid == aid)
     {
@@ -519,42 +531,115 @@ EmlsrOperationsTestBase::SetSsid(uint16_t aid, Mac48Address /* addr */)
     m_lastAid = aid;
 
     // wait some time (5ms) to allow the completion of association
-    auto delay = MilliSeconds(5);
+    const auto delay = MilliSeconds(5);
 
-    if (m_establishBaDl)
+    if (!m_establishBaDl.empty())
     {
         // trigger establishment of BA agreement with AP as originator
         Simulator::Schedule(delay, [=, this]() {
             m_apMac->GetDevice()->GetNode()->AddApplication(
-                GetApplication(DOWNLINK, aid - 1, 4, 1000));
+                GetApplication(DOWNLINK, aid - 1, 4, 1000, m_establishBaDl.front()));
         });
-
-        delay += MilliSeconds(5);
     }
-
-    if (m_establishBaUl)
+    else if (!m_establishBaUl.empty())
     {
         // trigger establishment of BA agreement with AP as recipient
         Simulator::Schedule(delay, [=, this]() {
             m_staMacs[aid - 1]->GetDevice()->GetNode()->AddApplication(
-                GetApplication(UPLINK, aid - 1, 4, 1000));
+                GetApplication(UPLINK, aid - 1, 4, 1000, m_establishBaUl.front()));
         });
-
-        delay += MilliSeconds(5);
     }
+    else
+    {
+        Simulator::Schedule(delay, [=, this]() { SetSsid(aid); });
+    }
+}
 
-    Simulator::Schedule(delay, [=, this]() {
-        if (aid < m_nEmlsrStations + m_nNonEmlsrStations)
-        {
-            // make the next STA start ML discovery & setup
-            m_staMacs[aid]->SetSsid(Ssid("ns-3-ssid"));
-            return;
-        }
-        // all stations associated; start traffic if needed
-        StartTraffic();
-        // stop generation of beacon frames in order to avoid interference
-        m_apMac->SetAttribute("BeaconGeneration", BooleanValue(false));
-    });
+void
+EmlsrOperationsTestBase::BaEstablishedDl(Mac48Address recipient,
+                                         uint8_t tid,
+                                         std::optional<Mac48Address> /* gcrGroup */)
+{
+    // wait some time (5ms) to allow the exchange of the data frame that triggered the Block Ack
+    const auto delay = MilliSeconds(5);
+
+    auto linkId = m_apMac->IsAssociated(recipient);
+    NS_TEST_ASSERT_MSG_EQ(linkId.has_value(), true, "No link for association of " << recipient);
+    auto aid = m_apMac->GetWifiRemoteStationManager(*linkId)->GetAssociationId(recipient);
+
+    if (auto it = std::find(m_establishBaDl.cbegin(), m_establishBaDl.cend(), tid);
+        it != m_establishBaDl.cend() && std::next(it) != m_establishBaDl.cend())
+    {
+        // trigger establishment of BA agreement with AP as originator
+        Simulator::Schedule(delay, [=, this]() {
+            m_apMac->GetDevice()->GetNode()->AddApplication(
+                GetApplication(DOWNLINK, aid - 1, 4, 1000, *std::next(it)));
+        });
+    }
+    else if (!m_establishBaUl.empty())
+    {
+        // trigger establishment of BA agreement with AP as recipient
+        Simulator::Schedule(delay, [=, this]() {
+            m_staMacs[aid - 1]->GetDevice()->GetNode()->AddApplication(
+                GetApplication(UPLINK, aid - 1, 4, 1000, m_establishBaUl.front()));
+        });
+    }
+    else
+    {
+        Simulator::Schedule(delay, [=, this]() { SetSsid(aid - 1 + 1); });
+    }
+}
+
+void
+EmlsrOperationsTestBase::BaEstablishedUl(std::size_t index,
+                                         Mac48Address recipient,
+                                         uint8_t tid,
+                                         std::optional<Mac48Address> /* gcrGroup */)
+{
+    // wait some time (5ms) to allow the exchange of the data frame that triggered the Block Ack
+    const auto delay = MilliSeconds(5);
+
+    if (auto it = std::find(m_establishBaUl.cbegin(), m_establishBaUl.cend(), tid);
+        it != m_establishBaUl.cend() && std::next(it) != m_establishBaUl.cend())
+    {
+        // trigger establishment of BA agreement with AP as recipient
+        Simulator::Schedule(delay, [=, this]() {
+            m_staMacs[index]->GetDevice()->GetNode()->AddApplication(
+                GetApplication(UPLINK, index, 4, 1000, *std::next(it)));
+        });
+    }
+    else
+    {
+        Simulator::Schedule(delay, [=, this]() { SetSsid(index + 1); });
+    }
+}
+
+void
+EmlsrOperationsTestBase::SetSsid(std::size_t count)
+{
+    if (count < m_nEmlsrStations + m_nNonEmlsrStations)
+    {
+        // make the next STA start ML discovery & setup
+        m_staMacs[count]->SetSsid(Ssid("ns-3-ssid"));
+        return;
+    }
+    // all stations associated; start traffic if needed
+    StartTraffic();
+    // stop generation of beacon frames in order to avoid interference
+    m_apMac->SetAttribute("BeaconGeneration", BooleanValue(false));
+    // disconnect callbacks
+    m_apMac->TraceDisconnectWithoutContext(
+        "AssociatedSta",
+        MakeCallback(&EmlsrOperationsTestBase::StaAssociated, this));
+    m_apMac->GetQosTxop(AC_BE)->TraceDisconnectWithoutContext(
+        "BaEstablished",
+        MakeCallback(&EmlsrOperationsTestBase::BaEstablishedDl, this));
+    for (std::size_t id = 0; id < m_nEmlsrStations + m_nNonEmlsrStations; ++id)
+    {
+        m_staMacs[id]->GetQosTxop(AC_BE)->TraceDisconnectWithoutContext(
+            "BaEstablished",
+            MakeCallback(&EmlsrOperationsTestBase::BaEstablishedUl, this).Bind(id));
+    }
 }
 
 void
@@ -889,7 +974,7 @@ EmlsrDlTxopTest::EmlsrDlTxopTest(const Params& params)
     m_paddingDelay = params.paddingDelay;
     m_transitionDelay = params.transitionDelay;
     m_transitionTimeout = params.transitionTimeout;
-    m_establishBaDl = true;
+    m_establishBaDl = {0};
     m_putAuxPhyToSleep = params.putAuxPhyToSleep;
     m_duration = Seconds(1.5);
 
@@ -2622,8 +2707,8 @@ EmlsrUlTxopTest::EmlsrUlTxopTest(const Params& params)
     // when aux PHYs do not switch link, the main PHY switches back to its previous link after
     // a TXOP, hence the transition delay must exceed the channel switch delay (default: 250us)
     m_transitionDelay = {MicroSeconds(256)};
-    m_establishBaDl = true;
-    m_establishBaUl = true;
+    m_establishBaDl = {0};
+    m_establishBaUl = {0};
     m_putAuxPhyToSleep = params.putAuxPhyToSleep;
     m_duration = Seconds(1);
 
@@ -3841,8 +3926,8 @@ EmlsrUlOfdmaTest::EmlsrUlOfdmaTest(bool enableBsrp)
     m_linksToEnableEmlsrOn = {0, 1, 2};
     m_nEmlsrStations = 1;
     m_nNonEmlsrStations = 1;
-    m_establishBaDl = false;
-    m_establishBaUl = true;
+    m_establishBaDl = {};
+    m_establishBaUl = {0};
     m_mainPhyId = 1;
     m_duration = Seconds(1);
 }
@@ -4165,7 +4250,7 @@ EmlsrLinkSwitchTest::EmlsrLinkSwitchTest(const Params& params)
     m_nNonEmlsrStations = 0;
     m_linksToEnableEmlsrOn = {0, 1, 2}; // enable EMLSR on all links right after association
     m_mainPhyId = 1;
-    m_establishBaDl = true;
+    m_establishBaDl = {0};
     m_duration = Seconds(1);
     // when aux PHYs do not switch link, the main PHY switches back to its previous link after
     // a TXOP, hence the transition delay must exceed the channel switch delay (default: 250us)
@@ -4770,7 +4855,7 @@ EmlsrCcaBusyTest::EmlsrCcaBusyTest(MHz_u auxPhyMaxChWidth)
     m_nNonEmlsrStations = 1;
     m_linksToEnableEmlsrOn = {0, 1, 2}; // enable EMLSR on all links right after association
     m_mainPhyId = 1;
-    m_establishBaUl = true;
+    m_establishBaUl = {0};
     m_duration = Seconds(1);
     m_transitionDelay = {MicroSeconds(128)};
 }
@@ -4991,8 +5076,8 @@ SingleLinkEmlsrTest::SingleLinkEmlsrTest(bool switchAuxPhy, bool auxPhyTxCapable
     // channel switch delay will be also set to 64 us
     m_paddingDelay = {MicroSeconds(64)};
     m_transitionDelay = {MicroSeconds(64)};
-    m_establishBaDl = true;
-    m_establishBaUl = true;
+    m_establishBaDl = {0};
+    m_establishBaUl = {0};
     m_duration = Seconds(0.5);
 }
 
