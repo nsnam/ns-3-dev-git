@@ -39,9 +39,12 @@
 #include "ns3/wifi-mac-header.h"
 #include "ns3/wifi-mac.h"
 #include "ns3/wifi-net-device.h"
+#include "ns3/wifi-phy-rx-trace-helper.h"
+#include "ns3/wifi-tx-stats-helper.h"
 #include "ns3/yans-wifi-helper.h"
 
 #include <fstream>
+#include <iomanip>
 #include <vector>
 
 /// Avoid std::numbers::pi because it's C++20
@@ -104,6 +107,8 @@ std::set<uint32_t> associated; ///< Contains the IDs of the STAs that successful
 bool tracing = false;    ///< Flag to enable/disable generation of tracing files
 uint32_t pktSize = 1500; ///< packet size used for the simulation (in bytes)
 uint8_t maxMpdus = 0;    ///< The maximum number of MPDUs in A-MPDUs (0 to disable MPDU aggregation)
+bool useTxHelper = false; ///< Flag to get MPDU statistics with WifiTxStatsHelper
+bool useRxHelper = false; ///< Flag to get PPDU statistics with WifiPhyRxTraceHelper
 
 /// Table of the expected values for EIFS
 std::map<std::string /* mode */,
@@ -2632,6 +2637,24 @@ Experiment::Run(const WifiHelper& helper,
     Config::Connect("/NodeList/*/$ns3::Node/ApplicationList/*/$ns3::PacketSocketClient/Tx",
                     MakeCallback(&SocketSendTrace));
 
+    WifiTxStatsHelper wifiTxStats;
+    if (useTxHelper)
+    {
+        // Setup Wi-Fi Transmission Statistics Helper (WifiTxStatsHelper) for all devices
+        wifiTxStats.Enable(devices);
+        wifiTxStats.Start(Seconds(10));
+        wifiTxStats.Stop(Seconds(10) + duration);
+    }
+
+    WifiPhyRxTraceHelper rxTraceHelper;
+    if (useRxHelper)
+    {
+        // Setup Wi-Fi PHY Reception Trace Helper (WifiPhyRxTraceHelper) for all devices
+        rxTraceHelper.Enable(devices);
+        rxTraceHelper.Start(Seconds(10));
+        rxTraceHelper.Stop(Seconds(10) + duration);
+    }
+
     Simulator::Schedule(Seconds(10), &RestartCalc);
     Simulator::Stop(Seconds(10) + duration);
 
@@ -2642,6 +2665,151 @@ Experiment::Run(const WifiHelper& helper,
 
     Simulator::Run();
     Simulator::Destroy();
+
+    if (useTxHelper)
+    {
+        // Get results from WifiTxStatsHelper
+        const auto numSuccessPerNodeDevice = wifiTxStats.GetSuccessesByNodeDevice();
+        const auto numFailurePerNodeDevice = wifiTxStats.GetFailuresByNodeDevice();
+        const auto numFailureDueToFailedEnqueuePerNodeDevice =
+            wifiTxStats.GetFailuresByNodeDevice(WIFI_MAC_DROP_FAILED_ENQUEUE);
+        const auto numFailureDueToExpiredLifetimePerNodeDevice =
+            wifiTxStats.GetFailuresByNodeDevice(WIFI_MAC_DROP_EXPIRED_LIFETIME);
+        const auto numFailureDueToRetryLimitReachedPerNodeDevice =
+            wifiTxStats.GetFailuresByNodeDevice(WIFI_MAC_DROP_REACHED_RETRY_LIMIT);
+        const auto numFailureDueToQosOldPacketPerNodeDevice =
+            wifiTxStats.GetFailuresByNodeDevice(WIFI_MAC_DROP_QOS_OLD_PACKET);
+        const auto numRetransPerNodeDevice = wifiTxStats.GetRetransmissionsByNodeDevice();
+        std::cout << "WifiTxStatsHelper: node to number of MPDUs acked during (10, "
+                  << 10 + duration.ToInteger(Time::S) << "] s:" << std::endl;
+        if (numSuccessPerNodeDevice.empty())
+        {
+            std::cout << "none\n";
+        }
+        else
+        {
+            std::cout << std::setw(5) << "node" << std::setw(10) << "nSuccess" << std::endl;
+            for (const auto& [nodeDevTuple, nSuccess] : numSuccessPerNodeDevice)
+            {
+                std::cout << std::setw(5) << std::get<0>(nodeDevTuple) << std::setw(10) << nSuccess
+                          << std::endl;
+            }
+        }
+        std::cout
+            << "WifiTxStatsHelper: node to number of MPDUs failed (due to any reason) during (10, "
+            << 10 + duration.ToInteger(Time::S) << "] s:" << std::endl;
+        if (numFailurePerNodeDevice.empty())
+        {
+            std::cout << "none\n";
+        }
+        else
+        {
+            std::cout << std::setw(5) << "node" << std::setw(10) << "nFailed" << std::endl;
+            for (const auto& [nodeDevTuple, nFailure] : numFailurePerNodeDevice)
+            {
+                std::cout << std::setw(5) << std::get<0>(nodeDevTuple) << std::setw(10) << nFailure
+                          << std::endl;
+            }
+            std::cout << "WifiTxStatsHelper: node to number of MPDUs failed (due to "
+                         "WIFI_MAC_DROP_FAILED_ENQUEUE) during (10, "
+                      << 10 + duration.ToInteger(Time::S) << "] s:" << std::endl;
+            if (numFailureDueToFailedEnqueuePerNodeDevice.empty())
+            {
+                std::cout << "none\n";
+            }
+            else
+            {
+                std::cout << std::setw(5) << "node" << std::setw(10) << "nFailed" << std::endl;
+                for (const auto& [nodeDevTuple, nFailure] :
+                     numFailureDueToFailedEnqueuePerNodeDevice)
+                {
+                    std::cout << std::setw(5) << std::get<0>(nodeDevTuple) << std::setw(10)
+                              << nFailure << std::endl;
+                }
+            }
+            std::cout << "WifiTxStatsHelper: node to number of MPDUs failed (due to "
+                         "WIFI_MAC_DROP_EXPIRED_LIFETIME) during (10, "
+                      << 10 + duration.ToInteger(Time::S) << "] s:" << std::endl;
+            if (numFailureDueToExpiredLifetimePerNodeDevice.empty())
+            {
+                std::cout << "none\n";
+            }
+            else
+            {
+                std::cout << std::setw(5) << "node" << std::setw(10) << "nFailed" << std::endl;
+                for (const auto& [nodeDevTuple, nFailure] :
+                     numFailureDueToExpiredLifetimePerNodeDevice)
+                {
+                    std::cout << std::setw(5) << std::get<0>(nodeDevTuple) << std::setw(10)
+                              << nFailure << std::endl;
+                }
+            }
+            std::cout << "WifiTxStatsHelper: node to number of MPDUs failed (due to "
+                         "WIFI_MAC_DROP_REACHED_RETRY_LIMIT) during (10, "
+                      << 10 + duration.ToInteger(Time::S) << "] s:" << std::endl;
+            if (numFailureDueToRetryLimitReachedPerNodeDevice.empty())
+            {
+                std::cout << "none\n";
+            }
+            else
+            {
+                std::cout << std::setw(5) << "node" << std::setw(10) << "nFailed" << std::endl;
+                for (const auto& [nodeDevTuple, nFailure] :
+                     numFailureDueToRetryLimitReachedPerNodeDevice)
+                {
+                    std::cout << std::setw(5) << std::get<0>(nodeDevTuple) << std::setw(10)
+                              << nFailure << std::endl;
+                }
+            }
+            std::cout << "WifiTxStatsHelper: node to number of MPDUs failed (due to "
+                         "WIFI_MAC_DROP_QOS_OLD_PACKET) during (10, "
+                      << 10 + duration.ToInteger(Time::S) << "] s:" << std::endl;
+            if (numFailureDueToQosOldPacketPerNodeDevice.empty())
+            {
+                std::cout << "none\n";
+            }
+            else
+            {
+                std::cout << std::setw(5) << "node" << std::setw(10) << "nFailed" << std::endl;
+                for (const auto& [nodeDevTuple, nFailure] :
+                     numFailureDueToQosOldPacketPerNodeDevice)
+                {
+                    std::cout << std::setw(5) << std::get<0>(nodeDevTuple) << std::setw(10)
+                              << nFailure << std::endl;
+                }
+            }
+        }
+        std::cout << "WifiTxStatsHelper: node to number of retransmissions of MPDUs "
+                     "Acked during (10, "
+                  << 10 + duration.ToInteger(Time::S) << "] s:" << std::endl;
+        if (numRetransPerNodeDevice.empty())
+        {
+            std::cout << "none\n";
+        }
+        else
+        {
+            std::cout << std::setw(5) << "node" << std::setw(10) << "nRetrans" << std::endl;
+            for (const auto& [nodeDevTuple, nRetrans] : numRetransPerNodeDevice)
+            {
+                std::cout << std::setw(5) << std::get<0>(nodeDevTuple) << std::setw(10) << nRetrans
+                          << std::endl;
+            }
+        }
+    }
+
+    if (useRxHelper)
+    {
+        // Get results from WifiPhyRxTraceHelper
+        std::cout << "\nWifiPhyRxTraceHelper: overall statistics" << std::endl;
+        rxTraceHelper.PrintStatistics();
+        for (uint32_t nodeIndex = 0; nodeIndex < nNodes; ++nodeIndex)
+        {
+            std::cout << "\nWifiPhyRxTraceHelper: per-node statistics for node " << nodeIndex
+                      << std::endl;
+            rxTraceHelper.PrintStatistics(nodeIndex);
+        }
+        std::cout << std::endl;
+    }
 
     if (tracing)
     {
@@ -2727,6 +2895,8 @@ main(int argc, char* argv[])
                  "Logging level (0: no log - 1: simulation script logs - 2: all logs)",
                  verbose);
     cmd.AddValue("tracing", "Generate trace files", tracing);
+    cmd.AddValue("useTxHelper", "Enable WifiTxStatsHelper on all devices", useTxHelper);
+    cmd.AddValue("useRxHelper", "Enable WifiPhyRxTraceHelper on all devices", useRxHelper);
     cmd.AddValue("pktSize", "The packet size in bytes", pktSize);
     cmd.AddValue("trials", "The maximal number of runs per network size", trials);
     cmd.AddValue("duration", "Time duration for each trial in seconds", duration);
