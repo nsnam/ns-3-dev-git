@@ -619,7 +619,7 @@ PhyEntity::ScheduleEndOfMpdus(Ptr<Event> event)
             if (GetRandomValue() > snrPer.per)
             {
                 // interference level should permit to correctly decode the MAC header
-                m_endOfMacHdrEvents.push_back(
+                m_endOfMacHdrEvents[staId].push_back(
                     Simulator::Schedule(endOfMpduDuration + macHdrDuration, [=, this]() {
                         m_wifiPhy->m_phyRxMacHeaderEndTrace((*mpdu)->GetHeader(),
                                                             txVector,
@@ -942,9 +942,12 @@ PhyEntity::NotifyInterferenceRxEndAndClear(bool reset)
         NS_ASSERT(endOfMpduEvent.IsExpired());
     }
     m_endOfMpduEvents.clear();
-    for (const auto& endOfMacHdrEvent : m_endOfMacHdrEvents)
+    for (const auto& [staId, endOfMacHdrEvents] : m_endOfMacHdrEvents)
     {
-        NS_ASSERT(endOfMacHdrEvent.IsExpired());
+        for (const auto& endOfMacHdrEvent : endOfMacHdrEvents)
+        {
+            NS_ASSERT(endOfMacHdrEvent.IsExpired());
+        }
     }
     m_endOfMacHdrEvents.clear();
     if (reset)
@@ -1147,9 +1150,12 @@ PhyEntity::CancelAllEvents()
         endMpduEvent.Cancel();
     }
     m_endOfMpduEvents.clear();
-    for (auto& endMacHdrEvent : m_endOfMacHdrEvents)
+    for (auto& [staId, endOfMacHdrEvents] : m_endOfMacHdrEvents)
     {
-        endMacHdrEvent.Cancel();
+        for (auto& endMacHdrEvent : endOfMacHdrEvents)
+        {
+            endMacHdrEvent.Cancel();
+        }
     }
     m_endOfMacHdrEvents.clear();
 }
@@ -1190,9 +1196,12 @@ PhyEntity::DoAbortCurrentReception(WifiPhyRxfailureReason reason)
             endMpduEvent.Cancel();
         }
         m_endOfMpduEvents.clear();
-        for (auto& endMacHdrEvent : m_endOfMacHdrEvents)
+        for (auto& [staId, endOfMacHdrEvents] : m_endOfMacHdrEvents)
         {
-            endMacHdrEvent.Cancel();
+            for (auto& endMacHdrEvent : endOfMacHdrEvents)
+            {
+                endMacHdrEvent.Cancel();
+            }
         }
         m_endOfMacHdrEvents.clear();
     }
