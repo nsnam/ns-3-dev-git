@@ -273,7 +273,8 @@ HtFrameExchangeManager::SendAddBaResponse(const MgtAddBaRequestHeader& reqHdr,
                                                 reqHdr.GetStartingSequence(),
                                                 m_rxMiddle);
 
-    auto agreement = GetBaManager(tid)->GetAgreementAsRecipient(originator, tid);
+    auto agreement =
+        GetBaManager(tid)->GetAgreementAsRecipient(originator, tid, reqHdr.GetGcrGroupAddress());
     NS_ASSERT(agreement);
     if (respHdr.GetTimeout() != 0)
     {
@@ -749,9 +750,11 @@ HtFrameExchangeManager::NotifyReceivedNormalAck(Ptr<WifiMpdu> mpdu)
                 MgtAddBaResponseHeader addBa;
                 p->PeekHeader(addBa);
                 auto tid = addBa.GetTid();
-                NS_ASSERT_MSG(GetBaManager(tid)->GetAgreementAsRecipient(address, tid),
-                              "Recipient BA agreement {" << address << ", " << +tid
-                                                         << "} not found");
+                NS_ASSERT_MSG(
+                    GetBaManager(tid)->GetAgreementAsRecipient(address,
+                                                               tid,
+                                                               addBa.GetGcrGroupAddress()),
+                    "Recipient BA agreement {" << address << ", " << +tid << "} not found");
                 m_pendingAddBaResp.erase({address, tid});
             }
         }

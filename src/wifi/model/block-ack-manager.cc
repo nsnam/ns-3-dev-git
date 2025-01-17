@@ -96,6 +96,38 @@ BlockAckManager::GetOriginatorBaAgreement(const Mac48Address& recipient,
     return m_originatorAgreements.cend();
 }
 
+BlockAckManager::RecipientAgreementsI
+BlockAckManager::GetRecipientBaAgreement(const Mac48Address& originator,
+                                         uint8_t tid,
+                                         std::optional<Mac48Address> gcrGroupAddr)
+{
+    auto [first, last] = m_recipientAgreements.equal_range({originator, tid});
+    for (auto it = first; it != last; ++it)
+    {
+        if (it->second.GetGcrGroupAddress() == gcrGroupAddr)
+        {
+            return it;
+        }
+    }
+    return m_recipientAgreements.end();
+}
+
+BlockAckManager::RecipientAgreementsCI
+BlockAckManager::GetRecipientBaAgreement(const Mac48Address& originator,
+                                         uint8_t tid,
+                                         std::optional<Mac48Address> gcrGroupAddr) const
+{
+    const auto [first, last] = m_recipientAgreements.equal_range({originator, tid});
+    for (auto it = first; it != last; ++it)
+    {
+        if (it->second.GetGcrGroupAddress() == gcrGroupAddr)
+        {
+            return it;
+        }
+    }
+    return m_recipientAgreements.cend();
+}
+
 BlockAckManager::OriginatorAgreementOptConstRef
 BlockAckManager::GetAgreementAsOriginator(const Mac48Address& recipient,
                                           uint8_t tid,
@@ -110,13 +142,15 @@ BlockAckManager::GetAgreementAsOriginator(const Mac48Address& recipient,
 }
 
 BlockAckManager::RecipientAgreementOptConstRef
-BlockAckManager::GetAgreementAsRecipient(const Mac48Address& originator, uint8_t tid) const
+BlockAckManager::GetAgreementAsRecipient(const Mac48Address& originator,
+                                         uint8_t tid,
+                                         std::optional<Mac48Address> gcrGroupAddr) const
 {
-    if (auto it = m_recipientAgreements.find({originator, tid}); it != m_recipientAgreements.end())
+    if (const auto it = GetRecipientBaAgreement(originator, tid, gcrGroupAddr);
+        it != m_recipientAgreements.end())
     {
         return std::cref(it->second);
     }
-
     return std::nullopt;
 }
 
@@ -270,20 +304,37 @@ BlockAckManager::CreateRecipientAgreement(const MgtAddBaResponseHeader& respHdr,
         agreement.SetGcrGroupAddress(*gcrGroupAddr);
     }
 
-    m_recipientAgreements.insert_or_assign({originator, tid}, agreement);
+    if (auto it = GetRecipientBaAgreement(originator, tid, respHdr.GetGcrGroupAddress());
+        it != m_recipientAgreements.end())
+    {
+        it->second = std::move(agreement);
+    }
+    else
+    {
+        m_recipientAgreements.emplace(std::make_pair(originator, tid), std::move(agreement));
+    }
+
+    const auto [first, last] = m_recipientAgreements.equal_range({originator, tid});
+    NS_ASSERT_MSG(
+        std::count_if(first,
+                      last,
+                      [&respHdr](const auto& elem) {
+                          return elem.second.GetGcrGroupAddress() == respHdr.GetGcrGroupAddress();
+                      }) == 1,
+        "There exists more than one " << (respHdr.GetGcrGroupAddress().has_value() ? "GCR " : " ")
+                                      << "Block Ack agreement for originator " << originator
+                                      << " and tid " << +tid);
 }
 
 void
 BlockAckManager::DestroyRecipientAgreement(const Mac48Address& originator, uint8_t tid)
 {
     NS_LOG_FUNCTION(this << originator << tid);
-
-    if (auto agreementIt = m_recipientAgreements.find({originator, tid});
-        agreementIt != m_recipientAgreements.end())
+    if (auto it = GetRecipientBaAgreement(originator, tid); it != m_recipientAgreements.end())
     {
         // forward up the buffered MPDUs before destroying the agreement
-        agreementIt->second.Flush();
-        m_recipientAgreements.erase(agreementIt);
+        it->second.Flush();
+        m_recipientAgreements.erase(it);
     }
 }
 
@@ -669,28 +720,29 @@ BlockAckManager::NotifyGotBlockAckRequest(const Mac48Address& originator,
                                           uint16_t startingSeq)
 {
     NS_LOG_FUNCTION(this << originator << tid << startingSeq);
-    auto it = m_recipientAgreements.find({originator, tid});
-    if (it == m_recipientAgreements.end())
+    if (auto it = GetRecipientBaAgreement(originator, tid); it != m_recipientAgreements.end())
     {
-        return;
+        it->second.NotifyReceivedBar(startingSeq);
     }
-    it->second.NotifyReceivedBar(startingSeq);
 }
 
 void
 BlockAckManager::NotifyGotMpdu(Ptr<const WifiMpdu> mpdu)
 {
     NS_LOG_FUNCTION(this << *mpdu);
-    auto originator = mpdu->GetOriginal()->GetHeader().GetAddr2();
     NS_ASSERT(mpdu->GetHeader().IsQosData());
-    auto tid = mpdu->GetHeader().GetQosTid();
-
-    auto it = m_recipientAgreements.find({originator, tid});
-    if (it == m_recipientAgreements.end())
+    const auto originator = mpdu->GetOriginal()->GetHeader().GetAddr2();
+    const auto tid = mpdu->GetHeader().GetQosTid();
+    std::optional<Mac48Address> groupAddress;
+    if (const auto addr1 = mpdu->GetOriginal()->GetHeader().GetAddr1(); addr1.IsGroup())
     {
-        return;
+        groupAddress = mpdu->begin()->second.GetDestinationAddr();
     }
-    it->second.NotifyReceivedMpdu(mpdu);
+    if (auto it = GetRecipientBaAgreement(originator, tid, groupAddress);
+        it != m_recipientAgreements.end())
+    {
+        it->second.NotifyReceivedMpdu(mpdu);
+    }
 }
 
 CtrlBAckRequestHeader
