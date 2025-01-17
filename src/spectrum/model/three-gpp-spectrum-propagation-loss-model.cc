@@ -285,27 +285,29 @@ ThreeGppSpectrumPropagationLossModel::CalcBeamformingGain(
 
     // Calculate RX PSD from the spectrum channel matrix H and
     // the precoding matrix P as: PSD = (H*P)^h * (H*P)
-    MatrixBasedChannelModel::Complex3DVector p;
+    Ptr<const ComplexMatrixArray> p;
     if (!rxParams->precodingMatrix)
     {
         // When the precoding matrix P is not set, we create one with a single column
-        p = ComplexMatrixArray(rxParams->spectrumChannelMatrix->GetNumCols(), 1, 1);
+        ComplexMatrixArray page =
+            ComplexMatrixArray(rxParams->spectrumChannelMatrix->GetNumCols(), 1, 1);
         // Initialize it to the inverse square of the number of txPorts
-        p.Elem(0, 0, 0) = 1.0 / sqrt(rxParams->spectrumChannelMatrix->GetNumCols());
+        page.Elem(0, 0, 0) = 1.0 / sqrt(rxParams->spectrumChannelMatrix->GetNumCols());
         for (size_t rowI = 0; rowI < rxParams->spectrumChannelMatrix->GetNumCols(); rowI++)
         {
-            p.Elem(rowI, 0, 0) = p.Elem(0, 0, 0);
+            page.Elem(rowI, 0, 0) = page.Elem(0, 0, 0);
         }
         // Replicate vector to match the number of RBGs
-        p = p.MakeNCopies(rxParams->spectrumChannelMatrix->GetNumPages());
+        p = Create<const ComplexMatrixArray>(
+            page.MakeNCopies(rxParams->spectrumChannelMatrix->GetNumPages()));
     }
     else
     {
-        p = *rxParams->precodingMatrix;
+        p = rxParams->precodingMatrix;
     }
     // When we have the precoding matrix P, we first do
     // H(rxPorts,txPorts,numRbs) x P(txPorts,txStreams,numRbs) = HxP(rxPorts,txStreams,numRbs)
-    MatrixBasedChannelModel::Complex3DVector hP = *rxParams->spectrumChannelMatrix * p;
+    MatrixBasedChannelModel::Complex3DVector hP = *rxParams->spectrumChannelMatrix * *p;
 
     // Then (HxP)^h dimensions are (txStreams, rxPorts, numRbs)
     // MatrixBasedChannelModel::Complex3DVector hPHerm = hP.HermitianTranspose();
