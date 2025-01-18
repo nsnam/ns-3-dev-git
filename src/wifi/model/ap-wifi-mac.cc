@@ -290,6 +290,45 @@ ApWifiMac::GetGcrManager() const
     return m_gcrManager;
 }
 
+bool
+ApWifiMac::UseGcr(const WifiMacHeader& hdr) const
+{
+    if (!hdr.IsQosData())
+    {
+        return false;
+    }
+
+    if (!IsGroupcast(hdr.GetAddr1()))
+    {
+        return false;
+    }
+
+    if (!m_gcrManager)
+    {
+        return false;
+    }
+
+    if (m_gcrManager->GetRetransmissionPolicy() ==
+        GroupAddressRetransmissionPolicy::NO_ACK_NO_RETRY)
+    {
+        return false;
+    }
+
+    /*
+     * 802.11-2020 11.21.16.3.4 (GCR operation):
+     * An AP or mesh STA shall transmit a frame belonging to a group address
+     * via the GCR service if any associated STA or peer mesh STA has a GCR
+     * agreement for the group address and, otherwise, does not transmit the
+     * frame via the GCR service.
+     */
+    if (m_gcrManager->GetMemberStasForGroupAddress(hdr.GetAddr1()).empty())
+    {
+        return false;
+    }
+
+    return true;
+}
+
 void
 ApWifiMac::DoCompleteConfig()
 {

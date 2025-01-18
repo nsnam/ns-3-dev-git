@@ -177,6 +177,14 @@ class ApWifiMac : public WifiMac
      */
     uint8_t GetMaxBufferStatus(Mac48Address address) const;
 
+    /**
+     * Return whether GCR is used to transmit a packet.
+     *
+     * @param hdr the header of the packet to transmit
+     * @return true if a GCR manager is set and the packet is a groupcast QoS data, false otherwise
+     */
+    bool UseGcr(const WifiMacHeader& hdr) const;
+
     /// ACI-indexed map of access parameters of type unsigned integer (CWmin, CWmax and AIFSN)
     using UintAccessParamsMap = std::map<AcIndex, std::vector<uint64_t>>;
 
