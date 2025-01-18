@@ -1670,7 +1670,7 @@ ThreeGppChannelModel::GetThreeGppTable(const Ptr<const MobilityModel> aMob,
             table3gpp->m_uLgZSD = -0.1 * log10(1 + fcGHz) + 0.73;
             table3gpp->m_sigLgZSD = -0.04 * log10(1 + fcGHz) + 0.34;
             table3gpp->m_offsetZOD = 0;
-            table3gpp->m_cDS = 5;
+            table3gpp->m_cDS = 5 * 1e-9;
             table3gpp->m_cASD = 17;
             table3gpp->m_cASA = 17;
             table3gpp->m_cZSA = 7;
@@ -1704,7 +1704,7 @@ ThreeGppChannelModel::GetThreeGppTable(const Ptr<const MobilityModel> aMob,
             table3gpp->m_uLgZSD = -0.04 * log10(1 + fcGHz) + 0.92;
             table3gpp->m_sigLgZSD = -0.07 * log10(1 + fcGHz) + 0.41;
             table3gpp->m_offsetZOD = 0;
-            table3gpp->m_cDS = 11;
+            table3gpp->m_cDS = 11 * 1e-9;
             table3gpp->m_cASD = 22;
             table3gpp->m_cASA = 22;
             table3gpp->m_cZSA = 7;
@@ -1738,7 +1738,7 @@ ThreeGppChannelModel::GetThreeGppTable(const Ptr<const MobilityModel> aMob,
             table3gpp->m_uLgZSD = -0.04 * log10(1 + fcGHz) + 0.92;
             table3gpp->m_sigLgZSD = -0.07 * log10(1 + fcGHz) + 0.41;
             table3gpp->m_offsetZOD = 0;
-            table3gpp->m_cDS = 11;
+            table3gpp->m_cDS = 11 * 1e-9;
             table3gpp->m_cASD = 22;
             table3gpp->m_cASA = 22;
             table3gpp->m_cZSA = 7;
@@ -1779,7 +1779,7 @@ ThreeGppChannelModel::GetThreeGppTable(const Ptr<const MobilityModel> aMob,
             table3gpp->m_uLgZSD = -0.1 * log10(1 + fcGHz) + 0.73;
             table3gpp->m_sigLgZSD = -0.04 * log10(1 + fcGHz) + 0.34;
             table3gpp->m_offsetZOD = 0;
-            table3gpp->m_cDS = 5;
+            table3gpp->m_cDS = 5 * 1e-9;
             table3gpp->m_cASD = 17;
             table3gpp->m_cASA = 17;
             table3gpp->m_cZSA = 7;
@@ -1813,7 +1813,7 @@ ThreeGppChannelModel::GetThreeGppTable(const Ptr<const MobilityModel> aMob,
             table3gpp->m_uLgZSD = -0.04 * log10(1 + fcGHz) + 0.92;
             table3gpp->m_sigLgZSD = -0.07 * log10(1 + fcGHz) + 0.41;
             table3gpp->m_offsetZOD = 0;
-            table3gpp->m_cDS = 11;
+            table3gpp->m_cDS = 11 * 1e-9;
             table3gpp->m_cASD = 22;
             table3gpp->m_cASA = 22;
             table3gpp->m_cZSA = 7;
@@ -1851,7 +1851,7 @@ ThreeGppChannelModel::GetThreeGppTable(const Ptr<const MobilityModel> aMob,
             table3gpp->m_uLgZSD = -0.04 * log10(1 + fcGHz) + 0.92;
             table3gpp->m_sigLgZSD = -0.07 * log10(1 + fcGHz) + 0.41;
             table3gpp->m_offsetZOD = 0;
-            table3gpp->m_cDS = 11;
+            table3gpp->m_cDS = 11 * 1e-9;
             table3gpp->m_cASD = 22;
             table3gpp->m_cASA = 22;
             table3gpp->m_cZSA = 7;
