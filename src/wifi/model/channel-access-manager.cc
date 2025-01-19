@@ -29,6 +29,8 @@ NS_LOG_COMPONENT_DEFINE("ChannelAccessManager");
 
 NS_OBJECT_ENSURE_REGISTERED(ChannelAccessManager);
 
+const Time ChannelAccessManager::DEFAULT_N_SLOTS_LEFT_MIN_DELAY = MicroSeconds(25);
+
 /**
  * Listener for PHY events. Forwards to ChannelAccessManager.
  * The ChannelAccessManager may handle multiple PHY listeners connected to distinct PHYs,
@@ -187,16 +189,23 @@ ChannelAccessManager::GetTypeId()
                           MakeBooleanAccessor(&ChannelAccessManager::m_proactiveBackoff),
                           MakeBooleanChecker())
             .AddAttribute("NSlotsLeft",
-                          "Fire the NSlotsLeftAlert trace source when the backoff counter with "
-                          "the minimum value among all ACs reaches this value or it is started "
-                          "with a value less than this attribute. If this value is zero, the "
-                          "trace source is never fired.",
+                          "The NSlotsLeftAlert trace source is fired when the number of remaining "
+                          "backoff slots for any AC is equal to or less than the value of this "
+                          "attribute. Note that the trace source is fired only if the AC for which "
+                          "the previous condition is met has requested channel access. Also, if "
+                          "the value of this attribute is zero, the trace source is never fired.",
                           UintegerValue(0),
                           MakeUintegerAccessor(&ChannelAccessManager::m_nSlotsLeft),
                           MakeUintegerChecker<uint8_t>())
+            .AddAttribute("NSlotsLeftMinDelay",
+                          "The minimum gap between the end of a medium busy event and the time "
+                          "the NSlotsLeftAlert trace source can be fired.",
+                          TimeValue(ChannelAccessManager::DEFAULT_N_SLOTS_LEFT_MIN_DELAY),
+                          MakeTimeAccessor(&ChannelAccessManager::m_nSlotsLeftMinDelay),
+                          MakeTimeChecker())
             .AddTraceSource("NSlotsLeftAlert",
-                            "The backoff counter of the AC with the given index reached the "
-                            "threshold set through the NSlotsLeft attribute.",
+                            "The number of remaining backoff slots for the AC with the given index "
+                            "reached the threshold set through the NSlotsLeft attribute.",
                             MakeTraceSourceAccessor(&ChannelAccessManager::m_nSlotsLeftCallback),
                             "ns3::ChannelAccessManager::NSlotsLeftCallback");
     return tid;
@@ -799,10 +808,14 @@ ChannelAccessManager::DoRestartAccessTimeoutIfNeeded()
 
         if (m_nSlotsLeft > 0)
         {
-            if (const auto slots = m_nSlotsLeft * GetSlot(); expectedBackoffDelay > slots)
+            const auto expectedNotifyTime =
+                Max(expectedBackoffEnd - m_nSlotsLeft * GetSlot(),
+                    accessGrantStart - GetSifs() + m_nSlotsLeftMinDelay);
+
+            if (expectedNotifyTime > now)
             {
-                // make the timer expire when the specified number of slots are left
-                expectedBackoffDelay -= slots;
+                // make the timer expire when it's time to notify that the given slots are left
+                expectedBackoffDelay = expectedNotifyTime - now;
             }
             else
             {

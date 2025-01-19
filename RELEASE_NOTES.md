@@ -41,6 +41,7 @@ The required Doxygen version for documentation generation is now version 1.13.
 - (mobility) !2397 - Fix Rectangle::GetClosestSideOrCorner. It could assign the incorrect side when the checked position was outside the rectangle.
 - (wifi) #2368 - Fix various issues related to Content Channels and RU allocation. Fixes mostly covers cases where OFDMA is used with central 26 tones, where a single user is being assigned the whole PPDU bandwidth or where a RU is larger than 20 MHz.
 - (zigbee) !2383 - Fix malformed RREP command with missing command options field.
+- (wifi) Fix the time the `NSlotsLeftAlert` trace source of `ChannelAccessManager` is fired (it cannot be earlier than the access grant start time)
 
 ## Release 3.44
 

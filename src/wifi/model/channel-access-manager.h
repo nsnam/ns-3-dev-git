@@ -511,6 +511,11 @@ class ChannelAccessManager : public Object
     uint8_t m_nSlotsLeft;                  //!< fire the NSlotsLeftAlert trace source when the
                                            //!< backoff counter with the minimum value among all
                                            //!< ACs reaches this value
+    Time m_nSlotsLeftMinDelay; //!< the minimum gap between the end of a medium busy event and
+                               //!< the time the NSlotsLeftAlert trace source can be fired
+
+    /// default value for the NSlotsLeftMinDelay attribute, corresponds to a PIFS in 5GHz/6GHz bands
+    static const Time DEFAULT_N_SLOTS_LEFT_MIN_DELAY;
 
     /**
      * TracedCallback signature for NSlotsLeft alerts.

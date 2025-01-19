@@ -1408,22 +1408,45 @@ A similar check is applied to possibly postpone the switch back to the preferred
 SwitchMainPhyBack timer expires.
 
 The Advanced EMLSR Manager also connects a callback to the ``NSlotsLeftAlert`` trace source of the
-Channel Access Manager, which sends notifications when at most a configurable number of slots
-remain until the backoff of an AC expires. When the Advanced EMLSR Manager receives such a
-notification, it evaluates the opportunity of switching the main PHY to the auxiliary link on which
-the notification has been received. Specifically, the Advanced EMLSR Manager performs the check
-described above to determine whether the potential UL transmit opportunity shall be dropped (it is
-dropped if a PPDU being received on another EMLSR link might be an ICF and the ``AllowUlTxopInRx``
-attribute is set to false) and then it checks whether it is convenient for the main PHY to switch
-to the auxiliary link as described above (with the exception that the expected delay until backoff
-end is also taken into account). If the main PHY is requested to switch to the auxiliary link and
-the backoff on the auxiliary link counts down to zero while the main PHY is switching, a NAV and
-CCA check is performed as described above (by the aux PHY in the PIFS period preceding the main PHY
-channel switch end or by the main PHY in the PIFS period following the main PHY channel switch end).
-Similarly, a NAV and CCA check is performed (by the main PHY) if the remaining backoff time when
-the main PHY switch is completed is less than a PIFS. Otherwise, SwitchMainPhyBack timer is started
-having a duration of SwitchMainPhyBackDelay plus the remaining time until the backoff of the AC
-involved in the Channel Access Manager notification is expected to expire.
+Channel Access Manager, which sends notifications when at most a configurable number of slots remain
+until the backoff of an AC expires. It must be noted that this notification is only sent if channel
+access has been requested by the AC for which the number of remaining backoff slots has reached
+the given threshold. Thus, if an AC terminates a TXOP and generates a new backoff value, but it
+has no packets in the queue, then channel access is not requested and the notification is not
+scheduled; if a new packet arrives after that the backoff counter has reached zero, channel access
+is requested and notification is sent immediately (while channel access is gained at the next slot
+boundary, which may be a few microseconds later). If channel access is requested while the backoff
+counter is non-zero, the notification is sent when the number of slots remaining until the backoff
+of an AC expires reaches the configured value, if the backoff counter starts at a value greater than
+or equal to the configured value, or as soon as the notification can be sent based on the value of
+the ``NSlotsLeftMinDelay`` attribute  of the Channel Access Manager. This attribute indicates the
+minimum amount of time that must elapse since the start of the AIFS to enable the dispatching of
+the notification. Example:
+
+::
+
+  BE AC (thus AIFS = SIFS + 3 * slots), Backoff = 3, NSlotsLeft >= 5, NSlotsLeftMinDelay = PIFS
+
+  |------AIFS--------|
+  | SIFS | s | s | s | s | s | s |
+             ^
+             |
+      send notification
+
+When the Advanced EMLSR Manager receives such a notification, it evaluates the opportunity of
+switching the main PHY to the auxiliary link on which the notification has been received. Specifically,
+the Advanced EMLSR Manager performs the check described above to determine whether the potential UL
+transmit opportunity shall be dropped (it is dropped if a PPDU being received on another EMLSR link
+might be an ICF and the ``AllowUlTxopInRx`` attribute is set to false) and then it checks whether it is
+convenient for the main PHY to switch to the auxiliary link as described above (with the exception that
+the expected delay until backoff end is also taken into account). If the main PHY is requested to switch
+to the auxiliary link and the backoff on the auxiliary link counts down to zero while the main PHY is
+switching, a NAV and CCA check is performed as described above (by the aux PHY in the PIFS period
+preceding the main PHY channel switch end or by the main PHY in the PIFS period following the main PHY
+channel switch end). Similarly, a NAV and CCA check is performed (by the main PHY) if the remaining
+backoff time when the main PHY switch is completed is less than a PIFS. Otherwise, SwitchMainPhyBack
+timer is started having a duration of SwitchMainPhyBackDelay plus the remaining time until the backoff
+of the AC involved in the Channel Access Manager notification is expected to expire.
 
 The Advanced EMLSR Manager has the ``InterruptSwitch`` attribute that can be set to true to
 interrupt a main PHY switch when it is determined that the main PHY shall switch to a different
