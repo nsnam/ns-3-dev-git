@@ -39,6 +39,7 @@ been tested on Linux. As of this release, the latest known version to work with 
 
 - (wifi) APs unblock transmissions to stations that are in power save mode when they disassociate, otherwise they will not be able to associate again
 - (wifi) APs record disassociation on all links setup with a non-AP MLD
+- (wifi) Fix the time the `NSlotsLeftAlert` trace source of `ChannelAccessManager` is fired (it cannot be earlier than the access grant start time)
 
 ## Release 3.44
 
