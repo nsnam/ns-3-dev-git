@@ -746,13 +746,22 @@ class WifiPhy : public Object
     typedef void (*PhyRxPayloadBeginTracedCallback)(WifiTxVector txVector, Time psduDuration);
 
     /**
-     * TracedCallback signature for start of PSDU reception events.
+     * TracedCallback signature for PhyRxPpduDrop trace source.
      *
-     * @param txVector the TXVECTOR decoded from the PHY header
-     * @param psduDuration the duration of the PSDU
+     * @param ppdu the ppdu being received
+     * @param reason the reason the ppdu was dropped
      */
     typedef void (*PhyRxPpduDropTracedCallback)(Ptr<const WifiPpdu> ppdu,
                                                 WifiPhyRxfailureReason reason);
+
+    /**
+     * TracedCallback signature for PhyRxDrop trace source.
+     *
+     * @param packet the packet being received
+     * @param reason the reason the packet was dropped
+     */
+    typedef void (*PhyRxDropTracedCallback)(Ptr<const Packet> packet,
+                                            WifiPhyRxfailureReason reason);
 
     /**
      * TracedCallback signature for end of MAC header reception events.

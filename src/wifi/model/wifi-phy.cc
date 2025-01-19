@@ -351,7 +351,7 @@ WifiPhy::GetTypeId()
                             "Trace source indicating a packet "
                             "has been dropped by the device during reception",
                             MakeTraceSourceAccessor(&WifiPhy::m_phyRxDropTrace),
-                            "ns3::Packet::TracedCallback")
+                            "ns3::WifiPhy::PhyRxDropTracedCallback")
             .AddTraceSource("PhyRxPpduDrop",
                             "Trace source indicating a ppdu "
                             "has been dropped by the device during reception",
