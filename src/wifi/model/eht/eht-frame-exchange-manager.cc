@@ -1052,8 +1052,12 @@ EhtFrameExchangeManager::IsCrossLinkCollision(
                             on the given link ID */
                          [=, this](uint8_t id) {
                              auto macHdr = m_mac->GetFrameExchangeManager(id)->GetReceivedMacHdr();
-                             return macHdr.has_value() &&
-                                    m_mac->GetMldAddress(macHdr->get().GetAddr2()) == mldAddress;
+                             if (!macHdr.has_value())
+                             {
+                                 return false;
+                             }
+                             auto addr2 = macHdr->get().GetAddr2();
+                             return m_mac->GetMldAddress(addr2) == mldAddress;
                          }))
         {
             crossLinkCollision = false;
