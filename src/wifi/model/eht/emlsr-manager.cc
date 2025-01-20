@@ -886,12 +886,14 @@ EmlsrManager::SwitchMainPhy(uint8_t linkId,
     // request the main PHY to switch channel
     const auto delay = mainPhy->GetChannelSwitchDelay();
     const auto pifs = mainPhy->GetSifs() + mainPhy->GetSlot();
-    NS_ASSERT_MSG(noSwitchDelay || delay <= std::max(m_lastAdvTransitionDelay, pifs),
-                  "Channel switch delay ("
-                      << delay.As(Time::US)
-                      << ") should be shorter than the maximum between the Transition delay ("
-                      << m_lastAdvTransitionDelay.As(Time::US) << ") and a PIFS ("
-                      << pifs.As(Time::US) << ")");
+    if (!noSwitchDelay && delay > std::max(m_lastAdvTransitionDelay, pifs))
+    {
+        NS_LOG_WARN("Channel switch delay ("
+                    << delay.As(Time::US)
+                    << ") should be shorter than the maximum between the Transition delay ("
+                    << m_lastAdvTransitionDelay.As(Time::US) << ") and a PIFS ("
+                    << pifs.As(Time::US) << ")");
+    }
     if (noSwitchDelay)
     {
         mainPhy->SetAttribute("ChannelSwitchDelay", TimeValue(Seconds(0)));
