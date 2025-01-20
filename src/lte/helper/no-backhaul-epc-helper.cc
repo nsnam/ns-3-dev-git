@@ -288,12 +288,6 @@ NoBackhaulEpcHelper::GetTypeId()
     return tid;
 }
 
-TypeId
-NoBackhaulEpcHelper::GetInstanceTypeId() const
-{
-    return GetTypeId();
-}
-
 void
 NoBackhaulEpcHelper::DoDispose()
 {

@@ -46,8 +46,6 @@ class RttEstimator : public Object
 
     ~RttEstimator() override;
 
-    TypeId GetInstanceTypeId() const override;
-
     /**
      * @brief Add a new measurement to the estimator. Pure virtual function.
      * @param t the new RTT measure.
@@ -125,8 +123,6 @@ class RttMeanDeviation : public RttEstimator
      * @param r the object to copy
      */
     RttMeanDeviation(const RttMeanDeviation& r);
-
-    TypeId GetInstanceTypeId() const override;
 
     /**
      * @brief Add a new measurement to the estimator.

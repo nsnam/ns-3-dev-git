@@ -145,13 +145,6 @@ Icmpv6L4Protocol::GetTypeId()
     return tid;
 }
 
-TypeId
-Icmpv6L4Protocol::GetInstanceTypeId() const
-{
-    NS_LOG_FUNCTION(this);
-    return Icmpv6L4Protocol::GetTypeId();
-}
-
 Icmpv6L4Protocol::Icmpv6L4Protocol()
     : m_node(nullptr)
 {

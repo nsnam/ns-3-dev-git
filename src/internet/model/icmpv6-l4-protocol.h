@@ -47,7 +47,6 @@ class Icmpv6L4Protocol : public IpL4Protocol
      * @return the object TypeId
      */
     static TypeId GetTypeId();
-    TypeId GetInstanceTypeId() const override;
 
     /**
      * @brief ICMPv6 protocol number (58).

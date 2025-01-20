@@ -89,12 +89,6 @@ EmuEpcHelper::GetTypeId()
     return tid;
 }
 
-TypeId
-EmuEpcHelper::GetInstanceTypeId() const
-{
-    return GetTypeId();
-}
-
 void
 EmuEpcHelper::DoDispose()
 {

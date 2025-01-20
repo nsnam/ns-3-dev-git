@@ -33,7 +33,6 @@ class TcpOptionTS : public TcpOption
      * @return the object TypeId
      */
     static TypeId GetTypeId();
-    TypeId GetInstanceTypeId() const override;
 
     void Print(std::ostream& os) const override;
     void Serialize(Buffer::Iterator start) const override;

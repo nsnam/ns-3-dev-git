@@ -44,7 +44,6 @@ class TcpOptionWinScale : public TcpOption
      * @return the object TypeId
      */
     static TypeId GetTypeId();
-    TypeId GetInstanceTypeId() const override;
 
     TcpOptionWinScale();
     ~TcpOptionWinScale() override;

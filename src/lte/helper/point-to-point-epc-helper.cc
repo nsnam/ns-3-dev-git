@@ -82,12 +82,6 @@ PointToPointEpcHelper::GetTypeId()
     return tid;
 }
 
-TypeId
-PointToPointEpcHelper::GetInstanceTypeId() const
-{
-    return GetTypeId();
-}
-
 void
 PointToPointEpcHelper::DoDispose()
 {

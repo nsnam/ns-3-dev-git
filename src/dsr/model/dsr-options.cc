@@ -477,12 +477,6 @@ DsrOptionRreq::GetTypeId()
     return tid;
 }
 
-TypeId
-DsrOptionRreq::GetInstanceTypeId() const
-{
-    return GetTypeId();
-}
-
 DsrOptionRreq::DsrOptionRreq()
 {
     NS_LOG_FUNCTION_NOARGS();
@@ -1018,12 +1012,6 @@ DsrOptionRrep::~DsrOptionRrep()
     NS_LOG_FUNCTION_NOARGS();
 }
 
-TypeId
-DsrOptionRrep::GetInstanceTypeId() const
-{
-    return GetTypeId();
-}
-
 uint8_t
 DsrOptionRrep::GetOptionNumber() const
 {
@@ -1239,12 +1227,6 @@ DsrOptionSR::DsrOptionSR()
 DsrOptionSR::~DsrOptionSR()
 {
     NS_LOG_FUNCTION_NOARGS();
-}
-
-TypeId
-DsrOptionSR::GetInstanceTypeId() const
-{
-    return GetTypeId();
 }
 
 uint8_t
@@ -1519,12 +1501,6 @@ DsrOptionRerr::~DsrOptionRerr()
     NS_LOG_FUNCTION_NOARGS();
 }
 
-TypeId
-DsrOptionRerr::GetInstanceTypeId() const
-{
-    return GetTypeId();
-}
-
 uint8_t
 DsrOptionRerr::GetOptionNumber() const
 {
@@ -1712,12 +1688,6 @@ DsrOptionAckReq::~DsrOptionAckReq()
     NS_LOG_FUNCTION_NOARGS();
 }
 
-TypeId
-DsrOptionAckReq::GetInstanceTypeId() const
-{
-    return GetTypeId();
-}
-
 uint8_t
 DsrOptionAckReq::GetOptionNumber() const
 {
@@ -1778,12 +1748,6 @@ DsrOptionAck::DsrOptionAck()
 DsrOptionAck::~DsrOptionAck()
 {
     NS_LOG_FUNCTION_NOARGS();
-}
-
-TypeId
-DsrOptionAck::GetInstanceTypeId() const
-{
-    return GetTypeId();
 }
 
 uint8_t

@@ -54,11 +54,6 @@ class SequenceNumberTestObj : public Object
         return tid;
     }
 
-    TypeId GetInstanceTypeId() const override
-    {
-        return GetTypeId();
-    }
-
     /// Increment the sequence number.
     void IncSequenceNumber()
     {

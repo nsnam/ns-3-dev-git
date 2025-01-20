@@ -137,7 +137,6 @@ class FlowMonitor : public Object
      * @return the object TypeId
      */
     static TypeId GetTypeId();
-    TypeId GetInstanceTypeId() const override;
     FlowMonitor();
 
     /// Add a FlowClassifier to be used by the flow monitor.

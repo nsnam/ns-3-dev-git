@@ -74,12 +74,6 @@ FlowMonitor::GetTypeId()
     return tid;
 }
 
-TypeId
-FlowMonitor::GetInstanceTypeId() const
-{
-    return GetTypeId();
-}
-
 FlowMonitor::FlowMonitor()
     : m_enabled(false)
 {

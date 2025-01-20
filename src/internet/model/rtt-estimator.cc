@@ -87,12 +87,6 @@ RttEstimator::~RttEstimator()
     NS_LOG_FUNCTION(this);
 }
 
-TypeId
-RttEstimator::GetInstanceTypeId() const
-{
-    return GetTypeId();
-}
-
 void
 RttEstimator::Reset()
 {
@@ -147,12 +141,6 @@ RttMeanDeviation::RttMeanDeviation(const RttMeanDeviation& c)
       m_beta(c.m_beta)
 {
     NS_LOG_FUNCTION(this);
-}
-
-TypeId
-RttMeanDeviation::GetInstanceTypeId() const
-{
-    return GetTypeId();
 }
 
 uint32_t

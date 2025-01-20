@@ -289,12 +289,6 @@ TcpSocketBase::GetTypeId()
     return tid;
 }
 
-TypeId
-TcpSocketBase::GetInstanceTypeId() const
-{
-    return TcpSocketBase::GetTypeId();
-}
-
 TcpSocketBase::TcpSocketBase()
     : TcpSocket()
 {

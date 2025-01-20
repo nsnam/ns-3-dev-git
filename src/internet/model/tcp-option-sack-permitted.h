@@ -36,7 +36,6 @@ class TcpOptionSackPermitted : public TcpOption
      * @return the object TypeId
      */
     static TypeId GetTypeId();
-    TypeId GetInstanceTypeId() const override;
 
     TcpOptionSackPermitted();
     ~TcpOptionSackPermitted() override;

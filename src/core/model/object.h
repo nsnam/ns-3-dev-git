@@ -135,7 +135,7 @@ class Object : public SimpleRefCount<Object, ObjectBase, ObjectDeleter>
     /** Destructor. */
     ~Object() override;
 
-    TypeId GetInstanceTypeId() const override;
+    TypeId GetInstanceTypeId() const final;
 
     /**
      * Get a pointer to the requested aggregated Object.  If the type of object

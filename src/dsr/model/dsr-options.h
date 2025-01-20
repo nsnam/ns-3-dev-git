@@ -354,11 +354,6 @@ class DsrOptionRreq : public DsrOptions
      */
     static TypeId GetTypeId();
     /**
-     * @brief Get the instance type ID.
-     * @return instance type ID
-     */
-    TypeId GetInstanceTypeId() const override;
-    /**
      * @brief Constructor.
      */
     DsrOptionRreq();
@@ -405,11 +400,6 @@ class DsrOptionRrep : public DsrOptions
      * @return the object TypeId
      */
     static TypeId GetTypeId();
-    /**
-     * @brief Get the instance type ID.
-     * @return instance type ID
-     */
-    TypeId GetInstanceTypeId() const override;
 
     DsrOptionRrep();
     ~DsrOptionRrep() override;
@@ -452,11 +442,6 @@ class DsrOptionSR : public DsrOptions
      * @return the object TypeId
      */
     static TypeId GetTypeId();
-    /**
-     * @brief Get the instance type ID.
-     * @return instance type ID
-     */
-    TypeId GetInstanceTypeId() const override;
 
     DsrOptionSR();
     ~DsrOptionSR() override;
@@ -495,11 +480,6 @@ class DsrOptionRerr : public DsrOptions
      * @return the object TypeId
      */
     static TypeId GetTypeId();
-    /**
-     * @brief Get the instance type ID.
-     * @return instance type ID
-     */
-    TypeId GetInstanceTypeId() const override;
 
     DsrOptionRerr();
     ~DsrOptionRerr() override;
@@ -557,11 +537,6 @@ class DsrOptionAckReq : public DsrOptions
      * @return the object TypeId
      */
     static TypeId GetTypeId();
-    /**
-     * @brief Get the instance type ID.
-     * @return instance type ID
-     */
-    TypeId GetInstanceTypeId() const override;
 
     DsrOptionAckReq();
     ~DsrOptionAckReq() override;
@@ -604,11 +579,6 @@ class DsrOptionAck : public DsrOptions
      * @return the object TypeId
      */
     static TypeId GetTypeId();
-    /**
-     * @brief Get the instance type ID.
-     * @return instance type ID
-     */
-    TypeId GetInstanceTypeId() const override;
 
     DsrOptionAck();
     ~DsrOptionAck() override;

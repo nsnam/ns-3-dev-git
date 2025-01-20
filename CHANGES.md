@@ -42,6 +42,7 @@ This file is a best-effort approach to solving this issue; we will do our best b
 * (applications) Deprecated attributes `RemoteAddress` and `RemotePort` in UdpClient, UdpTraceClient and UdpEchoClient. They have been combined into a single `Remote` attribute.
 * (applications) Deprecated attributes `ThreeGppHttpClient::RemoteServerAddress` and `ThreeGppHttpClient::RemoteServerPort`. They have been combined into a single `ThreeGppHttpClient::Remote` attribute.
 * (core) Deprecated `SUPPORTED`, `DEPRECATED` and `OBSOLETE` in `TypeId` class. They have been replaced by `SupportLevel::{SUPPORTED,DEPRECATED,OBSOLETE}`, respectively.
+* (core) ``Object::GetInstanceTypeId()`` can no longer be specialized by subclasses.
 * (lr-wpan) ``LrWpanMac`` is now also aggregated to ``LrWpanNetDevice``.
 * (stats) Deprecated ns3::NaN and ns3::isNaN to use std::nan and std::isnan in their place
 * (tap-bridge) Deprecated "Gateway" attribute.

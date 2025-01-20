@@ -94,12 +94,6 @@ class TrafficControlLayer : public Object
     static TypeId GetTypeId();
 
     /**
-     * @brief Get the type ID for the instance
-     * @return the instance TypeId
-     */
-    TypeId GetInstanceTypeId() const override;
-
-    /**
      * @brief Constructor
      */
     TrafficControlLayer();

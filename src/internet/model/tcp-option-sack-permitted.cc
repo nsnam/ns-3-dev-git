@@ -40,12 +40,6 @@ TcpOptionSackPermitted::GetTypeId()
     return tid;
 }
 
-TypeId
-TcpOptionSackPermitted::GetInstanceTypeId() const
-{
-    return GetTypeId();
-}
-
 void
 TcpOptionSackPermitted::Print(std::ostream& os) const
 {

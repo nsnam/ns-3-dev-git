@@ -47,7 +47,6 @@ class EmuEpcHelper : public NoBackhaulEpcHelper
      * @return The object TypeId.
      */
     static TypeId GetTypeId();
-    TypeId GetInstanceTypeId() const override;
     void DoDispose() override;
 
     // inherited from EpcHelper

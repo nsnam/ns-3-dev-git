@@ -35,8 +35,6 @@ class TcpOption : public Object
      */
     static TypeId GetTypeId();
 
-    TypeId GetInstanceTypeId() const override;
-
     /**
      * The option Kind, as defined in the respective RFCs.
      */
@@ -120,7 +118,6 @@ class TcpOptionUnknown : public TcpOption
      * @return the object TypeId
      */
     static TypeId GetTypeId();
-    TypeId GetInstanceTypeId() const override;
 
     void Print(std::ostream& os) const override;
     void Serialize(Buffer::Iterator start) const override;

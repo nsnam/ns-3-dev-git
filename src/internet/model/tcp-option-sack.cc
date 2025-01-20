@@ -41,12 +41,6 @@ TcpOptionSack::GetTypeId()
     return tid;
 }
 
-TypeId
-TcpOptionSack::GetInstanceTypeId() const
-{
-    return GetTypeId();
-}
-
 void
 TcpOptionSack::Print(std::ostream& os) const
 {

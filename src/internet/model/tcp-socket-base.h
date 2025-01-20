@@ -216,12 +216,6 @@ class TcpSocketBase : public TcpSocket
     static TypeId GetTypeId();
 
     /**
-     * @brief Get the instance TypeId
-     * @return the instance TypeId
-     */
-    TypeId GetInstanceTypeId() const override;
-
-    /**
      * @brief TcpGeneralTest friend class (for tests).
      * @relates TcpGeneralTest
      */

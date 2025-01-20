@@ -41,12 +41,6 @@ TcpOption::GetTypeId()
     return tid;
 }
 
-TypeId
-TcpOption::GetInstanceTypeId() const
-{
-    return GetTypeId();
-}
-
 Ptr<TcpOption>
 TcpOption::CreateOption(uint8_t kind)
 {
@@ -120,12 +114,6 @@ TcpOptionUnknown::GetTypeId()
                             .SetGroupName("Internet")
                             .AddConstructor<TcpOptionUnknown>();
     return tid;
-}
-
-TypeId
-TcpOptionUnknown::GetInstanceTypeId() const
-{
-    return GetTypeId();
 }
 
 void
