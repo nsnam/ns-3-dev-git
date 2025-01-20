@@ -1541,7 +1541,9 @@ EhtFrameExchangeManager::PostProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTx
     if ((m_apMac || m_mac->GetTypeOfStation() == ADHOC_STA) && m_txopHolder == psdu->GetAddr2() &&
         GetWifiRemoteStationManager()->GetEmlsrEnabled(*m_txopHolder))
     {
-        if (!m_ongoingTxopEnd.IsPending())
+        const auto unrespondedRts = (psdu->GetHeader(0).IsRts() && !m_sendCtsEvent.IsPending());
+
+        if (!m_ongoingTxopEnd.IsPending() && !unrespondedRts)
         {
             // an EMLSR client has started an UL TXOP. Start the ongoingTxopEnd timer so that
             // the next call to UpdateTxopEndOnRxEnd does its job
