@@ -532,16 +532,27 @@ EhtFrameExchangeManager::GenerateInDeviceInterference(Ptr<WifiPhy> phy,
     auto txPhy = DynamicCast<SpectrumWifiPhy>(m_phy);
     NS_ASSERT(txPhy);
 
-    auto psd = Create<SpectrumValue>(rxPhy->GetCurrentInterface()->GetRxSpectrumModel());
-    *psd = txPower;
+    for (const auto& [range, interface] : rxPhy->GetSpectrumPhyInterfaces())
+    {
+        if (!interface->GetRxSpectrumModel())
+        {
+            // we may have created a PHY interface but never set a frequency channel comprised
+            // in the frequency range associated with that PHY interface, thus the RX spectrum
+            // model may have not been created
+            continue;
+        }
 
-    auto spectrumSignalParams = Create<SpectrumSignalParameters>();
-    spectrumSignalParams->duration = duration;
-    spectrumSignalParams->txPhy = txPhy->GetCurrentInterface();
-    spectrumSignalParams->txAntenna = txPhy->GetAntenna();
-    spectrumSignalParams->psd = psd;
+        auto psd = Create<SpectrumValue>(interface->GetRxSpectrumModel());
+        *psd = txPower;
 
-    rxPhy->StartRx(spectrumSignalParams, rxPhy->GetCurrentInterface());
+        auto spectrumSignalParams = Create<SpectrumSignalParameters>();
+        spectrumSignalParams->duration = duration;
+        spectrumSignalParams->txPhy = txPhy->GetCurrentInterface();
+        spectrumSignalParams->txAntenna = txPhy->GetAntenna();
+        spectrumSignalParams->psd = psd;
+
+        rxPhy->StartRx(spectrumSignalParams, interface);
+    }
 }
 
 void
