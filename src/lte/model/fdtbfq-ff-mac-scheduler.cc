@@ -27,13 +27,13 @@ namespace ns3
 
 NS_LOG_COMPONENT_DEFINE("FdTbfqFfMacScheduler");
 
-/// FdTbfqType0AllocationRbg value array
+/// FdTbfqType0AllocationRbg value array (see table 7.1.6.1-1 of 36.213)
 static const int FdTbfqType0AllocationRbg[4] = {
     10,  // RBG size 1
     26,  // RBG size 2
     63,  // RBG size 3
     110, // RBG size 4
-};       // see table 7.1.6.1-1 of 36.213
+};
 
 NS_OBJECT_ENSURE_REGISTERED(FdTbfqFfMacScheduler);
 

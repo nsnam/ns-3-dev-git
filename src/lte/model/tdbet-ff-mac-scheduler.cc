@@ -26,13 +26,13 @@ namespace ns3
 
 NS_LOG_COMPONENT_DEFINE("TdBetFfMacScheduler");
 
-/// TDBET type 0 allocation RBG
+/// TDBET type 0 allocation RBG (see table 7.1.6.1-1 of 36.213)
 static const int TdBetType0AllocationRbg[4] = {
     10,  // RBG size 1
     26,  // RBG size 2
     63,  // RBG size 3
     110, // RBG size 4
-};       // see table 7.1.6.1-1 of 36.213
+};
 
 NS_OBJECT_ENSURE_REGISTERED(TdBetFfMacScheduler);
 

@@ -248,7 +248,8 @@ BSLinkManager::VerifyInvitedRanging(Cid cid, uint8_t uiuc)
             {
                 auto rngrsp = new RngRsp();
                 AbortRanging(ssRecord->GetBasicCid(), rngrsp, ssRecord, true);
-            } // else keep polling
+            }
+            // else keep polling
         }
     }
 }
