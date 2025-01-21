@@ -163,7 +163,7 @@ LteSecondaryCellSelectionTestCase::DoRun()
 
     // Destroy simulator.
     Simulator::Destroy();
-} // end of void LteSecondaryCellSelectionTestCase::DoRun ()
+}
 
 void
 LteSecondaryCellSelectionTestCase::StateTransitionCallback(std::string context,

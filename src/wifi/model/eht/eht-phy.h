@@ -279,7 +279,7 @@ class EhtPhy : public HePhy
     static uint64_t CalculateNonHtReferenceRate(WifiCodeRate codeRate, uint16_t constellationSize);
 
     static const PpduFormats m_ehtPpduFormats; //!< EHT PPDU formats
-};                                             // class EhtPhy
+};
 
 } // namespace ns3
 

@@ -429,8 +429,7 @@ class int64x64_t
     static cairo_uint128_t UmulByInvert(const cairo_uint128_t a, const cairo_uint128_t b);
 
     cairo_int128_t _v; //!< The Q64.64 value.
-
-}; // class int64x64_t
+};
 
 } // namespace ns3
 

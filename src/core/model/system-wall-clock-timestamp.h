@@ -57,8 +57,7 @@ class SystemWallClockTimestamp
 
     /** Difference between the two previous time stamps. */
     std::time_t m_diff;
-
-}; // class SystemWallClockTimestamp
+};
 
 } // namespace ns3
 

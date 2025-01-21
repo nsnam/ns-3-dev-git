@@ -988,17 +988,15 @@ FdBetFfMacScheduler::DoSchedDlTriggerReq(
                         itMax = it;
                         metricMax = metric;
                     }
-                } // end for estAveThr
+                }
 
                 rbgMap.at(i) = true;
-
-            } // end for free RBGs
+            }
 
             i++;
 
         } while (i < rbgNum); // end for RBGs
-
-    } // end if estAveThr
+    }
 
     // reset TTI stats of users
     for (auto itStats = m_flowStatsDl.begin(); itStats != m_flowStatsDl.end(); itStats++)
@@ -1147,7 +1145,7 @@ FdBetFfMacScheduler::DoSchedDlTriggerReq(
         }
 
         itMap++;
-    }                               // end while allocation
+    }
     ret.m_nrOfPdcchOfdmSymbols = 1; /// \todo check correct value according the DCIs txed
 
     // update UEs stats

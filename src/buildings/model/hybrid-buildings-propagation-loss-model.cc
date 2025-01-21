@@ -199,7 +199,7 @@ HybridBuildingsPropagationLossModel::GetLoss(Ptr<MobilityModel> a, Ptr<MobilityM
                 loss = ItuR1411(a, b) + ExternalWallLoss(b1) + HeightLoss(b1);
                 NS_LOG_INFO(this << " 0-I (<1000) ITUR1411 + BEL : " << loss);
             }
-        } // end b1->isIndoor ()
+        }
     }
     else
     {
@@ -242,8 +242,8 @@ HybridBuildingsPropagationLossModel::GetLoss(Ptr<MobilityModel> a, Ptr<MobilityM
                 loss = ItuR1411(a, b) + ExternalWallLoss(a1) + HeightLoss(a1);
                 NS_LOG_INFO(this << " I-O (<1000)  ITUR1411 + BEL + HG: " << loss);
             }
-        } // end if (isBIndoor)
-    }     // end if (!isAIndoor)
+        }
+    }
 
     loss = std::max(loss, 0.0);
 

@@ -183,21 +183,16 @@ LteAnr::DoReportUeMeas(LteRrcSap::MeasResults measResults)
                     neighbourRelation.detectedAsNeighbour = true;
                     m_neighbourRelationTable[it->physCellId] = neighbourRelation;
                 }
-
-            } // end of for (it = measResults.measResultListEutra.begin ())
-
-        } // end of if (measResults.haveMeasResultNeighCells &&
-          // !(measResults.measResultListEutra.empty ()))
+            }
+        }
         else
         {
             NS_LOG_WARN(
                 this << " Event A4 received without measurement results from neighbouring cells");
             /// @todo Remove neighbours in the NRT.
         }
-
-    } // end of else of if (measId != m_measId)
-
-} // end of DoReportUeMeas
+    }
+}
 
 void
 LteAnr::DoAddNeighbourRelation(uint16_t cellId)

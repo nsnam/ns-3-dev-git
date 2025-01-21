@@ -213,7 +213,6 @@ class LteRadioLinkFailureTestCase : public TestCase
     uint32_t m_numOfInSyncIndications;    ///< number of in-sync indications detected
     uint32_t m_numOfOutOfSyncIndications; ///< number of out-of-sync indications detected
     Ptr<MobilityModel> m_ueMobility;      ///< UE mobility model
-
-}; // end of class LteRadioLinkFailureTestCase
+};
 
 #endif /* LTE_TEST_RADIO_LINK_FAILURE_H */

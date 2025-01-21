@@ -77,7 +77,7 @@ OhBuildingsPropagationLossModel::GetLoss(Ptr<MobilityModel> a, Ptr<MobilityModel
             // b indoor
             loss = m_okumuraHata->GetLoss(a, b) + ExternalWallLoss(b1);
             NS_LOG_INFO(this << " O-I : " << loss);
-        } // end b1->isIndoor ()
+        }
     }
     else
     {
@@ -101,8 +101,8 @@ OhBuildingsPropagationLossModel::GetLoss(Ptr<MobilityModel> a, Ptr<MobilityModel
         {
             loss = m_okumuraHata->GetLoss(a, b) + ExternalWallLoss(a1);
             NS_LOG_INFO(this << " I-O : " << loss);
-        } // end if (isBIndoor)
-    }     // end if (!isAIndoor)
+        }
+    }
 
     loss = std::max(0.0, loss);
     return loss;

@@ -172,7 +172,7 @@ class HtPpdu : public OfdmPpdu
                                    const HtSigHeader& htSig) const;
 
     HtSigHeader m_htSig; //!< the HT-SIG PHY header
-};                       // class HtPpdu
+};
 
 } // namespace ns3
 

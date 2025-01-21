@@ -282,10 +282,10 @@ ThreeGppHttpServer::StartApplication()
         m_initialSocket->SetRecvCallback(
             MakeCallback(&ThreeGppHttpServer::ReceivedDataCallback, this));
         m_initialSocket->SetSendCallback(MakeCallback(&ThreeGppHttpServer::SendCallback, this));
-    } // end of `if (m_initialSocket == 0)`
+    }
 
     SwitchToState(STARTED);
-} // end of `void StartApplication ()`
+}
 
 void
 ThreeGppHttpServer::StopApplication()
@@ -469,10 +469,8 @@ ThreeGppHttpServer::ReceivedDataCallback(Ptr<Socket> socket)
             NS_FATAL_ERROR("Invalid packet.");
             break;
         }
-
-    } // end of `while ((packet = socket->RecvFrom (from)))`
-
-} // end of `void ReceivedDataCallback (Ptr<Socket> socket)`
+    }
+}
 
 void
 ThreeGppHttpServer::SendCallback(Ptr<Socket> socket, uint32_t availableBufferSize)
@@ -522,8 +520,7 @@ ThreeGppHttpServer::SendCallback(Ptr<Socket> socket, uint32_t availableBufferSiz
         }
     }
 #endif /* NS3_LOG_ENABLE */
-
-} // end of `void SendCallback (Ptr<Socket> socket, uint32_t availableBufferSize)`
+}
 
 void
 ThreeGppHttpServer::ServeNewMainObject(Ptr<Socket> socket)
@@ -642,8 +639,7 @@ ThreeGppHttpServer::ServeFromTxBuffer(Ptr<Socket> socket)
                          << " and waiting for another Tx opportunity.");
         return 0;
     }
-
-} // end of `uint32_t ServeFromTxBuffer (Ptr<Socket> socket)`
+}
 
 void
 ThreeGppHttpServer::SwitchToState(ThreeGppHttpServer::State_t state)

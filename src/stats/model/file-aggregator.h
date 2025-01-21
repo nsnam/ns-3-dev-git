@@ -354,8 +354,7 @@ class FileAggregator : public DataCollectionObject
     std::string m_8dFormat;  //!< Format string for 8D C-style sprintf() function.
     std::string m_9dFormat;  //!< Format string for 9D C-style sprintf() function.
     std::string m_10dFormat; //!< Format string for 10D C-style sprintf() function.
-
-}; // class FileAggregator
+};
 
 } // namespace ns3
 

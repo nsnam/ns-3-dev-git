@@ -972,7 +972,7 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
                           //!< includes the noise figure)
 
     static uint64_t m_globalPpduUid; //!< Global counter of the PPDU UID
-};                                   // class PhyEntity
+};
 
 /**
  * @brief Stream insertion operator.

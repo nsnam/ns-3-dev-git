@@ -92,8 +92,7 @@ class PriorityQueueScheduler : public Scheduler
 
     /** The event queue. */
     EventPriorityQueue m_queue;
-
-}; // class PriorityQueueScheduler
+};
 
 } // namespace ns3
 

@@ -437,8 +437,7 @@ class ThreeGppHttpClient : public SourceApplication
      * elapsed.
      */
     EventId m_eventParseMainObject;
-
-}; // end of `class ThreeGppHttpClient`
+};
 
 } // namespace ns3
 

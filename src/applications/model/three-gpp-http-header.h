@@ -119,8 +119,7 @@ class ThreeGppHttpHeader : public Header
     uint32_t m_contentLength; //!<" Content length field (in bytes unit).
     uint64_t m_clientTs;      //!<" Client time stamp field (in time step unit).
     uint64_t m_serverTs;      //!<" Server time stamp field (in time step unit).
-
-}; // end of `class ThreeGppHttpHeader`
+};
 
 } // namespace ns3
 

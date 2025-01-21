@@ -881,8 +881,7 @@ PrintAttributes(std::ostream& os, const TypeId tid)
             PrintAttributesTid(os, tmp);
         }
         tmp = tmp.GetParent();
-
-    } // Attributes
+    }
 } // PrintAttributes()
 
 /**
@@ -1034,8 +1033,7 @@ PrintTypeIdBlocks(std::ostream& os)
         // Get the class's index out of the map;
         TypeId tid = TypeId::GetRegistered(item.second);
         PrintTypeIdBlock(os, tid);
-    } // for class documentation
-
+    }
 } // PrintTypeIdBlocks()
 
 /***************************************************************

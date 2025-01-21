@@ -75,8 +75,7 @@ class UanMacAloha : public UanMac
 
   protected:
     void DoDispose() override;
-
-}; // class UanMacAloha
+};
 
 } // namespace ns3
 

@@ -134,8 +134,7 @@ class Mac8Address
     friend bool operator!=(const Mac8Address& a, const Mac8Address& b);
     friend std::ostream& operator<<(std::ostream& os, const Mac8Address& address);
     friend std::istream& operator>>(std::istream& is, Mac8Address& address);
-
-}; // class Mac8Address
+};
 
 /**
  * Address comparison, less than.

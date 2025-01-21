@@ -91,8 +91,7 @@ class LteHandoverAlgorithm : public Object
      * @param measResults a single report of one measurement identity
      */
     virtual void DoReportUeMeas(uint16_t rnti, LteRrcSap::MeasResults measResults) = 0;
-
-}; // end of class LteHandoverAlgorithm
+};
 
 } // end of namespace ns3
 

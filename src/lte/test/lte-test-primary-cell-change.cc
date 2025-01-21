@@ -200,7 +200,7 @@ LtePrimaryCellChangeTestCase::DoRun()
 
     // Destroy simulator.
     Simulator::Destroy();
-} // end of void LtePrimaryCellChangeTestCase::DoRun ()
+}
 
 void
 LtePrimaryCellChangeTestCase::StateTransitionCallback(std::string context,

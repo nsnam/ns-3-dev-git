@@ -109,7 +109,6 @@ class LteSecondaryCellSelectionTestCase : public TestCase
 
     /// The current UE RRC state.
     std::map<uint64_t, LteUeRrc::State> m_lastState;
-
-}; // end of class LteSecondaryCellSelectionTestCase
+};
 
 #endif /* LTE_TEST_SECONDARY_CELL_SELECTION_H */

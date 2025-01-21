@@ -372,8 +372,7 @@ class int64x64_t
     /**@}*/
 
     long double _v; //!< The Q64.64 value.
-
-}; // class int64x64_t
+};
 
 } // namespace ns3
 

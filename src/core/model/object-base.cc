@@ -174,8 +174,7 @@ ObjectBase::ConstructSelf(const AttributeConstructionList& attributes)
                                                           << "'");
                 */
             }
-
-        } // for i attributes
+        }
         tid = tid.GetParent();
     } while (tid != ObjectBase::GetTypeId());
     NotifyConstructionCompleted();

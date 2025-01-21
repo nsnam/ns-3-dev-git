@@ -128,7 +128,7 @@ class OfdmPpdu : public WifiPpdu
 
     MHz_u m_channelWidth; //!< the channel width used to transmit that PPDU
                           //!< (needed to distinguish 5 MHz, 10 MHz or 20 MHz PPDUs)
-};                        // class OfdmPpdu
+};
 
 } // namespace ns3
 

@@ -187,7 +187,7 @@ class VhtPpdu : public OfdmPpdu
                                    const VhtSigHeader& vhtSig) const;
 
     VhtSigHeader m_vhtSig; //!< the VHT-SIG PHY header
-};                         // class VhtPpdu
+};
 
 } // namespace ns3
 

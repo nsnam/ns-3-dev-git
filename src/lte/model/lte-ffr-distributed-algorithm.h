@@ -178,8 +178,7 @@ class LteFfrDistributedAlgorithm : public LteFfrAlgorithm
     std::map<uint16_t, uint32_t> m_cellWeightMap; ///< cell weight map
 
     std::map<uint16_t, std::vector<bool>> m_rntp; ///< RNTP
-
-}; // end of class LteFfrDistributedAlgorithm
+};
 
 } // end of namespace ns3
 

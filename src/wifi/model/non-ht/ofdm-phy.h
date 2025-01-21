@@ -443,7 +443,7 @@ class OfdmPhy : public PhyEntity
     static const ModulationLookupTable
         m_ofdmModulationLookupTable; //!< lookup table to retrieve code rate and constellation size
                                      //!< corresponding to a unique name of modulation
-};                                   // class OfdmPhy
+};
 
 } // namespace ns3
 

@@ -556,7 +556,7 @@ main(int argc, char* argv[])
             dlClientApps.Start(Seconds(0.27));
             ulServerApps.Start(Seconds(0.27));
             ulClientApps.Start(Seconds(0.27));
-        } // end for b
+        }
     }
     NS_LOG_INFO("Enable Lte traces and connect custom trace sinks");
 

@@ -293,7 +293,7 @@ LteHandoverFailureTestCase::DoRun()
 
     RngSeedManager::SetSeed(previousSeed);
     RngSeedManager::SetRun(previousRun);
-} // end of void LteHandoverFailureTestCase::DoRun ()
+}
 
 void
 LteHandoverFailureTestCase::UeHandoverStartCallback(std::string context,

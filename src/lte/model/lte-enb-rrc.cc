@@ -1369,8 +1369,7 @@ UeManager::RecvMeasurementReport(LteRrcSap::MeasurementReport msg)
                                         m_rrc->ComponentCarrierToCellId(m_componentCarrierId),
                                         m_rnti,
                                         msg);
-
-} // end of UeManager::RecvMeasurementReport
+}
 
 // methods forwarded from CMAC SAP
 

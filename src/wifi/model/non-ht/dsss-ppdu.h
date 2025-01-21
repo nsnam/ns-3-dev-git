@@ -122,7 +122,7 @@ class DsssPpdu : public WifiPpdu
                                            const DsssSigHeader& dsssSig) const;
 
     DsssSigHeader m_dsssSig; //!< the DSSS SIG PHY header
-};                           // class DsssPpdu
+};
 
 } // namespace ns3
 

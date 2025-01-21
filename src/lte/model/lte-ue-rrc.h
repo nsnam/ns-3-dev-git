@@ -1333,8 +1333,7 @@ class LteUeRrc : public Object
      * The number of component carriers.
      */
     uint16_t m_numberOfComponentCarriers;
-
-}; // end of class LteUeRrc
+};
 
 /**
  * @brief Stream insertion operator.

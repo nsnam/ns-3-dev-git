@@ -87,8 +87,7 @@ class LteFrNoOpAlgorithm : public LteFfrAlgorithm
     // FFR RRF SAP
     LteFfrRrcSapUser* m_ffrRrcSapUser;         ///< FFR RRC SAP user
     LteFfrRrcSapProvider* m_ffrRrcSapProvider; ///< FFR RRC SAP provider
-
-}; // end of class LteFrNoOpAlgorithm
+};
 
 } // end of namespace ns3
 

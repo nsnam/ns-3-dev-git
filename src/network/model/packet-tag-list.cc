@@ -81,7 +81,7 @@ PacketTagList::COWTraverse(Tag& tag, PacketTagList::COWWriter Writer)
             prevNext = &cur->next;
             cur = cur->next;
         }
-    } // while !found && !cow
+    }
 
     // did we find it or run out of tags?
     if (cur == nullptr || found)

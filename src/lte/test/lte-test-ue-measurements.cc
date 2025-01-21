@@ -836,8 +836,7 @@ LteUeMeasurementsPiecewiseTestCase1::DoRun()
     Simulator::Stop(Seconds(2.201));
     Simulator::Run();
     Simulator::Destroy();
-
-} // end of void LteUeMeasurementsPiecewiseTestCase1::DoRun ()
+}
 
 void
 LteUeMeasurementsPiecewiseTestCase1::DoTeardown()
@@ -904,11 +903,9 @@ LteUeMeasurementsPiecewiseTestCase1::RecvMeasurementReportCallback(
             NS_TEST_ASSERT_MSG_EQ(observedRsrp,
                                   referenceRsrp,
                                   "The RSRP observed differs with the reference RSRP");
-        } // end of if (!hasEnded)
-
-    } // end of if (measResults.measId == m_expectedMeasId)
-
-} // end of LteUeMeasurementsPiecewiseTestCase1::RecvMeasurementReportCallback
+        }
+    }
+}
 
 void
 LteUeMeasurementsPiecewiseTestCase1::TeleportVeryNear()
@@ -1544,8 +1541,7 @@ LteUeMeasurementsPiecewiseTestCase2::DoRun()
     Simulator::Stop(Seconds(2.201));
     Simulator::Run();
     Simulator::Destroy();
-
-} // end of void LteUeMeasurementsPiecewiseTestCase2::DoRun ()
+}
 
 void
 LteUeMeasurementsPiecewiseTestCase2::DoTeardown()
@@ -1616,8 +1612,7 @@ LteUeMeasurementsPiecewiseTestCase2::RecvMeasurementReportCallback(
                           << EutranMeasurementMapping::RsrpRange2Dbm(it->rsrpResult) << " dBm)"
                           << " rsrq=" << (uint16_t)it->rsrqResult << " ("
                           << EutranMeasurementMapping::RsrqRange2Db(it->rsrqResult) << " dB)");
-
-    } // end of else of if (measResults.measResultListEutra.size () == 0)
+    }
 
     // verifying the report timing
     bool hasEnded = m_itExpectedTime == m_expectedTime.end();
@@ -1647,8 +1642,7 @@ LteUeMeasurementsPiecewiseTestCase2::RecvMeasurementReportCallback(
     NS_TEST_ASSERT_MSG_EQ(observedRsrp,
                           referenceRsrp,
                           "The RSRP observed differs with the reference RSRP");
-
-} // end of void LteUeMeasurementsPiecewiseTestCase2::RecvMeasurementReportCallback
+}
 
 void
 LteUeMeasurementsPiecewiseTestCase2::TeleportVeryNear()
@@ -1838,8 +1832,7 @@ LteUeMeasurementsPiecewiseTestCase3::DoRun()
     Simulator::Stop(Seconds(2.201));
     Simulator::Run();
     Simulator::Destroy();
-
-} // end of void LteUeMeasurementsPiecewiseTestCase3::DoRun ()
+}
 
 void
 LteUeMeasurementsPiecewiseTestCase3::DoTeardown()
@@ -1912,8 +1905,7 @@ LteUeMeasurementsPiecewiseTestCase3::RecvMeasurementReportCallback(
                               << " rsrq=" << (uint16_t)it.rsrqResult << " ("
                               << EutranMeasurementMapping::RsrqRange2Db(it.rsrqResult) << " dB)");
         }
-
-    } // end of else of if (measResults.measResultListEutra.size () == 0)
+    }
 
     // verifying the report timing
     bool hasEnded = m_itExpectedTime == m_expectedTime.end();
@@ -1934,8 +1926,7 @@ LteUeMeasurementsPiecewiseTestCase3::RecvMeasurementReportCallback(
     NS_TEST_ASSERT_MSG_EQ(timeNowMs,
                           timeExpectedMs,
                           "Reporting should not have occurred at this time");
-
-} // end of void LteUeMeasurementsPiecewiseTestCase3::RecvMeasurementReportCallback
+}
 
 void
 LteUeMeasurementsPiecewiseTestCase3::TeleportEnbNear()
@@ -2451,8 +2442,7 @@ LteUeMeasurementsHandoverTestCase::DoRun()
     Simulator::Stop(m_duration);
     Simulator::Run();
     Simulator::Destroy();
-
-} // end of void LteUeMeasurementsHandoverTestCase::DoRun ()
+}
 
 void
 LteUeMeasurementsHandoverTestCase::DoTeardown()
@@ -2539,8 +2529,7 @@ LteUeMeasurementsHandoverTestCase::RecvMeasurementReportCallback(
                           << EutranMeasurementMapping::RsrpRange2Dbm(it->rsrpResult) << " dBm)"
                           << " rsrq=" << (uint16_t)it->rsrqResult << " ("
                           << EutranMeasurementMapping::RsrqRange2Db(it->rsrqResult) << " dB)");
-
-    } // end of else of if (measResults.measResultListEutra.size () == 0)
+    }
 
     // verifying the report timing
     bool hasEnded = m_itExpectedTime == m_expectedTime.end();
@@ -2570,5 +2559,4 @@ LteUeMeasurementsHandoverTestCase::RecvMeasurementReportCallback(
     NS_TEST_ASSERT_MSG_EQ(observedRsrp,
                           referenceRsrp,
                           "The RSRP observed differs with the reference RSRP");
-
-} // end of void LteUeMeasurementsHandoverTestCase::RecvMeasurementReportCallback
+}

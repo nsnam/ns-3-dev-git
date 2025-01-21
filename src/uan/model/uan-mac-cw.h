@@ -168,8 +168,7 @@ class UanMacCw : public UanMac, public UanPhyListener
 
   protected:
     void DoDispose() override;
-
-}; // class UanMacCw
+};
 
 } // namespace ns3
 

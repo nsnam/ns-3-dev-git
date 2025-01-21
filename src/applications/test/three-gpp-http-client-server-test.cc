@@ -601,8 +601,7 @@ ThreeGppHttpObjectTestCase::DoRun()
                           "Tracker of embedded objects detected irrelevant packet(s).");
 
     Simulator::Destroy();
-
-} // end of `void HttpClientServerTestCase::DoRun ()`
+}
 
 void
 ThreeGppHttpObjectTestCase::DoTeardown()

@@ -316,8 +316,7 @@ LteCellSelectionTestCase::DoRun()
                 ipv4RoutingHelper.GetStaticRouting(ueNode->GetObject<Ipv4>());
             ueStaticRouting->SetDefaultRoute(epcHelper->GetUeDefaultGatewayAddress(), 1);
         }
-
-    } // end of if (m_isEpcMode)
+    }
     else
     {
         NS_FATAL_ERROR("No support yet for LTE-only simulations");
@@ -348,8 +347,7 @@ LteCellSelectionTestCase::DoRun()
     // Restore the seed and run number that were in effect before this test
     Config::SetGlobal("RngSeed", UintegerValue(previousSeed));
     Config::SetGlobal("RngRun", UintegerValue(previousRun));
-
-} // end of void LteCellSelectionTestCase::DoRun ()
+}
 
 void
 LteCellSelectionTestCase::CheckPoint(Ptr<LteUeNetDevice> ueDev,

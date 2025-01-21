@@ -221,8 +221,7 @@ class LteAnr : public Object
 
     /// Serving cell ID
     uint16_t m_servingCellId;
-
-}; // end of class LteAnr
+};
 
 } // end of namespace ns3
 

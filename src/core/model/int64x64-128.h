@@ -446,8 +446,7 @@ class int64x64_t
     static uint128_t UmulByInvert(const uint128_t a, const uint128_t b);
 
     int128_t _v; //!< The Q64.64 value.
-
-}; // class int64x64_t
+};
 
 } // namespace ns3
 

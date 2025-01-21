@@ -94,8 +94,7 @@ class Fnv1a : public Implementation
     uint32_t m_hash32;
     uint64_t m_hash64;
     /**@}*/
-
-}; // class Fnv1a
+};
 
 } // namespace Function
 

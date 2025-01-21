@@ -308,8 +308,7 @@ class FileHelper
     std::string m_8dFormat;  //!< Format string for 8D format C-style sprintf() function.
     std::string m_9dFormat;  //!< Format string for 9D format C-style sprintf() function.
     std::string m_10dFormat; //!< Format string for 10D format C-style sprintf() function.
-
-}; // class FileHelper
+};
 
 } // namespace ns3
 

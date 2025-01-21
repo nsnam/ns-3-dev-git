@@ -122,8 +122,7 @@ class UanChannel : public Channel
     void SendUp(uint32_t i, Ptr<Packet> packet, double rxPowerDb, UanTxMode txMode, UanPdp pdp);
 
     void DoDispose() override;
-
-}; // class UanChannel
+};
 
 } // namespace ns3
 

@@ -896,7 +896,7 @@ main(int argc, char* argv[])
                             InetSocketAddress(Ipv4Address::GetAny(), ulPort));
                         serverApps.Add(ulPacketSinkHelper.Install(remoteHost));
                     }
-                } // end if (useUdp)
+                }
 
                 Ptr<EpcTft> tft = Create<EpcTft>();
                 if (epcDl)
@@ -922,8 +922,7 @@ main(int argc, char* argv[])
                 Time startTime = Seconds(startTimeSeconds->GetValue());
                 serverApps.Start(startTime);
                 clientApps.Start(startTime);
-
-            } // end for b
+            }
         }
     }
     else // (epc == false)

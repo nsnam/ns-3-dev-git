@@ -477,12 +477,10 @@ class DictFiles
                 std::string phrase;
                 getline(dictStream, phrase);
                 dict.Add(phrase);
-            } // while
+            }
 
             dictStream.close();
-
-        } // for m_files
-
+        }
     } // ReadInto
 
   private:
@@ -532,7 +530,7 @@ main(int argc, char* argv[])
     if (timing)
     {
         dict.Time();
-    } // if (timing)
+    }
 
     return 0;
-} // main
+}

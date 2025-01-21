@@ -347,7 +347,7 @@ class VhtPhy : public HtPhy
     static const NesExceptionMap m_exceptionsMap; //!< exception map for number of BCC encoders
                                                   //!< (extracted from VHT-MCS tables)
     static const PpduFormats m_vhtPpduFormats;    //!< VHT PPDU formats
-};                                                // class VhtPhy
+};
 
 } // namespace ns3
 

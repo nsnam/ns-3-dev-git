@@ -164,7 +164,7 @@ Ipv6L3ProtocolTestCase::DoRun()
     NS_TEST_ASSERT_MSG_EQ(num, 1, "Number of addresses should be 1??");
 
     Simulator::Destroy();
-} // end DoRun
+}
 
 /**
  * @ingroup internet-test

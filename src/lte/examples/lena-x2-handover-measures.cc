@@ -276,8 +276,7 @@ main(int argc, char* argv[])
             Time startTime = Seconds(startTimeSeconds->GetValue());
             serverApps.Start(startTime);
             clientApps.Start(startTime);
-
-        } // end for b
+        }
     }
 
     // Add X2 interface

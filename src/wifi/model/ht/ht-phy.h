@@ -567,7 +567,7 @@ class HtPhy : public OfdmPhy
                                //!< MCS indices)
 
     static const PpduFormats m_htPpduFormats; //!< HT PPDU formats
-};                                            // class HtPhy
+};
 
 } // namespace ns3
 

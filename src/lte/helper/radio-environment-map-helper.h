@@ -147,8 +147,7 @@ class RadioEnvironmentMapHelper : public Object
 
     bool m_useDataChannel; ///< The `UseDataChannel` attribute.
     int32_t m_rbId;        ///< The `RbId` attribute.
-
-}; // end of `class RadioEnvironmentMapHelper`
+};
 
 } // namespace ns3
 

@@ -290,8 +290,7 @@ class LtePhy : public Object
 
     /// component carrier Id used to address sap
     uint8_t m_componentCarrierId;
-
-}; // end of `class LtePhy`
+};
 
 } // namespace ns3
 

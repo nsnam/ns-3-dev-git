@@ -199,7 +199,7 @@ class DsssPhy : public PhyEntity
     static const ModulationLookupTable
         m_dsssModulationLookupTable; //!< lookup table to retrieve code rate and constellation size
                                      //!< corresponding to a unique name of modulation
-};                                   // class DsssPhy
+};
 
 } // namespace ns3
 

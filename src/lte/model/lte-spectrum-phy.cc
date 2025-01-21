@@ -1147,7 +1147,7 @@ LteSpectrumPhy::EndRxData()
                         m_harqPhyModule->ResetDlHarqProcessStatus((*itTb).second.harqProcessId);
                     }
                 }
-            } // end if ((*itTb).second.downlink) HARQ
+            }
         }
     }
 

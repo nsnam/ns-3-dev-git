@@ -1257,8 +1257,8 @@ CqaFfMacScheduler::DoSchedDlTriggerReq(
                     }
                     sum += sbCqi;
                 }
-            } // end if cqi
-        }     // end of rbgNum
+            }
+        }
 
         sbCqiSum.insert(std::pair<uint16_t, uint8_t>((*itrbr).first.m_rnti, sum));
     }
@@ -1530,7 +1530,7 @@ CqaFfMacScheduler::DoSchedDlTriggerReq(
                 itCurrentGroup->second.erase(userWithMaximumMetric);
             }
         }
-    } // while there are more groups of users
+    }
 
     // reset TTI stats of users
     for (auto itStats = m_flowStatsDl.begin(); itStats != m_flowStatsDl.end(); itStats++)
@@ -1676,7 +1676,7 @@ CqaFfMacScheduler::DoSchedDlTriggerReq(
         }
 
         itMap++;
-    }                               // end while allocation
+    }
     ret.m_nrOfPdcchOfdmSymbols = 1; // TODO: check correct value according the DCIs txed
 
     // update UEs stats

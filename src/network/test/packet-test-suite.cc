@@ -1170,7 +1170,7 @@ PacketTagListTest::DoRun()
             CheckRef(mrg, m5, msg, false);
         }
 #undef RemoveCheck
-    } // Removal
+    }
 
     // Replace
     {
@@ -1241,20 +1241,20 @@ PacketTagListTest::DoRun()
                 case 1:
                     now = RemoveTime(ref, t1);
                     break;
-                } // switch
+                }
 
                 if (now < rmn[j])
                 {
                     rmn[j] = now;
                 }
-            } // for tag j
-        }     // for iteration i
+            }
+        }
         for (int j = TAG_LAST; j > 0; --j)
         {
             std::cout << GetName() << "min remove time: t" << j << ": " << std::setw(8) << rmn[j]
                       << " ticks" << std::endl;
         }
-    } // Timing
+    }
 }
 
 /**

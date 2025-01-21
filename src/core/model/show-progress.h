@@ -181,8 +181,7 @@ class ShowProgress
     std::ostream* m_os;    //!< The output stream to use.
     bool m_verbose;        //!< Verbose mode flag
     uint64_t m_repCount;   //!< Number of CheckProgress events
-
-}; // class ShowProgress
+};
 
 } // namespace ns3
 

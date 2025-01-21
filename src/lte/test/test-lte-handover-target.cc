@@ -355,8 +355,7 @@ LteHandoverTargetTestCase::DoRun()
     Simulator::Stop(Seconds(1));
     Simulator::Run();
     Simulator::Destroy();
-
-} // end of void LteX2HandoverTargetTestCase::DoRun ()
+}
 
 void
 LteHandoverTargetTestCase::DoTeardown()

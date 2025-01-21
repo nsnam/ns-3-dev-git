@@ -902,11 +902,9 @@ TdMtFfMacScheduler::DoSchedDlTriggerReq(
                     metricMax = metric;
                     itMax = it;
                 }
-            } // LcActivePerFlow
-
-        } // cqi
-
-    } // end for m_flowStatsDl
+            }
+        }
+    }
 
     if (itMax == m_flowStatsDl.end())
     {
@@ -925,9 +923,8 @@ TdMtFfMacScheduler::DoSchedDlTriggerReq(
             {
                 rbgMap.at(i) = true;
                 tempMap.push_back(i);
-            } // end for RBG free
-
-        } // end for RBGs
+            }
+        }
         if (!tempMap.empty())
         {
             allocationMap[*itMax] = tempMap;
@@ -1061,7 +1058,7 @@ TdMtFfMacScheduler::DoSchedDlTriggerReq(
         ret.m_buildDataList.push_back(newEl);
 
         itMap++;
-    }                               // end while allocation
+    }
     ret.m_nrOfPdcchOfdmSymbols = 1; /// \todo check correct value according the DCIs txed
 
     m_schedSapUser->SchedDlConfigInd(ret);

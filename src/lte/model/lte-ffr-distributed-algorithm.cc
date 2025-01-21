@@ -701,7 +701,6 @@ LteFfrDistributedAlgorithm::UpdateNeighbourMeasurements(uint16_t rnti,
         cellMeasures->m_rsrq = rsrq;
         it1->second[cellId] = cellMeasures;
     }
-
-} // end of UpdateNeighbourMeasurements
+}
 
 } // end of namespace ns3

@@ -364,10 +364,8 @@ ThreeGppHttpClient::ReceivedDataCallback(Ptr<Socket> socket)
             NS_FATAL_ERROR("Invalid state " << GetStateString() << " for ReceivedData().");
             break;
         }
-
-    } // end of `while ((packet = socket->RecvFrom (from)))`
-
-} // end of `void ReceivedDataCallback (Ptr<Socket> socket)`
+    }
+}
 
 void
 ThreeGppHttpClient::OpenConnection()
@@ -435,7 +433,7 @@ ThreeGppHttpClient::OpenConnection()
                                 MakeCallback(&ThreeGppHttpClient::ErrorCloseCallback, this));
     m_socket->SetRecvCallback(MakeCallback(&ThreeGppHttpClient::ReceivedDataCallback, this));
     m_socket->SetAttribute("MaxSegLifetime", DoubleValue(0.02)); // 20 ms.
-} // end of `void OpenConnection ()`
+}
 
 void
 ThreeGppHttpClient::RequestMainObject()
@@ -472,8 +470,7 @@ ThreeGppHttpClient::RequestMainObject()
         SwitchToState(EXPECTING_MAIN_OBJECT);
         m_pageLoadStartTs = Simulator::Now(); // start counting page loading time
     }
-
-} // end of `void RequestMainObject ()`
+}
 
 void
 ThreeGppHttpClient::RequestEmbeddedObject()
@@ -518,8 +515,7 @@ ThreeGppHttpClient::RequestEmbeddedObject()
         m_embeddedObjectsToBeRequested--;
         SwitchToState(EXPECTING_EMBEDDED_OBJECT);
     }
-
-} // end of `void RequestEmbeddedObject ()`
+}
 
 void
 ThreeGppHttpClient::ReceiveMainObject(Ptr<Packet> packet, const Address& from)
@@ -573,7 +569,7 @@ ThreeGppHttpClient::ReceiveMainObject(Ptr<Packet> packet, const Address& from)
     }
 
     EnterParsingTime();
-} // end of `void ReceiveMainObject (Ptr<Packet> packet)`
+}
 
 void
 ThreeGppHttpClient::ReceiveEmbeddedObject(Ptr<Packet> packet, const Address& from)
@@ -643,7 +639,7 @@ ThreeGppHttpClient::ReceiveEmbeddedObject(Ptr<Packet> packet, const Address& fro
         FinishReceivingPage(); // trigger callback for page loading time
         EnterReadingTime();
     }
-} // end of `void ReceiveEmbeddedObject (Ptr<Packet> packet)`
+}
 
 void
 ThreeGppHttpClient::Receive(Ptr<Packet> packet)
@@ -698,8 +694,7 @@ ThreeGppHttpClient::Receive(Ptr<Packet> packet)
             m_constructedPacket->AddAtEnd(packetCopy);
         }
     }
-
-} // end of `void Receive (packet)`
+}
 
 void
 ThreeGppHttpClient::EnterParsingTime()
@@ -754,8 +749,7 @@ ThreeGppHttpClient::ParseMainObject()
         FinishReceivingPage(); // trigger callback for page loading time
         EnterReadingTime();
     }
-
-} // end of `void ParseMainObject ()`
+}
 
 void
 ThreeGppHttpClient::EnterReadingTime()

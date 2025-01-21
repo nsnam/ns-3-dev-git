@@ -50,7 +50,7 @@ class ErpOfdmPpdu : public OfdmPpdu
 
   private:
     void SetTxVectorFromLSigHeader(WifiTxVector& txVector, const LSigHeader& lSig) const override;
-}; // class ErpOfdmPpdu
+};
 
 } // namespace ns3
 

@@ -475,8 +475,8 @@ CheckEnvironmentVariables()
                                << flag << "\" in env variable NS_LOG for component name "
                                << component);
             }
-        } // for flag
-    }     // for component
+        }
+    }
 }
 
 void

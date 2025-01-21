@@ -503,8 +503,7 @@ class LteEnbPhy : public LtePhy
      * PhyTransmissionStatParameters.
      */
     TracedCallback<PhyTransmissionStatParameters> m_dlPhyTransmission;
-
-}; // end of `class LteEnbPhy`
+};
 
 } // namespace ns3
 

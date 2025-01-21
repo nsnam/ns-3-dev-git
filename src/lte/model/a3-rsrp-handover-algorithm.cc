@@ -156,7 +156,7 @@ A3RsrpHandoverAlgorithm::DoReportUeMeas(uint16_t rnti, LteRrcSap::MeasResults me
         // Inform eNodeB RRC about handover
         m_handoverManagementSapUser->TriggerHandover(rnti, bestNeighbourCellId);
     }
-} // end of DoReportUeMeas
+}
 
 bool
 A3RsrpHandoverAlgorithm::IsValidNeighbour(uint16_t cellId)

@@ -200,7 +200,7 @@ class ErpOfdmPhy : public OfdmPhy
     static const ModulationLookupTable
         m_erpOfdmModulationLookupTable; //!< lookup table to retrieve code rate and constellation
                                         //!< size corresponding to a unique name of modulation
-};                                      // class ErpOfdmPhy
+};
 
 } // namespace ns3
 

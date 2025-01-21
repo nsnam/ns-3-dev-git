@@ -478,7 +478,7 @@ LteX2HandoverMeasuresTestCase::DoRun()
                         bearerData.ulSink = sinkContainer.Get(0)->GetObject<PacketSink>();
                         serverApps.Add(sinkContainer);
                     }
-                } // end if (useUdp)
+                }
 
                 Ptr<EpcTft> tft = Create<EpcTft>();
                 if (epcDl)
@@ -506,8 +506,7 @@ LteX2HandoverMeasuresTestCase::DoRun()
                 clientApps.Start(startTime);
 
                 ueData.bearerDataList.push_back(bearerData);
-
-            } // end for b
+            }
 
             m_ueDataVector.push_back(ueData);
         }

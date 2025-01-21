@@ -60,7 +60,7 @@ class HePpdu : public OfdmPpdu
         uint8_t m_bandwidth{0}; ///< Bandwidth field
         uint8_t m_giLtfSize{0}; ///< GI+LTF Size field
         uint8_t m_nsts{0};      ///< NSTS
-    };                          // struct HeSuSigHeader
+    };
 
     /**
      * HE-SIG PHY header for HE TB PPDUs (HE-SIG-A1/A2)
@@ -70,7 +70,7 @@ class HePpdu : public OfdmPpdu
         uint8_t m_format{0};    ///< Format bit
         uint8_t m_bssColor{0};  ///< BSS color field
         uint8_t m_bandwidth{0}; ///< Bandwidth field
-    };                          // struct HeTbSigHeader
+    };
 
     /**
      * HE-SIG PHY header for HE MU PPDUs (HE-SIG-A1/A2/B)
@@ -91,7 +91,7 @@ class HePpdu : public OfdmPpdu
         HeSigBContentChannels m_contentChannels; //!< HE SIG-B Content Channels
         std::optional<Center26ToneRuIndication>
             m_center26ToneRuIndication; //!< center 26 tone RU indication in SIG-B common subfields
-    };                                  // struct HeMuSigHeader
+    };
 
     /// type of the HE-SIG PHY header
     using HeSigHeader = std::variant<std::monostate, HeSuSigHeader, HeTbSigHeader, HeMuSigHeader>;
@@ -353,7 +353,7 @@ class HePpdu : public OfdmPpdu
     virtual bool IsUlMu() const;
 
     HeSigHeader m_heSig; //!< the HE-SIG PHY header
-};                       // class HePpdu
+};
 
 /**
  * @brief Stream insertion operator.

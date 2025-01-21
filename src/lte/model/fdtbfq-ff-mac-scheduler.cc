@@ -1056,7 +1056,7 @@ FdTbfqFfMacScheduler::DoSchedDlTriggerReq(
                 metricMax = metric;
                 itMax = it;
             }
-        } // end for m_flowStatsDl
+        }
 
         if (itMax == m_flowStatsDl.end())
         {
@@ -1200,9 +1200,9 @@ FdTbfqFfMacScheduler::DoSchedDlTriggerReq(
                             achievableRateMax = achievableRate;
                             rbgIndex = k;
                         }
-                    } // end of LcActivePerFlow
-                }     // end of cqi
-            }         // end of for rbgNum
+                    }
+                }
+            }
 
             if (rbgIndex == rbgNum) // impossible
             {
@@ -1294,8 +1294,7 @@ FdTbfqFfMacScheduler::DoSchedDlTriggerReq(
                               8); // (size of TB in bytes according to table 7.1.7.2.1-1 of 36.213)
                 bytesTxed += tbSize;
             }
-
-        } // end of while()
+        }
 
         // remove and unmark last RBG assigned to UE
         if (bytesTxed > budget)
@@ -1339,7 +1338,7 @@ FdTbfqFfMacScheduler::DoSchedDlTriggerReq(
                 }
             }
         }
-    } // end of RBGs
+    }
 
     // generate the transmission opportunities by grouping the RBGs of the same RNTI and
     // creating the correspondent DCIs
@@ -1519,7 +1518,7 @@ FdTbfqFfMacScheduler::DoSchedDlTriggerReq(
         ret.m_buildDataList.push_back(newEl);
 
         itMap++;
-    }                               // end while allocation
+    }
     ret.m_nrOfPdcchOfdmSymbols = 1; /// \todo check correct value according the DCIs txed
 
     m_schedSapUser->SchedDlConfigInd(ret);

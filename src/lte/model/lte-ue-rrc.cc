@@ -920,8 +920,7 @@ LteUeRrc::DoReportUeMeasurements(LteUeCphySapUser::UeMeasurementsParameters para
             }
         }
     }
-
-} // end of LteUeRrc::DoReportUeMeasurements
+}
 
 // RRC SAP methods
 
@@ -1244,8 +1243,7 @@ LteUeRrc::SynchronizeToStrongestCell()
         m_cphySapProvider.at(0)->SynchronizeWithEnb(maxRsrpCellId, m_dlEarfcn);
         SwitchToState(IDLE_WAIT_MIB_SIB1);
     }
-
-} // end of void LteUeRrc::SynchronizeToStrongestCell ()
+}
 
 void
 LteUeRrc::EvaluateCellForSelection()
@@ -1325,8 +1323,7 @@ LteUeRrc::EvaluateCellForSelection()
         SwitchToState(IDLE_CELL_SEARCH);
         SynchronizeToStrongestCell(); // retry to a different cell
     }
-
-} // end of void LteUeRrc::EvaluateCellForSelection ()
+}
 
 void
 LteUeRrc::ApplyRadioResourceConfigDedicatedSecondaryCarrier(
@@ -1874,8 +1871,7 @@ LteUeRrc::SaveUeMeasurements(uint16_t cellId,
                       << ", carrier component Id " << componentCarrierId << ", new RSRP " << rsrp
                       << " stored " << storedMeasIt->second.rsrp << ", new RSRQ " << rsrq
                       << " stored " << storedMeasIt->second.rsrq);
-
-} // end of void SaveUeMeasurements
+}
 
 void
 LteUeRrc::MeasurementReportTriggering(uint8_t measId)
@@ -2014,8 +2010,7 @@ LteUeRrc::MeasurementReportTriggering(uint8_t measId)
         NS_LOG_LOGIC(this << " event A1: serving cell " << servingCellId << " ms=" << ms
                           << " thresh=" << thresh << " entryCond=" << entryCond
                           << " leavingCond=" << leavingCond);
-
-    } // end of case LteRrcSap::ReportConfigEutra::EVENT_A1
+    }
 
     break;
 
@@ -2100,8 +2095,7 @@ LteUeRrc::MeasurementReportTriggering(uint8_t measId)
         NS_LOG_LOGIC(this << " event A2: serving cell " << servingCellId << " ms=" << ms
                           << " thresh=" << thresh << " entryCond=" << entryCond
                           << " leavingCond=" << leavingCond);
-
-    } // end of case LteRrcSap::ReportConfigEutra::EVENT_A2
+    }
 
     break;
 
@@ -2211,10 +2205,8 @@ LteUeRrc::MeasurementReportTriggering(uint8_t measId)
             NS_LOG_LOGIC(this << " event A3: neighbor cell " << cellId << " mn=" << mn
                               << " mp=" << mp << " offset=" << off << " entryCond=" << entryCond
                               << " leavingCond=" << leavingCond);
-
-        } // end of for (storedMeasIt)
-
-    } // end of case LteRrcSap::ReportConfigEutra::EVENT_A3
+        }
+    }
 
     break;
 
@@ -2312,10 +2304,8 @@ LteUeRrc::MeasurementReportTriggering(uint8_t measId)
             NS_LOG_LOGIC(this << " event A4: neighbor cell " << cellId << " mn=" << mn
                               << " thresh=" << thresh << " entryCond=" << entryCond
                               << " leavingCond=" << leavingCond);
-
-        } // end of for (storedMeasIt)
-
-    } // end of case LteRrcSap::ReportConfigEutra::EVENT_A4
+        }
+    }
 
     break;
 
@@ -2414,10 +2404,8 @@ LteUeRrc::MeasurementReportTriggering(uint8_t measId)
                 NS_LOG_LOGIC(this << " event A5: neighbor cell " << cellId << " mn=" << mn
                                   << " mp=" << mp << " thresh2=" << thresh2
                                   << " thresh1=" << thresh1 << " entryCond=" << entryCond);
-
-            } // end of for (storedMeasIt)
-
-        } // end of if (entryCond)
+            }
+        }
         else
         {
             NS_LOG_LOGIC(this << " event A5: serving cell " << m_cellId << " mp=" << mp
@@ -2457,7 +2445,7 @@ LteUeRrc::MeasurementReportTriggering(uint8_t measId)
                             eventLeavingCondApplicable = true;
                         }
                     }
-                } // end of if (reportConfigEutra.timeToTrigger == 0)
+                }
                 else
                 {
                     // leaving condition #2 has to be checked to cancel time-to-trigger
@@ -2509,18 +2497,13 @@ LteUeRrc::MeasurementReportTriggering(uint8_t measId)
                                               << " mn=" << mn << " mp=" << mp
                                               << " thresh2=" << thresh2 << " thresh1=" << thresh1
                                               << " leavingCond=" << leavingCond);
-
-                        } // end of if (measReportIt->second.cellsTriggeredList.find (cellId)
-                          //            != measReportIt->second.cellsTriggeredList.end ())
-
-                    } // end of for (storedMeasIt)
-
-                } // end of else of if (reportConfigEutra.timeToTrigger == 0)
+                        }
+                    }
+                }
 
                 NS_LOG_LOGIC(this << " event A5: serving cell " << m_cellId << " mp=" << mp
                                   << " thresh1=" << thresh1 << " leavingCond=" << leavingCond);
-
-            } // end of if (leavingCond)
+            }
             else
             {
                 if (reportConfigEutra.timeToTrigger > 0)
@@ -2568,25 +2551,18 @@ LteUeRrc::MeasurementReportTriggering(uint8_t measId)
                         NS_LOG_LOGIC(this << " event A5: neighbor cell " << cellId << " mn=" << mn
                                           << " mp=" << mp << " thresh2=" << thresh2 << " thresh1="
                                           << thresh1 << " leavingCond=" << leavingCond);
-
-                    } // end of if (measReportIt->second.cellsTriggeredList.find (cellId)
-                      //            != measReportIt->second.cellsTriggeredList.end ())
-
-                } // end of for (storedMeasIt)
-
-            } // end of else of if (leavingCond)
-
-        } // end of if (isMeasIdInReportList)
-
-    } // end of case LteRrcSap::ReportConfigEutra::EVENT_A5
+                    }
+                }
+            }
+        }
+    }
 
     break;
 
     default:
         NS_FATAL_ERROR("unsupported eventId " << reportConfigEutra.eventId);
         break;
-
-    } // switch (event type)
+    }
 
     NS_LOG_LOGIC(this << " eventEntryCondApplicable=" << eventEntryCondApplicable
                       << " eventLeavingCondApplicable=" << eventLeavingCondApplicable);
@@ -2640,8 +2616,7 @@ LteUeRrc::MeasurementReportTriggering(uint8_t measId)
             leavingTriggerIt->second.push_back(t);
         }
     }
-
-} // end of void LteUeRrc::MeasurementReportTriggering (uint8_t measId)
+}
 
 void
 LteUeRrc::CancelEnteringTrigger(uint8_t measId)
@@ -2807,10 +2782,8 @@ LteUeRrc::VarMeasReportListAdd(uint8_t measId, ConcernedCells_t enteringCells)
                 CancelEnteringTrigger(measId, *it);
             }
         }
-
-    } // end of if (!enteringTriggerIt->second.empty ())
-
-} // end of LteUeRrc::VarMeasReportListAdd
+    }
+}
 
 void
 LteUeRrc::VarMeasReportListErase(uint8_t measId, ConcernedCells_t leavingCells, bool reportOnLeave)
@@ -2862,10 +2835,8 @@ LteUeRrc::VarMeasReportListErase(uint8_t measId, ConcernedCells_t leavingCells, 
                 CancelLeavingTrigger(measId, *it);
             }
         }
-
-    } // end of if (!leavingTriggerIt->second.empty ())
-
-} // end of LteUeRrc::VarMeasReportListErase
+    }
+}
 
 void
 LteUeRrc::VarMeasReportListClear(uint8_t measId)

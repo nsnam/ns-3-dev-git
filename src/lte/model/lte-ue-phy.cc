@@ -663,12 +663,10 @@ LteUePhy::GenerateCqiRsrpRsrq(const SpectrumValue& sinr)
         }
 
         itPss++;
-
-    } // end of while (itPss != m_pssList.end ())
+    }
 
     m_pssList.clear();
-
-} // end of void LteUePhy::GenerateCtrlCqiReport (const SpectrumValue& sinr)
+}
 
 double
 LteUePhy::ComputeAvgSinr(const SpectrumValue& sinr)
@@ -1195,8 +1193,7 @@ LteUePhy::ReceivePss(uint16_t cellId, Ptr<SpectrumValue> p)
     el.pssPsdSum = sum;
     el.nRB = nRB;
     m_pssList.push_back(el);
-
-} // end of void LteUePhy::ReceivePss (uint16_t cellId, Ptr<SpectrumValue> p)
+}
 
 void
 LteUePhy::QueueSubChannelsForTransmission(std::vector<int> rbMap)
@@ -1279,7 +1276,7 @@ LteUePhy::SubframeIndication(uint32_t frameNo, uint32_t subframeNo)
                 NS_LOG_LOGIC(this << " UE - UL NOTHING TO SEND");
             }
         }
-    } // m_configured
+    }
 
     // trigger the MAC
     m_uePhySapUser->SubframeIndication(frameNo, subframeNo);
@@ -1369,8 +1366,7 @@ LteUePhy::DoReset()
      */
     m_downlinkSpectrumPhy->m_interferenceCtrl->EndRx();
     m_downlinkSpectrumPhy->m_interferenceData->EndRx();
-
-} // end of void LteUePhy::DoReset ()
+}
 
 void
 LteUePhy::DoStartCellSearch(uint32_t dlEarfcn)

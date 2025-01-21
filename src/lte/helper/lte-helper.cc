@@ -786,7 +786,7 @@ LteHelper::InstallSingleEnbDevice(Ptr<Node> n)
         {
             NS_LOG_WARN("UL propagation model does not have a Frequency attribute");
         }
-    } // end for
+    }
     rrc->SetForwardUpCallback(MakeCallback(&LteEnbNetDevice::Receive, dev));
     dev->Initialize();
     n->AddDevice(dev);

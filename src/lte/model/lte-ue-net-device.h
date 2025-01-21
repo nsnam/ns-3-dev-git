@@ -184,8 +184,7 @@ class LteUeNetDevice : public LteNetDevice
     uint32_t m_csgId; ///< the CSG ID
 
     std::map<uint8_t, Ptr<ComponentCarrierUe>> m_ccMap; ///< CC map
-
-}; // end of class LteUeNetDevice
+};
 
 } // namespace ns3
 

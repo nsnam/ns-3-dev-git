@@ -521,8 +521,7 @@ class Simulator
      * Stop event (if present)
      */
     static EventId m_stopEvent;
-
-}; // class Simulator
+};
 
 /**
  * @ingroup simulator

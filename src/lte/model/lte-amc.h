@@ -121,8 +121,7 @@ class LteAmc : public Object
      * AMC model used to assign CQI.
      */
     AmcModel m_amcModel;
-
-}; // end of `class LteAmc`
+};
 
 } // namespace ns3
 

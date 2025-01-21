@@ -53,8 +53,7 @@ class UanNoiseModelDefault : public UanNoiseModel
   private:
     double m_wind;     //!< Wind speed in m/s.
     double m_shipping; //!< Shipping contribution to noise between 0 and 1.
-
-}; // class UanNoiseModelDefault
+};
 
 } // namespace ns3
 

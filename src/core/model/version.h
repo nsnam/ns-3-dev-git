@@ -258,8 +258,7 @@ class Version
      * @return String containing full version
      */
     static std::string LongVersion();
-
-}; // class Version
+};
 
 } // namespace ns3
 
