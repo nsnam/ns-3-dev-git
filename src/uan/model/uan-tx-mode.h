@@ -95,11 +95,11 @@ class UanTxMode
     uint32_t GetUid() const;
 
   private:
+    uint32_t m_uid; //!< Mode id
+
     friend class UanTxModeFactory;
     friend std::ostream& operator<<(std::ostream& os, const UanTxMode& mode);
     friend std::istream& operator>>(std::istream& is, UanTxMode& mode);
-
-    uint32_t m_uid; //!< Mode id
 
 }; // class UanTxMode
 
