@@ -368,7 +368,7 @@ class ZigbeeBeaconPayload : public Header
     /**
      * Get the router capacity capability.
      *
-     * @return Whether or not is cabable of accepting join request
+     * @return Whether or not is capable of accepting join request
      *         from router-capable devices.
      */
     bool GetRouterCapacity() const;
