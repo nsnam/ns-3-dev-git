@@ -1971,7 +1971,8 @@ ThreeGppChannelModel::GetThreeGppTable(const Ptr<const MobilityModel> aMob,
                 table3gpp->m_raysPerCluster = NTNDenseUrbanLOS.at(freqBand).at(
                     elevAngleQuantized)[Table3gppParams::raysPerCluster];
                 table3gpp->m_cDS =
-                    NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cDS];
+                    NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cDS] *
+                    1e-9;
                 table3gpp->m_cASD =
                     NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASD];
                 table3gpp->m_cASA =
@@ -2023,7 +2024,8 @@ ThreeGppChannelModel::GetThreeGppTable(const Ptr<const MobilityModel> aMob,
                 table3gpp->m_raysPerCluster = NTNDenseUrbanNLOS.at(freqBand).at(
                     elevAngleQuantized)[Table3gppParams::raysPerCluster];
                 table3gpp->m_cDS =
-                    NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cDS];
+                    NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cDS] *
+                    1e-9;
                 table3gpp->m_cASD =
                     NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASD];
                 table3gpp->m_cASA =
@@ -2081,7 +2083,7 @@ ThreeGppChannelModel::GetThreeGppTable(const Ptr<const MobilityModel> aMob,
                 table3gpp->m_raysPerCluster = NTNUrbanLOS.at(freqBand).at(
                     elevAngleQuantized)[Table3gppParams::raysPerCluster];
                 table3gpp->m_cDS =
-                    NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cDS];
+                    NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cDS] * 1e-9;
                 table3gpp->m_cASD =
                     NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASD];
                 table3gpp->m_cASA =
@@ -2136,7 +2138,7 @@ ThreeGppChannelModel::GetThreeGppTable(const Ptr<const MobilityModel> aMob,
                 table3gpp->m_raysPerCluster = NTNUrbanNLOS.at(freqBand).at(
                     elevAngleQuantized)[Table3gppParams::raysPerCluster];
                 table3gpp->m_cDS =
-                    NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cDS];
+                    NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cDS] * 1e-9;
                 table3gpp->m_cASD =
                     NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASD];
                 table3gpp->m_cASA =
@@ -2195,7 +2197,7 @@ ThreeGppChannelModel::GetThreeGppTable(const Ptr<const MobilityModel> aMob,
                 table3gpp->m_raysPerCluster = NTNSuburbanLOS.at(freqBand).at(
                     elevAngleQuantized)[Table3gppParams::raysPerCluster];
                 table3gpp->m_cDS =
-                    NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cDS];
+                    NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cDS] * 1e-9;
                 table3gpp->m_cASD =
                     NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASD];
                 table3gpp->m_cASA =
@@ -2250,7 +2252,8 @@ ThreeGppChannelModel::GetThreeGppTable(const Ptr<const MobilityModel> aMob,
                 table3gpp->m_raysPerCluster = NTNSuburbanNLOS.at(freqBand).at(
                     elevAngleQuantized)[Table3gppParams::raysPerCluster];
                 table3gpp->m_cDS =
-                    NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cDS];
+                    NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cDS] *
+                    1e-9;
                 table3gpp->m_cASD =
                     NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASD];
                 table3gpp->m_cASA =
@@ -2308,7 +2311,7 @@ ThreeGppChannelModel::GetThreeGppTable(const Ptr<const MobilityModel> aMob,
                 table3gpp->m_raysPerCluster = NTNRuralLOS.at(freqBand).at(
                     elevAngleQuantized)[Table3gppParams::raysPerCluster];
                 table3gpp->m_cDS =
-                    NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cDS];
+                    NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cDS] * 1e-9;
                 table3gpp->m_cASD =
                     NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASD];
                 table3gpp->m_cASA =
@@ -2363,7 +2366,7 @@ ThreeGppChannelModel::GetThreeGppTable(const Ptr<const MobilityModel> aMob,
                 table3gpp->m_raysPerCluster = NTNRuralNLOS.at(freqBand).at(
                     elevAngleQuantized)[Table3gppParams::raysPerCluster];
                 table3gpp->m_cDS =
-                    NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cDS];
+                    NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cDS] * 1e-9;
                 table3gpp->m_cASD =
                     NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASD];
                 table3gpp->m_cASA =
