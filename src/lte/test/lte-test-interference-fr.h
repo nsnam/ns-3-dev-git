@@ -20,7 +20,7 @@ using namespace ns3;
  * @ingroup lte-test
  *
  * @brief Test suite for the interference test when using different
- * frequency reuse algorithms.Check if the interfence values correspond to
+ * frequency reuse algorithms.Check if the interference values correspond to
  * theoretical values.
  */
 class LteInterferenceFrTestSuite : public TestSuite
@@ -33,7 +33,7 @@ class LteInterferenceFrTestSuite : public TestSuite
  * @ingroup lte-test
  *
  * @brief Lte interference test when using hard frequency reuse algorithm. Check
- * if the interfence values correspond to theoretical values.
+ * if the interference values correspond to theoretical values.
  */
 class LteInterferenceHardFrTestCase : public TestCase
 {

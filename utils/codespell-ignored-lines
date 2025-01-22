@@ -159,3 +159,8 @@ static ns3::GlobalValue g_rate("VRCrate",
 
 ./doc/manual/source/working-with-docker.rst
     067a8b748816715d93ede9099132d943c04b13fcc23b3b8a7e21d23c1096cc2a
+
+./src/lte/model/cqa-ff-mac-scheduler.cc
+    std::map<LteFlowId_t, int> UEtoHOL;
+        UEtoHOL.insert(std::pair<LteFlowId_t, int>(itLogicalChannels->first, delay));
+                int hol = UEtoHOL.find(flowId)->second;

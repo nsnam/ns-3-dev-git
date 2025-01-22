@@ -14,7 +14,7 @@ namespace ns3
  * @brief Test case that for testing the deactivation of the bearer
  * functionality. The test consist in deactivating the bearer and checking
  * if some traffic will appear afterwards on the given bearer. If some traffic
- * is detected the test will fail. Firs the de-activation is performed by
+ * is detected the test will fail. First the de-activation is performed by
  * using Simulator::Schedule() method which will initiate bearer de-activation
  * after deActivateTime that is specified as the test parameter. Additionally,
  * test instantiate de-activation in sequence.
