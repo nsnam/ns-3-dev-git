@@ -164,3 +164,12 @@ static ns3::GlobalValue g_rate("VRCrate",
     std::map<LteFlowId_t, int> UEtoHOL;
         UEtoHOL.insert(std::pair<LteFlowId_t, int>(itLogicalChannels->first, delay));
                 int hol = UEtoHOL.find(flowId)->second;
+
+./src/mesh/doc/source/mesh-design.rst
+contribution in [Hep15]_.
+when forwarding a frame (e.g., [Hep16]_), but current wifi module maintainers
+value was chosen based on the measurement results reported in [Hep16]_ which
+
+./src/mesh/doc/source/mesh-references.rst
+.. [Hep15] \C. Hepner and \A. Witt and \R. Muenzner, `Validation of the ns-3 802.11s model and proposed changes compliant to IEEE 802.11-2012 <https://www.nsnam.org/wp-content/uploads/2015/05/WNS3_2015_submission_33.pdf>`_, Poster at 2015 Workshop on ns-3, May 2015.
+.. [Hep16] \C. Hepner and \S. Moll and \R. Muenzner, `Influence of Processing Delays on the VoIP Performance for IEEE 802.11s Multihop Wireless Mesh Networks:  Comparison of ns-3 Network Simulations with Hardware Measurements <http://dl.acm.org/citation.cfm?id=3021439>`_, Proceedings of SIMUTOOLS 16, August, 2016.
