@@ -531,7 +531,7 @@ class Socket : public Object
      * This method is provided so as to have an API which is closer in
      * appearance to that of real network or BSD sockets.
      *
-     * If the underlying packet was carring null (fake) data, this buffer
+     * If the underlying packet was carrying null (fake) data, this buffer
      * will be zeroed up to the length specified by the return value.
      *
      * @param buf A pointer to a raw byte buffer to write the data to.
@@ -564,7 +564,7 @@ class Socket : public Object
      * appearance to that of real network or BSD sockets.
      *
      * @param buf A pointer to a raw byte buffer to write the data to.
-     * If the underlying packet was carring null (fake) data, this buffer
+     * If the underlying packet was carrying null (fake) data, this buffer
      * will be zeroed up to the length specified by the return value.
      * @param size Number of bytes (at most) to copy to buf
      * @param flags any flags to pass to the socket
