@@ -16,6 +16,7 @@
 
 #include "antenna-model.h"
 
+#include "ns3/boolean.h"
 #include "ns3/double.h"
 #include "ns3/log.h"
 
@@ -65,7 +66,12 @@ CircularApertureAntennaModel::GetTypeId()
                           "The maximum gain value in dB of the antenna",
                           DoubleValue(1),
                           MakeDoubleAccessor(&CircularApertureAntennaModel::SetMaxGain),
-                          MakeDoubleChecker<double>(0.0));
+                          MakeDoubleChecker<double>(0.0))
+            .AddAttribute("ForceGainBounds",
+                          "Force GetGainDb to [AntennaMinGainDb, AntennaMaxGainDb] range",
+                          BooleanValue(true),
+                          MakeBooleanAccessor(&CircularApertureAntennaModel::m_forceGainBounds),
+                          MakeBooleanChecker());
     return tid;
 }
 
@@ -174,6 +180,10 @@ CircularApertureAntennaModel::GetGainDb(Angles a)
         gain = std::cyl_bessel_j(1, kasintheta) / kasintheta;
 #endif
         gain = 10 * log10(4 * gain * gain) + m_maxGain;
+        if (m_forceGainBounds)
+        {
+            gain = std::min(std::max(gain, m_minGain), m_maxGain);
+        }
     }
 
     return gain;

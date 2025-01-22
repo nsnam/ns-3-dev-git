@@ -4,6 +4,7 @@
  *   SPDX-License-Identifier: GPL-2.0-only
  */
 
+#include "ns3/boolean.h"
 #include "ns3/circular-aperture-antenna-model.h"
 #include "ns3/double.h"
 #include "ns3/log.h"
@@ -56,6 +57,7 @@ class CircularApertureAntennaModelTestCase : public TestCase
          * @param testAzimuth test azimuth [rad]
          * @param testInclination test inclination [rad]
          * @param expectedGain the expected gain value [dB]
+         * @param forceGainBounds restrict or not gain range to [antennaMinGainDb, antennaMaxGainDb]
          */
         TestPoint(double antennaMaxGainDb,
                   double antennaMinGainDb,
@@ -63,14 +65,16 @@ class CircularApertureAntennaModelTestCase : public TestCase
                   double operatingFrequency,
                   double testAzimuth,
                   double testInclination,
-                  double expectedGain)
+                  double expectedGain,
+                  bool forceGainBounds)
             : m_antennaMaxGainDb(antennaMaxGainDb),
               m_antennaMinGainDb(antennaMinGainDb),
               m_antennaCircularApertureRadius(antennaCircularApertureRadius),
               m_operatingFrequency(operatingFrequency),
               m_testAzimuth(DegreesToRadians(testAzimuth)),
               m_testInclination(DegreesToRadians(testInclination)),
-              m_expectedGain(expectedGain)
+              m_expectedGain(expectedGain),
+              m_forceGainBounds(forceGainBounds)
         {
         }
 
@@ -81,6 +85,7 @@ class CircularApertureAntennaModelTestCase : public TestCase
         double m_testAzimuth;                   ///< test azimuth [rad]
         double m_testInclination;               ///< test inclination [rad]
         double m_expectedGain;                  ///< the expected gain value [dB]
+        bool m_forceGainBounds;                 ///< enable bounds checking for GetGainDb
     };
 
     /**
@@ -136,7 +141,9 @@ CircularApertureAntennaModelTestCase::TestAntennaGain(TestPoint testPoint)
             "AntennaCircularApertureRadius",
             DoubleValue(testPoint.m_antennaCircularApertureRadius),
             "OperatingFrequency",
-            DoubleValue(testPoint.m_operatingFrequency));
+            DoubleValue(testPoint.m_operatingFrequency),
+            "ForceGainBounds",
+            BooleanValue(testPoint.m_forceGainBounds));
 
     Ptr<UniformPlanarArray> upa =
         CreateObjectWithAttributes<UniformPlanarArray>("AntennaElement",
@@ -164,45 +171,50 @@ CircularApertureAntennaModelTestCase::DoRun()
         // MaxGainDb  MinGainDb  Radius (m)  Freq (Hz)   Azimuth (deg)  Incl (deg)  ExpGain (dB)
         // Test invariant: gain always equal to max gain at boresight (inclination 90, azimuth = 0)
         // for different frequency
-        {30, -30, 0.5, 2e9, 0, 90, 30},
-        {30, -30, 2, 20e9, 0, 90, 30},
+        {30, -30, 0.5, 2e9, 0, 90, 30, false},
+        {30, -30, 2, 20e9, 0, 90, 30, false},
         // Test invariant: gain always equal to max gain at boresight (inclination 90, azimuth = 0)
         // for different max gain
-        {20, -30, 0.5, 2e9, 0, 90, 20},
-        {10, -30, 2, 20e9, 0, 90, 10},
+        {20, -30, 0.5, 2e9, 0, 90, 20, false},
+        {10, -30, 2, 20e9, 0, 90, 10, false},
         // Test invariant: gain always equal to min gain outside of |theta| < 90 deg
         // for different frequency
-        {30, -100, 0.5, 2e9, 0, 0, -100},
-        {30, -100, 2, 20e9, 0, 0, -100},
+        {30, -100, 0.5, 2e9, 0, 0, -100, false},
+        {30, -100, 2, 20e9, 0, 0, -100, false},
         // Test invariant: gain always equal to min gain outside of |theta| < 90 deg
         // for different orientations
-        {30, -100, 0.5, 2e9, 180, 90, -100},
-        {30, -100, 2, 20e9, -180, 90, -100},
+        {30, -100, 0.5, 2e9, 180, 90, -100, false},
+        {30, -100, 2, 20e9, -180, 90, -100, false},
         // Fixed elevation to boresight (90deg) and azimuth varying in [-90, 0] deg with steps of 10
         // degrees
-        {0, -50, 0.10707, 28000000000, -90, 90, -50},
-        {0, -50, 0.10707, 28000000000, -80, 90, -49.8022},
-        {0, -50, 0.10707, 28000000000, -70, 90, -49.1656},
-        {0, -50, 0.10707, 28000000000, -60, 90, -60.9132},
-        {0, -50, 0.10707, 28000000000, -50, 90, -59.2368},
-        {0, -50, 0.10707, 28000000000, -40, 90, -44.6437},
-        {0, -50, 0.10707, 28000000000, -30, 90, -43.9686},
-        {0, -50, 0.10707, 28000000000, -20, 90, -36.3048},
-        {0, -50, 0.10707, 28000000000, -10, 90, -30.5363},
-        {0, -50, 0.10707, 28000000000, 0, 90, 0},
+        {0, -50, 0.10707, 28000000000, -90, 90, -50, false},
+        {0, -50, 0.10707, 28000000000, -80, 90, -49.8022, false},
+        {0, -50, 0.10707, 28000000000, -70, 90, -49.1656, false},
+        {0, -50, 0.10707, 28000000000, -60, 90, -60.9132, false},
+        {0, -50, 0.10707, 28000000000, -60, 90, -50, true},
+        {0, -50, 0.10707, 28000000000, -50, 90, -59.2368, false},
+        {0, -50, 0.10707, 28000000000, -50, 90, -50, true},
+        {0, -50, 0.10707, 28000000000, -40, 90, -44.6437, false},
+        {0, -50, 0.10707, 28000000000, -30, 90, -43.9686, false},
+        {0, -50, 0.10707, 28000000000, -20, 90, -36.3048, false},
+        {0, -50, 0.10707, 28000000000, -10, 90, -30.5363, false},
+        {0, -50, 0.10707, 28000000000, 0, 90, 0, false},
         // Fixed azimuth to boresight (0 deg) and azimuth varying in [0, 90] deg with steps of 9
         // degrees
-        {0, -50, 0.10707, 28e9, 0, 0, -50},
-        {0, -50, 0.10707, 28e9, 0, 9, -49.7256},
-        {0, -50, 0.10707, 28e9, 0, 18, -52.9214},
-        {0, -50, 0.10707, 28e9, 0, 27, -48.6077},
-        {0, -50, 0.10707, 28e9, 0, 36, -60.684},
-        {0, -50, 0.10707, 28e9, 0, 45, -55.1468},
-        {0, -50, 0.10707, 28e9, 0, 54, -42.9648},
-        {0, -50, 0.10707, 28e9, 0, 63, -45.6472},
-        {0, -50, 0.10707, 28e9, 0, 72, -48.6378},
-        {0, -50, 0.10707, 28e9, 0, 81, -35.1613},
-        {0, -50, 0.10707, 28e9, 0, 90, 0}};
+        {0, -50, 0.10707, 28e9, 0, 0, -50, false},
+        {0, -50, 0.10707, 28e9, 0, 9, -49.7256, false},
+        {0, -50, 0.10707, 28e9, 0, 18, -52.9214, false},
+        {0, -50, 0.10707, 28e9, 0, 18, -50, true},
+        {0, -50, 0.10707, 28e9, 0, 27, -48.6077, false},
+        {0, -50, 0.10707, 28e9, 0, 36, -60.684, false},
+        {0, -50, 0.10707, 28e9, 0, 36, -50, true},
+        {0, -50, 0.10707, 28e9, 0, 45, -55.1468, false},
+        {0, -50, 0.10707, 28e9, 0, 45, -50, true},
+        {0, -50, 0.10707, 28e9, 0, 54, -42.9648, false},
+        {0, -50, 0.10707, 28e9, 0, 63, -45.6472, false},
+        {0, -50, 0.10707, 28e9, 0, 72, -48.6378, false},
+        {0, -50, 0.10707, 28e9, 0, 81, -35.1613, false},
+        {0, -50, 0.10707, 28e9, 0, 90, 0, false}};
 
     // Call TestAntennaGain on each test point
     for (auto& point : testPoints)
