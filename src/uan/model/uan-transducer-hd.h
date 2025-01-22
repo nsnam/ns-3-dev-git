@@ -57,7 +57,7 @@ class UanTransducerHd : public UanTransducer
   private:
     State m_state;             //!< Transducer state.
     ArrivalList m_arrivalList; //!< List of arriving packets which overlap in time.
-    UanPhyList m_phyList;      //!< List of physical layers attached above this tranducer.
+    UanPhyList m_phyList;      //!< List of physical layers attached above this transducer.
     Ptr<UanChannel> m_channel; //!< The attached channel.
     EventId m_endTxEvent;      //!< Event scheduled for end of transmission.
     Time m_endTxTime;          //!< Time at which transmission will be completed.
