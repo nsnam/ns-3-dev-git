@@ -12,6 +12,7 @@
 
 #include "ns3/matrix-array.h"
 #include "ns3/object.h"
+#include "ns3/symmetric-adjacency-matrix.h"
 
 #include <complex>
 
@@ -243,13 +244,30 @@ class PhasedArrayModel : public Object
      */
     uint32_t GetId() const;
 
+    /**
+     * Returns whether the channel needs to be updated due to antenna setting changes.
+     * @param antennaB the second antenna of the pair for the channel we want to check
+     * @return whether a channel update is needed due to antenna settings changes
+     */
+    bool IsChannelOutOfDate(Ptr<const PhasedArrayModel> antennaB) const;
+
   protected:
+    /**
+     * After changing the antenna settings, InvalidateChannels() should be called to mark
+     * up-to-date channels as out-of-date
+     */
+    void InvalidateChannels() const;
+
     ComplexVector m_beamformingVector;  //!< the beamforming vector in use
     Ptr<AntennaModel> m_antennaElement; //!< the model of the antenna element in use
     bool m_isBfVectorValid;             //!< ensures the validity of the beamforming vector
     static uint32_t
         m_idCounter;  //!< the ID counter that is used to determine the unique antenna array ID
     uint32_t m_id{0}; //!< the ID of this antenna array instance
+    static SymmetricAdjacencyMatrix<bool>
+        m_outOfDateAntennaPairChannel; //!< matrix indicating whether a channel matrix between a
+                                       //!< pair of antennas needs to be updated after a change in
+                                       //!< one of the antennas configurations
 };
 
 } /* namespace ns3 */

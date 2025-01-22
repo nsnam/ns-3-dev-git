@@ -18,6 +18,7 @@ namespace ns3
 {
 
 uint32_t PhasedArrayModel::m_idCounter = 0;
+SymmetricAdjacencyMatrix<bool> PhasedArrayModel::m_outOfDateAntennaPairChannel;
 
 NS_LOG_COMPONENT_DEFINE("PhasedArrayModel");
 
@@ -27,6 +28,8 @@ PhasedArrayModel::PhasedArrayModel()
     : m_isBfVectorValid{false}
 {
     m_id = m_idCounter++;
+    m_outOfDateAntennaPairChannel.AddRow();
+    m_outOfDateAntennaPairChannel.SetValueAdjacent(m_id, true);
 }
 
 PhasedArrayModel::~PhasedArrayModel()
@@ -135,6 +138,23 @@ uint32_t
 PhasedArrayModel::GetId() const
 {
     return m_id;
+}
+
+bool
+PhasedArrayModel::IsChannelOutOfDate(Ptr<const PhasedArrayModel> antennaB) const
+{
+    // Check that channel needs update
+    bool needsUpdate = m_outOfDateAntennaPairChannel.GetValue(m_id, antennaB->m_id);
+
+    // Assume the channel will be updated (needsUpdate == true), reset these
+    m_outOfDateAntennaPairChannel.SetValue(m_id, antennaB->m_id, false);
+    return needsUpdate;
+}
+
+void
+PhasedArrayModel::InvalidateChannels() const
+{
+    m_outOfDateAntennaPairChannel.SetValueAdjacent(m_id, true);
 }
 
 } /* namespace ns3 */

@@ -2464,8 +2464,9 @@ ThreeGppChannelModel::AntennaSetupChanged(Ptr<const PhasedArrayModel> aAntenna,
     size_t uAntNumElems = bAntenna->GetNumElems();
     size_t chanNumRows = channelMatrix->m_channel.GetNumRows();
     size_t chanNumCols = channelMatrix->m_channel.GetNumCols();
-    return ((uAntNumElems != chanNumRows) || (sAntNumElems != chanNumCols)) &&
-           ((uAntNumElems != chanNumCols) || (sAntNumElems != chanNumRows));
+    return (((uAntNumElems != chanNumRows) || (sAntNumElems != chanNumCols)) &&
+            ((uAntNumElems != chanNumCols) || (sAntNumElems != chanNumRows))) ||
+           aAntenna->IsChannelOutOfDate(bAntenna);
 }
 
 Ptr<const MatrixBasedChannelModel::ChannelMatrix>

@@ -106,6 +106,7 @@ UniformPlanarArray::SetNumColumns(uint32_t n)
     if (n != m_numColumns)
     {
         m_isBfVectorValid = false;
+        InvalidateChannels();
     }
     m_numColumns = n;
 }
@@ -123,6 +124,7 @@ UniformPlanarArray::SetNumRows(uint32_t n)
     if (n != m_numRows)
     {
         m_isBfVectorValid = false;
+        InvalidateChannels();
     }
     m_numRows = n;
 }
@@ -139,6 +141,7 @@ UniformPlanarArray::SetAlpha(double alpha)
     m_alpha = alpha;
     m_cosAlpha = cos(m_alpha);
     m_sinAlpha = sin(m_alpha);
+    InvalidateChannels();
 }
 
 void
@@ -147,6 +150,7 @@ UniformPlanarArray::SetBeta(double beta)
     m_beta = beta;
     m_cosBeta = cos(m_beta);
     m_sinBeta = sin(m_beta);
+    InvalidateChannels();
 }
 
 void
@@ -155,6 +159,7 @@ UniformPlanarArray::SetPolSlant(double polSlant)
     m_polSlant = polSlant;
     m_cosPolSlant[0] = cos(m_polSlant);
     m_sinPolSlant[0] = sin(m_polSlant);
+    InvalidateChannels();
 }
 
 void
@@ -166,6 +171,7 @@ UniformPlanarArray::SetAntennaHorizontalSpacing(double s)
     if (s != m_disH)
     {
         m_isBfVectorValid = false;
+        InvalidateChannels();
     }
     m_disH = s;
 }
@@ -185,6 +191,7 @@ UniformPlanarArray::SetAntennaVerticalSpacing(double s)
     if (s != m_disV)
     {
         m_isBfVectorValid = false;
+        InvalidateChannels();
     }
     m_disV = s;
 }
@@ -292,6 +299,7 @@ UniformPlanarArray::SetNumVerticalPorts(uint16_t nPorts)
     NS_ASSERT_MSG(((m_numRows % nPorts) == 0),
                   "The number of vertical ports must divide number of rows");
     m_numVPorts = nPorts;
+    InvalidateChannels();
 }
 
 void
@@ -301,6 +309,7 @@ UniformPlanarArray::SetNumHorizontalPorts(uint16_t nPorts)
     NS_ASSERT_MSG(((m_numColumns % nPorts) == 0),
                   "The number of horizontal ports must divide number of columns");
     m_numHPorts = nPorts;
+    InvalidateChannels();
 }
 
 uint16_t
@@ -380,6 +389,7 @@ UniformPlanarArray::SetDualPol(bool isDualPol)
         m_cosPolSlant[1] = cos(m_polSlant - M_PI / 2);
         m_sinPolSlant[1] = sin(m_polSlant - M_PI / 2);
     }
+    InvalidateChannels();
 }
 
 double
