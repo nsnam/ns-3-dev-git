@@ -75,7 +75,7 @@ class LoopbackNetDevice : public NetDevice
 
   private:
     /**
-     * Receive a packet from tge Loopback NetDevice.
+     * Receive a packet from the Loopback NetDevice.
      *
      * @param packet a reference to the received packet
      * @param protocol the protocol
