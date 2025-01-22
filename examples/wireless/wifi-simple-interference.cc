@@ -122,7 +122,7 @@ ReceivePacket(Ptr<Socket> socket)
 /**
  * Generate traffic
  *
- * @param socket The seding socket.
+ * @param socket The sending socket.
  * @param pktSize The packet size.
  * @param pktCount The packet counter.
  * @param pktInterval The interval between two packets.

@@ -1935,11 +1935,11 @@ ContextToMac(std::string context)
 // Functions for tracing.
 
 /**
- * Incremement the counter for a given address.
+ * Increment the counter for a given address.
  *
  * @param [out] counter The counter to increment.
- * @param addr The address to incremement the counter for.
- * @param increment The incremement (1 if omitted).
+ * @param addr The address to increment the counter for.
+ * @param increment The increment (1 if omitted).
  */
 void
 IncrementCounter(std::map<Mac48Address, uint64_t>& counter,

@@ -548,7 +548,7 @@ WifiPrimaryChannelsTest::DoRun()
      * |     |-----|     |-----|     |-----|     |-----|
      *
      * Then, we double the transmission channel width. We will have four rounds
-     * of transmissions. We avoid using adjacent channels to avoid interfence
+     * of transmissions. We avoid using adjacent channels to avoid interference
      * among transmissions:
      *
      *      AP0                     AP4
@@ -607,7 +607,7 @@ WifiPrimaryChannelsTest::DoRun()
 
     // To have simultaneous transmissions on adjacent channels, just initialize
     // nRounds to 1 and nApsPerRound to m_channelWidth / 20. Of course, the test
-    // will fail because some stations will not receive some frames due to interfence
+    // will fail because some stations will not receive some frames due to interference
     uint16_t nRounds = 2;
     uint16_t nApsPerRound = Count20MHzSubchannels(m_channelWidth) / 2;
     for (MHz_u txChannelWidth{20}; txChannelWidth <= m_channelWidth;
