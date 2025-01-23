@@ -1512,10 +1512,12 @@ EMLSR clients:
     switching and be operating on the link the ICF is received on at the end of the ICF reception
 
 * The ``StaWifiMac::EmlsrLinkSwitch`` trace provides information about start/end of EMLSR link
-  switch events: when a PHY operating on a link starts switching to another link, the trace provides
-  the ID of the link the PHY is leaving and a null pointer (indicating that no PHY is operating on
-  that link); when a PHY completes switching to a link, the trace provides the ID of the link and a
-  pointer to the PHY (which is now operating on that link)
+  switch events. This trace is fired: (i) when a PHY operating on a link starts switching to
+  another link, thus the PHY is disconnected from the previous link; (ii) when a PHY is connected
+  to a new link after performing a channel switch. This trace provides: the ID of the previous link,
+  in case the PHY is disconnected, or the ID of the new link, in case the PHY is connected; a
+  pointer to the PHY that switches link; a boolean value indicating if the PHY is connected to
+  (true) or disconnected from (false) the given link
 * The ``EmlsrManager::MainPhySwitch`` trace is fired when the main PHY switches channel to operate
   on another link. Information associated with the main PHY switch is provided through a struct
   that is inherited from ``struct EmlsrMainPhySwitchTrace``. Different inherited structs are defined

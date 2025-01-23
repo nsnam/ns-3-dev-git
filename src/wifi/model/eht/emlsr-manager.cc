@@ -208,39 +208,64 @@ EmlsrManager::DoSetWifiMac(Ptr<StaWifiMac> mac)
 }
 
 void
-EmlsrManager::EmlsrLinkSwitchCallback(uint8_t linkId, Ptr<WifiPhy> phy)
+EmlsrManager::EmlsrLinkSwitchCallback(uint8_t linkId, Ptr<WifiPhy> phy, bool connected)
 {
-    NS_LOG_FUNCTION(this << linkId << phy);
+    NS_LOG_FUNCTION(this << linkId << phy << connected);
 
-    if (!phy)
+    // TODO the ScheduleNow calls in this function can be removed once we get rid of the
+    // instantaneous main PHY switch at the end of ICF reception
+
+    if (!connected)
     {
-        NS_ASSERT(!m_noPhySince.contains(linkId));
+        NS_ASSERT_MSG(phy->GetPhyId() == m_mainPhyId,
+                      "Main PHY only is expected to leave a link on which it is operating");
         NS_LOG_DEBUG("Record that no PHY is operating on link " << +linkId);
-        m_noPhySince[linkId] = Simulator::Now();
+
+        if (phy->GetChannelSwitchDelay().IsZero())
+        {
+            // a PHY that was operating on a link has left the link and the channel switch delay is
+            // zero; this must be an instantaneous switch of the main PHY at the end of ICF
+            // reception. ScheduleNow the setting of m_noPhySince to get the "real" channel switch
+            // delay, so that the actual time the main PHY started switching can be determined. Due
+            // to this scheduling, all other actions must be scheduled now, too
+            Simulator::ScheduleNow([=, this]() {
+                NS_ASSERT(!m_noPhySince.contains(linkId));
+                m_noPhySince[linkId] = Simulator::Now() - phy->GetChannelSwitchDelay();
+            });
+        }
+        else
+        {
+            Simulator::ScheduleNow([=, this]() {
+                NS_ASSERT(!m_noPhySince.contains(linkId));
+                m_noPhySince[linkId] = Simulator::Now();
+            });
+        }
         return;
     }
 
-    // phy switched to operate on the link with ID equal to linkId
-    auto it = m_noPhySince.find(linkId);
+    Simulator::ScheduleNow([=, this]() {
+        // phy switched to operate on the link with ID equal to linkId
+        auto it = m_noPhySince.find(linkId);
 
-    if (it == m_noPhySince.end())
-    {
-        // phy switched to a link on which another PHY was operating, do nothing
-        return;
-    }
+        if (it == m_noPhySince.end())
+        {
+            // phy switched to a link on which another PHY was operating, do nothing
+            return;
+        }
 
-    auto duration = Simulator::Now() - it->second;
-    NS_ASSERT_MSG(duration.IsPositive(), "Interval duration should not be negative");
+        auto duration = Simulator::Now() - it->second;
+        NS_ASSERT_MSG(duration.IsPositive(), "Interval duration should not be negative");
 
-    NS_LOG_DEBUG("PHY " << +phy->GetPhyId() << " switched to link " << +linkId << " after "
-                        << duration.As(Time::US)
-                        << " since last time a PHY was operating on this link");
-    if (duration > MicroSeconds(MEDIUM_SYNC_THRESHOLD_USEC))
-    {
-        StartMediumSyncDelayTimer(linkId);
-    }
+        NS_LOG_DEBUG("PHY " << +phy->GetPhyId() << " switched to link " << +linkId << " after "
+                            << duration.As(Time::US)
+                            << " since last time a PHY was operating on this link");
+        if (duration > MicroSeconds(MEDIUM_SYNC_THRESHOLD_USEC))
+        {
+            StartMediumSyncDelayTimer(linkId);
+        }
 
-    m_noPhySince.erase(it);
+        m_noPhySince.erase(it);
+    });
 }
 
 void

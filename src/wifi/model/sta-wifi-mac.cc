@@ -146,11 +146,15 @@ StaWifiMac::GetTypeId()
                             MakeTraceSourceAccessor(&StaWifiMac::m_beaconInfo),
                             "ns3::ApInfo::TracedCallback")
             .AddTraceSource("EmlsrLinkSwitch",
-                            "Trace start/end of EMLSR link switch events: when a PHY operating on "
-                            "a link starts switching, provides the ID of the link and a null "
-                            "pointer (indicating no PHY is operating on that link); when a PHY "
-                            "completes switching to a link, provides the ID of the link and a "
-                            "pointer to the PHY (that is now operating on that link)",
+                            "Trace start/end of EMLSR link switch events. Specifically, this trace "
+                            "is fired: (i) when a PHY _operating on a link_ starts switching to "
+                            "another link, thus the PHY is disconnected from the previous link; "
+                            "(ii) when a PHY is connected to a new link after performing a channel "
+                            "switch. This trace provides: the ID of the previous link, in "
+                            "case the PHY is disconnected, or the ID of the new link, in case the "
+                            "PHY is connected; a pointer to the PHY that switches link; a boolean "
+                            "value indicating if the PHY is connected to (true) or disconnected "
+                            "from (false) the given link.",
                             MakeTraceSourceAccessor(&StaWifiMac::m_emlsrLinkSwitchLogger),
                             "ns3::StaWifiMac::EmlsrLinkSwitchCallback");
     return tid;
@@ -2103,15 +2107,23 @@ StaWifiMac::NotifySwitchingEmlsrLink(Ptr<WifiPhy> phy, uint8_t linkId, Time dela
 {
     NS_LOG_FUNCTION(this << phy << linkId << delay.As(Time::US));
 
-    // If the PHY is switching channel to operate on another link, then it is no longer operating
-    // on the current link. If any link (other than the current link) points to the PHY that is
-    // switching channel, reset the phy pointer of the link
+    // if the PHY that is starting a channel switch was operating on a link (i.e., there is a link,
+    // other than the new link, that points to the PHY), then it is no longer operating on that
+    // link and we have to reset the phy pointer of the link.
     for (auto& [id, link] : GetLinks())
     {
         if (link->phy == phy && id != linkId)
         {
+            // we do not get here if the PHY is not operating on any link, which happens if:
+            // - PHY is an aux PHY to reconnect to its link
+            // - PHY is an aux PHY that is starting switching to the link previously occupied by the
+            //   main PHY (because the main PHY is now operating on the aux PHY link)
+            // - PHY is the main PHY that completed the channel switch but connecting it to the link
+            //   was postponed until now (e.g. because the aux PHY on the link was receiving an ICF)
+            // - PHY is the main PHY that was switching, the switch was interrupted and it is
+            //   now starting switching to another link
             link->phy = nullptr;
-            m_emlsrLinkSwitchLogger(id, nullptr);
+            m_emlsrLinkSwitchLogger(id, phy, false);
         }
     }
 
@@ -2134,7 +2146,7 @@ StaWifiMac::NotifySwitchingEmlsrLink(Ptr<WifiPhy> phy, uint8_t linkId, Time dela
         // Connect the station manager on the new link to the given PHY
         newLink.stationManager->SetupPhy(phy);
         // log link switch
-        m_emlsrLinkSwitchLogger(linkId, phy);
+        m_emlsrLinkSwitchLogger(linkId, phy, true);
     };
 
     // cancel any pending event for the given PHY to switch link

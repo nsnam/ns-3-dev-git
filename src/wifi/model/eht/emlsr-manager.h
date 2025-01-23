@@ -440,10 +440,11 @@ class EmlsrManager : public Object
     /**
      * Callback connected to the EmlsrLinkSwitch trace source of StaWifiMac.
      *
-     * @param linkId the ID of the link involved in the EMLSR link switch event
-     * @param phy a pointer to the PHY involved in the EMLSR link switch event
+     * @param linkId the ID of the link which the PHY is connected to/disconnected from
+     * @param phy a pointer to the PHY that is connected to/disconnected from the given link
+     * @param connected true if the PHY is connected, false if the PHY is disconnected
      */
-    virtual void EmlsrLinkSwitchCallback(uint8_t linkId, Ptr<WifiPhy> phy);
+    virtual void EmlsrLinkSwitchCallback(uint8_t linkId, Ptr<WifiPhy> phy, bool connected);
 
     /**
      * Set the CCA ED threshold (if needed) on the given PHY that is switching channel to
