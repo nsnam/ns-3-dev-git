@@ -443,7 +443,10 @@ endfunction()
 function(separate_ns3_from_non_ns3_libs libname libraries_to_link
          ns_libraries_to_link non_ns_libraries_to_link
 )
-  set(non_ns_libs ${CMAKE_THREAD_LIBS_INIT})
+  set(non_ns_libs)
+  if(DEFINED CMAKE_THREAD_LIBS_INIT)
+    list(APPEND non_ns_libs ${CMAKE_THREAD_LIBS_INIT})
+  endif()
   set(ns_libs)
   foreach(library ${libraries_to_link})
     remove_lib_prefix("${library}" module_name)
