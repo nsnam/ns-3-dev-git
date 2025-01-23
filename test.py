@@ -1253,7 +1253,7 @@ def run_tests():
             build_cmd = "./ns3"
 
         if sys.platform == "win32":
-            build_cmd = sys.executable + " " + build_cmd
+            build_cmd = f'"{sys.executable}" {build_cmd}'
 
         if args.verbose:
             print("Building: %s" % build_cmd)
