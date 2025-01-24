@@ -105,7 +105,7 @@ if(${CLANG} AND APPLE)
   set(STATIC_LINK_FLAGS "")
 endif()
 
-if(${NS3_FAST_LINKERS})
+if(${NS3_FAST_LINKERS} AND (NOT ${MSVC}))
   # Search for faster linkers mold and lld, and use them if available
   mark_as_advanced(MOLD LLD)
   find_program(MOLD mold)
