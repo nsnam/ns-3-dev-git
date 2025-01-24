@@ -73,6 +73,7 @@ if("${CMAKE_CXX_COMPILER_ID}" MATCHES "MSVC" OR "${CMAKE_CXX_SIMULATE_ID}"
                                                 MATCHES "MSVC"
 )
   set(MSVC True)
+  set(NS3_INT64X64 "CAIRO" CACHE STRING "Int64x64 implementation" FORCE)
 else()
   set(MSVC False)
 endif()
