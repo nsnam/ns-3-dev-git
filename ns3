@@ -771,7 +771,12 @@ def search_cmake_cache(build_profile):
 
     if not current_cmake_generator:
         # Search for available generators
-        cmake_generator_map = {"ninja": "Ninja", "make": "Unix Makefiles", "xcodebuild": "Xcode"}
+        cmake_generator_map = {
+            "msbuild": "Visual Studio 17 2022",
+            "ninja": "Ninja",
+            "make": "Unix Makefiles",
+            "xcodebuild": "Xcode",
+        }
         available_generators = []
         for generator in cmake_generator_map.keys():
             if shutil.which(generator):
@@ -949,6 +954,8 @@ def configure_cmake(
     # Try to set specified generator (will probably fail if there is an old cache)
     if args.G:
         cmake_args.extend(["-G", args.G])
+        if "Visual Studio" in args.G:
+            cmake_args.extend(["-A", "x64", "-T", "ClangCL"])
 
     if args.trace_cmake_perf:
         cmake_performance_trace = os.path.join(
