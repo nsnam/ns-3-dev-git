@@ -812,8 +812,7 @@ WifiPhyOperatingChannel::GetAll20MHzChannelIndicesInSecondary(
 std::set<uint8_t>
 WifiPhyOperatingChannel::Get20MHzIndicesCoveringRu(WifiRu::RuSpec ru, MHz_u width) const
 {
-    auto ruType = WifiRu::GetRuType(ru);
-    auto ruIndex = WifiRu::GetIndex(ru);
+    const auto ruType = WifiRu::GetRuType(ru);
 
     NS_ASSERT_MSG(WifiRu::GetBandwidth(ruType) <= width,
                   "No RU of type " << ruType << " is contained in a " << width << " MHz channel");
@@ -822,7 +821,7 @@ WifiPhyOperatingChannel::Get20MHzIndicesCoveringRu(WifiRu::RuSpec ru, MHz_u widt
                                       << GetTotalWidth() << ")");
 
     // handle first the special case of center 26-tone RUs
-    if (ruType == RuType::RU_26_TONE && ruIndex == 19)
+    if (const auto ruIndex = WifiRu::GetIndex(ru); ruType == RuType::RU_26_TONE && ruIndex == 19)
     {
         NS_ASSERT_MSG(WifiRu::IsHe(ru), "Center 26-tone RUs can only be used with HE");
         NS_ASSERT_MSG(width >= MHz_u{80},
@@ -837,31 +836,14 @@ WifiPhyOperatingChannel::Get20MHzIndicesCoveringRu(WifiRu::RuSpec ru, MHz_u widt
         return indices;
     }
 
-    if (ruType == RuType::RU_26_TONE && ruIndex > 19)
+    auto ruPhyIndex = WifiRu::GetPhyIndex(ru, width, m_primary20Index);
+    if (ruType == RuType::RU_26_TONE && ruPhyIndex > 19)
     {
         // "ignore" the center 26-tone RUs in 80 MHz channels
-        ruIndex--;
-        if (ruIndex > 37)
+        ruPhyIndex--;
+        if (ruPhyIndex > 37)
         {
-            NS_ASSERT(WifiRu::IsEht(ru));
-            ruIndex -= (ruIndex - 19) / 37;
-        }
-    }
-
-    // if the HE RU refers to a 160 MHz channel, we have to update the RU index (which refers to an
-    // 80 MHz channel) if the RU is not in the lower 80 MHz channel
-    if (width == MHz_u{160} && WifiRu::IsHe(ru))
-    {
-        bool primary80IsLower80 = (m_primary20Index < 4);
-        if (primary80IsLower80 != std::get<HeRu::RuSpec>(ru).GetPrimary80MHz())
-        {
-            auto nRusIn80MHz = HeRu::GetNRus(MHz_u{80}, ruType);
-            // "ignore" the center 26-tone RU in an 80 MHz channel
-            if (ruType == RuType::RU_26_TONE)
-            {
-                nRusIn80MHz--;
-            }
-            ruIndex += nRusIn80MHz;
+            ruPhyIndex -= (ruPhyIndex - 19) / 37;
         }
     }
 
@@ -896,7 +878,7 @@ WifiPhyOperatingChannel::Get20MHzIndicesCoveringRu(WifiRu::RuSpec ru, MHz_u widt
                         ruType,
                         WifiRu::IsHe(ru) ? WIFI_MOD_CLASS_HE : WIFI_MOD_CLASS_EHT);
     // compute the index (starting at 0) of the covering channel within the given width
-    std::size_t indexOfCoveringChannelInGivenWidth = (ruIndex - 1) / nRusInCoveringChannel;
+    std::size_t indexOfCoveringChannelInGivenWidth = (ruPhyIndex - 1) / nRusInCoveringChannel;
 
     // expand the index of the covering channel in the indices of its constituent
     // 20 MHz channels (within the given width)

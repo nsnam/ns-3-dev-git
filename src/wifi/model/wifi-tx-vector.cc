@@ -799,7 +799,7 @@ WifiTxVector::DeriveRuAllocation(uint8_t p20Index) const
     for (const auto& [ru, staIds] : orderedMap)
     {
         const auto ruType = WifiRu::GetRuType(ru);
-        auto ruIndex = WifiRu::GetIndex(ru);
+        auto ruIndex = WifiRu::GetPhyIndex(ru, m_channelWidth, p20Index);
         if ((ruType == RuType::RU_26_TONE) && (ruIndex == 19))
         {
             continue;
@@ -811,25 +811,12 @@ WifiTxVector::DeriveRuAllocation(uint8_t p20Index) const
             WifiRu::GetRusOfType(ruBw > MHz_u{20} ? ruBw : MHz_u{20}, ruType, mc);
         if ((m_channelWidth >= MHz_u{80}) && (ruIndex > 19))
         {
-            // take into account the center 26-tone RU in the low 80 MHz
+            // "ignore" the center 26-tone RUs in 80 MHz channels
             ruIndex--;
-        }
-        const auto isPrimary80MHz = std::get<HeRu::RuSpec>(ru).GetPrimary80MHz();
-        const auto primary80IsLower80 = (p20Index < m_channelWidth / MHz_u{40});
-        const auto isLow80 =
-            (primary80IsLower80 && isPrimary80MHz) || (!primary80IsLower80 && !isPrimary80MHz);
-        if ((m_channelWidth > MHz_u{80}) && !isLow80 && (ruIndex > 19))
-        {
-            // take into account the center 26-tone RU in the high 80 MHz
-            ruIndex--;
-        }
-        if ((m_channelWidth > MHz_u{80}) && !isLow80 &&
-            (ruType != WifiRu::GetRuType(m_channelWidth)))
-        {
-            // adjust RU index for the high 80 MHz: in that case index is restarting at 1,
-            // hence we need to add an offset corresponding to the number of RUs of the same type in
-            // the low 80 MHz
-            ruIndex += HeRu::GetRusOfType(MHz_u{80}, ruType).size();
+            if (ruIndex > 37)
+            {
+                ruIndex -= (ruIndex - 19) / 37;
+            }
         }
         const auto numSubchannelsForRu = (ruBw < MHz_u{20}) ? 1 : Count20MHzSubchannels(ruBw);
         const auto index = (ruBw < MHz_u{20}) ? ((ruIndex - 1) / rusPerSubchannel.size())
