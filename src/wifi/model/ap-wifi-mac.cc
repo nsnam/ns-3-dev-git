@@ -783,7 +783,7 @@ ApWifiMac::GetMultiLinkElement(uint8_t linkId,
     auto ehtConfiguration = GetEhtConfiguration();
     NS_ASSERT(ehtConfiguration);
 
-    if (ehtConfiguration->m_emlsrActivated)
+    if (ehtConfiguration->GetEmlsrActivated())
     {
         mle.SetEmlsrSupported(true);
         // When the EMLSR Padding Delay subfield is included in a frame sent by an AP affiliated
@@ -2425,7 +2425,7 @@ ApWifiMac::ReceiveEmlOmn(MgtEmlOmn& frame, const Mac48Address& sender, uint8_t l
 
     auto ehtConfiguration = GetEhtConfiguration();
 
-    if (!ehtConfiguration || !ehtConfiguration->m_emlsrActivated)
+    if (!ehtConfiguration || !ehtConfiguration->GetEmlsrActivated())
     {
         NS_LOG_DEBUG(
             "Received an EML Operating Mode Notification frame but EMLSR is not activated");

@@ -184,7 +184,7 @@ EmlsrManager::SetWifiMac(Ptr<StaWifiMac> mac)
     m_staMac = mac;
 
     NS_ABORT_MSG_IF(!m_staMac->GetEhtConfiguration(), "EmlsrManager requires EHT support");
-    NS_ABORT_MSG_IF(!m_staMac->GetEhtConfiguration()->m_emlsrActivated,
+    NS_ABORT_MSG_IF(!m_staMac->GetEhtConfiguration()->GetEmlsrActivated(),
                     "EmlsrManager requires EMLSR to be activated");
     NS_ABORT_MSG_IF(m_staMac->GetTypeOfStation() != STA,
                     "EmlsrManager can only be installed on non-AP MLDs");

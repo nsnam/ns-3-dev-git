@@ -152,7 +152,7 @@ WifiMacHelper::Create(Ptr<WifiNetDevice> device, WifiStandard standard) const
     // create and install the EMLSR Manager if this is an EHT non-AP device with EMLSR activated
     // and association type set to ML setup
     if (standard >= WIFI_STANDARD_80211be && staMac &&
-        device->GetEhtConfiguration()->m_emlsrActivated &&
+        device->GetEhtConfiguration()->GetEmlsrActivated() &&
         staMac->GetAssocType() == WifiAssocType::ML_SETUP)
     {
         auto emlsrManager = m_emlsrManager.Create<EmlsrManager>();
@@ -161,7 +161,7 @@ WifiMacHelper::Create(Ptr<WifiNetDevice> device, WifiStandard standard) const
 
     // create and install the AP EMLSR Manager if this is an EHT AP MLD with EMLSR activated
     if (standard >= WIFI_STANDARD_80211be && apMac && apMac->GetNLinks() > 1 &&
-        device->GetEhtConfiguration()->m_emlsrActivated)
+        device->GetEhtConfiguration()->GetEmlsrActivated())
     {
         auto apEmlsrManager = m_apEmlsrManager.Create<ApEmlsrManager>();
         apMac->SetApEmlsrManager(apEmlsrManager);
