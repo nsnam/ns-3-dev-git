@@ -942,9 +942,20 @@ ThreeGppSpectrumPropagationLossModelTest::DoRun()
         (rxParamsOld->spectrumChannelMatrix->GetNumRows() == 1))
     {
         // this is only really true in case of SISO (1x1 non-polarized port array)
-        NS_TEST_ASSERT_MSG_EQ((*rxParamsOld->psd == *rxParamsNew->psd),
-                              true,
+        const auto& oldValues = rxParamsOld->psd->GetValues();
+        const auto& newValues = rxParamsNew->psd->GetValues();
+
+        NS_TEST_ASSERT_MSG_EQ(oldValues.size(),
+                              newValues.size(),
                               "The long term for the direct and the reverse channel are different");
+        for (size_t i = 0; i < oldValues.size(); i++)
+        {
+            NS_TEST_ASSERT_MSG_EQ_TOL(
+                oldValues.at(i),
+                newValues.at(i),
+                1e-9,
+                "The long term for the direct and the reverse channel are different");
+        }
     }
 
     // 2) check if the long term is updated when changing the BF vector
