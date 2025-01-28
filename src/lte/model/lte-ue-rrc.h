@@ -23,6 +23,7 @@
 #include "lte-ue-cphy-sap.h"
 
 #include "ns3/deprecated.h"
+#include "ns3/lte-export.h"
 #include "ns3/object.h"
 #include "ns3/packet.h"
 #include "ns3/traced-callback.h"
@@ -50,7 +51,7 @@ namespace ns3
  *  - time-to-trigger check is always performed before the reporting, so there
  *    would still be chance for it to cancel the reporting if necessary.
  */
-extern const Time UE_MEASUREMENT_REPORT_DELAY;
+LTE_EXPORT extern const Time UE_MEASUREMENT_REPORT_DELAY;
 
 class LteRlc;
 class LteMacSapProvider;
