@@ -245,9 +245,11 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
      * is not involved in any DL or UL TXOP on another link.
      *
      * @param address the link MAC address of the given EMLSR client
+     * @param checkThisLink whether to check if the EMLSR client is involved in a DL TXOP on
+     *                      this link
      * @return whether transmissions could be unblocked
      */
-    bool UnblockEmlsrLinksIfAllowed(Mac48Address address);
+    bool UnblockEmlsrLinksIfAllowed(Mac48Address address, bool checkThisLink);
 
   private:
     /**

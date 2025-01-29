@@ -101,6 +101,7 @@ QosFrameExchangeManager::SendCfEndIfNeeded()
                             &QosFrameExchangeManager::NotifyChannelReleased,
                             this,
                             m_edca);
+        ResetTxNav();
         return true;
     }
 
@@ -674,7 +675,7 @@ QosFrameExchangeManager::TransmissionFailed(bool forceCurrentCw)
     m_initialFrame = false;
     m_sentFrameTo.clear();
     // reset TXNAV because transmission failed
-    m_txNav = Simulator::Now();
+    ResetTxNav();
 }
 
 void

@@ -1367,14 +1367,8 @@ HtFrameExchangeManager::ForwardPsduDown(Ptr<const WifiPsdu> psdu, WifiTxVector& 
         txVector.SetAggregation(true);
     }
 
-    auto txDuration = WifiPhy::CalculateTxDuration(psdu, txVector, m_phy->GetPhyBand());
-    // The TXNAV timer is a single timer, shared by the EDCAFs within a STA, that is initialized
-    // with the duration from the Duration/ID field in the frame most recently successfully
-    // transmitted by the TXOP holder, except for PS-Poll frames. (Sec.10.23.2.2 IEEE 802.11-2020)
-    if (!psdu->GetHeader(0).IsPsPoll())
-    {
-        m_txNav = Max(m_txNav, Simulator::Now() + txDuration + psdu->GetDuration());
-    }
+    const auto txDuration = WifiPhy::CalculateTxDuration(psdu, txVector, m_phy->GetPhyBand());
+    SetTxNav(*psdu->begin(), txDuration);
 
     m_phy->Send(psdu, txVector);
 }

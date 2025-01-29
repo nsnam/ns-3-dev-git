@@ -580,9 +580,9 @@ EhtFrameExchangeManager::IntraBssNavResetTimeout()
 }
 
 bool
-EhtFrameExchangeManager::UnblockEmlsrLinksIfAllowed(Mac48Address address)
+EhtFrameExchangeManager::UnblockEmlsrLinksIfAllowed(Mac48Address address, bool checkThisLink)
 {
-    NS_LOG_FUNCTION(this << address);
+    NS_LOG_FUNCTION(this << address << checkThisLink);
 
     auto mldAddress = GetWifiRemoteStationManager()->GetMldAddress(address);
     NS_ASSERT_MSG(mldAddress, "MLD address not found for " << address);
@@ -634,9 +634,8 @@ EhtFrameExchangeManager::UnblockEmlsrLinksIfAllowed(Mac48Address address)
             return false;
         }
 
-        if (linkId == m_linkId)
+        if (linkId == m_linkId && !checkThisLink)
         {
-            // no need to check if the EMLSR client is involved in a DL TXOP on this link
             continue;
         }
 
@@ -670,8 +669,8 @@ EhtFrameExchangeManager::EmlsrSwitchToListening(Mac48Address address, const Time
     NS_ASSERT_MSG(mldAddress, "MLD address not found for " << address);
     NS_ASSERT_MSG(m_apMac, "This function shall only be called by AP MLDs");
 
-    auto blockLinks = [=, this]() {
-        if (!UnblockEmlsrLinksIfAllowed(address))
+    auto blockLinks = [=, this](bool checkThisLink) {
+        if (!UnblockEmlsrLinksIfAllowed(address, checkThisLink))
         {
             NS_LOG_DEBUG("Could not unblock transmissions to " << address);
             return;
@@ -709,7 +708,16 @@ EhtFrameExchangeManager::EmlsrSwitchToListening(Mac48Address address, const Time
                                                   Simulator::Schedule(endDelay, unblockLinks));
     };
 
-    delay.IsZero() ? blockLinks() : static_cast<void>(Simulator::Schedule(delay, blockLinks));
+    // it makes sense to check if the EMLSR client is involved in a DL TXOP on this link only if
+    // the transition delay start is scheduled to start after some delay, because the AP MLD may
+    // start another DL TXOP in the meantime. An example is when the AP MLD terminates a TXOP on
+    // this link due to the remaining TXOP time being not enough to send another frame (not even a
+    // CF-End), delays the start of the transition delay to align with the EMLSR client (which is
+    // waiting for a SIFS + slot + PHY RXSTART delay after the last frame to switch to listening
+    // operations), gains channel access on this link again before starting the transition delay
+    // timer and sends an ICF.
+    delay.IsZero() ? blockLinks(false)
+                   : static_cast<void>(Simulator::Schedule(delay, [=]() { blockLinks(true); }));
 }
 
 void
@@ -922,8 +930,8 @@ EhtFrameExchangeManager::SwitchToListeningOrUnblockLinks(const std::set<Mac48Add
         {
             // EMLSR client switched to listening operations if it was protected, otherwise
             // simply unblock transmissions
-            m_protectedStas.contains(address) ? EmlsrSwitchToListening(address, Seconds(0))
-                                              : (void)(UnblockEmlsrLinksIfAllowed(address));
+            m_protectedStas.contains(address) ? EmlsrSwitchToListening(address, Time{0})
+                                              : (void)(UnblockEmlsrLinksIfAllowed(address, false));
             m_protectedStas.erase(address);
         }
     }
@@ -1233,13 +1241,21 @@ EhtFrameExchangeManager::NotifyChannelReleased(Ptr<Txop> txop)
 
     if (m_apMac)
     {
-        // the channel has been released; all EMLSR clients are switching back to
-        // listening operation
+        // the channel has been released; if the TXNAV is still set, it means that there is not
+        // enough time left to send a CF-End. In this case, EMLSR clients wait for a slot plus the
+        // PHY RX start delay before switching back to listening operation (in this case, this
+        // function is called a SIFS after the last frame in the TXOP)
+        Time delay{0};
+        if (const auto remTxNav = m_txNav - Simulator::Now(); remTxNav.IsStrictlyPositive())
+        {
+            delay = Min(m_phy->GetSlot() + EMLSR_RX_PHY_START_DELAY, remTxNav);
+        }
+
         for (const auto& address : m_protectedStas)
         {
             if (GetWifiRemoteStationManager()->GetEmlsrEnabled(address))
             {
-                EmlsrSwitchToListening(address, Seconds(0));
+                EmlsrSwitchToListening(address, delay);
             }
         }
     }
@@ -1748,6 +1764,8 @@ EhtFrameExchangeManager::UpdateTxopEndOnTxStart(Time txDuration, Time durationId
         // after the end of this PPDU, hence we need to postpone the TXOP end in order to
         // get the PHY-RXSTART.indication
         delay = txDuration + m_phy->GetSifs() + m_phy->GetSlot() + EMLSR_RX_PHY_START_DELAY;
+        // TXOP end cannot be beyond the period protected via Duration/ID
+        delay = Min(delay, txDuration + durationId);
     }
 
     NS_LOG_DEBUG("Expected TXOP end=" << (Simulator::Now() + delay).As(Time::S));
@@ -1801,6 +1819,8 @@ EhtFrameExchangeManager::UpdateTxopEndOnRxEnd(Time durationId)
     // we may send a response after a SIFS or we may receive another frame after a SIFS.
     // Postpone the TXOP end by considering the latter (which takes longer)
     auto delay = m_phy->GetSifs() + m_phy->GetSlot() + EMLSR_RX_PHY_START_DELAY;
+    // TXOP end cannot be beyond the period protected via Duration/ID
+    delay = Min(delay, durationId);
     NS_LOG_DEBUG("Expected TXOP end=" << (Simulator::Now() + delay).As(Time::S));
     m_ongoingTxopEnd =
         Simulator::Schedule(delay, &EhtFrameExchangeManager::TxopEnd, this, m_txopHolder);
