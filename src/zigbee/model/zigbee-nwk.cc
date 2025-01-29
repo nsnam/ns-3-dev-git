@@ -209,8 +209,6 @@ void
 ZigbeeNwk::SetMac(Ptr<LrWpanMacBase> mac)
 {
     m_mac = mac;
-    // Update IEEE Nwk Address
-    m_mac->MlmeGetRequest(MacPibAttributeIdentifier::macExtendedAddress);
 }
 
 Ptr<LrWpanMacBase>
@@ -656,7 +654,10 @@ ZigbeeNwk::ReceiveRREP(Mac16Address macSrcAddr,
                     mcpsDataparams.m_dstAddr = routeEntry->GetNextHopAddr();
                     m_macHandle++;
 
-                    m_mac->McpsDataRequest(mcpsDataparams, pendingTxPkt->txPkt);
+                    Simulator::ScheduleNow(&LrWpanMacBase::McpsDataRequest,
+                                           m_mac,
+                                           mcpsDataparams,
+                                           pendingTxPkt->txPkt);
                 }
             }
             else
@@ -990,7 +991,7 @@ ZigbeeNwk::SendDataUcst(Ptr<Packet> packet, uint8_t nwkHandle)
         mcpsDataparams.m_dstAddrMode = SHORT_ADDR;
         mcpsDataparams.m_dstAddr = nextHop;
         m_macHandle++;
-        m_mac->McpsDataRequest(mcpsDataparams, packet);
+        Simulator::ScheduleNow(&LrWpanMacBase::McpsDataRequest, m_mac, mcpsDataparams, packet);
     }
     else if (nextHopStatus == ROUTE_NOT_FOUND)
     {
@@ -1027,7 +1028,7 @@ ZigbeeNwk::SendDataBcst(Ptr<Packet> packet, uint8_t nwkHandle)
     mcpsDataparams.m_dstAddrMode = SHORT_ADDR;
     mcpsDataparams.m_dstAddr = Mac16Address("FF:FF");
     m_macHandle++;
-    m_mac->McpsDataRequest(mcpsDataparams, packet);
+    Simulator::ScheduleNow(&LrWpanMacBase::McpsDataRequest, m_mac, mcpsDataparams, packet);
 }
 
 void
@@ -1133,7 +1134,7 @@ ZigbeeNwk::MlmeScanConfirm(MlmeScanConfirmParams params)
                 mlmeParams.m_scanChannels = channelMaskFiltered;
                 mlmeParams.m_scanDuration = m_netFormParams.m_scanDuration;
                 mlmeParams.m_scanType = MLMESCAN_ACTIVE;
-                m_mac->MlmeScanRequest(mlmeParams);
+                Simulator::ScheduleNow(&LrWpanMacBase::MlmeScanRequest, m_mac, mlmeParams);
             }
         }
     }
@@ -1218,7 +1219,10 @@ ZigbeeNwk::MlmeScanConfirm(MlmeScanConfirmParams params)
                 m_nwkNetworkAddress = Mac16Address("00:00");
             }
             // Set Short Address and continue with beacon payload afterwards.
-            m_mac->MlmeSetRequest(MacPibAttributeIdentifier::macShortAddress, pibAttr);
+            Simulator::ScheduleNow(&LrWpanMacBase::MlmeSetRequest,
+                                   m_mac,
+                                   MacPibAttributeIdentifier::macShortAddress,
+                                   pibAttr);
         }
         else
         {
@@ -1279,7 +1283,9 @@ ZigbeeNwk::MlmeScanConfirm(MlmeScanConfirmParams params)
             // and finally the join confirmation
             m_nwkExtendedPanId = m_joinParams.m_extendedPanId;
             m_nwkCapabilityInformation = m_joinParams.m_capabilityInfo;
-            m_mac->MlmeGetRequest(MacPibAttributeIdentifier::macShortAddress);
+            Simulator::ScheduleNow(&LrWpanMacBase::MlmeGetRequest,
+                                   m_mac,
+                                   MacPibAttributeIdentifier::macShortAddress);
         }
         else
         {
@@ -1452,6 +1458,7 @@ ZigbeeNwk::MlmeStartConfirm(MlmeStartConfirmParams params)
         if (nwkConfirmStatus != NwkStatus::SUCCESS)
         {
             m_pendPrimitiveNwk = NLDE_NLME_NONE;
+            m_startRouterParams = {};
             if (!m_nlmeStartRouterConfirmCallback.IsNull())
             {
                 NlmeStartRouterConfirmParams confirmParams;
@@ -1478,7 +1485,9 @@ ZigbeeNwk::MlmeSetConfirm(MlmeSetConfirmParams params)
         {
             // Section (3.2.2.5.3 , 6.g)
             // Getting this device MAC extended address using MLME-GET
-            m_mac->MlmeGetRequest(MacPibAttributeIdentifier::macExtendedAddress);
+            Simulator::ScheduleNow(&LrWpanMacBase::MlmeGetRequest,
+                                   m_mac,
+                                   MacPibAttributeIdentifier::macExtendedAddress);
         }
         else if (params.m_status == MacStatus::SUCCESS &&
                  params.id == MacPibAttributeIdentifier::macBeaconPayload)
@@ -1493,7 +1502,7 @@ ZigbeeNwk::MlmeSetConfirm(MlmeSetConfirmParams params)
             startParams.m_battLifeExt = m_netFormParams.m_batteryLifeExtension;
             startParams.m_coorRealgn = false;
             startParams.m_panCoor = true;
-            m_mac->MlmeStartRequest(startParams);
+            Simulator::ScheduleNow(&LrWpanMacBase::MlmeStartRequest, m_mac, startParams);
         }
         else if (params.m_status == MacStatus::SUCCESS &&
                  params.id == MacPibAttributeIdentifier::macBeaconPayloadLength)
@@ -1545,6 +1554,7 @@ ZigbeeNwk::MlmeSetConfirm(MlmeSetConfirmParams params)
                  params.id == MacPibAttributeIdentifier::macBeaconPayload)
         {
             m_pendPrimitiveNwk = NLDE_NLME_NONE;
+            m_startRouterParams = {};
             if (!m_nlmeStartRouterConfirmCallback.IsNull())
             {
                 NlmeStartRouterConfirmParams confirmParams;
@@ -1566,13 +1576,33 @@ ZigbeeNwk::MlmeGetConfirm(MacStatus status,
 {
     NS_LOG_FUNCTION(this);
 
+    // Update the values of attributes in the network layer
+    if (status == MacStatus::SUCCESS)
+    {
+        if (id == MacPibAttributeIdentifier::macExtendedAddress)
+        {
+            m_nwkIeeeAddress = attribute->macExtendedAddress;
+        }
+        else if (id == MacPibAttributeIdentifier::macShortAddress)
+        {
+            m_nwkNetworkAddress = attribute->macShortAddress;
+        }
+        else if (id == MacPibAttributeIdentifier::macPanId)
+        {
+            m_nwkPanId = attribute->macPanId;
+        }
+        else if (id == MacPibAttributeIdentifier::pCurrentChannel)
+        {
+            m_currentChannel = attribute->pCurrentChannel;
+        }
+    }
+
     if (m_pendPrimitiveNwk == PendingPrimitiveNwk::NLME_NETWORK_FORMATION)
     {
         if (id == MacPibAttributeIdentifier::macExtendedAddress && status == MacStatus::SUCCESS)
         {
             // Section (3.2.2.5.3 , 6.g)
             // Set nwkExtendedPanId and m_nwkIeeeAddress and nwkPanId
-            m_nwkIeeeAddress = attribute->macExtendedAddress;
             m_nwkExtendedPanId = m_nwkIeeeAddress.ConvertToInt();
             m_nwkPanId = m_netFormParamsGen->panId;
 
@@ -1605,13 +1635,12 @@ ZigbeeNwk::MlmeGetConfirm(MacStatus status,
     {
         if (id == MacPibAttributeIdentifier::macShortAddress)
         {
-            m_nwkNetworkAddress = attribute->macShortAddress;
-            m_mac->MlmeGetRequest(MacPibAttributeIdentifier::macPanId);
+            Simulator::ScheduleNow(&LrWpanMacBase::MlmeGetRequest,
+                                   m_mac,
+                                   MacPibAttributeIdentifier::macPanId);
         }
         else if (id == MacPibAttributeIdentifier::macPanId)
         {
-            m_nwkPanId = attribute->macPanId;
-
             NlmeJoinConfirmParams joinConfirmParams;
             joinConfirmParams.m_channelList = m_joinParams.m_scanChannelList;
             joinConfirmParams.m_status = NwkStatus::SUCCESS;
@@ -1628,23 +1657,25 @@ ZigbeeNwk::MlmeGetConfirm(MacStatus status,
             }
         }
     }
-    else if (status == MacStatus::SUCCESS)
+    else if (m_pendPrimitiveNwk == PendingPrimitiveNwk::NLME_START_ROUTER &&
+             status == MacStatus::SUCCESS)
     {
-        if (id == MacPibAttributeIdentifier::macExtendedAddress)
+        if (id == MacPibAttributeIdentifier::pCurrentChannel)
         {
-            m_nwkIeeeAddress = attribute->macExtendedAddress;
-        }
-        else if (id == MacPibAttributeIdentifier::macShortAddress)
-        {
-            m_nwkNetworkAddress = attribute->macShortAddress;
-        }
-        else if (id == MacPibAttributeIdentifier::macPanId)
-        {
-            m_nwkPanId = attribute->macPanId;
-        }
-        else if (id == MacPibAttributeIdentifier::pCurrentChannel)
-        {
-            m_currentChannel = attribute->pCurrentChannel;
+            // TODO: MLME-START.request should be issue sequentially to all the interfaces in the
+            // nwkMacInterfaceTable (currently not supported), for the moment only a single
+            // interface is supported.
+            MlmeStartRequestParams startParams;
+            startParams.m_logCh = m_currentChannel;
+            startParams.m_logChPage = 0; // In zigbee, only page 0 is supported.
+            startParams.m_PanId = m_nwkPanId;
+            startParams.m_bcnOrd = m_startRouterParams.m_beaconOrder;
+            startParams.m_sfrmOrd = m_startRouterParams.m_superframeOrder;
+            startParams.m_battLifeExt = m_startRouterParams.m_batteryLifeExt;
+            startParams.m_coorRealgn = false;
+            startParams.m_panCoor = false;
+
+            Simulator::ScheduleNow(&LrWpanMacBase::MlmeStartRequest, m_mac, startParams);
         }
     }
 }
@@ -1686,7 +1717,7 @@ ZigbeeNwk::MlmeOrphanIndication(MlmeOrphanIndicationParams params)
                      << params.m_orphanAddr << " | " << entry->GetNwkAddr()
                      << "] found in neighbor table, responding to orphaned device");
 
-        m_mac->MlmeOrphanResponse(respParams);
+        Simulator::ScheduleNow(&LrWpanMacBase::MlmeOrphanResponse, m_mac, respParams);
     }
 }
 
@@ -1855,7 +1886,7 @@ ZigbeeNwk::MlmeAssociateIndication(MlmeAssociateIndicationParams params)
             responseParams.m_status = MacStatus::SUCCESS;
             responseParams.m_assocShortAddr = entry->GetNwkAddr();
             responseParams.m_extDevAddr = entry->GetExtAddr();
-            m_mac->MlmeAssociateResponse(responseParams);
+            Simulator::ScheduleNow(&LrWpanMacBase::MlmeAssociateResponse, m_mac, responseParams);
         }
         else
         {
@@ -1926,7 +1957,7 @@ ZigbeeNwk::MlmeAssociateIndication(MlmeAssociateIndicationParams params)
                      " address "
                      << responseParams.m_assocShortAddr);
 
-        m_mac->MlmeAssociateResponse(responseParams);
+        Simulator::ScheduleNow(&LrWpanMacBase::MlmeAssociateResponse, m_mac, responseParams);
     }
 }
 
@@ -2050,7 +2081,7 @@ ZigbeeNwk::NldeDataRequest(NldeDataRequestParams params, Ptr<Packet> packet)
             mcpsDataparams.m_dstAddrMode = SHORT_ADDR;
             mcpsDataparams.m_dstAddr = entry->GetNwkAddr();
             m_macHandle++;
-            m_mac->McpsDataRequest(mcpsDataparams, packet);
+            Simulator::ScheduleNow(&LrWpanMacBase::McpsDataRequest, m_mac, mcpsDataparams, packet);
         }
         else
         {
@@ -2155,7 +2186,7 @@ ZigbeeNwk::NlmeNetworkFormationRequest(NlmeNetworkFormationRequestParams params)
         mlmeParams.m_scanChannels = params.m_scanChannelList.channelsField[0];
         mlmeParams.m_scanDuration = params.m_scanDuration;
         mlmeParams.m_scanType = MLMESCAN_ACTIVE;
-        m_mac->MlmeScanRequest(mlmeParams);
+        Simulator::ScheduleNow(&LrWpanMacBase::MlmeScanRequest, m_mac, mlmeParams);
     }
     else if (channelsCount > 1)
     {
@@ -2164,7 +2195,7 @@ ZigbeeNwk::NlmeNetworkFormationRequest(NlmeNetworkFormationRequestParams params)
         mlmeParams.m_scanChannels = params.m_scanChannelList.channelsField[0];
         mlmeParams.m_scanDuration = params.m_scanDuration;
         mlmeParams.m_scanType = MLMESCAN_ED;
-        m_mac->MlmeScanRequest(mlmeParams);
+        Simulator::ScheduleNow(&LrWpanMacBase::MlmeScanRequest, m_mac, mlmeParams);
     }
 }
 
@@ -2348,7 +2379,7 @@ ZigbeeNwk::NlmeNetworkDiscoveryRequest(NlmeNetworkDiscoveryRequestParams params)
     NS_LOG_DEBUG("Active scanning started, "
                  << " on page " << static_cast<uint32_t>(page) << " and channels 0x" << std::hex
                  << params.m_scanChannelList.channelsField[0] << std::dec);
-    m_mac->MlmeScanRequest(scanParams);
+    Simulator::ScheduleNow(&LrWpanMacBase::MlmeScanRequest, m_mac, scanParams);
 }
 
 void
@@ -2494,7 +2525,7 @@ ZigbeeNwk::NlmeJoinRequest(NlmeJoinRequestParams params)
         NS_LOG_DEBUG("Orphan scanning started, "
                      << "sending orphan notifications on page " << static_cast<uint32_t>(page)
                      << " and channels " << std::hex << params.m_scanChannelList.channelsField[0]);
-        m_mac->MlmeScanRequest(scanParams);
+        Simulator::ScheduleNow(&LrWpanMacBase::MlmeScanRequest, m_mac, scanParams);
     }
     else if (params.m_rejoinNetwork == ASSOCIATION)
     {
@@ -2547,7 +2578,7 @@ ZigbeeNwk::NlmeJoinRequest(NlmeJoinRequestParams params)
             m_associateParams.panId = panId;
             m_associateParams.extAddress = bestParentEntry->GetExtAddr();
 
-            m_mac->MlmeAssociateRequest(assocParams);
+            Simulator::ScheduleNow(&LrWpanMacBase::MlmeAssociateRequest, m_mac, assocParams);
         }
         else
         {
@@ -2584,6 +2615,8 @@ ZigbeeNwk::NlmeStartRouterRequest(NlmeStartRouterRequestParams params)
 
     if (capability.GetDeviceType() != MacDeviceType::ROUTER)
     {
+        m_pendPrimitiveNwk = NLDE_NLME_NONE;
+        m_startRouterParams = {};
         if (!m_nlmeStartRouterConfirmCallback.IsNull())
         {
             NlmeStartRouterConfirmParams confirmParams;
@@ -2595,23 +2628,12 @@ ZigbeeNwk::NlmeStartRouterRequest(NlmeStartRouterRequestParams params)
     else
     {
         m_pendPrimitiveNwk = NLME_START_ROUTER;
-
+        // store the NLME-START-ROUTER.request params while request the current channel
+        m_startRouterParams = params;
         // request an update of the current channel in use in the PHY
-        m_mac->MlmeGetRequest(MacPibAttributeIdentifier::pCurrentChannel);
-
-        // TODO: MLME-START.request should be issue to all the interfaces in the
-        // nwkMacInterfaceTable (currently not supported), for the moment only a single
-        // interface is supported.
-        MlmeStartRequestParams startParams;
-        startParams.m_logCh = m_currentChannel;
-        startParams.m_logChPage = 0; // In zigbee, only page 0 is supported.
-        startParams.m_PanId = m_nwkPanId;
-        startParams.m_bcnOrd = params.m_beaconOrder;
-        startParams.m_sfrmOrd = params.m_superframeOrder;
-        startParams.m_battLifeExt = params.m_batteryLifeExt;
-        startParams.m_coorRealgn = false;
-        startParams.m_panCoor = false;
-        m_mac->MlmeStartRequest(startParams);
+        Simulator::ScheduleNow(&LrWpanMacBase::MlmeGetRequest,
+                               m_mac,
+                               MacPibAttributeIdentifier::pCurrentChannel);
     }
 }
 
@@ -2993,7 +3015,7 @@ ZigbeeNwk::SendRREQ(ZigbeeNwkHeader nwkHeader,
         params.m_dstAddr = Mac16Address::GetBroadcast();
         params.m_msduHandle = m_macHandle.GetValue();
         m_macHandle++;
-        m_mac->McpsDataRequest(params, nsdu);
+        Simulator::ScheduleNow(&LrWpanMacBase::McpsDataRequest, m_mac, params, nsdu);
     }
     else
     {
@@ -3045,7 +3067,7 @@ ZigbeeNwk::SendRREP(Mac16Address nextHop,
     nsdu->AddHeader(payloadType);
     nsdu->AddHeader(nwkHeader);
 
-    m_mac->McpsDataRequest(params, nsdu);
+    Simulator::ScheduleNow(&LrWpanMacBase::McpsDataRequest, m_mac, params, nsdu);
 }
 
 int64_t
@@ -3076,7 +3098,10 @@ ZigbeeNwk::UpdateBeaconPayloadLength()
     m_beaconPayload->AddHeader(beaconPayloadHeader);
     Ptr<MacPibAttributes> pibAttr = Create<MacPibAttributes>();
     pibAttr->macBeaconPayloadLength = m_beaconPayload->GetSize();
-    m_mac->MlmeSetRequest(MacPibAttributeIdentifier::macBeaconPayloadLength, pibAttr);
+    Simulator::ScheduleNow(&LrWpanMacBase::MlmeSetRequest,
+                           m_mac,
+                           MacPibAttributeIdentifier::macBeaconPayloadLength,
+                           pibAttr);
 }
 
 void
@@ -3090,7 +3115,10 @@ ZigbeeNwk::UpdateBeaconPayload()
     pibAttr->macBeaconPayload.resize(m_beaconPayload->GetSize());
     m_beaconPayload->CopyData(pibAttr->macBeaconPayload.data(), m_beaconPayload->GetSize());
     m_beaconPayload = nullptr;
-    m_mac->MlmeSetRequest(MacPibAttributeIdentifier::macBeaconPayload, pibAttr);
+    Simulator::ScheduleNow(&LrWpanMacBase::MlmeSetRequest,
+                           m_mac,
+                           MacPibAttributeIdentifier::macBeaconPayload,
+                           pibAttr);
 }
 
 std::ostream&

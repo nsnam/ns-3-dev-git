@@ -1211,6 +1211,12 @@ class ZigbeeNwk : public Object
     NlmeJoinIndicationParams m_joinIndParams;
 
     /**
+     * Temporally store the NLME-START-ROUTER.request parameters during
+     * the router initialization process.
+     */
+    NlmeStartRouterRequestParams m_startRouterParams;
+
+    /**
      * Temporally store parameters during the associate process that take
      * place during a NLME-JOIN.request.
      */
