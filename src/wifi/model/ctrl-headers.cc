@@ -1187,7 +1187,7 @@ CtrlTriggerUserInfoField::CtrlTriggerUserInfoField(TriggerFrameType triggerType,
       m_ulFecCodingType(false),
       m_ulMcs(0),
       m_ulDcm(false),
-      m_ps160(true),
+      m_ps160(false),
       m_ulTargetRssi(0),
       m_triggerType(triggerType),
       m_basicTriggerDependentUserInfo(0)
@@ -1418,7 +1418,6 @@ CtrlTriggerUserInfoField::HasRaRuForUnassociatedSta() const
 void
 CtrlTriggerUserInfoField::SetRuAllocation(WifiRu::RuSpec ru)
 {
-    NS_ASSERT_MSG(WifiRu::IsHe(ru), "EHT RUs not supported yet");
     const auto ruIndex = WifiRu::GetIndex(ru);
     const auto ruType = WifiRu::GetRuType(ru);
     NS_ABORT_MSG_IF(ruIndex == 0, "Valid indices start at 1");
@@ -1429,18 +1428,24 @@ CtrlTriggerUserInfoField::SetRuAllocation(WifiRu::RuSpec ru)
     {
     case RuType::RU_26_TONE:
         m_ruAllocation = ruIndex - 1;
+        NS_ABORT_MSG_IF(!WifiRu::IsHe(ru) && (m_ruAllocation == 18), "Reserved value.");
+        NS_ASSERT(m_ruAllocation <= 36);
         break;
     case RuType::RU_52_TONE:
         m_ruAllocation = ruIndex + 36;
+        NS_ASSERT(m_ruAllocation <= 52);
         break;
     case RuType::RU_106_TONE:
         m_ruAllocation = ruIndex + 52;
+        NS_ASSERT(m_ruAllocation <= 60);
         break;
     case RuType::RU_242_TONE:
         m_ruAllocation = ruIndex + 60;
+        NS_ASSERT(m_ruAllocation <= 64);
         break;
     case RuType::RU_484_TONE:
         m_ruAllocation = ruIndex + 64;
+        NS_ASSERT(m_ruAllocation <= 67);
         break;
     case RuType::RU_996_TONE:
         m_ruAllocation = 67;
@@ -1448,15 +1453,22 @@ CtrlTriggerUserInfoField::SetRuAllocation(WifiRu::RuSpec ru)
     case RuType::RU_2x996_TONE:
         m_ruAllocation = 68;
         break;
+    case RuType::RU_4x996_TONE:
+        m_ruAllocation = 69;
+        break;
     default:
         NS_FATAL_ERROR("RU type unknown.");
         break;
     }
 
-    NS_ABORT_MSG_IF(m_ruAllocation > 68, "Reserved value.");
+    NS_ABORT_MSG_IF(m_ruAllocation > 69, "Reserved value.");
+
+    auto b0 = (WifiRu::IsHe(ru) && !std::get<HeRu::RuSpec>(ru).GetPrimary80MHz()) ||
+              (WifiRu::IsEht(ru) && !std::get<EhtRu::RuSpec>(ru).GetPrimary80MHzOrLower80MHz());
+    m_ps160 = (WifiRu::IsEht(ru) && !std::get<EhtRu::RuSpec>(ru).GetPrimary160MHz());
 
     m_ruAllocation <<= 1;
-    if (WifiRu::IsHe(ru) && !std::get<HeRu::RuSpec>(ru).GetPrimary80MHz())
+    if (b0)
     {
         m_ruAllocation++;
     }
@@ -1471,7 +1483,7 @@ CtrlTriggerUserInfoField::GetRuAllocation() const
     RuType ruType;
     std::size_t index;
 
-    bool primary80MHz = ((m_ruAllocation & 0x01) == 0);
+    const auto primaryOrLower80MHz = ((m_ruAllocation & 0x01) == 0);
 
     uint8_t val = m_ruAllocation >> 1;
 
@@ -1510,12 +1522,23 @@ CtrlTriggerUserInfoField::GetRuAllocation() const
         ruType = RuType::RU_2x996_TONE;
         index = 1;
     }
+    else if (val == 69)
+    {
+        NS_ASSERT(m_variant == TriggerFrameVariant::EHT);
+        ruType = RuType::RU_4x996_TONE;
+        index = 1;
+    }
     else
     {
         NS_FATAL_ERROR("Reserved value.");
     }
 
-    return HeRu::RuSpec{ruType, index, primary80MHz};
+    if (m_variant == TriggerFrameVariant::EHT)
+    {
+        return EhtRu::RuSpec{ruType, index, !m_ps160, primaryOrLower80MHz};
+    }
+
+    return HeRu::RuSpec{ruType, index, primaryOrLower80MHz};
 }
 
 void
