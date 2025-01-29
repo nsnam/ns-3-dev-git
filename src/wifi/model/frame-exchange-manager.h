@@ -366,6 +366,17 @@ class FrameExchangeManager : public Object
     virtual void NavResetTimeout();
 
     /**
+     * Set the TXNAV upon sending an MPDU.
+     *
+     * @param mpdu the MPDU being sent
+     * @param txDuration the TX duration of the MPDU
+     */
+    void SetTxNav(Ptr<const WifiMpdu> mpdu, const Time& txDuration);
+
+    /// Reset the TXNAV
+    void ResetTxNav();
+
+    /**
      * This method is called when the reception of a PSDU fails.
      *
      * @param psdu the PSDU whose reception failed
