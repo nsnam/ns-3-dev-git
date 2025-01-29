@@ -194,6 +194,13 @@ function(build_lib)
     set(export_dest ${CMAKE_HEADER_OUTPUT_DIRECTORY}/${BLIB_LIBNAME}-export.h)
     file(COPY_FILE ${export_file} ${export_dest})
     install(FILES ${export_file} DESTINATION include/ns3 COMPONENT Headers)
+
+    # In case building on Visual Studio
+    if(${MSVC})
+      target_compile_definitions(
+        ${BLIB_LIBNAME} PRIVATE ${BLIB_LIBNAME}_EXPORTS
+      )
+    endif()
   endif()
 
   # Reuse PCH
@@ -361,7 +368,7 @@ endfunction()
 
 function(build_lib_export_definitions_as_interface_definitions libname)
   get_target_property(target_definitions ${libname} COMPILE_DEFINITIONS)
-  if(${target_definitions} STREQUAL "target_definitions-NOTFOUND")
+  if("${target_definitions}" STREQUAL "target_definitions-NOTFOUND")
     set(target_definitions)
   endif()
   get_directory_property(dir_definitions COMPILE_DEFINITIONS)

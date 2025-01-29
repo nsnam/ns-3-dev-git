@@ -12,7 +12,7 @@ additional_commands:
             DEFINITIONS : '*'
 
     build_lib:
-        flags: [IGNORE_PCH]
+        flags: [IGNORE_PCH, GENERATE_EXPORT_HEADER]
         kwargs:
             LIBNAME : '1'
             SOURCE_FILES : '*'
