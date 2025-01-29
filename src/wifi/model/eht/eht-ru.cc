@@ -596,201 +596,201 @@ const SubcarrierGroups EhtRu::m_ruSubcarrierGroups{
 const EhtRu::RuAllocationMap EhtRu::m_ruAllocations = {
     // clang-format off
     {0,
-     {EhtRu::RuSpec{RuType::RU_26_TONE, 1},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 2},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 3},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 4},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 5},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 6},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 7},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 8},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 9}}},
+     {EhtRu::RuSpec{RuType::RU_26_TONE, 1, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 2, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 3, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 4, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 5, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 6, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 7, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 8, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 9, true, true}}},
     {1,
-     {EhtRu::RuSpec{RuType::RU_26_TONE, 1},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 2},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 3},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 4},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 5},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 6},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 7},
-      EhtRu::RuSpec{RuType::RU_52_TONE, 4}}},
+     {EhtRu::RuSpec{RuType::RU_26_TONE, 1, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 2, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 3, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 4, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 5, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 6, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 7, true, true},
+      EhtRu::RuSpec{RuType::RU_52_TONE, 4, true, true}}},
     {2,
-     {EhtRu::RuSpec{RuType::RU_26_TONE, 1},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 2},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 3},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 4},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 5},
-      EhtRu::RuSpec{RuType::RU_52_TONE, 3},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 8},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 9}}},
+     {EhtRu::RuSpec{RuType::RU_26_TONE, 1, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 2, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 3, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 4, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 5, true, true},
+      EhtRu::RuSpec{RuType::RU_52_TONE, 3, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 8, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 9, true, true}}},
     {3,
-     {EhtRu::RuSpec{RuType::RU_26_TONE, 1},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 2},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 3},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 4},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 5},
-      EhtRu::RuSpec{RuType::RU_52_TONE, 3},
-      EhtRu::RuSpec{RuType::RU_52_TONE, 4}}},
+     {EhtRu::RuSpec{RuType::RU_26_TONE, 1, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 2, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 3, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 4, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 5, true, true},
+      EhtRu::RuSpec{RuType::RU_52_TONE, 3, true, true},
+      EhtRu::RuSpec{RuType::RU_52_TONE, 4, true, true}}},
     {4,
-     {EhtRu::RuSpec{RuType::RU_26_TONE, 1},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 2},
-      EhtRu::RuSpec{RuType::RU_52_TONE, 2},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 5},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 6},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 7},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 8},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 9}}},
+     {EhtRu::RuSpec{RuType::RU_26_TONE, 1, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 2, true, true},
+      EhtRu::RuSpec{RuType::RU_52_TONE, 2, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 5, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 6, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 7, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 8, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 9, true, true}}},
     {5,
-     {EhtRu::RuSpec{RuType::RU_26_TONE, 1},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 2},
-      EhtRu::RuSpec{RuType::RU_52_TONE, 2},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 5},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 6},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 7},
-      EhtRu::RuSpec{RuType::RU_52_TONE, 4}}},
+     {EhtRu::RuSpec{RuType::RU_26_TONE, 1, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 2, true, true},
+      EhtRu::RuSpec{RuType::RU_52_TONE, 2, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 5, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 6, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 7, true, true},
+      EhtRu::RuSpec{RuType::RU_52_TONE, 4, true, true}}},
     {6,
-     {EhtRu::RuSpec{RuType::RU_26_TONE, 1},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 2},
-      EhtRu::RuSpec{RuType::RU_52_TONE, 2},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 5},
-      EhtRu::RuSpec{RuType::RU_52_TONE, 3},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 8},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 9}}},
+     {EhtRu::RuSpec{RuType::RU_26_TONE, 1, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 2, true, true},
+      EhtRu::RuSpec{RuType::RU_52_TONE, 2, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 5, true, true},
+      EhtRu::RuSpec{RuType::RU_52_TONE, 3, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 8, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 9, true, true}}},
     {7,
-     {EhtRu::RuSpec{RuType::RU_26_TONE, 1},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 2},
-      EhtRu::RuSpec{RuType::RU_52_TONE, 2},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 5},
-      EhtRu::RuSpec{RuType::RU_52_TONE, 3},
-      EhtRu::RuSpec{RuType::RU_52_TONE, 4}}},
+     {EhtRu::RuSpec{RuType::RU_26_TONE, 1, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 2, true, true},
+      EhtRu::RuSpec{RuType::RU_52_TONE, 2, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 5, true, true},
+      EhtRu::RuSpec{RuType::RU_52_TONE, 3, true, true},
+      EhtRu::RuSpec{RuType::RU_52_TONE, 4, true, true}}},
     {8,
-     {EhtRu::RuSpec{RuType::RU_52_TONE, 1},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 3},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 4},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 5},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 6},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 7},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 8},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 9}}},
+     {EhtRu::RuSpec{RuType::RU_52_TONE, 1, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 3, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 4, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 5, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 6, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 7, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 8, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 9, true, true}}},
     {9,
-     {EhtRu::RuSpec{RuType::RU_52_TONE, 1},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 3},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 4},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 5},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 6},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 7},
-      EhtRu::RuSpec{RuType::RU_52_TONE, 4}}},
+     {EhtRu::RuSpec{RuType::RU_52_TONE, 1, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 3, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 4, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 5, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 6, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 7, true, true},
+      EhtRu::RuSpec{RuType::RU_52_TONE, 4, true, true}}},
     {10,
-     {EhtRu::RuSpec{RuType::RU_52_TONE, 1},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 3},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 4},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 5},
-      EhtRu::RuSpec{RuType::RU_52_TONE, 3},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 8},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 9}}},
+     {EhtRu::RuSpec{RuType::RU_52_TONE, 1, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 3, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 4, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 5, true, true},
+      EhtRu::RuSpec{RuType::RU_52_TONE, 3, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 8, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 9, true, true}}},
     {11,
-     {EhtRu::RuSpec{RuType::RU_52_TONE, 1},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 3},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 4},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 5},
-      EhtRu::RuSpec{RuType::RU_52_TONE, 3},
-      EhtRu::RuSpec{RuType::RU_52_TONE, 4}}},
+     {EhtRu::RuSpec{RuType::RU_52_TONE, 1, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 3, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 4, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 5, true, true},
+      EhtRu::RuSpec{RuType::RU_52_TONE, 3, true, true},
+      EhtRu::RuSpec{RuType::RU_52_TONE, 4, true, true}}},
     {12,
-     {EhtRu::RuSpec{RuType::RU_52_TONE, 1},
-      EhtRu::RuSpec{RuType::RU_52_TONE, 2},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 5},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 6},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 7},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 8},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 9}}},
+     {EhtRu::RuSpec{RuType::RU_52_TONE, 1, true, true},
+      EhtRu::RuSpec{RuType::RU_52_TONE, 2, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 5, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 6, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 7, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 8, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 9, true, true}}},
     {13,
-     {EhtRu::RuSpec{RuType::RU_52_TONE, 1},
-      EhtRu::RuSpec{RuType::RU_52_TONE, 2},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 5},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 6},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 7},
-      EhtRu::RuSpec{RuType::RU_52_TONE, 4}}},
+     {EhtRu::RuSpec{RuType::RU_52_TONE, 1, true, true},
+      EhtRu::RuSpec{RuType::RU_52_TONE, 2, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 5, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 6, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 7, true, true},
+      EhtRu::RuSpec{RuType::RU_52_TONE, 4, true, true}}},
     {14,
-     {EhtRu::RuSpec{RuType::RU_52_TONE, 1},
-      EhtRu::RuSpec{RuType::RU_52_TONE, 2},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 5},
-      EhtRu::RuSpec{RuType::RU_52_TONE, 3},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 8},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 9}}},
+     {EhtRu::RuSpec{RuType::RU_52_TONE, 1, true, true},
+      EhtRu::RuSpec{RuType::RU_52_TONE, 2, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 5, true, true},
+      EhtRu::RuSpec{RuType::RU_52_TONE, 3, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 8, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 9, true, true}}},
     {15,
-     {EhtRu::RuSpec{RuType::RU_52_TONE, 1},
-      EhtRu::RuSpec{RuType::RU_52_TONE, 2},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 5},
-      EhtRu::RuSpec{RuType::RU_52_TONE, 3},
-      EhtRu::RuSpec{RuType::RU_52_TONE, 4}}},
+     {EhtRu::RuSpec{RuType::RU_52_TONE, 1, true, true},
+      EhtRu::RuSpec{RuType::RU_52_TONE, 2, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 5, true, true},
+      EhtRu::RuSpec{RuType::RU_52_TONE, 3, true, true},
+      EhtRu::RuSpec{RuType::RU_52_TONE, 4, true, true}}},
     {16,
-     {EhtRu::RuSpec{RuType::RU_26_TONE, 1},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 2},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 3},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 4},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 5},
-      EhtRu::RuSpec{RuType::RU_106_TONE, 2}}},
+     {EhtRu::RuSpec{RuType::RU_26_TONE, 1, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 2, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 3, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 4, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 5, true, true},
+      EhtRu::RuSpec{RuType::RU_106_TONE, 2, true, true}}},
     {17,
-     {EhtRu::RuSpec{RuType::RU_26_TONE, 1},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 2},
-      EhtRu::RuSpec{RuType::RU_52_TONE, 2},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 5},
-      EhtRu::RuSpec{RuType::RU_106_TONE, 2}}},
+     {EhtRu::RuSpec{RuType::RU_26_TONE, 1, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 2, true, true},
+      EhtRu::RuSpec{RuType::RU_52_TONE, 2, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 5, true, true},
+      EhtRu::RuSpec{RuType::RU_106_TONE, 2, true, true}}},
     {18,
-     {EhtRu::RuSpec{RuType::RU_52_TONE, 1},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 3},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 4},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 5},
-      EhtRu::RuSpec{RuType::RU_106_TONE, 2}}},
+     {EhtRu::RuSpec{RuType::RU_52_TONE, 1, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 3, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 4, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 5, true, true},
+      EhtRu::RuSpec{RuType::RU_106_TONE, 2, true, true}}},
     {19,
-     {EhtRu::RuSpec{RuType::RU_52_TONE, 1},
-      EhtRu::RuSpec{RuType::RU_52_TONE, 2},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 5},
-      EhtRu::RuSpec{RuType::RU_106_TONE, 2}}},
+     {EhtRu::RuSpec{RuType::RU_52_TONE, 1, true, true},
+      EhtRu::RuSpec{RuType::RU_52_TONE, 2, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 5, true, true},
+      EhtRu::RuSpec{RuType::RU_106_TONE, 2, true, true}}},
     {20,
-     {EhtRu::RuSpec{RuType::RU_106_TONE, 1},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 5},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 6},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 7},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 8},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 9}}},
+     {EhtRu::RuSpec{RuType::RU_106_TONE, 1, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 5, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 6, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 7, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 8, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 9, true, true}}},
     {21,
-     {EhtRu::RuSpec{RuType::RU_106_TONE, 1},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 5},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 6},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 7},
-      EhtRu::RuSpec{RuType::RU_52_TONE, 4}}},
+     {EhtRu::RuSpec{RuType::RU_106_TONE, 1, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 5, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 6, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 7, true, true},
+      EhtRu::RuSpec{RuType::RU_52_TONE, 4, true, true}}},
     {22,
-     {EhtRu::RuSpec{RuType::RU_106_TONE, 1},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 5},
-      EhtRu::RuSpec{RuType::RU_52_TONE, 3},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 8},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 9}}},
+     {EhtRu::RuSpec{RuType::RU_106_TONE, 1, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 5, true, true},
+      EhtRu::RuSpec{RuType::RU_52_TONE, 3, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 8, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 9, true, true}}},
     {23,
-     {EhtRu::RuSpec{RuType::RU_106_TONE, 1},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 5},
-      EhtRu::RuSpec{RuType::RU_52_TONE, 3},
-      EhtRu::RuSpec{RuType::RU_52_TONE, 4}}},
+     {EhtRu::RuSpec{RuType::RU_106_TONE, 1, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 5, true, true},
+      EhtRu::RuSpec{RuType::RU_52_TONE, 3, true, true},
+      EhtRu::RuSpec{RuType::RU_52_TONE, 4, true, true}}},
     {24,
-     {EhtRu::RuSpec{RuType::RU_52_TONE, 1},
-      EhtRu::RuSpec{RuType::RU_52_TONE, 2},
-      EhtRu::RuSpec{RuType::RU_52_TONE, 3},
-      EhtRu::RuSpec{RuType::RU_52_TONE, 4}}},
+     {EhtRu::RuSpec{RuType::RU_52_TONE, 1, true, true},
+      EhtRu::RuSpec{RuType::RU_52_TONE, 2, true, true},
+      EhtRu::RuSpec{RuType::RU_52_TONE, 3, true, true},
+      EhtRu::RuSpec{RuType::RU_52_TONE, 4, true, true}}},
     {25,
-     {EhtRu::RuSpec{RuType::RU_106_TONE, 1},
-      EhtRu::RuSpec{RuType::RU_26_TONE, 5},
-      EhtRu::RuSpec{RuType::RU_106_TONE, 2}}},
+     {EhtRu::RuSpec{RuType::RU_106_TONE, 1, true, true},
+      EhtRu::RuSpec{RuType::RU_26_TONE, 5, true, true},
+      EhtRu::RuSpec{RuType::RU_106_TONE, 2, true, true}}},
     {48, // FIXME: map 106/106 to 106+26/106 as long as MRU is not supported
-     {EhtRu::RuSpec{RuType::RU_106_TONE, 1},
-      EhtRu::RuSpec{RuType::RU_106_TONE, 2}}},
+     {EhtRu::RuSpec{RuType::RU_106_TONE, 1, true, true},
+      EhtRu::RuSpec{RuType::RU_106_TONE, 2, true, true}}},
     {64,
-      {EhtRu::RuSpec{RuType::RU_242_TONE, 1}}},
+      {EhtRu::RuSpec{RuType::RU_242_TONE, 1, true, true}}},
     {72,
-      {EhtRu::RuSpec{RuType::RU_484_TONE, 1}}},
+      {EhtRu::RuSpec{RuType::RU_484_TONE, 1, true, true}}},
     {80,
-      {EhtRu::RuSpec{RuType::RU_996_TONE, 1}}},
+      {EhtRu::RuSpec{RuType::RU_996_TONE, 1, true, true}}},
     {88,
-      {EhtRu::RuSpec{RuType::RU_2x996_TONE, 1}}},
+      {EhtRu::RuSpec{RuType::RU_2x996_TONE, 1, true, true}}},
     // clang-format on
 };
 
@@ -843,9 +843,14 @@ EhtRu::GetEqualizedRuAllocation(RuType ruType, bool isOdd, bool hasUsers)
     }
 }
 
-EhtRu::RuSpec::RuSpec(RuType ruType, std::size_t index)
-    : m_ruType(ruType),
-      m_index(index)
+EhtRu::RuSpec::RuSpec(RuType ruType,
+                      std::size_t index,
+                      bool primary160MHz,
+                      bool primary80MHzOrLower80MHz)
+    : m_ruType{ruType},
+      m_index{index},
+      m_primary160MHz{primary160MHz},
+      m_primary80MHzOrLower80MHz{primary80MHzOrLower80MHz}
 {
     NS_ABORT_MSG_IF(index == 0, "Index cannot be zero");
 }
@@ -864,14 +869,101 @@ EhtRu::RuSpec::GetIndex() const
     return m_index;
 }
 
-std::size_t
-EhtRu::RuSpec::GetPhyIndex(MHz_t bw, uint8_t p20Index) const
+bool
+EhtRu::RuSpec::GetPrimary160MHz() const
 {
-    return GetIndex();
+    NS_ABORT_MSG_IF(m_index == 0, "Undefined RU");
+    return m_primary160MHz;
+}
+
+bool
+EhtRu::RuSpec::GetPrimary80MHzOrLower80MHz() const
+{
+    NS_ABORT_MSG_IF(m_index == 0, "Undefined RU");
+    return m_primary80MHzOrLower80MHz;
 }
 
 std::size_t
-EhtRu::GetNRus(MHz_t bw, RuType ruType)
+EhtRu::RuSpec::GetPhyIndex(MHz_t bw, uint8_t p20Index) const
+{
+    auto phyIndex{m_index};
+    const auto primary160IsLower160 = (p20Index < (MHz_t{320} / MHz_t{20}) / 2);
+    if ((bw > MHz_t{160}) && (m_ruType == RuType::RU_2x996_TONE) &&
+        ((primary160IsLower160 && !m_primary160MHz) || (!primary160IsLower160 && m_primary160MHz)))
+    {
+        phyIndex += 1;
+    }
+    const auto indicesPer80MHz = GetNRus(MHz_t{80}, m_ruType, true);
+    if ((bw > MHz_t{160}) && (m_ruType < RuType::RU_2x996_TONE) &&
+        ((primary160IsLower160 && !m_primary160MHz) || (!primary160IsLower160 && m_primary160MHz)))
+    {
+        phyIndex += 2 * indicesPer80MHz;
+    }
+    const uint8_t num20MHzSubchannelsIn160 = MHz_t{160} / MHz_t{20};
+    const auto primary80IsLower80 =
+        ((p20Index % num20MHzSubchannelsIn160) < (num20MHzSubchannelsIn160 / 2));
+    if ((bw > MHz_t{80}) && (m_ruType < RuType::RU_4x996_TONE) &&
+        ((m_primary160MHz && ((primary80IsLower80 && !m_primary80MHzOrLower80MHz) ||
+                              (!primary80IsLower80 && m_primary80MHzOrLower80MHz))) ||
+         (!m_primary160MHz && !m_primary80MHzOrLower80MHz)))
+    {
+        phyIndex += indicesPer80MHz;
+    }
+    return phyIndex;
+}
+
+std::pair<bool, bool>
+EhtRu::GetPrimaryFlags(MHz_t bw, RuType ruType, std::size_t phyIndex, uint8_t p20Index)
+{
+    const auto nRus = GetNRus(bw, ruType);
+    const auto ruWidth = WifiRu::GetBandwidth(ruType);
+    const auto indicesPer80MHz = (ruWidth <= MHz_t{80}) ? GetNRus(MHz_t{80}, ruType, true) : 1;
+    const auto undefinedRusPer80MHz =
+        (ruWidth <= MHz_t{80}) ? (indicesPer80MHz - GetNRus(MHz_t{80}, ruType)) : 0;
+    const auto primary160IsLower160 = (p20Index < (MHz_t{320} / MHz_t{20}) / 2);
+    const auto primary160 =
+        (bw < MHz_t{320} || ruType == RuType::RU_4x996_TONE ||
+         (primary160IsLower160 && phyIndex <= (nRus / 2) + (2 * undefinedRusPer80MHz)) ||
+         (!primary160IsLower160 && phyIndex > (nRus / 2) + (2 * undefinedRusPer80MHz)));
+    bool primary80OrLow80;
+    if (primary160)
+    {
+        const uint8_t num20MHzSubchannelsIn160 = MHz_t{160} / MHz_t{20};
+        const auto primary80IsLower80 =
+            ((p20Index % num20MHzSubchannelsIn160) < (num20MHzSubchannelsIn160 / 2));
+        const auto threshold =
+            ((bw < MHz_t{320}) || primary160IsLower160) ? indicesPer80MHz : 3 * indicesPer80MHz;
+        primary80OrLow80 = (bw < MHz_t{160}) || (ruType >= RuType::RU_2x996_TONE) ||
+                           (primary80IsLower80 && phyIndex <= threshold) ||
+                           (!primary80IsLower80 && phyIndex > threshold);
+    }
+    else
+    {
+        primary80OrLow80 = (bw < MHz_t{160}) || (ruType >= RuType::RU_2x996_TONE) ||
+                           ((((phyIndex - 1) / indicesPer80MHz) % 2) == 0);
+    }
+    return {primary160, primary80OrLow80};
+}
+
+std::size_t
+EhtRu::GetIndexIn80MHzSegment(MHz_t bw, RuType ruType, std::size_t phyIndex)
+{
+    if (WifiRu::GetBandwidth(ruType) > MHz_t{80})
+    {
+        return 1;
+    }
+
+    if (const auto indicesPer80MHz = GetNRus(MHz_t{80}, ruType, true);
+        bw > MHz_t{80} && phyIndex > indicesPer80MHz)
+    {
+        return (((phyIndex - 1) % indicesPer80MHz) + 1);
+    }
+
+    return phyIndex;
+}
+
+std::size_t
+EhtRu::GetNRus(MHz_t bw, RuType ruType, bool includeUndefinedRus /* = false */)
 {
     if (WifiRu::GetBandwidth(ruType) >= MHz_t{20})
     {
@@ -884,9 +976,15 @@ EhtRu::GetNRus(MHz_t bw, RuType ruType)
         return 0;
     }
 
-    const auto num80MHz = std::max<uint16_t>(bw / MHz_t{80}, 1);
-    const auto undefinedRus = ((ruType == RuType::RU_26_TONE) && (bw >= MHz_t{80})) ? num80MHz : 0;
-    return it->second.size() - undefinedRus;
+    auto nRus = it->second.size();
+    if (!includeUndefinedRus)
+    {
+        const auto num80MHz = std::max<uint16_t>(bw / MHz_t{80}, 1);
+        const auto undefinedRus =
+            ((ruType == RuType::RU_26_TONE) && (bw >= MHz_t{80})) ? num80MHz : 0;
+        nRus -= undefinedRus;
+    }
+    return nRus;
 }
 
 std::vector<EhtRu::RuSpec>
@@ -899,20 +997,31 @@ EhtRu::GetRusOfType(MHz_t bw, RuType ruType)
 
     if (WifiRu::GetBandwidth(ruType) == bw)
     {
-        return {{ruType, 1}};
+        return {{ruType, 1, true, true}};
+    }
+
+    if (ruType == RuType::RU_2x996_TONE)
+    {
+        NS_ASSERT(bw >= MHz_t{160});
+        return {{ruType, 1, true, true}, {ruType, 1, false, true}};
     }
 
     std::vector<EhtRu::RuSpec> ret;
-
     const auto subcarrierGroup = EhtRu::m_ruSubcarrierGroups.at({bw, ruType});
-    for (std::size_t ruIndex = 1; ruIndex <= subcarrierGroup.size(); ruIndex++)
+    const auto indices = GetNRus(std::min(bw, MHz_t{80}), ruType, true);
+    for (uint8_t idx80MHz = 0; idx80MHz < (bw / MHz_t{80}); ++idx80MHz)
     {
-        if (subcarrierGroup.at(ruIndex - 1).empty())
+        const auto p160 = (idx80MHz < 2);
+        const auto p80orLow80 = ((idx80MHz % 2) == 0);
+        for (std::size_t ruIndex = 1; ruIndex <= indices; ++ruIndex)
         {
-            // undefined RU
-            continue;
+            if (subcarrierGroup.at(ruIndex - 1).empty())
+            {
+                // undefined RU
+                continue;
+            }
+            ret.emplace_back(ruType, ruIndex, p160, p80orLow80);
         }
-        ret.emplace_back(ruType, ruIndex);
     }
     return ret;
 }
@@ -940,13 +1049,15 @@ EhtRu::GetCentral26TonesRus(MHz_t bw, RuType ruType)
     }
 
     std::vector<EhtRu::RuSpec> ret;
-    for (uint8_t i = 0; i < (bw / MHz_t{80}); ++i)
+    for (uint8_t idx80MHz = 0; idx80MHz < (bw / MHz_t{80}); ++idx80MHz)
     {
+        const auto p160 = (idx80MHz < 2);
+        const auto p80orLow80 = ((idx80MHz % 2) == 0);
         std::transform(indices.cbegin(),
                        indices.cend(),
                        std::back_inserter(ret),
-                       [i](const auto indice) {
-                           return EhtRu::RuSpec{RuType::RU_26_TONE, indice + (i * 37)};
+                       [p160, p80orLow80](const auto indice) {
+                           return EhtRu::RuSpec{RuType::RU_26_TONE, indice, p160, p80orLow80};
                        });
     }
     return ret;
@@ -963,8 +1074,8 @@ EhtRu::GetSubcarrierGroup(MHz_t bw, RuType ruType, std::size_t phyIndex)
 bool
 EhtRu::DoesOverlap(MHz_t bw, EhtRu::RuSpec ru, const std::vector<EhtRu::RuSpec>& v)
 {
-    // A RU spans the whole bandwidth, hence it overlaps with any other RU
-    if (bw == WifiRu::GetBandwidth(ru.GetRuType()) && !v.empty())
+    // A 4x996-tone RU spans 320 MHz, hence it overlaps with any other RU
+    if (bw == MHz_t{320} && ru.GetRuType() == RuType::RU_4x996_TONE && !v.empty())
     {
         return true;
     }
@@ -973,9 +1084,27 @@ EhtRu::DoesOverlap(MHz_t bw, EhtRu::RuSpec ru, const std::vector<EhtRu::RuSpec>&
     // not been set yet. Hence, we pass the "MAC" index to GetSubcarrierGroup instead
     // of the PHY index. This is fine because we compare the primary 80 MHz bands of
     // the two RUs below.
-    SubcarrierGroup rangesRu = GetSubcarrierGroup(bw, ru.GetRuType(), ru.GetIndex());
+    const auto rangesRu = GetSubcarrierGroup(bw, ru.GetRuType(), ru.GetIndex());
+    const auto ruBw = WifiRu::GetBandwidth(ru.GetRuType());
     for (auto& p : v)
     {
+        // A 4x996-tone RU spans 160 MHz, hence it overlaps
+        if (bw == MHz_t{320} && p.GetRuType() == RuType::RU_4x996_TONE)
+        {
+            return true;
+        }
+        if ((ru.GetPrimary160MHz() != p.GetPrimary160MHz()))
+        {
+            // the two RUs are located in distinct 160MHz bands
+            continue;
+        }
+        if (const auto otherRuBw = WifiRu::GetBandwidth(p.GetRuType());
+            (ruBw <= MHz_t{80}) && (otherRuBw <= MHz_t{80}) &&
+            (ru.GetPrimary80MHzOrLower80MHz() != p.GetPrimary80MHzOrLower80MHz()))
+        {
+            // the two RUs are located in distinct 80MHz bands
+            continue;
+        }
         for (const auto& rangeRu : rangesRu)
         {
             SubcarrierGroup rangesP = GetSubcarrierGroup(bw, p.GetRuType(), p.GetIndex());
@@ -995,12 +1124,17 @@ EhtRu::RuSpec
 EhtRu::FindOverlappingRu(MHz_t bw, EhtRu::RuSpec referenceRu, RuType searchedRuType)
 {
     const auto numRus = EhtRu::GetNRus(bw, searchedRuType);
-    for (std::size_t index = 1; index <= numRus; ++index)
+    for (uint8_t idx80MHz = 0; idx80MHz < (bw / MHz_t{80}); ++idx80MHz)
     {
-        EhtRu::RuSpec searchedRu(searchedRuType, index);
-        if (DoesOverlap(bw, referenceRu, {searchedRu}))
+        const auto p160 = (idx80MHz < 2);
+        const auto p80orLow80 = ((idx80MHz % 2) == 0);
+        for (std::size_t index = 1; index <= numRus; ++index)
         {
-            return searchedRu;
+            EhtRu::RuSpec searchedRu(searchedRuType, index, p160, p80orLow80);
+            if (DoesOverlap(bw, referenceRu, {searchedRu}))
+            {
+                return searchedRu;
+            }
         }
     }
     NS_ABORT_MSG("The searched RU type " << searchedRuType << " was not found for bw=" << bw
@@ -1050,7 +1184,8 @@ EhtRu::RuSpec::operator==(const EhtRu::RuSpec& other) const
     // we do not compare the RU PHY indices because they may be uninitialized for
     // one of the compared RUs. This event should not cause the comparison to evaluate
     // to false
-    return std::tie(m_ruType, m_index) == std::tie(other.m_ruType, other.m_index);
+    return std::tie(m_ruType, m_index, m_primary160MHz, m_primary80MHzOrLower80MHz) ==
+           std::tie(other.m_ruType, other.m_index, m_primary160MHz, m_primary80MHzOrLower80MHz);
 }
 
 bool
@@ -1065,13 +1200,24 @@ EhtRu::RuSpec::operator<(const EhtRu::RuSpec& other) const
     // we do not compare the RU PHY indices because they may be uninitialized for
     // one of the compared RUs. This event should not cause the comparison to evaluate
     // to false
-    return std::tie(m_ruType, m_index) < std::tie(other.m_ruType, other.m_index);
+    return std::tie(m_ruType, m_index, m_primary160MHz, m_primary80MHzOrLower80MHz) <
+           std::tie(other.m_ruType, other.m_index, m_primary160MHz, m_primary80MHzOrLower80MHz);
 }
 
 std::ostream&
 operator<<(std::ostream& os, const EhtRu::RuSpec& ru)
 {
-    os << "RU{" << ru.GetRuType() << "/" << ru.GetIndex() << "}";
+    os << "RU{" << ru.GetRuType() << "/" << ru.GetIndex() << "/"
+       << (ru.GetPrimary160MHz() ? "primary160MHz" : "secondary160MHz") << "/";
+    if (ru.GetPrimary160MHz())
+    {
+        os << (ru.GetPrimary80MHzOrLower80MHz() ? "primary80MHz" : "secondary80MHz");
+    }
+    else
+    {
+        os << (ru.GetPrimary80MHzOrLower80MHz() ? "Lower80MHz" : "high80MHz");
+    }
+    os << "}";
     return os;
 }
 

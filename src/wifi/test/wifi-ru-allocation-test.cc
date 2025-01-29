@@ -9,6 +9,7 @@
 #include "ns3/test.h"
 #include "ns3/wifi-phy-operating-channel.h"
 #include "ns3/wifi-ru.h"
+#include "ns3/wifi-utils.h"
 
 using namespace ns3;
 
@@ -23,17 +24,22 @@ namespace
  *
  * @param ruType the RU type
  * @param index the RU index (starting at 1)
- * @param primary80MHz whether the RU is allocated in the primary 80MHz channel (only for HE)
+ * @param primaryOrLow80MHz whether the RU is allocated in the primary 80MHz channel or in the low
+ * 80 MHz if the RU is allocated in the secondary 160 MHz
+ * @param primary160MHz whether the RU is allocated in the primary 160MHz channel (only for EHT)
  * @return the created RU Specification.
  */
 WifiRu::RuSpec
-MakeRuSpec(RuType ruType, std::size_t index, std::optional<bool> primary80MHz = std::nullopt)
+MakeRuSpec(RuType ruType,
+           std::size_t index,
+           bool primaryOrLow80MHz,
+           std::optional<bool> primary160MHz = std::nullopt)
 {
-    if (primary80MHz)
+    if (!primary160MHz)
     {
-        return HeRu::RuSpec{ruType, index, *primary80MHz};
+        return HeRu::RuSpec{ruType, index, primaryOrLow80MHz};
     }
-    return EhtRu::RuSpec{ruType, index};
+    return EhtRu::RuSpec{ruType, index, *primary160MHz, primaryOrLow80MHz};
 }
 
 } // namespace
@@ -61,7 +67,8 @@ class Wifi20MHzIndicesCoveringRuTest : public TestCase
      * @param primary20 the index of the primary20 channel to configure
      * @param ru the given RU
      * @param width the width of the channel to which the given RU refers to; normally, it is the
-     * width of the PPDU for which the RU is allocated @param indices the expected indices
+     * width of the PPDU for which the RU is allocated
+     * @param indices the expected indices
      */
     void RunOne(uint8_t primary20,
                 WifiRu::RuSpec ru,
@@ -100,12 +107,11 @@ Wifi20MHzIndicesCoveringRuTest::RunOne(uint8_t primary20,
     };
 
     m_channel.SetPrimary20Index(primary20);
-
     auto actualIndices = m_channel.Get20MHzIndicesCoveringRu(ru, width);
-    NS_TEST_ASSERT_MSG_EQ((actualIndices == indices),
+    NS_TEST_EXPECT_MSG_EQ((actualIndices == indices),
                           true,
-                          "Channel width=" << m_channel.GetWidth() << " MHz, PPDU width=" << width
-                                           << " MHz, p20Index=" << +primary20 << " , RU=" << ru
+                          "Channel width=" << m_channel.GetWidth() << ", PPDU width=" << width
+                                           << ", p20Index=" << +primary20 << " , RU=" << ru
                                            << ". Expected indices " << printToStr(indices)
                                            << " differs from actual " << printToStr(actualIndices));
 }
@@ -113,7 +119,8 @@ Wifi20MHzIndicesCoveringRuTest::RunOne(uint8_t primary20,
 void
 Wifi20MHzIndicesCoveringRuTest::DoRun()
 {
-    const auto p80 = (m_standard == WIFI_STANDARD_80211ax) ? std::optional(true) : std::nullopt;
+    const auto p80{true};
+    const auto p160{(m_standard == WIFI_STANDARD_80211be) ? std::optional(true) : std::nullopt};
 
     /******************
      * 20 MHz channel *
@@ -128,20 +135,20 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
         // All the 9 26-tone RUs are covered by the unique 20 MHz channel
         for (std::size_t idx = 1; idx <= 9; idx++)
         {
-            RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx, p80), width, {p20Index});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx, p80, p160), width, {p20Index});
         }
         // All the 4 52-tone RUs are covered by the unique 20 MHz channel
         for (std::size_t idx = 1; idx <= 4; idx++)
         {
-            RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx, p80), width, {p20Index});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx, p80, p160), width, {p20Index});
         }
         // Both 106-tone RUs are covered by the unique 20 MHz channel
         for (std::size_t idx = 1; idx <= 2; idx++)
         {
-            RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx, p80), width, {p20Index});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx, p80, p160), width, {p20Index});
         }
         // The 242-tone RU is covered by the unique 20 MHz channel
-        RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 1, p80), width, {p20Index});
+        RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 1, p80, p160), width, {p20Index});
     }
 
     /******************
@@ -157,20 +164,20 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
         // All the 9 26-tone RUs are covered by the primary 20 MHz channel
         for (std::size_t idx = 1; idx <= 9; idx++)
         {
-            RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx, p80), width, {p20Index});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx, p80, p160), width, {p20Index});
         }
         // All the 4 52-tone RUs are covered by the primary 20 MHz channel
         for (std::size_t idx = 1; idx <= 4; idx++)
         {
-            RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx, p80), width, {p20Index});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx, p80, p160), width, {p20Index});
         }
         // Both 106-tone RUs are covered by the primary 20 MHz channel
         for (std::size_t idx = 1; idx <= 2; idx++)
         {
-            RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx, p80), width, {p20Index});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx, p80, p160), width, {p20Index});
         }
         // The 242-tone RU is covered by the primary 20 MHz channel
-        RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 1, p80), width, {p20Index});
+        RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 1, p80, p160), width, {p20Index});
     }
 
     /* 40 MHz PPDU */
@@ -181,39 +188,39 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
         // The first 9 26-tone RUs are covered by the first 20 MHz channel
         for (std::size_t idx = 1; idx <= 9; idx++)
         {
-            RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx, p80), width, {0});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx, p80, p160), width, {0});
         }
         // The second 9 26-tone RUs are covered by the second 20 MHz channel
         for (std::size_t idx = 10; idx <= 18; idx++)
         {
-            RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx, p80), width, {1});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx, p80, p160), width, {1});
         }
         // The first 4 52-tone RUs are covered by the first 20 MHz channel
         for (std::size_t idx = 1; idx <= 4; idx++)
         {
-            RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx, p80), width, {0});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx, p80, p160), width, {0});
         }
         // The second 4 52-tone RUs are covered by the second 20 MHz channel
         for (std::size_t idx = 5; idx <= 8; idx++)
         {
-            RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx, p80), width, {1});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx, p80, p160), width, {1});
         }
         // The first 2 106-tone RUs are covered by the first 20 MHz channel
         for (std::size_t idx = 1; idx <= 2; idx++)
         {
-            RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx, p80), width, {0});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx, p80, p160), width, {0});
         }
         // The second 2 106-tone RUs are covered by the second 20 MHz channel
         for (std::size_t idx = 3; idx <= 4; idx++)
         {
-            RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx, p80), width, {1});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx, p80, p160), width, {1});
         }
         // The first 242-tone RU is covered by the first 20 MHz channel
-        RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 1, p80), width, {0});
+        RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 1, p80, p160), width, {0});
         // The second 242-tone RU is covered by the second 20 MHz channel
-        RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 2, p80), width, {1});
+        RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 2, p80, p160), width, {1});
         // The 484-tone RU is covered by both 20 MHz channels
-        RunOne(p20Index, MakeRuSpec(RuType::RU_484_TONE, 1, p80), width, {0, 1});
+        RunOne(p20Index, MakeRuSpec(RuType::RU_484_TONE, 1, p80, p160), width, {0, 1});
     }
 
     /******************
@@ -229,20 +236,20 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
         // All the 9 26-tone RUs are covered by the primary 20 MHz channel
         for (std::size_t idx = 1; idx <= 9; idx++)
         {
-            RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx, p80), width, {p20Index});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx, p80, p160), width, {p20Index});
         }
         // All the 4 52-tone RUs are covered by the primary 20 MHz channel
         for (std::size_t idx = 1; idx <= 4; idx++)
         {
-            RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx, p80), width, {p20Index});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx, p80, p160), width, {p20Index});
         }
         // Both 106-tone RUs are covered by the primary 20 MHz channel
         for (std::size_t idx = 1; idx <= 2; idx++)
         {
-            RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx, p80), width, {p20Index});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx, p80, p160), width, {p20Index});
         }
         // The 242-tone RU is covered by the primary 20 MHz channel
-        RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 1, p80), width, {p20Index});
+        RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 1, p80, p160), width, {p20Index});
     }
 
     /* 40 MHz PPDU */
@@ -258,39 +265,42 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
         // The first 9 26-tone RUs are in the lower 20 MHz of the PPDU bandwidth
         for (std::size_t idx = 1; idx <= 9; idx++)
         {
-            RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx, p80), width, {ch20Index0});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx, p80, p160), width, {ch20Index0});
         }
         // The second 9 26-tone RUs are in the higher 20 MHz of the PPDU bandwidth
         for (std::size_t idx = 10; idx <= 18; idx++)
         {
-            RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx, p80), width, {ch20Index1});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx, p80, p160), width, {ch20Index1});
         }
         // The first 4 52-tone RUs are in the lower 20 MHz of the PPDU bandwidth
         for (std::size_t idx = 1; idx <= 4; idx++)
         {
-            RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx, p80), width, {ch20Index0});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx, p80, p160), width, {ch20Index0});
         }
         // The second 4 52-tone RUs are in the higher 20 MHz of the PPDU bandwidth
         for (std::size_t idx = 5; idx <= 8; idx++)
         {
-            RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx, p80), width, {ch20Index1});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx, p80, p160), width, {ch20Index1});
         }
         // The first 2 106-tone RUs are in the lower 20 MHz of the PPDU bandwidth
         for (std::size_t idx = 1; idx <= 2; idx++)
         {
-            RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx, p80), width, {ch20Index0});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx, p80, p160), width, {ch20Index0});
         }
         // The second 2 106-tone RUs are in the higher 20 MHz of the PPDU bandwidth
         for (std::size_t idx = 3; idx <= 4; idx++)
         {
-            RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx, p80), width, {ch20Index1});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx, p80, p160), width, {ch20Index1});
         }
         // The first 242-tone RU is in the lower 20 MHz of the PPDU bandwidth
-        RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 1, p80), width, {ch20Index0});
+        RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 1, p80, p160), width, {ch20Index0});
         // The second 242-tone RU is in the higher 20 MHz of the PPDU bandwidth
-        RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 2, p80), width, {ch20Index1});
+        RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 2, p80, p160), width, {ch20Index1});
         // The 484-tone RU is covered by both 20 MHz channels
-        RunOne(p20Index, MakeRuSpec(RuType::RU_484_TONE, 1, p80), width, {ch20Index0, ch20Index1});
+        RunOne(p20Index,
+               MakeRuSpec(RuType::RU_484_TONE, 1, p80, p160),
+               width,
+               {ch20Index0, ch20Index1});
     }
 
     /* 80 MHz PPDU */
@@ -301,82 +311,82 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
         // The first 9 26-tone RUs are in the first 20 MHz channel
         for (std::size_t idx = 1; idx <= 9; idx++)
         {
-            RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx, p80), width, {0});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx, p80, p160), width, {0});
         }
         // The second 9 26-tone RUs are in the second 20 MHz channel
         for (std::size_t idx = 10; idx <= 18; idx++)
         {
-            RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx, p80), width, {1});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx, p80, p160), width, {1});
         }
         if (m_standard == WIFI_STANDARD_80211ax)
         {
             // The center 26-tone RU is covered by the central 20 MHz channels
-            RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, 19, p80), width, {1, 2});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, 19, p80, p160), width, {1, 2});
         }
         // The following 9 26-tone RUs are in the third 20 MHz channel
         for (std::size_t idx = 20; idx <= 28; idx++)
         {
-            RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx, p80), width, {2});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx, p80, p160), width, {2});
         }
         // The last 9 26-tone RUs are in the fourth 20 MHz channel
         for (std::size_t idx = 29; idx <= 37; idx++)
         {
-            RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx, p80), width, {3});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx, p80, p160), width, {3});
         }
         // The first 4 52-tone RUs are in the first 20 MHz channel
         for (std::size_t idx = 1; idx <= 4; idx++)
         {
-            RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx, p80), width, {0});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx, p80, p160), width, {0});
         }
         // The second 4 52-tone RUs are in the second 20 MHz channel
         for (std::size_t idx = 5; idx <= 8; idx++)
         {
-            RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx, p80), width, {1});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx, p80, p160), width, {1});
         }
         // The third 4 52-tone RUs are in the third 20 MHz channel
         for (std::size_t idx = 9; idx <= 12; idx++)
         {
-            RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx, p80), width, {2});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx, p80, p160), width, {2});
         }
         // The fourth 4 52-tone RUs are in the fourth 20 MHz channel
         for (std::size_t idx = 13; idx <= 16; idx++)
         {
-            RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx, p80), width, {3});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx, p80, p160), width, {3});
         }
         // The first 2 106-tone RUs are in the first 20 MHz channel
         for (std::size_t idx = 1; idx <= 2; idx++)
         {
-            RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx, p80), width, {0});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx, p80, p160), width, {0});
         }
         // The second 2 106-tone RUs are in the second 20 MHz channel
         for (std::size_t idx = 3; idx <= 4; idx++)
         {
-            RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx, p80), width, {1});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx, p80, p160), width, {1});
         }
         // The third 2 106-tone RUs are in the third 20 MHz channel
         for (std::size_t idx = 5; idx <= 6; idx++)
         {
-            RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx, p80), width, {2});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx, p80, p160), width, {2});
         }
         // The fourth 2 106-tone RUs are in the fourth 20 MHz channel
         for (std::size_t idx = 7; idx <= 8; idx++)
         {
-            RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx, p80), width, {3});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx, p80, p160), width, {3});
         }
         // The first 242-tone RU is in the first 20 MHz channel
-        RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 1, p80), width, {0});
+        RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 1, p80, p160), width, {0});
         // The second 242-tone RU is in the second 20 MHz channel
-        RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 2, p80), width, {1});
+        RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 2, p80, p160), width, {1});
         // The third 242-tone RU is in the third 20 MHz channel
-        RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 3, p80), width, {2});
+        RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 3, p80, p160), width, {2});
         // The fourth 242-tone RU is in the fourth 20 MHz channel
-        RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 4, p80), width, {3});
+        RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 4, p80, p160), width, {3});
         // The first 484-tone RU is covered by the first two 20 MHz channels
-        RunOne(p20Index, MakeRuSpec(RuType::RU_484_TONE, 1, p80), width, {0, 1});
+        RunOne(p20Index, MakeRuSpec(RuType::RU_484_TONE, 1, p80, p160), width, {0, 1});
         // The second 484-tone RU is covered by the last two 20 MHz channels
-        RunOne(p20Index, MakeRuSpec(RuType::RU_484_TONE, 2, p80), width, {2, 3});
+        RunOne(p20Index, MakeRuSpec(RuType::RU_484_TONE, 2, p80, p160), width, {2, 3});
         // The 996-tone RU is covered by all the 20 MHz channels
-        RunOne(p20Index, MakeRuSpec(RuType::RU_996_TONE, 1, p80), width, {0, 1, 2, 3});
+        RunOne(p20Index, MakeRuSpec(RuType::RU_996_TONE, 1, p80, p160), width, {0, 1, 2, 3});
     }
 
     /******************
@@ -392,20 +402,20 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
         // All the 9 26-tone RUs are covered by the primary 20 MHz channel
         for (std::size_t idx = 1; idx <= 9; idx++)
         {
-            RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx, p80), width, {p20Index});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx, p80, p160), width, {p20Index});
         }
         // All the 4 52-tone RUs are covered by the primary 20 MHz channel
         for (std::size_t idx = 1; idx <= 4; idx++)
         {
-            RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx, p80), width, {p20Index});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx, p80, p160), width, {p20Index});
         }
         // Both 106-tone RUs are covered by the primary 20 MHz channel
         for (std::size_t idx = 1; idx <= 2; idx++)
         {
-            RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx, p80), width, {p20Index});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx, p80, p160), width, {p20Index});
         }
         // The 242-tone RU is covered by the primary 20 MHz channel
-        RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 1, p80), width, {p20Index});
+        RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 1, p80, p160), width, {p20Index});
     }
 
     /* 40 MHz PPDU */
@@ -421,39 +431,42 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
         // The first 9 26-tone RUs are in the lower 20 MHz of the PPDU bandwidth
         for (std::size_t idx = 1; idx <= 9; idx++)
         {
-            RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx, p80), width, {ch20Index0});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx, p80, p160), width, {ch20Index0});
         }
         // The second 9 26-tone RUs are in the higher 20 MHz of the PPDU bandwidth
         for (std::size_t idx = 10; idx <= 18; idx++)
         {
-            RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx, p80), width, {ch20Index1});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx, p80, p160), width, {ch20Index1});
         }
         // The first 4 52-tone RUs are in the lower 20 MHz of the PPDU bandwidth
         for (std::size_t idx = 1; idx <= 4; idx++)
         {
-            RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx, p80), width, {ch20Index0});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx, p80, p160), width, {ch20Index0});
         }
         // The second 4 52-tone RUs are in the higher 20 MHz of the PPDU bandwidth
         for (std::size_t idx = 5; idx <= 8; idx++)
         {
-            RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx, p80), width, {ch20Index1});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx, p80, p160), width, {ch20Index1});
         }
         // The first 2 106-tone RUs are in the lower 20 MHz of the PPDU bandwidth
         for (std::size_t idx = 1; idx <= 2; idx++)
         {
-            RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx, p80), width, {ch20Index0});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx, p80, p160), width, {ch20Index0});
         }
         // The second 2 106-tone RUs are in the higher 20 MHz of the PPDU bandwidth
         for (std::size_t idx = 3; idx <= 4; idx++)
         {
-            RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx, p80), width, {ch20Index1});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx, p80, p160), width, {ch20Index1});
         }
         // The first 242-tone RU is in the lower 20 MHz of the PPDU bandwidth
-        RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 1, p80), width, {ch20Index0});
+        RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 1, p80, p160), width, {ch20Index0});
         // The second 242-tone RU is in the higher 20 MHz of the PPDU bandwidth
-        RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 2, p80), width, {ch20Index1});
+        RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 2, p80, p160), width, {ch20Index1});
         // The 484-tone RU is covered by both 20 MHz channels
-        RunOne(p20Index, MakeRuSpec(RuType::RU_484_TONE, 1, p80), width, {ch20Index0, ch20Index1});
+        RunOne(p20Index,
+               MakeRuSpec(RuType::RU_484_TONE, 1, p80, p160),
+               width,
+               {ch20Index0, ch20Index1});
     }
 
     /* 80 MHz PPDU */
@@ -471,86 +484,92 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
         // The first 9 26-tone RUs are in the first 20 MHz channel
         for (std::size_t idx = 1; idx <= 9; idx++)
         {
-            RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx, p80), width, {ch20Index0});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx, p80, p160), width, {ch20Index0});
         }
         // The second 9 26-tone RUs are in the second 20 MHz channel
         for (std::size_t idx = 10; idx <= 18; idx++)
         {
-            RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx, p80), width, {ch20Index1});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx, p80, p160), width, {ch20Index1});
         }
         if (m_standard == WIFI_STANDARD_80211ax)
         {
             // The center 26-tone RU is covered by the central 20 MHz channels
             RunOne(p20Index,
-                   MakeRuSpec(RuType::RU_26_TONE, 19, p80),
+                   MakeRuSpec(RuType::RU_26_TONE, 19, p80, p160),
                    width,
                    {ch20Index1, ch20Index2});
         }
         // The following 9 26-tone RUs are in the third 20 MHz channel
         for (std::size_t idx = 20; idx <= 28; idx++)
         {
-            RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx, p80), width, {ch20Index2});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx, p80, p160), width, {ch20Index2});
         }
         // The last 9 26-tone RUs are in the fourth 20 MHz channel
         for (std::size_t idx = 29; idx <= 37; idx++)
         {
-            RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx, p80), width, {ch20Index3});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx, p80, p160), width, {ch20Index3});
         }
         // The first 4 52-tone RUs are in the first 20 MHz channel
         for (std::size_t idx = 1; idx <= 4; idx++)
         {
-            RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx, p80), width, {ch20Index0});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx, p80, p160), width, {ch20Index0});
         }
         // The second 4 52-tone RUs are in the second 20 MHz channel
         for (std::size_t idx = 5; idx <= 8; idx++)
         {
-            RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx, p80), width, {ch20Index1});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx, p80, p160), width, {ch20Index1});
         }
         // The third 4 52-tone RUs are in the third 20 MHz channel
         for (std::size_t idx = 9; idx <= 12; idx++)
         {
-            RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx, p80), width, {ch20Index2});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx, p80, p160), width, {ch20Index2});
         }
         // The fourth 4 52-tone RUs are in the fourth 20 MHz channel
         for (std::size_t idx = 13; idx <= 16; idx++)
         {
-            RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx, p80), width, {ch20Index3});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx, p80, p160), width, {ch20Index3});
         }
         // The first 2 106-tone RUs are in the first 20 MHz channel
         for (std::size_t idx = 1; idx <= 2; idx++)
         {
-            RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx, p80), width, {ch20Index0});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx, p80, p160), width, {ch20Index0});
         }
         // The second 2 106-tone RUs are in the second 20 MHz channel
         for (std::size_t idx = 3; idx <= 4; idx++)
         {
-            RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx, p80), width, {ch20Index1});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx, p80, p160), width, {ch20Index1});
         }
         // The third 2 106-tone RUs are in the third 20 MHz channel
         for (std::size_t idx = 5; idx <= 6; idx++)
         {
-            RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx, p80), width, {ch20Index2});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx, p80, p160), width, {ch20Index2});
         }
         // The fourth 2 106-tone RUs are in the fourth 20 MHz channel
         for (std::size_t idx = 7; idx <= 8; idx++)
         {
-            RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx, p80), width, {ch20Index3});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx, p80, p160), width, {ch20Index3});
         }
         // The first 242-tone RU is in the first 20 MHz channel
-        RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 1, p80), width, {ch20Index0});
+        RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 1, p80, p160), width, {ch20Index0});
         // The second 242-tone RU is in the second 20 MHz channel
-        RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 2, p80), width, {ch20Index1});
+        RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 2, p80, p160), width, {ch20Index1});
         // The third 242-tone RU is in the third 20 MHz channel
-        RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 3, p80), width, {ch20Index2});
+        RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 3, p80, p160), width, {ch20Index2});
         // The fourth 242-tone RU is in the fourth 20 MHz channel
-        RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 4, p80), width, {ch20Index3});
+        RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 4, p80, p160), width, {ch20Index3});
         // The first 484-tone RU is covered by the first two 20 MHz channels
-        RunOne(p20Index, MakeRuSpec(RuType::RU_484_TONE, 1, p80), width, {ch20Index0, ch20Index1});
+        RunOne(p20Index,
+               MakeRuSpec(RuType::RU_484_TONE, 1, p80, p160),
+               width,
+               {ch20Index0, ch20Index1});
         // The second 484-tone RU is covered by the last two 20 MHz channels
-        RunOne(p20Index, MakeRuSpec(RuType::RU_484_TONE, 2, p80), width, {ch20Index2, ch20Index3});
+        RunOne(p20Index,
+               MakeRuSpec(RuType::RU_484_TONE, 2, p80, p160),
+               width,
+               {ch20Index2, ch20Index3});
         // The 996-tone RU is covered by all the 20 MHz channels
         RunOne(p20Index,
-               MakeRuSpec(RuType::RU_996_TONE, 1, p80),
+               MakeRuSpec(RuType::RU_996_TONE, 1, p80, p160),
                width,
                {ch20Index0, ch20Index1, ch20Index2, ch20Index3});
     }
@@ -560,27 +579,23 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
     {
         const MHz_t width{160};
 
-        for (auto primary80MHz : {true, false})
+        for (auto primary80 : {true, false})
         {
-            const auto primary80 =
-                (m_standard == WIFI_STANDARD_80211ax) ? std::optional(primary80MHz) : std::nullopt;
-
             // RUs can be allocated in one (or more) of the four 20 MHz channels in P80/S80
-            // (depending on the primary80MHz flag)
-            const uint8_t p80Index = (primary80MHz == (p20Index < 4)) ? 0 : 1;
+            // (depending on the primary80 flag)
+            const uint8_t p80Index = (primary80 == (p20Index < 4)) ? 0 : 1;
             const uint8_t ch20Index0 = p80Index * 4;
             const uint8_t ch20Index1 = p80Index * 4 + 1;
             const uint8_t ch20Index2 = p80Index * 4 + 2;
             const uint8_t ch20Index3 = p80Index * 4 + 3;
 
             // The first 9 26-tone RUs are in the first 20 MHz channel
-            std::size_t startIdx =
-                ((m_standard == WIFI_STANDARD_80211ax) || (p80Index == 0)) ? 1 : 38;
+            std::size_t startIdx = 1;
             std::size_t stopIdx = startIdx + 8;
             for (std::size_t idx = startIdx; idx <= stopIdx; idx++)
             {
                 RunOne(p20Index,
-                       MakeRuSpec(RuType::RU_26_TONE, idx, primary80),
+                       MakeRuSpec(RuType::RU_26_TONE, idx, primary80, p160),
                        width,
                        {ch20Index0});
             }
@@ -590,7 +605,7 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
             for (std::size_t idx = startIdx; idx <= stopIdx; idx++)
             {
                 RunOne(p20Index,
-                       MakeRuSpec(RuType::RU_26_TONE, idx, primary80),
+                       MakeRuSpec(RuType::RU_26_TONE, idx, primary80, p160),
                        width,
                        {ch20Index1});
             }
@@ -598,7 +613,7 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
             {
                 // The center 26-tone RU is covered by the central 20 MHz channels
                 RunOne(p20Index,
-                       MakeRuSpec(RuType::RU_26_TONE, 19, primary80),
+                       MakeRuSpec(RuType::RU_26_TONE, 19, primary80, p160),
                        width,
                        {ch20Index1, ch20Index2});
             }
@@ -608,7 +623,7 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
             for (std::size_t idx = startIdx; idx <= stopIdx; idx++)
             {
                 RunOne(p20Index,
-                       MakeRuSpec(RuType::RU_26_TONE, idx, primary80),
+                       MakeRuSpec(RuType::RU_26_TONE, idx, primary80, p160),
                        width,
                        {ch20Index2});
             }
@@ -618,17 +633,17 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
             for (std::size_t idx = startIdx; idx <= stopIdx; idx++)
             {
                 RunOne(p20Index,
-                       MakeRuSpec(RuType::RU_26_TONE, idx, primary80),
+                       MakeRuSpec(RuType::RU_26_TONE, idx, primary80, p160),
                        width,
                        {ch20Index3});
             }
             // The first 4 52-tone RUs are in the first 20 MHz channel
-            startIdx = ((m_standard == WIFI_STANDARD_80211ax) || (p80Index == 0)) ? 1 : 17;
+            startIdx = 1;
             stopIdx = startIdx + 3;
             for (std::size_t idx = startIdx; idx <= stopIdx; idx++)
             {
                 RunOne(p20Index,
-                       MakeRuSpec(RuType::RU_52_TONE, idx, primary80),
+                       MakeRuSpec(RuType::RU_52_TONE, idx, primary80, p160),
                        width,
                        {ch20Index0});
             }
@@ -638,7 +653,7 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
             for (std::size_t idx = startIdx; idx <= stopIdx; idx++)
             {
                 RunOne(p20Index,
-                       MakeRuSpec(RuType::RU_52_TONE, idx, primary80),
+                       MakeRuSpec(RuType::RU_52_TONE, idx, primary80, p160),
                        width,
                        {ch20Index1});
             }
@@ -648,7 +663,7 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
             for (std::size_t idx = startIdx; idx <= stopIdx; idx++)
             {
                 RunOne(p20Index,
-                       MakeRuSpec(RuType::RU_52_TONE, idx, primary80),
+                       MakeRuSpec(RuType::RU_52_TONE, idx, primary80, p160),
                        width,
                        {ch20Index2});
             }
@@ -658,17 +673,17 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
             for (std::size_t idx = startIdx; idx <= stopIdx; idx++)
             {
                 RunOne(p20Index,
-                       MakeRuSpec(RuType::RU_52_TONE, idx, primary80),
+                       MakeRuSpec(RuType::RU_52_TONE, idx, primary80, p160),
                        width,
                        {ch20Index3});
             }
             // The first 2 106-tone RUs are in the first 20 MHz channel
-            startIdx = ((m_standard == WIFI_STANDARD_80211ax) || (p80Index == 0)) ? 1 : 9;
+            startIdx = 1;
             stopIdx = startIdx + 1;
             for (std::size_t idx = startIdx; idx <= stopIdx; idx++)
             {
                 RunOne(p20Index,
-                       MakeRuSpec(RuType::RU_106_TONE, idx, primary80),
+                       MakeRuSpec(RuType::RU_106_TONE, idx, primary80, p160),
                        width,
                        {ch20Index0});
             }
@@ -678,7 +693,7 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
             for (std::size_t idx = startIdx; idx <= stopIdx; idx++)
             {
                 RunOne(p20Index,
-                       MakeRuSpec(RuType::RU_106_TONE, idx, primary80),
+                       MakeRuSpec(RuType::RU_106_TONE, idx, primary80, p160),
                        width,
                        {ch20Index1});
             }
@@ -688,7 +703,7 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
             for (std::size_t idx = startIdx; idx <= stopIdx; idx++)
             {
                 RunOne(p20Index,
-                       MakeRuSpec(RuType::RU_106_TONE, idx, primary80),
+                       MakeRuSpec(RuType::RU_106_TONE, idx, primary80, p160),
                        width,
                        {ch20Index2});
             }
@@ -698,43 +713,46 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
             for (std::size_t idx = startIdx; idx <= stopIdx; idx++)
             {
                 RunOne(p20Index,
-                       MakeRuSpec(RuType::RU_106_TONE, idx, primary80),
+                       MakeRuSpec(RuType::RU_106_TONE, idx, primary80, p160),
                        width,
                        {ch20Index3});
             }
             // The first 242-tone RU is in the first 20 MHz channel
-            auto idx = ((m_standard == WIFI_STANDARD_80211ax) || (p80Index == 0)) ? 1 : 5;
+            auto idx = 1;
             RunOne(p20Index,
-                   MakeRuSpec(RuType::RU_242_TONE, idx++, primary80),
+                   MakeRuSpec(RuType::RU_242_TONE, idx++, primary80, p160),
                    width,
                    {ch20Index0});
             // The second 242-tone RU is in the second 20 MHz channel
             RunOne(p20Index,
-                   MakeRuSpec(RuType::RU_242_TONE, idx++, primary80),
+                   MakeRuSpec(RuType::RU_242_TONE, idx++, primary80, p160),
                    width,
                    {ch20Index1});
             // The third 242-tone RU is in the third 20 MHz channel
             RunOne(p20Index,
-                   MakeRuSpec(RuType::RU_242_TONE, idx++, primary80),
+                   MakeRuSpec(RuType::RU_242_TONE, idx++, primary80, p160),
                    width,
                    {ch20Index2});
             // The fourth 242-tone RU is in the fourth 20 MHz channel
-            RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, idx, primary80), width, {ch20Index3});
-            // The first 484-tone RU is covered by the first two 20 MHz channels
-            idx = ((m_standard == WIFI_STANDARD_80211ax) || (p80Index == 0)) ? 1 : 3;
             RunOne(p20Index,
-                   MakeRuSpec(RuType::RU_484_TONE, idx++, primary80),
+                   MakeRuSpec(RuType::RU_242_TONE, idx, primary80, p160),
+                   width,
+                   {ch20Index3});
+            // The first 484-tone RU is covered by the first two 20 MHz channels
+            idx = 1;
+            RunOne(p20Index,
+                   MakeRuSpec(RuType::RU_484_TONE, idx++, primary80, p160),
                    width,
                    {ch20Index0, ch20Index1});
             // The second 484-tone RU is covered by the last two 20 MHz channels
             RunOne(p20Index,
-                   MakeRuSpec(RuType::RU_484_TONE, idx, primary80),
+                   MakeRuSpec(RuType::RU_484_TONE, idx, primary80, p160),
                    width,
                    {ch20Index2, ch20Index3});
             // The 996-tone RU is covered by all the 20 MHz channels
-            idx = ((m_standard == WIFI_STANDARD_80211ax) || (p80Index == 0)) ? 1 : 2;
+            idx = 1;
             RunOne(p20Index,
-                   MakeRuSpec(RuType::RU_996_TONE, idx, primary80),
+                   MakeRuSpec(RuType::RU_996_TONE, idx, primary80, p160),
                    width,
                    {ch20Index0, ch20Index1, ch20Index2, ch20Index3});
         }
@@ -760,20 +778,23 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
             // All the 9 26-tone RUs are covered by the primary 20 MHz channel
             for (std::size_t idx = 1; idx <= 9; idx++)
             {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx), width, {p20Index});
+                RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx, p80, p160), width, {p20Index});
             }
             // All the 4 52-tone RUs are covered by the primary 20 MHz channel
             for (std::size_t idx = 1; idx <= 4; idx++)
             {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx), width, {p20Index});
+                RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx, p80, p160), width, {p20Index});
             }
             // Both 106-tone RUs are covered by the primary 20 MHz channel
             for (std::size_t idx = 1; idx <= 2; idx++)
             {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx), width, {p20Index});
+                RunOne(p20Index,
+                       MakeRuSpec(RuType::RU_106_TONE, idx, p80, p160),
+                       width,
+                       {p20Index});
             }
             // The 242-tone RU is covered by the primary 20 MHz channel
-            RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 1), width, {p20Index});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 1, p80, p160), width, {p20Index});
         }
 
         /* 40 MHz PPDU */
@@ -789,39 +810,60 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
             // The first 9 26-tone RUs are in the lower 20 MHz of the PPDU bandwidth
             for (std::size_t idx = 1; idx <= 9; idx++)
             {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx), width, {ch20Index0});
+                RunOne(p20Index,
+                       MakeRuSpec(RuType::RU_26_TONE, idx, p80, p160),
+                       width,
+                       {ch20Index0});
             }
             // The second 9 26-tone RUs are in the higher 20 MHz of the PPDU bandwidth
             for (std::size_t idx = 10; idx <= 18; idx++)
             {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx), width, {ch20Index1});
+                RunOne(p20Index,
+                       MakeRuSpec(RuType::RU_26_TONE, idx, p80, p160),
+                       width,
+                       {ch20Index1});
             }
             // The first 4 52-tone RUs are in the lower 20 MHz of the PPDU bandwidth
             for (std::size_t idx = 1; idx <= 4; idx++)
             {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx), width, {ch20Index0});
+                RunOne(p20Index,
+                       MakeRuSpec(RuType::RU_52_TONE, idx, p80, p160),
+                       width,
+                       {ch20Index0});
             }
             // The second 4 52-tone RUs are in the higher 20 MHz of the PPDU bandwidth
             for (std::size_t idx = 5; idx <= 8; idx++)
             {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx), width, {ch20Index1});
+                RunOne(p20Index,
+                       MakeRuSpec(RuType::RU_52_TONE, idx, p80, p160),
+                       width,
+                       {ch20Index1});
             }
             // The first 2 106-tone RUs are in the lower 20 MHz of the PPDU bandwidth
             for (std::size_t idx = 1; idx <= 2; idx++)
             {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx), width, {ch20Index0});
+                RunOne(p20Index,
+                       MakeRuSpec(RuType::RU_106_TONE, idx, p80, p160),
+                       width,
+                       {ch20Index0});
             }
             // The second 2 106-tone RUs are in the higher 20 MHz of the PPDU bandwidth
             for (std::size_t idx = 3; idx <= 4; idx++)
             {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx), width, {ch20Index1});
+                RunOne(p20Index,
+                       MakeRuSpec(RuType::RU_106_TONE, idx, p80, p160),
+                       width,
+                       {ch20Index1});
             }
             // The first 242-tone RU is in the lower 20 MHz of the PPDU bandwidth
-            RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 1), width, {ch20Index0});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 1, p80, p160), width, {ch20Index0});
             // The second 242-tone RU is in the higher 20 MHz of the PPDU bandwidth
-            RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 2), width, {ch20Index1});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 2, p80, p160), width, {ch20Index1});
             // The 484-tone RU is covered by both 20 MHz channels
-            RunOne(p20Index, MakeRuSpec(RuType::RU_484_TONE, 1), width, {ch20Index0, ch20Index1});
+            RunOne(p20Index,
+                   MakeRuSpec(RuType::RU_484_TONE, 1, p80, p160),
+                   width,
+                   {ch20Index0, ch20Index1});
         }
 
         /* 80 MHz PPDU */
@@ -839,86 +881,128 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
             // The first 9 26-tone RUs are in the first 20 MHz channel
             for (std::size_t idx = 1; idx <= 9; idx++)
             {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx), width, {ch20Index0});
+                RunOne(p20Index,
+                       MakeRuSpec(RuType::RU_26_TONE, idx, p80, p160),
+                       width,
+                       {ch20Index0});
             }
             // The second 9 26-tone RUs are in the second 20 MHz channel
             for (std::size_t idx = 10; idx <= 18; idx++)
             {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx), width, {ch20Index1});
+                RunOne(p20Index,
+                       MakeRuSpec(RuType::RU_26_TONE, idx, p80, p160),
+                       width,
+                       {ch20Index1});
             }
             if (m_standard == WIFI_STANDARD_80211ax)
             {
                 // The center 26-tone RU is covered by the central 20 MHz channels
                 RunOne(p20Index,
-                       MakeRuSpec(RuType::RU_26_TONE, 19),
+                       MakeRuSpec(RuType::RU_26_TONE, 19, p80, p160),
                        width,
                        {ch20Index1, ch20Index2});
             }
             // The following 9 26-tone RUs are in the third 20 MHz channel
             for (std::size_t idx = 20; idx <= 28; idx++)
             {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx), width, {ch20Index2});
+                RunOne(p20Index,
+                       MakeRuSpec(RuType::RU_26_TONE, idx, p80, p160),
+                       width,
+                       {ch20Index2});
             }
             // The last 9 26-tone RUs are in the fourth 20 MHz channel
             for (std::size_t idx = 29; idx <= 37; idx++)
             {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx), width, {ch20Index3});
+                RunOne(p20Index,
+                       MakeRuSpec(RuType::RU_26_TONE, idx, p80, p160),
+                       width,
+                       {ch20Index3});
             }
             // The first 4 52-tone RUs are in the first 20 MHz channel
             for (std::size_t idx = 1; idx <= 4; idx++)
             {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx), width, {ch20Index0});
+                RunOne(p20Index,
+                       MakeRuSpec(RuType::RU_52_TONE, idx, p80, p160),
+                       width,
+                       {ch20Index0});
             }
             // The second 4 52-tone RUs are in the second 20 MHz channel
             for (std::size_t idx = 5; idx <= 8; idx++)
             {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx), width, {ch20Index1});
+                RunOne(p20Index,
+                       MakeRuSpec(RuType::RU_52_TONE, idx, p80, p160),
+                       width,
+                       {ch20Index1});
             }
             // The third 4 52-tone RUs are in the third 20 MHz channel
             for (std::size_t idx = 9; idx <= 12; idx++)
             {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx), width, {ch20Index2});
+                RunOne(p20Index,
+                       MakeRuSpec(RuType::RU_52_TONE, idx, p80, p160),
+                       width,
+                       {ch20Index2});
             }
             // The fourth 4 52-tone RUs are in the fourth 20 MHz channel
             for (std::size_t idx = 13; idx <= 16; idx++)
             {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx), width, {ch20Index3});
+                RunOne(p20Index,
+                       MakeRuSpec(RuType::RU_52_TONE, idx, p80, p160),
+                       width,
+                       {ch20Index3});
             }
             // The first 2 106-tone RUs are in the first 20 MHz channel
             for (std::size_t idx = 1; idx <= 2; idx++)
             {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx), width, {ch20Index0});
+                RunOne(p20Index,
+                       MakeRuSpec(RuType::RU_106_TONE, idx, p80, p160),
+                       width,
+                       {ch20Index0});
             }
             // The second 2 106-tone RUs are in the second 20 MHz channel
             for (std::size_t idx = 3; idx <= 4; idx++)
             {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx), width, {ch20Index1});
+                RunOne(p20Index,
+                       MakeRuSpec(RuType::RU_106_TONE, idx, p80, p160),
+                       width,
+                       {ch20Index1});
             }
             // The third 2 106-tone RUs are in the third 20 MHz channel
             for (std::size_t idx = 5; idx <= 6; idx++)
             {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx), width, {ch20Index2});
+                RunOne(p20Index,
+                       MakeRuSpec(RuType::RU_106_TONE, idx, p80, p160),
+                       width,
+                       {ch20Index2});
             }
             // The fourth 2 106-tone RUs are in the fourth 20 MHz channel
             for (std::size_t idx = 7; idx <= 8; idx++)
             {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx), width, {ch20Index3});
+                RunOne(p20Index,
+                       MakeRuSpec(RuType::RU_106_TONE, idx, p80, p160),
+                       width,
+                       {ch20Index3});
             }
             // The first 242-tone RU is in the first 20 MHz channel
-            RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 1), width, {ch20Index0});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 1, p80, p160), width, {ch20Index0});
             // The second 242-tone RU is in the second 20 MHz channel
-            RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 2), width, {ch20Index1});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 2, p80, p160), width, {ch20Index1});
             // The third 242-tone RU is in the third 20 MHz channel
-            RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 3), width, {ch20Index2});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 3, p80, p160), width, {ch20Index2});
             // The fourth 242-tone RU is in the fourth 20 MHz channel
-            RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 4), width, {ch20Index3});
+            RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 4, p80, p160), width, {ch20Index3});
             // The first 484-tone RU is covered by the first two 20 MHz channels
-            RunOne(p20Index, MakeRuSpec(RuType::RU_484_TONE, 1), width, {ch20Index0, ch20Index1});
+            RunOne(p20Index,
+                   MakeRuSpec(RuType::RU_484_TONE, 1, p80, p160),
+                   width,
+                   {ch20Index0, ch20Index1});
             // The second 484-tone RU is covered by the last two 20 MHz channels
-            RunOne(p20Index, MakeRuSpec(RuType::RU_484_TONE, 2), width, {ch20Index2, ch20Index3});
+            RunOne(p20Index,
+                   MakeRuSpec(RuType::RU_484_TONE, 2, p80, p160),
+                   width,
+                   {ch20Index2, ch20Index3});
             // The 996-tone RU is covered by all the 20 MHz channels
             RunOne(p20Index,
-                   MakeRuSpec(RuType::RU_996_TONE, 1),
+                   MakeRuSpec(RuType::RU_996_TONE, 1, p80, p160),
                    width,
                    {ch20Index0, ch20Index1, ch20Index2, ch20Index3});
         }
@@ -928,8 +1012,184 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
         {
             const MHz_t width{160};
 
-            // PPDU is transmitted on P160
-            const uint8_t p160Index = p20Index / 8;
+            const uint8_t p160Index = (p20Index < 8) ? 0 : 1;
+            for (auto primary80 : {true, false})
+            {
+                // RUs can be allocated in one (or more) of the four 20 MHz channels in P80/S80
+                // (depending on the primary80 flag)
+                const uint8_t p80Index = (primary80 == (p20Index - (p160Index * 8) < 4)) ? 0 : 1;
+                const uint8_t ch20Index0 = (p160Index * 8) + p80Index * 4;
+                const uint8_t ch20Index1 = (p160Index * 8) + p80Index * 4 + 1;
+                const uint8_t ch20Index2 = (p160Index * 8) + p80Index * 4 + 2;
+                const uint8_t ch20Index3 = (p160Index * 8) + p80Index * 4 + 3;
+
+                // The first 9 26-tone RUs are in the first 20 MHz channel
+                std::size_t startIdx = 1;
+                std::size_t stopIdx = startIdx + 8;
+                for (std::size_t idx = startIdx; idx <= stopIdx; idx++)
+                {
+                    RunOne(p20Index,
+                           MakeRuSpec(RuType::RU_26_TONE, idx, primary80, p160),
+                           width,
+                           {ch20Index0});
+                }
+                // The second 9 26-tone RUs are in the second 20 MHz channel
+                startIdx = stopIdx + 1;
+                stopIdx = startIdx + 8;
+                for (std::size_t idx = startIdx; idx <= stopIdx; idx++)
+                {
+                    RunOne(p20Index,
+                           MakeRuSpec(RuType::RU_26_TONE, idx, primary80, p160),
+                           width,
+                           {ch20Index1});
+                }
+                if (m_standard == WIFI_STANDARD_80211ax)
+                {
+                    // The center 26-tone RU is covered by the central 20 MHz channels
+                    RunOne(p20Index,
+                           MakeRuSpec(RuType::RU_26_TONE, 19, primary80, p160),
+                           width,
+                           {ch20Index1, ch20Index2});
+                }
+                // The following 9 26-tone RUs are in the third 20 MHz channel
+                startIdx = stopIdx + 2;
+                stopIdx = startIdx + 8;
+                for (std::size_t idx = startIdx; idx <= stopIdx; idx++)
+                {
+                    RunOne(p20Index,
+                           MakeRuSpec(RuType::RU_26_TONE, idx, primary80, p160),
+                           width,
+                           {ch20Index2});
+                }
+                // The last 9 26-tone RUs are in the fourth 20 MHz channel
+                startIdx = stopIdx + 1;
+                stopIdx = startIdx + 8;
+                for (std::size_t idx = startIdx; idx <= stopIdx; idx++)
+                {
+                    RunOne(p20Index,
+                           MakeRuSpec(RuType::RU_26_TONE, idx, primary80, p160),
+                           width,
+                           {ch20Index3});
+                }
+                // The first 4 52-tone RUs are in the first 20 MHz channel
+                startIdx = 1;
+                stopIdx = startIdx + 3;
+                for (std::size_t idx = startIdx; idx <= stopIdx; idx++)
+                {
+                    RunOne(p20Index,
+                           MakeRuSpec(RuType::RU_52_TONE, idx, primary80, p160),
+                           width,
+                           {ch20Index0});
+                }
+                // The second 4 52-tone RUs are in the second 20 MHz channel
+                startIdx = stopIdx + 1;
+                stopIdx = startIdx + 3;
+                for (std::size_t idx = startIdx; idx <= stopIdx; idx++)
+                {
+                    RunOne(p20Index,
+                           MakeRuSpec(RuType::RU_52_TONE, idx, primary80, p160),
+                           width,
+                           {ch20Index1});
+                }
+                // The third 4 52-tone RUs are in the third 20 MHz channel
+                startIdx = stopIdx + 1;
+                stopIdx = startIdx + 3;
+                for (std::size_t idx = startIdx; idx <= stopIdx; idx++)
+                {
+                    RunOne(p20Index,
+                           MakeRuSpec(RuType::RU_52_TONE, idx, primary80, p160),
+                           width,
+                           {ch20Index2});
+                }
+                // The fourth 4 52-tone RUs are in the fourth 20 MHz channel
+                startIdx = stopIdx + 1;
+                stopIdx = startIdx + 3;
+                for (std::size_t idx = startIdx; idx <= stopIdx; idx++)
+                {
+                    RunOne(p20Index,
+                           MakeRuSpec(RuType::RU_52_TONE, idx, primary80, p160),
+                           width,
+                           {ch20Index3});
+                }
+                // The first 2 106-tone RUs are in the first 20 MHz channel
+                startIdx = 1;
+                stopIdx = startIdx + 1;
+                for (std::size_t idx = startIdx; idx <= stopIdx; idx++)
+                {
+                    RunOne(p20Index,
+                           MakeRuSpec(RuType::RU_106_TONE, idx, primary80, p160),
+                           width,
+                           {ch20Index0});
+                }
+                // The second 2 106-tone RUs are in the second 20 MHz channel
+                startIdx = stopIdx + 1;
+                stopIdx = startIdx + 1;
+                for (std::size_t idx = startIdx; idx <= stopIdx; idx++)
+                {
+                    RunOne(p20Index,
+                           MakeRuSpec(RuType::RU_106_TONE, idx, primary80, p160),
+                           width,
+                           {ch20Index1});
+                }
+                // The third 2 106-tone RUs are in the third 20 MHz channel
+                startIdx = stopIdx + 1;
+                stopIdx = startIdx + 1;
+                for (std::size_t idx = startIdx; idx <= stopIdx; idx++)
+                {
+                    RunOne(p20Index,
+                           MakeRuSpec(RuType::RU_106_TONE, idx, primary80, p160),
+                           width,
+                           {ch20Index2});
+                }
+                // The fourth 2 106-tone RUs are in the fourth 20 MHz channel
+                startIdx = stopIdx + 1;
+                stopIdx = startIdx + 1;
+                for (std::size_t idx = startIdx; idx <= stopIdx; idx++)
+                {
+                    RunOne(p20Index,
+                           MakeRuSpec(RuType::RU_106_TONE, idx, primary80, p160),
+                           width,
+                           {ch20Index3});
+                }
+                // The first 242-tone RU is in the first 20 MHz channel
+                auto idx = 1;
+                RunOne(p20Index,
+                       MakeRuSpec(RuType::RU_242_TONE, idx++, primary80, p160),
+                       width,
+                       {ch20Index0});
+                // The second 242-tone RU is in the second 20 MHz channel
+                RunOne(p20Index,
+                       MakeRuSpec(RuType::RU_242_TONE, idx++, primary80, p160),
+                       width,
+                       {ch20Index1});
+                // The third 242-tone RU is in the third 20 MHz channel
+                RunOne(p20Index,
+                       MakeRuSpec(RuType::RU_242_TONE, idx++, primary80, p160),
+                       width,
+                       {ch20Index2});
+                // The fourth 242-tone RU is in the fourth 20 MHz channel
+                RunOne(p20Index,
+                       MakeRuSpec(RuType::RU_242_TONE, idx, primary80, p160),
+                       width,
+                       {ch20Index3});
+                // The first 484-tone RU is covered by the first two 20 MHz channels
+                idx = 1;
+                RunOne(p20Index,
+                       MakeRuSpec(RuType::RU_484_TONE, idx++, primary80, p160),
+                       width,
+                       {ch20Index0, ch20Index1});
+                // The second 484-tone RU is covered by the last two 20 MHz channels
+                RunOne(p20Index,
+                       MakeRuSpec(RuType::RU_484_TONE, idx, primary80, p160),
+                       width,
+                       {ch20Index2, ch20Index3});
+                // The 996-tone RU is covered by all the 20 MHz channels
+                idx = 1;
+                RunOne(p20Index,
+                       MakeRuSpec(RuType::RU_996_TONE, idx, primary80, p160),
+                       width,
+                       {ch20Index0, ch20Index1, ch20Index2, ch20Index3});
+            }
             // RUs can be allocated in one (or more) of the four 20 MHz channels in P160
             const uint8_t ch20Index0 = p160Index * 8;
             const uint8_t ch20Index1 = p160Index * 8 + 1;
@@ -939,164 +1199,9 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
             const uint8_t ch20Index5 = p160Index * 8 + 5;
             const uint8_t ch20Index6 = p160Index * 8 + 6;
             const uint8_t ch20Index7 = p160Index * 8 + 7;
-
-            // The first 9 26-tone RUs are in the first 20 MHz channel
-            for (std::size_t idx = 1; idx <= 9; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx), width, {ch20Index0});
-            }
-            // The second 9 26-tone RUs are in the second 20 MHz channel
-            for (std::size_t idx = 10; idx <= 18; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx), width, {ch20Index1});
-            }
-            // The third 9 26-tone RUs are in the third 20 MHz channel
-            for (std::size_t idx = 20; idx <= 28; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx), width, {ch20Index2});
-            }
-            // The fourth 9 26-tone RUs are in the fourth 20 MHz channel
-            for (std::size_t idx = 29; idx <= 37; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx), width, {ch20Index3});
-            }
-            // The fifth 9 26-tone RUs are in the fifth 20 MHz channel
-            for (std::size_t idx = 38; idx <= 46; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx), width, {ch20Index4});
-            }
-            // The sixth 9 26-tone RUs are in the sixth 20 MHz channel
-            for (std::size_t idx = 47; idx <= 55; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx), width, {ch20Index5});
-            }
-            // The seventh 9 26-tone RUs are in the seventh 20 MHz channel
-            for (std::size_t idx = 57; idx <= 65; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx), width, {ch20Index6});
-            }
-            // The last 9 26-tone RUs are in the last 20 MHz channel
-            for (std::size_t idx = 66; idx <= 74; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx), width, {ch20Index7});
-            }
-            // The first 4 52-tone RUs are in the first 20 MHz channel
-            for (std::size_t idx = 1; idx <= 4; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx), width, {ch20Index0});
-            }
-            // The second 4 52-tone RUs are in the second 20 MHz channel
-            for (std::size_t idx = 5; idx <= 8; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx), width, {ch20Index1});
-            }
-            // The third 4 52-tone RUs are in the third 20 MHz channel
-            for (std::size_t idx = 9; idx <= 12; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx), width, {ch20Index2});
-            }
-            // The fourth 4 52-tone RUs are in the fourth 20 MHz channel
-            for (std::size_t idx = 13; idx <= 16; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx), width, {ch20Index3});
-            }
-            // The fifth 4 52-tone RUs are in the fifth 20 MHz channel
-            for (std::size_t idx = 17; idx <= 20; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx), width, {ch20Index4});
-            }
-            // The sixth 4 52-tone RUs are in the sixth 20 MHz channel
-            for (std::size_t idx = 21; idx <= 24; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx), width, {ch20Index5});
-            }
-            // The seventh 4 52-tone RUs are in the seventh 20 MHz channel
-            for (std::size_t idx = 25; idx <= 28; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx), width, {ch20Index6});
-            }
-            // The last 4 52-tone RUs are in the last 20 MHz channel
-            for (std::size_t idx = 29; idx <= 32; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx), width, {ch20Index7});
-            }
-            // The first 2 106-tone RUs are in the first 20 MHz channel
-            for (std::size_t idx = 1; idx <= 2; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx), width, {ch20Index0});
-            }
-            // The second 2 106-tone RUs are in the second 20 MHz channel
-            for (std::size_t idx = 3; idx <= 4; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx), width, {ch20Index1});
-            }
-            // The third 2 106-tone RUs are in the third 20 MHz channel
-            for (std::size_t idx = 5; idx <= 6; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx), width, {ch20Index2});
-            }
-            // The fourth 2 106-tone RUs are in the fourth 20 MHz channel
-            for (std::size_t idx = 7; idx <= 8; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx), width, {ch20Index3});
-            }
-            // The fifth 2 106-tone RUs are in the fifth 20 MHz channel
-            for (std::size_t idx = 9; idx <= 10; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx), width, {ch20Index4});
-            }
-            // The sixth 2 106-tone RUs are in the sixth 20 MHz channel
-            for (std::size_t idx = 11; idx <= 12; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx), width, {ch20Index5});
-            }
-            // The seventh 2 106-tone RUs are in the seventh 20 MHz channel
-            for (std::size_t idx = 13; idx <= 14; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx), width, {ch20Index6});
-            }
-            // The last 2 106-tone RUs are in the last 20 MHz channel
-            for (std::size_t idx = 15; idx <= 16; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx), width, {ch20Index7});
-            }
-            // The first 242-tone RU is in the first 20 MHz channel
-            RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 1), width, {ch20Index0});
-            // The second 242-tone RU is in the second 20 MHz channel
-            RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 2), width, {ch20Index1});
-            // The third 242-tone RU is in the third 20 MHz channel
-            RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 3), width, {ch20Index2});
-            // The fourth 242-tone RU is in the fourth 20 MHz channel
-            RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 4), width, {ch20Index3});
-            // The fifth 242-tone RU is in the fifth 20 MHz channel
-            RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 5), width, {ch20Index4});
-            // The sixth 242-tone RU is in the sixth 20 MHz channel
-            RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 6), width, {ch20Index5});
-            // The seventh 242-tone RU is in the seventh 20 MHz channel
-            RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 7), width, {ch20Index6});
-            // The last 242-tone RU is in the last 20 MHz channel
-            RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 8), width, {ch20Index7});
-            // The first 484-tone RU is covered by the first two 20 MHz channels
-            RunOne(p20Index, MakeRuSpec(RuType::RU_484_TONE, 1), width, {ch20Index0, ch20Index1});
-            // The second 484-tone RU is covered by the second two 20 MHz channels
-            RunOne(p20Index, MakeRuSpec(RuType::RU_484_TONE, 2), width, {ch20Index2, ch20Index3});
-            // The third 484-tone RU is covered by the third two 20 MHz channels
-            RunOne(p20Index, MakeRuSpec(RuType::RU_484_TONE, 3), width, {ch20Index4, ch20Index5});
-            // The last 484-tone RU is covered by the last two 20 MHz channels
-            RunOne(p20Index, MakeRuSpec(RuType::RU_484_TONE, 4), width, {ch20Index6, ch20Index7});
-            // The first 996-tone RU is covered by the first four 20 MHz channels
+            // The 2x996-tone RU is covered by all the eight 20 MHz channels
             RunOne(p20Index,
-                   MakeRuSpec(RuType::RU_996_TONE, 1),
-                   width,
-                   {ch20Index0, ch20Index1, ch20Index2, ch20Index3});
-            // The last 996-tone RU is covered by the last four 20 MHz channels
-            RunOne(p20Index,
-                   MakeRuSpec(RuType::RU_996_TONE, 2),
-                   width,
-                   {ch20Index4, ch20Index5, ch20Index6, ch20Index7});
-            // The 2x996-tone RU is covered by the first eight 20 MHz channels
-            RunOne(p20Index,
-                   MakeRuSpec(RuType::RU_2x996_TONE, 1),
+                   MakeRuSpec(RuType::RU_2x996_TONE, 1, p80, p160),
                    width,
                    {ch20Index0,
                     ch20Index1,
@@ -1113,312 +1218,176 @@ Wifi20MHzIndicesCoveringRuTest::DoRun()
         {
             const MHz_t width{320};
 
-            // The first 9 26-tone RUs are in the first 20 MHz channel
-            for (std::size_t idx = 1; idx <= 9; idx++)
+            for (auto primary160 : {true, false})
             {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx), width, {0});
+                const uint8_t p160Index = (primary160 == (p20Index < 8)) ? 0 : 1;
+                for (auto primary80OrLow80 : {true, false})
+                {
+                    const uint8_t offset80MHz =
+                        primary160
+                            ? ((primary80OrLow80 == (p20Index - (p160Index * 8) < 4)) ? 0 : 4)
+                            : (primary80OrLow80 ? 0 : 4);
+                    const uint8_t ch20Index0 = (p160Index * 8) + offset80MHz;
+                    const uint8_t ch20Index1 = (p160Index * 8) + offset80MHz + 1;
+                    const uint8_t ch20Index2 = (p160Index * 8) + offset80MHz + 2;
+                    const uint8_t ch20Index3 = (p160Index * 8) + offset80MHz + 3;
+
+                    // The first 9 26-tone RUs are in the first 20 MHz channel
+                    for (std::size_t idx = 1; idx <= 9; idx++)
+                    {
+                        RunOne(p20Index,
+                               MakeRuSpec(RuType::RU_26_TONE, idx, primary80OrLow80, primary160),
+                               width,
+                               {ch20Index0});
+                    }
+                    // The second 9 26-tone RUs are in the second 20 MHz channel
+                    for (std::size_t idx = 10; idx <= 18; idx++)
+                    {
+                        RunOne(p20Index,
+                               MakeRuSpec(RuType::RU_26_TONE, idx, primary80OrLow80, primary160),
+                               width,
+                               {ch20Index1});
+                    }
+                    // The third 9 26-tone RUs are in the third 20 MHz channel
+                    for (std::size_t idx = 20; idx <= 28; idx++)
+                    {
+                        RunOne(p20Index,
+                               MakeRuSpec(RuType::RU_26_TONE, idx, primary80OrLow80, primary160),
+                               width,
+                               {ch20Index2});
+                    }
+                    // The fourth 9 26-tone RUs are in the fourth 20 MHz channel
+                    for (std::size_t idx = 29; idx <= 37; idx++)
+                    {
+                        RunOne(p20Index,
+                               MakeRuSpec(RuType::RU_26_TONE, idx, primary80OrLow80, primary160),
+                               width,
+                               {ch20Index3});
+                    }
+                    // The first 4 52-tone RUs are in the first 20 MHz channel
+                    for (std::size_t idx = 1; idx <= 4; idx++)
+                    {
+                        RunOne(p20Index,
+                               MakeRuSpec(RuType::RU_52_TONE, idx, primary80OrLow80, primary160),
+                               width,
+                               {ch20Index0});
+                    }
+                    // The second 4 52-tone RUs are in the second 20 MHz channel
+                    for (std::size_t idx = 5; idx <= 8; idx++)
+                    {
+                        RunOne(p20Index,
+                               MakeRuSpec(RuType::RU_52_TONE, idx, primary80OrLow80, primary160),
+                               width,
+                               {ch20Index1});
+                    }
+                    // The third 4 52-tone RUs are in the third 20 MHz channel
+                    for (std::size_t idx = 9; idx <= 12; idx++)
+                    {
+                        RunOne(p20Index,
+                               MakeRuSpec(RuType::RU_52_TONE, idx, primary80OrLow80, primary160),
+                               width,
+                               {ch20Index2});
+                    }
+                    // The fourth 4 52-tone RUs are in the fourth 20 MHz channel
+                    for (std::size_t idx = 13; idx <= 16; idx++)
+                    {
+                        RunOne(p20Index,
+                               MakeRuSpec(RuType::RU_52_TONE, idx, primary80OrLow80, primary160),
+                               width,
+                               {ch20Index3});
+                    }
+                    // The first 2 106-tone RUs are in the first 20 MHz channel
+                    for (std::size_t idx = 1; idx <= 2; idx++)
+                    {
+                        RunOne(p20Index,
+                               MakeRuSpec(RuType::RU_106_TONE, idx, primary80OrLow80, primary160),
+                               width,
+                               {ch20Index0});
+                    }
+                    // The second 2 106-tone RUs are in the second 20 MHz channel
+                    for (std::size_t idx = 3; idx <= 4; idx++)
+                    {
+                        RunOne(p20Index,
+                               MakeRuSpec(RuType::RU_106_TONE, idx, primary80OrLow80, primary160),
+                               width,
+                               {ch20Index1});
+                    }
+                    // The third 2 106-tone RUs are in the third 20 MHz channel
+                    for (std::size_t idx = 5; idx <= 6; idx++)
+                    {
+                        RunOne(p20Index,
+                               MakeRuSpec(RuType::RU_106_TONE, idx, primary80OrLow80, primary160),
+                               width,
+                               {ch20Index2});
+                    }
+                    // The fourth 2 106-tone RUs are in the fourth 20 MHz channel
+                    for (std::size_t idx = 7; idx <= 8; idx++)
+                    {
+                        RunOne(p20Index,
+                               MakeRuSpec(RuType::RU_106_TONE, idx, primary80OrLow80, primary160),
+                               width,
+                               {ch20Index3});
+                    }
+                    // The first 242-tone RU is in the first 20 MHz channel
+                    RunOne(p20Index,
+                           MakeRuSpec(RuType::RU_242_TONE, 1, primary80OrLow80, primary160),
+                           width,
+                           {ch20Index0});
+                    // The second 242-tone RU is in the second 20 MHz channel
+                    RunOne(p20Index,
+                           MakeRuSpec(RuType::RU_242_TONE, 2, primary80OrLow80, primary160),
+                           width,
+                           {ch20Index1});
+                    // The third 242-tone RU is in the third 20 MHz channel
+                    RunOne(p20Index,
+                           MakeRuSpec(RuType::RU_242_TONE, 3, primary80OrLow80, primary160),
+                           width,
+                           {ch20Index2});
+                    // The fourth 242-tone RU is in the fourth 20 MHz channel
+                    RunOne(p20Index,
+                           MakeRuSpec(RuType::RU_242_TONE, 4, primary80OrLow80, primary160),
+                           width,
+                           {ch20Index3});
+                    // The first 484-tone RU is covered by the first two 20 MHz channels
+                    RunOne(p20Index,
+                           MakeRuSpec(RuType::RU_484_TONE, 1, primary80OrLow80, primary160),
+                           width,
+                           {ch20Index0, ch20Index1});
+                    // The second 484-tone RU is covered by the second two 20 MHz channels
+                    RunOne(p20Index,
+                           MakeRuSpec(RuType::RU_484_TONE, 2, primary80OrLow80, primary160),
+                           width,
+                           {ch20Index2, ch20Index3});
+                    // The first 996-tone RU is covered by the first four 20 MHz channels
+                    RunOne(p20Index,
+                           MakeRuSpec(RuType::RU_996_TONE, 1, primary80OrLow80, primary160),
+                           width,
+                           {ch20Index0, ch20Index1, ch20Index2, ch20Index3});
+                }
+                const uint8_t ch20Index0 = p160Index * 8;
+                const uint8_t ch20Index1 = p160Index * 8 + 1;
+                const uint8_t ch20Index2 = p160Index * 8 + 2;
+                const uint8_t ch20Index3 = p160Index * 8 + 3;
+                const uint8_t ch20Index4 = p160Index * 8 + 4;
+                const uint8_t ch20Index5 = p160Index * 8 + 5;
+                const uint8_t ch20Index6 = p160Index * 8 + 6;
+                const uint8_t ch20Index7 = p160Index * 8 + 7;
+                // The first 2x996-tone RU is covered by the first eight 20 MHz channels
+                RunOne(p20Index,
+                       MakeRuSpec(RuType::RU_2x996_TONE, 1, p80, primary160),
+                       width,
+                       {ch20Index0,
+                        ch20Index1,
+                        ch20Index2,
+                        ch20Index3,
+                        ch20Index4,
+                        ch20Index5,
+                        ch20Index6,
+                        ch20Index7});
             }
-            // The second 9 26-tone RUs are in the second 20 MHz channel
-            for (std::size_t idx = 10; idx <= 18; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx), width, {1});
-            }
-            // The third 9 26-tone RUs are in the third 20 MHz channel
-            for (std::size_t idx = 20; idx <= 28; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx), width, {2});
-            }
-            // The fourth 9 26-tone RUs are in the fourth 20 MHz channel
-            for (std::size_t idx = 29; idx <= 37; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx), width, {3});
-            }
-            // The fifth 9 26-tone RUs are in the fifth 20 MHz channel
-            for (std::size_t idx = 38; idx <= 46; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx), width, {4});
-            }
-            // The sixth 9 26-tone RUs are in the sixth 20 MHz channel
-            for (std::size_t idx = 47; idx <= 55; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx), width, {5});
-            }
-            // The seventh 9 26-tone RUs are in the seventh 20 MHz channel
-            for (std::size_t idx = 57; idx <= 65; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx), width, {6});
-            }
-            // The eighth 9 26-tone RUs are in the eighth 20 MHz channel
-            for (std::size_t idx = 66; idx <= 74; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx), width, {7});
-            }
-            // The ninth 9 26-tone RUs are in the ninth 20 MHz channel
-            for (std::size_t idx = 75; idx <= 83; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx), width, {8});
-            }
-            // The tenth 9 26-tone RUs are in the tenth 20 MHz channel
-            for (std::size_t idx = 84; idx <= 92; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx), width, {9});
-            }
-            // The eleventh 9 26-tone RUs are in the eleventh 20 MHz channel
-            for (std::size_t idx = 94; idx <= 102; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx), width, {10});
-            }
-            // The twelfth 9 26-tone RUs are in the twelfth 20 MHz channel
-            for (std::size_t idx = 103; idx <= 111; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx), width, {11});
-            }
-            // The thirteenth 9 26-tone RUs are in the thirteenth 20 MHz channel
-            for (std::size_t idx = 112; idx <= 120; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx), width, {12});
-            }
-            // The fourteenth 9 26-tone RUs are in the fourteenth 20 MHz channel
-            for (std::size_t idx = 121; idx <= 129; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx), width, {13});
-            }
-            // The fifteenth 9 26-tone RUs are in the fifteenth 20 MHz channel
-            for (std::size_t idx = 131; idx <= 139; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx), width, {14});
-            }
-            // The last 9 26-tone RUs are in the last 20 MHz channel
-            for (std::size_t idx = 140; idx <= 148; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_26_TONE, idx), width, {15});
-            }
-            // The first 4 52-tone RUs are in the first 20 MHz channel
-            for (std::size_t idx = 1; idx <= 4; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx), width, {0});
-            }
-            // The second 4 52-tone RUs are in the second 20 MHz channel
-            for (std::size_t idx = 5; idx <= 8; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx), width, {1});
-            }
-            // The third 4 52-tone RUs are in the third 20 MHz channel
-            for (std::size_t idx = 9; idx <= 12; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx), width, {2});
-            }
-            // The fourth 4 52-tone RUs are in the fourth 20 MHz channel
-            for (std::size_t idx = 13; idx <= 16; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx), width, {3});
-            }
-            // The fifth 4 52-tone RUs are in the fifth 20 MHz channel
-            for (std::size_t idx = 17; idx <= 20; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx), width, {4});
-            }
-            // The sixth 4 52-tone RUs are in the sixth 20 MHz channel
-            for (std::size_t idx = 21; idx <= 24; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx), width, {5});
-            }
-            // The seventh 4 52-tone RUs are in the seventh 20 MHz channel
-            for (std::size_t idx = 25; idx <= 28; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx), width, {6});
-            }
-            // The eighth 4 52-tone RUs are in the eighth 20 MHz channel
-            for (std::size_t idx = 29; idx <= 32; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx), width, {7});
-            }
-            // The ninth 4 52-tone RUs are in the ninth 20 MHz channel
-            for (std::size_t idx = 33; idx <= 36; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx), width, {8});
-            }
-            // The tenth 4 52-tone RUs are in the tenth 20 MHz channel
-            for (std::size_t idx = 37; idx <= 40; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx), width, {9});
-            }
-            // The eleventh 4 52-tone RUs are in the eleventh 20 MHz channel
-            for (std::size_t idx = 41; idx <= 44; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx), width, {10});
-            }
-            // The twelfth 4 52-tone RUs are in the twelfth 20 MHz channel
-            for (std::size_t idx = 45; idx <= 48; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx), width, {11});
-            }
-            // The thirteenth 4 52-tone RUs are in the thirteenth 20 MHz channel
-            for (std::size_t idx = 49; idx <= 52; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx), width, {12});
-            }
-            // The fourteenth 4 52-tone RUs are in the fourteenth 20 MHz channel
-            for (std::size_t idx = 53; idx <= 56; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx), width, {13});
-            }
-            // The fifteenth 4 52-tone RUs are in the fifteenth 20 MHz channel
-            for (std::size_t idx = 57; idx <= 60; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx), width, {14});
-            }
-            // The last 4 52-tone RUs are in the last 20 MHz channel
-            for (std::size_t idx = 61; idx <= 64; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_52_TONE, idx), width, {15});
-            }
-            // The first 2 106-tone RUs are in the first 20 MHz channel
-            for (std::size_t idx = 1; idx <= 2; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx), width, {0});
-            }
-            // The second 2 106-tone RUs are in the second 20 MHz channel
-            for (std::size_t idx = 3; idx <= 4; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx), width, {1});
-            }
-            // The third 2 106-tone RUs are in the third 20 MHz channel
-            for (std::size_t idx = 5; idx <= 6; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx), width, {2});
-            }
-            // The fourth 2 106-tone RUs are in the fourth 20 MHz channel
-            for (std::size_t idx = 7; idx <= 8; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx), width, {3});
-            }
-            // The fifth 2 106-tone RUs are in the fifth 20 MHz channel
-            for (std::size_t idx = 9; idx <= 10; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx), width, {4});
-            }
-            // The sixth 2 106-tone RUs are in the sixth 20 MHz channel
-            for (std::size_t idx = 11; idx <= 12; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx), width, {5});
-            }
-            // The seventh 2 106-tone RUs are in the seventh 20 MHz channel
-            for (std::size_t idx = 13; idx <= 14; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx), width, {6});
-            }
-            // The eighth 2 106-tone RUs are in the eighth 20 MHz channel
-            for (std::size_t idx = 15; idx <= 16; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx), width, {7});
-            }
-            // The ninth 2 106-tone RUs are in the ninth 20 MHz channel
-            for (std::size_t idx = 17; idx <= 18; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx), width, {8});
-            }
-            // The tenth 2 106-tone RUs are in the tenth 20 MHz channel
-            for (std::size_t idx = 19; idx <= 20; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx), width, {9});
-            }
-            // The eleventh 2 106-tone RUs are in the eleventh 20 MHz channel
-            for (std::size_t idx = 21; idx <= 22; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx), width, {10});
-            }
-            // The twelfth 2 106-tone RUs are in the twelfth 20 MHz channel
-            for (std::size_t idx = 23; idx <= 24; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx), width, {11});
-            }
-            // The thirteenth 2 106-tone RUs are in the thirteenth 20 MHz channel
-            for (std::size_t idx = 25; idx <= 26; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx), width, {12});
-            }
-            // The fourteenth 2 106-tone RUs are in the fourteenth 20 MHz channel
-            for (std::size_t idx = 27; idx <= 28; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx), width, {13});
-            }
-            // The fifteenth 2 106-tone RUs are in the fifteenth 20 MHz channel
-            for (std::size_t idx = 29; idx <= 30; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx), width, {14});
-            }
-            // The last 2 106-tone RUs are in the last 20 MHz channel
-            for (std::size_t idx = 31; idx <= 32; idx++)
-            {
-                RunOne(p20Index, MakeRuSpec(RuType::RU_106_TONE, idx), width, {15});
-            }
-            // The first 242-tone RU is in the first 20 MHz channel
-            RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 1), width, {0});
-            // The second 242-tone RU is in the second 20 MHz channel
-            RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 2), width, {1});
-            // The third 242-tone RU is in the third 20 MHz channel
-            RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 3), width, {2});
-            // The fourth 242-tone RU is in the fourth 20 MHz channel
-            RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 4), width, {3});
-            // The fifth 242-tone RU is in the fifth 20 MHz channel
-            RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 5), width, {4});
-            // The sixth 242-tone RU is in the sixth 20 MHz channel
-            RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 6), width, {5});
-            // The seventh 242-tone RU is in the seventh 20 MHz channel
-            RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 7), width, {6});
-            // The eighth 242-tone RU is in the eighth 20 MHz channel
-            RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 8), width, {7});
-            // The ninth 242-tone RU is in the ninth 20 MHz channel
-            RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 9), width, {8});
-            // The tenth 242-tone RU is in the tenth 20 MHz channel
-            RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 10), width, {9});
-            // The eleventh 242-tone RU is in the eleventh 20 MHz channel
-            RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 11), width, {10});
-            // The twelfth 242-tone RU is in the twelfth 20 MHz channel
-            RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 12), width, {11});
-            // The thirteenth 242-tone RU is in the thirteenth 20 MHz channel
-            RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 13), width, {12});
-            // The fourteenth 242-tone RU is in the fourteenth 20 MHz channel
-            RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 14), width, {13});
-            // The fifteenth 242-tone RU is in the fifteenth 20 MHz channel
-            RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 15), width, {14});
-            // The last 242-tone RU is in the last 20 MHz channel
-            RunOne(p20Index, MakeRuSpec(RuType::RU_242_TONE, 16), width, {15});
-            // The first 484-tone RU is covered by the first two 20 MHz channels
-            RunOne(p20Index, MakeRuSpec(RuType::RU_484_TONE, 1), width, {0, 1});
-            // The second 484-tone RU is covered by the second two 20 MHz channels
-            RunOne(p20Index, MakeRuSpec(RuType::RU_484_TONE, 2), width, {2, 3});
-            // The third 484-tone RU is covered by the third two 20 MHz channels
-            RunOne(p20Index, MakeRuSpec(RuType::RU_484_TONE, 3), width, {4, 5});
-            // The fourth 484-tone RU is covered by the fourth two 20 MHz channels
-            RunOne(p20Index, MakeRuSpec(RuType::RU_484_TONE, 4), width, {6, 7});
-            // The fifth 484-tone RU is covered by the fifth two 20 MHz channels
-            RunOne(p20Index, MakeRuSpec(RuType::RU_484_TONE, 5), width, {8, 9});
-            // The sixth 484-tone RU is covered by the sixth two 20 MHz channels
-            RunOne(p20Index, MakeRuSpec(RuType::RU_484_TONE, 6), width, {10, 11});
-            // The seventh 484-tone RU is covered by the seventh two 20 MHz channels
-            RunOne(p20Index, MakeRuSpec(RuType::RU_484_TONE, 7), width, {12, 13});
-            // The last 484-tone RU is covered by the last two 20 MHz channels
-            RunOne(p20Index, MakeRuSpec(RuType::RU_484_TONE, 8), width, {14, 15});
-            // The first 996-tone RU is covered by the first four 20 MHz channels
-            RunOne(p20Index, MakeRuSpec(RuType::RU_996_TONE, 1), width, {0, 1, 2, 3});
-            // The second 996-tone RU is covered by the second four 20 MHz channels
-            RunOne(p20Index, MakeRuSpec(RuType::RU_996_TONE, 2), width, {4, 5, 6, 7});
-            // The third 996-tone RU is covered by the third four 20 MHz channels
-            RunOne(p20Index, MakeRuSpec(RuType::RU_996_TONE, 3), width, {8, 9, 10, 11});
-            // The last 996-tone RU is covered by the last four 20 MHz channels
-            RunOne(p20Index, MakeRuSpec(RuType::RU_996_TONE, 4), width, {12, 13, 14, 15});
-            // The first 2x996-tone RU is covered by the first eight 20 MHz channels
-            RunOne(p20Index, MakeRuSpec(RuType::RU_2x996_TONE, 1), width, {0, 1, 2, 3, 4, 5, 6, 7});
-            // The last 2x996-tone RU is covered by the last eight 20 MHz channels
-            RunOne(p20Index,
-                   MakeRuSpec(RuType::RU_2x996_TONE, 2),
-                   width,
-                   {8, 9, 10, 11, 12, 13, 14, 15});
             // The 4x996-tone RU is covered by all the sixteen 20 MHz channels
             RunOne(p20Index,
-                   MakeRuSpec(RuType::RU_4x996_TONE, 1),
+                   MakeRuSpec(RuType::RU_4x996_TONE, 1, p80, p160),
                    width,
                    {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15});
         }
@@ -1467,11 +1436,10 @@ void
 WifiNumRusInChannelTest::RunOne(RuType rutype, MHz_t width, std::size_t size)
 {
     const auto numRus = WifiRu::GetNRus(width, rutype, m_modClass);
-    NS_TEST_ASSERT_MSG_EQ(numRus,
+    NS_TEST_EXPECT_MSG_EQ(numRus,
                           size,
-                          "Channel width=" << width << " MHz, RU type=" << rutype
-                                           << ". Expected size " << size
-                                           << " differs from computed size " << numRus);
+                          "Channel width=" << width << ", RU type=" << rutype << ". Expected size "
+                                           << size << " differs from computed size " << numRus);
 }
 
 void
@@ -1688,18 +1656,19 @@ WifiRusOfTypeInChannelTest::RunOne(RuType rutype,
     };
 
     const auto actualRus = WifiRu::GetRusOfType(width, rutype, m_modClass);
-    NS_TEST_ASSERT_MSG_EQ((actualRus == expectedRus),
+    NS_TEST_EXPECT_MSG_EQ((actualRus == expectedRus),
                           true,
-                          "Channel width=" << width << " MHz, RU type=" << rutype
-                                           << ". Expected RUs " << printToStr(expectedRus)
-                                           << " differs from actual RUs " << printToStr(actualRus));
+                          "Channel width=" << width << ", RU type=" << rutype << ". Expected RUs "
+                                           << printToStr(expectedRus) << " differs from actual RUs "
+                                           << printToStr(actualRus));
 }
 
 void
 WifiRusOfTypeInChannelTest::DoRun()
 {
-    const auto p80 = (m_modClass == WIFI_MOD_CLASS_HE) ? std::optional(true) : std::nullopt;
-    const auto s80 = (m_modClass == WIFI_MOD_CLASS_HE) ? std::optional(false) : std::nullopt;
+    const auto p80{true};
+    const auto s80{false};
+    const auto p160{(m_modClass == WIFI_MOD_CLASS_HE) ? std::nullopt : std::optional(true)};
 
     /******************
      * 20 MHz channel *
@@ -1710,31 +1679,32 @@ WifiRusOfTypeInChannelTest::DoRun()
         // 9x 26-tone RUs are in 20 MHz channels
         RunOne(RuType::RU_26_TONE,
                width,
-               {MakeRuSpec(RuType::RU_26_TONE, 1, p80),
-                MakeRuSpec(RuType::RU_26_TONE, 2, p80),
-                MakeRuSpec(RuType::RU_26_TONE, 3, p80),
-                MakeRuSpec(RuType::RU_26_TONE, 4, p80),
-                MakeRuSpec(RuType::RU_26_TONE, 5, p80),
-                MakeRuSpec(RuType::RU_26_TONE, 6, p80),
-                MakeRuSpec(RuType::RU_26_TONE, 7, p80),
-                MakeRuSpec(RuType::RU_26_TONE, 8, p80),
-                MakeRuSpec(RuType::RU_26_TONE, 9, p80)});
+               {MakeRuSpec(RuType::RU_26_TONE, 1, p80, p160),
+                MakeRuSpec(RuType::RU_26_TONE, 2, p80, p160),
+                MakeRuSpec(RuType::RU_26_TONE, 3, p80, p160),
+                MakeRuSpec(RuType::RU_26_TONE, 4, p80, p160),
+                MakeRuSpec(RuType::RU_26_TONE, 5, p80, p160),
+                MakeRuSpec(RuType::RU_26_TONE, 6, p80, p160),
+                MakeRuSpec(RuType::RU_26_TONE, 7, p80, p160),
+                MakeRuSpec(RuType::RU_26_TONE, 8, p80, p160),
+                MakeRuSpec(RuType::RU_26_TONE, 9, p80, p160)});
 
         // 4x 52-tone RUs are in 20 MHz channels
         RunOne(RuType::RU_52_TONE,
                width,
-               {MakeRuSpec(RuType::RU_52_TONE, 1, p80),
-                MakeRuSpec(RuType::RU_52_TONE, 2, p80),
-                MakeRuSpec(RuType::RU_52_TONE, 3, p80),
-                MakeRuSpec(RuType::RU_52_TONE, 4, p80)});
+               {MakeRuSpec(RuType::RU_52_TONE, 1, p80, p160),
+                MakeRuSpec(RuType::RU_52_TONE, 2, p80, p160),
+                MakeRuSpec(RuType::RU_52_TONE, 3, p80, p160),
+                MakeRuSpec(RuType::RU_52_TONE, 4, p80, p160)});
 
         // 2x 106-tone RUs are in 20 MHz channels
         RunOne(RuType::RU_106_TONE,
                width,
-               {MakeRuSpec(RuType::RU_106_TONE, 1, p80), MakeRuSpec(RuType::RU_106_TONE, 2, p80)});
+               {MakeRuSpec(RuType::RU_106_TONE, 1, p80, p160),
+                MakeRuSpec(RuType::RU_106_TONE, 2, p80, p160)});
 
         // 1x 242-tone RUs are in 20 MHz channels
-        RunOne(RuType::RU_242_TONE, width, {MakeRuSpec(RuType::RU_242_TONE, 1, p80)});
+        RunOne(RuType::RU_242_TONE, width, {MakeRuSpec(RuType::RU_242_TONE, 1, p80, p160)});
 
         // no 484-tone RUs are in 20 MHz channels
         RunOne(RuType::RU_484_TONE, width, {});
@@ -1758,52 +1728,53 @@ WifiRusOfTypeInChannelTest::DoRun()
         // 18x 26-tone RUs are in 40 MHz channels
         RunOne(RuType::RU_26_TONE,
                width,
-               {MakeRuSpec(RuType::RU_26_TONE, 1, p80),
-                MakeRuSpec(RuType::RU_26_TONE, 2, p80),
-                MakeRuSpec(RuType::RU_26_TONE, 3, p80),
-                MakeRuSpec(RuType::RU_26_TONE, 4, p80),
-                MakeRuSpec(RuType::RU_26_TONE, 5, p80),
-                MakeRuSpec(RuType::RU_26_TONE, 6, p80),
-                MakeRuSpec(RuType::RU_26_TONE, 7, p80),
-                MakeRuSpec(RuType::RU_26_TONE, 8, p80),
-                MakeRuSpec(RuType::RU_26_TONE, 9, p80),
-                MakeRuSpec(RuType::RU_26_TONE, 10, p80),
-                MakeRuSpec(RuType::RU_26_TONE, 11, p80),
-                MakeRuSpec(RuType::RU_26_TONE, 12, p80),
-                MakeRuSpec(RuType::RU_26_TONE, 13, p80),
-                MakeRuSpec(RuType::RU_26_TONE, 14, p80),
-                MakeRuSpec(RuType::RU_26_TONE, 15, p80),
-                MakeRuSpec(RuType::RU_26_TONE, 16, p80),
-                MakeRuSpec(RuType::RU_26_TONE, 17, p80),
-                MakeRuSpec(RuType::RU_26_TONE, 18, p80)});
+               {MakeRuSpec(RuType::RU_26_TONE, 1, p80, p160),
+                MakeRuSpec(RuType::RU_26_TONE, 2, p80, p160),
+                MakeRuSpec(RuType::RU_26_TONE, 3, p80, p160),
+                MakeRuSpec(RuType::RU_26_TONE, 4, p80, p160),
+                MakeRuSpec(RuType::RU_26_TONE, 5, p80, p160),
+                MakeRuSpec(RuType::RU_26_TONE, 6, p80, p160),
+                MakeRuSpec(RuType::RU_26_TONE, 7, p80, p160),
+                MakeRuSpec(RuType::RU_26_TONE, 8, p80, p160),
+                MakeRuSpec(RuType::RU_26_TONE, 9, p80, p160),
+                MakeRuSpec(RuType::RU_26_TONE, 10, p80, p160),
+                MakeRuSpec(RuType::RU_26_TONE, 11, p80, p160),
+                MakeRuSpec(RuType::RU_26_TONE, 12, p80, p160),
+                MakeRuSpec(RuType::RU_26_TONE, 13, p80, p160),
+                MakeRuSpec(RuType::RU_26_TONE, 14, p80, p160),
+                MakeRuSpec(RuType::RU_26_TONE, 15, p80, p160),
+                MakeRuSpec(RuType::RU_26_TONE, 16, p80, p160),
+                MakeRuSpec(RuType::RU_26_TONE, 17, p80, p160),
+                MakeRuSpec(RuType::RU_26_TONE, 18, p80, p160)});
 
         // 8x 52-tone RUs are in 40 MHz channels
         RunOne(RuType::RU_52_TONE,
                width,
-               {MakeRuSpec(RuType::RU_52_TONE, 1, p80),
-                MakeRuSpec(RuType::RU_52_TONE, 2, p80),
-                MakeRuSpec(RuType::RU_52_TONE, 3, p80),
-                MakeRuSpec(RuType::RU_52_TONE, 4, p80),
-                MakeRuSpec(RuType::RU_52_TONE, 5, p80),
-                MakeRuSpec(RuType::RU_52_TONE, 6, p80),
-                MakeRuSpec(RuType::RU_52_TONE, 7, p80),
-                MakeRuSpec(RuType::RU_52_TONE, 8, p80)});
+               {MakeRuSpec(RuType::RU_52_TONE, 1, p80, p160),
+                MakeRuSpec(RuType::RU_52_TONE, 2, p80, p160),
+                MakeRuSpec(RuType::RU_52_TONE, 3, p80, p160),
+                MakeRuSpec(RuType::RU_52_TONE, 4, p80, p160),
+                MakeRuSpec(RuType::RU_52_TONE, 5, p80, p160),
+                MakeRuSpec(RuType::RU_52_TONE, 6, p80, p160),
+                MakeRuSpec(RuType::RU_52_TONE, 7, p80, p160),
+                MakeRuSpec(RuType::RU_52_TONE, 8, p80, p160)});
 
         // 4x 106-tone RUs are in 40 MHz channels
         RunOne(RuType::RU_106_TONE,
                width,
-               {MakeRuSpec(RuType::RU_106_TONE, 1, p80),
-                MakeRuSpec(RuType::RU_106_TONE, 2, p80),
-                MakeRuSpec(RuType::RU_106_TONE, 3, p80),
-                MakeRuSpec(RuType::RU_106_TONE, 4, p80)});
+               {MakeRuSpec(RuType::RU_106_TONE, 1, p80, p160),
+                MakeRuSpec(RuType::RU_106_TONE, 2, p80, p160),
+                MakeRuSpec(RuType::RU_106_TONE, 3, p80, p160),
+                MakeRuSpec(RuType::RU_106_TONE, 4, p80, p160)});
 
         // 2x 242-tone RUs are in 40 MHz channels
         RunOne(RuType::RU_242_TONE,
                width,
-               {MakeRuSpec(RuType::RU_242_TONE, 1, p80), MakeRuSpec(RuType::RU_242_TONE, 2, p80)});
+               {MakeRuSpec(RuType::RU_242_TONE, 1, p80, p160),
+                MakeRuSpec(RuType::RU_242_TONE, 2, p80, p160)});
 
         // 1x 484-tone RUs are in 40 MHz channels
-        RunOne(RuType::RU_484_TONE, width, {MakeRuSpec(RuType::RU_484_TONE, 1, p80)});
+        RunOne(RuType::RU_484_TONE, width, {MakeRuSpec(RuType::RU_484_TONE, 1, p80, p160)});
 
         // no 996-tone RUs are in 40 MHz channels
         RunOne(RuType::RU_996_TONE, width, {});
@@ -1822,80 +1793,98 @@ WifiRusOfTypeInChannelTest::DoRun()
         const MHz_t width{80};
 
         // 37x 26-tone RUs are in 80 MHz channels (1 less for EHT)
-        std::vector<WifiRu::RuSpec> expectedRus{
-            MakeRuSpec(RuType::RU_26_TONE, 1, p80),  MakeRuSpec(RuType::RU_26_TONE, 2, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 3, p80),  MakeRuSpec(RuType::RU_26_TONE, 4, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 5, p80),  MakeRuSpec(RuType::RU_26_TONE, 6, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 7, p80),  MakeRuSpec(RuType::RU_26_TONE, 8, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 9, p80),  MakeRuSpec(RuType::RU_26_TONE, 10, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 11, p80), MakeRuSpec(RuType::RU_26_TONE, 12, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 13, p80), MakeRuSpec(RuType::RU_26_TONE, 14, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 15, p80), MakeRuSpec(RuType::RU_26_TONE, 16, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 17, p80), MakeRuSpec(RuType::RU_26_TONE, 18, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 20, p80), MakeRuSpec(RuType::RU_26_TONE, 21, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 22, p80), MakeRuSpec(RuType::RU_26_TONE, 23, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 24, p80), MakeRuSpec(RuType::RU_26_TONE, 25, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 26, p80), MakeRuSpec(RuType::RU_26_TONE, 27, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 28, p80), MakeRuSpec(RuType::RU_26_TONE, 29, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 30, p80), MakeRuSpec(RuType::RU_26_TONE, 31, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 32, p80), MakeRuSpec(RuType::RU_26_TONE, 33, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 34, p80), MakeRuSpec(RuType::RU_26_TONE, 35, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 36, p80), MakeRuSpec(RuType::RU_26_TONE, 37, p80)};
+        std::vector<WifiRu::RuSpec> expectedRus{MakeRuSpec(RuType::RU_26_TONE, 1, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 2, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 3, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 4, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 5, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 6, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 7, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 8, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 9, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 10, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 11, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 12, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 13, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 14, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 15, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 16, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 17, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 18, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 20, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 21, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 22, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 23, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 24, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 25, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 26, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 27, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 28, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 29, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 30, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 31, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 32, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 33, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 34, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 35, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 36, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 37, p80, p160)};
         if (m_modClass == WIFI_MOD_CLASS_HE)
         {
             // RU 19 is undefined for EHT
             const auto it = std::next(expectedRus.cbegin(), 18);
-            expectedRus.insert(it, MakeRuSpec(RuType::RU_26_TONE, 19, p80));
+            expectedRus.insert(it, MakeRuSpec(RuType::RU_26_TONE, 19, p80, p160));
         }
         RunOne(RuType::RU_26_TONE, width, expectedRus);
 
         // 16x 52-tone RUs are in 80 MHz channels
         RunOne(RuType::RU_52_TONE,
                width,
-               {MakeRuSpec(RuType::RU_52_TONE, 1, p80),
-                MakeRuSpec(RuType::RU_52_TONE, 2, p80),
-                MakeRuSpec(RuType::RU_52_TONE, 3, p80),
-                MakeRuSpec(RuType::RU_52_TONE, 4, p80),
-                MakeRuSpec(RuType::RU_52_TONE, 5, p80),
-                MakeRuSpec(RuType::RU_52_TONE, 6, p80),
-                MakeRuSpec(RuType::RU_52_TONE, 7, p80),
-                MakeRuSpec(RuType::RU_52_TONE, 8, p80),
-                MakeRuSpec(RuType::RU_52_TONE, 9, p80),
-                MakeRuSpec(RuType::RU_52_TONE, 10, p80),
-                MakeRuSpec(RuType::RU_52_TONE, 11, p80),
-                MakeRuSpec(RuType::RU_52_TONE, 12, p80),
-                MakeRuSpec(RuType::RU_52_TONE, 13, p80),
-                MakeRuSpec(RuType::RU_52_TONE, 14, p80),
-                MakeRuSpec(RuType::RU_52_TONE, 15, p80),
-                MakeRuSpec(RuType::RU_52_TONE, 16, p80)});
+               {MakeRuSpec(RuType::RU_52_TONE, 1, p80, p160),
+                MakeRuSpec(RuType::RU_52_TONE, 2, p80, p160),
+                MakeRuSpec(RuType::RU_52_TONE, 3, p80, p160),
+                MakeRuSpec(RuType::RU_52_TONE, 4, p80, p160),
+                MakeRuSpec(RuType::RU_52_TONE, 5, p80, p160),
+                MakeRuSpec(RuType::RU_52_TONE, 6, p80, p160),
+                MakeRuSpec(RuType::RU_52_TONE, 7, p80, p160),
+                MakeRuSpec(RuType::RU_52_TONE, 8, p80, p160),
+                MakeRuSpec(RuType::RU_52_TONE, 9, p80, p160),
+                MakeRuSpec(RuType::RU_52_TONE, 10, p80, p160),
+                MakeRuSpec(RuType::RU_52_TONE, 11, p80, p160),
+                MakeRuSpec(RuType::RU_52_TONE, 12, p80, p160),
+                MakeRuSpec(RuType::RU_52_TONE, 13, p80, p160),
+                MakeRuSpec(RuType::RU_52_TONE, 14, p80, p160),
+                MakeRuSpec(RuType::RU_52_TONE, 15, p80, p160),
+                MakeRuSpec(RuType::RU_52_TONE, 16, p80, p160)});
 
         // 8x 106-tone RUs are in 80 MHz channels
         RunOne(RuType::RU_106_TONE,
                width,
-               {MakeRuSpec(RuType::RU_106_TONE, 1, p80),
-                MakeRuSpec(RuType::RU_106_TONE, 2, p80),
-                MakeRuSpec(RuType::RU_106_TONE, 3, p80),
-                MakeRuSpec(RuType::RU_106_TONE, 4, p80),
-                MakeRuSpec(RuType::RU_106_TONE, 5, p80),
-                MakeRuSpec(RuType::RU_106_TONE, 6, p80),
-                MakeRuSpec(RuType::RU_106_TONE, 7, p80),
-                MakeRuSpec(RuType::RU_106_TONE, 8, p80)});
+               {MakeRuSpec(RuType::RU_106_TONE, 1, p80, p160),
+                MakeRuSpec(RuType::RU_106_TONE, 2, p80, p160),
+                MakeRuSpec(RuType::RU_106_TONE, 3, p80, p160),
+                MakeRuSpec(RuType::RU_106_TONE, 4, p80, p160),
+                MakeRuSpec(RuType::RU_106_TONE, 5, p80, p160),
+                MakeRuSpec(RuType::RU_106_TONE, 6, p80, p160),
+                MakeRuSpec(RuType::RU_106_TONE, 7, p80, p160),
+                MakeRuSpec(RuType::RU_106_TONE, 8, p80, p160)});
 
         // 4x 242-tone RUs are in 80 MHz channels
         RunOne(RuType::RU_242_TONE,
                width,
-               {MakeRuSpec(RuType::RU_242_TONE, 1, p80),
-                MakeRuSpec(RuType::RU_242_TONE, 2, p80),
-                MakeRuSpec(RuType::RU_242_TONE, 3, p80),
-                MakeRuSpec(RuType::RU_242_TONE, 4, p80)});
+               {MakeRuSpec(RuType::RU_242_TONE, 1, p80, p160),
+                MakeRuSpec(RuType::RU_242_TONE, 2, p80, p160),
+                MakeRuSpec(RuType::RU_242_TONE, 3, p80, p160),
+                MakeRuSpec(RuType::RU_242_TONE, 4, p80, p160)});
 
         // 2x 484-tone RUs are in 80 MHz channels
         RunOne(RuType::RU_484_TONE,
                width,
-               {MakeRuSpec(RuType::RU_484_TONE, 1, p80), MakeRuSpec(RuType::RU_484_TONE, 2, p80)});
+               {MakeRuSpec(RuType::RU_484_TONE, 1, p80, p160),
+                MakeRuSpec(RuType::RU_484_TONE, 2, p80, p160)});
 
         // 1x 996-tone RUs are in 80 MHz channels
-        RunOne(RuType::RU_996_TONE, width, {MakeRuSpec(RuType::RU_996_TONE, 1, p80)});
+        RunOne(RuType::RU_996_TONE, width, {MakeRuSpec(RuType::RU_996_TONE, 1, p80, p160)});
 
         // no 2x996-tone RUs are in 80 MHz channels
         RunOne(RuType::RU_2x996_TONE, width, {});
@@ -1911,79 +1900,78 @@ WifiRusOfTypeInChannelTest::DoRun()
         const MHz_t width{160};
 
         // 74x 26-tone RUs are in 160 MHz channels (2 less for EHT)
-        std::vector<WifiRu::RuSpec> expectedRus{
-            MakeRuSpec(RuType::RU_26_TONE, 1, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 2, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 3, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 4, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 5, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 6, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 7, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 8, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 9, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 10, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 11, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 12, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 13, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 14, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 15, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 16, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 17, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 18, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 20, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 21, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 22, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 23, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 24, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 25, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 26, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 27, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 28, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 29, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 30, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 31, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 32, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 33, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 34, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 35, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 36, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 37, p80),
-            MakeRuSpec(RuType::RU_26_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 1U : 38U, s80),
-            MakeRuSpec(RuType::RU_26_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 2U : 39U, s80),
-            MakeRuSpec(RuType::RU_26_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 3U : 40U, s80),
-            MakeRuSpec(RuType::RU_26_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 4U : 41U, s80),
-            MakeRuSpec(RuType::RU_26_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 5U : 42U, s80),
-            MakeRuSpec(RuType::RU_26_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 6U : 43U, s80),
-            MakeRuSpec(RuType::RU_26_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 7U : 44U, s80),
-            MakeRuSpec(RuType::RU_26_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 8U : 45U, s80),
-            MakeRuSpec(RuType::RU_26_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 9U : 46U, s80),
-            MakeRuSpec(RuType::RU_26_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 10U : 47U, s80),
-            MakeRuSpec(RuType::RU_26_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 11U : 48U, s80),
-            MakeRuSpec(RuType::RU_26_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 12U : 49U, s80),
-            MakeRuSpec(RuType::RU_26_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 13U : 50U, s80),
-            MakeRuSpec(RuType::RU_26_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 14U : 51U, s80),
-            MakeRuSpec(RuType::RU_26_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 15U : 52U, s80),
-            MakeRuSpec(RuType::RU_26_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 16U : 53U, s80),
-            MakeRuSpec(RuType::RU_26_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 17U : 54U, s80),
-            MakeRuSpec(RuType::RU_26_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 18U : 55U, s80),
-            MakeRuSpec(RuType::RU_26_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 20U : 57U, s80),
-            MakeRuSpec(RuType::RU_26_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 21U : 58U, s80),
-            MakeRuSpec(RuType::RU_26_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 22U : 59U, s80),
-            MakeRuSpec(RuType::RU_26_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 23U : 60U, s80),
-            MakeRuSpec(RuType::RU_26_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 24U : 61U, s80),
-            MakeRuSpec(RuType::RU_26_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 25U : 62U, s80),
-            MakeRuSpec(RuType::RU_26_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 26U : 63U, s80),
-            MakeRuSpec(RuType::RU_26_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 27U : 64U, s80),
-            MakeRuSpec(RuType::RU_26_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 28U : 65U, s80),
-            MakeRuSpec(RuType::RU_26_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 29U : 66U, s80),
-            MakeRuSpec(RuType::RU_26_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 30U : 67U, s80),
-            MakeRuSpec(RuType::RU_26_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 31U : 68U, s80),
-            MakeRuSpec(RuType::RU_26_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 32U : 69U, s80),
-            MakeRuSpec(RuType::RU_26_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 33U : 70U, s80),
-            MakeRuSpec(RuType::RU_26_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 34U : 71U, s80),
-            MakeRuSpec(RuType::RU_26_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 35U : 72U, s80),
-            MakeRuSpec(RuType::RU_26_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 36U : 73U, s80),
-            MakeRuSpec(RuType::RU_26_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 37U : 74U, s80)};
+        std::vector<WifiRu::RuSpec> expectedRus{MakeRuSpec(RuType::RU_26_TONE, 1, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 2, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 3, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 4, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 5, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 6, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 7, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 8, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 9, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 10, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 11, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 12, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 13, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 14, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 15, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 16, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 17, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 18, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 20, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 21, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 22, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 23, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 24, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 25, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 26, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 27, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 28, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 29, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 30, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 31, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 32, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 33, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 34, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 35, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 36, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 37, p80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 1, s80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 2, s80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 3, s80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 4, s80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 5, s80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 6, s80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 7, s80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 8, s80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 9, s80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 10, s80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 11, s80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 12, s80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 13, s80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 14, s80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 15, s80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 16, s80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 17, s80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 18, s80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 20, s80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 21, s80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 22, s80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 23, s80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 24, s80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 25, s80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 26, s80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 27, s80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 28, s80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 29, s80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 30, s80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 31, s80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 32, s80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 33, s80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 34, s80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 35, s80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 36, s80, p160),
+                                                MakeRuSpec(RuType::RU_26_TONE, 37, s80, p160)};
         if (m_modClass == WIFI_MOD_CLASS_HE)
         {
             // RU 19 and RU 56 are undefined for EHT
@@ -1995,91 +1983,87 @@ WifiRusOfTypeInChannelTest::DoRun()
         RunOne(RuType::RU_26_TONE, width, expectedRus);
 
         // 32x 52-tone RUs are in 160 MHz channels
-        RunOne(
-            RuType::RU_52_TONE,
-            width,
-            {MakeRuSpec(RuType::RU_52_TONE, 1, p80),
-             MakeRuSpec(RuType::RU_52_TONE, 2, p80),
-             MakeRuSpec(RuType::RU_52_TONE, 3, p80),
-             MakeRuSpec(RuType::RU_52_TONE, 4, p80),
-             MakeRuSpec(RuType::RU_52_TONE, 5, p80),
-             MakeRuSpec(RuType::RU_52_TONE, 6, p80),
-             MakeRuSpec(RuType::RU_52_TONE, 7, p80),
-             MakeRuSpec(RuType::RU_52_TONE, 8, p80),
-             MakeRuSpec(RuType::RU_52_TONE, 9, p80),
-             MakeRuSpec(RuType::RU_52_TONE, 10, p80),
-             MakeRuSpec(RuType::RU_52_TONE, 11, p80),
-             MakeRuSpec(RuType::RU_52_TONE, 12, p80),
-             MakeRuSpec(RuType::RU_52_TONE, 13, p80),
-             MakeRuSpec(RuType::RU_52_TONE, 14, p80),
-             MakeRuSpec(RuType::RU_52_TONE, 15, p80),
-             MakeRuSpec(RuType::RU_52_TONE, 16, p80),
-             MakeRuSpec(RuType::RU_52_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 1U : 17U, s80),
-             MakeRuSpec(RuType::RU_52_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 2U : 18U, s80),
-             MakeRuSpec(RuType::RU_52_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 3U : 19U, s80),
-             MakeRuSpec(RuType::RU_52_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 4U : 20U, s80),
-             MakeRuSpec(RuType::RU_52_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 5U : 21U, s80),
-             MakeRuSpec(RuType::RU_52_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 6U : 22U, s80),
-             MakeRuSpec(RuType::RU_52_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 7U : 23U, s80),
-             MakeRuSpec(RuType::RU_52_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 8U : 24U, s80),
-             MakeRuSpec(RuType::RU_52_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 9U : 25U, s80),
-             MakeRuSpec(RuType::RU_52_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 10U : 26U, s80),
-             MakeRuSpec(RuType::RU_52_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 11U : 27U, s80),
-             MakeRuSpec(RuType::RU_52_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 12U : 28U, s80),
-             MakeRuSpec(RuType::RU_52_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 13U : 29U, s80),
-             MakeRuSpec(RuType::RU_52_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 14U : 30U, s80),
-             MakeRuSpec(RuType::RU_52_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 15U : 31U, s80),
-             MakeRuSpec(RuType::RU_52_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 16U : 32U, s80)});
+        RunOne(RuType::RU_52_TONE, width, {MakeRuSpec(RuType::RU_52_TONE, 1, p80, p160),
+                                           MakeRuSpec(RuType::RU_52_TONE, 2, p80, p160),
+                                           MakeRuSpec(RuType::RU_52_TONE, 3, p80, p160),
+                                           MakeRuSpec(RuType::RU_52_TONE, 4, p80, p160),
+                                           MakeRuSpec(RuType::RU_52_TONE, 5, p80, p160),
+                                           MakeRuSpec(RuType::RU_52_TONE, 6, p80, p160),
+                                           MakeRuSpec(RuType::RU_52_TONE, 7, p80, p160),
+                                           MakeRuSpec(RuType::RU_52_TONE, 8, p80, p160),
+                                           MakeRuSpec(RuType::RU_52_TONE, 9, p80, p160),
+                                           MakeRuSpec(RuType::RU_52_TONE, 10, p80, p160),
+                                           MakeRuSpec(RuType::RU_52_TONE, 11, p80, p160),
+                                           MakeRuSpec(RuType::RU_52_TONE, 12, p80, p160),
+                                           MakeRuSpec(RuType::RU_52_TONE, 13, p80, p160),
+                                           MakeRuSpec(RuType::RU_52_TONE, 14, p80, p160),
+                                           MakeRuSpec(RuType::RU_52_TONE, 15, p80, p160),
+                                           MakeRuSpec(RuType::RU_52_TONE, 16, p80, p160),
+                                           MakeRuSpec(RuType::RU_52_TONE, 1, s80, p160),
+                                           MakeRuSpec(RuType::RU_52_TONE, 2, s80, p160),
+                                           MakeRuSpec(RuType::RU_52_TONE, 3, s80, p160),
+                                           MakeRuSpec(RuType::RU_52_TONE, 4, s80, p160),
+                                           MakeRuSpec(RuType::RU_52_TONE, 5, s80, p160),
+                                           MakeRuSpec(RuType::RU_52_TONE, 6, s80, p160),
+                                           MakeRuSpec(RuType::RU_52_TONE, 7, s80, p160),
+                                           MakeRuSpec(RuType::RU_52_TONE, 8, s80, p160),
+                                           MakeRuSpec(RuType::RU_52_TONE, 9, s80, p160),
+                                           MakeRuSpec(RuType::RU_52_TONE, 10, s80, p160),
+                                           MakeRuSpec(RuType::RU_52_TONE, 11, s80, p160),
+                                           MakeRuSpec(RuType::RU_52_TONE, 12, s80, p160),
+                                           MakeRuSpec(RuType::RU_52_TONE, 13, s80, p160),
+                                           MakeRuSpec(RuType::RU_52_TONE, 14, s80, p160),
+                                           MakeRuSpec(RuType::RU_52_TONE, 15, s80, p160),
+                                           MakeRuSpec(RuType::RU_52_TONE, 16, s80, p160)});
 
         // 16x 106-tone RUs are in 160 MHz channels
-        RunOne(
-            RuType::RU_106_TONE,
-            width,
-            {MakeRuSpec(RuType::RU_106_TONE, 1, p80),
-             MakeRuSpec(RuType::RU_106_TONE, 2, p80),
-             MakeRuSpec(RuType::RU_106_TONE, 3, p80),
-             MakeRuSpec(RuType::RU_106_TONE, 4, p80),
-             MakeRuSpec(RuType::RU_106_TONE, 5, p80),
-             MakeRuSpec(RuType::RU_106_TONE, 6, p80),
-             MakeRuSpec(RuType::RU_106_TONE, 7, p80),
-             MakeRuSpec(RuType::RU_106_TONE, 8, p80),
-             MakeRuSpec(RuType::RU_106_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 1U : 9U, s80),
-             MakeRuSpec(RuType::RU_106_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 2U : 10U, s80),
-             MakeRuSpec(RuType::RU_106_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 3U : 11U, s80),
-             MakeRuSpec(RuType::RU_106_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 4U : 12U, s80),
-             MakeRuSpec(RuType::RU_106_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 5U : 13U, s80),
-             MakeRuSpec(RuType::RU_106_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 6U : 14U, s80),
-             MakeRuSpec(RuType::RU_106_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 7U : 15U, s80),
-             MakeRuSpec(RuType::RU_106_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 8U : 16U, s80)});
+        RunOne(RuType::RU_106_TONE,
+               width,
+               {MakeRuSpec(RuType::RU_106_TONE, 1, p80, p160),
+                MakeRuSpec(RuType::RU_106_TONE, 2, p80, p160),
+                MakeRuSpec(RuType::RU_106_TONE, 3, p80, p160),
+                MakeRuSpec(RuType::RU_106_TONE, 4, p80, p160),
+                MakeRuSpec(RuType::RU_106_TONE, 5, p80, p160),
+                MakeRuSpec(RuType::RU_106_TONE, 6, p80, p160),
+                MakeRuSpec(RuType::RU_106_TONE, 7, p80, p160),
+                MakeRuSpec(RuType::RU_106_TONE, 8, p80, p160),
+                MakeRuSpec(RuType::RU_106_TONE, 1, s80, p160),
+                MakeRuSpec(RuType::RU_106_TONE, 2, s80, p160),
+                MakeRuSpec(RuType::RU_106_TONE, 3, s80, p160),
+                MakeRuSpec(RuType::RU_106_TONE, 4, s80, p160),
+                MakeRuSpec(RuType::RU_106_TONE, 5, s80, p160),
+                MakeRuSpec(RuType::RU_106_TONE, 6, s80, p160),
+                MakeRuSpec(RuType::RU_106_TONE, 7, s80, p160),
+                MakeRuSpec(RuType::RU_106_TONE, 8, s80, p160)});
 
         // 8x 242-tone RUs are in 160 MHz channels
         RunOne(RuType::RU_242_TONE,
                width,
-               {MakeRuSpec(RuType::RU_242_TONE, 1, p80),
-                MakeRuSpec(RuType::RU_242_TONE, 2, p80),
-                MakeRuSpec(RuType::RU_242_TONE, 3, p80),
-                MakeRuSpec(RuType::RU_242_TONE, 4, p80),
-                MakeRuSpec(RuType::RU_242_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 1U : 5U, s80),
-                MakeRuSpec(RuType::RU_242_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 2U : 6U, s80),
-                MakeRuSpec(RuType::RU_242_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 3U : 7U, s80),
-                MakeRuSpec(RuType::RU_242_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 4U : 8U, s80)});
+               {MakeRuSpec(RuType::RU_242_TONE, 1, p80, p160),
+                MakeRuSpec(RuType::RU_242_TONE, 2, p80, p160),
+                MakeRuSpec(RuType::RU_242_TONE, 3, p80, p160),
+                MakeRuSpec(RuType::RU_242_TONE, 4, p80, p160),
+                MakeRuSpec(RuType::RU_242_TONE, 1, s80, p160),
+                MakeRuSpec(RuType::RU_242_TONE, 2, s80, p160),
+                MakeRuSpec(RuType::RU_242_TONE, 3, s80, p160),
+                MakeRuSpec(RuType::RU_242_TONE, 4, s80, p160)});
 
         // 4x 484-tone RUs are in 160 MHz channels
         RunOne(RuType::RU_484_TONE,
                width,
-               {MakeRuSpec(RuType::RU_484_TONE, 1, p80),
-                MakeRuSpec(RuType::RU_484_TONE, 2, p80),
-                MakeRuSpec(RuType::RU_484_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 1U : 3U, s80),
-                MakeRuSpec(RuType::RU_484_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 2U : 4U, s80)});
+               {MakeRuSpec(RuType::RU_484_TONE, 1, p80, p160),
+                MakeRuSpec(RuType::RU_484_TONE, 2, p80, p160),
+                MakeRuSpec(RuType::RU_484_TONE, 1, s80, p160),
+                MakeRuSpec(RuType::RU_484_TONE, 2, s80, p160)});
 
         // 2x 996-tone RUs are in 160 MHz channels
         RunOne(RuType::RU_996_TONE,
                width,
-               {MakeRuSpec(RuType::RU_996_TONE, 1, p80),
-                MakeRuSpec(RuType::RU_996_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 1U : 2U, s80)});
+               {MakeRuSpec(RuType::RU_996_TONE, 1, p80, p160),
+                MakeRuSpec(RuType::RU_996_TONE, 1, s80, p160)});
 
         // 1x 2x996-tone RUs are in 160 MHz channels
-        RunOne(RuType::RU_2x996_TONE, width, {MakeRuSpec(RuType::RU_2x996_TONE, 1, p80)});
+        RunOne(RuType::RU_2x996_TONE, width, {MakeRuSpec(RuType::RU_2x996_TONE, 1, p80, p160)});
 
         // no 4x996-tone RUs are in 160 MHz channels
         RunOne(RuType::RU_4x996_TONE, width, {});
@@ -2095,182 +2079,303 @@ WifiRusOfTypeInChannelTest::DoRun()
         // 144x 26-tone RUs are in 320 MHz channels (148 minus 4 undefined)
         RunOne(RuType::RU_26_TONE,
                width,
-               {EhtRu::RuSpec{RuType::RU_26_TONE, 1},   EhtRu::RuSpec{RuType::RU_26_TONE, 2},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 3},   EhtRu::RuSpec{RuType::RU_26_TONE, 4},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 5},   EhtRu::RuSpec{RuType::RU_26_TONE, 6},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 7},   EhtRu::RuSpec{RuType::RU_26_TONE, 8},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 9},   EhtRu::RuSpec{RuType::RU_26_TONE, 10},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 11},  EhtRu::RuSpec{RuType::RU_26_TONE, 12},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 13},  EhtRu::RuSpec{RuType::RU_26_TONE, 14},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 15},  EhtRu::RuSpec{RuType::RU_26_TONE, 16},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 17},  EhtRu::RuSpec{RuType::RU_26_TONE, 18},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 20},  EhtRu::RuSpec{RuType::RU_26_TONE, 21},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 22},  EhtRu::RuSpec{RuType::RU_26_TONE, 23},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 24},  EhtRu::RuSpec{RuType::RU_26_TONE, 25},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 26},  EhtRu::RuSpec{RuType::RU_26_TONE, 27},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 28},  EhtRu::RuSpec{RuType::RU_26_TONE, 29},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 30},  EhtRu::RuSpec{RuType::RU_26_TONE, 31},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 32},  EhtRu::RuSpec{RuType::RU_26_TONE, 33},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 34},  EhtRu::RuSpec{RuType::RU_26_TONE, 35},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 36},  EhtRu::RuSpec{RuType::RU_26_TONE, 37},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 38},  EhtRu::RuSpec{RuType::RU_26_TONE, 39},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 40},  EhtRu::RuSpec{RuType::RU_26_TONE, 41},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 42},  EhtRu::RuSpec{RuType::RU_26_TONE, 43},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 44},  EhtRu::RuSpec{RuType::RU_26_TONE, 45},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 46},  EhtRu::RuSpec{RuType::RU_26_TONE, 47},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 48},  EhtRu::RuSpec{RuType::RU_26_TONE, 49},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 50},  EhtRu::RuSpec{RuType::RU_26_TONE, 51},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 52},  EhtRu::RuSpec{RuType::RU_26_TONE, 53},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 54},  EhtRu::RuSpec{RuType::RU_26_TONE, 55},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 57},  EhtRu::RuSpec{RuType::RU_26_TONE, 58},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 59},  EhtRu::RuSpec{RuType::RU_26_TONE, 60},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 61},  EhtRu::RuSpec{RuType::RU_26_TONE, 62},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 63},  EhtRu::RuSpec{RuType::RU_26_TONE, 64},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 65},  EhtRu::RuSpec{RuType::RU_26_TONE, 66},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 67},  EhtRu::RuSpec{RuType::RU_26_TONE, 68},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 69},  EhtRu::RuSpec{RuType::RU_26_TONE, 70},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 71},  EhtRu::RuSpec{RuType::RU_26_TONE, 72},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 73},  EhtRu::RuSpec{RuType::RU_26_TONE, 74},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 75},  EhtRu::RuSpec{RuType::RU_26_TONE, 76},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 77},  EhtRu::RuSpec{RuType::RU_26_TONE, 78},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 79},  EhtRu::RuSpec{RuType::RU_26_TONE, 80},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 81},  EhtRu::RuSpec{RuType::RU_26_TONE, 82},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 83},  EhtRu::RuSpec{RuType::RU_26_TONE, 84},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 85},  EhtRu::RuSpec{RuType::RU_26_TONE, 86},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 87},  EhtRu::RuSpec{RuType::RU_26_TONE, 88},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 89},  EhtRu::RuSpec{RuType::RU_26_TONE, 90},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 91},  EhtRu::RuSpec{RuType::RU_26_TONE, 92},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 94},  EhtRu::RuSpec{RuType::RU_26_TONE, 95},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 96},  EhtRu::RuSpec{RuType::RU_26_TONE, 97},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 98},  EhtRu::RuSpec{RuType::RU_26_TONE, 99},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 100}, EhtRu::RuSpec{RuType::RU_26_TONE, 101},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 102}, EhtRu::RuSpec{RuType::RU_26_TONE, 103},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 104}, EhtRu::RuSpec{RuType::RU_26_TONE, 105},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 106}, EhtRu::RuSpec{RuType::RU_26_TONE, 107},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 108}, EhtRu::RuSpec{RuType::RU_26_TONE, 109},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 110}, EhtRu::RuSpec{RuType::RU_26_TONE, 111},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 112}, EhtRu::RuSpec{RuType::RU_26_TONE, 113},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 114}, EhtRu::RuSpec{RuType::RU_26_TONE, 115},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 116}, EhtRu::RuSpec{RuType::RU_26_TONE, 117},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 118}, EhtRu::RuSpec{RuType::RU_26_TONE, 119},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 120}, EhtRu::RuSpec{RuType::RU_26_TONE, 121},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 122}, EhtRu::RuSpec{RuType::RU_26_TONE, 123},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 124}, EhtRu::RuSpec{RuType::RU_26_TONE, 125},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 126}, EhtRu::RuSpec{RuType::RU_26_TONE, 127},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 128}, EhtRu::RuSpec{RuType::RU_26_TONE, 129},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 131}, EhtRu::RuSpec{RuType::RU_26_TONE, 132},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 133}, EhtRu::RuSpec{RuType::RU_26_TONE, 134},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 135}, EhtRu::RuSpec{RuType::RU_26_TONE, 136},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 137}, EhtRu::RuSpec{RuType::RU_26_TONE, 138},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 139}, EhtRu::RuSpec{RuType::RU_26_TONE, 140},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 141}, EhtRu::RuSpec{RuType::RU_26_TONE, 142},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 143}, EhtRu::RuSpec{RuType::RU_26_TONE, 144},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 145}, EhtRu::RuSpec{RuType::RU_26_TONE, 146},
-                EhtRu::RuSpec{RuType::RU_26_TONE, 147}, EhtRu::RuSpec{RuType::RU_26_TONE, 148}});
+               {EhtRu::RuSpec{RuType::RU_26_TONE, 1, true, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 2, true, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 3, true, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 4, true, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 5, true, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 6, true, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 7, true, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 8, true, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 9, true, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 10, true, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 11, true, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 12, true, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 13, true, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 14, true, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 15, true, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 16, true, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 17, true, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 18, true, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 20, true, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 21, true, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 22, true, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 23, true, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 24, true, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 25, true, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 26, true, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 27, true, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 28, true, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 29, true, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 30, true, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 31, true, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 32, true, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 33, true, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 34, true, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 35, true, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 36, true, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 37, true, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 1, true, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 2, true, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 3, true, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 4, true, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 5, true, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 6, true, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 7, true, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 8, true, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 9, true, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 10, true, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 11, true, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 12, true, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 13, true, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 14, true, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 15, true, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 16, true, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 17, true, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 18, true, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 20, true, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 21, true, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 22, true, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 23, true, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 24, true, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 25, true, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 26, true, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 27, true, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 28, true, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 29, true, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 30, true, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 31, true, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 32, true, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 33, true, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 34, true, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 35, true, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 36, true, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 37, true, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 1, false, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 2, false, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 3, false, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 4, false, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 5, false, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 6, false, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 7, false, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 8, false, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 9, false, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 10, false, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 11, false, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 12, false, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 13, false, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 14, false, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 15, false, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 16, false, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 17, false, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 18, false, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 20, false, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 21, false, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 22, false, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 23, false, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 24, false, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 25, false, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 26, false, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 27, false, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 28, false, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 29, false, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 30, false, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 31, false, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 32, false, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 33, false, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 34, false, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 35, false, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 36, false, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 37, false, true},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 1, false, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 2, false, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 3, false, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 4, false, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 5, false, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 6, false, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 7, false, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 8, false, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 9, false, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 10, false, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 11, false, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 12, false, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 13, false, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 14, false, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 15, false, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 16, false, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 17, false, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 18, false, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 20, false, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 21, false, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 22, false, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 23, false, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 24, false, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 25, false, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 26, false, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 27, false, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 28, false, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 29, false, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 30, false, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 31, false, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 32, false, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 33, false, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 34, false, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 35, false, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 36, false, false},
+                EhtRu::RuSpec{RuType::RU_26_TONE, 37, false, false}});
 
         // 64x 52-tone RUs are in 320 MHz channels
         RunOne(RuType::RU_52_TONE,
                width,
-               {EhtRu::RuSpec{RuType::RU_52_TONE, 1},  EhtRu::RuSpec{RuType::RU_52_TONE, 2},
-                EhtRu::RuSpec{RuType::RU_52_TONE, 3},  EhtRu::RuSpec{RuType::RU_52_TONE, 4},
-                EhtRu::RuSpec{RuType::RU_52_TONE, 5},  EhtRu::RuSpec{RuType::RU_52_TONE, 6},
-                EhtRu::RuSpec{RuType::RU_52_TONE, 7},  EhtRu::RuSpec{RuType::RU_52_TONE, 8},
-                EhtRu::RuSpec{RuType::RU_52_TONE, 9},  EhtRu::RuSpec{RuType::RU_52_TONE, 10},
-                EhtRu::RuSpec{RuType::RU_52_TONE, 11}, EhtRu::RuSpec{RuType::RU_52_TONE, 12},
-                EhtRu::RuSpec{RuType::RU_52_TONE, 13}, EhtRu::RuSpec{RuType::RU_52_TONE, 14},
-                EhtRu::RuSpec{RuType::RU_52_TONE, 15}, EhtRu::RuSpec{RuType::RU_52_TONE, 16},
-                EhtRu::RuSpec{RuType::RU_52_TONE, 17}, EhtRu::RuSpec{RuType::RU_52_TONE, 18},
-                EhtRu::RuSpec{RuType::RU_52_TONE, 19}, EhtRu::RuSpec{RuType::RU_52_TONE, 20},
-                EhtRu::RuSpec{RuType::RU_52_TONE, 21}, EhtRu::RuSpec{RuType::RU_52_TONE, 22},
-                EhtRu::RuSpec{RuType::RU_52_TONE, 23}, EhtRu::RuSpec{RuType::RU_52_TONE, 24},
-                EhtRu::RuSpec{RuType::RU_52_TONE, 25}, EhtRu::RuSpec{RuType::RU_52_TONE, 26},
-                EhtRu::RuSpec{RuType::RU_52_TONE, 27}, EhtRu::RuSpec{RuType::RU_52_TONE, 28},
-                EhtRu::RuSpec{RuType::RU_52_TONE, 29}, EhtRu::RuSpec{RuType::RU_52_TONE, 30},
-                EhtRu::RuSpec{RuType::RU_52_TONE, 31}, EhtRu::RuSpec{RuType::RU_52_TONE, 32},
-                EhtRu::RuSpec{RuType::RU_52_TONE, 33}, EhtRu::RuSpec{RuType::RU_52_TONE, 34},
-                EhtRu::RuSpec{RuType::RU_52_TONE, 35}, EhtRu::RuSpec{RuType::RU_52_TONE, 36},
-                EhtRu::RuSpec{RuType::RU_52_TONE, 37}, EhtRu::RuSpec{RuType::RU_52_TONE, 38},
-                EhtRu::RuSpec{RuType::RU_52_TONE, 39}, EhtRu::RuSpec{RuType::RU_52_TONE, 40},
-                EhtRu::RuSpec{RuType::RU_52_TONE, 41}, EhtRu::RuSpec{RuType::RU_52_TONE, 42},
-                EhtRu::RuSpec{RuType::RU_52_TONE, 43}, EhtRu::RuSpec{RuType::RU_52_TONE, 44},
-                EhtRu::RuSpec{RuType::RU_52_TONE, 45}, EhtRu::RuSpec{RuType::RU_52_TONE, 46},
-                EhtRu::RuSpec{RuType::RU_52_TONE, 47}, EhtRu::RuSpec{RuType::RU_52_TONE, 48},
-                EhtRu::RuSpec{RuType::RU_52_TONE, 49}, EhtRu::RuSpec{RuType::RU_52_TONE, 50},
-                EhtRu::RuSpec{RuType::RU_52_TONE, 51}, EhtRu::RuSpec{RuType::RU_52_TONE, 52},
-                EhtRu::RuSpec{RuType::RU_52_TONE, 53}, EhtRu::RuSpec{RuType::RU_52_TONE, 54},
-                EhtRu::RuSpec{RuType::RU_52_TONE, 55}, EhtRu::RuSpec{RuType::RU_52_TONE, 56},
-                EhtRu::RuSpec{RuType::RU_52_TONE, 57}, EhtRu::RuSpec{RuType::RU_52_TONE, 58},
-                EhtRu::RuSpec{RuType::RU_52_TONE, 59}, EhtRu::RuSpec{RuType::RU_52_TONE, 60},
-                EhtRu::RuSpec{RuType::RU_52_TONE, 61}, EhtRu::RuSpec{RuType::RU_52_TONE, 62},
-                EhtRu::RuSpec{RuType::RU_52_TONE, 63}, EhtRu::RuSpec{RuType::RU_52_TONE, 64}});
+               {EhtRu::RuSpec{RuType::RU_52_TONE, 1, true, true},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 2, true, true},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 3, true, true},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 4, true, true},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 5, true, true},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 6, true, true},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 7, true, true},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 8, true, true},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 9, true, true},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 10, true, true},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 11, true, true},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 12, true, true},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 13, true, true},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 14, true, true},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 15, true, true},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 16, true, true},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 1, true, false},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 2, true, false},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 3, true, false},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 4, true, false},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 5, true, false},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 6, true, false},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 7, true, false},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 8, true, false},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 9, true, false},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 10, true, false},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 11, true, false},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 12, true, false},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 13, true, false},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 14, true, false},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 15, true, false},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 16, true, false},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 1, false, true},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 2, false, true},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 3, false, true},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 4, false, true},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 5, false, true},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 6, false, true},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 7, false, true},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 8, false, true},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 9, false, true},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 10, false, true},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 11, false, true},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 12, false, true},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 13, false, true},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 14, false, true},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 15, false, true},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 16, false, true},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 1, false, false},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 2, false, false},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 3, false, false},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 4, false, false},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 5, false, false},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 6, false, false},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 7, false, false},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 8, false, false},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 9, false, false},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 10, false, false},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 11, false, false},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 12, false, false},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 13, false, false},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 14, false, false},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 15, false, false},
+                EhtRu::RuSpec{RuType::RU_52_TONE, 16, false, false}});
 
         // 32x 106-tone RUs are in 320 MHz channels
         RunOne(RuType::RU_106_TONE,
                width,
-               {EhtRu::RuSpec{RuType::RU_106_TONE, 1},  EhtRu::RuSpec{RuType::RU_106_TONE, 2},
-                EhtRu::RuSpec{RuType::RU_106_TONE, 3},  EhtRu::RuSpec{RuType::RU_106_TONE, 4},
-                EhtRu::RuSpec{RuType::RU_106_TONE, 5},  EhtRu::RuSpec{RuType::RU_106_TONE, 6},
-                EhtRu::RuSpec{RuType::RU_106_TONE, 7},  EhtRu::RuSpec{RuType::RU_106_TONE, 8},
-                EhtRu::RuSpec{RuType::RU_106_TONE, 9},  EhtRu::RuSpec{RuType::RU_106_TONE, 10},
-                EhtRu::RuSpec{RuType::RU_106_TONE, 11}, EhtRu::RuSpec{RuType::RU_106_TONE, 12},
-                EhtRu::RuSpec{RuType::RU_106_TONE, 13}, EhtRu::RuSpec{RuType::RU_106_TONE, 14},
-                EhtRu::RuSpec{RuType::RU_106_TONE, 15}, EhtRu::RuSpec{RuType::RU_106_TONE, 16},
-                EhtRu::RuSpec{RuType::RU_106_TONE, 17}, EhtRu::RuSpec{RuType::RU_106_TONE, 18},
-                EhtRu::RuSpec{RuType::RU_106_TONE, 19}, EhtRu::RuSpec{RuType::RU_106_TONE, 20},
-                EhtRu::RuSpec{RuType::RU_106_TONE, 21}, EhtRu::RuSpec{RuType::RU_106_TONE, 22},
-                EhtRu::RuSpec{RuType::RU_106_TONE, 23}, EhtRu::RuSpec{RuType::RU_106_TONE, 24},
-                EhtRu::RuSpec{RuType::RU_106_TONE, 25}, EhtRu::RuSpec{RuType::RU_106_TONE, 26},
-                EhtRu::RuSpec{RuType::RU_106_TONE, 27}, EhtRu::RuSpec{RuType::RU_106_TONE, 28},
-                EhtRu::RuSpec{RuType::RU_106_TONE, 29}, EhtRu::RuSpec{RuType::RU_106_TONE, 30},
-                EhtRu::RuSpec{RuType::RU_106_TONE, 31}, EhtRu::RuSpec{RuType::RU_106_TONE, 32}});
+               {EhtRu::RuSpec{RuType::RU_106_TONE, 1, true, true},
+                EhtRu::RuSpec{RuType::RU_106_TONE, 2, true, true},
+                EhtRu::RuSpec{RuType::RU_106_TONE, 3, true, true},
+                EhtRu::RuSpec{RuType::RU_106_TONE, 4, true, true},
+                EhtRu::RuSpec{RuType::RU_106_TONE, 5, true, true},
+                EhtRu::RuSpec{RuType::RU_106_TONE, 6, true, true},
+                EhtRu::RuSpec{RuType::RU_106_TONE, 7, true, true},
+                EhtRu::RuSpec{RuType::RU_106_TONE, 8, true, true},
+                EhtRu::RuSpec{RuType::RU_106_TONE, 1, true, false},
+                EhtRu::RuSpec{RuType::RU_106_TONE, 2, true, false},
+                EhtRu::RuSpec{RuType::RU_106_TONE, 3, true, false},
+                EhtRu::RuSpec{RuType::RU_106_TONE, 4, true, false},
+                EhtRu::RuSpec{RuType::RU_106_TONE, 5, true, false},
+                EhtRu::RuSpec{RuType::RU_106_TONE, 6, true, false},
+                EhtRu::RuSpec{RuType::RU_106_TONE, 7, true, false},
+                EhtRu::RuSpec{RuType::RU_106_TONE, 8, true, false},
+                EhtRu::RuSpec{RuType::RU_106_TONE, 1, false, true},
+                EhtRu::RuSpec{RuType::RU_106_TONE, 2, false, true},
+                EhtRu::RuSpec{RuType::RU_106_TONE, 3, false, true},
+                EhtRu::RuSpec{RuType::RU_106_TONE, 4, false, true},
+                EhtRu::RuSpec{RuType::RU_106_TONE, 5, false, true},
+                EhtRu::RuSpec{RuType::RU_106_TONE, 6, false, true},
+                EhtRu::RuSpec{RuType::RU_106_TONE, 7, false, true},
+                EhtRu::RuSpec{RuType::RU_106_TONE, 8, false, true},
+                EhtRu::RuSpec{RuType::RU_106_TONE, 1, false, false},
+                EhtRu::RuSpec{RuType::RU_106_TONE, 2, false, false},
+                EhtRu::RuSpec{RuType::RU_106_TONE, 3, false, false},
+                EhtRu::RuSpec{RuType::RU_106_TONE, 4, false, false},
+                EhtRu::RuSpec{RuType::RU_106_TONE, 5, false, false},
+                EhtRu::RuSpec{RuType::RU_106_TONE, 6, false, false},
+                EhtRu::RuSpec{RuType::RU_106_TONE, 7, false, false},
+                EhtRu::RuSpec{RuType::RU_106_TONE, 8, false, false}});
 
         // 16x 242-tone RUs are in 320 MHz channels
         RunOne(RuType::RU_242_TONE,
                width,
-               {EhtRu::RuSpec{RuType::RU_242_TONE, 1},
-                EhtRu::RuSpec{RuType::RU_242_TONE, 2},
-                EhtRu::RuSpec{RuType::RU_242_TONE, 3},
-                EhtRu::RuSpec{RuType::RU_242_TONE, 4},
-                EhtRu::RuSpec{RuType::RU_242_TONE, 5},
-                EhtRu::RuSpec{RuType::RU_242_TONE, 6},
-                EhtRu::RuSpec{RuType::RU_242_TONE, 7},
-                EhtRu::RuSpec{RuType::RU_242_TONE, 8},
-                EhtRu::RuSpec{RuType::RU_242_TONE, 9},
-                EhtRu::RuSpec{RuType::RU_242_TONE, 10},
-                EhtRu::RuSpec{RuType::RU_242_TONE, 11},
-                EhtRu::RuSpec{RuType::RU_242_TONE, 12},
-                EhtRu::RuSpec{RuType::RU_242_TONE, 13},
-                EhtRu::RuSpec{RuType::RU_242_TONE, 14},
-                EhtRu::RuSpec{RuType::RU_242_TONE, 15},
-                EhtRu::RuSpec{RuType::RU_242_TONE, 16}});
+               {EhtRu::RuSpec{RuType::RU_242_TONE, 1, true, true},
+                EhtRu::RuSpec{RuType::RU_242_TONE, 2, true, true},
+                EhtRu::RuSpec{RuType::RU_242_TONE, 3, true, true},
+                EhtRu::RuSpec{RuType::RU_242_TONE, 4, true, true},
+                EhtRu::RuSpec{RuType::RU_242_TONE, 1, true, false},
+                EhtRu::RuSpec{RuType::RU_242_TONE, 2, true, false},
+                EhtRu::RuSpec{RuType::RU_242_TONE, 3, true, false},
+                EhtRu::RuSpec{RuType::RU_242_TONE, 4, true, false},
+                EhtRu::RuSpec{RuType::RU_242_TONE, 1, false, true},
+                EhtRu::RuSpec{RuType::RU_242_TONE, 2, false, true},
+                EhtRu::RuSpec{RuType::RU_242_TONE, 3, false, true},
+                EhtRu::RuSpec{RuType::RU_242_TONE, 4, false, true},
+                EhtRu::RuSpec{RuType::RU_242_TONE, 1, false, false},
+                EhtRu::RuSpec{RuType::RU_242_TONE, 2, false, false},
+                EhtRu::RuSpec{RuType::RU_242_TONE, 3, false, false},
+                EhtRu::RuSpec{RuType::RU_242_TONE, 4, false, false}});
 
         // 8x 484-tone RUs are in 320 MHz channels
         RunOne(RuType::RU_484_TONE,
                width,
-               {EhtRu::RuSpec{RuType::RU_484_TONE, 1},
-                EhtRu::RuSpec{RuType::RU_484_TONE, 2},
-                EhtRu::RuSpec{RuType::RU_484_TONE, 3},
-                EhtRu::RuSpec{RuType::RU_484_TONE, 4},
-                EhtRu::RuSpec{RuType::RU_484_TONE, 5},
-                EhtRu::RuSpec{RuType::RU_484_TONE, 6},
-                EhtRu::RuSpec{RuType::RU_484_TONE, 7},
-                EhtRu::RuSpec{RuType::RU_484_TONE, 8}});
+               {EhtRu::RuSpec{RuType::RU_484_TONE, 1, true, true},
+                EhtRu::RuSpec{RuType::RU_484_TONE, 2, true, true},
+                EhtRu::RuSpec{RuType::RU_484_TONE, 1, true, false},
+                EhtRu::RuSpec{RuType::RU_484_TONE, 2, true, false},
+                EhtRu::RuSpec{RuType::RU_484_TONE, 1, false, true},
+                EhtRu::RuSpec{RuType::RU_484_TONE, 2, false, true},
+                EhtRu::RuSpec{RuType::RU_484_TONE, 1, false, false},
+                EhtRu::RuSpec{RuType::RU_484_TONE, 2, false, false}});
 
         // 4x 996-tone RUs are in 320 MHz channels
         RunOne(RuType::RU_996_TONE,
                width,
-               {EhtRu::RuSpec{RuType::RU_996_TONE, 1},
-                EhtRu::RuSpec{RuType::RU_996_TONE, 2},
-                EhtRu::RuSpec{RuType::RU_996_TONE, 3},
-                EhtRu::RuSpec{RuType::RU_996_TONE, 4}});
+               {EhtRu::RuSpec{RuType::RU_996_TONE, 1, true, true},
+                EhtRu::RuSpec{RuType::RU_996_TONE, 1, true, false},
+                EhtRu::RuSpec{RuType::RU_996_TONE, 1, false, true},
+                EhtRu::RuSpec{RuType::RU_996_TONE, 1, false, false}});
 
         // 2x 2x996-tone RUs are in 320 MHz channels
         RunOne(RuType::RU_2x996_TONE,
                width,
-               {EhtRu::RuSpec{RuType::RU_2x996_TONE, 1}, EhtRu::RuSpec{RuType::RU_2x996_TONE, 2}});
+               {EhtRu::RuSpec{RuType::RU_2x996_TONE, 1, true, true},
+                EhtRu::RuSpec{RuType::RU_2x996_TONE, 1, false, true}});
 
         // 1x 4x996-tone RUs are in 320 MHz channels
-        RunOne(RuType::RU_4x996_TONE, width, {EhtRu::RuSpec{RuType::RU_4x996_TONE, 1}});
+        RunOne(RuType::RU_4x996_TONE, width, {EhtRu::RuSpec{RuType::RU_4x996_TONE, 1, true, true}});
     }
 }
 
@@ -2331,9 +2436,9 @@ WifiCentral26TonesRusInChannelTest::RunOne(RuType rutype,
     };
 
     const auto actualRus = WifiRu::GetCentral26TonesRus(width, rutype, m_modClass);
-    NS_TEST_ASSERT_MSG_EQ((actualRus == expectedRus),
+    NS_TEST_EXPECT_MSG_EQ((actualRus == expectedRus),
                           true,
-                          "Channel width=" << width << " MHz, RU type=" << rutype
+                          "Channel width=" << width << ", RU type=" << rutype
                                            << ". Expected 26-tone RUs " << printToStr(expectedRus)
                                            << " differs from actual 26-tone RUs "
                                            << printToStr(actualRus));
@@ -2342,8 +2447,9 @@ WifiCentral26TonesRusInChannelTest::RunOne(RuType rutype,
 void
 WifiCentral26TonesRusInChannelTest::DoRun()
 {
-    const auto p80 = (m_modClass == WIFI_MOD_CLASS_HE) ? std::optional(true) : std::nullopt;
-    const auto s80 = (m_modClass == WIFI_MOD_CLASS_HE) ? std::optional(false) : std::nullopt;
+    const auto p80{true};
+    const auto s80{false};
+    const auto p160{(m_modClass == WIFI_MOD_CLASS_HE) ? std::nullopt : std::optional(true)};
 
     /******************
      * 20 MHz channel *
@@ -2355,10 +2461,10 @@ WifiCentral26TonesRusInChannelTest::DoRun()
         RunOne(RuType::RU_26_TONE, width, {});
 
         // there is room for 1 center 26-tone RU when 52-tone RUs are used over 20 MHz
-        RunOne(RuType::RU_52_TONE, width, {MakeRuSpec(RuType::RU_26_TONE, 5, p80)});
+        RunOne(RuType::RU_52_TONE, width, {MakeRuSpec(RuType::RU_26_TONE, 5, p80, p160)});
 
         // there is room for 1 center 26-tone RU when 106-tone RUs are used over 20 MHz
-        RunOne(RuType::RU_106_TONE, width, {MakeRuSpec(RuType::RU_26_TONE, 5, p80)});
+        RunOne(RuType::RU_106_TONE, width, {MakeRuSpec(RuType::RU_26_TONE, 5, p80, p160)});
 
         // there is no room for center 26-tone RUs when 242-tone RUs are used over 20 MHz
         RunOne(RuType::RU_242_TONE, width, {});
@@ -2376,12 +2482,14 @@ WifiCentral26TonesRusInChannelTest::DoRun()
         // there is room for 2 center 26-tone RUs when 52-tone RUs are used over 40 MHz
         RunOne(RuType::RU_52_TONE,
                width,
-               {MakeRuSpec(RuType::RU_26_TONE, 5, p80), MakeRuSpec(RuType::RU_26_TONE, 14, p80)});
+               {MakeRuSpec(RuType::RU_26_TONE, 5, p80, p160),
+                MakeRuSpec(RuType::RU_26_TONE, 14, p80, p160)});
 
         // there is room for 2 center 26-tone RUs when 106-tone RUs are used over 40 MHz
         RunOne(RuType::RU_106_TONE,
                width,
-               {MakeRuSpec(RuType::RU_26_TONE, 5, p80), MakeRuSpec(RuType::RU_26_TONE, 14, p80)});
+               {MakeRuSpec(RuType::RU_26_TONE, 5, p80, p160),
+                MakeRuSpec(RuType::RU_26_TONE, 14, p80, p160)});
 
         // there is no room for center 26-tone RUs when 242-tone RUs are used over 40 MHz
         RunOne(RuType::RU_242_TONE, width, {});
@@ -2402,14 +2510,14 @@ WifiCentral26TonesRusInChannelTest::DoRun()
         // there is room for 5 (1 less for EHT) center 26-tone RUs when
         // 52-tone/106-tone/242-tone/484-tone RUs are used over 80 MHz
         std::vector<WifiRu::RuSpec> expectedCentral26TonesRus{
-            MakeRuSpec(RuType::RU_26_TONE, 5, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 14, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 24, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 33, p80)};
+            MakeRuSpec(RuType::RU_26_TONE, 5, p80, p160),
+            MakeRuSpec(RuType::RU_26_TONE, 14, p80, p160),
+            MakeRuSpec(RuType::RU_26_TONE, 24, p80, p160),
+            MakeRuSpec(RuType::RU_26_TONE, 33, p80, p160)};
         std::vector<WifiRu::RuSpec> extraCentral26TonesRus{};
         if (m_modClass == WIFI_MOD_CLASS_HE) // RU 19 is undefined for EHT
         {
-            HeRu::RuSpec central26TonesRu{RuType::RU_26_TONE, 19, *p80};
+            HeRu::RuSpec central26TonesRu{RuType::RU_26_TONE, 19, p80};
             extraCentral26TonesRus.emplace_back(central26TonesRu);
             const auto it = std::next(expectedCentral26TonesRus.cbegin(), 2);
             expectedCentral26TonesRus.insert(it, central26TonesRu);
@@ -2437,25 +2545,25 @@ WifiCentral26TonesRusInChannelTest::DoRun()
         // there is room for 10 (2 less for EHT) center 26-tone RUs when
         // 52-tone/106-tone/242-tone/484-tone RUs are used over 80 MHz
         std::vector<WifiRu::RuSpec> expectedCentral26TonesRus{
-            MakeRuSpec(RuType::RU_26_TONE, 5, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 14, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 24, p80),
-            MakeRuSpec(RuType::RU_26_TONE, 33, p80),
-            MakeRuSpec(RuType::RU_26_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 5UL : 42UL, s80),
-            MakeRuSpec(RuType::RU_26_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 14UL : 51UL, s80),
-            MakeRuSpec(RuType::RU_26_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 24UL : 61UL, s80),
-            MakeRuSpec(RuType::RU_26_TONE, (m_modClass == WIFI_MOD_CLASS_HE) ? 33UL : 70UL, s80)};
+            MakeRuSpec(RuType::RU_26_TONE, 5, p80, p160),
+            MakeRuSpec(RuType::RU_26_TONE, 14, p80, p160),
+            MakeRuSpec(RuType::RU_26_TONE, 24, p80, p160),
+            MakeRuSpec(RuType::RU_26_TONE, 33, p80, p160),
+            MakeRuSpec(RuType::RU_26_TONE, 5, s80, p160),
+            MakeRuSpec(RuType::RU_26_TONE, 14, s80, p160),
+            MakeRuSpec(RuType::RU_26_TONE, 24, s80, p160),
+            MakeRuSpec(RuType::RU_26_TONE, 33, s80, p160)};
         std::vector<WifiRu::RuSpec> extraCentral26TonesRus{};
         if (m_modClass == WIFI_MOD_CLASS_HE) // RU 19 and RU 56 are undefined for EHT
         {
             {
-                HeRu::RuSpec central26TonesRu{RuType::RU_26_TONE, 19, *p80};
+                HeRu::RuSpec central26TonesRu{RuType::RU_26_TONE, 19, p80};
                 extraCentral26TonesRus.emplace_back(central26TonesRu);
                 const auto it = std::next(expectedCentral26TonesRus.cbegin(), 2);
                 expectedCentral26TonesRus.insert(it, central26TonesRu);
             }
             {
-                HeRu::RuSpec central26TonesRu{RuType::RU_26_TONE, 19, *s80};
+                HeRu::RuSpec central26TonesRu{RuType::RU_26_TONE, 19, s80};
                 extraCentral26TonesRus.emplace_back(central26TonesRu);
                 const auto it = std::next(expectedCentral26TonesRus.cbegin(), 7);
                 expectedCentral26TonesRus.insert(it, central26TonesRu);
@@ -2486,22 +2594,22 @@ WifiCentral26TonesRusInChannelTest::DoRun()
 
         // there is room for 16 center 26-tone RUs when 52-tone/106-tone RUs are used over 320 MHz
         std::vector<WifiRu::RuSpec> expectedCentral26TonesRus{
-            EhtRu::RuSpec{RuType::RU_26_TONE, 5},
-            EhtRu::RuSpec{RuType::RU_26_TONE, 14},
-            EhtRu::RuSpec{RuType::RU_26_TONE, 24},
-            EhtRu::RuSpec{RuType::RU_26_TONE, 33},
-            EhtRu::RuSpec{RuType::RU_26_TONE, 42},
-            EhtRu::RuSpec{RuType::RU_26_TONE, 51},
-            EhtRu::RuSpec{RuType::RU_26_TONE, 61},
-            EhtRu::RuSpec{RuType::RU_26_TONE, 70},
-            EhtRu::RuSpec{RuType::RU_26_TONE, 79},
-            EhtRu::RuSpec{RuType::RU_26_TONE, 88},
-            EhtRu::RuSpec{RuType::RU_26_TONE, 98},
-            EhtRu::RuSpec{RuType::RU_26_TONE, 107},
-            EhtRu::RuSpec{RuType::RU_26_TONE, 116},
-            EhtRu::RuSpec{RuType::RU_26_TONE, 125},
-            EhtRu::RuSpec{RuType::RU_26_TONE, 135},
-            EhtRu::RuSpec{RuType::RU_26_TONE, 144}};
+            EhtRu::RuSpec{RuType::RU_26_TONE, 5, true, true},
+            EhtRu::RuSpec{RuType::RU_26_TONE, 14, true, true},
+            EhtRu::RuSpec{RuType::RU_26_TONE, 24, true, true},
+            EhtRu::RuSpec{RuType::RU_26_TONE, 33, true, true},
+            EhtRu::RuSpec{RuType::RU_26_TONE, 5, true, false},
+            EhtRu::RuSpec{RuType::RU_26_TONE, 14, true, false},
+            EhtRu::RuSpec{RuType::RU_26_TONE, 24, true, false},
+            EhtRu::RuSpec{RuType::RU_26_TONE, 33, true, false},
+            EhtRu::RuSpec{RuType::RU_26_TONE, 5, false, true},
+            EhtRu::RuSpec{RuType::RU_26_TONE, 14, false, true},
+            EhtRu::RuSpec{RuType::RU_26_TONE, 24, false, true},
+            EhtRu::RuSpec{RuType::RU_26_TONE, 33, false, true},
+            EhtRu::RuSpec{RuType::RU_26_TONE, 5, false, false},
+            EhtRu::RuSpec{RuType::RU_26_TONE, 14, false, false},
+            EhtRu::RuSpec{RuType::RU_26_TONE, 24, false, false},
+            EhtRu::RuSpec{RuType::RU_26_TONE, 33, false, false}};
 
         RunOne(RuType::RU_52_TONE, width, expectedCentral26TonesRus);
         RunOne(RuType::RU_106_TONE, width, expectedCentral26TonesRus);
@@ -2577,20 +2685,20 @@ WifiEqualSizedRusTest::RunOne(MHz_t width,
                                                                   actualNumStas,
                                                                   actualNumCentral26TonesRus,
                                                                   m_modClass);
-    NS_TEST_ASSERT_MSG_EQ(
+    NS_TEST_EXPECT_MSG_EQ(
         actualNumStas,
         expectedNumStas,
         "Channel width=" << width << " MHz. Expected number of candidate stations "
                          << expectedNumStas << " differs from actual number of candidate stations "
                          << actualNumStas);
-    NS_TEST_ASSERT_MSG_EQ(actualNumCentral26TonesRus,
+    NS_TEST_EXPECT_MSG_EQ(actualNumCentral26TonesRus,
                           expectedNumCentral26TonesRus,
                           "Channel width="
                               << width << " MHz. Expected number of additional 26-tone RUs "
                               << expectedNumStas
                               << " differs from actual number of additional 26-tone RUs "
                               << actualNumStas);
-    NS_TEST_ASSERT_MSG_EQ(actualRuType,
+    NS_TEST_EXPECT_MSG_EQ(actualRuType,
                           expectedRuType,
                           "Channel width=" << width << " MHz. Expected RU type " << expectedRuType
                                            << " differs from actual RU type " << actualRuType);
@@ -3866,9 +3974,9 @@ WifiSubcarrierGroupsTest::RunOne(MHz_t width,
 
     const auto actualSubcarrierGroup =
         WifiRu::GetSubcarrierGroup(width, ruType, phyIndex, m_modClass);
-    NS_TEST_ASSERT_MSG_EQ((actualSubcarrierGroup == expectedSubcarrierGroup),
+    NS_TEST_EXPECT_MSG_EQ((actualSubcarrierGroup == expectedSubcarrierGroup),
                           true,
-                          "Channel width=" << width << " MHz, RU type=" << ruType << ", PHY index="
+                          "Channel width=" << width << ", RU type=" << ruType << ", PHY index="
                                            << phyIndex << ". Expected subcarrier groups "
                                            << printToStr(expectedSubcarrierGroup)
                                            << " differs from actual subcarrier groups "
@@ -4737,6 +4845,930 @@ WifiSubcarrierGroupsTest::DoRun()
  * @ingroup wifi-test
  * @ingroup tests
  *
+ * @brief Test the methods to convert PHY indices to 80MHz indices with primary flags.
+ */
+class WifiRuPhyIdxTo80MHzIdxAndFlagsTest : public TestCase
+{
+  public:
+    /**
+     * Constructor
+     * @param modClass the modulation class to distinguish 802.11ax and 802.11be
+     */
+    WifiRuPhyIdxTo80MHzIdxAndFlagsTest(WifiModulationClass modClass);
+
+    /**
+     * Check converted PHY indices to 80MHz indices with primary flag are correct.
+     *
+     * @param primary20 the index of the primary20 channel to configure
+     * @param bw the bandwidth
+     * @param ruType the RU type
+     * @param phyIndex the PHY index of the RU
+     * @param expectedP160 the expected P160 flag
+     * @param expectedP80OrLower80 the expected P80OrLower80 flag
+     * @param expected80MHzIdx the expected index within the 80 MHz segment
+     */
+    void RunOne(uint8_t primary20,
+                MHz_t bw,
+                RuType ruType,
+                std::size_t phyIndex,
+                bool expectedP160,
+                bool expectedP80OrLower80,
+                std::size_t expected80MHzIdx);
+
+  private:
+    void DoRun() override;
+
+    WifiModulationClass m_modClass; ///< the modulation class to consider for the test
+};
+
+WifiRuPhyIdxTo80MHzIdxAndFlagsTest::WifiRuPhyIdxTo80MHzIdxAndFlagsTest(WifiModulationClass modClass)
+    : TestCase{"Check conversion from PHY indices to 80MHz indices with primary flag for " +
+               std::string((modClass == WIFI_MOD_CLASS_HE) ? "HE" : "EHT")},
+      m_modClass{modClass}
+{
+}
+
+void
+WifiRuPhyIdxTo80MHzIdxAndFlagsTest::RunOne(uint8_t primary20,
+                                           MHz_t bw,
+                                           RuType ruType,
+                                           std::size_t phyIndex,
+                                           bool expectedP160,
+                                           bool expectedP80OrLower80,
+                                           std::size_t expected80MHzIdx)
+{
+    auto primary80OrLower80{true};
+    auto primary160{true};
+    std::size_t idx80MHz{1};
+    if (m_modClass == WIFI_MOD_CLASS_HE)
+    {
+        idx80MHz = HeRu::GetIndexIn80MHzSegment(bw, ruType, phyIndex);
+        primary80OrLower80 = HeRu::GetPrimary80MHzFlag(bw, ruType, phyIndex, primary20);
+    }
+    else
+    {
+        idx80MHz = EhtRu::GetIndexIn80MHzSegment(bw, ruType, phyIndex);
+        const auto& [p160, p80OrLower80] = EhtRu::GetPrimaryFlags(bw, ruType, phyIndex, primary20);
+        primary160 = p160;
+        primary80OrLower80 = p80OrLower80;
+    }
+    NS_TEST_EXPECT_MSG_EQ(idx80MHz,
+                          expected80MHzIdx,
+                          "BW=" << bw << ", p20Index=" << +primary20 << " , ruType=" << ruType
+                                << " , phyIndex=" << phyIndex << ". Expected 80MHz index "
+                                << expected80MHzIdx << " differs from actual " << idx80MHz);
+    NS_TEST_EXPECT_MSG_EQ(primary160,
+                          expectedP160,
+                          "BW=" << bw << ", p20Index=" << +primary20 << " , ruType=" << ruType
+                                << " , phyIndex=" << phyIndex << ". Expected P160 flag "
+                                << expectedP160 << " differs from actual " << primary160);
+    NS_TEST_EXPECT_MSG_EQ(primary80OrLower80,
+                          expectedP80OrLower80,
+                          "BW=" << bw << ", p20Index=" << +primary20 << " , ruType=" << ruType
+                                << " , phyIndex=" << phyIndex << ". Expected P80OrLower80 flag "
+                                << expectedP80OrLower80 << " differs from actual "
+                                << primary80OrLower80);
+}
+
+void
+WifiRuPhyIdxTo80MHzIdxAndFlagsTest::DoRun()
+{
+    const auto p160{true};
+    const auto s160{false};
+    const auto p80OrLower80{true};
+    const auto s80OrHigher80{false};
+
+    // consider maximum bandwidth for the test: 160 MHz for HE and 320 MHz otherwise (EHT)
+    uint8_t p20IdxMax = (m_modClass == WIFI_MOD_CLASS_HE) ? 8 : 16;
+
+    /* 20 MHz */
+    {
+        const MHz_t bw{20};
+
+        for (uint8_t p20Index = 0; p20Index < p20IdxMax; p20Index++)
+        {
+            std::size_t numRusPer20MHz = 9;
+            std::size_t startPhyIdx = p20Index * numRusPer20MHz;
+            // All the 26-tone RUs in 20 MHz PPDUs are always in P80 (hence index within 80 MHz
+            // segment equals PHY index)
+            for (std::size_t phyIdx = startPhyIdx; phyIdx <= startPhyIdx + numRusPer20MHz; phyIdx++)
+            {
+                RunOne(p20Index, bw, RuType::RU_26_TONE, phyIdx, p160, p80OrLower80, phyIdx);
+            }
+
+            numRusPer20MHz = 4;
+            startPhyIdx = p20Index * numRusPer20MHz;
+            // All the 52-tone RUs in 20 MHz PPDUs are always in P80 (hence index within 80 MHz
+            // segment equals PHY index)
+            for (std::size_t phyIdx = startPhyIdx; phyIdx <= startPhyIdx + numRusPer20MHz; phyIdx++)
+            {
+                RunOne(p20Index, bw, RuType::RU_52_TONE, phyIdx, p160, p80OrLower80, phyIdx);
+            }
+
+            numRusPer20MHz = 2;
+            startPhyIdx = p20Index * numRusPer20MHz;
+            // Both the 106-tone RUs in 20 MHz PPDUs are always in P80 (hence index within 80 MHz
+            // segment equals PHY index)
+            for (std::size_t phyIdx = startPhyIdx; phyIdx <= startPhyIdx + numRusPer20MHz; phyIdx++)
+            {
+                RunOne(p20Index, bw, RuType::RU_106_TONE, phyIdx, p160, p80OrLower80, phyIdx);
+            }
+
+            numRusPer20MHz = 1;
+            startPhyIdx = p20Index * numRusPer20MHz;
+            // The 242-tone RUs in 20 MHz PPDUs is always in P80 (hence index within 80 MHz segment
+            // equals PHY index)
+            for (std::size_t phyIdx = startPhyIdx; phyIdx <= startPhyIdx + numRusPer20MHz; phyIdx++)
+            {
+                RunOne(p20Index, bw, RuType::RU_242_TONE, phyIdx, p160, p80OrLower80, phyIdx);
+            }
+        }
+    }
+
+    /* 40 MHz */
+    {
+        const MHz_t bw{40};
+
+        for (uint8_t p20Index = 0; p20Index < p20IdxMax; p20Index++)
+        {
+            std::size_t numRusPer40MHz = 18;
+            std::size_t startPhyIdx = (p20Index / 2) * numRusPer40MHz;
+            // All the 26-tone RUs in 40 MHz PPDUs are always in P80 (hence index within 80 MHz
+            // segment equals PHY index)
+            for (std::size_t phyIdx = startPhyIdx; phyIdx <= startPhyIdx + numRusPer40MHz; phyIdx++)
+            {
+                RunOne(p20Index, bw, RuType::RU_26_TONE, phyIdx, p160, p80OrLower80, phyIdx);
+            }
+
+            numRusPer40MHz = 8;
+            startPhyIdx = (p20Index / 2) * numRusPer40MHz;
+            // All the 52-tone RUs in 40 MHz PPDUs are always in P80 (hence index within 80 MHz
+            // segment equals PHY index)
+            for (std::size_t phyIdx = startPhyIdx; phyIdx <= startPhyIdx + numRusPer40MHz; phyIdx++)
+            {
+                RunOne(p20Index, bw, RuType::RU_52_TONE, phyIdx, p160, p80OrLower80, phyIdx);
+            }
+
+            numRusPer40MHz = 4;
+            startPhyIdx = (p20Index / 2) * numRusPer40MHz;
+            // All the 106-tone RUs in 40 MHz PPDUs are always in P80 (hence index within 80 MHz
+            // segment equals PHY index)
+            for (std::size_t phyIdx = startPhyIdx; phyIdx <= startPhyIdx + numRusPer40MHz; phyIdx++)
+            {
+                RunOne(p20Index, bw, RuType::RU_106_TONE, phyIdx, p160, p80OrLower80, phyIdx);
+            }
+
+            numRusPer40MHz = 2;
+            startPhyIdx = (p20Index / 2) * numRusPer40MHz;
+            // Both the 242-tone RUs in 40 MHz PPDUs are always in P80 (hence index within 80 MHz
+            // segment equals PHY index)
+            for (std::size_t phyIdx = startPhyIdx; phyIdx <= startPhyIdx + numRusPer40MHz; phyIdx++)
+            {
+                RunOne(p20Index, bw, RuType::RU_242_TONE, phyIdx, p160, p80OrLower80, phyIdx);
+            }
+
+            numRusPer40MHz = 1;
+            startPhyIdx = (p20Index / 2) * numRusPer40MHz;
+            // The 484-tone RUs in 40 MHz PPDUs is always in P80 (hence index within 80 MHz segment
+            // equals PHY index)
+            for (std::size_t phyIdx = startPhyIdx; phyIdx <= startPhyIdx + numRusPer40MHz; phyIdx++)
+            {
+                RunOne(p20Index, bw, RuType::RU_484_TONE, phyIdx, p160, p80OrLower80, phyIdx);
+            }
+        }
+    }
+
+    /* 80 MHz */
+    {
+        const MHz_t bw{80};
+
+        for (uint8_t p20Index = 0; p20Index < p20IdxMax; p20Index++)
+        {
+            std::size_t numRusPer80MHz = 37;
+            std::size_t startPhyIdx = (p20Index / 4) * numRusPer80MHz;
+            // All the 26-tone RUs in 80 MHz PPDUs are always in P80 (hence index within 80 MHz
+            // segment equals PHY index)
+            for (std::size_t phyIdx = startPhyIdx; phyIdx <= startPhyIdx + numRusPer80MHz; phyIdx++)
+            {
+                if (phyIdx == 19)
+                {
+                    // Undefined RU
+                    continue;
+                }
+                RunOne(p20Index, bw, RuType::RU_26_TONE, phyIdx, p160, p80OrLower80, phyIdx);
+            }
+
+            numRusPer80MHz = 16;
+            startPhyIdx = (p20Index / 4) * numRusPer80MHz;
+            // All the 52-tone RUs in 80 MHz PPDUs are always in P80 (hence index within 80 MHz
+            // segment equals PHY index)
+            for (std::size_t phyIdx = startPhyIdx; phyIdx <= startPhyIdx + numRusPer80MHz; phyIdx++)
+            {
+                RunOne(p20Index, bw, RuType::RU_52_TONE, phyIdx, p160, p80OrLower80, phyIdx);
+            }
+
+            numRusPer80MHz = 8;
+            startPhyIdx = (p20Index / 4) * numRusPer80MHz;
+            // All the 106-tone RUs in 80 MHz PPDUs are always in P80 (hence index within 80 MHz
+            // segment equals PHY index)
+            for (std::size_t phyIdx = startPhyIdx; phyIdx <= startPhyIdx + numRusPer80MHz; phyIdx++)
+            {
+                RunOne(p20Index, bw, RuType::RU_106_TONE, phyIdx, p160, p80OrLower80, phyIdx);
+            }
+
+            numRusPer80MHz = 4;
+            startPhyIdx = (p20Index / 4) * numRusPer80MHz;
+            // All the 242-tone RUs in 80 MHz PPDUs are always in P80 (hence index within 80 MHz
+            // segment equals PHY index)
+            for (std::size_t phyIdx = startPhyIdx; phyIdx <= startPhyIdx + numRusPer80MHz; phyIdx++)
+            {
+                RunOne(p20Index, bw, RuType::RU_242_TONE, phyIdx, p160, p80OrLower80, phyIdx);
+            }
+
+            numRusPer80MHz = 2;
+            startPhyIdx = (p20Index / 4) * numRusPer80MHz;
+            // Both The 484-tone RUs in 80 MHz PPDUs are always in P80 (hence index within 80 MHz
+            // segment equals PHY index)
+            for (std::size_t phyIdx = startPhyIdx; phyIdx <= startPhyIdx + numRusPer80MHz; phyIdx++)
+            {
+                RunOne(p20Index, bw, RuType::RU_484_TONE, phyIdx, p160, p80OrLower80, phyIdx);
+            }
+
+            numRusPer80MHz = 1;
+            startPhyIdx = (p20Index / 4) * numRusPer80MHz;
+            // The 996-tone RUs in 80 MHz PPDUs is always in P80 (hence index within 80 MHz segment
+            // equals PHY index)
+            for (std::size_t phyIdx = startPhyIdx; phyIdx <= startPhyIdx + numRusPer80MHz; phyIdx++)
+            {
+                RunOne(p20Index, bw, RuType::RU_996_TONE, phyIdx, p160, p80OrLower80, phyIdx);
+            }
+        }
+    }
+
+    /* 160 MHz */
+    {
+        const MHz_t bw{160};
+
+        for (uint8_t p20Index = 0; p20Index < p20IdxMax; p20Index++)
+        {
+            const uint8_t p80Index = p20Index / 4;
+            const uint8_t s80Index = (p80Index % 2 == 0) ? (p80Index + 1) : (p80Index - 1);
+
+            // 26-tone RUs in P80
+            std::size_t numRusPer80MHz = 37;
+            std::size_t numRusPer160MHz = 2 * numRusPer80MHz;
+            std::size_t startPhyIdx = ((p80Index * numRusPer80MHz) % numRusPer160MHz) + 1;
+            std::size_t idxIn80MHz = 1;
+            for (std::size_t phyIdx = startPhyIdx; phyIdx < startPhyIdx + numRusPer80MHz; phyIdx++)
+            {
+                if ((m_modClass != WIFI_MOD_CLASS_HE) && (idxIn80MHz == 19))
+                {
+                    // Undefined RU
+                    continue;
+                }
+                RunOne(p20Index, bw, RuType::RU_26_TONE, phyIdx, p160, p80OrLower80, idxIn80MHz++);
+            }
+
+            // 26-tone RUs in S80
+            startPhyIdx = ((s80Index * numRusPer80MHz) % numRusPer160MHz) + 1;
+            idxIn80MHz = 1;
+            for (std::size_t phyIdx = startPhyIdx; phyIdx < startPhyIdx + numRusPer80MHz; phyIdx++)
+            {
+                if ((m_modClass != WIFI_MOD_CLASS_HE) && (idxIn80MHz == 19))
+                {
+                    // Undefined RU
+                    continue;
+                }
+                RunOne(p20Index, bw, RuType::RU_26_TONE, phyIdx, p160, s80OrHigher80, idxIn80MHz++);
+            }
+
+            // 52-tone RUs in P80
+            numRusPer80MHz = 16;
+            numRusPer160MHz = 2 * numRusPer80MHz;
+            startPhyIdx = ((p80Index * numRusPer80MHz) % numRusPer160MHz) + 1;
+            idxIn80MHz = 1;
+            for (std::size_t phyIdx = startPhyIdx; phyIdx < startPhyIdx + numRusPer80MHz; phyIdx++)
+            {
+                RunOne(p20Index, bw, RuType::RU_52_TONE, phyIdx, p160, p80OrLower80, idxIn80MHz++);
+            }
+
+            // 52-tone RUs in S80
+            startPhyIdx = ((s80Index * numRusPer80MHz) % numRusPer160MHz) + 1;
+            idxIn80MHz = 1;
+            for (std::size_t phyIdx = startPhyIdx; phyIdx < startPhyIdx + numRusPer80MHz; phyIdx++)
+            {
+                RunOne(p20Index, bw, RuType::RU_52_TONE, phyIdx, p160, s80OrHigher80, idxIn80MHz++);
+            }
+
+            // 106-tone RUs in P80
+            numRusPer80MHz = 8;
+            numRusPer160MHz = 2 * numRusPer80MHz;
+            startPhyIdx = ((p80Index * numRusPer80MHz) % numRusPer160MHz) + 1;
+            idxIn80MHz = 1;
+            for (std::size_t phyIdx = startPhyIdx; phyIdx < startPhyIdx + numRusPer80MHz; phyIdx++)
+            {
+                RunOne(p20Index, bw, RuType::RU_106_TONE, phyIdx, p160, p80OrLower80, idxIn80MHz++);
+            }
+
+            // 106-tone RUs in S80
+            startPhyIdx = ((s80Index * numRusPer80MHz) % numRusPer160MHz) + 1;
+            idxIn80MHz = 1;
+            for (std::size_t phyIdx = startPhyIdx; phyIdx < startPhyIdx + numRusPer80MHz; phyIdx++)
+            {
+                RunOne(p20Index,
+                       bw,
+                       RuType::RU_106_TONE,
+                       phyIdx,
+                       p160,
+                       s80OrHigher80,
+                       idxIn80MHz++);
+            }
+
+            // 242-tone RUs in P80
+            numRusPer80MHz = 4;
+            numRusPer160MHz = 2 * numRusPer80MHz;
+            startPhyIdx = ((p80Index * numRusPer80MHz) % numRusPer160MHz) + 1;
+            idxIn80MHz = 1;
+            for (std::size_t phyIdx = startPhyIdx; phyIdx < startPhyIdx + numRusPer80MHz; phyIdx++)
+            {
+                RunOne(p20Index, bw, RuType::RU_242_TONE, phyIdx, p160, p80OrLower80, idxIn80MHz++);
+            }
+
+            // 242-tone RUs in S80
+            startPhyIdx = ((s80Index * numRusPer80MHz) % numRusPer160MHz) + 1;
+            idxIn80MHz = 1;
+            for (std::size_t phyIdx = startPhyIdx; phyIdx < startPhyIdx + numRusPer80MHz; phyIdx++)
+            {
+                RunOne(p20Index,
+                       bw,
+                       RuType::RU_242_TONE,
+                       phyIdx,
+                       p160,
+                       s80OrHigher80,
+                       idxIn80MHz++);
+            }
+
+            // 484-tone RUs in P80
+            numRusPer80MHz = 2;
+            numRusPer160MHz = 2 * numRusPer80MHz;
+            startPhyIdx = ((p80Index * numRusPer80MHz) % numRusPer160MHz) + 1;
+            idxIn80MHz = 1;
+            for (std::size_t phyIdx = startPhyIdx; phyIdx < startPhyIdx + numRusPer80MHz; phyIdx++)
+            {
+                RunOne(p20Index, bw, RuType::RU_484_TONE, phyIdx, p160, p80OrLower80, idxIn80MHz++);
+            }
+
+            // 484-tone RUs in S80
+            startPhyIdx = ((s80Index * numRusPer80MHz) % numRusPer160MHz) + 1;
+            idxIn80MHz = 1;
+            for (std::size_t phyIdx = startPhyIdx; phyIdx < startPhyIdx + numRusPer80MHz; phyIdx++)
+            {
+                RunOne(p20Index,
+                       bw,
+                       RuType::RU_484_TONE,
+                       phyIdx,
+                       p160,
+                       s80OrHigher80,
+                       idxIn80MHz++);
+            }
+
+            // 996-tone RU in P80
+            numRusPer80MHz = 1;
+            numRusPer160MHz = 2 * numRusPer80MHz;
+            startPhyIdx = ((p80Index * numRusPer80MHz) % numRusPer160MHz) + 1;
+            idxIn80MHz = 1;
+            for (std::size_t phyIdx = startPhyIdx; phyIdx < startPhyIdx + numRusPer80MHz; phyIdx++)
+            {
+                RunOne(p20Index, bw, RuType::RU_996_TONE, phyIdx, p160, p80OrLower80, idxIn80MHz++);
+            }
+
+            // 996-tone RU in S80
+            startPhyIdx = ((s80Index * numRusPer80MHz) % numRusPer160MHz) + 1;
+            idxIn80MHz = 1;
+            for (std::size_t phyIdx = startPhyIdx; phyIdx < startPhyIdx + numRusPer80MHz; phyIdx++)
+            {
+                RunOne(p20Index,
+                       bw,
+                       RuType::RU_996_TONE,
+                       phyIdx,
+                       p160,
+                       s80OrHigher80,
+                       idxIn80MHz++);
+            }
+
+            // 2x996-tone RU
+            RunOne(p20Index, bw, RuType::RU_2x996_TONE, 1, p160, p80OrLower80, 1);
+        }
+    }
+
+    /* 320 MHz */
+    if (m_modClass == WIFI_MOD_CLASS_EHT)
+    {
+        const MHz_t bw{320};
+
+        for (uint8_t p20Index = 0; p20Index < p20IdxMax; p20Index++)
+        {
+            const uint8_t p160Index = p20Index / 8;
+            const uint8_t s160Index = (p160Index % 2 == 0) ? (p160Index + 1) : (p160Index - 1);
+            const uint8_t p80Index = p20Index / 4;
+            const uint8_t s80Index = (p80Index % 2 == 0) ? (p80Index + 1) : (p80Index - 1);
+
+            // 26-tone RUs in P80
+            std::size_t numRusPer80MHz = 37;
+            std::size_t numRusPer320MHz = 4 * numRusPer80MHz;
+            std::size_t startPhyIdx = ((p80Index * numRusPer80MHz) % numRusPer320MHz) + 1;
+            std::size_t idxIn80MHz = 1;
+            for (std::size_t phyIdx = startPhyIdx; phyIdx < startPhyIdx + numRusPer80MHz; phyIdx++)
+            {
+                if ((m_modClass != WIFI_MOD_CLASS_HE) && (idxIn80MHz == 19))
+                {
+                    // Undefined RU
+                    continue;
+                }
+                RunOne(p20Index, bw, RuType::RU_26_TONE, phyIdx, p160, p80OrLower80, idxIn80MHz++);
+            }
+
+            // 26-tone RUs in S80
+            startPhyIdx = ((s80Index * numRusPer80MHz) % numRusPer320MHz) + 1;
+            idxIn80MHz = 1;
+            for (std::size_t phyIdx = startPhyIdx; phyIdx < startPhyIdx + numRusPer80MHz; phyIdx++)
+            {
+                if ((m_modClass != WIFI_MOD_CLASS_HE) && (idxIn80MHz == 19))
+                {
+                    // Undefined RU
+                    continue;
+                }
+                RunOne(p20Index, bw, RuType::RU_26_TONE, phyIdx, p160, s80OrHigher80, idxIn80MHz++);
+            }
+
+            // 26-tone RUs in S160
+            std::size_t numRusPer160MHz = 2 * numRusPer80MHz;
+            startPhyIdx = ((s160Index * numRusPer160MHz) % numRusPer320MHz) + 1;
+            idxIn80MHz = 1;
+            // lower 80 MHz
+            for (std::size_t phyIdx = startPhyIdx; phyIdx < startPhyIdx + numRusPer80MHz; phyIdx++)
+            {
+                if ((m_modClass != WIFI_MOD_CLASS_HE) && (idxIn80MHz == 19))
+                {
+                    // Undefined RU
+                    continue;
+                }
+                RunOne(p20Index, bw, RuType::RU_26_TONE, phyIdx, s160, p80OrLower80, idxIn80MHz++);
+            }
+            // higher 80 MHz
+            startPhyIdx += numRusPer80MHz;
+            idxIn80MHz = 1;
+            for (std::size_t phyIdx = startPhyIdx; phyIdx < startPhyIdx + numRusPer80MHz; phyIdx++)
+            {
+                if ((m_modClass != WIFI_MOD_CLASS_HE) && (idxIn80MHz == 19))
+                {
+                    // Undefined RU
+                    continue;
+                }
+                RunOne(p20Index, bw, RuType::RU_26_TONE, phyIdx, s160, s80OrHigher80, idxIn80MHz++);
+            }
+
+            // 52-tone RUs in P80
+            numRusPer80MHz = 16;
+            numRusPer320MHz = 4 * numRusPer80MHz;
+            startPhyIdx = ((p80Index * numRusPer80MHz) % numRusPer320MHz) + 1;
+            idxIn80MHz = 1;
+            for (std::size_t phyIdx = startPhyIdx; phyIdx < startPhyIdx + numRusPer80MHz; phyIdx++)
+            {
+                RunOne(p20Index, bw, RuType::RU_52_TONE, phyIdx, p160, p80OrLower80, idxIn80MHz++);
+            }
+
+            // 52-tone RUs in S80
+            startPhyIdx = ((s80Index * numRusPer80MHz) % numRusPer320MHz) + 1;
+            idxIn80MHz = 1;
+            for (std::size_t phyIdx = startPhyIdx; phyIdx < startPhyIdx + numRusPer80MHz; phyIdx++)
+            {
+                RunOne(p20Index, bw, RuType::RU_52_TONE, phyIdx, p160, s80OrHigher80, idxIn80MHz++);
+            }
+
+            // 52-tone RUs in S160
+            numRusPer160MHz = 2 * numRusPer80MHz;
+            startPhyIdx = ((s160Index * numRusPer160MHz) % numRusPer320MHz) + 1;
+            idxIn80MHz = 1;
+            // lower 80 MHz
+            for (std::size_t phyIdx = startPhyIdx; phyIdx < startPhyIdx + numRusPer80MHz; phyIdx++)
+            {
+                RunOne(p20Index, bw, RuType::RU_52_TONE, phyIdx, s160, p80OrLower80, idxIn80MHz++);
+            }
+            // higher 80 MHz
+            startPhyIdx += numRusPer80MHz;
+            idxIn80MHz = 1;
+            for (std::size_t phyIdx = startPhyIdx; phyIdx < startPhyIdx + numRusPer80MHz; phyIdx++)
+            {
+                RunOne(p20Index, bw, RuType::RU_52_TONE, phyIdx, s160, s80OrHigher80, idxIn80MHz++);
+            }
+
+            // 106-tone RUs in P80
+            numRusPer80MHz = 8;
+            numRusPer320MHz = 4 * numRusPer80MHz;
+            startPhyIdx = ((p80Index * numRusPer80MHz) % numRusPer320MHz) + 1;
+            idxIn80MHz = 1;
+            for (std::size_t phyIdx = startPhyIdx; phyIdx < startPhyIdx + numRusPer80MHz; phyIdx++)
+            {
+                RunOne(p20Index, bw, RuType::RU_106_TONE, phyIdx, p160, p80OrLower80, idxIn80MHz++);
+            }
+
+            // 106-tone RUs in S80
+            startPhyIdx = ((s80Index * numRusPer80MHz) % numRusPer320MHz) + 1;
+            idxIn80MHz = 1;
+            for (std::size_t phyIdx = startPhyIdx; phyIdx < startPhyIdx + numRusPer80MHz; phyIdx++)
+            {
+                RunOne(p20Index,
+                       bw,
+                       RuType::RU_106_TONE,
+                       phyIdx,
+                       p160,
+                       s80OrHigher80,
+                       idxIn80MHz++);
+            }
+
+            // 106-tone RUs in S160
+            numRusPer160MHz = 2 * numRusPer80MHz;
+            startPhyIdx = ((s160Index * numRusPer160MHz) % numRusPer320MHz) + 1;
+            idxIn80MHz = 1;
+            // lower 80 MHz
+            for (std::size_t phyIdx = startPhyIdx; phyIdx < startPhyIdx + numRusPer80MHz; phyIdx++)
+            {
+                RunOne(p20Index, bw, RuType::RU_106_TONE, phyIdx, s160, p80OrLower80, idxIn80MHz++);
+            }
+            // higher 80 MHz
+            startPhyIdx += numRusPer80MHz;
+            idxIn80MHz = 1;
+            for (std::size_t phyIdx = startPhyIdx; phyIdx < startPhyIdx + numRusPer80MHz; phyIdx++)
+            {
+                RunOne(p20Index,
+                       bw,
+                       RuType::RU_106_TONE,
+                       phyIdx,
+                       s160,
+                       s80OrHigher80,
+                       idxIn80MHz++);
+            }
+
+            // 242-tone RUs in P80
+            numRusPer80MHz = 4;
+            numRusPer320MHz = 4 * numRusPer80MHz;
+            startPhyIdx = ((p80Index * numRusPer80MHz) % numRusPer320MHz) + 1;
+            idxIn80MHz = 1;
+            for (std::size_t phyIdx = startPhyIdx; phyIdx < startPhyIdx + numRusPer80MHz; phyIdx++)
+            {
+                RunOne(p20Index, bw, RuType::RU_242_TONE, phyIdx, p160, p80OrLower80, idxIn80MHz++);
+            }
+
+            // 242-tone RUs in S80
+            startPhyIdx = ((s80Index * numRusPer80MHz) % numRusPer320MHz) + 1;
+            idxIn80MHz = 1;
+            for (std::size_t phyIdx = startPhyIdx; phyIdx < startPhyIdx + numRusPer80MHz; phyIdx++)
+            {
+                RunOne(p20Index,
+                       bw,
+                       RuType::RU_242_TONE,
+                       phyIdx,
+                       p160,
+                       s80OrHigher80,
+                       idxIn80MHz++);
+            }
+
+            // 242-tone RUs in S160
+            numRusPer160MHz = 2 * numRusPer80MHz;
+            startPhyIdx = ((s160Index * numRusPer160MHz) % numRusPer320MHz) + 1;
+            idxIn80MHz = 1;
+            // lower 80 MHz
+            for (std::size_t phyIdx = startPhyIdx; phyIdx < startPhyIdx + numRusPer80MHz; phyIdx++)
+            {
+                RunOne(p20Index, bw, RuType::RU_242_TONE, phyIdx, s160, p80OrLower80, idxIn80MHz++);
+            }
+            // higher 80 MHz
+            startPhyIdx += numRusPer80MHz;
+            idxIn80MHz = 1;
+            for (std::size_t phyIdx = startPhyIdx; phyIdx < startPhyIdx + numRusPer80MHz; phyIdx++)
+            {
+                RunOne(p20Index,
+                       bw,
+                       RuType::RU_242_TONE,
+                       phyIdx,
+                       s160,
+                       s80OrHigher80,
+                       idxIn80MHz++);
+            }
+
+            // 484-tone RUs in P80
+            numRusPer80MHz = 2;
+            numRusPer320MHz = 4 * numRusPer80MHz;
+            startPhyIdx = ((p80Index * numRusPer80MHz) % numRusPer320MHz) + 1;
+            idxIn80MHz = 1;
+            for (std::size_t phyIdx = startPhyIdx; phyIdx < startPhyIdx + numRusPer80MHz; phyIdx++)
+            {
+                RunOne(p20Index, bw, RuType::RU_484_TONE, phyIdx, p160, p80OrLower80, idxIn80MHz++);
+            }
+
+            // 484-tone RUs in S80
+            startPhyIdx = ((s80Index * numRusPer80MHz) % numRusPer320MHz) + 1;
+            idxIn80MHz = 1;
+            for (std::size_t phyIdx = startPhyIdx; phyIdx < startPhyIdx + numRusPer80MHz; phyIdx++)
+            {
+                RunOne(p20Index,
+                       bw,
+                       RuType::RU_484_TONE,
+                       phyIdx,
+                       p160,
+                       s80OrHigher80,
+                       idxIn80MHz++);
+            }
+
+            // 484-tone RUs in S160
+            numRusPer160MHz = 2 * numRusPer80MHz;
+            startPhyIdx = ((s160Index * numRusPer160MHz) % numRusPer320MHz) + 1;
+            idxIn80MHz = 1;
+            // lower 80 MHz
+            for (std::size_t phyIdx = startPhyIdx; phyIdx < startPhyIdx + numRusPer80MHz; phyIdx++)
+            {
+                RunOne(p20Index, bw, RuType::RU_484_TONE, phyIdx, s160, p80OrLower80, idxIn80MHz++);
+            }
+            // higher 80 MHz
+            startPhyIdx += numRusPer80MHz;
+            idxIn80MHz = 1;
+            for (std::size_t phyIdx = startPhyIdx; phyIdx < startPhyIdx + numRusPer80MHz; phyIdx++)
+            {
+                RunOne(p20Index,
+                       bw,
+                       RuType::RU_484_TONE,
+                       phyIdx,
+                       s160,
+                       s80OrHigher80,
+                       idxIn80MHz++);
+            }
+
+            // 996-tone RU in P80
+            numRusPer80MHz = 1;
+            numRusPer320MHz = 4 * numRusPer80MHz;
+            startPhyIdx = ((p80Index * numRusPer80MHz) % numRusPer320MHz) + 1;
+            idxIn80MHz = 1;
+            for (std::size_t phyIdx = startPhyIdx; phyIdx < startPhyIdx + numRusPer80MHz; phyIdx++)
+            {
+                RunOne(p20Index, bw, RuType::RU_996_TONE, phyIdx, p160, p80OrLower80, idxIn80MHz++);
+            }
+
+            // 996-tone RU in S80
+            startPhyIdx = ((s80Index * numRusPer80MHz) % numRusPer320MHz) + 1;
+            idxIn80MHz = 1;
+            for (std::size_t phyIdx = startPhyIdx; phyIdx < startPhyIdx + numRusPer80MHz; phyIdx++)
+            {
+                RunOne(p20Index,
+                       bw,
+                       RuType::RU_996_TONE,
+                       phyIdx,
+                       p160,
+                       s80OrHigher80,
+                       idxIn80MHz++);
+            }
+
+            // 996-tone RUs in S160
+            numRusPer160MHz = 2 * numRusPer80MHz;
+            startPhyIdx = ((s160Index * numRusPer160MHz) % numRusPer320MHz) + 1;
+            idxIn80MHz = 1;
+            // lower 80 MHz
+            for (std::size_t phyIdx = startPhyIdx; phyIdx < startPhyIdx + numRusPer80MHz; phyIdx++)
+            {
+                RunOne(p20Index, bw, RuType::RU_996_TONE, phyIdx, s160, p80OrLower80, idxIn80MHz++);
+            }
+            // higher 80 MHz
+            startPhyIdx += numRusPer80MHz;
+            idxIn80MHz = 1;
+            for (std::size_t phyIdx = startPhyIdx; phyIdx < startPhyIdx + numRusPer80MHz; phyIdx++)
+            {
+                RunOne(p20Index,
+                       bw,
+                       RuType::RU_996_TONE,
+                       phyIdx,
+                       s160,
+                       s80OrHigher80,
+                       idxIn80MHz++);
+            }
+
+            // 2x996-tone RU in P160
+            numRusPer160MHz = 1;
+            numRusPer320MHz = 2 * numRusPer160MHz;
+            startPhyIdx = ((p160Index * numRusPer160MHz) % numRusPer320MHz) + 1;
+            idxIn80MHz = 1;
+            for (std::size_t phyIdx = startPhyIdx; phyIdx < startPhyIdx + numRusPer160MHz; phyIdx++)
+            {
+                RunOne(p20Index,
+                       bw,
+                       RuType::RU_2x996_TONE,
+                       phyIdx,
+                       p160,
+                       p80OrLower80,
+                       idxIn80MHz++);
+            }
+
+            // 996-tone RU in S80
+            startPhyIdx = ((s160Index * numRusPer160MHz) % numRusPer320MHz) + 1;
+            idxIn80MHz = 1;
+            for (std::size_t phyIdx = startPhyIdx; phyIdx < startPhyIdx + numRusPer160MHz; phyIdx++)
+            {
+                RunOne(p20Index,
+                       bw,
+                       RuType::RU_2x996_TONE,
+                       phyIdx,
+                       s160,
+                       p80OrLower80,
+                       idxIn80MHz++);
+            }
+
+            // 4x996-tone RU
+            RunOne(p20Index, bw, RuType::RU_4x996_TONE, 1, p160, p80OrLower80, 1);
+        }
+    }
+}
+
+/**
+ * @ingroup wifi-test
+ * @ingroup tests
+ *
+ * @brief Test the WifiRu::DoesOverlap() method.
+ */
+class WifiRuOverlappingTest : public TestCase
+{
+  public:
+    /**
+     * Constructor
+     * @param modClass the modulation class to distinguish 802.11ax and 802.11be
+     */
+    WifiRuOverlappingTest(WifiModulationClass modClass);
+
+    /**
+     * Check the result of DoesOverlap() is correct.
+     *
+     * @param bw the bandwidth of the PPDU
+     * @param ru the given RU allocation
+     * @param rus the given set of RUs
+     * @param overlapExpected whether it is expected the given RU overlaps with the given set of RUs
+     */
+    void RunOne(MHz_t bw,
+                WifiRu::RuSpec ru,
+                const std::vector<WifiRu::RuSpec>& rus,
+                bool overlapExpected);
+
+  private:
+    void DoRun() override;
+
+    WifiModulationClass m_modClass; ///< the modulation class to consider for the test
+};
+
+WifiRuOverlappingTest::WifiRuOverlappingTest(WifiModulationClass modClass)
+    : TestCase{"Check RUs overlapping for " +
+               std::string((modClass == WIFI_MOD_CLASS_HE) ? "HE" : "EHT")},
+      m_modClass{modClass}
+{
+}
+
+void
+WifiRuOverlappingTest::RunOne(MHz_t bw,
+                              WifiRu::RuSpec ru,
+                              const std::vector<WifiRu::RuSpec>& rus,
+                              bool overlapExpected)
+{
+    auto printToStr = [](const std::vector<WifiRu::RuSpec>& v) {
+        std::stringstream ss;
+        ss << "{";
+        for (const auto& ru : v)
+        {
+            ss << ru << " ";
+        }
+        ss << "}";
+        return ss.str();
+    };
+
+    const auto overlap = WifiRu::DoesOverlap(bw, ru, rus);
+    NS_TEST_EXPECT_MSG_EQ(overlap,
+                          overlapExpected,
+                          "BW=" << bw << ", ru=" << ru << " , rus=" << printToStr(rus)
+                                << ". Expected overlap " << overlapExpected
+                                << " differs from actual " << overlap);
+}
+
+void
+WifiRuOverlappingTest::DoRun()
+{
+    const auto p80{true};
+    const auto s80{false};
+    const auto p160{(m_modClass == WIFI_MOD_CLASS_HE) ? std::nullopt : std::optional(true)};
+    const auto s160{(m_modClass == WIFI_MOD_CLASS_HE) ? std::nullopt : std::optional(false)};
+
+    /* 20 MHz PPDU */
+    {
+        const MHz_t bw{20};
+
+        auto ru = MakeRuSpec(RuType::RU_242_TONE, 1, p80, p160);
+
+        // 242-tones RU should overlap with 26-tones RUs in same 80 MHz segment
+        RunOne(bw,
+               ru,
+               {MakeRuSpec(RuType::RU_26_TONE, 1, p80, p160),
+                MakeRuSpec(RuType::RU_26_TONE, 2, p80, p160),
+                MakeRuSpec(RuType::RU_26_TONE, 3, p80, p160),
+                MakeRuSpec(RuType::RU_26_TONE, 4, p80, p160),
+                MakeRuSpec(RuType::RU_26_TONE, 5, p80, p160),
+                MakeRuSpec(RuType::RU_26_TONE, 6, p80, p160),
+                MakeRuSpec(RuType::RU_26_TONE, 7, p80, p160),
+                MakeRuSpec(RuType::RU_26_TONE, 8, p80, p160),
+                MakeRuSpec(RuType::RU_26_TONE, 9, p80, p160)},
+               true);
+
+        // 242-tones RU should not overlap with 26-tones RUs in same 160 MHz segment but different
+        // 80 MHz segment
+        RunOne(bw,
+               ru,
+               {MakeRuSpec(RuType::RU_26_TONE, 1, s80, p160),
+                MakeRuSpec(RuType::RU_26_TONE, 2, s80, p160),
+                MakeRuSpec(RuType::RU_26_TONE, 3, s80, p160),
+                MakeRuSpec(RuType::RU_26_TONE, 4, s80, p160),
+                MakeRuSpec(RuType::RU_26_TONE, 5, s80, p160),
+                MakeRuSpec(RuType::RU_26_TONE, 6, s80, p160),
+                MakeRuSpec(RuType::RU_26_TONE, 7, s80, p160),
+                MakeRuSpec(RuType::RU_26_TONE, 8, s80, p160),
+                MakeRuSpec(RuType::RU_26_TONE, 9, s80, p160)},
+               false);
+
+        // 242-tones RU should not overlap with 26-tones RUs in different 160 MHz segment
+        if (m_modClass != WIFI_MOD_CLASS_HE)
+        {
+            RunOne(bw,
+                   ru,
+                   {MakeRuSpec(RuType::RU_26_TONE, 1, p80, s160),
+                    MakeRuSpec(RuType::RU_26_TONE, 2, p80, s160),
+                    MakeRuSpec(RuType::RU_26_TONE, 3, p80, s160),
+                    MakeRuSpec(RuType::RU_26_TONE, 4, p80, s160),
+                    MakeRuSpec(RuType::RU_26_TONE, 5, p80, s160),
+                    MakeRuSpec(RuType::RU_26_TONE, 6, p80, s160),
+                    MakeRuSpec(RuType::RU_26_TONE, 7, p80, s160),
+                    MakeRuSpec(RuType::RU_26_TONE, 8, p80, s160),
+                    MakeRuSpec(RuType::RU_26_TONE, 9, p80, s160)},
+                   false);
+        }
+    }
+
+    /* 80 MHz PPDU */
+    {
+        const MHz_t bw{80};
+
+        auto ru = MakeRuSpec(RuType::RU_106_TONE, 1, p80, p160);
+
+        // 106-tones RU should overlap with 484-tones RUs in same 80 MHz segment
+        RunOne(bw,
+               ru,
+               {MakeRuSpec(RuType::RU_484_TONE, 1, p80, p160),
+                MakeRuSpec(RuType::RU_484_TONE, 2, p80, p160)},
+               true);
+
+        // 106-tones RU should not overlap with 484-tones RUs in same 160 MHz segment but different
+        // 80 MHz segment
+        RunOne(bw,
+               ru,
+               {MakeRuSpec(RuType::RU_484_TONE, 1, s80, p160),
+                MakeRuSpec(RuType::RU_484_TONE, 2, s80, p160)},
+               false);
+
+        // 106-tones RU should not overlap with 484-tones RUs in different 160 MHz segment
+        if (m_modClass != WIFI_MOD_CLASS_HE)
+        {
+            RunOne(bw,
+                   ru,
+                   {MakeRuSpec(RuType::RU_484_TONE, 1, s80, s160),
+                    MakeRuSpec(RuType::RU_484_TONE, 2, s80, s160)},
+                   false);
+        }
+    }
+
+    /* 160 MHz PPDU */
+    {
+        const MHz_t bw{160};
+
+        auto ru = MakeRuSpec(RuType::RU_996_TONE, 1, s80, p160);
+
+        // 996-tones RU should overlap with 2x996 RU in same 160 MHz segment
+        RunOne(bw, ru, {MakeRuSpec(RuType::RU_2x996_TONE, 1, p80, p160)}, true);
+
+        // 996-tones RU should not overlap with 2x996 RU in different 160 MHz segment
+        if (m_modClass != WIFI_MOD_CLASS_HE)
+        {
+            RunOne(bw, ru, {MakeRuSpec(RuType::RU_2x996_TONE, 1, p80, s160)}, false);
+        }
+    }
+
+    // TODO: these tests can be further extended with more combinations
+}
+
+/**
+ * @ingroup wifi-test
+ * @ingroup tests
+ *
  * @brief wifi primary channels test suite
  */
 class WifiRuAllocationTestSuite : public TestSuite
@@ -4764,6 +5796,12 @@ WifiRuAllocationTestSuite::WifiRuAllocationTestSuite()
     AddTestCase(new WifiEqualSizedRusTest(WIFI_MOD_CLASS_EHT), TestCase::Duration::QUICK);
     AddTestCase(new WifiSubcarrierGroupsTest(WIFI_MOD_CLASS_HE), TestCase::Duration::QUICK);
     AddTestCase(new WifiSubcarrierGroupsTest(WIFI_MOD_CLASS_EHT), TestCase::Duration::QUICK);
+    AddTestCase(new WifiRuPhyIdxTo80MHzIdxAndFlagsTest(WIFI_MOD_CLASS_HE),
+                TestCase::Duration::QUICK);
+    AddTestCase(new WifiRuPhyIdxTo80MHzIdxAndFlagsTest(WIFI_MOD_CLASS_EHT),
+                TestCase::Duration::QUICK);
+    AddTestCase(new WifiRuOverlappingTest(WIFI_MOD_CLASS_HE), TestCase::Duration::QUICK);
+    AddTestCase(new WifiRuOverlappingTest(WIFI_MOD_CLASS_EHT), TestCase::Duration::QUICK);
 }
 
 static WifiRuAllocationTestSuite g_wifiRuAllocationTestSuite; ///< the test suite

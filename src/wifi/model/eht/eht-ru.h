@@ -15,6 +15,7 @@
 #include <map>
 #include <optional>
 #include <ostream>
+#include <utility>
 #include <vector>
 
 namespace ns3
@@ -40,9 +41,13 @@ class EhtRu
          * Constructor
          *
          * @param ruType the RU type
-         * @param index the RU index (starting at 1)
+         * @param index the RU index (starting at 1) within the 80 MHz segment
+         * @param primary160MHz whether the RU is allocated in the primary 160MHz channel
+         * @param primary80MHzOrLower80MHz if the RU is allocated in the primary 160MHz channel,
+         * whether the RU is allocated in the primary 80MHz channel, otherwise whether the RU is
+         * allocated in the lower 80MHz channel of the secondary 160 MHz channel
          */
-        RuSpec(RuType ruType, std::size_t index);
+        RuSpec(RuType ruType, std::size_t index, bool primary160MHz, bool primary80MHzOrLower80MHz);
 
         /**
          * Get the RU type
@@ -50,12 +55,14 @@ class EhtRu
          * @return the RU type
          */
         RuType GetRuType() const;
+
         /**
-         * Get the RU index
+         * Get the RU index within the 80 MHz segment
          *
-         * @return the RU index
+         * @return the RU index within the 80 MHz segment
          */
         std::size_t GetIndex() const;
+
         /**
          * Get the RU PHY index
          *
@@ -66,12 +73,27 @@ class EhtRu
         std::size_t GetPhyIndex(MHz_t bw, uint8_t p20Index) const;
 
         /**
+         * Get whether the RU is allocated in the primary 160MHz channel
+         *
+         * @return true if the RU is in the primary 160 MHz channel and false otherwise
+         */
+        bool GetPrimary160MHz() const;
+
+        /**
+         * @return if the RU is allocated in the primary 160MHz channel, true if the RU is allocated
+         * in the primary 80MHz channel, otherwise true if the RU is allocated in the lower 80MHz
+         * channel
+         */
+        bool GetPrimary80MHzOrLower80MHz() const;
+
+        /**
          * Compare this RU to the given RU.
          *
          * @param other the given RU
          * @return true if this RU compares equal to the given RU, false otherwise
          */
         bool operator==(const RuSpec& other) const;
+
         /**
          * Compare this RU to the given RU.
          *
@@ -79,6 +101,7 @@ class EhtRu
          * @return true if this RU differs from the given RU, false otherwise
          */
         bool operator!=(const RuSpec& other) const;
+
         /**
          * Compare this RU to the given RU.
          *
@@ -88,28 +111,60 @@ class EhtRu
         bool operator<(const RuSpec& other) const;
 
       private:
-        RuType m_ruType{};     //!< RU type
-        std::size_t m_index{}; /**< RU index (starting at 1) as defined by Tables 27-7
-                                  to 27-9 of 802.11ax D8.0 */
+        RuType m_ruType{};      //!< RU type
+        std::size_t m_index{};  /**< RU index (starting at 1) within the 80 MHz segment */
+        bool m_primary160MHz{}; //!< true if the RU is allocated in the primary 160MHz channel
+        bool m_primary80MHzOrLower80MHz{}; //!< if the RU is allocated in the primary 160MHz
+                                           //!< channel, true if the RU is allocated in the primary
+                                           //!< 80MHz channel, otherwise true if the RU is allocated
+                                           //!< in the lower 80MHz channel
     };
 
     /**
-     * Get the number of distinct RUs of the given type (number of tones)
-     * available in a EHT PPDU of the given bandwidth.
-     * This does not take undefined RUs into account.
+     * Get the primary flags of a given RU transmitted in a PPDU.
+     * The first flag identifies whether the RU is in the primary 160 MHz.
+     * The second flag identifies whether the RU is allocated in the primary 80MHz channel if the RU
+     * is allocated in the primary 160MHz channel, or whether the RU is allocated in the lower 80MHz
+     * channel if the RU is allocated in the secondary 160MHz channel
      *
      * @param bw the bandwidth of the PPDU (20, 40, 80, 160, 320)
      * @param ruType the RU type (number of tones)
+     * @param phyIndex the PHY index (starting at 1) of the RU
+     * @param p20Index the index of the primary20 channel
+     * @return the primary flags
+     */
+    static std::pair<bool, bool> GetPrimaryFlags(MHz_t bw,
+                                                 RuType ruType,
+                                                 std::size_t phyIndex,
+                                                 uint8_t p20Index);
+
+    /**
+     * Get the index of a given RU transmitted in a PPDU within its 80 MHz segment.
+     *
+     * @param bw the bandwidth of the PPDU (20, 40, 80, 160, 320)
+     * @param ruType the RU type (number of tones)
+     * @param phyIndex the PHY index (starting at 1) of the RU
+     * @return the index within the 80 MHz segment
+     */
+    static std::size_t GetIndexIn80MHzSegment(MHz_t bw, RuType ruType, std::size_t phyIndex);
+
+    /**
+     * Get the number of distinct RUs of the given type (number of tones)
+     * available in a PPDU of the given bandwidth.
+     *
+     * @param bw the bandwidth of the PPDU (20, 40, 80, 160, 320)
+     * @param ruType the RU type (number of tones)
+     * @param includeUndefinedRus whether undefined RUs should be taken account.
      * @return the number of distinct RUs available
      */
-    static std::size_t GetNRus(MHz_t bw, RuType ruType);
+    static std::size_t GetNRus(MHz_t bw, RuType ruType, bool includeUndefinedRus = false);
 
     /**
      * Get the set of distinct RUs of the given type (number of tones)
-     * available in an EHT PPDU of the given bandwidth.
+     * available in an PPDU of the given bandwidth.
      * This does not take undefined RUs into account.
      *
-     * @param bw the bandwidth of the EHT PPDU (20, 40, 80, 160, 320)
+     * @param bw the bandwidth of the PPDU (20, 40, 80, 160, 320)
      * @param ruType the RU type (number of tones)
      * @return the set of distinct RUs available
      */
@@ -119,7 +174,7 @@ class EhtRu
      * Get the set of 26-tone RUs that can be additionally allocated if the given
      * bandwidth is split in RUs of the given type.
      *
-     * @param bw the bandwidth of the EHT PPDU (20, 40, 80, 160, 320)
+     * @param bw the bandwidth of the PPDU (20, 40, 80, 160, 320)
      * @param ruType the RU type (number of tones)
      * @return the set of 26-tone RUs that can be additionally allocated
      */
@@ -127,7 +182,7 @@ class EhtRu
 
     /**
      * Get the subcarrier group of the RU having the given PHY index among all the RUs of the given
-     * type (number of tones) available in an EHT PPDU of the given bandwidth. A subcarrier group is
+     * type (number of tones) available in an PPDU of the given bandwidth. A subcarrier group is
      * defined as one or more pairs indicating the lowest frequency index and the highest frequency
      * index.
      *
@@ -143,7 +198,7 @@ class EhtRu
      * Note that for channel width of 160 MHz the returned range is relative to
      * the 160 MHz channel (i.e. -1012 to 1012).
      *
-     * @param bw the bandwidth of the EHT> PPDU (20, 40, 80, 160, 320)
+     * @param bw the bandwidth of the PPDU (20, 40, 80, 160, 320)
      * @param ru the given RU allocation
      * @param v the given set of RUs
      * @return true if the given RU overlaps with the given set of RUs.
@@ -155,7 +210,7 @@ class EhtRu
      * reference RU allocation.
      * Note that an assert is generated if the RU allocation is not found.
      *
-     * @param bw the bandwidth of the EHT PPDU (20, 40, 80, 160, 320)
+     * @param bw the bandwidth of the PPDU (20, 40, 80, 160, 320)
      * @param referenceRu the reference RU allocation
      * @param searchedRuType the searched RU type
      * @return the searched RU allocation.
@@ -197,7 +252,7 @@ class EhtRu
      * Get the number of 26-tone RUs that can be allocated if returned RU size is greater than 26
      * tones.
      *
-     * @param bw the bandwidth of the EHT PPDU (20, 40, 80, 160, 320)
+     * @param bw the bandwidth of the PPDU (20, 40, 80, 160, 320)
      * @param ruType the RU type (number of tones)
      * @return the number of 26-tone RUs that can be allocated
      */
