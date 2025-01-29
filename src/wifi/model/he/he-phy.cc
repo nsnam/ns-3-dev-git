@@ -1882,7 +1882,6 @@ HePhy::ConvertHeRuSubcarriers(MHz_t bandWidth,
     }
     convertedSubcarriers.emplace_back(centerFrequencyIndexLow + subcarrierRange.first,
                                       centerFrequencyIndexHigh + subcarrierRange.second);
-    ++bandIndex;
     return convertedSubcarriers;
 }
 
