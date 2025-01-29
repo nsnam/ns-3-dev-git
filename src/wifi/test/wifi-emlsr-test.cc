@@ -8,13 +8,14 @@
 
 #include "wifi-emlsr-test.h"
 
+#include "ns3/advanced-emlsr-manager.h"
 #include "ns3/attribute-container.h"
 #include "ns3/boolean.h"
 #include "ns3/config.h"
 #include "ns3/ctrl-headers.h"
 #include "ns3/eht-configuration.h"
 #include "ns3/eht-frame-exchange-manager.h"
-#include "ns3/emlsr-manager.h"
+#include "ns3/interference-helper.h"
 #include "ns3/log.h"
 #include "ns3/mgt-action-headers.h"
 #include "ns3/mobility-helper.h"
@@ -22,6 +23,7 @@
 #include "ns3/node-list.h"
 #include "ns3/packet-socket-helper.h"
 #include "ns3/packet-socket-server.h"
+#include "ns3/pointer.h"
 #include "ns3/qos-txop.h"
 #include "ns3/rng-seed-manager.h"
 #include "ns3/rr-multi-user-scheduler.h"
@@ -30,6 +32,7 @@
 #include "ns3/spectrum-wifi-phy.h"
 #include "ns3/string.h"
 #include "ns3/wifi-net-device.h"
+#include "ns3/wifi-spectrum-phy-interface.h"
 
 #include <algorithm>
 #include <functional>
@@ -5263,6 +5266,452 @@ SingleLinkEmlsrTest::DoRun()
     Simulator::Destroy();
 }
 
+EmlsrIcfSentDuringMainPhySwitchTest::EmlsrIcfSentDuringMainPhySwitchTest()
+    : EmlsrOperationsTestBase("Check ICF reception while main PHY is switching")
+{
+    m_mainPhyId = 0;
+    m_linksToEnableEmlsrOn = {0, 1, 2};
+    m_nEmlsrStations = 1;
+    m_nNonEmlsrStations = 0;
+
+    // channel switch delay will be also set to 64 us
+    m_paddingDelay = {MicroSeconds(128)};
+    m_transitionDelay = {MicroSeconds(64)};
+    m_establishBaDl = {0, 3};
+    m_establishBaUl = {0, 3};
+    m_duration = Seconds(0.5);
+}
+
+void
+EmlsrIcfSentDuringMainPhySwitchTest::DoSetup()
+{
+    // channel switch delay will be modified during test scenarios
+    Config::SetDefault("ns3::WifiPhy::ChannelSwitchDelay", TimeValue(MicroSeconds(64)));
+    Config::SetDefault("ns3::WifiPhy::NotifyMacHdrRxEnd", BooleanValue(true));
+    Config::SetDefault("ns3::DefaultEmlsrManager::SwitchAuxPhy", BooleanValue(false));
+    Config::SetDefault("ns3::EmlsrManager::AuxPhyTxCapable", BooleanValue(false));
+    // AP MLD transmits both TID 0 and TID 3 on link 1
+    Config::SetDefault("ns3::EhtConfiguration::TidToLinkMappingDl", StringValue("0,3 1"));
+    // EMLSR client transmits TID 0 on link 1 and TID 3 on link 2
+    Config::SetDefault("ns3::EhtConfiguration::TidToLinkMappingUl",
+                       StringValue("0 1; 3 " + std::to_string(m_linkIdForTid3)));
+
+    EmlsrOperationsTestBase::DoSetup();
+
+    m_staMacs[0]->TraceConnectWithoutContext(
+        "EmlsrLinkSwitch",
+        MakeCallback(&EmlsrIcfSentDuringMainPhySwitchTest::EmlsrLinkSwitchCb, this));
+
+    for (uint8_t i = 0; i < m_staMacs[0]->GetDevice()->GetNPhys(); ++i)
+    {
+        m_bands.at(i) = m_staMacs[0]->GetDevice()->GetPhy(i)->GetBand(MHz_u{20}, 0);
+    }
+}
+
+void
+EmlsrIcfSentDuringMainPhySwitchTest::GenerateNoiseOnAllLinks(Ptr<WifiMac> mac, Time duration)
+{
+    for (const auto linkId : mac->GetLinkIds())
+    {
+        auto phy = DynamicCast<SpectrumWifiPhy>(mac->GetWifiPhy(linkId));
+        NS_TEST_ASSERT_MSG_NE(phy, nullptr, "No PHY on link " << +linkId);
+        const auto txPower = phy->GetPower(1) + phy->GetTxGain();
+
+        auto psd = Create<SpectrumValue>(phy->GetCurrentInterface()->GetRxSpectrumModel());
+        *psd = txPower;
+
+        auto spectrumSignalParams = Create<SpectrumSignalParameters>();
+        spectrumSignalParams->duration = duration;
+        spectrumSignalParams->txPhy = phy->GetCurrentInterface();
+        spectrumSignalParams->txAntenna = phy->GetAntenna();
+        spectrumSignalParams->psd = psd;
+
+        phy->StartRx(spectrumSignalParams, phy->GetCurrentInterface());
+    }
+}
+
+void
+EmlsrIcfSentDuringMainPhySwitchTest::CheckInDeviceInterference(const std::string& frameTypeStr,
+                                                               uint8_t linkId,
+                                                               Time duration)
+{
+    for (const auto& phy : m_staMacs[0]->GetDevice()->GetPhys())
+    {
+        // ignore the PHY that is transmitting
+        if (m_staMacs[0]->GetLinkForPhy(phy) == linkId)
+        {
+            continue;
+        }
+
+        PointerValue ptr;
+        phy->GetAttribute("InterferenceHelper", ptr);
+        auto interferenceHelper = ptr.Get<InterferenceHelper>();
+
+        // we need to check that all the PHY interfaces recorded the in-device interference,
+        // hence we consider a 20 MHz sub-band of the frequency channels of all the links
+        for (uint8_t i = 0; i < m_staMacs[0]->GetNLinks(); ++i)
+        {
+            auto energyDuration =
+                interferenceHelper->GetEnergyDuration(DbmToW(phy->GetCcaEdThreshold()),
+                                                      m_bands.at(i));
+
+            NS_TEST_EXPECT_MSG_EQ(
+                energyDuration,
+                duration,
+                m_testStr << ", " << frameTypeStr << ": Unexpected energy duration for PHY "
+                          << +phy->GetPhyId() << " in the band corresponding to link " << +i);
+        }
+    }
+}
+
+void
+EmlsrIcfSentDuringMainPhySwitchTest::Transmit(Ptr<WifiMac> mac,
+                                              uint8_t phyId,
+                                              WifiConstPsduMap psduMap,
+                                              WifiTxVector txVector,
+                                              double txPowerW)
+{
+    EmlsrOperationsTestBase::Transmit(mac, phyId, psduMap, txVector, txPowerW);
+
+    const auto psdu = psduMap.cbegin()->second;
+    const auto& hdr = psdu->GetHeader(0);
+
+    // nothing to do before setup is completed
+    if (!m_setupDone)
+    {
+        return;
+    }
+
+    auto linkId = mac->GetLinkForPhy(phyId);
+    NS_TEST_ASSERT_MSG_EQ(linkId.has_value(),
+                          true,
+                          "PHY " << +phyId << " is not operating on any link");
+
+    if (!m_events.empty())
+    {
+        // check that the expected frame is being transmitted
+        NS_TEST_EXPECT_MSG_EQ(m_events.front().hdrType,
+                              hdr.GetType(),
+                              "Unexpected MAC header type for frame #" << ++m_processedEvents);
+        // perform actions/checks, if any
+        if (m_events.front().func)
+        {
+            m_events.front().func(psdu, txVector, linkId.value());
+        }
+
+        m_events.pop_front();
+    }
+}
+
+void
+EmlsrIcfSentDuringMainPhySwitchTest::StartTraffic()
+{
+    m_setupDone = true;
+    RunOne();
+}
+
+void
+EmlsrIcfSentDuringMainPhySwitchTest::DoRun()
+{
+    Simulator::Stop(m_duration);
+    Simulator::Run();
+
+    NS_TEST_EXPECT_MSG_EQ(m_events.empty(), true, "Not all events took place");
+
+    Simulator::Destroy();
+}
+
+void
+EmlsrIcfSentDuringMainPhySwitchTest::EmlsrLinkSwitchCb(uint8_t linkId,
+                                                       Ptr<WifiPhy> phy,
+                                                       bool connected)
+{
+    if (!m_setupDone)
+    {
+        return;
+    }
+
+    if (!connected)
+    {
+        const auto mainPhy = m_staMacs[0]->GetDevice()->GetPhy(m_mainPhyId);
+        NS_LOG_DEBUG("Main PHY leaving link " << +linkId << ", switch delay "
+                                              << mainPhy->GetChannelSwitchDelay().As(Time::US)
+                                              << "\n");
+        m_switchFrom = MainPhySwitchInfo{Simulator::Now(), linkId};
+        m_switchTo.reset();
+    }
+    else
+    {
+        NS_LOG_DEBUG((phy->GetPhyId() == m_mainPhyId ? "Main" : "Aux")
+                     << " PHY connected to link " << +linkId << "\n");
+        if (phy->GetPhyId() == m_mainPhyId)
+        {
+            m_switchTo = MainPhySwitchInfo{Simulator::Now(), linkId};
+            m_switchFrom.reset();
+        }
+    }
+}
+
+void
+EmlsrIcfSentDuringMainPhySwitchTest::RunOne()
+{
+    const auto useMacHdrInfo = ((m_testIndex & 0b001) != 0);
+    const auto interruptSwitch = ((m_testIndex & 0b010) != 0);
+    const auto switchToOtherLink = ((m_testIndex & 0b100) != 0);
+
+    m_staMacs[0]->GetEmlsrManager()->SetAttribute("UseNotifiedMacHdr", BooleanValue(useMacHdrInfo));
+    auto advEmlsrMgr = DynamicCast<AdvancedEmlsrManager>(m_staMacs[0]->GetEmlsrManager());
+    NS_TEST_ASSERT_MSG_NE(advEmlsrMgr, nullptr, "Advanced EMLSR Manager required");
+    advEmlsrMgr->SetAttribute("InterruptSwitch", BooleanValue(interruptSwitch));
+
+    m_testStr = "SwitchToOtherLink=" + std::to_string(switchToOtherLink) +
+                ", InterruptSwitch=" + std::to_string(interruptSwitch) +
+                ", UseMacHdrInfo=" + std::to_string(useMacHdrInfo) +
+                ", ChannelSwitchDurationIdx=" + std::to_string(m_csdIndex);
+    NS_LOG_INFO("Starting test: " << m_testStr << "\n");
+
+    // generate noise on all the links of the AP MLD and the EMLSR client, so as to align the EDCA
+    // backoff boundaries
+    Simulator::Schedule(MilliSeconds(3), [=, this]() {
+        GenerateNoiseOnAllLinks(m_apMac, MicroSeconds(500));
+        GenerateNoiseOnAllLinks(m_staMacs[0], MicroSeconds(500));
+    });
+
+    // wait some more time to ensure that backoffs count down to zero and then generate a packet
+    // at the AP MLD and a packet at the EMLSR client. AP MLD and EMLSR client are expected to get
+    // access at the same time because backoff counter is zero and EDCA boundaries are aligned
+    Simulator::Schedule(MilliSeconds(5), [=, this]() {
+        uint8_t prio = (switchToOtherLink ? 3 : 0);
+        m_apMac->GetDevice()->GetNode()->AddApplication(GetApplication(DOWNLINK, 0, 1, 500, prio));
+        m_staMacs[0]->GetDevice()->GetNode()->AddApplication(
+            GetApplication(UPLINK, 0, 1, 500, prio));
+    });
+
+    m_switchFrom.reset();
+    m_switchTo.reset();
+
+    m_events.emplace_back(
+        WIFI_MAC_CTL_TRIGGER,
+        [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, uint8_t linkId) {
+            const auto phyHdrDuration = WifiPhy::CalculatePhyPreambleAndHeaderDuration(txVector);
+            const auto txDuration =
+                WifiPhy::CalculateTxDuration(psdu,
+                                             txVector,
+                                             m_apMac->GetWifiPhy(linkId)->GetPhyBand());
+            auto mainPhy = m_staMacs[0]->GetDevice()->GetPhy(m_mainPhyId);
+
+            // compute channel switch delay based on the scenario to test
+            Time channelSwitchDelay{0};
+            const auto margin = MicroSeconds(2);
+
+            switch (m_csdIndex)
+            {
+            case BEFORE_PHY_HDR_END:
+                channelSwitchDelay = phyHdrDuration - margin;
+                break;
+            case BEFORE_MAC_HDR_END:
+                channelSwitchDelay = phyHdrDuration + margin;
+                break;
+            case BEFORE_MAC_PAYLOAD_END:
+                channelSwitchDelay = txDuration - m_paddingDelay.at(0) - margin;
+                break;
+            case BEFORE_PADDING_END:
+                channelSwitchDelay = txDuration - m_paddingDelay.at(0) + margin;
+                break;
+            default:;
+            }
+
+            NS_TEST_ASSERT_MSG_EQ(channelSwitchDelay.IsStrictlyPositive(),
+                                  true,
+                                  m_testStr << ": Channel switch delay is not strictly positive ("
+                                            << channelSwitchDelay.As(Time::US) << ")");
+            NS_TEST_ASSERT_MSG_LT(channelSwitchDelay,
+                                  m_paddingDelay.at(0),
+                                  m_testStr
+                                      << ": Channel switch delay is greater than padding delay");
+            // set channel switch delay
+            mainPhy->SetAttribute("ChannelSwitchDelay", TimeValue(channelSwitchDelay));
+
+            const auto startTx = Simulator::Now();
+
+            // check that main PHY has started switching
+            Simulator::ScheduleNow([=, this]() {
+                NS_TEST_ASSERT_MSG_EQ(m_switchFrom.has_value(),
+                                      true,
+                                      m_testStr << ": Main PHY did not start switching");
+                NS_TEST_EXPECT_MSG_EQ(+m_switchFrom->linkId,
+                                      +m_mainPhyId,
+                                      m_testStr << ": Main PHY did not left the preferred link");
+                NS_TEST_EXPECT_MSG_EQ(m_switchFrom->time,
+                                      startTx,
+                                      m_testStr
+                                          << ": Main PHY did not start switching at ICF TX start");
+            });
+
+            // check what happens after channel switch is completed
+            Simulator::Schedule(channelSwitchDelay + TimeStep(1), [=, this]() {
+                // sanity check that the channel switch delay was computed correctly
+                auto auxPhy = m_staMacs[0]->GetWifiPhy(linkId);
+                auto fem = m_staMacs[0]->GetFrameExchangeManager(linkId);
+                switch (m_csdIndex)
+                {
+                case BEFORE_PADDING_END:
+                    NS_TEST_EXPECT_MSG_GT(
+                        Simulator::Now(),
+                        startTx + txDuration - m_paddingDelay.at(0),
+                        m_testStr << ": Channel switch terminated before padding start");
+                    [[fallthrough]];
+                case BEFORE_MAC_PAYLOAD_END:
+                    if (useMacHdrInfo)
+                    {
+                        NS_TEST_EXPECT_MSG_EQ(fem->GetReceivedMacHdr().has_value(),
+                                              true,
+                                              m_testStr << ": Channel switch terminated before "
+                                                           "MAC header info is received");
+                    }
+                    [[fallthrough]];
+                case BEFORE_MAC_HDR_END:
+                    NS_TEST_EXPECT_MSG_EQ(fem->GetOngoingRxInfo().has_value(),
+                                          true,
+                                          m_testStr << ": Channel switch terminated before "
+                                                       "receiving RXSTART indication");
+                    break;
+                case BEFORE_PHY_HDR_END:
+                    NS_TEST_EXPECT_MSG_EQ(auxPhy->GetInfoIfRxingPhyHeader().has_value(),
+                                          true,
+                                          m_testStr << ": Expected to be receiving the PHY header");
+                    break;
+                default:
+                    NS_ABORT_MSG("Unexpected channel switch duration index");
+                }
+
+                // if the main PHY switched to the same link on which the ICF is being received,
+                // connecting the main PHY to the link is postponed until the end of the ICF, hence
+                // the main PHY is not operating on any link at this time;
+                // if the main PHY switched to another link, it was connected to that link but
+                // the UL TXOP did not start because, at the end of the NAV and CCA busy in the last
+                // PIFS check, it was detected that a frame which could be an ICF was being received
+                // on another link)
+                NS_TEST_EXPECT_MSG_EQ(m_staMacs[0]->GetLinkForPhy(m_mainPhyId).has_value(),
+                                      switchToOtherLink,
+                                      m_testStr
+                                          << ": Main PHY not expected to be connected to a link");
+
+                if (switchToOtherLink)
+                {
+                    NS_TEST_EXPECT_MSG_EQ(
+                        +m_staMacs[0]->GetLinkForPhy(m_mainPhyId).value(),
+                        +m_linkIdForTid3,
+                        m_testStr << ": Main PHY did not left the link on which TID 3 is mapped");
+                }
+            });
+
+            // check what happens when the ICF ends
+            Simulator::Schedule(txDuration + TimeStep(1), [=, this]() {
+                // if the main PHY switched to the same link on which the ICF has been received,
+                // it has now been connected to that link; if the main PHY switched to another
+                // link and there was not enough time for the main PHY to start switching to the
+                // link on which the ICF has been received at the start of the padding, the ICF
+                // has been dropped and the main PHY stayed on the preferred link
+
+                const auto id = m_staMacs[0]->GetLinkForPhy(m_mainPhyId);
+                NS_TEST_EXPECT_MSG_EQ(id.has_value(),
+                                      true,
+                                      m_testStr << ": Main PHY expected to be connected to a link");
+                NS_TEST_EXPECT_MSG_EQ(+id.value(),
+                                      +linkId,
+                                      m_testStr << ": Main PHY connected to an unexpected link");
+
+                NS_TEST_ASSERT_MSG_EQ(m_switchTo.has_value(),
+                                      true,
+                                      m_testStr << ": Main PHY was not connected to a link");
+                NS_TEST_EXPECT_MSG_EQ(+m_switchTo->linkId,
+                                      +linkId,
+                                      m_testStr
+                                          << ": Main PHY was not connected to the expected link");
+                NS_TEST_EXPECT_MSG_EQ(m_switchTo->time,
+                                      Simulator::Now() - TimeStep(1),
+                                      m_testStr << ": Main PHY was not connected at ICF TX end");
+            });
+        });
+
+    m_events.emplace_back(
+        WIFI_MAC_CTL_CTS,
+        [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, uint8_t linkId) {
+            const auto id = m_staMacs[0]->GetLinkForPhy(m_mainPhyId);
+            NS_TEST_EXPECT_MSG_EQ(id.has_value(),
+                                  true,
+                                  m_testStr << ": Main PHY expected to be connected to a link");
+            NS_TEST_EXPECT_MSG_EQ(+id.value(),
+                                  +linkId,
+                                  m_testStr
+                                      << ": Main PHY expected to be connected to same link as ICF");
+            Simulator::ScheduleNow([=, this]() {
+                NS_TEST_EXPECT_MSG_EQ(m_staMacs[0]->GetDevice()->GetPhy(m_mainPhyId)->IsStateTx(),
+                                      true,
+                                      m_testStr << ": Main PHY expected to be transmitting");
+            });
+
+            const auto txDuration =
+                WifiPhy::CalculateTxDuration(psdu,
+                                             txVector,
+                                             m_staMacs[0]->GetWifiPhy(linkId)->GetPhyBand());
+
+            Simulator::ScheduleNow([=, this]() {
+                CheckInDeviceInterference(m_testStr + ", CTS", linkId, txDuration);
+            });
+        });
+
+    m_events.emplace_back(WIFI_MAC_QOSDATA);
+    m_events.emplace_back(
+        WIFI_MAC_CTL_ACK,
+        [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, uint8_t linkId) {
+            const auto txDuration =
+                WifiPhy::CalculateTxDuration(psdu,
+                                             txVector,
+                                             m_staMacs[0]->GetWifiPhy(linkId)->GetPhyBand());
+
+            Simulator::ScheduleNow([=, this]() {
+                CheckInDeviceInterference(m_testStr + ", ACK", linkId, txDuration);
+            });
+        });
+
+    // Uplink TXOP
+    m_events.emplace_back(
+        WIFI_MAC_QOSDATA,
+        [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, uint8_t linkId) {
+            const auto txDuration =
+                WifiPhy::CalculateTxDuration(psdu,
+                                             txVector,
+                                             m_staMacs[0]->GetWifiPhy(linkId)->GetPhyBand());
+
+            Simulator::ScheduleNow([=, this]() {
+                CheckInDeviceInterference(m_testStr + ", QoS Data", linkId, txDuration);
+            });
+        });
+
+    m_events.emplace_back(
+        WIFI_MAC_CTL_ACK,
+        [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, uint8_t linkId) {
+            // Continue with the next test scenario
+            Simulator::Schedule(MilliSeconds(2), [=, this]() {
+                NS_TEST_EXPECT_MSG_EQ(m_events.empty(), true, "Not all events took place");
+
+                m_csdIndex = static_cast<ChannelSwitchEnd>(static_cast<uint8_t>(m_csdIndex) + 1);
+                if (m_csdIndex == CSD_COUNT)
+                {
+                    ++m_testIndex;
+                    m_csdIndex = BEFORE_PHY_HDR_END;
+                }
+
+                if (m_testIndex < 8)
+                {
+                    RunOne();
+                }
+            });
+        });
+}
+
 WifiEmlsrTestSuite::WifiEmlsrTestSuite()
     : TestSuite("wifi-emlsr", Type::UNIT)
 {
@@ -5368,6 +5817,8 @@ WifiEmlsrTestSuite::WifiEmlsrTestSuite()
             }
         }
     }
+
+    AddTestCase(new EmlsrIcfSentDuringMainPhySwitchTest(), TestCase::Duration::QUICK);
 
     AddTestCase(new EmlsrUlOfdmaTest(false), TestCase::Duration::QUICK);
     AddTestCase(new EmlsrUlOfdmaTest(true), TestCase::Duration::QUICK);
