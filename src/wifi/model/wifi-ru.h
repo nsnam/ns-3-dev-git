@@ -228,7 +228,6 @@ class WifiRu
      */
     static bool IsEht(RuSpec ru);
 
-  private:
     /**
      * Get the maximum RU type supported by a given modulation class.
      *
