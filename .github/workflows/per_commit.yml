@@ -196,7 +196,7 @@ jobs:
       - name: Run tests and examples
         if: env.cache_misses != '0'
         run: ./test.py --no-build
-  Windows_Visual_Studio: # disable until remaining issues are not fixed and find a way to cache compilation artifacts
+  Windows_Visual_Studio:
     runs-on: windows-latest
     defaults:
       run:
@@ -215,7 +215,6 @@ jobs:
           python ns3 build
       - name: Run tests and examples
         continue-on-error: true
-        timeout-minutes: 60
         run: |
           set PATH=%CD%\build;%PATH%
           python .\test.py --no-build
