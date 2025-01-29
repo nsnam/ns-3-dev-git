@@ -157,6 +157,18 @@ if(${NS3_CCACHE})
         ${CCACHE} --set-config
         sloppiness=pch_defines,time_macros,include_file_mtime,include_file_ctime
     )
+    if(DEFINED MSVC)
+      if(MSVC)
+        file(COPY_FILE ${CCACHE} ${CMAKE_BINARY_DIR}/clang-cl.exe
+             ONLY_IF_DIFFERENT
+        )
+        set(CMAKE_VS_GLOBALS
+            "CLToolExe=clang-cl.exe" "CLToolPath=${CMAKE_BINARY_DIR}"
+            "TrackFileAccess=false" "UseMultiToolTask=true"
+            "DebugInformationFormat=OldStyle"
+        )
+      endif()
+    endif()
   endif()
 endif()
 
