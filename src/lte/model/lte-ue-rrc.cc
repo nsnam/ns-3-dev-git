@@ -2678,13 +2678,7 @@ LteUeRrc::CancelEnteringTrigger(uint8_t measId, uint16_t cellId)
     {
         NS_ASSERT(it2->measId == measId);
 
-        for (auto it3 = it2->concernedCells.begin(); it3 != it2->concernedCells.end(); ++it3)
-        {
-            if (*it3 == cellId)
-            {
-                it3 = it2->concernedCells.erase(it3);
-            }
-        }
+        it2->concernedCells.remove_if([cellId](auto cell) { return cellId == cell; });
 
         if (it2->concernedCells.empty())
         {
@@ -2735,13 +2729,7 @@ LteUeRrc::CancelLeavingTrigger(uint8_t measId, uint16_t cellId)
     {
         NS_ASSERT(it2->measId == measId);
 
-        for (auto it3 = it2->concernedCells.begin(); it3 != it2->concernedCells.end(); ++it3)
-        {
-            if (*it3 == cellId)
-            {
-                it3 = it2->concernedCells.erase(it3);
-            }
-        }
+        it2->concernedCells.remove_if([cellId](auto cell) { return cellId == cell; });
 
         if (it2->concernedCells.empty())
         {

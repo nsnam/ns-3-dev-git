@@ -736,10 +736,10 @@ LteFfrEnhancedAlgorithm::DoReportDlCqiInfo(
         for (uint32_t j = 0; j < dlRbgAvailableMap.size(); j++)
         {
             uint32_t index = rbgSize * j;
-            for (uint32_t i = 0; i < rbgSize; i++)
+            for (uint32_t i = 0; i < rbgSize && index < m_ulBandwidth; i++)
             {
-                index = index + i;
                 ulRbAvailableMap[index] = dlRbgAvailableMap[j];
+                index++;
             }
         }
 

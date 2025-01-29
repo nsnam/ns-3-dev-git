@@ -1495,7 +1495,8 @@ CqaFfMacScheduler::DoSchedDlTriggerReq(
             }
 
             qos_rb_and_CQI_assigned_to_lc s;
-            s.cqi_value_for_lc = UeToCQIValue.find(userWithMaximumMetric)->second;
+            const auto ueToCqiIt = UeToCQIValue.find(userWithMaximumMetric);
+            s.cqi_value_for_lc = ueToCqiIt != UeToCQIValue.end() ? ueToCqiIt->second : 1;
             s.resource_block_index = currentRB;
 
             auto itMap = allocationMapPerRntiPerLCId.find(userWithMaximumMetric.m_rnti);
