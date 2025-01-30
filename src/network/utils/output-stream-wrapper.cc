@@ -26,8 +26,8 @@ OutputStreamWrapper::OutputStreamWrapper(std::string filename, std::ios::openmod
     m_ostream = os;
     FatalImpl::RegisterStream(m_ostream);
     NS_ABORT_MSG_UNLESS(os->is_open(),
-                        "AsciiTraceHelper::CreateFileStream():  "
-                            << "Unable to Open " << filename << " for mode " << filemode);
+                        "AsciiTraceHelper::CreateFileStream(): Unable to Open "
+                            << filename << " for mode " << filemode);
 }
 
 OutputStreamWrapper::OutputStreamWrapper(std::ostream* os)

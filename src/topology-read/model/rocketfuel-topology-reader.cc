@@ -106,9 +106,7 @@ PrintNodeInfo(std::string& uid,
 {
     /* uid @loc [+] [bb] (num_neigh) [&ext] -> <nuid-1> <nuid-2> ... {-euid} ... =name[!] rn */
     NS_LOG_INFO("Load Node[" << uid << "]: location: " << loc << " dns: " << dns << " bb: " << bb
-                             << " neighbors: " << neighListSize << "("
-                             << "%d"
-                             << ") externals: \"%s\"(%d) "
+                             << " neighbors: " << neighListSize << "(%d) externals: \"%s\"(%d) "
                              << "name: " << name << " radius: " << radius);
 }
 

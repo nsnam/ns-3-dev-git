@@ -676,11 +676,9 @@ ThreeGppHttpClient::Receive(Ptr<Packet> packet)
      */
     if (m_objectBytesToBeReceived < contentSize)
     {
-        NS_LOG_WARN(this << " The received packet"
-                         << " (" << contentSize << " bytes of content)"
-                         << " is larger than"
-                         << " the content that we expected to receive"
-                         << " (" << m_objectBytesToBeReceived << " bytes).");
+        NS_LOG_WARN(this << " The received packet (" << contentSize << " bytes of content)"
+                         << " is larger than the content that we expected to receive ("
+                         << m_objectBytesToBeReceived << " bytes).");
         // Stop expecting any more packet of this object.
         m_objectBytesToBeReceived = 0;
         m_constructedPacket = nullptr;
@@ -810,10 +808,9 @@ ThreeGppHttpClient::SwitchToState(ThreeGppHttpClient::State_t state)
     {
         if (m_objectBytesToBeReceived > 0)
         {
-            NS_FATAL_ERROR("Cannot start a new receiving session"
-                           << " if the previous object"
-                           << " (" << m_objectBytesToBeReceived << " bytes)"
-                           << " is not completely received yet.");
+            NS_FATAL_ERROR("Cannot start a new receiving session if the previous object ("
+                           << m_objectBytesToBeReceived
+                           << " bytes) is not completely received yet.");
         }
     }
 

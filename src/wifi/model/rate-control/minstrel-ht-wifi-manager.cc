@@ -1321,8 +1321,7 @@ MinstrelHtWifiManager::FindRate(MinstrelHtWifiRemoteStation* station)
                     /// set the rate that we're currently sampling
                     station->m_sampleRate = sampleIdx;
 
-                    NS_LOG_DEBUG("FindRate "
-                                 << "sampleRate=" << sampleIdx);
+                    NS_LOG_DEBUG("FindRate sampleRate=" << sampleIdx);
                     station->m_sampleTries--;
                     return sampleIdx;
                 }
@@ -1337,8 +1336,7 @@ MinstrelHtWifiManager::FindRate(MinstrelHtWifiRemoteStation* station)
                         /// set the rate that we're currently sampling
                         station->m_sampleRate = sampleIdx;
 
-                        NS_LOG_DEBUG("FindRate "
-                                     << "sampleRate=" << sampleIdx);
+                        NS_LOG_DEBUG("FindRate sampleRate=" << sampleIdx);
                         station->m_sampleTries--;
                         return sampleIdx;
                     }
@@ -1353,8 +1351,7 @@ MinstrelHtWifiManager::FindRate(MinstrelHtWifiRemoteStation* station)
 
     /// Continue using the best rate.
 
-    NS_LOG_DEBUG("FindRate "
-                 << "maxTpRrate=" << station->m_maxTpRate);
+    NS_LOG_DEBUG("FindRate maxTpRrate=" << station->m_maxTpRate);
     return station->m_maxTpRate;
 }
 

@@ -776,10 +776,10 @@ TestRunnerImpl::PrintHelp(const char* program_name) const
         << "  --xml                  : format test run output as xml" << std::endl
         << "  --tempdir=DIR          : set temp dir for tests to store output files" << std::endl
         << "  --datadir=DIR          : set data dir for tests to read reference files" << std::endl
-        << "  --out=FILE             : send test result to FILE instead of standard "
-        << "output" << std::endl
-        << "  --append=FILE          : append test result to FILE instead of standard "
-        << "output" << std::endl;
+        << "  --out=FILE             : send test result to FILE instead of standard output"
+        << std::endl
+        << "  --append=FILE          : append test result to FILE instead of standard output"
+        << std::endl;
 }
 
 void

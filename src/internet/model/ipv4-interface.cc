@@ -239,8 +239,7 @@ Ipv4Interface::Send(Ptr<Packet> p, const Ipv4Header& hdr, Ipv4Address dest)
     }
     if (m_device->NeedsArp())
     {
-        NS_LOG_LOGIC("Needs ARP"
-                     << " " << dest);
+        NS_LOG_LOGIC("Needs ARP " << dest);
         Ptr<ArpL3Protocol> arp = m_node->GetObject<ArpL3Protocol>();
         Address hardwareDestination;
         bool found = false;

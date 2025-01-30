@@ -432,10 +432,8 @@ main(int argc, char* argv[])
 
     if (writeForPlot)
     {
-        filePlotQueue << pathOut << "/"
-                      << "red-queue.plotme";
-        filePlotQueueAvg << pathOut << "/"
-                         << "red-queue_avg.plotme";
+        filePlotQueue << pathOut << "/red-queue.plotme";
+        filePlotQueueAvg << pathOut << "/red-queue_avg.plotme";
 
         remove(filePlotQueue.str().c_str());
         remove(filePlotQueueAvg.str().c_str());

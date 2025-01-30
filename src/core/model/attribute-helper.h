@@ -315,9 +315,7 @@ MakeSimpleAttributeChecker(std::string name, std::string underlying)
         iss.str(value);                                                                            \
         iss >> m_value;                                                                            \
         NS_ABORT_MSG_UNLESS(iss.eof(),                                                             \
-                            "Attribute value "                                                     \
-                                << "\"" << value << "\""                                           \
-                                << " is not properly formatted");                                  \
+                            "Attribute value \"" << value << "\" is not properly formatted");      \
         return !iss.bad() && !iss.fail();                                                          \
     }
 

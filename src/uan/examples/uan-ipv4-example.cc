@@ -209,8 +209,7 @@ UanExperiment::SendPackets()
 void
 UanExperiment::SendSinglePacket(Ptr<Node> node, Ptr<Packet> pkt, Ipv4Address dst)
 {
-    NS_LOG_UNCOND(Simulator::Now().GetHours() << "h"
-                                              << " packet sent to " << dst);
+    NS_LOG_UNCOND(Simulator::Now().GetHours() << "h packet sent to " << dst);
     InetSocketAddress ipv4_destination = InetSocketAddress(dst, 9);
     m_sockets[node]->SendTo(pkt, 0, ipv4_destination);
 }

@@ -579,11 +579,9 @@ ThreeGppHttpObjectTestCase::DoRun()
                      << m_mainObjectTracker.GetNumOfObjectsReceived() << " object(s).");
     NS_LOG_INFO(this << " Total embedded objects received: "
                      << m_embeddedObjectTracker.GetNumOfObjectsReceived() << " object(s).");
-    NS_LOG_INFO(this << " One-trip delays:"
-                     << " average=" << m_delayCalculator->getMean() << " min="
+    NS_LOG_INFO(this << " One-trip delays: average=" << m_delayCalculator->getMean() << " min="
                      << m_delayCalculator->getMin() << " max=" << m_delayCalculator->getMax());
-    NS_LOG_INFO(this << " Round-trip delays:"
-                     << " average=" << m_rttCalculator->getMean() << " min="
+    NS_LOG_INFO(this << " Round-trip delays: average=" << m_rttCalculator->getMean() << " min="
                      << m_rttCalculator->getMin() << " max=" << m_rttCalculator->getMax());
     NS_LOG_INFO(this << " Number of packets dropped by the devices: " << m_numOfPacketDrops
                      << " packet(s).");

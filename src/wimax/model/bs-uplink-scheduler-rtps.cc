@@ -421,8 +421,7 @@ UplinkSchedulerRtps::ServiceUnsolicitedGrants(const SSRecord* ssRecord,
         {
             NS_LOG_DEBUG("BS uplink scheduler, " << serviceFlow->GetSchedulingTypeStr()
                                                  << " unicast poll, size: " << allocationSize
-                                                 << " symbols"
-                                                 << ", modulation: BPSK 1/2");
+                                                 << " symbols, modulation: BPSK 1/2");
         }
 
         NS_LOG_DEBUG(", CID: " << serviceFlow->GetConnection()->GetCid()
@@ -646,8 +645,7 @@ UplinkSchedulerRtps::AllocateInitialRangingInterval(uint32_t& symbolsToAllocatio
         ulMapIeIr.SetUiuc(OfdmUlBurstProfile::UIUC_INITIAL_RANGING);
 
         NS_LOG_DEBUG("BS uplink scheduler, initial ranging allocation, size: "
-                     << allocationSize << " symbols"
-                     << ", modulation: BPSK 1/2");
+                     << allocationSize << " symbols, modulation: BPSK 1/2");
 
         // marking start and end of each TO, only for debugging
         for (uint8_t i = 0; i < GetNrIrOppsAllocated(); i++)

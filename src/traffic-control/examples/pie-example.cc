@@ -284,10 +284,8 @@ main(int argc, char* argv[])
 
     if (writeForPlot)
     {
-        filePlotQueueDisc << pathOut << "/"
-                          << "pie-queue-disc.plotme";
-        filePlotQueueDiscAvg << pathOut << "/"
-                             << "pie-queue-disc_avg.plotme";
+        filePlotQueueDisc << pathOut << "/pie-queue-disc.plotme";
+        filePlotQueueDiscAvg << pathOut << "/pie-queue-disc_avg.plotme";
 
         remove(filePlotQueueDisc.str().c_str());
         remove(filePlotQueueDiscAvg.str().c_str());

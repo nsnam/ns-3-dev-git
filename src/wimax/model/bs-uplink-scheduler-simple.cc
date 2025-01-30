@@ -495,8 +495,7 @@ UplinkSchedulerSimple::AllocateInitialRangingInterval(uint32_t& symbolsToAllocat
         ulMapIeIr.SetUiuc(OfdmUlBurstProfile::UIUC_INITIAL_RANGING);
 
         NS_LOG_DEBUG("BS uplink scheduler, initial ranging allocation, size: "
-                     << allocationSize << " symbols"
-                     << ", modulation: BPSK 1/2");
+                     << allocationSize << " symbols, modulation: BPSK 1/2");
 
         // marking start and end of each TO, only for debugging
         for (uint8_t i = 0; i < GetNrIrOppsAllocated(); i++)

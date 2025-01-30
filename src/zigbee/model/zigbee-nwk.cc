@@ -2525,9 +2525,9 @@ ZigbeeNwk::NlmeJoinRequest(NlmeJoinRequestParams params)
         // Note: Scan duration is fixed to a macResponseWaitTime in an Orphan scan
         //       (i.e. It does not use the scanDuration parameter)
         scanParams.m_scanType = MLMESCAN_ORPHAN;
-        NS_LOG_DEBUG("Orphan scanning started, "
-                     << "sending orphan notifications on page " << page << " and channels "
-                     << std::hex << params.m_scanChannelList.channelsField[0]);
+        NS_LOG_DEBUG("Orphan scanning started, sending orphan notifications on page "
+                     << page << " and channels " << std::hex
+                     << params.m_scanChannelList.channelsField[0]);
 
         Simulator::ScheduleNow(&LrWpanMacBase::MlmeScanRequest, m_mac, scanParams);
     }

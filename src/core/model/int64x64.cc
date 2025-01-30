@@ -96,8 +96,8 @@ operator<<(std::ostream& os, const int64x64_t& value)
         low *= 10;
         digit = low.GetHigh();
         NS_ASSERT_MSG((0 <= digit) && (digit <= 9),
-                      "digit " << digit << " out of range [0,9] "
-                               << " streaming out " << HEXHILOW(value.GetHigh(), value.GetLow()));
+                      "digit " << digit << " out of range [0,9] streaming out "
+                               << HEXHILOW(value.GetHigh(), value.GetLow()));
         low -= digit;
 
         oss << std::setw(1) << digit;
@@ -200,8 +200,8 @@ ReadLoDigits(std::string str)
     {
         int digit = *rit - '0';
         NS_ASSERT_MSG((0 <= digit) && (digit <= 9),
-                      "digit " << digit << " out of range [0,9]"
-                               << " streaming in low digits \"" << str << "\"");
+                      "digit " << digit << " out of range [0,9] streaming in low digits \"" << str
+                               << "\"");
         low = (low + digit + round) / 10;
     }
 

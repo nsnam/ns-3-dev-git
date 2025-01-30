@@ -80,8 +80,7 @@ CosineAntennaModelTestCase::BuildNameString(Angles a, double b, double o, double
 {
     std::ostringstream oss;
     oss << "theta=" << a.GetInclination() << " , phi=" << a.GetAzimuth() << ", beamdwidth=" << b
-        << "deg"
-        << ", orientation=" << o << ", maxGain=" << g << " dB";
+        << "deg, orientation=" << o << ", maxGain=" << g << " dB";
     return oss.str();
 }
 

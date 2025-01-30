@@ -782,11 +782,11 @@ SubscriberStationNetDevice::SendBurst(uint8_t uiuc,
         record->UpdatePktsSent(burst->GetNPackets());
         record->UpdateBytesSent(burst->GetSize());
 
-        NS_LOG_DEBUG(" sending burst"
-                     << ", SFID: " << connection->GetServiceFlow()->GetSfid() << ", pkts sent: "
-                     << record->GetPktsSent() << ", pkts rcvd: " << record->GetPktsRcvd()
-                     << ", bytes sent: " << record->GetBytesSent()
-                     << ", bytes rcvd: " << record->GetBytesRcvd());
+        NS_LOG_DEBUG(" sending burst, SFID: " << connection->GetServiceFlow()->GetSfid()
+                                              << ", pkts sent: " << record->GetPktsSent()
+                                              << ", pkts rcvd: " << record->GetPktsRcvd()
+                                              << ", bytes sent: " << record->GetBytesSent()
+                                              << ", bytes rcvd: " << record->GetBytesRcvd());
     }
     else
     {

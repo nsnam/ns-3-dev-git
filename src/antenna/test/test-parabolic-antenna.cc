@@ -81,8 +81,7 @@ ParabolicAntennaModelTestCase::BuildNameString(Angles a, double b, double o, dou
 {
     std::ostringstream oss;
     oss << "theta=" << a.GetInclination() << " , phi=" << a.GetAzimuth() << ", beamdwidth=" << b
-        << "deg"
-        << ", orientation=" << o << ", maxAttenuation=" << g << " dB";
+        << "deg, orientation=" << o << ", maxAttenuation=" << g << " dB";
     return oss.str();
 }
 

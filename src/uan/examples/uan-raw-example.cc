@@ -198,8 +198,7 @@ UanExperiment::SendPackets()
 void
 UanExperiment::SendSinglePacket(Ptr<Node> node, Ptr<Packet> pkt, Mac8Address dst)
 {
-    NS_LOG_UNCOND(Simulator::Now().GetHours() << "h"
-                                              << " packet sent to " << dst);
+    NS_LOG_UNCOND(Simulator::Now().GetHours() << "h packet sent to " << dst);
     PacketSocketAddress socketAddress;
     socketAddress.SetSingleDevice(node->GetDevice(0)->GetIfIndex());
     socketAddress.SetPhysicalAddress(dst);

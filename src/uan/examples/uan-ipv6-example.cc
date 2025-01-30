@@ -213,8 +213,7 @@ UanExperiment::SendPackets()
 void
 UanExperiment::SendSinglePacket(Ptr<Node> node, Ptr<Packet> pkt, Ipv6Address dst)
 {
-    NS_LOG_UNCOND(Simulator::Now().GetHours() << "h"
-                                              << " packet sent to " << dst);
+    NS_LOG_UNCOND(Simulator::Now().GetHours() << "h packet sent to " << dst);
     Inet6SocketAddress ipv6_destination = Inet6SocketAddress(Ipv6Address::ConvertFrom(dst), 9);
     m_sockets[node]->SendTo(pkt, 0, ipv6_destination);
 }

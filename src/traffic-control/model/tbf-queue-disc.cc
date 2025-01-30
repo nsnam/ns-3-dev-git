@@ -349,8 +349,8 @@ TbfQueueDisc::CheckConfig()
     if (m_burst <= m_mtu)
     {
         NS_LOG_WARN("The size of the first bucket ("
-                    << m_burst << ") should be "
-                    << "greater than the size of the second bucket (" << m_mtu << ").");
+                    << m_burst << ") should be greater than the size of the second bucket ("
+                    << m_mtu << ").");
     }
 
     if (m_peakRate > DataRate("0bps") && m_peakRate <= m_rate)

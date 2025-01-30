@@ -273,9 +273,8 @@ main(int argc, char* argv[])
     NS_LOG_DEBUG(" *Remaining Capacity * "
                  << "| Node 0: " << battery0->GetRemainingEnergy() << " J "
                  << "| Node 1: " << battery1->GetRemainingEnergy() << " J");
-    NS_LOG_DEBUG(" *SoC * "
-                 << "| Node 0: " << battery0->GetStateOfCharge() << " % "
-                 << "| Node 1: " << battery1->GetStateOfCharge() << " % ");
+    NS_LOG_DEBUG(" *SoC * | Node 0: " << battery0->GetStateOfCharge() << " % "
+                                      << "| Node 1: " << battery1->GetStateOfCharge() << " %");
 
     Simulator::Destroy();
 

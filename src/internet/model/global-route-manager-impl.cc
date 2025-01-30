@@ -865,9 +865,7 @@ GlobalRouteManagerImpl::SPFNext(SPFVertex* v, CandidateQueue& candidate)
             }
             else
             {
-                NS_ASSERT_MSG(0,
-                              "SPFNexthopCalculation never "
-                                  << "return false, but it does now!");
+                NS_ASSERT_MSG(0, "SPFNexthopCalculation never return false, but it does now!");
             }
         }
         else if (w_lsa->GetStatus() == GlobalRoutingLSA::LSA_SPF_CANDIDATE)

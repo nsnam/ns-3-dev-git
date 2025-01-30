@@ -1585,12 +1585,13 @@ HeFrameExchangeManager::GetHeTbTxVector(CtrlTriggerHeader trigger, Mac48Address 
                                                   << m_phy->GetTxPowerEnd() << "dBm)");
     }
     v.SetTxPowerLevel(powerLevel);
-    NS_LOG_LOGIC("UL power control: "
-                 << "input {pathLoss=" << pathLossDb << "dB, reqTxPower=" << reqTxPower << "dBm}"
-                 << " output {powerLevel=" << +powerLevel << " -> " << m_phy->GetPower(powerLevel)
-                 << "dBm}"
-                 << " PHY power capa {min=" << m_phy->GetTxPowerStart() << "dBm, max="
-                 << m_phy->GetTxPowerEnd() << "dBm, levels:" << +numPowerLevels << "}");
+    NS_LOG_LOGIC("UL power control: input "
+                 << "{pathLoss=" << pathLossDb << "dB, reqTxPower=" << reqTxPower << "dBm}"
+                 << " output "
+                 << "{powerLevel=" << +powerLevel << " -> " << m_phy->GetPower(powerLevel) << "dBm}"
+                 << " PHY power capa "
+                 << "{min=" << m_phy->GetTxPowerStart() << "dBm, max=" << m_phy->GetTxPowerEnd()
+                 << "dBm, levels:" << +numPowerLevels << "}");
 
     return v;
 }

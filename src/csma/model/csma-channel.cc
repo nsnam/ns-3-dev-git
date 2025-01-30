@@ -131,8 +131,8 @@ CsmaChannel::Detach(uint32_t deviceId)
 
         if ((m_state == TRANSMITTING) && (m_currentSrc == deviceId))
         {
-            NS_LOG_WARN("CsmaChannel::Detach(): Device is currently"
-                        << "transmitting (" << deviceId << ")");
+            NS_LOG_WARN("CsmaChannel::Detach(): Device is currently transmitting (" << deviceId
+                                                                                    << ")");
         }
 
         return true;

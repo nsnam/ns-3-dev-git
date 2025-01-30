@@ -442,8 +442,8 @@ ThreeGppHttpServer::ReceivedDataCallback(Ptr<Socket> socket)
         {
         case ThreeGppHttpHeader::MAIN_OBJECT: {
             const auto processingDelay = m_httpVariables->GetMainObjectGenerationDelay();
-            NS_LOG_INFO(this << " Will finish generating a main object"
-                             << " in " << processingDelay.As(Time::S) << ".");
+            NS_LOG_INFO(this << " Will finish generating a main object in "
+                             << processingDelay.As(Time::S) << ".");
             m_txBuffer->RecordNextServe(socket,
                                         Simulator::Schedule(processingDelay,
                                                             &ThreeGppHttpServer::ServeNewMainObject,
@@ -454,8 +454,8 @@ ThreeGppHttpServer::ReceivedDataCallback(Ptr<Socket> socket)
         }
         case ThreeGppHttpHeader::EMBEDDED_OBJECT: {
             const auto processingDelay = m_httpVariables->GetEmbeddedObjectGenerationDelay();
-            NS_LOG_INFO(this << " Will finish generating an embedded object"
-                             << " in " << processingDelay.As(Time::S) << ".");
+            NS_LOG_INFO(this << " Will finish generating an embedded object in "
+                             << processingDelay.As(Time::S) << ".");
             m_txBuffer->RecordNextServe(
                 socket,
                 Simulator::Schedule(processingDelay,
@@ -492,12 +492,12 @@ ThreeGppHttpServer::SendCallback(Ptr<Socket> socket, uint32_t availableBufferSiz
         switch (m_txBuffer->GetBufferContentType(socket))
         {
         case ThreeGppHttpHeader::MAIN_OBJECT:
-            NS_LOG_INFO(this << " Transmission of main object is suspended"
-                             << " after " << actualSent << " bytes.");
+            NS_LOG_INFO(this << " Transmission of main object is suspended after " << actualSent
+                             << " bytes.");
             break;
         case ThreeGppHttpHeader::EMBEDDED_OBJECT:
-            NS_LOG_INFO(this << " Transmission of embedded object is suspended"
-                             << " after " << actualSent << " bytes.");
+            NS_LOG_INFO(this << " Transmission of embedded object is suspended after " << actualSent
+                             << " bytes.");
             break;
         default:
             NS_FATAL_ERROR("Invalid Tx buffer content type.");
@@ -535,8 +535,8 @@ ThreeGppHttpServer::ServeNewMainObject(Ptr<Socket> socket)
 
     if (actualSent < objectSize)
     {
-        NS_LOG_INFO(this << " Transmission of main object is suspended"
-                         << " after " << actualSent << " bytes.");
+        NS_LOG_INFO(this << " Transmission of main object is suspended after " << actualSent
+                         << " bytes.");
     }
     else
     {
@@ -557,8 +557,8 @@ ThreeGppHttpServer::ServeNewEmbeddedObject(Ptr<Socket> socket)
 
     if (actualSent < objectSize)
     {
-        NS_LOG_INFO(this << " Transmission of embedded object is suspended"
-                         << " after " << actualSent << " bytes.");
+        NS_LOG_INFO(this << " Transmission of embedded object is suspended after " << actualSent
+                         << " bytes.");
     }
     else
     {
@@ -633,10 +633,8 @@ ThreeGppHttpServer::ServeFromTxBuffer(Ptr<Socket> socket)
     }
     else
     {
-        NS_LOG_INFO(this << " Failed to send object,"
-                         << " GetErrNo= " << socket->GetErrno() << ","
-                         << " suspending transmission"
-                         << " and waiting for another Tx opportunity.");
+        NS_LOG_INFO(this << " Failed to send object, GetErrNo= " << socket->GetErrno()
+                         << ", suspending transmission and waiting for another Tx opportunity.");
         return 0;
     }
 }

@@ -201,10 +201,10 @@ RreqHeader::Deserialize(Buffer::Iterator start)
 void
 RreqHeader::Print(std::ostream& os) const
 {
-    os << "RREQ ID " << m_requestID << " destination: ipv4 " << m_dst << " sequence number "
-       << m_dstSeqNo << " source: ipv4 " << m_origin << " sequence number " << m_originSeqNo
-       << " flags:"
-       << " Gratuitous RREP " << (*this).GetGratuitousRrep() << " Destination only "
+    os << "RREQ ID " << m_requestID;
+    os << " destination: ipv4 " << m_dst << " sequence number " << m_dstSeqNo;
+    os << " source: ipv4 " << m_origin << " sequence number " << m_originSeqNo;
+    os << " flags: Gratuitous RREP " << (*this).GetGratuitousRrep() << " Destination only "
        << (*this).GetDestinationOnly() << " Unknown sequence number " << (*this).GetUnknownSeqno();
 }
 

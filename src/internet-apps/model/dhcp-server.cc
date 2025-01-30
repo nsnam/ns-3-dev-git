@@ -319,8 +319,7 @@ DhcpServer::SendOffer(Ptr<NetDevice> iDev, DhcpHeader header, InetSocketAddress 
                               InetSocketAddress(Ipv4Address("255.255.255.255"), from.GetPort()))) >=
             0)
         {
-            NS_LOG_INFO("DHCP OFFER"
-                        << " Offered Address: " << offeredAddress);
+            NS_LOG_INFO("DHCP OFFER Offered Address: " << offeredAddress);
         }
         else
         {
