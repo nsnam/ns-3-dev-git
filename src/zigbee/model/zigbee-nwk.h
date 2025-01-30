@@ -1191,7 +1191,7 @@ class ZigbeeNwk : public Object
     NlmeNetworkFormationRequestParams m_netFormParams;
 
     /**
-     *  The values temporally stored as a result of  the initial steps of a
+     *  The values temporarily stored as a result of  the initial steps of a
      *  NLME-NETWORK-FORMATION.request (i.e. after the first energy scan)
      *  Page, Channel, PanId.
      */
@@ -1205,19 +1205,19 @@ class ZigbeeNwk : public Object
     NlmeJoinRequestParams m_joinParams;
 
     /**
-     * Temporally store the NLME-JOIN.indication parameters while the
+     * Temporarily store the NLME-JOIN.indication parameters while the
      * join operations (asocciation) conclude in the coordinator or router.
      */
     NlmeJoinIndicationParams m_joinIndParams;
 
     /**
-     * Temporally store the NLME-START-ROUTER.request parameters during
+     * Temporarily store the NLME-START-ROUTER.request parameters during
      * the router initialization process.
      */
     NlmeStartRouterRequestParams m_startRouterParams;
 
     /**
-     * Temporally store parameters during the associate process that take
+     * Temporarily store parameters during the associate process that take
      * place during a NLME-JOIN.request.
      */
     AssociateParams m_associateParams;
