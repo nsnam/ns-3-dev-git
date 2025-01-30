@@ -998,7 +998,7 @@ LteSpectrumPhy::EndRxData()
             params.m_size = (*itTb).second.size;
             params.m_rv = (*itTb).second.rv;
             params.m_ndi = (*itTb).second.ndi;
-            params.m_correctness = (uint8_t) !(*itTb).second.corrupt;
+            params.m_correctness = static_cast<uint8_t>(!(*itTb).second.corrupt);
             params.m_ccId = m_componentCarrierId;
             if ((*itTb).second.downlink)
             {
