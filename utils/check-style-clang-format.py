@@ -745,7 +745,7 @@ def check_include_quotes_line(
         verbose_infos = [
             f"{filename}:{line_number + 1}:{header_index + 1}: error: ns-3 #include headers with angle brackets detected",
             f"    {line}",
-            f'    {"":{header_index}}^',
+            f"    {'':{header_index}}^",
         ]
 
     return (is_line_compliant, line_fixed, verbose_infos)
@@ -794,7 +794,7 @@ def check_doxygen_tags_line(
                 [
                     f"{filename}:{line_number + 1}:{doxygen_tag_index + 1}: error: detected Doxygen tags using \\ rather than @",
                     f"    {line_stripped}",
-                    f'    {"":{doxygen_tag_index}}^',
+                    f"    {'':{doxygen_tag_index}}^",
                 ]
             )
 
