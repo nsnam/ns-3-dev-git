@@ -788,9 +788,7 @@ SubscriberStationNetDevice::SendBurst(uint8_t uiuc,
                                               << ", bytes sent: " << record->GetBytesSent()
                                               << ", bytes rcvd: " << record->GetBytesRcvd());
     }
-    else
-    {
-    }
+
     ForwardDown(burst, modulationType);
 }
 
