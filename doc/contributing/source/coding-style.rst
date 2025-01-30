@@ -155,9 +155,9 @@ The script performs multiple style checks. By default, the script runs the follo
 * Check if local ``#include`` headers do not use the "ns3/" prefix. Respects clang-format guards.
 * Check if ns-3 ``#include`` headers use quotes (``""``) instead of angle brackets (``<>``). Respects clang-format guards.
 * Check if Doxygen tags use ``@`` rather than ``\\``. Respects clang-format guards.
+* Check if source code use SPDX licenses rather than GPL license text. Respects clang-format guards.
 * Check if there are no trailing whitespace. Always checked.
 * Check if there are no tabs. Respects clang-format guards.
-* Check if source code files use SPDX licenses rather than GPL license text. Respects clang-format guards.
 * Check if files have the correct encoding (UTF-8). Always checked.
 
 The process returns a zero exit code if all files adhere to these rules.
@@ -171,9 +171,9 @@ flags:
 * ``--no-include-prefixes``
 * ``--no-include-quotes``
 * ``--no-doxygen-tags``
+* ``--no-licenses``
 * ``--no-whitespace``
 * ``--no-tabs``
-* ``--no-licenses``
 * ``--no-encoding``
 
 Additional information about the formatting issues detected by the script can be enabled
