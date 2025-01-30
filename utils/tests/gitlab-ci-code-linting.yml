@@ -84,21 +84,6 @@ clang-tidy-19:
   interruptible: true
   timeout: 3h
 
-# Emacs line
-emacs-line:
-  stage: .pre
-  image: ubuntu:latest
-  script:
-    - if ( egrep -rn --include="*.h" --include="*.cc" --include="*.c" --include="*.py" --include="*.rst" "c-file-style:|py-indent-offset:" ) ; then
-      echo "Found Emacs lines on the above C/C++, Python and RST files" ;
-      exit 1 ;
-      else
-      echo "No Emacs lines found on C/C++, Python and RST files" ;
-      exit 0 ;
-      fi
-  timeout: 1h
-  interruptible: true
-
 # Spell checking
 spell-check:
   stage: .pre
