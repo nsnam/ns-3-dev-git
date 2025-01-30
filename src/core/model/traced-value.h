@@ -501,10 +501,12 @@ operator>(const U& lhs, const TracedValue<T>& rhs)
  * @returns The result of doing the operator on
  *     the underlying values.
  */
+// clang-format off
 template <typename T, typename U>
 auto
 operator+(const TracedValue<T>& lhs, const TracedValue<U>& rhs)
     -> TracedValue<decltype(lhs.Get() + rhs.Get())>
+// clang-format on
 {
     TRACED_VALUE_DEBUG("x+x");
     return TracedValue<decltype(lhs.Get() + rhs.Get())>(lhs.Get() + rhs.Get());
@@ -529,10 +531,12 @@ operator+(const U& lhs, const TracedValue<T>& rhs) -> TracedValue<decltype(lhs +
 }
 
 /** @copydoc operator+(const TracedValue<T>&lhs,const TracedValue<U>&rhs) */
+// clang-format off
 template <typename T, typename U>
 auto
 operator-(const TracedValue<T>& lhs, const TracedValue<U>& rhs)
     -> TracedValue<decltype(lhs.Get() - rhs.Get())>
+// clang-format on
 {
     TRACED_VALUE_DEBUG("x-x");
     return TracedValue<decltype(lhs.Get() - rhs.Get())>(lhs.Get() - rhs.Get());
@@ -557,10 +561,12 @@ operator-(const U& lhs, const TracedValue<T>& rhs) -> TracedValue<decltype(lhs -
 }
 
 /** @copydoc operator+(const TracedValue<T>&lhs,const TracedValue<U>&rhs) */
+// clang-format off
 template <typename T, typename U>
 auto
 operator*(const TracedValue<T>& lhs, const TracedValue<U>& rhs)
     -> TracedValue<decltype(lhs.Get() * rhs.Get())>
+// clang-format on
 {
     TRACED_VALUE_DEBUG("x*x");
     return TracedValue<decltype(lhs.Get() * rhs.Get())>(lhs.Get() * rhs.Get());
@@ -585,10 +591,12 @@ operator*(const U& lhs, const TracedValue<T>& rhs) -> TracedValue<decltype(lhs +
 }
 
 /** @copydoc operator+(const TracedValue<T>&lhs,const TracedValue<U>&rhs) */
+// clang-format off
 template <typename T, typename U>
 auto
 operator/(const TracedValue<T>& lhs, const TracedValue<U>& rhs)
     -> TracedValue<decltype(lhs.Get() / rhs.Get())>
+// clang-format on
 {
     TRACED_VALUE_DEBUG("x/x");
     return TracedValue<decltype(lhs.Get() / rhs.Get())>(lhs.Get() / rhs.Get());
@@ -613,10 +621,12 @@ operator/(const U& lhs, const TracedValue<T>& rhs) -> TracedValue<decltype(lhs /
 }
 
 /** @copydoc operator+(const TracedValue<T>&lhs,const TracedValue<U>&rhs) */
+// clang-format off
 template <typename T, typename U>
 auto
 operator%(const TracedValue<T>& lhs, const TracedValue<U>& rhs)
     -> TracedValue<decltype(lhs.Get() % rhs.Get())>
+// clang-format on
 {
     TRACED_VALUE_DEBUG("x%x");
     return TracedValue<decltype(lhs.Get() % rhs.Get())>(lhs.Get() % rhs.Get());
@@ -641,10 +651,12 @@ operator%(const U& lhs, const TracedValue<T>& rhs) -> TracedValue<decltype(lhs %
 }
 
 /** @copydoc operator+(const TracedValue<T>&lhs,const TracedValue<U>&rhs) */
+// clang-format off
 template <typename T, typename U>
 auto
 operator^(const TracedValue<T>& lhs, const TracedValue<U>& rhs)
     -> TracedValue<decltype(lhs.Get() ^ rhs.Get())>
+// clang-format on
 {
     TRACED_VALUE_DEBUG("x^x");
     return TracedValue<decltype(lhs.Get() ^ rhs.Get())>(lhs.Get() ^ rhs.Get());
@@ -669,10 +681,12 @@ operator^(const U& lhs, const TracedValue<T>& rhs) -> TracedValue<decltype(lhs ^
 }
 
 /** @copydoc operator+(const TracedValue<T>&lhs,const TracedValue<U>&rhs) */
+// clang-format off
 template <typename T, typename U>
 auto
 operator|(const TracedValue<T>& lhs, const TracedValue<U>& rhs)
     -> TracedValue<decltype(lhs.Get() | rhs.Get())>
+// clang-format on
 {
     TRACED_VALUE_DEBUG("x|x");
     return TracedValue<decltype(lhs.Get() | rhs.Get())>(lhs.Get() | rhs.Get());
@@ -697,10 +711,12 @@ operator|(const U& lhs, const TracedValue<T>& rhs) -> TracedValue<decltype(lhs |
 }
 
 /** @copydoc operator+(const TracedValue<T>&lhs,const TracedValue<U>&rhs) */
+// clang-format off
 template <typename T, typename U>
 auto
 operator&(const TracedValue<T>& lhs, const TracedValue<U>& rhs)
     -> TracedValue<decltype(lhs.Get() & rhs.Get())>
+// clang-format on
 {
     TRACED_VALUE_DEBUG("x&x");
     return TracedValue<decltype(lhs.Get() & rhs.Get())>(lhs.Get() & rhs.Get());
@@ -725,10 +741,12 @@ operator&(const U& lhs, const TracedValue<T>& rhs) -> TracedValue<decltype(lhs &
 }
 
 /** @copydoc operator+(const TracedValue<T>&lhs,const TracedValue<U>&rhs) */
+// clang-format off
 template <typename T, typename U>
 auto
 operator<<(const TracedValue<T>& lhs, const TracedValue<U>& rhs)
     -> TracedValue<decltype(lhs.Get() << rhs.Get())>
+// clang-format on
 {
     TRACED_VALUE_DEBUG("x<<x");
     return TracedValue<decltype(lhs.Get() << rhs.Get())>(lhs.Get() << rhs.Get());
@@ -753,10 +771,12 @@ operator<<(const U& lhs, const TracedValue<T>& rhs) -> TracedValue<decltype(lhs 
 }
 
 /** @copydoc operator+(const TracedValue<T>&lhs,const TracedValue<U>&rhs) */
+// clang-format off
 template <typename T, typename U>
 auto
 operator>>(const TracedValue<T>& lhs, const TracedValue<U>& rhs)
     -> TracedValue<decltype(lhs.Get() >> rhs.Get())>
+// clang-format on
 {
     TRACED_VALUE_DEBUG("x>>x");
     return TracedValue<decltype(lhs.Get() >> rhs.Get())>(lhs.Get() >> rhs.Get());

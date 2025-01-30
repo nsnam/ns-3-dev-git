@@ -235,39 +235,45 @@ class SimulatorTemplateTestCase : public TestCase
      *
      * @{
      */
-    void bar0(){};
-    void bar1(int){};
-    void bar2(int, int){};
-    void bar3(int, int, int){};
-    void bar4(int, int, int, int){};
-    void bar5(int, int, int, int, int){};
-    void baz1(int&){};
-    void baz2(int&, int&){};
-    void baz3(int&, int&, int&){};
-    void baz4(int&, int&, int&, int&){};
-    void baz5(int&, int&, int&, int&, int&){};
-    void cbaz1(const int&){};
-    void cbaz2(const int&, const int&){};
-    void cbaz3(const int&, const int&, const int&){};
-    void cbaz4(const int&, const int&, const int&, const int&){};
-    void cbaz5(const int&, const int&, const int&, const int&, const int&){};
 
-    void bar0c() const {};
-    void bar1c(int) const {};
-    void bar2c(int, int) const {};
-    void bar3c(int, int, int) const {};
-    void bar4c(int, int, int, int) const {};
-    void bar5c(int, int, int, int, int) const {};
-    void baz1c(int&) const {};
-    void baz2c(int&, int&) const {};
-    void baz3c(int&, int&, int&) const {};
-    void baz4c(int&, int&, int&, int&) const {};
-    void baz5c(int&, int&, int&, int&, int&) const {};
-    void cbaz1c(const int&) const {};
-    void cbaz2c(const int&, const int&) const {};
-    void cbaz3c(const int&, const int&, const int&) const {};
-    void cbaz4c(const int&, const int&, const int&, const int&) const {};
-    void cbaz5c(const int&, const int&, const int&, const int&, const int&) const {};
+    // clang-format off
+
+    void bar0() {}
+    void bar1(int) {}
+    void bar2(int, int) {}
+    void bar3(int, int, int) {}
+    void bar4(int, int, int, int) {}
+    void bar5(int, int, int, int, int) {}
+    void baz1(int&) {}
+    void baz2(int&, int&) {}
+    void baz3(int&, int&, int&) {}
+    void baz4(int&, int&, int&, int&) {}
+    void baz5(int&, int&, int&, int&, int&) {}
+    void cbaz1(const int&) {}
+    void cbaz2(const int&, const int&) {}
+    void cbaz3(const int&, const int&, const int&) {}
+    void cbaz4(const int&, const int&, const int&, const int&) {}
+    void cbaz5(const int&, const int&, const int&, const int&, const int&) {}
+
+    void bar0c() const {}
+    void bar1c(int) const {}
+    void bar2c(int, int) const {}
+    void bar3c(int, int, int) const {}
+    void bar4c(int, int, int, int) const {}
+    void bar5c(int, int, int, int, int) const {}
+    void baz1c(int&) const {}
+    void baz2c(int&, int&) const {}
+    void baz3c(int&, int&, int&) const {}
+    void baz4c(int&, int&, int&, int&) const {}
+    void baz5c(int&, int&, int&, int&, int&) const {}
+    void cbaz1c(const int&) const {}
+    void cbaz2c(const int&, const int&) const {}
+    void cbaz3c(const int&, const int&, const int&) const {}
+    void cbaz4c(const int&, const int&, const int&, const int&) const {}
+    void cbaz5c(const int&, const int&, const int&, const int&, const int&) const {}
+
+    // clang-format on
+
     /** @} */
 };
 
@@ -276,85 +282,27 @@ class SimulatorTemplateTestCase : public TestCase
  *
  * @{
  */
-static void
-foo0()
-{
-}
 
-static void
-foo1(int)
-{
-}
+// clang-format off
 
-static void
-foo2(int, int)
-{
-}
+static void foo0() {}
+static void foo1(int) {}
+static void foo2(int, int) {}
+static void foo3(int, int, int) {}
+static void foo4(int, int, int, int) {}
+static void foo5(int, int, int, int, int) {}
+static void ber1(int&) {}
+static void ber2(int&, int&) {}
+static void ber3(int&, int&, int&) {}
+static void ber4(int&, int&, int&, int&) {}
+static void ber5(int&, int&, int&, int&, int&) {}
+static void cber1(const int&) {}
+static void cber2(const int&, const int&) {}
+static void cber3(const int&, const int&, const int&) {}
+static void cber4(const int&, const int&, const int&, const int&) {}
+static void cber5(const int&, const int&, const int&, const int&, const int&) {}
 
-static void
-foo3(int, int, int)
-{
-}
-
-static void
-foo4(int, int, int, int)
-{
-}
-
-static void
-foo5(int, int, int, int, int)
-{
-}
-
-static void
-ber1(int&)
-{
-}
-
-static void
-ber2(int&, int&)
-{
-}
-
-static void
-ber3(int&, int&, int&)
-{
-}
-
-static void
-ber4(int&, int&, int&, int&)
-{
-}
-
-static void
-ber5(int&, int&, int&, int&, int&)
-{
-}
-
-static void
-cber1(const int&)
-{
-}
-
-static void
-cber2(const int&, const int&)
-{
-}
-
-static void
-cber3(const int&, const int&, const int&)
-{
-}
-
-static void
-cber4(const int&, const int&, const int&, const int&)
-{
-}
-
-static void
-cber5(const int&, const int&, const int&, const int&, const int&)
-{
-}
+// clang-format on
 
 /** @} */
 
