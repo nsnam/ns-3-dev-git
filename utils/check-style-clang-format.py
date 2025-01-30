@@ -16,6 +16,7 @@ the ".clang-format" file. This script performs the following checks / fixes:
 - Check / fix ns-3 #include headers using angle brackets <> rather than quotes "". Respects clang-format guards.
 - Check / fix Doxygen tags using @ rather than \\. Respects clang-format guards.
 - Check / fix SPDX licenses rather than GPL text. Respects clang-format guards.
+- Check / fix emacs file style comments. Respects clang-format guards.
 - Check / trim trailing whitespace. Always checked.
 - Check / replace tabs with spaces. Respects clang-format guards.
 - Check file encoding. Always checked.
@@ -78,6 +79,7 @@ CHECKS = [
     "include_quotes",
     "doxygen_tags",
     "license",
+    "emacs",
     "whitespace",
     "tabs",
     "formatting",
@@ -121,6 +123,14 @@ FILE_EXTENSIONS_TO_CHECK["license"] = [
     ".cmake",
     ".h",
     ".py",
+]
+
+FILE_EXTENSIONS_TO_CHECK["emacs"] = [
+    ".c",
+    ".cc",
+    ".h",
+    ".py",
+    ".rst",
 ]
 
 FILE_EXTENSIONS_TO_CHECK["tabs"] = [
@@ -324,6 +334,7 @@ def check_style_clang_format(
         "include_quotes": 'ns-3 #include headers using angle brackets <> rather than quotes ""',
         "doxygen_tags": "Doxygen tags using \\ rather than @",
         "license": "GPL license text instead of SPDX license",
+        "emacs": "emacs file style comments",
         "whitespace": "trailing whitespace",
         "tabs": "tabs",
         "formatting": "bad code formatting",
@@ -357,6 +368,13 @@ def check_style_clang_format(
             "kwargs": {
                 "respect_clang_format_guards": True,
                 "check_style_line_function": check_licenses_line,
+            },
+        },
+        "emacs": {
+            "function": check_manually_file,
+            "kwargs": {
+                "respect_clang_format_guards": True,
+                "check_style_line_function": check_emacs_line,
             },
         },
         "whitespace": {
@@ -865,6 +883,46 @@ def check_licenses_line(
     return (is_line_compliant, line_fixed, verbose_infos)
 
 
+def check_emacs_line(
+    line: str,
+    filename: str,
+    line_number: int,
+) -> Tuple[bool, str, List[str]]:
+    """
+    Check / fix emacs file style comment in a line.
+
+    @param line The line to check.
+    @param filename Name of the file to be checked.
+    @param line_number The number of the line checked.
+    @return Tuple [Whether the line is compliant with the style (before the check),
+                   Fixed line,
+                   Verbose information].
+    """
+
+    is_line_compliant = True
+    line_fixed = line
+    verbose_infos: List[str] = []
+
+    # Check if line is an emacs file style comment
+    line_stripped = line.strip()
+    # fmt: off
+    emacs_line = re.search(r"c-file-style:|py-indent-offset:", line_stripped)
+    # fmt: on
+
+    if emacs_line:
+        is_line_compliant = False
+        line_fixed = ""
+        col_index = emacs_line.start()
+
+        verbose_infos = [
+            f"{filename}:{line_number + 1}:{col_index}: error: emacs file style comment detected",
+            f"    {line_stripped}",
+            f"    {'':{col_index}}^",
+        ]
+
+    return (is_line_compliant, line_fixed, verbose_infos)
+
+
 def check_whitespace_line(
     line: str,
     filename: str,
@@ -981,6 +1039,12 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
+        "--no-emacs",
+        action="store_true",
+        help="Do not check / fix emacs file style comments (respects clang-format guards)",
+    )
+
+    parser.add_argument(
         "--no-whitespace",
         action="store_true",
         help="Do not check / fix trailing whitespace",
@@ -1035,6 +1099,7 @@ if __name__ == "__main__":
                 "include_quotes": not args.no_include_quotes,
                 "doxygen_tags": not args.no_doxygen_tags,
                 "license": not args.no_licenses,
+                "emacs": not args.no_emacs,
                 "whitespace": not args.no_whitespace,
                 "tabs": not args.no_tabs,
                 "formatting": not args.no_formatting,

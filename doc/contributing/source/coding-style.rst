@@ -179,6 +179,9 @@ Users can disable specific checks using the corresponding flags.
   * - SPDX Licenses
     - Check if source code use SPDX licenses rather than GPL license text. Respects clang-format guards.
     - ``--no-licenses``
+  * - Emacs comments
+    - Check if source code does not have emacs file style comments. Respects clang-format guards.
+    - ``--no-emacs``
   * - Trailing whitespace
     - Check if there are no trailing whitespace. Always checked.
     - ``--no-whitespace``
