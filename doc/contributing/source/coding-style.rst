@@ -237,9 +237,10 @@ Therefore, it is recommended to use the latest version available.
 
 To ensure consistency among developers, |ns3| defines a minimum version of clang-tidy,
 whose warnings must not be ignored. Therefore, developers should, at least, scan their
-code with the minimum version of clang-tidy.
+code with the minimum version of clang-tidy. However, more recent versions can be used,
+which will produce better warnings.
 
-The minimum version is clang-tidy-14.
+The minimum version is clang-tidy-15.
 
 Integration with IDEs
 =====================
