@@ -149,32 +149,45 @@ source code files. Additionally, it performs other manual checks and fixes in te
 We recommend running this script over your newly introduced C++ files prior to submission
 as a Merge Request.
 
-The script performs multiple style checks. By default, the script runs the following checks:
-
-* Check code formatting using clang-format. Respects clang-format guards.
-* Check if local ``#include`` headers do not use the "ns3/" prefix. Respects clang-format guards.
-* Check if ns-3 ``#include`` headers use quotes (``""``) instead of angle brackets (``<>``). Respects clang-format guards.
-* Check if Doxygen tags use ``@`` rather than ``\\``. Respects clang-format guards.
-* Check if source code use SPDX licenses rather than GPL license text. Respects clang-format guards.
-* Check if there are no trailing whitespace. Always checked.
-* Check if there are no tabs. Respects clang-format guards.
-* Check if files have the correct encoding (UTF-8). Always checked.
-
-The process returns a zero exit code if all files adhere to these rules.
+The script performs multiple style checks. It returns a zero exit code if all files adhere to these rules.
 If there are files that do not comply with the rules, the process returns a non-zero
 exit code and lists the respective files. This mode is useful for developers editing
 their code and for the GitLab CI/CD pipeline to check if the codebase is well formatted.
-All checks are enabled by default. Users can disable specific checks using the corresponding
-flags:
 
-* ``--no-formatting``
-* ``--no-include-prefixes``
-* ``--no-include-quotes``
-* ``--no-doxygen-tags``
-* ``--no-licenses``
-* ``--no-whitespace``
-* ``--no-tabs``
-* ``--no-encoding``
+The script runs the checks explained in the following table.
+All checks are enabled by default.
+Users can disable specific checks using the corresponding flags.
+
+.. list-table::
+  :header-rows: 1
+
+  * - Check
+    - Description
+    - Flag to Disable Check
+  * - Formatting
+    - Check code formatting using clang-format. Respects clang-format guards.
+    - ``--no-formatting``
+  * - #include "ns3/" prefixes
+    - Check if local ``#include`` headers do not use the "ns3/" prefix. Respects clang-format guards.
+    - ``--no-include-prefixes``
+  * - #include quotes
+    - Check if ns-3 ``#include`` headers use quotes (``""``) instead of angle brackets (``<>``). Respects clang-format guards.
+    - ``--no-include-quotes``
+  * - Doxygen tags
+    - Check if Doxygen tags use ``@`` rather than ``\\``. Respects clang-format guards.
+    - ``--no-doxygen-tags``
+  * - SPDX Licenses
+    - Check if source code use SPDX licenses rather than GPL license text. Respects clang-format guards.
+    - ``--no-licenses``
+  * - Trailing whitespace
+    - Check if there are no trailing whitespace. Always checked.
+    - ``--no-whitespace``
+  * - Tabs
+    - Check if there are no tabs. Respects clang-format guards.
+    - ``--no-tabs``
+  * - File encoding
+    - Check if files have the correct encoding (UTF-8). Always checked.
+    - ``--no-encoding``
 
 Additional information about the formatting issues detected by the script can be enabled
 by adding the ``-v, --verbose`` flag.
