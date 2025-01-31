@@ -350,8 +350,7 @@ NetmapNetDeviceHelper::CreateFileDescriptor() const
         // an "ancillary element" but the msghdr uses the control message terminology
         // so we call it "control."
         //
-        size_t msg_size = sizeof(int);
-        char control[CMSG_SPACE(msg_size)];
+        char control[CMSG_SPACE(sizeof(int))];
 
         //
         // There is a msghdr that is used to minimize the number of parameters
