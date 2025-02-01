@@ -281,14 +281,17 @@ TupleValue<Args...>::DeserializeFromString(std::string value, Ptr<const Attribut
 
     value.erase(value.begin());
     value.pop_back();
-    std::replace(value.data(), value.data() + value.size(), ',', ' ');
 
     std::istringstream iss(value);
     std::vector<Ptr<AttributeValue>> values;
     std::size_t i = 0;
 
-    while (iss >> value)
+    for (std::string elem; std::getline(iss, elem, ',');)
     {
+        // remove leading whitespaces
+        std::istringstream tmp{elem};
+        std::getline(tmp >> std::ws, value);
+
         if (i >= count)
         {
             return false;
