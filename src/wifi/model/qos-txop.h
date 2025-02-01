@@ -477,11 +477,15 @@ class QosTxop : public Txop
      *
      * @param recipient the MAC address of the recipient
      * @param tid the TID for which block ack agreement is established
+     * @param gcrGroup the GCR group address (if any)
      */
-    typedef void (*BaEstablishedCallback)(Mac48Address recipient, uint8_t tid);
+    typedef void (*BaEstablishedCallback)(Mac48Address recipient,
+                                          uint8_t tid,
+                                          std::optional<Mac48Address> gcrGroup);
 
     /// TracedCallback for block ack agreement established events typedef
-    using BaEstablishedTracedCallback = TracedCallback<Mac48Address, uint8_t>;
+    using BaEstablishedTracedCallback =
+        TracedCallback<Mac48Address, uint8_t, std::optional<Mac48Address>>;
 
     BaEstablishedTracedCallback
         m_baEstablishedCallback; //!< traced callback for block ack agreement established events

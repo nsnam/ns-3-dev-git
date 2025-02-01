@@ -269,14 +269,15 @@ WifiRetransmitTest::DoSetup()
         dev->GetMac()->GetWifiPhy(linkId)->SetPostReceptionErrorModel(m_apErrorModel);
     }
 
-    Callback<void, Mac48Address, uint8_t> baEstablished = [this](Mac48Address, uint8_t) {
-        m_baEstablished = true;
-        // force the first TXOP to be started on link 0 in case of MLDs
-        if (m_nLinks > 1)
-        {
-            m_staMac->BlockTxOnLink(1, WifiQueueBlockedReason::TID_NOT_MAPPED);
-        }
-    };
+    Callback<void, Mac48Address, uint8_t, std::optional<Mac48Address>> baEstablished =
+        [this](Mac48Address, uint8_t, std::optional<Mac48Address>) {
+            m_baEstablished = true;
+            // force the first TXOP to be started on link 0 in case of MLDs
+            if (m_nLinks > 1)
+            {
+                m_staMac->BlockTxOnLink(1, WifiQueueBlockedReason::TID_NOT_MAPPED);
+            }
+        };
 
     m_staMac->GetQosTxop(AC_BE)->TraceConnectWithoutContext("BaEstablished", baEstablished);
 
