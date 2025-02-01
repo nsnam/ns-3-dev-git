@@ -7,6 +7,7 @@
  */
 
 #include "ns3/attribute-container.h"
+#include "ns3/data-rate.h"
 #include "ns3/double.h"
 #include "ns3/integer.h"
 #include "ns3/log.h"
@@ -83,6 +84,9 @@ class AttributeContainerObject : public Object
      */
     std::vector<int> GetIntVec() const;
 
+    std::tuple<DataRate, DataRate, std::string> m_tupleRatesString; //!< tuple of two data rates
+                                                                    //!< and a string
+
   private:
     std::list<double> m_doublelist; //!< List of doubles.
     std::vector<int> m_intvec;      //!< Vector of ints.
@@ -150,7 +154,17 @@ AttributeContainerObject::GetTypeId()
                 MakeAttributeContainerChecker<IntVecMapValue, ';'>(
                     MakePairChecker<IntegerValue, AttributeContainerValue<IntegerValue>>(
                         MakeIntegerChecker<int>(),
-                        MakeAttributeContainerChecker<IntegerValue>(MakeIntegerChecker<int>()))));
+                        MakeAttributeContainerChecker<IntegerValue>(MakeIntegerChecker<int>()))))
+            .AddAttribute(
+                "TupleRatesString",
+                "An example of tuple of two data rates (comprising value and unit, possibly "
+                "separated by a white space) and a string (possibly containing a white space).",
+                StringValue("{1 Mb/s, 10kb/s, test string}"),
+                MakeTupleAccessor<DataRateValue, DataRateValue, StringValue>(
+                    &AttributeContainerObject::m_tupleRatesString),
+                MakeTupleChecker<DataRateValue, DataRateValue, StringValue>(MakeDataRateChecker(),
+                                                                            MakeDataRateChecker(),
+                                                                            MakeStringChecker()));
     return tid;
 }
 
@@ -541,6 +555,19 @@ AttributeContainerSetGetTestCase::DoRun()
             NS_TEST_ASSERT_MSG_EQ(valCheck, true, "Incorrect value in mapstrint");
             ++iter;
         }
+    }
+
+    {
+        // check that the tuple of two data rates and a string was correctly initialized
+        NS_TEST_EXPECT_MSG_EQ(std::get<0>(obj->m_tupleRatesString),
+                              DataRate(1e6),
+                              "Unexpected value for the first data rate");
+        NS_TEST_EXPECT_MSG_EQ(std::get<1>(obj->m_tupleRatesString),
+                              DataRate(1e4),
+                              "Unexpected value for the second data rate");
+        NS_TEST_EXPECT_MSG_EQ(std::get<2>(obj->m_tupleRatesString),
+                              "test string",
+                              "Unexpected value for the string");
     }
 }
 
