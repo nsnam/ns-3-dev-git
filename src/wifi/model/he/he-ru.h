@@ -106,6 +106,31 @@ class HeRu
     };
 
     /**
+     * Get the primary 80 MHz flag of a given RU transmitted in a PPDU.
+     * The flag identifies whether the RU is in the primary 80 MHz.
+     *
+     * @param bw the bandwidth of the PPDU (20, 40, 80, 160)
+     * @param ruType the RU type (number of tones)
+     * @param phyIndex the PHY index (starting at 1) of the RU
+     * @param p20Index the index of the primary20 channel
+     * @return the primary 80 MHz flag
+     */
+    static bool GetPrimary80MHzFlag(MHz_u bw,
+                                    RuType ruType,
+                                    std::size_t phyIndex,
+                                    uint8_t p20Index);
+
+    /**
+     * Get the index of a given RU transmitted in a PPDU within its 80 MHz segment.
+     *
+     * @param bw the bandwidth of the PPDU (20, 40, 80, 160)
+     * @param ruType the RU type (number of tones)
+     * @param phyIndex the PHY index (starting at 1) of the RU
+     * @return the index within the 80 MHz segment
+     */
+    static std::size_t GetIndexIn80MHzSegment(MHz_u bw, RuType ruType, std::size_t phyIndex);
+
+    /**
      * Get the number of distinct RUs of the given type (number of tones)
      * available in a HE PPDU of the given bandwidth.
      *

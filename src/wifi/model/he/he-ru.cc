@@ -10,6 +10,7 @@
 
 #include "ns3/abort.h"
 #include "ns3/assert.h"
+#include "ns3/wifi-ru.h"
 
 #include <optional>
 #include <tuple>
@@ -455,6 +456,35 @@ HeRu::RuSpec::GetPhyIndex(MHz_u bw, uint8_t p20Index) const
     {
         return m_index + GetNRus(bw, m_ruType) / 2;
     }
+}
+
+bool
+HeRu::GetPrimary80MHzFlag(MHz_u bw, RuType ruType, std::size_t phyIndex, uint8_t p20Index)
+{
+    if (bw < MHz_u{160} || ruType == RuType::RU_2x996_TONE)
+    {
+        return true;
+    }
+    const auto primary80IsLower80 = (p20Index < bw / MHz_u{40});
+    const auto indicesPer80MHz = GetNRus(MHz_u{80}, ruType);
+    return ((primary80IsLower80 && (phyIndex <= indicesPer80MHz)) ||
+            (!primary80IsLower80 && (phyIndex > indicesPer80MHz)));
+}
+
+std::size_t
+HeRu::GetIndexIn80MHzSegment(MHz_u bw, RuType ruType, std::size_t phyIndex)
+{
+    std::size_t index{phyIndex};
+    const auto indicesPer80MHz = GetNRus(MHz_u{80}, ruType);
+    if (WifiRu::GetBandwidth(ruType) > MHz_u{80})
+    {
+        index = 1;
+    }
+    else if (bw > MHz_u{80} && phyIndex > indicesPer80MHz)
+    {
+        index = (((phyIndex - 1) % indicesPer80MHz) + 1);
+    }
+    return index;
 }
 
 std::size_t

@@ -3375,11 +3375,12 @@ TestUlOfdmaPhyTransmission::GetTxVectorForHeTbPpdu(uint16_t txStaId,
         NS_ASSERT_MSG(false, "Unsupported channel width");
     }
 
-    auto primary80MHz = true;
+    auto primary80MHz{true};
     if (m_channelWidth == MHz_u{160} && index == 2)
     {
-        primary80MHz = false;
-        index = 1;
+        primary80MHz = HeRu::GetPrimary80MHzFlag(m_channelWidth, ruType, index, 0);
+        ;
+        index = HeRu::GetIndexIn80MHzSegment(m_channelWidth, ruType, index);
     }
     HeRu::RuSpec ru(ruType, index, primary80MHz);
     txVector.SetRu(ru, txStaId);

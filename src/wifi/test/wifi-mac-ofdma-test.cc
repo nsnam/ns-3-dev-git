@@ -325,17 +325,18 @@ TestMultiUserScheduler::ComputeWifiTxVector()
         NS_ABORT_MSG("Unsupported channel width");
     }
 
-    bool primary80 = true;
-    std::size_t ruIndex = 1;
-
+    auto primary80{true};
+    std::size_t ruIndex{1};
     for (auto& sta : staList)
     {
-        if (bw == MHz_u{160} && ruIndex == 3)
+        auto index{ruIndex};
+        if ((bw == MHz_u{160}) && (ruIndex == 3))
         {
-            ruIndex = 1;
-            primary80 = false;
+            index = HeRu::GetIndexIn80MHzSegment(bw, ruType, ruIndex);
+            primary80 = HeRu::GetPrimary80MHzFlag(bw, ruType, ruIndex, 0);
         }
-        m_txVector.SetHeMuUserInfo(sta.first, {HeRu::RuSpec{ruType, ruIndex++, primary80}, 11, 1});
+        m_txVector.SetHeMuUserInfo(sta.first, {HeRu::RuSpec{ruType, index, primary80}, 11, 1});
+        ruIndex++;
     }
     m_txVector.SetSigBMode(VhtPhy::GetVhtMcs5());
 }

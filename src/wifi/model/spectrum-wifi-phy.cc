@@ -181,12 +181,9 @@ SpectrumWifiPhy::GetRuBands(Ptr<WifiSpectrumPhyInterface> spectrumPhyInterface,
                             ConvertIndicesToFrequenciesForInterface(spectrumPhyInterface,
                                                                     indicesPerSegment));
                     }
-                    std::size_t index =
-                        (bw == MHz_u{160} && phyIndex > nRus / 2 ? phyIndex - nRus / 2 : phyIndex);
-                    bool primary80IsLower80 = (p20Index < bw / MHz_u{40});
-                    bool primary80 = (bw < MHz_u{160} || ruType == RuType::RU_2x996_TONE ||
-                                      (primary80IsLower80 && phyIndex <= nRus / 2) ||
-                                      (!primary80IsLower80 && phyIndex > nRus / 2));
+                    const auto index = HeRu::GetIndexIn80MHzSegment(bw, ruType, phyIndex);
+                    const auto primary80 =
+                        HeRu::GetPrimary80MHzFlag(bw, ruType, phyIndex, p20Index);
                     const auto ru = HeRu::RuSpec{ruType, index, primary80};
                     NS_ABORT_IF(WifiRu::GetPhyIndex(ru, bw, p20Index) != phyIndex);
                     ruBands.insert({band, ru});
