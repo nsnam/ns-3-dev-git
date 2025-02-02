@@ -173,6 +173,7 @@ function(build_lib)
   # Set alias
   add_library(ns3::${BLIB_LIBNAME} ALIAS ${BLIB_LIBNAME})
 
+  set(export_file)
   if(${BLIB_GENERATE_EXPORT_HEADER})
     include(GenerateExportHeader)
     string(TOUPPER "${BLIB_LIBNAME}" uppercase_libname)
@@ -186,14 +187,12 @@ function(build_lib)
              "\n#define ${uppercase_libname}_NO_EXPORT"
              "\n#endif"
     )
+    set(export_file ${CMAKE_HEADER_OUTPUT_DIRECTORY}/${BLIB_LIBNAME}-export.h)
+
     generate_export_header(
-      ${BLIB_LIBNAME} EXPORT_FILE_NAME ${BLIB_LIBNAME}-export.h
+      ${BLIB_LIBNAME} EXPORT_FILE_NAME ${export_file}
       CUSTOM_CONTENT_FROM_VARIABLE force_undef_export
     )
-    set(export_file ${CMAKE_CURRENT_BINARY_DIR}/${BLIB_LIBNAME}-export.h)
-    set(export_dest ${CMAKE_HEADER_OUTPUT_DIRECTORY}/${BLIB_LIBNAME}-export.h)
-    file(COPY_FILE ${export_file} ${export_dest})
-    install(FILES ${export_file} DESTINATION include/ns3 COMPONENT Headers)
 
     # In case building on Visual Studio
     if(${MSVC})
@@ -213,7 +212,7 @@ function(build_lib)
     ${BLIB_LIBNAME}
     PROPERTIES
       PUBLIC_HEADER
-      "${BLIB_HEADER_FILES};${BLIB_DEPRECATED_HEADER_FILES};${CMAKE_HEADER_OUTPUT_DIRECTORY}/${BLIB_LIBNAME}-module.h"
+      "${BLIB_HEADER_FILES};${BLIB_DEPRECATED_HEADER_FILES};${CMAKE_HEADER_OUTPUT_DIRECTORY}/${BLIB_LIBNAME}-module.h;${export_file}"
       PRIVATE_HEADER "${BLIB_PRIVATE_HEADER_FILES}"
       # set output directory for DLLs
       RUNTIME_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
