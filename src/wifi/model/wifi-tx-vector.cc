@@ -820,9 +820,9 @@ WifiTxVector::DeriveRuAllocation(uint8_t p20Index) const
         {
             continue;
         }
-        const auto ruBw = WifiRu::GetBandwidth(ruType);
+        const auto numSubchannelsForRu = WifiRu::GetNum20MHzSubchannelsInRu(ruType);
         const auto rusPerSubchannel =
-            WifiRu::GetRusOfType(ruBw > MHz_t{20} ? ruBw : MHz_t{20}, ruType, mc);
+            WifiRu::GetRusOfType(numSubchannelsForRu * MHz_t{20}, ruType, mc);
         if ((m_channelWidth >= MHz_t{80}) && (ruIndex > 19))
         {
             // "ignore" the center 26-tone RUs in 80 MHz channels
@@ -832,7 +832,7 @@ WifiTxVector::DeriveRuAllocation(uint8_t p20Index) const
                 ruIndex -= (ruIndex - 19) / 37;
             }
         }
-        const auto numSubchannelsForRu = (ruBw < MHz_t{20}) ? 1 : Count20MHzSubchannels(ruBw);
+        const auto ruBw = WifiRu::GetBandwidth(ruType);
         const auto index = (ruBw < MHz_t{20}) ? ((ruIndex - 1) / rusPerSubchannel.size())
                                               : ((ruIndex - 1) * numSubchannelsForRu);
         NS_ABORT_IF(index >= Count20MHzSubchannels(m_channelWidth));

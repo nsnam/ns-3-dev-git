@@ -8,6 +8,8 @@
 
 #include "wifi-ru.h"
 
+#include "wifi-utils.h"
+
 namespace ns3
 {
 
@@ -124,6 +126,13 @@ WifiRu::GetRuType(MHz_t bandwidth)
         NS_ABORT_MSG(bandwidth << " bandwidth not found");
         return RuType::RU_TYPE_MAX;
     }
+}
+
+std::size_t
+WifiRu::GetNum20MHzSubchannelsInRu(RuType ruType)
+{
+    const auto ruBw = WifiRu::GetBandwidth(ruType);
+    return (ruBw < MHz_t{20}) ? 1 : Count20MHzSubchannels(ruBw);
 }
 
 std::size_t

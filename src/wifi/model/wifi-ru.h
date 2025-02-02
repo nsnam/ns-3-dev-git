@@ -97,6 +97,14 @@ class WifiRu
     static RuType GetRuType(MHz_t bandwidth);
 
     /**
+     * Get the number of 20 MHz subchannels occupied by a given RU.
+     *
+     * @param ruType the RU type (number of tones)
+     * @return the number of 20 MHz subchannels occupied by the RU
+     */
+    static std::size_t GetNum20MHzSubchannelsInRu(RuType ruType);
+
+    /**
      * Get the number of distinct RUs of the given type (number of tones)
      * available in a PPDU of the given bandwidth.
      *

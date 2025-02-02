@@ -340,11 +340,10 @@ HePpdu::SetHeMuUserInfos(WifiTxVector& txVector,
             {
                 ruType = WifiRu::GetRuType(ruAllocation.size() * MHz_t{20});
             }
-            const auto ruBw = WifiRu::GetBandwidth(ruType);
-            const auto num20MhzSubchannelsInRu =
-                (ruBw < MHz_t{20}) ? 1 : Count20MHzSubchannels(ruBw);
+            const auto num20MhzSubchannelsInRu = WifiRu::GetNum20MHzSubchannelsInRu(ruType);
             if (userInfo.staId != NO_USER_STA_ID)
             {
+                const auto ruBw = WifiRu::GetBandwidth(ruType);
                 const std::size_t numRus =
                     (ruBw > MHz_t{20}) ? 1 : HeRu::GetNRus(MHz_t{20}, ruType);
                 const std::size_t ruIndexOffset = (ruBw < MHz_t{20})
