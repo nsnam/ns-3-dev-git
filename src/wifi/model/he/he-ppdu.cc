@@ -223,19 +223,10 @@ HePpdu::SetTxVectorFromPhyHeaders(WifiTxVector& txVector) const
 }
 
 WifiRu::RuSpec
-HePpdu::GetRuSpec(std::size_t ruAllocIndex,
-                  const std::vector<WifiRu::RuSpec>& ruSpecs,
-                  RuType ruType,
-                  std::size_t ruIndex,
-                  MHz_u bw) const
+HePpdu::GetRuSpec(std::size_t ruAllocIndex, MHz_u bw, RuType ruType, std::size_t phyIndex) const
 {
-    const auto ruBw = WifiRu::GetBandwidth(ruType);
-    const uint8_t num20MhzSubchannelsInRu = (ruBw < MHz_u{20}) ? 1 : Count20MHzSubchannels(ruBw);
-    const std::size_t numRus = (ruBw > MHz_u{20}) ? 1 : HeRu::GetNRus(MHz_u{20}, ruType);
-    const std::size_t ruIndexOffset =
-        (ruBw < MHz_u{20}) ? (numRus * ruAllocIndex) : (ruAllocIndex / num20MhzSubchannelsInRu);
-    std::size_t index = WifiRu::GetIndex(ruSpecs.at(ruIndex)) + ruIndexOffset;
-    auto isPrimary80 = true;
+    auto isPrimary80{true};
+    auto index{phyIndex};
     if (bw > MHz_u{80})
     {
         const auto isLow80 = ruAllocIndex < 4;
@@ -348,10 +339,19 @@ HePpdu::SetHeMuUserInfos(WifiTxVector& txVector,
             {
                 ruType = WifiRu::GetRuType(ruAllocation.size() * MHz_u{20});
             }
+            const auto ruBw = WifiRu::GetBandwidth(ruType);
+            const auto num20MhzSubchannelsInRu =
+                (ruBw < MHz_u{20}) ? 1 : Count20MHzSubchannels(ruBw);
             if (userInfo.staId != NO_USER_STA_ID)
             {
+                const std::size_t numRus =
+                    (ruBw > MHz_u{20}) ? 1 : HeRu::GetNRus(MHz_u{20}, ruType);
+                const std::size_t ruIndexOffset = (ruBw < MHz_u{20})
+                                                      ? (numRus * ruAllocIndex)
+                                                      : (ruAllocIndex / num20MhzSubchannelsInRu);
+                std::size_t phyIndex = WifiRu::GetIndex(ruSpecs.at(ruIndex)) + ruIndexOffset;
                 const auto ru{
-                    GetRuSpec(ruAllocIndex, ruSpecs, ruType, ruIndex, txVector.GetChannelWidth())};
+                    GetRuSpec(ruAllocIndex, txVector.GetChannelWidth(), ruType, phyIndex)};
                 txVector.SetHeMuUserInfo(userInfo.staId, {ru, userInfo.mcs, userInfo.nss});
             }
             numRusLeft--;
@@ -359,9 +359,6 @@ HePpdu::SetHeMuUserInfos(WifiTxVector& txVector,
             numUsersLeftInCc--;
             if (numRusLeft == 0 && numUsersLeft == 0)
             {
-                const auto ruBw = WifiRu::GetBandwidth(ruType);
-                const uint8_t num20MhzSubchannelsInRu =
-                    (ruBw < MHz_u{20}) ? 1 : Count20MHzSubchannels(ruBw);
                 const auto pos = std::find(remainingRuAllocIndices.cbegin(),
                                            remainingRuAllocIndices.cend(),
                                            ruAllocIndex);

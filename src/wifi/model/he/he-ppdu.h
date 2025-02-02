@@ -265,17 +265,15 @@ class HePpdu : public OfdmPpdu
      * Get the RU specification that has been assigned a given user.
      *
      * @param ruAllocIndex the index of the RU allocation
-     * @param ruSpecs RU specs deduced from the RU allocation
-     * @param ruType RU type of the user to be assigned
-     * @param ruIndex RU index of the user to be assigned
      * @param bw the total bandwidth used for the transmission
+     * @param ruType RU type of the user to be assigned
+     * @param phyIndex RU PHY index of the user to be assigned
      * @return the value used to encode the bandwidth field in HE-SIG-A
      */
     virtual WifiRu::RuSpec GetRuSpec(std::size_t ruAllocIndex,
-                                     const std::vector<WifiRu::RuSpec>& ruSpecs,
+                                     MHz_u bw,
                                      RuType ruType,
-                                     std::size_t ruIndex,
-                                     MHz_u bw) const;
+                                     std::size_t phyIndex) const;
 
     /**
      * Convert channel width expressed in MHz to bandwidth field encoding in HE-SIG-A.
