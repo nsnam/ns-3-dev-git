@@ -27,49 +27,11 @@
  * build process puts html files into the doc/html/ directory, and latex
  * filex into the doc/latex/ directory.
  *
- * @section module-sec Module overview
+ * @section topics-sec Doxygen groups
  *
- * The ns-3 library is split across many modules organized under the
- * <b><a href="modules.html">Modules</a></b> tab.
- *     - aodv
- *     - applications
- *     - bridge
- *     - click
- *     - config-store
- *     - core
- *     - csma
- *     - csma-layout
- *     - dsdv
- *     - emu
- *     - energy
- *     - flow-monitor
- *     - internet
- *     - lte
- *     - mesh
- *     - mobility
- *     - mpi
- *     - netanim
- *     - network
- *     - nix-vector-routing
- *     - ns3tcp
- *     - ns3wifi
- *     - olsr
- *     - openflow
- *     - point-to-point
- *     - point-to-point-layout
- *     - propagation
- *     - spectrum
- *     - stats
- *     - tap-bridge
- *     - traffic-control
- *     - test
- *     - topology-read
- *     - uan
- *     - virtual-net-device
- *     - visualizer
- *     - wifi
- *     - wimax
- *
+ * The ns-3 library is split across many modules, and the Doxygen for these modules is typically
+ * added to <a href ="https://www.doxygen.nl/manual/grouping.html">Doxygen groups</a>.
+ * These groupings can be browsed under the <b><a href="topics.html">Topics</a></b> tab.
  */
 
 /**
