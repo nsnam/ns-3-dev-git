@@ -1078,41 +1078,50 @@ ZigbeeNwk::MlmeScanConfirm(MlmeScanConfirmParams params)
             m_netFormParams = {};
             m_netFormParamsGen = nullptr;
 
+            // See Zigbee specification r22.1.0, Section 3.2.2.5.3, (6.b.i)
             if (!m_nlmeNetworkFormationConfirmCallback.IsNull())
             {
                 NlmeNetworkFormationConfirmParams confirmParams;
-                confirmParams.m_status = NwkStatus::STARTUP_FAILURE;
+                confirmParams.m_status =
+                    NwkStatus::STARTUP_FAILURE; // it should be the status of the MLME
                 m_nlmeNetworkFormationConfirmCallback(confirmParams);
             }
         }
         else
         {
-            // TODO: continue energy scan in other interfaces if supported.
+            // TODO: Continue energy detection (ED) scan in other interfaces if supported.
 
-            // Filter the channels with unacceptable energy level (channel, energy)
+            // See Zigbee specification r22.1.0, Section 3.2.2.5.3, (6.b.ii)
+            // Pick the list of acceptable channels on which to continue doing an ACTIVE scan
             std::vector<uint8_t> energyList = params.m_energyDetList;
             uint32_t channelMask = m_netFormParams.m_scanChannelList.channelsField[0];
-            uint32_t channelMaskFiltered = 0;
-            uint32_t countAcceptableChannels = 0;
 
-            for (uint32_t i = 11; i <= 26; i++)
+            NS_LOG_DEBUG("[NLME-NETWORK-FORMATION.request]: \n              "
+                         << "EnergyThreshold: " << static_cast<uint16_t>(m_scanEnergyThreshold)
+                         << " | ChannelMask: 0x" << std::hex << channelMask << std::dec
+                         << " | EnergyList: " << energyList);
+
+            m_filteredChannelMask = 0;
+            uint32_t countAcceptableChannels = 0;
+            uint8_t energyListPos = 0;
+            for (uint32_t i = 0; i < 32; i++)
             {
-                if ((channelMask >> i) & 1)
+                // check if the i position exist in the ChannelMask
+                if (channelMask & (1 << i))
                 {
-                    // Channel found in mask, check energy channel and mark it if acceptable
-                    if (energyList[0] <= m_scanEnergyThreshold)
+                    if (energyList[energyListPos] <= m_scanEnergyThreshold)
                     {
-                        // energy is acceptable, register to filtered list
-                        channelMaskFiltered |= (1 << i);
-                        energyList.erase(energyList.begin());
+                        m_filteredChannelMask |= (1 << i);
                         countAcceptableChannels++;
                     }
+                    energyListPos++;
                 }
             }
 
-            NS_LOG_DEBUG("[NLME-NETWORK-FORMATION.request]: Energy scan complete, "
-                         << countAcceptableChannels << " acceptable channels found : 0x" << std::hex
-                         << channelMaskFiltered << std::dec);
+            NS_LOG_DEBUG("[NLME-NETWORK-FORMATION.request]:\n              "
+                         << "Energy scan complete, " << countAcceptableChannels
+                         << " acceptable channels found : 0x" << std::hex << m_filteredChannelMask
+                         << std::dec);
 
             if (countAcceptableChannels == 0)
             {
@@ -1129,9 +1138,10 @@ ZigbeeNwk::MlmeScanConfirm(MlmeScanConfirmParams params)
             }
             else
             {
+                // See Zigbee specification r22.1.0, Section 3.2.2.5.3, (6.c)
                 MlmeScanRequestParams mlmeParams;
-                mlmeParams.m_chPage = (channelMaskFiltered >> 27) & (0x01F);
-                mlmeParams.m_scanChannels = channelMaskFiltered;
+                mlmeParams.m_chPage = (m_filteredChannelMask >> 27) & (0x01F);
+                mlmeParams.m_scanChannels = m_filteredChannelMask;
                 mlmeParams.m_scanDuration = m_netFormParams.m_scanDuration;
                 mlmeParams.m_scanType = MLMESCAN_ACTIVE;
                 Simulator::ScheduleNow(&LrWpanMacBase::MlmeScanRequest, m_mac, mlmeParams);
@@ -1140,59 +1150,60 @@ ZigbeeNwk::MlmeScanConfirm(MlmeScanConfirmParams params)
     }
     else if (m_pendPrimitiveNwk == NLME_NETWORK_FORMATION && params.m_scanType == MLMESCAN_ACTIVE)
     {
-        // See Zigbee specification r22.1.0, Section 3.2.2.5.3,
         if (params.m_status == MacStatus::NO_BEACON || params.m_status == MacStatus::SUCCESS)
         {
-            uint8_t channel = 0;
-            uint8_t page = 0;
-            uint16_t panId = 0;
-
-            // TODO: We should scan channels on each interface
+            // TODO: We should ACTIVE scan channels on each interface
             // (only possible when more interfaces (nwkMacInterfaceTable) are supported)
             // for now, only a single interface is considered.
 
-            if (params.m_status == MacStatus::NO_BEACON)
-            {
-                // All channels provided in the active scan were acceptable
-                // (No coordinators found). Take the first channel in the list and
-                // generate a random panid.
-                for (uint8_t j = 11; j <= 26; j++)
-                {
-                    if ((m_netFormParams.m_scanChannelList.channelsField[0] & (1 << j)) != 0)
-                    {
-                        channel = j;
-                        page = (m_netFormParams.m_scanChannelList.channelsField[0] >> 27) & (0x01F);
-                        break;
-                    }
-                }
-                //
-                // Choose a random PAN ID  (3.2.2.5.3 , d.ii.)
-                panId = m_uniformRandomVariable->GetInteger(1, 0xFFF7);
-            }
-            else
-            {
-                // At least 1 coordinator was found in X channel
+            // See Zigbee specification r22.1.0, (3.2.2.5.3, 6.d.ii)
+            // Check results of an ACTIVE scan an select a different PAN ID and channel:
+            // Choose a random PAN ID
+            // Page is always 0 until more interfaces supported
+            uint8_t channel = 0;
+            uint8_t page = 0;
+            uint16_t panId = m_uniformRandomVariable->GetInteger(1, 0xFFF7);
 
-                // TODO: Choose the channel with the lowest energy within the threshold.
-                // If no channel is acceptable, return a NLME-NETWORK-FORMATION.confirm with
-                // START_UP_FAILURE status (3.2.2.5.3 , d and e)
-                NS_FATAL_ERROR("A coordinator found in active scan, but no channel judgment is "
-                               "supported, cannot complete network formation");
-                /* uint32_t channelMask = m_netFormParams.m_scanChannelList.channelsField[0];
-                 for (uint32_t i=11; i<=26; i++)
-                 {
-                     if ((channelMask >> i) & 1)
-                     {
-                         // Channel found in mask, check energy channel and mark it if acceptable
-                         if (energyList[0] <= m_scanEnergyThreshold)
-                         {
-                             // energy is acceptable, register to filtered list
-                             channelMaskFiltered |= (1 << i) & (1 << i);
-                             energyList.erase(energyList.begin());
-                             countAcceptableChannels++;
-                         }
-                     }
-                 }*/
+            std::vector<uint8_t> pansPerChannel(27);
+            uint32_t secondFilteredChannelMask = m_filteredChannelMask;
+            for (const auto& panDescriptor : params.m_panDescList)
+            {
+                // Clear all the bit positions of channels with active PAN networks
+                // (The channels with PAN descriptors received)
+                secondFilteredChannelMask &= ~(1 << panDescriptor.m_logCh);
+                // Add to the number of PAN detected in this channel
+                pansPerChannel[panDescriptor.m_logCh] += 1;
+            }
+
+            for (uint32_t i = 0; i < 32; i++)
+            {
+                // Pick the first channel in the list that does not contain
+                // any PAN network
+                if (secondFilteredChannelMask & (1 << i))
+                {
+                    channel = i;
+                    break;
+                }
+            }
+
+            if (channel < 11 || channel > 26)
+            {
+                // Extreme case: All the channels in the previous step contained PAN networks
+                // therefore choose the channel with the least PAN networks.
+                uint8_t channelIndex = 0;
+                uint8_t lowestPanNum = 99;
+                for (const auto& numPans : pansPerChannel)
+                {
+                    if (numPans != 0 && numPans <= lowestPanNum)
+                    {
+                        channel = channelIndex;
+                        lowestPanNum = numPans;
+                    }
+                    channelIndex++;
+                }
+
+                NS_ASSERT_MSG(channel < 11 || channel > 26,
+                              "Invalid channel in PAN descriptor list during ACTIVE scan");
             }
 
             // store the chosen page, channel and pan Id.
@@ -1201,10 +1212,10 @@ ZigbeeNwk::MlmeScanConfirm(MlmeScanConfirmParams params)
             m_netFormParamsGen->channel = channel;
             m_netFormParamsGen->panId = panId;
 
-            NS_LOG_DEBUG("[NLME-NETWORK-FORMATION.request]: Active scan complete, page "
-                         << std::dec << static_cast<uint32_t>(page) << ", channel " << std::dec
-                         << static_cast<uint32_t>(channel) << " and PAN ID 0x" << std::hex << panId
-                         << std::dec << " chosen.");
+            NS_LOG_DEBUG("[NLME-NETWORK-FORMATION.request]:\n              "
+                         << "Active scan complete, page " << std::dec << static_cast<uint32_t>(page)
+                         << ", channel " << std::dec << static_cast<uint32_t>(channel)
+                         << " and PAN ID 0x" << std::hex << panId << std::dec << " chosen.");
 
             // Set the device short address (3.2.2.5.3 , 6.f)
             Ptr<MacPibAttributes> pibAttr = Create<MacPibAttributes>();
@@ -1239,8 +1250,6 @@ ZigbeeNwk::MlmeScanConfirm(MlmeScanConfirmParams params)
                 confirmParams.m_status = GetNwkStatus(params.m_status);
                 m_nlmeNetworkFormationConfirmCallback(confirmParams);
             }
-
-            NS_LOG_ERROR("Unknown error found during network formation");
         }
     }
     else if (m_pendPrimitiveNwk == NLME_NET_DISCV && params.m_scanType == MLMESCAN_ACTIVE)
@@ -1250,8 +1259,9 @@ ZigbeeNwk::MlmeScanConfirm(MlmeScanConfirmParams params)
 
         if (params.m_status == MacStatus::SUCCESS)
         {
-            NS_LOG_DEBUG("[NLME-NETWORK-DISCOVERY.request]: Active scan, "
-                         << m_networkDescriptorList.size() << " PARENT capable device(s) found");
+            NS_LOG_DEBUG("[NLME-NETWORK-DISCOVERY.request]:\n              "
+                         << "Active scan, " << m_networkDescriptorList.size()
+                         << " PARENT capable device(s) found");
 
             netDiscConfirmParams.m_netDescList = m_networkDescriptorList;
             netDiscConfirmParams.m_networkCount = m_networkDescriptorList.size();
@@ -1331,10 +1341,11 @@ ZigbeeNwk::MlmeAssociateConfirm(MlmeAssociateConfirmParams params)
             if (m_nwkNeighborTable.LookUpEntry(m_associateParams.extAddress, entry))
             {
                 entry->SetRelationship(NBR_PARENT);
-                // m_nwkNeighborTable.Update(m_associateParams.extAddress, entry);
-                NS_LOG_DEBUG("Associated SUCCESSFULLY to PAN ID and Ext PAN ID: "
-                             << "(0x" << std::hex << m_nwkPanId << " | 0x" << m_nwkExtendedPanId
-                             << ")" << std::dec);
+
+                NS_LOG_DEBUG("[NLME-JOIN.request]:\n              "
+                             << "Status: " << joinConfirmParams.m_status << " | PAN ID: 0x"
+                             << std::hex << m_nwkPanId << " | Extended PAN ID: 0x"
+                             << m_nwkExtendedPanId << std::dec);
             }
             else
             {
@@ -1434,9 +1445,9 @@ ZigbeeNwk::MlmeStartConfirm(MlmeStartConfirmParams params)
 
     if (m_pendPrimitiveNwk == NLME_NETWORK_FORMATION)
     {
-        NS_LOG_DEBUG("[NLME-NETWORK-FORMATION.request]: Complete, Status "
-                     << nwkConfirmStatus << " | Pan Id and ExtPanId: (0x" << std::hex << m_nwkPanId
-                     << " | 0x" << m_nwkExtendedPanId << ")" << std::dec);
+        NS_LOG_DEBUG("[NLME-NETWORK-FORMATION.request]:\n              "
+                     << "Status: " << nwkConfirmStatus << " | PAN ID:" << std::hex << m_nwkPanId
+                     << " | Extended PAN ID: 0x" << m_nwkExtendedPanId << std::dec);
 
         m_pendPrimitiveNwk = NLDE_NLME_NONE;
         m_netFormParams = {};
@@ -1451,9 +1462,9 @@ ZigbeeNwk::MlmeStartConfirm(MlmeStartConfirmParams params)
     }
     else if (m_pendPrimitiveNwk == NLME_START_ROUTER)
     {
-        NS_LOG_DEBUG("[NLME-START-ROUTER.request]: Complete, Status "
-                     << nwkConfirmStatus << " | Pan Id and ExtPanId: (0x" << std::hex << m_nwkPanId
-                     << " | 0x" << m_nwkExtendedPanId << ")" << std::dec);
+        NS_LOG_DEBUG("[NLME-START-ROUTER.request]:\n              "
+                     << "Status: " << nwkConfirmStatus << " | PAN ID: 0x" << std::hex << m_nwkPanId
+                     << " | Extended PAN ID: 0x" << m_nwkExtendedPanId << std::dec);
 
         if (nwkConfirmStatus != NwkStatus::SUCCESS)
         {
@@ -1953,9 +1964,9 @@ ZigbeeNwk::MlmeAssociateIndication(MlmeAssociateIndicationParams params)
             responseParams.m_assocShortAddr = Mac16Address("FF:FF");
         }
 
-        NS_LOG_DEBUG("Storing an Associate response command with the allocated"
-                     " address "
-                     << responseParams.m_assocShortAddr);
+        NS_LOG_DEBUG("\n              "
+                     << "Storing an Associate response command with the allocated address "
+                     << "[" << responseParams.m_assocShortAddr << "]");
 
         Simulator::ScheduleNow(&LrWpanMacBase::MlmeAssociateResponse, m_mac, responseParams);
     }
@@ -2556,10 +2567,10 @@ ZigbeeNwk::NlmeJoinRequest(NlmeJoinRequestParams params)
             {
                 assocParams.m_coordAddrMode = lrwpan::AddressMode::SHORT_ADDR;
                 assocParams.m_coordShortAddr = bestParentEntry->GetNwkAddr();
-                NS_LOG_DEBUG("Send Assoc. Req. to [" << bestParentEntry->GetNwkAddr()
-                                                     << "] in PAN id and Ext PAN id: " << std::hex
-                                                     << "(0x" << panId << " | 0x"
-                                                     << params.m_extendedPanId << ")" << std::dec);
+                NS_LOG_DEBUG("\n              "
+                             << "Send Association Request [" << bestParentEntry->GetNwkAddr()
+                             << "] | PAN ID: " << std::hex << "0x" << panId
+                             << " | Extended PAN ID: 0x" << params.m_extendedPanId << std::dec);
             }
             else
             {
@@ -3289,6 +3300,13 @@ operator<<(std::ostream& os, const NwkStatus& state)
         os << "SCAN IN PROGRESS";
         break;
     }
+    return os;
+}
+
+std::ostream&
+operator<<(std::ostream& os, const std::vector<uint8_t>& vec)
+{
+    std::copy(vec.begin(), vec.end(), std::ostream_iterator<uint16_t>(os, " "));
     return os;
 }
 

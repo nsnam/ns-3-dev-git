@@ -29,6 +29,7 @@
 
 #include <cstdint>
 #include <iomanip>
+#include <iterator>
 
 namespace ns3
 {
@@ -214,6 +215,15 @@ enum NwkStatus : std::uint8_t
  *  @return The output stream with text value of the NWK state
  */
 std::ostream& operator<<(std::ostream& os, const NwkStatus& state);
+
+/**
+ * Overloaded operator to print uint8_t vectors
+ *
+ * @param os The output stream
+ * @param vec The uint8_t vector to print
+ * @return The output stream with the text value of the uint8_t vector members
+ */
+std::ostream& operator<<(std::ostream& os, const std::vector<uint8_t>& vec);
 
 /**
  * @ingroup zigbee
@@ -1223,9 +1233,17 @@ class ZigbeeNwk : public Object
     AssociateParams m_associateParams;
 
     /**
-     *  The maximum acceptable energy level used in an energy scan
+     *  The maximum acceptable energy level used in an energy scan taking place
+     *  during a NLME-NETWORK-FORMATION.request.
      */
     uint8_t m_scanEnergyThreshold;
+
+    /**
+     *  Contains the list of channels with acceptable energy levels in a bitmap form.
+     *  This is the result of an Energy Detection (ED) scan during
+     *  a NLME-NETWORK-FORMATION.request
+     */
+    uint32_t m_filteredChannelMask;
 
     /**
      *  Indicates the current primitive in use in the NWK layer.
