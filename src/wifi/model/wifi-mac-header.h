@@ -512,6 +512,12 @@ class WifiMacHeader : public Header
      * @return the duration from the Duration/ID field (Time object)
      */
     Time GetDuration() const;
+
+    /**
+     * @return true if the Duration/ID field contains a value for setting the NAV
+     */
+    bool HasNav() const;
+
     /**
      * Return the raw Sequence Control field.
      *

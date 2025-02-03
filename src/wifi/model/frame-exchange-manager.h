@@ -353,12 +353,17 @@ class FrameExchangeManager : public Object
     virtual void ProtectionCompleted();
 
     /**
-     * Update the NAV, if needed, based on the Duration/ID of the given <i>psdu</i>.
+     * Update the NAV, if needed, based on the Duration/ID of the given MAC header and the given
+     * surplus.
      *
-     * @param psdu the received PSDU
-     * @param txVector TxVector of the received PSDU
+     * @param hdr the given MAC header
+     * @param txVector TxVector of the PSDU containing the MAC header
+     * @param surplus the surplus to add to the Duration/ID value. This is needed, e.g., when
+     *                setting the NAV at the end of the reception of the MAC header
      */
-    virtual void UpdateNav(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector);
+    virtual void UpdateNav(const WifiMacHeader& hdr,
+                           const WifiTxVector& txVector,
+                           const Time& surplus = Time{0});
 
     /**
      * Reset the NAV upon expiration of the NAV reset timer.
