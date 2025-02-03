@@ -267,7 +267,6 @@ Save the following Dockerfile to the base directory.
                        mingw-w64-x86_64-qt5 \
                        git \
                        mingw-w64-x86_64-msmpi \
-                       mingw-w64-x86_64-uncrustify \
                        mingw-w64-x86_64-imagemagick \
                        mingw-w64-x86_64-doxygen \
                        mingw-w64-x86_64-graphviz \
