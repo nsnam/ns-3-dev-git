@@ -679,6 +679,16 @@ QosFrameExchangeManager::TransmissionFailed(bool forceCurrentCw)
 }
 
 void
+QosFrameExchangeManager::ReceivedMacHdr(const WifiMacHeader& macHdr,
+                                        const WifiTxVector& txVector,
+                                        Time psduDuration)
+{
+    NS_LOG_FUNCTION(this << macHdr << txVector << psduDuration.As(Time::MS));
+    FrameExchangeManager::ReceivedMacHdr(macHdr, txVector, psduDuration);
+    SetTxopHolder(macHdr, txVector);
+}
+
+void
 QosFrameExchangeManager::PreProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector)
 {
     NS_LOG_FUNCTION(this << psdu << txVector);
@@ -714,15 +724,15 @@ QosFrameExchangeManager::PostProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTx
 {
     NS_LOG_FUNCTION(this << psdu << txVector);
 
-    SetTxopHolder(psdu, txVector);
+    SetTxopHolder(psdu->GetHeader(0), txVector);
     FrameExchangeManager::PostProcessFrame(psdu, txVector);
 }
 
 void
-QosFrameExchangeManager::SetTxopHolder(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector)
+QosFrameExchangeManager::SetTxopHolder(const WifiMacHeader& hdr, const WifiTxVector& txVector)
 {
-    NS_LOG_FUNCTION(this << psdu << txVector);
-    if (auto txopHolder = FindTxopHolder(psdu->GetHeader(0), txVector))
+    NS_LOG_FUNCTION(this << hdr << txVector);
+    if (auto txopHolder = FindTxopHolder(hdr, txVector))
     {
         m_txopHolder = *txopHolder;
     }
@@ -766,17 +776,19 @@ QosFrameExchangeManager::ClearTxopHolderIfNeeded()
 }
 
 void
-QosFrameExchangeManager::UpdateNav(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector)
+QosFrameExchangeManager::UpdateNav(const WifiMacHeader& hdr,
+                                   const WifiTxVector& txVector,
+                                   const Time& surplus)
 {
-    NS_LOG_FUNCTION(this << psdu << txVector);
-    if (psdu->GetHeader(0).IsCfEnd())
+    NS_LOG_FUNCTION(this << hdr << txVector << surplus.As(Time::US));
+    if (hdr.IsCfEnd())
     {
         NS_LOG_DEBUG("Received CF-End, resetting NAV");
         NavResetTimeout();
         return;
     }
 
-    FrameExchangeManager::UpdateNav(psdu, txVector);
+    FrameExchangeManager::UpdateNav(hdr, txVector, surplus);
 }
 
 void

@@ -1956,9 +1956,9 @@ HeFrameExchangeManager::ReceiveMuBarTrigger(const CtrlTriggerHeader& trigger,
 }
 
 bool
-HeFrameExchangeManager::IsIntraBssPpdu(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) const
+HeFrameExchangeManager::IsIntraBssPpdu(const WifiMacHeader& hdr, const WifiTxVector& txVector) const
 {
-    NS_LOG_FUNCTION(this << psdu << txVector);
+    NS_LOG_FUNCTION(this << hdr << txVector);
 
     // "If, based on the MAC address information of a frame carried in a received PPDU, the
     // received PPDU satisfies both intra-BSS and inter-BSS conditions, then the received PPDU is
@@ -1966,9 +1966,9 @@ HeFrameExchangeManager::IsIntraBssPpdu(Ptr<const WifiPsdu> psdu, const WifiTxVec
     // Hence, check first if the intra-BSS conditions using MAC address information are satisfied:
     // 1. "The PPDU carries a frame that has an RA, TA, or BSSID field value that is equal to
     //    the BSSID of the BSS in which the STA is associated"
-    const auto ra = psdu->GetAddr1();
-    const auto ta = psdu->GetAddr2();
-    const auto bssid = psdu->GetHeader(0).GetAddr3();
+    const auto ra = hdr.GetAddr1();
+    auto ta = hdr.GetAddr2();
+    const auto bssid = hdr.GetAddr3();
     const auto empty = Mac48Address();
 
     if (ra == m_bssid || ta == m_bssid || bssid == m_bssid)
@@ -1979,7 +1979,7 @@ HeFrameExchangeManager::IsIntraBssPpdu(Ptr<const WifiPsdu> psdu, const WifiTxVec
     // 2. "The PPDU carries a Control frame that does not have a TA field and that has an
     //    RA field value that matches the saved TXOP holder address of the BSS in which
     //    the STA is associated"
-    if (psdu->GetHeader(0).IsCtl() && ta == empty && ra == m_txopHolder)
+    if (hdr.IsCtl() && ta == empty && ra == m_txopHolder)
     {
         return true;
     }
@@ -2021,16 +2021,18 @@ HeFrameExchangeManager::IsIntraBssPpdu(Ptr<const WifiPsdu> psdu, const WifiTxVec
 }
 
 void
-HeFrameExchangeManager::UpdateNav(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector)
+HeFrameExchangeManager::UpdateNav(const WifiMacHeader& hdr,
+                                  const WifiTxVector& txVector,
+                                  const Time& surplus)
 {
-    NS_LOG_FUNCTION(this << psdu << txVector);
+    NS_LOG_FUNCTION(this << hdr << txVector << surplus.As(Time::US));
 
-    if (!psdu->HasNav())
+    if (!hdr.HasNav())
     {
         return;
     }
 
-    if (psdu->GetAddr1() == m_self)
+    if (hdr.GetAddr1() == m_self)
     {
         // When the received frame's RA is equal to the STA's own MAC address, the STA
         // shall not update its NAV (IEEE 802.11-2020, sec. 10.3.2.4)
@@ -2040,18 +2042,19 @@ HeFrameExchangeManager::UpdateNav(Ptr<const WifiPsdu> psdu, const WifiTxVector& 
     // The intra-BSS NAV is updated by an intra-BSS PPDU. The basic NAV is updated by an
     // inter-BSS PPDU or a PPDU that cannot be classified as intra-BSS or inter-BSS.
     // (Section 26.2.4 of 802.11ax-2021)
-    if (!IsIntraBssPpdu(psdu, txVector))
+    if (!IsIntraBssPpdu(hdr, txVector))
     {
         NS_LOG_DEBUG("PPDU not classified as intra-BSS, update the basic NAV");
-        VhtFrameExchangeManager::UpdateNav(psdu, txVector);
+        VhtFrameExchangeManager::UpdateNav(hdr, txVector, surplus);
         return;
     }
 
     NS_LOG_DEBUG("PPDU classified as intra-BSS, update the intra-BSS NAV");
-    Time duration = psdu->GetDuration();
+    Time duration = hdr.GetDuration();
     NS_LOG_DEBUG("Duration/ID=" << duration);
+    duration += surplus;
 
-    if (psdu->GetHeader(0).IsCfEnd())
+    if (hdr.IsCfEnd())
     {
         // An HE STA that maintains two NAVs (see 26.2.4) and receives a CF-End frame should reset
         // the basic NAV if the received CF-End frame is carried in an inter-BSS PPDU and reset the
@@ -2079,14 +2082,16 @@ HeFrameExchangeManager::UpdateNav(Ptr<const WifiPsdu> psdu, const WifiTxVector& 
         // The “CTS_Time” shall be calculated using the length of the CTS frame and the data
         // rate at which the RTS frame used for the most recent NAV update was received
         // (IEEE 802.11-2016 sec. 10.3.2.4)
-        if (psdu->GetHeader(0).IsRts())
+        if (hdr.IsRts())
         {
+            auto addr2 = hdr.GetAddr2();
             WifiTxVector ctsTxVector =
-                GetWifiRemoteStationManager()->GetCtsTxVector(psdu->GetAddr2(), txVector.GetMode());
+                GetWifiRemoteStationManager()->GetCtsTxVector(addr2, txVector.GetMode());
             auto navResetDelay =
                 2 * m_phy->GetSifs() +
                 WifiPhy::CalculateTxDuration(GetCtsSize(), ctsTxVector, m_phy->GetPhyBand()) +
                 WifiPhy::CalculatePhyPreambleAndHeaderDuration(ctsTxVector) + 2 * m_phy->GetSlot();
+            m_intraBssNavResetEvent.Cancel();
             m_intraBssNavResetEvent =
                 Simulator::Schedule(navResetDelay,
                                     &HeFrameExchangeManager::IntraBssNavResetTimeout,

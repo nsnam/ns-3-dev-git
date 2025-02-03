@@ -108,7 +108,9 @@ class QosFrameExchangeManager : public FrameExchangeManager
     void PreProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) override;
     void PostProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) override;
     void NavResetTimeout() override;
-    void UpdateNav(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) override;
+    void UpdateNav(const WifiMacHeader& hdr,
+                   const WifiTxVector& txVector,
+                   const Time& surplus = Time{0}) override;
     Time GetFrameDurationId(const WifiMacHeader& header,
                             uint32_t size,
                             const WifiTxParameters& txParams,
@@ -122,6 +124,9 @@ class QosFrameExchangeManager : public FrameExchangeManager
     void TransmissionSucceeded() override;
     void TransmissionFailed(bool forceCurrentCw = false) override;
     void ForwardMpduDown(Ptr<WifiMpdu> mpdu, WifiTxVector& txVector) override;
+    void ReceivedMacHdr(const WifiMacHeader& macHdr,
+                        const WifiTxVector& txVector,
+                        Time psduDuration) override;
 
     /**
      * Request the FrameExchangeManager to start a frame exchange sequence.
@@ -191,10 +196,10 @@ class QosFrameExchangeManager : public FrameExchangeManager
     /**
      * Set the TXOP holder, if needed, based on the received frame
      *
-     * @param psdu the received PSDU
+     * @param hdr the MAC header of the received PSDU
      * @param txVector TX vector of the received PSDU
      */
-    void SetTxopHolder(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector);
+    void SetTxopHolder(const WifiMacHeader& hdr, const WifiTxVector& txVector);
 
     /**
      * Cancel the PIFS recovery event and have the EDCAF attempting PIFS recovery

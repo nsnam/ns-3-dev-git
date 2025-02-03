@@ -322,6 +322,7 @@ FrameExchangeManager::ReceivedMacHdr(const WifiMacHeader& macHdr,
 {
     NS_LOG_FUNCTION(this << macHdr << txVector << psduDuration.As(Time::MS));
     m_ongoingRxInfo = {macHdr, txVector, Simulator::Now() + psduDuration};
+    UpdateNav(macHdr, txVector, psduDuration);
 }
 
 std::optional<std::reference_wrapper<const FrameExchangeManager::OngoingRxInfo>>
@@ -1255,11 +1256,9 @@ FrameExchangeManager::Receive(Ptr<const WifiPsdu> psdu,
             // has been correctly received)
             NS_ASSERT(perMpduStatus.empty() || (perMpduStatus.size() == 1 && perMpduStatus[0]));
             // Ack and CTS do not carry Addr2
-            if (!psdu->GetHeader(0).IsAck() && !psdu->GetHeader(0).IsCts())
+            if (const auto& hdr = psdu->GetHeader(0); !hdr.IsAck() && !hdr.IsCts())
             {
-                GetWifiRemoteStationManager()->ReportRxOk(psdu->GetHeader(0).GetAddr2(),
-                                                          rxSignalInfo,
-                                                          txVector);
+                GetWifiRemoteStationManager()->ReportRxOk(psdu->GetAddr2(), rxSignalInfo, txVector);
             }
             ReceiveMpdu(*(psdu->begin()), rxSignalInfo, txVector, perMpduStatus.empty());
         }
@@ -1297,23 +1296,26 @@ FrameExchangeManager::PostProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTxVec
 {
     NS_LOG_FUNCTION(this << psdu << txVector);
 
-    UpdateNav(psdu, txVector);
+    UpdateNav(psdu->GetHeader(0), txVector);
 }
 
 void
-FrameExchangeManager::UpdateNav(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector)
+FrameExchangeManager::UpdateNav(const WifiMacHeader& hdr,
+                                const WifiTxVector& txVector,
+                                const Time& surplus)
 {
-    NS_LOG_FUNCTION(this << psdu << txVector);
+    NS_LOG_FUNCTION(this << hdr << txVector << surplus.As(Time::US));
 
-    if (!psdu->HasNav())
+    if (!hdr.HasNav())
     {
         return;
     }
 
-    Time duration = psdu->GetDuration();
+    Time duration = hdr.GetDuration();
     NS_LOG_DEBUG("Duration/ID=" << duration);
+    duration += surplus;
 
-    if (psdu->GetAddr1() == m_self)
+    if (hdr.GetAddr1() == m_self)
     {
         // When the received frame's RA is equal to the STA's own MAC address, the STA
         // shall not update its NAV (IEEE 802.11-2016, sec. 10.3.2.4)
@@ -1337,14 +1339,16 @@ FrameExchangeManager::UpdateNav(Ptr<const WifiPsdu> psdu, const WifiTxVector& tx
         // The “CTS_Time” shall be calculated using the length of the CTS frame and the data
         // rate at which the RTS frame used for the most recent NAV update was received
         // (IEEE 802.11-2016 sec. 10.3.2.4)
-        if (psdu->GetHeader(0).IsRts())
+        if (hdr.IsRts())
         {
+            auto addr2 = hdr.GetAddr2();
             WifiTxVector ctsTxVector =
-                GetWifiRemoteStationManager()->GetCtsTxVector(psdu->GetAddr2(), txVector.GetMode());
+                GetWifiRemoteStationManager()->GetCtsTxVector(addr2, txVector.GetMode());
             Time navResetDelay =
                 2 * m_phy->GetSifs() +
                 WifiPhy::CalculateTxDuration(GetCtsSize(), ctsTxVector, m_phy->GetPhyBand()) +
                 WifiPhy::CalculatePhyPreambleAndHeaderDuration(ctsTxVector) + 2 * m_phy->GetSlot();
+            m_navResetEvent.Cancel();
             m_navResetEvent =
                 Simulator::Schedule(navResetDelay, &FrameExchangeManager::NavResetTimeout, this);
         }
