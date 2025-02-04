@@ -2,4 +2,4 @@
 skip = .git,.gitlab-ci-local,*.eps,*.pdf,*.css_t,AUTHORS,*build*,*.mob,./cmake-*,./venv
 ignore-words = ./utils/codespell-ignored-words
 exclude-file = ./utils/codespell-ignored-lines
-regex = (?<![a-z])[a-z']+|[A-Z][a-z']*|[a-z]+'[a-z]*|[a-z]+(?=[_-])|[a-z]+(?=[A-Z])|\d+
+regex = (?<![a-zà-öø-ÿ])[a-zà-öø-ÿ'`]+|[A-ZÀ-ÖØ-Þ][a-zà-öø-ÿ'`]*|[a-zà-öø-ÿ]+'[a-zà-öø-ÿ]*|[a-zà-öø-ÿ]+(?=[_-])|[a-zà-öø-ÿ]+(?=[A-ZÀ-ÖØ-Þ])|\d+
