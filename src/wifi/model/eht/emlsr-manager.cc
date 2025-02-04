@@ -243,6 +243,8 @@ EmlsrManager::EmlsrLinkSwitchCallback(uint8_t linkId, Ptr<WifiPhy> phy, bool con
         return;
     }
 
+    SetCcaEdThresholdOnLinkSwitch(phy, linkId);
+
     Simulator::ScheduleNow([=, this]() {
         // phy switched to operate on the link with ID equal to linkId
         auto it = m_noPhySince.find(linkId);
@@ -848,8 +850,9 @@ EmlsrManager::SetCcaEdThresholdOnLinkSwitch(Ptr<WifiPhy> phy, uint8_t linkId)
     if (auto statusIt = m_mediumSyncDelayStatus.find(linkId);
         statusIt != m_mediumSyncDelayStatus.cend() && statusIt->second.timer.IsPending())
     {
-        NS_LOG_DEBUG("Setting CCA ED threshold of PHY " << phy << " to " << +m_msdOfdmEdThreshold
-                                                        << " on link " << +linkId);
+        NS_LOG_DEBUG("Setting CCA ED threshold of PHY " << +phy->GetPhyId() << " to "
+                                                        << +m_msdOfdmEdThreshold << " on link "
+                                                        << +linkId);
 
         // store the current CCA ED threshold in the m_prevCcaEdThreshold map, if not present
         m_prevCcaEdThreshold.try_emplace(phy, phy->GetCcaEdThreshold());
@@ -860,8 +863,8 @@ EmlsrManager::SetCcaEdThresholdOnLinkSwitch(Ptr<WifiPhy> phy, uint8_t linkId)
     else if (auto threshIt = m_prevCcaEdThreshold.find(phy);
              threshIt != m_prevCcaEdThreshold.cend())
     {
-        NS_LOG_DEBUG("Resetting CCA ED threshold of PHY " << phy << " to " << threshIt->second
-                                                          << " on link " << +linkId);
+        NS_LOG_DEBUG("Resetting CCA ED threshold of PHY "
+                     << +phy->GetPhyId() << " to " << threshIt->second << " on link " << +linkId);
         phy->SetCcaEdThreshold(threshIt->second);
         m_prevCcaEdThreshold.erase(threshIt);
     }
@@ -968,7 +971,6 @@ EmlsrManager::SwitchMainPhy(uint8_t linkId,
     m_mainPhySwitchInfo.to = linkId;
     m_mainPhySwitchInfo.end = Simulator::Now() + timeToSwitchEnd;
 
-    SetCcaEdThresholdOnLinkSwitch(mainPhy, linkId);
     NotifyMainPhySwitch(currMainPhyLinkId, linkId, auxPhy, timeToSwitchEnd);
 }
 
@@ -1003,8 +1005,6 @@ EmlsrManager::SwitchAuxPhy(Ptr<WifiPhy> auxPhy, uint8_t currLinkId, uint8_t next
                 Txop::CHECK_MEDIUM_BUSY);
         }
     });
-
-    SetCcaEdThresholdOnLinkSwitch(auxPhy, nextLinkId);
 }
 
 void
@@ -1035,7 +1035,7 @@ EmlsrManager::StartMediumSyncDelayTimer(uint8_t linkId)
     if (!it->second.timer.IsPending())
     {
         NS_LOG_DEBUG("Setting CCA ED threshold on link "
-                     << +linkId << " to " << +m_msdOfdmEdThreshold << " PHY " << phy);
+                     << +linkId << " to " << +m_msdOfdmEdThreshold << " PHY " << +phy->GetPhyId());
         m_prevCcaEdThreshold[phy] = phy->GetCcaEdThreshold();
         phy->SetCcaEdThreshold(m_msdOfdmEdThreshold);
     }

@@ -124,7 +124,6 @@ DefaultEmlsrManager::NotifyMainPhySwitch(std::optional<uint8_t> currLinkId,
 
         // the Aux PHY is not actually switching (hence no switching delay)
         GetStaMac()->NotifySwitchingEmlsrLink(m_auxPhyToReconnect, *currLinkId, Seconds(0));
-        SetCcaEdThresholdOnLinkSwitch(m_auxPhyToReconnect, *currLinkId);
     }
 
     // if currLinkId has no value, it means that the main PHY switch is interrupted, hence reset
