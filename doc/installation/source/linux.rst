@@ -91,8 +91,8 @@ Please see below subsections for Python-related package requirements.
   +-----------------------------+------------------------------------------------------------+
   | GTK-based config store      | ``libgtk-3-dev``                                           |
   +-----------------------------+------------------------------------------------------------+
-  | Emulation with virtual      | ``lxc-utils lxc-templates``                                |
-  | machines and tap bridge     | ``vtun uml-utilities ebtables bridge-utils``               |
+  | Emulation with virtual      |                                                            |
+  | machines and tap bridge     | ``lxc-utils lxc-templates iproute2 iptables``              |
   +-----------------------------+------------------------------------------------------------+
   | Support for openflow        | ``libxml2 libxml2-dev libboost-all-dev``                   |
   +-----------------------------+------------------------------------------------------------+
