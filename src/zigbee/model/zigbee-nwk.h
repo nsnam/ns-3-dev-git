@@ -226,6 +226,14 @@ std::ostream& operator<<(std::ostream& os, const NwkStatus& state);
 std::ostream& operator<<(std::ostream& os, const std::vector<uint8_t>& vec);
 
 /**
+ *
+ * @param os The output stream
+ * @param num The uint8_t number to print
+ * @return The output stream with the text value of the uint8_t number
+ */
+std::ostream& operator<<(std::ostream& os, const uint8_t& num);
+
+/**
  * @ingroup zigbee
  *
  *  Status codes for network status command frame and route discovery failures.
