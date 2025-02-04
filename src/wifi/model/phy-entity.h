@@ -410,6 +410,15 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
     void CancelRunningEndPreambleDetectionEvents();
 
     /**
+     * Get the remaining time to the end of the MAC header reception of the next MPDU being
+     * received from the given STA, if any.
+     *
+     * @param staId the STA-ID of the transmitter; equals SU_STA_ID for SU PPDUs
+     * @return the remaining time to the end of the MAC header reception of the next MPDU, if any
+     */
+    virtual std::optional<Time> GetTimeToMacHdrEnd(uint16_t staId) const;
+
+    /**
      * Return the STA ID that has been assigned to the station this PHY belongs to.
      * This is typically called for MU PPDUs, in order to pick the correct PSDU.
      *

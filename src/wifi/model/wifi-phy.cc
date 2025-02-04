@@ -1797,6 +1797,19 @@ WifiPhy::NotifyMonitorSniffTx(Ptr<const WifiPsdu> psdu,
     }
 }
 
+std::optional<Time>
+WifiPhy::GetTimeToMacHdrEnd(uint16_t staId) const
+{
+    for (auto& [modClass, phyEntity] : m_phyEntities)
+    {
+        if (auto remTime = phyEntity->GetTimeToMacHdrEnd(staId))
+        {
+            return remTime;
+        }
+    }
+    return std::nullopt;
+}
+
 WifiConstPsduMap
 WifiPhy::GetWifiConstPsduMap(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector)
 {

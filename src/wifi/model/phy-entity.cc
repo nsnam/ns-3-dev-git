@@ -844,6 +844,27 @@ PhyEntity::GetReceptionStatus(Ptr<WifiMpdu> mpdu,
     }
 }
 
+std::optional<Time>
+PhyEntity::GetTimeToMacHdrEnd(uint16_t staId) const
+{
+    const auto it = m_endOfMacHdrEvents.find(staId);
+
+    if (it == m_endOfMacHdrEvents.cend())
+    {
+        return std::nullopt;
+    }
+
+    for (const auto& endOfMacHdrEvent : it->second)
+    {
+        if (endOfMacHdrEvent.IsPending())
+        {
+            return Simulator::GetDelayLeft(endOfMacHdrEvent);
+        }
+    }
+
+    return std::nullopt;
+}
+
 std::pair<MHz_u, WifiSpectrumBandInfo>
 PhyEntity::GetChannelWidthAndBand(const WifiTxVector& txVector, uint16_t /* staId */) const
 {

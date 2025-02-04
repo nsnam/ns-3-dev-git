@@ -895,6 +895,15 @@ class WifiPhy : public Object
     dB_u GetRxGain() const;
 
     /**
+     * Get the remaining time to the end of the MAC header reception of the next MPDU being
+     * received from the given STA, if any.
+     *
+     * @param staId the STA-ID of the transmitter; equals SU_STA_ID for SU PPDUs
+     * @return the remaining time to the end of the MAC header reception of the next MPDU, if any
+     */
+    std::optional<Time> GetTimeToMacHdrEnd(uint16_t staId) const;
+
+    /**
      * Sets the device this PHY is associated with.
      *
      * @param device the device this PHY is associated with
