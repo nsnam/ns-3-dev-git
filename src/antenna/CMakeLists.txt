@@ -74,6 +74,7 @@ build_lib(
     model/phased-array-model.h
     model/three-gpp-antenna-model.h
     model/uniform-planar-array.h
+    utils/symmetric-adjacency-matrix.h
   LIBRARIES_TO_LINK ${libcore}
   TEST_SOURCES
     ${circular_aperture_antenna_test_sources}
@@ -83,4 +84,5 @@ build_lib(
     test/test-isotropic-antenna.cc
     test/test-parabolic-antenna.cc
     test/test-uniform-planar-array.cc
+    test/test-adjacency-matrix.cc
 )
