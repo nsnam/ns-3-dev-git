@@ -37,6 +37,8 @@ This file is a best-effort approach to solving this issue; we will do our best b
 
 ### Changed behavior
 
+* (lr-wpan) Association: Fix the handling of situations where the association response commands arrives before the data request command acknowledgment that is supposed to precede it.
+
 ## Changes from ns-3.42 to ns-3.43
 
 ### New API

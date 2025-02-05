@@ -319,6 +319,7 @@ LrWpanMac::DoDispose()
     m_scanEnergyEvent.Cancel();
     m_scanOrphanEvent.Cancel();
     m_beaconEvent.Cancel();
+    m_assocResCmdWaitTimeout.Cancel();
 
     Object::DoDispose();
 }
@@ -681,6 +682,8 @@ LrWpanMac::MlmeAssociateRequest(MlmeAssociateRequestParams params)
     // obtained from those operations.
     m_pendPrimitive = MLME_ASSOC_REQ;
     m_associateParams = params;
+    m_ignoreDataCmdAck = false;
+
     bool invalidRequest = false;
 
     if (params.m_coordPanId == 0xffff)
@@ -2312,10 +2315,28 @@ LrWpanMac::PdDataIndication(uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
                     case CommandPayloadHeader::ASSOCIATION_REQ:
                         NS_LOG_DEBUG("Association Request Command Received; processing ACK");
                         break;
-                    case CommandPayloadHeader::ASSOCIATION_RESP:
-                        m_assocResCmdWaitTimeout.Cancel(); // cancel event to a lost assoc resp cmd.
-                        NS_LOG_DEBUG("Association Response Command Received; processing ACK");
+                    case CommandPayloadHeader::ASSOCIATION_RESP: {
+                        if (m_assocResCmdWaitTimeout.IsPending())
+                        {
+                            m_assocResCmdWaitTimeout
+                                .Cancel(); // cancel event to a lost assoc resp cmd.
+                            NS_LOG_DEBUG("Association Response Command Received; processing ACK");
+                        }
+                        else
+                        {
+                            // Association response command was received before (or never received)
+                            // a Data request command ACK. This is an extreme case and it is
+                            // essentially caused by saturation in the network.
+                            // We turn a flag ON to not react once
+                            // we finally receive the Data request command ACK. This behavior is not
+                            // standard, but necessary to address this flaw in design of the
+                            // original association process.
+                            m_ignoreDataCmdAck = true;
+                            NS_LOG_DEBUG("Assoc. Resp Cmd received before Data Req. Cmd. in "
+                                         "Association request");
+                        }
                         break;
+                    }
                     default:
                         break;
                     }
@@ -2505,15 +2526,18 @@ LrWpanMac::PdDataIndication(uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
                             }
 
                             case CommandPayloadHeader::DATA_REQ: {
-                                // Schedule an event in case the Association Response Command never
-                                // reached this device during an association process.
-                                double symbolRate = m_phy->GetDataOrSymbolRate(false);
-                                Time waitTime = Seconds(
-                                    static_cast<double>(m_assocRespCmdWaitTime) / symbolRate);
-                                m_assocResCmdWaitTimeout =
-                                    Simulator::Schedule(waitTime,
-                                                        &LrWpanMac::LostAssocRespCommand,
-                                                        this);
+                                if (!m_ignoreDataCmdAck)
+                                {
+                                    // Schedule an event in case the Association Response Command
+                                    // never reached this device during an association process.
+                                    double symbolRate = m_phy->GetDataOrSymbolRate(false);
+                                    Time waitTime = Seconds(
+                                        static_cast<double>(m_assocRespCmdWaitTime) / symbolRate);
+                                    m_assocResCmdWaitTimeout =
+                                        Simulator::Schedule(waitTime,
+                                                            &LrWpanMac::LostAssocRespCommand,
+                                                            this);
+                                }
 
                                 if (!m_mlmePollConfirmCallback.IsNull())
                                 {

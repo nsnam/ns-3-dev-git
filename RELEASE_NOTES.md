@@ -49,14 +49,15 @@ The required Doxygen version for documentation generation is version 1.11.
 
 ### Bugs fixed
 
+- (lr-wpan) !2334 - Fix the MAC reaction to an association issue in which association response commands might be received before data request command acks.
+- (propagation) Scale the NTN LOS probabilities from percentages [0, 100] to probabilities [0, 1]
+- (spectrum) Calculate PSD by combining received power on ports, even when no precoding matrix is set
+- (spectrum) Scale the CDS parameter of V2V models to nanoseconds
+- (spectrum) Add missing K-factor fields (uk, sigK) for NTN NLOS 3GPP channel model
 - (wifi) Retransmit procedures have been aligned with the standard specifications.
 - (wifi) Clear PSDU map if no immediate response expected with BAR-BA ack sequence
 - (wifi) Fix S-MPDU TX duration computation with BlockAck ack policy
 - (wifi) Fix missing DSSS Param Set in Probe Request sent over 2.4 GHz links
-- (spectrum) Calculate PSD by combining received power on ports, even when no precoding matrix is set
-- (spectrum) Scale the CDS parameter of V2V models to nanoseconds
-- (spectrum) Add missing K-factor fields (uk, sigK) for NTN NLOS 3GPP channel model
-- (propagation) Scale the NTN LOS probabilities from percentages [0, 100] to probabilities [0, 1]
 
 ## Release 3.43
 

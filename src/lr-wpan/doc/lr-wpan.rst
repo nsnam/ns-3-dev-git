@@ -260,7 +260,13 @@ Devices that have the short address ``FF:FF`` are not associated an cannot parti
 Devices that have the short address ``FF:FE`` and have a valid PAN ID can communicate with other devices in the network using the
 extended address mode. In this mode, devices will use its 64 bit address (A.K.A. extended address) to communicate in the network.
 
-A fixed association is possible in |ns3| without the use of the bootstrap process. For this purpose, the ``LrWpanHelper::CreateAssociatedPan``
+Before ns-3.44, the MAC association struggled to handle scenarios where the association response command arrived before the acknowledgment (ACK)
+for a data request command. This issue could arise in saturated networks and is caused by a delayed data request command ACK
+(which do not use CSMA/CA but can be retried several times if necessary). This situation highlighted a problem and a design flaw in the original standard, where association responses
+are sent immediately after sending a data request acknowledgments. As a result, their arrival could become inverted. However,
+the current MAC implementation is now capable of correctly reacting to this delayed ACK issue.
+
+Finally, a fixed association is possible in |ns3| without the use of the bootstrap process. For this purpose, the ``LrWpanHelper::CreateAssociatedPan``
 is used. See the Helpers subsection for more details.
 
 MAC transmission Queues

@@ -1262,6 +1262,14 @@ class LrWpanMac : public LrWpanMacBase
     uint8_t m_lastRxFrameLqi;
 
     /**
+     * This flag informs the MAC that an association response command was received
+     * before the acknowledgment (ACK) for the data request command that
+     * should precede it. This situation typically occurs due to network saturation.
+     */
+
+    bool m_ignoreDataCmdAck;
+
+    /**
      * Scheduler event for the ACK timeout of the currently transmitted data
      * packet.
      */
