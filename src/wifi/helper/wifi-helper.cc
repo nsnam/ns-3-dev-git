@@ -1237,7 +1237,9 @@ WifiHelper::EnableLogComponents(LogLevel logLevel)
     LogComponentEnable("ConstantObssPdAlgorithm", logLevel);
     LogComponentEnable("ConstantRateWifiManager", logLevel);
     LogComponentEnable("DefaultApEmlsrManager", logLevel);
+    LogComponentEnable("DefaultDsoManager", logLevel);
     LogComponentEnable("DefaultEmlsrManager", logLevel);
+    LogComponentEnable("DsoManager", logLevel);
     LogComponentEnable("DsssErrorRateModel", logLevel);
     LogComponentEnable("DsssPhy", logLevel);
     LogComponentEnable("DsssPpdu", logLevel);
