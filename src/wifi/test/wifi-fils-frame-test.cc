@@ -121,7 +121,7 @@ class WifiFilsFrameTest : public TestCase
     /// @param channel the channel to attach to
     /// @param isAp whether the device is an AP
     /// @return the created WifiNetDevice
-    Ptr<WifiNetDevice> SetupDevice(Ptr<YansWifiChannel>& channel, bool isAp);
+    Ptr<WifiNetDevice> SetupDevice(Ptr<YansWifiChannel>& channel, bool isAp) const;
 
     /// @brief callback connected to PSDU TX begin trace source
     /// @param psduMap the transmitted PSDU map
@@ -168,7 +168,7 @@ WifiFilsFrameTest::WifiFilsFrameTest(const WifiFilsFrameTestParams& params)
 }
 
 Ptr<WifiNetDevice>
-WifiFilsFrameTest::SetupDevice(Ptr<YansWifiChannel>& channel, bool isAp)
+WifiFilsFrameTest::SetupDevice(Ptr<YansWifiChannel>& channel, bool isAp) const
 {
     NodeContainer node;
     YansWifiPhyHelper phy;
