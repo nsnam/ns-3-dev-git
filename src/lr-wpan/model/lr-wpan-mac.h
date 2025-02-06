@@ -491,7 +491,7 @@ class LrWpanMac : public LrWpanMacBase
     uint16_t m_macPanId;
 
     /**
-     * Temporally stores the value of the current m_macPanId when a MLME-SCAN.request is performed.
+     * Temporarily stores the value of the current m_macPanId when a MLME-SCAN.request is performed.
      * See IEEE 802.15.4-2011, section 5.1.2.1.2.
      */
     uint16_t m_macPanIdScan;

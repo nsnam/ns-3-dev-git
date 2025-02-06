@@ -1660,7 +1660,7 @@ ZigbeeNwk::MlmeOrphanIndication(MlmeOrphanIndicationParams params)
         respParams.m_orphanAddr = params.m_orphanAddr;
         respParams.m_shortAddr = entry->GetNwkAddr();
 
-        // Temporally store the NLME-JOIN.indications parameters that will be
+        // Temporarily store the NLME-JOIN.indications parameters that will be
         // returned after the DIRECT_JOIN process concludes.
         // (after MLME-COMM-STATUS.indication is received)
         CapabilityInformation capability;
@@ -1905,7 +1905,7 @@ ZigbeeNwk::MlmeAssociateIndication(MlmeAssociateIndicationParams params)
             responseParams.m_status = MacStatus::SUCCESS;
             responseParams.m_assocShortAddr = allocatedAddr;
 
-            // Temporally store the NLME-JOIN.indications parameters that will be
+            // Temporarily store the NLME-JOIN.indications parameters that will be
             // returned after the association process concludes.
             // (after MLME-COMM-STATUS.indication received and beacon payload updated)
             m_joinIndParams.m_capabilityInfo = receivedCapability.GetCapability();
@@ -2542,7 +2542,7 @@ ZigbeeNwk::NlmeJoinRequest(NlmeJoinRequestParams params)
             m_nwkParentInformation = 0;
             m_nwkCapabilityInformation = params.m_capabilityInfo;
 
-            // Temporally store some associate values until the process concludes
+            // Temporarily store some associate values until the process concludes
             m_associateParams.panId = panId;
             m_associateParams.extAddress = bestParentEntry->GetExtAddr();
 
