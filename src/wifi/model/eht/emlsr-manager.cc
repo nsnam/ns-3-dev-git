@@ -753,6 +753,8 @@ EmlsrManager::NotifyProtectionCompleted(uint8_t linkId)
             SetSleepStateForAllAuxPhys(true);
         }
     }
+
+    DoNotifyProtectionCompleted(linkId);
 }
 
 void

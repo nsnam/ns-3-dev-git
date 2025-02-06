@@ -245,12 +245,20 @@ AdvancedEmlsrManager::DoGetDelayUntilAccessRequest(uint8_t linkId)
         }
     }
 
-    if (GetStaMac()->GetWifiPhy(linkId) == GetStaMac()->GetDevice()->GetPhy(GetMainPhyId()) &&
-        !m_auxPhyTxCapable && m_ccaLastPifs.IsPending())
+    auto phy = GetStaMac()->GetWifiPhy(linkId);
+    auto mainPhy = GetStaMac()->GetDevice()->GetPhy(m_mainPhyId);
+
+    if (phy == mainPhy)
     {
-        // main PHY has got access on the link it switched to (because the aux PHY is not TX
-        // capable) before a PIFS interval was elapsed: do not start the TXOP now
-        return {false, Time{0}};
+        if (!m_auxPhyTxCapable && m_ccaLastPifs.IsPending())
+        {
+            // main PHY has got access on the link it switched to (because the aux PHY is not TX
+            // capable) before a PIFS interval was elapsed: do not start the TXOP now
+            return {false, Time{0}};
+        }
+
+        // UL TXOP is going to start
+        m_rtsStartingUlTxop[linkId] = {Simulator::Now(), false};
     }
 
     return {true, Time{0}};
@@ -329,6 +337,20 @@ AdvancedEmlsrManager::DoNotifyTxopEnd(uint8_t linkId)
     // or
     // - SwitchAuxPhy is false and there is an aux PHY to reconnect
 
+    std::shared_ptr<EmlsrMainPhySwitchTrace> traceInfo;
+
+    if (const auto it = m_rtsStartingUlTxop.find(linkId);
+        it != m_rtsStartingUlTxop.cend() && it->second.second)
+    {
+        // TXOP ended due to a CTS timeout following the RTS that started a TXOP
+        traceInfo = std::make_shared<EmlsrCtsAfterRtsTimeoutTrace>(Time{0});
+        m_rtsStartingUlTxop.erase(it);
+    }
+    else
+    {
+        traceInfo = std::make_shared<EmlsrTxopEndedTrace>();
+    }
+
     // Note that the main PHY may be switching at the end of a TXOP when, e.g., the main PHY
     // starts switching to a link on which an aux PHY gained a TXOP and sent an RTS, but the CTS
     // is not received and the UL TXOP ends before the main PHY channel switch is completed.
@@ -342,17 +364,18 @@ AdvancedEmlsrManager::DoNotifyTxopEnd(uint8_t linkId)
             !m_switchAuxPhy || m_mainPhySwitchInfo.end >= Simulator::Now(),
             "Aux PHY next link ID should have a value when interrupting a main PHY switch");
         uint8_t nextLinkId = m_switchAuxPhy ? m_mainPhySwitchInfo.from : GetMainPhyId();
-        const auto delay = mainPhy->IsStateSwitching() ? mainPhy->GetDelayUntilIdle() : Time{0};
-        SwitchMainPhy(nextLinkId,
-                      false,
-                      DONT_RESET_BACKOFF,
-                      REQUEST_ACCESS,
-                      EmlsrTxopEndedTrace(delay));
+        SwitchMainPhy(nextLinkId, false, DONT_RESET_BACKOFF, REQUEST_ACCESS, std::move(*traceInfo));
     }
     else
     {
         // delay link switch until current channel switching is completed
         const auto delay = mainPhy->GetDelayUntilIdle();
+
+        if (auto info = std::dynamic_pointer_cast<EmlsrCtsAfterRtsTimeoutTrace>(traceInfo))
+        {
+            info->sinceCtsTimeout = delay;
+        }
+
         Simulator::Schedule(delay, [=, this]() {
             // request the main PHY to switch back to the preferred link only if in the meantime
             // no TXOP started on another link (which will require the main PHY to switch link)
@@ -362,7 +385,7 @@ AdvancedEmlsrManager::DoNotifyTxopEnd(uint8_t linkId)
                               false,
                               DONT_RESET_BACKOFF,
                               REQUEST_ACCESS,
-                              EmlsrTxopEndedTrace(delay));
+                              std::move(*traceInfo));
             }
         });
     }
@@ -412,7 +435,7 @@ AdvancedEmlsrManager::GetDelayUnlessMainPhyTakesOverUlTxop(uint8_t linkId)
 
     // TXOP can be started, main PHY will be scheduled to switch by NotifyRtsSent as soon as the
     // transmission of the RTS is notified
-    m_switchMainPhyOnRtsTx[linkId] = Simulator::Now();
+    m_rtsStartingUlTxop[linkId] = {Simulator::Now(), false};
 
     return {true, Time{0}};
 }

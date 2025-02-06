@@ -1530,20 +1530,22 @@ EMLSR clients:
   * ``EmlsrUlTxopRtsSentByAuxPhyTrace``: main PHY is starting switching to another link to take over
     an UL TXOP started by a TX capable aux PHY that transmitted an RTS frame on that link
   * ``EmlsrTxopEndedTrace``: main PHY is starting switching because a (DL or UL) TXOP ended. This
-    trace has a parameter, remTime, whose value is set as follows. When a TXOP ends after a
-    successful transmission and aux PHYs do not switch link, the main PHY switches back to the
-    preferred link; in such a case, the remTime parameter is set to zero. However, a TXOP may end
-    due to a CTS timeout after that a TX capable aux PHY had sent an RTS to start an UL TXOP and
-    the main PHY may be switching when the CTS timeout occurs. If the main PHY switch cannot be
-    interrupted (see case a) in Fig. :ref:`fig-emlsr-txop-ended-trace`), which is the case with the
-    Default EMLSR Manager or with the Advanced EMLSR Manager when the ``InterruptSwitch`` attribute
-    is false, the remTime parameter is set to the remaining channel switch delay at the time the
-    TXOP ends. If the main PHY switch can be interrupted (see case b) in Fig.
-    :ref:`fig-emlsr-txop-ended-trace`), which is the case with the Advanced EMLSR Manager when the
-    ``InterruptSwitch`` attribute is true, the remTime parameter indicates the time that was left
-    to complete the previous channel switch. Note that, in the latter case, this channel switch can
-    also occur when the aux PHYs switch link, as the main PHY returns to the link it was operating
-    on before starting the previous channel switch.
+    trace is called when aux PHYs do not switch link and the main PHY switches back to the preferred
+    link when a TXOP carried out on another link ends
+  * ``EmlsrRtsSentByAuxPhyCtsTimeoutTrace``: main PHY is starting switching after a CTS timeout
+    occurred on the link on which an RTS was transmitted to start an UL TXOP. This trace
+    has a parameter, sinceCtsTimeout, that provides the time elapsed since the CTS timeout occurred.
+    Normally, this trace is called when aux PHYs do not switch links, because the main PHY has to
+    return to the preferred link upon CTS timeout, because a TXOP did not start. In some cases, the
+    main PHY may be switching when CTS timeout occurs; this happens when an aux PHY that is TX
+    capable transmits an RTS and the main PHY starts switching to the aux PHY link. In such a case,
+    the main PHY completes the current link switch and then it starts switching to return back to
+    the preferred link (see case (a) in Fig. :ref:`fig-emlsr-txop-ended-trace`). If the
+    main PHY switch can be interrupted (see case (b) in Fig. :ref:`fig-emlsr-txop-ended-trace`),
+    which is the case with the Advanced EMLSR Manager when the ``InterruptSwitch`` attribute is
+    false, the previous switch is interrupted and the main PHY starts switching to the previous
+    link (in this case, the time elapsed since the CTS timeout occurred is zero). This holds true
+    for both the case aux PHYs do not switch link and the case aux PHYs switch link.
 
 Ack manager
 ###########

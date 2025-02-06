@@ -188,6 +188,15 @@ std::pair<bool, Time>
 DefaultEmlsrManager::DoGetDelayUntilAccessRequest(uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << linkId);
+    auto phy = GetStaMac()->GetWifiPhy(linkId);
+    auto mainPhy = GetStaMac()->GetDevice()->GetPhy(m_mainPhyId);
+
+    if (phy == mainPhy)
+    {
+        // UL TXOP is going to start
+        m_rtsStartingUlTxop[linkId] = {Simulator::Now(), false};
+    }
+
     return {true, Time{0}}; // start the TXOP
 }
 
@@ -208,13 +217,24 @@ DefaultEmlsrManager::DoNotifyTxopEnd(uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << linkId);
 
-    // switch main PHY to the previous link, if needed
-    if (!m_switchAuxPhy)
+    if (m_switchAuxPhy)
     {
+        return; // nothing to do
+    }
+
+    // switch main PHY to the previous link, if needed
+    if (const auto it = m_rtsStartingUlTxop.find(linkId);
+        it != m_rtsStartingUlTxop.cend() && it->second.second)
+    {
+        // TXOP ended due to a CTS timeout following the RTS that started a TXOP
         const auto mainPhy = GetStaMac()->GetDevice()->GetPhy(m_mainPhyId);
         const auto delay = mainPhy->IsStateSwitching() ? mainPhy->GetDelayUntilIdle() : Time{0};
-        SwitchMainPhyBackToPreferredLink(linkId, EmlsrTxopEndedTrace(delay));
+        SwitchMainPhyBackToPreferredLink(linkId, EmlsrCtsAfterRtsTimeoutTrace(delay));
+        m_rtsStartingUlTxop.erase(it);
+        return;
     }
+
+    SwitchMainPhyBackToPreferredLink(linkId, EmlsrTxopEndedTrace());
 }
 
 void
@@ -340,7 +360,7 @@ DefaultEmlsrManager::GetDelayUnlessMainPhyTakesOverUlTxop(uint8_t linkId)
 
     // TXOP can be started, main PHY will be scheduled to switch by NotifyRtsSent as soon as the
     // transmission of the RTS is notified
-    m_switchMainPhyOnRtsTx[linkId] = Simulator::Now();
+    m_rtsStartingUlTxop[linkId] = {Simulator::Now(), false};
 
     return {true, Time{0}};
 }
@@ -352,16 +372,23 @@ DefaultEmlsrManager::NotifyRtsSent(uint8_t linkId,
 {
     NS_LOG_FUNCTION(this << *rts << txVector);
 
-    const auto it = m_switchMainPhyOnRtsTx.find(linkId);
+    const auto it = m_rtsStartingUlTxop.find(linkId);
 
-    if (it == m_switchMainPhyOnRtsTx.cend() || it->second != Simulator::Now())
+    if (it == m_rtsStartingUlTxop.cend() || it->second.first != Simulator::Now())
     {
-        // No request for main PHY to switch or obsolete request
-        return;
+        return; // Not an RTS starting an UL TXOP
+    }
+    it->second.second = true;
+
+    auto phy = GetStaMac()->GetWifiPhy(linkId);
+    auto mainPhy = GetStaMac()->GetDevice()->GetPhy(m_mainPhyId);
+
+    if (phy == mainPhy)
+    {
+        return; // RTS sent by the main PHY
     }
 
     // Main PHY shall terminate the channel switch at the end of CTS reception
-    auto mainPhy = GetStaMac()->GetDevice()->GetPhy(m_mainPhyId);
     const auto delay = GetTimeToCtsEnd(linkId, txVector) - mainPhy->GetChannelSwitchDelay();
     NS_ASSERT_MSG(delay.IsPositive(),
                   "RTS is being sent, but not enough time for main PHY to switch");
@@ -374,8 +401,13 @@ DefaultEmlsrManager::NotifyRtsSent(uint8_t linkId,
                       DONT_REQUEST_ACCESS,
                       EmlsrUlTxopRtsSentByAuxPhyTrace{});
     });
+}
 
-    m_switchMainPhyOnRtsTx.erase(it);
+void
+DefaultEmlsrManager::DoNotifyProtectionCompleted(uint8_t linkId)
+{
+    NS_LOG_FUNCTION(this << linkId);
+    m_rtsStartingUlTxop.erase(linkId);
 }
 
 } // namespace ns3

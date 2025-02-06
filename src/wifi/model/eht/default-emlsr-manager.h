@@ -81,9 +81,9 @@ class DefaultEmlsrManager : public EmlsrManager
                                       //!< the main PHY is operating has to connect a listener to
                                       //!< when the main PHY is back operating on its previous link
     EventId m_auxPhySwitchEvent;      //!< event scheduled for an aux PHY to switch link
-    std::map<uint8_t, Time> m_switchMainPhyOnRtsTx; //!< link ID-indexed map of the time when an RTS
-                                                    //!< that requires the main PHY to switch link
-                                                    //!< is expected to be transmitted on the link
+    std::map<uint8_t, std::pair<Time, bool>>
+        m_rtsStartingUlTxop; //!< link ID-indexed map indicating the time when an UL TXOP is going
+                             //!< to start and whether it is starting with an RTS
 
   private:
     /**
@@ -111,6 +111,7 @@ class DefaultEmlsrManager : public EmlsrManager
     void DoNotifyIcfReceived(uint8_t linkId) override;
     void DoNotifyUlTxopStart(uint8_t linkId) override;
     void DoNotifyTxopEnd(uint8_t linkId) override;
+    void DoNotifyProtectionCompleted(uint8_t linkId) override;
 };
 
 } // namespace ns3

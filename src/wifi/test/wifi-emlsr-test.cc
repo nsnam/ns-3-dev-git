@@ -3110,19 +3110,6 @@ EmlsrUlTxopTest::CheckBlockAck(const WifiConstPsduMap& psduMap,
         if (m_staMacs[0]->GetLinkForPhy(m_mainPhyId) != linkId)
         {
             Simulator::Schedule(txDuration + TimeStep(1), [=, this]() {
-                // check the traced remaining time before calling CheckMainPhyTraceInfo
-                if (const auto traceInfoIt = m_traceInfo.find(0);
-                    traceInfoIt != m_traceInfo.cend() &&
-                    traceInfoIt->second->GetName() == "TxopEnded")
-                {
-                    const auto& traceInfo =
-                        static_cast<const EmlsrTxopEndedTrace&>(*traceInfoIt->second);
-                    NS_TEST_EXPECT_MSG_EQ(
-                        traceInfo.remTime,
-                        Time{0},
-                        "Expected null remaining time because TXOP ended regularly");
-                }
-
                 CheckMainPhyTraceInfo(0, "TxopEnded", linkId, m_mainPhyId);
             });
         }
@@ -3518,24 +3505,25 @@ EmlsrUlTxopTest::CheckCtsFrames(Ptr<const WifiMpdu> mpdu,
                 // aux PHYs are put to sleep if and only if CTS is not corrupted
                 // (causing the end of the TXOP)
                 CheckAuxPhysSleepMode(m_staMacs[0], !doCorruptCts);
-                // if CTS is corrupted, TXOP ends and the main PHY switches back
-                // to the preferred link
+                // if CTS is corrupted, TXOP ends and the main PHY switches back to the preferred
+                // link
                 if (doCorruptCts)
                 {
-                    // check the traced remaining time before calling CheckMainPhyTraceInfo
+                    // check the traced elapsed time since CTS timeout before calling
+                    // CheckMainPhyTraceInfo
                     if (const auto traceInfoIt = m_traceInfo.find(0);
                         traceInfoIt != m_traceInfo.cend() &&
-                        traceInfoIt->second->GetName() == "TxopEnded")
+                        traceInfoIt->second->GetName() == "CtsAfterRtsTimeout")
                     {
                         const auto& traceInfo =
-                            static_cast<const EmlsrTxopEndedTrace&>(*traceInfoIt->second);
-                        NS_TEST_EXPECT_MSG_GT(traceInfo.remTime,
+                            static_cast<const EmlsrCtsAfterRtsTimeoutTrace&>(*traceInfoIt->second);
+                        NS_TEST_EXPECT_MSG_GT(traceInfo.sinceCtsTimeout,
                                               Time{0},
                                               "Expected non-zero remaining time because main PHY "
-                                              "was switching when TXOP ended");
+                                              "was switching when CTS timeout occurred");
                     }
 
-                    CheckMainPhyTraceInfo(0, "TxopEnded", linkId, m_mainPhyId);
+                    CheckMainPhyTraceInfo(0, "CtsAfterRtsTimeout", linkId, m_mainPhyId);
                 }
             });
     }

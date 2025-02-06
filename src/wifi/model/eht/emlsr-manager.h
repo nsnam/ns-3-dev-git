@@ -605,6 +605,14 @@ class EmlsrManager : public Object
     virtual void DoNotifyUlTxopStart(uint8_t linkId) = 0;
 
     /**
+     * Notify the subclass that protection (if required) is completed and data frame exchange can
+     * start on the given link.
+     *
+     * @param linkId the ID of the given link
+     */
+    virtual void DoNotifyProtectionCompleted(uint8_t linkId) = 0;
+
+    /**
      * Notify the subclass of the end of a TXOP on the given link.
      *
      * @param linkId the ID of the given link
@@ -734,61 +742,58 @@ struct EmlsrUlTxopRtsSentByAuxPhyTrace
 /**
  * Struct to trace that main PHY switched when a (DL or UL) TXOP ended.
  *
- * This trace is normally called when aux PHYs do not switch link and the main PHY switches back to
- * the preferred link when a TXOP carried out on another link ends. In such a case, the remTime
- * field is set to zero.
- *
- * Note that the main PHY may be already switching when the TXOP ends; this happens, e.g., when the
- * main PHY starts switching to a link on which an aux PHY gained a TXOP and sent an RTS, but the
- * CTS is not received and the UL TXOP ends before the main PHY channel switch is completed. In this
- * case, the main PHY switch is postponed until the previous switch is completed and the remTime
- * field is set to the remaining channel switch delay at the time the TXOP ends:
+ * This trace is called when aux PHYs do not switch link and the main PHY switches back to the
+ * preferred link when a TXOP carried out on another link ends.
+ */
+struct EmlsrTxopEndedTrace : public EmlsrMainPhySwitchTraceImpl<EmlsrTxopEndedTrace>
+{
+    static constexpr std::string_view m_name = "TxopEnded"; //!< trace name
+};
+
+/**
+ * Struct to trace that main PHY started switching after a CTS timeout occurred on the link on
+ * which an RTS was transmitted to start an UL TXOP. Provides the time elapsed since the
+ * CTS timeout occurred.
  *
  *                                |-- main PHY switch --|
  *                                |----- to link 1 -----|
  *                                          ┌───────────┐
  *                                          │    CTS    │
  *  ────────────────────────┬───────────┬───┴X──────────┴─────────────────────────────
- *  [link 1]                │    RTS    │     │-remTime-│
- *                          └───────────┘     │         |-- main PHY switch --|
+ *  [link 1]                │    RTS    │     │-elapsed-│
+ *                          └───────────┘     │-- time--|-- main PHY switch --|
  *                                            │         |- to preferred link -|
- *                                         CTS timeout
+ *                                        CTS timeout
  *
- * Note also that the Advanced EMLSR manager may allow a main PHY switch to be interrupted. If this
- * option is enabled and the main PHY is switching when the TXOP ends, the previous switch is
- * interrupted and the main PHY starts switching to the preferred link (in this case, the remTime
- * field indicates the time that was left to complete the previous switch). Also note that, with
- * the Advanced EMLSR manager, this trace may also be called when aux PHYs switch link. This happens
- * when the TXOP ends while the main PHY is switching; in this case, the previous switch is
- * interrupted and the main PHY returns to the link on which it was operating before the previous
- * switch.
+ * Normally, this trace is called when aux PHYs do not switch links, because the main PHY has to
+ * return to the preferred link upon CTS timeout, because a TXOP did not start. In some cases, the
+ * main PHY may be switching when CTS timeout occurs; this happens when an aux PHY that is TX
+ * capable transmits an RTS and the main PHY starts switching to the aux PHY link (the start time
+ * of the main PHY switch is computed such that the main PHY switch ends slightly after the
+ * reception of the CTS). In such a case, the main PHY completes the current link switch and then
+ * it starts switching to return back to the preferred link.
  *
- *                                |-- main PHY switch --|
- *                                |----- to link 1 -----|(interrupted)
- *                                          ┌───────────┐
- *                                          │    CTS    │
- *  ────────────────────────┬───────────┬───┴X──────────┴─────────────────────────────
- *  [link 1]                │    RTS    │     │-remTime-│
- *                          └───────────┘     │-- main PHY switch --|
- *                                            │- to preferred link -|
- *                                         CTS timeout
+ * Note that the Advanced EMLSR manager may allow a main PHY switch to be interrupted. If this
+ * option is enabled and the main PHY is switching when CTS timeout occurs, the previous switch is
+ * interrupted and the main PHY starts switching to the previous link (in this case, the time
+ * elapsed since the CTS timeout occurred is zero). This holds true for both the case aux PHYs do
+ * not switch link and the case aux PHYs switch link.
  */
-struct EmlsrTxopEndedTrace : public EmlsrMainPhySwitchTraceImpl<EmlsrTxopEndedTrace>
+struct EmlsrCtsAfterRtsTimeoutTrace
+    : public EmlsrMainPhySwitchTraceImpl<EmlsrCtsAfterRtsTimeoutTrace>
 {
-    static constexpr std::string_view m_name = "TxopEnded"; //!< trace name
+    static constexpr std::string_view m_name = "CtsAfterRtsTimeout"; //!< trace name
 
-    Time remTime; //!< the remaining time (at TXOP end) until the main PHY completes the
-                  //!< channel switch, in case the main PHY is completing a previous switch
-                  //!< when the TXOP ends
+    Time sinceCtsTimeout; //!< time elapsed since CTS timeout occurred
 
     /**
      * Constructor provided because this struct is not an aggregate (it has a base struct), hence
      * we cannot use designated initializers.
      *
-     * @param t the value for the sinceTxopEnd field
+     * @param elapsed the value for the sinceCtsTimeout field
      */
-    EmlsrTxopEndedTrace(const Time& t)
-        : remTime(t)
+    EmlsrCtsAfterRtsTimeoutTrace(const Time& elapsed)
+        : sinceCtsTimeout(elapsed)
     {
     }
 };
