@@ -1045,8 +1045,7 @@ LrWpanMac::SendOneBeacon()
     else
     {
         // Extract the octets from m_macBeaconPayload and place them in a packet
-        uint8_t* octets = &m_macBeaconPayload[0];
-        beaconPacket = Create<Packet>(octets, m_macBeaconPayload.size());
+        beaconPacket = Create<Packet>(m_macBeaconPayload.data(), m_macBeaconPayload.size());
     }
 
     LrWpanMacHeader macHdr(LrWpanMacHeader::LRWPAN_MAC_BEACON, m_macBsn.GetValue());
