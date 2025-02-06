@@ -1333,22 +1333,42 @@ ZigbeeNwk::MlmeAssociateConfirm(MlmeAssociateConfirmParams params)
             // Update NWK NIB values
             m_nwkNetworkAddress = params.m_assocShortAddr;
             m_nwkExtendedPanId = m_joinParams.m_extendedPanId;
-            m_nwkPanId = m_associateParams.panId;
+            m_nwkPanId = m_associateParams.m_coordPanId;
 
             // Update relationship
-            if (m_nwkNeighborTable.LookUpEntry(m_associateParams.extAddress, entry))
+            if (m_associateParams.m_coordAddrMode == lrwpan::AddressMode::EXT_ADDR)
             {
-                entry->SetRelationship(NBR_PARENT);
+                if (m_nwkNeighborTable.LookUpEntry(m_associateParams.m_coordExtAddr, entry))
+                {
+                    entry->SetRelationship(NBR_PARENT);
 
-                NS_LOG_DEBUG("[NLME-JOIN.request]:\n              "
-                             << "Status: " << joinConfirmParams.m_status << " | PAN ID: 0x"
-                             << std::hex << m_nwkPanId << " | Extended PAN ID: 0x"
-                             << m_nwkExtendedPanId << std::dec);
+                    NS_LOG_DEBUG("[NLME-JOIN.request]:\n              "
+                                 << "Status: " << joinConfirmParams.m_status << " | PAN ID: 0x"
+                                 << std::hex << m_nwkPanId << " | Extended PAN ID: 0x"
+                                 << m_nwkExtendedPanId << std::dec);
+                }
+                else
+                {
+                    NS_LOG_ERROR("Entry not found while updating relationship");
+                }
             }
             else
             {
-                NS_LOG_ERROR("Entry not found while updating relationship");
+                if (m_nwkNeighborTable.LookUpEntry(m_associateParams.m_coordShortAddr, entry))
+                {
+                    entry->SetRelationship(NBR_PARENT);
+
+                    NS_LOG_DEBUG("[NLME-JOIN.request]:\n              "
+                                 << "Status: " << joinConfirmParams.m_status << " | PAN ID: 0x"
+                                 << std::hex << m_nwkPanId << " | Extended PAN ID: 0x"
+                                 << m_nwkExtendedPanId << std::dec);
+                }
+                else
+                {
+                    NS_LOG_ERROR("Entry not found while updating relationship");
+                }
             }
+
             // TODO:m_nwkUpdateId
         }
         else
@@ -1356,14 +1376,29 @@ ZigbeeNwk::MlmeAssociateConfirm(MlmeAssociateConfirmParams params)
             if (params.m_status == MacStatus::FULL_CAPACITY)
             {
                 // Discard neighbor as potential parent
-                if (m_nwkNeighborTable.LookUpEntry(m_associateParams.extAddress, entry))
+                if (m_associateParams.m_coordAddrMode == lrwpan::AddressMode::EXT_ADDR)
                 {
-                    entry->SetPotentialParent(false);
+                    if (m_nwkNeighborTable.LookUpEntry(m_associateParams.m_coordExtAddr, entry))
+                    {
+                        entry->SetPotentialParent(false);
+                    }
+                    else
+                    {
+                        NS_LOG_ERROR("Neighbor not found when discarding as potential parent");
+                    }
                 }
                 else
                 {
-                    NS_LOG_ERROR("Neighbor not found when discarding as potential parent");
+                    if (m_nwkNeighborTable.LookUpEntry(m_associateParams.m_coordShortAddr, entry))
+                    {
+                        entry->SetPotentialParent(false);
+                    }
+                    else
+                    {
+                        NS_LOG_ERROR("Neighbor not found when discarding as potential parent");
+                    }
                 }
+
                 joinConfirmParams.m_status = NwkStatus::NEIGHBOR_TABLE_FULL;
             }
             else
@@ -2542,9 +2577,8 @@ ZigbeeNwk::NlmeJoinRequest(NlmeJoinRequestParams params)
             m_nwkParentInformation = 0;
             m_nwkCapabilityInformation = params.m_capabilityInfo;
 
-            // Temporarily store some associate values until the process concludes
-            m_associateParams.panId = panId;
-            m_associateParams.extAddress = bestParentEntry->GetExtAddr();
+            // Temporarily store MLME-ASSOCIATE.request parameters until the JOIN process concludes
+            m_associateParams = assocParams;
 
             Simulator::ScheduleNow(&LrWpanMacBase::MlmeAssociateRequest, m_mac, assocParams);
         }
@@ -2808,8 +2842,6 @@ ZigbeeNwk::AllocateNetworkAddress()
 uint8_t
 ZigbeeNwk::GetLQINonLinearValue(uint8_t lqi) const
 {
-    NS_LOG_FUNCTION(this);
-
     uint8_t mappedValue;
 
     if (lqi > 50)

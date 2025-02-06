@@ -1022,11 +1022,21 @@ NeighborTableEntry::Print(Ptr<OutputStreamWrapper> stream) const
         break;
     }
 
-    *os << std::setw(14) << static_cast<uint32_t>(m_txFailure);
-    *os << std::setw(5) << static_cast<uint32_t>(m_lqi);
-    *os << std::setw(16) << static_cast<uint32_t>(m_outgoingCost);
-    *os << std::setw(8) << static_cast<uint32_t>(m_age);
-    *os << "0x" << std::hex << m_extPanId << std::dec;
+    *os << std::setw(14) << static_cast<uint16_t>(m_txFailure);
+    *os << std::setw(5) << static_cast<uint16_t>(m_lqi);
+    *os << std::setw(16) << static_cast<uint16_t>(m_outgoingCost);
+    *os << std::setw(8) << static_cast<uint16_t>(m_age);
+    *os << std::setw(19) << std::hex << m_extPanId << std::dec;
+
+    if (m_potentialParent)
+    {
+        *os << std::setw(11) << "TRUE";
+    }
+    else
+    {
+        *os << std::setw(11) << "FALSE";
+    }
+
     *os << std::endl;
     (*os).copyfmt(oldState);
 }
@@ -1172,7 +1182,8 @@ NeighborTable::Print(Ptr<OutputStreamWrapper> stream) const
     *os << std::setw(5) << "LQI";
     *os << std::setw(16) << "Outgoing Cost";
     *os << std::setw(8) << "Age";
-    *os << std::setw(10) << "Ext PAN ID";
+    *os << std::setw(19) << "Ext PAN ID";
+    *os << std::setw(11) << "Pot. Parent";
     *os << std::endl;
 
     for (const auto& entry : m_neighborTable)

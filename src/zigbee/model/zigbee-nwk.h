@@ -580,17 +580,6 @@ struct NlmeJoinIndicationParams
 /**
  * @ingroup zigbee
  *
- * Structure to store parameters used during associate process.
- */
-struct AssociateParams
-{
-    Mac64Address extAddress; //!< The extended address of the device to which the request is send.
-    uint16_t panId; //!< The PAN id used by the device to which the association request is send.
-};
-
-/**
- * @ingroup zigbee
- *
  * NLME-START-ROUTER.request params.
  * See Zigbee Specification r22.1.0, 3.2.2.13
  */
@@ -1235,10 +1224,10 @@ class ZigbeeNwk : public Object
     NlmeStartRouterRequestParams m_startRouterParams;
 
     /**
-     * Temporarily store parameters during the associate process that take
-     * place during a NLME-JOIN.request.
+     * Temporarily store MLME-ASSOCIATE.request parameters
+     * during a NLME-JOIN.request.
      */
-    AssociateParams m_associateParams;
+    lrwpan::MlmeAssociateRequestParams m_associateParams;
 
     /**
      *  The maximum acceptable energy level used in an energy scan taking place
