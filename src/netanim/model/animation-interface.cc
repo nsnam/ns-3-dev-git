@@ -2518,9 +2518,8 @@ AnimationInterface::WriteXmlRp(uint32_t nodeId,
     element.AddAttribute("id", nodeId);
     element.AddAttribute("d", destination.c_str());
     element.AddAttribute("c", rpElements.size());
-    for (auto i = rpElements.begin(); i != rpElements.end(); ++i)
+    for (const auto& rpElement : rpElements)
     {
-        const Ipv4RoutePathElement& rpElement = *i;
         AnimXmlElement rpeElement("rpe");
         rpeElement.AddAttribute("n", rpElement.nodeId);
         rpeElement.AddAttribute("nH", rpElement.nextHop.c_str());

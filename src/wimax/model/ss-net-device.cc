@@ -1161,13 +1161,11 @@ SubscriberStationNetDevice::ProcessUlMap(const UlMap& ulmap)
     m_nrUlMapRecvd++;
     m_ucdCount = ulmap.GetUcdCount();
     m_allocationStartTime = ulmap.GetAllocationStartTime();
-    std::list<OfdmUlMapIe> ulMapElements = ulmap.GetUlMapElements();
+    const auto& ulMapElements = ulmap.GetUlMapElements();
     m_linkManager->SetRangingIntervalFound(false);
 
-    for (auto iter = ulMapElements.begin(); iter != ulMapElements.end(); ++iter)
+    for (const auto& ulMapIe : ulMapElements)
     {
-        const OfdmUlMapIe& ulMapIe = *iter;
-
         if (ulMapIe.GetUiuc() == OfdmUlBurstProfile::UIUC_END_OF_MAP)
         {
             break;
@@ -1263,12 +1261,10 @@ SubscriberStationNetDevice::ProcessDcd(const Dcd& dcd)
 
     GetPhy()->GetFrameDuration(dcdChnlEncodings.GetFrameDurationCode());
 
-    std::vector<OfdmDlBurstProfile> dlBurstProfiles = dcd.GetDlBurstProfiles();
+    const auto& dlBurstProfiles = dcd.GetDlBurstProfiles();
 
-    for (auto iter = dlBurstProfiles.begin(); iter != dlBurstProfiles.end(); ++iter)
+    for (const auto& brstProfile : dlBurstProfiles)
     {
-        const OfdmDlBurstProfile& brstProfile = *iter;
-
         /*NS-2 does this, may be not correct, assumes DIUC/UIUC to
          modulation type mapping in DCD/UCD may change over time*/
         if (brstProfile.GetFecCodeType() == m_modulationType)
@@ -1298,12 +1294,9 @@ SubscriberStationNetDevice::ProcessUcd(const Ucd& ucd)
                                 1); // initializing ranging CW
     OfdmUcdChannelEncodings ucdChnlEncodings = ucd.GetChannelEncodings();
 
-    std::vector<OfdmUlBurstProfile> ulBurstProfiles = ucd.GetUlBurstProfiles();
-
-    for (auto iter = ulBurstProfiles.begin(); iter != ulBurstProfiles.end(); ++iter)
+    const auto& ulBurstProfiles = ucd.GetUlBurstProfiles();
+    for (const auto& brstProfile : ulBurstProfiles)
     {
-        const OfdmUlBurstProfile& brstProfile = *iter;
-
         /*NS-2 does this, may be not correct, assumes DIUC/UIUC to
          modulation type mapping in DCD/UCD may change over time*/
         if (brstProfile.GetFecCodeType() == m_modulationType)
