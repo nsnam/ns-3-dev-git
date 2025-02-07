@@ -1305,6 +1305,7 @@ ZigbeeNwk::MlmeScanConfirm(MlmeScanConfirmParams params)
             {
                 NlmeJoinConfirmParams joinConfirmParams;
                 joinConfirmParams.m_status = NwkStatus::NO_NETWORKS;
+                m_nlmeJoinConfirmCallback(joinConfirmParams);
             }
         }
     }
@@ -3130,6 +3131,9 @@ operator<<(std::ostream& os, const NwkStatus& state)
         break;
     case NwkStatus::INVALID_HANDLE:
         os << "INVALID HANDLE";
+        break;
+    case NwkStatus::INVALID_PARAMETER_MAC:
+        os << "INVALID PARAMETER MAC";
         break;
     case NwkStatus::NO_ACK:
         os << "NO ACKNOLEDGMENT";
