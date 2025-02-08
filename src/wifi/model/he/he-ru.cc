@@ -631,6 +631,12 @@ HeRu::DoesOverlap(MHz_u bw, RuSpec ru, const std::vector<RuSpec>& v)
     SubcarrierGroup rangesRu = GetSubcarrierGroup(bw, ru.GetRuType(), ru.GetIndex());
     for (auto& p : v)
     {
+        // A 2x996-tone RU spans 160 MHz, hence it overlaps
+        if (bw == MHz_u{160} && p.GetRuType() == RuType::RU_2x996_TONE)
+        {
+            return true;
+        }
+
         if (ru.GetPrimary80MHz() != p.GetPrimary80MHz())
         {
             // the two RUs are located in distinct 80MHz bands
