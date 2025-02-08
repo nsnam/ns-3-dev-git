@@ -376,10 +376,10 @@ WifiMac::GetTypeId()
                 MakeTraceSourceAccessor(&WifiMac::m_psduMapResponseTimeoutCallback),
                 "ns3::WifiMac::PsduMapResponseTimeoutCallback")
             .AddTraceSource("IcfDropReason",
-                            "An ICF is dropped by an EMLSR client for the given reason on the "
-                            "link with the given ID. This trace source is actually fed by the "
-                            "EHT Frame Exchange Manager through the m_icfDropCallback member "
-                            "variable.",
+                            "An ICF sent by the given sender is dropped by an EMLSR client for "
+                            "the given reason on the link with the given ID. This trace source "
+                            "is actually fed by the EHT Frame Exchange Manager through the "
+                            "m_icfDropCallback member variable.",
                             MakeTraceSourceAccessor(&WifiMac::m_icfDropCallback),
                             "ns3::WifiMac::IcfDropCallback");
     return tid;

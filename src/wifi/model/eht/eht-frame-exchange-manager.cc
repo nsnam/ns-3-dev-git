@@ -1870,12 +1870,12 @@ EhtFrameExchangeManager::DropReceivedIcf(Ptr<const WifiMpdu> icf)
 
     auto emlsrManager = m_staMac->GetEmlsrManager();
     NS_ASSERT(emlsrManager);
+    auto addr2 = icf->GetHeader().GetAddr2();
 
     if (UsingOtherEmlsrLink())
     {
         // we received an ICF on a link that is blocked because another EMLSR link is
         // being used. Check if there is an ongoing DL TXOP on the other EMLSR link
-        auto addr2 = icf->GetHeader().GetAddr2();
         const auto sender = GetWifiRemoteStationManager()->GetMldAddress(addr2).value_or(addr2);
         NS_ASSERT_MSG(addr2 != m_bssid || sender != m_bssid,
                       "If the ICF is not sent by an adhoc peer, it must be sent by an (AP) MLD");
@@ -1913,7 +1913,7 @@ EhtFrameExchangeManager::DropReceivedIcf(Ptr<const WifiMpdu> icf)
             // link started before the reception of the ICF ended). In both cases, we drop this ICF
             // and let the TXOP on the other EMLSR link continue.
             NS_LOG_DEBUG("Drop ICF because another EMLSR link is being used");
-            m_icfDropCallback(WifiIcfDrop::USING_OTHER_LINK, m_linkId);
+            m_icfDropCallback({WifiIcfDrop::USING_OTHER_LINK, m_linkId, addr2});
             return true;
         }
     }
@@ -1947,7 +1947,7 @@ EhtFrameExchangeManager::DropReceivedIcf(Ptr<const WifiMpdu> icf)
             NS_LOG_DEBUG(
                 "Drop ICF due to not enough time for the main PHY to switch link; reason = "
                 << *reason);
-            m_icfDropCallback(*reason, m_linkId);
+            m_icfDropCallback({*reason, m_linkId, addr2});
             return true;
         }
     }
