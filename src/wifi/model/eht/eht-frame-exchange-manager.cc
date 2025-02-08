@@ -1658,7 +1658,7 @@ EhtFrameExchangeManager::DropReceivedIcf()
             // started before the reception of the ICF ended. We drop this ICF and let the
             // UL TXOP continue.
             NS_LOG_DEBUG("Drop ICF because another EMLSR link is being used");
-            m_icfDropCallback(WifiIcfDrop::USING_OTHER_LINK, m_linkId);
+            m_icfDropCallback({WifiIcfDrop::USING_OTHER_LINK, m_linkId, m_bssid});
             return true;
         }
     }
@@ -1692,7 +1692,7 @@ EhtFrameExchangeManager::DropReceivedIcf()
             NS_LOG_DEBUG(
                 "Drop ICF due to not enough time for the main PHY to switch link; reason = "
                 << *reason);
-            m_icfDropCallback(*reason, m_linkId);
+            m_icfDropCallback({*reason, m_linkId, m_bssid});
             return true;
         }
     }

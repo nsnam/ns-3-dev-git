@@ -171,7 +171,7 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
     void SetIcfPaddingAndTxVector(CtrlTriggerHeader& trigger, WifiTxVector& txVector) const;
 
     /// ICF drop reason traced callback (WifiMac exposes this trace source)
-    TracedCallback<WifiIcfDrop, uint8_t> m_icfDropCallback;
+    WifiMac::IcfDropTracedCallback m_icfDropCallback;
 
   protected:
     void DoDispose() override;

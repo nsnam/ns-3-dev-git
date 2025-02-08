@@ -811,6 +811,24 @@ class WifiMac : public Object
                          uint8_t tid,
                          uint8_t linkId) const;
 
+    /// Information reported by ICF drop trace
+    struct IcfDropInfo
+    {
+        WifiIcfDrop reason{}; ///< the reason why the ICF was dropped by the EMLSR client
+        uint8_t linkId{};     ///< the ID of the link on which the ICF was dropped
+        Mac48Address sender;  ///< the sender of the ICF
+    };
+
+    /**
+     * TracedCallback signature for ICF drop events.
+     *
+     * @param info information reported by ICF drop trace
+     */
+    typedef void (*IcfDropCallback)(const IcfDropInfo& info);
+
+    /// TracedCallback for ICF drop events typedef
+    using IcfDropTracedCallback = TracedCallback<const IcfDropInfo&>;
+
   protected:
     void DoInitialize() override;
     void DoDispose() override;
@@ -1379,17 +1397,6 @@ class WifiMac : public Object
      * This trace source is fed by a WifiTxTimer object.
      */
     PsduMapResponseTimeoutTracedCallback m_psduMapResponseTimeoutCallback;
-
-    /**
-     * TracedCallback signature for ICF drop events.
-     *
-     * @param reason the reason why the ICF was dropped by the EMLSR client
-     * @param linkId the ID of the link on which the ICF was dropped
-     */
-    typedef void (*IcfDropCallback)(WifiIcfDrop reason, uint8_t linkId);
-
-    /// TracedCallback for ICF drop events typedef
-    using IcfDropTracedCallback = TracedCallback<WifiIcfDrop, uint8_t>;
 
     IcfDropTracedCallback m_icfDropCallback; //!< traced callback for ICF drop events
 };
