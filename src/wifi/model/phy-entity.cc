@@ -1324,8 +1324,7 @@ PhyEntity::GetDelayUntilCcaEnd(dBm_t threshold, const WifiSpectrumBandInfo& band
 void
 PhyEntity::SwitchMaybeToCcaBusy(const Ptr<const WifiPpdu> ppdu)
 {
-    const auto ccaIndication = GetCcaIndication(ppdu);
-    if (ccaIndication.has_value())
+    if (const auto ccaIndication = GetCcaIndication(ppdu))
     {
         NS_LOG_DEBUG("CCA busy for " << ccaIndication.value().second << " during "
                                      << ccaIndication.value().first.As(Time::S));
@@ -1334,9 +1333,17 @@ PhyEntity::SwitchMaybeToCcaBusy(const Ptr<const WifiPpdu> ppdu)
                                       {});
         return;
     }
+
     if (ppdu)
     {
         SwitchMaybeToCcaBusy();
+        return;
+    }
+
+    if (m_wifiPhy->IsStateCcaBusy())
+    {
+        NS_LOG_DEBUG("Update CCA indication to IDLE");
+        m_state->SwitchMaybeToCcaBusy(Seconds(0), WIFI_CHANLIST_PRIMARY, {});
     }
 }
 
