@@ -36,6 +36,8 @@ This file is a best-effort approach to solving this issue; we will do our best b
 
 ### Changed behavior
 
+* (wifi) `CcaEdThreshold` can be changed at run-time.
+
 ## Changes from ns-3.46 to ns-3.46.1
 
 The ns-3.46.1 contains some small build system fixes discovered after the ns-3.46 release, and two

@@ -536,6 +536,10 @@ WifiPhy::SetCcaEdThreshold(dBm_u threshold)
 {
     NS_LOG_FUNCTION(this << threshold);
     m_ccaEdThreshold = threshold;
+    if (IsInitialized())
+    {
+        SwitchMaybeToCcaBusy();
+    }
 }
 
 dBm_u
