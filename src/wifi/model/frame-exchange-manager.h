@@ -310,6 +310,9 @@ class FrameExchangeManager : public Object
      */
     void NotifyOffNow();
 
+    /// PSDU received traced callback (WifiMac exposes this trace source)
+    WifiMac::RxPsduTracedCallback m_rxPsduCallback;
+
   protected:
     void DoDispose() override;
 

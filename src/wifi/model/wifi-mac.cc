@@ -375,6 +375,14 @@ WifiMac::GetTypeId()
                 "a BSRP Trigger Frame.",
                 MakeTraceSourceAccessor(&WifiMac::m_psduMapResponseTimeoutCallback),
                 "ns3::WifiMac::PsduMapResponseTimeoutCallback")
+            .AddTraceSource("ReceivedPsdu",
+                            "A PSDU is successfully received and passed by the PHY to the MAC. "
+                            "This trace source provides the received PSDU, the TXVECTOR used to "
+                            "transmit the PSDU, the ID of the link on which the PSDU was received "
+                            "and the ID of the PHY that received the PSDU. This is a "
+                            "non-promiscuous trace.",
+                            MakeTraceSourceAccessor(&WifiMac::m_rxPsduCallback),
+                            "ns3::WifiMac::RxPsduCallback")
             .AddTraceSource("IcfDropReason",
                             "An ICF sent by the given sender is dropped by an EMLSR client for "
                             "the given reason on the link with the given ID. This trace source "
@@ -1000,6 +1008,8 @@ WifiMac::SetFrameExchangeManagers(const std::vector<Ptr<FrameExchangeManager>>& 
             MakeCallback(&DroppedMpduTracedCallback::operator(), &m_droppedMpduCallback));
         link->feManager->SetAckedMpduCallback(
             MakeCallback(&MpduTracedCallback::operator(), &m_ackedMpduCallback));
+        link->feManager->m_rxPsduCallback.ConnectWithoutContext(
+            MakeCallback(&RxPsduTracedCallback::operator(), &m_rxPsduCallback));
         if (auto ehtFem = DynamicCast<EhtFrameExchangeManager>(link->feManager))
         {
             ehtFem->m_icfDropCallback.ConnectWithoutContext(

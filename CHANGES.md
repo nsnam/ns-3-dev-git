@@ -22,6 +22,7 @@ This file is a best-effort approach to solving this issue; we will do our best b
 * (wifi) Added a new attribute `Per20CcaSensitivityThreshold` to `EhtConfiguration` for tuning the Per 20MHz CCA threshold when 802.11be is used.
 * (internet) A new trace source `Ipv6L3Protocol::MulticastForward` has been added with the same meaning as for IPv4.
 * (wifi) Added a new `AssocType` attribute to `StaWifiMac` to configure the type of association performed by a device, provided that it is supported by the standard configured for the device. By using this attribute, it is possible for an EHT single-link device to perform ML setup with an AP MLD and for an EHT multi-link device to perform legacy association with an AP MLD.
+* (wifi) Added a new `WifiMac::ReceivedPsdu` trace source, which is fired every time a PSDU is successfully received by the PHY and passed to the MAC to be processed. This trace provides the received PSDU, the TXVECTOR used to transmit the PSDU, the ID of the link on which the PSDU was received and the ID of the PHY that received the PSDU.
 
 ### Changes to existing API
 

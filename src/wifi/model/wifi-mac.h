@@ -15,6 +15,7 @@
 #include "wifi-mac-queue-scheduler.h"
 #include "wifi-remote-station-manager.h"
 #include "wifi-standards.h"
+#include "wifi-tx-vector.h"
 
 #include "ns3/uniform-random-bit-generator.h"
 
@@ -843,6 +844,25 @@ class WifiMac : public Object
                          uint8_t tid,
                          uint8_t linkId) const;
 
+    /// Information reported by received PSDU trace
+    struct RxPsduInfo
+    {
+        Ptr<const WifiPsdu> psdu; ///< the received PSDU
+        WifiTxVector txVector;    ///< the TXVECTOR used to transmit the received PSDU
+        uint8_t linkId{};         ///< the ID of the link on which the PSDU was received
+        uint8_t phyId{};          ///< the ID of the PHY that received the PSDU
+    };
+
+    /**
+     * TracedCallback signature for PSDU receive events.
+     *
+     * @param info information reported by the received PSDU trace
+     */
+    typedef void (*RxPsduCallback)(const RxPsduInfo& info);
+
+    /// TracedCallback for PSDU receive events typedef
+    using RxPsduTracedCallback = TracedCallback<const RxPsduInfo&>;
+
     /// Information reported by ICF drop trace
     struct IcfDropInfo
     {
@@ -1439,6 +1459,7 @@ class WifiMac : public Object
      */
     PsduMapResponseTimeoutTracedCallback m_psduMapResponseTimeoutCallback;
 
+    RxPsduTracedCallback m_rxPsduCallback;   //!< traced callback for PSDU receive events
     IcfDropTracedCallback m_icfDropCallback; //!< traced callback for ICF drop events
 };
 

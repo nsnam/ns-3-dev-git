@@ -1266,6 +1266,7 @@ FrameExchangeManager::Receive(Ptr<const WifiPsdu> psdu,
         {
             EndReceiveAmpdu(psdu, rxSignalInfo, txVector, perMpduStatus);
         }
+        m_rxPsduCallback({psdu, txVector, m_linkId, m_phy->GetPhyId()});
     }
     else if (m_promisc)
     {
