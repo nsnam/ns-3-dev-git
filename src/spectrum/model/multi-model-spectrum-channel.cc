@@ -422,7 +422,7 @@ MultiModelSpectrumChannel::StartRx(
             if (rxConverterIterator == txInfoIterator->second.m_spectrumConverterMap.cend())
             {
                 // No converter means TX SpectrumModel is orthogonal to current PHY SpectrumModel
-                params->psd = txPsd;
+                return;
             }
             else
             {
