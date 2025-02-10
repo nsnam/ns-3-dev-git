@@ -74,7 +74,9 @@ class OfdmPpdu : public WifiPpdu
       private:
         uint8_t m_rate;    ///< RATE field
         uint16_t m_length; ///< LENGTH field
-    };                     // class LSigHeader
+
+        // end of class LSigHeader
+    };
 
     /**
      * Create an OFDM PPDU.

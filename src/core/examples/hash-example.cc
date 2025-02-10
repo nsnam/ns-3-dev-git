@@ -248,7 +248,8 @@ class Collider
     /** The list of collisions. */
     collision_t m_coll;
 
-}; // class Collider
+    // end of class Collider
+};
 
 /**
  * Word list and hashers to test.
@@ -412,7 +413,8 @@ class Dictionary
     std::vector<Collider> m_hashes;   /**< List of hash Colliders. */
     std::vector<std::string> m_words; /**< List of unique words. */
 
-}; // class Dictionary
+    // end of class Dictionary
+};
 
 /**
  * Source word list files.
@@ -486,7 +488,8 @@ class DictFiles
   private:
     std::vector<std::string> m_files; /**< List of word files to use. */
 
-}; // class DictFiles
+    // end of class DictFiles
+};
 
 } // namespace Example
 

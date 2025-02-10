@@ -451,7 +451,9 @@ class CommandLine
          * @return The default value
          */
         virtual std::string GetDefault() const = 0;
-    }; // class Item
+
+        // end of class Item
+    };
 
     /**
      * @ingroup commandline
@@ -468,7 +470,9 @@ class CommandLine
 
         T* m_valuePtr;         /**< Pointer to the POD location */
         std::string m_default; /**< String representation of default value */
-    };                         // class UserItem
+
+        // end of class UserItem
+    };
 
     /**
      * @ingroup commandline
@@ -488,7 +492,9 @@ class CommandLine
          * function is \c const in the base class Item.
          */
         mutable std::string m_value;
-    }; // class StringItem
+
+        // end of class StringItem
+    };
 
     /**
      * @ingroup commandline
@@ -508,7 +514,9 @@ class CommandLine
         std::size_t m_size;
         /** The default value. */
         std::string m_default;
-    }; // class CharStarItem
+
+        // end of class CharStarItem
+    };
 
     /**
      * @ingroup commandline
@@ -524,7 +532,9 @@ class CommandLine
 
         ns3::Callback<bool, const std::string&> m_callback; /**< The Callback */
         std::string m_default; /**< The default value, as a string, if it exists. */
-    };                         // class CallbackItem
+
+        // end of class CallbackItem
+    };
 
     /**
      * Tuple type returned by GetOptionName().
@@ -659,7 +669,8 @@ class CommandLine
     /** The source file name (without `.cc`), as would be given to `ns3 run` */
     std::string m_shortName;
 
-}; // class CommandLine
+    // end of class CommandLine
+};
 
 /**
  * @ingroup commandline

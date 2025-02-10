@@ -341,7 +341,8 @@ class MibLteControlMessage : public LteControlMessage
   private:
     LteRrcSap::MasterInformationBlock m_mib; ///< MIB
 
-}; // end of class MibLteControlMessage
+    // end of class MibLteControlMessage
+};
 
 // ---------------------------------------------------------------------------
 
@@ -379,7 +380,8 @@ class Sib1LteControlMessage : public LteControlMessage
   private:
     LteRrcSap::SystemInformationBlockType1 m_sib1; ///< SIB1
 
-}; // end of class Sib1LteControlMessage
+    // end of class Sib1LteControlMessage
+};
 
 } // namespace ns3
 

@@ -116,7 +116,8 @@ class MemberLteHandoverManagementSapProvider : public LteHandoverManagementSapPr
   private:
     C* m_owner; ///< the owner class
 
-}; // end of class MemberLteHandoverManagementSapProvider
+    // end of class MemberLteHandoverManagementSapProvider
+};
 
 template <class C>
 MemberLteHandoverManagementSapProvider<C>::MemberLteHandoverManagementSapProvider(C* owner)
@@ -159,7 +160,8 @@ class MemberLteHandoverManagementSapUser : public LteHandoverManagementSapUser
   private:
     C* m_owner; ///< the owner class
 
-}; // end of class MemberLteAnrSapUser
+    // end of class MemberLteAnrSapUser
+};
 
 template <class C>
 MemberLteHandoverManagementSapUser<C>::MemberLteHandoverManagementSapUser(C* owner)

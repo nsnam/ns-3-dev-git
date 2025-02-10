@@ -850,7 +850,8 @@ class Time
 
     int64_t m_data; //!< Virtual time value, in the current unit.
 
-}; // class Time
+    // end of class Time
+};
 
 namespace TracedValueCallback
 {
@@ -1498,7 +1499,8 @@ class TimeWithUnit
      */
     friend std::ostream& operator<<(std::ostream& os, const TimeWithUnit& timeU);
 
-}; // class TimeWithUnit
+    // end of class TimeWithUnit
+};
 
 /**
  * @ingroup time

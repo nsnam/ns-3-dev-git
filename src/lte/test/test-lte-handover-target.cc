@@ -129,7 +129,8 @@ class LteHandoverTargetTestCase : public TestCase
     Ptr<LteEnbNetDevice> m_sourceEnbDev; ///< source ENB device
     bool m_hasHandoverOccurred;          ///< has handover occurred?
 
-}; // end of class LteHandoverTargetTestCase
+    // end of class LteHandoverTargetTestCase
+};
 
 LteHandoverTargetTestCase::LteHandoverTargetTestCase(std::string name,
                                                      Vector uePosition,

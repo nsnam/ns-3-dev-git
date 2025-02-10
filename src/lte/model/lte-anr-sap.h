@@ -132,7 +132,8 @@ class MemberLteAnrSapProvider : public LteAnrSapProvider
   private:
     C* m_owner; ///< the owner class
 
-}; // end of class MemberLteAnrSapProvider
+    // end of class MemberLteAnrSapProvider
+};
 
 template <class C>
 MemberLteAnrSapProvider<C>::MemberLteAnrSapProvider(C* owner)
@@ -199,7 +200,8 @@ class MemberLteAnrSapUser : public LteAnrSapUser
   private:
     C* m_owner; ///< the owner class
 
-}; // end of class MemberLteAnrSapUser
+    // end of class MemberLteAnrSapUser
+};
 
 template <class C>
 MemberLteAnrSapUser<C>::MemberLteAnrSapUser(C* owner)

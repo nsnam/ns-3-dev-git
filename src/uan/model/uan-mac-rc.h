@@ -132,7 +132,8 @@ class Reservation
     /** Has this reservation been transmitted. */
     bool m_transmitted;
 
-}; // class Reservation
+    // end of class Reservation
+};
 
 /**
  * @ingroup uan
@@ -306,7 +307,8 @@ class UanMacRc : public UanMac
   protected:
     void DoDispose() override;
 
-}; // class UanMacRc
+    // end of class UanMacRc
+};
 
 } // namespace ns3
 

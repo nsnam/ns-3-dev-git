@@ -217,6 +217,8 @@ class AccessorHelper : public AttributeAccessor
      * @returns true if the member value could be retrieved successfully
      */
     virtual bool DoGet(const T* object, U* v) const = 0;
+
+    // end of class AccessorHelper
 };
 
 /**

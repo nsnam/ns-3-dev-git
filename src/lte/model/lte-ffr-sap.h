@@ -165,7 +165,8 @@ class MemberLteFfrSapProvider : public LteFfrSapProvider
   private:
     C* m_owner; ///< the owner class
 
-}; // end of class MemberLteFfrSapProvider
+    // end of class MemberLteFfrSapProvider
+};
 
 template <class C>
 MemberLteFfrSapProvider<C>::MemberLteFfrSapProvider(C* owner)
@@ -260,7 +261,8 @@ class MemberLteFfrSapUser : public LteFfrSapUser
   private:
     C* m_owner; ///< the owner class
 
-}; // end of class LteFfrSapUser
+    // end of class LteFfrSapUser
+};
 
 template <class C>
 MemberLteFfrSapUser<C>::MemberLteFfrSapUser(C* owner)

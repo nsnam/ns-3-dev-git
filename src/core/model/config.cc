@@ -220,7 +220,8 @@ class ArrayMatcher
     /** The Config path element. */
     std::string m_element;
 
-}; // class ArrayMatcher
+    // end of class ArrayMatcher
+};
 
 ArrayMatcher::ArrayMatcher(std::string element)
     : m_element(element)
@@ -368,7 +369,8 @@ class Resolver
     /** The Config path. */
     std::string m_path;
 
-}; // class Resolver
+    // end of class Resolver
+};
 
 Resolver::Resolver(std::string path)
     : m_path(path)
@@ -672,7 +674,8 @@ class ConfigImpl : public Singleton<ConfigImpl>
     /** The list of Config path roots. */
     Roots m_roots;
 
-}; // class ConfigImpl
+    // end of class ConfigImpl
+};
 
 void
 ConfigImpl::ParsePath(std::string path, std::string* root, std::string* leaf) const

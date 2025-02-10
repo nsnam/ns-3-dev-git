@@ -188,7 +188,8 @@ class TracedValueCallbackTestCase : public TestCase
 
         } // Invoke()
 
-    }; // class CheckTvCb<T>
+        // end of class CheckTvCb<T>
+    };
 
     /**
      * Check the TracedValue typedef against TracedValueCbSink<T>.

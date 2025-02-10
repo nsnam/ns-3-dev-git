@@ -107,7 +107,8 @@ class Murmur3 : public Implementation
     std::size_t m_size64;
     /**@}*/
 
-}; // class Murmur3
+    // end of class Murmur3
+};
 
 } // namespace Function
 

@@ -352,7 +352,8 @@ class TestCaseBase : public TestCase
     /** \c true if we've already set the seed the correctly. */
     bool m_seedSet = false;
 
-}; // class TestCaseBase
+    // end of class TestCaseBase
+};
 
 /**
  * @ingroup rng-tests

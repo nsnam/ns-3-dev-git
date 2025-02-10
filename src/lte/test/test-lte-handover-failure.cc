@@ -191,7 +191,8 @@ class LteHandoverFailureTestCase : public TestCase
     uint16_t m_targeteNodeBPosition;   ///< position of the target eNodeB
     bool m_hasHandoverFailureOccurred; ///< has handover failure occurred in simulation
 
-}; // end of class LteHandoverFailureTestCase
+    // end of class LteHandoverFailureTestCase
+};
 
 void
 LteHandoverFailureTestCase::DoRun()

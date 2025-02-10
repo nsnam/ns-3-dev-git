@@ -65,7 +65,9 @@ class MuRtsCtsHePhy : public HePhy
      * @param muRtsTxVector the TXVECTOR used to transmit MU-RTS trigger frame
      */
     void SetMuRtsTxVector(const WifiTxVector& muRtsTxVector);
-}; // class MuRtsCtsHePhy
+
+    // end of class MuRtsCtsHePhy
+};
 
 MuRtsCtsHePhy::MuRtsCtsHePhy()
     : HePhy()
@@ -126,7 +128,9 @@ class MuRtsCtsSpectrumWifiPhy : public SpectrumWifiPhy
 
   private:
     Ptr<MuRtsCtsHePhy> m_muRtsCtsHePhy; ///< Pointer to HE PHY instance used for MU-RTS/CTS PHY test
-};                                      // class MuRtsCtsSpectrumWifiPhy
+
+    // end of class MuRtsCtsSpectrumWifiPhy
+};
 
 TypeId
 MuRtsCtsSpectrumWifiPhy::GetTypeId()

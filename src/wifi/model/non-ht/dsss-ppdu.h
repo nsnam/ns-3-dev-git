@@ -70,7 +70,9 @@ class DsssPpdu : public WifiPpdu
       private:
         uint8_t m_rate;    ///< RATE field
         uint16_t m_length; ///< LENGTH field
-    };                     // class DsssSigHeader
+
+        // end of class DsssSigHeader
+    };
 
     /**
      * Create a DSSS (HR/DSSS) PPDU.

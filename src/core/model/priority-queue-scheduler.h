@@ -88,7 +88,8 @@ class PriorityQueueScheduler : public Scheduler
          */
         bool remove(const Scheduler::Event& ev);
 
-    }; // class EventPriorityQueue
+        // end of class EventPriorityQueue
+    };
 
     /** The event queue. */
     EventPriorityQueue m_queue;

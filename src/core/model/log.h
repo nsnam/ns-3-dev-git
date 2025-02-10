@@ -410,7 +410,8 @@ class LogComponent
     std::string m_name; //!< LogComponent name.
     std::string m_file; //!< File defining this LogComponent.
 
-}; // class LogComponent
+    // end of class LogComponent
+};
 
 /**
  * Get the LogComponent registered with the given name.
@@ -458,6 +459,8 @@ class ParameterLogger
 
     bool m_first{true}; //!< First argument flag, doesn't get `, `.
     std::ostream& m_os; //!< Underlying output stream.
+
+    // end of class ParameterLogger
 };
 
 template <typename T>

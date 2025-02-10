@@ -102,7 +102,8 @@ class ExampleAsTestCase : public TestCase
     std::string m_args;    /**< Any additional arguments to the program. */
     bool m_shouldNotErr;   /**< Whether error return status is a test failure. */
 
-}; // class ExampleAsTestCase
+    // end of class ExampleAsTestCase
+};
 
 /**
  * @ingroup testing
@@ -209,7 +210,8 @@ class ExampleAsTestSuite : public TestSuite
                        const std::string args = "",
                        const Duration duration = Duration::QUICK,
                        const bool shouldNotErr = true);
-}; // class ExampleAsTestSuite
+    // end of class ExampleAsTestSuite
+};
 
 } // namespace ns3
 

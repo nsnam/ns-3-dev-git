@@ -154,7 +154,8 @@ class EnvironmentVariable
         /** The key, value store. */
         KeyValueStore m_dict;
 
-    }; // class Dictionary
+        // end of class Dictionary
+    };
 
     /**
      * Set an environment variable.
@@ -214,7 +215,8 @@ class EnvironmentVariable
     /** Clear the instance, forcing all new lookups. */
     static void Clear();
 
-}; // class EnvironmentVariable
+    // end of class EnvironmentVariable
+};
 
 } // namespace ns3
 

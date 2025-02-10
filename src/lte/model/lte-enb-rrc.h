@@ -1768,14 +1768,17 @@ class LteEnbRrc : public Object
      */
     TracedCallback<uint64_t, uint16_t, uint16_t> m_handoverFailureJoiningTrace;
 
-    uint16_t m_numberOfComponentCarriers; ///< number of component carriers
+    /// Number of component carriers
+    uint16_t m_numberOfComponentCarriers;
 
-    bool m_carriersConfigured; ///< are carriers configured
+    /// Are carriers configured
+    bool m_carriersConfigured;
 
-    std::map<uint8_t, Ptr<ComponentCarrierBaseStation>>
-        m_componentCarrierPhyConf; ///< component carrier phy configuration
+    /// Component carrier phy configuration
+    std::map<uint8_t, Ptr<ComponentCarrierBaseStation>> m_componentCarrierPhyConf;
 
-}; // end of `class LteEnbRrc`
+    // end of `class LteEnbRrc`
+};
 
 /**
  * @brief Stream insertion operator.

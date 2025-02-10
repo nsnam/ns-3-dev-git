@@ -112,7 +112,8 @@ class MpiTestSuite : public TestSuite
         AddTestCase(new MpiTestCase(name, program, dataDir, ranks, args, shouldNotErr), duration);
     }
 
-}; // class MpiTestSuite
+    // end of class MpiTestSuite
+};
 
 /* Tests using SimpleDistributedSimulatorImpl */
 static MpiTestSuite g_mpiNms2("mpi-example-nms-2", "nms-p2p-nix-distributed", NS_TEST_SOURCEDIR, 2);

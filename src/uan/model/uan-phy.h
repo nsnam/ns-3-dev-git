@@ -85,7 +85,8 @@ class UanPhyCalcSinr : public Object
   protected:
     void DoDispose() override;
 
-}; // class UanPhyCalcSinr
+    // end of class UanPhyCalcSinr
+};
 
 /**
  * @ingroup uan
@@ -120,7 +121,8 @@ class UanPhyPer : public Object
   protected:
     void DoDispose() override;
 
-}; // class UanPhyPer
+    // end of class UanPhyPer
+};
 
 /**
  * @ingroup uan
@@ -156,7 +158,9 @@ class UanPhyListener
     virtual void NotifyTxStart(Time duration) = 0;
     /** Function called when Phy object finishes transmitting packet */
     virtual void NotifyTxEnd() = 0;
-}; // class UanPhyListener
+
+    // end of class UanPhyListener
+};
 
 /**
  * @ingroup uan
@@ -540,7 +544,8 @@ class UanPhy : public Object
      */
     ns3::TracedCallback<Ptr<const Packet>> m_phyRxDropTrace;
 
-}; // class UanPhy
+    // end of class UanPhy
+};
 
 } // namespace ns3
 

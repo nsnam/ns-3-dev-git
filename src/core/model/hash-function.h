@@ -88,7 +88,9 @@ class Implementation : public SimpleRefCount<Implementation>
     virtual ~Implementation()
     {
     }
-}; // Hashfunction
+
+    // end of class Hash::Implementation
+};
 
 /*--------------------------------------
  *  Hash function implementation
@@ -146,7 +148,9 @@ class Hash32 : public Implementation
 
   private:
     Hash32Function_ptr m_fp; /**< The hash function. */
-};                           // Hash32
+
+    // end of class Hash::Function::Hash32
+};
 
 /**
  * @ingroup hash
@@ -187,7 +191,9 @@ class Hash64 : public Implementation
 
   private:
     Hash64Function_ptr m_fp; /**< The hash function. */
-};                           // Hash64<Hash64Function_ptr>
+
+    // end of class Hash::Function::Hash64
+};
 
 } // namespace Function
 

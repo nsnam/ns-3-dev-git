@@ -313,7 +313,8 @@ class StaticInformation
      */
     mutable std::vector<std::string> m_noTids;
 
-}; // class StaticInformation
+    // end of class StaticInformation
+};
 
 void
 StaticInformation::RecordAggregationInfo(std::string a, std::string b)

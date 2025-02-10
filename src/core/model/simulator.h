@@ -521,6 +521,8 @@ class Simulator
      * Stop event (if present)
      */
     static EventId m_stopEvent;
+
+    // end of class Simulator
 };
 
 /**
