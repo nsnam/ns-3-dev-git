@@ -10,6 +10,7 @@
 #include "ns3/log.h"
 #include "ns3/simulator.h"
 #include "ns3/test.h"
+#include "ns3/tuple.h"
 
 using namespace ns3;
 
@@ -262,6 +263,86 @@ DataRateTestCase2::DoRun()
  * @ingroup network-test
  * @ingroup tests
  *
+ * Object with an attribute that is a tuple of data rates and a string.
+ */
+class DataRateTupleObject : public Object
+{
+  public:
+    ~DataRateTupleObject() override = default;
+
+    /**
+     * @brief Get the type ID.
+     * @return The object TypeId.
+     */
+    static TypeId GetTypeId();
+
+    std::tuple<DataRate, DataRate, std::string> m_tupleRatesString; //!< tuple of two data rates
+                                                                    //!< and a string
+};
+
+TypeId
+DataRateTupleObject::GetTypeId()
+{
+    static TypeId tid =
+        TypeId("ns3::DataRateTupleObject")
+            .SetParent<Object>()
+            .SetGroupName("Test")
+            .AddConstructor<DataRateTupleObject>()
+            .AddAttribute(
+                "TupleRatesString",
+                "An example of tuple of two data rates (comprising value and unit, possibly "
+                "separated by a white space) and a string (possibly containing a white space).",
+                StringValue("{1 Mb/s, 10kb/s, test string}"),
+                MakeTupleAccessor<DataRateValue, DataRateValue, StringValue>(
+                    &DataRateTupleObject::m_tupleRatesString),
+                MakeTupleChecker<DataRateValue, DataRateValue, StringValue>(MakeDataRateChecker(),
+                                                                            MakeDataRateChecker(),
+                                                                            MakeStringChecker()));
+    return tid;
+}
+
+/**
+ * @ingroup network-test
+ * @ingroup tests
+ *
+ * Attribute set and get TestCase.
+ */
+class DataRateTupleSetGetTestCase : public TestCase
+{
+  public:
+    DataRateTupleSetGetTestCase();
+    ~DataRateTupleSetGetTestCase() override = default;
+
+  private:
+    void DoRun() override;
+};
+
+DataRateTupleSetGetTestCase::DataRateTupleSetGetTestCase()
+    : TestCase("test attribute set and get")
+{
+}
+
+void
+DataRateTupleSetGetTestCase::DoRun()
+{
+    Ptr<DataRateTupleObject> obj = CreateObject<DataRateTupleObject>();
+
+    // check that the tuple of two data rates and a string was correctly initialized
+    NS_TEST_EXPECT_MSG_EQ(std::get<0>(obj->m_tupleRatesString),
+                          DataRate(1e6),
+                          "Unexpected value for the first data rate");
+    NS_TEST_EXPECT_MSG_EQ(std::get<1>(obj->m_tupleRatesString),
+                          DataRate(1e4),
+                          "Unexpected value for the second data rate");
+    NS_TEST_EXPECT_MSG_EQ(std::get<2>(obj->m_tupleRatesString),
+                          "test string",
+                          "Unexpected value for the string");
+}
+
+/**
+ * @ingroup network-test
+ * @ingroup tests
+ *
  * @brief DataRate TestSuite
  */
 class DataRateTestSuite : public TestSuite
@@ -275,6 +356,7 @@ DataRateTestSuite::DataRateTestSuite()
 {
     AddTestCase(new DataRateTestCase1(), TestCase::Duration::QUICK);
     AddTestCase(new DataRateTestCase2(), TestCase::Duration::QUICK);
+    AddTestCase(new DataRateTupleSetGetTestCase(), TestCase::Duration::QUICK);
 }
 
 static DataRateTestSuite sDataRateTestSuite; //!< Static variable for test initialization
