@@ -9,9 +9,9 @@
 
 #include "format-string.h"
 
-#include <ns3/attribute-helper.h>
-#include <ns3/attribute.h>
-#include <ns3/double.h>
+#include "ns3/attribute-helper.h"
+#include "ns3/attribute.h"
+#include "ns3/double.h"
 
 #include <algorithm>
 #include <cinttypes>
@@ -21,7 +21,6 @@
 #include <vector>
 
 // clang-format off
-
 namespace ns3
 {
 
@@ -36,10 +35,21 @@ struct degree_t
 
     /// Constructor
     /// @param val Value in degree
+    constexpr explicit degree_t(int32_t val)
+        : val(static_cast<double>(val))
+    {
+    }
+
+    /// Constructor
+    /// @param val Value in degree
     constexpr explicit degree_t(double val)
         : val(val)
     {
     }
+
+    /// Constructor
+    /// @param str a string representation of a degree
+    explicit degree_t(const std::string& str);
 
     /// Conversion from radian
     /// @param input radian
@@ -91,53 +101,10 @@ struct degree_t
         return output;
     }
 
-    /// Equality operator
-    /// @param rhs right hand side of the operator
-    /// @return true if equal, false otherwise
-    inline bool operator==(const degree_t& rhs) const
-    {
-        return val == rhs.val;
-    }
-
-    /// Inequality operator
-    /// @param rhs right hand side of the operator
-    /// @return true if not equal, false otherwise
-    inline bool operator!=(const degree_t& rhs) const
-    {
-        return !(operator==(rhs));
-    }
-
-    /// Less than operator
-    /// @param rhs right hand side of the operator
-    /// @return true if less than, false otherwise
-    inline bool operator<(const degree_t& rhs) const
-    {
-        return val < rhs.val;
-    }
-
-    /// Greater than operator
-    /// @param rhs right hand side of the operator
-    /// @return true if greater than, false otherwise
-    inline bool operator>(const degree_t& rhs) const
-    {
-        return val > rhs.val;
-    }
-
-    /// Less than or equal to operator
-    /// @param rhs right hand side of the operator
-    /// @return true if less than or equal to, false otherwise
-    inline bool operator<=(const degree_t& rhs) const
-    {
-        return val <= rhs.val;
-    }
-
-    /// Greater than or equal to operator
-    /// @param rhs right hand side of the operator
-    /// @return true if greater than or equal to, false otherwise
-    inline bool operator>=(const degree_t& rhs) const
-    {
-        return val >= rhs.val;
-    }
+    /// Three-way comparison
+    /// @param rhs right hand side
+    /// @return deduced comparison type
+    auto operator<=>(const degree_t& rhs) const = default;
 
     /// Unary minus operator
     /// @return negative of the degree
@@ -204,11 +171,22 @@ struct radian_t
     radian_t() = default; ///< Default constructor
 
     /// Constructor
+    /// @param val Value in degree
+    constexpr explicit radian_t(int32_t val)
+        : val(static_cast<double>(val))
+    {
+    }
+
+    /// Constructor
     /// @param val Value in radian
     constexpr explicit radian_t(double val)
         : val(val)
     {
     }
+
+    /// Constructor
+    /// @param str a string representation of a degree
+    explicit radian_t(const std::string& str);
 
     /// Conversion from degree
     /// @param input degree
@@ -397,7 +375,5 @@ ATTRIBUTE_ACCESSOR_DEFINE(radian);
 ATTRIBUTE_CHECKER_DEFINE_WITH_CONVERTER(radian_t, radian, Double);
 /// @endcond
 } // namespace ns3
-
-// clang-format on
 
 #endif // UNITS_ANGLE_H

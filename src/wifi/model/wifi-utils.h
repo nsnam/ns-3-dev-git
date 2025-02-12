@@ -109,7 +109,7 @@ dB_t RatioToDb(double ratio);
 inline std::size_t
 Count20MHzSubchannels(MHz_t channelWidth)
 {
-    NS_ASSERT((channelWidth % MHz_t{20}) == MHz_t{0});
+    NS_ASSERT(channelWidth.IsMultipleOf(20_MHz));
     return channelWidth / MHz_t{20};
 }
 
@@ -127,7 +127,7 @@ Count20MHzSubchannels(MHz_t lower, MHz_t upper)
 {
     NS_ASSERT(upper >= lower);
     const auto width = upper - lower;
-    NS_ASSERT((width % MHz_t{20}) == MHz_t{0});
+    NS_ASSERT(width.IsMultipleOf(20_MHz));
     return Count20MHzSubchannels(width);
 }
 

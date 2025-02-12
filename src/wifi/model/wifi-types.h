@@ -111,7 +111,7 @@ struct FrequencyRange
      * @returns -1 if the provided range is located at a lower minimum frequency, 0 if the provided
      * range is identical or 1 if the provided range is located at a higher minimum frequency
      */
-    std::weak_ordering operator<=>(const FrequencyRange& range) const = default;
+    std::partial_ordering operator<=>(const FrequencyRange& range) const = default;
 };
 
 /**

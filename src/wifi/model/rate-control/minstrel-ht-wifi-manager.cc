@@ -954,7 +954,7 @@ MinstrelHtWifiManager::UpdateRateAfterAllowedWidth(uint16_t txRate, MHz_t allowe
     }
 
     NS_ASSERT(GetPhy()->GetDevice()->GetHtConfiguration() != nullptr);
-    NS_ASSERT((group.chWidth % MHz_t{20}) == MHz_t{0});
+    NS_ASSERT(group.chWidth.IsMultipleOf(20_MHz));
     // try halving the channel width and check if the group with the same number of
     // streams and same GI is supported, until either a supported group is found or
     // the width becomes lower than 20 MHz

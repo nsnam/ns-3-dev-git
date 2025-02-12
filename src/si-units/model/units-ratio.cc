@@ -9,6 +9,13 @@ using namespace ns3;
 namespace ns3
 {
 
+percent_t::percent_t(const std::string& str)
+{
+    auto res = from_str(str);
+    NS_ABORT_MSG_IF(!res.has_value(), GetParseErrMsg(str, "percent"));
+    val = res.value().val;
+}
+
 /// Multiply operation
 /// @param lfs a unitless value
 /// @param rhs percent
@@ -54,8 +61,7 @@ operator<<(std::ostream& os, const percent_t& rhs)
 std::istream&
 operator>>(std::istream& is, percent_t& rhs)
 {
-    is >> rhs.val;
-    return is;
+    return ParseSIString(is, rhs, "percent");
 }
 
 /// @cond Doxygen bug: multiple @param
@@ -85,5 +91,3 @@ ATTRIBUTE_VALUE_IMPLEMENT_WITH_NAME(percent_t, percent);
 /// @endcond
 
 } // namespace ns3
-
-// clang-format on

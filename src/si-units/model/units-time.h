@@ -4,10 +4,10 @@
 #include "format-string.h"
 #include "units-aliases.h"
 
-#include <ns3/attribute-helper.h>
-#include <ns3/attribute.h>
-#include <ns3/double.h>
-#include <ns3/nstime.h>
+#include "ns3/attribute-helper.h"
+#include "ns3/attribute.h"
+#include "ns3/double.h"
+#include "ns3/nstime.h"
 
 #include <algorithm>
 #include <cinttypes>
@@ -63,7 +63,7 @@ struct nSEC_t
         return output;
     }
 
-     /// Converts from vectors of nSEC_t to integers represented in nanoseconds
+    /// Converts from vectors of nSEC_t to integers represented in nanoseconds
     /// @param input A vector of nSEC_t
     /// @returns A vector of integers represented in nanoseconds
     static std::vector<int64_t> to_ints(
@@ -76,53 +76,10 @@ struct nSEC_t
         return output;
     }
 
-    /// Equality operators
-    /// @param rhs value to compare
-    /// @returns True if the values are equal, false otherwise
-    inline bool operator==(const nSEC_t& rhs) const
-    {
-        return v == rhs.v;
-    }
-
-    /// Inequality operators
-    /// @param rhs value to compare
-    /// @returns True if the values are not equal, false otherwise
-    inline bool operator!=(const nSEC_t& rhs) const
-    {
-        return !(operator==(rhs));
-    }
-
-    /// Less than operators
-    /// @param rhs value to compare
-    /// @returns True if the value is less than the rhs, false otherwise
-    inline bool operator<(const nSEC_t& rhs) const
-    {
-        return v < rhs.v;
-    }
-
-    /// Greater than operators
-    /// @param rhs value to compare
-    /// @returns True if the value is greater than the rhs, false otherwise
-    inline bool operator>(const nSEC_t& rhs) const
-    {
-        return v > rhs.v;
-    }
-
-    /// Less than or equal to operators
-    /// @param rhs value to compare
-    /// @returns True if the value is less than or equal to the rhs, false otherwise
-    inline bool operator<=(const nSEC_t& rhs) const
-    {
-        return v <= rhs.v;
-    }
-
-    /// Greater than or equal to operators
-    /// @param rhs value to compare
-    /// @returns True if the value is greater than or equal to the rhs, false otherwise
-    inline bool operator>=(const nSEC_t& rhs) const
-    {
-        return v >= rhs.v;
-    }
+    /// Three-way comparison
+    /// @param rhs right hand side
+    /// @return deduced comparison type
+    auto operator<=>(const nSEC_t& rhs) const = default;
 
     /// Negation operator
     /// @returns Negated value
@@ -197,6 +154,10 @@ nSEC_t operator""_SEC(unsigned long long v);
 nSEC_t operator""_SEC(long double v);
 
 std::ostream& operator<<(std::ostream& os, const nSEC_t& q);
+
+// Note other strong types use istream
+// TODO(porce): Explore if this type also converge to the same handling, including input argument
+// with suffix string
 std::istream& operator>>(std::istream& is, nSEC_t& q);
 
 /// @cond Doxygen warning about the macro internals
@@ -205,7 +166,5 @@ ATTRIBUTE_ACCESSOR_DEFINE(nSEC);
 ATTRIBUTE_CHECKER_DEFINE(nSEC);
 /// @endcond
 } // namespace ns3
-
-// clang-format on
 
 #endif // UNITS_TIME_H

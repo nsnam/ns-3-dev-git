@@ -269,7 +269,7 @@ cpp_examples = [
         "False",
     ),
     (
-        "wifi-spectrum-per-interference --distance=24 --index=31 --simulationTime=1s --waveformPower=0.1",
+        "wifi-spectrum-per-interference --distance=24 --index=31 --simulationTime=1s --waveformPower=0.1Watt",
         "True",
         "True",
     ),

@@ -37,7 +37,7 @@ struct FrequencyChannelInfo
      * 0 if the provided channel info is identical or a positive value if the provided channel info
      * is located at a higher channel number
      */
-    std::weak_ordering operator<=>(const FrequencyChannelInfo& info) const = default;
+    std::partial_ordering operator<=>(const FrequencyChannelInfo& info) const = default;
     uint8_t number{0};                                        ///< the channel number
     MHz_t frequency{0};                                       ///< the center frequency
     MHz_t width{0};                                           ///< the channel width

@@ -3,11 +3,55 @@
 #include "string-utils.h"
 #include "units-aliases.h"
 
+#include "ns3/log.h"
+
 using namespace ns3;
 
 // clang-format off
 namespace ns3
 {
+
+dB_t::dB_t(const std::string& str)
+{
+    auto res = from_str(str);
+    NS_ABORT_MSG_IF(!res.has_value(), GetParseErrMsg(str, "dB"));
+    val = res.value().val;
+}
+
+dBm_t::dBm_t(const std::string& str)
+{
+    auto res = from_str(str);
+    NS_ABORT_MSG_IF(!res.has_value(), GetParseErrMsg(str, "dBm"));
+    val = res.value().val;
+}
+
+mWatt_t::mWatt_t(const std::string& str)
+{
+    auto res = from_str(str);
+    NS_ABORT_MSG_IF(!res.has_value(), GetParseErrMsg(str, "mWatt"));
+    val = res.value().val;
+}
+
+Watt_t::Watt_t(const std::string& str)
+{
+    auto res = from_str(str);
+    NS_ABORT_MSG_IF(!res.has_value(), GetParseErrMsg(str, "Watt"));
+    val = res.value().val;
+}
+
+dBm_per_Hz_t::dBm_per_Hz_t(const std::string& str)
+{
+    auto res = from_str(str);
+    NS_ABORT_MSG_IF(!res.has_value(), GetParseErrMsg(str, "dBm/Hz_t"));
+    val = res.value().val;
+}
+
+dBm_per_MHz_t::dBm_per_MHz_t(const std::string& str)
+{
+    auto res = from_str(str);
+    NS_ABORT_MSG_IF(!res.has_value(), GetParseErrMsg(str, "dBm/MHz_t"));
+    val = res.value().val;
+}
 
 dBm_t
 dB_t::operator+(const dBm_t& rhs) const
@@ -310,7 +354,8 @@ operator""_dB(unsigned long long val)
 /// User defined literals for dBr
 /// @param val Value in dBr
 /// @return dBr_t
-dBr_t operator""_dBr(long double val)
+dBr_t
+operator""_dBr(long double val)
 {
     return dBr_t{static_cast<double>(val)};
 }
@@ -318,7 +363,8 @@ dBr_t operator""_dBr(long double val)
 /// User defined literals for dBr
 /// @param val Value in dBr
 /// @return dBr_t
-dBr_t operator""_dBr(unsigned long long val)
+dBr_t
+operator""_dBr(unsigned long long val)
 {
     return dBr_t{static_cast<double>(val)};
 }
@@ -416,7 +462,8 @@ operator""_dBm_per_Hz(unsigned long long val)
 /// User defined literals for dBm_per_MHz
 /// @param val Value in dBm_per_MHz
 /// @return dBm_per_MHz_t
-dBm_per_MHz_t operator""_dBm_per_MHz(long double val)
+dBm_per_MHz_t
+operator""_dBm_per_MHz(long double val)
 {
     return dBm_per_MHz_t{static_cast<double>(val)};
 }
@@ -490,8 +537,7 @@ operator<<(std::ostream& os, const dBm_per_MHz_t& rhs)
 std::istream&
 operator>>(std::istream& is, dB_t& rhs)
 {
-    is >> rhs.val;
-    return is;
+    return ParseSIString(is, rhs, "dB");
 }
 
 /// Input stream for dBm
@@ -501,8 +547,7 @@ operator>>(std::istream& is, dB_t& rhs)
 std::istream&
 operator>>(std::istream& is, dBm_t& rhs)
 {
-    is >> rhs.val;
-    return is;
+    return ParseSIString(is, rhs, "dBm");
 }
 
 /// Input stream for mWatt
@@ -512,8 +557,7 @@ operator>>(std::istream& is, dBm_t& rhs)
 std::istream&
 operator>>(std::istream& is, mWatt_t& rhs)
 {
-    is >> rhs.val;
-    return is;
+    return ParseSIString(is, rhs, "mWatt");
 }
 
 /// Input stream for Watt
@@ -523,8 +567,7 @@ operator>>(std::istream& is, mWatt_t& rhs)
 std::istream&
 operator>>(std::istream& is, Watt_t& rhs)
 {
-    is >> rhs.val;
-    return is;
+    return ParseSIString(is, rhs, "Watt");
 }
 
 /// Input stream for dBm_per_Hz
@@ -534,8 +577,7 @@ operator>>(std::istream& is, Watt_t& rhs)
 std::istream&
 operator>>(std::istream& is, dBm_per_Hz_t& rhs)
 {
-    is >> rhs.val;
-    return is;
+    return ParseSIString(is, rhs, "dBm/Hz");
 }
 
 /// Input stream for dBm_per_MHz
@@ -545,8 +587,7 @@ operator>>(std::istream& is, dBm_per_Hz_t& rhs)
 std::istream&
 operator>>(std::istream& is, dBm_per_MHz_t& rhs)
 {
-    is >> rhs.val;
-    return is;
+    return ParseSIString(is, rhs, "dBm/MHz");
 }
 
 /// @cond Doxygen bug: multiple @param
@@ -559,6 +600,7 @@ dB_t::from_str(const std::string& input)
     auto res = StringToDouble(input, "dB");
     return res.has_value() ? std::optional(dB_t{res.value()}) : std::nullopt;
 }
+
 /// @endcond
 
 /// Convert string to dBm
@@ -611,6 +653,7 @@ dBm_per_MHz_t::from_str(const std::string& input)
     auto res = StringToDouble(input, "dBm_per_MHz");
     return res.has_value() ? std::optional(dBm_per_MHz_t{res.value()}) : std::nullopt;
 }
+
 /// @endcond
 
 /// @cond Doxygen warning about macro internals
@@ -636,5 +679,3 @@ ATTRIBUTE_CHECKER_IMPLEMENT_WITH_CONVERTER(dBm_per_MHz_t, dBm_per_MHz);
 ATTRIBUTE_VALUE_IMPLEMENT_WITH_NAME(dBm_per_MHz_t, dBm_per_MHz);
 /// @endcond
 } // namespace ns3
-
-// clang-format on

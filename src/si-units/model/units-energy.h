@@ -6,10 +6,10 @@
 #include "units-frequency.h"
 #include "units-time.h"
 
-#include <ns3/abort.h>
-#include <ns3/attribute-helper.h>
-#include <ns3/attribute.h>
-#include <ns3/double.h>
+#include "ns3/abort.h"
+#include "ns3/attribute-helper.h"
+#include "ns3/attribute.h"
+#include "ns3/double.h"
 
 #include <algorithm>
 #include <cinttypes>
@@ -54,11 +54,22 @@ struct dB_t
     dB_t() = default; ///< Default constructor
 
     /// Constructor
+    /// @param val Value in degree
+    constexpr explicit dB_t(int32_t val)
+        : val(static_cast<double>(val))
+    {
+    }
+
+    /// Constructor
     /// @param val Value in dB
     constexpr explicit dB_t(double val)
         : val(val)
     {
     }
+
+    /// Constructor
+    /// @param str a string representation of a dB value
+    explicit dB_t(const std::string& str);
 
     /// Converts to string.
     /// @return String representation of dB_t object.
@@ -122,53 +133,10 @@ struct dB_t
         return output;
     }
 
-    /// Equality operator.
-    /// @param rhs value to compare
-    /// @return True if equal.
-    inline bool operator==(const dB_t& rhs) const
-    {
-        return val == rhs.val;
-    }
-
-    /// Inequality operator.
-    /// @param rhs value to compare
-    /// @return True if not equal.
-    inline bool operator!=(const dB_t& rhs) const
-    {
-        return !(operator==(rhs));
-    }
-
-    /// Less than operator.
-    /// @param rhs value to compare
-    /// @return True if less than.
-    inline bool operator<(const dB_t& rhs) const
-    {
-        return val < rhs.val;
-    }
-
-    /// Greater than operator.
-    /// @param rhs value to compare
-    /// @return True if greater than.
-    inline bool operator>(const dB_t& rhs) const
-    {
-        return val > rhs.val;
-    }
-
-    /// Less than or equal operator.
-    /// @param rhs value to compare
-    /// @return True if less than or equal.
-    inline bool operator<=(const dB_t& rhs) const
-    {
-        return val <= rhs.val;
-    }
-
-    /// Greater than or equal operator.
-    /// @param rhs value to compare
-    /// @return True if greater than or equal.
-    inline bool operator>=(const dB_t& rhs) const
-    {
-        return val >= rhs.val;
-    }
+    /// Three-way comparison
+    /// @param rhs right hand side
+    /// @return deduced comparison type
+    auto operator<=>(const dB_t& rhs) const = default;
 
     /// Negation operator.
     /// @return Negated value.
@@ -268,6 +236,10 @@ struct dBm_t
     {
     }
 
+    /// Constructor
+    /// @param str a string representation of a dBm value
+    explicit dBm_t(const std::string& str);
+
     /// Converts from mWatt
     /// @param input input power struct in mWatt_t
     /// @return dBm_t object
@@ -275,7 +247,7 @@ struct dBm_t
 
     /// Converts to mWatt
     /// @return power unit struct in mWatt_t
-    mWatt_t to_mWatt() const;                      // NOLINT(readability-identifier-naming)
+    mWatt_t to_mWatt() const; // NOLINT(readability-identifier-naming)
 
     /// Gets power unit in mWatt
     /// @return power unit in mWatt
@@ -331,53 +303,10 @@ struct dBm_t
         return output;
     }
 
-    /// Equality operator.
-    /// @param rhs value to compare
-    /// @returns true if the two values are equal, false otherwise
-    inline bool operator==(const dBm_t& rhs) const
-    {
-        return val == rhs.val;
-    }
-
-    /// Inequality operator.
-    /// @param rhs value to compare
-    /// @returns true if the two values are not equal, false otherwise
-    inline bool operator!=(const dBm_t& rhs) const
-    {
-        return !(operator==(rhs));
-    }
-
-    /// Less than operator.
-    /// @param rhs value to compare
-    /// @returns true if the value is less than the rhs value, false otherwise
-    inline bool operator<(const dBm_t& rhs) const
-    {
-        return val < rhs.val;
-    }
-
-    /// Greater than operator.
-    /// @param rhs value to compare
-    /// @returns true if the value is greater than the rhs value, false otherwise
-    inline bool operator>(const dBm_t& rhs) const
-    {
-        return val > rhs.val;
-    }
-
-    /// Less than or equal to operator.
-    /// @param rhs value to compare
-    /// @returns true if the value is less than or equal to the rhs value, false otherwise
-    inline bool operator<=(const dBm_t& rhs) const
-    {
-        return val <= rhs.val;
-    }
-
-    /// Greater than or equal to operator.
-    /// @param rhs value to compare
-    /// @returns true if the value is greater than or equal to the rhs value, false otherwise
-    inline bool operator>=(const dBm_t& rhs) const
-    {
-        return val >= rhs.val;
-    }
+    /// Three-way comparison
+    /// @param rhs right hand side
+    /// @return deduced comparison type
+    auto operator<=>(const dBm_t& rhs) const = default;
 
     /// Negation operator.
     /// @returns a new dBm_t value with the value negated
@@ -465,11 +394,22 @@ struct mWatt_t
     mWatt_t() = default; ///< Default constructor
 
     /// Constructor
+    /// @param val Value in degree
+    constexpr explicit mWatt_t(int32_t val)
+        : val(static_cast<double>(val))
+    {
+    }
+
+    /// Constructor
     /// @param val Value in mWatt
     constexpr explicit mWatt_t(double val)
         : val(val)
     {
     }
+
+    /// Constructor
+    /// @param str a string representation of a mWatt value
+    explicit mWatt_t(const std::string& str);
 
     // Note these are exceptions to method naming rules in order output be consistent. dBm_t,
     // mWatt_t, and Watt_t conversion method names.
@@ -481,7 +421,7 @@ struct mWatt_t
 
     /// Conversion to dBm_t
     /// @returns power unit struct in dBm_t
-    dBm_t to_dBm() const;                        // NOLINT(readability-identifier-naming)
+    dBm_t to_dBm() const; // NOLINT(readability-identifier-naming)
 
     /// Get the value in dBm
     /// @returns power unit in dBm
@@ -537,53 +477,15 @@ struct mWatt_t
         return output;
     }
 
-    /// Equality operator
-    /// @param rhs value to compare
-    /// @returns true if the two values are equal
-    inline bool operator==(const mWatt_t& rhs) const
-    {
-        return val == rhs.val;
-    }
+    /// Three-way comparison
+    /// @param rhs right hand side
+    /// @return deduced comparison type
+    auto operator<=>(const mWatt_t& rhs) const = default;
 
-    /// Inequality operator
-    /// @param rhs value to compare
-    /// @returns true if the two values are not equal
-    inline bool operator!=(const mWatt_t& rhs) const
-    {
-        return !(operator==(rhs));
-    }
-
-    /// Less than operator
-    /// @param rhs value to compare
-    /// @returns true if the left value is less than the right value
-    inline bool operator<(const mWatt_t& rhs) const
-    {
-        return val < rhs.val;
-    }
-
-    /// Greater than operator
-    /// @param rhs value to compare
-    /// @returns true if the left value is greater than the right value
-    inline bool operator>(const mWatt_t& rhs) const
-    {
-        return val > rhs.val;
-    }
-
-    /// Less than or equal to operator
-    /// @param rhs value to compare
-    /// @returns true if the left value is less than or equal to the right value
-    inline bool operator<=(const mWatt_t& rhs) const
-    {
-        return val <= rhs.val;
-    }
-
-    /// Greater than or equal to operator
-    /// @param rhs value to compare
-    /// @returns true if the left value is greater than or equal to the right value
-    inline bool operator>=(const mWatt_t& rhs) const
-    {
-        return val >= rhs.val;
-    }
+    /// Equality comparison
+    /// @param rhs right hand side
+    /// @return true if equal, false otherwise
+    bool operator==(const mWatt_t& rhs) const = default;
 
     /// Negation Operator
     /// @returns a mWatt_t power unit struct with value equals to -val
@@ -713,11 +615,22 @@ struct Watt_t
     Watt_t() = default; ///< Default constructor
 
     /// Constructor
+    /// @param val Value in degree
+    constexpr explicit Watt_t(int32_t val)
+        : val(static_cast<double>(val))
+    {
+    }
+
+    /// Constructor
     /// @param val Value in Watt
     constexpr explicit Watt_t(double val)
         : val(val)
     {
     }
+
+    /// Constructor
+    /// @param str a string representation of a Watt value
+    explicit Watt_t(const std::string& str);
 
     // mWatt_t-Watt_t-dBm_t Conversion Operators
     /// Sets power unit in Watt_t from dBm_t
@@ -786,53 +699,15 @@ struct Watt_t
     // Watt_t-Watt_t Operators
     // Keeping classes simple, even if duplication is present. Preferring faster runtime.
 
-    /// Equality Operator
-    /// @param rhs right-hand side operand
-    /// @returns true if the two power values are equal
-    inline bool operator==(const Watt_t& rhs) const
-    {
-        return val == rhs.val;
-    }
+    /// Three-way comparison
+    /// @param rhs right hand side
+    /// @return deduced comparison type
+    auto operator<=>(const Watt_t& rhs) const = default;
 
-    /// Inequality Operator
-    /// @param rhs right-hand side operand
-    /// @returns true if the two power values are not equal
-    inline bool operator!=(const Watt_t& rhs) const
-    {
-        return !(operator==(rhs));
-    }
-
-    /// Less Than Comparison Operator
-    /// @param rhs right-hand side operand
-    /// @returns true if the power value is less than the rhs value
-    inline bool operator<(const Watt_t& rhs) const
-    {
-        return val < rhs.val;
-    }
-
-    /// Greater Than Comparison Operator
-    /// @param rhs right-hand side operand
-    /// @returns true if the power value is greater than the rhs value
-    inline bool operator>(const Watt_t& rhs) const
-    {
-        return val > rhs.val;
-    }
-
-    /// Less Than or Equal Comparison Operator
-    /// @param rhs right-hand side operand
-    /// @returns true if the power value is less than or equal the rhs value
-    inline bool operator<=(const Watt_t& rhs) const
-    {
-        return val <= rhs.val;
-    }
-
-    /// Greater Than or Equal Comparison Operator
-    /// @param rhs right-hand side operand
-    /// @returns true if the power value is greater than or equal the rhs value
-    inline bool operator>=(const Watt_t& rhs) const
-    {
-        return val >= rhs.val;
-    }
+    /// Equality comparison
+    /// @param rhs right hand side
+    /// @return true if equal, false otherwise
+    bool operator==(const Watt_t& rhs) const = default;
 
     /// Arithmetic Negation Operator
     /// @returns negated power value
@@ -981,11 +856,22 @@ struct dBm_per_Hz_t // NOLINT(readability-identifier-naming)
     dBm_per_Hz_t() = default; ///< Default constructor
 
     /// Constructor
+    /// @param val Value in degree
+    constexpr explicit dBm_per_Hz_t(int32_t val)
+        : val(static_cast<double>(val))
+    {
+    }
+
+    /// Constructor
     /// @param val Value in dBm/Hz
     constexpr explicit dBm_per_Hz_t(double val)
         : val(val)
     {
     }
+
+    /// Constructor
+    /// @param str a string representation of a dBm/Hz_t value
+    explicit dBm_per_Hz_t(const std::string& str);
 
     /// Get value in dBm
     /// @returns a double value in dBm
@@ -1066,53 +952,10 @@ struct dBm_per_Hz_t // NOLINT(readability-identifier-naming)
         return OverBandwidth(rhs.to_Hz());
     }
 
-    /// Equality operator
-    /// @param rhs value to compare
-    /// @returns true if equal
-    inline bool operator==(const dBm_per_Hz_t& rhs) const
-    {
-        return val == rhs.val;
-    }
-
-    /// Inequality operator
-    /// @param rhs value to compare
-    /// @returns true if not equal
-    inline bool operator!=(const dBm_per_Hz_t& rhs) const
-    {
-        return !(operator==(rhs));
-    }
-
-    /// Less than operator
-    /// @param rhs value to compare
-    /// @returns true if less than
-    inline bool operator<(const dBm_per_Hz_t& rhs) const
-    {
-        return val < rhs.val;
-    }
-
-    /// Greater than operator
-    /// @param rhs value to compare
-    /// @returns true if greater than
-    inline bool operator>(const dBm_per_Hz_t& rhs) const
-    {
-        return val > rhs.val;
-    }
-
-    /// Less than or equal to operator
-    /// @param rhs value to compare
-    /// @returns true if less than or equal to
-    inline bool operator<=(const dBm_per_Hz_t& rhs) const
-    {
-        return val <= rhs.val;
-    }
-
-    /// Greater than or equal to operator
-    /// @param rhs value to compare
-    /// @returns true if greater than or equal to
-    inline bool operator>=(const dBm_per_Hz_t& rhs) const
-    {
-        return val >= rhs.val;
-    }
+    /// Three-way comparison
+    /// @param rhs right hand side
+    /// @return deduced comparison type
+    auto operator<=>(const dBm_per_Hz_t& rhs) const = default;
 
     /// Negation operator
     /// @returns negated value
@@ -1170,11 +1013,22 @@ struct dBm_per_MHz_t // NOLINT(readability-identifier-naming)
     dBm_per_MHz_t() = default; ///< Default constructor
 
     /// Constructor
+    /// @param val Value in degree
+    constexpr explicit dBm_per_MHz_t(int32_t val)
+        : val(static_cast<double>(val))
+    {
+    }
+
+    /// Constructor
     /// @param val Value in dBm/MHz
     constexpr explicit dBm_per_MHz_t(double val)
         : val(val)
     {
     }
+
+    /// Constructor
+    /// @param str a string representation of a dBm/MHz_t value
+    explicit dBm_per_MHz_t(const std::string& str);
 
     /// Get value in dBm
     /// @returns a double value in dBm
@@ -1255,53 +1109,10 @@ struct dBm_per_MHz_t // NOLINT(readability-identifier-naming)
         return OverBandwidth(rhs.to_MHz());
     }
 
-    /// Equality operator
-    /// @param rhs value to compare
-    /// @returns true if equal
-    inline bool operator==(const dBm_per_MHz_t& rhs) const
-    {
-        return val == rhs.val;
-    }
-
-    /// Inequality operator
-    /// @param rhs value to compare
-    /// @returns true if not equal
-    inline bool operator!=(const dBm_per_MHz_t& rhs) const
-    {
-        return !(operator==(rhs));
-    }
-
-    /// Less than operator
-    /// @param rhs value to compare
-    /// @returns true if less than
-    inline bool operator<(const dBm_per_MHz_t& rhs) const
-    {
-        return val < rhs.val;
-    }
-
-    /// Greater than operator
-    /// @param rhs value to compare
-    /// @returns true if greater than
-    inline bool operator>(const dBm_per_MHz_t& rhs) const
-    {
-        return val > rhs.val;
-    }
-
-    /// Less than or equal to operator
-    /// @param rhs value to compare
-    /// @returns true if less than or equal to
-    inline bool operator<=(const dBm_per_MHz_t& rhs) const
-    {
-        return val <= rhs.val;
-    }
-
-    /// Greater than or equal to operator
-    /// @param rhs value to compare
-    /// @returns true if greater than or equal to
-    inline bool operator>=(const dBm_per_MHz_t& rhs) const
-    {
-        return val >= rhs.val;
-    }
+    /// Three-way comparison
+    /// @param rhs right hand side
+    /// @return deduced comparison type
+    auto operator<=>(const dBm_per_MHz_t& rhs) const = default;
 
     /// Negation operator
     /// @returns negated value
@@ -1408,11 +1219,11 @@ ATTRIBUTE_VALUE_DEFINE_WITH_NAME(dBm_per_Hz_t, dBm_per_Hz); // See si-units-test
 ATTRIBUTE_ACCESSOR_DEFINE(dBm_per_Hz);
 ATTRIBUTE_CHECKER_DEFINE_WITH_CONVERTER(dBm_per_Hz_t, dBm_per_Hz, Double);
 
-ATTRIBUTE_VALUE_DEFINE_WITH_NAME(dBm_per_MHz_t, dBm_per_MHz); // See si-units-test-suite.cc for usages
+ATTRIBUTE_VALUE_DEFINE_WITH_NAME(dBm_per_MHz_t,
+                                 dBm_per_MHz); // See si-units-test-suite.cc for usages
 ATTRIBUTE_ACCESSOR_DEFINE(dBm_per_MHz);
 ATTRIBUTE_CHECKER_DEFINE_WITH_CONVERTER(dBm_per_MHz_t, dBm_per_MHz, Double);
 /// @endcond
 } // namespace ns3
 
-// clang-format on
 #endif // UNITS_ENERGY_H

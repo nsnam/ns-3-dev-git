@@ -188,7 +188,7 @@ main(int argc, char* argv[])
                  "select ns3::NistErrorRateModel or ns3::YansErrorRateModel",
                  errorModelType);
     cmd.AddValue("enablePcap", "enable pcap output", enablePcap);
-    cmd.AddValue("waveformPower", "Waveform power (linear W)", waveformPower);
+    cmd.AddValue("waveformPower", "Waveform power (Watt)", waveformPower);
     cmd.Parse(argc, argv);
 
     uint16_t startIndex = 0;

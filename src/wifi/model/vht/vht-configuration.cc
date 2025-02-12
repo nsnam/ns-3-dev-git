@@ -13,6 +13,7 @@
 #include "ns3/log.h"
 #include "ns3/string.h"
 #include "ns3/tuple.h"
+#include "ns3/units-energy.h"
 
 namespace ns3
 {
@@ -53,7 +54,7 @@ VhtConfiguration::GetTypeId()
                           "should be higher than "
                           "the threshold (dBm) associated to the PPDU bandwidth to allow the PHY "
                           "layer to declare CCA BUSY state.",
-                          StringValue("{-72.0, -72.0, -69.0}"),
+                          StringValue("{-72.0dBm, -72.0dBm, -69.0dBm}"),
                           MakeTupleAccessor<dBmValue, dBmValue, dBmValue>(
                               &VhtConfiguration::SetSecondaryCcaSensitivityThresholds,
                               &VhtConfiguration::GetSecondaryCcaSensitivityThresholds),

@@ -621,7 +621,7 @@ WifiPhyOperatingChannel::GetWidthType() const
 uint8_t
 WifiPhyOperatingChannel::GetPrimaryChannelIndex(MHz_t primaryChannelWidth) const
 {
-    if ((primaryChannelWidth % MHz_t{20}) != MHz_t{0})
+    if (!primaryChannelWidth.IsMultipleOf(20_MHz))
     {
         NS_LOG_DEBUG("The operating channel width is not a multiple of 20 MHz; return 0");
         return 0;
@@ -989,7 +989,7 @@ operator<<(std::ostream& os, const WifiPhyOperatingChannel& channel)
             }
         }
         os << " band " << channel.GetPhyBand();
-        if ((channel.GetTotalWidth() % MHz_t{20}) == MHz_t{0})
+        if (channel.GetTotalWidth().IsMultipleOf(20_MHz))
         {
             os << " primary20 " << +channel.GetPrimaryChannelIndex(MHz_t{20});
         }

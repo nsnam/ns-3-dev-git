@@ -1271,7 +1271,7 @@ PhyEntity::GetCurrentEvent() const
 WifiSpectrumBandInfo
 PhyEntity::GetPrimaryBand(MHz_t bandWidth) const
 {
-    if (m_wifiPhy->GetChannelWidth() % MHz_t{20} != MHz_t{0})
+    if (!m_wifiPhy->GetChannelWidth().IsMultipleOf(MHz_t{20}))
     {
         return m_wifiPhy->GetBand(bandWidth);
     }
@@ -1435,7 +1435,7 @@ PhyEntity::CanStartRx(Ptr<const WifiPpdu> ppdu) const
     // The PHY shall not issue a PHY-RXSTART.indication primitive in response to a PPDU that does
     // not overlap the primary channel
     const auto channelWidth = m_wifiPhy->GetChannelWidth();
-    const auto primaryWidth = ((channelWidth % MHz_t{20}) == MHz_t{0})
+    const auto primaryWidth = channelWidth.IsMultipleOf(20_MHz)
                                   ? MHz_t{20}
                                   : channelWidth; // if the channel width is a multiple of 20 MHz,
                                                   // then we consider the primary20 channel

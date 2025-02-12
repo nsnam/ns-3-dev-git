@@ -2,11 +2,27 @@
 
 #include "string-utils.h"
 
+#include <iostream>
+
 using namespace ns3;
 
 // clang-format off
 namespace ns3
 {
+
+Hz_t::Hz_t(const std::string& str)
+{
+    auto res = from_str(str);
+    NS_ABORT_MSG_IF(!res.has_value(), GetParseErrMsg(str, "Hz"));
+    val = res.value().val;
+}
+
+MHz_t::MHz_t(const std::string& str)
+{
+    auto res = from_str(str);
+    NS_ABORT_MSG_IF(!res.has_value(), GetParseErrMsg(str, "MHz"));
+    val = res.value().val;
+}
 
 /// User-defined literals for Hz
 /// @param val The value in Hz
@@ -115,8 +131,7 @@ operator<<(std::ostream& os, const Hz_t& rhs)
 std::istream&
 operator>>(std::istream& is, Hz_t& rhs)
 {
-    is >> rhs.val;
-    return is;
+    return ParseSIString(is, rhs, "Hz");
 }
 
 /// Output stream for MHz_t
@@ -136,8 +151,7 @@ operator<<(std::ostream& os, const MHz_t& rhs)
 std::istream&
 operator>>(std::istream& is, MHz_t& rhs)
 {
-    is >> rhs.val;
-    return is;
+    return ParseSIString(is, rhs, "MHz");
 }
 
 /// Multiply Hz_t by double
@@ -289,5 +303,3 @@ ATTRIBUTE_VALUE_IMPLEMENT_WITH_NAME(MHz_t, MHz);
 /// @endcond
 
 } // namespace ns3
-
-// clang-format on

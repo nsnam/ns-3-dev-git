@@ -5,9 +5,22 @@
 using namespace ns3;
 
 // clang-format off
-
 namespace ns3
 {
+
+degree_t::degree_t(const std::string& str)
+{
+    auto res = from_str(str);
+    NS_ABORT_MSG_IF(!res.has_value(), GetParseErrMsg(str, "degree"));
+    val = res.value().val;
+}
+
+radian_t::radian_t(const std::string& str)
+{
+    auto res = from_str(str);
+    NS_ABORT_MSG_IF(!res.has_value(), GetParseErrMsg(str, "radian"));
+    val = res.value().val;
+}
 
 degree_t
 degree_t::from_radian(const radian_t& input)
@@ -183,8 +196,7 @@ operator<<(std::ostream& os, const radian_t& rhs)
 std::istream&
 operator>>(std::istream& is, degree_t& rhs)
 {
-    is >> rhs.val;
-    return is;
+    return ParseSIString(is, rhs, "degree");
 }
 
 /// Input operator
@@ -194,8 +206,7 @@ operator>>(std::istream& is, degree_t& rhs)
 std::istream&
 operator>>(std::istream& is, radian_t& rhs)
 {
-    is >> rhs.val;
-    return is;
+    return ParseSIString(is, rhs, "radian");
 }
 
 /// @cond Doxygen error: multiple @param
@@ -227,5 +238,3 @@ ATTRIBUTE_VALUE_IMPLEMENT_WITH_NAME(radian_t, radian);
 /// @endcond
 
 } // namespace ns3
-
-// clang-format on

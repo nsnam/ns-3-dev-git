@@ -8,9 +8,9 @@
 #include "units-frequency.h"
 #include "units-time.h"
 
-#include <ns3/attribute-helper.h>
-#include <ns3/attribute.h>
-#include <ns3/double.h>
+#include "ns3/attribute-helper.h"
+#include "ns3/attribute.h"
+#include "ns3/double.h"
 
 #include <algorithm>
 #include <cinttypes>
@@ -36,11 +36,22 @@ struct percent_t
     percent_t() = default; ///< Default constructor
 
     /// Constructor
+    /// @param val Value in degree
+    constexpr explicit percent_t(int32_t val)
+        : val(static_cast<double>(val))
+    {
+    }
+
+    /// Constructor
     /// @param val Value in percent
     constexpr explicit percent_t(double val)
         : val(val)
     {
     }
+
+    /// Constructor
+    /// @param str a string representation of the percent
+    explicit percent_t(const std::string& str);
 
     /// Represent in string
     /// @return String representation
@@ -90,53 +101,10 @@ struct percent_t
         return output;
     }
 
-    /// Equality operators
-    /// @param rhs value to compare
-    /// @return true if equal, false otherwise
-    inline bool operator==(const percent_t& rhs) const
-    {
-        return val == rhs.val;
-    }
-
-    /// Inequality operators
-    /// @param rhs value to compare
-    /// @return true if not equal, false otherwise
-    inline bool operator!=(const percent_t& rhs) const
-    {
-        return !(operator==(rhs));
-    }
-
-    /// Less than operators
-    /// @param rhs value to compare
-    /// @return true if less than, false otherwise
-    inline bool operator<(const percent_t& rhs) const
-    {
-        return val < rhs.val;
-    }
-
-    /// Greater than operators
-    /// @param rhs value to compare
-    /// @return true if greater than, false otherwise
-    inline bool operator>(const percent_t& rhs) const
-    {
-        return val > rhs.val;
-    }
-
-    /// Less than or equal to operators
-    /// @param rhs value to compare
-    /// @return true if less than or equal to, false otherwise
-    inline bool operator<=(const percent_t& rhs) const
-    {
-        return val <= rhs.val;
-    }
-
-    /// Greater than or equal to operators
-    /// @param rhs value to compare
-    /// @return true if greater than or equal to, false otherwise
-    inline bool operator>=(const percent_t& rhs) const
-    {
-        return val >= rhs.val;
-    }
+    /// Three-way comparison
+    /// @param rhs right hand side
+    /// @return deduced comparison type
+    auto operator<=>(const percent_t& rhs) const = default;
 
     /// Negation operator
     /// @return Negated value
@@ -242,7 +210,5 @@ ATTRIBUTE_ACCESSOR_DEFINE(percent);
 ATTRIBUTE_CHECKER_DEFINE_WITH_CONVERTER(percent_t, percent, Double);
 /// @endcond
 } // namespace ns3
-
-// clang-format on
 
 #endif // UNITS_RATIO_H

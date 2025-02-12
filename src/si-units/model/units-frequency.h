@@ -4,10 +4,11 @@
 #include "format-string.h"
 #include "units-aliases.h"
 
-#include <ns3/attribute-helper.h>
-#include <ns3/attribute.h>
-#include <ns3/nstime.h>
-#include <ns3/uinteger.h>
+#include "ns3/assert.h"
+#include "ns3/attribute-helper.h"
+#include "ns3/attribute.h"
+#include "ns3/nstime.h"
+#include "ns3/uinteger.h"
 
 #include <algorithm>
 #include <cinttypes>
@@ -50,6 +51,10 @@ struct Hz_t
         : val(static_cast<double>(val))
     {
     }
+
+    /// Constructor
+    /// @param str a string representation of the frequency
+    explicit Hz_t(const std::string& str);
 
     /// @brief Stringify with metric prefix
     /// Sub-Hertz not supported
@@ -96,53 +101,10 @@ struct Hz_t
         return output;
     }
 
-    /// Equality operator
-    /// @param rhs Right-hand side of the equality operator
-    /// @return True if the two values are equal, false otherwise
-    inline bool operator==(const Hz_t& rhs) const
-    {
-        return val == rhs.val;
-    }
-
-    /// Inequality operator
-    /// @param rhs value to compare
-    /// @return True if the two values are not equal, false otherwise
-    inline bool operator!=(const Hz_t& rhs) const
-    {
-        return !(operator==(rhs));
-    }
-
-    /// Less-than operator
-    /// @param rhs value to compare
-    /// @return True if the left-hand side value is less than the right-hand side value, false otherwise
-    inline bool operator<(const Hz_t& rhs) const
-    {
-        return val < rhs.val;
-    }
-
-    /// Greater-than operator
-    /// @param rhs value to compare
-    /// @return True if the left-hand side value is greater than the right-hand side value, false otherwise
-    inline bool operator>(const Hz_t& rhs) const
-    {
-        return val > rhs.val;
-    }
-
-    /// Less-than-or-equal-to operator
-    /// @param rhs value to compare
-    /// @return True if the left-hand side value is less than or equal to the right-hand side value, false otherwise
-    inline bool operator<=(const Hz_t& rhs) const
-    {
-        return val <= rhs.val;
-    }
-
-    /// Greater-than-or-equal-to operator
-    /// @param rhs value to compare
-    /// @return True if the left-hand side value is greater than or equal to the right-hand side value, false otherwise
-    inline bool operator>=(const Hz_t& rhs) const
-    {
-        return val >= rhs.val;
-    }
+    /// Three-way comparison
+    /// @param rhs right hand side
+    /// @return deduced comparison type
+    auto operator<=>(const Hz_t& rhs) const = default;
 
     /// Negation operator
     /// @return Negated value
@@ -307,6 +269,10 @@ struct MHz_t
     {
     }
 
+    /// Constructor
+    /// @param str a string representation of the frequency
+    explicit MHz_t(const std::string& str);
+
     /// @brief Stringify with metric prefix
     /// Sub-Hertz not supported
     /// @return String with metric prefix
@@ -315,53 +281,10 @@ struct MHz_t
         return to_Hz().str();
     }
 
-    /// Equality operator
-    /// @param rhs Right-hand side of the equality operator
-    /// @return True if the two values are equal, false otherwise
-    inline bool operator==(const MHz_t& rhs) const
-    {
-        return val == rhs.val;
-    }
-
-    /// Inequality operator
-    /// @param rhs value to compare
-    /// @return True if the two values are not equal, false otherwise
-    inline bool operator!=(const MHz_t& rhs) const
-    {
-        return !(operator==(rhs));
-    }
-
-    /// Less-than operator
-    /// @param rhs value to compare
-    /// @return True if the left-hand side value is less than the right-hand side value, false otherwise
-    inline bool operator<(const MHz_t& rhs) const
-    {
-        return val < rhs.val;
-    }
-
-    /// Greater-than operator
-    /// @param rhs value to compare
-    /// @return True if the left-hand side value is greater than the right-hand side value, false otherwise
-    inline bool operator>(const MHz_t& rhs) const
-    {
-        return val > rhs.val;
-    }
-
-    /// Less-than-or-equal-to operator
-    /// @param rhs value to compare
-    /// @return True if the left-hand side value is less than or equal to the right-hand side value, false otherwise
-    inline bool operator<=(const MHz_t& rhs) const
-    {
-        return val <= rhs.val;
-    }
-
-    /// Greater-than-or-equal-to operator
-    /// @param rhs value to compare
-    /// @return True if the left-hand side value is greater than or equal to the right-hand side value, false otherwise
-    inline bool operator>=(const MHz_t& rhs) const
-    {
-        return val >= rhs.val;
-    }
+    /// Three-way comparison
+    /// @param rhs right hand side
+    /// @return deduced comparison type
+    auto operator<=>(const MHz_t& rhs) const = default;
 
     /// Arithmetic Negation Operator
     /// @returns negated power value
@@ -386,13 +309,14 @@ struct MHz_t
         return MHz_t{val - rhs.val};
     }
 
-    /// Remainder (modulus) from the quotient of two MHz_t
+    /// Test if this value is a multiple of the given value
     /// @param rhs the right-hand side MHz_t value
-    /// @return The remainder from the quotient of the two values
-    inline MHz_t operator%(const MHz_t& rhs) const
+    /// @return true if it is a multiple, false otherwise
+    inline bool IsMultipleOf(const MHz_t& rhs) const
     {
-        return MHz_t{static_cast<double>(static_cast<uint64_t>(in_Hz()) %
-                                         static_cast<uint64_t>(rhs.in_Hz()))};
+        NS_ASSERT(rhs.val != 0.);
+        auto div = static_cast<int64_t>(val / rhs.val);
+        return val == (div * rhs.val);
     }
 
     /// Addition assignment operator
@@ -488,14 +412,6 @@ struct MHz_t
         return to_Hz();
     }
 
-    /// Equality operator
-    /// @param rhs Right-hand side of the equality operator
-    /// @return True if the two values are equal, false otherwise
-    inline bool operator==(const Hz_t& rhs) const
-    {
-        return to_Hz() == rhs;
-    }
-
     /// Get the value of the MHz_t in Hz
     /// @return Value in Hz
     inline double in_Hz() const // NOLINT(readability-identifier-naming)
@@ -529,6 +445,20 @@ struct MHz_t
     inline Hz_t to_Hz() const // NOLINT(readability-identifier-naming)
     {
         return Hz_t{val * ONE_MEGA};
+    }
+
+    /// Converts from a string
+    /// @param input String to convert from
+    /// @return Optional MHz_t value
+    static std::optional<MHz_t> from_str( // NOLINT(readability-identifier-naming)
+        const std::string& input)
+    {
+        auto res = Hz_t::from_str(input);
+        if (res.has_value())
+        {
+            return res.value().to_MHz();
+        }
+        return std::nullopt;
     }
 };
 
@@ -602,7 +532,5 @@ ATTRIBUTE_ACCESSOR_DEFINE(MHz);
 ATTRIBUTE_CHECKER_DEFINE_WITH_CONVERTER(MHz_t, MHz, Uinteger);
 /// @endcond
 } // namespace ns3
-
-// clang-format on
 
 #endif // UNITS_FREQUENCY_H

@@ -2,10 +2,8 @@
 
 #include <algorithm>
 #include <charconv>
-#include <fstream>
+#include <istream>
 #include <optional>
-#include <ostream>
-#include <sstream>
 #include <string>
 
 // clang-format off
@@ -44,7 +42,7 @@ IsNumber(const std::string& str)
     // - std::sscanf : fails to filter out many invalid forms. Inability to raise an exception
     // - std::from_chars : Lack of support of floating point in Apple clang
     // - std::stold : fails to filter out many invalid forms.
-    // - std::istringstream : fails to filter out many invalid forms.
+    // - std::istream : fails to filter out many invalid forms.
     // - class NSFormatter : too much extra dependency
 
     auto pos = str.find_first_not_of("0123456789.-");

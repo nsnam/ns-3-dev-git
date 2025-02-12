@@ -1,20 +1,39 @@
-#include <ns3/log.h>
-#include <ns3/object.h>
-#include <ns3/string.h>
-#include <ns3/test.h>
-#include <ns3/units-aliases.h>
-#include <ns3/units-angle.h>
-#include <ns3/units-energy.h>
-#include <ns3/units-frequency.h>
-#include <ns3/units-ratio.h>
-#include <ns3/units-time.h>
+#include "ns3/log.h"
+#include "ns3/object.h"
+#include "ns3/string.h"
+#include "ns3/test.h"
+#include "ns3/tuple.h"
+#include "ns3/units-aliases.h"
+#include "ns3/units-angle.h"
+#include "ns3/units-energy.h"
+#include "ns3/units-frequency.h"
+#include "ns3/units-ratio.h"
+#include "ns3/units-time.h"
 
-#include <vector>
+#include <istream>
+#include <streambuf>
+#include <tuple>
 
 using namespace ns3;
 
-// clang-format off
 NS_LOG_COMPONENT_DEFINE("SiUnitsTest");
+
+// clang-format off
+
+/// A stream buffer for testing.
+/// \details See TestInputOperatorPositives() function for usage
+struct StreamBuffer : public std::streambuf
+{
+    /// Constructor.
+    /// \param str The string to use as the stream buffer.
+    StreamBuffer(const std::string& str)
+    {
+        auto cstr = str.c_str();
+        auto beg = const_cast<char*>(cstr);
+        auto len = str.size();
+        setg(beg, beg, beg + len);
+    }
+};
 
 /// Test case for SI units.
 class TestCaseSiUnits : public TestCase
@@ -26,6 +45,39 @@ class TestCaseSiUnits : public TestCase
     }
 
   private:
+    /// Test input operators - positive cases
+    /// @tparam T type
+    /// @param tvs test vectors
+    template <typename T>
+    void TestInputOperatorPositives(const std::vector<std::string>& tvs)
+    {
+        T got;
+        for (auto& tv : tvs)
+        {
+            T want{tv};
+            StreamBuffer buf(tv);
+            std::istream is(&buf);
+            is >> got;
+            NS_TEST_EXPECT_MSG_EQ(got, want, tv);
+        }
+    }
+
+    /// Test input operators - negative cases
+    /// @tparam T type
+    /// @param tvs test vectors
+    template <typename T>
+    void TestInputOperatorNegatives(const std::vector<std::string>& tvs)
+    {
+        T got;
+        for (auto& tv : tvs)
+        {
+            StreamBuffer buf(tv);
+            std::istream is(&buf);
+            is >> got;
+            NS_TEST_EXPECT_MSG_EQ(is.fail(), true, tv);
+        }
+    }
+
     /// Test degree_t
     void Unit_degree() // NOLINT(readability-identifier-naming)
     {
@@ -33,6 +85,7 @@ class TestCaseSiUnits : public TestCase
         NS_TEST_EXPECT_MSG_EQ(degree_t{-1}, degree_t{-1.0}, "");
         NS_TEST_EXPECT_MSG_EQ(0_degree, -(0_degree), "");
         NS_TEST_EXPECT_MSG_EQ(0_degree, 0.0_degree, "");
+        NS_TEST_EXPECT_MSG_EQ(degree_t{"20.1 degree"}, 20.1_degree, "");
 
         NS_TEST_EXPECT_MSG_EQ((30_degree == 30.0_degree), true, "");
         NS_TEST_EXPECT_MSG_EQ((30_degree != 40.0_degree), true, "");
@@ -77,6 +130,18 @@ class TestCaseSiUnits : public TestCase
         NS_TEST_EXPECT_MSG_EQ(degree_t::from_str("-3.14degree").value(), -3.14_degree, "");
         NS_TEST_EXPECT_MSG_EQ(degree_t::from_str("3.14 Degree").has_value(), false, "");
         NS_TEST_EXPECT_MSG_EQ(degree_t::from_str("3.14_degree").has_value(), false, "");
+
+        TestInputOperatorPositives<degree_t>({"12.3degree", "12.3 degree", " 12.3  degree "});
+        TestInputOperatorNegatives<degree_t>(
+            {"12.3Degree", "12.3'", "12.3_degree", "12.3degree_t", "12.3", "12.3dBm"});
+
+        NS_TEST_EXPECT_MSG_EQ(degree_t{"90degree"}, 90_degree, "");
+        NS_TEST_EXPECT_MSG_EQ(degree_t{"90.0degree"}, 90_degree, "");
+        NS_TEST_EXPECT_MSG_EQ(degree_t{"90.00degree"}, 90_degree, "");
+        NS_TEST_EXPECT_MSG_EQ(degree_t{"3.14degree"}, 3.14_degree, "");
+        NS_TEST_EXPECT_MSG_EQ(degree_t{"3.14 degree"}, 3.14_degree, "");
+        NS_TEST_EXPECT_MSG_EQ(degree_t{"  3.14  degree  "}, 3.14_degree, "");
+        NS_TEST_EXPECT_MSG_EQ(degree_t{"-3.14degree"}, -3.14_degree, "");
     }
 
     /// Test radian_t
@@ -86,6 +151,7 @@ class TestCaseSiUnits : public TestCase
         NS_TEST_EXPECT_MSG_EQ(radian_t{-1}, radian_t{-1.0}, "");
         NS_TEST_EXPECT_MSG_EQ(0_radian, -(0_radian), "");
         NS_TEST_EXPECT_MSG_EQ(0_radian, 0.0_radian, "");
+        NS_TEST_EXPECT_MSG_EQ(radian_t{"1.5 radian"}, 1.5_radian, "");
 
         NS_TEST_EXPECT_MSG_EQ((30_radian == 30.0_radian), true, "");
         NS_TEST_EXPECT_MSG_EQ((30_radian != 40.0_radian), true, "");
@@ -132,6 +198,10 @@ class TestCaseSiUnits : public TestCase
         NS_TEST_EXPECT_MSG_EQ(radian_t::from_str("-3.14radian").value(), -3.14_radian, "");
         NS_TEST_EXPECT_MSG_EQ(radian_t::from_str("3.14 Radian").has_value(), false, "");
         NS_TEST_EXPECT_MSG_EQ(radian_t::from_str("3.14_radian").has_value(), false, "");
+
+        TestInputOperatorPositives<radian_t>({"12.3radian", "12.3 radian", " 12.3  radian "});
+        TestInputOperatorNegatives<radian_t>(
+            {"12.3Radian", "12.3_radian", "12.3radian_t", "12.3", "12.3degree"});
     }
 
     /// Test dB_t
@@ -150,6 +220,7 @@ class TestCaseSiUnits : public TestCase
         NS_TEST_EXPECT_MSG_EQ(dB_t{0}, dB_t(0.0), "");
         NS_TEST_EXPECT_MSG_EQ(dB_t{0}, dB_t{0_dB}, "");
         NS_TEST_EXPECT_MSG_EQ(dB_t{0}, dB_t(0_dB), "");
+        NS_TEST_EXPECT_MSG_EQ(dB_t{"1.5 dB"}, 1.5_dB, "");
 
         // Equality, inequality
         NS_TEST_EXPECT_MSG_EQ(dB_t{10}, 10_dB, "");
@@ -159,14 +230,14 @@ class TestCaseSiUnits : public TestCase
         NS_TEST_EXPECT_MSG_EQ((dB_t{10} != 20_dB), true, "");    // NOLINT
 
         // Comparison
-        NS_TEST_ASSERT_MSG_LT(1_dB, 2_dB, "");
-        NS_TEST_ASSERT_MSG_GT(2_dB, 1_dB, "");
-        NS_TEST_ASSERT_MSG_LT_OR_EQ(1_dB, 1_dB, "");
-        NS_TEST_ASSERT_MSG_LT_OR_EQ(1_dB, 2_dB, "");
-        NS_TEST_ASSERT_MSG_GT_OR_EQ(2_dB, 1_dB, "");
-        NS_TEST_ASSERT_MSG_GT_OR_EQ(2_dB, 2_dB, "");
-        NS_TEST_ASSERT_MSG_LT(-1_dB, 2_dB, "");
-        NS_TEST_ASSERT_MSG_GT(2_dB, -1_dB, "");
+        NS_TEST_EXPECT_MSG_LT(1_dB, 2_dB, "");
+        NS_TEST_EXPECT_MSG_GT(2_dB, 1_dB, "");
+        NS_TEST_EXPECT_MSG_LT_OR_EQ(1_dB, 1_dB, "");
+        NS_TEST_EXPECT_MSG_LT_OR_EQ(1_dB, 2_dB, "");
+        NS_TEST_EXPECT_MSG_GT_OR_EQ(2_dB, 1_dB, "");
+        NS_TEST_EXPECT_MSG_GT_OR_EQ(2_dB, 2_dB, "");
+        NS_TEST_EXPECT_MSG_LT(-1_dB, 2_dB, "");
+        NS_TEST_EXPECT_MSG_GT(2_dB, -1_dB, "");
         NS_TEST_EXPECT_MSG_EQ((10_dB < 20_dB), true, "");
         NS_TEST_EXPECT_MSG_EQ((10_dB <= 20_dB), true, "");
         NS_TEST_EXPECT_MSG_EQ((10_dB > 20_dB), false, "");
@@ -193,6 +264,10 @@ class TestCaseSiUnits : public TestCase
         NS_TEST_EXPECT_MSG_EQ(dB_t::from_str("-3.14dB").value(), -3.14_dB, "");
         NS_TEST_EXPECT_MSG_EQ(dB_t::from_str("3.14 Db").has_value(), false, "");
         NS_TEST_EXPECT_MSG_EQ(dB_t::from_str("3.14_dB").has_value(), false, "");
+
+        TestInputOperatorPositives<dB_t>({"12.3dB", "12.3 dB", " 12.3  dB "});
+        TestInputOperatorNegatives<dB_t>(
+            {"12.3db", "12.3DB", "12.3_dB", "12.3dB_t", "12.3", "12.3dBm"});
     }
 
     /// Test dBr_t
@@ -220,14 +295,14 @@ class TestCaseSiUnits : public TestCase
         NS_TEST_EXPECT_MSG_EQ((dBr_t{10} != 20_dBr), true, "");    // NOLINT
 
         // Comparison
-        NS_TEST_ASSERT_MSG_LT(1_dBr, 2_dBr, "");
-        NS_TEST_ASSERT_MSG_GT(2_dBr, 1_dBr, "");
-        NS_TEST_ASSERT_MSG_LT_OR_EQ(1_dBr, 1_dBr, "");
-        NS_TEST_ASSERT_MSG_LT_OR_EQ(1_dBr, 2_dBr, "");
-        NS_TEST_ASSERT_MSG_GT_OR_EQ(2_dBr, 1_dBr, "");
-        NS_TEST_ASSERT_MSG_GT_OR_EQ(2_dBr, 2_dBr, "");
-        NS_TEST_ASSERT_MSG_LT(-1_dBr, 2_dBr, "");
-        NS_TEST_ASSERT_MSG_GT(2_dBr, -1_dBr, "");
+        NS_TEST_EXPECT_MSG_LT(1_dBr, 2_dBr, "");
+        NS_TEST_EXPECT_MSG_GT(2_dBr, 1_dBr, "");
+        NS_TEST_EXPECT_MSG_LT_OR_EQ(1_dBr, 1_dBr, "");
+        NS_TEST_EXPECT_MSG_LT_OR_EQ(1_dBr, 2_dBr, "");
+        NS_TEST_EXPECT_MSG_GT_OR_EQ(2_dBr, 1_dBr, "");
+        NS_TEST_EXPECT_MSG_GT_OR_EQ(2_dBr, 2_dBr, "");
+        NS_TEST_EXPECT_MSG_LT(-1_dBr, 2_dBr, "");
+        NS_TEST_EXPECT_MSG_GT(2_dBr, -1_dBr, "");
         NS_TEST_EXPECT_MSG_EQ((10_dBr < 20_dBr), true, "");
         NS_TEST_EXPECT_MSG_EQ((10_dBr <= 20_dBr), true, "");
         NS_TEST_EXPECT_MSG_EQ((10_dBr > 20_dBr), false, "");
@@ -254,6 +329,10 @@ class TestCaseSiUnits : public TestCase
         NS_TEST_EXPECT_MSG_EQ(dBr_t::from_str("-3.14dBr").value(), -3.14_dBr, "");
         NS_TEST_EXPECT_MSG_EQ(dBr_t::from_str("3.14 Dbr").has_value(), false, "");
         NS_TEST_EXPECT_MSG_EQ(dBr_t::from_str("3.14_dBr").has_value(), false, "");
+
+        TestInputOperatorPositives<dBr_t>({"12.3dBr", "12.3 dBr", " 12.3  dBr "});
+        TestInputOperatorNegatives<dBr_t>(
+            {"12.3DBR", "12.3dbr", "12.3_dBr", "12.3dBr_t", "12.3", "12.3dB"});
     }
 
     /// Test mWatt_t
@@ -261,17 +340,18 @@ class TestCaseSiUnits : public TestCase
     {
         // Notations
         NS_TEST_EXPECT_MSG_EQ(mWatt_t{0}, 0_mWatt, "");
+        NS_TEST_EXPECT_MSG_EQ(mWatt_t{"1.5 mWatt"}, 1.5_mWatt, "");
 
         // Equality, inequality
         NS_TEST_EXPECT_MSG_EQ_TOL(1_mWatt, 1e9_pWatt, 1_pWatt, ""); // NOLINT
 
         // Comparison
-        NS_TEST_ASSERT_MSG_LT(1_mWatt, 2_mWatt, "");
-        NS_TEST_ASSERT_MSG_GT(2_mWatt, 1_mWatt, "");
-        NS_TEST_ASSERT_MSG_LT_OR_EQ(1_mWatt, 1_mWatt, "");
-        NS_TEST_ASSERT_MSG_LT_OR_EQ(1_mWatt, 2_mWatt, "");
-        NS_TEST_ASSERT_MSG_GT_OR_EQ(2_mWatt, 1_mWatt, "");
-        NS_TEST_ASSERT_MSG_GT_OR_EQ(2_mWatt, 2_mWatt, "");
+        NS_TEST_EXPECT_MSG_LT(1_mWatt, 2_mWatt, "");
+        NS_TEST_EXPECT_MSG_GT(2_mWatt, 1_mWatt, "");
+        NS_TEST_EXPECT_MSG_LT_OR_EQ(1_mWatt, 1_mWatt, "");
+        NS_TEST_EXPECT_MSG_LT_OR_EQ(1_mWatt, 2_mWatt, "");
+        NS_TEST_EXPECT_MSG_GT_OR_EQ(2_mWatt, 1_mWatt, "");
+        NS_TEST_EXPECT_MSG_GT_OR_EQ(2_mWatt, 2_mWatt, "");
 
         // Arithmetic
         NS_TEST_EXPECT_MSG_EQ((1_mWatt + 2_mWatt), 3_mWatt, "");
@@ -287,6 +367,10 @@ class TestCaseSiUnits : public TestCase
         NS_TEST_EXPECT_MSG_EQ(mWatt_t{100}.in_dBm(), 20.0, "");
         NS_TEST_EXPECT_MSG_EQ(mWatt_t{123.45}.in_Watt(), 0.12345, ""); // NOLINT
         NS_TEST_EXPECT_MSG_EQ(mWatt_t{123.45}.in_mWatt(), 123.45, ""); // NOLINT
+
+        TestInputOperatorPositives<mWatt_t>({"12.3mWatt", "12.3 mWatt", " 12.3  mWatt "});
+        TestInputOperatorNegatives<mWatt_t>(
+            {"12.3MWATT", "12.3mW", "12.3_mWatt", "12.3mWatt_t", "12.3", "12.3dBm"});
     }
 
     /// Test Watt_t
@@ -303,6 +387,7 @@ class TestCaseSiUnits : public TestCase
         NS_TEST_EXPECT_MSG_EQ(Watt_t{0}, -0_Watt, "");
         NS_TEST_EXPECT_MSG_EQ(Watt_t{0}, -0._Watt, "");
         NS_TEST_EXPECT_MSG_EQ(Watt_t{0}, -0.0_Watt, "");
+        NS_TEST_EXPECT_MSG_EQ(Watt_t{"1.5 Watt"}, 1.5_Watt, "");
 
         // Equality, inequality
         NS_TEST_EXPECT_MSG_EQ(Watt_t{10}, 10_Watt, "");
@@ -313,16 +398,16 @@ class TestCaseSiUnits : public TestCase
         NS_TEST_EXPECT_MSG_EQ((Watt_t{10} != 20_Watt), true, "");
 
         // Comparison
-        NS_TEST_ASSERT_MSG_LT(1_Watt, 2_Watt, "");
-        NS_TEST_ASSERT_MSG_GT(2_Watt, 1_Watt, "");
-        NS_TEST_ASSERT_MSG_LT_OR_EQ(1_Watt, 1_Watt, "");
-        NS_TEST_ASSERT_MSG_LT_OR_EQ(1_Watt, 2_Watt, "");
-        NS_TEST_ASSERT_MSG_GT_OR_EQ(2_Watt, 1_Watt, "");
-        NS_TEST_ASSERT_MSG_GT_OR_EQ(2_Watt, 2_Watt, "");
-        NS_TEST_ASSERT_MSG_LT(-2_Watt, 1_Watt, "");
-        NS_TEST_ASSERT_MSG_LT(-2_Watt, -1_Watt, "");
-        NS_TEST_ASSERT_MSG_GT(-1_Watt, -2_Watt, "");
-        NS_TEST_ASSERT_MSG_GT(1_Watt, -2_Watt, "");
+        NS_TEST_EXPECT_MSG_LT(1_Watt, 2_Watt, "");
+        NS_TEST_EXPECT_MSG_GT(2_Watt, 1_Watt, "");
+        NS_TEST_EXPECT_MSG_LT_OR_EQ(1_Watt, 1_Watt, "");
+        NS_TEST_EXPECT_MSG_LT_OR_EQ(1_Watt, 2_Watt, "");
+        NS_TEST_EXPECT_MSG_GT_OR_EQ(2_Watt, 1_Watt, "");
+        NS_TEST_EXPECT_MSG_GT_OR_EQ(2_Watt, 2_Watt, "");
+        NS_TEST_EXPECT_MSG_LT(-2_Watt, 1_Watt, "");
+        NS_TEST_EXPECT_MSG_LT(-2_Watt, -1_Watt, "");
+        NS_TEST_EXPECT_MSG_GT(-1_Watt, -2_Watt, "");
+        NS_TEST_EXPECT_MSG_GT(1_Watt, -2_Watt, "");
         NS_TEST_EXPECT_MSG_EQ((10_Watt < 20_Watt), true, "");
         NS_TEST_EXPECT_MSG_EQ((10_Watt <= 20_Watt), true, "");
         NS_TEST_EXPECT_MSG_EQ((10_Watt > 20_Watt), false, "");
@@ -342,6 +427,10 @@ class TestCaseSiUnits : public TestCase
         NS_TEST_EXPECT_MSG_EQ(Watt_t{100}.in_dBm(), 50.0, "");
         NS_TEST_EXPECT_MSG_EQ(Watt_t{1.2345}.in_mWatt(), 1234.5, ""); // NOLINT
         NS_TEST_EXPECT_MSG_EQ(Watt_t{123.45}.in_Watt(), 123.45, "");  // NOLINT
+
+        TestInputOperatorPositives<Watt_t>({"12.3Watt", "12.3 Watt", " 12.3  Watt "});
+        TestInputOperatorNegatives<Watt_t>(
+            {"12.3watt", "12.3W", "12.3_Watt", "12.3Watt_t", "12.3", "12.3mWatt"});
     }
 
     /// Test dBm_t
@@ -357,6 +446,7 @@ class TestCaseSiUnits : public TestCase
         NS_TEST_EXPECT_MSG_EQ(dBm_t{0}, -0_dBm, "");
         NS_TEST_EXPECT_MSG_EQ(dBm_t{0}, -0._dBm, "");
         NS_TEST_EXPECT_MSG_EQ(dBm_t{0}, -0.0_dBm, "");
+        NS_TEST_EXPECT_MSG_EQ(dBm_t{"1.5 dBm"}, 1.5_dBm, "");
 
         // Equality, inequality
 
@@ -367,14 +457,14 @@ class TestCaseSiUnits : public TestCase
         NS_TEST_EXPECT_MSG_EQ((dBm_t{10} != 20_dBm), true, "");
 
         // Comparison
-        NS_TEST_ASSERT_MSG_LT(1_dBm, 2_dBm, "");
-        NS_TEST_ASSERT_MSG_GT(2_dBm, 1_dBm, "");
-        NS_TEST_ASSERT_MSG_LT_OR_EQ(1_dBm, 1_dBm, "");
-        NS_TEST_ASSERT_MSG_LT_OR_EQ(1_dBm, 2_dBm, "");
-        NS_TEST_ASSERT_MSG_GT_OR_EQ(2_dBm, 1_dBm, "");
-        NS_TEST_ASSERT_MSG_GT_OR_EQ(2_dBm, 2_dBm, "");
-        NS_TEST_ASSERT_MSG_LT(-1_dBm, 2_dBm, "");
-        NS_TEST_ASSERT_MSG_GT(2_dBm, -1_dBm, "");
+        NS_TEST_EXPECT_MSG_LT(1_dBm, 2_dBm, "");
+        NS_TEST_EXPECT_MSG_GT(2_dBm, 1_dBm, "");
+        NS_TEST_EXPECT_MSG_LT_OR_EQ(1_dBm, 1_dBm, "");
+        NS_TEST_EXPECT_MSG_LT_OR_EQ(1_dBm, 2_dBm, "");
+        NS_TEST_EXPECT_MSG_GT_OR_EQ(2_dBm, 1_dBm, "");
+        NS_TEST_EXPECT_MSG_GT_OR_EQ(2_dBm, 2_dBm, "");
+        NS_TEST_EXPECT_MSG_LT(-1_dBm, 2_dBm, "");
+        NS_TEST_EXPECT_MSG_GT(2_dBm, -1_dBm, "");
         NS_TEST_EXPECT_MSG_EQ((10_dBm < 20_dBm), true, "");
         NS_TEST_EXPECT_MSG_EQ((10_dBm <= 20_dBm), true, "");
         NS_TEST_EXPECT_MSG_EQ((10_dBm > 20_dBm), false, "");
@@ -396,6 +486,10 @@ class TestCaseSiUnits : public TestCase
         // Need tolerance due to math precision error on M1 Ultra with --ffast-math
         NS_TEST_EXPECT_MSG_EQ_TOL(dBm_t{20}.in_Watt(), 0.1, 1e-10, "");
         NS_TEST_EXPECT_MSG_EQ(dBm_t{123.45}.in_dBm(), 123.45, ""); // NOLINT
+
+        TestInputOperatorPositives<dBm_t>({"12.3dBm", "12.3 dBm", " 12.3  dBm "});
+        TestInputOperatorNegatives<dBm_t>(
+            {"12.3DBM", "12.3dbm", "12.3_dBm", "12.3dBm_t", "12.3", "12.3Watt"});
     }
 
     /// Test dBm_t and dB_t operations
@@ -419,18 +513,18 @@ class TestCaseSiUnits : public TestCase
         NS_TEST_EXPECT_MSG_EQ((mWatt_t{10} != 20_Watt), true, "");
 
         // Comparison
-        NS_TEST_ASSERT_MSG_LT(1_mWatt, 2_Watt, "");
-        NS_TEST_ASSERT_MSG_GT(2_mWatt, 0.001_Watt, "");
-        NS_TEST_ASSERT_MSG_LT_OR_EQ(1000_mWatt, 1_Watt, "");
-        NS_TEST_ASSERT_MSG_GT_OR_EQ(2_mWatt, 0.001_Watt, "");
+        NS_TEST_EXPECT_MSG_LT(1_mWatt, 2_Watt, "");
+        NS_TEST_EXPECT_MSG_GT(2_mWatt, 0.001_Watt, "");
+        NS_TEST_EXPECT_MSG_LT_OR_EQ(1000_mWatt, 1_Watt, "");
+        NS_TEST_EXPECT_MSG_GT_OR_EQ(2_mWatt, 0.001_Watt, "");
         NS_TEST_EXPECT_MSG_EQ((10_mWatt < 20_Watt), true, "");
         NS_TEST_EXPECT_MSG_EQ((2000_mWatt <= 2_Watt), true, "");
         NS_TEST_EXPECT_MSG_EQ((10_mWatt > 10_Watt), false, "");
         NS_TEST_EXPECT_MSG_EQ((10_mWatt >= 20_Watt), false, "");
-        NS_TEST_ASSERT_MSG_LT(1_Watt, 2000_mWatt, "");
-        NS_TEST_ASSERT_MSG_GT(2_Watt, 0.001_mWatt, "");
-        NS_TEST_ASSERT_MSG_LT_OR_EQ(0.001_Watt, 1_mWatt, "");
-        NS_TEST_ASSERT_MSG_GT_OR_EQ(2_Watt, 2_mWatt, "");
+        NS_TEST_EXPECT_MSG_LT(1_Watt, 2000_mWatt, "");
+        NS_TEST_EXPECT_MSG_GT(2_Watt, 0.001_mWatt, "");
+        NS_TEST_EXPECT_MSG_LT_OR_EQ(0.001_Watt, 1_mWatt, "");
+        NS_TEST_EXPECT_MSG_GT_OR_EQ(2_Watt, 2_mWatt, "");
         NS_TEST_EXPECT_MSG_EQ((0.1_Watt < 200_mWatt), true, "");
         NS_TEST_EXPECT_MSG_EQ((2_Watt <= 2000_mWatt), true, "");
         NS_TEST_EXPECT_MSG_EQ((0.1_Watt > 100_mWatt), false, "");
@@ -482,6 +576,8 @@ class TestCaseSiUnits : public TestCase
         NS_TEST_EXPECT_MSG_EQ(Hz_t{123000000000.}, 123_GHz, "");
         NS_TEST_EXPECT_MSG_EQ(Hz_t{123000000000000.}, 123_THz, "");
         NS_TEST_EXPECT_MSG_EQ(Hz_t{123000000000000.}, 123000000000000_Hz, "");
+        NS_TEST_EXPECT_MSG_EQ(Hz_t{"123 Hz"}, 123_Hz, "");
+        NS_TEST_EXPECT_MSG_EQ(Hz_t{"123.45Hz"}, 123.45_Hz, "");
 
         NS_TEST_EXPECT_MSG_EQ(10_Hz + 20_Hz, 30_Hz, "");
         NS_TEST_EXPECT_MSG_EQ(10_MHz - 20_MHz, -10_MHz, "");
@@ -549,6 +645,35 @@ class TestCaseSiUnits : public TestCase
         NS_TEST_EXPECT_MSG_EQ(Hz_t::from_str("3.14MHz").value(), 3.14_MHz, "");
         NS_TEST_EXPECT_MSG_EQ(Hz_t::from_str("3.14GHz").value(), 3.14_GHz, "");
         NS_TEST_EXPECT_MSG_EQ(Hz_t::from_str("3.14THz").value(), 3.14_THz, "");
+
+        TestInputOperatorPositives<Hz_t>({"12.3Hz", "12.3 Hz", " 12.3  Hz "});
+        TestInputOperatorNegatives<Hz_t>(
+            {"12.3hz", "12.3HZ", "12.3hZ", "12.3_MHz", "12.3MHz_t", "12.3", "12.3dBm"});
+    }
+
+    /// Test MHz
+    void Unit_MHz() // NOLINT
+    {
+        NS_TEST_EXPECT_MSG_EQ(MHz_t::from_str("3.14 MHz").value(), 3.14_MHz, "");
+        NS_TEST_EXPECT_MSG_EQ(MHz_t{"123MHz"}, 123_MHz, "");
+        NS_TEST_EXPECT_MSG_EQ(MHz_t{"123.45 MHz"}, 123.45_MHz, "");
+        NS_TEST_EXPECT_MSG_EQ(MHz_t{0.5}.IsMultipleOf(0.1_MHz), true, "");
+        NS_TEST_EXPECT_MSG_EQ(MHz_t{0.5}.IsMultipleOf(0.15_MHz), false, "");
+        NS_TEST_EXPECT_MSG_EQ(MHz_t{20}.IsMultipleOf(5_MHz), true, "");
+        NS_TEST_EXPECT_MSG_EQ(MHz_t{20}.IsMultipleOf(20_MHz), true, "");
+        NS_TEST_EXPECT_MSG_EQ(MHz_t{80}.IsMultipleOf(20_MHz), true, "");
+        NS_TEST_EXPECT_MSG_EQ(MHz_t{80}.IsMultipleOf(40_MHz), true, "");
+        NS_TEST_EXPECT_MSG_EQ(MHz_t{80}.IsMultipleOf(21_MHz), false, "");
+
+        TestInputOperatorPositives<MHz_t>({"12.3MHz", "12.3 MHz", " 12.3  MHz "});
+        TestInputOperatorNegatives<MHz_t>({"12.3mhz",
+                                           "12.3Mhz",
+                                           "12.3mHz",
+                                           "12.3MHZ",
+                                           "12.3_MHz",
+                                           "12.3MHz_t",
+                                           "12.3",
+                                           "12.3dBm"});
     }
 
     /// Test mWatt and unitless value operations
@@ -570,6 +695,7 @@ class TestCaseSiUnits : public TestCase
     void Unit_dBm_per_Hz() // NOLINT
     {
         NS_TEST_EXPECT_MSG_EQ(dBm_per_Hz_t{-43.21}, -43.21_dBm_per_Hz, ""); // NOLINT
+        NS_TEST_EXPECT_MSG_EQ(dBm_per_Hz_t{"1.5 dBm/Hz"}, 1.5_dBm_per_Hz, "");
 
         // Utilities
         NS_TEST_EXPECT_MSG_EQ(dBm_per_Hz_t{123}.val, 123.0, "");               // NOLINT
@@ -582,24 +708,34 @@ class TestCaseSiUnits : public TestCase
                               dBm_per_Hz_t{-80},
                               "");                                        // NOLINT
         NS_TEST_EXPECT_MSG_EQ(dBm_per_Hz_t{123.45}.in_dBm(), 123.45, ""); // NOLINT
+
+        TestInputOperatorPositives<dBm_per_Hz_t>({"12.3dBm/Hz", "12.3 dBm/Hz", " 12.3  dBm/Hz "});
+        TestInputOperatorNegatives<dBm_per_Hz_t>(
+            {"12.3dbm/Hz", "12.3dBm/hz", "12.3dBm_per_Hz", "12.3", "12.3dBm"});
     }
 
     /// Test dBm_per_MHz_t
     void Unit_dBm_per_MHz() // NOLINT
     {
-        NS_TEST_ASSERT_MSG_EQ(dBm_per_MHz_t{-43.21}, -43.21_dBm_per_MHz, ""); // NOLINT
+        NS_TEST_EXPECT_MSG_EQ(dBm_per_MHz_t{-43.21}, -43.21_dBm_per_MHz, ""); // NOLINT
+        NS_TEST_EXPECT_MSG_EQ(dBm_per_MHz_t{"1.5 dBm/MHz"}, 1.5_dBm_per_MHz, "");
 
         // Utilities
-        NS_TEST_ASSERT_MSG_EQ(dBm_per_MHz_t{123}.val, 123.0, "");                // NOLINT
-        NS_TEST_ASSERT_MSG_EQ(dBm_per_MHz_t{123}.str(), "123.0 dBm/MHz", "");    // NOLINT
-        NS_TEST_ASSERT_MSG_EQ(dBm_per_MHz_t{123.45}.val, 123.45, "");            // NOLINT
-        NS_TEST_ASSERT_MSG_EQ(dBm_per_MHz_t{123.45}.str(), "123.5 dBm/MHz", ""); // NOLINT
+        NS_TEST_EXPECT_MSG_EQ(dBm_per_MHz_t{123}.val, 123.0, "");                // NOLINT
+        NS_TEST_EXPECT_MSG_EQ(dBm_per_MHz_t{123}.str(), "123.0 dBm/MHz", "");    // NOLINT
+        NS_TEST_EXPECT_MSG_EQ(dBm_per_MHz_t{123.45}.val, 123.45, "");            // NOLINT
+        NS_TEST_EXPECT_MSG_EQ(dBm_per_MHz_t{123.45}.str(), "123.5 dBm/MHz", ""); // NOLINT
 
-        NS_TEST_ASSERT_MSG_EQ(dBm_per_MHz_t::AveragePsd(-20_dBm, 1_MHz),
+        NS_TEST_EXPECT_MSG_EQ(dBm_per_MHz_t::AveragePsd(-20_dBm, 1_MHz),
                               dBm_per_MHz_t{-20},
                               "");                                                      // NOLINT
-        NS_TEST_ASSERT_MSG_EQ(dBm_per_MHz_t{-80.0}.OverBandwidth(100_kHz), -8_dBm, ""); // NOLINT
-        NS_TEST_ASSERT_MSG_EQ(dBm_per_MHz_t{123.45}.in_dBm(), 123.45, "");              // NOLINT
+        NS_TEST_EXPECT_MSG_EQ(dBm_per_MHz_t{-80.0}.OverBandwidth(100_kHz), -8_dBm, ""); // NOLINT
+        NS_TEST_EXPECT_MSG_EQ(dBm_per_MHz_t{123.45}.in_dBm(), 123.45, "");              // NOLINT
+
+        TestInputOperatorPositives<dBm_per_MHz_t>(
+            {"12.3dBm/MHz", "12.3 dBm/MHz", " 12.3  dBm/MHz "});
+        TestInputOperatorNegatives<dBm_per_MHz_t>(
+            {"12.3dbm/MHz", "12.3dBm/mhz", "12.3dBm_per_MHz", "12.3", "12.3dBm/Hz"});
     }
 
     /// Test vector conversions
@@ -683,11 +819,11 @@ class TestCaseSiUnits : public TestCase
             auto got1 = dBm_per_MHz_t::from_doubles(tvs);
             auto got2 = dBm_per_MHz_t::to_doubles(got1);
             auto got3 = dBm_per_MHz_t::from_doubles(got2);
-            NS_TEST_ASSERT_MSG_EQ((tvs == got2), true, "vector of double's do not match");
-            NS_TEST_ASSERT_MSG_EQ((got1 == got3), true, "vector of dBm_per_MHz_t's do not match");
+            NS_TEST_EXPECT_MSG_EQ((tvs == got2), true, "vector of double's do not match");
+            NS_TEST_EXPECT_MSG_EQ((got1 == got3), true, "vector of dBm_per_MHz_t's do not match");
             for (size_t idx = 0; idx < tvs.size(); ++idx)
             {
-                NS_TEST_ASSERT_MSG_EQ(got1[idx].val, tvs[idx], "");
+                NS_TEST_EXPECT_MSG_EQ(got1[idx].val, tvs[idx], "");
             }
         }
 
@@ -756,6 +892,7 @@ class TestCaseSiUnits : public TestCase
         NS_TEST_EXPECT_MSG_EQ(percent_t::from_ratio(0.125), percent_t{12.5}, "");
         NS_TEST_EXPECT_MSG_EQ(percent_t{12.5}.to_ratio(), 0.125, "");
         NS_TEST_EXPECT_MSG_EQ(percent_t{50}, 50_percent, "");
+        NS_TEST_EXPECT_MSG_EQ(percent_t{"50.1 percent"}, 50.1_percent, "");
 
         // Arithmetic
         NS_TEST_EXPECT_MSG_EQ(percent_t{10} + percent_t{20}, percent_t{30}, "");
@@ -768,18 +905,18 @@ class TestCaseSiUnits : public TestCase
         NS_TEST_EXPECT_MSG_EQ(10.0 * percent_t{10}, percent_t{100}, "");
 
         // Comparison
-        NS_TEST_ASSERT_MSG_LT(percent_t{10}, percent_t{20}, "");
-        NS_TEST_ASSERT_MSG_LT(percent_t{-100}, percent_t{0}, "");
-        NS_TEST_ASSERT_MSG_LT_OR_EQ(percent_t{10}, percent_t{20}, "");
-        NS_TEST_ASSERT_MSG_LT_OR_EQ(percent_t{20}, percent_t{20}, "");
-        NS_TEST_ASSERT_MSG_GT(percent_t{20}, percent_t{10}, "");
-        NS_TEST_ASSERT_MSG_GT(percent_t{0}, percent_t{-100}, "");
-        NS_TEST_ASSERT_MSG_GT_OR_EQ(percent_t{20}, percent_t{10}, "");
-        NS_TEST_ASSERT_MSG_GT_OR_EQ(percent_t{20}, percent_t{20}, "");
+        NS_TEST_EXPECT_MSG_LT(percent_t{10}, percent_t{20}, "");
+        NS_TEST_EXPECT_MSG_LT(percent_t{-100}, percent_t{0}, "");
+        NS_TEST_EXPECT_MSG_LT_OR_EQ(percent_t{10}, percent_t{20}, "");
+        NS_TEST_EXPECT_MSG_LT_OR_EQ(percent_t{20}, percent_t{20}, "");
+        NS_TEST_EXPECT_MSG_GT(percent_t{20}, percent_t{10}, "");
+        NS_TEST_EXPECT_MSG_GT(percent_t{0}, percent_t{-100}, "");
+        NS_TEST_EXPECT_MSG_GT_OR_EQ(percent_t{20}, percent_t{10}, "");
+        NS_TEST_EXPECT_MSG_GT_OR_EQ(percent_t{20}, percent_t{20}, "");
 
         // Inequality
-        NS_TEST_ASSERT_MSG_NE(percent_t{31.41592}.val, 31.41593, "");
-        NS_TEST_ASSERT_MSG_NE(percent_t{31.4159265358979}, percent_t{31.4159265358978}, "");
+        NS_TEST_EXPECT_MSG_NE(percent_t{31.41592}.val, 31.41593, "");
+        NS_TEST_EXPECT_MSG_NE(percent_t{31.4159265358979}, percent_t{31.4159265358978}, "");
 
         // Assignment
         percent_t got{20};
@@ -814,6 +951,7 @@ class TestCaseSiUnits : public TestCase
         Unit_double_and_mWatt();
         Conversion();
         Unit_Hz();
+        Unit_MHz();
         Unit_dBm_and_dB();
         Vectors();
         Unit_nsec();
@@ -898,24 +1036,50 @@ class AttributeMock : public Object
                               "help message for percent",
                               percentValue(20.5_percent),
                               MakepercentAccessor(&AttributeMock::m_percent),
-                              MakepercentChecker());
+                              MakepercentChecker())
+                .AddAttribute("tuple1",
+                              "a tuple of 1 entry setting with TupleValue",
+                              TupleValue<dBmValue>(-1.5_dBm),
+                              MakeTupleAccessor<dBmValue>(&AttributeMock::m_tuple1),
+                              MakeTupleChecker<dBmValue>(MakedBmChecker()))
+                .AddAttribute("tuple2",
+                              "a tuple of 1 entry setting with StringValue",
+                              StringValue("{-1.5dBm}"),
+                              MakeTupleAccessor<dBmValue>(&AttributeMock::m_tuple2),
+                              MakeTupleChecker<dBmValue>(MakedBmChecker()))
+                .AddAttribute(
+                    "tuple3",
+                    "a tuple of 2 entries setting with TupleValue",
+                    TupleValue<dBmValue, dBmValue>({-1.5_dBm, 1.5_dBm}),
+                    MakeTupleAccessor<dBmValue, dBmValue>(&AttributeMock::m_tuple3),
+                    MakeTupleChecker<dBmValue, dBmValue>(MakedBmChecker(), MakedBmChecker()))
+                .AddAttribute(
+                    "tuple4",
+                    "a tuple of 2 entries setting with StringValue",
+                    StringValue("{-1.5dBm, 1.5dBm}"),
+                    MakeTupleAccessor<dBmValue, dBmValue>(&AttributeMock::m_tuple4),
+                    MakeTupleChecker<dBmValue, dBmValue>(MakedBmChecker(), MakedBmChecker()));
 
         return tid;
     }
 
-    dB_t m_dB{};                   ///< value of dB
-    dBr_t m_dBr{};                 ///< value of dBr
-    dBm_t m_dBm{};                 ///< value of dBm
-    mWatt_t m_mWatt{};             ///< value of mWatt
-    Watt_t m_Watt{};               ///< value of Watt
-    dBm_per_Hz_t m_dBm_per_Hz{};   ///< value of dBm_per_Hz
-    dBm_per_MHz_t m_dBm_per_MHz{}; ///< value of dBm_per_MHz
-    Hz_t m_Hz{};                   ///< value of Hz
-    MHz_t m_MHz{};                 ///< value of MHz
-    nSEC_t m_nSEC{};               ///< value of nSEC
-    degree_t m_degree{};           ///< value of degree
-    radian_t m_radian{};           ///< value of radian
-    percent_t m_percent{};         ///< value of percent
+    dB_t m_dB{};                         ///< value of dB
+    dBr_t m_dBr{};                       ///< value of dBr
+    dBm_t m_dBm{};                       ///< value of dBm
+    mWatt_t m_mWatt{};                   ///< value of mWatt
+    Watt_t m_Watt{};                     ///< value of Watt
+    dBm_per_Hz_t m_dBm_per_Hz{};         ///< value of dBm_per_Hz
+    dBm_per_MHz_t m_dBm_per_MHz{};       ///< value of dBm_per_MHz
+    Hz_t m_Hz{};                         ///< value of Hz
+    MHz_t m_MHz{};                       ///< value of MHz
+    nSEC_t m_nSEC{};                     ///< value of nSEC
+    degree_t m_degree{};                 ///< value of degree
+    radian_t m_radian{};                 ///< value of radian
+    percent_t m_percent{};               ///< value of percent
+    std::tuple<dBm_t> m_tuple1{};        ///< tuple of dBm_t
+    std::tuple<dBm_t> m_tuple2{};        ///< tuple of dBm_t
+    std::tuple<dBm_t, dBm_t> m_tuple3{}; ///< tuple of dBm_t
+    std::tuple<dBm_t, dBm_t> m_tuple4{}; ///< tuple of dBm_t
 };
 
 /// Test case for SiUnitsAttributes
@@ -940,7 +1104,7 @@ class TestCaseSiUnitsAttributes : public TestCase
         {
             auto want = 10_dB;
             mock->SetAttribute("dB", DoubleValue(10));
-            NS_TEST_ASSERT_MSG_EQ(mock->m_dB, want, "");
+            NS_TEST_EXPECT_MSG_EQ(mock->m_dB, want, "");
         }
         {
             auto want = 25_dBr;
@@ -950,7 +1114,7 @@ class TestCaseSiUnitsAttributes : public TestCase
         {
             auto want = 5_dBr;
             mock->SetAttribute("dBr", DoubleValue(5));
-            NS_TEST_ASSERT_MSG_EQ(mock->m_dBr, want, "");
+            NS_TEST_EXPECT_MSG_EQ(mock->m_dBr, want, "");
         }
         {
             auto want = 20_dBm;
@@ -960,7 +1124,7 @@ class TestCaseSiUnitsAttributes : public TestCase
         {
             auto want = 10_dBm;
             mock->SetAttribute("dBm", DoubleValue(10));
-            NS_TEST_ASSERT_MSG_EQ(mock->m_dBm, want, "");
+            NS_TEST_EXPECT_MSG_EQ(mock->m_dBm, want, "");
         }
         {
             auto want = 100_mWatt;
@@ -970,7 +1134,7 @@ class TestCaseSiUnitsAttributes : public TestCase
         {
             auto want = 50_mWatt;
             mock->SetAttribute("mWatt", DoubleValue(50));
-            NS_TEST_ASSERT_MSG_EQ(mock->m_mWatt, want, "");
+            NS_TEST_EXPECT_MSG_EQ(mock->m_mWatt, want, "");
         }
         {
             auto want = 221_Watt;
@@ -985,22 +1149,22 @@ class TestCaseSiUnitsAttributes : public TestCase
         {
             auto want = 0.001_dBm_per_Hz;
             mock->SetAttribute("dBm_per_Hz", dBm_per_HzValue(want));
-            NS_TEST_ASSERT_MSG_EQ(mock->m_dBm_per_Hz, want, "");
+            NS_TEST_EXPECT_MSG_EQ(mock->m_dBm_per_Hz, want, "");
         }
         {
             auto want = 0.02_dBm_per_Hz;
             mock->SetAttribute("dBm_per_Hz", DoubleValue(0.02));
-            NS_TEST_ASSERT_MSG_EQ(mock->m_dBm_per_Hz, want, "");
+            NS_TEST_EXPECT_MSG_EQ(mock->m_dBm_per_Hz, want, "");
         }
         {
             auto want = 0.001_dBm_per_MHz;
             mock->SetAttribute("dBm_per_MHz", dBm_per_MHzValue(want));
-            NS_TEST_ASSERT_MSG_EQ(mock->m_dBm_per_MHz, want, "");
+            NS_TEST_EXPECT_MSG_EQ(mock->m_dBm_per_MHz, want, "");
         }
         {
             auto want = 0.02_dBm_per_MHz;
             mock->SetAttribute("dBm_per_MHz", DoubleValue(0.02));
-            NS_TEST_ASSERT_MSG_EQ(mock->m_dBm_per_MHz, want, "");
+            NS_TEST_EXPECT_MSG_EQ(mock->m_dBm_per_MHz, want, "");
         }
         {
             auto want = 365_Hz;
@@ -1010,17 +1174,17 @@ class TestCaseSiUnitsAttributes : public TestCase
         {
             auto want = 500_Hz;
             mock->SetAttribute("Hz", UintegerValue(500));
-            NS_TEST_ASSERT_MSG_EQ(mock->m_Hz, want, "");
+            NS_TEST_EXPECT_MSG_EQ(mock->m_Hz, want, "");
         }
         {
             auto want = 10_MHz;
             mock->SetAttribute("MHz", MHzValue(want));
-            NS_TEST_ASSERT_MSG_EQ(mock->m_MHz, want, "");
+            NS_TEST_EXPECT_MSG_EQ(mock->m_MHz, want, "");
         }
         {
             auto want = 100_MHz;
             mock->SetAttribute("MHz", UintegerValue(100));
-            NS_TEST_ASSERT_MSG_EQ(mock->m_MHz, want, "");
+            NS_TEST_EXPECT_MSG_EQ(mock->m_MHz, want, "");
         }
         {
             auto want = 100_nSEC;
@@ -1035,7 +1199,7 @@ class TestCaseSiUnitsAttributes : public TestCase
         {
             auto want = 360_degree;
             mock->SetAttribute("degree", DoubleValue(360));
-            NS_TEST_ASSERT_MSG_EQ(mock->m_degree, want, "");
+            NS_TEST_EXPECT_MSG_EQ(mock->m_degree, want, "");
         }
         {
             auto want = 2.4_radian;
@@ -1045,7 +1209,7 @@ class TestCaseSiUnitsAttributes : public TestCase
         {
             auto want = 2_radian;
             mock->SetAttribute("radian", DoubleValue(2));
-            NS_TEST_ASSERT_MSG_EQ(mock->m_radian, want, "");
+            NS_TEST_EXPECT_MSG_EQ(mock->m_radian, want, "");
         }
         {
             auto want = 2.4_percent;
@@ -1055,7 +1219,77 @@ class TestCaseSiUnitsAttributes : public TestCase
         {
             auto want = 5.9_percent;
             mock->SetAttribute("percent", DoubleValue(5.9));
-            NS_TEST_ASSERT_MSG_EQ(mock->m_percent, want, "");
+            NS_TEST_EXPECT_MSG_EQ(mock->m_percent, want, "");
+        }
+        { // A tuple of single entry setting with TupleValue
+            NS_TEST_EXPECT_MSG_EQ(std::get<0>(mock->m_tuple1), -1.5_dBm, "");
+            mock->SetAttribute("tuple1", TupleValue<dBmValue>(-15_dBm));
+            NS_TEST_EXPECT_MSG_EQ(std::get<0>(mock->m_tuple1), -15_dBm, "");
+        }
+        { // A tuple of single entry setting with StringValue
+            NS_TEST_EXPECT_MSG_EQ(std::get<0>(mock->m_tuple2), -1.5_dBm, "");
+
+            // change value
+            mock->SetAttribute("tuple2", StringValue("{-15dBm}"));
+            NS_TEST_EXPECT_MSG_EQ(std::get<0>(mock->m_tuple2), -15_dBm, "");
+
+            // space after opening brace
+            mock->SetAttribute("tuple2", StringValue("{ -27dBm}"));
+            NS_TEST_EXPECT_MSG_EQ(std::get<0>(mock->m_tuple2), -27_dBm, "");
+
+            // space before closing brace
+            mock->SetAttribute("tuple2", StringValue("{-35dBm }"));
+            NS_TEST_EXPECT_MSG_EQ(std::get<0>(mock->m_tuple2), -35_dBm, "");
+
+            // space combination of after opening brace and before closing brace
+            mock->SetAttribute("tuple2", StringValue("{ -45dBm }"));
+            NS_TEST_EXPECT_MSG_EQ(std::get<0>(mock->m_tuple2), -45_dBm, "");
+
+            // space between the number and the SI unit
+            mock->SetAttribute("tuple2", StringValue("{-15 dBm}"));
+            NS_TEST_EXPECT_MSG_EQ(std::get<0>(mock->m_tuple2), -15_dBm, "");
+        }
+        { // A tuple of two entries setting with TupleValue
+            NS_TEST_EXPECT_MSG_EQ(std::get<0>(mock->m_tuple3), -1.5_dBm, "");
+            NS_TEST_EXPECT_MSG_EQ(std::get<1>(mock->m_tuple3), 1.5_dBm, "");
+            mock->SetAttribute("tuple3", TupleValue<dBmValue, dBmValue>({-15_dBm, 15_dBm}));
+            NS_TEST_EXPECT_MSG_EQ(std::get<0>(mock->m_tuple3), -15_dBm, "");
+            NS_TEST_EXPECT_MSG_EQ(std::get<1>(mock->m_tuple3), 15_dBm, "");
+        }
+        { // A tuple of two entries setting with StringValueStrong type StringValue attribute
+            // tuple access
+            NS_TEST_EXPECT_MSG_EQ(std::get<0>(mock->m_tuple4), -1.5_dBm, "");
+            NS_TEST_EXPECT_MSG_EQ(std::get<1>(mock->m_tuple4), 1.5_dBm, "");
+
+            // no space before and after comma
+            mock->SetAttribute("tuple4", StringValue("{-1dBm,1dBm}"));
+            NS_TEST_EXPECT_MSG_EQ(std::get<0>(mock->m_tuple4), -1_dBm, "");
+            NS_TEST_EXPECT_MSG_EQ(std::get<1>(mock->m_tuple4), 1_dBm, "");
+
+            // space after comma
+            mock->SetAttribute("tuple4", StringValue("{-15dBm, 15dBm}"));
+            NS_TEST_EXPECT_MSG_EQ(std::get<0>(mock->m_tuple4), -15_dBm, "");
+            NS_TEST_EXPECT_MSG_EQ(std::get<1>(mock->m_tuple4), 15_dBm, "");
+
+            // space before comma
+            mock->SetAttribute("tuple4", StringValue("{-25dBm , 25dBm}"));
+            NS_TEST_EXPECT_MSG_EQ(std::get<0>(mock->m_tuple4), -25_dBm, "");
+            NS_TEST_EXPECT_MSG_EQ(std::get<1>(mock->m_tuple4), 25_dBm, "");
+
+            // space between comma and between the number and the SI unit
+            mock->SetAttribute("tuple4", StringValue("{-35 dBm , 35 dBm}"));
+            NS_TEST_EXPECT_MSG_EQ(std::get<0>(mock->m_tuple4), -35_dBm, "");
+            NS_TEST_EXPECT_MSG_EQ(std::get<1>(mock->m_tuple4), 35_dBm, "");
+        }
+        { // Test cases crashing or failing: StringValue for TupleValue
+
+            // // space before opening brace
+            // mock->SetAttribute("tuple2", StringValue(" {-25dBm}"));
+            // NS_TEST_EXPECT_MSG_EQ(std::get<0>(mock->m_tuple2), -25_dBm, "");
+
+            // // space after closing brace
+            // mock->SetAttribute("tuple2", StringValue("{-37dBm} "));
+            // NS_TEST_EXPECT_MSG_EQ(std::get<0>(mock->m_tuple2), -37_dBm, "");
         }
     }
 };
@@ -1073,5 +1307,3 @@ class SiUnitsTestSuite : public TestSuite
 };
 
 static SiUnitsTestSuite g_siUnitsTestSuite; ///< Register the test suite
-
-// clang-format on
