@@ -94,7 +94,7 @@ RateChange(uint64_t oldVal, uint64_t newVal)
 /// Step structure
 struct Step
 {
-    dBm_t stepSize;  ///< step size
+    dB_t stepSize;   ///< step size
     double stepTime; ///< step size in seconds
 };
 
@@ -175,7 +175,7 @@ ChangeSignalAndReportRate(Ptr<FixedRssLossModel> rssModel,
     // Calculate received rate since last interval
     double currentRate = ((g_intervalBytes * 8) / step.stepTime) / 1e6; // Mb/s
     actualDataset.Add(snr.in_dB(), currentRate);
-    const dBm_t newRss{rss.in_dBm() - step.stepSize.in_dBm()};
+    const dBm_t newRss{rss.in_dBm() - step.stepSize.in_dB()};
     rssModel->SetRss(newRss.in_dBm());
     NS_LOG_INFO("At time " << Simulator::Now().As(Time::S) << "; selected rate "
                            << (g_intervalRate / 1e6) << "; observed rate " << currentRate
@@ -199,7 +199,7 @@ main(int argc, char* argv[])
     uint32_t steps;
     uint32_t rtsThreshold = 999999; // disabled even for large A-MPDU
     uint32_t maxAmpduSize = 65535;
-    dBm_t stepSize{1};
+    dB_t stepSize{1};
     double stepTime = 1;        // seconds
     uint32_t packetSize = 1024; // bytes
     bool broadcast = false;
@@ -229,7 +229,7 @@ main(int argc, char* argv[])
                  maxRetryCount);
     cmd.AddValue("rtsThreshold", "RTS threshold", rtsThreshold);
     cmd.AddValue("maxAmpduSize", "Max A-MPDU size", maxAmpduSize);
-    cmd.AddValue("stepSize", "Power between steps (dBm)", stepSize);
+    cmd.AddValue("stepSize", "Power between steps (dB)", stepSize);
     cmd.AddValue("stepTime", "Time on each step (seconds)", stepTime);
     cmd.AddValue("broadcast", "Send broadcast instead of unicast", broadcast);
     cmd.AddValue("serverChannelWidth",
@@ -672,7 +672,7 @@ main(int argc, char* argv[])
     steps = static_cast<uint32_t>(
         std::abs(static_cast<double>(
                      (clientSelectedStandard.m_snrHigh - clientSelectedStandard.m_snrLow).in_dB()) /
-                 stepSize.in_dBm()) +
+                 stepSize.in_dB()) +
         1);
     NS_LOG_DEBUG("Using " << steps << " steps for SNR range " << clientSelectedStandard.m_snrLow
                           << ":" << clientSelectedStandard.m_snrHigh);
