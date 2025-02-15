@@ -448,8 +448,41 @@ severity.  This macro does not use any of the prefix options.  Recall
 that logging is only enabled in ``debug``, ``default`` and ``relwithdebinfo``
 builds, so this macro will only produce output in the same builds.
 
-The |ns3| model libraries do not typically use the ``NS_LOG_UNCOND(...)`` macro;
-it is provided for users for assistance with debugging.
+The |ns3| model libraries do not use the ``NS_LOG_UNCOND(...)`` macro;
+it is provided for users for assistance with debugging.  The most common
+use case is if a user is debugging some code and doesn't want to enable
+all log macros in a file because it would produce too much output. Instead,
+selected log statements can temporarily be changed from, e.g., ``NS_LOG_DEBUG(...)`` to ``NS_LOG_UNCOND(...)`` for the duration of the debugging session.
+Don't forget to undo such a change before committing a bug fix.
+
+Logging Blocks of Code
+======================
+
+Sometimes the calculations of variables to be included in a log statement is
+involved and may not easily fit into a single ``NS_LOG`` statement.
+The variables can raise compilation warnings when the logging is disabled, and
+in any case, any unnecessary operations should be avoided.  For this situation,
+authors can include a block of code in logging using the
+`#ifdef NS3_LOG_ENABLE`` macro, as demonstrated in the sample below.
+
+::
+
+  #ifdef NS3_LOG_ENABLE
+  {
+      // Expensive calculation that is only used for logging
+      int total = 0;
+      for (const auto& v : myVector)
+      {
+          total += complexCalculation(v);
+      }
+
+      NS_LOG_DEBUG("Total: " << total);
+  }
+  #endif // NS3_LOG_ENABLE
+
+Please remember to check that any such complicated logging statements have no
+side effects that would cause different simulation execution in optimized
+builds.
 
 Guidelines
 ==========
