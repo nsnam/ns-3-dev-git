@@ -398,6 +398,7 @@ build_lib(
     test/wifi-aggregation-test.cc
     test/wifi-channel-settings-test.cc
     test/wifi-co-trace-helper-test.cc
+    test/wifi-dso-test.cc
     test/wifi-dynamic-bw-op-test.cc
     test/wifi-eht-info-elems-test.cc
     test/wifi-emlsr-basic-exchanges-test.cc
