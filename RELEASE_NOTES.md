@@ -48,6 +48,7 @@ The required Doxygen version for documentation generation is version 1.11.
 - (wifi) Add support for exchanging 802.11be Multi-Link Probe Request frames. Currently, the default association manager does not instruct the MAC to transmit a Multi-Link Probe Request frame, though.
 - (wifi) 2004! - Add Wi-Fi channel occupancy statistics helper
 - (wifi) 2009! - Added WifiTxStatsHelper for Wi-Fi MAC-level tracing.
+- (wifi) - Added support for 802.11aa groupcast with retries (GCR). Both unsolicited retries (GCR-UR) and Block Ack (GCR-BA) mechanisms are implemented.
 
 ### Bugs fixed
 
