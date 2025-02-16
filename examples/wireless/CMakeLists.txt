@@ -298,3 +298,14 @@ build_example(
   LIBRARIES_TO_LINK ${libwifi}
                     ${libapplications}
 )
+
+build_example(
+  NAME wifi-multicast
+  SOURCE_FILES wifi-multicast.cc
+  LIBRARIES_TO_LINK
+    ${libwifi}
+    ${libcore}
+    ${libnetwork}
+    ${libapplications}
+    ${libinternet}
+)
