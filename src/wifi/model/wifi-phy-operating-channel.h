@@ -383,11 +383,21 @@ class WifiPhyOperatingChannel
     /**
      * Get a WifiPhyOperatingChannel object corresponding to the primary channel of the given width.
      *
-     * @param primaryChannelWidth the width of the primary channel in MHz
+     * @param primaryChannelWidth the width of the primary channel
      * @return a WifiPhyOperatingChannel object corresponding to the primary channel of the given
      *         width
      */
     WifiPhyOperatingChannel GetPrimaryChannel(MHz_t primaryChannelWidth) const;
+
+    /**
+     * Get a WifiPhyOperatingChannel object corresponding to the secondary channel of the given
+     * width.
+     *
+     * @param secondaryChannelWidth the width of the secondary channel
+     * @return a WifiPhyOperatingChannel object corresponding to the secondary channel of the given
+     *         width
+     */
+    WifiPhyOperatingChannel GetSecondaryChannel(MHz_t secondaryChannelWidth) const;
 
     /**
      * Get the channel indices of the minimum subset of 20 MHz channels containing the given RU.
