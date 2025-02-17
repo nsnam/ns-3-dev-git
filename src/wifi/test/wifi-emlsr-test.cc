@@ -2732,8 +2732,9 @@ EmlsrUlTxopTest::DoSetup()
                        UintegerValue(m_auxPhyChannelWidth));
     Config::SetDefault("ns3::DefaultEmlsrManager::SwitchAuxPhy", BooleanValue(false));
     Config::SetDefault("ns3::AdvancedEmlsrManager::UseAuxPhyCca", BooleanValue(m_useAuxPhyCca));
+    // switch main PHY back delay should be at least a PIFS for the switch to occur
     Config::SetDefault("ns3::AdvancedEmlsrManager::SwitchMainPhyBackDelay",
-                       TimeValue(MilliSeconds(m_switchMainPhyBackDelayTimeout ? 2 : 0)));
+                       TimeValue(MicroSeconds(m_switchMainPhyBackDelayTimeout ? 2000 : 30)));
     Config::SetDefault("ns3::EhtConfiguration::MediumSyncDuration",
                        TimeValue(m_mediumSyncDuration));
     Config::SetDefault("ns3::EhtConfiguration::MsdMaxNTxops", UintegerValue(m_msdMaxNTxops));

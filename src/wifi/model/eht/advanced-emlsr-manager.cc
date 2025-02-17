@@ -640,7 +640,14 @@ AdvancedEmlsrManager::RequestMainPhyToSwitch(uint8_t linkId, AcIndex aci, const 
                             GetChannelForMainPhy(linkId).GetTotalWidth()))
     {
         // cannot use aux PHY CCA
-        minDelay += GetStaMac()->GetWifiPhy(linkId)->GetPifs();
+        const auto pifs = GetStaMac()->GetWifiPhy(linkId)->GetPifs();
+        if (m_switchMainPhyBackDelay < pifs)
+        {
+            NS_LOG_DEBUG(
+                "Main PHY has to perform CCA but switch main PHY back delay is less than PIFS");
+            return false;
+        }
+        minDelay += pifs;
     }
     minDelay = std::max(delay, minDelay);
 
