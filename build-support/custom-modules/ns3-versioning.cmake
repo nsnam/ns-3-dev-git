@@ -6,7 +6,9 @@
 function(check_git_repo_has_ns3_tags HAS_TAGS GIT_VERSION_TAG)
   execute_process(
     COMMAND ${GIT} describe --tags --abbrev=0 --match ns-3.[0-9]*
-    OUTPUT_VARIABLE GIT_TAG_OUTPUT ERROR_QUIET
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+    OUTPUT_VARIABLE GIT_TAG_OUTPUT
+    ERROR_QUIET
   )
 
   # Result will be empty in case of a shallow clone or no git repo
@@ -35,7 +37,7 @@ function(check_ns3_closest_tags CLOSEST_TAG VERSION_COMMIT_HASH
 )
   execute_process(
     COMMAND ${GIT} describe --tags --dirty --long
-    OUTPUT_VARIABLE GIT_TAG_OUTPUT
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} OUTPUT_VARIABLE GIT_TAG_OUTPUT
   )
 
   string(REPLACE "\r" "" GIT_TAG_OUTPUT ${GIT_TAG_OUTPUT}) # remove CR (carriage
