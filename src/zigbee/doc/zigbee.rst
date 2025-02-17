@@ -1,13 +1,18 @@
-.. include:: replace.txt
-.. highlight:: cpp
-
-
 Zigbee
 ======
 
+.. include:: replace.txt
+.. highlight:: cpp
+
+.. heading hierarchy:
+   ============= Chapter
+   ------------- Section (#.#)
+   ~~~~~~~~~~~~~ Subsection (#.#.#)
+
 This chapter describes the implementation of |ns3| models for Zigbee
-protocol stack (Zigbee Pro) as specified by
+Pro stack (also known as Zigbee 3.x) as specified by
 the Connectivity Standards Alliance (CSA), Zigbee Specification Revision 22 1.0 (2017).
+
 
 The model described in the present document, represents the uncertified simulated models of Zigbee (TM)
 technology to be used in |ns3| for research and educational purposes. The objective is to provide
@@ -24,10 +29,10 @@ The source code for the new module lives in the directory ``src/zigbee``.
 
     Zigbee Stack Architecture in ns-3
 
-The Zigbee stack implementation is designed to operate on top of an existing |ns3| NetDevice that incorporates at least one object derived from ``LrWpanMacBase`` (which is compliant with IEEE 802.15.4-2011 MAC standards).
-This device should have been previously aggregated, such as in the case of ``LrWpanNetDevice``.
+The Zigbee stack implementation is designed to operate on top of an existing |ns3| ``NetDevice`` that aggregates an object derived from ``LrWpanMacBase`` (which is compliant with IEEE 802.15.4-2011 MAC standards).
+This is the case of ``NetDevices`` such as the ``LrWpanNetDevice``.
 
-While other technologies like 6loWPAN can interact with the underlying MAC layer through general-purpose NetDevice interfaces, Zigbee has specific requirements that necessitate certain features from a lr-wpan MAC.
+While other technologies like 6loWPAN can interact with the underlying MAC layer through general-purpose ``NetDevice`` interfaces, Zigbee has specific requirements that necessitate certain features from a lr-wpan MAC.
 Consequently, the |ns3| Zigbee implementation directly accesses the aggregated ``LrWpanMacBase`` and interfaces with it accordingly.
 
 The current scope of the project includes **only the NWK layer in the Zigbee stack**. However, the project can be later extended
@@ -71,10 +76,10 @@ The following is a list of NWK primitives supported:
 - NLME-START-ROUTER (Request, Confirm)
 - NLDE-DATA (Request, Confirm, Indication)
 
-For details on how to use these primitives, please consult the zigbee pro specification.
+For details on how to use these primitives, please consult the Zigbee Pro specification.
 
-Typically, users do not have to interact with the zigbee network layer (NWK) directly. Most commonly, the NWK is used by the Application Support Sub-Layer (APS) instead.
-In the current implementation of zigbee in |ns3| we only support the NWK, for this reason, users wishing to use the routing, network joining and scanning capabilities of zigbee
+Typically, users do not have to interact with the Zigbee network layer (NWK) directly. Most commonly, the NWK is used by the Application Support Sub-Layer (APS) instead.
+In the current implementation of Zigbee in |ns3| we only support the NWK, for this reason, users wishing to use the routing, network joining and scanning capabilities of Zigbee
 must interact directly with the NWK.
 
 The following is a brief explanation of how users can interact with the NWK and what are the supported capabilities.
@@ -175,7 +180,7 @@ The device joining the network must issue a primitive similar to this one::
     NlmeJoinRequestParams joinParams;
     joinParams.m_rejoinNetwork = zigbee::JoiningMethod::DIRECT_OR_REJOIN;
     joinParams.m_scanChannelList.channelPageCount = 1;
-    joinParams.m_scanChannelList.channelsField[0] = zigbee::ALL_CHANNELS;
+    joinParams.m_scanChannelList.channelsField[0] = zigbee::ALL_CHANNELS; // Bitmap representing Ch. 11~26
     joinParams.m_capabilityInfo = capaInfo.GetCapability();
     joinParams.m_extendedPanId = Mac64Address("00:00:00:00:00:00:CA:FE").ConvertToInt();
     zstack->GetNwk()->NlmeJoinRequest(joinParams);
@@ -221,8 +226,9 @@ In |ns3|, Many-To-One routing is achieved by using the ``NLME-ROUTE-DISCOVERY.re
    routeDiscParams.m_dstAddrMode = NO_ADDRESS;
    zstack->GetNwk()->NlmeRouteDiscoveryRequest(routeDiscParams);
 
-Important: The process described above assumes that devices have already joined the network.
-A route discovery request issued before a device is part of the network (join process) will result in failure.
+.. note::
+    Important: The process described above assumes that devices have already joined the network.
+    A route discovery request issued before a device is part of the network (join process) will result in failure.
 
 **Mesh Routing**
 
@@ -288,8 +294,9 @@ Alternatively, a Mesh route discovery can be performed along a data transmission
     dataReqParams.m_discoverRoute = ENABLE_ROUTE_DISCOVERY;
     zstack->GetNwk()->NldeDataRequest(dataReqParams, p);
 
-Important: The process described above assumes that devices have already joined the network.
-A route discovery request issued before a device is part of the network (join process) will result in failure.
+.. note::
+    Important: The process described above assumes that devices have already joined the network.
+    A route discovery request issued before a device is part of the network (join process) will result in failure.
 
 Usage
 -----
@@ -353,7 +360,7 @@ Traces
 
 The following trace sources have been implemented:
 
-- ``RreqRetriesExhausted``: Trace source indicating when a node has reached the maximum allowed number of RREQ retries during a oute discovery request.
+- ``RreqRetriesExhausted``: Trace source indicating when a node has reached the maximum allowed number of RREQ retries during a route discovery request.
 
 Examples and Tests
 ------------------
@@ -366,8 +373,8 @@ All the examples listed here shows scenarios in which a quasi-layer implementati
 
 * ``zigbee-direct-join.cc``:  An example showing the NWK layer join process of devices using the orphaning procedure (Direct join).
 * ``zigbee-association-join.cc``:  An example showing the NWK layer join process of 3 devices in a zigbee network (MAC association).
-* ``zigbee-nwk-routing.cc``: Shows a simple topology of 5 router devices sequentially joining a network. Data transmission and/or route discovery also shown in this example
-* ``zigbee-nwk-routing-grid.cc``: Shows a complex grid topology of 50 router devices sequentially joining a network. Data transmission and/or route discovery also shown in this example.
+* ``zigbee-nwk-routing.cc``: Shows a simple topology of 5 router devices sequentially joining a network. Data transmission and route discovery (MESH routing) are also shown in this example
+* ``zigbee-nwk-routing-grid.cc``: Shows a complex grid topology of 50 router devices sequentially joining a network. Route discovery (MANY-TO-ONE routing) is also shown in this example.
 
 The following unit test have been developed to ensure the correct behavior of the module:
 

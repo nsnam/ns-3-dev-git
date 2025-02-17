@@ -293,7 +293,7 @@ ZigbeeRreqRetryTestCase::DoRun()
     netFormParams.m_beaconOrder = 15;
 
     Simulator::ScheduleWithContext(zstack0->GetNode()->GetId(),
-                                   Seconds(1.0),
+                                   Seconds(1),
                                    &ZigbeeNwk::NlmeNetworkFormationRequest,
                                    zstack0->GetNwk(),
                                    netFormParams);
@@ -307,7 +307,7 @@ ZigbeeRreqRetryTestCase::DoRun()
     netDiscParams.m_scanChannelList.channelsField[0] = 0x00007800; // 0x00000800;
     netDiscParams.m_scanDuration = 2;
     Simulator::ScheduleWithContext(zstack1->GetNode()->GetId(),
-                                   Seconds(3.0),
+                                   Seconds(3),
                                    &ZigbeeNwk::NlmeNetworkDiscoveryRequest,
                                    zstack1->GetNwk(),
                                    netDiscParams);
@@ -317,7 +317,7 @@ ZigbeeRreqRetryTestCase::DoRun()
     netDiscParams2.m_scanChannelList.channelsField[0] = 0x00007800; // 0x00000800;
     netDiscParams2.m_scanDuration = 2;
     Simulator::ScheduleWithContext(zstack2->GetNode()->GetId(),
-                                   Seconds(4.0),
+                                   Seconds(4),
                                    &ZigbeeNwk::NlmeNetworkDiscoveryRequest,
                                    zstack2->GetNwk(),
                                    netDiscParams2);

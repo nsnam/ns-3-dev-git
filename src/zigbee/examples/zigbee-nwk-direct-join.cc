@@ -176,7 +176,7 @@ main(int argc, char* argv[])
     netFormParams.m_beaconOrder = 15;
 
     Simulator::ScheduleWithContext(0,
-                                   Seconds(0.0),
+                                   Seconds(0),
                                    &ZigbeeNwk::NlmeNetworkFormationRequest,
                                    zstack0->GetNwk(),
                                    netFormParams);
@@ -192,7 +192,7 @@ main(int argc, char* argv[])
     directParams.m_deviceAddr = Mac64Address("00:00:00:00:00:00:00:01");
 
     Simulator::ScheduleWithContext(0,
-                                   Seconds(5.0),
+                                   Seconds(5),
                                    &ZigbeeNwk::NlmeDirectJoinRequest,
                                    zstack0->GetNwk(),
                                    directParams);
@@ -213,7 +213,7 @@ main(int argc, char* argv[])
     joinParams.m_extendedPanId = Mac64Address("00:00:00:00:00:00:CA:FE").ConvertToInt();
 
     Simulator::ScheduleWithContext(1,
-                                   Seconds(5.5),
+                                   MilliSeconds(5500),
                                    &ZigbeeNwk::NlmeJoinRequest,
                                    zstack1->GetNwk(),
                                    joinParams);
@@ -222,7 +222,7 @@ main(int argc, char* argv[])
     //     (i.e. it becomes able to accept request from other devices to join the network)
     NlmeStartRouterRequestParams startRouterParams;
     Simulator::ScheduleWithContext(1,
-                                   Seconds(5.6),
+                                   MilliSeconds(5600),
                                    &ZigbeeNwk::NlmeStartRouterRequest,
                                    zstack1->GetNwk(),
                                    startRouterParams);
@@ -232,7 +232,7 @@ main(int argc, char* argv[])
     directParams2.m_deviceAddr = Mac64Address("00:00:00:00:00:00:00:02");
 
     Simulator::ScheduleWithContext(1,
-                                   Seconds(6.0),
+                                   MilliSeconds(6000),
                                    &ZigbeeNwk::NlmeDirectJoinRequest,
                                    zstack1->GetNwk(),
                                    directParams2);
@@ -245,11 +245,12 @@ main(int argc, char* argv[])
     joinParams2.m_extendedPanId = Mac64Address("00:00:00:00:00:00:CA:FE").ConvertToInt();
 
     Simulator::ScheduleWithContext(2,
-                                   Seconds(6.1),
+                                   MilliSeconds(6100),
                                    &ZigbeeNwk::NlmeJoinRequest,
                                    zstack2->GetNwk(),
                                    joinParams2);
 
+    Simulator::Stop(Seconds(10));
     Simulator::Run();
 
     Simulator::Destroy();

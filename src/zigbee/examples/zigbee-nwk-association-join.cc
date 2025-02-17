@@ -218,7 +218,7 @@ main(int argc, char* argv[])
     netFormParams.m_beaconOrder = 15;
 
     Simulator::ScheduleWithContext(zstack0->GetNode()->GetId(),
-                                   Seconds(1.0),
+                                   Seconds(1),
                                    &ZigbeeNwk::NlmeNetworkFormationRequest,
                                    zstack0->GetNwk(),
                                    netFormParams);
@@ -230,7 +230,7 @@ main(int argc, char* argv[])
     netDiscParams.m_scanChannelList.channelsField[0] = 0x7800;
     netDiscParams.m_scanDuration = 14;
     Simulator::ScheduleWithContext(zstack1->GetNode()->GetId(),
-                                   Seconds(3.0),
+                                   Seconds(3),
                                    &ZigbeeNwk::NlmeNetworkDiscoveryRequest,
                                    zstack1->GetNwk(),
                                    netDiscParams);
@@ -244,7 +244,7 @@ main(int argc, char* argv[])
     netDiscParams2.m_scanChannelList.channelsField[0] = 0x7800;
     netDiscParams2.m_scanDuration = 14;
     Simulator::ScheduleWithContext(zstack2->GetNode()->GetId(),
-                                   Seconds(1020.0),
+                                   Seconds(1020),
                                    &ZigbeeNwk::NlmeNetworkDiscoveryRequest,
                                    zstack2->GetNwk(),
                                    netDiscParams2);
