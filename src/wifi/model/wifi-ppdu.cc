@@ -10,6 +10,7 @@
 
 #include "wifi-phy-operating-channel.h"
 #include "wifi-psdu.h"
+#include "wifi-utils.h"
 
 #include "ns3/log.h"
 
@@ -181,38 +182,7 @@ WifiPpdu::DoesOverlapChannel(MHz_t minFreq, MHz_t maxFreq) const
     const MHz_t txChannelWidth = (m_txChannelWidth / m_txCenterFreqs.size());
     for (auto txCenterFreq : m_txCenterFreqs)
     {
-        const auto minTxFreq = txCenterFreq - txChannelWidth / 2;
-        const auto maxTxFreq = txCenterFreq + txChannelWidth / 2;
-        /**
-         * The PPDU does not overlap the channel in two cases.
-         *
-         * First non-overlapping case:
-         *
-         *                                        ┌─────────┐
-         *                                PPDU    │ Nominal │
-         *                                        │  Band   │
-         *                                        └─────────┘
-         *                                   minTxFreq   maxTxFreq
-         *
-         *       minFreq                       maxFreq
-         *         ┌──────────────────────────────┐
-         *         │           Channel            │
-         *         └──────────────────────────────┘
-         *
-         * Second non-overlapping case:
-         *
-         *         ┌─────────┐
-         * PPDU    │ Nominal │
-         *         │  Band   │
-         *         └─────────┘
-         *    minTxFreq   maxTxFreq
-         *
-         *                 minFreq                       maxFreq
-         *                   ┌──────────────────────────────┐
-         *                   │           Channel            │
-         *                   └──────────────────────────────┘
-         */
-        if ((minTxFreq < maxFreq) && (maxTxFreq > minFreq))
+        if (DoesOverlap(GetFrequencyRange(txCenterFreq, txChannelWidth), {minFreq, maxFreq}))
         {
             return true;
         }

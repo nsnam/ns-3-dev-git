@@ -30,6 +30,7 @@ class WifiMacHeader;
 class Packet;
 class WifiMac;
 class WifiTxVector;
+class WifiPhyOperatingChannel;
 
 enum class TriggerFrameVariant : uint8_t;
 
@@ -275,6 +276,34 @@ bool IsGcr(Ptr<WifiMac> mac, const WifiMacHeader& hdr);
  * @return the MAC address of the individually addressed recipient to use
  */
 Mac48Address GetIndividuallyAddressedRecipient(Ptr<WifiMac> mac, const WifiMacHeader& hdr);
+
+/**
+ * Compute the frequency range (start and stop frequencies) corresponding to a channel with a given
+ * center frequency and a given bandwidth
+ *
+ * @param centerFrequency the center frequency of the channel
+ * @param bandwidth the bandwidth of the channel
+ * @return the frequency range of the channel
+ */
+FrequencyRange GetFrequencyRange(MHz_t centerFrequency, MHz_t bandwidth);
+
+/**
+ * Check whether two channels overlap.
+ *
+ * @param rangeChannel1 the frequency range of the first channel
+ * @param rangeChannel2 the frequency range of the second channel
+ * @return true if the channels overlap, false otherwise
+ */
+bool DoesOverlap(const FrequencyRange& rangeChannel1, const FrequencyRange& rangeChannel2);
+
+/**
+ * Check whether two channels overlap.
+ *
+ * @param channel1 the first channel
+ * @param channel2 the second channel
+ * @return true if the channels overlap, false otherwise
+ */
+bool DoesOverlap(const WifiPhyOperatingChannel& channel1, const WifiPhyOperatingChannel& channel2);
 
 /// Link ID for single link operations (helps tracking places where correct link
 /// ID is to be used to support multi-link operations)

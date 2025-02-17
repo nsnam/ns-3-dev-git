@@ -13,6 +13,7 @@
 #include "gcr-manager.h"
 #include "wifi-mac-header.h"
 #include "wifi-mac-trailer.h"
+#include "wifi-phy-operating-channel.h"
 #include "wifi-tx-vector.h"
 
 #include "ns3/packet.h"
@@ -288,6 +289,62 @@ GetIndividuallyAddressedRecipient(Ptr<WifiMac> mac, const WifiMacHeader& hdr)
     }
     auto apMac = DynamicCast<ApWifiMac>(mac);
     return apMac->GetGcrManager()->GetIndividuallyAddressedRecipient(addr1);
+}
+
+bool
+DoesOverlap(const FrequencyRange& rangeChannel1, const FrequencyRange& rangeChannel2)
+{
+    /**
+     * The channel 1 does not overlap the channel 2 in two cases.
+     *
+     * First non-overlapping case:
+     *
+     *                                        ┌─────────┐
+     *                                        │channel 1│
+     *                                        └─────────┘
+     *         ┌──────────────────────────────┐
+     *         │          Channel 2           │
+     *         └──────────────────────────────┘
+     *
+     * Second non-overlapping case:
+     *
+     *         ┌─────────┐
+     *         │channel 1│
+     *         └─────────┘
+     *                   ┌──────────────────────────────┐
+     *                   │          Channel 2           │
+     *                   └──────────────────────────────┘
+     */
+    return ((rangeChannel1.minFrequency < rangeChannel2.maxFrequency) &&
+            (rangeChannel1.maxFrequency > rangeChannel2.minFrequency));
+}
+
+FrequencyRange
+GetFrequencyRange(MHz_t centerFrequency, MHz_t bandwidth)
+{
+    return {centerFrequency - bandwidth / 2, centerFrequency + bandwidth / 2};
+}
+
+bool
+DoesOverlap(const WifiPhyOperatingChannel& channel1, const WifiPhyOperatingChannel& channel2)
+{
+    // assume all segments have the same width for now
+    const auto channel1CenterFreqs = channel1.GetFrequencies();
+    const auto channel1Bw = channel1.GetTotalWidth() / channel1CenterFreqs.size();
+    const auto channel2CenterFreqs = channel2.GetFrequencies();
+    const auto channel2Bw = channel2.GetTotalWidth() / channel2CenterFreqs.size();
+    for (const auto& freq1 : channel1CenterFreqs)
+    {
+        for (const auto& freq2 : channel2CenterFreqs)
+        {
+            if (DoesOverlap(GetFrequencyRange(freq1, channel1Bw),
+                            GetFrequencyRange(freq2, channel2Bw)))
+            {
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 } // namespace ns3

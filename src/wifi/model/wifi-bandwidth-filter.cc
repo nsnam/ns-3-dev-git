@@ -11,6 +11,7 @@
 #include "wifi-psdu.h"
 #include "wifi-spectrum-phy-interface.h"
 #include "wifi-spectrum-signal-parameters.h"
+#include "wifi-utils.h"
 
 #include "ns3/boolean.h"
 #include "ns3/spectrum-transmit-filter.h"
@@ -86,47 +87,14 @@ WifiBandwidthFilter::DoFilter(Ptr<const SpectrumSignalParameters> params,
     bool filter = true;
     for (auto rxCenterFreq : rxCenterFreqs)
     {
-        const auto rxMinFreq = rxCenterFreq - rxWidth / 2 - guardBandwidth;
-        const auto rxMaxFreq = rxCenterFreq + rxWidth / 2 + guardBandwidth;
+        const auto rxRange = GetFrequencyRange(rxCenterFreq, rxWidth + (2 * guardBandwidth));
         const auto operatingFrequencies = interface->GetCenterFrequencies();
         const auto operatingChannelWidth =
             interface->GetChannelWidth() / operatingFrequencies.size();
         for (auto operatingFrequency : operatingFrequencies)
         {
-            const auto channelMinFreq = operatingFrequency - operatingChannelWidth / 2;
-            const auto channelMaxFreq = operatingFrequency + operatingChannelWidth / 2;
-            /**
-             * The PPDU can be ignored if the two bands do not overlap.
-             *
-             * First non-overlapping case:
-             *
-             *                                        ┌─────────┬─────────┬─────────┐
-             *                                PPDU    │  Guard  │ Nominal │  Guard  │
-             *                                        │  Band   │   Band  │  Band   │
-             *                                        └─────────┴─────────┴─────────┘
-             *                                    rxMinFreq                     rxMaxFreq
-             *
-             * channelMinFreq                channelMaxFreq
-             *         ┌──────────────────────────────┐
-             *         │         Operating            │
-             *         │           Channel            │
-             *         └──────────────────────────────┘
-             *
-             * Second non-overlapping case:
-             *
-             *         ┌─────────┬─────────┬─────────┐
-             * PPDU    │  Guard  │ Nominal │  Guard  │
-             *         │  Band   │   Band  │  Band   │
-             *         └─────────┴─────────┴─────────┘
-             *     rxMinFreq                     rxMaxFreq
-             *
-             *                               channelMinFreq                channelMaxFreq
-             *                                       ┌──────────────────────────────┐
-             *                                       │         Operating            │
-             *                                       │           Channel            │
-             *                                       └──────────────────────────────┘
-             */
-            filter &= ((rxMinFreq >= channelMaxFreq) || (rxMaxFreq <= channelMinFreq));
+            const auto channelRange = GetFrequencyRange(operatingFrequency, operatingChannelWidth);
+            filter &= !DoesOverlap(rxRange, channelRange);
         }
     }
     NS_LOG_DEBUG("Returning " << filter);
