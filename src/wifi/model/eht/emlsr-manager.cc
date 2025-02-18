@@ -1381,27 +1381,25 @@ EmlsrManager::ComputeOperatingChannels()
         m_mainPhyChannels.emplace(linkId, channel);
 
         auto mainPhyChWidth = channel.GetWidth();
-        auto auxPhyMaxWidth =
-            std::min(m_auxPhyMaxWidth, GetMaximumChannelWidth(m_auxPhyMaxModClass));
-        if (auxPhyMaxWidth >= mainPhyChWidth)
+        if (m_auxPhyMaxWidth >= mainPhyChWidth)
         {
             // same channel can be used by aux PHYs
             m_auxPhyChannels.emplace(linkId, channel);
             continue;
         }
         // aux PHYs will operate on a primary subchannel
-        auto freq = channel.GetPrimaryChannelCenterFrequency(auxPhyMaxWidth);
+        auto freq = channel.GetPrimaryChannelCenterFrequency(m_auxPhyMaxWidth);
         auto chIt = WifiPhyOperatingChannel::FindFirst(0,
                                                        freq,
-                                                       auxPhyMaxWidth,
+                                                       m_auxPhyMaxWidth,
                                                        WIFI_STANDARD_UNSPECIFIED,
                                                        channel.GetPhyBand());
         NS_ASSERT_MSG(chIt != WifiPhyOperatingChannel::m_frequencyChannels.end(),
-                      "Primary" << auxPhyMaxWidth << " channel not found");
+                      "Primary" << m_auxPhyMaxWidth << " channel not found");
         m_auxPhyChannels.emplace(linkId, chIt);
         // find the P20 index for the channel used by the aux PHYs
         auto p20Index = channel.GetPrimaryChannelIndex(MHz_t{20});
-        while (mainPhyChWidth > auxPhyMaxWidth)
+        while (mainPhyChWidth > m_auxPhyMaxWidth)
         {
             mainPhyChWidth /= 2;
             p20Index /= 2;
