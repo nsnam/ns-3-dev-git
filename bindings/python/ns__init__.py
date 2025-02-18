@@ -115,7 +115,7 @@ def _search_libraries() -> dict:
             library_map[library_infix] = set()
 
         # Append the directory
-        library_map[library_infix].add(library)
+        library_map[library_infix].add(os.path.realpath(library))
 
     # Replace sets with lists
     for key, values in library_map.items():
