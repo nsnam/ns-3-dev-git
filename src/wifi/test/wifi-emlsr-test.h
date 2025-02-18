@@ -622,14 +622,17 @@ class EmlsrDlTxopTest : public EmlsrOperationsTestBase
  *   link, stays in sleep mode until the TXOP ends and is resumed from sleep mode right after the
  *   end of the DL/UL TXOP.
  * - When an aux PHY that is not TX capable gains a TXOP, it checks whether the main PHY can switch
- *   to the auxiliary link a start an UL TXOP. If the main PHY is switching, the aux PHY waits
+ *   to the auxiliary link and start an UL TXOP. If the main PHY is switching, the aux PHY waits
  *   until the channel switch is completed and checks again; if the remaining backoff time on the
  *   preferred link is greater than the channel switch delay, the main PHY is requested to switch to
- *   the auxiliary link of the aux PHY. When the channel switch is completed, if the medium is
- *   idle on the auxiliary link and the backoff is zero, the main PHY starts an UL TXOP after a
- *   PIFS period; otherwise, the main PHY starts an UL TXOP when the backoff timer counts down to
- *   zero. The QoS data frame sent by the main PHY is not protected by RTS and the bandwidth it
- *   occupies is not affected by possible limitations on the aux PHY TX bandwidth capabilities.
+ *   the auxiliary link of the aux PHY. When the channel switch is completed, an UL TXOP can start
+ *   immediately or after some delay. Specifically, if the backoff has already reached zero when
+ *   the channel switch is completed, the UL TXOP starts immediately, if aux PHY CCA is used, or in
+ *   a PIFS, otherwise; if the backoff has not yet reached zero when the channel switch is
+ *   completed, the UL TXOP starts at backoff end, if aux PHY CCA is used, or at the latest between
+ *   the backoff end and a PIFS after the end of channel switch, otherwise. The TX bandwidth equals
+ *   the channel width supported by the aux PHY, if aux PHY CCA is used, or the channel width
+ *   supported by the main PHY, otherwise.
  *
  * Also, if the PutAuxPhyToSleep attribute is set to true, it is checked that aux PHYs are in
  * sleep mode a SIFS after receiving the ICF and are still in sleep mode right before receiving
@@ -660,6 +663,8 @@ class EmlsrUlTxopTest : public EmlsrOperationsTestBase
                                         //!< aux PHY is not TX capable
         uint8_t nSlotsLeftAlert;        //!< value to set the ChannelAccessManager NSlotsLeft
                                         //!< attribute to
+        Time csdAuxPhyNoTx;             //!< the channel switch delay to set for the main PHY when
+                                        //!< aux PHYs are made non-TX capable
         bool putAuxPhyToSleep;          //!< whether aux PHYs are put to sleep during DL/UL TXOPs
         bool switchMainPhyBackDelayTimeout; //!< whether a SwitchMainPhyBackDelay timer expires
                                             //!< after that the main PHY moved to an aux PHY link
@@ -768,6 +773,8 @@ class EmlsrUlTxopTest : public EmlsrOperationsTestBase
     bool m_useAuxPhyCca;                  //!< whether CCA info from aux PHY is used when
                                           //!< aux PHY is not TX capable
     uint8_t m_nSlotsLeftAlert;            //!< value for ChannelAccessManager NSlotsLeft attribute
+    Time m_csdAuxPhyNoTx;                 //!< the channel switch delay to set for the main PHY when
+                                          //!< aux PHYs are made non-TX capable
     bool m_switchMainPhyBackDelayTimeout; //!< whether a SwitchMainPhyBackDelay timer expires
                                           //!< after that the main PHY moved to an aux PHY link
     std::optional<bool> m_corruptCts;     //!< whether the transmitted CTS must be corrupted

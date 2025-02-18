@@ -2680,9 +2680,11 @@ EmlsrDlTxopTest::DoRun()
 }
 
 EmlsrUlTxopTest::EmlsrUlTxopTest(const Params& params)
-    : EmlsrOperationsTestBase("Check EML UL TXOP transmissions (genBackoffAndUseAuxPhyCca=" +
-                              std::to_string(params.genBackoffAndUseAuxPhyCca) +
-                              ", nSlotsLeftAlert=" + std::to_string(params.nSlotsLeftAlert)),
+    : EmlsrOperationsTestBase(
+          "Check EML UL TXOP transmissions (genBackoffAndUseAuxPhyCca=" +
+          std::to_string(params.genBackoffAndUseAuxPhyCca) +
+          ", nSlotsLeftAlert=" + std::to_string(params.nSlotsLeftAlert) +
+          ", csdAuxPhyNoTx=" + std::to_string(params.csdAuxPhyNoTx.GetMicroSeconds()) + "us"),
       m_emlsrLinks(params.linksToEnableEmlsrOn),
       m_channelWidth(params.channelWidth),
       m_auxPhyChannelWidth(params.auxPhyChannelWidth),
@@ -2698,6 +2700,7 @@ EmlsrUlTxopTest::EmlsrUlTxopTest(const Params& params)
       m_genBackoffIfTxopWithoutTx(params.genBackoffAndUseAuxPhyCca),
       m_useAuxPhyCca(params.genBackoffAndUseAuxPhyCca),
       m_nSlotsLeftAlert(params.nSlotsLeftAlert),
+      m_csdAuxPhyNoTx(params.csdAuxPhyNoTx),
       m_switchMainPhyBackDelayTimeout(params.switchMainPhyBackDelayTimeout),
       m_5thQosFrameExpWidth(0)
 {
@@ -3230,6 +3233,10 @@ EmlsrUlTxopTest::CheckBlockAck(const WifiConstPsduMap& psduMap,
             // auxiliary link other than the one on which the last frame exchange occurred
             m_staMacs[0]->GetEmlsrManager()->SetMediumSyncDuration(Seconds(0));
         }
+        m_staMacs[0]
+            ->GetDevice()
+            ->GetPhy(m_mainPhyId)
+            ->SetAttribute("ChannelSwitchDelay", TimeValue(m_csdAuxPhyNoTx));
 
         // generate a very large backoff for the preferred link, so that when an aux PHY gains a
         // TXOP, it requests the main PHY to switch to its link to transmit the frames
@@ -3396,25 +3403,32 @@ EmlsrUlTxopTest::CheckBlockAck(const WifiConstPsduMap& psduMap,
                                               "Main PHY should have completed switching");
                         // update backoff on the auxiliary link on which main PHY is operating
                         auto cam = m_staMacs[0]->GetChannelAccessManager(*auxLinkId);
+                        const auto backoffEnd = cam->GetBackoffEndFor(acBe);
+                        const auto now = Simulator::Now();
+                        const auto pifs = mainPhy->GetPifs();
                         cam->NeedBackoffUponAccess(acBe, true, true);
+                        // if aux PHY CCA can be used, it is actually used unless the switch is
+                        // completed at least a PIFS before the backoff end (which can only happen
+                        // when NSlotsLeft is strictly greater than zero)
                         const auto usedAuxPhyCca =
                             (m_useAuxPhyCca || m_auxPhyChannelWidth >= m_channelWidth) &&
-                            (m_nSlotsLeftAlert == 0 ||
-                             cam->GetBackoffEndFor(acBe) <= Simulator::Now());
+                            !(backoffEnd - now >= pifs);
                         m_5thQosFrameExpWidth =
                             usedAuxPhyCca ? m_auxPhyChannelWidth : m_channelWidth;
-                        // record the time the transmission of the QoS data frames must have
-                        // started: (a PIFS after) end of channel switch, if the backoff counter
-                        // on the auxiliary link is null and UseAuxPhyCca is true (false); when
-                        // the backoff expires, otherwise
-                        if (auto slots = acBe->GetBackoffSlots(*auxLinkId); slots == 0)
+                        // record the time the transmission of the QoS data frames must have started
+                        if (backoffEnd <= now)
                         {
-                            m_5thQosFrameTxTime =
-                                Simulator::Now() + (m_useAuxPhyCca ? Time{0} : mainPhy->GetPifs());
+                            // the backoff is already expired: transmit now, if aux PHY CCA is used,
+                            // or in a PIFS, otherwise
+                            m_5thQosFrameTxTime = usedAuxPhyCca ? now : now + pifs;
                         }
                         else
                         {
-                            m_5thQosFrameTxTime = cam->GetBackoffEndFor(acBe);
+                            // transmit at backoff end, if aux PHY CCA is used, or at the latest
+                            // between the backoff end and a PIFS after end of channel switch,
+                            // otherwise
+                            m_5thQosFrameTxTime =
+                                usedAuxPhyCca ? backoffEnd : Max(backoffEnd, now + pifs);
                         }
                     });
                 });
@@ -3903,9 +3917,12 @@ EmlsrUlTxopTest::CheckResults()
     NS_TEST_EXPECT_MSG_NE(+psduIt->linkId,
                           +m_mainPhyId,
                           "Fifth QoS data frame should be transmitted on an auxiliary link");
-    NS_TEST_EXPECT_MSG_EQ(psduIt->txVector.GetChannelWidth(),
-                          m_5thQosFrameExpWidth,
-                          "Fifth data frame not transmitted on the correct channel width");
+    if (!m_switchMainPhyBackDelayTimeout)
+    {
+        NS_TEST_EXPECT_MSG_EQ(psduIt->txVector.GetChannelWidth(),
+                              m_5thQosFrameExpWidth,
+                              "Fifth data frame not transmitted on the correct channel width");
+    }
 }
 
 EmlsrUlOfdmaTest::EmlsrUlOfdmaTest(bool enableBsrp)
@@ -5295,9 +5312,36 @@ WifiEmlsrTestSuite::WifiEmlsrTestSuite()
                                              3,
                                              genBackoffAndUseAuxPhyCca,
                                              nSlotsLeft,
+                                             MicroSeconds(75),
                                              true, /* putAuxPhyToSleep */
                                              false /* switchMainPhyBackDelayTimeout */}),
                         TestCase::Duration::QUICK);
+            // test other channel switch delay values compared to the nSlotsLeft alert
+            if (nSlotsLeft > 0)
+            {
+                AddTestCase(new EmlsrUlTxopTest({{0, 1, 2},
+                                                 MHz_u{40},
+                                                 MHz_u{20},
+                                                 MicroSeconds(5504),
+                                                 3,
+                                                 genBackoffAndUseAuxPhyCca,
+                                                 nSlotsLeft,
+                                                 MicroSeconds(1),
+                                                 false, /* putAuxPhyToSleep */
+                                                 false /* switchMainPhyBackDelayTimeout */}),
+                            TestCase::Duration::QUICK);
+                AddTestCase(new EmlsrUlTxopTest({{0, 1, 2},
+                                                 MHz_u{40},
+                                                 MHz_u{20},
+                                                 MicroSeconds(5504),
+                                                 3,
+                                                 genBackoffAndUseAuxPhyCca,
+                                                 nSlotsLeft,
+                                                 MicroSeconds(5),
+                                                 false, /* putAuxPhyToSleep */
+                                                 false /* switchMainPhyBackDelayTimeout */}),
+                            TestCase::Duration::QUICK);
+            }
             AddTestCase(new EmlsrUlTxopTest({{0, 1},
                                              MHz_u{40},
                                              MHz_u{20},
@@ -5305,7 +5349,8 @@ WifiEmlsrTestSuite::WifiEmlsrTestSuite()
                                              1,
                                              genBackoffAndUseAuxPhyCca,
                                              nSlotsLeft,
-                                             false, /* putAuxPhyToSleep */
+                                             MicroSeconds(75), // greater than nSlotsLeft slots
+                                             false,            /* putAuxPhyToSleep */
                                              true /* switchMainPhyBackDelayTimeout */}),
                         TestCase::Duration::QUICK);
         }

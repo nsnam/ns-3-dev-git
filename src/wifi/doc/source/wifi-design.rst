@@ -1450,10 +1450,12 @@ the expected delay until backoff end is also taken into account). If the main PH
 to the auxiliary link and the backoff on the auxiliary link counts down to zero while the main PHY is
 switching, a NAV and CCA check is performed as described above (by the aux PHY in the PIFS period
 preceding the main PHY channel switch end or by the main PHY in the PIFS period following the main PHY
-channel switch end). Similarly, a NAV and CCA check is performed (by the main PHY) if the remaining
-backoff time when the main PHY switch is completed is less than a PIFS. Otherwise, SwitchMainPhyBack
-timer is started having a duration of SwitchMainPhyBackDelay plus the remaining time until the backoff
-of the AC involved in the Channel Access Manager notification is expected to expire.
+channel switch end). If the remaining backoff time when the main PHY completes the switch to the aux
+PHY link is greater than or equal to a PIFS, no NAV and CCA check is scheduled, as the main PHY has
+enough time to perform CCA on the aux PHY link. If the remaining backoff time when the main PHY
+completes the switch to the aux PHY link is less than a PIFS, the UL TXOP starts as soon as the
+backoff counter reaches zero, if aux PHY CCA can be used, or a PIFS after the end of the main PHY
+switch (provided that the NAV and CCA check indicates medium idle), if main PHY CCA is requested.
 
 The Advanced EMLSR Manager has the ``InterruptSwitch`` attribute that can be set to true to
 interrupt a main PHY switch when it is determined that the main PHY shall switch to a different

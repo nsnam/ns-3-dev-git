@@ -504,6 +504,7 @@ void
 AdvancedEmlsrManager::SwitchMainPhyBackDelayExpired(uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << linkId);
+    NS_ASSERT(!m_switchMainPhyBackEvent.IsPending());
 
     if (m_switchAuxPhy)
     {
@@ -882,32 +883,84 @@ AdvancedEmlsrManager::SwitchMainPhyIfTxopToBeGainedByAuxPhy(uint8_t linkId,
     // use aux PHY CCA (if allowed) if the backoff has already counted down to zero on the aux PHY
     // link when the main PHY completes the switch
     const auto edca = GetStaMac()->GetQosTxop(aci);
-    const auto cam = GetStaMac()->GetChannelAccessManager(linkId);
     const auto auxPhy = GetStaMac()->GetWifiPhy(linkId);
     const auto switchDelay = mainPhy->GetChannelSwitchDelay();
-    const auto now = Simulator::Now();
     const auto auxPhyCcaCanBeUsed =
         m_useAuxPhyCca || (GetChannelForAuxPhy(linkId).GetTotalWidth() >=
                            GetChannelForMainPhy(linkId).GetTotalWidth());
-    const auto backoffEndBeforeSwitch = (cam->GetBackoffEndFor(edca) - now) <= switchDelay;
 
-    if (auxPhyCcaCanBeUsed && backoffEndBeforeSwitch)
-    {
-        NS_LOG_DEBUG("Schedule CCA check at the end of main PHY switch");
-        m_ccaLastPifs = Simulator::Schedule(switchDelay, [=, this]() {
-            // check NAV and CCA only if the backoff actually counted down to zero already
-            if (cam->GetBackoffEndFor(edca) <= Simulator::Now())
-            {
-                CheckNavAndCcaLastPifs(auxPhy, linkId, edca);
-            }
-        });
-    }
+    // check expected channel access delay when switch is completed
+    Simulator::Schedule(switchDelay, [=, this]() {
+        // this is scheduled before starting the main PHY switch, hence it is executed before the
+        // main PHY is connected to the aux PHY link
+
+        if (!m_switchAuxPhy && !m_switchMainPhyBackEvent.IsPending())
+        {
+            // if SwitchAuxPhy is false and the switch main PHY back timer is not running, it means
+            // that the channel switch was interrupted, hence there is nothing to check
+            return;
+        }
+
+        const auto backoffEnd =
+            GetStaMac()->GetChannelAccessManager(linkId)->GetBackoffEndFor(edca);
+        const auto pifs = GetStaMac()->GetWifiPhy(linkId)->GetPifs();
+        const auto now = Simulator::Now();
+
+        // In case aux PHY CCA can be used and the backoff has not yet reached zero, no NAV and CCA
+        // check is needed. The channel width that will be used is the width of the aux PHY if less
+        // than a PIFS remains until the backoff reaches zero, and the width of the main PHY,
+        // otherwise. If aux PHY CCA can be used and the backoff has already reached zero, a NAV and
+        // CCA check is needed.
+
+        if (auxPhyCcaCanBeUsed && backoffEnd < now)
+        {
+            /**
+             * use aux PHY CCA in the last PIFS interval before main PHY switch end
+             *
+             *        Backoff    Switch
+             *          end     end (now)
+             * ──────────┴─────────┴──────────
+             *      |---- PIFS ----|
+             */
+            CheckNavAndCcaLastPifs(auxPhy, linkId, edca);
+        }
+        else if (!auxPhyCcaCanBeUsed && (backoffEnd - now <= pifs))
+        {
+            /**
+             * the remaining backoff time (if any) when the main PHY completes the switch is shorter
+             * than or equal to a PIFS, thus the main PHY performs CCA in the last PIFS interval
+             * after switch end
+             *
+             *        Switch    Backoff                 Backoff    Switch
+             *       end (now)    end                     end     end (now)
+             * ──────────┴─────────┴──────────   ──────────┴─────────┴──────────
+             *           |---- PIFS ----|                            |---- PIFS ----|
+             */
+            NS_LOG_DEBUG("Schedule CCA check a PIFS after the end of main PHY switch");
+            m_ccaLastPifs = Simulator::Schedule(pifs,
+                                                &AdvancedEmlsrManager::CheckNavAndCcaLastPifs,
+                                                this,
+                                                mainPhy,
+                                                linkId,
+                                                edca);
+        }
+
+        else if (!m_switchAuxPhy &&
+                 !GetExpectedAccessWithinDelay(linkId,
+                                               Simulator::GetDelayLeft(m_switchMainPhyBackEvent) +
+                                                   mainPhy->GetChannelSwitchDelay()))
+        {
+            NS_LOG_DEBUG("No AC is expected to get backoff soon, switch main PHY back");
+            m_switchMainPhyBackEvent.Cancel();
+            SwitchMainPhyBackDelayExpired(linkId);
+        }
+    });
 
     Time remNav{0};
     if (const auto mainPhyLinkId = GetStaMac()->GetLinkForPhy(mainPhy))
     {
         auto mainPhyNavEnd = GetStaMac()->GetChannelAccessManager(*mainPhyLinkId)->GetNavEnd();
-        remNav = Max(remNav, mainPhyNavEnd - now);
+        remNav = Max(remNav, mainPhyNavEnd - Simulator::Now());
     }
 
     SwitchMainPhy(linkId,
@@ -924,48 +977,6 @@ AdvancedEmlsrManager::SwitchMainPhyIfTxopToBeGainedByAuxPhy(uint8_t linkId,
                             &AdvancedEmlsrManager::SwitchMainPhyBackDelayExpired,
                             this,
                             linkId);
-
-    // check expected channel access delay when switch is completed
-    Simulator::Schedule(switchDelay, [=, this]() {
-        const auto accessDelay = cam->GetBackoffEndFor(edca) - Simulator::Now();
-
-        if (!m_switchAuxPhy && !m_switchMainPhyBackEvent.IsPending())
-        {
-            // if SwitchAuxPhy is false and the switch main PHY back timer is not running, it means
-            // that the channel switch was interrupted, hence there is nothing to check
-            return;
-        }
-
-        if (auxPhyCcaCanBeUsed && backoffEndBeforeSwitch && accessDelay.IsNegative())
-        {
-            // backoff already counted down to zero and we used aux PHY CCA
-            return;
-        }
-
-        const auto pifs = GetStaMac()->GetWifiPhy(linkId)->GetPifs();
-
-        // if the remaining backoff time is shorter than PIFS when the main PHY completes the
-        // switch, we need to schedule a CCA check a PIFS after the end of the main PHY switch
-        if (accessDelay <= pifs)
-        {
-            // use main PHY CCA in the last PIFS interval after main PHY switch end
-            NS_LOG_DEBUG("Schedule CCA check a PIFS after the end of main PHY switch");
-            m_ccaLastPifs = Simulator::Schedule(pifs,
-                                                &AdvancedEmlsrManager::CheckNavAndCcaLastPifs,
-                                                this,
-                                                mainPhy,
-                                                linkId,
-                                                edca);
-        }
-        else if (!m_switchAuxPhy &&
-                 !GetExpectedAccessWithinDelay(linkId,
-                                               Simulator::GetDelayLeft(m_switchMainPhyBackEvent) +
-                                                   mainPhy->GetChannelSwitchDelay()))
-        {
-            NS_LOG_DEBUG("No AC is expected to get backoff soon, switch main PHY back");
-            SwitchMainPhyBackDelayExpired(linkId);
-        }
-    });
 }
 
 } // namespace ns3
