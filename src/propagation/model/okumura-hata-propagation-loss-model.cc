@@ -120,7 +120,7 @@ OkumuraHataPropagationLossModel::GetLoss(Ptr<MobilityModel> a, Ptr<MobilityModel
         }
         else if (m_environment == OpenAreasEnvironment)
         {
-            loss += -4.70 * std::pow(log_fMhz, 2) + 18.33 * log_fMhz - 40.94;
+            loss += -4.78 * std::pow(log_fMhz, 2) + 18.33 * log_fMhz - 40.94;
         }
     }
     else

@@ -410,7 +410,7 @@ The extension for the standard OH in open area is
 
 .. math::
 
-  L_\mathrm{O} = L_\mathrm{U} - 4.70 (\log{f})^2 + 18.33\log{f} - 40.94
+  L_\mathrm{O} = L_\mathrm{U} - 4.78 (\log{f})^2 + 18.33\log{f} - 40.94
 
 
 The literature lacks of extensions of the COST231 to open area (for suburban it seems that

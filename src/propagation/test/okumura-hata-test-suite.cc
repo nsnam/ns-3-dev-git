@@ -174,7 +174,7 @@ OkumuraHataPropagationLossModelTestSuite::OkumuraHataPropagationLossModelTestSui
                                                             1,
                                                             OpenAreasEnvironment,
                                                             LargeCity,
-                                                            110.21,
+                                                            109.66,
                                                             "original OH OpenAreas"),
                 TestCase::Duration::QUICK);
 

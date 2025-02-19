@@ -68,7 +68,7 @@ BuildingsPathlossTestSuite::BuildingsPathlossTestSuite()
                                               2,
                                               OpenAreasEnvironment,
                                               LargeCity,
-                                              110.21,
+                                              109.66,
                                               "loss OH OpenAreas"),
                 TestCase::Duration::QUICK);
 
