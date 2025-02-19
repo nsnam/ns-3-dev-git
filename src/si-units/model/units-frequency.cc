@@ -1,7 +1,5 @@
 #include "units-frequency.h"
 
-#include "string-utils.h"
-
 #include <iostream>
 
 using namespace ns3;

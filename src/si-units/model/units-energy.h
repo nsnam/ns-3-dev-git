@@ -1,7 +1,7 @@
 #ifndef UNITS_ENERGY_H
 #define UNITS_ENERGY_H
 
-#include "format-string.h"
+#include "si-units-parser.h"
 #include "units-aliases.h"
 #include "units-frequency.h"
 #include "units-time.h"

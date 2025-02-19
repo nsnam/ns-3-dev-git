@@ -1,6 +1,5 @@
 #include "units-energy.h"
 
-#include "string-utils.h"
 #include "units-aliases.h"
 
 #include "ns3/log.h"

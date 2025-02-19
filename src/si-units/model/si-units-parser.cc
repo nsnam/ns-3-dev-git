@@ -1,15 +1,13 @@
-#include "string-utils.h"
+#include "si-units-parser.h"
 
 #include <algorithm>
-#include <charconv>
-#include <istream>
-#include <optional>
-#include <string>
 
 // clang-format off
+
 namespace ns3
 {
 
+/// @cond Doxygen warning about the missindg doc despite of ones in the header file
 std::string
 TrimL(const std::string& str)
 {
@@ -89,6 +87,8 @@ StringToDouble(std::string str, std::string suffix)
     }
     return std::nullopt;
 }
+
+/// @endcond
 
 } // namespace ns3
 

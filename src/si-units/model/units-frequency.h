@@ -1,7 +1,7 @@
 #ifndef UNITS_FREQUENCY_H
 #define UNITS_FREQUENCY_H
 
-#include "format-string.h"
+#include "si-units-parser.h"
 #include "units-aliases.h"
 
 #include "ns3/assert.h"

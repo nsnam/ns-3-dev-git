@@ -1,5 +1,5 @@
 set(source_files
-    model/string-utils.cc
+    model/si-units-parser.cc
     model/units-angle.cc
     model/units-energy.cc
     model/units-frequency.cc
@@ -8,9 +8,8 @@ set(source_files
 )
 
 set(header_files
-    model/format-string.h
+    model/si-units-parser.h
     model/si-units.h
-    model/string-utils.h
     model/units-aliases.h
     model/units-angle.h
     model/units-energy.h

@@ -1,17 +1,36 @@
-#ifndef STRING_UTILS_H
-#define STRING_UTILS_H
+#ifndef SI_UNITS_PARSER_H
+#define SI_UNITS_PARSER_H
 
-#include "format-string.h"
-
-#include <iomanip>
 #include <iostream>
+#include <memory>
 #include <optional>
-#include <sstream>
 #include <string>
-#include <vector>
+
+// clang-format off
 
 namespace ns3
 {
+
+// https://stackoverflow.com/a/26221725
+// License: CC0 1.0
+/// A string formatter returning std::string
+/// @tparam Args The types of the arguments to format
+/// @param format_str The format string
+/// @param args The arguments to format
+/// @return The formatted string in std::string
+template <typename... Args>
+std::string
+sformat(const std::string& format_str, Args... args)
+{
+    int size = snprintf(nullptr, 0, format_str.c_str(), args...) + 1; // Extra space for '\0'
+    if (size <= 0)
+    {
+        throw std::runtime_error("Error during format string.");
+    }
+    std::unique_ptr<char[]> buf(new char[size]);
+    snprintf(buf.get(), size, format_str.c_str(), args...);
+    return std::string(buf.get(), buf.get() + size - 1); // We don't want the '\0' inside
+}
 
 /// Trim white spaces off the string from left
 /// @param str string
@@ -41,8 +60,6 @@ std::optional<double> StringToDouble(std::string str, std::string suffix = "");
 /// @param s string to test
 /// @return true if number, false otherwise
 bool IsNumber(const std::string& s);
-
-/// @endcond
 
 /// Get parse error message
 /// @param str string under parsing
@@ -79,4 +96,6 @@ ParseSIString(std::istream& is, T& outcome, const std::string& suffix)
 
 } // namespace ns3
 
-#endif // STRING_UTILS_H
+// clang-format on
+
+#endif // SI_UNITS_PARSER_H

@@ -7,7 +7,7 @@
 // M_PI is 3.141.. in numeric value and is defined either in <math.h> or <cmath>.
 // Note it is of radian_t not of a degree_t.
 
-#include "format-string.h"
+#include "si-units-parser.h"
 
 #include "ns3/attribute-helper.h"
 #include "ns3/attribute.h"

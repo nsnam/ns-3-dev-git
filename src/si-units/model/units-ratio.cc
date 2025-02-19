@@ -1,6 +1,5 @@
 #include "units-ratio.h"
 
-#include "string-utils.h"
 #include "units-aliases.h"
 
 using namespace ns3;

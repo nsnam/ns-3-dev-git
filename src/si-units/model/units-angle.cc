@@ -1,7 +1,5 @@
 #include "units-angle.h"
 
-#include "string-utils.h"
-
 using namespace ns3;
 
 // clang-format off
