@@ -4937,7 +4937,6 @@ EmlsrCcaBusyTest::StartTraffic()
     m_staMacs[0]->GetEmlsrManager()->SwitchMainPhy(
         m_nextMainPhyLinkId,
         false,
-        EmlsrManager::DONT_RESET_BACKOFF,
         EmlsrManager::DONT_REQUEST_ACCESS,
         EmlsrDlTxopIcfReceivedByAuxPhyTrace{}); // trace info not used
 
