@@ -483,6 +483,9 @@ class ChannelAccessManager : public Object
     Time m_lastSleepEnd;          //!< the last sleep end time
     Time m_lastOffEnd;            //!< the last off end time
     Time m_eifsNoDifs;            //!< EIFS no DIFS time
+    Timespan m_lastNoPhy;         //!< the last start and end time no PHY was operating on the link
+    mutable Time m_cachedSifs;    //!< cached value for SIFS, to be only used without a PHY
+    mutable Time m_cachedSlot;    //!< cached value for slot, to be only used without a PHY
     EventId m_accessTimeout;      //!< the access timeout ID
     bool m_generateBackoffOnNoTx; //!< whether the backoff should be invoked when the AC gains the
                                   //!< right to start a TXOP but it does not transmit any frame
@@ -490,6 +493,8 @@ class ChannelAccessManager : public Object
                                   //!< provided that the queue is not actually empty
     bool m_proactiveBackoff; //!< whether a new backoff value is generated when a CCA busy period
                              //!< starts and the backoff counter is zero
+    Time m_resetBackoffThreshold; //!< if no PHY operates on a link for a period greater than this
+                                  //!< threshold, the backoff on that link is reset
 
     /// Information associated with each PHY that is going to operate on another EMLSR link
     struct EmlsrLinkSwitchInfo
