@@ -60,6 +60,7 @@ The required Doxygen version for documentation generation is version 1.11.
 - (wifi) Clear PSDU map if no immediate response expected with BAR-BA ack sequence
 - (wifi) Fix S-MPDU TX duration computation with BlockAck ack policy
 - (wifi) Fix missing DSSS Param Set in Probe Request sent over 2.4 GHz links
+- (spectrum) Trigger 3GPP channel updates after changes to antenna attributes
 
 ## Release 3.43
 
