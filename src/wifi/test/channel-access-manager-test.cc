@@ -414,6 +414,25 @@ class ChannelAccessManagerTest : public TestCase
      */
     void AddRxStartEvt(uint64_t at, uint64_t duration);
 
+    /**
+     * Add a PHY disconnect event consisting in the PHY leaving the link and returning after a
+     * given time.
+     *
+     * @param at the event time
+     * @param duration the duration of the interval during which no PHY is connected
+     * @param threshold the value for the ResetBackoffThreshold attribute
+     * @param from the index of the Txop that has to request channel access when PHY is reconnected
+     */
+    void AddPhyDisconnectEvt(uint64_t at, uint64_t duration, uint64_t threshold, uint32_t from);
+
+    /**
+     * Add a PHY reconnect event consisting in another PHY operating on the link for the given time.
+     *
+     * @param at the event time
+     * @param duration the duration of the interval during which another PHY is connected
+     */
+    void AddPhyReconnectEvt(uint64_t at, uint64_t duration);
+
     typedef std::vector<Ptr<TxopTest<TxopType>>> TxopTests; //!< the TXOP tests typedef
 
     Ptr<FrameExchangeManagerStub<TxopType>> m_feManager;  //!< the Frame Exchange Manager stubbed
@@ -658,6 +677,12 @@ ChannelAccessManagerTest<TxopType>::EndTest()
 {
     Simulator::Run();
 
+    m_ChannelAccessManager->RemovePhyListener(m_phy);
+    m_phy->Dispose();
+    m_ChannelAccessManager->Dispose();
+    m_ChannelAccessManager = nullptr;
+    m_feManager = nullptr;
+
     for (auto i = m_txop.begin(); i != m_txop.end(); i++)
     {
         Ptr<TxopTest<TxopType>> state = *i;
@@ -671,11 +696,6 @@ ChannelAccessManagerTest<TxopType>::EndTest()
     }
     m_txop.clear();
 
-    m_ChannelAccessManager->RemovePhyListener(m_phy);
-    m_phy->Dispose();
-    m_ChannelAccessManager->Dispose();
-    m_ChannelAccessManager = nullptr;
-    m_feManager = nullptr;
     Simulator::Destroy();
 }
 
@@ -857,6 +877,59 @@ ChannelAccessManagerTest<TxopType>::AddRxStartEvt(uint64_t at, uint64_t duration
                         &ChannelAccessManager::NotifyRxStartNow,
                         m_ChannelAccessManager,
                         MicroSeconds(duration));
+}
+
+template <typename TxopType>
+void
+ChannelAccessManagerTest<TxopType>::AddPhyDisconnectEvt(uint64_t at,
+                                                        uint64_t duration,
+                                                        uint64_t threshold,
+                                                        uint32_t from)
+{
+    m_ChannelAccessManager->SetAttribute("ResetBackoffThreshold",
+                                         TimeValue(MicroSeconds(threshold)));
+
+    Simulator::Schedule(MicroSeconds(at) - Now(),
+                        &ChannelAccessManager::RemovePhyListener,
+                        m_ChannelAccessManager,
+                        m_phy);
+
+    Simulator::Schedule(MicroSeconds(at + duration) - Now(), [=, this]() {
+        auto txop = m_txop[from];
+        auto hadFramesToTransmit = txop->HasFramesToTransmit(SINGLE_LINK_OP_ID);
+        m_ChannelAccessManager->SetupPhyListener(m_phy);
+        if (duration > threshold)
+        {
+            // request channel access again because all backoffs have been reset
+            if (m_ChannelAccessManager->NeedBackoffUponAccess(txop, hadFramesToTransmit, true))
+            {
+                txop->GenerateBackoff(0);
+            }
+            m_ChannelAccessManager->RequestAccess(txop);
+        }
+    });
+}
+
+template <typename TxopType>
+void
+ChannelAccessManagerTest<TxopType>::AddPhyReconnectEvt(uint64_t at, uint64_t duration)
+{
+    Simulator::Schedule(MicroSeconds(at) - Now(), [=, this]() {
+        auto newPhy = CreateObject<SpectrumWifiPhy>();
+        newPhy->SetInterferenceHelper(CreateObject<InterferenceHelper>());
+        newPhy->AddChannel(DynamicCast<SpectrumChannel>(m_phy->GetChannel()));
+        newPhy->SetOperatingChannel(m_phy->GetOperatingChannel());
+        newPhy->ConfigureStandard(WIFI_STANDARD_80211be);
+        // connect new PHY
+        m_ChannelAccessManager->SetupPhyListener(newPhy);
+
+        Simulator::Schedule(MicroSeconds(duration), [=, this]() {
+            // disconnect new PHY
+            m_ChannelAccessManager->RemovePhyListener(newPhy);
+            // reconnect previous PHY
+            m_ChannelAccessManager->SetupPhyListener(m_phy);
+        });
+    });
 }
 
 /*
@@ -1310,13 +1383,11 @@ ChannelAccessManagerTest<QosTxop>::DoRun()
     EndTest();
 
     // Check backoff decrement at slot boundaries. Medium becomes busy during backoff
-    //  20           50     56      60     61     71     77      81         85     87     97    103
-    //  107    127
-    //   |     rx     | sifs | aifsn | idle |  rx  | sifs | aifsn |   idle   | idle |  rx  | sifs |
-    //   aifsn |  tx  |
-    //      |                        |                            |          |
-    //     30 request access.    decrement                    decrement  decrement
-    //        backoff slots: 3    slots: 2                     slots: 1   slots: 0
+    //  20     50     56      60     61   71     77      81     85     87     97    103     107  127
+    //   |  rx  | sifs | aifsn | idle | rx | sifs | aifsn | idle | idle |  rx  | sifs | aifsn | tx |
+    //      |                  |                          |      |
+    //   30 request access.  decrement                decrement  decrement
+    //    backoff slots: 3    slots: 2                 slots: 1   slots: 0
     StartTest(4, 6, 10);
     AddTxop(1);
     AddRxOkEvt(20, 30);
@@ -1324,6 +1395,49 @@ ChannelAccessManagerTest<QosTxop>::DoRun()
     AddRxOkEvt(87, 10);
     AddAccessRequest(30, 20, 107, 0);
     ExpectBackoff(30, 3, 0);
+    EndTest();
+
+    // Check backoff reset after no PHY operates on a link for more than the threshold.
+    //  20     50     56      60     61       71     77      81    101
+    //   |  rx  | sifs | aifsn | idle | no phy | sifs | aifsn |  tx  |
+    //      |                  |               |
+    //   30 request access.  decrement       reset
+    //    backoff slots: 3    slots: 2       backoff
+    StartTest(4, 6, 10);
+    AddTxop(1);
+    AddRxOkEvt(20, 30);
+    AddAccessRequest(30, 20, 81, 0);
+    ExpectBackoff(30, 3, 0);
+    AddPhyDisconnectEvt(61, 10, 0, 0);
+    EndTest();
+
+    // Check backoff freeze while no PHY operates on a link for less than the threshold.
+    //  20     50     56      60     61       71     77      81     85     89    109
+    //   |  rx  | sifs | aifsn | idle | no phy | sifs | aifsn | idle | idle |  tx  |
+    //      |                  |               |              |      |
+    //   30 request access.  decrement       resume      decrement  decrement
+    //    backoff slots: 3    slots: 2       backoff      slots: 1   slots: 0
+    StartTest(4, 6, 10);
+    AddTxop(1);
+    AddRxOkEvt(20, 30);
+    AddAccessRequest(30, 20, 89, 0);
+    ExpectBackoff(30, 3, 0);
+    AddPhyDisconnectEvt(61, 10, 20, 0);
+    EndTest();
+
+    // Check backoff left unmodified when previous PHY is reconnected to the link
+    //  20         50     56      60 61    64       68   71  72       76   96
+    //   |          |      |       |  |----- new PHY -----|   |        |    |
+    //   |    rx    | sifs | aifsn |  idle  |  idle  |  idle  |  idle  | tx |
+    //      |                      |        |        |        |
+    //   30 request access. decrement  decrement  decrement  decrement
+    //    backoff slots: 4   slots: 3   slots: 2   slots: 1   slots: 0
+    StartTest(4, 6, 10);
+    AddTxop(1);
+    AddRxOkEvt(20, 30);
+    AddAccessRequest(30, 20, 76, 0);
+    ExpectBackoff(30, 4, 0);
+    AddPhyReconnectEvt(61, 10);
     EndTest();
 }
 

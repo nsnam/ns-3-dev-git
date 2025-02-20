@@ -1212,6 +1212,13 @@ for UL TXOPs, aux PHYs are put to sleep when the CTS frame is received, if RTS/C
 the transmission of the data frame starts, otherwise. Aux PHYs are resumed from sleep when the TXOP
 ends.
 
+EMLSR operations, as detailed below, may lead to situations in which no PHY operates on a link for
+a certain time interval. Whether to freeze or reset the backoff counters for that link during such
+intervals is controlled by the ``ResetBackoffThreshold`` attribute of the ``ChannelAccessManager``:
+if the duration of the interval during which no PHY operates on a link is longer than the value of
+this attribute, the backoff counters are reset; otherwise, they are frozen until a PHY is connected
+to the link.
+
 Downlink TXOP
 -------------
 

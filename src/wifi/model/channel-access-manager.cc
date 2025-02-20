@@ -188,6 +188,12 @@ ChannelAccessManager::GetTypeId()
                           BooleanValue(false),
                           MakeBooleanAccessor(&ChannelAccessManager::m_proactiveBackoff),
                           MakeBooleanChecker())
+            .AddAttribute("ResetBackoffThreshold",
+                          "If no PHY operates on this link for a period greater than this "
+                          "threshold, all the backoffs are reset.",
+                          TimeValue(Time{0}),
+                          MakeTimeAccessor(&ChannelAccessManager::m_resetBackoffThreshold),
+                          MakeTimeChecker())
             .AddAttribute("NSlotsLeft",
                           "The NSlotsLeftAlert trace source is fired when the number of remaining "
                           "backoff slots for any AC is equal to or less than the value of this "
@@ -268,6 +274,7 @@ ChannelAccessManager::SetupPhyListener(Ptr<WifiPhy> phy)
 {
     NS_LOG_FUNCTION(this << phy);
 
+    const auto now = Simulator::Now();
     auto phyListener = GetPhyListener(phy);
 
     if (phyListener)
@@ -281,21 +288,32 @@ ChannelAccessManager::SetupPhyListener(Ptr<WifiPhy> phy)
         // channel access manager; unregister the listener and register again (below) to get
         // updated CCA busy information
         phy->UnregisterListener(phyListener);
+        // we expect that the PHY is reconnected immediately after the other PHY left the link:
+        // reset the start of m_lastNoPhy so as to ignore this event
+        NS_ASSERT(m_lastNoPhy.start == now);
+        NS_ASSERT(m_lastNoPhy.end <= m_lastNoPhy.start);
+        m_lastNoPhy.start = m_lastNoPhy.end;
     }
     else
     {
         phyListener = std::make_shared<PhyListener>(this);
         m_phyListeners.emplace(phy, phyListener);
-        if (!m_phy)
+        if (m_phy)
+        {
+            DeactivatePhyListener(m_phy);
+        }
+        else
         {
             // no PHY operating on this link and no previous PHY listener to reactivate
-            m_lastSwitchingEnd = Simulator::Now();
+            m_lastSwitchingEnd = now;
+            m_lastNoPhy.end = now;
+            if (now - m_lastNoPhy.start > m_resetBackoffThreshold)
+            {
+                ResetAllBackoffs();
+            }
         }
     }
-    if (m_phy)
-    {
-        DeactivatePhyListener(m_phy);
-    }
+
     m_phy = phy; // this is the new active PHY
     ResizeLastBusyStructs();
     phy->RegisterListener(phyListener);
@@ -312,7 +330,10 @@ ChannelAccessManager::RemovePhyListener(Ptr<WifiPhy> phy)
         // reset m_phy if we are removing listener registered for the active PHY
         if (m_phy == phy)
         {
+            UpdateBackoff();
+            UpdateLastIdlePeriod();
             m_phy = nullptr;
+            m_lastNoPhy.start = Simulator::Now();
         }
     }
 }
@@ -324,10 +345,6 @@ ChannelAccessManager::DeactivatePhyListener(Ptr<WifiPhy> phy)
     if (auto listener = GetPhyListener(phy))
     {
         listener->SetActive(false);
-    }
-    if (m_phy == phy)
-    {
-        m_phy = nullptr;
     }
 }
 
@@ -360,19 +377,27 @@ ChannelAccessManager::SetupFrameExchangeManager(Ptr<FrameExchangeManager> feMana
 Time
 ChannelAccessManager::GetSlot() const
 {
-    return m_phy->GetSlot();
+    if (m_phy)
+    {
+        m_cachedSlot = m_phy->GetSlot();
+    }
+    return m_cachedSlot;
 }
 
 Time
 ChannelAccessManager::GetSifs() const
 {
-    return m_phy->GetSifs();
+    if (m_phy)
+    {
+        m_cachedSifs = m_phy->GetSifs();
+    }
+    return m_cachedSifs;
 }
 
 Time
 ChannelAccessManager::GetEifsNoDifs() const
 {
-    return m_phy->GetSifs() + m_phy->GetAckTxTime();
+    return m_eifsNoDifs;
 }
 
 void
@@ -660,6 +685,13 @@ void
 ChannelAccessManager::AccessTimeout()
 {
     NS_LOG_FUNCTION(this);
+
+    if (!m_phy && Simulator::Now() - m_lastNoPhy.start > m_resetBackoffThreshold)
+    {
+        ResetAllBackoffs();
+        return;
+    }
+
     UpdateBackoff();
     DoGrantDcfAccess();
     DoRestartAccessTimeoutIfNeeded();
@@ -669,8 +701,9 @@ Time
 ChannelAccessManager::GetAccessGrantStart(bool ignoreNav) const
 {
     NS_LOG_FUNCTION(this << ignoreNav);
+    const auto now = Simulator::Now();
     auto rxAccessStart = m_lastRx.end;
-    if ((m_lastRx.end <= Simulator::Now()) && !m_lastRxReceivedOk)
+    if ((m_lastRx.end <= now) && !m_lastRxReceivedOk)
     {
         rxAccessStart += GetEifsNoDifs();
     }
@@ -678,6 +711,7 @@ ChannelAccessManager::GetAccessGrantStart(bool ignoreNav) const
     // (Sec. 10.23.2.5 of IEEE 802.11-2020)
     const auto busyAccessStart = m_lastBusyEnd.at(WIFI_CHANLIST_PRIMARY);
     const auto navAccessStart = ignoreNav ? Time{0} : m_lastNavEnd;
+    const auto noPhyStart = m_phy ? m_lastNoPhy.end : now;
 
     const auto accessGrantedStart = std::max({rxAccessStart,
                                               busyAccessStart,
@@ -686,6 +720,7 @@ ChannelAccessManager::GetAccessGrantStart(bool ignoreNav) const
                                               m_lastAckTimeoutEnd,
                                               m_lastCtsTimeoutEnd,
                                               m_lastSwitchingEnd,
+                                              noPhyStart,
                                               m_lastSleepEnd,
                                               m_lastOffEnd});
 
@@ -695,6 +730,7 @@ ChannelAccessManager::GetAccessGrantStart(bool ignoreNav) const
                 << busyAccessStart.As(Time::US) << ", tx access start=" << m_lastTxEnd.As(Time::US)
                 << ", nav access start=" << navAccessStart.As(Time::US)
                 << ", switching access start=" << m_lastSwitchingEnd.As(Time::US)
+                << ", no PHY start=" << noPhyStart.As(Time::US)
                 << ", sleep access start=" << m_lastSleepEnd.As(Time::US)
                 << ", off access start=" << m_lastOffEnd.As(Time::US));
     return accessGrantedStart + GetSifs();
@@ -956,6 +992,7 @@ ChannelAccessManager::NotifyRxEndErrorNow()
     // we expect the PHY to notify us of the start of a CCA busy period, if needed
     m_lastRx.end = Simulator::Now();
     m_lastRxReceivedOk = false;
+    m_eifsNoDifs = m_phy->GetSifs() + m_phy->GetAckTxTime();
 }
 
 void
@@ -1087,6 +1124,7 @@ ChannelAccessManager::ResetState()
     m_lastNavEnd = std::min(m_lastNavEnd, now);
     m_lastAckTimeoutEnd = std::min(m_lastAckTimeoutEnd, now);
     m_lastCtsTimeoutEnd = std::min(m_lastCtsTimeoutEnd, now);
+    m_lastNoPhy.end = std::min(m_lastNoPhy.end, now);
 
     InitLastBusyStructs();
 }
@@ -1240,8 +1278,12 @@ void
 ChannelAccessManager::UpdateLastIdlePeriod()
 {
     NS_LOG_FUNCTION(this);
-    Time idleStart =
-        std::max({m_lastTxEnd, m_lastRx.end, m_lastSwitchingEnd, m_lastSleepEnd, m_lastOffEnd});
+    Time idleStart = std::max({m_lastTxEnd,
+                               m_lastRx.end,
+                               m_lastSwitchingEnd,
+                               m_lastNoPhy.end,
+                               m_lastSleepEnd,
+                               m_lastOffEnd});
     Time now = Simulator::Now();
 
     if (idleStart >= now)
