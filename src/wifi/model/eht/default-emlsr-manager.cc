@@ -263,7 +263,6 @@ DefaultEmlsrManager::SwitchMainPhyBackToPreferredLink(uint8_t linkId,
     {
         SwitchMainPhy(GetMainPhyId(),
                       false,
-                      DONT_RESET_BACKOFF,
                       REQUEST_ACCESS,
                       std::forward<EmlsrMainPhySwitchTrace>(traceInfo));
     }
@@ -275,11 +274,7 @@ DefaultEmlsrManager::SwitchMainPhyBackToPreferredLink(uint8_t linkId,
             // require the main PHY to switch link)
             if (!GetEhtFem(linkId)->UsingOtherEmlsrLink())
             {
-                SwitchMainPhy(GetMainPhyId(),
-                              false,
-                              DONT_RESET_BACKOFF,
-                              REQUEST_ACCESS,
-                              std::move(*info));
+                SwitchMainPhy(GetMainPhyId(), false, REQUEST_ACCESS, std::move(*info));
             }
         });
     }
@@ -395,11 +390,7 @@ DefaultEmlsrManager::NotifyRtsSent(uint8_t linkId,
 
     NS_LOG_DEBUG("Schedule main Phy switch in " << delay.As(Time::US));
     m_ulMainPhySwitch[linkId] = Simulator::Schedule(delay, [=, this]() {
-        SwitchMainPhy(linkId,
-                      false,
-                      RESET_BACKOFF,
-                      DONT_REQUEST_ACCESS,
-                      EmlsrUlTxopRtsSentByAuxPhyTrace{});
+        SwitchMainPhy(linkId, false, DONT_REQUEST_ACCESS, EmlsrUlTxopRtsSentByAuxPhyTrace{});
     });
 }
 

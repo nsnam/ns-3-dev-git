@@ -364,7 +364,7 @@ AdvancedEmlsrManager::DoNotifyTxopEnd(uint8_t linkId)
             !m_switchAuxPhy || m_mainPhySwitchInfo.end >= Simulator::Now(),
             "Aux PHY next link ID should have a value when interrupting a main PHY switch");
         uint8_t nextLinkId = m_switchAuxPhy ? m_mainPhySwitchInfo.from : GetMainPhyId();
-        SwitchMainPhy(nextLinkId, false, DONT_RESET_BACKOFF, REQUEST_ACCESS, std::move(*traceInfo));
+        SwitchMainPhy(nextLinkId, false, REQUEST_ACCESS, std::move(*traceInfo));
     }
     else
     {
@@ -381,11 +381,7 @@ AdvancedEmlsrManager::DoNotifyTxopEnd(uint8_t linkId)
             // no TXOP started on another link (which will require the main PHY to switch link)
             if (!GetEhtFem(linkId)->UsingOtherEmlsrLink())
             {
-                SwitchMainPhy(GetMainPhyId(),
-                              false,
-                              DONT_RESET_BACKOFF,
-                              REQUEST_ACCESS,
-                              std::move(*traceInfo));
+                SwitchMainPhy(GetMainPhyId(), false, REQUEST_ACCESS, std::move(*traceInfo));
             }
         });
     }
@@ -760,7 +756,6 @@ AdvancedEmlsrManager::SwitchMainPhyIfTxopGainedByAuxPhy(uint8_t linkId, AcIndex 
 
         SwitchMainPhy(linkId,
                       false,
-                      RESET_BACKOFF,
                       DONT_REQUEST_ACCESS,
                       EmlsrUlTxopAuxPhyNotTxCapableTrace(aci, Time{0}, remNav));
 
@@ -917,7 +912,6 @@ AdvancedEmlsrManager::SwitchMainPhyIfTxopToBeGainedByAuxPhy(uint8_t linkId,
 
     SwitchMainPhy(linkId,
                   false,
-                  RESET_BACKOFF,
                   DONT_REQUEST_ACCESS,
                   EmlsrUlTxopAuxPhyNotTxCapableTrace(aci, delay, remNav));
 

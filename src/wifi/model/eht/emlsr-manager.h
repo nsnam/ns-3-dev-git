@@ -408,8 +408,6 @@ class EmlsrManager : public Object
      *
      * @param linkId the ID of the link on which the main PHY has to operate
      * @param noSwitchDelay whether switching delay should be zero
-     * @param resetBackoff whether backoff should be reset on the link on which the main PHY
-     *                     is operating
      * @param requestAccess whether channel access should be requested on the link on which the
      *                      main PHY is moving onto
      * @param traceInfo information to pass to the main PHY switch traced callback (the fromLinkId
@@ -417,12 +415,9 @@ class EmlsrManager : public Object
      */
     void SwitchMainPhy(uint8_t linkId,
                        bool noSwitchDelay,
-                       bool resetBackoff,
                        bool requestAccess,
                        EmlsrMainPhySwitchTrace&& traceInfo);
 
-    static constexpr bool RESET_BACKOFF = true;       //!< reset backoff on main PHY switch
-    static constexpr bool DONT_RESET_BACKOFF = false; //!< do not reset backoff on main PHY switch
     static constexpr bool REQUEST_ACCESS = true; //!< request channel access when PHY switch ends
     static constexpr bool DONT_REQUEST_ACCESS =
         false; //!< do not request channel access when PHY switch ends

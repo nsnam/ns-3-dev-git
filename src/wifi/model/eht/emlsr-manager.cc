@@ -507,7 +507,6 @@ EmlsrManager::NotifyIcfReceived(uint8_t linkId)
     {
         SwitchMainPhy(linkId,
                       true, // channel switch should occur instantaneously
-                      RESET_BACKOFF,
                       DONT_REQUEST_ACCESS,
                       EmlsrDlTxopIcfReceivedByAuxPhyTrace{});
     }
@@ -873,12 +872,10 @@ EmlsrManager::SetCcaEdThresholdOnLinkSwitch(Ptr<WifiPhy> phy, uint8_t linkId)
 void
 EmlsrManager::SwitchMainPhy(uint8_t linkId,
                             bool noSwitchDelay,
-                            bool resetBackoff,
                             bool requestAccess,
                             EmlsrMainPhySwitchTrace&& traceInfo)
 {
-    NS_LOG_FUNCTION(this << linkId << noSwitchDelay << resetBackoff << requestAccess
-                         << traceInfo.GetName());
+    NS_LOG_FUNCTION(this << linkId << noSwitchDelay << requestAccess << traceInfo.GetName());
 
     auto mainPhy = m_staMac->GetDevice()->GetPhy(m_mainPhyId);
 
@@ -945,12 +942,6 @@ EmlsrManager::SwitchMainPhy(uint8_t linkId,
     if (!currMainPhyLinkId.has_value())
     {
         m_staMac->NotifySwitchingEmlsrLink(mainPhy, linkId, timeToSwitchEnd);
-    }
-
-    if (resetBackoff && currMainPhyLinkId.has_value())
-    {
-        // reset the backoffs on the link left by the main PHY
-        m_staMac->GetChannelAccessManager(*currMainPhyLinkId)->ResetAllBackoffs();
     }
 
     if (requestAccess)
@@ -1346,20 +1337,6 @@ EmlsrManager::ApplyMaxChannelWidthAndModClassOnAuxPhys()
         auxPhy->SetAttribute("ChannelSwitchDelay", TimeValue(Time{0}));
         auxPhy->SetOperatingChannel(channel);
         auxPhy->SetAttribute("ChannelSwitchDelay", TimeValue(delay));
-
-        // the way the ChannelAccessManager handles EMLSR link switch implies that a PHY listener
-        // is removed when the channel switch starts and another one is attached when the channel
-        // switch ends. In the meantime, no PHY is connected to the ChannelAccessManager. Thus,
-        // reset all backoffs (so that access timeout is also cancelled) when the channel switch
-        // starts and request channel access (if needed) when the channel switch ends.
-        cam->ResetAllBackoffs();
-        for (const auto& [acIndex, ac] : wifiAcList)
-        {
-            m_staMac->GetQosTxop(acIndex)->StartAccessAfterEvent(
-                linkId,
-                Txop::DIDNT_HAVE_FRAMES_TO_TRANSMIT,
-                Txop::CHECK_MEDIUM_BUSY);
-        }
     }
 }
 
