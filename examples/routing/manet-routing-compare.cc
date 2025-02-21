@@ -18,14 +18,14 @@
  */
 
 /*
- * This example program allows one to run ns-3 DSDV, AODV, or OLSR under
+ * This example program allows one to run ns-3 DSDV, DSR, AODV, or OLSR under
  * a typical random waypoint mobility model.
  *
  * By default, the simulation runs for 200 simulated seconds, of which
- * the first 50 are used for start-up time.  The number of nodes is 50.
+ * the first 100 are used for start-up time.  The number of nodes is 50.
  * Nodes move according to RandomWaypointMobilityModel with a speed of
  * 20 m/s and no pause time within a 300x1500 m region.  The WiFi is
- * in ad hoc mode with a 2 Mb/s rate (802.11b) and a Friis loss model.
+ * in ad hoc mode with a 11 Mb/s rate (802.11b) and a Friis loss model.
  * The transmit power is set to 7.5 dBm.
  *
  * It is possible to change the mobility and density of the network by
@@ -34,14 +34,13 @@
  * the transmit power (as power increases, the impact of mobility
  * decreases and the effective density increases).
  *
- * By default, OLSR is used, but specifying a value of 2 for the protocol
- * will cause AODV to be used, and specifying a value of 3 will cause
- * DSDV to be used.
+ * By default, AODV is used, but specifying a string of 'OLSR', 'DSDV', or
+ * 'DSR' to the protocol command-line argument will change the protocol.
  *
  * By default, there are 10 source/sink data pairs sending UDP data
  * at an application rate of 2.048 Kb/s each.    This is typically done
  * at a rate of 4 64-byte packets per second.  Application data is
- * started at a random time between 50 and 51 seconds and continues
+ * started at a random time between 100 and 101 seconds and continues
  * to the end of the simulation.
  *
  * The program outputs a few items:
@@ -49,6 +48,8 @@
  *   <timestamp> <node-id> received one packet from <src-address>
  * - each second, the data reception statistics are tabulated and output
  *   to a comma-separated value (csv) file
+ * - mobility traces of the nodes are printed to 'manet-routing-compare.mob';
+ *   this trace can be disabled using a command-line argument
  * - some tracing and flow monitor configuration that used to work is
  *   left commented inline in the program
  */
