@@ -565,8 +565,8 @@ GetTypicalAggregations()
     info.RecordAggregationInfo("ns3::Node", "ns3::dsdv::RoutingProtocol");
     info.RecordAggregationInfo("ns3::Node", "ns3::dsr::DsrRouting");
     info.RecordAggregationInfo("ns3::Node", "ns3::olsr::RoutingProtocol");
-    info.RecordAggregationInfo("ns3::Node", "ns3::EnergyHarvesterContainer");
-    info.RecordAggregationInfo("ns3::Node", "ns3::EnergySourceContainer");
+    info.RecordAggregationInfo("ns3::Node", "ns3::energy::EnergyHarvesterContainer");
+    info.RecordAggregationInfo("ns3::Node", "ns3::energy::EnergySourceContainer");
 
     // Create a channel object so that channels appear in the namespace
     // paths that will be generated here.
