@@ -120,7 +120,7 @@ class RoutingExperiment
     int m_nSinks{10};                                      //!< Number of sink nodes.
     std::string m_protocolName{"AODV"};                    //!< Protocol name.
     double m_txp{7.5};                                     //!< Tx power.
-    bool m_traceMobility{false};                           //!< Enable mobility tracing.
+    bool m_traceMobility{true};                            //!< Enable mobility tracing.
     bool m_flowMonitor{false};                             //!< Enable FlowMonitor.
 };
 
@@ -388,7 +388,10 @@ RoutingExperiment::Run()
     // Ptr<OutputStreamWrapper> osw = ascii.CreateFileStream(tr_name + ".tr");
     // wifiPhy.EnableAsciiAll(osw);
     AsciiTraceHelper ascii;
-    MobilityHelper::EnableAsciiAll(ascii.CreateFileStream(tr_name + ".mob"));
+    if (m_traceMobility)
+    {
+        MobilityHelper::EnableAsciiAll(ascii.CreateFileStream(tr_name + ".mob"));
+    }
 
     FlowMonitorHelper flowmonHelper;
     Ptr<FlowMonitor> flowmon;
