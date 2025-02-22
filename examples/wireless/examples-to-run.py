@@ -294,6 +294,51 @@ cpp_examples = [
         "True",
         "False",
     ),
+    (
+        "wifi-multicast --minExpectedPackets=10",
+        "True",
+        "True",
+    ),
+    (
+        "wifi-multicast --gcrRetransmissionPolicy=GcrUr --minExpectedPackets=10",
+        "True",
+        "True",
+    ),
+    (
+        "wifi-multicast --gcrRetransmissionPolicy=GcrUr --multicastFrameErrorRate=0.2 --minExpectedPackets=10",
+        "True",
+        "True",
+    ),
+    (
+        "wifi-multicast --gcrRetransmissionPolicy=GcrUr --maxAmpduLength=65535 --maxPackets=0 --nStations=4 --dataRate=50Mbps --gcrProtection=Rts-Cts --rtsThreshold=0 --simulationTime=1 --minExpectedThroughput=35 --maxExpectedThroughput=40",
+        "True",
+        "True",
+    ),
+    (
+        "wifi-multicast --gcrRetransmissionPolicy=GcrUr --maxAmpduLength=65535 --maxPackets=0 --nStations=4 --dataRate=50Mbps --gcrProtection=Cts-To-Self --simulationTime=1 --minExpectedThroughput=40 --maxExpectedThroughput=45",
+        "True",
+        "True",
+    ),
+    (
+        "wifi-multicast --gcrRetransmissionPolicy=GcrBlockAck --minExpectedPackets=10",
+        "True",
+        "True",
+    ),
+    (
+        "wifi-multicast --gcrRetransmissionPolicy=GcrBlockAck --multicastFrameErrorRate=0.2 --minExpectedPackets=10",
+        "True",
+        "True",
+    ),
+    (
+        "wifi-multicast --gcrRetransmissionPolicy=GcrBlockAck --maxAmpduLength=65535 --maxPackets=0 --nStations=4 --dataRate=100Mbps --gcrProtection=Rts-Cts --rtsThreshold=0 --simulationTime=1s --minExpectedThroughput=100 --maxExpectedThroughput=100",
+        "True",
+        "True",
+    ),
+    (
+        "wifi-multicast --gcrRetransmissionPolicy=GcrBlockAck --maxAmpduLength=65535 --maxPackets=0 --nStations=4 --dataRate=100Mbps --gcrProtection=Cts-To-Self --simulationTime=1s --minExpectedThroughput=100 --maxExpectedThroughput=100",
+        "True",
+        "True",
+    ),
 ]
 
 # A list of Python examples to run in order to ensure that they remain

@@ -231,6 +231,11 @@ main(int argc, char* argv[])
     std::string gcrProtection{"Rts-Cts"};
     double multicastFrameErrorRate{0.0};
     uint16_t maxAmpduLength{0};
+    double minExpectedPackets{0};
+    double maxExpectedPackets{0};
+    double minExpectedThroughput{0};
+    double maxExpectedThroughput{0};
+    double tolerance{0.01};
 
     CommandLine cmd(__FILE__);
     cmd.AddValue("logging", "turn on example log components", logging);
@@ -269,6 +274,20 @@ main(int argc, char* argv[])
                  "artificial error rate for multicast frame",
                  multicastFrameErrorRate);
     cmd.AddValue("maxAmpduLength", "maximum length in bytes of an A-MPDU", maxAmpduLength);
+    cmd.AddValue("minExpectedPackets",
+                 "if set, simulation fails if the lowest amount of received packets is below this "
+                 "value (in Mbit/s)",
+                 minExpectedPackets);
+    cmd.AddValue("maxExpectedPackets",
+                 "if set, simulation fails if the highest amount of received packets is above this "
+                 "value (in Mbit/s)",
+                 maxExpectedPackets);
+    cmd.AddValue("minExpectedThroughput",
+                 "if set, simulation fails if the throughput is below this value",
+                 minExpectedThroughput);
+    cmd.AddValue("maxExpectedThroughput",
+                 "if set, simulation fails if the throughput is above this value",
+                 maxExpectedThroughput);
     cmd.Parse(argc, argv);
 
     Config::SetDefault("ns3::WifiMac::RobustAVStreamingSupported", BooleanValue(true));
@@ -492,6 +511,26 @@ main(int argc, char* argv[])
                 : 0.0; // Mbit/s
         std::cout << "STA" << i + 1 << "\t\t\t0\t\t\t0\t\t\t" << rxPackets << "\t\t\t" << rxBytes
                   << "\t\t\t" << throughput << "" << std::endl;
+        if (rxPackets < minExpectedPackets)
+        {
+            NS_LOG_ERROR("Obtained RX packets " << rxPackets << " is not expected!");
+            exit(1);
+        }
+        if (maxExpectedPackets > 0 && rxPackets > maxExpectedPackets)
+        {
+            NS_LOG_ERROR("Obtained RX packets " << rxPackets << " is not expected!");
+            exit(1);
+        }
+        if ((throughput * (1 + tolerance)) < minExpectedThroughput)
+        {
+            NS_LOG_ERROR("Obtained throughput " << throughput << " is not expected!");
+            exit(1);
+        }
+        if (maxExpectedThroughput > 0 && (throughput > (maxExpectedThroughput * (1 + tolerance))))
+        {
+            NS_LOG_ERROR("Obtained throughput " << throughput << " is not expected!");
+            exit(1);
+        }
     }
 
     Simulator::Destroy();
