@@ -847,6 +847,27 @@ PhyEntity::GetReceptionStatus(Ptr<WifiMpdu> mpdu,
 }
 
 std::optional<Time>
+PhyEntity::GetTimeToPreambleDetectionEnd() const
+{
+    if (m_endPreambleDetectionEvents.empty())
+    {
+        return {};
+    }
+
+    Time delayUntilPreambleDetectionEnd;
+    for (const auto& endPreambleDetectionEvent : m_endPreambleDetectionEvents)
+    {
+        if (endPreambleDetectionEvent.IsPending())
+        {
+            delayUntilPreambleDetectionEnd =
+                std::max(delayUntilPreambleDetectionEnd,
+                         Simulator::GetDelayLeft(endPreambleDetectionEvent));
+        }
+    }
+    return delayUntilPreambleDetectionEnd;
+}
+
+std::optional<Time>
 PhyEntity::GetTimeToMacHdrEnd(uint16_t staId) const
 {
     const auto it = m_endOfMacHdrEvents.find(staId);
@@ -1180,12 +1201,6 @@ PhyEntity::CancelAllEvents()
         }
     }
     m_endOfMacHdrEvents.clear();
-}
-
-bool
-PhyEntity::NoEndPreambleDetectionEvents() const
-{
-    return m_endPreambleDetectionEvents.empty();
 }
 
 void
