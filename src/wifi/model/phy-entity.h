@@ -401,21 +401,14 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      */
     virtual void CancelAllEvents();
     /**
-     * @return \c true if there is no end preamble detection event running, \c false otherwise
-     */
-    bool NoEndPreambleDetectionEvents() const;
-    /**
      * Cancel all end preamble detection events.
      */
     void CancelRunningEndPreambleDetectionEvents();
 
-    /**
-     * Get the remaining time to the end of the MAC header reception of the next MPDU being
-     * received from the given STA, if any.
-     *
-     * @param staId the STA-ID of the transmitter; equals SU_STA_ID for SU PPDUs
-     * @return the remaining time to the end of the MAC header reception of the next MPDU, if any
-     */
+    /// @copydoc WifiPhy::GetTimeToPreambleDetectionEnd
+    virtual std::optional<Time> GetTimeToPreambleDetectionEnd() const;
+
+    /// @copydoc WifiPhy::GetTimeToMacHdrEnd
     virtual std::optional<Time> GetTimeToMacHdrEnd(uint16_t staId) const;
 
     /**

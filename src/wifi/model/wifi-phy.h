@@ -117,7 +117,8 @@ class WifiPhy : public Object
      * @return if the PHY is busy decoding the PHY header fields of a PPDU, return the TXVECTOR
      *         used to transmit the PPDU; otherwise, return a null optional value
      */
-    std::optional<std::reference_wrapper<const WifiTxVector>> GetInfoIfRxingPhyHeader() const;
+    virtual std::optional<std::reference_wrapper<const WifiTxVector>> GetInfoIfRxingPhyHeader()
+        const;
 
     /**
      * For HE receptions only, check and possibly modify the transmit power restriction state at
@@ -883,13 +884,21 @@ class WifiPhy : public Object
     dB_u GetRxGain() const;
 
     /**
+     * Get the remaining time to preamble detection period to elapse, if preamble detection is
+     * ongoing.
+     *
+     * @return the remaining time to the end of the preamble detection detection period, if ongoing
+     */
+    virtual std::optional<Time> GetTimeToPreambleDetectionEnd() const;
+
+    /**
      * Get the remaining time to the end of the MAC header reception of the next MPDU being
      * received from the given STA, if any.
      *
      * @param staId the STA-ID of the transmitter; equals SU_STA_ID for SU PPDUs
      * @return the remaining time to the end of the MAC header reception of the next MPDU, if any
      */
-    std::optional<Time> GetTimeToMacHdrEnd(uint16_t staId) const;
+    virtual std::optional<Time> GetTimeToMacHdrEnd(uint16_t staId) const;
 
     /**
      * Sets the device this PHY is associated with.

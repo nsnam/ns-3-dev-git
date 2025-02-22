@@ -1774,6 +1774,19 @@ WifiPhy::NotifyMonitorSniffTx(Ptr<const WifiPsdu> psdu,
 }
 
 std::optional<Time>
+WifiPhy::GetTimeToPreambleDetectionEnd() const
+{
+    for (const auto& [modClass, phyEntity] : m_phyEntities)
+    {
+        if (auto remTime = phyEntity->GetTimeToPreambleDetectionEnd())
+        {
+            return remTime;
+        }
+    }
+    return std::nullopt;
+}
+
+std::optional<Time>
 WifiPhy::GetTimeToMacHdrEnd(uint16_t staId) const
 {
     for (auto& [modClass, phyEntity] : m_phyEntities)
@@ -1852,20 +1865,15 @@ WifiPhy::Send(const WifiConstPsduMap& psdus, const WifiTxVector& txVector)
 
     const auto txDuration = CalculateTxDuration(psdus, txVector, GetPhyBand());
 
-    auto noEndPreambleDetectionEvent = true;
-    for (const auto& [mc, entity] : m_phyEntities)
-    {
-        noEndPreambleDetectionEvent =
-            noEndPreambleDetectionEvent && entity->NoEndPreambleDetectionEvents();
-    }
-    if (!noEndPreambleDetectionEvent && !m_currentEvent)
+    if (const auto timeToPreambleDetectionEnd = GetTimeToPreambleDetectionEnd();
+        timeToPreambleDetectionEnd && !m_currentEvent)
     {
         // PHY is in the initial few microseconds during which the
         // start of RX has occurred but the preamble detection period
         // has not elapsed
         AbortCurrentReception(SIGNAL_DETECTION_ABORTED_BY_TX);
     }
-    else if (!noEndPreambleDetectionEvent || m_currentEvent)
+    else if (timeToPreambleDetectionEnd || m_currentEvent)
     {
         AbortCurrentReception(RECEPTION_ABORTED_BY_TX);
     }
@@ -1944,13 +1952,7 @@ WifiPhy::Reset()
 {
     NS_LOG_FUNCTION(this);
     m_currentPreambleEvents.clear();
-    bool noEndPreambleDetectionEvent = true;
-    for (const auto& [mc, entity] : m_phyEntities)
-    {
-        noEndPreambleDetectionEvent =
-            noEndPreambleDetectionEvent && entity->NoEndPreambleDetectionEvents();
-    }
-    if (m_interference && (m_currentEvent || !noEndPreambleDetectionEvent))
+    if (m_interference && (m_currentEvent || GetTimeToPreambleDetectionEnd()))
     {
         m_interference->NotifyRxEnd(Simulator::Now(), GetCurrentFrequencyRange());
     }
