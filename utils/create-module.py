@@ -167,7 +167,7 @@ class {CAPITALIZED}TestCase1 : public TestCase
 {{
   public:
     {CAPITALIZED}TestCase1();
-    virtual ~{CAPITALIZED}TestCase1();
+    ~{CAPITALIZED}TestCase1() override;
 
   private:
     void DoRun() override;
@@ -212,6 +212,7 @@ class {CAPITALIZED}TestSuite : public TestSuite
     {CAPITALIZED}TestSuite();
 }};
 
+// Type for TestSuite can be UNIT, SYSTEM, EXAMPLE, or PERFORMANCE
 {CAPITALIZED}TestSuite::{CAPITALIZED}TestSuite()
     : TestSuite("{MODULE}", Type::UNIT)
 {{
