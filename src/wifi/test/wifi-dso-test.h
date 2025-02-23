@@ -10,16 +10,30 @@
 #define WIFI_DSO_TEST_H
 
 #include "ns3/ap-wifi-mac.h"
+#include "ns3/multi-model-spectrum-channel.h"
 #include "ns3/nstime.h"
+#include "ns3/packet-socket-address.h"
+#include "ns3/packet-socket-client.h"
+#include "ns3/spectrum-wifi-phy.h"
 #include "ns3/sta-wifi-mac.h"
 #include "ns3/test.h"
+#include "ns3/waveform-generator.h"
 #include "ns3/wifi-phy-operating-channel.h"
+#include "ns3/wifi-ppdu.h"
+#include "ns3/wifi-psdu.h"
 #include "ns3/wifi-types.h"
 
+#include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
 using namespace ns3;
+
+namespace ns3
+{
+enum class DsoTxopEvent;
+}
 
 /**
  * @ingroup wifi-test
@@ -40,19 +54,126 @@ class DsoTestBase : public TestCase
      */
     explicit DsoTestBase(const std::string& name);
 
+    /// Enumeration for traffic directions
+    enum TrafficDirection : uint8_t
+    {
+        DOWNLINK = 0,
+        UPLINK
+    };
+
   protected:
     void DoSetup() override;
+
+    /// Information about transmitted frames
+    struct FrameInfo
+    {
+        Time startTx;             ///< TX start time
+        WifiConstPsduMap psduMap; ///< transmitted PSDU map
+        WifiTxVector txVector;    ///< TXVECTOR
+    };
+
+    /**
+     * @param dir the traffic direction (downlink/uplink)
+     * @param staId the index (starting at 0) of the non-AP MLD generating/receiving packets
+     * @param count the number of packets to generate
+     * @param pktSize the size of the packets to generate
+     * @param priority user priority for generated packets
+     * @return an application generating the given number packets of the given size from/to the
+     *         AP MLD to/from the given non-AP MLD
+     */
+    Ptr<PacketSocketClient> GetApplication(TrafficDirection dir,
+                                           std::size_t staId,
+                                           std::size_t count,
+                                           std::size_t pktSize,
+                                           uint8_t priority = 0) const;
+
+    /**
+     * Start the generation of traffic (needs to be overridden)
+     */
+    virtual void StartTraffic();
+
+    /**
+     * Callback invoked when a FEM passes PSDUs to the PHY.
+     *
+     * @param psduMap the PSDU map
+     * @param txVector the TX vector
+     * @param txPowerW the tx power in Watts
+     */
+    virtual void Transmit(WifiConstPsduMap psduMap, WifiTxVector txVector, double txPowerW);
+
+    /**
+     * Callback invoked when a packet is received by an application
+     *
+     * @param p the packet
+     * @param adr the address
+     */
+    virtual void Receive(Ptr<const Packet> p, const Address& adr);
 
     std::size_t m_nDsoStas{1};    ///< number of UHR non-AP STAs with DSO enabled
     std::size_t m_nNonDsoStas{0}; ///< number of UHR non-AP STAs with DSO disabled
     std::size_t m_nNonUhrStas{0}; ///< number of non-UHR non-AP STAs
     std::string m_apOpChannel;    ///< string representing the operating channel of the AP
     std::string m_stasOpChannel;  ///< string representing the operating channel of the non-AP STAs
+    std::string m_mode{"UhrMcs11"}; ///< the mode to configure on the constant rate manager
+
+    Ptr<MultiModelSpectrumChannel> m_channel;     ///< the spectrum channel
     std::vector<FrequencyRange> m_stasFreqRanges; ///< the frequency ranges covered by each spectrum
                                                   ///< PHY interface for DSO STAs
     Ptr<ApWifiMac> m_apMac;                       ///< AP wifi MAC
     std::vector<Ptr<StaWifiMac>> m_staMacs;       ///< MACs of the non-AP STAs
     Time m_duration;                              ///< simulation duration
+    std::vector<uint8_t> m_establishBaDl{};       /**< the TIDs for which BA needs to be established
+                                                       with the AP as originator */
+    std::vector<uint8_t> m_establishBaUl{};       /**< the TIDs for which BA needs to be established
+                                                       with the AP as recipient */
+    std::vector<FrameInfo> m_txPsdus;             ///< transmitted PSDUs
+    uint64_t m_receivedPackets{0};                ///< received packets
+    bool m_started{
+        false}; ///< flag whether traffic is started and transmitted PSDUs can be recorded
+
+  private:
+    /**
+     * Callback connected to the ApWifiMac's AssociatedSta trace source.
+     * Start generating traffic (if needed) when all stations are associated.
+     *
+     * @param aid the AID assigned to the previous associated STA
+     */
+    void StaAssociated(uint16_t aid, Mac48Address /* addr */);
+
+    /**
+     * Callback connected to the QosTxop's BaEstablished trace source of the AP's BE AC.
+     *
+     * @param recipient the recipient of the established Block Ack agreement
+     * @param tid the TID
+     */
+    void BaEstablishedDl(Mac48Address recipient,
+                         uint8_t tid,
+                         std::optional<Mac48Address> /*gcrGroup*/);
+
+    /**
+     * Callback connected to the QosTxop's BaEstablished trace source of a STA's BE AC.
+     *
+     * @param index the index of the STA which the callback is connected to
+     * @param recipient the recipient of the established Block Ack agreement
+     * @param tid the TID
+     */
+    void BaEstablishedUl(std::size_t index,
+                         Mac48Address recipient,
+                         uint8_t tid,
+                         std::optional<Mac48Address> /*gcrGroup*/);
+
+    /**
+     * Set the SSID on the next station that needs to start the association procedure, or start
+     * traffic if no other station left.
+     *
+     * @param count the number of STAs that completed the association procedure
+     */
+    void SetSsid(std::size_t count);
+
+    uint16_t m_startAid{MIN_AID};                 ///< first AID to allocate to stations
+    uint16_t m_lastAid{0};                        ///< AID of last associated station
+    std::vector<PacketSocketAddress> m_dlSockets; ///< packet socket address for DL traffic
+    std::vector<PacketSocketAddress> m_ulSockets; ///< packet socket address for UL traffic
 };
 
 /**
@@ -84,6 +205,153 @@ class DsoSubbandsTest : public DsoTestBase
   private:
     std::map<EhtRu::PrimaryFlags, WifiPhyOperatingChannel>
         m_expectedDsoSubbands; //!< expected DSO subbands
+};
+
+/**
+ * @ingroup wifi-test
+ * @ingroup tests
+ *
+ * @brief Test the DSO frame exchange sequence.
+ */
+class DsoTxopTest : public DsoTestBase
+{
+  public:
+    /**
+     * Parameters for the DSO TXOP test
+     */
+    struct Params
+    {
+        std::string testName; //!< the name of the test
+        std::size_t numDlMuPpdus{
+            0}; //!< the number of DL MU PPDU to be transmitted by the AP during DSO TXOP
+        std::size_t numUlMuPpdus{
+            0}; //!< the number of UL MU PPDU to be transmitted by the STA during DSO TXOP
+        Time switchingDelayToDso; //!< the delay to switch the channel to the DSO subband
+        Time switchingDelayToPrimary{
+            "250us"}; //!< the delay to switch the channel to the primary subband
+        bool protectSingleExchange{false};        //!< whether single protection mechanism is used
+        bool generateInterferenceAfterIcf{false}; //!< whether to generate interference in DSO
+                                                  //!< subband after ICF transmission has started
+        bool generateObssDuringDsoTxop{false};    //!< whether to generate OBSS during DSO TXOP
+        DsoTxopEvent expectedTxopEndEventInDsoSubband{}; //!< the expected DSO TXOP termination
+                                                         //!< event for operating in DSO subband
+    };
+
+    /**
+     * Constructor
+     *
+     * @param params parameters for the DSO TXOP test
+     */
+    DsoTxopTest(const Params& params);
+    ~DsoTxopTest() override = default;
+
+  protected:
+    void DoSetup() override;
+    void DoRun() override;
+    void StartTraffic() override;
+    void Transmit(WifiConstPsduMap psduMap, WifiTxVector txVector, double txPowerW) override;
+
+  private:
+    /**
+     * Callback connected to the DSO Manager DSO TXOP event trace source.
+     *
+     * @param index the index of the DSO STA whose DSO TXOP event is logged
+     * @param event the event that occurred
+     */
+    void DsoTxopEventCallback(std::size_t index, DsoTxopEvent event, uint8_t /*linkId*/);
+
+    /**
+     * Check that appropriate actions are taken when a DSO ICF is transmitted by the AP.
+     *
+     * @param psduMap the PSDU carrying the ICF
+     * @param txVector the TXVECTOR used to send the ICF
+     */
+    void CheckIcf(const WifiConstPsduMap& psduMap, const WifiTxVector& txVector);
+
+    /**
+     * Check that appropriate actions are taken when the STA transmits a PPDU containing
+     * QoS NULL frames.
+     *
+     * @param psduMap the PSDU(s) carrying QoS NULL frames
+     * @param txVector the TXVECTOR used to send the PPDU
+     */
+    void CheckQosNullFrames(const WifiConstPsduMap& psduMap, const WifiTxVector& txVector);
+
+    /**
+     * Check that appropriate actions are taken when the AP transmits a PPDU containing
+     * QoS data frames.
+     *
+     * @param psduMap the PSDU(s) carrying QoS data frames
+     * @param txVector the TXVECTOR used to send the PPDU
+     */
+    void CheckQosFrames(const WifiConstPsduMap& psduMap, const WifiTxVector& txVector);
+
+    /**
+     * Check that appropriate actions are taken when BlockAck frames are transmitted by STAs.
+     *
+     * @param psduMap the PSDU carrying BlockAck frames
+     * @param txVector the TXVECTOR used to send the BlockAck frames
+     */
+    void CheckBlockAck(const WifiConstPsduMap& psduMap, const WifiTxVector& txVector);
+
+    /**
+     * Get the delay until current TXOP completion.
+     *
+     * @param clientId the index of the STA to check
+     * @param psduMap the PSDU carrying the last frame of the sequence
+     * @param txVector the TXVECTOR used to send the last frame of the sequence
+     * @return the delay until current TXOP completion
+     */
+    Time GetDelayUntilTxopCompletion(std::size_t clientId,
+                                     const WifiConstPsduMap& psduMap,
+                                     const WifiTxVector& txVector);
+
+    /**
+     * Check that the PHY of the DSO STA switches back to its primary subband.
+     *
+     * @param clientId the index of the STA to check
+     * @param delay the delay after which the DSO STA is expected to initiate its switch back
+     */
+    void CheckSwitchBack(std::size_t clientId, const Time& delay);
+
+    /**
+     * Check that the simulation produced the expected results.
+     */
+    void CheckResults();
+
+    /**
+     * Generate OBSS frame in the DSO subband
+     */
+    void GenerateObssFrame();
+
+    /**
+     * Start interference function
+     * @param duration the duration of the interference
+     */
+    void StartInterference(const Time& duration);
+
+    /**
+     * Stop interference function
+     */
+    void StopInterference();
+
+    Params m_params; //!< the test parameters
+
+    Ptr<SpectrumWifiPhy> m_obssPhy; ///< PHY of an OBSS STA
+
+    Ptr<WaveformGenerator> m_interferer; ///< waveform generator for interference
+
+    std::size_t m_countQoSframes{0}; //!< counter for QoS frames received once traffic has started
+    std::size_t m_countBlockAck{
+        0}; //!< counter for BlockAck frames received once traffic has started
+
+    std::map<std::size_t, std::vector<DsoTxopEvent>>
+        m_dsoTxopEventInfos{}; //!< map of DSO TXOP events per STA
+
+    std::size_t m_idxStaInDsoSubband{
+        1}; //!< index of the STA that is expected to switch to the DSO subband
+    std::size_t m_idxStaInPrimarySubband{
+        0}; //!< index of the STA that is expected to stay in the primary subband
 };
 
 /**
