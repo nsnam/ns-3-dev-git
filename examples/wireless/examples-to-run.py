@@ -345,7 +345,12 @@ cpp_examples = [
         "True",
     ),
     (
-        "wifi-p2p --simulationTime=1s --staToAdhocTrafficType=Video --adhocToStaTrafficType=Video --staToAdhocMaxExpectedLatency=2ms --adhocToStaMaxExpectedLatency=2ms",
+        "wifi-p2p --simulationTime=2s --apToStaTrafficType=Voip --apToStaAccessCategory=VO --staToApTrafficType=Voip --staToApAccessCategory=VO --staToAdhocTrafficType=Video --staToAdhocAccessCategory=VI --adhocToStaTrafficType=Video --adhocToStaAccessCategory=VI --apToStaMaxExpectedLatency=1ms --staToApMaxExpectedLatency=1ms --staToAdhocMaxExpectedLatency=1ms --adhocToStaMaxExpectedLatency=1ms",
+        "True",
+        "True",
+    ),
+    (
+        "wifi-p2p --simulationTime=2s --apToStaTrafficType=VDI --apToStaAccessCategory=BK --staToApTrafficType=VDI --staToApAccessCategory=BK --staToAdhocTrafficType=Gaming --staToAdhocAccessCategory=BE --adhocToStaTrafficType=Gaming --adhocToStaAccessCategory=BE --apToStaMaxExpectedLatency=1ms --staToApMaxExpectedLatency=1ms --staToAdhocMaxExpectedLatency=1ms --adhocToStaMaxExpectedLatency=1ms",
         "True",
         "True",
     ),
