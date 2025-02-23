@@ -28,6 +28,7 @@
 #include "ns3/p2p-cache-helper.h"
 #include "ns3/packet-sink-helper.h"
 #include "ns3/packet-sink.h"
+#include "ns3/qos-txop.h"
 #include "ns3/simulator.h"
 #include "ns3/socket.h"
 #include "ns3/spectrum-wifi-helper.h"
@@ -40,6 +41,7 @@
 #include "ns3/udp-socket-factory.h"
 #include "ns3/udp-socket.h"
 #include "ns3/uinteger.h"
+#include "ns3/wifi-mac-queue.h"
 #include "ns3/wifi-net-device.h"
 
 #include <algorithm>
@@ -90,10 +92,18 @@ GetStandardForType(const std::string& type)
 }
 
 /// Access category to TOS mapping
-const std::map<std::string, uint8_t> AcToTos = {{"BE", 0x00 /* CS0 */},
-                                                {"BK", 0x28 /* AF11 */},
-                                                {"VI", 0xb8 /* EF */},
-                                                {"VO", 0xc0 /* CS7 */}};
+const std::map<std::string, uint8_t> AcToTos{{"BE", 0x00 /* CS0 */},
+                                             {"BK", 0x28 /* AF11 */},
+                                             {"VI", 0xb8 /* EF */},
+                                             {"VO", 0xc0 /* CS7 */}};
+
+/// Access category to human readable string mapping
+const std::map<AcIndex, std::string> AcToString{
+    {AC_BE, "BE"},
+    {AC_BK, "BK"},
+    {AC_VI, "VI"},
+    {AC_VO, "VO"},
+};
 
 } // namespace
 
@@ -206,6 +216,14 @@ class WifiP2pExample
     void NotifyAppRx(Direction dir, Ptr<const Packet> packet, const Address& address);
 
     /**
+     * Function invoked when a packet is enqueued
+     * @param ac the access category of the queue
+     * @param mac the MAC of the device
+     * @param mpdu the MPDU that is enqueued
+     */
+    void PacketEnqueued(const std::string& ac, Ptr<const WifiMac> mac, Ptr<const WifiMpdu> mpdu);
+
+    /**
      * Function invoked when a new backoff is generated
      * @param backoff the generated backoff
      * @param linkId the link ID
@@ -227,6 +245,13 @@ class WifiP2pExample
      * @return the string corresponding to the destination device
      */
     static std::string GetToString(Direction dir, bool p2p = true);
+
+    /**
+     * Get the string for a given direction
+     * @param dir the direction
+     * @return the string
+     */
+    static std::string GetDirectionString(Direction dir);
 
     /**
      * Get the source node for a given direction
@@ -317,6 +342,14 @@ WifiP2pExample::GetToString(Direction dir, bool p2p)
         return p2p ? "Adhoc" : "Sta2";
     }
     return "";
+}
+
+std::string
+WifiP2pExample::GetDirectionString(Direction dir)
+{
+    const auto fromString{GetFromString(dir)};
+    const auto toString{GetToString(dir)};
+    return fromString + " to " + toString;
 }
 
 Ptr<Node>
@@ -427,12 +460,12 @@ WifiP2pExample::Config(int argc, char* argv[])
     cmd.AddValue("maxAmpduLength", "maximum length in bytes of an A-MPDU", m_maxAmpduLength);
     for (auto& [direction, dirInfo] : m_infos)
     {
+        const auto directionStr{GetDirectionString(direction)};
         const auto fromString{GetFromString(direction)};
         const auto toString{GetToString(direction)};
         auto prepend{fromString};
         std::transform(prepend.cbegin(), prepend.cend(), prepend.begin(), ::tolower);
         prepend += "To" + toString;
-        const auto directionStr = fromString + " to " + toString;
 
         auto paramName = prepend + "TrafficType";
         auto description = "The traffic type from " + directionStr + ": Cbr, Video or Gaming";
@@ -495,6 +528,12 @@ WifiP2pExample::Config(int argc, char* argv[])
         cmd.AddValue(paramName, description, dirInfo.maxExpectedLoss);
     }
     cmd.Parse(argc, argv);
+
+    for (auto& [direction, dirInfo] : m_infos)
+    {
+        NS_ABORT_MSG_IF(!AcToTos.contains(dirInfo.ac),
+                        "Invalid access category for " << GetDirectionString(direction));
+    }
 
     if (verbose)
     {
@@ -659,6 +698,9 @@ WifiP2pExample::Setup()
     auto apDevice = wifi.Install(apPhyHelper, wifiMac, m_wifiApNode);
     streamNumber += WifiHelper::AssignStreams(apDevice, streamNumber);
 
+    NetDeviceContainer allDevices;
+    allDevices.Add(apDevice);
+
     // setup STAs (including adhoc station)
     NetDeviceContainer staDevices;
     if (m_p2p)
@@ -738,6 +780,19 @@ WifiP2pExample::Setup()
         staDevices.Add(wifi.Install(staPhyHelper, wifiMac, m_wifiStaNodes.Get(1)));
     }
     streamNumber += WifiHelper::AssignStreams(staDevices, streamNumber);
+    allDevices.Add(staDevices);
+
+    for (auto it = allDevices.Begin(); it != allDevices.End(); ++it)
+    {
+        auto mac = DynamicCast<WifiNetDevice>(*it)->GetMac();
+        for (const auto& [ac, acStr] : AcToString)
+        {
+            auto qosTxop = mac->GetQosTxop(ac);
+            qosTxop->GetWifiMacQueue()->TraceConnectWithoutContext(
+                "Enqueue",
+                MakeCallback(&WifiP2pExample::PacketEnqueued, this).Bind(acStr, mac));
+        }
+    }
 
     Config::ConnectWithoutContext(
         "/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/$ns3::WifiMac/BE_Txop/BackoffTrace",
@@ -1159,6 +1214,43 @@ WifiP2pExample::NotifyAppRx(Direction dir, Ptr<const Packet> packet, const Addre
                         "Packet with UID " << uid << " not found");
         m_infos.at(dir).latencies.push_back(Simulator::Now() - it->second);
     }
+}
+
+void
+WifiP2pExample::PacketEnqueued(const std::string& ac,
+                               Ptr<const WifiMac> mac,
+                               Ptr<const WifiMpdu> mpdu)
+{
+    if (!mpdu->GetHeader().IsQosData() || mpdu->GetPacketSize() < 50)
+    {
+        // ignore non-QoS data frames and small packets (ARP requests, ARP responses, ...)
+        return;
+    }
+    Direction dir;
+    if (mac->GetTypeOfStation() == AP)
+    {
+        dir = AP_TO_STA;
+    }
+    else
+    {
+        auto adhocMac = DynamicCast<WifiNetDevice>(m_wifiStaNodes.Get(1)->GetDevice(0))->GetMac();
+        if (mac == adhocMac)
+        {
+            dir = ADHOC_TO_STA;
+        }
+        else if (mpdu->GetHeader().GetAddr1() == adhocMac->GetAddress())
+        {
+            dir = STA_TO_ADHOC;
+        }
+        else
+        {
+            dir = STA_TO_AP;
+        }
+    }
+    NS_LOG_FUNCTION(this << ac << dir << *mpdu);
+    NS_ABORT_MSG_IF(m_infos.at(dir).ac != ac,
+                    "Unexpected access category for traffic sent from "
+                        << GetFromString(dir) << " to " << GetToString(dir, m_p2p));
 }
 
 void
