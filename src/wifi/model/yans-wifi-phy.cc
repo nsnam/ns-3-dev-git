@@ -109,7 +109,7 @@ YansWifiPhy::StartRx(Ptr<const WifiPpdu> ppdu, dBm_t rxPower)
         {{{{0, 0}}, {{Hz_t{0}, Hz_t{0}}}}, (DbmToW(totalRxPower))}); // dummy band for YANS
     if (totalRxPower < GetRxSensitivity() + RatioToDb(txWidth / MHz_t{20}))
     {
-        NS_LOG_INFO("Received signal too weak to process: " << rxPower << " dBm");
+        NS_LOG_INFO("Received signal too weak to process: " << rxPower);
         m_interference->Add(ppdu, rxDuration, rxPowerW, GetCurrentFrequencyRange());
         SwitchMaybeToCcaBusy();
         return;
