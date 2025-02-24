@@ -832,29 +832,25 @@ WifiMacHeader::IsPowerManagement() const
 bool
 WifiMacHeader::IsQosBlockAck() const
 {
-    NS_ASSERT(IsQosData());
-    return (m_qosAckPolicy == 3);
+    return (IsQosData() && m_qosAckPolicy == 3);
 }
 
 bool
 WifiMacHeader::IsQosNoAck() const
 {
-    NS_ASSERT(IsQosData());
-    return (m_qosAckPolicy == 1);
+    return (IsQosData() && m_qosAckPolicy == 1);
 }
 
 bool
 WifiMacHeader::IsQosAck() const
 {
-    NS_ASSERT(IsQosData());
-    return (m_qosAckPolicy == 0);
+    return (IsQosData() && m_qosAckPolicy == 0);
 }
 
 bool
 WifiMacHeader::IsQosEosp() const
 {
-    NS_ASSERT(IsQosData());
-    return (m_qosEosp == 1);
+    return (IsQosData() && m_qosEosp == 1);
 }
 
 WifiMacHeader::QosAckPolicy
@@ -886,8 +882,7 @@ WifiMacHeader::GetQosAckPolicy() const
 bool
 WifiMacHeader::IsQosAmsdu() const
 {
-    NS_ASSERT(IsQosData());
-    return (m_amsduPresent == 1);
+    return (IsQosData() && m_amsduPresent == 1);
 }
 
 uint8_t

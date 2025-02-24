@@ -555,33 +555,33 @@ class WifiMacHeader : public Header
      */
     bool IsMoreFragments() const;
     /**
-     * Return if the QoS Ack policy is Block Ack.
+     * Return if IsQosData() is true and the QoS Ack policy is Block Ack.
      *
-     * @return true if the QoS Ack policy is Block Ack, false otherwise
+     * @return true if IsQosData() and the QoS Ack policy is Block Ack, false otherwise
      */
     bool IsQosBlockAck() const;
     /**
-     * Return if the QoS Ack policy is No Ack.
+     * Return if IsQosData() is true and the QoS Ack policy is No Ack.
      *
-     * @return true if the QoS Ack policy is No Ack, false otherwise
+     * @return true if IsQosData() and the QoS Ack policy is No Ack, false otherwise
      */
     bool IsQosNoAck() const;
     /**
-     * Return if the QoS Ack policy is Normal Ack.
+     * Return if IsQosData() is true and the QoS Ack policy is Normal Ack.
      *
-     * @return true if the QoS Ack policy is No Ack, false otherwise
+     * @return true if IsQosData() and the QoS Ack policy is No Ack, false otherwise
      */
     bool IsQosAck() const;
     /**
-     * Return if the end of service period (EOSP) is set.
+     * Return if IsQosData() is true and the end of service period (EOSP) is set.
      *
-     * @return true if the end of service period (EOSP) is set, false otherwise
+     * @return true if IsQosData() and the end of service period (EOSP) is set, false otherwise
      */
     bool IsQosEosp() const;
     /**
-     * Check if the A-MSDU present bit is set in the QoS control field.
+     * Check if IsQosData() is true and the A-MSDU present bit is set in the QoS control field.
      *
-     * @return true if the A-MSDU present bit is set,
+     * @return true if IsQosData() and the A-MSDU present bit is set,
      *         false otherwise
      */
     bool IsQosAmsdu() const;
