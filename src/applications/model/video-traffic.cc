@@ -128,10 +128,6 @@ VideoTraffic::GetTypeId()
                           DoubleValue(60.227),
                           MakeDoubleAccessor(&VideoTraffic::m_gammaScale),
                           MakeDoubleChecker<double>())
-            .AddTraceSource("Tx",
-                            "A video packet is sent",
-                            MakeTraceSourceAccessor(&VideoTraffic::m_txTrace),
-                            "ns3::Packet::TracedCallback")
             .AddTraceSource(
                 "TxWithLatency",
                 "A video packet is sent, this trace also reports the latency applied to the packet",

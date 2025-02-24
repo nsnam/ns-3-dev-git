@@ -69,11 +69,7 @@ VirtualDesktop::GetTypeId()
                     &VirtualDesktop::SetParametersPacketSize),
                 MakeAttributeContainerChecker<PairValue<DoubleValue, DoubleValue>, ';'>(
                     MakePairChecker<DoubleValue, DoubleValue>(MakeDoubleChecker<double>(),
-                                                              MakeDoubleChecker<double>())))
-            .AddTraceSource("Tx",
-                            "A new VDI packet is created and is sent",
-                            MakeTraceSourceAccessor(&VirtualDesktop::m_txTrace),
-                            "ns3::Packet::TracedCallback");
+                                                              MakeDoubleChecker<double>())));
     return tid;
 }
 

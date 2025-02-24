@@ -108,10 +108,6 @@ VoipTraffic::GetTypeId()
                           TimeValue(MilliSeconds(80)),
                           MakeTimeAccessor(&VoipTraffic::m_laplacianBound),
                           MakeTimeChecker())
-            .AddTraceSource("Tx",
-                            "A VoIP packet is sent",
-                            MakeTraceSourceAccessor(&VoipTraffic::m_txTrace),
-                            "ns3::Packet::TracedCallback")
             .AddTraceSource(
                 "TxWithJitter",
                 "A VoIP packet is sent, this trace also reports the jitter applied to the packet",

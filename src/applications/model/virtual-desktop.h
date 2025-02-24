@@ -14,7 +14,6 @@
 #include "ns3/address.h"
 #include "ns3/event-id.h"
 #include "ns3/ptr.h"
-#include "ns3/traced-callback.h"
 
 #include <utility>
 #include <vector>
@@ -145,9 +144,6 @@ class VirtualDesktop : public SourceApplication
 
     EventId m_txEvent;          //!< Event id of pending TX event
     Ptr<Packet> m_unsentPacket; //!< Unsent packet cached for future attempt
-
-    /// Traced Callback: transmitted packets.
-    TracedCallback<Ptr<const Packet>> m_txTrace;
 };
 
 } // namespace ns3

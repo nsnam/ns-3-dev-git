@@ -216,8 +216,9 @@ MobileGamingTestCase::DoSetup()
     int64_t streamNumber = 100;
     sourceHelper.AssignStreams(nodes, streamNumber);
 
-    Config::ConnectWithoutContext("/NodeList/*/$ns3::Node/ApplicationList/*/$ns3::MobileGaming/Tx",
-                                  MakeCallback(&MobileGamingTestCase::PacketTx, this));
+    Config::ConnectWithoutContext(
+        "/NodeList/*/$ns3::Node/ApplicationList/*/$ns3::MobileGaming/TxWithStage",
+        MakeCallback(&MobileGamingTestCase::PacketTx, this));
 
     Config::Connect("/NodeList/*/ApplicationList/*/$ns3::PacketSink/Rx",
                     MakeCallback(&MobileGamingTestCase::ReceiveRx, this));

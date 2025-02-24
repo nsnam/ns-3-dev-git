@@ -14,7 +14,6 @@
 #include "ns3/address.h"
 #include "ns3/event-id.h"
 #include "ns3/ptr.h"
-#include "ns3/traced-callback.h"
 
 namespace ns3
 {
@@ -121,8 +120,8 @@ class MobileGaming : public SourceApplication
      */
     typedef void (*TxTracedCallback)(Ptr<const Packet> packet, TrafficModelStage stage);
 
-    /// Traced Callback: transmitted packets.
-    TracedCallback<Ptr<const Packet>, TrafficModelStage> m_txTrace;
+    /// Traced Callback: transmitted packets and their stage.
+    TracedCallback<Ptr<const Packet>, TrafficModelStage> m_txStageTrace;
 };
 
 /**

@@ -195,9 +195,6 @@ class VideoTraffic : public SourceApplication
      */
     typedef void (*TxTracedCallback)(Ptr<const Packet> packet, Time latency);
 
-    /// Traced Callback: transmitted packets.
-    TracedCallback<Ptr<const Packet>> m_txTrace;
-
     /// Traced Callback: transmitted packets and their latencies.
     TracedCallback<Ptr<const Packet>, Time> m_txLatencyTrace;
 

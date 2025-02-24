@@ -71,9 +71,9 @@ MobileGaming::GetTypeId()
                 StringValue("ns3::LargestExtremeValueRandomVariable[Location=13000|Scale=3700]"),
                 MakePointerAccessor(&MobileGaming::m_levArrivals),
                 MakePointerChecker<LargestExtremeValueRandomVariable>())
-            .AddTraceSource("Tx",
-                            "A packet is sent",
-                            MakeTraceSourceAccessor(&MobileGaming::m_txTrace),
+            .AddTraceSource("TxWithStage",
+                            "A packet is sent, this trace also reports the current stage",
+                            MakeTraceSourceAccessor(&MobileGaming::m_txStageTrace),
                             "ns3::MobileGaming::TxTracedCallback");
     return tid;
 }
@@ -219,7 +219,8 @@ MobileGaming::SendPacket()
 
     const auto actualSize = static_cast<uint32_t>(m_socket->Send(packet));
     NS_ABORT_IF(actualSize != packetSize);
-    m_txTrace(packet, stage);
+    m_txTrace(packet);
+    m_txStageTrace(packet, stage);
 
     if (InetSocketAddress::IsMatchingType(m_peer))
     {

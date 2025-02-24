@@ -198,9 +198,6 @@ class VoipTraffic : public SourceApplication
      */
     typedef void (*StateUpdatedCallback)(VoiceActivityState state, Time duration);
 
-    /// Traced Callback: transmitted packets.
-    TracedCallback<Ptr<const Packet>> m_txTrace;
-
     /// Traced Callback: transmitted packets and their jitters.
     TracedCallback<Ptr<const Packet>, Time> m_txJitterTrace;
 

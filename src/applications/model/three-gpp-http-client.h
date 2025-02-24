@@ -397,8 +397,6 @@ class ThreeGppHttpClient : public SourceApplication
     ns3::TracedCallback<Ptr<const ThreeGppHttpClient>> m_connectionEstablishedTrace;
     /// The `ConnectionClosed` trace source.
     ns3::TracedCallback<Ptr<const ThreeGppHttpClient>> m_connectionClosedTrace;
-    /// The `Tx` trace source.
-    ns3::TracedCallback<Ptr<const Packet>> m_txTrace;
     /// The `TxMainObjectRequest` trace source.
     ns3::TracedCallback<Ptr<const Packet>> m_txMainObjectRequestTrace;
     /// The `TxEmbeddedObjectRequest` trace source.

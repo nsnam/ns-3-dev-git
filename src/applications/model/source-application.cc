@@ -43,7 +43,11 @@ SourceApplication::GetTypeId()
                           "All 8 bits of the TOS byte are set (including ECN bits).",
                           UintegerValue(0),
                           MakeUintegerAccessor(&SourceApplication::m_tos),
-                          MakeUintegerChecker<uint8_t>());
+                          MakeUintegerChecker<uint8_t>())
+            .AddTraceSource("Tx",
+                            "A packet is sent",
+                            MakeTraceSourceAccessor(&SourceApplication::m_txTrace),
+                            "ns3::Packet::TracedCallback");
     return tid;
 }
 
