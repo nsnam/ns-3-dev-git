@@ -48,6 +48,7 @@
 #include <array>
 #include <iomanip>
 #include <limits>
+#include <map>
 #include <sstream>
 #include <string>
 #include <unordered_map>
@@ -225,10 +226,11 @@ class WifiP2pExample
 
     /**
      * Function invoked when a new backoff is generated
+     * @param ac the access category of the queue
      * @param backoff the generated backoff
      * @param linkId the link ID
      */
-    void BackoffTrace(uint32_t backoff, uint8_t linkId);
+    void BackoffTrace(AcIndex ac, uint32_t backoff, uint8_t linkId);
 
     /**
      * Get the string corresponding to the source device for a given direction
@@ -309,7 +311,8 @@ class WifiP2pExample
     Ipv4InterfaceContainer m_staInterfaces{}; //!< the IPv4 interfaces of the non-AP STAs
     Ipv4InterfaceContainer m_p2pInterfaces{}; //!< the IPv4 interfaces of the P2P peers
 
-    std::vector<uint32_t> m_backoffs{}; //!< the generated backoff values
+    std::map<AcIndex, std::vector<uint32_t>>
+        m_backoffs{}; //!< the generated backoff values, indexed per AC
 };
 
 std::string
@@ -791,12 +794,12 @@ WifiP2pExample::Setup()
             qosTxop->GetWifiMacQueue()->TraceConnectWithoutContext(
                 "Enqueue",
                 MakeCallback(&WifiP2pExample::PacketEnqueued, this).Bind(acStr, mac));
+            m_backoffs[ac] = {};
+            qosTxop->TraceConnectWithoutContext(
+                "BackoffTrace",
+                MakeCallback(&WifiP2pExample::BackoffTrace, this).Bind(ac));
         }
     }
-
-    Config::ConnectWithoutContext(
-        "/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/$ns3::WifiMac/BE_Txop/BackoffTrace",
-        MakeCallback(&WifiP2pExample::BackoffTrace, this));
 
     // mobility
     MobilityHelper mobility;
@@ -1117,14 +1120,16 @@ WifiP2pExample::PrintResults()
         << averageE2eLatency << std::setw(16) << totalTxPacket << std::setw(16) << totalRxPacket
         << std::setw(16) << totalossRate << std::endl;
 
-    const auto totalBackoff =
-        std::accumulate(m_backoffs.cbegin(), m_backoffs.cend(), 0.0, [](auto sum, auto val) {
-            return sum + val;
-        });
-    if (m_simulationTime.IsStrictlyPositive() && (totalTxPacket > 0))
+    for (const auto& [ac, acStr] : AcToString)
     {
-        const auto averageBackoff = m_backoffs.empty() ? 0.0 : (totalBackoff / m_backoffs.size());
-        oss << "Average backoff: " << averageBackoff << std::endl;
+        const auto totalBackoff =
+            std::accumulate(m_backoffs.at(ac).cbegin(), m_backoffs.at(ac).cend(), 0.0);
+        if (m_simulationTime.IsStrictlyPositive() && (totalTxPacket > 0))
+        {
+            const auto averageBackoff =
+                m_backoffs.at(ac).empty() ? 0.0 : (totalBackoff / m_backoffs.size());
+            oss << "Average backoff [" << acStr << "]: " << averageBackoff << std::endl;
+        }
     }
 
     std::cout << oss.str();
@@ -1254,10 +1259,10 @@ WifiP2pExample::PacketEnqueued(const std::string& ac,
 }
 
 void
-WifiP2pExample::BackoffTrace(uint32_t backoff, uint8_t linkId)
+WifiP2pExample::BackoffTrace(AcIndex ac, uint32_t backoff, uint8_t linkId)
 {
-    NS_LOG_FUNCTION(this << linkId << backoff);
-    m_backoffs.push_back(backoff);
+    NS_LOG_FUNCTION(this << ac << linkId << backoff);
+    m_backoffs.at(ac).push_back(backoff);
 }
 
 int
