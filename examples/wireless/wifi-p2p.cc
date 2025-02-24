@@ -28,6 +28,7 @@
 #include "ns3/p2p-cache-helper.h"
 #include "ns3/packet-sink-helper.h"
 #include "ns3/packet-sink.h"
+#include "ns3/pointer.h"
 #include "ns3/qos-txop.h"
 #include "ns3/simulator.h"
 #include "ns3/socket.h"
@@ -891,29 +892,63 @@ WifiP2pExample::Setup()
                     if ((direction == AP_TO_STA) ||
                         (direction == STA_TO_ADHOC)) // assume DL parameters
                     {
-                        sourceHelper.SetAttribute("MinInitialPacketSize", UintegerValue(0));
-                        sourceHelper.SetAttribute("MaxInitialPacketSize", UintegerValue(20));
-                        sourceHelper.SetAttribute("MinEndPacketSize", UintegerValue(500));
-                        sourceHelper.SetAttribute("MaxEndPacketSize", UintegerValue(600));
-                        sourceHelper.SetAttribute("PacketSizeLevLocation", UintegerValue(50));
-                        sourceHelper.SetAttribute("PacketSizeLevScale", DoubleValue(11.0));
-                        sourceHelper.SetAttribute("PacketArrivalLevLocation",
-                                                  TimeValue(MilliSeconds(13)));
-                        sourceHelper.SetAttribute("PacketArrivalLevScale",
-                                                  TimeValue(MicroSeconds(3700)));
+                        auto ips =
+                            CreateObjectWithAttributes<UniformRandomVariable>("Min",
+                                                                              DoubleValue(0),
+                                                                              "Max",
+                                                                              DoubleValue(20));
+                        sourceHelper.SetAttribute("InitialPacketSize", PointerValue(ips));
+
+                        auto eps =
+                            CreateObjectWithAttributes<UniformRandomVariable>("Min",
+                                                                              DoubleValue(500),
+                                                                              "Max",
+                                                                              DoubleValue(600));
+                        sourceHelper.SetAttribute("EndPacketSize", PointerValue(eps));
+
+                        auto psl = CreateObjectWithAttributes<LargestExtremeValueRandomVariable>(
+                            "Location",
+                            DoubleValue(50),
+                            "Scale",
+                            DoubleValue(11));
+                        sourceHelper.SetAttribute("PacketSizeLev", PointerValue(psl));
+
+                        auto pal = CreateObjectWithAttributes<LargestExtremeValueRandomVariable>(
+                            "Location",
+                            DoubleValue(13000),
+                            "Scale",
+                            DoubleValue(3700));
+                        sourceHelper.SetAttribute("PacketArrivalLev", PointerValue(pal));
                     }
                     else // assume UL parameters
                     {
-                        sourceHelper.SetAttribute("MinInitialPacketSize", UintegerValue(0));
-                        sourceHelper.SetAttribute("MaxInitialPacketSize", UintegerValue(20));
-                        sourceHelper.SetAttribute("MinEndPacketSize", UintegerValue(400));
-                        sourceHelper.SetAttribute("MaxEndPacketSize", UintegerValue(550));
-                        sourceHelper.SetAttribute("PacketSizeLevLocation", UintegerValue(38));
-                        sourceHelper.SetAttribute("PacketSizeLevScale", DoubleValue(3.7));
-                        sourceHelper.SetAttribute("PacketArrivalLevLocation",
-                                                  TimeValue(MilliSeconds(15)));
-                        sourceHelper.SetAttribute("PacketArrivalLevScale",
-                                                  TimeValue(MicroSeconds(5700)));
+                        auto ips =
+                            CreateObjectWithAttributes<UniformRandomVariable>("Min",
+                                                                              DoubleValue(0),
+                                                                              "Max",
+                                                                              DoubleValue(20));
+                        sourceHelper.SetAttribute("InitialPacketSize", PointerValue(ips));
+
+                        auto eps =
+                            CreateObjectWithAttributes<UniformRandomVariable>("Min",
+                                                                              DoubleValue(400),
+                                                                              "Max",
+                                                                              DoubleValue(550));
+                        sourceHelper.SetAttribute("EndPacketSize", PointerValue(eps));
+
+                        auto psl = CreateObjectWithAttributes<LargestExtremeValueRandomVariable>(
+                            "Location",
+                            DoubleValue(38),
+                            "Scale",
+                            DoubleValue(3.7));
+                        sourceHelper.SetAttribute("PacketSizeLev", PointerValue(psl));
+
+                        auto pal = CreateObjectWithAttributes<LargestExtremeValueRandomVariable>(
+                            "Location",
+                            DoubleValue(15000),
+                            "Scale",
+                            DoubleValue(5700));
+                        sourceHelper.SetAttribute("PacketArrivalLev", PointerValue(pal));
                     }
                 }
                 else if (dirInfo.gamingSyncMechanism == "FrameLockstep")
@@ -921,29 +956,63 @@ WifiP2pExample::Setup()
                     if ((direction == AP_TO_STA) ||
                         (direction == STA_TO_ADHOC)) // assume DL parameters
                     {
-                        sourceHelper.SetAttribute("MinInitialPacketSize", UintegerValue(0));
-                        sourceHelper.SetAttribute("MaxInitialPacketSize", UintegerValue(80));
-                        sourceHelper.SetAttribute("MinEndPacketSize", UintegerValue(140));
-                        sourceHelper.SetAttribute("MaxEndPacketSize", UintegerValue(150));
-                        sourceHelper.SetAttribute("PacketSizeLevLocation", UintegerValue(210));
-                        sourceHelper.SetAttribute("PacketSizeLevScale", DoubleValue(35.0));
-                        sourceHelper.SetAttribute("PacketArrivalLevLocation",
-                                                  TimeValue(MilliSeconds(28)));
-                        sourceHelper.SetAttribute("PacketArrivalLevScale",
-                                                  TimeValue(MicroSeconds(4200)));
+                        auto ips =
+                            CreateObjectWithAttributes<UniformRandomVariable>("Min",
+                                                                              DoubleValue(0),
+                                                                              "Max",
+                                                                              DoubleValue(80));
+                        sourceHelper.SetAttribute("InitialPacketSize", PointerValue(ips));
+
+                        auto eps =
+                            CreateObjectWithAttributes<UniformRandomVariable>("Min",
+                                                                              DoubleValue(140),
+                                                                              "Max",
+                                                                              DoubleValue(150));
+                        sourceHelper.SetAttribute("EndPacketSize", PointerValue(eps));
+
+                        auto psl = CreateObjectWithAttributes<LargestExtremeValueRandomVariable>(
+                            "Location",
+                            DoubleValue(210),
+                            "Scale",
+                            DoubleValue(35));
+                        sourceHelper.SetAttribute("PacketSizeLev", PointerValue(psl));
+
+                        auto pal = CreateObjectWithAttributes<LargestExtremeValueRandomVariable>(
+                            "Location",
+                            DoubleValue(28000),
+                            "Scale",
+                            DoubleValue(4200));
+                        sourceHelper.SetAttribute("PacketArrivalLev", PointerValue(pal));
                     }
                     else // assume UL parameters
                     {
-                        sourceHelper.SetAttribute("MinInitialPacketSize", UintegerValue(0));
-                        sourceHelper.SetAttribute("MaxInitialPacketSize", UintegerValue(80));
-                        sourceHelper.SetAttribute("MinEndPacketSize", UintegerValue(50));
-                        sourceHelper.SetAttribute("MaxEndPacketSize", UintegerValue(60));
-                        sourceHelper.SetAttribute("PacketSizeLevLocation", UintegerValue(92));
-                        sourceHelper.SetAttribute("PacketSizeLevScale", DoubleValue(38.0));
-                        sourceHelper.SetAttribute("PacketArrivalLevLocation",
-                                                  TimeValue(MilliSeconds(22)));
-                        sourceHelper.SetAttribute("PacketArrivalLevScale",
-                                                  TimeValue(MicroSeconds(3400)));
+                        auto ips =
+                            CreateObjectWithAttributes<UniformRandomVariable>("Min",
+                                                                              DoubleValue(0),
+                                                                              "Max",
+                                                                              DoubleValue(80));
+                        sourceHelper.SetAttribute("InitialPacketSize", PointerValue(ips));
+
+                        auto eps =
+                            CreateObjectWithAttributes<UniformRandomVariable>("Min",
+                                                                              DoubleValue(50),
+                                                                              "Max",
+                                                                              DoubleValue(60));
+                        sourceHelper.SetAttribute("EndPacketSize", PointerValue(eps));
+
+                        auto psl = CreateObjectWithAttributes<LargestExtremeValueRandomVariable>(
+                            "Location",
+                            DoubleValue(92),
+                            "Scale",
+                            DoubleValue(38));
+                        sourceHelper.SetAttribute("PacketSizeLev", PointerValue(psl));
+
+                        auto pal = CreateObjectWithAttributes<LargestExtremeValueRandomVariable>(
+                            "Location",
+                            DoubleValue(22000),
+                            "Scale",
+                            DoubleValue(3400));
+                        sourceHelper.SetAttribute("PacketArrivalLev", PointerValue(pal));
                     }
                 }
                 else
