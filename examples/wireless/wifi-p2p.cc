@@ -107,6 +107,12 @@ const std::map<AcIndex, std::string> AcToString{
     {AC_VO, "VO"},
 };
 
+/// Traffic type to Type ID
+const std::map<std::string, std::string> trafficToTypeId{{"Video", "ns3::VideoTraffic"},
+                                                         {"Gaming", "ns3::MobileGaming"},
+                                                         {"Voip", "ns3::VoipTraffic"},
+                                                         {"VDI", "ns3::VirtualDesktop"}};
+
 } // namespace
 
 /**
@@ -472,7 +478,8 @@ WifiP2pExample::Config(int argc, char* argv[])
         prepend += "To" + toString;
 
         auto paramName = prepend + "TrafficType";
-        auto description = "The traffic type from " + directionStr + ": Cbr, Video or Gaming";
+        auto description =
+            "The traffic type from " + directionStr + ": Cbr, Video, Gaming, Voip or VDI";
         cmd.AddValue(paramName, description, dirInfo.trafficType);
 
         paramName = prepend + "L4Protocol";
@@ -872,11 +879,9 @@ WifiP2pExample::Setup()
                 "Tx",
                 MakeCallback(&WifiP2pExample::NotifyAppTx, this).Bind(direction));
         }
-        else if ((dirInfo.trafficType == "Video") || (dirInfo.trafficType == "Gaming"))
+        else if (trafficToTypeId.contains(dirInfo.trafficType))
         {
-            const auto applicationId =
-                (dirInfo.trafficType == "Video") ? "ns3::VideoTraffic" : "ns3::MobileGaming";
-            ApplicationHelper sourceHelper(applicationId);
+            ApplicationHelper sourceHelper(trafficToTypeId.at(dirInfo.trafficType));
             sourceHelper.SetAttribute("Protocol", StringValue(l4ProtocolId));
             sourceHelper.SetAttribute("Remote", AddressValue(socket));
             sourceHelper.SetAttribute("Tos", UintegerValue(AcToTos.at(dirInfo.ac)));
@@ -1020,6 +1025,18 @@ WifiP2pExample::Setup()
                     NS_FATAL_ERROR("Incorrect gaming synchronization mechanism");
                 }
             }
+            else if (dirInfo.trafficType == "VDI")
+            {
+                if ((direction == STA_TO_AP) || (direction == ADHOC_TO_STA)) // assume UL parameters
+                {
+                    auto ipa = CreateObjectWithAttributes<ExponentialRandomVariable>(
+                        "Mean",
+                        DoubleValue(48287000));
+                    sourceHelper.SetAttribute("InterPacketArrivals", PointerValue(ipa));
+                    sourceHelper.SetAttribute("ParametersPacketSize", StringValue("50.598 5.0753"));
+                }
+                // no else, defaults for VDI are DL
+            }
             auto sourceNode = GetFrom(direction);
             auto source = sourceHelper.Install(sourceNode);
             streamNumber += sourceHelper.AssignStreams(sourceNode, streamNumber);
@@ -1028,6 +1045,10 @@ WifiP2pExample::Setup()
             source.Get(0)->TraceConnectWithoutContext(
                 "Tx",
                 MakeCallback(&WifiP2pExample::NotifyAppTx, this).Bind(direction));
+        }
+        else
+        {
+            NS_ABORT_MSG("Invalid traffic type for " << GetDirectionString(direction));
         }
         ++port;
     }
