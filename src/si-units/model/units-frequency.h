@@ -7,8 +7,8 @@
 #include "ns3/assert.h"
 #include "ns3/attribute-helper.h"
 #include "ns3/attribute.h"
+#include "ns3/double.h"
 #include "ns3/nstime.h"
-#include "ns3/uinteger.h"
 
 #include <algorithm>
 #include <cinttypes>
@@ -20,7 +20,10 @@
 // clang-format off
 namespace ns3
 {
+struct kHz_t;
 struct MHz_t;
+struct GHz_t;
+struct THz_t;
 
 /// Frequency unit in Hz
 struct Hz_t
@@ -47,6 +50,13 @@ struct Hz_t
 
     /// Constructor
     /// @param val Value in Hz
+    constexpr explicit Hz_t(int64_t val)
+        : val(static_cast<double>(val))
+    {
+    }
+
+    /// Constructor
+    /// @param val Value in Hz
     constexpr explicit Hz_t(uint64_t val)
         : val(static_cast<double>(val))
     {
@@ -59,27 +69,11 @@ struct Hz_t
     /// @brief Stringify with metric prefix
     /// Sub-Hertz not supported
     /// @return String with metric prefix
-    std::string str() const // NOLINT(readability-identifier-naming)
-    {
-        const std::vector<std::string> WHOLE_UNIT_PREFIX = {"", "k", "M", "G", "T"};
+    std::string str() const; // NOLINT(readability-identifier-naming);
 
-        size_t idx{};
-        auto valInt = static_cast<int64_t>(val); // No support of sub-Hertz
-        if (valInt > 0)
-        {
-            while (((idx + 1) < WHOLE_UNIT_PREFIX.size()) && ((valInt % ONE_KILO) == 0))
-            {
-                valInt /= ONE_KILO;
-                ++idx;
-            }
-        }
-
-        return sformat("%lld %sHz", valInt, WHOLE_UNIT_PREFIX[idx].c_str());
-    }
-
-    /// Converts a vector of double values represented in Hz to a vector of Hz_t
-    /// @param input Vector of double values represented in Hz
-    /// @return Vector of Hz_t values
+    /// @brief Convert a vector of double values to a vector of Hz_t values
+    /// @param input vector of double values
+    /// @return vector of Hz_t values
     static std::vector<Hz_t> from_doubles(
         std::vector<double>& input) // NOLINT(readability-identifier-naming)
     {
@@ -230,249 +224,229 @@ struct Hz_t
         return val / ONE_GIGA;
     }
 
-    /// Converts a Hz_t unit struct to MHz_t
-    /// @returns frequency unit struct in MHz_t
+    /// Get the value of the Hz_t in THz
+    /// @return Value in THz
+    inline double in_THz() const // NOLINT(readability-identifier-naming)
+    {
+        return val / ONE_TERA;
+    }
+
+    /// Copies an object
+    /// @returns frequency unit struct in Hz_t
+    Hz_t to_Hz() const;
+
+    /// Converts to kHz_t type
+    /// @returns object in kHz_t
+    kHz_t to_kHz() const; // NOLINT(readability-identifier-naming)
+
+    /// Converts to MHz_t type
+    /// @returns object in MHz_t
     MHz_t to_MHz() const; // NOLINT(readability-identifier-naming)
+
+    /// Converts to GHz_t type
+    /// @returns object in GHz_t
+    GHz_t to_GHz() const; // NOLINT(readability-identifier-naming)
+
+    /// Converts to THz_t type
+    /// @returns object in THz_t
+    THz_t to_THz() const; // NOLINT(readability-identifier-naming)
 
     /// Converts from a string
     /// @param input String to convert from
     /// @return Optional Hz_t value
     static std::optional<Hz_t> from_str( // NOLINT(readability-identifier-naming)
         const std::string& input);
+
+    /// Test if this is a multiple of the right hand side
+    /// @param rhs the measuring size in Hz
+    /// @returns true if a multiple, false otherwise
+    bool IsMultipleOf(const Hz_t& rhs) const;
+};
+
+/// Frequency unit in kHz
+struct kHz_t : Hz_t
+{
+    kHz_t() = default; ///< Default constructor // NOLINT(readability-identifier-naming
+
+    /// Constructor
+    /// @param val Value in kHz
+    constexpr explicit kHz_t(int32_t val)
+        : Hz_t(static_cast<double>(val * ONE_KILO))
+    {
+    }
+
+    /// Constructor
+    /// @param val Value in kHz
+    constexpr explicit kHz_t(int64_t val)
+        : Hz_t(static_cast<double>(val * ONE_KILO))
+    {
+    }
+
+    /// Constructor
+    /// @param val Value in kHz
+    constexpr explicit kHz_t(uint64_t val)
+        : Hz_t(val * ONE_KILO)
+    {
+    }
+
+    /// Constructor
+    /// @param val Value in kHz
+    constexpr explicit kHz_t(double val)
+        : Hz_t(val * ONE_KILO)
+    {
+    }
+
+    /// Constructor
+    /// @param hz Value in Hz
+    constexpr kHz_t(const Hz_t hz)
+        : Hz_t(hz)
+    {
+    }
+
+    /// Constructor
+    /// @param str a string representation of the frequency
+    explicit kHz_t(const std::string& str);
 };
 
 /// Frequency unit in MHz
-struct MHz_t
+struct MHz_t : Hz_t
 {
-    double val{}; ///< Value in MHz
-
-    MHz_t() = default; ///< Default constructor
+    MHz_t() = default; ///< Default constructor // NOLINT(readability-identifier-naming
 
     /// Constructor
     /// @param val Value in MHz
     constexpr explicit MHz_t(double val)
-        : val(val)
+        : Hz_t(static_cast<double>(val * ONE_MEGA))
     {
     }
 
     /// Constructor
     /// @param val Value in MHz
     constexpr explicit MHz_t(int32_t val)
-        : val(static_cast<double>(val))
+        : Hz_t(static_cast<int64_t>(val * ONE_MEGA))
     {
     }
 
     /// Constructor
     /// @param val Value in MHz
     constexpr explicit MHz_t(uint64_t val)
-        : val(static_cast<double>(val))
+        : Hz_t(static_cast<uint64_t>(val * ONE_MEGA))
+    {
+    }
+
+    /// Constructor
+    /// @param hz Value in Hz
+    constexpr MHz_t(const Hz_t hz)
+        : Hz_t(hz)
     {
     }
 
     /// Constructor
     /// @param str a string representation of the frequency
     explicit MHz_t(const std::string& str);
+};
 
-    /// @brief Stringify with metric prefix
-    /// Sub-Hertz not supported
-    /// @return String with metric prefix
-    std::string str() const // NOLINT(readability-identifier-naming)
+/// Frequency unit in GHz
+struct GHz_t : Hz_t
+{
+    GHz_t() = default; ///< Default constructor // NOLINT(readability-identifier-naming
+
+    /// Constructor
+    /// @param val Value in GHz
+    constexpr explicit GHz_t(int32_t val)
+        : Hz_t(static_cast<double>(val * ONE_GIGA))
     {
-        return to_Hz().str();
     }
 
-    /// Three-way comparison
-    /// @param rhs right hand side
-    /// @return deduced comparison type
-    auto operator<=>(const MHz_t& rhs) const = default;
-
-    /// Arithmetic Negation Operator
-    /// @returns negated power value
-    inline MHz_t operator-() const
+    /// Constructor
+    /// @param val Value in GHz
+    constexpr explicit GHz_t(int64_t val)
+        : Hz_t(static_cast<double>(val * ONE_GIGA))
     {
-        return MHz_t{-val};
     }
 
-    /// Addition operator
-    /// @param rhs value to add
-    /// @return Sum of the two values
-    inline constexpr MHz_t operator+(const MHz_t& rhs) const
+    /// Constructor
+    /// @param val Value in GHz
+    constexpr explicit GHz_t(uint64_t val)
+        : Hz_t(val * ONE_GIGA)
     {
-        return MHz_t{val + rhs.val};
     }
 
-    /// Subtraction operator
-    /// @param rhs value to subtract
-    /// @return Difference of the two values
-    inline constexpr MHz_t operator-(const MHz_t& rhs) const
+    /// Constructor
+    /// @param val Value in GHz
+    constexpr explicit GHz_t(double val)
+        : Hz_t(val * ONE_GIGA)
     {
-        return MHz_t{val - rhs.val};
     }
 
-    /// Test if this value is a multiple of the given value
-    /// @param rhs the right-hand side MHz_t value
-    /// @return true if it is a multiple, false otherwise
-    inline bool IsMultipleOf(const MHz_t& rhs) const
+    /// Constructor
+    /// @param hz Value in Hz
+    constexpr GHz_t(const Hz_t hz)
+        : Hz_t(hz)
     {
-        NS_ASSERT(rhs.val != 0.);
-        auto div = static_cast<int64_t>(val / rhs.val);
-        return val == (div * rhs.val);
     }
 
-    /// Addition assignment operator
-    /// @param rhs value to add
-    /// @return Reference to this object
-    inline MHz_t& operator+=(const MHz_t& rhs)
+    /// Constructor
+    /// @param str a string representation of the frequency
+    explicit GHz_t(const std::string& str);
+};
+
+/// Frequency unit in THz
+struct THz_t : Hz_t
+{
+    THz_t() = default; ///< Default constructor // NOLINT(readability-identifier-naming
+
+    /// Constructor
+    /// @param val Value in THz
+    constexpr explicit THz_t(int32_t val)
+        : Hz_t(static_cast<double>(val * ONE_TERA))
     {
-        val += rhs.val;
-        return *this;
     }
 
-    /// Subtraction assignment operator
-    /// @param rhs value to subtract
-    /// @return Reference to this object
-    inline MHz_t& operator-=(const MHz_t& rhs)
+    /// Constructor
+    /// @param val Value in THz
+    constexpr explicit THz_t(int64_t val)
+        : Hz_t(static_cast<double>(val * ONE_TERA))
     {
-        val -= rhs.val;
-        return *this;
     }
 
-    /// Division operator
-    /// @param rhs value to divide by
-    /// @return Quotient of the two values
-    inline MHz_t operator/(double rhs) const
+    /// Constructor
+    /// @param val Value in THz
+    constexpr explicit THz_t(uint64_t val)
+        : Hz_t(val * ONE_TERA)
     {
-        return MHz_t{val / rhs};
     }
 
-    /// Division operator
-    /// @param rhs value to divide by
-    /// @return Quotient of the two values
-    inline double operator/(const MHz_t& rhs) const
+    /// Constructor
+    /// @param val Value in THz
+    constexpr explicit THz_t(double val)
+        : Hz_t(val * ONE_TERA)
     {
-        return val / rhs.val;
     }
 
-    /// Multiplication operator
-    /// @param rhs value to multiply by
-    /// @return Product of the two values
-    inline MHz_t operator*(double rhs) const
+    /// Constructor
+    /// @param hz Value in Hz
+    constexpr THz_t(const Hz_t hz)
+        : Hz_t(hz)
     {
-        return MHz_t{val * rhs};
     }
 
-    /// Multiplication assignment operator
-    /// @param rhs value to multiply by
-    /// @return Reference to this object
-    inline MHz_t& operator*=(double rhs)
-    {
-        val *= rhs;
-        return *this;
-    }
-
-    /// Division assignment operator
-    /// @param rhs value to divide by
-    /// @return Reference to this object
-    inline MHz_t& operator/=(double rhs)
-    {
-        val /= rhs;
-        return *this;
-    }
-
-    /// Addition assignment operator
-    /// @param rhs value to add
-    /// @return Reference to this object
-    inline MHz_t& operator+=(const Hz_t& rhs)
-    {
-        val += rhs.in_MHz();
-        return *this;
-    }
-
-    /// Subtraction assignment operator
-    /// @param rhs value to subtract
-    /// @return Reference to this object
-    inline MHz_t& operator-=(const Hz_t& rhs)
-    {
-        val -= rhs.in_MHz();
-        return *this;
-    }
-
-    /// Multiplication operator
-    /// @param nstime time
-    /// @return Unitless value
-    inline double operator*(Time nstime) const
-    {
-        return to_Hz() * nstime;
-    }
-
-    /// Conversion operator
-    /// @return the object converted in Hz_t
-    inline operator Hz_t() const
-    {
-        return to_Hz();
-    }
-
-    /// Get the value of the MHz_t in Hz
-    /// @return Value in Hz
-    inline double in_Hz() const // NOLINT(readability-identifier-naming)
-    {
-        return to_Hz().in_Hz();
-    }
-
-    /// Get the value of the MHz_t in kHz
-    /// @return Value in kHz
-    inline double in_kHz() const // NOLINT(readability-identifier-naming)
-    {
-        return to_Hz().in_kHz();
-    }
-
-    /// Get the value of the MHz_t in MHz
-    /// @return Value in MHz
-    inline double in_MHz() const // NOLINT(readability-identifier-naming)
-    {
-        return to_Hz().in_MHz();
-    }
-
-    /// Get the value of the MHz_t in GHz
-    /// @return Value in GHz
-    inline double in_GHz() const // NOLINT(readability-identifier-naming)
-    {
-        return to_Hz().in_GHz();
-    }
-
-    /// Converts a MHz_t unit struct to Hz
-    /// @returns frequency unit struct in Hz
-    inline Hz_t to_Hz() const // NOLINT(readability-identifier-naming)
-    {
-        return Hz_t{val * ONE_MEGA};
-    }
-
-    /// Converts from a string
-    /// @param input String to convert from
-    /// @return Optional MHz_t value
-    static std::optional<MHz_t> from_str( // NOLINT(readability-identifier-naming)
-        const std::string& input)
-    {
-        auto res = Hz_t::from_str(input);
-        if (res.has_value())
-        {
-            return res.value().to_MHz();
-        }
-        return std::nullopt;
-    }
+    /// Constructor
+    /// @param str a string representation of the frequency
+    explicit THz_t(const std::string& str);
 };
 
 // User defined literals
 Hz_t operator""_Hz(unsigned long long val);
 Hz_t operator""_Hz(long double val);
-Hz_t operator""_kHz(unsigned long long val);
-Hz_t operator""_kHz(long double val);
+kHz_t operator""_kHz(unsigned long long val);
+kHz_t operator""_kHz(long double val);
 MHz_t operator""_MHz(unsigned long long val);
 MHz_t operator""_MHz(long double val);
-Hz_t operator""_GHz(unsigned long long val);
-Hz_t operator""_GHz(long double val);
-Hz_t operator""_THz(unsigned long long val);
-Hz_t operator""_THz(long double val);
+GHz_t operator""_GHz(unsigned long long val);
+GHz_t operator""_GHz(long double val);
+THz_t operator""_THz(unsigned long long val);
+THz_t operator""_THz(long double val);
 
 std::ostream& operator<<(std::ostream& os, const Hz_t& rhs);
 std::istream& operator>>(std::istream& is, Hz_t& rhs);
@@ -483,53 +457,26 @@ std::istream& operator>>(std::istream& is, MHz_t& rhs);
 Hz_t operator*(double lfs, const Hz_t& rhs);
 double operator*(Time nstime, const Hz_t& rhs);
 
-MHz_t operator*(double lfs, const MHz_t& rhs);
-double operator*(Time nstime, const MHz_t& rhs);
-
-Hz_t operator+(const Hz_t& lhs, const MHz_t& rhs);
-MHz_t operator+(const MHz_t& lhs, const Hz_t& rhs);
-
-Hz_t operator-(const Hz_t& lhs, const MHz_t& rhs);
-MHz_t operator-(const MHz_t& lhs, const Hz_t& rhs);
-
-double operator/(const Hz_t& lhs, const MHz_t& rhs);
-double operator/(const MHz_t& lhs, const Hz_t& rhs);
-
-/// Converts a value represented in kHz to Hz_t
-/// @param val Value in kHz
-/// @return Value in Hz_t
-inline Hz_t
-kHz_t(double val)
-{
-    return Hz_t{val * ONE_KILO};
-}
-
-/// Converts a value represented in GHz to Hz_t
-/// @param val Value in GHz
-/// @return Value in Hz_t
-inline Hz_t
-GHz_t(double val)
-{
-    return Hz_t{val * ONE_GIGA};
-}
-
-/// Converts a value represented in THz to Hz_t
-/// @param val Value in THz
-/// @return Value in Hz_t
-inline Hz_t
-THz_t(double val)
-{
-    return Hz_t{val * ONE_TERA};
-}
-
 /// @cond Doxygen warning against macro internals
 ATTRIBUTE_VALUE_DEFINE_WITH_NAME(Hz_t, Hz); // See si-units-test-suite.cc for usages
 ATTRIBUTE_ACCESSOR_DEFINE(Hz);
-ATTRIBUTE_CHECKER_DEFINE_WITH_CONVERTER(Hz_t, Hz, Uinteger);
+ATTRIBUTE_CHECKER_DEFINE_WITH_CONVERTER(Hz_t, Hz, Double);
+
+ATTRIBUTE_VALUE_DEFINE_WITH_NAME(kHz_t, kHz); // See si-units-test-suite.cc for usages
+ATTRIBUTE_ACCESSOR_DEFINE(kHz);
+ATTRIBUTE_CHECKER_DEFINE_WITH_CONVERTER(kHz_t, kHz, Double);
 
 ATTRIBUTE_VALUE_DEFINE_WITH_NAME(MHz_t, MHz); // See si-units-test-suite.cc for usages
 ATTRIBUTE_ACCESSOR_DEFINE(MHz);
-ATTRIBUTE_CHECKER_DEFINE_WITH_CONVERTER(MHz_t, MHz, Uinteger);
+ATTRIBUTE_CHECKER_DEFINE_WITH_CONVERTER(MHz_t, MHz, Double);
+
+ATTRIBUTE_VALUE_DEFINE_WITH_NAME(GHz_t, GHz); // See si-units-test-suite.cc for usages
+ATTRIBUTE_ACCESSOR_DEFINE(GHz);
+ATTRIBUTE_CHECKER_DEFINE_WITH_CONVERTER(GHz_t, GHz, Double);
+
+ATTRIBUTE_VALUE_DEFINE_WITH_NAME(THz_t, THz); // See si-units-test-suite.cc for usages
+ATTRIBUTE_ACCESSOR_DEFINE(THz);
+ATTRIBUTE_CHECKER_DEFINE_WITH_CONVERTER(THz_t, THz, Double);
 /// @endcond
 } // namespace ns3
 

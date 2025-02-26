@@ -17,11 +17,11 @@
 namespace ns3
 {
 
-const auto ONE_KILO = 1000L; ///< Kilo
-const auto ONE_MEGA = ONE_KILO * ONE_KILO; ///< Mega
-const auto ONE_GIGA = ONE_MEGA * ONE_KILO; ///< Giga
-const auto ONE_TERA = ONE_GIGA * ONE_KILO; ///< Tera
-const auto ONE_PETA = ONE_TERA * ONE_KILO; ///< Peta
+constexpr auto ONE_KILO = 1000L;               ///< Kilo
+constexpr auto ONE_MEGA = ONE_KILO * ONE_KILO; ///< Mega
+constexpr auto ONE_GIGA = ONE_MEGA * ONE_KILO; ///< Giga
+constexpr auto ONE_TERA = ONE_GIGA * ONE_KILO; ///< Tera
+constexpr auto ONE_PETA = ONE_TERA * ONE_KILO; ///< Peta
 
 // Small numbers
 constexpr double EPSILON = std::numeric_limits<double>::epsilon(); ///< Minimum resolution

@@ -619,19 +619,19 @@ class TestCaseSiUnits : public TestCase
         NS_TEST_EXPECT_MSG_EQ((123.45e6_kHz).in_MHz(), 123450, "");
         NS_TEST_EXPECT_MSG_EQ((123.456789e6_kHz).in_MHz(), 123456.789, "");
 
-        NS_TEST_EXPECT_MSG_EQ(kHz_t(123.4), 123.4_kHz, "");
-        NS_TEST_EXPECT_MSG_EQ(MHz_t(123.4), 123.4_MHz, "");
-        NS_TEST_EXPECT_MSG_EQ(GHz_t(123.4), 123.4_GHz, "");
-        NS_TEST_EXPECT_MSG_EQ(THz_t(123.4), 123.4_THz, "");
-        NS_TEST_EXPECT_MSG_EQ(kHz_t(123), 123_kHz, "");
-        NS_TEST_EXPECT_MSG_EQ(MHz_t(123), 123_MHz, "");
-        NS_TEST_EXPECT_MSG_EQ(GHz_t(123), 123_GHz, "");
-        NS_TEST_EXPECT_MSG_EQ(THz_t(123), 123_THz, "");
+        NS_TEST_EXPECT_MSG_EQ(kHz_t{123.4}, 123.4_kHz, "");
+        NS_TEST_EXPECT_MSG_EQ(MHz_t{123.4}, 123.4_MHz, "");
+        NS_TEST_EXPECT_MSG_EQ(GHz_t{123.4}, 123.4_GHz, "");
+        NS_TEST_EXPECT_MSG_EQ(THz_t{123.4}, 123.4_THz, "");
+        NS_TEST_EXPECT_MSG_EQ(kHz_t{123}, 123_kHz, "");
+        NS_TEST_EXPECT_MSG_EQ(MHz_t{123}, 123_MHz, "");
+        NS_TEST_EXPECT_MSG_EQ(GHz_t{123}, 123_GHz, "");
+        NS_TEST_EXPECT_MSG_EQ(THz_t{123}, 123_THz, "");
 
-        NS_TEST_EXPECT_MSG_EQ(kHz_t(123.4), 123400_Hz, "");
-        NS_TEST_EXPECT_MSG_EQ(MHz_t(123.4), 123400000_Hz, "");
-        NS_TEST_EXPECT_MSG_EQ(GHz_t(123.4), 123400000000_Hz, "");
-        NS_TEST_EXPECT_MSG_EQ(THz_t(123.4), 123400000000000_Hz, "");
+        NS_TEST_EXPECT_MSG_EQ(kHz_t{123.4}, 123400_Hz, "");
+        NS_TEST_EXPECT_MSG_EQ(MHz_t{123.4}, 123400000_Hz, "");
+        NS_TEST_EXPECT_MSG_EQ(GHz_t{123.4}, 123400000000_Hz, "");
+        NS_TEST_EXPECT_MSG_EQ(THz_t{123.4}, 123400000000000_Hz, "");
 
         // Conversion from string
         NS_TEST_EXPECT_MSG_EQ(Hz_t::from_str("3.14Hz").value(), 3.14_Hz, "");
@@ -649,11 +649,15 @@ class TestCaseSiUnits : public TestCase
         TestInputOperatorPositives<Hz_t>({"12.3Hz", "12.3 Hz", " 12.3  Hz "});
         TestInputOperatorNegatives<Hz_t>(
             {"12.3hz", "12.3HZ", "12.3hZ", "12.3_MHz", "12.3MHz_t", "12.3", "12.3dBm"});
-    }
+        TestInputOperatorPositives<kHz_t>({"12.3kHz", "12.3 kHz"});
+        TestInputOperatorNegatives<kHz_t>({"12.3khz", "12.3KHZ"});
+        TestInputOperatorPositives<MHz_t>({"12.3MHz", "12.3 MHz"});
+        TestInputOperatorNegatives<MHz_t>({"12.3Mhz", "12.3MHZ"});
+        TestInputOperatorPositives<GHz_t>({"12.3GHz", "12.3 GHz"});
+        TestInputOperatorNegatives<GHz_t>({"12.3Ghz", "12.3GHZ"});
+        TestInputOperatorPositives<THz_t>({"12.3THz", "12.3 THz"});
+        TestInputOperatorNegatives<THz_t>({"12.3Thz", "12.3THZ"});
 
-    /// Test MHz
-    void Unit_MHz() // NOLINT
-    {
         NS_TEST_EXPECT_MSG_EQ(MHz_t::from_str("3.14 MHz").value(), 3.14_MHz, "");
         NS_TEST_EXPECT_MSG_EQ(MHz_t{"123MHz"}, 123_MHz, "");
         NS_TEST_EXPECT_MSG_EQ(MHz_t{"123.45 MHz"}, 123.45_MHz, "");
@@ -951,7 +955,6 @@ class TestCaseSiUnits : public TestCase
         Unit_double_and_mWatt();
         Conversion();
         Unit_Hz();
-        Unit_MHz();
         Unit_dBm_and_dB();
         Vectors();
         Unit_nsec();
@@ -1012,11 +1015,26 @@ class AttributeMock : public Object
                               HzValue(415000_Hz),
                               MakeHzAccessor(&AttributeMock::m_Hz),
                               MakeHzChecker())
+                .AddAttribute("kHz",
+                              "help message for kHz",
+                              kHzValue(415_kHz),
+                              MakekHzAccessor(&AttributeMock::m_kHz),
+                              MakekHzChecker())
                 .AddAttribute("MHz",
                               "help message for MHz",
                               MHzValue(300_MHz),
                               MakeMHzAccessor(&AttributeMock::m_MHz),
                               MakeMHzChecker())
+                .AddAttribute("GHz",
+                              "help message for GHz",
+                              GHzValue(300_GHz),
+                              MakeGHzAccessor(&AttributeMock::m_GHz),
+                              MakeGHzChecker())
+                .AddAttribute("THz",
+                              "help message for THz",
+                              THzValue(300_THz),
+                              MakeTHzAccessor(&AttributeMock::m_THz),
+                              MakeTHzChecker())
                 .AddAttribute("nSEC",
                               "help message for nSEC",
                               nSECValue(-20_nSEC),
@@ -1071,6 +1089,9 @@ class AttributeMock : public Object
     dBm_per_Hz_t m_dBm_per_Hz{};         ///< value of dBm_per_Hz
     dBm_per_MHz_t m_dBm_per_MHz{};       ///< value of dBm_per_MHz
     Hz_t m_Hz{};                         ///< value of Hz
+    kHz_t m_kHz{};                       ///< value of kHz
+    GHz_t m_GHz{};                       ///< value of GHz
+    THz_t m_THz{};                       ///< value of THz
     MHz_t m_MHz{};                       ///< value of MHz
     nSEC_t m_nSEC{};                     ///< value of nSEC
     degree_t m_degree{};                 ///< value of degree
@@ -1173,7 +1194,7 @@ class TestCaseSiUnitsAttributes : public TestCase
         }
         {
             auto want = 500_Hz;
-            mock->SetAttribute("Hz", UintegerValue(500));
+            mock->SetAttribute("Hz", DoubleValue(500));
             NS_TEST_EXPECT_MSG_EQ(mock->m_Hz, want, "");
         }
         {
@@ -1182,9 +1203,24 @@ class TestCaseSiUnitsAttributes : public TestCase
             NS_TEST_EXPECT_MSG_EQ(mock->m_MHz, want, "");
         }
         {
+            auto want = 123.4_kHz;
+            mock->SetAttribute("kHz", kHzValue(want));
+            NS_TEST_EXPECT_MSG_EQ(mock->m_kHz, want, "");
+        }
+        {
             auto want = 100_MHz;
-            mock->SetAttribute("MHz", UintegerValue(100));
+            mock->SetAttribute("MHz", DoubleValue(100));
             NS_TEST_EXPECT_MSG_EQ(mock->m_MHz, want, "");
+        }
+        {
+            auto want = 123.4_GHz;
+            mock->SetAttribute("GHz", GHzValue(want));
+            NS_TEST_EXPECT_MSG_EQ(mock->m_GHz, want, "");
+        }
+        {
+            auto want = 123.4_THz;
+            mock->SetAttribute("THz", THzValue(want));
+            NS_TEST_EXPECT_MSG_EQ(mock->m_THz, want, "");
         }
         {
             auto want = 100_nSEC;
