@@ -28,6 +28,7 @@ This file is a best-effort approach to solving this issue; we will do our best b
 
 * (internet-apps) Added a parameter to the RADVD helper to announce a prefix without the autoconfiguration flag.
 * (wifi) Callbacks connected to the `WifiMac::IcfDropReason` trace source are now passed a `struct IcfDropInfo` object that has three fields indicating the reason for dropping the ICF, the ID of the link on which the ICF was dropped and the MAC address of the sender of the ICF.
+* (wifi) The `EmlsrSwitchMainPhyBackTrace` has been extended to provide the time elapsed since the switch main PHY back timer started, the reason why the main PHY switches back before the expiration of the switch main PHY back timer and whether the main PHY is switching while it is requested to switch back.
 
 ### Changes to build system
 
