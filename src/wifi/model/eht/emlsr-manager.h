@@ -504,20 +504,10 @@ class EmlsrManager : public Object
      */
     void CancelAllSleepEvents();
 
-    /**
-     * Get whether channel access is expected to be granted on the given link within the given
-     * delay to an Access Category that has traffic to send on the given link.
-     *
-     * @param linkId the ID of the given link
-     * @param delay the given delay
-     * @return whether channel access is expected to be granted on the given link within the given
-     *         delay
-     */
-    bool GetExpectedAccessWithinDelay(uint8_t linkId, const Time& delay) const;
-
     /// Store information about a main PHY switch.
     struct MainPhySwitchInfo
     {
+        Time start;     //!< start of channel switching
         Time end;       //!< end of channel switching
         uint8_t from{}; //!< ID of the link which the main PHY is/has been leaving
         uint8_t to{};   //!< ID of the link which the main PHY is moving to

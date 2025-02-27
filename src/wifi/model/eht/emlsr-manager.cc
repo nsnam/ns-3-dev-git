@@ -960,6 +960,7 @@ EmlsrManager::SwitchMainPhy(uint8_t linkId,
 
     m_mainPhySwitchInfo.from = currMainPhyLinkId.value_or(m_mainPhySwitchInfo.from);
     m_mainPhySwitchInfo.to = linkId;
+    m_mainPhySwitchInfo.start = Simulator::Now();
     m_mainPhySwitchInfo.end = Simulator::Now() + timeToSwitchEnd;
 
     NotifyMainPhySwitch(currMainPhyLinkId, linkId, auxPhy, timeToSwitchEnd);
@@ -1120,28 +1121,6 @@ EmlsrManager::MediumSyncDelayNTxopsExceeded(uint8_t linkId)
 
     NS_ASSERT(timerIt != m_mediumSyncDelayStatus.cend() && timerIt->second.timer.IsPending());
     return timerIt->second.msdNTxopsLeft == 0;
-}
-
-bool
-EmlsrManager::GetExpectedAccessWithinDelay(uint8_t linkId, const Time& delay) const
-{
-    const auto deadline = Simulator::Now() + delay;
-    for (const auto& [acIndex, ac] : wifiAcList)
-    {
-        if (auto edca = m_staMac->GetQosTxop(acIndex); edca->HasFramesToTransmit(linkId))
-        {
-            const auto backoffEnd =
-                m_staMac->GetChannelAccessManager(linkId)->GetBackoffEndFor(edca);
-
-            if (backoffEnd <= deadline)
-            {
-                NS_LOG_DEBUG("Backoff end for " << acIndex << " on link " << +linkId << ": "
-                                                << backoffEnd.As(Time::US));
-                return true;
-            }
-        }
-    }
-    return false;
 }
 
 MgtEmlOmn

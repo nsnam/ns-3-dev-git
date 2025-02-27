@@ -17,6 +17,7 @@
 #include "ns3/wifi-phy.h"
 
 #include <algorithm>
+#include <sstream>
 
 namespace ns3
 {
@@ -302,14 +303,15 @@ AdvancedEmlsrManager::ReceivedMacHdr(Ptr<WifiPhy> phy,
     const auto mainPhyInvolved =
         (phy->GetPhyId() == GetMainPhyId()) ||
         (m_mainPhySwitchInfo.end >= Simulator::Now() && m_mainPhySwitchInfo.to == *linkId);
+    const auto delay =
+        Simulator::GetDelayLeft(m_switchMainPhyBackEvent) + phy->GetChannelSwitchDelay();
 
-    if (m_switchMainPhyBackEvent.IsPending() && mainPhyInvolved &&
-        !GetExpectedAccessWithinDelay(*linkId,
-                                      Simulator::GetDelayLeft(m_switchMainPhyBackEvent) +
-                                          phy->GetChannelSwitchDelay()))
+    if (WifiExpectedAccessReason reason;
+        m_switchMainPhyBackEvent.IsPending() && mainPhyInvolved &&
+        (reason = GetStaMac()->GetChannelAccessManager(*linkId)->GetExpectedAccessWithin(delay)) !=
+            WifiExpectedAccessReason::ACCESS_EXPECTED)
     {
-        m_switchMainPhyBackEvent.Cancel();
-        SwitchMainPhyBackDelayExpired(*linkId);
+        SwitchMainPhyBackDelayExpired(*linkId, reason);
     }
 }
 
@@ -452,17 +454,19 @@ AdvancedEmlsrManager::CheckNavAndCcaLastPifs(Ptr<WifiPhy> phy, uint8_t linkId, P
     auto txopNotStarted = [=, this]() {
         // check when access may be granted to determine whether to switch the main PHY back
         // to the preferred link (if aux PHYs do not switch link)
-        if (!m_switchAuxPhy &&
-            !GetExpectedAccessWithinDelay(linkId,
-                                          Simulator::GetDelayLeft(m_switchMainPhyBackEvent) +
-                                              phy->GetChannelSwitchDelay()))
+        const auto delay =
+            Simulator::GetDelayLeft(m_switchMainPhyBackEvent) + phy->GetChannelSwitchDelay();
+
+        if (WifiExpectedAccessReason reason;
+            !m_switchAuxPhy &&
+            (reason = GetStaMac()->GetChannelAccessManager(linkId)->GetExpectedAccessWithin(
+                 delay)) != WifiExpectedAccessReason::ACCESS_EXPECTED)
         {
             NS_LOG_DEBUG("No AC is expected to get backoff soon, switch main PHY back");
             if (auto mainPhy = GetStaMac()->GetDevice()->GetPhy(GetMainPhyId());
                 !mainPhy->IsStateSwitching())
             {
-                m_switchMainPhyBackEvent.Cancel();
-                SwitchMainPhyBackDelayExpired(linkId);
+                SwitchMainPhyBackDelayExpired(linkId, reason);
             }
             return;
         }
@@ -501,10 +505,21 @@ AdvancedEmlsrManager::CheckNavAndCcaLastPifs(Ptr<WifiPhy> phy, uint8_t linkId, P
 }
 
 void
-AdvancedEmlsrManager::SwitchMainPhyBackDelayExpired(uint8_t linkId)
+AdvancedEmlsrManager::SwitchMainPhyBackDelayExpired(
+    uint8_t linkId,
+    std::optional<WifiExpectedAccessReason> stopReason)
 {
-    NS_LOG_FUNCTION(this << linkId);
-    NS_ASSERT(!m_switchMainPhyBackEvent.IsPending());
+    if (g_log.IsEnabled(ns3::LOG_FUNCTION))
+    {
+        std::stringstream ss;
+        if (stopReason.has_value())
+        {
+            ss << stopReason.value();
+        }
+        NS_LOG_FUNCTION(this << linkId << ss.str());
+    }
+
+    m_switchMainPhyBackEvent.Cancel();
 
     if (m_switchAuxPhy)
     {
@@ -541,7 +556,8 @@ AdvancedEmlsrManager::SwitchMainPhyBackDelayExpired(uint8_t linkId)
             // this is the link on which the main PHY is operating. If an AC with traffic is
             // expected to get channel access soon (within a channel switch delay), restart
             // the timer to have the main PHY stay a bit longer on this link
-            if (GetExpectedAccessWithinDelay(linkId, phy->GetChannelSwitchDelay()))
+            if (GetStaMac()->GetChannelAccessManager(linkId)->GetExpectedAccessWithin(
+                    phy->GetChannelSwitchDelay()) == WifiExpectedAccessReason::ACCESS_EXPECTED)
             {
                 extension = Max(extension, phy->GetChannelSwitchDelay());
             }
@@ -555,12 +571,16 @@ AdvancedEmlsrManager::SwitchMainPhyBackDelayExpired(uint8_t linkId)
             Simulator::Schedule(extension,
                                 &AdvancedEmlsrManager::SwitchMainPhyBackDelayExpired,
                                 this,
-                                linkId);
+                                linkId,
+                                stopReason);
         return;
     }
 
     // no need to wait further, switch the main PHY back to the preferred link
-    SwitchMainPhyBackToPreferredLink(linkId, EmlsrSwitchMainPhyBackTrace(false));
+    const auto elapsed = Simulator::Now() - m_mainPhySwitchInfo.start;
+    const auto isSwitching = GetStaMac()->GetDevice()->GetPhy(GetMainPhyId())->IsStateSwitching();
+    SwitchMainPhyBackToPreferredLink(linkId,
+                                     EmlsrSwitchMainPhyBackTrace(elapsed, stopReason, isSwitching));
 }
 
 void
@@ -585,10 +605,10 @@ AdvancedEmlsrManager::InterruptSwitchMainPhyBackTimerIfNeeded()
 
     const auto delay =
         Simulator::GetDelayLeft(m_switchMainPhyBackEvent) + mainPhy->GetChannelSwitchDelay();
-    if (!GetExpectedAccessWithinDelay(*linkId, delay))
+    if (auto reason = GetStaMac()->GetChannelAccessManager(*linkId)->GetExpectedAccessWithin(delay);
+        reason != WifiExpectedAccessReason::ACCESS_EXPECTED)
     {
-        m_switchMainPhyBackEvent.Cancel();
-        SwitchMainPhyBackDelayExpired(*linkId);
+        SwitchMainPhyBackDelayExpired(*linkId, reason);
     }
 }
 
@@ -768,7 +788,8 @@ AdvancedEmlsrManager::SwitchMainPhyIfTxopGainedByAuxPhy(uint8_t linkId, AcIndex 
             Simulator::Schedule(mainPhy->GetChannelSwitchDelay() + m_switchMainPhyBackDelay,
                                 &AdvancedEmlsrManager::SwitchMainPhyBackDelayExpired,
                                 this,
-                                linkId);
+                                linkId,
+                                std::nullopt);
         return;
     }
 
@@ -944,15 +965,15 @@ AdvancedEmlsrManager::SwitchMainPhyIfTxopToBeGainedByAuxPhy(uint8_t linkId,
                                                 linkId,
                                                 edca);
         }
-
-        else if (!m_switchAuxPhy &&
-                 !GetExpectedAccessWithinDelay(linkId,
-                                               Simulator::GetDelayLeft(m_switchMainPhyBackEvent) +
-                                                   mainPhy->GetChannelSwitchDelay()))
+        else if (WifiExpectedAccessReason reason;
+                 !m_switchAuxPhy &&
+                 (reason = GetStaMac()->GetChannelAccessManager(linkId)->GetExpectedAccessWithin(
+                      Simulator::GetDelayLeft(m_switchMainPhyBackEvent) +
+                      mainPhy->GetChannelSwitchDelay())) !=
+                     WifiExpectedAccessReason::ACCESS_EXPECTED)
         {
             NS_LOG_DEBUG("No AC is expected to get backoff soon, switch main PHY back");
-            m_switchMainPhyBackEvent.Cancel();
-            SwitchMainPhyBackDelayExpired(linkId);
+            SwitchMainPhyBackDelayExpired(linkId, reason);
         }
     });
 
@@ -976,7 +997,8 @@ AdvancedEmlsrManager::SwitchMainPhyIfTxopToBeGainedByAuxPhy(uint8_t linkId,
         Simulator::Schedule(switchDelay + m_switchMainPhyBackDelay,
                             &AdvancedEmlsrManager::SwitchMainPhyBackDelayExpired,
                             this,
-                            linkId);
+                            linkId,
+                            std::nullopt);
 }
 
 } // namespace ns3

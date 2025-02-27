@@ -1548,6 +1548,17 @@ EMLSR clients:
     false, the previous switch is interrupted and the main PHY starts switching to the previous
     link (in this case, the time elapsed since the CTS timeout occurred is zero). This holds true
     for both the case aux PHYs do not switch link and the case aux PHYs switch link.
+  * ``EmlsrSwitchMainPhyBackTrace``: main PHY is switching back to the preferred link after that it
+    did not manage to gain channel access on an aux PHY link before the expiration of the switch
+    main PHY back timer, whose duration is set to the value of the
+    ``ns3::AdvancedEmlsrManager::SwitchMainPhyBackDelay`` attribute. The main PHY can switch back
+    before the timer expiration in case it is determined that channel access is not expected to be
+    gained within the timer expiration plus a channel switch delay. This trace has three parameters:
+    the time elapsed since the switch main PHY back timer started, the reason for switching back
+    before the timer expiration (if that is the case) and a boolean value indicating whether
+    the main PHY is switching when it is requested to switch back. This trace is provided by the
+    ``AdvancedEmlsrManager`` and is only fired when aux PHYs are not TX capable and do not switch
+    link.
 
 Ack manager
 ###########

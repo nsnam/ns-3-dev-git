@@ -11,6 +11,8 @@
 
 #include "default-emlsr-manager.h"
 
+#include "ns3/channel-access-manager.h"
+
 #include <memory>
 
 namespace ns3
@@ -105,14 +107,18 @@ class AdvancedEmlsrManager : public DefaultEmlsrManager
     void SwitchMainPhyIfTxopToBeGainedByAuxPhy(uint8_t linkId, AcIndex aci, const Time& delay);
 
     /**
-     * This method is called when the switch main PHY back delay timer (which is started when the
-     * main PHY switches to the link of an aux PHY that does not switch and is not TX capable)
-     * expires and decides whether to delay the request to switch the main PHY back to the preferred
-     * link or to execute it immediately.
+     * This method is called when the switch main PHY back timer (which is started when the main PHY
+     * switches to the link of an aux PHY that does not switch and is not TX capable) expires and
+     * decides whether to delay the request to switch the main PHY back to the preferred link or to
+     * execute it immediately. This method can also be called to terminate a running switch main PHY
+     * back timer, in case it is determined that channel access is not expected to be gained before
+     * the expiration of the timer plus the channel switch delay.
      *
      * @param linkId the ID of the link that the main PHY is leaving
+     * @param stopReason the reason for terminating the switch main PHY back timer before expiration
      */
-    void SwitchMainPhyBackDelayExpired(uint8_t linkId);
+    void SwitchMainPhyBackDelayExpired(uint8_t linkId,
+                                       std::optional<WifiExpectedAccessReason> stopReason);
 
   private:
     void DoNotifyTxopEnd(uint8_t linkId) override;
@@ -149,16 +155,26 @@ struct EmlsrSwitchMainPhyBackTrace : public EmlsrMainPhySwitchTraceImpl<EmlsrSwi
 {
     static constexpr std::string_view m_name = "TxopNotGainedOnAuxPhyLink"; //!< trace name
 
-    bool nothingToTx; //!< if true, the main PHY managed to gain a TXOP but had nothing to transmit
+    Time elapsed; //!< the time elapsed since the switch main PHY back timer started
+    std::optional<WifiExpectedAccessReason>
+        earlySwitchReason; //!< the reason why the main PHY switches back before the expiration of
+                           //!< the switch main PHY back timer
+    bool isSwitching; //!< whether the main PHY is switching while it is requested to switch back
 
     /**
      * Constructor provided because this struct is not an aggregate (it has a base struct), hence
      * we cannot use designated initializers.
      *
-     * @param nothing the value for the nothingToTx field
+     * @param time the value for the elapsed field
+     * @param reason the value for the earlySwitchReason field
+     * @param switching the value for the isSwitching field
      */
-    EmlsrSwitchMainPhyBackTrace(bool nothing)
-        : nothingToTx(nothing)
+    EmlsrSwitchMainPhyBackTrace(Time time,
+                                std::optional<WifiExpectedAccessReason> reason,
+                                bool switching)
+        : elapsed(time),
+          earlySwitchReason(reason),
+          isSwitching(switching)
     {
     }
 };
