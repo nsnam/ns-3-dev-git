@@ -302,7 +302,7 @@ AdvancedEmlsrManager::ReceivedMacHdr(Ptr<WifiPhy> phy,
     // expires (plus a channel switch delay), try to switch the main PHY back to the preferred link
     const auto mainPhyInvolved =
         (phy->GetPhyId() == GetMainPhyId()) ||
-        (m_mainPhySwitchInfo.end >= Simulator::Now() && m_mainPhySwitchInfo.to == *linkId);
+        (m_mainPhySwitchInfo.disconnected && m_mainPhySwitchInfo.to == *linkId);
     const auto delay =
         Simulator::GetDelayLeft(m_switchMainPhyBackEvent) + phy->GetChannelSwitchDelay();
 
@@ -363,7 +363,7 @@ AdvancedEmlsrManager::DoNotifyTxopEnd(uint8_t linkId)
     if (m_switchAuxPhy || !mainPhy->IsStateSwitching() || m_interruptSwitching)
     {
         NS_ASSERT_MSG(
-            !m_switchAuxPhy || m_mainPhySwitchInfo.end >= Simulator::Now(),
+            !m_switchAuxPhy || m_mainPhySwitchInfo.disconnected,
             "Aux PHY next link ID should have a value when interrupting a main PHY switch");
         uint8_t nextLinkId = m_switchAuxPhy ? m_mainPhySwitchInfo.from : GetMainPhyId();
         SwitchMainPhy(nextLinkId, false, REQUEST_ACCESS, std::move(*traceInfo));

@@ -507,10 +507,11 @@ class EmlsrManager : public Object
     /// Store information about a main PHY switch.
     struct MainPhySwitchInfo
     {
-        Time start;     //!< start of channel switching
-        Time end;       //!< end of channel switching
-        uint8_t from{}; //!< ID of the link which the main PHY is/has been leaving
-        uint8_t to{};   //!< ID of the link which the main PHY is moving to
+        Time start;               //!< start of channel switching
+        bool disconnected{false}; //!< true if the main PHY is not connected to any link, i.e., it
+                                  //!< is switching or waiting to be connected to a link
+        uint8_t from{};           //!< ID of the link which the main PHY is/has been leaving
+        uint8_t to{};             //!< ID of the link which the main PHY is moving to
     };
 
     Time m_emlsrPaddingDelay;    //!< EMLSR Padding delay

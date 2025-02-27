@@ -141,10 +141,9 @@ EmlsrManager::GetTypeId()
 }
 
 EmlsrManager::EmlsrManager()
-    : m_mainPhySwitchInfo{},
-      // The STA initializes dot11MSDTimerDuration to aPPDUMaxTime defined in Table 36-70
-      // (Sec. 35.3.16.8.1 of 802.11be D3.1)
-      m_mediumSyncDuration(MicroSeconds(DEFAULT_MSD_DURATION_USEC)),
+    // The STA initializes dot11MSDTimerDuration to aPPDUMaxTime defined in Table 36-70
+    // (Sec. 35.3.16.8.1 of 802.11be D3.1)
+    : m_mediumSyncDuration(MicroSeconds(DEFAULT_MSD_DURATION_USEC)),
       // The default value of dot11MSDOFDMEDthreshold is –72 dBm and the default value of
       // dot11MSDTXOPMax is 1, respectively (Sec. 35.3.16.8.1 of 802.11be D3.1)
       m_msdOfdmEdThreshold(DEFAULT_MSD_OFDM_ED_THRESH),
@@ -242,6 +241,12 @@ EmlsrManager::EmlsrLinkSwitchCallback(uint8_t linkId, Ptr<WifiPhy> phy, bool con
     }
 
     SetCcaEdThresholdOnLinkSwitch(phy, linkId);
+
+    if (phy->GetPhyId() == m_mainPhyId)
+    {
+        // main PHY has been connected to a link
+        m_mainPhySwitchInfo.disconnected = false;
+    }
 
     Simulator::ScheduleNow([=, this]() {
         // phy switched to operate on the link with ID equal to linkId
@@ -888,6 +893,11 @@ EmlsrManager::SwitchMainPhy(uint8_t linkId,
     traceInfo.toLinkId = linkId;
     m_mainPhySwitchTrace(traceInfo);
 
+    m_mainPhySwitchInfo.from = currMainPhyLinkId.value_or(m_mainPhySwitchInfo.from);
+    m_mainPhySwitchInfo.to = linkId;
+    m_mainPhySwitchInfo.start = Simulator::Now();
+    m_mainPhySwitchInfo.disconnected = true;
+
     const auto newMainPhyChannel = GetChannelForMainPhy(linkId);
 
     NS_LOG_DEBUG("Main PHY (" << mainPhy << ") is about to switch to " << newMainPhyChannel
@@ -957,11 +967,6 @@ EmlsrManager::SwitchMainPhy(uint8_t linkId,
             }
         });
     }
-
-    m_mainPhySwitchInfo.from = currMainPhyLinkId.value_or(m_mainPhySwitchInfo.from);
-    m_mainPhySwitchInfo.to = linkId;
-    m_mainPhySwitchInfo.start = Simulator::Now();
-    m_mainPhySwitchInfo.end = Simulator::Now() + timeToSwitchEnd;
 
     NotifyMainPhySwitch(currMainPhyLinkId, linkId, auxPhy, timeToSwitchEnd);
 }
