@@ -37,6 +37,30 @@ class WifiTxVector;
 enum AcIndex : uint8_t; // opaque enum declaration
 
 /**
+ * @brief Enumeration values for the outcome of the check whether channel access is expected to be
+ *        gained within a given time interval
+ * @see ChannelAccessManager::GetExpectedAccessWithin
+ * @ingroup wifi
+ */
+enum class WifiExpectedAccessReason : uint8_t
+{
+    ACCESS_EXPECTED = 0,
+    NOT_REQUESTED,
+    NOTHING_TO_TX,
+    RX_END,
+    BUSY_END,
+    TX_END,
+    NAV_END,
+    ACK_TIMER_END,
+    CTS_TIMER_END,
+    SWITCHING_END,
+    NO_PHY_END,
+    SLEEP_END,
+    OFF_END,
+    BACKOFF_END
+};
+
+/**
  * @brief Manage a set of ns3::Txop
  * @ingroup wifi
  *
@@ -170,6 +194,21 @@ class ChannelAccessManager : public Object
      * @return the time when the backoff procedure ended (or will end)
      */
     Time GetBackoffEndFor(Ptr<Txop> txop) const;
+
+    /**
+     * Check whether channel access is expected to be granted within the given delay. If it is,
+     * ACCESS_EXPECTED is returned. If channel access is not expected to be granted because no
+     * AC has requested channel access, NOT_REQUESTED is returned. If no AC has frames to send,
+     * NOTHING_TO_TX is returned. If any of the times returned by DoGetAccessGrantStart() exceeds
+     * the given deadline, the reason corresponding to the earliest of such times is returned.
+     * Otherwise, it means that access cannot be granted in time due to the backoff slots to wait
+     * and BACKOFF_END is returned.
+     *
+     * @see DoGetAccessGrantStart
+     * @param delay the given delay
+     * @return ACCESS_EXPECTED or the reason why channel access is not expected to be gained in time
+     */
+    WifiExpectedAccessReason GetExpectedAccessWithin(const Time& delay) const;
 
     /**
      * @return the time until the NAV has been set
@@ -411,6 +450,20 @@ class ChannelAccessManager : public Object
     Time GetBackoffEndFor(Ptr<Txop> txop, Time accessGrantStart) const;
 
     /**
+     * Return a map containing (Time, WifiExpectedAccessReason) pairs sorted in increasing order
+     * of times. For each of the events preventing channel access (e.g., medium busy, RX state,
+     * TX state, etc), a pair is present in the map indicating the latest known time for which
+     * channel access cannot be granted due to that event. Therefore, the returned map does not
+     * contain a pair for some WifiExpectedAccessReason enum values (ACCESS_EXPECTED, NOTHING_TO_TX,
+     * NOT_REQUESTED and BACKOFF_END).
+     *
+     * @param ignoreNav whether NAV should be ignored
+     * @return a map containing (Time, WifiExpectedAccessReason) pairs sorted in increasing order
+     *         of times
+     */
+    std::multimap<Time, WifiExpectedAccessReason> DoGetAccessGrantStart(bool ignoreNav) const;
+
+    /**
      * This method determines whether the medium has been idle during a period (of
      * non-null duration) immediately preceding the time this method is called. If
      * so, the last idle start time and end time for each channel type are updated.
@@ -539,6 +592,15 @@ class ChannelAccessManager : public Object
 
     NSlotsLeftTracedCallback m_nSlotsLeftCallback; //!< traced callback for NSlotsLeft alerts
 };
+
+/**
+ * @brief Stream insertion operator.
+ *
+ * @param os the stream
+ * @param reason the expected access reason
+ * @return a reference to the stream
+ */
+std::ostream& operator<<(std::ostream& os, const WifiExpectedAccessReason& reason);
 
 } // namespace ns3
 
