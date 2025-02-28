@@ -1314,13 +1314,17 @@ EmlsrManager::ApplyMaxChannelWidthAndModClassOnAuxPhys()
         auto auxPhy = m_staMac->GetWifiPhy(linkId);
         auto channel = GetChannelForAuxPhy(linkId);
 
-        if (linkId == currMainPhyLinkId || !m_staMac->IsEmlsrLink(linkId) ||
-            auxPhy->GetOperatingChannel() == channel)
+        if (linkId == currMainPhyLinkId || !m_staMac->IsEmlsrLink(linkId))
         {
-            continue;
+            continue; // main PHY link or not an EMLSR link
         }
 
         auxPhy->SetMaxModulationClassSupported(m_auxPhyMaxModClass);
+
+        if (auxPhy->GetOperatingChannel() == channel)
+        {
+            continue;
+        }
 
         NS_LOG_DEBUG("Aux PHY (" << auxPhy << ") is about to switch to " << channel
                                  << " to operate on link " << +linkId);
