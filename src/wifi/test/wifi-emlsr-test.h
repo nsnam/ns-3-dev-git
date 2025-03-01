@@ -169,7 +169,7 @@ class EmlsrOperationsTestBase : public TestCase
      * @param index the index of the EMLSR client whose main PHY switch event is logged
      * @param info the information associated with the main PHY switch event
      */
-    void MainPhySwitchInfoCallback(std::size_t index, const EmlsrMainPhySwitchTrace& info);
+    virtual void MainPhySwitchInfoCallback(std::size_t index, const EmlsrMainPhySwitchTrace& info);
 
     /**
      * Check information provided by the EMLSR Manager MainPhySwitch trace.
@@ -1238,6 +1238,139 @@ class EmlsrIcfSentDuringMainPhySwitchTest : public EmlsrOperationsTestBase
     std::list<Events> m_events;                    //!< list of events for a test run
     std::size_t m_processedEvents{0};              //!< number of processed events
     const uint8_t m_linkIdForTid3{2};              //!< ID of the link on which TID 3 is mapped
+};
+
+/**
+ * @ingroup wifi-test
+ * @ingroup tests
+ *
+ * @brief Switch main PHY back timer test
+ *
+ * An AP MLD and an EMLSR client, both having 3 links, are considered in this test. Aux PHYs are
+ * not TX capable, do not switch links and support up to the HT modulation class; the preferred link
+ * is link 2. In order to control link switches, a TID-to-Link mapping is configured so that TID 0
+ * is mapped onto link 1 for both DL and UL. In this test, the main PHY switches to link 1 to start
+ * an UL TXOP but, while the main PHY is switching or shortly after the channel switch ends, the AP
+ * MLD transmits a QoS Data broadcast frame on link 1 using a modulation supported by the aux PHYs.
+ * Different situations are tested and it is verified that the main PHY switches back to the
+ * preferred link as expected. Scenarios:
+ *
+ * - RXSTART_WHILE_SWITCH_NO_INTERRUPT: the AP MLD transmits an HT PPDU while the main PHY is
+ *   switching; at the end of the PHY header reception (while the main PHY is still switching), the
+ *   MAC of the EMLSR client receives the RX start notification, which indicates that the modulation
+ *   is HT (hence the PPDU does not carry an ICF) and the PPDU duration exceeds the switch main PHY
+ *   back delay. The EMLSR client decides to switch the main PHY back to the preferred link (with
+ *   reason RX_END), but the actual main PHY switch is postponed until the ongoing channel switch
+ *   terminates.
+ * - RXSTART_WHILE_SWITCH_INTERRUPT: same as previous scenario, except that the main PHY switch can
+ *   be interrupted, hence the main PHY switches back to the preferred link as soon as the reception
+ *   of the PHY header ends.
+ * - RXSTART_AFTER_SWITCH_HT_PPDU: the AP MLD transmits an HT PPDU some time after the main PHY
+ *   starts switching to link 1; the delay is computed so that the RX START notification is sent
+ *   after that the main PHY has completed the channel switch. When the main PHY completes the
+ *   switch to link 1, it is determined that the PPDU being received (using HT modulation) cannot
+ *   be an ICF, hence the main PHY is connected to link 1. Connecting the main PHY to link 1
+ *   triggers a CCA busy notification until the end of the PPDU (we assume this information is
+ *   available from the PHY header decoded by the aux PHY), thus the main PHY switches back to the
+ *   preferred link (with reason BUSY_END).
+ * - NON_HT_PPDU_DONT_USE_MAC_HDR: the AP MLD transmits a non-HT PPDU on link 1 (it does not really
+ *   matter if the RX START notification is sent before or after the end of main PHY switch). When
+ *   the main PHY completes the switch to link 1, it is detected that the aux PHY on link 1 is
+ *   receiving a PPDU which may be an ICF (the modulation is non-HT), hence the main PHY is not
+ *   connected to link 1 until the end of the PPDU reception (MAC header info is not used). At that
+ *   time, it is detected that the PPDU does not contain an ICF, but it is determined that channel
+ *   access can be gained before the end of the switch main PHY back timer, hence the main PHY stays
+ *   on link 1 and transmits its unicast data frame. The start of the UL TXOP cancels the main PHY
+ *   switch back timer and the main PHY switches back to the preferred link at the end of the TXOP.
+ * - NON_HT_PPDU_USE_MAC_HDR: same as previous scenario, except that the MAC header info can be
+ *   used. After completing the channel switch, the main PHY is not connected to link 1 because the
+ *   non-HT PPDU being received may be an ICF. When the MAC header info is notified, it is detected
+ *   that the PPDU does not contain an ICF, channel access would not be gained before the end of the
+ *   switch main PHY back timer and therefore the main PHY switches back to the preferred link (with
+ *   reason RX_END).
+ * - LONG_SWITCH_BACK_DELAY_DONT_USE_MAC_HDR: same as the NON_HT_PPDU_DONT_USE_MAC_HDR scenario,
+ *   except that the switch main PHY back delay is longer and exceeds the PPDU duration, but it is
+ *   does not exceed the PPDU duration plus AIFS and the backoff slots. Therefore, at the end of the
+ *   PPDU reception, it is determined that the backoff counter will not reach zero before the end of
+ *   the switch main PHY back timer plus a channel switch delay and the main PHY switches back to
+ *   the preferred link (with reason BACKOFF_END).
+ * - LONG_SWITCH_BACK_DELAY_USE_MAC_HDR: same as the NON_HT_PPDU_USE_MAC_HDR scenario,
+ *   except that the switch main PHY back delay is longer and exceeds the PPDU duration, but it
+ *   does not exceed the PPDU duration plus AIFS and the backoff slots. Therefore, at the end of the
+ *   MAC header reception, it is determined that the backoff counter will not reach zero before the
+ *   end of the switch main PHY back timer plus a channel switch delay and the main PHY switches
+ *   back to the preferred link (with reason BACKOFF_END).
+ *
+ * In all the cases, it is verified that, after the reception of the broadcast data frame, the EMLSR
+ * client transmits the data frame and receives the acknowledgment.
+ */
+class EmlsrSwitchMainPhyBackTest : public EmlsrOperationsTestBase
+{
+  public:
+    /// Constructor.
+    EmlsrSwitchMainPhyBackTest();
+
+    /**
+     * Enumeration indicating the tested scenario
+     */
+    enum TestScenario : uint8_t
+    {
+        RXSTART_WHILE_SWITCH_NO_INTERRUPT = 0,
+        RXSTART_WHILE_SWITCH_INTERRUPT,
+        RXSTART_AFTER_SWITCH_HT_PPDU,
+        NON_HT_PPDU_DONT_USE_MAC_HDR,
+        NON_HT_PPDU_USE_MAC_HDR,
+        LONG_SWITCH_BACK_DELAY_DONT_USE_MAC_HDR,
+        LONG_SWITCH_BACK_DELAY_USE_MAC_HDR,
+        COUNT
+    };
+
+  protected:
+    void DoSetup() override;
+    void DoRun() override;
+    void Transmit(Ptr<WifiMac> mac,
+                  uint8_t phyId,
+                  WifiConstPsduMap psduMap,
+                  WifiTxVector txVector,
+                  double txPowerW) override;
+    void MainPhySwitchInfoCallback(std::size_t index, const EmlsrMainPhySwitchTrace& info) override;
+
+    /// Runs a test case and invokes itself for the next test case
+    void RunOne();
+
+    /// Actions and checks to perform upon the transmission of each frame
+    struct Events
+    {
+        /**
+         * Constructor.
+         *
+         * @param type the frame MAC header type
+         * @param f function to perform actions and checks
+         */
+        Events(WifiMacType type,
+               std::function<void(Ptr<const WifiPsdu>, const WifiTxVector&, uint8_t)>&& f = {})
+            : hdrType(type),
+              func(f)
+        {
+        }
+
+        WifiMacType hdrType; ///< MAC header type of frame being transmitted
+        std::function<void(Ptr<const WifiPsdu>, const WifiTxVector&, uint8_t)>
+            func; ///< function to perform actions and checks
+    };
+
+  private:
+    void StartTraffic() override;
+
+    uint8_t m_testIndex{0};               //!< index to iterate over test scenarios
+    bool m_setupDone{false};              //!< whether association, BA, ... have been done
+    bool m_dlPktDone{false};              //!< whether the DL packet has been generated
+    std::list<Events> m_events;           //!< list of events for a test run
+    std::size_t m_processedEvents{0};     //!< number of processed events
+    const uint8_t m_linkIdForTid0{1};     //!< ID of the link on which TID 0 is mapped
+    Ptr<WifiMpdu> m_bcastFrame;           //!< the broadcast frame sent by the AP MLD
+    Time m_switchMainPhyBackDelay;        //!< the switch main PHY back delay
+    Time m_expectedMainPhySwitchBackTime; //!< expected main PHY switch back time
 };
 
 #endif /* WIFI_EMLSR_TEST_H */

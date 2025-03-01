@@ -423,6 +423,14 @@ class Txop : public Object
     void StartBackoffNow(uint32_t nSlots, uint8_t linkId);
 
     /**
+     * Return the current number of backoff slots on the given link.
+     *
+     * @param linkId the ID of the given link
+     * @return the current number of backoff slots
+     */
+    uint32_t GetBackoffSlots(uint8_t linkId) const;
+
+    /**
      * Check if the Txop has frames to transmit over the given link
      * @param linkId the ID of the given link.
      * @return true if the Txop has frames to transmit.
@@ -494,13 +502,6 @@ class Txop : public Object
      */
     void RequestAccess(uint8_t linkId);
 
-    /**
-     * Return the current number of backoff slots on the given link.
-     *
-     * @param linkId the ID of the given link
-     * @return the current number of backoff slots
-     */
-    uint32_t GetBackoffSlots(uint8_t linkId) const;
     /**
      * Return the time when the backoff procedure started on the given link.
      *

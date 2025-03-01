@@ -15,6 +15,8 @@
 
 #include <memory>
 
+class EmlsrSwitchMainPhyBackTest;
+
 namespace ns3
 {
 
@@ -27,6 +29,9 @@ class WifiPhyListener;
  */
 class AdvancedEmlsrManager : public DefaultEmlsrManager
 {
+    /// Allow test cases to access private members
+    friend class ::EmlsrSwitchMainPhyBackTest;
+
   public:
     /**
      * @brief Get the type ID.

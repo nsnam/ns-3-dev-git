@@ -5712,6 +5712,585 @@ EmlsrIcfSentDuringMainPhySwitchTest::RunOne()
         });
 }
 
+EmlsrSwitchMainPhyBackTest::EmlsrSwitchMainPhyBackTest()
+    : EmlsrOperationsTestBase("Check handling of the switch main PHY back timer")
+{
+    m_mainPhyId = 2;
+    m_linksToEnableEmlsrOn = {0, 1, 2};
+    m_nEmlsrStations = 1;
+    m_nNonEmlsrStations = 0;
+
+    // channel switch delay will be also set to 64 us
+    m_paddingDelay = {MicroSeconds(64)};
+    m_transitionDelay = {MicroSeconds(64)};
+    m_establishBaDl = {0};
+    m_establishBaUl = {0};
+    m_duration = Seconds(0.5);
+}
+
+void
+EmlsrSwitchMainPhyBackTest::DoSetup()
+{
+    Config::SetDefault("ns3::WifiPhy::ChannelSwitchDelay", TimeValue(MicroSeconds(64)));
+    Config::SetDefault("ns3::WifiPhy::NotifyMacHdrRxEnd", BooleanValue(true));
+    Config::SetDefault("ns3::DefaultEmlsrManager::SwitchAuxPhy", BooleanValue(false));
+    Config::SetDefault("ns3::EmlsrManager::AuxPhyTxCapable", BooleanValue(false));
+    // Use only link 1 for DL and UL traffic
+    std::string mapping = "0 " + std::to_string(m_linkIdForTid0);
+    Config::SetDefault("ns3::EhtConfiguration::TidToLinkMappingDl", StringValue(mapping));
+    Config::SetDefault("ns3::EhtConfiguration::TidToLinkMappingUl", StringValue(mapping));
+    Config::SetDefault("ns3::EmlsrManager::AuxPhyMaxModClass", StringValue("HT"));
+    Config::SetDefault("ns3::AdvancedEmlsrManager::UseAuxPhyCca", BooleanValue(true));
+
+    EmlsrOperationsTestBase::DoSetup();
+
+    WifiMacHeader hdr(WIFI_MAC_QOSDATA);
+    hdr.SetAddr1(Mac48Address::GetBroadcast());
+    hdr.SetAddr2(m_apMac->GetFrameExchangeManager(m_linkIdForTid0)->GetAddress());
+    hdr.SetAddr3(m_apMac->GetAddress());
+    hdr.SetDsFrom();
+    hdr.SetDsNotTo();
+    hdr.SetQosTid(0);
+
+    m_bcastFrame = Create<WifiMpdu>(Create<Packet>(1000), hdr);
+}
+
+void
+EmlsrSwitchMainPhyBackTest::Transmit(Ptr<WifiMac> mac,
+                                     uint8_t phyId,
+                                     WifiConstPsduMap psduMap,
+                                     WifiTxVector txVector,
+                                     double txPowerW)
+{
+    EmlsrOperationsTestBase::Transmit(mac, phyId, psduMap, txVector, txPowerW);
+
+    const auto psdu = psduMap.cbegin()->second;
+    const auto& hdr = psdu->GetHeader(0);
+
+    // nothing to do before setup is completed
+    if (!m_setupDone)
+    {
+        return;
+    }
+
+    auto linkId = mac->GetLinkForPhy(phyId);
+    NS_TEST_ASSERT_MSG_EQ(linkId.has_value(),
+                          true,
+                          "PHY " << +phyId << " is not operating on any link");
+
+    if (!m_events.empty())
+    {
+        // check that the expected frame is being transmitted
+        NS_TEST_EXPECT_MSG_EQ(m_events.front().hdrType,
+                              hdr.GetType(),
+                              "Unexpected MAC header type for frame #" << ++m_processedEvents);
+        // perform actions/checks, if any
+        if (m_events.front().func)
+        {
+            m_events.front().func(psdu, txVector, linkId.value());
+        }
+
+        m_events.pop_front();
+    }
+}
+
+void
+EmlsrSwitchMainPhyBackTest::StartTraffic()
+{
+    m_setupDone = true;
+    RunOne();
+}
+
+void
+EmlsrSwitchMainPhyBackTest::DoRun()
+{
+    Simulator::Stop(m_duration);
+    Simulator::Run();
+
+    NS_TEST_EXPECT_MSG_EQ(m_events.empty(), true, "Not all events took place");
+
+    Simulator::Destroy();
+}
+
+void
+EmlsrSwitchMainPhyBackTest::MainPhySwitchInfoCallback(std::size_t index,
+                                                      const EmlsrMainPhySwitchTrace& info)
+{
+    EmlsrOperationsTestBase::MainPhySwitchInfoCallback(index, info);
+
+    if (!m_setupDone)
+    {
+        return;
+    }
+
+    if (!m_dlPktDone && info.GetName() == "UlTxopAuxPhyNotTxCapable")
+    {
+        NS_LOG_INFO("Main PHY starts switching\n");
+        const auto delay =
+            static_cast<TestScenario>(m_testIndex) <= RXSTART_WHILE_SWITCH_INTERRUPT
+                ? Time{0}
+                : MicroSeconds(30); // greater than duration of PHY header of non-HT PPDU
+        Simulator::Schedule(delay,
+                            [=, this]() { m_apMac->GetQosTxop(AC_BE)->Queue(m_bcastFrame); });
+        return;
+    }
+
+    if (m_expectedMainPhySwitchBackTime == Simulator::Now() &&
+        info.GetName() == "TxopNotGainedOnAuxPhyLink")
+    {
+        NS_LOG_INFO("Main PHY switches back\n");
+
+        const auto& traceInfo = static_cast<const EmlsrSwitchMainPhyBackTrace&>(info);
+
+        switch (static_cast<TestScenario>(m_testIndex))
+        {
+        case RXSTART_WHILE_SWITCH_NO_INTERRUPT:
+        case RXSTART_WHILE_SWITCH_INTERRUPT:
+            NS_TEST_EXPECT_MSG_EQ((traceInfo.elapsed.IsStrictlyPositive() &&
+                                   traceInfo.elapsed < m_switchMainPhyBackDelay),
+                                  true,
+                                  "Unexpected value for the elapsed field");
+            NS_TEST_EXPECT_MSG_EQ(traceInfo.earlySwitchReason.has_value(),
+                                  true,
+                                  "earlySwitchReason should hold a value");
+            NS_TEST_EXPECT_MSG_EQ(traceInfo.earlySwitchReason.value(),
+                                  WifiExpectedAccessReason::RX_END,
+                                  "Unexpected earlySwitchReason value");
+            NS_TEST_EXPECT_MSG_EQ(traceInfo.isSwitching, true, "Unexpected value for isSwitching");
+            break;
+
+        case RXSTART_AFTER_SWITCH_HT_PPDU:
+            NS_TEST_EXPECT_MSG_EQ((traceInfo.elapsed.IsStrictlyPositive() &&
+                                   traceInfo.elapsed < m_switchMainPhyBackDelay),
+                                  true,
+                                  "Unexpected value for the elapsed field");
+            NS_TEST_EXPECT_MSG_EQ(traceInfo.earlySwitchReason.has_value(),
+                                  true,
+                                  "earlySwitchReason should hold a value");
+            NS_TEST_EXPECT_MSG_EQ(traceInfo.earlySwitchReason.value(),
+                                  WifiExpectedAccessReason::BUSY_END,
+                                  "Unexpected earlySwitchReason value");
+            NS_TEST_EXPECT_MSG_EQ(traceInfo.isSwitching, false, "Unexpected value for isSwitching");
+            break;
+
+        case NON_HT_PPDU_USE_MAC_HDR:
+            NS_TEST_EXPECT_MSG_EQ((traceInfo.elapsed.IsStrictlyPositive() &&
+                                   traceInfo.elapsed < m_switchMainPhyBackDelay),
+                                  true,
+                                  "Unexpected value for the elapsed field");
+            NS_TEST_EXPECT_MSG_EQ(traceInfo.earlySwitchReason.has_value(),
+                                  true,
+                                  "earlySwitchReason should hold a value");
+            NS_TEST_EXPECT_MSG_EQ(traceInfo.earlySwitchReason.value(),
+                                  WifiExpectedAccessReason::RX_END,
+                                  "Unexpected earlySwitchReason value");
+            NS_TEST_EXPECT_MSG_EQ(traceInfo.isSwitching, false, "Unexpected value for isSwitching");
+            break;
+
+        case LONG_SWITCH_BACK_DELAY_DONT_USE_MAC_HDR:
+            NS_TEST_EXPECT_MSG_EQ((traceInfo.elapsed.IsStrictlyPositive() &&
+                                   traceInfo.elapsed >= m_switchMainPhyBackDelay),
+                                  true,
+                                  "Unexpected value for the elapsed field");
+            NS_TEST_EXPECT_MSG_EQ(traceInfo.earlySwitchReason.has_value(),
+                                  true,
+                                  "earlySwitchReason should hold a value");
+            NS_TEST_EXPECT_MSG_EQ(traceInfo.earlySwitchReason.value(),
+                                  WifiExpectedAccessReason::BACKOFF_END,
+                                  "Unexpected earlySwitchReason value");
+            NS_TEST_EXPECT_MSG_EQ(traceInfo.isSwitching, false, "Unexpected value for isSwitching");
+            break;
+
+        case LONG_SWITCH_BACK_DELAY_USE_MAC_HDR:
+            NS_TEST_EXPECT_MSG_EQ((traceInfo.elapsed.IsStrictlyPositive() &&
+                                   traceInfo.elapsed < m_switchMainPhyBackDelay),
+                                  true,
+                                  "Unexpected value for the elapsed field");
+            NS_TEST_EXPECT_MSG_EQ(traceInfo.earlySwitchReason.has_value(),
+                                  true,
+                                  "earlySwitchReason should hold a value");
+            NS_TEST_EXPECT_MSG_EQ(traceInfo.earlySwitchReason.value(),
+                                  WifiExpectedAccessReason::BACKOFF_END,
+                                  "Unexpected earlySwitchReason value");
+            NS_TEST_EXPECT_MSG_EQ(traceInfo.isSwitching, false, "Unexpected value for isSwitching");
+            break;
+
+        default:
+            NS_TEST_ASSERT_MSG_EQ(true, false, "Unexpected scenario: " << +m_testIndex);
+        }
+        m_dlPktDone = true;
+    }
+
+    if (m_expectedMainPhySwitchBackTime == Simulator::Now() && info.GetName() == "TxopEnded")
+    {
+        NS_LOG_INFO("Main PHY switches back\n");
+
+        NS_TEST_EXPECT_MSG_EQ(+m_testIndex,
+                              +static_cast<uint8_t>(NON_HT_PPDU_DONT_USE_MAC_HDR),
+                              "Unexpected TxopEnded reason for switching main PHY back");
+
+        m_dlPktDone = true;
+    }
+}
+
+void
+EmlsrSwitchMainPhyBackTest::RunOne()
+{
+    const auto testIndex = static_cast<TestScenario>(m_testIndex);
+
+    const auto bcastTxVector =
+        m_apMac->GetWifiRemoteStationManager(m_linkIdForTid0)
+            ->GetGroupcastTxVector(m_bcastFrame->GetHeader(),
+                                   m_apMac->GetWifiPhy(m_linkIdForTid0)->GetChannelWidth());
+    const auto bcastTxDuration =
+        WifiPhy::CalculateTxDuration(m_bcastFrame->GetSize(),
+                                     bcastTxVector,
+                                     m_apMac->GetWifiPhy(m_linkIdForTid0)->GetPhyBand());
+
+    const auto mode = (testIndex >= NON_HT_PPDU_DONT_USE_MAC_HDR ? OfdmPhy::GetOfdmRate6Mbps()
+                                                                 : HtPhy::GetHtMcs0());
+
+    m_switchMainPhyBackDelay = bcastTxDuration;
+    if (testIndex != LONG_SWITCH_BACK_DELAY_DONT_USE_MAC_HDR &&
+        testIndex != LONG_SWITCH_BACK_DELAY_USE_MAC_HDR)
+    {
+        // make switch main PHY back delay at least two channel switch delays shorter than the
+        // PPDU TX duration
+        m_switchMainPhyBackDelay -= MicroSeconds(250);
+    }
+
+    const auto interruptSwitch = (testIndex == RXSTART_WHILE_SWITCH_INTERRUPT);
+    const auto useMacHeader =
+        (testIndex == NON_HT_PPDU_USE_MAC_HDR || testIndex == LONG_SWITCH_BACK_DELAY_USE_MAC_HDR);
+
+    m_apMac->GetWifiRemoteStationManager(m_linkIdForTid0)
+        ->SetAttribute("NonUnicastMode", WifiModeValue(mode));
+    m_staMacs[0]->GetEmlsrManager()->SetAttribute("SwitchMainPhyBackDelay",
+                                                  TimeValue(m_switchMainPhyBackDelay));
+    m_staMacs[0]->GetEmlsrManager()->SetAttribute("InterruptSwitch", BooleanValue(interruptSwitch));
+    m_staMacs[0]->GetEmlsrManager()->SetAttribute("UseNotifiedMacHdr", BooleanValue(useMacHeader));
+
+    NS_LOG_INFO("Starting test #" << +m_testIndex << "\n");
+    m_dlPktDone = false;
+
+    // wait some more time to ensure that backoffs count down to zero and then generate a packet
+    // at the EMLSR client. When notified of the main PHY switch, we decide when the AP MLD has to
+    // transmit a broadcast frame
+    Simulator::Schedule(MilliSeconds(5), [=, this]() {
+        m_staMacs[0]->GetDevice()->GetNode()->AddApplication(GetApplication(UPLINK, 0, 1, 500));
+    });
+
+    auto mainPhy = m_staMacs[0]->GetDevice()->GetPhy(m_mainPhyId);
+    auto advEmlsrMgr = DynamicCast<AdvancedEmlsrManager>(m_staMacs[0]->GetEmlsrManager());
+
+    m_events.emplace_back(
+        WIFI_MAC_QOSDATA,
+        [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, uint8_t linkId) {
+            const auto phyHdrDuration = WifiPhy::CalculatePhyPreambleAndHeaderDuration(txVector);
+            const auto txDuration =
+                WifiPhy::CalculateTxDuration(psdu,
+                                             txVector,
+                                             m_apMac->GetWifiPhy(linkId)->GetPhyBand());
+            NS_TEST_EXPECT_MSG_EQ(psdu->GetAddr1(),
+                                  Mac48Address::GetBroadcast(),
+                                  "Expected a broadcast frame");
+            NS_TEST_EXPECT_MSG_EQ(+linkId,
+                                  +m_linkIdForTid0,
+                                  "Broadcast frame transmitted on wrong link");
+            NS_TEST_EXPECT_MSG_EQ(psdu->GetAddr2(),
+                                  m_apMac->GetFrameExchangeManager(linkId)->GetAddress(),
+                                  "Unexpected TA for the broadcast frame");
+            NS_TEST_EXPECT_MSG_EQ(txVector.GetMode(), mode, "Unexpected WifiMode");
+
+            switch (testIndex)
+            {
+            case RXSTART_WHILE_SWITCH_NO_INTERRUPT:
+                // main PHY is switching before the end of PHY header reception and
+                // the switch main PHY back timer is running
+                Simulator::Schedule(phyHdrDuration - TimeStep(1), [=, this]() {
+                    NS_TEST_EXPECT_MSG_EQ(
+                        mainPhy->GetState()->GetLastTime({WifiPhyState::SWITCHING}),
+                        Simulator::Now(),
+                        "Main PHY is not switching at the end of PHY header reception");
+                    NS_TEST_EXPECT_MSG_EQ(+advEmlsrMgr->m_mainPhySwitchInfo.to,
+                                          +m_linkIdForTid0,
+                                          "Main PHY is switching to a wrong link");
+                    NS_TEST_EXPECT_MSG_EQ(advEmlsrMgr->m_switchMainPhyBackEvent.IsPending(),
+                                          true,
+                                          "Main PHY switch back timer should be running");
+                });
+                // main PHY is still switching right after the end of PHY header reception, but
+                // the switch main PHY back timer has been stopped
+                Simulator::Schedule(phyHdrDuration + TimeStep(2), [=, this]() {
+                    NS_TEST_EXPECT_MSG_EQ(
+                        mainPhy->GetState()->GetLastTime({WifiPhyState::SWITCHING}),
+                        Simulator::Now(),
+                        "Main PHY is not switching at the end of PHY header reception");
+                    NS_TEST_EXPECT_MSG_EQ(+advEmlsrMgr->m_mainPhySwitchInfo.to,
+                                          +m_linkIdForTid0,
+                                          "Main PHY is switching to a wrong link");
+                    NS_TEST_EXPECT_MSG_EQ(advEmlsrMgr->m_switchMainPhyBackEvent.IsPending(),
+                                          false,
+                                          "Main PHY switch back timer should have been stopped");
+                });
+                // main PHY is expected to switch back when the ongoing switch terminates
+                m_expectedMainPhySwitchBackTime = Simulator::Now() + mainPhy->GetDelayUntilIdle();
+                break;
+
+            case RXSTART_WHILE_SWITCH_INTERRUPT:
+                // main PHY is switching before the end of PHY header reception and
+                // the switch main PHY back timer is running
+                Simulator::Schedule(phyHdrDuration - TimeStep(1), [=, this]() {
+                    NS_TEST_EXPECT_MSG_EQ(
+                        mainPhy->GetState()->GetLastTime({WifiPhyState::SWITCHING}),
+                        Simulator::Now(),
+                        "Main PHY is not switching at the end of PHY header reception");
+                    NS_TEST_EXPECT_MSG_EQ(+advEmlsrMgr->m_mainPhySwitchInfo.to,
+                                          +m_linkIdForTid0,
+                                          "Main PHY is switching to a wrong link");
+                    NS_TEST_EXPECT_MSG_EQ(advEmlsrMgr->m_switchMainPhyBackEvent.IsPending(),
+                                          true,
+                                          "Main PHY switch back timer should be running");
+                });
+                // main PHY is switching back right after the end of PHY header reception, but
+                // the switch main PHY back timer has been stopped
+                Simulator::Schedule(phyHdrDuration + TimeStep(2), [=, this]() {
+                    NS_TEST_EXPECT_MSG_EQ(
+                        mainPhy->GetState()->GetLastTime({WifiPhyState::SWITCHING}),
+                        Simulator::Now(),
+                        "Main PHY is not switching at the end of PHY header reception");
+                    NS_TEST_EXPECT_MSG_EQ(+advEmlsrMgr->m_mainPhySwitchInfo.to,
+                                          +m_mainPhyId,
+                                          "Main PHY is switching to a wrong link");
+                    NS_TEST_EXPECT_MSG_EQ(advEmlsrMgr->m_switchMainPhyBackEvent.IsPending(),
+                                          false,
+                                          "Main PHY switch back timer should have been stopped");
+                });
+                // main PHY is expected to switch back when the reception of PHY header ends
+                m_expectedMainPhySwitchBackTime = Simulator::Now() + phyHdrDuration + TimeStep(1);
+                break;
+
+            case RXSTART_AFTER_SWITCH_HT_PPDU:
+                // main PHY is switching back at the end of PHY header reception and
+                // the switch main PHY back timer has been stopped
+                Simulator::Schedule(phyHdrDuration, [=, this]() {
+                    NS_TEST_EXPECT_MSG_EQ(
+                        mainPhy->GetState()->GetLastTime({WifiPhyState::SWITCHING}),
+                        Simulator::Now(),
+                        "Main PHY is not switching at the end of PHY header reception");
+                    NS_TEST_EXPECT_MSG_EQ(+advEmlsrMgr->m_mainPhySwitchInfo.to,
+                                          +m_mainPhyId,
+                                          "Main PHY is switching to a wrong link");
+                    NS_TEST_EXPECT_MSG_EQ(advEmlsrMgr->m_switchMainPhyBackEvent.IsPending(),
+                                          false,
+                                          "Main PHY switch back timer should have been stopped");
+                });
+                // main PHY is expected to switch back when the reception of PHY header ends
+                m_expectedMainPhySwitchBackTime =
+                    Simulator::Now() + mainPhy->GetDelayUntilIdle() + TimeStep(1);
+                break;
+
+            case NON_HT_PPDU_DONT_USE_MAC_HDR:
+                // when the main PHY completes the channel switch, it is not connected to the aux
+                // PHY link and the switch main PHY back timer is running
+                Simulator::Schedule(mainPhy->GetDelayUntilIdle() + TimeStep(1), [=, this]() {
+                    NS_TEST_EXPECT_MSG_EQ(advEmlsrMgr->m_mainPhySwitchInfo.disconnected,
+                                          true,
+                                          "Main PHY should be waiting to be connected to a link");
+                    NS_TEST_EXPECT_MSG_EQ(+advEmlsrMgr->m_mainPhySwitchInfo.to,
+                                          +m_linkIdForTid0,
+                                          "Main PHY is waiting to be connected to a wrong link");
+                    NS_TEST_EXPECT_MSG_EQ(advEmlsrMgr->m_switchMainPhyBackEvent.IsPending(),
+                                          true,
+                                          "Main PHY switch back timer should be running");
+                    // when PIFS check is performed at the end of the main PHY switch, the medium
+                    // is found busy and a backoff value is generated; make sure that this value is
+                    // at most 2 to ensure the conditions expected by this scenario
+                    if (auto beTxop = m_staMacs[0]->GetQosTxop(AC_BE);
+                        beTxop->GetBackoffSlots(m_linkIdForTid0) > 2)
+                    {
+                        beTxop->StartBackoffNow(2, m_linkIdForTid0);
+                        m_staMacs[0]
+                            ->GetChannelAccessManager(m_linkIdForTid0)
+                            ->NotifyAckTimeoutResetNow(); // force restart access timeout
+                    }
+                });
+                // once the PPDU is received, the main PHY is connected to the aux PHY and the
+                // switch main PHY back timer is still running
+                Simulator::Schedule(txDuration + TimeStep(1), [=, this]() {
+                    NS_TEST_EXPECT_MSG_EQ(
+                        mainPhy->GetState()->IsStateSwitching(),
+                        false,
+                        "Main PHY should not be switching at the end of PPDU reception");
+                    NS_TEST_EXPECT_MSG_EQ(advEmlsrMgr->m_mainPhySwitchInfo.disconnected,
+                                          false,
+                                          "Main PHY should have been connected to a link");
+                    NS_TEST_ASSERT_MSG_EQ(m_staMacs[0]->GetLinkForPhy(m_mainPhyId).has_value(),
+                                          true,
+                                          "Main PHY should have been connected to a link");
+                    NS_TEST_EXPECT_MSG_EQ(+m_staMacs[0]->GetLinkForPhy(m_mainPhyId).value(),
+                                          +m_linkIdForTid0,
+                                          "Main PHY is connected to a wrong link");
+                    NS_TEST_EXPECT_MSG_EQ(advEmlsrMgr->m_switchMainPhyBackEvent.IsPending(),
+                                          true,
+                                          "Main PHY switch back timer should be running");
+                });
+                break;
+
+            case NON_HT_PPDU_USE_MAC_HDR:
+            case LONG_SWITCH_BACK_DELAY_USE_MAC_HDR:
+                // when the main PHY completes the channel switch, it is not connected to the aux
+                // PHY link and the switch main PHY back timer is running. The aux PHY is in RX
+                // state and has MAC header info available
+                Simulator::Schedule(mainPhy->GetDelayUntilIdle() + TimeStep(1), [=, this]() {
+                    NS_TEST_EXPECT_MSG_EQ(advEmlsrMgr->m_mainPhySwitchInfo.disconnected,
+                                          true,
+                                          "Main PHY should be waiting to be connected to a link");
+                    NS_TEST_EXPECT_MSG_EQ(+advEmlsrMgr->m_mainPhySwitchInfo.to,
+                                          +m_linkIdForTid0,
+                                          "Main PHY is waiting to be connected to a wrong link");
+                    NS_TEST_EXPECT_MSG_EQ(advEmlsrMgr->m_switchMainPhyBackEvent.IsPending(),
+                                          true,
+                                          "Main PHY switch back timer should be running");
+                    const auto auxPhy = m_staMacs[0]->GetDevice()->GetPhy(m_linkIdForTid0);
+                    NS_TEST_EXPECT_MSG_EQ(auxPhy->IsStateRx(),
+                                          true,
+                                          "Aux PHY should be in RX state");
+                    auto remTime = auxPhy->GetTimeToMacHdrEnd(SU_STA_ID);
+                    NS_TEST_ASSERT_MSG_EQ(remTime.has_value(),
+                                          true,
+                                          "No MAC header info available");
+                    if (testIndex == LONG_SWITCH_BACK_DELAY_USE_MAC_HDR)
+                    {
+                        // when PIFS check is performed at the end of the main PHY switch, the
+                        // medium is found busy and a backoff value is generated; make sure that
+                        // this value is at least 7 to ensure that the backoff timer is still
+                        // running when the switch main PHY back timer is expected to expire
+                        if (auto beTxop = m_staMacs[0]->GetQosTxop(AC_BE);
+                            beTxop->GetBackoffSlots(m_linkIdForTid0) <= 6)
+                        {
+                            beTxop->StartBackoffNow(7, m_linkIdForTid0);
+                        }
+                    }
+                    // main PHY is expected to switch back when the MAC header is received
+                    m_expectedMainPhySwitchBackTime = Simulator::Now() + remTime.value();
+                    // once the MAC header is received, the main PHY switches back and the
+                    // switch main PHY back timer is stopped
+                    Simulator::Schedule(remTime.value() + TimeStep(1), [=, this]() {
+                        NS_TEST_EXPECT_MSG_EQ(
+                            mainPhy->GetState()->IsStateSwitching(),
+                            true,
+                            "Main PHY should be switching after receiving the MAC header");
+                        NS_TEST_EXPECT_MSG_EQ(+advEmlsrMgr->m_mainPhySwitchInfo.to,
+                                              +m_mainPhyId,
+                                              "Main PHY should be switching to the preferred link");
+                        NS_TEST_EXPECT_MSG_EQ(advEmlsrMgr->m_switchMainPhyBackEvent.IsPending(),
+                                              false,
+                                              "Main PHY switch back timer should not be running");
+                    });
+                });
+                break;
+
+            case LONG_SWITCH_BACK_DELAY_DONT_USE_MAC_HDR:
+                // when the main PHY completes the channel switch, it is not connected to the aux
+                // PHY link and the switch main PHY back timer is running
+                Simulator::Schedule(mainPhy->GetDelayUntilIdle() + TimeStep(1), [=, this]() {
+                    NS_TEST_EXPECT_MSG_EQ(advEmlsrMgr->m_mainPhySwitchInfo.disconnected,
+                                          true,
+                                          "Main PHY should be waiting to be connected to a link");
+                    NS_TEST_EXPECT_MSG_EQ(+advEmlsrMgr->m_mainPhySwitchInfo.to,
+                                          +m_linkIdForTid0,
+                                          "Main PHY is waiting to be connected to a wrong link");
+                    NS_TEST_EXPECT_MSG_EQ(advEmlsrMgr->m_switchMainPhyBackEvent.IsPending(),
+                                          true,
+                                          "Main PHY switch back timer should be running");
+                    // when PIFS check is performed at the end of the main PHY switch, the medium
+                    // is found busy and a backoff value is generated; make sure that this value is
+                    // at least 7 to ensure that the backoff timer is still running when the switch
+                    // main PHY back timer is expected to expire
+                    if (auto beTxop = m_staMacs[0]->GetQosTxop(AC_BE);
+                        beTxop->GetBackoffSlots(m_linkIdForTid0) <= 6)
+                    {
+                        beTxop->StartBackoffNow(7, m_linkIdForTid0);
+                    }
+                });
+                // once the PPDU is received, the switch main PHY back timer is stopped and the
+                // main PHY switches back to the preferred link
+                Simulator::Schedule(txDuration + TimeStep(2), [=, this]() {
+                    NS_TEST_EXPECT_MSG_EQ(
+                        mainPhy->GetState()->IsStateSwitching(),
+                        true,
+                        "Main PHY should be switching at the end of PPDU reception");
+                    NS_TEST_EXPECT_MSG_EQ(+advEmlsrMgr->m_mainPhySwitchInfo.to,
+                                          +m_mainPhyId,
+                                          "Main PHY should be switching back to preferred link");
+                    NS_TEST_EXPECT_MSG_EQ(advEmlsrMgr->m_switchMainPhyBackEvent.IsPending(),
+                                          false,
+                                          "Main PHY switch back timer should be not running");
+                });
+                // main PHY is expected to switch back when the reception of PPDU ends
+                m_expectedMainPhySwitchBackTime = Simulator::Now() + txDuration + TimeStep(1);
+                break;
+
+            default:
+                NS_TEST_ASSERT_MSG_EQ(true, false, "Unexpected scenario: " << +m_testIndex);
+            }
+        });
+
+    m_events.emplace_back(
+        WIFI_MAC_QOSDATA,
+        [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, uint8_t linkId) {
+            NS_TEST_EXPECT_MSG_EQ(+linkId,
+                                  +m_linkIdForTid0,
+                                  "Unicast frame transmitted on wrong link");
+            NS_TEST_EXPECT_MSG_EQ(psdu->GetAddr1(),
+                                  m_apMac->GetFrameExchangeManager(linkId)->GetAddress(),
+                                  "Unexpected RA for the unicast frame");
+            NS_TEST_EXPECT_MSG_EQ(psdu->GetAddr2(),
+                                  m_staMacs[0]->GetFrameExchangeManager(linkId)->GetAddress(),
+                                  "Unexpected TA for the unicast frame");
+
+            if (testIndex == NON_HT_PPDU_DONT_USE_MAC_HDR)
+            {
+                Simulator::Schedule(TimeStep(1), [=, this]() {
+                    // UL TXOP started, main PHY switch back time was cancelled
+                    NS_TEST_EXPECT_MSG_EQ(advEmlsrMgr->m_switchMainPhyBackEvent.IsPending(),
+                                          false,
+                                          "Main PHY switch back timer should not be running");
+                });
+            }
+        });
+
+    m_events.emplace_back(
+        WIFI_MAC_CTL_ACK,
+        [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, uint8_t linkId) {
+            const auto phyHdrDuration = WifiPhy::CalculatePhyPreambleAndHeaderDuration(txVector);
+            const auto txDuration =
+                WifiPhy::CalculateTxDuration(psdu,
+                                             txVector,
+                                             m_apMac->GetWifiPhy(linkId)->GetPhyBand());
+
+            if (testIndex == NON_HT_PPDU_DONT_USE_MAC_HDR)
+            {
+                // main PHY is expected to switch back when the UL TXOP ends
+                m_expectedMainPhySwitchBackTime = Simulator::Now() + txDuration;
+            }
+
+            Simulator::Schedule(MilliSeconds(2), [=, this]() {
+                // check that trace infos have been received
+                NS_TEST_EXPECT_MSG_EQ(m_dlPktDone,
+                                      true,
+                                      "Did not receive the expected trace infos");
+                NS_TEST_EXPECT_MSG_EQ(m_events.empty(), true, "Not all events took place");
+
+                if (++m_testIndex < static_cast<uint8_t>(COUNT))
+                {
+                    RunOne();
+                }
+            });
+        });
+}
+
 WifiEmlsrTestSuite::WifiEmlsrTestSuite()
     : TestSuite("wifi-emlsr", Type::UNIT)
 {
@@ -5819,6 +6398,7 @@ WifiEmlsrTestSuite::WifiEmlsrTestSuite()
     }
 
     AddTestCase(new EmlsrIcfSentDuringMainPhySwitchTest(), TestCase::Duration::QUICK);
+    AddTestCase(new EmlsrSwitchMainPhyBackTest(), TestCase::Duration::QUICK);
 
     AddTestCase(new EmlsrUlOfdmaTest(false), TestCase::Duration::QUICK);
     AddTestCase(new EmlsrUlOfdmaTest(true), TestCase::Duration::QUICK);
