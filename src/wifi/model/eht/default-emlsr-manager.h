@@ -73,7 +73,8 @@ class DefaultEmlsrManager : public EmlsrManager
      * @param traceInfo information to pass to the main PHY switch traced callback (the fromLinkId
      *                  and toLinkId fields are set by SwitchMainPhy)
      */
-    void SwitchMainPhyBackToPreferredLink(uint8_t linkId, EmlsrMainPhySwitchTrace&& traceInfo);
+    virtual void SwitchMainPhyBackToPreferredLink(uint8_t linkId,
+                                                  EmlsrMainPhySwitchTrace&& traceInfo);
 
     bool m_switchAuxPhy; /**< whether Aux PHY should switch channel to operate on the link on which
                               the Main PHY was operating before moving to the link of the Aux PHY */
