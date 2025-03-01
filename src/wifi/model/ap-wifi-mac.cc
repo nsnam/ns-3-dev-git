@@ -1451,15 +1451,6 @@ ApWifiMac::SetAid(MgtAssocResponseHeader& assoc, const LinkIdStaAddrMap& linkIdS
                             "AID " << it->first << " already assigned to " << staAddr
                                    << ", could not assign " << aid);
         }
-
-        if (auto extendedCapabilities =
-                GetWifiRemoteStationManager(linkId)->GetStationExtendedCapabilities(staAddr);
-            m_gcrManager)
-        {
-            const auto isGcrCapable =
-                extendedCapabilities && extendedCapabilities->m_robustAvStreaming;
-            m_gcrManager->NotifyStaAssociated(staAddr, isGcrCapable);
-        }
     }
 
     // set the AID in all the Association Responses. NOTE that the Association
@@ -1778,6 +1769,16 @@ ApWifiMac::TxOk(Ptr<const WifiMpdu> mpdu)
 
             // Apply the negotiated TID-to-Link Mapping (if any) for DL direction
             ApplyTidLinkMapping(*staMldAddress, WifiDirection::DOWNLINK);
+        }
+
+        if (auto extendedCapabilities =
+                GetWifiRemoteStationManager(*linkId)->GetStationExtendedCapabilities(
+                    hdr.GetAddr1());
+            m_gcrManager)
+        {
+            const auto isGcrCapable =
+                extendedCapabilities && extendedCapabilities->m_robustAvStreaming;
+            m_gcrManager->NotifyStaAssociated(hdr.GetAddr1(), isGcrCapable);
         }
     }
     else if (hdr.IsAction())
