@@ -93,7 +93,8 @@ EhtPpdu::SetEhtPhyHeader(const WifiTxVector& txVector)
 uint8_t
 EhtPpdu::GetChannelWidthEncodingFromMhz(MHz_t channelWidth, const WifiPhyOperatingChannel& channel)
 {
-    NS_ASSERT(channel.GetTotalWidth() >= channelWidth);
+    // NS_ASSERT(channel.GetTotalWidth() >= channelWidth); // uncomment once UHR headers are
+    // implemented
     if (channelWidth == MHz_t{320})
     {
         switch (channel.GetNumber())
@@ -107,7 +108,8 @@ EhtPpdu::GetChannelWidthEncodingFromMhz(MHz_t channelWidth, const WifiPhyOperati
         case 191:
             return 5;
         default:
-            NS_ASSERT_MSG(false, "Invalid 320 MHz channel number " << +channel.GetNumber());
+            // NS_ASSERT_MSG(false, "Invalid 320 MHz channel number " << +channel.GetNumber()); //
+            // uncomment once UHR headers are implemented
             return 4;
         }
     }

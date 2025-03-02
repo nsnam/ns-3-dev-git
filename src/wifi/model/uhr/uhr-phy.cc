@@ -12,6 +12,7 @@
 #include "uhr-ppdu.h"
 
 #include "ns3/interference-helper.h"
+#include "ns3/wifi-mac.h"
 #include "ns3/wifi-net-device.h"
 #include "ns3/wifi-phy.h"
 #include "ns3/wifi-psdu.h"
@@ -269,6 +270,39 @@ UhrPhy::CreateUhrMcs(uint8_t index)
                                           MakeCallback(&GetDataRateFromTxVector),
                                           MakeBoundCallback(&GetNonHtReferenceRate, index),
                                           MakeCallback(&IsAllowed));
+}
+
+bool
+UhrPhy::IsChannelWidthSupported(Ptr<const WifiPpdu> ppdu) const
+{
+    auto device = m_wifiPhy->GetDevice();
+    auto mac = device->GetMac();
+    auto uhrConfiguration = device->GetUhrConfiguration();
+    const auto& txVector{ppdu->GetTxVector()};
+    if ((mac->GetTypeOfStation() == STA) && uhrConfiguration->GetDsoActivated() &&
+        IsUhr(txVector.GetPreambleType()) && txVector.IsMu() &&
+        (txVector.GetChannelWidth() > m_wifiPhy->GetChannelWidth()))
+    {
+        // total channel width can be larger than the one supported by the UHR PHY for DSO STA
+        return true;
+    }
+    return EhtPhy::IsChannelWidthSupported(ppdu);
+}
+
+MHz_t
+UhrPhy::GetChannelWidthForMu(const WifiTxVector& txVector, uint16_t staId) const
+{
+    auto device = m_wifiPhy->GetDevice();
+    auto mac = device->GetMac();
+    auto uhrConfiguration = device->GetUhrConfiguration();
+    if ((mac->GetTypeOfStation() == STA) && uhrConfiguration->GetDsoActivated() &&
+        IsUhr(txVector.GetPreambleType()) && txVector.IsMu() &&
+        (txVector.GetChannelWidth() > m_wifiPhy->GetChannelWidth()))
+    {
+        // channel width to consider for DSO STA is the channel width of the DSO subchannel
+        return m_wifiPhy->GetChannelWidth();
+    }
+    return EhtPhy::GetChannelWidthForMu(txVector, staId);
 }
 
 } // namespace ns3

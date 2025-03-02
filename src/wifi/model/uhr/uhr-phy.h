@@ -52,6 +52,7 @@ class UhrPhy : public EhtPhy
                             const WifiTxVector& txVector,
                             Time ppduDuration) override;
     Time CalculateNonHeDurationForHeMu(const WifiTxVector& txVector) const override;
+    bool IsChannelWidthSupported(Ptr<const WifiPpdu> ppdu) const override;
 
     /**
      * Initialize all UHR modes.
@@ -160,6 +161,7 @@ class UhrPhy : public EhtPhy
                                 PhyFieldRxStatus status,
                                 WifiPpduField field) override;
     WifiPhyRxfailureReason GetFailureReason(WifiPpduField field) const override;
+    MHz_t GetChannelWidthForMu(const WifiTxVector& txVector, uint16_t staId) const override;
 
     /**
      * Create and return the UHR MCS corresponding to

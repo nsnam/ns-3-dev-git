@@ -17,14 +17,17 @@
 namespace
 {
 /**
- * Get the center frequency of each segment covered by the provided channel width. If the specified
- * channel width is contained in a single frequency segment, a single center frequency is returned.
- * If the specified channel width is spread over multiple frequency segments (e.g. 160 MHz if
- * operating channel is 80+80MHz), multiple center frequencies are returned.
+ * Get the center frequency of each segment of the operating channel that are covered by the
+ * provided channel width. If the specified channel width contains a single frequency segment (if
+ * the operating channel is not a 80+80MHz or if the requested channel width is less than 160 MHz in
+ * case of 80+80MHz), a single center frequency is returned. If the specified channel width is
+ * spread over multiple frequency segments (if the operating channel is a 80+80MHz and the requested
+ * channel width is larger than 80 MHz), multiple center frequencies are returned.
  *
  * @param channel the operating channel of the PHY
- * @param channelWidth the channel width
- * @return the center frequency of each segment covered by the given width
+ * @param channelWidth the channel width occupied by the PPDU
+ * @return the center frequency of each segment of the operating channel that is covered by the
+ * given width
  */
 std::vector<ns3::MHz_t>
 GetChannelCenterFrequenciesPerSegment(const ns3::WifiPhyOperatingChannel& channel,
@@ -35,6 +38,7 @@ GetChannelCenterFrequenciesPerSegment(const ns3::WifiPhyOperatingChannel& channe
         return {};
     }
     std::vector<ns3::MHz_t> freqs{};
+    channelWidth = std::min(channelWidth, channel.GetTotalWidth());
     const auto width = std::min(channelWidth, channel.GetWidth(0));
     const auto primarySegmentIndex = channel.GetPrimarySegmentIndex(width);
     const auto secondarySegmentIndex = channel.GetSecondarySegmentIndex(width);

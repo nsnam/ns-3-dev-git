@@ -553,6 +553,17 @@ class HePhy : public VhtPhy
      */
     virtual std::vector<Time> GetPer20MHzDurations(const Ptr<const WifiPpdu> ppdu);
 
+    /**
+     * Get the channel width to consider for a MU PPDU (DL or UL).
+     * This typically returns the channel width obtained from the TXVECTOR,
+     * but allows a child class to overrule.
+     *
+     * @param txVector the transmission parameters
+     * @param staId the station ID of the PSDU
+     * @return the channel width to consider for transmission or reception of a DL/UL MU
+     */
+    virtual MHz_t GetChannelWidthForMu(const WifiTxVector& txVector, uint16_t staId) const;
+
     uint64_t m_previouslyTxPpduUid; //!< UID of the previously sent PPDU, used by AP to recognize
                                     //!< response HE TB PPDUs
     uint64_t m_currentMuPpduUid;    //!< UID of the HE MU or HE TB PPDU being received

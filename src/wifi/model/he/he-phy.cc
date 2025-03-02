@@ -981,7 +981,7 @@ HePhy::GetRuBandForTx(const WifiTxVector& txVector, uint16_t staId) const
 {
     NS_ASSERT(txVector.IsMu());
     auto ru = txVector.GetRu(staId);
-    const auto channelWidth = txVector.GetChannelWidth();
+    const auto channelWidth = GetChannelWidthForMu(txVector, staId);
     NS_ASSERT(channelWidth <= m_wifiPhy->GetChannelWidth());
     const auto mc = txVector.GetModulationClass();
     const auto group = WifiRu::GetSubcarrierGroup(
@@ -1011,12 +1011,19 @@ HePhy::GetRuBandForTx(const WifiTxVector& txVector, uint16_t staId) const
     return ruBandForTx;
 }
 
+MHz_t
+HePhy::GetChannelWidthForMu(const WifiTxVector& txVector, uint16_t staId) const
+{
+    NS_ASSERT(txVector.IsMu());
+    return txVector.GetChannelWidth();
+}
+
 WifiSpectrumBandInfo
 HePhy::GetRuBandForRx(const WifiTxVector& txVector, uint16_t staId) const
 {
     NS_ASSERT(txVector.IsMu());
     auto ru = txVector.GetRu(staId);
-    const auto channelWidth = txVector.GetChannelWidth();
+    const auto channelWidth = GetChannelWidthForMu(txVector, staId);
     NS_ASSERT(channelWidth <= m_wifiPhy->GetChannelWidth());
     const auto mc = txVector.GetModulationClass();
     const auto group = WifiRu::GetSubcarrierGroup(
@@ -1350,10 +1357,10 @@ HePhy::GetTxPowerSpectralDensity(Watt_t txPower,
     switch (ppdu->GetType())
     {
     case WIFI_PPDU_TYPE_UL_MU: {
+        const auto staId = GetStaId(ppdu);
         if (flag == HePpdu::PSD_NON_HE_PORTION)
         {
             // non-HE portion is sent only on the 20 MHz channels covering the RU
-            const auto staId = GetStaId(ppdu);
             const auto ruWidth = WifiRu::GetBandwidth(WifiRu::GetRuType(txVector.GetRu(staId)));
             channelWidth = (ruWidth < MHz_t{20}) ? MHz_t{20} : ruWidth;
             return WifiSpectrumValueHelper::CreateDuplicated20MhzTxPowerSpectralDensity(
@@ -1368,6 +1375,7 @@ HePhy::GetTxPowerSpectralDensity(Watt_t txPower,
         }
         else
         {
+            channelWidth = GetChannelWidthForMu(txVector, staId);
             const auto band = GetRuBandForTx(txVector, GetStaId(ppdu)).indices;
             return WifiSpectrumValueHelper::CreateHeMuOfdmTxPowerSpectralDensity(
                 centerFrequencies,
