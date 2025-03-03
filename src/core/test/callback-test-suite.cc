@@ -174,7 +174,7 @@ BasicCallbackTestCase::DoRun()
 
     //
     // Make sure we can declare and compile a Callback pointing to a member
-    // function that returns void, takes two parameters, and execute it.
+    // function that returns int, takes two parameters, and execute it.
     //
     Callback<int, double, int> target4 =
         Callback<int, double, int>(&BasicCallbackTestCase::Target4, this);
