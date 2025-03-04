@@ -21,6 +21,7 @@ See the LICENSE file for more details.
 * [Working with the Development Version of ns-3](#working-with-the-development-version-of-ns-3)
 * [Contributing to ns-3](#contributing-to-ns-3)
 * [Reporting Issues](#reporting-issues)
+* [Asking Questions](#asking-questions)
 * [ns-3 App Store](#ns-3-app-store)
 
 > **NOTE**: Much more substantial information about ns-3 can be found at
@@ -214,6 +215,15 @@ If you would like to report an issue, you can open a new issue in the
 [GitLab issue tracker](https://gitlab.com/nsnam/ns-3-dev/-/issues).
 Before creating a new issue, please check if the problem that you are facing
 was already reported and contribute to the discussion, if necessary.
+
+## Asking Questions
+
+ns-3 has an official [ns-3-users message board](https://groups.google.com/g/ns-3-users)
+where the community asks questions and share helpful advice.
+Additionally, ns-3 has the [ns-3 Zulip chat](https://ns-3.zulipchat.com/), used to discuss
+development issues and questions among maintainers and the community.
+
+Please use the above resources to ask questions about ns-3, rather than creating issues.
 
 ## ns-3 App Store
 
