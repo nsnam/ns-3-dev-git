@@ -1110,14 +1110,14 @@ class SingleLinkEmlsrTest : public EmlsrOperationsTestBase
  *
  * The channel switch delay for the main PHY varies across test scenarios and is computed so that
  * the channel switch terminates during one of the different steps of the reception of the ICF:
- * before the PHY header end, before the MAC header end, before the padding start and after the
- * padding start.
+ * during preamble detection period, before the PHY header end, before the MAC header end, before
+ * the padding start and after the padding start.
  *
    \verbatim
-   ┌──────┬──────┬────────────────────┬───────┐
-   │  PHY │  MAC │    MAC PAYLOAD     │       │
-   │HEADER│HEADER│(COMMON & USER INFO)│PADDING│
-   └──────┴──────┴────────────────────┴───────┘
+   ┌────────┬──────┬──────┬────────────────────┬───────┐
+   │PREAMBLE│  PHY │  MAC │    MAC PAYLOAD     │       │
+   │ DETECT │HEADER│HEADER│(COMMON & USER INFO)│PADDING│
+   └────────┴──────┴──────┴────────────────────┴───────┘
    \endverbatim
  *
  * All the combinations of the following are tested:
@@ -1148,7 +1148,8 @@ class EmlsrIcfSentDuringMainPhySwitchTest : public EmlsrOperationsTestBase
      */
     enum ChannelSwitchEnd : uint8_t
     {
-        BEFORE_PHY_HDR_END = 0,
+        DURING_PREAMBLE_DETECTION = 0,
+        BEFORE_PHY_HDR_END,
         BEFORE_MAC_HDR_END,
         BEFORE_MAC_PAYLOAD_END,
         BEFORE_PADDING_END,

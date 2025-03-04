@@ -5506,6 +5506,9 @@ EmlsrIcfSentDuringMainPhySwitchTest::RunOne()
 
             switch (m_csdIndex)
             {
+            case DURING_PREAMBLE_DETECTION:
+                channelSwitchDelay = MicroSeconds(1);
+                break;
             case BEFORE_PHY_HDR_END:
                 channelSwitchDelay = phyHdrDuration - margin;
                 break;
@@ -5581,6 +5584,11 @@ EmlsrIcfSentDuringMainPhySwitchTest::RunOne()
                                           true,
                                           m_testStr << ": Expected to be receiving the PHY header");
                     break;
+                case DURING_PREAMBLE_DETECTION:
+                    NS_TEST_EXPECT_MSG_EQ(auxPhy->GetTimeToPreambleDetectionEnd().has_value(),
+                                          true,
+                                          m_testStr
+                                              << ": Expected to be in preamble detection period");
                 default:
                     NS_ABORT_MSG("Unexpected channel switch duration index");
                 }

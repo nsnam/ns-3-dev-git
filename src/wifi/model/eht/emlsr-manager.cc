@@ -590,7 +590,12 @@ EmlsrManager::CheckPossiblyReceivingIcf(uint8_t linkId) const
         return {false, Time{0}};
     }
 
-    if (auto macHdr = GetEhtFem(linkId)->GetReceivedMacHdr(); macHdr && m_useNotifiedMacHdr)
+    if (auto endPreamble = phy->GetTimeToPreambleDetectionEnd())
+    {
+        NS_LOG_DEBUG("Detecting a PPDU preamble, postpone by " << endPreamble->As(Time::US));
+        return {true, endPreamble.value()};
+    }
+    else if (auto macHdr = GetEhtFem(linkId)->GetReceivedMacHdr(); macHdr && m_useNotifiedMacHdr)
     {
         NS_LOG_DEBUG("Receiving the MAC payload of a PSDU and MAC header info can be used");
         NS_ASSERT(phy->GetState()->GetLastTime({WifiPhyState::RX}) == Simulator::Now());
