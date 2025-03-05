@@ -17,6 +17,8 @@
 namespace ns3
 {
 
+class WifiTxVector;
+
 /**
  * @brief receive notifications about PHY events.
  */
@@ -51,11 +53,13 @@ class WifiPhyListener
      */
     virtual void NotifyRxEndOk() = 0;
     /**
+     * @param txVector the TXVECTOR used for transmission
+     *
      * We have received the last bit of a packet for which
      * NotifyRxStart was invoked first and, the packet has
      * _not_ been successfully received.
      */
-    virtual void NotifyRxEndError() = 0;
+    virtual void NotifyRxEndError(const WifiTxVector& txVector) = 0;
     /**
      * @param duration the expected transmission duration.
      * @param txPower the nominal TX power

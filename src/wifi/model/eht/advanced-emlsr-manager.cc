@@ -64,7 +64,7 @@ class EmlsrPhyListener : public WifiPhyListener
                             m_emlsrManager);
     }
 
-    void NotifyRxEndError() override
+    void NotifyRxEndError(const WifiTxVector& /* txVector */) override
     {
     }
 
