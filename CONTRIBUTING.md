@@ -33,7 +33,7 @@ The full documentation about how to contribute to ns-3 is available in the [ns-3
 
 We have an official message board where the community chimes in with helpful advice if you have questions.
 
-* [ns-3-users, the official ns-3 message board](https://groups.google.com/forum/#!forum/ns-3-users)
+* [ns-3-users, the official ns-3 message board](https://groups.google.com/g/ns-3-users)
 * [ns-3 manual](https://www.nsnam.org/docs/manual/html/index.html)
 
 If chat is more your speed, you can join the ns-3 Zulip channel:
