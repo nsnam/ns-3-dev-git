@@ -18,6 +18,8 @@ This file is a best-effort approach to solving this issue; we will do our best b
 
 ### Changes to existing API
 
+* (internet-apps) Added a parameter to the RADVD helper to announce a prefix without the autoconfiguration flag.
+
 ### Changes to build system
 
 ### Changed behavior
