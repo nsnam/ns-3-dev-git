@@ -111,7 +111,7 @@ class DefaultEmlsrManager : public EmlsrManager
                              Time duration) override;
     void DoNotifyIcfReceived(uint8_t linkId) override;
     void DoNotifyUlTxopStart(uint8_t linkId) override;
-    void DoNotifyTxopEnd(uint8_t linkId) override;
+    void DoNotifyTxopEnd(uint8_t linkId, Ptr<QosTxop> edca) override;
     void DoNotifyProtectionCompleted(uint8_t linkId) override;
 };
 

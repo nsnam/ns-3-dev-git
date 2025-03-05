@@ -142,7 +142,15 @@ AdvancedEmlsrManager::GetTypeId()
                           "expires, the main PHY is switched back to the preferred link.",
                           TimeValue(MilliSeconds(5)),
                           MakeTimeAccessor(&AdvancedEmlsrManager::m_switchMainPhyBackDelay),
-                          MakeTimeChecker());
+                          MakeTimeChecker())
+            .AddAttribute("KeepMainPhyAfterDlTxop",
+                          "In case aux PHYs are not TX capable and do not switch link, after the "
+                          "end of a DL TXOP carried out on an aux PHY link, the main PHY stays on "
+                          "that link for a switch main PHY back delay, if this attribute is true, "
+                          "or it returns to the preferred link, otherwise.",
+                          BooleanValue(false),
+                          MakeBooleanAccessor(&AdvancedEmlsrManager::m_keepMainPhyAfterDlTxop),
+                          MakeBooleanChecker());
     return tid;
 }
 
@@ -310,7 +318,7 @@ AdvancedEmlsrManager::ReceivedMacHdr(Ptr<WifiPhy> phy,
         // another callback (FEM::ReceivedMacHdr) from the PhyRxMacHeaderEnd trace source of
         // the main PHY, thus invalidating the list of callbacks on which the for loop iterates.
         // Hence, schedule the call to NotifyTxopEnd to execute it outside such for loop.
-        Simulator::ScheduleNow(&AdvancedEmlsrManager::NotifyTxopEnd, this, *linkId, false, false);
+        Simulator::ScheduleNow(&AdvancedEmlsrManager::NotifyTxopEnd, this, *linkId, nullptr);
     }
 
     // if the MAC header has been received on the link on which the main PHY is operating (or on
@@ -335,9 +343,9 @@ AdvancedEmlsrManager::ReceivedMacHdr(Ptr<WifiPhy> phy,
 }
 
 void
-AdvancedEmlsrManager::DoNotifyTxopEnd(uint8_t linkId)
+AdvancedEmlsrManager::DoNotifyTxopEnd(uint8_t linkId, Ptr<QosTxop> edca)
 {
-    NS_LOG_FUNCTION(this << linkId);
+    NS_LOG_FUNCTION(this << linkId << edca);
 
     auto mainPhy = GetStaMac()->GetDevice()->GetPhy(m_mainPhyId);
 
@@ -357,6 +365,30 @@ AdvancedEmlsrManager::DoNotifyTxopEnd(uint8_t linkId)
     // - SwitchAuxPhy is true, the main PHY is switching and switching can be interrupted
     // or
     // - SwitchAuxPhy is false and there is an aux PHY to reconnect
+
+    if (!m_auxPhyTxCapable && !m_switchAuxPhy && !edca && m_keepMainPhyAfterDlTxop)
+    {
+        // DL TXOP ended, check if the main PHY must be kept on this link to try to gain an UL TXOP
+        NS_ASSERT_MSG(!m_switchMainPhyBackEvent.IsPending(),
+                      "Switch main PHY back timer should not be running at the end of a DL TXOP");
+        NS_ASSERT_MSG(!mainPhy->IsStateSwitching(),
+                      "Main PHY should not be switching at the end of a DL TXOP");
+
+        if (GetStaMac()->GetChannelAccessManager(linkId)->GetExpectedAccessWithin(
+                m_switchMainPhyBackDelay) == WifiExpectedAccessReason::ACCESS_EXPECTED)
+        {
+            NS_LOG_DEBUG("Keep main PHY on link " << +linkId << " to try to gain an UL TXOP");
+            m_switchMainPhyBackEvent =
+                Simulator::Schedule(m_switchMainPhyBackDelay,
+                                    &AdvancedEmlsrManager::SwitchMainPhyBackDelayExpired,
+                                    this,
+                                    linkId,
+                                    std::nullopt);
+            // start checking PHY activity on the link the main PHY is operating
+            RegisterListener(GetStaMac()->GetWifiPhy(linkId));
+            return;
+        }
+    }
 
     std::shared_ptr<EmlsrMainPhySwitchTrace> traceInfo;
 

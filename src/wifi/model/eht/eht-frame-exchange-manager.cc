@@ -1264,12 +1264,9 @@ EhtFrameExchangeManager::NotifyChannelReleased(Ptr<Txop> txop)
         // Notify the UL TXOP end to the EMLSR Manager
         auto edca = DynamicCast<QosTxop>(txop);
         NS_ASSERT(edca);
-        auto txopStart = edca->GetTxopStartTime(m_linkId);
 
         NS_ASSERT(m_staMac->GetEmlsrManager());
-        m_staMac->GetEmlsrManager()->NotifyTxopEnd(m_linkId,
-                                                   (!txopStart || *txopStart == Simulator::Now()),
-                                                   m_ongoingTxopEnd.IsPending());
+        m_staMac->GetEmlsrManager()->NotifyTxopEnd(m_linkId, edca);
     }
 
     HeFrameExchangeManager::NotifyChannelReleased(txop);

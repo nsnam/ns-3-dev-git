@@ -270,12 +270,10 @@ class EmlsrManager : public Object
      * Notify the end of a TXOP on the given link.
      *
      * @param linkId the ID of the given link
-     * @param ulTxopNotStarted whether this is a notification of the end of an UL TXOP that did
-     *                      not even start (no frame transmitted)
-     * @param ongoingDlTxop whether a DL TXOP is ongoing on the given link (if true, this is
-     *                      a notification of the end of an UL TXOP)
+     * @param edca the EDCAF that carried out the TXOP, in case of UL TXOP, or a null pointer,
+     *             in case of DL TXOP
      */
-    void NotifyTxopEnd(uint8_t linkId, bool ulTxopNotStarted = false, bool ongoingDlTxop = false);
+    void NotifyTxopEnd(uint8_t linkId, Ptr<QosTxop> edca = nullptr);
 
     /**
      * Notify that an STA affiliated with the EMLSR client is causing in-device interference
@@ -602,8 +600,10 @@ class EmlsrManager : public Object
      * Notify the subclass of the end of a TXOP on the given link.
      *
      * @param linkId the ID of the given link
+     * @param edca the EDCAF that carried out the TXOP, in case of UL TXOP, or a null pointer,
+     *             in case of DL TXOP
      */
-    virtual void DoNotifyTxopEnd(uint8_t linkId) = 0;
+    virtual void DoNotifyTxopEnd(uint8_t linkId, Ptr<QosTxop> edca) = 0;
 
     /**
      * Notify the acknowledgment of the given MPDU.

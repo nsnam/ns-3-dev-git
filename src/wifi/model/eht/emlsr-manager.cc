@@ -765,9 +765,9 @@ EmlsrManager::NotifyProtectionCompleted(uint8_t linkId)
 }
 
 void
-EmlsrManager::NotifyTxopEnd(uint8_t linkId, bool ulTxopNotStarted, bool ongoingDlTxop)
+EmlsrManager::NotifyTxopEnd(uint8_t linkId, Ptr<QosTxop> edca)
 {
-    NS_LOG_FUNCTION(this << linkId << ulTxopNotStarted << ongoingDlTxop);
+    NS_LOG_FUNCTION(this << linkId << edca);
 
     if (!m_staMac->IsEmlsrLink(linkId))
     {
@@ -795,15 +795,19 @@ EmlsrManager::NotifyTxopEnd(uint8_t linkId, bool ulTxopNotStarted, bool ongoingD
     // this link of an ICF starting a DL TXOP. If the EMLSR Manager unblocked the other EMLSR
     // links, another TXOP could be started on another EMLSR link (possibly leading to a crash)
     // while the DL TXOP on this link is ongoing.
-    if (ongoingDlTxop)
+    if (GetEhtFem(linkId)->GetOngoingTxopEndEvent().IsPending())
     {
         NS_LOG_DEBUG("DL TXOP ongoing");
         return;
     }
-    if (ulTxopNotStarted)
+    if (edca)
     {
-        NS_LOG_DEBUG("TXOP did not even start");
-        return;
+        if (auto txopStart = edca->GetTxopStartTime(linkId);
+            !txopStart || *txopStart == Simulator::Now())
+        {
+            NS_LOG_DEBUG("UL TXOP did not even start");
+            return;
+        }
     }
 
     if (m_auxPhyToSleep)
@@ -812,7 +816,7 @@ EmlsrManager::NotifyTxopEnd(uint8_t linkId, bool ulTxopNotStarted, bool ongoingD
         SetSleepStateForAllAuxPhys(false);
     }
 
-    DoNotifyTxopEnd(linkId);
+    DoNotifyTxopEnd(linkId, edca);
 
     // unblock transmissions and resume medium access on other EMLSR links
     std::set<uint8_t> linkIds;

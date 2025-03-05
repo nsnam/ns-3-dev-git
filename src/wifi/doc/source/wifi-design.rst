@@ -1414,6 +1414,14 @@ a reason to postpone the switch. The switch back to the preferred link is postpo
 A similar check is applied to possibly postpone the switch back to the preferred link when the
 SwitchMainPhyBack timer expires.
 
+The Advanced EMLSR Manager provides the ``KeepMainPhyAfterDlTxop`` attribute to control the behavior
+of the main PHY at the end of a DL TXOP carried out on an aux PHY link, in case aux PHYs are not TX
+capable and do not switch link. If such attribute is set to false (default value), the main PHY
+immediately switches back to the preferred link. If such attribute is set to true, it is checked
+whether channel access on the aux PHY link is expected to be gained within a switch main PHY back
+delay plus a channel switch delay: if it is, the main PHY stays on the aux PHY link and a switch
+main PHY back timer is started; otherwise, the main PHY switches back to the preferred link.
+
 The Advanced EMLSR Manager also connects a callback to the ``NSlotsLeftAlert`` trace source of the
 Channel Access Manager, which sends notifications when at most a configurable number of slots remain
 until the backoff of an AC expires. It must be noted that this notification is only sent if channel

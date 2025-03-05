@@ -5459,14 +5459,18 @@ EmlsrIcfSentDuringMainPhySwitchTest::RunOne()
     const auto interruptSwitch = ((m_testIndex & 0b010) != 0);
     const auto switchToOtherLink = ((m_testIndex & 0b100) != 0);
 
+    const auto keepMainPhyAfterDlTxop = useMacHdrInfo;
+
     m_staMacs[0]->GetEmlsrManager()->SetAttribute("UseNotifiedMacHdr", BooleanValue(useMacHdrInfo));
     auto advEmlsrMgr = DynamicCast<AdvancedEmlsrManager>(m_staMacs[0]->GetEmlsrManager());
     NS_TEST_ASSERT_MSG_NE(advEmlsrMgr, nullptr, "Advanced EMLSR Manager required");
     advEmlsrMgr->SetAttribute("InterruptSwitch", BooleanValue(interruptSwitch));
+    advEmlsrMgr->SetAttribute("KeepMainPhyAfterDlTxop", BooleanValue(keepMainPhyAfterDlTxop));
 
     m_testStr = "SwitchToOtherLink=" + std::to_string(switchToOtherLink) +
                 ", InterruptSwitch=" + std::to_string(interruptSwitch) +
                 ", UseMacHdrInfo=" + std::to_string(useMacHdrInfo) +
+                ", KeepMainPhyAfterDlTxop=" + std::to_string(keepMainPhyAfterDlTxop) +
                 ", ChannelSwitchDurationIdx=" + std::to_string(m_csdIndex);
     NS_LOG_INFO("Starting test: " << m_testStr << "\n");
 
@@ -5682,6 +5686,16 @@ EmlsrIcfSentDuringMainPhySwitchTest::RunOne()
             Simulator::ScheduleNow([=, this]() {
                 CheckInDeviceInterference(m_testStr + ", ACK", linkId, txDuration);
             });
+            // check the KeepMainPhyAfterDlTxop attribute
+            Simulator::Schedule(txDuration + TimeStep(1), [=, this]() {
+                auto mainPhy = m_staMacs[0]->GetDevice()->GetPhy(m_mainPhyId);
+                auto shouldSwitch = (!keepMainPhyAfterDlTxop || switchToOtherLink);
+                NS_TEST_EXPECT_MSG_EQ(mainPhy->IsStateSwitching(),
+                                      shouldSwitch,
+                                      m_testStr << ": Main PHY should "
+                                                << (shouldSwitch ? "" : "not")
+                                                << " be switching back after DL TXOP end");
+            });
         });
 
     // Uplink TXOP
@@ -5701,10 +5715,21 @@ EmlsrIcfSentDuringMainPhySwitchTest::RunOne()
     m_events.emplace_back(
         WIFI_MAC_CTL_ACK,
         [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, uint8_t linkId) {
+            const auto txDuration =
+                WifiPhy::CalculateTxDuration(psdu,
+                                             txVector,
+                                             m_staMacs[0]->GetWifiPhy(linkId)->GetPhyBand());
+            // check that main PHY switches back after UL TXOP
+            Simulator::Schedule(txDuration + TimeStep(1), [=, this]() {
+                auto mainPhy = m_staMacs[0]->GetDevice()->GetPhy(m_mainPhyId);
+                NS_TEST_EXPECT_MSG_EQ(
+                    mainPhy->IsStateSwitching(),
+                    true,
+                    m_testStr << ": Main PHY should be switching back after UL TXOP end");
+            });
             // Continue with the next test scenario
             Simulator::Schedule(MilliSeconds(2), [=, this]() {
                 NS_TEST_EXPECT_MSG_EQ(m_events.empty(), true, "Not all events took place");
-
                 m_csdIndex = static_cast<ChannelSwitchEnd>(static_cast<uint8_t>(m_csdIndex) + 1);
                 if (m_csdIndex == CSD_COUNT)
                 {
