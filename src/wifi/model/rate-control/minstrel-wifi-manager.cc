@@ -1038,7 +1038,7 @@ MinstrelWifiManager::RateInit(MinstrelWifiRemoteStation* station)
         {
             NS_LOG_DEBUG("  Checking " << retries << " retries");
             totalTxTimeWithGivenRetries =
-                CalculateTimeUnicastPacket(station->m_minstrelTable[i].perfectTxTime, 0, retries);
+                CalculateTimeUnicastPacket(GetSupported(station, i), 0, retries);
             NS_LOG_DEBUG("   totalTxTimeWithGivenRetries = " << totalTxTimeWithGivenRetries);
             if (totalTxTimeWithGivenRetries > MilliSeconds(6))
             {
@@ -1053,22 +1053,28 @@ MinstrelWifiManager::RateInit(MinstrelWifiRemoteStation* station)
 }
 
 Time
-MinstrelWifiManager::CalculateTimeUnicastPacket(Time dataTransmissionTime,
+MinstrelWifiManager::CalculateTimeUnicastPacket(WifiMode mode,
                                                 uint32_t shortRetries,
                                                 uint32_t longRetries)
 {
-    NS_LOG_FUNCTION(this << dataTransmissionTime << shortRetries << longRetries);
+    NS_LOG_FUNCTION(this << mode << shortRetries << longRetries);
     // See rc80211_minstrel.c
 
     // First transmission (Data + Ack timeout)
-    Time tt = dataTransmissionTime + GetPhy()->GetSifs() + GetPhy()->GetAckTxTime();
+    WifiTxVector txVector;
+    txVector.SetMode(mode);
+    txVector.SetPreambleType(
+        GetPreambleForTransmission(mode.GetModulationClass(), GetShortPreambleEnabled()));
+    const auto oneTxTime =
+        GetCalcTxTime(mode) + GetPhy()->GetSifs() + GetEstimatedAckTxTime(txVector);
+    auto tt = oneTxTime;
 
     uint32_t cwMax = 1023;
     uint32_t cw = 31;
     for (uint32_t retry = 0; retry < longRetries; retry++)
     {
         // Add one re-transmission (Data + Ack timeout)
-        tt += dataTransmissionTime + GetPhy()->GetSifs() + GetPhy()->GetAckTxTime();
+        tt += oneTxTime;
 
         // Add average back off (half the current contention window)
         tt += (cw / 2.0) * GetPhy()->GetSlot();

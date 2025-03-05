@@ -429,18 +429,6 @@ class WifiPhy : public Object
      * @return the PIFS duration
      */
     Time GetPifs() const;
-    /**
-     * Return the estimated Ack TX time for this PHY.
-     *
-     * @return the estimated Ack TX time
-     */
-    Time GetAckTxTime() const;
-    /**
-     * Return the estimated BlockAck TX time for this PHY.
-     *
-     * @return the estimated BlockAck TX time
-     */
-    Time GetBlockAckTxTime() const;
 
     /**
      * Get the maximum PSDU size in bytes for the given modulation class.
@@ -1611,11 +1599,9 @@ class WifiPhy : public Object
     WifiPhyOperatingChannel m_operatingChannel; //!< Operating channel
     bool m_fixedPhyBand; //!< True to prohibit changing PHY band after initialization
 
-    Time m_sifs;           //!< Short Interframe Space (SIFS) duration
-    Time m_slot;           //!< Slot duration
-    Time m_pifs;           //!< PCF Interframe Space (PIFS) duration
-    Time m_ackTxTime;      //!< estimated Ack TX time
-    Time m_blockAckTxTime; //!< estimated BlockAck TX time
+    Time m_sifs; //!< Short Interframe Space (SIFS) duration
+    Time m_slot; //!< Slot duration
+    Time m_pifs; //!< PCF Interframe Space (PIFS) duration
 
     dBm_u m_rxSensitivity;  //!< Receive sensitivity threshold
     dBm_u m_ccaEdThreshold; //!< Clear channel assessment (CCA) energy detection (ED) threshold

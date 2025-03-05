@@ -1811,9 +1811,7 @@ MinstrelHtWifiManager::CalculateRetransmits(MinstrelHtWifiRemoteStation* station
     uint32_t cwMax = 1023;
     Time cwTime;
     Time txTime;
-    Time dataTxTime;
     const auto slotTime = GetPhy()->GetSlot();
-    const auto ackTime = GetPhy()->GetSifs() + GetPhy()->GetBlockAckTxTime();
 
     if (station->m_groupsTable[groupId].m_ratesTable[rateId].ewmaProb < 1)
     {
@@ -1824,16 +1822,15 @@ MinstrelHtWifiManager::CalculateRetransmits(MinstrelHtWifiRemoteStation* station
         station->m_groupsTable[groupId].m_ratesTable[rateId].retryCount = 2;
         station->m_groupsTable[groupId].m_ratesTable[rateId].retryUpdated = true;
 
-        dataTxTime =
-            GetFirstMpduTxTime(
-                groupId,
-                GetMcsSupported(station,
-                                station->m_groupsTable[groupId].m_ratesTable[rateId].mcsIndex)) +
-            GetMpduTxTime(
-                groupId,
-                GetMcsSupported(station,
-                                station->m_groupsTable[groupId].m_ratesTable[rateId].mcsIndex)) *
-                (station->m_avgAmpduLen - 1);
+        auto mode =
+            GetMcsSupported(station, station->m_groupsTable[groupId].m_ratesTable[rateId].mcsIndex);
+        WifiTxVector txVector;
+        txVector.SetMode(mode);
+        txVector.SetPreambleType(GetPreambleForTransmission(mode.GetModulationClass()));
+
+        const auto dataTxTime = GetFirstMpduTxTime(groupId, mode) +
+                                GetMpduTxTime(groupId, mode) * (station->m_avgAmpduLen - 1);
+        const auto ackTime = GetPhy()->GetSifs() + GetEstimatedAckTxTime(txVector);
 
         /* Contention time for first 2 tries */
         cwTime = (cw / 2) * slotTime;

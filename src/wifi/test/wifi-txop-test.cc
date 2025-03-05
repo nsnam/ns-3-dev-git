@@ -628,7 +628,7 @@ WifiTxopTest::CheckResults()
     tStart = m_txPsdus[2].txStart;
 
     auto apPhy = apDev->GetPhy(SINGLE_LINK_OP_ID);
-    auto eifsNoDifs = apPhy->GetSifs() + apPhy->GetAckTxTime();
+    auto eifsNoDifs = apPhy->GetSifs() + GetEstimatedAckTxTime(m_txPsdus[1].txVector);
 
     NS_TEST_EXPECT_MSG_GT_OR_EQ(
         tStart - tEnd,
