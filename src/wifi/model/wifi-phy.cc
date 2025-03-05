@@ -388,8 +388,6 @@ WifiPhy::WifiPhy()
       m_sifs(),
       m_slot(),
       m_pifs(),
-      m_ackTxTime(),
-      m_blockAckTxTime(),
       m_powerRestricted(false),
       m_channelAccessRequested(false),
       m_txSpatialStreams(1),
@@ -856,18 +854,6 @@ WifiPhy::GetPifs() const
     return m_pifs;
 }
 
-Time
-WifiPhy::GetAckTxTime() const
-{
-    return m_ackTxTime;
-}
-
-Time
-WifiPhy::GetBlockAckTxTime() const
-{
-    return m_blockAckTxTime;
-}
-
 void
 WifiPhy::Configure80211a()
 {
@@ -880,7 +866,6 @@ WifiPhy::Configure80211a()
     SetPifs(GetSifs() + GetSlot());
     // See Table 10-5 "Determination of the EstimatedAckTxTime based on properties
     // of the PPDU causing the EIFS" of 802.11-2016
-    m_ackTxTime = MicroSeconds(44);
 }
 
 void
@@ -896,7 +881,6 @@ WifiPhy::Configure80211b()
     SetPifs(GetSifs() + GetSlot());
     // See Table 10-5 "Determination of the EstimatedAckTxTime based on properties
     // of the PPDU causing the EIFS" of 802.11-2016
-    m_ackTxTime = MicroSeconds(304);
 }
 
 void
@@ -924,7 +908,6 @@ WifiPhy::Configure80211p()
         SetSifs(OFDM_SIFS_TIME_10MHZ);
         SetSlot(OFDM_SLOT_TIME_10MHZ);
         SetPifs(GetSifs() + GetSlot());
-        m_ackTxTime = MicroSeconds(88);
     }
     else if (GetChannelWidth() == MHz_t{5})
     {
@@ -934,7 +917,6 @@ WifiPhy::Configure80211p()
         SetSifs(OFDM_SIFS_TIME_5MHZ);
         SetSlot(OFDM_SLOT_TIME_5MHZ);
         SetPifs(GetSifs() + GetSlot());
-        m_ackTxTime = MicroSeconds(176);
     }
     else
     {
@@ -955,10 +937,6 @@ WifiPhy::Configure80211n()
         Configure80211a();
     }
     AddPhyEntity(WIFI_MOD_CLASS_HT, Create<HtPhy>(m_txSpatialStreams));
-
-    // See Table 10-5 "Determination of the EstimatedAckTxTime based on properties
-    // of the PPDU causing the EIFS" of 802.11-2016
-    m_blockAckTxTime = MicroSeconds(68);
 }
 
 void

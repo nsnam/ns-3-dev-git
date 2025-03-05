@@ -92,7 +92,7 @@ AirtimeLinkMetricCalculator::CalculateMetric(Mac48Address peerAddress,
         (uint32_t)((double)(/*Overhead + payload*/
                             // DIFS + SIFS + AckTxTime = 2 * SIFS + 2 * SLOT + AckTxTime
                             2 * mac->GetWifiPhy()->GetSifs() + 2 * mac->GetWifiPhy()->GetSlot() +
-                            mac->GetWifiPhy()->GetAckTxTime() +
+                            GetEstimatedAckTxTime(txVector) +
                             WifiPhy::CalculateTxDuration(m_testFrame->GetSize(),
                                                          txVector,
                                                          mac->GetWifiPhy()->GetPhyBand()))

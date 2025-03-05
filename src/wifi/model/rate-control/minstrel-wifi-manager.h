@@ -314,14 +314,12 @@ class MinstrelWifiManager : public WifiRemoteStationManager
      *  - Data transmission
      *  - backoffs according to CW
      *
-     * @param dataTransmissionTime the data transmission time
+     * @param mode the WiFi mode used to transmit the data frame
      * @param shortRetries short retries
      * @param longRetries long retries
      * @returns the unicast packet time
      */
-    Time CalculateTimeUnicastPacket(Time dataTransmissionTime,
-                                    uint32_t shortRetries,
-                                    uint32_t longRetries);
+    Time CalculateTimeUnicastPacket(WifiMode mode, uint32_t shortRetries, uint32_t longRetries);
 
     /**
      * Print Sample Table.
