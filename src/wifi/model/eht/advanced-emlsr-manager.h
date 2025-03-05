@@ -139,7 +139,7 @@ class AdvancedEmlsrManager : public DefaultEmlsrManager
     void UnregisterListener();
 
   private:
-    void DoNotifyTxopEnd(uint8_t linkId) override;
+    void DoNotifyTxopEnd(uint8_t linkId, Ptr<QosTxop> edca) override;
     void DoNotifyIcfReceived(uint8_t linkId) override;
     void DoNotifyUlTxopStart(uint8_t linkId) override;
 
@@ -154,6 +154,9 @@ class AdvancedEmlsrManager : public DefaultEmlsrManager
     Time m_switchMainPhyBackDelay; //!< duration of the timer started in case of non-TX capable aux
                                    //!< PHY when medium is sensed busy during the PIFS interval
                                    //!< preceding/following the main PHY switch end
+    bool m_keepMainPhyAfterDlTxop; //!< whether the main PHY must stay, for a switch main PHY back
+                                   //!< delay, on an aux PHY link after a DL TXOP, in case aux PHYs
+                                   //!< are not TX capable and do not switch
     EventId m_ccaLastPifs;         //!< event scheduled in case of non-TX capable aux PHY to
                                    //!< determine whether TX can be started based on whether
                                    //!< the medium has been idle during the last PIFS interval
