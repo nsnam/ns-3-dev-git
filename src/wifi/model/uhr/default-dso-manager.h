@@ -30,6 +30,11 @@ class DefaultDsoManager : public DsoManager
 
     DefaultDsoManager();
     ~DefaultDsoManager() override;
+
+    Time GetSwitchingDelayToDsoSubband() const override;
+
+  private:
+    Time m_chSwitchToDsoBandDelay; //!< Delay to switch the channel to the DSO subband
 };
 
 } // namespace ns3

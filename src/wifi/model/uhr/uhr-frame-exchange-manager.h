@@ -30,6 +30,23 @@ class UhrFrameExchangeManager : public EhtFrameExchangeManager
     static TypeId GetTypeId();
     UhrFrameExchangeManager();
     ~UhrFrameExchangeManager() override;
+
+    void NotifySwitchingStartNow(Time duration) override;
+
+    /**
+     * Notify that the PHY is switching to or from a DSO subband.
+     * This notification is sent by the DSO Manager.
+     */
+    void NotifyDsoSwitching();
+
+  protected:
+    void ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
+                     RxSignalInfo rxSignalInfo,
+                     const WifiTxVector& txVector,
+                     bool inAmpdu) override;
+
+  private:
+    bool m_switchingForDso{false}; //!< flag whether channel is switching for DSO operations
 };
 
 } // namespace ns3

@@ -9,6 +9,7 @@
 #ifndef DSO_MANAGER_H
 #define DSO_MANAGER_H
 
+#include "ns3/nstime.h"
 #include "ns3/object.h"
 #include "ns3/wifi-ru.h"
 
@@ -50,12 +51,35 @@ class DsoManager : public Object
     void SetWifiMac(Ptr<StaWifiMac> mac);
 
     /**
+     * Get whether the STA is currently operating on the DSO subband on the given link.
+     *
+     * @param linkId the ID of the link to check
+     * @return true if the STA is on the DSO subband, false otherwise
+     */
+    bool IsOnDsoSubband(uint8_t linkId) const;
+
+    /**
      * Notify the reception of a management frame addressed to us.
      *
      * @param mpdu the received MPDU
      * @param linkId the ID of the link over which the MPDU was received
      */
     void NotifyMgtFrameReceived(Ptr<const WifiMpdu> mpdu, uint8_t linkId);
+
+    /**
+     * Notify the reception of an initial Control frame on the given link.
+     *
+     * @param linkId the ID of the link on which the initial Control frame was received
+     * @param ru the RU the non-AP STA should transition to
+     */
+    void NotifyIcfReceived(uint8_t linkId, WifiRu::RuSpec ru);
+
+    /**
+     * Get the delay to switch to the DSO subband.
+     * This is implementation-specific and has to be provided by the subclass.
+     * @return the delay to switch to the DSO subband
+     */
+    virtual Time GetSwitchingDelayToDsoSubband() const = 0;
 
   protected:
     void DoDispose() override;
@@ -104,6 +128,17 @@ class DsoManager : public Object
      * @param assocResp the Association Response frame header for that link
      */
     void ComputeSubbands(uint8_t linkId, const MgtAssocResponseHeader& assocResp);
+
+    /**
+     * Perform a channel switch.
+     *
+     * @param linkId the ID of the given link
+     * @param channel the operating channel to switch to
+     * @param delay the switching delay
+     */
+    void SwitchPhyChannel(uint8_t linkId,
+                          const WifiPhyOperatingChannel& channel,
+                          const Time& delay);
 
     Ptr<StaWifiMac> m_staMac; //!< the MAC of the managed non-AP MLD
 

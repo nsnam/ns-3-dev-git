@@ -252,6 +252,9 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
     bool m_earlyTxopEndDetect; ///< whether the Duration/ID value of the frame being transmitted
                                ///< or received can be used to early detect an ongoing TXOP end
 
+    EventId m_ongoingTxopEnd; //!< event indicating the possible end of the current TXOP (of which
+                              //!< we are not the holder)
+
   private:
     /**
      * @param icf the received ICF
@@ -333,8 +336,6 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
 
     bool m_dlTxopStart{false}; //!< whether a DL TXOP start is detected and needs to be notified to
                                //!< the EMLSR manager after post-processing the initial frame
-    EventId m_ongoingTxopEnd;  //!< event indicating the possible end of the current TXOP (of which
-                               //!< we are not the holder)
     std::unordered_map<Mac48Address, EventId, WifiAddressHash>
         m_transDelayTimer; //!< MLD address-indexed map of transition delay timers
 };

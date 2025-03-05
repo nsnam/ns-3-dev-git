@@ -101,6 +101,61 @@ DsoManager::NotifyMgtFrameReceived(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
 }
 
 void
+DsoManager::NotifyIcfReceived(uint8_t linkId, WifiRu::RuSpec ru)
+{
+    NS_LOG_FUNCTION(this << linkId << ru);
+    NS_ASSERT(WifiRu::IsEht(ru));
+
+    if (m_dsoSubbands.empty())
+    {
+        // nothing to do, we do not have any DSO subband to switch to
+        return;
+    }
+
+    NS_ASSERT_MSG(!IsOnDsoSubband(linkId),
+                  "No ICF should be received when already operating on a DSO subband");
+
+    const auto& phy = m_staMac->GetWifiPhy(linkId);
+    const auto& currentChannel = phy->GetOperatingChannel();
+    NS_ASSERT(currentChannel.GetWidth() < MHz_t{320});
+    auto ehtRu = std::get<EhtRu::RuSpec>(ru);
+    if (ehtRu.GetPrimary160MHz() &&
+        (ehtRu.GetPrimary80MHzOrLower80MHz() || currentChannel.GetWidth() == MHz_t{160}))
+
+    {
+        // nothing to do, we received an ICF with RU assigned in main channel
+        return;
+    }
+
+    const auto staChannelWidth = phy->GetChannelWidth();
+    const auto& dsoSubbands = GetDsoSubbands(linkId);
+    const auto itDsoSubband =
+        dsoSubbands.find({ehtRu.GetPrimary160MHz(),
+                          (staChannelWidth > MHz_t{80}) || ehtRu.GetPrimary80MHzOrLower80MHz()});
+    NS_ASSERT_MSG(itDsoSubband != dsoSubbands.cend(), "No DSO subband found for the given RU spec");
+    SwitchPhyChannel(linkId, itDsoSubband->second, GetSwitchingDelayToDsoSubband());
+}
+
+void
+DsoManager::SwitchPhyChannel(uint8_t linkId,
+                             const WifiPhyOperatingChannel& channel,
+                             const Time& delay)
+{
+    NS_LOG_FUNCTION(this << linkId << channel << delay);
+
+    auto phy = m_staMac->GetWifiPhy(linkId);
+    const auto initialDelay = phy->GetChannelSwitchDelay();
+
+    // switch channel within the provided delay
+    phy->SetAttribute("ChannelSwitchDelay", TimeValue(delay));
+    GetUhrFem(linkId)->NotifyDsoSwitching();
+    phy->SetOperatingChannel(channel);
+
+    // restore previous channel switch delay
+    phy->SetAttribute("ChannelSwitchDelay", TimeValue(initialDelay));
+}
+
+void
 DsoManager::ComputeSubbands(uint8_t linkId, const MgtAssocResponseHeader& assocResp)
 {
     NS_LOG_FUNCTION(this << linkId << assocResp);
@@ -190,6 +245,12 @@ DsoManager::GetDsoSubbands(uint8_t linkId) const
     NS_ASSERT_MSG(it != m_dsoSubbands.end(),
                   "DSO subband for PHY on link ID " << +linkId << " not found");
     return it->second;
+}
+
+bool
+DsoManager::IsOnDsoSubband(uint8_t linkId) const
+{
+    return m_staMac->GetWifiPhy(linkId)->GetOperatingChannel() != GetPrimarySubband(linkId);
 }
 
 } // namespace ns3
