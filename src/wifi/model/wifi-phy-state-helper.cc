@@ -482,11 +482,11 @@ WifiPhyStateHelper::SwitchFromRxEndOk()
 }
 
 void
-WifiPhyStateHelper::SwitchFromRxEndError()
+WifiPhyStateHelper::SwitchFromRxEndError(const WifiTxVector& txVector)
 {
     NS_LOG_FUNCTION(this);
     NS_ASSERT(m_endRx == Simulator::Now());
-    NotifyListeners(&WifiPhyListener::NotifyRxEndError);
+    NotifyListeners(&WifiPhyListener::NotifyRxEndError, txVector);
     DoSwitchFromRx();
 }
 

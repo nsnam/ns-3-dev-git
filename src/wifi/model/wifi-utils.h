@@ -27,6 +27,7 @@ class Mac48Address;
 class WifiMacHeader;
 class Packet;
 class WifiMac;
+class WifiTxVector;
 
 /**
  * Wifi direction. Values are those defined for the TID-to-Link Mapping Control Direction
@@ -195,6 +196,13 @@ uint32_t GetRtsSize();
  * @return the total CTS size in bytes
  */
 uint32_t GetCtsSize();
+
+/**
+ * @param txVector the TXVECTOR used to transmit a frame whose reception failed
+ * @return the estimated Ack TX time, based on Table 10-8 of IEEE 802.11REVme D7.0
+ */
+Time GetEstimatedAckTxTime(const WifiTxVector& txVector);
+
 /**
  * @param seq MPDU sequence number
  * @param winstart sequence number window start

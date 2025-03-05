@@ -42,6 +42,7 @@ The required Doxygen version for documentation generation is now version 1.13.
 - (wifi) #2368 - Fix various issues related to Content Channels and RU allocation. Fixes mostly covers cases where OFDMA is used with central 26 tones, where a single user is being assigned the whole PPDU bandwidth or where a RU is larger than 20 MHz.
 - (zigbee) !2383 - Fix malformed RREP command with missing command options field.
 - (wifi) Fix the time the `NSlotsLeftAlert` trace source of `ChannelAccessManager` is fired (it cannot be earlier than the access grant start time)
+- (wifi) Fix the EIFS computation, which depends on the modulation class of the PPDU whose reception failed rather than on the latest standard supported by a device
 
 ## Release 3.44
 

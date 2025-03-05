@@ -627,9 +627,9 @@ class CcaTestPhyListener : public ns3::WifiPhyListener
         NS_LOG_FUNCTION(this);
     }
 
-    void NotifyRxEndError() override
+    void NotifyRxEndError(const WifiTxVector& txVector) override
     {
-        NS_LOG_FUNCTION(this);
+        NS_LOG_FUNCTION(this << txVector);
     }
 
     void NotifyTxStart(Time duration, dBm_u txPower) override

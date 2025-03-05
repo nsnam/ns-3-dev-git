@@ -873,7 +873,7 @@ HePhy::RxPayloadFailed(Ptr<const WifiPsdu> psdu, double snr, const WifiTxVector&
     NS_LOG_FUNCTION(this << *psdu << txVector << snr);
     if (!txVector.IsUlMu())
     {
-        m_state->SwitchFromRxEndError();
+        m_state->SwitchFromRxEndError(txVector);
     }
 }
 
@@ -906,7 +906,7 @@ HePhy::DoEndReceivePayload(Ptr<const WifiPpdu> ppdu)
             }
             else
             {
-                m_state->SwitchFromRxEndError();
+                m_state->SwitchFromRxEndError(ppdu->GetTxVector());
             }
             NotifyInterferenceRxEndAndClear(true); // reset WifiPhy
             m_rxHeTbPpdus = 0;

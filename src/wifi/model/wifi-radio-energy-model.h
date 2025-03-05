@@ -56,7 +56,7 @@ class WifiRadioEnergyModelPhyListener : public WifiPhyListener
 
     void NotifyRxStart(Time duration) override;
     void NotifyRxEndOk() override;
-    void NotifyRxEndError() override;
+    void NotifyRxEndError(const WifiTxVector& txVector) override;
     void NotifyTxStart(Time duration, dBm_u txPower) override;
     void NotifyCcaBusyStart(Time duration,
                             WifiChannelListType channelType,

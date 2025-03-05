@@ -246,8 +246,10 @@ class WifiPhyStateHelper : public Object
     void SwitchFromRxEndOk();
     /**
      * Switch from RX after the reception failed.
+     *
+     * @param txVector the TXVECTOR used for transmission of failed frame
      */
-    void SwitchFromRxEndError();
+    void SwitchFromRxEndError(const WifiTxVector& txVector);
     /**
      * Abort current reception following a CCA reset request.
      * @param operatingWidth the channel width the PHY is operating on

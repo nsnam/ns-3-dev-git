@@ -33,6 +33,7 @@ class WifiPhy;
 class PhyListener;
 class Txop;
 class FrameExchangeManager;
+class WifiTxVector;
 enum AcIndex : uint8_t; // opaque enum declaration
 
 /**
@@ -236,8 +237,10 @@ class ChannelAccessManager : public Object
     /**
      * Notify the Txop that a packet reception was just
      * completed unsuccessfuly.
+     *
+     * @param txVector the TXVECTOR used for transmission
      */
-    void NotifyRxEndErrorNow();
+    void NotifyRxEndErrorNow(const WifiTxVector& txVector);
     /**
      * @param duration expected duration of transmission
      *

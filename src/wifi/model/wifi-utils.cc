@@ -13,6 +13,7 @@
 #include "gcr-manager.h"
 #include "wifi-mac-header.h"
 #include "wifi-mac-trailer.h"
+#include "wifi-tx-vector.h"
 
 #include "ns3/packet.h"
 
@@ -107,6 +108,61 @@ GetCtsSize()
     static const uint32_t size = WifiMacHeader(WIFI_MAC_CTL_CTS).GetSize() + 4;
 
     return size;
+}
+
+Time
+GetEstimatedAckTxTime(const WifiTxVector& txVector)
+{
+    auto modClass = txVector.GetModulationClass();
+
+    switch (modClass)
+    {
+    case WIFI_MOD_CLASS_DSSS:
+    case WIFI_MOD_CLASS_HR_DSSS:
+        if (txVector.GetMode().GetDataRate(txVector) == 1e6)
+        {
+            return MicroSeconds(304);
+        }
+        else if (txVector.GetPreambleType() == WIFI_PREAMBLE_LONG)
+        {
+            return MicroSeconds(248);
+        }
+        else
+        {
+            return MicroSeconds(152);
+        }
+        break;
+    case WIFI_MOD_CLASS_ERP_OFDM:
+    case WIFI_MOD_CLASS_OFDM:
+        if (auto constSize = txVector.GetMode().GetConstellationSize(); constSize == 2)
+        {
+            return MicroSeconds(44);
+        }
+        else if (constSize == 4)
+        {
+            return MicroSeconds(32);
+        }
+        else
+        {
+            return MicroSeconds(28);
+        }
+        break;
+    default: {
+        auto staId = (txVector.IsMu() ? txVector.GetHeMuUserInfoMap().begin()->first : SU_STA_ID);
+        if (const auto constSize = txVector.GetMode(staId).GetConstellationSize(); constSize == 2)
+        {
+            return MicroSeconds(68);
+        }
+        else if (constSize == 4)
+        {
+            return MicroSeconds(44);
+        }
+        else
+        {
+            return MicroSeconds(32);
+        }
+    }
+    }
 }
 
 bool

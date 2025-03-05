@@ -90,11 +90,11 @@ class PhyListener : public ns3::WifiPhyListener
         }
     }
 
-    void NotifyRxEndError() override
+    void NotifyRxEndError(const WifiTxVector& txVector) override
     {
         if (m_active)
         {
-            m_cam->NotifyRxEndErrorNow();
+            m_cam->NotifyRxEndErrorNow(txVector);
         }
     }
 
@@ -985,14 +985,14 @@ ChannelAccessManager::NotifyRxEndOkNow()
 }
 
 void
-ChannelAccessManager::NotifyRxEndErrorNow()
+ChannelAccessManager::NotifyRxEndErrorNow(const WifiTxVector& txVector)
 {
     NS_LOG_FUNCTION(this);
     NS_LOG_DEBUG("rx end error");
     // we expect the PHY to notify us of the start of a CCA busy period, if needed
     m_lastRx.end = Simulator::Now();
     m_lastRxReceivedOk = false;
-    m_eifsNoDifs = m_phy->GetSifs() + m_phy->GetAckTxTime();
+    m_eifsNoDifs = m_phy->GetSifs() + GetEstimatedAckTxTime(txVector);
 }
 
 void

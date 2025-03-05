@@ -732,7 +732,21 @@ ChannelAccessManagerTest<TxopType>::AddRxErrorEvt(uint64_t at, uint64_t duration
                         MicroSeconds(duration));
     Simulator::Schedule(MicroSeconds(at + duration) - Now(),
                         &ChannelAccessManager::NotifyRxEndErrorNow,
-                        m_ChannelAccessManager);
+                        m_ChannelAccessManager,
+                        WifiTxVector(OfdmPhy::GetOfdmRate6Mbps(),
+                                     1,
+                                     WIFI_PREAMBLE_LONG,
+                                     NanoSeconds(800),
+                                     1,
+                                     1,
+                                     0,
+                                     MHz_u{20},
+                                     false,
+                                     false,
+                                     false,
+                                     0,
+                                     0,
+                                     false));
 }
 
 template <typename TxopType>
@@ -747,7 +761,21 @@ ChannelAccessManagerTest<TxopType>::AddRxErrorEvt(uint64_t at,
                         MicroSeconds(duration));
     Simulator::Schedule(MicroSeconds(at + timeUntilError) - Now(),
                         &ChannelAccessManager::NotifyRxEndErrorNow,
-                        m_ChannelAccessManager);
+                        m_ChannelAccessManager,
+                        WifiTxVector(OfdmPhy::GetOfdmRate6Mbps(),
+                                     1,
+                                     WIFI_PREAMBLE_LONG,
+                                     NanoSeconds(800),
+                                     1,
+                                     1,
+                                     0,
+                                     MHz_u{20},
+                                     false,
+                                     false,
+                                     false,
+                                     0,
+                                     0,
+                                     false));
     Simulator::Schedule(MicroSeconds(at + timeUntilError) - Now(),
                         &ChannelAccessManager::NotifyCcaBusyStartNow,
                         m_ChannelAccessManager,

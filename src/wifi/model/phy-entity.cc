@@ -785,7 +785,7 @@ void
 PhyEntity::RxPayloadFailed(Ptr<const WifiPsdu> psdu, double snr, const WifiTxVector& txVector)
 {
     NS_LOG_FUNCTION(this << *psdu << txVector << snr);
-    m_state->SwitchFromRxEndError();
+    m_state->SwitchFromRxEndError(txVector);
 }
 
 void

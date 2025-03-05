@@ -2890,9 +2890,9 @@ class OfdmaTestPhyListener : public ns3::WifiPhyListener
         m_lastRxSuccess = true;
     }
 
-    void NotifyRxEndError() override
+    void NotifyRxEndError(const WifiTxVector& txVector) override
     {
-        NS_LOG_FUNCTION(this);
+        NS_LOG_FUNCTION(this << txVector);
         m_lastRxEnd = Simulator::Now();
         ++m_notifyRxEnd;
         m_lastRxSuccess = false;
