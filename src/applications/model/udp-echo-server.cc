@@ -41,10 +41,6 @@ UdpEchoServer::GetTypeId()
                           UintegerValue(0),
                           MakeUintegerAccessor(&UdpEchoServer::m_tos),
                           MakeUintegerChecker<uint8_t>())
-            .AddTraceSource("Rx",
-                            "A packet has been received",
-                            MakeTraceSourceAccessor(&UdpEchoServer::m_rxTrace),
-                            "ns3::Packet::TracedCallback")
             .AddTraceSource("RxWithAddresses",
                             "A packet has been received",
                             MakeTraceSourceAccessor(&UdpEchoServer::m_rxTraceWithAddresses),
@@ -157,7 +153,8 @@ UdpEchoServer::HandleRead(Ptr<Socket> socket)
     {
         Address localAddress;
         socket->GetSockName(localAddress);
-        m_rxTrace(packet);
+        m_rxTraceWithoutAddress(packet);
+        m_rxTrace(packet, from);
         m_rxTraceWithAddresses(packet, from, localAddress);
         if (InetSocketAddress::IsMatchingType(from))
         {

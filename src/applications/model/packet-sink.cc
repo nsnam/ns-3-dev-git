@@ -49,10 +49,6 @@ PacketSink::GetTypeId()
                           BooleanValue(false),
                           MakeBooleanAccessor(&PacketSink::m_enableSeqTsSizeHeader),
                           MakeBooleanChecker())
-            .AddTraceSource("Rx",
-                            "A packet has been received",
-                            MakeTraceSourceAccessor(&PacketSink::m_rxTrace),
-                            "ns3::Packet::AddressTracedCallback")
             .AddTraceSource("RxWithAddresses",
                             "A packet has been received",
                             MakeTraceSourceAccessor(&PacketSink::m_rxTraceWithAddresses),
@@ -252,7 +248,8 @@ PacketSink::HandleRead(Ptr<Socket> socket)
                                    << " total Rx " << m_totalRx << " bytes");
         }
 
-        if (!m_rxTrace.IsEmpty() || !m_rxTraceWithAddresses.IsEmpty() ||
+        if (!m_rxTrace.IsEmpty() || !m_rxTraceWithoutAddress.IsEmpty() ||
+            !m_rxTraceWithAddresses.IsEmpty() ||
             (!m_rxTraceWithSeqTsSize.IsEmpty() && m_enableSeqTsSizeHeader))
         {
             Address localAddress;
@@ -270,6 +267,7 @@ PacketSink::HandleRead(Ptr<Socket> socket)
             {
                 socket->GetSockName(localAddress);
             }
+            m_rxTraceWithoutAddress(packet);
             m_rxTrace(packet, from);
             m_rxTraceWithAddresses(packet, from, localAddress);
 

@@ -280,8 +280,6 @@ class ThreeGppHttpServer : public SinkApplication
     TracedCallback<uint32_t> m_embeddedObjectTrace;
     /// The `Tx` trace source.
     TracedCallback<Ptr<const Packet>> m_txTrace;
-    /// The `Rx` trace source.
-    TracedCallback<Ptr<const Packet>, const Address&> m_rxTrace;
     /// The `Rx` trace source with the local address.
     TracedCallback<Ptr<const Packet>, const Address&, const Address&> m_rxTraceWithAddresses;
     /// The `RxDelay` trace source.

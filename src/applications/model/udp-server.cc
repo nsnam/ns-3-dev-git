@@ -45,10 +45,6 @@ UdpServer::GetTypeId()
                           MakeUintegerAccessor(&UdpServer::GetPacketWindowSize,
                                                &UdpServer::SetPacketWindowSize),
                           MakeUintegerChecker<uint16_t>(8, 256))
-            .AddTraceSource("Rx",
-                            "A packet has been received",
-                            MakeTraceSourceAccessor(&UdpServer::m_rxTrace),
-                            "ns3::Packet::TracedCallback")
             .AddTraceSource("RxWithAddresses",
                             "A packet has been received",
                             MakeTraceSourceAccessor(&UdpServer::m_rxTraceWithAddresses),
@@ -175,7 +171,8 @@ UdpServer::HandleRead(Ptr<Socket> socket)
     {
         Address localAddress;
         socket->GetSockName(localAddress);
-        m_rxTrace(packet);
+        m_rxTraceWithoutAddress(packet);
+        m_rxTrace(packet, from);
         m_rxTraceWithAddresses(packet, from, localAddress);
         if (packet->GetSize() > 0)
         {
