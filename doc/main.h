@@ -18,8 +18,7 @@
  *
  * @section install-sec Building the Documentation
  *
- * Building ns-3 Doxygen requires Doxygen version 1.8 at a minimum, but version 1.9 is recommended
- * to minimize warnings.
+ * Building ns-3 Doxygen requires Doxygen version 1.11
  *
  * Type "./ns3 docs doxygen" or "./ns3 docs doxygen-no-build" to build the
  *  documentation.  The doc/ directory contains
