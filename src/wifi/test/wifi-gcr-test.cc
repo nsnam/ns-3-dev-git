@@ -26,7 +26,6 @@
 #include "ns3/packet-socket-client.h"
 #include "ns3/packet-socket-helper.h"
 #include "ns3/packet-socket-server.h"
-#include "ns3/pointer.h"
 #include "ns3/qos-txop.h"
 #include "ns3/rng-seed-manager.h"
 #include "ns3/rr-multi-user-scheduler.h"
@@ -1010,9 +1009,7 @@ GcrTestBase::DoSetup()
         }
     }
 
-    PointerValue ptr;
-    m_apWifiMac->GetAttribute("BE_Txop", ptr);
-    ptr.Get<QosTxop>()->TraceConnectWithoutContext(
+    m_apWifiMac->GetQosTxop(AC_BE)->TraceConnectWithoutContext(
         "TxopTrace",
         MakeCallback(&GcrTestBase::NotifyTxopTerminated, this));
 

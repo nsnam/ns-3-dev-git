@@ -21,7 +21,6 @@
 #include "ns3/packet-socket-helper.h"
 #include "ns3/packet-socket-server.h"
 #include "ns3/packet.h"
-#include "ns3/pointer.h"
 #include "ns3/qos-txop.h"
 #include "ns3/qos-utils.h"
 #include "ns3/recipient-block-ack-agreement.h"
@@ -1932,9 +1931,7 @@ BlockAckAggregationDisabledTest::DoRun()
 
     if (m_txop)
     {
-        PointerValue ptr;
-        sta_device->GetMac()->GetAttribute("BE_Txop", ptr);
-        ptr.Get<QosTxop>()->TraceConnectWithoutContext(
+        sta_device->GetMac()->GetQosTxop(AC_BE)->TraceConnectWithoutContext(
             "TxopTrace",
             MakeCallback(&TxopDurationTracer::Trace, &txopTracer));
     }

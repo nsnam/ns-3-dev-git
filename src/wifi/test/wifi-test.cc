@@ -58,30 +58,16 @@ static void
 AssignWifiRandomStreams(Ptr<WifiMac> mac, int64_t stream)
 {
     int64_t currentStream = stream;
-    PointerValue ptr;
     if (!mac->GetQosSupported())
     {
-        mac->GetAttribute("Txop", ptr);
-        Ptr<Txop> txop = ptr.Get<Txop>();
-        currentStream += txop->AssignStreams(currentStream);
+        currentStream += mac->GetTxop()->AssignStreams(currentStream);
     }
     else
     {
-        mac->GetAttribute("VO_Txop", ptr);
-        Ptr<QosTxop> vo_txop = ptr.Get<QosTxop>();
-        currentStream += vo_txop->AssignStreams(currentStream);
-
-        mac->GetAttribute("VI_Txop", ptr);
-        Ptr<QosTxop> vi_txop = ptr.Get<QosTxop>();
-        currentStream += vi_txop->AssignStreams(currentStream);
-
-        mac->GetAttribute("BE_Txop", ptr);
-        Ptr<QosTxop> be_txop = ptr.Get<QosTxop>();
-        currentStream += be_txop->AssignStreams(currentStream);
-
-        mac->GetAttribute("BK_Txop", ptr);
-        Ptr<QosTxop> bk_txop = ptr.Get<QosTxop>();
-        bk_txop->AssignStreams(currentStream);
+        currentStream += mac->GetQosTxop(AC_VO)->AssignStreams(currentStream);
+        currentStream += mac->GetQosTxop(AC_VI)->AssignStreams(currentStream);
+        currentStream += mac->GetQosTxop(AC_BE)->AssignStreams(currentStream);
+        currentStream += mac->GetQosTxop(AC_BK)->AssignStreams(currentStream);
     }
 }
 
@@ -887,9 +873,7 @@ QosFragmentationTestCase::DoRun()
     Ptr<WifiNetDevice> sta_device = DynamicCast<WifiNetDevice>(staDevices.Get(0));
 
     // set the TXOP limit on BE AC
-    PointerValue ptr;
-    sta_device->GetMac()->GetAttribute("BE_Txop", ptr);
-    ptr.Get<QosTxop>()->SetTxopLimit(MicroSeconds(3008));
+    sta_device->GetMac()->GetQosTxop(AC_BE)->SetTxopLimit(MicroSeconds(3008));
 
     PacketSocketAddress socket;
     socket.SetSingleDevice(sta_device->GetIfIndex());
@@ -2721,9 +2705,8 @@ Issue40TestCase::RunOne(bool useAmpdu)
         // Disable use of BAR that are sent with the lowest modulation so that we can also reproduce
         // the problem with A-MPDU, i.e. the lack of feedback about SNR change
         Ptr<WifiNetDevice> ap_device = DynamicCast<WifiNetDevice>(apDevice.Get(0));
-        PointerValue ptr;
-        ap_device->GetMac()->GetAttribute("BE_Txop", ptr);
-        ptr.Get<QosTxop>()->SetAttribute("UseExplicitBarAfterMissedBlockAck", BooleanValue(false));
+        ap_device->GetMac()->GetQosTxop(AC_BE)->SetAttribute("UseExplicitBarAfterMissedBlockAck",
+                                                             BooleanValue(false));
     }
 
     // Transmit a first data packet before the station moves: it should be sent with a high
