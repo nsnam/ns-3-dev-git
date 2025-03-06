@@ -186,8 +186,6 @@ class PacketSink : public SinkApplication
 
     bool m_enableSeqTsSizeHeader; //!< Enable or disable the export of SeqTsSize header
 
-    /// Traced Callback: received packets, source address.
-    TracedCallback<Ptr<const Packet>, const Address&> m_rxTrace;
     /// Callback for tracing the packet Rx events, includes source and destination addresses
     TracedCallback<Ptr<const Packet>, const Address&, const Address&> m_rxTraceWithAddresses;
     /// Callbacks for tracing the packet Rx events, includes source, destination addresses, and

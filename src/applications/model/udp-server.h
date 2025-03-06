@@ -92,9 +92,6 @@ class UdpServer : public SinkApplication
     uint64_t m_received;             //!< Number of received packets
     PacketLossCounter m_lossCounter; //!< Lost packet counter
 
-    /// Callbacks for tracing the packet Rx events
-    TracedCallback<Ptr<const Packet>> m_rxTrace;
-
     /// Callbacks for tracing the packet Rx events, includes source and destination addresses
     TracedCallback<Ptr<const Packet>, const Address&, const Address&> m_rxTraceWithAddresses;
 };

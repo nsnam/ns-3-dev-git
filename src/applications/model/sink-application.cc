@@ -37,7 +37,15 @@ SinkApplication::GetTypeId()
                 "Port on which the application listens for incoming packets.",
                 UintegerValue(INVALID_PORT),
                 MakeUintegerAccessor(&SinkApplication::SetPort, &SinkApplication::GetPort),
-                MakeUintegerChecker<uint32_t>());
+                MakeUintegerChecker<uint32_t>())
+            .AddTraceSource("Rx",
+                            "A packet has been received",
+                            MakeTraceSourceAccessor(&SinkApplication::m_rxTrace),
+                            "ns3::Packet::AddressTracedCallback")
+            .AddTraceSource("RxWithoutAddress",
+                            "A packet has been received from a given address",
+                            MakeTraceSourceAccessor(&SinkApplication::m_rxTraceWithoutAddress),
+                            "ns3::Packet::TracedCallback");
     return tid;
 }
 
