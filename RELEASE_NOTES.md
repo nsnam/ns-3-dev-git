@@ -12,7 +12,7 @@ a [GitLab.com issue tracker](https://gitlab.com/nsnam/ns-3-dev/-/issues) number,
 and references prefixed by '!' refer to a
 [GitLab.com merge request](https://gitlab.com/nsnam/ns-3-dev/-/merge_requests) number.
 
-## Release 3-dev
+## Release 3.44
 
 ### Supported platforms
 
@@ -28,7 +28,11 @@ requirements (Note: not all ns-3 features are available on all systems):
 Python API requires [Cppyy](https://cppyy.readthedocs.io/en/latest/installation.html) and has only
 been tested on Linux. As of this release, the latest known version to work with ns-3 is cppyy==3.1.2.
 
-The required Doxygen version for documentation generation is version 1.11.
+The required Doxygen version for documentation generation is now version 1.11.
+
+Doxygen tags are now required to use the '@' rather than the '\' character.
+
+The minimum clang-format version is version 15.
 
 ### New user-visible features
 
@@ -36,33 +40,39 @@ The required Doxygen version for documentation generation is version 1.11.
 - (applications) - The `ThreeGppHttpServer::LocalAddress` and `ThreeGppHttpServer::LocalPort` attributes have been renamed to `ThreeGppHttpServer::Remote` and `ThreeGppHttpServer::Port`, respectively.
 - (applications) - It is now possible to specify the address on which to bind the listening socket for UdpServer via the `Local` attribute.
 - (applications) - It is now possible to specify a port only for PacketSink to listen to any address (both IPv4 and IPv6).
+- (build) Scan for contrib modules in `ns-3-external-contrib` directory, at the same level of the ns-3 directory (e.g. `./ns-3-dev/../ns-3-external-contrib/`).
+- (energy) Added new information and reformatted energy module documentation.
 - (wifi) - Added a `WifiDefaultProtectionManager::SkipMuRtsBeforeBsrp` attribute to avoid using MU-RTS to protect the transmission of a BSRP Trigger Frame. If this attribute is set to true (which is the default value), BSRP Trigger Frames can be used as Initial Control Frames for EMLSR clients
 - (wifi) Each MSDU, A-MSDU or management MPDU now has its individual frame retry count and each Txop/QosTxop has its own SRC (Station Retry Count) to match the standard specifications.
 - (wifi) The `MaxSsrc` and `MaxSlrc` attributes of the `WifiRemoteStationManager` have been obsoleted and replaced by the `FrameRetryLimit` attribute of the `WifiMac`.
 - (wifi) Added the `IncrementRetryCountUnderBa` attribute to the  `WifiRemoteStationManager` to choose whether or not to increase the retry count of frames that are part of a block ack agreement; this attribute defaults to false to match the standard specifications.
 - (wifi) Added a new `BaEstablished` trace source to `QosTxop` to notify that a block ack agreement has been established with a given recipient for a given TID.
-- (zigbee) Added Zigbee module support.
-- (energy) Added new information and reformatted energy module documentation.
 - (wifi) Added a new `MainPhySwitch` trace source to EmlsrManager, which is fired when the main PHY switches channel to operate on another link and provides information about the reason for starting the switch.
-- (build) Scan for contrib modules in `ns-3-external-contrib` directory, at the same level of the ns-3 directory (e.g. `./ns-3-dev/../ns-3-external-contrib/`).
 - (wifi) Add support for exchanging 802.11be Multi-Link Probe Request frames. Currently, the default association manager does not instruct the MAC to transmit a Multi-Link Probe Request frame, though.
 - (wifi) 2004! - Add Wi-Fi channel occupancy statistics helper
 - (wifi) 2009! - Added WifiTxStatsHelper for Wi-Fi MAC-level tracing.
 - (wifi) - Added support for 802.11aa groupcast with retries (GCR). Both unsolicited retries (GCR-UR) and Block Ack (GCR-BA) mechanisms are implemented.
+- (zigbee) Added a new Zigbee module.
 
 ### Bugs fixed
 
+- (core) - Fix the command-line handling of default values containing a space
+- (examples) - Fix incorrect energy calculation in wifi power adaptation examples
+- (internet) #1109 - Add support for multiple hardware types in ArpHeader
+- (internet) #1177 - check for 0-TTL before trying to decrement
 - (lr-wpan) !2334 - Fix the MAC reaction to an association issue in which association response commands might be received before data request command acks.
 - (propagation) Scale the NTN LOS probabilities from percentages [0, 100] to probabilities [0, 1]
+- (propagation) !2352 - Fix Okumura Hata propagation loss model for open areas environment
 - (spectrum) Calculate PSD by combining received power on ports, even when no precoding matrix is set
 - (spectrum) Scale the CDS parameter of V2V models to nanoseconds
 - (spectrum) Add missing K-factor fields (uk, sigK) for NTN NLOS 3GPP channel model
+- (spectrum) Trigger 3GPP channel updates after changes to antenna attributes
 - (wifi) Retransmit procedures have been aligned with the standard specifications.
 - (wifi) Clear PSDU map if no immediate response expected with BAR-BA ack sequence
 - (wifi) Fix S-MPDU TX duration computation with BlockAck ack policy
 - (wifi) Fix missing DSSS Param Set in Probe Request sent over 2.4 GHz links
-- (spectrum) Trigger 3GPP channel updates after changes to antenna attributes
 - (wifi) #1104 - Fix wrong calculation of start sequence number
+- (wifi) Ensure AckedMpdu trace is fired before the MPDU is dequeued
 
 ## Release 3.43
 
