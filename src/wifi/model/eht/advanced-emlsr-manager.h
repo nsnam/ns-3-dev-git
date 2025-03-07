@@ -157,9 +157,20 @@ class AdvancedEmlsrManager : public DefaultEmlsrManager
     bool m_keepMainPhyAfterDlTxop; //!< whether the main PHY must stay, for a switch main PHY back
                                    //!< delay, on an aux PHY link after a DL TXOP, in case aux PHYs
                                    //!< are not TX capable and do not switch
-    EventId m_ccaLastPifs;         //!< event scheduled in case of non-TX capable aux PHY to
-                                   //!< determine whether TX can be started based on whether
-                                   //!< the medium has been idle during the last PIFS interval
+    bool m_checkAccessOnMainPhyLink; //!< in case aux PHYs are not TX capable and an Access
+                                     //!< Category, say it AC X, is about to gain channel access on
+                                     //!< an aux PHY link, determine whether the time the ACs with
+                                     //!< priority higher than or equal to AC X and with frames to
+                                     //!< send on the main PHY link are expected to gain access on
+                                     //!< the main PHY link should be taken into account when taking
+                                     //!< the decision to switch the main PHY to the aux PHY link
+    AcIndex m_minAcToSkipCheckAccess; //!< if m_checkAccessOnMainPhyLink is set to false, indicate
+                                      //!< the minimum priority AC for which it is allowed to skip
+                                      //!< the check related to the expected channel access time on
+                                      //!< the main PHY link
+    EventId m_ccaLastPifs;            //!< event scheduled in case of non-TX capable aux PHY to
+                                      //!< determine whether TX can be started based on whether
+                                      //!< the medium has been idle during the last PIFS interval
     EventId m_switchMainPhyBackEvent; //!< event scheduled in case of non-TX capable aux PHY when
                                       //!< medium is sensed busy during the PIFS interval
                                       //!< preceding/following the main PHY switch end
