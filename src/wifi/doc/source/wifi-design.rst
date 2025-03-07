@@ -1371,11 +1371,15 @@ to the auxiliary link:
 * the main PHY is not switching nor is it trying to get channel access on another auxiliary link
 * no MediumSyncDelay timer is running on the auxiliary link or the maximum number of TXOP attempts
   has not yet been reached
-* the main PHY is expected to get channel access on the auxiliary link more quickly, i.e., ALL the
-  ACs with queued frames (that can be transmitted on the link on which the main PHY is currently
-  operating) and with priority higher than or equal to that of the AC for which Aux PHY gained TXOP
-  have their backoff counter greater than the maximum between the expected delay in gaining channel
-  access on the auxiliary and the channel switch delay (plus PIFS if we cannot use aux PHY CCA)
+* the main PHY is expected to get channel access on the auxiliary link more quickly. More precisely,
+  let AC X be the AC that is about to gain channel access on the aux PHY link, the main PHY is
+  requested to switch if we do not expect any AC, with priority higher than or equal to AC X and
+  with frames to send on the main PHY link, to gain channel access on the main PHY link before AC X
+  is able to start transmitting on the aux PHY link.
+
+Note that the last condition is not checked if the ``CheckAccessOnMainPhyLink`` attribute is set to
+false and AC X has a priority higher than or equal to the AC specified by the ``MinAcToSkipCheckAccess``
+attribute.
 
 If the main PHY switches to the auxiliary link, it cannot transmit as soon as it completes the
 channel switch, but it has to verify that the medium has been virtually and physically idle

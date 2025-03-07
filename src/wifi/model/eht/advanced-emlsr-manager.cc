@@ -150,7 +150,32 @@ AdvancedEmlsrManager::GetTypeId()
                           "or it returns to the preferred link, otherwise.",
                           BooleanValue(false),
                           MakeBooleanAccessor(&AdvancedEmlsrManager::m_keepMainPhyAfterDlTxop),
-                          MakeBooleanChecker());
+                          MakeBooleanChecker())
+            .AddAttribute("CheckAccessOnMainPhyLink",
+                          "In case aux PHYs are not TX capable and an Access Category, say it AC "
+                          "X, is about to gain channel access on an aux PHY link, determine "
+                          "whether the time the ACs with priority higher than or equal to AC X and "
+                          "with frames to send on the main PHY link are expected to gain access on "
+                          "the main PHY link should be taken into account when taking the decision "
+                          "to switch the main PHY to the aux PHY link.",
+                          BooleanValue(true),
+                          MakeBooleanAccessor(&AdvancedEmlsrManager::m_checkAccessOnMainPhyLink),
+                          MakeBooleanChecker())
+            .AddAttribute(
+                "MinAcToSkipCheckAccess",
+                "If the CheckAccessOnMainPhyLink attribute is set to false, indicate the "
+                "minimum priority AC for which it is allowed to skip the check related "
+                "to the expected channel access time on the main PHY link.",
+                EnumValue(AcIndex::AC_BK),
+                MakeEnumAccessor<AcIndex>(&AdvancedEmlsrManager::m_minAcToSkipCheckAccess),
+                MakeEnumChecker(AcIndex::AC_BE,
+                                "AC_BE",
+                                AcIndex::AC_VI,
+                                "AC_VI",
+                                AcIndex::AC_VO,
+                                "AC_VO",
+                                AcIndex::AC_BK,
+                                "AC_BK"));
     return tid;
 }
 
@@ -770,37 +795,53 @@ AdvancedEmlsrManager::RequestMainPhyToSwitch(uint8_t linkId, AcIndex aci, const 
         return false;
     }
 
-    // request to switch main PHY if we expect the main PHY to get channel access on this link more
-    // quickly, i.e., if ALL the ACs with queued frames (that can be transmitted on the link on
-    // which the main PHY is currently operating) and with priority higher than or equal to that of
-    // the AC for which Aux PHY gained TXOP have their backoff counter greater than the maximum
-    // between the expected delay in gaining channel access and the channel switch delay (plus PIFS
-    // if we cannot use aux PHY CCA)
+    // if the AC that is about to get channel access on the aux PHY link has no frames to send on
+    // that link, do not request the main PHY to switch
+    if (!GetStaMac()->GetQosTxop(aci)->HasFramesToTransmit(linkId))
+    {
+        NS_LOG_DEBUG("No frames of " << aci << " to send on link " << +linkId);
+        return false;
+    }
 
-    auto requestSwitch = false;
+    // if user has configured to skip the check related to the expected channel access time on
+    // the main PHY link and the AC that is about to gain access on the aux PHY link has a priority
+    // greater than or equal to the minimum priority that has been configured, switch the main PHY
+    if (!m_checkAccessOnMainPhyLink && (aci >= m_minAcToSkipCheckAccess))
+    {
+        NS_LOG_DEBUG("Skipping check related to the expected channel access time on main PHY link");
+        return true;
+    }
+
+    // let AC X be the AC that is about to gain channel access on the aux PHY link, request to
+    // switch the main PHY if we do not expect any AC, with priority higher than or equal to that
+    // of AC X and with frames to send on the main PHY link, to gain channel access on the main PHY
+    // link before AC X is able to start transmitting on the aux PHY link.
+
     const auto now = Simulator::Now();
 
     for (const auto& [acIndex, ac] : wifiAcList)
     {
-        if (auto edca = GetStaMac()->GetQosTxop(acIndex);
-            acIndex >= aci && edca->HasFramesToTransmit(linkId))
+        // ignore ACs with lower priority than the AC that is about to get access on aux PHY link
+        if (acIndex < aci)
         {
-            requestSwitch = true;
+            continue;
+        }
 
-            const auto backoffEnd =
-                GetStaMac()->GetChannelAccessManager(*mainPhyLinkId)->GetBackoffEndFor(edca);
-            NS_LOG_DEBUG("Backoff end for " << acIndex
-                                            << " on preferred link: " << backoffEnd.As(Time::US));
+        const auto edca = GetStaMac()->GetQosTxop(acIndex);
+        const auto backoffEnd =
+            GetStaMac()->GetChannelAccessManager(*mainPhyLinkId)->GetBackoffEndFor(edca);
+        NS_LOG_DEBUG("Backoff end for " << acIndex
+                                        << " on main PHY link: " << backoffEnd.As(Time::US));
 
-            if ((backoffEnd <= now + minDelay) && edca->HasFramesToTransmit(*mainPhyLinkId))
-            {
-                requestSwitch = false;
-                break;
-            }
+        if ((backoffEnd <= now + minDelay) && edca->HasFramesToTransmit(*mainPhyLinkId))
+        {
+            NS_LOG_DEBUG(acIndex << " is expected to gain access on link " << +mainPhyLinkId.value()
+                                 << " sooner than " << aci << " on link " << +linkId);
+            return false;
         }
     }
 
-    return requestSwitch;
+    return true;
 }
 
 void
