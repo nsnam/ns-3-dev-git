@@ -1698,6 +1698,14 @@ StaWifiMac::UpdateApInfo(const MgtResponseFrameType& frame,
     };
     std::visit(doRecordCapabilities, frame);
 
+    if (auto link = GetLinks().find(linkId); IsAssociated() && link != GetLinks().cend() &&
+                                             GetStaLink(link->second).bssid.has_value() &&
+                                             GetStaLink(link->second).bssid.value() != bssid)
+    {
+        NS_LOG_DEBUG("Ignore information in beacon frame not received from associated AP");
+        return;
+    }
+
     // ERP Information is not present in Association Response frames
     const std::optional<ErpInformation>* erpInformation = nullptr;
 
