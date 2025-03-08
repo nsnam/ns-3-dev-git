@@ -33,6 +33,10 @@ if(CLANG)
   if(${NS3_COLORED_OUTPUT} OR "$ENV{CLICOLOR}")
     add_definitions(-fcolor-diagnostics) # colorize clang++ output
   endif()
+  if("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "aarch64")
+    # see https://gitlab.com/nsnam/ns-3-dev/-/issues/932
+    add_compile_definitions(NVALGRIND)
+  endif()
 endif()
 
 set(GCC FALSE)
