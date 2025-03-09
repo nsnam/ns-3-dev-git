@@ -14,6 +14,14 @@ and references prefixed by '!' refer to a
 
 ## Release 3.44
 
+This release adds the zigbee module and otherwise contains maintenance and small feature updates
+to the existing models and build system.
+
+### Availability
+
+This release is available from:
+<https://www.nsnam.org/release/ns-allinone-3.44.tar.bz2>
+
 ### Supported platforms
 
 This release is intended to work on systems with the following minimal
