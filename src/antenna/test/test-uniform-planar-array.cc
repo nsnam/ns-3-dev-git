@@ -206,7 +206,9 @@ class UpdateOnChangeTestCase : public TestCase
      */
     UpdateOnChangeTestCase(Ptr<AntennaModel> element, std::string name)
         : TestCase(name),
-          m_element(element){};
+          m_element(element)
+    {
+    }
 
   private:
     /**
