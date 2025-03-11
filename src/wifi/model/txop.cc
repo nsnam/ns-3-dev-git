@@ -776,8 +776,17 @@ Txop::NotifyChannelReleased(uint8_t linkId)
     GenerateBackoff(linkId);
     if (HasFramesToTransmit(linkId))
     {
-        Simulator::ScheduleNow(&Txop::RequestAccess, this, linkId);
+        // if the channel released notification (below) leads the power save manager to put the
+        // PHY in sleep state, do not request channel access (which would wake up the PHY)
+        Simulator::ScheduleNow([=, this]() {
+            if (auto phy = m_mac->GetWifiPhy(linkId); phy && !phy->IsStateSleep())
+            {
+                NS_LOG_DEBUG("Request channel access again after releasing the channel");
+                RequestAccess(linkId);
+            }
+        });
     }
+    m_mac->NotifyChannelReleased(this, linkId);
 }
 
 void

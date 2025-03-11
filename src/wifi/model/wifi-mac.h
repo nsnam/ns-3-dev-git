@@ -575,6 +575,14 @@ class WifiMac : public Object
     virtual void NotifyRequestAccess(Ptr<Txop> txop, uint8_t linkId);
 
     /**
+     * Notify that the given TXOP has released the channel on the given link.
+     *
+     * @param txop the DCF/EDCAF releasing the channel
+     * @param linkId the ID of the given link
+     */
+    virtual void NotifyChannelReleased(Ptr<Txop> txop, uint8_t linkId);
+
+    /**
      * @return pointer to HtConfiguration if it exists
      */
     Ptr<HtConfiguration> GetHtConfiguration() const;

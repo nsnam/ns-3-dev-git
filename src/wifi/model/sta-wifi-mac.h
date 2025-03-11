@@ -333,6 +333,7 @@ class StaWifiMac : public WifiMac
 
     void NotifyChannelSwitching(uint8_t linkId) override;
     void NotifyRequestAccess(Ptr<Txop> txop, uint8_t linkId) override;
+    void NotifyChannelReleased(Ptr<Txop> txop, uint8_t linkId) override;
 
     /**
      * Notify the MAC that EMLSR mode has changed on the given set of links.

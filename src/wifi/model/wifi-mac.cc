@@ -765,6 +765,11 @@ WifiMac::NotifyRequestAccess(Ptr<Txop> txop, uint8_t linkId)
 }
 
 void
+WifiMac::NotifyChannelReleased(Ptr<Txop> txop, uint8_t linkId)
+{
+}
+
+void
 WifiMac::SetupDcfQueue()
 {
     NS_LOG_FUNCTION(this);

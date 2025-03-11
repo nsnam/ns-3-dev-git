@@ -179,6 +179,24 @@ DefaultPowerSaveManager::DoNotifyRequestAccess(Ptr<Txop> txop, uint8_t linkId)
 }
 
 void
+DefaultPowerSaveManager::DoNotifyChannelReleased(Ptr<Txop> txop, uint8_t linkId)
+{
+    NS_LOG_FUNCTION(this << txop << linkId);
+
+    if (GetStaMac()->GetPmMode(linkId) == WifiPowerManagementMode::WIFI_PM_ACTIVE)
+    {
+        // cancel timer, if any
+        if (auto it = m_wakeUpEvents.find(linkId); it != m_wakeUpEvents.cend())
+        {
+            it->second.Cancel();
+        }
+        return;
+    }
+
+    GoToSleepIfPossible(linkId);
+}
+
+void
 DefaultPowerSaveManager::DoTxDropped(WifiMacDropReason reason, Ptr<const WifiMpdu> mpdu)
 {
     NS_LOG_FUNCTION(this << reason << *mpdu);
