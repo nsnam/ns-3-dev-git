@@ -71,9 +71,9 @@ UdpTraceClient::GetTypeId()
                 "The destination port of the outbound packets",
                 UintegerValue(UdpTraceClient::DEFAULT_PORT),
                 MakeAddressAccessor(
-                    (void(UdpTraceClient::*)(const Address&)) &
-                        UdpTraceClient::SetRemote, // this is needed to indicate which version of
-                                                   // the function overload to use
+                    // this is needed to indicate which version of the function overload to use
+                    static_cast<void (UdpTraceClient::*)(const Address&)>(
+                        &UdpTraceClient::SetRemote),
                     &UdpTraceClient::GetRemote),
                 MakeUintegerChecker<uint16_t>(),
                 TypeId::SupportLevel::DEPRECATED,

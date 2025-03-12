@@ -187,7 +187,9 @@ class MultiUserScheduler : public Object
      */
     virtual void UpdateTriggerFrameAfterProtection(uint8_t linkId,
                                                    CtrlTriggerHeader& trigger,
-                                                   WifiTxParameters& txParams) const {};
+                                                   WifiTxParameters& txParams) const
+    {
+    }
 
     /**
      * Update the given PSDU map after protection is completed on the given link.
@@ -198,7 +200,9 @@ class MultiUserScheduler : public Object
      */
     virtual void UpdateDlMuAfterProtection(uint8_t linkId,
                                            WifiPsduMap& psduMap,
-                                           WifiTxParameters& txParams) const {};
+                                           WifiTxParameters& txParams) const
+    {
+    }
 
     /**
      * Remove the User Info fields for which the given predicate is true from the given Trigger

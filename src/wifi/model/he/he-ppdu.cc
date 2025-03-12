@@ -738,14 +738,14 @@ HePpdu::GetHeSigBContentChannels(const WifiTxVector& txVector, uint8_t p20Index)
             }
             const auto central26TonesRus =
                 WifiRu::GetCentral26TonesRus(channelWidth, prevRuType, mc);
-            if (ruType < RuType::RU_242_TONE && (prevCcIndex == ccIndex) &&
-                ((ruType != RuType::RU_26_TONE) ||
-                 std::none_of(central26TonesRus.cbegin(),
-                              central26TonesRus.cend(),
-                              [ruIndex, channelWidth, p20Index](const auto& ruSpec) {
-                                  return WifiRu::GetPhyIndex(ruSpec, channelWidth, p20Index) ==
-                                         ruIndex;
-                              })))
+            const auto isCentral26ToneRu = std::none_of(
+                central26TonesRus.cbegin(),
+                central26TonesRus.cend(),
+                [ruIndex, channelWidth, p20Index](const auto& ruSpec) {
+                    return WifiRu::GetPhyIndex(ruSpec, channelWidth, p20Index) == ruIndex;
+                });
+            if ((ruType < RuType::RU_242_TONE) && (prevCcIndex == ccIndex) &&
+                ((ruType != RuType::RU_26_TONE) || isCentral26ToneRu))
             {
                 contentChannels[ccIndex].push_back({NO_USER_STA_ID, 0, 0});
             }
