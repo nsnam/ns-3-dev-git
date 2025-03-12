@@ -16,10 +16,10 @@
   timeout: 1h
   interruptible: true
 
-check-style-clang-format-18:
+check-style-clang-format-19:
   extends: .check-style-clang-format
   variables:
-    CLANG_FORMAT_VERSION: 18
+    CLANG_FORMAT_VERSION: 19
 
 check-style-clang-format-15:
   extends: .check-style-clang-format
