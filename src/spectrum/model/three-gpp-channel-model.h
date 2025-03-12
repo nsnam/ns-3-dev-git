@@ -228,21 +228,6 @@ class ThreeGppChannelModel : public MatrixBasedChannelModel
 
     /**
      * Get the parameters needed to apply the channel generation procedure
-     * @param channelCondition the channel condition
-     * @param hBS the height of the BS
-     * @param hUT the height of the UT
-     * @param distance2D the 2D distance between tx and rx
-     * @return the parameters table
-     */
-    NS_DEPRECATED_3_41("Use GetThreeGppTable(const Ptr<const MobilityModel>, const Ptr<const "
-                       "MobilityModel>, Ptr<const ChannelCondition>) instead")
-    Ptr<const ParamsTable> GetThreeGppTable(Ptr<const ChannelCondition> channelCondition,
-                                            double hBS,
-                                            double hUT,
-                                            double distance2D) const;
-
-    /**
-     * Get the parameters needed to apply the channel generation procedure
      * @param aMob the mobility model of node A
      * @param bMob the mobility model of node B
      * @param channelCondition the channel condition

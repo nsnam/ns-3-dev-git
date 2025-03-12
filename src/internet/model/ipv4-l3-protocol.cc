@@ -1401,19 +1401,6 @@ Ipv4L3Protocol::GetIpForward() const
 }
 
 void
-Ipv4L3Protocol::SetWeakEsModel(bool model)
-{
-    NS_LOG_FUNCTION(this << model);
-    m_strongEndSystemModel = !model;
-}
-
-bool
-Ipv4L3Protocol::GetWeakEsModel() const
-{
-    return !m_strongEndSystemModel;
-}
-
-void
 Ipv4L3Protocol::SetStrongEndSystemModel(bool model)
 {
     NS_LOG_FUNCTION(this << model);

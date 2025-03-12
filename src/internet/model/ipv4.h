@@ -445,24 +445,6 @@ class Ipv4 : public Object
     virtual bool GetIpForward() const = 0;
 
     /**
-     * @brief Get the Weak Es Model status
-     *
-     * RFC1122 term for whether host accepts datagram with a dest. address on another interface
-     * @returns true for Weak Es Model activated
-     */
-    NS_DEPRECATED_3_41("Use GetStrongEndSystemModel instead")
-    virtual bool GetWeakEsModel() const = 0;
-
-    /**
-     * @brief Set or unset the Weak Es Model
-     *
-     * RFC1122 term for whether host accepts datagram with a dest. address on another interface
-     * @param model true for Weak Es Model
-     */
-    NS_DEPRECATED_3_41("Use SetStrongEndSystemModel instead")
-    virtual void SetWeakEsModel(bool model) = 0;
-
-    /**
      * @brief Set or unset the Strong End System Model
      *
      * RFC1122 term for whether host rejects datagram with a dest. address on another interface

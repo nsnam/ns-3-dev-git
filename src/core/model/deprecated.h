@@ -118,11 +118,4 @@
  */
 #define NS_DEPRECATED_3_42(msg) NS_DEPRECATED("Deprecated in ns-3.42: " msg)
 
-/**
- * @ingroup deprecation
- * @def NS_DEPRECATED_3_41
- * Tag for things deprecated in version ns-3.41.
- */
-#define NS_DEPRECATED_3_41(msg) NS_DEPRECATED("Deprecated in ns-3.41: " msg)
-
 #endif /* NS3_DEPRECATED_H */

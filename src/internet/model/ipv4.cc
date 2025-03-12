@@ -35,14 +35,6 @@ Ipv4::GetTypeId()
                 BooleanValue(true),
                 MakeBooleanAccessor(&Ipv4::SetIpForward, &Ipv4::GetIpForward),
                 MakeBooleanChecker())
-            .AddAttribute("WeakEsModel",
-                          "RFC1122 term for whether host accepts datagram with a dest. address on "
-                          "another interface",
-                          BooleanValue(true),
-                          MakeBooleanAccessor(&Ipv4::SetWeakEsModel, &Ipv4::GetWeakEsModel),
-                          MakeBooleanChecker(),
-                          TypeId::SupportLevel::DEPRECATED,
-                          "DEPRECATED since ns-3.41. Use the StrongEndSystemModel attribute.")
             .AddAttribute(
                 "StrongEndSystemModel",
                 "Reject packets for an address not configured on the interface they're "
