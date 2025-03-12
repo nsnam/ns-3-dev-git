@@ -18,13 +18,6 @@ build_lib_example(
 )
 
 build_lib_example(
-  NAME li-ion-energy-source-example
-  SOURCE_FILES li-ion-energy-source-example.cc
-  LIBRARIES_TO_LINK ${libcore}
-                    ${libenergy}
-)
-
-build_lib_example(
   NAME rv-battery-model-test
   SOURCE_FILES rv-battery-model-test.cc
   LIBRARIES_TO_LINK

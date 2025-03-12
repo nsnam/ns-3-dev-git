@@ -17,7 +17,6 @@ build_lib(
     model/energy-harvester.cc
     model/energy-source.cc
     model/generic-battery-model.cc
-    model/li-ion-energy-source.cc
     model/rv-battery-model.cc
     model/simple-device-energy-model.cc
   HEADER_FILES
@@ -37,10 +36,8 @@ build_lib(
     model/energy-harvester.h
     model/energy-source.h
     model/generic-battery-model.h
-    model/li-ion-energy-source.h
     model/rv-battery-model.h
     model/simple-device-energy-model.h
   LIBRARIES_TO_LINK ${libnetwork}
   TEST_SOURCES test/basic-energy-harvester-test.cc
-               test/li-ion-energy-source-test.cc
 )
