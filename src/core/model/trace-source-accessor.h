@@ -136,9 +136,12 @@ namespace ns3
  * @param [in] a The underlying data value.
  * @returns The TraceSourceAccessor
  */
+// clang-format off
+// Clang-format guard needed for versions <= 18
 template <typename T, typename SOURCE>
 Ptr<const TraceSourceAccessor>
-DoMakeTraceSourceAccessor(SOURCE T::*a)
+DoMakeTraceSourceAccessor(SOURCE T::* a)
+// clang-format on
 {
     struct Accessor : public TraceSourceAccessor
     {
@@ -186,7 +189,10 @@ DoMakeTraceSourceAccessor(SOURCE T::*a)
             return true;
         }
 
-        SOURCE T::*m_source;
+        // clang-format off
+        // Clang-format guard needed for versions <= 18
+        SOURCE T::* m_source;
+        // clang-format on
     }* accessor = new Accessor();
 
     accessor->m_source = a;

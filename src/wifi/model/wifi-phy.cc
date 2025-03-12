@@ -90,7 +90,8 @@ WifiPhy::GetTypeId()
                 StringValue("{0, 0, BAND_UNSPECIFIED, 0}"),
                 MakeAttributeContainerAccessor<
                     TupleValue<UintegerValue, UintegerValue, EnumValue<WifiPhyBand>, UintegerValue>,
-                    ';'>((void(WifiPhy::*)(const ChannelSegments&)) & WifiPhy::SetOperatingChannel),
+                    ';'>(static_cast<void (WifiPhy::*)(const ChannelSegments&)>(
+                    &WifiPhy::SetOperatingChannel)),
                 MakeAttributeContainerChecker<
                     TupleValue<UintegerValue, UintegerValue, EnumValue<WifiPhyBand>, UintegerValue>,
                     ';'>(MakeTupleChecker<UintegerValue,

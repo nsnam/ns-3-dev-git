@@ -103,6 +103,7 @@ struct EhtPhyCapabilities
     uint8_t
         support20MhzOperatingStaReceivingNdpWithWiderBw : 1; //!< Support For 20 MHz Operating STA
                                                              //!< Receiving NDP With Wider Bandwidth
+
     uint8_t nonOfdmaUlMuMimoBwNotLargerThan80Mhz : 1; //!< Non-OFDMA UL MU-MIMO (BW ≤ 80 MHz)
     uint8_t nonOfdmaUlMuMimo160Mhz : 1;               //!< Non-OFDMA UL MU-MIMO (BW = 160 MHz)
     uint8_t nonOfdmaUlMuMimo320Mhz : 1;               //!< Non-OFDMA UL MU-MIMO (BW = 320 MHz)

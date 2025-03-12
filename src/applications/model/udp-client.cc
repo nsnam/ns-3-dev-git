@@ -50,17 +50,17 @@ UdpClient::GetTypeId()
                           MakeTimeAccessor(&UdpClient::m_interval),
                           MakeTimeChecker())
             // NS_DEPRECATED_3_44
-            .AddAttribute("RemoteAddress",
-                          "The destination Address of the outbound packets",
-                          AddressValue(),
-                          MakeAddressAccessor(
-                              (void(UdpClient::*)(const Address&)) &
-                                  UdpClient::SetRemote, // this is needed to indicate which version
-                                                        // of the function overload to use
-                              &UdpClient::GetRemote),
-                          MakeAddressChecker(),
-                          TypeId::SupportLevel::DEPRECATED,
-                          "Replaced by Remote in ns-3.44.")
+            .AddAttribute(
+                "RemoteAddress",
+                "The destination Address of the outbound packets",
+                AddressValue(),
+                MakeAddressAccessor(
+                    // this is needed to indicate which version of the function overload to use
+                    static_cast<void (UdpClient::*)(const Address&)>(&UdpClient::SetRemote),
+                    &UdpClient::GetRemote),
+                MakeAddressChecker(),
+                TypeId::SupportLevel::DEPRECATED,
+                "Replaced by Remote in ns-3.44.")
             // NS_DEPRECATED_3_44
             .AddAttribute("RemotePort",
                           "The destination port of the outbound packets",

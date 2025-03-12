@@ -57,25 +57,26 @@ UdpTraceClient::GetTypeId()
             .SetGroupName("Applications")
             .AddConstructor<UdpTraceClient>()
             // NS_DEPRECATED_3_44
-            .AddAttribute("RemoteAddress",
-                          "The destination Address of the outbound packets",
-                          AddressValue(),
-                          MakeAddressAccessor(
-                              (void(UdpTraceClient::*)(const Address&)) &
-                              UdpTraceClient::SetRemote), // this is needed to indicate which
-                                                          // version of the function overload to use
-                          MakeAddressChecker(),
-                          TypeId::SupportLevel::DEPRECATED,
-                          "Replaced by Remote in ns-3.44.")
+            .AddAttribute(
+                "RemoteAddress",
+                "The destination Address of the outbound packets",
+                AddressValue(),
+                MakeAddressAccessor(
+                    // this is needed to indicate which version of the function overload to use
+                    static_cast<void (UdpTraceClient::*)(const Address&)>(
+                        &UdpTraceClient::SetRemote)),
+                MakeAddressChecker(),
+                TypeId::SupportLevel::DEPRECATED,
+                "Replaced by Remote in ns-3.44.")
             // NS_DEPRECATED_3_44
             .AddAttribute(
                 "RemotePort",
                 "The destination port of the outbound packets",
                 UintegerValue(UdpTraceClient::DEFAULT_PORT),
                 MakeAddressAccessor(
-                    (void(UdpTraceClient::*)(const Address&)) &
-                        UdpTraceClient::SetRemote, // this is needed to indicate which version of
-                                                   // the function overload to use
+                    // this is needed to indicate which version of the function overload to use
+                    static_cast<void (UdpTraceClient::*)(const Address&)>(
+                        &UdpTraceClient::SetRemote),
                     &UdpTraceClient::GetRemote),
                 MakeUintegerChecker<uint16_t>(),
                 TypeId::SupportLevel::DEPRECATED,

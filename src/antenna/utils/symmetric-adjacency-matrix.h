@@ -246,7 +246,7 @@ class SymmetricAdjacencyMatrix
         {
             m_rowOffsets.push_back(i * (i + 1) / 2);
         }
-    };
+    }
 
     /**
      * @brief Retrieve the value of matrix (row, column) node
@@ -307,7 +307,7 @@ class SymmetricAdjacencyMatrix
         m_rowOffsets.push_back(m_matrix.size());
         m_rows++;
         m_matrix.resize(m_matrix.size() + m_rows);
-    };
+    }
 
     /**
      * @brief Retrieve number of rows in the adjacency matrix

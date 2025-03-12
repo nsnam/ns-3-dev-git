@@ -1201,10 +1201,13 @@ EmlsrDlTxopTest::CheckResults()
          * after another on the link used to establish association.
          */
         auto setupLinks = m_staMacs[i]->GetSetupLinkIds();
-        if (i < m_nEmlsrStations &&
+
+        bool areAllSetupLinksEmlsr =
             std::none_of(setupLinks.begin(), setupLinks.end(), [&](auto&& linkId) {
                 return linkId != m_mainPhyId && m_emlsrLinks.count(linkId) == 0;
-            }))
+            });
+
+        if (i < m_nEmlsrStations && areAllSetupLinksEmlsr)
         {
             NS_TEST_EXPECT_MSG_EQ(linkIds.size(),
                                   1,

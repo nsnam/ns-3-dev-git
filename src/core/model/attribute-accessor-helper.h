@@ -233,9 +233,12 @@ class AccessorHelper : public AttributeAccessor
  * @param [in]  memberVariable  The address of the data member.
  * @returns The AttributeAccessor.
  */
+// clang-format off
+// Clang-format guard needed for versions <= 18
 template <typename V, typename T, typename U>
 inline Ptr<const AttributeAccessor>
-DoMakeAccessorHelperOne(U T::*memberVariable)
+DoMakeAccessorHelperOne(U T::* memberVariable)
+// clang-format on
 {
     /* AttributeAccessor implementation for a class member variable. */
     class MemberVariable : public AccessorHelper<T, V>
@@ -245,7 +248,10 @@ DoMakeAccessorHelperOne(U T::*memberVariable)
          * Construct from a class data member address.
          * @param [in] memberVariable The class data member address.
          */
-        MemberVariable(U T::*memberVariable)
+        // clang-format off
+        // Clang-format guard needed for versions <= 18
+        MemberVariable(U T::* memberVariable)
+            // clang-format on
             : AccessorHelper<T, V>(),
               m_memberVariable(memberVariable)
         {
@@ -280,7 +286,10 @@ DoMakeAccessorHelperOne(U T::*memberVariable)
             return true;
         }
 
-        U T::*m_memberVariable; // Address of the class data member.
+        // clang-format off
+        // Clang-format guard needed for versions <= 18
+        U T::* m_memberVariable; // Address of the class data member.
+        // clang-format on
     };
 
     return Ptr<const AttributeAccessor>(new MemberVariable(memberVariable), false);

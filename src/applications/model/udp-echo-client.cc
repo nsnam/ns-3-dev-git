@@ -47,9 +47,8 @@ UdpEchoClient::GetTypeId()
                 "The destination Address of the outbound packets",
                 AddressValue(),
                 MakeAddressAccessor(
-                    (void(UdpEchoClient::*)(const Address&)) &
-                        UdpEchoClient::SetRemote, // this is needed to indicate which version of the
-                                                  // function overload to use
+                    // this is needed to indicate which version of the function overload to use
+                    static_cast<void (UdpEchoClient::*)(const Address&)>(&UdpEchoClient::SetRemote),
                     &UdpEchoClient::GetRemote),
                 MakeAddressChecker(),
                 TypeId::SupportLevel::DEPRECATED,
