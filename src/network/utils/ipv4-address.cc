@@ -281,6 +281,14 @@ Ipv4Address::IsLocalMulticast() const
     return (m_address & 0xffffff00) == 0xe0000000;
 }
 
+bool
+Ipv4Address::IsLinkLocal() const
+{
+    NS_LOG_FUNCTION(this);
+    // Link-Local address is 169.254.0.0/16
+    return (m_address & 0xffff0000) == 0xa9fe0000;
+}
+
 void
 Ipv4Address::Serialize(uint8_t buf[4]) const
 {

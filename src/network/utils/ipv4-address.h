@@ -113,6 +113,14 @@ class Ipv4Address
      */
     bool IsLocalMulticast() const;
     /**
+     * @brief If the IPv4 address is an APIPA address (169.254/16).
+     *
+     * The Automatic Private IP Address is described in \RFC{3927}
+     *
+     * @return true if the address is link-local, false otherwise
+     */
+    bool IsLinkLocal() const;
+    /**
      * @brief Combine this address with a network mask
      *
      * This method returns an IPv4 address that is this address combined
