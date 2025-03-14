@@ -210,6 +210,9 @@ class EmlsrOperationsTestBase : public TestCase
                                                      WIFI_SPECTRUM_5_GHZ,
                                                      WIFI_SPECTRUM_6_GHZ};
 
+    uint32_t m_rngSeed{1};                    //!< RNG seed value
+    uint64_t m_rngRun{1};                     //!< RNG run value
+    int64_t m_streamNo{5};                    //!< RNG stream number
     uint8_t m_mainPhyId{0};                   //!< ID of the main PHY
     std::set<uint8_t> m_linksToEnableEmlsrOn; /**< IDs of the links on which EMLSR mode has to
                                                    be enabled */

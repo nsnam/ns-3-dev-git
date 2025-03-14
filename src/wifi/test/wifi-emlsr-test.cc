@@ -302,9 +302,9 @@ EmlsrOperationsTestBase::CheckMainPhyTraceInfo(std::size_t index,
 void
 EmlsrOperationsTestBase::DoSetup()
 {
-    RngSeedManager::SetSeed(1);
-    RngSeedManager::SetRun(1);
-    int64_t streamNumber = 11;
+    RngSeedManager::SetSeed(m_rngSeed);
+    RngSeedManager::SetRun(m_rngRun);
+    int64_t streamNumber = m_streamNo;
 
     Config::SetDefault("ns3::WifiMac::MpduBufferSize", UintegerValue(64));
     Config::SetDefault("ns3::EmlsrManager::InDeviceInterference", BooleanValue(true));
