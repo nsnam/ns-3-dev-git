@@ -201,9 +201,9 @@ class EmlsrOperationsTestBase : public TestCase
     };
 
     /// array of strings defining the channels for the MLD links
-    const std::array<std::string, 3> m_channelsStr{"{2, 0, BAND_2_4GHZ, 0}"s,
-                                                   "{36, 0, BAND_5GHZ, 0}"s,
-                                                   "{1, 0, BAND_6GHZ, 0}"s};
+    std::array<std::string, 3> m_channelsStr{"{2, 0, BAND_2_4GHZ, 0}"s,
+                                             "{36, 0, BAND_5GHZ, 0}"s,
+                                             "{1, 0, BAND_6GHZ, 0}"s};
 
     /// array of frequency ranges for MLD links
     const std::array<FrequencyRange, 3> m_freqRanges{WIFI_SPECTRUM_2_4_GHZ,
@@ -624,18 +624,6 @@ class EmlsrDlTxopTest : public EmlsrOperationsTestBase
  *   channel), the aux PHY is put in sleep mode as soon as the main PHY starts operating on the
  *   link, stays in sleep mode until the TXOP ends and is resumed from sleep mode right after the
  *   end of the DL/UL TXOP.
- * - When an aux PHY that is not TX capable gains a TXOP, it checks whether the main PHY can switch
- *   to the auxiliary link and start an UL TXOP. If the main PHY is switching, the aux PHY waits
- *   until the channel switch is completed and checks again; if the remaining backoff time on the
- *   preferred link is greater than the channel switch delay, the main PHY is requested to switch to
- *   the auxiliary link of the aux PHY. When the channel switch is completed, an UL TXOP can start
- *   immediately or after some delay. Specifically, if the backoff has already reached zero when
- *   the channel switch is completed, the UL TXOP starts immediately, if aux PHY CCA is used, or in
- *   a PIFS, otherwise; if the backoff has not yet reached zero when the channel switch is
- *   completed, the UL TXOP starts at backoff end, if aux PHY CCA is used, or at the latest between
- *   the backoff end and a PIFS after the end of channel switch, otherwise. The TX bandwidth equals
- *   the channel width supported by the aux PHY, if aux PHY CCA is used, or the channel width
- *   supported by the main PHY, otherwise.
  *
  * Also, if the PutAuxPhyToSleep attribute is set to true, it is checked that aux PHYs are in
  * sleep mode a SIFS after receiving the ICF and are still in sleep mode right before receiving
@@ -657,17 +645,8 @@ class EmlsrUlTxopTest : public EmlsrOperationsTestBase
         uint8_t msdMaxNTxops;           //!< Max number of TXOPs that an EMLSR client is allowed
                                         //!< to attempt to initiate while the MediumSyncDelay
                                         //!< timer is running (zero indicates no limit)
-        bool genBackoffAndUseAuxPhyCca; //!< this variable controls two boolean values that are
-                                        //!< either both set to true or both set to false;
-                                        //!< the first value controls whether the backoff should be
-                                        //!< invoked when the AC gains the right to start a TXOP
-                                        //!< but it does not transmit any frame, the second value
-                                        //!< controls whether CCA info from aux PHY is used when
-                                        //!< aux PHY is not TX capable
-        uint8_t nSlotsLeftAlert;        //!< value to set the ChannelAccessManager NSlotsLeft
-                                        //!< attribute to
-        Time csdAuxPhyNoTx;             //!< the channel switch delay to set for the main PHY when
-                                        //!< aux PHYs are made non-TX capable
+        bool genBackoffIfTxopWithoutTx; //!< whether the backoff should be invoked when the AC gains
+                                        //!< a TXOP but it does not transmit any frame
         bool putAuxPhyToSleep;          //!< whether aux PHYs are put to sleep during DL/UL TXOPs
         bool switchMainPhyBackDelayTimeout; //!< whether a SwitchMainPhyBackDelay timer expires
                                             //!< after that the main PHY moved to an aux PHY link
@@ -773,16 +752,7 @@ class EmlsrUlTxopTest : public EmlsrOperationsTestBase
     bool m_genBackoffIfTxopWithoutTx;     //!< whether the backoff should be invoked when the AC
                                           //!< gains the right to start a TXOP but it does not
                                           //!< transmit any frame
-    bool m_useAuxPhyCca;                  //!< whether CCA info from aux PHY is used when
-                                          //!< aux PHY is not TX capable
-    uint8_t m_nSlotsLeftAlert;            //!< value for ChannelAccessManager NSlotsLeft attribute
-    Time m_csdAuxPhyNoTx;                 //!< the channel switch delay to set for the main PHY when
-                                          //!< aux PHYs are made non-TX capable
-    bool m_switchMainPhyBackDelayTimeout; //!< whether a SwitchMainPhyBackDelay timer expires
-                                          //!< after that the main PHY moved to an aux PHY link
     std::optional<bool> m_corruptCts;     //!< whether the transmitted CTS must be corrupted
-    Time m_5thQosFrameTxTime;             //!< start transmission time of the 5th QoS data frame
-    MHz_u m_5thQosFrameExpWidth;          //!< expected width of the 5th QoS data frame
 };
 
 /**
@@ -1382,6 +1352,115 @@ class EmlsrSwitchMainPhyBackTest : public EmlsrOperationsTestBase
     Ptr<WifiMpdu> m_bcastFrame;           //!< the broadcast frame sent by the AP MLD
     Time m_switchMainPhyBackDelay;        //!< the switch main PHY back delay
     Time m_expectedMainPhySwitchBackTime; //!< expected main PHY switch back time
+};
+
+/**
+ * @ingroup wifi-test
+ * @ingroup tests
+ *
+ * @brief Check NAV and CCA in the last PIFS test
+ *
+ * An AP MLD and an EMLSR client, both having 3 links, are considered in this test. Aux PHYs are
+ * not TX capable, do not switch links and operate on 20 MHz channels; the main PHY operates on
+ * 40 MHz channels and the preferred link is link 1. In order to control link switches, a
+ * TID-to-Link mapping is configured so that TID 0 is mapped onto link 2 for both DL and UL. In this
+ * test, the main PHY switches to link 2 to start an UL TXOP a predefined number of slots before
+ * the backoff ends on link 2. We consider different durations of the channel switch delay to
+ * verify the time the data frame is transmitted by the EMLSR client on link 2 and the data frame
+ * TX width in various situations:
+ *
+ *        AuxPhyCca = false                           AuxPhyCca = true
+ *                          ┌────┐                             ┌────┐
+ *                          │QoS │40                           │QoS │20
+ *                 |--PIFS--│Data│MHz                 |--PIFS--│Data│MHz
+ * ──────┬─────────┬────────┴────┴────         ──────┬─────────┼────┴─────────────
+ *    Backoff    Switch                           Backoff    Switch
+ *      end       end                               end       end
+ *
+ *
+ *        AuxPhyCca = false                           AuxPhyCca = true
+ *                   ┌────┐                                    ┌────┐
+ *                   │QoS │40                                  │QoS │20
+ *          |--PIFS--│Data│MHz                        |--PIFS--│Data│MHz
+ * ─────────┬──────┬─┴────┴───────────         ──────────┬─────┼────┴─────────────
+ *       Switch  Backoff                              Switch Backoff
+ *         end    end                                   end   end
+ *
+ *
+ *        AuxPhyCca = false/true
+ *                      ┌────┐
+ *                      │QoS │40
+ *          |--PIFS--|  │Data│MHz
+ * ─────────┬───────────┼────┴────────
+ *       Switch      Backoff
+ *         end         end
+ *
+ * In all the cases, it is verified that the EMLSR client transmits the data frame, at the expected
+ * time and on the expected channel width, and receives the acknowledgment.
+ */
+class EmlsrCheckNavAndCcaLastPifsTest : public EmlsrOperationsTestBase
+{
+  public:
+    /// Constructor.
+    EmlsrCheckNavAndCcaLastPifsTest();
+
+    /**
+     * Enumeration indicating the tested scenario
+     */
+    enum TestScenario : uint8_t
+    {
+        BACKOFF_END_BEFORE_SWITCH_END = 0,
+        LESS_THAN_PIFS_UNTIL_BACKOFF_END,
+        MORE_THAN_PIFS_UNTIL_BACKOFF_END,
+        COUNT
+    };
+
+  protected:
+    void DoSetup() override;
+    void DoRun() override;
+    void Transmit(Ptr<WifiMac> mac,
+                  uint8_t phyId,
+                  WifiConstPsduMap psduMap,
+                  WifiTxVector txVector,
+                  double txPowerW) override;
+
+    /// Runs a test case and invokes itself for the next test case
+    void RunOne();
+
+    /// Actions and checks to perform upon the transmission of each frame
+    struct Events
+    {
+        /**
+         * Constructor.
+         *
+         * @param type the frame MAC header type
+         * @param f function to perform actions and checks
+         */
+        Events(WifiMacType type,
+               std::function<void(Ptr<const WifiPsdu>, const WifiTxVector&, uint8_t)>&& f = {})
+            : hdrType(type),
+              func(f)
+        {
+        }
+
+        WifiMacType hdrType; ///< MAC header type of frame being transmitted
+        std::function<void(Ptr<const WifiPsdu>, const WifiTxVector&, uint8_t)>
+            func; ///< function to perform actions and checks
+    };
+
+  private:
+    void StartTraffic() override;
+
+    std::size_t m_testIndex{0};       //!< index to iterate over test scenarios
+    bool m_setupDone{false};          //!< whether association, BA, ... have been done
+    std::list<Events> m_events;       //!< list of events for a test run
+    std::size_t m_processedEvents{0}; //!< number of processed events
+    const uint8_t m_linkIdForTid0{2}; //!< ID of the link on which TID 0 is mapped
+    const uint8_t m_nSlotsLeft{4};    //!< value for the CAM NSlotsLeft attribute
+    const MHz_u m_mainPhyWidth{40};   //!< main PHY channel width
+    const MHz_u m_auxPhyWidth{20};    //!< aux PHY channel width
+    Time m_expectedTxStart;           //!< expected start time for frame transmission
+    MHz_u m_expectedWidth;            //!< expected channel width for frame transmission
 };
 
 #endif /* WIFI_EMLSR_TEST_H */
