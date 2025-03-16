@@ -73,11 +73,11 @@ main(int argc, char* argv[])
     uint8_t maxMcs{std::numeric_limits<uint8_t>::min()};
     uint16_t minWidth{std::numeric_limits<uint16_t>::max()}; // MHz
     uint16_t maxWidth{std::numeric_limits<uint16_t>::min()}; // MHz
-    uint16_t minGi{std::numeric_limits<uint16_t>::max()};    // nanoseconds
-    uint16_t maxGi{std::numeric_limits<uint16_t>::min()};    // nanoseconds
+    auto minGi{Time::Max()};
+    auto maxGi{Time::Min()}; // nanoseconds
     std::vector<std::tuple<uint8_t /* MCS */,
                            uint16_t /* width */,
-                           uint16_t /* GI */,
+                           Time /* GI */,
                            std::string /* filename */>>
         runs{};
     while (!validationFile.eof())
@@ -102,7 +102,7 @@ main(int argc, char* argv[])
             const uint16_t width = std::stod(words.at(1));
             minWidth = std::min(width, minWidth);
             maxWidth = std::max(width, maxWidth);
-            const uint16_t gi = std::stod(words.at(2));
+            const Time gi{words.at(2)};
             minGi = std::min(gi, minGi);
             maxGi = std::max(gi, maxGi);
             const auto filename = words.at(3);
@@ -111,7 +111,7 @@ main(int argc, char* argv[])
     }
     validationFile.close();
 
-    std::vector<std::tuple<uint8_t, uint16_t, uint16_t, double>> results{};
+    std::vector<std::tuple<uint8_t, uint16_t, Time, double>> results{};
     for (const auto& [mcs, width, gi, resultFileName] : runs)
     {
         std::ifstream resultFile;
@@ -144,8 +144,8 @@ main(int argc, char* argv[])
     {
         if (!printLastOnly || (printLastOnly && (++resultIndex == results.size())))
         {
-            std::cout << +mcs << "\t\t\t" << width << " MHz\t\t\t" << gi << " ns\t\t\t"
-                      << throughput << " Mbit/s" << std::endl;
+            std::cout << +mcs << "\t\t\t" << width << " MHz\t\t\t" << gi.GetNanoSeconds()
+                      << " ns\t\t\t" << throughput << " Mbit/s" << std::endl;
         }
         if (mcs != prevMcs)
         {

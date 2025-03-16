@@ -166,8 +166,8 @@ main(int argc, char* argv[])
     uint16_t mpduBufferSize{512};
     std::string emlsrMgrTypeId{"ns3::DefaultEmlsrManager"};
     std::string emlsrLinks;
-    uint16_t paddingDelayUsec{32};
-    uint16_t transitionDelayUsec{128};
+    Time paddingDelay{"32us"};
+    Time transitionDelay{"128us"};
     Time channelSwitchDelay{"100us"};
     bool switchAuxPhy{true};
     MHz_t auxPhyChWidth{20};
@@ -185,14 +185,14 @@ main(int argc, char* argv[])
     bool enableBsrp{false};
     std::string mcsStr;
     std::vector<uint64_t> mcsValues;
-    int channelWidth{-1};  // in MHz, -1 indicates an unset value
-    int guardInterval{-1}; // in nanoseconds, -1 indicates an unset value
+    int channelWidth{-1}; // in MHz, -1 indicates an unset value
+    Time guardInterval;
     uint32_t payloadSize =
         700; // must fit in the max TX duration when transmitting at MCS 0 over an RU of 26 tones
-    Time tputInterval{0}; // interval for detailed throughput measurement
+    Time tputInterval; // interval for detailed throughput measurement
     double minExpectedThroughput{0.0};
     double maxExpectedThroughput{0.0};
-    Time accessReqInterval{0};
+    Time accessReqInterval;
     bool multiProcessing{false};
     unsigned int numParallelJobs{1}; // if unset, keep default of parallel scheduler
     std::string fileName{""};
@@ -217,11 +217,11 @@ main(int argc, char* argv[])
                  "The comma separated list of IDs of EMLSR links (for MLDs only)",
                  emlsrLinks);
     cmd.AddValue("emlsrPaddingDelay",
-                 "The EMLSR padding delay in microseconds (0, 32, 64, 128 or 256)",
-                 paddingDelayUsec);
+                 "The EMLSR padding delay (0us, 32us, 64us, 128us or 256us)",
+                 paddingDelay);
     cmd.AddValue("emlsrTransitionDelay",
-                 "The EMLSR transition delay in microseconds (0, 16, 32, 64, 128 or 256)",
-                 transitionDelayUsec);
+                 "The EMLSR transition delay (0us, 16us, 32us, 64us, 128us or 256us)",
+                 transitionDelay);
     cmd.AddValue("emlsrAuxSwitch",
                  "Whether Aux PHY should switch channel to operate on the link on which "
                  "the Main PHY was operating before moving to the link of the Aux PHY. ",
@@ -268,10 +268,10 @@ main(int argc, char* argv[])
                  "if set, limit testing to a specific channel width expressed in MHz (20, 40, 80, "
                  "160 or 320 MHz)",
                  channelWidth);
-    cmd.AddValue("guardInterval",
-                 "if set, limit testing to a specific guard interval duration expressed in "
-                 "nanoseconds (800, 1600 or 3200 ns)",
-                 guardInterval);
+    cmd.AddValue(
+        "guardInterval",
+        "if set, limit testing to a specific guard interval duration (800ns, 1600ns or 3200 ns)",
+        guardInterval);
     cmd.AddValue("payloadSize", "The application payload size in bytes", payloadSize);
     cmd.AddValue("tputInterval", "duration of intervals for throughput measurement", tputInterval);
     cmd.AddValue("minExpectedThroughput",
@@ -385,8 +385,8 @@ main(int argc, char* argv[])
         minChannelWidth = channelWidth;
         maxChannelWidth = channelWidth;
     }
-    int minGi = enableUlOfdma ? 1600 : 800;
-    int maxGi = 3200;
+    auto minGi = enableUlOfdma ? NanoSeconds(1600) : NanoSeconds(800);
+    auto maxGi = NanoSeconds(3200);
     if (guardInterval >= minGi && guardInterval <= maxGi)
     {
         minGi = guardInterval;
@@ -401,15 +401,15 @@ main(int argc, char* argv[])
             const auto is80Plus80 = (use80Plus80 && (width == 160));
             const std::string widthStr = is80Plus80 ? "80+80" : std::to_string(width);
             const auto segmentWidthStr = is80Plus80 ? "80" : widthStr;
-            for (int gi = maxGi; gi >= minGi; gi /= 2) // Nanoseconds
+            for (auto gi = maxGi; gi >= minGi; gi = gi / 2)
             {
                 std::string outputFileName{""};
                 if (fileName.empty() || multiProcessing)
                 {
-                    auto command = cmd.GetName() +
-                                   " --multiProcessing=0 --mcs=" + std::to_string(mcs) +
-                                   " --channelWidth=" + std::to_string(width) +
-                                   " --guardInterval=" + std::to_string(gi) + " ";
+                    auto command =
+                        cmd.GetName() + " --multiProcessing=0 --mcs=" + std::to_string(mcs) +
+                        " --channelWidth=" + std::to_string(width) +
+                        " --guardInterval=" + std::to_string(gi.GetNanoSeconds()) + "ns ";
                     std::vector<std::string> programArguments(argv + 1, argv + argc);
                     for (const auto& argument : programArguments)
                     {
@@ -429,11 +429,11 @@ main(int argc, char* argv[])
 
                     outputFileName = tmpDir + "mcs=" + std::to_string(mcs) +
                                      "-width=" + std::to_string(width) +
-                                     "-gi=" + std::to_string(gi) + ".dat";
+                                     "-gi=" + std::to_string(gi.GetNanoSeconds()) + "ns.dat";
                     inputFile << "--fileName=" << outputFileName << std::endl;
-                    const auto validationFileContent = std::to_string(mcs) + " " +
-                                                       std::to_string(width) + " " +
-                                                       std::to_string(gi) + " " + outputFileName;
+                    const auto validationFileContent =
+                        std::to_string(mcs) + " " + std::to_string(width) + " " +
+                        std::to_string(gi.GetNanoSeconds()) + "ns " + outputFileName;
                     validationFile << validationFileContent << std::endl;
                 }
                 if (multiProcessing)
@@ -548,9 +548,9 @@ main(int argc, char* argv[])
                                     "EmlsrLinkSet",
                                     StringValue(emlsrLinks),
                                     "EmlsrPaddingDelay",
-                                    TimeValue(MicroSeconds(paddingDelayUsec)),
+                                    TimeValue(paddingDelay),
                                     "EmlsrTransitionDelay",
-                                    TimeValue(MicroSeconds(transitionDelayUsec)),
+                                    TimeValue(transitionDelay),
                                     "SwitchAuxPhy",
                                     BooleanValue(switchAuxPhy),
                                     "AuxPhyTxCapable",
@@ -592,7 +592,7 @@ main(int argc, char* argv[])
                 // Set guard interval and MPDU buffer size
                 Config::Set(
                     "/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/HeConfiguration/GuardInterval",
-                    TimeValue(NanoSeconds(gi)));
+                    TimeValue(gi));
                 Config::Set("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/MpduBufferSize",
                             UintegerValue(mpduBufferSize));
 
@@ -637,7 +637,7 @@ main(int argc, char* argv[])
                 }
 
                 const auto maxLoad =
-                    nLinks * EhtPhy::GetDataRate(mcs, MHz_t{width}, NanoSeconds(gi), 1) / nStations;
+                    nLinks * EhtPhy::GetDataRate(mcs, MHz_t{width}, gi, 1) / nStations;
                 if (udp)
                 {
                     // UDP flow

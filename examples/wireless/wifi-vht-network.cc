@@ -91,8 +91,8 @@ main(int argc, char* argv[])
     std::string mcsStr;
     std::vector<uint64_t> mcsValues;
     std::string phyModel{"Yans"};
-    int channelWidth{-1};  // in MHz, -1 indicates an unset value
-    int guardInterval{-1}; // in nanoseconds, -1 indicates an unset value
+    int channelWidth{-1}; // in MHz, -1 indicates an unset value
+    Time guardInterval;
     double minExpectedThroughput{0.0};
     double maxExpectedThroughput{0.0};
     bool multiProcessing{false};
@@ -120,8 +120,7 @@ main(int argc, char* argv[])
                  "or 160 MHz)",
                  channelWidth);
     cmd.AddValue("guardInterval",
-                 "if set, limit testing to a specific guard interval duration expressed in "
-                 "nanoseconds (800 or 400 ns)",
+                 "if set, limit testing to a specific guard interval duration (400ns or 800 ns)",
                  guardInterval);
     cmd.AddValue("minExpectedThroughput",
                  "if set, simulation fails if the lowest throughput is below this value",
@@ -213,8 +212,8 @@ main(int argc, char* argv[])
         minChannelWidth = channelWidth;
         maxChannelWidth = channelWidth;
     }
-    int minGi = 400;
-    int maxGi = 800;
+    auto minGi = NanoSeconds(400);
+    auto maxGi = NanoSeconds(800);
     if (guardInterval >= minGi && guardInterval <= maxGi)
     {
         minGi = guardInterval;
@@ -233,15 +232,15 @@ main(int argc, char* argv[])
             const auto is80Plus80 = (use80Plus80 && (width == 160));
             const std::string widthStr = is80Plus80 ? "80+80" : std::to_string(width);
             const auto segmentWidthStr = is80Plus80 ? "80" : widthStr;
-            for (int gi = maxGi; gi >= minGi; gi /= 2) // Nanoseconds
+            for (auto gi = maxGi; gi >= minGi; gi = gi / 2)
             {
                 std::string outputFileName{""};
                 if (fileName.empty() || multiProcessing)
                 {
-                    auto command = cmd.GetName() +
-                                   " --multiProcessing=0 --mcs=" + std::to_string(mcs) +
-                                   " --channelWidth=" + std::to_string(width) +
-                                   " --guardInterval=" + std::to_string(gi) + " ";
+                    auto command =
+                        cmd.GetName() + " --multiProcessing=0 --mcs=" + std::to_string(mcs) +
+                        " --channelWidth=" + std::to_string(width) +
+                        " --guardInterval=" + std::to_string(gi.GetNanoSeconds()) + "ns ";
                     std::vector<std::string> programArguments(argv + 1, argv + argc);
                     for (const auto& argument : programArguments)
                     {
@@ -261,11 +260,11 @@ main(int argc, char* argv[])
 
                     outputFileName = tmpDir + "mcs=" + std::to_string(mcs) +
                                      "-width=" + std::to_string(width) +
-                                     "-gi=" + std::to_string(gi) + ".dat";
+                                     "-gi=" + std::to_string(gi.GetNanoSeconds()) + "ns.dat";
                     inputFile << "--fileName=" << outputFileName << std::endl;
-                    const auto validationFileContent = std::to_string(mcs) + " " +
-                                                       std::to_string(width) + " " +
-                                                       std::to_string(gi) + " " + outputFileName;
+                    const auto validationFileContent =
+                        std::to_string(mcs) + " " + std::to_string(width) + " " +
+                        std::to_string(gi.GetNanoSeconds()) + "ns " + outputFileName;
                     validationFile << validationFileContent << std::endl;
                 }
                 if (multiProcessing)
@@ -273,7 +272,7 @@ main(int argc, char* argv[])
                     continue;
                 }
 
-                const auto sgi = (gi == 400);
+                const auto sgi = (gi == NanoSeconds(400));
                 uint32_t payloadSize; // 1500 byte IP packet
                 if (udp)
                 {
@@ -393,8 +392,7 @@ main(int argc, char* argv[])
                 apNodeInterface = address.Assign(apDevice);
 
                 /* Setting applications */
-                const auto maxLoad =
-                    VhtPhy::GetDataRate(mcs, MHz_t{width}, NanoSeconds(sgi ? 400 : 800), 1);
+                const auto maxLoad = VhtPhy::GetDataRate(mcs, MHz_t{width}, gi, 1);
                 ApplicationContainer serverApp;
                 if (udp)
                 {

@@ -101,8 +101,8 @@ main(int argc, char* argv[])
     bool enableBsrp{false};
     std::string mcsStr;
     std::vector<uint64_t> mcsValues;
-    int channelWidth{-1};  // in MHz, -1 indicates an unset value
-    int guardInterval{-1}; // in nanoseconds, -1 indicates an unset value
+    int channelWidth{-1}; // in MHz, -1 indicates an unset value
+    Time guardInterval;
     uint32_t payloadSize =
         700; // must fit in the max TX duration when transmitting at MCS 0 over an RU of 26 tones
     std::string phyModel{"Yans"};
@@ -150,10 +150,10 @@ main(int argc, char* argv[])
                  "if set, limit testing to a specific channel width expressed in MHz (20, 40, 80 "
                  "or 160 MHz)",
                  channelWidth);
-    cmd.AddValue("guardInterval",
-                 "if set, limit testing to a specific guard interval duration expressed in "
-                 "nanoseconds (800, 1600 or 3200 ns)",
-                 guardInterval);
+    cmd.AddValue(
+        "guardInterval",
+        "if set, limit testing to a specific guard interval duration (800ns, 1600ns or 3200 ns)",
+        guardInterval);
     cmd.AddValue("payloadSize", "The application payload size in bytes", payloadSize);
     cmd.AddValue("phyModel",
                  "PHY model to use when OFDMA is disabled (Yans or Spectrum). If 80+80 MHz or "
@@ -278,8 +278,8 @@ main(int argc, char* argv[])
         minChannelWidth = channelWidth;
         maxChannelWidth = channelWidth;
     }
-    int minGi = enableUlOfdma ? 1600 : 800;
-    int maxGi = 3200;
+    auto minGi = enableUlOfdma ? NanoSeconds(1600) : NanoSeconds(800);
+    auto maxGi = NanoSeconds(3200);
     if (guardInterval >= minGi && guardInterval <= maxGi)
     {
         minGi = guardInterval;
@@ -294,15 +294,15 @@ main(int argc, char* argv[])
             const auto is80Plus80 = (use80Plus80 && (width == 160));
             const std::string widthStr = is80Plus80 ? "80+80" : std::to_string(width);
             const auto segmentWidthStr = is80Plus80 ? "80" : widthStr;
-            for (int gi = maxGi; gi >= minGi; gi /= 2) // Nanoseconds
+            for (auto gi = maxGi; gi >= minGi; gi = gi / 2)
             {
                 std::string outputFileName{""};
                 if (fileName.empty() || multiProcessing)
                 {
-                    auto command = cmd.GetName() +
-                                   " --multiProcessing=0 --mcs=" + std::to_string(mcs) +
-                                   " --channelWidth=" + std::to_string(width) +
-                                   " --guardInterval=" + std::to_string(gi) + " ";
+                    auto command =
+                        cmd.GetName() + " --multiProcessing=0 --mcs=" + std::to_string(mcs) +
+                        " --channelWidth=" + std::to_string(width) +
+                        " --guardInterval=" + std::to_string(gi.GetNanoSeconds()) + "ns ";
                     std::vector<std::string> programArguments(argv + 1, argv + argc);
                     for (const auto& argument : programArguments)
                     {
@@ -322,11 +322,11 @@ main(int argc, char* argv[])
 
                     outputFileName = tmpDir + "mcs=" + std::to_string(mcs) +
                                      "-width=" + std::to_string(width) +
-                                     "-gi=" + std::to_string(gi) + ".dat";
+                                     "-gi=" + std::to_string(gi.GetNanoSeconds()) + "ns.dat";
                     inputFile << "--fileName=" << outputFileName << std::endl;
-                    const auto validationFileContent = std::to_string(mcs) + " " +
-                                                       std::to_string(width) + " " +
-                                                       std::to_string(gi) + " " + outputFileName;
+                    const auto validationFileContent =
+                        std::to_string(mcs) + " " + std::to_string(width) + " " +
+                        std::to_string(gi.GetNanoSeconds()) + "ns " + outputFileName;
                     validationFile << validationFileContent << std::endl;
                 }
                 if (multiProcessing)
@@ -396,7 +396,7 @@ main(int argc, char* argv[])
                                              ctrlRate);
 
                 // Set guard interval
-                wifi.ConfigHeOptions("GuardInterval", TimeValue(NanoSeconds(gi)));
+                wifi.ConfigHeOptions("GuardInterval", TimeValue(gi));
 
                 Ssid ssid = Ssid("ns3-80211ax");
 
@@ -503,8 +503,7 @@ main(int argc, char* argv[])
                     clientNodes.Add(downlink ? wifiApNode.Get(0) : wifiStaNodes.Get(i));
                 }
 
-                const auto maxLoad =
-                    HePhy::GetDataRate(mcs, MHz_t{width}, NanoSeconds(gi), 1) / nStations;
+                const auto maxLoad = HePhy::GetDataRate(mcs, MHz_t{width}, gi, 1) / nStations;
                 if (udp)
                 {
                     // UDP flow
