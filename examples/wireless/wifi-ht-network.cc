@@ -87,10 +87,10 @@ main(int argc, char* argv[])
     bool useRts{false};
     Time simulationTime{"10s"};
     meter_u distance{1.0};
-    double frequency{5}; // whether 2.4 or 5 GHz
+    GHz_t frequency{5}; // either 2.4 or 5 GHz
     std::string mcsStr;
     std::vector<uint64_t> mcsValues;
-    int channelWidth{-1}; // in MHz, -1 indicates an unset value
+    MHz_t channelWidth;
     Time guardInterval;
     double minExpectedThroughput{0.0};
     double maxExpectedThroughput{0.0};
@@ -99,9 +99,7 @@ main(int argc, char* argv[])
     std::string fileName{""};
 
     CommandLine cmd(__FILE__);
-    cmd.AddValue("frequency",
-                 "Whether working in the 2.4 or 5.0 GHz band (other values gets rejected)",
-                 frequency);
+    cmd.AddValue("frequency", "Frequency band (2.4 or 5 GHz)", frequency);
     cmd.AddValue("distance",
                  "Distance in meters between the station and the access point",
                  distance);
@@ -112,10 +110,9 @@ main(int argc, char* argv[])
         "mcs",
         "list of comma separated MCS values to test; if unset, all MCS values (0-7) are tested",
         mcsStr);
-    cmd.AddValue(
-        "channelWidth",
-        "if set, limit testing to a specific channel width expressed in MHz (20 or 40 MHz)",
-        channelWidth);
+    cmd.AddValue("channelWidth",
+                 "if set, limit testing to a specific channel width (20 or 40 MHz)",
+                 channelWidth);
     cmd.AddValue("guardInterval",
                  "if set, limit testing to a specific guard interval duration (400ns or 800 ns)",
                  guardInterval);
@@ -187,12 +184,12 @@ main(int argc, char* argv[])
         std::sort(mcsValues.begin(), mcsValues.end());
     }
 
-    int minChannelWidth = 20;
-    int maxChannelWidth = 40;
-    if ((channelWidth != -1) &&
+    MHz_t minChannelWidth{20};
+    MHz_t maxChannelWidth{40};
+    if ((channelWidth != MHz_t{0}) &&
         ((channelWidth < minChannelWidth) || (channelWidth > maxChannelWidth)))
     {
-        NS_FATAL_ERROR("Invalid channel width: " << channelWidth << " MHz");
+        NS_FATAL_ERROR("Invalid channel width: " << channelWidth);
     }
     if (channelWidth >= minChannelWidth && channelWidth <= maxChannelWidth)
     {
@@ -210,7 +207,7 @@ main(int argc, char* argv[])
     bool isFirst{true};
     for (const auto mcs : mcsValues)
     {
-        for (int width = minChannelWidth; width <= maxChannelWidth; width *= 2) // MHz
+        for (auto width = minChannelWidth; width <= maxChannelWidth; width *= 2)
         {
             for (auto gi = maxGi; gi >= minGi; gi = gi / 2)
             {
@@ -219,7 +216,7 @@ main(int argc, char* argv[])
                 {
                     auto command =
                         cmd.GetName() + " --multiProcessing=0 --mcs=" + std::to_string(mcs) +
-                        " --channelWidth=" + std::to_string(width) +
+                        " --channelWidth=" + width.str(false) +
                         " --guardInterval=" + std::to_string(gi.GetNanoSeconds()) + "ns ";
                     std::vector<std::string> programArguments(argv + 1, argv + argc);
                     for (const auto& argument : programArguments)
@@ -239,11 +236,11 @@ main(int argc, char* argv[])
                     inputFile << command;
 
                     outputFileName = tmpDir + "mcs=" + std::to_string(mcs) +
-                                     "-width=" + std::to_string(width) +
+                                     "-width=" + width.str(false) +
                                      "-gi=" + std::to_string(gi.GetNanoSeconds()) + "ns.dat";
                     inputFile << "--fileName=" << outputFileName << std::endl;
                     const auto validationFileContent =
-                        std::to_string(mcs) + " " + std::to_string(width) + " " +
+                        std::to_string(mcs) + " " + width.str(false) + " " +
                         std::to_string(gi.GetNanoSeconds()) + "ns " + outputFileName;
                     validationFile << validationFileContent << std::endl;
                 }
@@ -277,12 +274,12 @@ main(int argc, char* argv[])
                 WifiHelper wifi;
                 std::ostringstream ossControlMode;
 
-                if (frequency == 5.0)
+                if (frequency == GHz_t{5})
                 {
                     ossControlMode << "OfdmRate";
                     wifi.SetStandard(WIFI_STANDARD_80211n);
                 }
-                else if (frequency == 2.4)
+                else if (frequency == GHz_t{2.4})
                 {
                     wifi.SetStandard(WIFI_STANDARD_80211n);
                     ossControlMode << "ErpOfdmRate";
@@ -291,7 +288,7 @@ main(int argc, char* argv[])
                 }
                 else
                 {
-                    NS_FATAL_ERROR("Wrong frequency value!");
+                    NS_FATAL_ERROR("Wrong frequency band: " << frequency);
                 }
 
                 auto nonHtRefRateMbps = HtPhy::GetNonHtReferenceRate(mcs) / 1e6;
@@ -312,8 +309,10 @@ main(int argc, char* argv[])
                     TupleValue<UintegerValue, UintegerValue, EnumValue<WifiPhyBand>, UintegerValue>,
                     ';'>
                     channelValue;
-                WifiPhyBand band = (frequency == 5.0 ? WIFI_PHY_BAND_5GHZ : WIFI_PHY_BAND_2_4GHZ);
-                channelValue.Set(WifiPhy::ChannelSegments{{0, width, band, 0}});
+                WifiPhyBand band =
+                    (frequency == GHz_t{5} ? WIFI_PHY_BAND_5GHZ : WIFI_PHY_BAND_2_4GHZ);
+                channelValue.Set(
+                    WifiPhy::ChannelSegments{{0, static_cast<uint16_t>(width.in_MHz()), band, 0}});
 
                 mac.SetType("ns3::StaWifiMac", "Ssid", SsidValue(ssid));
                 phy.Set("ChannelSettings", channelValue);
@@ -363,7 +362,7 @@ main(int argc, char* argv[])
                 apNodeInterface = address.Assign(apDevice);
 
                 /* Setting applications */
-                const auto maxLoad = HtPhy::GetDataRate(mcs, MHz_t{width}, gi, 1);
+                const auto maxLoad = HtPhy::GetDataRate(mcs, width, gi, 1);
                 ApplicationContainer serverApp;
                 if (udp)
                 {

@@ -320,7 +320,9 @@ build_example(
 build_example(
   NAME wifi-network-validator
   SOURCE_FILES wifi-network-validator.cc
-  LIBRARIES_TO_LINK ${libcore}
+  LIBRARIES_TO_LINK
+    ${libcore}
+    ${libsi-units}
 )
 
 build_example(

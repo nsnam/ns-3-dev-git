@@ -174,10 +174,10 @@ main(int argc, char* argv[])
     bool auxPhyTxCapable{true};
     Time simulationTime{"10s"};
     meter_u distance{1.0};
-    double frequency{5};  // whether the first link operates in the 2.4, 5 or 6 GHz
-    double frequency2{0}; // whether the second link operates in the 2.4, 5 or 6 GHz (0 means no
-                          // second link exists)
-    double frequency3{
+    GHz_t frequency{5};  // whether the first link operates in the 2.4, 5 or 6 GHz
+    GHz_t frequency2{0}; // whether the second link operates in the 2.4, 5 or 6 GHz (0 means no
+                         // second link exists)
+    GHz_t frequency3{
         0}; // whether the third link operates in the 2.4, 5 or 6 GHz (0 means no third link exists)
     std::size_t nStations{1};
     std::string dlAckSeqType{"NO-OFDMA"};
@@ -185,7 +185,7 @@ main(int argc, char* argv[])
     bool enableBsrp{false};
     std::string mcsStr;
     std::vector<uint64_t> mcsValues;
-    int channelWidth{-1}; // in MHz, -1 indicates an unset value
+    MHz_t channelWidth;
     Time guardInterval;
     uint32_t payloadSize =
         700; // must fit in the max TX duration when transmitting at MCS 0 over an RU of 26 tones
@@ -265,8 +265,7 @@ main(int argc, char* argv[])
         "list of comma separated MCS values to test; if unset, all MCS values (0-13) are tested",
         mcsStr);
     cmd.AddValue("channelWidth",
-                 "if set, limit testing to a specific channel width expressed in MHz (20, 40, 80, "
-                 "160 or 320 MHz)",
+                 "if set, limit testing to a specific channel width (20, 40, 80, 160 or 320 MHz)",
                  channelWidth);
     cmd.AddValue(
         "guardInterval",
@@ -370,15 +369,17 @@ main(int argc, char* argv[])
         std::sort(mcsValues.begin(), mcsValues.end());
     }
 
-    int minChannelWidth = 20;
-    int maxChannelWidth =
-        ((frequency != 2.4) && (frequency2 != 2.4) && (frequency3 != 2.4))
-            ? (((frequency == 6) && (frequency2 == 0) && (frequency3 == 0)) ? 320 : 160)
-            : 40;
-    if ((channelWidth != -1) &&
+    MHz_t minChannelWidth{20};
+    auto maxChannelWidth =
+        ((frequency != GHz_t{2.4}) && (frequency2 != GHz_t{2.4}) && (frequency3 != GHz_t{2.4}))
+            ? (((frequency == GHz_t{6}) && (frequency2 == GHz_t{0}) && (frequency3 == GHz_t{0}))
+                   ? MHz_t{320}
+                   : MHz_t{160})
+            : MHz_t{40};
+    if ((channelWidth != MHz_t{0}) &&
         ((channelWidth < minChannelWidth) || (channelWidth > maxChannelWidth)))
     {
-        NS_FATAL_ERROR("Invalid channel width: " << channelWidth << " MHz");
+        NS_FATAL_ERROR("Invalid channel width: " << channelWidth);
     }
     if (channelWidth >= minChannelWidth && channelWidth <= maxChannelWidth)
     {
@@ -396,11 +397,12 @@ main(int argc, char* argv[])
     bool isFirst{true};
     for (const auto mcs : mcsValues)
     {
-        for (int width = minChannelWidth; width <= maxChannelWidth; width *= 2) // MHz
+        for (auto width = minChannelWidth; width <= maxChannelWidth; width *= 2)
         {
-            const auto is80Plus80 = (use80Plus80 && (width == 160));
-            const std::string widthStr = is80Plus80 ? "80+80" : std::to_string(width);
-            const auto segmentWidthStr = is80Plus80 ? "80" : widthStr;
+            const auto is80Plus80 = (use80Plus80 && (width == MHz_t{160}));
+            const auto segmentWidthStr =
+                is80Plus80 ? std::string("80")
+                           : std::to_string(static_cast<uint16_t>(width.in_MHz()));
             for (auto gi = maxGi; gi >= minGi; gi = gi / 2)
             {
                 std::string outputFileName{""};
@@ -408,7 +410,7 @@ main(int argc, char* argv[])
                 {
                     auto command =
                         cmd.GetName() + " --multiProcessing=0 --mcs=" + std::to_string(mcs) +
-                        " --channelWidth=" + std::to_string(width) +
+                        " --channelWidth=" + width.str(false) +
                         " --guardInterval=" + std::to_string(gi.GetNanoSeconds()) + "ns ";
                     std::vector<std::string> programArguments(argv + 1, argv + argc);
                     for (const auto& argument : programArguments)
@@ -428,11 +430,11 @@ main(int argc, char* argv[])
                     inputFile << command;
 
                     outputFileName = tmpDir + "mcs=" + std::to_string(mcs) +
-                                     "-width=" + std::to_string(width) +
+                                     "-width=" + width.str(false) +
                                      "-gi=" + std::to_string(gi.GetNanoSeconds()) + "ns.dat";
                     inputFile << "--fileName=" << outputFileName << std::endl;
                     const auto validationFileContent =
-                        std::to_string(mcs) + " " + std::to_string(width) + " " +
+                        std::to_string(mcs) + " " + width.str(false) + " " +
                         std::to_string(gi.GetNanoSeconds()) + "ns " + outputFileName;
                     validationFile << validationFileContent << std::endl;
                 }
@@ -447,7 +449,7 @@ main(int argc, char* argv[])
                 }
 
                 Config::SetDefault("ns3::EhtConfiguration::Support320MHzOperation",
-                                   BooleanValue(channelWidth > 160));
+                                   BooleanValue(channelWidth > MHz_t{160}));
 
                 NodeContainer wifiStaNodes;
                 wifiStaNodes.Create(nStations);
@@ -468,19 +470,19 @@ main(int argc, char* argv[])
                 uint64_t nonHtRefRateMbps = EhtPhy::GetNonHtReferenceRate(mcs) / 1e6;
 
                 if (frequency2 == frequency || frequency3 == frequency ||
-                    (frequency3 != 0 && frequency3 == frequency2))
+                    (frequency3 != GHz_t{0} && frequency3 == frequency2))
                 {
                     NS_FATAL_ERROR("Frequency values must be unique!");
                 }
 
                 for (auto freq : {frequency, frequency2, frequency3})
                 {
-                    if (nLinks > 0 && freq == 0)
+                    if (nLinks > 0 && freq == GHz_t{0})
                     {
                         break;
                     }
                     channelStr[nLinks] = "{0, " + segmentWidthStr + ", ";
-                    if (freq == 6)
+                    if (freq == GHz_t{6})
                     {
                         channelStr[nLinks] += "BAND_6GHZ, 0}";
                         freqRanges[nLinks] = WIFI_SPECTRUM_6_GHZ;
@@ -493,7 +495,7 @@ main(int argc, char* argv[])
                                                      "ControlMode",
                                                      StringValue(dataModeStr));
                     }
-                    else if (freq == 5)
+                    else if (freq == GHz_t{5})
                     {
                         channelStr[nLinks] += "BAND_5GHZ, 0}";
                         freqRanges[nLinks] = WIFI_SPECTRUM_5_GHZ;
@@ -505,7 +507,7 @@ main(int argc, char* argv[])
                                                      "ControlMode",
                                                      StringValue(ctrlRateStr));
                     }
-                    else if (freq == 2.4)
+                    else if (freq == GHz_t{2.4})
                     {
                         channelStr[nLinks] += "BAND_2_4GHZ, 0}";
                         freqRanges[nLinks] = WIFI_SPECTRUM_2_4_GHZ;
@@ -521,7 +523,7 @@ main(int argc, char* argv[])
                     }
                     else
                     {
-                        NS_FATAL_ERROR("Wrong frequency value!");
+                        NS_FATAL_ERROR("Wrong frequency value: " << freq);
                     }
 
                     if (is80Plus80)

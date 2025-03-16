@@ -94,14 +94,14 @@ main(int argc, char* argv[])
     bool useExtendedBlockAck{false};
     Time simulationTime{"10s"};
     meter_u distance{1.0};
-    double frequency{5}; // whether 2.4, 5 or 6 GHz
+    GHz_t frequency{5}; // either 2.4, 5 or 6 GHz
     std::size_t nStations{1};
     std::string dlAckSeqType{"NO-OFDMA"};
     bool enableUlOfdma{false};
     bool enableBsrp{false};
     std::string mcsStr;
     std::vector<uint64_t> mcsValues;
-    int channelWidth{-1}; // in MHz, -1 indicates an unset value
+    MHz_t channelWidth;
     Time guardInterval;
     uint32_t payloadSize =
         700; // must fit in the max TX duration when transmitting at MCS 0 over an RU of 26 tones
@@ -114,9 +114,7 @@ main(int argc, char* argv[])
     std::string fileName{""};
 
     CommandLine cmd(__FILE__);
-    cmd.AddValue("frequency",
-                 "Whether working in the 2.4, 5 or 6 GHz band (other values gets rejected)",
-                 frequency);
+    cmd.AddValue("frequency", "Frequency band (2.4, 5 or 6 GHz)", frequency);
     cmd.AddValue("distance",
                  "Distance in meters between the station and the access point",
                  distance);
@@ -147,8 +145,7 @@ main(int argc, char* argv[])
         "list of comma separated MCS values to test; if unset, all MCS values (0-11) are tested",
         mcsStr);
     cmd.AddValue("channelWidth",
-                 "if set, limit testing to a specific channel width expressed in MHz (20, 40, 80 "
-                 "or 160 MHz)",
+                 "if set, limit testing to a specific channel width (20, 40, 80 or 160 MHz)",
                  channelWidth);
     cmd.AddValue(
         "guardInterval",
@@ -266,12 +263,12 @@ main(int argc, char* argv[])
         std::sort(mcsValues.begin(), mcsValues.end());
     }
 
-    int minChannelWidth = 20;
-    int maxChannelWidth = frequency == 2.4 ? 40 : 160;
-    if ((channelWidth != -1) &&
+    MHz_t minChannelWidth{20};
+    auto maxChannelWidth = (frequency == GHz_t{2.4}) ? MHz_t{40} : MHz_t{160};
+    if ((channelWidth != MHz_t{0}) &&
         ((channelWidth < minChannelWidth) || (channelWidth > maxChannelWidth)))
     {
-        NS_FATAL_ERROR("Invalid channel width: " << channelWidth << " MHz");
+        NS_FATAL_ERROR("Invalid channel width: " << channelWidth);
     }
     if (channelWidth >= minChannelWidth && channelWidth <= maxChannelWidth)
     {
@@ -289,11 +286,12 @@ main(int argc, char* argv[])
     bool isFirst{true};
     for (const auto mcs : mcsValues)
     {
-        for (int width = minChannelWidth; width <= maxChannelWidth; width *= 2) // MHz
+        for (auto width = minChannelWidth; width <= maxChannelWidth; width *= 2)
         {
-            const auto is80Plus80 = (use80Plus80 && (width == 160));
-            const std::string widthStr = is80Plus80 ? "80+80" : std::to_string(width);
-            const auto segmentWidthStr = is80Plus80 ? "80" : widthStr;
+            const auto is80Plus80 = (use80Plus80 && (width == MHz_t{160}));
+            const auto segmentWidthStr =
+                is80Plus80 ? std::string("80")
+                           : std::to_string(static_cast<uint16_t>(width.in_MHz()));
             for (auto gi = maxGi; gi >= minGi; gi = gi / 2)
             {
                 std::string outputFileName{""};
@@ -301,7 +299,7 @@ main(int argc, char* argv[])
                 {
                     auto command =
                         cmd.GetName() + " --multiProcessing=0 --mcs=" + std::to_string(mcs) +
-                        " --channelWidth=" + std::to_string(width) +
+                        " --channelWidth=" + width.str(false) +
                         " --guardInterval=" + std::to_string(gi.GetNanoSeconds()) + "ns ";
                     std::vector<std::string> programArguments(argv + 1, argv + argc);
                     for (const auto& argument : programArguments)
@@ -321,11 +319,11 @@ main(int argc, char* argv[])
                     inputFile << command;
 
                     outputFileName = tmpDir + "mcs=" + std::to_string(mcs) +
-                                     "-width=" + std::to_string(width) +
+                                     "-width=" + width.str(false) +
                                      "-gi=" + std::to_string(gi.GetNanoSeconds()) + "ns.dat";
                     inputFile << "--fileName=" << outputFileName << std::endl;
                     const auto validationFileContent =
-                        std::to_string(mcs) + " " + std::to_string(width) + " " +
+                        std::to_string(mcs) + " " + width.str(false) + " " +
                         std::to_string(gi.GetNanoSeconds()) + "ns " + outputFileName;
                     validationFile << validationFileContent << std::endl;
                 }
@@ -355,21 +353,21 @@ main(int argc, char* argv[])
                 std::ostringstream ossDataMode;
                 ossDataMode << "HeMcs" << mcs;
 
-                if (frequency == 6)
+                if (frequency == GHz_t{6})
                 {
                     ctrlRate = StringValue(ossDataMode.str());
                     channelStr += "BAND_6GHZ, 0}";
                     Config::SetDefault("ns3::LogDistancePropagationLossModel::ReferenceLoss",
                                        DoubleValue(48));
                 }
-                else if (frequency == 5)
+                else if (frequency == GHz_t{5})
                 {
                     std::ostringstream ossControlMode;
                     ossControlMode << "OfdmRate" << nonHtRefRateMbps << "Mbps";
                     ctrlRate = StringValue(ossControlMode.str());
                     channelStr += "BAND_5GHZ, 0}";
                 }
-                else if (frequency == 2.4)
+                else if (frequency == GHz_t{2.4})
                 {
                     std::ostringstream ossControlMode;
                     ossControlMode << "ErpOfdmRate" << nonHtRefRateMbps << "Mbps";
@@ -380,7 +378,7 @@ main(int argc, char* argv[])
                 }
                 else
                 {
-                    NS_FATAL_ERROR("Wrong frequency value!");
+                    NS_FATAL_ERROR("Wrong frequency value: " << frequency);
                 }
 
                 if (is80Plus80)

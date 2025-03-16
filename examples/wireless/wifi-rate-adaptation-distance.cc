@@ -36,7 +36,7 @@
  * Example for HT rates with SGI and channel width of 40MHz:
  * ./ns3 run "wifi-rate-adaptation-distance --staManager=ns3::MinstrelHtWifiManager
  * --apManager=ns3::MinstrelHtWifiManager --outputFileName=minstrelHt --shortGuardInterval=true
- * --channelWidth=40"
+ * --channelWidth=40MHz"
  *
  * To enable the log of rate changes:
  * export NS_LOG=RateAdaptationDistance=level_info
@@ -181,7 +181,7 @@ main(int argc, char* argv[])
     std::string outputFileName{"minstrelHT"};
     uint32_t BeMaxAmpduSize{65535};
     bool shortGuardInterval{false};
-    uint32_t chWidth{20};
+    MHz_t chWidth{20};
     int ap1_x{0};
     int ap1_y{0};
     int sta1_x{5};
@@ -240,7 +240,8 @@ main(int argc, char* argv[])
         frequencyBand = "BAND_5GHZ";
     }
     wifiPhy.Set("ChannelSettings",
-                StringValue("{0, " + std::to_string(chWidth) + ", " + frequencyBand + ", 0}"));
+                StringValue("{0, " + std::to_string(static_cast<uint16_t>(chWidth.in_MHz())) +
+                            ", " + frequencyBand + ", 0}"));
 
     // By default, the CCA sensitivity is -82 dBm, meaning if the RSS is
     // below this value, the receiver will reject the Wi-Fi frame.

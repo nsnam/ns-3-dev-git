@@ -8,6 +8,7 @@
 
 #include "ns3/command-line.h"
 #include "ns3/log.h"
+#include "ns3/si-units.h"
 
 #include <filesystem>
 #include <fstream>
@@ -71,14 +72,12 @@ main(int argc, char* argv[])
 
     uint8_t minMcs{std::numeric_limits<uint8_t>::max()};
     uint8_t maxMcs{std::numeric_limits<uint8_t>::min()};
-    uint16_t minWidth{std::numeric_limits<uint16_t>::max()}; // MHz
-    uint16_t maxWidth{std::numeric_limits<uint16_t>::min()}; // MHz
+    MHz_t minWidth{std::numeric_limits<uint16_t>::max()};
+    MHz_t maxWidth{std::numeric_limits<uint16_t>::min()};
     auto minGi{Time::Max()};
     auto maxGi{Time::Min()}; // nanoseconds
-    std::vector<std::tuple<uint8_t /* MCS */,
-                           uint16_t /* width */,
-                           Time /* GI */,
-                           std::string /* filename */>>
+    std::vector<
+        std::tuple<uint8_t /* MCS */, MHz_t /* width */, Time /* GI */, std::string /* filename */>>
         runs{};
     while (!validationFile.eof())
     {
@@ -99,7 +98,7 @@ main(int argc, char* argv[])
             const uint8_t mcs = std::stod(words.at(0));
             minMcs = std::min(mcs, minMcs);
             maxMcs = std::max(mcs, maxMcs);
-            const uint16_t width = std::stod(words.at(1));
+            const MHz_t width{words.at(1)};
             minWidth = std::min(width, minWidth);
             maxWidth = std::max(width, maxWidth);
             const Time gi{words.at(2)};
@@ -111,7 +110,7 @@ main(int argc, char* argv[])
     }
     validationFile.close();
 
-    std::vector<std::tuple<uint8_t, uint16_t, Time, double>> results{};
+    std::vector<std::tuple<uint8_t, MHz_t, Time, double>> results{};
     for (const auto& [mcs, width, gi, resultFileName] : runs)
     {
         std::ifstream resultFile;
@@ -144,8 +143,8 @@ main(int argc, char* argv[])
     {
         if (!printLastOnly || (printLastOnly && (++resultIndex == results.size())))
         {
-            std::cout << +mcs << "\t\t\t" << width << " MHz\t\t\t" << gi.GetNanoSeconds()
-                      << " ns\t\t\t" << throughput << " Mbit/s" << std::endl;
+            std::cout << +mcs << "\t\t\t" << width << "\t\t\t" << gi.GetNanoSeconds() << " ns\t\t\t"
+                      << throughput << " Mbit/s" << std::endl;
         }
         if (mcs != prevMcs)
         {

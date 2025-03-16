@@ -91,7 +91,7 @@ main(int argc, char* argv[])
     std::string mcsStr;
     std::vector<uint64_t> mcsValues;
     std::string phyModel{"Yans"};
-    int channelWidth{-1}; // in MHz, -1 indicates an unset value
+    MHz_t channelWidth;
     Time guardInterval;
     double minExpectedThroughput{0.0};
     double maxExpectedThroughput{0.0};
@@ -116,8 +116,7 @@ main(int argc, char* argv[])
                  "automatically selected",
                  phyModel);
     cmd.AddValue("channelWidth",
-                 "if set, limit testing to a specific channel width expressed in MHz (20, 40, 80 "
-                 "or 160 MHz)",
+                 "if set, limit testing to a specific channel width (20, 40, 80 or 160 MHz)",
                  channelWidth);
     cmd.AddValue("guardInterval",
                  "if set, limit testing to a specific guard interval duration (400ns or 800 ns)",
@@ -200,12 +199,12 @@ main(int argc, char* argv[])
         std::sort(mcsValues.begin(), mcsValues.end());
     }
 
-    int minChannelWidth = 20;
-    int maxChannelWidth = 160;
-    if ((channelWidth != -1) &&
+    MHz_t minChannelWidth{20};
+    MHz_t maxChannelWidth{160};
+    if ((channelWidth != MHz_t{0}) &&
         ((channelWidth < minChannelWidth) || (channelWidth > maxChannelWidth)))
     {
-        NS_FATAL_ERROR("Invalid channel width: " << channelWidth << " MHz");
+        NS_FATAL_ERROR("Invalid channel width: " << channelWidth);
     }
     if (channelWidth >= minChannelWidth && channelWidth <= maxChannelWidth)
     {
@@ -223,15 +222,16 @@ main(int argc, char* argv[])
     bool isFirst{true};
     for (const auto mcs : mcsValues)
     {
-        for (int width = minChannelWidth; width <= maxChannelWidth; width *= 2) // MHz
+        for (auto width = minChannelWidth; width <= maxChannelWidth; width *= 2)
         {
-            if (mcs == 9 && width == 20)
+            if (mcs == 9 && width == MHz_t{20})
             {
                 continue;
             }
-            const auto is80Plus80 = (use80Plus80 && (width == 160));
-            const std::string widthStr = is80Plus80 ? "80+80" : std::to_string(width);
-            const auto segmentWidthStr = is80Plus80 ? "80" : widthStr;
+            const auto is80Plus80 = (use80Plus80 && (width == MHz_t{160}));
+            const auto segmentWidthStr =
+                is80Plus80 ? std::string("80")
+                           : std::to_string(static_cast<uint16_t>(width.in_MHz()));
             for (auto gi = maxGi; gi >= minGi; gi = gi / 2)
             {
                 std::string outputFileName{""};
@@ -239,7 +239,7 @@ main(int argc, char* argv[])
                 {
                     auto command =
                         cmd.GetName() + " --multiProcessing=0 --mcs=" + std::to_string(mcs) +
-                        " --channelWidth=" + std::to_string(width) +
+                        " --channelWidth=" + width.str(false) +
                         " --guardInterval=" + std::to_string(gi.GetNanoSeconds()) + "ns ";
                     std::vector<std::string> programArguments(argv + 1, argv + argc);
                     for (const auto& argument : programArguments)
@@ -259,11 +259,11 @@ main(int argc, char* argv[])
                     inputFile << command;
 
                     outputFileName = tmpDir + "mcs=" + std::to_string(mcs) +
-                                     "-width=" + std::to_string(width) +
+                                     "-width=" + width.str(false) +
                                      "-gi=" + std::to_string(gi.GetNanoSeconds()) + "ns.dat";
                     inputFile << "--fileName=" << outputFileName << std::endl;
                     const auto validationFileContent =
-                        std::to_string(mcs) + " " + std::to_string(width) + " " +
+                        std::to_string(mcs) + " " + width.str(false) + " " +
                         std::to_string(gi.GetNanoSeconds()) + "ns " + outputFileName;
                     validationFile << validationFileContent << std::endl;
                 }
@@ -392,7 +392,7 @@ main(int argc, char* argv[])
                 apNodeInterface = address.Assign(apDevice);
 
                 /* Setting applications */
-                const auto maxLoad = VhtPhy::GetDataRate(mcs, MHz_t{width}, gi, 1);
+                const auto maxLoad = VhtPhy::GetDataRate(mcs, width, gi, 1);
                 ApplicationContainer serverApp;
                 if (udp)
                 {
