@@ -226,6 +226,9 @@ main(int argc, char* argv[])
                     for (const auto& argument : programArguments)
                     {
                         if (argument.starts_with("--multiProcessing") ||
+                            argument.starts_with("--mcs") ||
+                            argument.starts_with("--channelWidth") ||
+                            argument.starts_with("--guardInterval") ||
                             argument.starts_with("--fileName") ||
                             argument.starts_with("--minExpectedThroughput") ||
                             argument.starts_with("--maxExpectedThroughput"))
