@@ -854,13 +854,13 @@ PhyEntity::GetTimeToPreambleDetectionEnd() const
         return {};
     }
 
-    Time delayUntilPreambleDetectionEnd;
+    std::optional<Time> delayUntilPreambleDetectionEnd;
     for (const auto& endPreambleDetectionEvent : m_endPreambleDetectionEvents)
     {
         if (endPreambleDetectionEvent.IsPending())
         {
             delayUntilPreambleDetectionEnd =
-                std::max(delayUntilPreambleDetectionEnd,
+                std::max(delayUntilPreambleDetectionEnd.value_or(Time{0}),
                          Simulator::GetDelayLeft(endPreambleDetectionEvent));
         }
     }
