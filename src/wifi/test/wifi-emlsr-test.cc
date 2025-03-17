@@ -160,9 +160,13 @@ EmlsrOperationsTestBase::Transmit(Ptr<WifiMac> mac,
                     txDuration - TimeStep(1),
                     [=, hdrType = psdu->GetHeader(0).GetTypeString(), this]() {
                         // check if MSD timer was running on the link before completing transmission
-                        bool msdWasRunning = staMac->GetEmlsrManager()
-                                                 ->GetElapsedMediumSyncDelayTimer(id)
-                                                 .has_value();
+                        // and is expected to be running when check is performed (in 2 timesteps)
+                        const auto msdTimer =
+                            staMac->GetEmlsrManager()->GetElapsedMediumSyncDelayTimer(id);
+                        const auto msdDuration =
+                            staMac->GetEhtConfiguration()->m_mediumSyncDuration;
+                        const auto msdWasRunning =
+                            (msdTimer.has_value() && (msdDuration - *msdTimer > TimeStep(2)));
                         if (auto phy = staMac->GetWifiPhy(id);
                             !msdWasRunning && !mustStartMsd && phy && phy->IsStateSleep())
                         {
