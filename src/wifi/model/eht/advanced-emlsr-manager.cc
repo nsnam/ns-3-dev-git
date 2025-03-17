@@ -901,32 +901,33 @@ AdvancedEmlsrManager::SwitchMainPhyIfTxopGainedByAuxPhy(uint8_t linkId, AcIndex 
     // case, do nothing because the main PHY will start a TXOP and at the end of such TXOP
     // links will be unblocked and the channel access requested on all links
 
-    Time delay{};
+    std::optional<Time> delay;
 
     if (m_ccaLastPifs.IsPending() || m_switchMainPhyBackEvent.IsPending())
     {
         delay = std::max(Simulator::GetDelayLeft(m_ccaLastPifs),
                          Simulator::GetDelayLeft(m_switchMainPhyBackEvent));
     }
-    else if (mainPhy->IsStateSwitching() || mainPhy->IsStateCcaBusy() || mainPhy->IsStateRx())
+    else if (mainPhy->GetState()->GetLastTime(
+                 {WifiPhyState::SWITCHING, WifiPhyState::CCA_BUSY, WifiPhyState::RX}) ==
+             Simulator::Now())
     {
         delay = mainPhy->GetDelayUntilIdle();
-        NS_ASSERT(delay.IsStrictlyPositive());
     }
 
     NS_LOG_DEBUG("Main PHY state is " << mainPhy->GetState()->GetState());
     auto edca = GetStaMac()->GetQosTxop(aci);
     edca->NotifyChannelReleased(linkId); // to set access to NOT_REQUESTED
 
-    if (delay.IsZero())
+    if (!delay.has_value())
     {
         NS_LOG_DEBUG("Do nothing");
         return;
     }
 
     NS_LOG_DEBUG("Schedule channel access request on link "
-                 << +linkId << " at time " << (Simulator::Now() + delay).As(Time::NS));
-    Simulator::Schedule(delay, [=]() {
+                 << +linkId << " at time " << (Simulator::Now() + *delay).As(Time::NS));
+    Simulator::Schedule(*delay, [=]() {
         edca->StartAccessAfterEvent(linkId,
                                     Txop::DIDNT_HAVE_FRAMES_TO_TRANSMIT,
                                     Txop::CHECK_MEDIUM_BUSY);
