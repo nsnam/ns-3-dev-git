@@ -273,7 +273,9 @@ EmlsrOperationsTestBase::CheckMainPhyTraceInfo(std::size_t index,
                                                bool checkToLinkId)
 {
     const auto traceInfoIt = m_traceInfo.find(index);
-    NS_TEST_ASSERT_MSG_EQ((traceInfoIt != m_traceInfo.cend()), true, "Expected stored trace info");
+    NS_TEST_ASSERT_MSG_EQ((traceInfoIt != m_traceInfo.cend()),
+                          true,
+                          "Expected stored trace info: " << reason);
     const auto& traceInfo = traceInfoIt->second;
 
     NS_TEST_EXPECT_MSG_EQ(traceInfo->GetName(), reason, "Unexpected reason");
@@ -3306,8 +3308,12 @@ EmlsrUlTxopTest::CheckCtsFrames(Ptr<const WifiMpdu> mpdu,
             // aux PHYs are put to sleep if and only if CTS is not corrupted
             // (causing the end of the TXOP)
             CheckAuxPhysSleepMode(m_staMacs[0], !doCorruptCts);
-            // if CTS is corrupted, TXOP ends and the main PHY switches back to the preferred link
-            if (doCorruptCts)
+            // if CTS is corrupted, TXOP ends and the main PHY switches back to the preferred link,
+            // unless channel access is obtained on another link before the main PHY completes the
+            // switch to the link on which CTS timeout occurred
+            if (auto ehtFem = StaticCast<EhtFrameExchangeManager>(
+                    m_staMacs[0]->GetFrameExchangeManager(linkId));
+                doCorruptCts && !ehtFem->UsingOtherEmlsrLink())
             {
                 // check the traced elapsed time since CTS timeout before calling
                 // CheckMainPhyTraceInfo
