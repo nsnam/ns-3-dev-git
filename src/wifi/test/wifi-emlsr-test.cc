@@ -273,7 +273,9 @@ EmlsrOperationsTestBase::CheckMainPhyTraceInfo(std::size_t index,
                                                bool checkToLinkId)
 {
     const auto traceInfoIt = m_traceInfo.find(index);
-    NS_TEST_ASSERT_MSG_EQ((traceInfoIt != m_traceInfo.cend()), true, "Expected stored trace info");
+    NS_TEST_ASSERT_MSG_EQ((traceInfoIt != m_traceInfo.cend()),
+                          true,
+                          "Expected stored trace info: " << reason);
     const auto& traceInfo = traceInfoIt->second;
 
     NS_TEST_EXPECT_MSG_EQ(traceInfo->GetName(), reason, "Unexpected reason");
@@ -3315,8 +3317,11 @@ EmlsrUlTxopTest::CheckCtsFrames(Ptr<const WifiMpdu> mpdu,
                 // (causing the end of the TXOP)
                 CheckAuxPhysSleepMode(m_staMacs[0], !doCorruptCts);
                 // if CTS is corrupted, TXOP ends and the main PHY switches back to the preferred
-                // link
-                if (doCorruptCts)
+                // link, unless channel access is obtained on another link before the main PHY
+                // completes the switch to the link on which CTS timeout occurred
+                if (auto ehtFem = StaticCast<EhtFrameExchangeManager>(
+                        m_staMacs[0]->GetFrameExchangeManager(linkId));
+                    doCorruptCts && !ehtFem->UsingOtherEmlsrLink())
                 {
                     // check the traced elapsed time since CTS timeout before calling
                     // CheckMainPhyTraceInfo
@@ -3588,8 +3593,8 @@ EmlsrUlTxopTest::CheckResults()
     ++psduIt;
     jumpToQosDataOrMuRts();
 
-    // the first attempt at transmitting the fourth QoS data frame fails because CTS is corrupted
-    // RTS
+    // the first attempt at transmitting the fourth QoS data frame fails because CTS is
+    // corrupted RTS
     NS_TEST_ASSERT_MSG_EQ((psduIt != m_txPsdus.cend()),
                           true,
                           "RTS before fourth QoS data frame has not been transmitted");
@@ -3710,10 +3715,11 @@ EmlsrUlOfdmaTest::Transmit(Ptr<WifiMac> mac,
                                                            txVector,
                                                            mac->GetWifiPhy(linkId)->GetPhyBand());
             NS_LOG_INFO("This is the first Trigger Frame\n");
-            // once the Trigger Frame is received by the EMLSR client, make the client application
-            // on the EMLSR client generate two packets. These packets will be sent via UL OFDMA
-            // because the EMLSR client has blocked transmissions on other links when receiving
-            // this Trigger Frame, hence it will not try to get access on other links via EDCA
+            // once the Trigger Frame is received by the EMLSR client, make the client
+            // application on the EMLSR client generate two packets. These packets will be sent
+            // via UL OFDMA because the EMLSR client has blocked transmissions on other links
+            // when receiving this Trigger Frame, hence it will not try to get access on other
+            // links via EDCA
             Simulator::Schedule(
                 txDuration + MicroSeconds(1), // to account for propagation delay
                 [=, this]() {
@@ -3896,8 +3902,8 @@ EmlsrUlOfdmaTest::CheckResults()
         if (hdr.IsQosData() && !hdr.HasData())
         {
             ++qosNullCount;
-            // if BSRP is enabled, the QoS Null frame sent by the EMLSR client in response to the
-            // first BSRP TF reports a non-null buffer status
+            // if BSRP is enabled, the QoS Null frame sent by the EMLSR client in response to
+            // the first BSRP TF reports a non-null buffer status
             if (m_enableBsrp &&
                 hdr.GetAddr2() == m_staMacs[0]->GetFrameExchangeManager(firstLinkId)->GetAddress())
             {
@@ -3915,8 +3921,9 @@ EmlsrUlOfdmaTest::CheckResults()
                           (m_enableBsrp ? 4 : 2),
                           "Unexpected number of QoS Null frames");
 
-    // we expect only one Basic Trigger Frame (sent on the same link as the first Trigger Frame),
-    // because the buffer status reported on the other links by the non-EMLSR client is zero
+    // we expect only one Basic Trigger Frame (sent on the same link as the first Trigger
+    // Frame), because the buffer status reported on the other links by the non-EMLSR client is
+    // zero
     NS_TEST_ASSERT_MSG_EQ(m_txPsdus[index].psduMap.cbegin()->second->GetHeader(0).IsTrigger(),
                           true,
                           "Expected a Trigger Frame");
@@ -3932,8 +3939,8 @@ EmlsrUlOfdmaTest::CheckResults()
 
     // when BSRP TF is enabled, the non-EMLSR client has already communicated a buffer status of
     // zero, so it is not solicited by the AP through the Basic Trigger Frame. Otherwise, it is
-    // solicited because buffer status was not known when the BSRP TF was prepared (before sending
-    // MU-RTS)
+    // solicited because buffer status was not known when the BSRP TF was prepared (before
+    // sending MU-RTS)
     NS_TEST_EXPECT_MSG_EQ(trigger.GetNUserInfoFields(),
                           (m_enableBsrp ? 1 : 2),
                           "Unexpected number of User Info fields for Basic Trigger Frame");
@@ -4221,17 +4228,16 @@ EmlsrLinkSwitchTest::CheckQosFrames(const WifiConstPsduMap& psduMap,
  *                                └───┘     └──┘
  *
  *
- *  |--------- main PHY ----------|------------------ aux PHY A ----------------|--- main PHY ---
- *     ┌───┐     ┌───┐                                                      ┌───┐     ┌───┐
- *     │ICF│     │QoS│                                                      │ICF│     │QoS│
+ *  |--------- main PHY ----------|------------------ aux PHY A ----------------|--- main PHY
+ *--- ┌───┐     ┌───┐                                                      ┌───┐     ┌───┐ │ICF│
+ *│QoS│                                                      │ICF│     │QoS│
  *  ───┴───┴┬───┬┴───┴┬──┬──────────────────────────────────────────────────┴───┴┬───┬┴───┴┬──┬──
  *  [link 1]│CTS│     │BA│                                                       │CTS│     │BA│
  *          └───┘     └──┘                                                       └───┘     └──┘
  *
  *
- *  |--------------------- aux PHY B --------------------|------ main PHY ------|-- aux PHY A ---
- *                                                   ┌───┐     ┌───┐
- *                                                   │ICF│     │QoS│
+ *  |--------------------- aux PHY B --------------------|------ main PHY ------|-- aux PHY A
+ *--- ┌───┐     ┌───┐ │ICF│     │QoS│
  *  ─────────────────────────────────────────────────┴───┴┬───┬┴───┴┬──┬─────────────────────────
  *  [link 2]                                              │CTS│     │BA│
  *                                                        └───┘     └──┘
@@ -4259,7 +4265,8 @@ EmlsrLinkSwitchTest::CheckQosFrames(const WifiConstPsduMap& psduMap,
  *
  * AUX PHY switching disabled (X = channel switch delay)
  *
- *  |------------------------------------------ aux PHY A ---------------------------------------
+ *  |------------------------------------------ aux PHY A
+ *---------------------------------------
  *                                |-- main PHY --|X|
  *                            ┌───┐     ┌───┐
  *                            │ICF│     │QoS│
@@ -4268,15 +4275,16 @@ EmlsrLinkSwitchTest::CheckQosFrames(const WifiConstPsduMap& psduMap,
  *                                 └───┘     └──┘
  *
  *                                                 |-main|
- *  |--------- main PHY ----------|                |-PHY-|                |------ main PHY ------
- *     ┌───┐     ┌───┐                                                      ┌───┐     ┌───┐
+ *  |--------- main PHY ----------|                |-PHY-|                |------ main PHY
+ *------ ┌───┐     ┌───┐                                                      ┌───┐     ┌───┐
  *     │ICF│     │QoS│                                                      │ICF│     │QoS│
  *  ───┴───┴┬───┬┴───┴┬──┬──────────────────────────────────────────────────┴───┴┬───┬┴───┴┬──┬──
  *  [link 1]│CTS│     │BA│                                                       │CTS│     │BA│
  *          └───┘     └──┘                                                       └───┘     └──┘
  *
  *
- *  |------------------------------------------ aux PHY B ---------------------------------------
+ *  |------------------------------------------ aux PHY B
+ *---------------------------------------
  *                                                       |-- main PHY --|X|
  *                                                   ┌───┐     ┌───┐
  *                                                   │ICF│     │QoS│
@@ -4317,10 +4325,10 @@ EmlsrLinkSwitchTest::CheckInitialControlFrame(const WifiConstPsduMap& psduMap,
         m_txPsdusPos = m_txPsdus.size() - 1;
     }
 
-    // the first ICF is sent to protect ADDBA_REQ for DL BA agreement, then one ICF is sent before
-    // each of the 4 DL QoS Data frames; finally, another ICF is sent before the ADDBA_RESP for UL
-    // BA agreement. Hence, at any time the number of ICF sent is always greater than or equal to
-    // the number of QoS data frames sent.
+    // the first ICF is sent to protect ADDBA_REQ for DL BA agreement, then one ICF is sent
+    // before each of the 4 DL QoS Data frames; finally, another ICF is sent before the
+    // ADDBA_RESP for UL BA agreement. Hence, at any time the number of ICF sent is always
+    // greater than or equal to the number of QoS data frames sent.
     NS_TEST_EXPECT_MSG_GT_OR_EQ(m_countIcfFrames, m_countQoSframes, "Unexpected number of ICFs");
 
     auto mainPhy = m_staMacs[0]->GetDevice()->GetPhy(m_mainPhyId);
@@ -4424,11 +4432,11 @@ EmlsrLinkSwitchTest::CheckRtsFrame(const WifiConstPsduMap& psduMap,
                                           "Main PHY expected to be in SWITCHING state instead of "
                                               << mainPhy->GetState()->GetState());
 
-                    // If main PHY channel switch can be interrupted, the main PHY should be back
-                    // operating on the preferred link after a channel switch delay. Otherwise, it
-                    // will be operating on the preferred link, if SwitchAuxPhy is false, or on the
-                    // link used to send the RTS, if SwitchAuxPhy is true, after the remaining
-                    // channel switching time plus the channel switch delay.
+                    // If main PHY channel switch can be interrupted, the main PHY should be
+                    // back operating on the preferred link after a channel switch delay.
+                    // Otherwise, it will be operating on the preferred link, if SwitchAuxPhy is
+                    // false, or on the link used to send the RTS, if SwitchAuxPhy is true,
+                    // after the remaining channel switching time plus the channel switch delay.
                     auto newLinkId = (m_resetCamStateAndInterruptSwitch || !m_switchAuxPhy)
                                          ? m_mainPhyId
                                          : linkId;
@@ -4511,7 +4519,8 @@ EmlsrLinkSwitchTest::CheckResults()
 
     NS_TEST_EXPECT_MSG_EQ(m_countIcfFrames, 6, "Unexpected number of ICFs sent");
 
-    // frame exchanges without RTS because the EMLSR client sent the initial frame through main PHY
+    // frame exchanges without RTS because the EMLSR client sent the initial frame through main
+    // PHY
     const std::size_t nFrameExchNoRts = fe11protected ? 3 : 4;
 
     const std::size_t nFrameExchWithRts = fe11protected ? 1 : 0;
@@ -4644,8 +4653,8 @@ EmlsrCcaBusyTest::TransmitPacketToAp(uint8_t linkId)
 
     // force the transmission of the packet to happen now on the given link.
     // Multiple ScheduleNow calls are needed because Node::AddApplication() schedules a call to
-    // Application::Initialize(), which schedules a call to Application::StartApplication(), which
-    // schedules a call to PacketSocketClient::Send(), which finally generates the packet
+    // Application::Initialize(), which schedules a call to Application::StartApplication(),
+    // which schedules a call to PacketSocketClient::Send(), which finally generates the packet
     Simulator::ScheduleNow([=, this]() {
         Simulator::ScheduleNow([=, this]() {
             Simulator::ScheduleNow([=, this]() {
@@ -4709,7 +4718,8 @@ EmlsrCcaBusyTest::StartTraffic()
  *                         .┌───────────────┐
  *                         .│  other to AP  │
  * ─────────────────────────┴───────────────┴────────────────────────────────────────────────────
- *  |------------ aux PHY ----------|---------------------- main PHY ----------------------------
+ *  |------------ aux PHY ----------|---------------------- main PHY
+ * ----------------------------
  *
  */
 
@@ -4749,10 +4759,10 @@ EmlsrCcaBusyTest::CheckPoint1()
         caManager->m_lastBusyEnd[WIFI_CHANLIST_PRIMARY],
         Simulator::Now(),
         "ChannelAccessManager on destination link not notified of CCA busy");
-    NS_TEST_EXPECT_MSG_LT(
-        caManager->m_lastBusyEnd[WIFI_CHANLIST_PRIMARY],
-        endTxTime,
-        "ChannelAccessManager on destination link notified of CCA busy until end of transmission");
+    NS_TEST_EXPECT_MSG_LT(caManager->m_lastBusyEnd[WIFI_CHANLIST_PRIMARY],
+                          endTxTime,
+                          "ChannelAccessManager on destination link notified of CCA busy until "
+                          "end of transmission");
 
     // second checkpoint is after that the main PHY completed the link switch
     Simulator::Schedule(mainPhy->GetDelayUntilIdle() + TimeStep(1),
@@ -4763,9 +4773,9 @@ EmlsrCcaBusyTest::CheckPoint1()
 void
 EmlsrCcaBusyTest::CheckPoint2()
 {
-    // second checkpoint is after that the main PHY completed the link switch. The channel access
-    // manager on destination link (Y) is expected to be notified by the main PHY that medium is
-    // busy until the end of the ongoing transmission
+    // second checkpoint is after that the main PHY completed the link switch. The channel
+    // access manager on destination link (Y) is expected to be notified by the main PHY that
+    // medium is busy until the end of the ongoing transmission
     const auto caManager = m_staMacs[0]->GetChannelAccessManager(m_nextMainPhyLinkId);
     const auto endTxTime = m_staMacs[1]->GetChannelAccessManager(m_nextMainPhyLinkId)->m_lastTxEnd;
     NS_TEST_ASSERT_MSG_EQ(caManager->m_lastBusyEnd.contains(WIFI_CHANLIST_PRIMARY),
@@ -4880,7 +4890,8 @@ SingleLinkEmlsrTest::Transmit(Ptr<WifiMac> mac,
 void
 SingleLinkEmlsrTest::DoRun()
 {
-    // lambda to check that AP MLD started the transition delay timer after the TX/RX of given frame
+    // lambda to check that AP MLD started the transition delay timer after the TX/RX of given
+    // frame
     auto checkTransDelay = [this](Ptr<const WifiPsdu> psdu,
                                   const WifiTxVector& txVector,
                                   bool testUnblockedForOtherReasons,
@@ -4960,7 +4971,8 @@ SingleLinkEmlsrTest::DoRun()
     m_events.emplace_back(WIFI_MAC_QOSDATA);
     m_events.emplace_back(WIFI_MAC_CTL_BACKRESP,
                           [=](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) {
-                              // check that transition delay is started after reception of BlockAck
+                              // check that transition delay is started after reception of
+                              // BlockAck
                               checkTransDelay(psdu, txVector, true, "DL QoS Data");
                           });
 
@@ -4987,7 +4999,8 @@ SingleLinkEmlsrTest::DoRun()
     m_events.emplace_back(WIFI_MAC_QOSDATA);
     m_events.emplace_back(WIFI_MAC_CTL_BACKRESP,
                           [=](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) {
-                              // check that transition delay is started after reception of BlockAck
+                              // check that transition delay is started after reception of
+                              // BlockAck
                               checkTransDelay(psdu, txVector, true, "UL QoS Data");
                           });
 
@@ -5209,16 +5222,17 @@ EmlsrIcfSentDuringMainPhySwitchTest::RunOne()
                 ", ChannelSwitchDurationIdx=" + std::to_string(m_csdIndex);
     NS_LOG_INFO("Starting test: " << m_testStr << "\n");
 
-    // generate noise on all the links of the AP MLD and the EMLSR client, so as to align the EDCA
-    // backoff boundaries
+    // generate noise on all the links of the AP MLD and the EMLSR client, so as to align the
+    // EDCA backoff boundaries
     Simulator::Schedule(MilliSeconds(3), [=, this]() {
         GenerateNoiseOnAllLinks(m_apMac, MicroSeconds(500));
         GenerateNoiseOnAllLinks(m_staMacs[0], MicroSeconds(500));
     });
 
     // wait some more time to ensure that backoffs count down to zero and then generate a packet
-    // at the AP MLD and a packet at the EMLSR client. AP MLD and EMLSR client are expected to get
-    // access at the same time because backoff counter is zero and EDCA boundaries are aligned
+    // at the AP MLD and a packet at the EMLSR client. AP MLD and EMLSR client are expected to
+    // get access at the same time because backoff counter is zero and EDCA boundaries are
+    // aligned
     Simulator::Schedule(MilliSeconds(5), [=, this]() {
         uint8_t prio = (switchToOtherLink ? 3 : 0);
         m_apMac->GetDevice()->GetNode()->AddApplication(GetApplication(DOWNLINK, 0, 1, 500, prio));
@@ -5333,12 +5347,12 @@ EmlsrIcfSentDuringMainPhySwitchTest::RunOne()
                 }
 
                 // if the main PHY switched to the same link on which the ICF is being received,
-                // connecting the main PHY to the link is postponed until the end of the ICF, hence
-                // the main PHY is not operating on any link at this time;
-                // if the main PHY switched to another link, it was connected to that link but
-                // the UL TXOP did not start because, at the end of the NAV and CCA busy in the last
-                // PIFS check, it was detected that a frame which could be an ICF was being received
-                // on another link)
+                // connecting the main PHY to the link is postponed until the end of the ICF,
+                // hence the main PHY is not operating on any link at this time; if the main PHY
+                // switched to another link, it was connected to that link but the UL TXOP did
+                // not start because, at the end of the NAV and CCA busy in the last PIFS check,
+                // it was detected that a frame which could be an ICF was being received on
+                // another link)
                 NS_TEST_EXPECT_MSG_EQ(m_staMacs[0]->GetLinkForPhy(m_mainPhyId).has_value(),
                                       switchToOtherLink,
                                       m_testStr
@@ -5742,8 +5756,8 @@ EmlsrSwitchMainPhyBackTest::RunOne()
     m_dlPktDone = false;
 
     // wait some more time to ensure that backoffs count down to zero and then generate a packet
-    // at the EMLSR client. When notified of the main PHY switch, we decide when the AP MLD has to
-    // transmit a broadcast frame
+    // at the EMLSR client. When notified of the main PHY switch, we decide when the AP MLD has
+    // to transmit a broadcast frame
     Simulator::Schedule(MilliSeconds(5), [=, this]() {
         m_staMacs[0]->GetDevice()->GetNode()->AddApplication(GetApplication(UPLINK, 0, 1, 500));
     });
@@ -5859,8 +5873,8 @@ EmlsrSwitchMainPhyBackTest::RunOne()
                 break;
 
             case NON_HT_PPDU_DONT_USE_MAC_HDR:
-                // when the main PHY completes the channel switch, it is not connected to the aux
-                // PHY link and the switch main PHY back timer is running
+                // when the main PHY completes the channel switch, it is not connected to the
+                // aux PHY link and the switch main PHY back timer is running
                 Simulator::Schedule(mainPhy->GetDelayUntilIdle() + TimeStep(1), [=, this]() {
                     NS_TEST_EXPECT_MSG_EQ(advEmlsrMgr->m_mainPhySwitchInfo.disconnected,
                                           true,
@@ -5871,9 +5885,10 @@ EmlsrSwitchMainPhyBackTest::RunOne()
                     NS_TEST_EXPECT_MSG_EQ(advEmlsrMgr->m_switchMainPhyBackEvent.IsPending(),
                                           true,
                                           "Main PHY switch back timer should be running");
-                    // when PIFS check is performed at the end of the main PHY switch, the medium
-                    // is found busy and a backoff value is generated; make sure that this value is
-                    // at most 2 to ensure the conditions expected by this scenario
+                    // when PIFS check is performed at the end of the main PHY switch, the
+                    // medium is found busy and a backoff value is generated; make sure that
+                    // this value is at most 2 to ensure the conditions expected by this
+                    // scenario
                     if (auto beTxop = m_staMacs[0]->GetQosTxop(AC_BE);
                         beTxop->GetBackoffSlots(m_linkIdForTid0) > 2)
                     {
@@ -5907,9 +5922,9 @@ EmlsrSwitchMainPhyBackTest::RunOne()
 
             case NON_HT_PPDU_USE_MAC_HDR:
             case LONG_SWITCH_BACK_DELAY_USE_MAC_HDR:
-                // when the main PHY completes the channel switch, it is not connected to the aux
-                // PHY link and the switch main PHY back timer is running. The aux PHY is in RX
-                // state and has MAC header info available
+                // when the main PHY completes the channel switch, it is not connected to the
+                // aux PHY link and the switch main PHY back timer is running. The aux PHY is in
+                // RX state and has MAC header info available
                 Simulator::Schedule(mainPhy->GetDelayUntilIdle() + TimeStep(1), [=, this]() {
                     NS_TEST_EXPECT_MSG_EQ(advEmlsrMgr->m_mainPhySwitchInfo.disconnected,
                                           true,
@@ -5960,8 +5975,8 @@ EmlsrSwitchMainPhyBackTest::RunOne()
                 break;
 
             case LONG_SWITCH_BACK_DELAY_DONT_USE_MAC_HDR:
-                // when the main PHY completes the channel switch, it is not connected to the aux
-                // PHY link and the switch main PHY back timer is running
+                // when the main PHY completes the channel switch, it is not connected to the
+                // aux PHY link and the switch main PHY back timer is running
                 Simulator::Schedule(mainPhy->GetDelayUntilIdle() + TimeStep(1), [=, this]() {
                     NS_TEST_EXPECT_MSG_EQ(advEmlsrMgr->m_mainPhySwitchInfo.disconnected,
                                           true,
@@ -5972,10 +5987,10 @@ EmlsrSwitchMainPhyBackTest::RunOne()
                     NS_TEST_EXPECT_MSG_EQ(advEmlsrMgr->m_switchMainPhyBackEvent.IsPending(),
                                           true,
                                           "Main PHY switch back timer should be running");
-                    // when PIFS check is performed at the end of the main PHY switch, the medium
-                    // is found busy and a backoff value is generated; make sure that this value is
-                    // at least 7 to ensure that the backoff timer is still running when the switch
-                    // main PHY back timer is expected to expire
+                    // when PIFS check is performed at the end of the main PHY switch, the
+                    // medium is found busy and a backoff value is generated; make sure that
+                    // this value is at least 7 to ensure that the backoff timer is still
+                    // running when the switch main PHY back timer is expected to expire
                     if (auto beTxop = m_staMacs[0]->GetQosTxop(AC_BE);
                         beTxop->GetBackoffSlots(m_linkIdForTid0) <= 6)
                     {
@@ -6209,17 +6224,17 @@ EmlsrCheckNavAndCcaLastPifsTest::RunOne()
             const auto emlsrBeEdca = m_staMacs[0]->GetQosTxop(AC_BE);
 
             // generate a packet at the EMLSR client while the medium on the link on which TID 0
-            // is mapped is still busy, so that a backoff value is generated. The backoff counter
-            // is configured to be equal to the m_nSlotsLeft value
+            // is mapped is still busy, so that a backoff value is generated. The backoff
+            // counter is configured to be equal to the m_nSlotsLeft value
             Simulator::Schedule(txDuration - TimeStep(1), [=, this]() {
                 emlsrBeEdca->StartBackoffNow(m_nSlotsLeft, m_linkIdForTid0);
                 m_staMacs[0]->GetDevice()->GetNode()->AddApplication(
                     GetApplication(UPLINK, 0, 1, 500));
             });
 
-            // given that the backoff counter equals m_nSlotsLeft, we expect that, an AIFS after the
-            // end of the broadcast frame transmission, the NSlotsLeftAlert trace is fired and the
-            // main PHY starts switching to the link on which TID 0 is mapped
+            // given that the backoff counter equals m_nSlotsLeft, we expect that, an AIFS after
+            // the end of the broadcast frame transmission, the NSlotsLeftAlert trace is fired
+            // and the main PHY starts switching to the link on which TID 0 is mapped
             const auto aifs = auxPhy->GetSifs() + emlsrBeEdca->GetAifsn(m_linkIdForTid0) * slot;
             Simulator::Schedule(txDuration + aifs + TimeStep(1), [=, this]() {
                 NS_TEST_EXPECT_MSG_EQ(mainPhy->IsStateSwitching(),
