@@ -494,14 +494,17 @@ EmlsrOperationsTestBase::DoSetup()
     m_apMac->TraceConnectWithoutContext(
         "AssociatedSta",
         MakeCallback(&EmlsrOperationsTestBase::StaAssociated, this));
-    m_apMac->GetQosTxop(AC_BE)->TraceConnectWithoutContext(
-        "BaEstablished",
-        MakeCallback(&EmlsrOperationsTestBase::BaEstablishedDl, this));
-    for (std::size_t id = 0; id < m_nEmlsrStations + m_nNonEmlsrStations; ++id)
+    for (const auto& [aci, ac] : wifiAcList)
     {
-        m_staMacs[id]->GetQosTxop(AC_BE)->TraceConnectWithoutContext(
+        m_apMac->GetQosTxop(aci)->TraceConnectWithoutContext(
             "BaEstablished",
-            MakeCallback(&EmlsrOperationsTestBase::BaEstablishedUl, this).Bind(id));
+            MakeCallback(&EmlsrOperationsTestBase::BaEstablishedDl, this));
+        for (std::size_t id = 0; id < m_nEmlsrStations + m_nNonEmlsrStations; ++id)
+        {
+            m_staMacs[id]->GetQosTxop(aci)->TraceConnectWithoutContext(
+                "BaEstablished",
+                MakeCallback(&EmlsrOperationsTestBase::BaEstablishedUl, this).Bind(id));
+        }
     }
     Simulator::Schedule(Seconds(0), [&]() { m_staMacs[0]->SetSsid(Ssid("ns-3-ssid")); });
 }
@@ -535,8 +538,8 @@ EmlsrOperationsTestBase::StaAssociated(uint16_t aid, Mac48Address /* addr */)
     }
     m_lastAid = aid;
 
-    // wait some time (5ms) to allow the completion of association
-    const auto delay = MilliSeconds(5);
+    // wait some time (10ms) to allow the completion of association
+    const auto delay = MilliSeconds(10);
 
     if (!m_establishBaDl.empty())
     {
@@ -565,8 +568,8 @@ EmlsrOperationsTestBase::BaEstablishedDl(Mac48Address recipient,
                                          uint8_t tid,
                                          std::optional<Mac48Address> /* gcrGroup */)
 {
-    // wait some time (5ms) to allow the exchange of the data frame that triggered the Block Ack
-    const auto delay = MilliSeconds(5);
+    // wait some time (10ms) to allow the exchange of the data frame that triggered the Block Ack
+    const auto delay = MilliSeconds(10);
 
     auto linkId = m_apMac->IsAssociated(recipient);
     NS_TEST_ASSERT_MSG_EQ(linkId.has_value(), true, "No link for association of " << recipient);
@@ -601,8 +604,8 @@ EmlsrOperationsTestBase::BaEstablishedUl(std::size_t index,
                                          uint8_t tid,
                                          std::optional<Mac48Address> /* gcrGroup */)
 {
-    // wait some time (5ms) to allow the exchange of the data frame that triggered the Block Ack
-    const auto delay = MilliSeconds(5);
+    // wait some time (10ms) to allow the exchange of the data frame that triggered the Block Ack
+    const auto delay = MilliSeconds(10);
 
     if (auto it = std::find(m_establishBaUl.cbegin(), m_establishBaUl.cend(), tid);
         it != m_establishBaUl.cend() && std::next(it) != m_establishBaUl.cend())
@@ -636,14 +639,17 @@ EmlsrOperationsTestBase::SetSsid(std::size_t count)
     m_apMac->TraceDisconnectWithoutContext(
         "AssociatedSta",
         MakeCallback(&EmlsrOperationsTestBase::StaAssociated, this));
-    m_apMac->GetQosTxop(AC_BE)->TraceDisconnectWithoutContext(
-        "BaEstablished",
-        MakeCallback(&EmlsrOperationsTestBase::BaEstablishedDl, this));
-    for (std::size_t id = 0; id < m_nEmlsrStations + m_nNonEmlsrStations; ++id)
+    for (const auto& [aci, ac] : wifiAcList)
     {
-        m_staMacs[id]->GetQosTxop(AC_BE)->TraceDisconnectWithoutContext(
+        m_apMac->GetQosTxop(aci)->TraceDisconnectWithoutContext(
             "BaEstablished",
-            MakeCallback(&EmlsrOperationsTestBase::BaEstablishedUl, this).Bind(id));
+            MakeCallback(&EmlsrOperationsTestBase::BaEstablishedDl, this));
+        for (std::size_t id = 0; id < m_nEmlsrStations + m_nNonEmlsrStations; ++id)
+        {
+            m_staMacs[id]->GetQosTxop(aci)->TraceDisconnectWithoutContext(
+                "BaEstablished",
+                MakeCallback(&EmlsrOperationsTestBase::BaEstablishedUl, this).Bind(id));
+        }
     }
 }
 
