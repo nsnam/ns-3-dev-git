@@ -6272,6 +6272,18 @@ EmlsrSwitchMainPhyBackTest::RunOne()
                     NS_TEST_ASSERT_MSG_EQ(remTime.has_value(),
                                           true,
                                           "No MAC header info available");
+                    if (testIndex == LONG_SWITCH_BACK_DELAY_USE_MAC_HDR)
+                    {
+                        // when PIFS check is performed at the end of the main PHY switch, the
+                        // medium is found busy and a backoff value is generated; make sure that
+                        // this value is at least 7 to ensure that the backoff timer is still
+                        // running when the switch main PHY back timer is expected to expire
+                        if (auto beTxop = m_staMacs[0]->GetQosTxop(AC_BE);
+                            beTxop->GetBackoffSlots(m_linkIdForTid0) <= 6)
+                        {
+                            beTxop->StartBackoffNow(7, m_linkIdForTid0);
+                        }
+                    }
                     // main PHY is expected to switch back when the MAC header is received
                     m_expectedMainPhySwitchBackTime = Simulator::Now() + remTime.value();
                     // once the MAC header is received, the main PHY switches back and the
@@ -6306,7 +6318,8 @@ EmlsrSwitchMainPhyBackTest::RunOne()
                                           "Main PHY switch back timer should be running");
                     // when PIFS check is performed at the end of the main PHY switch, the medium
                     // is found busy and a backoff value is generated; make sure that this value is
-                    // at least 7 to ensure the conditions expected by this scenario
+                    // at least 7 to ensure that the backoff timer is still running when the switch
+                    // main PHY back timer is expected to expire
                     if (auto beTxop = m_staMacs[0]->GetQosTxop(AC_BE);
                         beTxop->GetBackoffSlots(m_linkIdForTid0) <= 6)
                     {

@@ -1380,8 +1380,8 @@ class EmlsrIcfSentDuringMainPhySwitchTest : public EmlsrOperationsTestBase
  *   PPDU reception, it is determined that the backoff counter will not reach zero before the end of
  *   the switch main PHY back timer plus a channel switch delay and the main PHY switches back to
  *   the preferred link (with reason BACKOFF_END).
- * - LONG_SWITCH_BACK_DELAY_USE_MAC_HDR: same as the NON_HT_PPDU_DONT_USE_MAC_HDR scenario,
- *   except that the switch main PHY back delay is longer and exceeds the PPDU duration, but it is
+ * - LONG_SWITCH_BACK_DELAY_USE_MAC_HDR: same as the NON_HT_PPDU_USE_MAC_HDR scenario,
+ *   except that the switch main PHY back delay is longer and exceeds the PPDU duration, but it
  *   does not exceed the PPDU duration plus AIFS and the backoff slots. Therefore, at the end of the
  *   MAC header reception, it is determined that the backoff counter will not reach zero before the
  *   end of the switch main PHY back timer plus a channel switch delay and the main PHY switches
