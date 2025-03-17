@@ -1274,7 +1274,7 @@ EmlsrDlTxopTest::CheckResults()
             WifiPhy::CalculateTxDuration(psduIt->psduMap,
                                          psduIt->txVector,
                                          m_staMacs[i]->GetWifiPhy(psduIt->linkId)->GetPhyBand());
-        psduIt++;
+        auto firstQos = psduIt++;
 
         jumpToQosDataOrMuRts();
         NS_TEST_ASSERT_MSG_EQ((psduIt != m_txPsdus.cend() &&
@@ -1283,6 +1283,17 @@ EmlsrDlTxopTest::CheckResults()
                               "Expected at least two QoS data frames before enabling EMLSR mode");
         linkIds.insert(psduIt->linkId);
         const auto secondAmpduTxStart = psduIt->startTx;
+
+        auto beaconInBetween{false};
+        while (++firstQos != psduIt)
+        {
+            if (firstQos->psduMap.cbegin()->second->GetHeader(0).IsBeacon())
+            {
+                beaconInBetween = true;
+                break;
+            }
+        }
+
         psduIt++;
 
         /**
@@ -1311,7 +1322,7 @@ EmlsrDlTxopTest::CheckResults()
          * Otherwise, the two A-MPDUs can be sent concurrently on two distinct links (may be
          * the link used to establish association and a non-EMLSR link).
          */
-        else
+        else if (!beaconInBetween)
         {
             NS_TEST_EXPECT_MSG_EQ(linkIds.size(),
                                   2,
@@ -4510,6 +4521,15 @@ EmlsrLinkSwitchTest::CheckResults()
     // m_txPsdusPos points to the first ICF
     auto psduIt = std::next(m_txPsdus.cbegin(), m_txPsdusPos);
 
+    // lambda to increase psduIt while skipping Beacon frames
+    auto nextPsdu = [&]() {
+        do
+        {
+            ++psduIt;
+        } while (psduIt != m_txPsdus.cend() &&
+                 psduIt->psduMap.at(SU_STA_ID)->GetHeader(0).IsBeacon());
+    };
+
     const std::size_t nFrameExchanges =
         m_countIcfFrames + nFrameExchNoRts + nFrameExchWithRts + 1 /* corrupted RTS */;
 
@@ -4523,7 +4543,7 @@ EmlsrLinkSwitchTest::CheckResults()
                                           : psduIt->psduMap.at(SU_STA_ID)->GetHeader(0).IsRts())),
                                   true,
                                   "Expected a Trigger Frame (ICF)");
-            psduIt++;
+            nextPsdu();
             if (i == 10)
             {
                 continue; // corrupted RTS
@@ -4532,7 +4552,7 @@ EmlsrLinkSwitchTest::CheckResults()
                                    psduIt->psduMap.at(SU_STA_ID)->GetHeader(0).IsCts()),
                                   true,
                                   "Expected a CTS");
-            psduIt++;
+            nextPsdu();
         }
 
         if (i == 1 || i == 2 || i == 7 || i == 8) // frame exchanges with ADDBA REQ/RESP frames
@@ -4541,7 +4561,7 @@ EmlsrLinkSwitchTest::CheckResults()
                                    psduIt->psduMap.at(SU_STA_ID)->GetHeader(0).IsMgt()),
                                   true,
                                   "Expected a management frame");
-            psduIt++;
+            nextPsdu();
             NS_TEST_EXPECT_MSG_EQ((psduIt->psduMap.size() == 1 &&
                                    psduIt->psduMap.at(SU_STA_ID)->GetHeader(0).IsAck()),
                                   true,
@@ -4553,13 +4573,13 @@ EmlsrLinkSwitchTest::CheckResults()
                                    psduIt->psduMap.at(SU_STA_ID)->GetHeader(0).IsQosData()),
                                   true,
                                   "Expected a QoS Data frame");
-            psduIt++;
+            nextPsdu();
             NS_TEST_EXPECT_MSG_EQ((psduIt->psduMap.size() == 1 &&
                                    psduIt->psduMap.at(SU_STA_ID)->GetHeader(0).IsBlockAck()),
                                   true,
                                   "Expected a BlockAck");
         }
-        psduIt++;
+        nextPsdu();
     }
 }
 
