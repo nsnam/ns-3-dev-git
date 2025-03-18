@@ -213,7 +213,7 @@ main(int argc, char* argv[])
     std::string tmpDir{""};
     if (fileName.empty() || multiProcessing)
     {
-        char dirTemplate[] = "/tmp/ns3-wifi-eht-network-XXXXXX";
+        char dirTemplate[] = "/tmp/ns3-wifi-he-network-XXXXXX";
         tmpDir = mkdtemp(dirTemplate);
         tmpDir.append("/");
     }
