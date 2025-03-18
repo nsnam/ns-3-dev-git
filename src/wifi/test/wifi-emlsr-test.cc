@@ -1203,8 +1203,8 @@ EmlsrDlTxopTest::CheckResults()
         auto setupLinks = m_staMacs[i]->GetSetupLinkIds();
 
         bool areAllSetupLinksEmlsr =
-            std::none_of(setupLinks.begin(), setupLinks.end(), [&](auto&& linkId) {
-                return linkId != m_mainPhyId && m_emlsrLinks.count(linkId) == 0;
+            std::all_of(setupLinks.begin(), setupLinks.end(), [&](auto&& linkId) {
+                return linkId == m_mainPhyId || m_emlsrLinks.contains(linkId);
             });
 
         if (i < m_nEmlsrStations && areAllSetupLinksEmlsr)
