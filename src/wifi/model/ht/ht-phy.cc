@@ -459,7 +459,6 @@ Ptr<SpectrumValue>
 HtPhy::GetTxPowerSpectralDensity(Watt_t txPower, Ptr<const WifiPpdu> ppdu) const
 {
     const auto& centerFrequencies = ppdu->GetTxCenterFreqs();
-    NS_ASSERT(centerFrequencies.size() == 1);
     const auto& txVector = ppdu->GetTxVector();
     const auto channelWidth = txVector.GetChannelWidth();
     NS_LOG_FUNCTION(this << centerFrequencies.front() << channelWidth << txPower);
