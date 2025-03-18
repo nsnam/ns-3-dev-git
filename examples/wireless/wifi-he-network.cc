@@ -442,13 +442,13 @@ main(int argc, char* argv[])
                     YansWifiPhyHelper phy;
                     phy.SetPcapDataLinkType(WifiPhyHelper::DLT_IEEE802_11_RADIO);
                     phy.SetChannel(channel.Create());
+                    phy.Set("ChannelSettings", StringValue(channelStr));
 
                     mac.SetType("ns3::StaWifiMac",
                                 "Ssid",
                                 SsidValue(ssid),
                                 "MpduBufferSize",
                                 UintegerValue(useExtendedBlockAck ? 256 : 64));
-                    phy.Set("ChannelSettings", StringValue(channelStr));
                     staDevices = wifi.Install(phy, mac, wifiStaNodes);
 
                     mac.SetType("ns3::ApWifiMac",

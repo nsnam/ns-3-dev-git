@@ -329,9 +329,7 @@ main(int argc, char* argv[])
                     SpectrumWifiPhyHelper phy;
                     phy.SetPcapDataLinkType(WifiPhyHelper::DLT_IEEE802_11_RADIO);
                     phy.SetChannel(spectrumChannel);
-
-                    phy.Set("ChannelSettings",
-                            StringValue("{0, " + std::to_string(width) + ", BAND_5GHZ, 0}"));
+                    phy.Set("ChannelSettings", StringValue(channelStr));
 
                     mac.SetType("ns3::StaWifiMac", "Ssid", SsidValue(ssid));
                     staDevice = wifi.Install(phy, mac, wifiStaNode);
@@ -349,9 +347,7 @@ main(int argc, char* argv[])
                     YansWifiPhyHelper phy;
                     phy.SetPcapDataLinkType(WifiPhyHelper::DLT_IEEE802_11_RADIO);
                     phy.SetChannel(channel.Create());
-
-                    phy.Set("ChannelSettings",
-                            StringValue("{0, " + std::to_string(width) + ", BAND_5GHZ, 0}"));
+                    phy.Set("ChannelSettings", StringValue(channelStr));
 
                     mac.SetType("ns3::StaWifiMac", "Ssid", SsidValue(ssid));
                     staDevice = wifi.Install(phy, mac, wifiStaNode);
