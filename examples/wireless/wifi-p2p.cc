@@ -152,10 +152,10 @@ class WifiP2pExample
             "BV1"}; ///< model class identifier if traffic type is video
         std::string gamingSyncMechanism{
             "StatusSync"}; ///< synchronization mechanism to use if traffic type is gaming
-        double minExpectedThroughput{
-            0.0}; ///< minimum expected average throughput at the end of the run in Mbit/s
-        double maxExpectedThroughput{
-            0.0}; ///< maximum expected average throughput at the end of the run in Mbit/s
+        DataRate
+            minExpectedThroughput; ///< minimum expected average throughput at the end of the run
+        DataRate
+            maxExpectedThroughput; ///< maximum expected average throughput at the end of the run
         Time minExpectedLatency{}; ///< minimum expected average end-to-end latency at the end of
                                    ///< the run
         Time maxExpectedLatency{}; ///< maximum expected average end-to-end latency at the end of
@@ -169,7 +169,7 @@ class WifiP2pExample
             Time>
             packets{};                 ///< store info about transmitted packets
         std::vector<Time> latencies{}; ///< store end-to-end latencies
-        double throughput{0.0};        ///< store average throughput in Mbit/s
+        DataRate throughput;           ///< store average throughput
         Time latency{};                ///< store average end-to-end latency
         double lossRate{0.0};          ///< store packet loss rate in %
     };
@@ -514,13 +514,13 @@ WifiP2pExample::Config(int argc, char* argv[])
         cmd.AddValue(paramName, description, dirInfo.gamingSyncMechanism);
 
         paramName = prepend + "MinExpectedThroughput";
-        description = "if set, simulation fails if the " + directionStr +
-                      " throughput is below this value (in Mbit/s)";
+        description =
+            "if set, simulation fails if the " + directionStr + " throughput is below this value";
         cmd.AddValue(paramName, description, dirInfo.minExpectedThroughput);
 
         paramName = prepend + "MaxExpectedThroughput";
-        description = "if set, simulation fails if the " + directionStr +
-                      " throughput is above this value (in Mbit/s)";
+        description =
+            "if set, simulation fails if the " + directionStr + " throughput is above this value";
         cmd.AddValue(paramName, description, dirInfo.maxExpectedThroughput);
 
         paramName = prepend + "MinExpectedLatency";
@@ -1105,9 +1105,10 @@ WifiP2pExample::PrintResults()
                                  ? dirInfo.sinkApp.Get(0)->GetObject<PacketSink>()->GetTotalRx()
                                  : 0;
         totalBytes += rxBytes;
-        dirInfo.throughput = m_simulationTime.IsStrictlyPositive()
-                                 ? ((rxBytes * 8.0) / m_simulationTime.GetMicroSeconds())
-                                 : 0.0;
+        dirInfo.throughput =
+            m_simulationTime.IsStrictlyPositive()
+                ? DataRate((rxBytes * 8.0 * 1e6) / m_simulationTime.GetMicroSeconds())
+                : DataRate();
         std::copy(dirInfo.latencies.cbegin(),
                   dirInfo.latencies.cend(),
                   std::back_inserter(totalE2eLatencies));
@@ -1147,9 +1148,10 @@ WifiP2pExample::PrintResults()
                       std::back_inserter(totalE2eLatenciesP2p));
         }
         dirInfo.lossRate = (txPackets > 0) ? (100.0 * (txPackets - rxPackets) / txPackets) : 0;
-        oss << std::setw(16) << directionStr << std::setw(24) << dirInfo.throughput << std::setw(24)
-            << latency << std::setw(16) << txPackets << std::setw(16) << rxPackets << std::setw(16)
-            << dirInfo.lossRate << std::endl;
+        oss << std::setw(16) << directionStr << std::setw(24)
+            << dirInfo.throughput.GetBitRate() * 1e-6 << std::setw(24) << latency << std::setw(16)
+            << txPackets << std::setw(16) << rxPackets << std::setw(16) << dirInfo.lossRate
+            << std::endl;
     }
 
     const auto aggregateThroughputInfrastructure =

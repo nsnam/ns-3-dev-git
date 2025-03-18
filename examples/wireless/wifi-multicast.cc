@@ -237,8 +237,8 @@ main(int argc, char* argv[])
     uint16_t maxAmpduLength{0};
     double minExpectedPackets{0};
     double maxExpectedPackets{0};
-    double minExpectedThroughput{0};
-    double maxExpectedThroughput{0};
+    DataRate minExpectedThroughput;
+    DataRate maxExpectedThroughput;
     double tolerance{0.01};
 
     CommandLine cmd(__FILE__);
@@ -565,12 +565,12 @@ main(int argc, char* argv[])
         const auto rxPackets = rxBytes / payloadSize;
         const auto throughput =
             (g_lastRx - g_firstTx).IsStrictlyPositive()
-                ? static_cast<double>(rxBytes * 8) / ((g_lastRx - g_firstTx).GetMicroSeconds())
-                : 0.0; // Mbit/s
+                ? DataRate((rxBytes * 8 * 1e6) / ((g_lastRx - g_firstTx).GetMicroSeconds()))
+                : DataRate();
         if (!flowMon)
         {
             std::cout << "STA" << i + 1 << "\t\t0\t\t0\t\t" << rxPackets << "\t\t" << rxBytes
-                      << "\t\t" << throughput << "\n";
+                      << "\t\t" << throughput.GetBitRate() * 1e-6 << "\n";
         }
         if (rxPackets < minExpectedPackets)
         {

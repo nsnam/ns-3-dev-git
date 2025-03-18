@@ -7,6 +7,7 @@
  */
 
 #include "ns3/command-line.h"
+#include "ns3/data-rate.h"
 #include "ns3/log.h"
 #include "ns3/si-units.h"
 
@@ -25,8 +26,8 @@ int
 main(int argc, char* argv[])
 {
     std::string resultsFileName{""};
-    auto minExpectedThroughput{0.0}; // Mbit/s
-    auto maxExpectedThroughput{0.0}; // Mbit/s
+    DataRate minExpectedThroughput;
+    DataRate maxExpectedThroughput;
     auto tolerance{0.0};
     auto printResultBanner{true};
     auto printLastOnly{false};
@@ -35,14 +36,12 @@ main(int argc, char* argv[])
     cmd.AddValue("resultsFile",
                  "file containing the list of files containing results",
                  resultsFileName);
-    cmd.AddValue(
-        "minExpectedThroughput",
-        "if set, simulation fails if the lowest throughput is below this value (in Mbit/s)",
-        minExpectedThroughput);
-    cmd.AddValue(
-        "maxExpectedThroughput",
-        "if set, simulation fails if the highest throughput is above this value (in Mbit/s)",
-        maxExpectedThroughput);
+    cmd.AddValue("minExpectedThroughput",
+                 "if set, simulation fails if the lowest throughput is below this value",
+                 minExpectedThroughput);
+    cmd.AddValue("maxExpectedThroughput",
+                 "if set, simulation fails if the highest throughput is above this value",
+                 maxExpectedThroughput);
     cmd.AddValue("tolerance",
                  "accepted tolerance for difference between expected bounds and actual results",
                  tolerance);
@@ -110,7 +109,7 @@ main(int argc, char* argv[])
     }
     validationFile.close();
 
-    std::vector<std::tuple<uint8_t, MHz_t, Time, double>> results{};
+    std::vector<std::tuple<uint8_t, MHz_t, Time, DataRate>> results{};
     for (const auto& [mcs, width, gi, resultFileName] : runs)
     {
         std::ifstream resultFile;
@@ -129,22 +128,22 @@ main(int argc, char* argv[])
                 throughput = std::stod(line);
             }
         }
-        results.emplace_back(mcs, width, gi, throughput);
+        results.emplace_back(mcs, width, gi, throughput * 1e6);
     }
 
     uint8_t index{0};
     uint8_t prevMcs{0};
-    auto prevThroughput{0.0};
+    DataRate prevThroughput;
     const auto maxNumWidthCombinations = 4;
     const auto maxNumGiCombinations = 3;
-    std::array<double, maxNumGiCombinations * maxNumWidthCombinations> prevThroughputs{0.0};
+    std::array<DataRate, maxNumGiCombinations * maxNumWidthCombinations> prevThroughputs;
     std::size_t resultIndex{0};
     for (const auto& [mcs, width, gi, throughput] : results)
     {
         if (!printLastOnly || (printLastOnly && (++resultIndex == results.size())))
         {
             std::cout << +mcs << "\t\t\t" << width << "\t\t\t" << gi.GetNanoSeconds() << " ns\t\t\t"
-                      << throughput << " Mbit/s" << std::endl;
+                      << throughput.GetBitRate() * 1e-6 << " Mbit/s" << std::endl;
         }
         if (mcs != prevMcs)
         {

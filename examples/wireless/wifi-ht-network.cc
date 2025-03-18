@@ -11,6 +11,7 @@
 #include "ns3/boolean.h"
 #include "ns3/command-line.h"
 #include "ns3/config.h"
+#include "ns3/data-rate.h"
 #include "ns3/double.h"
 #include "ns3/enum.h"
 #include "ns3/ht-phy.h"
@@ -92,8 +93,8 @@ main(int argc, char* argv[])
     std::vector<uint64_t> mcsValues;
     MHz_t channelWidth;
     Time guardInterval;
-    double minExpectedThroughput{0.0};
-    double maxExpectedThroughput{0.0};
+    DataRate minExpectedThroughput;
+    DataRate maxExpectedThroughput;
     bool multiProcessing{false};
     unsigned int numParallelJobs{1}; // if unset, keep default of parallel scheduler
     std::string fileName{""};
@@ -457,9 +458,10 @@ main(int argc, char* argv[])
                 {
                     const auto validationCommand =
                         "./ns3 run --no-build \"wifi-network-validator --resultsFile=" +
-                        validationFileName +
-                        " --minExpectedThroughput=" + std::to_string(minExpectedThroughput) +
-                        " --maxExpectedThroughput=" + std::to_string(maxExpectedThroughput) +
+                        validationFileName + " --minExpectedThroughput=" +
+                        std::to_string(minExpectedThroughput.GetBitRate()) + "bps" +
+                        " --maxExpectedThroughput=" +
+                        std::to_string(maxExpectedThroughput.GetBitRate()) + "bps" +
                         " --printLastOnly=1 --printResultBanner=" + std::to_string(isFirst) + "\"";
                     RunCommandAndValidate(validationCommand, tmpDir);
                 }
@@ -497,8 +499,10 @@ main(int argc, char* argv[])
         const auto validationCommand =
             "./" + execPathName +
             " run --no-build \"wifi-network-validator --resultsFile=" + validationFileName +
-            " --minExpectedThroughput=" + std::to_string(minExpectedThroughput) +
-            " --maxExpectedThroughput=" + std::to_string(maxExpectedThroughput) + "\"";
+            " --minExpectedThroughput=" + std::to_string(minExpectedThroughput.GetBitRate()) +
+            "bps" +
+            " --maxExpectedThroughput=" + std::to_string(maxExpectedThroughput.GetBitRate()) +
+            "bps\"";
         RunCommandAndValidate(validationCommand, tmpDir);
     }
 

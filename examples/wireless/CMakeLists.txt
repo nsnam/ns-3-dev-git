@@ -323,6 +323,7 @@ build_example(
   LIBRARIES_TO_LINK
     ${libcore}
     ${libsi-units}
+    ${libnetwork}
 )
 
 build_example(
