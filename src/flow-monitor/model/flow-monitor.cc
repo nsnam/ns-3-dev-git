@@ -515,7 +515,7 @@ void
 FlowMonitor::SerializeToXmlFile(std::string fileName, bool enableHistograms, bool enableProbes)
 {
     NS_LOG_FUNCTION(this << fileName << enableHistograms << enableProbes);
-    std::ofstream os(fileName, std::ios::out | std::ios::binary);
+    std::ofstream os(fileName, std::ios::out);
     os << "<?xml version=\"1.0\" ?>\n";
     SerializeToXmlStream(os, 0, enableHistograms, enableProbes);
     os.close();
