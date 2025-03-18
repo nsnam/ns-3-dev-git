@@ -59,6 +59,7 @@ ThreeGppHttpClient::GetTypeId()
                 PointerValue(),
                 MakePointerAccessor(&ThreeGppHttpClient::m_httpVariables),
                 MakePointerChecker<ThreeGppHttpVariables>())
+            // NS_DEPRECATED_3_44
             .AddAttribute("RemoteServerAddress",
                           "The address of the destination server.",
                           AddressValue(),
@@ -66,6 +67,7 @@ ThreeGppHttpClient::GetTypeId()
                           MakeAddressChecker(),
                           TypeId::SupportLevel::DEPRECATED,
                           "Replaced by Remote in ns-3.44.")
+            // NS_DEPRECATED_3_44
             .AddAttribute("RemoteServerPort",
                           "The destination port of the outbound packets.",
                           UintegerValue(80), // the default HTTP port

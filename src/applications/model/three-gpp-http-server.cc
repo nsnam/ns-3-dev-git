@@ -59,6 +59,7 @@ ThreeGppHttpServer::GetTypeId()
                           PointerValue(),
                           MakePointerAccessor(&ThreeGppHttpServer::m_httpVariables),
                           MakePointerChecker<ThreeGppHttpVariables>())
+            // NS_DEPRECATED_3_44
             .AddAttribute("LocalAddress",
                           "The local address of the server, "
                           "i.e., the address on which to bind the Rx socket.",
@@ -67,6 +68,7 @@ ThreeGppHttpServer::GetTypeId()
                           MakeAddressChecker(),
                           TypeId::SupportLevel::DEPRECATED,
                           "Replaced by Local in ns-3.44.")
+            // NS_DEPRECATED_3_44
             .AddAttribute("LocalPort",
                           "Port on which the application listen for incoming packets.",
                           UintegerValue(80), // the default HTTP port

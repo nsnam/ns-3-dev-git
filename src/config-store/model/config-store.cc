@@ -61,6 +61,7 @@ ConfigStore::GetTypeId()
                 EnumValue(ConfigStore::RAW_TEXT),
                 MakeEnumAccessor<FileFormat>(&ConfigStore::SetFileFormat),
                 MakeEnumChecker(ConfigStore::RAW_TEXT, "RawText", ConfigStore::XML, "Xml"))
+            // NS_DEPRECATED_3_43
             .AddAttribute(
                 "SaveDeprecated",
                 "Save DEPRECATED attributes",

@@ -56,6 +56,7 @@ UdpTraceClient::GetTypeId()
             .SetParent<SourceApplication>()
             .SetGroupName("Applications")
             .AddConstructor<UdpTraceClient>()
+            // NS_DEPRECATED_3_44
             .AddAttribute("RemoteAddress",
                           "The destination Address of the outbound packets",
                           AddressValue(),
@@ -66,6 +67,7 @@ UdpTraceClient::GetTypeId()
                           MakeAddressChecker(),
                           TypeId::SupportLevel::DEPRECATED,
                           "Replaced by Remote in ns-3.44.")
+            // NS_DEPRECATED_3_44
             .AddAttribute(
                 "RemotePort",
                 "The destination port of the outbound packets",

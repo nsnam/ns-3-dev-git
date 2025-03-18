@@ -49,6 +49,7 @@ UdpClient::GetTypeId()
                           TimeValue(Seconds(1)),
                           MakeTimeAccessor(&UdpClient::m_interval),
                           MakeTimeChecker())
+            // NS_DEPRECATED_3_44
             .AddAttribute("RemoteAddress",
                           "The destination Address of the outbound packets",
                           AddressValue(),
@@ -60,6 +61,7 @@ UdpClient::GetTypeId()
                           MakeAddressChecker(),
                           TypeId::SupportLevel::DEPRECATED,
                           "Replaced by Remote in ns-3.44.")
+            // NS_DEPRECATED_3_44
             .AddAttribute("RemotePort",
                           "The destination port of the outbound packets",
                           UintegerValue(UdpClient::DEFAULT_PORT),

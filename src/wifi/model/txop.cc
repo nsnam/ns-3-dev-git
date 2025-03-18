@@ -65,6 +65,7 @@ Txop::GetTypeId()
                                           "AC_BEACON",
                                           AC_UNDEF,
                                           "AC_UNDEF"))
+            // NS_DEPRECATED_3_42
             .AddAttribute("MinCw",
                           "The minimum value of the contention window (just for the first link, "
                           "in case of 11be multi-link devices).",
@@ -85,6 +86,7 @@ Txop::GetTypeId()
                 AttributeContainerValue<UintegerValue>(),
                 MakeAttributeContainerAccessor<UintegerValue>(&Txop::SetMinCws, &Txop::GetMinCws),
                 MakeAttributeContainerChecker<UintegerValue>(MakeUintegerChecker<uint32_t>()))
+            // NS_DEPRECATED_3_42
             .AddAttribute("MaxCw",
                           "The maximum value of the contention window (just for the first link, "
                           "in case of 11be multi-link devices).",
@@ -105,6 +107,7 @@ Txop::GetTypeId()
                 AttributeContainerValue<UintegerValue>(),
                 MakeAttributeContainerAccessor<UintegerValue>(&Txop::SetMaxCws, &Txop::GetMaxCws),
                 MakeAttributeContainerChecker<UintegerValue>(MakeUintegerChecker<uint32_t>()))
+            // NS_DEPRECATED_3_42
             .AddAttribute(
                 "Aifsn",
                 "The AIFSN: the default value conforms to non-QOS (just for the first link, "
@@ -126,6 +129,7 @@ Txop::GetTypeId()
                 AttributeContainerValue<UintegerValue>(),
                 MakeAttributeContainerAccessor<UintegerValue>(&Txop::SetAifsns, &Txop::GetAifsns),
                 MakeAttributeContainerChecker<UintegerValue>(MakeUintegerChecker<uint8_t>()))
+            // NS_DEPRECATED_3_42
             .AddAttribute("TxopLimit",
                           "The TXOP limit: the default value conforms to non-QoS "
                           "(just for the first link, in case of 11be multi-link devices).",

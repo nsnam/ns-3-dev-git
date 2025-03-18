@@ -45,6 +45,7 @@ WifiRemoteStationManager::GetTypeId()
         TypeId("ns3::WifiRemoteStationManager")
             .SetParent<Object>()
             .SetGroupName("Wifi")
+            // NS_DEPRECATED_3_44
             .AddAttribute("MaxSsrc",
                           "The maximum number of retransmission attempts for any packet with size "
                           "<= RtsCtsThreshold. "
@@ -54,6 +55,7 @@ WifiRemoteStationManager::GetTypeId()
                           MakeUintegerChecker<uint32_t>(),
                           TypeId::SupportLevel::OBSOLETE,
                           "Use WifiMac::FrameRetryLimit instead")
+            // NS_DEPRECATED_3_44
             .AddAttribute("MaxSlrc",
                           "The maximum number of retransmission attempts for any packet with size "
                           "> RtsCtsThreshold. "
