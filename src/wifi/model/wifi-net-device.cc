@@ -44,14 +44,6 @@ WifiNetDevice::GetTypeId()
                           UintegerValue(MAX_MSDU_SIZE - LLC_SNAP_HEADER_LENGTH),
                           MakeUintegerAccessor(&WifiNetDevice::SetMtu, &WifiNetDevice::GetMtu),
                           MakeUintegerChecker<uint16_t>(1, MAX_MSDU_SIZE - LLC_SNAP_HEADER_LENGTH))
-            .AddAttribute("Channel",
-                          "The channel attached to this device",
-                          PointerValue(),
-                          MakePointerAccessor(&WifiNetDevice::GetChannel),
-                          MakePointerChecker<Channel>(),
-                          TypeId::SupportLevel::DEPRECATED,
-                          "class WifiNetDevice; use the Channel "
-                          "attribute of WifiPhy")
             .AddAttribute("Phy",
                           "The PHY layer attached to this device.",
                           PointerValue(),
