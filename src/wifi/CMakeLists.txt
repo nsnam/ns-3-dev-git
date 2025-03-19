@@ -380,7 +380,10 @@ build_lib(
     test/wifi-co-trace-helper-test.cc
     test/wifi-dynamic-bw-op-test.cc
     test/wifi-eht-info-elems-test.cc
-    test/wifi-emlsr-test.cc
+    test/wifi-emlsr-basic-exchanges-test.cc
+    test/wifi-emlsr-enabling-test.cc
+    test/wifi-emlsr-link-switch-test.cc
+    test/wifi-emlsr-test-base.cc
     test/wifi-error-rate-models-test.cc
     test/wifi-fils-frame-test.cc
     test/wifi-gcr-test.cc
