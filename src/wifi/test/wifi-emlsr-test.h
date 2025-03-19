@@ -1230,11 +1230,11 @@ class EmlsrIcfSentDuringMainPhySwitchTest : public EmlsrOperationsTestBase
  * An AP MLD and an EMLSR client, both having 3 links, are considered in this test. Aux PHYs are
  * not TX capable, do not switch links and support up to the HT modulation class; the preferred link
  * is link 2. In order to control link switches, a TID-to-Link mapping is configured so that TID 0
- * is mapped onto link 1 for both DL and UL. In this test, the main PHY switches to link 1 to start
- * an UL TXOP but, while the main PHY is switching or shortly after the channel switch ends, the AP
- * MLD transmits a QoS Data broadcast frame on link 1 using a modulation supported by the aux PHYs.
- * Different situations are tested and it is verified that the main PHY switches back to the
- * preferred link as expected. Scenarios:
+ * is mapped onto link 1 and TID 4 is mapped onto link 0 (for both DL and UL). In this test, the
+ * main PHY switches to link 1 to start an UL TXOP but, while the main PHY is switching or shortly
+ * after the channel switch ends, the AP MLD transmits a QoS Data broadcast frame on link 1 using a
+ * modulation supported by the aux PHYs. Different situations are tested and it is verified that
+ * the main PHY switches back to the preferred link as expected. Scenarios:
  *
  * - RXSTART_WHILE_SWITCH_NO_INTERRUPT: the AP MLD transmits an HT PPDU while the main PHY is
  *   switching; at the end of the PHY header reception (while the main PHY is still switching), the
@@ -1282,8 +1282,15 @@ class EmlsrIcfSentDuringMainPhySwitchTest : public EmlsrOperationsTestBase
  *   end of the switch main PHY back timer plus a channel switch delay and the main PHY switches
  *   back to the preferred link (with reason BACKOFF_END).
  *
- * In all the cases, it is verified that, after the reception of the broadcast data frame, the EMLSR
- * client transmits the data frame and receives the acknowledgment.
+ * Except for the NON_HT_PPDU_DONT_USE_MAC_HDR case, in which the main PHY stays on link 1 and
+ * transmits a data frame, receives the Ack and switches back to the preferred link at the TXOP end,
+ * in all other cases the main PHY switches back to the preferred link without sending a frame on
+ * link 1. A few microseconds after starting the switch to the preferred link, a frame with TID 4
+ * is queued. If interrupt switching is enabled, the switch to the preferred link is interrupted
+ * and the main PHY switches to link 0, where it transmits the data frame with TID 4 as soon as
+ * completing the switch. Afterwards, the main PHY switches back to the preferred link and, except
+ * for the NON_HT_PPDU_DONT_USE_MAC_HDR case, it switches to link 1 to transmit the queued frame
+ * with TID 0.
  */
 class EmlsrSwitchMainPhyBackTest : public EmlsrOperationsTestBase
 {
@@ -1315,6 +1322,9 @@ class EmlsrSwitchMainPhyBackTest : public EmlsrOperationsTestBase
                   WifiTxVector txVector,
                   double txPowerW) override;
     void MainPhySwitchInfoCallback(std::size_t index, const EmlsrMainPhySwitchTrace& info) override;
+
+    /// Insert events corresponding to the UL TXOP to transmit the QoS Data frame with TID 4
+    void InsertEventsForQosTid4();
 
     /// Runs a test case and invokes itself for the next test case
     void RunOne();
@@ -1349,6 +1359,7 @@ class EmlsrSwitchMainPhyBackTest : public EmlsrOperationsTestBase
     std::list<Events> m_events;           //!< list of events for a test run
     std::size_t m_processedEvents{0};     //!< number of processed events
     const uint8_t m_linkIdForTid0{1};     //!< ID of the link on which TID 0 is mapped
+    const uint8_t m_linkIdForTid4{0};     //!< ID of the link on which TID 4 is mapped
     Ptr<WifiMpdu> m_bcastFrame;           //!< the broadcast frame sent by the AP MLD
     Time m_switchMainPhyBackDelay;        //!< the switch main PHY back delay
     Time m_expectedMainPhySwitchBackTime; //!< expected main PHY switch back time

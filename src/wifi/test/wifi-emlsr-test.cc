@@ -641,6 +641,12 @@ EmlsrOperationsTestBase::SetSsid(std::size_t count)
     StartTraffic();
     // stop generation of beacon frames in order to avoid interference
     m_apMac->SetAttribute("BeaconGeneration", BooleanValue(false));
+    // Set the short slot time on the 2.4 GHz link because it is not updated automatically given
+    // that no more Beacon frames are sent
+    for (std::size_t id = 0; id < m_nEmlsrStations + m_nNonEmlsrStations; ++id)
+    {
+        m_staMacs[id]->GetDevice()->GetPhy(0)->SetSlot(MicroSeconds(9));
+    }
     // disconnect callbacks
     m_apMac->TraceDisconnectWithoutContext(
         "AssociatedSta",
@@ -5510,7 +5516,7 @@ EmlsrSwitchMainPhyBackTest::EmlsrSwitchMainPhyBackTest()
     m_paddingDelay = {MicroSeconds(64)};
     m_transitionDelay = {MicroSeconds(64)};
     m_establishBaDl = {0};
-    m_establishBaUl = {0};
+    m_establishBaUl = {0, 4};
     m_duration = Seconds(0.5);
 }
 
@@ -5522,7 +5528,8 @@ EmlsrSwitchMainPhyBackTest::DoSetup()
     Config::SetDefault("ns3::DefaultEmlsrManager::SwitchAuxPhy", BooleanValue(false));
     Config::SetDefault("ns3::EmlsrManager::AuxPhyTxCapable", BooleanValue(false));
     // Use only link 1 for DL and UL traffic
-    std::string mapping = "0 " + std::to_string(m_linkIdForTid0);
+    std::string mapping =
+        "0 " + std::to_string(m_linkIdForTid0) + "; 4 " + std::to_string(m_linkIdForTid4);
     Config::SetDefault("ns3::EhtConfiguration::TidToLinkMappingDl", StringValue(mapping));
     Config::SetDefault("ns3::EhtConfiguration::TidToLinkMappingUl", StringValue(mapping));
     Config::SetDefault("ns3::EmlsrManager::AuxPhyMaxModClass", StringValue("HT"));
@@ -5621,6 +5628,33 @@ EmlsrSwitchMainPhyBackTest::MainPhySwitchInfoCallback(std::size_t index,
         return;
     }
 
+    // lambda to generate a frame with TID 4 and to handle the corresponding frames
+    auto genTid4Frame = [=, this]() {
+        m_dlPktDone = true;
+
+        // in 5 microseconds, while still switching, generate a packet with TID 4, which causes a
+        // channel access request on link 0; if switching can be interrupted, the main PHY starts
+        // switching to link 0 as soon as channel access is gained on link 0
+        Simulator::Schedule(MicroSeconds(5), [=, this]() {
+            m_staMacs[0]->GetDevice()->GetNode()->AddApplication(
+                GetApplication(UPLINK, 0, 1, 500, 4));
+            // channel access can be obtained within a slot due to slot alignment
+            Simulator::Schedule(m_apMac->GetWifiPhy(m_linkIdForTid4)->GetSlot(), [=, this]() {
+                auto advEmlsrMgr =
+                    DynamicCast<AdvancedEmlsrManager>(m_staMacs[0]->GetEmlsrManager());
+
+                NS_TEST_EXPECT_MSG_EQ(advEmlsrMgr->m_mainPhySwitchInfo.disconnected,
+                                      true,
+                                      "Expected the main PHY to be switching");
+                NS_TEST_EXPECT_MSG_EQ(
+                    +advEmlsrMgr->m_mainPhySwitchInfo.to,
+                    +(advEmlsrMgr->m_interruptSwitching ? m_linkIdForTid4 : m_mainPhyId),
+                    "Main PHY is switching to wrong link");
+            });
+        });
+        InsertEventsForQosTid4();
+    };
+
     if (m_expectedMainPhySwitchBackTime == Simulator::Now() &&
         info.GetName() == "TxopNotGainedOnAuxPhyLink")
     {
@@ -5704,7 +5738,8 @@ EmlsrSwitchMainPhyBackTest::MainPhySwitchInfoCallback(std::size_t index,
         default:
             NS_TEST_ASSERT_MSG_EQ(true, false, "Unexpected scenario: " << +m_testIndex);
         }
-        m_dlPktDone = true;
+
+        genTid4Frame();
     }
 
     if (m_expectedMainPhySwitchBackTime == Simulator::Now() && info.GetName() == "TxopEnded")
@@ -5715,8 +5750,73 @@ EmlsrSwitchMainPhyBackTest::MainPhySwitchInfoCallback(std::size_t index,
                               +static_cast<uint8_t>(NON_HT_PPDU_DONT_USE_MAC_HDR),
                               "Unexpected TxopEnded reason for switching main PHY back");
 
-        m_dlPktDone = true;
+        genTid4Frame();
     }
+}
+
+void
+EmlsrSwitchMainPhyBackTest::InsertEventsForQosTid4()
+{
+    const auto testIndex = static_cast<TestScenario>(m_testIndex);
+    std::list<Events> events;
+
+    events.emplace_back(
+        WIFI_MAC_QOSDATA,
+        [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, uint8_t linkId) {
+            NS_TEST_EXPECT_MSG_EQ(+linkId,
+                                  +m_linkIdForTid4,
+                                  "Unicast frame with TID 4 transmitted on wrong link");
+            NS_TEST_EXPECT_MSG_EQ(psdu->GetAddr1(),
+                                  m_apMac->GetFrameExchangeManager(linkId)->GetAddress(),
+                                  "Unexpected RA for the unicast frame with TID 4");
+            NS_TEST_EXPECT_MSG_EQ(psdu->GetAddr2(),
+                                  m_staMacs[0]->GetFrameExchangeManager(linkId)->GetAddress(),
+                                  "Unexpected TA for the unicast frame with TID 4");
+            NS_TEST_EXPECT_MSG_EQ(+(*psdu->GetTids().cbegin()),
+                                  4,
+                                  "Expected a unicast frame with TID 4");
+            // if switching can be interrupted, the frame with TID 4 is transmitted as soon as
+            // the main PHY completes the switching to link 0
+            if (auto advEmlsrMgr =
+                    DynamicCast<AdvancedEmlsrManager>(m_staMacs[0]->GetEmlsrManager());
+                advEmlsrMgr->m_interruptSwitching)
+            {
+                auto mainPhy = m_staMacs[0]->GetDevice()->GetPhy(m_mainPhyId);
+                NS_TEST_EXPECT_MSG_EQ(advEmlsrMgr->m_mainPhySwitchInfo.start +
+                                          mainPhy->GetChannelSwitchDelay(),
+                                      Simulator::Now(),
+                                      "Expected TX to start at main PHY switch end");
+            }
+        });
+
+    events.emplace_back(WIFI_MAC_CTL_ACK);
+
+    events.emplace_back(
+        WIFI_MAC_CTL_END,
+        [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, uint8_t linkId) {
+            if (testIndex == NON_HT_PPDU_DONT_USE_MAC_HDR)
+            {
+                Simulator::Schedule(MilliSeconds(2), [=, this]() {
+                    // check that trace infos have been received
+                    NS_TEST_EXPECT_MSG_EQ(m_dlPktDone,
+                                          true,
+                                          "Did not receive the expected trace infos");
+                    NS_TEST_EXPECT_MSG_EQ(m_events.empty(), true, "Not all events took place");
+
+                    if (++m_testIndex < static_cast<uint8_t>(COUNT))
+                    {
+                        RunOne();
+                    }
+                });
+            }
+        });
+
+    // In the NON_HT_PPDU_DONT_USE_MAC_HDR scenario, the main PHY does not switch back to the
+    // preferred link after the transmission of the broadcast frame, so the QoS data frame with
+    // TID 0 is transmitted (on link 1) before the QoS data frame with TID 4 (on link 0)
+    const auto pos =
+        (testIndex == NON_HT_PPDU_DONT_USE_MAC_HDR ? m_events.cend() : m_events.cbegin());
+    m_events.splice(pos, events);
 }
 
 void
@@ -5745,7 +5845,9 @@ EmlsrSwitchMainPhyBackTest::RunOne()
         m_switchMainPhyBackDelay -= MicroSeconds(250);
     }
 
-    const auto interruptSwitch = (testIndex == RXSTART_WHILE_SWITCH_INTERRUPT);
+    const auto interruptSwitch =
+        (testIndex == RXSTART_WHILE_SWITCH_INTERRUPT || testIndex == NON_HT_PPDU_DONT_USE_MAC_HDR ||
+         testIndex == LONG_SWITCH_BACK_DELAY_USE_MAC_HDR);
     const auto useMacHeader =
         (testIndex == NON_HT_PPDU_USE_MAC_HDR || testIndex == LONG_SWITCH_BACK_DELAY_USE_MAC_HDR);
 
@@ -5755,6 +5857,9 @@ EmlsrSwitchMainPhyBackTest::RunOne()
                                                   TimeValue(m_switchMainPhyBackDelay));
     m_staMacs[0]->GetEmlsrManager()->SetAttribute("InterruptSwitch", BooleanValue(interruptSwitch));
     m_staMacs[0]->GetEmlsrManager()->SetAttribute("UseNotifiedMacHdr", BooleanValue(useMacHeader));
+    m_staMacs[0]->GetEmlsrManager()->SetAttribute("CheckAccessOnMainPhyLink", BooleanValue(false));
+    // no in-device interference, just to avoid starting MSD timer causing RTS-CTS exchanges
+    m_staMacs[0]->GetEmlsrManager()->SetAttribute("InDeviceInterference", BooleanValue(false));
 
     NS_LOG_INFO("Starting test #" << +m_testIndex << "\n");
     m_dlPktDone = false;
@@ -6062,19 +6167,21 @@ EmlsrSwitchMainPhyBackTest::RunOne()
                 // main PHY is expected to switch back when the UL TXOP ends
                 m_expectedMainPhySwitchBackTime = Simulator::Now() + txDuration;
             }
+            else
+            {
+                Simulator::Schedule(MilliSeconds(2), [=, this]() {
+                    // check that trace infos have been received
+                    NS_TEST_EXPECT_MSG_EQ(m_dlPktDone,
+                                          true,
+                                          "Did not receive the expected trace infos");
+                    NS_TEST_EXPECT_MSG_EQ(m_events.empty(), true, "Not all events took place");
 
-            Simulator::Schedule(MilliSeconds(2), [=, this]() {
-                // check that trace infos have been received
-                NS_TEST_EXPECT_MSG_EQ(m_dlPktDone,
-                                      true,
-                                      "Did not receive the expected trace infos");
-                NS_TEST_EXPECT_MSG_EQ(m_events.empty(), true, "Not all events took place");
-
-                if (++m_testIndex < static_cast<uint8_t>(COUNT))
-                {
-                    RunOne();
-                }
-            });
+                    if (++m_testIndex < static_cast<uint8_t>(COUNT))
+                    {
+                        RunOne();
+                    }
+                });
+            }
         });
 }
 
