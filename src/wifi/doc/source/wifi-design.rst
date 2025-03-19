@@ -1368,7 +1368,8 @@ auxiliary link. The following conditions must all hold in order to request the m
 to the auxiliary link:
 
 * the main PHY is not in TX state
-* the main PHY is not switching nor is it trying to get channel access on another auxiliary link
+* the main PHY is not switching (unless switching can be interrupted, see below) nor is it trying
+  to get channel access on another auxiliary link
 * no MediumSyncDelay timer is running on the auxiliary link or the maximum number of TXOP attempts
   has not yet been reached
 * the main PHY is expected to get channel access on the auxiliary link more quickly. More precisely,
@@ -1485,6 +1486,10 @@ and the new channel switch starts. This opportunity is exploited in some situati
 * If the main PHY is switching while an aux PHY is receiving an ICF, the switch can be interrupted
   so that the main PHY can start switching to the aux PHY link and be ready to operate on that link
   upon reception of the ICF.
+* If channel access is gained, or is about to be gained, on a link on which a non-TX capable aux PHY
+  is operating and the main PHY is switching, the main PHY switch can be interrupted and the main
+  PHY can start switching to the aux PHY link, provided that the main PHY was not switching to start
+  a (DL or UL) TXOP and the other conditions to request the main PHY to switch are satisfied.
 
 AP EMLSR Manager
 ----------------

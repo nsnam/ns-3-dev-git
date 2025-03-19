@@ -746,12 +746,14 @@ AdvancedEmlsrManager::RequestMainPhyToSwitch(uint8_t linkId, AcIndex aci, const 
 
     // the aux PHY is not TX capable; check if main PHY has to switch to the aux PHY's link
     auto mainPhy = GetStaMac()->GetDevice()->GetPhy(m_mainPhyId);
-    const auto mainPhyLinkId = GetStaMac()->GetLinkForPhy(mainPhy);
 
-    // if main PHY is not operating on a link, it is switching, hence do not request another switch
-    if (!mainPhyLinkId.has_value())
+    // if main PHY is not operating on a link and is trying to start a (DL or UL) TXOP, then do
+    // not request another switch
+    if (m_mainPhySwitchInfo.disconnected &&
+        (!m_interruptSwitching || m_mainPhySwitchInfo.reason == "DlTxopIcfReceivedByAuxPhy" ||
+         m_mainPhySwitchInfo.reason == "UlTxopAuxPhyNotTxCapable"))
     {
-        NS_LOG_DEBUG("Main PHY is not operating on any link");
+        NS_LOG_DEBUG("Main PHY is not operating on any link and cannot switch to another link");
         return false;
     }
 
@@ -787,9 +789,11 @@ AdvancedEmlsrManager::RequestMainPhyToSwitch(uint8_t linkId, AcIndex aci, const 
         return false;
     }
 
-    // DoGetDelayUntilAccessRequest has already checked if the main PHY is receiving an ICF
+    // DoGetDelayUntilAccessRequest has already checked if the main PHY is receiving an ICF and
+    // above it is checked whether we can request another switch while already switching
     if (const auto state = mainPhy->GetState()->GetState();
-        state != WifiPhyState::IDLE && state != WifiPhyState::CCA_BUSY && state != WifiPhyState::RX)
+        state != WifiPhyState::IDLE && state != WifiPhyState::CCA_BUSY &&
+        state != WifiPhyState::RX && state != WifiPhyState::SWITCHING)
     {
         NS_LOG_DEBUG("Cannot request main PHY to switch when in state " << state);
         return false;
@@ -809,6 +813,17 @@ AdvancedEmlsrManager::RequestMainPhyToSwitch(uint8_t linkId, AcIndex aci, const 
     if (!m_checkAccessOnMainPhyLink && (aci >= m_minAcToSkipCheckAccess))
     {
         NS_LOG_DEBUG("Skipping check related to the expected channel access time on main PHY link");
+        return true;
+    }
+
+    const auto mainPhyLinkId = GetStaMac()->GetLinkForPhy(mainPhy);
+    if (!mainPhyLinkId.has_value())
+    {
+        NS_ASSERT(m_mainPhySwitchInfo.disconnected);
+        NS_LOG_DEBUG("The main PHY is not connected to any link");
+        // we don't know when the main PHY will be connected to the link it is switching to, nor
+        // which backoff value it will possibly generate; therefore, request it to switch to the
+        // aux PHY link
         return true;
     }
 

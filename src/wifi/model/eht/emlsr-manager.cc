@@ -906,6 +906,7 @@ EmlsrManager::SwitchMainPhy(uint8_t linkId,
     m_mainPhySwitchInfo.to = linkId;
     m_mainPhySwitchInfo.start = Simulator::Now();
     m_mainPhySwitchInfo.disconnected = true;
+    m_mainPhySwitchInfo.reason = traceInfo.GetName();
 
     const auto newMainPhyChannel = GetChannelForMainPhy(linkId);
 

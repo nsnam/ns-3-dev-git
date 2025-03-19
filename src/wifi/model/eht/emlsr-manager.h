@@ -510,6 +510,7 @@ class EmlsrManager : public Object
                                   //!< is switching or waiting to be connected to a link
         uint8_t from{};           //!< ID of the link which the main PHY is/has been leaving
         uint8_t to{};             //!< ID of the link which the main PHY is moving to
+        std::string reason;       //!< the reason for switching the main PHY
     };
 
     Time m_emlsrPaddingDelay;    //!< EMLSR Padding delay
