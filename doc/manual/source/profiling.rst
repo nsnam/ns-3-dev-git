@@ -489,6 +489,167 @@ There are many tools to profile your program, including:
 An overview on how to use `Perf`_ with `Hotspot`_, `AMD uProf`_ and
 `Intel VTune`_ is provided in the following sections.
 
+.. _Profiling and optimization :
+
+Profiling and optimization
+++++++++++++++++++++++++++
+
+While profilers will help point out interest hotspots, they won't help fixing the issues.
+At least for now...
+
+After profiling, optimization should be done following the Pareto principle.
+Focus first on least amount of work that can provide most benefits.
+Let us see an example, based on ``lte-frequency-reuse``. In the example
+below you will see a flamegraph generated from the CPU-``cycles`` metrics
+collected by perf for this LTE example.
+
+.. image:: figures/perf-lte-frequency-reuse.png
+
+The vertical axis contain stacked bars. Every bar corresponds to a function.
+The stack itself represents the call stack (when a function call other,
+and other, etc). The width of each bar corresponds to the time it takes to
+execute the function itself and the functions it calls (bars on top of it).
+This is where we start looking for bottlenecks. Start looking at widest
+columns at the top, and move down. As an example, we can select
+``LteChunkProcessor::End()`` (highlighted in purple).
+
+.. image:: figures/perf-chunk-processor.png
+
+If we click on the ``LteChunkProcessor::End()``, we have a closer view of
+where it is actually spending time on. We can see many bars related to callback
+indirections. Note that each  bar is slightly shorter and offset to the right.
+This small difference is the overhead of each function call. When everything
+is added together, it corresponds to about 35% of total time of
+``LteChunkProcessor::End()``. Yes, callbacks are really expensive,
+even in optimized builds. Now, let us take a look at the big gap and big
+``LteAmc`` function being called by this callback.
+
+.. image:: figures/perf-detail.png
+
+Now that we are closed to the top of the stack, we have a better idea of
+what is actually happening and can optimize more easily.
+
+For example, notice that about 14% of ``LteAmc::CreateCqiFeedbacks()`` is
+spent on itself (gap on top of bar). This usually means one of the following:
+
+- many conditional operations (if-else, switches), causing instruction cache-misses or pipeline stalls in case of wrong branch prediction
+- accessing data in erratic patterns, causing data cache-misses
+- waiting for a value to be computed at a congested CPU unit (e.g. slow division, trigonometric), causing pipeline stalls
+- a lot of actual work, also known as retired instructions
+
+To check which case it really is, instead of CPU-``cycles``, one can collect complementary metrics
+such as ``cache-misses``, ``branch-misses``, ``stalled-cycles-frontend``, ``stalled-cycles-backend``.
+It is easy to spot which one of them is the actual culprit, because its bar will be wider.
+After figuring out the issue, you need to look at the code to locate the source of the issue.
+Some profilers, such as `Intel VTune`_ and `AMD uProf`_ can give you the rough location of the
+instructions (line of code) causing these misses and stalls.
+
+We also see that 86% of the time is spent elsewhere. In LteMiErrorModel, and some vector related calls.
+One of these vector calls is ``push_back``, which takes incredible 30% of the time.
+Now let us look at the code to see where we can improve it.
+
+.. sourcecode:: cpp
+
+    std::vector<int>
+    LteAmc::CreateCqiFeedbacks(const SpectrumValue& sinr, uint8_t rbgSize)
+    {
+        NS_LOG_FUNCTION(this);
+
+        std::vector<int> cqi;
+
+        if (m_amcModel == MiErrorModel)
+        {
+            NS_LOG_DEBUG(this << " AMC-VIENNA RBG size " << (uint16_t)rbgSize);
+            NS_ASSERT_MSG(rbgSize > 0, " LteAmc-Vienna: RBG size must be greater than 0");
+            std::vector<int> rbgMap;
+            int rbId = 0;
+            for (auto it = sinr.ConstValuesBegin(); it != sinr.ConstValuesEnd(); it++)
+            {
+                /// WE CAN CUT 30% OF TIME BY AVOIDING THESE REALLOCATIONS WITH rbgMap.resize(rbgSize) AT BEGINNING
+                /// THEN USING std::iota(rbgMap.begin(), rbgMap.end(),rbId+1-rbgSize) INSIDE THE NEXT IF
+                rbgMap.push_back(rbId++);
+                if ((rbId % rbgSize == 0) || ((it + 1) == sinr.ConstValuesEnd()))
+                {
+                    uint8_t mcs = 0;
+                    TbStats_t tbStats;
+                    while (mcs <= 28)
+                    {
+                        HarqProcessInfoList_t harqInfoList;
+                        tbStats = LteMiErrorModel::GetTbDecodificationStats(
+                            sinr,
+                            rbgMap,
+                            (uint16_t)GetDlTbSizeFromMcs(mcs, rbgSize) / 8, /// DIVISIONS ARE EXPENSIVE. OPTIMIZER WILL
+                                                                            /// REPLACE THIS TRIVIAL CASE WITH >> 3,
+                                                                            /// BUT THIS ISN'T ALWAYS THE CASE.
+                                                                            /// IF THE DIVISION IS BY A LOOP INVARIANT,
+                                                                            /// THEN COMPUTE ITS INVERSE OUTSIDE
+                                                                            /// THE LOOP TO REPLACE THE DIVISION WITH
+                                                                            /// A MULTIPLICATION.
+                            mcs,
+                            harqInfoList);
+                        if (tbStats.tbler > 0.1)
+                        {
+                            break;
+                        }
+                        mcs++;
+                    }
+                    if (mcs > 0)
+                    {
+                        mcs--;
+                    }
+                    NS_LOG_DEBUG(this << "\t RBG " << rbId << " MCS " << (uint16_t)mcs << " TBLER "
+                                      << tbStats.tbler);
+                    int rbgCqi = 0;
+                    if ((tbStats.tbler > 0.1) && (mcs == 0))
+                    {
+                        rbgCqi = 0; // any MCS can guarantee the 10 % of BER
+                    }
+                    else if (mcs == 28)
+                    {
+                        rbgCqi = 15; // all MCSs can guarantee the 10 % of BER
+                    }
+                    else
+                    {
+                        double s = SpectralEfficiencyForMcs[mcs];
+                        rbgCqi = 0;
+                        while ((rbgCqi < 15) && (SpectralEfficiencyForCqi[rbgCqi + 1] < s))
+                        {
+                            ++rbgCqi;
+                        }
+                    }
+                    NS_LOG_DEBUG(this << "\t MCS " << (uint16_t)mcs << "-> CQI " << rbgCqi);
+                    // fill the cqi vector (per RB basis)
+                    /// WE CAN CUT 30% OF TIME BY AVOIDING THESE REALLOCATIONS WITH cqi.resize(cqi.size()+rbgSize)
+                    /// THEN std::fill(cqi.rbegin(), cqi.rbegin()+rbgSize, rbgCqi)
+                    for (uint8_t j = 0; j < rbgSize; j++)
+                    {
+                        cqi.push_back(rbgCqi);
+                    }
+                    rbgMap.clear();
+                }
+            }
+        }
+
+        return cqi;
+    }
+
+
+Try to explore by yourself with the interactive flamegraph below
+(only available for html-based documentation).
+
+.. raw:: html
+    :file: figures/perf.svg
+
+Note: interactive flamegraph SVGs were generated with `perf.data` output exported by Linux Perf,
+then transformed to text and finally rendered as SVG.
+
+.. sourcecode:: console
+
+    git clone https://github.com/brendangregg/FlameGraph
+    ./FlameGraph/stackcollapse-perf.pl perf.data > perf.folded
+    ./FlameGraph/flamegraph.pl perf.folded --width=800 > perf.svg
+
+
 .. _Linux Perf and Hotspot GUI :
 
 Linux Perf and Hotspot GUI
