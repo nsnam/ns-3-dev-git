@@ -60,7 +60,7 @@ class FlowMonitor : public Object
         uint32_t txPackets{0};
     };
 
-    /// \brief Structure that represents the measured RX metrics of an individual packet flow
+    /// @brief Structure that represents the measured RX metrics of an individual packet flow
     struct FlowRxStats
     {
         /// Contains the absolute time when the first packet in the flow
@@ -119,7 +119,7 @@ class FlowMonitor : public Object
         Histogram flowInterruptionsHistogram{}; //!< histogram of durations of flow interruptions
     };
 
-    /// \brief Structure that represents the measured metrics of an individual packet flow
+    /// @brief Structure that represents the measured metrics of an individual packet flow
     struct FlowStats : public FlowTxStats, public FlowRxStats
     {
         /// This attribute tracks the number of drop packets over all nodes by a _reason code_.

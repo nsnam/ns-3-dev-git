@@ -29,7 +29,7 @@ namespace ns3
 {
 
 /**
- * \ingroup P2pCacheHelper
+ * @ingroup P2pCacheHelper
  *
  * @brief A helper class to populate ARP cache for P2P links.
  *
@@ -55,26 +55,26 @@ class P2pCacheHelper
     virtual ~P2pCacheHelper();
 
     /**
-     * \brief Populate ARP cache for the P2P link between the two peers
-     * \param netDevice the device to populate its cache
-     * \param peerDevice the peer device to populate the cache with its addresses
+     * @brief Populate ARP cache for the P2P link between the two peers
+     * @param netDevice the device to populate its cache
+     * @param peerDevice the peer device to populate the cache with its addresses
      */
     void PopulateP2pCache(Ptr<NetDevice> netDevice, Ptr<NetDevice> peerDevice) const;
 
   private:
     /**
-     * \brief Populate P2P ARP entries for given IPv4 interface.
-     * \param ipv4Interface the Ipv4Interface to process
-     * \param peerDeviceInterface the Ipv4Interface of the peer device
+     * @brief Populate P2P ARP entries for given IPv4 interface.
+     * @param ipv4Interface the Ipv4Interface to process
+     * @param peerDeviceInterface the Ipv4Interface of the peer device
      */
     void PopulateP2pEntries(Ptr<Ipv4Interface> ipv4Interface,
                             Ptr<Ipv4Interface> peerDeviceInterface) const;
 
     /**
-     * \brief Add an auto_generated entry to the ARP cache of an interface.
-     * \param netDeviceInterface the Ipv4Interface that ARP cache belongs to
-     * \param ipv4Address the IPv4 address will be added to the cache.
-     * \param macAddress the MAC address will be added to the cache.
+     * @brief Add an auto_generated entry to the ARP cache of an interface.
+     * @param netDeviceInterface the Ipv4Interface that ARP cache belongs to
+     * @param ipv4Address the IPv4 address will be added to the cache.
+     * @param macAddress the MAC address will be added to the cache.
      */
     void AddEntry(Ptr<Ipv4Interface> netDeviceInterface,
                   const Ipv4Address& ipv4Address,

@@ -6,30 +6,30 @@
  * Author: Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
-#include <ns3/application-container.h>
-#include <ns3/application-helper.h>
-#include <ns3/config.h>
-#include <ns3/double.h>
-#include <ns3/inet-socket-address.h>
-#include <ns3/internet-stack-helper.h>
-#include <ns3/ipv4-address-helper.h>
-#include <ns3/ipv4-address.h>
-#include <ns3/ipv4-interface-container.h>
-#include <ns3/ipv4-l3-protocol.h>
-#include <ns3/ipv4-list-routing-helper.h>
-#include <ns3/mobile-gaming.h>
-#include <ns3/node-container.h>
-#include <ns3/node.h>
-#include <ns3/nstime.h>
-#include <ns3/packet-sink-helper.h>
-#include <ns3/packet-sink.h>
-#include <ns3/packet-socket-address.h>
-#include <ns3/pointer.h>
-#include <ns3/rng-seed-manager.h>
-#include <ns3/simple-net-device-helper.h>
-#include <ns3/string.h>
-#include <ns3/test.h>
-#include <ns3/traced-callback.h>
+#include "ns3/application-container.h"
+#include "ns3/application-helper.h"
+#include "ns3/config.h"
+#include "ns3/double.h"
+#include "ns3/inet-socket-address.h"
+#include "ns3/internet-stack-helper.h"
+#include "ns3/ipv4-address-helper.h"
+#include "ns3/ipv4-address.h"
+#include "ns3/ipv4-interface-container.h"
+#include "ns3/ipv4-l3-protocol.h"
+#include "ns3/ipv4-list-routing-helper.h"
+#include "ns3/mobile-gaming.h"
+#include "ns3/node-container.h"
+#include "ns3/node.h"
+#include "ns3/nstime.h"
+#include "ns3/packet-sink-helper.h"
+#include "ns3/packet-sink.h"
+#include "ns3/packet-socket-address.h"
+#include "ns3/pointer.h"
+#include "ns3/rng-seed-manager.h"
+#include "ns3/simple-net-device-helper.h"
+#include "ns3/string.h"
+#include "ns3/test.h"
+#include "ns3/traced-callback.h"
 
 #include <algorithm>
 #include <numeric>
@@ -300,7 +300,7 @@ MobileGamingTestCase::DoRun()
  * @ingroup applications-test
  * @ingroup tests
  *
- * \brief MobileGaming TestSuite
+ * @brief MobileGaming TestSuite
  */
 class MobileGamingTestSuite : public TestSuite
 {

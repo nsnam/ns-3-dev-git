@@ -19,9 +19,9 @@
 using namespace ns3;
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief P2P Cache Test
+ * @brief P2P Cache Test
  */
 class P2pCacheTest : public TestCase
 {
@@ -32,8 +32,8 @@ class P2pCacheTest : public TestCase
     void DoRun() override;
 
     /**
-     * \brief Verify ARP caches is populated as expected
-     * \param expectedArpCaches The expected content of the ARP caches
+     * @brief Verify ARP caches is populated as expected
+     * @param expectedArpCaches The expected content of the ARP caches
      */
     void CheckArpCache(const std::string& expectedArpCaches);
 
@@ -107,9 +107,9 @@ P2pCacheTest::DoRun()
 }
 
 /**
- * \ingroup internet-test
+ * @ingroup internet-test
  *
- * \brief P2P Cache TestSuite
+ * @brief P2P Cache TestSuite
  */
 class P2pCacheTestSuite : public TestSuite
 {

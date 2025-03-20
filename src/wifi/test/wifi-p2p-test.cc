@@ -1339,7 +1339,7 @@ WifiP2pTestSuite::WifiP2pTestSuite()
                         TestCase::Duration::QUICK);
         }
     }
-
+    // clang-format off
     for (const auto& [name, params] : std::vector<std::pair<std::string, P2pTest::P2pTestParams>>{
              {"single link on 5 GHz",
               {
@@ -1454,6 +1454,7 @@ WifiP2pTestSuite::WifiP2pTestSuite()
                  .infraLinkSetP2pSta = {0, 1},
               }},
          })
+    // clang-format on
     {
         AddTestCase(new P2pTest(name, params), TestCase::Duration::QUICK);
     }

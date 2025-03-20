@@ -34,10 +34,10 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("WifiMloUdpTest");
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief Test UDP packet transmission between MLDs and SLDs.
+ * @brief Test UDP packet transmission between MLDs and SLDs.
  *
  * This test sets up an AP MLD and two non-AP MLDs having a variable number of links (possibly one).
  * The RF channels to set each link to are provided as input parameters. This test aims at veryfing
@@ -76,12 +76,12 @@ class WifiMloUdpTest : public MultiLinkOperationsTestBase
     /**
      * Constructor
      *
-     * \param apChannels string specifying channels for AP
-     * \param firstStaChannels string specifying channels for first STA
-     * \param secondStaChannels string specifying channels for second STA
-     * \param trafficPattern the pattern of traffic to generate
-     * \param assocType the type of association procedure for non-AP devices
-     * \param amsduAggr whether A-MSDU aggregation is enabled
+     * @param apChannels string specifying channels for AP
+     * @param firstStaChannels string specifying channels for first STA
+     * @param secondStaChannels string specifying channels for second STA
+     * @param trafficPattern the pattern of traffic to generate
+     * @param assocType the type of association procedure for non-AP devices
+     * @param amsduAggr whether A-MSDU aggregation is enabled
      */
     WifiMloUdpTest(const std::vector<std::string>& apChannels,
                    const std::vector<std::string>& firstStaChannels,
@@ -102,18 +102,18 @@ class WifiMloUdpTest : public MultiLinkOperationsTestBase
     /**
      * Check source and destination hardware addresses in ARP request frames.
      *
-     * \param arp the ARP header
-     * \param sender the MAC address of the sender (Address 2 field)
-     * \param linkId the ID of the link on which the ARP frame is transmitted
+     * @param arp the ARP header
+     * @param sender the MAC address of the sender (Address 2 field)
+     * @param linkId the ID of the link on which the ARP frame is transmitted
      */
     void CheckArpRequestHwAddresses(const ArpHeader& arp, Mac48Address sender, uint8_t linkId);
 
     /**
      * Check source and destination hardware addresses in ARP reply frames.
      *
-     * \param arp the ARP header
-     * \param sender the MAC address of the sender (Address 2 field)
-     * \param linkId the ID of the link on which the ARP frame is transmitted
+     * @param arp the ARP header
+     * @param sender the MAC address of the sender (Address 2 field)
+     * @param linkId the ID of the link on which the ARP frame is transmitted
      */
     void CheckArpReplyHwAddresses(const ArpHeader& arp, Mac48Address sender, uint8_t linkId);
 
@@ -554,10 +554,10 @@ WifiMloUdpTest::DoRun()
 }
 
 /**
- * \ingroup wifi-test
- * \ingroup tests
+ * @ingroup wifi-test
+ * @ingroup tests
  *
- * \brief Multi-Link Operations with UDP traffic Test Suite
+ * @brief Multi-Link Operations with UDP traffic Test Suite
  */
 class WifiMloUdpTestSuite : public TestSuite
 {
