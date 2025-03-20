@@ -178,8 +178,8 @@ class WifiMacQueueScheduler : public Object
     /**
      * Block the given set of links for all the container queues for the given reason.
      *
-     * \param reason the reason for blocking the queues
-     * \param linkIds set of links to block (empty to block all setup links)
+     * @param reason the reason for blocking the queues
+     * @param linkIds set of links to block (empty to block all setup links)
      */
     virtual void BlockAllQueues(WifiQueueBlockedReason reason,
                                 const std::set<uint8_t>& linkIds = {}) = 0;
@@ -187,8 +187,8 @@ class WifiMacQueueScheduler : public Object
     /**
      * Unblock the given set of links for all the container queues for the given reason.
      *
-     * \param reason the reason for unblocking the queues
-     * \param linkIds set of links to unblock (empty to unblock all setup links)
+     * @param reason the reason for unblocking the queues
+     * @param linkIds set of links to unblock (empty to unblock all setup links)
      */
     virtual void UnblockAllQueues(WifiQueueBlockedReason reason,
                                   const std::set<uint8_t>& linkIds = {}) = 0;
@@ -197,9 +197,9 @@ class WifiMacQueueScheduler : public Object
      * Return whether all the container queues are blocked for the given link for the given
      * reason, if different than REASONS_COUNT, or for any reason, otherwise.
      *
-     * \param linkId the ID of the given link
-     * \param reason the reason to check (if different than REASONS_COUNT)
-     * \return whether all the container queues are blocked for the given link
+     * @param linkId the ID of the given link
+     * @param reason the reason to check (if different than REASONS_COUNT)
+     * @return whether all the container queues are blocked for the given link
      */
     virtual bool GetAllQueuesBlockedOnLink(
         uint8_t linkId,

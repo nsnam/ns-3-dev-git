@@ -273,7 +273,7 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
      * Use Genie information (if requested) to determine whether to start the TXOP. Call this
      * method if this device is an EMLSR client.
      *
-     * \return the time to wait to retry channel access; zero indicates to start the TXOP
+     * @return the time to wait to retry channel access; zero indicates to start the TXOP
      */
     Time StaUseGenieInformation();
 

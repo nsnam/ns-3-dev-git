@@ -766,8 +766,8 @@ class WifiRemoteStationManager : public Object
     /**
      * Return whether the station state is a known adhoc peer.
      *
-     * \param address the address of the station
-     * \return true if the address is a known adhoc peer, false otherwise
+     * @param address the address of the station
+     * @return true if the address is a known adhoc peer, false otherwise
      */
     bool IsAdhocPeer(Mac48Address address) const;
     /**
@@ -819,7 +819,7 @@ class WifiRemoteStationManager : public Object
     /**
      * Records that the STA is an adhoc peer.
      *
-     * \param address the address of the station
+     * @param address the address of the station
      */
     void RecordAdhocPeer(Mac48Address address);
     /**

@@ -980,9 +980,9 @@ class WifiMac : public Object
     /**
      * Update capabilities information from the given management frame.
      *
-     * \param frame the body of the given management frame
-     * \param addr MAC address of the sender
-     * \param linkId ID of the link the management frame was received over
+     * @param frame the body of the given management frame
+     * @param addr MAC address of the sender
+     * @param linkId ID of the link the management frame was received over
      */
     void RecordCapabilities(const MgtFrameType& frame, const Mac48Address& addr, uint8_t linkId);
 

@@ -6,9 +6,9 @@
  * Author: Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
-#include <ns3/command-line.h>
-#include <ns3/fatal-error.h>
-#include <ns3/log.h>
+#include "ns3/command-line.h"
+#include "ns3/fatal-error.h"
+#include "ns3/log.h"
 
 #include <cstdlib>
 #include <fstream>

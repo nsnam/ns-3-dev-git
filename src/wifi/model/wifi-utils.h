@@ -225,9 +225,9 @@ uint32_t GetSize(Ptr<const Packet> packet, const WifiMacHeader* hdr, bool isAmpd
 /**
  * Check whether a guard interval duration is valid for a given standard.
  *
- * \param gi the guard interval duration
- * \param standard the standard
- * \return true if the guard interval duration is valid for the given standard, false otherwise
+ * @param gi the guard interval duration
+ * @param standard the standard
+ * @return true if the guard interval duration is valid for the given standard, false otherwise
  */
 bool IsValidGuardInterval(Time gi, WifiStandard standard);
 

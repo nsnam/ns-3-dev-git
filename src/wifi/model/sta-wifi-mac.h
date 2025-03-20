@@ -44,7 +44,7 @@ enum class WifiAssocType : uint8_t
 };
 
 /**
- * \ingroup wifi
+ * @ingroup wifi
  *
  * Scan type (active or passive)
  */
@@ -645,8 +645,8 @@ class StaWifiMac : public WifiMac
     /**
      * Get the link ID to use for a given P2P peer.
      *
-     * \param peer the MAC address of the P2P peer
-     * \return the link ID to use for the given peer if it is a known peer
+     * @param peer the MAC address of the P2P peer
+     * @return the link ID to use for the given peer if it is a known peer
      */
     std::optional<uint8_t> GetLinkIdForPeer(const Mac48Address& peer) const;
 

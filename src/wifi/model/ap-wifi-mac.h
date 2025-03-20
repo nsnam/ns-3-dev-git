@@ -629,7 +629,7 @@ class ApWifiMac : public WifiMac
      *
      * TODO this function is only used internally for the moment.
      *
-     * \param linkId the link ID
+     * @param linkId the link ID
      */
     void IncrBssParamsChgCount(uint8_t linkId);
 
@@ -690,8 +690,8 @@ class ApWifiMac : public WifiMac
     /**
      * TracedCallback signature for BSS Parameters Change Count events.
      *
-     * \param count the count value
-     * \param linkId the link ID
+     * @param count the count value
+     * @param linkId the link ID
      */
     typedef void (*BssParamsChgCountCallback)(uint8_t count, uint8_t linkId);
 

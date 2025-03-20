@@ -63,24 +63,24 @@ class AdhocWifiMac : public WifiMac
     /**
      * Enable or disable beacon generation.
      *
-     * \param enable enable or disable beacon generation
+     * @param enable enable or disable beacon generation
      */
     void SetBeaconGeneration(bool enable);
 
     /**
-     * \param interval the interval between two beacon transmissions.
+     * @param interval the interval between two beacon transmissions.
      */
     void SetBeaconInterval(Time interval);
 
     /**
-     * \return the interval between two beacon transmissions.
+     * @return the interval between two beacon transmissions.
      */
     Time GetBeaconInterval() const;
 
     /**
      * Accessor for the Txop object for beacons
      *
-     * \return a smart pointer to Txop
+     * @return a smart pointer to Txop
      */
     Ptr<Txop> GetBeaconTxop() const;
 
@@ -92,23 +92,23 @@ class AdhocWifiMac : public WifiMac
     /**
      * Process the Beacon frame received on the given link.
      *
-     * \param mpdu the MPDU containing the Beacon frame
-     * \param linkId the ID of the given link
+     * @param mpdu the MPDU containing the Beacon frame
+     * @param linkId the ID of the given link
      */
     void ReceiveBeacon(Ptr<const WifiMpdu> mpdu, uint8_t linkId);
 
     /**
      * Process the Probe Request frame received on the given link.
      *
-     * \param mpdu the MPDU containing the Probe Request frame
-     * \param linkId the ID of the given link
+     * @param mpdu the MPDU containing the Probe Request frame
+     * @param linkId the ID of the given link
      */
     void ReceiveProbeRequest(Ptr<const WifiMpdu> mpdu, uint8_t linkId);
 
     /**
      * Fill in the same capabilities as this device for a given new peer.
      *
-     * \param address the MAC address of the peer
+     * @param address the MAC address of the peer
      */
     void SetAllCapabilities(const Mac48Address& address);
 
@@ -116,63 +116,63 @@ class AdhocWifiMac : public WifiMac
      * Return an instance of SupportedRates that contains all rates that we support
      * (including HT rates).
      *
-     * \return all rates that we support for the given link
+     * @return all rates that we support for the given link
      */
     AllSupportedRates GetSupportedRates() const;
 
     /**
      * Return the DSSS Parameter Set that we support
      *
-     * \return the DSSS Parameter Set that we support
+     * @return the DSSS Parameter Set that we support
      */
     DsssParameterSet GetDsssParameterSet() const;
 
     /**
      * Return the Capability information of the IBSS.
      *
-     * \return the Capability information that we support
+     * @return the Capability information that we support
      */
     CapabilityInformation GetCapabilities() const;
 
     /**
      * Return the ERP information of the IBSS.
      *
-     * \return the ERP information that we support
+     * @return the ERP information that we support
      */
     ErpInformation GetErpInformation() const;
 
     /**
      * Return the EDCA Parameter Set of the IBSS.
      *
-     * \return the EDCA Parameter Set that we support
+     * @return the EDCA Parameter Set that we support
      */
     EdcaParameterSet GetEdcaParameterSet() const;
 
     /**
      * Return the HT operation of the IBSS.
      *
-     * \return the HT operation that we support
+     * @return the HT operation that we support
      */
     HtOperation GetHtOperation() const;
 
     /**
      * Return the VHT operation of the IBSS.
      *
-     * \return the VHT operation that we support
+     * @return the VHT operation that we support
      */
     VhtOperation GetVhtOperation() const;
 
     /**
      * Return the HE operation of the IBSS.
      *
-     * \return the HE operation that we support
+     * @return the HE operation that we support
      */
     HeOperation GetHeOperation() const;
 
     /**
      * Return the EHT operation of the IBSS.
      *
-     * \return the EHT operation that we support
+     * @return the EHT operation that we support
      */
     EhtOperation GetEhtOperation() const;
 

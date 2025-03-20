@@ -82,9 +82,9 @@ class ApEmlsrManager : public Object
     virtual bool UpdateCwAfterFailedIcf(bool isCrossLinkCollision) const = 0;
 
     /**
-     * \param isCrossLinkCollision whether all the clients solicited by the MU-RTS are EMLSR
+     * @param isCrossLinkCollision whether all the clients solicited by the MU-RTS are EMLSR
      *                             clients that have sent (or are sending) a frame to the AP
-     * \return whether the AP MLD shall report an ICF failure to the remote station manager
+     * @return whether the AP MLD shall report an ICF failure to the remote station manager
      */
     virtual bool ReportFailedIcf(bool isCrossLinkCollision) const = 0;
 

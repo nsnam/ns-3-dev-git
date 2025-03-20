@@ -288,8 +288,8 @@ class EhtPhy : public HePhy
      * This threshold is used for CCA check when signal is not occupying P20 or for Per 20MHz CCA
      * check.
      *
-     * \param ppdu the incoming PPDU or nullptr for any signal
-     * \return the CCA threshold for Per 20MHz check
+     * @param ppdu the incoming PPDU or nullptr for any signal
+     * @return the CCA threshold for Per 20MHz check
      */
     dBm_u Per20MHzCcaThreshold(const Ptr<const WifiPpdu> ppdu) const;
 

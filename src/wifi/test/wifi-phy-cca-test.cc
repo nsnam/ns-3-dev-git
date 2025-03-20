@@ -120,9 +120,9 @@ class WifiPhyCcaThresholdsTest : public TestCase
     Ptr<HePpdu> CreateDummyHePpdu(MHz_u bandwidth, const WifiPhyOperatingChannel& channel);
     /**
      * Create a EHT PPDU
-     * \param bandwidth the bandwidth used for the transmission the PPDU
-     * \param channel the operating channel of the PHY used for the transmission
-     * \return a EHT PPDU
+     * @param bandwidth the bandwidth used for the transmission the PPDU
+     * @param channel the operating channel of the PHY used for the transmission
+     * @return a EHT PPDU
      */
     Ptr<EhtPpdu> CreateDummyEhtPpdu(MHz_u bandwidth, const WifiPhyOperatingChannel& channel);
 
@@ -853,7 +853,7 @@ class WifiPhyCcaIndicationTest : public TestCase
     /**
      * Constructor
      *
-     * \param standard the standard to use for the test
+     * @param standard the standard to use for the test
      */
     WifiPhyCcaIndicationTest(WifiStandard standard);
 

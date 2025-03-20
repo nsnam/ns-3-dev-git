@@ -276,9 +276,9 @@ class WifiMacQueueSchedulerImpl : public WifiMacQueueScheduler
     /**
      * Block or unblock the given set of links for all the container queues for the given reason.
      *
-     * \param block true to block the queues, false to unblock
-     * \param reason the reason for blocking the queues
-     * \param linkIds set of links to block (empty to block all setup links)
+     * @param block true to block the queues, false to unblock
+     * @param reason the reason for blocking the queues
+     * @param linkIds set of links to block (empty to block all setup links)
      */
     void DoBlockAllQueues(bool block,
                           WifiQueueBlockedReason reason,

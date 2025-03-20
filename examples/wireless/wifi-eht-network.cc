@@ -138,8 +138,8 @@ PrintIntermediateTput(std::vector<uint64_t>& rxBytes,
 
 /**
  * Run a given system command and validate exit code.
- * \param command the command to run
- * \param directory the temporary directory used to run the commands
+ * @param command the command to run
+ * @param directory the temporary directory used to run the commands
  */
 void
 RunCommandAndValidate(const std::string& command, const std::string& directory)

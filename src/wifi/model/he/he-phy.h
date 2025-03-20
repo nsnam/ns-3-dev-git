@@ -556,8 +556,8 @@ class HePhy : public VhtPhy
      * indicates that the subchannel is idle. The vector is non-empty if the
      * operational channel width is larger than 20 MHz.
      *
-     * \param ppdu the incoming PPDU or nullptr for any signal
-     * \return the per-20 MHz CCA durations vector
+     * @param ppdu the incoming PPDU or nullptr for any signal
+     * @return the per-20 MHz CCA durations vector
      */
     virtual std::vector<Time> GetPer20MHzDurations(const Ptr<const WifiPpdu> ppdu);
 

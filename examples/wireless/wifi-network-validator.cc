@@ -6,8 +6,8 @@
  * Author: Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
-#include <ns3/command-line.h>
-#include <ns3/log.h>
+#include "ns3/command-line.h"
+#include "ns3/log.h"
 
 #include <filesystem>
 #include <fstream>

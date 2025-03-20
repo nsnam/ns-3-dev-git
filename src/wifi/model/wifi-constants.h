@@ -12,8 +12,8 @@
 #include "ns3/nstime.h"
 
 /**
- * \file
- * \ingroup wifi
+ * @file
+ * @ingroup wifi
  * Declaration of the constants used across wifi module
  */
 

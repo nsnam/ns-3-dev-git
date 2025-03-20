@@ -232,7 +232,7 @@ class HePpdu : public OfdmPpdu
     /**
      * Fill in the L-SIG header.
      *
-     * \param ppduDuration the transmission duration of this PPDU
+     * @param ppduDuration the transmission duration of this PPDU
      */
     void SetLSigHeader(Time ppduDuration);
 
