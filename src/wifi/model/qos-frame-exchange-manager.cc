@@ -510,7 +510,9 @@ QosFrameExchangeManager::GetFrameDurationId(const WifiMacHeader& header,
                      WifiPhy::CalculateTxDuration(size, txParams.m_txVector, m_phy->GetPhyBand()),
                  *txParams.m_acknowledgment->acknowledgmentTime);
 
-    if (m_protectSingleExchange)
+    // use single protection to transmit Association Request/Response or Probe Request/Response
+    if (m_protectSingleExchange || header.IsAssocReq() || header.IsAssocResp() ||
+        header.IsProbeReq() || header.IsProbeResp())
     {
         duration = std::min(duration, singleDurationId + m_singleExchangeProtectionSurplus);
     }

@@ -2009,10 +2009,10 @@ BackoffGenerationTest::BackoffGenerated(AcIndex ac, uint32_t backoff, uint8_t li
 
         if (m_nGenBackoff == 1)
         {
-            // we have to wait an AIFS before invoking backoff
-            delay = m_apMac->GetWifiPhy(linkId)->GetSifs() +
-                    m_apMac->GetQosTxop(AC_VO)->GetAifsn(linkId) *
-                        m_apMac->GetWifiPhy(linkId)->GetSlot();
+            // we have to wait an AIFS before invoking backoff because we get here when a backoff
+            // value is generated upon the reception of the Ack in response to the Assoc Response
+            delay = m_apMac->GetQosTxop(AC_VO)->GetAifsn(linkId) *
+                    m_apMac->GetWifiPhy(linkId)->GetSlot();
         }
         else if (m_nGenBackoff <= nValues)
         {

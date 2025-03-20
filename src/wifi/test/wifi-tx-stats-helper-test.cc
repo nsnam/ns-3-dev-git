@@ -396,20 +396,18 @@ WifiTxStatsHelperTest::DoRun()
         // 2) the 3rd data frame is transmitted 2 times within A-MPDU and 7 times alone
         // (WifiMac::FrameRetryLimit) and finally fails (retransmission = 8)
         //
-        // No. of PSDU      |   0   |   1   |   2   |   3   |   4   |   5   |   6   |   7   |   8 |
-        // No. recvd by AP  |       |       |   0   |       |   1   |       |   2   |       |   3 |
-        // AP's pkts        |  Bea  |  Bea  |       |  Ack  |       | AsRes |       | CfEnd | |
-        // STA's pkts       |       |       | AsReq |       | CfEnd |       |  Ack  |       | ABReq
-        // |
+        // No. of PSDU      |   0   |   1   |   2   |   3   |   4   |   5   |   6   |   7   |
+        // No. recvd by AP  |       |       |   0   |       |       |   1   |   2   |       |
+        // AP's pkts        |  Bea  |  Bea  |       |  Ack  | AsRes |       |       |  Ack  |
+        // STA's pkts       |       |       | AsReq |       |       |  Ack  | ABReq |       |
         //
-        // No. of PSDU      |   9   |  10   |  11   |  12   |  12   |  12   |  13   |  14   |  14 |
-        // No. recvd by AP  |       |       |   4   |   5   | 6(x)  | 7(x)  |       |   8   | 9(x) |
-        // AP's pkts        |  Ack  | ABRes |       |       |       |       | BAck  |       | |
-        // STA's pkts       |       |       |  Ack  | Data1 | Data2 | Data3 |       | Data2 | Data3
-        // |
+        // No. of PSDU      |   8   |   9   |  10   |  10   |  10   |  11   |  12   |  12   |
+        // No. recvd by AP  |       |   3   |   4   | 5(x)  | 6(x)  |       |   7   | 8(x)  |
+        // AP's pkts        | ABRes |       |       |       |       | BAck  |       |       |
+        // STA's pkts       |       |  Ack  | Data1 | Data2 | Data3 |       | Data2 | Data3 |
         //
-        // No. of PSDU      |  15   |  16   |  ...  |       |  ...  |  23   |  24   |  25   |  ...
-        // No. recvd by AP  |       | 10(x) |  ...  |       |  ...  | 16(x) |  17   |       |  ...
+        // No. of PSDU      |  13   |  14   |  ...  |       |  ...  |  21   |  22   |  23   |  ...
+        // No. recvd by AP  |       |  9(x) |  ...  |       |  ...  | 15(x) |  16   |       |  ...
         // AP's pkts        | BAck  |       |  ...  |  Bea  |  ...  |       |       | BAck  |  ...
         // STA's pkts       |       | Data3 |  ...  |       |  ...  | Data3 |  Bar  |       |  ...
         //
@@ -419,20 +417,20 @@ WifiTxStatsHelperTest::DoRun()
         // 2) the 3rd data frame is
         // retransmitted once and succeeds (retransmission = 1)
         //
-        // No. of PSDU      |   0   |   1   |   2   |   3   |   4   |   5   |   6   |   7   |   8 |
-        // No. recvd by AP  |       |       |   0   |       |       |   1   |       |   2   | | AP's
-        // pkts        |  Bea  |  Bea  |       |  Ack  |  Bea  |       |  Ack  |       | ABRes |
-        // STA's pkts       |       |       | Null  |       |       | ABReq |       | CfEnd | |
+        // No. of PSDU     |   0   |   1   |   2   |   3   |   4   |   5   |   6   |   7   |   8   |
+        // No. recvd by AP |       |       |   0   |       |       |   1   |       |   2   |       |
+        // AP's pkts       |  Bea  |  Bea  |       |  Ack  |  Bea  |       |  Ack  |       | ABRes |
+        // STA's pkts      |       |       | Null  |       |       | ABReq |       | CfEnd |       |
         //
-        // No. of PSDU      |   9   |  10   |  11   |  11   |  11   |  12   |  13   |  13   |  14 |
-        // No. recvd by AP  |   3   |       |   4   | 5(x)  | 6(x)  |       | 7(x)  |   8   | | AP's
-        // pkts        |       | CfEnd |       |       |       | BAck  |       |       | BAck  |
-        // STA's pkts       |  Ack  |       | Data1 | Data2 | Data3 |       | Data2 | Data3 | |
+        // No. of PSDU     |   9   |  10   |  11   |  11   |  11   |  12   |  13   |  13   |  14   |
+        // No. recvd by AP |   3   |       |   4   | 5(x)  | 6(x)  |       | 7(x)  |   8   |       |
+        // AP's pkts       |       | CfEnd |       |       |       | BAck  |       |       | BAck  |
+        // STA's pkts      |  Ack  |       | Data1 | Data2 | Data3 |       | Data2 | Data3 |       |
         //
-        // No. of PSDU      |  15   |  ...  |  21   |  22   |  23   |  24   |  ...
-        // No. recvd by AP  | 9(x)  |  ...  | 15(x) |  16   |       |  17   |  ...
-        // AP's pkts        |       |  ...  |       |       | BAck  |       |  ...
-        // STA's pkts       | Data2 |  ...  | Data2 |  Bar  |       | CfEnd |  ...
+        // No. of PSDU     |  15   |  ...  |  21   |  22   |  23   |  24   |  ...
+        // No. recvd by AP | 9(x)  |  ...  | 15(x) |  16   |       |  17   |  ...
+        // AP's pkts       |       |  ...  |       |       | BAck  |       |  ...
+        // STA's pkts      | Data2 |  ...  | Data2 |  Bar  |       | CfEnd |  ...
         //
         // Legend:
         // Bea = Beacon, AsReq = Association Request, AsRes = Association Response
@@ -443,7 +441,7 @@ WifiTxStatsHelperTest::DoRun()
 
         // Force drops on link 0 at AP
         auto apPem0 = CreateObject<ReceiveListErrorModel>();
-        apPem0->SetList({6, 7, 9, 10, 11, 12, 13, 14, 15, 16});
+        apPem0->SetList({5, 6, 8, 9, 10, 11, 12, 13, 14, 15});
         DynamicCast<WifiNetDevice>(apDevices.Get(0))
             ->GetMac()
             ->GetWifiPhy(0)
@@ -1053,10 +1051,10 @@ WifiTxStatsHelperTest::CheckResults(const WifiTxStatsHelper& wifiTxStats)
 
         successRecordLink0It = successRecords.at(nodeDeviceLink0Tuple).begin();
         NS_TEST_ASSERT_MSG_GT_OR_EQ(successRecordLink0It->m_txStartTime,
-                                    m_txStartTimes[0][11] + m_durations[0][11] + m_aifss[0],
-                                    "link 0 pkt first tx should be after the 11th packet on link");
+                                    m_txStartTimes[0][9] + m_durations[0][9] + m_aifss[0],
+                                    "link 0 pkt first tx should be after the 9th packet on link");
         NS_TEST_ASSERT_MSG_LT_OR_EQ(successRecordLink0It->m_txStartTime,
-                                    m_txStartTimes[0][11] + m_durations[0][11] + m_aifss[0] +
+                                    m_txStartTimes[0][9] + m_durations[0][9] + m_aifss[0] +
                                         tolerance + m_cwMins[0] * m_slot,
                                     "link 0 pkt first backoff should not exceed cwMin");
         successRecordLink0ItNext = successRecordLink0It;
@@ -1090,12 +1088,12 @@ WifiTxStatsHelperTest::CheckResults(const WifiTxStatsHelper& wifiTxStats)
 
         successRecordLink0It = successRecords.at(nodeDeviceLink0Tuple).begin();
         NS_TEST_ASSERT_MSG_GT_OR_EQ(successRecordLink0It->m_ackTime,
-                                    m_txStartTimes[0][12] + m_durations[0][12] + m_sifs +
-                                        m_durations[0][13],
+                                    m_txStartTimes[0][10] + m_durations[0][10] + m_sifs +
+                                        m_durations[0][11],
                                     "Wrong first Block Ack reception time on link 0");
         NS_TEST_ASSERT_MSG_LT_OR_EQ(successRecordLink0It->m_ackTime,
-                                    m_txStartTimes[0][12] + m_durations[0][12] + m_sifs +
-                                        m_durations[0][13] + 2 * tolerance,
+                                    m_txStartTimes[0][10] + m_durations[0][10] + m_sifs +
+                                        m_durations[0][11] + 2 * tolerance,
                                     "Wrong first Block Ack reception time on link 0");
         successRecordLink1It = successRecords.at(nodeDeviceLink1Tuple).begin();
         NS_TEST_ASSERT_MSG_GT_OR_EQ(successRecordLink1It->m_ackTime,
@@ -1110,12 +1108,12 @@ WifiTxStatsHelperTest::CheckResults(const WifiTxStatsHelper& wifiTxStats)
         successRecordLink0It = successRecords.at(nodeDeviceLink0Tuple).begin();
         std::advance(successRecordLink0It, 1);
         NS_TEST_ASSERT_MSG_GT_OR_EQ(successRecordLink0It->m_ackTime,
-                                    m_txStartTimes[0][14] + m_durations[0][14] + m_sifs +
-                                        m_durations[0][15],
+                                    m_txStartTimes[0][12] + m_durations[0][12] + m_sifs +
+                                        m_durations[0][13],
                                     "Wrong second Block Ack reception time on link 0");
         NS_TEST_ASSERT_MSG_LT_OR_EQ(successRecordLink0It->m_ackTime,
-                                    m_txStartTimes[0][14] + m_durations[0][14] + m_sifs +
-                                        m_durations[0][15] + 2 * tolerance,
+                                    m_txStartTimes[0][12] + m_durations[0][12] + m_sifs +
+                                        m_durations[0][13] + 2 * tolerance,
                                     "Wrong second Block Ack reception time on link 0");
         successRecordLink1It = successRecords.at(nodeDeviceLink1Tuple).begin();
         std::advance(successRecordLink1It, 1);
