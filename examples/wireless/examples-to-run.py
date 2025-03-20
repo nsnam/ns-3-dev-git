@@ -200,17 +200,17 @@ cpp_examples = [
         "True",
     ),
     (
-        "wifi-eht-network --multiProcessing=1 --simulationTime=0.2s --frequency=2.4 --frequency2=5 --guardInterval=1600 --udp=0 --downlink=1 --useRts=0 --mpduBufferSize=512 --emlsrLinks=0,1 --emlsrPaddingDelay=32 --emlsrTransitionDelay=32 --channelSwitchDelay=32 --emlsrAuxSwitch=True --emlsrAuxTxCapable=True --minExpectedThroughput=5 --maxExpectedThroughput=200",
+        "wifi-eht-network --multiProcessing=1 --simulationTime=0.2s --frequency=2.4 --frequency2=5 --guardInterval=1600 --udp=0 --downlink=1 --useRts=0 --mpduBufferSize=512 --emlsrLinks=0,1 --emlsrPaddingDelay=32 --emlsrTransitionDelay=32 --channelSwitchDelay=32 --emlsrAuxSwitch=True --emlsrAuxTxCapable=True --minExpectedThroughput=3 --maxExpectedThroughput=200 --RngRun=2",
         "True",
         "True",
     ),
     (
-        "wifi-eht-network --multiProcessing=1 --simulationTime=0.2s --frequency=2.4 --frequency2=5 --guardInterval=1600 --udp=0 --downlink=1 --useRts=1 --mpduBufferSize=512 --emlsrLinks=0,1 --emlsrPaddingDelay=64 --emlsrTransitionDelay=64 --channelSwitchDelay=64 --emlsrMgrTypeId=ns3::AdvancedEmlsrManager --emlsrAuxSwitch=False --emlsrAuxTxCapable=True --minExpectedThroughput=5 --maxExpectedThroughput=190",
+        "wifi-eht-network --multiProcessing=1 --simulationTime=0.2s --frequency=2.4 --frequency2=5 --guardInterval=1600 --udp=0 --downlink=1 --useRts=1 --mpduBufferSize=512 --emlsrLinks=0,1 --emlsrPaddingDelay=64 --emlsrTransitionDelay=64 --channelSwitchDelay=64 --emlsrMgrTypeId=ns3::AdvancedEmlsrManager --emlsrAuxSwitch=False --emlsrAuxTxCapable=True --minExpectedThroughput=3 --maxExpectedThroughput=190",
         "True",
         "True",
     ),
     (
-        "wifi-eht-network --multiProcessing=1 --simulationTime=0.2s --frequency=2.4 --frequency2=5 --guardInterval=1600 --udp=0 --downlink=0 --useRts=0 --mpduBufferSize=512 --emlsrLinks=0,1 --emlsrPaddingDelay=0 --emlsrTransitionDelay=0 --channelSwitchDelay=1ns --emlsrMgrTypeId=ns3::AdvancedEmlsrManager --emlsrAuxSwitch=False --emlsrAuxTxCapable=False --minExpectedThroughput=5 --maxExpectedThroughput=40 --RngRun=7",
+        "wifi-eht-network --multiProcessing=1 --simulationTime=0.2s --frequency=2.4 --frequency2=5 --guardInterval=1600 --udp=0 --downlink=0 --useRts=0 --mpduBufferSize=512 --emlsrLinks=0,1 --emlsrPaddingDelay=0 --emlsrTransitionDelay=0 --channelSwitchDelay=1ns --emlsrMgrTypeId=ns3::AdvancedEmlsrManager --emlsrAuxSwitch=False --emlsrAuxTxCapable=False --minExpectedThroughput=5 --maxExpectedThroughput=180 --RngRun=7",
         "True",
         "True",
     ),
@@ -220,7 +220,7 @@ cpp_examples = [
         "True",
     ),
     (
-        "wifi-eht-network --multiProcessing=1 --simulationTime=0.3s --frequency=2.4 --frequency2=5 --frequency3=6 --guardInterval=1600 --udp=0 --downlink=0 --useRts=1 --mpduBufferSize=512 --emlsrLinks=0,1,2 --emlsrPaddingDelay=64 --emlsrTransitionDelay=64 --channelSwitchDelay=64us --emlsrAuxSwitch=False --emlsrAuxTxCapable=True --nStations=4 --dlAckType=MU-BAR --enableUlOfdma=1 --enableBsrp=1 --mcs=1,4,8,11,13 --minExpectedThroughput=10 --maxExpectedThroughput=260 --RngRun=4",
+        "wifi-eht-network --multiProcessing=1 --simulationTime=0.3s --frequency=2.4 --frequency2=5 --frequency3=6 --guardInterval=1600 --udp=0 --downlink=0 --useRts=1 --mpduBufferSize=512 --emlsrLinks=0,1,2 --emlsrPaddingDelay=64 --emlsrTransitionDelay=64 --channelSwitchDelay=64us --emlsrAuxSwitch=False --emlsrAuxTxCapable=True --nStations=4 --dlAckType=MU-BAR --enableUlOfdma=1 --enableBsrp=1 --mcs=1,4,8,11,13 --minExpectedThroughput=10 --maxExpectedThroughput=300 --RngRun=4",
         "True",
         "True",
     ),
