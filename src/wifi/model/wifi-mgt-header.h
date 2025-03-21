@@ -13,8 +13,10 @@
 #include "supported-rates.h"
 
 #include "ns3/eht-capabilities.h"
+#include "ns3/he-6ghz-band-capabilities.h"
 #include "ns3/header.h"
 #include "ns3/multi-link-element.h"
+#include "ns3/vht-capabilities.h"
 
 #include <algorithm>
 #include <iterator>
@@ -363,11 +365,9 @@ void
 WifiMgtHeader<Derived, std::tuple<Elems...>>::InitForDeserialization(
     std::optional<EhtCapabilities>& optElem)
 {
-    NS_ASSERT(Get<SupportedRates>());
-    auto rates = AllSupportedRates{*Get<SupportedRates>(), std::nullopt};
-    const bool is2_4Ghz = rates.IsSupportedRate(
-        1000000 /* 1 Mbit/s */); // TODO: use presence of VHT capabilities IE and HE 6 GHz Band
-                                 // Capabilities IE once the later is implemented
+    auto& vhtCapabilities = Get<VhtCapabilities>();
+    auto& he6GhzBandCapabilities = Get<He6GhzBandCapabilities>();
+    const auto is2_4Ghz = !vhtCapabilities && !he6GhzBandCapabilities;
     auto& heCapabilities = Get<HeCapabilities>();
     if (heCapabilities)
     {
