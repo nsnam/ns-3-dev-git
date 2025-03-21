@@ -2361,6 +2361,10 @@ WifiMac::GetHeCapabilities(uint8_t linkId) const
         ((phy->GetPhyBand() == WIFI_PHY_BAND_5GHZ) || (phy->GetPhyBand() == WIFI_PHY_BAND_6GHZ)))
     {
         channelWidthSet |= 0x04;
+        if (phy->GetOperatingChannel().GetNSegments() > 1)
+        {
+            channelWidthSet |= 0x08;
+        }
     }
     capabilities.SetChannelWidthSet(channelWidthSet);
     capabilities.SetLdpcCodingInPayload(htConfiguration->m_ldpcSupported);
