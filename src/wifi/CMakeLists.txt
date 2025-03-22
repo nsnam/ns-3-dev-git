@@ -376,6 +376,7 @@ build_lib(
     test/spectrum-wifi-phy-test.cc
     test/tx-duration-test.cc
     test/wifi-aggregation-test.cc
+    test/wifi-channel-settings-test.cc
     test/wifi-co-trace-helper-test.cc
     test/wifi-dynamic-bw-op-test.cc
     test/wifi-eht-info-elems-test.cc
