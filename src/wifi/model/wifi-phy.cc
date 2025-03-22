@@ -1305,8 +1305,10 @@ WifiPhy::DoChannelSwitch()
     if (const auto chWidth = GetChannelWidth();
         (m_maxRadioBw != MHz_t{0}) && (chWidth > m_maxRadioBw))
     {
-        NS_ABORT_MSG("Attempting to set a " << chWidth << " channel on a station only supporting "
-                                            << m_maxRadioBw << " operation");
+        // throw an exception instead of using NS_ABORT_MSG for unit testing this code
+        throw std::runtime_error("Attempting to set a " + chWidth.str() +
+                                 " channel on a station only supporting " + m_maxRadioBw.str() +
+                                 " operation");
     }
 
     if (changingPhyBand)
