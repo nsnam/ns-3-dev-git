@@ -56,6 +56,7 @@ UdpServer::UdpServer()
     : SinkApplication(DEFAULT_PORT)
 {
     NS_LOG_FUNCTION(this);
+    m_protocolTid = TypeId::LookupByName("ns3::UdpSocketFactory");
 }
 
 UdpServer::~UdpServer()
@@ -95,8 +96,7 @@ UdpServer::StartApplication()
 
     if (!m_socket)
     {
-        auto tid = TypeId::LookupByName("ns3::UdpSocketFactory");
-        m_socket = Socket::CreateSocket(GetNode(), tid);
+        m_socket = Socket::CreateSocket(GetNode(), m_protocolTid);
         auto local = m_local;
         if (local.IsInvalid())
         {
@@ -129,8 +129,7 @@ UdpServer::StartApplication()
     {
         // local address is not specified, so create another socket to also listen to all IPv6
         // addresses
-        auto tid = TypeId::LookupByName("ns3::UdpSocketFactory");
-        m_socket6 = Socket::CreateSocket(GetNode(), tid);
+        m_socket6 = Socket::CreateSocket(GetNode(), m_protocolTid);
         auto local = Inet6SocketAddress(Ipv6Address::GetAny(), m_port);
         if (m_socket6->Bind(local) == -1)
         {

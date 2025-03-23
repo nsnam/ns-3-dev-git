@@ -71,6 +71,8 @@ class SinkApplication : public Application
     Ptr<Socket> m_socket;  //!< Socket (IPv4 or IPv6, depending on local address)
     Ptr<Socket> m_socket6; //!< IPv6 Socket (used if only port is specified)
 
+    TypeId m_protocolTid; //!< Protocol TypeId value
+
     Address m_local; //!< Local address to bind to (address and port)
     uint32_t m_port; //!< Local port to bind to
 

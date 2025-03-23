@@ -42,7 +42,7 @@ PacketSink::GetTypeId()
             .AddAttribute("Protocol",
                           "The type id of the protocol to use for the rx socket.",
                           TypeIdValue(UdpSocketFactory::GetTypeId()),
-                          MakeTypeIdAccessor(&PacketSink::m_tid),
+                          MakeTypeIdAccessor(&PacketSink::m_protocolTid),
                           MakeTypeIdChecker())
             .AddAttribute("EnableSeqTsSizeHeader",
                           "Enable optional header tracing of SeqTsSizeHeader",
@@ -110,7 +110,7 @@ PacketSink::StartApplication() // Called at time specified by Start
     // Create the socket if not already
     if (!m_socket)
     {
-        m_socket = Socket::CreateSocket(GetNode(), m_tid);
+        m_socket = Socket::CreateSocket(GetNode(), m_protocolTid);
         auto local = m_local;
         if (local.IsInvalid())
         {
@@ -161,7 +161,7 @@ PacketSink::StartApplication() // Called at time specified by Start
     {
         // local address is not specified, so create another socket to also listen to all IPv6
         // addresses
-        m_socket6 = Socket::CreateSocket(GetNode(), m_tid);
+        m_socket6 = Socket::CreateSocket(GetNode(), m_protocolTid);
         auto local = Inet6SocketAddress(Ipv6Address::GetAny(), m_port);
         if (m_socket6->Bind(local) == -1)
         {
