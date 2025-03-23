@@ -88,19 +88,10 @@ BulkSendApplication::SetMaxBytes(uint64_t maxBytes)
     m_maxBytes = maxBytes;
 }
 
-Ptr<Socket>
-BulkSendApplication::GetSocket() const
-{
-    NS_LOG_FUNCTION(this);
-    return m_socket;
-}
-
 void
 BulkSendApplication::DoDispose()
 {
     NS_LOG_FUNCTION(this);
-
-    m_socket = nullptr;
     m_unsentPacket = nullptr;
     // chain up
     SourceApplication::DoDispose();

@@ -26,7 +26,6 @@ namespace ns3
 {
 
 class RandomVariableStream;
-class Socket;
 
 /**
  * @ingroup applications
@@ -103,12 +102,6 @@ class OnOffApplication : public SourceApplication
      */
     void SetMaxBytes(uint64_t maxBytes);
 
-    /**
-     * @brief Return a pointer to associated socket.
-     * @return pointer to associated socket
-     */
-    Ptr<Socket> GetSocket() const;
-
     int64_t AssignStreams(int64_t stream) override;
 
   protected:
@@ -138,7 +131,6 @@ class OnOffApplication : public SourceApplication
      */
     void SendPacket();
 
-    Ptr<Socket> m_socket;                //!< Associated socket
     bool m_connected{false};             //!< True if connected
     Ptr<RandomVariableStream> m_onTime;  //!< rng for On Time
     Ptr<RandomVariableStream> m_offTime; //!< rng for Off Time

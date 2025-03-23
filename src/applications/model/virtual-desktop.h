@@ -24,7 +24,6 @@ namespace ns3
 class ExponentialRandomVariable;
 class UniformRandomVariable;
 class NormalRandomVariable;
-class Socket;
 
 /**
  * @ingroup applications
@@ -126,7 +125,6 @@ class VirtualDesktop : public SourceApplication
      */
     void TxAvailable(Ptr<Socket> socket, uint32_t available);
 
-    Ptr<Socket> m_socket;       //!< Associated socket
     TypeId m_tid;               //!< Type of the socket used
     bool m_connected{false};    //!< True if connected
     bool m_initialPacket{true}; //!< True if the next packet to send is the initial packet

@@ -22,7 +22,6 @@
 namespace ns3
 {
 
-class Socket;
 class WeibullRandomVariable;
 class GammaRandomVariable;
 
@@ -163,7 +162,6 @@ class VideoTraffic : public SourceApplication
     Ptr<GammaRandomVariable>
         m_gamma; //!< Gamma random variable to generate latency (in milliseconds)
 
-    Ptr<Socket> m_socket;              //!< Associated socket
     std::optional<uint32_t> m_maxSize; //!< Limit on the number of bytes that can be sent at once
                                        //!< over the network, hence we limit at application level to
                                        //!< apply the latency to each transmitted packet

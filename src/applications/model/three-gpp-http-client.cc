@@ -153,12 +153,6 @@ ThreeGppHttpClient::SetPort(uint16_t port)
     }
 }
 
-Ptr<Socket>
-ThreeGppHttpClient::GetSocket() const
-{
-    return m_socket;
-}
-
 ThreeGppHttpClient::State_t
 ThreeGppHttpClient::GetState() const
 {

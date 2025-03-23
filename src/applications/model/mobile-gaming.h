@@ -20,7 +20,6 @@ namespace ns3
 
 class UniformRandomVariable;
 class LargestExtremeValueRandomVariable;
-class Socket;
 
 /**
  * @ingroup applications
@@ -94,7 +93,6 @@ class MobileGaming : public SourceApplication
      */
     void ConnectionFailed(Ptr<Socket> socket);
 
-    Ptr<Socket> m_socket;    //!< Associated socket
     TypeId m_tid;            //!< Type of the socket used
     bool m_connected{false}; //!< True if connected
 

@@ -105,7 +105,6 @@ MobileGaming::DoDispose()
 {
     NS_LOG_FUNCTION(this);
     CancelEvents();
-    m_socket = nullptr;
     SourceApplication::DoDispose();
 }
 

@@ -17,6 +17,7 @@ namespace ns3
 {
 
 class Packet;
+class Socket;
 
 /**
  * @ingroup applications
@@ -58,9 +59,19 @@ class SourceApplication : public Application
      */
     Address GetRemote() const;
 
+    /**
+     * @brief Get the socket this application is attached to.
+     * @return pointer to associated socket
+     */
+    Ptr<Socket> GetSocket() const;
+
   protected:
+    void DoDispose() override;
+
     /// Traced Callback: transmitted packets.
     TracedCallback<Ptr<const Packet>> m_txTrace;
+
+    Ptr<Socket> m_socket; //!< Socket
 
     Address m_peer;  //!< Peer address
     Address m_local; //!< Local address to bind to

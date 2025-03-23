@@ -9,6 +9,7 @@
 #include "source-application.h"
 
 #include "ns3/log.h"
+#include "ns3/socket.h"
 #include "ns3/uinteger.h"
 
 namespace ns3
@@ -62,6 +63,14 @@ SourceApplication::~SourceApplication()
 }
 
 void
+SourceApplication::DoDispose()
+{
+    NS_LOG_FUNCTION(this);
+    m_socket = nullptr;
+    Application::DoDispose();
+}
+
+void
 SourceApplication::SetRemote(const Address& addr)
 {
     NS_LOG_FUNCTION(this << addr);
@@ -75,6 +84,12 @@ Address
 SourceApplication::GetRemote() const
 {
     return m_peer;
+}
+
+Ptr<Socket>
+SourceApplication::GetSocket() const
+{
+    return m_socket;
 }
 
 } // Namespace ns3

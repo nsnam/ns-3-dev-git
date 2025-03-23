@@ -19,7 +19,6 @@
 namespace ns3
 {
 
-class Socket;
 class TcpHeader;
 class TcpSocketBase;
 
@@ -89,12 +88,6 @@ class BulkSendApplication : public SourceApplication
      */
     void SetMaxBytes(uint64_t maxBytes);
 
-    /**
-     * @brief Get the socket this application is attached to.
-     * @return pointer to associated socket
-     */
-    Ptr<Socket> GetSocket() const;
-
   protected:
     void DoDispose() override;
 
@@ -109,7 +102,6 @@ class BulkSendApplication : public SourceApplication
      */
     void SendData(const Address& from, const Address& to);
 
-    Ptr<Socket> m_socket;                //!< Associated socket
     bool m_connected{false};             //!< True if connected
     uint32_t m_sendSize;                 //!< Size of data to send each time
     uint64_t m_maxBytes;                 //!< Limit total number of bytes sent
