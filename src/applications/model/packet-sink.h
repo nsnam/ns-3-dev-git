@@ -178,7 +178,6 @@ class PacketSink : public SinkApplication
     std::list<Ptr<Socket>> m_socketList; //!< the accepted sockets
 
     uint64_t m_totalRx{0}; //!< Total bytes received
-    TypeId m_tid;          //!< Protocol TypeId
 
     bool m_enableSeqTsSizeHeader{false}; //!< Enable or disable the export of SeqTsSize header
 

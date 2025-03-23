@@ -40,6 +40,7 @@ ThreeGppHttpServer::ThreeGppHttpServer()
 {
     NS_LOG_FUNCTION(this);
     NS_LOG_INFO(this << " MTU size for this server application is " << m_mtuSize << " bytes.");
+    m_tid = TypeId::LookupByName("ns3::TcpSocketFactory");
 }
 
 // static
@@ -223,7 +224,7 @@ ThreeGppHttpServer::StartApplication()
     if (!m_socket)
     {
         // Creating a TCP socket to connect to the server.
-        m_socket = Socket::CreateSocket(GetNode(), TcpSocketFactory::GetTypeId());
+        m_socket = Socket::CreateSocket(GetNode(), m_tid);
         m_socket->SetAttribute("SegmentSize", UintegerValue(m_mtuSize));
 
         NS_ABORT_MSG_IF(m_local.IsInvalid(), "Local address not properly set");
