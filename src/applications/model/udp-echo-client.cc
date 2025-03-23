@@ -81,12 +81,6 @@ UdpEchoClient::GetTypeId()
 }
 
 UdpEchoClient::UdpEchoClient()
-    : m_dataSize{0},
-      m_data{nullptr},
-      m_sent{0},
-      m_socket{nullptr},
-      m_peerPort{},
-      m_sendEvent{}
 {
     NS_LOG_FUNCTION(this);
 }

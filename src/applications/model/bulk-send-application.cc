@@ -72,10 +72,6 @@ BulkSendApplication::GetTypeId()
 }
 
 BulkSendApplication::BulkSendApplication()
-    : m_socket(nullptr),
-      m_connected(false),
-      m_totBytes(0),
-      m_unsentPacket(nullptr)
 {
     NS_LOG_FUNCTION(this);
 }

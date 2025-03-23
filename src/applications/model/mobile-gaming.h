@@ -94,9 +94,9 @@ class MobileGaming : public SourceApplication
      */
     void ConnectionFailed(Ptr<Socket> socket);
 
-    Ptr<Socket> m_socket; //!< Associated socket
-    TypeId m_tid;         //!< Type of the socket used
-    bool m_connected;     //!< True if connected
+    Ptr<Socket> m_socket;    //!< Associated socket
+    TypeId m_tid;            //!< Type of the socket used
+    bool m_connected{false}; //!< True if connected
 
     Ptr<UniformRandomVariable>
         m_initialSizeUniform; //!< Uniform random variable to generate the initial packet size
@@ -108,7 +108,7 @@ class MobileGaming : public SourceApplication
     Ptr<LargestExtremeValueRandomVariable>
         m_levSizes; //!< Largest extreme value random variable to generate packet sizes
 
-    TrafficModelStage m_currentStage; //!< Hold the current stage
+    TrafficModelStage m_currentStage{TrafficModelStage::INITIAL}; //!< Hold the current stage
 
     EventId m_txEvent; //!< Event ID of pending TX event scheduling
 

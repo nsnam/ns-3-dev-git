@@ -166,16 +166,16 @@ class VideoTraffic : public SourceApplication
     std::optional<uint32_t> m_maxSize; //!< Limit on the number of bytes that can be sent at once
                                        //!< over the network, hence we limit at application level to
                                        //!< apply the latency to each transmitted packet
-    bool m_connected;                  //!< True if connected
-    uint32_t m_remainingSize; //!< Number of bytes to send directly to the socket because current
-                              //!< video frame is too large to be sent at once
-    Time m_interArrival;      //!< Calculated inter arrival duration between two generated packets
+    bool m_connected{false};           //!< True if connected
+    uint32_t m_remainingSize{0}; //!< Number of bytes to send directly to the socket because current
+                                 //!< video frame is too large to be sent at once
+    Time m_interArrival; //!< Calculated inter arrival duration between two generated packets
 
     EventId m_generateFrameEvent;           //!< Event ID of pending frame generation event
     std::deque<uint32_t> m_generatedFrames; //!< Hold size of generated video frames
 
     std::map<uint64_t, EventId> m_sendEvents; //!< Event IDs of pending TX events
-    uint64_t m_nextEventId;                   //!< The next event ID
+    uint64_t m_nextEventId{0};                //!< The next event ID
 
     /// Structure to store information about packets that are not successfully transmitted
     struct UnsentPacketInfo

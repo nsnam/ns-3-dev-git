@@ -78,7 +78,7 @@ class SeqTsEchoHeader : public Header
     uint32_t Deserialize(Buffer::Iterator start) override;
 
   private:
-    uint32_t m_seq;     //!< Sequence number
+    uint32_t m_seq{0};  //!< Sequence number
     Time m_tsValue;     //!< Sender's timestamp
     Time m_tsEchoReply; //!< Receiver's timestamp
 };

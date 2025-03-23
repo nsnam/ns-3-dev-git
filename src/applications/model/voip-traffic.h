@@ -143,9 +143,9 @@ class VoipTraffic : public SourceApplication
      */
     void ConnectionFailed(Ptr<Socket> socket);
 
-    Ptr<Socket> m_socket; //!< Associated socket
-    TypeId m_tid;         //!< Type of the socket used
-    bool m_connected;     //!< True if connected
+    Ptr<Socket> m_socket;    //!< Associated socket
+    TypeId m_tid;            //!< Type of the socket used
+    bool m_connected{false}; //!< True if connected
 
     uint32_t m_activePacketSize;  //!< Size in bytes for payload of active packets
     uint32_t m_silencePacketSize; //!< Size in bytes for payload of silence packets
@@ -171,16 +171,17 @@ class VoipTraffic : public SourceApplication
     Ptr<LaplacianRandomVariable>
         m_laplacian; //!< Laplacian random variable to generate delay jitter
 
-    VoiceActivityState m_currentState; //!< Hold the current voice activity state
-    bool m_pendingStateTransition;     //!< Flag whether a state transition should once duration of
-                                       //!< current state has elapsed
-    Time m_remainingStateDuration;     //!< The remaining duration in the current state
-    Time m_remainingEncodingDuration;  //!< The remaining duration to encode the current frame
+    VoiceActivityState m_currentState{
+        VoiceActivityState::INACTIVE_SILENCE}; //!< Hold the current voice activity state
+    bool m_pendingStateTransition{false}; //!< Flag whether a state transition should once duration
+                                          //!< of current state has elapsed
+    Time m_remainingStateDuration;        //!< The remaining duration in the current state
+    Time m_remainingEncodingDuration;     //!< The remaining duration to encode the current frame
 
     EventId m_stateUpdateEvent; //!< Event ID of pending state update event scheduling
 
     std::map<uint64_t, EventId> m_txPacketEvents; //!< Event IDs of pending TX events
-    uint64_t m_nextEventId;                       //!< The next event ID
+    uint64_t m_nextEventId{0};                    //!< The next event ID
 
     /**
      * TracedCallback signature for packet and jitter.

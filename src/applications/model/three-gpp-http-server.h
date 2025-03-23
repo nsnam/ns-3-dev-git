@@ -250,7 +250,7 @@ class ThreeGppHttpServer : public SinkApplication
     void SwitchToState(State_t state);
 
     /// The current state of the client application. Begins with NOT_STARTED.
-    State_t m_state;
+    State_t m_state{NOT_STARTED};
     /// The listening socket, for receiving connection requests from clients.
     Ptr<Socket> m_initialSocket;
     /// Pointer to the transmission buffer.

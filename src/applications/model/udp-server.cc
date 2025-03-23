@@ -53,11 +53,7 @@ UdpServer::GetTypeId()
 }
 
 UdpServer::UdpServer()
-    : SinkApplication(DEFAULT_PORT),
-      m_socket{nullptr},
-      m_socket6{nullptr},
-      m_received{0},
-      m_lossCounter{0}
+    : SinkApplication(DEFAULT_PORT)
 {
     NS_LOG_FUNCTION(this);
 }
@@ -70,7 +66,6 @@ UdpServer::~UdpServer()
 uint16_t
 UdpServer::GetPacketWindowSize() const
 {
-    NS_LOG_FUNCTION(this);
     return m_lossCounter.GetBitMapSize();
 }
 
@@ -84,14 +79,12 @@ UdpServer::SetPacketWindowSize(uint16_t size)
 uint32_t
 UdpServer::GetLost() const
 {
-    NS_LOG_FUNCTION(this);
     return m_lossCounter.GetLost();
 }
 
 uint64_t
 UdpServer::GetReceived() const
 {
-    NS_LOG_FUNCTION(this);
     return m_received;
 }
 

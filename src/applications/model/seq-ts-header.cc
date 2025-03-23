@@ -21,8 +21,7 @@ NS_LOG_COMPONENT_DEFINE("SeqTsHeader");
 NS_OBJECT_ENSURE_REGISTERED(SeqTsHeader);
 
 SeqTsHeader::SeqTsHeader()
-    : m_seq(0),
-      m_ts(Simulator::Now().GetTimeStep())
+    : m_ts{Simulator::Now()}
 {
     NS_LOG_FUNCTION(this);
 }
@@ -45,7 +44,7 @@ Time
 SeqTsHeader::GetTs() const
 {
     NS_LOG_FUNCTION(this);
-    return TimeStep(m_ts);
+    return m_ts;
 }
 
 TypeId
@@ -68,7 +67,7 @@ void
 SeqTsHeader::Print(std::ostream& os) const
 {
     NS_LOG_FUNCTION(this << &os);
-    os << "(seq=" << m_seq << " time=" << TimeStep(m_ts).As(Time::S) << ")";
+    os << "(seq=" << m_seq << " time=" << m_ts.As(Time::S) << ")";
 }
 
 uint32_t
@@ -84,7 +83,7 @@ SeqTsHeader::Serialize(Buffer::Iterator start) const
     NS_LOG_FUNCTION(this << &start);
     Buffer::Iterator i = start;
     i.WriteHtonU32(m_seq);
-    i.WriteHtonU64(m_ts);
+    i.WriteHtonU64(m_ts.GetTimeStep());
 }
 
 uint32_t
@@ -93,7 +92,7 @@ SeqTsHeader::Deserialize(Buffer::Iterator start)
     NS_LOG_FUNCTION(this << &start);
     Buffer::Iterator i = start;
     m_seq = i.ReadNtohU32();
-    m_ts = i.ReadNtohU64();
+    m_ts = TimeStep(i.ReadNtohU64());
     return GetSerializedSize();
 }
 

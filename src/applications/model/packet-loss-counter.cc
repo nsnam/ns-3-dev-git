@@ -19,10 +19,6 @@ namespace ns3
 NS_LOG_COMPONENT_DEFINE("PacketLossCounter");
 
 PacketLossCounter::PacketLossCounter(uint8_t bitmapSize)
-    : m_lost(0),
-      m_bitMapSize(0),
-      m_lastMaxSeqNum(0),
-      m_receiveBitMap(nullptr)
 {
     NS_LOG_FUNCTION(this << bitmapSize);
     SetBitMapSize(bitmapSize);

@@ -121,18 +121,11 @@ VoipTraffic::GetTypeId()
 }
 
 VoipTraffic::VoipTraffic()
-    : m_socket{nullptr},
-      m_connected{false},
-      m_inactiveExponential{CreateObject<ExponentialRandomVariable>()},
+    : m_inactiveExponential{CreateObject<ExponentialRandomVariable>()},
       m_activeExponential{CreateObject<ExponentialRandomVariable>()},
       m_inactiveUniform{CreateObject<UniformRandomVariable>()},
       m_activeUniform{CreateObject<UniformRandomVariable>()},
-      m_laplacian{CreateObject<LaplacianRandomVariable>()},
-      m_currentState{VoiceActivityState::INACTIVE_SILENCE},
-      m_pendingStateTransition{false},
-      m_remainingStateDuration{Seconds(0)},
-      m_remainingEncodingDuration{Seconds(0)},
-      m_nextEventId{0}
+      m_laplacian{CreateObject<LaplacianRandomVariable>()}
 {
     NS_LOG_FUNCTION(this);
 }

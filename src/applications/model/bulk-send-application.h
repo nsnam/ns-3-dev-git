@@ -110,10 +110,10 @@ class BulkSendApplication : public SourceApplication
     void SendData(const Address& from, const Address& to);
 
     Ptr<Socket> m_socket;                //!< Associated socket
-    bool m_connected;                    //!< True if connected
+    bool m_connected{false};             //!< True if connected
     uint32_t m_sendSize;                 //!< Size of data to send each time
     uint64_t m_maxBytes;                 //!< Limit total number of bytes sent
-    uint64_t m_totBytes;                 //!< Total bytes sent so far
+    uint64_t m_totBytes{0};              //!< Total bytes sent so far
     TypeId m_tid;                        //!< The type of protocol to use.
     uint32_t m_seq{0};                   //!< Sequence
     Ptr<Packet> m_unsentPacket;          //!< Variable to cache unsent packet

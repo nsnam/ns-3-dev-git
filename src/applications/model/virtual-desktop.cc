@@ -74,10 +74,6 @@ VirtualDesktop::GetTypeId()
 }
 
 VirtualDesktop::VirtualDesktop()
-    : m_socket{nullptr},
-      m_connected{false},
-      m_initialPacket{true},
-      m_unsentPacket{nullptr}
 {
     NS_LOG_FUNCTION(this);
 }

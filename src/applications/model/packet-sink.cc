@@ -61,12 +61,6 @@ PacketSink::GetTypeId()
 }
 
 PacketSink::PacketSink()
-    : m_buffer{},
-      m_socket{nullptr},
-      m_socket6{nullptr},
-      m_socketList{},
-      m_totalRx{0},
-      m_enableSeqTsSizeHeader{false}
 {
     NS_LOG_FUNCTION(this);
 }

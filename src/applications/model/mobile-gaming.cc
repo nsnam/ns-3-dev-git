@@ -79,10 +79,6 @@ MobileGaming::GetTypeId()
 }
 
 MobileGaming::MobileGaming()
-    : m_socket{nullptr},
-      m_connected{false},
-      m_currentStage{TrafficModelStage::INITIAL},
-      m_txEvent{}
 {
     NS_LOG_FUNCTION(this);
 }

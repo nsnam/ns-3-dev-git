@@ -30,17 +30,7 @@ namespace ns3
 NS_OBJECT_ENSURE_REGISTERED(ThreeGppHttpClient);
 
 ThreeGppHttpClient::ThreeGppHttpClient()
-    : m_state{NOT_STARTED},
-      m_socket{nullptr},
-      m_objectBytesToBeReceived{0},
-      m_objectClientTs{},
-      m_objectServerTs{},
-      m_embeddedObjectsToBeRequested{0},
-      m_pageLoadStartTs{},
-      m_numberEmbeddedObjectsRequested{0},
-      m_numberBytesPage{0},
-      m_httpVariables{CreateObject<ThreeGppHttpVariables>()},
-      m_peerPort{}
+    : m_httpVariables{CreateObject<ThreeGppHttpVariables>()}
 {
     NS_LOG_FUNCTION(this);
 }

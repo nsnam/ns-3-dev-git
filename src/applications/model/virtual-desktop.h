@@ -126,10 +126,10 @@ class VirtualDesktop : public SourceApplication
      */
     void TxAvailable(Ptr<Socket> socket, uint32_t available);
 
-    Ptr<Socket> m_socket; //!< Associated socket
-    TypeId m_tid;         //!< Type of the socket used
-    bool m_connected;     //!< True if connected
-    bool m_initialPacket; //!< True if the next packet to send is the initial packet
+    Ptr<Socket> m_socket;       //!< Associated socket
+    TypeId m_tid;               //!< Type of the socket used
+    bool m_connected{false};    //!< True if connected
+    bool m_initialPacket{true}; //!< True if the next packet to send is the initial packet
 
     Ptr<UniformRandomVariable> m_initialArrivalUniform; //!< Uniform random variable to generate
                                                         //!< initial packet arrival in nanoseconds

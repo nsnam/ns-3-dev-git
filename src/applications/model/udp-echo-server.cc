@@ -49,9 +49,7 @@ UdpEchoServer::GetTypeId()
 }
 
 UdpEchoServer::UdpEchoServer()
-    : SinkApplication(DEFAULT_PORT),
-      m_socket{nullptr},
-      m_socket6{nullptr}
+    : SinkApplication(DEFAULT_PORT)
 {
     NS_LOG_FUNCTION(this);
 }

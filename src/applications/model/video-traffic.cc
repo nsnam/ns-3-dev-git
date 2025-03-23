@@ -143,12 +143,7 @@ VideoTraffic::GetTypeId()
 
 VideoTraffic::VideoTraffic()
     : m_weibull{CreateObject<WeibullRandomVariable>()},
-      m_gamma{CreateObject<GammaRandomVariable>()},
-      m_socket{nullptr},
-      m_connected{false},
-      m_remainingSize{0},
-      m_interArrival{Time(0)},
-      m_nextEventId{0}
+      m_gamma{CreateObject<GammaRandomVariable>()}
 {
     NS_LOG_FUNCTION(this);
 }

@@ -61,8 +61,8 @@ class SeqTsHeader : public Header
     uint32_t Deserialize(Buffer::Iterator start) override;
 
   private:
-    uint32_t m_seq; //!< Sequence number
-    uint64_t m_ts;  //!< Timestamp
+    uint32_t m_seq{0}; //!< Sequence number
+    Time m_ts;         //!< Timestamp
 };
 
 } // namespace ns3
