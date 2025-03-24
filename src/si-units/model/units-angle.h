@@ -69,10 +69,11 @@ struct degree_t
     double in_degree() const; // NOLINT(readability-identifier-naming)
 
     /// String representation
+    /// @param space Insert or omit space between a number and a unit measurement, with SI standard as default
     /// @return string representation of the angle
-    std::string str() const // NOLINT(readability-identifier-naming)
+    std::string str(bool space=true) const // NOLINT(readability-identifier-naming)
     {
-        return sformat("%.1f degree", val);
+        return sformat(space? "%.1f degree" : "%.1fdegree", val);
     }
 
     /// Convert from a vector of doubles to a vector of degrees
@@ -206,10 +207,11 @@ struct radian_t
     double in_radian() const; // NOLINT(readability-identifier-naming)
 
     /// String representation
+    /// @param space Insert or omit space between a number and a unit measurement, with SI standard as default
     /// @return string representation of the angle
-    std::string str() const // NOLINT(readability-identifier-naming)
+    std::string str(bool space=true) const // NOLINT(readability-identifier-naming)
     {
-        return sformat("%.1f radian", val);
+        return sformat(space? "%.1f radian" : "%.1fradian", val);
     }
 
     /// Convert from a vector of doubles to a vector of radians

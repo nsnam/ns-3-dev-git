@@ -34,8 +34,9 @@ struct nSEC_t
     }
 
     /// Represents in a human-readable string
+    /// @param space Insert or omit space between a number and a unit measurement, with SI standard as default
     /// @returns A string representation of the value in the most easy to read unit scale
-    std::string str() const // NOLINT(readability-identifier-naming)
+    std::string str(bool space=true) const // NOLINT(readability-identifier-naming)
     {
         const std::vector<std::string> SUBUNIT_PREFIX = {"n", "u", "m", ""};
 
@@ -47,7 +48,7 @@ struct nSEC_t
             ++idx;
         }
 
-        return sformat("%lld %sSEC", val, SUBUNIT_PREFIX[idx].c_str());
+        return sformat(space ? "%lld %sSEC" : "%lld%sSEC", val, SUBUNIT_PREFIX[idx].c_str());
     }
 
     /// Converts from integers represented in nanoseconds to a vector of nSEC_t

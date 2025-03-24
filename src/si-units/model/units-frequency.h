@@ -68,8 +68,9 @@ struct Hz_t
 
     /// @brief Stringify with metric prefix
     /// Sub-Hertz not supported
+    /// @param space Insert or omit space between a number and a unit measurement, with SI standard as default
     /// @return String with metric prefix
-    std::string str() const; // NOLINT(readability-identifier-naming);
+    std::string str(bool space=true) const; // NOLINT(readability-identifier-naming);
 
     /// @brief Convert a vector of double values to a vector of Hz_t values
     /// @param input vector of double values

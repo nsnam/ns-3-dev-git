@@ -8,7 +8,7 @@ using namespace ns3;
 namespace ns3
 {
 std::string
-Hz_t::str() const // NOLINT(readability-identifier-naming)
+Hz_t::str(bool space) const // NOLINT(readability-identifier-naming)
 {
     const std::vector<std::string> WHOLE_UNIT_PREFIX = {"", "k", "M", "G", "T"};
 
@@ -23,7 +23,7 @@ Hz_t::str() const // NOLINT(readability-identifier-naming)
         }
     }
 
-    return sformat("%lld %sHz", valInt, WHOLE_UNIT_PREFIX[idx].c_str());
+    return sformat(space ? "%lld %sHz" : "%lld%sHz", valInt, WHOLE_UNIT_PREFIX[idx].c_str());
 }
 
 Hz_t::Hz_t(const std::string& str)

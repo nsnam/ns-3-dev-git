@@ -54,10 +54,11 @@ struct percent_t
     explicit percent_t(const std::string& str);
 
     /// Represent in string
+    /// @param space Insert or omit space between a number and a unit measurement, with SI standard as default
     /// @return String representation
-    std::string str() const // NOLINT(readability-identifier-naming)
+    std::string str(bool space=true) const // NOLINT(readability-identifier-naming)
     {
-        return sformat("%.1f %%", val); // ISO 31-0 requires a non-breaking space
+        return sformat(space ? "%.1f %%" : "%.1f%%", val); // ISO 31-0 requires a non-breaking space
     }
 
     /// Constructor from ratio

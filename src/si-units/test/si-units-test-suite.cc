@@ -115,6 +115,7 @@ class TestCaseSiUnits : public TestCase
         NS_TEST_EXPECT_MSG_EQ(degree_t{-370}.normalize(), -(10_degree), "");
 
         NS_TEST_EXPECT_MSG_EQ((123.4_degree).str(), "123.4 degree", "");
+        NS_TEST_EXPECT_MSG_EQ((123.4_degree).str(false), "123.4degree", "");
         NS_TEST_EXPECT_MSG_EQ(degree_t::from_radian(radian_t{M_PI}), 180_degree, "");
         NS_TEST_EXPECT_MSG_EQ(degree_t{180}.to_radian(), radian_t{M_PI}, "");
         NS_TEST_EXPECT_MSG_EQ(degree_t{180}.in_radian(), M_PI, "");
@@ -186,6 +187,7 @@ class TestCaseSiUnits : public TestCase
         NS_TEST_EXPECT_MSG_EQ(radian_t{-2.25 * M_PI}.normalize(), radian_t{-0.25 * M_PI}, "");
 
         NS_TEST_EXPECT_MSG_EQ((123.4_radian).str(), "123.4 radian", "");
+        NS_TEST_EXPECT_MSG_EQ((123.4_radian).str(false), "123.4radian", "");
         NS_TEST_EXPECT_MSG_EQ(radian_t::from_degree(180_degree), radian_t{M_PI}, "");
         NS_TEST_EXPECT_MSG_EQ(radian_t{M_PI}.to_degree(), 180_degree, "");
         NS_TEST_EXPECT_MSG_EQ(radian_t{M_PI}.in_degree(), 180, "");
@@ -252,9 +254,10 @@ class TestCaseSiUnits : public TestCase
         NS_TEST_EXPECT_MSG_EQ(-8_dB, (0_dB - 8_dB), "");
 
         // Utilities
-        NS_TEST_EXPECT_MSG_EQ(dB_t{123}.str(), "123.0 dB", "");    // NOLINT
-        NS_TEST_EXPECT_MSG_EQ(dB_t{123.45}.val, 123.45, "");       // NOLINT
-        NS_TEST_EXPECT_MSG_EQ(dB_t{123.45}.str(), "123.5 dB", ""); // NOLINT
+        NS_TEST_EXPECT_MSG_EQ(dB_t{123}.str(), "123.0 dB", "");     // NOLINT
+        NS_TEST_EXPECT_MSG_EQ(dB_t{123}.str(false), "123.0dB", ""); // NOLINT
+        NS_TEST_EXPECT_MSG_EQ(dB_t{123.45}.val, 123.45, "");        // NOLINT
+        NS_TEST_EXPECT_MSG_EQ(dB_t{123.45}.str(), "123.5 dB", "");  // NOLINT
         NS_TEST_EXPECT_MSG_EQ(dB_t{20}.to_linear(), 100.0, "");
 
         // Conversion from string
@@ -317,9 +320,10 @@ class TestCaseSiUnits : public TestCase
         NS_TEST_EXPECT_MSG_EQ(-8_dBr, (0_dBr - 8_dBr), "");
 
         // Utilities
-        NS_TEST_EXPECT_MSG_EQ(dBr_t{123}.str(), "123.0 dBr", "");    // NOLINT
-        NS_TEST_EXPECT_MSG_EQ(dBr_t{123.45}.val, 123.45, "");        // NOLINT
-        NS_TEST_EXPECT_MSG_EQ(dBr_t{123.45}.str(), "123.5 dBr", ""); // NOLINT
+        NS_TEST_EXPECT_MSG_EQ(dBr_t{123}.str(), "123.0 dBr", "");     // NOLINT
+        NS_TEST_EXPECT_MSG_EQ(dBr_t{123}.str(false), "123.0dBr", ""); // NOLINT
+        NS_TEST_EXPECT_MSG_EQ(dBr_t{123.45}.val, 123.45, "");         // NOLINT
+        NS_TEST_EXPECT_MSG_EQ(dBr_t{123.45}.str(), "123.5 dBr", "");  // NOLINT
         NS_TEST_EXPECT_MSG_EQ(dBr_t{20}.to_linear(), 100.0, "");
 
         // Conversion from string
@@ -362,8 +366,9 @@ class TestCaseSiUnits : public TestCase
         NS_TEST_EXPECT_MSG_EQ(-8_mWatt, (0_mWatt - 8_mWatt), "");
 
         // Utilities
-        NS_TEST_EXPECT_MSG_EQ(mWatt_t{123}.str(), "123.0 mWatt", "");    // NOLINT
-        NS_TEST_EXPECT_MSG_EQ(mWatt_t{123.45}.str(), "123.5 mWatt", ""); // NOLINT
+        NS_TEST_EXPECT_MSG_EQ(mWatt_t{123}.str(), "123.0 mWatt", "");     // NOLINT
+        NS_TEST_EXPECT_MSG_EQ(mWatt_t{123}.str(false), "123.0mWatt", ""); // NOLINT
+        NS_TEST_EXPECT_MSG_EQ(mWatt_t{123.45}.str(), "123.5 mWatt", "");  // NOLINT
         NS_TEST_EXPECT_MSG_EQ(mWatt_t{100}.in_dBm(), 20.0, "");
         NS_TEST_EXPECT_MSG_EQ(mWatt_t{123.45}.in_Watt(), 0.12345, ""); // NOLINT
         NS_TEST_EXPECT_MSG_EQ(mWatt_t{123.45}.in_mWatt(), 123.45, ""); // NOLINT
@@ -422,8 +427,9 @@ class TestCaseSiUnits : public TestCase
         NS_TEST_EXPECT_MSG_EQ(-8_Watt, (0_Watt - 8_Watt), "");
 
         // Utilities
-        NS_TEST_EXPECT_MSG_EQ(Watt_t{123}.str(), "123.0 Watt", "");    // NOLINT
-        NS_TEST_EXPECT_MSG_EQ(Watt_t{123.45}.str(), "123.5 Watt", ""); // NOLINT
+        NS_TEST_EXPECT_MSG_EQ(Watt_t{123}.str(), "123.0 Watt", "");     // NOLINT
+        NS_TEST_EXPECT_MSG_EQ(Watt_t{123}.str(false), "123.0Watt", ""); // NOLINT
+        NS_TEST_EXPECT_MSG_EQ(Watt_t{123.45}.str(), "123.5 Watt", "");  // NOLINT
         NS_TEST_EXPECT_MSG_EQ(Watt_t{100}.in_dBm(), 50.0, "");
         NS_TEST_EXPECT_MSG_EQ(Watt_t{1.2345}.in_mWatt(), 1234.5, ""); // NOLINT
         NS_TEST_EXPECT_MSG_EQ(Watt_t{123.45}.in_Watt(), 123.45, "");  // NOLINT
@@ -480,8 +486,9 @@ class TestCaseSiUnits : public TestCase
 #endif    // IMPLEMENTED BUT NOT ALLOWED TO BE USED
 
         // Utilities
-        NS_TEST_EXPECT_MSG_EQ(dBm_t{123}.str(), "123.0 dBm", "");    // NOLINT
-        NS_TEST_EXPECT_MSG_EQ(dBm_t{123.45}.str(), "123.5 dBm", ""); // NOLINT
+        NS_TEST_EXPECT_MSG_EQ(dBm_t{123}.str(), "123.0 dBm", "");     // NOLINT
+        NS_TEST_EXPECT_MSG_EQ(dBm_t{123}.str(false), "123.0dBm", ""); // NOLINT
+        NS_TEST_EXPECT_MSG_EQ(dBm_t{123.45}.str(), "123.5 dBm", "");  // NOLINT
         NS_TEST_EXPECT_MSG_EQ(dBm_t{20}.in_mWatt(), 100.0, "");
         // Need tolerance due to math precision error on M1 Ultra with --ffast-math
         NS_TEST_EXPECT_MSG_EQ_TOL(dBm_t{20}.in_Watt(), 0.1, 1e-10, "");
@@ -605,6 +612,7 @@ class TestCaseSiUnits : public TestCase
         NS_TEST_EXPECT_MSG_EQ((MilliSeconds(1) * 1_Hz), 0.001, "");
 
         NS_TEST_EXPECT_MSG_EQ((123_Hz).str(), "123 Hz", "");
+        NS_TEST_EXPECT_MSG_EQ((123_Hz).str(false), "123Hz", "");
         NS_TEST_EXPECT_MSG_EQ((123_kHz).str(), "123 kHz", "");
         NS_TEST_EXPECT_MSG_EQ((123_MHz).str(), "123 MHz", "");
         NS_TEST_EXPECT_MSG_EQ((123_GHz).str(), "123 GHz", "");
@@ -702,10 +710,11 @@ class TestCaseSiUnits : public TestCase
         NS_TEST_EXPECT_MSG_EQ(dBm_per_Hz_t{"1.5 dBm/Hz"}, 1.5_dBm_per_Hz, "");
 
         // Utilities
-        NS_TEST_EXPECT_MSG_EQ(dBm_per_Hz_t{123}.val, 123.0, "");               // NOLINT
-        NS_TEST_EXPECT_MSG_EQ(dBm_per_Hz_t{123}.str(), "123.0 dBm/Hz", "");    // NOLINT
-        NS_TEST_EXPECT_MSG_EQ(dBm_per_Hz_t{123.45}.val, 123.45, "");           // NOLINT
-        NS_TEST_EXPECT_MSG_EQ(dBm_per_Hz_t{123.45}.str(), "123.5 dBm/Hz", ""); // NOLINT
+        NS_TEST_EXPECT_MSG_EQ(dBm_per_Hz_t{123}.val, 123.0, "");                // NOLINT
+        NS_TEST_EXPECT_MSG_EQ(dBm_per_Hz_t{123}.str(), "123.0 dBm/Hz", "");     // NOLINT
+        NS_TEST_EXPECT_MSG_EQ(dBm_per_Hz_t{123}.str(false), "123.0dBm/Hz", ""); // NOLINT
+        NS_TEST_EXPECT_MSG_EQ(dBm_per_Hz_t{123.45}.val, 123.45, "");            // NOLINT
+        NS_TEST_EXPECT_MSG_EQ(dBm_per_Hz_t{123.45}.str(), "123.5 dBm/Hz", "");  // NOLINT
 
         NS_TEST_EXPECT_MSG_EQ(dBm_per_Hz_t{-80.0}.OverBandwidth(1_MHz), -20_dBm, ""); // NOLINT
         NS_TEST_EXPECT_MSG_EQ(dBm_per_Hz_t::AveragePsd(-20_dBm, 1_MHz),
@@ -725,10 +734,11 @@ class TestCaseSiUnits : public TestCase
         NS_TEST_EXPECT_MSG_EQ(dBm_per_MHz_t{"1.5 dBm/MHz"}, 1.5_dBm_per_MHz, "");
 
         // Utilities
-        NS_TEST_EXPECT_MSG_EQ(dBm_per_MHz_t{123}.val, 123.0, "");                // NOLINT
-        NS_TEST_EXPECT_MSG_EQ(dBm_per_MHz_t{123}.str(), "123.0 dBm/MHz", "");    // NOLINT
-        NS_TEST_EXPECT_MSG_EQ(dBm_per_MHz_t{123.45}.val, 123.45, "");            // NOLINT
-        NS_TEST_EXPECT_MSG_EQ(dBm_per_MHz_t{123.45}.str(), "123.5 dBm/MHz", ""); // NOLINT
+        NS_TEST_EXPECT_MSG_EQ(dBm_per_MHz_t{123}.val, 123.0, "");                 // NOLINT
+        NS_TEST_EXPECT_MSG_EQ(dBm_per_MHz_t{123}.str(), "123.0 dBm/MHz", "");     // NOLINT
+        NS_TEST_EXPECT_MSG_EQ(dBm_per_MHz_t{123}.str(false), "123.0dBm/MHz", ""); // NOLINT
+        NS_TEST_EXPECT_MSG_EQ(dBm_per_MHz_t{123.45}.val, 123.45, "");             // NOLINT
+        NS_TEST_EXPECT_MSG_EQ(dBm_per_MHz_t{123.45}.str(), "123.5 dBm/MHz", "");  // NOLINT
 
         NS_TEST_EXPECT_MSG_EQ(dBm_per_MHz_t::AveragePsd(-20_dBm, 1_MHz),
                               dBm_per_MHz_t{-20},
@@ -872,6 +882,7 @@ class TestCaseSiUnits : public TestCase
         NS_TEST_EXPECT_MSG_EQ((10_nSEC -= 100_nSEC), -90_nSEC, "");
 
         NS_TEST_EXPECT_MSG_EQ((123_nSEC).str(), "123 nSEC", "");
+        NS_TEST_EXPECT_MSG_EQ((123_nSEC).str(false), "123nSEC", "");
         NS_TEST_EXPECT_MSG_EQ((123_uSEC).str(), "123 uSEC", "");
         NS_TEST_EXPECT_MSG_EQ((123_mSEC).str(), "123 mSEC", "");
         NS_TEST_EXPECT_MSG_EQ((123_SEC).str(), "123 SEC", "");
@@ -930,6 +941,7 @@ class TestCaseSiUnits : public TestCase
 
         // String
         NS_TEST_EXPECT_MSG_EQ(got.str(), "20.1 %", "");
+        NS_TEST_EXPECT_MSG_EQ(got.str(false), "20.1%", "");
         NS_TEST_EXPECT_MSG_EQ(percent_t::from_str("20.1 %").value(), got, "");
         NS_TEST_EXPECT_MSG_EQ(percent_t::from_str("20.1%").value(), got, "");
         NS_TEST_EXPECT_MSG_EQ(percent_t::from_str("20.1 percent").value(), got, "");

@@ -72,10 +72,11 @@ struct dB_t
     explicit dB_t(const std::string& str);
 
     /// Converts to string.
+    /// @param space Insert or omit space between a number and a unit measurement, with SI standard as default
     /// @return String representation of dB_t object.
-    std::string str() const // NOLINT(readability-identifier-naming)
+    std::string str(bool space=true) const // NOLINT(readability-identifier-naming)
     {
-        return sformat("%.1f dB", val);
+        return sformat(space ? "%.1f dB" : "%.1fdB", val);
     }
 
     /// Converts from linear scale.
@@ -271,10 +272,11 @@ struct dBm_t
     double in_dBm() const; // NOLINT(readability-identifier-naming). Return quantity only
 
     /// Represents the power unit as a string
+    /// @param space Insert or omit space between a number and a unit measurement, with SI standard as default
     /// @returns a string representation of the power unit
-    std::string str() const // NOLINT(readability-identifier-naming)
+    std::string str(bool space=true) const // NOLINT(readability-identifier-naming)
     {
-        return sformat("%.1f dBm", val);
+        return sformat(space ? "%.1f dBm" : "%.1fdBm", val);
     }
 
     /// Converts a vector of doubles representing in dBm to a vector of dBm_t
@@ -445,10 +447,11 @@ struct mWatt_t
     double in_mWatt() const; // NOLINT(readability-identifier-naming). Return quantity only
 
     /// Returns a string representation of the power unit
+    /// @param space Insert or omit space between a number and a unit measurement, with SI standard as default
     /// @returns a string representation of the power unit
-    std::string str() const // NOLINT(readability-identifier-naming)
+    std::string str(bool space=true) const // NOLINT(readability-identifier-naming)
     {
-        return sformat("%.1f mWatt", val);
+        return sformat(space ? "%.1f mWatt" : "%.1fmWatt", val);
     }
 
     /// Converts a vector of double values represented in mWatt to a vector of mWatt_t
@@ -664,10 +667,11 @@ struct Watt_t
     double in_Watt() const; // NOLINT(readability-identifier-naming). Return quantity only
 
     /// Returns Watt_t power unit value in floating point string representations
+    /// @param space Insert or omit space between a number and a unit measurement, with SI standard as default
     /// @returns a string of format "%.1f Watt" representing the power value in Watt_t
-    std::string str() const // NOLINT(readability-identifier-naming)
+    std::string str(bool space=true) const // NOLINT(readability-identifier-naming)
     {
-        return sformat("%.1f Watt", val);
+        return sformat(space ? "%.1f Watt" : "%.1fWatt", val);
     }
 
     /// Rerturns a vector of Watt_t power unit structs from an input vector values
@@ -912,10 +916,11 @@ struct dBm_per_Hz_t // NOLINT(readability-identifier-naming)
     }
 
     /// Represents a value in dBm/Hz as a string
+    /// @param space Insert or omit space between a number and a unit measurement, with SI standard as default
     /// @returns a string representation of the value
-    std::string str() const // NOLINT(readability-identifier-naming)
+    std::string str(bool space=true) const // NOLINT(readability-identifier-naming)
     {
-        return sformat("%.1Lf dBm/Hz", val);
+        return sformat(space ? "%.1Lf dBm/Hz" : "%.1LfdBm/Hz", val);
     }
 
     /// Calculate average PSD
@@ -1069,10 +1074,11 @@ struct dBm_per_MHz_t // NOLINT(readability-identifier-naming)
     }
 
     /// Represents a value in dBm/MHz as a string
+    /// @param space Insert or omit space between a number and a unit measurement, with SI standard as default
     /// @returns a string representation of the value
-    std::string str() const // NOLINT(readability-identifier-naming)
+    std::string str(bool space=true) const // NOLINT(readability-identifier-naming)
     {
-        return sformat("%.1Lf dBm/Hz", val);
+        return sformat(space ? "%.1Lf dBm/Hz" : "%.1LfdBm/Hz", val);
     }
 
     /// Calculate average PSD
