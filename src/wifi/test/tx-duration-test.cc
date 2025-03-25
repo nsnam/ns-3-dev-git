@@ -2053,6 +2053,7 @@ class MuSigDurationTest : public TestCase
 
   private:
     void DoRun() override;
+    void DoTeardown() override;
 
     /**
      * Build a TXVECTOR for HE MU or EHT MU.
@@ -2060,6 +2061,8 @@ class MuSigDurationTest : public TestCase
      * @return the configured TXVECTOR for HE MU or EHT MU
      */
     WifiTxVector BuildTxVector() const;
+
+    Ptr<YansWifiPhy> m_phy; ///< the PHY under test
 
     std::list<HeMuUserInfo> m_userInfos; ///< HE MU specific per-user information
     WifiMode m_sigBMode;                 ///< Mode used to transmit HE-SIG-B
@@ -2122,19 +2125,19 @@ MuSigDurationTest::BuildTxVector() const
 void
 MuSigDurationTest::DoRun()
 {
-    auto phy = CreateObject<YansWifiPhy>();
+    m_phy = CreateObject<YansWifiPhy>();
     auto channelNum = WifiPhyOperatingChannel::FindFirst(0,
                                                          MHz_t{0},
                                                          MHz_t{320},
                                                          WIFI_STANDARD_80211be,
                                                          WIFI_PHY_BAND_6GHZ)
                           ->number;
-    phy->SetOperatingChannel(
+    m_phy->SetOperatingChannel(
         WifiPhy::ChannelTuple{channelNum, 320, WIFI_PHY_BAND_6GHZ, m_p20Index});
-    phy->ConfigureStandard(WIFI_STANDARD_80211be);
+    m_phy->ConfigureStandard(WIFI_STANDARD_80211be);
 
     const auto& txVector = BuildTxVector();
-    auto phyEntity = phy->GetPhyEntity(txVector.GetModulationClass());
+    auto phyEntity = m_phy->GetPhyEntity(txVector.GetModulationClass());
 
     // Verify mode for HE-SIG-B/EHT-SIG field
     NS_TEST_EXPECT_MSG_EQ(phyEntity->GetSigMode(WIFI_PPDU_FIELD_SIG_B, txVector),
@@ -2191,7 +2194,7 @@ MuSigDurationTest::DoRun()
         auto psdu = Create<WifiPsdu>(Create<Packet>(1000), hdr);
         ppduDuration = std::max(
             ppduDuration,
-            WifiPhy::CalculateTxDuration(psdu->GetSize(), txVector, phy->GetPhyBand(), i + 1));
+            WifiPhy::CalculateTxDuration(psdu->GetSize(), txVector, m_phy->GetPhyBand(), i + 1));
         psdus.insert(std::make_pair(i, psdu));
     }
     auto ppdu = phyEntity->BuildPpdu(psdus, txVector, ppduDuration);
@@ -2200,6 +2203,15 @@ MuSigDurationTest::DoRun()
     NS_TEST_EXPECT_MSG_EQ((txVector.GetHeMuUserInfoMap() == rxVector.GetHeMuUserInfoMap()),
                           true,
                           "Incorrect user infos in reconstructed TXVECTOR");
+
+    Simulator::Destroy();
+}
+
+void
+MuSigDurationTest::DoTeardown()
+{
+    m_phy->Dispose();
+    m_phy = nullptr;
 }
 
 /**
