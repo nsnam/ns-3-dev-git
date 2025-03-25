@@ -9,15 +9,9 @@
       base-devel ninja cmake python ccache gsl gtk3 boost openmpi openssh
       graphviz imagemagick texlive-basic texlive-bin texlive-binextra texlive-latexextra
       texlive-fontutils texlive-fontsrecommended texlive-mathscience python-sphinx wget
-    #  doxygen
+      doxygen
     # dia is archived
     - pacman --noconfirm -U https://archive.archlinux.org/packages/d/dia/dia-0.97.3-9-x86_64.pkg.tar.zst
-    # temporary revert to Doxygen 1.11.0. The package has been recompiled
-    # without spdlog and wizard support to fix a library dependency.
-    # Clang-18 is needed by doxygen
-    - pacman -S --noconfirm clang18
-    - wget -nv http://www.nsnam.org/packages/doxygen-1.11.0-4-x86_64.pkg.tar.zst
-    - pacman --noconfirm -U doxygen-1.11.0-4-x86_64.pkg.tar.zst
     # no policy is a good policy.
     - mv /etc/ImageMagick-7/policy.xml /etc/ImageMagick-7/policy.xml.bak
     # - sed -i "s/EPS,PDF,//g" /etc/ImageMagick-7/policy.xml
