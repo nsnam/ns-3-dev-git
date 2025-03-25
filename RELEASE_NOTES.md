@@ -28,6 +28,8 @@ requirements (Note: not all ns-3 features are available on all systems):
 Python API requires [Cppyy](https://cppyy.readthedocs.io/en/latest/installation.html) and has only
 been tested on Linux. As of this release, the latest known version to work with ns-3 is cppyy==3.1.2.
 
+The required Doxygen version for documentation generation is now version 1.13.
+
 ### New user-visible features
 
 - (core ) !2385 - The function `Now()` will now print the real time since the beginning of the simulation instead of the real time since the last event call when `RealTimeSimulatorImpl` is used.
