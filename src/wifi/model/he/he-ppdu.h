@@ -81,7 +81,7 @@ class HePpdu : public OfdmPpdu
         uint8_t m_bssColor{0};        ///< BSS color field
         uint8_t m_bandwidth{0};       ///< Bandwidth field
         uint8_t m_sigBMcs{0};         ///< HE-SIG-B MCS
-        uint8_t m_muMimoUsers;        ///< MU-MIMO users
+        uint8_t m_muMimoUsers{0};     ///< MU-MIMO users
         uint8_t m_sigBCompression{0}; ///< SIG-B compression
         uint8_t m_giLtfSize{0};       ///< GI+LTF Size field
 
