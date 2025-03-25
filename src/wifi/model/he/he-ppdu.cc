@@ -275,7 +275,7 @@ HePpdu::SetHeMuUserInfos(WifiTxVector& txVector,
         }
         for (const auto& userInfo : contentChannel)
         {
-            if (*center26ToneRuIndication && (numUsersLeftInCc == 1))
+            if (center26ToneRuIndication && (numUsersLeftInCc == 1))
             {
                 // handle central 26 tones
                 if ((contentChannelIndex == 0) &&
