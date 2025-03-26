@@ -21,6 +21,7 @@ on the IEEE 802.11 standard [ieee80211]_. We will go into more detail below but 
 
 * basic 802.11 DCF with **infrastructure** and **adhoc** modes
 * **802.11a**, **802.11b**, **802.11g**, **802.11n** (both 2.4 and 5 GHz bands), **802.11ac**, **802.11ax** (2.4, 5 and 6 GHz bands) and **802.11be** physical layers
+* Power Save mode
 * **MSDU aggregation** and **MPDU aggregation** extensions of 802.11n, and both can be combined together (two-level aggregation)
 * 802.11ax **DL OFDMA** and **UL OFDMA** (including support for the MU EDCA Parameter Set)
 * 802.11be **Multi-link** discovery and setup, **Multi-Link Operations (MLO)** in **STR** (Simultaneous Transmit Receive) mode and **EMLSR** (Enhanced Multi-Link Single-Radio) mode
@@ -1086,6 +1087,56 @@ gives management frames higher priority than data frames and serves data frames 
 first come first serve fashion. For multi-user transmissions (see below), scheduling
 is performed by a Multi-User scheduler, which may or may not consult the wifi MAC queue
 scheduler to identify the stations to serve with a Multi-User DL or UL transmission.
+
+Power Save mode
+###############
+The Power Save mode feature requires support from both the APs and the non-AP STAs. The |ns3|
+implementation closely follows the 802.11 specifications, which can be summarized as follows:
+
+* As soon as one of the associated STAs switches to powersave mode, the AP buffers all the group
+  addressed frames (by blocking the corresponding queues) and transmits them immediately after a
+  Beacon frame containing a DTIM indicating the presence of buffered group addressed frames (by
+  temporarily unblocking the corresponding queues for the time required to transmit them all).
+* The AP buffers all unicast frames addressed to a non-AP STA in powersave mode or to a non-AP
+  MLD having no affiliated non-AP STA in active mode and operating on a link on which the unicast
+  frame can be sent (this is achieved by blocking the queues storing packets destined to such
+  non-AP STA for all the time during which the non-AP STA is in powersave mode). The presence of
+  buffered units for non-AP STAs in powersave mode is indicated in the TIM element of Beacon frames
+* When a non-AP STA in powersave mode receives a Beacon frame containing a TIM element indicating
+  the presence of buffered units at the AP, a PS-Poll frame is enqueued and channel access is
+  requested to transmit such a frame.
+* An AP replies to a PS-Poll frame received from a non-AP STA in powersave mode by sending a
+  buffered unit addressed to that non-AP STA.
+* When a non-AP STA in powersave mode receives a buffered unit from the AP in response to a PS-Poll
+  frame, it acknowledges its reception and enqueues another PS-Poll frame if the received buffered
+  unit indicates the presence of more buffered units at the AP.
+
+Non-AP STAs (possibly affiliated with a non-AP MLD) can be configured to switch between active and
+powersave mode by using the ``PowerSaveMode`` attribute of the ``PowerSaveManager`` class.
+``PowerSaveManager`` is an abstract base class and a default subclass (``DefaultPowerSaveManager``)
+is provided. The purpose of a Power Save Manager is to switch the state of a non-AP STA in powersave
+mode between active and doze (i.e., sleep), based on the notifications received from the other MAC
+components. The behavior of the default Power Save Manager can be summarized as follows:
+
+* A non-AP STA in powersave mode is allowed to sleep (i.e., transition to the doze state) if the
+  last Beacon frame received from the associated AP does not indicate the presence of buffered group
+  addressed frames nor the presence of buffered unicast frames addressed to the non-AP STA, and the
+  non-AP STA has no frames to transmit. Whether a non-AP STA in powersave mode can transition to the
+  doze state is checked in many situations:
+
+  * after receiving a Beacon frame
+  * after receiving a frame from the AP in response to a PS-Poll frame
+  * after receiving a group addressed frame from the AP
+  * when releasing the channel after completing a TXOP
+  * after dropping a PS-Poll frame (e.g., due to reaching the max retry limit)
+
+* When a non-AP STA in powersave mode is put to sleep, an event is scheduled to wake up the non-AP
+  STA right before the expected transmission time of the Beacon frame that is sent a number of
+  Beacon intervals equal to the value of the ``ListenInterval`` attribute of the ``PowerSaveManager``
+  class after the last received Beacon frame.
+* When an event (such as the enqueue of a data unit from the upper layer or the unblocking of a
+  queue) that triggers a channel access request occurs, the non-AP STA in powersave mode is awakened
+  (if in sleep mode).
 
 Multi-user transmissions
 ########################
