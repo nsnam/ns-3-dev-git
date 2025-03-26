@@ -5,7 +5,7 @@
  *
  */
 
-/**
+/*
  * This is an example on how to configure the channel model classes to simulate
  * a vehicular environment.
  * The channel condition is determined using the model specified in [1], Table 6.2-1.
@@ -38,6 +38,7 @@
 
 using namespace ns3;
 
+/// the log component
 NS_LOG_COMPONENT_DEFINE("ThreeGppV2vChannelExample");
 
 static Ptr<ThreeGppPropagationLossModel>
@@ -46,7 +47,7 @@ static Ptr<ThreeGppSpectrumPropagationLossModel>
     m_spectrumLossModel;                       //!< the SpectrumPropagationLossModel object
 static Ptr<ChannelConditionModel> m_condModel; //!< the ChannelConditionModel object
 
-/*
+/**
  * @brief A structure that holds the parameters for the ComputeSnr
  * function. In this way the problem with the limited
  * number of parameters of method Schedule is avoided.
