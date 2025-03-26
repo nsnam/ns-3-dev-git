@@ -70,12 +70,10 @@ class VoipTraffic : public SourceApplication
 
     int64_t AssignStreams(int64_t stream) override;
 
-  protected:
-    void DoDispose() override;
-
   private:
-    void StartApplication() override;
-    void StopApplication() override;
+    void DoStartApplication(bool firstTime) override;
+    void DoConnectionSucceeded(Ptr<Socket> socket) override;
+    void CancelEvents() override;
 
     /**
      * Set the mean of the exponential distribution used to calculate durations of active/talking
@@ -90,11 +88,6 @@ class VoipTraffic : public SourceApplication
      * @param mean the mean value
      */
     void SetInactiveExponentialMean(Time mean);
-
-    /**
-     * @brief Cancel all pending events.
-     */
-    void CancelEvents();
 
     /**
      * Update voice activity state
@@ -127,22 +120,6 @@ class VoipTraffic : public SourceApplication
      * @return the interval between two state updates
      */
     Time GetStateUpdateInterval() const;
-
-    /**
-     * Handle a Connection Succeed event
-     *
-     * @param socket the connected socket
-     */
-    void ConnectionSucceeded(Ptr<Socket> socket);
-
-    /**
-     * Handle a Connection Failed event
-     *
-     * @param socket the not connected socket
-     */
-    void ConnectionFailed(Ptr<Socket> socket);
-
-    bool m_connected{false}; //!< True if connected
 
     uint32_t m_activePacketSize;  //!< Size in bytes for payload of active packets
     uint32_t m_silencePacketSize; //!< Size in bytes for payload of silence packets

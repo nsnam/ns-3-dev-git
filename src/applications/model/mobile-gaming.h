@@ -57,17 +57,11 @@ class MobileGaming : public SourceApplication
         ENDING = 2
     };
 
-  protected:
-    void DoDispose() override;
-
   private:
-    void StartApplication() override;
-    void StopApplication() override;
-
-    /**
-     * @brief Cancel all pending events.
-     */
-    void CancelEvents();
+    void DoStartApplication(bool firstTime) override;
+    void DoStopApplication() override;
+    void DoConnectionSucceeded(Ptr<Socket> socket) override;
+    void CancelEvents() override;
 
     /**
      * Schedule the next packet transmission
@@ -78,22 +72,6 @@ class MobileGaming : public SourceApplication
      * Transmit one initial, gaming or ending packet
      */
     void SendPacket();
-
-    /**
-     * Handle a Connection Succeed event
-     *
-     * @param socket the connected socket
-     */
-    void ConnectionSucceeded(Ptr<Socket> socket);
-
-    /**
-     * Handle a Connection Failed event
-     *
-     * @param socket the not connected socket
-     */
-    void ConnectionFailed(Ptr<Socket> socket);
-
-    bool m_connected{false}; //!< True if connected
 
     Ptr<UniformRandomVariable>
         m_initialSizeUniform; //!< Uniform random variable to generate the initial packet size

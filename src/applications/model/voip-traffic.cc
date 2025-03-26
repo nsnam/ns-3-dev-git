@@ -149,14 +149,6 @@ VoipTraffic::AssignStreams(int64_t stream)
 }
 
 void
-VoipTraffic::DoDispose()
-{
-    NS_LOG_FUNCTION(this);
-    CancelEvents();
-    SourceApplication::DoDispose();
-}
-
-void
 VoipTraffic::SetActiveExponentialMean(Time mean)
 {
     NS_LOG_FUNCTION(this << mean);
@@ -171,71 +163,20 @@ VoipTraffic::SetInactiveExponentialMean(Time mean)
 }
 
 void
-VoipTraffic::StartApplication()
+VoipTraffic::DoStartApplication(bool firstTime)
 {
-    NS_LOG_FUNCTION(this);
+    NS_LOG_FUNCTION(this << firstTime);
+    NS_ASSERT(m_socket != nullptr);
 
-    if (!m_socket)
+    if (firstTime)
     {
-        m_socket = Socket::CreateSocket(GetNode(), m_tid);
-
-        int ret = -1;
-        if (!m_local.IsInvalid())
-        {
-            NS_ABORT_MSG_IF((Inet6SocketAddress::IsMatchingType(m_peer) &&
-                             InetSocketAddress::IsMatchingType(m_local)) ||
-                                (InetSocketAddress::IsMatchingType(m_peer) &&
-                                 Inet6SocketAddress::IsMatchingType(m_local)),
-                            "Incompatible peer and local address IP version");
-            ret = m_socket->Bind(m_local);
-        }
-        else
-        {
-            if (Inet6SocketAddress::IsMatchingType(m_peer))
-            {
-                ret = m_socket->Bind6();
-            }
-            else if (InetSocketAddress::IsMatchingType(m_peer) ||
-                     PacketSocketAddress::IsMatchingType(m_peer))
-            {
-                ret = m_socket->Bind();
-            }
-        }
-
-        if (ret == -1)
-        {
-            NS_FATAL_ERROR("Failed to bind socket");
-        }
-
-        m_socket->SetConnectCallback(MakeCallback(&VoipTraffic::ConnectionSucceeded, this),
-                                     MakeCallback(&VoipTraffic::ConnectionFailed, this));
-
-        if (InetSocketAddress::IsMatchingType(m_peer))
-        {
-            m_socket->SetIpTos(m_tos); // Affects only IPv4 sockets.
-        }
-
-        m_socket->Connect(m_peer);
         m_socket->SetAllowBroadcast(true);
         m_socket->ShutdownRecv();
     }
 
-    CancelEvents();
-
     if (m_connected)
     {
         ScheduleNext();
-    }
-}
-
-void
-VoipTraffic::StopApplication()
-{
-    NS_LOG_FUNCTION(this);
-    CancelEvents();
-    if (m_socket)
-    {
-        m_socket->Close();
     }
 }
 
@@ -397,18 +338,10 @@ VoipTraffic::UpdateState()
 }
 
 void
-VoipTraffic::ConnectionSucceeded(Ptr<Socket> socket)
+VoipTraffic::DoConnectionSucceeded(Ptr<Socket> socket)
 {
     NS_LOG_FUNCTION(this << socket);
-    m_connected = true;
     ScheduleNext();
-}
-
-void
-VoipTraffic::ConnectionFailed(Ptr<Socket> socket)
-{
-    NS_LOG_FUNCTION(this << socket);
-    NS_FATAL_ERROR("Can't connect");
 }
 
 std::ostream&

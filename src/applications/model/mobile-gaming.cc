@@ -101,64 +101,17 @@ MobileGaming::AssignStreams(int64_t stream)
 }
 
 void
-MobileGaming::DoDispose()
+MobileGaming::DoStartApplication(bool firstTime)
 {
-    NS_LOG_FUNCTION(this);
-    CancelEvents();
-    SourceApplication::DoDispose();
-}
+    NS_LOG_FUNCTION(this << firstTime);
 
-void
-MobileGaming::StartApplication()
-{
-    NS_LOG_FUNCTION(this);
-
-    if (!m_socket)
+    if (firstTime)
     {
-        m_socket = Socket::CreateSocket(GetNode(), m_tid);
-
-        int ret = -1;
-        if (!m_local.IsInvalid())
-        {
-            NS_ABORT_MSG_IF((Inet6SocketAddress::IsMatchingType(m_peer) &&
-                             InetSocketAddress::IsMatchingType(m_local)) ||
-                                (InetSocketAddress::IsMatchingType(m_peer) &&
-                                 Inet6SocketAddress::IsMatchingType(m_local)),
-                            "Incompatible peer and local address IP version");
-            ret = m_socket->Bind(m_local);
-        }
-        else
-        {
-            if (Inet6SocketAddress::IsMatchingType(m_peer))
-            {
-                ret = m_socket->Bind6();
-            }
-            else if (InetSocketAddress::IsMatchingType(m_peer) ||
-                     PacketSocketAddress::IsMatchingType(m_peer))
-            {
-                ret = m_socket->Bind();
-            }
-        }
-
-        if (ret == -1)
-        {
-            NS_FATAL_ERROR("Failed to bind socket");
-        }
-
-        m_socket->SetConnectCallback(MakeCallback(&MobileGaming::ConnectionSucceeded, this),
-                                     MakeCallback(&MobileGaming::ConnectionFailed, this));
-
-        if (InetSocketAddress::IsMatchingType(m_peer))
-        {
-            m_socket->SetIpTos(m_tos); // Affects only IPv4 sockets.
-        }
-
-        m_socket->Connect(m_peer);
         m_socket->SetAllowBroadcast(true);
         m_socket->ShutdownRecv();
     }
 
-    CancelEvents();
+    m_currentStage = TrafficModelStage::INITIAL;
 
     if (m_connected)
     {
@@ -167,7 +120,7 @@ MobileGaming::StartApplication()
 }
 
 void
-MobileGaming::StopApplication()
+MobileGaming::DoStopApplication()
 {
     NS_LOG_FUNCTION(this);
     m_currentStage = TrafficModelStage::ENDING;
@@ -177,8 +130,12 @@ void
 MobileGaming::CancelEvents()
 {
     NS_LOG_FUNCTION(this);
+    if (m_currentStage == TrafficModelStage::ENDING)
+    {
+        // handled once ending packet is transmitted
+        return;
+    }
     m_txEvent.Cancel();
-    m_currentStage = TrafficModelStage::INITIAL;
 }
 
 void
@@ -234,11 +191,9 @@ MobileGaming::SendPacket()
 
     if (m_currentStage == TrafficModelStage::ENDING)
     {
+        m_currentStage = TrafficModelStage::INITIAL;
         CancelEvents();
-        if (m_socket)
-        {
-            m_socket->Close();
-        }
+        CloseConnection();
     }
     else
     {
@@ -251,18 +206,10 @@ MobileGaming::SendPacket()
 }
 
 void
-MobileGaming::ConnectionSucceeded(Ptr<Socket> socket)
+MobileGaming::DoConnectionSucceeded(Ptr<Socket> socket)
 {
     NS_LOG_FUNCTION(this << socket);
-    m_connected = true;
     ScheduleNext();
-}
-
-void
-MobileGaming::ConnectionFailed(Ptr<Socket> socket)
-{
-    NS_LOG_FUNCTION(this << socket);
-    NS_FATAL_ERROR("Can't connect");
 }
 
 std::ostream&

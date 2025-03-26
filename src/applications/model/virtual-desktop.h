@@ -50,12 +50,10 @@ class VirtualDesktop : public SourceApplication
 
     int64_t AssignStreams(int64_t stream) override;
 
-  protected:
-    void DoDispose() override;
-
   private:
-    void StartApplication() override;
-    void StopApplication() override;
+    void DoStartApplication(bool firstTime) override;
+    void DoConnectionSucceeded(Ptr<Socket> socket) override;
+    void CancelEvents() override;
 
     /**
      * @brief Set the parameters of the normal random variable used to generate the VDI packet
@@ -81,11 +79,6 @@ class VirtualDesktop : public SourceApplication
     uint32_t GetPacketSize() const;
 
     /**
-     * @brief Cancel all pending events.
-     */
-    void CancelEvents();
-
-    /**
      * Schedule the next TX
      */
     void ScheduleNext();
@@ -94,20 +87,6 @@ class VirtualDesktop : public SourceApplication
      * Transmit the next VDI packet
      */
     void SendPacket();
-
-    /**
-     * Handle a Connection Succeed event
-     *
-     * @param socket the connected socket
-     */
-    void ConnectionSucceeded(Ptr<Socket> socket);
-
-    /**
-     * Handle a Connection Failed event
-     *
-     * @param socket the not connected socket
-     */
-    void ConnectionFailed(Ptr<Socket> socket);
 
     /**
      * Handle a Data Sent event
@@ -125,7 +104,6 @@ class VirtualDesktop : public SourceApplication
      */
     void TxAvailable(Ptr<Socket> socket, uint32_t available);
 
-    bool m_connected{false};    //!< True if connected
     bool m_initialPacket{true}; //!< True if the next packet to send is the initial packet
 
     Ptr<UniformRandomVariable> m_initialArrivalUniform; //!< Uniform random variable to generate

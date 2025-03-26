@@ -80,16 +80,11 @@ class VideoTraffic : public SourceApplication
 
   protected:
     void DoInitialize() override;
-    void DoDispose() override;
 
   private:
-    void StartApplication() override;
-    void StopApplication() override;
-
-    /**
-     * Cancel all pending events.
-     */
-    void CancelEvents();
+    void DoStartApplication(bool firstTime) override;
+    void DoConnectionSucceeded(Ptr<Socket> socket) override;
+    void CancelEvents() override;
 
     /**
      * Schedule send of a packet with a random latency
@@ -118,20 +113,6 @@ class VideoTraffic : public SourceApplication
      * @return the payload size of the next packet to transmit (in bytes)
      */
     uint32_t GetNextPayloadSize();
-
-    /**
-     * Handle a Connection Succeed event
-     *
-     * @param socket the connected socket
-     */
-    void ConnectionSucceeded(Ptr<Socket> socket);
-
-    /**
-     * Handle a Connection Failed event
-     *
-     * @param socket the not connected socket
-     */
-    void ConnectionFailed(Ptr<Socket> socket);
 
     /**
      * Handle a Data Sent event
@@ -164,7 +145,6 @@ class VideoTraffic : public SourceApplication
     std::optional<uint32_t> m_maxSize; //!< Limit on the number of bytes that can be sent at once
                                        //!< over the network, hence we limit at application level to
                                        //!< apply the latency to each transmitted packet
-    bool m_connected{false};           //!< True if connected
     uint32_t m_remainingSize{0}; //!< Number of bytes to send directly to the socket because current
                                  //!< video frame is too large to be sent at once
     Time m_interArrival; //!< Calculated inter arrival duration between two generated packets

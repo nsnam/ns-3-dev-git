@@ -81,6 +81,7 @@ UdpClient::GetTypeId()
 }
 
 UdpClient::UdpClient()
+    : SourceApplication(false)
 {
     NS_LOG_FUNCTION(this);
     m_tid = TypeId::LookupByName("ns3::UdpSocketFactory");
@@ -154,49 +155,13 @@ UdpClient::GetPort() const
 }
 
 void
-UdpClient::StartApplication()
+UdpClient::DoStartApplication(bool firstTime)
 {
-    NS_LOG_FUNCTION(this);
+    NS_LOG_FUNCTION(this << firstTime);
+    NS_ASSERT(m_socket != nullptr);
 
-    if (!m_socket)
+    if (firstTime)
     {
-        m_socket = Socket::CreateSocket(GetNode(), m_tid);
-        NS_ABORT_MSG_IF(m_peer.IsInvalid(), "Remote address not properly set");
-        if (!m_local.IsInvalid())
-        {
-            NS_ABORT_MSG_IF((Inet6SocketAddress::IsMatchingType(m_peer) &&
-                             InetSocketAddress::IsMatchingType(m_local)) ||
-                                (InetSocketAddress::IsMatchingType(m_peer) &&
-                                 Inet6SocketAddress::IsMatchingType(m_local)),
-                            "Incompatible peer and local address IP version");
-            if (m_socket->Bind(m_local) == -1)
-            {
-                NS_FATAL_ERROR("Failed to bind socket");
-            }
-        }
-        else
-        {
-            if (InetSocketAddress::IsMatchingType(m_peer))
-            {
-                if (m_socket->Bind() == -1)
-                {
-                    NS_FATAL_ERROR("Failed to bind socket");
-                }
-            }
-            else if (Inet6SocketAddress::IsMatchingType(m_peer))
-            {
-                if (m_socket->Bind6() == -1)
-                {
-                    NS_FATAL_ERROR("Failed to bind socket");
-                }
-            }
-            else
-            {
-                NS_ASSERT_MSG(false, "Incompatible address type: " << m_peer);
-            }
-        }
-        m_socket->SetIpTos(m_tos); // Affects only IPv4 sockets.
-        m_socket->Connect(m_peer);
         m_socket->SetAllowBroadcast(true);
     }
 
@@ -216,14 +181,7 @@ UdpClient::StartApplication()
     m_peerString = peerAddressStringStream.str();
 #endif // NS3_LOG_ENABLE
 
-    m_sendEvent = Simulator::Schedule(Seconds(0), &UdpClient::Send, this);
-}
-
-void
-UdpClient::StopApplication()
-{
-    NS_LOG_FUNCTION(this);
-    Simulator::Cancel(m_sendEvent);
+    m_sendEvent = Simulator::ScheduleNow(&UdpClient::Send, this);
 }
 
 void
@@ -267,6 +225,13 @@ UdpClient::Send()
     {
         m_sendEvent = Simulator::Schedule(m_interval, &UdpClient::Send, this);
     }
+}
+
+void
+UdpClient::CancelEvents()
+{
+    NS_LOG_FUNCTION(this);
+    Simulator::Cancel(m_sendEvent);
 }
 
 uint64_t

@@ -184,21 +184,13 @@ VideoTraffic::DoInitialize()
 }
 
 void
-VideoTraffic::DoDispose()
+VideoTraffic::DoStartApplication(bool firstTime)
 {
-    NS_LOG_FUNCTION(this);
-    CancelEvents();
-    SourceApplication::DoDispose();
-}
+    NS_LOG_FUNCTION(this << firstTime);
+    NS_ASSERT(m_socket != nullptr);
 
-void
-VideoTraffic::StartApplication()
-{
-    NS_LOG_FUNCTION(this);
-
-    if (!m_socket)
+    if (firstTime)
     {
-        m_socket = Socket::CreateSocket(GetNode(), m_tid);
         if (m_tid == TcpSocketFactory::GetTypeId())
         {
             UintegerValue uintegerValue;
@@ -206,65 +198,15 @@ VideoTraffic::StartApplication()
             m_maxSize = uintegerValue.Get();
         }
 
-        int ret = -1;
-        if (!m_local.IsInvalid())
-        {
-            NS_ABORT_MSG_IF((Inet6SocketAddress::IsMatchingType(m_peer) &&
-                             InetSocketAddress::IsMatchingType(m_local)) ||
-                                (InetSocketAddress::IsMatchingType(m_peer) &&
-                                 Inet6SocketAddress::IsMatchingType(m_local)),
-                            "Incompatible peer and local address IP version");
-            ret = m_socket->Bind(m_local);
-        }
-        else
-        {
-            if (Inet6SocketAddress::IsMatchingType(m_peer))
-            {
-                ret = m_socket->Bind6();
-            }
-            else if (InetSocketAddress::IsMatchingType(m_peer) ||
-                     PacketSocketAddress::IsMatchingType(m_peer))
-            {
-                ret = m_socket->Bind();
-            }
-        }
-
-        if (ret == -1)
-        {
-            NS_FATAL_ERROR("Failed to bind socket");
-        }
-
-        m_socket->SetConnectCallback(MakeCallback(&VideoTraffic::ConnectionSucceeded, this),
-                                     MakeCallback(&VideoTraffic::ConnectionFailed, this));
         m_socket->SetDataSentCallback(MakeCallback(&VideoTraffic::TxDone, this));
         m_socket->SetSendCallback(MakeCallback(&VideoTraffic::TxAvailable, this));
-
-        if (InetSocketAddress::IsMatchingType(m_peer))
-        {
-            m_socket->SetIpTos(m_tos); // Affects only IPv4 sockets.
-        }
-
-        m_socket->Connect(m_peer);
         m_socket->SetAllowBroadcast(true);
         m_socket->ShutdownRecv();
     }
 
-    CancelEvents();
-
     if (m_connected)
     {
         ScheduleNextFrame();
-    }
-}
-
-void
-VideoTraffic::StopApplication()
-{
-    NS_LOG_FUNCTION(this);
-    CancelEvents();
-    if (m_socket)
-    {
-        m_socket->Close();
     }
 }
 
@@ -401,18 +343,10 @@ VideoTraffic::Send(uint64_t eventId, uint32_t size, Time latency)
 }
 
 void
-VideoTraffic::ConnectionSucceeded(Ptr<Socket> socket)
+VideoTraffic::DoConnectionSucceeded(Ptr<Socket> socket)
 {
     NS_LOG_FUNCTION(this << socket);
-    m_connected = true;
     ScheduleNextFrame();
-}
-
-void
-VideoTraffic::ConnectionFailed(Ptr<Socket> socket)
-{
-    NS_LOG_FUNCTION(this << socket);
-    NS_FATAL_ERROR("Can't connect");
 }
 
 void

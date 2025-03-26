@@ -101,8 +101,8 @@ class UdpTraceClient : public SourceApplication
     void SetTraceLoop(bool traceLoop);
 
   private:
-    void StartApplication() override;
-    void StopApplication() override;
+    void DoStartApplication(bool firstTime) override;
+    void CancelEvents() override;
 
     /**
      * @brief Set the remote port (temporary function until deprecated attributes are removed)
