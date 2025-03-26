@@ -757,6 +757,7 @@ AdvancedEmlsrManager::RequestMainPhyToSwitch(uint8_t linkId, AcIndex aci, const 
 
     // the aux PHY is not TX capable; check if main PHY has to switch to the aux PHY's link
     auto mainPhy = GetStaMac()->GetDevice()->GetPhy(m_mainPhyId);
+    const auto mainPhyLinkId = GetStaMac()->GetLinkForPhy(mainPhy);
 
     // if main PHY is not operating on a link and is trying to start a (DL or UL) TXOP, then do
     // not request another switch
@@ -843,28 +844,8 @@ AdvancedEmlsrManager::RequestMainPhyToSwitch(uint8_t linkId, AcIndex aci, const 
         }
 
         const auto edca = GetStaMac()->GetQosTxop(acIndex);
-        const auto mainPhyLinkId = GetStaMac()->GetLinkForPhy(mainPhy);
-        Time backoffEnd;
-        if (!mainPhyLinkId.has_value())
-        {
-            NS_ASSERT(m_mainPhySwitchInfo.disconnected);
-            NS_LOG_DEBUG("The main PHY is not connected to any link");
-            // we don't know when the main PHY will be connected to a link, nor which backoff value
-            // it will possibly generate; for sure, it has to wait at least an AIFS before accessing
-            // the medium
-            backoffEnd =
-                mainPhy->GetSifs() + edca->GetAifsn(m_mainPhySwitchInfo.to) * mainPhy->GetSlot();
-            if (mainPhy->IsStateSwitching())
-            {
-                // the main PHY is switching, add the remaining switching time
-                backoffEnd += mainPhy->GetDelayUntilIdle();
-            }
-        }
-        else
-        {
-            backoffEnd =
-                GetStaMac()->GetChannelAccessManager(*mainPhyLinkId)->GetBackoffEndFor(edca);
-        }
+        const auto backoffEnd =
+            GetStaMac()->GetChannelAccessManager(*mainPhyLinkId)->GetBackoffEndFor(edca);
         NS_LOG_DEBUG("Backoff end for " << acIndex
                                         << " on main PHY link: " << backoffEnd.As(Time::US));
 
