@@ -669,17 +669,26 @@ HePpdu::GetHeSigBContentChannels(const WifiTxVector& txVector, uint8_t p20Index)
         contentChannels.emplace_back();
     }
 
+    const auto mc = txVector.GetModulationClass();
+    const auto& ruAllocs = txVector.GetRuAllocation(p20Index);
+    std::vector<std::vector<WifiRu::RuSpec>> ruSpecs;
+    ruSpecs.reserve(ruAllocs.size());
+    std::transform(ruAllocs.cbegin(),
+                   ruAllocs.cend(),
+                   std::back_inserter(ruSpecs),
+                   [mc](const auto ruAlloc) { return WifiRu::GetRuSpecs(ruAlloc, mc); });
+
     std::optional<HeSigBUserSpecificField> cc1Central26ToneRu;
     std::optional<HeSigBUserSpecificField> cc2Central26ToneRu;
 
     const auto& orderedMap = txVector.GetUserInfoMapOrderedByRus(p20Index);
-    RuType prevRuType{RuType::RU_TYPE_MAX};
-    std::size_t prevRuIndex{0};
-    std::size_t prevCcIndex{0};
+    std::optional<std::size_t> prevRuSpecsIdx;
+    std::size_t nAllocatedUsers{0};
     for (const auto& [ru, staIds] : orderedMap)
     {
         const auto ruType = WifiRu::GetRuType(ru);
         auto ruIdx = WifiRu::GetIndex(ru);
+        auto ruPhyIndex = WifiRu::GetPhyIndex(ru, channelWidth, p20Index);
         if ((ruType == RuType::RU_26_TONE) && (ruIdx == 19))
         {
             NS_ASSERT(WifiRu::IsHe(ru));
@@ -689,25 +698,23 @@ HePpdu::GetHeSigBContentChannels(const WifiTxVector& txVector, uint8_t p20Index)
             {
                 NS_ASSERT(!cc1Central26ToneRu);
                 cc1Central26ToneRu = HeSigBUserSpecificField{staId, userInfo.nss, userInfo.mcs};
+                ++nAllocatedUsers;
             }
             else
             {
                 NS_ASSERT(!cc2Central26ToneRu);
                 cc2Central26ToneRu = HeSigBUserSpecificField{staId, userInfo.nss, userInfo.mcs};
+                ++nAllocatedUsers;
             }
             continue;
         }
 
-        const auto ruIndex = WifiRu::GetPhyIndex(ru, channelWidth, p20Index);
-        if ((prevRuType < RuType::RU_TYPE_MAX) && (prevRuType != ruType))
-        {
-            prevRuIndex *= WifiRu::GetBandwidth(prevRuType) / WifiRu::GetBandwidth(ruType);
-        }
+        // special case for RUs that are larger than 20 MHz: equally split the users
+        // between the two content channels, since they are not allocated in a specific 20 MHz
         if (ruType >= RuType::RU_484_TONE)
         {
             for (auto staId : staIds)
             {
-                // equal split
                 const auto ccIndex =
                     (contentChannels.at(0).size() <= contentChannels.at(1).size()) ? 0 : 1;
                 const auto& userInfo = txVector.GetHeMuUserInfo(staId);
@@ -717,77 +724,87 @@ HePpdu::GetHeSigBContentChannels(const WifiTxVector& txVector, uint8_t p20Index)
             continue;
         }
 
-        const auto mc = txVector.GetModulationClass();
-        const auto numRus = WifiRu::GetNRus(MHz_t{20}, ruType, mc);
-        while (prevRuIndex < ruIndex - 1)
+        if ((ruType == RuType::RU_26_TONE) && (channelWidth >= MHz_t{80}))
         {
-            std::size_t ccIndex{0};
-            if (channelWidth < MHz_t{40})
+            // "ignore" the center 26-tone RUs in 80 MHz channels
+            ruIdx = (ruIdx > 19) ? (ruIdx - 1) : ruIdx;
+            ruPhyIndex = (ruPhyIndex > 19) ? (ruPhyIndex - 1) : ruPhyIndex;
+            if (ruPhyIndex > 37)
             {
-                // only one content channel
-                ccIndex = 0;
+                ruPhyIndex -= (ruPhyIndex - 19) / 37;
             }
-            else if (txVector.IsSigBCompression())
-            {
-                // equal split
-                ccIndex = (contentChannels.at(0).size() <= contentChannels.at(1).size()) ? 0 : 1;
-            }
-            else
-            {
-                ccIndex = ((prevRuIndex / numRus) % 2 == 0) ? 0 : 1;
-            }
-            const auto central26TonesRus =
-                WifiRu::GetCentral26TonesRus(channelWidth, prevRuType, mc);
-            const auto isCentral26ToneRu = std::none_of(
-                central26TonesRus.cbegin(),
-                central26TonesRus.cend(),
-                [ruIndex, channelWidth, p20Index](const auto& ruSpec) {
-                    return WifiRu::GetPhyIndex(ruSpec, channelWidth, p20Index) == ruIndex;
-                });
-            if ((ruType < RuType::RU_242_TONE) && (prevCcIndex == ccIndex) &&
-                ((ruType != RuType::RU_26_TONE) || isCentral26ToneRu))
-            {
-                contentChannels[ccIndex].push_back({NO_USER_STA_ID, 0, 0});
-            }
-            ++prevRuIndex;
-            prevCcIndex = ccIndex;
         }
-        prevRuIndex = ruIndex;
-        prevRuType = ruType;
+
+        const auto numRus = WifiRu::GetNRus(MHz_t{20}, ruType, mc);
+        std::size_t ccIndex{0};
+        if (channelWidth < MHz_t{40})
+        {
+            // only one content channel
+            ccIndex = 0;
+        }
+        else if (txVector.IsSigBCompression())
+        {
+            // MU-MIMO: equal split
+            ccIndex = (contentChannels.at(0).size() <= contentChannels.at(1).size()) ? 0 : 1;
+        }
+        else
+        {
+            ccIndex = (((ruIdx - 1) / numRus) % 2 == 0) ? 0 : 1;
+        }
+        const auto ruSpecsIdxIn80MHz = (ruIdx - 1) / numRus;
+        const auto ruOffsetIn80MHz = ruSpecsIdxIn80MHz * numRus;
+        auto ruSpecsIdx = (ruPhyIndex - 1) / numRus;
+        if (prevRuSpecsIdx && *prevRuSpecsIdx != ruSpecsIdx)
+        {
+            // we are in a different 20 MHz subchannel, we need to fill the remaining RUs in
+            // previous 20 MHz subchannel that are not allocated (if any)
+            auto& rus = ruSpecs.at(*prevRuSpecsIdx);
+            for (std::size_t i = 0; i < rus.size(); ++i)
+            {
+                // since we are in a different 20 MHz subchannel than the one being processed, we
+                // need to use the other content channel index
+                const auto otherCcIndex = (ccIndex == 0) ? 1 : 0;
+                contentChannels.at(otherCcIndex).push_back({.staId = NO_USER_STA_ID});
+            }
+        }
+        prevRuSpecsIdx = ruSpecsIdx;
+        auto& rus = ruSpecs.at(ruSpecsIdx);
+        // loop over the RUs in the current 20 MHz subchannel and fill in the RUs that are not
+        // allocated between the previous allocated RU and the current one
+        while (!rus.empty() && ((WifiRu::GetRuType(rus.front()) != ruType) ||
+                                (WifiRu::GetIndex(rus.front()) != (ruIdx - ruOffsetIn80MHz))))
+        {
+            contentChannels.at(ccIndex).push_back({.staId = NO_USER_STA_ID});
+            // allocated current RU to an empty user, so we can remove it from the list
+            rus.erase(rus.cbegin());
+        }
+        // fill the content channel with the current RU and the user(s) allocated to it
         for (auto staId : staIds)
         {
             const auto& userInfo = txVector.GetHeMuUserInfo(staId);
             NS_ASSERT(ru == userInfo.ru);
-            std::size_t ccIndex{0};
-            if (channelWidth < MHz_t{40})
-            {
-                // only one content channel
-                ccIndex = 0;
-            }
-            else if (txVector.IsSigBCompression())
-            {
-                // MU-MIMO: equal split
-                ccIndex = (contentChannels.at(0).size() <= contentChannels.at(1).size()) ? 0 : 1;
-            }
-            else
-            {
-                if (ruType == RuType::RU_26_TONE && ruIdx > 19)
-                {
-                    // "ignore" the center 26-tone RUs in 80 MHz channels
-                    ruIdx--;
-                    if (ruIdx > 37)
-                    {
-                        NS_ASSERT(!WifiRu::IsHe(ru));
-                        ruIdx -= (ruIdx - 19) / 37;
-                    }
-                }
-                ccIndex = (((ruIdx - 1) / numRus) % 2 == 0) ? 0 : 1;
-            }
             contentChannels.at(ccIndex).push_back({staId, userInfo.nss, userInfo.mcs});
-            prevCcIndex = ccIndex;
+        }
+        // remove the current RU from the list, since it has been allocated
+        if (!rus.empty())
+        {
+            rus.erase(rus.cbegin());
+        }
+        ++nAllocatedUsers;
+        // we reached the last allocated user in the last 20 MHz subchannel, we need to fill the
+        // remaining RUs that are not allocated (if any)
+        if (nAllocatedUsers == orderedMap.size())
+        {
+            while (!rus.empty())
+            {
+                contentChannels.at(ccIndex).push_back({.staId = NO_USER_STA_ID});
+                auto rusBegin = rus.begin();
+                rus.erase(rusBegin);
+            }
         }
     }
 
+    // finally, add the center 26-tone RUs, if any, to the content channels
     if (cc1Central26ToneRu)
     {
         contentChannels.at(0).push_back(*cc1Central26ToneRu);
@@ -797,13 +814,14 @@ HePpdu::GetHeSigBContentChannels(const WifiTxVector& txVector, uint8_t p20Index)
         contentChannels.at(1).push_back(*cc2Central26ToneRu);
     }
 
+    // check that the content channels returned by the function match with
+    // GetNumRusPerHeSigBContentChannel
     const auto isSigBCompression = txVector.IsSigBCompression();
     if (!isSigBCompression)
     {
-        // Add unassigned RUs
         auto numNumRusPerHeSigBContentChannel = GetNumRusPerHeSigBContentChannel(
             channelWidth,
-            txVector.GetModulationClass(),
+            mc,
             txVector.GetRuAllocation(p20Index),
             txVector.GetCenter26ToneRuIndication(),
             isSigBCompression,
@@ -814,12 +832,7 @@ HePpdu::GetHeSigBContentChannels(const WifiTxVector& txVector, uint8_t p20Index)
             const auto totalUsersInContentChannel = (contentChannelIndex == 1)
                                                         ? numNumRusPerHeSigBContentChannel.first
                                                         : numNumRusPerHeSigBContentChannel.second;
-            NS_ASSERT(contentChannel.size() <= totalUsersInContentChannel);
-            std::size_t unallocatedRus = totalUsersInContentChannel - contentChannel.size();
-            for (std::size_t i = 0; i < unallocatedRus; i++)
-            {
-                contentChannel.push_back({NO_USER_STA_ID, 0, 0});
-            }
+            NS_ASSERT(contentChannel.size() == totalUsersInContentChannel);
             contentChannelIndex++;
         }
     }

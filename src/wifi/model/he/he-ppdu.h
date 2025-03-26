@@ -38,9 +38,9 @@ class HePpdu : public OfdmPpdu
     /// User Specific Fields in HE-SIG-Bs.
     struct HeSigBUserSpecificField
     {
-        uint16_t staId : 11; ///< STA-ID
-        uint8_t nss : 4;     ///< number of spatial streams
-        uint8_t mcs : 4;     ///< MCS index
+        uint16_t staId : 11 {NO_USER_STA_ID}; ///< STA-ID
+        uint8_t nss : 4 {1};                  ///< number of spatial streams
+        uint8_t mcs : 4 {0};                  ///< MCS index
     };
 
     /// HE SIG-B Content Channels
