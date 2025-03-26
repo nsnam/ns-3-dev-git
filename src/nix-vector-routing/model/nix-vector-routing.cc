@@ -30,16 +30,19 @@ NS_LOG_COMPONENT_DEFINE("NixVectorRouting");
 NS_OBJECT_TEMPLATE_CLASS_DEFINE(NixVectorRouting, Ipv4RoutingProtocol);
 NS_OBJECT_TEMPLATE_CLASS_DEFINE(NixVectorRouting, Ipv6RoutingProtocol);
 
+/// Flag to mark when caches are dirty and need to be flushed
 template <typename T>
 bool NixVectorRouting<T>::g_isCacheDirty = false;
 
-// Epoch starts from one to make it easier to spot an uninitialized NixVector during debug.
+/// Epoch starts from one to make it easier to spot an uninitialized NixVector during debug.
 template <typename T>
 uint32_t NixVectorRouting<T>::g_epoch = 1;
 
+/// Mapping of IP address to ns-3 node
 template <typename T>
 typename NixVectorRouting<T>::IpAddressToNodeMap NixVectorRouting<T>::g_ipAddressToNodeMap;
 
+/// Mapping of Ptr<NetDevice> to Ptr<IpInterface>.
 template <typename T>
 typename NixVectorRouting<T>::NetDeviceToIpInterfaceMap
     NixVectorRouting<T>::g_netdeviceToIpInterfaceMap;
