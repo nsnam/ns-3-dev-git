@@ -14,7 +14,11 @@
 #include "wifi-mpdu.h"
 #include "wifi-phy.h"
 
+#include "ns3/attribute-container.h"
+#include "ns3/boolean.h"
 #include "ns3/log.h"
+#include "ns3/pair.h"
+#include "ns3/uinteger.h"
 
 namespace ns3
 {
@@ -26,13 +30,42 @@ NS_OBJECT_ENSURE_REGISTERED(PowerSaveManager);
 TypeId
 PowerSaveManager::GetTypeId()
 {
-    static TypeId tid = TypeId("ns3::PowerSaveManager").SetParent<Object>().SetGroupName("Wifi");
+    static TypeId tid =
+        TypeId("ns3::PowerSaveManager")
+            .SetParent<Object>()
+            .SetGroupName("Wifi")
+            .AddAttribute(
+                "PowerSaveMode",
+                "Enable/disable power save mode on the given links. If a string is used to "
+                "set this attribute, the string must contain a comma-separated list of pairs, "
+                "where each pair is made of the link ID and a boolean value (indicating whether "
+                "to enable PS mode on that link), separated by a space. If this object is not "
+                "initialized yet when this attribute is set, the settings are stored and notified "
+                "to the STA wifi MAC upon initialization.",
+                StringValue(""),
+                MakeAttributeContainerAccessor<PairValue<UintegerValue, BooleanValue>>(
+                    &PowerSaveManager::SetPowerSaveMode),
+                MakeAttributeContainerChecker<PairValue<UintegerValue, BooleanValue>>(
+                    MakePairChecker<UintegerValue, BooleanValue>(MakeUintegerChecker<uint8_t>(),
+                                                                 MakeBooleanChecker())));
     return tid;
 }
 
 PowerSaveManager::~PowerSaveManager()
 {
     NS_LOG_FUNCTION_NOARGS();
+}
+
+void
+PowerSaveManager::DoInitialize()
+{
+    NS_LOG_FUNCTION(this);
+
+    for (const auto& [linkId, enablePs] : m_linkIdEnableMap)
+    {
+        m_staMac->SetPowerSaveMode({enablePs, linkId});
+    }
+    m_linkIdEnableMap.clear();
 }
 
 void
@@ -65,6 +98,22 @@ PowerSaveManager::GetStaInfo(uint8_t linkId)
 {
     NS_ASSERT(m_staInfo.contains(linkId));
     return m_staInfo.at(linkId);
+}
+
+void
+PowerSaveManager::SetPowerSaveMode(const std::map<uint8_t, bool>& linkIdEnableMap)
+{
+    for (const auto& [linkId, enablePs] : linkIdEnableMap)
+    {
+        if (m_staMac && m_staMac->IsInitialized())
+        {
+            m_staMac->SetPowerSaveMode({enablePs, linkId});
+        }
+        else
+        {
+            m_linkIdEnableMap[linkId] = enablePs;
+        }
+    }
 }
 
 void

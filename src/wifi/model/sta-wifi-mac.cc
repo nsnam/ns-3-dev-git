@@ -111,6 +111,7 @@ StaWifiMac::GetTypeId()
                           PointerValue(),
                           MakePointerAccessor(&StaWifiMac::m_powerSaveManager),
                           MakePointerChecker<PowerSaveManager>())
+            // NS_DEPRECATED_3_45
             .AddAttribute(
                 "PowerSaveMode",
                 "Enable/disable power save mode on the given link. The power management mode is "
@@ -120,7 +121,9 @@ StaWifiMac::GetTypeId()
                 PairValue<BooleanValue, UintegerValue>(),
                 MakePairAccessor<BooleanValue, UintegerValue>(&StaWifiMac::SetPowerSaveMode),
                 MakePairChecker<BooleanValue, UintegerValue>(MakeBooleanChecker(),
-                                                             MakeUintegerChecker<uint8_t>()))
+                                                             MakeUintegerChecker<uint8_t>()),
+                TypeId::SupportLevel::DEPRECATED,
+                "Use PowerSaveManager::PowerSaveMode instead")
             .AddAttribute("PmModeSwitchTimeout",
                           "If switching to a new Power Management mode is not completed within "
                           "this amount of time, make another attempt at switching Power "
@@ -200,6 +203,10 @@ StaWifiMac::DoInitialize()
     if (m_emlsrManager)
     {
         m_emlsrManager->Initialize();
+    }
+    if (m_powerSaveManager)
+    {
+        m_powerSaveManager->Initialize();
     }
     StartScanning();
     NS_ABORT_IF(!TraceConnectWithoutContext("AckedMpdu", MakeCallback(&StaWifiMac::TxOk, this)));
