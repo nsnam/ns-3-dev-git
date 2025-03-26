@@ -14,9 +14,11 @@
 #include <filesystem>
 #include <fstream>
 #include <limits>
+#include <map>
 #include <string>
 #include <thread>
 #include <tuple>
+#include <vector>
 
 using namespace ns3;
 
@@ -131,12 +133,9 @@ main(int argc, char* argv[])
         results.emplace_back(mcs, width, gi, throughput * 1e6);
     }
 
-    uint8_t index{0};
-    uint8_t prevMcs{0};
-    DataRate prevThroughput;
-    const auto maxNumWidthCombinations = 4;
-    const auto maxNumGiCombinations = 3;
-    std::array<DataRate, maxNumGiCombinations * maxNumWidthCombinations> prevThroughputs;
+    std::optional<uint8_t> prevMcs;
+    std::optional<DataRate> prevThroughput;
+    std::map<std::pair<MHz_t, Time>, DataRate> prevThroughputs;
     std::size_t resultIndex{0};
     for (const auto& [mcs, width, gi, throughput] : results)
     {
@@ -147,7 +146,6 @@ main(int argc, char* argv[])
         }
         if (mcs != prevMcs)
         {
-            index = 0;
             prevThroughput = 0.0;
             prevMcs = mcs;
         }
@@ -173,7 +171,7 @@ main(int argc, char* argv[])
         }
 
         // test previous throughput is smaller (for the same mcs)
-        if (throughput * (1.0 + tolerance) > prevThroughput)
+        if (throughput * (1.0 + tolerance) > *prevThroughput)
         {
             prevThroughput = throughput;
         }
@@ -184,17 +182,17 @@ main(int argc, char* argv[])
         }
 
         // test previous throughput is smaller (for the same channel width and GI)
-        if (throughput * (1.0 + tolerance) > prevThroughputs[index])
+        const auto widthGiPair = std::make_pair(width, gi);
+        auto [it, inserted] = prevThroughputs.try_emplace(widthGiPair, DataRate());
+        if (throughput * (1.0 + tolerance) > it->second)
         {
-            prevThroughputs[index] = throughput;
+            it->second = throughput;
         }
         else if (throughput > 0.0)
         {
             NS_LOG_ERROR("Obtained throughput " << throughput << " is not expected!");
             exit(1);
         }
-
-        index++;
     }
 
     return 0;
