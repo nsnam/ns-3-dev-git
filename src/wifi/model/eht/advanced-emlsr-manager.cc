@@ -757,7 +757,6 @@ AdvancedEmlsrManager::RequestMainPhyToSwitch(uint8_t linkId, AcIndex aci, const 
 
     // the aux PHY is not TX capable; check if main PHY has to switch to the aux PHY's link
     auto mainPhy = GetStaMac()->GetDevice()->GetPhy(m_mainPhyId);
-    const auto mainPhyLinkId = GetStaMac()->GetLinkForPhy(mainPhy);
 
     // if main PHY is not operating on a link and is trying to start a (DL or UL) TXOP, then do
     // not request another switch
@@ -825,6 +824,17 @@ AdvancedEmlsrManager::RequestMainPhyToSwitch(uint8_t linkId, AcIndex aci, const 
     if (!m_checkAccessOnMainPhyLink && (aci >= m_minAcToSkipCheckAccess))
     {
         NS_LOG_DEBUG("Skipping check related to the expected channel access time on main PHY link");
+        return true;
+    }
+
+    const auto mainPhyLinkId = GetStaMac()->GetLinkForPhy(mainPhy);
+    if (!mainPhyLinkId.has_value())
+    {
+        NS_ASSERT(m_mainPhySwitchInfo.disconnected);
+        NS_LOG_DEBUG("The main PHY is not connected to any link");
+        // we don't know when the main PHY will be connected to the link it is switching to, nor
+        // which backoff value it will possibly generate; therefore, request it to switch to the
+        // aux PHY link
         return true;
     }
 
