@@ -150,7 +150,6 @@ class VideoTraffic : public SourceApplication
     void TxAvailable(Ptr<Socket> socket, uint32_t available);
 
     TrafficModelClassIdentifier m_trafficModelClassId; //!< The Traffic Model Class Identifier
-    TypeId m_tid;                                      //!< Type of the socket used
     DataRate m_bitRate;                                //!< Video bit rate (if model is custom)
     double m_weibullScale; //!< Scale parameter for the Weibull distribution (if model is custom)
     double m_weibullShape; //!< Shape parameter for the Weibull distribution (if model is custom)

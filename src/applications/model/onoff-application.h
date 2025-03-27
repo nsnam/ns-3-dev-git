@@ -143,7 +143,6 @@ class OnOffApplication : public SourceApplication
     uint64_t m_totBytes{0};              //!< Total bytes sent so far
     EventId m_startStopEvent;            //!< Event id for next start or stop event
     EventId m_sendEvent;                 //!< Event id of pending "send packet" event
-    TypeId m_tid;                        //!< Type of the socket used
     uint32_t m_seq{0};                   //!< Sequence
     Ptr<Packet> m_unsentPacket;          //!< Unsent packet cached for future attempt
     bool m_enableSeqTsSizeHeader{false}; //!< Enable or disable the use of SeqTsSizeHeader

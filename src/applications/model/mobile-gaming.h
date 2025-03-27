@@ -93,7 +93,6 @@ class MobileGaming : public SourceApplication
      */
     void ConnectionFailed(Ptr<Socket> socket);
 
-    TypeId m_tid;            //!< Type of the socket used
     bool m_connected{false}; //!< True if connected
 
     Ptr<UniformRandomVariable>

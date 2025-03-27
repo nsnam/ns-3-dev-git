@@ -83,6 +83,7 @@ UdpClient::GetTypeId()
 UdpClient::UdpClient()
 {
     NS_LOG_FUNCTION(this);
+    m_tid = TypeId::LookupByName("ns3::UdpSocketFactory");
 }
 
 UdpClient::~UdpClient()
@@ -159,8 +160,7 @@ UdpClient::StartApplication()
 
     if (!m_socket)
     {
-        auto tid = TypeId::LookupByName("ns3::UdpSocketFactory");
-        m_socket = Socket::CreateSocket(GetNode(), tid);
+        m_socket = Socket::CreateSocket(GetNode(), m_tid);
         NS_ABORT_MSG_IF(m_peer.IsInvalid(), "Remote address not properly set");
         if (!m_local.IsInvalid())
         {

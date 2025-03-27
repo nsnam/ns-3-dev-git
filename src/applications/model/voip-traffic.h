@@ -142,7 +142,6 @@ class VoipTraffic : public SourceApplication
      */
     void ConnectionFailed(Ptr<Socket> socket);
 
-    TypeId m_tid;            //!< Type of the socket used
     bool m_connected{false}; //!< True if connected
 
     uint32_t m_activePacketSize;  //!< Size in bytes for payload of active packets

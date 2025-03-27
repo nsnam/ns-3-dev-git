@@ -125,7 +125,6 @@ class VirtualDesktop : public SourceApplication
      */
     void TxAvailable(Ptr<Socket> socket, uint32_t available);
 
-    TypeId m_tid;               //!< Type of the socket used
     bool m_connected{false};    //!< True if connected
     bool m_initialPacket{true}; //!< True if the next packet to send is the initial packet
 
