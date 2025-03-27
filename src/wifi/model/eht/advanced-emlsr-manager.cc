@@ -1074,9 +1074,10 @@ AdvancedEmlsrManager::SwitchMainPhyIfTxopToBeGainedByAuxPhy(uint8_t linkId,
         // this is scheduled before starting the main PHY switch, hence it is executed before the
         // main PHY is connected to the aux PHY link
 
-        if (!m_switchMainPhyBackEvent.IsPending())
+        if (!m_switchAuxPhy && !m_switchMainPhyBackEvent.IsPending())
         {
-            // the channel switch was interrupted, nothing to check
+            // if SwitchAuxPhy is false and the switch main PHY back timer is not running, it means
+            // that the channel switch was interrupted, hence there is nothing to check
             return;
         }
 
