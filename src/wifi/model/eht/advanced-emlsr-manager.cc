@@ -410,8 +410,7 @@ AdvancedEmlsrManager::DoNotifyTxopEnd(uint8_t linkId, Ptr<QosTxop> edca)
                       "Main PHY should not be switching at the end of a DL TXOP");
 
         if (GetStaMac()->GetChannelAccessManager(linkId)->GetExpectedAccessWithin(
-                m_switchMainPhyBackDelay + mainPhy->GetChannelSwitchDelay()) ==
-            WifiExpectedAccessReason::ACCESS_EXPECTED)
+                m_switchMainPhyBackDelay) == WifiExpectedAccessReason::ACCESS_EXPECTED)
         {
             NS_LOG_DEBUG("Keep main PHY on link " << +linkId << " to try to gain an UL TXOP");
             m_switchMainPhyBackEvent =
