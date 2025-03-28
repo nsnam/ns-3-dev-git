@@ -626,9 +626,8 @@ EmlsrManager::CheckPossiblyReceivingIcf(uint8_t linkId) const
     {
         // we have not yet received the MAC header or we cannot use its info
 
-        auto ongoingRxInfo = GetEhtFem(linkId)->GetOngoingRxInfo();
-        // if a PHY is in RX state, it should have info about received MAC header.
-        // The exception is represented by this situation:
+        // even if a PHY is in RX state, it may not have info about received MAC header.
+        // This may happen, e.g., when:
         // - an aux PHY is disconnected from the MAC stack because the main PHY is
         //   operating on its link
         // - the main PHY notifies the MAC header info to the FEM and then leaves the
@@ -637,15 +636,9 @@ EmlsrManager::CheckPossiblyReceivingIcf(uint8_t linkId) const
         //   MAC header info to be discarded by the FEM
         // - the aux PHY is re-connected to the MAC stack and is still in RX state
         //   when the main PHY gets channel access on another link (and we get here)
-        if (!ongoingRxInfo.has_value())
-        {
-            NS_ASSERT_MSG(phy != GetStaMac()->GetDevice()->GetPhy(GetMainPhyId()),
-                          "Main PHY should have MAC header info when in RX state");
-            // we are in the situation described above; if the MPDU being received
-            // by the aux PHY is not addressed to the EMLSR client, we can ignore it
-        }
-        else if (const auto& txVector = ongoingRxInfo->get().txVector;
-                 txVector.GetModulationClass() < WIFI_MOD_CLASS_HT)
+        if (auto ongoingRxInfo = GetEhtFem(linkId)->GetOngoingRxInfo();
+            ongoingRxInfo.has_value() &&
+            ongoingRxInfo->get().txVector.GetModulationClass() < WIFI_MOD_CLASS_HT)
         {
             if (auto remTime = phy->GetTimeToMacHdrEnd(SU_STA_ID);
                 m_useNotifiedMacHdr && remTime.has_value() && remTime->IsStrictlyPositive())
