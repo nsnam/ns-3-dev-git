@@ -1572,6 +1572,25 @@ EhtFrameExchangeManager::ShallDropReceivedMpdu(Ptr<const WifiMpdu> mpdu) const
         return false;
     }
 
+    // discard any frame received after scheduling a CTS response. It has been observed that
+    // an ICF may be received by both the main PHY and an aux PHY (leading to scheduling a
+    // CTS response twice) if:
+    // - the main PHY switches to an aux PHY link and completes the switch during the preamble
+    //   detection period for a PPDU (that is not an ICF), hence main PHY connection is postponed
+    // - right afterwards, an ICF is transmitted on the aux PHY link (collision with the other
+    //   PPDU)
+    // - the main PHY starts receiving the ICF, and so does the aux PHY because the ICF signal
+    //   is stronger
+    // - at the end of the ICF reception, the aux PHY notifies the ICF to the FEM, which schedules
+    //   a CTS and connects the main PHY to the link; then, the main PHY notifies the ICF to the
+    //   FEM again
+    if (m_sendCtsEvent.IsPending())
+    {
+        NS_LOG_DEBUG("Dropping " << *mpdu << " received when CTS is scheduled for TX on link "
+                                 << +m_linkId);
+        return true;
+    }
+
     const auto& hdr = mpdu->GetHeader();
 
     // We impose that an aux PHY is only able to receive an ICF, a CF-End, a CTS or a management
