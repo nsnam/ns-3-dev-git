@@ -249,6 +249,45 @@ GetModulationClassForStandard(WifiStandard standard)
     return modulationClass;
 }
 
+std::set<MHz_t>
+GetSupportedChannelWidthSet(WifiStandard standard, WifiPhyBand band)
+{
+    switch (standard)
+    {
+    case WIFI_STANDARD_80211p:
+        return {MHz_t{5}};
+    case WIFI_STANDARD_80211a:
+    case WIFI_STANDARD_80211g:
+        return {MHz_t{20}};
+    case WIFI_STANDARD_80211b:
+        return {MHz_t{22}};
+    case WIFI_STANDARD_80211n:
+        return {MHz_t{20}, MHz_t{40}};
+    case WIFI_STANDARD_80211ac:
+        return {MHz_t{80}, MHz_t{160}};
+    case WIFI_STANDARD_80211ax:
+        return (band == WifiPhyBand::WIFI_PHY_BAND_2_4GHZ) ? std::set<MHz_t>{MHz_t{20}, MHz_t{40}}
+                                                           : std::set<MHz_t>{MHz_t{80}, MHz_t{160}};
+    case WIFI_STANDARD_80211be:
+    case WIFI_STANDARD_80211bn:
+        switch (band)
+        {
+        case WifiPhyBand::WIFI_PHY_BAND_2_4GHZ:
+            return {MHz_t{20}, MHz_t{40}};
+        case WifiPhyBand::WIFI_PHY_BAND_5GHZ:
+            return {MHz_t{80}, MHz_t{160}};
+        case WifiPhyBand::WIFI_PHY_BAND_6GHZ:
+            return {MHz_t{20}, MHz_t{80}, MHz_t{160}, MHz_t{320}};
+        default:
+            NS_ABORT_MSG("Unknown band: " << band);
+            return {};
+        }
+    default:
+        NS_ABORT_MSG("Unknown standard: " << standard);
+        return {};
+    }
+}
+
 MHz_t
 GetMaximumChannelWidth(WifiModulationClass modulation)
 {
