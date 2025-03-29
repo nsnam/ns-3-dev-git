@@ -19,6 +19,7 @@
 #include "ns3/ptr.h"
 
 #include <ostream>
+#include <set>
 #include <vector>
 
 /**
@@ -680,6 +681,15 @@ bool IsUlMu(WifiPreamble preamble);
  * @return the modulation class corresponding to the standard
  */
 WifiModulationClass GetModulationClassForStandard(WifiStandard standard);
+
+/**
+ * Get the supported channel width set that can be advertised in PHY capabilities.
+ *
+ * @param standard the standard
+ * @param band the PHY band
+ * @return the supported channel width set that can be advertised for the given standard and band
+ */
+std::set<MHz_u> GetSupportedChannelWidthSet(WifiStandard standard, WifiPhyBand band);
 
 /**
  * Get the maximum channel width allowed for the given modulation class.
