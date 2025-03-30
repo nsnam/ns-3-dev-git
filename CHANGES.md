@@ -24,6 +24,7 @@ This file is a best-effort approach to solving this issue; we will do our best b
 * (wifi) Added a new `AssocType` attribute to `StaWifiMac` to configure the type of association performed by a device, provided that it is supported by the standard configured for the device. By using this attribute, it is possible for an EHT single-link device to perform ML setup with an AP MLD and for an EHT multi-link device to perform legacy association with an AP MLD.
 * (wifi) Added a new `WifiMac::ReceivedPsdu` trace source, which is fired every time a PSDU is successfully received by the PHY and passed to the MAC to be processed. This trace provides the received PSDU, the TXVECTOR used to transmit the PSDU, the ID of the link on which the PSDU was received and the ID of the PHY that received the PSDU.
 * (wifi) Added a new attribute (`KeepMainPhyAfterDlTxop`) to the `AdvancedEmlsrManager` to control whether, after the end of a DL TXOP carried out on an aux PHY link, the main PHY shall stay on that link (for a switch main PHY back delay) in the attempt to gain an UL TXOP. This attribute is applicable to the case in which aux PHYs are not TX capable and do not switch link.
+* (applications) New trace sources `SourceApplication::ConnectionSucceeded` and `SourceApplication::ConnectionFailed` have been added to report connection success/failure events.
 
 ### Changes to existing API
 

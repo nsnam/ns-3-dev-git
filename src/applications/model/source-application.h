@@ -80,6 +80,19 @@ class SourceApplication : public Application
     /// Traced Callback: transmitted packets.
     TracedCallback<Ptr<const Packet>> m_txTrace;
 
+    /**
+     * TracedCallback signature for connection success/failure event.
+     *
+     * @param [in] socket The socket for which connection succeeded/failed.
+     */
+    typedef void (*ConnectionEventCallback)(Ptr<Socket> socket);
+
+    /// Traced Callback: connection success event.
+    TracedCallback<Ptr<Socket>> m_connectionSuccess;
+
+    /// Traced Callback: connection failure event.
+    TracedCallback<Ptr<Socket>> m_connectionFailure;
+
     Ptr<Socket> m_socket; //!< Socket
 
     TypeId m_tid; //!< Protocol TypeId
