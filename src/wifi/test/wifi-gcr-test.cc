@@ -744,9 +744,9 @@ GcrTestBase::DoSetup()
     // WifiHelper::EnableLogComponents();
     // LogComponentEnable("WifiGcrTest", LOG_LEVEL_ALL);
 
-    RngSeedManager::SetSeed(1);
-    RngSeedManager::SetRun(2);
-    int64_t streamNumber = 100;
+    RngSeedManager::SetSeed(m_rngSeed);
+    RngSeedManager::SetRun(m_rngRun);
+    int64_t streamNumber = m_streamNo;
 
     Config::SetDefault("ns3::WifiMacQueue::MaxDelay", TimeValue(m_params.maxLifetime));
     const auto maxPacketsInQueue = std::max<uint16_t>(m_params.numGroupcastPackets + 1, 500);
@@ -1046,6 +1046,7 @@ GcrUrTest::GcrUrTest(const std::string& testName,
       m_gcrUrParams{gcrUrParams},
       m_currentUid{0}
 {
+    m_rngRun = 2;
 }
 
 void
@@ -1373,6 +1374,7 @@ GcrBaTest::GcrBaTest(const std::string& testName,
       m_lastTxSeq{-1},
       m_nTxGcrBarsInCurrentTxop{0}
 {
+    m_rngRun = 5;
 }
 
 void
