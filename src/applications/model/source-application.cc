@@ -51,7 +51,15 @@ SourceApplication::GetTypeId()
             .AddTraceSource("Tx",
                             "A packet is sent",
                             MakeTraceSourceAccessor(&SourceApplication::m_txTrace),
-                            "ns3::Packet::TracedCallback");
+                            "ns3::Packet::TracedCallback")
+            .AddTraceSource("ConnectionSucceeded",
+                            "Succeeded to establish connection",
+                            MakeTraceSourceAccessor(&SourceApplication::m_connectionSuccess),
+                            "ns3::SourceApplication::ConnectionEventCallback")
+            .AddTraceSource("ConnectionFailed",
+                            "Failed to establish connection",
+                            MakeTraceSourceAccessor(&SourceApplication::m_connectionFailure),
+                            "ns3::SourceApplication::ConnectionEventCallback");
     return tid;
 }
 
@@ -179,6 +187,7 @@ SourceApplication::ConnectionSucceeded(Ptr<Socket> socket)
     NS_LOG_FUNCTION(this << socket);
     m_connected = true;
     DoConnectionSucceeded(socket);
+    m_connectionSuccess(socket, m_local, m_peer);
 }
 
 void
@@ -187,6 +196,7 @@ SourceApplication::ConnectionFailed(Ptr<Socket> socket)
     NS_LOG_FUNCTION(this << socket);
     m_connected = false;
     DoConnectionFailed(socket);
+    m_connectionFailure(socket, m_local, m_peer);
 }
 
 void

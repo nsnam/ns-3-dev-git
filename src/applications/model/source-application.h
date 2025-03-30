@@ -81,6 +81,23 @@ class SourceApplication : public Application
     /// Traced Callback: transmitted packets.
     TracedCallback<Ptr<const Packet>> m_txTrace;
 
+    /**
+     * TracedCallback signature for connection success/failure event.
+     *
+     * @param [in] socket The socket for which connection succeeded/failed.
+     * @param [in] local The local address.
+     * @param [in] remote The remote address.
+     */
+    typedef void (*ConnectionEventCallback)(Ptr<Socket> socket,
+                                            const Address& local,
+                                            const Address& remote);
+
+    /// Traced Callback: connection success event.
+    TracedCallback<Ptr<Socket>, const Address&, const Address&> m_connectionSuccess;
+
+    /// Traced Callback: connection failure event.
+    TracedCallback<Ptr<Socket>, const Address&, const Address&> m_connectionFailure;
+
     Ptr<Socket> m_socket; //!< Socket
 
     TypeId m_protocolTid; //!< Protocol TypeId value
