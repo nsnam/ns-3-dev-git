@@ -192,9 +192,12 @@ class GcrTestBase : public TestCase
      */
     virtual bool IsUsingAmpduOrSmpdu() const;
 
-    std::string m_testName; ///< name of the test
-    GcrParameters m_params; ///< parameters for the test to run
-    bool m_expectGcrUsed;   ///< flag whether GCR is expected to be used during the test
+    std::string m_testName;  ///< name of the test
+    uint32_t m_rngSeed{1};   ///< RNG seed value
+    uint64_t m_rngRun{1};    ///< RNG run value
+    int64_t m_streamNo{100}; ///< RNG stream number
+    GcrParameters m_params;  ///< parameters for the test to run
+    bool m_expectGcrUsed;    ///< flag whether GCR is expected to be used during the test
     uint16_t m_expectedMaxNumMpdusInPsdu; ///< expected maximum number of MPDUs in PSDUs
 
     Ptr<ApWifiMac> m_apWifiMac;                 ///< AP wifi MAC
