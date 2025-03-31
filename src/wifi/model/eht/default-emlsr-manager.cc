@@ -201,7 +201,7 @@ DefaultEmlsrManager::DoGetDelayUntilAccessRequest(uint8_t linkId)
 }
 
 void
-DefaultEmlsrManager::DoNotifyIcfReceived(uint8_t linkId)
+DefaultEmlsrManager::DoNotifyDlTxopStart(uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << linkId);
 }

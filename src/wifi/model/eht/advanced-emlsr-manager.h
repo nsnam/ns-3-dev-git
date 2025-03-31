@@ -140,7 +140,7 @@ class AdvancedEmlsrManager : public DefaultEmlsrManager
 
   private:
     void DoNotifyTxopEnd(uint8_t linkId, Ptr<QosTxop> edca) override;
-    void DoNotifyIcfReceived(uint8_t linkId) override;
+    void DoNotifyDlTxopStart(uint8_t linkId) override;
     void DoNotifyUlTxopStart(uint8_t linkId) override;
 
     bool m_allowUlTxopInRx;        //!< whether a (main or aux) PHY is allowed to start an UL
