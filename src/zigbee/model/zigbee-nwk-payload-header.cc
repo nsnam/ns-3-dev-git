@@ -372,10 +372,29 @@ void
 ZigbeePayloadRouteReplyCommand::Serialize(Buffer::Iterator start) const
 {
     Buffer::Iterator i = start;
+
+    uint8_t cmdOption = 0;
+    if (m_cmdOptOrigIeeeAddr)
+    {
+        cmdOption |= (1 << 4);
+    }
+
+    if (m_cmdOptRespIeeeAddr)
+    {
+        cmdOption |= (1 << 5);
+    }
+
+    if (m_cmdOptMcst)
+    {
+        cmdOption |= (1 << 6);
+    }
+    i.WriteU8(cmdOption);
+
     i.WriteU8(m_routeReqId);
     WriteTo(i, m_origAddr);
     WriteTo(i, m_respAddr);
     i.WriteU8(m_pathCost);
+
     if (m_cmdOptOrigIeeeAddr)
     {
         WriteTo(i, m_origIeeeAddr);
@@ -391,10 +410,17 @@ uint32_t
 ZigbeePayloadRouteReplyCommand::Deserialize(Buffer::Iterator start)
 {
     Buffer::Iterator i = start;
+
+    uint8_t cmdOption = i.ReadU8();
+    m_cmdOptOrigIeeeAddr = (cmdOption & (1 << 4)) != 0;
+    m_cmdOptRespIeeeAddr = (cmdOption & (1 << 5)) != 0;
+    m_cmdOptMcst = (cmdOption & (1 << 6)) != 0;
+
     m_routeReqId = (i.ReadU8());
     ReadFrom(i, m_origAddr);
     ReadFrom(i, m_respAddr);
     m_pathCost = (i.ReadU8());
+
     if (m_cmdOptOrigIeeeAddr)
     {
         ReadFrom(i, m_origIeeeAddr);
