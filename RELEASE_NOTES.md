@@ -30,6 +30,8 @@ been tested on Linux. As of this release, the latest known version to work with 
 
 ### New user-visible features
 
+- (core ) !2385 - The function `Now()` will now print the real time since the beginning of the simulation instead of the real time since the last event call when `RealTimeSimulatorImpl` is used.
+
 ### Bugs fixed
 
 - (wifi) #2368 - Fix various issues related to Content Channels and RU allocation. Fixes mostly covers cases where OFDMA is used with central 26 tones, where a single user is being assigned the whole PPDU bandwidth or where a RU is larger than 20 MHz.

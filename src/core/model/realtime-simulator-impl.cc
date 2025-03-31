@@ -573,7 +573,7 @@ RealtimeSimulatorImpl::ScheduleNow(EventImpl* impl)
 Time
 RealtimeSimulatorImpl::Now() const
 {
-    return TimeStep(m_currentTs);
+    return TimeStep(m_running ? m_synchronizer->GetCurrentRealtime() : m_currentTs);
 }
 
 //
