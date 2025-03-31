@@ -109,7 +109,7 @@ class DefaultEmlsrManager : public EmlsrManager
                              uint8_t nextLinkId,
                              Ptr<WifiPhy> auxPhy,
                              Time duration) override;
-    void DoNotifyIcfReceived(uint8_t linkId) override;
+    void DoNotifyDlTxopStart(uint8_t linkId) override;
     void DoNotifyUlTxopStart(uint8_t linkId) override;
     void DoNotifyTxopEnd(uint8_t linkId, Ptr<QosTxop> edca) override;
     void DoNotifyProtectionCompleted(uint8_t linkId) override;

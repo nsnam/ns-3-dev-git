@@ -467,7 +467,7 @@ EmlsrManager::NotifyMgtFrameReceived(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
 }
 
 void
-EmlsrManager::NotifyIcfReceived(uint8_t linkId)
+EmlsrManager::NotifyDlTxopStart(uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << linkId);
 
@@ -538,7 +538,7 @@ EmlsrManager::NotifyIcfReceived(uint8_t linkId)
         SetSleepStateForAllAuxPhys(true);
     }
 
-    DoNotifyIcfReceived(linkId);
+    DoNotifyDlTxopStart(linkId);
 }
 
 std::pair<bool, Time>

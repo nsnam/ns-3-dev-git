@@ -234,11 +234,11 @@ class EmlsrManager : public Object
     void NotifyMgtFrameReceived(Ptr<const WifiMpdu> mpdu, uint8_t linkId);
 
     /**
-     * Notify the reception of an initial Control frame on the given link.
+     * Notify the start of a DL TXOP on the given link.
      *
-     * @param linkId the ID of the link on which the initial Control frame was received
+     * @param linkId the ID of the given link
      */
-    void NotifyIcfReceived(uint8_t linkId);
+    void NotifyDlTxopStart(uint8_t linkId);
 
     /**
      * Notify the start of an UL TXOP on the given link
@@ -580,7 +580,7 @@ class EmlsrManager : public Object
      *
      * @param linkId the ID of the link on which the initial Control frame was received
      */
-    virtual void DoNotifyIcfReceived(uint8_t linkId) = 0;
+    virtual void DoNotifyDlTxopStart(uint8_t linkId) = 0;
 
     /**
      * Notify the subclass of the start of an UL TXOP on the given link

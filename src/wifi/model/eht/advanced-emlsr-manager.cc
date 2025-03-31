@@ -722,7 +722,7 @@ AdvancedEmlsrManager::InterruptSwitchMainPhyBackTimerIfNeeded()
 }
 
 void
-AdvancedEmlsrManager::DoNotifyIcfReceived(uint8_t linkId)
+AdvancedEmlsrManager::DoNotifyDlTxopStart(uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << linkId);
     m_switchMainPhyBackEvent.Cancel();
