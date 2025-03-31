@@ -502,6 +502,7 @@ operator>(const U& lhs, const TracedValue<T>& rhs)
  *     the underlying values.
  */
 // clang-format off
+// Clang-format guard needed for version 18 only
 template <typename T, typename U>
 auto
 operator+(const TracedValue<T>& lhs, const TracedValue<U>& rhs)
@@ -532,6 +533,7 @@ operator+(const U& lhs, const TracedValue<T>& rhs) -> TracedValue<decltype(lhs +
 
 /** @copydoc operator+(const TracedValue<T>&lhs,const TracedValue<U>&rhs) */
 // clang-format off
+// Clang-format guard needed for version 18 only
 template <typename T, typename U>
 auto
 operator-(const TracedValue<T>& lhs, const TracedValue<U>& rhs)
@@ -562,6 +564,7 @@ operator-(const U& lhs, const TracedValue<T>& rhs) -> TracedValue<decltype(lhs -
 
 /** @copydoc operator+(const TracedValue<T>&lhs,const TracedValue<U>&rhs) */
 // clang-format off
+// Clang-format guard needed for version 18 only
 template <typename T, typename U>
 auto
 operator*(const TracedValue<T>& lhs, const TracedValue<U>& rhs)
@@ -592,6 +595,7 @@ operator*(const U& lhs, const TracedValue<T>& rhs) -> TracedValue<decltype(lhs +
 
 /** @copydoc operator+(const TracedValue<T>&lhs,const TracedValue<U>&rhs) */
 // clang-format off
+// Clang-format guard needed for version 18 only
 template <typename T, typename U>
 auto
 operator/(const TracedValue<T>& lhs, const TracedValue<U>& rhs)
@@ -622,6 +626,7 @@ operator/(const U& lhs, const TracedValue<T>& rhs) -> TracedValue<decltype(lhs /
 
 /** @copydoc operator+(const TracedValue<T>&lhs,const TracedValue<U>&rhs) */
 // clang-format off
+// Clang-format guard needed for version 18 only
 template <typename T, typename U>
 auto
 operator%(const TracedValue<T>& lhs, const TracedValue<U>& rhs)
@@ -652,6 +657,7 @@ operator%(const U& lhs, const TracedValue<T>& rhs) -> TracedValue<decltype(lhs %
 
 /** @copydoc operator+(const TracedValue<T>&lhs,const TracedValue<U>&rhs) */
 // clang-format off
+// Clang-format guard needed for version 18 only
 template <typename T, typename U>
 auto
 operator^(const TracedValue<T>& lhs, const TracedValue<U>& rhs)
@@ -682,6 +688,7 @@ operator^(const U& lhs, const TracedValue<T>& rhs) -> TracedValue<decltype(lhs ^
 
 /** @copydoc operator+(const TracedValue<T>&lhs,const TracedValue<U>&rhs) */
 // clang-format off
+// Clang-format guard needed for version 18 only
 template <typename T, typename U>
 auto
 operator|(const TracedValue<T>& lhs, const TracedValue<U>& rhs)
@@ -712,6 +719,7 @@ operator|(const U& lhs, const TracedValue<T>& rhs) -> TracedValue<decltype(lhs |
 
 /** @copydoc operator+(const TracedValue<T>&lhs,const TracedValue<U>&rhs) */
 // clang-format off
+// Clang-format guard needed for version 18 only
 template <typename T, typename U>
 auto
 operator&(const TracedValue<T>& lhs, const TracedValue<U>& rhs)
@@ -742,6 +750,7 @@ operator&(const U& lhs, const TracedValue<T>& rhs) -> TracedValue<decltype(lhs &
 
 /** @copydoc operator+(const TracedValue<T>&lhs,const TracedValue<U>&rhs) */
 // clang-format off
+// Clang-format guard needed for version 18 only
 template <typename T, typename U>
 auto
 operator<<(const TracedValue<T>& lhs, const TracedValue<U>& rhs)
@@ -772,6 +781,7 @@ operator<<(const U& lhs, const TracedValue<T>& rhs) -> TracedValue<decltype(lhs 
 
 /** @copydoc operator+(const TracedValue<T>&lhs,const TracedValue<U>&rhs) */
 // clang-format off
+// Clang-format guard needed for version 18 only
 template <typename T, typename U>
 auto
 operator>>(const TracedValue<T>& lhs, const TracedValue<U>& rhs)
