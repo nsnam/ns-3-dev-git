@@ -624,18 +624,21 @@ HtFrameExchangeManager::GetBar(AcIndex ac,
         }
     }
 
-    if (selectedBar && selectedBar->GetHeader().GetAddr2() != m_self)
+    if (selectedBar)
     {
-        // the selected BAR has MLD addresses in Addr1/Addr2, replace them with link addresses
-        // and move to the appropriate container queue
-        NS_ASSERT(selectedBar->GetHeader().GetAddr2() == m_mac->GetAddress());
-        DequeueMpdu(selectedBar);
-        const auto currAddr1 = selectedBar->GetHeader().GetAddr1();
-        auto addr1 =
-            GetWifiRemoteStationManager()->GetAffiliatedStaAddress(currAddr1).value_or(currAddr1);
-        selectedBar->GetHeader().SetAddr1(addr1);
-        selectedBar->GetHeader().SetAddr2(m_self);
-        queue->Enqueue(selectedBar);
+        if (const auto currAddr1 = selectedBar->GetHeader().GetAddr1();
+            currAddr1 == m_mac->GetMldAddress(currAddr1))
+        {
+            // the selected BAR has MLD addresses in Addr1/Addr2, replace them with link addresses
+            // and move to the appropriate container queue
+            DequeueMpdu(selectedBar);
+            const auto addr1 =
+                GetWifiRemoteStationManager()->GetAffiliatedStaAddress(currAddr1).value_or(
+                    currAddr1);
+            selectedBar->GetHeader().SetAddr1(addr1);
+            selectedBar->GetHeader().SetAddr2(m_self);
+            queue->Enqueue(selectedBar);
+        }
     }
 
     return selectedBar;
