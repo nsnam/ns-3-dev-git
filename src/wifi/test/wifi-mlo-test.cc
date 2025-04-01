@@ -3011,6 +3011,213 @@ StartSeqNoUpdateAfterAddBaTimeoutTest::DoRun()
     Simulator::Destroy();
 }
 
+BarAfterDroppedMpduTest::BarAfterDroppedMpduTest(WifiAssocType assocType)
+    : MultiLinkOperationsTestBase("Check correct reception of the BAR sent after dropping MPDUs",
+                                  1,
+                                  BaseParams{{"{1, 0, BAND_6GHZ, 0}"},
+                                             {"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
+                                             {},
+                                             assocType}),
+      m_staErrorModel(CreateObject<ListErrorModel>()),
+      m_apErrorModel(CreateObject<ListErrorModel>())
+{
+}
+
+void
+BarAfterDroppedMpduTest::DoSetup()
+{
+    // Set the frame retry limit to 1 so that QoS data frames are dropped after the first TX failure
+    Config::SetDefault("ns3::WifiMac::FrameRetryLimit", UintegerValue(1));
+    Config::SetDefault("ns3::WifiRemoteStationManager::IncrementRetryCountUnderBa",
+                       BooleanValue(true));
+
+    MultiLinkOperationsTestBase::DoSetup();
+
+    // install post reception error model on all STAs affiliated with non-AP MLD
+    for (const auto linkId : m_staMacs[0]->GetLinkIds())
+    {
+        m_staMacs[0]->GetWifiPhy(linkId)->SetPostReceptionErrorModel(m_staErrorModel);
+    }
+    // install post reception error model on all APs affiliated with the AP MLD
+    for (const auto linkId : m_apMac->GetLinkIds())
+    {
+        m_apMac->GetWifiPhy(linkId)->SetPostReceptionErrorModel(m_apErrorModel);
+    }
+}
+
+void
+BarAfterDroppedMpduTest::Transmit(Ptr<WifiMac> mac,
+                                  uint8_t phyId,
+                                  WifiConstPsduMap psduMap,
+                                  WifiTxVector txVector,
+                                  double txPowerW)
+{
+    MultiLinkOperationsTestBase::Transmit(mac, phyId, psduMap, txVector, txPowerW);
+
+    const auto psdu = psduMap.cbegin()->second;
+    const auto& hdr = psdu->GetHeader(0);
+
+    // nothing to do before setup is completed or if this is a Beacon frame
+    if (!m_setupDone || hdr.IsBeacon())
+    {
+        return;
+    }
+
+    auto linkId = mac->GetLinkForPhy(phyId);
+    NS_TEST_ASSERT_MSG_EQ(linkId.has_value(),
+                          true,
+                          "PHY " << +phyId << " is not operating on any link");
+
+    if (!m_events.empty())
+    {
+        // check that the expected frame is being transmitted
+        NS_TEST_EXPECT_MSG_EQ(WifiMacHeader(m_events.front().hdrType).GetTypeString(),
+                              std::string(hdr.GetTypeString()),
+                              "Unexpected MAC header type for frame #" << ++m_processedEvents);
+        // perform actions/checks, if any
+        if (m_events.front().func)
+        {
+            m_events.front().func(psdu, txVector, linkId.value());
+        }
+
+        m_events.pop_front();
+    }
+}
+
+void
+BarAfterDroppedMpduTest::StartTraffic()
+{
+    m_setupDone = true;
+    InsertEvents();
+
+    PacketSocketAddress sockAddr;
+    sockAddr.SetSingleDevice(m_apMac->GetDevice()->GetIfIndex());
+    sockAddr.SetPhysicalAddress(m_staMacs[0]->GetAddress());
+    sockAddr.SetProtocol(1);
+
+    // install client application generating 2 packets of 1000 bytes on the AP MLD
+    m_apMac->GetDevice()->GetNode()->AddApplication(GetApplication(sockAddr, 2, 1000));
+}
+
+void
+BarAfterDroppedMpduTest::InsertEvents()
+{
+    // lambda returning the UIDs of all MPDUs in the given PSDU
+    auto getUids = [](Ptr<const WifiPsdu> psdu) {
+        std::list<uint64_t> uids;
+        for (const auto& mpdu : *PeekPointer(psdu))
+        {
+            uids.push_back(mpdu->GetPacket()->GetUid());
+        }
+        return uids;
+    };
+
+    // BlockAck agreement establishment (AP MLD -> non-AP STA)
+    m_events.emplace_back(WIFI_MAC_MGT_ACTION);
+    m_events.emplace_back(WIFI_MAC_CTL_ACK);
+    m_events.emplace_back(WIFI_MAC_MGT_ACTION);
+    m_events.emplace_back(WIFI_MAC_CTL_ACK);
+
+    m_events.emplace_back(
+        WIFI_MAC_QOSDATA,
+        [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, uint8_t linkId) {
+            NS_TEST_EXPECT_MSG_EQ(psdu->GetAddr2(),
+                                  m_apMac->GetFrameExchangeManager(linkId)->GetAddress(),
+                                  "Unexpected TA for the data frame sent by the AP");
+            NS_TEST_EXPECT_MSG_EQ(psdu->GetNMpdus(), 2, "Expected to transmit an A-MPDU");
+
+            // corrupt all the MPDUs in the A-MPDU
+            m_staErrorModel->SetList(getUids(psdu));
+        });
+
+    // QoS data frames are dropped, thus expect a BAR to advance recipient window
+    m_events.emplace_back(
+        WIFI_MAC_CTL_BACKREQ,
+        [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, uint8_t linkId) {
+            NS_TEST_EXPECT_MSG_EQ(psdu->GetAddr2(),
+                                  m_apMac->GetFrameExchangeManager(linkId)->GetAddress(),
+                                  "Unexpected TA for the BlockAckReq sent by the AP");
+            NS_TEST_EXPECT_MSG_EQ(psdu->GetAddr1(),
+                                  m_staMacs[0]->GetAddress(),
+                                  "Unexpected RA for the BlockAckReq sent by the AP");
+        });
+
+    m_events.emplace_back(
+        WIFI_MAC_CTL_BACKRESP,
+        [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, uint8_t linkId) {
+            NS_TEST_EXPECT_MSG_EQ(psdu->GetAddr2(),
+                                  m_staMacs[0]->GetAddress(),
+                                  "Unexpected TA for the BlockAck sent by the non-AP STA");
+            NS_TEST_EXPECT_MSG_EQ(psdu->GetAddr1(),
+                                  m_staMacs[0]->GetBssid(linkId),
+                                  "Unexpected RA for the BlockAck sent by the non-AP STA");
+
+            // generate uplink frames
+            Simulator::Schedule(MilliSeconds(5), [=, this]() {
+                PacketSocketAddress sockAddr;
+                sockAddr.SetSingleDevice(m_staMacs[0]->GetDevice()->GetIfIndex());
+                sockAddr.SetPhysicalAddress(m_apMac->GetAddress());
+                sockAddr.SetProtocol(1);
+
+                // install client application generating 2 packets of 1000 bytes on the non-AP STA
+                m_staMacs[0]->GetDevice()->GetNode()->AddApplication(
+                    GetApplication(sockAddr, 2, 1000));
+            });
+        });
+
+    // BlockAck agreement establishment (non-AP STA -> AP MLD)
+    m_events.emplace_back(WIFI_MAC_MGT_ACTION);
+    m_events.emplace_back(WIFI_MAC_CTL_ACK);
+    m_events.emplace_back(WIFI_MAC_MGT_ACTION);
+    m_events.emplace_back(WIFI_MAC_CTL_ACK);
+
+    m_events.emplace_back(
+        WIFI_MAC_QOSDATA,
+        [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, uint8_t linkId) {
+            NS_TEST_EXPECT_MSG_EQ(psdu->GetAddr2(),
+                                  m_staMacs[0]->GetFrameExchangeManager(linkId)->GetAddress(),
+                                  "Unexpected TA for the data frame sent by the non-AP STA");
+            NS_TEST_EXPECT_MSG_EQ(psdu->GetNMpdus(), 2, "Expected to transmit an A-MPDU");
+
+            // corrupt all the MPDUs in the A-MPDU
+            m_apErrorModel->SetList(getUids(psdu));
+        });
+
+    // QoS data frames are dropped, thus expect a BAR to advance recipient window
+    m_events.emplace_back(
+        WIFI_MAC_CTL_BACKREQ,
+        [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, uint8_t linkId) {
+            NS_TEST_EXPECT_MSG_EQ(psdu->GetAddr2(),
+                                  m_staMacs[0]->GetAddress(),
+                                  "Unexpected TA for the BlockAckReq sent by the non-AP STA");
+            NS_TEST_EXPECT_MSG_EQ(psdu->GetAddr1(),
+                                  m_staMacs[0]->GetBssid(linkId),
+                                  "Unexpected RA for the BlockAckReq sent by the non-AP STA");
+        });
+
+    m_events.emplace_back(
+        WIFI_MAC_CTL_BACKRESP,
+        [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, uint8_t linkId) {
+            NS_TEST_EXPECT_MSG_EQ(psdu->GetAddr2(),
+                                  m_apMac->GetFrameExchangeManager(linkId)->GetAddress(),
+                                  "Unexpected TA for the BlockAck sent by the AP");
+            NS_TEST_EXPECT_MSG_EQ(psdu->GetAddr1(),
+                                  m_staMacs[0]->GetAddress(),
+                                  "Unexpected RA for the BlockAck sent by the AP");
+        });
+}
+
+void
+BarAfterDroppedMpduTest::DoRun()
+{
+    Simulator::Stop(m_duration);
+    Simulator::Run();
+
+    NS_TEST_EXPECT_MSG_EQ(m_events.empty(), true, "Not all events took place");
+
+    Simulator::Destroy();
+}
+
 WifiMultiLinkOperationsTestSuite::WifiMultiLinkOperationsTestSuite()
     : TestSuite("wifi-mlo", Type::UNIT)
 {
@@ -3279,6 +3486,8 @@ WifiMultiLinkOperationsTestSuite::WifiMultiLinkOperationsTestSuite()
 
     AddTestCase(new ReleaseSeqNoAfterCtsTimeoutTest(), TestCase::Duration::QUICK);
     AddTestCase(new StartSeqNoUpdateAfterAddBaTimeoutTest(), TestCase::Duration::QUICK);
+    AddTestCase(new BarAfterDroppedMpduTest(WifiAssocType::ML_SETUP), TestCase::Duration::QUICK);
+    AddTestCase(new BarAfterDroppedMpduTest(WifiAssocType::LEGACY), TestCase::Duration::QUICK);
 }
 
 static WifiMultiLinkOperationsTestSuite g_wifiMultiLinkOperationsTestSuite; ///< the test suite

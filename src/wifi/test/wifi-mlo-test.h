@@ -790,6 +790,73 @@ class StartSeqNoUpdateAfterAddBaTimeoutTest : public MultiLinkOperationsTestBase
  * @ingroup wifi-test
  * @ingroup tests
  *
+ * @brief Test BlockAckReq frame sent by a Block Ack originator after dropping QoS data frames
+ *
+ * In this test, a non-AP STA associates with an AP MLD with 2 links using either legacy association
+ * or ML setup. A Block Ack agreement is established first in the downlink direction; the AP MLD
+ * sends 2 data frames, which are both corrupted. When a timeout occurs at the AP MLD, the 2 data
+ * frames are dropped, thus the AP MLD sends a BlockAckReq to advance the recipient window. It is
+ * checked that the BlockAckReq has the correct link addresses and that the non-AP STA replies with
+ * a BlockAck having correct link addresses. Then, a Block Ack agreement is established in the
+ * uplink direction and the same pattern of actions are repeated (in the inverse direction).
+ */
+class BarAfterDroppedMpduTest : public MultiLinkOperationsTestBase
+{
+  public:
+    /**
+     * Constructor.
+     *
+     * @param assocType the association type
+     */
+    BarAfterDroppedMpduTest(WifiAssocType assocType);
+
+  protected:
+    void DoSetup() override;
+    void DoRun() override;
+    void Transmit(Ptr<WifiMac> mac,
+                  uint8_t phyId,
+                  WifiConstPsduMap psduMap,
+                  WifiTxVector txVector,
+                  double txPowerW) override;
+
+    /// Actions and checks to perform upon the transmission of each frame
+    struct Events
+    {
+        /**
+         * Constructor.
+         *
+         * @param type the frame MAC header type
+         * @param f function to perform actions and checks
+         */
+        Events(WifiMacType type,
+               std::function<void(Ptr<const WifiPsdu>, const WifiTxVector&, uint8_t)>&& f = {})
+            : hdrType(type),
+              func(f)
+        {
+        }
+
+        WifiMacType hdrType; ///< MAC header type of frame being transmitted
+        std::function<void(Ptr<const WifiPsdu>, const WifiTxVector&, uint8_t)>
+            func; ///< function to perform actions and checks
+    };
+
+    /// Insert elements in the list of expected events (transmitted frames)
+    void InsertEvents();
+
+  private:
+    void StartTraffic() override;
+
+    bool m_setupDone{false};             //!< whether association has been completed
+    std::list<Events> m_events;          //!< list of events for a test run
+    std::size_t m_processedEvents{0};    //!< number of processed events
+    Ptr<ListErrorModel> m_staErrorModel; //!< error rate model to corrupt frames at the non-AP STA
+    Ptr<ListErrorModel> m_apErrorModel;  //!< error rate model to corrupt frames at the AP MLD
+};
+
+/**
+ * @ingroup wifi-test
+ * @ingroup tests
+ *
  * @brief wifi 11be MLD Test Suite
  */
 class WifiMultiLinkOperationsTestSuite : public TestSuite
