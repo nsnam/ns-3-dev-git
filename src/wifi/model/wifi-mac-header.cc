@@ -1184,6 +1184,8 @@ WifiMacHeader::Print(std::ostream& os) const
         break;
     case WIFI_MAC_CTL_BACKREQ:
     case WIFI_MAC_CTL_BACKRESP:
+        os << "RA=" << m_addr1 << ", TA=" << m_addr2 << ", Duration/ID=" << m_duration << "us";
+        break;
     case WIFI_MAC_CTL_CTLWRAPPER:
     case WIFI_MAC_CTL_END:
     case WIFI_MAC_CTL_END_ACK:
