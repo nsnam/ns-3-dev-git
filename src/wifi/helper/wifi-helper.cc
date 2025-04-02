@@ -738,6 +738,10 @@ WifiPhyHelper::GetRadiotapHeader(RadiotapHeader& header,
             ehtFields.data.at(1) |= GetRadiotapField(RadiotapHeader::EHT_DATA1_RU_MRU_SIZE,
                                                      RadiotapHeader::EHT_DATA1_RU_MRU_SIZE_2x996);
             break;
+        case RuType::RU_4x996_TONE:
+            ehtFields.data.at(1) |= GetRadiotapField(RadiotapHeader::EHT_DATA1_RU_MRU_SIZE,
+                                                     RadiotapHeader::EHT_DATA1_RU_MRU_SIZE_4x996);
+            break;
         default:
             NS_ABORT_MSG("Unexpected RU type");
             break;
