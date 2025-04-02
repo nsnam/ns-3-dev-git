@@ -34,6 +34,9 @@
 #include <bit>
 #include <memory>
 
+namespace ns3
+{
+
 namespace
 {
 /**
@@ -49,10 +52,17 @@ GetRadiotapField(uint32_t mask, uint32_t val)
     const auto shift = std::countr_zero(mask);
     return (val << shift) & mask;
 }
-} // namespace
 
-namespace ns3
-{
+/// 320 MHz channelization map
+const std::map<MHz_t, RadiotapHeader::UsigCommonBw> channelization320MHzMap{
+    {MHz_t{6105}, RadiotapHeader::USIG_COMMON_BW_320MHZ_1},
+    {MHz_t{6425}, RadiotapHeader::USIG_COMMON_BW_320MHZ_1},
+    {MHz_t{6745}, RadiotapHeader::USIG_COMMON_BW_320MHZ_1},
+    {MHz_t{6265}, RadiotapHeader::USIG_COMMON_BW_320MHZ_2},
+    {MHz_t{6585}, RadiotapHeader::USIG_COMMON_BW_320MHZ_2},
+    {MHz_t{6905}, RadiotapHeader::USIG_COMMON_BW_320MHZ_2},
+};
+} // namespace
 
 NS_LOG_COMPONENT_DEFINE("WifiHelper");
 
@@ -628,6 +638,11 @@ WifiPhyHelper::GetRadiotapHeader(RadiotapHeader& header,
         case 160:
             usigFields.common |= GetRadiotapField(RadiotapHeader::USIG_COMMON_BW,
                                                   RadiotapHeader::USIG_COMMON_BW_160MHZ);
+            break;
+        case 320:
+            usigFields.common |=
+                GetRadiotapField(RadiotapHeader::USIG_COMMON_BW,
+                                 channelization320MHzMap.at(MHz_t{channelFreqMhz}));
             break;
         default:
             NS_ABORT_MSG("Unexpected channel width");
