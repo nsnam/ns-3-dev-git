@@ -379,6 +379,11 @@ cpp_examples = [
         "True",
         "True",
     ),
+    (
+        "wifi-roaming --simulationTime=5s --disassocTime=2.5s --dlLoad=10Mbps --udp=0",
+        "True",
+        "True",
+    ),
 ]
 
 # A list of Python examples to run in order to ensure that they remain
