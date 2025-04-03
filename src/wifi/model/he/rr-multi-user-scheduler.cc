@@ -1041,16 +1041,39 @@ RrMultiUserScheduler::ComputeDlMuInfo()
     // Compute the TX params (again) by using the stored MPDUs and the final TXVECTOR
     Time actualAvailableTime = (m_initialFrame ? Time::Min() : m_availableTime);
 
-    for (const auto& candidate : m_candidates)
+    for (auto candidateIt = m_candidates.begin(); candidateIt != m_candidates.end();)
     {
-        mpdu = candidate.second;
+        mpdu = candidateIt->second;
         NS_ASSERT(mpdu);
 
-        bool ret [[maybe_unused]] =
-            GetHeFem(m_linkId)->TryAddMpdu(mpdu, dlMuInfo.txParams, actualAvailableTime);
-        NS_ASSERT_MSG(ret,
-                      "Weird that an MPDU does not meet constraints when "
-                      "transmitted over a larger RU");
+        if (GetHeFem(m_linkId)->TryAddMpdu(mpdu, dlMuInfo.txParams, actualAvailableTime))
+        {
+            ++candidateIt;
+            continue;
+        }
+
+        // this candidate STA must have been assigned a central 26-tone RU and the transmission
+        // time of the queued MPDU exceeds the PPDU TX duration
+        auto& heMuUserInfoMap = dlMuInfo.txParams.m_txVector.GetHeMuUserInfoMap();
+        auto currentMapIt = heMuUserInfoMap.find(candidateIt->first->aid);
+        NS_ASSERT(currentMapIt != heMuUserInfoMap.end());
+        auto firstMapIt = heMuUserInfoMap.find(m_candidates.cbegin()->first->aid);
+        NS_ASSERT(firstMapIt != heMuUserInfoMap.end());
+
+        auto central26TonesRus =
+            WifiRu::GetCentral26TonesRus(m_allowedWidth,
+                                         WifiRu::GetRuType(firstMapIt->second.ru),
+                                         dlMuInfo.txParams.m_txVector.GetModulationClass());
+        auto it [[maybe_unused]] = std::find(central26TonesRus.cbegin(),
+                                             central26TonesRus.cend(),
+                                             currentMapIt->second.ru);
+        NS_ASSERT_MSG(it != central26TonesRus.cend(),
+                      "STA with AID " << currentMapIt->first
+                                      << " has not been allocated a central 26-tone RU, but the "
+                                         "queued MPDU does not fit the MU PPDU TX duration");
+        // remove STA from set of candidate STAs
+        candidateIt = m_candidates.erase(candidateIt);
+        heMuUserInfoMap.erase(currentMapIt);
     }
 
     // We have to complete the PSDUs to send
