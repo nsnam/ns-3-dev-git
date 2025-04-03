@@ -65,7 +65,7 @@ EmlsrManager::GetTypeId()
                               TypeId::ATTR_CONSTRUCT, // prevent setting after construction
                           MHzValue(20_MHz),
                           MakeMHzAccessor(&EmlsrManager::m_auxPhyMaxWidth),
-                          MakeMHzChecker(20_MHz, 160_MHz))
+                          MakeMHzChecker(20_MHz, 320_MHz))
             .AddAttribute("AuxPhyMaxModClass",
                           "The maximum modulation class supported by Aux PHYs. Use "
                           "WIFI_MOD_CLASS_OFDM for non-HT.",
