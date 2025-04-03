@@ -194,6 +194,10 @@ RrMultiUserScheduler::GetTxVectorForUlMu(std::function<bool(const MasterInfo&)> 
     // determine RUs to allocate to stations
     const auto isEht =
         (m_apMac->GetEhtSupported() && m_apMac->GetEhtSupported(firstCandidate->address));
+    m_allowedWidth = std::min(
+        m_allowedWidth,
+        GetWifiRemoteStationManager(m_linkId)->GetChannelWidthSupported(firstCandidate->address));
+    txVector.SetChannelWidth(m_allowedWidth);
     auto count = std::min<std::size_t>(m_nStations, m_staListUl.size());
     std::size_t nCentral26TonesRus;
     WifiRu::GetEqualSizedRusForStations(m_allowedWidth,
@@ -229,6 +233,16 @@ RrMultiUserScheduler::GetTxVectorForUlMu(std::function<bool(const MasterInfo&)> 
         {
             NS_LOG_DEBUG(
                 "Skipping non-EHT STA because this Trigger Frame is only soliciting EHT STAs");
+            staIt = std::find_if(++staIt, m_staListUl.end(), canBeSolicited);
+            continue;
+        }
+
+        const auto staSupportedWidth =
+            GetWifiRemoteStationManager(m_linkId)->GetChannelWidthSupported(staIt->address);
+        if (staIt != firstCandidate && staSupportedWidth < m_allowedWidth)
+        {
+            NS_LOG_DEBUG("Skipping STA " << staIt->address << " not supporting " << m_allowedWidth
+                                         << " operations");
             staIt = std::find_if(++staIt, m_staListUl.end(), canBeSolicited);
             continue;
         }
@@ -820,6 +834,16 @@ RrMultiUserScheduler::TrySendingDlMuPpdu()
             continue;
         }
 
+        const auto staSupportedWidth =
+            GetWifiRemoteStationManager(m_linkId)->GetChannelWidthSupported(staIt->address);
+        if (!m_candidates.empty() && staSupportedWidth < m_allowedWidth)
+        {
+            NS_LOG_DEBUG("Skipping STA " << staIt->address << " not supporting " << m_allowedWidth
+                                         << " operations");
+            ++staIt;
+            continue;
+        }
+
         // check if the AP has at least one frame to be sent to the current station
         for (uint8_t tid : tids)
         {
@@ -846,7 +870,8 @@ RrMultiUserScheduler::TrySendingDlMuPpdu()
 
                     WifiTxVector txVectorCopy = m_txParams.m_txVector;
 
-                    // the first candidate STA determines the preamble type for the DL MU PPDU
+                    // the first candidate STA determines the preamble type and the channel width
+                    // for the DL MU PPDU
                     if (m_candidates.empty())
                     {
                         WifiModulationClass mc = WIFI_MOD_CLASS_HE;
@@ -857,6 +882,8 @@ RrMultiUserScheduler::TrySendingDlMuPpdu()
                                 0); // indicates DL OFDMA transmission
                             mc = WIFI_MOD_CLASS_EHT;
                         }
+                        m_allowedWidth = std::min(m_allowedWidth, staSupportedWidth);
+                        m_txParams.m_txVector.SetChannelWidth(m_allowedWidth);
                         ruType = WifiRu::GetEqualSizedRusForStations(m_allowedWidth,
                                                                      count,
                                                                      nCentral26TonesRus,
