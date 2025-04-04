@@ -32,6 +32,8 @@ The required Doxygen version for documentation generation is now version 1.13.
 
 ### New user-visible features
 
+- (flow-monitor) !2387 - Reformatted documentation and added a new concept figure.
+
 ### Bugs fixed
 
 - (wifi) #2368 - Fix various issues related to Content Channels and RU allocation. Fixes mostly covers cases where OFDMA is used with central 26 tones, where a single user is being assigned the whole PPDU bandwidth or where a RU is larger than 20 MHz.

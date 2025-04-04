@@ -1,19 +1,14 @@
 Flow Monitor
-------------
+============
 
 .. include:: replace.txt
 .. highlight:: cpp
 
 .. heading hierarchy:
-   ------------- Chapter
-   ************* Section (#.#)
-   ============= Subsection (#.#.#)
-   ############# Paragraph (no number)
+   ============= Chapter
+   ------------- Section (#.#)
+   ~~~~~~~~~~~~~ Subsection (#.#.#)
 
-Model Description
-*****************
-
-The source code for the module lives in the directory ``src/flow-monitor``.
 
 The Flow Monitor module goal is to provide a flexible system to measure the
 performance of network protocols. The module uses probes, installed in network
@@ -26,8 +21,12 @@ destination (IP, port)} tuple.
 The statistics are collected for each flow can be exported in XML format. Moreover,
 the user can access the probes directly to request specific stats about each flow.
 
-Design
-======
+
+.. _fig-flowmonitorArq:
+
+.. figure:: figures/flowmonitorArq.*
+
+    High-level Flow Monitor Architecture
 
 Flow Monitor module is designed in a modular way. It can be extended by subclassing
 ``ns3::FlowProbe`` and ``ns3::FlowClassifier``.
@@ -42,10 +41,10 @@ guaranteed to be in every type of ``ns3::NetDevice``. As an example,
 ``CsmaNetDevice`` and ``PointToPointNetDevice`` have a ``TxQueue/Drop`` trace, while
 ``WiFiNetDevice`` does not.
 
-The full module design is described in [FlowMonitor]_
+The source code for the module lives in the directory ``src/flow-monitor``.
 
 Scope and Limitations
-=====================
+---------------------
 
 At the moment, probes and classifiers are available only for IPv4 and IPv6.
 
@@ -89,8 +88,7 @@ These stats will be written in XML form upon request (see the Usage section).
 Due to the above design, FlowMonitor can not generate statistics when used with DSR routing
 protocol (because DSR forwards packets using broadcast addresses)
 
-The "lost" packets problem
-##########################
+**The "lost" packets problem**
 
 At the end of a simulation, Flow Monitor could report about "lost" packets, i.e.,
 packets that Flow Monitor have lost track of.
@@ -111,15 +109,25 @@ It is important to stress that "lost" packets could be anywhere in the network, 
 toward the received packets or the dropped ones. Ideally, their number should be zero or a minimal
 fraction of the other ones, i.e., they should be "statistically irrelevant".
 
-References
-==========
-
-.. [FlowMonitor] G. Carneiro, P. Fortuna, and M. Ricardo. 2009. FlowMonitor: a network monitoring framework for the network simulator 3 (NS-3). In Proceedings of the Fourth International ICST Conference on Performance Evaluation Methodologies and Tools (VALUETOOLS '09). http://dx.doi.org/10.4108/ICST.VALUETOOLS2009.7493 (Full text: https://dl.acm.org/doi/abs/10.4108/ICST.VALUETOOLS2009.7493)
 
 Usage
-*****
+-----
 
 The module usage is extremely simple. The helper will take care of about everything.
+There are however, a few things that must be considered when using Flow Monitor:
+
+
+
+Helpers
+~~~~~~~
+
+The helper API follows the pattern usage of normal helpers.
+Through the helper you can install the monitor in the nodes, set the monitor attributes, and
+print the statistics.
+
+
+.. Important::
+  When using the :cpp:class:`ns3::FlowMonitorHelper` must be instantiated only once in the ``main`` function.
 
 The typical use is::
 
@@ -139,32 +147,7 @@ activate/deactivate the histograms and the per-probe detailed stats.
 Other possible alternatives can be found in the Doxygen documentation, while
 ``cleanup_time`` is the time needed by in-flight packets to reach their destinations.
 
-Helpers
-=======
-
-The helper API follows the pattern usage of normal helpers.
-Through the helper you can install the monitor in the nodes, set the monitor attributes, and
-print the statistics.
-
-One important thing is: the :cpp:class:`ns3::FlowMonitorHelper` must be instantiated only
-once in the main.
-
-Attributes
-==========
-
-The module provides the following attributes in :cpp:class:`ns3::FlowMonitor`:
-
-* MaxPerHopDelay (Time, default 10s): The maximum per-hop delay that should be considered;
-* StartTime (Time, default 0s): The time when the monitoring starts;
-* DelayBinWidth (double, default 0.001): The width used in the delay histogram;
-* JitterBinWidth (double, default 0.001): The width used in the jitter histogram;
-* PacketSizeBinWidth (double, default 20.0): The width used in the packetSize histogram;
-* FlowInterruptionsBinWidth (double, default 0.25): The width used in the flowInterruptions histogram;
-* FlowInterruptionsMinTime (double, default 0.5): The minimum inter-arrival time that is considered a flow interruption.
-
-
-Output
-======
+**XML file output**
 
 The main model output is an XML formatted report about flow statistics. An example is::
 
@@ -203,8 +186,30 @@ That's a perfectly normal behaviour, as packets are fragmented at IP level in th
 It should also be observed that the receiving node's probe (index 4) doesn't count the fragments, as the
 reassembly is done before the probing point.
 
-Examples
-========
+
+Attributes
+~~~~~~~~~~
+
+The module provides the following attributes in :cpp:class:`ns3::FlowMonitor`:
+
+* ``MaxPerHopDelay`` (Time, default 10s): The maximum per-hop delay that should be considered;
+* ``StartTime`` (Time, default 0s): The time when the monitoring starts;
+* ``DelayBinWidth`` (double, default 0.001): The width used in the delay histogram;
+* ``JitterBinWidth`` (double, default 0.001): The width used in the jitter histogram;
+* ``PacketSizeBinWidth`` (double, default 20.0): The width used in the packetSize histogram;
+* ``FlowInterruptionsBinWidth`` (double, default 0.25): The width used in the flowInterruptions histogram;
+* ``FlowInterruptionsMinTime`` (double, default 0.5): The minimum inter-arrival time that is considered a flow interruption.
+
+
+Traces
+~~~~~~
+
+No traces are provided by this module as it is the module itself which provides a simple monitoring functionality to
+other networks.
+
+
+Examples and Tests
+------------------
 
 The examples are located in `src/flow-monitor/examples`.
 
@@ -217,16 +222,18 @@ Moreover, the following examples use the flow-monitor module:
 * examples/wireless/wifi-multirate.cc
 * examples/wireless/wifi-hidden-terminal.cc
 
+Tests are provided to ensure the histogram correct functionality.
 
-Troubleshooting
-===============
-
-Do not define more than one :cpp:class:`ns3::FlowMonitorHelper` in the simulation.
 
 Validation
-**********
+----------
 
 The paper in the references contains a full description of the module validation against
 a test network.
 
-Tests are provided to ensure the Histogram correct functionality.
+
+References
+----------
+
+[`1 <https://dl.acm.org/doi/abs/10.4108/ICST.VALUETOOLS2009.74939>`_] G. Carneiro, P. Fortuna, and M. Ricardo. 2009. FlowMonitor: a network monitoring framework for the network simulator 3 (NS-3). In Proceedings of the Fourth International ICST Conference on Performance Evaluation Methodologies and Tools (VALUETOOLS '09). http://dx.doi.org/10.4108/ICST.VALUETOOLS2009.7493.
+
