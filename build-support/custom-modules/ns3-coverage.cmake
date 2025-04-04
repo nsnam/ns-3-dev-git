@@ -33,13 +33,15 @@ if(${NS3_COVERAGE})
   add_custom_target(
     coverage_gcc
     COMMAND lcov -o ns3.info -c --directory ${CMAKE_BINARY_DIR} ${zero_counters}
+            --keep-going --ignore-errors inconsistent
     WORKING_DIRECTORY ${CMAKE_OUTPUT_DIRECTORY}/coverage
     DEPENDS run_test_py
   )
 
   add_custom_target(
     coverage_html
-    COMMAND genhtml ns3.info
+    COMMAND genhtml --ignore-errors inconsistent --ignore-errors corrupt
+            ns3.info -o ./html
     WORKING_DIRECTORY ${CMAKE_OUTPUT_DIRECTORY}/coverage
     DEPENDS coverage_gcc
   )

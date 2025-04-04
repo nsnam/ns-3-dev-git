@@ -252,14 +252,10 @@ weekly-build-coverage:
   variables:
     MODE: debug
     EXTRA_OPTIONS: "--enable-gcov --disable-asserts --disable-logs"
-    TARGET: coverage_cobertura
+    TARGET: coverage_html
   artifacts:
     paths:
-     - build/coverage/cobertura.xml
-    reports:
-      coverage_report:
-        coverage_format: cobertura
-        path: build/coverage/cobertura.xml
+     - build/coverage/html
   tags:
     - nsnam
     - linux
