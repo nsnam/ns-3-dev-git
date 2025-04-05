@@ -278,8 +278,6 @@ class ArpCache : public Object
          */
         void UpdateSeen();
 
-<<<<<<< HEAD
-=======
         /**
          * @brief Print this ARP entry to the given output stream
          *
@@ -293,7 +291,6 @@ class ArpCache : public Object
          */
         Time GetTimeout() const;
 
->>>>>>> 04b17e847 (internet: add functions to print an ArpCache::Entry)
       private:
         /**
          * @brief ARP cache entry states

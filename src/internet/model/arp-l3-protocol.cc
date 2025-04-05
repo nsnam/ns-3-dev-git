@@ -309,10 +309,23 @@ ArpL3Protocol::Lookup(Ptr<Packet> packet,
                                     cache,
                                     destination);
             }
+            else if (entry->IsWaitReply())
+            {
+                NS_LOG_LOGIC("node=" << m_node->GetId() << ", entry for " << destination
+                                     << " waiting for a reply -- adding the packet to the queue");
+                if (!entry->UpdateWaitReply(ArpCache::Ipv4PayloadHeaderPair(packet, ipHeader)))
+                {
+                    // add the Ipv4 header for tracing purposes
+                    packet->AddHeader(ipHeader);
+                    m_dropTrace(packet);
+                }
+                return false;
+            }
             else
             {
-                NS_FATAL_ERROR("Test for possibly unreachable code-- please file a bug report, "
-                               "with a test case, if this is ever hit");
+                NS_FATAL_ERROR("Test for possibly unreachable code -- please file a bug report, "
+                               "with a test case - "
+                               << *entry);
             }
         }
         else
@@ -352,8 +365,9 @@ ArpL3Protocol::Lookup(Ptr<Packet> packet,
             }
             else
             {
-                NS_LOG_LOGIC("Test for possibly unreachable code-- please file a bug report, with "
-                             "a test case, if this is ever hit");
+                NS_FATAL_ERROR("Test for possibly unreachable code -- please file a bug report, "
+                               "with a test case - "
+                               << *entry);
             }
         }
     }
