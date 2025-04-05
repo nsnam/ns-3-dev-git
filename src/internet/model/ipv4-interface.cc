@@ -31,16 +31,20 @@ NS_OBJECT_ENSURE_REGISTERED(Ipv4Interface);
 TypeId
 Ipv4Interface::GetTypeId()
 {
-    static TypeId tid = TypeId("ns3::Ipv4Interface")
-                            .SetParent<Object>()
-                            .SetGroupName("Internet")
-                            .AddAttribute("ArpCache",
-                                          "The arp cache for this ipv4 interface",
-                                          PointerValue(nullptr),
-                                          MakePointerAccessor(&Ipv4Interface::SetArpCache,
-                                                              &Ipv4Interface::GetArpCache),
-                                          MakePointerChecker<ArpCache>());
-    ;
+    static TypeId tid =
+        TypeId("ns3::Ipv4Interface")
+            .SetParent<Object>()
+            .SetGroupName("Internet")
+            .AddAttribute(
+                "ArpCache",
+                "The arp cache for this ipv4 interface",
+                PointerValue(nullptr),
+                MakePointerAccessor(&Ipv4Interface::SetArpCache, &Ipv4Interface::GetArpCache),
+                MakePointerChecker<ArpCache>())
+            .AddTraceSource("InterfaceStatus",
+                            "Interface has been set up or down.",
+                            MakeTraceSourceAccessor(&Ipv4Interface::m_interfaceStatus),
+                            "ns3::Ipv4Address::TracedCallback");
     return tid;
 }
 
@@ -175,6 +179,11 @@ Ipv4Interface::SetUp()
 {
     NS_LOG_FUNCTION(this);
     m_ifup = true;
+
+    Ptr<Ipv4> ip = m_node->GetObject<Ipv4>();
+    NS_ASSERT_MSG(ip, "IPv4 not installed on node.");
+    auto ifIndex = ip->GetInterfaceForDevice(m_device);
+    m_interfaceStatus(m_ifup, ifIndex);
 }
 
 void
@@ -182,6 +191,11 @@ Ipv4Interface::SetDown()
 {
     NS_LOG_FUNCTION(this);
     m_ifup = false;
+
+    Ptr<Ipv4> ip = m_node->GetObject<Ipv4>();
+    NS_ASSERT_MSG(ip, "IPv4 not installed on node.");
+    auto ifIndex = ip->GetInterfaceForDevice(m_device);
+    m_interfaceStatus(m_ifup, ifIndex);
 }
 
 bool

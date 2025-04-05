@@ -12,6 +12,7 @@
 
 #include "ns3/object.h"
 #include "ns3/ptr.h"
+#include "ns3/traced-callback.h"
 
 #include <list>
 
@@ -238,6 +239,12 @@ class Ipv4Interface : public Object
         m_removeAddressCallback; //!< remove address callback
     Callback<void, Ptr<Ipv4Interface>, Ipv4InterfaceAddress>
         m_addAddressCallback; //!< add address callback
+
+    /**
+     * The trace fired when the interface state changes.
+     * Includes state (true if interface is up) and the interface index.
+     */
+    ns3::TracedCallback<bool, int32_t> m_interfaceStatus;
 };
 
 } // namespace ns3

@@ -33,7 +33,14 @@ NS_OBJECT_ENSURE_REGISTERED(Ipv6Interface);
 TypeId
 Ipv6Interface::GetTypeId()
 {
-    static TypeId tid = TypeId("ns3::Ipv6Interface").SetParent<Object>().SetGroupName("Internet");
+    static TypeId tid =
+        TypeId("ns3::Ipv6Interface")
+            .SetParent<Object>()
+            .SetGroupName("Internet")
+            .AddTraceSource("InterfaceStatus",
+                            "Interface has been set up or down.",
+                            MakeTraceSourceAccessor(&Ipv6Interface::m_interfaceStatus),
+                            "ns3::Ipv6Address::TracedCallback");
     return tid;
 }
 
@@ -170,6 +177,11 @@ Ipv6Interface::SetUp()
     }
     DoSetup();
     m_ifup = true;
+
+    Ptr<Ipv6> ip = m_node->GetObject<Ipv6>();
+    NS_ASSERT_MSG(ip, "IPv6 not installed on node.");
+    auto ifIndex = ip->GetInterfaceForDevice(m_device);
+    m_interfaceStatus(m_ifup, ifIndex);
 }
 
 void
@@ -179,6 +191,11 @@ Ipv6Interface::SetDown()
     m_ifup = false;
     m_addresses.clear();
     m_ndCache->Flush();
+
+    Ptr<Ipv6> ip = m_node->GetObject<Ipv6>();
+    NS_ASSERT_MSG(ip, "IPv6 not installed on node.");
+    auto ifIndex = ip->GetInterfaceForDevice(m_device);
+    m_interfaceStatus(m_ifup, ifIndex);
 }
 
 bool
