@@ -10,6 +10,7 @@
 #define WIFI_UTILS_H
 
 #include "block-ack-type.h"
+#include "wifi-phy-common.h"
 #include "wifi-spectrum-value-helper.h"
 #include "wifi-standard-constants.h"
 #include "wifi-standards.h"
@@ -188,6 +189,16 @@ WIFI_EXPORT uint32_t GetBlockAckSize(BlockAckType type);
  * @return the total BlockAckRequest size in bytes
  */
 WIFI_EXPORT uint32_t GetBlockAckRequestSize(BlockAckReqType type);
+
+/**
+ * Return the variant of the Trigger Frame used to solicit a TB PPDU, based on the modulation class
+ * of the TB PPDU.
+ *
+ * @param modClass the modulation class of the solicited TB PPDU
+ * @return the variant of the Trigger Frame
+ */
+TriggerFrameVariant GetTriggerFrameVariant(WifiModulationClass modClass);
+
 /**
  * Return the total MU-BAR size (including FCS trailer).
  *
@@ -199,6 +210,7 @@ WIFI_EXPORT uint32_t GetBlockAckRequestSize(BlockAckReqType type);
 uint32_t GetMuBarSize(TriggerFrameVariant variant,
                       MHz_u bw,
                       const std::list<BlockAckReqType>& types);
+
 /**
  * Return the total RTS size (including FCS trailer).
  *
