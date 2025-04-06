@@ -165,7 +165,7 @@ cpp_examples = [
         "True",
     ),
     (
-        "wifi-eht-network --simulationTime=0.1s --frequency=5 --useRts=1 --minExpectedThroughput=6 --maxExpectedThroughput=660",
+        "wifi-eht-network --simulationTime=0.1s --frequency=6 --useRts=1 --minExpectedThroughput=5 --maxExpectedThroughput=800",
         "True",
         "True",
     ),
