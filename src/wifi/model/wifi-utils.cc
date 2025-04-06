@@ -74,6 +74,23 @@ GetBlockAckRequestSize(BlockAckReqType type)
     return hdr.GetSize() + bar.GetSerializedSize() + 4;
 }
 
+TriggerFrameVariant
+GetTriggerFrameVariant(WifiModulationClass modClass)
+{
+    switch (modClass)
+    {
+    case WIFI_MOD_CLASS_HE:
+        return TriggerFrameVariant::HE;
+    case WIFI_MOD_CLASS_EHT:
+        return TriggerFrameVariant::EHT;
+    case WIFI_MOD_CLASS_UHR:
+        return TriggerFrameVariant::UHR;
+    default:
+        NS_FATAL_ERROR("Unsupported modulation class: " << modClass);
+        return TriggerFrameVariant::HE;
+    }
+}
+
 uint32_t
 GetMuBarSize(TriggerFrameVariant variant, MHz_t bw, const std::list<BlockAckReqType>& types)
 {

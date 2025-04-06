@@ -1227,8 +1227,23 @@ CtrlTriggerUserInfoField::operator=(const CtrlTriggerUserInfoField& userInfo)
 void
 CtrlTriggerUserInfoField::Print(std::ostream& os) const
 {
-    os << ", USER_INFO " << (m_variant == TriggerFrameVariant::HE ? "HE" : "EHT")
-       << " variant AID=" << m_aid12 << ", RU_Allocation=" << +m_ruAllocation
+    os << ", USER_INFO ";
+    switch (m_variant)
+    {
+    case TriggerFrameVariant::HE:
+        os << "HE";
+        break;
+    case TriggerFrameVariant::EHT:
+        os << "EHT";
+        break;
+    case TriggerFrameVariant::UHR:
+        os << "UHR";
+        break;
+    default:
+        NS_ASSERT_MSG(false, "Unsupported variant");
+        break;
+    }
+    os << " variant AID=" << m_aid12 << ", RU_Allocation=" << +m_ruAllocation
        << ", MCS=" << +m_ulMcs;
 }
 
@@ -1292,7 +1307,7 @@ CtrlTriggerUserInfoField::Serialize(Buffer::Iterator start) const
     // Here we need to write 8 bits covering the UL Target RSSI (7 bits) and B39, which is
     // reserved in the HE variant and the PS160 subfield in the EHT variant.
     uint8_t bit32To39 = m_ulTargetRssi;
-    if (m_variant == TriggerFrameVariant::EHT)
+    if (m_variant != TriggerFrameVariant::HE)
     {
         bit32To39 |= (m_ps160 ? 1 << 7 : 0);
     }
@@ -1349,7 +1364,7 @@ CtrlTriggerUserInfoField::Deserialize(Buffer::Iterator start)
 
     uint8_t bit32To39 = i.ReadU8();
     m_ulTargetRssi = bit32To39 & 0x7f; // B39 is reserved in HE variant
-    if (m_variant == TriggerFrameVariant::EHT)
+    if (m_variant != TriggerFrameVariant::HE)
     {
         m_ps160 = (bit32To39 >> 7) == 1;
     }
@@ -1382,6 +1397,8 @@ CtrlTriggerUserInfoField::GetPreambleType() const
         return WIFI_PREAMBLE_HE_TB;
     case TriggerFrameVariant::EHT:
         return WIFI_PREAMBLE_EHT_TB;
+    case TriggerFrameVariant::UHR:
+        return WIFI_PREAMBLE_UHR_TB;
     default:
         NS_ABORT_MSG("Unexpected variant: " << +static_cast<uint8_t>(m_variant));
     }
@@ -1524,7 +1541,7 @@ CtrlTriggerUserInfoField::GetRuAllocation() const
     }
     else if (val == 69)
     {
-        NS_ASSERT(m_variant == TriggerFrameVariant::EHT);
+        NS_ASSERT(m_variant >= TriggerFrameVariant::EHT);
         ruType = RuType::RU_4x996_TONE;
         index = 1;
     }
@@ -1533,7 +1550,7 @@ CtrlTriggerUserInfoField::GetRuAllocation() const
         NS_FATAL_ERROR("Reserved value.");
     }
 
-    if (m_variant == TriggerFrameVariant::EHT)
+    if (m_variant >= TriggerFrameVariant::EHT)
     {
         return EhtRu::RuSpec{ruType, index, !m_ps160, primaryOrLower80MHz};
     }
@@ -1594,7 +1611,7 @@ CtrlTriggerUserInfoField::GetUlFecCodingType() const
 void
 CtrlTriggerUserInfoField::SetUlMcs(uint8_t mcs)
 {
-    uint8_t maxMcs = m_variant == TriggerFrameVariant::EHT ? 13 : 11;
+    uint8_t maxMcs = m_variant == TriggerFrameVariant::HE ? 11 : 13;
     NS_ABORT_MSG_IF(mcs > maxMcs, "Invalid MCS index");
     m_ulMcs = mcs;
 }
@@ -1765,8 +1782,11 @@ CtrlTriggerUserInfoField::GetMuBarTriggerDepUserInfo() const
  * Trigger frame - Special User Info field
  *****************************************/
 
-CtrlTriggerSpecialUserInfoField::CtrlTriggerSpecialUserInfoField(TriggerFrameType triggerType)
-    : m_triggerType(triggerType)
+CtrlTriggerSpecialUserInfoField::CtrlTriggerSpecialUserInfoField(
+    TriggerFrameType triggerType,
+    TriggerFrameVariant triggerVariant /* = TriggerFrameVariant::EHT */)
+    : m_triggerType(triggerType),
+      m_triggerVariant(triggerVariant)
 {
 }
 
@@ -1823,6 +1843,8 @@ CtrlTriggerSpecialUserInfoField::Serialize(Buffer::Iterator start) const
 
     uint32_t userInfo = 0;
     userInfo |= (AID_SPECIAL_USER & 0x0fff);
+    uint8_t phyVersionId = (m_triggerVariant == TriggerFrameVariant::UHR) ? 0x01 : 0x00;
+    userInfo |= (static_cast<uint32_t>(phyVersionId) << 12);
     userInfo |= (static_cast<uint32_t>(m_ulBwExt) << 15);
     i.WriteHtolsbU32(userInfo);
     i.WriteU8(0);
@@ -1861,6 +1883,8 @@ CtrlTriggerSpecialUserInfoField::Deserialize(Buffer::Iterator start)
 
     const uint16_t aid12 = userInfo & 0x0fff;
     NS_ABORT_MSG_IF(aid12 != AID_SPECIAL_USER, "Failed to deserialize Special User Info field");
+    uint8_t phyVersionId = (userInfo >> 12) & 0x03;
+    m_triggerVariant = (phyVersionId == 1) ? TriggerFrameVariant::UHR : TriggerFrameVariant::EHT;
     m_ulBwExt = (userInfo >> 15) & 0x03;
 
     if (m_triggerType == TriggerFrameType::BASIC_TRIGGER)
@@ -1876,10 +1900,16 @@ CtrlTriggerSpecialUserInfoField::Deserialize(Buffer::Iterator start)
     return i;
 }
 
-TriggerFrameType
-CtrlTriggerSpecialUserInfoField::GetType() const
+void
+CtrlTriggerSpecialUserInfoField::SetTriggerVariant(TriggerFrameVariant variant)
 {
-    return m_triggerType;
+    m_triggerVariant = variant;
+}
+
+TriggerFrameVariant
+CtrlTriggerSpecialUserInfoField::GetTriggerVariant() const
+{
+    return m_triggerVariant;
 }
 
 void
@@ -1966,6 +1996,9 @@ CtrlTriggerHeader::CtrlTriggerHeader(TriggerFrameType type, const WifiTxVector& 
     case WIFI_PREAMBLE_EHT_TB:
         m_variant = TriggerFrameVariant::EHT;
         break;
+    case WIFI_PREAMBLE_UHR_TB:
+        m_variant = TriggerFrameVariant::UHR;
+        break;
     default:
         NS_ABORT_MSG("Cannot create a TF out of a TXVECTOR with preamble type: "
                      << txVector.GetPreambleType());
@@ -1974,8 +2007,8 @@ CtrlTriggerHeader::CtrlTriggerHeader(TriggerFrameType type, const WifiTxVector& 
     // special user is always present if solicited TB PPDU format is EHT or later
     if (txVector.GetModulationClass() >= WifiModulationClass::WIFI_MOD_CLASS_EHT)
     {
-        NS_ASSERT(m_variant == TriggerFrameVariant::EHT);
-        m_specialUserInfoField.emplace(m_triggerType);
+        NS_ASSERT(m_variant >= TriggerFrameVariant::EHT);
+        m_specialUserInfoField.emplace(m_triggerType, m_variant);
     }
 
     SetUlBandwidth(txVector.GetChannelWidth());
@@ -2064,10 +2097,14 @@ CtrlTriggerHeader::SetVariant(TriggerFrameVariant variant)
     NS_ABORT_MSG_IF(!m_userInfoFields.empty(),
                     "Cannot change Common Info field variant if User Info fields are present");
     m_variant = variant;
+    if (m_specialUserInfoField)
+    {
+        m_specialUserInfoField->SetTriggerVariant(m_variant);
+    }
     // special user is always present if User Info field variant is EHT or later
     if (!m_specialUserInfoField && (m_variant >= TriggerFrameVariant::EHT))
     {
-        m_specialUserInfoField.emplace(m_triggerType);
+        m_specialUserInfoField.emplace(m_triggerType, m_variant);
     }
 }
 
@@ -2091,7 +2128,7 @@ CtrlTriggerHeader::GetSerializedSize() const
 
     if (m_specialUserInfoField)
     {
-        NS_ASSERT(m_variant == TriggerFrameVariant::EHT);
+        NS_ASSERT(m_variant >= TriggerFrameVariant::EHT);
         size += m_specialUserInfoField->GetSerializedSize();
     }
 
@@ -2126,17 +2163,28 @@ CtrlTriggerHeader::Serialize(Buffer::Iterator start) const
     commonInfo |= (m_giAndLtfType & 0x03) << 20;
     commonInfo |= static_cast<uint64_t>(m_apTxPower & 0x3f) << 28;
     commonInfo |= static_cast<uint64_t>(m_ulSpatialReuse) << 37;
+
     if (m_variant == TriggerFrameVariant::HE)
     {
         uint64_t ulHeSigA2 = 0x01ff; // nine bits equal to 1
         commonInfo |= ulHeSigA2 << 54;
+    }
+    else if (m_variant == TriggerFrameVariant::EHT)
+    {
+        uint64_t ehtReserved = 0x7f; // seven bits equal to 1
+        commonInfo |= ehtReserved << 56;
+    }
+    else if (m_variant == TriggerFrameVariant::UHR)
+    {
+        uint64_t uhrReserved = 0x2; // two bits equal to 1
+        commonInfo |= uhrReserved << 61;
     }
 
     i.WriteHtolsbU64(commonInfo);
 
     if (m_specialUserInfoField)
     {
-        NS_ASSERT(m_variant == TriggerFrameVariant::EHT);
+        NS_ASSERT(m_variant == m_specialUserInfoField->GetTriggerVariant());
         i = m_specialUserInfoField->Serialize(i);
     }
 
@@ -2178,16 +2226,18 @@ CtrlTriggerHeader::Deserialize(Buffer::Iterator start)
     NS_ABORT_MSG_IF(m_triggerType == TriggerFrameType::NFRP_TRIGGER,
                     "NFRP Trigger frame is not supported");
 
-    if (m_variant == TriggerFrameVariant::EHT)
+    m_specialUserInfoField.reset();
+    const auto userInfo = i.ReadLsbtohU16();
+    i.Prev(2);
+    if (const auto aid12 = userInfo & 0x0fff; aid12 == AID_SPECIAL_USER)
     {
-        m_specialUserInfoField.reset();
-        const auto userInfo = i.ReadLsbtohU16();
-        i.Prev(2);
-        if (const auto aid12 = userInfo & 0x0fff; aid12 == AID_SPECIAL_USER)
-        {
-            m_specialUserInfoField.emplace(m_triggerType);
-            i = m_specialUserInfoField->Deserialize(i);
-        }
+        m_specialUserInfoField.emplace(m_triggerType);
+        i = m_specialUserInfoField->Deserialize(i);
+    }
+
+    if (m_specialUserInfoField)
+    {
+        m_variant = m_specialUserInfoField->GetTriggerVariant();
     }
 
     while (i.GetRemainingSize() >= 2)
@@ -2381,7 +2431,7 @@ CtrlTriggerHeader::SetUlBandwidth(MHz_t bw)
     }
     if (m_specialUserInfoField)
     {
-        NS_ASSERT(m_variant == TriggerFrameVariant::EHT);
+        NS_ASSERT(m_variant >= TriggerFrameVariant::EHT);
         m_specialUserInfoField->SetUlBwExt(bw);
     }
 }
@@ -2391,7 +2441,7 @@ CtrlTriggerHeader::GetUlBandwidth() const
 {
     if (m_specialUserInfoField)
     {
-        NS_ASSERT(m_variant == TriggerFrameVariant::EHT);
+        NS_ASSERT(m_variant >= TriggerFrameVariant::EHT);
         if (m_specialUserInfoField->GetUlBwExt() > 1)
         {
             return MHz_t{320};

@@ -568,7 +568,8 @@ enum class TriggerFrameType : uint8_t
 enum class TriggerFrameVariant : uint8_t
 {
     HE = 0,
-    EHT
+    EHT,
+    UHR
 };
 
 /**
@@ -927,8 +928,10 @@ class CtrlTriggerSpecialUserInfoField
      * Constructor
      *
      * @param triggerType the Trigger frame type
+     * @param triggerVariant the Trigger frame variant
      */
-    explicit CtrlTriggerSpecialUserInfoField(TriggerFrameType triggerType);
+    CtrlTriggerSpecialUserInfoField(TriggerFrameType triggerType,
+                                    TriggerFrameVariant triggerVariant = TriggerFrameVariant::EHT);
 
     /**
      * Copy assignment operator.
@@ -966,11 +969,18 @@ class CtrlTriggerSpecialUserInfoField
     Buffer::Iterator Deserialize(Buffer::Iterator start);
 
     /**
-     * Get the type of the Trigger Frame this Special User Info field belongs to.
+     * Set the trigger variant.
      *
-     * @return the type of the Trigger Frame this Special User Info field belongs to
+     * @param variant the trigger variant
      */
-    TriggerFrameType GetType() const;
+    void SetTriggerVariant(TriggerFrameVariant variant);
+
+    /**
+     * Get the trigger variant.
+     *
+     * @return the trigger variant
+     */
+    TriggerFrameVariant GetTriggerVariant() const;
 
     /**
      * Set the UL Bandwidth Extension subfield value of the solicited EHT TB PPDU.
@@ -1007,7 +1017,8 @@ class CtrlTriggerSpecialUserInfoField
 
   private:
     TriggerFrameType m_triggerType{};                        //!< Trigger type
-    uint8_t m_ulBwExt{};                                     //!< UL Bandwidth Extension
+    TriggerFrameVariant m_triggerVariant{};                  //!< Trigger variant
+    uint8_t m_ulBwExt : 2 {};                                //!< UL Bandwidth Extension
     CtrlBAckRequestHeader m_muBarTriggerDependentUserInfo{}; //!< MU-BAR variant of Trigger
                                                              //!< Dependent User Info subfield
 };

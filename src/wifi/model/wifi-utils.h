@@ -11,6 +11,7 @@
 
 #include "block-ack-type.h"
 #include "wifi-constants.h"
+#include "wifi-phy-common.h"
 #include "wifi-standards.h"
 #include "wifi-types.h"
 
@@ -140,6 +141,7 @@ Count20MHzSubchannels(MHz_t lower, MHz_t upper)
  * @return the total Ack size in bytes
  */
 uint32_t GetAckSize();
+
 /**
  * Return the total BlockAck size (including FCS trailer).
  *
@@ -147,6 +149,7 @@ uint32_t GetAckSize();
  * @return the total BlockAck size in bytes
  */
 uint32_t GetBlockAckSize(BlockAckType type);
+
 /**
  * Return the total BlockAckRequest size (including FCS trailer).
  *
@@ -154,6 +157,16 @@ uint32_t GetBlockAckSize(BlockAckType type);
  * @return the total BlockAckRequest size in bytes
  */
 uint32_t GetBlockAckRequestSize(BlockAckReqType type);
+
+/**
+ * Return the variant of the Trigger Frame used to solicit a TB PPDU, based on the modulation class
+ * of the TB PPDU.
+ *
+ * @param modClass the modulation class of the solicited TB PPDU
+ * @return the variant of the Trigger Frame
+ */
+TriggerFrameVariant GetTriggerFrameVariant(WifiModulationClass modClass);
+
 /**
  * Return the total MU-BAR size (including FCS trailer).
  *
@@ -165,12 +178,14 @@ uint32_t GetBlockAckRequestSize(BlockAckReqType type);
 uint32_t GetMuBarSize(TriggerFrameVariant variant,
                       MHz_t bw,
                       const std::list<BlockAckReqType>& types);
+
 /**
  * Return the total RTS size (including FCS trailer).
  *
  * @return the total RTS size in bytes
  */
 uint32_t GetRtsSize();
+
 /**
  * Return the total CTS size (including FCS trailer).
  *
@@ -193,12 +208,14 @@ Time GetEstimatedAckTxTime(const WifiTxVector& txVector);
  * This method checks if the MPDU's sequence number is inside the scoreboard boundaries or not
  */
 bool IsInWindow(uint16_t seq, uint16_t winstart, uint16_t winsize);
+
 /**
  * Add FCS trailer to a packet.
  *
  * @param packet the packet to add a trailer to
  */
 void AddWifiMacTrailer(Ptr<Packet> packet);
+
 /**
  * Return the total size of the packet after WifiMacHeader and FCS trailer
  * have been added.

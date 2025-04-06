@@ -1146,9 +1146,7 @@ HeFrameExchangeManager::CalculateAcknowledgmentTime(WifiAcknowledgment* acknowle
         std::tie(dlMuTfMuBarAcknowledgment->ulLength, duration) =
             HePhy::ConvertHeTbPpduDurationToLSigLength(duration, txVector, m_phy->GetPhyBand());
 
-        const auto muBarVariant = (txVector.GetModulationClass() == WIFI_MOD_CLASS_HE)
-                                      ? TriggerFrameVariant::HE
-                                      : TriggerFrameVariant::EHT;
+        const auto muBarVariant = GetTriggerFrameVariant(txVector.GetModulationClass());
         uint32_t muBarSize =
             GetMuBarSize(muBarVariant,
                          dlMuTfMuBarAcknowledgment->muBarTxVector.GetChannelWidth(),
@@ -1301,9 +1299,7 @@ HeFrameExchangeManager::GetTxDuration(uint32_t ppduPayloadSize,
         NS_ASSERT_MSG(!psduInfo->seqNumbers.empty(), "No sequence number for " << receiver);
         const auto tid = psduInfo->seqNumbers.cbegin()->first;
 
-        const auto muBarVariant = (txParams.m_txVector.GetModulationClass() == WIFI_MOD_CLASS_HE)
-                                      ? TriggerFrameVariant::HE
-                                      : TriggerFrameVariant::EHT;
+        const auto muBarVariant = GetTriggerFrameVariant(txParams.m_txVector.GetModulationClass());
         ppduPayloadSize = MpduAggregator::GetSizeIfAggregated(
             GetMuBarSize(muBarVariant,
                          txParams.m_txVector.GetChannelWidth(),
@@ -1500,8 +1496,23 @@ WifiTxVector
 HeFrameExchangeManager::GetTrigVector(const CtrlTriggerHeader& trigger) const
 {
     WifiTxVector v;
-    v.SetPreambleType(trigger.GetVariant() == TriggerFrameVariant::HE ? WIFI_PREAMBLE_HE_TB
-                                                                      : WIFI_PREAMBLE_EHT_TB);
+    WifiPreamble preamble;
+    switch (trigger.GetVariant())
+    {
+    case TriggerFrameVariant::HE:
+        preamble = WIFI_PREAMBLE_HE_TB;
+        break;
+    case TriggerFrameVariant::EHT:
+        preamble = WIFI_PREAMBLE_EHT_TB;
+        break;
+    case TriggerFrameVariant::UHR:
+        preamble = WIFI_PREAMBLE_UHR_TB;
+        break;
+    default:
+        NS_ASSERT_MSG(false, "Unsupported variant");
+        break;
+    }
+    v.SetPreambleType(preamble);
     v.SetChannelWidth(trigger.GetUlBandwidth());
     v.SetGuardInterval(trigger.GetGuardInterval());
     v.SetLength(trigger.GetUlLength());

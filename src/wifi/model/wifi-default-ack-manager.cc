@@ -16,6 +16,7 @@
 #include "wifi-mpdu.h"
 #include "wifi-protection.h"
 #include "wifi-tx-parameters.h"
+#include "wifi-utils.h"
 
 #include "ns3/he-frame-exchange-manager.h"
 #include "ns3/log.h"
@@ -597,8 +598,10 @@ WifiDefaultAckManager::GetAckInfoIfTfMuBar(Ptr<const WifiMpdu> mpdu,
 
         // determine the TX vector used to send the BlockAck frame
         WifiTxVector blockAckTxVector;
-        auto preamble = IsEht(txParams.m_txVector.GetPreambleType()) ? WIFI_PREAMBLE_EHT_TB
-                                                                     : WIFI_PREAMBLE_HE_TB;
+        auto preamble = IsUhr(txParams.m_txVector.GetPreambleType())
+                            ? WIFI_PREAMBLE_UHR_TB
+                            : (IsEht(txParams.m_txVector.GetPreambleType()) ? WIFI_PREAMBLE_EHT_TB
+                                                                            : WIFI_PREAMBLE_HE_TB);
         blockAckTxVector.SetPreambleType(preamble);
         blockAckTxVector.SetChannelWidth(txParams.m_txVector.GetChannelWidth());
         // 800ns GI is not allowed for HE TB
@@ -685,8 +688,10 @@ WifiDefaultAckManager::GetAckInfoIfAggregatedMuBar(Ptr<const WifiMpdu> mpdu,
 
         // determine the TX vector used to send the BlockAck frame
         WifiTxVector blockAckTxVector;
-        auto preamble = IsEht(txParams.m_txVector.GetPreambleType()) ? WIFI_PREAMBLE_EHT_TB
-                                                                     : WIFI_PREAMBLE_HE_TB;
+        auto preamble = IsUhr(txParams.m_txVector.GetPreambleType())
+                            ? WIFI_PREAMBLE_UHR_TB
+                            : (IsEht(txParams.m_txVector.GetPreambleType()) ? WIFI_PREAMBLE_EHT_TB
+                                                                            : WIFI_PREAMBLE_HE_TB);
         blockAckTxVector.SetPreambleType(preamble);
         blockAckTxVector.SetChannelWidth(txParams.m_txVector.GetChannelWidth());
         // 800ns GI is not allowed for HE TB
@@ -700,11 +705,11 @@ WifiDefaultAckManager::GetAckInfoIfAggregatedMuBar(Ptr<const WifiMpdu> mpdu,
         NS_LOG_DEBUG("Adding STA " << receiver
                                    << " to the list of stations that will reply with a Block Ack");
         Ptr<QosTxop> edca = m_mac->GetQosTxop(QosUtilsMapTidToAc(tid));
+        const auto muBarVariant = GetTriggerFrameVariant(GetModulationClassForPreamble(preamble));
         acknowledgment->stationsReplyingWithBlockAck.emplace(
             receiver,
             WifiDlMuAggregateTf::BlockAckInfo{
-                GetMuBarSize(IsEht(txParams.m_txVector.GetPreambleType()) ? TriggerFrameVariant::EHT
-                                                                          : TriggerFrameVariant::HE,
+                GetMuBarSize(muBarVariant,
                              txParams.m_txVector.GetChannelWidth(),
                              {m_mac->GetBarTypeAsOriginator(receiver, tid)}),
                 edca->GetBaManager()->GetBlockAckReqHeader(
