@@ -18,13 +18,17 @@
 #include "ns3/common-info-basic-mle.h"
 #include "ns3/data-rate.h"
 #include "ns3/eht-capabilities.h"
+#include "ns3/eht-operation.h"
 #include "ns3/he-6ghz-band-capabilities.h"
 #include "ns3/he-capabilities.h"
+#include "ns3/he-operation.h"
 #include "ns3/ht-capabilities.h"
+#include "ns3/ht-operation.h"
 #include "ns3/mac48-address.h"
 #include "ns3/object.h"
 #include "ns3/traced-callback.h"
 #include "ns3/vht-capabilities.h"
+#include "ns3/vht-operation.h"
 
 #include <array>
 #include <list>
@@ -106,13 +110,17 @@ struct WifiRemoteStationState
     bool m_erpOfdmSupported;           //!< Flag if ERP OFDM is supported by the remote station
     bool m_ofdmSupported;              //!< Flag if OFDM is supported by the remote station
     Ptr<const HtCapabilities> m_htCapabilities; //!< remote station HT capabilities
+    Ptr<const HtOperation> m_htOperation;       //!< remote station HT operation
     Ptr<const ExtendedCapabilities>
         m_extendedCapabilities;                   //!< remote station extended capabilities
     Ptr<const VhtCapabilities> m_vhtCapabilities; //!< remote station VHT capabilities
+    Ptr<const VhtOperation> m_vhtOperation;       //!< remote station VHT operation
     Ptr<const HeCapabilities> m_heCapabilities;   //!< remote station HE capabilities
+    Ptr<const HeOperation> m_heOperation;         //!< remote station HE operation
     Ptr<const He6GhzBandCapabilities>
         m_he6GhzBandCapabilities;                 //!< remote station HE 6GHz band capabilities
     Ptr<const EhtCapabilities> m_ehtCapabilities; //!< remote station EHT capabilities
+    Ptr<const EhtOperation> m_ehtOperation;       //!< remote station EHT operation
     /// remote station Multi-Link Element Common Info
     std::shared_ptr<CommonInfoBasicMle> m_mleCommonInfo;
     bool m_emlsrEnabled; //!< whether EMLSR mode is enabled on this link
@@ -254,6 +262,13 @@ class WifiRemoteStationManager : public Object
      */
     void AddStationHtCapabilities(Mac48Address from, const HtCapabilities& htCapabilities);
     /**
+     * Records HT operation of the remote station.
+     *
+     * @param from the address of the station being recorded
+     * @param htOperation the HT operation of the station
+     */
+    void AddStationHtOperation(Mac48Address from, const HtOperation& htOperation);
+    /**
      * Records extended capabilities of the remote station.
      *
      * @param from the address of the station being recorded
@@ -269,12 +284,26 @@ class WifiRemoteStationManager : public Object
      */
     void AddStationVhtCapabilities(Mac48Address from, const VhtCapabilities& vhtCapabilities);
     /**
+     * Records VHT operation of the remote station.
+     *
+     * @param from the address of the station being recorded
+     * @param vhtOperation the VHT operation of the station
+     */
+    void AddStationVhtOperation(Mac48Address from, const VhtOperation& vhtOperation);
+    /**
      * Records HE capabilities of the remote station.
      *
      * @param from the address of the station being recorded
      * @param heCapabilities the HE capabilities of the station
      */
     void AddStationHeCapabilities(Mac48Address from, const HeCapabilities& heCapabilities);
+    /**
+     * Records HE operation of the remote station.
+     *
+     * @param from the address of the station being recorded
+     * @param heOperation the HE operation of the station
+     */
+    void AddStationHeOperation(Mac48Address from, const HeOperation& heOperation);
     /**
      * Records HE 6 GHz Band Capabilities of a remote station
      *
@@ -290,6 +319,13 @@ class WifiRemoteStationManager : public Object
      * @param ehtCapabilities the EHT capabilities of the station
      */
     void AddStationEhtCapabilities(Mac48Address from, const EhtCapabilities& ehtCapabilities);
+    /**
+     * Records EHT operation of the remote station.
+     *
+     * @param from the address of the station being recorded
+     * @param ehtOperation the EHT operation of the station
+     */
+    void AddStationEhtOperation(Mac48Address from, const EhtOperation& ehtOperation);
     /**
      * Records the Common Info field advertised by the given remote station in a Multi-Link
      * Element. It includes the MLD address of the remote station.
@@ -307,6 +343,13 @@ class WifiRemoteStationManager : public Object
      */
     Ptr<const HtCapabilities> GetStationHtCapabilities(Mac48Address from);
     /**
+     * Return the HT operation sent by the remote station.
+     *
+     * @param from the address of the remote station
+     * @return the HT operation sent by the remote station
+     */
+    Ptr<const HtOperation> GetStationHtOperation(Mac48Address from);
+    /**
      * Return the extended capabilities sent by the remote station.
      *
      * @param from the address of the remote station
@@ -321,12 +364,26 @@ class WifiRemoteStationManager : public Object
      */
     Ptr<const VhtCapabilities> GetStationVhtCapabilities(Mac48Address from);
     /**
+     * Return the VHT operation sent by the remote station.
+     *
+     * @param from the address of the remote station
+     * @return the VHT operation sent by the remote station
+     */
+    Ptr<const VhtOperation> GetStationVhtOperation(Mac48Address from);
+    /**
      * Return the HE capabilities sent by the remote station.
      *
      * @param from the address of the remote station
      * @return the HE capabilities sent by the remote station
      */
     Ptr<const HeCapabilities> GetStationHeCapabilities(Mac48Address from);
+    /**
+     * Return the HE operation sent by the remote station.
+     *
+     * @param from the address of the remote station
+     * @return the HE operation sent by the remote station
+     */
+    Ptr<const HeOperation> GetStationHeOperation(Mac48Address from);
     /**
      * Return the HE 6 GHz Band Capabilities sent by a remote station.
      *
@@ -341,6 +398,13 @@ class WifiRemoteStationManager : public Object
      * @return the EHT capabilities sent by the remote station
      */
     Ptr<const EhtCapabilities> GetStationEhtCapabilities(Mac48Address from);
+    /**
+     * Return the EHT operation sent by the remote station.
+     *
+     * @param from the address of the remote station
+     * @return the EHT operation sent by the remote station
+     */
+    Ptr<const EhtOperation> GetStationEhtOperation(Mac48Address from);
     /**
      * @param from the (MLD or link) address of the remote non-AP MLD
      * @return the EML Capabilities advertised by the remote non-AP MLD

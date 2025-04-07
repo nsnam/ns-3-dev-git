@@ -464,19 +464,27 @@ class StaWifiMac : public WifiMac
     void ReceiveAssocResp(Ptr<const WifiMpdu> mpdu, uint8_t linkId);
 
     /**
-     * Update associated AP's information from the given management frame (Beacon,
-     * Probe Response or Association Response). If STA is not associated, this
-     * information will be used for the association process.
+     * Update operations information from the given management frame.
+     *
+     * @param frame the body of the given management frame
+     * @param addr MAC address of the sender
+     * @param linkId ID of the link the management frame was received over
+     */
+    void RecordOperations(const MgtFrameType& frame, const Mac48Address& addr, uint8_t linkId);
+
+    /**
+     * Update operational settings based on associated AP's information provided by the given
+     * management frame (Beacon, Probe Response or Association Response).
      *
      * @param frame the body of the given management frame
      * @param apAddr MAC address of the AP
      * @param bssid MAC address of BSSID
      * @param linkId ID of the link the management frame was received over
      */
-    void UpdateApInfo(const MgtFrameType& frame,
-                      const Mac48Address& apAddr,
-                      const Mac48Address& bssid,
-                      uint8_t linkId);
+    void ApplyOperationalSettings(const MgtFrameType& frame,
+                                  const Mac48Address& apAddr,
+                                  const Mac48Address& bssid,
+                                  uint8_t linkId);
 
     /**
      * Get the (Re)Association Request frame to send on a given link. The returned frame

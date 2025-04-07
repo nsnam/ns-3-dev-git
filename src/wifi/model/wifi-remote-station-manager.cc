@@ -1486,12 +1486,8 @@ WifiRemoteStationManager::GetMostRecentRssi(Mac48Address address) const
 std::shared_ptr<WifiRemoteStationState>
 WifiRemoteStationManager::LookupState(Mac48Address address) const
 {
-    NS_LOG_FUNCTION(this << address);
-    auto stateIt = m_states.find(address);
-
-    if (stateIt != m_states.end())
+    if (const auto stateIt = m_states.find(address); stateIt != m_states.cend())
     {
-        NS_LOG_DEBUG("WifiRemoteStationManager::LookupState returning existing state");
         return stateIt->second;
     }
 
@@ -1505,9 +1501,13 @@ WifiRemoteStationManager::LookupState(Mac48Address address) const
     state->m_erpOfdmSupported = false;
     state->m_ofdmSupported = false;
     state->m_htCapabilities = nullptr;
+    state->m_htOperation = nullptr;
     state->m_vhtCapabilities = nullptr;
+    state->m_vhtOperation = nullptr;
     state->m_heCapabilities = nullptr;
+    state->m_heOperation = nullptr;
     state->m_ehtCapabilities = nullptr;
+    state->m_ehtOperation = nullptr;
     state->m_mleCommonInfo = nullptr;
     state->m_emlsrEnabled = false;
     state->m_channelWidth = m_wifiPhy->GetChannelWidth();
@@ -1589,6 +1589,18 @@ WifiRemoteStationManager::AddStationHtCapabilities(Mac48Address from,
 }
 
 void
+WifiRemoteStationManager::AddStationHtOperation(Mac48Address from, const HtOperation& htOperation)
+{
+    NS_LOG_FUNCTION(this << from << htOperation);
+    auto state = LookupState(from);
+    if (htOperation.GetStaChannelWidth() == 0)
+    {
+        state->m_channelWidth = MHz_u{20};
+    }
+    state->m_htOperation = Create<const HtOperation>(htOperation);
+}
+
+void
 WifiRemoteStationManager::AddStationExtendedCapabilities(
     Mac48Address from,
     const ExtendedCapabilities& extendedCapabilities)
@@ -1624,6 +1636,34 @@ WifiRemoteStationManager::AddStationVhtCapabilities(Mac48Address from,
         }
     }
     state->m_vhtCapabilities = Create<const VhtCapabilities>(vhtCapabilities);
+}
+
+void
+WifiRemoteStationManager::AddStationVhtOperation(Mac48Address from,
+                                                 const VhtOperation& vhtOperation)
+{
+    NS_LOG_FUNCTION(this << from << vhtOperation);
+    auto state = LookupState(from);
+    /*
+     * Table 9-274 (VHT Operation Information subfields) of 802.11-2020:
+     * Set to 0 for 20 MHz or 40 MHz BSS bandwidth.
+     * Set to 1 for 80 MHz, 160 MHz or 80+80 MHz BSS bandwidth.
+     */
+    if (vhtOperation.GetChannelWidth() == 0)
+    {
+        state->m_channelWidth = std::min(MHz_u{40}, state->m_channelWidth);
+    }
+    else if (vhtOperation.GetChannelWidth() == 1)
+    {
+        state->m_channelWidth = std::min(MHz_u{160}, state->m_channelWidth);
+    }
+    state->m_vhtOperation = Create<const VhtOperation>(vhtOperation);
+}
+
+Ptr<const VhtOperation>
+WifiRemoteStationManager::GetStationVhtOperation(Mac48Address from)
+{
+    return LookupState(from)->m_vhtOperation;
 }
 
 void
@@ -1678,6 +1718,34 @@ WifiRemoteStationManager::AddStationHeCapabilities(Mac48Address from,
 }
 
 void
+WifiRemoteStationManager::AddStationHeOperation(Mac48Address from, const HeOperation& heOperation)
+{
+    NS_LOG_FUNCTION(this << from << heOperation);
+    auto state = LookupState(from);
+    if (auto operation6GHz = heOperation.m_6GHzOpInfo)
+    {
+        switch (operation6GHz->m_chWid)
+        {
+        case 0:
+            state->m_channelWidth = MHz_u{20};
+            break;
+        case 1:
+            state->m_channelWidth = MHz_u{40};
+            break;
+        case 2:
+            state->m_channelWidth = MHz_u{80};
+            break;
+        case 3:
+            state->m_channelWidth = MHz_u{160};
+            break;
+        default:
+            NS_FATAL_ERROR("Invalid channel width value in 6 GHz Operation Information field");
+        }
+    }
+    state->m_heOperation = Create<const HeOperation>(heOperation);
+}
+
+void
 WifiRemoteStationManager::AddStationHe6GhzCapabilities(
     const Mac48Address& from,
     const He6GhzBandCapabilities& he6GhzCapabilities)
@@ -1712,6 +1780,35 @@ WifiRemoteStationManager::AddStationEhtCapabilities(Mac48Address from,
 }
 
 void
+WifiRemoteStationManager::AddStationEhtOperation(Mac48Address from,
+                                                 const EhtOperation& ehtOperation)
+{
+    NS_LOG_FUNCTION(this << from << ehtOperation);
+    auto state = LookupState(from);
+    if (auto opControl = ehtOperation.m_opInfo)
+    {
+        switch (opControl->control.channelWidth)
+        {
+        case 0:
+            state->m_channelWidth = MHz_u{20};
+            break;
+        case 1:
+            state->m_channelWidth = MHz_u{40};
+            break;
+        case 2:
+            state->m_channelWidth = MHz_u{80};
+            break;
+        case 3:
+            state->m_channelWidth = MHz_u{160};
+            break;
+        default:
+            NS_FATAL_ERROR("Invalid channel width value in EHT Operation Information field");
+        }
+    }
+    state->m_ehtOperation = Create<const EhtOperation>(ehtOperation);
+}
+
+void
 WifiRemoteStationManager::AddStationMleCommonInfo(
     Mac48Address from,
     const std::shared_ptr<CommonInfoBasicMle>& mleCommonInfo)
@@ -1729,6 +1826,12 @@ Ptr<const HtCapabilities>
 WifiRemoteStationManager::GetStationHtCapabilities(Mac48Address from)
 {
     return LookupState(from)->m_htCapabilities;
+}
+
+Ptr<const HtOperation>
+WifiRemoteStationManager::GetStationHtOperation(Mac48Address from)
+{
+    return LookupState(from)->m_htOperation;
 }
 
 Ptr<const ExtendedCapabilities>
@@ -1749,6 +1852,12 @@ WifiRemoteStationManager::GetStationHeCapabilities(Mac48Address from)
     return LookupState(from)->m_heCapabilities;
 }
 
+Ptr<const HeOperation>
+WifiRemoteStationManager::GetStationHeOperation(Mac48Address from)
+{
+    return LookupState(from)->m_heOperation;
+}
+
 Ptr<const He6GhzBandCapabilities>
 WifiRemoteStationManager::GetStationHe6GhzCapabilities(const Mac48Address& from) const
 {
@@ -1759,6 +1868,12 @@ Ptr<const EhtCapabilities>
 WifiRemoteStationManager::GetStationEhtCapabilities(Mac48Address from)
 {
     return LookupState(from)->m_ehtCapabilities;
+}
+
+Ptr<const EhtOperation>
+WifiRemoteStationManager::GetStationEhtOperation(Mac48Address from)
+{
+    return LookupState(from)->m_ehtOperation;
 }
 
 std::optional<std::reference_wrapper<CommonInfoBasicMle::EmlCapabilities>>
