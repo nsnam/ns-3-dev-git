@@ -924,7 +924,7 @@ StaWifiMac::ScanningTimeout(const std::optional<ApInfo>& bestAp)
     }
 
     NS_LOG_DEBUG("Attempting to associate with AP: " << *bestAp);
-    UpdateApInfo(bestAp->m_frame, bestAp->m_apAddr, bestAp->m_bssid, bestAp->m_linkId);
+    ApplyOperationalSettings(bestAp->m_frame, bestAp->m_apAddr, bestAp->m_bssid, bestAp->m_linkId);
     // reset info on links to setup
     for (auto& [id, link] : GetLinks())
     {
@@ -1379,6 +1379,7 @@ StaWifiMac::ReceiveBeacon(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
     NS_LOG_DEBUG("Beacon received");
     MgtBeaconHeader beacon;
     mpdu->GetPacket()->PeekHeader(beacon);
+
     const auto& capabilities = beacon.m_capability;
     bool goodBeacon;
     if (!capabilities.IsEss())
@@ -1422,10 +1423,14 @@ StaWifiMac::ReceiveBeacon(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
             // enqueue a probe request to that Adhoc STA to inform about our capabilities
             EnqueueProbeRequest(GetProbeRequest(linkId), linkId, from);
         }
-        UpdateApInfo(apInfo.m_frame, from, bssid, linkId);
+        RecordCapabilities(beacon, from, linkId);
+        RecordOperations(beacon, from, linkId);
         GetWifiRemoteStationManager(linkId)->RecordAdhocPeer(from);
         return;
     }
+
+    RecordCapabilities(beacon, from, linkId);
+    RecordOperations(beacon, from, linkId);
 
     if (!goodBeacon)
     {
@@ -1439,7 +1444,7 @@ StaWifiMac::ReceiveBeacon(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
         Time delay = MicroSeconds(std::get<MgtBeaconHeader>(apInfo.m_frame).m_beaconInterval *
                                   m_maxMissedBeacons);
         RestartBeaconWatchdog(delay);
-        UpdateApInfo(apInfo.m_frame, from, bssid, linkId);
+        ApplyOperationalSettings(apInfo.m_frame, from, bssid, linkId);
         if (m_powerSaveManager)
         {
             m_powerSaveManager->NotifyReceivedBeacon(mpdu, linkId);
@@ -1459,9 +1464,14 @@ StaWifiMac::ReceiveProbeResp(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
     const WifiMacHeader& hdr = mpdu->GetHeader();
     NS_ASSERT(hdr.IsProbeResp());
 
-    NS_LOG_DEBUG("Probe response received from " << hdr.GetAddr2());
+    const auto from = hdr.GetAddr2();
+    NS_LOG_DEBUG("Probe response received from " << from);
     MgtProbeResponseHeader probeResp;
     mpdu->GetPacket()->PeekHeader(probeResp);
+
+    RecordCapabilities(probeResp, from, linkId);
+    RecordOperations(probeResp, from, linkId);
+
     if (!CheckSupportedRates(probeResp, linkId))
     {
         return;
@@ -1484,23 +1494,28 @@ StaWifiMac::ReceiveAssocResp(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
     const WifiMacHeader& hdr = mpdu->GetHeader();
     NS_ASSERT(hdr.IsAssocResp() || hdr.IsReassocResp());
 
+    MgtAssocResponseHeader assocResp;
+    mpdu->GetPacket()->PeekHeader(assocResp);
+
+    RecordCapabilities(assocResp, hdr.GetAddr2(), linkId);
+    RecordOperations(assocResp, hdr.GetAddr2(), linkId);
+
     if (m_state != WAIT_ASSOC_RESP)
     {
         return;
     }
 
-    std::optional<Mac48Address> apMldAddress;
-    MgtAssocResponseHeader assocResp;
-    mpdu->GetPacket()->PeekHeader(assocResp);
     if (m_assocRequestEvent.IsPending())
     {
         m_assocRequestEvent.Cancel();
     }
+
+    std::optional<Mac48Address> apMldAddress;
     if (assocResp.m_statusCode.IsSuccess())
     {
         m_aid = assocResp.m_aid;
         NS_LOG_DEBUG((hdr.IsReassocResp() ? "reassociation done" : "association completed"));
-        UpdateApInfo(assocResp, hdr.GetAddr2(), hdr.GetAddr3(), linkId);
+        ApplyOperationalSettings(assocResp, hdr.GetAddr2(), hdr.GetAddr3(), linkId);
         NS_ASSERT(GetLink(linkId).bssid.has_value() && *GetLink(linkId).bssid == hdr.GetAddr3());
         SetBssid(hdr.GetAddr3(), linkId);
         SetState(ASSOCIATED);
@@ -1606,14 +1621,16 @@ StaWifiMac::ReceiveAssocResp(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
                             "match the address stored in the station manager for link "
                                 << +staLinkid);
             // process the Association Response contained in this Per-STA Profile
-            MgtAssocResponseHeader assoc = perStaProfile.GetAssocResponse();
-            if (assoc.m_statusCode.IsSuccess())
+            auto& assocResp = perStaProfile.GetAssocResponse();
+            RecordCapabilities(assocResp, *bssid, staLinkid);
+            RecordOperations(assocResp, *bssid, staLinkid);
+            if (assocResp.m_statusCode.IsSuccess())
             {
-                NS_ABORT_MSG_IF(m_aid != 0 && m_aid != assoc.m_aid,
+                NS_ABORT_MSG_IF(m_aid != 0 && m_aid != assocResp.m_aid,
                                 "AID should be the same for all the links");
-                m_aid = assoc.m_aid;
+                m_aid = assocResp.m_aid;
                 NS_LOG_DEBUG("Setup on link " << staLinkid << " completed");
-                UpdateApInfo(assoc, *bssid, *bssid, staLinkid);
+                ApplyOperationalSettings(assocResp, *bssid, *bssid, staLinkid);
                 SetBssid(*bssid, staLinkid);
                 m_setupCompleted(staLinkid, *bssid);
                 SetState(ASSOCIATED);
@@ -1811,23 +1828,77 @@ StaWifiMac::CheckSupportedRates(std::variant<MgtBeaconHeader, MgtProbeResponseHe
 }
 
 void
-StaWifiMac::UpdateApInfo(const MgtResponseFrameType& frame,
-                         const Mac48Address& apAddr,
-                         const Mac48Address& bssid,
-                         uint8_t linkId)
+StaWifiMac::RecordOperations(const MgtResponseFrameType& frame,
+                             const Mac48Address& from,
+                             uint8_t linkId)
+{
+    NS_LOG_FUNCTION(this << frame.index() << from << linkId);
+    auto remoteStationManager = GetWifiRemoteStationManager(linkId);
+    auto phy = GetWifiPhy(linkId);
+
+    // lambda processing Information Elements included in all frame types
+    auto recordFromOpIes = [&](auto&& frame) {
+        const auto& edcaParameters = frame.template Get<EdcaParameterSet>();
+        const auto qosSupported = edcaParameters.has_value();
+        GetWifiRemoteStationManager(linkId)->SetQosSupport(from, qosSupported);
+
+        if (GetHtSupported(linkId))
+        {
+            /* HT station */
+            if (const auto& htOperation = frame.template Get<HtOperation>())
+            {
+                remoteStationManager->AddStationHtOperation(from, *htOperation);
+            }
+        }
+
+        if (GetVhtSupported(linkId))
+        {
+            /* VHT station */
+            if (const auto& vhtOperation = frame.template Get<VhtOperation>())
+            {
+                remoteStationManager->AddStationVhtOperation(from, *vhtOperation);
+            }
+        }
+
+        if (!GetHeSupported())
+        {
+            return;
+        }
+        /* HE station */
+        if (const auto& heOperation = frame.template Get<HeOperation>())
+        {
+            remoteStationManager->AddStationHeOperation(from, *heOperation);
+        }
+
+        if (!GetEhtSupported())
+        {
+            return;
+        }
+        /* EHT station */
+        if (const auto& ehtOperation = frame.template Get<EhtOperation>())
+        {
+            remoteStationManager->AddStationEhtOperation(from, *ehtOperation);
+        }
+    };
+
+    // process Information Elements included in the current frame variant
+    std::visit(recordFromOpIes, frame);
+}
+
+void
+StaWifiMac::ApplyOperationalSettings(const MgtResponseFrameType& frame,
+                                     const Mac48Address& apAddr,
+                                     const Mac48Address& bssid,
+                                     uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << frame.index() << apAddr << bssid << +linkId);
-
-    auto doRecordCapabilities = [&](auto&& mgtFrame) {
-        RecordCapabilities(mgtFrame, apAddr, linkId);
-    };
-    std::visit(doRecordCapabilities, frame);
 
     if (auto link = GetLinks().find(linkId); IsAssociated() && link != GetLinks().cend() &&
                                              GetStaLink(link->second).bssid.has_value() &&
                                              GetStaLink(link->second).bssid.value() != bssid)
     {
-        NS_LOG_DEBUG("Ignore information in beacon frame not received from associated AP");
+        NS_LOG_DEBUG(
+            "Ignore information in management response frame not received from associated AP");
         return;
     }
 
@@ -1847,16 +1918,17 @@ StaWifiMac::UpdateApInfo(const MgtResponseFrameType& frame,
     auto processOtherIes = [&](auto&& frame) {
         const auto& capabilities = frame.m_capability;
         bool isShortPreambleEnabled = capabilities.IsShortPreamble();
+        auto remoteStationManager = GetWifiRemoteStationManager(linkId);
         if (erpInformation && erpInformation->has_value() && GetErpSupported(linkId))
         {
             isShortPreambleEnabled &= !(*erpInformation)->GetBarkerPreambleMode();
             if ((*erpInformation)->GetUseProtection() != 0)
             {
-                GetWifiRemoteStationManager(linkId)->SetUseNonErpProtection(true);
+                remoteStationManager->SetUseNonErpProtection(true);
             }
             else
             {
-                GetWifiRemoteStationManager(linkId)->SetUseNonErpProtection(false);
+                remoteStationManager->SetUseNonErpProtection(false);
             }
             if (capabilities.IsShortSlotTime() == true)
             {
@@ -1869,20 +1941,17 @@ StaWifiMac::UpdateApInfo(const MgtResponseFrameType& frame,
                 GetWifiPhy(linkId)->SetSlot(MicroSeconds(20));
             }
         }
-        GetWifiRemoteStationManager(linkId)->SetShortPreambleEnabled(isShortPreambleEnabled);
-        GetWifiRemoteStationManager(linkId)->SetShortSlotTimeEnabled(
-            capabilities.IsShortSlotTime());
+        remoteStationManager->SetShortPreambleEnabled(isShortPreambleEnabled);
+        remoteStationManager->SetShortSlotTimeEnabled(capabilities.IsShortSlotTime());
 
         if (!GetQosSupported())
         {
             return;
         }
         /* QoS station */
-        bool qosSupported = false;
         const auto& edcaParameters = frame.template Get<EdcaParameterSet>();
         if (edcaParameters.has_value())
         {
-            qosSupported = true;
             // The value of the TXOP Limit field is specified as an unsigned integer, with the least
             // significant octet transmitted first, in units of 32 μs.
             SetEdcaParameters({AC_BE,
@@ -1910,7 +1979,6 @@ StaWifiMac::UpdateApInfo(const MgtResponseFrameType& frame,
                                32 * MicroSeconds(edcaParameters->GetVoTxopLimit())},
                               linkId);
         }
-        GetWifiRemoteStationManager(linkId)->SetQosSupport(apAddr, qosSupported);
 
         if (GetHtSupported(linkId))
         {
@@ -1918,7 +1986,7 @@ StaWifiMac::UpdateApInfo(const MgtResponseFrameType& frame,
             if (const auto& htCapabilities = frame.template Get<HtCapabilities>();
                 !htCapabilities.has_value())
             {
-                GetWifiRemoteStationManager(linkId)->RemoveAllSupportedMcs(apAddr);
+                remoteStationManager->RemoveAllSupportedMcs(apAddr);
             }
         }
 

@@ -452,7 +452,7 @@ AdhocWifiMac::ReceiveProbeRequest(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
         return;
     }
 
-    // store capabilities from received beacon
+    // store capabilities from probe request
     MgtProbeRequestHeader probeReq;
     mpdu->GetPacket()->PeekHeader(probeReq);
     RecordCapabilities(probeReq, from, linkId);
