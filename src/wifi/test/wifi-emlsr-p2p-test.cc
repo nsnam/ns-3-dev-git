@@ -32,42 +32,14 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE("WifiEmlsrP2pTest");
 
-EmlsrAdhocPeerTest::EmlsrAdhocPeerTest(bool switchAuxPhy, bool auxPhySleepAndUpdateCw)
-    : EmlsrOperationsTestBase(
-          "Check data exchange between an EMLSR client and an adhoc peer (switchAuxPhy=" +
-          std::to_string(switchAuxPhy) +
-          ", auxPhySleepAndUpdateCw=" + std::to_string(auxPhySleepAndUpdateCw) + ")"),
-      m_switchAuxPhy(switchAuxPhy),
-      m_updateCwAfterIcfFailure(auxPhySleepAndUpdateCw),
-      m_staErrorModel(CreateObject<ListErrorModel>()),
-      m_otherErrorModel(CreateObject<ListErrorModel>())
+EmlsrP2pOperationsTestBase::EmlsrP2pOperationsTestBase(const std::string& name)
+    : EmlsrOperationsTestBase(name)
 {
-    m_linksToEnableEmlsrOn = {0, 1, 2}; // all links
-    m_nEmlsrStations = 1;
-    m_nNonEmlsrStations = 0;
-
-    // channel switch delay will be also set to 64 us
-    m_paddingDelay = {MicroSeconds(64)};
-    m_transitionDelay = {MicroSeconds(64)};
-    m_mainPhyId = 0;
-    m_putAuxPhyToSleep = auxPhySleepAndUpdateCw;
-    m_establishBaDl = {0};
-    m_establishBaUl = {0};
-    m_duration = Seconds(0.5);
 }
 
 void
-EmlsrAdhocPeerTest::DoSetup()
+EmlsrP2pOperationsTestBase::DoSetup()
 {
-    Config::SetDefault("ns3::WifiPhy::ChannelSwitchDelay", TimeValue(MicroSeconds(64)));
-    Config::SetDefault("ns3::DefaultEmlsrManager::SwitchAuxPhy", BooleanValue(m_switchAuxPhy));
-    Config::SetDefault("ns3::AdvancedApEmlsrManager::UpdateCwAfterFailedIcf",
-                       EnumValue(m_updateCwAfterIcfFailure
-                                     ? WifiUpdateCwAfterIcfFailure::ALWAYS
-                                     : WifiUpdateCwAfterIcfFailure::IF_NOT_CROSS_LINK_COLLISION));
-    Config::SetDefault("ns3::AdhocWifiMac::EmlsrUpdateCwAfterFailedIcf",
-                       BooleanValue(m_updateCwAfterIcfFailure));
-
     EmlsrOperationsTestBase::DoSetup();
 
     m_staMacs[0]->SetAttribute("EnableP2pLinks", BooleanValue(true));
@@ -103,7 +75,7 @@ EmlsrAdhocPeerTest::DoSetup()
                 "BeaconGeneration",
                 BooleanValue(false), // will be enabled after enabling EMLSR mode on the client
                 "EmlsrPeer",
-                BooleanValue(true),
+                BooleanValue(m_emlsrAwareAdhocPeer),
                 "EmlsrPeerPaddingDelay",
                 TimeValue(m_paddingDelay.front()),
                 "EmlsrPeerTransitionDelay",
@@ -147,14 +119,6 @@ EmlsrAdhocPeerTest::DoSetup()
     m_emlsrToAdhocSockAddr.SetPhysicalAddress(m_adhocMac->GetDevice()->GetAddress());
     m_emlsrToAdhocSockAddr.SetProtocol(1);
 
-    // install error models
-    for (std::size_t phyId = 0; phyId < m_apMac->GetNLinks(); ++phyId)
-    {
-        m_apMac->GetDevice()->GetPhy(phyId)->SetPostReceptionErrorModel(m_otherErrorModel);
-        m_staMacs[0]->GetDevice()->GetPhy(phyId)->SetPostReceptionErrorModel(m_staErrorModel);
-    }
-    m_adhocMac->GetWifiPhy(SINGLE_LINK_OP_ID)->SetPostReceptionErrorModel(m_otherErrorModel);
-
     // Trace PSDUs passed to the PHY on adhoc peer station
     Config::ConnectWithoutContext(
         "/NodeList/2/DeviceList/*/$ns3::WifiNetDevice/Phys/0/PhyTxPsduBegin",
@@ -162,9 +126,9 @@ EmlsrAdhocPeerTest::DoSetup()
 }
 
 Ptr<PacketSocketClient>
-EmlsrAdhocPeerTest::GetP2pApplication(bool fromEmlsrToAdhoc,
-                                      std::size_t count,
-                                      std::size_t pktSize) const
+EmlsrP2pOperationsTestBase::GetP2pApplication(bool fromEmlsrToAdhoc,
+                                              std::size_t count,
+                                              std::size_t pktSize) const
 {
     auto client = CreateObject<PacketSocketClient>();
     client->SetAttribute("PacketSize", UintegerValue(pktSize));
@@ -178,7 +142,7 @@ EmlsrAdhocPeerTest::GetP2pApplication(bool fromEmlsrToAdhoc,
 }
 
 void
-EmlsrAdhocPeerTest::StartTraffic()
+EmlsrP2pOperationsTestBase::StartTraffic()
 {
     NS_LOG_FUNCTION(this);
 
@@ -210,16 +174,127 @@ EmlsrAdhocPeerTest::StartTraffic()
     // between the AP MLD and the EMLSR client
     delay += MilliSeconds(5);
 
-    Simulator::Schedule(delay, [this]() {
-        m_setupDone = true;
-        RunOne(m_apMac);
-    });
+    Simulator::Schedule(delay, [this]() { DoStartTraffic(); });
+}
+
+void
+EmlsrP2pOperationsTestBase::Transmit(Ptr<WifiMac> mac,
+                                     uint8_t phyId,
+                                     WifiConstPsduMap psduMap,
+                                     WifiTxVector txVector,
+                                     double txPowerW)
+{
+    EmlsrOperationsTestBase::Transmit(mac, phyId, psduMap, txVector, txPowerW);
+
+    const auto psdu = psduMap.cbegin()->second;
+    const auto& hdr = psdu->GetHeader(0);
+    auto linkId = mac->GetLinkForPhy(phyId);
+    NS_TEST_ASSERT_MSG_EQ(linkId.has_value(),
+                          true,
+                          "PHY " << +phyId << " is not operating on any link");
+
+    // check that the EMLSR client sends frames addressed to the AP MLD on an infrastructure link
+    // and frames addressed to the adhoc peer on the P2P link
+    if (mac->GetTypeOfStation() == STA && m_staMacs[0]->IsEmlsrLink(0) &&
+        !hdr.GetAddr1().IsGroup() && hdr.HasData())
+    {
+        // (unicast) PSDU transmitted by the EMLSR client after enabling EMLSR mode
+        const auto toAdhocPeer = (psduMap.cbegin()->second->GetAddr1() == m_adhocMac->GetAddress());
+        NS_TEST_EXPECT_MSG_EQ(toAdhocPeer,
+                              (linkId.value() == m_p2pLinkId),
+                              "TX occurred on unexpected link " << +linkId.value());
+    }
+
+    if (!m_setupDone || hdr.IsCfEnd())
+    {
+        return;
+    }
+
+    ++m_processedEvents;
+
+    if (!m_events.empty())
+    {
+        // check that the expected frame is being transmitted
+        NS_TEST_EXPECT_MSG_EQ(std::string(WifiMacHeader(m_events.front().hdrType).GetTypeString()),
+                              hdr.GetTypeString(),
+                              "Unexpected MAC header type for frame #" << m_processedEvents);
+        // perform actions/checks, if any
+        if (m_events.front().func)
+        {
+            m_events.front().func(psdu, txVector, linkId.value());
+        }
+
+        m_events.pop_front();
+    }
+}
+
+void
+EmlsrP2pOperationsTestBase::DoRun()
+{
+    Simulator::Stop(m_duration);
+    Simulator::Run();
+
+    NS_TEST_EXPECT_MSG_EQ(m_events.empty(), true, "Not all events took place");
+
+    Simulator::Destroy();
+}
+
+EmlsrAdhocPeerTest::EmlsrAdhocPeerTest(bool switchAuxPhy, bool auxPhySleepAndUpdateCw)
+    : EmlsrP2pOperationsTestBase(
+          "Check data exchange between an EMLSR client and an adhoc peer (switchAuxPhy=" +
+          std::to_string(switchAuxPhy) +
+          ", auxPhySleepAndUpdateCw=" + std::to_string(auxPhySleepAndUpdateCw) + ")"),
+      m_switchAuxPhy(switchAuxPhy),
+      m_updateCwAfterIcfFailure(auxPhySleepAndUpdateCw),
+      m_staErrorModel(CreateObject<ListErrorModel>()),
+      m_otherErrorModel(CreateObject<ListErrorModel>())
+{
+    m_linksToEnableEmlsrOn = {0, 1, 2}; // all links
+    m_nEmlsrStations = 1;
+    m_nNonEmlsrStations = 0;
+
+    // channel switch delay will be also set to 64 us
+    m_paddingDelay = {MicroSeconds(64)};
+    m_transitionDelay = {MicroSeconds(64)};
+    m_mainPhyId = 0;
+    m_putAuxPhyToSleep = auxPhySleepAndUpdateCw;
+    m_establishBaDl = {0};
+    m_establishBaUl = {0};
+    m_duration = Seconds(0.5);
+}
+
+void
+EmlsrAdhocPeerTest::DoSetup()
+{
+    Config::SetDefault("ns3::WifiPhy::ChannelSwitchDelay", TimeValue(MicroSeconds(64)));
+    Config::SetDefault("ns3::DefaultEmlsrManager::SwitchAuxPhy", BooleanValue(m_switchAuxPhy));
+    Config::SetDefault("ns3::AdvancedApEmlsrManager::UpdateCwAfterFailedIcf",
+                       EnumValue(m_updateCwAfterIcfFailure
+                                     ? WifiUpdateCwAfterIcfFailure::ALWAYS
+                                     : WifiUpdateCwAfterIcfFailure::IF_NOT_CROSS_LINK_COLLISION));
+    Config::SetDefault("ns3::AdhocWifiMac::EmlsrUpdateCwAfterFailedIcf",
+                       BooleanValue(m_updateCwAfterIcfFailure));
+
+    EmlsrP2pOperationsTestBase::DoSetup();
+
+    // install error models
+    for (std::size_t phyId = 0; phyId < m_apMac->GetNLinks(); ++phyId)
+    {
+        m_apMac->GetDevice()->GetPhy(phyId)->SetPostReceptionErrorModel(m_otherErrorModel);
+        m_staMacs[0]->GetDevice()->GetPhy(phyId)->SetPostReceptionErrorModel(m_staErrorModel);
+    }
+    m_adhocMac->GetWifiPhy(SINGLE_LINK_OP_ID)->SetPostReceptionErrorModel(m_otherErrorModel);
+}
+
+void
+EmlsrAdhocPeerTest::DoStartTraffic()
+{
+    m_setupDone = true;
+    RunOne(m_apMac);
 
     // after 20 ms (to complete the two TXOPs with the AP MLD), simulate two TXOPs
     // between the adhoc peer and the EMLSR client
-    delay += MilliSeconds(20);
-
-    Simulator::Schedule(delay, [this]() { RunOne(m_adhocMac); });
+    Simulator::Schedule(MilliSeconds(20), [this]() { RunOne(m_adhocMac); });
 }
 
 void
@@ -247,8 +322,6 @@ EmlsrAdhocPeerTest::RunOne(Ptr<WifiMac> mac)
     // the EMLSR client has terminated a TXOP with the other device, so the main PHY has to switch
     // and an RTS is sent
     m_events.emplace_back(WIFI_MAC_CTL_RTS);
-
-    const auto firstEventIt = std::prev(m_events.cend());
 
     m_events.emplace_back(
         WIFI_MAC_CTL_CTS,
@@ -329,68 +402,6 @@ EmlsrAdhocPeerTest::RunOne(Ptr<WifiMac> mac)
         });
     m_events.emplace_back(WIFI_MAC_QOSDATA);
     m_events.emplace_back(WIFI_MAC_CTL_BACKRESP);
-
-    m_eventIt = firstEventIt;
-}
-
-void
-EmlsrAdhocPeerTest::Transmit(Ptr<WifiMac> mac,
-                             uint8_t phyId,
-                             WifiConstPsduMap psduMap,
-                             WifiTxVector txVector,
-                             double txPowerW)
-{
-    EmlsrOperationsTestBase::Transmit(mac, phyId, psduMap, txVector, txPowerW);
-
-    const auto psdu = psduMap.cbegin()->second;
-    const auto& hdr = psdu->GetHeader(0);
-    auto linkId = mac->GetLinkForPhy(phyId);
-    NS_TEST_ASSERT_MSG_EQ(linkId.has_value(),
-                          true,
-                          "PHY " << +phyId << " is not operating on any link");
-
-    // check that the EMLSR client sends frames addressed to the AP MLD on an infrastructure link
-    // and frames addressed to the adhoc peer on the P2P link
-    if (mac->GetTypeOfStation() == STA && m_staMacs[0]->IsEmlsrLink(0) && !hdr.GetAddr1().IsGroup())
-    {
-        // (unicast) PSDU transmitted by the EMLSR client after enabling EMLSR mode
-        const auto toAdhocPeer = (psduMap.cbegin()->second->GetAddr1() == m_adhocMac->GetAddress());
-        NS_TEST_EXPECT_MSG_EQ(toAdhocPeer,
-                              (linkId.value() == m_p2pLinkId),
-                              "TX occurred on unexpected link " << +linkId.value());
-    }
-
-    if (!m_setupDone || hdr.IsCfEnd())
-    {
-        return;
-    }
-
-    if (m_eventIt != m_events.cend())
-    {
-        // check that the expected frame is being transmitted
-        NS_TEST_EXPECT_MSG_EQ(m_eventIt->hdrType,
-                              hdr.GetType(),
-                              "Unexpected MAC header type for frame #"
-                                  << std::distance(m_events.cbegin(), m_eventIt));
-        // perform actions/checks, if any
-        if (m_eventIt->func)
-        {
-            m_eventIt->func(psdu, txVector, linkId.value());
-        }
-
-        ++m_eventIt;
-    }
-}
-
-void
-EmlsrAdhocPeerTest::DoRun()
-{
-    Simulator::Stop(m_duration);
-    Simulator::Run();
-
-    NS_TEST_EXPECT_MSG_EQ((m_eventIt == m_events.cend()), true, "Not all events took place");
-
-    Simulator::Destroy();
 }
 
 WifiEmlsrP2pTestSuite::WifiEmlsrP2pTestSuite()

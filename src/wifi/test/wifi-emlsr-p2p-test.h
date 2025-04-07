@@ -17,31 +17,19 @@
  * @ingroup wifi-test
  * @ingroup tests
  *
- * @brief Test data exchange between an EMLSR client and an adhoc peer.
+ * @brief Base class to setup an adhoc peer that exchanges data with an EMLSR client.
  *
- * An EMLSR client setups 3 links with an AP MLD and EMLSR mode is enabled on all three links.
- * A TID-to-Link Mapping is configured so that only one link (differing from the preferred link)
- * is used for data exchange between the EMLSR client and the AP MLD. Another link (differing from
- * the preferred link) is used for data exchange between the EMLSR client and a single-link adhoc
- * peer. The EMLSR client carries out both a DL TXOP and an UL TXOP with both the AP MLD and the
- * adhoc peer (at different times). In every TXOP, the CTS frame is corrupted once. It is verified
- * that data exchanges take place on the expected link and all the expected frames are exchanged
- * during the TXOPs. All combinations of values for the SwitchAuxPhy and PutAuxPhyToSleep attributes
- * are tested. It is also verified that the UpdateCwAfterFailedIcf attribute of
- * AdvancedApEmlsrManager and the EmlsrUpdateCwAfterFailedIcf attribute of AdhocWifiMac work as
- * expected.
  */
-class EmlsrAdhocPeerTest : public EmlsrOperationsTestBase
+class EmlsrP2pOperationsTestBase : public EmlsrOperationsTestBase
 {
   public:
     /**
-     * Constructor.
+     * Constructor
      *
-     * @param switchAuxPhy whether aux PHYs switch link
-     * @param auxPhySleepAndUpdateCw whether aux PHYs are put to sleep during DL/UL TXOPs and
-     *                               whether CW is updated after ICF failure
+     * @param name The name of the new TestCase created
      */
-    EmlsrAdhocPeerTest(bool switchAuxPhy, bool auxPhySleepAndUpdateCw);
+    EmlsrP2pOperationsTestBase(const std::string& name);
+    ~EmlsrP2pOperationsTestBase() override = default;
 
   protected:
     void DoSetup() override;
@@ -64,14 +52,6 @@ class EmlsrAdhocPeerTest : public EmlsrOperationsTestBase
                                               std::size_t count,
                                               std::size_t pktSize) const;
 
-    /**
-     * Simulate a DL TXOP and an UL TXOP between the EMLSR client and either the AP MLD or the
-     * adhoc peer.
-     *
-     * @param mac the MAC of the device exchanging data with the EMLSR client
-     */
-    void RunOne(Ptr<WifiMac> mac);
-
     /// Actions and checks to perform upon the transmission of each frame
     struct Events
     {
@@ -93,28 +73,79 @@ class EmlsrAdhocPeerTest : public EmlsrOperationsTestBase
             func; ///< function to perform actions and checks
     };
 
+    Ptr<AdhocWifiMac> m_adhocMac;     //!< the MAC of the adhoc peer
+    const uint8_t m_infraLinkId{1};   //!< ID of the link used for infra data exchange
+    const uint8_t m_p2pLinkId{2};     //!< ID of the link used for P2P data exchange
+    bool m_emlsrAwareAdhocPeer{true}; //!< whether the adhoc peer is EMLSR aware
+    std::list<Events> m_events;       //!< list of events for a test run
+    std::size_t m_processedEvents{0}; //!< number of processed events
+    bool m_setupDone{false}; //!< whether the setup (including BA agreements) has been completed
+
   private:
     /**
      * Activate beacon generation on adhoc peer, so that EMLSR client and adhoc peer know each
      * other, then establish block ack agreements between EMLSR client and adhoc peer and finally
-     * start generation of traffic to simulate TXOPs.
+     * call DoStartTraffic.
      */
     void StartTraffic() override;
 
-    const uint8_t m_infraLinkId{1};        //!< ID of the link used for infra data exchange
-    const uint8_t m_p2pLinkId{2};          //!< ID of the link used for P2P data exchange
-    bool m_switchAuxPhy;                   //!< whether aux PHYs switch link
-    bool m_updateCwAfterIcfFailure;        //!< whether to update adhoc peer's CW after ICF failure
-    Ptr<AdhocWifiMac> m_adhocMac;          //!< the MAC of the adhoc peer
-    Ptr<ListErrorModel> m_staErrorModel;   ///< error rate model to install on EMLSR client
-    Ptr<ListErrorModel> m_otherErrorModel; ///< error rate model to install on AP MLD or adhoc peer
+    /// actually start generation of traffic
+    virtual void DoStartTraffic() = 0;
+
     PacketSocketAddress
         m_emlsrToAdhocSockAddr; //!< packet socket address for EMLSR client to adhoc peer traffic
     PacketSocketAddress
         m_adhocToEmlsrSockAddr; //!< packet socket address for adhoc peer to EMLSR client traffic
-    bool m_setupDone{false};    //!< whether the setup (including BA agreements) has been completed
-    std::list<Events> m_events; //!< list of events for a test run
-    std::list<Events>::const_iterator m_eventIt; //!< iterator over the list of events
+};
+
+/**
+ * @ingroup wifi-test
+ * @ingroup tests
+ *
+ * @brief Test data exchange between an EMLSR client and an adhoc peer.
+ *
+ * An EMLSR client setups 3 links with an AP MLD and EMLSR mode is enabled on all three links.
+ * A TID-to-Link Mapping is configured so that only one link (differing from the preferred link)
+ * is used for data exchange between the EMLSR client and the AP MLD. Another link (differing from
+ * the preferred link) is used for data exchange between the EMLSR client and a single-link adhoc
+ * peer. The EMLSR client carries out both a DL TXOP and an UL TXOP with both the AP MLD and the
+ * adhoc peer (at different times). In every TXOP, the CTS frame is corrupted once. It is verified
+ * that data exchanges take place on the expected link and all the expected frames are exchanged
+ * during the TXOPs. All combinations of values for the SwitchAuxPhy and PutAuxPhyToSleep attributes
+ * are tested. It is also verified that the UpdateCwAfterFailedIcf attribute of
+ * AdvancedApEmlsrManager and the EmlsrUpdateCwAfterFailedIcf attribute of AdhocWifiMac work as
+ * expected.
+ */
+class EmlsrAdhocPeerTest : public EmlsrP2pOperationsTestBase
+{
+  public:
+    /**
+     * Constructor.
+     *
+     * @param switchAuxPhy whether aux PHYs switch link
+     * @param auxPhySleepAndUpdateCw whether aux PHYs are put to sleep during DL/UL TXOPs and
+     *                               whether CW is updated after ICF failure
+     */
+    EmlsrAdhocPeerTest(bool switchAuxPhy, bool auxPhySleepAndUpdateCw);
+
+  protected:
+    void DoSetup() override;
+
+    /**
+     * Simulate a DL TXOP and an UL TXOP between the EMLSR client and either the AP MLD or the
+     * adhoc peer.
+     *
+     * @param mac the MAC of the device exchanging data with the EMLSR client
+     */
+    void RunOne(Ptr<WifiMac> mac);
+
+  private:
+    void DoStartTraffic() override;
+
+    bool m_switchAuxPhy;                   //!< whether aux PHYs switch link
+    bool m_updateCwAfterIcfFailure;        //!< whether to update adhoc peer's CW after ICF failure
+    Ptr<ListErrorModel> m_staErrorModel;   ///< error rate model to install on EMLSR client
+    Ptr<ListErrorModel> m_otherErrorModel; ///< error rate model to install on AP MLD or adhoc peer
 };
 
 /**
