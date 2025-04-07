@@ -632,7 +632,7 @@ WifiMacQueueSchedulerImpl<Priority, Compare>::BlockAllQueues(WifiQueueBlockedRea
     }
     else
     {
-        m_blockAllInfo[reason].merge(std::set{linkIds});
+        m_blockAllInfo[reason].merge(std::set<uint8_t>{linkIds});
     }
 }
 
