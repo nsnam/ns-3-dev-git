@@ -404,6 +404,200 @@ EmlsrAdhocPeerTest::RunOne(Ptr<WifiMac> mac)
     m_events.emplace_back(WIFI_MAC_CTL_BACKRESP);
 }
 
+EmlsrUnawareAdhocPeerTest::EmlsrUnawareAdhocPeerTest()
+    : EmlsrP2pOperationsTestBase(
+          "Check data exchange between an EMLSR client and an EMLSR-unaware adhoc peer"),
+      m_staErrorModel(CreateObject<ListErrorModel>())
+{
+    m_linksToEnableEmlsrOn = {0, 1, 2}; // all links
+    m_nEmlsrStations = 1;
+    m_nNonEmlsrStations = 0;
+    m_mainPhyId = m_p2pLinkId; // main PHY
+    m_emlsrAwareAdhocPeer = false;
+
+    // channel switch delay will be also set to 64 us
+    m_paddingDelay = {MicroSeconds(64)};
+    m_transitionDelay = {MicroSeconds(64)};
+    m_duration = Seconds(0.5);
+}
+
+void
+EmlsrUnawareAdhocPeerTest::DoSetup()
+{
+    Config::SetDefault("ns3::WifiPhy::ChannelSwitchDelay", TimeValue(MicroSeconds(64)));
+    Config::SetDefault("ns3::DefaultEmlsrManager::SwitchAuxPhy", BooleanValue(false));
+    Config::SetDefault("ns3::WifiRemoteStationManager::RtsCtsThreshold",
+                       UintegerValue(3 * m_payloadSize));
+
+    EmlsrP2pOperationsTestBase::DoSetup();
+
+    // install error model on the P2P link
+    m_staMacs[0]->GetDevice()->GetPhy(m_p2pLinkId)->SetPostReceptionErrorModel(m_staErrorModel);
+    // adhoc peer drops frames after the first TX failure
+    m_adhocMac->SetFrameRetryLimit(1);
+    m_adhocMac->GetWifiRemoteStationManager()->SetAttribute("IncrementRetryCountUnderBa",
+                                                            BooleanValue(true));
+}
+
+void
+EmlsrUnawareAdhocPeerTest::DoStartTraffic()
+{
+    m_setupDone = true;
+    RunOne();
+}
+
+void
+EmlsrUnawareAdhocPeerTest::RunOne()
+{
+    m_adhocMac->GetDevice()->GetNode()->AddApplication(GetP2pApplication(false, 1, m_payloadSize));
+
+    /*
+     * Single MPDU (without RTS)
+     */
+    m_events.emplace_back(
+        WIFI_MAC_QOSDATA,
+        [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, uint8_t linkId) {
+            NS_TEST_EXPECT_MSG_EQ(psdu->GetAddr2(),
+                                  m_adhocMac->GetAddress(),
+                                  "First QoS data frame not sent by the adhoc peer");
+            NS_TEST_EXPECT_MSG_EQ(
+                psdu->GetAddr1(),
+                m_staMacs[0]->GetFrameExchangeManager(m_p2pLinkId)->GetAddress(),
+                "First QoS data frame not correctly addressed to the EMLSR client");
+            NS_TEST_EXPECT_MSG_EQ(psdu->GetNMpdus(),
+                                  1,
+                                  "Unexpected number of MPDUs in first QoS data frame");
+        });
+
+    m_events.emplace_back(
+        WIFI_MAC_CTL_ACK,
+        [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, uint8_t linkId) {
+            NS_TEST_EXPECT_MSG_EQ(
+                +linkId,
+                +m_p2pLinkId,
+                "Ack in response to first QoS data frame not sent on the P2P link");
+            // generate two packets at the adhoc peer (sent in an A-MPDU without RTS protection)
+            m_adhocMac->GetDevice()->GetNode()->AddApplication(
+                GetP2pApplication(false, 2, m_payloadSize));
+        });
+
+    /*
+     * A-MPDU with 2 MPDUs (without RTS)
+     */
+    m_events.emplace_back(
+        WIFI_MAC_QOSDATA,
+        [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, uint8_t linkId) {
+            NS_TEST_EXPECT_MSG_EQ(psdu->GetAddr2(),
+                                  m_adhocMac->GetAddress(),
+                                  "Second QoS data frame not sent by the adhoc peer");
+            NS_TEST_EXPECT_MSG_EQ(
+                psdu->GetAddr1(),
+                m_staMacs[0]->GetFrameExchangeManager(m_p2pLinkId)->GetAddress(),
+                "Second QoS data frame not correctly addressed to the EMLSR client");
+            NS_TEST_EXPECT_MSG_EQ(psdu->GetNMpdus(),
+                                  2,
+                                  "Unexpected number of MPDUs in second QoS data frame");
+        });
+
+    m_events.emplace_back(
+        WIFI_MAC_CTL_BACKRESP,
+        [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, uint8_t linkId) {
+            NS_TEST_EXPECT_MSG_EQ(
+                +linkId,
+                +m_p2pLinkId,
+                "BlockAck in response to second QoS data frame not sent on the P2P link");
+            // generate three packets at the adhoc peer (sent in an A-MPDU with RTS protection)
+            m_adhocMac->GetDevice()->GetNode()->AddApplication(
+                GetP2pApplication(false, 3, m_payloadSize));
+        });
+
+    /*
+     * A-MPDU with 3 MPDUs (with RTS)
+     */
+    m_events.emplace_back(
+        WIFI_MAC_CTL_RTS,
+        [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, uint8_t linkId) {
+            NS_TEST_EXPECT_MSG_EQ(psdu->GetAddr2(),
+                                  m_adhocMac->GetAddress(),
+                                  "RTS frame not sent by the adhoc peer");
+            NS_TEST_EXPECT_MSG_EQ(psdu->GetAddr1(),
+                                  m_staMacs[0]->GetFrameExchangeManager(m_p2pLinkId)->GetAddress(),
+                                  "RTS frame not correctly addressed to the EMLSR client");
+        });
+
+    m_events.emplace_back(
+        WIFI_MAC_CTL_CTS,
+        [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, uint8_t linkId) {
+            NS_TEST_EXPECT_MSG_EQ(+linkId, +m_p2pLinkId, "CTS frame not sent on the P2P link");
+        });
+
+    m_events.emplace_back(
+        WIFI_MAC_QOSDATA,
+        [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, uint8_t linkId) {
+            NS_TEST_EXPECT_MSG_EQ(psdu->GetAddr2(),
+                                  m_adhocMac->GetAddress(),
+                                  "Third QoS data frame not sent by the adhoc peer");
+            NS_TEST_EXPECT_MSG_EQ(
+                psdu->GetAddr1(),
+                m_staMacs[0]->GetFrameExchangeManager(m_p2pLinkId)->GetAddress(),
+                "Third QoS data frame not correctly addressed to the EMLSR client");
+            NS_TEST_EXPECT_MSG_EQ(psdu->GetNMpdus(),
+                                  3,
+                                  "Unexpected number of MPDUs in third QoS data frame");
+
+            // corrupt the second MPDU in this A-MPDU
+            m_staErrorModel->SetList({psdu->GetPayload(1)->GetUid()});
+        });
+
+    m_events.emplace_back(
+        WIFI_MAC_CTL_BACKRESP,
+        [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, uint8_t linkId) {
+            NS_TEST_EXPECT_MSG_EQ(
+                +linkId,
+                +m_p2pLinkId,
+                "BlockAck in response to third QoS data frame not sent on the P2P link");
+        });
+
+    // the MPDU whose reception failed is retransmitted. The reception fails again and the MPDU
+    // is now dropped (transmission is now considered as failed), hence a BlockAckReq is sent
+    m_events.emplace_back(
+        WIFI_MAC_QOSDATA,
+        [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, uint8_t linkId) {
+            NS_TEST_EXPECT_MSG_EQ(psdu->GetAddr2(),
+                                  m_adhocMac->GetAddress(),
+                                  "Retransmitted QoS data frame not sent by the adhoc peer");
+            NS_TEST_EXPECT_MSG_EQ(
+                psdu->GetAddr1(),
+                m_staMacs[0]->GetFrameExchangeManager(m_p2pLinkId)->GetAddress(),
+                "Retransmitted QoS data frame not correctly addressed to the EMLSR client");
+            NS_TEST_EXPECT_MSG_EQ(psdu->GetNMpdus(),
+                                  1,
+                                  "Unexpected number of MPDUs in retransmitted QoS data frame");
+        });
+
+    /*
+     * BlockAckReq
+     */
+    m_events.emplace_back(
+        WIFI_MAC_CTL_BACKREQ,
+        [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, uint8_t linkId) {
+            NS_TEST_EXPECT_MSG_EQ(psdu->GetAddr2(),
+                                  m_adhocMac->GetAddress(),
+                                  "BlockAckReq not sent by the adhoc peer");
+            NS_TEST_EXPECT_MSG_EQ(psdu->GetAddr1(),
+                                  m_staMacs[0]->GetFrameExchangeManager(m_p2pLinkId)->GetAddress(),
+                                  "BlockAckReq not correctly addressed to the EMLSR client");
+        });
+
+    m_events.emplace_back(
+        WIFI_MAC_CTL_BACKRESP,
+        [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, uint8_t linkId) {
+            NS_TEST_EXPECT_MSG_EQ(+linkId,
+                                  +m_p2pLinkId,
+                                  "BlockAck in response to BlockAckReq not sent on the P2P link");
+        });
+}
+
 WifiEmlsrP2pTestSuite::WifiEmlsrP2pTestSuite()
     : TestSuite("wifi-emlsr-p2p", Type::UNIT)
 {
@@ -415,6 +609,8 @@ WifiEmlsrP2pTestSuite::WifiEmlsrP2pTestSuite()
                         TestCase::Duration::QUICK);
         }
     }
+
+    AddTestCase(new EmlsrUnawareAdhocPeerTest(), TestCase::Duration::QUICK);
 }
 
 static WifiEmlsrP2pTestSuite g_wifiEmlsrP2pTestSuite; ///< the test suite

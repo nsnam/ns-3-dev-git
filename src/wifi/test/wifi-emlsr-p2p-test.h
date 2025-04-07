@@ -152,6 +152,42 @@ class EmlsrAdhocPeerTest : public EmlsrP2pOperationsTestBase
  * @ingroup wifi-test
  * @ingroup tests
  *
+ * @brief Test data exchange between an EMLSR client and an EMLSR-unaware adhoc peer.
+ *
+ * An EMLSR client setups 3 links with an AP MLD and EMLSR mode is enabled on all three links.
+ * A TID-to-Link Mapping is configured so that the preferred link is only used for data exchange
+ * between the EMLSR client and a single-link EMLSR-unaware adhoc peer. The aux PHYs of the EMLSR
+ * client do not switch link, so that the main PHY always returns to the preferred link. This test
+ * verifies that the EMLSR client is able to successfully receive the following frames, when sent
+ * on the preferred link:
+ * - single MPDU carrying QoS data frame
+ * - A-MPDU
+ * - RTS
+ * - BlockAckReq
+ */
+class EmlsrUnawareAdhocPeerTest : public EmlsrP2pOperationsTestBase
+{
+  public:
+    EmlsrUnawareAdhocPeerTest();
+
+  protected:
+    void DoSetup() override;
+
+    /// Generate packets that the adhoc peer sends to the EMLSR client and check correctness of
+    /// the operations.
+    void RunOne();
+
+  private:
+    void DoStartTraffic() override;
+
+    const std::size_t m_payloadSize{750}; //!< size of payload in bytes
+    Ptr<ListErrorModel> m_staErrorModel;  ///< error rate model to install on the EMLSR client
+};
+
+/**
+ * @ingroup wifi-test
+ * @ingroup tests
+ *
  * @brief wifi EMLSR suite to test operations with adhoc P2P client
  */
 class WifiEmlsrP2pTestSuite : public TestSuite
