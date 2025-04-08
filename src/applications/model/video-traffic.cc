@@ -164,6 +164,26 @@ VideoTraffic::AssignStreams(int64_t stream)
 }
 
 void
+VideoTraffic::DoInitialize()
+{
+    NS_LOG_FUNCTION(this);
+    SourceApplication::DoInitialize();
+
+    if (m_trafficModelClassId != TrafficModelClassIdentifier::CUSTOM)
+    {
+        const auto it = m_trafficModels.find(m_trafficModelClassId);
+        NS_ASSERT(it != m_trafficModels.cend());
+        m_bitRate = it->second.bitRate;
+        m_weibullScale = it->second.weibullScale;
+        m_weibullShape = it->second.weibullShape;
+    }
+
+    auto averageFrameSize =
+        static_cast<uint32_t>(WeibullRandomVariable::GetMean(m_weibullScale, m_weibullShape));
+    m_interArrival = m_bitRate.CalculateBytesTxTime(averageFrameSize);
+}
+
+void
 VideoTraffic::DoDispose()
 {
     NS_LOG_FUNCTION(this);
@@ -179,19 +199,6 @@ VideoTraffic::StartApplication()
 
     if (!m_socket)
     {
-        if (m_trafficModelClassId != TrafficModelClassIdentifier::CUSTOM)
-        {
-            const auto it = m_trafficModels.find(m_trafficModelClassId);
-            NS_ASSERT(it != m_trafficModels.cend());
-            m_bitRate = it->second.bitRate;
-            m_weibullScale = it->second.weibullScale;
-            m_weibullShape = it->second.weibullShape;
-        }
-
-        auto averageFrameSize =
-            static_cast<uint32_t>(WeibullRandomVariable::GetMean(m_weibullScale, m_weibullShape));
-        m_interArrival = m_bitRate.CalculateBytesTxTime(averageFrameSize);
-
         m_socket = Socket::CreateSocket(GetNode(), m_tid);
         if (m_tid == TcpSocketFactory::GetTypeId())
         {

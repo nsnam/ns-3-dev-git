@@ -80,6 +80,7 @@ class VideoTraffic : public SourceApplication
     int64_t AssignStreams(int64_t stream) override;
 
   protected:
+    void DoInitialize() override;
     void DoDispose() override;
 
   private:
