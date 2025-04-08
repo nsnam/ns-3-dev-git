@@ -207,7 +207,7 @@ ThreeGppHttpClient::DoDispose()
         StopApplication();
     }
 
-    Application::DoDispose(); // Chain up.
+    SourceApplication::DoDispose(); // Chain up.
 }
 
 void

@@ -99,7 +99,7 @@ PacketSink::DoDispose()
     m_socketList.clear();
 
     // chain up
-    Application::DoDispose();
+    SinkApplication::DoDispose();
 }
 
 // Application Methods

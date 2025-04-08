@@ -103,7 +103,7 @@ BulkSendApplication::DoDispose()
     m_socket = nullptr;
     m_unsentPacket = nullptr;
     // chain up
-    Application::DoDispose();
+    SourceApplication::DoDispose();
 }
 
 // Application Methods

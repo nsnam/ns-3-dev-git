@@ -154,7 +154,7 @@ VoipTraffic::DoDispose()
     NS_LOG_FUNCTION(this);
     CancelEvents();
     m_socket = nullptr;
-    Application::DoDispose();
+    SourceApplication::DoDispose();
 }
 
 void

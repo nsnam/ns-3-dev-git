@@ -206,7 +206,7 @@ ThreeGppHttpServer::DoDispose()
         StopApplication();
     }
 
-    Application::DoDispose(); // Chain up.
+    SinkApplication::DoDispose(); // Chain up.
 }
 
 void
