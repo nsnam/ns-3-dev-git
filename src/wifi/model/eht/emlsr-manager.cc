@@ -897,6 +897,12 @@ EmlsrManager::SwitchMainPhy(uint8_t linkId,
     traceInfo.toLinkId = linkId;
     m_mainPhySwitchTrace(traceInfo);
 
+    m_mainPhySwitchInfo.from = currMainPhyLinkId.value_or(m_mainPhySwitchInfo.from);
+    m_mainPhySwitchInfo.to = linkId;
+    m_mainPhySwitchInfo.start = Simulator::Now();
+    m_mainPhySwitchInfo.disconnected = true;
+    m_mainPhySwitchInfo.reason = traceInfo.GetName();
+
     const auto newMainPhyChannel = GetChannelForMainPhy(linkId);
 
     NS_LOG_DEBUG("Main PHY (" << mainPhy << ") is about to switch to " << newMainPhyChannel
@@ -966,12 +972,6 @@ EmlsrManager::SwitchMainPhy(uint8_t linkId,
             }
         });
     }
-
-    m_mainPhySwitchInfo.from = currMainPhyLinkId.value_or(m_mainPhySwitchInfo.from);
-    m_mainPhySwitchInfo.to = linkId;
-    m_mainPhySwitchInfo.start = Simulator::Now();
-    m_mainPhySwitchInfo.disconnected = true;
-    m_mainPhySwitchInfo.reason = traceInfo.GetName();
 
     NotifyMainPhySwitch(currMainPhyLinkId, linkId, auxPhy, timeToSwitchEnd);
 }
