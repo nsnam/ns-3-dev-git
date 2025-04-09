@@ -180,7 +180,7 @@ cpp_examples = [
         "True",
     ),
     (
-        "wifi-eht-network --multiProcessing=1 --simulationTime=0.23s --udp=0 --downlink=1 --useRts=0 --nStations=4 --dlAckType=ACK-SU-FORMAT --enableUlOfdma=1 --enableBsrp=0 --mcs=6 --frequency2=6GHz  --minExpectedThroughput=35Mbps --maxExpectedThroughput=404Mbps",
+        "wifi-eht-network --multiProcessing=1 --simulationTime=0.3s --udp=0 --downlink=1 --useRts=0 --nStations=4 --dlAckType=ACK-SU-FORMAT --enableUlOfdma=1 --enableBsrp=0 --mcs=6 --frequency2=6GHz  --minExpectedThroughput=60Mbps --maxExpectedThroughput=430Mbps",
         "True",
         "True",
     ),
@@ -215,7 +215,7 @@ cpp_examples = [
         "True",
     ),
     (
-        "wifi-eht-network --multiProcessing=1 --simulationTime=0.3s --frequency=2.4GHz --frequency2=5GHz --frequency3=6GHz --guardInterval=1600ns --udp=0 --downlink=1 --useRts=0 --mpduBufferSize=512 --emlsrLinks=0,1,2 --emlsrPaddingDelay=32us --emlsrTransitionDelay=32us --channelSwitchDelay=32us --emlsrAuxSwitch=True --emlsrAuxTxCapable=True --nStations=4 --dlAckType=AGGR-MU-BAR --enableUlOfdma=1 --enableBsrp=0 --mcs=0,3,5,9,10 --minExpectedThroughput=8Mbps --maxExpectedThroughput=300Mbps --RngRun=2",
+        "wifi-eht-network --multiProcessing=1 --simulationTime=0.3s --frequency=2.4GHz --frequency2=5GHz --frequency3=6GHz --guardInterval=1600ns --udp=0 --downlink=1 --useRts=0 --mpduBufferSize=512 --emlsrLinks=0,1,2 --emlsrPaddingDelay=32us --emlsrTransitionDelay=32us --channelSwitchDelay=32us --emlsrAuxSwitch=True --emlsrAuxTxCapable=True --nStations=4 --dlAckType=AGGR-MU-BAR --enableUlOfdma=1 --enableBsrp=0 --mcs=0,3,5,9,10 --minExpectedThroughput=8Mbps --maxExpectedThroughput=300Mbps --RngRun=4",
         "True",
         "True",
     ),

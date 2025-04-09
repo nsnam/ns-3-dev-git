@@ -1971,7 +1971,8 @@ CtrlTriggerHeader::CtrlTriggerHeader(TriggerFrameType type, const WifiTxVector& 
                      << txVector.GetPreambleType());
     }
 
-    if (txVector.GetChannelWidth() > MHz_t{160})
+    // special user is always present if solicited TB PPDU format is EHT or later
+    if (txVector.GetModulationClass() >= WifiModulationClass::WIFI_MOD_CLASS_EHT)
     {
         NS_ASSERT(m_variant == TriggerFrameVariant::EHT);
         m_specialUserInfoField.emplace(m_triggerType);
@@ -2063,6 +2064,11 @@ CtrlTriggerHeader::SetVariant(TriggerFrameVariant variant)
     NS_ABORT_MSG_IF(!m_userInfoFields.empty(),
                     "Cannot change Common Info field variant if User Info fields are present");
     m_variant = variant;
+    // special user is always present if User Info field variant is EHT or later
+    if (!m_specialUserInfoField && (m_variant >= TriggerFrameVariant::EHT))
+    {
+        m_specialUserInfoField.emplace(m_triggerType);
+    }
 }
 
 TriggerFrameVariant
@@ -2371,11 +2377,7 @@ CtrlTriggerHeader::SetUlBandwidth(MHz_t bw)
     }
     if (bw > MHz_t{160})
     {
-        NS_ASSERT(m_variant == TriggerFrameVariant::EHT);
-        if (!m_specialUserInfoField)
-        {
-            m_specialUserInfoField.emplace(m_triggerType);
-        }
+        NS_ASSERT(m_specialUserInfoField);
     }
     if (m_specialUserInfoField)
     {
