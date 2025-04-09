@@ -77,6 +77,32 @@ enum WifiMacDropReason : uint8_t
     WIFI_MAC_DROP_QOS_OLD_PACKET
 };
 
+/**
+ * @brief Stream insertion operator.
+ *
+ * @param os the stream
+ * @param reason the reason why an MPDU was dropped
+ * @returns a reference to the stream
+ */
+inline std::ostream&
+operator<<(std::ostream& os, WifiMacDropReason reason)
+{
+    switch (reason)
+    {
+    case WIFI_MAC_DROP_FAILED_ENQUEUE:
+        return (os << "DROP_FAILED_ENQUEUE");
+    case WIFI_MAC_DROP_EXPIRED_LIFETIME:
+        return (os << "DROP_EXPIRED_LIFETIME");
+    case WIFI_MAC_DROP_REACHED_RETRY_LIMIT:
+        return (os << "DROP_REACHED_RETRY_LIMIT");
+    case WIFI_MAC_DROP_QOS_OLD_PACKET:
+        return (os << "DROP_QOS_OLD_PACKET");
+    default:
+        NS_ABORT_MSG("Unknown reason to drop MPDU: " << +static_cast<uint8_t>(reason));
+        return (os << "unknown");
+    }
+}
+
 typedef std::unordered_map<uint16_t /* staId */, Ptr<WifiPsdu> /* PSDU */> WifiPsduMap;
 
 /**
