@@ -988,11 +988,11 @@ Ipv4DynamicGlobalRoutingTestCase::DoRun()
 
     devHelper.SetNetDevicePointToPointMode(true);
     NetDeviceContainer d0d2 = devHelper.Install(n0n2);
-    devHelper.SetNetDevicePointToPointMode(false);
-
     NetDeviceContainer d1d6 = devHelper.Install(n1n6);
     NetDeviceContainer d1d2 = devHelper.Install(n1n2);
     NetDeviceContainer d5d6 = devHelper.Install(n5n6);
+
+    devHelper.SetNetDevicePointToPointMode(false);
     NetDeviceContainer d2345 = devHelper.Install(n2345);
 
     // Later, we add IP addresses.
