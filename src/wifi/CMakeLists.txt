@@ -407,6 +407,7 @@ build_lib(
     test/wifi-retransmit-test.cc
     test/wifi-ru-allocation-test.cc
     test/wifi-channel-switching-test.cc
+    test/wifi-static-emlsr-test.cc
     test/wifi-static-infra-bss-test.cc
     test/wifi-test.cc
     test/wifi-transmit-mask-test.cc
