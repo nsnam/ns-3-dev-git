@@ -32,6 +32,7 @@ class WifiMacHeader;
  *
  * - association/ML setup (note that scanning is disabled for this purpose)
  * - block ack agreement(s)
+ * - enabling EMLSR mode on EMLSR client links
  */
 class WifiStaticSetupHelper
 {
@@ -152,6 +153,25 @@ class WifiStaticSetupHelper
     /// @param recipientMac recipient MAC
     /// @return the Block Ack recipient address
     static Mac48Address GetBaRecipientAddr(Ptr<WifiMac> originatorMac, Ptr<WifiMac> recipientMac);
+
+    /// Bypass EML Operating Mode Notification exchange sequence between AP MLD
+    /// and input non-AP devices
+    /// @param apDev AP MLD
+    /// @param clientDevs Non-AP devices
+    static void SetStaticEmlsr(Ptr<WifiNetDevice> apDev, const NetDeviceContainer& clientDevs);
+
+    /// Bypass EML Operating Mode Notification exchange sequence between AP MLD and non-AP MLD
+    /// to enable EMLSR mode on the links specified via the EmlsrManager::EmlsrLinkSet attribute
+    /// @param apDev AP MLD
+    /// @param clientDev Non-AP MLD
+    static void SetStaticEmlsr(Ptr<WifiNetDevice> apDev, Ptr<WifiNetDevice> clientDev);
+
+    /// Perform EML Operating Mode Notification exchange sequence between AP MLD and non-AP MLD
+    /// to enable EMLSR mode on the links specified via the EmlsrManager::EmlsrLinkSet attribute
+    /// post initialization at runtime begin
+    /// @param apDev AP MLD
+    /// @param clientDev Non-AP MLD
+    static void SetStaticEmlsrPostInit(Ptr<WifiNetDevice> apDev, Ptr<WifiNetDevice> clientDev);
 };
 
 } // namespace ns3

@@ -12,6 +12,7 @@
 #include "ns3/ap-wifi-mac.h"
 #include "ns3/assert.h"
 #include "ns3/boolean.h"
+#include "ns3/emlsr-manager.h"
 #include "ns3/ht-configuration.h"
 #include "ns3/ht-frame-exchange-manager.h"
 #include "ns3/log.h"
@@ -462,6 +463,78 @@ Mac48Address
 WifiStaticSetupHelper::GetBaRecipientAddr(Ptr<WifiMac> originatorMac, Ptr<WifiMac> recipientMac)
 {
     return GetBaOriginatorAddr(recipientMac, originatorMac);
+}
+
+void
+WifiStaticSetupHelper::SetStaticEmlsr(Ptr<WifiNetDevice> apDev, Ptr<WifiNetDevice> clientDev)
+{
+    NS_LOG_FUNCTION_NOARGS();
+
+    Simulator::ScheduleNow(&WifiStaticSetupHelper::SetStaticEmlsrPostInit, apDev, clientDev);
+}
+
+void
+WifiStaticSetupHelper::SetStaticEmlsrPostInit(Ptr<WifiNetDevice> apDev,
+                                              Ptr<WifiNetDevice> clientDev)
+{
+    NS_LOG_FUNCTION_NOARGS();
+
+    auto clientMac = DynamicCast<StaWifiMac>(clientDev->GetMac());
+    NS_ASSERT_MSG(clientMac, "Expected StaWifiMac");
+    NS_ASSERT_MSG(clientMac->IsAssociated(), "Expected Association complete");
+    auto setupLinks = clientMac->GetSetupLinkIds();
+
+    if (const auto isMldAssoc = (setupLinks.size() > 1); !isMldAssoc)
+    {
+        NS_LOG_DEBUG("Multi-link setup not performed, skipping EMLSR static setup");
+        return;
+    }
+    if (!clientDev->IsEmlsrActivated())
+    {
+        NS_LOG_DEBUG("Non-AP MLD does not support EMLSR, not performing EMLSR static setup");
+        return;
+    }
+
+    auto emlsrManager = clientMac->GetEmlsrManager();
+    NS_ASSERT_MSG(emlsrManager, "EMLSR Manager not set");
+    emlsrManager->ComputeOperatingChannels();
+    auto emlOmnReq = emlsrManager->GetEmlOmn();
+    auto emlsrLinkId = emlsrManager->GetLinkToSendEmlOmn();
+    emlsrManager->ChangeEmlsrMode();
+    auto clientLinkAddr = clientMac->GetFrameExchangeManager(emlsrLinkId)->GetAddress();
+    auto apMac = DynamicCast<ApWifiMac>(apDev->GetMac());
+    NS_ASSERT_MSG(apMac, "Expected ApWifiMac");
+    apMac->ReceiveEmlOmn(emlOmnReq, clientLinkAddr, emlsrLinkId);
+    apMac->EmlOmnExchangeCompleted(emlOmnReq, clientLinkAddr, emlsrLinkId);
+}
+
+void
+WifiStaticSetupHelper::SetStaticEmlsr(Ptr<WifiNetDevice> apDev,
+                                      const NetDeviceContainer& clientDevs)
+{
+    NS_LOG_FUNCTION_NOARGS();
+
+    auto apMac = DynamicCast<ApWifiMac>(apDev->GetMac());
+    NS_ASSERT_MSG(apMac, "Expected ApWifiMac");
+    // Check if AP supports EMLSR
+    if ((!apMac->GetEhtSupported()) || (apMac->GetNLinks() == 1))
+    {
+        NS_LOG_DEBUG("AP does not support MLD, not performing EMLSR static setup");
+        return;
+    }
+
+    if (!apDev->IsEmlsrActivated())
+    {
+        NS_LOG_DEBUG("AP MLD does not support EMLSR, not performing EMLSR static setup");
+        return;
+    }
+
+    for (auto i = clientDevs.Begin(); i != clientDevs.End(); ++i)
+    {
+        auto clientDev = DynamicCast<WifiNetDevice>(*i);
+        NS_ASSERT_MSG(clientDev, "WifiNetDevice expected");
+        SetStaticEmlsr(apDev, clientDev);
+    }
 }
 
 } // namespace ns3

@@ -80,6 +80,7 @@ class EmlsrManager : public Object
 {
     /// Allow test cases to access private members
     friend class ::EmlsrCcaBusyTest;
+    friend class WifiStaticSetupHelper;
 
   public:
     /**

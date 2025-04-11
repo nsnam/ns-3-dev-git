@@ -12,6 +12,7 @@
 #include "sta-wifi-mac.h"
 #include "wifi-phy.h"
 
+#include "ns3/boolean.h"
 #include "ns3/channel.h"
 #include "ns3/eht-configuration.h"
 #include "ns3/he-configuration.h"
@@ -653,6 +654,22 @@ Ptr<EhtConfiguration>
 WifiNetDevice::GetEhtConfiguration() const
 {
     return (m_standard >= WIFI_STANDARD_80211be ? m_ehtConfiguration : nullptr);
+}
+
+bool
+WifiNetDevice::IsEmlsrActivated() const
+{
+    if (!m_ehtConfiguration)
+    {
+        return false;
+    }
+
+    BooleanValue emlsrActivated;
+    if (!m_ehtConfiguration->GetAttributeFailSafe("EmlsrActivated", emlsrActivated))
+    {
+        return false;
+    }
+    return emlsrActivated.Get();
 }
 
 } // namespace ns3
