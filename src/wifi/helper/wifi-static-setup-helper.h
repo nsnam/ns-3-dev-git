@@ -17,6 +17,7 @@
 namespace ns3
 {
 
+class AdhocWifiMac;
 class ApWifiMac;
 class MgtAssocRequestHeader;
 class MgtAssocResponseHeader;
@@ -24,6 +25,7 @@ class NetDeviceContainer;
 class WifiNetDevice;
 class StaWifiMac;
 class WifiMacHeader;
+class WifiMpdu;
 
 /**
  * Helper to statically setup wifi devices without actually exchanging management frames over the
@@ -32,6 +34,7 @@ class WifiMacHeader;
  * - association/ML setup (note that scanning is disabled for this purpose)
  * - block ack agreement(s)
  * - enabling EMLSR mode on EMLSR client links
+ * - setup of a P2P link by exchanging Beacon/Probe Request frames
  */
 class WifiStaticSetupHelper
 {
@@ -170,6 +173,26 @@ class WifiStaticSetupHelper
     /// @param apDev AP MLD
     /// @param clientDev Non-AP MLD
     static void SetStaticEmlsrPostInit(Ptr<WifiNetDevice> apDev, Ptr<WifiNetDevice> clientDev);
+
+    /// Perform static Beacon/Probe Request exchange for input devices
+    /// post initialization at runtime begin
+    /// @param bssDev BSS device
+    /// @param clientDev client device
+    static void ExchAdhocBssFrames(Ptr<WifiNetDevice> bssDev, Ptr<WifiNetDevice> clientDev);
+
+    /// Get client device's link identifier for P2P communication
+    /// Implementation assumes adhoc device operates on single link
+    /// @param bssDev Adhoc BSS device
+    /// @param clientDev client device
+    /// @return the client device's link ID for P2P communication (if any)
+    static std::optional<linkId_t> GetP2pLinkId(Ptr<WifiNetDevice> bssDev,
+                                                Ptr<WifiNetDevice> clientDev);
+
+    /// Get Probe Request MPDU for input MAC and link identifier
+    /// @param clientMac Client MAC instance
+    /// @param linkId link identifier
+    /// @return the Probe Request MPDU
+    static Ptr<const WifiMpdu> GetProbeReqMpdu(Ptr<StaWifiMac> clientMac, linkId_t linkId);
 };
 
 } // namespace ns3

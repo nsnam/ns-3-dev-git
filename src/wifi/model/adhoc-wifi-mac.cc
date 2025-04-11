@@ -309,18 +309,10 @@ AdhocWifiMac::SetLinkUpCallback(Callback<void> linkUp)
     linkUp();
 }
 
-void
-AdhocWifiMac::SendOneBeacon()
+MgtBeaconHeader
+AdhocWifiMac::GetBeacon(uint8_t linkId)
 {
-    NS_LOG_FUNCTION(this);
-
-    WifiMacHeader hdr;
-    hdr.SetType(WIFI_MAC_MGT_BEACON);
-    hdr.SetAddr1(Mac48Address::GetBroadcast());
-    hdr.SetAddr2(GetAddress());
-    hdr.SetAddr3(GetAddress());
-    hdr.SetDsNotFrom();
-    hdr.SetDsNotTo();
+    NS_ASSERT_MSG(GetLinkIds().contains(linkId), "Invalid link identifier " << +linkId);
 
     MgtBeaconHeader beacon;
     beacon.Get<Ssid>() = GetSsid();
@@ -329,11 +321,11 @@ AdhocWifiMac::SendOneBeacon()
     beacon.Get<ExtendedSupportedRatesIE>() = supportedRates.extendedRates;
     beacon.m_beaconInterval = GetBeaconInterval().GetMicroSeconds();
     beacon.m_capability = GetCapabilities();
-    if (GetDsssSupported(SINGLE_LINK_OP_ID))
+    if (GetDsssSupported(linkId))
     {
         beacon.Get<DsssParameterSet>() = GetDsssParameterSet();
     }
-    if (GetErpSupported(SINGLE_LINK_OP_ID))
+    if (GetErpSupported(linkId))
     {
         beacon.Get<ErpInformation>() = GetErpInformation();
     }
@@ -341,29 +333,29 @@ AdhocWifiMac::SendOneBeacon()
     {
         beacon.Get<EdcaParameterSet>() = GetEdcaParameterSet();
     }
-    if (GetHtSupported(SINGLE_LINK_OP_ID))
+    if (GetHtSupported(linkId))
     {
         beacon.Get<ExtendedCapabilities>() = GetExtendedCapabilities();
-        beacon.Get<HtCapabilities>() = GetHtCapabilities(SINGLE_LINK_OP_ID);
+        beacon.Get<HtCapabilities>() = GetHtCapabilities(linkId);
         beacon.Get<HtOperation>() = GetHtOperation();
     }
-    if (GetVhtSupported(SINGLE_LINK_OP_ID))
+    if (GetVhtSupported(linkId))
     {
-        beacon.Get<VhtCapabilities>() = GetVhtCapabilities(SINGLE_LINK_OP_ID);
+        beacon.Get<VhtCapabilities>() = GetVhtCapabilities(linkId);
         beacon.Get<VhtOperation>() = GetVhtOperation();
     }
     if (GetHeSupported())
     {
-        beacon.Get<HeCapabilities>() = GetHeCapabilities(SINGLE_LINK_OP_ID);
+        beacon.Get<HeCapabilities>() = GetHeCapabilities(linkId);
         beacon.Get<HeOperation>() = GetHeOperation();
-        if (Is6GhzBand(SINGLE_LINK_OP_ID))
+        if (Is6GhzBand(linkId))
         {
-            beacon.Get<He6GhzBandCapabilities>() = GetHe6GhzBandCapabilities(SINGLE_LINK_OP_ID);
+            beacon.Get<He6GhzBandCapabilities>() = GetHe6GhzBandCapabilities(linkId);
         }
     }
     if (GetEhtSupported())
     {
-        beacon.Get<EhtCapabilities>() = GetEhtCapabilities(SINGLE_LINK_OP_ID);
+        beacon.Get<EhtCapabilities>() = GetEhtCapabilities(linkId);
         beacon.Get<EhtOperation>() = GetEhtOperation();
     }
     if (GetUhrSupported())
@@ -371,10 +363,25 @@ AdhocWifiMac::SendOneBeacon()
         beacon.Get<UhrCapabilities>() = GetUhrCapabilities(SINGLE_LINK_OP_ID);
     }
 
+    return beacon;
+}
+
+void
+AdhocWifiMac::SendOneBeacon()
+{
+    NS_LOG_FUNCTION(this);
+
+    WifiMacHeader hdr(WIFI_MAC_MGT_BEACON);
+    hdr.SetAddr1(Mac48Address::GetBroadcast());
+    hdr.SetAddr2(GetAddress());
+    hdr.SetAddr3(GetAddress());
+    hdr.SetDsNotFrom();
+    hdr.SetDsNotTo();
+    auto beacon = GetBeacon(SINGLE_LINK_OP_ID);
     auto packet = Create<Packet>();
     packet->AddHeader(beacon);
-    m_beaconTxop->Queue(Create<WifiMpdu>(packet, hdr));
-
+    auto beaconMpdu = Create<WifiMpdu>(packet, hdr);
+    m_beaconTxop->Queue(beaconMpdu);
     m_beaconEvent = Simulator::Schedule(GetBeaconInterval(), &AdhocWifiMac::SendOneBeacon, this);
 }
 

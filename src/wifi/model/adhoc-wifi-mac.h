@@ -25,6 +25,7 @@ class HtOperation;
 class VhtOperation;
 class HeOperation;
 class EhtOperation;
+class MgtBeaconHeader;
 
 /**
  * @ingroup wifi
@@ -42,6 +43,8 @@ class AdhocWifiMac : public WifiMac
 
     AdhocWifiMac();
     ~AdhocWifiMac() override;
+
+    friend class WifiStaticSetupHelper;
 
     void SetLinkUpCallback(Callback<void> linkUp) override;
     bool CanForwardPacketsTo(Mac48Address to) const override;
@@ -77,6 +80,14 @@ class AdhocWifiMac : public WifiMac
      * @return the interval between two beacon transmissions.
      */
     Time GetBeaconInterval() const;
+
+    /**
+     * @brief Get Beacon header for input link identifier
+     *
+     * @param linkId link identifier
+     * @return a smart pointer to the Beacon header
+     */
+    MgtBeaconHeader GetBeacon(uint8_t linkId);
 
     /**
      * Forward a beacon packet for transmission.

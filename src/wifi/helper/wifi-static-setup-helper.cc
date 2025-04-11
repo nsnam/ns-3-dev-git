@@ -56,9 +56,20 @@ WifiStaticSetupHelper::SetStaticAssocPostInit(Ptr<WifiNetDevice> bssDev,
 {
     auto clientMac = DynamicCast<StaWifiMac>(clientDev->GetMac());
     auto apMac = DynamicCast<ApWifiMac>(bssDev->GetMac());
+    if (apMac && clientMac)
+    {
+        SetStaticAssocPostInit(apMac, clientMac);
+        return;
+    }
 
-    NS_ABORT_MSG_IF(!apMac || !clientMac, "Invalid static capabilities exchange case");
-    SetStaticAssocPostInit(apMac, clientMac);
+    auto adhocMac = DynamicCast<AdhocWifiMac>(bssDev->GetMac());
+    if (adhocMac && clientMac)
+    {
+        ExchAdhocBssFrames(bssDev, clientDev);
+        return;
+    }
+
+    NS_FATAL_ERROR("Invalid static capabilities exchange case");
 }
 
 void
@@ -517,6 +528,85 @@ WifiStaticSetupHelper::SetStaticEmlsr(Ptr<WifiNetDevice> apDev,
         NS_ASSERT_MSG(clientDev, "WifiNetDevice expected");
         SetStaticEmlsr(apDev, clientDev);
     }
+}
+
+void
+WifiStaticSetupHelper::ExchAdhocBssFrames(Ptr<WifiNetDevice> bssDev, Ptr<WifiNetDevice> clientDev)
+{
+    auto clientMac = DynamicCast<StaWifiMac>(clientDev->GetMac());
+    NS_ASSERT_MSG(clientMac, "Expected StaWifiMac");
+
+    BooleanValue enableP2pLinks;
+    clientMac->GetAttribute("EnableP2pLinks", enableP2pLinks);
+    if (!enableP2pLinks.Get())
+    {
+        NS_LOG_DEBUG("P2P communication is disabled on client, not performing static setup");
+        return;
+    }
+
+    auto clientLinkId = GetP2pLinkId(bssDev, clientDev);
+    if (!clientLinkId.has_value())
+    {
+        NS_LOG_WARN("No matching operating channel in input devices");
+        return;
+    }
+
+    auto adhocMac = DynamicCast<AdhocWifiMac>(bssDev->GetMac());
+    NS_ASSERT_MSG(adhocMac, "Expected AdhocWifiMac");
+
+    // IBSS Beacon on operating link
+    auto beacon = adhocMac->GetBeacon(SINGLE_LINK_OP_ID);
+    auto adhocAddr = adhocMac->GetAddress();
+    clientMac->RecordCapabilities(beacon, adhocAddr, *clientLinkId);
+    clientMac->GetWifiRemoteStationManager(*clientLinkId)->RecordAdhocPeer(adhocAddr);
+
+    // Probe Request
+    auto probeReqMpdu = GetProbeReqMpdu(clientMac, *clientLinkId);
+    adhocMac->ReceiveProbeRequest(probeReqMpdu, SINGLE_LINK_OP_ID);
+}
+
+std::optional<linkId_t>
+WifiStaticSetupHelper::GetP2pLinkId(Ptr<WifiNetDevice> bssDev, Ptr<WifiNetDevice> clientDev)
+{
+    auto adhocPhy = bssDev->GetPhy();
+    if (!adhocPhy)
+    {
+        return std::nullopt;
+    }
+    auto clientMac = clientDev->GetMac();
+    for (const auto linkId : clientMac->GetLinkIds())
+    {
+        auto clientPhy = clientMac->GetWifiPhy(linkId);
+        if (!clientPhy)
+        {
+            continue;
+        }
+        const auto isMultipleOf20MHz = adhocPhy->GetChannelWidth().IsMultipleOf(20_MHz);
+        const auto width = (isMultipleOf20MHz ? MHz_t{20} : adhocPhy->GetChannelWidth());
+        if (adhocPhy->GetOperatingChannel().GetPrimaryChannel(width) ==
+            clientPhy->GetOperatingChannel().GetPrimaryChannel(width))
+        {
+            return linkId;
+        }
+    }
+    return std::nullopt;
+}
+
+Ptr<const WifiMpdu>
+WifiStaticSetupHelper::GetProbeReqMpdu(Ptr<StaWifiMac> clientMac, linkId_t linkId)
+{
+    NS_ASSERT_MSG(clientMac, "Expected StaWifiMac instance");
+    const auto& linkIds = clientMac->GetLinkIds();
+    NS_ASSERT_MSG(linkIds.contains(linkId), "Invalid link " << +linkId);
+    auto addr2 = clientMac->GetFrameExchangeManager(linkId)->GetAddress();
+    auto probeReq = clientMac->GetProbeRequest(linkId);
+    WifiMacHeader hdr(WIFI_MAC_MGT_PROBE_REQUEST);
+    hdr.SetAddr2(addr2);
+    hdr.SetDsNotFrom();
+    hdr.SetDsNotTo();
+    auto packet = Create<Packet>();
+    packet->AddHeader(probeReq);
+    return Create<WifiMpdu>(packet, hdr);
 }
 
 } // namespace ns3
