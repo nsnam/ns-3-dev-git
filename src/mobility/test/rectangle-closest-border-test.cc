@@ -87,22 +87,29 @@ RectangleClosestBorderTestSuite::RectangleClosestBorderTestSuite()
     // Rectangle in the positive x-plane to check the intersection with.
     Rectangle rectangle = Rectangle(0.0, 10.0, 0.0, 10.0);
 
-    /*            2                3                4
-     *              +----------------------------+ (10,10)
-     *              |  11         16          12 |
-     *              |                            |
-     *              |                            |
-     *      1       |  15          18         17 |              5
-     *              |                            |
-     *              |                            |
-     *              |  10          14         13 |
-     *              +----------------------------+
-     *           9                                  7
-     *           (0,0)
+    /*     23                                                             24
+     *                                    20
+     *                                    :
+     *                                    :
+     *                   2                3                4
+     *                      +----------------------------+ (10,10)
+     *                      |  11         16          12 |
+     *                      |                            |
+     *                      |                            |
+     *     19 ....  1       |  15          18         17 |              5 .... 21
+     *                      |                            |
+     *                      |                            |
+     *                      |  10          14         13 |
+     *                      +----------------------------+
+     *                   9                                  7
+     *                   (0,0)
      *
      *
      *
-     *                             8
+     *                                     8
+     *                                     :
+     *                                     :
+     * 26                                    22                                25
      */
     // Left side (1 and 15)
     AddTestCase(new RectangleClosestBorderTestCase(-5, 5, rectangle, Rectangle::LEFTSIDE),
@@ -147,6 +154,26 @@ RectangleClosestBorderTestSuite::RectangleClosestBorderTestSuite()
     // Central position (18)
     AddTestCase(new RectangleClosestBorderTestCase(5, 5, rectangle, Rectangle::TOPSIDE),
                 TestCase::Duration::QUICK);
+    // For coordinates to left, top, right, bottom (19, 20, 21, 22)
+    AddTestCase(new RectangleClosestBorderTestCase(-30, 5, rectangle, Rectangle::LEFTSIDE),
+                TestCase::Duration::QUICK);
+    AddTestCase(new RectangleClosestBorderTestCase(5, 30, rectangle, Rectangle::TOPSIDE),
+                TestCase::Duration::QUICK);
+    AddTestCase(new RectangleClosestBorderTestCase(30, 5, rectangle, Rectangle::RIGHTSIDE),
+                TestCase::Duration::QUICK);
+    AddTestCase(new RectangleClosestBorderTestCase(5, -30, rectangle, Rectangle::BOTTOMSIDE),
+                TestCase::Duration::QUICK);
+    // For coordinates to left-top, right-top, right-bottom, left-bottom diagonals (23, 24, 25, 26)
+    AddTestCase(new RectangleClosestBorderTestCase(-30, 40, rectangle, Rectangle::TOPLEFTCORNER),
+                TestCase::Duration::QUICK);
+    AddTestCase(new RectangleClosestBorderTestCase(40, 40, rectangle, Rectangle::TOPRIGHTCORNER),
+                TestCase::Duration::QUICK);
+    AddTestCase(
+        new RectangleClosestBorderTestCase(40, -30, rectangle, Rectangle::BOTTOMRIGHTCORNER),
+        TestCase::Duration::QUICK);
+    AddTestCase(
+        new RectangleClosestBorderTestCase(-30, -30, rectangle, Rectangle::BOTTOMLEFTCORNER),
+        TestCase::Duration::QUICK);
 }
 
 /**

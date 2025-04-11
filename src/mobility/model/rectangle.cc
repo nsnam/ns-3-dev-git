@@ -52,12 +52,28 @@ Rectangle::IsOnTheBorder(const Vector& position) const
 Rectangle::Side
 Rectangle::GetClosestSideOrCorner(const Vector& position) const
 {
-    std::array<double, 4> distanceFromBorders{
-        std::abs(position.x - this->xMin), // left border
-        std::abs(this->xMax - position.x), // right border
-        std::abs(position.y - this->yMin), // bottom border
-        std::abs(this->yMax - position.y), // top border
-    };
+    std::array<double, 4> distanceFromBorders;
+
+    if (IsInside(position))
+    {
+        distanceFromBorders = {
+            std::abs(position.x - this->xMin), // left border
+            std::abs(this->xMax - position.x), // right border
+            std::abs(position.y - this->yMin), // bottom border
+            std::abs(this->yMax - position.y)  // top border
+        };
+    }
+    else
+    {
+        const auto yMid = (yMax + yMin) / 2;
+        const auto xMid = (xMax + xMin) / 2;
+        distanceFromBorders = {
+            CalculateDistance(position, Vector(xMin, yMid, position.z)), // left border
+            CalculateDistance(position, Vector(xMax, yMid, position.z)), // right border
+            CalculateDistance(position, Vector(xMid, yMin, position.z)), // bottom border
+            CalculateDistance(position, Vector(xMid, yMax, position.z))  // top border
+        };
+    }
     uint8_t flags = 0;
     double minDist = std::numeric_limits<double>::max();
     for (int i = 0; i < 4; i++)
@@ -85,22 +101,12 @@ Rectangle::GetClosestSideOrCorner(const Vector& position) const
         side = TOPSIDE;
         break;
     case 0b0011:
-        // Opposing sides are equally distant, so we need to check the other two
-        // We also need to check if we're inside or outside.
+        // Opposing sides are equally distant, so we choose top
         side = TOPSIDE;
-        if (!IsInside(position))
-        {
-            side = (distanceFromBorders[0] > distanceFromBorders[1]) ? RIGHTSIDE : LEFTSIDE;
-        }
         break;
     case 0b1100:
-        // Opposing sides are equally distant, so we need to check the other two
-        // We also need to check if we're inside or outside.
+        // Opposing sides are equally distant, so choose right
         side = RIGHTSIDE;
-        if (!IsInside(position))
-        {
-            side = (distanceFromBorders[2] > distanceFromBorders[3]) ? TOPSIDE : BOTTOMSIDE;
-        }
         break;
     case 0b0001:
     case 0b1101:
