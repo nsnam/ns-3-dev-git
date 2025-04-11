@@ -96,26 +96,17 @@ Rectangle::GetClosestSideOrCorner(const Vector& position) const
     switch (flags)
     {
     //     LRBT
-    case 0b1111:
-        // Every side is equally distant, so choose any
-        side = TOPSIDE;
-        break;
-    case 0b0011:
-        // Opposing sides are equally distant, so we choose top
-        side = TOPSIDE;
-        break;
-    case 0b1100:
-        // Opposing sides are equally distant, so choose right
-        side = RIGHTSIDE;
-        break;
-    case 0b0001:
-    case 0b1101:
+    case 0b1111: // Equidistant to all sides, so we choose top
+    case 0b1101: // Equidistant to top, left and right, so we choose top
+    case 0b0011: // Opposing sides are equally distant, so we choose top
+    case 0b0001: // Closer to top
         side = TOPSIDE;
         break;
     case 0b0010:
     case 0b1110:
         side = BOTTOMSIDE;
         break;
+    case 0b1100: // Opposing sides are equally distant, so choose right
     case 0b0100:
     case 0b0111:
         side = RIGHTSIDE;
