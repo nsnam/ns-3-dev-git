@@ -178,6 +178,11 @@ class WifiNetDevice : public NetDevice
      */
     Ptr<UhrConfiguration> GetUhrConfiguration() const;
 
+    /**
+     *  @return true if device supports EMLSR, otherwise false
+     */
+    bool IsEmlsrActivated() const;
+
     void SetIfIndex(const uint32_t index) override;
     uint32_t GetIfIndex() const override;
     Ptr<Channel> GetChannel() const override;
