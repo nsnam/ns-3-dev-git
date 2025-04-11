@@ -59,6 +59,8 @@ using AssocReqRefVariant = std::variant<std::reference_wrapper<MgtAssocRequestHe
 class ApWifiMac : public WifiMac
 {
   public:
+    friend class WifiStaticSetupHelper;
+
     /**
      * @brief Get the type ID.
      * @return the object TypeId

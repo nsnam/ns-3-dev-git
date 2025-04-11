@@ -89,6 +89,8 @@ typedef std::unordered_map<uint16_t /* staId */, Ptr<WifiPsdu> /* PSDU */> WifiP
 class WifiMac : public Object
 {
   public:
+    friend class WifiStaticSetupHelper;
+
     /**
      * @brief Get the type ID.
      * @return the object TypeId

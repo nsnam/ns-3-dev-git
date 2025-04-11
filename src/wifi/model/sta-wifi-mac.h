@@ -148,6 +148,7 @@ class StaWifiMac : public WifiMac
     friend class ::AmpduAggregationTest;
     friend class ::MultiLinkOperationsTestBase;
     friend class ::ProbeExchTest;
+    friend class WifiStaticSetupHelper;
 
     /**
      * Struct to hold information regarding observed AP through
