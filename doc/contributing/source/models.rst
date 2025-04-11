@@ -1,14 +1,13 @@
 .. include:: replace.txt
 .. heading hierarchy:
-   ------------- Chapter
-   ************* Section (#.#)
-   ============= Subsection (#.#.#)
-   ############# Paragraph (no number)
+   ============= Chapter
+   ------------- Section (#.#)
+   ~~~~~~~~~~~~~ Subsection (#.#.#)
 
 .. _Models:
 
 Submitting new models
----------------------
+=====================
 
 We actively encourage submission of new features to |ns3|.
 Independent submissions are essential for open source projects, and if
@@ -21,7 +20,7 @@ new models in |ns3|, and how you can help to minimize the burden on maintainers
 and thus minimize the average time-to-merge of your code.
 
 Options for new models
-**********************
+----------------------
 
 |ns3| is organized into modules, each of which is compiled and linked into
 a separate library.  Users can selectively enable and disable the inclusion
@@ -69,7 +68,7 @@ The remainder of the chapter concerns option 1 (upstreaming to ns-3-dev); the
 other options are described in the next chapter (:ref:`External`).
 
 Upstreaming new models
-**********************
+----------------------
 The term "upstreaming" refers to the process whereby new code is
 contributed back to an upstream source (the main open source project)
 whereby that project takes responsibility for further enhancement and
@@ -102,7 +101,7 @@ when the following guidelines are followed:
   things before maintainers look at it again.
 
 Code reviews
-************
+------------
 
 Code submissions to ns-3-dev are expected to go through a review process
 where one or more maintainers comment on the code.  The basic purpose of the
@@ -119,7 +118,7 @@ controversial.  Many examples of ongoing reviews can be browsed on
 our `GitLab.com site <https://gitlab.com/nsnam/ns-3-dev/-/merge_requests>`_.
 
 Submission structure
-********************
+--------------------
 
 For each code submission, include a description of what your code is doing,
 and why. Ideally, you should be able to provide a summary description in a
@@ -129,7 +128,7 @@ are looking for early feedback), preface the title of the Merge Request
 with ``Draft:``.
 
 Coherent and multi-part submissions
-===================================
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Large code submissions should be split into smaller submissions where possible.
 The likelihood of getting maintainers to review your submission is inversely
@@ -160,7 +159,7 @@ separately without having to consider the impact of merging one submission
 on other submissions.
 
 History rewriting
-=================
+~~~~~~~~~~~~~~~~~
 
 It is good practice to rebase your feature branch onto the tip of the
 (evolving) ns-3-dev, so that the commits appear on top of a recent commit
@@ -176,7 +175,7 @@ commits that are not helpful to future maintainers:  they make it more painful
 to use the annotate and bisect commands.  For this reason, it is good
 practice to "squash" and "rebase" commits into coherent groups.  For example,
 assume that the commit history, after you have responded to a reviewer's
-comment, looks like this:
+comment, looks like this (`git log` output):
 
 ::
 
@@ -205,7 +204,7 @@ ask a maintainer for help in doing this if you need some help to learn
 this process.
 
 Documentation, tests, and examples
-**********************************
+----------------------------------
 
 Often we have observed that contributors will provide nice new classes
 implementing a new model, but will fail to include supporting test code,
@@ -220,12 +219,128 @@ starting the implementation). However, when it times come to merge your code,
 you should be prepared to provide these things, as fits your contribution
 (maintainers will provide some guidance here).
 
-Including examples
-==================
+If you add a new features, or make changes to existing features, you need to
+update existing or write new documentation and example code. Consider the
+following checklist:
+
+* Doxygen should be added to header files for all public classes and methods, and should be checked for Doxygen errors
+* New features should be described in the ``RELEASE_NOTES.md``
+* Public API changes (if any) must be documented in ``CHANGES.md``
+* New API or changes to existing API must update the inline Doxygen documentation in header files
+* Consider updating or adding a new section to the manual (``doc/manual``) or
+  model library (``doc/models``) as appropriate
+* Update the ``AUTHORS`` file for any new authors
+
+
+Guidelines to Write Sphinx Documentation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Here are some general guidelines when creating Sphinx documentation:
+
+* When possible, avoid using more than 2 levels of hierarchy (i.e., create only sections and subsections).
+* Avoid creating sections or subsections that only contain small paragraphs. If the content is too short, consider combining the content of 2 sections/subsections into one (exceptions include the fixed sections and subsections).
+* Include code snippets and/or images (figures or text-based) to better explain your content. This is particularly recommended for the helpers subsection.
+* Use references with numbers, rather than using names. Include the reference link when available (use the number for the link).
+* Follow the section hierarchy explained in this guide.
+* Verify that there is a line between the header and the body of each section or subsection.
+
+For a concrete example, see ``src/lr-wpan/doc/lr-wpan.rst``.
+
+Documentation should be created using the following heading hierarchy:
+
+::
+
+   Model Name
+   ==========
+
+   Section
+   -------
+
+   Subsection
+   ~~~~~~~~~~
+
+   SubsubSection (Use only in extreme cases!)
+   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In general, the number of sections or subsection is free, but there are a few sections and subsections that must be present.
+The following is the general outline of a module documentation in ns-3:
+
+::
+
+  My fantastic model name here
+  ============================
+
+  This first part is for describing what the model is trying to accomplish.
+  General descriptions , design, overview of the project goes in this part without the need of any subsections.
+  An additional visual summary is also recommended.
+
+  Scope and Limitations
+  ---------------------
+
+  A list of missing capabilities or things not considered in the model goes here.
+  This section is fixed and must be the first section in the model documentation.
+
+  Section A
+  ---------
+
+  Free form sections and subsections goes here.
+
+  Section B
+  ---------
+
+  Free form sections and subsections goes here.
+
+  Usage
+  -----
+
+  A brief description of the model usage goes here. This section must be present.
+
+  Helpers
+  ~~~~~~~
+
+  A description of the helpers used by the model goes here. Snippets of code are
+  preferable when describing the helpers usage. This subsection must be present.
+  If the model CANNOT provide helpers write "Not applicable".
+
+  Attributes
+  ~~~~~~~~~~
+
+  A list of attributes used by the model, each attribute should include a small
+  description. This subsection must be present.
+  If the model CANNOT provide attributes write "Not applicable".
+
+  Traces
+  ~~~~~~
+
+  A list of the source traces used by the model, each trace should include a small
+  description. This subsection must be present.
+  If the model CANNOT provide traces write "Not applicable".
+
+  Examples and Tests
+  ------------------
+
+  Do not forget to add a brief description of each example and test present in the model.
+  Example:
+  ``my-example.cc : This example demonstrate the use of x in y situation.``
+  This section must be present.
+
+  Validation
+  ----------
+
+  Descriptions of how the model was validated must be here. This section must be present.
+
+  References
+  ----------
+
+  The reference material used in the construction of the model. This section must be present.
+
+
+Examples
+~~~~~~~~
 For many submissions, it will be important to include at least one example that exercises the new code, so the reviewer understands how it is intended to be used. For final submission, please consider to add as many examples as you can that will help new users of your code. The <tt>samples/</tt> and <tt>examples/</tt> directories are places for these files.
 
 Tests
-=====
+~~~~~
 
 All new models should include automated tests.  These should, where
 appropriate, be unit tests of model correctness, validation tests of
@@ -237,23 +352,9 @@ regression tests.
 The ns-3 manual provides documentation and suggestions for
 `how to write tests <https://www.nsnam.org/docs//manual/html/how-to-write-tests.html>`_.
 
-Documentation
-=============
-
-If you add a new features, or make changes to existing features, you need to
-update existing or write new documentation and example code. Consider the
-following checklist:
-
-* Doxygen should be added to header files for all public classes and methods, and should be checked for Doxygen errors
-* new features should be described in the ``RELEASE_NOTES.md``
-* public API changes (if any) must be documented in ``CHANGES.html``
-* new API or changes to existing API must update the inline doxygen documentation in header files
-* consider updating or adding a new section to the manual (``doc/manual``) or
-  model library (``doc/models``) as appropriate
-* update the ``AUTHORS`` file for any new authors
 
 Module dependencies
-===================
+-------------------
 
 Since |ns3| is a modular system, each module has (typically) dependencies on
 other modules. These must be kept to the minimum necessary, and circular

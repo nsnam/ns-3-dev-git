@@ -29,6 +29,7 @@ This file is a best-effort approach to solving this issue; we will do our best b
 
 ### Changed behavior
 
+* (docs) Models documentation format guidelines have been updated.
 * (zigbee) Adjust pedantic link cost requirement in ``NeighborTable::LookUpForBestParent``, a minimum link cost of 3 is not required now.
 
 ## Changes from ns-3.43 to ns-3.44
