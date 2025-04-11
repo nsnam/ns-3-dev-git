@@ -875,8 +875,8 @@ Ipv4DynamicGlobalRoutingTestCase::Ipv4DynamicGlobalRoutingTestCase()
     : TestCase("Dynamic global routing example"),
       m_count(0)
 {
-    m_firstInterface.resize(16);
-    m_secondInterface.resize(16);
+    m_firstInterface.resize(16, 0);
+    m_secondInterface.resize(16, 0);
     m_dataRate = DataRate("2kbps");
     m_packetSize = 50;
 }
@@ -1071,69 +1071,45 @@ Ipv4DynamicGlobalRoutingTestCase::DoRun()
     Simulator::Run();
 
     NS_TEST_ASSERT_MSG_EQ(m_count, 70, "Dynamic global routing did not deliver all packets");
-    // Test that for node n6, the interface facing n5 receives packets at
+    // Test that for node n6, the interface facing n1 receives packets at
     // times (1-2), (4-6), (8-10), (11-12), (14-16) and the interface
-    // facing n1 receives packets at times (2-4), (6-8), (12-13)
-    NS_TEST_ASSERT_MSG_EQ(m_firstInterface[1],
-                          5,
-                          "Dynamic global routing did not deliver all packets "
-                              << int(m_firstInterface[1]));
-    NS_TEST_ASSERT_MSG_EQ(m_secondInterface[2],
-                          5,
-                          "Dynamic global routing did not deliver all packets "
-                              << int(m_secondInterface[2]));
-    NS_TEST_ASSERT_MSG_EQ(m_secondInterface[3],
-                          5,
-                          "Dynamic global routing did not deliver all packets "
-                              << int(m_secondInterface[3]));
-    NS_TEST_ASSERT_MSG_EQ(m_firstInterface[4],
-                          5,
-                          "Dynamic global routing did not deliver all packets "
-                              << int(m_firstInterface[4]));
-    NS_TEST_ASSERT_MSG_EQ(m_firstInterface[5],
-                          5,
-                          "Dynamic global routing did not deliver all packets "
-                              << int(m_firstInterface[5]));
-    NS_TEST_ASSERT_MSG_EQ(m_secondInterface[6],
-                          5,
-                          "Dynamic global routing did not deliver all packets "
-                              << int(m_secondInterface[6]));
-    NS_TEST_ASSERT_MSG_EQ(m_secondInterface[7],
-                          5,
-                          "Dynamic global routing did not deliver all packets "
-                              << int(m_secondInterface[7]));
-    NS_TEST_ASSERT_MSG_EQ(m_firstInterface[8],
-                          5,
-                          "Dynamic global routing did not deliver all packets "
-                              << int(m_firstInterface[8]));
-    NS_TEST_ASSERT_MSG_EQ(m_firstInterface[9],
-                          5,
-                          "Dynamic global routing did not deliver all packets "
-                              << int(m_firstInterface[9]));
-    NS_TEST_ASSERT_MSG_EQ(m_firstInterface[10],
-                          0,
-                          "Dynamic global routing did not deliver all packets "
-                              << int(m_firstInterface[10]));
-    NS_TEST_ASSERT_MSG_EQ(m_firstInterface[11],
-                          5,
-                          "Dynamic global routing did not deliver all packets "
-                              << int(m_firstInterface[11]));
-    NS_TEST_ASSERT_MSG_EQ(m_secondInterface[12],
-                          5,
-                          "Dynamic global routing did not deliver all packets "
-                              << int(m_secondInterface[12]));
-    NS_TEST_ASSERT_MSG_EQ(m_secondInterface[13],
-                          5,
-                          "Dynamic global routing did not deliver all packets "
-                              << int(m_secondInterface[13]));
-    NS_TEST_ASSERT_MSG_EQ(m_firstInterface[14],
-                          5,
-                          "Dynamic global routing did not deliver all packets "
-                              << int(m_firstInterface[14]));
-    NS_TEST_ASSERT_MSG_EQ(m_firstInterface[15],
-                          5,
-                          "Dynamic global routing did not deliver all packets "
-                              << int(m_firstInterface[15]));
+    // facing n5 receives packets at times (2-4), (6-8), (12-13)
+
+    // Note: there are two sending sockets, both on n1.
+    // The first socket sends packets at time (1-10), the second at time (11, 16).
+    // The first socket sends packets to n6, targeting the address facing n5.
+    // The second socket sends packets to n6, targeting the address facing n1.
+    // This actually doesn't matter, as n6 will accept packets sent to the "wrong" address.
+    //
+    // The shortest path netween n1 and n6 is the direct one, but the topology changes during the
+    // simulation:
+    // - (2-4): removal from n1 of the interface toward n6
+    // - (6-8): removal from n6 of the interface toward n1
+    // - (12-14): removal from n1 of the interface toward n6
+    // When the link is broken, packets are rerouted though the longest (and only) path, reaching
+    // n6 though n5.
+
+    std::vector<uint8_t> firstInterfaceTest{0, 5, 0, 0, 5, 5, 0, 0, 5, 5, 0, 5, 0, 0, 5, 5};
+    std::vector<uint8_t> secondInterfaceTest{0, 0, 5, 5, 0, 0, 5, 5, 0, 0, 0, 0, 5, 5, 0, 0};
+
+    for (uint32_t index = 0; index < firstInterfaceTest.size(); index++)
+    {
+        NS_TEST_ASSERT_MSG_EQ(firstInterfaceTest[index],
+                              m_firstInterface[index],
+                              "Dynamic global routing did deliver the wrong number of packets "
+                              "to the first interface at time "
+                                  << index);
+    }
+
+    for (uint32_t index = 0; index < secondInterfaceTest.size(); index++)
+    {
+        NS_TEST_ASSERT_MSG_EQ(secondInterfaceTest[index],
+                              m_secondInterface[index],
+                              "Dynamic global routing did deliver the wrong number of packets "
+                              "to the second interface at time "
+                                  << index);
+    }
+
     Simulator::Destroy();
 }
 
