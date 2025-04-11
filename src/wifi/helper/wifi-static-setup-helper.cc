@@ -69,6 +69,13 @@ WifiStaticSetupHelper::SetStaticAssocPostInit(Ptr<WifiNetDevice> bssDev,
         return;
     }
 
+    auto adhocClientMac = DynamicCast<AdhocWifiMac>(clientDev->GetMac());
+    if (adhocMac && adhocClientMac)
+    {
+        ExchAdhocBeacons(bssDev, clientDev);
+        return;
+    }
+
     NS_FATAL_ERROR("Invalid static capabilities exchange case");
 }
 
@@ -607,6 +614,40 @@ WifiStaticSetupHelper::GetProbeReqMpdu(Ptr<StaWifiMac> clientMac, linkId_t linkI
     auto packet = Create<Packet>();
     packet->AddHeader(probeReq);
     return Create<WifiMpdu>(packet, hdr);
+}
+
+void
+WifiStaticSetupHelper::ExchAdhocBeacons(Ptr<WifiNetDevice> adhocDev0, Ptr<WifiNetDevice> adhocDev1)
+{
+    auto adhocPhy0 = adhocDev0->GetPhy();
+    NS_ASSERT_MSG(adhocPhy0, "Expected WifiPhy");
+    auto adhocPhy1 = adhocDev1->GetPhy();
+    NS_ASSERT_MSG(adhocPhy1, "Expected WifiPhy");
+
+    const auto isMultipleOf20MHz = adhocPhy0->GetChannelWidth().IsMultipleOf(20_MHz);
+    const auto width = (isMultipleOf20MHz ? MHz_t{20} : adhocPhy0->GetChannelWidth());
+    if (adhocPhy0->GetOperatingChannel().GetPrimaryChannel(width) !=
+        adhocPhy1->GetOperatingChannel().GetPrimaryChannel(width))
+    {
+        NS_LOG_DEBUG(
+            "Operating channel mismatch between input adhoc devices, Beacon exchange skipped.");
+        return;
+    }
+
+    auto adhocMac0 = DynamicCast<AdhocWifiMac>(adhocDev0->GetMac());
+    NS_ASSERT_MSG(adhocMac0, "Expected AdhocWifiMac");
+    auto adhocMac1 = DynamicCast<AdhocWifiMac>(adhocDev1->GetMac());
+    NS_ASSERT_MSG(adhocMac1, "Expected AdhocWifiMac");
+
+    // IBSS Beacon from device 0
+    auto beacon0 = adhocMac0->GetBeacon(SINGLE_LINK_OP_ID);
+    adhocMac1->RecordCapabilities(beacon0, adhocMac0->GetAddress(), SINGLE_LINK_OP_ID);
+    adhocMac1->GetWifiRemoteStationManager()->RecordAdhocPeer(adhocMac0->GetAddress());
+
+    // IBSS Beacon from device 1
+    auto beacon1 = adhocMac1->GetBeacon(SINGLE_LINK_OP_ID);
+    adhocMac0->RecordCapabilities(beacon1, adhocMac1->GetAddress(), SINGLE_LINK_OP_ID);
+    adhocMac0->GetWifiRemoteStationManager()->RecordAdhocPeer(adhocMac1->GetAddress());
 }
 
 } // namespace ns3

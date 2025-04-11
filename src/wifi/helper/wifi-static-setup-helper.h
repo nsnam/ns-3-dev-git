@@ -35,6 +35,7 @@ class WifiMpdu;
  * - block ack agreement(s)
  * - enabling EMLSR mode on EMLSR client links
  * - setup of a P2P link by exchanging Beacon/Probe Request frames
+ * - exchange Beacon frames among adhoc devices
  */
 class WifiStaticSetupHelper
 {
@@ -193,6 +194,12 @@ class WifiStaticSetupHelper
     /// @param linkId link identifier
     /// @return the Probe Request MPDU
     static Ptr<const WifiMpdu> GetProbeReqMpdu(Ptr<StaWifiMac> clientMac, linkId_t linkId);
+
+    /// Perform static Beacon exchange between AdhocWifiMac devices
+    /// post initialization at runtime begin
+    /// @param adhocDev0 BSS device
+    /// @param adhocDev1 client device
+    static void ExchAdhocBeacons(Ptr<WifiNetDevice> adhocDev0, Ptr<WifiNetDevice> adhocDev1);
 };
 
 } // namespace ns3

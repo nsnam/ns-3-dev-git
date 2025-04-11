@@ -29,6 +29,7 @@ This file is a best-effort approach to solving this issue; we will do our best b
 * (wifi) Added a new `MaxRadioBw` attribute to `WifiPhy` to configure the maximum width supported by the radio.
 * (wifi) Added a new `EarlyTxopEndDetect` attribute to `EhtFrameExchangeManager` to control whether the Duration/ID value of the frame being transmitted or received by a device shall be used to early detect the end of an ongoing TXOP (held by another device).
 * (wifi) Added a new `DisableScanning` attribute to `StaWifiMac` to disable channel scanning; it can be useful to set this attribute to false when a static setup is performed.
+* (wifi) Added a ``WifiStaticSetupHelper`` to statically establish association, Block Ack agreements, P2P links, etc. without actually exchanging management frames
 
 ### Changes to existing API
 
