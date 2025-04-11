@@ -181,7 +181,6 @@ EhtPpdu::SetTxVectorFromPhyHeaders(WifiTxVector& txVector) const
         if (const auto p20Index = m_operatingChannel.GetPrimaryChannelIndex(MHz_t{20});
             ruAllocation.has_value())
         {
-            txVector.SetRuAllocation(ruAllocation.value(), p20Index);
             const auto isMuMimo = (ehtPhyHeader->m_ppduType == 2);
             const auto muMimoUsers =
                 isMuMimo
@@ -197,6 +196,7 @@ EhtPpdu::SetTxVectorFromPhyHeaders(WifiTxVector& txVector) const
                              ehtPhyHeader->m_contentChannels,
                              ehtPhyHeader->m_ppduType == 2,
                              muMimoUsers);
+            txVector.SetRuAllocation(ruAllocation.value(), p20Index);
         }
         else if (ehtPhyHeader->m_ppduType == 1) // EHT SU
         {
