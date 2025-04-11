@@ -44,6 +44,23 @@ class RrMultiUserScheduler : public MultiUserScheduler
 
     Time GetExtraTimeForBsrpTfDurationId(uint8_t linkId) const override;
 
+    /**
+     * Information used to sort stations
+     */
+    struct MasterInfo
+    {
+        uint16_t aid{0};      //!< station's AID
+        Mac48Address address; //!< station's MAC Address
+        double credits{0.};   //!< credits accumulated by the station
+    };
+
+    /**
+     * @brief Get UL MU eligible stations list
+     *
+     * @return list of UL MU eligible stations
+     */
+    virtual const std::list<MasterInfo>& GetUlMuStas() const;
+
   protected:
     void DoDispose() override;
     void DoInitialize() override;
@@ -54,16 +71,6 @@ class RrMultiUserScheduler : public MultiUserScheduler
     void UpdateDlMuAfterProtection(uint8_t linkId,
                                    WifiPsduMap& psduMap,
                                    WifiTxParameters& txParams) const override;
-
-    /**
-     * Information used to sort stations
-     */
-    struct MasterInfo
-    {
-        uint16_t aid;         //!< station's AID
-        Mac48Address address; //!< station's MAC Address
-        double credits;       //!< credits accumulated by the station
-    };
 
     /**
      * Determine whether the given STA can be solicited via a Basic Trigger Frame.

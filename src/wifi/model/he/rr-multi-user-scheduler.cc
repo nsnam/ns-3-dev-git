@@ -1118,4 +1118,10 @@ RrMultiUserScheduler::ComputeUlMuInfo()
     return UlMuInfo{m_trigger, m_triggerMacHdr, std::move(m_txParams)};
 }
 
+const std::list<RrMultiUserScheduler::MasterInfo>&
+RrMultiUserScheduler::GetUlMuStas() const
+{
+    return m_staListUl;
+}
+
 } // namespace ns3
