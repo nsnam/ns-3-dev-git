@@ -11,7 +11,7 @@ cppyy-22.04:
       python3 python3-pip
       libboost-dev libgsl-dev libgtk-3-dev
       git wget
-    - pip install cppyy==3.1.2 matplotlib numpy
+    - pip install cppyy==3.5.0 matplotlib numpy
   script:
     - if (git remote | grep -qw upstream) ; then
       git remote remove upstream ;
