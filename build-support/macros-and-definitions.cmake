@@ -630,6 +630,7 @@ macro(process_options)
 
   set(Python3_LIBRARIES)
   set(Python3_EXECUTABLE)
+  set(Python_EXECUTABLE)
   set(Python3_FOUND FALSE)
   set(Python3_INCLUDE_DIRS)
   set(Python3_Interpreter_FOUND FALSE)
