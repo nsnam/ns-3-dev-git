@@ -351,6 +351,9 @@ def get_newest_version(versions: list) -> str:
 def find_ns3_from_search() -> (str, list, str):
     libraries = search_libraries("ns3")
 
+    # Filter in libraries prefixed with libns3
+    libraries = list(filter(lambda x: "libns3" in x, libraries))
+
     if not libraries:
         raise Exception("ns-3 libraries were not found.")
 
