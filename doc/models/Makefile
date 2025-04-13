@@ -118,6 +118,8 @@ SOURCEFIGS = \
 	$(SRC)/applications/doc/http-num-of-embedded-objects.png \
 	$(SRC)/applications/doc/http-parsing-time.png \
 	$(SRC)/applications/doc/http-reading-time.png \
+	$(SRC)/dsr/doc/figures/dsrRreq.dia \
+	$(SRC)/dsr/doc/figures/dsrRrep.dia \
 	$(SRC)/network/doc/packet.dia \
 	$(SRC)/network/doc/node.dia \
 	$(SRC)/network/doc/buffer.dia \
@@ -478,6 +480,8 @@ IMAGES_EPS = \
 	$(FIGURES)/802-15-4-psr-distance.eps \
 	$(FIGURES)/energyFramework.eps \
 	$(FIGURES)/flowmonitorArq.eps \
+	$(FIGURES)/dsrRreq.eps \
+	$(FIGURES)/dsrRrep.eps \
 	$(FIGURES)/clear-channel.eps \
 	$(FIGURES)/assoc-manager.eps \
 	$(FIGURES)/emlsr-dl-txop.eps \

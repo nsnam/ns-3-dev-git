@@ -80,6 +80,16 @@ namespace dsr
 class DsrOptions;
 
 /**
+ * @defgroup dsr Dynamic Source Routing (DSR)
+ *
+ * This section documents the API of the Dynamic Source Routing Protocol based on RFC 4728
+ * with some modifications. For a generic functional description, please refer to the ns-3
+ * model library document.
+ */
+
+/**
+ * @ingroup dsr
+ *
  * @class DsrRouting
  * @brief Dsr Routing base
  */

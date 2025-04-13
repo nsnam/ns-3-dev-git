@@ -22,8 +22,9 @@ This file is a best-effort approach to solving this issue; we will do our best b
 ### Changes to existing API
 
 * (core) ``Object::GetInstanceTypeId()`` can no longer be specialized by subclasses and any such subclass API should be deleted (the base class will handle it).
-* (internet-apps) Added a parameter to the RADVD helper to announce a prefix without the autoconfiguration flag.
+* (dsr) Reformatted documentation and added a new concept figure.
 * (flow-monitor) Reformatted documentation and added a new concept figure.
+* (internet-apps) Added a parameter to the RADVD helper to announce a prefix without the autoconfiguration flag.
 
 ### Changes to build system
 
