@@ -414,7 +414,9 @@ WifiTxVector::SetRuAllocation(const RuAllocation& ruAlloc, uint8_t p20Index)
 {
     if (ns3::IsDlMu(m_preamble) && !m_muUserInfos.empty())
     {
-        NS_ASSERT(ruAlloc == DeriveRuAllocation(p20Index));
+        // DeriveRuAllocation does not support unequal-sized RU allocation yet
+        NS_ASSERT_MSG(!IsEqualSizedRuAllocation(ruAlloc) || ruAlloc == DeriveRuAllocation(p20Index),
+                      "RU allocation does not match derived allocation");
     }
     m_ruAllocation = ruAlloc;
 }
@@ -812,7 +814,7 @@ WifiTxVector::DeriveRuAllocation(uint8_t p20Index) const
     RuAllocation ruAllocations(Count20MHzSubchannels(m_channelWidth), emptyRu);
     std::vector<RuType> ruTypes{};
     ruTypes.resize(ruAllocations.size());
-    const auto& orderedMap = GetUserInfoMapOrderedByRus(p20Index);
+    const auto orderedMap = GetUserInfoMapOrderedByRus(p20Index);
     std::pair<std::size_t /* number of RUs in content channel 1 */,
               std::size_t /* number of RUs in content channel 2 */>
         ccSizes{0, 0};
@@ -905,6 +907,29 @@ WifiTxVector::DeriveCenter26ToneRuIndication() const
         }
     }
     return static_cast<Center26ToneRuIndication>(center26ToneRuIndication);
+}
+
+bool
+WifiTxVector::IsEqualSizedRuAllocation(const RuAllocation& ruAlloc) const
+{
+    for (const auto alloc : ruAlloc)
+    {
+        const auto ruSpecs = WifiRu::GetRuSpecs(alloc, GetModulationClass());
+        if (ruSpecs.empty())
+        {
+            // punctured or unassigned
+            continue;
+        }
+        if (!std::all_of(ruSpecs.cbegin(),
+                         ruSpecs.cend(),
+                         [ruType = WifiRu::GetRuType(ruSpecs.front())](const auto& ruSpec) {
+                             return (WifiRu::GetRuType(ruSpec) == ruType);
+                         }))
+        {
+            return false;
+        }
+    }
+    return true;
 }
 
 } // namespace ns3

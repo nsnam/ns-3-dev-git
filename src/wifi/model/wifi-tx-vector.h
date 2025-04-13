@@ -524,6 +524,15 @@ class WifiTxVector
     RuAllocation DeriveRuAllocation(uint8_t p20Index) const;
 
     /**
+     * Return whether each 20 MHz subchannel is made of RUs of the same size only, based on a given
+     * RU allocation.
+     *
+     * @param ruAlloc the RU allocation to check
+     * @return true if each 20 MHz subchannel is made of RUs of the same size only, false otherwise
+     */
+    bool IsEqualSizedRuAllocation(const RuAllocation& ruAlloc) const;
+
+    /**
      * Derive the CENTER_26_TONE_RU field from the TXVECTOR
      * for which its CENTER_26_TONE_RU has not been set yet,
      * based on the content of per-user information.
