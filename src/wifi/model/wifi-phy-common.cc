@@ -249,15 +249,15 @@ GetSupportedChannelWidthSet(WifiStandard standard, WifiPhyBand band)
     case WIFI_STANDARD_80211ac:
         return {MHz_u{80}, MHz_u{160}};
     case WIFI_STANDARD_80211ax:
-        return (band == WifiPhyBand::WIFI_PHY_BAND_2_4GHZ) ? std::set<MHz_u>{MHz_u{20}, MHz_u{40}}
-                                                           : std::set<MHz_u>{MHz_u{80}, MHz_u{160}};
+        return (band == WifiPhyBand::WIFI_PHY_BAND_2_4GHZ)
+                   ? std::set<MHz_u>{MHz_u{20}, MHz_u{40}}
+                   : std::set<MHz_u>{MHz_u{20}, MHz_u{80}, MHz_u{160}};
     case WIFI_STANDARD_80211be:
         switch (band)
         {
         case WifiPhyBand::WIFI_PHY_BAND_2_4GHZ:
             return {MHz_u{20}, MHz_u{40}};
         case WifiPhyBand::WIFI_PHY_BAND_5GHZ:
-            return {MHz_u{80}, MHz_u{160}};
         case WifiPhyBand::WIFI_PHY_BAND_6GHZ:
             return {MHz_u{20}, MHz_u{80}, MHz_u{160}};
         default:
