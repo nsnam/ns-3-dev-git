@@ -157,8 +157,7 @@ WifiMode::GetMcsValue() const
     }
     else
     {
-        // We should not go here!
-        NS_ASSERT(false);
+        NS_ASSERT_MSG(false, "GetMcsValue() cannot be called for non-HT modulations");
         return 0;
     }
 }
