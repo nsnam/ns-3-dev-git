@@ -1712,6 +1712,10 @@ WifiRemoteStationManager::AddStationHeCapabilities(Mac48Address from,
         {
             state->m_channelWidth = MHz_t{80};
         }
+        else if (heCapabilities.GetChannelWidthSet() == 0x00)
+        {
+            state->m_channelWidth = MHz_t{20};
+        }
         // For other cases at 5 GHz, the supported channel width is set by the VHT capabilities
     }
     else if (m_wifiPhy->GetPhyBand() == WIFI_PHY_BAND_2_4GHZ)
