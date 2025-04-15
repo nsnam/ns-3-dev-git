@@ -1,5 +1,6 @@
 set(source_files
     helper/internet-stack-helper.cc
+    helper/internet-static-setup-helper.cc
     helper/internet-trace-helper.cc
     helper/ipv4-address-helper.cc
     helper/ipv4-global-routing-helper.cc
@@ -131,6 +132,7 @@ set(source_files
 
 set(header_files
     helper/internet-stack-helper.h
+    helper/internet-static-setup-helper.h
     helper/internet-trace-helper.h
     helper/ipv4-address-helper.h
     helper/ipv4-global-routing-helper.h

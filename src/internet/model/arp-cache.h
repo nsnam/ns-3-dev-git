@@ -314,6 +314,17 @@ class ArpCache : public Object
         uint32_t m_retries;                         //!< retry counter
     };
 
+    /**
+     * @brief Try to add an (IP, MAC) entry to the ARP cache
+     * Check if such entry already exists. If it exists, assert that to-be-added entry does not
+     * contradict to the already existing entry. If it does not exist add it.
+     *
+     * @param ip IP address of the ARP entry.
+     * @param mac MAC address of the ARP entry.
+     * @returns A pair of entry and a status, indicating if a new entry was added to the cache.
+     */
+    std::pair<ArpCache::Entry*, bool> TryAdd(Ipv4Address ip, Address mac);
+
   private:
     /**
      * @brief ARP Cache container

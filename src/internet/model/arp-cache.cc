@@ -611,4 +611,27 @@ ArpCache::Entry::ClearRetries()
     m_retries = 0;
 }
 
+std::pair<ArpCache::Entry*, bool>
+ArpCache::TryAdd(Ipv4Address ip, Address mac)
+{
+    NS_LOG_FUNCTION(this << ip << mac);
+    auto entry = Lookup(ip);
+    if (!entry)
+    {
+        // This is a new ARP entry
+        entry = Add(ip);
+        entry->SetMacAddress(mac);
+        return {entry, true};
+    }
+    else
+    {
+        // ARP entry for ipAddr already exists
+        // Check that what is being added does not contradict to the existing entry
+        NS_ASSERT_MSG(entry->GetMacAddress() == mac,
+                      "Implicit attempt to overwrite ARP table entry with new MAC value. "
+                      "Do it explicitly, remove old entry and add a new one instead.");
+        return {entry, false};
+    }
+}
+
 } // namespace ns3
