@@ -143,6 +143,26 @@ StaWifiMac::GetTypeId()
                           BooleanValue(false),
                           MakeBooleanAccessor(&StaWifiMac::m_enableP2pLinks),
                           MakeBooleanChecker())
+            .AddAttribute("ForceDisassociation",
+                          "Force this STA to disassociate from the current AP. If this attribute "
+                          "is set to true, a Disassociation frame is sent to the AP and a scanning "
+                          "procedure is started when the STA receives the acknowledgment from the "
+                          "AP or the disassociation timer expires. If this attribute is set to "
+                          "false, the AP is not notified and a scanning procedure immediately "
+                          "starts. This attribute has no effect when the STA is not associated "
+                          "with any AP.",
+                          TypeId::ATTR_GET | TypeId::ATTR_SET, // do not set at construction time
+                          BooleanValue(true),
+                          MakeBooleanAccessor(&StaWifiMac::ForceDisassociation),
+                          MakeBooleanChecker())
+            .AddAttribute("DisassocTimeout",
+                          "The duration of the timer started when sending a Disassociation frame "
+                          "to the AP. If the timer expires and the acknowledgment for the "
+                          "Disassociation frame has not been received yet, the station proceeds "
+                          "to disassociate and starts a new scanning procedure.",
+                          TimeValue(MilliSeconds(50)),
+                          MakeTimeAccessor(&StaWifiMac::m_disassocTimeout),
+                          MakeTimeChecker())
             .AddTraceSource("Assoc",
                             "Associated with an access point. If this is an MLD that associated "
                             "with an AP MLD, the AP MLD address is provided.",
@@ -1083,6 +1103,31 @@ StaWifiMac::Disassociated()
 }
 
 void
+StaWifiMac::ForceDisassociation(bool notifyAp)
+{
+    NS_LOG_FUNCTION(this << notifyAp);
+
+    if (!IsAssociated())
+    {
+        NS_LOG_DEBUG("STA is not associated, do nothing");
+        return;
+    }
+
+    if (!notifyAp)
+    {
+        Disassociated();
+        return;
+    }
+
+    const auto linkIds = GetSetupLinkIds();
+    NS_ASSERT_MSG(!linkIds.empty(), "STA associated but no link setup");
+    const auto linkId = *linkIds.cbegin();
+    EnqueueDisassociation(GetBssid(linkId), linkId);
+    m_disassocEvent.Cancel();
+    m_disassocEvent = Simulator::Schedule(m_disassocTimeout, &StaWifiMac::Disassociated, this);
+}
+
+void
 StaWifiMac::RestartBeaconWatchdog(Time delay)
 {
     NS_LOG_FUNCTION(this << delay);
@@ -1727,6 +1772,7 @@ StaWifiMac::ReceiveAssocResp(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
     }
 
     SetPmModeAfterAssociation(linkId);
+    m_disassocEvent.Cancel();
 }
 
 void
@@ -2204,6 +2250,7 @@ StaWifiMac::TxOk(Ptr<const WifiMpdu> mpdu)
     if (hdr.IsDisassociation())
     {
         // the AP has acknowledged our disassociation frame, now try to associate again
+        m_disassocEvent.Cancel();
         Disassociated();
     }
 }

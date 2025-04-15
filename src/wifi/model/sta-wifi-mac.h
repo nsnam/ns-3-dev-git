@@ -407,6 +407,16 @@ class StaWifiMac : public WifiMac
      */
     void UnblockTxOnLink(std::set<uint8_t> linkIds, WifiQueueBlockedReason reason);
 
+    /**
+     * Force the STA to disassociate from the current AP. This will trigger a new scanning
+     * procedure, which is started immediately, if the AP is not notified, or when the AP
+     * acknowledges the disassociation frame or the disassociation timer expires, whichever
+     * occurs first, otherwise.
+     *
+     * @param notifyAp whether the AP must be notified by sending a Disassociation frame
+     */
+    void ForceDisassociation(bool notifyAp);
+
   protected:
     /**
      * Structure holding information specific to a single link. Here, the meaning of
@@ -714,6 +724,8 @@ class StaWifiMac : public WifiMac
     Time m_probeRequestTimeout;                   ///< probe request timeout
     Time m_assocRequestTimeout;                   ///< association request timeout
     EventId m_assocRequestEvent;                  ///< association request event
+    Time m_disassocTimeout;                       ///< disassociation timeout
+    EventId m_disassocEvent;                      ///< disassociation event
     uint32_t m_maxMissedBeacons;                  ///< maximum missed beacons
     EventId m_beaconWatchdog;                     //!< beacon watchdog
     Time m_beaconWatchdogEnd{0};                  //!< beacon watchdog end

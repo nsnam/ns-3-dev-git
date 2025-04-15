@@ -31,6 +31,7 @@ This file is a best-effort approach to solving this issue; we will do our best b
 * (wifi) Added a new `DisableScanning` attribute to `StaWifiMac` to disable channel scanning; it can be useful to set this attribute to false when a static setup is performed.
 * (wifi) Added a ``WifiStaticSetupHelper`` to statically establish association, Block Ack agreements, P2P links, etc. without actually exchanging management frames
 * (internet) Added an ``InternetStaticSetupHelper`` to statically configure ARP caches for all devices.
+* (wifi) Added a new `ForceDisassociation` attribute to `StaWifiMac` to force a non-AP STA to disassociate from the current AP, which can be optionally notified through a Disassociation frame.
 
 ### Changes to existing API
 
