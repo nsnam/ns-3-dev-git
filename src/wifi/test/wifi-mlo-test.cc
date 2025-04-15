@@ -459,8 +459,7 @@ AidAssignmentTest::SwitchToPsModeAndDisassociate(bool multiLink)
             "Expected STA with address " << staAddress << " to be in PS mode");
 
         NS_LOG_INFO("STA " << staAddress << " disassociating");
-        staMac->EnqueueDisassociation(m_apMac->GetFrameExchangeManager(apLinkId)->GetAddress(),
-                                      staLinkId);
+        staMac->ForceDisassociation(true);
 
         // be notified when the STA disassociates
         staMac->TraceConnectWithoutContext(
