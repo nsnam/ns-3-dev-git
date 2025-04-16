@@ -9,24 +9,15 @@
 #ifndef P2P_CACHE_HELPER_H
 #define P2P_CACHE_HELPER_H
 
-#include "ipv4-interface-container.h"
-#include "ipv6-interface-container.h"
-
-#include "ns3/arp-cache.h"
-#include "ns3/arp-header.h"
-#include "ns3/arp-l3-protocol.h"
-#include "ns3/channel.h"
-#include "ns3/icmpv6-l4-protocol.h"
-#include "ns3/ipv4-address.h"
-#include "ns3/ipv4-interface.h"
-#include "ns3/ipv4-l3-protocol.h"
-#include "ns3/ipv6-interface.h"
-#include "ns3/ipv6-l3-protocol.h"
-#include "ns3/net-device-container.h"
-#include "ns3/node-list.h"
+#include "ns3/ptr.h"
 
 namespace ns3
 {
+
+class NetDevice;
+class Ipv4Interface;
+class Ipv4Address;
+class Address;
 
 /**
  * @ingroup P2pCacheHelper

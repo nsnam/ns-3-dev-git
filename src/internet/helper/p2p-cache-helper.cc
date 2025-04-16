@@ -8,13 +8,14 @@
 
 #include "p2p-cache-helper.h"
 
-#include "ns3/assert.h"
+#include "ns3/arp-cache.h"
+#include "ns3/ipv4-address.h"
+#include "ns3/ipv4-interface.h"
+#include "ns3/ipv4-l3-protocol.h"
 #include "ns3/ipv4.h"
 #include "ns3/log.h"
 #include "ns3/net-device.h"
 #include "ns3/node.h"
-#include "ns3/ptr.h"
-#include "ns3/simulator.h"
 
 namespace ns3
 {

@@ -9,6 +9,7 @@
 #include "ns3/internet-stack-helper.h"
 #include "ns3/ipv4-address-helper.h"
 #include "ns3/ipv4-routing-helper.h"
+#include "ns3/node-list.h"
 #include "ns3/p2p-cache-helper.h"
 #include "ns3/simple-channel.h"
 #include "ns3/simple-net-device-helper.h"
