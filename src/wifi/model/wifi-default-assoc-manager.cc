@@ -300,8 +300,7 @@ WifiDefaultAssocManager::ChannelSwitchTimeout(uint8_t linkId)
 bool
 WifiDefaultAssocManager::CanBeInserted(const StaWifiMac::ApInfo& apInfo) const
 {
-    return ((m_waitBeaconEvent.IsPending() || m_probeRequestEvent.IsPending()) &&
-            (!m_skipAssocIncompatibleChannelWidth || IsChannelWidthCompatible(apInfo)));
+    return (!m_skipAssocIncompatibleChannelWidth || IsChannelWidthCompatible(apInfo));
 }
 
 bool
