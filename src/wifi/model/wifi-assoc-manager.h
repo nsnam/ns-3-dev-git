@@ -110,6 +110,15 @@ class WifiAssocManager : public Object
     virtual void NotifyChannelSwitched(uint8_t linkId) = 0;
 
     /**
+     * Notify that ML setup has been completed and link IDs have been swapped. This method
+     * updates the link IDs in the information gathered so far.
+     *
+     * @param swapInfo a set of pairs (from, to) each mapping a current link ID to the
+     *              link ID it has to become (i.e., link 'from' becomes link 'to')
+     */
+    void NotifyLinkSwapped(const std::map<uint8_t, uint8_t>& swapInfo);
+
+    /**
      * Compare two ApInfo objects for the purpose of keeping a sorted list of
      * ApInfo objects.
      *

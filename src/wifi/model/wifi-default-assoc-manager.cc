@@ -148,7 +148,7 @@ WifiDefaultAssocManager::EndScanning()
     // then radios with no constraint
     std::list<uint8_t> localLinkIds;
 
-    for (uint8_t linkId = 0; linkId < m_mac->GetNLinks(); linkId++)
+    for (const auto linkId : m_mac->GetLinkIds())
     {
         if (linkId == bestAp.m_linkId)
         {

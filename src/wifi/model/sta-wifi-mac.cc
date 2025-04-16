@@ -939,13 +939,13 @@ StaWifiMac::StartScanning()
 
     WifiScanParams scanParams;
     scanParams.ssid = GetSsid();
-    for (const auto& [id, link] : GetLinks())
+    for (const auto& phy : GetDevice()->GetPhys())
     {
         WifiScanParams::ChannelList channel{
-            (link->phy->HasFixedPhyBand()) ? WifiScanParams::Channel{0, link->phy->GetPhyBand()}
-                                           : WifiScanParams::Channel{0, WIFI_PHY_BAND_UNSPECIFIED}};
+            (phy->HasFixedPhyBand()) ? WifiScanParams::Channel{0, phy->GetPhyBand()}
+                                     : WifiScanParams::Channel{0, WIFI_PHY_BAND_UNSPECIFIED}};
 
-        scanParams.channelList.push_back(channel);
+        scanParams.channelList[phy->GetPhyId()] = channel;
     }
     if (m_activeProbing)
     {
@@ -1007,6 +1007,7 @@ StaWifiMac::ScanningTimeout(const std::optional<ApInfo>& bestAp)
     }
 
     SwapLinks(swapInfo);
+    m_assocManager->NotifyLinkSwapped(swapInfo);
 
     // lambda to get beacon interval from Beacon or Probe Response
     auto getBeaconInterval = [](auto&& frame) {

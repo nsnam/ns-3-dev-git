@@ -78,12 +78,12 @@ struct WifiScanParams
     /// typedef for a list of channels
     using ChannelList = std::list<Channel>;
 
-    WifiScanType type;                    ///< indicates either active or passive scanning
-    Ssid ssid;                            ///< desired SSID or wildcard SSID
-    std::vector<ChannelList> channelList; ///< list of channels to scan, for each link
-    Time probeDelay;                      ///< delay prior to transmitting a Probe Request
-    Time minChannelTime;                  ///< minimum time to spend on each channel
-    Time maxChannelTime;                  ///< maximum time to spend on each channel
+    WifiScanType type;                          ///< indicates either active or passive scanning
+    Ssid ssid;                                  ///< desired SSID or wildcard SSID
+    std::map<uint8_t, ChannelList> channelList; ///< list of channels to scan, for each PHY ID
+    Time probeDelay;                            ///< delay prior to transmitting a Probe Request
+    Time minChannelTime;                        ///< minimum time to spend on each channel
+    Time maxChannelTime;                        ///< maximum time to spend on each channel
 };
 
 /**

@@ -158,10 +158,13 @@ WifiAssocManager::MatchScanParams(const StaWifiMac::ApInfo& apInfo) const
         return true;
     };
 
-    NS_ASSERT(apInfo.m_linkId < m_scanParams.channelList.size());
-    if (std::find_if(m_scanParams.channelList[apInfo.m_linkId].cbegin(),
-                     m_scanParams.channelList[apInfo.m_linkId].cend(),
-                     channelMatch) == m_scanParams.channelList[apInfo.m_linkId].cend())
+    if (std::all_of(m_scanParams.channelList.cbegin(),
+                    m_scanParams.channelList.cend(),
+                    [&](auto&& phyIdChannelsPair) {
+                        return std::find_if(phyIdChannelsPair.second.cbegin(),
+                                            phyIdChannelsPair.second.cend(),
+                                            channelMatch) == phyIdChannelsPair.second.cend();
+                    }))
     {
         NS_LOG_DEBUG("AP " << apInfo.m_bssid << " is not operating on a requested channel");
         return false;
@@ -204,6 +207,7 @@ WifiAssocManager::NotifyApInfo(const StaWifiMac::ApInfo&& apInfo)
     if (!CanBeInserted(apInfo) || !MatchScanParams(apInfo) ||
         (!m_allowedLinks.empty() && !m_allowedLinks.contains(apInfo.m_linkId)))
     {
+        NS_LOG_DEBUG("AP info cannot be inserted");
         return;
     }
 
@@ -225,6 +229,23 @@ WifiAssocManager::NotifyApInfo(const StaWifiMac::ApInfo&& apInfo)
                                << +listIt->m_linkId
                                << ") prevented insertion of given ApInfo object");
     hashIt->second = listIt;
+}
+
+void
+WifiAssocManager::NotifyLinkSwapped(const std::map<uint8_t, uint8_t>& swapInfo)
+{
+    NS_LOG_FUNCTION(this);
+
+    // update the information gathered from APs
+    for (auto& apInfoConst : m_apList)
+    {
+        auto& apInfo = const_cast<StaWifiMac::ApInfo&>(apInfoConst);
+        apInfo.m_setupLinks.clear(); // will be cleared anyway before selecting this AP
+        if (const auto it = swapInfo.find(apInfo.m_linkId); it != swapInfo.end())
+        {
+            apInfo.m_linkId = it->second;
+        }
+    }
 }
 
 void
