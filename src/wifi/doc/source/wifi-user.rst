@@ -579,6 +579,28 @@ The wifi standard can be configured only once, i.e., it is not possible to
 change standard during a simulation. It is instead possible to change the
 channel settings at any time.
 
+Advertisement of the channel width
+++++++++++++++++++++++++++++++++++
+
+STAs are advertizing their channel width in capabilities and operations (for APs) information elements
+contained in management frames.
+
+The channel width that is being advertised is the value that is returned by WifiPhy::ChannelWidth, which corresponds to
+the value that is set in the ChannelSettings attribute (or the total width in case of non-contiguous channel operation).
+
+Not all the channel widths can be advertised for non-AP STAs, depending on the standard and the band.
+This is not a problem as long as the AP the non-AP STA is associated with is operating on the same channel width
+or on a narrower one. Otherwise, the AP might select a larger channel width for the transmission of downlink PPDUs,
+which would then be dropped by the PHY of the non-AP STA.
+
+For example, since VHT Capabilities Information Elements only allow the advertisement of 80 and 160 MHz channel widths,
+a VHT non-AP STA with its ChannelSettings set to use a 40 MHz channel width won't be able to receive any downlink PPDUs
+if the VHT AP has its ChannelSettings set to operate on an 80 MHz channel width.
+
+It is possible to configure the behavior of the association manager to either abort the simulation when such
+a problematic situation is detected (default) or to allow the association anyway, depending on the configured value
+for the ``ns3::WifiMac::AllowAssociationWithDifferentChannelWidth`` attribute.
+
 
 SpectrumWifiPhyHelper
 =====================
