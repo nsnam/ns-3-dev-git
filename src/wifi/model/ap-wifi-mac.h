@@ -780,6 +780,10 @@ class ApWifiMac : public WifiMac
                                     //!< frame or between two FD frames on 2.4GHz and 5GHz links
     bool m_sendUnsolProbeResp;      //!< send unsolicited Probe Response instead of FILS Discovery
 
+    uint16_t m_fwdProtNumber; //!< if non-zero, specifies the protocol number for the broadcast
+                              //!< packet that the AP forwards up when a STA completes association
+                              //!< (source address is STA address)
+
     /// store value and timestamp for each Buffer Status Report
     struct BsrType
     {
