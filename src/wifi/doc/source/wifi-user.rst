@@ -601,6 +601,10 @@ It is possible to configure the behavior of the association manager to either ab
 a problematic situation is detected (default) or to allow the association anyway, depending on the configured value
 for the ``ns3::WifiMac::AllowAssociationWithDifferentChannelWidth`` attribute.
 
+If the default association manager is used, it is also possible to skip candidate APs that are operating on a
+larger channel width than the non-AP STA and which would result in the problematic situation described above.
+This is done by setting the ``ns3::WifiMac::SkipCandidateAPsWithLargerChannelWidth`` attribute to true.
+
 
 SpectrumWifiPhyHelper
 =====================
