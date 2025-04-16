@@ -62,6 +62,8 @@ class WifiDefaultAssocManager : public WifiAssocManager
     Time m_channelSwitchTimeout;              ///< maximum delay for channel switching
     bool m_skipAssocIncompatibleChannelWidth; ///< flag whether to skip APs with incompatible
                                               ///< channel width
+    bool m_skipScanningIfApInfoAvail; ///< whether AP information from a scanning procedure should
+                                      ///< be retained and used afterwards to avoid new scanning
 
     /** Channel switch info */
     struct ChannelSwitchInfo
