@@ -200,6 +200,16 @@ class WifiAssocManager : public Object
     virtual bool CanBeReturned(const StaWifiMac::ApInfo& apInfo) const = 0;
 
     /**
+     * Check whether the channel width of the STA is compatible with the channel width of the
+     * operating channel of a given AP. A channel width is compatible if the STA can advertise it to
+     * the AP, or AP operates on a channel width that is equal or lower than that channel width
+     *
+     * @param apInfo the given AP information
+     * @return true if the channel width of the STA is compatible, false otherwise
+     */
+    bool IsChannelWidthCompatible(const StaWifiMac::ApInfo& apInfo) const;
+
+    /**
      * Extract the best AP to associate with from the sorted list and return
      * it, if any, to the STA wifi MAC along with the notification that scanning
      * is completed.
@@ -225,6 +235,9 @@ class WifiAssocManager : public Object
     Ptr<StaWifiMac> m_mac;            ///< pointer to the STA wifi MAC
     std::set<uint8_t> m_allowedLinks; /**< "Only Beacon and Probe Response frames received on a
                                             link belonging to the this set are processed */
+
+    bool m_allowAssocAllChannelWidths; ///< flag whether the check on channel width compatibility
+                                       ///< with the candidate AP should be skipped
 
   private:
     /**
