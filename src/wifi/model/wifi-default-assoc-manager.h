@@ -57,9 +57,11 @@ class WifiDefaultAssocManager : public WifiAssocManager
      */
     void ChannelSwitchTimeout(uint8_t linkId);
 
-    EventId m_waitBeaconEvent;   ///< wait beacon event
-    EventId m_probeRequestEvent; ///< probe request event
-    Time m_channelSwitchTimeout; ///< maximum delay for channel switching
+    EventId m_waitBeaconEvent;                ///< wait beacon event
+    EventId m_probeRequestEvent;              ///< probe request event
+    Time m_channelSwitchTimeout;              ///< maximum delay for channel switching
+    bool m_skipAssocIncompatibleChannelWidth; ///< flag whether to skip APs with incompatible
+                                              ///< channel width
 
     /** Channel switch info */
     struct ChannelSwitchInfo
