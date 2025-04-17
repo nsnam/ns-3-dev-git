@@ -98,6 +98,7 @@ class MultiLinkElement : public WifiInformationElement
     uint16_t GetInformationFieldSize() const override;
     void SerializeInformationField(Buffer::Iterator start) const override;
     uint16_t DeserializeInformationField(Buffer::Iterator start, uint16_t length) override;
+    void Print(std::ostream& os) const override;
 
     /**
      * Get the Multi-Link element variant
@@ -306,6 +307,7 @@ class MultiLinkElement : public WifiInformationElement
         PerStaProfileSubelement& operator=(PerStaProfileSubelement&& perStaProfile) = default;
 
         WifiInformationElementId ElementId() const override;
+        void Print(std::ostream& os) const override;
 
         /**
          * Set the Link ID subfield in the STA Control field

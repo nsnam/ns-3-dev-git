@@ -303,4 +303,12 @@ EdcaParameterSet::DeserializeInformationField(Buffer::Iterator start, uint16_t l
     return length;
 }
 
+void
+EdcaParameterSet::Print(std::ostream& os) const
+{
+    os << "EDCA Parameter Set=["
+       << "QosInfo: " << +m_qosInfo << ", AC_BE: " << m_acBE << ", AC_BK: " << m_acBK
+       << ", AC_VI: " << m_acVI << ", AC_VO: " << m_acVO << "]";
+}
+
 } // namespace ns3

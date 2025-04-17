@@ -207,9 +207,8 @@ Tim::GetPartialVirtualBitmap() const
 void
 Tim::Print(std::ostream& os) const
 {
-    os << "DTIM Count: " << +m_dtimCount << ", "
-       << "DTIM Period: " << +m_dtimPeriod << ", "
-       << "Has Multicast Pending: " << m_hasMulticastPending << ", AID values:";
+    os << "TIM=[DTIM Count: " << +m_dtimCount << ", DTIM Period: " << +m_dtimPeriod
+       << ", Has Multicast Pending: " << m_hasMulticastPending << ", AID values: ";
     for (uint16_t aid = 0; aid < 2008; ++aid)
     {
         if (HasAid(aid))
@@ -217,6 +216,7 @@ Tim::Print(std::ostream& os) const
             os << aid << " ";
         }
     }
+    os << "]";
 }
 
 } // namespace ns3

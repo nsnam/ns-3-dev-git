@@ -55,7 +55,10 @@ VhtCapabilities::ElementId() const
 void
 VhtCapabilities::Print(std::ostream& os) const
 {
-    os << "VHT Capabilities=" << GetVhtCapabilitiesInfo() << "|" << GetSupportedMcsAndNssSet();
+    os << "VHT Capabilities=[Supported Channel Width Set: " << +m_supportedChannelWidthSet
+       << ", SGI 80 MHz: " << +m_shortGuardIntervalFor80Mhz
+       << ", SGI 160 MHz: " << +m_shortGuardIntervalFor160Mhz
+       << ", Max MPDU Length: " << m_maxMpduLength << "]";
 }
 
 uint16_t

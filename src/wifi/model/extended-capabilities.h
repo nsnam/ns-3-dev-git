@@ -18,7 +18,7 @@ namespace ns3
  * @brief The Extended Capabilities Information Element
  * @ingroup wifi
  *
- * This class knows how to serialise and deserialise the Extended Capabilities Information Element
+ * This class knows how to serialize and deserialize the Extended Capabilities Information Element
  */
 class ExtendedCapabilities : public WifiInformationElement
 {

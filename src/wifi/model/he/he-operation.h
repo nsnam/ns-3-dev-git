@@ -20,7 +20,7 @@ namespace ns3
  * @brief The HE Operation Information Element
  * @ingroup wifi
  *
- * This class knows how to serialise and deserialise
+ * This class knows how to serialize and deserialize
  * the HE Operation Information Element
  */
 class HeOperation : public WifiInformationElement

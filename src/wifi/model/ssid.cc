@@ -43,7 +43,7 @@ Ssid::Ssid(std::string s)
 void
 Ssid::Print(std::ostream& os) const
 {
-    os << "ssid=" << PeekString();
+    os << "SSID=[" << PeekString() << "]";
 }
 
 bool

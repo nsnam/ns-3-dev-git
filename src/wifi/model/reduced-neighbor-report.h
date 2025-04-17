@@ -24,7 +24,7 @@ class WifiPhyOperatingChannel;
  * @brief The Reduced Neighbor Report element
  * @ingroup wifi
  *
- * This class knows how to serialise and deserialise the Reduced Neighbor Report element.
+ * This class knows how to serialize and deserialize the Reduced Neighbor Report element.
  */
 class ReducedNeighborReport : public WifiInformationElement
 {
@@ -92,6 +92,7 @@ class ReducedNeighborReport : public WifiInformationElement
     uint16_t GetInformationFieldSize() const override;
     void SerializeInformationField(Buffer::Iterator start) const override;
     uint16_t DeserializeInformationField(Buffer::Iterator start, uint16_t length) override;
+    void Print(std::ostream& os) const override;
 
     /**
      * Get the number of Neighbor AP Information fields

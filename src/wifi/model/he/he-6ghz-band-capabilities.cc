@@ -124,14 +124,14 @@ He6GhzBandCapabilities::DeserializeInformationField(Buffer::Iterator start, uint
 void
 He6GhzBandCapabilities::Print(std::ostream& os) const
 {
-    os << "HE 6GHz Band Capabilities=[Capabilities Information|"
-       << " Min MPDU start spacing: " << +m_capabilitiesInfo.m_minMpduStartSpacing
-       << " Max A-MPDU Length Exp: " << +m_capabilitiesInfo.m_maxAmpduLengthExponent
-       << " Max MPDU Length: " << +m_capabilitiesInfo.m_maxMpduLength
-       << " SM Power Save: " << +m_capabilitiesInfo.m_smPowerSave
-       << " RD Responder: " << +m_capabilitiesInfo.m_rdResponder
-       << " RX Antenna Pattern: " << +m_capabilitiesInfo.m_rxAntennaPatternConsistency
-       << " TX Antenna Pattern: " << +m_capabilitiesInfo.m_txAntennaPatternConsistency << "]";
+    os << "HE 6GHz Band Capabilities=["
+       << "Min MPDU start spacing: " << +m_capabilitiesInfo.m_minMpduStartSpacing
+       << ", Max A-MPDU Length Exp: " << +m_capabilitiesInfo.m_maxAmpduLengthExponent
+       << ", Max MPDU Length: " << +m_capabilitiesInfo.m_maxMpduLength
+       << ", SM Power Save: " << +m_capabilitiesInfo.m_smPowerSave
+       << ", RD Responder: " << +m_capabilitiesInfo.m_rdResponder
+       << ", RX Antenna Pattern: " << +m_capabilitiesInfo.m_rxAntennaPatternConsistency
+       << ", TX Antenna Pattern: " << +m_capabilitiesInfo.m_txAntennaPatternConsistency << "]";
 }
 
 } // namespace ns3

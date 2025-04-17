@@ -18,7 +18,7 @@ namespace ns3
  * @brief The EDCA Parameter Set
  * @ingroup wifi
  *
- * This class knows how to serialise and deserialise the EDCA Parameter Set.
+ * This class knows how to serialize and deserialize the EDCA Parameter Set.
  */
 class EdcaParameterSet : public WifiInformationElement
 {
@@ -262,6 +262,7 @@ class EdcaParameterSet : public WifiInformationElement
     uint16_t GetInformationFieldSize() const override;
     void SerializeInformationField(Buffer::Iterator start) const override;
     uint16_t DeserializeInformationField(Buffer::Iterator start, uint16_t length) override;
+    void Print(std::ostream& os) const override;
 
     uint8_t m_qosInfo;  ///< QOS info
     uint8_t m_reserved; ///< reserved

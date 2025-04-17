@@ -677,6 +677,23 @@ MultiLinkElement::PerStaProfileSubelement::DeserProbeReqMlePerSta(ns3::Buffer::I
 }
 
 void
+MultiLinkElement::PerStaProfileSubelement::Print(std::ostream& os) const
+{
+    os << "Per-STA Profile Subelement=[";
+    os << "Variant: " << +static_cast<uint8_t>(m_variant);
+    os << ", STA Control: " << +m_staControl;
+    if (HasStaMacAddress())
+    {
+        os << ", STA MAC Address: " << m_staMacAddress;
+    }
+    if (m_bssParamsChgCnt)
+    {
+        os << ", BSS Params Change Count: " << +m_bssParamsChgCnt.value();
+    }
+    os << "]";
+}
+
+void
 MultiLinkElement::AddPerStaProfileSubelement()
 {
     auto variant = GetVariant();
@@ -806,6 +823,17 @@ MultiLinkElement::DeserializeInformationField(Buffer::Iterator start, uint16_t l
     }
 
     return count;
+}
+
+void
+MultiLinkElement::Print(std::ostream& os) const
+{
+    os << "Multi-Link Element=[Per-STA Profile Subelements: {";
+    for (const auto& subelement : m_perStaProfileSubelements)
+    {
+        subelement.Print(os);
+    }
+    os << "}]";
 }
 
 } // namespace ns3

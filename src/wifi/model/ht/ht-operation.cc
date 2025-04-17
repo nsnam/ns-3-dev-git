@@ -54,18 +54,20 @@ HtOperation::ElementId() const
 void
 HtOperation::Print(std::ostream& os) const
 {
-    os << "HT Operation=" << bool(GetPrimaryChannel()) << "|" << +GetSecondaryChannelOffset() << "|"
-       << bool(GetStaChannelWidth()) << "|" << bool(GetRifsMode()) << "|" << +GetHtProtection()
-       << "|" << bool(GetNonGfHtStasPresent()) << "|" << bool(GetObssNonHtStasPresent()) << "|"
-       << bool(GetDualBeacon()) << "|" << bool(GetDualCtsProtection()) << "|"
-       << bool(GetStbcBeacon()) << "|" << bool(GetLSigTxopProtectionFullSupport()) << "|"
-       << bool(GetPcoActive()) << "|" << bool(GetPhase()) << "|" << GetRxHighestSupportedDataRate()
-       << "|" << bool(GetTxMcsSetDefined()) << "|" << bool(GetTxRxMcsSetUnequal()) << "|"
-       << +GetTxMaxNSpatialStreams() << "|" << bool(GetTxUnequalModulation()) << "|";
+    os << "HT Operation=[Primary Channel: " << +m_primaryChannel
+       << ", Secondary Channel Offset: " << +m_secondaryChannelOffset
+       << ", STA Channel Width: " << +m_staChannelWidth << ", HT Protection: " << +m_htProtection
+       << ", OBSS NON HT STAs Present: " << +m_obssNonHtStasPresent
+       << ", L-SIG TXOP Protection Full Support: " << +m_lSigTxopProtectionFullSupport
+       << ", RX Highest Supported Data Rate: " << m_rxHighestSupportedDataRate << ", MCS Set: {";
     for (uint8_t i = 0; i < MAX_SUPPORTED_MCS; i++)
     {
-        os << IsSupportedMcs(i) << " ";
+        if (IsSupportedMcs(i))
+        {
+            os << +i << " ";
+        }
     }
+    os << "}]";
 }
 
 uint16_t
