@@ -123,7 +123,7 @@ WifiInformationElement::Deserialize(Buffer::Iterator i)
     Buffer::Iterator start = i;
     i = DeserializeIfPresent(i);
     // This IE was not optional, so confirm that we did actually
-    // deserialise something.
+    // deserialize something.
     NS_ASSERT(i.GetDistanceFrom(start) != 0);
     return i;
 }

@@ -20,7 +20,7 @@ ExtendedCapabilities::ElementId() const
 void
 ExtendedCapabilities::Print(std::ostream& os) const
 {
-    os << "Extended Capabilities=";
+    os << "Extended Capabilities=[]";
     // TODO: print useful capabilities
 }
 

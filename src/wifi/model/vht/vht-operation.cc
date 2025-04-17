@@ -28,8 +28,10 @@ VhtOperation::ElementId() const
 void
 VhtOperation::Print(std::ostream& os) const
 {
-    os << "VHT Operation=" << +GetChannelWidth() << "|" << +GetChannelCenterFrequencySegment0()
-       << "|" << +GetChannelCenterFrequencySegment1() << "|" << GetBasicVhtMcsAndNssSet();
+    os << "VHT Operation=[Channel Width: " << +m_channelWidth
+       << ", Channel Center Frequency Segment 0: " << +m_channelCenterFrequencySegment0
+       << ", Channel Center Frequency Segment 1: " << +m_channelCenterFrequencySegment1
+       << ", Basic VHT-MCS and NSS Set: " << m_basicVhtMcsAndNssSet << "]";
 }
 
 uint16_t

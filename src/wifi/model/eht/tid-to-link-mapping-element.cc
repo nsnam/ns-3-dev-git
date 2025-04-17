@@ -291,4 +291,34 @@ TidToLinkMapping::DeserializeInformationField(Buffer::Iterator start, uint16_t l
     return count;
 }
 
+void
+TidToLinkMapping::Print(std::ostream& os) const
+{
+    os << "TID-To-Link Mapping=["
+       << "Direction: " << static_cast<uint16_t>(m_control.direction)
+       << ", Default Mapping: " << m_control.defaultMapping
+       << ", Link Mapping Size: " << +m_control.linkMappingSize;
+    if (m_control.mappingSwitchTimePresent)
+    {
+        os << ", Mapping Switch Time: " << *m_mappingSwitchTime;
+    }
+    if (m_control.expectedDurationPresent)
+    {
+        os << ", Expected Duration: " << *m_expectedDuration;
+    }
+    os << ", Link Mapping: {";
+    for (const auto& [tid, linkMapping] : m_linkMapping)
+    {
+        os << "TID " << +tid << ": ";
+        for (uint8_t linkId = 0; linkId < 15; linkId++)
+        {
+            if (((linkMapping >> linkId) & 0x0001) == 1)
+            {
+                os << +linkId << " ";
+            }
+        }
+    }
+    os << "}]";
+}
+
 } // namespace ns3

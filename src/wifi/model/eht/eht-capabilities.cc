@@ -415,7 +415,7 @@ EhtCapabilities::ElementIdExt() const
 void
 EhtCapabilities::Print(std::ostream& os) const
 {
-    os << "EHT Capabilities="; // TODO
+    os << "EHT Capabilities=[]"; // TODO
 }
 
 uint16_t

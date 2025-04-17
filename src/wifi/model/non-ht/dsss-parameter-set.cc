@@ -48,4 +48,10 @@ DsssParameterSet::DeserializeInformationField(Buffer::Iterator start, uint16_t l
     return length;
 }
 
+void
+DsssParameterSet::Print(std::ostream& os) const
+{
+    os << "DSSS Parameter Set=[Current Channel: " << +m_currentChannel << "]";
+}
+
 } // namespace ns3

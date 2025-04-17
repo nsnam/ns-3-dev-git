@@ -572,7 +572,7 @@ DoPrint(const std::optional<T>& elem, std::ostream& os)
 {
     if (elem.has_value())
     {
-        os << *elem << " , ";
+        os << *elem << ", ";
     }
 }
 

@@ -21,7 +21,7 @@ namespace ns3
  * @brief The Supported Rates Information Element
  * @ingroup wifi
  *
- * This class knows how to serialise and deserialise the Supported
+ * This class knows how to serialize and deserialize the Supported
  * Rates Element that holds the first 8 (non-HT) supported rates.
  *
  * The \c ExtendedSupportedRatesIE class deals with rates beyond the first 8.
@@ -57,7 +57,7 @@ class SupportedRates : public WifiInformationElement
  * @brief The Extended Supported Rates Information Element
  * @ingroup wifi
  *
- * This class knows how to serialise and deserialise the Extended
+ * This class knows how to serialize and deserialize the Extended
  * Supported Rates Element that holds (non-HT) rates beyond the 8 that
  * the original Supported Rates element can carry.
  */

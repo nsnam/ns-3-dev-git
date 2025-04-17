@@ -30,7 +30,7 @@ SupportedRates::SupportedRates()
 void
 SupportedRates::Print(std::ostream& os) const
 {
-    os << "rates=[";
+    os << "Supported Rates=[";
     for (std::size_t i = 0; i < m_rates.size(); i++)
     {
         if ((m_rates[i] & 0x80) > 0)

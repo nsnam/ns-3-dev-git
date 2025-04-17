@@ -18,7 +18,7 @@ namespace ns3
  * @brief The ErpInformation Information Element
  * @ingroup wifi
  *
- * This class knows how to serialise and deserialise the ErpInformation Information Element.
+ * This class knows how to serialize and deserialize the ErpInformation Information Element.
  */
 class ErpInformation : public WifiInformationElement
 {
@@ -30,6 +30,7 @@ class ErpInformation : public WifiInformationElement
     uint16_t GetInformationFieldSize() const override;
     void SerializeInformationField(Buffer::Iterator start) const override;
     uint16_t DeserializeInformationField(Buffer::Iterator start, uint16_t length) override;
+    void Print(std::ostream& os) const override;
 
     /**
      * Set the Barker_Preamble_Mode field in the ErpInformation information element.
@@ -73,16 +74,6 @@ class ErpInformation : public WifiInformationElement
   private:
     uint8_t m_erpInformation; ///< ERP information
 };
-
-/**
- * output stream output operator
- *
- * @param os output stream
- * @param erpInformation the ERP Information
- *
- * @returns output stream
- */
-std::ostream& operator<<(std::ostream& os, const ErpInformation& erpInformation);
 
 } // namespace ns3
 

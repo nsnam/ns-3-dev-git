@@ -726,4 +726,18 @@ ReducedNeighborReport::DeserializeInformationField(Buffer::Iterator start, uint1
     return count;
 }
 
+void
+ReducedNeighborReport::Print(std::ostream& os) const
+{
+    os << "Reduced Neighbor Report=[";
+    for (const auto& neighborApInfo : m_nbrApInfoFields)
+    {
+        os << "{Operating Class: " << +neighborApInfo.operatingClass
+           << ", Channel Number: " << +neighborApInfo.channelNumber
+           << ", TBTT Information Count: " << +neighborApInfo.tbttInfoHdr.tbttInfoCount
+           << ", TBTT Information Length: " << +neighborApInfo.tbttInfoHdr.tbttInfoLength << "}, ";
+    }
+    os << "]";
+}
+
 } // namespace ns3

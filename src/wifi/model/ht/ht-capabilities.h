@@ -25,7 +25,7 @@ namespace ns3
  * @brief The HT Capabilities Information Element
  * @ingroup wifi
  *
- * This class knows how to serialise and deserialise the HT Capabilities Information Element
+ * This class knows how to serialize and deserialize the HT Capabilities Information Element
  */
 class HtCapabilities : public WifiInformationElement
 {

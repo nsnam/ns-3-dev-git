@@ -262,7 +262,7 @@ typedef uint8_t WifiInformationElementId;
  * maintain the relevant state.
  *
  * This class also provides an implementation of the equality
- * operator, which operates by comparing the serialised versions of
+ * operator, which operates by comparing the serialized versions of
  * the two WifiInformationElement objects concerned.
  *
  * Elements are defined to have a common general format consisting of
@@ -347,7 +347,7 @@ class WifiInformationElement : public SimpleRefCount<WifiInformationElement>
     virtual void Print(std::ostream& os) const;
     /**
      * Compare two IEs for equality by ID & Length, and then through
-     * memcmp of serialised version
+     * memcmp of serialized version
      *
      * @param a another information element to compare with
      *
