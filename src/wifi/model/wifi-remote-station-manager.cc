@@ -1811,6 +1811,9 @@ WifiRemoteStationManager::AddStationEhtOperation(Mac48Address from,
         case 3:
             state->m_channelWidth = MHz_u{160};
             break;
+        case 4:
+            state->m_channelWidth = MHz_u{320};
+            break;
         default:
             NS_FATAL_ERROR("Invalid channel width value in EHT Operation Information field");
         }

@@ -1148,8 +1148,9 @@ ApWifiMac::GetEhtOperation(uint8_t linkId) const
     NS_ASSERT(GetEhtSupported());
     EhtOperation operation;
     auto remoteStationManager = GetWifiRemoteStationManager(linkId);
+    const auto phy = GetWifiPhy(linkId);
 
-    auto maxSpatialStream = GetWifiPhy(linkId)->GetMaxSupportedRxSpatialStreams();
+    auto maxSpatialStream = phy->GetMaxSupportedRxSpatialStreams();
     for (const auto& sta : GetLink(linkId).staList)
     {
         if (remoteStationManager->GetEhtSupported(sta.second))
@@ -1163,6 +1164,13 @@ ApWifiMac::GetEhtOperation(uint8_t linkId) const
     operation.SetMaxRxNss(maxSpatialStream, 0, WIFI_EHT_MAX_MCS_INDEX);
     operation.SetMaxTxNss(maxSpatialStream, 0, WIFI_EHT_MAX_MCS_INDEX);
     operation.m_params.grpBuExp = m_grpAddrBuIndicExp;
+
+    if (const auto bw = phy->GetChannelWidth();
+        (phy->GetPhyBand() == WIFI_PHY_BAND_6GHZ) && (bw == MHz_u{320}))
+    {
+        operation.m_opInfo.emplace(EhtOperation::EhtOpInfo{{.channelWidth = 4}});
+        operation.m_params.opInfoPresent = 1;
+    }
     return operation;
 }
 
