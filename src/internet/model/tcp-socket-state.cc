@@ -79,6 +79,11 @@ TcpSocketState::GetTypeId()
                             "The TCP connection's congestion window",
                             MakeTraceSourceAccessor(&TcpSocketState::m_bytesInFlight),
                             "ns3::TracedValueCallback::Uint32")
+            .AddTraceSource(
+                "FackAwnd",
+                "Estimate of amount of outstanding data in the network (if FACK option is enabled)",
+                MakeTraceSourceAccessor(&TcpSocketState::m_fackAwnd),
+                "ns3::TracedValueCallback::Uint32")
             .AddTraceSource("RTT",
                             "Smoothed RTT",
                             MakeTraceSourceAccessor(&TcpSocketState::m_srtt),

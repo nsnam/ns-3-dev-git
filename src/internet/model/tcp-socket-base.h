@@ -370,6 +370,11 @@ class TcpSocketBase : public TcpSocket
     TracedCallback<uint32_t, uint32_t> m_bytesInFlightTrace;
 
     /**
+     * @brief Callback pointer for fackAwnd trace chaining
+     */
+    TracedCallback<uint32_t, uint32_t> m_fackAwndTrace;
+
+    /**
      * @brief Callback pointer for RTT trace chaining
      */
     TracedCallback<Time, Time> m_srttTrace;
@@ -443,6 +448,13 @@ class TcpSocketBase : public TcpSocket
      * @param newValue new bytesInFlight value
      */
     void UpdateBytesInFlight(uint32_t oldValue, uint32_t newValue) const;
+
+    /**
+     * @brief Callback function to hook to TcpSocketState awnd(FACK's inflight)
+     * @param oldValue old awnd value
+     * @param newValue new awnd value
+     */
+    void UpdateFackAwnd(uint32_t oldValue, uint32_t newValue) const;
 
     /**
      * @brief Callback function to hook to TcpSocketState rtt
@@ -671,6 +683,26 @@ class TcpSocketBase : public TcpSocket
                                            const Address& localAddr,
                                            const Address& peerAddr,
                                            const Ptr<const TcpSocketBase> socket);
+
+    // Variables for FACK
+    uint32_t m_sndFack;                  //!< Sequence number of the forward most acknowledgement
+    uint32_t m_outstandingRetransBytes;  //!< Number of outstanding retransmitted bytes
+    TracedValue<uint32_t> m_fackAwnd{0}; //!< Tracks the inflight data calculated by FACK algorithm.
+
+    /**
+     * @brief Get the current FACK sequence number.
+     *
+     * @return The sequence number up to which data is considered
+     *         cumulatively acknowledged by FACK.
+     */
+    uint32_t GetSndFack() const;
+
+    /**
+     * @brief Check whether Forward Acknowledgment (FACK) is enabled.
+     *
+     * @return true if FACK is enabled, false otherwise.
+     */
+    bool GetFackEnabled() const;
 
   protected:
     // Implementing ns3::TcpSocket -- Attribute get/set
@@ -1428,6 +1460,8 @@ class TcpSocketBase : public TcpSocket
     uint8_t m_sndWindShift{0};      //!< Window shift to apply to incoming segments
     bool m_timestampEnabled{true};  //!< Timestamp option enabled
     uint32_t m_timestampToEcho{0};  //!< Timestamp to echo
+
+    bool m_fackEnabled{false}; //!< flag for enabling FACK
 
     EventId m_sendPendingDataEvent{}; //!< micro-delay event to send pending data
 

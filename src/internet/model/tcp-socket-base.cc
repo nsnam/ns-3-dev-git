@@ -139,6 +139,11 @@ TcpSocketBase::GetTypeId()
                           BooleanValue(true),
                           MakeBooleanAccessor(&TcpSocketBase::m_timestampEnabled),
                           MakeBooleanChecker())
+            .AddAttribute("Fack",
+                          "Enable or disable FACK option",
+                          BooleanValue(false),
+                          MakeBooleanAccessor(&TcpSocketBase::m_fackEnabled),
+                          MakeBooleanChecker())
             .AddAttribute(
                 "MinRto",
                 "Minimum retransmit timeout value",
@@ -243,6 +248,10 @@ TcpSocketBase::GetTypeId()
                             "Socket estimation of bytes in flight",
                             MakeTraceSourceAccessor(&TcpSocketBase::m_bytesInFlightTrace),
                             "ns3::TracedValueCallback::Uint32")
+            .AddTraceSource("FackAwnd",
+                            "Socket estimation of bytes in flight by FACK",
+                            MakeTraceSourceAccessor(&TcpSocketBase::m_fackAwndTrace),
+                            "ns3::TracedValueCallback::Uint32")
             .AddTraceSource("HighestRxSequence",
                             "Highest sequence number received from peer",
                             MakeTraceSourceAccessor(&TcpSocketBase::m_highRxMark),
@@ -304,6 +313,9 @@ TcpSocketBase::TcpSocketBase()
     m_tcb = CreateObject<TcpSocketState>();
     m_rateOps = CreateObject<TcpRateLinux>();
 
+    m_sndFack = 0;
+    m_outstandingRetransBytes = 0;
+
     m_tcb->m_rxBuffer = CreateObject<TcpRxBuffer>();
 
     m_tcb->m_pacingRate = m_tcb->m_maxPacingRate;
@@ -350,6 +362,10 @@ TcpSocketBase::TcpSocketBase()
     ok = m_tcb->TraceConnectWithoutContext("BytesInFlight",
                                            MakeCallback(&TcpSocketBase::UpdateBytesInFlight, this));
     NS_ASSERT_MSG(ok, "Could not connect trace source BytesInFlight");
+
+    ok = m_tcb->TraceConnectWithoutContext("FackAwnd",
+                                           MakeCallback(&TcpSocketBase::UpdateFackAwnd, this));
+    NS_ASSERT_MSG(ok == true, "Could not connect trace source FackAwnd");
 
     ok = m_tcb->TraceConnectWithoutContext("RTT", MakeCallback(&TcpSocketBase::UpdateRtt, this));
     NS_ASSERT_MSG(ok, "Could not connect trace source RTT");
@@ -407,6 +423,7 @@ TcpSocketBase::TcpSocketBase(const TcpSocketBase& sock)
       m_sndWindShift(sock.m_sndWindShift),
       m_timestampEnabled(sock.m_timestampEnabled),
       m_timestampToEcho(sock.m_timestampToEcho),
+      m_fackEnabled(sock.m_fackEnabled),
       m_recover(sock.m_recover),
       m_recoverActive(sock.m_recoverActive),
       m_retxThresh(sock.m_retxThresh),
@@ -462,6 +479,9 @@ TcpSocketBase::TcpSocketBase(const TcpSocketBase& sock)
         m_tcb->m_sendEmptyPacketCallback = MakeCallback(&TcpSocketBase::SendEmptyPacket, this);
     }
 
+    m_sndFack = sock.m_sndFack;
+    m_outstandingRetransBytes = sock.m_outstandingRetransBytes;
+
     bool ok;
 
     ok = m_tcb->TraceConnectWithoutContext(
@@ -500,6 +520,9 @@ TcpSocketBase::TcpSocketBase(const TcpSocketBase& sock)
     ok = m_tcb->TraceConnectWithoutContext("BytesInFlight",
                                            MakeCallback(&TcpSocketBase::UpdateBytesInFlight, this));
     NS_ASSERT_MSG(ok, "Could not connect trace source BytesInFlight");
+
+    ok = m_tcb->TraceConnectWithoutContext("FackAwnd",
+                                           MakeCallback(&TcpSocketBase::UpdateFackAwnd, this));
 
     ok = m_tcb->TraceConnectWithoutContext("RTT", MakeCallback(&TcpSocketBase::UpdateRtt, this));
     NS_ASSERT_MSG(ok, "Could not connect trace source RTT");
@@ -1805,6 +1828,16 @@ TcpSocketBase::DupAck(uint32_t currentDelivered)
         // CA_RECOVERY and reducing sending rate again.
         NS_ASSERT((m_dupAckCount <= m_retxThresh) || m_recoverActive);
 
+        uint32_t fackDiff = 0;
+        if (m_fackEnabled)
+        {
+            uint32_t headSeq = m_txBuffer->HeadSequence().GetValue();
+            if (m_sndFack > headSeq)
+            {
+                fackDiff = m_sndFack - headSeq;
+            }
+        }
+
         // RFC 6675, Section 5, continuing:
         // ... and take the following steps:
         // (1) If DupAcks >= DupThresh, go to step (4).
@@ -1816,8 +1849,12 @@ TcpSocketBase::DupAck(uint32_t currentDelivered)
         //     bandwidth-greedy application in high speed and reliable network
         //     (such as datacenter network) whose sending rate is constrained by
         //     TCP socket buffer size at receiver side.
-        if ((m_dupAckCount == m_retxThresh) &&
-            ((m_highRxAckMark >= m_recover) || (!m_recoverActive)))
+
+        // Check FACK recovery condition
+
+        if ((m_fackEnabled && fackDiff > m_tcb->m_segmentSize * 3) ||
+            ((m_dupAckCount == m_retxThresh) &&
+             (m_highRxAckMark >= m_recover || (!m_recoverActive))))
         {
             EnterRecovery(currentDelivered);
             NS_ASSERT(m_tcb->m_congState == TcpSocketState::CA_RECOVERY);
@@ -2009,6 +2046,19 @@ TcpSocketBase::ProcessAck(const SequenceNumber32& ackNumber,
      * The check below implements conditions a), b), and d), and c) is prevented by virtue of not
      * reaching this code if SYN or FIN is set, and e) is not supported.
      */
+
+    if (m_fackEnabled && ackNumber == m_txBuffer->HeadSequence() &&
+        m_tcb->m_congState == TcpSocketState::CA_RECOVERY)
+    {
+        if (m_outstandingRetransBytes > m_tcb->m_segmentSize)
+        {
+            m_outstandingRetransBytes -= m_tcb->m_segmentSize;
+        }
+        else
+        {
+            m_outstandingRetransBytes = 0;
+        }
+    }
 
     bool isDupack = m_sackEnabled ? scoreboardUpdated
                                   : (ackNumber == oldHeadSequence &&
@@ -3579,9 +3629,35 @@ TcpSocketBase::Window() const
 uint32_t
 TcpSocketBase::AvailableWindow() const
 {
-    uint32_t win = Window();             // Number of bytes allowed to be outstanding
-    uint32_t inflight = BytesInFlight(); // Number of outstanding bytes
-    return (inflight > win) ? 0 : win - inflight;
+    uint32_t win = Window(); // Number of bytes allowed to be outstanding
+
+    if (m_sackEnabled && m_fackEnabled && win >= m_tcb->m_ssThresh)
+    {
+        // Update awnd (Data sender's estimate of the actual quantity of data outstanding in the
+        // network)
+        NS_LOG_DEBUG("FACK is enabled and win >= ssthresh (" << m_tcb->m_ssThresh << ")");
+
+        uint32_t sndNxt = (m_tcb->m_highTxMark.Get().GetValue());
+        uint32_t retranData = m_txBuffer->GetRetransmitsCount();
+        uint32_t awnd = sndNxt - m_sndFack + retranData;
+        m_tcb->m_fackAwnd = awnd;
+
+        NS_LOG_DEBUG("SndNxt: " << sndNxt << ", SndFack: " << m_sndFack << ", AWND: " << awnd
+                                << ", RetranData :" << retranData);
+
+        uint32_t awndDiff = (win > awnd) ? (win - awnd) : 0;
+        NS_LOG_DEBUG("AWND: " << awnd << ", win: " << win << ", AWND_DIFF: " << awndDiff);
+        return awndDiff;
+    }
+
+    uint32_t inflight = BytesInFlight();
+
+    if (inflight >= win)
+    {
+        return 0;
+    }
+
+    return win - inflight;
 }
 
 uint16_t
@@ -3826,6 +3902,13 @@ TcpSocketBase::NewAck(const SequenceNumber32& ack, bool resetRTO)
 
     // Reset the data retransmission count. We got a new ACK!
     m_dataRetrCount = m_dataRetries;
+
+    // Update m_sndFack if possible
+    if (m_fackEnabled && ack.GetValue() > m_sndFack)
+    {
+        NS_LOG_INFO(" m_sndFack " << m_sndFack << " updated by normal ack to " << ack.GetValue());
+        m_sndFack = ack.GetValue();
+    }
 
     if (m_state != SYN_RCVD && resetRTO)
     { // Set RTO unless the ACK is received in SYN_RCVD state
@@ -4174,6 +4257,18 @@ TcpSocketBase::GetSndBufSize() const
     return m_txBuffer->MaxBufferSize();
 }
 
+uint32_t
+TcpSocketBase::GetSndFack() const
+{
+    return m_sndFack;
+}
+
+bool
+TcpSocketBase::GetFackEnabled() const
+{
+    return m_fackEnabled;
+}
+
 void
 TcpSocketBase::SetRcvBufSize(uint32_t size)
 {
@@ -4411,6 +4506,21 @@ TcpSocketBase::ProcessOptionSack(const Ptr<const TcpOption> option)
     NS_LOG_FUNCTION(this << option);
 
     Ptr<const TcpOptionSack> s = DynamicCast<const TcpOptionSack>(option);
+
+    // Update m_sndFack with the highest sequence number acknowledged from the SACK blocks
+    if (m_fackEnabled)
+    {
+        for (const auto& [leftEdge, rightEdge] : s->GetSackList())
+        {
+            if (rightEdge.GetValue() > m_sndFack)
+            {
+                NS_LOG_INFO(" m_sndFack updated from " << m_sndFack << " to "
+                                                       << rightEdge.GetValue());
+                m_sndFack = rightEdge.GetValue();
+            }
+        }
+    }
+
     return m_txBuffer->Update(s->GetSackList(), MakeCallback(&TcpRateOps::SkbDelivered, m_rateOps));
 }
 
@@ -4653,6 +4763,12 @@ void
 TcpSocketBase::UpdateBytesInFlight(uint32_t oldValue, uint32_t newValue) const
 {
     m_bytesInFlightTrace(oldValue, newValue);
+}
+
+void
+TcpSocketBase::UpdateFackAwnd(uint32_t oldValue, uint32_t newValue) const
+{
+    m_fackAwndTrace(oldValue, newValue);
 }
 
 void
