@@ -579,7 +579,18 @@ class TcpSocketBase : public TcpSocket
      * @param useEcn Mode of ECN to use.
      */
     void SetUseEcn(TcpSocketState::UseEcn_t useEcn);
-
+    /**
+     * @brief Set ABE mode of use on the socket
+     *
+     * @param useAbe Mode of ABE to use.
+     */
+    void SetUseAbe(bool useAbe);
+    /**
+     * @brief Get ABE mode of use on the socket
+     *
+     * @return true if ABE is enabled, false otherwise.
+     */
+    bool GetUseAbe() const;
     /**
      * @brief Enable or disable pacing
      * @param pacing Boolean to enable or disable pacing
@@ -1394,6 +1405,10 @@ class TcpSocketBase : public TcpSocket
     bool m_shutdownSend{false};  //!< Send no longer allowed
     bool m_shutdownRecv{false};  //!< Receive no longer allowed
     bool m_connected{false};     //!< Connection established
+    bool m_useAbe{false};        //!< ABE mode
+                                 //!< It will override the UseEcn attribute
+                                 //!< if it is 'Off' and set it to 'On', but
+                                 //!< will leave it untouched if it is 'AcceptOnly'
     double m_msl{0.0};           //!< Max segment lifetime
 
     // Window management

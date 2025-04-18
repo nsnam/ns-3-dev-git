@@ -93,10 +93,10 @@ class TcpCubic : public TcpCongestionOps
     void Init(Ptr<TcpSocketState> tcb) override;
 
   private:
-    bool m_fastConvergence; //!< Enable or disable fast convergence algorithm
-    bool m_tcpFriendliness; //!< Enable or disable TCP-friendliness heuristic
-    double m_beta;          //!< Beta for cubic multiplicative increase
-
+    bool m_fastConvergence;                //!< Enable or disable fast convergence algorithm
+    bool m_tcpFriendliness;                //!< Enable or disable TCP-friendliness heuristic
+    double m_beta;                         //!< Beta for cubic multiplicative decrease
+    double m_betaEcn;                      //!< Beta for cubic multiplicative decrease with ABE
     bool m_hystart;                        //!< Enable or disable HyStart algorithm
     HybridSSDetectionMode m_hystartDetect; //!< Detect way for HyStart algorithm
     uint32_t m_hystartLowWindow;           //!< Lower bound cWnd for hybrid slow start (segments)

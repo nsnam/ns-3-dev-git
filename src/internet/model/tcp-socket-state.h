@@ -203,9 +203,9 @@ class TcpSocketState : public Object
 
     Ptr<TcpRxBuffer> m_rxBuffer; //!< Rx buffer (reordering buffer)
 
-    EcnMode_t m_ecnMode{ClassicEcn}; //!< ECN mode
-    UseEcn_t m_useEcn{Off};          //!< Socket ECN capability
-
+    EcnMode_t m_ecnMode{ClassicEcn};     //!< ECN mode
+    UseEcn_t m_useEcn{Off};              //!< Socket ECN capability
+    bool m_abeEnabled{false};            //!< ABE mode
     EcnCodePoint_t m_ectCodePoint{Ect0}; //!< ECT code point to use
 
     uint32_t m_lastAckedSackedBytes{

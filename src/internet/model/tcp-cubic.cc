@@ -43,7 +43,12 @@ TcpCubic::GetTypeId()
                           "Beta for multiplicative decrease",
                           DoubleValue(0.7),
                           MakeDoubleAccessor(&TcpCubic::m_beta),
-                          MakeDoubleChecker<double>(0.0))
+                          MakeDoubleChecker<double>(0.0, 1.0))
+            .AddAttribute("BetaEcn",
+                          "Beta for multiplicative decrease for ABE",
+                          DoubleValue(0.85), // According to RFC 8511 (ABE)
+                          MakeDoubleAccessor(&TcpCubic::m_betaEcn),
+                          MakeDoubleChecker<double>(0.0, 1.0))
             .AddAttribute("HyStart",
                           "Enable (true) or disable (false) hybrid slow start algorithm",
                           BooleanValue(true),
@@ -129,6 +134,7 @@ TcpCubic::TcpCubic(const TcpCubic& sock)
     : TcpCongestionOps(sock),
       m_fastConvergence(sock.m_fastConvergence),
       m_beta(sock.m_beta),
+      m_betaEcn(sock.m_betaEcn),
       m_hystart(sock.m_hystart),
       m_hystartDetect(sock.m_hystartDetect),
       m_hystartLowWindow(sock.m_hystartLowWindow),
@@ -467,8 +473,16 @@ TcpCubic::GetSsThresh(Ptr<const TcpSocketState> tcb, uint32_t bytesInFlight)
 
     m_epochStart = Time::Min(); // end of epoch
 
-    /* Formula taken from the Linux kernel */
-    uint32_t ssThresh = std::max(static_cast<uint32_t>(segCwnd * m_beta), 2U) * tcb->m_segmentSize;
+    uint32_t ssThresh;
+    if (tcb->m_abeEnabled && tcb->m_ecnState == TcpSocketState::ECN_ECE_RCVD)
+    {
+        ssThresh = std::max(static_cast<uint32_t>(segCwnd * m_betaEcn), 2U) *
+                   tcb->m_segmentSize; // According to RFC 8511 (ABE)
+    }
+    else
+    { /* Formula taken from the Linux kernel */
+        ssThresh = std::max(static_cast<uint32_t>(segCwnd * m_beta), 2U) * tcb->m_segmentSize;
+    }
 
     NS_LOG_DEBUG("SsThresh = " << ssThresh);
 

@@ -194,6 +194,11 @@ TcpSocketBase::GetTypeId()
                                           "On",
                                           TcpSocketState::AcceptOnly,
                                           "AcceptOnly"))
+            .AddAttribute("UseAbe",
+                          "Parameter to set ABE functionality",
+                          BooleanValue(false),
+                          MakeBooleanAccessor(&TcpSocketBase::m_useAbe),
+                          MakeBooleanChecker())
             .AddTraceSource("RTO",
                             "Retransmission timeout",
                             MakeTraceSourceAccessor(&TcpSocketBase::m_rto),
@@ -293,6 +298,11 @@ TcpSocketBase::TcpSocketBase()
     : TcpSocket()
 {
     NS_LOG_FUNCTION(this);
+
+    // We need attributes initialized here, not later, so use the
+    // ConstructSelf() technique documented in the manual
+    ObjectBase::ConstructSelf(AttributeConstructionList());
+
     m_txBuffer = CreateObject<TcpTxBuffer>();
     m_txBuffer->SetRWndCallback(MakeCallback(&TcpSocketBase::GetRWnd, this));
     m_tcb = CreateObject<TcpSocketState>();
@@ -302,6 +312,8 @@ TcpSocketBase::TcpSocketBase()
 
     m_tcb->m_pacingRate = m_tcb->m_maxPacingRate;
     m_pacingTimer.SetFunction(&TcpSocketBase::NotifyPacingPerformed, this);
+
+    SetUseAbe(m_useAbe);
 
     m_tcb->m_sendEmptyPacketCallback = MakeCallback(&TcpSocketBase::SendEmptyPacket, this);
 
@@ -4804,6 +4816,24 @@ TcpSocketBase::SetUseEcn(TcpSocketState::UseEcn_t useEcn)
 {
     NS_LOG_FUNCTION(this << useEcn);
     m_tcb->m_useEcn = useEcn;
+}
+
+void
+TcpSocketBase::SetUseAbe(bool useAbe)
+{
+    NS_LOG_FUNCTION(this << useAbe);
+    if (m_tcb->m_useEcn == TcpSocketState::Off && useAbe)
+    {
+        NS_LOG_INFO("Enabling ECN along with ABE");
+        m_tcb->m_useEcn = TcpSocketState::On;
+    }
+    m_tcb->m_abeEnabled = useAbe;
+}
+
+bool
+TcpSocketBase::GetUseAbe() const
+{
+    return m_tcb->m_abeEnabled;
 }
 
 uint32_t
