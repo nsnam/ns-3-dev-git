@@ -1425,6 +1425,14 @@ ApWifiMac::GetEhtOperation(uint8_t linkId) const
     operation.SetMaxRxNss(maxSpatialStream, 0, WIFI_EHT_MAX_MCS_INDEX);
     operation.SetMaxTxNss(maxSpatialStream, 0, WIFI_EHT_MAX_MCS_INDEX);
     operation.m_params.grpBuExp = m_grpAddrBuIndicExp;
+
+    const auto phy = GetWifiPhy(linkId);
+    if (const auto bw = phy->GetChannelWidth();
+        (phy->GetPhyBand() == WIFI_PHY_BAND_6GHZ) && (bw == MHz_t{320}))
+    {
+        operation.m_opInfo.emplace(EhtOperation::EhtOpInfo{{.channelWidth = 4}});
+        operation.m_params.opInfoPresent = 1;
+    }
     return operation;
 }
 
