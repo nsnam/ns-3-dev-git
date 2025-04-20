@@ -28,6 +28,19 @@ build_example(
 )
 
 build_example(
+  NAME tcp-ecn-example
+  SOURCE_FILES tcp-ecn-example.cc
+  LIBRARIES_TO_LINK
+    ${libpoint-to-point}
+    ${libinternet}
+    ${libapplications}
+    ${libtraffic-control}
+    ${libnetwork}
+    ${libinternet-apps}
+    ${libflow-monitor}
+)
+
+build_example(
   NAME tcp-bbr-example
   SOURCE_FILES tcp-bbr-example.cc
   LIBRARIES_TO_LINK
