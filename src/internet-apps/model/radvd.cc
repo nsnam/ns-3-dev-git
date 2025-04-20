@@ -77,13 +77,19 @@ Radvd::DoDispose()
 {
     NS_LOG_FUNCTION(this);
 
-    m_recvSocket->Close();
-    m_recvSocket = nullptr;
+    if (m_recvSocket)
+    {
+        m_recvSocket->Close();
+        m_recvSocket = nullptr;
+    }
 
     for (auto it = m_sendSockets.begin(); it != m_sendSockets.end(); ++it)
     {
-        it->second->Close();
-        it->second = nullptr;
+        if (it->second)
+        {
+            it->second->Close();
+            it->second = nullptr;
+        }
     }
 
     Application::DoDispose();

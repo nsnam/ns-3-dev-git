@@ -376,7 +376,9 @@ SOURCEFIGS = \
 	$(SRC)/energy/doc/figures/nimh.png \
 	$(SRC)/zigbee/doc/figures/zigbeeStackArch.dia \
 	$(SRC)/zigbee/doc/figures/manyToOne.dia \
-	$(SRC)/zigbee/doc/figures/mesh.dia
+	$(SRC)/zigbee/doc/figures/mesh.dia \
+	$(SRC)/internet-apps/doc/figures/dhcpv6-message-exchange.dia \
+	$(SRC)/internet-apps/doc/figures/stateful-dhcpv6-format.dia
 
 # specify figures from which .png and .pdf figures need to be
 # generated (all dia and eps figures)
@@ -502,7 +504,10 @@ IMAGES_EPS = \
 	$(FIGURES)/lena-radio-link-failure-two-enb.eps \
 	$(FIGURES)/zigbeeStackArch.eps \
 	$(FIGURES)/manyToOne.eps \
-	$(FIGURES)/mesh.eps
+	$(FIGURES)/mesh.eps \
+	$(FIGURES)/dhcpv6-message-exchange.eps \
+	$(FIGURES)/stateful-dhcpv6-format.eps
+
 
 # rescale pdf figures as necessary
 $(FIGURES)/testbed.pdf_width = 5in

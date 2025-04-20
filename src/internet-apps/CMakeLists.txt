@@ -2,12 +2,18 @@ build_lib(
   LIBNAME internet-apps
   SOURCE_FILES
     helper/dhcp-helper.cc
+    helper/dhcp6-helper.cc
     helper/ping-helper.cc
     helper/radvd-helper.cc
     helper/v4traceroute-helper.cc
     model/dhcp-client.cc
     model/dhcp-header.cc
     model/dhcp-server.cc
+    model/dhcp6-client.cc
+    model/dhcp6-duid.cc
+    model/dhcp6-header.cc
+    model/dhcp6-options.cc
+    model/dhcp6-server.cc
     model/ping.cc
     model/radvd-interface.cc
     model/radvd-prefix.cc
@@ -15,12 +21,18 @@ build_lib(
     model/v4traceroute.cc
   HEADER_FILES
     helper/dhcp-helper.h
+    helper/dhcp6-helper.h
     helper/ping-helper.h
     helper/radvd-helper.h
     helper/v4traceroute-helper.h
     model/dhcp-client.h
     model/dhcp-header.h
     model/dhcp-server.h
+    model/dhcp6-client.h
+    model/dhcp6-duid.h
+    model/dhcp6-header.h
+    model/dhcp6-options.h
+    model/dhcp6-server.h
     model/ping.h
     model/radvd-interface.h
     model/radvd-prefix.h
@@ -29,6 +41,7 @@ build_lib(
   LIBRARIES_TO_LINK ${libinternet}
   TEST_SOURCES
     test/dhcp-test.cc
+    test/dhcp6-test.cc
     test/ipv6-radvd-test.cc
     test/ping-test.cc
 )

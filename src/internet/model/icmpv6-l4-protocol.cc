@@ -168,6 +168,7 @@ Icmpv6L4Protocol::DoDispose()
     }
     m_cacheList.clear();
     m_downTarget.Nullify();
+    m_startDhcpv6.Nullify();
 
     m_node = nullptr;
     IpL4Protocol::DoDispose();

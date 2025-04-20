@@ -10,6 +10,18 @@ build_lib_example(
 )
 
 build_lib_example(
+  NAME dhcp6-example
+  SOURCE_FILES dhcp6-example.cc
+  LIBRARIES_TO_LINK
+    ${libapplications}
+    ${libcsma}
+    ${libinternet}
+    ${libinternet-apps}
+    ${libpoint-to-point}
+    ${libwifi}
+)
+
+build_lib_example(
   NAME traceroute-example
   SOURCE_FILES traceroute-example.cc
   LIBRARIES_TO_LINK
