@@ -27,7 +27,6 @@
 namespace ns3
 {
 
-class Socket;
 class Packet;
 class ThreeGppHttpVariables;
 class ThreeGppHttpServerTxBuffer;
@@ -151,7 +150,7 @@ class ThreeGppHttpServer : public SinkApplication
     // SOCKET CALLBACK METHODS
 
     /**
-     * Invoked when #m_initialSocket receives a connection request.
+     * Invoked when #m_socket receives a connection request.
      * @param socket Pointer to the socket where the event originates from.
      * @param address The address of the remote client where the connection
      *                request comes from.
@@ -179,7 +178,7 @@ class ThreeGppHttpServer : public SinkApplication
      */
     void ErrorCloseCallback(Ptr<Socket> socket);
     /**
-     * Invoked when #m_initialSocket receives some packet data. It will check the
+     * Invoked when #m_socket receives some packet data. It will check the
      * packet for ThreeGppHttpHeader. It also fires the `Rx` trace source.
      *
      * Depending on the type of object requested, the method will trigger
@@ -251,8 +250,6 @@ class ThreeGppHttpServer : public SinkApplication
 
     /// The current state of the client application. Begins with NOT_STARTED.
     State_t m_state{NOT_STARTED};
-    /// The listening socket, for receiving connection requests from clients.
-    Ptr<Socket> m_initialSocket;
     /// Pointer to the transmission buffer.
     Ptr<ThreeGppHttpServerTxBuffer> m_txBuffer;
 

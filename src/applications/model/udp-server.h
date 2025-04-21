@@ -87,8 +87,6 @@ class UdpServer : public SinkApplication
      */
     void HandleRead(Ptr<Socket> socket);
 
-    Ptr<Socket> m_socket;               //!< Socket
-    Ptr<Socket> m_socket6;              //!< IPv6 Socket (used if only port is specified)
     uint64_t m_received{0};             //!< Number of received packets
     PacketLossCounter m_lossCounter{0}; //!< Lost packet counter
 
