@@ -20,6 +20,7 @@ namespace ns3
 
 class Packet;
 class Address;
+class Socket;
 
 /**
  * @ingroup applications
@@ -59,11 +60,16 @@ class SinkApplication : public Application
     static constexpr uint32_t INVALID_PORT{std::numeric_limits<uint32_t>::max()}; //!< invalid port
 
   protected:
+    void DoDispose() override;
+
     /// Callbacks for tracing the packet Rx events
     ns3::TracedCallback<Ptr<const Packet>> m_rxTraceWithoutAddress;
 
     /// Traced Callback: received packets, source address.
     TracedCallback<Ptr<const Packet>, const Address&> m_rxTrace;
+
+    Ptr<Socket> m_socket;  //!< Socket (IPv4 or IPv6, depending on local address)
+    Ptr<Socket> m_socket6; //!< IPv6 Socket (used if only port is specified)
 
     Address m_local; //!< Local address to bind to (address and port)
     uint32_t m_port; //!< Local port to bind to

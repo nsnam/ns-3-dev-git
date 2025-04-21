@@ -23,7 +23,6 @@
 namespace ns3
 {
 
-class Socket;
 class Packet;
 
 /**
@@ -173,9 +172,6 @@ class PacketSink : public SinkApplication
     };
 
     std::unordered_map<Address, Ptr<Packet>, AddressHash> m_buffer; //!< Buffer for received packets
-
-    Ptr<Socket> m_socket;  //!< Socket
-    Ptr<Socket> m_socket6; //!< IPv6 Socket (used if only port is specified)
 
     // In the case of TCP, each socket accept returns a new socket, so the
     // listening socket is stored separately from the accepted sockets

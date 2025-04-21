@@ -95,7 +95,6 @@ void
 PacketSink::DoDispose()
 {
     NS_LOG_FUNCTION(this);
-    m_socket = nullptr;
     m_socketList.clear();
 
     // chain up

@@ -165,7 +165,7 @@ ThreeGppHttpServer::SetMtuSize(uint32_t mtuSize)
 Ptr<Socket>
 ThreeGppHttpServer::GetSocket() const
 {
-    return m_initialSocket;
+    return m_socket;
 }
 
 ThreeGppHttpServer::State_t
@@ -222,17 +222,17 @@ ThreeGppHttpServer::StartApplication()
     }
 
     m_httpVariables->Initialize();
-    if (!m_initialSocket)
+    if (!m_socket)
     {
         // Creating a TCP socket to connect to the server.
-        m_initialSocket = Socket::CreateSocket(GetNode(), TcpSocketFactory::GetTypeId());
-        m_initialSocket->SetAttribute("SegmentSize", UintegerValue(m_mtuSize));
+        m_socket = Socket::CreateSocket(GetNode(), TcpSocketFactory::GetTypeId());
+        m_socket->SetAttribute("SegmentSize", UintegerValue(m_mtuSize));
 
         NS_ABORT_MSG_IF(m_local.IsInvalid(), "Local address not properly set");
         if (InetSocketAddress::IsMatchingType(m_local))
         {
             const auto ipv4 [[maybe_unused]] = InetSocketAddress::ConvertFrom(m_local).GetIpv4();
-            m_initialSocket->SetIpTos(m_tos); // Affects only IPv4 sockets.
+            m_socket->SetIpTos(m_tos); // Affects only IPv4 sockets.
             NS_LOG_INFO(this << " Binding on " << ipv4 << " port " << m_port << " / " << m_local
                              << ".");
         }
@@ -247,24 +247,22 @@ ThreeGppHttpServer::StartApplication()
             NS_ABORT_MSG("Incompatible local address");
         }
 
-        auto ret [[maybe_unused]] = m_initialSocket->Bind(m_local);
+        auto ret [[maybe_unused]] = m_socket->Bind(m_local);
         NS_LOG_DEBUG(this << " Bind() return value= " << ret
-                          << " GetErrNo= " << m_initialSocket->GetErrno() << ".");
+                          << " GetErrNo= " << m_socket->GetErrno() << ".");
 
-        ret = m_initialSocket->Listen();
+        ret = m_socket->Listen();
         NS_LOG_DEBUG(this << " Listen () return value= " << ret
-                          << " GetErrNo= " << m_initialSocket->GetErrno() << ".");
+                          << " GetErrNo= " << m_socket->GetErrno() << ".");
 
-        NS_ASSERT_MSG(m_initialSocket, "Failed creating socket.");
-        m_initialSocket->SetAcceptCallback(
+        NS_ASSERT_MSG(m_socket, "Failed creating socket.");
+        m_socket->SetAcceptCallback(
             MakeCallback(&ThreeGppHttpServer::ConnectionRequestCallback, this),
             MakeCallback(&ThreeGppHttpServer::NewConnectionCreatedCallback, this));
-        m_initialSocket->SetCloseCallbacks(
-            MakeCallback(&ThreeGppHttpServer::NormalCloseCallback, this),
-            MakeCallback(&ThreeGppHttpServer::ErrorCloseCallback, this));
-        m_initialSocket->SetRecvCallback(
-            MakeCallback(&ThreeGppHttpServer::ReceivedDataCallback, this));
-        m_initialSocket->SetSendCallback(MakeCallback(&ThreeGppHttpServer::SendCallback, this));
+        m_socket->SetCloseCallbacks(MakeCallback(&ThreeGppHttpServer::NormalCloseCallback, this),
+                                    MakeCallback(&ThreeGppHttpServer::ErrorCloseCallback, this));
+        m_socket->SetRecvCallback(MakeCallback(&ThreeGppHttpServer::ReceivedDataCallback, this));
+        m_socket->SetSendCallback(MakeCallback(&ThreeGppHttpServer::SendCallback, this));
     }
 
     SwitchToState(STARTED);
@@ -281,15 +279,15 @@ ThreeGppHttpServer::StopApplication()
     m_txBuffer->CloseAllSockets();
 
     // Stop listening.
-    if (m_initialSocket)
+    if (m_socket)
     {
-        m_initialSocket->Close();
-        m_initialSocket->SetAcceptCallback(MakeNullCallback<bool, Ptr<Socket>, const Address&>(),
-                                           MakeNullCallback<void, Ptr<Socket>, const Address&>());
-        m_initialSocket->SetCloseCallbacks(MakeNullCallback<void, Ptr<Socket>>(),
-                                           MakeNullCallback<void, Ptr<Socket>>());
-        m_initialSocket->SetRecvCallback(MakeNullCallback<void, Ptr<Socket>>());
-        m_initialSocket->SetSendCallback(MakeNullCallback<void, Ptr<Socket>, uint32_t>());
+        m_socket->Close();
+        m_socket->SetAcceptCallback(MakeNullCallback<bool, Ptr<Socket>, const Address&>(),
+                                    MakeNullCallback<void, Ptr<Socket>, const Address&>());
+        m_socket->SetCloseCallbacks(MakeNullCallback<void, Ptr<Socket>>(),
+                                    MakeNullCallback<void, Ptr<Socket>>());
+        m_socket->SetRecvCallback(MakeNullCallback<void, Ptr<Socket>>());
+        m_socket->SetSendCallback(MakeNullCallback<void, Ptr<Socket>, uint32_t>());
     }
 }
 
@@ -331,7 +329,7 @@ ThreeGppHttpServer::NormalCloseCallback(Ptr<Socket> socket)
 {
     NS_LOG_FUNCTION(this << socket);
 
-    if (socket == m_initialSocket)
+    if (socket == m_socket)
     {
         if (m_state == STARTED)
         {
@@ -367,7 +365,7 @@ ThreeGppHttpServer::ErrorCloseCallback(Ptr<Socket> socket)
 {
     NS_LOG_FUNCTION(this << socket);
 
-    if (socket == m_initialSocket)
+    if (socket == m_socket)
     {
         if (m_state == STARTED)
         {

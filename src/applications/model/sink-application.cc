@@ -9,6 +9,7 @@
 #include "sink-application.h"
 
 #include "ns3/log.h"
+#include "ns3/socket.h"
 #include "ns3/uinteger.h"
 
 namespace ns3
@@ -58,6 +59,15 @@ SinkApplication::SinkApplication(uint16_t defaultPort)
 SinkApplication::~SinkApplication()
 {
     NS_LOG_FUNCTION(this);
+}
+
+void
+SinkApplication::DoDispose()
+{
+    NS_LOG_FUNCTION(this);
+    m_socket = nullptr;
+    m_socket6 = nullptr;
+    Application::DoDispose();
 }
 
 void
