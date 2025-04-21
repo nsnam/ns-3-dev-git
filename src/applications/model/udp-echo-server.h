@@ -44,8 +44,7 @@ class UdpEchoServer : public SinkApplication
     ~UdpEchoServer() override;
 
   private:
-    void StartApplication() override;
-    void StopApplication() override;
+    void DoStartApplication() override;
 
     /**
      * @brief Handle a packet reception.

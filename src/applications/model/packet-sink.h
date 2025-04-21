@@ -101,8 +101,8 @@ class PacketSink : public SinkApplication
     void DoDispose() override;
 
   private:
-    void StartApplication() override;
-    void StopApplication() override;
+    void DoStartApplication() override;
+    void DoStopApplication() override;
 
     /**
      * @brief Handle a packet received by the application

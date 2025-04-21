@@ -206,14 +206,14 @@ ThreeGppHttpServer::DoDispose()
 
     if (!Simulator::IsFinished())
     {
-        StopApplication();
+        CloseAllSockets();
     }
 
     SinkApplication::DoDispose(); // Chain up.
 }
 
 void
-ThreeGppHttpServer::StartApplication()
+ThreeGppHttpServer::DoStartApplication()
 {
     NS_LOG_FUNCTION(this);
 
@@ -223,54 +223,50 @@ ThreeGppHttpServer::StartApplication()
     }
 
     m_httpVariables->Initialize();
-    if (!m_socket)
+
+    m_socket->SetAttribute("SegmentSize", UintegerValue(m_mtuSize));
+
+    NS_ABORT_MSG_IF(m_local.IsInvalid(), "Local address not properly set");
+    if (InetSocketAddress::IsMatchingType(m_local))
     {
-        // Creating a TCP socket to connect to the server.
-        m_socket = Socket::CreateSocket(GetNode(), m_protocolTid);
-        m_socket->SetAttribute("SegmentSize", UintegerValue(m_mtuSize));
-
-        NS_ABORT_MSG_IF(m_local.IsInvalid(), "Local address not properly set");
-        if (InetSocketAddress::IsMatchingType(m_local))
-        {
-            const auto ipv4 [[maybe_unused]] = InetSocketAddress::ConvertFrom(m_local).GetIpv4();
-            m_socket->SetIpTos(m_tos); // Affects only IPv4 sockets.
-            NS_LOG_INFO(this << " Binding on " << ipv4 << " port " << m_port << " / " << m_local
-                             << ".");
-        }
-        else if (Inet6SocketAddress::IsMatchingType(m_local))
-        {
-            const auto ipv6 [[maybe_unused]] = Inet6SocketAddress::ConvertFrom(m_local).GetIpv6();
-            NS_LOG_INFO(this << " Binding on " << ipv6 << " port " << m_port << " / " << m_local
-                             << ".");
-        }
-        else
-        {
-            NS_ABORT_MSG("Incompatible local address");
-        }
-
-        auto ret [[maybe_unused]] = m_socket->Bind(m_local);
-        NS_LOG_DEBUG(this << " Bind() return value= " << ret
-                          << " GetErrNo= " << m_socket->GetErrno() << ".");
-
-        ret = m_socket->Listen();
-        NS_LOG_DEBUG(this << " Listen () return value= " << ret
-                          << " GetErrNo= " << m_socket->GetErrno() << ".");
-
-        NS_ASSERT_MSG(m_socket, "Failed creating socket.");
-        m_socket->SetAcceptCallback(
-            MakeCallback(&ThreeGppHttpServer::ConnectionRequestCallback, this),
-            MakeCallback(&ThreeGppHttpServer::NewConnectionCreatedCallback, this));
-        m_socket->SetCloseCallbacks(MakeCallback(&ThreeGppHttpServer::NormalCloseCallback, this),
-                                    MakeCallback(&ThreeGppHttpServer::ErrorCloseCallback, this));
-        m_socket->SetRecvCallback(MakeCallback(&ThreeGppHttpServer::ReceivedDataCallback, this));
-        m_socket->SetSendCallback(MakeCallback(&ThreeGppHttpServer::SendCallback, this));
+        const auto ipv4 [[maybe_unused]] = InetSocketAddress::ConvertFrom(m_local).GetIpv4();
+        m_socket->SetIpTos(m_tos); // Affects only IPv4 sockets.
+        NS_LOG_INFO(this << " Binding on " << ipv4 << " port " << m_port << " / " << m_local
+                         << ".");
     }
+    else if (Inet6SocketAddress::IsMatchingType(m_local))
+    {
+        const auto ipv6 [[maybe_unused]] = Inet6SocketAddress::ConvertFrom(m_local).GetIpv6();
+        NS_LOG_INFO(this << " Binding on " << ipv6 << " port " << m_port << " / " << m_local
+                         << ".");
+    }
+    else
+    {
+        NS_ABORT_MSG("Incompatible local address");
+    }
+
+    auto ret [[maybe_unused]] = m_socket->Bind(m_local);
+    NS_LOG_DEBUG(this << " Bind() return value= " << ret << " GetErrNo= " << m_socket->GetErrno()
+                      << ".");
+
+    ret = m_socket->Listen();
+    NS_LOG_DEBUG(this << " Listen () return value= " << ret << " GetErrNo= " << m_socket->GetErrno()
+                      << ".");
+
+    NS_ASSERT_MSG(m_socket, "Failed creating socket.");
+    m_socket->SetAcceptCallback(
+        MakeCallback(&ThreeGppHttpServer::ConnectionRequestCallback, this),
+        MakeCallback(&ThreeGppHttpServer::NewConnectionCreatedCallback, this));
+    m_socket->SetCloseCallbacks(MakeCallback(&ThreeGppHttpServer::NormalCloseCallback, this),
+                                MakeCallback(&ThreeGppHttpServer::ErrorCloseCallback, this));
+    m_socket->SetRecvCallback(MakeCallback(&ThreeGppHttpServer::ReceivedDataCallback, this));
+    m_socket->SetSendCallback(MakeCallback(&ThreeGppHttpServer::SendCallback, this));
 
     SwitchToState(STARTED);
 }
 
 void
-ThreeGppHttpServer::StopApplication()
+ThreeGppHttpServer::DoStopApplication()
 {
     NS_LOG_FUNCTION(this);
 
@@ -278,18 +274,6 @@ ThreeGppHttpServer::StopApplication()
 
     // Close all accepted sockets.
     m_txBuffer->CloseAllSockets();
-
-    // Stop listening.
-    if (m_socket)
-    {
-        m_socket->Close();
-        m_socket->SetAcceptCallback(MakeNullCallback<bool, Ptr<Socket>, const Address&>(),
-                                    MakeNullCallback<void, Ptr<Socket>, const Address&>());
-        m_socket->SetCloseCallbacks(MakeNullCallback<void, Ptr<Socket>>(),
-                                    MakeNullCallback<void, Ptr<Socket>>());
-        m_socket->SetRecvCallback(MakeNullCallback<void, Ptr<Socket>>());
-        m_socket->SetSendCallback(MakeNullCallback<void, Ptr<Socket>, uint32_t>());
-    }
 }
 
 bool

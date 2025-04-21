@@ -62,6 +62,12 @@ class SinkApplication : public Application
   protected:
     void DoDispose() override;
 
+    /**
+     * @brief Close all the sockets
+     * @return true if all sockets closed successfully, false otherwise
+     */
+    bool CloseAllSockets();
+
     /// Callbacks for tracing the packet Rx events
     ns3::TracedCallback<Ptr<const Packet>> m_rxTraceWithoutAddress;
 
@@ -77,6 +83,9 @@ class SinkApplication : public Application
     uint32_t m_port; //!< Local port to bind to
 
   private:
+    void StartApplication() override;
+    void StopApplication() override;
+
     /**
      * @brief set the local address
      * @param addr local address
@@ -100,6 +109,23 @@ class SinkApplication : public Application
      * @return the server port
      */
     uint32_t GetPort() const;
+
+    /**
+     * @brief Close the socket
+     * @param socket the socket to close
+     * @return true if the socket closed successfully, false otherwise
+     */
+    bool CloseSocket(Ptr<Socket> socket);
+
+    /**
+     * @brief Application specific startup code for child subclasses
+     */
+    virtual void DoStartApplication();
+
+    /**
+     * @brief Application specific shutdown code for child subclasses
+     */
+    virtual void DoStopApplication();
 };
 
 } // namespace ns3

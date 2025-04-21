@@ -100,4 +100,69 @@ SinkApplication::GetPort() const
     return m_port;
 }
 
+void
+SinkApplication::StartApplication()
+{
+    NS_LOG_FUNCTION(this);
+
+    // note: it is currently not possible to restart an application
+
+    m_socket = Socket::CreateSocket(GetNode(), m_protocolTid);
+    if (m_local.IsInvalid() && !m_socket6)
+    {
+        // local address is not specified, so create another socket to also listen to all IPv6
+        // addresses
+        m_socket6 = Socket::CreateSocket(GetNode(), m_protocolTid);
+    }
+
+    DoStartApplication();
+}
+
+void
+SinkApplication::StopApplication()
+{
+    NS_LOG_FUNCTION(this);
+    DoStopApplication();
+    CloseAllSockets();
+}
+
+bool
+SinkApplication::CloseAllSockets()
+{
+    NS_LOG_FUNCTION(this);
+    auto ret = CloseSocket(m_socket);
+    ret = CloseSocket(m_socket6) && ret;
+    return ret;
+}
+
+bool
+SinkApplication::CloseSocket(Ptr<Socket> socket)
+{
+    NS_LOG_FUNCTION(this << socket);
+    if (socket)
+    {
+        const auto ret = socket->Close();
+        socket->SetAcceptCallback(MakeNullCallback<bool, Ptr<Socket>, const Address&>(),
+                                  MakeNullCallback<void, Ptr<Socket>, const Address&>());
+        socket->SetCloseCallbacks(MakeNullCallback<void, Ptr<Socket>>(),
+                                  MakeNullCallback<void, Ptr<Socket>>());
+        socket->SetRecvCallback(MakeNullCallback<void, Ptr<Socket>>());
+        socket->SetSendCallback(MakeNullCallback<void, Ptr<Socket>, uint32_t>());
+        return (ret == 0);
+    }
+    return true;
+}
+
+void
+SinkApplication::DoStartApplication()
+{
+    NS_LOG_FUNCTION(this);
+}
+
+void
+SinkApplication::DoStopApplication()
+{
+    NS_LOG_FUNCTION(this);
+}
+
 } // Namespace ns3

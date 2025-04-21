@@ -90,67 +90,42 @@ UdpServer::GetReceived() const
 }
 
 void
-UdpServer::StartApplication()
+UdpServer::DoStartApplication()
 {
     NS_LOG_FUNCTION(this);
 
-    if (!m_socket)
+    auto local = m_local;
+    if (local.IsInvalid())
     {
-        m_socket = Socket::CreateSocket(GetNode(), m_protocolTid);
-        auto local = m_local;
-        if (local.IsInvalid())
-        {
-            local = InetSocketAddress(Ipv4Address::GetAny(), m_port);
-            NS_LOG_INFO(this << " Binding on port " << m_port << " / " << local << ".");
-        }
-        else
-        {
-            if (InetSocketAddress::IsMatchingType(m_local))
-            {
-                const auto ipv4 = InetSocketAddress::ConvertFrom(m_local).GetIpv4();
-                NS_LOG_INFO(this << " Binding on " << ipv4 << " port " << m_port << " / " << m_local
-                                 << ".");
-            }
-            else if (Ipv6Address::IsMatchingType(m_local))
-            {
-                const auto ipv6 = Inet6SocketAddress::ConvertFrom(m_local).GetIpv6();
-                NS_LOG_INFO(this << " Binding on " << ipv6 << " port " << m_port << " / " << m_local
-                                 << ".");
-            }
-        }
-        if (m_socket->Bind(local) == -1)
-        {
-            NS_FATAL_ERROR("Failed to bind socket");
-        }
-        m_socket->SetRecvCallback(MakeCallback(&UdpServer::HandleRead, this));
+        local = InetSocketAddress(Ipv4Address::GetAny(), m_port);
+        NS_LOG_INFO(this << " Binding on port " << m_port << " / " << local << ".");
     }
-
-    if (m_local.IsInvalid() && !m_socket6)
+    else if (InetSocketAddress::IsMatchingType(m_local))
     {
-        // local address is not specified, so create another socket to also listen to all IPv6
-        // addresses
-        m_socket6 = Socket::CreateSocket(GetNode(), m_protocolTid);
+        const auto ipv4 = InetSocketAddress::ConvertFrom(m_local).GetIpv4();
+        NS_LOG_INFO(this << " Binding on " << ipv4 << " port " << m_port << " / " << m_local
+                         << ".");
+    }
+    else if (Ipv6Address::IsMatchingType(m_local))
+    {
+        const auto ipv6 = Inet6SocketAddress::ConvertFrom(m_local).GetIpv6();
+        NS_LOG_INFO(this << " Binding on " << ipv6 << " port " << m_port << " / " << m_local
+                         << ".");
+    }
+    if (m_socket->Bind(local) == -1)
+    {
+        NS_FATAL_ERROR("Failed to bind socket");
+    }
+    m_socket->SetRecvCallback(MakeCallback(&UdpServer::HandleRead, this));
+
+    if (m_local.IsInvalid())
+    {
         auto local = Inet6SocketAddress(Ipv6Address::GetAny(), m_port);
         if (m_socket6->Bind(local) == -1)
         {
             NS_FATAL_ERROR("Failed to bind socket");
         }
         m_socket6->SetRecvCallback(MakeCallback(&UdpServer::HandleRead, this));
-    }
-}
-
-void
-UdpServer::StopApplication()
-{
-    NS_LOG_FUNCTION(this);
-
-    if (m_socket)
-    {
-        m_socket->SetRecvCallback(MakeNullCallback<void, Ptr<Socket>>());
-    }
-    if (m_socket6)
-    {
-        m_socket6->SetRecvCallback(MakeNullCallback<void, Ptr<Socket>>());
     }
 }
 
