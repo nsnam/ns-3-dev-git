@@ -61,13 +61,12 @@ UdpEchoServer::~UdpEchoServer()
 }
 
 void
-UdpEchoServer::StartApplication()
+UdpEchoServer::DoStartApplication(bool firstTime)
 {
-    NS_LOG_FUNCTION(this);
+    NS_LOG_FUNCTION(this << firstTime);
 
-    if (!m_socket)
+    if (firstTime)
     {
-        m_socket = Socket::CreateSocket(GetNode(), m_tid);
         auto local = m_local;
         if (local.IsInvalid())
         {
@@ -94,11 +93,8 @@ UdpEchoServer::StartApplication()
         m_socket->SetRecvCallback(MakeCallback(&UdpEchoServer::HandleRead, this));
     }
 
-    if (m_local.IsInvalid() && !m_socket6)
+    if (m_local.IsInvalid() && firstTime)
     {
-        // local address is not specified, so create another socket to also listen to all IPv6
-        // addresses
-        m_socket6 = Socket::CreateSocket(GetNode(), m_tid);
         auto local = Inet6SocketAddress(Ipv6Address::GetAny(), m_port);
         if (m_socket6->Bind(local) == -1)
         {
@@ -118,23 +114,6 @@ UdpEchoServer::StartApplication()
             }
         }
         m_socket6->SetRecvCallback(MakeCallback(&UdpEchoServer::HandleRead, this));
-    }
-}
-
-void
-UdpEchoServer::StopApplication()
-{
-    NS_LOG_FUNCTION(this);
-
-    if (m_socket)
-    {
-        m_socket->Close();
-        m_socket->SetRecvCallback(MakeNullCallback<void, Ptr<Socket>>());
-    }
-    if (m_socket6)
-    {
-        m_socket6->Close();
-        m_socket6->SetRecvCallback(MakeNullCallback<void, Ptr<Socket>>());
     }
 }
 

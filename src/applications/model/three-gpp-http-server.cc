@@ -204,16 +204,16 @@ ThreeGppHttpServer::DoDispose()
 
     if (!Simulator::IsFinished())
     {
-        StopApplication();
+        CloseAllConnections();
     }
 
     SinkApplication::DoDispose(); // Chain up.
 }
 
 void
-ThreeGppHttpServer::StartApplication()
+ThreeGppHttpServer::DoStartApplication(bool firstTime)
 {
-    NS_LOG_FUNCTION(this);
+    NS_LOG_FUNCTION(this << firstTime);
 
     if (m_state != NOT_STARTED)
     {
@@ -221,10 +221,8 @@ ThreeGppHttpServer::StartApplication()
     }
 
     m_httpVariables->Initialize();
-    if (!m_socket)
+    if (firstTime)
     {
-        // Creating a TCP socket to connect to the server.
-        m_socket = Socket::CreateSocket(GetNode(), m_tid);
         m_socket->SetAttribute("SegmentSize", UintegerValue(m_mtuSize));
 
         NS_ABORT_MSG_IF(m_local.IsInvalid(), "Local address not properly set");
@@ -268,7 +266,7 @@ ThreeGppHttpServer::StartApplication()
 }
 
 void
-ThreeGppHttpServer::StopApplication()
+ThreeGppHttpServer::DoStopApplication()
 {
     NS_LOG_FUNCTION(this);
 
@@ -276,18 +274,6 @@ ThreeGppHttpServer::StopApplication()
 
     // Close all accepted sockets.
     m_txBuffer->CloseAllSockets();
-
-    // Stop listening.
-    if (m_socket)
-    {
-        m_socket->Close();
-        m_socket->SetAcceptCallback(MakeNullCallback<bool, Ptr<Socket>, const Address&>(),
-                                    MakeNullCallback<void, Ptr<Socket>, const Address&>());
-        m_socket->SetCloseCallbacks(MakeNullCallback<void, Ptr<Socket>>(),
-                                    MakeNullCallback<void, Ptr<Socket>>());
-        m_socket->SetRecvCallback(MakeNullCallback<void, Ptr<Socket>>());
-        m_socket->SetSendCallback(MakeNullCallback<void, Ptr<Socket>, uint32_t>());
-    }
 }
 
 bool
