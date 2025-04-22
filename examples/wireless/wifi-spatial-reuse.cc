@@ -345,17 +345,20 @@ main(int argc, char* argv[])
     Config::Connect("/NodeList/*/ApplicationList/*/$ns3::PacketSocketServer/Rx",
                     MakeCallback(&SocketRx));
 
-    // Obtain pointers to the ObssPdAlgorithm objects and hook trace sinks
-    // to the Reset trace source on each STA.  Note that this trace connection
-    // cannot be done through the Config path system, so pointers are used.
-    auto deviceA = staDeviceA.Get(0)->GetObject<WifiNetDevice>();
-    auto hePhyA = DynamicCast<HePhy>(deviceA->GetPhy()->GetPhyEntity(WIFI_MOD_CLASS_HE));
-    // Pass in the context string "1" to allow the trace to distinguish objects
-    hePhyA->GetObssPdAlgorithm()->TraceConnect("Reset", "1", MakeCallback(&ResetTrace));
-    auto deviceB = staDeviceB.Get(0)->GetObject<WifiNetDevice>();
-    auto hePhyB = DynamicCast<HePhy>(deviceB->GetPhy()->GetPhyEntity(WIFI_MOD_CLASS_HE));
-    // Pass in the context string "2" to allow the trace to distinguish objects
-    hePhyB->GetObssPdAlgorithm()->TraceConnect("Reset", "2", MakeCallback(&ResetTrace));
+    if (enableObssPd)
+    {
+        // Obtain pointers to the ObssPdAlgorithm objects and hook trace sinks
+        // to the Reset trace source on each STA.  Note that this trace connection
+        // cannot be done through the Config path system, so pointers are used.
+        auto deviceA = staDeviceA.Get(0)->GetObject<WifiNetDevice>();
+        auto hePhyA = DynamicCast<HePhy>(deviceA->GetPhy()->GetPhyEntity(WIFI_MOD_CLASS_HE));
+        // Pass in the context string "1" to allow the trace to distinguish objects
+        hePhyA->GetObssPdAlgorithm()->TraceConnect("Reset", "1", MakeCallback(&ResetTrace));
+        auto deviceB = staDeviceB.Get(0)->GetObject<WifiNetDevice>();
+        auto hePhyB = DynamicCast<HePhy>(deviceB->GetPhy()->GetPhyEntity(WIFI_MOD_CLASS_HE));
+        // Pass in the context string "2" to allow the trace to distinguish objects
+        hePhyB->GetObssPdAlgorithm()->TraceConnect("Reset", "2", MakeCallback(&ResetTrace));
+    }
 
     Simulator::Stop(duration);
     Simulator::Run();
