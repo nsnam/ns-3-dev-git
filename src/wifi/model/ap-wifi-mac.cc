@@ -61,12 +61,12 @@ ApWifiMac::GetTypeId()
                 MakeTimeAccessor(&ApWifiMac::GetBeaconInterval, &ApWifiMac::SetBeaconInterval),
                 MakeTimeChecker())
             .AddAttribute("BeaconJitter",
-                          "A uniform random variable to cause the initial beacon starting time "
-                          "(after simulation time 0) "
-                          "to be distributed between 0 and the BeaconInterval.",
+                          "A random variable to cause the initial beacon starting time (after "
+                          "simulation time 0) to be distributed between 0 and the BeaconInterval. "
+                          "Generated values must be between 0 and 1.",
                           StringValue("ns3::UniformRandomVariable"),
                           MakePointerAccessor(&ApWifiMac::m_beaconJitter),
-                          MakePointerChecker<UniformRandomVariable>())
+                          MakePointerChecker<RandomVariableStream>())
             .AddAttribute("EnableBeaconJitter",
                           "If beacons are enabled, whether to jitter the initial send event.",
                           BooleanValue(true),
@@ -3027,11 +3027,15 @@ ApWifiMac::DoInitialize()
         GetLink(linkId).beaconEvent.Cancel();
         if (m_enableBeaconGeneration)
         {
-            uint64_t jitterUs =
-                (m_enableBeaconJitter
-                     ? static_cast<uint64_t>(m_beaconJitter->GetValue(0, 1) *
-                                             (GetBeaconInterval().GetMicroSeconds()))
-                     : 0);
+            uint64_t jitterUs{0};
+            if (m_enableBeaconJitter)
+            {
+                const auto value = m_beaconJitter->GetValue();
+                NS_ABORT_MSG_IF(value < 0 || value > 1,
+                                "Jitter (" << value << ") must be between 0 and 1");
+                jitterUs = static_cast<uint64_t>(value * (GetBeaconInterval().GetMicroSeconds()));
+            }
+
             NS_LOG_DEBUG("Scheduling initial beacon for access point "
                          << GetAddress() << " at time " << jitterUs << "us");
             GetLink(linkId).beaconEvent = Simulator::Schedule(MicroSeconds(jitterUs),

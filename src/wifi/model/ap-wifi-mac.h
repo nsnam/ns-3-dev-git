@@ -732,7 +732,7 @@ class ApWifiMac : public WifiMac
     Ptr<Txop> m_beaconTxop;        //!< Dedicated Txop for beacons
     bool m_enableBeaconGeneration; //!< Flag whether beacons are being generated
     Time m_beaconInterval;         //!< Beacon interval
-    Ptr<UniformRandomVariable>
+    Ptr<RandomVariableStream>
         m_beaconJitter; //!< UniformRandomVariable used to randomize the time of the first beacon
     bool m_enableBeaconJitter; //!< Flag whether the first beacon should be generated at random time
     uint8_t m_dtimPeriod;      //!< DTIM Period
