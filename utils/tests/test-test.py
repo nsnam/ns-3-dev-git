@@ -100,6 +100,9 @@ def main(argv):
         "--html=t_opt.html && rm t_opt.html",
         "-x t_opt.xml && rm t_opt.xml",
         "--xml=t_opt.xml && rm t_opt.xml",
+        "--example=wifi-phy-configuration",
+        "--example=wifi-phy-configuration*",
+        '--example="wifi-phy-configuration --testCase=0"',
     ]
 
     configure_string = sys.executable + " ns3 configure --enable-tests --enable-examples"
