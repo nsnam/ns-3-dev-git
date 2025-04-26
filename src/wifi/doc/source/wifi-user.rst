@@ -216,7 +216,7 @@ For example, this code configures a node with 3 antennas that supports 2 spatial
  wifiPhyHelper.Set("MaxSupportedTxSpatialStreams", UintegerValue(2));
  wifiPhyHelper.Set("MaxSupportedRxSpatialStreams", UintegerValue(1));
 
-802.11n PHY layer can support both 20 (default) or 40 MHz channel width, and 802.11ac/ax PHY layer can use either 20, 40, 80 (default) or 160 MHz channel width.  See below for further documentation on setting the frequency, channel width, and channel number.
+802.11n PHY layer can support both 20 (default) or 40 MHz channel width, and 802.11ac/ax PHY layer can use either 20, 40, 80 (default), 160 or 320 MHz channel width.  See below for further documentation on setting the frequency, channel width, and channel number.
 
 .. sourcecode:: cpp
 
@@ -475,33 +475,35 @@ The following channel numbers are well-defined for 5 GHz standards:
    +------------------+-------------------------------------------+
 
 
-The following channel numbers are well-defined for 6 GHz standards (802.11ax only):
+The following channel numbers are well-defined for 6 GHz standards (802.11ax and later):
 
 .. table:: 6 GHz channel numbers
    :widths: 20 70
 
-   +------------------+-------------------------------------------+
-   | ``ChannelWidth`` | ``ChannelNumber``                         |
-   +------------------+-------------------------------------------+
-   | 20 MHz           | 1, 5, 9, 13, 17, 21, 25, 29, 33, 37, 41,  |
-   |                  | 45, 49, 53, 57, 61, 65, 69, 73, 77, 81,   |
-   |                  | 85, 89, 93, 97, 101, 105, 109, 113, 117,  |
-   |                  | 121, 125, 129, 133, 137, 141, 145, 149,   |
-   |                  | 153, 157, 161, 165, 169, 173, 177, 181,   |
-   |                  | 185, 189, 193, 197, 201, 205, 209, 213,   |
-   |                  | 217, 221, 225, 229, 233                   |
-   +------------------+-------------------------------------------+
-   | 40 MHz           | 3, 11, 19, 27, 35, 43, 51, 59, 67, 75,    |
-   |                  | 83, 91, 99, 107, 115, 123, 131, 139, 147, |
-   |                  | 155, 163, 171, 179, 187, 195, 203, 211,   |
-   |                  | 219, 227                                  |
-   +------------------+-------------------------------------------+
-   | 80 MHz           | 7, 23, 39, 55, 71, 87, 103, 119, 135,     |
-   |                  | 151, 167, 183, 199, 215                   |
-   +------------------+-------------------------------------------+
-   | 160 MHz          | 15, 47, 79, 111, 143, 175, 207            |
-   +------------------+-------------------------------------------+
-
+   +-------------------+------------------------------------------+
+   | ``ChannelWidth``  | ``ChannelNumber``                        |
+   +-------------------+------------------------------------------+
+   | 20 MHz            | 1, 5, 9, 13, 17, 21, 25, 29, 33, 37, 41, |
+   |                   | 45, 49, 53, 57, 61, 65, 69, 73, 77, 81,  |
+   |                   | 85, 89, 93, 97, 101, 105, 109, 113, 117, |
+   |                   | 121, 125, 129, 133, 137, 141, 145, 149,  |
+   |                   | 153, 157, 161, 165, 169, 173, 177, 181,  |
+   |                   | 185, 189, 193, 197, 201, 205, 209, 213,  |
+   |                   | 217, 221, 225, 229, 233                  |
+   +-------------------+------------------------------------------+
+   | 40 MHz            | 3, 11, 19, 27, 35, 43, 51, 59, 67, 75,   |
+   |                   | 83, 91, 99, 107, 115, 123, 131, 139, 147,|
+   |                   | 155, 163, 171, 179, 187, 195, 203, 211,  |
+   |                   | 219, 227                                 |
+   +-------------------+------------------------------------------+
+   | 80 MHz            | 7, 23, 39, 55, 71, 87, 103, 119, 135,    |
+   |                   | 151, 167, 183, 199, 215                  |
+   +-------------------+------------------------------------------+
+   | 160 MHz           | 15, 47, 79, 111, 143, 175, 207           |
+   +-------------------+------------------------------------------+
+   | 320 MHz (802.11be | 31, 95, 159 (320 MHz-1)                  |
+   | and later)        | 63, 127, 191 (320 MHz-2)                 |
+   +-------------------+------------------------------------------+
 
 The channel number may be set either before or after creation of the
 WifiPhy object.
