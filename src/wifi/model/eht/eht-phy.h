@@ -252,6 +252,7 @@ class EhtPhy : public HePhy
                                 WifiPpduField field) override;
     WifiPhyRxfailureReason GetFailureReason(WifiPpduField field) const override;
     uint32_t GetSigBSize(const WifiTxVector& txVector) const override;
+    uint32_t GetMaxPsduSize() const override;
     dBm_t GetCcaThreshold(const Ptr<const WifiPpdu> ppdu,
                           WifiChannelListType channelType) const override;
     const std::map<MHz_t, WifiChannelListType>& GetCcaSecondaryChannels() const override;

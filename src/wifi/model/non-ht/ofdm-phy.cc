@@ -651,7 +651,7 @@ OfdmPhy::IsAllowed(const WifiTxVector& /*txVector*/)
 uint32_t
 OfdmPhy::GetMaxPsduSize() const
 {
-    return 4095;
+    return WIFI_PSDU_MAX_LENGTH;
 }
 
 MHz_t

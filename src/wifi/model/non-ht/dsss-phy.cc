@@ -387,7 +387,7 @@ DsssPhy::IsAllowed(const WifiTxVector& /*txVector*/)
 uint32_t
 DsssPhy::GetMaxPsduSize() const
 {
-    return 4095;
+    return WIFI_PSDU_MAX_LENGTH;
 }
 
 } // namespace ns3
