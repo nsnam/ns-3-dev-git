@@ -173,7 +173,6 @@ The following details pertain to the physical layer and channel models:
 * Channel Switch Announcement is not supported
 * Authentication and encryption are missing
 * Processing delays are not modeled
-* Cases where RTS/CTS and ACK are transmitted using HT/VHT/HE/EHT formats are not supported
 * Energy consumption model does not consider MIMO
 * 802.11ax preamble puncturing is supported by the PHY but is currently not exploited by the MAC
 * Only minimal MU-MIMO is supported (ideal PHY assumed, no MAC layer yet)
@@ -274,7 +273,7 @@ considering the size and complexity of the corresponding files.
 In addition, adding and maintaining new PHY amendments had become a complex
 task (especially those implemented inside other modules, e.g. DMG).
 The adopted solution was to have ``PhyEntity`` classes that contain the "clause"
-specific (i.e. HT/VHT/HE/EHT etc) parts of the PHY process.
+specific (i.e. HT etc) parts of the PHY process.
 
 The notion of "PHY entity" is in the standard at the beginning of each PHY
 layer description clause, e.g. section 21.1.1 of IEEE 802.11-2016:
@@ -302,6 +301,7 @@ the IEEE 802.11 standard. The currently implemented PHY entities are:
 * ``ns3::VhtPhy``: PHY entity for VHT (11ac)
 * ``ns3::HePhy``: PHY entity for HE (11ax)
 * ``ns3::EhtPhy``: PHY entity for EHT (11be)
+* ``ns3::UhrPhy``: PHY entity for UHR (11bn)
 
 Their inheritance diagram is given in Figure :ref:`phyentity-hierarchy` and
 closely follows the standard's logic, e.g. section 21.1.1 of IEEE 802.11-2016:
@@ -336,6 +336,7 @@ specialized into the following amendment-specific PPDUs:
 * ``ns3::VhtPpdu``: PPDU for VHT (11ac)
 * ``ns3::HePpdu``: PPDU for HE (11ax)
 * ``ns3::EhtPpdu``: PPDU for EHT (11be)
+* ``ns3::UhrPpdu``: PPDU for UHR (11bn)
 
 Their inheritance diagram is given in Figure :ref:`wifippdu-hierarchy` and
 closely follows the standard's logic, e.g. section 21.3.8.1 of IEEE 802.11-2016:
