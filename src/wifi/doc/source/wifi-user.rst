@@ -325,7 +325,8 @@ The following values for WifiStandard are defined in
   WIFI_STANDARD_80211n,
   WIFI_STANDARD_80211ac,
   WIFI_STANDARD_80211ax,
-  WIFI_STANDARD_80211be
+  WIFI_STANDARD_80211be,
+  WIFI_STANDARD_80211bn
 
 By default, the WifiHelper (the typical use case for WifiPhy creation) will
 configure the WIFI_STANDARD_80211ax standard by default.  Other values
@@ -343,7 +344,7 @@ as soon as the WifiStandard is set. Here are the rules (applied in the given ord
 
 * If the band is unspecified (i.e., it is set to WIFI_PHY_BAND_UNSPECIFIED or
   "BAND_UNSPECIFIED"), the default band for the configured standard is set
-  (5 GHz band for 802.11{a, ac, ax, be, p} and 2.4 GHz band for all the others).
+  (5 GHz band for 802.11{a, ac, ax, be, bn, p} and 2.4 GHz band for all the others).
 
 * If both the channel width and the channel number are unspecified (i.e., they
   are set to zero), the default channel width for the configured standard and

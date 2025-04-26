@@ -20,11 +20,12 @@ on the IEEE 802.11 standard [ieee80211]_. We will go into more detail below but 
 |ns3| provides models for these aspects of 802.11:
 
 * basic 802.11 DCF with **infrastructure** and **adhoc** modes
-* **802.11a**, **802.11b**, **802.11g**, **802.11n** (both 2.4 and 5 GHz bands), **802.11ac**, **802.11ax** (2.4, 5 and 6 GHz bands) and **802.11be** physical layers
+* **802.11a**, **802.11b**, **802.11g**, **802.11n** (both 2.4 and 5 GHz bands), **802.11ac**, **802.11ax** (2.4, 5 and 6 GHz bands), **802.11be** and **802.11bn** physical layers
 * Power Save mode (TIM element in Beacon frames, transmission of PS-Poll frames, setting PHYs of STAs to sleep to save energy and resuming them to listen to Beacon frames)
 * **MSDU aggregation** and **MPDU aggregation** extensions of 802.11n, and both can be combined together (two-level aggregation)
 * 802.11ax **DL OFDMA** and **UL OFDMA** (including support for the MU EDCA Parameter Set)
 * 802.11be **Multi-link** discovery and setup, **Multi-Link Operations (MLO)** in **STR** (Simultaneous Transmit Receive) mode and **EMLSR** (Enhanced Multi-Link Single-Radio) mode
+* initial **802.11bn (UHR)** support built on top of the EHT PHY/MAC models
 * QoS-based EDCA and queueing extensions of **802.11e**
 * the ability to use different propagation loss models and propagation delay models,
   please see the chapter on :ref:`Propagation` for more detail
@@ -37,7 +38,7 @@ on the IEEE 802.11 standard [ieee80211]_. We will go into more detail below but 
 The set of 802.11 models provided in |ns3| attempts to provide an accurate
 MAC-level implementation of the 802.11 specification and to provide a
 packet-level abstraction of the PHY-level for different PHYs, corresponding to
-802.11a/b/e/g/n/ac/ax/be specifications.
+802.11a/b/e/g/n/ac/ax/be/bn specifications.
 
 In |ns3|, nodes can have multiple WifiNetDevices on separate channels, and the
 WifiNetDevice can coexist with other device types.
@@ -168,20 +169,21 @@ packets.  Interference from other wireless technologies is only modeled
 when the SpectrumWifiPhy is used.
 The following details pertain to the physical layer and channel models:
 
-* 802.11n/ac/ax/be beamforming is not supported
+* Beamforming is not supported
 * 802.11n RIFS is not supported
 * 802.11 PCF/HCF/HCCA are not implemented
 * Channel Switch Announcement is not supported
 * Authentication and encryption are missing
 * Processing delays are not modeled
-* Cases where RTS/CTS and ACK are transmitted using HT/VHT/HE/EHT formats are not supported
 * Energy consumption model does not consider MIMO
-* 802.11ax preamble puncturing is supported by the PHY but is currently not exploited by the MAC
+* Preamble puncturing is supported by the PHY but is currently not exploited by the MAC
 * Only minimal MU-MIMO is supported (ideal PHY assumed, no MAC layer yet)
 
 At the MAC layer, most of the main functions found in deployed Wi-Fi
 equipment for 802.11a/b/e/g/n/ac/ax/be are implemented, but there are scattered instances
-where some limitations in the models exist. Support for 802.11n, ac, ax and be is evolving.
+where some limitations in the models exist. 802.11bn support is currently limited to the
+same capabilities as 802.11be since UHR-specific MAC features are not modeled yet.
+Support for 802.11n, ac, ax, be and bn is evolving.
 
 Some implementation choices that are not imposed by the standard are listed below:
 
@@ -296,7 +298,7 @@ considering the size and complexity of the corresponding files.
 In addition, adding and maintaining new PHY amendments had become a complex
 task (especially those implemented inside other modules, e.g. DMG).
 The adopted solution was to have ``PhyEntity`` classes that contain the "clause"
-specific (i.e. HT/VHT/HE/EHT etc) parts of the PHY process.
+specific (i.e. HT etc) parts of the PHY process.
 
 The notion of "PHY entity" is in the standard at the beginning of each PHY
 layer description clause, e.g. section 21.1.1 of IEEE 802.11-2016:
@@ -324,6 +326,7 @@ the IEEE 802.11 standard. The currently implemented PHY entities are:
 * ``ns3::VhtPhy``: PHY entity for VHT (11ac)
 * ``ns3::HePhy``: PHY entity for HE (11ax)
 * ``ns3::EhtPhy``: PHY entity for EHT (11be)
+* ``ns3::UhrPhy``: PHY entity for UHR (11bn)
 
 Their inheritance diagram is given in Figure :ref:`phyentity-hierarchy` and
 closely follows the standard's logic, e.g. section 21.1.1 of IEEE 802.11-2016:
@@ -358,6 +361,7 @@ specialized into the following amendment-specific PPDUs:
 * ``ns3::VhtPpdu``: PPDU for VHT (11ac)
 * ``ns3::HePpdu``: PPDU for HE (11ax)
 * ``ns3::EhtPpdu``: PPDU for EHT (11be)
+* ``ns3::UhrPpdu``: PPDU for UHR (11bn)
 
 Their inheritance diagram is given in Figure :ref:`wifippdu-hierarchy` and
 closely follows the standard's logic, e.g. section 21.3.8.1 of IEEE 802.11-2016:
