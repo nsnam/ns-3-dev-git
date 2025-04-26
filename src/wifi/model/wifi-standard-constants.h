@@ -87,6 +87,22 @@ static constexpr uint16_t MAX_MSDU_SIZE{2304};
 /// The length in octets of the IEEE 802.11 MAC FCS field
 static constexpr uint16_t WIFI_MAC_FCS_LENGTH{4};
 
+/// The value for aPSDUMaxLength in Table 15-5 (DSSS PHY characteristics), Table 17-21 (OFDM PHY
+/// characteristics) and Table 18-5 (ERP characteristics) of 802.11-2020
+static constexpr uint32_t WIFI_PSDU_MAX_LENGTH{4095};
+
+/// The value for aPSDUMaxLength in Table 19-25 (HT PHY characteristics) of 802.11-2020
+static constexpr uint32_t WIFI_PSDU_MAX_LENGTH_HT{65'535};
+
+/// The value for aPSDUMaxLength in Table 21-28 (VHT PHY characteristics) of 802.11-2020
+static constexpr uint32_t WIFI_PSDU_MAX_LENGTH_VHT{4'692'480};
+
+/// The value for aPSDUMaxLength in Table 27-54 (HE PHY characteristics) of 802.11ax-2021
+static constexpr uint32_t WIFI_PSDU_MAX_LENGTH_HE{6'500'631};
+
+/// The value for aPSDUMaxLength in Table 36-70 (EHT PHY characteristics) of 802.11be D7.0
+static constexpr uint32_t WIFI_PSDU_MAX_LENGTH_EHT{15'523'200};
+
 /// The minimum value for dot11RTSThreshold (C.3 MIB detail in IEEE Std 802.11-2020)
 static constexpr uint32_t WIFI_MIN_RTS_THRESHOLD{0};
 

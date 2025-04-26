@@ -428,6 +428,12 @@ EhtPhy::CalculateNonHtReferenceRate(WifiCodeRate codeRate, uint16_t constellatio
     return dataRate;
 }
 
+uint32_t
+EhtPhy::GetMaxPsduSize() const
+{
+    return WIFI_PSDU_MAX_LENGTH_EHT;
+}
+
 dBm_u
 EhtPhy::Per20MHzCcaThreshold(const Ptr<const WifiPpdu> ppdu) const
 {

@@ -38,6 +38,8 @@ been tested on Linux. As of this release, the latest known version to work with 
 
 ### Bugs fixed
 
+- (wifi) Fix incorrect aPSDUMaxLength value for 802.11be.
+
 ## Release 3.46.1
 
 ns-3.46.1 is a small update to ns-3.46 to fix build issues discovered after release.

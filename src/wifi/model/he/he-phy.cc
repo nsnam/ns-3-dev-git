@@ -1779,7 +1779,7 @@ HePhy::GetWifiConstPsduMap(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVecto
 uint32_t
 HePhy::GetMaxPsduSize() const
 {
-    return 6500631;
+    return WIFI_PSDU_MAX_LENGTH_HE;
 }
 
 bool

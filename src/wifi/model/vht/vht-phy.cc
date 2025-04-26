@@ -520,7 +520,7 @@ VhtPhy::IsCombinationAllowed(uint8_t mcsValue, MHz_u channelWidth, uint8_t nss)
 uint32_t
 VhtPhy::GetMaxPsduSize() const
 {
-    return 4692480;
+    return WIFI_PSDU_MAX_LENGTH_VHT;
 }
 
 dBm_u

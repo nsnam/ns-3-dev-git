@@ -816,7 +816,7 @@ HtPhy::IsAllowed(const WifiTxVector& /*txVector*/)
 uint32_t
 HtPhy::GetMaxPsduSize() const
 {
-    return 65535;
+    return WIFI_PSDU_MAX_LENGTH_HT;
 }
 
 const std::map<MHz_u, WifiChannelListType>&
