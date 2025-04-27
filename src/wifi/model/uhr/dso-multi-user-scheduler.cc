@@ -54,6 +54,11 @@ DsoMultiUserScheduler::SelectTxFormat()
 {
     NS_LOG_FUNCTION(this);
 
+    if (const auto format = DoSelectTxFormat())
+    {
+        return *format;
+    }
+
     if (m_initialFrame && m_dsoTxop)
     {
         m_dsoTxop = false;
@@ -111,6 +116,12 @@ DsoMultiUserScheduler::SelectTxFormat()
 
     // otherwise, try sending a DL MU PPDU
     return TrySendingDlMuPpdu();
+}
+
+std::optional<MultiUserScheduler::TxFormat>
+DsoMultiUserScheduler::DoSelectTxFormat()
+{
+    return std::nullopt;
 }
 
 WifiTxVector

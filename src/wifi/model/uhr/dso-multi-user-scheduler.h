@@ -13,6 +13,7 @@
 
 #include <functional>
 #include <list>
+#include <optional>
 
 namespace ns3
 {
@@ -40,6 +41,14 @@ class DsoMultiUserScheduler : public RrMultiUserScheduler
     TxFormat TrySendingDlMuPpdu() override;
     WifiTxVector GetTxVectorForUlMu(std::function<bool(const MasterInfo&)> canBeSolicited) override;
     bool CanSolicitStaInBsrpTf(const MasterInfo& info, WifiDirection direction) const override;
+
+    /**
+     * Allow the base class to select the transmission format for the next transmission.
+     *
+     * @return the selected transmission format, or std::nullopt if no transmission format is
+     * selected
+     */
+    virtual std::optional<TxFormat> DoSelectTxFormat();
 
   private:
     TxFormat SelectTxFormat() override;

@@ -11,12 +11,12 @@
 #include "ns3/boolean.h"
 #include "ns3/config.h"
 #include "ns3/default-dso-manager.h"
+#include "ns3/dso-multi-user-scheduler.h"
 #include "ns3/eht-configuration.h"
 #include "ns3/he-configuration.h"
 #include "ns3/interference-helper.h"
 #include "ns3/log.h"
 #include "ns3/mobility-helper.h"
-#include "ns3/multi-user-scheduler.h"
 #include "ns3/nist-error-rate-model.h"
 #include "ns3/node-list.h"
 #include "ns3/non-communicating-net-device.h"
@@ -75,10 +75,10 @@ NS_OBJECT_ENSURE_REGISTERED(TestDsoManager);
  * @ingroup wifi-test
  * @ingroup tests
  *
- * @brief Dummy Multi User Scheduler used to test DSO operations
+ * @brief Extend DSO Multi User Scheduler
  *
  */
-class TestDsoMultiUserScheduler : public MultiUserScheduler
+class TestDsoMultiUserScheduler : public DsoMultiUserScheduler
 {
   public:
     /**
@@ -94,26 +94,13 @@ class TestDsoMultiUserScheduler : public MultiUserScheduler
      * @param forcedFormat the transmission format to be set, std::nullopt for no forced
      * transmission format
      */
-    void SetForcedFormat(std::optional<MultiUserScheduler::TxFormat> forcedFormat);
+    void SetForcedFormat(std::optional<TxFormat> forcedFormat);
+
+  protected:
+    std::optional<TxFormat> DoSelectTxFormat() override;
 
   private:
-    // Implementation of pure virtual methods of MultiUserScheduler class
-    TxFormat SelectTxFormat() override;
-    DlMuInfo ComputeDlMuInfo() override;
-    UlMuInfo ComputeUlMuInfo() override;
-
-    /**
-     * Compute the TX vector to use for MU PPDUs.
-     */
-    void ComputeWifiTxVector();
-
-    TxFormat m_txFormat;                                        //!< the format of next transmission
-    WifiTxVector m_txVector;                                    //!< the TX vector for MU PPDUs
-    CtrlTriggerHeader m_trigger;                                //!< Trigger Frame to send
-    WifiMacHeader m_triggerHdr;                                 //!< MAC header for Trigger Frame
-    WifiTxParameters m_txParams;                                //!< TX parameters
-    WifiPsduMap m_psduMap;                                      //!< the DL MU PPDU to transmit
-    std::optional<MultiUserScheduler::TxFormat> m_forcedFormat; ///< forced transmission format
+    std::optional<TxFormat> m_forcedFormat; ///< forced transmission format
 };
 
 NS_OBJECT_ENSURE_REGISTERED(TestDsoMultiUserScheduler);
@@ -122,14 +109,13 @@ TypeId
 TestDsoMultiUserScheduler::GetTypeId()
 {
     static TypeId tid = TypeId("ns3::TestDsoMultiUserScheduler")
-                            .SetParent<MultiUserScheduler>()
+                            .SetParent<DsoMultiUserScheduler>()
                             .SetGroupName("Wifi")
                             .AddConstructor<TestDsoMultiUserScheduler>();
     return tid;
 }
 
 TestDsoMultiUserScheduler::TestDsoMultiUserScheduler()
-    : m_txFormat(SU_TX)
 {
     NS_LOG_FUNCTION(this);
 }
@@ -146,185 +132,11 @@ TestDsoMultiUserScheduler::SetForcedFormat(std::optional<MultiUserScheduler::TxF
     m_forcedFormat = forcedFormat;
 }
 
-MultiUserScheduler::TxFormat
-TestDsoMultiUserScheduler::SelectTxFormat()
+std::optional<MultiUserScheduler::TxFormat>
+TestDsoMultiUserScheduler::DoSelectTxFormat()
 {
     NS_LOG_FUNCTION(this);
-
-    if (m_forcedFormat.has_value() && (m_forcedFormat.value() <= SU_TX))
-    {
-        NS_LOG_DEBUG("Return " << m_forcedFormat.value());
-        return m_forcedFormat.value();
-    }
-
-    ComputeWifiTxVector();
-
-    if ((m_txFormat == SU_TX) || ((m_txFormat == UL_MU_TX) && m_forcedFormat.has_value() &&
-                                  (m_forcedFormat.value() == UL_MU_TX)))
-    {
-        // try to send a DSO ICF
-        auto txVector{m_txVector};
-        txVector.SetPreambleType(WIFI_PREAMBLE_UHR_TB);
-        m_trigger = CtrlTriggerHeader((m_txFormat == UL_MU_TX) ? TriggerFrameType::BASIC_TRIGGER
-                                                               : TriggerFrameType::BSRP_TRIGGER,
-                                      txVector);
-        auto item = GetTriggerFrame(m_trigger, m_linkId);
-        m_triggerHdr = item->GetHeader();
-
-        const auto ampduSize =
-            (m_txFormat == UL_MU_TX) ? 1500 : GetMaxSizeOfQosNullAmpdu(m_trigger);
-        auto staList = m_apMac->GetStaList(SINGLE_LINK_OP_ID);
-        Time duration = WifiPhy::CalculateTxDuration(ampduSize,
-                                                     txVector,
-                                                     m_apMac->GetWifiPhy()->GetPhyBand(),
-                                                     staList.begin()->first);
-
-        uint16_t length;
-        std::tie(length, duration) = HePhy::ConvertHeTbPpduDurationToLSigLength(
-            duration,
-            m_trigger.GetHeTbTxVector(m_trigger.begin()->GetAid12()),
-            m_apMac->GetWifiPhy()->GetPhyBand());
-        m_trigger.SetUlLength(length);
-
-        // set the TXVECTOR used to send the ICF
-        m_txParams.m_txVector =
-            m_apMac->GetWifiRemoteStationManager()->GetRtsTxVector(m_triggerHdr.GetAddr1(),
-                                                                   m_allowedWidth);
-
-        if (!GetHeFem(SINGLE_LINK_OP_ID)->TryAddMpdu(item, m_txParams, m_availableTime) ||
-            (m_availableTime != Time::Min() &&
-             *m_txParams.m_protection->protectionTime + *m_txParams.m_txDuration // TF tx time
-                     + m_apMac->GetWifiPhy()->GetSifs() + duration +
-                     *m_txParams.m_acknowledgment->acknowledgmentTime >
-                 m_availableTime))
-        {
-            NS_LOG_DEBUG("Remaining TXOP duration is not enough to send DSO ICF");
-            return SU_TX;
-        }
-
-        m_txFormat = UL_MU_TX;
-    }
-    else if (m_txFormat == UL_MU_TX || m_txFormat == DL_MU_TX)
-    {
-        // try to send a DL MU PPDU
-        m_psduMap.clear();
-        auto staList = m_apMac->GetStaList(SINGLE_LINK_OP_ID);
-
-        /* Initialize TX params */
-        m_txParams.Clear();
-        m_txParams.m_txVector = m_txVector;
-
-        for (auto& sta : staList)
-        {
-            Ptr<WifiMpdu> peeked;
-            uint8_t tid;
-
-            for (tid = 0; tid < 8; tid++)
-            {
-                peeked = m_apMac->GetQosTxop(tid)->PeekNextMpdu(SINGLE_LINK_OP_ID, tid, sta.second);
-                if (peeked)
-                {
-                    break;
-                }
-            }
-
-            if (!peeked)
-            {
-                NS_LOG_DEBUG("No frame to send to " << sta.second);
-                continue;
-            }
-
-            Ptr<WifiMpdu> mpdu = m_apMac->GetQosTxop(tid)->GetNextMpdu(SINGLE_LINK_OP_ID,
-                                                                       peeked,
-                                                                       m_txParams,
-                                                                       m_availableTime,
-                                                                       m_initialFrame);
-            if (!mpdu)
-            {
-                NS_LOG_DEBUG("Not enough time to send frames to all the stations");
-                return SU_TX;
-            }
-
-            std::vector<Ptr<WifiMpdu>> mpduList;
-            mpduList = GetHeFem(SINGLE_LINK_OP_ID)
-                           ->GetMpduAggregator()
-                           ->GetNextAmpdu(mpdu, m_txParams, m_availableTime);
-
-            if (mpduList.size() > 1)
-            {
-                m_psduMap[sta.first] = Create<WifiPsdu>(std::move(mpduList));
-            }
-            else
-            {
-                m_psduMap[sta.first] = Create<WifiPsdu>(mpdu, true);
-            }
-        }
-
-        if (m_psduMap.empty())
-        {
-            NS_LOG_DEBUG("No frame to send");
-            return SU_TX;
-        }
-
-        m_txFormat = DL_MU_TX;
-    }
-    else
-    {
-        NS_ABORT_MSG("Cannot get here.");
-    }
-
-    NS_LOG_DEBUG("Return " << m_txFormat);
-    return m_txFormat;
-}
-
-void
-TestDsoMultiUserScheduler::ComputeWifiTxVector()
-{
-    NS_LOG_FUNCTION(this);
-
-    const auto bw = m_apMac->GetWifiPhy()->GetChannelWidth();
-    NS_ASSERT(bw > MHz_t{80});
-
-    m_txVector.SetPreambleType(WIFI_PREAMBLE_UHR_MU);
-    m_txVector.SetEhtPpduType(0);
-    m_txVector.SetChannelWidth(bw);
-    m_txVector.SetGuardInterval(m_apMac->GetHeConfiguration()->GetGuardInterval());
-
-    auto staList{m_apMac->GetStaList(SINGLE_LINK_OP_ID)};
-    auto nRusAssigned{staList.size()};
-    std::size_t nCentral26TonesRus;
-    const auto ruType = EhtRu::GetEqualSizedRusForStations(bw, nRusAssigned, nCentral26TonesRus);
-    std::size_t ruIndex{1};
-    for (auto& sta : staList)
-    {
-        WifiMacHeader hdr(WIFI_MAC_QOSDATA);
-        hdr.SetAddr1(GetWifiRemoteStationManager(m_linkId)
-                         ->GetAffiliatedStaAddress(sta.second)
-                         .value_or(sta.second));
-        hdr.SetAddr2(m_apMac->GetFrameExchangeManager(m_linkId)->GetAddress());
-        const auto suTxVector =
-            GetWifiRemoteStationManager(m_linkId)->GetDataTxVector(hdr, m_allowedWidth);
-        auto index = EhtRu::GetIndexIn80MHzSegment(bw, ruType, ruIndex);
-        const auto& [primary160, primary80OrLow80] = EhtRu::GetPrimaryFlags(bw, ruType, ruIndex, 0);
-        const auto ru = EhtRu::RuSpec{ruType, index, primary160, primary80OrLow80};
-        m_txVector.SetHeMuUserInfo(sta.first,
-                                   {ru, suTxVector.GetMode().GetMcsValue(), suTxVector.GetNss()});
-        ruIndex++;
-    }
-}
-
-MultiUserScheduler::DlMuInfo
-TestDsoMultiUserScheduler::ComputeDlMuInfo()
-{
-    NS_LOG_FUNCTION(this);
-    return DlMuInfo{m_psduMap, std::move(m_txParams)};
-}
-
-MultiUserScheduler::UlMuInfo
-TestDsoMultiUserScheduler::ComputeUlMuInfo()
-{
-    NS_LOG_FUNCTION(this);
-    return UlMuInfo{m_trigger, m_triggerHdr, std::move(m_txParams)};
+    return m_forcedFormat;
 }
 
 DsoTestBase::DsoTestBase(const std::string& name)
@@ -820,6 +632,7 @@ DsoTxopTest::StartTraffic()
 
     auto muScheduler =
         DynamicCast<TestDsoMultiUserScheduler>(m_apMac->GetObject<MultiUserScheduler>());
+    muScheduler->SetForcedFormat(std::nullopt);
 
     DsoTestBase::StartTraffic();
 
@@ -835,7 +648,6 @@ DsoTxopTest::StartTraffic()
 
     if (numDlMuPpdus > 0)
     {
-        muScheduler->SetForcedFormat(MultiUserScheduler::TxFormat::DL_MU_TX);
         for (std::size_t i = 0; i < m_nDsoStas; ++i)
         {
             m_apMac->GetDevice()->GetNode()->AddApplication(GetApplication(DOWNLINK, i, 1, 1000));
@@ -843,7 +655,6 @@ DsoTxopTest::StartTraffic()
     }
     else if (m_params.numUlMuPpdus > 0)
     {
-        muScheduler->SetForcedFormat(MultiUserScheduler::TxFormat::UL_MU_TX);
         muScheduler->SetAccessReqInterval(MilliSeconds(1));
     }
 }
