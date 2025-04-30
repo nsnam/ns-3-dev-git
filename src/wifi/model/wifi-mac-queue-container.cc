@@ -208,6 +208,59 @@ WifiMacQueueContainer::GetAllExpiredMpdus() const
     return {m_expiredQueue.begin(), m_expiredQueue.end()};
 }
 
+std::ostream&
+operator<<(std::ostream& os, WifiContainerQueueType queueType)
+{
+    switch (queueType)
+    {
+    case WIFI_CTL_QUEUE:
+        return os << "CTL_QUEUE";
+    case WIFI_MGT_QUEUE:
+        return os << "MGT_QUEUE";
+    case WIFI_QOSDATA_QUEUE:
+        return os << "QOSDATA_QUEUE";
+    case WIFI_DATA_QUEUE:
+        return os << "DATA_QUEUE";
+    }
+    return os << "UNKNOWN(" << static_cast<uint16_t>(queueType) << ")";
+}
+
+std::ostream&
+operator<<(std::ostream& os, WifiRcvAddr rcvAddrType)
+{
+    switch (rcvAddrType)
+    {
+    case WifiRcvAddr::UNICAST:
+        return os << "UNICAST";
+    case WifiRcvAddr::BROADCAST:
+        return os << "BROADCAST";
+    case WifiRcvAddr::GROUPCAST:
+        return os << "GROUPCAST";
+    case WifiRcvAddr::COUNT:
+        return os << "COUNT";
+    }
+    return os << "UNKNOWN(" << static_cast<uint16_t>(rcvAddrType) << ")";
+}
+
+std::ostream&
+operator<<(std::ostream& os, const WifiContainerQueueId& queueId)
+{
+    os << "{" << queueId.type << ", " << queueId.addrType;
+    if (const auto& addr1 = queueId.addr1)
+    {
+        os << ", addr1=" << addr1.value();
+    }
+    if (const auto& addr2 = queueId.addr2)
+    {
+        os << ", addr2=" << addr2.value();
+    }
+    if (const auto& tid = queueId.tid)
+    {
+        os << ", tid=" << +tid.value();
+    }
+    return os << "}";
+}
+
 } // namespace ns3
 
 /****************************************************
