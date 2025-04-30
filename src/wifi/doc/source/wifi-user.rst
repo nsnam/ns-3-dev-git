@@ -533,6 +533,9 @@ such as:
 In the above, while channel number 14 is well-defined in practice for 802.11b
 only, it is for 2.4 GHz band, not 5 GHz band.
 
+If a limitation is configured for the supported bandwidth of the PHY radio through the MaxRadioBw attribute,
+the simulator will exit with an error if the configured bandwidth exceeds the maximum allowed bandwidth.
+
 WifiPhy::Primary20MHzIndex
 ++++++++++++++++++++++++++
 
