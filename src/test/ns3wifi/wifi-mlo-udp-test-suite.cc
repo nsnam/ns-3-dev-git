@@ -586,9 +586,9 @@ WifiMloUdpTestSuite::WifiMloUdpTestSuite()
                {"{42, 80, BAND_5GHZ, 2}", "{5, 40, BAND_2_4GHZ, 0}"}}},
           // AP MLD with 3 links, non-AP MLD with 3 links, non-AP MLD with 2 links
           ParamsTuple{
-              {{"{42, 80, BAND_5GHZ, 2}", "{5, 40, BAND_2_4GHZ, 0}", "{7, 80, BAND_6GHZ, 0}"},
-               {"{42, 80, BAND_5GHZ, 2}", "{5, 40, BAND_2_4GHZ, 0}", "{7, 80, BAND_6GHZ, 0}"},
-               {"{5, 40, BAND_2_4GHZ, 0}", "{7, 80, BAND_6GHZ, 0}"}}}})
+              {{"{42, 80, BAND_5GHZ, 2}", "{7, 80, BAND_6GHZ, 0}", "{5, 40, BAND_2_4GHZ, 0}"},
+               {"{42, 80, BAND_5GHZ, 2}", "{7, 80, BAND_6GHZ, 0}", "{5, 40, BAND_2_4GHZ, 0}"},
+               {"{7, 80, BAND_6GHZ, 0}", "{5, 40, BAND_2_4GHZ, 0}"}}}})
     {
         for (const auto& trafficPattern : {WifiTrafficPattern::STA_TO_AP,
                                            WifiTrafficPattern::AP_TO_STA,

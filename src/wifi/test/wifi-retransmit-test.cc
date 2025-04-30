@@ -214,7 +214,6 @@ WifiRetransmitTest::DoSetup()
 
     WifiHelper wifi;
     wifi.SetStandard(m_nLinks == 1 ? WIFI_STANDARD_80211ax : WIFI_STANDARD_80211be);
-    wifi.ConfigVhtOptions("Support160MHzOperation", BooleanValue(false));
     wifi.SetRemoteStationManager("ns3::ConstantRateWifiManager",
                                  "DataMode",
                                  WifiModeValue(HePhy::GetHeMcs8()),
@@ -227,7 +226,6 @@ WifiRetransmitTest::DoSetup()
     NetDeviceContainer staDevice = wifi.Install(phy, mac, wifiStaNode);
     m_staMac = StaticCast<StaWifiMac>(StaticCast<WifiNetDevice>(staDevice.Get(0))->GetMac());
 
-    wifi.ConfigVhtOptions("Support160MHzOperation", BooleanValue(true));
     // use default 160 MHz channel in 5 GHz band for the AP
     phy.Set(0, "ChannelSettings", StringValue("{0, 160, BAND_5GHZ, 0}"));
 

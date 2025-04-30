@@ -45,14 +45,14 @@ class VhtConfiguration : public Object
      * @param enable true if 20 MHz, 40 MHz, 80 MHz and 160 MHz operation is to be supported,
      *               false if 20 MHz, 40 MHz and 80 MHz operation is to be supported
      */
-    NS_DEPRECATED_3_44("Set the m_160MHzSupported member variable instead")
+    NS_DEPRECATED_3_44("Set the ChannelSettings of the WifiPhy instead")
     void Set160MHzOperationSupported(bool enable);
 
     /**
      * @return true if 20 MHz, 40 MHz, 80 MHz and 160 MHz operation is supported,
      *         false if 20 MHz, 40 MHz and 80 MHz operation is supported
      */
-    NS_DEPRECATED_3_44("Get the m_160MHzSupported member variable instead")
+    NS_DEPRECATED_3_44("Use WifiPhy::GetChannelWidth instead")
     bool Get160MHzOperationSupported() const;
 
     using SecondaryCcaSensitivityThresholds =

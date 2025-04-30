@@ -39,11 +39,15 @@ VhtConfiguration::GetTypeId()
             .SetParent<Object>()
             .SetGroupName("Wifi")
             .AddConstructor<VhtConfiguration>()
+            // NS_DEPRECATED_3_45
             .AddAttribute("Support160MHzOperation",
                           "Whether or not 160 MHz operation is to be supported.",
                           BooleanValue(true),
                           MakeBooleanAccessor(&VhtConfiguration::m_160MHzSupported),
-                          MakeBooleanChecker())
+                          MakeBooleanChecker(),
+                          TypeId::SupportLevel::OBSOLETE,
+                          "Set an initial channel via WifiPhy::ChannelSettings whose width "
+                          "corresponds to the maximum desired width instead")
             .AddAttribute("SecondaryCcaSensitivityThresholds",
                           "Tuple {threshold for 20MHz PPDUs, threshold for 40MHz PPDUs, threshold "
                           "for 80MHz PPDUs} "

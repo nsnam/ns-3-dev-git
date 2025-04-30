@@ -908,17 +908,12 @@ GcrTestBase::DoSetup()
         if (m_params.stas.at(i).standard >= WIFI_STANDARD_80211n)
         {
             auto staHtConfiguration = CreateObject<HtConfiguration>();
-            staHtConfiguration->m_40MHzSupported =
-                (m_params.stas.at(i).standard >= WIFI_STANDARD_80211ac ||
-                 m_params.stas.at(i).maxChannelWidth >= MHz_u{40});
             staHtConfiguration->m_sgiSupported = (m_params.stas.at(i).minGi == NanoSeconds(400));
             staNetDevice->SetHtConfiguration(staHtConfiguration);
         }
         if (m_params.stas.at(i).standard >= WIFI_STANDARD_80211ac)
         {
             auto staVhtConfiguration = CreateObject<VhtConfiguration>();
-            staVhtConfiguration->m_160MHzSupported =
-                (m_params.stas.at(i).maxChannelWidth >= MHz_u{160});
             staNetDevice->SetVhtConfiguration(staVhtConfiguration);
         }
         if (m_params.stas.at(i).standard >= WIFI_STANDARD_80211ax)

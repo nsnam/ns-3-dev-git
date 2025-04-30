@@ -77,14 +77,14 @@ class HtConfiguration : public Object
      * @param enable true if both 20 MHz and 40 MHz operation is to be supported,
      *               false if only 20 MHz operation is to be supported
      */
-    NS_DEPRECATED_3_44("Set the m_40MHzSupported member variable instead")
+    NS_DEPRECATED_3_44("Set the ChannelSettings of the WifiPhy instead")
     void Set40MHzOperationSupported(bool enable);
 
     /**
      * @return true if both 20 MHz and 40 MHz operation is supported, false if
      *         only 20 MHz operation is supported
      */
-    NS_DEPRECATED_3_44("Get the m_40MHzSupported member variable instead")
+    NS_DEPRECATED_3_45("Use WifiPhy::GetChannelWidth instead")
     bool Get40MHzOperationSupported() const;
 
     bool m_sgiSupported;   ///< flag whether short guard interval is supported

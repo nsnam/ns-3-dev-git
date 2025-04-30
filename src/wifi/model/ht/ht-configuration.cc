@@ -47,11 +47,15 @@ HtConfiguration::GetTypeId()
                           BooleanValue(false),
                           MakeBooleanAccessor(&HtConfiguration::m_ldpcSupported),
                           MakeBooleanChecker())
+            // NS_DEPRECATED_3_45
             .AddAttribute("Support40MHzOperation",
                           "Whether or not 40 MHz operation is to be supported.",
                           BooleanValue(true),
                           MakeBooleanAccessor(&HtConfiguration::m_40MHzSupported),
-                          MakeBooleanChecker());
+                          MakeBooleanChecker(),
+                          TypeId::SupportLevel::OBSOLETE,
+                          "Set an initial channel via WifiPhy::ChannelSettings whose width "
+                          "corresponds to the maximum desired width instead");
     return tid;
 }
 

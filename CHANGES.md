@@ -30,6 +30,7 @@ This file is a best-effort approach to solving this issue; we will do our best b
 * (lr-wpan) - Renamed example ``lr-wpan\examples\lr-wpan-mlme.cc`` to ``lr-wpan\examples\lr-wpan-beacon-mode.cc``.
 * (lr-wpan) - Update correct use of extended addresses in ``lr-wpan\examples\lr-wpan-data.cc``.
 * (wifi) Callbacks connected to the `WifiMac::IcfDropReason` trace source are now passed a `struct IcfDropInfo` object that has three fields indicating the reason for dropping the ICF, the ID of the link on which the ICF was dropped and the MAC address of the sender of the ICF.
+* (wifi) Obsoleted the `Support40MHzOperation` and `Support160MHzOperation` attributes from the HT/VHT configurations. These capabilities are now directly derived from the `ChannelSettings` attribute.
 
 ### Changes to build system
 
