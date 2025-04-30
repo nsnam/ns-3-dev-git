@@ -49,6 +49,7 @@ but other contemporaneous versions may also work.
 - (wifi) Added initial support for 802.11bn.
 - (wifi) Extend Ideal rate manager to support UHR rates
 - (wifi) Extend MinstrelHT rate manager to support UHR rates
+- (wifi) Extend Thompson Sampling rate manager to support EHT rates
 
 ### Bugs fixed
 
