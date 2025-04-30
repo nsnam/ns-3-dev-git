@@ -1664,6 +1664,8 @@ class WifiPhy : public Object
 
     Time m_channelSwitchDelay; //!< Time required to switch between channel
 
+    MHz_t m_maxRadioBw; //!< Maximum radio bandwidth
+
     Ptr<WifiNetDevice> m_device;   //!< Pointer to the device
     Ptr<MobilityModel> m_mobility; //!< Pointer to the mobility model
 
