@@ -109,33 +109,34 @@ ThompsonSamplingWifiManager::InitializeStation(WifiRemoteStation* st) const
         return;
     }
 
-    // Add HT, VHT or HE MCSes
-    for (const auto& mode : GetPhy()->GetMcsList())
+    // Add MCSs supported by this station and the remote station
+    WifiModulationClass modulationClass{WIFI_MOD_CLASS_HT};
+    if (GetEhtSupported() && GetEhtSupported(st))
     {
-        for (MHz_t j{20}; j <= GetPhy()->GetChannelWidth(); j *= 2)
-        {
-            WifiModulationClass modulationClass = WIFI_MOD_CLASS_HT;
-            if (GetVhtSupported())
-            {
-                modulationClass = WIFI_MOD_CLASS_VHT;
-            }
-            if (GetHeSupported())
-            {
-                modulationClass = WIFI_MOD_CLASS_HE;
-            }
-            if (mode.GetModulationClass() == modulationClass)
-            {
-                for (uint8_t k = 1; k <= GetPhy()->GetMaxSupportedTxSpatialStreams(); k++)
-                {
-                    if (mode.IsAllowed(j, k))
-                    {
-                        RateStats stats;
-                        stats.mode = mode;
-                        stats.channelWidth = j;
-                        stats.nss = k;
+        modulationClass = WIFI_MOD_CLASS_EHT;
+    }
+    else if (GetHeSupported() && GetHeSupported(st))
+    {
+        modulationClass = WIFI_MOD_CLASS_HE;
+    }
+    else if (GetVhtSupported() && GetVhtSupported(st))
+    {
+        modulationClass = WIFI_MOD_CLASS_VHT;
+    }
 
-                        station->m_mcsStats.push_back(stats);
-                    }
+    const auto phy = GetPhy();
+    const auto mcsList = phy->GetMcsList(modulationClass);
+
+    for (const auto& mode : mcsList)
+    {
+        for (MHz_t width{20}; width <= phy->GetChannelWidth(); width *= 2)
+        {
+            for (uint8_t nss = 1; nss <= phy->GetMaxSupportedTxSpatialStreams(); ++nss)
+            {
+                if (mode.IsAllowed(width, nss))
+                {
+                    station->m_mcsStats.emplace_back(
+                        RateStats{.mode = mode, .channelWidth = width, .nss = nss});
                 }
             }
         }
@@ -289,7 +290,7 @@ ThompsonSamplingWifiManager::DoReportFinalDataFailed(WifiRemoteStation* station)
 Time
 ThompsonSamplingWifiManager::GetModeGuardInterval(WifiRemoteStation* st, WifiMode mode) const
 {
-    if (mode.GetModulationClass() == WIFI_MOD_CLASS_HE)
+    if (mode.GetModulationClass() >= WIFI_MOD_CLASS_HE)
     {
         return std::max(GetGuardInterval(st), GetGuardInterval());
     }
@@ -314,7 +315,8 @@ ThompsonSamplingWifiManager::DoGetDataTxVector(WifiRemoteStation* st, MHz_t allo
 
     auto& stats = station->m_mcsStats.at(station->m_nextMode);
     const auto mode = stats.mode;
-    const auto channelWidth = std::min(stats.channelWidth, allowedWidth);
+    const auto channelWidth =
+        GetPhy()->GetTxBandwidth(mode, std::min(stats.channelWidth, allowedWidth));
     const auto nss = stats.nss;
     const auto guardInterval = GetModeGuardInterval(st, mode);
 
@@ -334,11 +336,11 @@ ThompsonSamplingWifiManager::DoGetDataTxVector(WifiRemoteStation* st, MHz_t allo
         mode,
         GetDefaultTxPowerLevel(),
         GetPreambleForTransmission(mode.GetModulationClass(), GetShortPreambleEnabled()),
-        GetModeGuardInterval(st, mode),
+        guardInterval,
         GetNumberOfAntennas(),
         nss,
         0, // NESS
-        GetPhy()->GetTxBandwidth(mode, channelWidth),
+        channelWidth,
         GetAggregation(station),
         false);
 }
