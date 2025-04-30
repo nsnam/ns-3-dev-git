@@ -46,7 +46,10 @@ VhtConfiguration::GetTypeId()
                               TypeId::ATTR_CONSTRUCT, // prevent setting after construction
                           BooleanValue(true),
                           MakeBooleanAccessor(&VhtConfiguration::m_160MHzSupported),
-                          MakeBooleanChecker())
+                          MakeBooleanChecker(),
+                          TypeId::SupportLevel::OBSOLETE,
+                          "Set an initial channel via WifiPhy::ChannelSettings whose width "
+                          "corresponds to the maximum desired width instead")
             .AddAttribute("SecondaryCcaSensitivityThresholds",
                           "Tuple {threshold for 20MHz PPDUs, threshold for 40MHz PPDUs, threshold "
                           "for 80MHz PPDUs} "

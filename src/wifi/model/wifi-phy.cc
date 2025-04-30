@@ -1292,28 +1292,6 @@ WifiPhy::DoChannelSwitch()
     m_operatingChannel.Set(segments, m_standard);
     m_operatingChannel.SetPrimary20Index(std::get<3>(m_channelSettings.front()));
 
-    // check that the channel width is supported
-    const auto chWidth = GetChannelWidth();
-
-    if (m_device)
-    {
-        if (auto htConfig = m_device->GetHtConfiguration();
-            htConfig && !htConfig->m_40MHzSupported && chWidth > MHz_t{20})
-        {
-            NS_ABORT_MSG("Attempting to set a " << chWidth
-                                                << " channel on"
-                                                   " a station only supporting 20 MHz operation");
-        }
-
-        if (auto vhtConfig = m_device->GetVhtConfiguration();
-            vhtConfig && !vhtConfig->Get160MHzOperationSupported() && chWidth > MHz_t{80})
-        {
-            NS_ABORT_MSG("Attempting to set a " << chWidth
-                                                << " channel on"
-                                                   " a station supporting up to 80 MHz operation");
-        }
-    }
-
     if (changingPhyBand)
     {
         ConfigureStandard(m_standard);

@@ -206,13 +206,13 @@ WifiDefaultAssocManager::EndScanning()
                     // switching channel while a PHY is in sleep state fails
                     phy->ResumeFromSleep();
                 }
-                // switch this link to using the channel used by a reported AP (or its primary80
-                // in case the reported AP is using a 160 MHz and the non-AP MLD does not support
-                // 160 MHz operations)
-                if (apChannel.GetTotalWidth() > MHz_t{80} &&
-                    !phy->GetDevice()->GetVhtConfiguration()->Get160MHzOperationSupported())
+
+                // switch this link to using the channel used by a reported AP (or one of its
+                // primary subchannels in case the reported AP has larger channel width than the one
+                // supported by the non-AP MLD)
+                if (apChannel.GetTotalWidth() > phy->GetChannelWidth())
                 {
-                    apChannel = apChannel.GetPrimaryChannel(MHz_t{80});
+                    apChannel = apChannel.GetPrimaryChannel(phy->GetChannelWidth());
                 }
 
                 NS_LOG_DEBUG("Switch link " << +linkId << " to using " << apChannel);
