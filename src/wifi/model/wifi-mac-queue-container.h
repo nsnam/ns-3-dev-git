@@ -227,6 +227,30 @@ class WifiMacQueueContainer
         m_nBytesPerQueue; //!< size in bytes of the container queues
 };
 
+/**
+ * @brief Stream insertion operator.
+ * @param [in] os the reference to the output stream
+ * @param [in] queueType the container queue type
+ * @return a reference to the output stream
+ */
+std::ostream& operator<<(std::ostream& os, WifiContainerQueueType queueType);
+
+/**
+ * @brief Stream insertion operator.
+ * @param [in] os the reference to the output stream
+ * @param [in] rcvAddrType the receiver address type
+ * @return a reference to the output stream
+ */
+std::ostream& operator<<(std::ostream& os, WifiRcvAddr rcvAddrType);
+
+/**
+ * @brief Stream insertion operator.
+ * @param [in] os the reference to the output stream
+ * @param [in] queueId the container queue ID
+ * @return a reference to the output stream
+ */
+std::ostream& operator<<(std::ostream& os, const WifiContainerQueueId& queueId);
+
 } // namespace ns3
 
 #endif /* WIFI_MAC_QUEUE_CONTAINER_H */

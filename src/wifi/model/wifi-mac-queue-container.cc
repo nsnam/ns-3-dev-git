@@ -205,6 +205,52 @@ WifiMacQueueContainer::GetAllExpiredMpdus() const
     return {m_expiredQueue.begin(), m_expiredQueue.end()};
 }
 
+std::ostream&
+operator<<(std::ostream& os, WifiContainerQueueType queueType)
+{
+    switch (queueType)
+    {
+    case WIFI_CTL_QUEUE:
+        return os << "CTL_QUEUE";
+    case WIFI_MGT_QUEUE:
+        return os << "MGT_QUEUE";
+    case WIFI_QOSDATA_QUEUE:
+        return os << "QOSDATA_QUEUE";
+    case WIFI_DATA_QUEUE:
+        return os << "DATA_QUEUE";
+    }
+    return os << "UNKNOWN(" << static_cast<uint16_t>(queueType) << ")";
+}
+
+std::ostream&
+operator<<(std::ostream& os, WifiRcvAddr rcvAddrType)
+{
+    switch (rcvAddrType)
+    {
+    case WifiRcvAddr::UNICAST:
+        return os << "UNICAST";
+    case WifiRcvAddr::BROADCAST:
+        return os << "BROADCAST";
+    case WifiRcvAddr::GROUPCAST:
+        return os << "GROUPCAST";
+    case WifiRcvAddr::COUNT:
+        return os << "COUNT";
+    }
+    return os << "UNKNOWN(" << static_cast<uint16_t>(rcvAddrType) << ")";
+}
+
+std::ostream&
+operator<<(std::ostream& os, const WifiContainerQueueId& queueId)
+{
+    os << "{" << std::get<WifiContainerQueueType>(queueId) << ", " << std::get<WifiRcvAddr>(queueId)
+       << ", " << std::get<Mac48Address>(queueId);
+    if (const auto& optTid = std::get<std::optional<uint8_t>>(queueId))
+    {
+        os << ", " << +optTid.value();
+    }
+    return os << "}";
+}
+
 } // namespace ns3
 
 /****************************************************
