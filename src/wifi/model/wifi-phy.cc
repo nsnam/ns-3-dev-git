@@ -1312,14 +1312,6 @@ WifiPhy::DoChannelSwitch()
                                                 << " channel on"
                                                    " a station supporting up to 80 MHz operation");
         }
-
-        if (auto ehtConfig = m_device->GetEhtConfiguration();
-            ehtConfig && !ehtConfig->Get320MHzOperationSupported() && chWidth > MHz_t{160})
-        {
-            NS_ABORT_MSG("Attempting to set a " << chWidth
-                                                << " channel on"
-                                                   " a station supporting up to 160 MHz operation");
-        }
     }
 
     if (changingPhyBand)

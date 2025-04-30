@@ -204,7 +204,6 @@ WifiUseAvailBwTest::DoRun()
                                  StringValue("EhtMcs0"),
                                  "ControlMode",
                                  StringValue("OfdmRate6Mbps"));
-    wifi.ConfigEhtOptions("Support320MHzOperation", BooleanValue(true));
 
     WifiMacHelper apMac;
     apMac.SetType("ns3::ApWifiMac", "Ssid", SsidValue(Ssid("dynamic-bw-op-ssid")));

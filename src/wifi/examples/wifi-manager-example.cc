@@ -714,8 +714,6 @@ main(int argc, char* argv[])
     Config::SetDefault("ns3::MinstrelWifiManager::PrintStats", BooleanValue(true));
     Config::SetDefault("ns3::MinstrelWifiManager::PrintSamples", BooleanValue(true));
     Config::SetDefault("ns3::MinstrelHtWifiManager::PrintStats", BooleanValue(true));
-    Config::SetDefault("ns3::EhtConfiguration::Support320MHzOperation",
-                       BooleanValue(std::max(serverChannelWidth, clientChannelWidth) > MHz_t{160}));
     // Disable the default noise figure of 7 dBm in WifiPhy; the calculations
     // of SNR below assume that the only noise is thermal noise
     Config::SetDefault("ns3::WifiPhy::RxNoiseFigure", dBValue(0_dB));

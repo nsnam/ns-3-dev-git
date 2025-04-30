@@ -851,9 +851,7 @@ TestDlOfdmaPhyTransmission<LatestPhyEntityType>::DoSetup()
     apDev->SetStandard(standard);
     if (m_modClass >= WIFI_MOD_CLASS_EHT)
     {
-        auto ehtConfiguration =
-            CreateObjectWithAttributes<EhtConfiguration>("Support320MHzOperation",
-                                                         BooleanValue(true));
+        auto ehtConfiguration = CreateObject<EhtConfiguration>();
         apDev->SetEhtConfiguration(ehtConfiguration);
     }
 
@@ -879,9 +877,7 @@ TestDlOfdmaPhyTransmission<LatestPhyEntityType>::DoSetup()
     sta1Dev->SetStandard(standard);
     if (m_modClass >= WIFI_MOD_CLASS_EHT)
     {
-        auto ehtConfiguration =
-            CreateObjectWithAttributes<EhtConfiguration>("Support320MHzOperation",
-                                                         BooleanValue(true));
+        auto ehtConfiguration = CreateObject<EhtConfiguration>();
         sta1Dev->SetEhtConfiguration(ehtConfiguration);
     }
 
@@ -907,9 +903,7 @@ TestDlOfdmaPhyTransmission<LatestPhyEntityType>::DoSetup()
     sta2Dev->SetStandard(standard);
     if (m_modClass >= WIFI_MOD_CLASS_EHT)
     {
-        auto ehtConfiguration =
-            CreateObjectWithAttributes<EhtConfiguration>("Support320MHzOperation",
-                                                         BooleanValue(true));
+        auto ehtConfiguration = CreateObject<EhtConfiguration>();
         sta2Dev->SetEhtConfiguration(ehtConfiguration);
     }
 
@@ -936,9 +930,7 @@ TestDlOfdmaPhyTransmission<LatestPhyEntityType>::DoSetup()
     sta3Dev->SetStandard(standard);
     if (m_modClass >= WIFI_MOD_CLASS_EHT)
     {
-        auto ehtConfiguration =
-            CreateObjectWithAttributes<EhtConfiguration>("Support320MHzOperation",
-                                                         BooleanValue(true));
+        auto ehtConfiguration = CreateObject<EhtConfiguration>();
         sta3Dev->SetEhtConfiguration(ehtConfiguration);
     }
 
@@ -4077,9 +4069,7 @@ TestUlOfdmaPhyTransmission<LatestPhyEntityType>::DoSetup()
     apDev->SetHeConfiguration(heConfiguration);
     if (m_modClass >= WIFI_MOD_CLASS_EHT)
     {
-        auto ehtConfiguration =
-            CreateObjectWithAttributes<EhtConfiguration>("Support320MHzOperation",
-                                                         BooleanValue(true));
+        auto ehtConfiguration = CreateObject<EhtConfiguration>();
         apDev->SetEhtConfiguration(ehtConfiguration);
     }
     Ptr<InterferenceHelper> apInterferenceHelper = CreateObject<InterferenceHelper>();
@@ -4109,9 +4099,7 @@ TestUlOfdmaPhyTransmission<LatestPhyEntityType>::DoSetup()
     sta1Dev->SetHeConfiguration(CreateObject<HeConfiguration>());
     if (m_modClass >= WIFI_MOD_CLASS_EHT)
     {
-        auto ehtConfiguration =
-            CreateObjectWithAttributes<EhtConfiguration>("Support320MHzOperation",
-                                                         BooleanValue(true));
+        auto ehtConfiguration = CreateObject<EhtConfiguration>();
         sta1Dev->SetEhtConfiguration(ehtConfiguration);
     }
     m_phySta1 = CreateObject<OfdmaSpectrumWifiPhy<LatestPhyEntityType>>(1);
@@ -4135,9 +4123,7 @@ TestUlOfdmaPhyTransmission<LatestPhyEntityType>::DoSetup()
     sta2Dev->SetHeConfiguration(CreateObject<HeConfiguration>());
     if (m_modClass >= WIFI_MOD_CLASS_EHT)
     {
-        auto ehtConfiguration =
-            CreateObjectWithAttributes<EhtConfiguration>("Support320MHzOperation",
-                                                         BooleanValue(true));
+        auto ehtConfiguration = CreateObject<EhtConfiguration>();
         sta2Dev->SetEhtConfiguration(ehtConfiguration);
     }
     m_phySta2 = CreateObject<OfdmaSpectrumWifiPhy<LatestPhyEntityType>>(2);
@@ -4161,9 +4147,7 @@ TestUlOfdmaPhyTransmission<LatestPhyEntityType>::DoSetup()
     sta3Dev->SetHeConfiguration(CreateObject<HeConfiguration>());
     if (m_modClass >= WIFI_MOD_CLASS_EHT)
     {
-        auto ehtConfiguration =
-            CreateObjectWithAttributes<EhtConfiguration>("Support320MHzOperation",
-                                                         BooleanValue(true));
+        auto ehtConfiguration = CreateObject<EhtConfiguration>();
         sta3Dev->SetEhtConfiguration(ehtConfiguration);
     }
     m_phySta3 = CreateObject<OfdmaSpectrumWifiPhy<LatestPhyEntityType>>(3);

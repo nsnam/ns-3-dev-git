@@ -2160,8 +2160,6 @@ OfdmaAckSequenceTest::DoRun()
     Config::SetDefault("ns3::HeConfiguration::VoMuEdcaTimer",
                        TimeValue(MicroSeconds(8192 * m_muEdcaParameterSet.muTimer)));
 
-    Config::SetDefault("ns3::EhtConfiguration::Support320MHzOperation", BooleanValue(true));
-
     // increase MSDU lifetime so that it does not expire before the MU EDCA timer ends
     Config::SetDefault("ns3::WifiMacQueue::MaxDelay", TimeValue(Seconds(2)));
 

@@ -189,10 +189,6 @@ WifiFilsFrameTest::SetupDevice(Ptr<YansWifiChannel>& channel, bool isAp) const
     phy.Set("MaxSupportedRxSpatialStreams", UintegerValue(m_params.nss));
 
     wifi.SetStandard(m_params.standard);
-    if (m_params.standard == WifiStandard::WIFI_STANDARD_80211be)
-    {
-        wifi.ConfigEhtOptions("Support320MHzOperation", BooleanValue(m_params.bw >= MHz_t{320}));
-    }
     wifi.SetRemoteStationManager("ns3::ConstantRateWifiManager");
 
     if (isAp)

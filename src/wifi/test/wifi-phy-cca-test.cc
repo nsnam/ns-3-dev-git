@@ -304,8 +304,7 @@ WifiPhyCcaThresholdsTest::DoSetup()
     m_device->SetStandard(WIFI_STANDARD_80211be);
     m_vhtConfiguration = CreateObject<VhtConfiguration>();
     m_device->SetVhtConfiguration(m_vhtConfiguration);
-    m_ehtConfiguration =
-        CreateObjectWithAttributes<EhtConfiguration>("Support320MHzOperation", BooleanValue(true));
+    m_ehtConfiguration = CreateObject<EhtConfiguration>();
     m_device->SetEhtConfiguration(m_ehtConfiguration);
 
     m_phy = CreateObject<SpectrumWifiPhy>();
@@ -1454,9 +1453,7 @@ WifiPhyCcaIndicationTest::DoSetup()
     rxDev->SetVhtConfiguration(vhtConfiguration);
     if (m_standard > WIFI_STANDARD_80211ax)
     {
-        auto ehtConfiguration =
-            CreateObjectWithAttributes<EhtConfiguration>("Support320MHzOperation",
-                                                         BooleanValue(true));
+        auto ehtConfiguration = CreateObject<EhtConfiguration>();
         rxDev->SetEhtConfiguration(ehtConfiguration);
     }
     m_rxPhy = CreateObject<SpectrumWifiPhy>();

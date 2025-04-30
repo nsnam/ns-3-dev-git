@@ -454,9 +454,6 @@ main(int argc, char* argv[])
                     Config::SetDefault("ns3::TcpSocket::SegmentSize", UintegerValue(payloadSize));
                 }
 
-                Config::SetDefault("ns3::EhtConfiguration::Support320MHzOperation",
-                                   BooleanValue(channelWidth > MHz_t{160}));
-
                 NodeContainer wifiStaNodes;
                 wifiStaNodes.Create(nStations);
                 NodeContainer wifiApNode;
