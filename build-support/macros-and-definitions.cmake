@@ -54,8 +54,8 @@ include(ns3-check-dependencies)
 
 # Set compiler options and get command to force unused function linkage (useful
 # for libraries)
-set(CXX_UNSUPPORTED_STANDARDS 98 11 14 17)
-set(CMAKE_CXX_STANDARD_MINIMUM 20)
+set(CXX_UNSUPPORTED_STANDARDS 98 11 14 17 20)
+set(CMAKE_CXX_STANDARD_MINIMUM 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
