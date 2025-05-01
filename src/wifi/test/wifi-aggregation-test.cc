@@ -798,15 +798,16 @@ class HeAggregationTest : public AmpduAggregationTest
 };
 
 HeAggregationTest::HeAggregationTest(uint16_t bufferSize)
-    : AmpduAggregationTest("Check the correctness of 802.11ax aggregation operations, size=" +
-                               std::to_string(bufferSize),
-                           Params{.standard = WIFI_STANDARD_80211ax,
-                                  .nLinks = 1,
-                                  .dataMode = "HeMcs11",
-                                  .bufferSize = bufferSize,
-                                  .maxAmsduSize = 0,
-                                  .maxAmpduSize = 6500631,
-                                  .txopLimit = Seconds(0)})
+    : AmpduAggregationTest(
+          "Check the correctness of 802.11ax aggregation operations, buffer size=" +
+              std::to_string(bufferSize),
+          Params{.standard = WIFI_STANDARD_80211ax,
+                 .nLinks = 1,
+                 .dataMode = "HeMcs11",
+                 .bufferSize = bufferSize,
+                 .maxAmsduSize = 0,
+                 .maxAmpduSize = 6500631,
+                 .txopLimit = Seconds(0)})
 {
 }
 
@@ -860,23 +861,25 @@ class EhtAggregationTest : public AmpduAggregationTest
      * Constructor.
      *
      * @param bufferSize the size (in number of MPDUs) of the BlockAck buffer
+     * @param maxAmpduSize the maximum size (in bytes) allowed per A-MPDU
      */
-    EhtAggregationTest(uint16_t bufferSize);
+    EhtAggregationTest(uint16_t bufferSize, uint32_t maxAmpduSize);
 
   private:
     void DoRun() override;
 };
 
-EhtAggregationTest::EhtAggregationTest(uint16_t bufferSize)
-    : AmpduAggregationTest("Check the correctness of 802.11be aggregation operations, size=" +
-                               std::to_string(bufferSize),
-                           Params{.standard = WIFI_STANDARD_80211be,
-                                  .nLinks = 2,
-                                  .dataMode = "EhtMcs13",
-                                  .bufferSize = bufferSize,
-                                  .maxAmsduSize = 0,
-                                  .maxAmpduSize = 102000,
-                                  .txopLimit = Seconds(0)})
+EhtAggregationTest::EhtAggregationTest(uint16_t bufferSize, uint32_t maxAmpduSize)
+    : AmpduAggregationTest(
+          "Check the correctness of 802.11be aggregation operations, buffer size=" +
+              std::to_string(bufferSize) + ", max A-MPDU size=" + std::to_string(maxAmpduSize),
+          Params{.standard = WIFI_STANDARD_80211be,
+                 .nLinks = 2,
+                 .dataMode = "EhtMcs13",
+                 .bufferSize = bufferSize,
+                 .maxAmsduSize = 0,
+                 .maxAmpduSize = maxAmpduSize,
+                 .txopLimit = Seconds(0)})
 {
 }
 
@@ -884,13 +887,16 @@ void
 EhtAggregationTest::DoRun()
 {
     /*
-     * Test behavior when 1200 packets of 100 bytes each are ready for transmission. The max
-     * A-MPDU size limit (102000 B) is computed to have at most 750 MPDUs aggregated in a single
-     * A-MPDU (each MPDU is 130 B, plus 4 B of A-MPDU subframe header, plus 2 B of padding).
+     * Test behavior when 1200 packets of 100 bytes each are ready for transmission. In the first
+     * tests, the max A-MPDU size limit (102000 B) is computed to have at most 750 MPDUs aggregated
+     * in a single A-MPDU (each MPDU is 130 B, plus 4 B of A-MPDU subframe header, plus 2 B of
+     * padding). In the last test, the max A-MPDU size limit is the upper bound allowed by the
+     * standard (6500631 B), which allows to aggregate 1024 MPDUs (the buffer size) in a single
+     * A-MPDU.
      */
     const std::size_t numPackets = 1200;
     EnqueuePkts(numPackets, 100, Mac48Address("00:00:00:00:00:02"));
-    const std::size_t maxNMpdus = 750;
+    const auto maxNMpdus = std::min<std::size_t>(m_params.maxAmpduSize / 136, m_params.bufferSize);
 
     for (uint8_t linkId = 0; linkId < m_params.nLinks; linkId++)
     {
@@ -917,7 +923,7 @@ EhtAggregationTest::DoRun()
 
         uint16_t expectedRemainingPacketsInQueue;
 
-        if (m_params.bufferSize >= maxNMpdus)
+        if (m_params.bufferSize > maxNMpdus)
         {
             // two A-MPDUs are transmitted concurrently on the two links and together saturate
             // the transmit window
@@ -1300,8 +1306,9 @@ WifiAggregationTestSuite::WifiAggregationTestSuite()
     AddTestCase(new TwoLevelAggregationTest, TestCase::Duration::QUICK);
     AddTestCase(new HeAggregationTest(64), TestCase::Duration::QUICK);
     AddTestCase(new HeAggregationTest(256), TestCase::Duration::QUICK);
-    AddTestCase(new EhtAggregationTest(512), TestCase::Duration::QUICK);
-    AddTestCase(new EhtAggregationTest(1024), TestCase::Duration::QUICK);
+    AddTestCase(new EhtAggregationTest(512, 102000), TestCase::Duration::QUICK);
+    AddTestCase(new EhtAggregationTest(1024, 102000), TestCase::Duration::QUICK);
+    AddTestCase(new EhtAggregationTest(1024, 15523200), TestCase::Duration::QUICK);
     AddTestCase(new PreservePacketsInAmpdus(true), TestCase::Duration::QUICK);
     AddTestCase(new PreservePacketsInAmpdus(false), TestCase::Duration::QUICK);
 }
