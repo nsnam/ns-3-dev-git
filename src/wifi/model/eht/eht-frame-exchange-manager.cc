@@ -53,10 +53,17 @@ NS_OBJECT_ENSURE_REGISTERED(EhtFrameExchangeManager);
 TypeId
 EhtFrameExchangeManager::GetTypeId()
 {
-    static TypeId tid = TypeId("ns3::EhtFrameExchangeManager")
-                            .SetParent<HeFrameExchangeManager>()
-                            .AddConstructor<EhtFrameExchangeManager>()
-                            .SetGroupName("Wifi");
+    static TypeId tid =
+        TypeId("ns3::EhtFrameExchangeManager")
+            .SetParent<HeFrameExchangeManager>()
+            .AddConstructor<EhtFrameExchangeManager>()
+            .SetGroupName("Wifi")
+            .AddAttribute("EarlyTxopEndDetect",
+                          "Whether the Duration/ID value of the frame being transmitted "
+                          "or received can be used to early detect an ongoing TXOP end.",
+                          BooleanValue(true),
+                          MakeBooleanAccessor(&EhtFrameExchangeManager::m_earlyTxopEndDetect),
+                          MakeBooleanChecker());
     return tid;
 }
 
@@ -1780,7 +1787,7 @@ EhtFrameExchangeManager::UpdateTxopEndOnTxStart(Time txDuration, Time durationId
         // the response)
         delay = m_txTimer.GetDelayLeft();
     }
-    else if (durationId <= m_phy->GetSifs())
+    else if (m_earlyTxopEndDetect && durationId <= m_phy->GetSifs())
     {
         // the TX timer is not running, hence no response is expected, and the Duration/ID value
         // is less than or equal to a SIFS; the TXOP will end after this transmission
@@ -1794,8 +1801,11 @@ EhtFrameExchangeManager::UpdateTxopEndOnTxStart(Time txDuration, Time durationId
         // after the end of this PPDU, hence we need to postpone the TXOP end in order to
         // get the PHY-RXSTART.indication
         delay = txDuration + m_phy->GetSifs() + m_phy->GetSlot() + EMLSR_RX_PHY_START_DELAY;
-        // TXOP end cannot be beyond the period protected via Duration/ID
-        delay = Min(delay, txDuration + durationId);
+        if (m_earlyTxopEndDetect)
+        {
+            // TXOP end cannot be beyond the period protected via Duration/ID
+            delay = Min(delay, txDuration + durationId);
+        }
     }
 
     NS_LOG_DEBUG("Expected TXOP end=" << (Simulator::Now() + delay).As(Time::S));
@@ -1839,7 +1849,7 @@ EhtFrameExchangeManager::UpdateTxopEndOnRxEnd(Time durationId)
 
     // if the Duration/ID of the received frame is less than a SIFS, the TXOP
     // is terminated
-    if (durationId <= m_phy->GetSifs())
+    if (m_earlyTxopEndDetect && durationId <= m_phy->GetSifs())
     {
         NS_LOG_DEBUG("Assume TXOP ended based on Duration/ID value");
         TxopEnd(m_txopHolder);
@@ -1849,8 +1859,11 @@ EhtFrameExchangeManager::UpdateTxopEndOnRxEnd(Time durationId)
     // we may send a response after a SIFS or we may receive another frame after a SIFS.
     // Postpone the TXOP end by considering the latter (which takes longer)
     auto delay = m_phy->GetSifs() + m_phy->GetSlot() + EMLSR_RX_PHY_START_DELAY;
-    // TXOP end cannot be beyond the period protected via Duration/ID
-    delay = Min(delay, durationId);
+    if (m_earlyTxopEndDetect)
+    {
+        // TXOP end cannot be beyond the period protected via Duration/ID
+        delay = Min(delay, durationId);
+    }
     NS_LOG_DEBUG("Expected TXOP end=" << (Simulator::Now() + delay).As(Time::S));
     m_ongoingTxopEnd =
         Simulator::Schedule(delay, &EhtFrameExchangeManager::TxopEnd, this, m_txopHolder);

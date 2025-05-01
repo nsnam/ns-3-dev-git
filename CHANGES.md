@@ -16,6 +16,8 @@ This file is a best-effort approach to solving this issue; we will do our best b
 
 ### New API
 
+* (wifi) Added a new `EarlyTxopEndDetect` attribute to `EhtFrameExchangeManager` to control whether the Duration/ID value of the frame being transmitted or received by a device shall be used to early detect the end of an ongoing TXOP (held by another device).
+
 ### Changes to existing API
 
 * (antenna) Reformatted documentation

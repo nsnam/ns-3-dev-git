@@ -2711,9 +2711,12 @@ EmlsrUlTxopTest::CheckResults()
                           "Fourth data frame not transmitted on the same width as RTS");
 }
 
-EmlsrUlOfdmaTest::EmlsrUlOfdmaTest(bool enableBsrp)
-    : EmlsrOperationsTestBase("Check UL OFDMA operations with an EMLSR client"),
+EmlsrUlOfdmaTest::EmlsrUlOfdmaTest(bool enableBsrp, bool protectSingleExchange)
+    : EmlsrOperationsTestBase("Check UL OFDMA operations with an EMLSR client (enableBsrp=" +
+                              std::to_string(enableBsrp) + ", protectSingleExchange=" +
+                              std::to_string(protectSingleExchange) + ")"),
       m_enableBsrp(enableBsrp),
+      m_protectSingleExchange(protectSingleExchange),
       m_txPsdusPos(0),
       m_startAccessReq(0)
 {
@@ -2730,6 +2733,11 @@ void
 EmlsrUlOfdmaTest::DoSetup()
 {
     Config::SetDefault("ns3::WifiPhy::ChannelSwitchDelay", TimeValue(m_transitionDelay.at(0)));
+    Config::SetDefault("ns3::QosFrameExchangeManager::ProtectSingleExchange",
+                       BooleanValue(m_protectSingleExchange));
+    Config::SetDefault("ns3::DefaultEmlsrManager::SwitchAuxPhy", BooleanValue(false));
+    Config::SetDefault("ns3::EhtFrameExchangeManager::EarlyTxopEndDetect",
+                       BooleanValue(!(m_enableBsrp && m_protectSingleExchange)));
 
     EmlsrOperationsTestBase::DoSetup();
 
@@ -2762,6 +2770,7 @@ EmlsrUlOfdmaTest::Transmit(Ptr<WifiMac> mac,
         {
             // this is the first Trigger Frame sent after the AP requested channel access
             // through the Multi-user scheduler and it is an ICF for the EMLSR client
+            m_1stTfLinkId = linkId;
             m_txPsdusPos = m_txPsdus.size() - 1;
             auto txDuration = WifiPhy::CalculateTxDuration(psduMap,
                                                            txVector,
@@ -2789,6 +2798,37 @@ EmlsrUlOfdmaTest::Transmit(Ptr<WifiMac> mac,
                     m_staMacs[0]->GetDevice()->GetNode()->AddApplication(
                         GetApplication(UPLINK, 0, 2, 100));
                 });
+        }
+        break;
+
+    case WIFI_MAC_QOSDATA_NULL:
+        if (linkId == m_1stTfLinkId &&
+            psdu->GetAddr2() == m_staMacs[0]->GetFrameExchangeManager(linkId)->GetAddress())
+        {
+            NS_TEST_EXPECT_MSG_EQ(m_enableBsrp,
+                                  true,
+                                  "EMLSR client is not expected to send a QoS null on the same "
+                                  "link as the first TF when BSRP is disabled");
+
+            // the Duration/ID of the QoS null frame sent by the EMLSR client after the first
+            // Trigger Frame on the same link is zero if and only if ProtectSingleExchange is true
+            NS_TEST_EXPECT_MSG_EQ(psdu->GetDuration().IsZero(),
+                                  m_protectSingleExchange,
+                                  "Unexpected Duration/ID (" << psdu->GetDuration()
+                                                             << ") when ProtectSingleExchange="
+                                                             << m_protectSingleExchange);
+
+            const auto txDuration =
+                WifiPhy::CalculateTxDuration(psduMap,
+                                             txVector,
+                                             mac->GetWifiPhy(linkId)->GetPhyBand());
+            Simulator::Schedule(txDuration + MAX_PROPAGATION_DELAY, [=, this]() {
+                auto ehtFem = StaticCast<EhtFrameExchangeManager>(
+                    m_staMacs[0]->GetFrameExchangeManager(linkId));
+                NS_TEST_EXPECT_MSG_EQ(ehtFem->GetOngoingTxopEndEvent().IsPending(),
+                                      true,
+                                      "After QoS Null frame, the TXOP is not expected to be ended");
+            });
         }
         break;
 
@@ -3080,8 +3120,14 @@ WifiEmlsrBasicExchangesTestSuite::WifiEmlsrBasicExchangesTestSuite()
                     TestCase::Duration::QUICK);
     }
 
-    AddTestCase(new EmlsrUlOfdmaTest(false), TestCase::Duration::QUICK);
-    AddTestCase(new EmlsrUlOfdmaTest(true), TestCase::Duration::QUICK);
+    for (const auto enableBsrp : {true, false})
+    {
+        for (const auto protectSingleExchange : {true, false})
+        {
+            AddTestCase(new EmlsrUlOfdmaTest(enableBsrp, protectSingleExchange),
+                        TestCase::Duration::QUICK);
+        }
+    }
 }
 
 static WifiEmlsrBasicExchangesTestSuite g_wifiEmlsrBasicExchangesTestSuite; ///< the test suite
