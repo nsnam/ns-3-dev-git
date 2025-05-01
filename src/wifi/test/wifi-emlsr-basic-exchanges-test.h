@@ -392,6 +392,12 @@ class EmlsrUlTxopTest : public EmlsrOperationsTestBase
  *   (AP MLD has blocked transmissions to the EMLSR client upon preparing the first Trigger Frame)
  * - the buffer status reported in QoS Null frames is as expected
  * - the EMLSR client sends a QoS Data frame in a TB PPDU
+ *
+ * It is also checked that, when sending BSRP TF is enabled and the single protection mechanism is
+ * used, the QoS Null frames sent in response to the BSRP TF acting as ICF have a Duration/ID of
+ * zero but the EMLSR client does not consider the TXOP ended when the transmission of the QoS Null
+ * frame ends (because in this case the ns3::EhtFrameExchangeManager::EarlyTxopEndDetect attribute
+ * is set to false) and therefore correctly receives the Basic Trigger Frame sent after a SIFS.
  */
 class EmlsrUlOfdmaTest : public EmlsrOperationsTestBase
 {
@@ -400,8 +406,9 @@ class EmlsrUlOfdmaTest : public EmlsrOperationsTestBase
      * Constructor
      *
      * @param enableBsrp whether MU scheduler sends BSRP TFs
+     * @param protectSingleExchange whether single protection mechanism is used
      */
-    EmlsrUlOfdmaTest(bool enableBsrp);
+    EmlsrUlOfdmaTest(bool enableBsrp, bool protectSingleExchange);
 
   protected:
     void DoSetup() override;
@@ -420,9 +427,11 @@ class EmlsrUlOfdmaTest : public EmlsrOperationsTestBase
   private:
     void StartTraffic() override;
 
-    bool m_enableBsrp;        //!< whether MU scheduler sends BSRP TFs
-    std::size_t m_txPsdusPos; //!< position in the vector of TX PSDUs of the first ICF
-    Time m_startAccessReq;    //!< start time of the first AP MLD access request via MU scheduler
+    bool m_enableBsrp;            //!< whether MU scheduler sends BSRP TFs
+    bool m_protectSingleExchange; //!< whether single protection mechanism is used
+    std::size_t m_txPsdusPos;     //!< position in the vector of TX PSDUs of the first ICF
+    Time m_startAccessReq; //!< start time of the first AP MLD access request via MU scheduler
+    std::optional<uint8_t> m_1stTfLinkId; //!< ID of the link on which the first TF is sent
 };
 
 /**

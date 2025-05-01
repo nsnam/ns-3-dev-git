@@ -249,6 +249,9 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
      */
     bool UnblockEmlsrLinksIfAllowed(Mac48Address address, bool checkThisLink);
 
+    bool m_earlyTxopEndDetect; ///< whether the Duration/ID value of the frame being transmitted
+                               ///< or received can be used to early detect an ongoing TXOP end
+
   private:
     /**
      * @param icf the received ICF
