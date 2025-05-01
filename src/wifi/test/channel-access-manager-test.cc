@@ -956,6 +956,7 @@ ChannelAccessManagerTest<TxopType>::AddPhyReconnectEvt(uint64_t at, uint64_t dur
             m_ChannelAccessManager->RemovePhyListener(newPhy);
             // reconnect previous PHY
             m_ChannelAccessManager->SetupPhyListener(m_phy);
+            newPhy->Dispose();
         });
     });
 }
