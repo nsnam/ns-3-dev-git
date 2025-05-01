@@ -261,7 +261,7 @@ ValArrayTestCase<T>::DoRun()
 
     // test the function IsAlmostEqual
     v9(0, 0, 0) = v9(0, 0, 0) + static_cast<T>(1);
-    NS_TEST_ASSERT_MSG_EQ(v9.IsAlmostEqual(v8, 2) && (v9 != v8),
+    NS_TEST_ASSERT_MSG_EQ((v9.IsAlmostEqual(v8, 2) && (v9 != v8)),
                           true,
                           "Matrices should be almost equal, but not equal.");
 

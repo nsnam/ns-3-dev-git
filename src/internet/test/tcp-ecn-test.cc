@@ -422,7 +422,7 @@ TcpEcnTest::Rx(const Ptr<const Packet> p, const TcpHeader& h, SocketWho who)
             if (m_testcase == 2 || m_testcase == 4 || m_testcase == 5 || m_testcase == 6)
             {
                 NS_TEST_ASSERT_MSG_NE(
-                    ((h.GetFlags()) & TcpHeader::ECE) && ((h.GetFlags()) & TcpHeader::CWR),
+                    (((h.GetFlags()) & TcpHeader::ECE) && ((h.GetFlags()) & TcpHeader::CWR)),
                     0,
                     "The flags ECE + CWR should be set in the TCP header of first message received "
                     "at receiver when sender is ECN Capable");
@@ -430,7 +430,7 @@ TcpEcnTest::Rx(const Ptr<const Packet> p, const TcpHeader& h, SocketWho who)
             else
             {
                 NS_TEST_ASSERT_MSG_EQ(
-                    ((h.GetFlags()) & TcpHeader::ECE) && ((h.GetFlags()) & TcpHeader::CWR),
+                    (((h.GetFlags()) & TcpHeader::ECE) && ((h.GetFlags()) & TcpHeader::CWR)),
                     0,
                     "The flags ECE + CWR should not be set in the TCP header of first message "
                     "received at receiver when sender is not ECN Capable");
@@ -454,10 +454,10 @@ TcpEcnTest::Rx(const Ptr<const Packet> p, const TcpHeader& h, SocketWho who)
     {
         if (m_senderReceived == 0)
         {
-            NS_TEST_ASSERT_MSG_NE(((h.GetFlags()) & TcpHeader::SYN) &&
-                                      ((h.GetFlags()) & TcpHeader::ACK),
-                                  0,
-                                  "SYN+ACK received as first message at sender");
+            NS_TEST_ASSERT_MSG_NE(
+                (((h.GetFlags()) & TcpHeader::SYN) && ((h.GetFlags()) & TcpHeader::ACK)),
+                0,
+                "SYN+ACK received as first message at sender");
             if (m_testcase == 4 || m_testcase == 5 || m_testcase == 6)
             {
                 NS_TEST_ASSERT_MSG_NE(

@@ -669,7 +669,7 @@ class LteRrcSap
     {
         uint16_t physCellId; ///< Phy cell ID
         bool haveCgiInfo;    ///< have CGI info?
-        CgiInfo cgiInfo;     ///< CGI info
+        CgiInfo cgiInfo{};   ///< CGI info
         bool haveRsrpResult; ///< have RSRP result
         uint8_t rsrpResult;  ///< RSRP result
         bool haveRsrqResult; ///< have RSRQ result?

@@ -539,8 +539,8 @@ Ipv6FragmentationTest::DoRun()
         uint16_t recvSize = m_receivedPacketServer->GetSize();
 
         NS_TEST_EXPECT_MSG_EQ((recvSize == 0), true, "Server got a packet, something wrong");
-        NS_TEST_EXPECT_MSG_EQ((m_icmpType == Icmpv6Header::ICMPV6_ERROR_TIME_EXCEEDED) &&
-                                  (m_icmpCode == Icmpv6Header::ICMPV6_FRAGTIME),
+        NS_TEST_EXPECT_MSG_EQ(((m_icmpType == Icmpv6Header::ICMPV6_ERROR_TIME_EXCEEDED) &&
+                               (m_icmpCode == Icmpv6Header::ICMPV6_FRAGTIME)),
                               true,
                               "Client did not receive ICMPv6::TIME_EXCEEDED " << int(m_icmpType)
                                                                               << int(m_icmpCode));

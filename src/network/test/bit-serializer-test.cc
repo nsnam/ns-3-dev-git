@@ -43,7 +43,7 @@ BitSerializerTest::DoRun()
     testBitSerializer1.PushBits(0x0, 2);
 
     std::vector<uint8_t> result = testBitSerializer1.GetBytes();
-    NS_TEST_EXPECT_MSG_EQ((result[0] == 0xab) && (result[1] == 0xc0),
+    NS_TEST_EXPECT_MSG_EQ(((result[0] == 0xab) && (result[1] == 0xc0)),
                           true,
                           "Incorrect serialization " << std::hex << +result[0] << +result[1]
                                                      << " instead of " << 0xab << " " << 0xc0
@@ -58,7 +58,7 @@ BitSerializerTest::DoRun()
     testBitSerializer2.InsertPaddingAtEnd(false);
 
     result = testBitSerializer2.GetBytes();
-    NS_TEST_EXPECT_MSG_EQ((result[0] == 0x0a) && (result[1] == 0xbc),
+    NS_TEST_EXPECT_MSG_EQ(((result[0] == 0x0a) && (result[1] == 0xbc)),
                           true,
                           "Incorrect serialization " << std::hex << +result[0] << +result[1]
                                                      << " instead of " << 0x0a << " " << 0xbc

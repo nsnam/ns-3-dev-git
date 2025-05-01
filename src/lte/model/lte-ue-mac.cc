@@ -230,11 +230,11 @@ LteUeMac::LteUeMac()
       m_bsrLast(),
       m_freshUlBsr(false),
       m_harqProcessId(0),
+      m_miUlHarqProcessesPacketTimer(HARQ_PERIOD, 0),
       m_rnti(0),
       m_imsi(0),
       m_rachConfigured(false),
       m_waitingForRaResponse(false)
-
 {
     NS_LOG_FUNCTION(this);
     m_miUlHarqProcessesPacket.resize(HARQ_PERIOD);
@@ -243,7 +243,6 @@ LteUeMac::LteUeMac()
         Ptr<PacketBurst> pb = CreateObject<PacketBurst>();
         m_miUlHarqProcessesPacket.at(i) = pb;
     }
-    m_miUlHarqProcessesPacketTimer.resize(HARQ_PERIOD, 0);
 
     m_macSapProvider = new UeMemberLteMacSapProvider(this);
     m_cmacSapProvider = new UeMemberLteUeCmacSapProvider(this);

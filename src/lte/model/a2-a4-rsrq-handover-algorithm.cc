@@ -241,7 +241,6 @@ A2A4RsrqHandoverAlgorithm::UpdateNeighbourMeasurements(uint16_t rnti, uint16_t c
     {
         neighbourCellMeasures = it2->second;
         neighbourCellMeasures->m_cellId = cellId;
-        neighbourCellMeasures->m_rsrp = 0;
         neighbourCellMeasures->m_rsrq = rsrq;
     }
     else
@@ -249,7 +248,6 @@ A2A4RsrqHandoverAlgorithm::UpdateNeighbourMeasurements(uint16_t rnti, uint16_t c
         // insert a new cell entry
         neighbourCellMeasures = Create<UeMeasure>();
         neighbourCellMeasures->m_cellId = cellId;
-        neighbourCellMeasures->m_rsrp = 0;
         neighbourCellMeasures->m_rsrq = rsrq;
         it1->second[cellId] = neighbourCellMeasures;
     }

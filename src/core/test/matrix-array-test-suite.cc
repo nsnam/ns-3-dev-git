@@ -230,10 +230,10 @@ MatrixArrayTestCase<T>::DoRun()
 
     // test 1D array creation, i.e. vector and transposing it
     MatrixArray<T> m9 = MatrixArray<T>(std::vector<T>({0, 1, 2, 3, 4, 5, 6, 7}));
-    NS_TEST_ASSERT_MSG_EQ((m9.GetNumRows() == 8) && (m9.GetNumCols() == 1) &&
-                              (m9.GetNumPages() == 1),
-                          true,
-                          "Creation of vector is not correct.");
+    NS_TEST_ASSERT_MSG_EQ(
+        ((m9.GetNumRows() == 8) && (m9.GetNumCols() == 1) && (m9.GetNumPages() == 1)),
+        true,
+        "Creation of vector is not correct.");
 
     NS_LOG_INFO("Vector:" << m9);
     NS_LOG_INFO("Vector after transposing:" << m9.Transpose());
