@@ -1509,7 +1509,7 @@ HeFrameExchangeManager::GetTrigVector(const CtrlTriggerHeader& trigger) const
         preamble = WIFI_PREAMBLE_UHR_TB;
         break;
     default:
-        NS_ASSERT_MSG(false, "Unsupported variant");
+        NS_ABORT_MSG("Unsupported variant");
         break;
     }
     v.SetPreambleType(preamble);

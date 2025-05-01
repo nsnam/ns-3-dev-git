@@ -400,7 +400,7 @@ IbssCapabilitiesTest::CheckResults()
         }
         else
         {
-            NS_ASSERT_MSG(false, "TX and RX standards combination not covered by the test");
+            NS_ABORT_MSG("TX and RX standards combination not covered by the test");
         }
     }
     else
@@ -415,7 +415,7 @@ IbssCapabilitiesTest::CheckResults()
         }
         else
         {
-            NS_ASSERT_MSG(false, "TX standard not covered by the test");
+            NS_ABORT_MSG("TX standard not covered by the test");
         }
     }
     NS_TEST_EXPECT_MSG_EQ(m_txVectors.at(0).GetModulationClass(),
@@ -917,22 +917,22 @@ P2pTest::CheckResults()
             break;
         }
     }
-    NS_TEST_EXPECT_MSG_EQ(!p2pStaTxLinks.empty() &&
-                              std::all_of(p2pStaTxLinks.cbegin(),
-                                          p2pStaTxLinks.cend(),
-                                          [expectedP2pLinkId](const auto& txLinkInfo) {
-                                              return txLinkInfo.second == expectedP2pLinkId;
-                                          }),
-                          true,
-                          "Unexpected link ID used by P2P STA during P2P period");
+    NS_TEST_EXPECT_MSG_EQ(
+        (!p2pStaTxLinks.empty() && std::all_of(p2pStaTxLinks.cbegin(),
+                                               p2pStaTxLinks.cend(),
+                                               [expectedP2pLinkId](const auto& txLinkInfo) {
+                                                   return txLinkInfo.second == expectedP2pLinkId;
+                                               })),
+        true,
+        "Unexpected link ID used by P2P STA during P2P period");
 
     // check link used for P2P communication from adhoc to STA
-    NS_TEST_EXPECT_MSG_EQ(m_txLinks.contains(ADHOC_TO_P2P_STA_PROTOCOL) &&
-                              std::all_of(m_txLinks.at(ADHOC_TO_P2P_STA_PROTOCOL).cbegin(),
-                                          m_txLinks.at(ADHOC_TO_P2P_STA_PROTOCOL).cend(),
-                                          [](const auto& txLinkInfo) {
-                                              return txLinkInfo.second == SINGLE_LINK_OP_ID;
-                                          }),
+    NS_TEST_EXPECT_MSG_EQ((m_txLinks.contains(ADHOC_TO_P2P_STA_PROTOCOL) &&
+                           std::all_of(m_txLinks.at(ADHOC_TO_P2P_STA_PROTOCOL).cbegin(),
+                                       m_txLinks.at(ADHOC_TO_P2P_STA_PROTOCOL).cend(),
+                                       [](const auto& txLinkInfo) {
+                                           return txLinkInfo.second == SINGLE_LINK_OP_ID;
+                                       })),
                           true,
                           "Unexpected link ID used by adhoc STA");
 
@@ -970,38 +970,36 @@ P2pTest::CheckResults()
         NS_ASSERT(!infraStaLinks.empty());
         NS_ASSERT(!infraP2pStaLinks.empty());
 
-        NS_TEST_EXPECT_MSG_EQ(m_txLinks.contains(AP_TO_P2P_STA_PROTOCOL) &&
-                                  std::all_of(m_txLinks.at(AP_TO_P2P_STA_PROTOCOL).cbegin(),
-                                              m_txLinks.at(AP_TO_P2P_STA_PROTOCOL).cend(),
-                                              [&infraApLinks](const auto& txLinkInfo) {
-                                                  return infraApLinks.contains(txLinkInfo.second);
-                                              }),
+        NS_TEST_EXPECT_MSG_EQ((m_txLinks.contains(AP_TO_P2P_STA_PROTOCOL) &&
+                               std::all_of(m_txLinks.at(AP_TO_P2P_STA_PROTOCOL).cbegin(),
+                                           m_txLinks.at(AP_TO_P2P_STA_PROTOCOL).cend(),
+                                           [&infraApLinks](const auto& txLinkInfo) {
+                                               return infraApLinks.contains(txLinkInfo.second);
+                                           })),
                               true,
                               "Unexpected link ID used for AP to P2P STA");
-        NS_TEST_EXPECT_MSG_EQ(m_txLinks.contains(P2P_STA_TO_AP_PROTOCOL) &&
-                                  std::all_of(m_txLinks.at(P2P_STA_TO_AP_PROTOCOL).cbegin(),
-                                              m_txLinks.at(P2P_STA_TO_AP_PROTOCOL).cend(),
-                                              [&infraP2pStaLinks](const auto& txLinkInfo) {
-                                                  return infraP2pStaLinks.contains(
-                                                      txLinkInfo.second);
-                                              }),
+        NS_TEST_EXPECT_MSG_EQ((m_txLinks.contains(P2P_STA_TO_AP_PROTOCOL) &&
+                               std::all_of(m_txLinks.at(P2P_STA_TO_AP_PROTOCOL).cbegin(),
+                                           m_txLinks.at(P2P_STA_TO_AP_PROTOCOL).cend(),
+                                           [&infraP2pStaLinks](const auto& txLinkInfo) {
+                                               return infraP2pStaLinks.contains(txLinkInfo.second);
+                                           })),
                               true,
                               "Unexpected link ID used for P2P STA to AP");
-        NS_TEST_EXPECT_MSG_EQ(m_txLinks.contains(P2P_STA_TO_STA_PROTOCOL) &&
-                                  std::all_of(m_txLinks.at(P2P_STA_TO_STA_PROTOCOL).cbegin(),
-                                              m_txLinks.at(P2P_STA_TO_STA_PROTOCOL).cend(),
-                                              [&infraP2pStaLinks](const auto& txLinkInfo) {
-                                                  return infraP2pStaLinks.contains(
-                                                      txLinkInfo.second);
-                                              }),
+        NS_TEST_EXPECT_MSG_EQ((m_txLinks.contains(P2P_STA_TO_STA_PROTOCOL) &&
+                               std::all_of(m_txLinks.at(P2P_STA_TO_STA_PROTOCOL).cbegin(),
+                                           m_txLinks.at(P2P_STA_TO_STA_PROTOCOL).cend(),
+                                           [&infraP2pStaLinks](const auto& txLinkInfo) {
+                                               return infraP2pStaLinks.contains(txLinkInfo.second);
+                                           })),
                               true,
                               "Unexpected link ID used for P2P STA to STA");
-        NS_TEST_EXPECT_MSG_EQ(m_txLinks.contains(STA_TO_P2P_STA_PROTOCOL) &&
-                                  std::all_of(m_txLinks.at(STA_TO_P2P_STA_PROTOCOL).cbegin(),
-                                              m_txLinks.at(STA_TO_P2P_STA_PROTOCOL).cend(),
-                                              [&infraStaLinks](const auto& txLinkInfo) {
-                                                  return infraStaLinks.contains(txLinkInfo.second);
-                                              }),
+        NS_TEST_EXPECT_MSG_EQ((m_txLinks.contains(STA_TO_P2P_STA_PROTOCOL) &&
+                               std::all_of(m_txLinks.at(STA_TO_P2P_STA_PROTOCOL).cbegin(),
+                                           m_txLinks.at(STA_TO_P2P_STA_PROTOCOL).cend(),
+                                           [&infraStaLinks](const auto& txLinkInfo) {
+                                               return infraStaLinks.contains(txLinkInfo.second);
+                                           })),
                               true,
                               "Unexpected link ID used for STA to P2P STA");
         std::vector<std::pair<Time, uint8_t>> nonP2pStaTxLinks{};
@@ -1016,13 +1014,12 @@ P2pTest::CheckResults()
                                                          tstamp <= period.stop);
                                              });
                      });
-        NS_TEST_EXPECT_MSG_EQ(!nonP2pStaTxLinks.empty() &&
-                                  std::all_of(nonP2pStaTxLinks.cbegin(),
-                                              nonP2pStaTxLinks.cend(),
-                                              [&infraP2pStaLinks](const auto& txLinkInfo) {
-                                                  return infraP2pStaLinks.contains(
-                                                      txLinkInfo.second);
-                                              }),
+        NS_TEST_EXPECT_MSG_EQ((!nonP2pStaTxLinks.empty() &&
+                               std::all_of(nonP2pStaTxLinks.cbegin(),
+                                           nonP2pStaTxLinks.cend(),
+                                           [&infraP2pStaLinks](const auto& txLinkInfo) {
+                                               return infraP2pStaLinks.contains(txLinkInfo.second);
+                                           })),
                               true,
                               "Unexpected link ID used by P2P STA during non-P2P period");
     }

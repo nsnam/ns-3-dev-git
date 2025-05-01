@@ -417,7 +417,7 @@ EmlsrLinkSwitchTest::CheckInitialControlFrame(const WifiConstPsduMap& psduMap,
 
     // if aux PHYs do not switch links, the main PHY is operating on its original link when
     // the transmission of an ICF starts
-    NS_TEST_EXPECT_MSG_EQ(m_switchAuxPhy || currMainPhyLinkId == m_mainPhyId,
+    NS_TEST_EXPECT_MSG_EQ((m_switchAuxPhy || currMainPhyLinkId == m_mainPhyId),
                           true,
                           "Main PHY is operating on an unexpected link ("
                               << +currMainPhyLinkId.value() << ", expected " << +m_mainPhyId
