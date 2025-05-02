@@ -224,7 +224,7 @@ namespace tests
  * The message is interpreted as a stream, for example:
  *
  * @code
- * NS_TEST_EXPECT_MSG_EQUAL (result, true,
+ * NS_TEST_EXPECT_MSG_EQ(result, true,
  *      "cannot open file " << filename << " in test");
  * @endcode
  *
