@@ -694,16 +694,16 @@ TdTbfqFfMacScheduler::DoSchedDlTriggerReq(
         NS_LOG_INFO(this << " Processing DLHARQ feedback");
         if (nLayers == 1)
         {
-            retx.push_back(m_dlInfoListBuffered.at(i).m_harqStatus.at(0) ==
-                           DlInfoListElement_s::NACK);
-            retx.push_back(false);
+            retx.emplace_back(m_dlInfoListBuffered.at(i).m_harqStatus.at(0) ==
+                              DlInfoListElement_s::NACK);
+            retx.emplace_back(false);
         }
         else
         {
-            retx.push_back(m_dlInfoListBuffered.at(i).m_harqStatus.at(0) ==
-                           DlInfoListElement_s::NACK);
-            retx.push_back(m_dlInfoListBuffered.at(i).m_harqStatus.at(1) ==
-                           DlInfoListElement_s::NACK);
+            retx.emplace_back(m_dlInfoListBuffered.at(i).m_harqStatus.at(0) ==
+                              DlInfoListElement_s::NACK);
+            retx.emplace_back(m_dlInfoListBuffered.at(i).m_harqStatus.at(1) ==
+                              DlInfoListElement_s::NACK);
         }
         if (retx.at(0) || retx.at(1))
         {
