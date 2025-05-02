@@ -6,7 +6,7 @@
   before_script:
     - pacman-key --init
     - pacman -Syu --noconfirm
-      base-devel ninja cmake python ccache gsl gtk3 boost openmpi openssh
+      base-devel ninja cmake python ccache gsl gtk3 boost openmpi openssh libxml2-legacy
       graphviz imagemagick texlive-basic texlive-bin texlive-binextra texlive-latexextra
       texlive-fontutils texlive-fontsrecommended texlive-mathscience python-sphinx wget
       doxygen
