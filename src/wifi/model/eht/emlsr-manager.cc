@@ -58,9 +58,7 @@ EmlsrManager::GetTypeId()
                 MakeUintegerAccessor(&EmlsrManager::SetMainPhyId, &EmlsrManager::GetMainPhyId),
                 MakeUintegerChecker<uint8_t>())
             .AddAttribute("AuxPhyChannelWidth",
-                          "The maximum channel width (MHz) supported by Aux PHYs. Note that the "
-                          "maximum channel width is capped to the maximum channel width supported "
-                          "by the configured maximum modulation class supported.",
+                          "The maximum channel width supported by Aux PHYs.",
                           TypeId::ATTR_GET |
                               TypeId::ATTR_CONSTRUCT, // prevent setting after construction
                           MHzValue(20_MHz),
