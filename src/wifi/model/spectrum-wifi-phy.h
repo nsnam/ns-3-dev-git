@@ -20,6 +20,7 @@
 
 #include <map>
 #include <optional>
+#include <set>
 #include <vector>
 
 class SpectrumWifiPhyFilterTest;
@@ -32,8 +33,8 @@ struct SpectrumSignalParameters;
 class WifiSpectrumPhyInterface;
 struct WifiSpectrumSignalParameters;
 
-/// Map a spectrum band associated with an RU to the RU specification
-using RuBands = std::map<WifiSpectrumBandInfo, WifiRu::RuSpec>;
+/// Set of RU bands
+using RuBands = std::set<WifiSpectrumBandInfo>;
 
 /**
  * @brief 802.11 PHY layer model
