@@ -62,6 +62,10 @@ operator<<(std::ostream& os, WifiQueueBlockedReason reason)
         return (os << "WAITING_EMLSR_TRANSITION_DELAY");
     case WifiQueueBlockedReason::TID_NOT_MAPPED:
         return (os << "TID_NOT_MAPPED");
+    case WifiQueueBlockedReason::WAIT_UNTIL_DTIM:
+        return (os << "WAIT_UNTIL_DTIM");
+    case WifiQueueBlockedReason::TX_GROUP_AFTER_DTIM:
+        return (os << "TX_GROUP_AFTER_DTIM");
     case WifiQueueBlockedReason::REASONS_COUNT:
         return (os << "REASONS_COUNT");
     default:
