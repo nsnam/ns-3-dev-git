@@ -126,7 +126,7 @@ namespace ns3
  *
  * Then we set the weights from the nodes to themselves as 0
  * @code
- * for (size_t i=0; i < routeWeights.GetRows(); i++)
+ * for (std::size_t i=0; i < routeWeights.GetRows(); i++)
  * {
  *     routeWeights.SetValue(i, i, 0);
  * }
@@ -135,9 +135,9 @@ namespace ns3
  * Create the known shortest paths
  * @code
  *  std::map<std::pair<int, int>, std::vector<int>> routeMap;
- *  for (size_t i = 0; i < routeWeights.GetRows(); i++)
+ *  for (std::size_t i = 0; i < routeWeights.GetRows(); i++)
  *  {
- *      for (size_t j = 0; j < routeWeights.GetRows(); j++)
+ *      for (std::size_t j = 0; j < routeWeights.GetRows(); j++)
  *      {
  *          if (routeWeights.GetValue(i, j) != maxFloat)
  *          {
@@ -158,11 +158,11 @@ namespace ns3
  * and store them in a routing table. In this case, by brute-force
  *
  * @code
- * for (size_t bridgeNode = 0; bridgeNode < routeWeights.GetRows(); bridgeNode++)
+ * for (std::size_t bridgeNode = 0; bridgeNode < routeWeights.GetRows(); bridgeNode++)
  *  {
- *      for (size_t srcNode = 0; srcNode < routeWeights.GetRows(); srcNode++)
+ *      for (std::size_t srcNode = 0; srcNode < routeWeights.GetRows(); srcNode++)
  *      {
- *          for (size_t dstNode = 0; dstNode < routeWeights.GetRows(); dstNode++)
+ *          for (std::size_t dstNode = 0; dstNode < routeWeights.GetRows(); dstNode++)
  *          {
  *              auto weightA = routeWeights.GetValue(srcNode, bridgeNode);
  *              auto weightB = routeWeights.GetValue(bridgeNode, dstNode);
@@ -237,12 +237,12 @@ class SymmetricAdjacencyMatrix
      * @param [in] numRows The number of rows in the matrix
      * @param [in] value The default initialization value of matrix
      */
-    SymmetricAdjacencyMatrix(size_t numRows = 0, T value = {})
+    SymmetricAdjacencyMatrix(std::size_t numRows = 0, T value = {})
     {
         m_rows = numRows;
         m_matrix.resize(m_rows * (m_rows + 1) / 2);
         std::fill(m_matrix.begin(), m_matrix.end(), value);
-        for (size_t i = 0; i < numRows; i++)
+        for (std::size_t i = 0; i < numRows; i++)
         {
             m_rowOffsets.push_back(i * (i + 1) / 2);
         }
@@ -254,7 +254,7 @@ class SymmetricAdjacencyMatrix
      * @param [in] column  The column of the matrix to retrieve the value
      * @return value retrieved from matrix (row, column) or matrix (column, row)
      */
-    T GetValue(size_t row, size_t column)
+    T GetValue(std::size_t row, std::size_t column)
     {
         // Highest id should be always row, since we have only half matrix
         const auto maxIndex = std::max(row, column);
@@ -268,7 +268,7 @@ class SymmetricAdjacencyMatrix
      * @param [in] column The column of the matrix to set the value
      * @param [in] value value to be assigned to matrix (row, column) or matrix (column, row)
      */
-    void SetValue(size_t row, size_t column, T value)
+    void SetValue(std::size_t row, std::size_t column, T value)
     {
         // Highest id should be always row, since we have only half matrix
         const auto maxIndex = std::max(row, column);
@@ -282,18 +282,18 @@ class SymmetricAdjacencyMatrix
      * @param [in] row The row of the matrix to set the value
      * @param [in] value Value to be assigned to matrix (row, column) or matrix (column, row)
      */
-    void SetValueAdjacent(size_t row, T value)
+    void SetValueAdjacent(std::size_t row, T value)
     {
         // Since we only store the lower-left half of the adjacency matrix,
         // we need to set the adjacent values in both rows and columns involving this row id
 
         // First set the columns of row m_id
-        for (size_t i = 0; i < row; i++)
+        for (std::size_t i = 0; i < row; i++)
         {
             m_matrix.at(m_rowOffsets.at(row) + i) = value;
         }
         // Then set the column m_id of rows >= m_id
-        for (size_t i = row; i < m_rows; i++)
+        for (std::size_t i = row; i < m_rows; i++)
         {
             m_matrix.at(m_rowOffsets.at(i) + row) = value;
         }
@@ -313,18 +313,18 @@ class SymmetricAdjacencyMatrix
      * @brief Retrieve number of rows in the adjacency matrix
      * @return the number of rows
      */
-    size_t GetRows()
+    std::size_t GetRows()
     {
         return m_rows;
     }
 
   private:
-    size_t m_rows; //!< Number of rows in matrix
+    std::size_t m_rows; //!< Number of rows in matrix
     std::vector<T>
         m_matrix; //!< The adjacency matrix. For efficiency purposes, we store only lower
                   //!< left half, including the main diagonal. It also is stored as a vector
                   //!< not to introduce gaps between different rows or items (in case T = bool)
-    std::vector<size_t> m_rowOffsets; //!< Precomputed row starting offsets of m_matrix
+    std::vector<std::size_t> m_rowOffsets; //!< Precomputed row starting offsets of m_matrix
 };
 
 } // namespace ns3
