@@ -21,11 +21,10 @@ UhrMacCapabilities::GetSize() const
 void
 UhrMacCapabilities::Serialize(Buffer::Iterator& start) const
 {
-    // TODO: assume DSO supported field is encoded on B3
     uint8_t val = dpsSupport | (dpsAssistingSupport << 1) | (mlPowerManagement << 2) |
-                  (dsoSupported << 3) | (npcaSupported << 4) | (bsrEnhancementSupport << 5);
+                  (npcaSupported << 4) | (bsrEnhancementSupport << 5) | (dsoSupport << 7);
 
-    // TODO: implement other fields once 802.11bn D0.1 is available
+    // TODO: implement other fields once next 802.11bn draft is available
     start.WriteU8(val);
 }
 
@@ -37,11 +36,10 @@ UhrMacCapabilities::Deserialize(Buffer::Iterator start)
     dpsSupport = val & 0x01;
     dpsAssistingSupport = (val >> 1) & 0x01;
     mlPowerManagement = (val >> 2) & 0x01;
-    // TODO: assume DSO supported field is encoded on B3
-    dsoSupported = (val >> 3) & 0x01;
     npcaSupported = (val >> 4) & 0x01;
     bsrEnhancementSupport = (val >> 5) & 0x01;
-    // TODO: implement other fields once 802.11bn D0.1 is available
+    dsoSupport = (val >> 7) & 0x01;
+    // TODO: implement other fields once next 802.11bn draft is available
     return 1;
 }
 
@@ -55,13 +53,13 @@ UhrPhyCapabilities::GetSize() const
 void
 UhrPhyCapabilities::Serialize(Buffer::Iterator& /*start*/) const
 {
-    // TODO: implement once 802.11bn D0.1 is available
+    // TODO: implement once defined in a next 802.11bn draft
 }
 
 uint16_t
 UhrPhyCapabilities::Deserialize(Buffer::Iterator /*start*/)
 {
-    // TODO: implement once 802.11bn D0.1 is available
+    // TODO: implement once defined in a next 802.11bn draft
     return 0;
 }
 
@@ -80,7 +78,7 @@ UhrCapabilities::ElementIdExt() const
 void
 UhrCapabilities::Print(std::ostream& os) const
 {
-    os << "UHR Capabilities="; // TODO
+    os << "UHR Capabilities=[]"; // TODO
 }
 
 uint16_t

@@ -19,12 +19,13 @@ namespace ns3
  */
 struct UhrMacCapabilities
 {
-    uint8_t dpsSupport : 1 {0};            //!< DPS Support
-    uint8_t dpsAssistingSupport : 1 {0};   //!< DPS Assisting Support
-    uint8_t mlPowerManagement : 1 {0};     //!< Multi-Link Power Management
-    uint8_t dsoSupported : 1 {0};          //!< DSO supported (not defined yet in 802.11bn/D0.2)
-    uint8_t npcaSupported : 1 {0};         //!< NPCA Supported
-    uint8_t bsrEnhancementSupport : 1 {0}; //!< BSR Enhancement Support
+    uint8_t dpsSupport : 1 {0};                 //!< DPS Support
+    uint8_t dpsAssistingSupport : 1 {0};        //!< DPS Assisting Support
+    uint8_t mlPowerManagement : 1 {0};          //!< Multi-Link Power Management
+    uint8_t npcaSupported : 1 {0};              //!< NPCA Supported
+    uint8_t bsrEnhancementSupport : 1 {0};      //!< BSR Enhancement Support
+    uint8_t additionalMappedTidSupport : 1 {0}; //!< Additional Mapped TID Support
+    uint8_t dsoSupport : 1 {0};                 //!< DSO support
 
     /**
      * Get the size of the serialized UHR MAC capabilities subfield
