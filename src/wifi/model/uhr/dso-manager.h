@@ -11,9 +11,12 @@
 
 #include "ns3/nstime.h"
 #include "ns3/object.h"
+#include "ns3/traced-callback.h"
 #include "ns3/wifi-ru.h"
 
+#include <functional>
 #include <map>
+#include <optional>
 #include <vector>
 
 namespace ns3
@@ -22,8 +25,32 @@ namespace ns3
 class UhrFrameExchangeManager;
 class StaWifiMac;
 class WifiMpdu;
+class WifiPsdu;
 class WifiPhyOperatingChannel;
 class MgtAssocResponseHeader;
+class WifiTxVector;
+
+/**
+ * @ingroup wifi
+ * Enumeration of the possible DSO TXOP events to report.
+ */
+enum class DsoTxopEvent
+{
+    RX_ICF,  // Received Initial Control Frame to indicate the start of a DSO TXOP
+    TX_ICR,  // Transmitted response to the ICF that initiated the DSO TXOP
+    TIMEOUT, // DSO TXOP terminated because no PHY-RXSTART indication has been received within the
+             // DSO expected timeout value
+    DURATION_DETECT_END, // DSO TXOP terminated because the duration/ID field of the most recently
+                         // received frame has been detected to be zero and EarlyTxopEndDetect
+                         // attribute is enabled
+    RX_CF_END,           // DSO TXOP terminated because a CF-END frame has been received
+    RX_OBSS,             // DSO TXOP terminated because an OBSS frame has been received
+    RX_OTHER, // DSO TXOP terminated because a frame that is not an OBSS frame and is not intended
+              // to this DSO STA has been received
+    FAILED_RESPONSE, // DSO TXOP terminated because no response to the most recently received frame
+                     // from the AP that requires an immediate response after a SIFS has been
+                     // transmitted (not supported yet)
+};
 
 /**
  * @ingroup wifi
@@ -75,11 +102,23 @@ class DsoManager : public Object
     void NotifyIcfReceived(uint8_t linkId, WifiRu::RuSpec ru);
 
     /**
+     * Notify the transmission of the response to an initial Control frame on the given link.
+     *
+     * @param linkId the ID of the link on which the ICR was transmitted
+     */
+    void NotifyIcrTransmitted(uint8_t linkId);
+
+    /**
      * Notify the end of a TXOP on the given link.
      *
      * @param linkId the ID of the given link
+     * @param psdu the received PSDU that triggered the termination of the TXOP, if any
+     * @param txVector TXVECTOR of the received PSDU, if any
      */
-    void NotifyTxopEnd(uint8_t linkId);
+    void NotifyTxopEnd(
+        uint8_t linkId,
+        Ptr<const WifiPsdu> psdu = nullptr,
+        std::optional<std::reference_wrapper<const WifiTxVector>> txVector = std::nullopt);
 
     /**
      * Get the delay to switch to the DSO subband.
@@ -155,7 +194,26 @@ class DsoManager : public Object
         m_dsoSubbands; //!< link ID-indexed map of DSO subbands
 
     Time m_dsoSwitchBackDelay; //!< DSO Switch Back delay
+
+    /**
+     * TracedCallback signature for DSO TXOP event trace source.
+     *
+     * @param event the event that occurred
+     * @param linkId the ID of the link on which the event occurred
+     */
+    typedef void (*DsoTxopEventTracedCallback)(DsoTxopEvent event, uint8_t linkId);
+
+    TracedCallback<DsoTxopEvent, uint8_t> m_dsoTxopEventTrace; //!< DSO TXOP event trace source
 };
+
+/**
+ * @brief Stream insertion operator.
+ *
+ * @param os the output stream
+ * @param event the DSO TXOP event
+ * @returns a reference to the stream
+ */
+std::ostream& operator<<(std::ostream& os, DsoTxopEvent event);
 
 } // namespace ns3
 

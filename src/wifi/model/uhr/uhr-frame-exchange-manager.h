@@ -46,6 +46,7 @@ class UhrFrameExchangeManager : public EhtFrameExchangeManager
                      bool inAmpdu) override;
     void PostProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) override;
     void TxopEnd(const std::optional<Mac48Address>& txopHolder) override;
+    void ForwardPsduMapDown(WifiConstPsduMap psduMap, WifiTxVector& txVector) override;
 
   private:
     /**
@@ -58,7 +59,8 @@ class UhrFrameExchangeManager : public EhtFrameExchangeManager
     bool ShouldDsoSwitchBackToPrimary(Ptr<const WifiPsdu> psdu,
                                       uint16_t aid,
                                       const Mac48Address& address) const;
-
+    bool m_dsoIcfReceived{
+        false}; //!< flag whether an ICF has been received to indicate the start of a DSO TXOP
     bool m_switchingForDso{false}; //!< flag whether channel is switching for DSO operations
 };
 

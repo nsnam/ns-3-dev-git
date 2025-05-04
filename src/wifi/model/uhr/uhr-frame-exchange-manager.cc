@@ -89,6 +89,8 @@ UhrFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
                 &UhrFrameExchangeManager::TxopEnd,
                 this,
                 sender);
+
+            m_dsoIcfReceived = true;
         }
     }
 
@@ -202,10 +204,27 @@ UhrFrameExchangeManager::PostProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTx
     {
         NS_LOG_DEBUG("No longer involved in the TXOP and switching back to primary subchannel");
         m_ongoingTxopEnd.Cancel();
-        dsoManager->NotifyTxopEnd(m_linkId);
+        dsoManager->NotifyTxopEnd(m_linkId, psdu, txVector);
     }
 
     EhtFrameExchangeManager::PostProcessFrame(psdu, txVector);
+}
+
+void
+UhrFrameExchangeManager::ForwardPsduMapDown(WifiConstPsduMap psduMap, WifiTxVector& txVector)
+{
+    NS_LOG_FUNCTION(this << psduMap << txVector);
+
+    if (const auto addr1 = psduMap.cbegin()->second->GetAddr1();
+        m_dsoIcfReceived && m_staMac && m_staMac->GetDsoManager() && (addr1 == m_bssid) &&
+        txVector.IsUlMu() && psduMap.cbegin()->second->GetHeader(0).IsQosData() &&
+        !psduMap.cbegin()->second->GetHeader(0).HasData())
+    {
+        m_staMac->GetDsoManager()->NotifyIcrTransmitted(m_linkId);
+    }
+    m_dsoIcfReceived = false;
+
+    EhtFrameExchangeManager::ForwardPsduMapDown(psduMap, txVector);
 }
 
 } // namespace ns3

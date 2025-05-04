@@ -12,6 +12,7 @@
 #include "uhr-frame-exchange-manager.h"
 
 #include "ns3/abort.h"
+#include "ns3/boolean.h"
 #include "ns3/eht-configuration.h"
 #include "ns3/eht-operation.h"
 #include "ns3/he-operation.h"
@@ -47,7 +48,11 @@ DsoManager::GetTypeId()
                 TimeValue(MicroSeconds(
                     275)), // aSIFSTime + aSlotTime + aRxPHYStartDelay + default switching delay
                 MakeTimeAccessor(&DsoManager::m_dsoSwitchBackDelay),
-                MakeTimeChecker());
+                MakeTimeChecker())
+            .AddTraceSource("DsoTxopEvent",
+                            "Trace source indicating a DSO TXOP event.",
+                            MakeTraceSourceAccessor(&DsoManager::m_dsoTxopEventTrace),
+                            "ns3::DsoManager::DsoTxopEventTracedCallback");
     return tid;
 }
 
@@ -117,6 +122,8 @@ DsoManager::NotifyIcfReceived(uint8_t linkId, WifiRu::RuSpec ru)
     NS_LOG_FUNCTION(this << linkId << ru);
     NS_ASSERT(WifiRu::IsEht(ru));
 
+    m_dsoTxopEventTrace(DsoTxopEvent::RX_ICF, linkId);
+
     if (m_dsoSubbands.empty())
     {
         // nothing to do, we do not have any DSO subband to switch to
@@ -148,9 +155,18 @@ DsoManager::NotifyIcfReceived(uint8_t linkId, WifiRu::RuSpec ru)
 }
 
 void
-DsoManager::NotifyTxopEnd(uint8_t linkId)
+DsoManager::NotifyIcrTransmitted(uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << linkId);
+    m_dsoTxopEventTrace(DsoTxopEvent::TX_ICR, linkId);
+}
+
+void
+DsoManager::NotifyTxopEnd(uint8_t linkId,
+                          Ptr<const WifiPsdu> psdu,
+                          std::optional<std::reference_wrapper<const WifiTxVector>> txVector)
+{
+    NS_LOG_FUNCTION(this << linkId << psdu);
 
     if (!m_staMac->IsAssociated())
     {
@@ -158,6 +174,34 @@ DsoManager::NotifyTxopEnd(uint8_t linkId)
     }
 
     auto phy = m_staMac->GetWifiPhy(linkId);
+    if (psdu)
+    {
+        NS_ASSERT(txVector);
+        if (const auto& hdr = psdu->GetHeader(0); hdr.IsCfEnd())
+        {
+            m_dsoTxopEventTrace(DsoTxopEvent::RX_CF_END, linkId);
+        }
+        else if (!GetUhrFem(linkId)->IsIntraBssPpdu(psdu->GetHeader(0), *txVector))
+        {
+            m_dsoTxopEventTrace(DsoTxopEvent::RX_OBSS, linkId);
+        }
+        else
+        {
+            m_dsoTxopEventTrace(DsoTxopEvent::RX_OTHER, linkId);
+        }
+    }
+    else if (BooleanValue earlyTxopEndDetect;
+             GetUhrFem(linkId)->GetAttributeFailSafe("EarlyTxopEndDetect", earlyTxopEndDetect) &&
+             earlyTxopEndDetect.Get())
+    {
+        m_dsoTxopEventTrace(DsoTxopEvent::DURATION_DETECT_END, linkId);
+    }
+    else
+    {
+        // TODO: FAILED_RESPONSE is not supported yet
+        m_dsoTxopEventTrace(DsoTxopEvent::TIMEOUT, linkId);
+    }
+
     if (!IsOnDsoSubband(linkId))
     {
         return;
@@ -281,6 +325,31 @@ bool
 DsoManager::IsOnDsoSubband(uint8_t linkId) const
 {
     return m_staMac->GetWifiPhy(linkId)->GetOperatingChannel() != GetPrimarySubband(linkId);
+}
+
+std::ostream&
+operator<<(std::ostream& os, DsoTxopEvent reason)
+{
+    switch (reason)
+    {
+    case DsoTxopEvent::RX_ICF:
+        return (os << "RX_ICF");
+    case DsoTxopEvent::TX_ICR:
+        return (os << "TX_ICR");
+    case DsoTxopEvent::TIMEOUT:
+        return (os << "TIMEOUT");
+    case DsoTxopEvent::RX_CF_END:
+        return (os << "RX_CF_END");
+    case DsoTxopEvent::RX_OBSS:
+        return (os << "RX_OBSS");
+    case DsoTxopEvent::RX_OTHER:
+        return (os << "RX_OTHER");
+    case DsoTxopEvent::FAILED_RESPONSE:
+        return (os << "FAILED_RESPONSE");
+    default:
+        NS_FATAL_ERROR("Unknown reason");
+        return (os << "UNKNOWN");
+    }
 }
 
 } // namespace ns3
