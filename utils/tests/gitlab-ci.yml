@@ -77,7 +77,7 @@ workflow:
       then `touch build/tests-$CI_COMMIT_REF_SLUG.txt`;
       fi
     - if [[ "$CI_JOB_STAGE" == "test" ]] && [[ "$MODE" != "debug" ]] && [[ -f build/tests-$CI_COMMIT_REF_SLUG.txt ]];
-      then ./test.py -n;
+      then ./test.py -n --verbose-failed;
       if [[ $? == 0 ]];
       then `rm build/tests-$CI_COMMIT_REF_SLUG.txt` || true;
       fi;
