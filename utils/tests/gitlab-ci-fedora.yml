@@ -23,14 +23,14 @@
       gsl gsl-devel
       sqlite sqlite-devel
       libxml2 libxml2-devel
-      openmpi openmpi-devel openssh
+      mpich mpich-devel openssh
       goocanvas2-devel
       python python-devel
       python3-gobject-devel gobject-introspection-devel
       graphviz-devel graphviz ipython
       git
     - source /etc/profile.d/modules.sh
-    - module load mpi/openmpi-$(uname -m)
+    - module load mpi/mpich-$(uname -m)
   variables:
     COMPILER: g++
 
