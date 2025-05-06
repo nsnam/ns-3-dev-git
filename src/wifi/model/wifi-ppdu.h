@@ -73,7 +73,7 @@ class WifiPpdu : public SimpleRefCount<WifiPpdu>
     /**
      * Destructor for WifiPpdu.
      */
-    virtual ~WifiPpdu() = default;
+    virtual ~WifiPpdu();
 
     /**
      * Get the TXVECTOR used to send the PPDU.
