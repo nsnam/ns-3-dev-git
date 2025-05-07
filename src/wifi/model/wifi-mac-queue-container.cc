@@ -119,6 +119,56 @@ WifiMacQueueContainer::GetNBytes(const WifiContainerQueueId& queueId) const
     return m_nBytesPerQueue.at(queueId);
 }
 
+void
+WifiMacQueueContainer::ReplaceAddresses(const WifiContainerQueueId& queueId,
+                                        std::optional<Mac48Address> addr1,
+                                        std::optional<Mac48Address> addr2) const
+{
+    if (!m_queues.contains(queueId))
+    {
+        return; // given container queue does not exist
+    }
+
+    for (auto& elem : m_queues.at(queueId))
+    {
+        NS_ASSERT_MSG(elem.mpdu->IsOriginal(), "Expected the MPDU original copy in the queue");
+        if (addr1)
+        {
+            elem.mpdu->GetHeader().SetAddr1(*addr1);
+        }
+        if (addr2)
+        {
+            elem.mpdu->GetHeader().SetAddr2(*addr2);
+        }
+    }
+
+    // update the queue ID if the address in the queue ID has changed
+    std::optional<Mac48Address> newAddress;
+    const auto& addr = (std::get<WifiRcvAddr>(queueId) == WifiRcvAddr::BROADCAST ? addr2 : addr1);
+    if (addr && addr != std::get<Mac48Address>(queueId))
+    {
+        newAddress = addr.value();
+    }
+
+    if (newAddress)
+    {
+        auto newQueueId = queueId;
+        std::get<Mac48Address>(newQueueId) = *newAddress;
+
+        if (auto nh = m_queues.extract(queueId))
+        {
+            nh.key() = newQueueId;
+            m_queues.insert(std::move(nh));
+        }
+
+        if (auto nh = m_nBytesPerQueue.extract(queueId))
+        {
+            nh.key() = newQueueId;
+            m_nBytesPerQueue.insert(std::move(nh));
+        }
+    }
+}
+
 std::pair<WifiMacQueueContainer::iterator, WifiMacQueueContainer::iterator>
 WifiMacQueueContainer::ExtractExpiredMpdus(const WifiContainerQueueId& queueId) const
 {

@@ -109,6 +109,12 @@ class WifiMacQueueSchedulerImpl : public WifiMacQueueScheduler
     std::optional<Mask> GetQueueLinkMask(AcIndex ac,
                                          const WifiContainerQueueId& queueId,
                                          uint8_t linkId) final;
+    /** @copydoc ns3::WifiMacQueueScheduler::ResetQueueInfo */
+    void ResetQueueInfo(AcIndex ac, const WifiContainerQueueId& queueId) final;
+    /** @copydoc ns3::WifiMacQueueScheduler::ChangeQueueIdAddress */
+    void ChangeQueueIdAddress(AcIndex ac,
+                              const WifiContainerQueueId& queueId,
+                              Mac48Address address) final;
     /** @copydoc ns3::WifiMacQueueScheduler::HasToDropBeforeEnqueue */
     Ptr<WifiMpdu> HasToDropBeforeEnqueue(AcIndex ac, Ptr<WifiMpdu> mpdu) final;
     /** @copydoc ns3::WifiMacQueueScheduler::NotifyEnqueue */
@@ -765,6 +771,53 @@ WifiMacQueueSchedulerImpl<Priority, Compare>::GetQueueLinkMask(AcIndex ac,
     }
 
     return std::nullopt;
+}
+
+template <class Priority, class Compare>
+void
+WifiMacQueueSchedulerImpl<Priority, Compare>::ResetQueueInfo(AcIndex ac,
+                                                             const WifiContainerQueueId& queueId)
+{
+    NS_LOG_FUNCTION(this << ac << queueId);
+
+    const auto queueInfoIt = m_perAcInfo[ac].queueInfoMap.find(queueId);
+    if (queueInfoIt != m_perAcInfo[ac].queueInfoMap.cend())
+    {
+        queueInfoIt->second.linkIds.clear();
+    }
+}
+
+template <class Priority, class Compare>
+void
+WifiMacQueueSchedulerImpl<Priority, Compare>::ChangeQueueIdAddress(
+    AcIndex ac,
+    const WifiContainerQueueId& queueId,
+    Mac48Address address)
+{
+    NS_LOG_FUNCTION(this << ac << queueId << address);
+
+    if (std::get<Mac48Address>(queueId) == address)
+    {
+        return; // new address is equal to current address
+    }
+
+    auto queueInfoPairIt = m_perAcInfo[ac].queueInfoMap.find(queueId);
+
+    if (queueInfoPairIt == m_perAcInfo[ac].queueInfoMap.end())
+    {
+        return; // queue not found, do nothing
+    }
+
+    // extract the element, change the address of the queue ID and re-insert
+    auto nh = m_perAcInfo[ac].queueInfoMap.extract(queueInfoPairIt);
+    std::get<Mac48Address>(nh.key()) = address;
+    const auto ret = m_perAcInfo[ac].queueInfoMap.insert(std::move(nh));
+    NS_ASSERT(ret.inserted);
+    // update the reference to the queue info in the sorted list
+    if (auto& queueInfo = ret.position->second; queueInfo.priorityIt.has_value())
+    {
+        queueInfo.priorityIt.value()->second = std::ref(*ret.position);
+    }
 }
 
 template <class Priority, class Compare>

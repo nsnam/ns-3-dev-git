@@ -184,6 +184,19 @@ class WifiMacQueueContainer
     uint32_t GetNBytes(const WifiContainerQueueId& queueId) const;
 
     /**
+     * Replace the addresses in the Address fields of all the MPDUs in the given container queue
+     * with the given addresses. Also, update the address in the ID of the given container queue
+     * if needed.
+     *
+     * @param queueId the ID of the given container queue
+     * @param addr1 the address to write in the Address 1 field (if given)
+     * @param addr2 the address to write in the Address 2 field (if given)
+     */
+    void ReplaceAddresses(const WifiContainerQueueId& queueId,
+                          std::optional<Mac48Address> addr1,
+                          std::optional<Mac48Address> addr2) const;
+
+    /**
      * Transfer non-inflight MPDUs with expired lifetime in the container queue identified by
      * the given QueueId to the container queue storing MPDUs with expired lifetime.
      *

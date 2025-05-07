@@ -12,6 +12,7 @@
 #include "wifi-mac-queue.h"
 
 #include "wifi-mac-queue-scheduler.h"
+#include "wifi-utils.h"
 
 #include "ns3/simulator.h"
 
@@ -327,7 +328,7 @@ WifiMacQueue::PeekByTidAndAddress(uint8_t tid, Mac48Address dest, Ptr<const Wifi
 Ptr<WifiMpdu>
 WifiMacQueue::PeekByQueueId(const WifiContainerQueueId& queueId, Ptr<const WifiMpdu> item) const
 {
-    NS_LOG_FUNCTION(this << item);
+    NS_LOG_FUNCTION(this << queueId << item);
     NS_ASSERT(!item || (item->IsQueued() && WifiMacQueueContainer::GetQueueId(item) == queueId));
 
     // Remove MPDUs with expired lifetime if we are looking for the first MPDU in the queue
@@ -420,6 +421,17 @@ WifiMacQueue::Flush()
 }
 
 void
+WifiMacQueue::Flush(const WifiContainerQueueId& queueId)
+{
+    NS_LOG_FUNCTION(this << queueId);
+    const auto& queue = GetContainer().GetQueue(queueId);
+    while (!queue.empty())
+    {
+        DoRemove(queue.cbegin());
+    }
+}
+
+void
 WifiMacQueue::Replace(Ptr<const WifiMpdu> currentItem, Ptr<WifiMpdu> newItem)
 {
     NS_LOG_FUNCTION(this << *currentItem << *newItem);
@@ -437,6 +449,24 @@ WifiMacQueue::Replace(Ptr<const WifiMpdu> currentItem, Ptr<WifiMpdu> newItem)
     // The size of a WifiMacQueue is measured as number of packets. We dequeued
     // one packet, so there is certainly room for inserting one packet
     NS_ABORT_IF(!ret);
+}
+
+void
+WifiMacQueue::ReplaceAddresses(const WifiContainerQueueId& queueId,
+                               std::optional<Mac48Address> addr1,
+                               std::optional<Mac48Address> addr2)
+{
+    NS_LOG_FUNCTION(this << queueId << (addr1 ? toString(*addr1) : "")
+                         << (addr2 ? toString(*addr2) : ""));
+
+    GetContainer().ReplaceAddresses(queueId, addr1, addr2);
+
+    // update the queue ID held by the scheduler if the address in the queue ID has changed
+    const auto& addr = (std::get<WifiRcvAddr>(queueId) == WifiRcvAddr::BROADCAST ? addr2 : addr1);
+    if (addr && addr != std::get<Mac48Address>(queueId))
+    {
+        m_scheduler->ChangeQueueIdAddress(m_ac, queueId, addr.value());
+    }
 }
 
 uint32_t
