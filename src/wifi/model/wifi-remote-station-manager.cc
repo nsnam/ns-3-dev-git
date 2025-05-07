@@ -1519,32 +1519,8 @@ WifiRemoteStationManager::LookupState(Mac48Address address) const
     }
 
     auto state = std::make_shared<WifiRemoteStationState>();
-    state->m_state = WifiRemoteStationState::BRAND_NEW;
-    state->m_address = address;
-    state->m_aid = 0;
-    state->m_operationalRateSet.push_back(GetDefaultMode());
-    state->m_operationalMcsSet.push_back(GetDefaultMcs());
-    state->m_dsssSupported = false;
-    state->m_erpOfdmSupported = false;
-    state->m_ofdmSupported = false;
-    state->m_htCapabilities = nullptr;
-    state->m_htOperation = nullptr;
-    state->m_vhtCapabilities = nullptr;
-    state->m_vhtOperation = nullptr;
-    state->m_heCapabilities = nullptr;
-    state->m_heOperation = nullptr;
-    state->m_ehtCapabilities = nullptr;
-    state->m_ehtOperation = nullptr;
-    state->m_mleCommonInfo = nullptr;
-    state->m_emlsrEnabled = false;
-    state->m_uhrCapabilities = nullptr;
-    state->m_channelWidth = m_wifiPhy->GetChannelWidth();
-    state->m_guardInterval = GetGuardInterval();
-    state->m_ness = 0;
-    state->m_aggregation = false;
-    state->m_qosSupported = false;
-    state->m_isInPsMode = false;
     const_cast<WifiRemoteStationManager*>(this)->m_states.insert({address, state});
+    ResetState(address);
     NS_LOG_DEBUG("WifiRemoteStationManager::LookupState returning new state");
     return state;
 }
@@ -1567,6 +1543,41 @@ WifiRemoteStationManager::Lookup(Mac48Address address) const
     station->m_rssiAndUpdateTimePair = std::make_pair(dBm_t{0}, Seconds(0));
     const_cast<WifiRemoteStationManager*>(this)->m_stations.insert({address, station});
     return station;
+}
+
+void
+WifiRemoteStationManager::ResetState(Mac48Address address) const
+{
+    NS_LOG_FUNCTION(this << address);
+    if (const auto stateIt = m_states.find(address); stateIt != m_states.cend())
+    {
+        auto& state = stateIt->second;
+        state->m_state = WifiRemoteStationState::BRAND_NEW;
+        state->m_address = address;
+        state->m_aid = 0;
+        state->m_operationalRateSet.push_back(GetDefaultMode());
+        state->m_operationalMcsSet.push_back(GetDefaultMcs());
+        state->m_dsssSupported = false;
+        state->m_erpOfdmSupported = false;
+        state->m_ofdmSupported = false;
+        state->m_htCapabilities = nullptr;
+        state->m_htOperation = nullptr;
+        state->m_vhtCapabilities = nullptr;
+        state->m_vhtOperation = nullptr;
+        state->m_heCapabilities = nullptr;
+        state->m_heOperation = nullptr;
+        state->m_ehtCapabilities = nullptr;
+        state->m_ehtOperation = nullptr;
+        state->m_mleCommonInfo = nullptr;
+        state->m_emlsrEnabled = false;
+        state->m_uhrCapabilities = nullptr;
+        state->m_channelWidth = m_wifiPhy->GetChannelWidth();
+        state->m_guardInterval = GetGuardInterval();
+        state->m_ness = 0;
+        state->m_aggregation = false;
+        state->m_qosSupported = false;
+        state->m_isInPsMode = false;
+    }
 }
 
 void

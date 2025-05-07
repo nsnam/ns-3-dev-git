@@ -206,6 +206,13 @@ class WifiRemoteStationManager : public Object
     virtual int64_t AssignStreams(int64_t stream);
 
     /**
+     * Reset the state of the station corresponding to the given address (if one exists).
+     *
+     * @param address the MAC address of the given station
+     */
+    void ResetState(Mac48Address address) const;
+
+    /**
      * Sets the maximum STA short retry count (SSRC).
      *
      * @param maxSsrc the maximum SSRC
