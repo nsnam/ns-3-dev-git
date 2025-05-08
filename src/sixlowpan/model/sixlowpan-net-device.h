@@ -596,10 +596,6 @@ class SixLowPanNetDevice : public NetDevice
      * Container for fragment key -> fragments.
      */
     typedef std::map<FragmentKey_t, Ptr<Fragments>> MapFragments_t;
-    /**
-     * Container Iterator for fragment key -> fragments.
-     */
-    typedef std::map<FragmentKey_t, Ptr<Fragments>>::iterator MapFragmentsI_t;
 
     MapFragments_t m_fragments;       //!< Fragments hold to be rebuilt.
     Time m_fragmentExpirationTimeout; //!< Time limit for fragment rebuilding.
