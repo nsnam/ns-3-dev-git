@@ -622,9 +622,11 @@ WifiMacQueueSchedulerImpl<Priority, Compare>::DoBlockAllQueues(
     const std::set<WifiRcvAddr>& addrTypes,
     const std::set<uint8_t>& linkIds)
 {
-    for (auto& perAcInfo : m_perAcInfo)
+    const auto acList =
+        GetMac()->GetQosSupported() ? edcaAcIndices : std::list<AcIndex>{AC_BE_NQOS};
+    for (const auto ac : acList)
     {
-        for (auto& [queueId, queueInfo] : perAcInfo.queueInfoMap)
+        for (auto& [queueId, queueInfo] : m_perAcInfo[ac].queueInfoMap)
         {
             if (addrTypes.empty() || addrTypes.contains(std::get<WifiRcvAddr>(queueId)))
             {
