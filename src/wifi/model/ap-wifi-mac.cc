@@ -706,23 +706,44 @@ ApWifiMac::HasBufferedGroupcast(uint8_t linkId) const
 {
     auto acList = GetQosSupported() ? edcaAcIndices : std::list<AcIndex>{AC_BE_NQOS};
 
-    return std::any_of(acList.cbegin(), acList.cend(), [=, this](const auto aci) {
-        auto queueId = m_scheduler->GetNext(aci, std::nullopt);
+    const auto blocked =
+        GetMacQueueScheduler()->GetAllQueuesBlockedOnLink(linkId,
+                                                          WifiRcvAddr::BROADCAST,
+                                                          WifiQueueBlockedReason::WAIT_UNTIL_DTIM);
+
+    if (blocked)
+    {
+        // temporarily unblock queues with group addressed frames, otherwise buffered group
+        // addressed frames will not be detected
+        GetMacQueueScheduler()->UnblockAllQueues(WifiQueueBlockedReason::WAIT_UNTIL_DTIM,
+                                                 {linkId},
+                                                 {WifiRcvAddr::BROADCAST, WifiRcvAddr::GROUPCAST});
+    }
+
+    const auto found = std::any_of(acList.cbegin(), acList.cend(), [=, this](const auto aci) {
+        auto queueId = m_scheduler->GetNext(aci, linkId);
 
         while (queueId)
         {
-            const auto addrType = std::get<1>(*queueId);
-            const auto& address = std::get<2>(*queueId);
-            if ((addrType == WifiRcvAddr::BROADCAST || addrType == WifiRcvAddr::GROUPCAST) &&
-                address == GetFrameExchangeManager(linkId)->GetAddress())
+            if (const auto addrType = std::get<1>(*queueId);
+                addrType == WifiRcvAddr::BROADCAST || addrType == WifiRcvAddr::GROUPCAST)
             {
                 NS_LOG_DEBUG("Found some group addressed frames for link " << +linkId);
                 return true;
             }
-            queueId = m_scheduler->GetNext(aci, std::nullopt, *queueId);
+            queueId = m_scheduler->GetNext(aci, linkId, *queueId);
         }
         return false;
     });
+
+    if (blocked)
+    {
+        GetMacQueueScheduler()->BlockAllQueues(WifiQueueBlockedReason::WAIT_UNTIL_DTIM,
+                                               {linkId},
+                                               {WifiRcvAddr::BROADCAST, WifiRcvAddr::GROUPCAST});
+    }
+
+    return found;
 }
 
 Tim
