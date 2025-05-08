@@ -392,7 +392,7 @@ Ipv6ExtensionFragment::Process(Ptr<Packet>& packet,
     Ipv6Address src = ipv6Header.GetSource();
 
     FragmentKey_t fragmentKey = FragmentKey_t(src, identification);
-    Ptr<Fragments> fragments;
+    std::shared_ptr<Fragments> fragments;
 
     Ipv6Header ipHeader = ipv6Header;
     ipHeader.SetNextHeader(fragmentHeader.GetNextHeader());
@@ -400,7 +400,7 @@ Ipv6ExtensionFragment::Process(Ptr<Packet>& packet,
     auto it = m_fragments.find(fragmentKey);
     if (it == m_fragments.end())
     {
-        fragments = Create<Fragments>();
+        fragments = std::make_shared<Fragments>();
         m_fragments.insert(std::make_pair(fragmentKey, fragments));
         NS_LOG_DEBUG("Insert new fragment key: src: "
                      << src << " IP hdr id " << identification << " m_fragments.size() "
@@ -630,13 +630,12 @@ void
 Ipv6ExtensionFragment::HandleFragmentsTimeout(FragmentKey_t fragmentKey, Ipv6Header ipHeader)
 {
     NS_LOG_FUNCTION(this << fragmentKey.first << fragmentKey.second << ipHeader);
-    Ptr<Fragments> fragments;
 
     auto it = m_fragments.find(fragmentKey);
     NS_ASSERT_MSG(it != m_fragments.end(),
                   "IPv6 Fragment timeout reached for non-existent fragment");
-    fragments = it->second;
 
+    std::shared_ptr<Fragments> fragments = it->second;
     Ptr<Packet> packet = fragments->GetPartialPacket();
 
     // if we have at least 8 bytes, we can send an ICMP.

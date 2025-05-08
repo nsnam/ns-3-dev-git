@@ -564,7 +564,7 @@ LrWpanMac::McpsDataRequest(McpsDataRequestParams params, Ptr<Packet> p)
         }
         p->AddTrailer(macTrailer);
 
-        Ptr<TxQueueElement> txQElement = Create<TxQueueElement>();
+        auto txQElement = std::make_shared<TxQueueElement>();
         txQElement->txQMsduHandle = params.m_msduHandle;
         txQElement->txQPkt = p;
         EnqueueTxQElement(txQElement);
@@ -847,7 +847,7 @@ LrWpanMac::MlmeOrphanResponse(MlmeOrphanResponseParams params)
 
     commandPacket->AddTrailer(macTrailer);
 
-    Ptr<TxQueueElement> txQElement = Create<TxQueueElement>();
+    auto txQElement = std::make_shared<TxQueueElement>();
     txQElement->txQPkt = commandPacket;
     EnqueueTxQElement(txQElement);
     CheckQueue();
@@ -1150,7 +1150,7 @@ LrWpanMac::SendOneBeacon()
         // Beacon as a result of a beacon request
         // The beacon shall be transmitted using CSMA/CA
         // IEEE 802.15.4-2011 (Section 5.1.2.1.2)
-        Ptr<TxQueueElement> txQElement = Create<TxQueueElement>();
+        auto txQElement = std::make_shared<TxQueueElement>();
         txQElement->txQPkt = beaconPacket;
         EnqueueTxQElement(txQElement);
         CheckQueue();
@@ -1193,7 +1193,7 @@ LrWpanMac::SendBeaconRequestCommand()
 
     commandPacket->AddTrailer(macTrailer);
 
-    Ptr<TxQueueElement> txQElement = Create<TxQueueElement>();
+    auto txQElement = std::make_shared<TxQueueElement>();
     txQElement->txQPkt = commandPacket;
     EnqueueTxQElement(txQElement);
     CheckQueue();
@@ -1234,7 +1234,7 @@ LrWpanMac::SendOrphanNotificationCommand()
 
     commandPacket->AddTrailer(macTrailer);
 
-    Ptr<TxQueueElement> txQElement = Create<TxQueueElement>();
+    auto txQElement = std::make_shared<TxQueueElement>();
     txQElement->txQPkt = commandPacket;
     EnqueueTxQElement(txQElement);
     CheckQueue();
@@ -1283,7 +1283,7 @@ LrWpanMac::SendAssocRequestCommand()
 
     commandPacket->AddTrailer(macTrailer);
 
-    Ptr<TxQueueElement> txQElement = Create<TxQueueElement>();
+    auto txQElement = std::make_shared<TxQueueElement>();
     txQElement->txQPkt = commandPacket;
     EnqueueTxQElement(txQElement);
     CheckQueue();
@@ -1342,7 +1342,7 @@ LrWpanMac::SendDataRequestCommand()
     commandPacket->AddTrailer(macTrailer);
 
     // Set the Command packet to be transmitted
-    Ptr<TxQueueElement> txQElement = Create<TxQueueElement>();
+    auto txQElement = std::make_shared<TxQueueElement>();
     txQElement->txQPkt = commandPacket;
     EnqueueTxQElement(txQElement);
     CheckQueue();
@@ -1358,12 +1358,12 @@ LrWpanMac::SendAssocResponseCommand(Ptr<Packet> rxDataReqPkt)
 
     NS_ASSERT(receivedMacPayload.GetCommandFrameType() == CommandPayloadHeader::DATA_REQ);
 
-    Ptr<IndTxQueueElement> indTxQElement = Create<IndTxQueueElement>();
+    auto indTxQElement = std::make_shared<IndTxQueueElement>();
     bool elementFound;
     elementFound = DequeueInd(receivedMacHdr.GetExtSrcAddr(), indTxQElement);
     if (elementFound)
     {
-        Ptr<TxQueueElement> txQElement = Create<TxQueueElement>();
+        auto txQElement = std::make_shared<TxQueueElement>();
         txQElement->txQPkt = indTxQElement->txQPkt;
         m_txQueue.emplace_back(txQElement);
     }
@@ -2258,7 +2258,7 @@ LrWpanMac::ReceiveAcknowledgment(const LrWpanMacHeader& receivedMacHdr, Ptr<Pack
         // Receive ACK to data packet
         if (!m_mcpsDataConfirmCallback.IsNull())
         {
-            Ptr<TxQueueElement> txQElement = m_txQueue.front();
+            std::shared_ptr<TxQueueElement> txQElement = m_txQueue.front();
             McpsDataConfirmParams confirmParams;
             confirmParams.m_msduHandle = txQElement->txQMsduHandle;
             confirmParams.m_status = MacStatus::SUCCESS;
@@ -2316,7 +2316,7 @@ LrWpanMac::CheckQueue()
             // check MAC is not in a IFS
             if (!m_ifsEvent.IsPending())
             {
-                Ptr<TxQueueElement> txQElement = m_txQueue.front();
+                std::shared_ptr<TxQueueElement> txQElement = m_txQueue.front();
                 m_txPkt = txQElement->txQPkt;
 
                 m_setMacState =
@@ -2684,7 +2684,7 @@ LrWpanMac::SendAck(uint8_t seqno)
 }
 
 void
-LrWpanMac::EnqueueTxQElement(Ptr<TxQueueElement> txQElement)
+LrWpanMac::EnqueueTxQElement(std::shared_ptr<TxQueueElement> txQElement)
 {
     if (m_txQueue.size() < m_maxTxQueueSize)
     {
@@ -2708,7 +2708,7 @@ LrWpanMac::EnqueueTxQElement(Ptr<TxQueueElement> txQElement)
 void
 LrWpanMac::RemoveFirstTxQElement()
 {
-    Ptr<TxQueueElement> txQElement = m_txQueue.front();
+    std::shared_ptr<TxQueueElement> txQElement = m_txQueue.front();
     Ptr<const Packet> p = txQElement->txQPkt;
     m_numCsmacaRetry += m_csmaCa->GetNB() + 1;
 
@@ -2862,7 +2862,7 @@ LrWpanMac::PrepareRetransmission()
         {
             // Maximum number of retransmissions has been reached.
             // remove the copy of the DATA packet that was just sent
-            Ptr<TxQueueElement> txQElement = m_txQueue.front();
+            std::shared_ptr<TxQueueElement> txQElement = m_txQueue.front();
             m_macTxDropTrace(txQElement->txQPkt);
             if (!m_mcpsDataConfirmCallback.IsNull())
             {
@@ -2888,7 +2888,7 @@ LrWpanMac::PrepareRetransmission()
 void
 LrWpanMac::EnqueueInd(Ptr<Packet> p)
 {
-    Ptr<IndTxQueueElement> indTxQElement = Create<IndTxQueueElement>();
+    auto indTxQElement = std::make_shared<IndTxQueueElement>();
     LrWpanMacHeader peekedMacHdr;
     p->PeekHeader(peekedMacHdr);
 
@@ -2952,7 +2952,7 @@ LrWpanMac::EnqueueInd(Ptr<Packet> p)
 }
 
 bool
-LrWpanMac::DequeueInd(Mac64Address dst, Ptr<IndTxQueueElement> entry)
+LrWpanMac::DequeueInd(Mac64Address dst, std::shared_ptr<IndTxQueueElement> entry)
 {
     PurgeInd();
 
@@ -3027,7 +3027,7 @@ LrWpanMac::PrintPendingTxQueue(std::ostream& os) const
        << "    Frame type    |"
        << "    Expire time\n";
 
-    for (auto transaction : m_indTxQueue)
+    for (const auto& transaction : m_indTxQueue)
     {
         transaction->txQPkt->PeekHeader(peekedMacHdr);
         os << transaction->dstExtAddress << "           "
@@ -3062,7 +3062,7 @@ LrWpanMac::PrintTxQueue(std::ostream& os) const
        << "    Dst PAN id    |"
        << "    Frame type    |\n";
 
-    for (auto transaction : m_txQueue)
+    for (const auto& transaction : m_txQueue)
     {
         transaction->txQPkt->PeekHeader(peekedMacHdr);
 
@@ -3251,7 +3251,7 @@ LrWpanMac::PdDataConfirm(PhyEnumeration status)
                 {
                     McpsDataConfirmParams confirmParams;
                     NS_ASSERT_MSG(!m_txQueue.empty(), "TxQsize = 0");
-                    Ptr<TxQueueElement> txQElement = m_txQueue.front();
+                    std::shared_ptr<TxQueueElement> txQElement = m_txQueue.front();
                     confirmParams.m_msduHandle = txQElement->txQMsduHandle;
                     confirmParams.m_status = MacStatus::SUCCESS;
                     m_mcpsDataConfirmCallback(confirmParams);
@@ -3356,7 +3356,7 @@ LrWpanMac::PdDataConfirm(PhyEnumeration status)
         if (!macHdr.IsAcknowledgment())
         {
             NS_ASSERT_MSG(!m_txQueue.empty(), "TxQsize = 0");
-            Ptr<TxQueueElement> txQElement = m_txQueue.front();
+            std::shared_ptr<TxQueueElement> txQElement = m_txQueue.front();
             m_macTxDropTrace(txQElement->txQPkt);
             if (!m_mcpsDataConfirmCallback.IsNull())
             {

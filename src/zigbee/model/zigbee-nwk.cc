@@ -677,7 +677,7 @@ ZigbeeNwk::ReceiveRREP(Mac16Address macSrcAddr,
                     }
                 }
 
-                Ptr<PendingTxPkt> pendingTxPkt = Create<PendingTxPkt>();
+                auto pendingTxPkt = std::make_shared<PendingTxPkt>();
                 if (!m_pendingTxQueue.empty() &&
                     DequeuePendingTx(payload.GetRespAddr(), pendingTxPkt))
                 {
@@ -1232,7 +1232,7 @@ ZigbeeNwk::SendDataBcst(Ptr<Packet> packet, uint8_t nwkHandle)
 void
 ZigbeeNwk::McpsDataConfirm(McpsDataConfirmParams params)
 {
-    Ptr<TxPkt> bufferedElement;
+    std::shared_ptr<TxPkt> bufferedElement;
     if (RetrieveTxPkt(params.m_msduHandle, bufferedElement))
     {
         ZigbeeNwkHeader nwkHeader;
@@ -3004,7 +3004,7 @@ ZigbeeNwk::EnqueuePendingTx(Ptr<Packet> p, uint8_t nsduHandle)
         ZigbeeNwkHeader peekedNwkHeader;
         p->PeekHeader(peekedNwkHeader);
 
-        Ptr<PendingTxPkt> pendingTxPkt = Create<PendingTxPkt>();
+        auto pendingTxPkt = std::make_shared<PendingTxPkt>();
         pendingTxPkt->dstAddr = peekedNwkHeader.GetDstAddr();
         pendingTxPkt->nsduHandle = nsduHandle;
         pendingTxPkt->txPkt = p;
@@ -3019,7 +3019,7 @@ ZigbeeNwk::EnqueuePendingTx(Ptr<Packet> p, uint8_t nsduHandle)
 }
 
 bool
-ZigbeeNwk::DequeuePendingTx(Mac16Address dst, Ptr<PendingTxPkt> entry)
+ZigbeeNwk::DequeuePendingTx(Mac16Address dst, std::shared_ptr<PendingTxPkt> entry)
 {
     // TODO : PurgeTxQueue();
 
@@ -3055,7 +3055,7 @@ ZigbeeNwk::BufferTxPkt(Ptr<Packet> p, uint8_t macHandle, uint8_t nwkHandle)
 {
     if (m_txBuffer.size() < m_txBufferMaxSize)
     {
-        Ptr<TxPkt> txPkt = Create<TxPkt>();
+        auto txPkt = std::make_shared<TxPkt>();
         txPkt->macHandle = macHandle;
         txPkt->nwkHandle = nwkHandle;
         txPkt->txPkt = p;
@@ -3069,16 +3069,17 @@ ZigbeeNwk::BufferTxPkt(Ptr<Packet> p, uint8_t macHandle, uint8_t nwkHandle)
 }
 
 bool
-ZigbeeNwk::RetrieveTxPkt(uint8_t macHandle, Ptr<TxPkt>& txPkt)
+ZigbeeNwk::RetrieveTxPkt(uint8_t macHandle, std::shared_ptr<TxPkt>& txPkt)
 {
-    for (auto bufferedPkt : m_txBuffer)
+    for (const auto& bufferedPkt : m_txBuffer)
     {
         if (bufferedPkt->macHandle == macHandle)
         {
             txPkt = bufferedPkt;
 
-            std::erase_if(m_txBuffer,
-                          [&macHandle](Ptr<TxPkt> pkt) { return pkt->macHandle == macHandle; });
+            std::erase_if(m_txBuffer, [&macHandle](std::shared_ptr<TxPkt> pkt) {
+                return pkt->macHandle == macHandle;
+            });
 
             return true;
         }

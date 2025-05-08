@@ -535,7 +535,7 @@ class Ipv4L3Protocol : public Ipv4
     /**
      * @brief A Set of Fragment belonging to the same packet (src, dst, identification and proto)
      */
-    class Fragments : public SimpleRefCount<Fragments>
+    class Fragments
     {
       public:
         /**
@@ -599,7 +599,7 @@ class Ipv4L3Protocol : public Ipv4
     };
 
     /// Container of fragments, stored as pairs(src+dst addr, src+dst port) / fragment
-    typedef std::map<FragmentKey_t, Ptr<Fragments>> MapFragments_t;
+    typedef std::map<FragmentKey_t, std::shared_ptr<Fragments>> MapFragments_t;
 
     MapFragments_t m_fragments;       //!< Fragmented packets.
     Time m_fragmentExpirationTimeout; //!< Expiration timeout

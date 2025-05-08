@@ -482,8 +482,7 @@ void
 EpcPgwApplication::AddUe(uint64_t imsi)
 {
     NS_LOG_FUNCTION(this << imsi);
-    Ptr<UeInfo> ueInfo = Create<UeInfo>();
-    m_ueInfoByImsiMap[imsi] = ueInfo;
+    m_ueInfoByImsiMap[imsi] = std::make_shared<UeInfo>();
 }
 
 void

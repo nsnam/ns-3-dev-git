@@ -485,9 +485,6 @@ LteFfrDistributedAlgorithm::Calculate()
     m_ulEdgeRbgMap.clear();
     m_ulEdgeRbgMap.resize(m_ulBandwidth, false);
 
-    Ptr<UeMeasure> servingCellMeasures;
-    Ptr<UeMeasure> neighbourCellMeasures;
-
     uint32_t edgeUeNum = 0;
     for (auto areaIt = m_ues.begin(); areaIt != m_ues.end(); areaIt++)
     {
@@ -507,15 +504,12 @@ LteFfrDistributedAlgorithm::Calculate()
                 continue;
             }
 
-            servingCellMeasures = nullptr;
-            neighbourCellMeasures = nullptr;
-
             auto it2 = it1->second.find(m_cellId);
             if (it2 == it1->second.end())
             {
                 continue;
             }
-            servingCellMeasures = it2->second;
+            std::shared_ptr<UeMeasure> servingCellMeasures = it2->second;
 
             for (it2 = it1->second.begin(); it2 != it1->second.end(); it2++)
             {
@@ -523,7 +517,7 @@ LteFfrDistributedAlgorithm::Calculate()
                 {
                     continue;
                 }
-                neighbourCellMeasures = it2->second;
+                std::shared_ptr<UeMeasure> neighbourCellMeasures = it2->second;
 
                 if (servingCellMeasures && neighbourCellMeasures)
                 {
@@ -689,7 +683,7 @@ LteFfrDistributedAlgorithm::UpdateNeighbourMeasurements(uint16_t rnti,
     else
     {
         // insert a new cell entry
-        Ptr<UeMeasure> cellMeasures = Create<UeMeasure>();
+        auto cellMeasures = std::make_shared<UeMeasure>();
         cellMeasures->m_cellId = cellId;
         cellMeasures->m_rsrp = rsrp;
         cellMeasures->m_rsrq = rsrq;

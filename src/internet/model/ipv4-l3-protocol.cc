@@ -1513,12 +1513,12 @@ Ipv4L3Protocol::ProcessFragment(Ptr<Packet>& packet, Ipv4Header& ipHeader, uint3
     key.first = addressCombination;
     key.second = idProto;
 
-    Ptr<Fragments> fragments;
+    std::shared_ptr<Fragments> fragments;
 
     auto it = m_fragments.find(key);
     if (it == m_fragments.end())
     {
-        fragments = Create<Fragments>();
+        fragments = std::make_shared<Fragments>();
         m_fragments.insert(std::make_pair(key, fragments));
 
         auto iter = SetTimeout(key, ipHeader, iif);

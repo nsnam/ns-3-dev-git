@@ -330,7 +330,7 @@ class Ipv6ExtensionFragment : public Ipv6Extension
      *
      * @brief This class stores the fragments of a packet waiting to be rebuilt.
      */
-    class Fragments : public SimpleRefCount<Fragments>
+    class Fragments
     {
       public:
         /**
@@ -436,7 +436,7 @@ class Ipv6ExtensionFragment : public Ipv6Extension
     /**
      * @brief Container for the packet fragments.
      */
-    typedef std::map<FragmentKey_t, Ptr<Fragments>> MapFragments_t;
+    typedef std::map<FragmentKey_t, std::shared_ptr<Fragments>> MapFragments_t;
 
     /**
      * @brief The hash of fragmented packets.

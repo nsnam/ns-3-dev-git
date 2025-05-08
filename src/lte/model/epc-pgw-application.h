@@ -182,7 +182,7 @@ class EpcPgwApplication : public Application
     /**
      * store info for each UE connected to this PGW
      */
-    class UeInfo : public SimpleRefCount<UeInfo>
+    class UeInfo
     {
       public:
         UeInfo();
@@ -290,17 +290,17 @@ class EpcPgwApplication : public Application
     /**
      * UeInfo stored by UE IPv4 address
      */
-    std::map<Ipv4Address, Ptr<UeInfo>> m_ueInfoByAddrMap;
+    std::map<Ipv4Address, std::shared_ptr<UeInfo>> m_ueInfoByAddrMap;
 
     /**
      * UeInfo stored by UE IPv6 address
      */
-    std::map<Ipv6Address, Ptr<UeInfo>> m_ueInfoByAddrMap6;
+    std::map<Ipv6Address, std::shared_ptr<UeInfo>> m_ueInfoByAddrMap6;
 
     /**
      * UeInfo stored by IMSI
      */
-    std::map<uint64_t, Ptr<UeInfo>> m_ueInfoByImsiMap;
+    std::map<uint64_t, std::shared_ptr<UeInfo>> m_ueInfoByImsiMap;
 
     /**
      * UDP port to be used for GTP-U

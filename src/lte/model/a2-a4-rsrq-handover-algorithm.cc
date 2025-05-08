@@ -234,7 +234,7 @@ A2A4RsrqHandoverAlgorithm::UpdateNeighbourMeasurements(uint16_t rnti, uint16_t c
     }
 
     NS_ASSERT(it1 != m_neighbourCellMeasures.end());
-    Ptr<UeMeasure> neighbourCellMeasures;
+    std::shared_ptr<UeMeasure> neighbourCellMeasures;
     auto it2 = it1->second.find(cellId);
 
     if (it2 != it1->second.end())
@@ -246,7 +246,7 @@ A2A4RsrqHandoverAlgorithm::UpdateNeighbourMeasurements(uint16_t rnti, uint16_t c
     else
     {
         // insert a new cell entry
-        neighbourCellMeasures = Create<UeMeasure>();
+        neighbourCellMeasures = std::make_shared<UeMeasure>();
         neighbourCellMeasures->m_cellId = cellId;
         neighbourCellMeasures->m_rsrq = rsrq;
         it1->second[cellId] = neighbourCellMeasures;

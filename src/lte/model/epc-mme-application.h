@@ -187,7 +187,7 @@ class EpcMmeApplication : public Application
     /**
      * Hold info on a UE
      */
-    struct UeInfo : public SimpleRefCount<UeInfo>
+    struct UeInfo
     {
         uint64_t imsi;                              ///< UE identifier
         uint64_t mmeUeS1Id;                         ///< mmeUeS1Id
@@ -200,19 +200,19 @@ class EpcMmeApplication : public Application
     /**
      * UeInfo stored by IMSI
      */
-    std::map<uint64_t, Ptr<UeInfo>> m_ueInfoMap;
+    std::map<uint64_t, std::shared_ptr<UeInfo>> m_ueInfoMap;
 
     /**
      * @brief This Function erases all contexts of bearer from MME side
      * @param ueInfo UE information pointer
      * @param epsBearerId Bearer Id which need to be removed corresponding to UE
      */
-    void RemoveBearer(Ptr<UeInfo> ueInfo, uint8_t epsBearerId);
+    void RemoveBearer(std::shared_ptr<UeInfo> ueInfo, uint8_t epsBearerId);
 
     /**
      * Hold info on an ENB
      */
-    struct EnbInfo : public SimpleRefCount<EnbInfo>
+    struct EnbInfo
     {
         uint16_t gci;              ///< GCI
         Ipv4Address s1uAddr;       ///< IP address of the S1-U interface
@@ -222,7 +222,7 @@ class EpcMmeApplication : public Application
     /**
      * EnbInfo stored by EGCI
      */
-    std::map<uint16_t, Ptr<EnbInfo>> m_enbInfoMap;
+    std::map<uint16_t, std::shared_ptr<EnbInfo>> m_enbInfoMap;
 
     EpcS1apSapMme* m_s1apSapMme; ///< EpcS1apSapMme
 

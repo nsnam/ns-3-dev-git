@@ -135,7 +135,7 @@ class A2A4RsrqHandoverAlgorithm : public LteHandoverAlgorithm
      * Measurements reported by a UE for a cell ID. The values are quantized
      * according 3GPP TS 36.133 section 9.1.4 and 9.1.7.
      */
-    class UeMeasure : public SimpleRefCount<UeMeasure>
+    class UeMeasure
     {
       public:
         uint16_t m_cellId; ///< Cell ID.
@@ -146,7 +146,7 @@ class A2A4RsrqHandoverAlgorithm : public LteHandoverAlgorithm
      * Measurements reported by a UE for several cells. The structure is a map
      * indexed by the cell ID.
      */
-    typedef std::map<uint16_t, Ptr<UeMeasure>> MeasurementRow_t;
+    typedef std::map<uint16_t, std::shared_ptr<UeMeasure>> MeasurementRow_t;
 
     /**
      * Measurements reported by several UEs. The structure is a map indexed by

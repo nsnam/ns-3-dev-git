@@ -460,7 +460,7 @@ class SixLowPanNetDevice : public NetDevice
     /**
      * @brief A Set of Fragments.
      */
-    class Fragments : public SimpleRefCount<Fragments>
+    class Fragments
     {
       public:
         /**
@@ -595,7 +595,7 @@ class SixLowPanNetDevice : public NetDevice
     /**
      * Container for fragment key -> fragments.
      */
-    typedef std::map<FragmentKey_t, Ptr<Fragments>> MapFragments_t;
+    typedef std::map<FragmentKey_t, std::shared_ptr<Fragments>> MapFragments_t;
 
     MapFragments_t m_fragments;       //!< Fragments hold to be rebuilt.
     Time m_fragmentExpirationTimeout; //!< Time limit for fragment rebuilding.

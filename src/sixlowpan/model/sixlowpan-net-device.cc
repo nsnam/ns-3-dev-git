@@ -2450,7 +2450,7 @@ SixLowPanNetDevice::ProcessFragment(Ptr<Packet>& packet,
                                                    fragNHeader.GetDatagramTag());
     }
 
-    Ptr<Fragments> fragments;
+    std::shared_ptr<Fragments> fragments;
 
     auto it = m_fragments.find(key);
     if (it == m_fragments.end())
@@ -2472,7 +2472,7 @@ SixLowPanNetDevice::ProcessFragment(Ptr<Packet>& packet,
             m_fragments[oldestKey] = nullptr;
             m_fragments.erase(oldestKey);
         }
-        fragments = Create<Fragments>();
+        fragments = std::make_shared<Fragments>();
         fragments->SetPacketSize(packetSize);
         m_fragments.insert(std::make_pair(key, fragments));
         uint32_t ifIndex = GetIfIndex();

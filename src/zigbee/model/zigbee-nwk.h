@@ -1057,7 +1057,7 @@ class ZigbeeNwk : public Object
     /**
      * Structure representing an element in the pending transaction queue.
      */
-    struct PendingTxPkt : public SimpleRefCount<PendingTxPkt>
+    struct PendingTxPkt
     {
         uint8_t nsduHandle;   //!< The NSDU handle
         Mac16Address dstAddr; //!< The destination network Address
@@ -1069,7 +1069,7 @@ class ZigbeeNwk : public Object
      * The pending transaction queue of data packets awaiting to be transmitted
      * until a route to the destination becomes available.
      */
-    std::deque<Ptr<PendingTxPkt>> m_pendingTxQueue;
+    std::deque<std::shared_ptr<PendingTxPkt>> m_pendingTxQueue;
 
     /**
      * The maximum size of the pending transaction queue.
@@ -1079,7 +1079,7 @@ class ZigbeeNwk : public Object
     /**
      * Structure representing an element in the Tx Buffer.
      */
-    struct TxPkt : public SimpleRefCount<TxPkt>
+    struct TxPkt
     {
         uint8_t macHandle; //!< The mac handle (msdu handle).
         uint8_t nwkHandle; //!< The nwk handle (nsdu handle).
@@ -1090,7 +1090,7 @@ class ZigbeeNwk : public Object
      * The transmission buffer. Copies of DATA packets are stored here
      * for post transmission handling.
      */
-    std::deque<Ptr<TxPkt>> m_txBuffer;
+    std::deque<std::shared_ptr<TxPkt>> m_txBuffer;
 
     /**
      * The maximum size of the transmission buffer
@@ -1293,7 +1293,7 @@ class ZigbeeNwk : public Object
      *
      * @return True if successfully dequeued
      */
-    bool DequeuePendingTx(Mac16Address dst, Ptr<PendingTxPkt> entry);
+    bool DequeuePendingTx(Mac16Address dst, std::shared_ptr<PendingTxPkt> entry);
 
     /**
      * Dispose of all PendingTxPkt accumulated in the pending transmission queue.
@@ -1320,7 +1320,7 @@ class ZigbeeNwk : public Object
      * @param txPkt The packet buffered in the TxPkt buffer.
      * @return True if the txPkt is successfully retrieved.
      */
-    bool RetrieveTxPkt(uint8_t macHandle, Ptr<TxPkt>& txPkt);
+    bool RetrieveTxPkt(uint8_t macHandle, std::shared_ptr<TxPkt>& txPkt);
 
     /**
      * Dispose of all the entries in the TxPkt Buffer.
