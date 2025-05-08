@@ -38,7 +38,7 @@ namespace
  *
  * Inspired by PHOLD.
  */
-class Hold : public SimpleRefCount<Hold>
+class Hold
 {
   public:
     /**
@@ -119,7 +119,7 @@ main(int argc, char** argv)
               << "average event sleep time:  " << wait.As(Time::MS) << "\n"
               << "total simulation run time: " << stop.As(Time::S) << std::endl;
 
-    Ptr<Hold> h = Create<Hold>(wait, interval);
+    auto h = std::make_unique<Hold>(wait, interval);
     h->Event();
 
     Simulator::Stop(stop);
