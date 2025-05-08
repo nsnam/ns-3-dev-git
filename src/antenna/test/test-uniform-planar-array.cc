@@ -258,6 +258,19 @@ UpdateOnChangeTestCase::DoRun()
         false,
         "Not expecting update, since the pair was just updated and no settings changed");
     ant->SetAlpha(DegreesToRadians(90));
+    NS_TEST_ASSERT_MSG_EQ(
+        ant->IsChannelOutOfDate(ant2),
+        false,
+        "Not expecting update, since the pair was just updated and angle was not changed");
+    ant->SetAlpha(DegreesToRadians(85));
+    NS_TEST_ASSERT_MSG_EQ(ant2->IsChannelOutOfDate(ant),
+                          true,
+                          "Expecting update, antenna parameter changed");
+    NS_TEST_ASSERT_MSG_EQ(
+        ant->IsChannelOutOfDate(ant2),
+        false,
+        "Not expecting update, since the pair was just updated and angle was not changed");
+    ant->SetAlpha(DegreesToRadians(80));
     NS_TEST_ASSERT_MSG_EQ(ant->IsChannelOutOfDate(ant2),
                           true,
                           "Expecting update, antenna parameter changed");
