@@ -10,8 +10,12 @@
 #include "ns3/arp-l3-protocol.h"
 #include "ns3/config.h"
 #include "ns3/frame-exchange-manager.h"
+#include "ns3/icmpv6-header.h"
 #include "ns3/internet-stack-helper.h"
 #include "ns3/ipv4-address-helper.h"
+#include "ns3/ipv6-address-helper.h"
+#include "ns3/ipv6-header.h"
+#include "ns3/ipv6-l3-protocol.h"
 #include "ns3/llc-snap-header.h"
 #include "ns3/mobility-helper.h"
 #include "ns3/pointer.h"
@@ -43,8 +47,9 @@ NS_LOG_COMPONENT_DEFINE("WifiMloUdpTest");
  * The RF channels to set each link to are provided as input parameters. This test aims at veryfing
  * the successful transmission and reception of UDP packets in different traffic scenarios (from
  * the first station to the AP, from the AP to the first station, from one station to another).
- * The number of transmitted ARP Request/Reply frames is verified, as well as the source HW address
- * they carry. Specifically:
+ * The number of transmitted ARP Request/Reply frames for IPv4 traffic and Neighbor
+ * Solicitation/Advertisement frames for IPv6 traffic is verified, as well as the link-layer
+ * address they carry. Specifically:
  *
  * STA to AP
  * ---------
@@ -73,22 +78,25 @@ NS_LOG_COMPONENT_DEFINE("WifiMloUdpTest");
 class WifiMloUdpTest : public MultiLinkOperationsTestBase
 {
   public:
+    /// Input parameters
+    struct InputParams
+    {
+        std::size_t id;                             ///< input ID
+        std::vector<std::string> apChannels;        ///< string specifying channels for AP
+        std::vector<std::string> firstStaChannels;  ///< string specifying channels for first STA
+        std::vector<std::string> secondStaChannels; ///< string specifying channels for second STA
+        WifiTrafficPattern trafficPattern;          ///< the pattern of traffic to generate
+        WifiAssocType assocType;                    ///< type of association procedure
+        bool amsduAggr;                             ///< whether A-MSDU aggregation is enabled
+        uint8_t ipVersion;                          ///< IP version to use, either 4 or 6
+    };
+
     /**
      * Constructor
      *
-     * @param apChannels string specifying channels for AP
-     * @param firstStaChannels string specifying channels for first STA
-     * @param secondStaChannels string specifying channels for second STA
-     * @param trafficPattern the pattern of traffic to generate
-     * @param assocType the type of association procedure for non-AP devices
-     * @param amsduAggr whether A-MSDU aggregation is enabled
+     * @param params the input parameters
      */
-    WifiMloUdpTest(const std::vector<std::string>& apChannels,
-                   const std::vector<std::string>& firstStaChannels,
-                   const std::vector<std::string>& secondStaChannels,
-                   WifiTrafficPattern trafficPattern,
-                   WifiAssocType assocType,
-                   bool amsduAggr);
+    WifiMloUdpTest(const InputParams& params);
 
   protected:
     void DoSetup() override;
@@ -117,6 +125,24 @@ class WifiMloUdpTest : public MultiLinkOperationsTestBase
      */
     void CheckArpReplyHwAddresses(const ArpHeader& arp, Mac48Address sender, uint8_t linkId);
 
+    /**
+     * Check source link-layer address in Neighbor Solicitation frames.
+     *
+     * @param sourceLinkLayerAddress the source link-layer address option
+     * @param sender the MAC address of the sender (Address 2 field)
+     * @param linkId the ID of the link on which the Neighbor Solicitation frame is transmitted
+     */
+    void CheckNsHwAddress(Address sourceLinkLayerAddress, Mac48Address sender, uint8_t linkId);
+
+    /**
+     * Check target link-layer address in Neighbor Advertisement frames.
+     *
+     * @param targetLinkLayerAddress the target link-layer address option
+     * @param sender the MAC address of the sender (Address 2 field)
+     * @param linkId the ID of the link on which the Neighbor Advertisement frame is transmitted
+     */
+    void CheckNaHwAddress(Address targetLinkLayerAddress, Mac48Address sender, uint8_t linkId);
+
   private:
     void StartTraffic() override;
 
@@ -124,38 +150,46 @@ class WifiMloUdpTest : public MultiLinkOperationsTestBase
     WifiTrafficPattern m_trafficPattern;             ///< the pattern of traffic to generate
     WifiAssocType m_assocType;                       //!< association type
     bool m_amsduAggr;                                ///< whether A-MSDU aggregation is enabled
+    uint8_t m_ipVersion;                             ///< IP version to use, either 4 or 6
     const std::size_t m_nPackets{3};                 ///< number of application packets to generate
-    Ipv4InterfaceContainer m_staInterfaces;          ///< IP interfaces for non-AP MLDs
-    Ipv4InterfaceContainer m_apInterface;            ///< IP interface for AP MLD
+    Ipv4InterfaceContainer m_staInterfaces;          ///< IPv4 interfaces for non-AP MLDs
+    Ipv4InterfaceContainer m_apInterface;            ///< IPv4 interface for AP MLD
+    Ipv6InterfaceContainer m_staInterfaces6;         ///< IPv6 interfaces for non-AP MLDs
+    Ipv6InterfaceContainer m_apInterface6;           ///< IPv6 interface for AP MLD
     const uint16_t m_udpPort{50000};                 ///< UDP port for application servers
     Ptr<UdpServer> m_sink;                           ///< server app on the receiving node
     std::size_t m_nArpRequest{0};        ///< counts how many ARP Requests are transmitted
     std::size_t m_nCheckedArpRequest{0}; ///< counts how many ARP Requests are checked
     std::size_t m_nArpReply{0};          ///< counts how many ARP Replies are transmitted
     std::size_t m_nCheckedArpReply{0};   ///< counts how many ARP Replies are checked
+    std::size_t m_nNs{0};                ///< counts how many Neighbor Solicitations are transmitted
+    std::size_t m_nCheckedNs{0};         ///< counts how many Neighbor Solicitations are checked
+    std::size_t m_nNa{0};                ///< counts how many Neighbor Advertisements are sent
+    std::size_t m_nCheckedNa{0};         ///< counts how many Neighbor Advertisements are checked
 };
 
-WifiMloUdpTest::WifiMloUdpTest(const std::vector<std::string>& apChannels,
-                               const std::vector<std::string>& firstStaChannels,
-                               const std::vector<std::string>& secondStaChannels,
-                               WifiTrafficPattern trafficPattern,
-                               WifiAssocType assocType,
-                               bool amsduAggr)
+WifiMloUdpTest::WifiMloUdpTest(const InputParams& params)
     : MultiLinkOperationsTestBase(
           std::string("Check UDP packet transmission between MLDs ") +
-              " (#AP_links: " + std::to_string(apChannels.size()) +
-              ", #STA_1_links: " + std::to_string(firstStaChannels.size()) +
-              ", #STA_2_links: " + std::to_string(secondStaChannels.size()) +
-              ", Traffic pattern: " + std::to_string(static_cast<uint8_t>(trafficPattern)) +
-              ", Assoc type: " + (assocType == WifiAssocType::LEGACY ? "Legacy" : "ML setup") +
-              ", A-MSDU aggregation: " + std::to_string(amsduAggr) + ")",
+              " (ID: " + std::to_string(params.id) +
+              ", #AP_links: " + std::to_string(params.apChannels.size()) +
+              ", #STA_1_links: " + std::to_string(params.firstStaChannels.size()) +
+              ", #STA_2_links: " + std::to_string(params.secondStaChannels.size()) +
+              ", Traffic pattern: " + std::to_string(static_cast<uint8_t>(params.trafficPattern)) +
+              ", Assoc type: " +
+              (params.assocType == WifiAssocType::LEGACY ? "Legacy" : "ML setup") +
+              ", A-MSDU aggregation: " + std::to_string(params.amsduAggr) +
+              ", IP version: " + std::to_string(params.ipVersion) + ")",
           2,
-          BaseParams{firstStaChannels, apChannels, {}}),
-      m_2ndStaChannels(secondStaChannels),
-      m_trafficPattern(trafficPattern),
-      m_assocType(assocType),
-      m_amsduAggr(amsduAggr)
+          BaseParams{params.firstStaChannels, params.apChannels, {}}),
+      m_2ndStaChannels(params.secondStaChannels),
+      m_trafficPattern(params.trafficPattern),
+      m_assocType(params.assocType),
+      m_amsduAggr(params.amsduAggr),
+      m_ipVersion(params.ipVersion)
 {
+    NS_ABORT_MSG_IF(m_ipVersion != 4 && m_ipVersion != 6,
+                    "Unsupported IP version " << +m_ipVersion);
 }
 
 void
@@ -216,8 +250,8 @@ WifiMloUdpTest::DoSetup()
     NetDeviceContainer apDevices = wifi.Install(apPhyHelper, mac, wifiApNode);
 
     // Uncomment the lines below to write PCAP files
-    // apPhyHelper.EnablePcap("wifi-mlo_AP", apDevices);
-    // staPhyHelper1.EnablePcap("wifi-mlo_STA", staDevices);
+    apPhyHelper.EnablePcap("wifi-mlo_AP", apDevices);
+    staPhyHelper1.EnablePcap("wifi-mlo_STA", staDevices);
 
     // Assign fixed streams to random variables in use
     streamNumber += WifiHelper::AssignStreams(apDevices, streamNumber);
@@ -266,12 +300,25 @@ WifiMloUdpTest::DoSetup()
     stack.Install(allNodes);
     streamNumber += stack.AssignStreams(allNodes, streamNumber);
 
-    Ipv4AddressHelper address;
-    address.SetBase("10.1.0.0", "255.255.255.0");
-    m_apInterface = address.Assign(NetDeviceContainer(m_apMac->GetDevice()));
-    for (std::size_t i = 0; i < m_nStations; i++)
+    if (m_ipVersion == 4)
     {
-        m_staInterfaces.Add(address.Assign(NetDeviceContainer(m_staMacs[i]->GetDevice())));
+        Ipv4AddressHelper address;
+        address.SetBase("10.1.0.0", "255.255.255.0");
+        m_apInterface = address.Assign(NetDeviceContainer(m_apMac->GetDevice()));
+        for (std::size_t i = 0; i < m_nStations; i++)
+        {
+            m_staInterfaces.Add(address.Assign(NetDeviceContainer(m_staMacs[i]->GetDevice())));
+        }
+    }
+    else
+    {
+        Ipv6AddressHelper address;
+        address.SetBase(Ipv6Address("2001:1::"), Ipv6Prefix(64));
+        m_apInterface6 = address.Assign(NetDeviceContainer(m_apMac->GetDevice()));
+        for (std::size_t i = 0; i < m_nStations; i++)
+        {
+            m_staInterfaces6.Add(address.Assign(NetDeviceContainer(m_staMacs[i]->GetDevice())));
+        }
     }
 
     // install a UDP server on all nodes
@@ -307,27 +354,30 @@ void
 WifiMloUdpTest::StartTraffic()
 {
     Ptr<WifiMac> srcMac;
-    Ipv4Address destAddr;
+    Address destAddr;
 
     switch (m_trafficPattern)
     {
     case WifiTrafficPattern::STA_TO_AP:
         srcMac = m_staMacs[0];
-        destAddr = m_apInterface.GetAddress(0);
+        destAddr = (m_ipVersion == 4 ? Address(m_apInterface.GetAddress(0))
+                                     : Address(m_apInterface6.GetAddress(0, 1)));
         break;
     case WifiTrafficPattern::AP_TO_STA:
         srcMac = m_apMac;
-        destAddr = m_staInterfaces.GetAddress(0);
+        destAddr = (m_ipVersion == 4 ? Address(m_staInterfaces.GetAddress(0))
+                                     : Address(m_staInterfaces6.GetAddress(0, 1)));
         break;
     case WifiTrafficPattern::STA_TO_STA:
         srcMac = m_staMacs[0];
-        destAddr = m_staInterfaces.GetAddress(1);
+        destAddr = (m_ipVersion == 4 ? Address(m_staInterfaces.GetAddress(1))
+                                     : Address(m_staInterfaces6.GetAddress(1, 1)));
         break;
     default:
         NS_ABORT_MSG("Unsupported scenario " << +static_cast<uint8_t>(m_trafficPattern));
     }
 
-    UdpClientHelper clientHelper(InetSocketAddress(destAddr, m_udpPort));
+    UdpClientHelper clientHelper(destAddr, m_udpPort);
     clientHelper.SetAttribute("MaxPackets", UintegerValue(m_nPackets));
     clientHelper.SetAttribute("Interval", TimeValue(Time{0}));
     clientHelper.SetAttribute("PacketSize", UintegerValue(100));
@@ -350,7 +400,7 @@ WifiMloUdpTest::Transmit(Ptr<WifiMac> mac,
 
     if (!psdu->GetHeader(0).IsQosData() || !psdu->GetHeader(0).HasData())
     {
-        // we are interested in ARP Request/Reply frames, which are carried by QoS data frames
+        // we are interested in address resolution frames, which are carried by QoS data frames
         return;
     }
 
@@ -376,21 +426,73 @@ WifiMloUdpTest::Transmit(Ptr<WifiMac> mac,
             auto packet = pkt->Copy();
             packet->RemoveHeader(llc);
 
-            if (llc.GetType() != ArpL3Protocol::PROT_NUMBER)
+            if (llc.GetType() == ArpL3Protocol::PROT_NUMBER)
+            {
+                ArpHeader arp;
+                packet->RemoveHeader(arp);
+
+                if (arp.IsRequest())
+                {
+                    CheckArpRequestHwAddresses(arp, psdu->GetAddr2(), linkId);
+                }
+                if (arp.IsReply())
+                {
+                    CheckArpReplyHwAddresses(arp, psdu->GetAddr2(), linkId);
+                }
+                continue;
+            }
+
+            if (llc.GetType() != Ipv6L3Protocol::PROT_NUMBER)
             {
                 continue;
             }
 
-            ArpHeader arp;
-            packet->RemoveHeader(arp);
+            Ipv6Header ipv6;
+            packet->RemoveHeader(ipv6);
 
-            if (arp.IsRequest())
+            if (ipv6.GetNextHeader() != Ipv6Header::IPV6_ICMPV6 || ipv6.GetSource().IsAny())
             {
-                CheckArpRequestHwAddresses(arp, psdu->GetAddr2(), linkId);
+                continue;
             }
-            if (arp.IsReply())
+
+            Icmpv6Header icmpv6;
+            packet->PeekHeader(icmpv6);
+
+            if (icmpv6.GetType() == Icmpv6Header::ICMPV6_ND_NEIGHBOR_SOLICITATION)
             {
-                CheckArpReplyHwAddresses(arp, psdu->GetAddr2(), linkId);
+                Icmpv6NS ns;
+                packet->RemoveHeader(ns);
+
+                NS_TEST_ASSERT_MSG_NE(packet->GetSize(), 0, "Missing Neighbor Solicitation option");
+
+                uint8_t type;
+                packet->CopyData(&type, sizeof(type));
+                NS_TEST_EXPECT_MSG_EQ(+type,
+                                      Icmpv6Header::ICMPV6_OPT_LINK_LAYER_SOURCE,
+                                      "Unexpected Neighbor Solicitation option");
+
+                Icmpv6OptionLinkLayerAddress lla(true);
+                packet->RemoveHeader(lla);
+                CheckNsHwAddress(lla.GetAddress(), psdu->GetAddr2(), linkId);
+            }
+            else if (icmpv6.GetType() == Icmpv6Header::ICMPV6_ND_NEIGHBOR_ADVERTISEMENT)
+            {
+                Icmpv6NA na;
+                packet->RemoveHeader(na);
+
+                NS_TEST_ASSERT_MSG_NE(packet->GetSize(),
+                                      0,
+                                      "Missing Neighbor Advertisement option");
+
+                uint8_t type;
+                packet->CopyData(&type, sizeof(type));
+                NS_TEST_EXPECT_MSG_EQ(+type,
+                                      Icmpv6Header::ICMPV6_OPT_LINK_LAYER_TARGET,
+                                      "Unexpected Neighbor Advertisement option");
+
+                Icmpv6OptionLinkLayerAddress lla(false);
+                packet->RemoveHeader(lla);
+                CheckNaHwAddress(lla.GetAddress(), psdu->GetAddr2(), linkId);
             }
         }
     }
@@ -480,6 +582,87 @@ WifiMloUdpTest::CheckArpReplyHwAddresses(const ArpHeader& arp, Mac48Address send
 }
 
 void
+WifiMloUdpTest::CheckNsHwAddress(Address sourceLinkLayerAddress,
+                                 Mac48Address sender,
+                                 uint8_t linkId)
+{
+    ++m_nNs;
+
+    // source link-layer address cannot be checked for forwarded frames because
+    // they can be forwarded on different links
+    if (auto srcMac =
+            (m_trafficPattern == WifiTrafficPattern::AP_TO_STA ? StaticCast<WifiMac>(m_apMac)
+                                                               : StaticCast<WifiMac>(m_staMacs[0]));
+        !srcMac->GetLinkIdByAddress(sender) && sender != srcMac->GetAddress())
+    {
+        // the sender address is not the MLD address nor a link address of the source device
+        return;
+    }
+
+    Mac48Address expectedSrc;
+
+    switch (m_trafficPattern)
+    {
+    case WifiTrafficPattern::STA_TO_AP:
+    case WifiTrafficPattern::STA_TO_STA:
+        // Neighbor Solicitations are forged with the MAC address advertised by the NetDevice to
+        // IPv6.
+        expectedSrc = (m_assocType == WifiAssocType::LEGACY || m_apMac->GetNLinks() == 1)
+                          ? m_staMacs[0]->GetFrameExchangeManager(linkId)->GetAddress()
+                          : m_staMacs[0]->GetAddress();
+        break;
+    case WifiTrafficPattern::AP_TO_STA:
+        // Neighbor Solicitations are forged with the MAC address advertised by the NetDevice to
+        // IPv6.
+        expectedSrc = m_apMac->GetAddress();
+        break;
+    default:
+        NS_ABORT_MSG("Unsupported scenario " << +static_cast<uint8_t>(m_trafficPattern));
+    }
+
+    ++m_nCheckedNs;
+
+    NS_TEST_EXPECT_MSG_EQ(Mac48Address::ConvertFrom(sourceLinkLayerAddress),
+                          expectedSrc,
+                          "Unexpected source link-layer address");
+}
+
+void
+WifiMloUdpTest::CheckNaHwAddress(Address targetLinkLayerAddress,
+                                 Mac48Address sender,
+                                 uint8_t linkId)
+{
+    ++m_nNa;
+
+    // target link-layer address cannot be checked for forwarded frames because
+    // they can be forwarded on different links
+    auto srcMac =
+        (m_trafficPattern == WifiTrafficPattern::STA_TO_AP   ? StaticCast<WifiMac>(m_apMac)
+         : m_trafficPattern == WifiTrafficPattern::AP_TO_STA ? StaticCast<WifiMac>(m_staMacs[0])
+                                                             : StaticCast<WifiMac>(m_staMacs[1]));
+
+    if (!srcMac->GetLinkIdByAddress(sender) && sender != srcMac->GetAddress())
+    {
+        // the sender address is not the MLD address nor a link address of the source device
+        return;
+    }
+
+    // the target link-layer address of the Neighbor Advertisement is the address of the link on
+    // which the Neighbor Advertisement is sent, if the sender performed legacy association, or the
+    // MLD address, otherwise
+    Mac48Address expectedTarget =
+        (m_assocType == WifiAssocType::LEGACY || m_apMac->GetNLinks() == 1)
+            ? srcMac->GetFrameExchangeManager(linkId)->GetAddress()
+            : srcMac->GetAddress();
+
+    ++m_nCheckedNa;
+
+    NS_TEST_EXPECT_MSG_EQ(Mac48Address::ConvertFrom(targetLinkLayerAddress),
+                          expectedTarget,
+                          "Unexpected target link-layer address");
+}
+
+void
 WifiMloUdpTest::DoRun()
 {
     Simulator::Stop(m_duration);
@@ -490,65 +673,82 @@ WifiMloUdpTest::DoRun()
                           m_nPackets,
                           "Unexpected number of received packets");
 
-    std::size_t expectedNOrigArpRequest{0};
-    std::size_t expectedNFwdArpRequest{0};
+    std::size_t expectedNOrigRequest{0};
+    std::size_t expectedNFwdRequest{0};
 
     switch (m_trafficPattern)
     {
     case WifiTrafficPattern::STA_TO_AP:
     case WifiTrafficPattern::STA_TO_STA:
-        // STA transmits ARP Request on one link, AP retransmits it on all of its links
-        expectedNOrigArpRequest = 1;
-        expectedNFwdArpRequest = m_apMac->GetNLinks();
+        // STA transmits one request, AP retransmits it on all of its links
+        expectedNOrigRequest = 1;
+        expectedNFwdRequest = m_apMac->GetNLinks();
         break;
     case WifiTrafficPattern::AP_TO_STA:
-        // AP transmits ARP Request on all of its links
-        expectedNOrigArpRequest = m_apMac->GetNLinks();
-        expectedNFwdArpRequest = 0;
+        // AP transmits the request on all of its links
+        expectedNOrigRequest = m_apMac->GetNLinks();
+        expectedNFwdRequest = 0;
         break;
     default:
         NS_ABORT_MSG("Unsupported scenario " << +static_cast<uint8_t>(m_trafficPattern));
     }
 
-    NS_TEST_EXPECT_MSG_EQ(m_nArpRequest,
-                          expectedNOrigArpRequest + expectedNFwdArpRequest,
-                          "Unexpected number of transmitted ARP Request frames");
-    NS_TEST_EXPECT_MSG_EQ(m_nCheckedArpRequest,
-                          expectedNOrigArpRequest,
-                          "Unexpected number of checked ARP Request frames");
-
-    std::size_t expectedNOrigArpReply{0};
-    std::size_t expectedNFwdArpReply{0};
+    std::size_t expectedNOrigReply{0};
+    std::size_t expectedNFwdReply{0};
 
     switch (m_trafficPattern)
     {
     case WifiTrafficPattern::STA_TO_AP:
-        // STA transmits only one ARP Request, AP replies with one (unicast) ARP Reply
-        expectedNOrigArpReply = 1;
-        expectedNFwdArpReply = 0;
+        // STA transmits only one request, AP replies with one unicast reply
+        expectedNOrigReply = 1;
+        expectedNFwdReply = 0;
         break;
     case WifiTrafficPattern::AP_TO_STA:
-        // ARP Request is broadcast, so it is sent by the AP on all of its links; the STA sends
-        // an ARP Reply for each setup link
-        expectedNOrigArpReply =
+        // the request is broadcast/multicast, so it is sent by the AP on all of its links; the STA
+        // sends a reply for each setup link
+        expectedNOrigReply =
             std::min<std::size_t>(m_apMac->GetNLinks(), m_staMacs[0]->GetSetupLinkIds().size());
-        expectedNFwdArpReply = 0;
+        expectedNFwdReply = 0;
         break;
     case WifiTrafficPattern::STA_TO_STA:
-        // AP forwards ARP Request on all of its links; STA 2 sends as many ARP Replies as the
-        // number of setup links; each such ARP Reply is forwarded by the AP to STA 1
-        expectedNOrigArpReply = expectedNFwdArpReply = m_staMacs[1]->GetSetupLinkIds().size();
+        // AP forwards the request on all of its links; STA 2 sends as many replies as the number
+        // of setup links; each such reply is forwarded by the AP to STA 1
+        expectedNOrigReply = expectedNFwdReply = m_staMacs[1]->GetSetupLinkIds().size();
         break;
     default:
         NS_ABORT_MSG("Unsupported scenario " << +static_cast<uint8_t>(m_trafficPattern));
     }
 
-    NS_TEST_EXPECT_MSG_EQ(m_nArpReply,
-                          expectedNOrigArpReply + expectedNFwdArpReply,
-                          "Unexpected number of transmitted ARP Reply frames");
-    NS_TEST_EXPECT_MSG_EQ(m_nCheckedArpReply,
-                          expectedNOrigArpReply,
-                          "Unexpected number of checked ARP Reply frames");
+    if (m_ipVersion == 4)
+    {
+        NS_TEST_EXPECT_MSG_EQ(m_nArpRequest,
+                              expectedNOrigRequest + expectedNFwdRequest,
+                              "Unexpected number of transmitted ARP Request frames");
+        NS_TEST_EXPECT_MSG_EQ(m_nCheckedArpRequest,
+                              expectedNOrigRequest,
+                              "Unexpected number of checked ARP Request frames");
+        NS_TEST_EXPECT_MSG_EQ(m_nArpReply,
+                              expectedNOrigReply + expectedNFwdReply,
+                              "Unexpected number of transmitted ARP Reply frames");
+        NS_TEST_EXPECT_MSG_EQ(m_nCheckedArpReply,
+                              expectedNOrigReply,
+                              "Unexpected number of checked ARP Reply frames");
+    }
+    else
+    {
+        NS_TEST_EXPECT_MSG_EQ(m_nNs,
+                              expectedNOrigRequest + expectedNFwdRequest,
+                              "Unexpected number of transmitted Neighbor Solicitation frames");
+        NS_TEST_EXPECT_MSG_EQ(m_nCheckedNs,
+                              expectedNOrigRequest,
+                              "Unexpected number of checked Neighbor Solicitation frames");
+        NS_TEST_EXPECT_MSG_EQ(m_nNa,
+                              expectedNOrigReply + expectedNFwdReply,
+                              "Unexpected number of transmitted Neighbor Advertisement frames");
+        NS_TEST_EXPECT_MSG_EQ(m_nCheckedNa,
+                              expectedNOrigReply,
+                              "Unexpected number of checked Neighbor Advertisement frames");
+    }
 
     Simulator::Destroy();
 }
@@ -568,29 +768,31 @@ class WifiMloUdpTestSuite : public TestSuite
 WifiMloUdpTestSuite::WifiMloUdpTestSuite()
     : TestSuite("wifi-mlo-udp", Type::SYSTEM)
 {
+    std::size_t inputId{};
+    std::vector<WifiMloUdpTest::InputParams> testVectors;
     using ParamsTuple = std::array<std::vector<std::string>, 3>; // AP, STA 1, STA 2 channels
 
     for (const auto& channels :
          {// single link AP, non-AP MLD with 3 links, single link non-AP STA
           ParamsTuple{
-              {{"{7, 80, BAND_6GHZ, 0}"},
-               {"{42, 80, BAND_5GHZ, 2}", "{5, 40, BAND_2_4GHZ, 0}", "{7, 80, BAND_6GHZ, 0}"},
-               {"{7, 80, BAND_6GHZ, 0}"}}},
+              {{"{3, 40, BAND_6GHZ, 0}"},
+               {"{46, 40, BAND_5GHZ, 1}", "{5, 40, BAND_2_4GHZ, 0}", "{3, 40, BAND_6GHZ, 0}"},
+               {"{3, 40, BAND_6GHZ, 0}"}}},
           // single link AP, non-AP MLD with 3 links, non-AP MLD with 2 links
           ParamsTuple{
-              {{"{7, 80, BAND_6GHZ, 0}"},
-               {"{42, 80, BAND_5GHZ, 2}", "{5, 40, BAND_2_4GHZ, 0}", "{7, 80, BAND_6GHZ, 0}"},
-               {"{42, 80, BAND_5GHZ, 2}", "{7, 80, BAND_6GHZ, 0}"}}},
+              {{"{3, 40, BAND_6GHZ, 0}"},
+               {"{46, 40, BAND_5GHZ, 1}", "{5, 40, BAND_2_4GHZ, 0}", "{3, 40, BAND_6GHZ, 0}"},
+               {"{46, 40, BAND_5GHZ, 1}", "{3, 40, BAND_6GHZ, 0}"}}},
           // AP MLD with 3 links, single link non-AP STA, non-AP MLD with 2 links
           ParamsTuple{
-              {{"{42, 80, BAND_5GHZ, 2}", "{5, 40, BAND_2_4GHZ, 0}", "{7, 80, BAND_6GHZ, 0}"},
-               {"{7, 80, BAND_6GHZ, 0}"},
-               {"{42, 80, BAND_5GHZ, 2}", "{5, 40, BAND_2_4GHZ, 0}"}}},
+              {{"{46, 40, BAND_5GHZ, 1}", "{5, 40, BAND_2_4GHZ, 0}", "{3, 40, BAND_6GHZ, 0}"},
+               {"{3, 40, BAND_6GHZ, 0}"},
+               {"{46, 40, BAND_5GHZ, 1}", "{5, 40, BAND_2_4GHZ, 0}"}}},
           // AP MLD with 3 links, non-AP MLD with 3 links, non-AP MLD with 2 links
           ParamsTuple{
-              {{"{42, 80, BAND_5GHZ, 2}", "{7, 80, BAND_6GHZ, 0}", "{5, 40, BAND_2_4GHZ, 0}"},
-               {"{42, 80, BAND_5GHZ, 2}", "{7, 80, BAND_6GHZ, 0}", "{5, 40, BAND_2_4GHZ, 0}"},
-               {"{7, 80, BAND_6GHZ, 0}", "{5, 40, BAND_2_4GHZ, 0}"}}}})
+              {{"{46, 40, BAND_5GHZ, 1}", "{3, 40, BAND_6GHZ, 0}", "{5, 40, BAND_2_4GHZ, 0}"},
+               {"{46, 40, BAND_5GHZ, 1}", "{3, 40, BAND_6GHZ, 0}", "{5, 40, BAND_2_4GHZ, 0}"},
+               {"{3, 40, BAND_6GHZ, 0}", "{5, 40, BAND_2_4GHZ, 0}"}}}})
     {
         for (const auto& trafficPattern : {WifiTrafficPattern::STA_TO_AP,
                                            WifiTrafficPattern::AP_TO_STA,
@@ -600,16 +802,26 @@ WifiMloUdpTestSuite::WifiMloUdpTestSuite()
             {
                 for (const auto assocType : {WifiAssocType::LEGACY, WifiAssocType::ML_SETUP})
                 {
-                    AddTestCase(new WifiMloUdpTest(channels[0],
-                                                   channels[1],
-                                                   channels[2],
-                                                   trafficPattern,
-                                                   assocType,
-                                                   amsduAggr),
-                                TestCase::Duration::QUICK);
+                    for (const uint8_t ipVersion : {4, 6})
+                    {
+                        testVectors.emplace_back(
+                            WifiMloUdpTest::InputParams{.id = inputId++,
+                                                        .apChannels = channels[0],
+                                                        .firstStaChannels = channels[1],
+                                                        .secondStaChannels = channels[2],
+                                                        .trafficPattern = trafficPattern,
+                                                        .assocType = assocType,
+                                                        .amsduAggr = amsduAggr,
+                                                        .ipVersion = ipVersion});
+                    }
                 }
             }
         }
+    }
+
+    for (const auto& testVector : testVectors)
+    {
+        AddTestCase(new WifiMloUdpTest(testVector), TestCase::Duration::QUICK);
     }
 }
 
