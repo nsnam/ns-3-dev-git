@@ -357,6 +357,9 @@ class IidManager : public Singleton<IidManager>
          */
         HashChainFlag = 0x80000000
     };
+
+    /** Use maximum value of size_t as a flag for "size unknown" */
+    static constexpr std::size_t SIZE_UNKNOWN = std::numeric_limits<std::size_t>::max();
 };
 
 // static
@@ -439,7 +442,7 @@ IidManager::AllocateUid(std::string name)
     information.hash = hash;
     information.parent = 0;
     information.groupName = "";
-    information.size = (std::size_t)(-1);
+    information.size = SIZE_UNKNOWN;
     information.hasConstructor = false;
     information.mustHideFromDocumentation = false;
     information.supportLevel = TypeId::SupportLevel::SUPPORTED;
@@ -500,6 +503,7 @@ IidManager::SetSize(uint16_t uid, std::size_t size)
 {
     NS_LOG_FUNCTION(IID << uid << size);
     IidInformation* information = LookupInformation(uid);
+    NS_ASSERT_MSG(size < SIZE_UNKNOWN, "Size is too large");
     information->size = size;
 }
 

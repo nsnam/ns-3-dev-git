@@ -29,7 +29,7 @@ class TupleObject : public Object
     /**
      * Test enum type
      */
-    enum TupleTestEnum
+    enum TupleTestEnum : int
     {
         VALUE1,
         VALUE2,
@@ -175,7 +175,7 @@ TupleValueTestCase::DoRun()
                           true,
                           "Second element of tuple 1 not correctly set");
     NS_TEST_ASSERT_MSG_EQ(std::get<2>(t1),
-                          (int)(TupleObject::VALUE1),
+                          TupleObject::VALUE1,
                           "Third element of tuple 1 not correctly set");
 
     // Test that default values have been assigned to tuple 2
@@ -205,7 +205,7 @@ TupleValueTestCase::DoRun()
                           true,
                           "Second element of tuple 1 not correctly set");
     NS_TEST_ASSERT_MSG_EQ(std::get<2>(t1),
-                          (int)(TupleObject::VALUE2),
+                          TupleObject::VALUE2,
                           "Third element of tuple 1 not correctly set");
 
     // Test that we can correctly set and get new values for tuple 2
@@ -238,7 +238,7 @@ TupleValueTestCase::DoRun()
                           true,
                           "Second element of tuple 1 not correctly set");
     NS_TEST_ASSERT_MSG_EQ(std::get<2>(t1),
-                          (int)(TupleObject::VALUE1),
+                          TupleObject::VALUE1,
                           "Third element of tuple 1 not correctly set");
 
     // Test that we can set tuple 2 from string
@@ -257,20 +257,20 @@ TupleValueTestCase::DoRun()
     ret1 = tupleObject->SetAttributeFailSafe("StringStringEnumTuple",
                                              TupleValue<StringValue, StringValue>({"Get", "Back"}));
     NS_TEST_ASSERT_MSG_EQ(ret1, false, "Too few values");
-    NS_TEST_ASSERT_MSG_EQ((tupleObject->GetTuple1() ==
-                           std::make_tuple("Come", "Together", (int)(TupleObject::VALUE1))),
-                          true,
-                          "Tuple modified after failed assignment");
+    NS_TEST_ASSERT_MSG_EQ(
+        (tupleObject->GetTuple1() == std::make_tuple("Come", "Together", TupleObject::VALUE1)),
+        true,
+        "Tuple modified after failed assignment");
 
     ret1 = tupleObject->SetAttributeFailSafe(
         "StringStringEnumTuple",
         MakeTupleValue<TupleObject::Tuple1Pack>(
             TupleObject::Tuple1{"Get", "Back", TupleObject::VALUE3}));
     NS_TEST_ASSERT_MSG_EQ(ret1, false, "Invalid enum value");
-    NS_TEST_ASSERT_MSG_EQ((tupleObject->GetTuple1() ==
-                           std::make_tuple("Come", "Together", (int)(TupleObject::VALUE1))),
-                          true,
-                          "Tuple modified after failed assignment");
+    NS_TEST_ASSERT_MSG_EQ(
+        (tupleObject->GetTuple1() == std::make_tuple("Come", "Together", TupleObject::VALUE1)),
+        true,
+        "Tuple modified after failed assignment");
 
     ret2 = tupleObject->SetAttributeFailSafe(
         "DoubleUintStringTuple",

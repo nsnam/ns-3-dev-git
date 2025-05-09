@@ -367,7 +367,7 @@ CalendarScheduler::CalculateNewWidth()
     }
 
     totalSeparation *= 3;
-    totalSeparation = std::max(totalSeparation, (uint64_t)1);
+    totalSeparation = std::max(totalSeparation, static_cast<uint64_t>(1));
     return totalSeparation;
 }
 

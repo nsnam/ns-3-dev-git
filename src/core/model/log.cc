@@ -224,7 +224,7 @@ LogComponent::EnvVarCheck()
         }
         pre_pipe = false;
     }
-    Enable((LogLevel)level);
+    Enable(static_cast<LogLevel>(level));
 }
 
 bool

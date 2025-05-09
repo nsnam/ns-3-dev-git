@@ -67,7 +67,7 @@ namespace tests
     {                                                                                              \
         if (MustAssertOnFailure())                                                                 \
         {                                                                                          \
-            *(volatile int*)0 = 0;                                                                 \
+            std::terminate();                                                                      \
         }                                                                                          \
     } while (false)
 

@@ -70,7 +70,7 @@ Histogram(Ptr<RandomVariableStream> rndvar,
           const std::string& title,
           bool impulses = false)
 {
-    typedef std::map<double, unsigned int> histogram_maptype;
+    typedef std::map<double, double> histogram_maptype;
     histogram_maptype histogram;
 
     for (unsigned int i = 0; i < probes; ++i)
@@ -90,7 +90,7 @@ Histogram(Ptr<RandomVariableStream> rndvar,
 
     for (auto hi = histogram.begin(); hi != histogram.end(); ++hi)
     {
-        data.Add(hi->first, (double)hi->second / (double)probes / precision);
+        data.Add(hi->first, hi->second / probes / precision);
     }
 
     return data;

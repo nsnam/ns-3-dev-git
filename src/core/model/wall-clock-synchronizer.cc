@@ -131,7 +131,7 @@ WallClockSynchronizer::DoGetDrift(uint64_t ns)
         // Real time (nsNow) is larger/later than the simulator time (ns).  We are
         // behind real time and the difference (drift) is positive.
         //
-        return (int64_t)(nsNow - ns);
+        return static_cast<int64_t>(nsNow - ns);
     }
     else
     {
@@ -139,7 +139,7 @@ WallClockSynchronizer::DoGetDrift(uint64_t ns)
         // Real time (nsNow) is smaller/earlier than the simulator time (ns).  We are
         // ahead of real time and the difference (drift) is negative.
         //
-        return -(int64_t)(ns - nsNow);
+        return -static_cast<int64_t>(ns - nsNow);
     }
 }
 
@@ -351,7 +351,7 @@ WallClockSynchronizer::DriftCorrect(uint64_t nsNow, uint64_t nsDelay)
     // have more drift than delay, then we just play catch up as fast as possible
     // by not delaying at all.
     //
-    auto correction = (uint64_t)drift;
+    auto correction = static_cast<uint64_t>(drift);
     if (correction <= nsDelay)
     {
         return nsDelay - correction;

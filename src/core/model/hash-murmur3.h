@@ -90,7 +90,7 @@ class Murmur3 : public Implementation
      * This has to be a constant for all MPI ranks to generate
      * the same hash from the same string.
      */
-    static constexpr auto SEED{0x8BADF00D}; // Ate bad food
+    static constexpr uint32_t SEED{0x8BADF00D}; // Ate bad food
 
     /**
      * Cache last hash value, and total bytes hashed (needed to finalize),

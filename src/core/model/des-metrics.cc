@@ -107,10 +107,11 @@ DesMetrics::TraceWithContext(uint32_t context, const Time& now, const Time& dela
         ss << m_separator << std::endl;
     }
 
-    uint32_t sendCtx = Simulator::GetContext();
+    auto sendCtx = static_cast<int32_t>(Simulator::GetContext());
+    auto iContext = static_cast<int32_t>(context);
     // Force to signed so we can show NoContext as '-1'
-    int32_t send = (sendCtx != Simulator::NO_CONTEXT) ? (int32_t)sendCtx : -1;
-    int32_t recv = (context != Simulator::NO_CONTEXT) ? (int32_t)context : -1;
+    auto send = (sendCtx != static_cast<int32_t>(Simulator::NO_CONTEXT)) ? sendCtx : -1;
+    auto recv = (iContext != static_cast<int32_t>(Simulator::NO_CONTEXT)) ? iContext : -1;
 
     ss << "  [\"" << send << "\",\"" << now.GetTimeStep() << "\",\"" << recv << "\",\""
        << (now + delay).GetTimeStep() << "\"]";

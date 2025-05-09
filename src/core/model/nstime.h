@@ -97,7 +97,7 @@ class CORE_EXPORT Time
     /**
      * The unit to use to interpret a number representing time
      */
-    enum Unit
+    enum Unit : int
     {
         Y = 0,     //!< year, 365 days
         D = 1,     //!< day, 24 hours

@@ -33,7 +33,7 @@ namespace ns3
 class int64x64_t
 {
     /// High bit of fractional part
-    static const uint64_t HPCAIRO_MASK_HI_BIT = (((uint64_t)1) << 63);
+    static const uint64_t HPCAIRO_MASK_HI_BIT = (1ULL << 63);
     /// Mask for fraction part
     static const uint64_t HP_MASK_LO = 0xffffffffffffffffULL;
 

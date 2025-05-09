@@ -167,7 +167,7 @@ class TracedValue
      */
     template <typename U>
     TracedValue(const U& other)
-        : m_v((T)other)
+        : m_v(static_cast<T>(other))
     {
     }
 

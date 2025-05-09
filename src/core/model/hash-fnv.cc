@@ -180,9 +180,9 @@ typedef uint32_t Fnv32_t;  //PDB
  * \note The FNV-1a initial basis is the same value as FNV-1 by definition.
  */
 // Use fully qualified type so this define works outside this scope //PDB
-#define FNV1_32_INIT ((Fnv1aImplementation::Fnv32_t)0x811c9dc5)
+constexpr Fnv1aImplementation::Fnv32_t FNV1_32_INIT{0x811c9dc5};
 /** \copydoc FNV1_32_INIT */
-#define FNV1_32A_INIT FNV1_32_INIT
+constexpr Fnv1aImplementation::Fnv32_t FNV1_32A_INIT = FNV1_32_INIT;
 
 
 /**
@@ -233,9 +233,10 @@ extern const Fnv64_t fnv0_64_init;
  * \note The FNV-1a initial basis is the same value as FNV-1 by definition.
  */
 #if defined(HAVE_64BIT_LONG_LONG)
-#define FNV1_64_INIT ((Fnv1aImplementation::Fnv64_t)0xcbf29ce484222325ULL)
+// Use fully qualified type so this define works outside this scope //PDB
+constexpr Fnv1aImplementation::Fnv64_t FNV1_64_INIT{0xcbf29ce484222325ULL};
 /** \copydoc FNV1_64_INIT */
-#define FNV1A_64_INIT FNV1_64_INIT
+constexpr Fnv1aImplementation::Fnv64_t FNV1A_64_INIT = FNV1_64_INIT;
 #else /* HAVE_64BIT_LONG_LONG */
 extern const fnv1_64_init;
 extern const Fnv64_t fnv1a_64_init;
@@ -765,8 +766,8 @@ Fnv1a::GetHash64(const char* buffer, const std::size_t size)
 void
 Fnv1a::clear()
 {
-    m_hash32 = FNV1_32A_INIT;
-    m_hash64 = FNV1A_64_INIT;
+    m_hash32 = Fnv1aImplementation::FNV1_32A_INIT;
+    m_hash64 = Fnv1aImplementation::FNV1A_64_INIT;
 }
 
 } // namespace Function

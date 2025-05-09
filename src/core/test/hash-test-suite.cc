@@ -282,7 +282,7 @@ uint32_t
 gnu_sum32(const char* buffer, const std::size_t size)
 {
     uint32_t h = gnu_sum(buffer, size);
-    return (uint32_t)((h << 16) + h);
+    return (h << 16) + h;
 }
 
 /**
@@ -294,7 +294,7 @@ uint64_t
 gnu_sum64(const char* buffer, const std::size_t size)
 {
     uint64_t h = gnu_sum32(buffer, size);
-    return (uint64_t)((h << 32) + h);
+    return (h << 32) + h;
 }
 
 /**

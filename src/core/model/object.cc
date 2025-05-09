@@ -94,7 +94,7 @@ Object::Object()
     : m_tid(Object::GetTypeId()),
       m_disposed(false),
       m_initialized(false),
-      m_aggregates((Aggregates*)std::malloc(sizeof(Aggregates))),
+      m_aggregates(static_cast<Aggregates*>(std::malloc(sizeof(Aggregates)))),
       m_getObjectCount(0)
 {
     NS_LOG_FUNCTION(this);
@@ -132,7 +132,7 @@ Object::Object(const Object& o)
     : m_tid(o.m_tid),
       m_disposed(false),
       m_initialized(false),
-      m_aggregates((Aggregates*)std::malloc(sizeof(Aggregates))),
+      m_aggregates(static_cast<Aggregates*>(std::malloc(sizeof(Aggregates)))),
       m_getObjectCount(0)
 {
     m_aggregates->n = 1;
@@ -303,7 +303,8 @@ Object::AggregateObject(Ptr<Object> o)
     Object* other = PeekPointer(o);
     // first create the new aggregate buffer.
     uint32_t total = m_aggregates->n + other->m_aggregates->n;
-    auto aggregates = (Aggregates*)std::malloc(sizeof(Aggregates) + (total - 1) * sizeof(Object*));
+    auto aggregates =
+        static_cast<Aggregates*>(std::malloc(sizeof(Aggregates) + (total - 1) * sizeof(Object*)));
     aggregates->n = total;
 
     // copy our buffer to the new buffer

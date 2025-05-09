@@ -193,7 +193,7 @@ void MurmurHash3_x86_32 ( const void * key, std::size_t len,
 void MurmurHash3_x86_32_incr ( const void * key, std::size_t len,
                                uint32_t seed, void * out )
 {
-  const uint8_t * data = (const uint8_t*)key;
+  const uint8_t * data = static_cast<const uint8_t*>(key); //PDB cast
   const std::size_t nblocks = len / 4;  //PDB: was const int nblocks
 
   uint32_t h1 = seed;
@@ -205,7 +205,7 @@ void MurmurHash3_x86_32_incr ( const void * key, std::size_t len,
   // body
 
   //PDB: const uint32_t * blocks = (const uint32_t *)(data + nblocks*4);
-  const uint32_t * blocks = (const uint32_t *)(data);
+  const uint32_t * blocks = reinterpret_cast<const uint32_t*>(data); //PDB cast
 
   //PDB: for(int i = -nblocks; i; i++)
   for(std::size_t i = 0; i < nblocks; i++)
@@ -224,7 +224,7 @@ void MurmurHash3_x86_32_incr ( const void * key, std::size_t len,
   //----------
   // tail
 
-  const uint8_t * tail = (const uint8_t*)(data + nblocks*4);
+  const uint8_t* tail = data + nblocks * 4;
 
   uint32_t k1 = 0;
 
@@ -236,7 +236,7 @@ void MurmurHash3_x86_32_incr ( const void * key, std::size_t len,
           k1 *= c1; k1 = rotl32(k1,15); k1 *= c2; h1 ^= k1;
   };
 
-  *(uint32_t *)out = h1;
+  *static_cast<uint32_t*>(out) = h1; //PDB cast
 }
 
 //PDB - incremental hashing - finalization
@@ -252,7 +252,7 @@ void MurmurHash3_x86_32_fin ( std::size_t len,
 
   h1 = fmix(h1);
 
-  *(uint32_t *)out = h1;
+  *static_cast<uint32_t*>(out) = h1; //PDB cast
 }
 
 //-----------------------------------------------------------------------------
@@ -300,7 +300,7 @@ void MurmurHash3_x86_128 ( const void * key, const std::size_t len,
 void MurmurHash3_x86_128_incr ( const void * key, const std::size_t len,
                                 uint32_t * seeds, void * out )
 {
-  const uint8_t * data = (const uint8_t*)key;
+  const uint8_t* data = static_cast<const uint8_t*>(key); //PDB cast
   const std::size_t nblocks = len / 16;  //PDB: was const int nblocks
 
   uint32_t h1 = seeds[0];
@@ -317,7 +317,7 @@ void MurmurHash3_x86_128_incr ( const void * key, const std::size_t len,
   // body
 
   //PDB: const uint32_t * blocks = (const uint32_t *)(data + nblocks*16);
-  const uint32_t * blocks = (const uint32_t *)(data);
+  const uint32_t* blocks = reinterpret_cast<const uint32_t*>(data); //PDB cast
 
   //PDB: for(int i = -nblocks; i; i++)
   for(std::size_t i = 0; i < nblocks; i++)
@@ -347,7 +347,7 @@ void MurmurHash3_x86_128_incr ( const void * key, const std::size_t len,
   //----------
   // tail
 
-  const uint8_t * tail = (const uint8_t*)(data + nblocks*16);
+  const uint8_t* tail = data + nblocks * 16;
 
   uint32_t k1 = 0;
   uint32_t k2 = 0;
@@ -380,10 +380,11 @@ void MurmurHash3_x86_128_incr ( const void * key, const std::size_t len,
            k1 *= c1; k1  = rotl32(k1,15); k1 *= c2; h1 ^= k1;
   };
 
-  ((uint32_t *)out)[0] = h1;
-  ((uint32_t *)out)[1] = h2;
-  ((uint32_t *)out)[2] = h3;
-  ((uint32_t *)out)[3] = h4;
+  auto outVals = static_cast<uint32_t*>(out);
+  outVals[0] = h1;
+  outVals[1] = h2;
+  outVals[2] = h3;
+  outVals[3] = h4;
 }
 
 //PDB - incremental hashing - finalization
@@ -411,10 +412,11 @@ void MurmurHash3_x86_128_fin ( const std::size_t len,
   h1 += h2; h1 += h3; h1 += h4;
   h2 += h1; h3 += h1; h4 += h1;
 
-  ((uint32_t *)out)[0] = h1;
-  ((uint32_t *)out)[1] = h2;
-  ((uint32_t *)out)[2] = h3;
-  ((uint32_t *)out)[3] = h4;
+  auto outVals = static_cast<uint32_t*>(out);
+  outVals[0] = h1;
+  outVals[1] = h2;
+  outVals[2] = h3;
+  outVals[3] = h4;
 }
 
 //-----------------------------------------------------------------------------
@@ -422,7 +424,7 @@ void MurmurHash3_x86_128_fin ( const std::size_t len,
 void MurmurHash3_x64_128 ( const void * key, const std::size_t len,
                            const uint32_t seed, void * out )
 {
-  const uint8_t * data = (const uint8_t*)key;
+  const uint8_t * data = static_cast<const uint8_t*>(key); //PDB cast
   const std::size_t nblocks = len / 16;  //PDB: was const int nblocks
 
   uint64_t h1 = seed;
@@ -434,7 +436,7 @@ void MurmurHash3_x64_128 ( const void * key, const std::size_t len,
   //----------
   // body
 
-  const uint64_t * blocks = (const uint64_t *)(data);
+  const uint64_t * blocks = reinterpret_cast<const uint64_t *>(data); //PDB cast
 
   for(std::size_t i = 0; i < nblocks; i++)  //PDB: was int i
   {
@@ -453,30 +455,30 @@ void MurmurHash3_x64_128 ( const void * key, const std::size_t len,
   //----------
   // tail
 
-  const uint8_t * tail = (const uint8_t*)(data + nblocks*16);
+  const uint8_t* tail = data + nblocks * 16;
 
   uint64_t k1 = 0;
   uint64_t k2 = 0;
 
   switch(len & 15)
   {
-  case 15: k2 ^= uint64_t(tail[14]) << 48;
-  case 14: k2 ^= uint64_t(tail[13]) << 40;
-  case 13: k2 ^= uint64_t(tail[12]) << 32;
-  case 12: k2 ^= uint64_t(tail[11]) << 24;
-  case 11: k2 ^= uint64_t(tail[10]) << 16;
-  case 10: k2 ^= uint64_t(tail[ 9]) << 8;
-  case  9: k2 ^= uint64_t(tail[ 8]) << 0;
+  case 15: k2 ^= static_cast<uint64_t>(tail[14]) << 48; //PDB cast
+  case 14: k2 ^= static_cast<uint64_t>(tail[13]) << 40; //PDB cast
+  case 13: k2 ^= static_cast<uint64_t>(tail[12]) << 32; //PDB cast
+  case 12: k2 ^= static_cast<uint64_t>(tail[11]) << 24; //PDB cast
+  case 11: k2 ^= static_cast<uint64_t>(tail[10]) << 16; //PDB cast
+  case 10: k2 ^= static_cast<uint64_t>(tail[ 9]) << 8; //PDB cast
+  case  9: k2 ^= static_cast<uint64_t>(tail[ 8]) << 0; //PDB cast
            k2 *= c2; k2  = rotl64(k2,33); k2 *= c1; h2 ^= k2;
 
-  case  8: k1 ^= uint64_t(tail[ 7]) << 56;
-  case  7: k1 ^= uint64_t(tail[ 6]) << 48;
-  case  6: k1 ^= uint64_t(tail[ 5]) << 40;
-  case  5: k1 ^= uint64_t(tail[ 4]) << 32;
-  case  4: k1 ^= uint64_t(tail[ 3]) << 24;
-  case  3: k1 ^= uint64_t(tail[ 2]) << 16;
-  case  2: k1 ^= uint64_t(tail[ 1]) << 8;
-  case  1: k1 ^= uint64_t(tail[ 0]) << 0;
+  case  8: k1 ^= static_cast<uint64_t>(tail[ 7]) << 56; //PDB cast
+  case  7: k1 ^= static_cast<uint64_t>(tail[ 6]) << 48; //PDB cast
+  case  6: k1 ^= static_cast<uint64_t>(tail[ 5]) << 40; //PDB cast
+  case  5: k1 ^= static_cast<uint64_t>(tail[ 4]) << 32; //PDB cast
+  case  4: k1 ^= static_cast<uint64_t>(tail[ 3]) << 24; //PDB cast
+  case  3: k1 ^= static_cast<uint64_t>(tail[ 2]) << 16; //PDB cast
+  case  2: k1 ^= static_cast<uint64_t>(tail[ 1]) << 8; //PDB cast
+  case  1: k1 ^= static_cast<uint64_t>(tail[ 0]) << 0; //PDB cast
            k1 *= c1; k1  = rotl64(k1,31); k1 *= c2; h1 ^= k1;
   };
 
@@ -494,8 +496,9 @@ void MurmurHash3_x64_128 ( const void * key, const std::size_t len,
   h1 += h2;
   h2 += h1;
 
-  ((uint32_t *)out)[0] = static_cast<uint32_t> (h1);  //PDB cast
-  ((uint32_t *)out)[1] = static_cast<uint32_t> (h2);  //PDB cast
+  auto outVals = static_cast<uint32_t*>(out);
+  outVals[0] = h1;
+  outVals[1] = h2;
 }
 
 // clang-format on
@@ -519,10 +522,10 @@ Murmur3::GetHash32(const char* buffer, const std::size_t size)
 {
     using namespace Murmur3Implementation;
 
-    MurmurHash3_x86_32_incr(buffer, size, m_hash32, (void*)&m_hash32);
+    MurmurHash3_x86_32_incr(buffer, size, m_hash32, static_cast<void*>(&m_hash32));
     m_size32 += static_cast<uint32_t>(size);
     uint32_t hash;
-    MurmurHash3_x86_32_fin(m_size32, m_hash32, (void*)&hash);
+    MurmurHash3_x86_32_fin(m_size32, m_hash32, static_cast<void*>(&hash));
 
     return hash;
 }
@@ -532,7 +535,7 @@ Murmur3::GetHash64(const char* buffer, const std::size_t size)
 {
     using namespace Murmur3Implementation;
 
-    MurmurHash3_x86_128_incr(buffer, static_cast<int>(size), (uint32_t*)(void*)m_hash64, m_hash64);
+    MurmurHash3_x86_128_incr(buffer, size, reinterpret_cast<uint32_t*>(m_hash64), m_hash64);
     m_size64 += size;
 
     // Simpler would be:
@@ -549,7 +552,7 @@ Murmur3::GetHash64(const char* buffer, const std::size_t size)
     // Using uint32_t here avoids the bug, and continues to works with newer gcc.
     uint32_t hash[4];
 
-    MurmurHash3_x86_128_fin(static_cast<int>(m_size64), (uint32_t*)(void*)m_hash64, hash);
+    MurmurHash3_x86_128_fin(m_size64, reinterpret_cast<uint32_t*>(m_hash64), hash);
     uint64_t result = hash[1];
     result = (result << 32) | hash[0];
     return result;
@@ -558,9 +561,9 @@ Murmur3::GetHash64(const char* buffer, const std::size_t size)
 void
 Murmur3::clear()
 {
-    m_hash32 = (uint32_t)SEED;
+    m_hash32 = SEED;
     m_size32 = 0;
-    m_hash64[0] = m_hash64[1] = ((uint64_t)SEED << 32) | (uint32_t)SEED;
+    m_hash64[0] = m_hash64[1] = (static_cast<uint64_t>(SEED) << 32) | SEED;
     m_size64 = 0;
 }
 

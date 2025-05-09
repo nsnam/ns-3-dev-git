@@ -511,7 +511,7 @@ RealtimeSimulatorImpl::Schedule(const Time& delay, EventImpl* impl)
         Time tAbsolute = Simulator::Now() + delay;
         NS_ASSERT_MSG(delay.IsPositive(), "RealtimeSimulatorImpl::Schedule(): Negative delay");
         ev.impl = impl;
-        ev.key.m_ts = (uint64_t)tAbsolute.GetTimeStep();
+        ev.key.m_ts = static_cast<uint64_t>(tAbsolute.GetTimeStep());
         ev.key.m_context = GetContext();
         ev.key.m_uid = m_uid;
         m_uid++;

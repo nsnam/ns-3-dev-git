@@ -132,7 +132,7 @@ FindSelf()
 #if defined(__linux__)
     {
         ssize_t size = 1024;
-        char* buffer = (char*)malloc(size);
+        char* buffer = static_cast<char*>(malloc(size));
         memset(buffer, 0, size);
         int pathLength;
         while (true)
@@ -145,7 +145,7 @@ FindSelf()
             }
             size *= 2;
             free(buffer);
-            buffer = (char*)malloc(size);
+            buffer = static_cast<char*>(malloc(size));
             memset(buffer, 0, size);
         }
         if (pathLength == -1)

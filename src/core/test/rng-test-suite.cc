@@ -56,11 +56,13 @@ class RngUniformTestCase : public TestCase
 {
   public:
     /// Number of runs.
-    static const uint32_t N_RUNS = 5;
+    static constexpr uint32_t N_RUNS = 5;
     /// Number of bins.
-    static const uint32_t N_BINS = 50;
+    static constexpr uint32_t N_BINS = 50;
     /// Number of measurements.
-    static const uint32_t N_MEASUREMENTS = 1000000;
+    static constexpr uint32_t N_MEASUREMENTS = 1000000;
+    /// Expected density for uniform distribution.
+    static constexpr double EXPECTED_DENSITY{static_cast<double>(N_MEASUREMENTS) / N_BINS};
 
     RngUniformTestCase();
     ~RngUniformTestCase() override;
@@ -98,7 +100,7 @@ RngUniformTestCase::ChiSquaredTest(Ptr<UniformRandomVariable> u)
 
     double tmp[N_BINS];
 
-    double expected = ((double)N_MEASUREMENTS / (double)N_BINS);
+    double expected{EXPECTED_DENSITY};
 
     for (uint32_t i = 0; i < N_BINS; ++i)
     {
@@ -135,7 +137,7 @@ RngUniformTestCase::DoRun()
         sum += result;
     }
 
-    sum /= (double)N_RUNS;
+    sum /= N_RUNS;
 
     NS_TEST_ASSERT_MSG_LT(sum, maxStatistic, "Chi-squared statistic out of range");
 }
@@ -149,11 +151,11 @@ class RngNormalTestCase : public TestCase
 {
   public:
     /// Number of runs.
-    static const uint32_t N_RUNS = 5;
+    static constexpr uint32_t N_RUNS = 5;
     /// Number of bins.
-    static const uint32_t N_BINS = 50;
+    static constexpr uint32_t N_BINS = 50;
     /// Number of measurements.
-    static const uint32_t N_MEASUREMENTS = 1000000;
+    static constexpr uint32_t N_MEASUREMENTS = 1000000;
 
     RngNormalTestCase();
     ~RngNormalTestCase() override;
@@ -242,7 +244,7 @@ RngNormalTestCase::DoRun()
         sum += result;
     }
 
-    sum /= (double)N_RUNS;
+    sum /= N_RUNS;
 
     NS_TEST_ASSERT_MSG_LT(sum, maxStatistic, "Chi-squared statistic out of range");
 }
@@ -256,11 +258,11 @@ class RngExponentialTestCase : public TestCase
 {
   public:
     /// Number of runs.
-    static const uint32_t N_RUNS = 5;
+    static constexpr uint32_t N_RUNS = 5;
     /// Number of bins.
-    static const uint32_t N_BINS = 50;
+    static constexpr uint32_t N_BINS = 50;
     /// Number of measurements.
-    static const uint32_t N_MEASUREMENTS = 1000000;
+    static constexpr uint32_t N_MEASUREMENTS = 1000000;
 
     RngExponentialTestCase();
     ~RngExponentialTestCase() override;
@@ -348,7 +350,7 @@ RngExponentialTestCase::DoRun()
         sum += result;
     }
 
-    sum /= (double)N_RUNS;
+    sum /= N_RUNS;
 
     NS_TEST_ASSERT_MSG_LT(sum, maxStatistic, "Chi-squared statistic out of range");
 }
@@ -362,11 +364,11 @@ class RngParetoTestCase : public TestCase
 {
   public:
     /// Number of runs.
-    static const uint32_t N_RUNS = 5;
+    static constexpr uint32_t N_RUNS = 5;
     /// Number of bins.
-    static const uint32_t N_BINS = 50;
+    static constexpr uint32_t N_BINS = 50;
     /// Number of measurements.
-    static const uint32_t N_MEASUREMENTS = 1000000;
+    static constexpr uint32_t N_MEASUREMENTS = 1000000;
 
     RngParetoTestCase();
     ~RngParetoTestCase() override;
@@ -459,7 +461,7 @@ RngParetoTestCase::DoRun()
         sum += result;
     }
 
-    sum /= (double)N_RUNS;
+    sum /= N_RUNS;
 
     NS_TEST_ASSERT_MSG_LT(sum, maxStatistic, "Chi-squared statistic out of range");
 }

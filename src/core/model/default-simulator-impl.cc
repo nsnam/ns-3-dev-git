@@ -218,7 +218,7 @@ DefaultSimulatorImpl::Schedule(const Time& delay, EventImpl* event)
 
     Scheduler::Event ev;
     ev.impl = event;
-    ev.key.m_ts = (uint64_t)tAbsolute.GetTimeStep();
+    ev.key.m_ts = static_cast<uint64_t>(tAbsolute.GetTimeStep());
     ev.key.m_context = GetContext();
     ev.key.m_uid = m_uid;
     m_uid++;
@@ -237,7 +237,7 @@ DefaultSimulatorImpl::ScheduleWithContext(uint32_t context, const Time& delay, E
         Time tAbsolute = delay + TimeStep(m_currentTs);
         Scheduler::Event ev;
         ev.impl = event;
-        ev.key.m_ts = (uint64_t)tAbsolute.GetTimeStep();
+        ev.key.m_ts = static_cast<uint64_t>(tAbsolute.GetTimeStep());
         ev.key.m_context = context;
         ev.key.m_uid = m_uid;
         m_uid++;
