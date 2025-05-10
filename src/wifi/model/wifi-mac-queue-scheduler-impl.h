@@ -58,15 +58,18 @@ class WifiMacQueueSchedulerImpl : public WifiMacQueueScheduler
 
     /** @copydoc ns3::WifiMacQueueScheduler::SetWifiMac */
     void SetWifiMac(Ptr<WifiMac> mac) final;
-    /** @copydoc ns3::WifiMacQueueScheduler::GetNext(AcIndex,std::optional<uint8_t>) */
-    std::optional<WifiContainerQueueId> GetNext(AcIndex ac, std::optional<uint8_t> linkId) final;
+    /** @copydoc ns3::WifiMacQueueScheduler::GetNext(AcIndex,std::optional<uint8_t>,bool) */
+    std::optional<WifiContainerQueueId> GetNext(AcIndex ac,
+                                                std::optional<uint8_t> linkId,
+                                                bool skipBlockedQueues = true) final;
     /**
      *  @copydoc ns3::WifiMacQueueScheduler::GetNext(AcIndex,std::optional<uint8_t>,
-     *           const WifiContainerQueueId&)
+     *           const WifiContainerQueueId&,bool)
      */
     std::optional<WifiContainerQueueId> GetNext(AcIndex ac,
                                                 std::optional<uint8_t> linkId,
-                                                const WifiContainerQueueId& prevQueueId) final;
+                                                const WifiContainerQueueId& prevQueueId,
+                                                bool skipBlockedQueues = true) final;
     /** @copydoc ns3::WifiMacQueueScheduler::GetLinkIds */
     std::list<uint8_t> GetLinkIds(AcIndex ac,
                                   Ptr<const WifiMpdu> mpdu,
@@ -200,19 +203,23 @@ class WifiMacQueueSchedulerImpl : public WifiMacQueueScheduler
     typename QueueInfoMap::iterator InitQueueInfo(AcIndex ac, Ptr<const WifiMpdu> mpdu);
 
     /**
-     * Get the next queue to serve. The search starts from the given one. The returned
-     * queue is guaranteed to contain at least an MPDU whose lifetime has not expired.
-     * Queues containing MPDUs that cannot be sent over the given link are ignored.
+     * Get the next queue to serve. The search starts from the given one. The returned queue is
+     * guaranteed to contain at least an MPDU whose lifetime has not expired. Queues containing
+     * MPDUs that cannot be sent over the given link, if any, or on any link, otherwise, are ignored
+     * if and only if <i>skipBlockedQueues</i> is true.
      *
      * @param ac the Access Category that we want to serve
      * @param linkId the ID of the link on which MPDUs contained in the returned queue must be
      *               allowed to be sent
      * @param sortedQueuesIt iterator pointing to the queue we start the search from
+     * @param skipBlockedQueues whether queues containing MPDUs that cannot be sent over the given
+     *                          link, if any, or on any link, otherwise, must be ignored
      * @return the ID of the selected container queue (if any)
      */
     std::optional<WifiContainerQueueId> DoGetNext(AcIndex ac,
                                                   std::optional<uint8_t> linkId,
-                                                  typename SortedQueues::iterator sortedQueuesIt);
+                                                  typename SortedQueues::iterator sortedQueuesIt,
+                                                  bool skipBlockedQueues);
 
     /**
      * Check whether an MPDU has to be dropped before enqueuing the given MPDU.
@@ -703,19 +710,22 @@ WifiMacQueueSchedulerImpl<Priority, Compare>::GetQueueLinkMask(AcIndex ac,
 
 template <class Priority, class Compare>
 std::optional<WifiContainerQueueId>
-WifiMacQueueSchedulerImpl<Priority, Compare>::GetNext(AcIndex ac, std::optional<uint8_t> linkId)
+WifiMacQueueSchedulerImpl<Priority, Compare>::GetNext(AcIndex ac,
+                                                      std::optional<uint8_t> linkId,
+                                                      bool skipBlockedQueues)
 {
-    NS_LOG_FUNCTION(this << +ac << linkId.has_value());
-    return DoGetNext(ac, linkId, m_perAcInfo[ac].sortedQueues.begin());
+    NS_LOG_FUNCTION(this << +ac << linkId.has_value() << skipBlockedQueues);
+    return DoGetNext(ac, linkId, m_perAcInfo[ac].sortedQueues.begin(), skipBlockedQueues);
 }
 
 template <class Priority, class Compare>
 std::optional<WifiContainerQueueId>
 WifiMacQueueSchedulerImpl<Priority, Compare>::GetNext(AcIndex ac,
                                                       std::optional<uint8_t> linkId,
-                                                      const WifiContainerQueueId& prevQueueId)
+                                                      const WifiContainerQueueId& prevQueueId,
+                                                      bool skipBlockedQueues)
 {
-    NS_LOG_FUNCTION(this << +ac << linkId.has_value());
+    NS_LOG_FUNCTION(this << +ac << linkId.has_value() << skipBlockedQueues);
 
     auto queueInfoIt = m_perAcInfo[ac].queueInfoMap.find(prevQueueId);
     NS_ABORT_IF(queueInfoIt == m_perAcInfo[ac].queueInfoMap.end() ||
@@ -724,7 +734,7 @@ WifiMacQueueSchedulerImpl<Priority, Compare>::GetNext(AcIndex ac,
     auto sortedQueuesIt = queueInfoIt->second.priorityIt.value();
     NS_ABORT_IF(sortedQueuesIt == m_perAcInfo[ac].sortedQueues.end());
 
-    return DoGetNext(ac, linkId, ++sortedQueuesIt);
+    return DoGetNext(ac, linkId, ++sortedQueuesIt, skipBlockedQueues);
 }
 
 template <class Priority, class Compare>
@@ -732,9 +742,10 @@ std::optional<WifiContainerQueueId>
 WifiMacQueueSchedulerImpl<Priority, Compare>::DoGetNext(
     AcIndex ac,
     std::optional<uint8_t> linkId,
-    typename SortedQueues::iterator sortedQueuesIt)
+    typename SortedQueues::iterator sortedQueuesIt,
+    bool skipBlockedQueues)
 {
-    NS_LOG_FUNCTION(this << +ac << linkId.has_value());
+    NS_LOG_FUNCTION(this << +ac << linkId.has_value() << skipBlockedQueues);
     NS_ASSERT(static_cast<uint8_t>(ac) < AC_UNDEF);
 
     while (sortedQueuesIt != m_perAcInfo[ac].sortedQueues.end())
@@ -743,11 +754,13 @@ WifiMacQueueSchedulerImpl<Priority, Compare>::DoGetNext(
         const auto& linkIds = queueInfoPair.second.linkIds;
         typename std::decay_t<decltype(linkIds)>::const_iterator linkIt;
 
-        if (!linkId.has_value() ||
-            ((linkIt = linkIds.find(*linkId)) != linkIds.cend() && linkIt->second.none()))
+        if (!skipBlockedQueues ||
+            std::any_of(linkIds.cbegin(), linkIds.cend(), [&linkId](const auto& linkIdMask) {
+                return (!linkId.has_value() || linkId == linkIdMask.first) &&
+                       linkIdMask.second.none();
+            }))
         {
-            // Packets in this queue can be sent over the link we got channel access on.
-            // Now remove packets with expired lifetime from this queue.
+            // Remove packets with expired lifetime from this queue.
             // In case the queue becomes empty, the queue is removed from the sorted
             // list and sortedQueuesIt is invalidated; thus, store an iterator to the
             // previous queue in the sorted list (if any) to resume the search afterwards.
