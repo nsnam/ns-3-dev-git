@@ -387,7 +387,13 @@ WifiMacQueue::PeekFirstAvailable(uint8_t linkId, Ptr<const WifiMpdu> item) const
 Ptr<WifiMpdu>
 WifiMacQueue::Remove()
 {
-    return Remove(Peek());
+    if (auto queueId = m_scheduler->GetNext(m_ac, std::nullopt, false))
+    {
+        return Remove(GetContainer().GetQueue(queueId.value()).cbegin()->mpdu);
+    }
+
+    NS_LOG_DEBUG("The queue is empty");
+    return nullptr;
 }
 
 Ptr<WifiMpdu>
