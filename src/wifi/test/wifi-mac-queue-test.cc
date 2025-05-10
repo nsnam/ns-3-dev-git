@@ -421,6 +421,96 @@ WifiExtractExpiredMpdusTest::DoRun()
  * @ingroup wifi-test
  * @ingroup tests
  *
+ * @brief Test that a wifi MAC queue is correctly flushed even if (at least) a container queue
+ * is blocked.
+ */
+class WifiMacQueueFlushTest : public TestCase
+{
+  public:
+    WifiMacQueueFlushTest();
+
+  private:
+    void DoRun() override;
+};
+
+WifiMacQueueFlushTest::WifiMacQueueFlushTest()
+    : TestCase("Test WifiMacQueue Flush operation")
+{
+}
+
+void
+WifiMacQueueFlushTest::DoRun()
+{
+    auto wifiMacQueue = CreateObject<WifiMacQueue>(AC_BE);
+    auto wifiMacScheduler = CreateObject<FcfsWifiQueueScheduler>();
+    wifiMacScheduler->m_perAcInfo[AC_BE].wifiMacQueue = wifiMacQueue;
+    wifiMacQueue->SetScheduler(wifiMacScheduler);
+
+    const auto addr1 = Mac48Address::Allocate();
+    const auto addr2 = Mac48Address::Allocate();
+
+    // Initialize the queue with some packets.
+    const auto tid = wifiAcList.at(AC_BE).GetLowTid();
+    const std::size_t nPackets = 5;
+    for (std::size_t i = 0; i < nPackets; i++)
+    {
+        WifiMacHeader header(WIFI_MAC_QOSDATA);
+        header.SetAddr1(addr1);
+        header.SetAddr2(addr2);
+        header.SetQosTid(tid);
+        auto item = Create<WifiMpdu>(Create<Packet>(), header);
+        wifiMacQueue->Enqueue(item);
+    }
+
+    WifiContainerQueueId queueId(WifiContainerQueueType::WIFI_QOSDATA_QUEUE,
+                                 WifiRcvAddr::UNICAST,
+                                 addr1,
+                                 tid);
+
+    // Check that all elements are inserted successfully.
+    NS_TEST_EXPECT_MSG_EQ(wifiMacQueue->GetNPackets(),
+                          nPackets,
+                          "Queue has unexpected number of elements");
+
+    NS_TEST_EXPECT_MSG_EQ(wifiMacQueue->GetNPackets(queueId),
+                          nPackets,
+                          "Unexpected number of packets in container queue");
+
+    NS_TEST_EXPECT_MSG_EQ(wifiMacScheduler->GetNext(AC_BE, SINGLE_LINK_OP_ID).has_value(),
+                          true,
+                          "Expected the scheduler to return a container queue");
+
+    // block the queue containing the packets
+    wifiMacScheduler->BlockQueues(WifiQueueBlockedReason::TID_NOT_MAPPED,
+                                  AC_BE,
+                                  {WifiContainerQueueType::WIFI_QOSDATA_QUEUE},
+                                  addr1,
+                                  addr2,
+                                  {tid},
+                                  {SINGLE_LINK_OP_ID});
+
+    NS_TEST_EXPECT_MSG_EQ(wifiMacScheduler->GetNext(AC_BE, SINGLE_LINK_OP_ID).has_value(),
+                          false,
+                          "Expected the container queue to  be blocked");
+
+    wifiMacQueue->Flush();
+
+    // Check that all elements are removed successfully.
+    NS_TEST_EXPECT_MSG_EQ(wifiMacQueue->GetNPackets(),
+                          0,
+                          "Queue has unexpected number of elements");
+
+    NS_TEST_EXPECT_MSG_EQ(wifiMacQueue->GetNPackets(queueId),
+                          0,
+                          "Unexpected number of packets in container queue");
+
+    Simulator::Destroy();
+}
+
+/**
+ * @ingroup wifi-test
+ * @ingroup tests
+ *
  * @brief Wifi MAC Queue Test Suite
  */
 class WifiMacQueueTestSuite : public TestSuite
@@ -434,6 +524,7 @@ WifiMacQueueTestSuite::WifiMacQueueTestSuite()
 {
     AddTestCase(new WifiMacQueueDropOldestTest, TestCase::Duration::QUICK);
     AddTestCase(new WifiExtractExpiredMpdusTest, TestCase::Duration::QUICK);
+    AddTestCase(new WifiMacQueueFlushTest, TestCase::Duration::QUICK);
 }
 
 static WifiMacQueueTestSuite g_wifiMacQueueTestSuite; ///< the test suite

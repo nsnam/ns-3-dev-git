@@ -25,6 +25,7 @@
 #include <vector>
 
 class WifiMacQueueDropOldestTest;
+class WifiMacQueueFlushTest;
 
 namespace ns3
 {
@@ -43,8 +44,9 @@ template <class Priority, class Compare = std::less<Priority>>
 class WifiMacQueueSchedulerImpl : public WifiMacQueueScheduler
 {
   public:
-    /// allow WifiMacQueueDropOldestTest class access
+    /// allow test classes access
     friend class ::WifiMacQueueDropOldestTest;
+    friend class ::WifiMacQueueFlushTest;
 
     /**
      * @brief Get the type ID.
