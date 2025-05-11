@@ -14,6 +14,8 @@ See the LICENSE file for more details.
 ## Table of Contents
 
 * [Overview](#overview-an-open-source-project)
+* [Software overview](#software-overview)
+* [Getting ns-3](#getting-ns-3)
 * [Building ns-3](#building-ns-3)
 * [Testing ns-3](#testing-ns-3)
 * [Running ns-3](#running-ns-3)
@@ -41,13 +43,60 @@ This README excerpts some details from a more extensive
 tutorial that is maintained at:
 <https://www.nsnam.org/documentation/latest/>
 
-## Building ns-3
+## Software overview
+
+From a software perspective, ns-3 consists of a number of C++
+libraries organized around different topics and technologies.
+Programs that actually run simulations can be written in
+either C++ or Python; the use of Python is enabled by
+[runtime C++/Python bindings](https://cppyy.readthedocs.io/en/latest/).  Simulation programs will
+typically link or import the ns `core` library and any additional
+libraries that they need.  ns-3 requires a modern C++ compiler
+installation (g++ or clang++) and the [CMake](https://cmake.org) build system.
+Most ns-3 programs are single-threaded; there is some limited
+support for parallelization using the [MPI](https://www.nsnam.org/docs/models/html/distributed.html) framework.
+ns-3 can also run in a real-time emulation mode by binding to an
+Ethernet device on the host machine and generating and consuming
+packets on an actual network.  The ns-3 APIs are documented
+using [Doxygen](https://www.doxygen.nl).
 
 The code for the framework and the default models provided
-by ns-3 is built as a set of libraries. User simulations
-are expected to be written as simple programs that make
-use of these ns-3 libraries.
+by ns-3 is built as a set of libraries. The libraries maintained
+by the open source project can be found in the `src` directory.
+Users may extend ns-3 by adding libraries to the build;
+third-party libraries can be found on the [ns-3 App Store](https://www.nsnam.org)
+or elsewhere in public Git repositories, and are usually added to the `contrib` directory.
 
+## Getting ns-3
+
+ns-3 can be obtained by either downloading a released source
+archive, or by cloning the project's
+[Git repository](https://gitlab.com/nsnam/ns-3-dev.git).
+
+Starting with ns-3 release version 3.45, there are two versions
+of source archives that are published with each release:
+
+1. ns-3.##.tar.bz2
+1. ns-allinone-3.##.tar.bz2
+
+The first archive is simply a compressed archive of the same code
+that one can obtain by checking out the release tagged code from
+the ns-3-dev Git repository.  The second archive consists of
+ns-3 plus additional contributed modules that are maintained outside
+of the main ns-3 open source project but that have been reviewed
+by maintainers and lightly tested for compatibility with the
+release.  The contributed modules included in the `allinone` release
+will change over time as new third-party libraries emerge while others
+may lose compatibility with the ns-3 mainline (e.g., if they become
+unmaintained).
+
+## Building ns-3
+
+As mentioned above, ns-3 uses the CMake build system, but
+the project maintains a customized wrapper around CMake
+called the `ns3` tool.  This tool provides a
+[Waf-like](https://waf.io) API
+to the underlying CMake build manager.
 To build the set of default libraries and the example
 programs included in this package, you need to use the
 `ns3` tool. This tool provides a Waf-like API to the

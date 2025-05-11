@@ -30,6 +30,11 @@ been tested on Linux. As of this release, the latest known version to work with 
 
 The required Doxygen version for documentation generation is now version 1.13.
 
+Note that the ns-3 allinone archive has been redesigned for this release; the
+allinone release no longer contains the `netanim` animator or the `bake` build tools
+but instead contains ns-3 plus additional contributed ns-3 modules that are known
+to work with the release.
+
 ### New user-visible features
 
 - (dsr) !2403 - Reformatted documentation and added a new concept figure.

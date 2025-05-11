@@ -173,9 +173,9 @@ Here is some example code that is written in Python and that runs |ns3|, which i
 Running Python Scripts
 **********************
 
-For users that want to change upstream modules in C++ and got a copy of
-ns-3 by Git cloning the ns-3-dev repository, or downloaded the
-ns3-allinone package, or is using bake, continue to the next section.
+For users who want to change upstream modules in C++ and who obtained a copy of
+ns-3 by Git cloning the ns-3-dev repository, or by downloading a released
+source archive, continue to the next section.
 
 `Note: models implemented in Python are not available from C++. If you want
 your model to be available for both C++ and Python users, you must implement

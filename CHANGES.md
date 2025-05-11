@@ -37,6 +37,8 @@ This file is a best-effort approach to solving this issue; we will do our best b
 
 ### Changes to build system
 
+* The ns-allinone release has been redesigned; it no longer includes ``netanim`` or ``bake`` but instead includes ns-3 plus compatible contributed modules.
+
 ### Changed behavior
 
 * (docs) Models documentation format guidelines have been updated.
