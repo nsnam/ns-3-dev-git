@@ -127,6 +127,7 @@ struct WifiRemoteStationState
     std::shared_ptr<CommonInfoBasicMle> m_mleCommonInfo;
     bool m_emlsrEnabled;                          //!< whether EMLSR mode is enabled on this link
     Ptr<const UhrCapabilities> m_uhrCapabilities; //!< remote station UHR capabilities
+    bool m_dsoEnabled;                            //!< whether DSO mode is enabled on this link
 
     MHz_t m_channelWidth; //!< Channel width supported by the remote station
     Time m_guardInterval; //!< HE Guard interval durationsupported by the remote station
@@ -264,6 +265,11 @@ class WifiRemoteStationManager : public Object
      * @param emlsrEnabled whether EMLSR mode is enabled for the station on this link
      */
     void SetEmlsrEnabled(const Mac48Address& from, bool emlsrEnabled);
+    /**
+     * @param from the address of the station being recorded
+     * @param dsoEnabled whether DSO mode is enabled for the station on this link
+     */
+    void SetDsoEnabled(const Mac48Address& from, bool dsoEnabled);
     /**
      * Records HT capabilities of the remote station.
      *
@@ -793,7 +799,16 @@ class WifiRemoteStationManager : public Object
      * @return whether EMLSR mode is enabled for the non-AP MLD on this link
      */
     bool GetEmlsrEnabled(const Mac48Address& address) const;
-
+    /**
+     * @param address the (MLD or link) address of the non-AP MLD
+     * @return whether the non-AP MLD supports DSO
+     */
+    bool GetDsoSupported(const Mac48Address& address) const;
+    /**
+     * @param address the (MLD or link) address of the non-AP MLD
+     * @return whether DSO mode is enabled for the non-AP MLD on this link
+     */
+    bool GetDsoEnabled(const Mac48Address& address) const;
     /**
      * Return a mode for non-unicast packets.
      *
@@ -1347,6 +1362,16 @@ class WifiRemoteStationManager : public Object
      * @return whether EMLSR mode is enabled for the non-AP MLD on this link
      */
     bool GetEmlsrEnabled(const WifiRemoteStation* station) const;
+    /**
+     * @param station the station of a non-AP MLD
+     * @return whether the non-AP MLD supports DSO
+     */
+    bool GetDsoSupported(const WifiRemoteStation* station) const;
+    /**
+     * @param station the station of a non-AP MLD
+     * @return whether DSO mode is enabled for the non-AP MLD on this link
+     */
+    bool GetDsoEnabled(const WifiRemoteStation* station) const;
     /**
      * Return the WifiMode supported by the specified station at the specified index.
      *

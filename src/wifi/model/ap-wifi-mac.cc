@@ -1787,6 +1787,12 @@ ApWifiMac::SetAid(MgtAssocResponseHeader& assoc, const LinkIdStaAddrMap& linkIdS
             }
             UpdateShortSlotTimeEnabled(id);
             UpdateShortPreambleEnabled(id);
+            // enabling/disabling the DSO mode is still TBD, hence assume DSO is enabled after
+            // association
+            if (link.stationManager->GetDsoSupported(staAddr))
+            {
+                link.stationManager->SetDsoEnabled(staAddr, true);
+            }
         }
         else
         {
@@ -2982,6 +2988,11 @@ ApWifiMac::HandleDisassociationOrReassociation(uint16_t aid, bool isDisassoc)
         }
         UpdateShortSlotTimeEnabled(id);
         UpdateShortPreambleEnabled(id);
+
+        if (GetWifiRemoteStationManager(id)->GetDsoSupported(*address))
+        {
+            GetWifiRemoteStationManager(id)->SetDsoEnabled(*address, false);
+        }
 
         link.staList.erase(it);
         m_aidToMldOrLinkAddress.erase(aid);

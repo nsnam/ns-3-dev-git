@@ -1602,6 +1602,13 @@ WifiRemoteStationManager::SetEmlsrEnabled(const Mac48Address& from, bool emlsrEn
 }
 
 void
+WifiRemoteStationManager::SetDsoEnabled(const Mac48Address& from, bool dsoEnabled)
+{
+    NS_LOG_FUNCTION(this << from << dsoEnabled);
+    LookupState(from)->m_dsoEnabled = dsoEnabled;
+}
+
+void
 WifiRemoteStationManager::AddStationHtCapabilities(Mac48Address from,
                                                    const HtCapabilities& htCapabilities)
 {
@@ -2466,9 +2473,22 @@ WifiRemoteStationManager::GetEmlsrSupported(const WifiRemoteStation* station) co
 }
 
 bool
+WifiRemoteStationManager::GetDsoSupported(const WifiRemoteStation* station) const
+{
+    return station->m_state->m_uhrCapabilities &&
+           station->m_state->m_uhrCapabilities->m_macCapabilities.dsoSupport == 1;
+}
+
+bool
 WifiRemoteStationManager::GetEmlsrEnabled(const WifiRemoteStation* station) const
 {
     return station->m_state->m_emlsrEnabled;
+}
+
+bool
+WifiRemoteStationManager::GetDsoEnabled(const WifiRemoteStation* station) const
+{
+    return station->m_state->m_dsoEnabled;
 }
 
 bool
@@ -2587,11 +2607,28 @@ WifiRemoteStationManager::GetEmlsrSupported(const Mac48Address& address) const
 }
 
 bool
+WifiRemoteStationManager::GetDsoSupported(const Mac48Address& address) const
+{
+    auto uhrCapacilibites = LookupState(address)->m_uhrCapabilities;
+    return uhrCapacilibites && uhrCapacilibites->m_macCapabilities.dsoSupport == 1;
+}
+
+bool
 WifiRemoteStationManager::GetEmlsrEnabled(const Mac48Address& address) const
 {
     if (auto stateIt = m_states.find(address); stateIt != m_states.cend())
     {
         return stateIt->second->m_emlsrEnabled;
+    }
+    return false;
+}
+
+bool
+WifiRemoteStationManager::GetDsoEnabled(const Mac48Address& address) const
+{
+    if (auto stateIt = m_states.find(address); stateIt != m_states.cend())
+    {
+        return stateIt->second->m_dsoEnabled;
     }
     return false;
 }
