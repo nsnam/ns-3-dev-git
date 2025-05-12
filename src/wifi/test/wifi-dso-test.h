@@ -113,7 +113,8 @@ class DsoTestBase : public TestCase
     std::size_t m_nNonDsoStas{0}; ///< number of UHR non-AP STAs with DSO disabled
     std::size_t m_nNonUhrStas{0}; ///< number of non-UHR non-AP STAs
     std::string m_apOpChannel;    ///< string representing the operating channel of the AP
-    std::string m_stasOpChannel;  ///< string representing the operating channel of the non-AP STAs
+    std::vector<std::string>
+        m_stasOpChannel;            ///< string representing the operating channel per non-AP STAs
     std::string m_mode{"UhrMcs11"}; ///< the mode to configure on the constant rate manager
 
     Ptr<MultiModelSpectrumChannel> m_channel; ///< the spectrum channel
@@ -350,6 +351,89 @@ class DsoTxopTest : public DsoTestBase
         1}; //!< index of the STA that is expected to switch to the DSO subband
     std::size_t m_idxStaInPrimarySubband{
         0}; //!< index of the STA that is expected to stay in the primary subband
+};
+
+/**
+ * @ingroup wifi-test
+ * @ingroup tests
+ *
+ * @brief Test the DSO MU scheduler.
+ *
+ * This test considers an AP with a DSO scheduler and a variable number of non-AP STAs with DSO
+ * activated. Downlink, uplink and both traffic directions are tested. For simplicity, a single
+ * packet per STA and per direction is enqueued prior to a DL or UL MU transmission. The test also
+ * allows to generate more packets for some STAs.
+ *
+ * It is verified that:
+ * - the scheduler allocates RUs to the STAs according to the expected allocations;
+ * - RU allocation stay unchanged over a same DSO TXOP;
+ * - in case of DL + UL traffic, the scheduler alternates between DL and UL MU transmissions;
+ * - the AP and the non-AP STAs transmit the expected number of packets within the duration of the
+ * test.
+ */
+class DsoSchedulerTest : public DsoTestBase
+{
+  public:
+    /**
+     * Parameters for the DSO Scheduler test
+     */
+    struct Params
+    {
+        std::string testName;    //!< the name of the test
+        std::string apOpChannel; ///< string representing the operating channel of the AP
+        std::vector<std::string> dsoStasOpChannel; ///< string representing the operating channel
+                                                   ///< per non-AP STAs that are DSO capable
+        std::vector<std::size_t>
+            numGeneratedDlPackets; //!< number of downlink packets to be generated per STA
+        std::vector<std::size_t>
+            numGeneratedUlPackets;    //!< number of uplink packets to be generated per STA
+        std::size_t maxServedStas{4}; //!< maximum number of STAs that can be served by the
+                                      //!< scheduler in a single TXOP (0 means no limit)
+        std::vector<std::map<uint16_t, EhtRu::RuSpec>>
+            expectedRuAllocations; //!< expected RU allocation indexed by STA ID for every TXOP
+    };
+
+    /**
+     * Constructor
+     *
+     * @param params parameters for the DSO TXOP test
+     */
+    DsoSchedulerTest(const Params& params);
+    ~DsoSchedulerTest() override = default;
+
+  protected:
+    void DoSetup() override;
+    void DoRun() override;
+    void StartTraffic() override;
+    void Transmit(WifiConstPsduMap psduMap, WifiTxVector txVector, double txPowerW) override;
+
+  private:
+    /**
+     * Check RUs allocated by scheduler in transmitted Trigger Frame.
+     *
+     * @param psduMap the PSDU carrying the TF
+     * @param txVector the TXVECTOR used to send the TF
+     */
+    void CheckTrigger(const WifiConstPsduMap& psduMap, const WifiTxVector& txVector);
+
+    /**
+     * Check RUs allocated by scheduler in transmitted MU PPDU.
+     *
+     * @param psduMap the PSDU(s) carrying QoS data frames
+     * @param txVector the TXVECTOR used to send the PPDU
+     */
+    void CheckMuPpdu(const WifiConstPsduMap& psduMap, const WifiTxVector& txVector);
+
+    /**
+     * Check that the simulation produced the expected results.
+     */
+    void CheckResults();
+
+    Params m_params;                          //!< the test parameters
+    const bool m_enableUlOfdma;               //!< whether to enable UL OFDMA
+    std::size_t m_txopId{0};                  //!< the TXOP ID used to identify the current TXOP
+    std::vector<std::size_t> m_dlTxPackets{}; //!< number of transmitted DL packets per STA
+    std::vector<std::size_t> m_ulTxPackets{}; //!< number of transmitted UL packets per STA
 };
 
 /**

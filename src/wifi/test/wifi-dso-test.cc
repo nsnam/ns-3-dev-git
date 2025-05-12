@@ -166,7 +166,6 @@ DsoTestBase::DoSetup()
 
     m_channel = CreateObject<MultiModelSpectrumChannel>();
     stasPhyHelper.SetChannel(m_channel);
-    stasPhyHelper.Set("ChannelSettings", StringValue(m_stasOpChannel));
 
     WifiMacHelper mac;
     mac.SetType("ns3::StaWifiMac",
@@ -183,6 +182,7 @@ DsoTestBase::DoSetup()
     for (std::size_t i = 0; i < m_nDsoStas + m_nNonDsoStas + m_nNonUhrStas; ++i)
     {
         wifi.ConfigUhrOptions("DsoActivated", BooleanValue(i < m_nDsoStas));
+        stasPhyHelper.Set("ChannelSettings", StringValue(m_stasOpChannel.at(i)));
         NodeContainer staNode(1);
         wifi.SetStandard(i < (m_nDsoStas + m_nNonDsoStas) ? WIFI_STANDARD_80211bn
                                                           : WIFI_STANDARD_80211be);
@@ -489,7 +489,7 @@ DsoSubbandsTest::DsoSubbandsTest(
 {
     m_nDsoStas = 1;
     m_apOpChannel = apChannel;
-    m_stasOpChannel = stasChannel;
+    m_stasOpChannel = {stasChannel};
     m_duration = Seconds(0.5);
 }
 
@@ -527,7 +527,7 @@ DsoTxopTest::DsoTxopTest(const Params& params)
 {
     m_nDsoStas = 2;
     m_apOpChannel = "{114, 0, BAND_5GHZ, 0}";
-    m_stasOpChannel = "{106, 0, BAND_5GHZ, 0}";
+    m_stasOpChannel = {"{106, 0, BAND_5GHZ, 0}", "{106, 0, BAND_5GHZ, 0}"};
     m_duration = Seconds(1.0);
     m_establishBaDl = {0};
     m_establishBaUl = {0};
@@ -1526,6 +1526,308 @@ DsoTxopTest::DoRun()
     Simulator::Destroy();
 }
 
+DsoSchedulerTest::DsoSchedulerTest(const Params& params)
+    : DsoTestBase(params.testName),
+      m_params{params},
+      m_enableUlOfdma{std::any_of(m_params.numGeneratedUlPackets.cbegin(),
+                                  m_params.numGeneratedUlPackets.cend(),
+                                  [](const auto& num) { return num > 0; })}
+{
+    m_nDsoStas = params.dsoStasOpChannel.size();
+    m_apOpChannel = params.apOpChannel;
+    m_stasOpChannel = params.dsoStasOpChannel;
+    m_duration = Seconds(2.0);
+    m_establishBaDl = {0};
+    m_establishBaUl = {0};
+}
+
+void
+DsoSchedulerTest::StartTraffic()
+{
+    NS_LOG_FUNCTION(this);
+
+    auto muScheduler =
+        DynamicCast<TestDsoMultiUserScheduler>(m_apMac->GetObject<MultiUserScheduler>());
+    muScheduler->SetForcedFormat(std::nullopt);
+
+    DsoTestBase::StartTraffic();
+
+    NS_ASSERT_MSG(m_params.numGeneratedDlPackets.size() ==
+                      (m_nDsoStas + m_nNonDsoStas + m_nNonUhrStas),
+                  "Number of DL packets to generate per STA is not set correctly");
+    NS_ASSERT_MSG(m_params.numGeneratedUlPackets.size() ==
+                      (m_nDsoStas + m_nNonDsoStas + m_nNonUhrStas),
+                  "Number of UL packets to generate per STA is not set correctly");
+
+    for (std::size_t i = 0; i < (m_nDsoStas + m_nNonDsoStas + m_nNonUhrStas); ++i)
+    {
+        if (m_params.numGeneratedDlPackets.at(i) > 0)
+        {
+            NS_LOG_DEBUG("Generate one DL packet for STA " << i + 1);
+            m_apMac->GetDevice()->GetNode()->AddApplication(GetApplication(DOWNLINK, i, 1, 1000));
+            m_dlTxPackets.push_back(1);
+        }
+        else
+        {
+            m_dlTxPackets.push_back(0);
+        }
+    }
+
+    if (m_enableUlOfdma)
+    {
+        muScheduler->SetAccessReqInterval(MilliSeconds(100));
+        // UL traffic is started once the first trigger is transmitted to avoid non-OFDMA UL traffic
+    }
+}
+
+void
+DsoSchedulerTest::Transmit(WifiConstPsduMap psduMap, WifiTxVector txVector, double txPowerW)
+{
+    DsoTestBase::Transmit(psduMap, txVector, txPowerW);
+
+    if (!m_started)
+    {
+        // traffic is not started yet
+        return;
+    }
+
+    switch (auto psdu = psduMap.begin()->second; psdu->GetHeader(0).GetType())
+    {
+    case WIFI_MAC_CTL_TRIGGER: {
+        Simulator::Schedule(TimeStep(1), [this]() {
+            for (std::size_t i = 0; i < (m_nDsoStas + m_nNonDsoStas + m_nNonUhrStas); ++i)
+            {
+                if (m_staMacs.at(i)->GetQosTxop(AC_BE)->GetWifiMacQueue()->GetNPackets() > 0)
+                {
+                    continue;
+                }
+                bool first{false};
+                if (m_ulTxPackets.size() <= i)
+                {
+                    first = true;
+                    m_ulTxPackets.push_back(0);
+                }
+                if (m_params.numGeneratedUlPackets.at(i) > m_ulTxPackets.at(i))
+                {
+                    NS_LOG_DEBUG("Generate one " << (first ? "" : "more ") << "UL packet for STA "
+                                                 << i + 1);
+                    m_staMacs.at(i)->GetDevice()->GetNode()->AddApplication(
+                        GetApplication(UPLINK, i, 1, 1000));
+                    ++m_ulTxPackets.at(i);
+                }
+            }
+        });
+        CheckTrigger(psduMap, txVector);
+        break;
+    }
+    case WIFI_MAC_QOSDATA:
+        if (txVector.IsMu())
+        {
+            CheckMuPpdu(psduMap, txVector);
+        }
+        break;
+    case WIFI_MAC_CTL_BACKRESP: {
+        const auto ta = psduMap.cbegin()->second->GetAddr2();
+        for (std::size_t i = 0; i < (m_nDsoStas + m_nNonDsoStas + m_nNonUhrStas); ++i)
+        {
+            if (m_staMacs.at(i)->GetLinkIdByAddress(ta) &&
+                m_params.numGeneratedDlPackets.at(i) > m_dlTxPackets.at(i))
+            {
+                NS_LOG_DEBUG("Generate one more DL packet for STA " << i + 1);
+                m_apMac->GetDevice()->GetNode()->AddApplication(
+                    GetApplication(DOWNLINK, i, 1, 1000));
+                ++m_dlTxPackets.at(i);
+            }
+        }
+    }
+    break;
+    case WIFI_MAC_CTL_END: {
+        ++m_txopId;
+        break;
+    }
+    default:
+        break;
+    }
+}
+
+void
+DsoSchedulerTest::CheckTrigger(const WifiConstPsduMap& psduMap, const WifiTxVector& txVector)
+{
+    NS_LOG_FUNCTION(this << psduMap << txVector);
+
+    if (!m_started)
+    {
+        // traffic is not started yet
+        return;
+    }
+
+    if (m_txopId >= m_params.expectedRuAllocations.size())
+    {
+        return;
+    }
+
+    CtrlTriggerHeader trigger;
+    psduMap.cbegin()->second->GetPayload(0)->PeekHeader(trigger);
+    for (std::size_t i = 0; i < (m_nDsoStas + m_nNonDsoStas + m_nNonUhrStas); ++i)
+    {
+        const auto it = trigger.FindUserInfoWithAid(m_staMacs.at(i)->GetAssociationId());
+        if (it == trigger.end())
+        {
+            NS_LOG_DEBUG("No user info for STA " << i + 1);
+            if (trigger.IsBsrp())
+            {
+                NS_TEST_EXPECT_MSG_EQ(m_params.expectedRuAllocations.at(m_txopId).contains(i),
+                                      false,
+                                      "Expected no RU allocated in TF for STA "
+                                          << i + 1 << " during TXOP #" << m_txopId + 1);
+            }
+            continue;
+        }
+        NS_TEST_ASSERT_MSG_EQ(m_params.expectedRuAllocations.at(m_txopId).contains(i),
+                              true,
+                              "Expected RU allocated in TF for STA " << i + 1 << " during TXOP #"
+                                                                     << m_txopId + 1);
+        const auto ru = std::get<EhtRu::RuSpec>(it->GetRuAllocation());
+        NS_TEST_EXPECT_MSG_EQ(ru,
+                              m_params.expectedRuAllocations.at(m_txopId).at(i),
+                              "Unexpected RU allocation in TF for STA " << i + 1 << " during TXOP #"
+                                                                        << m_txopId + 1);
+    }
+}
+
+void
+DsoSchedulerTest::CheckMuPpdu(const WifiConstPsduMap& psduMap, const WifiTxVector& txVector)
+{
+    NS_LOG_FUNCTION(this << psduMap << txVector);
+
+    NS_TEST_ASSERT_MSG_LT(m_txopId,
+                          m_params.expectedRuAllocations.size(),
+                          "Unexpected number of MU PPDUS");
+
+    const auto expectedNumDlMuPpdus = *std::max_element(m_params.numGeneratedDlPackets.cbegin(),
+                                                        m_params.numGeneratedDlPackets.cend());
+    const std::size_t countPrevDlMuPpdus = std::accumulate(
+        m_txPsdus.cbegin(),
+        m_txPsdus.cend(),
+        0,
+        [](std::size_t sum, const auto& frameInfo) {
+            return (frameInfo.startTx < Simulator::Now()) && (frameInfo.txVector.IsDlMu())
+                       ? (sum + 1)
+                       : sum;
+        });
+    const auto prevMuPpdu =
+        std::find_if(m_txPsdus.crbegin(), m_txPsdus.crend(), [](const auto& frameInfo) {
+            return (frameInfo.startTx < Simulator::Now()) && frameInfo.txVector.IsMu() &&
+                   frameInfo.psduMap.cbegin()->second->GetHeader(0).IsQosData() &&
+                   frameInfo.psduMap.cbegin()->second->GetHeader(0).HasData();
+        });
+    if (m_enableUlOfdma && ((countPrevDlMuPpdus == expectedNumDlMuPpdus) ||
+                            ((prevMuPpdu != m_txPsdus.crend()) && prevMuPpdu->txVector.IsDlMu())))
+    {
+        NS_TEST_EXPECT_MSG_EQ(txVector.IsUlMu(), true, "Expected a UL MU PPDU");
+    }
+    else
+    {
+        NS_TEST_EXPECT_MSG_EQ(txVector.IsDlMu(), true, "Expected a DL MU PPDU");
+    }
+
+    const auto& userInfoMap = txVector.GetHeMuUserInfoMap();
+    for (const auto& [staId, userInfo] : userInfoMap)
+    {
+        NS_TEST_ASSERT_MSG_EQ(m_params.expectedRuAllocations.at(m_txopId).contains(staId - 1),
+                              true,
+                              "Expected RU allocated in MU PPDU for STA "
+                                  << staId << " during TXOP #" << m_txopId + 1);
+        const auto ru = std::get<EhtRu::RuSpec>(userInfo.ru);
+        NS_TEST_EXPECT_MSG_EQ(ru,
+                              m_params.expectedRuAllocations.at(m_txopId).at(staId - 1),
+                              "Unexpected RU allocation in MU PPDU for STA "
+                                  << staId << " during TXOP #" << m_txopId + 1);
+    }
+}
+
+void
+DsoSchedulerTest::CheckResults()
+{
+    NS_LOG_FUNCTION(this);
+    for (const auto& pair : m_txPsdus)
+    {
+        if (pair.psduMap.cbegin()->second->GetHeader(0).IsQosData() &&
+            pair.psduMap.cbegin()->second->GetHeader(0).HasData())
+        {
+            NS_LOG_DEBUG("TX PSDU: " << pair.psduMap.cbegin()->second->GetHeader(0) << " at "
+                                     << pair.startTx << " with TX vector " << pair.txVector);
+        }
+    }
+    const auto countDlMuPpdus = std::accumulate(
+        m_txPsdus.cbegin(),
+        m_txPsdus.cend(),
+        0,
+        [](std::size_t sum, const auto& frameInfo) {
+            return (frameInfo.txVector.IsDlMu())
+                       ? (sum + std::count_if(frameInfo.psduMap.cbegin(),
+                                              frameInfo.psduMap.cend(),
+                                              [](const auto& psdu) {
+                                                  return psdu.second->GetHeader(0).IsQosData() &&
+                                                         psdu.second->GetHeader(0).HasData();
+                                              }))
+                       : sum;
+        });
+    const auto countUlMuPpdus =
+        std::accumulate(m_txPsdus.cbegin(),
+                        m_txPsdus.cend(),
+                        0,
+                        [](std::size_t sum, const auto& frameInfo) {
+                            return (frameInfo.txVector.IsUlMu() &&
+                                    frameInfo.psduMap.cbegin()->second->GetHeader(0).IsQosData() &&
+                                    frameInfo.psduMap.cbegin()->second->GetHeader(0).HasData())
+                                       ? (sum + frameInfo.psduMap.size())
+                                       : sum;
+                        });
+    const auto expectedDlTxPackets =
+        std::accumulate(m_params.numGeneratedDlPackets.begin(),
+                        m_params.numGeneratedDlPackets.end(),
+                        0,
+                        [](std::size_t sum, const auto numPackets) { return sum + numPackets; });
+    const auto expectedUlTxPackets =
+        std::accumulate(m_params.numGeneratedUlPackets.begin(),
+                        m_params.numGeneratedUlPackets.end(),
+                        0,
+                        [](std::size_t sum, const auto numPackets) { return sum + numPackets; });
+    NS_TEST_EXPECT_MSG_EQ(countDlMuPpdus,
+                          expectedDlTxPackets,
+                          "Unexpected number of transmitted DL packets");
+    NS_TEST_EXPECT_MSG_EQ(countUlMuPpdus,
+                          expectedUlTxPackets,
+                          "Unexpected number of transmitted UL packets");
+}
+
+void
+DsoSchedulerTest::DoSetup()
+{
+    DsoTestBase::DoSetup();
+    auto muScheduler =
+        DynamicCast<TestDsoMultiUserScheduler>(m_apMac->GetObject<MultiUserScheduler>());
+    muScheduler->SetAttribute("NStations", UintegerValue(m_params.maxServedStas));
+    // do not have OFDMA before StartTraffic() is called
+    muScheduler->SetForcedFormat(MultiUserScheduler::TxFormat::SU_TX);
+    // Enable UL-OFDMA in case of UL traffic
+    muScheduler->SetAttribute("EnableUlOfdma", BooleanValue(m_enableUlOfdma));
+
+    m_apMac->GetQosTxop(AC_BE)->SetTxopLimit(MicroSeconds(1600));
+}
+
+void
+DsoSchedulerTest::DoRun()
+{
+    Simulator::Stop(m_duration);
+    Simulator::Run();
+
+    CheckResults();
+
+    Simulator::Destroy();
+}
+
 WifiDsoTestSuite::WifiDsoTestSuite()
     : TestSuite("wifi-dso", Type::UNIT)
 {
@@ -1994,6 +2296,218 @@ WifiDsoTestSuite::WifiDsoTestSuite()
                     .expectedTxopEndEventInDsoSubband = DsoTxopEvent::RX_OBSS,
                 }),
                 TestCase::Duration::QUICK);
+
+    using TrafficParams = std::initializer_list<
+        std::tuple<std::string, std::vector<std::size_t>, std::vector<std::size_t>>>;
+    for (const auto& [trafficStr, dlTraffic, ulTraffic] : TrafficParams{
+             {"DL traffic with equal traffic per STA in DSO TXOP", {1, 1}, {0, 0}},
+             {"DL traffic with unequal traffic per STA in DSO TXOP", {3, 2}, {0, 0}},
+             {"UL traffic with equal traffic per STA in DSO TXOP", {0, 0}, {1, 1}},
+             {"UL traffic with unequal traffic per STA in DSO TXOP", {0, 0}, {2, 3}},
+             {"DL+UL traffic with equal traffic per STA in DSO TXOP", {1, 1}, {1, 1}},
+             {"DL+UL traffic with unequal traffic per STA in DSO TXOP (same for DL and UL)",
+              {2, 3},
+              {2, 3}},
+             {"DL+UL traffic with unequal traffic per STA in DSO TXOP (different for DL and UL)",
+              {2, 3},
+              {3, 2}}})
+    {
+        AddTestCase(
+            new DsoSchedulerTest(
+                {.testName =
+                     "Check DSO scheduler with 320 MHz AP, two 160 MHz DSO STAs: " + trafficStr,
+                 .apOpChannel = "{31, 0, BAND_6GHZ, 0}",
+                 .dsoStasOpChannel = {"{15, 0, BAND_6GHZ, 0}", "{15, 0, BAND_6GHZ, 0}"},
+                 .numGeneratedDlPackets = dlTraffic,
+                 .numGeneratedUlPackets = ulTraffic,
+                 .expectedRuAllocations = {{{0,
+                                             EhtRu::RuSpec{RuType::RU_2x996_TONE,
+                                                           1,
+                                                           EhtRu::PRIMARY_160_FLAGS.first,
+                                                           EhtRu::PRIMARY_160_FLAGS.second}},
+                                            {1,
+                                             EhtRu::RuSpec{RuType::RU_2x996_TONE,
+                                                           1,
+                                                           EhtRu::SECONDARY_160_FLAGS.first,
+                                                           EhtRu::SECONDARY_160_FLAGS.second}}}}}),
+            TestCase::Duration::QUICK);
+
+        AddTestCase(
+            new DsoSchedulerTest(
+                {.testName =
+                     "Check DSO scheduler with 320 MHz AP, two 80 MHz DSO STAs: " + trafficStr,
+                 .apOpChannel = "{31, 0, BAND_6GHZ, 0}",
+                 .dsoStasOpChannel = {"{7, 0, BAND_6GHZ, 0}", "{7, 0, BAND_6GHZ, 0}"},
+                 .numGeneratedDlPackets = dlTraffic,
+                 .numGeneratedUlPackets = ulTraffic,
+                 .expectedRuAllocations = {{{0,
+                                             EhtRu::RuSpec{RuType::RU_996_TONE,
+                                                           1,
+                                                           EhtRu::PRIMARY_80_FLAGS.first,
+                                                           EhtRu::PRIMARY_80_FLAGS.second}},
+                                            {1,
+                                             EhtRu::RuSpec{RuType::RU_996_TONE,
+                                                           1,
+                                                           EhtRu::SECONDARY_80_FLAGS.first,
+                                                           EhtRu::SECONDARY_80_FLAGS.second}}}}}),
+            TestCase::Duration::QUICK);
+
+        AddTestCase(
+            new DsoSchedulerTest(
+                {.testName =
+                     "Check DSO scheduler with 160 MHz AP, two 80 MHz DSO STAs: " + trafficStr,
+                 .apOpChannel = "{15, 0, BAND_6GHZ, 0}",
+                 .dsoStasOpChannel = {"{7, 0, BAND_6GHZ, 0}", "{7, 0, BAND_6GHZ, 0}"},
+                 .numGeneratedDlPackets = dlTraffic,
+                 .numGeneratedUlPackets = ulTraffic,
+                 .expectedRuAllocations = {{{0,
+                                             EhtRu::RuSpec{RuType::RU_996_TONE,
+                                                           1,
+                                                           EhtRu::PRIMARY_80_FLAGS.first,
+                                                           EhtRu::PRIMARY_80_FLAGS.second}},
+                                            {1,
+                                             EhtRu::RuSpec{RuType::RU_996_TONE,
+                                                           1,
+                                                           EhtRu::SECONDARY_80_FLAGS.first,
+                                                           EhtRu::SECONDARY_80_FLAGS.second}}}}}),
+            TestCase::Duration::QUICK);
+    }
+
+    for (const auto& [trafficStr, dlTraffic, ulTraffic] :
+         TrafficParams{{"DL traffic", {1, 1, 1, 1}, {0, 0, 0, 0}},
+                       {"UL traffic", {0, 0, 0, 0}, {1, 1, 1, 1}}})
+    {
+        AddTestCase(
+            new DsoSchedulerTest(
+                {.testName = "Check DSO scheduler with 160 MHz AP, four 80 MHz DSO STAs (" +
+                             trafficStr + ")",
+                 .apOpChannel = "{15, 0, BAND_6GHZ, 0}",
+                 .dsoStasOpChannel = {"{7, 0, BAND_6GHZ, 0}",
+                                      "{7, 0, BAND_6GHZ, 0}",
+                                      "{7, 0, BAND_6GHZ, 0}",
+                                      "{7, 0, BAND_6GHZ, 0}"},
+                 .numGeneratedDlPackets = dlTraffic,
+                 .numGeneratedUlPackets = ulTraffic,
+                 .expectedRuAllocations = {{{0,
+                                             EhtRu::RuSpec{RuType::RU_484_TONE,
+                                                           1,
+                                                           EhtRu::PRIMARY_80_FLAGS.first,
+                                                           EhtRu::PRIMARY_80_FLAGS.second}},
+                                            {1,
+                                             EhtRu::RuSpec{RuType::RU_484_TONE,
+                                                           2,
+                                                           EhtRu::PRIMARY_80_FLAGS.first,
+                                                           EhtRu::PRIMARY_80_FLAGS.second}},
+                                            {2,
+                                             EhtRu::RuSpec{RuType::RU_484_TONE,
+                                                           1,
+                                                           EhtRu::SECONDARY_80_FLAGS.first,
+                                                           EhtRu::SECONDARY_80_FLAGS.second}},
+                                            {3,
+                                             EhtRu::RuSpec{RuType::RU_484_TONE,
+                                                           2,
+                                                           EhtRu::SECONDARY_80_FLAGS.first,
+                                                           EhtRu::SECONDARY_80_FLAGS.second}}}}}),
+            TestCase::Duration::QUICK);
+    }
+
+    AddTestCase(
+        new DsoSchedulerTest(
+            {.testName = "Check DSO scheduler with 320 MHz AP, six 80 MHz DSO STAs (DL traffic)",
+             .apOpChannel = "{31, 0, BAND_6GHZ, 0}",
+             .dsoStasOpChannel = {"{7, 0, BAND_6GHZ, 0}",
+                                  "{7, 0, BAND_6GHZ, 0}",
+                                  "{7, 0, BAND_6GHZ, 0}",
+                                  "{7, 0, BAND_6GHZ, 0}",
+                                  "{7, 0, BAND_6GHZ, 0}",
+                                  "{7, 0, BAND_6GHZ, 0}"},
+             .numGeneratedDlPackets = {1, 1, 1, 1, 1, 1},
+             .numGeneratedUlPackets = {0, 0, 0, 0, 0, 0},
+             .expectedRuAllocations = {{{0,
+                                         EhtRu::RuSpec{RuType::RU_996_TONE,
+                                                       1,
+                                                       EhtRu::PRIMARY_80_FLAGS.first,
+                                                       EhtRu::PRIMARY_80_FLAGS.second}},
+                                        {1,
+                                         EhtRu::RuSpec{RuType::RU_996_TONE,
+                                                       1,
+                                                       EhtRu::SECONDARY_80_FLAGS.first,
+                                                       EhtRu::SECONDARY_80_FLAGS.second}},
+                                        {2,
+                                         EhtRu::RuSpec{RuType::RU_996_TONE,
+                                                       1,
+                                                       EhtRu::SECONDARY_160_LOW_FLAGS.first,
+                                                       EhtRu::SECONDARY_160_LOW_FLAGS.second}},
+                                        {3,
+                                         EhtRu::RuSpec{RuType::RU_996_TONE,
+                                                       1,
+                                                       EhtRu::SECONDARY_160_HIGH_FLAGS.first,
+                                                       EhtRu::SECONDARY_160_HIGH_FLAGS.second}}},
+                                       {{4,
+                                         EhtRu::RuSpec{RuType::RU_996_TONE,
+                                                       1,
+                                                       EhtRu::PRIMARY_80_FLAGS.first,
+                                                       EhtRu::PRIMARY_80_FLAGS.second}},
+                                        {5,
+                                         EhtRu::RuSpec{RuType::RU_996_TONE,
+                                                       1,
+                                                       EhtRu::SECONDARY_80_FLAGS.first,
+                                                       EhtRu::SECONDARY_80_FLAGS.second}}}}}),
+        TestCase::Duration::QUICK);
+
+    AddTestCase(
+        new DsoSchedulerTest(
+            {.testName = "Check DSO scheduler with 320 MHz AP, six 80 MHz DSO STAs (UL traffic)",
+             .apOpChannel = "{31, 0, BAND_6GHZ, 0}",
+             .dsoStasOpChannel = {"{7, 0, BAND_6GHZ, 0}",
+                                  "{7, 0, BAND_6GHZ, 0}",
+                                  "{7, 0, BAND_6GHZ, 0}",
+                                  "{7, 0, BAND_6GHZ, 0}",
+                                  "{7, 0, BAND_6GHZ, 0}",
+                                  "{7, 0, BAND_6GHZ, 0}"},
+             .numGeneratedDlPackets = {0, 0, 0, 0, 0, 0},
+             .numGeneratedUlPackets = {1, 1, 1, 1, 1, 1},
+             .expectedRuAllocations = {{{0,
+                                         EhtRu::RuSpec{RuType::RU_996_TONE,
+                                                       1,
+                                                       EhtRu::PRIMARY_80_FLAGS.first,
+                                                       EhtRu::PRIMARY_80_FLAGS.second}},
+                                        {1,
+                                         EhtRu::RuSpec{RuType::RU_996_TONE,
+                                                       1,
+                                                       EhtRu::SECONDARY_80_FLAGS.first,
+                                                       EhtRu::SECONDARY_80_FLAGS.second}},
+                                        {2,
+                                         EhtRu::RuSpec{RuType::RU_996_TONE,
+                                                       1,
+                                                       EhtRu::SECONDARY_160_LOW_FLAGS.first,
+                                                       EhtRu::SECONDARY_160_LOW_FLAGS.second}},
+                                        {3,
+                                         EhtRu::RuSpec{RuType::RU_996_TONE,
+                                                       1,
+                                                       EhtRu::SECONDARY_160_HIGH_FLAGS.first,
+                                                       EhtRu::SECONDARY_160_HIGH_FLAGS.second}}},
+                                       {{4,
+                                         EhtRu::RuSpec{RuType::RU_996_TONE,
+                                                       1,
+                                                       EhtRu::PRIMARY_80_FLAGS.first,
+                                                       EhtRu::PRIMARY_80_FLAGS.second}},
+                                        {5,
+                                         EhtRu::RuSpec{RuType::RU_996_TONE,
+                                                       1,
+                                                       EhtRu::SECONDARY_80_FLAGS.first,
+                                                       EhtRu::SECONDARY_80_FLAGS.second}},
+                                        {0,
+                                         EhtRu::RuSpec{RuType::RU_996_TONE,
+                                                       1,
+                                                       EhtRu::SECONDARY_160_LOW_FLAGS.first,
+                                                       EhtRu::SECONDARY_160_LOW_FLAGS.second}},
+                                        {1,
+                                         EhtRu::RuSpec{RuType::RU_996_TONE,
+                                                       1,
+                                                       EhtRu::SECONDARY_160_HIGH_FLAGS.first,
+                                                       EhtRu::SECONDARY_160_HIGH_FLAGS.second}}}}}),
+        TestCase::Duration::QUICK);
 }
 
 static WifiDsoTestSuite g_wifiDsoTestSuite; ///< the test suite
