@@ -123,7 +123,6 @@ Scope and Limitations
 ---------------------
 
 - Indirect data transmissions are not supported but planned for a future update.
-- Devices are capable of associating with a single PAN coordinator.
 - Interference is modeled as AWGN but this is currently not thoroughly tested.
 - The standard describes the support of multiple PHY band-modulations but currently, only 250kbps O-QPSK (channel page 0) is supported.
 - Active and passive MAC scans are able to obtain a LQI value from a beacon frame, however, the scan primitives assumes LQI is correctly implemented and does not check the validity of its value.
@@ -136,6 +135,9 @@ Scope and Limitations
 - Indirect transmissions are only supported during the association process.
 - RSSI is not supported as this is part of the 2015 revision and the current implementation only supports until the 2011 revision.
 - PHY and MAC are currently not supported by the attribute system. To change the behavior of the PHY and MAC the standard SET primitives (e.g. MLME-SET.request) must be used.
+- No radio energy model is supported.
+- The PHY does not include sleep state.
+- Preamble is not fully modeled but its duration is considered.
 
 The PHY layer
 -------------
@@ -256,9 +258,10 @@ A key element to remember is that bootstrap have 2 objectives:
 1. Enable devices to join a new formed network (associate).
 2. Assign short addresses and PAN ID.
 
-Devices that have the short address ``FF:FF`` are not associated an cannot participate in any unicast communication in the network.
-Devices that have the short address ``FF:FE`` and have a valid PAN ID can communicate with other devices in the network using the
-extended address mode. In this mode, devices will use its 64 bit address (A.K.A. extended address) to communicate in the network.
+.. note::
+    Devices that have the short address ``FF:FF`` are not associated an cannot participate in any unicast communication in the network.
+    Devices that have the short address ``FF:FE`` and have a valid PAN ID can communicate with other devices in the network using the extended address mode.
+    In this mode, devices will use its 64 bit address (A.K.A. extended address) to communicate in the network.
 
 Before ns-3.44, the MAC association struggled to handle scenarios where the association response command arrived before the acknowledgment (ACK)
 for a data request command. This issue could arise in saturated networks and is caused by a delayed data request command ACK
@@ -320,14 +323,13 @@ configuration of an Attribute (``PseudoMacAddressMode``).
 
 The default is to use RFC 6282 style addresses.
 
-Note that, on reception, a packet might contain either a short or a long address. This is reflected
-in the upper-layer notification callback, which can contain either the pseudo-address (48 bits) or
-the long address (64 bit) of the sender.
+.. note::
+    On reception, a packet might contain either a short or a long address. This is reflected in the upper-layer notification callback,
+    which can contain either the pseudo-address (48 bits) or the long address (64 bit) of the sender.
+    Also RFC 4944 or RFC 6282 are the RFCs defining the IPv6 address compression formats (HC1 and IPHC respectively).
+    It is definitely not a good idea to either mix devices using different pseudo-address format or compression types in the same network.
+    This point is further discussed in the ``sixlowpan`` module documentation.
 
-Note also that RFC 4944 or RFC 6282 are the RFCs defining the IPv6 address compression formats
-(HC1 and IPHC respectively). It is definitely not a good idea to either mix devices using different
-pseudo-address format or compression types in the same network. This point is further discussed
-in the ``sixlowpan`` module documentation.
 
 
 Usage
@@ -369,9 +371,9 @@ refer to the ``lr-wpan-data.cc`` example.
 For more complex topologies an auto-configured address assignation scheme is recommended,
 the bootstrap process (scan and association) described by the standard can help with this.
 
-**Important:** Devices that does not have short addresses assigned (Any address other than ``FF:FF``) on PAN IDs cannot communicate in lr-wpan network. Make sure both
-are present in your simulated devices using any of the schemes described.
-
+.. note::
+    As mentioned in previous sections, devices that does not have short addresses assigned (Any address other than ``FF:FF``) and with a valid PAN IDs cannot communicate in lr-wpan network.
+    Make sure both are present in your simulated devices using any of the schemes described.
 
 Finally, the ``LrWpanHelper`` can be used to generate pcap or ascii traces.
 These pcap files can be later on visualized in Wireshark.
@@ -448,7 +450,7 @@ The following examples have been written, which can be found in ``src/lr-wpan/ex
 * ``lr-wpan-phy-test.cc``:  An example to test the phy.
 * ``lr-wpan-ed-scan.cc``:  Simple example showing the use of energy detection (ED) scan in the MAC.
 * ``lr-wpan-active-scan.cc``:  A simple example showing the use of an active scan in the MAC.
-* ``lr-wpan-mlme.cc``: Demonstrates the use of lr-wpan beacon mode. Nodes use a manual association (i.e. No bootstrap) in this example.
+* ``lr-wpan-beacon-mode.cc``: Demonstrates the use of lr-wpan beacon mode. Nodes use a manual association (i.e. No bootstrap) in this example.
 * ``lr-wpan-bootstrap.cc``:  Demonstrates the use of scanning and association working together to initiate a PAN.
 * ``lr-wpan-orphan-scan.cc``: Demonstrates the use of an orphan scanning in a simple network joining procedure.
 
