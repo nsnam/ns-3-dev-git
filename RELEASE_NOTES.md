@@ -34,6 +34,7 @@ The required Doxygen version for documentation generation is now version 1.13.
 
 - (dsr) !2403 - Reformatted documentation and added a new concept figure.
 - (flow-monitor) !2387 - Reformatted documentation and added a new concept figure.
+- (lr-wpan) - !2429 - Renamed example lr-wpan-mlme to lr-wpan-beacon-mode.
 - (wifi) Added the `ProtectSingleExchange` attribute to the `QosFrameExchangeManager` to choose whether the NAV protection should cover the entire TXOP or only the current frame exchange when the TXOP limit is non-zero. In that case, the Duration/ID field in frames establishing the protection is set to the time remaining until the end of the current frame exchange. It is also possible to select whether the NAV duration should be extended by an additional time to protect beyond end of the immediate frame exchange via the `SingleExchangeProtectionSurplus` attribute of the `QosFrameExchangeManager`.
 
 ### Bugs fixed
