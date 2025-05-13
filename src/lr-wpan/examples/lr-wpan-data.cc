@@ -46,7 +46,7 @@ DataIndication(McpsDataIndicationParams params, Ptr<Packet> p)
 static void
 DataConfirm(McpsDataConfirmParams params)
 {
-    NS_LOG_UNCOND("LrWpanMcpsDataConfirmStatus = " << params.m_status);
+    NS_LOG_UNCOND("LrWpanMcpsDataConfirmStatus = " << static_cast<uint16_t>(params.m_status));
 }
 
 /**
@@ -126,18 +126,23 @@ main(int argc, char* argv[])
     //    Ptr<LrWpanNetDevice> dev0 = devices.Get(0)->GetObject<LrWpanNetDevice>();
     //    Ptr<LrWpanNetDevice> dev1 = devices.Get(1)->GetObject<LrWpanNetDevice>();
 
-    // Set 16-bit short addresses if extended is false, otherwise use 64-bit extended addresses
+    // Set 16-bit and 64-bit MAC addresses.
+    // Note: Extended addresses must ALWAYS be present. If the devices are using the extended
+    // address mode, short addresses should use the short address FF:FE. A short address of FF:FF
+    // indicates that the devices is not associated to any device.
     if (!extended)
     {
-        dev0->SetAddress(Mac16Address("00:01"));
-        dev1->SetAddress(Mac16Address("00:02"));
+        dev0->GetMac()->SetExtendedAddress(Mac64Address("00:00:00:00:00:00:00:01"));
+        dev1->GetMac()->SetExtendedAddress(Mac64Address("00:00:00:00:00:00:00:02"));
+        dev0->GetMac()->SetShortAddress(Mac16Address("00:01"));
+        dev1->GetMac()->SetShortAddress(Mac16Address("00:02"));
     }
     else
     {
-        Ptr<LrWpanMac> mac0 = dev0->GetMac();
-        Ptr<LrWpanMac> mac1 = dev1->GetMac();
-        mac0->SetExtendedAddress(Mac64Address("00:00:00:00:00:00:00:01"));
-        mac1->SetExtendedAddress(Mac64Address("00:00:00:00:00:00:00:02"));
+        dev0->GetMac()->SetExtendedAddress(Mac64Address("00:00:00:00:00:00:00:01"));
+        dev1->GetMac()->SetExtendedAddress(Mac64Address("00:00:00:00:00:00:00:02"));
+        dev0->GetMac()->SetShortAddress(Mac16Address("FF:FE"));
+        dev1->GetMac()->SetShortAddress(Mac16Address("FF:FE"));
     }
 
     // Trace state changes in the phy
