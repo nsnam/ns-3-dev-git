@@ -111,7 +111,11 @@ ThompsonSamplingWifiManager::InitializeStation(WifiRemoteStation* st) const
 
     // Add MCSs supported by this station and the remote station
     WifiModulationClass modulationClass{WIFI_MOD_CLASS_HT};
-    if (GetEhtSupported() && GetEhtSupported(st))
+    if (GetUhrSupported() && GetUhrSupported(st))
+    {
+        modulationClass = WIFI_MOD_CLASS_UHR;
+    }
+    else if (GetEhtSupported() && GetEhtSupported(st))
     {
         modulationClass = WIFI_MOD_CLASS_EHT;
     }

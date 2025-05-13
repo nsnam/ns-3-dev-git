@@ -374,6 +374,11 @@ cpp_examples = [
         "True",
         "True",
     ),
+    (
+        "wifi-raa-compare --standard=11bn --width=320MHz --fixedRss=-55dBm --stepTime=2s",
+        "True",
+        "True",
+    ),
 ]
 
 # A list of Python examples to run in order to ensure that they remain

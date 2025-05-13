@@ -48,6 +48,7 @@ The required Doxygen version for documentation generation is now version 1.13.
 - (wifi) Fix Duration/ID for group addressed frames sent under multiple protection setting
 - (wifi) EMLSR clients can switch to listening operations when receiving the MAC header of a broadcast frame that is not a Trigger Frame nor a Multi-STA BA
 - (wifi) Extend Thompson Sampling rate manager to support EHT rates
+- (wifi) Extend Thompson Sampling rate manager to support UHR rates
 
 ## Release 3.44
 
