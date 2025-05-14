@@ -32,6 +32,7 @@ enum class WifiQueueBlockedReason : uint8_t
 {
     WAITING_ADDBA_RESP = 0,
     POWER_SAVE_MODE,
+    DISASSOCIATION,
     USING_OTHER_EMLSR_LINK,
     WAITING_EMLSR_TRANSITION_DELAY,
     TID_NOT_MAPPED,
@@ -56,6 +57,8 @@ operator<<(std::ostream& os, WifiQueueBlockedReason reason)
         return (os << "WAITING_ADDBA_RESP");
     case WifiQueueBlockedReason::POWER_SAVE_MODE:
         return (os << "POWER_SAVE_MODE");
+    case WifiQueueBlockedReason::DISASSOCIATION:
+        return (os << "DISASSOCIATION");
     case WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK:
         return (os << "USING_OTHER_EMLSR_LINK");
     case WifiQueueBlockedReason::WAITING_EMLSR_TRANSITION_DELAY:

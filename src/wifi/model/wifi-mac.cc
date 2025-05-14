@@ -1604,14 +1604,15 @@ WifiMac::ApplyTidLinkMapping(const Mac48Address& mldAddr, WifiDirection dir)
 void
 WifiMac::BlockUnicastTxOnLinks(WifiQueueBlockedReason reason,
                                Mac48Address address,
-                               const std::set<uint8_t>& linkIds)
+                               const std::set<uint8_t>& linkIds,
+                               bool exceptMgt)
 {
     std::stringstream ss;
     if (g_log.IsEnabled(ns3::LOG_FUNCTION))
     {
         std::copy(linkIds.cbegin(), linkIds.cend(), std::ostream_iterator<uint16_t>(ss, " "));
     }
-    NS_LOG_FUNCTION(this << reason << address << ss.str());
+    NS_LOG_FUNCTION(this << reason << address << ss.str() << exceptMgt);
     NS_ASSERT(m_scheduler);
 
     for (const auto linkId : linkIds)
@@ -1636,13 +1637,14 @@ WifiMac::BlockUnicastTxOnLinks(WifiQueueBlockedReason reason,
                                      {ac.GetLowTid(), ac.GetHighTid()},
                                      {linkId});
             // block queues storing management and control frames that use link addresses
-            m_scheduler->BlockQueues(reason,
-                                     acIndex,
-                                     {WIFI_MGT_QUEUE, WIFI_CTL_QUEUE},
-                                     linkAddr.value_or(address),
-                                     link.feManager->GetAddress(),
-                                     {},
-                                     {linkId});
+            m_scheduler->BlockQueues(
+                reason,
+                acIndex,
+                (exceptMgt ? std::list{WIFI_CTL_QUEUE} : std::list{WIFI_MGT_QUEUE, WIFI_CTL_QUEUE}),
+                linkAddr.value_or(address),
+                link.feManager->GetAddress(),
+                {},
+                {linkId});
         }
     }
 }
@@ -1880,6 +1882,146 @@ WifiMac::EnqueueDisassociation(Mac48Address addr1, uint8_t linkId)
 
     MgtDisassociationHeader disassoc;
     EnqueueMgt(hdr, {disassoc}, linkId);
+}
+
+void
+WifiMac::ResetRemoteInfo(Mac48Address remoteAddr, uint8_t linkId)
+{
+    NS_LOG_FUNCTION(this << remoteAddr << linkId);
+    auto remoteStationManager = GetWifiRemoteStationManager(linkId);
+
+    // reset remote station manager info in case the station is/had been already
+    // associated
+    if (const auto mldAddr = remoteStationManager->GetMldAddress(remoteAddr))
+    {
+        for (const auto& [id, lnk] : GetLinks())
+        {
+            if (const auto linkAddr =
+                    GetWifiRemoteStationManager(id)->GetAffiliatedStaAddress(*mldAddr))
+            {
+                GetWifiRemoteStationManager(id)->ResetState(*mldAddr);
+                GetWifiRemoteStationManager(id)->ResetState(*linkAddr);
+            }
+        }
+    }
+    else
+    {
+        remoteStationManager->ResetState(remoteAddr);
+    }
+}
+
+void
+WifiMac::HandleQueuesUponAssocStateChanged(Mac48Address remoteAddr,
+                                           const std::set<uint8_t>& linkIds,
+                                           bool isDisassoc)
+{
+    NS_LOG_FUNCTION(this << remoteAddr << (isDisassoc ? "Disassociation" : "(Re)Association"));
+
+    // do not block management queues to be able to transmit association request frames
+    BlockUnicastTxOnLinks(WifiQueueBlockedReason::DISASSOCIATION, remoteAddr, linkIds, true);
+
+    // flush queues containing frames that can be dropped, depending on whether this is a
+    // disassociation or a (re)association and whether devices are multi-link or single-link
+    const auto acList = GetQosSupported() ? edcaAcIndices : std::list<AcIndex>{AC_BE_NQOS};
+    bool isMld{false};
+
+    for (const auto& linkId : linkIds)
+    {
+        auto& link = GetLink(linkId);
+        const auto linkAddr = link.stationManager->GetAffiliatedStaAddress(remoteAddr);
+        isMld = linkAddr.has_value();
+
+        for (const auto aci : acList)
+        {
+            // drop queued management frames
+            GetTxopQueue(aci)->Flush({WIFI_MGT_QUEUE,
+                                      WifiRcvAddr::UNICAST,
+                                      linkAddr.value_or(remoteAddr),
+                                      std::nullopt});
+
+            // drop queued control frames in case of disassociation or in case of (re)association
+            // if the transmitter address of the control frames is a link address (different than
+            // the MLD address)
+            if (isDisassoc || (isMld && (linkAddr != remoteAddr)))
+            {
+                GetTxopQueue(aci)->Flush({WIFI_CTL_QUEUE,
+                                          WifiRcvAddr::UNICAST,
+                                          linkAddr.value_or(remoteAddr),
+                                          std::nullopt});
+            }
+        }
+    }
+
+    // in case of MLDs and Disassociation, control frames having MLD addresses shall be dropped
+    if (isDisassoc && isMld)
+    {
+        WifiContainerQueueId queueId(WIFI_CTL_QUEUE,
+                                     WifiRcvAddr::UNICAST,
+                                     remoteAddr,
+                                     std::nullopt);
+        for (const auto aci : acList)
+        {
+            GetTxopQueue(aci)->Flush(queueId);
+        }
+    }
+}
+
+void
+WifiMac::RestoreQueuesAfterReassoc(Mac48Address remoteAddr)
+{
+    NS_LOG_FUNCTION(this << remoteAddr);
+
+    // lambda to reset and reconfigure link information for queues containing data frames and
+    // control frames having the MLD address as transmitter address
+    const auto restore = [this](AcIndex aci, const WifiContainerQueueId& queueId) {
+        GetMacQueueScheduler()->ResetQueueInfo(aci, queueId);
+        if (auto mpdu = GetTxopQueue(aci)->PeekByQueueId(queueId))
+        {
+            NS_LOG_DEBUG("Initializing info for queue " << queueId << " for " << aci);
+            GetMacQueueScheduler()->GetLinkIds(aci, mpdu); // calls InitQueueInfo
+            do
+            {
+                auto linkIds = mpdu->GetInFlightLinkIds();
+                for (const auto id : linkIds)
+                {
+                    mpdu->ResetInFlight(id);
+                }
+            } while ((mpdu = GetTxopQueue(aci)->PeekByQueueId(queueId, mpdu)));
+        }
+    };
+
+    if (GetQosSupported())
+    {
+        for (const auto& [aci, ac] : wifiAcList)
+        {
+            restore(aci, {WIFI_QOSDATA_QUEUE, WifiRcvAddr::UNICAST, remoteAddr, ac.GetHighTid()});
+            restore(aci, {WIFI_QOSDATA_QUEUE, WifiRcvAddr::UNICAST, remoteAddr, ac.GetLowTid()});
+            restore(aci, {WIFI_CTL_QUEUE, WifiRcvAddr::UNICAST, remoteAddr, std::nullopt});
+        }
+    }
+    else
+    {
+        restore(AC_BE_NQOS, {WIFI_DATA_QUEUE, WifiRcvAddr::UNICAST, remoteAddr, std::nullopt});
+        restore(AC_BE_NQOS, {WIFI_CTL_QUEUE, WifiRcvAddr::UNICAST, remoteAddr, std::nullopt});
+    }
+}
+
+void
+WifiMac::DestroyAllBlockAckAgreements(Mac48Address remoteAddr)
+{
+    NS_LOG_FUNCTION(this << remoteAddr);
+
+    if (!m_qosSupported)
+    {
+        return;
+    }
+
+    for (uint8_t tid = 0; tid < 8; ++tid)
+    {
+        auto baManager = GetQosTxop(tid)->GetBaManager();
+        baManager->DestroyOriginatorAgreement(remoteAddr, tid, std::nullopt);
+        baManager->DestroyRecipientAgreement(remoteAddr, tid, std::nullopt);
+    }
 }
 
 void

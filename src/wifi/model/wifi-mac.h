@@ -368,17 +368,21 @@ class WifiMac : public Object
     void SetBssid(Mac48Address bssid, uint8_t linkId);
 
     /**
-     * Block the transmission on the given links of all unicast frames addressed to
-     * the station with the given address for the given reason. The given MAC address
-     * must be the MLD address in case the addressed device is multi-link.
+     * Block the transmission on the given links of all unicast frames (except management frames,
+     * if requested) addressed to the station with the given address for the given reason. The
+     * given MAC address must be the MLD address in case the addressed device is multi-link.
      *
      * @param reason the reason for blocking transmissions
      * @param address the MAC address of the given device
      * @param linkIds the IDs of the links to block
+     * @param exceptMgt true not to block management frames, false to block management frames.
+     *                  Keeping management frames unblocked is useful, e.g., after disassociation
+     *                  to be able to send new association request frames
      */
     void BlockUnicastTxOnLinks(WifiQueueBlockedReason reason,
                                Mac48Address address,
-                               const std::set<uint8_t>& linkIds);
+                               const std::set<uint8_t>& linkIds,
+                               bool exceptMgt = false);
 
     /**
      * Unblock the transmission on the given links of all unicast frames addressed to
@@ -1038,6 +1042,63 @@ class WifiMac : public Object
      * @param linkId the ID of the link on which the frame is transmitted
      */
     void EnqueueDisassociation(Mac48Address addr1, uint8_t linkId);
+
+    /**
+     * Reset the information about the given remote station from the remote station manager
+     * operating on the given link.
+     *
+     * @param remoteAddr the (MLD or link) address of the remote station
+     * @param linkId the ID of the given link
+     */
+    void ResetRemoteInfo(Mac48Address remoteAddr, uint8_t linkId);
+
+    /**
+     * This function performs the operations that APs and non-AP STAs need to take on their queues
+     * in case of disassociation or (re)association. Firstly, all container queues storing frames
+     * to transmit to the given remote station are blocked with reason DISASSOCIATION.
+     *
+     * Additionally, if <i>isDisassoc</i> is true:
+     *
+     * - Management queues and control queues are flushed
+     *
+     * If <i>isDisassoc</i> is false:
+     *
+     * - Management queues are flushed
+     * - In case of MLDs, control queues having a link address as transmitter address are flushed
+     *
+     * The rationale is that a reassociation may involve the setup of a different set of links,
+     * hence management and control frames that must be sent on a specific link shall be dropped.
+     * Control frames that can be sent on any link could be BlockAckReq frames scheduled to advance
+     * the recipient window, hence they should not be dropped if the Block Ack agreement is not
+     * destroyed.
+     *
+     * @param remoteAddr the remote station address (MLD address for ML setup, link address for
+     *                   legacy association)
+     * @param linkIds the ID of the links setup with the remote station
+     * @param isDisassoc true in case of disassociation notified to the AP, false in case of
+     *                   (re)association or disassociation not notified to the AP
+     */
+    void HandleQueuesUponAssocStateChanged(Mac48Address remoteAddr,
+                                           const std::set<uint8_t>& linkIds,
+                                           bool isDisassoc);
+
+    /**
+     * Queues that have been blocked (and not flushed) upon disassociation or reassociation need
+     * to be restored in case of successful association. Restoring a queue involves resetting the
+     * associated link information and configuring new link information that reflects the new set
+     * of setup links.
+     *
+     * @param remoteAddr the remote station address (MLD address for ML setup, link address for
+     *                   legacy association)
+     */
+    void RestoreQueuesAfterReassoc(Mac48Address remoteAddr);
+
+    /**
+     * Destroy all the Block Ack agreements established with the given remote station.
+     *
+     * @param remoteAddr the remote station address for the given link
+     */
+    void DestroyAllBlockAckAgreements(Mac48Address remoteAddr);
 
     /**
      * Apply the TID-to-Link Mapping negotiated with the given MLD for the given direction
