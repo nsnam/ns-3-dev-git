@@ -329,6 +329,7 @@ WifiChannelSettingsTestSuite::WifiChannelSettingsTestSuite()
         {{MHz_u{40}, WIFI_PHY_BAND_6GHZ}, "{3, 40, BAND_6GHZ, 0}"},
         {{MHz_u{80}, WIFI_PHY_BAND_6GHZ}, "{7, 80, BAND_6GHZ, 0}"},
         {{MHz_u{160}, WIFI_PHY_BAND_6GHZ}, "{15, 160, BAND_6GHZ, 0}"},
+        {{MHz_u{320}, WIFI_PHY_BAND_6GHZ}, "{31, 320, BAND_6GHZ, 0}"},
     };
 
     for (const auto standard : {WIFI_STANDARD_80211n,
@@ -336,7 +337,7 @@ WifiChannelSettingsTestSuite::WifiChannelSettingsTestSuite()
                                 WIFI_STANDARD_80211ax,
                                 WIFI_STANDARD_80211be})
     {
-        for (const auto maxSupportedBw : {MHz_u{20}, MHz_u{40}, MHz_u{80}, MHz_u{160}})
+        for (const auto maxSupportedBw : {MHz_u{20}, MHz_u{40}, MHz_u{80}, MHz_u{160}, MHz_u{320}})
         {
             for (const auto& [apWidthBandPair, apChannel] : channelSettingsMap)
             {
