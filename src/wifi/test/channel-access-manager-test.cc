@@ -1960,15 +1960,6 @@ BackoffGenerationTest::DoSetup()
     m_client->SetRemote(remoteAddr);
     m_client->SetStartTime(Seconds(0));
     m_client->SetStopTime(Seconds(1));
-
-    // Block VO queue so that the AP does not send QoS data frames
-    m_apMac->GetMacQueueScheduler()->BlockQueues(WifiQueueBlockedReason::TID_NOT_MAPPED,
-                                                 AC_VO,
-                                                 {WIFI_QOSDATA_QUEUE},
-                                                 m_staMac->GetAddress(),
-                                                 m_apMac->GetAddress(),
-                                                 {m_tid},
-                                                 {SINGLE_LINK_OP_ID});
 }
 
 void
@@ -2020,10 +2011,19 @@ BackoffGenerationTest::Transmit(WifiConstPsduMap psduMap, WifiTxVector txVector,
             {
                 // generate a packet destined to the non-AP station (this packet is held because
                 // the queue is blocked) as soon as association is completed
-                Simulator::Schedule(txDuration,
-                                    &Node::AddApplication,
-                                    m_apMac->GetDevice()->GetNode(),
-                                    m_client);
+                Simulator::Schedule(txDuration + TimeStep(1), [this] {
+                    // Block VO queue so that the AP does not send QoS data frames
+                    m_apMac->GetMacQueueScheduler()->BlockQueues(
+                        WifiQueueBlockedReason::TID_NOT_MAPPED,
+                        AC_VO,
+                        {WIFI_QOSDATA_QUEUE},
+                        m_staMac->GetAddress(),
+                        m_apMac->GetAddress(),
+                        {m_tid},
+                        {SINGLE_LINK_OP_ID});
+                    // generate a packet
+                    m_apMac->GetDevice()->GetNode()->AddApplication(m_client);
+                });
             }
         }
         else if (psdu->GetHeader(0).IsQosData())

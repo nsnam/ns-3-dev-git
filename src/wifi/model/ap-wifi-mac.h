@@ -388,6 +388,15 @@ class ApWifiMac : public WifiMac
     void ParseReportedStaInfo(const AssocReqRefVariant& assoc, Mac48Address from, uint8_t linkId);
 
     /**
+     * Take actions required when receiving a Disassociation frame or a (Re)Association frame from
+     * a STA that is already associated.
+     *
+     * @param aid the AID of the STA that sent a frame to disassociate or (re)associate
+     * @param isDisassoc true/false if a Disassociation/(Re)Association frame was received
+     */
+    void HandleDisassociationOrReassociation(uint16_t aid, bool isDisassoc);
+
+    /**
      * Process the EML Operating Mode Notification frame received from the given station on the
      * given link.
      *
