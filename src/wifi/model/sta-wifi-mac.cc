@@ -113,6 +113,11 @@ StaWifiMac::GetTypeId()
                                           "LEGACY",
                                           WifiAssocType::ML_SETUP,
                                           "ML_SETUP"))
+            .AddAttribute("AssocManager",
+                          "The Association Manager object.",
+                          PointerValue(),
+                          MakePointerAccessor(&StaWifiMac::m_assocManager),
+                          MakePointerChecker<WifiAssocManager>())
             .AddAttribute("PowerSaveManager",
                           "The Power Save manager object.",
                           PointerValue(),
@@ -322,6 +327,12 @@ StaWifiMac::SetAssocManager(Ptr<WifiAssocManager> assocManager)
     NS_LOG_FUNCTION(this << assocManager);
     m_assocManager = assocManager;
     m_assocManager->SetStaWifiMac(this);
+}
+
+Ptr<WifiAssocManager>
+StaWifiMac::GetAssocManager() const
+{
+    return m_assocManager;
 }
 
 WifiAssocType
@@ -881,12 +892,12 @@ StaWifiMac::SendAssociationRequest(bool isReassoc)
         EnqueueMgt(hdr, {std::get<MgtReassocRequestHeader>(frame)}, linkId);
     }
 
-    if (m_assocRequestEvent.IsPending())
-    {
-        m_assocRequestEvent.Cancel();
-    }
-    m_assocRequestEvent =
-        Simulator::Schedule(m_assocRequestTimeout, &StaWifiMac::AssocRequestTimeout, this);
+    m_disassocEvent.Cancel();
+    m_assocRequestEvent.Cancel();
+    m_assocRequestEvent = Simulator::Schedule(m_assocRequestTimeout,
+                                              &StaWifiMac::AssocRequestTimeout,
+                                              this,
+                                              isReassoc);
 }
 
 void
@@ -1033,11 +1044,11 @@ StaWifiMac::ScanningTimeout(const std::optional<ApInfo>& bestAp)
 }
 
 void
-StaWifiMac::AssocRequestTimeout()
+StaWifiMac::AssocRequestTimeout(bool isReassoc)
 {
     NS_LOG_FUNCTION(this);
     SetState(WAIT_ASSOC_RESP);
-    SendAssociationRequest(false);
+    SendAssociationRequest(isReassoc);
 }
 
 void
@@ -1079,14 +1090,22 @@ StaWifiMac::Disassociated()
 
     Mac48Address apAddr; // the AP address to trace (MLD address in case of ML setup)
 
+    std::set<uint8_t> linkIds;
     for (const auto& [id, link] : GetLinks())
     {
-        auto& bssid = GetStaLink(link).bssid;
-        if (bssid)
+        if (const auto& bssid = GetStaLink(link).bssid)
         {
             apAddr = GetWifiRemoteStationManager(id)->GetMldAddress(*bssid).value_or(*bssid);
+            linkIds.insert(id);
         }
-        bssid = std::nullopt; // link is no longer setup
+    }
+
+    HandleQueuesUponAssocStateChanged(apAddr, linkIds, false);
+
+    // reset BSSID on all links and switch them all on
+    for (const auto& [id, link] : GetLinks())
+    {
+        GetStaLink(link).bssid = std::nullopt;
         link->phy->ResumeFromOff();
     }
 
@@ -1188,14 +1207,13 @@ StaWifiMac::DoGetLocalAddress(const Mac48Address& remoteAddr) const
 
     // the remote address is unknown
 
-    if (!IsAssociated())
+    const auto linkIds = GetSetupLinkIds();
+    if (linkIds.empty())
     {
         return GetAddress();
     }
 
     // if this device has performed ML setup with an AP MLD, return the MLD address of this device
-    const auto linkIds = GetSetupLinkIds();
-    NS_ASSERT(!linkIds.empty());
     const auto linkId = *linkIds.cbegin(); // a setup link
 
     if (GetLink(linkId).stationManager->GetMldAddress(GetBssid(linkId)))
@@ -1582,7 +1600,6 @@ StaWifiMac::ReceiveAssocResp(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
         m_assocRequestEvent.Cancel();
     }
 
-    std::optional<Mac48Address> apMldAddress;
     if (assocResp.m_statusCode.IsSuccess())
     {
         m_aid = assocResp.m_aid;
@@ -1591,42 +1608,6 @@ StaWifiMac::ReceiveAssocResp(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
         NS_ASSERT(GetLink(linkId).bssid.has_value() && *GetLink(linkId).bssid == hdr.GetAddr3());
         SetBssid(hdr.GetAddr3(), linkId);
         SetState(ASSOCIATED);
-        if ((GetAssocType() == WifiAssocType::ML_SETUP) &&
-            assocResp.Get<MultiLinkElement>().has_value())
-        {
-            // this is an ML setup, trace the setup link
-            m_setupCompleted(linkId, hdr.GetAddr3());
-            apMldAddress = GetWifiRemoteStationManager(linkId)->GetMldAddress(hdr.GetAddr3());
-            NS_ASSERT(apMldAddress);
-
-            if (const auto& mldCapabilities =
-                    GetWifiRemoteStationManager(linkId)->GetStationMldCapabilities(hdr.GetAddr3());
-                mldCapabilities && static_cast<WifiTidToLinkMappingNegSupport>(
-                                       mldCapabilities->get().tidToLinkMappingSupport) >
-                                       WifiTidToLinkMappingNegSupport::NOT_SUPPORTED)
-            {
-                // the AP MLD supports TID-to-Link Mapping negotiation, hence we included
-                // TID-to-Link Mapping element(s) in the Association Request.
-                if (assocResp.Get<TidToLinkMapping>().empty())
-                {
-                    // The AP MLD did not include a TID-to-Link Mapping element in the Association
-                    // Response, hence it accepted the mapping, which we can now store.
-                    UpdateTidToLinkMapping(*apMldAddress,
-                                           WifiDirection::DOWNLINK,
-                                           m_dlTidLinkMappingInAssocReq);
-                    UpdateTidToLinkMapping(*apMldAddress,
-                                           WifiDirection::UPLINK,
-                                           m_ulTidLinkMappingInAssocReq);
-
-                    // Apply the negotiated TID-to-Link Mapping (if any) for UL direction
-                    ApplyTidLinkMapping(*apMldAddress, WifiDirection::UPLINK);
-                }
-            }
-        }
-        else
-        {
-            m_assocLogger(hdr.GetAddr3());
-        }
         if (!m_linkUp.IsNull())
         {
             m_linkUp();
@@ -1657,6 +1638,8 @@ StaWifiMac::ReceiveAssocResp(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
     {
         setupLinks.remove(linkId);
     }
+
+    auto apMldAddress = GetWifiRemoteStationManager(linkId)->GetMldAddress(hdr.GetAddr3());
 
     // if a Multi-Link Element is present, this is an ML setup, hence check if we can setup (other)
     // links
@@ -1715,11 +1698,6 @@ StaWifiMac::ReceiveAssocResp(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
             // remove the ID of the link we setup
             setupLinks.remove(staLinkid);
         }
-        if (apMldAddress)
-        {
-            // this is an ML setup, trace the MLD address of the AP (only once)
-            m_assocLogger(*apMldAddress);
-        }
     }
     // remaining links in setupLinks are not setup and hence must be disabled,
     // unless P2P link support is enabled
@@ -1729,6 +1707,49 @@ StaWifiMac::ReceiveAssocResp(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
         if (!m_enableP2pLinks)
         {
             GetLink(id).phy->SetOffMode();
+        }
+    }
+
+    if (apMldAddress)
+    {
+        // this is an ML setup, trace the MLD address of the AP (only once) and the setup link
+        m_assocLogger(*apMldAddress);
+        m_setupCompleted(linkId, hdr.GetAddr3());
+    }
+    else
+    {
+        m_assocLogger(hdr.GetAddr3());
+    }
+
+    const auto newAddr1 = apMldAddress.value_or(hdr.GetAddr3());
+    UpdateQueuedFramesAddresses(newAddr1, apMldAddress.has_value());
+    m_prevApAddr = newAddr1;
+
+    if (const auto& mldCapabilities =
+            GetWifiRemoteStationManager(linkId)->GetStationMldCapabilities(hdr.GetAddr3());
+        apMldAddress && mldCapabilities &&
+        static_cast<WifiTidToLinkMappingNegSupport>(
+            mldCapabilities->get().tidToLinkMappingSupport) >
+            WifiTidToLinkMappingNegSupport::NOT_SUPPORTED)
+    {
+        // the AP MLD supports TID-to-Link Mapping negotiation, hence we included
+        // TID-to-Link Mapping element(s) in the Association Request.
+        if (assocResp.Get<TidToLinkMapping>().empty())
+        {
+            // The AP MLD did not include a TID-to-Link Mapping element in the Association
+            // Response, hence it accepted the mapping, which we can now store after resetting
+            // the mappings
+            UpdateTidToLinkMapping(*apMldAddress, WifiDirection::DOWNLINK, {});
+            UpdateTidToLinkMapping(*apMldAddress, WifiDirection::UPLINK, {});
+            UpdateTidToLinkMapping(*apMldAddress,
+                                   WifiDirection::DOWNLINK,
+                                   m_dlTidLinkMappingInAssocReq);
+            UpdateTidToLinkMapping(*apMldAddress,
+                                   WifiDirection::UPLINK,
+                                   m_ulTidLinkMappingInAssocReq);
+
+            // Apply the negotiated TID-to-Link Mapping (if any) for UL direction
+            ApplyTidLinkMapping(*apMldAddress, WifiDirection::UPLINK);
         }
     }
 
@@ -1764,6 +1785,54 @@ StaWifiMac::ReceiveAssocResp(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
 
     SetPmModeAfterAssociation(linkId);
     m_disassocEvent.Cancel();
+}
+
+void
+StaWifiMac::UpdateQueuedFramesAddresses(Mac48Address apAddr, bool isMldAddr)
+{
+    NS_LOG_FUNCTION(this << apAddr << isMldAddr);
+
+    if (m_prevApAddr)
+    {
+        // if the STA roamed to another AP, the addresses of the data frames stored in the queues
+        // must be updated and the remaining control frames must be dropped
+        if (apAddr != *m_prevApAddr)
+        {
+            auto linkIds = GetSetupLinkIds();
+            NS_ASSERT(!linkIds.empty());
+            const auto linkId = *linkIds.begin();
+            const auto newAddr2 =
+                (isMldAddr ? GetAddress() : GetFrameExchangeManager(linkId)->GetAddress());
+
+            if (GetQosSupported())
+            {
+                for (const auto& [aci, ac] : wifiAcList)
+                {
+                    GetTxopQueue(aci)->ReplaceAddresses(
+                        {WIFI_QOSDATA_QUEUE, WifiRcvAddr::UNICAST, *m_prevApAddr, ac.GetHighTid()},
+                        apAddr,
+                        newAddr2);
+                    GetTxopQueue(aci)->ReplaceAddresses(
+                        {WIFI_QOSDATA_QUEUE, WifiRcvAddr::UNICAST, *m_prevApAddr, ac.GetLowTid()},
+                        apAddr,
+                        newAddr2);
+                    GetTxopQueue(aci)->Flush(
+                        {WIFI_CTL_QUEUE, WifiRcvAddr::UNICAST, *m_prevApAddr, std::nullopt});
+                }
+            }
+            else
+            {
+                GetTxopQueue(AC_BE_NQOS)
+                    ->ReplaceAddresses(
+                        {WIFI_DATA_QUEUE, WifiRcvAddr::UNICAST, *m_prevApAddr, std::nullopt},
+                        apAddr,
+                        newAddr2);
+                GetTxopQueue(AC_BE_NQOS)
+                    ->Flush({WIFI_CTL_QUEUE, WifiRcvAddr::UNICAST, *m_prevApAddr, std::nullopt});
+            }
+        }
+        RestoreQueuesAfterReassoc(apAddr);
+    }
 }
 
 void
@@ -2238,10 +2307,18 @@ StaWifiMac::TxOk(Ptr<const WifiMpdu> mpdu)
         }
     }
 
-    if (hdr.IsDisassociation())
+    if (hdr.IsDisassociation() && m_disassocEvent.IsPending())
     {
         // the AP has acknowledged our disassociation frame, now try to associate again
         m_disassocEvent.Cancel();
+
+        const auto rcvAddr = hdr.GetAddr1();
+        const auto address =
+            GetWifiRemoteStationManager(*linkId)->GetMldAddress(rcvAddr).value_or(rcvAddr);
+        HandleQueuesUponAssocStateChanged(address, GetSetupLinkIds(), true);
+
+        DestroyAllBlockAckAgreements(address);
+
         Disassociated();
     }
 }

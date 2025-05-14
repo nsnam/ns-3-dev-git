@@ -204,6 +204,11 @@ class StaWifiMac : public WifiMac
     void SetAssocManager(Ptr<WifiAssocManager> assocManager);
 
     /**
+     * @return the Association Manager
+     */
+    Ptr<WifiAssocManager> GetAssocManager() const;
+
+    /**
      * Set the Power Save Manager.
      *
      * @param powerSaveManager the Power Save Manager
@@ -578,8 +583,10 @@ class StaWifiMac : public WifiMac
     /**
      * This method is called after the association timeout occurred. We switch the state to
      * WAIT_ASSOC_RESP and re-send an association request.
+     *
+     * @param isReassoc flag whether it is a reassociation request
      */
-    void AssocRequestTimeout();
+    void AssocRequestTimeout(bool isReassoc);
     /**
      * Start the scanning process which trigger active or passive scanning based on the
      * active probing flag.
@@ -606,6 +613,16 @@ class StaWifiMac : public WifiMac
      * Set the state to unassociated and try to associate again.
      */
     void Disassociated();
+
+    /**
+     * Update the Address 1 and Address 2 fields (if needed) of the queued frames upon association
+     * with an AP having the given address.
+     *
+     * @param apAddr the AP address
+     * @param isMldAddr whether the AP address is an MLD address
+     */
+    void UpdateQueuedFramesAddresses(Mac48Address apAddr, bool isMldAddr);
+
     /**
      * Return an instance of SupportedRates that contains all rates that we support
      * including HT rates.
@@ -731,6 +748,9 @@ class StaWifiMac : public WifiMac
     Time m_beaconWatchdogEnd{0};                  //!< beacon watchdog end
     bool m_enableScanning;                        //!< enable channel scanning
     bool m_activeProbing;                         ///< active probing
+    std::optional<Mac48Address> m_prevApAddr;     ///< the address (MLD address for ML setup, link
+                                                  ///< address for legacy association) of the AP
+                                                  ///< this STA was previously associated with
     Ptr<RandomVariableStream> m_probeDelay;       ///< RandomVariable used to randomize the time
                                                   ///< of the first Probe Response on each channel
     Time m_pmModeSwitchTimeout;                   ///< PM mode switch timeout
