@@ -353,10 +353,7 @@ DsoTestBase::DoSetup()
     stasPhyHelper.SetPcapDataLinkType(WifiPhyHelper::DLT_IEEE802_11_RADIO);
 
     m_channel = CreateObject<MultiModelSpectrumChannel>();
-    for (const auto& freqRange : m_stasFreqRanges)
-    {
-        stasPhyHelper.AddChannel(m_channel, freqRange);
-    }
+    stasPhyHelper.SetChannel(m_channel);
     stasPhyHelper.Set("ChannelSettings", StringValue(m_stasOpChannel));
 
     WifiMacHelper mac;
@@ -682,26 +679,6 @@ DsoSubbandsTest::DsoSubbandsTest(
     m_apOpChannel = apChannel;
     m_stasOpChannel = stasChannel;
     m_duration = Seconds(0.5);
-    std::set<FrequencyRange> dsoFreqRanges;
-    std::transform(m_expectedDsoSubbands.cbegin(),
-                   m_expectedDsoSubbands.cend(),
-                   std::inserter(dsoFreqRanges, dsoFreqRanges.end()),
-                   [](const auto& pair) -> FrequencyRange {
-                       return {pair.second.GetFrequency() - pair.second.GetWidth() / 2,
-                               pair.second.GetFrequency() + pair.second.GetWidth() / 2};
-                   });
-    m_stasFreqRanges = {{MHz_t{2401}, dsoFreqRanges.cbegin()->minFrequency},
-                        {dsoFreqRanges.crbegin()->maxFrequency, MHz_t{7125}}};
-    auto prevStopFreq = dsoFreqRanges.cbegin()->minFrequency;
-    for (const auto& freqRange : dsoFreqRanges)
-    {
-        if (prevStopFreq < freqRange.minFrequency)
-        {
-            m_stasFreqRanges.emplace_back(prevStopFreq, freqRange.minFrequency);
-        }
-        prevStopFreq = freqRange.maxFrequency;
-        m_stasFreqRanges.emplace_back(freqRange.minFrequency, freqRange.maxFrequency);
-    }
 }
 
 void
@@ -739,7 +716,6 @@ DsoTxopTest::DsoTxopTest(const Params& params)
     m_nDsoStas = 2;
     m_apOpChannel = "{114, 0, BAND_5GHZ, 0}";
     m_stasOpChannel = "{106, 0, BAND_5GHZ, 0}";
-    m_stasFreqRanges = {{MHz_t{5170}, MHz_t{5570}}, {MHz_t{5570}, MHz_t{5915}}};
     m_duration = Seconds(1.0);
     m_establishBaDl = {0};
     m_establishBaUl = {0};

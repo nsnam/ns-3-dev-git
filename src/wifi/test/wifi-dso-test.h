@@ -116,18 +116,16 @@ class DsoTestBase : public TestCase
     std::string m_stasOpChannel;  ///< string representing the operating channel of the non-AP STAs
     std::string m_mode{"UhrMcs11"}; ///< the mode to configure on the constant rate manager
 
-    Ptr<MultiModelSpectrumChannel> m_channel;     ///< the spectrum channel
-    std::vector<FrequencyRange> m_stasFreqRanges; ///< the frequency ranges covered by each spectrum
-                                                  ///< PHY interface for DSO STAs
-    Ptr<ApWifiMac> m_apMac;                       ///< AP wifi MAC
-    std::vector<Ptr<StaWifiMac>> m_staMacs;       ///< MACs of the non-AP STAs
-    Time m_duration;                              ///< simulation duration
-    std::vector<uint8_t> m_establishBaDl{};       /**< the TIDs for which BA needs to be established
-                                                       with the AP as originator */
-    std::vector<uint8_t> m_establishBaUl{};       /**< the TIDs for which BA needs to be established
-                                                       with the AP as recipient */
-    std::vector<FrameInfo> m_txPsdus;             ///< transmitted PSDUs
-    uint64_t m_receivedPackets{0};                ///< received packets
+    Ptr<MultiModelSpectrumChannel> m_channel; ///< the spectrum channel
+    Ptr<ApWifiMac> m_apMac;                   ///< AP wifi MAC
+    std::vector<Ptr<StaWifiMac>> m_staMacs;   ///< MACs of the non-AP STAs
+    Time m_duration;                          ///< simulation duration
+    std::vector<uint8_t> m_establishBaDl{};   /**< the TIDs for which BA needs to be established
+                                                   with the AP as originator */
+    std::vector<uint8_t> m_establishBaUl{};   /**< the TIDs for which BA needs to be established
+                                                   with the AP as recipient */
+    std::vector<FrameInfo> m_txPsdus;         ///< transmitted PSDUs
+    uint64_t m_receivedPackets{0};            ///< received packets
     bool m_started{
         false}; ///< flag whether traffic is started and transmitted PSDUs can be recorded
 
