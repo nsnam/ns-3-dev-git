@@ -199,6 +199,8 @@ WifiTxopTest::WifiTxopTest(const WifiTxopTest::Params& params)
       m_singleRtsPerTxop(params.singleRtsPerTxop),
       m_lengthBasedRtsCtsThresh(params.lengthBasedRtsCtsThresh),
       m_protectedIfResponded(params.protectedIfResponded),
+      m_protectSingleExchange(params.protectSingleExchange),
+      m_singleExchangeProtectionSurplus(params.singleExchangeProtectionBuffer),
       m_apErrorModel(CreateObject<ListErrorModel>()),
       m_staErrorModel(CreateObject<ListErrorModel>()),
       m_apCorrupted(false),
