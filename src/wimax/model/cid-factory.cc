@@ -12,7 +12,7 @@
 
 #include "ns3/uinteger.h"
 
-#include <stdint.h>
+#include <cstdint>
 
 namespace ns3
 {

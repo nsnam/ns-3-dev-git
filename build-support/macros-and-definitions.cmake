@@ -1074,7 +1074,7 @@ macro(process_options)
   # Process core-config If INT128 is not found, fallback to CAIRO
   if(${NS3_INT64X64} MATCHES "INT128")
     check_cxx_source_compiles(
-      "#include <stdint.h>
+      "#include <cstdint>
        int main()
          {
             if ((uint128_t *) 0) return 0;
@@ -1084,7 +1084,7 @@ macro(process_options)
       HAVE_UINT128_T
     )
     check_cxx_source_compiles(
-      "#include <stdint.h>
+      "#include <cstdint>
        int main()
          {
            if ((__uint128_t *) 0) return 0;
@@ -1129,12 +1129,9 @@ macro(process_options)
 
   # Check for required headers and functions, set flags if they're found or warn
   # if they're not found
-  check_include_file("stdint.h" "HAVE_STDINT_H")
-  check_include_file("inttypes.h" "HAVE_INTTYPES_H")
   check_include_file("sys/types.h" "HAVE_SYS_TYPES_H")
   check_include_file("sys/stat.h" "HAVE_SYS_STAT_H")
   check_include_file("dirent.h" "HAVE_DIRENT_H")
-  check_include_file("stdlib.h" "HAVE_STDLIB_H")
   check_include_file("signal.h" "HAVE_SIGNAL_H")
   check_include_file("netpacket/packet.h" "HAVE_PACKETH")
   check_function_exists("getenv" "HAVE_GETENV")
@@ -1287,13 +1284,13 @@ macro(process_options)
         <limits>
         <list>
         <map>
-        <math.h>
+        <cmath>
         <ostream>
         <queue>
         <set>
         <sstream>
-        <stdint.h>
-        <stdlib.h>
+        <cstdint>
+        <cstdlib>
         <string>
         <tuple>
         <typeinfo>

@@ -11,9 +11,9 @@
 #include "string.h"
 
 #include <cstdlib>  // std::getenv
+#include <cstdlib>  // Global functions setenv, unsetenv
 #include <cstring>  // strlen
 #include <iostream> // clog
-#include <stdlib.h> // Global functions setenv, unsetenv
 
 /**
  * @file

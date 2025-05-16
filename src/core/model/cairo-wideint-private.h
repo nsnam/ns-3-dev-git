@@ -51,45 +51,7 @@
 // extern const char * cairo_impl64;
 // extern const char * cairo_impl128;
 
-/*for compatibility with MacOS and Cygwin*/
-#ifndef HAVE_STDINT_H
-#ifdef __APPLE__
-#define HAVE_STDINT_H 1
-#elif defined(WIN32)
-#define HAVE_STDINT_H 1
-#endif
-#endif
-
-#if   HAVE_STDINT_H
-# include <stdint.h>
-#elif HAVE_INTTYPES_H
-# include <inttypes.h>
-#elif HAVE_SYS_INT_TYPES_H
-# include <sys/int_types.h>
-#elif defined(_MSC_VER)
-typedef __int8 int8_t;
-typedef unsigned __int8 uint8_t;
-typedef __int16 int16_t;
-typedef unsigned __int16 uint16_t;
-typedef __int32 int32_t;
-typedef unsigned __int32 uint32_t;
-typedef __int64 int64_t;
-typedef unsigned __int64 uint64_t;
-# ifndef HAVE_UINT64_T
-#  define HAVE_UINT64_T 1
-# endif
-# ifndef INT16_MIN
-#  define INT16_MIN     (-32767-1)
-# endif
-# ifndef INT16_MAX
-#  define INT16_MAX     (32767)
-# endif
-# ifndef UINT16_MAX
-#  define UINT16_MAX    (65535)
-# endif
-#else
-#error Cannot find definitions for fixed-width integral types (uint8_t, uint32_t, etc.)
-#endif
+#include <cstdint> // PDB
 
 #ifdef __cplusplus
 extern "C" {

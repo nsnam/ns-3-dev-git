@@ -52,7 +52,7 @@
 #include "ns3/uinteger.h"
 
 #include <algorithm>
-#include <math.h>
+#include <cmath>
 
 namespace
 {

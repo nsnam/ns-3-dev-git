@@ -11,8 +11,8 @@
 #include "ns3/log.h"
 #include "ns3/packet.h"
 
+#include <cstdint>
 #include <list>
-#include <stdint.h>
 
 namespace ns3
 {

@@ -20,7 +20,7 @@
 #include "ns3/udp-header.h"
 #include "ns3/udp-l4-protocol.h"
 
-#include <stdint.h>
+#include <cstdint>
 
 namespace ns3
 {

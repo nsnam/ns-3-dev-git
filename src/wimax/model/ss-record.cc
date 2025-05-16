@@ -11,7 +11,7 @@
 
 #include "service-flow.h"
 
-#include <stdint.h>
+#include <cstdint>
 
 namespace ns3
 {

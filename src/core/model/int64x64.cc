@@ -9,11 +9,11 @@
 #include "assert.h"
 #include "log.h"
 
+#include <cstdint>
 #include <iomanip> // showpos
 #include <iostream>
 #include <limits>
 #include <sstream>
-#include <stdint.h>
 
 /**
  * @file

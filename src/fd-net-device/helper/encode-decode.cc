@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: GPL-2.0-only
  */
 
+#include <cstdint>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
-#include <stdint.h>
 #include <string>
 
 namespace ns3

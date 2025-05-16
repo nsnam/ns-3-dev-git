@@ -11,7 +11,7 @@
 
 #include "ns3/ipv4-address.h"
 
-#include <stdint.h>
+#include <cstdint>
 
 namespace ns3
 {
