@@ -36,7 +36,9 @@ foreach(
   )
 endforeach()
 
-if(${ENABLE_EMU})
+if(${ENABLE_EMU}
+   AND ${ENABLE_EMUNETDEV}
+)
   build_lib_example(
     NAME lena-simple-epc-emu
     SOURCE_FILES lena-simple-epc-emu.cc
