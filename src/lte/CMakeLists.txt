@@ -2,7 +2,9 @@ set(emu_sources)
 set(emu_headers)
 set(emu_features)
 set(emu_libraries)
-if(${ENABLE_EMU})
+if(${ENABLE_EMU}
+   AND ${ENABLE_EMUNETDEV}
+)
   set(emu_sources
       helper/emu-epc-helper.cc
   )

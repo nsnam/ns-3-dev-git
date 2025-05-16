@@ -1174,6 +1174,15 @@ macro(process_options)
     set(ENABLE_TAP OFF)
     set(ENABLE_EMU OFF)
     set(ENABLE_FDNETDEV FALSE)
+    mark_as_advanced(
+      ENABLE_FDNETDEV ENABLE_DPDKDEVNET ENABLE_TAPNETDEV ENABLE_EMUNETDEV
+      ENABLE_NETMAP_EMU
+    )
+    set(ENABLE_FDNETDEV False CACHE INTERNAL "")
+    set(ENABLE_DPDKDEVNET False CACHE INTERNAL "")
+    set(ENABLE_TAPNETDEV False CACHE INTERNAL "")
+    set(ENABLE_EMUNETDEV False CACHE INTERNAL "")
+    set(ENABLE_NETMAP_EMU False CACHE INTERNAL "")
     list(REMOVE_ITEM libs_to_build fd-net-device)
     message(
       STATUS
