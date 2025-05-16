@@ -23,9 +23,9 @@
 #include "ns3/pointer.h"
 
 #include <cmath>
+#include <cstdint>
+#include <cstdlib>
 #include <list>
-#include <stdint.h>
-#include <stdlib.h>
 #include <vector>
 
 namespace ns3

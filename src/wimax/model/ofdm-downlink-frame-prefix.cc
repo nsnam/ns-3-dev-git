@@ -10,7 +10,7 @@
 
 #include "ns3/address-utils.h"
 
-#include <stdint.h>
+#include <cstdint>
 
 namespace ns3
 {

@@ -10,7 +10,7 @@
 
 #include "ul-mac-messages.h"
 
-#include <stdint.h>
+#include <cstdint>
 
 namespace ns3
 {

@@ -15,8 +15,8 @@
 #include "ns3/pcap-file-wrapper.h"
 #include "ns3/ptr.h"
 
+#include <cstdint>
 #include <fstream>
-#include <stdint.h>
 #include <string>
 
 namespace ns3

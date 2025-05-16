@@ -29,7 +29,7 @@
 #include "ns3/pointer.h"
 #include "ns3/simulator.h"
 
-#include <stdint.h>
+#include <cstdint>
 
 namespace ns3
 {

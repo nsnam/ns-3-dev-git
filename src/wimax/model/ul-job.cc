@@ -9,7 +9,7 @@
 
 #include "ul-job.h"
 
-#include <stdint.h>
+#include <cstdint>
 
 namespace ns3
 {

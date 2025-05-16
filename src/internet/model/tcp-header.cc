@@ -14,8 +14,8 @@
 #include "ns3/buffer.h"
 #include "ns3/log.h"
 
+#include <cstdint>
 #include <iostream>
-#include <stdint.h>
 
 namespace ns3
 {

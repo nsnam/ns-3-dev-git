@@ -16,10 +16,10 @@
 #include "ns3/system-wall-clock-ms.h"
 
 #include <algorithm>
+#include <cstdlib> // for exit ()
 #include <iostream>
 #include <limits>
 #include <sstream>
-#include <stdlib.h> // for exit ()
 #include <string>
 
 using namespace ns3;

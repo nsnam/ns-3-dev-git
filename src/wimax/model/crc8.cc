@@ -6,7 +6,7 @@
  * Author: Mohamed Amine Ismail <amine.ismail@sophia.inria.fr>
  *                              <amine.ismail@udcast.com>
  */
-#include <stdint.h>
+#include <cstdint>
 
 namespace ns3
 {

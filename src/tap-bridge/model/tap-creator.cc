@@ -9,6 +9,7 @@
 #include "ns3/mac48-address.h"
 
 #include <cerrno>
+#include <cstdint>
 #include <cstdlib>
 #include <cstring> // for strerror
 #include <fcntl.h>
@@ -19,7 +20,6 @@
 #include <net/route.h>
 #include <netinet/in.h>
 #include <sstream>
-#include <stdint.h>
 #include <string>
 #include <sys/ioctl.h>
 #include <sys/socket.h>
