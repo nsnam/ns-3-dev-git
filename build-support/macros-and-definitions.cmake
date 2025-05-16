@@ -1076,7 +1076,6 @@ macro(process_options)
       "#include <cstdint>
        int main()
          {
-            if ((uint128_t *) 0) return 0;
             if (sizeof (uint128_t)) return 0;
             return 1;
          }"
@@ -1086,7 +1085,6 @@ macro(process_options)
       "#include <cstdint>
        int main()
          {
-           if ((__uint128_t *) 0) return 0;
            if (sizeof (__uint128_t)) return 0;
            return 1;
         }"
