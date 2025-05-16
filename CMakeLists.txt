@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.20..3.20)
 # ##############################################################################
 # Project name                        #
 # ##############################################################################
-project(NS3 CXX C)
+project(NS3 CXX)
 
 file(STRINGS VERSION NS3_VER)
 

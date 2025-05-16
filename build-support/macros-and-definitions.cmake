@@ -60,7 +60,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Include CMake files used for compiler checks
-include(CheckIncludeFile) # Used to check a single C header at a time
 include(CheckIncludeFileCXX) # Used to check a single C++ header at a time
 include(CheckIncludeFiles) # Used to check multiple headers at once
 include(CheckFunctionExists)
@@ -1129,11 +1128,11 @@ macro(process_options)
 
   # Check for required headers and functions, set flags if they're found or warn
   # if they're not found
-  check_include_file("sys/types.h" "HAVE_SYS_TYPES_H")
-  check_include_file("sys/stat.h" "HAVE_SYS_STAT_H")
-  check_include_file("dirent.h" "HAVE_DIRENT_H")
-  check_include_file("signal.h" "HAVE_SIGNAL_H")
-  check_include_file("netpacket/packet.h" "HAVE_PACKETH")
+  check_include_file_cxx("sys/types.h" "HAVE_SYS_TYPES_H")
+  check_include_file_cxx("sys/stat.h" "HAVE_SYS_STAT_H")
+  check_include_file_cxx("dirent.h" "HAVE_DIRENT_H")
+  check_include_file_cxx("signal.h" "HAVE_SIGNAL_H")
+  check_include_file_cxx("netpacket/packet.h" "HAVE_PACKETH")
   check_function_exists("getenv" "HAVE_GETENV")
 
   configure_file(
