@@ -98,7 +98,7 @@ main(int argc, char** argv)
                 }
                 else
                 {
-                    routeMap[{i, j}] = {(int)i};
+                    routeMap[{i, j}] = std::vector<int>{(int)i};
                 }
             }
         }
