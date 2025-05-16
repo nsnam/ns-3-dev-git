@@ -1179,8 +1179,6 @@ def extract_cmakecache_settings(current_cmake_cache_folder):
     current_settings.extend(re.findall("(CMAKE_GENERATOR):.*=(.*)", contents))  # extract generator
     current_settings.extend(re.findall("(CMAKE_CXX_COMPILER):.*=(.*)", contents))  # C++ compiler
     current_settings.extend(re.findall("(CMAKE_CXX_FLAGS):.*=(.*)", contents))  # C++ flags
-    current_settings.extend(re.findall("(CMAKE_C_COMPILER):.*=(.*)", contents))  # C compiler
-    current_settings.extend(re.findall("(CMAKE_C_FLAGS):.*=(.*)", contents))  # C flags
     current_settings.extend(
         re.findall("(CMAKE_INSTALL_PREFIX):.*=(.*)", contents)
     )  # installation directory

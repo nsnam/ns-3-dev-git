@@ -1,26 +1,26 @@
 set(module_enabled_features) # modulegen_customizations consumes this list
 
-check_include_file(
+check_include_file_cxx(
   net/ethernet.h
   HAVE_NET_ETHERNET_H
 )
-check_include_file(
+check_include_file_cxx(
   netpacket/packet.h
   HAVE_PACKET_H
 )
-check_include_file(
+check_include_file_cxx(
   net/if.h
   HAVE_IF_NETS_H
 )
-check_include_file(
+check_include_file_cxx(
   linux/if_tun.h
   HAVE_IF_TUN_H
 )
-check_include_file(
+check_include_file_cxx(
   net/netmap_user.h
   HAVE_NETMAP_USER_H
 )
-check_include_file(
+check_include_file_cxx(
   sys/ioctl.h
   HAVE_SYS_IOCTL_H
 )
