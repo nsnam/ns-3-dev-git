@@ -50,8 +50,6 @@ weekly-gcc:
   script:
     - echo "Starting GCC jobs"
 
-# GCC 10 (not tested here since it is configured for Ubuntu 20.04)
-
 # GCC 13
 weekly-build-gcc-13-debug:
   extends: .weekly-gcc-base
