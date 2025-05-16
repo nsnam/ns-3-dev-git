@@ -4,8 +4,8 @@
 # "RELEASE", that has a value "weekly". Also, a variable "CLANG" should be set
 # to True.
 
-# We support CLANG versions 11 through 18
-# We test only CLANG 11 on Ubuntu 20.04 and CLANG 18 on Ubuntu 24.04
+# We support CLANG versions 17 through 20
+# We test only CLANG 17 and CLANG 18 on Ubuntu 24.04
 
 .weekly-clang-ubuntu:
   extends: .base-build
@@ -28,13 +28,12 @@
   variables:
     COMPILER: clang++-$CLANG
 
-.weekly-clang-ubuntu20.04:
-  image: ubuntu:20.04
+.weekly-clang-ubuntu24.04:
+  image: ubuntu:24.04
   extends: .weekly-clang-ubuntu
   variables:
-    LIBGSL: libgsl23
+    LIBGSL: libgsl27
     EXTRA_PACKAGES: libstdc++-10-dev
-    EXTRA_OPTIONS: --disable-eigen
 
 .weekly-clang-ubuntu24.04:
   image: ubuntu:24.04
@@ -52,49 +51,49 @@ weekly-clang:
   script:
     - echo "Starting clang jobs"
 
-# CLANG 11
-weekly-build-clang-11-debug:
-  extends: .weekly-clang-ubuntu20.04
+# CLANG 17
+weekly-build-clang-17-debug:
+  extends: .weekly-clang-ubuntu24.04
   needs: ["weekly-clang"]
   stage: build
   variables:
-    CLANG: 11
+    CLANG: 17
     MODE: debug
 
-weekly-build-clang-11-default:
-  extends: .weekly-clang-ubuntu20.04
+weekly-build-clang-17-default:
+  extends: .weekly-clang-ubuntu24.04
   needs: ["weekly-clang"]
   stage: build
   variables:
-    CLANG: 11
+    CLANG: 17
     MODE: default
 
-weekly-build-clang-11-optimized:
-  extends: .weekly-clang-ubuntu20.04
+weekly-build-clang-17-optimized:
+  extends: .weekly-clang-ubuntu24.04
   needs: ["weekly-clang"]
   stage: build
   variables:
-    CLANG: 11
+    CLANG: 17
     MODE: optimized
 
-weekly-test-clang-11-default:
-  extends: .weekly-clang-ubuntu20.04
+weekly-test-clang-17-default:
+  extends: .weekly-clang-ubuntu24.04
   stage: test
-  needs: ["weekly-build-clang-11-default"]
+  needs: ["weekly-build-clang-17-default"]
   dependencies:
-    - weekly-build-clang-11-default
+    - weekly-build-clang-17-default
   variables:
-    CLANG: 11
+    CLANG: 17
     MODE: default
 
-weekly-test-clang-11-optimized:
-  extends: .weekly-clang-ubuntu20.04
+weekly-test-clang-17-optimized:
+  extends: .weekly-clang-ubuntu24.04
   stage: test
-  needs: ["weekly-build-clang-11-optimized"]
+  needs: ["weekly-build-clang-17-optimized"]
   dependencies:
-    - weekly-build-clang-11-optimized
+    - weekly-build-clang-17-optimized
   variables:
-    CLANG: 11
+    CLANG: 17
     MODE: optimized
 
 # CLANG 18

@@ -40,62 +40,7 @@ weekly-ubuntu:
   script:
     - echo "Starting Ubuntu jobs"
 
-# Ubuntu 20.04 (Until April 2025)
-weekly-build-ubuntu-20.04-debug:
-  extends: .weekly-base-ubuntu
-  needs: ["weekly-ubuntu"]
-  image: ubuntu:20.04
-  stage: build
-  variables:
-    MODE: debug
-    LIBGSL: libgsl23
-    COMPILER: g++-10
-
-weekly-build-ubuntu-20.04-default:
-  extends: .weekly-base-ubuntu
-  needs: ["weekly-ubuntu"]
-  image: ubuntu:20.04
-  stage: build
-  variables:
-    MODE: default
-    LIBGSL: libgsl23
-    COMPILER: g++-10
-
-weekly-build-ubuntu-20.04-optimized:
-  extends: .weekly-base-ubuntu
-  needs: ["weekly-ubuntu"]
-  image: ubuntu:20.04
-  stage: build
-  variables:
-    MODE: optimized
-    LIBGSL: libgsl23
-    COMPILER: g++-10
-
-weekly-test-ubuntu-20.04-default:
-  extends: .weekly-base-ubuntu
-  image: ubuntu:20.04
-  stage: test
-  needs: ["weekly-build-ubuntu-20.04-default"]
-  dependencies:
-    - weekly-build-ubuntu-20.04-default
-  variables:
-    MODE: default
-    LIBGSL: libgsl23
-    COMPILER: g++-10
-
-weekly-test-ubuntu-20.04-optimized:
-  extends: .weekly-base-ubuntu
-  image: ubuntu:20.04
-  stage: test
-  needs: ["weekly-build-ubuntu-20.04-optimized"]
-  dependencies:
-    - weekly-build-ubuntu-20.04-optimized
-  variables:
-    MODE: optimized
-    LIBGSL: libgsl23
-    COMPILER: g++-10
-
-# Ubuntu 22.04 (Until January 2032)
+# Ubuntu 22.04 (Until April 2027)
 weekly-build-ubuntu-22.04-debug:
   extends: .weekly-base-ubuntu
   needs: ["weekly-ubuntu"]
@@ -150,6 +95,61 @@ weekly-test-ubuntu-22.04-optimized:
     LIBGSL: libgsl27
     COMPILER: g++
 
+# Ubuntu 24.04 (Until April 2029)
+weekly-build-ubuntu-24.04-debug:
+  extends: .weekly-base-ubuntu
+  needs: ["weekly-ubuntu"]
+  image: ubuntu:24.04
+  stage: build
+  variables:
+    MODE: debug
+    LIBGSL: libgsl27
+    COMPILER: g++
+
+weekly-build-ubuntu-24.04-default:
+  extends: .weekly-base-ubuntu
+  needs: ["weekly-ubuntu"]
+  image: ubuntu:24.04
+  stage: build
+  variables:
+    MODE: default
+    LIBGSL: libgsl27
+    COMPILER: g++
+
+weekly-build-ubuntu-24.04-optimized:
+  extends: .weekly-base-ubuntu
+  needs: ["weekly-ubuntu"]
+  image: ubuntu:24.04
+  stage: build
+  variables:
+    MODE: optimized
+    LIBGSL: libgsl27
+    COMPILER: g++
+
+weekly-test-ubuntu-24.04-default:
+  extends: .weekly-base-ubuntu
+  image: ubuntu:24.04
+  stage: test
+  needs: ["weekly-build-ubuntu-24.04-default"]
+  dependencies:
+    - weekly-build-ubuntu-24.04-default
+  variables:
+    MODE: default
+    LIBGSL: libgsl27
+    COMPILER: g++
+
+weekly-test-ubuntu-24.04-optimized:
+  extends: .weekly-base-ubuntu
+  image: ubuntu:24.04
+  stage: test
+  needs: ["weekly-build-ubuntu-24.04-optimized"]
+  dependencies:
+    - weekly-build-ubuntu-24.04-optimized
+  variables:
+    MODE: optimized
+    LIBGSL: libgsl27
+    COMPILER: g++
+
 # Ubuntu Rolling (latest released, might be non-LTS)
 weekly-build-ubuntu-rolling-debug:
   extends: .weekly-base-ubuntu
@@ -171,7 +171,6 @@ weekly-build-ubuntu-rolling-default:
     LIBGSL: libgsl28
     COMPILER: g++
 
-# Aug. 26, 2023: --disable-eigen is needed to prevent a -Werror=unused-variable
 weekly-build-ubuntu-rolling-optimized:
   extends: .weekly-base-ubuntu
   needs: ["weekly-ubuntu"]
@@ -181,7 +180,6 @@ weekly-build-ubuntu-rolling-optimized:
     MODE: optimized
     LIBGSL: libgsl28
     COMPILER: g++
-    EXTRA_OPTIONS: --disable-eigen
 
 weekly-test-ubuntu-rolling-default:
   extends: .weekly-base-ubuntu
@@ -195,7 +193,6 @@ weekly-test-ubuntu-rolling-default:
     LIBGSL: libgsl28
     COMPILER: g++
 
-# Aug. 26, 2023: --disable-eigen is needed to prevent a -Werror=unused-variable
 weekly-test-ubuntu-rolling-optimized:
   extends: .weekly-base-ubuntu
   image: ubuntu:rolling
@@ -207,4 +204,3 @@ weekly-test-ubuntu-rolling-optimized:
     MODE: optimized
     LIBGSL: libgsl28
     COMPILER: g++
-    EXTRA_OPTIONS: --disable-eigen

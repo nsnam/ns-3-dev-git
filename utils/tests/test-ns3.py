@@ -1929,10 +1929,10 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         """
 
         run_ns3("clean")
-        with DockerContainerManager(self, "ubuntu:20.04") as container:
+        with DockerContainerManager(self, "ubuntu:22.04") as container:
             container.execute("apt-get update")
             container.execute("apt-get remove -y g++")
-            container.execute("apt-get install -y python3 cmake g++-10 clang-11")
+            container.execute("apt-get install -y python3 cmake g++-11 clang-17")
 
             # Enable Ninja tracing without using the Ninja generator
             try:
