@@ -833,10 +833,9 @@ EhtRu::GetEqualizedRuAllocation(RuType ruType, bool isOdd, bool hasUsers)
         return hasUsers ? 64 : 28;
     case RuType::RU_484_TONE:
         return hasUsers ? 72 : 29;
-    case RuType::RU_996_TONE:
-        return hasUsers ? 80 : 30;
     default:
-        return hasUsers ? 88 : 30;
+        const auto ruAlloc = (ruType == RuType::RU_2x996_TONE) ? 88 : 80;
+        return hasUsers ? ruAlloc : 30;
     }
 }
 
