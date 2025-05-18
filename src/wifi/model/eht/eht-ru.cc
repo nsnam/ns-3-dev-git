@@ -824,22 +824,18 @@ EhtRu::GetEqualizedRuAllocation(RuType ruType, bool isOdd, bool hasUsers)
     {
     case RuType::RU_26_TONE:
         return 0;
-    case RuType::RU_52_TONE: {
+    case RuType::RU_52_TONE:
         return isOdd ? 15 : 24;
-    }
-    case RuType::RU_106_TONE: {
+    case RuType::RU_106_TONE:
         // FIXME: map 106/106 to 106+26/106 as long as MRU is not supported
         return isOdd ? 25 : 48;
-    }
-    case RuType::RU_242_TONE: {
+    case RuType::RU_242_TONE:
         return hasUsers ? 64 : 28;
-    }
-    case RuType::RU_484_TONE: {
+    case RuType::RU_484_TONE:
         return hasUsers ? 72 : 29;
-    }
-    default: {
-        return hasUsers ? 80 : 30;
-    }
+    default:
+        const auto ruAlloc = (ruType == RuType::RU_2x996_TONE) ? 88 : 80;
+        return hasUsers ? ruAlloc : 30;
     }
 }
 
