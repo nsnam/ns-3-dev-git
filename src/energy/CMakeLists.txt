@@ -40,4 +40,5 @@ build_lib(
     model/simple-device-energy-model.h
   LIBRARIES_TO_LINK ${libnetwork}
   TEST_SOURCES test/basic-energy-harvester-test.cc
+               test/generic-battery-test.cc
 )
