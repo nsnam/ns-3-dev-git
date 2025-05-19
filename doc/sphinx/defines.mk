@@ -1,4 +1,9 @@
-CONVERT = convert -density 300
+ifeq (, $(shell command -v magick))
+	CONVERT = convert -density 300
+else
+	CONVERT = magick -density 300
+endif
+
 DIA = dia
 DOT = dot
 EPSTOPDF = epstopdf
