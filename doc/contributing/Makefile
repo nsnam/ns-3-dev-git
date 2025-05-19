@@ -1,23 +1,11 @@
 # Makefile for Sphinx documentation
 #
-EPSTOPDF = epstopdf
-DIA = dia
-CONVERT = convert -density 300
-
-# You can set these variables from the command line.
-SPHINXOPTS    = -W --keep-going
-SPHINXBUILD   = sphinx-build
-PAPER         =
-BUILDDIR      = build
+include $(CURDIR)/../sphinx/defines.mk
 
 # Internal variables.
-PAPEROPT_a4     = -D latex_paper_size=a4
-PAPEROPT_letter = -D latex_paper_size=letter
 ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) source
 
 # Additional variables for figures, not sphinx default:
-DIA = dia
-EPSTOPDF = epstopdf
 FIGURES = source/figures
 IMAGES_EPS = \
 
