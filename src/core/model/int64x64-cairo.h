@@ -1,3 +1,4 @@
+// NOLINTBEGIN
 /*
  * Copyright (c) 2010 INRIA
  *
@@ -435,3 +436,4 @@ class int64x64_t
 
 #endif /* defined(INT64X64_USE_CAIRO) && !defined(PYTHON_SCAN) */
 #endif /* INT64X64_CAIRO_H */
+// NOLINTEND
