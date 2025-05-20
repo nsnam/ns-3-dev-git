@@ -8,6 +8,7 @@
 #ifndef MOBILITY_MODEL_H
 #define MOBILITY_MODEL_H
 
+#include "ns3/mobility-export.h"
 #include "ns3/object.h"
 #include "ns3/traced-callback.h"
 #include "ns3/vector.h"
@@ -25,7 +26,7 @@ namespace ns3
  *
  * This is a base class for all specific mobility models.
  */
-class MobilityModel : public Object
+class MOBILITY_EXPORT MobilityModel : public Object
 {
   public:
     /**
