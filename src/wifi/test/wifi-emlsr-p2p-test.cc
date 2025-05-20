@@ -11,6 +11,8 @@
 #include "ns3/advanced-ap-emlsr-manager.h"
 #include "ns3/boolean.h"
 #include "ns3/config.h"
+#include "ns3/eht-frame-exchange-manager.h"
+#include "ns3/emlsr-manager.h"
 #include "ns3/log.h"
 #include "ns3/mobility-helper.h"
 #include "ns3/multi-model-spectrum-channel.h"
@@ -404,9 +406,10 @@ EmlsrAdhocPeerTest::RunOne(Ptr<WifiMac> mac)
     m_events.emplace_back(WIFI_MAC_CTL_BACKRESP);
 }
 
-EmlsrUnawareAdhocPeerTest::EmlsrUnawareAdhocPeerTest()
+EmlsrUnawareAdhocPeerTest::EmlsrUnawareAdhocPeerTest(bool emlsrUsesMacHdrInfo)
     : EmlsrP2pOperationsTestBase(
           "Check data exchange between an EMLSR client and an EMLSR-unaware adhoc peer"),
+      m_emlsrUsesMacHdrInfo(emlsrUsesMacHdrInfo),
       m_staErrorModel(CreateObject<ListErrorModel>())
 {
     m_linksToEnableEmlsrOn = {0, 1, 2}; // all links
@@ -431,6 +434,16 @@ EmlsrUnawareAdhocPeerTest::DoSetup()
 
     EmlsrP2pOperationsTestBase::DoSetup();
 
+    m_staMacs[0]->GetEmlsrManager()->SetAttribute("UseNotifiedMacHdr",
+                                                  BooleanValue(m_emlsrUsesMacHdrInfo));
+    // MAC header info is always notified, so that we can check if transmissions on the infra link
+    // are blocked or not as expected
+    auto phys = m_staMacs[0]->GetDevice()->GetPhys();
+    for (const auto& phy : phys)
+    {
+        phy->SetAttribute("NotifyMacHdrRxEnd", BooleanValue(true));
+    }
+
     // install error model on the P2P link
     m_staMacs[0]->GetDevice()->GetPhy(m_p2pLinkId)->SetPostReceptionErrorModel(m_staErrorModel);
     // adhoc peer drops frames after the first TX failure
@@ -449,6 +462,44 @@ EmlsrUnawareAdhocPeerTest::DoStartTraffic()
 void
 EmlsrUnawareAdhocPeerTest::RunOne()
 {
+    // lambda to check that the adhoc peer does not start the transition delay because it is
+    // EMLSR unaware
+    auto checkTransDelayNotRunning = [=, this] {
+        WifiContainerQueueId queueId(
+            WIFI_QOSDATA_QUEUE,
+            WifiRcvAddr::UNICAST,
+            m_staMacs[0]->GetFrameExchangeManager(m_p2pLinkId)->GetAddress(),
+            wifiAcList.at(AC_BE).GetLowTid());
+        const auto mask =
+            m_adhocMac->GetMacQueueScheduler()->GetQueueLinkMask(AC_BE, queueId, SINGLE_LINK_OP_ID);
+        NS_TEST_ASSERT_MSG_EQ(mask.has_value(), true, "Adhoc peer has no queue for EMLSR client");
+        NS_TEST_EXPECT_MSG_EQ(mask->test(static_cast<std::size_t>(
+                                  WifiQueueBlockedReason::WAITING_EMLSR_TRANSITION_DELAY)),
+                              false,
+                              "Transition delay running at adhoc peer");
+    };
+
+    // lambda to check that transmissions on the infra link are blocked or not as expected
+    auto checkInfraLinkBlocked = [=, this]() {
+        auto ehtFem = DynamicCast<EhtFrameExchangeManager>(
+            m_staMacs[0]->GetFrameExchangeManager(m_infraLinkId));
+        NS_TEST_ASSERT_MSG_NE(ehtFem, nullptr, "No EHT FEM installed on EMLSR client");
+        NS_TEST_EXPECT_MSG_EQ(ehtFem->UsingOtherEmlsrLink(),
+                              m_expectInfraLinkBlocked,
+                              "Expected transmissions on infra link"
+                                  << (m_expectInfraLinkBlocked ? " " : " not ")
+                                  << "to be blocked at time " << Simulator::Now().As(Time::US));
+    };
+
+    Callback<void, const WifiMacHeader&, const WifiTxVector&, Time> cb(
+        [=](const WifiMacHeader&, const WifiTxVector&, Time) {
+            Simulator::Schedule(TimeStep(1), checkInfraLinkBlocked);
+        });
+
+    auto mainPhy = m_staMacs[0]->GetDevice()->GetPhy(m_mainPhyId);
+    mainPhy->TraceConnectWithoutContext("PhyRxMacHeaderEnd", cb);
+    const auto staP2pPhyBand = m_staMacs[0]->GetWifiPhy(m_p2pLinkId)->GetPhyBand();
+
     m_adhocMac->GetDevice()->GetNode()->AddApplication(GetP2pApplication(false, 1, m_payloadSize));
 
     /*
@@ -467,6 +518,7 @@ EmlsrUnawareAdhocPeerTest::RunOne()
             NS_TEST_EXPECT_MSG_EQ(psdu->GetNMpdus(),
                                   1,
                                   "Unexpected number of MPDUs in first QoS data frame");
+            m_expectInfraLinkBlocked = m_emlsrUsesMacHdrInfo;
         });
 
     m_events.emplace_back(
@@ -476,6 +528,11 @@ EmlsrUnawareAdhocPeerTest::RunOne()
                 +linkId,
                 +m_p2pLinkId,
                 "Ack in response to first QoS data frame not sent on the P2P link");
+            m_expectInfraLinkBlocked = true;
+
+            const auto txDuration = WifiPhy::CalculateTxDuration(psdu, txVector, staP2pPhyBand);
+            Simulator::Schedule(txDuration + TimeStep(1), checkTransDelayNotRunning);
+
             // generate two packets at the adhoc peer (sent in an A-MPDU without RTS protection)
             m_adhocMac->GetDevice()->GetNode()->AddApplication(
                 GetP2pApplication(false, 2, m_payloadSize));
@@ -497,6 +554,15 @@ EmlsrUnawareAdhocPeerTest::RunOne()
             NS_TEST_EXPECT_MSG_EQ(psdu->GetNMpdus(),
                                   2,
                                   "Unexpected number of MPDUs in second QoS data frame");
+            m_expectInfraLinkBlocked = m_emlsrUsesMacHdrInfo;
+
+            const auto txDuration = WifiPhy::CalculateTxDuration(psdu, txVector, staP2pPhyBand);
+            const auto phyHdrDuration = WifiPhy::CalculatePhyPreambleAndHeaderDuration(txVector);
+
+            // when receiving the MAC header of the second MPDU, transmissions on infra link are
+            // already blocked because they were blocked at the end of the first MPDU
+            const auto end1stMpdu = (txDuration - phyHdrDuration) / 2;
+            Simulator::Schedule(end1stMpdu, [=, this] { m_expectInfraLinkBlocked = true; });
         });
 
     m_events.emplace_back(
@@ -506,6 +572,11 @@ EmlsrUnawareAdhocPeerTest::RunOne()
                 +linkId,
                 +m_p2pLinkId,
                 "BlockAck in response to second QoS data frame not sent on the P2P link");
+            m_expectInfraLinkBlocked = true;
+
+            const auto txDuration = WifiPhy::CalculateTxDuration(psdu, txVector, staP2pPhyBand);
+            Simulator::Schedule(txDuration + TimeStep(1), checkTransDelayNotRunning);
+
             // generate three packets at the adhoc peer (sent in an A-MPDU with RTS protection)
             m_adhocMac->GetDevice()->GetNode()->AddApplication(
                 GetP2pApplication(false, 3, m_payloadSize));
@@ -523,12 +594,14 @@ EmlsrUnawareAdhocPeerTest::RunOne()
             NS_TEST_EXPECT_MSG_EQ(psdu->GetAddr1(),
                                   m_staMacs[0]->GetFrameExchangeManager(m_p2pLinkId)->GetAddress(),
                                   "RTS frame not correctly addressed to the EMLSR client");
+            m_expectInfraLinkBlocked = m_emlsrUsesMacHdrInfo;
         });
 
     m_events.emplace_back(
         WIFI_MAC_CTL_CTS,
         [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, uint8_t linkId) {
             NS_TEST_EXPECT_MSG_EQ(+linkId, +m_p2pLinkId, "CTS frame not sent on the P2P link");
+            m_expectInfraLinkBlocked = true;
         });
 
     m_events.emplace_back(
@@ -556,6 +629,9 @@ EmlsrUnawareAdhocPeerTest::RunOne()
                 +linkId,
                 +m_p2pLinkId,
                 "BlockAck in response to third QoS data frame not sent on the P2P link");
+
+            const auto txDuration = WifiPhy::CalculateTxDuration(psdu, txVector, staP2pPhyBand);
+            Simulator::Schedule(txDuration + TimeStep(1), checkTransDelayNotRunning);
         });
 
     // the MPDU whose reception failed is retransmitted. The reception fails again and the MPDU
@@ -573,6 +649,7 @@ EmlsrUnawareAdhocPeerTest::RunOne()
             NS_TEST_EXPECT_MSG_EQ(psdu->GetNMpdus(),
                                   1,
                                   "Unexpected number of MPDUs in retransmitted QoS data frame");
+            m_expectInfraLinkBlocked = m_emlsrUsesMacHdrInfo;
         });
 
     /*
@@ -587,6 +664,7 @@ EmlsrUnawareAdhocPeerTest::RunOne()
             NS_TEST_EXPECT_MSG_EQ(psdu->GetAddr1(),
                                   m_staMacs[0]->GetFrameExchangeManager(m_p2pLinkId)->GetAddress(),
                                   "BlockAckReq not correctly addressed to the EMLSR client");
+            m_expectInfraLinkBlocked = m_emlsrUsesMacHdrInfo;
         });
 
     m_events.emplace_back(
@@ -595,6 +673,10 @@ EmlsrUnawareAdhocPeerTest::RunOne()
             NS_TEST_EXPECT_MSG_EQ(+linkId,
                                   +m_p2pLinkId,
                                   "BlockAck in response to BlockAckReq not sent on the P2P link");
+            m_expectInfraLinkBlocked = true;
+
+            const auto txDuration = WifiPhy::CalculateTxDuration(psdu, txVector, staP2pPhyBand);
+            Simulator::Schedule(txDuration + TimeStep(1), checkTransDelayNotRunning);
         });
 }
 
@@ -610,7 +692,10 @@ WifiEmlsrP2pTestSuite::WifiEmlsrP2pTestSuite()
         }
     }
 
-    AddTestCase(new EmlsrUnawareAdhocPeerTest(), TestCase::Duration::QUICK);
+    for (const auto emlsrUsesMacHdrInfo : {true, false})
+    {
+        AddTestCase(new EmlsrUnawareAdhocPeerTest(emlsrUsesMacHdrInfo), TestCase::Duration::QUICK);
+    }
 }
 
 static WifiEmlsrP2pTestSuite g_wifiEmlsrP2pTestSuite; ///< the test suite

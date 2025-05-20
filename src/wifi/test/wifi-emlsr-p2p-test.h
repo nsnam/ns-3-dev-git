@@ -160,15 +160,28 @@ class EmlsrAdhocPeerTest : public EmlsrP2pOperationsTestBase
  * client do not switch link, so that the main PHY always returns to the preferred link. This test
  * verifies that the EMLSR client is able to successfully receive the following frames, when sent
  * on the preferred link:
+ *
  * - single MPDU carrying QoS data frame
  * - A-MPDU
  * - RTS
  * - BlockAckReq
+ *
+ * Also, it is checked that:
+ *
+ * - transmissions on the infra link are blocked at the end of the first MPDU in an A-MPDU and,
+ *   if MAC header info can be used, at the end of the MAC header of the frames listed above
+ * - the adhoc peer does not start the transition delay at the end of the TXOPs because it is
+ *   EMLSR unaware
  */
 class EmlsrUnawareAdhocPeerTest : public EmlsrP2pOperationsTestBase
 {
   public:
-    EmlsrUnawareAdhocPeerTest();
+    /**
+     * Constructor.
+     *
+     * @param emlsrUsesMacHdrInfo whether EMLSR client uses notified MAC header info
+     */
+    EmlsrUnawareAdhocPeerTest(bool emlsrUsesMacHdrInfo);
 
   protected:
     void DoSetup() override;
@@ -180,8 +193,10 @@ class EmlsrUnawareAdhocPeerTest : public EmlsrP2pOperationsTestBase
   private:
     void DoStartTraffic() override;
 
+    bool m_emlsrUsesMacHdrInfo;           //!< whether EMLSR client uses notified MAC header info
     const std::size_t m_payloadSize{750}; //!< size of payload in bytes
     Ptr<ListErrorModel> m_staErrorModel;  ///< error rate model to install on the EMLSR client
+    bool m_expectInfraLinkBlocked{false}; ///< whether infra link is expected to be blocked
 };
 
 /**
