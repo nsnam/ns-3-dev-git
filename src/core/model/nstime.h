@@ -15,6 +15,8 @@
 #include "int64x64.h"
 #include "type-name.h"
 
+#include "ns3/core-export.h"
+
 #include <cmath>
 #include <limits>
 #include <ostream>
@@ -90,7 +92,7 @@ class TimeWithUnit;
  * if you use picoseconds is 2^64 ps = 2^24 s = 7 months, whereas,
  * had you used nanoseconds, you could have run for 584 years.
  */
-class Time
+class CORE_EXPORT Time
 {
   public:
     /**
@@ -127,7 +129,7 @@ class Time
     inline Time()
         : m_data()
     {
-        if (g_markingTimes)
+        if (MarkingTimes())
         {
             Mark(this);
         }
@@ -141,7 +143,7 @@ class Time
     inline Time(const Time& o)
         : m_data(o.m_data)
     {
-        if (g_markingTimes)
+        if (MarkingTimes())
         {
             Mark(this);
         }
@@ -155,7 +157,7 @@ class Time
     Time(Time&& o)
         : m_data(o.m_data)
     {
-        if (g_markingTimes)
+        if (MarkingTimes())
         {
             Mark(this);
         }
@@ -174,7 +176,7 @@ class Time
     explicit inline Time(double v)
         : m_data(llround(v))
     {
-        if (g_markingTimes)
+        if (MarkingTimes())
         {
             Mark(this);
         }
@@ -183,7 +185,7 @@ class Time
     explicit inline Time(int v)
         : m_data(v)
     {
-        if (g_markingTimes)
+        if (MarkingTimes())
         {
             Mark(this);
         }
@@ -192,7 +194,7 @@ class Time
     explicit inline Time(long int v)
         : m_data(v)
     {
-        if (g_markingTimes)
+        if (MarkingTimes())
         {
             Mark(this);
         }
@@ -201,7 +203,7 @@ class Time
     explicit inline Time(long long int v)
         : m_data(v)
     {
-        if (g_markingTimes)
+        if (MarkingTimes())
         {
             Mark(this);
         }
@@ -210,7 +212,7 @@ class Time
     explicit inline Time(unsigned int v)
         : m_data(v)
     {
-        if (g_markingTimes)
+        if (MarkingTimes())
         {
             Mark(this);
         }
@@ -219,7 +221,7 @@ class Time
     explicit inline Time(unsigned long int v)
         : m_data(v)
     {
-        if (g_markingTimes)
+        if (MarkingTimes())
         {
             Mark(this);
         }
@@ -228,7 +230,7 @@ class Time
     explicit inline Time(unsigned long long int v)
         : m_data(v)
     {
-        if (g_markingTimes)
+        if (MarkingTimes())
         {
             Mark(this);
         }
@@ -237,7 +239,7 @@ class Time
     explicit inline Time(const int64x64_t& v)
         : m_data(v.Round())
     {
-        if (g_markingTimes)
+        if (MarkingTimes())
         {
             Mark(this);
         }
@@ -291,7 +293,7 @@ class Time
     /** Destructor */
     ~Time()
     {
-        if (g_markingTimes)
+        if (MarkingTimes())
         {
             Clear(this);
         }
@@ -746,6 +748,21 @@ class Time
      */
     static MarkedTimes* g_markingTimes;
 
+    /**
+     *  Null check for g_markingTimes from outside time.cc
+     *
+     *  @return \c true if g_markingTimes is not null
+     *
+     *  @internal
+     *
+     *  The inline Time ctors need to check if g_markingTimes is allocated
+     *  before calling Mark(). Likewise, the dtor also needs to check before
+     *  calling Clear(). On Windows, attempting to access g_markingTimes
+     *  directly from outside the compilation unit is an access violation so
+     *  this method is provided to work around that limitation.
+     */
+    static bool MarkingTimes();
+
   public:
     /**
      *  Function to force static initialization of Time.
@@ -865,6 +882,13 @@ namespace TracedValueCallback
 typedef void (*Time)(Time oldValue, Time newValue);
 
 } // namespace TracedValueCallback
+
+/**
+ * Force static initialization order of Time in each compilation unit.
+ * This is internal to the Time implementation.
+ * @relates Time
+ */
+static bool g_TimeStaticInit [[maybe_unused]] = Time::StaticInit();
 
 /**
  * Equality operator for Time.
@@ -1509,27 +1533,6 @@ class TimeWithUnit
  * @returns The type name as a string.
  */
 TYPENAMEGET_DEFINE(Time);
-
-/**
- * @ingroup time
- *
- * @brief Helper class to force static initialization
- * of Time in each compilation unit, ensuring it is
- * initialized before usage.
- * This is internal to the Time implementation.
- * @relates Time
- */
-class TimeInitializationHelper
-{
-  public:
-    /** Default constructor calls Time::StaticInit */
-    TimeInitializationHelper()
-    {
-        Time::StaticInit();
-    }
-};
-
-static TimeInitializationHelper g_timeInitHelper; ///< Instance of Time static initialization helper
 
 } // namespace ns3
 

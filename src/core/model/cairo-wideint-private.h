@@ -70,7 +70,10 @@ extern "C" {
 
 #if !HAVE_UINT64_T
 
-extern const char * cairo_impl64;
+//PDB original string literal causes access violation on Windows when accessed
+// by binaries that link to core, e.g. tests
+// Substitute function call
+const char * cairo_impl64();
 
 typedef struct _cairo_uint64 {
   uint32_t    lo, hi;
@@ -111,7 +114,10 @@ int            cairo_I  _cairo_int64_lt (cairo_uint64_t a, cairo_uint64_t b);
 
 #else
 
-extern const char * cairo_impl64;
+//PDB original string literal causes access violation on Windows when accessed
+// by binaries that link to core, e.g. tests
+// Substitute function call
+const char * cairo_impl64();
 
 typedef uint64_t    cairo_uint64_t;
 typedef int64_t     cairo_int64_t;
@@ -193,7 +199,10 @@ _cairo_int64_divrem (cairo_int64_t num, cairo_int64_t den);
 
 #if !HAVE_UINT128_T
 
-extern const char * cairo_impl128;
+//PDB original string literal causes access violation on Windows when accessed
+// by binaries that link to core, e.g. tests
+// Substitute function call
+const char * cairo_impl128();
 
 typedef struct cairo_uint128 {
   cairo_uint64_t      lo, hi;
@@ -238,7 +247,10 @@ int             cairo_I _cairo_int128_lt (cairo_int128_t a, cairo_int128_t b);
 
 #else   /* !HAVE_UINT128_T */
 
-extern const char * cairo_impl128;
+//PDB original string literal causes access violation on Windows when accessed
+// by binaries that link to core, e.g. tests
+// Substitute function call
+const char * cairo_impl128();
 
 typedef uint128_t       cairo_uint128_t;
 typedef int128_t        cairo_int128_t;

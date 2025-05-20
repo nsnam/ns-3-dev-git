@@ -1540,8 +1540,8 @@ Int64x64ImplTestCase::DoRun()
     std::cout << std::endl;
 
 #if defined(INT64X64_USE_CAIRO) && !defined(PYTHON_SCAN)
-    std::cout << "cairo_impl64:  " << cairo_impl64 << std::endl;
-    std::cout << "cairo_impl128: " << cairo_impl128 << std::endl;
+    std::cout << "cairo_impl64:  " << cairo_impl64() << std::endl;
+    std::cout << "cairo_impl128: " << cairo_impl128() << std::endl;
 #endif
 
     if (RUNNING_WITH_LIMITED_PRECISION != 0)

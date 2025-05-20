@@ -487,6 +487,10 @@ ParameterLogger::operator<<(const T& param)
         // Use + unary operator to cast uint8_t / int8_t to uint32_t / int32_t, respectively
         m_os << +param;
     }
+    else if constexpr (std::is_pointer_v<T>)
+    {
+        m_os << static_cast<const void*>(&param);
+    }
     else
     {
         m_os << param;

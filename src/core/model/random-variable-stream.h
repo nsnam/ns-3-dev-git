@@ -19,6 +19,7 @@
 #include "object.h"
 #include "type-id.h"
 
+#include <limits>
 #include <map>
 #include <stdint.h>
 
@@ -978,8 +979,8 @@ class WeibullRandomVariable : public RandomVariableStream
 class NormalRandomVariable : public RandomVariableStream
 {
   public:
-    /** Large constant to bound the range. */
-    static const double INFINITE_VALUE;
+    /// Large constant to bound the range.
+    static constexpr double INFINITE_VALUE = std::numeric_limits<double>::max();
 
     /**
      * @brief Register this type.
