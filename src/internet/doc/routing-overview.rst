@@ -225,6 +225,11 @@ recompute the global routes upon Interface notification events (up/down, or
 add/remove address). If set to false (default), routing may break unless the
 user manually calls RecomputeRoutingTables() after such events. The default is
 set to false to preserve legacy |ns3| program behavior.
+The helper also provides a ``PrintRoute()`` method that allows users to
+print the routing path calculated between two nodes; see the example
+program ``src/internet/examples/ipv4-global-routing-print-route.cc`` for a
+number of example statements showing how this method can be called.
+
 
 Global Routing Implementation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

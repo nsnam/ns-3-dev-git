@@ -13,6 +13,7 @@
 #include "global-router-interface.h"
 
 #include "ns3/ipv4-address.h"
+#include "ns3/ipv4-routing-helper.h"
 #include "ns3/object.h"
 #include "ns3/ptr.h"
 
@@ -733,6 +734,36 @@ class GlobalRouteManagerImpl
      */
     void DebugSPFCalculate(Ipv4Address root);
 
+    /**
+     * @brief prints the path from this node to the destination node at a particular time.
+     * @param sourceNode the source node
+     * @param dest the destination node
+     * @param stream The output stream to which the routing path will be written.
+     * @param nodeIdLookup Print the Node Id
+     * @param unit The time unit for timestamps in the printed output.
+     * @see Ipv4GlobalRoutingHelper::PrintRoute
+     */
+    void PrintRoute(Ptr<Node> sourceNode,
+                    Ptr<Node> dest,
+                    Ptr<OutputStreamWrapper> stream,
+                    bool nodeIdLookup,
+                    Time::Unit unit);
+
+    /**
+     * @brief prints the path from this node to the destination node at a particular time.
+     * @param sourceNode the source node
+     * @param dest the destination nodes ipv4 address
+     * @param stream The output stream to which the routing path will be written.
+     * @param nodeIdLookup Print the node id
+     * @param unit The time unit for timestamps in the printed output.
+     * @see Ipv4GlobalRoutingHelper::PrintRoute
+     */
+    void PrintRoute(Ptr<Node> sourceNode,
+                    Ipv4Address dest,
+                    Ptr<OutputStreamWrapper> stream,
+                    bool nodeIdLookup,
+                    Time::Unit unit);
+
   private:
     SPFVertex* m_spfroot;           //!< the root node
     GlobalRouteManagerLSDB* m_lsdb; //!< the Link State DataBase (LSDB) of the Global Route Manager
@@ -916,6 +947,45 @@ class GlobalRouteManagerImpl
      * @return the outgoing interface number
      */
     int32_t FindOutgoingInterfaceId(Ipv4Address a, Ipv4Mask amask = Ipv4Mask("255.255.255.255"));
+
+    /**
+     * @brief given IP it iterates through the node list to find the node associated with the ip
+     * @param source ip address associated with the node we want to find
+     * @returns the node pointer to the ip
+     */
+    Ptr<Node> GetNodeByIp(const Ipv4Address& source);
+
+    /**
+     * @brief Is used by PrintRoute() to get the global routing protocol associated with it or
+     * returns nullptr if not found.
+     * @param node the node pointer
+     * @returns the global routing protocol associated with the node
+     */
+    Ptr<Ipv4GlobalRouting> GetGlobalRoutingForNode(Ptr<Node> node);
+
+    /**
+     * @brief Is used by PrintRoute() to check if the destination is on the source node itself
+     * @param ipv4 the ipv4 stack of the source node
+     * @param dest the destination
+     * @returns true if the destination is on the source node itself
+     */
+    bool IsLocalDelivery(Ptr<Ipv4> ipv4, Ipv4Address dest);
+
+    /**
+     * @brief Is used by PrintRoute() to check if the source node has an ipv4 address
+     * @param ipv4 the ipv4 stack of the source node
+     * @returns true if the source node has an ipv4 address
+     */
+    bool ValidateSourceNodeHasIpAddress(Ptr<Ipv4> ipv4);
+
+    /**
+     * @brief Is used by PrintRoute() to check if the destination is on the same subnet as the
+     * source node
+     * @param ipv4CurrentNode the current node
+     * @param dest the destination
+     * @returns true if the destination is on the same subnet as the source node
+     */
+    bool IsOnSameSubnet(Ptr<Ipv4> ipv4CurrentNode, Ipv4Address dest);
 };
 
 } // namespace ns3

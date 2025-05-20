@@ -10,6 +10,8 @@
 #ifndef GLOBAL_ROUTE_MANAGER_H
 #define GLOBAL_ROUTE_MANAGER_H
 
+#include "ns3/ipv4-routing-helper.h"
+
 #include <cstdint>
 
 namespace ns3
@@ -66,6 +68,62 @@ class GlobalRouteManager
      * called In typical simulations or when using the GlobalRouting helper.
      */
     static void ResetRouterId();
+
+    /**
+     * @brief prints the path from this node to the destination node at a particular time.
+     * @param sourceNode The source node.
+     * @param dest The IPv4 address of the destination node.
+     * @param stream The output stream to which the routing path will be written.
+     * @param nodeIdLookup Print the Node Id
+     * @param unit The time unit for timestamps in the printed output.
+     * @see Ipv4GlobalRoutingHelper::PrintRoute
+     */
+    static void PrintRoute(Ptr<Node> sourceNode,
+                           Ipv4Address dest,
+                           Ptr<OutputStreamWrapper> stream,
+                           bool nodeIdLookup = true,
+                           Time::Unit unit = Time::S);
+
+    /**
+     *@brief prints the path from this node to the destination node at a particular time.
+     * @param sourceNode The source node.
+     * @param dest The IPv4 address of the destination node.
+     * @param nodeIdLookup Print the Node Id
+     * @param unit The time unit for timestamps in the printed output.
+     * @see Ipv4GlobalRoutingHelper::PrintRoute
+     */
+    static void PrintRoute(Ptr<Node> sourceNode,
+                           Ipv4Address dest,
+                           bool nodeIdLookup = true,
+                           Time::Unit unit = Time::S);
+
+    /**
+     *@brief prints the path from this node to the destination node at a particular time.
+     * @param sourceNode  The source node.
+     * @param dest The destination node.
+     * @param stream The output stream to which the routing path will be written.
+     * @param nodeIdLookup Print the Node Id
+     * @param unit The time unit for timestamps in the printed output.
+     * @see Ipv4GlobalRoutingHelper::PrintRoute
+     */
+    static void PrintRoute(Ptr<Node> sourceNode,
+                           Ptr<Node> dest,
+                           Ptr<OutputStreamWrapper> stream,
+                           bool nodeIdLookup = true,
+                           Time::Unit unit = Time::S);
+
+    /**
+     *@brief prints the path from this node to the destination node at a particular time.
+     * @param sourceNode The source node.
+     * @param dest The destination node.
+     * @param nodeIdLookup Print the Node Id
+     * @param unit The time unit for timestamps in the printed output.
+     * @see Ipv4GlobalRoutingHelper::PrintRoute
+     */
+    static void PrintRoute(Ptr<Node> sourceNode,
+                           Ptr<Node> dest,
+                           bool nodeIdLookup = true,
+                           Time::Unit unit = Time::S);
 
   private:
     static uint32_t routerId; //!< Router ID counter

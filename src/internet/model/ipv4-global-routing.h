@@ -29,6 +29,7 @@ class Ipv4Header;
 class Ipv4RoutingTableEntry;
 class Ipv4MulticastRoutingTableEntry;
 class Node;
+class GlobalRouteManagerImpl;
 
 /**
  * @ingroup ipv4
@@ -59,6 +60,8 @@ class Node;
  */
 class Ipv4GlobalRouting : public Ipv4RoutingProtocol
 {
+    friend class GlobalRouteManagerImpl;
+
   public:
     /**
      * @brief Get the type ID.
