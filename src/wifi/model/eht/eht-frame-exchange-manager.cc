@@ -583,11 +583,13 @@ EhtFrameExchangeManager::ForwardPsduDown(Ptr<const WifiPsdu> psdu, WifiTxVector&
     HeFrameExchangeManager::ForwardPsduDown(psdu, txVector);
     UpdateTxopEndOnTxStart(txDuration, psdu->GetDuration());
 
-    if (m_apMac && m_apMac->GetApEmlsrManager())
+    if ((m_apMac && m_apMac->GetApEmlsrManager()) || m_mac->GetTypeOfStation() == ADHOC_STA)
     {
-        auto delay = m_apMac->GetApEmlsrManager()->GetDelayOnTxPsduNotForEmlsr(psdu,
-                                                                               txVector,
-                                                                               m_phy->GetPhyBand());
+        auto delay =
+            m_apMac ? m_apMac->GetApEmlsrManager()->GetDelayOnTxPsduNotForEmlsr(psdu,
+                                                                                txVector,
+                                                                                m_phy->GetPhyBand())
+                    : txDuration;
 
         // check if the EMLSR clients shall switch back to listening operation
         for (auto clientIt = m_protectedStas.begin(); clientIt != m_protectedStas.end();)
