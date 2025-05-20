@@ -189,10 +189,6 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
                      RxSignalInfo rxSignalInfo,
                      const WifiTxVector& txVector,
                      bool inAmpdu) override;
-    void EndReceiveAmpdu(Ptr<const WifiPsdu> psdu,
-                         const RxSignalInfo& rxSignalInfo,
-                         const WifiTxVector& txVector,
-                         const std::vector<bool>& perMpduStatus) override;
     void NavResetTimeout() override;
     void IntraBssNavResetTimeout() override;
     void SendCtsAfterRts(const WifiMacHeader& rtsHdr,

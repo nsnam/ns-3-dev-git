@@ -1526,10 +1526,29 @@ EhtFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
     }
     else if (m_staMac && m_staMac->IsEmlsrLink(m_linkId) && !m_ongoingTxopEnd.IsPending() &&
              m_phy->GetPhyId() == m_staMac->GetEmlsrManager()->GetMainPhyId() &&
-             (hdr.IsRts() || hdr.IsBlockAckReq() || (hdr.IsData() && hdr.GetAddr1() == m_self)))
+             (hdr.IsRts() || hdr.IsBlockAckReq() || hdr.IsData()) && hdr.GetAddr1() == m_self)
     {
-        // a frame that is starting a DL TXOP has been received by the main PHY
+        // a frame that is starting a DL TXOP has been received by the main PHY, check if the frame
+        // shall be dropped
+        if (DropReceivedIcf(mpdu))
+        {
+            return;
+        }
+
         m_dlTxopStart = true;
+
+        if (inAmpdu)
+        {
+            // start blocking transmission on other links (which is normally done later on by
+            // PostProcessFrame()) to avoid starting an UL TXOP before end of A-MPDU
+            for (auto id : m_staMac->GetLinkIds())
+            {
+                if (id != m_linkId && m_staMac->IsEmlsrLink(id))
+                {
+                    m_staMac->BlockTxOnLink(id, WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK);
+                }
+            }
+        }
     }
 
     if (!m_dlTxopStart && ShallDropReceivedMpdu(mpdu))
@@ -1553,33 +1572,6 @@ EhtFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
         // block transmissions to the EMLSR client on other links
         CheckEmlsrClientStartingTxop(hdr, txVector);
     }
-}
-
-void
-EhtFrameExchangeManager::EndReceiveAmpdu(Ptr<const WifiPsdu> psdu,
-                                         const RxSignalInfo& rxSignalInfo,
-                                         const WifiTxVector& txVector,
-                                         const std::vector<bool>& perMpduStatus)
-{
-    NS_LOG_FUNCTION(
-        this << *psdu << rxSignalInfo << txVector << perMpduStatus.size()
-             << std::all_of(perMpduStatus.begin(), perMpduStatus.end(), [](bool v) { return v; }));
-
-    const auto& hdr = psdu->GetHeader(0);
-    if (m_staMac && m_staMac->IsEmlsrLink(m_linkId) && !m_ongoingTxopEnd.IsPending() &&
-        m_phy->GetPhyId() == m_staMac->GetEmlsrManager()->GetMainPhyId() &&
-        (hdr.IsData() && hdr.GetAddr1() == m_self))
-    {
-        // a frame that is starting a DL TXOP has been received by the main PHY
-        m_dlTxopStart = true;
-    }
-
-    if (!m_dlTxopStart && ShallDropReceivedMpdu(*psdu->begin()))
-    {
-        return;
-    }
-
-    HeFrameExchangeManager::EndReceiveAmpdu(psdu, rxSignalInfo, txVector, perMpduStatus);
 }
 
 bool

@@ -329,6 +329,7 @@ AdvancedEmlsrManager::ReceivedMacHdr(Ptr<WifiPhy> phy,
     NS_LOG_FUNCTION(this << *linkId << macHdr << txVector << psduDuration.As(Time::MS));
 
     auto& ongoingTxopEnd = GetEhtFem(*linkId)->GetOngoingTxopEndEvent();
+    const auto isMainPhy = (phy->GetPhyId() == GetMainPhyId());
 
     if (ongoingTxopEnd.IsPending() && macHdr.GetAddr1() != GetEhtFem(*linkId)->GetAddress() &&
         !macHdr.GetAddr1().IsBroadcast() &&
@@ -346,13 +347,30 @@ AdvancedEmlsrManager::ReceivedMacHdr(Ptr<WifiPhy> phy,
         Simulator::ScheduleNow(&AdvancedEmlsrManager::NotifyTxopEnd, this, *linkId, nullptr);
     }
 
+    if (!ongoingTxopEnd.IsPending() && GetStaMac()->IsEmlsrLink(*linkId) && isMainPhy &&
+        !GetEhtFem(*linkId)->UsingOtherEmlsrLink() &&
+        (macHdr.IsRts() || macHdr.IsBlockAckReq() || macHdr.IsData()) &&
+        (macHdr.GetAddr1() == GetEhtFem(*linkId)->GetAddress()))
+    {
+        // a frame that is starting a DL TXOP is being received by the main PHY; start blocking
+        // transmission on other links (which is normally done later on by PostProcessFrame()) to
+        // avoid starting an UL TXOP before the end of the MPDU
+        for (auto id : GetStaMac()->GetLinkIds())
+        {
+            if (id != *linkId && GetStaMac()->IsEmlsrLink(id))
+            {
+                GetStaMac()->BlockTxOnLink(id, WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK);
+            }
+        }
+        return;
+    }
+
     // if the MAC header has been received on the link on which the main PHY is operating (or on
     // the link the main PHY is switching to), the switch main PHY back timer is running and channel
     // access is not expected to be gained by the main PHY before the switch main PHY back timer
     // expires (plus a channel switch delay), try to switch the main PHY back to the preferred link
     const auto mainPhyInvolved =
-        (phy->GetPhyId() == GetMainPhyId()) ||
-        (m_mainPhySwitchInfo.disconnected && m_mainPhySwitchInfo.to == *linkId);
+        isMainPhy || (m_mainPhySwitchInfo.disconnected && m_mainPhySwitchInfo.to == *linkId);
     const auto delay =
         Simulator::GetDelayLeft(m_switchMainPhyBackEvent) + phy->GetChannelSwitchDelay();
 
