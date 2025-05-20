@@ -32,6 +32,22 @@
 
 namespace ns3
 {
+/**
+ * @brief Artificial delay of UE measurements procedure.
+ *
+ * i.e. the period between the time layer-1-filtered measurements from PHY
+ * layer is received and the earliest time the actual measurement report
+ * submission to the serving cell is invoked.
+ *
+ * This delay exists because of racing condition between several UE measurements
+ * functions which happen to be scheduled at the same time. The delay ensures
+ * that:
+ *  - measurements (e.g., layer-3 filtering) are always performed before
+ *    reporting, thus the latter always use the latest measured RSRP and RSRQ;
+ *    and
+ *  - time-to-trigger check is always performed before the reporting, so there
+ *    would still be chance for it to cancel the reporting if necessary.
+ */
 const Time UE_MEASUREMENT_REPORT_DELAY = MicroSeconds(1);
 
 NS_LOG_COMPONENT_DEFINE("LteUeRrc");

@@ -42,6 +42,8 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE("LteUeMeasurementsTest");
 
+const Time UE_MEASUREMENT_REPORT_DELAY = MicroSeconds(1);
+
 // ===== LTE-UE-MEASUREMENTS TEST SUITE ==================================== //
 
 void
