@@ -14,6 +14,7 @@
 #include "wifi-units.h"
 
 #include "ns3/abort.h"
+#include "ns3/wifi-export.h"
 
 #include <list>
 #include <map>
@@ -78,7 +79,7 @@ operator<<(std::ostream& os, WifiStandard standard)
 /**
  * @brief map a given standard configured by the user to the allowed PHY bands
  */
-extern const std::map<WifiStandard, std::list<WifiPhyBand>> wifiStandards;
+WIFI_EXPORT extern const std::map<WifiStandard, std::list<WifiPhyBand>> wifiStandards;
 
 /**
  * Get the type of the frequency channel for the given standard

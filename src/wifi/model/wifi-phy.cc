@@ -12,6 +12,7 @@
 #include "error-rate-model.h"
 #include "frame-capture-model.h"
 #include "interference-helper.h"
+#include "phy-entity.h"
 #include "preamble-detection-model.h"
 #include "wifi-net-device.h"
 #include "wifi-ppdu.h"
@@ -470,10 +471,10 @@ WifiPhy::DoDispose()
     m_phyEntities.clear();
 }
 
-std::map<WifiModulationClass, Ptr<PhyEntity>>&
+std::map<WifiModulationClass, std::shared_ptr<PhyEntity>>&
 WifiPhy::GetStaticPhyEntities()
 {
-    static std::map<WifiModulationClass, Ptr<PhyEntity>> g_staticPhyEntities;
+    static std::map<WifiModulationClass, std::shared_ptr<PhyEntity>> g_staticPhyEntities;
     return g_staticPhyEntities;
 }
 
@@ -756,7 +757,7 @@ WifiPhy::CalculateSnr(const WifiTxVector& txVector, double ber) const
     return m_interference->GetErrorRateModel()->CalculateSnr(txVector, ber);
 }
 
-const Ptr<const PhyEntity>
+const std::shared_ptr<const PhyEntity>
 WifiPhy::GetStaticPhyEntity(WifiModulationClass modulation)
 {
     const auto it = GetStaticPhyEntities().find(modulation);
@@ -765,7 +766,7 @@ WifiPhy::GetStaticPhyEntity(WifiModulationClass modulation)
     return it->second;
 }
 
-Ptr<PhyEntity>
+std::shared_ptr<PhyEntity>
 WifiPhy::GetPhyEntity(WifiModulationClass modulation) const
 {
     const auto it = m_phyEntities.find(modulation);
@@ -774,19 +775,19 @@ WifiPhy::GetPhyEntity(WifiModulationClass modulation) const
     return it->second;
 }
 
-Ptr<PhyEntity>
+std::shared_ptr<PhyEntity>
 WifiPhy::GetPhyEntity(WifiStandard standard) const
 {
     return GetPhyEntity(GetModulationClassForStandard(standard));
 }
 
-Ptr<PhyEntity>
+std::shared_ptr<PhyEntity>
 WifiPhy::GetLatestPhyEntity() const
 {
     return GetPhyEntity(m_standard);
 }
 
-Ptr<PhyEntity>
+std::shared_ptr<PhyEntity>
 WifiPhy::GetPhyEntityForPpdu(const Ptr<const WifiPpdu> ppdu) const
 {
     NS_ABORT_IF(!ppdu);
@@ -807,7 +808,7 @@ WifiPhy::GetPhyEntityForPpdu(const Ptr<const WifiPpdu> ppdu) const
 }
 
 void
-WifiPhy::AddStaticPhyEntity(WifiModulationClass modulation, Ptr<PhyEntity> phyEntity)
+WifiPhy::AddStaticPhyEntity(WifiModulationClass modulation, std::shared_ptr<PhyEntity> phyEntity)
 {
     NS_ASSERT_MSG(!GetStaticPhyEntities().contains(modulation),
                   "The PHY entity has already been added. The setting should only be done once per "
@@ -816,7 +817,7 @@ WifiPhy::AddStaticPhyEntity(WifiModulationClass modulation, Ptr<PhyEntity> phyEn
 }
 
 void
-WifiPhy::AddPhyEntity(WifiModulationClass modulation, Ptr<PhyEntity> phyEntity)
+WifiPhy::AddPhyEntity(WifiModulationClass modulation, std::shared_ptr<PhyEntity> phyEntity)
 {
     NS_LOG_FUNCTION(this << modulation);
     NS_ABORT_MSG_IF(!GetStaticPhyEntities().contains(modulation),
@@ -868,7 +869,7 @@ void
 WifiPhy::Configure80211a()
 {
     NS_LOG_FUNCTION(this);
-    AddPhyEntity(WIFI_MOD_CLASS_OFDM, Create<OfdmPhy>());
+    AddPhyEntity(WIFI_MOD_CLASS_OFDM, std::make_shared<OfdmPhy>());
 
     // See Table 17-21 "OFDM PHY characteristics" of 802.11-2016
     SetSifs(OFDM_SIFS_TIME_20MHZ);
@@ -882,7 +883,7 @@ void
 WifiPhy::Configure80211b()
 {
     NS_LOG_FUNCTION(this);
-    Ptr<DsssPhy> phyEntity = Create<DsssPhy>();
+    std::shared_ptr<DsssPhy> phyEntity = std::make_shared<DsssPhy>();
     AddPhyEntity(WIFI_MOD_CLASS_HR_DSSS, phyEntity);
     AddPhyEntity(WIFI_MOD_CLASS_DSSS, phyEntity); // when plain DSSS modes are used
 
@@ -903,7 +904,7 @@ WifiPhy::Configure80211g()
     // if the user sets the ShortSlotTimeSupported flag to true and when the BSS
     // consists of only ERP STAs capable of supporting this option.
     Configure80211b();
-    AddPhyEntity(WIFI_MOD_CLASS_ERP_OFDM, Create<ErpOfdmPhy>());
+    AddPhyEntity(WIFI_MOD_CLASS_ERP_OFDM, std::make_shared<ErpOfdmPhy>());
 }
 
 void
@@ -912,7 +913,7 @@ WifiPhy::Configure80211p()
     NS_LOG_FUNCTION(this);
     if (GetChannelWidth() == MHz_u{10})
     {
-        AddPhyEntity(WIFI_MOD_CLASS_OFDM, Create<OfdmPhy>(OFDM_PHY_10_MHZ));
+        AddPhyEntity(WIFI_MOD_CLASS_OFDM, std::make_shared<OfdmPhy>(OFDM_PHY_10_MHZ));
 
         // See Table 17-21 "OFDM PHY characteristics" of 802.11-2016
         SetSifs(OFDM_SIFS_TIME_10MHZ);
@@ -921,7 +922,7 @@ WifiPhy::Configure80211p()
     }
     else if (GetChannelWidth() == MHz_u{5})
     {
-        AddPhyEntity(WIFI_MOD_CLASS_OFDM, Create<OfdmPhy>(OFDM_PHY_5_MHZ));
+        AddPhyEntity(WIFI_MOD_CLASS_OFDM, std::make_shared<OfdmPhy>(OFDM_PHY_5_MHZ));
 
         // See Table 17-21 "OFDM PHY characteristics" of 802.11-2016
         SetSifs(OFDM_SIFS_TIME_5MHZ);
@@ -946,7 +947,7 @@ WifiPhy::Configure80211n()
     {
         Configure80211a();
     }
-    AddPhyEntity(WIFI_MOD_CLASS_HT, Create<HtPhy>(m_txSpatialStreams));
+    AddPhyEntity(WIFI_MOD_CLASS_HT, std::make_shared<HtPhy>(m_txSpatialStreams));
 }
 
 void
@@ -954,7 +955,7 @@ WifiPhy::Configure80211ac()
 {
     NS_LOG_FUNCTION(this);
     Configure80211n();
-    AddPhyEntity(WIFI_MOD_CLASS_VHT, Create<VhtPhy>());
+    AddPhyEntity(WIFI_MOD_CLASS_VHT, std::make_shared<VhtPhy>());
 }
 
 void
@@ -969,7 +970,7 @@ WifiPhy::Configure80211ax()
     {
         Configure80211ac();
     }
-    AddPhyEntity(WIFI_MOD_CLASS_HE, Create<HePhy>());
+    AddPhyEntity(WIFI_MOD_CLASS_HE, std::make_shared<HePhy>());
 }
 
 void
@@ -977,7 +978,7 @@ WifiPhy::Configure80211be()
 {
     NS_LOG_FUNCTION(this);
     Configure80211ax();
-    AddPhyEntity(WIFI_MOD_CLASS_EHT, Create<EhtPhy>());
+    AddPhyEntity(WIFI_MOD_CLASS_EHT, std::make_shared<EhtPhy>());
 }
 
 void
@@ -1335,7 +1336,7 @@ WifiPhy::SetMaxSupportedTxSpatialStreams(uint8_t streams)
         auto phyEntity = m_phyEntities.find(WIFI_MOD_CLASS_HT);
         if (phyEntity != m_phyEntities.end())
         {
-            Ptr<HtPhy> htPhy = DynamicCast<HtPhy>(phyEntity->second);
+            std::shared_ptr<HtPhy> htPhy = std::dynamic_pointer_cast<HtPhy>(phyEntity->second);
             if (htPhy)
             {
                 htPhy->SetMaxSupportedNss(
@@ -1380,7 +1381,7 @@ WifiPhy::GetBssMembershipSelectorList() const
     std::list<uint8_t> list;
     for (const auto& phyEntity : m_phyEntities)
     {
-        Ptr<HtPhy> htPhy = DynamicCast<HtPhy>(phyEntity.second);
+        std::shared_ptr<HtPhy> htPhy = std::dynamic_pointer_cast<HtPhy>(phyEntity.second);
         if (htPhy)
         {
             list.emplace_back(htPhy->GetBssMembershipSelector());

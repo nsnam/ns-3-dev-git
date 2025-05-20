@@ -276,6 +276,12 @@ operator<<(std::ostream& os, const FrequencyChannelInfo& info)
     return os;
 }
 
+const std::set<FrequencyChannelInfo>&
+WifiPhyOperatingChannel::GetFrequencyChannels()
+{
+    return m_frequencyChannels;
+}
+
 bool
 WifiPhyOperatingChannel::Compare::operator()(const ConstIterator& first,
                                              const ConstIterator& second) const

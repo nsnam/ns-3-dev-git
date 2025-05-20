@@ -565,7 +565,7 @@ class ConstructorEht
     ConstructorEht()
     {
         ns3::EhtPhy::InitializeModes();
-        ns3::WifiPhy::AddStaticPhyEntity(ns3::WIFI_MOD_CLASS_EHT, ns3::Create<ns3::EhtPhy>());
+        ns3::WifiPhy::AddStaticPhyEntity(ns3::WIFI_MOD_CLASS_EHT, std::make_shared<ns3::EhtPhy>());
     }
 } g_constructor_eht; ///< the constructor for EHT modes
 

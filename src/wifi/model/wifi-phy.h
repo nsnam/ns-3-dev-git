@@ -10,12 +10,18 @@
 #ifndef WIFI_PHY_H
 #define WIFI_PHY_H
 
-#include "phy-entity.h"
+#include "frame-capture-model.h"
+#include "interference-helper.h"
+#include "preamble-detection-model.h"
+#include "wifi-net-device.h"
 #include "wifi-phy-operating-channel.h"
 #include "wifi-phy-state-helper.h"
+#include "wifi-radio-energy-model.h"
 #include "wifi-standards.h"
 
 #include "ns3/error-model.h"
+#include "ns3/mobility-model.h"
+#include "ns3/wifi-export.h"
 
 #include <limits>
 
@@ -35,6 +41,7 @@ namespace ns3
 {
 
 class Channel;
+class PhyEntity;
 class WifiNetDevice;
 class MobilityModel;
 class WifiPhyStateHelper;
@@ -51,7 +58,7 @@ class WifiMacHeader;
  * @ingroup wifi
  *
  */
-class WifiPhy : public Object
+class WIFI_EXPORT WifiPhy : public Object
 {
   public:
     friend class PhyEntity;
@@ -1162,7 +1169,8 @@ class WifiPhy : public Object
      * @param modulation the modulation class
      * @param phyEntity the PHY entity
      */
-    static void AddStaticPhyEntity(WifiModulationClass modulation, Ptr<PhyEntity> phyEntity);
+    static void AddStaticPhyEntity(WifiModulationClass modulation,
+                                   std::shared_ptr<PhyEntity> phyEntity);
 
     /**
      * Get the __implemented__ PHY entity corresponding to the modulation class.
@@ -1172,7 +1180,8 @@ class WifiPhy : public Object
      * @param modulation the modulation class
      * @return the pointer to the static implemented PHY entity
      */
-    static const Ptr<const PhyEntity> GetStaticPhyEntity(WifiModulationClass modulation);
+    static const std::shared_ptr<const PhyEntity> GetStaticPhyEntity(
+        WifiModulationClass modulation);
 
     /**
      * Get the supported PHY entity to use for a received PPDU.
@@ -1185,7 +1194,7 @@ class WifiPhy : public Object
      * @param ppdu the received PPDU
      * @return the pointer to the supported PHY entity
      */
-    Ptr<PhyEntity> GetPhyEntityForPpdu(const Ptr<const WifiPpdu> ppdu) const;
+    std::shared_ptr<PhyEntity> GetPhyEntityForPpdu(const Ptr<const WifiPpdu> ppdu) const;
 
     /**
      * Get the supported PHY entity corresponding to the modulation class.
@@ -1193,20 +1202,20 @@ class WifiPhy : public Object
      * @param modulation the modulation class
      * @return the pointer to the supported PHY entity
      */
-    Ptr<PhyEntity> GetPhyEntity(WifiModulationClass modulation) const;
+    std::shared_ptr<PhyEntity> GetPhyEntity(WifiModulationClass modulation) const;
     /**
      * Get the supported PHY entity corresponding to the wifi standard.
      *
      * @param standard the wifi standard
      * @return the pointer to the supported PHY entity
      */
-    Ptr<PhyEntity> GetPhyEntity(WifiStandard standard) const;
+    std::shared_ptr<PhyEntity> GetPhyEntity(WifiStandard standard) const;
     /**
      * Get the latest PHY entity supported by this PHY instance.
      *
      * @return the latest PHY entity supported by this PHY instance
      */
-    Ptr<PhyEntity> GetLatestPhyEntity() const;
+    std::shared_ptr<PhyEntity> GetLatestPhyEntity() const;
 
     /**
      * @return the UID of the previously received PPDU (reset to UINT64_MAX upon transmission)
@@ -1335,7 +1344,7 @@ class WifiPhy : public Object
      * @param modulation the modulation class
      * @param phyEntity the PHY entity
      */
-    void AddPhyEntity(WifiModulationClass modulation, Ptr<PhyEntity> phyEntity);
+    void AddPhyEntity(WifiModulationClass modulation, std::shared_ptr<PhyEntity> phyEntity);
 
     uint8_t m_phyId; //!< the index of the PHY in the vector of PHYs held by the WifiNetDevice
 
@@ -1378,7 +1387,7 @@ class WifiPhy : public Object
      * looking for WifiMode objects for which
      * WifiMode::IsMandatory() is true.
      */
-    std::map<WifiModulationClass, Ptr<PhyEntity>> m_phyEntities;
+    std::map<WifiModulationClass, std::shared_ptr<PhyEntity>> m_phyEntities;
 
     TracedCallback<Ptr<const WifiPpdu>, const WifiTxVector&>
         m_signalTransmissionCb; //!< Signal Transmission callback
@@ -1599,7 +1608,7 @@ class WifiPhy : public Object
      * For PHY entities supported by a given WifiPhy instance,
      * @see m_phyEntities.
      */
-    static std::map<WifiModulationClass, Ptr<PhyEntity>>& GetStaticPhyEntities();
+    static std::map<WifiModulationClass, std::shared_ptr<PhyEntity>>& GetStaticPhyEntities();
 
     WifiStandard m_standard;                    //!< WifiStandard
     WifiModulationClass m_maxModClassSupported; //!< max modulation class supported

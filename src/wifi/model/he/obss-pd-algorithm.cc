@@ -76,11 +76,13 @@ ObssPdAlgorithm::ConnectWifiNetDevice(const Ptr<WifiNetDevice> device)
     auto phy = device->GetPhy();
     if (phy->GetStandard() >= WIFI_STANDARD_80211be)
     {
-        auto ehtPhy = DynamicCast<EhtPhy>(device->GetPhy()->GetPhyEntity(WIFI_MOD_CLASS_EHT));
+        auto ehtPhy =
+            std::dynamic_pointer_cast<EhtPhy>(device->GetPhy()->GetPhyEntity(WIFI_MOD_CLASS_EHT));
         NS_ASSERT(ehtPhy);
         ehtPhy->SetObssPdAlgorithm(this);
     }
-    auto hePhy = DynamicCast<HePhy>(device->GetPhy()->GetPhyEntity(WIFI_MOD_CLASS_HE));
+    auto hePhy =
+        std::dynamic_pointer_cast<HePhy>(device->GetPhy()->GetPhyEntity(WIFI_MOD_CLASS_HE));
     NS_ASSERT(hePhy);
     hePhy->SetObssPdAlgorithm(this);
 }

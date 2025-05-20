@@ -2235,8 +2235,7 @@ class PhyHeaderSectionsTest : public TestCase
      * @param obtained the map of PHY header sections to check
      * @param expected the expected map of PHY header sections
      */
-    void CheckPhyHeaderSections(PhyEntity::PhyHeaderSections obtained,
-                                PhyEntity::PhyHeaderSections expected);
+    void CheckPhyHeaderSections(PhyHeaderSections obtained, PhyHeaderSections expected);
 };
 
 PhyHeaderSectionsTest::PhyHeaderSectionsTest()
@@ -2249,8 +2248,8 @@ PhyHeaderSectionsTest::~PhyHeaderSectionsTest()
 }
 
 void
-PhyHeaderSectionsTest::CheckPhyHeaderSections(PhyEntity::PhyHeaderSections obtained,
-                                              PhyEntity::PhyHeaderSections expected)
+PhyHeaderSectionsTest::CheckPhyHeaderSections(PhyHeaderSections obtained,
+                                              PhyHeaderSections expected)
 {
     NS_ASSERT_MSG(obtained.size() == expected.size(),
                   "The expected map size (" << expected.size() << ") was not obtained ("
@@ -2295,14 +2294,14 @@ void
 PhyHeaderSectionsTest::DoRun()
 {
     Time ppduStart = Seconds(1);
-    Ptr<PhyEntity> phyEntity;
-    PhyEntity::PhyHeaderSections sections;
+    std::shared_ptr<PhyEntity> phyEntity;
+    PhyHeaderSections sections;
     WifiTxVector txVector;
     WifiMode nonHtMode;
 
     // ==================================================================================
     // 11b (HR/DSSS)
-    phyEntity = Create<DsssPhy>();
+    phyEntity = std::make_shared<DsssPhy>();
     txVector.SetMode(DsssPhy::GetDsssRate1Mbps());
     txVector.SetChannelWidth(MHz_u{22});
 
@@ -2344,7 +2343,7 @@ PhyHeaderSectionsTest::DoRun()
     };
     for (auto variant : variants)
     {
-        phyEntity = Create<OfdmPhy>(variant.first);
+        phyEntity = std::make_shared<OfdmPhy>(variant.first);
         std::size_t ratio = variant.second;
         const auto bw = MHz_u{20} / ratio;
         txVector.SetChannelWidth(bw);
@@ -2362,7 +2361,7 @@ PhyHeaderSectionsTest::DoRun()
 
     // ==================================================================================
     // 11g (ERP-OFDM)
-    phyEntity = Create<ErpOfdmPhy>();
+    phyEntity = std::make_shared<ErpOfdmPhy>();
     txVector.SetChannelWidth(MHz_u{20});
     txVector.SetMode(ErpOfdmPhy::GetErpOfdmRate(54000000));
     nonHtMode = ErpOfdmPhy::GetErpOfdmRate6Mbps();
@@ -2375,7 +2374,7 @@ PhyHeaderSectionsTest::DoRun()
 
     // ==================================================================================
     // 11n (HT)
-    phyEntity = Create<HtPhy>(4);
+    phyEntity = std::make_shared<HtPhy>(4);
     txVector.SetChannelWidth(MHz_u{20});
     txVector.SetMode(HtPhy::GetHtMcs6());
     nonHtMode = OfdmPhy::GetOfdmRate6Mbps();
@@ -2410,7 +2409,7 @@ PhyHeaderSectionsTest::DoRun()
 
     // ==================================================================================
     // 11ac (VHT)
-    phyEntity = Create<VhtPhy>();
+    phyEntity = std::make_shared<VhtPhy>();
     txVector.SetChannelWidth(MHz_u{20});
     txVector.SetNess(0);
     txVector.SetMode(VhtPhy::GetVhtMcs7());
@@ -2453,7 +2452,7 @@ PhyHeaderSectionsTest::DoRun()
 
     // ==================================================================================
     // 11ax (HE)
-    phyEntity = Create<HePhy>();
+    phyEntity = std::make_shared<HePhy>();
     txVector.SetChannelWidth(MHz_u{20});
     txVector.SetNss(2); // HE-LTF duration assumed to be always 8 us for the time being (see note in
                         // HePhy::GetTrainingDuration)
@@ -2526,7 +2525,7 @@ PhyHeaderSectionsTest::DoRun()
     // 11be (EHT)
     sections.erase(WIFI_PPDU_FIELD_SIG_A); // FIXME: do we keep using separate type for 11be?
     sections.erase(WIFI_PPDU_FIELD_SIG_B); // FIXME: do we keep using separate type for 11be?
-    phyEntity = Create<EhtPhy>();
+    phyEntity = std::make_shared<EhtPhy>();
     txVector.SetChannelWidth(MHz_u{20});
     txVector.SetNss(2); // EHT-LTF duration assumed to be always 8 us for the time being (see note
                         // in HePhy::GetTrainingDuration)

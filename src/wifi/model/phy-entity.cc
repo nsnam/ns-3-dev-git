@@ -15,13 +15,16 @@
 #include "interference-helper.h"
 #include "preamble-detection-model.h"
 #include "spectrum-wifi-phy.h"
+#include "wifi-net-device.h"
 #include "wifi-psdu.h"
+#include "wifi-radio-energy-model.h"
 #include "wifi-spectrum-signal-parameters.h"
 #include "wifi-utils.h"
 
 #include "ns3/assert.h"
 #include "ns3/data-rate.h"
 #include "ns3/log.h"
+#include "ns3/mobility-model.h"
 #include "ns3/packet.h"
 #include "ns3/simulator.h"
 
@@ -212,7 +215,7 @@ PhyEntity::GetAddressedPsduInPpdu(Ptr<const WifiPpdu> ppdu) const
     return ppdu->GetPsdu();
 }
 
-PhyEntity::PhyHeaderSections
+PhyHeaderSections
 PhyEntity::GetPhyHeaderSections(const WifiTxVector& txVector, Time ppduStart) const
 {
     PhyHeaderSections map;
@@ -257,7 +260,7 @@ PhyEntity::GetDurationUpToField(WifiPpduField field, const WifiTxVector& txVecto
         .first; // return the start time of field relatively to the beginning of the PPDU
 }
 
-PhyEntity::SnrPer
+SnrPer
 PhyEntity::GetPhyHeaderSnrPer(WifiPpduField field, Ptr<Event> event) const
 {
     const auto measurementChannelWidth = GetMeasurementChannelWidth(event->GetPpdu());

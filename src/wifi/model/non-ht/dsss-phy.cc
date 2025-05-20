@@ -404,7 +404,7 @@ class ConstructorDsss
     ConstructorDsss()
     {
         ns3::DsssPhy::InitializeModes();
-        ns3::Ptr<ns3::DsssPhy> phyEntity = ns3::Create<ns3::DsssPhy>();
+        auto phyEntity = std::make_shared<ns3::DsssPhy>();
         ns3::WifiPhy::AddStaticPhyEntity(ns3::WIFI_MOD_CLASS_HR_DSSS, phyEntity);
         ns3::WifiPhy::AddStaticPhyEntity(
             ns3::WIFI_MOD_CLASS_DSSS,

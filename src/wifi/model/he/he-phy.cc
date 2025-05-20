@@ -1888,7 +1888,7 @@ class ConstructorHe
     ConstructorHe()
     {
         ns3::HePhy::InitializeModes();
-        ns3::WifiPhy::AddStaticPhyEntity(ns3::WIFI_MOD_CLASS_HE, ns3::Create<ns3::HePhy>());
+        ns3::WifiPhy::AddStaticPhyEntity(ns3::WIFI_MOD_CLASS_HE, std::make_shared<ns3::HePhy>());
     }
 } g_constructor_he; ///< the constructor for HE modes
 

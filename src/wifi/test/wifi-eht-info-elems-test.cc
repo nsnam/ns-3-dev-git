@@ -635,7 +635,7 @@ ReducedNeighborReportTest::GetReducedNeighborReport(PhyOpChannelIt channel2_4It,
 
     std::stringstream info;
 
-    if (channel2_4It != WifiPhyOperatingChannel::m_frequencyChannels.cend())
+    if (channel2_4It != WifiPhyOperatingChannel::GetFrequencyChannels().cend())
     {
         WifiPhyOperatingChannel channel(channel2_4It);
 
@@ -652,7 +652,7 @@ ReducedNeighborReportTest::GetReducedNeighborReport(PhyOpChannelIt channel2_4It,
         rnr.SetMldParameters(nbrId, 0, {0, 2, 3, 1, 1});
     }
 
-    if (channel5It != WifiPhyOperatingChannel::m_frequencyChannels.cend())
+    if (channel5It != WifiPhyOperatingChannel::GetFrequencyChannels().cend())
     {
         WifiPhyOperatingChannel channel(channel5It);
 
@@ -676,7 +676,7 @@ ReducedNeighborReportTest::GetReducedNeighborReport(PhyOpChannelIt channel2_4It,
         rnr.SetMldParameters(nbrId, 1, {0, 4, 5, 1, 0});
     }
 
-    if (channel6It != WifiPhyOperatingChannel::m_frequencyChannels.cend())
+    if (channel6It != WifiPhyOperatingChannel::GetFrequencyChannels().cend())
     {
         WifiPhyOperatingChannel channel(channel6It);
 
@@ -703,14 +703,15 @@ ReducedNeighborReportTest::DoRun()
     PhyOpChannelIt channel2_4It;
     PhyOpChannelIt channel5It;
     PhyOpChannelIt channel6It;
-    channel2_4It = channel5It = channel6It = WifiPhyOperatingChannel::m_frequencyChannels.cbegin();
+    channel2_4It = channel5It = channel6It =
+        WifiPhyOperatingChannel::GetFrequencyChannels().cbegin();
 
     // Test all available frequency channels
-    while (channel2_4It != WifiPhyOperatingChannel::m_frequencyChannels.cend() ||
-           channel5It != WifiPhyOperatingChannel::m_frequencyChannels.cend() ||
-           channel6It != WifiPhyOperatingChannel::m_frequencyChannels.cend())
+    while (channel2_4It != WifiPhyOperatingChannel::GetFrequencyChannels().cend() ||
+           channel5It != WifiPhyOperatingChannel::GetFrequencyChannels().cend() ||
+           channel6It != WifiPhyOperatingChannel::GetFrequencyChannels().cend())
     {
-        if (channel2_4It != WifiPhyOperatingChannel::m_frequencyChannels.cend())
+        if (channel2_4It != WifiPhyOperatingChannel::GetFrequencyChannels().cend())
         {
             channel2_4It = WifiPhyOperatingChannel::FindFirst(0,
                                                               MHz_u{0},
@@ -719,7 +720,7 @@ ReducedNeighborReportTest::DoRun()
                                                               WIFI_PHY_BAND_2_4GHZ,
                                                               channel2_4It);
         }
-        if (channel5It != WifiPhyOperatingChannel::m_frequencyChannels.cend())
+        if (channel5It != WifiPhyOperatingChannel::GetFrequencyChannels().cend())
         {
             channel5It = WifiPhyOperatingChannel::FindFirst(0,
                                                             MHz_u{0},
@@ -728,7 +729,7 @@ ReducedNeighborReportTest::DoRun()
                                                             WIFI_PHY_BAND_5GHZ,
                                                             channel5It);
         }
-        if (channel6It != WifiPhyOperatingChannel::m_frequencyChannels.cend())
+        if (channel6It != WifiPhyOperatingChannel::GetFrequencyChannels().cend())
         {
             channel6It = WifiPhyOperatingChannel::FindFirst(0,
                                                             MHz_u{0},
@@ -741,15 +742,15 @@ ReducedNeighborReportTest::DoRun()
         TestHeaderSerialization(GetReducedNeighborReport(channel2_4It, channel5It, channel6It));
 
         // advance all channel iterators
-        if (channel2_4It != WifiPhyOperatingChannel::m_frequencyChannels.cend())
+        if (channel2_4It != WifiPhyOperatingChannel::GetFrequencyChannels().cend())
         {
             channel2_4It++;
         }
-        if (channel5It != WifiPhyOperatingChannel::m_frequencyChannels.cend())
+        if (channel5It != WifiPhyOperatingChannel::GetFrequencyChannels().cend())
         {
             channel5It++;
         }
-        if (channel6It != WifiPhyOperatingChannel::m_frequencyChannels.cend())
+        if (channel6It != WifiPhyOperatingChannel::GetFrequencyChannels().cend())
         {
             channel6It++;
         }

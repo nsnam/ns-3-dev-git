@@ -273,7 +273,8 @@ class MuMimoSpectrumWifiPhy : public SpectrumWifiPhy
     void DoInitialize() override;
     void DoDispose() override;
 
-    Ptr<MuMimoTestHePhy> m_ofdmTestHePhy; ///< Pointer to HE PHY instance used for MU-MIMO test
+    std::shared_ptr<MuMimoTestHePhy>
+        m_ofdmTestHePhy; ///< Pointer to HE PHY instance used for MU-MIMO test
 
     // end of class MuMimoSpectrumWifiPhy
 };
@@ -289,7 +290,7 @@ MuMimoSpectrumWifiPhy::GetTypeId()
 MuMimoSpectrumWifiPhy::MuMimoSpectrumWifiPhy(uint16_t staId)
     : SpectrumWifiPhy()
 {
-    m_ofdmTestHePhy = Create<MuMimoTestHePhy>(staId);
+    m_ofdmTestHePhy = std::make_shared<MuMimoTestHePhy>(staId);
     m_ofdmTestHePhy->SetOwner(this);
 }
 
@@ -1373,7 +1374,7 @@ TestUlMuMimoPhyTransmission::SetTrigVector(const std::vector<uint16_t>& staIds, 
                                                    txVector,
                                                    m_phyAp->GetPhyBand());
     txVector.SetLength(length);
-    auto hePhyAp = DynamicCast<HePhy>(m_phyAp->GetPhyEntity(WIFI_MOD_CLASS_HE));
+    auto hePhyAp = std::dynamic_pointer_cast<HePhy>(m_phyAp->GetPhyEntity(WIFI_MOD_CLASS_HE));
     hePhyAp->SetTrigVector(txVector, m_expectedPpduDuration);
 }
 

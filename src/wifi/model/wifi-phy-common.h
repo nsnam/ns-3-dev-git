@@ -728,6 +728,45 @@ const std::map<WifiChannelListType, dBm_u> channelTypeToScalingFactor{
     {WIFI_CHANLIST_SECONDARY160, 12.0},
 };
 
+/**
+ * A struct for both SNR and PER
+ */
+struct SnrPer
+{
+    double snr{0.0}; ///< SNR in linear scale
+    double per{1.0}; ///< PER
+
+    /**
+     * Default constructor.
+     */
+    SnrPer()
+    {
+    }
+
+    /**
+     * Constructor for SnrPer.
+     *
+     * @param s the SNR in linear scale
+     * @param p the PER
+     */
+    SnrPer(double s, double p)
+        : snr(s),
+          per(p)
+    {
+    }
+};
+
+/**
+ * A pair containing information on the PHY header chunk, namely
+ * the start and stop times of the chunk and the WifiMode used.
+ */
+typedef std::pair<std::pair<Time /* start */, Time /* stop */>, WifiMode> PhyHeaderChunkInfo;
+/**
+ * A map of PhyHeaderChunkInfo elements per PPDU field.
+ * @see PhyHeaderChunkInfo
+ */
+typedef std::map<WifiPpduField, PhyHeaderChunkInfo> PhyHeaderSections;
+
 } // namespace ns3
 
 #endif /* WIFI_PHY_COMMON_H */

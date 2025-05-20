@@ -343,7 +343,7 @@ EhtFrameExchangeManager::ForwardPsduDown(Ptr<const WifiPsdu> psdu, WifiTxVector&
     // EHT-SIG, the equivalent of HE-SIG-B, is present in EHT SU transmissions, too
     if (txVector.GetPreambleType() == WIFI_PREAMBLE_EHT_MU)
     {
-        auto phy = StaticCast<EhtPhy>(m_phy->GetPhyEntity(WIFI_MOD_CLASS_EHT));
+        auto phy = std::static_pointer_cast<EhtPhy>(m_phy->GetPhyEntity(WIFI_MOD_CLASS_EHT));
         auto sigBMode = phy->GetSigBMode(txVector);
         txVector.SetSigBMode(sigBMode);
     }
@@ -472,7 +472,7 @@ EhtFrameExchangeManager::ForwardPsduMapDown(WifiConstPsduMap psduMap, WifiTxVect
             const auto psduMapIt = psduMap.find(aid);
             const auto aidNotFoundAndNotTf = (psduMapIt == psduMap.cend()) && !IsTrigger(psduMap);
             // the PSDU to process: the one addressed to the given AID (if any) or the unique one
-            const auto psdu = (psduMapIt != psduMap.cend() ? psduMapIt : psduMap.cbegin())->second;
+            const auto psdu = (psduMapIt != psduMap.cend() ? psduMapIt : psduMap.begin())->second;
 
             if (GetWifiRemoteStationManager()->GetEmlsrEnabled(*clientIt) &&
                 (aidNotFoundAndNotTf || GetEmlsrSwitchToListening(psdu, aid, *clientIt)))

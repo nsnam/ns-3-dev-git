@@ -243,11 +243,11 @@ class OfdmaSpectrumWifiPhy : public SpectrumWifiPhy
     /**
      * @return a const pointer to the latest PHY entity instance
      */
-    Ptr<LatestPhyEntityType> GetPhyEntity() const;
+    std::shared_ptr<LatestPhyEntityType> GetPhyEntity() const;
 
   private:
     /// Pointer to latest PHY entity instance used for OFDMA test
-    Ptr<OfdmaTestPhy<LatestPhyEntityType>> m_ofdmaTestPhy;
+    std::shared_ptr<OfdmaTestPhy<LatestPhyEntityType>> m_ofdmaTestPhy;
 
     /// Callback providing UID of the PPDU that is about to be transmitted
     TracedCallback<uint64_t> m_phyTxPpduUidTrace;
@@ -276,7 +276,7 @@ template <typename LatestPhyEntityType>
 OfdmaSpectrumWifiPhy<LatestPhyEntityType>::OfdmaSpectrumWifiPhy(uint16_t staId)
     : SpectrumWifiPhy()
 {
-    m_ofdmaTestPhy = Create<OfdmaTestPhy<LatestPhyEntityType>>(staId);
+    m_ofdmaTestPhy = std::make_shared<OfdmaTestPhy<LatestPhyEntityType>>(staId);
     m_ofdmaTestPhy->SetOwner(this);
 }
 
@@ -344,10 +344,10 @@ OfdmaSpectrumWifiPhy<LatestPhyEntityType>::GetEnergyDuration(Watt_u energy,
 }
 
 template <typename LatestPhyEntityType>
-Ptr<LatestPhyEntityType>
+std::shared_ptr<LatestPhyEntityType>
 OfdmaSpectrumWifiPhy<LatestPhyEntityType>::GetPhyEntity() const
 {
-    return DynamicCast<LatestPhyEntityType>(m_ofdmaTestPhy /*GetLatestPhyEntity()*/);
+    return std::dynamic_pointer_cast<LatestPhyEntityType>(m_ofdmaTestPhy /*GetLatestPhyEntity()*/);
 }
 
 /**
@@ -2706,7 +2706,7 @@ TestMultipleHeTbPreambles::RxHeTbPpdu(uint64_t uid,
         HePhy::ConvertHeTbPpduDurationToLSigLength(ppduDuration, txVector, m_phy->GetPhyBand());
     txVector.SetLength(length);
     m_trigVector.SetLength(length);
-    auto hePhy = DynamicCast<HePhy>(m_phy->GetLatestPhyEntity());
+    auto hePhy = std::dynamic_pointer_cast<HePhy>(m_phy->GetLatestPhyEntity());
     hePhy->SetTrigVector(m_trigVector, ppduDuration);
     ppdu->ResetTxVector();
     m_phy->StartRx(rxParams, nullptr);
@@ -4348,7 +4348,8 @@ TestUlOfdmaPhyTransmission<LatestPhyEntityType>::SchedulePowerMeasurementChecks(
     const auto detectionDuration = WifiPhy::GetPreambleDetectionDuration();
     const auto txVectorSta1 = GetTxVectorForTbPpdu(1, 1, 0);
     const auto txVectorSta2 = GetTxVectorForTbPpdu(2, 2, 0);
-    const auto phyEntity = DynamicCast<OfdmaTestPhy<LatestPhyEntityType>>(m_phyAp->GetPhyEntity());
+    const auto phyEntity =
+        std::dynamic_pointer_cast<OfdmaTestPhy<LatestPhyEntityType>>(m_phyAp->GetPhyEntity());
     const auto nonOfdmaDuration = phyEntity->CalculateNonHeDurationForHeTb(txVectorSta2);
     NS_ASSERT(nonOfdmaDuration == phyEntity->CalculateNonHeDurationForHeTb(txVectorSta1));
 
@@ -5589,7 +5590,7 @@ TestPhyPaddingExclusion::SetTrigVector(Time ppduDuration)
     std::tie(length, ppduDuration) =
         HePhy::ConvertHeTbPpduDurationToLSigLength(ppduDuration, trigVector, m_phyAp->GetPhyBand());
     trigVector.SetLength(length);
-    auto hePhyAp = DynamicCast<HePhy>(m_phyAp->GetLatestPhyEntity());
+    auto hePhyAp = std::dynamic_pointer_cast<HePhy>(m_phyAp->GetLatestPhyEntity());
     hePhyAp->SetTrigVector(trigVector, ppduDuration);
 }
 

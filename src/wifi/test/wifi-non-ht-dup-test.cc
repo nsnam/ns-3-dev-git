@@ -127,7 +127,8 @@ class MuRtsCtsSpectrumWifiPhy : public SpectrumWifiPhy
     void SetMuRtsTxVector(const WifiTxVector& muRtsTxVector);
 
   private:
-    Ptr<MuRtsCtsHePhy> m_muRtsCtsHePhy; ///< Pointer to HE PHY instance used for MU-RTS/CTS PHY test
+    std::shared_ptr<MuRtsCtsHePhy>
+        m_muRtsCtsHePhy; ///< Pointer to HE PHY instance used for MU-RTS/CTS PHY test
 
     // end of class MuRtsCtsSpectrumWifiPhy
 };
@@ -144,7 +145,7 @@ MuRtsCtsSpectrumWifiPhy::MuRtsCtsSpectrumWifiPhy()
     : SpectrumWifiPhy()
 {
     NS_LOG_FUNCTION(this);
-    m_muRtsCtsHePhy = Create<MuRtsCtsHePhy>();
+    m_muRtsCtsHePhy = std::make_shared<MuRtsCtsHePhy>();
     m_muRtsCtsHePhy->SetOwner(this);
 }
 

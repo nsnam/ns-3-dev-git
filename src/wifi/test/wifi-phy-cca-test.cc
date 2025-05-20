@@ -140,7 +140,7 @@ class WifiPhyCcaThresholdsTest : public TestCase
      * signal occupies
      * @param expectedCcaThreshold the CCA threshold that is expected to be reported
      */
-    void VerifyCcaThreshold(const Ptr<PhyEntity> phy,
+    void VerifyCcaThreshold(const std::shared_ptr<PhyEntity> phy,
                             const Ptr<const WifiPpdu> ppdu,
                             WifiChannelListType channelType,
                             dBm_u expectedCcaThreshold);
@@ -273,7 +273,7 @@ WifiPhyCcaThresholdsTest::CreateDummyEhtPpdu(MHz_u bandwidth,
 }
 
 void
-WifiPhyCcaThresholdsTest::VerifyCcaThreshold(const Ptr<PhyEntity> phy,
+WifiPhyCcaThresholdsTest::VerifyCcaThreshold(const std::shared_ptr<PhyEntity> phy,
                                              const Ptr<const WifiPpdu> ppdu,
                                              WifiChannelListType channelType,
                                              dBm_u expectedCcaThreshold)

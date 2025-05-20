@@ -9,9 +9,13 @@
 #ifndef INTERFERENCE_HELPER_H
 #define INTERFERENCE_HELPER_H
 
-#include "phy-entity.h"
+#include "wifi-phy-common.h"
+#include "wifi-ppdu.h"
+#include "wifi-tx-vector.h"
 
 #include "ns3/object.h"
+
+#include <map>
 
 namespace ns3
 {
@@ -19,6 +23,11 @@ namespace ns3
 class WifiPpdu;
 class WifiPsdu;
 class ErrorRateModel;
+
+/**
+ * A map of the received power for each band
+ */
+using RxPowerWattPerChannelBand = std::map<WifiSpectrumBandInfo, Watt_u>;
 
 /**
  * @ingroup wifi
@@ -241,11 +250,11 @@ class InterferenceHelper : public Object
      *
      * @return struct of SNR and PER (with PER being evaluated over the provided time window)
      */
-    PhyEntity::SnrPer CalculatePayloadSnrPer(Ptr<Event> event,
-                                             MHz_u channelWidth,
-                                             const WifiSpectrumBandInfo& band,
-                                             uint16_t staId,
-                                             std::pair<Time, Time> relativeMpduStartStop) const;
+    SnrPer CalculatePayloadSnrPer(Ptr<Event> event,
+                                  MHz_u channelWidth,
+                                  const WifiSpectrumBandInfo& band,
+                                  uint16_t staId,
+                                  std::pair<Time, Time> relativeMpduStartStop) const;
     /**
      * Calculate the SNIR for the event (starting from now until the event end).
      *
@@ -271,10 +280,10 @@ class InterferenceHelper : public Object
      *
      * @return struct of SNR and PER
      */
-    PhyEntity::SnrPer CalculatePhyHeaderSnrPer(Ptr<Event> event,
-                                               MHz_u channelWidth,
-                                               const WifiSpectrumBandInfo& band,
-                                               WifiPpduField header) const;
+    SnrPer CalculatePhyHeaderSnrPer(Ptr<Event> event,
+                                    MHz_u channelWidth,
+                                    const WifiSpectrumBandInfo& band,
+                                    WifiPpduField header) const;
 
     /**
      * Notify that RX has started.
@@ -505,7 +514,7 @@ class InterferenceHelper : public Object
      * @param nis the NiChanges
      * @param channelWidth the channel width for header measurement
      * @param band the band
-     * @param phyHeaderSections the map of PHY header sections (\see PhyEntity::PhyHeaderSections)
+     * @param phyHeaderSections the map of PHY header sections (\see PhyHeaderSections)
      *
      * @return the success rate of the PHY header sections
      */
@@ -513,7 +522,7 @@ class InterferenceHelper : public Object
                                         NiChangesPerBand* nis,
                                         MHz_u channelWidth,
                                         const WifiSpectrumBandInfo& band,
-                                        PhyEntity::PhyHeaderSections phyHeaderSections) const;
+                                        PhyHeaderSections phyHeaderSections) const;
 
     double m_noiseFigure;                 //!< noise figure (linear)
     Ptr<ErrorRateModel> m_errorRateModel; //!< error rate model

@@ -709,8 +709,9 @@ class ConstructorOfdm
     ConstructorOfdm()
     {
         ns3::OfdmPhy::InitializeModes();
-        ns3::WifiPhy::AddStaticPhyEntity(ns3::WIFI_MOD_CLASS_OFDM,
-                                         ns3::Create<ns3::OfdmPhy>()); // default variant will do
+        ns3::WifiPhy::AddStaticPhyEntity(
+            ns3::WIFI_MOD_CLASS_OFDM,
+            std::make_shared<ns3::OfdmPhy>()); // default variant will do
     }
 } g_constructor_ofdm; ///< the constructor for OFDM modes
 

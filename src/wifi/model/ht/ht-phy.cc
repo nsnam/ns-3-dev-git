@@ -938,7 +938,7 @@ class ConstructorHt
     {
         ns3::HtPhy::InitializeModes();
         ns3::WifiPhy::AddStaticPhyEntity(ns3::WIFI_MOD_CLASS_HT,
-                                         ns3::Create<ns3::HtPhy>()); // dummy Nss
+                                         std::make_shared<ns3::HtPhy>()); // dummy Nss
     }
 } g_constructor_ht; ///< the constructor for HT modes
 

@@ -13,6 +13,8 @@
 #define PHY_ENTITY_H
 
 #include "wifi-phy-band.h"
+#include "wifi-phy-state-helper.h"
+#include "wifi-phy.h"
 #include "wifi-ppdu.h"
 #include "wifi-tx-vector.h"
 #include "wifi-types.h"
@@ -20,6 +22,7 @@
 #include "ns3/event-id.h"
 #include "ns3/nstime.h"
 #include "ns3/simple-ref-count.h"
+#include "ns3/wifi-export.h"
 
 #include <list>
 #include <map>
@@ -60,7 +63,7 @@ class WifiPpdu;
  * to be used by each PHY entity, corresponding to
  * the different amendments of the IEEE 802.11 standard.
  */
-class PhyEntity : public SimpleRefCount<PhyEntity>
+class WIFI_EXPORT PhyEntity
 {
   public:
     /**
@@ -104,34 +107,6 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
             : isSuccess(s),
               reason(r),
               actionIfFailure(a)
-        {
-        }
-    };
-
-    /**
-     * A struct for both SNR and PER
-     */
-    struct SnrPer
-    {
-        double snr{0.0}; ///< SNR in linear scale
-        double per{1.0}; ///< PER
-
-        /**
-         * Default constructor.
-         */
-        SnrPer()
-        {
-        }
-
-        /**
-         * Constructor for SnrPer.
-         *
-         * @param s the SNR in linear scale
-         * @param p the PER
-         */
-        SnrPer(double s, double p)
-            : snr(s),
-              per(p)
         {
         }
     };
@@ -282,16 +257,6 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      */
     virtual uint32_t GetMaxPsduSize() const = 0;
 
-    /**
-     * A pair containing information on the PHY header chunk, namely
-     * the start and stop times of the chunk and the WifiMode used.
-     */
-    typedef std::pair<std::pair<Time /* start */, Time /* stop */>, WifiMode> PhyHeaderChunkInfo;
-    /**
-     * A map of PhyHeaderChunkInfo elements per PPDU field.
-     * @see PhyHeaderChunkInfo
-     */
-    typedef std::map<WifiPpduField, PhyHeaderChunkInfo> PhyHeaderSections;
     /**
      * Return a map of PHY header chunk information per PPDU field.
      * This map will contain the PPDU fields that are actually present based

@@ -10,6 +10,7 @@
 #define WIFI_CONSTANTS_H
 
 #include "ns3/nstime.h"
+#include "ns3/wifi-export.h"
 
 /**
  * @file
@@ -22,7 +23,7 @@ namespace ns3
 
 /// Wi-Fi Time Unit value in microseconds (see IEEE 802.11-2020 sec. 3.1)
 /// Used to initialize WIFI_TU
-extern const Time WIFI_TU;
+WIFI_EXPORT extern const Time WIFI_TU;
 
 /// aRxPHYStartDelay value to use when waiting for a new frame in the context of EMLSR operations
 /// (Sec. 35.3.17 of 802.11be D3.1)
@@ -59,10 +60,10 @@ extern const Time DSSS_SIFS_TIME;
 extern const Time DSSS_SLOT_TIME;
 
 /// maximum propagation delay
-extern const Time MAX_PROPAGATION_DELAY;
+WIFI_EXPORT extern const Time MAX_PROPAGATION_DELAY;
 
 /// The aMediumSyncThreshold defined by Sec. 35.3.16.18.1 of 802.11be D4.0
-extern const Time MEDIUM_SYNC_THRESHOLD;
+WIFI_EXPORT extern const Time MEDIUM_SYNC_THRESHOLD;
 
 /// Subcarrier frequency spacing in Hz (Table 19-6 "Timing-related constants" of 802.11-2020)
 static constexpr uint32_t SUBCARRIER_FREQUENCY_SPACING{312500};

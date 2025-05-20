@@ -15,14 +15,17 @@
 #include "ns3/config.h"
 #include "ns3/eht-configuration.h"
 #include "ns3/eht-ppdu.h"
+#include "ns3/frame-capture-model.h"
 #include "ns3/he-configuration.h"
 #include "ns3/ht-configuration.h"
+#include "ns3/interference-helper.h"
 #include "ns3/log.h"
 #include "ns3/mobility-model.h"
 #include "ns3/names.h"
 #include "ns3/net-device-queue-interface.h"
 #include "ns3/obss-pd-algorithm.h"
 #include "ns3/pointer.h"
+#include "ns3/preamble-detection-model.h"
 #include "ns3/qos-txop.h"
 #include "ns3/qos-utils.h"
 #include "ns3/radiotap-header.h"
@@ -30,6 +33,7 @@
 #include "ns3/vht-configuration.h"
 #include "ns3/wifi-mac-queue.h"
 #include "ns3/wifi-mac-trailer.h"
+#include "ns3/wifi-radio-energy-model.h"
 
 #include <bit>
 #include <memory>

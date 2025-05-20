@@ -351,11 +351,13 @@ main(int argc, char* argv[])
         // to the Reset trace source on each STA.  Note that this trace connection
         // cannot be done through the Config path system, so pointers are used.
         auto deviceA = staDeviceA.Get(0)->GetObject<WifiNetDevice>();
-        auto hePhyA = DynamicCast<HePhy>(deviceA->GetPhy()->GetPhyEntity(WIFI_MOD_CLASS_HE));
+        auto hePhyA =
+            std::dynamic_pointer_cast<HePhy>(deviceA->GetPhy()->GetPhyEntity(WIFI_MOD_CLASS_HE));
         // Pass in the context string "1" to allow the trace to distinguish objects
         hePhyA->GetObssPdAlgorithm()->TraceConnect("Reset", "1", MakeCallback(&ResetTrace));
         auto deviceB = staDeviceB.Get(0)->GetObject<WifiNetDevice>();
-        auto hePhyB = DynamicCast<HePhy>(deviceB->GetPhy()->GetPhyEntity(WIFI_MOD_CLASS_HE));
+        auto hePhyB =
+            std::dynamic_pointer_cast<HePhy>(deviceB->GetPhy()->GetPhyEntity(WIFI_MOD_CLASS_HE));
         // Pass in the context string "2" to allow the trace to distinguish objects
         hePhyB->GetObssPdAlgorithm()->TraceConnect("Reset", "2", MakeCallback(&ResetTrace));
     }
