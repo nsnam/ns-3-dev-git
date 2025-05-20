@@ -11,7 +11,9 @@
 #include "adhoc-wifi-mac.h"
 
 #include "capability-information.h"
+#include "channel-access-manager.h"
 #include "edca-parameter-set.h"
+#include "mac-tx-middle.h"
 #include "mgt-headers.h"
 #include "qos-txop.h"
 #include "supported-rates.h"
@@ -29,6 +31,7 @@
 #include "ns3/ht-operation.h"
 #include "ns3/log.h"
 #include "ns3/packet.h"
+#include "ns3/string.h"
 #include "ns3/uhr-capabilities.h"
 #include "ns3/vht-capabilities.h"
 #include "ns3/vht-operation.h"
@@ -60,7 +63,8 @@ AdhocWifiMac::GetTypeId()
                           MakeBooleanAccessor(&AdhocWifiMac::SetBeaconGeneration),
                           MakeBooleanChecker())
             .AddAttribute("BeaconAc",
-                          "The Access Category to use for beacons.",
+                          "The Access Category whose EDCA parameters are used for the Beacon Txop "
+                          "if QoS is supported.",
                           EnumValue(AcIndex::AC_VI),
                           MakeEnumAccessor<AcIndex>(&AdhocWifiMac::m_beaconAc),
                           MakeEnumChecker(AcIndex::AC_BE,
@@ -107,6 +111,9 @@ AdhocWifiMac::AdhocWifiMac()
     : m_enableBeaconGeneration(false)
 {
     NS_LOG_FUNCTION(this);
+    m_beaconTxop = CreateObjectWithAttributes<Txop>("AcIndex", StringValue("AC_BEACON"));
+    m_beaconTxop->SetTxMiddle(m_txMiddle);
+
     // Let the lower layers know that we are acting in an IBSS
     SetTypeOfStation(ADHOC_STA);
 }
@@ -120,6 +127,8 @@ void
 AdhocWifiMac::DoInitialize()
 {
     NS_LOG_FUNCTION(this);
+    m_beaconTxop->Initialize();
+
     if (m_enableBeaconGeneration)
     {
         m_beaconEvent.Cancel();
@@ -133,6 +142,8 @@ void
 AdhocWifiMac::DoDispose()
 {
     NS_LOG_FUNCTION(this);
+    m_beaconTxop->Dispose();
+    m_beaconTxop = nullptr;
     m_enableBeaconGeneration = false;
     m_beaconEvent.Cancel();
     WifiMac::DoDispose();
@@ -176,16 +187,30 @@ AdhocWifiMac::GetBeaconInterval() const
     return m_beaconInterval;
 }
 
-Ptr<Txop>
-AdhocWifiMac::GetBeaconTxop() const
-{
-    return GetQosSupported() ? StaticCast<Txop>(GetQosTxop(m_beaconAc)) : GetTxop();
-}
-
 void
 AdhocWifiMac::DoCompleteConfig()
 {
     NS_LOG_FUNCTION(this);
+    m_beaconTxop->SetWifiMac(this);
+    // DCF behavior may be edited here; the default is PIFS access with zero backoff
+    auto txop = GetQosSupported() ? StaticCast<Txop>(GetQosTxop(m_beaconAc)) : GetTxop();
+    m_beaconTxop->SetAifsns(txop->GetAifsns());
+    m_beaconTxop->SetMinCws(txop->GetMinCws());
+    m_beaconTxop->SetMaxCws(txop->GetMaxCws());
+    for (uint8_t linkId = 0; linkId < GetNLinks(); ++linkId)
+    {
+        GetLink(linkId).channelAccessManager->Add(m_beaconTxop);
+    }
+}
+
+Ptr<Txop>
+AdhocWifiMac::GetTxopFor(AcIndex ac) const
+{
+    if (ac == AC_BEACON)
+    {
+        return m_beaconTxop;
+    }
+    return WifiMac::GetTxopFor(ac);
 }
 
 bool
@@ -348,7 +373,7 @@ AdhocWifiMac::SendOneBeacon()
 
     auto packet = Create<Packet>();
     packet->AddHeader(beacon);
-    GetBeaconTxop()->Queue(Create<WifiMpdu>(packet, hdr));
+    m_beaconTxop->Queue(Create<WifiMpdu>(packet, hdr));
 
     m_beaconEvent = Simulator::Schedule(GetBeaconInterval(), &AdhocWifiMac::SendOneBeacon, this);
 }

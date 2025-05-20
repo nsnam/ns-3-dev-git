@@ -45,6 +45,7 @@ class AdhocWifiMac : public WifiMac
 
     void SetLinkUpCallback(Callback<void> linkUp) override;
     bool CanForwardPacketsTo(Mac48Address to) const override;
+    Ptr<Txop> GetTxopFor(AcIndex ac) const override;
 
     Time m_emlsrPeerPaddingDelay;    //!< Padding delay used by peer STA operating in EMLSR mode
     Time m_emlsrPeerTransitionDelay; //!< Transition delay used by peer STA operating in EMLSR mode
@@ -76,13 +77,6 @@ class AdhocWifiMac : public WifiMac
      * @return the interval between two beacon transmissions.
      */
     Time GetBeaconInterval() const;
-
-    /**
-     * Accessor for the Txop object for beacons
-     *
-     * @return a smart pointer to Txop
-     */
-    Ptr<Txop> GetBeaconTxop() const;
 
     /**
      * Forward a beacon packet for transmission.
@@ -176,6 +170,7 @@ class AdhocWifiMac : public WifiMac
      */
     EhtOperation GetEhtOperation() const;
 
+    Ptr<Txop> m_beaconTxop;        //!< Dedicated Txop for beacons
     bool m_enableBeaconGeneration; //!< Flag whether beacons are being generated
     Time m_beaconInterval;         //!< the beacon interval
     AcIndex m_beaconAc;            //!< the access category to use for beacons
