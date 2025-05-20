@@ -111,7 +111,11 @@ if(${MSVC})
     _CRT_SECURE_NO_WARNINGS NS_MSVC NOMINMAX
   )
 
-  # Allow unresolved symbols as in most cases they are simply in other ns-3
-  # libraries
-  add_link_options("/FORCE:UNRESOLVED")
+  # Disable inlining (trust me, it is either that or moving every single inlined
+  # code to .cc)
+  add_compile_options(/Ob0)
+
+  # Prevent linker from eliminating unused functions and increase stack size to
+  # 8MB to match Linux
+  add_link_options(/OPT:NOREF /STACK:8388608)
 endif()
