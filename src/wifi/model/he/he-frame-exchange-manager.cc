@@ -2035,8 +2035,10 @@ HeFrameExchangeManager::IsIntraBssPpdu(const WifiMacHeader& hdr, const WifiTxVec
     auto ta = hdr.GetAddr2();
     const auto bssid = hdr.GetAddr3();
     const auto empty = Mac48Address();
+    const auto rsm = GetWifiRemoteStationManager();
 
-    if (ra == m_bssid || ta == m_bssid || bssid == m_bssid)
+    if (ra == m_bssid || ta == m_bssid || bssid == m_bssid || rsm->IsAdhocPeer(ra) ||
+        rsm->IsAdhocPeer(ta) || rsm->IsAdhocPeer(bssid))
     {
         return true;
     }
