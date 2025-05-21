@@ -42,6 +42,8 @@ EmlsrP2pOperationsTestBase::EmlsrP2pOperationsTestBase(const std::string& name)
 void
 EmlsrP2pOperationsTestBase::DoSetup()
 {
+    Config::SetDefault("ns3::WifiPhy::ChannelSwitchDelay", TimeValue(MicroSeconds(64)));
+
     EmlsrOperationsTestBase::DoSetup();
 
     m_staMacs[0]->SetAttribute("EnableP2pLinks", BooleanValue(true));
@@ -212,14 +214,13 @@ EmlsrP2pOperationsTestBase::Transmit(Ptr<WifiMac> mac,
         return;
     }
 
-    ++m_processedEvents;
-
     if (!m_events.empty())
     {
         // check that the expected frame is being transmitted
         NS_TEST_EXPECT_MSG_EQ(std::string(WifiMacHeader(m_events.front().hdrType).GetTypeString()),
                               hdr.GetTypeString(),
-                              "Unexpected MAC header type for frame #" << m_processedEvents);
+                              "Unexpected MAC header type for frame sent at time "
+                                  << Simulator::Now().As(Time::US));
         // perform actions/checks, if any
         if (m_events.front().func)
         {
@@ -268,7 +269,6 @@ EmlsrAdhocPeerTest::EmlsrAdhocPeerTest(bool switchAuxPhy, bool auxPhySleepAndUpd
 void
 EmlsrAdhocPeerTest::DoSetup()
 {
-    Config::SetDefault("ns3::WifiPhy::ChannelSwitchDelay", TimeValue(MicroSeconds(64)));
     Config::SetDefault("ns3::DefaultEmlsrManager::SwitchAuxPhy", BooleanValue(m_switchAuxPhy));
     Config::SetDefault("ns3::AdvancedApEmlsrManager::UpdateCwAfterFailedIcf",
                        EnumValue(m_updateCwAfterIcfFailure
@@ -427,7 +427,6 @@ EmlsrUnawareAdhocPeerTest::EmlsrUnawareAdhocPeerTest(bool emlsrUsesMacHdrInfo)
 void
 EmlsrUnawareAdhocPeerTest::DoSetup()
 {
-    Config::SetDefault("ns3::WifiPhy::ChannelSwitchDelay", TimeValue(MicroSeconds(64)));
     Config::SetDefault("ns3::DefaultEmlsrManager::SwitchAuxPhy", BooleanValue(false));
     Config::SetDefault("ns3::WifiRemoteStationManager::RtsCtsThreshold",
                        UintegerValue(3 * m_payloadSize));
@@ -680,6 +679,262 @@ EmlsrUnawareAdhocPeerTest::RunOne()
         });
 }
 
+EmlsrAdhocSwitchToListeningTest::EmlsrAdhocSwitchToListeningTest(bool switchAuxPhy,
+                                                                 bool emlsrUsesMacHdrInfo)
+    : EmlsrP2pOperationsTestBase("Check that an EMLSR-aware adhoc peer detects when an EMLSR "
+                                 "client switches to listening operations (switchAuxPhy=" +
+                                 std::to_string(switchAuxPhy) + ", emlsrUsesMacHdrInfo=" +
+                                 std::to_string(emlsrUsesMacHdrInfo) + ")"),
+      m_switchAuxPhy(switchAuxPhy),
+      m_emlsrUsesMacHdrInfo(emlsrUsesMacHdrInfo)
+{
+    m_linksToEnableEmlsrOn = {0, 1, 2}; // all links
+    m_nEmlsrStations = 1;
+    m_nNonEmlsrStations = 0;
+    m_mainPhyId = 0;
+    m_emlsrAwareAdhocPeer = true;
+
+    // channel switch delay will be also set to 64 us
+    m_paddingDelay = {MicroSeconds(64)};
+    m_transitionDelay = {MicroSeconds(64)};
+    m_duration = Seconds(0.5);
+}
+
+void
+EmlsrAdhocSwitchToListeningTest::DoSetup()
+{
+    Config::SetDefault("ns3::DefaultEmlsrManager::SwitchAuxPhy", BooleanValue(m_switchAuxPhy));
+
+    EmlsrP2pOperationsTestBase::DoSetup();
+
+    m_adhocMac->GetQosTxop(AC_BE)->SetTxopLimit(MicroSeconds(4000));
+    m_staMacs[0]->GetEmlsrManager()->SetAttribute("UseNotifiedMacHdr",
+                                                  BooleanValue(m_emlsrUsesMacHdrInfo));
+    auto phys = m_staMacs[0]->GetDevice()->GetPhys();
+    for (const auto& phy : phys)
+    {
+        phy->SetAttribute("NotifyMacHdrRxEnd", BooleanValue(m_emlsrUsesMacHdrInfo));
+    }
+}
+
+void
+EmlsrAdhocSwitchToListeningTest::DoStartTraffic()
+{
+    NS_LOG_INFO("Setup Done\n");
+    m_setupDone = true;
+    InsertEvents();
+    m_adhocMac->GetDevice()->GetNode()->AddApplication(GetP2pApplication(false, 1, m_payloadSize));
+}
+
+void
+EmlsrAdhocSwitchToListeningTest::InsertEvents()
+{
+    // lambda to check that EMLSR client switched to listening operation on the P2P link
+    auto checkEmlsrClientSwitchedToListening([=, this]() {
+        const auto now = Simulator::Now().As(Time::US);
+        auto ehtFem = DynamicCast<EhtFrameExchangeManager>(
+            m_staMacs[0]->GetFrameExchangeManager(m_p2pLinkId));
+        NS_TEST_ASSERT_MSG_NE(ehtFem, nullptr, "No EHT FEM on EMLSR client");
+        NS_TEST_EXPECT_MSG_EQ(ehtFem->GetOngoingTxopEndEvent().IsPending(),
+                              false,
+                              "Expected no ongoing TXOP for EMLSR client at time " << now);
+        NS_TEST_EXPECT_MSG_EQ(m_staMacs[0]->GetDevice()->GetPhy(m_mainPhyId)->IsStateSwitching(),
+                              !m_switchAuxPhy,
+                              "Main PHY was" << (m_switchAuxPhy ? " not " : " ")
+                                             << "expected to be switching at time " << now);
+    });
+
+    /*
+     * Initial frame exchange in the TXOP
+     */
+    m_events.emplace_back(
+        WIFI_MAC_CTL_TRIGGER,
+        [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, uint8_t linkId) {
+            NS_TEST_EXPECT_MSG_EQ(psdu->GetAddr2(),
+                                  m_adhocMac->GetAddress(),
+                                  "First ICF not sent by the adhoc peer");
+        });
+
+    m_events.emplace_back(
+        WIFI_MAC_CTL_CTS,
+        [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, uint8_t linkId) {
+            NS_TEST_EXPECT_MSG_EQ(+linkId,
+                                  +m_p2pLinkId,
+                                  "CTS in response to first ICF not sent on the P2P link");
+        });
+
+    m_events.emplace_back(
+        WIFI_MAC_QOSDATA,
+        [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, uint8_t linkId) {
+            NS_TEST_EXPECT_MSG_EQ(psdu->GetAddr2(),
+                                  m_adhocMac->GetAddress(),
+                                  "First QoS data frame not sent by the adhoc peer");
+            NS_TEST_EXPECT_MSG_EQ(
+                psdu->GetAddr1(),
+                m_staMacs[0]->GetFrameExchangeManager(m_p2pLinkId)->GetAddress(),
+                "First QoS data frame not correctly addressed to the EMLSR client");
+        });
+
+    m_events.emplace_back(
+        WIFI_MAC_CTL_ACK,
+        [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, uint8_t linkId) {
+            NS_TEST_EXPECT_MSG_EQ(
+                +linkId,
+                +m_p2pLinkId,
+                "Ack in response to first QoS data frame not sent on the P2P link");
+
+            const auto txDuration =
+                WifiPhy::CalculateTxDuration(psdu,
+                                             txVector,
+                                             m_adhocMac->GetWifiPhy()->GetPhyBand());
+            m_lastTxEnd = Simulator::Now() + txDuration;
+
+            // generate two broadcast packets at the adhoc peer
+            PacketSocketAddress broadcastAddr;
+            broadcastAddr.SetSingleDevice(m_adhocMac->GetDevice()->GetIfIndex());
+            broadcastAddr.SetPhysicalAddress(Mac48Address::GetBroadcast());
+            broadcastAddr.SetProtocol(1);
+
+            auto client = CreateObject<PacketSocketClient>();
+            client->SetAttribute("PacketSize", UintegerValue(m_payloadSize));
+            client->SetAttribute("MaxPackets", UintegerValue(2));
+            client->SetAttribute("Interval", TimeValue(Time{0}));
+            client->SetRemote(broadcastAddr);
+            client->SetStartTime(Time{0});
+            client->SetStopTime(m_duration - Simulator::Now());
+
+            m_adhocMac->GetDevice()->GetNode()->AddApplication(client);
+        });
+
+    /*
+     * Broadcast data frames (without RTS)
+     */
+    m_events.emplace_back(
+        WIFI_MAC_QOSDATA,
+        [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, uint8_t linkId) {
+            auto adhocPhy = m_adhocMac->GetWifiPhy();
+            const auto now = Simulator::Now();
+            NS_TEST_EXPECT_MSG_EQ(psdu->GetAddr2(),
+                                  m_adhocMac->GetAddress(),
+                                  "First broadcast QoS data frame not sent by the adhoc peer");
+            NS_TEST_EXPECT_MSG_EQ(psdu->GetAddr1(),
+                                  Mac48Address::GetBroadcast(),
+                                  "First broadcast QoS data frame has incorrect Receiver Address");
+            NS_TEST_EXPECT_MSG_LT(now,
+                                  m_lastTxEnd + adhocPhy->GetSifs() + MAX_PROPAGATION_DELAY,
+                                  "First broadcast QoS data frame not sent after a SIFS");
+
+            Callback<void, const WifiMacHeader&, const WifiTxVector&, Time> cb(
+                [=](const WifiMacHeader&, const WifiTxVector&, Time) {
+                    Simulator::Schedule(TimeStep(1), checkEmlsrClientSwitchedToListening);
+                });
+
+            auto mainPhy = m_staMacs[0]->GetDevice()->GetPhy(m_mainPhyId);
+            if (m_emlsrUsesMacHdrInfo)
+            {
+                // check that the EMLSR client switches to listening operation upon receiving
+                // MAC header info
+                mainPhy->TraceConnectWithoutContext("PhyRxMacHeaderEnd", cb);
+            }
+
+            const auto txDuration =
+                WifiPhy::CalculateTxDuration(psdu, txVector, adhocPhy->GetPhyBand());
+            m_lastTxEnd = now + txDuration;
+
+            // checks to be performed after the transmission of the first broadcast frame
+            Simulator::Schedule(txDuration + MAX_PROPAGATION_DELAY, [=, this]() {
+                if (!m_emlsrUsesMacHdrInfo)
+                {
+                    checkEmlsrClientSwitchedToListening();
+                }
+                else
+                {
+                    mainPhy->TraceDisconnectWithoutContext("PhyRxMacHeaderEnd", cb);
+                }
+            });
+        });
+
+    m_events.emplace_back(
+        WIFI_MAC_QOSDATA,
+        [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, uint8_t linkId) {
+            auto adhocPhy = m_adhocMac->GetWifiPhy();
+            NS_TEST_EXPECT_MSG_EQ(psdu->GetAddr2(),
+                                  m_adhocMac->GetAddress(),
+                                  "Second broadcast QoS data frame not sent by the adhoc peer");
+            NS_TEST_EXPECT_MSG_EQ(psdu->GetAddr1(),
+                                  Mac48Address::GetBroadcast(),
+                                  "Second broadcast QoS data frame has incorrect Receiver Address");
+            NS_TEST_EXPECT_MSG_LT(Simulator::Now(),
+                                  m_lastTxEnd + adhocPhy->GetSifs() + MAX_PROPAGATION_DELAY,
+                                  "Second broadcast QoS data frame not sent after a SIFS");
+
+            const auto txDuration =
+                WifiPhy::CalculateTxDuration(psdu, txVector, adhocPhy->GetPhyBand());
+            m_lastTxEnd = Simulator::Now() + txDuration;
+
+            // Adhoc peer does not exploit MAC header info, therefore it starts the transition
+            // delay at the end of the first broadcast frame, hence the transition delay is
+            // still running now
+            WifiContainerQueueId queueId(
+                WIFI_QOSDATA_QUEUE,
+                WifiRcvAddr::UNICAST,
+                m_staMacs[0]->GetFrameExchangeManager(m_p2pLinkId)->GetAddress(),
+                wifiAcList.at(AC_BE).GetLowTid());
+            auto mask = m_adhocMac->GetMacQueueScheduler()->GetQueueLinkMask(AC_BE,
+                                                                             queueId,
+                                                                             SINGLE_LINK_OP_ID);
+            NS_TEST_ASSERT_MSG_EQ(mask.has_value(),
+                                  true,
+                                  "Adhoc peer has no queue for EMLSR client");
+            NS_TEST_EXPECT_MSG_EQ(mask->test(static_cast<std::size_t>(
+                                      WifiQueueBlockedReason::WAITING_EMLSR_TRANSITION_DELAY)),
+                                  true,
+                                  "Transition delay not running at adhoc peer");
+
+            // generate another packet at the adhoc peer
+            m_adhocMac->GetDevice()->GetNode()->AddApplication(
+                GetP2pApplication(false, 1, m_payloadSize));
+        });
+
+    /*
+     * Second frame exchange with the EMLSR client in the same TXOP, protected by ICF because
+     * the EMLSR client switched to listening operation due to the broadcast data frames
+     */
+    m_events.emplace_back(
+        WIFI_MAC_CTL_TRIGGER,
+        [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, uint8_t linkId) {
+            NS_TEST_EXPECT_MSG_EQ(psdu->GetAddr2(),
+                                  m_adhocMac->GetAddress(),
+                                  "Second ICF not sent by the adhoc peer");
+            NS_TEST_EXPECT_MSG_LT(Simulator::Now(),
+                                  m_lastTxEnd + m_adhocMac->GetWifiPhy()->GetSifs() +
+                                      MAX_PROPAGATION_DELAY,
+                                  "Second ICF not sent after a SIFS");
+        });
+
+    m_events.emplace_back(
+        WIFI_MAC_CTL_CTS,
+        [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, uint8_t linkId) {
+            NS_TEST_EXPECT_MSG_EQ(+linkId,
+                                  +m_p2pLinkId,
+                                  "CTS in response to second ICF not sent on the P2P link");
+        });
+
+    m_events.emplace_back(
+        WIFI_MAC_QOSDATA,
+        [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, uint8_t linkId) {
+            NS_TEST_EXPECT_MSG_EQ(psdu->GetAddr2(),
+                                  m_adhocMac->GetAddress(),
+                                  "Second QoS data frame not sent by the adhoc peer");
+            NS_TEST_EXPECT_MSG_EQ(
+                psdu->GetAddr1(),
+                m_staMacs[0]->GetFrameExchangeManager(m_p2pLinkId)->GetAddress(),
+                "Second QoS data frame not correctly addressed to the EMLSR client");
+        });
+
+    m_events.emplace_back(WIFI_MAC_CTL_ACK);
+}
+
 WifiEmlsrP2pTestSuite::WifiEmlsrP2pTestSuite()
     : TestSuite("wifi-emlsr-p2p", Type::UNIT)
 {
@@ -695,6 +950,15 @@ WifiEmlsrP2pTestSuite::WifiEmlsrP2pTestSuite()
     for (const auto emlsrUsesMacHdrInfo : {true, false})
     {
         AddTestCase(new EmlsrUnawareAdhocPeerTest(emlsrUsesMacHdrInfo), TestCase::Duration::QUICK);
+    }
+
+    for (const auto switchAuxPhy : {true, false})
+    {
+        for (const auto emlsrUsesMacHdrInfo : {true, false})
+        {
+            AddTestCase(new EmlsrAdhocSwitchToListeningTest(switchAuxPhy, emlsrUsesMacHdrInfo),
+                        TestCase::Duration::QUICK);
+        }
     }
 }
 

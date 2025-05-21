@@ -78,7 +78,6 @@ class EmlsrP2pOperationsTestBase : public EmlsrOperationsTestBase
     const uint8_t m_p2pLinkId{2};     //!< ID of the link used for P2P data exchange
     bool m_emlsrAwareAdhocPeer{true}; //!< whether the adhoc peer is EMLSR aware
     std::list<Events> m_events;       //!< list of events for a test run
-    std::size_t m_processedEvents{0}; //!< number of processed events
     bool m_setupDone{false}; //!< whether the setup (including BA agreements) has been completed
 
   private:
@@ -197,6 +196,61 @@ class EmlsrUnawareAdhocPeerTest : public EmlsrP2pOperationsTestBase
     const std::size_t m_payloadSize{750}; //!< size of payload in bytes
     Ptr<ListErrorModel> m_staErrorModel;  ///< error rate model to install on the EMLSR client
     bool m_expectInfraLinkBlocked{false}; ///< whether infra link is expected to be blocked
+};
+
+/**
+ * @ingroup wifi-test
+ * @ingroup tests
+ *
+ * @brief Test that an EMLSR-aware adhoc peer is able to detect that an EMLSR client switched to
+ *        listening operations
+ *
+ * An EMLSR client setups 3 links with an AP MLD and EMLSR mode is enabled on all three links.
+ * A TID-to-Link Mapping is configured so that one link (other than the preferred link) is only used
+ * for data exchange between the EMLSR client and a single-link EMLSR-unaware adhoc peer. The TXOP
+ * limit for AC BE is set to a non-zero value (4ms). The adhoc peer carries out a TXOP in which it
+ * transmits (separated by a SIFS):
+ *
+ * - a unicast QoS data frame to the EMLSR client
+ * - two QoS data broadcast frames
+ * - another unicast QoS data frame to the EMLSR client
+ *
+ * It is checked that:
+ * - the first unicast QoS data frame is protected by ICF
+ * - the EMLSR client switches to listening operation (i.e., the TXOP is considered ended and the
+ *   main PHY switches back to the preferred link if aux PHYs do not switch) when notified of the
+ *   MAC header of the first broadcast frame, if MAC header notification is enabled, or at the end
+ *   of the first broadcast frame, otherwise
+ * - the adhoc peer detects that the EMLSR client has switched to listening operation at the end of
+ *   the first broadcast frame (because it does not exploit MAC header notification) and has the
+ *   transition delay running at the beginning of the second broadcast frame
+ * - the second unicast QoS data frame is protected by ICF because the adhoc peer detected that the
+ *   EMLSR client switched to listening operation
+ */
+class EmlsrAdhocSwitchToListeningTest : public EmlsrP2pOperationsTestBase
+{
+  public:
+    /**
+     * Constructor.
+     *
+     * @param switchAuxPhy whether aux PHYs switch link
+     * @param emlsrUsesMacHdrInfo whether EMLSR client uses notified MAC header info
+     */
+    EmlsrAdhocSwitchToListeningTest(bool switchAuxPhy, bool emlsrUsesMacHdrInfo);
+
+  protected:
+    void DoSetup() override;
+
+    /// Insert elements in the list of expected events (transmitted frames)
+    void InsertEvents();
+
+  private:
+    void DoStartTraffic() override;
+
+    bool m_switchAuxPhy;                  //!< whether aux PHYs switch link
+    bool m_emlsrUsesMacHdrInfo;           //!< whether EMLSR client uses notified MAC header info
+    const std::size_t m_payloadSize{250}; //!< size of payload in bytes
+    Time m_lastTxEnd;                     //!< end TX time of last frame sent by the adhoc peer
 };
 
 /**
