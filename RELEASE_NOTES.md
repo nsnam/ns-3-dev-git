@@ -40,6 +40,7 @@ ns-3 has switched to the C++23 standard by default.
 
 - (internet) #1251 - Added check for longest prefix match in GlobalRouting
 - (wifi) Block transmission on other EMLSR links as soon as it is detected that the main PHY is receiving an A-MPDU, to prevent that the EMLSR client starts an UL TXOP before the end of the A-MPDU
+- (wifi) EMLSR clients can switch to listening operations when receiving the MAC header of a broadcast frame that is not a Trigger Frame nor a Multi-STA BA
 
 ## Release 3.45
 

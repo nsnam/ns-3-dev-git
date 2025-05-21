@@ -332,7 +332,7 @@ AdvancedEmlsrManager::ReceivedMacHdr(Ptr<WifiPhy> phy,
     const auto isMainPhy = (phy->GetPhyId() == GetMainPhyId());
 
     if (ongoingTxopEnd.IsPending() && macHdr.GetAddr1() != GetEhtFem(*linkId)->GetAddress() &&
-        !macHdr.GetAddr1().IsBroadcast() &&
+        !macHdr.IsTrigger() && !macHdr.IsBlockAck() &&
         !(macHdr.IsCts() && macHdr.GetAddr1() == GetEhtFem(*linkId)->GetBssid() /* CTS-to-self */))
     {
         // the EMLSR client is no longer involved in the TXOP and switching to listening mode
