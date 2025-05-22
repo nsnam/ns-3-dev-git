@@ -39,7 +39,7 @@ class Kun2600MhzPropagationLossModel;
  *  - frequency: from 200 uo to 2600 MHz
  *  - short range communications vs long range communications
  *  - Node position respect to buildings: indoor, outdoor and hybrid (indoor <-> outdoor)
- *  - Building penetretation loss
+ *  - Building penetration loss
  *  - floors, etc...
  *
  *  @warning This model works only with MobilityBuildingInfo
