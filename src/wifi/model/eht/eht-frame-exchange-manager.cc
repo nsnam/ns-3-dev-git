@@ -1433,11 +1433,12 @@ EhtFrameExchangeManager::GetEmlsrSwitchToListening(Ptr<const WifiPsdu> psdu,
     // the AP MLD
     if (psdu->GetHeader(0).IsCts())
     {
-        if (m_apMac && psdu->GetAddr1() == m_self)
+        if ((m_apMac || m_mac->GetTypeOfStation() == ADHOC_STA) && psdu->GetAddr1() == m_self)
         {
             return false;
         }
-        if (m_staMac && psdu->GetAddr1() == m_bssid)
+        if (m_staMac && (psdu->GetAddr1() == m_bssid ||
+                         GetWifiRemoteStationManager()->IsAdhocPeer(psdu->GetAddr1())))
         {
             return false;
         }

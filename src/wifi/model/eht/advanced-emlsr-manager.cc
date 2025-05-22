@@ -343,7 +343,9 @@ AdvancedEmlsrManager::ReceivedMacHdr(Ptr<WifiPhy> phy,
 
     if (ongoingTxopEnd.IsPending() && macHdr.GetAddr1() != GetEhtFem(*linkId)->GetAddress() &&
         !macHdr.IsTrigger() && !macHdr.IsBlockAck() &&
-        !(macHdr.IsCts() && macHdr.GetAddr1() == GetEhtFem(*linkId)->GetBssid() /* CTS-to-self */))
+        !(macHdr.IsCts() && (macHdr.GetAddr1() == GetEhtFem(*linkId)->GetBssid() ||
+                             GetStaMac()->GetWifiRemoteStationManager(*linkId)->IsAdhocPeer(
+                                 macHdr.GetAddr1())) /* CTS-to-self */))
     {
         // the EMLSR client is no longer involved in the TXOP and switching to listening mode
         ongoingTxopEnd.Cancel();
