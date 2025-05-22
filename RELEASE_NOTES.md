@@ -45,6 +45,7 @@ The required Doxygen version for documentation generation is now version 1.13.
 - (wifi) Fix the time the `NSlotsLeftAlert` trace source of `ChannelAccessManager` is fired (it cannot be earlier than the access grant start time)
 - (wifi) Fix the EIFS computation, which depends on the modulation class of the PPDU whose reception failed rather than on the latest standard supported by a device
 - (wifi) Block transmission on other EMLSR links as soon as it is detected that the main PHY is receiving an A-MPDU, to prevent that the EMLSR client starts an UL TXOP before the end of the A-MPDU
+- (wifi) Fix Duration/ID for group addressed frames sent under multiple protection setting
 
 ## Release 3.44
 

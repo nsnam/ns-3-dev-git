@@ -615,6 +615,11 @@ FrameExchangeManager::SendMpdu()
 
         if (!m_mpdu->GetHeader().IsPsPoll())
         {
+            m_mpdu->GetHeader().SetDuration(
+                GetFrameDurationId(m_mpdu->GetHeader(),
+                                   GetPsduSize(m_mpdu, m_txParams.m_txVector),
+                                   m_txParams,
+                                   m_fragmentedPacket));
             Simulator::Schedule(txDuration, [=, this]() {
                 TransmissionSucceeded();
                 m_mpdu = nullptr;

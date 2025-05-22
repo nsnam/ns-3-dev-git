@@ -1258,6 +1258,7 @@ HtFrameExchangeManager::SendPsdu()
             DequeuePsdu(m_psdu);
         }
 
+        m_psdu->SetDuration(GetPsduDurationId(txDuration, m_txParams));
         Simulator::Schedule(txDuration, [=, this]() {
             TransmissionSucceeded();
             m_psdu = nullptr;
