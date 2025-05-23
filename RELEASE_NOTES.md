@@ -98,6 +98,7 @@ The minimum clang-format version is version 15.
 - (wifi) - Added support for 802.11aa groupcast with retries (GCR). Both unsolicited retries (GCR-UR) and Block Ack (GCR-BA) mechanisms are implemented.
 - (zigbee) Added a new Zigbee module.
 - (wifi) Trigger frames have been extended to support Special User Info field
+- (wifi) Added support for 802.11be STAs to operate on 320 MHz in 6 GHz band.
 
 ### Bugs fixed
 
