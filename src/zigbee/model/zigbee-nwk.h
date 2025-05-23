@@ -297,7 +297,7 @@ struct NldeDataConfirmParams
 };
 
 /**
- * @ingroup lr-wpan
+ * @ingroup zigbee
  *
  * NLDE-DATA.indication params. See Zigbee Specification 3.2.1.3.1
  */

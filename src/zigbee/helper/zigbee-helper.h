@@ -15,6 +15,7 @@
 #include "ns3/net-device-container.h"
 #include "ns3/object-factory.h"
 
+#include <optional>
 #include <string>
 
 namespace ns3
@@ -64,6 +65,12 @@ class ZigbeeHelper
     zigbee::ZigbeeStackContainer Install(NetDeviceContainer c);
 
     /**
+     * If this is set, the helper will only create Zigbee stacks that contain
+     * only the NWK layer
+     */
+    void SetNwkLayerOnly();
+
+    /**
      * Assign a fixed random variable stream number to the random variables
      * used by this model. Return the number of streams (possibly zero) that
      * have been assigned. The Install() method should have previously been
@@ -78,6 +85,7 @@ class ZigbeeHelper
 
   private:
     ObjectFactory m_stackFactory; //!< Zigbee stack object factory.
+    bool m_nwkLayerOnly;          //!< Flag indicating that only the NWK layer is present
 };
 
 } // namespace ns3

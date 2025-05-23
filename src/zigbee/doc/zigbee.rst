@@ -35,28 +35,42 @@ This is the case of ``NetDevices`` such as the ``LrWpanNetDevice``.
 While other technologies like 6loWPAN can interact with the underlying MAC layer through general-purpose ``NetDevice`` interfaces, Zigbee has specific requirements that necessitate certain features from a lr-wpan MAC.
 Consequently, the |ns3| Zigbee implementation directly accesses the aggregated ``LrWpanMacBase`` and interfaces with it accordingly.
 
-The current scope of the project includes **only the NWK layer in the Zigbee stack**. However, the project can be later extended
-to support higher layers like the Application Sublayer (APS) and the Zigbee Cluster Library (ZCL).
+The current scope of the project includes **only the NWK layer and the APS layer in the Zigbee stack**. However, the project can be later extended
+to support higher layers like the application framework (AF) or services like the Zigbee Cluster Library (ZCL).
 
 
 Scope and Limitations
 ---------------------
 
-- MacInterfaceTable is not supported (Multiple interface support).
+The NWK has the following limitations:
+
+- The NWK MacInterfaceTable NIB is not supported (Multiple MAC interfaces support).
 - Security handling is not supported.
 - Source routing and Tree routing are not implemented.
 - Zigbee Stack profile 0x01 (used for tree routing and distributed address assignment) is not supported.
 - A few NIB attributes setting and NWK constants are not supported by the |ns3| attribute system.
-- Traces are not implemented yet.
+- Trace sources are not implemented yet.
 - Data broadcast do not support retries or passive acknowledgment.
 - Data broadcast to low power routers is not supported as the underlying lr-wpan netdevice has no concept of energy consumption.
 - Address duplication detection is not supported.
 - Beacon mode is not througly tested.
-- The following Zigbee layers are not supported yet:
-   - Zigbee Application Support Sub-Layer (APS)
-   - Zigbee Cluster Library (ZCL)
-   - Zigbee Device Object (ZDO)
-   - Application Framework (AF)
+- 16-bit address resolution from a IEEE address at NWK layer is not supported.
+
+
+The APS has the following limitations:
+
+- No groupcasting support (Similar to multicast)
+- No fragmentation support
+- No duplicates detection
+- No acknowledged transmissions
+- No extenended address (64-bit) destinations supported
+- No trace sources
+
+The following Zigbee layers or services are not supported yet:
+
+- Zigbee Cluster Library (ZCL)
+- Zigbee Device Object (ZDO)
+- Application Framework (AF)
 
 To see a list of |ns3| Zigbee undergoing development efforts check issue `#1165 <https://gitlab.com/nsnam/ns-3-dev/-/issues/1165>`_
 
@@ -298,6 +312,31 @@ Alternatively, a Mesh route discovery can be performed along a data transmission
     Important: The process described above assumes that devices have already joined the network.
     A route discovery request issued before a device is part of the network (join process) will result in failure.
 
+The application support sub-layer (APS)
+---------------------------------------
+
+As its name suggests, this intermediate layer exists between the Network (NWK) layer and the Application Framework (AF).
+It provides services to both the Zigbee Device Object (ZDO) and the AF.
+The APS layer introduces abstract concepts such as **EndPoints**, **Clusters**, and **Profiles**; however, it does not assign specific meanings to these concepts.
+Instead, it simply adds this information to the transmitted frames.
+
+Effective management of **EndPoints**, **Clusters**, and **Profile IDs** requires the use of the Zigbee Cluster Library (ZCL) and the ZDO, which are not currently supported by this implementation.
+This implementation offers only the most basic functions of the APS, allowing data transmission using known 16-bit address destinations.
+Features such as groupcasting, transmission to IEEE addresses (64-bit address destinations), fragmentation, duplication detection, and security are not currently supported but are under development.
+
+By default, the APS layer is integrated within the Zigbee stack.
+However, users can choose to work solely with the NWK layer.
+To do this, they must disable the APS by using the `SetNwkLayerOnly()` function in the Zigbee helper.
+
+The APS layer can transmit data that includes information regarding source and destination endpoints, but it cannot initiate network formation or network joining procedures.
+Typically, the ZDO manages these processes; however, since we currently do not have the ZDO, users must directly interact with the NWK layer’s network formation and joining primitives to trigger these options.
+
+The following is a list of APS primitives are included:
+
+- APSDE-DATA (Request, Confirm, Indication) <------ Only Address mode 0x02 (16-bit address and destination endpoint present) supported.
+- APSME-BIND (Request, Confirm)  <----Included but inconsequential without group table support
+- APSME-UNBIND (Request, Confirm) <----Included but inconsequential without group table support
+
 Usage
 -----
 
@@ -329,7 +368,10 @@ is used to establish a Zigbee stack on top of these devices::
 
     // Install a zigbee stack on a set of devices using the helper
     ZigbeeHelper zigbee;
+    zigbee.SetNwkLayerOnly(); // Activate if you wish to have only the NWK layer in the stack
     ZigbeeStackContainer zigbeeStackContainer = zigbee.Install(lrwpanDevices);
+    // ...  ...
+    // Call to NWK primitives contained in the NWK layer in the Zigbee stack.
 
 Attributes
 ~~~~~~~~~~
@@ -375,11 +417,12 @@ All the examples listed here shows scenarios in which a quasi-layer implementati
 * ``zigbee-association-join.cc``:  An example showing the NWK layer join process of 3 devices in a zigbee network (MAC association).
 * ``zigbee-nwk-routing.cc``: Shows a simple topology of 5 router devices sequentially joining a network. Data transmission and route discovery (MESH routing) are also shown in this example
 * ``zigbee-nwk-routing-grid.cc``: Shows a complex grid topology of 50 router devices sequentially joining a network. Route discovery (MANY-TO-ONE routing) is also shown in this example.
+* ``zigbee-aps-data.cc``: Demonstrates the usage of the APS layer to transmit data.
 
 The following unit test have been developed to ensure the correct behavior of the module:
 
 * ``zigbee-rreq-test``: Test some situations in which RREQ messages should be retried during a route discovery process.
-
+* ``zigbee-aps-data-test``: Test the APS data transmission
 
 Validation
 ----------

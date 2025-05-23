@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Tokushima University, Japan
+ * Copyright (c) 2025 Tokushima University, Japan
  *
  * SPDX-License-Identifier: GPL-2.0-only
  *
@@ -9,12 +9,12 @@
  */
 
 /**
- * Mesh routing example with data transmission using a simple topology.
+ * Mesh routing example with APS layer data transmission in a simple topology.
  *
- * This example shows the NWK layer procedure to perform a route request.
- * Prior the route discovery and data transmission, an association-based join is performed.
- * The procedure requires a sequence of primitive calls on a specific order in the indicated
- * devices.
+ * This example use a Zigbee stack formed by NWK and APS layers.
+ * The APS layer is used to transmit data, the creation of the necessary routes is
+ * handle automatically by the NWK layer. There is no ZDO, therefore we need to manually
+ * use the NWK to form the network and establish the router devices.
  *
  *
  *  Network Extended PAN id: 0X000000000000CA:FE (based on the PAN coordinator address)
@@ -106,10 +106,11 @@ TraceRoute(Mac16Address src, Mac16Address dst)
 }
 
 static void
-NwkDataIndication(Ptr<ZigbeeStack> stack, NldeDataIndicationParams params, Ptr<Packet> p)
+ApsDataIndication(Ptr<ZigbeeStack> stack, ApsdeDataIndicationParams params, Ptr<Packet> p)
 {
     std::cout << Simulator::Now().As(Time::S) << " Node " << stack->GetNode()->GetId() << " | "
-              << "NsdeDataIndication:  Received packet of size " << p->GetSize() << "\n";
+              << "ApsdeDataIndication:  Received packet of size " << p->GetSize()
+              << " for destination EndPoint " << params.m_dstEndPoint << "\n";
 }
 
 static void
@@ -202,13 +203,25 @@ SendData(Ptr<ZigbeeStack> stackSrc, Ptr<ZigbeeStack> stackDst)
     // before transmitting data (Mesh routing).
 
     Ptr<Packet> p = Create<Packet>(5);
-    NldeDataRequestParams dataReqParams;
-    dataReqParams.m_dstAddrMode = UCST_BCST;
-    dataReqParams.m_dstAddr = stackDst->GetNwk()->GetNetworkAddress();
-    dataReqParams.m_nsduHandle = 1;
-    dataReqParams.m_discoverRoute = ENABLE_ROUTE_DISCOVERY;
+    // Src and Dst Endpoints must not be 0, because this is reserved for the ZDO.
+    // Other Endpoint numbers can help to differentiate between different applications
+    // running in the same node (similar to the concept of a port in TCP/IP).
+    // Likewise, because we currently do not have ZDO or ZCL or AF, clusterId
+    // and profileId numbers are non-sensical.
+    ApsdeDataRequestParams dataReqParams;
+    ZigbeeApsTxOptions txOptions;
+    dataReqParams.m_useAlias = false;
+    // Default, use 16 bit address destination (No option), equivalent to 0x00
+    dataReqParams.m_txOptions = txOptions.GetTxOptions();
+    dataReqParams.m_srcEndPoint = 3;
+    dataReqParams.m_clusterId = 5; // Arbitrary value
+    dataReqParams.m_profileId = 2; // Arbitrary value
 
-    Simulator::ScheduleNow(&ZigbeeNwk::NldeDataRequest, stackSrc->GetNwk(), dataReqParams, p);
+    dataReqParams.m_dstAddrMode = ApsDstAddressMode::DST_ADDR16_DST_ENDPOINT_PRESENT;
+    dataReqParams.m_dstAddr16 = stackDst->GetNwk()->GetNetworkAddress();
+    dataReqParams.m_dstEndPoint = 4;
+
+    Simulator::ScheduleNow(&ZigbeeAps::ApsdeDataRequest, stackSrc->GetAps(), dataReqParams, p);
 
     // Give a few seconds to allow the creation of the route and
     // then print the route trace and tables from the source
@@ -275,10 +288,9 @@ main(int argc, char* argv[])
     dev3->SetChannel(channel);
     dev4->SetChannel(channel);
 
-    // Configure the Zigbee stack and use only the NWK layer.
+    // Configure the Zigbee stack, by default both the NWK and the APS are present
 
     ZigbeeHelper zigbeeHelper;
-    zigbeeHelper.SetNwkLayerOnly();
     ZigbeeStackContainer zigbeeStackContainer = zigbeeHelper.Install(lrwpanDevices);
 
     Ptr<ZigbeeStack> zstack0 = zigbeeStackContainer.Get(0)->GetObject<ZigbeeStack>();
@@ -325,25 +337,14 @@ main(int argc, char* argv[])
     dev4->GetPhy()->SetMobility(dev4Mobility);
 
     // NWK callbacks hooks
-    // These hooks are usually directly connected to the APS layer
-    // In this case, there is no APS layer, therefore, we connect the event outputs
+    // These hooks are usually directly connected to the ZDO.
+    // In this case, there is no ZDO, therefore, we connect the event outputs
     // of all devices directly to our static functions in this example.
 
     zstack0->GetNwk()->SetNlmeNetworkFormationConfirmCallback(
         MakeBoundCallback(&NwkNetworkFormationConfirm, zstack0));
     zstack0->GetNwk()->SetNlmeRouteDiscoveryConfirmCallback(
         MakeBoundCallback(&NwkRouteDiscoveryConfirm, zstack0));
-
-    zstack0->GetNwk()->SetNldeDataIndicationCallback(
-        MakeBoundCallback(&NwkDataIndication, zstack0));
-    zstack1->GetNwk()->SetNldeDataIndicationCallback(
-        MakeBoundCallback(&NwkDataIndication, zstack1));
-    zstack2->GetNwk()->SetNldeDataIndicationCallback(
-        MakeBoundCallback(&NwkDataIndication, zstack2));
-    zstack3->GetNwk()->SetNldeDataIndicationCallback(
-        MakeBoundCallback(&NwkDataIndication, zstack3));
-    zstack4->GetNwk()->SetNldeDataIndicationCallback(
-        MakeBoundCallback(&NwkDataIndication, zstack4));
 
     zstack1->GetNwk()->SetNlmeNetworkDiscoveryConfirmCallback(
         MakeBoundCallback(&NwkNetworkDiscoveryConfirm, zstack1));
@@ -358,6 +359,19 @@ main(int argc, char* argv[])
     zstack2->GetNwk()->SetNlmeJoinConfirmCallback(MakeBoundCallback(&NwkJoinConfirm, zstack2));
     zstack3->GetNwk()->SetNlmeJoinConfirmCallback(MakeBoundCallback(&NwkJoinConfirm, zstack3));
     zstack4->GetNwk()->SetNlmeJoinConfirmCallback(MakeBoundCallback(&NwkJoinConfirm, zstack4));
+
+    // APS callback hooks
+
+    zstack0->GetAps()->SetApsdeDataIndicationCallback(
+        MakeBoundCallback(&ApsDataIndication, zstack0));
+    zstack1->GetAps()->SetApsdeDataIndicationCallback(
+        MakeBoundCallback(&ApsDataIndication, zstack1));
+    zstack2->GetAps()->SetApsdeDataIndicationCallback(
+        MakeBoundCallback(&ApsDataIndication, zstack2));
+    zstack3->GetAps()->SetApsdeDataIndicationCallback(
+        MakeBoundCallback(&ApsDataIndication, zstack3));
+    zstack4->GetAps()->SetApsdeDataIndicationCallback(
+        MakeBoundCallback(&ApsDataIndication, zstack4));
 
     // 1 - Initiate the Zigbee coordinator, start the network
     // ALL_CHANNELS = 0x07FFF800 (Channels 11~26)
@@ -417,7 +431,7 @@ main(int argc, char* argv[])
                                    zstack4->GetNwk(),
                                    netDiscParams4);
 
-    // 5- Find Route and Send data
+    // 5- Find Route and Send data (Call to APS layer)
 
     Simulator::Schedule(Seconds(8), &SendData, zstack0, zstack3);
 

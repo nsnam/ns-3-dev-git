@@ -3,6 +3,7 @@ set(base_examples
     zigbee-nwk-association-join
     zigbee-nwk-routing
     zigbee-nwk-routing-grid
+    zigbee-aps-data
 )
 
 foreach(

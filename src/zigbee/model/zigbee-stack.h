@@ -10,6 +10,7 @@
 #ifndef ZIGBEE_STACK_H
 #define ZIGBEE_STACK_H
 
+#include "zigbee-aps.h"
 #include "zigbee-nwk.h"
 
 #include "ns3/lr-wpan-mac-base.h"
@@ -28,6 +29,7 @@ namespace zigbee
 {
 
 class ZigbeeNwk;
+class ZigbeeAps;
 
 /**
  * @ingroup zigbee
@@ -85,6 +87,20 @@ class ZigbeeStack : public Object
     void SetNwk(Ptr<ZigbeeNwk> nwk);
 
     /**
+     * Get the APS layer used by this ZigbeeStack.
+     *
+     * @return the APS object
+     */
+    Ptr<ZigbeeAps> GetAps() const;
+
+    /**
+     * Set the APS layer used by this ZigbeeStack.
+     *
+     * @param aps The APS layer object
+     */
+    void SetAps(Ptr<ZigbeeAps> aps);
+
+    /**
      *  Returns a smart pointer to the underlying NetDevice.
      *
      * @return A smart pointer to the underlying NetDevice.
@@ -100,6 +116,11 @@ class ZigbeeStack : public Object
      */
     void SetNetDevice(Ptr<NetDevice> netDevice);
 
+    /**
+     * Inticates to the Zigbee stack that only the NWK layer should be present.
+     */
+    void SetOnlyNwkLayer();
+
   protected:
     /**
      * Dispose of the Objects used by the ZigbeeStack
@@ -114,8 +135,10 @@ class ZigbeeStack : public Object
   private:
     Ptr<lrwpan::LrWpanMacBase> m_mac; //!< The underlying LrWpan MAC connected to this Zigbee Stack.
     Ptr<ZigbeeNwk> m_nwk;             //!< The Zigbee Network layer.
+    Ptr<ZigbeeAps> m_aps;             //!< The Zigbee Application Support Sub-layer
     Ptr<Node> m_node;                 //!< The node associated with this NetDevice.
     Ptr<NetDevice> m_netDevice;       //!< Smart pointer to the underlying NetDevice.
+    bool m_nwkOnly; //!< Indicates that only the NWK layer is present in the Zigbee stack
 };
 
 } // namespace zigbee

@@ -8,8 +8,8 @@
  *  Alberto Gallegos Ramonet <alramonet@is.tokushima-u.ac.jp>
  */
 
-#ifndef ZIGBEE_TABLES_H
-#define ZIGBEE_TABLES_H
+#ifndef ZIGBEE_NWK_TABLES_H
+#define ZIGBEE_NWK_TABLES_H
 
 #include "zigbee-nwk-fields.h"
 
@@ -1324,4 +1324,4 @@ class BroadcastTransactionTable
 } // namespace zigbee
 } // namespace ns3
 
-#endif /* ZIGBEE_TABLES_H */
+#endif /* ZIGBEE_NWK_TABLES_H */

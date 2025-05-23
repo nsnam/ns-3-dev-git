@@ -120,10 +120,11 @@ main(int argc, char* argv[])
     dev1->SetChannel(channel);
     dev2->SetChannel(channel);
 
-    //// Configure NWK
+    //// Configure the Zigbee Stack and use only the NWK layer
 
-    ZigbeeHelper zigbee;
-    ZigbeeStackContainer zigbeeStackContainer = zigbee.Install(lrwpanDevices);
+    ZigbeeHelper zigbeeHelper;
+    zigbeeHelper.SetNwkLayerOnly();
+    ZigbeeStackContainer zigbeeStackContainer = zigbeeHelper.Install(lrwpanDevices);
 
     Ptr<ZigbeeStack> zstack0 = zigbeeStackContainer.Get(0)->GetObject<ZigbeeStack>();
     Ptr<ZigbeeStack> zstack1 = zigbeeStackContainer.Get(1)->GetObject<ZigbeeStack>();
