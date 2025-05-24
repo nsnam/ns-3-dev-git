@@ -858,7 +858,7 @@ macro(process_options)
     endif()
     set(CMAKE_REQUIRED_INCLUDES ${Boost_INCLUDE_DIRS})
   else()
-    message(HIGHLIGHTED_STATUS "Boost was not found")
+    message(${HIGHLIGHTED_STATUS} "Boost was not found")
   endif()
 
   set(GSL_FOUND FALSE)
