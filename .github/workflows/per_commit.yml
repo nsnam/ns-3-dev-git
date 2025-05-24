@@ -45,7 +45,7 @@ jobs:
           python3 -c "import re, subprocess;print('cache_misses=%d' % int(re.findall('cache_miss(.*)', subprocess.check_output(['ccache', '--print-stats']).decode())[0]))" >> $GITHUB_ENV
       - name: Run tests and examples
         if: env.cache_misses != '0'
-        run: python3 test.py --no-build
+        run: python3 test.py --no-build --verbose-failed
 
   Codecov:
     runs-on: ubuntu-latest
@@ -151,7 +151,7 @@ jobs:
           python3 -c "import re, subprocess;print('cache_misses=%d' % int(re.findall('cache_miss(.*)', subprocess.check_output(['ccache', '--print-stats']).decode())[0]))" >> $GITHUB_ENV
       - name: Run tests and examples
         if: env.cache_misses != '0'
-        run: python3 test.py --no-build
+        run: python3 test.py --no-build --verbose-failed
 
   Mac_OS_X:
     runs-on: ${{ matrix.os }}
@@ -195,7 +195,7 @@ jobs:
           python3 -c "import re, subprocess;print('cache_misses=%d' % int(re.findall('cache_miss(.*)', subprocess.check_output(['ccache', '--print-stats']).decode())[0]))" >> $GITHUB_ENV
       - name: Run tests and examples
         if: env.cache_misses != '0'
-        run: ./test.py --no-build
+        run: ./test.py --no-build --verbose-failed
   Windows_Visual_Studio:
     runs-on: windows-latest
     defaults:
@@ -217,4 +217,4 @@ jobs:
         continue-on-error: true
         run: |
           set PATH=%CD%\build;%PATH%
-          python .\test.py --no-build
+          python .\test.py --no-build --verbose-failed
