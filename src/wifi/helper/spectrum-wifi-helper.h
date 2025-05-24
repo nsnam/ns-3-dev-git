@@ -117,7 +117,14 @@ class SpectrumWifiPhyHelper : public WifiPhyHelper
     void AddWifiBandwidthFilter(Ptr<SpectrumChannel> channel);
 
     /**
-     * Function that is notified when a spectrum channel switched
+     * Function that is notified when the operating channel of a PHY has changed.
+     *
+     * For MLD devices, this function takes care to configure the inactive spectrum interfaces of
+     * all other PHYs to monitor the same channel as the PHY that has switched its channel. If a PHY
+     * does not support the same channel width as the PHY that has switched its channel, only the
+     * primary channel (with a width equal to the minimum between the widths of the two PHYs) of the
+     * PHY that has switched is monitored.
+     *
      * @param phy spectrum PHY instance that has switched its channel
      */
     static void SpectrumChannelSwitched(Ptr<SpectrumWifiPhy> phy);

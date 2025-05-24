@@ -22,6 +22,7 @@
 #include "ns3/wifi-bandwidth-filter.h"
 #include "ns3/wifi-net-device.h"
 #include "ns3/wifi-spectrum-value-helper.h"
+#include "ns3/wifi-utils.h"
 
 namespace ns3
 {
@@ -179,27 +180,39 @@ SpectrumWifiPhyHelper::SpectrumChannelSwitched(Ptr<SpectrumWifiPhy> phy)
         NS_ASSERT(spectrumPhy);
         if (spectrumPhy == phy)
         {
+            // this is the PHY that has switched, so we do not need to configure anything
             NS_LOG_DEBUG("PHY " << +otherPhy->GetPhyId()
                                 << " is the one that has switched: do nothing");
             continue;
         }
-        if (spectrumPhy->GetCurrentFrequencyRange() == phy->GetCurrentFrequencyRange())
+        if (DoesOverlap(spectrumPhy->GetCurrentFrequencyRange(), phy->GetCurrentFrequencyRange()))
         {
-            NS_LOG_DEBUG("This is the active interface for PHY " << +otherPhy->GetPhyId()
-                                                                 << ": do nothing");
+            // The frequency range covered by the active interface of the other PHY overlaps
+            // with the frequency range of the PHY that has switched, so there is no inactive
+            // interface to configure.
+            NS_LOG_DEBUG("Range " << phy->GetCurrentFrequencyRange() << " overlaps with the range "
+                                  << spectrumPhy->GetCurrentFrequencyRange()
+                                  << " of the active interface for PHY " << +otherPhy->GetPhyId()
+                                  << ": do nothing");
             continue;
         }
         if (const auto& interfaces = spectrumPhy->GetSpectrumPhyInterfaces();
-            !interfaces.contains(phy->GetCurrentFrequencyRange()))
+            std::find_if(interfaces.cbegin(), interfaces.cend(), [phy](const auto& item) {
+                return DoesOverlap(item.first, phy->GetCurrentFrequencyRange());
+            }) == interfaces.cend())
         {
+            // The other PHY does not have any interface that covers (fully or partially) the
+            // frequency range of the PHY that has switched, so there is no interface to configure.
             NS_LOG_DEBUG("No interface covering range " << phy->GetCurrentFrequencyRange()
                                                         << " for PHY " << +otherPhy->GetPhyId()
                                                         << ": do nothing");
             continue;
         }
         NS_LOG_DEBUG("Configure interface for PHY " << +otherPhy->GetPhyId());
-        spectrumPhy->ConfigureInterface(phy->GetOperatingChannel().GetFrequencies(),
-                                        phy->GetChannelWidth());
+        const auto primaryWidth = std::min(otherPhy->GetChannelWidth(), phy->GetChannelWidth());
+        const auto primaryChannel = phy->GetOperatingChannel().GetPrimaryChannel(primaryWidth);
+        spectrumPhy->ConfigureInterface(primaryChannel.GetFrequencies(),
+                                        primaryChannel.GetTotalWidth());
     }
 }
 

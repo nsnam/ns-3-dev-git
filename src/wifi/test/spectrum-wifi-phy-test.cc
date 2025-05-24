@@ -1653,24 +1653,24 @@ class SpectrumWifiPhyMultipleInterfacesTest : public TestCase
 
     /**
      * Schedule now to check the interferences
-     * @param phy the PHY for which the check has to be executed
+     * @param rxPhy the receiver PHY for which the check has to be executed
      * @param freqRange the frequency range for which the check has to be executed
-     * @param band the band for which the check has to be executed
+     * @param txPhy the transmitter PHY which generated the interference
      * @param interferencesExpected flag whether interferences are expected to have been tracked
      */
-    void CheckInterferences(Ptr<SpectrumWifiPhy> phy,
+    void CheckInterferences(Ptr<SpectrumWifiPhy> rxPhy,
                             const FrequencyRange& freqRange,
-                            const WifiSpectrumBandInfo& band,
+                            Ptr<SpectrumWifiPhy> txPhy,
                             bool interferencesExpected);
 
     /**
      * Check the interferences
-     * @param phy the PHY for which the check has to be executed
-     * @param band the band for which the check has to be executed
+     * @param rxPhy the receiver PHY for which the check has to be executed
+     * @param txPhy the transmitter PHY which generated the interference
      * @param interferencesExpected flag whether interferences are expected to have been tracked
      */
-    void DoCheckInterferences(Ptr<SpectrumWifiPhy> phy,
-                              const WifiSpectrumBandInfo& band,
+    void DoCheckInterferences(Ptr<SpectrumWifiPhy> rxPhy,
+                              Ptr<SpectrumWifiPhy> txPhy,
                               bool interferencesExpected);
 
     /**
@@ -1840,12 +1840,12 @@ SpectrumWifiPhyMultipleInterfacesTest::RxFailure(std::size_t index, Ptr<const Wi
 }
 
 void
-SpectrumWifiPhyMultipleInterfacesTest::CheckInterferences(Ptr<SpectrumWifiPhy> phy,
+SpectrumWifiPhyMultipleInterfacesTest::CheckInterferences(Ptr<SpectrumWifiPhy> rxPhy,
                                                           const FrequencyRange& freqRange,
-                                                          const WifiSpectrumBandInfo& band,
+                                                          Ptr<SpectrumWifiPhy> txPhy,
                                                           bool interferencesExpected)
 {
-    if ((!m_trackSignalsInactiveInterfaces) && (phy->GetCurrentFrequencyRange() != freqRange))
+    if ((!m_trackSignalsInactiveInterfaces) && (rxPhy->GetCurrentFrequencyRange() != freqRange))
     {
         // ignore since no bands for that range exists in interference helper in that case
         return;
@@ -1854,21 +1854,22 @@ SpectrumWifiPhyMultipleInterfacesTest::CheckInterferences(Ptr<SpectrumWifiPhy> p
     // occurred at the exact same time as the check
     Simulator::ScheduleNow(&SpectrumWifiPhyMultipleInterfacesTest::DoCheckInterferences,
                            this,
-                           phy,
-                           band,
+                           rxPhy,
+                           txPhy,
                            interferencesExpected);
 }
 
 void
-SpectrumWifiPhyMultipleInterfacesTest::DoCheckInterferences(Ptr<SpectrumWifiPhy> phy,
-                                                            const WifiSpectrumBandInfo& band,
+SpectrumWifiPhyMultipleInterfacesTest::DoCheckInterferences(Ptr<SpectrumWifiPhy> rxPhy,
+                                                            Ptr<SpectrumWifiPhy> txPhy,
                                                             bool interferencesExpected)
 {
-    NS_LOG_FUNCTION(this << phy << band << interferencesExpected);
+    const auto bw = std::min(rxPhy->GetChannelWidth(), txPhy->GetChannelWidth());
+    const auto band = txPhy->GetBand(bw, 0);
+    NS_LOG_FUNCTION(this << rxPhy << band << interferencesExpected);
     PointerValue ptr;
-    phy->GetAttribute("InterferenceHelper", ptr);
+    rxPhy->GetAttribute("InterferenceHelper", ptr);
     auto interferenceHelper = DynamicCast<InterferenceHelper>(ptr.Get<InterferenceHelper>());
-    NS_ASSERT(interferenceHelper);
     const auto energyDuration = interferenceHelper->GetEnergyDuration(Watt_t{0}, band);
     NS_TEST_ASSERT_MSG_EQ(energyDuration.IsStrictlyPositive(),
                           interferencesExpected,
@@ -2168,7 +2169,7 @@ SpectrumWifiPhyMultipleInterfacesTest::DoRun()
                                 this,
                                 rxPhy,
                                 txPpduPhy->GetCurrentFrequencyRange(),
-                                txPpduPhy->GetBand(txPpduPhy->GetChannelWidth(), 0),
+                                txPpduPhy,
                                 true);
             Simulator::Schedule(delay + checkResultsDelay,
                                 &SpectrumWifiPhyMultipleInterfacesTest::CheckResults,
@@ -2220,7 +2221,7 @@ SpectrumWifiPhyMultipleInterfacesTest::DoRun()
                                 this,
                                 rxPhy,
                                 txPpduPhy->GetCurrentFrequencyRange(),
-                                txPpduPhy->GetBand(txPpduPhy->GetChannelWidth(), 0),
+                                txPpduPhy,
                                 true);
             Simulator::Schedule(delay + checkResultsDelay,
                                 &SpectrumWifiPhyMultipleInterfacesTest::CheckResults,
