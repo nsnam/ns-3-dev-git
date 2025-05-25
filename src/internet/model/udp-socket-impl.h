@@ -137,7 +137,7 @@ class UdpSocketImpl : public UdpSocket
     int FinishBind();
 
     /**
-     * @brief Called by the L3 protocol when it received a packet to pass on to TCP.
+     * @brief Called by the L3 protocol when it received a packet to pass on to UDP.
      *
      * @param packet the incoming packet
      * @param header the packet's IPv4 header
@@ -150,7 +150,7 @@ class UdpSocketImpl : public UdpSocket
                    Ptr<Ipv4Interface> incomingInterface);
 
     /**
-     * @brief Called by the L3 protocol when it received a packet to pass on to TCP.
+     * @brief Called by the L3 protocol when it received a packet to pass on to UDP.
      *
      * @param packet the incoming packet
      * @param header the packet's IPv6 header
@@ -208,7 +208,7 @@ class UdpSocketImpl : public UdpSocket
     int DoSendTo(Ptr<Packet> p, Ipv6Address daddr, uint16_t dport);
 
     /**
-     * @brief Called by the L3 protocol when it received an ICMP packet to pass on to TCP.
+     * @brief Called by the L3 protocol when it received an ICMP packet to pass on to UDP.
      *
      * @param icmpSource the ICMP source address
      * @param icmpTtl the ICMP Time to Live
@@ -223,7 +223,7 @@ class UdpSocketImpl : public UdpSocket
                      uint32_t icmpInfo);
 
     /**
-     * @brief Called by the L3 protocol when it received an ICMPv6 packet to pass on to TCP.
+     * @brief Called by the L3 protocol when it received an ICMPv6 packet to pass on to UDP.
      *
      * @param icmpSource the ICMP source address
      * @param icmpTtl the ICMP Time to Live
