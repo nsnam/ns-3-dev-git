@@ -1451,7 +1451,12 @@ ApWifiMac::GetEhtOperation(uint8_t linkId) const
     if (const auto bw = phy->GetChannelWidth();
         (phy->GetPhyBand() == WIFI_PHY_BAND_6GHZ) && (bw == MHz_t{320}))
     {
-        operation.m_opInfo.emplace(EhtOperation::EhtOpInfo{{.channelWidth = 4}});
+        operation.m_opInfo.emplace(EhtOperation::EhtOpInfo{
+            .control = {.channelWidth = 4},
+            .ccfs0 = phy->GetOperatingChannel().GetPrimaryChannelNumber(MHz_t{160},
+                                                                        WIFI_STANDARD_80211be),
+            .ccfs1 = phy->GetOperatingChannel().GetSecondaryChannelNumber(MHz_t{160},
+                                                                          WIFI_STANDARD_80211be)});
         operation.m_params.opInfoPresent = 1;
     }
     return operation;
