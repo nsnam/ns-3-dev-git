@@ -183,8 +183,7 @@ DsssPhy::GetPayloadDuration(uint32_t size,
                             double& /* totalAmpduNumSymbols */,
                             uint16_t /* staId */) const
 {
-    return MicroSeconds(
-        lrint(ceil((size * 8.0) / (txVector.GetMode().GetDataRate(MHz_u{22}) / 1.0e6))));
+    return MicroSeconds(ceil((size * 8.0) / (txVector.GetMode().GetDataRate(MHz_u{22}) / 1.0e6)));
 }
 
 Ptr<WifiPpdu>

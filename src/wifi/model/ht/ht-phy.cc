@@ -319,8 +319,8 @@ HtPhy::GetPayloadDuration(uint32_t size,
     case LAST_MPDU_IN_AGGREGATE: {
         // last packet in an A-MPDU
         uint32_t totalSize = totalAmpduSize + size;
-        numSymbols = lrint(
-            stbc * ceil((service + totalSize * 8.0 + 6 * nes) / (stbc * numDataBitsPerSymbol)));
+        numSymbols =
+            stbc * ceil((service + totalSize * 8.0 + 6 * nes) / (stbc * numDataBitsPerSymbol));
         NS_ASSERT(totalAmpduNumSymbols <= numSymbols);
         numSymbols -= totalAmpduNumSymbols;
         if (incFlag)
@@ -336,7 +336,7 @@ HtPhy::GetPayloadDuration(uint32_t size,
         // The number of OFDM symbols in the data field when BCC encoding
         // is used is given in equation 19-32 of the IEEE 802.11-2016 standard.
         numSymbols =
-            lrint(stbc * ceil((service + size * 8.0 + 6.0 * nes) / (stbc * numDataBitsPerSymbol)));
+            stbc * ceil((service + size * 8.0 + 6.0 * nes) / (stbc * numDataBitsPerSymbol));
         break;
     }
     default:
