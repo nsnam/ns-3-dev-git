@@ -9,7 +9,7 @@
 #define NS3_SYMMETRIC_ADJACENCY_MATRIX_H
 
 #include <vector>
-
+#include <stddef.h>
 namespace ns3
 {
 
