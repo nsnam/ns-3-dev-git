@@ -92,7 +92,7 @@ EhtPhy::BuildModeList()
 uint16_t
 EhtPhy::GetUsableSubcarriers(MHz_u channelWidth)
 {
-    if (channelWidth == 320)
+    if (channelWidth == MHz_u{320})
     {
         return 3920;
     }

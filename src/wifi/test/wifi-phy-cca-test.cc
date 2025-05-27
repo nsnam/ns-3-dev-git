@@ -666,7 +666,7 @@ WifiPhyCcaThresholdsTest::RunOne()
     // EHT PHY: 320 MHz EHT PPDU in primary channel (20 MHz) if power in primary above CCA
     // sensitivity threshold
     VerifyCcaThreshold(m_phy->GetPhyEntity(WIFI_MOD_CLASS_EHT),
-                       CreateDummyEhtPpdu(320, m_phy->GetOperatingChannel()),
+                       CreateDummyEhtPpdu(MHz_u{320}, m_phy->GetOperatingChannel()),
                        WIFI_CHANLIST_PRIMARY,
                        m_CcaSensitivity);
 
@@ -1473,8 +1473,8 @@ WifiPhyCcaIndicationTest::RunOne()
         m_expectedPer20MhzCcaBusyDurations.at(0).at(0) = MicroSeconds(50);
     }
     ScheduleTest(delay,
-                 {{-64.0, MicroSeconds(0), MicroSeconds(100), P20_CENTER_FREQUENCY, 20},
-                  {-65.0, MicroSeconds(50), MicroSeconds(200), P20_CENTER_FREQUENCY, 20}},
+                 {{-64.0, MicroSeconds(0), MicroSeconds(100), P20_CENTER_FREQUENCY, MHz_u{20}},
+                  {-65.0, MicroSeconds(50), MicroSeconds(200), P20_CENTER_FREQUENCY, MHz_u{20}}},
                  {},
                  {
                      {MicroSeconds(50) + aCcaTimeWithDelta,
@@ -2995,7 +2995,11 @@ WifiPhyCcaIndicationTest::RunOne()
                             "Reception of a 20 MHz signal that occupies the first subchannel of "
                             "S160 below ED threshold");
         ScheduleTest(delay,
-                     {{-65.0, MicroSeconds(0), MicroSeconds(100), S160_CENTER_FREQUENCY - 70, 20}},
+                     {{-65.0,
+                       MicroSeconds(0),
+                       MicroSeconds(100),
+                       S160_CENTER_FREQUENCY - MHz_u{70},
+                       MHz_u{20}}},
                      {},
                      {
                          {aCcaTimeWithDelta, WifiPhyState::IDLE}, // IDLE after aCcaTimeWithDelta
@@ -3019,7 +3023,11 @@ WifiPhyCcaIndicationTest::RunOne()
                             "S160 above ED threshold");
         m_expectedPer20MhzCcaBusyDurations.at(0).at(8) = MicroSeconds(100);
         ScheduleTest(delay,
-                     {{-61.0, MicroSeconds(0), MicroSeconds(100), S160_CENTER_FREQUENCY - 70, 20}},
+                     {{-61.0,
+                       MicroSeconds(0),
+                       MicroSeconds(100),
+                       S160_CENTER_FREQUENCY - MHz_u{70},
+                       MHz_u{20}}},
                      {},
                      {
                          {aCcaTimeWithDelta, WifiPhyState::IDLE}, // IDLE after aCcaTimeWithDelta
@@ -3044,7 +3052,11 @@ WifiPhyCcaIndicationTest::RunOne()
                             "Reception of a 20 MHz signal that occupies the second subchannel of "
                             "S160 below ED threshold");
         ScheduleTest(delay,
-                     {{-65.0, MicroSeconds(0), MicroSeconds(100), S160_CENTER_FREQUENCY - 50, 20}},
+                     {{-65.0,
+                       MicroSeconds(0),
+                       MicroSeconds(100),
+                       S160_CENTER_FREQUENCY - MHz_u{50},
+                       MHz_u{20}}},
                      {},
                      {
                          {aCcaTimeWithDelta, WifiPhyState::IDLE}, // IDLE after aCcaTimeWithDelta
@@ -3068,7 +3080,11 @@ WifiPhyCcaIndicationTest::RunOne()
                             "S160 above ED threshold");
         m_expectedPer20MhzCcaBusyDurations.at(0).at(9) = MicroSeconds(100);
         ScheduleTest(delay,
-                     {{-61.0, MicroSeconds(0), MicroSeconds(100), S160_CENTER_FREQUENCY - 50, 20}},
+                     {{-61.0,
+                       MicroSeconds(0),
+                       MicroSeconds(100),
+                       S160_CENTER_FREQUENCY - MHz_u{50},
+                       MHz_u{20}}},
                      {},
                      {
                          {aCcaTimeWithDelta, WifiPhyState::IDLE}, // IDLE after aCcaTimeWithDelta
@@ -3093,7 +3109,11 @@ WifiPhyCcaIndicationTest::RunOne()
                             "Reception of a 20 MHz signal that occupies the third subchannel of "
                             "S160 below ED threshold");
         ScheduleTest(delay,
-                     {{-65.0, MicroSeconds(0), MicroSeconds(100), S160_CENTER_FREQUENCY - 30, 20}},
+                     {{-65.0,
+                       MicroSeconds(0),
+                       MicroSeconds(100),
+                       S160_CENTER_FREQUENCY - MHz_u{30},
+                       MHz_u{20}}},
                      {},
                      {
                          {aCcaTimeWithDelta, WifiPhyState::IDLE}, // IDLE after aCcaTimeWithDelta
@@ -3117,7 +3137,11 @@ WifiPhyCcaIndicationTest::RunOne()
                             "S160 above ED threshold");
         m_expectedPer20MhzCcaBusyDurations.at(0).at(10) = MicroSeconds(100);
         ScheduleTest(delay,
-                     {{-61.0, MicroSeconds(0), MicroSeconds(100), S160_CENTER_FREQUENCY - 30, 20}},
+                     {{-61.0,
+                       MicroSeconds(0),
+                       MicroSeconds(100),
+                       S160_CENTER_FREQUENCY - MHz_u{30},
+                       MHz_u{20}}},
                      {},
                      {
                          {aCcaTimeWithDelta, WifiPhyState::IDLE}, // IDLE after aCcaTimeWithDelta
@@ -3142,7 +3166,11 @@ WifiPhyCcaIndicationTest::RunOne()
                             "Reception of a 20 MHz signal that occupies the fourth subchannel of "
                             "S160 below ED threshold");
         ScheduleTest(delay,
-                     {{-65.0, MicroSeconds(0), MicroSeconds(100), S160_CENTER_FREQUENCY - 10, 20}},
+                     {{-65.0,
+                       MicroSeconds(0),
+                       MicroSeconds(100),
+                       S160_CENTER_FREQUENCY - MHz_u{10},
+                       MHz_u{20}}},
                      {},
                      {
                          {aCcaTimeWithDelta, WifiPhyState::IDLE}, // IDLE after aCcaTimeWithDelta
@@ -3166,7 +3194,11 @@ WifiPhyCcaIndicationTest::RunOne()
                             "S160 above ED threshold");
         m_expectedPer20MhzCcaBusyDurations.at(0).at(11) = MicroSeconds(100);
         ScheduleTest(delay,
-                     {{-61.0, MicroSeconds(0), MicroSeconds(100), S160_CENTER_FREQUENCY - 10, 20}},
+                     {{-61.0,
+                       MicroSeconds(0),
+                       MicroSeconds(100),
+                       S160_CENTER_FREQUENCY - MHz_u{10},
+                       MHz_u{20}}},
                      {},
                      {
                          {aCcaTimeWithDelta, WifiPhyState::IDLE}, // IDLE after aCcaTimeWithDelta
@@ -3192,7 +3224,11 @@ WifiPhyCcaIndicationTest::RunOne()
                             "Reception of a 40 MHz signal that occupies the fifth and sixth "
                             "subchannels of S160 below ED threshold");
         ScheduleTest(delay,
-                     {{-60.0, MicroSeconds(0), MicroSeconds(100), S160_CENTER_FREQUENCY + 20, 40}},
+                     {{-60.0,
+                       MicroSeconds(0),
+                       MicroSeconds(100),
+                       S160_CENTER_FREQUENCY + MHz_u{20},
+                       MHz_u{40}}},
                      {},
                      {
                          {aCcaTimeWithDelta, WifiPhyState::IDLE}, // IDLE after aCcaTimeWithDelta
@@ -3215,7 +3251,11 @@ WifiPhyCcaIndicationTest::RunOne()
                             "subchannels of S160 above ED threshold");
         std::fill_n(m_expectedPer20MhzCcaBusyDurations.at(0).begin() + 12, 2, MicroSeconds(100));
         ScheduleTest(delay,
-                     {{-58.0, MicroSeconds(0), MicroSeconds(100), S160_CENTER_FREQUENCY + 20, 40}},
+                     {{-58.0,
+                       MicroSeconds(0),
+                       MicroSeconds(100),
+                       S160_CENTER_FREQUENCY + MHz_u{20},
+                       MHz_u{40}}},
                      {},
                      {
                          {aCcaTimeWithDelta, WifiPhyState::IDLE}, // IDLE after aCcaTimeWithDelta
@@ -3241,7 +3281,11 @@ WifiPhyCcaIndicationTest::RunOne()
                             "Reception of a 40 MHz signal that occupies the seventh and eighth "
                             "subchannels of S160 below ED threshold");
         ScheduleTest(delay,
-                     {{-60.0, MicroSeconds(0), MicroSeconds(100), S160_CENTER_FREQUENCY + 60, 40}},
+                     {{-60.0,
+                       MicroSeconds(0),
+                       MicroSeconds(100),
+                       S160_CENTER_FREQUENCY + MHz_u{60},
+                       MHz_u{40}}},
                      {},
                      {
                          {aCcaTimeWithDelta, WifiPhyState::IDLE}, // IDLE after aCcaTimeWithDelta
@@ -3264,7 +3308,11 @@ WifiPhyCcaIndicationTest::RunOne()
                             "subchannels of S160 above ED threshold");
         std::fill_n(m_expectedPer20MhzCcaBusyDurations.at(0).begin() + 14, 2, MicroSeconds(100));
         ScheduleTest(delay,
-                     {{-58.0, MicroSeconds(0), MicroSeconds(100), S160_CENTER_FREQUENCY + 60, 40}},
+                     {{-58.0,
+                       MicroSeconds(0),
+                       MicroSeconds(100),
+                       S160_CENTER_FREQUENCY + MHz_u{60},
+                       MHz_u{40}}},
                      {},
                      {
                          {aCcaTimeWithDelta, WifiPhyState::IDLE}, // IDLE after aCcaTimeWithDelta
@@ -3290,7 +3338,11 @@ WifiPhyCcaIndicationTest::RunOne()
                             "Reception of a 80 MHz signal that occupies the first four "
                             "subchannels of S160 below ED threshold");
         ScheduleTest(delay,
-                     {{-57.0, MicroSeconds(0), MicroSeconds(100), S160_CENTER_FREQUENCY - 40, 80}},
+                     {{-57.0,
+                       MicroSeconds(0),
+                       MicroSeconds(100),
+                       S160_CENTER_FREQUENCY - MHz_u{40},
+                       MHz_u{80}}},
                      {},
                      {
                          {aCcaTimeWithDelta, WifiPhyState::IDLE}, // IDLE after aCcaTimeWithDelta
@@ -3313,7 +3365,11 @@ WifiPhyCcaIndicationTest::RunOne()
                             "subchannels of S160 above ED threshold");
         std::fill_n(m_expectedPer20MhzCcaBusyDurations.at(0).begin() + 8, 4, MicroSeconds(100));
         ScheduleTest(delay,
-                     {{-55.0, MicroSeconds(0), MicroSeconds(100), S160_CENTER_FREQUENCY - 40, 80}},
+                     {{-55.0,
+                       MicroSeconds(0),
+                       MicroSeconds(100),
+                       S160_CENTER_FREQUENCY - MHz_u{40},
+                       MHz_u{80}}},
                      {},
                      {
                          {aCcaTimeWithDelta, WifiPhyState::IDLE}, // IDLE after aCcaTimeWithDelta
@@ -3339,7 +3395,11 @@ WifiPhyCcaIndicationTest::RunOne()
                             "Reception of a 80 MHz signal that occupies the last four "
                             "subchannels of S160 below ED threshold");
         ScheduleTest(delay,
-                     {{-57.0, MicroSeconds(0), MicroSeconds(100), S160_CENTER_FREQUENCY + 40, 80}},
+                     {{-57.0,
+                       MicroSeconds(0),
+                       MicroSeconds(100),
+                       S160_CENTER_FREQUENCY + MHz_u{40},
+                       MHz_u{80}}},
                      {},
                      {
                          {aCcaTimeWithDelta, WifiPhyState::IDLE}, // IDLE after aCcaTimeWithDelta
@@ -3362,7 +3422,11 @@ WifiPhyCcaIndicationTest::RunOne()
                             "subchannels of S160 above ED threshold");
         std::fill_n(m_expectedPer20MhzCcaBusyDurations.at(0).begin() + 12, 4, MicroSeconds(100));
         ScheduleTest(delay,
-                     {{-55.0, MicroSeconds(0), MicroSeconds(100), S160_CENTER_FREQUENCY + 40, 80}},
+                     {{-55.0,
+                       MicroSeconds(0),
+                       MicroSeconds(100),
+                       S160_CENTER_FREQUENCY + MHz_u{40},
+                       MHz_u{80}}},
                      {},
                      {
                          {aCcaTimeWithDelta, WifiPhyState::IDLE}, // IDLE after aCcaTimeWithDelta
@@ -3387,17 +3451,18 @@ WifiPhyCcaIndicationTest::RunOne()
             &WifiPhyCcaIndicationTest::LogScenario,
             this,
             "Reception of a 160 MHz signal that occupies the whole S160 below ED threshold");
-        ScheduleTest(delay,
-                     {{-54.0, MicroSeconds(0), MicroSeconds(100), S160_CENTER_FREQUENCY, 160}},
-                     {},
-                     {
-                         {aCcaTimeWithDelta, WifiPhyState::IDLE}, // IDLE after aCcaTimeWithDelta
-                         {MicroSeconds(100) - smallDelta,
-                          WifiPhyState::IDLE}, // IDLE just before the transmission ends
-                         {MicroSeconds(100) + smallDelta,
-                          WifiPhyState::IDLE} // IDLE just after the transmission ends
-                     },
-                     {});
+        ScheduleTest(
+            delay,
+            {{-54.0, MicroSeconds(0), MicroSeconds(100), S160_CENTER_FREQUENCY, MHz_u{160}}},
+            {},
+            {
+                {aCcaTimeWithDelta, WifiPhyState::IDLE}, // IDLE after aCcaTimeWithDelta
+                {MicroSeconds(100) - smallDelta,
+                 WifiPhyState::IDLE}, // IDLE just before the transmission ends
+                {MicroSeconds(100) + smallDelta,
+                 WifiPhyState::IDLE} // IDLE just after the transmission ends
+            },
+            {});
         delay += Seconds(1.0);
 
         //----------------------------------------------------------------------------------------------------------------------------------
@@ -3410,20 +3475,21 @@ WifiPhyCcaIndicationTest::RunOne()
             this,
             "Reception of a 160 MHz signal that occupies the whole S160 above ED threshold");
         std::fill_n(m_expectedPer20MhzCcaBusyDurations.at(0).begin() + 8, 8, MicroSeconds(100));
-        ScheduleTest(delay,
-                     {{-52.0, MicroSeconds(0), MicroSeconds(100), S160_CENTER_FREQUENCY, 160}},
-                     {},
-                     {
-                         {aCcaTimeWithDelta, WifiPhyState::IDLE}, // IDLE after aCcaTimeWithDelta
-                         {MicroSeconds(100) - smallDelta,
-                          WifiPhyState::IDLE}, // IDLE just before the transmission ends
-                         {MicroSeconds(100) + smallDelta,
-                          WifiPhyState::IDLE} // IDLE just after the transmission ends
-                     },
-                     {{MicroSeconds(100) - smallDelta,
-                       MicroSeconds(100),
-                       WIFI_CHANLIST_SECONDARY160,
-                       m_expectedPer20MhzCcaBusyDurations.at(0)}});
+        ScheduleTest(
+            delay,
+            {{-52.0, MicroSeconds(0), MicroSeconds(100), S160_CENTER_FREQUENCY, MHz_u{160}}},
+            {},
+            {
+                {aCcaTimeWithDelta, WifiPhyState::IDLE}, // IDLE after aCcaTimeWithDelta
+                {MicroSeconds(100) - smallDelta,
+                 WifiPhyState::IDLE}, // IDLE just before the transmission ends
+                {MicroSeconds(100) + smallDelta,
+                 WifiPhyState::IDLE} // IDLE just after the transmission ends
+            },
+            {{MicroSeconds(100) - smallDelta,
+              MicroSeconds(100),
+              WIFI_CHANLIST_SECONDARY160,
+              m_expectedPer20MhzCcaBusyDurations.at(0)}});
         delay += Seconds(1.0);
         ResetExpectedPer20MhzCcaBusyDurations();
 
@@ -3435,17 +3501,18 @@ WifiPhyCcaIndicationTest::RunOne()
             &WifiPhyCcaIndicationTest::LogScenario,
             this,
             "Reception of a 320 MHz signal that occupies the whole band below ED threshold");
-        ScheduleTest(delay,
-                     {{-51.0, MicroSeconds(0), MicroSeconds(100), P320_CENTER_FREQUENCY, 320}},
-                     {},
-                     {
-                         {aCcaTimeWithDelta, WifiPhyState::IDLE}, // IDLE after aCcaTimeWithDelta
-                         {MicroSeconds(100) - smallDelta,
-                          WifiPhyState::IDLE}, // IDLE just before the transmission ends
-                         {MicroSeconds(100) + smallDelta,
-                          WifiPhyState::IDLE} // IDLE just after the transmission ends
-                     },
-                     {});
+        ScheduleTest(
+            delay,
+            {{-51.0, MicroSeconds(0), MicroSeconds(100), P320_CENTER_FREQUENCY, MHz_u{320}}},
+            {},
+            {
+                {aCcaTimeWithDelta, WifiPhyState::IDLE}, // IDLE after aCcaTimeWithDelta
+                {MicroSeconds(100) - smallDelta,
+                 WifiPhyState::IDLE}, // IDLE just before the transmission ends
+                {MicroSeconds(100) + smallDelta,
+                 WifiPhyState::IDLE} // IDLE just after the transmission ends
+            },
+            {});
 
         delay += Seconds(1.0);
 
@@ -3460,7 +3527,7 @@ WifiPhyCcaIndicationTest::RunOne()
         std::fill_n(m_expectedPer20MhzCcaBusyDurations.at(0).begin(), 16, MicroSeconds(100));
         ScheduleTest(
             delay,
-            {{-49.0, MicroSeconds(0), MicroSeconds(100), P320_CENTER_FREQUENCY, 320}},
+            {{-49.0, MicroSeconds(0), MicroSeconds(100), P320_CENTER_FREQUENCY, MHz_u{320}}},
             {},
             {
                 {aCcaTimeWithDelta, WifiPhyState::CCA_BUSY}, // CCA-BUSY after aCcaTimeWithDelta
@@ -3489,8 +3556,12 @@ WifiPhyCcaIndicationTest::RunOne()
         m_expectedPer20MhzCcaBusyDurations.at(1).at(15) = MicroSeconds(50);
         ScheduleTest(
             delay,
-            {{-52.0, MicroSeconds(0), MicroSeconds(100), S160_CENTER_FREQUENCY + 70, 20},
-             {-52.0, MicroSeconds(50), MicroSeconds(100), P20_CENTER_FREQUENCY, 20}},
+            {{-52.0,
+              MicroSeconds(0),
+              MicroSeconds(100),
+              S160_CENTER_FREQUENCY + MHz_u{70},
+              MHz_u{20}},
+             {-52.0, MicroSeconds(50), MicroSeconds(100), P20_CENTER_FREQUENCY, MHz_u{20}}},
             {},
             {
                 {aCcaTimeWithDelta,
@@ -3529,8 +3600,16 @@ WifiPhyCcaIndicationTest::RunOne()
         m_expectedPer20MhzCcaBusyDurations.at(1).at(14) = MicroSeconds(50);
         ScheduleTest(
             delay,
-            {{-52.0, MicroSeconds(0), MicroSeconds(100), S160_CENTER_FREQUENCY + 50, 20},
-             {-52.0, MicroSeconds(50), MicroSeconds(100), S80_CENTER_FREQUENCY - 10, 20}},
+            {{-52.0,
+              MicroSeconds(0),
+              MicroSeconds(100),
+              S160_CENTER_FREQUENCY + MHz_u{50},
+              MHz_u{20}},
+             {-52.0,
+              MicroSeconds(50),
+              MicroSeconds(100),
+              S80_CENTER_FREQUENCY - MHz_u{10},
+              MHz_u{20}}},
             {},
             {
                 {aCcaTimeWithDelta,
@@ -3567,8 +3646,16 @@ WifiPhyCcaIndicationTest::RunOne()
         m_expectedPer20MhzCcaBusyDurations.at(1).at(13) = MicroSeconds(50);
         ScheduleTest(
             delay,
-            {{-52.0, MicroSeconds(0), MicroSeconds(100), S160_CENTER_FREQUENCY + 30, 20},
-             {-52.0, MicroSeconds(50), MicroSeconds(100), S40_CENTER_FREQUENCY + 10, 20}},
+            {{-52.0,
+              MicroSeconds(0),
+              MicroSeconds(100),
+              S160_CENTER_FREQUENCY + MHz_u{30},
+              MHz_u{20}},
+             {-52.0,
+              MicroSeconds(50),
+              MicroSeconds(100),
+              S40_CENTER_FREQUENCY + MHz_u{10},
+              MHz_u{20}}},
             {},
             {
                 {aCcaTimeWithDelta,
@@ -3605,8 +3692,12 @@ WifiPhyCcaIndicationTest::RunOne()
         m_expectedPer20MhzCcaBusyDurations.at(1).at(12) = MicroSeconds(50);
         ScheduleTest(
             delay,
-            {{-52.0, MicroSeconds(0), MicroSeconds(100), S160_CENTER_FREQUENCY + 10, 20},
-             {-52.0, MicroSeconds(50), MicroSeconds(100), S20_CENTER_FREQUENCY, 20}},
+            {{-52.0,
+              MicroSeconds(0),
+              MicroSeconds(100),
+              S160_CENTER_FREQUENCY + MHz_u{10},
+              MHz_u{20}},
+             {-52.0, MicroSeconds(50), MicroSeconds(100), S20_CENTER_FREQUENCY, MHz_u{20}}},
             {},
             {
                 {aCcaTimeWithDelta,
@@ -3640,7 +3731,7 @@ WifiPhyCcaIndicationTest::RunOne()
             "Reception of a 160 MHz PPDU that occupies S160 below CCA sensitivity threshold");
         ScheduleTest(delay,
                      {},
-                     {{-64.0, MicroSeconds(0), S160_CENTER_FREQUENCY, 160}},
+                     {{-64.0, MicroSeconds(0), S160_CENTER_FREQUENCY, MHz_u{160}}},
                      {
                          {aCcaTimeWithDelta, WifiPhyState::IDLE}, // IDLE after aCcaTimeWithDelta
                          {ppduDurations.at(160) - smallDelta,
@@ -3663,7 +3754,7 @@ WifiPhyCcaIndicationTest::RunOne()
         std::fill_n(m_expectedPer20MhzCcaBusyDurations.at(0).begin() + 8, 8, ppduDurations.at(160));
         ScheduleTest(delay,
                      {},
-                     {{-62.0, MicroSeconds(0), S160_CENTER_FREQUENCY, 160}},
+                     {{-62.0, MicroSeconds(0), S160_CENTER_FREQUENCY, MHz_u{160}}},
                      {
                          {aCcaTimeWithDelta, WifiPhyState::IDLE}, // IDLE after aCcaTimeWithDelta
                          {ppduDurations.at(160) - smallDelta,

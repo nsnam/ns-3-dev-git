@@ -460,7 +460,7 @@ ChannelAccessManager::ResizeLastBusyStructs()
         m_lastIdle.erase(WIFI_CHANLIST_SECONDARY80);
     }
 
-    if (width >= 320)
+    if (width >= MHz_u{320})
     {
         m_lastBusyEnd.emplace(WIFI_CHANLIST_SECONDARY160, now);
         m_lastIdle.emplace(WIFI_CHANLIST_SECONDARY160, Timespan{now, now});

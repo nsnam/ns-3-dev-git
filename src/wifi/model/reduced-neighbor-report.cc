@@ -145,7 +145,7 @@ ReducedNeighborReport::SetOperatingChannel(std::size_t nbrApInfoId,
         {
             operatingClass = 134;
         }
-        else if (channel.GetWidth() == 320)
+        else if (channel.GetWidth() == MHz_u{320})
         {
             operatingClass = 137;
         }
@@ -246,7 +246,7 @@ ReducedNeighborReport::GetOperatingChannel(std::size_t nbrApInfoId) const
         break;
     case 137:
         band = WIFI_PHY_BAND_6GHZ;
-        width = 320;
+        width = MHz_u{320};
         break;
     default:
         break;

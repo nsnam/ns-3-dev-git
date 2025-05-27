@@ -1405,7 +1405,7 @@ ChannelAccessManagerTest<QosTxop>::DoRun()
     //   |    rx    | sifs | acktxttime | sifs + aifsn |  tx  |
     //                   |
     //                  55 request access
-    StartTest(4, 6, 10, 20, 320);
+    StartTest(4, 6, 10, 20, MHz_u{320});
     AddTxop(1);
     AddRxErrorEvt(20, 30);
     AddCcaBusyEvt(50, 26, WIFI_CHANLIST_SECONDARY);
@@ -1420,7 +1420,7 @@ ChannelAccessManagerTest<QosTxop>::DoRun()
     //   |    rx    | sifs | acktxttime | sifs + aifsn |  tx  |
     //                                        |
     //                                       70 request access
-    StartTest(4, 6, 10, 20, 320);
+    StartTest(4, 6, 10, 20, MHz_u{320});
     AddTxop(1);
     AddRxErrorEvt(20, 30);
     AddCcaBusyEvt(50, 26, WIFI_CHANLIST_SECONDARY40);
@@ -1435,7 +1435,7 @@ ChannelAccessManagerTest<QosTxop>::DoRun()
     //   |    rx    | sifs | acktxttime | sifs + aifsn | idle |  tx  |
     //                                                     |
     //                                                    82 request access
-    StartTest(4, 6, 10, 20, 320);
+    StartTest(4, 6, 10, 20, MHz_u{320});
     AddTxop(1);
     AddRxErrorEvt(20, 30);
     AddCcaBusyEvt(50, 34, WIFI_CHANLIST_SECONDARY80);
@@ -1450,7 +1450,7 @@ ChannelAccessManagerTest<QosTxop>::DoRun()
     //   |    rx    | sifs | acktxttime | sifs + aifsn | idle |  tx  |
     //                                                     |
     //                                                    82 request access
-    StartTest(4, 6, 10, 20, 320);
+    StartTest(4, 6, 10, 20, MHz_u{320});
     AddTxop(1);
     AddRxErrorEvt(20, 30);
     AddCcaBusyEvt(50, 34, WIFI_CHANLIST_SECONDARY160);

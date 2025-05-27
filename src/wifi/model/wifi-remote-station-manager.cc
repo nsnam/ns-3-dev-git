@@ -1771,7 +1771,7 @@ WifiRemoteStationManager::AddStationEhtCapabilities(Mac48Address from,
     if (ehtCapabilities.m_phyCapabilities.support320MhzIn6Ghz &&
         (m_wifiPhy->GetPhyBand() == WIFI_PHY_BAND_6GHZ))
     {
-        state->m_channelWidth = 320;
+        state->m_channelWidth = MHz_u{320};
     }
     // For other cases, the supported channel width is set by the HT/VHT capabilities
     for (const auto& mcs : m_wifiPhy->GetMcsList(WIFI_MOD_CLASS_EHT))

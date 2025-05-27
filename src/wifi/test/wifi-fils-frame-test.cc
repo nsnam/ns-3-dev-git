@@ -436,7 +436,7 @@ WifiFilsFrameTestBuildCase(const WifiFilsFrameTestCase& tc)
         break;
     case WifiFilsFrameTestCase::BW320MHZ_NSS3_DISC:
         params.standard = WifiStandard::WIFI_STANDARD_80211be;
-        params.bw = 320;
+        params.bw = MHz_u{320};
         params.ssid = "BW320MHZ_NSS3";
         params.nss = 3;
         params.filsIntrvl = 20 * WIFI_TU;

@@ -94,7 +94,7 @@ uint8_t
 EhtPpdu::GetChannelWidthEncodingFromMhz(MHz_u channelWidth, const WifiPhyOperatingChannel& channel)
 {
     NS_ASSERT(channel.GetTotalWidth() >= channelWidth);
-    if (channelWidth == 320)
+    if (channelWidth == MHz_u{320})
     {
         switch (channel.GetNumber())
         {
@@ -119,7 +119,7 @@ EhtPpdu::GetChannelWidthMhzFromEncoding(uint8_t bandwidth)
 {
     if ((bandwidth == 4) || (bandwidth == 5))
     {
-        return 320;
+        return MHz_u{320};
     }
     return HePpdu::GetChannelWidthMhzFromEncoding(bandwidth);
 }
