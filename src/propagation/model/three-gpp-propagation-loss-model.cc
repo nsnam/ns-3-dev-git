@@ -263,6 +263,9 @@ NS_LOG_COMPONENT_DEFINE("ThreeGppPropagationLossModel");
 
 NS_OBJECT_ENSURE_REGISTERED(ThreeGppPropagationLossModel);
 
+std::function<Ptr<MobilityModel>(Ptr<const MobilityModel>, Ptr<const MobilityModel>)>
+    ThreeGppPropagationLossModel::m_doCalcRxPowerPrologueFunction;
+
 TypeId
 ThreeGppPropagationLossModel::GetTypeId()
 {
@@ -375,10 +378,18 @@ ThreeGppPropagationLossModel::IsO2iLowPenetrationLoss(Ptr<const ChannelCondition
 
 double
 ThreeGppPropagationLossModel::DoCalcRxPower(double txPowerDbm,
-                                            Ptr<MobilityModel> a,
+                                            Ptr<MobilityModel> c,
                                             Ptr<MobilityModel> b) const
 {
     NS_LOG_FUNCTION(this);
+
+    // if there is a prologue function installed, call it and replace the transmitter mobility model
+    auto a = m_doCalcRxPowerPrologueFunction ? m_doCalcRxPowerPrologueFunction(b, c) : c;
+    if (a->GetPosition() != c->GetPosition())
+    {
+        NS_LOG_DEBUG("Prologue function replaced source position "
+                     << c->GetPosition() << " with position " << a->GetPosition());
+    }
 
     // check if the model is initialized
     NS_ASSERT_MSG(m_frequency != 0.0, "First set the centre frequency");

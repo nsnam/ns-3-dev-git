@@ -75,6 +75,26 @@ class ThreeGppPropagationLossModel : public PropagationLossModel
      */
     bool IsO2iLowPenetrationLoss(Ptr<const ChannelCondition> cond) const;
 
+    /**
+     * @brief Stop-gap solution for wraparound model
+     *
+     * Stop-gap solution for support of wraparound model in the 5G NR module. This
+     * method was introduced for ns-3.45 but will be removed in a future release once
+     * a more general solution is added elsewhere (most likely in the spectrum channel). The
+     * callback method registered here will be executed at the beginning of DoCalcRxPower, and the
+     * returned pointer to a mobility model will be subsequently used as the (replacement) source
+     * mobility model for the rest of DoCalcRxPower() processing.
+     *
+     * @param prologueFunction Function that receives two mobility models and compute a third, based
+     * on the wrapped position of the second model in respect to the first
+     */
+    static void InstallDoCalcRxPowerPrologueFunction(
+        std::function<Ptr<MobilityModel>(Ptr<const MobilityModel>, Ptr<const MobilityModel>)>
+            prologueFunction)
+    {
+        m_doCalcRxPowerPrologueFunction = prologueFunction;
+    }
+
   private:
     /**
      * Computes the received power by applying the pathloss model described in
@@ -300,6 +320,10 @@ class ThreeGppPropagationLossModel : public PropagationLossModel
     Ptr<NormalRandomVariable>
         m_normalO2iHighLossVar; //!< a normal random variable for the calculation of 02i high loss,
                                 //!< see TR38.901 Table 7.4.3-2
+
+    /// Optional prologue function that can be used to implement wraparound models
+    static std::function<Ptr<MobilityModel>(Ptr<const MobilityModel>, Ptr<const MobilityModel>)>
+        m_doCalcRxPowerPrologueFunction;
 };
 
 /**
