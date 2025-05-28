@@ -31,6 +31,9 @@ class WifiArbitrator : public Arbitrator
     static TypeId GetTypeId();
     WifiArbitrator();
     ~WifiArbitrator() override;
+
+  protected:
+    bool IsRequestAccepted(const Event& coexEvent) override;
 };
 
 } // namespace coex

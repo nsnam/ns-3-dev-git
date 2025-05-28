@@ -38,5 +38,11 @@ WifiArbitrator::~WifiArbitrator()
     NS_LOG_FUNCTION_NOARGS();
 }
 
+bool
+WifiArbitrator::IsRequestAccepted(const Event& coexEvent)
+{
+    return true;
+}
+
 } // namespace coex
 } // namespace ns3
