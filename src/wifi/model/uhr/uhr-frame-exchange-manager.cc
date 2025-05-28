@@ -9,7 +9,9 @@
 #include "uhr-frame-exchange-manager.h"
 
 #include "dso-manager.h"
+#include "uhr-phy.h"
 
+#include "ns3/ap-wifi-mac.h"
 #include "ns3/sta-wifi-mac.h"
 
 #undef NS_LOG_APPEND_CONTEXT
@@ -244,7 +246,132 @@ UhrFrameExchangeManager::ForwardPsduMapDown(WifiConstPsduMap psduMap, WifiTxVect
     }
     m_dsoIcfReceived = false;
 
+    if (m_apMac && IsTrigger(psduMap))
+    {
+        CtrlTriggerHeader trigger;
+        psduMap.cbegin()->second->GetPayload(0)->PeekHeader(trigger);
+        if (trigger.IsBsrp())
+        {
+            const auto& aidAddrMap = m_apMac->GetStaList(m_linkId);
+            for (const auto& userInfo : trigger)
+            {
+                const auto addressIt = aidAddrMap.find(userInfo.GetAid12());
+                NS_ASSERT_MSG(addressIt != aidAddrMap.end(), "AID not found");
+                if (!GetWifiRemoteStationManager()->GetDsoEnabled(addressIt->second))
+                {
+                    continue;
+                }
+                m_dsoStas.emplace(addressIt->second, userInfo.GetRuAllocation());
+            }
+        }
+    }
+
     EhtFrameExchangeManager::ForwardPsduMapDown(psduMap, txVector);
+}
+
+void
+UhrFrameExchangeManager::NotifyChannelReleased(Ptr<Txop> txop)
+{
+    NS_LOG_FUNCTION(this << txop);
+
+    if (m_apMac && !m_dsoStas.empty())
+    {
+        // the channel has been released; if the TXNAV is still set or if m_protectSingleExchange is
+        // enabled, it means no CF-End is going to be sent. In this case, DSO clients wait for a
+        // slot plus the PHY RX start delay before switching back to the DSO subband (in this case,
+        // this function is called a SIFS after the last frame in the TXOP)
+        Time delay{0};
+        if (const auto remTxNav = m_txNav - Simulator::Now();
+            remTxNav.IsStrictlyPositive() || m_protectSingleExchange)
+        {
+            delay = m_phy->GetSlot() + EMLSR_OR_DSO_RX_PHY_START_DELAY;
+        }
+
+        for (const auto& [address, ru] : m_dsoStas)
+        {
+            DsoSwitchBackToPrimary(address, delay);
+        }
+
+        m_dsoStas.clear();
+    }
+
+    EhtFrameExchangeManager::NotifyChannelReleased(txop);
+}
+
+void
+UhrFrameExchangeManager::DsoSwitchBackToPrimary(const Mac48Address& address, const Time& delay)
+{
+    NS_LOG_FUNCTION(this << address << delay.As(Time::US));
+
+    NS_ASSERT_MSG(GetWifiRemoteStationManager()->GetDsoEnabled(address),
+                  "DSO switch back to primary requested for a non-DSO STA");
+
+    const auto clientAddress =
+        GetWifiRemoteStationManager()->GetMldAddress(address).value_or(address);
+
+    NS_LOG_DEBUG("DSO switch back delay started: blocking link " << +m_linkId << " for address "
+                                                                 << clientAddress);
+    m_mac->BlockUnicastTxOnLinks(WifiQueueBlockedReason::WAITING_DSO_SWITCH_BACK_DELAY,
+                                 clientAddress,
+                                 {m_linkId});
+
+    auto unblockLink = [=, this]() {
+        NS_LOG_DEBUG("DSO switch back delay expired: unblocking link "
+                     << +m_linkId << " for address " << address);
+        m_mac->UnblockUnicastTxOnLinks(WifiQueueBlockedReason::WAITING_DSO_SWITCH_BACK_DELAY,
+                                       address,
+                                       {m_linkId});
+    };
+
+    const auto switchBackDelay =
+        MicroSeconds(295); // TODO: TBD how switch back delay is advertised to AP
+    const auto timeout =
+        switchBackDelay + delay - m_phy->GetSifs() - m_phy->GetSlot() -
+        EMLSR_OR_DSO_RX_PHY_START_DELAY; // switch back delay accounts for a SIFS + slot + PHY
+                                         // RXSTART delay, removing this quantity gives the
+                                         // switching delay needed by the DSO to switch back to the
+                                         // primary subband, an extra delay is passed to account for
+                                         // the extra timeout before the PHY switching of the DSO
+                                         // STA is expected to start
+    Simulator::Schedule(timeout, unblockLink);
+}
+
+void
+UhrFrameExchangeManager::TbPpduTimeout(WifiPsduMap* psduMap, std::size_t nSolicitedStations)
+{
+    NS_LOG_FUNCTION(this << psduMap << nSolicitedStations);
+    const auto& staMissedTbPpduFrom = m_txTimer.GetStasExpectedToRespond();
+
+    CtrlTriggerHeader trigger;
+    psduMap->cbegin()->second->GetPayload(0)->PeekHeader(trigger);
+
+    if (!m_dsoStas.empty() && trigger.IsBsrp() &&
+        (staMissedTbPpduFrom.size() == nSolicitedStations))
+    {
+        // No ICF response received from any DSO STA, we cannot differentiate between ICF not
+        // received by all STAs from all ICF responses being corrupted. Hence, we assume the worst
+        // case and we consider an ICF response is being transmitted before DSO STAs switch back to
+        // the primary subband.
+
+        const auto tbTxVector = trigger.GetHeTbTxVector(trigger.begin()->GetAid12());
+        const auto tbResponseDuration =
+            HePhy::ConvertLSigLengthToHeTbPpduDuration(trigger.GetUlLength(),
+                                                       tbTxVector,
+                                                       m_phy->GetPhyBand());
+        const auto remainingIcrDuration =
+            tbResponseDuration - WifiPhy::CalculatePhyPreambleAndHeaderDuration(tbTxVector);
+        const auto delay =
+            remainingIcrDuration + m_phy->GetSifs() + EMLSR_OR_DSO_RX_PHY_START_DELAY;
+
+        for (const auto& [address, ru] : m_dsoStas)
+        {
+            DsoSwitchBackToPrimary(address, delay);
+        }
+
+        m_dsoStas.clear();
+    }
+
+    EhtFrameExchangeManager::TbPpduTimeout(psduMap, nSolicitedStations);
 }
 
 } // namespace ns3
