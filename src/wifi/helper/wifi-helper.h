@@ -415,6 +415,16 @@ class WifiHelper
     void SetRemoteStationManager(uint8_t linkId, std::string type, Args&&... args);
 
     /**
+     * Set the type of Coex Manager(s) to create.
+     *
+     * @tparam Ts \deduced Argument types
+     * @param typeId the TypeID of the Coex Manager
+     * @param [in] args Name and AttributeValue pairs to set.
+     */
+    template <typename... Ts>
+    void SetCoexManager(std::string typeId, Ts&&... args);
+
+    /**
      * Helper function used to set the OBSS-PD algorithm
      *
      * @tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
@@ -594,6 +604,7 @@ class WifiHelper
 
   protected:
     mutable std::vector<ObjectFactory> m_stationManager; ///< station manager
+    ObjectFactory m_coexManager;                         //!< factory for the CoexManagers
     WifiStandard m_standard;                             ///< wifi standard
     ObjectFactory m_htConfig;                            ///< HT configuration
     ObjectFactory m_vhtConfig;                           ///< VHT configuration
@@ -695,6 +706,14 @@ WifiHelper::SetRemoteStationManager(uint8_t linkId, std::string type, Args&&... 
     {
         m_stationManager.resize(linkId + 1, ObjectFactory(type, std::forward<Args>(args)...));
     }
+}
+
+template <typename... Ts>
+void
+WifiHelper::SetCoexManager(std::string typeId, Ts&&... args)
+{
+    m_coexManager.SetTypeId(typeId);
+    m_coexManager.Set(std::forward<Ts>(args)...);
 }
 
 template <typename... Args>

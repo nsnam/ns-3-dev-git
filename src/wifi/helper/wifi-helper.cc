@@ -12,6 +12,7 @@
 
 #include "ns3/ampdu-subframe-header.h"
 #include "ns3/ap-wifi-mac.h"
+#include "ns3/coex-arbitrator.h"
 #include "ns3/config.h"
 #include "ns3/eht-configuration.h"
 #include "ns3/eht-ppdu.h"
@@ -29,6 +30,7 @@
 #include "ns3/sta-wifi-mac.h"
 #include "ns3/uhr-configuration.h"
 #include "ns3/vht-configuration.h"
+#include "ns3/wifi-coex-manager.h"
 #include "ns3/wifi-mac-queue.h"
 #include "ns3/wifi-mac-trailer.h"
 
@@ -1181,6 +1183,17 @@ WifiHelper::Install(const WifiPhyHelper& phyHelper,
             }
             device->AggregateObject(ndqi);
         }
+        if (m_coexManager.IsTypeIdSet())
+        {
+            auto coexArbitrator = node->GetObject<coex::Arbitrator>();
+            NS_ABORT_MSG_IF(
+                !coexArbitrator,
+                "A Coex Arbitrator shall be installed before installing device coex managers");
+            auto coexManager = m_coexManager.Create()->GetObject<WifiCoexManager>();
+            NS_ABORT_MSG_IF(!coexManager, "Expected a WifiCoexManager or a subclass of it");
+            coexManager->SetWifiNetDevice(device);
+            coexArbitrator->SetDeviceCoexManager(coex::Rat::WIFI, coexManager);
+        }
     }
     return devices;
 }
@@ -1294,6 +1307,7 @@ WifiHelper::EnableLogComponents(LogLevel logLevel)
     LogComponentEnable("VhtPpdu", logLevel);
     LogComponentEnable("WifiAckManager", logLevel);
     LogComponentEnable("WifiAssocManager", logLevel);
+    LogComponentEnable("WifiCoexManager", logLevel);
     LogComponentEnable("WifiDefaultAckManager", logLevel);
     LogComponentEnable("WifiDefaultAssocManager", logLevel);
     LogComponentEnable("WifiDefaultGcrManager", logLevel);

@@ -151,6 +151,7 @@ set(source_files
     model/wifi-acknowledgment.cc
     model/wifi-assoc-manager.cc
     model/wifi-bandwidth-filter.cc
+    model/wifi-coex-manager.cc
     model/wifi-default-ack-manager.cc
     model/wifi-default-assoc-manager.cc
     model/wifi-default-gcr-manager.cc
@@ -340,6 +341,7 @@ set(header_files
     model/wifi-acknowledgment.h
     model/wifi-assoc-manager.h
     model/wifi-bandwidth-filter.h
+    model/wifi-coex-manager.h
     model/wifi-default-ack-manager.h
     model/wifi-default-assoc-manager.h
     model/wifi-default-gcr-manager.h
@@ -396,6 +398,7 @@ build_lib(
   SOURCE_FILES ${source_files}
   HEADER_FILES ${header_files}
   LIBRARIES_TO_LINK
+    ${libcoex}
     ${libenergy}
     ${libspectrum}
     ${libsi-units}
