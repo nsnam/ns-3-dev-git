@@ -13,6 +13,7 @@
 
 #include <map>
 #include <set>
+#include <vector>
 
 namespace ns3
 {
@@ -54,25 +55,65 @@ class SpectrumWifiPhyHelper : public WifiPhyHelper
     void SetChannel(const std::string& channelName);
 
     /**
+     * Structure holding the information about a subchannel to configure for a spectrum PHY
+     * interface.
+     */
+    struct SpectrumSubchannel
+    {
+        std::set<MHz_t>
+            centerFrequencies; ///< the center frequencies for each segment of the subchannel
+        MHz_t totalWidth;   ///< the total width of the subchannel (it is assumed that all segments
+                            ///< have the same width)
+        bool enabled{true}; ///< whether the subchannel is enabled to track signals
+
+        /**
+         * @brief spaceship operator.
+         *
+         * @param other the other spectrum subchannel to compare with
+         * @returns a negative value if the provided subchannel is located at a lower center
+         * frequency, 0 if the provided subchannel is identical, or a positive value if the provided
+         * subchannel is located at a higher center frequency.
+         */
+        auto operator<=>(const SpectrumSubchannel& other) const
+        {
+            return centerFrequencies <=> other.centerFrequencies;
+        }
+    };
+
+    /**
      * @param channel the spectrum channel to add to this helper
-     * @param freqRange the frequency range, bounded by a minFrequency and a maxFrequency in MHz
+     * @param freqRange the total frequency range covered by the channel, bounded by a minFrequency
+     * and a maxFrequency
+     * @param subchannels the subchannels to configure for this channel. If provided, multiple
+     * spectrum PHY interfaces may be created to cover each subchannel, and eventually directly
+     * configured to operate on the frequency range(s) of these subchannels. Otherwise, a single
+     * spectrum PHY interface will be created to cover the whole frequency range and no subchannel
+     * configuration will be applied. If the subchannels are covering multiple 80+80 MHz operating
+     * channels, these cannot be intertwined.
      *
      * Every PHY created by a call to Install is added to this spectrum channel.
      * If a PHY is requested to operate or scan a channel with the specified frequency and width
      * combination, it will activate that channel and deactivate the current channel for that PHY.
      */
     void AddChannel(const Ptr<SpectrumChannel> channel,
-                    const FrequencyRange& freqRange = WHOLE_WIFI_SPECTRUM);
+                    const FrequencyRange& freqRange = WHOLE_WIFI_SPECTRUM,
+                    const std::vector<SpectrumSubchannel>& subchannels = {});
     /**
      * @param channelName The name of the spectrum channel to add to this helper
-     * @param freqRange the frequency range, bounded by a minFrequency and a maxFrequency in MHz
+     * @param freqRange the frequency range, bounded by a minFrequency and a maxFrequency
+     * @param subchannels the subchannels to configure for this channel. If provided, multiple
+     * spectrum PHY interfaces may be created to cover each subchannel, and eventually directly
+     * configured to operate on the frequency range(s) of these subchannels. Otherwise, a single
+     * spectrum PHY interface will be created to cover the whole frequency range and no subchannel
+     * configuration will be applied.
      *
      * Every PHY created by a call to Install is added to this spectrum channel.
      * If a PHY is requested to operate or scan a channel with the specified frequency and width
      * combination, it will activate that channel and deactivate the current channel for that PHY.
      */
     void AddChannel(const std::string& channelName,
-                    const FrequencyRange& freqRange = WHOLE_WIFI_SPECTRUM);
+                    const FrequencyRange& freqRange = WHOLE_WIFI_SPECTRUM,
+                    const std::vector<SpectrumSubchannel>& subchannels = {});
 
     /**
      * Add a given spectrum PHY interface to the PHY instance corresponding of a given link.
@@ -129,7 +170,27 @@ class SpectrumWifiPhyHelper : public WifiPhyHelper
      */
     static void SpectrumChannelSwitched(Ptr<SpectrumWifiPhy> phy);
 
-    std::map<FrequencyRange, Ptr<SpectrumChannel>> m_channels; ///< the spectrum channels
+    /**
+     * Structure holding the information to configure a spectrum channel.
+     */
+    struct SpectrumChannelInfo
+    {
+        Ptr<SpectrumChannel> channel;             ///< the spectrum channel
+        std::set<SpectrumSubchannel> subchannels; ///< the subchannels to configure for this channel
+    };
+
+    /**
+     * Configure the spectrum channel for a given PHY instance.
+     *
+     * @param phy the spectrum PHY instance to configure
+     * @param freqRange the frequency range to configure for the PHY instance
+     * @param channelInfo the information about the spectrum channel to configure
+     */
+    void ConfigureChannel(Ptr<SpectrumWifiPhy> phy,
+                          const FrequencyRange& freqRange,
+                          const SpectrumChannelInfo& channelInfo) const;
+
+    std::map<FrequencyRange, SpectrumChannelInfo> m_channels; ///< the spectrum channels
     std::map<uint8_t /* linkId */, std::set<FrequencyRange>>
         m_interfacesMap; ///< map of the spectrum PHY interfaces to be added to the PHY instance
                          ///< corresponding to a given link ID

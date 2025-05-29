@@ -55,17 +55,22 @@ SpectrumWifiPhyHelper::SetChannel(const std::string& channelName)
 
 void
 SpectrumWifiPhyHelper::AddChannel(const Ptr<SpectrumChannel> channel,
-                                  const FrequencyRange& freqRange)
+                                  const FrequencyRange& freqRange,
+                                  const std::vector<SpectrumSubchannel>& subchannels)
 {
-    m_channels[freqRange] = channel;
+    m_channels[freqRange] = SpectrumChannelInfo{
+        .channel = channel,
+        .subchannels = std::set<SpectrumSubchannel>(subchannels.begin(), subchannels.end())};
     AddWifiBandwidthFilter(channel);
 }
 
 void
-SpectrumWifiPhyHelper::AddChannel(const std::string& channelName, const FrequencyRange& freqRange)
+SpectrumWifiPhyHelper::AddChannel(const std::string& channelName,
+                                  const FrequencyRange& freqRange,
+                                  const std::vector<SpectrumSubchannel>& subchannels)
 {
     Ptr<SpectrumChannel> channel = Names::Find<SpectrumChannel>(channelName);
-    AddChannel(channel, freqRange);
+    AddChannel(channel, freqRange, subchannels);
 }
 
 void
@@ -156,16 +161,92 @@ SpectrumWifiPhyHelper::InstallPhyInterfaces(uint8_t linkId, Ptr<SpectrumWifiPhy>
     if (!m_interfacesMap.contains(linkId))
     {
         // default setup: set all interfaces to this link
-        for (const auto& [freqRange, channel] : m_channels)
+        for (const auto& [freqRange, channelInfo] : m_channels)
         {
-            phy->AddChannel(channel, freqRange);
+            ConfigureChannel(phy, freqRange, channelInfo);
         }
     }
     else
     {
         for (const auto& freqRange : m_interfacesMap.at(linkId))
         {
-            phy->AddChannel(m_channels.at(freqRange), freqRange);
+            ConfigureChannel(phy, freqRange, m_channels.at(freqRange));
+        }
+    }
+}
+
+void
+SpectrumWifiPhyHelper::ConfigureChannel(Ptr<SpectrumWifiPhy> phy,
+                                        const FrequencyRange& freqRange,
+                                        const SpectrumChannelInfo& channelInfo) const
+{
+    NS_LOG_FUNCTION(phy << phy << freqRange << channelInfo.channel
+                        << channelInfo.subchannels.size());
+
+    // If multiple subchannels have to be configured, we need to split the whole range.
+    // For that purpose, we need to calculate the frequencies at which each split should happen.
+    std::vector<MHz_t> splitFrequencies;
+    if (!channelInfo.subchannels.empty())
+    {
+        std::optional<MHz_t> prevStopFreq;
+        for (const auto& subchannel : channelInfo.subchannels)
+        {
+            // check there is no overlap with the other subchannels
+            std::vector<MHz_t> subchannelFreqs(subchannel.centerFrequencies.begin(),
+                                               subchannel.centerFrequencies.end());
+            NS_ABORT_MSG_IF(std::any_of(channelInfo.subchannels.cbegin(),
+                                        channelInfo.subchannels.cend(),
+                                        [&subchannel](const auto& subchan) {
+                                            const auto isSameSubchannel =
+                                                std::equal(subchan.centerFrequencies.cbegin(),
+                                                           subchan.centerFrequencies.cend(),
+                                                           subchannel.centerFrequencies.cbegin()) &&
+                                                (subchan.totalWidth == subchannel.totalWidth);
+                                            return !isSameSubchannel &&
+                                                   DoesOverlap(subchan.centerFrequencies,
+                                                               subchan.totalWidth,
+                                                               subchannel.centerFrequencies,
+                                                               subchannel.totalWidth);
+                                        }),
+                            "Subchannel overlap detected");
+            const auto width = subchannel.totalWidth / subchannel.centerFrequencies.size();
+            const auto startFreq = *subchannel.centerFrequencies.cbegin() - (width / 2);
+            const auto stopFreq = *subchannel.centerFrequencies.crbegin() + (width / 2);
+            if (prevStopFreq)
+            {
+                splitFrequencies.emplace_back(*prevStopFreq + ((startFreq - *prevStopFreq) / 2));
+            }
+            prevStopFreq = stopFreq;
+        }
+    }
+
+    // Split the frequency range into subranges starting from the minimum frequency
+    // and ending at the maximum frequency, using the split frequencies calculated above.
+    auto startFreq = freqRange.minFrequency;
+    std::vector<FrequencyRange> splitRanges;
+    for (const auto& freq : splitFrequencies)
+    {
+        splitRanges.emplace_back(startFreq, freq);
+        startFreq = freq;
+    }
+    splitRanges.emplace_back(startFreq, freqRange.maxFrequency);
+    for (const auto& splitRange : splitRanges)
+    {
+        phy->AddChannel(channelInfo.channel, splitRange);
+    }
+
+    // Finally, configure the interface of each subchannel, unless it is disabled.
+    if (!channelInfo.subchannels.empty())
+    {
+        for (const auto& subchannel : channelInfo.subchannels)
+        {
+            if (!subchannel.enabled)
+            {
+                continue;
+            }
+            phy->ConfigureInterface(
+                {subchannel.centerFrequencies.cbegin(), subchannel.centerFrequencies.cend()},
+                subchannel.totalWidth);
         }
     }
 }
