@@ -399,6 +399,22 @@ DsoMultiUserScheduler::CanSolicitStaInBsrpTf(const MasterInfo& info, WifiDirecti
     {
         return false;
     }
+
+    auto mldAddr =
+        GetWifiRemoteStationManager(m_linkId)->GetMldAddress(info.address).value_or(info.address);
+
+    // check if the DSO STA is possibly switching back to the primary subband
+    if (m_apMac->GetTxBlockedOnLink(AC_BE,
+                                    {WIFI_QOSDATA_QUEUE, WifiRcvAddr::UNICAST, mldAddr, 0},
+                                    m_linkId,
+                                    WifiQueueBlockedReason::WAITING_DSO_SWITCH_BACK_DELAY))
+    {
+        NS_LOG_INFO("DSO client "
+                    << mldAddr
+                    << " is possibly switching back to its primary subband: skipping station");
+        return false;
+    }
+
     return RrMultiUserScheduler::CanSolicitStaInBsrpTf(info, direction);
 }
 
