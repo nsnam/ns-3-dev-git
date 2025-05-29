@@ -759,6 +759,14 @@ class LrWpanMac : public LrWpanMacBase
     };
 
     /**
+     * Process a frame when promiscuous mode is active.
+     *
+     * @param lqi The LQI value of the received packet
+     * @param p The frame with the MPDU
+     */
+    void ReceiveInPromiscuousMode(uint8_t lqi, Ptr<Packet> p);
+
+    /**
      * Called to send a single beacon frame.
      */
     void SendOneBeacon();
