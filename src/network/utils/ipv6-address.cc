@@ -783,7 +783,7 @@ Ipv6Prefix::Ipv6Prefix()
 {
     NS_LOG_FUNCTION(this);
     memset(m_prefix, 0x00, 16);
-    m_prefixLength = 64;
+    m_prefixLength = 0;
 }
 
 Ipv6Prefix::Ipv6Prefix(const char* prefix)

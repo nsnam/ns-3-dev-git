@@ -254,7 +254,7 @@ class Ipv4Mask
 {
   public:
     /**
-     * Will initialize to a garbage value (0x66666666)
+     * Will initialize to a zero-length mask, which will match any address.
      */
     Ipv4Mask();
     /**
@@ -332,7 +332,7 @@ class Ipv4Mask
     friend bool operator!=(const Ipv4Mask& a, const Ipv4Mask& b);
 
   private:
-    uint32_t m_mask; //!< IP mask
+    uint32_t m_mask{}; //!< IP mask
 };
 
 ATTRIBUTE_HELPER_HEADER(Ipv4Address);

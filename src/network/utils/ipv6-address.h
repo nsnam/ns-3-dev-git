@@ -445,6 +445,8 @@ class Ipv6Prefix
   public:
     /**
      * @brief Default constructor.
+     *
+     * The default prefix is empty, corresponding to /0
      */
     Ipv6Prefix();
 
@@ -452,7 +454,7 @@ class Ipv6Prefix
      * @brief Constructs an Ipv6Prefix by using the input 16 bytes.
      *
      * The prefix length is calculated as the minimum prefix length, i.e.,
-     * 2001:db8:cafe:: will have a 47 bit prefix length.
+     * 2001:db8:cafe:: will have a 47 bit prefix length (0xE is 0b1110).
      *
      * @param prefix the 128-bit prefix
      */
@@ -507,10 +509,17 @@ class Ipv6Prefix
     ~Ipv6Prefix();
 
     /**
-     * @brief If the Address match the type.
-     * @param a a first address
-     * @param b a second address
-     * @return true if the type match, false otherwise
+     * @brief Check whether two addresses have the same bits in the prefix
+     * portion of their addresses.
+     *
+     * If the prefix length is 0, this method will return true regardless
+     * of the two address argument values.  If the prefix length is 128,
+     * this method will require that the two address arguments are the same.
+     *
+     * @param a first address to compare
+     * @param b second address to compare
+     * @return true if both addresses are equal in their masked bits,
+     * corresponding to the prefix length.
      */
     bool IsMatch(Ipv6Address a, Ipv6Address b) const;
 
