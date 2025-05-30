@@ -813,7 +813,6 @@ void
 Txop::NotifyOff()
 {
     NS_LOG_FUNCTION(this);
-    m_queue->Flush();
 }
 
 void
