@@ -8,6 +8,14 @@ from functools import lru_cache
 
 DEFAULT_INCLUDE_DIR = sysconfig.get_config_var("INCLUDEDIR")
 DEFAULT_LIB_DIR = sysconfig.get_config_var("LIBDIR")
+BUILD_TYPES = (
+    "debug",
+    "default",
+    "optimized",
+    "release",
+    "relwithdebinfo",
+    "minsizerel",
+)
 
 
 def find_ns3_lock() -> str:
@@ -313,14 +321,7 @@ def filter_module_name(library: str) -> str:
         components.pop(0)
 
     # Drop build profile suffix and test libraries
-    if components[-1] in [
-        "debug",
-        "default",
-        "optimized",
-        "release",
-        "relwithdebinfo",
-        "minsizerel",
-    ]:
+    if components[-1] in BUILD_TYPES:
         components.pop(-1)
     return "-".join(components)
 
@@ -521,12 +522,22 @@ def load_modules():
                 if os.path.isdir(linked_lib_include_dir):
                     cppyy.add_include_path(linked_lib_include_dir)
 
-    for module in modules:
-        cppyy.include(f"ns3/{module}-module.h")
+    # Get build type
+    build_type = ""  # release
+    for type in BUILD_TYPES:
+        if type in libraries_to_load[-1]:
+            build_type = type
 
-    # After including all headers, we finally load the modules
+    # Load a module, then its module header
     for library in libraries_to_load:
         cppyy.load_library(library)
+        for module in modules:
+            library_name_from_module = (
+                f"{version}-{module}{'-' if len(build_type)>0 else ''}{build_type}"
+            )
+            if library_name_from_module in library:
+                cppyy.include(f"ns3/{module}-module.h")
+                break
 
     # We expose cppyy to consumers of this module as ns.cppyy
     setattr(cppyy.gbl.ns3, "cppyy", cppyy)
