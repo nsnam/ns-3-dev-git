@@ -242,7 +242,7 @@ void
 TcpPacingTest::UpdateExpectedInterval()
 {
     double_t factor;
-    Time rtt = 2 * GetPropagationDelay();
+
     if (m_curCwnd < m_ssThresh / 2)
     {
         factor = static_cast<double>(m_pacingSsRatio) / 100;

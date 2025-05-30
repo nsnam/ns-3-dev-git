@@ -234,8 +234,6 @@ EhtFrameExchangeManager::StartTransmission(Ptr<Txop> edca, MHz_u allowedWidth)
         }
     }
 
-    std::optional<Time> timeToCtsEnd;
-
     if (m_staMac && m_staMac->IsEmlsrLink(m_linkId))
     {
         // Cannot start a transmission on a link blocked because another EMLSR link is being used

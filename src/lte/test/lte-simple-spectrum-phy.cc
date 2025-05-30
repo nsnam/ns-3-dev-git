@@ -114,7 +114,6 @@ LteSimpleSpectrumPhy::StartRx(Ptr<SpectrumSignalParameters> spectrumRxParams)
 
     NS_LOG_FUNCTION(this << spectrumRxParams);
     Ptr<const SpectrumValue> rxPsd = spectrumRxParams->psd;
-    Time duration = spectrumRxParams->duration;
 
     // the device might start RX only if the signal is of a type
     // understood by this device - in this case, an LTE signal.

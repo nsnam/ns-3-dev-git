@@ -151,8 +151,6 @@ EmlsrDlTxopTest::DoSetup()
 {
     // Channel switch delay should be less than the ICF padding duration, otherwise
     // DL TXOPs cannot be initiated on auxiliary links
-    auto delay = std::min(MicroSeconds(100),
-                          *std::min_element(m_paddingDelay.cbegin(), m_paddingDelay.cend()));
     Config::SetDefault("ns3::WifiPhy::ChannelSwitchDelay", TimeValue(MicroSeconds(75)));
 
     EmlsrOperationsTestBase::DoSetup();
@@ -778,7 +776,6 @@ EmlsrDlTxopTest::CheckResults()
         bAckRespTxEnd = bAckRespIt->startTx + WifiPhy::CalculateTxDuration(bAckRespIt->psduMap,
                                                                            bAckRespIt->txVector,
                                                                            phy->GetPhyBand());
-        auto timeout = phy->GetSifs() + phy->GetSlot() + MicroSeconds(20);
 
         // the fourth frame exchange starts a PIFS after the previous one because the AP
         // performs PIFS recovery (the initial frame in the TXOP was successfully received by

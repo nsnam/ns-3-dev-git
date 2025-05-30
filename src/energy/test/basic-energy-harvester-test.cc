@@ -77,8 +77,6 @@ BasicEnergyHarvesterTestCase::DoRun()
     harvester->SetNode(node);
     harvester->SetEnergySource(source);
 
-    Time now = Simulator::Now();
-
     /*
      * The energy harvester will recharge the energy source for m_timeS seconds.
      */

@@ -2193,7 +2193,6 @@ EmlsrSwitchMainPhyBackTest::RunOne()
     m_events.emplace_back(
         WIFI_MAC_CTL_ACK,
         [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, uint8_t linkId) {
-            const auto phyHdrDuration = WifiPhy::CalculatePhyPreambleAndHeaderDuration(txVector);
             const auto txDuration =
                 WifiPhy::CalculateTxDuration(psdu,
                                              txVector,
