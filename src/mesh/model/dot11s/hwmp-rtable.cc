@@ -59,19 +59,12 @@ HwmpRtable::AddReactivePath(Mac48Address destination,
 {
     NS_LOG_FUNCTION(this << destination << retransmitter << interface << metric
                          << lifetime.GetSeconds() << seqnum);
-    auto i = m_routes.find(destination);
-    if (i == m_routes.end())
-    {
-        ReactiveRoute newroute;
-        m_routes[destination] = newroute;
-    }
-    i = m_routes.find(destination);
-    NS_ASSERT(i != m_routes.end());
-    i->second.retransmitter = retransmitter;
-    i->second.interface = interface;
-    i->second.metric = metric;
-    i->second.whenExpire = Simulator::Now() + lifetime;
-    i->second.seqnum = seqnum;
+    auto& route = m_routes[destination]; // find existing record or create new
+    route.retransmitter = retransmitter;
+    route.interface = interface;
+    route.metric = metric;
+    route.whenExpire = Simulator::Now() + lifetime;
+    route.seqnum = seqnum;
 }
 
 void
