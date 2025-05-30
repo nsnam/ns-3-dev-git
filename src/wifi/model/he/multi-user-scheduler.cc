@@ -426,6 +426,11 @@ MultiUserScheduler::RemoveRecipientsFromDlMu(
         {
             NS_LOG_INFO("Removing PSDU addressed to " << address);
 
+            for (auto& mpdu : *psduMapIt->second)
+            {
+                mpdu->ResetInFlight(linkId);
+            }
+
             txParams.m_txVector.GetHeMuUserInfoMap().erase(psduMapIt->first);
             psduMapIt = psduMap.erase(psduMapIt);
 
