@@ -286,11 +286,10 @@ class HtFrameExchangeManager : public QosFrameExchangeManager
     /**
      * Retrieve the starting sequence number for a BA agreement to be established.
      *
-     * @param header the MAC header of the next data packet selected for transmission once the BA
-     * agreement is established. \return the starting sequence number for a BA agreement to be
-     * established
+     * @param mpdu the next MPDU selected for transmission once the BA agreement is established
+     * @return the starting sequence number for a BA agreement to be established
      */
-    uint16_t GetBaAgreementStartingSequenceNumber(const WifiMacHeader& header);
+    uint16_t GetBaAgreementStartingSequenceNumber(Ptr<const WifiMpdu> mpdu);
 
     /**
      * A Block Ack agreement needs to be established with the given recipient for the

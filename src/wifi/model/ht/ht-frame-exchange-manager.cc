@@ -403,12 +403,13 @@ HtFrameExchangeManager::SendDelbaFrame(Mac48Address addr,
 }
 
 uint16_t
-HtFrameExchangeManager::GetBaAgreementStartingSequenceNumber(const WifiMacHeader& header)
+HtFrameExchangeManager::GetBaAgreementStartingSequenceNumber(Ptr<const WifiMpdu> mpdu)
 {
-    // if the peeked MPDU has been already transmitted, use its sequence number
-    // as the starting sequence number for the BA agreement, otherwise use the
-    // next available sequence number
-    return header.IsRetry()
+    // if the peeked MPDU has been already assigned a sequence number, use its sequence number as
+    // the starting sequence number for the BA agreement, otherwise use the next available sequence
+    // number
+    const auto& header = mpdu->GetHeader();
+    return mpdu->HasSeqNoAssigned()
                ? header.GetSequenceNumber()
                : m_txMiddle->GetNextSeqNumberByTidAndAddress(header.GetQosTid(), header.GetAddr1());
 }
@@ -508,7 +509,7 @@ HtFrameExchangeManager::StartFrameExchange(Ptr<QosTxop> edca, Time availableTime
     {
         return SendAddBaRequest(hdr.GetAddr1(),
                                 hdr.GetQosTid(),
-                                GetBaAgreementStartingSequenceNumber(hdr),
+                                GetBaAgreementStartingSequenceNumber(peekedItem),
                                 edca->GetBlockAckInactivityTimeout(),
                                 true,
                                 availableTime);
@@ -519,7 +520,7 @@ HtFrameExchangeManager::StartFrameExchange(Ptr<QosTxop> edca, Time availableTime
         {
             return SendAddBaRequest(addbaRecipient.value(),
                                     hdr.GetQosTid(),
-                                    GetBaAgreementStartingSequenceNumber(hdr),
+                                    GetBaAgreementStartingSequenceNumber(peekedItem),
                                     edca->GetBlockAckInactivityTimeout(),
                                     true,
                                     availableTime,
