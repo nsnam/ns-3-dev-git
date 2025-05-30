@@ -44,6 +44,7 @@ class UhrFrameExchangeManager : public EhtFrameExchangeManager
                      RxSignalInfo rxSignalInfo,
                      const WifiTxVector& txVector,
                      bool inAmpdu) override;
+    void ReceivedQosNullAfterBsrpTf(Mac48Address sender) override;
     void PostProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) override;
     void TxopEnd(const std::optional<Mac48Address>& txopHolder) override;
     void ForwardPsduMapDown(WifiConstPsduMap psduMap, WifiTxVector& txVector) override;

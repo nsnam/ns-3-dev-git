@@ -104,6 +104,20 @@ UhrFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
 }
 
 void
+UhrFrameExchangeManager::ReceivedQosNullAfterBsrpTf(Mac48Address sender)
+{
+    NS_LOG_FUNCTION(this << sender);
+
+    // a DSO client responding to an ICF must be considered protected
+    if (GetWifiRemoteStationManager()->GetDsoEnabled(sender))
+    {
+        m_protectedStas.insert(sender);
+    }
+
+    EhtFrameExchangeManager::ReceivedQosNullAfterBsrpTf(sender);
+}
+
+void
 UhrFrameExchangeManager::NotifySwitchingStartNow(Time duration)
 {
     NS_LOG_FUNCTION(this << duration);
