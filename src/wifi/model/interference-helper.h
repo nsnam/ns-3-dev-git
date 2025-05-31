@@ -365,7 +365,7 @@ class InterferenceHelper : public Object
          * @param event causes this NI change
          */
         NiChange(Watt_u power, Ptr<Event> event);
-        ~NiChange();
+
         /**
          * Return the power
          *

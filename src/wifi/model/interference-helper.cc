@@ -134,11 +134,6 @@ InterferenceHelper::NiChange::NiChange(Watt_u power, Ptr<Event> event)
 {
 }
 
-InterferenceHelper::NiChange::~NiChange()
-{
-    m_event = nullptr;
-}
-
 Watt_u
 InterferenceHelper::NiChange::GetPower() const
 {
