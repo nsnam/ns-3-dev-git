@@ -275,14 +275,12 @@ WifiPhyHelper::PcapSniffTxEvent(const std::shared_ptr<PcapFilesInfo>& info,
     }
     case PcapHelper::DLT_IEEE802_11_RADIO: {
         Ptr<Packet> p = packet->Copy();
-        RadiotapHeader header;
-        GetRadiotapHeader(header,
-                          p,
-                          channelFreqMhz,
-                          info->device->GetPhy(phyId)->GetPrimary20Index(),
-                          txVector,
-                          aMpdu,
-                          staId);
+        const auto header = GetRadiotapHeader(p,
+                                              channelFreqMhz,
+                                              info->device->GetPhy(phyId)->GetPrimary20Index(),
+                                              txVector,
+                                              aMpdu,
+                                              staId);
         p->AddHeader(header);
         file->Write(Simulator::Now(), p);
         return;
@@ -318,15 +316,13 @@ WifiPhyHelper::PcapSniffRxEvent(const std::shared_ptr<PcapFilesInfo>& info,
     }
     case PcapHelper::DLT_IEEE802_11_RADIO: {
         Ptr<Packet> p = packet->Copy();
-        RadiotapHeader header;
-        GetRadiotapHeader(header,
-                          p,
-                          channelFreqMhz,
-                          info->device->GetPhy(phyId)->GetPrimary20Index(),
-                          txVector,
-                          aMpdu,
-                          staId,
-                          signalNoise);
+        const auto header = GetRadiotapHeader(p,
+                                              channelFreqMhz,
+                                              info->device->GetPhy(phyId)->GetPrimary20Index(),
+                                              txVector,
+                                              aMpdu,
+                                              staId,
+                                              signalNoise);
         p->AddHeader(header);
         file->Write(Simulator::Now(), p);
         return;
@@ -336,36 +332,29 @@ WifiPhyHelper::PcapSniffRxEvent(const std::shared_ptr<PcapFilesInfo>& info,
     }
 }
 
-void
-WifiPhyHelper::GetRadiotapHeader(RadiotapHeader& header,
-                                 Ptr<Packet> packet,
+RadiotapHeader
+WifiPhyHelper::GetRadiotapHeader(Ptr<Packet> packet,
                                  uint16_t channelFreqMhz,
                                  uint8_t p20Index,
                                  const WifiTxVector& txVector,
                                  MpduInfo aMpdu,
                                  uint16_t staId,
-                                 SignalNoiseDbm signalNoise)
+                                 std::optional<SignalNoiseDbm> signalNoise)
 {
-    GetRadiotapHeader(header, packet, channelFreqMhz, p20Index, txVector, aMpdu, staId);
-    header.SetAntennaSignalPower(signalNoise.signal);
-    header.SetAntennaNoisePower(signalNoise.noise);
-}
+    RadiotapHeader header;
 
-void
-WifiPhyHelper::GetRadiotapHeader(RadiotapHeader& header,
-                                 Ptr<Packet> packet,
-                                 uint16_t channelFreqMhz,
-                                 uint8_t p20Index,
-                                 const WifiTxVector& txVector,
-                                 MpduInfo aMpdu,
-                                 uint16_t staId)
-{
     const auto preamble = txVector.GetPreambleType();
     const auto modClass = txVector.GetModulationClass();
     const auto channelWidth = txVector.GetChannelWidth();
     const auto gi = txVector.GetGuardInterval();
 
-    header.SetWifiHeader(IsEht(preamble));
+    header.SetWifiHeader(IsEht(preamble) ? 2 : 1);
+
+    if (signalNoise)
+    {
+        header.SetAntennaSignalPower(signalNoise->signal);
+        header.SetAntennaNoisePower(signalNoise->noise);
+    }
 
     header.SetTsft(Simulator::Now().GetMicroSeconds());
 
@@ -817,6 +806,8 @@ WifiPhyHelper::GetRadiotapHeader(RadiotapHeader& header,
         ehtFields.userInfo.push_back(userInfo);
         header.SetEhtFields(ehtFields);
     }
+
+    return header;
 }
 
 void

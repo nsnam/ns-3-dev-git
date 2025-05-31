@@ -20,6 +20,7 @@
 
 #include <functional>
 #include <map>
+#include <optional>
 #include <vector>
 
 namespace ns3
@@ -310,44 +311,25 @@ class WifiPhyHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevi
                                                     uint8_t phyId);
 
     /**
-     * Get the Radiotap header for a transmitted packet.
-     *
-     * @param header the radiotap header to be filled in
-     * @param packet the packet
-     * @param channelFreqMhz the channel frequency
-     * @param p20Index the index of the primary20 channel
-     * @param txVector the TXVECTOR
-     * @param aMpdu the A-MPDU information
-     * @param staId the STA-ID
-     */
-    static void GetRadiotapHeader(RadiotapHeader& header,
-                                  Ptr<Packet> packet,
-                                  uint16_t channelFreqMhz,
-                                  uint8_t p20Index,
-                                  const WifiTxVector& txVector,
-                                  MpduInfo aMpdu,
-                                  uint16_t staId);
-
-    /**
      * Get the Radiotap header for a received packet.
      *
-     * @param header the radiotap header to be filled in
      * @param packet the packet
      * @param channelFreqMhz the channel frequency
      * @param p20Index the index of the primary20 channel
      * @param txVector the TXVECTOR
      * @param aMpdu the A-MPDU information
      * @param staId the STA-ID
-     * @param signalNoise the rx signal and noise information
+     * @param signalNoise the rx signal and noise information (for receiver only)
+     * @return the radiotap header
      */
-    static void GetRadiotapHeader(RadiotapHeader& header,
-                                  Ptr<Packet> packet,
-                                  uint16_t channelFreqMhz,
-                                  uint8_t p20Index,
-                                  const WifiTxVector& txVector,
-                                  MpduInfo aMpdu,
-                                  uint16_t staId,
-                                  SignalNoiseDbm signalNoise);
+    static RadiotapHeader GetRadiotapHeader(
+        Ptr<Packet> packet,
+        uint16_t channelFreqMhz,
+        uint8_t p20Index,
+        const WifiTxVector& txVector,
+        MpduInfo aMpdu,
+        uint16_t staId,
+        std::optional<SignalNoiseDbm> signalNoise = std::nullopt);
 
     /**
      * @brief Enable pcap output the indicated net device.

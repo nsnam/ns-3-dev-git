@@ -86,9 +86,9 @@ class RadiotapHeader : public Header
      * @brief Set the ieee80211_radiotap_header. This method must be called
      * before any other Set* method.
      *
-     * @param extended If true, one more it_present word follows the it_present bitmask.
+     * @param numPresentWords Number of it_present words in the radiotap header.
      */
-    void SetWifiHeader(bool extended);
+    void SetWifiHeader(std::size_t numPresentWords);
 
     /**
      * @brief Set the Time Synchronization Function Timer (TSFT) value.  Valid for
@@ -1058,9 +1058,8 @@ class RadiotapHeader : public Header
         RADIOTAP_EHT_SIG = 0x00000004
     };
 
-    uint16_t m_length{MIN_HEADER_SIZE};     //!< entire length of radiotap data + header
-    uint32_t m_present{0};                  //!< bits describing which fields follow header
-    std::optional<uint32_t> m_presentExt{}; //!< optional extended present bitmask
+    uint16_t m_length{MIN_HEADER_SIZE}; //!< entire length of radiotap data + header
+    std::vector<uint32_t> m_present{0}; //!< bits describing which fields follow header
 
     uint8_t m_tsftPad{0}; //!< TSFT padding.
     uint64_t m_tsft{0};   //!< Time Synchronization Function Timer (when the first bit of the MPDU
