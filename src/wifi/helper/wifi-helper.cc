@@ -366,7 +366,7 @@ WifiPhyHelper::GetRadiotapHeader(RadiotapHeader& header,
     const auto channelWidth = txVector.GetChannelWidth();
     const auto gi = txVector.GetGuardInterval();
 
-    header.SetWifiHeader(IsEht(preamble));
+    header.SetWifiHeader(IsEht(preamble) ? 2 : 1);
 
     header.SetTsft(Simulator::Now().GetMicroSeconds());
 
