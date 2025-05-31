@@ -109,7 +109,7 @@ RadiotapHeader::Serialize(Buffer::Iterator start) const
     //
     if (m_present & RADIOTAP_FHSS) // bit 4
     {
-        start.WriteU8(0); // not yet implemented
+        NS_ASSERT(false); // not yet implemented
     }
 
     //
@@ -138,7 +138,7 @@ RadiotapHeader::Serialize(Buffer::Iterator start) const
     //
     if (m_present & RADIOTAP_LOCK_QUALITY) // bit 7
     {
-        start.WriteU16(0); // not yet implemented
+        NS_ASSERT(false); // not yet implemented
     }
 
     //
@@ -148,7 +148,7 @@ RadiotapHeader::Serialize(Buffer::Iterator start) const
     //
     if (m_present & RADIOTAP_TX_ATTENUATION) // bit 8
     {
-        start.WriteU16(0); // not yet implemented
+        NS_ASSERT(false); // not yet implemented
     }
 
     //
@@ -158,7 +158,7 @@ RadiotapHeader::Serialize(Buffer::Iterator start) const
     //
     if (m_present & RADIOTAP_DB_TX_ATTENUATION) // bit 9
     {
-        start.WriteU16(0); // not yet implemented
+        NS_ASSERT(false); // not yet implemented
     }
 
     //
@@ -168,7 +168,7 @@ RadiotapHeader::Serialize(Buffer::Iterator start) const
     //
     if (m_present & RADIOTAP_DBM_TX_POWER) // bit 10
     {
-        start.WriteU8(0); // not yet implemented
+        NS_ASSERT(false); // not yet implemented
     }
 
     //
@@ -178,7 +178,7 @@ RadiotapHeader::Serialize(Buffer::Iterator start) const
     //
     if (m_present & RADIOTAP_ANTENNA) // bit 11
     {
-        start.WriteU8(0); // not yet implemented
+        NS_ASSERT(false); // not yet implemented
     }
 
     //
@@ -187,7 +187,7 @@ RadiotapHeader::Serialize(Buffer::Iterator start) const
     //
     if (m_present & RADIOTAP_DB_ANTSIGNAL) // bit 12
     {
-        start.WriteU8(0); // not yet implemented
+        NS_ASSERT(false); // not yet implemented
     }
 
     //
@@ -196,7 +196,7 @@ RadiotapHeader::Serialize(Buffer::Iterator start) const
     //
     if (m_present & RADIOTAP_DB_ANTNOISE) // bit 13
     {
-        start.WriteU8(0); // not yet implemented
+        NS_ASSERT(false); // not yet implemented
     }
 
     //
@@ -205,7 +205,7 @@ RadiotapHeader::Serialize(Buffer::Iterator start) const
     //
     if (m_present & RADIOTAP_RX_FLAGS) // bit 14
     {
-        start.WriteU16(0); // not yet implemented
+        NS_ASSERT(false); // not yet implemented
     }
 
     //
@@ -347,9 +347,7 @@ RadiotapHeader::Deserialize(Buffer::Iterator start)
     //
     if (m_present & RADIOTAP_FHSS) // bit 4
     {
-        // not yet implemented
-        start.ReadU8();
-        ++bytesRead;
+        NS_ASSERT(false); // not yet implemented
     }
 
     //
@@ -380,9 +378,7 @@ RadiotapHeader::Deserialize(Buffer::Iterator start)
     //
     if (m_present & RADIOTAP_LOCK_QUALITY) // bit 7
     {
-        // not yet implemented
-        start.ReadU16();
-        bytesRead += 2;
+        NS_ASSERT(false); // not yet implemented
     }
 
     //
@@ -392,9 +388,7 @@ RadiotapHeader::Deserialize(Buffer::Iterator start)
     //
     if (m_present & RADIOTAP_TX_ATTENUATION) // bit 8
     {
-        // not yet implemented
-        start.ReadU16();
-        bytesRead += 2;
+        NS_ASSERT(false); // not yet implemented
     }
 
     //
@@ -404,9 +398,7 @@ RadiotapHeader::Deserialize(Buffer::Iterator start)
     //
     if (m_present & RADIOTAP_DB_TX_ATTENUATION) // bit 9
     {
-        // not yet implemented
-        start.ReadU16();
-        bytesRead += 2;
+        NS_ASSERT(false); // not yet implemented
     }
 
     //
@@ -416,9 +408,7 @@ RadiotapHeader::Deserialize(Buffer::Iterator start)
     //
     if (m_present & RADIOTAP_DBM_TX_POWER) // bit 10
     {
-        // not yet implemented
-        start.ReadU8();
-        ++bytesRead;
+        NS_ASSERT(false); // not yet implemented
     }
 
     //
@@ -428,9 +418,7 @@ RadiotapHeader::Deserialize(Buffer::Iterator start)
     //
     if (m_present & RADIOTAP_ANTENNA) // bit 11
     {
-        // not yet implemented
-        start.ReadU8();
-        ++bytesRead;
+        NS_ASSERT(false); // not yet implemented
     }
 
     //
@@ -439,9 +427,7 @@ RadiotapHeader::Deserialize(Buffer::Iterator start)
     //
     if (m_present & RADIOTAP_DB_ANTSIGNAL) // bit 12
     {
-        // not yet implemented
-        start.ReadU8();
-        ++bytesRead;
+        NS_ASSERT(false); // not yet implemented
     }
 
     //
@@ -450,9 +436,7 @@ RadiotapHeader::Deserialize(Buffer::Iterator start)
     //
     if (m_present & RADIOTAP_DB_ANTNOISE) // bit 13
     {
-        // not yet implemented
-        start.ReadU8();
-        ++bytesRead;
+        NS_ASSERT(false); // not yet implemented
     }
 
     //
@@ -461,9 +445,7 @@ RadiotapHeader::Deserialize(Buffer::Iterator start)
     //
     if (m_present & RADIOTAP_RX_FLAGS) // bit 14
     {
-        // not yet implemented
-        start.ReadU16();
-        bytesRead += 2;
+        NS_ASSERT(false); // not yet implemented
     }
 
     //
