@@ -19,16 +19,20 @@ and references prefixed by '!' refer to a
 This release is intended to work on systems with the following minimal
 requirements (Note: not all ns-3 features are available on all systems):
 
-- g++-10.1 or later, or LLVM/clang++-11 or later
+- g++-11.1 or later, or LLVM/clang++-17 or later
 - Python 3.8 or later
-- CMake 3.13 or later
+- CMake 3.20 or later
 - (macOS only) Xcode 13.1.6 or later
 - (Windows only) Msys2/MinGW64 and Msys2/UCRT64 toolchains or WSL2
 
 Python API requires [Cppyy](https://cppyy.readthedocs.io/en/latest/installation.html) and has only
-been tested on Linux. As of this release, the latest known version to work with ns-3 is cppyy==3.1.2.
+been tested on Linux. As of this release, the latest known version to work with ns-3 is cppyy==3.5.0.
 
 ### New user-visible features
+
+ns-3 has switched to the C++23 standard by default.
+
+- (core) A stacktrace will now be printed on fatal errors in supported platforms.
 
 ### Bugs fixed
 
