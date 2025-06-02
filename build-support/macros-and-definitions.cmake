@@ -264,7 +264,9 @@ macro(process_options)
     if("${CLANG_TIDY}" STREQUAL "CLANG_TIDY-NOTFOUND")
       message(FATAL_ERROR "Clang-tidy was not found")
     else()
-      set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY}")
+      set(CMAKE_CXX_CLANG_TIDY ${CLANG_TIDY}
+                               -config-file=${CMAKE_SOURCE_DIR}/.clang-tidy
+      ) # --fix)
     endif()
   else()
     unset(CMAKE_CXX_CLANG_TIDY)
