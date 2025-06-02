@@ -330,9 +330,11 @@ class Txop : public Object
      */
     virtual void NotifySleep(uint8_t linkId);
     /**
-     * When off operation occurs, the queue gets cleaned up.
+     * Notify that the given link is switched off.
+     *
+     * @param linkId the ID of the given link
      */
-    virtual void NotifyOff();
+    virtual void NotifyOff(uint8_t linkId);
     /**
      * When wake up operation occurs on a link, channel access on that link
      * will be restarted.

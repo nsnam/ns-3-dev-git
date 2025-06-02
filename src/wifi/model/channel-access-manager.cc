@@ -1268,16 +1268,11 @@ void
 ChannelAccessManager::NotifyOffNow()
 {
     NS_LOG_FUNCTION(this);
-    // Cancel timeout
-    if (m_accessTimeout.IsPending())
-    {
-        m_accessTimeout.Cancel();
-    }
-
     // Reset backoffs
+    ResetAllBackoffs();
     for (auto txop : m_txops)
     {
-        txop->NotifyOff();
+        txop->NotifyOff(m_linkId);
     }
 }
 
