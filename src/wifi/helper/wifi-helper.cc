@@ -347,9 +347,9 @@ WifiPhyHelper::GetRadiotapHeader(RadiotapHeader& header,
                                  uint16_t staId,
                                  SignalNoiseDbm signalNoise)
 {
+    GetRadiotapHeader(header, packet, channelFreqMhz, p20Index, txVector, aMpdu, staId);
     header.SetAntennaSignalPower(signalNoise.signal);
     header.SetAntennaNoisePower(signalNoise.noise);
-    GetRadiotapHeader(header, packet, channelFreqMhz, p20Index, txVector, aMpdu, staId);
 }
 
 void
@@ -365,6 +365,8 @@ WifiPhyHelper::GetRadiotapHeader(RadiotapHeader& header,
     const auto modClass = txVector.GetModulationClass();
     const auto channelWidth = txVector.GetChannelWidth();
     const auto gi = txVector.GetGuardInterval();
+
+    header.SetWifiHeader(IsEht(preamble));
 
     header.SetTsft(Simulator::Now().GetMicroSeconds());
 
@@ -615,7 +617,6 @@ WifiPhyHelper::GetRadiotapHeader(RadiotapHeader& header,
         header.SetHeMuOtherUserFields(heMuOtherUserFields);
     }
 
-    const auto isLowP80 = p20Index < (channelWidth / MHz_t{40});
     if (IsEht(preamble))
     {
         RadiotapHeader::UsigFields usigFields{};
@@ -769,6 +770,7 @@ WifiPhyHelper::GetRadiotapHeader(RadiotapHeader& header,
         }
         if (channelWidth >= MHz_t{160})
         {
+            const auto isLowP80 = p20Index < (channelWidth / MHz_t{40});
             ehtFields.data.at(3) =
                 RadiotapHeader::EHT_DATA3_RU_ALLOC_CC_1_2_1_KNOWN |
                 RadiotapHeader::EHT_DATA3_RU_ALLOC_CC_2_2_1_KNOWN |

@@ -569,6 +569,20 @@ RadiotapHeader::Print(std::ostream& os) const
 }
 
 void
+RadiotapHeader::SetWifiHeader(bool extended)
+{
+    NS_LOG_FUNCTION(this << extended);
+    NS_ASSERT_MSG(m_length == MIN_HEADER_SIZE,
+                  "RadiotapHeader::SetWifiHeader() should be called before any other Set* method");
+    if (extended)
+    {
+        m_present |= RADIOTAP_EXT;
+        m_presentExt = 0;
+        m_length += sizeof(RadiotapExtFlags);
+    }
+}
+
+void
 RadiotapHeader::SetTsft(uint64_t value)
 {
     NS_LOG_FUNCTION(this << value);
@@ -1028,12 +1042,8 @@ void
 RadiotapHeader::SetUsigFields(const UsigFields& usigFields)
 {
     NS_LOG_FUNCTION(this << usigFields.common << usigFields.mask << usigFields.value);
-    if (!m_presentExt)
-    {
-        m_present |= RADIOTAP_TLV | RADIOTAP_EXT;
-        m_presentExt = 0;
-        m_length += sizeof(RadiotapExtFlags);
-    }
+    NS_ASSERT_MSG(m_presentExt, "Number of it_present words is incorrect");
+    m_present |= RADIOTAP_TLV;
 
     NS_ASSERT_MSG(!(*m_presentExt & RADIOTAP_USIG), "U-SIG radiotap field already present");
     *m_presentExt |= RADIOTAP_USIG;
@@ -1094,12 +1104,8 @@ void
 RadiotapHeader::SetEhtFields(const EhtFields& ehtFields)
 {
     NS_LOG_FUNCTION(this << ehtFields.known);
-    if (!m_presentExt)
-    {
-        m_present |= RADIOTAP_TLV | RADIOTAP_EXT;
-        m_presentExt = 0;
-        m_length += sizeof(RadiotapExtFlags);
-    }
+    NS_ASSERT_MSG(m_presentExt, "Number of it_present words is incorrect");
+    m_present |= RADIOTAP_TLV;
 
     NS_ASSERT_MSG(!(*m_presentExt & RADIOTAP_EHT_SIG), "EHT radiotap field already present");
     *m_presentExt |= RADIOTAP_EHT_SIG;
