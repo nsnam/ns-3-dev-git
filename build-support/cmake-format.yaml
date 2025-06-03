@@ -64,6 +64,19 @@ additional_commands:
             PUBLIC_HEADER_FILES: '*'
             DEPRECATED_HEADER_FILES: '*'
             PRIVATE_HEADER_FILES: '*'
+    try_compile:
+        pargs:
+            nargs: 3
+        kwargs:
+            OUTPUT_VARIABLE: '1'
+            CXX_STANDARD: '1'
+            CXX_STANDARD_REQUIRED: '1'
+            CXX_EXTENSIONS: '1'
+            SOURCES: '*'
+            CMAKE_FLAGS: '*'
+            COMPILE_DEFINITIONS: '*'
+            LINK_OPTIONS: '*'
+            LINK_LIBRARIES: '*'
 
 format:
   tab_size: 2
