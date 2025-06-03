@@ -346,9 +346,9 @@ WifiPhyHelper::GetRadiotapHeader(RadiotapHeader& header,
                                  uint16_t staId,
                                  SignalNoiseDbm signalNoise)
 {
+    GetRadiotapHeader(header, packet, channelFreqMhz, p20Index, txVector, aMpdu, staId);
     header.SetAntennaSignalPower(signalNoise.signal);
     header.SetAntennaNoisePower(signalNoise.noise);
-    GetRadiotapHeader(header, packet, channelFreqMhz, p20Index, txVector, aMpdu, staId);
 }
 
 void
@@ -364,6 +364,8 @@ WifiPhyHelper::GetRadiotapHeader(RadiotapHeader& header,
     const auto modClass = txVector.GetModulationClass();
     const auto channelWidth = txVector.GetChannelWidth();
     const auto gi = txVector.GetGuardInterval();
+
+    header.SetWifiHeader(IsEht(preamble));
 
     header.SetTsft(Simulator::Now().GetMicroSeconds());
 
