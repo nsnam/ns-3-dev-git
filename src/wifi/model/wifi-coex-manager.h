@@ -9,6 +9,7 @@
 #define WIFI_COEX_MANAGER_H
 
 #include "ns3/device-coex-manager.h"
+#include "ns3/event-id.h"
 
 namespace ns3
 {
@@ -32,6 +33,8 @@ class WifiCoexManager : public coex::DeviceManager
     WifiCoexManager();
     ~WifiCoexManager() override;
 
+    void ResourceBusyStart(const coex::Event& coexEvent) override;
+
     /**
      * Set the managed WifiNetDevice.
      *
@@ -43,6 +46,7 @@ class WifiCoexManager : public coex::DeviceManager
     void DoDispose() override;
 
     Ptr<WifiNetDevice> m_device; ///< the managed WifiNetDevice
+    EventId m_resourceBusyEvent; ///< end of resource busy period event
 };
 
 } // namespace ns3

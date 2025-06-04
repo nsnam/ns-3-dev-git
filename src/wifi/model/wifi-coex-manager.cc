@@ -7,10 +7,13 @@
  */
 #include "wifi-coex-manager.h"
 
+#include "sta-wifi-mac.h"
 #include "wifi-net-device.h"
+#include "wifi-phy.h"
 
 #include "ns3/coex-arbitrator.h"
 #include "ns3/log.h"
+#include "ns3/nstime.h"
 
 namespace ns3
 {
@@ -44,6 +47,7 @@ WifiCoexManager::DoDispose()
 {
     NS_LOG_FUNCTION_NOARGS();
     m_device = nullptr;
+    m_resourceBusyEvent.Cancel();
     coex::DeviceManager::DoDispose();
 }
 
@@ -52,6 +56,42 @@ WifiCoexManager::SetWifiNetDevice(Ptr<WifiNetDevice> device)
 {
     NS_LOG_FUNCTION(this << device);
     m_device = device;
+}
+
+void
+WifiCoexManager::ResourceBusyStart(const coex::Event& coexEvent)
+{
+    NS_LOG_FUNCTION(this << coexEvent);
+
+    auto staMac = DynamicCast<StaWifiMac>(m_device->GetMac());
+
+    if (!staMac)
+    {
+        // nothing to do if this is not a non-AP STA/MLD
+        return;
+    }
+
+    // TODO For now, assume that all links are unavailable
+    const auto links = staMac->GetSetupLinkIds();
+
+    if (!m_resourceBusyEvent.IsPending())
+    {
+        for (const auto linkId : links)
+        {
+            NS_LOG_DEBUG("Switching off PHY on link " << +linkId);
+            staMac->GetWifiPhy(linkId)->SetOffMode();
+        }
+    }
+
+    const auto delay = Max(coexEvent.duration, Simulator::GetDelayLeft(m_resourceBusyEvent));
+    m_resourceBusyEvent.Cancel();
+    m_resourceBusyEvent = Simulator::Schedule(delay, [=] {
+        for (const auto linkId : links)
+        {
+            NS_LOG_DEBUG("Switching on PHY on link " << +linkId);
+            staMac->GetWifiPhy(linkId)->ResumeFromOff();
+        }
+    });
 }
 
 } // namespace ns3

@@ -12,10 +12,14 @@
 
 namespace ns3
 {
+
+class Time;
+
 namespace coex
 {
 
 class Arbitrator;
+struct Event;
 
 /**
  * @ingroup coex
@@ -44,6 +48,14 @@ class DeviceManager : public Object
      * @return the Coex Arbitrator for the node
      */
     Ptr<Arbitrator> GetCoexArbitrator() const;
+
+    /**
+     * Indicate that the shared resource is busy from now due to the given coex event. Subclasses
+     * must take appropriate actions to prevent devices from using the resource during this period.
+     *
+     * @param coexEvent the coex event causing the resource to be busy from now
+     */
+    virtual void ResourceBusyStart(const Event& coexEvent) = 0;
 
   protected:
     void DoDispose() override;

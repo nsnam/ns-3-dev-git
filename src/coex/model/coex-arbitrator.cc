@@ -64,6 +64,7 @@ Arbitrator::DoDispose()
         coexManager->Dispose();
     }
     m_devCoexManagers.clear();
+    m_notifyEvent.Cancel();
     Object::DoDispose();
 }
 
@@ -206,12 +207,74 @@ Arbitrator::UpdateCoexEvents()
             auto next = std::next(it);
             auto nh = m_coexEvents.extract(it);
             nh.value().coexEvent.start += nh.value().coexEvent.periodicity;
+            nh.value().notified = false;
             m_coexEvents.insert(std::move(nh));
             it = next;
             continue;
         }
         ++it;
     }
+
+    ScheduleNotificationIfNeeded();
+}
+
+void
+Arbitrator::ScheduleNotificationIfNeeded()
+{
+    NS_LOG_FUNCTION(this);
+
+    const auto now = Simulator::Now();
+    auto coexElemIt = m_coexEvents.cbegin();
+
+    // skip coex events that have been already notified
+    while (coexElemIt != m_coexEvents.cend() && coexElemIt->notified)
+    {
+        ++coexElemIt;
+    }
+
+    if (coexElemIt == m_coexEvents.cend())
+    {
+        m_notifyEvent.Cancel();
+        return;
+    }
+
+    const auto remTime = coexElemIt->coexEvent.start - now;
+
+    if (m_notifyEvent.IsPending() && Simulator::GetDelayLeft(m_notifyEvent) == remTime)
+    {
+        return; // nothing to do
+    }
+
+    m_notifyEvent.Cancel();
+    NS_LOG_DEBUG("Schedule resource busy start at " << coexElemIt->coexEvent.start.As(Time::MS));
+    m_notifyEvent = Simulator::Schedule(remTime, &Arbitrator::NotifyResourceBusyStart, this);
+}
+
+void
+Arbitrator::NotifyResourceBusyStart()
+{
+    NS_LOG_FUNCTION(this);
+
+    NS_ASSERT_MSG(
+        !m_coexEvents.empty() && m_coexEvents.cbegin()->coexEvent.start == Simulator::Now(),
+        "NotifyResourceBusyStart is expected to be called at the start of a resource busy period");
+
+    // notify all coex managers but the one associated with the device using the resource
+    for (const auto& [rat, coexManager] : m_devCoexManagers)
+    {
+        if (rat != m_coexEvents.cbegin()->coexEvent.type.GetRat())
+        {
+            coexManager->ResourceBusyStart(m_coexEvents.cbegin()->coexEvent);
+        }
+    }
+
+    // mark the event as notified
+    auto nh = m_coexEvents.extract(m_coexEvents.begin());
+    nh.value().notified = true;
+    m_coexEvents.insert(std::move(nh));
+
+    // schedule a new notification if needed by calling UpdateCoexEvents
+    UpdateCoexEvents();
 }
 
 } // namespace coex

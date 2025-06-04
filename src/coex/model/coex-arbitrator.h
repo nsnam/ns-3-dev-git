@@ -102,8 +102,9 @@ class Arbitrator : public Object
      */
     struct CoexEventElem
     {
-        eventId_t id;    ///< the coex event ID
-        Event coexEvent; ///< the coex event
+        eventId_t id;         ///< the coex event ID
+        Event coexEvent;      ///< the coex event
+        bool notified{false}; ///< whether the coex event has been notified to managers
     };
 
     /**
@@ -153,12 +154,23 @@ class Arbitrator : public Object
     virtual bool IsRequestAccepted(const Event& coexEvent) = 0;
 
   private:
+    /**
+     * Schedule a resource busy notification if needed.
+     */
+    void ScheduleNotificationIfNeeded();
+
+    /**
+     * Notify coex managers of the start of a resource busy period.
+     */
+    void NotifyResourceBusyStart();
+
     Ptr<Node> m_node; ///< the node which this arbitrator is aggregated to
     std::map<Rat, Ptr<DeviceManager>>
         m_devCoexManagers; ///< a map of CoexManagers for the NetDevices on this node, indexed by
                            ///< the RAT corresponding to the NetDevice
     Events m_coexEvents;   ///< set of coex events sorted in increasing order of start time
     eventId_t m_nextCoexEvId{0}; ///< ID to assign to the next coex event
+    EventId m_notifyEvent;       ///< resource busy start notification event
 
     /// signature of callbacks for the coex event trace
     using CoexEventTraceCb = void (*)(const Event&);
