@@ -26,6 +26,11 @@ run_verbose = True
 path_sep = ";" if ";" in os.environ["PATH"] else ":"
 path_variable = "$PATH" if path_sep == ":" else "%PATH%"
 
+try:
+    TERMINAL_WIDTH = os.get_terminal_size().columns
+except OSError:
+    TERMINAL_WIDTH = 80  # assume 80 columns when grepping
+
 
 # Prints everything in the print_buffer on exit
 def exit_handler(dry_run):
@@ -520,7 +525,7 @@ def parse_args(argv):
             if custom_exit in e.message:
                 error_message = f"Exiting due to {e.message[e.message.index(custom_exit):]}"
         # Format error message to better fit the terminal width
-        print("\n".join(textwrap.wrap(error_message, width=os.get_terminal_size().columns)))
+        print("\n".join(textwrap.wrap(error_message, width=TERMINAL_WIDTH)))
         exit(1)
 
     # If run doesn't have a target, print the help message of the run parser
@@ -1503,12 +1508,12 @@ def run_step(args, target_to_run, target_args):
             # running mpi on the CI?
             if target_to_run in ["mpiexec", "mpirun"] and os.getenv("MPI_CI"):
                 if shutil.which("ompi_info"):
-                    target_args = ["--oversubscribe"] + target_args
                     try:
                         subprocess.check_call([target_to_run, "--allow-run-as-root", "dir"])
                         target_args = ["--allow-run-as-root"] + target_args
                     except subprocess.CalledProcessError:
                         pass
+                    target_args = ["--oversubscribe"] + target_args
 
     program_arguments = [*debugging_software, target_to_run, *target_args]
 
@@ -1569,11 +1574,7 @@ def print_targets_list(ns3_modules: list, ns3_programs: dict) -> None:
     def list_to_table(targets_list: list) -> str:
         # Set column width and check how much is space is left at the end
         columnwidth = 30
-        try:
-            terminal_width = os.get_terminal_size().columns
-        except OSError:
-            terminal_width = 80  # assume 80 columns when grepping
-        dead_space = terminal_width % columnwidth
+        dead_space = TERMINAL_WIDTH % columnwidth
 
         # Filter the targets with names longer than the column width
         large_items = list(filter(lambda x: len(x) >= columnwidth, targets_list))
@@ -1587,7 +1588,7 @@ def print_targets_list(ns3_modules: list, ns3_programs: dict) -> None:
             current_end = len(output)
             # If the terminal width minus the written columns is smaller than the dead space,
             # we add a new line and start counting the width of the new line from it
-            if terminal_width - (current_end - prev_new_line) < dead_space:
+            if TERMINAL_WIDTH - (current_end - prev_new_line) < dead_space:
                 prev_new_line = len(output)
                 output += "\n"
             # After the new line or space, add the item plus some spacing
