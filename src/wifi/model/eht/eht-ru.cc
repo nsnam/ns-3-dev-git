@@ -1174,32 +1174,6 @@ EhtRu::GetNumCentral26TonesRus(MHz_t bandwidth, RuType ruType)
                : 0;
 }
 
-bool
-EhtRu::RuSpec::operator==(const EhtRu::RuSpec& other) const
-{
-    // we do not compare the RU PHY indices because they may be uninitialized for
-    // one of the compared RUs. This event should not cause the comparison to evaluate
-    // to false
-    return std::tie(m_ruType, m_index, m_primary160MHz, m_primary80MHzOrLower80MHz) ==
-           std::tie(other.m_ruType, other.m_index, m_primary160MHz, m_primary80MHzOrLower80MHz);
-}
-
-bool
-EhtRu::RuSpec::operator!=(const EhtRu::RuSpec& other) const
-{
-    return !(*this == other);
-}
-
-bool
-EhtRu::RuSpec::operator<(const EhtRu::RuSpec& other) const
-{
-    // we do not compare the RU PHY indices because they may be uninitialized for
-    // one of the compared RUs. This event should not cause the comparison to evaluate
-    // to false
-    return std::tie(m_ruType, m_index, m_primary160MHz, m_primary80MHzOrLower80MHz) <
-           std::tie(other.m_ruType, other.m_index, m_primary160MHz, m_primary80MHzOrLower80MHz);
-}
-
 std::ostream&
 operator<<(std::ostream& os, const EhtRu::RuSpec& ru)
 {

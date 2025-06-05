@@ -789,30 +789,4 @@ HeRu::GetNumCentral26TonesRus(MHz_t bandwidth, RuType ruType)
     return nCentral26TonesRus;
 }
 
-bool
-HeRu::RuSpec::operator==(const RuSpec& other) const
-{
-    // we do not compare the RU PHY indices because they may be uninitialized for
-    // one of the compared RUs. This event should not cause the comparison to evaluate
-    // to false
-    return std::tie(m_ruType, m_index, m_primary80MHz) ==
-           std::tie(other.m_ruType, other.m_index, m_primary80MHz);
-}
-
-bool
-HeRu::RuSpec::operator!=(const RuSpec& other) const
-{
-    return !(*this == other);
-}
-
-bool
-HeRu::RuSpec::operator<(const RuSpec& other) const
-{
-    // we do not compare the RU PHY indices because they may be uninitialized for
-    // one of the compared RUs. This event should not cause the comparison to evaluate
-    // to false
-    return std::tie(m_ruType, m_index, m_primary80MHz) <
-           std::tie(other.m_ruType, other.m_index, other.m_primary80MHz);
-}
-
 } // namespace ns3
