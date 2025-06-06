@@ -59,6 +59,9 @@ class GlobalRouteManager
      * per-node forwarding tables
      */
     static void InitializeRoutes();
+
+  private:
+    static uint32_t routerId; //!< Router ID counter
 };
 
 } // namespace ns3
