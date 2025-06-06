@@ -467,14 +467,13 @@ InterferenceHelper::CalculateNoiseInterferenceW(Ptr<Event> event,
     {
         ;
     }
-    NiChanges ni;
+    auto& ni = nis[band];
     ni.emplace(event->GetStartTime(), NiChange(Watt_u{0}, event));
     while (++it != niIt->second.end() && it->second.GetEvent() != event)
     {
         ni.insert(*it);
     }
     ni.emplace(event->GetEndTime(), NiChange(Watt_u{0}, event));
-    nis.insert({band, ni});
     NS_ASSERT_MSG(noiseInterference >= Watt_u{0.0},
                   "CalculateNoiseInterferenceW returns negative value " << noiseInterference);
     return noiseInterference;
