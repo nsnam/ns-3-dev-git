@@ -60,6 +60,13 @@ class GlobalRouteManager
      */
     static void InitializeRoutes();
 
+    /**
+     * @brief Reset the router ID counter to zero. This should only be called by tests to reset the
+     * router ID counter between simulations within the same program. This function should not be
+     * called In typical simulations or when using the GlobalRouting helper.
+     */
+    static void ResetRouterId();
+
   private:
     static uint32_t routerId; //!< Router ID counter
 };

@@ -55,4 +55,10 @@ GlobalRouteManager::AllocateRouterId()
     return routerId++;
 }
 
+void
+GlobalRouteManager::ResetRouterId()
+{
+    routerId = 0;
+}
+
 } // namespace ns3
