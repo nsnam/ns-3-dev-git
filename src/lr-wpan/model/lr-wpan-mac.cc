@@ -1041,66 +1041,44 @@ LrWpanMac::ReceiveInPromiscuousMode(uint8_t lqi, Ptr<Packet> p)
     LrWpanMacHeader receivedMacHdr;
     p->RemoveHeader(receivedMacHdr);
 
-    McpsDataIndicationParams params;
-    params.m_dsn = receivedMacHdr.GetSeqNum();
-    params.m_mpduLinkQuality = lqi;
-    params.m_srcPanId = receivedMacHdr.GetSrcPanId();
-    params.m_srcAddrMode = receivedMacHdr.GetSrcAddrMode();
-
-    switch (params.m_srcAddrMode)
-    {
-    case SHORT_ADDR:
-        params.m_srcAddr = receivedMacHdr.GetShortSrcAddr();
-        break;
-    case EXT_ADDR:
-        params.m_srcExtAddr = receivedMacHdr.GetExtSrcAddr();
-        break;
-    default:
-        break;
-    }
-
-    params.m_dstPanId = receivedMacHdr.GetDstPanId();
-    params.m_dstAddrMode = receivedMacHdr.GetDstAddrMode();
-
-    switch (params.m_dstAddrMode)
-    {
-    case SHORT_ADDR:
-        params.m_dstAddr = receivedMacHdr.GetShortDstAddr();
-        break;
-    case EXT_ADDR:
-        params.m_dstExtAddr = receivedMacHdr.GetExtDstAddr();
-        break;
-    default:
-        break;
-    }
-
-    if (receivedMacHdr.GetSrcAddrMode() == SHORT_ADDR &&
-        receivedMacHdr.GetDstAddrMode() == SHORT_ADDR)
-    {
-        NS_LOG_DEBUG("Packet from [" << params.m_srcAddr << "] to [" << params.m_dstAddr << "]");
-    }
-    else if (receivedMacHdr.GetSrcAddrMode() == EXT_ADDR &&
-             receivedMacHdr.GetDstAddrMode() == EXT_ADDR)
-    {
-        NS_LOG_DEBUG("Packet from [" << params.m_srcExtAddr << "] to [" << params.m_dstExtAddr
-                                     << "]");
-    }
-    else if (receivedMacHdr.GetSrcAddrMode() == SHORT_ADDR &&
-             receivedMacHdr.GetDstAddrMode() == EXT_ADDR)
-    {
-        NS_LOG_DEBUG("Packet from [" << params.m_srcAddr << "] to [" << params.m_dstExtAddr << "]");
-    }
-    else if (receivedMacHdr.GetSrcAddrMode() == EXT_ADDR &&
-             receivedMacHdr.GetDstAddrMode() == SHORT_ADDR)
-    {
-        NS_LOG_DEBUG("Packet from [" << params.m_srcExtAddr << "] to [" << params.m_dstAddr << "]");
-    }
+    NS_LOG_DEBUG("promiscuous mode, forwarding up");
 
     // TODO: Fix here, this should trigger different Indication Callbacks
     // depending the type of frame received (data,command, beacon)
     if (!m_mcpsDataIndicationCallback.IsNull())
     {
-        NS_LOG_DEBUG("promiscuous mode, forwarding up");
+        McpsDataIndicationParams params;
+        params.m_dsn = receivedMacHdr.GetSeqNum();
+        params.m_mpduLinkQuality = lqi;
+        params.m_srcPanId = receivedMacHdr.GetSrcPanId();
+        params.m_srcAddrMode = receivedMacHdr.GetSrcAddrMode();
+
+        switch (params.m_srcAddrMode)
+        {
+        case SHORT_ADDR:
+            params.m_srcAddr = receivedMacHdr.GetShortSrcAddr();
+            break;
+        case EXT_ADDR:
+            params.m_srcExtAddr = receivedMacHdr.GetExtSrcAddr();
+            break;
+        default:
+            break;
+        }
+
+        params.m_dstPanId = receivedMacHdr.GetDstPanId();
+        params.m_dstAddrMode = receivedMacHdr.GetDstAddrMode();
+
+        switch (params.m_dstAddrMode)
+        {
+        case SHORT_ADDR:
+            params.m_dstAddr = receivedMacHdr.GetShortDstAddr();
+            break;
+        case EXT_ADDR:
+            params.m_dstExtAddr = receivedMacHdr.GetExtDstAddr();
+            break;
+        default:
+            break;
+        }
         m_mcpsDataIndicationCallback(params, p);
     }
 }
@@ -2034,6 +2012,171 @@ LrWpanMac::ReceiveBeacon(uint8_t lqi, Ptr<Packet> p)
 }
 
 void
+LrWpanMac::ReceiveCommand(uint8_t lqi, Ptr<Packet> p)
+{
+    NS_LOG_FUNCTION(this << lqi << p);
+
+    auto symbolRate = (uint64_t)m_phy->GetDataOrSymbolRate(false); // symbols per second
+
+    LrWpanMacTrailer receivedMacTrailer;
+    p->RemoveTrailer(receivedMacTrailer);
+
+    LrWpanMacHeader receivedMacHdr;
+    p->RemoveHeader(receivedMacHdr);
+
+    CommandPayloadHeader receivedMacPayload;
+    p->RemoveHeader(receivedMacPayload);
+
+    switch (receivedMacPayload.GetCommandFrameType())
+    {
+    case CommandPayloadHeader::BEACON_REQ:
+        if (m_csmaCa->IsUnSlottedCsmaCa() && m_coor)
+        {
+            // Jitter = Between 0 and 2 aUnitBackoffPeriods
+            // (0, 320us or 640us in 2.4Ghz O-QPSK)
+            // While this jitter is not described by the standard,
+            // it reduces the probability of collisions in beacons
+            // transmitted as a result of a beacon request
+            Time jitter =
+                Seconds(static_cast<double>(m_uniformVar->GetInteger(0, 3) * aUnitBackoffPeriod) /
+                        symbolRate);
+
+            Simulator::Schedule((jitter), &LrWpanMac::SendOneBeacon, this);
+        }
+        else
+        {
+            NS_LOG_DEBUG("Beacon Request command received in beacon mode: Ignore");
+        }
+        break;
+    case CommandPayloadHeader::ORPHAN_NOTIF:
+        if (m_coor)
+        {
+            if (!m_mlmeOrphanIndicationCallback.IsNull())
+            {
+                MlmeOrphanIndicationParams orphanParams;
+                orphanParams.m_orphanAddr = receivedMacHdr.GetExtSrcAddr();
+                m_mlmeOrphanIndicationCallback(orphanParams);
+            }
+        }
+        break;
+    case CommandPayloadHeader::COOR_REALIGN:
+        if (m_scanOrphanEvent.IsPending())
+        {
+            // Coordinator located, no need to keep scanning other channels
+            m_scanOrphanEvent.Cancel();
+
+            m_macPanIdScan = 0;
+            m_pendPrimitive = MLME_NONE;
+            m_channelScanIndex = 0;
+
+            // Update the device information with the received information
+            // from the Coordinator Realigment command.
+            m_macPanId = receivedMacPayload.GetPanId();
+            m_shortAddress = receivedMacPayload.GetShortAddr();
+            m_macCoordExtendedAddress = receivedMacHdr.GetExtSrcAddr();
+            m_macCoordShortAddress = receivedMacPayload.GetCoordShortAddr();
+
+            if (!m_mlmeScanConfirmCallback.IsNull())
+            {
+                MlmeScanConfirmParams confirmParams;
+                confirmParams.m_scanType = m_scanParams.m_scanType;
+                confirmParams.m_chPage = m_scanParams.m_chPage;
+                confirmParams.m_status = MacStatus::SUCCESS;
+                m_mlmeScanConfirmCallback(confirmParams);
+            }
+            m_scanParams = {};
+        }
+        // TODO: handle Coordinator realignment when not
+        //       used during an orphan scan.
+        break;
+    default:
+        break;
+    }
+}
+
+void
+LrWpanMac::ReceiveData(uint8_t lqi, Ptr<Packet> p)
+{
+    NS_LOG_FUNCTION(this << lqi << p);
+
+    LrWpanMacTrailer receivedMacTrailer;
+    p->RemoveTrailer(receivedMacTrailer);
+
+    LrWpanMacHeader receivedMacHdr;
+    p->RemoveHeader(receivedMacHdr);
+
+    NS_LOG_DEBUG("Data Packet is for me; forwarding up");
+
+    if (!m_mcpsDataIndicationCallback.IsNull())
+    {
+        McpsDataIndicationParams params;
+        params.m_dsn = receivedMacHdr.GetSeqNum();
+        params.m_mpduLinkQuality = lqi;
+        params.m_srcPanId = receivedMacHdr.GetSrcPanId();
+        params.m_srcAddrMode = receivedMacHdr.GetSrcAddrMode();
+
+        switch (params.m_srcAddrMode)
+        {
+        case SHORT_ADDR:
+            params.m_srcAddr = receivedMacHdr.GetShortSrcAddr();
+            break;
+        case EXT_ADDR:
+            params.m_srcExtAddr = receivedMacHdr.GetExtSrcAddr();
+            break;
+        default:
+            break;
+        }
+
+        params.m_dstPanId = receivedMacHdr.GetDstPanId();
+        params.m_dstAddrMode = receivedMacHdr.GetDstAddrMode();
+
+        switch (params.m_dstAddrMode)
+        {
+        case SHORT_ADDR:
+            params.m_dstAddr = receivedMacHdr.GetShortDstAddr();
+            break;
+        case EXT_ADDR:
+            params.m_dstExtAddr = receivedMacHdr.GetExtDstAddr();
+            break;
+        default:
+            break;
+        }
+
+        m_mcpsDataIndicationCallback(params, p);
+    }
+}
+
+void
+LrWpanMac::PrintPacket(Ptr<Packet> p)
+{
+    LrWpanMacHeader peekedMacHdr;
+    p->PeekHeader(peekedMacHdr);
+
+    if (peekedMacHdr.GetSrcAddrMode() == SHORT_ADDR && peekedMacHdr.GetDstAddrMode() == SHORT_ADDR)
+    {
+        NS_LOG_DEBUG("Packet from [" << peekedMacHdr.GetShortSrcAddr() << "] to ["
+                                     << peekedMacHdr.GetShortDstAddr() << "]");
+    }
+    else if (peekedMacHdr.GetSrcAddrMode() == EXT_ADDR && peekedMacHdr.GetDstAddrMode() == EXT_ADDR)
+    {
+        NS_LOG_DEBUG("Packet from [" << peekedMacHdr.GetExtSrcAddr() << "] to ["
+                                     << peekedMacHdr.GetExtDstAddr() << "]");
+    }
+    else if (peekedMacHdr.GetSrcAddrMode() == SHORT_ADDR &&
+             peekedMacHdr.GetDstAddrMode() == EXT_ADDR)
+    {
+        NS_LOG_DEBUG("Packet from [" << peekedMacHdr.GetShortSrcAddr() << "] to ["
+                                     << peekedMacHdr.GetExtDstAddr() << "]");
+    }
+    else if (peekedMacHdr.GetSrcAddrMode() == EXT_ADDR &&
+             peekedMacHdr.GetDstAddrMode() == SHORT_ADDR)
+    {
+        NS_LOG_DEBUG("Packet from [" << peekedMacHdr.GetExtSrcAddr() << "] to ["
+                                     << peekedMacHdr.GetShortDstAddr() << "]");
+    }
+}
+
+void
 LrWpanMac::CheckQueue()
 {
     NS_LOG_FUNCTION(this);
@@ -2167,6 +2310,7 @@ LrWpanMac::PdDataIndication(uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
     // Level 2 filtering
     if (m_macPromiscuousMode)
     {
+        PrintPacket(originalPkt);
         ReceiveInPromiscuousMode(lqi, originalPkt);
         return;
     }
@@ -2275,39 +2419,6 @@ LrWpanMac::PdDataIndication(uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
         return;
     }
 
-    McpsDataIndicationParams params;
-    params.m_dsn = receivedMacHdr.GetSeqNum();
-    params.m_mpduLinkQuality = lqi;
-    params.m_srcPanId = receivedMacHdr.GetSrcPanId();
-    params.m_srcAddrMode = receivedMacHdr.GetSrcAddrMode();
-
-    switch (params.m_srcAddrMode)
-    {
-    case SHORT_ADDR:
-        params.m_srcAddr = receivedMacHdr.GetShortSrcAddr();
-        break;
-    case EXT_ADDR:
-        params.m_srcExtAddr = receivedMacHdr.GetExtSrcAddr();
-        break;
-    default:
-        break;
-    }
-
-    params.m_dstPanId = receivedMacHdr.GetDstPanId();
-    params.m_dstAddrMode = receivedMacHdr.GetDstAddrMode();
-
-    switch (params.m_dstAddrMode)
-    {
-    case SHORT_ADDR:
-        params.m_dstAddr = receivedMacHdr.GetShortDstAddr();
-        break;
-    case EXT_ADDR:
-        params.m_dstExtAddr = receivedMacHdr.GetExtDstAddr();
-        break;
-    default:
-        break;
-    }
-
     m_macRxTrace(originalPkt);
     // \todo: What should we do if we receive a frame while waiting for an ACK?
     //        Especially if this frame has the ACK request bit set, should we reply with
@@ -2389,27 +2500,7 @@ LrWpanMac::PdDataIndication(uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
             Simulator::ScheduleNow(&LrWpanMac::SendAck, this, receivedMacHdr.GetSeqNum());
     }
 
-    if (receivedMacHdr.GetSrcAddrMode() == SHORT_ADDR &&
-        receivedMacHdr.GetDstAddrMode() == SHORT_ADDR)
-    {
-        NS_LOG_DEBUG("Packet from [" << params.m_srcAddr << "] to [" << params.m_dstAddr << "]");
-    }
-    else if (receivedMacHdr.GetSrcAddrMode() == EXT_ADDR &&
-             receivedMacHdr.GetDstAddrMode() == EXT_ADDR)
-    {
-        NS_LOG_DEBUG("Packet from [" << params.m_srcExtAddr << "] to [" << params.m_dstExtAddr
-                                     << "]");
-    }
-    else if (receivedMacHdr.GetSrcAddrMode() == SHORT_ADDR &&
-             receivedMacHdr.GetDstAddrMode() == EXT_ADDR)
-    {
-        NS_LOG_DEBUG("Packet from [" << params.m_srcAddr << "] to [" << params.m_dstExtAddr << "]");
-    }
-    else if (receivedMacHdr.GetSrcAddrMode() == EXT_ADDR &&
-             receivedMacHdr.GetDstAddrMode() == SHORT_ADDR)
-    {
-        NS_LOG_DEBUG("Packet from [" << params.m_srcExtAddr << "] to [" << params.m_dstAddr << "]");
-    }
+    PrintPacket(originalPkt);
 
     if (receivedMacHdr.IsBeacon())
     {
@@ -2417,83 +2508,11 @@ LrWpanMac::PdDataIndication(uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
     }
     else if (receivedMacHdr.IsCommand())
     {
-        // Handle the reception of frame commands that do not require ACK
-        // (i.e. Beacon Request, Orphan notification, Coordinator Realigment)
-        CommandPayloadHeader receivedMacPayload;
-        p->PeekHeader(receivedMacPayload);
-
-        switch (receivedMacPayload.GetCommandFrameType())
-        {
-        case CommandPayloadHeader::BEACON_REQ:
-            if (m_csmaCa->IsUnSlottedCsmaCa() && m_coor)
-            {
-                // Jitter = Between 0 and 2 aUnitBackoffPeriods
-                // (0, 320us or 640us in 2.4Ghz O-QPSK)
-                // While this jitter is not described by the standard,
-                // it reduces the probability of collisions in beacons
-                // transmitted as a result of a beacon request
-                Time jitter = Seconds(
-                    static_cast<double>(m_uniformVar->GetInteger(0, 3) * aUnitBackoffPeriod) /
-                    symbolRate);
-
-                Simulator::Schedule((jitter), &LrWpanMac::SendOneBeacon, this);
-            }
-            else
-            {
-                m_macRxDropTrace(originalPkt);
-            }
-            break;
-        case CommandPayloadHeader::ORPHAN_NOTIF:
-            if (!m_mlmeOrphanIndicationCallback.IsNull())
-            {
-                if (m_coor)
-                {
-                    MlmeOrphanIndicationParams orphanParams;
-                    orphanParams.m_orphanAddr = receivedMacHdr.GetExtSrcAddr();
-                    m_mlmeOrphanIndicationCallback(orphanParams);
-                }
-            }
-            break;
-        case CommandPayloadHeader::COOR_REALIGN:
-            if (m_scanOrphanEvent.IsPending())
-            {
-                // Coordinator located, no need to keep scanning other channels
-                m_scanOrphanEvent.Cancel();
-
-                m_macPanIdScan = 0;
-                m_pendPrimitive = MLME_NONE;
-                m_channelScanIndex = 0;
-
-                // Update the device information with the received information
-                // from the Coordinator Realigment command.
-                m_macPanId = receivedMacPayload.GetPanId();
-                m_shortAddress = receivedMacPayload.GetShortAddr();
-                m_macCoordExtendedAddress = receivedMacHdr.GetExtSrcAddr();
-                m_macCoordShortAddress = receivedMacPayload.GetCoordShortAddr();
-
-                if (!m_mlmeScanConfirmCallback.IsNull())
-                {
-                    MlmeScanConfirmParams confirmParams;
-                    confirmParams.m_scanType = m_scanParams.m_scanType;
-                    confirmParams.m_chPage = m_scanParams.m_chPage;
-                    confirmParams.m_status = MacStatus::SUCCESS;
-                    m_mlmeScanConfirmCallback(confirmParams);
-                }
-                m_scanParams = {};
-            }
-            // TODO: handle Coordinator realignment when not
-            //       used during an orphan scan.
-            break;
-        default:
-            m_macRxDropTrace(originalPkt);
-            break;
-        }
+        ReceiveCommand(lqi, originalPkt);
     }
-    else if (receivedMacHdr.IsData() && !m_mcpsDataIndicationCallback.IsNull())
+    else if (receivedMacHdr.IsData())
     {
-        // If it is a data frame, push it up the stack.
-        NS_LOG_DEBUG("Data Packet is for me; forwarding up");
-        m_mcpsDataIndicationCallback(params, p);
+        ReceiveData(lqi, originalPkt);
     }
     else if (receivedMacHdr.IsAcknowledgment() && m_txPkt && m_macState == MAC_ACK_PENDING)
     {

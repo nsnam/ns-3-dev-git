@@ -872,6 +872,30 @@ class LrWpanMac : public LrWpanMacBase
     void ReceiveBeacon(uint8_t lqi, Ptr<Packet> p);
 
     /**
+     * Used to process the reception of a command packet.
+     *
+     * @param lqi The value of the link quality indicator (LQI) of the received packet
+     * @param p The packet containing the MAC header and the beacon payload information
+     */
+    void ReceiveCommand(uint8_t lqi, Ptr<Packet> p);
+
+    /**
+     * Used to process the reception of data.
+     *
+     * @param lqi The value of the link quality indicator (LQI) of the received packet
+     * @param p The packet containing the MAC header and the data payload.
+     */
+    void ReceiveData(uint8_t lqi, Ptr<Packet> p);
+
+    /**
+     * Display the MAC header contents of a successfully received packet when
+     * logs are active.
+     *
+     * @param p The packet containing the MAC header
+     */
+    void PrintPacket(Ptr<Packet> p);
+
+    /**
      * Send an acknowledgment packet for the given sequence number.
      *
      * @param seqno the sequence number for the ACK
