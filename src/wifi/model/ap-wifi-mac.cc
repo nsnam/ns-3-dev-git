@@ -1455,8 +1455,7 @@ ApWifiMac::GetEhtOperation(uint8_t linkId) const
             .control = {.channelWidth = 4},
             .ccfs0 = phy->GetOperatingChannel().GetPrimaryChannelNumber(MHz_t{160},
                                                                         WIFI_STANDARD_80211be),
-            .ccfs1 = phy->GetOperatingChannel().GetSecondaryChannelNumber(MHz_t{160},
-                                                                          WIFI_STANDARD_80211be)});
+            .ccfs1 = phy->GetOperatingChannel().GetNumber()});
         operation.m_params.opInfoPresent = 1;
     }
     return operation;
