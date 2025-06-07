@@ -291,6 +291,16 @@ class WifiPhyOperatingChannel
     void SetPrimary20Index(uint8_t index);
 
     /**
+     * Set the channel number of the primary 20 MHz channel.
+     *
+     * Note: this function only supports setting the channel number of the primary 20 MHz channel
+     * when the PHY band is either 5 GHz or 6 GHz.
+     *
+     * @param number the channel number of the primary 20 MHz channel
+     */
+    void SetPrimary20ChannelNumber(uint8_t number);
+
+    /**
      * Get the center frequency of the primary channel of the given width.
      *
      * @param primaryChannelWidth the width of the primary channel
@@ -432,6 +442,14 @@ class WifiPhyOperatingChannel
      * @return the number of frequency segments
      */
     std::size_t GetNSegments() const;
+
+    /**
+     * Get the index of the primary 20 MHz channel.
+     * If the operating channel width is not a multiple of 20 MHz, this returns 0.
+     *
+     * @return the index of the primary 20 MHz channel
+     */
+    uint8_t GetPrimary20Index() const;
 
   private:
     ConstIteratorSet m_channelIts; //!< const iterators pointing to the configured frequency channel

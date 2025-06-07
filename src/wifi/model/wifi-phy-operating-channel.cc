@@ -661,6 +661,45 @@ WifiPhyOperatingChannel::SetPrimary20Index(uint8_t index)
     m_primary20Index = index;
 }
 
+void
+WifiPhyOperatingChannel::SetPrimary20ChannelNumber(uint8_t number)
+{
+    NS_LOG_FUNCTION(this << number);
+    NS_ASSERT_MSG(IsSet(), "No channel set");
+    NS_ASSERT_MSG(GetPhyBand() == WIFI_PHY_BAND_5GHZ || GetPhyBand() == WIFI_PHY_BAND_6GHZ,
+                  "SetPrimary20ChannelNumber is only supported for 5 and 6 GHz band");
+
+    // 20 MHz channels in the 5 and 6 GHz bands are always spaced by 4 channel numbers
+    const uint8_t spacing = 4;
+
+    // reset the primary20Index to 0 to find the lowest 20 MHz channel number
+    m_primary20Index = 0;
+    const auto lowest20MHzChannelNumber =
+        GetPrimaryChannelNumber(MHz_t{20}, WIFI_STANDARD_UNSPECIFIED);
+
+    uint8_t offset = 0;
+    if (GetWidthType() == WifiChannelWidthType::CW_80_PLUS_80MHZ)
+    {
+        // set the primary20Index to 3 to find the highest 20 MHz channel number of the lowest
+        // segment
+        m_primary20Index = 3;
+        const auto highest20MHzInLow =
+            GetPrimaryChannelNumber(MHz_t{20}, WIFI_STANDARD_UNSPECIFIED);
+        if (number >
+            highest20MHzInLow) // P20 is in the high segment, we need to calculate the offset
+        {
+            // set the primary20Index to 4 to find the lowest 20 MHz channel number of the highest
+            // segment
+            m_primary20Index = 4;
+            const auto lowest20MHzInHigh =
+                GetPrimaryChannelNumber(MHz_t{20}, WIFI_STANDARD_UNSPECIFIED);
+            offset = (lowest20MHzInHigh - highest20MHzInLow - spacing);
+        }
+    }
+
+    m_primary20Index = (number - lowest20MHzChannelNumber - offset) / spacing;
+}
+
 uint8_t
 WifiPhyOperatingChannel::GetPrimarySegmentIndex(MHz_t primaryChannelWidth) const
 {
@@ -962,6 +1001,12 @@ std::size_t
 WifiPhyOperatingChannel::GetNSegments() const
 {
     return m_channelIts.size();
+}
+
+uint8_t
+WifiPhyOperatingChannel::GetPrimary20Index() const
+{
+    return m_primary20Index;
 }
 
 bool

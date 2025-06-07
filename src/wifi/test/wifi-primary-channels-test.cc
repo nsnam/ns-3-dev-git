@@ -1567,6 +1567,155 @@ Wifi20MHzChannelIndicesTest::DoRun()
  * @ingroup wifi-test
  * @ingroup tests
  *
+ * @brief Test function to set P20 index by specifying the channel number of the primary20 channel.
+ */
+class WifiPrimary20MHzChannelTest : public TestCase
+{
+  public:
+    /**
+     * Constructor
+     */
+    WifiPrimary20MHzChannelTest();
+    ~WifiPrimary20MHzChannelTest() override = default;
+
+    /**
+     * Check that the P20 index is correctly computed when setting the
+     * primary20 channel number.
+     *
+     * @param p20ChanNumber the channel number of the primary20 channel to configure
+     * @param expectedP20Idx the expected P20 index
+     */
+    void RunOne(uint8_t p20ChanNumber, uint8_t expectedP20Idx);
+
+  private:
+    void DoRun() override;
+
+    WifiPhyOperatingChannel m_channel; //!< operating channel
+};
+
+WifiPrimary20MHzChannelTest::WifiPrimary20MHzChannelTest()
+    : TestCase("Check computation of P20 index when specifying the channel number")
+{
+}
+
+void
+WifiPrimary20MHzChannelTest::RunOne(uint8_t p20ChanNumber, uint8_t expectedP20Idx)
+{
+    m_channel.SetPrimary20ChannelNumber(p20ChanNumber);
+    auto actualP20Idx = m_channel.GetPrimary20Index();
+    NS_TEST_ASSERT_MSG_EQ(actualP20Idx,
+                          expectedP20Idx,
+                          "Expected P20 index " << +expectedP20Idx << " differs from actual "
+                                                << +actualP20Idx);
+}
+
+void
+WifiPrimary20MHzChannelTest::DoRun()
+{
+    /* 20 MHz channel in 5 GHz band */
+    m_channel.SetDefault(MHz_t{20}, WIFI_STANDARD_80211be, WIFI_PHY_BAND_5GHZ);
+    RunOne(36, 0);
+
+    /* 40 MHz channel in 5 GHz band */
+    m_channel.SetDefault(MHz_t{40}, WIFI_STANDARD_80211be, WIFI_PHY_BAND_5GHZ);
+    RunOne(36, 0);
+    RunOne(40, 1);
+
+    /* 80 MHz channel in 5 GHz band */
+    m_channel.SetDefault(MHz_t{80}, WIFI_STANDARD_80211be, WIFI_PHY_BAND_5GHZ);
+    RunOne(36, 0);
+    RunOne(40, 1);
+    RunOne(44, 2);
+    RunOne(48, 3);
+
+    /* 160 MHz channel in 5 GHz band */
+    m_channel.SetDefault(MHz_t{160}, WIFI_STANDARD_80211be, WIFI_PHY_BAND_5GHZ);
+    RunOne(36, 0);
+    RunOne(40, 1);
+    RunOne(44, 2);
+    RunOne(48, 3);
+    RunOne(52, 4);
+    RunOne(56, 5);
+    RunOne(60, 6);
+    RunOne(64, 7);
+
+    /* 80+80 MHz channel in 5 GHz band */
+    m_channel.Set({{122, MHz_t{0}, MHz_t{80}, WIFI_PHY_BAND_5GHZ},
+                   {155, MHz_t{0}, MHz_t{80}, WIFI_PHY_BAND_5GHZ}},
+                  WIFI_STANDARD_80211be);
+    RunOne(116, 0);
+    RunOne(120, 1);
+    RunOne(124, 2);
+    RunOne(128, 3);
+    RunOne(149, 4);
+    RunOne(153, 5);
+    RunOne(157, 6);
+    RunOne(161, 7);
+
+    /* 20 MHz channel in 6 GHz band */
+    m_channel.SetDefault(MHz_t{20}, WIFI_STANDARD_80211be, WIFI_PHY_BAND_6GHZ);
+    RunOne(1, 0);
+
+    /* 40 MHz channel in 6 GHz band */
+    m_channel.SetDefault(MHz_t{40}, WIFI_STANDARD_80211be, WIFI_PHY_BAND_6GHZ);
+    RunOne(1, 0);
+    RunOne(5, 1);
+
+    /* 80 MHz channel in 6 GHz band */
+    m_channel.SetDefault(MHz_t{80}, WIFI_STANDARD_80211be, WIFI_PHY_BAND_6GHZ);
+    RunOne(1, 0);
+    RunOne(5, 1);
+    RunOne(9, 2);
+    RunOne(13, 3);
+
+    /* 160 MHz channel in 6 GHz band */
+    m_channel.SetDefault(MHz_t{160}, WIFI_STANDARD_80211be, WIFI_PHY_BAND_6GHZ);
+    RunOne(1, 0);
+    RunOne(5, 1);
+    RunOne(9, 2);
+    RunOne(13, 3);
+    RunOne(17, 4);
+    RunOne(21, 5);
+    RunOne(25, 6);
+    RunOne(29, 7);
+
+    /* 80+80 MHz channel in 6 GHz band */
+    m_channel.Set({{71, MHz_t{0}, MHz_t{80}, WIFI_PHY_BAND_6GHZ},
+                   {119, MHz_t{0}, MHz_t{80}, WIFI_PHY_BAND_6GHZ}},
+                  WIFI_STANDARD_80211be);
+    RunOne(65, 0);
+    RunOne(69, 1);
+    RunOne(73, 2);
+    RunOne(77, 3);
+    RunOne(113, 4);
+    RunOne(117, 5);
+    RunOne(121, 6);
+    RunOne(125, 7);
+
+    /* 320 MHz channel in 6 GHz band */
+    m_channel.SetDefault(MHz_t{320}, WIFI_STANDARD_80211be, WIFI_PHY_BAND_6GHZ);
+    RunOne(1, 0);
+    RunOne(5, 1);
+    RunOne(9, 2);
+    RunOne(13, 3);
+    RunOne(17, 4);
+    RunOne(21, 5);
+    RunOne(25, 6);
+    RunOne(29, 7);
+    RunOne(33, 8);
+    RunOne(37, 9);
+    RunOne(41, 10);
+    RunOne(45, 11);
+    RunOne(49, 12);
+    RunOne(53, 13);
+    RunOne(57, 14);
+    RunOne(61, 15);
+}
+
+/**
+ * @ingroup wifi-test
+ * @ingroup tests
+ *
  * @brief wifi primary channels test suite
  */
 class WifiPrimaryChannelsTestSuite : public TestSuite
@@ -1599,6 +1748,7 @@ WifiPrimaryChannelsTestSuite::WifiPrimaryChannelsTestSuite()
     AddTestCase(new WifiPrimaryChannelsTest(WIFI_STANDARD_80211be, MHz_t{320}, false),
                 TestCase::Duration::TAKES_FOREVER);
     AddTestCase(new Wifi20MHzChannelIndicesTest(), TestCase::Duration::QUICK);
+    AddTestCase(new WifiPrimary20MHzChannelTest(), TestCase::Duration::QUICK);
 }
 
 static WifiPrimaryChannelsTestSuite g_wifiPrimaryChannelsTestSuite; ///< the test suite
