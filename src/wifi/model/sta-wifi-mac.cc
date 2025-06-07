@@ -1385,6 +1385,11 @@ StaWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
     {
         m_emlsrManager->NotifyMgtFrameReceived(mpdu, linkId);
     }
+
+    if (m_dsoManager)
+    {
+        m_dsoManager->NotifyMgtFrameReceived(mpdu, linkId);
+    }
 }
 
 void

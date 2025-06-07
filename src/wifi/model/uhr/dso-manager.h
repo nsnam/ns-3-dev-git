@@ -10,12 +10,19 @@
 #define DSO_MANAGER_H
 
 #include "ns3/object.h"
+#include "ns3/wifi-ru.h"
+
+#include <map>
+#include <vector>
 
 namespace ns3
 {
 
 class UhrFrameExchangeManager;
 class StaWifiMac;
+class WifiMpdu;
+class WifiPhyOperatingChannel;
+class MgtAssocResponseHeader;
 
 /**
  * @ingroup wifi
@@ -42,6 +49,14 @@ class DsoManager : public Object
      */
     void SetWifiMac(Ptr<StaWifiMac> mac);
 
+    /**
+     * Notify the reception of a management frame addressed to us.
+     *
+     * @param mpdu the received MPDU
+     * @param linkId the ID of the link over which the MPDU was received
+     */
+    void NotifyMgtFrameReceived(Ptr<const WifiMpdu> mpdu, uint8_t linkId);
+
   protected:
     void DoDispose() override;
 
@@ -56,8 +71,46 @@ class DsoManager : public Object
      */
     Ptr<UhrFrameExchangeManager> GetUhrFem(uint8_t linkId) const;
 
+    /**
+     * @param linkId the ID of the given link
+     * @return the operating channel the PHY must switch to in order to operate
+     *         on the primary subband
+     */
+    const WifiPhyOperatingChannel& GetPrimarySubband(uint8_t linkId) const;
+
+    /**
+     * @param linkId the ID of the given link
+     * @return the operating channel(s) the PHY must switch to in order to operate
+     *         on the DSO subband(s)
+     */
+    const std::map<EhtRu::PrimaryFlags, WifiPhyOperatingChannel>& GetDsoSubbands(
+        uint8_t linkId) const;
+
   private:
+    /**
+     * Compute the primary subband and the DSO subband(s) for a given link.
+     * The primary subband is always the operating channel on that link.
+     * For an UHR non-AP STA with DSO activated for which its PHY operating on that link supports at
+     * least 80 MHz, DSO subband(s) are computed unless that PHY supports a channel width equal or
+     * larger than the one of the AP. DSO subband(s) are calculated as follows:
+     * - if the PHY supports 160 MHz and the AP operates on a 320 MHz channel, the DSO subband is
+     * the secondary 160 MHz channel of the AP for that link;
+     * - if the PHY supports 80 MHz and the AP operates on a 160 MHz channel, the DSO subband is the
+     * secondary 80 MHz channel of the AP for that link;
+     * - if the PHY supports 80 MHz and the AP operates on a 320 MHz channel, the DSO subbands are
+     * all the 80 MHz channels of the AP for that link, except the primary 80 MHz channel.
+     *
+     * @param linkId the ID of the given link
+     * @param assocResp the Association Response frame header for that link
+     */
+    void ComputeSubbands(uint8_t linkId, const MgtAssocResponseHeader& assocResp);
+
     Ptr<StaWifiMac> m_staMac; //!< the MAC of the managed non-AP MLD
+
+    std::map<uint8_t, WifiPhyOperatingChannel>
+        m_primarySubbands; //!< link ID-indexed map of primary subbands
+    std::map<uint8_t, std::map<EhtRu::PrimaryFlags, WifiPhyOperatingChannel>>
+        m_dsoSubbands; //!< link ID-indexed map of DSO subbands
 };
 
 } // namespace ns3
