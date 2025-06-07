@@ -31,6 +31,7 @@ class RandomVariableStream;
 class PowerSaveManager;
 class WifiAssocManager;
 class EmlsrManager;
+class DsoManager;
 
 /**
  * @ingroup wifi
@@ -219,6 +220,20 @@ class StaWifiMac : public WifiMac
      * @return the EMLSR Manager
      */
     Ptr<EmlsrManager> GetEmlsrManager() const;
+
+    /**
+     * Set the DSO Manager.
+     *
+     * @param dsoManager the DSO Manager
+     */
+    void SetDsoManager(Ptr<DsoManager> dsoManager);
+
+    /**
+     * Get the DSO Manager.
+     *
+     * @return the DSO Manager
+     */
+    Ptr<DsoManager> GetDsoManager() const;
 
     /**
      * Get the frame body of the Probe Request to transmit on the given link.
@@ -693,6 +708,7 @@ class StaWifiMac : public WifiMac
     Ptr<PowerSaveManager> m_powerSaveManager;     ///< Power Save Manager
     WifiAssocType m_assocType;                    ///< type of association
     Ptr<EmlsrManager> m_emlsrManager;             ///< EMLSR Manager
+    Ptr<DsoManager> m_dsoManager;                 ///< DSO Manager
     Time m_waitBeaconTimeout;                     ///< wait beacon timeout
     Time m_probeRequestTimeout;                   ///< probe request timeout
     Time m_assocRequestTimeout;                   ///< association request timeout

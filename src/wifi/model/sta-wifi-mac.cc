@@ -22,6 +22,7 @@
 #include "wifi-phy.h"
 
 #include "ns3/attribute-container.h"
+#include "ns3/dso-manager.h"
 #include "ns3/eht-configuration.h"
 #include "ns3/emlsr-manager.h"
 #include "ns3/he-configuration.h"
@@ -237,6 +238,11 @@ StaWifiMac::DoDispose()
         event.Cancel();
     }
     m_emlsrLinkSwitch.clear();
+    if (m_dsoManager)
+    {
+        m_dsoManager->Dispose();
+    }
+    m_dsoManager = nullptr;
     WifiMac::DoDispose();
 }
 
@@ -319,6 +325,20 @@ Ptr<EmlsrManager>
 StaWifiMac::GetEmlsrManager() const
 {
     return m_emlsrManager;
+}
+
+void
+StaWifiMac::SetDsoManager(Ptr<DsoManager> dsoManager)
+{
+    NS_LOG_FUNCTION(this << dsoManager);
+    m_dsoManager = dsoManager;
+    m_dsoManager->SetWifiMac(this);
+}
+
+Ptr<DsoManager>
+StaWifiMac::GetDsoManager() const
+{
+    return m_dsoManager;
 }
 
 uint16_t

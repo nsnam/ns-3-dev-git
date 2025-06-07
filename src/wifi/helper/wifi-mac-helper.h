@@ -189,6 +189,16 @@ class WifiMacHelper
     void SetGcrManager(std::string type, Args&&... args);
 
     /**
+     * Helper function used to set the DSO Manager that can be installed on an UHR non-AP.
+     *
+     * @tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * @param type the type of DSO Manager
+     * @param args A sequence of name-value pairs of the attributes to set.
+     */
+    template <typename... Args>
+    void SetDsoManager(std::string type, Args&&... args);
+
+    /**
      * @param device the device within which the MAC object will reside
      * @param standard the standard to configure during installation
      * @returns a new MAC object.
@@ -212,6 +222,7 @@ class WifiMacHelper
     ObjectFactory m_emlsrManager;         ///< EMLSR Manager object factory
     ObjectFactory m_apEmlsrManager;       ///< AP EMLSR Manager object factory
     ObjectFactory m_gcrManager;           ///< GCR Manager object factory
+    ObjectFactory m_dsoManager;           ///< DSO Manager object factory
 };
 
 } // namespace ns3
@@ -331,6 +342,14 @@ WifiMacHelper::SetGcrManager(std::string type, Args&&... args)
 {
     m_gcrManager.SetTypeId(type);
     m_gcrManager.Set(args...);
+}
+
+template <typename... Args>
+void
+WifiMacHelper::SetDsoManager(std::string type, Args&&... args)
+{
+    m_dsoManager.SetTypeId(type);
+    m_dsoManager.Set(args...);
 }
 
 } // namespace ns3

@@ -10,6 +10,7 @@
 
 #include "ns3/ap-emlsr-manager.h"
 #include "ns3/boolean.h"
+#include "ns3/dso-manager.h"
 #include "ns3/eht-configuration.h"
 #include "ns3/emlsr-manager.h"
 #include "ns3/enum.h"
@@ -18,6 +19,7 @@
 #include "ns3/multi-user-scheduler.h"
 #include "ns3/pointer.h"
 #include "ns3/power-save-manager.h"
+#include "ns3/uhr-configuration.h"
 #include "ns3/wifi-ack-manager.h"
 #include "ns3/wifi-assoc-manager.h"
 #include "ns3/wifi-mac-queue-scheduler.h"
@@ -52,6 +54,7 @@ WifiMacHelper::WifiMacHelper()
     m_ackManager.SetTypeId("ns3::WifiDefaultAckManager");
     m_emlsrManager.SetTypeId("ns3::DefaultEmlsrManager");
     m_apEmlsrManager.SetTypeId("ns3::DefaultApEmlsrManager");
+    m_dsoManager.SetTypeId("ns3::DefaultDsoManager");
 }
 
 WifiMacHelper::~WifiMacHelper()
@@ -181,6 +184,14 @@ WifiMacHelper::Create(Ptr<WifiNetDevice> device, WifiStandard standard) const
     {
         auto gcrManager = m_gcrManager.Create<GcrManager>();
         apMac->SetGcrManager(gcrManager);
+    }
+
+    // create and install the DSO Manager if this is an UHR non-AP device with DSO activated
+    if (standard >= WIFI_STANDARD_80211bn && staMac &&
+        device->GetUhrConfiguration()->GetDsoActivated())
+    {
+        auto dsoManager = m_dsoManager.Create<DsoManager>();
+        staMac->SetDsoManager(dsoManager);
     }
 
     return mac;
