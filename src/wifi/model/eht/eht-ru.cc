@@ -908,7 +908,7 @@ EhtRu::RuSpec::GetPhyIndex(MHz_t bw, uint8_t p20Index) const
     return phyIndex;
 }
 
-std::pair<bool, bool>
+EhtRu::PrimaryFlags
 EhtRu::GetPrimaryFlags(MHz_t bw, RuType ruType, std::size_t phyIndex, uint8_t p20Index)
 {
     const auto nRus = GetNRus(bw, ruType);
@@ -1188,6 +1188,20 @@ operator<<(std::ostream& os, const EhtRu::RuSpec& ru)
         os << (ru.GetPrimary80MHzOrLower80MHz() ? "Lower80MHz" : "high80MHz");
     }
     os << "}";
+    return os;
+}
+
+std::ostream&
+operator<<(std::ostream& os, const EhtRu::PrimaryFlags& flags)
+{
+    if (const auto [primary160MHz, primary80OrLower80MHz] = flags; primary160MHz)
+    {
+        os << (primary80OrLower80MHz ? "P80" : "S80");
+    }
+    else
+    {
+        os << (primary80OrLower80MHz ? "S160/low80" : "S160/high80");
+    }
     return os;
 }
 

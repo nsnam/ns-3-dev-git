@@ -104,12 +104,28 @@ class EhtRu
                                            //!< in the lower 80MHz channel
     };
 
+    /// definition of the primary flags <primary160MHz, primary80MHzOrLower80MHz>. The first flag
+    /// identifies whether the RU is in the primary 160 MHz. The second flag identifies whether the
+    /// RU is allocated in the primary 80MHz channel if the RU is allocated in the primary 160MHz
+    /// channel, or whether the RU is allocated in the lower 80MHz channel if the RU is allocated in
+    /// the secondary 160MHz channel.
+    using PrimaryFlags = std::pair<bool, bool>;
+
+    /// Identifier for an RU located in the primary 80 MHz channel
+    static constexpr PrimaryFlags PRIMARY_80_FLAGS{true, true};
+    /// Identifier for an RU located in the secondary 80 MHz channel
+    static constexpr PrimaryFlags SECONDARY_80_FLAGS{true, false};
+    /// Identifier for an RU occupying the whole primary 160 MHz channel
+    static constexpr PrimaryFlags PRIMARY_160_FLAGS{true, true};
+    /// Identifier for an RU occupying the whole secondary 160 MHz channel
+    static constexpr PrimaryFlags SECONDARY_160_FLAGS{false, true};
+    /// Identifier for an RU located in the lower 80 MHz channel of the secondary 160 MHz channel
+    static constexpr PrimaryFlags SECONDARY_160_LOW_FLAGS{false, true};
+    /// Identifier for an RU located in the upper 80 MHz channel of the secondary 160 MHz channel
+    static constexpr PrimaryFlags SECONDARY_160_HIGH_FLAGS{false, false};
+
     /**
      * Get the primary flags of a given RU transmitted in a PPDU.
-     * The first flag identifies whether the RU is in the primary 160 MHz.
-     * The second flag identifies whether the RU is allocated in the primary 80MHz channel if the RU
-     * is allocated in the primary 160MHz channel, or whether the RU is allocated in the lower 80MHz
-     * channel if the RU is allocated in the secondary 160MHz channel
      *
      * @param bw the bandwidth of the PPDU (20, 40, 80, 160, 320)
      * @param ruType the RU type (number of tones)
@@ -117,10 +133,10 @@ class EhtRu
      * @param p20Index the index of the primary20 channel
      * @return the primary flags
      */
-    static std::pair<bool, bool> GetPrimaryFlags(MHz_t bw,
-                                                 RuType ruType,
-                                                 std::size_t phyIndex,
-                                                 uint8_t p20Index);
+    static PrimaryFlags GetPrimaryFlags(MHz_t bw,
+                                        RuType ruType,
+                                        std::size_t phyIndex,
+                                        uint8_t p20Index);
 
     /**
      * Get the index of a given RU transmitted in a PPDU within its 80 MHz segment.
@@ -260,6 +276,15 @@ class EhtRu
  * @returns a reference to the stream
  */
 std::ostream& operator<<(std::ostream& os, const EhtRu::RuSpec& ru);
+
+/**
+ * @brief Stream insertion operator.
+ *
+ * @param os the stream
+ * @param flags the primary flags
+ * @returns a reference to the stream
+ */
+std::ostream& operator<<(std::ostream& os, const EhtRu::PrimaryFlags& flags);
 
 } // namespace ns3
 
