@@ -766,7 +766,8 @@ also receive signals from these inactive RF interfaces when they belong to a con
 of the frequency range covered by the interface.
 The portion of the spectrum being monitored by an inactive interface is specified by a center frequency
 and a channel width, and is seamlessly set to equivalent of the operating channel of the spectrum PHY
-that is actively using that frequency range. The ``SpectrumWifiPhy``forwards these received signals
+that is actively using that frequency range (multiple center frequencies and the total width can be specified
+for non-contiguous operating channels). The ``SpectrumWifiPhy``forwards these received signals
 from inactive interfaces to the ``InterferenceHelper`` without further processing them.
 The benefit of the latter is that more accurate PHY-CCA.indication can be generated upon channel switching
 if one or more signals started to be transmitted on the new channel before the switch occurs,

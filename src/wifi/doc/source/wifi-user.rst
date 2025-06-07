@@ -1550,6 +1550,22 @@ Each node is equipped with 802.11b Wi-Fi device:
 Multiple RF interfaces configuration
 ++++++++++++++++++++++++++++++++++++
 
+In order to configure multiple RF interfaces, it is needed to provide the list of spectrum channels
+and the corresponding frequency range covered by each spectrum channel. ``SpectrumWifiPhyHelper::AddChannel``
+provides such API. If no frequency range is specified, the whole spectrum range allowed for Wi-Fi
+is used, which covers 2.4 GHz, 5 GHz, and 6 GHz bands. The frequency range of the spectrum channels cannot overlap
+with each others.
+
+As long as ``SpectrumWifiPhy::TrackSignalsFromInactiveInterfaces`` is set to true (default), the PHY will track
+signals on its inactive RF interfaces that has been configured. This configuration consists in specifying the
+center frequencies and the total bandwidth to share around these center frequencies the interface should monitor.
+``SpectrumWifiPhyHelper`` is responsible for configuring the inactive interfaces of the other PHYs of a MLD device
+once the operating channel of a PHY of that MLD device is configured. This means that the other PHYs will also track
+signals on the operating channel of that PHY from that moment on (i.e. when the simulation starts).
+
+The example below illustrates how to configure three spectrum channels for MLD devices with three links,
+one on the 2.4 GHz band, one on the 5 GHz band, and one one the 6 GHz band.
+
 .. sourcecode:: cpp
 
   NodeContainer ap;
@@ -1561,12 +1577,9 @@ Multiple RF interfaces configuration
   wifi.SetStandard(WIFI_STANDARD_80211be);
 
   // Create multiple spectrum channels
-  Ptr<MultiModelSpectrumChannel> spectrumChannel2_4Ghz =
-      CreateObject<MultiModelSpectrumChannel>();
-  Ptr<MultiModelSpectrumChannel> spectrumChannel5Ghz =
-      CreateObject<MultiModelSpectrumChannel>();
-  Ptr<MultiModelSpectrumChannel> spectrumChannel6Ghz =
-      CreateObject<MultiModelSpectrumChannel>();
+  auto spectrumChannel2_4Ghz = CreateObject<MultiModelSpectrumChannel>();
+  auto spectrumChannel5Ghz = CreateObject<MultiModelSpectrumChannel>();
+  auto spectrumChannel6Ghz = CreateObject<MultiModelSpectrumChannel>();
 
   // optional: set up propagation loss model separately for each spectrum channel
 
@@ -1620,6 +1633,21 @@ Multiple RF interfaces configuration
   mobility.Install(c);
 
   // other set up (e.g. InternetStack, Application)
+
+In some cases, it may be needed to track signals on multiple operating channels that belong to the same frequency band,
+and hence attached to the same spectrum channel (e.g. scanning, DSO, ...). In this case, the ``SpectrumWifiPhyHelper::AddChannel``
+method also allows to specify a list of operating channels that should directly be monitored when the simulation starts.
+This can also be used for SLD and it is not needed that the other PHYs operates on these operating channels to track signals on them,
+in case of MLD.
+
+The following example code snippet illustrates how to configure such monitoring for two channels in the 5 GHz band:
+
+::
+
+  SpectrumWifiPhyHelper phy;
+  auto spectrumChannel5Ghz = CreateObject<MultiModelSpectrumChannel>();
+  // track signals on channels with center frequencies set to 5530 MHz and 5610 MHz, both with 80 MHz bandwidth
+  phy.AddChannel(spectrumChannel5Ghz, WIFI_SPECTRUM_5_GHZ, {{{MHz_t{5530}}, MHz_t{80}}, {{MHz_t{5610}}, MHz_t{80}}});
 
 EMLSR configuration
 +++++++++++++++++++
