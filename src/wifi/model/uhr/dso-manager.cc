@@ -17,6 +17,7 @@
 #include "ns3/he-operation.h"
 #include "ns3/ht-operation.h"
 #include "ns3/log.h"
+#include "ns3/simulator.h"
 #include "ns3/spectrum-wifi-phy.h"
 #include "ns3/sta-wifi-mac.h"
 #include "ns3/vht-configuration.h"
@@ -36,7 +37,17 @@ NS_OBJECT_ENSURE_REGISTERED(DsoManager);
 TypeId
 DsoManager::GetTypeId()
 {
-    static TypeId tid = TypeId("ns3::DsoManager").SetParent<Object>().SetGroupName("Wifi");
+    static TypeId tid =
+        TypeId("ns3::DsoManager")
+            .SetParent<Object>()
+            .SetGroupName("Wifi")
+            .AddAttribute(
+                "DsoSwitchBackDelay",
+                "The DSO Switch Back Delay.",
+                TimeValue(MicroSeconds(
+                    275)), // aSIFSTime + aSlotTime + aRxPHYStartDelay + default switching delay
+                MakeTimeAccessor(&DsoManager::m_dsoSwitchBackDelay),
+                MakeTimeChecker());
     return tid;
 }
 
@@ -134,6 +145,25 @@ DsoManager::NotifyIcfReceived(uint8_t linkId, WifiRu::RuSpec ru)
                           (staChannelWidth > MHz_t{80}) || ehtRu.GetPrimary80MHzOrLower80MHz()});
     NS_ASSERT_MSG(itDsoSubband != dsoSubbands.cend(), "No DSO subband found for the given RU spec");
     SwitchPhyChannel(linkId, itDsoSubband->second, GetSwitchingDelayToDsoSubband());
+}
+
+void
+DsoManager::NotifyTxopEnd(uint8_t linkId)
+{
+    NS_LOG_FUNCTION(this << linkId);
+
+    if (!m_staMac->IsAssociated())
+    {
+        return;
+    }
+
+    auto phy = m_staMac->GetWifiPhy(linkId);
+    if (!IsOnDsoSubband(linkId))
+    {
+        return;
+    }
+
+    SwitchPhyChannel(linkId, GetPrimarySubband(linkId), phy->GetChannelSwitchDelay());
 }
 
 void

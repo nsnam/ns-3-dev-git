@@ -44,8 +44,21 @@ class UhrFrameExchangeManager : public EhtFrameExchangeManager
                      RxSignalInfo rxSignalInfo,
                      const WifiTxVector& txVector,
                      bool inAmpdu) override;
+    void PostProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) override;
+    void TxopEnd(const std::optional<Mac48Address>& txopHolder) override;
 
   private:
+    /**
+     * @param psdu the given PSDU
+     * @param aid the AID of a DSO STA
+     * @param address the link MAC address of a DSO STA
+     * @return whether the DSO STA having the given AID and MAC address shall switch back to
+     *         the primary subband when receiving the given PSDU
+     */
+    bool ShouldDsoSwitchBackToPrimary(Ptr<const WifiPsdu> psdu,
+                                      uint16_t aid,
+                                      const Mac48Address& address) const;
+
     bool m_switchingForDso{false}; //!< flag whether channel is switching for DSO operations
 };
 

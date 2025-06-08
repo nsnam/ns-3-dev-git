@@ -169,7 +169,7 @@ AdvancedApEmlsrManager::NotifyPsduRxError(uint8_t linkId, Ptr<const WifiPsdu> ps
     if (m_waitTransDelayOnPsduRxError)
     {
         auto phy = GetApMac()->GetWifiPhy(linkId);
-        auto delay = phy->GetSifs() + phy->GetSlot() + EMLSR_RX_PHY_START_DELAY;
+        auto delay = phy->GetSifs() + phy->GetSlot() + EMLSR_OR_DSO_RX_PHY_START_DELAY;
         GetEhtFem(linkId)->EmlsrSwitchToListening(psdu->GetAddr2(), delay);
         return;
     }

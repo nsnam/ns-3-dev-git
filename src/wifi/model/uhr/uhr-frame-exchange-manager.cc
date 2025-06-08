@@ -80,6 +80,15 @@ UhrFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
         {
             // this is a DSO ICF
             dsoManager->NotifyIcfReceived(m_linkId, it->GetRuAllocation());
+
+            // we just got involved in a DL TXOP. Check if we are still involved in the TXOP in a
+            // SIFS (we are expected to reply by sending a ICR frame)
+            NS_LOG_DEBUG("Expected TXOP end=" << (Simulator::Now() + m_phy->GetSifs()).As(Time::S));
+            m_ongoingTxopEnd = Simulator::Schedule(
+                m_phy->GetSifs() + dsoManager->GetSwitchingDelayToDsoSubband() + TimeStep(1),
+                &UhrFrameExchangeManager::TxopEnd,
+                this,
+                sender);
         }
     }
 
@@ -104,6 +113,99 @@ UhrFrameExchangeManager::NotifyDsoSwitching()
 {
     NS_LOG_FUNCTION(this);
     m_switchingForDso = true;
+}
+
+void
+UhrFrameExchangeManager::TxopEnd(const std::optional<Mac48Address>& txopHolder)
+{
+    NS_LOG_FUNCTION(this << txopHolder.has_value());
+
+    EhtFrameExchangeManager::TxopEnd(txopHolder);
+
+    if (m_ongoingTxopEnd.IsPending())
+    {
+        // TXOP end has been postponed
+        return;
+    }
+
+    if (Ptr<DsoManager> dsoManager; m_staMac && (dsoManager = m_staMac->GetDsoManager()))
+    {
+        dsoManager->NotifyTxopEnd(m_linkId);
+    }
+}
+
+bool
+UhrFrameExchangeManager::ShouldDsoSwitchBackToPrimary(Ptr<const WifiPsdu> psdu,
+                                                      uint16_t aid,
+                                                      const Mac48Address& address) const
+{
+    // The non-AP STA shall switch back from the DSO subband to the primary subband (...) when (...)
+    // this non-AP STA does not detect (...) any of the following frames:
+    // - an individually addressed frame with the RA equal to the MAC address of the non-AP STA
+    // affiliated with the non-AP MLD
+    if (psdu->GetAddr1() == address)
+    {
+        return false;
+    }
+
+    // - a Trigger frame that has one of the User Info fields addressed to the non-AP STA
+    for (const auto& mpdu : *PeekPointer(psdu))
+    {
+        if (mpdu->GetHeader().IsTrigger())
+        {
+            CtrlTriggerHeader trigger;
+            mpdu->GetPacket()->PeekHeader(trigger);
+            if (trigger.FindUserInfoWithAid(aid) != trigger.end())
+            {
+                return false;
+            }
+        }
+    }
+
+    // - a CTS-to-self frame with the RA equal to the MAC address of the AP
+    if (psdu->GetHeader(0).IsCts())
+    {
+        if (m_staMac && psdu->GetAddr1() == m_bssid)
+        {
+            return false;
+        }
+    }
+
+    // - a Multi-STA BlockAck frame that has one of the Per AID TID Info fields addressed to the
+    // non-AP STA
+    if (psdu->GetHeader(0).IsBlockAck())
+    {
+        CtrlBAckResponseHeader blockAck;
+        psdu->GetPayload(0)->PeekHeader(blockAck);
+        if (blockAck.IsMultiSta() && !blockAck.FindPerAidTidInfoWithAid(aid).empty())
+        {
+            return false;
+        }
+    }
+
+    // - a NDP Announcement frame that has one of the STA Info fields addressed to the non-AP
+    // STA affiliated with the non-AP MLD and a sounding NDP
+    // TODO NDP Announcement frame not supported yet
+
+    return true;
+}
+
+void
+UhrFrameExchangeManager::PostProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector)
+{
+    NS_LOG_FUNCTION(this << psdu << txVector);
+
+    if (Ptr<DsoManager> dsoManager;
+        m_staMac && (dsoManager = m_staMac->GetDsoManager()) && m_ongoingTxopEnd.IsPending() &&
+        dsoManager->IsOnDsoSubband(m_linkId) &&
+        ShouldDsoSwitchBackToPrimary(psdu, m_staMac->GetAssociationId(), m_self))
+    {
+        NS_LOG_DEBUG("No longer involved in the TXOP and switching back to primary subchannel");
+        m_ongoingTxopEnd.Cancel();
+        dsoManager->NotifyTxopEnd(m_linkId);
+    }
+
+    EhtFrameExchangeManager::PostProcessFrame(psdu, txVector);
 }
 
 } // namespace ns3

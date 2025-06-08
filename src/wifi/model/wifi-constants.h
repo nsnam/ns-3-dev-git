@@ -25,9 +25,10 @@ namespace ns3
 /// Used to initialize WIFI_TU
 extern const Time WIFI_TU;
 
-/// aRxPHYStartDelay value to use when waiting for a new frame in the context of EMLSR operations
-/// (Sec. 35.3.17 of 802.11be D3.1)
-extern const Time EMLSR_RX_PHY_START_DELAY;
+/// The delay derived from aRxPHYStartDelay duration to use when waiting for a new frame in the
+/// context of EMLSR operations (Sec. 35.3.17 of 802.11be D3.1) or DSO operations (Sec. 37.24 of
+/// 802.11bn D0.3).
+extern const Time EMLSR_OR_DSO_RX_PHY_START_DELAY;
 
 /// aSIFSTime value for OFDM (20 MHz channel spacing)
 /// (Table 17-21 "OFDM PHY characteristics" of 802.11-2020)

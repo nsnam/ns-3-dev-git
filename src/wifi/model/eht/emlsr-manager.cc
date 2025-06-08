@@ -619,7 +619,7 @@ EmlsrManager::CheckPossiblyReceivingIcf(uint8_t linkId) const
             // the PHY header of a non-HT PPDU, which may be an ICF, is being received; check
             // again after the TX duration of a non-HT PHY header
             NS_LOG_DEBUG("PHY header of a non-HT PPDU, which may be an ICF, is being received");
-            return {true, EMLSR_RX_PHY_START_DELAY};
+            return {true, EMLSR_OR_DSO_RX_PHY_START_DELAY};
         }
     }
     else if (phy->IsStateRx())

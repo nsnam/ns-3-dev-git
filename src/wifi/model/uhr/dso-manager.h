@@ -75,6 +75,13 @@ class DsoManager : public Object
     void NotifyIcfReceived(uint8_t linkId, WifiRu::RuSpec ru);
 
     /**
+     * Notify the end of a TXOP on the given link.
+     *
+     * @param linkId the ID of the given link
+     */
+    void NotifyTxopEnd(uint8_t linkId);
+
+    /**
      * Get the delay to switch to the DSO subband.
      * This is implementation-specific and has to be provided by the subclass.
      * @return the delay to switch to the DSO subband
@@ -146,6 +153,8 @@ class DsoManager : public Object
         m_primarySubbands; //!< link ID-indexed map of primary subbands
     std::map<uint8_t, std::map<EhtRu::PrimaryFlags, WifiPhyOperatingChannel>>
         m_dsoSubbands; //!< link ID-indexed map of DSO subbands
+
+    Time m_dsoSwitchBackDelay; //!< DSO Switch Back delay
 };
 
 } // namespace ns3

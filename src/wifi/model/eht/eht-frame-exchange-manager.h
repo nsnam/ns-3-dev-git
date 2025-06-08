@@ -209,6 +209,13 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
     void PrepareFrameToSend(Ptr<WifiMpdu> peekedItem) override;
 
     /**
+     * Take actions when a TXOP (of which we are not the holder) ends.
+     *
+     * @param txopHolder the holder of the TXOP (if any)
+     */
+    virtual void TxopEnd(const std::optional<Mac48Address>& txopHolder);
+
+    /**
      * @return whether this is an EMLSR client that cannot respond to an ICF received a SIFS before
      */
     bool EmlsrClientCannotRespondToIcf() const;
@@ -326,13 +333,6 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
      * @param durationId the Duration/ID value carried by the received frame
      */
     void UpdateTxopEndOnRxEnd(Time durationId);
-
-    /**
-     * Take actions when a TXOP (of which we are not the holder) ends.
-     *
-     * @param txopHolder the holder of the TXOP (if any)
-     */
-    void TxopEnd(const std::optional<Mac48Address>& txopHolder);
 
     bool m_dlTxopStart{false}; //!< whether a DL TXOP start is detected and needs to be notified to
                                //!< the EMLSR manager after post-processing the initial frame

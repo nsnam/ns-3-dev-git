@@ -1506,7 +1506,7 @@ EhtFrameExchangeManager::NotifyChannelReleased(Ptr<Txop> txop)
         Time delay{0};
         if (const auto remTxNav = m_txNav - Simulator::Now(); remTxNav.IsStrictlyPositive())
         {
-            delay = Min(m_phy->GetSlot() + EMLSR_RX_PHY_START_DELAY, remTxNav);
+            delay = Min(m_phy->GetSlot() + EMLSR_OR_DSO_RX_PHY_START_DELAY, remTxNav);
         }
 
         for (const auto& address : m_protectedStas)
@@ -1609,7 +1609,8 @@ EhtFrameExchangeManager::PostProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTx
 
     if (m_staMac && m_ongoingTxopEnd.IsPending())
     {
-        if (GetEmlsrSwitchToListening(psdu, m_staMac->GetAssociationId(), m_self))
+        if (m_staMac->IsEmlsrLink(m_linkId) &&
+            GetEmlsrSwitchToListening(psdu, m_staMac->GetAssociationId(), m_self))
         {
             // we are no longer involved in the TXOP and switching to listening mode
             m_ongoingTxopEnd.Cancel();
@@ -2069,7 +2070,7 @@ EhtFrameExchangeManager::UpdateTxopEndOnTxStart(Time txDuration, Time durationId
         // transmitting a CTS after ICS). The TXOP holder may transmit a frame a SIFS
         // after the end of this PPDU, hence we need to postpone the TXOP end in order to
         // get the PHY-RXSTART.indication
-        delay = txDuration + m_phy->GetSifs() + m_phy->GetSlot() + EMLSR_RX_PHY_START_DELAY;
+        delay = txDuration + m_phy->GetSifs() + m_phy->GetSlot() + EMLSR_OR_DSO_RX_PHY_START_DELAY;
         if (m_earlyTxopEndDetect)
         {
             // TXOP end cannot be beyond the period protected via Duration/ID
@@ -2127,7 +2128,7 @@ EhtFrameExchangeManager::UpdateTxopEndOnRxEnd(Time durationId)
 
     // we may send a response after a SIFS or we may receive another frame after a SIFS.
     // Postpone the TXOP end by considering the latter (which takes longer)
-    auto delay = m_phy->GetSifs() + m_phy->GetSlot() + EMLSR_RX_PHY_START_DELAY;
+    auto delay = m_phy->GetSifs() + m_phy->GetSlot() + EMLSR_OR_DSO_RX_PHY_START_DELAY;
     if (m_earlyTxopEndDetect)
     {
         // TXOP end cannot be beyond the period protected via Duration/ID

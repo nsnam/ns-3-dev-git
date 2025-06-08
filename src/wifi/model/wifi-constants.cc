@@ -13,7 +13,7 @@ namespace ns3
 
 const Time WIFI_TU = MicroSeconds(1024);
 
-const Time EMLSR_RX_PHY_START_DELAY = MicroSeconds(20);
+const Time EMLSR_OR_DSO_RX_PHY_START_DELAY = MicroSeconds(20);
 
 const Time OFDM_SIFS_TIME_20MHZ = MicroSeconds(16);
 
