@@ -1742,7 +1742,7 @@ HtFrameExchangeManager::MissedBlockAck(Ptr<WifiPsdu> psdu, const WifiTxVector& t
             {
                 psdu->GetHeader(0).SetRetry();
             }
-            else
+            else if (m_mac->CanForwardPacketsTo(recipient))
             {
                 // missed block ack after data frame with Implicit BAR Ack policy
                 auto [reqHdr, hdr] = edca->PrepareBlockAckRequest(recipient, tid);
