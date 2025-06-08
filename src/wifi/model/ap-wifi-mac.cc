@@ -1351,10 +1351,12 @@ ApWifiMac::GetVhtOperation(uint8_t linkId) const
     const auto& operatingChannel = phy->GetOperatingChannel();
     const auto is80Plus80 =
         operatingChannel.GetWidthType() == WifiChannelWidthType::CW_80_PLUS_80MHZ;
-    operation.SetChannelCenterFrequencySegment1((bssBandwidth == MHz_t{160})
-                                                    ? is80Plus80 ? operatingChannel.GetNumber(1)
-                                                                 : phy->GetChannelNumber()
-                                                    : 0);
+    operation.SetChannelCenterFrequencySegment1(
+        (bssBandwidth == MHz_t{160})
+            ? is80Plus80 ? phy->GetOperatingChannel().GetSecondaryChannelNumber(MHz_t{80},
+                                                                                phy->GetStandard())
+                         : phy->GetChannelNumber()
+            : 0);
     uint8_t maxSpatialStream = phy->GetMaxSupportedRxSpatialStreams();
     for (const auto& sta : GetLink(linkId).staList)
     {
