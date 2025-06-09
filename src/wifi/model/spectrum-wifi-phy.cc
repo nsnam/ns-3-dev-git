@@ -444,7 +444,18 @@ SpectrumWifiPhy::ConfigureInterface(const std::vector<MHz_t>& frequencies, MHz_t
         return;
     }
 
-    ResetSpectrumModel(spectrumPhyInterface, frequencies, width);
+    if (IsInitialized())
+    {
+        ResetSpectrumModel(spectrumPhyInterface, frequencies, width);
+    }
+    else
+    {
+        Simulator::ScheduleNow(&SpectrumWifiPhy::ResetSpectrumModel,
+                               this,
+                               spectrumPhyInterface,
+                               frequencies,
+                               width);
+    }
 }
 
 bool
