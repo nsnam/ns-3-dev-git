@@ -668,7 +668,7 @@ SimpleOfdmWimaxPhy::CalculateDataRate(WimaxPhy::ModulationType modulationType) c
     auto bitsTransmittedPerSymbol = (uint16_t)(bitsPerSymbol * GetNrCarriers() * fecCode);
     // 96, 192, 288, 384, 576, 767 and 864 bits per symbol for the seven modulations, respectively
 
-    return (uint32_t)symbolsPerSecond * bitsTransmittedPerSymbol;
+    return (uint32_t)(symbolsPerSecond * bitsTransmittedPerSymbol);
 }
 
 uint32_t
