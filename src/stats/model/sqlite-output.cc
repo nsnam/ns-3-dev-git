@@ -22,6 +22,7 @@ SQLiteOutput::SQLiteOutput(const std::string& name)
 {
     int rc = sqlite3_open(name.c_str(), &m_db);
     NS_ABORT_MSG_UNLESS(rc == SQLITE_OK, "Failed to open DB");
+    sqlite3_busy_timeout(m_db, 100); // set 100 ms timeout for sqlite3 operations
 }
 
 SQLiteOutput::~SQLiteOutput()
