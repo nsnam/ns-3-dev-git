@@ -96,6 +96,7 @@ LenaHarqTestCase::~LenaHarqTestCase()
 void
 LenaHarqTestCase::DoRun()
 {
+    SetDataDir(NS_TEST_SOURCEDIR);
     Config::SetDefault("ns3::LteAmc::Ber", DoubleValue(m_amcBer));
     Config::SetDefault("ns3::LteAmc::AmcModel", EnumValue(LteAmc::PiroEW2010));
     Config::SetDefault("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue(false));

@@ -148,6 +148,7 @@ LenaDataPhyErrorModelTestCase::~LenaDataPhyErrorModelTestCase()
 void
 LenaDataPhyErrorModelTestCase::DoRun()
 {
+    SetDataDir(NS_TEST_SOURCEDIR);
     double ber = 0.03;
     Config::SetDefault("ns3::LteAmc::Ber", DoubleValue(ber));
     Config::SetDefault("ns3::LteAmc::AmcModel", EnumValue(LteAmc::PiroEW2010));
@@ -309,6 +310,8 @@ LenaDlCtrlPhyErrorModelTestCase::~LenaDlCtrlPhyErrorModelTestCase()
 void
 LenaDlCtrlPhyErrorModelTestCase::DoRun()
 {
+    SetDataDir(NS_TEST_SOURCEDIR);
+
     double ber = 0.03;
     Config::SetDefault("ns3::LteAmc::Ber", DoubleValue(ber));
     Config::SetDefault("ns3::LteAmc::AmcModel", EnumValue(LteAmc::PiroEW2010));

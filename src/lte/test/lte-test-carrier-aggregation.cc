@@ -361,6 +361,7 @@ CarrierAggregationTestCase::DoRun()
 {
     NS_LOG_FUNCTION(this << m_nUser << m_dist << m_dlBandwidth << m_ulBandwidth
                          << m_numberOfComponentCarriers);
+    SetDataDir(NS_TEST_SOURCEDIR);
 
     Config::SetDefault("ns3::LteEnbNetDevice::DlEarfcn", UintegerValue(100));
     Config::SetDefault("ns3::LteEnbNetDevice::UlEarfcn", UintegerValue(100 + 18000));

@@ -167,6 +167,7 @@ LteRadioLinkFailureTestCase::DoRun()
     // LogComponentEnable ("LteUeRrc", logLevel);
     // LogComponentEnable ("LteEnbRrc", logLevel);
     // LogComponentEnable ("LteRadioLinkFailureTest", logLevel);
+    SetDataDir(NS_TEST_SOURCEDIR);
 
     Config::SetDefault("ns3::MacStatsCalculator::DlOutputFilename",
                        StringValue(CreateTempDirFilename("DlMacStats.txt")));

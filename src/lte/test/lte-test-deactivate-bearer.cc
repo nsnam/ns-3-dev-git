@@ -129,6 +129,7 @@ LenaDeactivateBearerTestCase::~LenaDeactivateBearerTestCase()
 void
 LenaDeactivateBearerTestCase::DoRun()
 {
+    SetDataDir(NS_TEST_SOURCEDIR);
     uint32_t originalSeed = RngSeedManager::GetSeed();
     uint32_t originalRun = RngSeedManager::GetRun();
     RngSeedManager::SetSeed(1);

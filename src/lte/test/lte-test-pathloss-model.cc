@@ -159,6 +159,7 @@ LtePathlossModelSystemTestCase::~LtePathlossModelSystemTestCase()
 void
 LtePathlossModelSystemTestCase::DoRun()
 {
+    SetDataDir(NS_TEST_SOURCEDIR);
     Config::SetDefault("ns3::MacStatsCalculator::DlOutputFilename",
                        StringValue(CreateTempDirFilename("DlMacStats.txt")));
     Config::SetDefault("ns3::MacStatsCalculator::UlOutputFilename",

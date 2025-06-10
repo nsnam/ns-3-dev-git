@@ -116,6 +116,7 @@ void
 LteEpcE2eDataTestCase::DoRun()
 {
     NS_LOG_FUNCTION(this << GetName());
+    SetDataDir(NS_TEST_SOURCEDIR);
     Config::Reset();
     Config::SetDefault("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue(false));
     Config::SetDefault("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue(false));

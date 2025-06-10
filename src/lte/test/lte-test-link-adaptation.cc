@@ -127,6 +127,7 @@ LteLinkAdaptationTestCase::~LteLinkAdaptationTestCase()
 void
 LteLinkAdaptationTestCase::DoRun()
 {
+    SetDataDir(NS_TEST_SOURCEDIR);
     Config::Reset();
     Config::SetDefault("ns3::LteAmc::AmcModel", EnumValue(LteAmc::PiroEW2010));
     Config::SetDefault("ns3::LteAmc::Ber", DoubleValue(0.00005));

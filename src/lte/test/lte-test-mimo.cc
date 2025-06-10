@@ -113,6 +113,7 @@ void
 LenaMimoTestCase::DoRun()
 {
     NS_LOG_FUNCTION(this << GetName());
+    SetDataDir(NS_TEST_SOURCEDIR);
     Config::SetDefault("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue(false));
     Config::SetDefault("ns3::LteAmc::AmcModel", EnumValue(LteAmc::PiroEW2010));
     Config::SetDefault("ns3::LteHelper::UseIdealRrc", BooleanValue(m_useIdealRrc));

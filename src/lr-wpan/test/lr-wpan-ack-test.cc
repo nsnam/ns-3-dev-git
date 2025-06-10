@@ -158,6 +158,8 @@ LrWpanAckTestCase::DataConfirmDev1(McpsDataConfirmParams params)
 void
 LrWpanAckTestCase::DoRun()
 {
+    SetDataDir(NS_TEST_SOURCEDIR);
+
     // Test setup:
     // Two nodes well in communication range.
     // Node 1 sends a request packet to node 2 with ACK request bit set. Node 2
