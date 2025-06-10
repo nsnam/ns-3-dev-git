@@ -91,7 +91,7 @@ class Version
 {
   public:
     /**
-     * Returns the ns-3 version tag of the closest ancestor commit.
+     * Returns the ns-3 version tag of the closest ancestor commit prefixed with ns-3.
      *
      * The format of the tag is
      * @verbatim ns3-<major>.<minor>[.patch] \endverbatim
