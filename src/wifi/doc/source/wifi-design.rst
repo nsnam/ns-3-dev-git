@@ -902,6 +902,65 @@ dwelling time implementation as described by the IEEE 802.11 standard
 [ieee80211]_ is also omitted, since it is only meaningful on the context
 of channel roaming.
 
+A non-AP STA can be forced to disassociate from the current AP via the ``ForceDisassociation``
+attribute of the ``StaWifiMac`` class. If this attribute is set to true, a Disassociation frame is
+sent to the AP and disassociation actually takes place when the STA receives the acknowledgment from
+the AP or the disassociation timer expires. If this attribute is set to false, the AP is not
+notified and disassociation immediately takes place. Table :ref:`table-disassoc-and-reassoc`
+lists the actions that are performed when various events occur. We note that re-association
+is supported via disassociation followed by a new association request.
+
+.. _table-disassoc-and-reassoc:
+
+.. table:: Disassociation and reassociation
+
+   +--------------------------------+-------------------------------------------------------------+
+   |     ``Event``                  | ``Actions``                                                 |
+   +================================+=============================================================+
+   | STA is requested to            | - Transmissions of all unicast frames, but management       |
+   | disassociate without           |   frames, on all setup links are blocked                    |
+   | notifying the AP               | - Management frames are dropped                             |
+   |                                | - Control frames having link addresses are dropped if       |
+   |                                |   ML setup was performed                                    |
+   +--------------------------------+-------------------------------------------------------------+
+   | STA is requested to            | - Enqueue a Disassociation frame                            |
+   | disassociate and notifies the  | - When the frame is acked or the timer expires:             |
+   | AP                             |                                                             |
+   |                                |   - Transmissions of all unicast frames, but management     |
+   |                                |     frames, on all setup links are blocked                  |
+   |                                |   - Management and control frames are dropped               |
+   |                                |   - Block Ack agreements are destroyed                      |
+   +--------------------------------+-------------------------------------------------------------+
+   | AP receives a Disassociation   | - Transmissions of all unicast frames, but management       |
+   | frame from an associated STA   |   frames, to the STA on all setup links are blocked         |
+   |                                | - Management and control frames are dropped                 |
+   |                                | - Block Ack agreements with the STA are destroyed           |
+   +--------------------------------+-------------------------------------------------------------+
+   | AP receives an Association     | - If STA is currently associated with the AP:               |
+   | Request from a STA             |                                                             |
+   |                                |   - Transmissions of all unicast frames, but management     |
+   |                                |     frames, to the STA on all setup links are blocked       |
+   |                                |   - Management frames are dropped                           |
+   |                                |   - Control frames having link addresses are dropped if     |
+   |                                |     ML setup was performed                                  |
+   |                                |                                                             |
+   |                                | - Information about STA that is possibly stored in the      |
+   |                                |   remote station managers of the AP is reset                |
+   +--------------------------------+-------------------------------------------------------------+
+   | STA that was previously        | - If STA associates with a different AP than previous one:  |
+   | associated with an AP receives |                                                             |
+   | an Association Response in     |   - RA and TA for all queued data frames are replaced to    |
+   | response to an Association     |     match the addresses of the new AP                       |
+   | Request                        |   - Control frames are dropped                              |
+   |                                |                                                             |
+   |                                | - Link information for non-empty queues containing data     |
+   |                                |   frames and control frames is reset and reconfigured       |
+   |                                | - All queued frames are marked as not inflight              |
+   +--------------------------------+-------------------------------------------------------------+
+
+
+
+
 Channel access
 ##############
 
