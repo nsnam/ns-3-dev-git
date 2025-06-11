@@ -543,7 +543,7 @@ SimpleOfdmWimaxPhy::ConvertBitsToBurst(Bvec buffer)
         j++;
     }
     uint16_t pos = 0;
-    Ptr<PacketBurst> RecvBurst = Create<PacketBurst>();
+    Ptr<PacketBurst> RecvBurst = CreateObject<PacketBurst>();
     while (pos < bufferSize)
     {
         uint16_t packetSize = 0;

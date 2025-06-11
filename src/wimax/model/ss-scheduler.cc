@@ -70,7 +70,7 @@ SSScheduler::Schedule(uint16_t availableSymbols,
                       Ptr<WimaxConnection>& connection)
 {
     Time timeStamp;
-    Ptr<PacketBurst> burst = Create<PacketBurst>();
+    Ptr<PacketBurst> burst = CreateObject<PacketBurst>();
     uint16_t nrSymbolsRequired = 0;
 
     if (!connection)

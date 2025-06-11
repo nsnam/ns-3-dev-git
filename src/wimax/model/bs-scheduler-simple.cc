@@ -175,7 +175,7 @@ BSSchedulerSimple::Schedule()
         }
         else
         {
-            burst = Create<PacketBurst>();
+            burst = CreateObject<PacketBurst>();
             while (connection->HasPackets())
             {
                 uint32_t FirstPacketSize = connection->GetQueue()->GetFirstPacketRequiredByte(
@@ -353,7 +353,7 @@ BSSchedulerSimple::CreateUgsBurst(ServiceFlow* serviceFlow,
     Time timeStamp;
     GenericMacHeader hdr;
     Ptr<Packet> packet;
-    Ptr<PacketBurst> burst = Create<PacketBurst>();
+    auto burst = CreateObject<PacketBurst>();
     uint32_t nrSymbolsRequired = 0;
 
     // serviceFlow->CleanUpQueue ();

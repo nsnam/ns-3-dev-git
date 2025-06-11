@@ -237,7 +237,7 @@ main(int argc, char* argv[])
     {
         // Create a special Ipv4StaticRouting instance for RoutingTableAssociation
         // Even the Ipv4StaticRouting instance added to list may be used
-        Ptr<Ipv4StaticRouting> hnaEntries = Create<Ipv4StaticRouting>();
+        Ptr<Ipv4StaticRouting> hnaEntries = CreateObject<Ipv4StaticRouting>();
 
         // Add the required routes into the Ipv4StaticRouting Protocol instance
         // and have the node generate HNA messages for all these routes

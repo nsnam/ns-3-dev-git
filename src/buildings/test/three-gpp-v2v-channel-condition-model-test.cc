@@ -136,7 +136,7 @@ ThreeGppV2vBuildingsChCondModelTestCase::DoRun()
     Ptr<MobilityModel> b = CreateObject<ConstantPositionMobilityModel>();
     nodes.Get(1)->AggregateObject(b);
 
-    Ptr<Building> building = Create<Building>();
+    auto building = CreateObject<Building>();
     building->SetNRoomsX(1);
     building->SetNRoomsY(1);
     building->SetNFloors(1);

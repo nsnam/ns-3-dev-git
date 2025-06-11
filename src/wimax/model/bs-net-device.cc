@@ -622,7 +622,7 @@ BaseStationNetDevice::DoSend(Ptr<Packet> packet,
                              const Mac48Address& dest,
                              uint16_t protocolNumber)
 {
-    Ptr<PacketBurst> burst = Create<PacketBurst>();
+    Ptr<PacketBurst> burst = CreateObject<PacketBurst>();
     ServiceFlow* serviceFlow = nullptr;
 
     NS_LOG_INFO("BS (" << source << "):");

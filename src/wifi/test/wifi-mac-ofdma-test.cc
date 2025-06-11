@@ -2231,7 +2231,7 @@ OfdmaAckSequenceTest::DoRun()
     {
         // create a listening VHT station
         wifi.SetStandard(WIFI_STANDARD_80211ac);
-        wifi.Install(phy, mac, Create<Node>());
+        wifi.Install(phy, mac, CreateObject<Node>());
     }
 
     wifi.SetStandard(m_scenario == WifiOfdmaScenario::HE ? WIFI_STANDARD_80211ax

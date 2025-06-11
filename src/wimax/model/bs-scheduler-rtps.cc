@@ -164,7 +164,7 @@ BSSchedulerRtps::CreateUgsBurst(ServiceFlow* serviceFlow,
     Time timeStamp;
     GenericMacHeader hdr;
     Ptr<Packet> packet;
-    Ptr<PacketBurst> burst = Create<PacketBurst>();
+    auto burst = CreateObject<PacketBurst>();
     uint32_t nrSymbolsRequired = 0;
 
     // serviceFlow->CleanUpQueue ();
@@ -211,7 +211,7 @@ BSSchedulerRtps::BSSchedulerBroadcastConnection(uint32_t& availableSymbols)
     uint32_t nrSymbolsRequired = 0;
     GenericMacHeader hdr;
     Ptr<Packet> packet;
-    Ptr<PacketBurst> burst = Create<PacketBurst>();
+    auto burst = CreateObject<PacketBurst>();
 
     while (GetBs()->GetBroadcastConnection()->HasPackets() && availableSymbols > 0)
     {
@@ -258,7 +258,7 @@ BSSchedulerRtps::BSSchedulerInitialRangingConnection(uint32_t& availableSymbols)
     uint32_t nrSymbolsRequired = 0;
     GenericMacHeader hdr;
     Ptr<Packet> packet;
-    Ptr<PacketBurst> burst = Create<PacketBurst>();
+    auto burst = CreateObject<PacketBurst>();
 
     while (GetBs()->GetInitialRangingConnection()->HasPackets() && availableSymbols > 0)
     {
@@ -306,7 +306,7 @@ BSSchedulerRtps::BSSchedulerBasicConnection(uint32_t& availableSymbols)
     uint32_t nrSymbolsRequired = 0;
     GenericMacHeader hdr;
     Ptr<Packet> packet;
-    Ptr<PacketBurst> burst = Create<PacketBurst>();
+    auto burst = CreateObject<PacketBurst>();
 
     std::vector<Ptr<WimaxConnection>> connections;
 
@@ -353,7 +353,7 @@ BSSchedulerRtps::BSSchedulerBasicConnection(uint32_t& availableSymbols)
         if (burst->GetNPackets() != 0)
         {
             AddDownlinkBurst(connection, diuc, modulationType, burst);
-            burst = Create<PacketBurst>();
+            burst = CreateObject<PacketBurst>();
         }
     }
 }
@@ -367,7 +367,7 @@ BSSchedulerRtps::BSSchedulerPrimaryConnection(uint32_t& availableSymbols)
     uint32_t nrSymbolsRequired = 0;
     GenericMacHeader hdr;
     Ptr<Packet> packet;
-    Ptr<PacketBurst> burst = Create<PacketBurst>();
+    auto burst = CreateObject<PacketBurst>();
 
     std::vector<Ptr<WimaxConnection>> connections;
 
@@ -427,7 +427,7 @@ BSSchedulerRtps::BSSchedulerUGSConnection(uint32_t& availableSymbols)
     uint32_t nrSymbolsRequired = 0;
     GenericMacHeader hdr;
     Ptr<Packet> packet;
-    Ptr<PacketBurst> burst = Create<PacketBurst>();
+    auto burst = CreateObject<PacketBurst>();
 
     Time currentTime = Simulator::Now();
 
@@ -471,7 +471,7 @@ BSSchedulerRtps::BSSchedulerUGSConnection(uint32_t& availableSymbols)
                     AddDownlinkBurst(connection, diuc, modulationType, burst);
                     currentTime = Simulator::Now();
                     serviceFlowRecord->SetDlTimeStamp(currentTime);
-                    burst = Create<PacketBurst>();
+                    burst = CreateObject<PacketBurst>();
                 }
             }
         }
@@ -484,7 +484,7 @@ BSSchedulerRtps::BSSchedulerRTPSConnection(uint32_t& availableSymbols)
     Ptr<WimaxConnection> connection;
     GenericMacHeader hdr;
     Ptr<Packet> packet;
-    Ptr<PacketBurst> burst = Create<PacketBurst>();
+    auto burst = CreateObject<PacketBurst>();
 
     Time currentTime = Simulator::Now();
 
@@ -569,7 +569,7 @@ BSSchedulerRtps::BSSchedulerRTPSConnection(uint32_t& availableSymbols)
     {
         packet = rtPSConnection[i]->GetQueue()->Peek(hdr);
         uint32_t symbolsForPacketTransmission = 0;
-        burst = Create<PacketBurst>();
+        burst = CreateObject<PacketBurst>();
         NS_LOG_INFO("\t\tCID = " << rtPSConnection[i]->GetCid()
                                  << " assignedSymbols = " << symbolsRequired[i]);
 
@@ -627,7 +627,7 @@ BSSchedulerRtps::BSSchedulerNRTPSConnection(uint32_t& availableSymbols)
     uint32_t nrSymbolsRequired = 0;
     GenericMacHeader hdr;
     Ptr<Packet> packet;
-    Ptr<PacketBurst> burst = Create<PacketBurst>();
+    auto burst = CreateObject<PacketBurst>();
 
     std::vector<ServiceFlow*> serviceFlows;
 
@@ -670,7 +670,7 @@ BSSchedulerRtps::BSSchedulerNRTPSConnection(uint32_t& availableSymbols)
         if (burst->GetNPackets() != 0)
         {
             AddDownlinkBurst(connection, diuc, modulationType, burst);
-            burst = Create<PacketBurst>();
+            burst = CreateObject<PacketBurst>();
         }
     }
 }
@@ -684,7 +684,7 @@ BSSchedulerRtps::BSSchedulerBEConnection(uint32_t& availableSymbols)
     uint32_t nrSymbolsRequired = 0;
     GenericMacHeader hdr;
     Ptr<Packet> packet;
-    Ptr<PacketBurst> burst = Create<PacketBurst>();
+    auto burst = CreateObject<PacketBurst>();
 
     std::vector<ServiceFlow*> serviceFlows;
 
@@ -726,7 +726,7 @@ BSSchedulerRtps::BSSchedulerBEConnection(uint32_t& availableSymbols)
         if (burst->GetNPackets() != 0)
         {
             AddDownlinkBurst(connection, diuc, modulationType, burst);
-            burst = Create<PacketBurst>();
+            burst = CreateObject<PacketBurst>();
         }
     }
 }

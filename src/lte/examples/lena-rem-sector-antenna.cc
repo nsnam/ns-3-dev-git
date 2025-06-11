@@ -70,7 +70,7 @@ main(int argc, char* argv[])
     std::vector<Vector> enbPosition;
     Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator>();
     Ptr<Building> building;
-    building = Create<Building>();
+    building = CreateObject<Building>();
     building->SetBoundaries(
         Box(0.0, nRooms * roomLength, 0.0, nRooms * roomLength, 0.0, roomHeight));
     building->SetBuildingType(Building::Residential);
