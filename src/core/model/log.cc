@@ -233,13 +233,6 @@ LogComponent::EnvVarCheck()
 }
 
 bool
-LogComponent::IsEnabled(const LogLevel level) const
-{
-    //  LogComponentEnableEnvVar ();
-    return level & m_levels;
-}
-
-bool
 LogComponent::IsNoneEnabled() const
 {
     return m_levels == 0;
