@@ -104,7 +104,7 @@ BuildingsChannelConditionModelTestCase::DoRun()
 
     Ptr<BuildingsChannelConditionModel> condModel = CreateObject<BuildingsChannelConditionModel>();
 
-    Ptr<Building> building = Create<Building>();
+    auto building = CreateObject<Building>();
     building->SetNRoomsX(1);
     building->SetNRoomsY(1);
     building->SetNFloors(1);

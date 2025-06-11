@@ -1880,7 +1880,7 @@ PointerAttributeTestCase::DoRun()
     // Now, lets create an Object of type Derived and set the local Ptr to point
     // to that object.  We can then set the PointerValue Attribute to that Ptr.
     //
-    derived = Create<Derived>();
+    derived = CreateObject<Derived>();
     bool ok = p->SetAttributeFailSafe("Pointer", PointerValue(derived));
     NS_TEST_ASSERT_MSG_EQ(ok,
                           true,

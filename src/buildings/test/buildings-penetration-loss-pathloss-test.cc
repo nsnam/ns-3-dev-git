@@ -174,7 +174,7 @@ BuildingsPenetrationLossesTestCase::DoRun()
     // create the factory for the propagation loss model
     ObjectFactory propModelFactory;
 
-    Ptr<Building> building = Create<Building>();
+    auto building = CreateObject<Building>();
     building->SetExtWallsType(Building::ExtWallsType_t::ConcreteWithWindows);
     building->SetNRoomsX(1);
     building->SetNRoomsY(1);

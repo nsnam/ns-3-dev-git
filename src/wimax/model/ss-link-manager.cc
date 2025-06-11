@@ -202,7 +202,7 @@ SSLinkManager::SendRangingRequest(uint8_t uiuc, uint16_t allocationSize)
     }
 
     Ptr<Packet> packet = Create<Packet>();
-    Ptr<PacketBurst> burst = Create<PacketBurst>();
+    Ptr<PacketBurst> burst = CreateObject<PacketBurst>();
 
     packet->AddHeader(m_rngreq);
     packet->AddHeader(ManagementMessageType(ManagementMessageType::MESSAGE_TYPE_RNG_REQ));

@@ -252,7 +252,7 @@ RoutingProtocol::RoutingProtocol()
 {
     m_uniformRandomVariable = CreateObject<UniformRandomVariable>();
 
-    m_hnaRoutingTable = Create<Ipv4StaticRouting>();
+    m_hnaRoutingTable = CreateObject<Ipv4StaticRouting>();
 }
 
 RoutingProtocol::~RoutingProtocol()

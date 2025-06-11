@@ -48,7 +48,7 @@ RemoteChannelBundleManager::Add(uint32_t systemId)
     NS_ASSERT(!g_initialized);
     NS_ASSERT(g_remoteChannelBundles.find(systemId) == g_remoteChannelBundles.end());
 
-    Ptr<RemoteChannelBundle> remoteChannelBundle = Create<RemoteChannelBundle>(systemId);
+    auto remoteChannelBundle = CreateObject<RemoteChannelBundle>(systemId);
 
     g_remoteChannelBundles[systemId] = remoteChannelBundle;
 
