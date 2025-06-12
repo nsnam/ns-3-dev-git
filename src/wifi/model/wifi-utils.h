@@ -23,6 +23,7 @@
 #include <list>
 #include <map>
 #include <set>
+#include <variant>
 
 namespace ns3
 {
@@ -32,6 +33,13 @@ class WifiMacHeader;
 class Packet;
 class WifiMac;
 class WifiTxVector;
+class WifiPhyOperatingChannel;
+class MgtBeaconHeader;
+class MgtProbeResponseHeader;
+class MgtAssocResponseHeader;
+class MgtAssocRequestHeader;
+class MgtReassocRequestHeader;
+class MgtProbeRequestHeader;
 
 enum class TriggerFrameVariant : uint8_t;
 
@@ -78,6 +86,18 @@ using linkId_t = uint8_t;
 
 /// @brief TID-indexed map of the link set to which the TID is mapped
 using WifiTidLinkMapping = std::map<tid_t, std::set<linkId_t>>;
+
+/// type of the management response frames
+using MgtResponseFrameType =
+    std::variant<MgtBeaconHeader, MgtProbeResponseHeader, MgtAssocResponseHeader>;
+
+/// type of the management frames
+using MgtFrameType = std::variant<MgtBeaconHeader,
+                                  MgtProbeResponseHeader,
+                                  MgtAssocResponseHeader,
+                                  MgtAssocRequestHeader,
+                                  MgtReassocRequestHeader,
+                                  MgtProbeRequestHeader>;
 
 /**
  * Convert from dBm to Watts.
@@ -313,6 +333,22 @@ WIFI_EXPORT Mac48Address GetIndividuallyAddressedRecipient(Ptr<WifiMac> mac,
  * @return the frequency range corresponding to the given PHY band
  */
 WIFI_EXPORT FrequencyRange GetFrequencyRange(WifiPhyBand band);
+
+/**
+ * Get the operating channel of an AP from the Operation elements included in a management frame.
+ *
+ * @param apBw the bandwidth of the operating channel the AP is operating on
+ * @param band the PHY band of the link for which the operating channel is requested. Note that only
+ * the 5 and 6 GHz bands are supported.
+ * @param standard the standard of the AP. Note that standards earlier than 802.11n are not
+ * supported.
+ * @param frame the management frame containing the Operation elements sent by the AP
+ * @return the operating channel of the AP
+ */
+WifiPhyOperatingChannel GetApOperatingChannel(MHz_u apBw,
+                                              WifiPhyBand band,
+                                              WifiStandard standard,
+                                              const MgtResponseFrameType& frame);
 
 /// Link ID for single link operations (helps tracking places where correct link
 /// ID is to be used to support multi-link operations)
