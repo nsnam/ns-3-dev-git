@@ -20,7 +20,6 @@
 #include "wifi-radio-energy-model.h"
 #include "wifi-utils.h"
 
-#include "ns3/attribute-container.h"
 #include "ns3/channel.h"
 #include "ns3/dsss-phy.h"
 #include "ns3/eht-phy.h" //also includes OFDM, HT, VHT and HE
@@ -33,7 +32,6 @@
 #include "ns3/random-variable-stream.h"
 #include "ns3/simulator.h"
 #include "ns3/string.h"
-#include "ns3/tuple.h"
 #include "ns3/vht-configuration.h"
 
 #include <algorithm>
@@ -89,27 +87,10 @@ WifiPhy::GetTypeId()
                 "Note that the channel width can be left unspecified (0) if the channel "
                 "number uniquely identify a frequency channel for the given standard and band.",
                 StringValue("{0, 0, BAND_UNSPECIFIED, 0}"),
-                MakeAttributeContainerAccessor<
-                    TupleValue<UintegerValue, UintegerValue, EnumValue<WifiPhyBand>, UintegerValue>,
-                    ';'>(static_cast<void (WifiPhy::*)(const ChannelSegments&)>(
-                    &WifiPhy::SetOperatingChannel)),
-                MakeAttributeContainerChecker<
-                    TupleValue<UintegerValue, UintegerValue, EnumValue<WifiPhyBand>, UintegerValue>,
-                    ';'>(MakeTupleChecker<UintegerValue,
-                                          UintegerValue,
-                                          EnumValue<WifiPhyBand>,
-                                          UintegerValue>(
-                    MakeUintegerChecker<uint8_t>(0, 233),
-                    MakeUintegerChecker<MHz_u>(0, 320),
-                    MakeEnumChecker(WifiPhyBand::WIFI_PHY_BAND_2_4GHZ,
-                                    "BAND_2_4GHZ",
-                                    WifiPhyBand::WIFI_PHY_BAND_5GHZ,
-                                    "BAND_5GHZ",
-                                    WifiPhyBand::WIFI_PHY_BAND_6GHZ,
-                                    "BAND_6GHZ",
-                                    WifiPhyBand::WIFI_PHY_BAND_UNSPECIFIED,
-                                    "BAND_UNSPECIFIED"),
-                    MakeUintegerChecker<uint8_t>(0, 15))))
+                MakeAttributeContainerAccessor<ChannelTupleValue, ';'>(
+                    static_cast<void (WifiPhy::*)(const ChannelSegments&)>(
+                        &WifiPhy::SetOperatingChannel)),
+                GetChannelSegmentsChecker())
             .AddAttribute("Frequency",
                           "The center frequency (MHz) of the current operating channel.",
                           TypeId::ATTR_GET,
@@ -384,6 +365,24 @@ WifiPhy::GetTypeId()
                             MakeTraceSourceAccessor(&WifiPhy::m_signalTransmissionCb),
                             "ns3::SpectrumWifiPhy::SignalTransmissionCallback");
     return tid;
+}
+
+Ptr<const AttributeChecker>
+WifiPhy::GetChannelSegmentsChecker()
+{
+    return MakeAttributeContainerChecker<ChannelTupleValue, ';'>(
+        MakeTupleChecker<UintegerValue, UintegerValue, EnumValue<WifiPhyBand>, UintegerValue>(
+            MakeUintegerChecker<uint8_t>(0, 233),
+            MakeUintegerChecker<uint16_t>(0, 320),
+            MakeEnumChecker(WifiPhyBand::WIFI_PHY_BAND_2_4GHZ,
+                            "BAND_2_4GHZ",
+                            WifiPhyBand::WIFI_PHY_BAND_5GHZ,
+                            "BAND_5GHZ",
+                            WifiPhyBand::WIFI_PHY_BAND_6GHZ,
+                            "BAND_6GHZ",
+                            WifiPhyBand::WIFI_PHY_BAND_UNSPECIFIED,
+                            "BAND_UNSPECIFIED"),
+            MakeUintegerChecker<uint8_t>(0, 15)));
 }
 
 WifiPhy::WifiPhy()
@@ -1224,6 +1223,31 @@ WifiPhy::GetDelayUntilChannelSwitch()
 }
 
 void
+WifiPhy::SetUnspecifiedChannelParams(WifiChannelConfig& channelCfg, WifiStandard standard)
+{
+    std::optional<uint8_t> prevChannelNumber{};
+    for (auto& [number, width, band, primary20] : channelCfg.segments)
+    {
+        if (band == WIFI_PHY_BAND_UNSPECIFIED)
+        {
+            band = GetDefaultPhyBand(standard);
+        }
+        if (width == MHz_u{0} && number == 0)
+        {
+            width = GetDefaultChannelWidth(standard, static_cast<WifiPhyBand>(band));
+        }
+        if (number == 0)
+        {
+            number = WifiPhyOperatingChannel::GetDefaultChannelNumber(width,
+                                                                      standard,
+                                                                      band,
+                                                                      prevChannelNumber);
+        }
+        prevChannelNumber = number;
+    }
+}
+
+void
 WifiPhy::DoChannelSwitch()
 {
     NS_LOG_FUNCTION(this);
@@ -1232,27 +1256,7 @@ WifiPhy::DoChannelSwitch()
     m_channelAccessRequested = false;
 
     // Update unspecified parameters with default values
-    std::optional<uint8_t> prevChannelNumber{};
-    for (auto& [number, width, band, primary20] : m_channelCfg.segments)
-    {
-        if (band == WIFI_PHY_BAND_UNSPECIFIED)
-        {
-            band = GetDefaultPhyBand(m_standard);
-        }
-        if (width == MHz_u{0} && number == 0)
-        {
-            width = GetDefaultChannelWidth(m_standard, static_cast<WifiPhyBand>(band));
-        }
-        if (number == 0)
-        {
-            number =
-                WifiPhyOperatingChannel::GetDefaultChannelNumber(width,
-                                                                 m_standard,
-                                                                 static_cast<WifiPhyBand>(band),
-                                                                 prevChannelNumber);
-        }
-        prevChannelNumber = number;
-    }
+    SetUnspecifiedChannelParams(m_channelCfg, m_standard);
 
     // We need to call SetStandard if this is the first time we set a channel or we
     // are changing PHY band. Checking if the new PHY band is different than the

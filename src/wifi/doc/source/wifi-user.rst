@@ -264,7 +264,7 @@ providing either a StringValue object or an AttributeContainerValue object:
 
 .. sourcecode:: cpp
 
-  AttributeContainerValue<TupleValue<UintegerValue, UintegerValue, EnumValue, UintegerValue>, ';'> value;
+  WifiPhy::ChannelSettingsValue value;
   value.Set(WifiPhy::ChannelSegments{{38, 40, WIFI_PHY_BAND_5GHZ, 0}});
 
 In both cases, the operating channel will be channel 38 in the 5 GHz band, which
@@ -283,7 +283,7 @@ The operating channel settings can then be configured in a number of ways:
 
 .. sourcecode:: cpp
 
-  AttributeContainerValue<TupleValue<UintegerValue, UintegerValue, EnumValue, UintegerValue>, ';'> value;
+  WifiPhy::ChannelSettingsValue value;
   value.Set(WifiPhy::ChannelSegments{{38, 40, WIFI_PHY_BAND_5GHZ, 0}});
   YansWifiPhyHelper wifiPhyHelper = YansWifiPhyHelper::Default();
   wifiPhyHelper.Set("ChannelSettings", value);

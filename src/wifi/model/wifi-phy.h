@@ -19,8 +19,12 @@
 #include "wifi-radio-energy-model.h"
 #include "wifi-standards.h"
 
+#include "ns3/attribute-container.h"
+#include "ns3/enum.h"
 #include "ns3/error-model.h"
 #include "ns3/mobility-model.h"
+#include "ns3/tuple.h"
+#include "ns3/uinteger.h"
 #include "ns3/wifi-export.h"
 
 #include <limits>
@@ -946,6 +950,40 @@ class WIFI_EXPORT WifiPhy : public Object
 
     /// segments identifying an operating channel
     using ChannelSegments = std::list<WifiChannelConfig::TupleWithoutUnits>;
+
+    /// AttributeValue type of a ChannelTuple object
+    using ChannelTupleValue =
+        TupleValue<UintegerValue, UintegerValue, EnumValue<WifiPhyBand>, UintegerValue>;
+
+    /// AttributeValue type of a ChannelSegments object
+    using ChannelSettingsValue = AttributeContainerValue<ChannelTupleValue, ';'>;
+
+    /**
+     * Get a checker for the ChannelSettings attribute, which can be used to deserialize a
+     * ChannelSegments object from a string:
+     *
+     * @code
+     *   WifiPhy::ChannelSettingsValue value;
+     *   value.DeserializeFromString("{36,0,BAND_5GHZ,0}", WifiPhy::GetChannelSegmentsChecker());
+     *   ChannelSettings channel = value.Get();
+     * @endcode
+     *
+     * Note that the WifiChannelConfig::FromString() static function uses the code above to return
+     * a WifiChannelConfig object starting from a string.
+     *
+     * @return a checker for the ChannelSettings attribute
+     */
+    static Ptr<const AttributeChecker> GetChannelSegmentsChecker();
+
+    /**
+     * The ChannelSettings attribute allows users to leave some parameters (e.g., the channel width)
+     * unspecified. This function is used to set such unspecified parameters to their default values
+     * in the given channel config.
+     *
+     * @param channelCfg the given channel settings
+     * @param standard the supported standard
+     */
+    static void SetUnspecifiedChannelParams(WifiChannelConfig& channelCfg, WifiStandard standard);
 
     /**
      * If the standard for this object has not been set yet, store the channel settings

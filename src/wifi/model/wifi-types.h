@@ -10,6 +10,7 @@
 #define WIFI_TYPES_H
 
 #include "wifi-phy-band.h"
+#include "wifi-standards.h"
 #include "wifi-units.h"
 
 #include "ns3/fatal-error.h"
@@ -83,17 +84,6 @@ struct RxSignalInfo
 {
     double snr; ///< SNR in linear scale
     dBm_u rssi; ///< RSSI
-};
-
-/**
- * @ingroup wifi
- * @brief Enumeration of frequency channel types
- */
-enum class FrequencyChannelType : uint8_t
-{
-    DSSS = 0,
-    OFDM,
-    CH_80211P
 };
 
 /**
@@ -195,6 +185,16 @@ struct WifiChannelConfig
      * @param tuples the list of tuples without units for channel width
      */
     WifiChannelConfig(const std::list<TupleWithoutUnits>& tuples);
+
+    /**
+     * Get the wifi channel config from a WifiPhy::ChannelSettings string
+     *
+     * @param settings the WifiPhy::ChannelSettings string
+     * @param standard the Wi-Fi standard
+     * @return the wifi channel config object
+     */
+    static WifiChannelConfig FromString(const std::string& settings,
+                                        WifiStandard standard = WIFI_STANDARD_UNSPECIFIED);
 
     /// @return a const reference to the first channel segment
     const Segment& front() const

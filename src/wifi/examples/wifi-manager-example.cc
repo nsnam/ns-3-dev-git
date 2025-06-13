@@ -746,10 +746,7 @@ main(int argc, char* argv[])
     NetDeviceContainer serverDevice;
     NetDeviceContainer clientDevice;
 
-    AttributeContainerValue<
-        TupleValue<UintegerValue, UintegerValue, EnumValue<WifiPhyBand>, UintegerValue>,
-        ';'>
-        channelValue;
+    WifiPhy::ChannelSettingsValue channelValue;
 
     WifiMacHelper wifiMac;
     if (infrastructure)
