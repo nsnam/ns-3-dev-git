@@ -177,10 +177,7 @@ WifiFilsFrameTest::SetupDevice(Ptr<YansWifiChannel>& channel, bool isAp) const
     MobilityHelper mobility;
     node.Create(1);
     phy.SetChannel(channel);
-    AttributeContainerValue<
-        TupleValue<UintegerValue, UintegerValue, EnumValue<WifiPhyBand>, UintegerValue>,
-        ';'>
-        channelValue;
+    WifiPhy::ChannelSettingsValue channelValue;
     channelValue.Set(WifiPhy::ChannelSegments{
         {INVALID_CHAN_NUM, m_params.bw.in_MHz(), DEFAULT_BAND, DEFAULT_PRIMARY_INDEX}});
     phy.Set("ChannelSettings", channelValue);

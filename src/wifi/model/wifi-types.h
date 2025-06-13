@@ -247,6 +247,14 @@ struct WifiChannelConfig
      */
     WifiChannelConfig(const std::list<TupleWithoutUnits>& tuples);
 
+    /**
+     * Get the wifi channel config from a WifiPhy::ChannelSettings string
+     *
+     * @param settings the WifiPhy::ChannelSettings string
+     * @return the wifi channel config object
+     */
+    static WifiChannelConfig FromString(const std::string& settings);
+
     /// @return a const reference to the first channel segment
     const Segment& front() const
     {
