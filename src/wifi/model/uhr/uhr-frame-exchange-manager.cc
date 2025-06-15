@@ -344,31 +344,68 @@ UhrFrameExchangeManager::TbPpduTimeout(WifiPsduMap* psduMap, std::size_t nSolici
 
     CtrlTriggerHeader trigger;
     psduMap->cbegin()->second->GetPayload(0)->PeekHeader(trigger);
-
-    if (!m_dsoStas.empty() && trigger.IsBsrp() &&
-        (staMissedTbPpduFrom.size() == nSolicitedStations))
+    if (trigger.IsBsrp())
     {
-        // No ICF response received from any DSO STA, we cannot differentiate between ICF not
-        // received by all STAs from all ICF responses being corrupted. Hence, we assume the worst
-        // case and we consider an ICF response is being transmitted before DSO STAs switch back to
-        // the primary subband.
-
-        const auto tbTxVector = trigger.GetHeTbTxVector(trigger.begin()->GetAid12());
-        const auto tbResponseDuration =
-            HePhy::ConvertLSigLengthToHeTbPpduDuration(trigger.GetUlLength(),
-                                                       tbTxVector,
-                                                       m_phy->GetPhyBand());
-        const auto remainingIcrDuration =
-            tbResponseDuration - WifiPhy::CalculatePhyPreambleAndHeaderDuration(tbTxVector);
-        const auto delay =
-            remainingIcrDuration + m_phy->GetSifs() + EMLSR_OR_DSO_RX_PHY_START_DELAY;
-
-        for (const auto& [address, ru] : m_dsoStas)
+        if (staMissedTbPpduFrom.size() == nSolicitedStations)
         {
-            DsoSwitchBackToPrimary(address, delay);
-        }
+            // No ICF response received from any DSO STA, we cannot differentiate between ICF not
+            // received by all STAs from all ICF responses being corrupted. Hence, we assume the
+            // worst case and we consider an ICF response is being transmitted before DSO STAs
+            // switch back to the primary subband.
 
-        m_dsoStas.clear();
+            const auto tbTxVector = trigger.GetHeTbTxVector(trigger.begin()->GetAid12());
+            const auto tbResponseDuration =
+                HePhy::ConvertLSigLengthToHeTbPpduDuration(trigger.GetUlLength(),
+                                                           tbTxVector,
+                                                           m_phy->GetPhyBand());
+            const auto remainingIcrDuration =
+                tbResponseDuration - WifiPhy::CalculatePhyPreambleAndHeaderDuration(tbTxVector);
+            const auto delay =
+                remainingIcrDuration + m_phy->GetSifs() + EMLSR_OR_DSO_RX_PHY_START_DELAY;
+
+            for (const auto& [address, ru] : m_dsoStas)
+            {
+                DsoSwitchBackToPrimary(address, delay);
+            }
+
+            m_dsoStas.clear();
+        }
+        else
+        {
+            auto assignedRuInP20{false};
+            auto assignedRuOtherThanP20{false};
+            const auto p20Index{m_phy->GetOperatingChannel().GetPrimary20Index()};
+            const auto& aidAddrMap = m_apMac->GetStaList(m_linkId);
+            for (const auto& userInfo : trigger)
+            {
+                const auto addressIt = aidAddrMap.find(userInfo.GetAid12());
+                NS_ASSERT_MSG(addressIt != aidAddrMap.end(), "AID not found");
+                if (!m_protectedStas.contains(addressIt->second))
+                {
+                    continue;
+                }
+                if (const auto indices = m_phy->GetOperatingChannel().Get20MHzIndicesCoveringRu(
+                        userInfo.GetRuAllocation(),
+                        m_phy->GetChannelWidth());
+                    indices.contains(p20Index))
+                {
+                    assignedRuInP20 = true;
+                }
+                else
+                {
+                    assignedRuOtherThanP20 = true;
+                }
+            }
+            if (!assignedRuInP20 && assignedRuOtherThanP20)
+            {
+                NS_LOG_DEBUG(
+                    "No non-AP STA assigned in the P20 subband responded to the DSO ICF and "
+                    "there is at least one response to the DSO ICF from a non-AP STA on any "
+                    "other subband: terminate the TXOP");
+                TransmissionFailed();
+                return;
+            }
+        }
     }
 
     EhtFrameExchangeManager::TbPpduTimeout(psduMap, nSolicitedStations);
