@@ -888,6 +888,13 @@ class LrWpanMac : public LrWpanMacBase
     void ReceiveData(uint8_t lqi, Ptr<Packet> p);
 
     /**
+     * Used to process an acknowledgment packet.
+     *
+     * @param p The packet containing the MAC header and the data payload.
+     */
+    void ReceiveAcknowledgment(Ptr<Packet> p);
+
+    /**
      * Display the MAC header contents of a successfully received packet when
      * logs are active.
      *
