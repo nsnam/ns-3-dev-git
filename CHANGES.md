@@ -18,7 +18,7 @@ This file is a best-effort approach to solving this issue; we will do our best b
 
 ### Changes to existing API
 
-* (lr-wpan) Debloat MAC PD-DATA.indication
+* (lr-wpan) Debloat MAC PD-DATA.indication and reduce packet copies.
 
 ### Changes to build system
 

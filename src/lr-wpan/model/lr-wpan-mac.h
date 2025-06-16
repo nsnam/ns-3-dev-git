@@ -16,6 +16,7 @@
 
 #include "lr-wpan-fields.h"
 #include "lr-wpan-mac-base.h"
+#include "lr-wpan-mac-header.h"
 #include "lr-wpan-phy.h"
 
 #include "ns3/event-id.h"
@@ -762,9 +763,12 @@ class LrWpanMac : public LrWpanMacBase
      * Process a frame when promiscuous mode is active.
      *
      * @param lqi The LQI value of the received packet
-     * @param p The frame with the MPDU
+     * @param receivedMacHdr The reference to the received MAC header
+     * @param p The packet containing the MAC payload
      */
-    void ReceiveInPromiscuousMode(uint8_t lqi, Ptr<Packet> p);
+    void ReceiveInPromiscuousMode(uint8_t lqi,
+                                  const LrWpanMacHeader& receivedMacHdr,
+                                  Ptr<Packet> p);
 
     /**
      * Called to send a single beacon frame.
@@ -866,41 +870,45 @@ class LrWpanMac : public LrWpanMacBase
     /**
      * Used to process the reception of a beacon packet.
      *
-     * @param lqi The value of the link quality indicator (LQI) of the received packet
-     * @param p The packet containing the MAC header and the beacon payload information
+     * @param lqi The value of the link quality indicator (LQI) of the received packet.
+     * @param receivedMacHdr The reference to the received MAC header.
+     * @param p The packet containing the beacon payload information.
      */
-    void ReceiveBeacon(uint8_t lqi, Ptr<Packet> p);
+    void ReceiveBeacon(uint8_t lqi, const LrWpanMacHeader& receivedMacHdr, Ptr<Packet> p);
 
     /**
      * Used to process the reception of a command packet.
      *
-     * @param lqi The value of the link quality indicator (LQI) of the received packet
-     * @param p The packet containing the MAC header and the beacon payload information
+     * @param lqi The value of the link quality indicator (LQI) of the received packet.
+     * @param receivedMacHdr The reference to the received MAC header.
+     * @param p The packet containing the command payload information.
      */
-    void ReceiveCommand(uint8_t lqi, Ptr<Packet> p);
+    void ReceiveCommand(uint8_t lqi, const LrWpanMacHeader& receivedMacHdr, Ptr<Packet> p);
 
     /**
      * Used to process the reception of data.
      *
-     * @param lqi The value of the link quality indicator (LQI) of the received packet
-     * @param p The packet containing the MAC header and the data payload.
+     * @param lqi The value of the link quality indicator (LQI) of the received packet.
+     * @param receivedMacHdr The reference to the received MAC header.
+     * @param p The packet containing the data payload.
      */
-    void ReceiveData(uint8_t lqi, Ptr<Packet> p);
+    void ReceiveData(uint8_t lqi, const LrWpanMacHeader& receivedMacHdr, Ptr<Packet> p);
 
     /**
      * Used to process an acknowledgment packet.
      *
+     * @param receivedMacHdr The reference to the received MAC header.
      * @param p The packet containing the MAC header and the data payload.
      */
-    void ReceiveAcknowledgment(Ptr<Packet> p);
+    void ReceiveAcknowledgment(const LrWpanMacHeader& receivedMacHdr, Ptr<Packet> p);
 
     /**
      * Display the MAC header contents of a successfully received packet when
      * logs are active.
      *
-     * @param p The packet containing the MAC header
+     * @param receivedMacHdr The reference of the received MAC header
      */
-    void PrintPacket(Ptr<Packet> p);
+    void PrintReceivedPacket(const LrWpanMacHeader& receivedMacHdr);
 
     /**
      * Send an acknowledgment packet for the given sequence number.
