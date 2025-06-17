@@ -941,14 +941,11 @@ class WIFI_EXPORT WifiPhy : public Object
      */
     Ptr<MobilityModel> GetMobility() const;
 
-    using ChannelTuple = std::tuple<uint8_t /* channel number */,
-                                    MHz_u /* channel width */,
-                                    WifiPhyBand /* WifiPhyBand */,
-                                    uint8_t /* primary20 index*/>; //!< Tuple identifying a segment
-                                                                   //!< of an operating channel
+    /// kept for backward compatibility, can be deprecated when using strong types
+    using ChannelTuple = WifiChannelConfig::SegmentWithoutUnits;
 
-    using ChannelSegments =
-        std::vector<ChannelTuple>; //!< segments identifying an operating channel
+    /// segments identifying an operating channel
+    using ChannelSegments = std::list<WifiChannelConfig::TupleWithoutUnits>;
 
     /**
      * If the standard for this object has not been set yet, store the channel settings
@@ -974,12 +971,12 @@ class WIFI_EXPORT WifiPhy : public Object
     void SetOperatingChannel(const ChannelSegments& channelSegments);
 
     /**
-     * This overloaded function is used when the operating channel
-     * consists of a single segment, identified by a tuple.
+     * This overloaded function is used to pass a WifiChannelConfig object from which
+     * the operating channel can be deduced.
      *
-     * @param tuple the segment identifying the operating channel
+     * @param channelCfg the channel config object
      */
-    void SetOperatingChannel(const ChannelTuple& tuple);
+    void SetOperatingChannel(const WifiChannelConfig& channelCfg);
 
     /**
      * Configure whether it is prohibited to change PHY band after initialization.
@@ -1613,7 +1610,7 @@ class WIFI_EXPORT WifiPhy : public Object
     WifiStandard m_standard;                    //!< WifiStandard
     WifiModulationClass m_maxModClassSupported; //!< max modulation class supported
     WifiPhyBand m_band;                         //!< WifiPhyBand
-    ChannelSegments m_channelSettings; //!< Store operating channel settings until initialization
+    WifiChannelConfig m_channelCfg; //!< Store operating channel config until initialization
     WifiPhyOperatingChannel m_operatingChannel; //!< Operating channel
     bool m_fixedPhyBand; //!< True to prohibit changing PHY band after initialization
 

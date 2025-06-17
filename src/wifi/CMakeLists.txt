@@ -172,6 +172,7 @@ set(source_files
     model/wifi-tx-parameters.cc
     model/wifi-tx-timer.cc
     model/wifi-tx-vector.cc
+    model/wifi-types.cc
     model/wifi-utils.cc
     model/yans-error-rate-model.cc
     model/yans-wifi-channel.cc
