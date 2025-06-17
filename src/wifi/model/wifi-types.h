@@ -9,11 +9,16 @@
 #ifndef WIFI_TYPES_H
 #define WIFI_TYPES_H
 
+#include "wifi-phy-band.h"
+
 #include "ns3/si-units.h"
 
 #include <compare>
+#include <list>
 #include <map>
 #include <ostream>
+#include <tuple>
+#include <vector>
 
 namespace ns3
 {
@@ -141,6 +146,127 @@ constexpr FrequencyRange WIFI_SPECTRUM_5_GHZ = {MHz_t{5170}, MHz_t{5915}};
 
 /// Identifier for the frequency range covering the wifi spectrum in the 6 GHz band
 constexpr FrequencyRange WIFI_SPECTRUM_6_GHZ = {MHz_t{5945}, MHz_t{7125}};
+
+/**
+ * Struct defining the configuration of a wifi channel, which can be made of one or multiple
+ * channel segments.
+ */
+struct WifiChannelConfig
+{
+    /// a channel segment, as a struct without units for channel width (to be deprecated when using
+    /// strong types)
+    struct SegmentWithoutUnits
+    {
+        uint8_t number{};                            ///< channel number
+        double width{};                              ///< channel width in MHz
+        WifiPhyBand band{WIFI_PHY_BAND_UNSPECIFIED}; ///< PHY band
+        uint8_t p20Index{};                          ///< primary20 index
+    };
+
+    /// a channel segment, as a struct with units for channel width
+    struct Segment
+    {
+        uint8_t number{};                            ///< channel number
+        MHz_t width{};                               ///< channel width
+        WifiPhyBand band{WIFI_PHY_BAND_UNSPECIFIED}; ///< PHY band
+        uint8_t p20Index{};                          ///< primary20 index
+
+        /**
+         * Constructor.
+         *
+         * @param n the channel number
+         * @param w the channel width
+         * @param b the PHY band
+         * @param i the primary20 index
+         */
+        Segment(uint8_t n, MHz_t w, WifiPhyBand b, uint8_t i)
+            : number(n),
+              width(w),
+              band(b),
+              p20Index(i)
+        {
+        }
+
+        /**
+         * Converting constructor (to be deprecated when using strong types)
+         *
+         * @param s a channel segment as a struct without units for channel width
+         */
+        Segment(const SegmentWithoutUnits& s)
+            : number(s.number),
+              width(MHz_t{s.width}),
+              band(s.band),
+              p20Index(s.p20Index)
+        {
+        }
+
+        /**
+         * Three-way comparison operator
+         *
+         * @param rhs right hand side
+         * @return deduced comparison type
+         */
+        auto operator<=>(const Segment& rhs) const = default;
+    };
+
+    std::vector<Segment> segments; ///< channel config
+
+    WifiChannelConfig() = default;
+
+    /**
+     * Construct a channel config from a channel segment
+     *
+     * @param segment the channel segment
+     */
+    WifiChannelConfig(const Segment& segment)
+        : segments(std::vector<Segment>{segment})
+    {
+    }
+
+    /**
+     * Construct a channel config from a segment without units for channel width
+     *
+     * @param s the segment without units for channel width
+     */
+    WifiChannelConfig(const SegmentWithoutUnits& s)
+        : WifiChannelConfig(Segment(s))
+    {
+    }
+
+    /// a channel segment, as a tuple without units for channel width (to be deprecated when using
+    /// strong types)
+    using TupleWithoutUnits = std::tuple<uint64_t /* channel number */,
+                                         uint64_t /* channel width in MHz */,
+                                         WifiPhyBand /* PHY band */,
+                                         uint64_t /* primary20 index*/>;
+
+    /**
+     * Construct a channel config from a list of tuples without units for channel width
+     *
+     * @param tuples the list of tuples without units for channel width
+     */
+    WifiChannelConfig(const std::list<TupleWithoutUnits>& tuples);
+
+    /// @return a const reference to the first channel segment
+    const Segment& front() const
+    {
+        return segments.front();
+    }
+
+    /// @return a reference to the first channel segment
+    Segment& front()
+    {
+        return segments.front();
+    }
+
+    /**
+     * Three-way comparison operator
+     *
+     * @param rhs right hand side
+     * @return deduced comparison type
+     */
+    auto operator<=>(const WifiChannelConfig& rhs) const = default;
+};
 
 /**
  * The different Resource Unit (RU) types.

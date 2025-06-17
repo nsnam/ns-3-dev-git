@@ -934,15 +934,11 @@ class WifiPhy : public Object
      */
     Ptr<MobilityModel> GetMobility() const;
 
-    // TODO: ChannelSettings is not using strong type yet for backward-compatibility
-    using ChannelTuple = std::tuple<uint8_t /* channel number */,
-                                    uint16_t /* channel width (MHz) */,
-                                    WifiPhyBand /* WifiPhyBand */,
-                                    uint8_t /* primary20 index*/>; //!< Tuple identifying a segment
-                                                                   //!< of an operating channel
+    /// kept for backward compatibility, can be deprecated when using strong types
+    using ChannelTuple = WifiChannelConfig::SegmentWithoutUnits;
 
-    using ChannelSegments =
-        std::vector<ChannelTuple>; //!< segments identifying an operating channel
+    /// segments identifying an operating channel
+    using ChannelSegments = std::list<WifiChannelConfig::TupleWithoutUnits>;
 
     /**
      * If the standard for this object has not been set yet, store the channel settings
@@ -968,12 +964,12 @@ class WifiPhy : public Object
     void SetOperatingChannel(const ChannelSegments& channelSegments);
 
     /**
-     * This overloaded function is used when the operating channel
-     * consists of a single segment, identified by a tuple.
+     * This overloaded function is used to pass a WifiChannelConfig object from which
+     * the operating channel can be deduced.
      *
-     * @param tuple the segment identifying the operating channel
+     * @param channelCfg the channel config object
      */
-    void SetOperatingChannel(const ChannelTuple& tuple);
+    void SetOperatingChannel(const WifiChannelConfig& channelCfg);
 
     /**
      * Configure whether it is prohibited to change PHY band after initialization.
@@ -1607,29 +1603,10 @@ class WifiPhy : public Object
      */
     static std::map<WifiModulationClass, Ptr<PhyEntity>>& GetStaticPhyEntities();
 
-    using ChannelTupleWithUnits =
-        std::tuple<uint8_t /* channel number */,
-                   MHz_t /* channel width */,
-                   WifiPhyBand /* WifiPhyBand */,
-                   uint8_t /* primary20 index*/>; //!< Tuple identifying a segment
-                                                  //!< of an operating channel
-
-    using ChannelSegmentsWithUnits =
-        std::vector<ChannelTupleWithUnits>; //!< segments identifying an operating channel
-
-    /**
-     * This overloaded function is used to pass a list of segments (with correct units) from which
-     * the operating channel can be deduced.
-     *
-     * @param channelSegments the segments identifying the operating channel
-     */
-    void SetOperatingChannel(const ChannelSegmentsWithUnits& channelSegments);
-
     WifiStandard m_standard;                    //!< WifiStandard
     WifiModulationClass m_maxModClassSupported; //!< max modulation class supported
     WifiPhyBand m_band;                         //!< WifiPhyBand
-    ChannelSegmentsWithUnits
-        m_channelSettings; //!< Store operating channel settings until initialization
+    WifiChannelConfig m_channelCfg; //!< Store operating channel config until initialization
     WifiPhyOperatingChannel m_operatingChannel; //!< Operating channel
     bool m_fixedPhyBand; //!< True to prohibit changing PHY band after initialization
 
