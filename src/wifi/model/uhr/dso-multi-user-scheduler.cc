@@ -638,4 +638,42 @@ DsoMultiUserScheduler::FinalizeTxVector(WifiTxVector& txVector)
     m_candidates.erase(candidateIt, m_candidates.end());
 }
 
+void
+DsoMultiUserScheduler::UpdateTriggerFrameAfterProtection(uint8_t linkId,
+                                                         CtrlTriggerHeader& trigger,
+                                                         WifiTxParameters& txParams) const
+{
+    NS_LOG_FUNCTION(this << linkId << &txParams);
+
+    // remove unprotected DSO clients, unless this is a BSRP TF (which acts as ICF)
+    if (trigger.IsBsrp() && m_dsoTxop)
+    {
+        NS_LOG_INFO("BSRP TF is an ICF for DSO clients");
+        return;
+    }
+
+    NS_LOG_INFO("Checking unprotected DSO clients");
+    RemoveRecipientsFromTf(linkId, trigger, txParams, m_isUnprotectedDsoClient);
+}
+
+void
+DsoMultiUserScheduler::UpdateDlMuAfterProtection(uint8_t linkId,
+                                                 WifiPsduMap& psduMap,
+                                                 WifiTxParameters& txParams) const
+{
+    NS_LOG_FUNCTION(this << linkId << &txParams);
+
+    NS_LOG_INFO("Checking unprotected DSO clients");
+    RemoveRecipientsFromDlMu(linkId, psduMap, txParams, m_isUnprotectedDsoClient);
+
+    if (std::all_of(psduMap.cbegin(), psduMap.cend(), [](const auto& psdu) {
+            return !psdu.second->GetHeader(0).HasData();
+        }))
+    {
+        NS_LOG_DEBUG("No QoS DATA frames to send in DL MU PPDU: clearing TXVECTOR and PSDU map");
+        psduMap.clear();
+        txParams.m_txVector.GetHeMuUserInfoMap().clear();
+    }
+}
+
 } // namespace ns3

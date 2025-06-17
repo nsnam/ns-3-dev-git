@@ -84,6 +84,10 @@ MultiUserScheduler::MultiUserScheduler()
     : m_isUnprotectedEmlsrClient([this](uint8_t linkId, Mac48Address address) {
           return m_apMac->GetWifiRemoteStationManager(linkId)->GetEmlsrEnabled(address) &&
                  !m_apMac->GetFrameExchangeManager(linkId)->GetProtectedStas().contains(address);
+      }),
+      m_isUnprotectedDsoClient([this](uint8_t linkId, Mac48Address address) {
+          return m_apMac->GetWifiRemoteStationManager(linkId)->GetDsoEnabled(address) &&
+                 !m_apMac->GetFrameExchangeManager(linkId)->GetProtectedStas().contains(address);
       })
 {
 }

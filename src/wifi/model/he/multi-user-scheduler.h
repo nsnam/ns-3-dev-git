@@ -271,6 +271,11 @@ class MultiUserScheduler : public Object
                                     //!< (link) address is an EMLSR client that is not protected on
                                     //!< the given link
 
+    const std::function<bool(uint8_t, Mac48Address)>
+        m_isUnprotectedDsoClient; //!< predicate returning true if the device with the given
+                                  //!< (link) address is a DSO client that is not protected on
+                                  //!< the given link
+
   private:
     /**
      * Set the wifi MAC. Note that it must be the MAC of an HE AP.

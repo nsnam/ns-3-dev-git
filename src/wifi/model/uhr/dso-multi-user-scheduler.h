@@ -41,6 +41,12 @@ class DsoMultiUserScheduler : public RrMultiUserScheduler
     TxFormat TrySendingDlMuPpdu() override;
     WifiTxVector GetTxVectorForUlMu(std::function<bool(const MasterInfo&)> canBeSolicited) override;
     bool CanSolicitStaInBsrpTf(const MasterInfo& info, WifiDirection direction) const override;
+    void UpdateTriggerFrameAfterProtection(uint8_t linkId,
+                                           CtrlTriggerHeader& trigger,
+                                           WifiTxParameters& txParams) const override;
+    void UpdateDlMuAfterProtection(uint8_t linkId,
+                                   WifiPsduMap& psduMap,
+                                   WifiTxParameters& txParams) const override;
 
     /**
      * Allow the base class to select the transmission format for the next transmission.
