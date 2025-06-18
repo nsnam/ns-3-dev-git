@@ -213,7 +213,13 @@ ChannelAccessManager::GetTypeId()
                             "The number of remaining backoff slots for the AC with the given index "
                             "reached the threshold set through the NSlotsLeft attribute.",
                             MakeTraceSourceAccessor(&ChannelAccessManager::m_nSlotsLeftCallback),
-                            "ns3::ChannelAccessManager::NSlotsLeftCallback");
+                            "ns3::ChannelAccessManager::NSlotsLeftCallback")
+            .AddTraceSource("NavEnd",
+                            "Traced value for NAV end changes. Provides a pair comprising the old "
+                            "NAV end and the new NAV end.",
+                            MakeTraceSourceAccessor(&ChannelAccessManager::m_lastNavEnd),
+                            "ns3::TracedValueCallback::Time");
+
     return tid;
 }
 
@@ -730,7 +736,7 @@ ChannelAccessManager::DoGetAccessGrantStart(bool ignoreNav) const
 
     ret.emplace(m_lastTxEnd, WifiExpectedAccessReason::TX_END);
 
-    const auto navAccessStart = ignoreNav ? Time{0} : m_lastNavEnd;
+    const auto navAccessStart = ignoreNav ? Time{0} : m_lastNavEnd.Get();
     ret.emplace(navAccessStart, WifiExpectedAccessReason::NAV_END);
 
     ret.emplace(m_lastAckTimeoutEnd, WifiExpectedAccessReason::ACK_TIMER_END);
@@ -1216,7 +1222,7 @@ ChannelAccessManager::ResetState()
     m_lastRxReceivedOk = true;
     UpdateLastIdlePeriod();
     m_lastRx.end = std::min(m_lastRx.end, now);
-    m_lastNavEnd = std::min(m_lastNavEnd, now);
+    m_lastNavEnd = std::min(m_lastNavEnd.Get(), now);
     m_lastAckTimeoutEnd = std::min(m_lastAckTimeoutEnd, now);
     m_lastCtsTimeoutEnd = std::min(m_lastCtsTimeoutEnd, now);
     m_lastNoPhy.end = std::min(m_lastNoPhy.end, now);
@@ -1330,7 +1336,7 @@ ChannelAccessManager::NotifyNavStartNow(Time duration)
     NS_LOG_FUNCTION(this << duration);
     NS_LOG_DEBUG("nav start for=" << duration);
     UpdateBackoff();
-    m_lastNavEnd = std::max(m_lastNavEnd, Simulator::Now() + duration);
+    m_lastNavEnd = std::max(m_lastNavEnd.Get(), Simulator::Now() + duration);
 }
 
 void

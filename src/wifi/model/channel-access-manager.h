@@ -16,6 +16,7 @@
 #include "ns3/nstime.h"
 #include "ns3/object.h"
 #include "ns3/traced-callback.h"
+#include "ns3/traced-value.h"
 
 #include <algorithm>
 #include <map>
@@ -522,13 +523,13 @@ class ChannelAccessManager : public Object
      */
     typedef std::vector<Ptr<Txop>> Txops;
 
-    Txops m_txops;            //!< the vector of managed Txops
-    Time m_lastAckTimeoutEnd; //!< the last Ack timeout end time
-    Time m_lastCtsTimeoutEnd; //!< the last CTS timeout end time
-    Time m_lastNavEnd;        //!< the last NAV end time
-    Timespan m_lastRx;        //!< the last receive start and end time
-    bool m_lastRxReceivedOk;  //!< the last receive OK
-    Time m_lastTxEnd;         //!< the last transmit end time
+    Txops m_txops;                  //!< the vector of managed Txops
+    Time m_lastAckTimeoutEnd;       //!< the last Ack timeout end time
+    Time m_lastCtsTimeoutEnd;       //!< the last CTS timeout end time
+    TracedValue<Time> m_lastNavEnd; //!< the last NAV end time
+    Timespan m_lastRx;              //!< the last receive start and end time
+    bool m_lastRxReceivedOk;        //!< the last receive OK
+    Time m_lastTxEnd;               //!< the last transmit end time
     std::map<WifiChannelListType, Time>
         m_lastBusyEnd;                       //!< the last busy end time for each channel type
     std::vector<Time> m_lastPer20MHzBusyEnd; /**< the last busy end time per 20 MHz channel
