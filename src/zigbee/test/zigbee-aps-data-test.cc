@@ -306,6 +306,10 @@ ZigbeeApsDataTestCase::DoRun()
                           4,
                           "Packet was not received in the correct destination endpoint");
 
+    zstack1->GetAps()->SetApsdeDataIndicationCallback(
+        MakeNullCallback<void, ApsdeDataIndicationParams, Ptr<Packet>>());
+    zstack2->GetAps()->SetApsdeDataIndicationCallback(
+        MakeNullCallback<void, ApsdeDataIndicationParams, Ptr<Packet>>());
     Simulator::Destroy();
 }
 
