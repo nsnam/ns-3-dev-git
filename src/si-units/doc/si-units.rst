@@ -165,8 +165,28 @@ behaviors of legacy APIs.
   auto xyz = dBm_t{SomeLegacyApi(myFreq.in_MHz())}; // dBm
 
 
-Migration of legacy APIs
-************************
+Migration of implementations
+****************************
+
+Each individual implementation can be migrated independently. The migration effort shall not
+change the APIs. This approach does not require caller code changes, keeping the legacy behavior, while improving the fidelity of implementation.
+
+::
+
+  // Legacy code taking frequency in MHz, returning power in dBm
+  double SomeLegacyApi(double freq);
+
+  // Improved implementation of the legacy API
+  double SomeLegacyApi(double freq)
+  {
+     GHz myFreq{freq};
+     dBm_t myResult = ...;
+     return myResult.in_dBm();
+  }
+
+
+Migration of APIs
+*****************
 
 A key is gradual, incremental, and testable refactoring. The outcome of the migration shall not
 change the behaviors. If the migration efforts discover incumbent bugs, bug fixes should be handled
@@ -175,10 +195,10 @@ as fixing bugs.
 
 ::
 
-  // Legacy API
+  // Before: Legacy API
   double SomeLegacyApi(double freq);
 
-  // Improved API
+  // After: Improved API
   dBm_t SomeLegacyApi(Hz_t freq);
 
 Note this API change does not necessarily imply the changes of implementation. The legacy
@@ -189,13 +209,10 @@ absorting the functionality in the new ones.
 
 ::
 
-  // Legacy implementation
-  double SomeLegacyApi(double freq)
-  {
-      ...
-  }
+  // Keep the legacy API and implementation
+  double SomeLegacyApi(double freq) { ... }
 
-  // Improved Implementation
+  // Improved API with the same name as the legacy one
   dBm_t SomeLegacyApi(Hz_t freq)
   {
     auto in = freq.in_MHz();
@@ -212,15 +229,15 @@ useful.
 
 ::
 
-  // Pass 0: Legacy API
+  // Pass 0: Legacy API to deprecate
   double SomeLegacyApi(double freq);
 
-  // Pass 1: replace with weak-types
+  // Pass 1: Intermediate API with weak-types
   using dBm_u = double;
   using Hz_u  = double;
   dBm_u SomeLegacyApi(Hz_u freq);
 
-  // Pass 2: replace with strong-types
+  // Pass 2: Ultimate API with strong-types
   struct dBm_t {..};
   struct Hz {..};
   dBm_t SomeLegacyApi(Hz_t freq);
