@@ -628,16 +628,11 @@ macro(process_options)
   set(Python3_FOUND FALSE)
   set(Python3_INCLUDE_DIRS)
   set(Python3_Interpreter_FOUND FALSE)
+  set(Python3_FIND_VIRTUALENV FIRST)
   if(${NS3_PYTHON_BINDINGS})
     find_package(Python3 COMPONENTS Interpreter Development)
   else()
-    # If Python was not set yet, use the version found by check_deps
-    check_deps(python3_deps EXECUTABLES python3)
-    if(python3_deps)
-      message(FATAL_ERROR "Python3 was not found")
-    else()
-      set(Python3_EXECUTABLE ${PYTHON3})
-    endif()
+    find_package(Python3 COMPONENTS Interpreter)
   endif()
 
   # Check if both Python interpreter and development libraries were found

@@ -40,6 +40,27 @@ function(check_deps missing_deps)
     )
     if(NOT (${return_code} EQUAL 0))
       list(APPEND local_missing_deps ${package})
+    else()
+      # To make sure CMake import files can be found from venv site packages, we
+      # manually add them to CMAKE_PREFIX_PATH
+      execute_process(
+        COMMAND
+          ${Python3_EXECUTABLE} -c
+          "import os; import ${package}; print(os.path.abspath(os.path.dirname(${package}.__file__)))"
+        OUTPUT_VARIABLE venv_site_packages_path
+      )
+      # Remove newlines (\n, \r, \r\n)
+      string(REGEX REPLACE "[\r\n]+$" "" venv_site_packages_path
+                           "${venv_site_packages_path}"
+      )
+      if(EXISTS ${venv_site_packages_path})
+        if(NOT (DEFINED CMAKE_PREFIX_PATH))
+          set(CMAKE_PREFIX_PATH "" PARENT_SCOPE)
+        endif()
+        set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};${venv_site_packages_path}"
+            PARENT_SCOPE
+        )
+      endif()
     endif()
   endforeach()
 
