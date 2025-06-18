@@ -126,6 +126,9 @@ class ChannelAccessManager : public Object
      */
     void SetupFrameExchangeManager(Ptr<FrameExchangeManager> feManager);
 
+    /// @return the ID of the link this Channel Access Manager is associated with
+    uint8_t GetLinkId() const;
+
     /**
      * @param txop a new Txop.
      *

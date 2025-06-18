@@ -9,6 +9,7 @@
 #ifndef TXOP_H
 #define TXOP_H
 
+#include "backoff-monitor.h"
 #include "wifi-mac-header.h"
 
 #include "ns3/nstime.h"
@@ -450,6 +451,13 @@ class Txop : public Object
     void SwapLinks(std::map<uint8_t, uint8_t> links);
 
     /**
+     * Enable or disable backoff monitoring.
+     *
+     * @param enable true/false to enable/disable backoff monitoring on all links
+     */
+    void EnableBackoffMon(bool enable);
+
+    /**
      * DCF/EDCA access parameters for all the links provided by users via this class' attributes
      * or the corresponding setter methods. For each access parameter, values are sorted in
      * increasing order of link ID. If user provides access parameters, they are used by WifiMac
@@ -521,6 +529,13 @@ class Txop : public Object
     void UpdateBackoffSlotsNow(uint32_t nSlots, Time backoffUpdateBound, uint8_t linkId);
 
     /**
+     * Reset the backoff counter on the given link.
+     *
+     * @param linkId the ID of the given link
+     */
+    void ResetBackoffNow(uint8_t linkId);
+
+    /**
      * Structure holding information specific to a single link. Here, the meaning of
      * "link" is that of the 11be amendment which introduced multi-link devices. For
      * previous amendments, only one link can be created.
@@ -573,12 +588,15 @@ class Txop : public Object
     UniformRandomBitGenerator m_shuffleLinkIdsGen; //!< random number generator to shuffle link IDs
 
     /// TracedCallback for backoff trace value typedef
-    typedef TracedCallback<uint32_t /* value */, uint8_t /* linkId */> BackoffValueTracedCallback;
+    using BackoffValueTracedCallback = TracedCallback<uint32_t /* value */, uint8_t /* linkId */>;
+    /// TracedCallback for backoff status typedef
+    using BackoffStatusTracedCallback = TracedCallback<const BackoffMonitor::StatusTrace&>;
     /// TracedCallback for CW trace value typedef
-    typedef TracedCallback<uint32_t /* value */, uint8_t /* linkId */> CwValueTracedCallback;
+    using CwValueTracedCallback = TracedCallback<uint32_t /* value */, uint8_t /* linkId */>;
 
-    BackoffValueTracedCallback m_backoffTrace; //!< backoff trace value
-    CwValueTracedCallback m_cwTrace;           //!< CW trace value
+    BackoffValueTracedCallback m_backoffTrace;        //!< backoff trace value
+    BackoffStatusTracedCallback m_backoffStatusTrace; //!< backoff status trace
+    CwValueTracedCallback m_cwTrace;                  //!< CW trace value
 
   private:
     /**
@@ -589,7 +607,8 @@ class Txop : public Object
     virtual std::unique_ptr<LinkEntity> CreateLinkEntity() const;
 
     std::map<uint8_t, std::unique_ptr<LinkEntity>>
-        m_links; //!< ID-indexed map of LinkEntity objects
+        m_links;                 //!< ID-indexed map of LinkEntity objects
+    BackoffMonitor m_backoffMon; //!< backoff monitor for this Txop on all links
 
     UserDefinedAccessParams m_userAccessParams; //!< user-defined DCF/EDCA access parameters
 };

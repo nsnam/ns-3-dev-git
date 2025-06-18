@@ -1407,6 +1407,13 @@ class WifiMac : public Object
     void NotifyRsmOfExpiredMpdu(Ptr<const WifiMpdu> mpdu);
 
     /**
+     * Enable or disable backoff monitoring.
+     *
+     * @param enable true/false to enable/disable backoff monitoring
+     */
+    void EnableBackoffMon(bool enable);
+
+    /**
      * This Boolean is set \c true iff this WifiMac is to model
      * 802.11e/WMM style Quality of Service. It is exposed through the
      * attribute system.
@@ -1456,6 +1463,8 @@ class WifiMac : public Object
     uint32_t m_frameRetryLimit; //!< the frame retry limit
 
     bool m_robustAVStreamingSupported; ///< flag whether robust AV streaming is supported
+
+    bool m_enableBackoffMon; ///< enable backoff monitoring for all Txops on all links
 
     /// @brief DL TID-to-Link Mapping negotiated with an MLD (identified by its MLD address)
     std::unordered_map<Mac48Address, WifiTidLinkMapping, WifiAddressHash> m_dlTidLinkMappings;

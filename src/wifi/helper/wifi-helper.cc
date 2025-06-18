@@ -1229,6 +1229,7 @@ WifiHelper::EnableLogComponents(LogLevel logLevel)
     LogComponentEnable("ApWifiMac", logLevel);
     LogComponentEnable("AparfWifiManager", logLevel);
     LogComponentEnable("ArfWifiManager", logLevel);
+    LogComponentEnable("BackoffMonitor", logLevel);
     LogComponentEnable("BlockAckAgreement", logLevel);
     LogComponentEnable("BlockAckManager", logLevel);
     LogComponentEnable("CaraWifiManager", logLevel);

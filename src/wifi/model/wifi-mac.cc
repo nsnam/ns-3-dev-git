@@ -298,6 +298,14 @@ WifiMac::GetTypeId()
                           MakeBooleanAccessor(&WifiMac::SetRobustAVStreamingSupported,
                                               &WifiMac::GetRobustAVStreamingSupported),
                           MakeBooleanChecker())
+            .AddAttribute(
+                "EnableBackoffMon",
+                "Enable or disable backoff monitoring on all links for all DCF/EDCAFs. If enabled, "
+                "use the Txop::BackoffStatus trace source to be notified when the backoff of a "
+                "DCF/EDCAF on a link is set to zero, is started/resumed or is paused.",
+                BooleanValue(false),
+                MakeBooleanAccessor(&WifiMac::EnableBackoffMon),
+                MakeBooleanChecker())
             .AddTraceSource(
                 "MacTx",
                 "A packet has been received by the WifiNetDevice and is about to be enqueued; "
@@ -960,6 +968,9 @@ WifiMac::CompleteConfig()
         ConfigurePhyDependentParameters(id);
     }
 
+    // enable/disable backoff monitoring now that PHYs have been added
+    EnableBackoffMon(m_enableBackoffMon);
+
     DoCompleteConfig();
 }
 
@@ -1425,6 +1436,26 @@ WifiMac::ResetWifiPhys()
             link->channelAccessManager->RemovePhyListener(link->phy);
         }
         link->phy = nullptr;
+    }
+}
+
+void
+WifiMac::EnableBackoffMon(bool enable)
+{
+    NS_LOG_FUNCTION(this << enable);
+    m_enableBackoffMon = enable;
+
+    // Enable/disable backoff monitoring if PHY have been added
+    if (m_device && m_device->GetNPhys() > 0)
+    {
+        if (m_txop)
+        {
+            m_txop->EnableBackoffMon(m_enableBackoffMon);
+        }
+        for (const auto& [aci, edca] : m_edca)
+        {
+            edca->EnableBackoffMon(m_enableBackoffMon);
+        }
     }
 }
 

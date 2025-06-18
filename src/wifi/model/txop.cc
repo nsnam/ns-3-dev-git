@@ -159,6 +159,10 @@ Txop::GetTypeId()
                             "Trace source for backoff values",
                             MakeTraceSourceAccessor(&Txop::m_backoffTrace),
                             "ns3::Txop::BackoffValueTracedCallback")
+            .AddTraceSource("BackoffStatus",
+                            "Trace source for backoff status updates",
+                            MakeTraceSourceAccessor(&Txop::m_backoffStatusTrace),
+                            "ns3::Txop::BackoffStatusTracedCallback")
             .AddTraceSource("CwTrace",
                             "Trace source for contention window values",
                             MakeTraceSourceAccessor(&Txop::m_cwTrace),
@@ -232,6 +236,8 @@ Txop::SwapLinks(std::map<uint8_t, uint8_t> links)
     }
     // move links remaining in tmp to m_links
     m_links.merge(tmp);
+
+    m_backoffMon.SwapLinks(links);
 }
 
 void
@@ -267,6 +273,38 @@ Ptr<WifiMacQueue>
 Txop::GetWifiMacQueue() const
 {
     return m_queue;
+}
+
+void
+Txop::EnableBackoffMon(bool enable)
+{
+    NS_LOG_FUNCTION(this << enable);
+    if (enable)
+    {
+        BackoffMonitor::StatusChangeCb cb(
+            [this](const BackoffMonitor::StatusTrace& info) { m_backoffStatusTrace(info); });
+        m_backoffMon.Enable(m_mac, m_queue->GetAc(), cb);
+        // connect NAV end callback to all channel access managers
+        for (const auto linkId : m_mac->GetLinkIds())
+        {
+            auto cam = m_mac->GetChannelAccessManager(linkId);
+            cam->TraceConnectWithoutContext(
+                "NavEnd",
+                MakeCallback(&BackoffMonitor::NotifyNavUpdated, &m_backoffMon).Bind(cam));
+        }
+    }
+    else
+    {
+        m_backoffMon.Disable();
+        // disconnect NAV end callback to all channel access managers
+        for (const auto linkId : m_mac->GetLinkIds())
+        {
+            auto cam = m_mac->GetChannelAccessManager(linkId);
+            cam->TraceDisconnectWithoutContext(
+                "NavEnd",
+                MakeCallback(&BackoffMonitor::NotifyNavUpdated, &m_backoffMon).Bind(cam));
+        }
+    }
 }
 
 void
@@ -426,6 +464,7 @@ Txop::UpdateBackoffSlotsNow(uint32_t nSlots, Time backoffUpdateBound, uint8_t li
     link.backoffSlots -= nSlots;
     link.backoffStart = backoffUpdateBound;
     NS_LOG_DEBUG("update slots=" << nSlots << " slots, backoff=" << link.backoffSlots);
+    m_backoffMon.NotifyBackoffUpdated(linkId, link.backoffSlots);
 }
 
 void
@@ -444,6 +483,20 @@ Txop::StartBackoffNow(uint32_t nSlots, uint8_t linkId)
     }
     link.backoffSlots = nSlots;
     link.backoffStart = Simulator::Now();
+    m_backoffMon.NotifyBackoffGenerated(linkId);
+}
+
+void
+Txop::ResetBackoffNow(uint8_t linkId)
+{
+    NS_LOG_FUNCTION(this << linkId);
+    auto& link = GetLink(linkId);
+
+    if (link.backoffSlots > 0)
+    {
+        m_backoffMon.NotifyBackoffReset(linkId);
+        UpdateBackoffSlotsNow(link.backoffSlots, Simulator::Now(), linkId);
+    }
 }
 
 void
@@ -768,6 +821,7 @@ Txop::NotifyChannelAccessed(uint8_t linkId, Time txopDuration)
 {
     NS_LOG_FUNCTION(this << linkId << txopDuration);
     GetLink(linkId).access = GRANTED;
+    m_backoffMon.NotifyChannelAccessed(linkId);
 }
 
 void

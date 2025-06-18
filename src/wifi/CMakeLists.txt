@@ -22,6 +22,7 @@ set(source_files
     model/ampdu-tag.cc
     model/amsdu-subframe-header.cc
     model/ap-wifi-mac.cc
+    model/backoff-monitor.cc
     model/block-ack-agreement.cc
     model/block-ack-manager.cc
     model/block-ack-type.cc
@@ -208,6 +209,7 @@ set(header_files
     model/ampdu-tag.h
     model/amsdu-subframe-header.h
     model/ap-wifi-mac.h
+    model/backoff-monitor.h
     model/block-ack-agreement.h
     model/block-ack-manager.h
     model/block-ack-type.h

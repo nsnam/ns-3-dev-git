@@ -372,6 +372,12 @@ ChannelAccessManager::SetLinkId(uint8_t linkId)
     m_linkId = linkId;
 }
 
+uint8_t
+ChannelAccessManager::GetLinkId() const
+{
+    return m_linkId;
+}
+
 void
 ChannelAccessManager::SetupFrameExchangeManager(Ptr<FrameExchangeManager> feManager)
 {
@@ -1235,12 +1241,7 @@ ChannelAccessManager::ResetBackoff(Ptr<Txop> txop)
 {
     NS_LOG_FUNCTION(this << txop);
 
-    uint32_t remainingSlots = txop->GetBackoffSlots(m_linkId);
-    if (remainingSlots > 0)
-    {
-        txop->UpdateBackoffSlotsNow(remainingSlots, Simulator::Now(), m_linkId);
-        NS_ASSERT(txop->GetBackoffSlots(m_linkId) == 0);
-    }
+    txop->ResetBackoffNow(m_linkId);
     txop->ResetCw(m_linkId);
     txop->GetLink(m_linkId).access = Txop::NOT_REQUESTED;
 }
