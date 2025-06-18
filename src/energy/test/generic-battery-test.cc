@@ -51,17 +51,23 @@ DischargeBatteryTestCase::DoRun()
     batteryModel->AppendDeviceEnergyModel(consumptionEnergyModel);
     consumptionEnergyModel->SetNode(node);
 
+    // Needed to initialize battery model
+    batteryModel->UpdateEnergySource();
+
     // Discharge the battery with a constant current of 2.33 A (1C)
     consumptionEnergyModel->SetCurrentA(2.33);
 
     Simulator::Stop(Seconds(3459));
     Simulator::Run();
-    Simulator::Destroy();
 
     NS_TEST_ASSERT_MSG_EQ_TOL(batteryModel->GetSupplyVoltage(),
                               3.0,
                               1.0e-2,
                               "Cutoff voltage not reached");
+    node->Dispose();
+    consumptionEnergyModel->Dispose();
+    batteryModel->Dispose();
+    Simulator::Destroy();
 }
 
 /**
