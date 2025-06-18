@@ -8,11 +8,14 @@
 
 #include "wifi-static-setup-helper.h"
 
+#include "ns3/adhoc-wifi-mac.h"
 #include "ns3/ap-wifi-mac.h"
 #include "ns3/assert.h"
 #include "ns3/boolean.h"
-#include "ns3/frame-exchange-manager.h"
+#include "ns3/ht-configuration.h"
+#include "ns3/ht-frame-exchange-manager.h"
 #include "ns3/log.h"
+#include "ns3/mgt-action-headers.h"
 #include "ns3/mgt-headers.h"
 #include "ns3/net-device-container.h"
 #include "ns3/packet.h"
@@ -275,6 +278,190 @@ WifiStaticSetupHelper::GetAssocReq(Ptr<StaWifiMac> clientMac, linkId_t linkId, b
     }
 
     return assocReq;
+}
+
+void
+WifiStaticSetupHelper::SetStaticBlockAck(Ptr<WifiNetDevice> apDev,
+                                         const NetDeviceContainer& clientDevs,
+                                         const std::set<tid_t>& tids,
+                                         std::optional<Mac48Address> gcrGroupAddr)
+{
+    NS_LOG_FUNCTION_NOARGS();
+
+    for (auto i = clientDevs.Begin(); i != clientDevs.End(); ++i)
+    {
+        auto clientDev = DynamicCast<WifiNetDevice>(*i);
+        NS_ASSERT_MSG(clientDev, "WifiNetDevice expected");
+        if (!clientDev->GetHtConfiguration())
+        {
+            // Block Ack requires HT support
+            continue;
+        }
+        for (const auto tid : tids)
+        {
+            SetStaticBlockAck(apDev, clientDev, tid, gcrGroupAddr); // Downlink setup
+            SetStaticBlockAck(clientDev, apDev, tid, gcrGroupAddr); // Uplink setup
+        }
+    }
+}
+
+void
+WifiStaticSetupHelper::SetStaticBlockAck(Ptr<WifiNetDevice> originatorDev,
+                                         Ptr<WifiNetDevice> recipientDev,
+                                         tid_t tid,
+                                         std::optional<Mac48Address> gcrGroupAddr)
+{
+    NS_LOG_FUNCTION_NOARGS();
+
+    Simulator::ScheduleNow(&WifiStaticSetupHelper::SetStaticBlockAckPostInit,
+                           originatorDev,
+                           recipientDev,
+                           tid,
+                           gcrGroupAddr);
+}
+
+void
+WifiStaticSetupHelper::SetStaticBlockAckPostInit(Ptr<WifiNetDevice> originatorDev,
+                                                 Ptr<WifiNetDevice> recipientDev,
+                                                 tid_t tid,
+                                                 std::optional<Mac48Address> gcrGroupAddr)
+{
+    NS_LOG_FUNCTION_NOARGS();
+
+    // Originator Device
+    const auto originatorMac = originatorDev->GetMac();
+    const auto originatorLinkId = *(originatorMac->GetLinkIds().begin());
+    const auto originatorFem = DynamicCast<HtFrameExchangeManager>(
+        originatorMac->GetFrameExchangeManager(originatorLinkId));
+    NS_ASSERT_MSG(originatorFem, "Block ACK setup requires HT support");
+    const auto originatorBaManager = originatorMac->GetQosTxop(tid)->GetBaManager();
+
+    // Recipient Device
+    const auto recipientMac = recipientDev->GetMac();
+    const auto recipientLinkId = *(recipientMac->GetLinkIds().begin());
+    const auto recipientFem =
+        DynamicCast<HtFrameExchangeManager>(recipientMac->GetFrameExchangeManager(recipientLinkId));
+    NS_ASSERT_MSG(recipientFem, "Block ACK setup requires HT support");
+    const auto recipientBaManager = recipientMac->GetQosTxop(tid)->GetBaManager();
+
+    const auto originatorAddr = GetBaOriginatorAddr(originatorMac, recipientMac);
+    const auto recipientAddr = GetBaRecipientAddr(originatorMac, recipientMac);
+
+    // Early return if BA Agreement already exists
+    if (originatorMac->GetBaAgreementEstablishedAsOriginator(recipientAddr, tid, gcrGroupAddr))
+    {
+        return;
+    }
+
+    // ADDBA Request
+    MgtAddBaRequestHeader reqHdr;
+    reqHdr.SetAmsduSupport(true);
+    reqHdr.SetImmediateBlockAck();
+    reqHdr.SetTid(tid);
+    reqHdr.SetBufferSize(originatorMac->GetMpduBufferSize());
+    reqHdr.SetTimeout(0);
+    reqHdr.SetStartingSequence(0);
+    if (gcrGroupAddr)
+    {
+        reqHdr.SetGcrGroupAddress(gcrGroupAddr.value());
+    }
+
+    // ADDBA Response
+    MgtAddBaResponseHeader respHdr;
+    StatusCode code;
+    code.SetSuccess();
+    respHdr.SetStatusCode(code);
+    respHdr.SetAmsduSupport(true);
+    respHdr.SetImmediateBlockAck();
+    respHdr.SetTid(tid);
+    auto agrBufferSize = std::min(reqHdr.GetBufferSize(), recipientMac->GetMpduBufferSize());
+    respHdr.SetBufferSize(agrBufferSize);
+    respHdr.SetTimeout(0);
+    if (auto gcrGroupAddr = reqHdr.GetGcrGroupAddress())
+    {
+        respHdr.SetGcrGroupAddress(gcrGroupAddr.value());
+    }
+
+    originatorBaManager->CreateOriginatorAgreement(reqHdr, recipientAddr);
+    recipientBaManager->CreateRecipientAgreement(respHdr,
+                                                 originatorAddr,
+                                                 reqHdr.GetStartingSequence(),
+                                                 recipientMac->m_rxMiddle);
+    auto recipientAgr [[maybe_unused]] =
+        recipientBaManager->GetAgreementAsRecipient(originatorAddr,
+                                                    tid,
+                                                    reqHdr.GetGcrGroupAddress());
+    NS_ASSERT_MSG(recipientAgr.has_value(),
+                  "No agreement as recipient found for originator " << originatorAddr << ", TID "
+                                                                    << +tid);
+    originatorBaManager->UpdateOriginatorAgreement(respHdr,
+                                                   recipientAddr,
+                                                   reqHdr.GetStartingSequence());
+    auto originatorAgr [[maybe_unused]] =
+        originatorBaManager->GetAgreementAsOriginator(recipientAddr,
+                                                      tid,
+                                                      reqHdr.GetGcrGroupAddress());
+    NS_ASSERT_MSG(originatorAgr.has_value(),
+                  "No agreement as originator found for recipient " << recipientAddr << ", TID "
+                                                                    << +tid);
+}
+
+Mac48Address
+WifiStaticSetupHelper::GetBaOriginatorAddr(Ptr<WifiMac> originatorMac, Ptr<WifiMac> recipientMac)
+{
+    // Originator is AdhocWifiMac type
+    // FIXME Restricted to single link operation, as AdHocWifiMac does not support multi-link yet
+    if (const auto origAdhoc = DynamicCast<AdhocWifiMac>(originatorMac))
+    {
+        return origAdhoc->GetAddress();
+    }
+
+    // Recipient is AdhocWifiMac type
+    // Return MAC address of link communicating with recipient
+    if (const auto recAdhoc = DynamicCast<AdhocWifiMac>(recipientMac))
+    {
+        const auto origSta = DynamicCast<StaWifiMac>(originatorMac);
+        NS_ASSERT_MSG(origSta, "Expected originator StaWifiMac type");
+        return origSta->GetLocalAddress(recAdhoc->GetAddress());
+    }
+
+    // Infra WLAN case
+    auto isOriginatorClient{true};
+    auto staMac = DynamicCast<StaWifiMac>(originatorMac);
+    if (!staMac)
+    {
+        staMac = DynamicCast<StaWifiMac>(recipientMac);
+        isOriginatorClient = false;
+    }
+    NS_ASSERT_MSG(staMac, "Expected one of the MACs to be StaWifiMac type");
+
+    const auto setupLinks = staMac->GetSetupLinkIds();
+    const auto nSetupLinks = setupLinks.size();
+    if (nSetupLinks != 1)
+    { // Handle cases other than single link association
+        return originatorMac->GetAddress();
+    }
+
+    // Handle case where one device is MLD and other is single link device
+    // Link MAC address to be used for Block ACK agreement
+    // Required for one device to be StaWifiMac type
+    const auto linkId = *(setupLinks.cbegin());
+    if (isOriginatorClient)
+    {
+        const auto fem = originatorMac->GetFrameExchangeManager(linkId);
+        return fem->GetAddress();
+    }
+    else
+    {
+        const auto fem = recipientMac->GetFrameExchangeManager(linkId);
+        return fem->GetBssid();
+    }
+}
+
+Mac48Address
+WifiStaticSetupHelper::GetBaRecipientAddr(Ptr<WifiMac> originatorMac, Ptr<WifiMac> recipientMac)
+{
+    return GetBaOriginatorAddr(recipientMac, originatorMac);
 }
 
 } // namespace ns3

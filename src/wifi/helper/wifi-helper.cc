@@ -1298,6 +1298,7 @@ WifiHelper::EnableLogComponents(LogLevel logLevel)
     LogComponentEnable("WifiSpectrumPhyInterface", logLevel);
     LogComponentEnable("WifiSpectrumSignalParameters", logLevel);
     LogComponentEnable("WifiSpectrumValueHelper", logLevel);
+    LogComponentEnable("WifiStaticSetupHelper", logLevel);
     LogComponentEnable("WifiTxCurrentModel", logLevel);
     LogComponentEnable("WifiTxParameters", logLevel);
     LogComponentEnable("WifiTxTimer", logLevel);
