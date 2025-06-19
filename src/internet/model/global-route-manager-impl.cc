@@ -1098,7 +1098,7 @@ GlobalRouteManagerImpl::SPFNexthopCalculation(SPFVertex* v,
         }
         else
         {
-            w->SetRootExitDirection(v->GetRootExitDirection());
+            w->InheritAllRootExitDirections(v);
         }
     }
     else
