@@ -1279,6 +1279,126 @@ Ipv4GlobalRoutingSlash32TestCase::DoRun()
 /**
  * @ingroup internet-test
  *
+ * @brief This TestCase tests if ECMP Route Calculation works. It does not check the
+ * correctness of the routes.
+ */
+class EcmpRouteCalculationTestCase : public TestCase
+{
+  public:
+    EcmpRouteCalculationTestCase();
+    void DoSetup() override;
+    void DoRun() override;
+
+  private:
+    NodeContainer nodes; //!< Nodes used in the test.
+};
+
+EcmpRouteCalculationTestCase::EcmpRouteCalculationTestCase()
+    : TestCase("ECMP Route Calculation TestCase")
+{
+}
+
+void
+EcmpRouteCalculationTestCase::DoSetup()
+{
+    /*
+        This TestCase checks the resolution of issue #1243 in the issue tracker.
+        The problem was that Global Routing failed to calculate next hops when going from a
+        network vertex to a router vertex when ECMP Routes were involved.
+
+        //         Network Topology
+        //
+        //
+        //          ------n1------
+        //         /              \
+        //        /                \
+        //       n0                n3----n4----n5
+        //        \                /
+        //         \              /
+        //          ------n2------
+        //
+        //    Link n0-n1: 10.1.1.1/30,10.1.1.2/30
+        //    Link n0-n2: 10.1.2.1/30,10.1.2.2/30
+        //    Link n1-n3: 10.1.3.1/30,10.1.3.2/30
+        //    Link n2-n3: 10.1.4.1/30,10.1.4.2/30
+        //    Link n3-n4: 10.1.5.1/24,10.1.5.2/24
+        //    Link n4-n5: 10.1.6.1/24,10.1.6.2/24
+        //
+        //     Note: Link n4-n5 is a LAN LINK. All others are simple P2P links.
+    */
+
+    nodes.Create(6);
+
+    Ipv4GlobalRoutingHelper globalhelper;
+    InternetStackHelper stack;
+    stack.SetRoutingHelper(globalhelper);
+    stack.Install(nodes);
+    SimpleNetDeviceHelper devHelper;
+    devHelper.SetNetDevicePointToPointMode(true);
+
+    Ptr<SimpleChannel> channel1 = CreateObject<SimpleChannel>();
+    NetDeviceContainer d01 = devHelper.Install(nodes.Get(0), channel1);
+    d01.Add(devHelper.Install(nodes.Get(1), channel1));
+
+    Ptr<SimpleChannel> channel2 = CreateObject<SimpleChannel>();
+    NetDeviceContainer d23 = devHelper.Install(nodes.Get(2), channel2);
+    d23.Add(devHelper.Install(nodes.Get(3), channel2));
+
+    Ptr<SimpleChannel> channel3 = CreateObject<SimpleChannel>();
+    NetDeviceContainer d02 = devHelper.Install(nodes.Get(0), channel3);
+    d02.Add(devHelper.Install(nodes.Get(2), channel3));
+
+    Ptr<SimpleChannel> channel4 = CreateObject<SimpleChannel>();
+    NetDeviceContainer d34 = devHelper.Install(nodes.Get(3), channel4);
+    d34.Add(devHelper.Install(nodes.Get(4), channel4));
+
+    Ptr<SimpleChannel> channel5 = CreateObject<SimpleChannel>();
+    NetDeviceContainer d13 = devHelper.Install(nodes.Get(1), channel5);
+    d13.Add(devHelper.Install(nodes.Get(3), channel5));
+
+    devHelper.SetNetDevicePointToPointMode(false);
+
+    Ptr<SimpleChannel> channel6 = CreateObject<SimpleChannel>();
+    NetDeviceContainer d45 = devHelper.Install(nodes.Get(4), channel6);
+    d45.Add(devHelper.Install(nodes.Get(5), channel6));
+
+    // Assign IP addresses to the devices
+    Ipv4AddressHelper address;
+    address.SetBase("10.1.1.0", "255.255.255.252");
+    Ipv4InterfaceContainer i01 = address.Assign(d01);
+
+    address.SetBase("10.1.2.0", "255.255.255.252");
+    Ipv4InterfaceContainer i02 = address.Assign(d02);
+
+    address.SetBase("10.1.3.0", "255.255.255.252");
+    Ipv4InterfaceContainer i13 = address.Assign(d13);
+
+    address.SetBase("10.1.4.0", "255.255.255.224");
+    Ipv4InterfaceContainer i23 = address.Assign(d23);
+
+    address.SetBase("10.1.5.0", "255.255.255.0");
+    Ipv4InterfaceContainer i34 = address.Assign(d34);
+
+    address.SetBase("10.1.6.0", "255.255.255.0");
+    Ipv4InterfaceContainer i45 = address.Assign(d45);
+}
+
+void
+EcmpRouteCalculationTestCase::DoRun()
+{
+    // The purpose of this test is to make sure the code doesn't crash when calculating ECMP routes
+    // with a topology described in issue #1243. It does not look into the correctness of the
+    // routes. We have other tests to make sure the routes are correct.
+    Ipv4GlobalRoutingHelper::PopulateRoutingTables();
+
+    Simulator::Run();
+    Simulator::Stop(Seconds(2));
+    Simulator::Destroy();
+}
+
+/**
+ * @ingroup internet-test
+ *
  * @brief IPv4 GlobalRouting TestSuite
  */
 class Ipv4GlobalRoutingTestSuite : public TestSuite
@@ -1298,6 +1418,7 @@ Ipv4GlobalRoutingTestSuite::Ipv4GlobalRoutingTestSuite()
     AddTestCase(new TwoBridgeTest, TestCase::Duration::QUICK);
     AddTestCase(new Ipv4DynamicGlobalRoutingTestCase, TestCase::Duration::QUICK);
     AddTestCase(new Ipv4GlobalRoutingSlash32TestCase, TestCase::Duration::QUICK);
+    AddTestCase(new EcmpRouteCalculationTestCase, TestCase::Duration::QUICK);
 }
 
 static Ipv4GlobalRoutingTestSuite
