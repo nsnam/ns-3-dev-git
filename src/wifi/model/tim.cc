@@ -8,7 +8,7 @@
 
 #include "tim.h"
 
-#include "wifi-constants.h"
+#include "wifi-standard-constants.h"
 
 #include <algorithm>
 #include <cstdint>

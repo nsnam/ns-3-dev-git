@@ -6,7 +6,7 @@
  * Author: Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
-#include "wifi-constants.h"
+#include "wifi-standard-constants.h"
 
 namespace ns3
 {

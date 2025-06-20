@@ -146,7 +146,6 @@ set(source_files
     model/wifi-acknowledgment.cc
     model/wifi-assoc-manager.cc
     model/wifi-bandwidth-filter.cc
-    model/wifi-constants.cc
     model/wifi-default-ack-manager.cc
     model/wifi-default-assoc-manager.cc
     model/wifi-default-gcr-manager.cc
@@ -176,6 +175,7 @@ set(source_files
     model/wifi-ru.cc
     model/wifi-spectrum-phy-interface.cc
     model/wifi-spectrum-signal-parameters.cc
+    model/wifi-standard-constants.cc
     model/wifi-standards.cc
     model/wifi-tx-current-model.cc
     model/wifi-tx-parameters.cc
@@ -329,7 +329,6 @@ set(header_files
     model/wifi-acknowledgment.h
     model/wifi-assoc-manager.h
     model/wifi-bandwidth-filter.h
-    model/wifi-constants.h
     model/wifi-default-ack-manager.h
     model/wifi-default-assoc-manager.h
     model/wifi-default-gcr-manager.h
@@ -347,6 +346,7 @@ set(header_files
     model/wifi-mode.h
     model/wifi-mpdu.h
     model/wifi-net-device.h
+    model/wifi-ns3-constants.h
     model/wifi-opt-field.h
     model/wifi-phy-band.h
     model/wifi-phy-common.h
@@ -365,6 +365,7 @@ set(header_files
     model/wifi-ru.h
     model/wifi-spectrum-phy-interface.h
     model/wifi-spectrum-signal-parameters.h
+    model/wifi-standard-constants.h
     model/wifi-standards.h
     model/wifi-tx-current-model.h
     model/wifi-tx-parameters.h
