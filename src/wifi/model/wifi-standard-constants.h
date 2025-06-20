@@ -6,8 +6,8 @@
  * Author: Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
-#ifndef WIFI_CONSTANTS_H
-#define WIFI_CONSTANTS_H
+#ifndef WIFI_STANDARD_CONSTANTS_H
+#define WIFI_STANDARD_CONSTANTS_H
 
 #include "ns3/nstime.h"
 #include "ns3/wifi-export.h"
@@ -128,4 +128,4 @@ static constexpr uint16_t AID_SPECIAL_USER{2007};
 
 } // namespace ns3
 
-#endif /* WIFI_CONSTANTS_H */
+#endif /* WIFI_STANDARD_CONSTANTS_H */

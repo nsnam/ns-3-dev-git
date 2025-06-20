@@ -10,7 +10,7 @@
 #define WIFI_UTILS_H
 
 #include "block-ack-type.h"
-#include "wifi-constants.h"
+#include "wifi-standard-constants.h"
 #include "wifi-types.h"
 
 #include "ns3/fatal-error.h"
@@ -66,8 +66,14 @@ operator<<(std::ostream& os, const WifiDirection& direction)
     }
 }
 
+/// @brief IEEE 802.11-2020 9.2.4.5.2 TID subfield
+using tid_t = uint8_t;
+
+/// @brief IEEE 802.11be D7.0 Figure 9-207e—Link ID Info field format
+using linkId_t = uint8_t;
+
 /// @brief TID-indexed map of the link set to which the TID is mapped
-using WifiTidLinkMapping = std::map<uint8_t, std::set<uint8_t>>;
+using WifiTidLinkMapping = std::map<tid_t, std::set<linkId_t>>;
 
 /**
  * Convert from dBm to Watts.

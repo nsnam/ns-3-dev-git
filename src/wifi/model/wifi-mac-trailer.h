@@ -9,7 +9,7 @@
 #ifndef WIFI_MAC_TRAILER_H
 #define WIFI_MAC_TRAILER_H
 
-#include "wifi-constants.h"
+#include "wifi-standard-constants.h"
 
 #include "ns3/trailer.h"
 

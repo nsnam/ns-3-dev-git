@@ -10,8 +10,8 @@
 #ifndef WIFI_MODE_H
 #define WIFI_MODE_H
 
-#include "wifi-constants.h"
 #include "wifi-phy-common.h"
+#include "wifi-standard-constants.h"
 
 #include "ns3/attribute-helper.h"
 #include "ns3/callback.h"
