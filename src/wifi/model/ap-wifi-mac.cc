@@ -2148,6 +2148,7 @@ ApWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
                     MgtEmlOmn frame;
                     pkt->RemoveHeader(frame);
                     ReceiveEmlOmn(frame, hdr->GetAddr2(), linkId);
+                    RespondToEmlOmn(frame, hdr->GetAddr2(), linkId);
                     return;
                 }
                 break;
@@ -2488,7 +2489,7 @@ ApWifiMac::ParseReportedStaInfo(const AssocReqRefVariant& assoc, Mac48Address fr
 }
 
 void
-ApWifiMac::ReceiveEmlOmn(MgtEmlOmn& frame, const Mac48Address& sender, uint8_t linkId)
+ApWifiMac::ReceiveEmlOmn(const MgtEmlOmn& frame, const Mac48Address& sender, uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << frame << sender << linkId);
 
@@ -2512,11 +2513,12 @@ ApWifiMac::ReceiveEmlOmn(MgtEmlOmn& frame, const Mac48Address& sender, uint8_t l
         emlCapabilities->get().emlsrPaddingDelay = frame.m_emlsrParamUpdate->paddingDelay;
         emlCapabilities->get().emlsrTransitionDelay = frame.m_emlsrParamUpdate->transitionDelay;
     }
+}
 
-    auto mldAddress = GetWifiRemoteStationManager(linkId)->GetMldAddress(sender);
-    NS_ASSERT_MSG(mldAddress, "No MLD address stored for STA " << sender);
-    auto emlsrLinks =
-        frame.m_emlControl.emlsrMode == 1 ? frame.GetLinkBitmap() : std::list<uint8_t>{};
+void
+ApWifiMac::RespondToEmlOmn(MgtEmlOmn frame, const Mac48Address& sender, uint8_t linkId)
+{
+    NS_LOG_FUNCTION(this << frame << sender << linkId);
 
     // The AP MLD has to consider the changes carried by the received EML Notification frame
     // as effective at the same time as the non-AP MLD. Therefore, we need to start a time
@@ -2532,65 +2534,13 @@ ApWifiMac::ReceiveEmlOmn(MgtEmlOmn& frame, const Mac48Address& sender, uint8_t l
             auto ackDuration =
                 WifiPhy::CalculateTxDuration(psduMap, txVector, GetLink(linkId).phy->GetPhyBand());
 
-            m_transitionTimeoutEvents[sender] = Simulator::Schedule(
-                ackDuration + ehtConfiguration->m_transitionTimeout,
-                [=, this]() {
-                    for (uint8_t id = 0; id < GetNLinks(); id++)
-                    {
-                        auto linkAddress =
-                            GetWifiRemoteStationManager(id)->GetAffiliatedStaAddress(*mldAddress);
-                        if (!linkAddress)
-                        {
-                            // this link has not been setup by the non-AP MLD
-                            continue;
-                        }
-
-                        if (!emlsrLinks.empty())
-                        {
-                            // the non-AP MLD is enabling EMLSR mode
-                            /**
-                             * After the successful transmission of the EML Operating Mode
-                             * Notification frame by the non-AP STA affiliated with the non-AP MLD,
-                             * the non-AP MLD shall operate in the EMLSR mode and the other non-AP
-                             * STAs operating on the corresponding EMLSR links shall transition to
-                             * active mode after the transition delay indicated in the Transition
-                             * Timeout subfield in the EML Capabilities subfield of the Basic
-                             * Multi-Link element or immediately after receiving an EML Operating
-                             * Mode Notification frame from one of the APs operating on the EMLSR
-                             * links and affiliated with the AP MLD (Sec. 35.3.17 of 802.11be D3.0)
-                             */
-                            auto enabled = std::find(emlsrLinks.cbegin(), emlsrLinks.cend(), id) !=
-                                           emlsrLinks.cend();
-                            if (enabled)
-                            {
-                                StaSwitchingToActiveModeOrDeassociated(*linkAddress, id);
-                            }
-                            GetWifiRemoteStationManager(id)->SetEmlsrEnabled(*linkAddress, enabled);
-                        }
-                        else
-                        {
-                            // the non-AP MLD is disabling EMLSR mode
-                            /**
-                             * After the successful transmission of the EML Operating Mode
-                             * Notification frame by the non-AP STA affiliated with the non-AP MLD,
-                             * the non-AP MLD shall disable the EMLSR mode and the other non-AP
-                             * STAs operating on the corresponding EMLSR links shall transition to
-                             * power save mode after the transition delay indicated in the
-                             * Transition Timeout subfield in the EML Capabilities subfield of the
-                             * Basic Multi-Link element or immediately after receiving an EML
-                             * Operating Mode Notification frame from one of the APs operating on
-                             * the EMLSR links and affiliated with the AP MLD. (Sec. 35.3.17 of
-                             * 802.11be D3.0)
-                             */
-                            if (id != linkId &&
-                                GetWifiRemoteStationManager(id)->GetEmlsrEnabled(*linkAddress))
-                            {
-                                StaSwitchingToPsMode(*linkAddress, id);
-                            }
-                            GetWifiRemoteStationManager(id)->SetEmlsrEnabled(*linkAddress, false);
-                        }
-                    }
-                });
+            m_transitionTimeoutEvents[sender] =
+                Simulator::Schedule(ackDuration + GetEhtConfiguration()->m_transitionTimeout,
+                                    &ApWifiMac::EmlOmnExchangeCompleted,
+                                    this,
+                                    frame,
+                                    sender,
+                                    linkId);
         });
 
     // connect the callback to the PHY TX begin trace to catch the Ack and disconnect
@@ -2618,6 +2568,73 @@ ApWifiMac::ReceiveEmlOmn(MgtEmlOmn& frame, const Mac48Address& sender, uint8_t l
 
     auto ehtFem = StaticCast<EhtFrameExchangeManager>(GetFrameExchangeManager(linkId));
     ehtFem->SendEmlOmn(sender, frame);
+}
+
+void
+ApWifiMac::EmlOmnExchangeCompleted(const MgtEmlOmn& frame,
+                                   const Mac48Address& sender,
+                                   uint8_t linkId)
+{
+    NS_LOG_FUNCTION(this << frame << sender << linkId);
+
+    auto mldAddress = GetWifiRemoteStationManager(linkId)->GetMldAddress(sender);
+    NS_ASSERT_MSG(mldAddress, "No MLD address stored for STA " << sender);
+    auto emlsrLinks =
+        frame.m_emlControl.emlsrMode == 1 ? frame.GetLinkBitmap() : std::list<uint8_t>{};
+
+    for (uint8_t id = 0; id < GetNLinks(); id++)
+    {
+        auto linkAddress = GetWifiRemoteStationManager(id)->GetAffiliatedStaAddress(*mldAddress);
+        if (!linkAddress)
+        {
+            // this link has not been setup by the non-AP MLD
+            continue;
+        }
+
+        if (!emlsrLinks.empty())
+        {
+            // the non-AP MLD is enabling EMLSR mode
+            /**
+             * After the successful transmission of the EML Operating Mode
+             * Notification frame by the non-AP STA affiliated with the non-AP MLD,
+             * the non-AP MLD shall operate in the EMLSR mode and the other non-AP
+             * STAs operating on the corresponding EMLSR links shall transition to
+             * active mode after the transition delay indicated in the Transition
+             * Timeout subfield in the EML Capabilities subfield of the Basic
+             * Multi-Link element or immediately after receiving an EML Operating
+             * Mode Notification frame from one of the APs operating on the EMLSR
+             * links and affiliated with the AP MLD (Sec. 35.3.17 of 802.11be D3.0)
+             */
+            auto enabled =
+                std::find(emlsrLinks.cbegin(), emlsrLinks.cend(), id) != emlsrLinks.cend();
+            if (enabled)
+            {
+                StaSwitchingToActiveModeOrDeassociated(*linkAddress, id);
+            }
+            GetWifiRemoteStationManager(id)->SetEmlsrEnabled(*linkAddress, enabled);
+        }
+        else
+        {
+            // the non-AP MLD is disabling EMLSR mode
+            /**
+             * After the successful transmission of the EML Operating Mode
+             * Notification frame by the non-AP STA affiliated with the non-AP MLD,
+             * the non-AP MLD shall disable the EMLSR mode and the other non-AP
+             * STAs operating on the corresponding EMLSR links shall transition to
+             * power save mode after the transition delay indicated in the
+             * Transition Timeout subfield in the EML Capabilities subfield of the
+             * Basic Multi-Link element or immediately after receiving an EML
+             * Operating Mode Notification frame from one of the APs operating on
+             * the EMLSR links and affiliated with the AP MLD. (Sec. 35.3.17 of
+             * 802.11be D3.0)
+             */
+            if (id != linkId && GetWifiRemoteStationManager(id)->GetEmlsrEnabled(*linkAddress))
+            {
+                StaSwitchingToPsMode(*linkAddress, id);
+            }
+            GetWifiRemoteStationManager(id)->SetEmlsrEnabled(*linkAddress, false);
+        }
+    }
 }
 
 void

@@ -329,14 +329,36 @@ class ApWifiMac : public WifiMac
     void ParseReportedStaInfo(const AssocReqRefVariant& assoc, Mac48Address from, uint8_t linkId);
 
     /**
-     * Take necessary actions upon receiving the given EML Operating Mode Notification frame
-     * from the given station on the given link.
+     * Process the EML Operating Mode Notification frame received from the given station on the
+     * given link.
      *
      * @param frame the received EML Operating Mode Notification frame
      * @param sender the MAC address of the sender of the frame
      * @param linkId the ID of the link over which the frame was received
      */
-    void ReceiveEmlOmn(MgtEmlOmn& frame, const Mac48Address& sender, uint8_t linkId);
+    void ReceiveEmlOmn(const MgtEmlOmn& frame, const Mac48Address& sender, uint8_t linkId);
+
+    /**
+     * Respond to the EML Operating Mode Notification frame received from the given station on the
+     * given link.
+     *
+     * @param frame the received EML Operating Mode Notification frame
+     * @param sender the MAC address of the sender of the frame
+     * @param linkId the ID of the link over which the frame was received
+     */
+    void RespondToEmlOmn(MgtEmlOmn frame, const Mac48Address& sender, uint8_t linkId);
+
+    /**
+     * Take necessary actions upon completion of an exchange of EML Operating Mode Notification
+     * frames.
+     *
+     * @param frame the received EML Operating Mode Notification frame
+     * @param sender the MAC address of the sender of the frame
+     * @param linkId the ID of the link over which the frame was received
+     */
+    void EmlOmnExchangeCompleted(const MgtEmlOmn& frame,
+                                 const Mac48Address& sender,
+                                 uint8_t linkId);
 
     /**
      * The packet we sent was successfully received by the receiver
