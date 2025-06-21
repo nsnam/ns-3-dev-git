@@ -190,6 +190,29 @@ class SpectrumWifiPhyHelper : public WifiPhyHelper
                           const FrequencyRange& freqRange,
                           const SpectrumChannelInfo& channelInfo) const;
 
+    /**
+     * Update the subchannels for a DSO PHY instance.
+     *
+     * This method will split the frequency range into subchannels
+     * based on the current channel width of the PHY instance to
+     * ensure that any DSO subchannel can be monitored.
+     *
+     * DSO PHY has to support at least 80 MHz.If the PHY supports up to 80 MHz, the frequency range
+     * will be split into 80 MHz subchannels. If the PHY supports up to 160 MHz, the frequency range
+     * will be split into 160 MHz subchannels. If the PHY supports up to 320 MHz, no split is needed
+     * for DSO. Frequency range for 2.4 GHz band is not changed as it is not used by DSO operations.
+     *
+     * Note: it is assumed that the maximum channel width of the PHY instance does not change at
+     * run-time.
+     *
+     * @param phy the spectrum PHY instance to configure
+     * @param freqRange the frequency range to configure for the PHY instance
+     * @param subchannels the set of subchannels to update
+     */
+    void UpdateSubchannelsForDso(Ptr<SpectrumWifiPhy> phy,
+                                 const FrequencyRange& freqRange,
+                                 std::set<SpectrumSubchannel>& subchannels) const;
+
     std::map<FrequencyRange, SpectrumChannelInfo> m_channels; ///< the spectrum channels
     std::map<uint8_t /* linkId */, std::set<FrequencyRange>>
         m_interfacesMap; ///< map of the spectrum PHY interfaces to be added to the PHY instance

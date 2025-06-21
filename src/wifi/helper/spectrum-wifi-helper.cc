@@ -19,6 +19,7 @@
 #include "ns3/spectrum-channel.h"
 #include "ns3/spectrum-transmit-filter.h"
 #include "ns3/spectrum-wifi-phy.h"
+#include "ns3/uhr-configuration.h"
 #include "ns3/wifi-bandwidth-filter.h"
 #include "ns3/wifi-net-device.h"
 #include "ns3/wifi-spectrum-value-helper.h"
@@ -144,10 +145,10 @@ SpectrumWifiPhyHelper::Create(Ptr<Node> node, Ptr<WifiNetDevice> device) const
             phy->SetPreambleDetectionModel(preambleDetection);
         }
         phy->ConfigureStandard(device->GetStandard());
+        phy->SetDevice(device);
         InstallPhyInterfaces(i, phy);
         phy->SetChannelSwitchedCallback(
             MakeCallback(&SpectrumWifiPhyHelper::SpectrumChannelSwitched).Bind(phy));
-        phy->SetDevice(device);
         phy->SetMobility(node->GetObject<MobilityModel>());
         ret.emplace_back(phy);
     }
@@ -162,8 +163,13 @@ SpectrumWifiPhyHelper::InstallPhyInterfaces(uint8_t linkId, Ptr<SpectrumWifiPhy>
     if (!m_interfacesMap.contains(linkId))
     {
         // default setup: set all interfaces to this link
-        for (const auto& [freqRange, channelInfo] : m_channels)
+        for (auto [freqRange, channelInfo] : m_channels)
         {
+            if (auto uhrConfig = phy->GetDevice()->GetUhrConfiguration();
+                uhrConfig && uhrConfig->GetDsoActivated())
+            {
+                UpdateSubchannelsForDso(phy, freqRange, channelInfo.subchannels);
+            }
             ConfigureChannel(phy, freqRange, channelInfo);
         }
     }
@@ -171,7 +177,13 @@ SpectrumWifiPhyHelper::InstallPhyInterfaces(uint8_t linkId, Ptr<SpectrumWifiPhy>
     {
         for (const auto& freqRange : m_interfacesMap.at(linkId))
         {
-            ConfigureChannel(phy, freqRange, m_channels.at(freqRange));
+            auto channelInfo = m_channels.at(freqRange);
+            if (auto uhrConfig = phy->GetDevice()->GetUhrConfiguration();
+                uhrConfig && uhrConfig->GetDsoActivated())
+            {
+                UpdateSubchannelsForDso(phy, freqRange, channelInfo.subchannels);
+            }
+            ConfigureChannel(phy, freqRange, channelInfo);
         }
     }
 }
@@ -249,6 +261,40 @@ SpectrumWifiPhyHelper::ConfigureChannel(Ptr<SpectrumWifiPhy> phy,
                 {subchannel.centerFrequencies.cbegin(), subchannel.centerFrequencies.cend()},
                 subchannel.totalWidth);
         }
+    }
+}
+
+void
+SpectrumWifiPhyHelper::UpdateSubchannelsForDso(Ptr<SpectrumWifiPhy> phy,
+                                               const FrequencyRange& freqRange,
+                                               std::set<SpectrumSubchannel>& subchannels) const
+{
+    NS_LOG_FUNCTION(phy << freqRange);
+
+    if (phy->GetChannelWidth() >= MHz_t{320})
+    {
+        // full BW supported, no need to split
+        return;
+    }
+
+    for (const MHz_t bw{phy->GetChannelWidth()};
+         const auto& frequencyChannel : WifiPhyOperatingChannel::m_frequencyChannels)
+    {
+        if ((frequencyChannel.width < MHz_t{80}) || (frequencyChannel.width != bw))
+        {
+            continue;
+        }
+        const auto start = frequencyChannel.frequency - (bw / 2);
+        const auto stop = frequencyChannel.frequency + (bw / 2);
+        if ((start < freqRange.minFrequency) || (stop > freqRange.maxFrequency))
+        {
+            continue;
+        }
+        subchannels.insert({
+            .centerFrequencies = {frequencyChannel.frequency},
+            .totalWidth = frequencyChannel.width,
+            .enabled = false,
+        });
     }
 }
 
