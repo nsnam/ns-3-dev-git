@@ -575,11 +575,7 @@ DsoTxopTest::GenerateObssFrame()
     auto txDuration = WifiPhy::CalculateTxDuration(psdu, txVector, m_obssPhy->GetPhyBand());
     for (std::size_t i = 0; i < m_nDsoStas; ++i)
     {
-        if (const auto isStaOperatingOnDsoSubband = (i == m_idxStaInDsoSubband);
-            isStaOperatingOnDsoSubband)
-        {
-            CheckSwitchBack(i, txDuration);
-        }
+        ScheduleChecksSwitchBack(i, txDuration);
     }
 
     m_obssPhy->Send(psdu, txVector);
@@ -653,9 +649,15 @@ DsoTxopTest::StartTraffic()
             m_apMac->GetDevice()->GetNode()->AddApplication(GetApplication(DOWNLINK, i, 1, 1000));
         }
     }
-    else if (m_params.numUlMuPpdus > 0)
+    if (m_params.numUlMuPpdus > 0)
     {
+        muScheduler->SetAttribute("EnableUlOfdma", BooleanValue(true));
         muScheduler->SetAccessReqInterval(MilliSeconds(1));
+    }
+    else
+    {
+        muScheduler->SetAttribute("EnableUlOfdma", BooleanValue(false));
+        muScheduler->SetAccessReqInterval(Time());
     }
 }
 
@@ -706,6 +708,7 @@ DsoTxopTest::CheckIcf(const WifiConstPsduMap& psduMap, const WifiTxVector& txVec
     }
 
     NS_LOG_DEBUG("Send DSO ICF");
+    ++m_countIcf;
 
     NS_TEST_EXPECT_MSG_EQ(txVector.IsNonHtDuplicate(),
                           true,
@@ -717,15 +720,45 @@ DsoTxopTest::CheckIcf(const WifiConstPsduMap& psduMap, const WifiTxVector& txVec
         true,
         "DSO ICF shall be sent at 6 Mb/s, 12 Mb/s, or 24 Mb/s");
 
-    auto txDuration =
-        WifiPhy::CalculateTxDuration(psduMap,
-                                     txVector,
-                                     m_apMac->GetWifiPhy(SINGLE_LINK_OP_ID)->GetPhyBand());
+    if (m_countIcf > 1)
+    {
+        return; // only check the ICF of the first DSO TXOP
+    }
+
+    auto apPhy = m_apMac->GetWifiPhy(SINGLE_LINK_OP_ID);
+    auto icfDuration = WifiPhy::CalculateTxDuration(psduMap, txVector, apPhy->GetPhyBand());
+
+    if (m_params.corruptIcf)
+    {
+        NS_LOG_DEBUG("CORRUPTED");
+        for (std::size_t i = 0; i < m_staErrorModels.size(); ++i)
+        {
+            m_staErrorModels.at(i)->SetList({psduMap.cbegin()->second->GetPayload(0)->GetUid()});
+            const auto uhrFem = DynamicCast<UhrFrameExchangeManager>(
+                m_staMacs.at(i)->GetFrameExchangeManager(SINGLE_LINK_OP_ID));
+            auto tbTxVector = uhrFem->GetHeTbTxVector(trigger, m_apMac->GetAddress());
+            const auto icrDuration =
+                HePhy::ConvertLSigLengthToHeTbPpduDuration(trigger.GetUlLength(),
+                                                           tbTxVector,
+                                                           apPhy->GetPhyBand());
+            const auto timeout =
+                apPhy->GetSifs() + apPhy->GetSlot() + EMLSR_OR_DSO_RX_PHY_START_DELAY;
+            const auto delay = icfDuration + apPhy->GetSifs() + icrDuration + timeout;
+            ScheduleChecksSwitchBack(i, delay);
+            const auto tbPpduTimeout = icfDuration + apPhy->GetSifs() + apPhy->GetSlot() +
+                                       WifiPhy::CalculatePhyPreambleAndHeaderDuration(tbTxVector);
+            const auto remainingIcrDurationAfterTbPpduTimeout =
+                icrDuration - WifiPhy::CalculatePhyPreambleAndHeaderDuration(tbTxVector) -
+                apPhy->GetSlot();
+            ScheduleChecksBlockedDlTx(tbPpduTimeout,
+                                      remainingIcrDurationAfterTbPpduTimeout + timeout);
+        }
+    }
 
     if (m_params.generateInterferenceAfterIcf)
     {
         // start interference right before the DSO STA is expected to switch to the DSO subband
-        Simulator::Schedule(txDuration - TimeStep(1),
+        Simulator::Schedule(icfDuration - TimeStep(1),
                             &DsoTxopTest::StartInterference,
                             this,
                             m_duration);
@@ -733,12 +766,13 @@ DsoTxopTest::CheckIcf(const WifiConstPsduMap& psduMap, const WifiTxVector& txVec
         // interference
         for (std::size_t i = 0; i < m_nDsoStas; ++i)
         {
-            m_staMacs.at(i)->GetWifiPhy(SINGLE_LINK_OP_ID)->SetTxPowerStart(dBm_t{30});
-            m_staMacs.at(i)->GetWifiPhy(SINGLE_LINK_OP_ID)->SetTxPowerEnd(dBm_t{30});
+            auto staPhy = m_staMacs.at(i)->GetWifiPhy(SINGLE_LINK_OP_ID);
+            staPhy->SetTxPowerStart(dBm_t{30});
+            staPhy->SetTxPowerEnd(dBm_t{30});
         }
     }
 
-    Simulator::Schedule(txDuration - TimeStep(1), [=, this]() {
+    Simulator::Schedule(icfDuration - TimeStep(1), [=, this]() {
         // all DSO STAs should be operating on the primary subband before the reception of the ICF
         for (std::size_t i = 0; i < m_nDsoStas; ++i)
         {
@@ -753,7 +787,7 @@ DsoTxopTest::CheckIcf(const WifiConstPsduMap& psduMap, const WifiTxVector& txVec
 
     if (m_params.switchingDelayToDso.IsStrictlyPositive())
     {
-        Simulator::Schedule(txDuration + TimeStep(1), [=, this]() {
+        Simulator::Schedule(icfDuration + TimeStep(1), [=, this]() {
             NS_LOG_DEBUG("Check STA " << m_idxStaInPrimarySubband + 1
                                       << " is not switching to the DSO subband");
             auto dsoManager = DynamicCast<TestDsoManager>(
@@ -767,24 +801,29 @@ DsoTxopTest::CheckIcf(const WifiConstPsduMap& psduMap, const WifiTxVector& txVec
                               << " should not be switching to the DSO subband after "
                                  "the reception of the ICF");
 
-            NS_LOG_DEBUG("Check STA " << m_idxStaInDsoSubband + 1
-                                      << " is switching to the DSO subband");
             dsoManager =
                 DynamicCast<TestDsoManager>(m_staMacs.at(m_idxStaInDsoSubband)->GetDsoManager());
             phy = m_staMacs.at(m_idxStaInDsoSubband)->GetWifiPhy(SINGLE_LINK_OP_ID);
+            const auto expectedSubband =
+                m_params.corruptIcf
+                    ? dsoManager->GetPrimarySubband(SINGLE_LINK_OP_ID)
+                    : dsoManager->GetDsoSubbands(SINGLE_LINK_OP_ID).cbegin()->second;
+            const auto isExpectedSwitching = !m_params.corruptIcf;
+            NS_LOG_DEBUG("Check STA " << m_idxStaInDsoSubband + 1
+                                      << (isExpectedSwitching ? " is switching to" : " stayed on")
+                                      << " the expected subband");
             NS_TEST_EXPECT_MSG_EQ(
-                ((phy->IsStateSwitching() &&
-                  (phy->GetOperatingChannel() ==
-                   dsoManager->GetDsoSubbands(SINGLE_LINK_OP_ID).cbegin()->second))),
+                ((phy->IsStateSwitching() == isExpectedSwitching) &&
+                 (phy->GetOperatingChannel() == expectedSubband)),
                 true,
-                "PHY of STA " << (m_idxStaInDsoSubband + 1)
-                              << " should be switching to the DSO subband after the "
-                                 "reception of the ICF");
+                "PHY of STA " << (m_idxStaInDsoSubband + 1) << " should "
+                              << (m_params.corruptIcf ? "not " : "")
+                              << " be switching to the DSO subband after the reception of the ICF");
         });
     }
 
     // check that STAs are operating on the expected subband after the reception of the ICF
-    Simulator::Schedule(txDuration + m_params.switchingDelayToDso + TimeStep(1), [=, this]() {
+    Simulator::Schedule(icfDuration + m_params.switchingDelayToDso + TimeStep(1), [=, this]() {
         NS_LOG_DEBUG("Check STA " << m_idxStaInPrimarySubband + 1
                                   << " is still operating on the primary subband");
         auto dsoManager =
@@ -798,18 +837,20 @@ DsoTxopTest::CheckIcf(const WifiConstPsduMap& psduMap, const WifiTxVector& txVec
                           << " should have stayed on the primary subband");
 
         NS_LOG_DEBUG("Check STA " << (m_idxStaInDsoSubband + 1)
-                                  << " has switched to the DSO subband");
+                                  << " is operating on the expected subband");
         dsoManager =
             DynamicCast<TestDsoManager>(m_staMacs.at(m_idxStaInDsoSubband)->GetDsoManager());
+        const auto expectedSubband =
+            m_params.corruptIcf ? dsoManager->GetPrimarySubband(SINGLE_LINK_OP_ID)
+                                : dsoManager->GetDsoSubbands(SINGLE_LINK_OP_ID).cbegin()->second;
         phy = m_staMacs.at(m_idxStaInDsoSubband)->GetWifiPhy(SINGLE_LINK_OP_ID);
+        NS_ASSERT((!phy->IsStateSwitching()) && (phy->GetOperatingChannel() == expectedSubband));
         NS_TEST_EXPECT_MSG_EQ(
-            ((!phy->IsStateSwitching()) &&
-             (phy->GetOperatingChannel() ==
-              dsoManager->GetDsoSubbands(SINGLE_LINK_OP_ID).cbegin()->second)),
+            ((!phy->IsStateSwitching()) && (phy->GetOperatingChannel() == expectedSubband)),
             true,
-            "PHY of STA "
-                << (m_idxStaInDsoSubband + 1)
-                << " should have switched to the DSO subband after the reception of the ICF");
+            "PHY of STA " << (m_idxStaInDsoSubband + 1) << " should "
+                          << (m_params.corruptIcf ? "not " : "")
+                          << "have switched to the DSO subband after the reception of the ICF");
     });
 
     if (m_params.numUlMuPpdus > 0)
@@ -831,39 +872,69 @@ DsoTxopTest::CheckQosNullFrames(const WifiConstPsduMap& psduMap, const WifiTxVec
         return;
     }
 
-    NS_LOG_DEBUG("Send ICF response");
+    NS_LOG_DEBUG("Send DSO ICF response");
+
+    const auto ta = psduMap.cbegin()->second->GetAddr2();
+    std::size_t clientId;
+    if (m_staMacs.at(0)->GetLinkIdByAddress(ta))
+    {
+        clientId = 0;
+    }
+    else
+    {
+        NS_TEST_ASSERT_MSG_EQ(m_staMacs.at(1)->GetLinkIdByAddress(ta).has_value(),
+                              true,
+                              "Unexpected TA for QosNull: " << ta);
+        clientId = 1;
+    }
+
+    const auto phy = m_staMacs.at(clientId)->GetWifiPhy(SINGLE_LINK_OP_ID);
+    const auto timeout = phy->GetSifs() + phy->GetSlot() + EMLSR_OR_DSO_RX_PHY_START_DELAY;
+    if ((m_countIcf == 1) && m_params.corruptedIcfResponses.contains(clientId))
+    {
+        NS_LOG_DEBUG("CORRUPTED");
+        auto list = m_apErrorModel->GetList();
+        list.push_back(psduMap.cbegin()->second->GetPayload(0)->GetUid());
+        m_apErrorModel->SetList(list);
+
+        const auto isTxopExpectedToTerminate =
+            ((clientId == m_idxStaInPrimarySubband) ||
+             (m_params.corruptedIcfResponses.size() == m_nDsoStas));
+        if (isTxopExpectedToTerminate)
+        {
+            // check AP blocks transmission to all DSO STAs for the switch back delay after the
+            // expected end of the ICF response plus timeout, and check DSO STAs are switching back
+            // to their primary subband during that period
+            const auto icfResponseDuration =
+                WifiPhy::CalculateTxDuration(psduMap, txVector, phy->GetPhyBand());
+            const auto delay = icfResponseDuration + timeout;
+            ScheduleChecksSwitchBack(clientId, delay);
+            const auto remainingIcrDurationAfterTbPpduTimeout =
+                icfResponseDuration - WifiPhy::CalculatePhyPreambleAndHeaderDuration(txVector) -
+                phy->GetSlot();
+            ScheduleChecksBlockedDlTx(icfResponseDuration,
+                                      timeout + remainingIcrDurationAfterTbPpduTimeout);
+        }
+    }
 
     if ((m_params.numDlMuPpdus == 0) && (m_params.numUlMuPpdus == 0))
     {
-        const auto ta = psduMap.cbegin()->second->GetAddr2();
-        std::size_t clientId;
-        if (m_staMacs.at(0)->GetLinkIdByAddress(ta))
+        // In this case, the DSO TXOP is directly terminated
+        auto delay = GetDelayUntilTxopCompletion(clientId, psduMap, txVector);
+        auto delayBeforeDlBlocked = delay;
+        if (m_params
+                .protectSingleExchange) // switch back immediately if TXOP is terminated by CF-END
         {
-            clientId = 0;
+            NS_LOG_DEBUG(
+                "Switch back to primary subband for STA "
+                << clientId + 1
+                << " is expected to be delayed by aSIFSTime + aSlotTime + aRxPHYStartDelay");
+            delay += timeout;
+            delayBeforeDlBlocked += phy->GetSifs(); // if no CF-END, the FEM is told the channel has
+                                                    // been released a SIFS after the last frame
         }
-        else
-        {
-            NS_TEST_ASSERT_MSG_EQ(m_staMacs.at(1)->GetLinkIdByAddress(ta).has_value(),
-                                  true,
-                                  "Unexpected TA for QosNull: " << ta);
-            clientId = 1;
-        }
-        if (const auto isStaOperatingOnDsoSubband = (clientId == m_idxStaInDsoSubband);
-            isStaOperatingOnDsoSubband)
-        {
-            auto delay = GetDelayUntilTxopCompletion(clientId, psduMap, txVector);
-            if (m_params.protectSingleExchange) // switch back immediately if TXOP is terminated by
-                                                // CF-END
-            {
-                NS_LOG_DEBUG(
-                    "Switch back to primary subband for STA "
-                    << clientId + 1
-                    << " is expected to be delayed by aSIFSTime + aSlotTime + aRxPHYStartDelay");
-                const auto phy = m_staMacs.at(clientId)->GetWifiPhy(SINGLE_LINK_OP_ID);
-                delay += phy->GetSifs() + phy->GetSlot() + EMLSR_OR_DSO_RX_PHY_START_DELAY;
-            }
-            CheckSwitchBack(clientId, delay);
-        }
+        ScheduleChecksSwitchBack(clientId, delay);
+        ScheduleChecksBlockedDlTx(delayBeforeDlBlocked, timeout);
     }
 }
 
@@ -897,61 +968,136 @@ DsoTxopTest::GetDelayUntilTxopCompletion(std::size_t clientId,
 }
 
 void
-DsoTxopTest::CheckSwitchBack(std::size_t clientId, const Time& delay)
+DsoTxopTest::ScheduleChecksSwitchBack(std::size_t clientId, const Time& delay)
 {
-    const auto phy = m_staMacs.at(clientId)->GetWifiPhy(SINGLE_LINK_OP_ID);
-    const auto dsoManager = DynamicCast<TestDsoManager>(m_staMacs.at(clientId)->GetDsoManager());
+    NS_LOG_FUNCTION(this << clientId << delay);
+    // If the ICR of the DSO STA that operated on the DSO subband during the first DSO TXOP
+    // was corrupted, it is expected to transmit on the primary subband in the next DSO TXOP
+    // since there is no pending DL traffic to the other STA and hence another RU does not
+    // need to be allocated.
+    const auto isStaOperatingOnDsoSubband =
+        (clientId == m_idxStaInDsoSubband) &&
+        ((!m_params.corruptedIcfResponses.contains(clientId) && !m_params.corruptIcf) ||
+         (m_countIcf > 1));
 
-    NS_TEST_EXPECT_MSG_NE(phy->GetOperatingChannel(),
-                          dsoManager->GetPrimarySubband(SINGLE_LINK_OP_ID),
-                          "STA " << clientId + 1
-                                 << " should not be operating on its primary subband");
-
-    // check that STAs are operating on the expected channel before the end of the switch back
-    // delay
-    Simulator::Schedule(delay - TimeStep(1), [=, this]() {
-        // the first STA is operating on its primary subband whereas the second STA is operating
-        // on the DSO subband
-        NS_LOG_DEBUG("Check STA " << clientId + 1 << " is still operating on the DSO subband");
-        NS_TEST_EXPECT_MSG_EQ(
+    if (isStaOperatingOnDsoSubband)
+    {
+        NS_TEST_EXPECT_MSG_NE(
             m_staMacs.at(clientId)->GetWifiPhy(SINGLE_LINK_OP_ID)->GetOperatingChannel(),
-            dsoManager->GetDsoSubbands(SINGLE_LINK_OP_ID).cbegin()->second,
-            "PHY of STA " << std::to_string(clientId + 1)
-                          << " should be operating on the DSO "
-                             "subband before the switch back delay");
+            DynamicCast<TestDsoManager>(m_staMacs.at(clientId)->GetDsoManager())
+                ->GetPrimarySubband(SINGLE_LINK_OP_ID),
+            "STA " << clientId + 1 << " should not be operating on its primary subband");
+    }
+
+    // Check that STAs are operating on the expected channel before the end of the switch back
+    // delay and DL transmissions to these STAs are not blocked by AP yet.
+    Simulator::Schedule(delay - TimeStep(1), [=, this]() {
+        if (isStaOperatingOnDsoSubband)
+        {
+            CheckChannelSwitchingBack(clientId, SwitchBackStatus::NOT_SWITCHING);
+        }
     });
 
-    // check that STAs are operating on the expected channel after the end of the switch back
-    // delay
+    // Check that STAs are operating on the expected channel after the end of the switch back
+    // delay and DL transmissions to these STAs are blocked by AP during the switch back delay.
     if (m_params.switchingDelayToPrimary.IsStrictlyPositive())
     {
-        Simulator::Schedule(delay + TimeStep(2), [=, this]() {
-            // both STAs should be operating on the primary subband
-            NS_LOG_DEBUG("Check STA " << clientId + 1
-                                      << " is switching back to the primary subband");
-            auto dsoManager = DynamicCast<TestDsoManager>(m_staMacs.at(clientId)->GetDsoManager());
-            NS_TEST_EXPECT_MSG_EQ(
-                (phy->IsStateSwitching() &&
-                 (phy->GetOperatingChannel() == dsoManager->GetPrimarySubband(SINGLE_LINK_OP_ID))),
-                true,
-                "PHY of STA " << std::to_string(clientId + 1)
-                              << " should be switching back to the primary subband after the "
-                                 "switch back delay");
+        Simulator::Schedule(delay + MAX_PROPAGATION_DELAY, [=, this]() {
+            if (isStaOperatingOnDsoSubband)
+            {
+                CheckChannelSwitchingBack(clientId, SwitchBackStatus::SWITCHING_BACK_TO_PRIMARY);
+            }
         });
     }
-    Simulator::Schedule(delay + m_params.switchingDelayToPrimary + TimeStep(1), [=, this]() {
-        // both STAs should be operating on the primary subband
-        NS_LOG_DEBUG("Check STA " << clientId + 1 << " has switched back to the primary subband");
-        auto dsoManager = DynamicCast<TestDsoManager>(m_staMacs.at(clientId)->GetDsoManager());
-        auto phy = m_staMacs.at(clientId)->GetWifiPhy(SINGLE_LINK_OP_ID);
+    if (isStaOperatingOnDsoSubband)
+    {
+        Simulator::Schedule(delay + m_params.switchingDelayToPrimary + TimeStep(1), [=, this]() {
+            CheckChannelSwitchingBack(clientId, SwitchBackStatus::SWITCHED_BACK_TO_PRIMARY);
+        });
+    }
+}
+
+void
+DsoTxopTest::CheckChannelSwitchingBack(std::size_t staId, SwitchBackStatus status)
+{
+    auto dsoManager = DynamicCast<TestDsoManager>(m_staMacs.at(staId)->GetDsoManager());
+    auto phy = m_staMacs.at(staId)->GetWifiPhy(SINGLE_LINK_OP_ID);
+    const auto operatingChannel = phy->GetOperatingChannel();
+    const auto isPhySwitching = phy->IsStateSwitching();
+    switch (status)
+    {
+    case SwitchBackStatus::NOT_SWITCHING:
+        NS_LOG_DEBUG("Check STA " << staId + 1 << " is still operating on the DSO subband");
+        NS_TEST_EXPECT_MSG_EQ(operatingChannel,
+                              dsoManager->GetDsoSubbands(SINGLE_LINK_OP_ID).cbegin()->second,
+                              "PHY of STA " << std::to_string(staId + 1)
+                                            << " should be operating on the DSO "
+                                               "subband before the switch back delay");
+        break;
+    case SwitchBackStatus::SWITCHING_BACK_TO_PRIMARY:
+        NS_LOG_DEBUG("Check STA " << staId + 1 << " is switching back to the primary subband");
         NS_TEST_EXPECT_MSG_EQ(
-            ((!phy->IsStateSwitching()) &&
-             (phy->GetOperatingChannel() == dsoManager->GetPrimarySubband(SINGLE_LINK_OP_ID))),
+            (isPhySwitching &&
+             (operatingChannel == dsoManager->GetPrimarySubband(SINGLE_LINK_OP_ID))),
+            true,
+            "PHY of STA " << std::to_string(staId + 1)
+                          << " should be switching back to the primary subband after the "
+                             "switch back delay");
+        break;
+    case SwitchBackStatus::SWITCHED_BACK_TO_PRIMARY:
+        NS_LOG_DEBUG("Check STA " << staId + 1 << " has switched back to the primary subband");
+        NS_TEST_EXPECT_MSG_EQ(
+            ((!isPhySwitching) &&
+             (operatingChannel == dsoManager->GetPrimarySubband(SINGLE_LINK_OP_ID))),
             true,
             "PHY of STA "
-                << std::to_string(clientId + 1)
+                << std::to_string(staId + 1)
                 << " should have switched back to the primary subband after the switch back delay");
-    });
+        break;
+    }
+}
+
+void
+DsoTxopTest::ScheduleChecksBlockedDlTx(const Time& delay, const Time& timeout)
+{
+    NS_LOG_FUNCTION(this << delay);
+    for (std::size_t i = 0; i < m_nDsoStas; ++i)
+    {
+        // check downlink transmissions are not blocked yet.
+        Simulator::Schedule(delay - TimeStep(1), [=, this]() { CheckBlockedDlTx(i, false); });
+
+        // check downlink transmissions are blocked during the switch back delay at AP.
+        if (m_params.switchingDelayToPrimary.IsStrictlyPositive())
+        {
+            Simulator::Schedule(delay + MAX_PROPAGATION_DELAY,
+                                [=, this]() { CheckBlockedDlTx(i, true); });
+        }
+        const auto switchBackDelay =
+            MicroSeconds(295); // FIXME: switch back delay is not advertised to AP yet
+        const auto apPhy = m_apMac->GetWifiPhy(SINGLE_LINK_OP_ID);
+        const auto switchingDelay = switchBackDelay - (apPhy->GetSifs() + apPhy->GetSlot() +
+                                                       EMLSR_OR_DSO_RX_PHY_START_DELAY);
+        Simulator::Schedule(delay + timeout + switchingDelay + MAX_PROPAGATION_DELAY,
+                            [=, this]() { CheckBlockedDlTx(i, false); });
+    }
+}
+
+void
+DsoTxopTest::CheckBlockedDlTx(std::size_t staId, bool blocked)
+{
+    NS_LOG_DEBUG("Check DL transmissions to STA " << staId + 1 << " are "
+                                                  << (blocked ? "blocked" : "unblocked"));
+    WifiContainerQueueId queueId(WIFI_QOSDATA_QUEUE,
+                                 WifiRcvAddr::UNICAST,
+                                 m_staMacs.at(staId)->GetAddress(),
+                                 0);
+    const auto mask =
+        m_apMac->GetMacQueueScheduler()->GetQueueLinkMask(AC_BE, queueId, SINGLE_LINK_OP_ID);
+    NS_TEST_ASSERT_MSG_EQ(mask.has_value(), true, "Expected to find a mask");
+    NS_TEST_EXPECT_MSG_EQ(
+        mask->test(static_cast<std::size_t>(WifiQueueBlockedReason::WAITING_DSO_SWITCH_BACK_DELAY)),
+        blocked,
+        "Expected DL transmissions to be " << (blocked ? "blocked" : "unblocked"));
 }
 
 void
@@ -978,7 +1124,18 @@ DsoTxopTest::CheckQosFrames(const WifiConstPsduMap& psduMap, const WifiTxVector&
                           "DL MU PPDU sent with an unexpected width");
 
     const auto& userInfoMap = txVector.GetHeMuUserInfoMap();
-    NS_TEST_EXPECT_MSG_EQ(userInfoMap.size(), 2, "DL MU PPDU should be addressed to both STAs");
+
+    // If the ICR of a DSO STA allocated to a RU in the DSO subchannel is not received whereas
+    // the ICR of the DSO STA allocated to a RU in the primary subchannel is received, the
+    // DSO TXOP is continued but DL MU PPDU(s) won't contain any PSDU for the DSO STA operating
+    // in the DSO subchannel.
+    const auto isDsoContinuedIfIcrNotReceived =
+        (m_params.corruptedIcfResponses.contains(m_idxStaInDsoSubband) &&
+         !m_params.corruptedIcfResponses.contains(m_idxStaInPrimarySubband));
+
+    NS_TEST_ASSERT_MSG_EQ(userInfoMap.size(),
+                          (isDsoContinuedIfIcrNotReceived ? 1 : 2),
+                          "Incorrect number of users addressed by DL MU PPDU");
 
     const auto ruStaPrimary = std::get<EhtRu::RuSpec>(
         userInfoMap.at(m_staMacs.at(m_idxStaInPrimarySubband)->GetAssociationId()).ru);
@@ -988,12 +1145,16 @@ DsoTxopTest::CheckQosFrames(const WifiConstPsduMap& psduMap, const WifiTxVector&
                           "PSDU for STA " << m_idxStaInPrimarySubband + 1
                                           << " should be sent over the primary 80 MHz");
 
-    const auto ruStaDso = std::get<EhtRu::RuSpec>(
-        userInfoMap.at(m_staMacs.at(m_idxStaInDsoSubband)->GetAssociationId()).ru);
-    NS_TEST_EXPECT_MSG_EQ((ruStaDso.GetPrimary160MHz() && !ruStaDso.GetPrimary80MHzOrLower80MHz()),
-                          true,
-                          "PSDU for STA " << (m_idxStaInDsoSubband + 1)
-                                          << " should be sent over the secondary 80 MHz");
+    if (!isDsoContinuedIfIcrNotReceived)
+    {
+        const auto ruStaDso = std::get<EhtRu::RuSpec>(
+            userInfoMap.at(m_staMacs.at(m_idxStaInDsoSubband)->GetAssociationId()).ru);
+        NS_TEST_EXPECT_MSG_EQ(
+            (ruStaDso.GetPrimary160MHz() && !ruStaDso.GetPrimary80MHzOrLower80MHz()),
+            true,
+            "PSDU for STA " << (m_idxStaInDsoSubband + 1)
+                            << " should be sent over the secondary 80 MHz");
+    }
 
     if (m_params.generateInterferenceAfterIcf)
     {
@@ -1003,11 +1164,7 @@ DsoTxopTest::CheckQosFrames(const WifiConstPsduMap& psduMap, const WifiTxVector&
                                          m_apMac->GetWifiPhy(SINGLE_LINK_OP_ID)->GetPhyBand());
         for (std::size_t i = 0; i < m_nDsoStas; ++i)
         {
-            if (const auto isStaOperatingOnDsoSubband = (i == m_idxStaInDsoSubband);
-                isStaOperatingOnDsoSubband)
-            {
-                CheckSwitchBack(i, txDuration);
-            }
+            ScheduleChecksSwitchBack(i, txDuration);
         }
     }
 }
@@ -1042,17 +1199,19 @@ DsoTxopTest::CheckBlockAck(const WifiConstPsduMap& psduMap, const WifiTxVector& 
         clientId = 1;
     }
 
+    const auto txDuration =
+        WifiPhy::CalculateTxDuration(psduMap,
+                                     txVector,
+                                     m_apMac->GetWifiPhy(SINGLE_LINK_OP_ID)->GetPhyBand());
     if (m_params.generateObssDuringDsoTxop && (m_countBlockAck == 1))
     {
-        auto txDuration =
-            WifiPhy::CalculateTxDuration(psduMap,
-                                         txVector,
-                                         m_apMac->GetWifiPhy(SINGLE_LINK_OP_ID)->GetPhyBand());
         Simulator::Schedule(txDuration + TimeStep(1), &DsoTxopTest::GenerateObssFrame, this);
     }
 
     auto muScheduler =
         DynamicCast<TestDsoMultiUserScheduler>(m_apMac->GetObject<MultiUserScheduler>());
+    const auto phy = m_staMacs.at(*clientId)->GetWifiPhy(SINGLE_LINK_OP_ID);
+    const auto timeout = phy->GetSifs() + phy->GetSlot() + EMLSR_OR_DSO_RX_PHY_START_DELAY;
     if (m_params.numDlMuPpdus > m_countQoSframes)
     {
         NS_LOG_DEBUG("Generate one more packet for STA " << *clientId + 1);
@@ -1062,21 +1221,17 @@ DsoTxopTest::CheckBlockAck(const WifiConstPsduMap& psduMap, const WifiTxVector& 
     }
     else if (m_params.numDlMuPpdus == m_countQoSframes)
     {
-        if (const auto isStaOperatingOnDsoSubband = (*clientId == m_idxStaInDsoSubband);
-            isStaOperatingOnDsoSubband && !m_params.generateInterferenceAfterIcf &&
-            !m_params.generateObssDuringDsoTxop)
+        if (!m_params.generateInterferenceAfterIcf && !m_params.generateObssDuringDsoTxop)
         {
             NS_LOG_DEBUG("DSO frame exchange(s) completed, channel shall switch back for STA "
                          << *clientId + 1);
-            const auto phy = m_staMacs.at(*clientId)->GetWifiPhy(SINGLE_LINK_OP_ID);
             auto delay = GetDelayUntilTxopCompletion(*clientId, psduMap, txVector);
-            const auto txDuration =
-                WifiPhy::CalculateTxDuration(psduMap, txVector, phy->GetPhyBand());
             const auto cfEndDuration = WifiPhy::CalculateTxDuration(
                 Create<WifiPsdu>(Create<Packet>(), WifiMacHeader(WIFI_MAC_CTL_END)),
                 m_apMac->GetWifiRemoteStationManager(SINGLE_LINK_OP_ID)
                     ->GetRtsTxVector(Mac48Address::GetBroadcast(), txVector.GetChannelWidth()),
                 phy->GetPhyBand());
+            auto delayBeforeDlBlocked = txDuration + phy->GetSifs() + cfEndDuration;
             if (delay - txDuration <
                 cfEndDuration) // switch back immediately if TXOP is terminated by CF-END
             {
@@ -1085,54 +1240,32 @@ DsoTxopTest::CheckBlockAck(const WifiConstPsduMap& psduMap, const WifiTxVector& 
                     << *clientId + 1
                     << " is expected to be delayed by aSIFSTime + aSlotTime + aRxPHYStartDelay");
                 const auto phy = m_staMacs.at(*clientId)->GetWifiPhy(SINGLE_LINK_OP_ID);
-                delay =
-                    txDuration + phy->GetSifs() + phy->GetSlot() + EMLSR_OR_DSO_RX_PHY_START_DELAY;
+                delay = txDuration + timeout;
+                delayBeforeDlBlocked =
+                    txDuration + phy->GetSifs(); // if no CF-END, the FEM is told the channel has
+                                                 // been released a SIFS after the last frame
             }
-            CheckSwitchBack(*clientId, delay);
-        }
-
-        if (m_countBlockAck == (m_nDsoStas * m_params.numDlMuPpdus))
-        {
-            // all STAs have sent all their Block ACKs, schedule one last packet per STA for next
-            // (non-DSO) TXOP
-            for (std::size_t i = 0; i < m_nDsoStas; ++i)
-            {
-                if (const auto mpdu =
-                        m_apMac->GetQosTxop(AC_BE)->GetWifiMacQueue()->PeekByTidAndAddress(
-                            0,
-                            m_staMacs.at(i)->GetAddress());
-                    !mpdu ||
-                    mpdu->IsInFlight()) // otherwise it means there is already one packet enqueued
-                                        // and hence it is not needed to schedule more
-                {
-                    NS_LOG_DEBUG("Generate one last packet for STA " << i + 1);
-                    Simulator::Schedule(MicroSeconds(150) + m_params.switchingDelayToPrimary +
-                                            TimeStep(i),
-                                        [this, i]() {
-                                            m_apMac->GetDevice()->GetNode()->AddApplication(
-                                                GetApplication(DOWNLINK, i, 1, 1000));
-                                        });
-                }
-            }
-            muScheduler->SetForcedFormat(MultiUserScheduler::TxFormat::SU_TX);
+            ScheduleChecksSwitchBack(*clientId, delay);
+            ScheduleChecksBlockedDlTx(delayBeforeDlBlocked,
+                                      timeout); // the channel has been released is notified to the
+                                                // FEM a SIFS after the last frame
         }
     }
     else if ((m_nDsoStas * m_params.numUlMuPpdus) == m_countQoSframes)
     {
         for (std::size_t i = 0; i < m_nDsoStas; ++i)
         {
-            if (const auto isStaOperatingOnDsoSubband = (i == m_idxStaInDsoSubband);
-                isStaOperatingOnDsoSubband)
-            {
-                NS_LOG_DEBUG("DSO frame exchange(s) completed, channel shall switch back for STA "
-                             << i + 1);
-                const auto delay = GetDelayUntilTxopCompletion(i, psduMap, txVector);
-                CheckSwitchBack(i, delay);
-            }
+            NS_LOG_DEBUG("DSO frame exchange(s) completed, channel shall switch back for STA "
+                         << i + 1);
+            const auto delay = GetDelayUntilTxopCompletion(i, psduMap, txVector);
+            ScheduleChecksSwitchBack(i, delay);
+            ScheduleChecksBlockedDlTx(delay, timeout);
 
             // schedule one last packet to be transmitted in a following TXOP (non-DSO)
             NS_LOG_DEBUG("Generate one last packet for STA " << i + 1);
-            Simulator::Schedule(MicroSeconds(150) + m_params.switchingDelayToPrimary + TimeStep(i),
+            Simulator::Schedule(txDuration +
+                                    m_staMacs.at(i)->GetWifiPhy(SINGLE_LINK_OP_ID)->GetSifs() +
+                                    TimeStep(i),
                                 [this, i]() {
                                     m_apMac->GetDevice()->GetNode()->AddApplication(
                                         GetApplication(DOWNLINK, i, 1, 1000));
@@ -1140,6 +1273,34 @@ DsoTxopTest::CheckBlockAck(const WifiConstPsduMap& psduMap, const WifiTxVector& 
         }
         muScheduler->SetForcedFormat(MultiUserScheduler::TxFormat::SU_TX);
         muScheduler->SetAccessReqInterval(Time());
+    }
+
+    if (m_countBlockAck == (m_nDsoStas * m_params.numDlMuPpdus))
+    {
+        // all STAs have sent all their Block ACKs, schedule one last packet per STA for next TXOP
+        for (std::size_t i = 0; i < m_nDsoStas; ++i)
+        {
+            if (const auto mpdu =
+                    m_apMac->GetQosTxop(AC_BE)->GetWifiMacQueue()->PeekByTidAndAddress(
+                        0,
+                        m_staMacs.at(i)->GetAddress());
+                !mpdu || mpdu->IsInFlight()) // otherwise it means there is already one packet
+                                             // enqueued and hence it is not needed to schedule more
+            {
+                NS_LOG_DEBUG("Generate one last packet for STA " << i + 1);
+                Simulator::Schedule(
+                    txDuration + m_staMacs.at(*clientId)->GetWifiPhy(SINGLE_LINK_OP_ID)->GetSifs() +
+                        TimeStep(i),
+                    [this, i]() {
+                        m_apMac->GetDevice()->GetNode()->AddApplication(
+                            GetApplication(DOWNLINK, i, 1, 1000));
+                    });
+            }
+        }
+        if (!m_params.nextTxopIsDso)
+        {
+            muScheduler->SetForcedFormat(MultiUserScheduler::TxFormat::SU_TX);
+        }
     }
 }
 
@@ -1158,277 +1319,362 @@ DsoTxopTest::CheckResults()
 
     auto psduIt = m_txPsdus.cbegin();
 
-    // Check the DSO ICF sent by the AP
-    auto psdu = psduIt->psduMap.cbegin()->second;
-    NS_TEST_ASSERT_MSG_EQ(psdu->GetHeader(0).IsTrigger(),
-                          true,
-                          "The first frame should be a trigger frame (ICF)");
-
-    CtrlTriggerHeader trigger;
-    psdu->GetPayload(0)->PeekHeader(trigger);
-    NS_TEST_ASSERT_MSG_EQ(trigger.IsBsrp(), true, "DSO ICF should be a BSRP trigger frame");
-
-    NS_TEST_EXPECT_MSG_EQ(psduIt->txVector.IsNonHtDuplicate(),
-                          true,
-                          "DSO ICF should be sent using non-HT duplicate");
-
-    const auto icfTxEnd =
-        psduIt->startTx +
-        WifiPhy::CalculateTxDuration(psduIt->psduMap,
-                                     psduIt->txVector,
-                                     m_apMac->GetWifiPhy(SINGLE_LINK_OP_ID)->GetPhyBand());
-
-    // Check ICR responses to DSO ICF sent by the non-AP STAs
-    std::size_t qosNullCount{0};
-    for (std::size_t i = 0; i < m_nDsoStas; ++i)
+    std::size_t numDsoTxops = m_params.nextTxopIsDso ? 2 : 1;
+    // If the ICF is corrupted or if there are corrupted ICF responses, another
+    // DSO TXOP is expected to be initiated by the AP.
+    if (!m_params.corruptedIcfResponses.empty() || m_params.corruptIcf)
     {
-        ++psduIt;
-        const auto& hdr = psduIt->psduMap.cbegin()->second->GetHeader(0);
-        if (hdr.IsQosData() && !hdr.HasData())
-        {
-            ++qosNullCount;
-        }
-        NS_TEST_EXPECT_MSG_EQ(psduIt->txVector.GetPreambleType(),
-                              WIFI_PREAMBLE_UHR_TB,
-                              "ICR should be sent as a UHR TB PPDU");
-        NS_TEST_EXPECT_MSG_EQ(icfTxEnd + m_apMac->GetWifiPhy(SINGLE_LINK_OP_ID)->GetSifs(),
-                              psduIt->startTx,
-                              "Expected the ICR to start a SIFS after the ICF");
+        ++numDsoTxops;
     }
 
-    NS_TEST_EXPECT_MSG_EQ(qosNullCount, m_nDsoStas, "Unexpected number of QoS Null frames (ICR)");
+    const auto isDsoContinuedIfIcrNotReceived =
+        (m_params.corruptedIcfResponses.contains(m_idxStaInDsoSubband) &&
+         !m_params.corruptedIcfResponses.contains(m_idxStaInPrimarySubband));
 
-    if ((m_params.numDlMuPpdus == 0) && (m_params.numUlMuPpdus == 0))
+    for (std::size_t dsoTxopId = 0; dsoTxopId < numDsoTxops; ++dsoTxopId)
     {
-        return;
-    }
-
-    const auto icrTxEnd =
-        psduIt->startTx +
-        WifiPhy::CalculateTxDuration(psduIt->psduMap,
-                                     psduIt->txVector,
-                                     m_apMac->GetWifiPhy(SINGLE_LINK_OP_ID)->GetPhyBand());
-    ++psduIt;
-
-    auto endPrevious{icrTxEnd};
-    for (std::size_t i = 0; i < m_params.numDlMuPpdus; ++i)
-    {
-        // Check the DL MU PPDU sent by the AP
-        NS_TEST_EXPECT_MSG_EQ(psduIt->txVector.IsDlMu(),
+        // Check the DSO ICF sent by the AP
+        auto psdu = psduIt->psduMap.cbegin()->second;
+        NS_TEST_ASSERT_MSG_EQ(psdu->GetHeader(0).IsTrigger(),
                               true,
-                              "A DL MU PPDU should be sent by the AP");
-        NS_TEST_ASSERT_MSG_EQ(psduIt->psduMap.size(),
-                              m_nDsoStas,
-                              "Unexpected number of STAs addressed by the DL MU PPDU");
-        NS_TEST_EXPECT_MSG_EQ(endPrevious + m_apMac->GetWifiPhy(SINGLE_LINK_OP_ID)->GetSifs(),
-                              psduIt->startTx,
-                              "Expected the MU PPDU to start a SIFS after the previous frame");
+                              "The first frame of a DSO TXOP should be a trigger frame (ICF)");
 
-        endPrevious = psduIt->startTx + WifiPhy::CalculateTxDuration(
-                                            psduIt->psduMap,
-                                            psduIt->txVector,
-                                            m_apMac->GetWifiPhy(SINGLE_LINK_OP_ID)->GetPhyBand());
+        CtrlTriggerHeader trigger;
+        psdu->GetPayload(0)->PeekHeader(trigger);
+        NS_TEST_ASSERT_MSG_EQ(trigger.IsBsrp(), true, "DSO ICF should be a BSRP trigger frame");
 
-        // Check Block ACK responses sent by the non-AP STAs
-        std::size_t blockAckCount{0};
-        for (std::size_t j = 0; j < m_nDsoStas; ++j)
+        NS_TEST_EXPECT_MSG_EQ(psduIt->txVector.IsNonHtDuplicate(),
+                              true,
+                              "DSO ICF should be sent using non-HT duplicate");
+
+        const auto icfTxEnd =
+            psduIt->startTx +
+            WifiPhy::CalculateTxDuration(psduIt->psduMap,
+                                         psduIt->txVector,
+                                         m_apMac->GetWifiPhy(SINGLE_LINK_OP_ID)->GetPhyBand());
+
+        ++psduIt;
+
+        if ((dsoTxopId == 0) && m_params.corruptIcf)
         {
-            if ((i == 0) && (j == 1) && (m_params.generateInterferenceAfterIcf > 0))
+            // First ICF is corrupted, so no ICRs are expected to be sent
+            continue;
+        }
+
+        // Check ICR responses to DSO ICF sent by the non-AP STAs
+        std::size_t qosNullCount{0};
+        Time endPrevious;
+        for (std::size_t i = 0; i < m_nDsoStas; ++i)
+        {
+            if ((dsoTxopId == 1) && isDsoContinuedIfIcrNotReceived &&
+                !m_params.corruptedIcfResponses.contains(i))
             {
-                // the second STA is not expected to send a Block ACK response
-                // because it did not receive the DL MU PPDU due to interference
+                // STA was served in the previous DSO TXOP
                 continue;
             }
-            if ((i == 1) && (j == 1) && (m_params.generateObssDuringDsoTxop > 0))
+            const auto& hdr = psduIt->psduMap.cbegin()->second->GetHeader(0);
+            if (hdr.IsQosData() && !hdr.HasData())
             {
-                // the second STA is not expected to send a Block ACK response
-                // because it latched on the OBSS frame instead of the DL MU PPDU
-                continue;
-            }
-            ++psduIt;
-            if (psduIt->psduMap.cbegin()->second->GetHeader(0).IsBlockAck())
-            {
-                ++blockAckCount;
+                ++qosNullCount;
             }
             NS_TEST_EXPECT_MSG_EQ(psduIt->txVector.GetPreambleType(),
                                   WIFI_PREAMBLE_UHR_TB,
-                                  "Block ACK should be sent as a UHR TB PPDU");
+                                  "ICR should be sent as a UHR TB PPDU");
+            NS_TEST_EXPECT_MSG_EQ(icfTxEnd + m_apMac->GetWifiPhy(SINGLE_LINK_OP_ID)->GetSifs(),
+                                  psduIt->startTx,
+                                  "Expected the ICR to start a SIFS after the ICF");
+
+            endPrevious =
+                psduIt->startTx +
+                WifiPhy::CalculateTxDuration(psduIt->psduMap,
+                                             psduIt->txVector,
+                                             m_apMac->GetWifiPhy(SINGLE_LINK_OP_ID)->GetPhyBand());
+
+            ++psduIt;
+        }
+
+        // If it is the second DSO TXOP following a DSO TXOP with corrupted ICF responses, only
+        // the STAs that previous had no DL MU PPDU(s) are expected to be addressed in this DSO TXOP
+        // since there is no more downlink traffic pending for the other STAs
+        const auto expectedNumIcfResponses = ((dsoTxopId == 0) || !isDsoContinuedIfIcrNotReceived)
+                                                 ? m_nDsoStas
+                                                 : m_params.corruptedIcfResponses.size();
+        NS_TEST_EXPECT_MSG_EQ(qosNullCount,
+                              expectedNumIcfResponses,
+                              "Unexpected number of QoS Null frames (ICR)");
+
+        if ((m_params.numDlMuPpdus == 0) && (m_params.numUlMuPpdus == 0))
+        {
+            return;
+        }
+
+        if ((dsoTxopId == 0) && m_params.corruptedIcfResponses.contains(m_idxStaInPrimarySubband))
+        {
+            // If the ICF response of the STA operating on the primary subband is not received,
+            // the DSO TXOP is expected to be terminated.
+            continue;
+        }
+
+        for (std::size_t i = 0; i < ((dsoTxopId == 0) ? m_params.numDlMuPpdus : 1); ++i)
+        {
+            // Check the DL MU PPDU sent by the AP
+            NS_TEST_EXPECT_MSG_EQ(psduIt->txVector.IsDlMu(),
+                                  true,
+                                  "A DL MU PPDU should be sent by the AP");
+            const std::size_t numUsersIfIcrNotReceived =
+                ((dsoTxopId == 0) ? (m_nDsoStas - m_params.corruptedIcfResponses.size())
+                                  : m_params.corruptedIcfResponses.size());
+            NS_TEST_ASSERT_MSG_EQ(
+                psduIt->psduMap.size(),
+                (isDsoContinuedIfIcrNotReceived ? numUsersIfIcrNotReceived : m_nDsoStas),
+                "Unexpected number of STAs addressed by the DL MU PPDU");
+            NS_TEST_ASSERT_MSG_EQ_TOL(
+                endPrevious + m_apMac->GetWifiPhy(SINGLE_LINK_OP_ID)->GetSifs(),
+                psduIt->startTx,
+                MAX_PROPAGATION_DELAY,
+                "Expected the MU PPDU to start a SIFS after the previous frame");
+
+            endPrevious =
+                psduIt->startTx +
+                WifiPhy::CalculateTxDuration(psduIt->psduMap,
+                                             psduIt->txVector,
+                                             m_apMac->GetWifiPhy(SINGLE_LINK_OP_ID)->GetPhyBand());
+
+            // Check Block ACK responses sent by the non-AP STAs
+            std::size_t blockAckCount{0};
+            for (std::size_t j = 0; j < m_nDsoStas; ++j)
+            {
+                if ((dsoTxopId == 0) && m_params.corruptedIcfResponses.contains(j))
+                {
+                    // this STA is not sollicited
+                    continue;
+                }
+                if ((dsoTxopId == 1) && isDsoContinuedIfIcrNotReceived &&
+                    !m_params.corruptedIcfResponses.contains(j))
+                {
+                    // this STA was served in the previous DSO TXOP
+                    continue;
+                }
+                if ((i == 0) && (j == 1) && (m_params.generateInterferenceAfterIcf > 0))
+                {
+                    // the second STA is not expected to send a Block ACK response
+                    // because it did not receive the DL MU PPDU due to interference
+                    continue;
+                }
+                if ((i == 1) && (j == 1) && (m_params.generateObssDuringDsoTxop > 0))
+                {
+                    // the second STA is not expected to send a Block ACK response
+                    // because it latched on the OBSS frame instead of the DL MU PPDU
+                    continue;
+                }
+                ++psduIt;
+                if (psduIt->psduMap.cbegin()->second->GetHeader(0).IsBlockAck())
+                {
+                    ++blockAckCount;
+                }
+                NS_TEST_EXPECT_MSG_EQ(psduIt->txVector.GetPreambleType(),
+                                      WIFI_PREAMBLE_UHR_TB,
+                                      "Block ACK should be sent as a UHR TB PPDU");
+                NS_TEST_EXPECT_MSG_EQ(
+                    endPrevious + m_apMac->GetWifiPhy(SINGLE_LINK_OP_ID)->GetSifs(),
+                    psduIt->startTx,
+                    "Expected the Block ACK to start a SIFS after the DL MU PPDU");
+            }
+            const auto expectedNumBlockAcks =
+                ((i == 0) && m_params.generateInterferenceAfterIcf) ||
+                        ((i == 1) && m_params.generateObssDuringDsoTxop)
+                    ? (m_nDsoStas - 1)
+                    : (isDsoContinuedIfIcrNotReceived ? numUsersIfIcrNotReceived : m_nDsoStas);
+            NS_TEST_EXPECT_MSG_EQ(blockAckCount,
+                                  expectedNumBlockAcks,
+                                  "Unexpected number of Block ACK responses");
+            endPrevious =
+                psduIt->startTx +
+                WifiPhy::CalculateTxDuration(psduIt->psduMap,
+                                             psduIt->txVector,
+                                             m_apMac->GetWifiPhy(SINGLE_LINK_OP_ID)->GetPhyBand());
+            ++psduIt;
+        }
+
+        for (std::size_t i = 0; i < m_params.numUlMuPpdus; ++i)
+        {
+            // Check the Basic Trigger sent by the AP
+            CtrlTriggerHeader trigger;
+            psduIt->psduMap.cbegin()->second->GetPayload(0)->PeekHeader(trigger);
+            NS_TEST_EXPECT_MSG_EQ(psduIt->psduMap.cbegin()->second->GetHeader(0).IsTrigger() &&
+                                      trigger.IsBasic(),
+                                  true,
+                                  "A Basic Trigger frame should be sent by the AP");
+
+            // Check the UL MU PPDUs sent by the non-AP STAs
+            for (std::size_t j = 0; j < m_nDsoStas; ++j)
+            {
+                ++psduIt;
+                NS_TEST_EXPECT_MSG_EQ(psduIt->txVector.IsUlMu(),
+                                      true,
+                                      "An UL MU PPDU should be sent by the non-AP STAs");
+            }
+
+            endPrevious =
+                psduIt->startTx +
+                WifiPhy::CalculateTxDuration(psduIt->psduMap,
+                                             psduIt->txVector,
+                                             m_apMac->GetWifiPhy(SINGLE_LINK_OP_ID)->GetPhyBand());
+
+            // Check the Block ACK sent by the AP
+            ++psduIt;
+            NS_TEST_EXPECT_MSG_EQ(psduIt->psduMap.cbegin()->second->GetHeader(0).IsBlockAck(),
+                                  true,
+                                  "A Block ACK frame should be sent by the AP");
             NS_TEST_EXPECT_MSG_EQ(endPrevious + m_apMac->GetWifiPhy(SINGLE_LINK_OP_ID)->GetSifs(),
                                   psduIt->startTx,
-                                  "Expected the Block ACK to start a SIFS after the DL MU PPDU");
-        }
-        const auto expectedNumBlockAcks = ((i == 0) && m_params.generateInterferenceAfterIcf) ||
-                                                  ((i == 1) && m_params.generateObssDuringDsoTxop)
-                                              ? (m_nDsoStas - 1)
-                                              : m_nDsoStas;
-        NS_TEST_EXPECT_MSG_EQ(blockAckCount,
-                              expectedNumBlockAcks,
-                              "Unexpected number of Block ACK responses");
-        endPrevious = psduIt->startTx + WifiPhy::CalculateTxDuration(
-                                            psduIt->psduMap,
-                                            psduIt->txVector,
-                                            m_apMac->GetWifiPhy(SINGLE_LINK_OP_ID)->GetPhyBand());
-        ++psduIt;
-    }
+                                  "Expected the Block ACK to start a SIFS after the UL MU PPDU");
+            endPrevious =
+                psduIt->startTx +
+                WifiPhy::CalculateTxDuration(psduIt->psduMap,
+                                             psduIt->txVector,
+                                             m_apMac->GetWifiPhy(SINGLE_LINK_OP_ID)->GetPhyBand());
 
-    for (std::size_t i = 0; i < m_params.numUlMuPpdus; ++i)
-    {
-        // Check the Basic Trigger sent by the AP
-        CtrlTriggerHeader trigger;
-        psduIt->psduMap.cbegin()->second->GetPayload(0)->PeekHeader(trigger);
-        NS_TEST_EXPECT_MSG_EQ(psduIt->psduMap.cbegin()->second->GetHeader(0).IsTrigger() &&
-                                  trigger.IsBasic(),
-                              true,
-                              "A Basic Trigger frame should be sent by the AP");
-
-        // Check the UL MU PPDUs sent by the non-AP STAs
-        for (std::size_t j = 0; j < m_nDsoStas; ++j)
-        {
             ++psduIt;
-            NS_TEST_EXPECT_MSG_EQ(psduIt->txVector.IsUlMu(),
-                                  true,
-                                  "An UL MU PPDU should be sent by the non-AP STAs");
         }
 
-        endPrevious = psduIt->startTx + WifiPhy::CalculateTxDuration(
-                                            psduIt->psduMap,
-                                            psduIt->txVector,
-                                            m_apMac->GetWifiPhy(SINGLE_LINK_OP_ID)->GetPhyBand());
+        if (m_params.generateInterferenceAfterIcf || m_params.generateObssDuringDsoTxop)
+        {
+            NS_TEST_ASSERT_MSG_EQ(
+                (psduIt->psduMap.cbegin()->second->GetHeader(0).IsBlockAckReq() &&
+                 (psduIt->psduMap.cbegin()->second->GetHeader(0).GetAddr2() ==
+                  m_apMac->GetAddress()) &&
+                 (psduIt->psduMap.cbegin()->second->GetHeader(0).GetAddr1() ==
+                  m_staMacs.at(m_idxStaInDsoSubband)->GetAddress())),
+                true,
+                "A BAR is expected to be sent to the DSO STA that did not reply with a Block ACK");
+            ++psduIt;
 
-        // Check the Block ACK sent by the AP
-        ++psduIt;
-        NS_TEST_EXPECT_MSG_EQ(psduIt->psduMap.cbegin()->second->GetHeader(0).IsBlockAck(),
-                              true,
-                              "A Block ACK frame should be sent by the AP");
-        NS_TEST_EXPECT_MSG_EQ(endPrevious + m_apMac->GetWifiPhy(SINGLE_LINK_OP_ID)->GetSifs(),
-                              psduIt->startTx,
-                              "Expected the Block ACK to start a SIFS after the UL MU PPDU");
-        endPrevious = psduIt->startTx + WifiPhy::CalculateTxDuration(
-                                            psduIt->psduMap,
-                                            psduIt->txVector,
-                                            m_apMac->GetWifiPhy(SINGLE_LINK_OP_ID)->GetPhyBand());
+            NS_TEST_ASSERT_MSG_EQ(
+                (psduIt->psduMap.cbegin()->second->GetHeader(0).IsBlockAckReq() &&
+                 (psduIt->psduMap.cbegin()->second->GetHeader(0).GetAddr2() ==
+                  m_apMac->GetAddress()) &&
+                 (psduIt->psduMap.cbegin()->second->GetHeader(0).GetAddr1() ==
+                  m_staMacs.at(m_idxStaInDsoSubband)->GetAddress()) &&
+                 psduIt->psduMap.cbegin()->second->GetHeader(0).IsRetry()),
+                true,
+                "A BAR is expected to be retransmitted to the DSO STA since it was "
+                "switching back to its primary subband during the first BAR");
+            endPrevious =
+                psduIt->startTx +
+                WifiPhy::CalculateTxDuration(psduIt->psduMap,
+                                             psduIt->txVector,
+                                             m_apMac->GetWifiPhy(SINGLE_LINK_OP_ID)->GetPhyBand());
 
-        ++psduIt;
+            ++psduIt;
+            NS_TEST_EXPECT_MSG_EQ(
+                psduIt->psduMap.cbegin()->second->GetHeader(0).IsBlockAck(),
+                true,
+                "A Block ACK frame should be sent by the DSO STA as a response to the BAR");
+            NS_TEST_EXPECT_MSG_EQ(endPrevious + m_apMac->GetWifiPhy(SINGLE_LINK_OP_ID)->GetSifs(),
+                                  psduIt->startTx,
+                                  "Expected the Block ACK to start a SIFS after the BAR");
+            ++psduIt;
+
+            const auto& hdr = psduIt->psduMap.cbegin()->second->GetHeader(0);
+            NS_TEST_EXPECT_MSG_EQ(hdr.IsQosData() && hdr.IsRetry() &&
+                                      (hdr.GetAddr2() == m_apMac->GetAddress()),
+                                  true,
+                                  "Expected the QoS DATA frame to be retransmitted by the AP");
+            const auto recipient = hdr.GetAddr1();
+            ++psduIt;
+
+            NS_TEST_EXPECT_MSG_EQ((psduIt->psduMap.cbegin()->second->GetHeader(0).IsAck() &&
+                                   (recipient == m_staMacs.at(m_idxStaInDsoSubband)->GetAddress())),
+                                  true,
+                                  "Expected a ACK response sent by the DSO STA");
+            endPrevious =
+                psduIt->startTx +
+                WifiPhy::CalculateTxDuration(psduIt->psduMap,
+                                             psduIt->txVector,
+                                             m_apMac->GetWifiPhy(SINGLE_LINK_OP_ID)->GetPhyBand());
+            ++psduIt;
+        }
+
+        if (const auto numRemainingPsdus = std::distance(psduIt, m_txPsdus.cend());
+            !m_params.protectSingleExchange && (numRemainingPsdus >= ((numDsoTxops == 1) ? 6 : 8)))
+        {
+            // Check the CF-END sent by the AP
+            NS_ASSERT(psduIt->psduMap.cbegin()->second->GetHeader(0).IsCfEnd() &&
+                      (psduIt->psduMap.cbegin()->second->GetHeader(0).GetAddr2() ==
+                       m_apMac->GetAddress()));
+            NS_TEST_EXPECT_MSG_EQ((psduIt->psduMap.cbegin()->second->GetHeader(0).IsCfEnd() &&
+                                   (psduIt->psduMap.cbegin()->second->GetHeader(0).GetAddr2() ==
+                                    m_apMac->GetAddress())),
+                                  true,
+                                  "The last frame of the DSO TXOP is expected to be a CF-END");
+            NS_TEST_EXPECT_MSG_EQ(endPrevious + m_apMac->GetWifiPhy(SINGLE_LINK_OP_ID)->GetSifs(),
+                                  psduIt->startTx,
+                                  "Expected the CF-END to start a SIFS after the Block ACK");
+            endPrevious =
+                psduIt->startTx +
+                WifiPhy::CalculateTxDuration(psduIt->psduMap,
+                                             psduIt->txVector,
+                                             m_apMac->GetWifiPhy(SINGLE_LINK_OP_ID)->GetPhyBand());
+            ++psduIt;
+        }
     }
 
-    if (m_params.generateInterferenceAfterIcf || m_params.generateObssDuringDsoTxop)
+    // checks for non-DSO TXOP(s) following the DSO TXOP(s)
+    if (!m_params.nextTxopIsDso)
     {
-        NS_TEST_ASSERT_MSG_EQ(
-            (psduIt->psduMap.cbegin()->second->GetHeader(0).IsBlockAckReq() &&
-             (psduIt->psduMap.cbegin()->second->GetHeader(0).GetAddr2() == m_apMac->GetAddress()) &&
-             (psduIt->psduMap.cbegin()->second->GetHeader(0).GetAddr1() ==
-              m_staMacs.at(m_idxStaInDsoSubband)->GetAddress())),
-            true,
-            "A BAR is expected to be sent to the DSO STA that did not reply with a Block ACK");
-        ++psduIt;
+        for (std::size_t i = 0; i < m_nDsoStas; ++i)
+        {
+            NS_TEST_EXPECT_MSG_EQ((psduIt->psduMap.cbegin()->second->GetHeader(0).IsQosData() &&
+                                   (psduIt->psduMap.cbegin()->second->GetHeader(0).GetAddr2() ==
+                                    m_apMac->GetAddress())),
+                                  true,
+                                  "Expected a QoS DATA frame sent by the AP");
+            const auto recipient = psduIt->psduMap.cbegin()->second->GetHeader(0).GetAddr1();
+            ++psduIt;
 
-        NS_TEST_ASSERT_MSG_EQ(
-            (psduIt->psduMap.cbegin()->second->GetHeader(0).IsBlockAckReq() &&
-             (psduIt->psduMap.cbegin()->second->GetHeader(0).GetAddr2() == m_apMac->GetAddress()) &&
-             (psduIt->psduMap.cbegin()->second->GetHeader(0).GetAddr1() ==
-              m_staMacs.at(m_idxStaInDsoSubband)->GetAddress()) &&
-             psduIt->psduMap.cbegin()->second->GetHeader(0).IsRetry()),
-            true,
-            "A BAR is expected to be retransmitted to the DSO STA since it was "
-            "switching back to its primary subband during the first BAR");
-        endPrevious = psduIt->startTx + WifiPhy::CalculateTxDuration(
-                                            psduIt->psduMap,
-                                            psduIt->txVector,
-                                            m_apMac->GetWifiPhy(SINGLE_LINK_OP_ID)->GetPhyBand());
+            NS_TEST_EXPECT_MSG_EQ((psduIt->psduMap.cbegin()->second->GetHeader(0).IsAck() &&
+                                   (recipient == m_staMacs.at(i)->GetAddress())),
+                                  true,
+                                  "Expected a ACK response sent by STA " << i + 1);
+            ++psduIt;
+        }
 
-        ++psduIt;
-        NS_TEST_EXPECT_MSG_EQ(
-            psduIt->psduMap.cbegin()->second->GetHeader(0).IsBlockAck(),
-            true,
-            "A Block ACK frame should be sent by the DSO STA as a response to the BAR");
-        NS_TEST_EXPECT_MSG_EQ(endPrevious + m_apMac->GetWifiPhy(SINGLE_LINK_OP_ID)->GetSifs(),
-                              psduIt->startTx,
-                              "Expected the Block ACK to start a SIFS after the BAR");
-        ++psduIt;
+        if (psduIt != m_txPsdus.cend())
+        {
+            // Check the CF-END sent by the AP
+            NS_TEST_EXPECT_MSG_EQ((psduIt->psduMap.cbegin()->second->GetHeader(0).IsCfEnd() &&
+                                   (psduIt->psduMap.cbegin()->second->GetHeader(0).GetAddr2() ==
+                                    m_apMac->GetAddress())),
+                                  true,
+                                  "The last frame of the TXOP is expected to be a CF-END");
 
-        const auto& hdr = psduIt->psduMap.cbegin()->second->GetHeader(0);
-        NS_TEST_EXPECT_MSG_EQ(hdr.IsQosData() && hdr.IsRetry() &&
-                                  (hdr.GetAddr2() == m_apMac->GetAddress()),
-                              true,
-                              "Expected the QoS DATA frame to be retransmitted by the AP");
-        const auto recipient = hdr.GetAddr1();
-        ++psduIt;
-
-        NS_TEST_EXPECT_MSG_EQ((psduIt->psduMap.cbegin()->second->GetHeader(0).IsAck() &&
-                               (recipient == m_staMacs.at(m_idxStaInDsoSubband)->GetAddress())),
-                              true,
-                              "Expected a ACK response sent by the DSO STA");
-        endPrevious = psduIt->startTx + WifiPhy::CalculateTxDuration(
-                                            psduIt->psduMap,
-                                            psduIt->txVector,
-                                            m_apMac->GetWifiPhy(SINGLE_LINK_OP_ID)->GetPhyBand());
-        ++psduIt;
+            // per STA, we expect numDlMuPpdus or numUlMuPpdus during DSO TXOP and 1 packet in a
+            // following (non-DSO) TXOP.
+            const auto expectedRxPackets =
+                (m_params.numDlMuPpdus + m_params.numUlMuPpdus + 1) * m_nDsoStas;
+            NS_TEST_EXPECT_MSG_EQ(m_receivedPackets,
+                                  expectedRxPackets,
+                                  "Unexpected amount of received packets");
+        }
     }
 
-    if (const auto numRemainingPsdus = std::distance(psduIt, m_txPsdus.cend());
-        numRemainingPsdus >= 6)
-    {
-        // Check the CF-END sent by the AP
-        NS_TEST_EXPECT_MSG_EQ(
-            (psduIt->psduMap.cbegin()->second->GetHeader(0).IsCfEnd() &&
-             (psduIt->psduMap.cbegin()->second->GetHeader(0).GetAddr2() == m_apMac->GetAddress())),
-            true,
-            "The last frame of the DSO TXOP is expected to be a CF-END");
-        NS_TEST_EXPECT_MSG_EQ(endPrevious + m_apMac->GetWifiPhy(SINGLE_LINK_OP_ID)->GetSifs(),
-                              psduIt->startTx,
-                              "Expected the CF-END to start a SIFS after the Block ACK");
-        endPrevious = psduIt->startTx + WifiPhy::CalculateTxDuration(
-                                            psduIt->psduMap,
-                                            psduIt->txVector,
-                                            m_apMac->GetWifiPhy(SINGLE_LINK_OP_ID)->GetPhyBand());
-        ++psduIt;
-    }
-
+    // check DSO TXOP events
     for (std::size_t i = 0; i < m_nDsoStas; ++i)
     {
-        NS_TEST_EXPECT_MSG_EQ(
-            (psduIt->psduMap.cbegin()->second->GetHeader(0).IsQosData() &&
-             (psduIt->psduMap.cbegin()->second->GetHeader(0).GetAddr2() == m_apMac->GetAddress())),
-            true,
-            "Expected a QoS DATA frame sent by the AP");
-        const auto recipient = psduIt->psduMap.cbegin()->second->GetHeader(0).GetAddr1();
-        ++psduIt;
-
-        NS_TEST_EXPECT_MSG_EQ((psduIt->psduMap.cbegin()->second->GetHeader(0).IsAck() &&
-                               (recipient == m_staMacs.at(i)->GetAddress())),
-                              true,
-                              "Expected a ACK response sent by STA " << i + 1);
-        ++psduIt;
-    }
-
-    if (psduIt != m_txPsdus.cend())
-    {
-        // Check the CF-END sent by the AP
-        NS_TEST_EXPECT_MSG_EQ(
-            (psduIt->psduMap.cbegin()->second->GetHeader(0).IsCfEnd() &&
-             (psduIt->psduMap.cbegin()->second->GetHeader(0).GetAddr2() == m_apMac->GetAddress())),
-            true,
-            "The last frame of the TXOP is expected to be a CF-END");
-
-        // per STA, we expect numDlMuPpdus or numUlMuPpdus during DSO TXOP and 1 packet in a
-        // following (non-DSO) TXOP.
-        const auto expectedRxPackets =
-            (m_params.numDlMuPpdus + m_params.numUlMuPpdus + 1) * m_nDsoStas;
-        NS_TEST_EXPECT_MSG_EQ(m_receivedPackets,
-                              expectedRxPackets,
-                              "Unexpected amount of received packets");
-    }
-
-    for (std::size_t i = 0; i < m_nDsoStas; ++i)
-    {
+        const auto numDsoTxopsWithEvents =
+            m_params.corruptIcf ||
+                    (isDsoContinuedIfIcrNotReceived && !m_params.corruptedIcfResponses.contains(i))
+                ? 1
+                : numDsoTxops;
         const auto it = m_dsoTxopEventInfos.find(i);
         NS_TEST_ASSERT_MSG_EQ((it != m_dsoTxopEventInfos.cend()),
                               true,
                               "No DSO TXOP termination event for STA " << i + 1);
-        // per STA, 3 events are expected: reception of ICF, transmission of ICR and TXOP
-        // termination
+        // per DSO TXOP and per STA, 3 events are expected: reception of ICF, transmission of ICR
+        // and TXOP termination
         NS_TEST_ASSERT_MSG_EQ(it->second.size(),
-                              3,
+                              3 * numDsoTxopsWithEvents,
                               "Unexpected number of DSO TXOP events for STA " << i + 1);
         NS_TEST_EXPECT_MSG_EQ(it->second.at(0),
                               DsoTxopEvent::RX_ICF,
@@ -1503,6 +1749,9 @@ DsoTxopTest::DoSetup()
         DynamicCast<TestDsoMultiUserScheduler>(m_apMac->GetObject<MultiUserScheduler>());
     muScheduler->SetForcedFormat(MultiUserScheduler::TxFormat::SU_TX);
 
+    m_apErrorModel = CreateObject<ListErrorModel>();
+    m_apMac->GetDevice()->GetPhy(SINGLE_LINK_OP_ID)->SetPostReceptionErrorModel(m_apErrorModel);
+
     m_apMac->GetQosTxop(AC_BE)->SetTxopLimit(MicroSeconds(1600));
     for (std::size_t i = 0; i < m_nDsoStas; ++i)
     {
@@ -1512,6 +1761,13 @@ DsoTxopTest::DoSetup()
 
         m_staMacs.at(i)->GetDsoManager()->SetAttribute("ChSwitchToDsoBandDelay",
                                                        TimeValue(m_params.switchingDelayToDso));
+
+        auto errorModel = CreateObject<ListErrorModel>();
+        m_staMacs.at(i)
+            ->GetDevice()
+            ->GetPhy(SINGLE_LINK_OP_ID)
+            ->SetPostReceptionErrorModel(errorModel);
+        m_staErrorModels.push_back(errorModel);
     }
 }
 
@@ -2046,167 +2302,188 @@ WifiDsoTestSuite::WifiDsoTestSuite()
                 TestCase::Duration::QUICK);
     expectedDsoSubbands.clear();
 
-    /**
-     *             ┌──────┐          ┌────────┐   switch back
-     *             │ BSRP │          │QoS DATA│   to primary
-     *  [AP]       │  TF  │          ├────────┤    |
-     *             │(ICF) │          │QoS DATA│    |
-     *  ───────────┴──────▼┬────────┬┴────────┴┬─┬─▼─ ...
-     *  [DSO STA]         |│QoS Null│          │B│
-     *                    |│(ICR)   │          │A│
-     *                    |├────────┤          ├─┤
-     *  [UHR STA]         |│QoS Null│          │B│
-     *                    |│(ICR)   │          │A│
-     *                    |└────────┘          └─┘
-     *                    |
-     *                  switch
-     *                  to DSO
-     */
-    AddTestCase(new DsoTxopTest({.testName = "Check DSO basic frame exchange sequence with "
-                                             "single protection enabled",
-                                 .numDlMuPpdus = 1,
-                                 .protectSingleExchange = true,
-                                 .expectedTxopEndEventInDsoSubband = DsoTxopEvent::TIMEOUT}),
-                TestCase::Duration::QUICK);
+    for (const auto nextTxopIsDso : {false, true})
+    {
+        /**
+         *             ┌──────┐          ┌────────┐   switch back
+         *             │ BSRP │          │QoS DATA│   to primary
+         *  [AP]       │  TF  │          ├────────┤    |
+         *             │(ICF) │          │QoS DATA│    |
+         *  ───────────┴──────▼┬────────┬┴────────┴┬─┬─▼─ ...
+         *  [DSO STA]         |│QoS Null│          │B│
+         *                    |│(ICR)   │          │A│
+         *                    |├────────┤          ├─┤
+         *  [UHR STA]         |│QoS Null│          │B│
+         *                    |│(ICR)   │          │A│
+         *                    |└────────┘          └─┘
+         *                    |
+         *                  switch
+         *                  to DSO
+         */
+        AddTestCase(new DsoTxopTest({.testName = "Check DSO basic frame exchange sequence with "
+                                                 "single protection enabled (nextTxopIsDso=" +
+                                                 std::to_string(nextTxopIsDso) + ")",
+                                     .numDlMuPpdus = 1,
+                                     .nextTxopIsDso = nextTxopIsDso,
+                                     .protectSingleExchange = true,
+                                     .expectedTxopEndEventInDsoSubband = DsoTxopEvent::TIMEOUT}),
+                    TestCase::Duration::QUICK);
 
-    /**
-     *                                                 switch back
-     *                                                 to primary
-     *                                                    |
-     *             ┌──────┐          ┌────────┐    ┌──────┐
-     *             │ BSRP │          │QoS DATA│    │      │
-     *  [AP]       │  TF  │          ├────────┤    │CF-END│
-     *             │(ICF) │          │QoS DATA│    │      │
-     *  ───────────┴──────▼┬────────┬┴────────┴┬─┬─┴──────▼── ...
-     *  [DSO STA]         |│QoS Null│          │B│
-     *                    |│(ICR)   │          │A│
-     *                    |├────────┤          ├─┤
-     *  [UHR STA]         |│QoS Null│          │B│
-     *                    |│(ICR)   │          │A│
-     *                    |└────────┘          └─┘
-     *                    |
-     *                  switch
-     *                  to DSO
-     */
-    AddTestCase(
-        new DsoTxopTest({.testName = "Check DSO basic frame exchange sequence with CF-END to "
-                                     "indicate end of TXOP",
-                         .numDlMuPpdus = 1,
+        /**
+         *                                                 switch back
+         *                                                 to primary
+         *                                                    |
+         *             ┌──────┐          ┌────────┐    ┌──────┐
+         *             │ BSRP │          │QoS DATA│    │      │
+         *  [AP]       │  TF  │          ├────────┤    │CF-END│
+         *             │(ICF) │          │QoS DATA│    │      │
+         *  ───────────┴──────▼┬────────┬┴────────┴┬─┬─┴──────▼── ...
+         *  [DSO STA]         |│QoS Null│          │B│
+         *                    |│(ICR)   │          │A│
+         *                    |├────────┤          ├─┤
+         *  [UHR STA]         |│QoS Null│          │B│
+         *                    |│(ICR)   │          │A│
+         *                    |└────────┘          └─┘
+         *                    |
+         *                  switch
+         *                  to DSO
+         */
+        AddTestCase(
+            new DsoTxopTest({.testName = "Check DSO basic frame exchange sequence with CF-END to "
+                                         "indicate end of TXOP (nextTxopIsDso=" +
+                                         std::to_string(nextTxopIsDso) + ")",
+                             .numDlMuPpdus = 1,
+                             .nextTxopIsDso = nextTxopIsDso,
+                             .expectedTxopEndEventInDsoSubband = DsoTxopEvent::RX_CF_END}),
+            TestCase::Duration::QUICK);
+
+        /**
+         *                                                               switch back
+         *                                                               to primary
+         *                                                                  |
+         *             ┌──────┐          ┌────────┐    ┌────────┐    ┌──────┐
+         *             │ BSRP │          │QoS DATA│    │QoS DATA│    │      │
+         *  [AP]       │  TF  │          ├────────┤    ├────────┤    │CF-END│
+         *             │(ICF) │          │QoS DATA│    │QoS DATA│    │      │
+         *  ───────────┴──────▼┬────────┬┴────────┴┬─┬─┴────────┴┬─┬─┴──────▼─ ...
+         *  [DSO STA]         |│QoS Null│          │B│           │B│
+         *                    |│(ICR)   │          │A│           │A│
+         *                    |├────────┤          ├─┤           ├─┤
+         *  [UHR STA]         |│QoS Null│          │B│           │B│
+         *                    |│(ICR)   │          │A│           │A│
+         *                    |└────────┘          └─┘           └─┘
+         *                  switch
+         *                  to DSO
+         */
+        AddTestCase(new DsoTxopTest({.testName = "Check DSO operations with multiple downlink "
+                                                 "transmissions (nextTxopIsDso=" +
+                                                 std::to_string(nextTxopIsDso) + ")",
+                                     .numDlMuPpdus = 2,
+                                     .nextTxopIsDso = nextTxopIsDso,
+                                     .expectedTxopEndEventInDsoSubband = DsoTxopEvent::RX_CF_END}),
+                    TestCase::Duration::QUICK);
+
+        /**
+         *                                                       switch back
+         *                                                       to primary
+         *                                                           |
+         *             ┌──────┐          ┌────────┐    ┌────────┐    |
+         *             │ BSRP │          │QoS DATA│    │QoS DATA│    |
+         *  [AP]       │  TF  │          ├────────┤    ├────────┤    |
+         *             │(ICF) │          │QoS DATA│    │QoS DATA│    |
+         *  ───────────┴──────▼┬────────┬┴────────┴┬─┬─┴────────┴┬─┬─▼─ ...
+         *  [DSO STA]         |│QoS Null│          │B│           │B│
+         *                    |│(ICR)   │          │A│           │A│
+         *                    |├────────┤          ├─┤           ├─┤
+         *  [UHR STA]         |│QoS Null│          │B│           │B│
+         *                    |│(ICR)   │          │A│           │A│
+         *                    |└────────┘          └─┘           └─┘
+         *                  switch
+         *                  to DSO
+         */
+        AddTestCase(new DsoTxopTest({
+                        .testName = "Check DSO operations with SIFS bursting (nextTxopIsDso=" +
+                                    std::to_string(nextTxopIsDso) + ")",
+                        .numDlMuPpdus = 2,
+                        .nextTxopIsDso = nextTxopIsDso,
+                        .protectSingleExchange = true,
+                        .expectedTxopEndEventInDsoSubband = DsoTxopEvent::TIMEOUT,
+                    }),
+                    TestCase::Duration::QUICK);
+
+        /**
+         *             ┌──────┐        switch back
+         *             │ BSRP │        to primary
+         *  [AP]       │  TF  │           |
+         *             │(ICF) │           |
+         *  ───────────┴──────▼┬────────┬─▼─ ...
+         *  [DSO STA]         |│QoS Null│
+         *                    |│(ICR)   │
+         *                    |├────────┤
+         *  [UHR STA]         |│QoS Null│
+         *                    |│(ICR)   │
+         *                    |└────────┘
+         *                  switch
+         *                  to DSO
+         */
+        AddTestCase(new DsoTxopTest({.testName = "Check DSO operations with no DL MU PPDU after "
+                                                 "ICF response (nextTxopIsDso=" +
+                                                 std::to_string(nextTxopIsDso) + ")",
+                                     .numDlMuPpdus = 0,
+                                     .nextTxopIsDso = nextTxopIsDso,
+                                     .protectSingleExchange = true,
+                                     .expectedTxopEndEventInDsoSubband = DsoTxopEvent::TIMEOUT}),
+                    TestCase::Duration::QUICK);
+
+        /**
+         *             ┌──────┐          ┌──────┐
+         *             │ BSRP │          │      │
+         *  [AP]       │  TF  │          │CF-END│
+         *             │(ICF) │          │      │
+         *  ───────────┴──────▼┬────────┬┴──────▼─ ...
+         *  [DSO STA]         |│QoS Null│       |
+         *                    |│(ICR)   │       |
+         *                    |├────────┤       │
+         *  [UHR STA]         |│QoS Null│       │
+         *                    |│(ICR)   │       │
+         *                    |└────────┘       │
+         *                    |                 |
+         *                  switch          switch back
+         *                  to DSO          to primary
+         */
+        AddTestCase(new DsoTxopTest(
+                        {.testName = "Check DSO operations with truncated TXOP (nextTxopIsDso=" +
+                                     std::to_string(nextTxopIsDso) + ")",
+                         .numDlMuPpdus = 0,
+                         .nextTxopIsDso = nextTxopIsDso,
                          .expectedTxopEndEventInDsoSubband = DsoTxopEvent::RX_CF_END}),
-        TestCase::Duration::QUICK);
+                    TestCase::Duration::QUICK);
 
-    /**
-     *                                                               switch back
-     *                                                               to primary
-     *                                                                  |
-     *             ┌──────┐          ┌────────┐    ┌────────┐    ┌──────┐
-     *             │ BSRP │          │QoS DATA│    │QoS DATA│    │      │
-     *  [AP]       │  TF  │          ├────────┤    ├────────┤    │CF-END│
-     *             │(ICF) │          │QoS DATA│    │QoS DATA│    │      │
-     *  ───────────┴──────▼┬────────┬┴────────┴┬─┬─┴────────┴┬─┬─┴──────▼─ ...
-     *  [DSO STA]         |│QoS Null│          │B│           │B│
-     *                    |│(ICR)   │          │A│           │A│
-     *                    |├────────┤          ├─┤           ├─┤
-     *  [UHR STA]         |│QoS Null│          │B│           │B│
-     *                    |│(ICR)   │          │A│           │A│
-     *                    |└────────┘          └─┘           └─┘
-     *                  switch
-     *                  to DSO
-     */
-    AddTestCase(new DsoTxopTest({.testName = "Check DSO operations with multiple downlink "
-                                             "transmissions",
-                                 .numDlMuPpdus = 2,
-                                 .expectedTxopEndEventInDsoSubband = DsoTxopEvent::RX_CF_END}),
-                TestCase::Duration::QUICK);
-
-    /**
-     *                                                       switch back
-     *                                                       to primary
-     *                                                           |
-     *             ┌──────┐          ┌────────┐    ┌────────┐    |
-     *             │ BSRP │          │QoS DATA│    │QoS DATA│    |
-     *  [AP]       │  TF  │          ├────────┤    ├────────┤    |
-     *             │(ICF) │          │QoS DATA│    │QoS DATA│    |
-     *  ───────────┴──────▼┬────────┬┴────────┴┬─┬─┴────────┴┬─┬─▼─ ...
-     *  [DSO STA]         |│QoS Null│          │B│           │B│
-     *                    |│(ICR)   │          │A│           │A│
-     *                    |├────────┤          ├─┤           ├─┤
-     *  [UHR STA]         |│QoS Null│          │B│           │B│
-     *                    |│(ICR)   │          │A│           │A│
-     *                    |└────────┘          └─┘           └─┘
-     *                  switch
-     *                  to DSO
-     */
-    AddTestCase(new DsoTxopTest({.testName = "Check DSO operations with SIFS bursting",
-                                 .numDlMuPpdus = 2,
-                                 .protectSingleExchange = true,
-                                 .expectedTxopEndEventInDsoSubband = DsoTxopEvent::TIMEOUT}),
-                TestCase::Duration::QUICK);
-
-    /**
-     *             ┌──────┐        switch back
-     *             │ BSRP │        to primary
-     *  [AP]       │  TF  │           |
-     *             │(ICF) │           |
-     *  ───────────┴──────▼┬────────┬─▼─ ...
-     *  [DSO STA]         |│QoS Null│
-     *                    |│(ICR)   │
-     *                    |├────────┤
-     *  [UHR STA]         |│QoS Null│
-     *                    |│(ICR)   │
-     *                    |└────────┘
-     *                  switch
-     *                  to DSO
-     */
-    AddTestCase(new DsoTxopTest({.testName = "Check DSO operations with no DL MU PPDU after "
-                                             "ICF response",
-                                 .numDlMuPpdus = 0,
-                                 .protectSingleExchange = true,
-                                 .expectedTxopEndEventInDsoSubband = DsoTxopEvent::TIMEOUT}),
-                TestCase::Duration::QUICK);
-
-    /**
-     *             ┌──────┐          ┌──────┐
-     *             │ BSRP │          │      │
-     *  [AP]       │  TF  │          │CF-END│
-     *             │(ICF) │          │      │
-     *  ───────────┴──────▼┬────────┬┴──────▼─ ...
-     *  [DSO STA]         |│QoS Null│       |
-     *                    |│(ICR)   │       |
-     *                    |├────────┤       │
-     *  [UHR STA]         |│QoS Null│       │
-     *                    |│(ICR)   │       │
-     *                    |└────────┘       │
-     *                    |                 |
-     *                  switch          switch back
-     *                  to DSO          to primary
-     */
-    AddTestCase(new DsoTxopTest({.testName = "Check DSO operations with truncated TXOP",
-                                 .numDlMuPpdus = 0,
-                                 .expectedTxopEndEventInDsoSubband = DsoTxopEvent::RX_CF_END}),
-                TestCase::Duration::QUICK);
-
-    /**
-     *             ┌──────┐          ┌────────┐        ┌────────┐  switch back
-     *             │ BSRP │          │QoS DATA│        │QoS DATA│  to primary
-     *  [AP]       │  TF  │          ├────────┤        ├────────┤    |
-     *             │(ICF) │          │QoS DATA│        │QoS DATA│    │
-     *  ───────────┴──────▼┬────────┬┴────────┴┬─┬─...─┴────────┴┬─┬─▼── ...
-     *  [DSO STA]         ││QoS Null│          │B│               │B│
-     *                    ││(ICR)   │          │A│               │A│
-     *                    │├────────┤          ├─┤               ├─┤
-     *  [UHR STA]         ││QoS Null│          │B│               │B│
-     *                    ││(ICR)   │          │A│               │A│
-     *                    │└────────┘          └─┘               └─┘
-     *                    |
-     *                  switch
-     *                  to DSO
-     */
-    AddTestCase(new DsoTxopTest({.testName = "Check DSO operations with downlink transmissions "
-                                             "covering the whole TXOP duration",
-                                 .numDlMuPpdus = 8,
-                                 .expectedTxopEndEventInDsoSubband = DsoTxopEvent::TIMEOUT}),
-                TestCase::Duration::QUICK);
+        /**
+         *             ┌──────┐          ┌────────┐        ┌────────┐  switch back
+         *             │ BSRP │          │QoS DATA│        │QoS DATA│  to primary
+         *  [AP]       │  TF  │          ├────────┤        ├────────┤    |
+         *             │(ICF) │          │QoS DATA│        │QoS DATA│    │
+         *  ───────────┴──────▼┬────────┬┴────────┴┬─┬─...─┴────────┴┬─┬─▼── ...
+         *  [DSO STA]         ││QoS Null│          │B│               │B│
+         *                    ││(ICR)   │          │A│               │A│
+         *                    │├────────┤          ├─┤               ├─┤
+         *  [UHR STA]         ││QoS Null│          │B│               │B│
+         *                    ││(ICR)   │          │A│               │A│
+         *                    │└────────┘          └─┘               └─┘
+         *                    |
+         *                  switch
+         *                  to DSO
+         */
+        AddTestCase(
+            new DsoTxopTest({.testName = "Check DSO operations with downlink transmissions "
+                                         "covering the whole TXOP duration (nextTxopIsDso=" +
+                                         std::to_string(nextTxopIsDso) + ")",
+                             .numDlMuPpdus = 8,
+                             .nextTxopIsDso = nextTxopIsDso,
+                             .expectedTxopEndEventInDsoSubband = DsoTxopEvent::TIMEOUT}),
+            TestCase::Duration::QUICK);
+    }
 
     /**
      *             ┌──────┐          ┌──────┐          ┌──┐┌──────┐
@@ -2296,6 +2573,106 @@ WifiDsoTestSuite::WifiDsoTestSuite()
                     .expectedTxopEndEventInDsoSubband = DsoTxopEvent::RX_OBSS,
                 }),
                 TestCase::Duration::QUICK);
+
+    /**
+     *                                        switch back
+     *                                        to primary
+     *             ┌──────┐                    |
+     *             │ BSRP │                    |
+     *  [AP]       │  TF  │          ┌────────┐|
+     *             │(ICF) │          │QoS DATA│|
+     *  ───────────┴──────▼┬────────┬┴────────┴▼───── ...
+     *  [DSO STA]         |│QoS Null│
+     *                    |│(ICR)   x
+     *                    |├────────┤           ┌─┐
+     *  [UHR STA]         |│QoS Null│           │B│
+     *                    |│(ICR)   │           │A│
+     *                    |└────────┘           └─┘
+     *                    |
+     *                  switch
+     *                  to DSO
+     */
+    AddTestCase(new DsoTxopTest({.testName = "Check DSO frame exchange sequence can continue if "
+                                             "one ICF response received on primary",
+                                 .numDlMuPpdus = 1,
+                                 .protectSingleExchange = true,
+                                 .corruptedIcfResponses = {1},
+                                 .expectedTxopEndEventInDsoSubband = DsoTxopEvent::TIMEOUT}),
+                TestCase::Duration::QUICK);
+
+    /**
+     *                           switch back
+     *                           to primary
+     *             ┌──────┐          |
+     *             │ BSRP │          |
+     *  [AP]       │  TF  │          |
+     *             │(ICF) │          |
+     *  ───────────┴──────▼┬────────┬▼─ ...
+     *  [DSO STA]         |│QoS Null│
+     *                    |│(ICR)   │
+     *                    |├────────┤
+     *  [UHR STA]         |│QoS Null│
+     *                    |│(ICR)   x
+     *                    |└────────┘
+     *                    |
+     *                  switch
+     *                  to DSO
+     */
+    AddTestCase(
+        new DsoTxopTest(
+            {.testName =
+                 "Check DSO TXOP is released if no ICF responses in the primary 20 MHz subband",
+             .numDlMuPpdus = 1,
+             .protectSingleExchange = true,
+             .corruptedIcfResponses = {0},
+             .expectedTxopEndEventInDsoSubband = DsoTxopEvent::TIMEOUT}),
+        TestCase::Duration::QUICK);
+
+    /**
+     *                           switch back
+     *                           to primary
+     *             ┌──────┐          |
+     *             │ BSRP │          |
+     *  [AP]       │  TF  │          |
+     *             │(ICF) │          |
+     *  ───────────┴──────▼┬────────┬▼─ ...
+     *  [DSO STA]         |│QoS Null│
+     *                    |│(ICR)   x
+     *                    |├────────┤
+     *  [UHR STA]         |│QoS Null│
+     *                    |│(ICR)   x
+     *                    |└────────┘
+     *                    |
+     *                  switch
+     *                  to DSO
+     */
+    AddTestCase(
+        new DsoTxopTest(
+            {.testName = "Check DSO TXOP is released if no ICF responses because all ICF responses "
+                         "are corrupted",
+             .numDlMuPpdus = 1,
+             .protectSingleExchange = true,
+             .corruptedIcfResponses = {0, 1},
+             .expectedTxopEndEventInDsoSubband = DsoTxopEvent::TIMEOUT}),
+        TestCase::Duration::QUICK);
+
+    /**
+     *                           expected switch
+     *                           back to primary
+     *             ┌──────┐          |
+     *             │ BSRP │          |
+     *  [AP]       │  TF  │          |
+     *             │(ICF) x          |
+     *  ───────────┴──────▼──────────▼─ ...
+     */
+    AddTestCase(
+        new DsoTxopTest(
+            {.testName = "Check DSO TXOP is released if no ICF responses because ICF is corrupted",
+             .numDlMuPpdus = 1,
+             .protectSingleExchange = true,
+             .corruptIcf = true,
+             .expectedTxopEndEventInDsoSubband = DsoTxopEvent::TIMEOUT}),
+        TestCase::Duration::QUICK);
 
     using TrafficParams = std::initializer_list<
         std::tuple<std::string, std::vector<std::size_t>, std::vector<std::size_t>>>;

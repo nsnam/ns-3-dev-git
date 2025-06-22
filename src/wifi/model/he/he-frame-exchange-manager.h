@@ -125,6 +125,18 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
      */
     std::set<Mac48Address> GetTfRecipients(const CtrlTriggerHeader& trigger) const;
 
+    /**
+     * Return a TXVECTOR for the UL frame that the station will send in response to
+     * the given Trigger frame, configured with the BSS color and transmit power
+     * level to use for the consequent HE TB PPDU.
+     * Note that this method should only be called by non-AP stations only.
+     *
+     * @param trigger the received Trigger frame
+     * @param triggerSender the MAC address of the AP sending the Trigger frame
+     * @return TXVECTOR for the HE TB PPDU frame
+     */
+    WifiTxVector GetHeTbTxVector(CtrlTriggerHeader trigger, Mac48Address triggerSender) const;
+
   protected:
     void DoDispose() override;
     void Reset() override;
@@ -285,18 +297,6 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
      * @return the TRIGVECTOR
      */
     WifiTxVector GetTrigVector(const CtrlTriggerHeader& trigger) const;
-
-    /**
-     * Return a TXVECTOR for the UL frame that the station will send in response to
-     * the given Trigger frame, configured with the BSS color and transmit power
-     * level to use for the consequent HE TB PPDU.
-     * Note that this method should only be called by non-AP stations only.
-     *
-     * @param trigger the received Trigger frame
-     * @param triggerSender the MAC address of the AP sending the Trigger frame
-     * @return TXVECTOR for the HE TB PPDU frame
-     */
-    WifiTxVector GetHeTbTxVector(CtrlTriggerHeader trigger, Mac48Address triggerSender) const;
 
     /**
      * Build a MU-BAR Trigger Frame starting from the TXVECTOR used to respond to

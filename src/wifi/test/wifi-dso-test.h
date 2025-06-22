@@ -10,6 +10,7 @@
 #define WIFI_DSO_TEST_H
 
 #include "ns3/ap-wifi-mac.h"
+#include "ns3/error-model.h"
 #include "ns3/multi-model-spectrum-channel.h"
 #include "ns3/nstime.h"
 #include "ns3/packet-socket-address.h"
@@ -25,6 +26,7 @@
 
 #include <map>
 #include <optional>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -228,10 +230,15 @@ class DsoTxopTest : public DsoTestBase
         Time switchingDelayToDso; //!< the delay to switch the channel to the DSO subband
         Time switchingDelayToPrimary{
             "250us"}; //!< the delay to switch the channel to the primary subband
+        bool nextTxopIsDso{
+            false}; //!< whether the next TXOP following the DSO TXOP under test is also a DSO TXOP
         bool protectSingleExchange{false};        //!< whether single protection mechanism is used
         bool generateInterferenceAfterIcf{false}; //!< whether to generate interference in DSO
                                                   //!< subband after ICF transmission has started
         bool generateObssDuringDsoTxop{false};    //!< whether to generate OBSS during DSO TXOP
+        std::set<std::size_t> corruptedIcfResponses{}; //!< STA ID that should corrupt the ICF
+                                                       //!< response(s) in the first DSO TXOP
+        bool corruptIcf{false}; //!< whether to corrupt the ICF in the first DSO TXOP
         DsoTxopEvent expectedTxopEndEventInDsoSubband{}; //!< the expected DSO TXOP termination
                                                          //!< event for operating in DSO subband
     };
@@ -306,12 +313,48 @@ class DsoTxopTest : public DsoTestBase
                                      const WifiTxVector& txVector);
 
     /**
-     * Check that the PHY of the DSO STA switches back to its primary subband.
+     * Schedule checks for the switch back to the primary subband.
      *
      * @param clientId the index of the STA to check
      * @param delay the delay after which the DSO STA is expected to initiate its switch back
      */
-    void CheckSwitchBack(std::size_t clientId, const Time& delay);
+    void ScheduleChecksSwitchBack(std::size_t clientId, const Time& delay);
+
+    /**
+     * Schedule checks for the blocked DL transmissions to the DSO STAs.
+     *
+     * @param delay the delay after which the AP is expected to block its DL transmissions to the
+     * DSO STAs
+     * @param timeout the timeout to be added to the DSO STA switching duration after which the AP
+     * is expected to unblock its DL transmissions to the DSO STAs
+     */
+    void ScheduleChecksBlockedDlTx(const Time& delay, const Time& timeout);
+    /**
+     * Status of the switch back to the primary subband.
+     */
+    enum class SwitchBackStatus : uint8_t
+    {
+        NOT_SWITCHING = 0,
+        SWITCHING_BACK_TO_PRIMARY,
+        SWITCHED_BACK_TO_PRIMARY,
+    };
+
+    /**
+     * Check the switch back to the primary subband.
+     *
+     * @param staId the index of the STA to check
+     * @param status the status to indicate whether the STA is still operating on the DSO subband or
+     * switching/switched back to the primary subband
+     */
+    void CheckChannelSwitchingBack(std::size_t staId, SwitchBackStatus status);
+
+    /**
+     * Check that the DL transmissions to the DSO STA are blocked/unblocked.
+     *
+     * @param staId the index of the STA to check
+     * @param blocked whether the DL transmissions to the DSO STA are blocked
+     */
+    void CheckBlockedDlTx(std::size_t staId, bool blocked);
 
     /**
      * Check that the simulation produced the expected results.
@@ -340,6 +383,11 @@ class DsoTxopTest : public DsoTestBase
 
     Ptr<WaveformGenerator> m_interferer; ///< waveform generator for interference
 
+    Ptr<ListErrorModel>
+        m_apErrorModel; ///< error rate model to artificially corrupt frames sent to the AP
+    std::vector<Ptr<ListErrorModel>>
+        m_staErrorModels;      ///< error rate model to artificially corrupt frames sent to the STAs
+    std::size_t m_countIcf{0}; //!< counter for ICF frames transmitted once traffic has started
     std::size_t m_countQoSframes{0}; //!< counter for QoS frames received once traffic has started
     std::size_t m_countBlockAck{
         0}; //!< counter for BlockAck frames received once traffic has started
