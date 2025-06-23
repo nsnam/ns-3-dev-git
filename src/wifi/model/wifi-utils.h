@@ -313,6 +313,14 @@ Mac48Address GetIndividuallyAddressedRecipient(Ptr<WifiMac> mac, const WifiMacHe
 FrequencyRange GetFrequencyRange(MHz_t centerFrequency, MHz_t bandwidth);
 
 /**
+ * Get the frequency range corresponding to the given PHY band.
+ *
+ * @param band the given PHY band
+ * @return the frequency range corresponding to the given PHY band
+ */
+FrequencyRange GetFrequencyRange(WifiPhyBand band);
+
+/**
  * Check whether two channels overlap.
  *
  * @param rangeChannel1 the frequency range of the first channel

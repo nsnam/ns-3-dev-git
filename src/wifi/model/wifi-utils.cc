@@ -325,6 +325,23 @@ GetFrequencyRange(MHz_t centerFrequency, MHz_t bandwidth)
     return {centerFrequency - bandwidth / 2, centerFrequency + bandwidth / 2};
 }
 
+FrequencyRange
+GetFrequencyRange(WifiPhyBand band)
+{
+    switch (band)
+    {
+    case WIFI_PHY_BAND_2_4GHZ:
+        return WIFI_SPECTRUM_2_4_GHZ;
+    case WIFI_PHY_BAND_5GHZ:
+        return WIFI_SPECTRUM_5_GHZ;
+    case WIFI_PHY_BAND_6GHZ:
+        return WIFI_SPECTRUM_6_GHZ;
+    default:
+        NS_FATAL_ERROR("Undefined frequency range for " << band);
+        return {};
+    }
+}
+
 bool
 DoesOverlap(const std::set<MHz_t>& channel1CenterFreqs,
             MHz_t channel1Bw,
