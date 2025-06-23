@@ -10,6 +10,7 @@
 #define WIFI_UTILS_H
 
 #include "block-ack-type.h"
+#include "wifi-spectrum-value-helper.h"
 #include "wifi-standard-constants.h"
 #include "wifi-types.h"
 
@@ -280,6 +281,14 @@ bool IsGcr(Ptr<WifiMac> mac, const WifiMacHeader& hdr);
  * @return the MAC address of the individually addressed recipient to use
  */
 Mac48Address GetIndividuallyAddressedRecipient(Ptr<WifiMac> mac, const WifiMacHeader& hdr);
+
+/**
+ * Get the frequency range corresponding to the given PHY band.
+ *
+ * @param band the given PHY band
+ * @return the frequency range corresponding to the given PHY band
+ */
+FrequencyRange GetFrequencyRange(WifiPhyBand band);
 
 /// Link ID for single link operations (helps tracking places where correct link
 /// ID is to be used to support multi-link operations)

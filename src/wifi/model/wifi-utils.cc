@@ -253,4 +253,21 @@ GetIndividuallyAddressedRecipient(Ptr<WifiMac> mac, const WifiMacHeader& hdr)
     return apMac->GetGcrManager()->GetIndividuallyAddressedRecipient(addr1);
 }
 
+FrequencyRange
+GetFrequencyRange(WifiPhyBand band)
+{
+    switch (band)
+    {
+    case WIFI_PHY_BAND_2_4GHZ:
+        return WIFI_SPECTRUM_2_4_GHZ;
+    case WIFI_PHY_BAND_5GHZ:
+        return WIFI_SPECTRUM_5_GHZ;
+    case WIFI_PHY_BAND_6GHZ:
+        return WIFI_SPECTRUM_6_GHZ;
+    default:
+        NS_FATAL_ERROR("Undefined frequency range for " << band);
+        return {};
+    }
+}
+
 } // namespace ns3
