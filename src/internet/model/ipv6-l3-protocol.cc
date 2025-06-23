@@ -1048,13 +1048,6 @@ Ipv6L3Protocol::Receive(Ptr<NetDevice> device,
         }
     }
 
-    /* forward up to IPv6 raw sockets */
-    for (auto it = m_sockets.begin(); it != m_sockets.end(); ++it)
-    {
-        Ptr<Ipv6RawSocketImpl> socket = *it;
-        socket->ForwardUp(packet, hdr, device);
-    }
-
     Ptr<Ipv6ExtensionDemux> ipv6ExtensionDemux = m_node->GetObject<Ipv6ExtensionDemux>();
     Ptr<Ipv6Extension> ipv6Extension = nullptr;
     uint8_t nextHeader = hdr.GetNextHeader();
@@ -1442,6 +1435,7 @@ Ipv6L3Protocol::LocalDeliver(Ptr<const Packet> packet, const Ipv6Header& ip, uin
     bool isDropped = false;
     bool stopProcessing = false;
     DropReason dropReason;
+    Ptr<NetDevice> device = GetNetDevice(iif);
 
     // check for a malformed hop-by-hop extension
     // this is a common case when forging IPv6 raw packets
@@ -1533,6 +1527,12 @@ Ipv6L3Protocol::LocalDeliver(Ptr<const Packet> packet, const Ipv6Header& ip, uin
                 Ptr<Packet> copy = p->Copy();
 
                 m_localDeliverTrace(newIpHeader, p, iif);
+
+                for (auto& socket : m_sockets)
+                {
+                    NS_LOG_INFO("Delivering to raw socket " << socket);
+                    socket->ForwardUp(p, newIpHeader, device);
+                }
 
                 IpL4Protocol::RxStatus status =
                     protocol->Receive(p, newIpHeader, GetInterface(iif));

@@ -77,6 +77,7 @@ to work with the release.
 
 - (bindings) #1187 - Fix library filtering to skip non-ns-3 libraries with "ns3" in their names.
 - (flow-monitor) #1202 - Create XML file in text mode
+- (internet) !2486 - Fix #809 - Ping for v4,v6 works now if fragmentation occurs.
 - (mobility) !2397 - Fix Rectangle::GetClosestSideOrCorner. It could assign the incorrect side when the checked position was outside the rectangle.
 - (wifi) #2368 - Fix various issues related to Content Channels and RU allocation. Fixes mostly covers cases where OFDMA is used with central 26 tones, where a single user is being assigned the whole PPDU bandwidth or where a RU is larger than 20 MHz.
 - (wifi) Various fixes to the EMLSR model have been made

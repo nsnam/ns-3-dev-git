@@ -5,11 +5,12 @@
  *
  * Author: Hajime Tazaki <tazaki@sfc.wide.ad.jp>
  */
-/**
+/*
  * This is the test code for ipv6-raw-socket-impl.cc.
  */
 
 #include "ns3/boolean.h"
+#include "ns3/error-model.h"
 #include "ns3/icmpv6-l4-protocol.h"
 #include "ns3/inet6-socket-address.h"
 #include "ns3/internet-stack-helper.h"
@@ -21,6 +22,7 @@
 #include "ns3/log.h"
 #include "ns3/node-container.h"
 #include "ns3/node.h"
+#include "ns3/pointer.h"
 #include "ns3/simple-channel.h"
 #include "ns3/simple-net-device-helper.h"
 #include "ns3/simple-net-device.h"
@@ -42,6 +44,198 @@
 #include <sys/types.h>
 
 using namespace ns3;
+
+NS_LOG_COMPONENT_DEFINE("ipv6-raw-fragmentation-test");
+
+/**
+ * @ingroup internet-test
+ *
+ * @brief IPv6 Raw Socket Fragmentation Test
+ * Configuration : Two sockets. 1 sender, 1 receiver
+ *                 Sender socket sends packets in two epochs.
+ *                 In the first epoch, it sends payload of sizes {500, 1000, 5000, 10000,
+ *                 20000, 40000, 60000}.
+ *                 In the second epoch, it sends payload of sizes {5000, 10000, 20000,
+ *                 40000, 60000}. These are payloads of size greater than the MTU of
+ *                 the link.
+ *                 In the first epoch, there is no loss model.
+ *                 In the second epoch, the second fragment of the packet sent is dropped.
+ *
+ * Expected behaviour: In the first epoch: Receiver should receive only 1 packet and the size of
+ *                     the payload received should be equal to the size of the payload sent.
+ *                     No packets should have been dropped.
+ *                     In the second epoch: Receiver should not receive any packet. Only 1 packet
+ *                     should have been dropped at the physical layer.
+ */
+class Ipv6RawFragmentationTest : public TestCase
+{
+  public:
+    Ipv6RawFragmentationTest();
+    void DoRun() override;
+
+  private:
+    /**
+     * @brief         Send a packet
+     * @param socket  The sending socket
+     * @param dst     Destination IPv6 address.
+     * @param size    Size (bytes) of the payload to send.
+     */
+    void SendPacket(Ptr<Socket> socket, Ipv6Address dst, uint32_t size);
+
+    /**
+     * @brief Receive a packet
+     * @param socket Socket that received a packet
+     */
+    void RxCallback(Ptr<Socket> socket);
+
+    /**
+     * @brief Packet dropped callback at Phy Rx.
+     * @param p Dropped packet.
+     */
+    void PhyRxDropCallback(Ptr<const Packet> p);
+
+    uint32_t m_rxCount{0};          //!< Total count of packets received.
+    uint32_t m_rxPayloadSize{0};    //!< Size of the last packet received.
+    uint32_t m_droppedFragments{0}; //!< Number of dropped packets
+};
+
+Ipv6RawFragmentationTest::Ipv6RawFragmentationTest()
+    : TestCase("ipv6-raw-fragmentation-test")
+{
+}
+
+void
+Ipv6RawFragmentationTest::RxCallback(Ptr<Socket> socket)
+{
+    Ptr<Packet> p = socket->Recv(std::numeric_limits<uint32_t>::max(), 0);
+
+    Ipv6Header hdr;
+    if (p->PeekHeader(hdr))
+    {
+        p->RemoveHeader(hdr);
+    }
+
+    m_rxPayloadSize = p->GetSize();
+    m_rxCount++;
+    NS_LOG_DEBUG("Receiver got " << m_rxPayloadSize << " bytes");
+}
+
+void
+Ipv6RawFragmentationTest::SendPacket(Ptr<Socket> sock, Ipv6Address dst, uint32_t size)
+{
+    Ptr<Packet> p = Create<Packet>(size);
+    sock->SendTo(p, 0, Inet6SocketAddress(dst, 0));
+    NS_LOG_DEBUG("Sender sent " << p->GetSize() << " bytes to " << dst);
+}
+
+void
+Ipv6RawFragmentationTest::PhyRxDropCallback(Ptr<const Packet> /*p*/)
+{
+    ++m_droppedFragments;
+}
+
+void
+Ipv6RawFragmentationTest::DoRun()
+{
+    Ptr<Node> rxNode = CreateObject<Node>();
+    Ptr<Node> txNode = CreateObject<Node>();
+
+    SimpleNetDeviceHelper helper;
+    helper.SetNetDevicePointToPointMode(true);
+
+    Ptr<SimpleNetDevice> rxDev = DynamicCast<SimpleNetDevice>(helper.Install(rxNode).Get(0));
+    Ptr<SimpleNetDevice> txDev = DynamicCast<SimpleNetDevice>(helper.Install(txNode).Get(0));
+
+    txDev->SetMtu(1280); // Minimum MTU allowed for IPv6
+
+    rxDev->TraceConnectWithoutContext(
+        "PhyRxDrop",
+        MakeCallback(&Ipv6RawFragmentationTest::PhyRxDropCallback, this));
+
+    Ptr<SimpleChannel> ch = CreateObject<SimpleChannel>();
+    rxDev->SetChannel(ch);
+    txDev->SetChannel(ch);
+
+    InternetStackHelper stack;
+    stack.SetIpv4StackInstall(false);
+    stack.Install(NodeContainer(rxNode, txNode));
+
+    rxNode->GetObject<Icmpv6L4Protocol>()->SetAttribute("DAD", BooleanValue(false));
+    txNode->GetObject<Icmpv6L4Protocol>()->SetAttribute("DAD", BooleanValue(false));
+
+    Ptr<Ipv6> ipv6Rx = rxNode->GetObject<Ipv6>();
+    Ptr<Ipv6> ipv6Tx = txNode->GetObject<Ipv6>();
+
+    uint32_t ifRx = ipv6Rx->AddInterface(rxDev);
+    ipv6Rx->AddAddress(ifRx, Ipv6InterfaceAddress("2001:db8::1", Ipv6Prefix(64)));
+    ipv6Rx->SetUp(ifRx);
+
+    uint32_t ifTx = ipv6Tx->AddInterface(txDev);
+    ipv6Tx->AddAddress(ifTx, Ipv6InterfaceAddress("2001:db8::2", Ipv6Prefix(64)));
+    ipv6Tx->SetUp(ifTx);
+
+    const uint8_t proto = Ipv6Header::IPV6_ICMPV6;
+
+    Ptr<Socket> rxSock = rxNode->GetObject<Ipv6RawSocketFactory>()->CreateSocket();
+    rxSock->SetAttribute("Protocol", UintegerValue(proto));
+    rxSock->Bind(Inet6SocketAddress(Ipv6Address::GetAny(), 0));
+    rxSock->SetRecvCallback(MakeCallback(&Ipv6RawFragmentationTest::RxCallback, this));
+
+    Ptr<Socket> txSock = txNode->GetObject<Ipv6RawSocketFactory>()->CreateSocket();
+    txSock->SetAttribute("Protocol", UintegerValue(proto));
+
+    std::vector<uint32_t> payloadSizes = {500, 1000, 5000, 10000, 20000, 40000, 60000};
+
+    for (auto sentPayloadSize : payloadSizes)
+    {
+        m_rxCount = 0;
+        m_rxPayloadSize = 0;
+
+        Simulator::Schedule(Seconds(0.0),
+                            &Ipv6RawFragmentationTest::SendPacket,
+                            this,
+                            txSock,
+                            Ipv6Address("2001:db8::1"),
+                            sentPayloadSize);
+        Simulator::Stop(Seconds(1.0));
+        Simulator::Run();
+
+        NS_TEST_EXPECT_MSG_EQ(m_rxPayloadSize,
+                              sentPayloadSize,
+                              "Reassembled packet size should be the same as the packet size sent");
+
+        NS_TEST_EXPECT_MSG_EQ(m_rxCount, 1, "Only 1 packet should have been received");
+
+        NS_TEST_EXPECT_MSG_EQ(m_droppedFragments, 0, "No packets should have been dropped");
+    }
+
+    std::vector<uint32_t> fragmentablePayloadSizes = {5000, 10000, 20000, 40000, 60000};
+
+    for (auto sentPayloadSize : fragmentablePayloadSizes)
+    {
+        m_rxCount = 0;
+        m_droppedFragments = 0;
+
+        Ptr<ReceiveListErrorModel> errModel = CreateObject<ReceiveListErrorModel>();
+        errModel->SetList({1});
+
+        rxDev->SetAttribute("ReceiveErrorModel", PointerValue(errModel));
+
+        Simulator::Schedule(Seconds(0.0),
+                            &Ipv6RawFragmentationTest::SendPacket,
+                            this,
+                            txSock,
+                            Ipv6Address("2001:db8::1"),
+                            sentPayloadSize);
+        Simulator::Stop(Seconds(1.0));
+        Simulator::Run();
+
+        NS_TEST_EXPECT_MSG_EQ(m_rxCount, 0, "No packet should have been received");
+
+        NS_TEST_EXPECT_MSG_EQ(m_droppedFragments, 1, "Exactly 1 packet should have been dropped.");
+    }
+    Simulator::Destroy();
+}
 
 /**
  * @ingroup internet-test
@@ -322,6 +516,7 @@ class Ipv6RawTestSuite : public TestSuite
         : TestSuite("ipv6-raw", Type::UNIT)
     {
         AddTestCase(new Ipv6RawSocketImplTest, TestCase::Duration::QUICK);
+        AddTestCase(new Ipv6RawFragmentationTest, TestCase::Duration::QUICK);
     }
 };
 

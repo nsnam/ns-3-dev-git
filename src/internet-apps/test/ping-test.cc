@@ -605,7 +605,7 @@ PingTestSuite::PingTestSuite()
     testcase2v4->SetSimulatorStopTime(Seconds(5));
     testcase2v4->CheckReportTransmitted(1);
     testcase2v4->CheckReportReceived(0);
-    testcase1v4->SetDestinationAddress(Ipv4Address("10.0.0.2"));
+    testcase2v4->SetDestinationAddress(Ipv4Address("10.0.0.2"));
     AddTestCase(testcase2v4, TestCase::Duration::QUICK);
 
     auto testcase2v6 = new PingTestCase(
@@ -697,8 +697,8 @@ PingTestSuite::PingTestSuite()
     // 5. Test for behavior of pinging an unreachable host when the
     //    network does not send an ICMP unreachable message.
     // Unlimited pings, StopApplication () with no packet in flight
-    // Configuration:  Ping::Count = 0,  Ping start time = 1s
-    //                 Ping stop time = 5.5s.  Ping to unknown destination.
+    // Configuration:  Ping::Count = 5,  Ping start time = 1s
+    //                 Ping stop time = 6.5s.  Ping to unknown destination.
     // Expected behavior:  By default, the timeout value is 1 second.  Ping
     //                     sends first packet at time 1 second, and does not
     //                     receive a response.  At the timeout (simulation time
@@ -900,30 +900,39 @@ PingTestSuite::PingTestSuite()
     testcase9v6->CheckReportTime(MicroSeconds(3040000));
     AddTestCase(testcase9v6, TestCase::Duration::QUICK);
 
-#ifdef NOTYET
-    //
-    // 10. Test for behavior of pinging on a link that causes IPv4 fragmentation
-    // Configuration:  Ping::Count = 1,  Ping start time = 1s
-    //                 Ping stop time = 2.5s.  Ping to Node 1
-    //                 Ping size set to 2000 bytes.
-    // Expected behavior:  At shortly after time 1 seconds, Ping should
-    //                     successfully exit by recording the successful
-    //                     exchange of one echo request and reply.
-    // How validated:  PingReport trace is checked for number of packets
-    //                 transmitted (5) and  received (0).
-    //                 PingReport time is checked for an explicit time
-    //                 (1.020028s) corresponding to 2000 bytes
-    //                 The packet loss rate should be checked to be 100 percent
-    PingTestCase* testcase10v4 = new PingTestCase("10. Test for IPv4 fragmentation", USEIPV6_FALSE);
+    // 10. Test for behavior of pinging with a big size that causes fragmentation
+    //    Configuration:  Ping::Count = 5,  Ping::Interval = 1s, Ping start
+    //                    time = 1s, Ping stop time = 6.5s,
+    //                    Payload size = 60000B
+    //    Expected behavior:  Pings are sent at times 1, 2, 3, 4, 5 sec.  The
+    //                        number sent equals number received, which equals 5.
+    //    How validated:  PingReport trace is checked for number of packets
+    //                    transmitted and received (5), and number of drops (0).
+    auto testcase10v4 = new PingTestCase("10. 5 pings, heavy payload, no losses, "
+                                         "StopApplication () with no packets in flight IPv4",
+                                         USEIPV6_FALSE);
     testcase10v4->SetStartTime(Seconds(1));
-    testcase10v4->SetStopTime(Seconds(2.5));
-    testcase10v4->SetCount(1);
-    testcase10v4->SetSize(2000);
-    testcase10v4->CheckReportTransmitted(1);
-    testcase10v4->CheckReportReceived(1);
-    testcase10v4->CheckReportTime(MicroSeconds(1020028));
+    testcase10v4->SetStopTime(Seconds(6.5));
+    testcase10v4->SetCount(5);
+    testcase10v4->SetSize(60000);
+    testcase10v4->CheckReportTransmitted(5);
+    testcase10v4->CheckReportReceived(5);
+    testcase10v4->CheckTraceTx(5);
+    testcase10v4->SetDestinationAddress(Ipv4Address("10.0.0.2"));
     AddTestCase(testcase10v4, TestCase::Duration::QUICK);
-#endif
+
+    auto testcase10v6 = new PingTestCase("10. 5 pings, heavy payload,  no losses, "
+                                         "StopApplication () with no packets in flight IPv6",
+                                         USEIPV6_TRUE);
+    testcase10v6->SetStartTime(Seconds(1));
+    testcase10v6->SetStopTime(Seconds(6.5));
+    testcase10v6->SetCount(5);
+    testcase10v6->SetSize(60000);
+    testcase10v6->CheckReportTransmitted(5);
+    testcase10v6->CheckReportReceived(5);
+    testcase10v6->CheckTraceTx(5);
+    testcase10v6->SetDestinationAddress(Ipv6Address("2001:1::200:ff:fe00:2"));
+    AddTestCase(testcase10v6, TestCase::Duration::QUICK);
 }
 
 static PingTestSuite pingTestSuite; //!< Static variable for test initialization
