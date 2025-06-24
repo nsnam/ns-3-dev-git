@@ -662,6 +662,7 @@ class StaWifiMac : public WifiMac
     uint32_t m_maxMissedBeacons;                  ///< maximum missed beacons
     EventId m_beaconWatchdog;                     //!< beacon watchdog
     Time m_beaconWatchdogEnd{0};                  //!< beacon watchdog end
+    bool m_enableScanning;                        //!< enable channel scanning
     bool m_activeProbing;                         ///< active probing
     Ptr<RandomVariableStream> m_probeDelay;       ///< RandomVariable used to randomize the time
                                                   ///< of the first Probe Response on each channel

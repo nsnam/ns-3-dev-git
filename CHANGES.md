@@ -19,6 +19,7 @@ This file is a best-effort approach to solving this issue; we will do our best b
 * (wifi) Added a new `EarlyTxopEndDetect` attribute to `EhtFrameExchangeManager` to control whether the Duration/ID value of the frame being transmitted or received by a device shall be used to early detect the end of an ongoing TXOP (held by another device).
 * (spectrum) Added the base `WraparoundModel`, which is retrieved from the associated objects of a spectrum channel, and then used to wraparound the transmitter mobility model during transmissions.
 * (spectrum) Added the `HexagonalWraparoundModel`, which implements the wraparound for a hexagonal cell deployment, typical of cellular networks.
+* (wifi) Added a new `DisableScanning` attribute to `StaWifiMac` to disable channel scanning; it can be useful to set this attribute to false when a static setup is performed.
 
 ### Changes to existing API
 

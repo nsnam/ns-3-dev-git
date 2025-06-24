@@ -74,6 +74,12 @@ StaWifiMac::GetTypeId()
                           UintegerValue(10),
                           MakeUintegerAccessor(&StaWifiMac::m_maxMissedBeacons),
                           MakeUintegerChecker<uint32_t>())
+            .AddAttribute("EnableScanning",
+                          "If false, STA does not perform channel scanning. This may be useful in "
+                          "case of static configuration via the static setup helper.",
+                          BooleanValue(true),
+                          MakeBooleanAccessor(&StaWifiMac::m_enableScanning),
+                          MakeBooleanChecker())
             .AddAttribute(
                 "ActiveProbing",
                 "If true, we send probe requests. If false, we don't."
@@ -823,6 +829,11 @@ void
 StaWifiMac::StartScanning()
 {
     NS_LOG_FUNCTION(this);
+    if (!m_enableScanning)
+    {
+        NS_LOG_DEBUG("Scanning disabled");
+        return;
+    }
     SetState(SCANNING);
     NS_ASSERT(m_assocManager);
 
