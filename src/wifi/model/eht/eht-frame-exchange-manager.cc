@@ -660,6 +660,13 @@ EhtFrameExchangeManager::ForwardPsduMapDown(WifiConstPsduMap psduMap, WifiTxVect
                                 {linkId});
                         }
                     }
+
+                    // Information for Genie mode start
+                    const auto delay = m_txTimer.GetDelayLeft();
+                    NS_ASSERT_MSG(delay.IsStrictlyPositive(), "No remaining time for TX timer");
+                    g_genieInfo[{m_mac->GetAddress(), *clientMld}] = {Simulator::Now() + delay,
+                                                                      m_linkId};
+                    // Information for Genie mode end
                 }
             }
         }
