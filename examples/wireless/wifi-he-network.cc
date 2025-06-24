@@ -14,6 +14,7 @@
 #include "ns3/enum.h"
 #include "ns3/he-phy.h"
 #include "ns3/internet-stack-helper.h"
+#include "ns3/internet-static-setup-helper.h"
 #include "ns3/ipv4-address-helper.h"
 #include "ns3/ipv4-global-routing-helper.h"
 #include "ns3/log.h"
@@ -29,6 +30,7 @@
 #include "ns3/udp-server.h"
 #include "ns3/uinteger.h"
 #include "ns3/wifi-acknowledgment.h"
+#include "ns3/wifi-static-setup-helper.h"
 #include "ns3/yans-wifi-channel.h"
 #include "ns3/yans-wifi-helper.h"
 
@@ -93,6 +95,8 @@ main(int argc, char* argv[])
     bool use80Plus80{false};
     bool useExtendedBlockAck{false};
     Time simulationTime{"10s"};
+    bool staticSetup{true};
+    auto startTime = Seconds(1);
     meter_u distance{1.0};
     GHz_t frequency{5}; // either 2.4, 5 or 6 GHz
     std::size_t nStations{1};
@@ -116,6 +120,9 @@ main(int argc, char* argv[])
     std::string fileName{""};
 
     CommandLine cmd(__FILE__);
+    cmd.AddValue("staticSetup",
+                 "Whether devices are configured using the static setup helper",
+                 staticSetup);
     cmd.AddValue("frequency", "Frequency band (2.4, 5 or 6 GHz)", frequency);
     cmd.AddValue("distance",
                  "Distance in meters between the station and the access point",
@@ -440,6 +447,8 @@ main(int argc, char* argv[])
                     mac.SetType("ns3::ApWifiMac",
                                 "EnableBeaconJitter",
                                 BooleanValue(false),
+                                "BeaconGeneration",
+                                BooleanValue(!staticSetup),
                                 "Ssid",
                                 SsidValue(ssid));
                     apDevice = wifi.Install(phy, mac, wifiApNode);
@@ -484,6 +493,22 @@ main(int argc, char* argv[])
                 mobility.Install(wifiApNode);
                 mobility.Install(wifiStaNodes);
 
+                if (staticSetup)
+                {
+                    /* static setup of association and BA agreements */
+                    auto apDev = DynamicCast<WifiNetDevice>(apDevice.Get(0));
+                    NS_ASSERT(apDev);
+                    WifiStaticSetupHelper::SetStaticAssoc(apDev, staDevices);
+                    for (uint32_t i = 0; i < staDevices.GetN(); ++i)
+                    {
+                        auto staDev = DynamicCast<WifiNetDevice>(staDevices.Get(i));
+                        NS_ASSERT(staDev);
+                        WifiStaticSetupHelper::SetStaticBlockAck(apDev, staDev, 0);
+                        WifiStaticSetupHelper::SetStaticBlockAck(staDev, apDev, 0);
+                    }
+                    startTime = MilliSeconds(1);
+                }
+
                 /* Internet stack*/
                 InternetStackHelper stack;
                 stack.Install(wifiApNode);
@@ -498,6 +523,12 @@ main(int argc, char* argv[])
 
                 staNodeInterfaces = address.Assign(staDevices);
                 apNodeInterface = address.Assign(apDevice);
+
+                if (staticSetup)
+                {
+                    /* static setup of ARP cache */
+                    InternetStaticSetupHelper::PopulateArpCache();
+                }
 
                 /* Setting applications */
                 ApplicationContainer serverApp;
@@ -521,7 +552,7 @@ main(int argc, char* argv[])
                     streamNumber += server.AssignStreams(serverNodes.get(), streamNumber);
 
                     serverApp.Start(Seconds(0));
-                    serverApp.Stop(simulationTime + Seconds(1));
+                    serverApp.Stop(simulationTime + startTime);
                     const auto packetInterval = payloadSize * 8.0 / maxLoad;
 
                     for (std::size_t i = 0; i < nStations; i++)
@@ -533,8 +564,8 @@ main(int argc, char* argv[])
                         ApplicationContainer clientApp = client.Install(clientNodes.Get(i));
                         streamNumber += client.AssignStreams(clientNodes.Get(i), streamNumber);
 
-                        clientApp.Start(Seconds(1));
-                        clientApp.Stop(simulationTime + Seconds(1));
+                        clientApp.Start(startTime);
+                        clientApp.Stop(simulationTime + startTime);
                     }
                 }
                 else
@@ -547,7 +578,7 @@ main(int argc, char* argv[])
                     streamNumber += packetSinkHelper.AssignStreams(serverNodes.get(), streamNumber);
 
                     serverApp.Start(Seconds(0));
-                    serverApp.Stop(simulationTime + Seconds(1));
+                    serverApp.Stop(simulationTime + startTime);
 
                     for (std::size_t i = 0; i < nStations; i++)
                     {
@@ -564,14 +595,14 @@ main(int argc, char* argv[])
                         ApplicationContainer clientApp = onoff.Install(clientNodes.Get(i));
                         streamNumber += onoff.AssignStreams(clientNodes.Get(i), streamNumber);
 
-                        clientApp.Start(Seconds(1));
-                        clientApp.Stop(simulationTime + Seconds(1));
+                        clientApp.Start(startTime);
+                        clientApp.Stop(simulationTime + startTime);
                     }
                 }
 
                 Simulator::Schedule(Seconds(0), &Ipv4GlobalRoutingHelper::PopulateRoutingTables);
 
-                Simulator::Stop(simulationTime + Seconds(1));
+                Simulator::Stop(simulationTime + startTime);
                 Simulator::Run();
 
                 auto rxBytes = 0.0;

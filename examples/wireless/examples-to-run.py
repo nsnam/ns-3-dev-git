@@ -85,22 +85,22 @@ cpp_examples = [
         "True",
     ),
     (
-        "wifi-vht-network --multiProcessing=1 --simulationTime=0.2s --useRts=0 --minExpectedThroughput=5Mbps --maxExpectedThroughput=620Mbps",
+        "wifi-vht-network --multiProcessing=1 --simulationTime=0.2s --useRts=0 --minExpectedThroughput=5Mbps --maxExpectedThroughput=630Mbps",
         "True",
         "True",
     ),
     (
-        "wifi-vht-network --multiProcessing=1 --simulationTime=0.2s --useRts=1 --minExpectedThroughput=5Mbps --maxExpectedThroughput=557Mbps",
+        "wifi-vht-network --multiProcessing=1 --simulationTime=0.2s --useRts=1 --minExpectedThroughput=5Mbps --maxExpectedThroughput=565Mbps",
         "True",
         "True",
     ),
     (
-        "wifi-vht-network --multiProcessing=1 --simulationTime=0.2s --useRts=0 --use80Plus80=1 --minExpectedThroughput=5Mbps --maxExpectedThroughput=620Mbps",
+        "wifi-vht-network --multiProcessing=1 --simulationTime=0.2s --useRts=0 --use80Plus80=1 --minExpectedThroughput=5Mbps --maxExpectedThroughput=630Mbps",
         "True",
         "True",
     ),
     (
-        "wifi-he-network --multiProcessing=1 --simulationTime=0.25s --frequency=5GHz --useRts=0 --minExpectedThroughput=6Mbps --maxExpectedThroughput=844Mbps",
+        "wifi-he-network --multiProcessing=1 --simulationTime=0.25s --frequency=5GHz --useRts=0 --minExpectedThroughput=3Mbps --maxExpectedThroughput=844Mbps",
         "True",
         "True",
     ),
@@ -110,22 +110,22 @@ cpp_examples = [
         "True",
     ),
     (
-        "wifi-he-network --multiProcessing=1 --simulationTime=0.3s --frequency=5GHz --useRts=0 --useExtendedBlockAck=1 --minExpectedThroughput=6Mbps --maxExpectedThroughput=1033Mbps",
+        "wifi-he-network --multiProcessing=1 --simulationTime=0.3s --frequency=5GHz --useRts=0 --useExtendedBlockAck=1 --minExpectedThroughput=3Mbps --maxExpectedThroughput=1033Mbps",
         "True",
         "True",
     ),
     (
-        "wifi-he-network --multiProcessing=1 --simulationTime=0.3s --frequency=5GHz --useRts=1 --minExpectedThroughput=6Mbps --maxExpectedThroughput=745Mbps",
+        "wifi-he-network --multiProcessing=1 --simulationTime=0.3s --frequency=5GHz --useRts=1 --minExpectedThroughput=3Mbps --maxExpectedThroughput=745Mbps",
         "True",
         "True",
     ),
     (
-        "wifi-he-network --multiProcessing=1 --simulationTime=0.25s --frequency=2.4GHz --useRts=0 --minExpectedThroughput=6Mbps --maxExpectedThroughput=238Mbps",
+        "wifi-he-network --multiProcessing=1 --simulationTime=0.25s --frequency=2.4GHz --useRts=0 --minExpectedThroughput=3Mbps --maxExpectedThroughput=238Mbps",
         "True",
         "True",
     ),
     (
-        "wifi-he-network --multiProcessing=1 --simulationTime=0.3s --frequency=2.4GHz --useRts=1 --minExpectedThroughput=6Mbps --maxExpectedThroughput=223Mbps",
+        "wifi-he-network --multiProcessing=1 --simulationTime=0.3s --frequency=2.4GHz --useRts=1 --minExpectedThroughput=3Mbps --maxExpectedThroughput=223Mbps",
         "True",
         "True",
     ),
@@ -135,7 +135,7 @@ cpp_examples = [
         "True",
     ),
     (
-        "wifi-he-network --multiProcessing=1 --simulationTime=0.3s --frequency=2.4GHz --udp=0 --downlink=1 --useRts=1 --nStations=5 --dlAckType=MU-BAR --enableUlOfdma=1 --enableBsrp=1 --mcs=5 --minExpectedThroughput=21Mbps --maxExpectedThroughput=56Mbps",
+        "wifi-he-network --multiProcessing=1 --simulationTime=0.3s --frequency=2.4GHz --udp=0 --downlink=1 --useRts=1 --nStations=5 --dlAckType=MU-BAR --enableUlOfdma=1 --enableBsrp=1 --mcs=5 --minExpectedThroughput=21Mbps --maxExpectedThroughput=65Mbps",
         "True",
         "True",
     ),
@@ -225,7 +225,7 @@ cpp_examples = [
         "True",
     ),
     (
-        "wifi-eht-network --multiProcessing=1 --simulationTime=0.3s --frequency=2.4GHz --frequency2=5GHz --frequency3=6GHz --guardInterval=1600ns --udp=0 --downlink=0 --useRts=1 --mpduBufferSize=512 --emlsrLinks=0,1,2 --emlsrPaddingDelay=0us --emlsrTransitionDelay=0us --channelSwitchDelay=1ns --emlsrMgrTypeId=ns3::AdvancedEmlsrManager --emlsrAuxSwitch=False --emlsrAuxTxCapable=False --nStations=4 --dlAckType=ACK-SU-FORMAT --enableUlOfdma=1 --enableBsrp=1 --mcs=1,5,8,11 --minExpectedThroughput=8Mbps --maxExpectedThroughput=333Mbps --RngRun=5",
+        "wifi-eht-network --multiProcessing=1 --simulationTime=0.3s --frequency=2.4GHz --frequency2=5GHz --frequency3=6GHz --guardInterval=1600ns --udp=0 --downlink=0 --useRts=1 --mpduBufferSize=512 --emlsrLinks=0,1,2 --emlsrPaddingDelay=0us --emlsrTransitionDelay=0us --channelSwitchDelay=1ns --emlsrMgrTypeId=ns3::AdvancedEmlsrManager --emlsrAuxSwitch=False --emlsrAuxTxCapable=False --nStations=4 --dlAckType=ACK-SU-FORMAT --enableUlOfdma=1 --enableBsrp=1 --mcs=1,5,8,11 --minExpectedThroughput=8Mbps --maxExpectedThroughput=333Mbps",
         "True",
         "True",
     ),

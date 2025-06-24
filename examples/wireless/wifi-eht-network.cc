@@ -14,6 +14,7 @@
 #include "ns3/eht-phy.h"
 #include "ns3/enum.h"
 #include "ns3/internet-stack-helper.h"
+#include "ns3/internet-static-setup-helper.h"
 #include "ns3/ipv4-address-helper.h"
 #include "ns3/log.h"
 #include "ns3/mobility-helper.h"
@@ -28,6 +29,7 @@
 #include "ns3/udp-server.h"
 #include "ns3/uinteger.h"
 #include "ns3/wifi-acknowledgment.h"
+#include "ns3/wifi-static-setup-helper.h"
 
 #include <algorithm>
 #include <array>
@@ -173,6 +175,8 @@ main(int argc, char* argv[])
     MHz_t auxPhyChWidth{20};
     bool auxPhyTxCapable{true};
     Time simulationTime{"10s"};
+    bool staticSetup{true};
+    auto startTime = Seconds(1);
     meter_u distance{1.0};
     GHz_t frequency{5};  // whether the first link operates in the 2.4, 5 or 6 GHz
     GHz_t frequency2{0}; // whether the second link operates in the 2.4, 5 or 6 GHz (0 means no
@@ -200,6 +204,9 @@ main(int argc, char* argv[])
     std::string fileName{""};
 
     CommandLine cmd(__FILE__);
+    cmd.AddValue("staticSetup",
+                 "Whether devices are configured using the static setup helper",
+                 staticSetup);
     cmd.AddValue(
         "frequency",
         "Whether the first link operates in the 2.4, 5 or 6 GHz band (other values gets rejected)",
@@ -590,6 +597,8 @@ main(int argc, char* argv[])
                 mac.SetType("ns3::ApWifiMac",
                             "EnableBeaconJitter",
                             BooleanValue(false),
+                            "BeaconGeneration",
+                            BooleanValue(!staticSetup),
                             "Ssid",
                             SsidValue(ssid));
                 apDevice = wifi.Install(phy, mac, wifiApNode);
@@ -618,6 +627,23 @@ main(int argc, char* argv[])
                 mobility.Install(wifiApNode);
                 mobility.Install(wifiStaNodes);
 
+                if (staticSetup)
+                {
+                    /* static setup of association and BA agreements */
+                    auto apDev = DynamicCast<WifiNetDevice>(apDevice.Get(0));
+                    NS_ASSERT(apDev);
+                    WifiStaticSetupHelper::SetStaticAssoc(apDev, staDevices);
+                    WifiStaticSetupHelper::SetStaticEmlsr(apDev, staDevices);
+                    for (uint32_t i = 0; i < staDevices.GetN(); ++i)
+                    {
+                        auto staDev = DynamicCast<WifiNetDevice>(staDevices.Get(i));
+                        NS_ASSERT(staDev);
+                        WifiStaticSetupHelper::SetStaticBlockAck(apDev, staDev, 0);
+                        WifiStaticSetupHelper::SetStaticBlockAck(staDev, apDev, 0);
+                    }
+                    startTime = MilliSeconds(1);
+                }
+
                 /* Internet stack*/
                 InternetStackHelper stack;
                 stack.Install(wifiApNode);
@@ -632,6 +658,12 @@ main(int argc, char* argv[])
 
                 staNodeInterfaces = address.Assign(staDevices);
                 apNodeInterface = address.Assign(apDevice);
+
+                if (staticSetup)
+                {
+                    /* static setup of ARP cache */
+                    InternetStaticSetupHelper::PopulateArpCache();
+                }
 
                 /* Setting applications */
                 ApplicationContainer serverApp;
@@ -656,7 +688,7 @@ main(int argc, char* argv[])
                     streamNumber += server.AssignStreams(serverNodes.get(), streamNumber);
 
                     serverApp.Start(Seconds(0));
-                    serverApp.Stop(simulationTime + Seconds(1));
+                    serverApp.Stop(simulationTime + startTime);
                     const auto packetInterval = payloadSize * 8.0 / maxLoad;
 
                     for (std::size_t i = 0; i < nStations; i++)
@@ -668,8 +700,8 @@ main(int argc, char* argv[])
                         ApplicationContainer clientApp = client.Install(clientNodes.Get(i));
                         streamNumber += client.AssignStreams(clientNodes.Get(i), streamNumber);
 
-                        clientApp.Start(Seconds(1));
-                        clientApp.Stop(simulationTime + Seconds(1));
+                        clientApp.Start(startTime);
+                        clientApp.Stop(simulationTime + startTime);
                     }
                 }
                 else
@@ -682,7 +714,7 @@ main(int argc, char* argv[])
                     streamNumber += packetSinkHelper.AssignStreams(serverNodes.get(), streamNumber);
 
                     serverApp.Start(Seconds(0));
-                    serverApp.Stop(simulationTime + Seconds(1));
+                    serverApp.Stop(simulationTime + startTime);
 
                     for (std::size_t i = 0; i < nStations; i++)
                     {
@@ -699,8 +731,8 @@ main(int argc, char* argv[])
                         ApplicationContainer clientApp = onoff.Install(clientNodes.Get(i));
                         streamNumber += onoff.AssignStreams(clientNodes.Get(i), streamNumber);
 
-                        clientApp.Start(Seconds(1));
-                        clientApp.Stop(simulationTime + Seconds(1));
+                        clientApp.Start(startTime);
+                        clientApp.Stop(simulationTime + startTime);
                     }
                 }
 
@@ -709,17 +741,17 @@ main(int argc, char* argv[])
 
                 if (tputInterval.IsStrictlyPositive())
                 {
-                    Simulator::Schedule(Seconds(1) + tputInterval,
+                    Simulator::Schedule(startTime + tputInterval,
                                         &PrintIntermediateTput,
                                         cumulRxBytes,
                                         udp,
                                         serverApp,
                                         payloadSize,
                                         tputInterval,
-                                        simulationTime + Seconds(1));
+                                        simulationTime + startTime);
                 }
 
-                Simulator::Stop(simulationTime + Seconds(1));
+                Simulator::Stop(simulationTime + startTime);
                 Simulator::Run();
 
                 cumulRxBytes = GetRxBytes(udp, serverApp, payloadSize);
