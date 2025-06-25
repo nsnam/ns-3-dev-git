@@ -370,6 +370,64 @@ by a scalar (numeric value)). Times can be written to/read from IO streams.
 In the case of writing it is easy to choose the output unit, different
 from the resolution unit.
 
+Here are examples of common usage:
+
+.. sourcecode:: cpp
+
+    Time t1 = MilliSeconds(1500); // 1.5 s = 1500 ms
+    Time t2 = MicroSeconds(500);  // 500 microseconds
+    Time t3 = t1 + t2;            // arithmetic
+    Time t4 = t3 * 2;             // multiplication
+
+    if (t4 > Seconds(3))
+    {
+        std::cout << "t4 is greater than 3 seconds\n";
+    }
+
+    double ms = t4.GetMilliSeconds(); // convert to double in ms
+
+    std::cout << t4.As(Time::MS) << "\n"; // stream with specific unit
+
+.. note::
+
+   When using floating-point values with constructors like ``Seconds(1.5)``,
+   users should be aware that values smaller than the current resolution
+   will be rounded. For example, if the resolution is set to nanoseconds,
+   values like ``Seconds(1e-10)`` will be rounded to zero.
+   Consider inspecting ``Time::SetResolution()`` and using methods like
+   ``GetNanoSeconds()`` to understand how sub-resolution values behave in practice.
+
+When calling ``Time::SetResolution()``, there is a trade-off between
+the precision of time measurements and the maximum simulation time
+span that can be represented. Finer resolutions (like femtoseconds)
+allow for more precise timing but reduce the maximum representable
+duration.
+
+.. list-table::
+  :header-rows: 1
+  :widths: 25 25 50
+
+  * - Resolution Unit
+    - Smallest Step
+    - Approximate Max Time Span
+  * - Seconds
+    - 1 s
+    - ~2.9 × 10¹¹ years
+  * - Milliseconds
+    - 1 ms
+    - ~2.9 × 10⁸ years
+  * - Microseconds
+    - 1 µs
+    - ~2.9 × 10⁵ years
+  * - Nanoseconds
+    - 1 ns
+    - ~292 years
+  * - Picoseconds
+    - 1 ps
+    - ~107 days
+  * - Femtoseconds
+    - 1 fs
+    - ~2.6 hours
 
 Scheduler
 *********
