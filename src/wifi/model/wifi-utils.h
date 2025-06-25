@@ -318,6 +318,20 @@ bool DoesOverlap(const FrequencyRange& rangeChannel1, const FrequencyRange& rang
 /**
  * Check whether two channels overlap.
  *
+ * @param channel1CenterFreqs the center frequencies of the first channel
+ * @param channel1Bw the total bandwidth of the first channel
+ * @param channel2CenterFreqs the center frequencies of the second channel
+ * @param channel2Bw the total bandwidth of the second channel
+ * @return true if the channels overlap, false otherwise
+ */
+bool DoesOverlap(const std::set<MHz_t>& channel1CenterFreqs,
+                 MHz_t channel1Bw,
+                 const std::set<MHz_t>& channel2CenterFreqs,
+                 MHz_t channel2Bw);
+
+/**
+ * Check whether two channels overlap.
+ *
  * @param channel1 the first channel
  * @param channel2 the second channel
  * @return true if the channels overlap, false otherwise

@@ -326,13 +326,11 @@ GetFrequencyRange(MHz_t centerFrequency, MHz_t bandwidth)
 }
 
 bool
-DoesOverlap(const WifiPhyOperatingChannel& channel1, const WifiPhyOperatingChannel& channel2)
+DoesOverlap(const std::set<MHz_t>& channel1CenterFreqs,
+            MHz_t channel1Bw,
+            const std::set<MHz_t>& channel2CenterFreqs,
+            MHz_t channel2Bw)
 {
-    // assume all segments have the same width for now
-    const auto channel1CenterFreqs = channel1.GetFrequencies();
-    const auto channel1Bw = channel1.GetTotalWidth() / channel1CenterFreqs.size();
-    const auto channel2CenterFreqs = channel2.GetFrequencies();
-    const auto channel2Bw = channel2.GetTotalWidth() / channel2CenterFreqs.size();
     for (const auto& freq1 : channel1CenterFreqs)
     {
         for (const auto& freq2 : channel2CenterFreqs)
@@ -345,6 +343,19 @@ DoesOverlap(const WifiPhyOperatingChannel& channel1, const WifiPhyOperatingChann
         }
     }
     return false;
+}
+
+bool
+DoesOverlap(const WifiPhyOperatingChannel& channel1, const WifiPhyOperatingChannel& channel2)
+{
+    // assume all segments have the same width for now
+    const std::set<MHz_t> channel1CenterFreqs(channel1.GetFrequencies().cbegin(),
+                                              channel1.GetFrequencies().cend());
+    const auto channel1Bw{channel1.GetTotalWidth() / channel1CenterFreqs.size()};
+    const std::set<MHz_t> channel2CenterFreqs(channel2.GetFrequencies().cbegin(),
+                                              channel2.GetFrequencies().cend());
+    const auto channel2Bw{channel2.GetTotalWidth() / channel2CenterFreqs.size()};
+    return DoesOverlap({channel1CenterFreqs}, channel1Bw, {channel2CenterFreqs}, channel2Bw);
 }
 
 /**
