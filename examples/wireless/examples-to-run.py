@@ -384,6 +384,26 @@ cpp_examples = [
         "True",
         "True",
     ),
+    (
+        "wifi-dso --simulationTime=1s --enableDso=1 --frequency=6GHz --apBw=320MHz --staBw=80MHz --nStas=4 --expectedThroughput=2Gbps",
+        "True",
+        "True",
+    ),
+    (
+        "wifi-dso --simulationTime=1s --enableDso=0 --frequency=6GHz --apBw=320MHz --staBw=80MHz --nStas=4 --expectedThroughput=500Mbps",
+        "True",
+        "True",
+    ),
+    (
+        "wifi-dso --simulationTime=1s --enableDso=1 --frequency=6GHz --apBw=320MHz --staBw=160MHz --nStas=2 --downlink=0 --enableUlOfdma=1 --muSchedAccessReqInterval=100us --expectedThroughput=2Gbps",
+        "True",
+        "True",
+    ),
+    (
+        "wifi-dso --simulationTime=1s --enableDso=0 --frequency=6GHz --apBw=320MHz --staBw=160MHz --nStas=2 --downlink=0 --enableUlOfdma=1 --muSchedAccessReqInterval=100us --expectedThroughput=1Gbps --RngRun=6",
+        "True",
+        "True",
+    ),
 ]
 
 # A list of Python examples to run in order to ensure that they remain
