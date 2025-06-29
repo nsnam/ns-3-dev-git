@@ -1767,6 +1767,92 @@ in the ``AdvancedApEmlsrManager`` class, with the difference that the former are
 failure, while the latter are only applied in case the ICF failure is due to a cross link collision
 (adhoc peers are single link devices, hence the concept of cross link collision is not applicable).
 
+Dynamic subband operation operation (DSO)
+#########################################
+
+The IEEE 802.11bn amendment introduced DSO operating mode to allow non-AP STAs with bandwidth narrower
+than the AP to be allocated frequency resources outside of their current operating bandwidth within the
+AP's bandwidth. |ns3| supports basic DSO operations as described in the following.
+
+Assumptions
+-----------
+
+802.11bn DSO is still under development and the standard is not yet finalized.
+The current implementation is based on the draft standard IEEE 802.11bn/D3.0
+and the following assumptions have been made:
+
+* Only UHR DSO-capable non-AP STAs are assumed to be present;
+* A DSO-capable non-AP STA operates in DSO mode directly once associated (mechanism to advertise DSO
+  mode is not standardized yet);
+* All DSO-capable non-AP STAs are assumed to have the same bandwidth, and stay constant at run-time;
+* Multi-user scheduler always allocates equal frequency resources to each non-AP STA;
+* Multi-user scheduler initiates the DSO operation by sending a DSO Trigger Frame if the first
+  candidate STA is DSO-capable;
+* Allocated frequency resources are static during a same DSO TXOP;
+* DSO switch back delay is not advertised to the AP and has a hardcoded value;
+* All DSO STAs involved in the current TXOP are assumed to switch back to their primary subband
+  at the same time, hence the AP is blocking any downlink transmission to all DSO STAs
+  until they have switched back to their primary subband;
+* UL MU CS is not used in DSO operations;
+* Padding is not used in DSO operations;
+* EMLSR and DSO operations cannot be used concurrently;
+* DSO operations are not supported on P2P links.
+
+DSO-capable multi-user scheduler
+--------------------------------
+
+A lightweight version of **RrMultiUserScheduler**, named **DsoCapableMultiUserScheduler**,
+has been added for DSO operations. It works with 802.11bn STAs only and supports the capability
+to allocate RUs to DSO STAs outside of their current operating bandwidth.
+
+Unlike the **RrMultiUserScheduler**, the **DsoCapableMultiUserScheduler** will not limit
+the bandwidth of the MU PPDU to the bandwidth of the first candidate STA, but will try to
+allocate the whole bandwidth of the AP to the MU PPDU, if possible. It will however limit
+the with of the RU that can be allocated to each STA to the bandwidth of the first candidate STA.
+
+Once channel access is gained, the **DsoCapableMultiUserScheduler** will try to send a BSRP triggered
+frame which acts as a DSO Trigger Frame prior to a DL MU transmission. During that operation, equal-sized
+RUs are allocated to each DSO-capable non-AP STA for which a downlink transmission is pending, limited by
+the maximum number of STAs that can be granted an RU per DSO TXOP, controlled by the
+``DsoCapableMultiUserScheduler::NStations`` attribute. If no downlink transmission is pending for any
+DSO-capable non-AP STA, the **DsoCapableMultiUserScheduler** will still allocate RUs to the next DSO-capable
+non-AP candidate STAs prior to a UL MU transmission.
+
+DSO manager
+-----------
+
+The **DsoManager** is the base class for DSO operations.
+It provides the basic functionality to determine DSO subbands upon association with an AP,
+to switch to a DSO subband based on the RU allocated to the DSO non-AP STA in the received ICF,
+and to switch back to the primary subband once the DSO non-AP STA is no longer involved
+in the DSO TXOP or once the DSO TXOP is terminated.
+
+DSO TXOP events
+---------------
+
+The DSO manager provides a ``DsoTxopEvent`` trace to further analyze the DSO operations.
+This trace is fired when one of the following DSO TXOP event occurs:
+
+* RX_ICF: the DSO manager has received an ICF to indicate the initiation of a DSO TXOP;
+* TX_ICR: the DSO manager has transmitted a response (ICR) to the ICF that initiated the
+  DSO TXOP once it has eventually switched the PHY to operate on one of the DSO subbands;
+* TIMEOUT: no PHY-RXSTART indication has been received by the DSO non-AP STA within the
+  expected timeout value. This indicates the DSO non-AP STA is no longer involved in the
+  DSO TXOP and is eventually switching back to its primary subchannel;
+* DURATION_DETECT_END: the DSO TXOP is terminated because the duration/ID field of the most
+  recently received frame has been detected to be zero and EarlyTxopEndDetect attribute is enabled.
+  The DSO STA might be switching back to its primary subchannel;
+* RX_CF_END: the DSO TXOP is terminated because a CF-End frame has been received and the DSO STA
+  might be switching back to its primary subchannel;
+* RX_OBSS: the DSO TXOP is terminated because an OBSS frame has been received and the DSO STA might
+  be switching back to its primary subchannel;
+* RX_OTHER: the DSO TXOP is terminated because a frame that is not an OBSS frame has been received
+  and is not intended to the DSO non-AP STA. This indicates the DSO non-AP STA is no longer involved
+  in the DSO TXOP and is eventually switching back to its primary subchannel;
+* FAILED_RESPONSE: the DSO TXOP is terminated because there has been no response to the most recently
+  received frame from the AP that requires an immediate response after a SIFS has been transmitted.
+  This trace is not fired yet in the current implementation.
+
 Ack manager
 ###########
 
