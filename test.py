@@ -1408,8 +1408,8 @@ def run_tests():
                 standard_out = standard_out.decode()
             list_items = standard_out.split("\n")
             list_items.sort()
-        print("Test Type    Test Name")
-        print("---------    ---------")
+        print("Test Type            Test Name")
+        print("---------------      ---------")
         for item in list_items:
             if len(item.strip()):
                 print(item)
@@ -1425,7 +1425,7 @@ def run_tests():
             python_examples_sorted.sort()
             examples_sorted.extend(python_examples_sorted)
         for item in examples_sorted:
-            print("example     ", item)
+            print("example             ", item)
         print()
 
     if args.kinds or args.list:

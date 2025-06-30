@@ -790,11 +790,11 @@ TestRunnerImpl::PrintTestNameList(std::list<TestCase*>::const_iterator begin,
     NS_LOG_FUNCTION(this << &begin << &end << printTestType);
     std::map<TestSuite::Type, std::string> label;
 
-    label[TestSuite::Type::ALL] = "all          ";
-    label[TestSuite::Type::UNIT] = "unit         ";
-    label[TestSuite::Type::SYSTEM] = "system       ";
-    label[TestSuite::Type::EXAMPLE] = "example      ";
-    label[TestSuite::Type::PERFORMANCE] = "performance  ";
+    label[TestSuite::Type::ALL] = "all                  ";
+    label[TestSuite::Type::UNIT] = "unit                 ";
+    label[TestSuite::Type::SYSTEM] = "system               ";
+    label[TestSuite::Type::EXAMPLE] = "example-as-test      ";
+    label[TestSuite::Type::PERFORMANCE] = "performance          ";
 
     for (auto i = begin; i != end; ++i)
     {
@@ -813,7 +813,7 @@ TestRunnerImpl::PrintTestTypeList() const
 {
     NS_LOG_FUNCTION(this);
     std::cout << "  core:        Run all TestSuite-based tests (exclude examples)" << std::endl;
-    std::cout << "  example:     Examples (to see if example programs run successfully)"
+    std::cout << "  example-as-test:     Examples (to see if example programs run successfully)"
               << std::endl;
     std::cout
         << "  performance: Performance Tests (check to see if the system is as fast as expected)"
