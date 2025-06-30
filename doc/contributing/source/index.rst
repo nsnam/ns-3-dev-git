@@ -32,3 +32,4 @@ This document is written in `reStructuredText <http://docutils.sourceforge.net/r
    models
    external
    coding-style
+   best-practices
