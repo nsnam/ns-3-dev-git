@@ -46,7 +46,7 @@ DsoManager::GetTypeId()
                 "DsoSwitchBackDelay",
                 "The DSO Switch Back Delay.",
                 TimeValue(MicroSeconds(
-                    275)), // aSIFSTime + aSlotTime + aRxPHYStartDelay + default switching delay
+                    295)), // aSIFSTime + aSlotTime + aRxPHYStartDelay + default switching delay
                 MakeTimeAccessor(&DsoManager::m_dsoSwitchBackDelay),
                 MakeTimeChecker())
             .AddTraceSource("DsoTxopEvent",
