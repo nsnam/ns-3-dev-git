@@ -120,6 +120,11 @@ class WIFI_EXPORT WifiAssocManager : public Object
     void SetStaWifiMac(Ptr<StaWifiMac> mac);
 
     /**
+     * Clear the stored information about all known APs.
+     */
+    void ClearStoredApInfo();
+
+    /**
      * Start scanning using the current STA configuration.
      */
     void StartScanning();
@@ -138,8 +143,10 @@ class WIFI_EXPORT WifiAssocManager : public Object
      * Notify that the given link has completed channel switching.
      *
      * @param linkId the ID of the given link
+     * @return whether the channel switch was requested by this manager in the context of its
+     *         scanning/association procedures
      */
-    virtual void NotifyChannelSwitched(uint8_t linkId) = 0;
+    bool NotifyChannelSwitched(linkId_t linkId);
 
     /**
      * Notify that ML setup has been completed and link IDs have been swapped. This method
@@ -185,6 +192,11 @@ class WIFI_EXPORT WifiAssocManager : public Object
      */
     static std::list<WifiAssocManager::RnrLinkInfo> GetAllAffiliatedAps(
         const ReducedNeighborReport& rnr);
+
+    /**
+     * @return whether a channel scanning procedure is ongoing
+     */
+    bool IsScanning() const;
 
     /**
      * Convert the data structure containing the channels to scan during scanning procedures into
@@ -272,6 +284,19 @@ class WIFI_EXPORT WifiAssocManager : public Object
     bool IsChannelWidthCompatible(const StaWifiMac::ApInfo& apInfo) const;
 
     /**
+     * Start a scanning procedure for each of the PHYs indicated in the scanning parameters. For
+     * each PHY, all frequency channels indicated in the scanning parameters for that PHY are
+     * scanned.
+     */
+    void ScanChannels();
+
+    /**
+     * Subclasses must implement this method, which is called at the end of a channel scanning
+     * procedure. This method needs to call ScanningTimeout(), which notifies the STA wifi MAC.
+     */
+    virtual void EndScanning() = 0;
+
+    /**
      * Extract the best AP to associate with from the sorted list and return
      * it, if any, to the STA wifi MAC along with the notification that scanning
      * is completed.
@@ -298,6 +323,7 @@ class WIFI_EXPORT WifiAssocManager : public Object
     std::set<linkId_t> m_allowedLinks; /**< Only Beacon and Probe Response frames received on a
                                             link belonging to the this set are processed */
 
+    Time m_channelSwitchTimeout;        ///< maximum delay for channel switching
     bool m_allowAssocAllChannelWidths;  ///< flag whether the check on channel width compatibility
                                         ///< with the candidate AP should be skipped
     bool m_enableScanning;              ///< whether channel scanning is enabled
@@ -329,13 +355,60 @@ class WIFI_EXPORT WifiAssocManager : public Object
     void ExpandScanningChannelsMap();
 
     /**
-     * Start a scanning procedure. This method needs to schedule a call to
-     * ScanningTimeout when the scanning procedure is completed.
+     * Request subclasses to start a scanning procedure.
      */
     virtual void DoStartScanning() = 0;
 
+    /**
+     * Notify subclasses that the given link has completed channel switching.
+     *
+     * @param linkId the ID of the given link
+     * @return whether the channel switch was requested by the subclass in the context of its
+     *         scanning/association procedures
+     */
+    virtual bool DoNotifyChannelSwitched(linkId_t linkId) = 0;
+
+    /**
+     * Switch the given PHY to the given channel (if needed) and start scanning.
+     *
+     * @param phyId the ID of the given PHY
+     * @param band the band of the channel to scan
+     * @param channelIt an iterator pointing to the channel to scan
+     */
+    void SwitchToChannelToScan(uint8_t phyId,
+                               WifiPhyBand band,
+                               WifiScanParams::ChannelList::mapped_type::const_iterator channelIt);
+
+    /**
+     * Scan the channel the given PHY is currently operating on using active or passive scanning
+     * (depending on the scanning parameters).
+     *
+     * @param phyId the ID of the given PHY
+     * @param band the band in which the given PHY is operating
+     * @param channelIt an iterator pointing to the current channel in the scanning list
+     */
+    void ScanCurrentChannel(uint8_t phyId,
+                            WifiPhyBand band,
+                            WifiScanParams::ChannelList::mapped_type::const_iterator channelIt);
+
+    /**
+     * Switch the given PHY to the next channel to scan. If there is no other channel to scan for
+     * the given PHY, call EndScanning() if scanning has been completed for all other PHYs.
+     *
+     * @param phyId the ID of the given PHY
+     * @param band the band in which the given PHY is operating
+     * @param channelNo the current channel number
+     */
+    void SwitchToNextChannelToScan(uint8_t phyId, WifiPhyBand band, uint8_t channelNo);
+
     WifiScanParams m_scanParams; ///< scanning parameters
-    SortedList m_apList;         ///< sorted list of candidate APs
+    std::map<uint8_t, EventId>
+        m_currentChannelScanEnd; ///< PHY ID-indexed map of events indicating the end of the scan of
+                                 ///< the current channel
+    std::map<uint8_t, EventId>
+        m_switchToChannelToScanTimeout; ///< PHY ID-indexed map of events indicating the end of the
+                                        ///< timer started when switching to the channel to scan
+    SortedList m_apList;                ///< sorted list of candidate APs
     /// hash table to help locate ApInfo objects in the sorted list based on the BSSID
     std::unordered_map<Mac48Address, SortedList::const_iterator, WifiAddressHash> m_apListIt;
 };

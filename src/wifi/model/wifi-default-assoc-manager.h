@@ -34,7 +34,7 @@ class WIFI_EXPORT WifiDefaultAssocManager : public WifiAssocManager
     WifiDefaultAssocManager();
     ~WifiDefaultAssocManager() override;
 
-    void NotifyChannelSwitched(uint8_t linkId) override;
+    bool DoNotifyChannelSwitched(linkId_t linkId) override;
     bool Compare(const StaWifiMac::ApInfo& lhs, const StaWifiMac::ApInfo& rhs) const override;
 
   protected:
@@ -46,7 +46,7 @@ class WIFI_EXPORT WifiDefaultAssocManager : public WifiAssocManager
      * Perform operations to do at the end of a scanning procedure, such as
      * identifying the links to setup in case of 11be MLD devices.
      */
-    void EndScanning();
+    void EndScanning() override;
 
   private:
     void DoStartScanning() override;
@@ -59,9 +59,6 @@ class WIFI_EXPORT WifiDefaultAssocManager : public WifiAssocManager
      */
     void ChannelSwitchTimeout(uint8_t linkId);
 
-    EventId m_waitBeaconEvent;                ///< wait beacon event
-    EventId m_probeRequestEvent;              ///< probe request event
-    Time m_channelSwitchTimeout;              ///< maximum delay for channel switching
     bool m_skipAssocIncompatibleChannelWidth; ///< flag whether to skip APs with incompatible
                                               ///< channel width
     bool m_skipScanningIfApInfoAvail; ///< whether AP information from a scanning procedure should

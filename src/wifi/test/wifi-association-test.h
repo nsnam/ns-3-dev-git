@@ -42,7 +42,6 @@ class WifiTestAssocManager : public WifiAssocManager
      */
     static TypeId GetTypeId();
 
-    void NotifyChannelSwitched(linkId_t linkId) override;
     bool Compare(const StaWifiMac::ApInfo& lhs, const StaWifiMac::ApInfo& rhs) const override;
 
     /**
@@ -62,6 +61,8 @@ class WifiTestAssocManager : public WifiAssocManager
 
   private:
     void DoStartScanning() override;
+    void EndScanning() override;
+    bool DoNotifyChannelSwitched(linkId_t linkId) override;
 
     Mac48Address m_bestAp; ///< the MAC address of the AP to associate with
     std::list<StaWifiMac::ApInfo::SetupLinksInfo> m_setupLinks; ///< the list of links to setup
