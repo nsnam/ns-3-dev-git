@@ -339,6 +339,15 @@ bool DoesOverlap(const std::set<MHz_t>& channel1CenterFreqs,
 bool DoesOverlap(const WifiPhyOperatingChannel& channel1, const WifiPhyOperatingChannel& channel2);
 
 /**
+ * Check whether an operating channel overlaps with a frequency range.
+ *
+ * @param opChannel the operating channel
+ * @param freqRange the frequency range
+ * @return true if the operating channel overlaps with the frequency range, false otherwise
+ */
+bool DoesOverlap(const WifiPhyOperatingChannel& opChannel, const FrequencyRange& freqRange);
+
+/**
  * Get the operating channel of an AP from the Operation elements included in a management frame.
  *
  * @param apBw the bandwidth of the operating channel the AP is operating on

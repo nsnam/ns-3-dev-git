@@ -358,6 +358,20 @@ DoesOverlap(const WifiPhyOperatingChannel& channel1, const WifiPhyOperatingChann
     return DoesOverlap({channel1CenterFreqs}, channel1Bw, {channel2CenterFreqs}, channel2Bw);
 }
 
+bool
+DoesOverlap(const WifiPhyOperatingChannel& opChannel, const FrequencyRange& freqRange)
+{
+    NS_ASSERT_MSG(opChannel.IsSet(), "Operating channel is not set");
+    const auto centerFreqs = opChannel.GetFrequencies();
+    const auto bw = opChannel.GetTotalWidth();
+    const auto rangeBw = freqRange.maxFrequency - freqRange.minFrequency;
+    const auto rangeFreq = freqRange.minFrequency + (rangeBw / 2);
+    return DoesOverlap(std::set<MHz_t>(centerFreqs.cbegin(), centerFreqs.cend()),
+                       bw,
+                       {rangeFreq},
+                       rangeBw);
+}
+
 /**
  * @brief Get the operating channel based on the center frequency segments and primary 20 MHz
  * channel number.
