@@ -287,6 +287,7 @@ class SpectrumWifiPhy : public WifiPhy
     bool m_disableWifiReception;           //!< forces this PHY to fail to sync on any signal
     bool m_trackSignalsInactiveInterfaces; //!< flag whether signals coming from inactive spectrum
                                            //!< PHY interfaces are tracked
+    bool m_pendingChannelSwitch{false};    //!< flag whether a channel switch is pending
 
     TracedCallback<Ptr<const SpectrumSignalParameters>, uint32_t, double, Time>
         m_signalCb; //!< Signal callback

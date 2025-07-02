@@ -143,6 +143,7 @@ SpectrumWifiPhyHelper::Create(Ptr<Node> node, Ptr<WifiNetDevice> device) const
                 m_preambleDetectionModel.at(i).Create<PreambleDetectionModel>();
             phy->SetPreambleDetectionModel(preambleDetection);
         }
+        phy->ConfigureStandard(device->GetStandard());
         InstallPhyInterfaces(i, phy);
         phy->SetChannelSwitchedCallback(
             MakeCallback(&SpectrumWifiPhyHelper::SpectrumChannelSwitched).Bind(phy));

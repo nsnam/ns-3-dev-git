@@ -1148,7 +1148,6 @@ WifiHelper::Install(const WifiPhyHelper& phyHelper,
                             << phys.size() << ")");
         for (std::size_t i = 0; i < phys.size(); i++)
         {
-            phys[i]->ConfigureStandard(m_standard);
             managers.push_back(stationManagers[i].Create<WifiRemoteStationManager>());
         }
         device->SetRemoteStationManagers(managers);

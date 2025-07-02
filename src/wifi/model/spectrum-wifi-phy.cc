@@ -89,8 +89,6 @@ SpectrumWifiPhy::GetTypeId()
 }
 
 SpectrumWifiPhy::SpectrumWifiPhy()
-    : m_spectrumPhyInterfaces{},
-      m_currentSpectrumPhyInterface{nullptr}
 {
     NS_LOG_FUNCTION(this);
 }
@@ -273,6 +271,12 @@ SpectrumWifiPhy::AddChannel(const Ptr<SpectrumChannel> channel, const FrequencyR
         wifiSpectrumPhyInterface->SetDevice(GetDevice());
     }
     m_spectrumPhyInterfaces.emplace(freqRange, wifiSpectrumPhyInterface);
+    if (m_pendingChannelSwitch && DoesOverlap(GetOperatingChannel(), freqRange))
+    {
+        // channel for active PHY interface added, finalize deferred channel switch
+        m_pendingChannelSwitch = false;
+        FinalizeChannelSwitch();
+    }
 }
 
 void
@@ -310,6 +314,16 @@ void
 SpectrumWifiPhy::FinalizeChannelSwitch()
 {
     NS_LOG_FUNCTION(this);
+
+    if (m_spectrumPhyInterfaces.empty())
+    {
+        NS_ASSERT_MSG(!m_pendingChannelSwitch, "Another channel switch is already pending");
+        NS_LOG_DEBUG(
+            "No spectrum channel has been set yet, defer configuration of active PHY interface");
+        m_pendingChannelSwitch = true;
+        return;
+    }
+
     const auto frequenciesAfter = GetOperatingChannel().GetFrequencies();
     const auto widthsAfter = GetOperatingChannel().GetWidths();
 
@@ -434,7 +448,7 @@ SpectrumWifiPhy::ConfigureInterface(const std::vector<MHz_t>& frequencies, MHz_t
         }
     }
 
-    NS_ABORT_MSG_IF(spectrumPhyInterface == m_currentSpectrumPhyInterface,
+    NS_ABORT_MSG_IF(IsInitialized() && (spectrumPhyInterface == m_currentSpectrumPhyInterface),
                     "This method should not be called for the current interface");
 
     if ((frequencies == spectrumPhyInterface->GetCenterFrequencies()) &&

@@ -109,6 +109,7 @@ YansWifiPhyHelper::Create(Ptr<Node> node, Ptr<WifiNetDevice> device) const
     }
     phy->SetChannel(m_channel);
     phy->SetDevice(device);
+    phy->ConfigureStandard(device->GetStandard());
     return std::vector<Ptr<WifiPhy>>({phy});
 }
 

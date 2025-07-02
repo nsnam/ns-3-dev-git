@@ -1168,7 +1168,7 @@ WifiPhy::SetOperatingChannel(const ChannelSegmentsWithUnits& channelSegments)
                          << static_cast<WifiPhyBand>(std::get<2>(channelSegments.front()))
                          << +std::get<3>(channelSegments.front()));
 
-    if (m_operatingChannel.IsSet() && (m_channelSettings == channelSegments))
+    if (IsInitialized() && m_operatingChannel.IsSet() && (m_channelSettings == channelSegments))
     {
         NS_LOG_DEBUG("Already operating on requested channel");
         return;

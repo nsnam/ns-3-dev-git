@@ -106,6 +106,7 @@ MeshHelper::CreateInterface(const WifiPhyHelper& phyHelper,
                             uint16_t channelId) const
 {
     Ptr<WifiNetDevice> device = CreateObject<WifiNetDevice>();
+    device->SetStandard(m_standard);
 
     // this is a const method, but we need to force the correct QoS setting
     ObjectFactory macObjectFactory = m_mac;
@@ -120,7 +121,6 @@ MeshHelper::CreateInterface(const WifiPhyHelper& phyHelper,
     std::vector<Ptr<WifiPhy>> phys = phyHelper.Create(node, device);
     NS_ABORT_IF(phys.size() != 1);
     node->AddDevice(device);
-    phys[0]->ConfigureStandard(m_standard);
     device->SetPhy(phys[0]);
     Ptr<MeshWifiInterfaceMac> mac = macObjectFactory.Create<MeshWifiInterfaceMac>();
     NS_ASSERT(mac);
