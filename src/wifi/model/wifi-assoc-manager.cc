@@ -146,16 +146,16 @@ WifiAssocManager::MatchScanParams(const StaWifiMac::ApInfo& apInfo) const
     }
 
     // we need to check if the AP is operating on a requested channel
-    auto channelMatch = [&apInfo](auto&& channel) {
-        if (channel.number != 0 && channel.number != apInfo.m_channel.number)
+    auto channelMatch = [&apInfo](auto&& channels) {
+        if (channels.first != WIFI_PHY_BAND_UNSPECIFIED && channels.first != apInfo.m_channel.band)
         {
             return false;
         }
-        if (channel.band != WIFI_PHY_BAND_UNSPECIFIED && channel.band != apInfo.m_channel.band)
-        {
-            return false;
-        }
-        return true;
+        return std::find_if(channels.second.cbegin(),
+                            channels.second.cend(),
+                            [&apInfo](auto channel) {
+                                return channel == 0 || channel == apInfo.m_channel.number;
+                            }) != channels.second.cend();
     };
 
     if (std::all_of(m_scanParams.channelList.cbegin(),

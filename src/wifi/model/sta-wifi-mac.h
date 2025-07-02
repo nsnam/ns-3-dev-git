@@ -13,7 +13,10 @@
 
 #include "wifi-mac.h"
 
+#include "ns3/attribute-container.h"
 #include "ns3/eht-configuration.h"
+#include "ns3/enum.h"
+#include "ns3/pair.h"
 
 #include <set>
 #include <variant>
@@ -63,27 +66,18 @@ enum class WifiScanType : uint8_t
  */
 struct WifiScanParams
 {
-    /**
-     * Struct identifying a channel to scan.
-     * A channel number equal to zero indicates to scan all the channels;
-     * an unspecified band (WIFI_PHY_BAND_UNSPECIFIED) indicates to scan
-     * all the supported PHY bands.
-     */
-    struct Channel
-    {
-        uint16_t number{0};                          ///< channel number
-        WifiPhyBand band{WIFI_PHY_BAND_UNSPECIFIED}; ///< PHY band
-    };
+    /// typedef for a PHY band-indexed map of channels to scan
+    using ChannelList = std::map<WifiPhyBand, std::list<uint64_t>>;
 
-    /// typedef for a list of channels
-    using ChannelList = std::list<Channel>;
+    /// typedef for PHY ID-indexed map of channels to scan
+    using Map = std::map<uint8_t, ChannelList>;
 
-    WifiScanType type;                          ///< indicates either active or passive scanning
-    Ssid ssid;                                  ///< desired SSID or wildcard SSID
-    std::map<uint8_t, ChannelList> channelList; ///< list of channels to scan, for each PHY ID
-    Time probeDelay;                            ///< delay prior to transmitting a Probe Request
-    Time minChannelTime;                        ///< minimum time to spend on each channel
-    Time maxChannelTime;                        ///< maximum time to spend on each channel
+    WifiScanType type;   ///< indicates either active or passive scanning
+    Ssid ssid;           ///< desired SSID or wildcard SSID
+    Map channelList;     ///< list of channels to scan, for each PHY ID
+    Time probeDelay;     ///< delay prior to transmitting a Probe Request
+    Time minChannelTime; ///< minimum time to spend on each channel
+    Time maxChannelTime; ///< maximum time to spend on each channel
 };
 
 /**
@@ -168,12 +162,19 @@ class StaWifiMac : public WifiMac
             Mac48Address bssid;  ///< BSSID
         };
 
+        /// Identify a channel via its number and frequency band
+        struct Channel
+        {
+            uint16_t number;                             ///< channel number
+            WifiPhyBand band{WIFI_PHY_BAND_UNSPECIFIED}; ///< PHY band
+        };
+
         Mac48Address m_bssid;         ///< BSSID
         Mac48Address m_apAddr;        ///< AP MAC address
         double m_snr;                 ///< SNR in linear scale
         MgtResponseFrameType m_frame; ///< The body of the management frame used to update AP info
-        WifiScanParams::Channel m_channel; ///< The channel the management frame was received on
-        uint8_t m_linkId;                  ///< ID of the link used to communicate with the AP
+        Channel m_channel;            ///< The channel the management frame was received on
+        uint8_t m_linkId;             ///< ID of the link used to communicate with the AP
         std::list<SetupLinksInfo>
             m_setupLinks; ///< information about the links to setup between MLDs
     };
@@ -421,6 +422,15 @@ class StaWifiMac : public WifiMac
      * @param notifyAp whether the AP must be notified by sending a Disassociation frame
      */
     void ForceDisassociation(bool notifyAp);
+
+    /**
+     * Convert the data structure containing the channels to scan during scanning procedures into
+     * a string formatted as described for the ScanningChannels attribute.
+     *
+     * @param channels the data structure containing the channels to scan
+     * @return a string formatted as described for the ScanningChannels attribute
+     */
+    static std::string ScanningChannelsToStr(const WifiScanParams::Map& channels);
 
   protected:
     /**
@@ -725,35 +735,74 @@ class StaWifiMac : public WifiMac
      * @param linkId the ID of the given link
      * @return a (channel number, PHY band) pair
      */
-    WifiScanParams::Channel GetCurrentChannel(uint8_t linkId) const;
+    ApInfo::Channel GetCurrentChannel(uint8_t linkId) const;
 
     void DoInitialize() override;
     void DoDispose() override;
 
-    MacState m_state;                             ///< MAC state
-    uint16_t m_aid;                               ///< Association AID
-    Ptr<WifiAssocManager> m_assocManager;         ///< Association Manager
-    Ptr<PowerSaveManager> m_powerSaveManager;     ///< Power Save Manager
-    WifiAssocType m_assocType;                    ///< type of association
-    Ptr<EmlsrManager> m_emlsrManager;             ///< EMLSR Manager
-    Ptr<DsoManager> m_dsoManager;                 ///< DSO Manager
-    Time m_waitBeaconTimeout;                     ///< wait beacon timeout
-    Time m_probeRequestTimeout;                   ///< probe request timeout
-    Time m_assocRequestTimeout;                   ///< association request timeout
-    EventId m_assocRequestEvent;                  ///< association request event
-    Time m_disassocTimeout;                       ///< disassociation timeout
-    EventId m_disassocEvent;                      ///< disassociation event
-    uint32_t m_maxMissedBeacons;                  ///< maximum missed beacons
-    EventId m_beaconWatchdog;                     //!< beacon watchdog
-    Time m_beaconWatchdogEnd{0};                  //!< beacon watchdog end
-    bool m_enableScanning;                        //!< enable channel scanning
-    bool m_activeProbing;                         ///< active probing
-    std::optional<Mac48Address> m_prevApAddr;     ///< the address (MLD address for ML setup, link
-                                                  ///< address for legacy association) of the AP
-                                                  ///< this STA was previously associated with
-    Ptr<RandomVariableStream> m_probeDelay;       ///< RandomVariable used to randomize the time
-                                                  ///< of the first Probe Response on each channel
-    Time m_pmModeSwitchTimeout;                   ///< PM mode switch timeout
+    /// typedef for an attribute value storing a pair (WifiPhyBand, list of channel numbers)
+    using PhyBandChannelNumbersPairValue =
+        PairValue<EnumValue<WifiPhyBand>, AttributeContainerValue<UintegerValue>>;
+
+    /**
+     * Get a checker for an attribute value consisting of a WifiPhyBand-index map of the list of
+     * channels to scan. This is used internally by SetScanningChannelsFromStr() and
+     * GetStrFromScanningChannels().
+     *
+     * @return a checker for an attribute value consisting of a WifiPhyBand-index map of the list
+     *         of channels to scan
+     */
+    static Ptr<const AttributeChecker> GetPhyBandChannelListChecker();
+
+    /**
+     * Set the channels to scan during scanning procedures starting from a string formatted as
+     * described for the ScanningChannels attribute.
+     *
+     * @param s the string formatted as described for the ScanningChannels attribute
+     */
+    void SetScanningChannelsFromStr(const std::string& s);
+
+    /**
+     * Process the data structure containing the channels to scan by replacing unspecified band
+     * and channel number values with their actual values, provided that PHYs have been installed.
+     */
+    void ExpandScanningChannelsMap();
+
+    /**
+     * For every PHY ID in the data structure containing the channels to scan for which the PHY
+     * band-indexed map is empty, insert the primary 20 MHz channel the PHY is currently operating
+     * on.
+     *
+     * @return a copy of the data structure containing the channels to scan with the indication of
+     *         the current channels where needed
+     */
+    WifiScanParams::Map SetCurrentChannelsForScanning();
+
+    MacState m_state;                         ///< MAC state
+    uint16_t m_aid;                           ///< Association AID
+    Ptr<WifiAssocManager> m_assocManager;     ///< Association Manager
+    Ptr<PowerSaveManager> m_powerSaveManager; ///< Power Save Manager
+    WifiAssocType m_assocType;                ///< type of association
+    Ptr<EmlsrManager> m_emlsrManager;         ///< EMLSR Manager
+    Ptr<DsoManager> m_dsoManager;             ///< DSO Manager
+    Time m_waitBeaconTimeout;                 ///< wait beacon timeout
+    Time m_probeRequestTimeout;               ///< probe request timeout
+    WifiScanParams::Map m_scanChannels;       ///< data structure containing the channels to scan
+    Time m_assocRequestTimeout;               ///< association request timeout
+    EventId m_assocRequestEvent;              ///< association request event
+    Time m_disassocTimeout;                   ///< disassociation timeout
+    EventId m_disassocEvent;                  ///< disassociation event
+    uint32_t m_maxMissedBeacons;              ///< maximum missed beacons
+    EventId m_beaconWatchdog;                 //!< beacon watchdog
+    Time m_beaconWatchdogEnd{0};              //!< beacon watchdog end
+    bool m_enableScanning;                    //!< enable channel scanning
+    bool m_activeProbing;                     ///< active probing
+    std::optional<Mac48Address> m_prevApAddr; ///< the address (MLD address for ML setup, link
+                                              ///< address for legacy association) of the AP
+                                              ///< this STA was previously associated with
+    Ptr<RandomVariableStream> m_probeDelay;   ///< RandomVariable used to randomize the time
+                                              ///< of the first Probe Response on each channel
+    Time m_pmModeSwitchTimeout;               ///< PM mode switch timeout
     std::map<uint8_t, EventId> m_emlsrLinkSwitch; ///< maps PHY ID to the event scheduled to switch
                                                   ///< the corresponding PHY to a new EMLSR link
 

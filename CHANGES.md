@@ -32,6 +32,7 @@ This file is a best-effort approach to solving this issue; we will do our best b
 * (wifi) Added a ``WifiStaticSetupHelper`` to statically establish association, Block Ack agreements, P2P links, etc. without actually exchanging management frames
 * (internet) Added an ``InternetStaticSetupHelper`` to statically configure ARP caches for all devices.
 * (wifi) Added a new `ForceDisassociation` attribute to `StaWifiMac` to force a non-AP STA to disassociate from the current AP, which can be optionally notified through a Disassociation frame.
+* (wifi) Added a new `ScanningChannels` attribute to `StaWifiMac` to select the PHY(s) to use for the next channel scanning and the scope of the scanning, i.e., which channel(s) to scan in which band(s).
 
 ### Changes to existing API
 

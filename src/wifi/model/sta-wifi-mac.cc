@@ -21,7 +21,6 @@
 #include "wifi-net-device.h"
 #include "wifi-phy.h"
 
-#include "ns3/attribute-container.h"
 #include "ns3/dso-manager.h"
 #include "ns3/eht-configuration.h"
 #include "ns3/emlsr-manager.h"
@@ -29,7 +28,6 @@
 #include "ns3/ht-configuration.h"
 #include "ns3/log.h"
 #include "ns3/packet.h"
-#include "ns3/pair.h"
 #include "ns3/pointer.h"
 #include "ns3/random-variable-stream.h"
 #include "ns3/shuffle.h"
@@ -99,6 +97,33 @@ StaWifiMac::GetTypeId()
                           StringValue("ns3::UniformRandomVariable[Min=50.0|Max=250.0]"),
                           MakePointerAccessor(&StaWifiMac::m_probeDelay),
                           MakePointerChecker<RandomVariableStream>())
+            .AddAttribute(
+                "ScanningChannels",
+                "Use this attribute to set which channels to scan and which PHYs to use during "
+                "scanning procedures. For each PHY to use, a PHY band-indexed map of the numbers "
+                "of the 20MHz channels to scan must be specified. The string must contain the PHY "
+                "ID followed by a colon(':') and the map of the channels to scan using the PHY "
+                "with the given ID. A pipe ('|') is used to separate the definition of the channel "
+                "maps for two PHYs. The map of channels to scan using a PHY can be specified in "
+                "one of the following ways: (a) empty map, causing only the currently configured "
+                "frequency channel to be scanned; (b) a single entry given by the pair "
+                "(WIFI_PHY_BAND_UNSPECIFIED, {0}): all the channels of all the bands are scanned; "
+                "(c) one or more entries, for all of which the key is not the unspecified PHY "
+                "band: scan all the channels specified for the respective bands, where 0 indicates "
+                "all channels in the corresponding band. The (PHY band, channel numbers list) "
+                "pairs shall be separated by a semicolon (;); in every pair, the PHY band and the "
+                "channel numbers list are separated by a blank space, and the elements of each "
+                "list are separated by a comma (,) without spaces. "
+                "Example: \"0 : WIFI_PHY_BAND_UNSPECIFIED 0 | 1: | 2: WIFI_PHY_BAND_5GHZ 104,108;"
+                " WIFI_PHY_BAND_6GHZ 0\" means that: "
+                "PHY 0 is used to scan all channels in all bands, PHY 1 is used to scan only the "
+                "currently configured channel, PHY 2 is used to scan channels 104 and 108 in the 5 "
+                "GHz band and all the channels in the 6 GHz band. "
+                "Note that if the string is empty, all PHYs will be used to scan their currently "
+                "configured channels.",
+                StringValue(""),
+                MakeStringAccessor(&StaWifiMac::SetScanningChannelsFromStr),
+                MakeStringChecker())
             .AddAttribute("AssocType",
                           "Type of association performed by this device (provided that it is "
                           "supported by the standard configured for this device, otherwise legacy "
@@ -216,6 +241,176 @@ StaWifiMac::StaWifiMac()
     // Let the lower layers know that we are acting as a non-AP STA in
     // an infrastructure BSS.
     SetTypeOfStation(STA);
+}
+
+Ptr<const AttributeChecker>
+StaWifiMac::GetPhyBandChannelListChecker()
+{
+    static auto phyBandChannelNumbersMapChecker =
+        MakeAttributeContainerChecker<PhyBandChannelNumbersPairValue, ';'>(
+            MakePairChecker<EnumValue<WifiPhyBand>, AttributeContainerValue<UintegerValue>>(
+                MakeEnumChecker(WIFI_PHY_BAND_2_4GHZ,
+                                "2.4GHz",
+                                WIFI_PHY_BAND_5GHZ,
+                                "5GHz",
+                                WIFI_PHY_BAND_6GHZ,
+                                "6GHz",
+                                WIFI_PHY_BAND_60GHZ,
+                                "60GHz",
+                                WIFI_PHY_BAND_UNSPECIFIED,
+                                "INVALID"),
+                MakeAttributeContainerChecker<UintegerValue>(MakeUintegerChecker<uint8_t>())));
+
+    return phyBandChannelNumbersMapChecker;
+}
+
+void
+StaWifiMac::SetScanningChannelsFromStr(const std::string& s)
+{
+    std::istringstream iss(s);
+    uint16_t phyId{};
+    m_scanChannels.clear();
+
+    while (iss >> phyId)
+    {
+        char sep;
+        if (!(iss >> sep) || sep != ':')
+        {
+            NS_ABORT_MSG("ScanningChannels: Expected ':', got '" << sep << "'");
+        }
+
+        // parse the PHY band-indexed map of channels to scan
+        std::string elem;
+        std::getline(iss >> std::ws, elem, '|');
+
+        AttributeContainerValue<PhyBandChannelNumbersPairValue, ';'> value;
+        value.DeserializeFromString(elem, GetPhyBandChannelListChecker());
+
+        WifiScanParams::ChannelList map;
+        value.GetAccessor(map);
+
+        // syntax check
+        NS_ABORT_MSG_IF(map.size() > 1 && map.contains(WIFI_PHY_BAND_UNSPECIFIED),
+                        "PHY " << phyId
+                               << "An unspecified PHY band must be the unique entry of the map of "
+                                  "channels to scan");
+
+        NS_ABORT_MSG_IF(map.contains(WIFI_PHY_BAND_UNSPECIFIED) &&
+                            map.at(WIFI_PHY_BAND_UNSPECIFIED) !=
+                                WifiScanParams::ChannelList::mapped_type{0},
+                        "PHY " << phyId
+                               << "An unspecified PHY band entry must be associated with a list "
+                                  "containing only a zero");
+
+        m_scanChannels[phyId] = map;
+    }
+
+    ExpandScanningChannelsMap();
+}
+
+std::string
+StaWifiMac::ScanningChannelsToStr(const WifiScanParams::Map& channels)
+{
+    std::stringstream ss;
+
+    for (auto phyIdMapIt = channels.cbegin(); phyIdMapIt != channels.cend(); ++phyIdMapIt)
+    {
+        const auto& phyId = phyIdMapIt->first;
+        const auto& bandChannelsMap = phyIdMapIt->second;
+
+        ss << +phyId << ":";
+
+        for (auto bandMapIt = bandChannelsMap.cbegin(); bandMapIt != bandChannelsMap.cend();
+             ++bandMapIt)
+        {
+            const auto& [band, list] = *bandMapIt;
+
+            ss << " " << band << " ";
+            for (auto listIt = list.cbegin(); listIt != list.cend(); ++listIt)
+            {
+                ss << *listIt;
+                if (std::next(listIt) != list.cend())
+                {
+                    ss << ",";
+                }
+            }
+
+            if (std::next(bandMapIt) != bandChannelsMap.cend())
+            {
+                ss << ";";
+            }
+        }
+
+        if (std::next(phyIdMapIt) != channels.cend())
+        {
+            ss << " | ";
+        }
+    }
+
+    return ss.str();
+}
+
+void
+StaWifiMac::ExpandScanningChannelsMap()
+{
+    NS_LOG_FUNCTION(this);
+
+    if (!GetDevice() || GetDevice()->GetNPhys() == 0)
+    {
+        // PHYs have not been configured yet, do nothing
+        return;
+    }
+
+    for (auto& [phyId, bandChannelsMap] : m_scanChannels)
+    {
+        const auto standard = GetDevice()->GetPhy(phyId)->GetStandard();
+
+        if (bandChannelsMap.contains(WIFI_PHY_BAND_UNSPECIFIED))
+        {
+            // this PHY must be used to scan all channels of all bands. Replace the unique entry
+            // with an entry for each of the bands supported given the configured standard
+            bandChannelsMap.clear();
+
+            auto bandsIt = wifiStandards.find(standard);
+            NS_ASSERT(bandsIt != wifiStandards.cend());
+            for (const auto band : bandsIt->second)
+            {
+                bandChannelsMap[band] = {0};
+            }
+        }
+
+        for (auto& [band, channels] : bandChannelsMap)
+        {
+            if (channels == WifiScanParams::ChannelList::mapped_type{0})
+            {
+                // insert all 20 MHz channels in this band
+                channels.clear();
+                auto startIt = WifiPhyOperatingChannel::m_frequencyChannels.cbegin();
+
+                while ((startIt = WifiPhyOperatingChannel::FindFirst(0,
+                                                                     MHz_t{0},
+                                                                     MHz_t{20},
+                                                                     standard,
+                                                                     band,
+                                                                     startIt)) !=
+                       WifiPhyOperatingChannel::m_frequencyChannels.cend())
+                {
+                    channels.emplace_back(startIt->number);
+                    ++startIt;
+                }
+            }
+        }
+    }
+
+    if (m_scanChannels.empty())
+    {
+        // all PHYs must be used to scan their currently configured channels, thus add an empty map
+        // for each PHY
+        for (uint8_t phyId = 0; phyId < GetDevice()->GetNPhys(); ++phyId)
+        {
+            m_scanChannels.try_emplace(phyId);
+        }
+    }
 }
 
 void
@@ -427,7 +622,7 @@ StaWifiMac::SetWifiPhys(const std::vector<Ptr<WifiPhy>>& phys)
     }
 }
 
-WifiScanParams::Channel
+StaWifiMac::ApInfo::Channel
 StaWifiMac::GetCurrentChannel(uint8_t linkId) const
 {
     auto phy = GetWifiPhy(linkId);
@@ -936,6 +1131,31 @@ StaWifiMac::TryToEnsureAssociated()
     }
 }
 
+WifiScanParams::Map
+StaWifiMac::SetCurrentChannelsForScanning()
+{
+    auto scanChannels = m_scanChannels;
+
+    for (auto& [phyId, bandChannelsMap] : scanChannels)
+    {
+        if (bandChannelsMap.empty())
+        {
+            // only the currently configured channel must be scanned
+            auto phy = GetDevice()->GetPhy(phyId);
+            NS_ASSERT(phy);
+            const auto channelNo =
+                (!phy->GetChannelWidth().IsMultipleOf(20_MHz)
+                     ? phy->GetChannelNumber()
+                     : phy->GetOperatingChannel().GetPrimaryChannelNumber(MHz_t{20},
+                                                                          phy->GetStandard()));
+            bandChannelsMap.emplace(phy->GetPhyBand(),
+                                    WifiScanParams::ChannelList::mapped_type{channelNo});
+        }
+    }
+
+    return scanChannels;
+}
+
 void
 StaWifiMac::StartScanning()
 {
@@ -950,14 +1170,10 @@ StaWifiMac::StartScanning()
 
     WifiScanParams scanParams;
     scanParams.ssid = GetSsid();
-    for (const auto& phy : GetDevice()->GetPhys())
-    {
-        WifiScanParams::ChannelList channel{
-            (phy->HasFixedPhyBand()) ? WifiScanParams::Channel{0, phy->GetPhyBand()}
-                                     : WifiScanParams::Channel{0, WIFI_PHY_BAND_UNSPECIFIED}};
 
-        scanParams.channelList[phy->GetPhyId()] = channel;
-    }
+    ExpandScanningChannelsMap();
+    scanParams.channelList = SetCurrentChannelsForScanning();
+
     if (m_activeProbing)
     {
         scanParams.type = WifiScanType::ACTIVE;
