@@ -433,6 +433,7 @@ build_lib(
     test/wifi-retransmit-test.cc
     test/wifi-ru-allocation-test.cc
     test/wifi-channel-switching-test.cc
+    test/wifi-scanning-test.cc
     test/wifi-static-adhoc-beacons-test.cc
     test/wifi-static-adhoc-bss-test.cc
     test/wifi-static-emlsr-test.cc

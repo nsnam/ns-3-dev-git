@@ -24,6 +24,7 @@
 class AmpduAggregationTest;
 class MultiLinkOperationsTestBase;
 class ProbeExchTest;
+class WifiScanningChannelsAttributeTest;
 
 namespace ns3
 {
@@ -145,6 +146,7 @@ class StaWifiMac : public WifiMac
     friend class ::MultiLinkOperationsTestBase;
     friend class ::ProbeExchTest;
     friend class WifiStaticSetupHelper;
+    friend class ::WifiScanningChannelsAttributeTest;
 
     /**
      * Struct to hold information regarding observed AP through
