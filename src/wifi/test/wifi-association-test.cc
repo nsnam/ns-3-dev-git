@@ -39,9 +39,10 @@ WifiTestAssocManager::GetTypeId()
     return tid;
 }
 
-void
-WifiTestAssocManager::NotifyChannelSwitched(linkId_t linkId)
+bool
+WifiTestAssocManager::DoNotifyChannelSwitched(linkId_t linkId)
 {
+    return false;
 }
 
 bool
@@ -84,6 +85,11 @@ WifiTestAssocManager::DoStartScanning()
         }
         ScanningTimeout();
     });
+}
+
+void
+WifiTestAssocManager::EndScanning()
+{
 }
 
 /***********************************

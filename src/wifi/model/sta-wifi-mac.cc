@@ -2752,13 +2752,17 @@ StaWifiMac::NotifyChannelSwitching(uint8_t linkId)
 
     WifiMac::NotifyChannelSwitching(linkId);
 
+    // notify association manager
+    if (m_assocManager->NotifyChannelSwitched(linkId))
+    {
+        // channel switch was requested by the association manager
+        return;
+    }
+
     if (IsInitialized() && IsAssociated())
     {
         Disassociated();
     }
-
-    // notify association manager
-    m_assocManager->NotifyChannelSwitched(linkId);
 }
 
 std::optional<uint8_t>

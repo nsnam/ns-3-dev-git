@@ -35,13 +35,6 @@ WifiDefaultAssocManager::GetTypeId()
             .SetParent<WifiAssocManager>()
             .AddConstructor<WifiDefaultAssocManager>()
             .SetGroupName("Wifi")
-            .AddAttribute("ChannelSwitchTimeout",
-                          "After requesting a channel switch on a link to setup that link, "
-                          "wait at most this amount of time. If a channel switch is not "
-                          "notified within this amount of time, we give up setting up that link.",
-                          TimeValue(MilliSeconds(5)),
-                          MakeTimeAccessor(&WifiDefaultAssocManager::m_channelSwitchTimeout),
-                          MakeTimeChecker(Seconds(0)))
             .AddAttribute(
                 "SkipAssocIncompatibleChannelWidth",
                 "If set to true, it does not include APs with incompatible channel width with the "
@@ -77,8 +70,6 @@ void
 WifiDefaultAssocManager::DoDispose()
 {
     NS_LOG_FUNCTION(this);
-    m_probeRequestEvent.Cancel();
-    m_waitBeaconEvent.Cancel();
     WifiAssocManager::DoDispose();
 }
 
@@ -101,33 +92,7 @@ WifiDefaultAssocManager::DoStartScanning()
         return;
     }
 
-    const_cast<SortedList&>(GetSortedList()).clear();
-    m_probeRequestEvent.Cancel();
-    m_waitBeaconEvent.Cancel();
-
-    if (GetScanParams().type == WifiScanType::ACTIVE)
-    {
-        for (uint8_t linkId = 0; linkId < m_mac->GetNLinks(); linkId++)
-        {
-            Simulator::Schedule(GetScanParams().probeDelay,
-                                &StaWifiMac::EnqueueProbeRequest,
-                                m_mac,
-                                m_mac->GetProbeRequest(linkId),
-                                linkId,
-                                Mac48Address::GetBroadcast(),
-                                Mac48Address::GetBroadcast());
-        }
-        m_probeRequestEvent =
-            Simulator::Schedule(GetScanParams().probeDelay + GetScanParams().maxChannelTime,
-                                &WifiDefaultAssocManager::EndScanning,
-                                this);
-    }
-    else
-    {
-        m_waitBeaconEvent = Simulator::Schedule(GetScanParams().maxChannelTime,
-                                                &WifiDefaultAssocManager::EndScanning,
-                                                this);
-    }
+    ScanChannels();
 }
 
 void
@@ -265,8 +230,8 @@ WifiDefaultAssocManager::EndScanning()
     }
 }
 
-void
-WifiDefaultAssocManager::NotifyChannelSwitched(uint8_t linkId)
+bool
+WifiDefaultAssocManager::DoNotifyChannelSwitched(uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << +linkId);
     if (m_channelSwitchInfo.size() > linkId && m_channelSwitchInfo[linkId].timer.IsPending())
@@ -281,7 +246,9 @@ WifiDefaultAssocManager::NotifyChannelSwitched(uint8_t linkId)
             // we are done
             ScanningTimeout();
         }
+        return true;
     }
+    return false;
 }
 
 void

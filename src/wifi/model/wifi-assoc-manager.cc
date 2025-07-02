@@ -10,6 +10,7 @@
 #include "wifi-assoc-manager.h"
 
 #include "sta-wifi-mac.h"
+#include "wifi-net-device.h"
 #include "wifi-phy.h"
 
 #include "ns3/attribute-container.h"
@@ -70,6 +71,15 @@ WifiAssocManager::GetTypeId()
                 AttributeContainerValue<UintegerValue>(),
                 MakeAttributeContainerAccessor<UintegerValue>(&WifiAssocManager::m_allowedLinks),
                 MakeAttributeContainerChecker<UintegerValue>(MakeUintegerChecker<uint8_t>()))
+            .AddAttribute("ChannelSwitchTimeout",
+                          "After requesting a channel switch on a link (e.g., to scan a new "
+                          "channel or to setup that link), wait at most this amount of time. If a "
+                          "channel switch is not notified within this amount of time, we cancel "
+                          "the pending operation (e.g., we move on to the next channel to scan or "
+                          "we give up setting up that link).",
+                          TimeValue(MilliSeconds(5)),
+                          MakeTimeAccessor(&WifiAssocManager::m_channelSwitchTimeout),
+                          MakeTimeChecker(Seconds(0)))
             .AddAttribute("AllowAssocAllChannelWidths",
                           "If set to true, it bypasses the check on channel width compatibility "
                           "with the candidate AP. A channel width is compatible if the STA can "
@@ -97,6 +107,15 @@ WifiAssocManager::DoDispose()
 {
     NS_LOG_FUNCTION(this);
     m_mac = nullptr;
+    for (auto& [phyId, event] : m_currentChannelScanEnd)
+    {
+        event.Cancel();
+    }
+    for (auto& [phyId, event] : m_switchToChannelToScanTimeout)
+    {
+        event.Cancel();
+    }
+    Object::DoDispose();
 }
 
 void
@@ -197,6 +216,204 @@ WifiAssocManager::StartScanning(WifiScanParams&& scanParams)
     }
 
     DoStartScanning();
+}
+
+void
+WifiAssocManager::ClearStoredApInfo()
+{
+    NS_LOG_FUNCTION(this);
+    m_apList.clear();
+    m_apListIt.clear();
+}
+
+void
+WifiAssocManager::ScanChannels()
+{
+    NS_LOG_FUNCTION(this);
+
+    // find the first channel to scan for each PHY
+    NS_ABORT_MSG_IF(m_scanParams.channelList.empty(), "No channels to scan");
+
+    for (const auto& [phyId, phyBandChannelsMap] : m_scanParams.channelList)
+    {
+        NS_ABORT_MSG_IF(phyBandChannelsMap.empty(), "No PHY band for PHY ID " << +phyId);
+
+        const auto& [band, channels] = *phyBandChannelsMap.cbegin();
+
+        NS_ABORT_MSG_IF(channels.empty(),
+                        "No channel to scan in " << band << " band for PHY ID " << +phyId);
+
+        SwitchToChannelToScan(phyId, band, channels.cbegin());
+    }
+}
+
+void
+WifiAssocManager::SwitchToChannelToScan(
+    uint8_t phyId,
+    WifiPhyBand band,
+    WifiScanParams::ChannelList::mapped_type::const_iterator channelIt)
+{
+    NS_LOG_FUNCTION(this << phyId << band << *channelIt);
+
+    auto phy = m_mac->GetDevice()->GetPhy(phyId);
+    NS_ASSERT(phy);
+    // check if we need to switch channel to scan the given channel
+    const auto isMultipleOf20MHz = phy->GetChannelWidth().IsMultipleOf(20_MHz);
+    const auto channelNo =
+        (!isMultipleOf20MHz
+             ? phy->GetChannelNumber()
+             : phy->GetOperatingChannel().GetPrimaryChannelNumber(MHz_t{20}, phy->GetStandard()));
+
+    if (channelNo != *channelIt)
+    {
+        // we need to switch channel
+        if (phy->IsStateSleep())
+        {
+            // switching channel while a PHY is in sleep state fails
+            phy->ResumeFromSleep();
+        }
+
+        const auto width = (!isMultipleOf20MHz ? phy->GetChannelWidth() : MHz_t{20});
+        NS_LOG_DEBUG("Switching PHY " << +phyId << " to channel " << *channelIt << ", " << band);
+        phy->SetOperatingChannel(WifiPhy::ChannelSegments{{*channelIt, width.in_MHz(), band, 0}});
+
+        // actual channel switching may be delayed; if it takes more than the configured
+        // maximum amount of time, move to the next channel to scan
+        m_switchToChannelToScanTimeout[phyId].Cancel();
+        m_switchToChannelToScanTimeout[phyId] =
+            Simulator::Schedule(m_channelSwitchTimeout,
+                                &WifiAssocManager::SwitchToNextChannelToScan,
+                                this,
+                                phyId,
+                                band,
+                                *channelIt);
+    }
+    else
+    {
+        // start scanning
+        ScanCurrentChannel(phyId, band, channelIt);
+    }
+}
+
+void
+WifiAssocManager::ScanCurrentChannel(
+    uint8_t phyId,
+    WifiPhyBand band,
+    WifiScanParams::ChannelList::mapped_type::const_iterator channelIt)
+{
+    NS_LOG_FUNCTION(this << phyId << band << *channelIt);
+
+    Time scanDuration;
+
+    if (m_scanParams.type == WifiScanType::ACTIVE)
+    {
+        scanDuration = m_scanParams.probeDelay + m_scanParams.maxChannelTime;
+        auto linkId = m_mac->GetLinkForPhy(phyId);
+        NS_ASSERT_MSG(linkId.has_value(), "PHY " << +phyId << " is not operating on any link");
+
+        // enqueue probe request after the probe delay
+        Simulator::Schedule(m_scanParams.probeDelay,
+                            &StaWifiMac::EnqueueProbeRequest,
+                            m_mac,
+                            m_mac->GetProbeRequest(*linkId),
+                            *linkId,
+                            Mac48Address::GetBroadcast(),
+                            Mac48Address::GetBroadcast());
+    }
+    else
+    {
+        scanDuration = m_scanParams.maxChannelTime;
+    }
+
+    m_currentChannelScanEnd[phyId].Cancel();
+    m_currentChannelScanEnd[phyId] =
+        Simulator::Schedule(scanDuration,
+                            &WifiAssocManager::SwitchToNextChannelToScan,
+                            this,
+                            phyId,
+                            band,
+                            *channelIt);
+}
+
+bool
+WifiAssocManager::NotifyChannelSwitched(uint8_t linkId)
+{
+    NS_LOG_FUNCTION(this << linkId);
+
+    auto phy = m_mac->GetWifiPhy(linkId);
+    NS_ASSERT(phy);
+
+    if (const auto it = m_switchToChannelToScanTimeout.find(phy->GetPhyId());
+        it != m_switchToChannelToScanTimeout.cend() && it->second.IsPending())
+    {
+        // we were waiting for this PHY to switch, start scanning
+        it->second.Cancel();
+        const auto phyId = phy->GetPhyId();
+        auto list = m_scanParams.channelList.at(phyId).at(phy->GetPhyBand());
+        auto channelIt = std::find(list.cbegin(), list.cend(), phy->GetChannelNumber());
+        NS_ASSERT_MSG(channelIt != list.cend(),
+                      "Current channel for PHY " << +phyId << "(" << phy->GetOperatingChannel()
+                                                 << ") is not present in the scanning list");
+        ScanCurrentChannel(phyId, phy->GetPhyBand(), channelIt);
+        return true;
+    }
+
+    return DoNotifyChannelSwitched(linkId);
+}
+
+void
+WifiAssocManager::SwitchToNextChannelToScan(uint8_t phyId, WifiPhyBand band, uint8_t channelNo)
+{
+    NS_LOG_FUNCTION(this << phyId << band << channelNo);
+
+    const auto phyIdChannelsMapIt = m_scanParams.channelList.find(phyId);
+    NS_ASSERT_MSG(phyIdChannelsMapIt != m_scanParams.channelList.cend(),
+                  "Cannot find PHY " << +phyId << " in the channel scanning map");
+
+    auto phyBandChannelsMapIt = phyIdChannelsMapIt->second.find(band);
+    NS_ASSERT_MSG(phyBandChannelsMapIt != phyIdChannelsMapIt->second.cend(),
+                  "Cannot find " << band << " band in the channel scanning map");
+
+    auto channelIt = std::find(phyBandChannelsMapIt->second.cbegin(),
+                               phyBandChannelsMapIt->second.cend(),
+                               channelNo);
+    NS_ASSERT(channelIt != phyBandChannelsMapIt->second.cend());
+
+    if (++channelIt != phyBandChannelsMapIt->second.cend())
+    {
+        NS_LOG_DEBUG("Found another channel to scan (" << *channelIt << ") in the same band ("
+                                                       << band << ")");
+        SwitchToChannelToScan(phyId, band, channelIt);
+        return;
+    }
+
+    if (++phyBandChannelsMapIt != phyIdChannelsMapIt->second.cend())
+    {
+        band = phyBandChannelsMapIt->first;
+        channelIt = phyBandChannelsMapIt->second.cbegin();
+        NS_LOG_DEBUG("Found a channel to scan (" << *channelIt << ") in another band (" << band
+                                                 << ")");
+        SwitchToChannelToScan(phyId, band, channelIt);
+        return;
+    }
+
+    // no other channel to scan for this PHY; if we are not waiting for other PHYs to finish their
+    // scanning, we are done
+    if (!IsScanning())
+    {
+        EndScanning();
+    }
+}
+
+bool
+WifiAssocManager::IsScanning() const
+{
+    return std::any_of(m_currentChannelScanEnd.cbegin(),
+                       m_currentChannelScanEnd.cend(),
+                       [](auto&& phyIdEventPair) { return phyIdEventPair.second.IsPending(); }) ||
+           std::any_of(m_switchToChannelToScanTimeout.cbegin(),
+                       m_switchToChannelToScanTimeout.cend(),
+                       [](auto&& phyIdEventPair) { return phyIdEventPair.second.IsPending(); });
 }
 
 void
