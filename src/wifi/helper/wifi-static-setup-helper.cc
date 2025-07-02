@@ -23,6 +23,7 @@
 #include "ns3/power-save-manager.h"
 #include "ns3/simulator.h"
 #include "ns3/sta-wifi-mac.h"
+#include "ns3/wifi-assoc-manager.h"
 #include "ns3/wifi-net-device.h"
 #include "ns3/wifi-remote-station-manager.h"
 #include "ns3/wifi-utils.h"
@@ -77,7 +78,7 @@ WifiStaticSetupHelper::SetStaticAssocPostInit(Ptr<ApWifiMac> apMac, Ptr<StaWifiM
     NS_ASSERT_MSG(clientMac, "Expected StaWifiMac");
 
     // disable scanning
-    clientMac->SetAttribute("EnableScanning", BooleanValue(false));
+    clientMac->GetAssocManager()->SetAttribute("EnableScanning", BooleanValue(false));
 
     const auto linkIdMap = GetLinkIdMap(apMac, clientMac);
     const auto nClientLinks = clientMac->GetNLinks();

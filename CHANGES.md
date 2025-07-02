@@ -24,6 +24,7 @@ This file is a best-effort approach to solving this issue; we will do our best b
 * (visualizer) Added `visualizer.set_speed()` and `visualizer.skip_to()`, and the `PyVizSpeed` and `PyVizStartTime` global values (`--PyVizSpeed`, `--PyVizStartTime`), to set the initial playback speed and skip the start of a simulation.
 * (visualizer) Plugins can add values to each node's snapshot with `add_node_info()` and hold the simulation with `add_step_guard()`.
 * (wifi) Added `WIFI_STANDARD_80211bn` and initial UHR classes (`UhrPhy`, `UhrPpdu`, `UhrFrameExchangeManager`, `UhrConfiguration`, `UhrCapabilities`, `UhrOperation`).
+* (wifi) Added a new `ScanningChannels` attribute to `WifiAssocManager` to select the PHY(s) to use for the next channel scanning and the scope of the scanning, i.e., which channel(s) to scan in which band(s).
 
 ### Changes to existing API
 

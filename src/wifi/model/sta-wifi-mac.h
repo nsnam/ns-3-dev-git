@@ -48,47 +48,6 @@ enum class WifiAssocType : uint8_t
 /**
  * @ingroup wifi
  *
- * Scan type (active or passive)
- */
-enum class WifiScanType : uint8_t
-{
-    ACTIVE = 0,
-    PASSIVE
-};
-
-/**
- * @ingroup wifi
- *
- * Structure holding scan parameters
- */
-struct WIFI_EXPORT WifiScanParams
-{
-    /**
-     * Struct identifying a channel to scan.
-     * A channel number equal to zero indicates to scan all the channels;
-     * an unspecified band (WIFI_PHY_BAND_UNSPECIFIED) indicates to scan
-     * all the supported PHY bands.
-     */
-    struct WIFI_EXPORT Channel
-    {
-        uint16_t number{0};                          ///< channel number
-        WifiPhyBand band{WIFI_PHY_BAND_UNSPECIFIED}; ///< PHY band
-    };
-
-    /// typedef for a list of channels
-    using ChannelList = std::list<Channel>;
-
-    WifiScanType type;                          ///< indicates either active or passive scanning
-    Ssid ssid;                                  ///< desired SSID or wildcard SSID
-    std::map<uint8_t, ChannelList> channelList; ///< list of channels to scan, for each PHY ID
-    Time probeDelay;                            ///< delay prior to transmitting a Probe Request
-    Time minChannelTime;                        ///< minimum time to spend on each channel
-    Time maxChannelTime;                        ///< maximum time to spend on each channel
-};
-
-/**
- * @ingroup wifi
- *
  * Enumeration for power management modes
  */
 enum WifiPowerManagementMode : uint8_t
@@ -168,12 +127,19 @@ class WIFI_EXPORT StaWifiMac : public WifiMac
             Mac48Address bssid;  ///< BSSID
         };
 
+        /// Identify a channel via its number and frequency band
+        struct Channel
+        {
+            uint16_t number;                             ///< channel number
+            WifiPhyBand band{WIFI_PHY_BAND_UNSPECIFIED}; ///< PHY band
+        };
+
         Mac48Address m_bssid;         ///< BSSID
         Mac48Address m_apAddr;        ///< AP MAC address
         double m_snr;                 ///< SNR in linear scale
         MgtResponseFrameType m_frame; ///< The body of the management frame used to update AP info
-        WifiScanParams::Channel m_channel; ///< The channel the management frame was received on
-        uint8_t m_linkId;                  ///< ID of the link used to communicate with the AP
+        Channel m_channel;            ///< The channel the management frame was received on
+        linkId_t m_linkId;            ///< ID of the link used to communicate with the AP
         std::list<SetupLinksInfo>
             m_setupLinks; ///< information about the links to setup between MLDs
     };
@@ -230,6 +196,11 @@ class WIFI_EXPORT StaWifiMac : public WifiMac
      * @return the EMLSR Manager
      */
     Ptr<EmlsrManager> GetEmlsrManager() const;
+
+    /**
+     * Notify the STA that a scanning procedure has started.
+     */
+    void NotifyScanningStarted();
 
     /**
      * Get the frame body of the Probe Request to transmit on the given link.
@@ -509,7 +480,7 @@ class WIFI_EXPORT StaWifiMac : public WifiMac
      * @param mpdu the MPDU containing the (Re)Association Response frame
      * @param linkId the ID of the given link
      */
-    void ReceiveAssocResp(Ptr<const WifiMpdu> mpdu, uint8_t linkId);
+    void ReceiveAssocResp(Ptr<const WifiMpdu> mpdu, linkId_t linkId);
 
     /**
      * Update operations information from the given management frame.
@@ -569,11 +540,6 @@ class WIFI_EXPORT StaWifiMac : public WifiMac
      * @param isReassoc flag whether it is a reassociation request
      */
     void AssocRequestTimeout(bool isReassoc);
-    /**
-     * Start the scanning process which trigger active or passive scanning based on the
-     * active probing flag.
-     */
-    void StartScanning();
     /**
      * Return whether we are waiting for an association response from an AP.
      *
@@ -707,7 +673,7 @@ class WIFI_EXPORT StaWifiMac : public WifiMac
      * @param linkId the ID of the given link
      * @return a (channel number, PHY band) pair
      */
-    WifiScanParams::Channel GetCurrentChannel(uint8_t linkId) const;
+    ApInfo::Channel GetCurrentChannel(linkId_t linkId) const;
 
     void DoInitialize() override;
     void DoDispose() override;

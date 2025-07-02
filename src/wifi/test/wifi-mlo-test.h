@@ -21,6 +21,7 @@
 #include "ns3/spectrum-wifi-helper.h"
 #include "ns3/sta-wifi-mac.h"
 #include "ns3/test.h"
+#include "ns3/wifi-assoc-manager.h"
 #include "ns3/wifi-psdu.h"
 
 #include <optional>

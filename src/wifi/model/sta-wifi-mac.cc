@@ -21,7 +21,6 @@
 #include "wifi-net-device.h"
 #include "wifi-phy.h"
 
-#include "ns3/attribute-container.h"
 #include "ns3/eht-configuration.h"
 #include "ns3/emlsr-manager.h"
 #include "ns3/he-configuration.h"
@@ -75,12 +74,15 @@ StaWifiMac::GetTypeId()
                           UintegerValue(10),
                           MakeUintegerAccessor(&StaWifiMac::m_maxMissedBeacons),
                           MakeUintegerChecker<uint32_t>())
+            // NS_DEPRECATED_3_50
             .AddAttribute("EnableScanning",
                           "If false, STA does not perform channel scanning. This may be useful in "
                           "case of static configuration via the static setup helper.",
                           BooleanValue(true),
                           MakeBooleanAccessor(&StaWifiMac::m_enableScanning),
-                          MakeBooleanChecker())
+                          MakeBooleanChecker(),
+                          TypeId::SupportLevel::OBSOLETE,
+                          "Use WifiAssocManager::EnableScanning instead")
             .AddAttribute(
                 "ActiveProbing",
                 "If true, we send probe requests. If false, we don't."
@@ -234,7 +236,7 @@ StaWifiMac::DoInitialize()
     {
         m_powerSaveManager->Initialize();
     }
-    StartScanning();
+    m_assocManager->StartScanning();
     NS_ABORT_IF(!TraceConnectWithoutContext("AckedMpdu", MakeCallback(&StaWifiMac::TxOk, this)));
     WifiMac::DoInitialize();
 }
@@ -374,8 +376,15 @@ StaWifiMac::SetActiveProbing(bool enable)
     if (m_state == SCANNING)
     {
         NS_LOG_DEBUG("STA is still scanning, reset scanning process");
-        StartScanning();
+        m_assocManager->StartScanning();
     }
+}
+
+void
+StaWifiMac::NotifyScanningStarted()
+{
+    NS_LOG_FUNCTION(this);
+    SetState(SCANNING);
 }
 
 bool
@@ -396,8 +405,8 @@ StaWifiMac::SetWifiPhys(const std::vector<Ptr<WifiPhy>>& phys)
     }
 }
 
-WifiScanParams::Channel
-StaWifiMac::GetCurrentChannel(uint8_t linkId) const
+StaWifiMac::ApInfo::Channel
+StaWifiMac::GetCurrentChannel(linkId_t linkId) const
 {
     auto phy = GetWifiPhy(linkId);
     const auto width = phy->GetOperatingChannel().IsOfdm() ? MHz_u{20} : phy->GetChannelWidth();
@@ -888,7 +897,7 @@ StaWifiMac::TryToEnsureAssociated()
          * We try to initiate a scan now.
          */
         m_linkDown();
-        StartScanning();
+        m_assocManager->StartScanning();
         break;
     case WAIT_ASSOC_RESP:
         /* we have sent an association request so we do not need to
@@ -906,43 +915,6 @@ StaWifiMac::TryToEnsureAssociated()
 }
 
 void
-StaWifiMac::StartScanning()
-{
-    NS_LOG_FUNCTION(this);
-    if (!m_enableScanning)
-    {
-        NS_LOG_DEBUG("Scanning disabled");
-        return;
-    }
-    SetState(SCANNING);
-    NS_ASSERT(m_assocManager);
-
-    WifiScanParams scanParams;
-    scanParams.ssid = GetSsid();
-    for (const auto& phy : GetDevice()->GetPhys())
-    {
-        WifiScanParams::ChannelList channel{
-            (phy->HasFixedPhyBand()) ? WifiScanParams::Channel{0, phy->GetPhyBand()}
-                                     : WifiScanParams::Channel{0, WIFI_PHY_BAND_UNSPECIFIED}};
-
-        scanParams.channelList[phy->GetPhyId()] = channel;
-    }
-    if (m_activeProbing)
-    {
-        scanParams.type = WifiScanType::ACTIVE;
-        scanParams.probeDelay = MicroSeconds(m_probeDelay->GetValue());
-        scanParams.minChannelTime = scanParams.maxChannelTime = m_probeRequestTimeout;
-    }
-    else
-    {
-        scanParams.type = WifiScanType::PASSIVE;
-        scanParams.maxChannelTime = m_waitBeaconTimeout;
-    }
-
-    m_assocManager->StartScanning(std::move(scanParams));
-}
-
-void
 StaWifiMac::ScanningTimeout(const std::optional<ApInfo>& bestAp)
 {
     NS_LOG_FUNCTION(this);
@@ -950,7 +922,7 @@ StaWifiMac::ScanningTimeout(const std::optional<ApInfo>& bestAp)
     if (!bestAp.has_value())
     {
         NS_LOG_DEBUG("Exhausted list of candidate AP; restart scanning");
-        StartScanning();
+        m_assocManager->StartScanning();
         return;
     }
 
@@ -1504,7 +1476,7 @@ StaWifiMac::ReceiveProbeResp(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
 }
 
 void
-StaWifiMac::ReceiveAssocResp(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
+StaWifiMac::ReceiveAssocResp(Ptr<const WifiMpdu> mpdu, linkId_t linkId)
 {
     NS_LOG_FUNCTION(this << *mpdu << +linkId);
     const WifiMacHeader& hdr = mpdu->GetHeader();
@@ -1548,7 +1520,7 @@ StaWifiMac::ReceiveAssocResp(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
         // multi-link (re)setup is successful. (Sec. 35.3.5.1 of 802.11be D3.1)
         NS_LOG_DEBUG("association refused");
         SetState(REFUSED);
-        StartScanning();
+        m_assocManager->StartScanning();
         return;
     }
 

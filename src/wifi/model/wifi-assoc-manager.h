@@ -12,6 +12,9 @@
 #include "qos-utils.h"
 #include "sta-wifi-mac.h"
 
+#include "ns3/attribute-container.h"
+#include "ns3/enum.h"
+#include "ns3/pair.h"
 #include "ns3/wifi-export.h"
 
 #include <optional>
@@ -20,6 +23,38 @@
 
 namespace ns3
 {
+
+/**
+ * @ingroup wifi
+ *
+ * Scan type (active or passive)
+ */
+enum class WifiScanType : uint8_t
+{
+    ACTIVE = 0,
+    PASSIVE
+};
+
+/**
+ * @ingroup wifi
+ *
+ * Structure holding scan parameters
+ */
+struct WIFI_EXPORT WifiScanParams
+{
+    /// typedef for a PHY band-indexed map of channels to scan
+    using ChannelList = std::map<WifiPhyBand, std::list<uint64_t>>;
+
+    /// typedef for PHY ID-indexed map of channels to scan
+    using Map = std::map<uint8_t, ChannelList>;
+
+    WifiScanType type;   ///< indicates either active or passive scanning
+    Ssid ssid;           ///< desired SSID or wildcard SSID
+    Map channelList;     ///< list of channels to scan, for each PHY ID
+    Time probeDelay;     ///< delay prior to transmitting a Probe Request
+    Time minChannelTime; ///< minimum time to spend on each channel
+    Time maxChannelTime; ///< maximum time to spend on each channel
+};
 
 /**
  * @ingroup wifi
@@ -85,14 +120,9 @@ class WIFI_EXPORT WifiAssocManager : public Object
     void SetStaWifiMac(Ptr<StaWifiMac> mac);
 
     /**
-     * Request the Association Manager to start a scanning procedure according to
-     * the given scanning parameters. At subclass' discretion, stored information
-     * about APs matching the given scanning parameters may be used and scanning
-     * not performed.
-     *
-     * @param scanParams the scanning parameters
+     * Start scanning using the current STA configuration.
      */
-    void StartScanning(WifiScanParams&& scanParams);
+    void StartScanning();
 
     /**
      * STA wifi MAC received a Beacon frame or Probe Response frame while scanning
@@ -156,6 +186,23 @@ class WIFI_EXPORT WifiAssocManager : public Object
     static std::list<WifiAssocManager::RnrLinkInfo> GetAllAffiliatedAps(
         const ReducedNeighborReport& rnr);
 
+    /**
+     * Convert the data structure containing the channels to scan during scanning procedures into
+     * a string formatted as described for the ScanningChannels attribute.
+     *
+     * @param channels the data structure containing the channels to scan
+     * @return a string formatted as described for the ScanningChannels attribute
+     */
+    static std::string ScanningChannelsToStr(const WifiScanParams::Map& channels);
+
+    /**
+     * Return the configured channels to scan, replacing empty per-PHY maps with the current
+     * primary 20 MHz channel used by the corresponding PHY.
+     *
+     * @return a copy of the channels to scan with the current channels filled in where needed
+     */
+    WifiScanParams::Map GetCurrentChannelsForScanning();
+
   protected:
     /**
      * Constructor (protected as this is an abstract base class)
@@ -165,6 +212,10 @@ class WIFI_EXPORT WifiAssocManager : public Object
 
     /// typedef for the sorted list of ApInfo objects
     using SortedList = std::set<StaWifiMac::ApInfo, ApInfoCompare>;
+
+    /// typedef for an attribute value storing a pair (WifiPhyBand, list of channel numbers)
+    using PhyBandChannelNumbersPairValue =
+        PairValue<EnumValue<WifiPhyBand>, AttributeContainerValue<UintegerValue>>;
 
     /**
      * @return a const reference to the sorted list of ApInfo objects.
@@ -243,14 +294,40 @@ class WIFI_EXPORT WifiAssocManager : public Object
      */
     bool CanSetupMultiLink(OptMleConstRef& mle, OptRnrConstRef& rnr);
 
-    Ptr<StaWifiMac> m_mac;            ///< pointer to the STA wifi MAC
-    std::set<uint8_t> m_allowedLinks; /**< "Only Beacon and Probe Response frames received on a
+    Ptr<StaWifiMac> m_mac;             ///< pointer to the STA wifi MAC
+    std::set<linkId_t> m_allowedLinks; /**< Only Beacon and Probe Response frames received on a
                                             link belonging to the this set are processed */
 
-    bool m_allowAssocAllChannelWidths; ///< flag whether the check on channel width compatibility
-                                       ///< with the candidate AP should be skipped
+    bool m_allowAssocAllChannelWidths;  ///< flag whether the check on channel width compatibility
+                                        ///< with the candidate AP should be skipped
+    bool m_enableScanning;              ///< whether channel scanning is enabled
+    WifiScanParams::Map m_scanChannels; ///< data structure containing the channels to scan
 
   private:
+    /**
+     * Get a checker for an attribute value consisting of a WifiPhyBand-index map of the list of
+     * channels to scan. This is used internally by SetScanningChannelsFromStr() and
+     * GetStrFromScanningChannels().
+     *
+     * @return a checker for an attribute value consisting of a WifiPhyBand-index map of the list
+     *         of channels to scan
+     */
+    static Ptr<const AttributeChecker> GetPhyBandChannelListChecker();
+
+    /**
+     * Set the channels to scan during scanning procedures starting from a string formatted as
+     * described for the ScanningChannels attribute.
+     *
+     * @param s the string formatted as described for the ScanningChannels attribute
+     */
+    void SetScanningChannelsFromStr(const std::string& s);
+
+    /**
+     * Process the data structure containing the channels to scan by replacing unspecified band
+     * and channel number values with their actual values, provided that PHYs have been installed.
+     */
+    void ExpandScanningChannelsMap();
+
     /**
      * Start a scanning procedure. This method needs to schedule a call to
      * ScanningTimeout when the scanning procedure is completed.
