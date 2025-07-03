@@ -1512,7 +1512,7 @@ HeFrameExchangeManager::GetHeTbTxVector(CtrlTriggerHeader trigger, Mac48Address 
     NS_ASSERT_MSG(heConfiguration, "This STA has to be an HE station to send an HE TB PPDU");
     v.SetBssColor(heConfiguration->m_bssColor);
 
-    if (userInfoIt->IsUlTargetRssiMaxTxPower())
+    if (userInfoIt->IsUlTargetRxPowerMaxTxPower())
     {
         NS_LOG_LOGIC("AP requested using the max transmit power (" << m_phy->GetTxPowerEnd()
                                                                    << " dBm)");
@@ -1544,7 +1544,7 @@ HeFrameExchangeManager::GetHeTbTxVector(CtrlTriggerHeader trigger, Mac48Address 
         trigger.GetApTxPower() -
         static_cast<int8_t>(
             *optRssi); // cast RSSI to be on equal footing with AP Tx power information
-    auto reqTxPower = dBm_u{static_cast<double>(userInfoIt->GetUlTargetRssi() + pathLossDb)};
+    auto reqTxPower = dBm_u{static_cast<double>(userInfoIt->GetUlTargetRxPower() + pathLossDb)};
 
     // Convert the transmit power to a power level
     uint8_t numPowerLevels = m_phy->GetNTxPower();
@@ -1600,7 +1600,7 @@ HeFrameExchangeManager::SetTargetRssi(CtrlTriggerHeader& trigger) const
         {
             // This might happen after static setup where the AP has not received any
             // frame from the client yet.
-            userInfo.SetUlTargetRssiMaxTxPower();
+            userInfo.SetUlTargetRxPowerMaxTxPower();
             continue;
         }
 
@@ -1609,7 +1609,7 @@ HeFrameExchangeManager::SetTargetRssi(CtrlTriggerHeader& trigger) const
         rssi = (rssi >= -20)
                    ? -20
                    : ((rssi <= -110) ? -110 : rssi); // cap so as to keep within [-110; -20] dBm
-        userInfo.SetUlTargetRssi(rssi);
+        userInfo.SetUlTargetRxPower(rssi);
     }
 }
 

@@ -803,32 +803,32 @@ class CtrlTriggerUserInfoField
      */
     bool GetMoreRaRu() const;
     /**
-     * Set the UL Target RSSI subfield to indicate to the station to transmit an
+     * Set the UL Target Receive Power subfield to indicate to the station to transmit an
      * HE TB PPDU response at its maximum transmit power for the assigned MCS
      */
-    void SetUlTargetRssiMaxTxPower();
+    void SetUlTargetRxPowerMaxTxPower();
     /**
-     * Set the UL Target RSSI subfield to indicate the expected receive signal
+     * Set the UL Target Receive Power subfield to indicate the expected receive signal
      * power in dBm
      *
      * @param dBm the expected receive signal power (a value between -110 and -20)
      */
-    void SetUlTargetRssi(int8_t dBm);
+    void SetUlTargetRxPower(int8_t dBm);
     /**
-     * Return true if the UL Target RSSI subfield indicates to the station to transmit
+     * Return true if the UL Target Receive Power subfield indicates to the station to transmit
      * an HE TB PPDU response at its maximum transmit power for the assigned MCS
      *
-     * @return true if the UL Target RSSI subfield indicates to the station to transmit
+     * @return true if the UL Target Receive Power subfield indicates to the station to transmit
      * an HE TB PPDU response at its maximum transmit power for the assigned MCS
      */
-    bool IsUlTargetRssiMaxTxPower() const;
+    bool IsUlTargetRxPowerMaxTxPower() const;
     /**
      * Get the expected receive signal power for the solicited HE TB PPDU. This
-     * method can only be called if IsUlTargetRssiMaxTxPower returns false.
+     * method can only be called if IsUlTargetRxPowerMaxTxPower returns false.
      *
      * @return the expected receive signal power in dBm
      */
-    int8_t GetUlTargetRssi() const;
+    int8_t GetUlTargetRxPower() const;
     /**
      * Set the Trigger Dependent User Info subfield for Basic Trigger frames.
      *
@@ -903,7 +903,7 @@ class CtrlTriggerUserInfoField
         } raRuInformation; //!< Used when AID12 is 0 or 2045
     } m_bits26To31;        //!< Fields occupying bits 26-31 in the User Info field
 
-    uint8_t m_ulTargetRssi;                  //!< Expected receive signal power
+    uint8_t m_ulTargetRxPower;               //!< Expected receive signal power
     TriggerFrameType m_triggerType;          //!< Trigger frame type
     uint8_t m_basicTriggerDependentUserInfo; //!< Basic Trigger variant of Trigger Dependent User
                                              //!< Info subfield

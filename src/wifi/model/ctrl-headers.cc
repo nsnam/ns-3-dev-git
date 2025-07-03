@@ -1188,7 +1188,7 @@ CtrlTriggerUserInfoField::CtrlTriggerUserInfoField(TriggerFrameType triggerType,
       m_ulMcs(0),
       m_ulDcm(false),
       m_ps160(false),
-      m_ulTargetRssi(0),
+      m_ulTargetRxPower(0),
       m_triggerType(triggerType),
       m_basicTriggerDependentUserInfo(0)
 {
@@ -1218,7 +1218,7 @@ CtrlTriggerUserInfoField::operator=(const CtrlTriggerUserInfoField& userInfo)
     m_ulDcm = userInfo.m_ulDcm;
     m_ps160 = userInfo.m_ps160;
     m_bits26To31 = userInfo.m_bits26To31;
-    m_ulTargetRssi = userInfo.m_ulTargetRssi;
+    m_ulTargetRxPower = userInfo.m_ulTargetRxPower;
     m_basicTriggerDependentUserInfo = userInfo.m_basicTriggerDependentUserInfo;
     m_muBarTriggerDependentUserInfo = userInfo.m_muBarTriggerDependentUserInfo;
     return *this;
@@ -1291,7 +1291,7 @@ CtrlTriggerUserInfoField::Serialize(Buffer::Iterator start) const
     i.WriteHtolsbU32(userInfo);
     // Here we need to write 8 bits covering the UL Target RSSI (7 bits) and B39, which is
     // reserved in the HE variant and the PS160 subfield in the EHT variant.
-    uint8_t bit32To39 = m_ulTargetRssi;
+    uint8_t bit32To39 = m_ulTargetRxPower;
     if (m_variant == TriggerFrameVariant::EHT)
     {
         bit32To39 |= (m_ps160 ? 1 << 7 : 0);
@@ -1348,7 +1348,7 @@ CtrlTriggerUserInfoField::Deserialize(Buffer::Iterator start)
     }
 
     uint8_t bit32To39 = i.ReadU8();
-    m_ulTargetRssi = bit32To39 & 0x7f; // B39 is reserved in HE variant
+    m_ulTargetRxPower = bit32To39 & 0x7f; // B39 is reserved in HE variant
     if (m_variant == TriggerFrameVariant::EHT)
     {
         m_ps160 = (bit32To39 >> 7) == 1;
@@ -1677,31 +1677,31 @@ CtrlTriggerUserInfoField::GetMoreRaRu() const
 }
 
 void
-CtrlTriggerUserInfoField::SetUlTargetRssiMaxTxPower()
+CtrlTriggerUserInfoField::SetUlTargetRxPowerMaxTxPower()
 {
-    m_ulTargetRssi = 127; // see Table 9-25i of 802.11ax amendment D3.0
+    m_ulTargetRxPower = 127; // see Table 9-54 of 802.11-2024
 }
 
 void
-CtrlTriggerUserInfoField::SetUlTargetRssi(int8_t dBm)
+CtrlTriggerUserInfoField::SetUlTargetRxPower(int8_t dBm)
 {
     NS_ABORT_MSG_IF(dBm < -110 || dBm > -20, "Invalid values for signal power");
 
-    m_ulTargetRssi = static_cast<uint8_t>(110 + dBm);
+    m_ulTargetRxPower = static_cast<uint8_t>(110 + dBm);
 }
 
 bool
-CtrlTriggerUserInfoField::IsUlTargetRssiMaxTxPower() const
+CtrlTriggerUserInfoField::IsUlTargetRxPowerMaxTxPower() const
 {
-    return (m_ulTargetRssi == 127);
+    return (m_ulTargetRxPower == 127);
 }
 
 int8_t
-CtrlTriggerUserInfoField::GetUlTargetRssi() const
+CtrlTriggerUserInfoField::GetUlTargetRxPower() const
 {
-    NS_ABORT_MSG_IF(m_ulTargetRssi == 127, "STA must use its max TX power");
+    NS_ABORT_MSG_IF(m_ulTargetRxPower == 127, "STA must use its max TX power");
 
-    return static_cast<int8_t>(m_ulTargetRssi) - 110;
+    return static_cast<int8_t>(m_ulTargetRxPower) - 110;
 }
 
 void

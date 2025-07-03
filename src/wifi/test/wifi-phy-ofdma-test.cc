@@ -5867,7 +5867,7 @@ TestUlOfdmaPowerControl::SendMuBar(std::vector<uint16_t> staIds)
         {
             NS_ABORT_MSG("Unknown STA-ID (" << staId << ")");
         }
-        ui.SetUlTargetRssi(ulTargetRssi);
+        ui.SetUlTargetRxPower(ulTargetRssi);
 
         CtrlBAckRequestHeader bar;
         bar.SetType(BlockAckReqType::COMPRESSED);
