@@ -1596,6 +1596,14 @@ HeFrameExchangeManager::SetTargetRssi(CtrlTriggerHeader& trigger) const
         auto itAidAddr = staList.find(userInfo.GetAid12());
         NS_ASSERT(itAidAddr != staList.end());
         auto optRssi = GetMostRecentRssi(itAidAddr->second);
+        if (!optRssi.has_value())
+        {
+            // This might happen after static setup where the AP has not received any
+            // frame from the client yet.
+            userInfo.SetUlTargetRssiMaxTxPower();
+            continue;
+        }
+
         NS_ASSERT(optRssi);
         auto rssi = static_cast<int8_t>(*optRssi);
         rssi = (rssi >= -20)
