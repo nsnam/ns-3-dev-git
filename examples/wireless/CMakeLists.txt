@@ -336,3 +336,12 @@ build_example(
     ${libapplications}
     ${libinternet}
 )
+
+build_example(
+  NAME wifi-raa-compare
+  SOURCE_FILES wifi-raa-compare.cc
+  LIBRARIES_TO_LINK
+    ${libwifi}
+    ${libapplications}
+    ${libflow-monitor}
+)
