@@ -214,12 +214,13 @@ HePhy::GetSigBSize(const WifiTxVector& txVector) const
     if (ns3::IsDlMu(txVector.GetPreambleType()))
     {
         NS_ASSERT(txVector.GetModulationClass() >= WIFI_MOD_CLASS_HE);
+        const auto p20Index =
+            m_wifiPhy ? m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(MHz_t{20}) : 0;
         return HePpdu::GetSigBFieldSize(
             txVector.GetChannelWidth(),
             txVector.GetModulationClass(),
-            txVector.GetRuAllocation(
-                m_wifiPhy ? m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(MHz_t{20}) : 0),
-            txVector.GetCenter26ToneRuIndication(),
+            txVector.GetRuAllocation(p20Index),
+            txVector.GetCenter26ToneRuIndication(p20Index),
             txVector.IsSigBCompression(),
             txVector.IsSigBCompression() ? txVector.GetHeMuUserInfoMap().size() : 0);
     }

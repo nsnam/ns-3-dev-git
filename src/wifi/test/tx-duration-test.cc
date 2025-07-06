@@ -2154,7 +2154,7 @@ MuSigDurationTest::DoRun()
         txVector.GetChannelWidth(),
         txVector.GetModulationClass(),
         txVector.GetRuAllocation(m_p20Index),
-        txVector.GetCenter26ToneRuIndication(),
+        txVector.GetCenter26ToneRuIndication(m_p20Index),
         txVector.IsSigBCompression(),
         txVector.IsSigBCompression() ? txVector.GetHeMuUserInfoMap().size() : 0);
     const auto contentChannels = HePpdu::GetHeSigBContentChannels(txVector, 0);

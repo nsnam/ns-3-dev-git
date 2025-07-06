@@ -191,6 +191,7 @@ EhtPpdu::SetTxVectorFromPhyHeaders(WifiTxVector& txVector) const
                     : 0;
             SetHeMuUserInfos(txVector,
                              WIFI_MOD_CLASS_EHT,
+                             p20Index,
                              ruAllocation.value(),
                              std::nullopt,
                              ehtPhyHeader->m_contentChannels,

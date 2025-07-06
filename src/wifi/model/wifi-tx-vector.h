@@ -489,16 +489,19 @@ class WifiTxVector
     /**
      * Set CENTER_26_TONE_RU field
      * @param center26ToneRuIndication the CENTER_26_TONE_RU field
+     * @param p20Index the index of the primary20 channel
      */
-    void SetCenter26ToneRuIndication(Center26ToneRuIndication center26ToneRuIndication);
+    void SetCenter26ToneRuIndication(Center26ToneRuIndication center26ToneRuIndication,
+                                     uint8_t p20Index);
 
     /**
      * Get CENTER_26_TONE_RU field
      * This field is present if format is HE_MU and
      * when channel width is set to 80 MHz or larger.
+     * @param p20Index the index of the primary20 channel
      * @return the CENTER_26_TONE_RU field if present
      */
-    std::optional<Center26ToneRuIndication> GetCenter26ToneRuIndication() const;
+    std::optional<Center26ToneRuIndication> GetCenter26ToneRuIndication(uint8_t p20Index) const;
 
     /**
      * Set the EHT_PPDU_TYPE parameter
@@ -537,9 +540,10 @@ class WifiTxVector
      * for which its CENTER_26_TONE_RU has not been set yet,
      * based on the content of per-user information.
      *
+     * @param p20Index the index of the primary20 channel
      * @return the CENTER_26_TONE_RU field
      */
-    Center26ToneRuIndication DeriveCenter26ToneRuIndication() const;
+    Center26ToneRuIndication DeriveCenter26ToneRuIndication(uint8_t p20Index) const;
 
     /**
      * Get the number of STAs in a given RU.

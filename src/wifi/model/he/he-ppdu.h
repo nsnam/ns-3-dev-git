@@ -250,6 +250,7 @@ class HePpdu : public OfdmPpdu
      *
      * @param txVector the TXVECTOR to set its HeMuUserInfoMap
      * @param mc the modulation class used for the transmission of the PPDU
+     * @param p20Index the index of the primary20 channel
      * @param ruAllocation the RU_ALLOCATION per 20 MHz
      * @param center26ToneRuIndication the center 26 tone RU indication
      * @param contentChannels the HE-SIG-B content channels
@@ -258,6 +259,7 @@ class HePpdu : public OfdmPpdu
      */
     void SetHeMuUserInfos(WifiTxVector& txVector,
                           WifiModulationClass mc,
+                          uint8_t p20Index,
                           const RuAllocation& ruAllocation,
                           std::optional<Center26ToneRuIndication> center26ToneRuIndication,
                           const HeSigBContentChannels& contentChannels,

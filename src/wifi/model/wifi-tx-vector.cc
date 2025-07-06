@@ -695,18 +695,19 @@ WifiTxVector::GetInactiveSubchannels() const
 }
 
 void
-WifiTxVector::SetCenter26ToneRuIndication(Center26ToneRuIndication center26ToneRuIndication)
+WifiTxVector::SetCenter26ToneRuIndication(Center26ToneRuIndication center26ToneRuIndication,
+                                          uint8_t p20Index)
 {
     NS_ASSERT(GetModulationClass() == WIFI_MOD_CLASS_HE);
     if (IsDlMu())
     {
-        NS_ASSERT(center26ToneRuIndication == DeriveCenter26ToneRuIndication());
+        NS_ASSERT(center26ToneRuIndication == DeriveCenter26ToneRuIndication(p20Index));
     }
     m_center26ToneRuIndication = center26ToneRuIndication;
 }
 
 std::optional<Center26ToneRuIndication>
-WifiTxVector::GetCenter26ToneRuIndication() const
+WifiTxVector::GetCenter26ToneRuIndication(uint8_t p20Index) const
 {
     if ((GetModulationClass() != WIFI_MOD_CLASS_HE) || !IsDlMu() || (m_channelWidth < MHz_t{80}))
     {
@@ -714,7 +715,7 @@ WifiTxVector::GetCenter26ToneRuIndication() const
     }
     if (!m_center26ToneRuIndication.has_value())
     {
-        m_center26ToneRuIndication.emplace(DeriveCenter26ToneRuIndication());
+        m_center26ToneRuIndication.emplace(DeriveCenter26ToneRuIndication(p20Index));
     }
     return m_center26ToneRuIndication;
 }
@@ -891,7 +892,7 @@ WifiTxVector::DeriveRuAllocation(uint8_t p20Index) const
 }
 
 Center26ToneRuIndication
-WifiTxVector::DeriveCenter26ToneRuIndication() const
+WifiTxVector::DeriveCenter26ToneRuIndication(uint8_t p20Index) const
 {
     uint8_t center26ToneRuIndication{0};
     for (const auto& userInfo : m_muUserInfos)
@@ -901,7 +902,7 @@ WifiTxVector::DeriveCenter26ToneRuIndication() const
             (WifiRu::GetIndex(userInfo.second.ru) == 19))
         {
             center26ToneRuIndication |=
-                (std::get<HeRu::RuSpec>(userInfo.second.ru).GetPrimary80MHz())
+                (WifiRu::GetPhyIndex(userInfo.second.ru, m_channelWidth, p20Index) <= 37)
                     ? CENTER_26_TONE_RU_LOW_80_MHZ_ALLOCATED
                     : CENTER_26_TONE_RU_HIGH_80_MHZ_ALLOCATED;
         }
