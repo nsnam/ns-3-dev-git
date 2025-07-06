@@ -711,4 +711,20 @@ WifiNetDevice::IsEmlsrActivated() const
     return emlsrActivated.Get();
 }
 
+bool
+WifiNetDevice::IsDsoActivated() const
+{
+    if (!m_uhrConfiguration)
+    {
+        return false;
+    }
+
+    BooleanValue dsoActivated;
+    if (!m_uhrConfiguration->GetAttributeFailSafe("DsoActivated", dsoActivated))
+    {
+        return false;
+    }
+    return dsoActivated.Get();
+}
+
 } // namespace ns3

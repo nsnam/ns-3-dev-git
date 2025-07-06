@@ -8,7 +8,6 @@
 
 #include "uhr-phy.h"
 
-#include "uhr-configuration.h"
 #include "uhr-ppdu.h"
 
 #include "ns3/interference-helper.h"
@@ -277,9 +276,8 @@ UhrPhy::IsChannelWidthSupported(Ptr<const WifiPpdu> ppdu) const
 {
     auto device = m_wifiPhy->GetDevice();
     auto mac = device->GetMac();
-    auto uhrConfiguration = device->GetUhrConfiguration();
     const auto& txVector{ppdu->GetTxVector()};
-    if ((mac->GetTypeOfStation() == STA) && uhrConfiguration->GetDsoActivated() &&
+    if ((mac->GetTypeOfStation() == STA) && device->IsDsoActivated() &&
         IsUhr(txVector.GetPreambleType()) && txVector.IsMu() &&
         (txVector.GetChannelWidth() > m_wifiPhy->GetChannelWidth()))
     {
@@ -294,8 +292,7 @@ UhrPhy::GetChannelWidthForMu(const WifiTxVector& txVector, uint16_t staId) const
 {
     auto device = m_wifiPhy->GetDevice();
     auto mac = device->GetMac();
-    auto uhrConfiguration = device->GetUhrConfiguration();
-    if ((mac->GetTypeOfStation() == STA) && uhrConfiguration->GetDsoActivated() &&
+    if ((mac->GetTypeOfStation() == STA) && device->IsDsoActivated() &&
         IsUhr(txVector.GetPreambleType()) && txVector.IsMu() &&
         (txVector.GetChannelWidth() > m_wifiPhy->GetChannelWidth()))
     {

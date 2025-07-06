@@ -248,6 +248,23 @@ DsoManager::ComputeSubbands(uint8_t linkId, const MgtAssocResponseHeader& assocR
 {
     NS_LOG_FUNCTION(this << linkId << assocResp);
 
+    auto phy = m_staMac->GetWifiPhy(linkId);
+    const auto bssid = GetUhrFem(linkId)->GetBssid();
+    const auto apBw =
+        m_staMac->GetWifiRemoteStationManager(linkId)->GetChannelWidthSupported(bssid);
+
+    const auto apChannel =
+        GetApOperatingChannel(apBw, phy->GetPhyBand(), phy->GetStandard(), assocResp);
+    NS_LOG_DEBUG("AP operating on channel " << apChannel << " for link " << +linkId);
+
+    ComputeSubbands(linkId, apChannel);
+}
+
+void
+DsoManager::ComputeSubbands(uint8_t linkId, const WifiPhyOperatingChannel& apChannel)
+{
+    NS_LOG_FUNCTION(this << linkId << apChannel);
+
     m_primarySubbands.erase(linkId);
     m_dsoSubbands.erase(linkId);
 
@@ -270,9 +287,6 @@ DsoManager::ComputeSubbands(uint8_t linkId, const MgtAssocResponseHeader& assocR
         NS_LOG_DEBUG("No DSO subband for link " << +linkId);
         return;
     }
-
-    const auto apChannel = GetApOperatingChannel(apBw, phyBand, phy->GetStandard(), assocResp);
-    NS_LOG_DEBUG("AP operating on channel " << apChannel << " for link " << +linkId);
 
     const std::size_t numSubbands = apBw / staChannelWidth;
     for (std::size_t i = 0; i < numSubbands; ++i)

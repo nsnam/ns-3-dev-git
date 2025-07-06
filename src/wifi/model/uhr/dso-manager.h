@@ -60,6 +60,8 @@ enum class DsoTxopEvent
  */
 class DsoManager : public Object
 {
+    friend class WifiStaticSetupHelper;
+
   public:
     /**
      * @brief Get the type ID.
@@ -175,6 +177,24 @@ class DsoManager : public Object
      * @param assocResp the Association Response frame header for that link
      */
     void ComputeSubbands(uint8_t linkId, const MgtAssocResponseHeader& assocResp);
+
+    /**
+     * Compute the primary subband and the DSO subband(s) for a given link.
+     * The primary subband is always the operating channel on that link.
+     * For an UHR non-AP STA with DSO activated for which its PHY operating on that link supports at
+     * least 80 MHz, DSO subband(s) are computed unless that PHY supports a channel width equal or
+     * larger than the one of the AP. DSO subband(s) are calculated as follows:
+     * - if the PHY supports 160 MHz and the AP operates on a 320 MHz channel, the DSO subband is
+     * the secondary 160 MHz channel of the AP for that link;
+     * - if the PHY supports 80 MHz and the AP operates on a 160 MHz channel, the DSO subband is the
+     * secondary 80 MHz channel of the AP for that link;
+     * - if the PHY supports 80 MHz and the AP operates on a 320 MHz channel, the DSO subbands are
+     * all the 80 MHz channels of the AP for that link, except the primary 80 MHz channel.
+     *
+     * @param linkId the ID of the given link
+     * @param apChannel the operating channel of the AP for that link
+     */
+    void ComputeSubbands(uint8_t linkId, const WifiPhyOperatingChannel& apChannel);
 
     /**
      * Perform a channel switch.

@@ -200,6 +200,13 @@ class WifiStaticSetupHelper
     /// @param adhocDev0 BSS device
     /// @param adhocDev1 client device
     static void ExchAdhocBeacons(Ptr<WifiNetDevice> adhocDev0, Ptr<WifiNetDevice> adhocDev1);
+
+  private:
+    /// Bypass DSO configuration based on association response frame exchanged between AP and input
+    /// non-AP devices post initialization at runtime begin
+    /// @param apMac AP MAC
+    /// @param clientMac client MAC
+    static void SetStaticDsoPostInit(Ptr<ApWifiMac> apMac, Ptr<StaWifiMac> clientMac);
 };
 
 } // namespace ns3

@@ -12,6 +12,7 @@
 #include "ns3/ap-wifi-mac.h"
 #include "ns3/assert.h"
 #include "ns3/boolean.h"
+#include "ns3/dso-manager.h"
 #include "ns3/emlsr-manager.h"
 #include "ns3/ht-configuration.h"
 #include "ns3/ht-frame-exchange-manager.h"
@@ -178,6 +179,8 @@ WifiStaticSetupHelper::SetStaticAssocPostInit(Ptr<ApWifiMac> apMac, Ptr<StaWifiM
         apMac->ApplyTidLinkMapping(clientMldAddr, WifiDirection::DOWNLINK);
         clientMac->ApplyTidLinkMapping(apMldAddr, WifiDirection::UPLINK);
     }
+
+    SetStaticDsoPostInit(apMac, clientMac);
 }
 
 std::map<linkId_t, linkId_t>
@@ -648,6 +651,32 @@ WifiStaticSetupHelper::ExchAdhocBeacons(Ptr<WifiNetDevice> adhocDev0, Ptr<WifiNe
     auto beacon1 = adhocMac1->GetBeacon(SINGLE_LINK_OP_ID);
     adhocMac0->RecordCapabilities(beacon1, adhocMac1->GetAddress(), SINGLE_LINK_OP_ID);
     adhocMac0->GetWifiRemoteStationManager()->RecordAdhocPeer(adhocMac1->GetAddress());
+}
+
+void
+WifiStaticSetupHelper::SetStaticDsoPostInit(Ptr<ApWifiMac> apMac, Ptr<StaWifiMac> clientMac)
+{
+    NS_ASSERT_MSG(apMac, "Expected ApWifiMac");
+    NS_ASSERT_MSG(clientMac, "Expected StaWifiMac");
+    NS_ASSERT_MSG(clientMac->IsAssociated(), "Expected association completed");
+
+    if (!apMac->GetUhrSupported())
+    {
+        NS_LOG_DEBUG("AP does not support UHR, not performing DSO static setup");
+        return;
+    }
+
+    if (!apMac->GetDevice()->IsDsoActivated())
+    {
+        NS_LOG_DEBUG("Non-AP device does not support DSO, not performing DSO static setup");
+        return;
+    }
+
+    auto dsoManager = clientMac->GetDsoManager();
+    NS_ASSERT_MSG(dsoManager, "DSO Manager not set");
+
+    // TODO: add DSO support for MLD
+    dsoManager->ComputeSubbands(SINGLE_LINK_OP_ID, apMac->GetWifiPhy()->GetOperatingChannel());
 }
 
 } // namespace ns3
