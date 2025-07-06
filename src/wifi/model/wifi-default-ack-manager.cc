@@ -68,7 +68,7 @@ WifiDefaultAckManager::GetTypeId()
                           "value of this attribute.",
                           UintegerValue(5),
                           MakeUintegerAccessor(&WifiDefaultAckManager::m_maxMcsForBlockAckInTbPpdu),
-                          MakeUintegerChecker<uint8_t>(0, 11));
+                          MakeUintegerChecker<uint8_t>(0, 13));
     return tid;
 }
 
