@@ -193,6 +193,16 @@ StaWifiMac::GetTypeId()
                           TimeValue(MilliSeconds(50)),
                           MakeTimeAccessor(&StaWifiMac::m_disassocTimeout),
                           MakeTimeChecker())
+            .AddAttribute(
+                "OfflineScanProtection",
+                "The technique to use to protect an offline channel scanning, i.e., to inform the "
+                "AP of the unavailability of the STA for some period.",
+                EnumValue(WifiOfflineScanProtection::NONE),
+                MakeEnumAccessor<WifiOfflineScanProtection>(&StaWifiMac::m_offlineProtection),
+                MakeEnumChecker(WifiOfflineScanProtection::NONE,
+                                "NONE",
+                                WifiOfflineScanProtection::POWERSAVE,
+                                "POWERSAVE"))
             .AddTraceSource("Assoc",
                             "Associated with an access point. If this is an MLD that associated "
                             "with an AP MLD, the AP MLD address is provided.",
@@ -1108,6 +1118,9 @@ StaWifiMac::TryToEnsureAssociated()
            and gather beacons or probe responses until the scanning timeout
          */
         break;
+    case OFFLINE_SCANNING:
+        NS_ABORT_MSG("We should not try to associate during offline channel scanning");
+        break;
     case UNASSOCIATED:
         /* we were associated but we missed a bunch of beacons
          * so we should assume we are not associated anymore.
@@ -1157,15 +1170,87 @@ StaWifiMac::SetCurrentChannelsForScanning()
 }
 
 void
-StaWifiMac::StartScanning()
+StaWifiMac::StartOfflineScanning()
 {
     NS_LOG_FUNCTION(this);
+
     if (!m_enableScanning)
     {
         NS_LOG_DEBUG("Scanning disabled");
         return;
     }
-    SetState(SCANNING);
+
+    NS_ABORT_MSG_IF(m_state == OFFLINE_SCANNING,
+                    "Already doing offline scanning, cannot request another one");
+    NS_ABORT_MSG_IF(!IsAssociated(), "Offline scanning can only be requested when associated");
+
+    // save current channels
+    ExpandScanningChannelsMap();
+
+    using enum WifiOfflineScanProtection;
+    switch (m_offlineProtection)
+    {
+    case NONE:
+        StartScanning(true);
+        break;
+    case POWERSAVE:
+        m_activeBeforeScan.clear();
+        for (const auto& [linkId, lnk] : GetLinks())
+        {
+            const auto& link = GetStaLink(lnk);
+            if (link.phy && m_scanChannels.contains(link.phy->GetPhyId()) &&
+                (link.pmMode == WifiPowerManagementMode::WIFI_PM_ACTIVE))
+            {
+                m_activeBeforeScan.emplace(linkId);
+                SetPowerSaveMode({true, linkId});
+            }
+        }
+        if (m_activeBeforeScan.empty())
+        {
+            StartScanning(true); // all required STAs already in powersave mode
+        }
+        break;
+    }
+}
+
+void
+StaWifiMac::PmModeChanged(WifiPowerManagementMode pmMode, uint8_t linkId)
+{
+    NS_LOG_FUNCTION(this << pmMode << linkId);
+
+    if (m_powerSaveManager)
+    {
+        m_powerSaveManager->NotifyPmModeChanged(pmMode, linkId);
+    }
+
+    if (m_activeBeforeScan.contains(linkId) && m_state != OFFLINE_SCANNING &&
+        std::all_of(m_activeBeforeScan.cbegin(), m_activeBeforeScan.cend(), [this](auto id) {
+            return GetPmMode(id) == WifiPowerManagementMode::WIFI_PM_POWERSAVE;
+        }))
+    {
+        // all the STAs we were waiting for have switched to powersave mode; start offline scanning
+        StartScanning(true);
+    }
+}
+
+void
+StaWifiMac::StartScanning(bool offline)
+{
+    NS_LOG_FUNCTION(this << offline);
+
+    if (!m_enableScanning)
+    {
+        NS_LOG_DEBUG("Scanning disabled");
+        return;
+    }
+
+    if (offline && !IsAssociated())
+    {
+        NS_LOG_DEBUG("Offline scanning cancelled, not associated");
+        return;
+    }
+
+    SetState(offline ? OFFLINE_SCANNING : SCANNING);
     NS_ASSERT(m_assocManager);
 
     WifiScanParams scanParams;
@@ -1193,6 +1278,19 @@ void
 StaWifiMac::ScanningTimeout(const std::optional<ApInfo>& bestAp)
 {
     NS_LOG_FUNCTION(this);
+
+    if (m_state == OFFLINE_SCANNING)
+    {
+        SetState(ASSOCIATED);
+
+        // restore PM mode
+        for (const auto linkId : m_activeBeforeScan)
+        {
+            SetPowerSaveMode({false, linkId});
+        }
+        m_activeBeforeScan.clear();
+        return;
+    }
 
     if (!bestAp.has_value())
     {
@@ -1380,6 +1478,12 @@ bool
 StaWifiMac::IsAssociated() const
 {
     return m_state == ASSOCIATED;
+}
+
+bool
+StaWifiMac::IsScanningChannelsOffline() const
+{
+    return m_state == OFFLINE_SCANNING;
 }
 
 bool
@@ -2509,18 +2613,12 @@ StaWifiMac::TxOk(Ptr<const WifiMpdu> mpdu)
     if (hdr.IsPowerManagement() && link.pmMode == WIFI_PM_SWITCHING_TO_PS)
     {
         link.pmMode = WIFI_PM_POWERSAVE;
-        if (m_powerSaveManager)
-        {
-            m_powerSaveManager->NotifyPmModeChanged(link.pmMode, *linkId);
-        }
+        PmModeChanged(link.pmMode, *linkId);
     }
     else if (!hdr.IsPowerManagement() && link.pmMode == WIFI_PM_SWITCHING_TO_ACTIVE)
     {
         link.pmMode = WIFI_PM_ACTIVE;
-        if (m_powerSaveManager)
-        {
-            m_powerSaveManager->NotifyPmModeChanged(link.pmMode, *linkId);
-        }
+        PmModeChanged(link.pmMode, *linkId);
     }
 
     if (hdr.IsDisassociation() && m_disassocEvent.IsPending())

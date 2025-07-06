@@ -233,6 +233,7 @@ WifiAssocManager::ScanChannels()
 
     // find the first channel to scan for each PHY
     NS_ABORT_MSG_IF(m_scanParams.channelList.empty(), "No channels to scan");
+    m_channelsToSet.clear();
 
     for (const auto& [phyId, phyBandChannelsMap] : m_scanParams.channelList)
     {
@@ -243,6 +244,8 @@ WifiAssocManager::ScanChannels()
         NS_ABORT_MSG_IF(channels.empty(),
                         "No channel to scan in " << band << " band for PHY ID " << +phyId);
 
+        // store the current channel before starting scanning
+        m_channelsToSet[phyId] = m_mac->GetDevice()->GetPhy(phyId)->GetOperatingChannel();
         SwitchToChannelToScan(phyId, band, channels.cbegin());
     }
 }
@@ -342,19 +345,38 @@ WifiAssocManager::NotifyChannelSwitched(uint8_t linkId)
 
     auto phy = m_mac->GetWifiPhy(linkId);
     NS_ASSERT(phy);
+    const auto phyId = phy->GetPhyId();
 
-    if (const auto it = m_switchToChannelToScanTimeout.find(phy->GetPhyId());
+    if (const auto it = m_switchToChannelToScanTimeout.find(phyId);
         it != m_switchToChannelToScanTimeout.cend() && it->second.IsPending())
     {
         // we were waiting for this PHY to switch, start scanning
         it->second.Cancel();
-        const auto phyId = phy->GetPhyId();
         auto list = m_scanParams.channelList.at(phyId).at(phy->GetPhyBand());
         auto channelIt = std::find(list.cbegin(), list.cend(), phy->GetChannelNumber());
         NS_ASSERT_MSG(channelIt != list.cend(),
                       "Current channel for PHY " << +phyId << "(" << phy->GetOperatingChannel()
                                                  << ") is not present in the scanning list");
         ScanCurrentChannel(phyId, phy->GetPhyBand(), channelIt);
+        return true;
+    }
+    else if (const auto it = m_switchToChannelToSetTimeout.find(phyId);
+             it != m_switchToChannelToSetTimeout.cend() && it->second.IsPending())
+    {
+        it->second.Cancel();
+        auto channelIt = m_channelsToSet.find(phyId);
+        NS_ASSERT_MSG(channelIt != m_channelsToSet.cend(),
+                      "Started timer for PHY " << +phyId << " but no channel expected to be set");
+        NS_ASSERT_MSG(channelIt->second == phy->GetOperatingChannel(),
+                      "Expected PHY " << +phyId << " to switch to " << channelIt->second
+                                      << " but it switched to " << phy->GetOperatingChannel());
+        NS_ASSERT_MSG(!IsScanning(), "Expected to set channels when scanning is completed");
+        m_channelsToSet.erase(channelIt);
+        if (m_channelsToSet.empty())
+        {
+            // no more channels to set, we can return to StaWifiMac
+            m_mac->ScanningTimeout(std::nullopt);
+        }
         return true;
     }
 
@@ -489,6 +511,42 @@ WifiAssocManager::ScanningTimeout()
                     "advertised to the AP");
 
     m_mac->ScanningTimeout(std::move(bestAp));
+}
+
+void
+WifiAssocManager::OfflineScanningTimeout()
+{
+    NS_LOG_FUNCTION(this);
+
+    // restore previous channels
+    for (auto it = m_channelsToSet.begin(); it != m_channelsToSet.end();)
+    {
+        const auto phyId = it->first;
+        const auto& channel = it->second;
+        const auto phy = m_mac->GetDevice()->GetPhy(phyId);
+
+        if (phy->GetOperatingChannel() != channel)
+        {
+            phy->SetOperatingChannel(channel);
+            // abort if channel switch does not complete before the channel switch timeout
+            m_switchToChannelToSetTimeout[phyId].Cancel();
+            m_switchToChannelToSetTimeout[phyId] = Simulator::Schedule(m_channelSwitchTimeout, [=] {
+                NS_ABORT_MSG("Unable to set " << channel << " on PHY " << +phyId);
+            });
+            ++it;
+        }
+        else
+        {
+            it = m_channelsToSet.erase(it);
+        }
+    }
+
+    // if no channels to set, we can return to StaWifiMac immediately; otherwise, we wait for
+    // channel switches to complete
+    if (m_channelsToSet.empty())
+    {
+        m_mac->ScanningTimeout(std::nullopt);
+    }
 }
 
 std::list<StaWifiMac::ApInfo::SetupLinksInfo>&

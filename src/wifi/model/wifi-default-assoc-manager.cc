@@ -104,6 +104,12 @@ WifiDefaultAssocManager::EndScanning()
     OptRnrConstRef rnr;
     std::list<WifiAssocManager::RnrLinkInfo> apList;
 
+    if (m_mac->IsScanningChannelsOffline())
+    {
+        OfflineScanningTimeout();
+        return;
+    }
+
     // If multi-link setup is not possible, just call ScanningTimeout() and return
     if (!CanSetupMultiLink(mle, rnr) || (apList = GetAllAffiliatedAps(*rnr)).empty())
     {

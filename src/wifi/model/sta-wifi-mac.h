@@ -84,6 +84,19 @@ struct WifiScanParams
 /**
  * @ingroup wifi
  *
+ * Enumerate protection techniques to adopt before performing an offline channel scan:
+ * - NONE: no protection
+ * - POWERSAVE: switch to powersave mode before starting offline channel scanning
+ */
+enum class WifiOfflineScanProtection : uint8_t
+{
+    NONE = 0,
+    POWERSAVE
+};
+
+/**
+ * @ingroup wifi
+ *
  * Enumeration for power management modes
  */
 enum WifiPowerManagementMode : uint8_t
@@ -294,6 +307,9 @@ class StaWifiMac : public WifiMac
      */
     bool IsAssociated() const;
 
+    /// @return whether offline channel scanning is ongoing
+    bool IsScanningChannelsOffline() const;
+
     /**
      * Get the IDs of the setup links (if any).
      *
@@ -362,6 +378,15 @@ class StaWifiMac : public WifiMac
      * @param mpdu the MPDU that we successfully sent
      */
     void TxOk(Ptr<const WifiMpdu> mpdu);
+
+    /**
+     * Perform actions required when the Power Management mode of the non-AP STA operating on the
+     * given link has changed.
+     *
+     * @param pmMode the new PM mode
+     * @param linkId the ID of the given link
+     */
+    void PmModeChanged(WifiPowerManagementMode pmMode, uint8_t linkId);
 
     void NotifyChannelSwitching(uint8_t linkId) override;
     void NotifyRequestAccess(Ptr<Txop> txop, uint8_t linkId) override;
@@ -434,6 +459,9 @@ class StaWifiMac : public WifiMac
      */
     static std::string ScanningChannelsToStr(const WifiScanParams::Map& channels);
 
+    /// Start an offline channel scanning procedure.
+    void StartOfflineScanning();
+
   protected:
     /**
      * Structure holding information specific to a single link. Here, the meaning of
@@ -478,6 +506,7 @@ class StaWifiMac : public WifiMac
     {
         ASSOCIATED,
         SCANNING,
+        OFFLINE_SCANNING,
         WAIT_ASSOC_RESP,
         UNASSOCIATED,
         REFUSED
@@ -602,8 +631,11 @@ class StaWifiMac : public WifiMac
     /**
      * Start the scanning process which trigger active or passive scanning based on the
      * active probing flag.
+     *
+     * @param offline whether an offline channel scanning is requested
      */
-    void StartScanning();
+    void StartScanning(bool offline = false);
+
     /**
      * Return whether we are waiting for an association response from an AP.
      *
@@ -807,6 +839,10 @@ class StaWifiMac : public WifiMac
     Time m_pmModeSwitchTimeout;               ///< PM mode switch timeout
     std::map<uint8_t, EventId> m_emlsrLinkSwitch; ///< maps PHY ID to the event scheduled to switch
                                                   ///< the corresponding PHY to a new EMLSR link
+
+    WifiOfflineScanProtection m_offlineProtection; ///< technique to protect an offline channel scan
+    std::set<uint8_t> m_activeBeforeScan; ///< IDs of links on which STAs are operating in active
+                                          ///< mode before switching to PS mode for offline scanning
 
     /// store the DL TID-to-Link Mapping included in the Association Request frame
     WifiTidLinkMapping m_dlTidLinkMappingInAssocReq;

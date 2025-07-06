@@ -250,6 +250,11 @@ class WifiAssocManager : public Object
      */
     void ScanningTimeout();
 
+    /**
+     * Restore channels used before starting an offline channel scanning procedure.
+     */
+    void OfflineScanningTimeout();
+
     /// typedef for an optional const reference to a ReducedNeighborReport object
     using OptRnrConstRef = std::optional<std::reference_wrapper<const ReducedNeighborReport>>;
     /// typedef for an optional const reference to a MultiLinkElement object
@@ -329,7 +334,14 @@ class WifiAssocManager : public Object
     std::map<uint8_t, EventId>
         m_switchToChannelToScanTimeout; ///< PHY ID-indexed map of events indicating the end of the
                                         ///< timer started when switching to the channel to scan
-    SortedList m_apList;                ///< sorted list of candidate APs
+    std::map<uint8_t, WifiPhyOperatingChannel>
+        m_channelsToSet; ///< PHY ID-indexed map of the frequency channels to set after a channel
+                         ///< scanning procedure is completed
+    std::map<uint8_t, EventId>
+        m_switchToChannelToSetTimeout; ///< PHY ID-indexed map of events indicating the end of the
+                                       ///< timer started when switching to the channels to set
+                                       ///< at the end of a scanning procedure
+    SortedList m_apList;               ///< sorted list of candidate APs
     /// hash table to help locate ApInfo objects in the sorted list based on the BSSID
     std::unordered_map<Mac48Address, SortedList::const_iterator, WifiAddressHash> m_apListIt;
 };
