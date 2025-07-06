@@ -119,7 +119,18 @@ WifiAssocManager::GetTypeId()
                 "configured channels.",
                 StringValue(""),
                 MakeStringAccessor(&WifiAssocManager::SetScanningChannelsFromStr),
-                MakeStringChecker());
+                MakeStringChecker())
+            .AddAttribute(
+                "OfflineScanProtection",
+                "The technique to use to protect an offline channel scanning, i.e., to inform the "
+                "AP of the unavailability of the STA for some period.",
+                EnumValue(WifiOfflineScanProtection::NONE),
+                MakeEnumAccessor<WifiOfflineScanProtection>(
+                    &WifiAssocManager::m_offlineScanProtection),
+                MakeEnumChecker(WifiOfflineScanProtection::NONE,
+                                "NONE",
+                                WifiOfflineScanProtection::POWERSAVE,
+                                "POWERSAVE"));
     return tid;
 }
 
@@ -404,6 +415,68 @@ WifiAssocManager::GetCurrentChannelsForScanning()
     return scanChannels;
 }
 
+void
+WifiAssocManager::StartOfflineScanning()
+{
+    NS_LOG_FUNCTION(this);
+    NS_ASSERT(m_mac);
+
+    if (!m_enableScanning)
+    {
+        NS_LOG_DEBUG("Scanning disabled");
+        return;
+    }
+
+    NS_ABORT_MSG_IF(IsScanning(), "Cannot start offline scanning while another scan is ongoing");
+    NS_ABORT_MSG_IF(!m_mac->IsAssociated(),
+                    "Offline scanning can only be requested when associated");
+
+    // save current channels
+    ExpandScanningChannelsMap();
+    m_activeBeforeScan.clear();
+
+    using enum WifiOfflineScanProtection;
+    switch (m_offlineScanProtection)
+    {
+    case NONE:
+        break;
+    case POWERSAVE:
+        const auto setupLinkIds = m_mac->GetSetupLinkIds();
+        for (const auto linkId : m_mac->GetLinkIds())
+        {
+            if (auto phy = m_mac->GetWifiPhy(linkId);
+                phy && m_scanChannels.contains(phy->GetPhyId()) && setupLinkIds.contains(linkId) &&
+                (m_mac->GetPmMode(linkId) == WifiPowerManagementMode::WIFI_PM_ACTIVE))
+            {
+                m_activeBeforeScan.emplace(linkId);
+                m_mac->SetPowerSaveMode({true, linkId});
+            }
+        }
+        if (!m_activeBeforeScan.empty())
+        {
+            return; // some STAs need to switch to powersave mode first
+        }
+        break;
+    }
+
+    StartScanning(true);
+}
+
+void
+WifiAssocManager::NotifyPmModeChanged(WifiPowerManagementMode pmMode, linkId_t linkId)
+{
+    NS_LOG_FUNCTION(this << pmMode << linkId);
+
+    if (m_activeBeforeScan.contains(linkId) &&
+        std::all_of(m_activeBeforeScan.cbegin(), m_activeBeforeScan.cend(), [this](auto id) {
+            return m_mac->GetPmMode(id) == WifiPowerManagementMode::WIFI_PM_POWERSAVE;
+        }))
+    {
+        // all the STAs we were waiting for have switched to powersave mode; start offline scanning
+        StartScanning(true);
+    }
+}
+
 const WifiScanParams&
 WifiAssocManager::GetScanParams() const
 {
@@ -466,13 +539,20 @@ WifiAssocManager::MatchScanParams(const StaWifiMac::ApInfo& apInfo) const
 }
 
 void
-WifiAssocManager::StartScanning()
+WifiAssocManager::StartScanning(bool offline)
 {
-    NS_LOG_FUNCTION(this);
+    NS_LOG_FUNCTION(this << offline);
 
     if (!m_enableScanning)
     {
         NS_LOG_DEBUG("Scanning disabled");
+        return;
+    }
+
+    NS_ASSERT(m_mac);
+    if (offline && !m_mac->IsAssociated())
+    {
+        NS_LOG_DEBUG("Offline scanning cancelled, not associated");
         return;
     }
 
@@ -502,6 +582,14 @@ WifiAssocManager::StartScanning()
         m_scanParams.maxChannelTime = waitBeaconTimeout.Get();
     }
 
+    for (const auto& [phyId, bandChannelsMap] : m_scanParams.channelList)
+    {
+        if (const auto linkId = m_mac->GetLinkForPhy(phyId))
+        {
+            m_mac->NotifyScanningStarted(offline, *linkId);
+        }
+    }
+
     // remove stored AP information not matching the scanning parameters or related to APs
     // that are not reachable on an allowed link
     for (auto ap = m_apList.begin(); ap != m_apList.end();)
@@ -518,8 +606,6 @@ WifiAssocManager::StartScanning()
             ++ap;
         }
     }
-
-    m_mac->NotifyScanningStarted();
 
     DoStartScanning();
 }
@@ -539,6 +625,7 @@ WifiAssocManager::ScanChannels()
 
     // find the first channel to scan for each PHY
     NS_ABORT_MSG_IF(m_scanParams.channelList.empty(), "No channels to scan");
+    m_channelsToSet.clear();
 
     for (const auto& [phyId, phyBandChannelsMap] : m_scanParams.channelList)
     {
@@ -549,6 +636,8 @@ WifiAssocManager::ScanChannels()
         NS_ABORT_MSG_IF(channels.empty(),
                         "No channel to scan in " << band << " band for PHY ID " << +phyId);
 
+        // store the current channel before starting scanning
+        m_channelsToSet[phyId] = m_mac->GetDevice()->GetPhy(phyId)->GetOperatingChannel();
         SwitchToChannelToScan(phyId, band, channels.cbegin());
     }
 }
@@ -648,19 +737,45 @@ WifiAssocManager::NotifyChannelSwitched(linkId_t linkId)
 
     auto phy = m_mac->GetWifiPhy(linkId);
     NS_ASSERT(phy);
+    const auto phyId = phy->GetPhyId();
 
-    if (const auto it = m_switchToChannelToScanTimeout.find(phy->GetPhyId());
+    if (const auto it = m_switchToChannelToScanTimeout.find(phyId);
         it != m_switchToChannelToScanTimeout.cend() && it->second.IsPending())
     {
         // we were waiting for this PHY to switch, start scanning
         it->second.Cancel();
-        const auto phyId = phy->GetPhyId();
         auto list = m_scanParams.channelList.at(phyId).at(phy->GetPhyBand());
         auto channelIt = std::find(list.cbegin(), list.cend(), phy->GetChannelNumber());
         NS_ASSERT_MSG(channelIt != list.cend(),
                       "Current channel for PHY " << +phyId << "(" << phy->GetOperatingChannel()
                                                  << ") is not present in the scanning list");
         ScanCurrentChannel(phyId, phy->GetPhyBand(), channelIt);
+        return true;
+    }
+    else if (const auto it = m_switchToChannelToSetTimeout.find(phyId);
+             it != m_switchToChannelToSetTimeout.cend() && it->second.IsPending())
+    {
+        it->second.Cancel();
+        auto channelIt = m_channelsToSet.find(phyId);
+        NS_ASSERT_MSG(channelIt != m_channelsToSet.cend(),
+                      "Started timer for PHY " << +phyId << " but no channel expected to be set");
+        NS_ASSERT_MSG(channelIt->second == phy->GetOperatingChannel(),
+                      "Expected PHY " << +phyId << " to switch to " << channelIt->second
+                                      << " but it switched to " << phy->GetOperatingChannel());
+        NS_ASSERT_MSG(!IsScanning(), "Expected to set channels when scanning is completed");
+        m_channelsToSet.erase(channelIt);
+        if (m_channelsToSet.empty())
+        {
+            // no more channels to set, we can return to StaWifiMac or handle offline scan end
+            if (m_mac->IsScanningChannelsOffline())
+            {
+                HandleOfflineScanningEnded();
+            }
+            else
+            {
+                m_mac->ScanningTimeout(std::nullopt);
+            }
+        }
         return true;
     }
 
@@ -795,6 +910,60 @@ WifiAssocManager::ScanningTimeout()
                     "advertised to the AP");
 
     m_mac->ScanningTimeout(std::move(bestAp));
+}
+
+void
+WifiAssocManager::HandleOfflineScanningEnded()
+{
+    NS_LOG_FUNCTION(this);
+
+    NS_ASSERT(m_mac);
+
+    // restore PM mode
+    for (const auto linkId : m_activeBeforeScan)
+    {
+        m_mac->SetPowerSaveMode({false, linkId});
+    }
+    m_activeBeforeScan.clear();
+
+    // notify the StaWifiMac that the offline scanning has ended
+    m_mac->ScanningTimeout(std::nullopt);
+}
+
+void
+WifiAssocManager::OfflineScanningTimeout()
+{
+    NS_LOG_FUNCTION(this);
+
+    // restore previous channels
+    for (auto it = m_channelsToSet.begin(); it != m_channelsToSet.end();)
+    {
+        const auto phyId = it->first;
+        const auto& channel = it->second;
+        const auto phy = m_mac->GetDevice()->GetPhy(phyId);
+
+        if (phy->GetOperatingChannel() != channel)
+        {
+            phy->SetOperatingChannel(channel);
+            // abort if channel switch does not complete before the channel switch timeout
+            m_switchToChannelToSetTimeout[phyId].Cancel();
+            m_switchToChannelToSetTimeout[phyId] = Simulator::Schedule(m_channelSwitchTimeout, [=] {
+                NS_ABORT_MSG("Unable to set " << channel << " on PHY " << +phyId);
+            });
+            ++it;
+        }
+        else
+        {
+            it = m_channelsToSet.erase(it);
+        }
+    }
+
+    // if no channels to set, we can return to StaWifiMac immediately; otherwise, we wait for
+    // channel switches to complete
+    if (m_channelsToSet.empty())
+    {
+        HandleOfflineScanningEnded();
+    }
 }
 
 std::list<StaWifiMac::ApInfo::SetupLinksInfo>&

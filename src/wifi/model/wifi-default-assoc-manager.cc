@@ -84,9 +84,10 @@ WifiDefaultAssocManager::DoStartScanning()
 {
     NS_LOG_FUNCTION(this);
 
-    // if there are entries in the sorted list of AP information, reuse them and
-    // do not perform scanning if SkipScanningIfApInfoAvail is set to true
-    if (m_skipScanningIfApInfoAvail && !GetSortedList().empty())
+    // if there are entries in the sorted list of AP information, reuse them and do not perform
+    // scanning if SkipScanningIfApInfoAvail is set to true, unless an offline scanning is requested
+    if (m_skipScanningIfApInfoAvail && !GetSortedList().empty() &&
+        !m_mac->IsScanningChannelsOffline())
     {
         Simulator::ScheduleNow(&WifiDefaultAssocManager::EndScanning, this);
         return;
@@ -103,6 +104,12 @@ WifiDefaultAssocManager::EndScanning()
     OptMleConstRef mle;
     OptRnrConstRef rnr;
     std::list<WifiAssocManager::RnrLinkInfo> apList;
+
+    if (m_mac->IsScanningChannelsOffline())
+    {
+        OfflineScanningTimeout();
+        return;
+    }
 
     // If multi-link setup is not possible, just call ScanningTimeout() and return
     if (!CanSetupMultiLink(mle, rnr) || (apList = GetAllAffiliatedAps(*rnr)).empty())

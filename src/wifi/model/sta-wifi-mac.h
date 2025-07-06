@@ -199,8 +199,11 @@ class WIFI_EXPORT StaWifiMac : public WifiMac
 
     /**
      * Notify the STA that a scanning procedure has started.
+     *
+     * @param offline true if the scan is an offline scan, false otherwise
+     * @param linkId the ID of the link on which scanning has started
      */
-    void NotifyScanningStarted();
+    void NotifyScanningStarted(bool offline, linkId_t linkId);
 
     /**
      * Get the frame body of the Probe Request to transmit on the given link.
@@ -251,6 +254,9 @@ class WIFI_EXPORT StaWifiMac : public WifiMac
      * @return true if we are associated with an AP, false otherwise
      */
     bool IsAssociated() const;
+
+    /// @return whether offline channel scanning is ongoing on some link
+    bool IsScanningChannelsOffline() const;
 
     /**
      * Get the IDs of the setup links (if any).
@@ -312,6 +318,15 @@ class WIFI_EXPORT StaWifiMac : public WifiMac
      * @param mpdu the MPDU that we successfully sent
      */
     void TxOk(Ptr<const WifiMpdu> mpdu);
+
+    /**
+     * Perform actions required when the Power Management mode of the non-AP STA operating on the
+     * given link has changed.
+     *
+     * @param pmMode the new PM mode
+     * @param linkId the ID of the given link
+     */
+    void PmModeChanged(WifiPowerManagementMode pmMode, linkId_t linkId);
 
     void NotifyChannelSwitching(uint8_t linkId) override;
     void NotifyRequestAccess(Ptr<Txop> txop, uint8_t linkId) override;
@@ -389,6 +404,7 @@ class WIFI_EXPORT StaWifiMac : public WifiMac
         bool sendAssocReq;                 //!< whether this link is used to send the
                                            //!< Association Request frame
         std::optional<Mac48Address> bssid; //!< BSSID of the AP to associate with over this link
+        bool offlineScanning{false};       //!< whether offline scanning is ongoing on this link
         WifiPowerManagementMode pmMode{WIFI_PM_ACTIVE}; /**< the current PM mode, if the STA is
                                                              associated, or the PM mode to switch
                                                              to upon association, otherwise */

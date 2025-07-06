@@ -381,10 +381,17 @@ StaWifiMac::SetActiveProbing(bool enable)
 }
 
 void
-StaWifiMac::NotifyScanningStarted()
+StaWifiMac::NotifyScanningStarted(bool offline, linkId_t linkId)
 {
-    NS_LOG_FUNCTION(this);
-    SetState(SCANNING);
+    NS_LOG_FUNCTION(this << offline << linkId);
+    if (!offline)
+    {
+        SetState(SCANNING);
+        return;
+    }
+    auto& link = GetLink(linkId);
+    NS_ASSERT_MSG(link.phy, "STA link " << +linkId << " has no PHY assigned");
+    link.offlineScanning = true;
 }
 
 bool
@@ -882,6 +889,9 @@ void
 StaWifiMac::TryToEnsureAssociated()
 {
     NS_LOG_FUNCTION(this);
+    NS_ABORT_MSG_IF(IsScanningChannelsOffline(),
+                    "We should not try to associate during offline channel scanning");
+
     switch (m_state)
     {
     case ASSOCIATED:
@@ -915,9 +925,30 @@ StaWifiMac::TryToEnsureAssociated()
 }
 
 void
+StaWifiMac::PmModeChanged(WifiPowerManagementMode pmMode, linkId_t linkId)
+{
+    NS_LOG_FUNCTION(this << pmMode << linkId);
+
+    if (m_powerSaveManager)
+    {
+        m_powerSaveManager->NotifyPmModeChanged(pmMode, linkId);
+    }
+    m_assocManager->NotifyPmModeChanged(pmMode, linkId);
+}
+
+void
 StaWifiMac::ScanningTimeout(const std::optional<ApInfo>& bestAp)
 {
     NS_LOG_FUNCTION(this);
+
+    if (IsScanningChannelsOffline())
+    {
+        for (const auto& [id, link] : GetLinks())
+        {
+            GetStaLink(link).offlineScanning = false;
+        }
+        return;
+    }
 
     if (!bestAp.has_value())
     {
@@ -1114,6 +1145,19 @@ bool
 StaWifiMac::IsAssociated() const
 {
     return m_state == ASSOCIATED;
+}
+
+bool
+StaWifiMac::IsScanningChannelsOffline() const
+{
+    for (const auto& [id, link] : GetLinks())
+    {
+        if (GetStaLink(link).offlineScanning)
+        {
+            return true;
+        }
+    }
+    return false;
 }
 
 bool
@@ -2197,18 +2241,12 @@ StaWifiMac::TxOk(Ptr<const WifiMpdu> mpdu)
     if (hdr.IsPowerManagement() && link.pmMode == WIFI_PM_SWITCHING_TO_PS)
     {
         link.pmMode = WIFI_PM_POWERSAVE;
-        if (m_powerSaveManager)
-        {
-            m_powerSaveManager->NotifyPmModeChanged(link.pmMode, *linkId);
-        }
+        PmModeChanged(link.pmMode, *linkId);
     }
     else if (!hdr.IsPowerManagement() && link.pmMode == WIFI_PM_SWITCHING_TO_ACTIVE)
     {
         link.pmMode = WIFI_PM_ACTIVE;
-        if (m_powerSaveManager)
-        {
-            m_powerSaveManager->NotifyPmModeChanged(link.pmMode, *linkId);
-        }
+        PmModeChanged(link.pmMode, *linkId);
     }
 
     if (hdr.IsDisassociation() && m_disassocEvent.IsPending())

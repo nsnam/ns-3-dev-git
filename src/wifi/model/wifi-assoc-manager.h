@@ -59,6 +59,19 @@ struct WIFI_EXPORT WifiScanParams
 /**
  * @ingroup wifi
  *
+ * Enumerate protection techniques to adopt before performing an offline channel scan:
+ * - NONE: no protection
+ * - POWERSAVE: switch to powersave mode before starting offline channel scanning
+ */
+enum class WifiOfflineScanProtection : uint8_t
+{
+    NONE = 0,
+    POWERSAVE
+};
+
+/**
+ * @ingroup wifi
+ *
  * Abstract base class for the Association Manager, which manages
  * scanning and association for single link devices and ML discovery
  * and setup for multi-link devices.
@@ -126,8 +139,10 @@ class WIFI_EXPORT WifiAssocManager : public Object
 
     /**
      * Start scanning using the current STA configuration.
+     *
+     * @param offline whether the scanning procedure is an offline channel scanning procedure
      */
-    void StartScanning();
+    void StartScanning(bool offline = false);
 
     /**
      * STA wifi MAC received a Beacon frame or Probe Response frame while scanning
@@ -156,6 +171,20 @@ class WIFI_EXPORT WifiAssocManager : public Object
      *              link ID it has to become (i.e., link 'from' becomes link 'to')
      */
     void NotifyLinkSwapped(const std::map<uint8_t, uint8_t>& swapInfo);
+
+    /**
+     * Notify that the Power Management mode of the non-AP STA operating on the given link
+     * has changed.
+     *
+     * @param pmMode the new PM mode
+     * @param linkId the ID of the given link
+     */
+    void NotifyPmModeChanged(WifiPowerManagementMode pmMode, linkId_t linkId);
+
+    /**
+     * Start an offline channel scanning procedure.
+     */
+    void StartOfflineScanning();
 
     /**
      * Compare two ApInfo objects for the purpose of keeping a sorted list of
@@ -303,6 +332,11 @@ class WIFI_EXPORT WifiAssocManager : public Object
      */
     void ScanningTimeout();
 
+    /**
+     * Restore channels used before starting an offline channel scanning procedure.
+     */
+    void OfflineScanningTimeout();
+
     /// typedef for an optional const reference to a ReducedNeighborReport object
     using OptRnrConstRef = std::optional<std::reference_wrapper<const ReducedNeighborReport>>;
     /// typedef for an optional const reference to a MultiLinkElement object
@@ -330,6 +364,10 @@ class WIFI_EXPORT WifiAssocManager : public Object
     WifiScanParams::Map m_scanChannels; ///< data structure containing the channels to scan
 
   private:
+    std::set<linkId_t> m_activeBeforeScan; ///< IDs of links on which STAs are operating in active
+                                           ///< mode before switching to PS mode for offline
+                                           ///< scanning
+
     /**
      * Get a checker for an attribute value consisting of a WifiPhyBand-index map of the list of
      * channels to scan. This is used internally by SetScanningChannelsFromStr() and
@@ -401,6 +439,11 @@ class WIFI_EXPORT WifiAssocManager : public Object
      */
     void SwitchToNextChannelToScan(uint8_t phyId, WifiPhyBand band, uint8_t channelNo);
 
+    /**
+     * Restore state after the completion of an offline channel scanning procedure.
+     */
+    void HandleOfflineScanningEnded();
+
     WifiScanParams m_scanParams; ///< scanning parameters
     std::map<uint8_t, EventId>
         m_currentChannelScanEnd; ///< PHY ID-indexed map of events indicating the end of the scan of
@@ -408,7 +451,17 @@ class WIFI_EXPORT WifiAssocManager : public Object
     std::map<uint8_t, EventId>
         m_switchToChannelToScanTimeout; ///< PHY ID-indexed map of events indicating the end of the
                                         ///< timer started when switching to the channel to scan
-    SortedList m_apList;                ///< sorted list of candidate APs
+    std::map<uint8_t, WifiPhyOperatingChannel>
+        m_channelsToSet; ///< PHY ID-indexed map of the frequency channels to set after a channel
+                         ///< scanning procedure is completed
+    std::map<uint8_t, EventId>
+        m_switchToChannelToSetTimeout; ///< PHY ID-indexed map of events indicating the end of the
+                                       ///< timer started when switching to the channels to set
+                                       ///< at the end of a scanning procedure
+    SortedList m_apList;               ///< sorted list of candidate APs
+    WifiOfflineScanProtection
+        m_offlineScanProtection; ///< technique to protect an offline channel scan
+
     /// hash table to help locate ApInfo objects in the sorted list based on the BSSID
     std::unordered_map<Mac48Address, SortedList::const_iterator, WifiAddressHash> m_apListIt;
 };
