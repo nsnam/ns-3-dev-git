@@ -11,6 +11,7 @@
 
 #include "ns3/nstime.h"
 #include "ns3/object.h"
+#include "ns3/traced-callback.h"
 
 #include <map>
 
@@ -232,6 +233,11 @@ class PowerSaveManager : public Object
         m_linkIdEnableMap; ///< a link ID-indexed map indicating whether to enable or not power save
                            ///< mode on the link with the given ID (used before initialization)
     uint32_t m_listenInterval; ///< beacon listen interval
+    TracedCallback<uint8_t, WifiPowerManagementMode>
+        m_pmModeLogger; ///< link ID-indexed power management mode logger
+
+    /// TracedCallback signature for power management mode change events
+    using PmModeChangeCallback = void (*)(uint8_t /* link ID */, WifiPowerManagementMode);
 };
 
 } // namespace ns3

@@ -54,7 +54,14 @@ PowerSaveManager::GetTypeId()
                           "listen for a PS STAs",
                           UintegerValue(1),
                           MakeUintegerAccessor(&PowerSaveManager::m_listenInterval),
-                          MakeUintegerChecker<uint32_t>(1));
+                          MakeUintegerChecker<uint32_t>(1))
+            .AddTraceSource(
+                "PmMode",
+                "Traces every change in the power management mode of the STAs affiliated with this "
+                "device. Provides the ID of the link on which the STA that changed power "
+                "management mode is operating and the new power management mode of the STA.",
+                MakeTraceSourceAccessor(&PowerSaveManager::m_pmModeLogger),
+                "ns3::PowerSaveManager::PmModeChangeCallback");
     return tid;
 }
 
@@ -191,6 +198,7 @@ PowerSaveManager::NotifyPmModeChanged(WifiPowerManagementMode pmMode, uint8_t li
             phy->ResumeFromSleep();
         }
     }
+    m_pmModeLogger(linkId, pmMode);
 }
 
 void
