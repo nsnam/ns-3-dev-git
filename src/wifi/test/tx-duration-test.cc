@@ -11,6 +11,7 @@
 #include "ns3/eht-phy.h"  //includes OFDM, HT, VHT and HE
 #include "ns3/eht-ppdu.h" //includes OFDM, HT, VHT and HE
 #include "ns3/erp-ofdm-phy.h"
+#include "ns3/he-ppdu.h"
 #include "ns3/he-ru.h"
 #include "ns3/log.h"
 #include "ns3/packet.h"
@@ -2033,23 +2034,25 @@ class MuSigDurationTest : public TestCase
     /**
      * Constructor
      *
+     * @param scenario the brief description of the test scenario
      * @param userInfos the HE MU specific per-user information to use for the test
      * @param sigBMode the mode to transmit HE-SIG-B for the test
      * @param channelWidth the channel width to select for the test
      * @param p20Index the index of the primary20 channel
+     * @param ruAllocation the RU_ALLOCATION to configure
      * @param expectedMuType the expected MU type (OFDMA or MU-MIMO)
-     * @param expectedRuAllocation the expected RuType::RU_ALLOCATION
-     * @param expectedNumUsersPerCc the expected number of users per content channel
      * @param expectedSigBDuration the expected duration of the HE-SIG-B header
+     * @param expectedContentChannels the expected content channels
      */
-    MuSigDurationTest(const std::list<HeMuUserInfo>& userInfos,
+    MuSigDurationTest(const std::string& scenario,
+                      const std::list<HeMuUserInfo>& userInfos,
                       const WifiMode& sigBMode,
                       MHz_t channelWidth,
                       uint8_t p20Index,
+                      const RuAllocation& ruAllocation,
                       MuType expectedMuType,
-                      const RuAllocation& expectedRuAllocation,
-                      const std::pair<std::size_t, std::size_t>& expectedNumUsersPerCc,
-                      Time expectedSigBDuration);
+                      const Time& expectedSigBDuration,
+                      const HePpdu::HeSigBContentChannels& expectedContentChannels);
 
   private:
     void DoRun() override;
@@ -2068,31 +2071,32 @@ class MuSigDurationTest : public TestCase
     WifiMode m_sigBMode;                 ///< Mode used to transmit HE-SIG-B
     MHz_t m_channelWidth;                ///< Channel width
     uint8_t m_p20Index;                  ///< index of the primary20 channel
+    RuAllocation m_ruAllocation;         ///< RU_ALLOCATION to configure
     MuType m_expectedMuType;             ///< Expected MU type (OFDMA or MU-MIMO)
-    RuAllocation m_expectedRuAllocation; ///< Expected RuType::RU_ALLOCATION
-    std::pair<std::size_t, std::size_t>
-        m_expectedNumUsersPerCc; ///< Expected number of users per content channel
-    Time m_expectedSigBDuration; ///< Expected duration of the HE-SIG-B/EHT-SIG header
+    Time m_expectedSigBDuration;         ///< Expected duration of the HE-SIG-B/EHT-SIG header
+    HePpdu::HeSigBContentChannels m_expectedContentChannels; ///< expected content channels
 };
 
-MuSigDurationTest::MuSigDurationTest(
-    const std::list<HeMuUserInfo>& userInfos,
-    const WifiMode& sigBMode,
-    MHz_t channelWidth,
-    uint8_t p20Index,
-    MuType expectedMuType,
-    const RuAllocation& expectedRuAllocation,
-    const std::pair<std::size_t, std::size_t>& expectedNumUsersPerCc,
-    Time expectedSigBDuration)
-    : TestCase{"Check HE-SIG-B or EHT-SIG duration computation"},
+MuSigDurationTest::MuSigDurationTest(const std::string& scenario,
+                                     const std::list<HeMuUserInfo>& userInfos,
+                                     const WifiMode& sigBMode,
+                                     MHz_t channelWidth,
+                                     uint8_t p20Index,
+                                     const RuAllocation& ruAllocation,
+                                     MuType expectedMuType,
+                                     const Time& expectedSigBDuration,
+                                     const HePpdu::HeSigBContentChannels& expectedContentChannels)
+    : TestCase{"Check " +
+               std::string(WifiRu::IsHe(userInfos.cbegin()->ru) ? "HE-SIG-B" : "EHT-SIG") +
+               " duration computation for " + scenario},
       m_userInfos{userInfos},
       m_sigBMode{sigBMode},
       m_channelWidth{channelWidth},
       m_p20Index{p20Index},
+      m_ruAllocation{ruAllocation},
       m_expectedMuType{expectedMuType},
-      m_expectedRuAllocation{expectedRuAllocation},
-      m_expectedNumUsersPerCc{expectedNumUsersPerCc},
-      m_expectedSigBDuration{expectedSigBDuration}
+      m_expectedSigBDuration{expectedSigBDuration},
+      m_expectedContentChannels{expectedContentChannels}
 {
 }
 
@@ -2118,6 +2122,7 @@ MuSigDurationTest::BuildTxVector() const
         staIds.push_back(staId++);
     }
     txVector.SetSigBMode(m_sigBMode);
+    txVector.SetRuAllocation(m_ruAllocation, m_p20Index);
     NS_ASSERT(m_expectedMuType == OFDMA ? txVector.IsDlOfdma() : txVector.IsDlMuMimo());
     return txVector;
 }
@@ -2144,11 +2149,6 @@ MuSigDurationTest::DoRun()
                           m_sigBMode,
                           "Incorrect mode used to send HE-SIG-B/EHT-SIG");
 
-    // Verify RuType::RU_ALLOCATION in TXVECTOR
-    NS_TEST_EXPECT_MSG_EQ((txVector.GetRuAllocation(0) == m_expectedRuAllocation),
-                          true,
-                          "Incorrect RuType::RU_ALLOCATION");
-
     // Verify number of users for content channels 1 and 2
     const auto& numUsersPerCc = HePpdu::GetNumRusPerHeSigBContentChannel(
         txVector.GetChannelWidth(),
@@ -2157,19 +2157,32 @@ MuSigDurationTest::DoRun()
         txVector.GetCenter26ToneRuIndication(m_p20Index),
         txVector.IsSigBCompression(),
         txVector.IsSigBCompression() ? txVector.GetHeMuUserInfoMap().size() : 0);
-    const auto contentChannels = HePpdu::GetHeSigBContentChannels(txVector, 0);
+
     NS_TEST_EXPECT_MSG_EQ(numUsersPerCc.first,
-                          m_expectedNumUsersPerCc.first,
+                          m_expectedContentChannels.at(0).size(),
                           "Incorrect number of users in content channel 1");
-    NS_TEST_EXPECT_MSG_EQ(numUsersPerCc.second,
-                          m_expectedNumUsersPerCc.second,
-                          "Incorrect number of users in content channel 2");
-    NS_TEST_EXPECT_MSG_EQ(contentChannels.at(0).size(),
-                          m_expectedNumUsersPerCc.first,
-                          "Incorrect number of users in content channel 1");
-    NS_TEST_EXPECT_MSG_EQ((contentChannels.size() > 1 ? contentChannels.at(1).size() : 0),
-                          m_expectedNumUsersPerCc.second,
-                          "Incorrect number of users in content channel 2");
+    NS_TEST_EXPECT_MSG_EQ(
+        numUsersPerCc.second,
+        (m_expectedContentChannels.size() > 1 ? m_expectedContentChannels.at(1).size() : 0),
+        "Incorrect number of users in content channel 2");
+
+    const auto contentChannels = HePpdu::GetHeSigBContentChannels(txVector, m_p20Index);
+    NS_TEST_ASSERT_MSG_EQ(contentChannels.size(),
+                          m_expectedContentChannels.size(),
+                          "Unexpected number of content channels");
+    for (std::size_t ccIndex = 0; ccIndex < m_expectedContentChannels.size(); ++ccIndex)
+    {
+        NS_TEST_ASSERT_MSG_EQ(contentChannels.at(ccIndex).size(),
+                              m_expectedContentChannels.at(ccIndex).size(),
+                              "Incorrect number of users in CC " << ccIndex + 1);
+        for (std::size_t i = 0; i < m_expectedContentChannels.at(ccIndex).size(); ++i)
+        {
+            NS_TEST_EXPECT_MSG_EQ(contentChannels.at(ccIndex).at(i),
+                                  m_expectedContentChannels.at(ccIndex).at(i),
+                                  "Incorrect content for user " << i + 1 << " in CC "
+                                                                << ccIndex + 1);
+        }
+    }
 
     // Verify total HE-SIG-B/EHT-SIG duration
     if (txVector.GetModulationClass() == WIFI_MOD_CLASS_HE)
@@ -2595,913 +2608,2924 @@ TxDurationTestSuite::TxDurationTestSuite()
          std::initializer_list<std::optional<bool>>{std::nullopt /* HE-SIG-B */,
                                                     std::optional(true) /* EHT-SIG */})
     {
-        // 20 MHz band, OFDMA, even number of users in content channel
-        AddTestCase(
-            new MuSigDurationTest({{MakeRuSpec(RuType::RU_106_TONE, 1, p80OrLow80, p160), 11, 1},
-                                   {MakeRuSpec(RuType::RU_106_TONE, 2, p80OrLow80, p160), 10, 4}},
-                                  VhtPhy::GetVhtMcs5(),
-                                  MHz_t{20},
-                                  0,
-                                  MuSigDurationTest::OFDMA,
-                                  (p160 == std::nullopt) ? RuAllocation{96} : RuAllocation{48},
-                                  std::make_pair(2, 0), // both users in content channel 1
-                                  MicroSeconds(4)),     // one OFDM symbol;
-            TestCase::Duration::QUICK);
-
-        // 40 MHz band, OFDMA, even number of users per content channel
-        AddTestCase(new MuSigDurationTest(
-                        {{MakeRuSpec(RuType::RU_106_TONE, 1, p80OrLow80, p160), 11, 1}, // CC1
-                         {MakeRuSpec(RuType::RU_106_TONE, 2, p80OrLow80, p160), 10, 4}, // CC1
-                         {MakeRuSpec(RuType::RU_52_TONE, 5, p80OrLow80, p160), 4, 1},   // CC2
-                         {MakeRuSpec(RuType::RU_52_TONE, 6, p80OrLow80, p160), 6, 2},   // CC2
-                         {MakeRuSpec(RuType::RU_52_TONE, 7, p80OrLow80, p160), 5, 3},   // CC2
-                         {MakeRuSpec(RuType::RU_52_TONE, 8, p80OrLow80, p160), 6, 2}},  // CC2
-                        VhtPhy::GetVhtMcs4(),
-                        MHz_t{40},
-                        0,
-                        MuSigDurationTest::OFDMA,
-                        (p160 == std::nullopt) ? RuAllocation{96, 112} : RuAllocation{48, 24},
-                        std::make_pair(2, 4), // two users in content channel 1 and
-                                              // four users in content channel 2
-                        MicroSeconds(4)),     // one OFDM symbol;
-                    TestCase::Duration::QUICK);
-
-        // 40 MHz band, OFDMA, odd number of users in second content channel
-        AddTestCase(new MuSigDurationTest(
-                        {{MakeRuSpec(RuType::RU_106_TONE, 1, p80OrLow80, p160), 11, 1}, // CC1
-                         {MakeRuSpec(RuType::RU_106_TONE, 2, p80OrLow80, p160), 10, 4}, // CC1
-                         {MakeRuSpec(RuType::RU_52_TONE, 5, p80OrLow80, p160), 4, 1},   // CC2
-                         {MakeRuSpec(RuType::RU_52_TONE, 6, p80OrLow80, p160), 6, 2},   // CC2
-                         {MakeRuSpec(RuType::RU_52_TONE, 7, p80OrLow80, p160), 5, 3},   // CC2
-                         {MakeRuSpec(RuType::RU_52_TONE, 8, p80OrLow80, p160), 6, 2},   // CC2
-                         {MakeRuSpec(RuType::RU_26_TONE, 14, p80OrLow80, p160), 3, 1}}, // CC2
-                        VhtPhy::GetVhtMcs3(),
-                        MHz_t{40},
-                        0,
-                        MuSigDurationTest::OFDMA,
-                        (p160 == std::nullopt) ? RuAllocation{96, 15} : RuAllocation{48, 15},
-                        std::make_pair(2, 5), // two users in content channel 1 and
-                                              // five users in content channel 2
-                        MicroSeconds(8)),     // two OFDM symbols
-                    TestCase::Duration::QUICK);
-
-        // 80 MHz band, OFDMA
-        AddTestCase(new MuSigDurationTest(
-                        {{MakeRuSpec(RuType::RU_106_TONE, 1, p80OrLow80, p160), 11, 1}, // CC1
-                         {MakeRuSpec(RuType::RU_106_TONE, 2, p80OrLow80, p160), 10, 4}, // CC1
-                         {MakeRuSpec(RuType::RU_52_TONE, 5, p80OrLow80, p160), 4, 1},   // CC2
-                         {MakeRuSpec(RuType::RU_52_TONE, 6, p80OrLow80, p160), 6, 2},   // CC2
-                         {MakeRuSpec(RuType::RU_52_TONE, 7, p80OrLow80, p160), 5, 3},   // CC2
-                         {MakeRuSpec(RuType::RU_52_TONE, 8, p80OrLow80, p160), 6, 2},   // CC2
-                         {MakeRuSpec(RuType::RU_26_TONE, 14, p80OrLow80, p160), 3, 1},  // CC2
-                         {MakeRuSpec(RuType::RU_242_TONE, 3, p80OrLow80, p160), 1, 1},  // CC1
-                         {MakeRuSpec(RuType::RU_242_TONE, 4, p80OrLow80, p160), 4, 1}}, // CC2
-                        VhtPhy::GetVhtMcs1(),
-                        MHz_t{80},
-                        0,
-                        MuSigDurationTest::OFDMA,
-                        (p160 == std::nullopt) ? RuAllocation{96, 15, 192, 192}
-                                               : RuAllocation{48, 15, 64, 64},
-                        std::make_pair(3, 6), // three users in content channel 1
-                                              // and six users in content channel 2
-                        MicroSeconds(16)),    // four OFDM symbols
-                    TestCase::Duration::QUICK);
-
-        // 80 MHz band, OFDMA, no central 26-tones RU
-        AddTestCase(new MuSigDurationTest(
-                        {{MakeRuSpec(RuType::RU_26_TONE, 1, p80OrLow80, p160), 8, 1},   // CC1
-                         {MakeRuSpec(RuType::RU_26_TONE, 2, p80OrLow80, p160), 8, 1},   // CC1
-                         {MakeRuSpec(RuType::RU_26_TONE, 3, p80OrLow80, p160), 8, 1},   // CC1
-                         {MakeRuSpec(RuType::RU_26_TONE, 4, p80OrLow80, p160), 8, 1},   // CC1
-                         {MakeRuSpec(RuType::RU_26_TONE, 5, p80OrLow80, p160), 8, 1},   // CC1
-                         {MakeRuSpec(RuType::RU_26_TONE, 6, p80OrLow80, p160), 8, 1},   // CC1
-                         {MakeRuSpec(RuType::RU_26_TONE, 7, p80OrLow80, p160), 8, 1},   // CC1
-                         {MakeRuSpec(RuType::RU_26_TONE, 8, p80OrLow80, p160), 8, 1},   // CC1
-                         {MakeRuSpec(RuType::RU_26_TONE, 9, p80OrLow80, p160), 8, 1},   // CC1
-                         {MakeRuSpec(RuType::RU_26_TONE, 10, p80OrLow80, p160), 8, 1},  // CC2
-                         {MakeRuSpec(RuType::RU_26_TONE, 11, p80OrLow80, p160), 8, 1},  // CC2
-                         {MakeRuSpec(RuType::RU_26_TONE, 12, p80OrLow80, p160), 8, 1},  // CC2
-                         {MakeRuSpec(RuType::RU_26_TONE, 13, p80OrLow80, p160), 8, 1},  // CC2
-                         {MakeRuSpec(RuType::RU_26_TONE, 14, p80OrLow80, p160), 8, 1},  // CC2
-                         {MakeRuSpec(RuType::RU_26_TONE, 15, p80OrLow80, p160), 8, 1},  // CC2
-                         {MakeRuSpec(RuType::RU_26_TONE, 16, p80OrLow80, p160), 8, 1},  // CC2
-                         {MakeRuSpec(RuType::RU_26_TONE, 17, p80OrLow80, p160), 8, 1},  // CC2
-                         {MakeRuSpec(RuType::RU_26_TONE, 18, p80OrLow80, p160), 8, 1},  // CC2
-                         {MakeRuSpec(RuType::RU_26_TONE, 20, p80OrLow80, p160), 8, 1},  // CC1
-                         {MakeRuSpec(RuType::RU_26_TONE, 21, p80OrLow80, p160), 8, 1},  // CC1
-                         {MakeRuSpec(RuType::RU_26_TONE, 22, p80OrLow80, p160), 8, 1},  // CC1
-                         {MakeRuSpec(RuType::RU_26_TONE, 23, p80OrLow80, p160), 8, 1},  // CC1
-                         {MakeRuSpec(RuType::RU_26_TONE, 24, p80OrLow80, p160), 8, 1},  // CC1
-                         {MakeRuSpec(RuType::RU_26_TONE, 25, p80OrLow80, p160), 8, 1},  // CC1
-                         {MakeRuSpec(RuType::RU_26_TONE, 26, p80OrLow80, p160), 8, 1},  // CC1
-                         {MakeRuSpec(RuType::RU_26_TONE, 27, p80OrLow80, p160), 8, 1},  // CC1
-                         {MakeRuSpec(RuType::RU_26_TONE, 28, p80OrLow80, p160), 8, 1},  // CC2
-                         {MakeRuSpec(RuType::RU_26_TONE, 29, p80OrLow80, p160), 8, 1},  // CC2
-                         {MakeRuSpec(RuType::RU_26_TONE, 30, p80OrLow80, p160), 8, 1},  // CC2
-                         {MakeRuSpec(RuType::RU_26_TONE, 31, p80OrLow80, p160), 8, 1},  // CC2
-                         {MakeRuSpec(RuType::RU_26_TONE, 32, p80OrLow80, p160), 8, 1},  // CC2
-                         {MakeRuSpec(RuType::RU_26_TONE, 33, p80OrLow80, p160), 8, 1},  // CC2
-                         {MakeRuSpec(RuType::RU_26_TONE, 34, p80OrLow80, p160), 8, 1},  // CC2
-                         {MakeRuSpec(RuType::RU_26_TONE, 35, p80OrLow80, p160), 8, 1},  // CC2
-                         {MakeRuSpec(RuType::RU_26_TONE, 36, p80OrLow80, p160), 8, 1},  // CC2
-                         {MakeRuSpec(RuType::RU_26_TONE, 37, p80OrLow80, p160), 8, 1}}, // CC2
-                        VhtPhy::GetVhtMcs5(),
-                        MHz_t{80},
-                        0,
-                        MuSigDurationTest::OFDMA,
-                        {0, 0, 0, 0},
-                        std::make_pair(18, 18), // 18 users users in each content channel
-                        MicroSeconds(12)),      // three OFDM symbols
-                    TestCase::Duration::QUICK);
-
-        // 160 MHz band, OFDMA, no central 26-tones RU
-        AddTestCase(new MuSigDurationTest(
-                        {{MakeRuSpec(RuType::RU_106_TONE, 1, p80OrLow80, p160), 11, 1}, // CC1
-                         {MakeRuSpec(RuType::RU_106_TONE, 2, p80OrLow80, p160), 10, 4}, // CC1
-                         {MakeRuSpec(RuType::RU_52_TONE, 5, p80OrLow80, p160), 4, 1},   // CC2
-                         {MakeRuSpec(RuType::RU_52_TONE, 6, p80OrLow80, p160), 6, 2},   // CC2
-                         {MakeRuSpec(RuType::RU_52_TONE, 7, p80OrLow80, p160), 5, 3},   // CC2
-                         {MakeRuSpec(RuType::RU_52_TONE, 8, p80OrLow80, p160), 6, 2},   // CC2
-                         {MakeRuSpec(RuType::RU_26_TONE, 14, p80OrLow80, p160), 3, 1},  // CC2
-                         {MakeRuSpec(RuType::RU_242_TONE, 3, p80OrLow80, p160), 1, 1},  // CC1
-                         {MakeRuSpec(RuType::RU_242_TONE, 4, p80OrLow80, p160), 4, 1},  // CC2
-                         {MakeRuSpec(RuType::RU_996_TONE, 1, s80OrHigh80, p160),
-                          1,
-                          1}}, // CC1 or CC2 => CC1 for better split
-                        VhtPhy::GetVhtMcs1(),
-                        MHz_t{160},
-                        0,
-                        MuSigDurationTest::OFDMA,
-                        (p160 == std::nullopt) ? RuAllocation{96, 15, 192, 192, 208, 115, 208, 115}
-                                               : RuAllocation{48, 15, 64, 64, 80, 30, 80, 30},
-                        std::make_pair(4, 6), // four users in content channel 1 and
-                                              // seven users in content channel 2
-                        MicroSeconds(16)),    // four OFDM symbols
-                    TestCase::Duration::QUICK);
-
-        // 20 MHz band, OFDMA, one unallocated RU at the middle
         AddTestCase(
             new MuSigDurationTest(
-                {{MakeRuSpec(RuType::RU_26_TONE, 1, p80OrLow80, p160), 11, 1},  // CC1
-                 {MakeRuSpec(RuType::RU_26_TONE, 2, p80OrLow80, p160), 11, 1},  // CC1
-                 {MakeRuSpec(RuType::RU_26_TONE, 3, p80OrLow80, p160), 11, 1},  // CC1
-                 {MakeRuSpec(RuType::RU_26_TONE, 4, p80OrLow80, p160), 11, 1},  // CC1
-                 {MakeRuSpec(RuType::RU_26_TONE, 6, p80OrLow80, p160), 11, 1},  // CC1
-                 {MakeRuSpec(RuType::RU_26_TONE, 7, p80OrLow80, p160), 11, 1},  // CC1
-                 {MakeRuSpec(RuType::RU_26_TONE, 8, p80OrLow80, p160), 11, 1},  // CC1
-                 {MakeRuSpec(RuType::RU_26_TONE, 9, p80OrLow80, p160), 11, 1}}, // CC1
+                "20 MHz band, OFDMA, even number of users in content channel",
+                {
+                    {MakeRuSpec(RuType::RU_106_TONE, 1, p80OrLow80, p160), 11, 1}, // user #1 in CC1
+                    {MakeRuSpec(RuType::RU_106_TONE, 2, p80OrLow80, p160), 10, 4},
+                }, // user #2 in CC1
                 VhtPhy::GetVhtMcs5(),
                 MHz_t{20},
                 0,
+                (p160 == std::nullopt) ? RuAllocation{96} : RuAllocation{48},
                 MuSigDurationTest::OFDMA,
+                MicroSeconds(4), // one OFDM symbol
+                {{
+                    HePpdu::HeSigBUserSpecificField{.staId = 1, .nss = 1, .mcs = 11},
+                    HePpdu::HeSigBUserSpecificField{.staId = 2, .nss = 4, .mcs = 10},
+                }}),
+            TestCase::Duration::QUICK);
+
+        AddTestCase(
+            new MuSigDurationTest(
+                "40 MHz band, OFDMA, even number of users per content channel",
+                {
+                    {MakeRuSpec(RuType::RU_106_TONE, 1, p80OrLow80, p160), 11, 1}, // user #1 in CC1
+                    {MakeRuSpec(RuType::RU_106_TONE, 2, p80OrLow80, p160), 10, 4}, // user #2 in CC1
+                    {MakeRuSpec(RuType::RU_52_TONE, 5, p80OrLow80, p160), 4, 1},   // user #3 in CC2
+                    {MakeRuSpec(RuType::RU_52_TONE, 6, p80OrLow80, p160), 6, 2},   // user #4 in CC2
+                    {MakeRuSpec(RuType::RU_52_TONE, 7, p80OrLow80, p160), 5, 3},   // user #5 in CC2
+                    {MakeRuSpec(RuType::RU_52_TONE, 8, p80OrLow80, p160), 6, 2},   // user #6 in CC2
+                },
+                VhtPhy::GetVhtMcs4(),
+                MHz_t{40},
+                0,
+                (p160 == std::nullopt) ? RuAllocation{96, 112} : RuAllocation{48, 24},
+                MuSigDurationTest::OFDMA,
+                MicroSeconds(4), // one OFDM symbol
+                {{
+                     HePpdu::HeSigBUserSpecificField{.staId = 1, .nss = 1, .mcs = 11},
+                     HePpdu::HeSigBUserSpecificField{.staId = 2, .nss = 4, .mcs = 10},
+                 },
+                 {
+                     HePpdu::HeSigBUserSpecificField{.staId = 3, .nss = 1, .mcs = 4},
+                     HePpdu::HeSigBUserSpecificField{.staId = 4, .nss = 2, .mcs = 6},
+                     HePpdu::HeSigBUserSpecificField{.staId = 5, .nss = 3, .mcs = 5},
+                     HePpdu::HeSigBUserSpecificField{.staId = 6, .nss = 2, .mcs = 6},
+                 }}),
+            TestCase::Duration::QUICK);
+
+        AddTestCase(
+            new MuSigDurationTest(
+                "40 MHz band, OFDMA, odd number of users in second content channel",
+                {
+                    {MakeRuSpec(RuType::RU_106_TONE, 1, p80OrLow80, p160), 11, 1}, // user #1 in CC1
+                    {MakeRuSpec(RuType::RU_106_TONE, 2, p80OrLow80, p160), 10, 4}, // user #2 in CC1
+                    {MakeRuSpec(RuType::RU_52_TONE, 5, p80OrLow80, p160), 4, 1},   // user #3 in CC2
+                    {MakeRuSpec(RuType::RU_52_TONE, 6, p80OrLow80, p160), 6, 2},   // user #4 in CC2
+                    {MakeRuSpec(RuType::RU_52_TONE, 7, p80OrLow80, p160), 5, 3},   // user #5 in CC2
+                    {MakeRuSpec(RuType::RU_52_TONE, 8, p80OrLow80, p160), 6, 2},   // user #6 in CC2
+                    {MakeRuSpec(RuType::RU_26_TONE, 14, p80OrLow80, p160),
+                     3,
+                     1}, // user #7 in CC2 (central 26-tone RU within the 20 MHz subchannel)
+                },
+                VhtPhy::GetVhtMcs3(),
+                MHz_t{40},
+                0,
+                (p160 == std::nullopt) ? RuAllocation{96, 15} : RuAllocation{48, 15},
+                MuSigDurationTest::OFDMA,
+                MicroSeconds(8), // two OFDM symbols
+                {{
+                     HePpdu::HeSigBUserSpecificField{.staId = 1, .nss = 1, .mcs = 11},
+                     HePpdu::HeSigBUserSpecificField{.staId = 2, .nss = 4, .mcs = 10},
+                 },
+                 {
+                     HePpdu::HeSigBUserSpecificField{.staId = 3, .nss = 1, .mcs = 4},
+                     HePpdu::HeSigBUserSpecificField{.staId = 4, .nss = 2, .mcs = 6},
+                     HePpdu::HeSigBUserSpecificField{.staId = 7, .nss = 1, .mcs = 3},
+                     HePpdu::HeSigBUserSpecificField{.staId = 5, .nss = 3, .mcs = 5},
+                     HePpdu::HeSigBUserSpecificField{.staId = 6, .nss = 2, .mcs = 6},
+                 }}),
+            TestCase::Duration::QUICK);
+
+        AddTestCase(
+            new MuSigDurationTest(
+                "80 MHz band, OFDMA",
+                {
+                    {MakeRuSpec(RuType::RU_106_TONE, 1, p80OrLow80, p160), 11, 1}, // user #1 in CC1
+                    {MakeRuSpec(RuType::RU_106_TONE, 2, p80OrLow80, p160), 10, 4}, // user #2 in CC1
+                    {MakeRuSpec(RuType::RU_52_TONE, 5, p80OrLow80, p160), 4, 1},   // user #3 in CC2
+                    {MakeRuSpec(RuType::RU_52_TONE, 6, p80OrLow80, p160), 6, 2},   // user #4 in CC2
+                    {MakeRuSpec(RuType::RU_52_TONE, 7, p80OrLow80, p160), 5, 3},   // user #5 in CC2
+                    {MakeRuSpec(RuType::RU_52_TONE, 8, p80OrLow80, p160), 6, 2},   // user #6 in CC2
+                    {MakeRuSpec(RuType::RU_26_TONE, 14, p80OrLow80, p160),
+                     3,
+                     1}, // user #7 in CC2 (central 26-tone RU within the 20 MHz subchannel)
+                    {MakeRuSpec(RuType::RU_242_TONE, 3, p80OrLow80, p160), 1, 1}, // user #8 in CC1
+                    {MakeRuSpec(RuType::RU_242_TONE, 4, p80OrLow80, p160), 4, 1}, // user #9 in CC2
+                },
+                VhtPhy::GetVhtMcs1(),
+                MHz_t{80},
+                0,
+                (p160 == std::nullopt) ? RuAllocation{96, 15, 192, 192}
+                                       : RuAllocation{48, 15, 64, 64},
+                MuSigDurationTest::OFDMA,
+                MicroSeconds(16), // four OFDM symbols
+                {{
+                     HePpdu::HeSigBUserSpecificField{.staId = 1, .nss = 1, .mcs = 11},
+                     HePpdu::HeSigBUserSpecificField{.staId = 2, .nss = 4, .mcs = 10},
+                     HePpdu::HeSigBUserSpecificField{.staId = 8, .nss = 1, .mcs = 1},
+                 },
+                 {
+                     HePpdu::HeSigBUserSpecificField{.staId = 3, .nss = 1, .mcs = 4},
+                     HePpdu::HeSigBUserSpecificField{.staId = 4, .nss = 2, .mcs = 6},
+                     HePpdu::HeSigBUserSpecificField{.staId = 7, .nss = 1, .mcs = 3},
+                     HePpdu::HeSigBUserSpecificField{.staId = 5, .nss = 3, .mcs = 5},
+                     HePpdu::HeSigBUserSpecificField{.staId = 6, .nss = 2, .mcs = 6},
+                     HePpdu::HeSigBUserSpecificField{.staId = 9, .nss = 1, .mcs = 4},
+                 }}),
+            TestCase::Duration::QUICK);
+
+        AddTestCase(
+            new MuSigDurationTest(
+                "80 MHz band, OFDMA, no central 26-tones RU",
+                {
+                    {MakeRuSpec(RuType::RU_26_TONE, 1, p80OrLow80, p160), 8, 1},  // user #1 in CC1
+                    {MakeRuSpec(RuType::RU_26_TONE, 2, p80OrLow80, p160), 8, 1},  // user #2 in CC1
+                    {MakeRuSpec(RuType::RU_26_TONE, 3, p80OrLow80, p160), 8, 1},  // user #3 in CC1
+                    {MakeRuSpec(RuType::RU_26_TONE, 4, p80OrLow80, p160), 8, 1},  // user #4 in CC1
+                    {MakeRuSpec(RuType::RU_26_TONE, 5, p80OrLow80, p160), 8, 1},  // user #5 in CC1
+                    {MakeRuSpec(RuType::RU_26_TONE, 6, p80OrLow80, p160), 8, 1},  // user #6 in CC1
+                    {MakeRuSpec(RuType::RU_26_TONE, 7, p80OrLow80, p160), 8, 1},  // user #7 in CC1
+                    {MakeRuSpec(RuType::RU_26_TONE, 8, p80OrLow80, p160), 8, 1},  // user #8 in CC1
+                    {MakeRuSpec(RuType::RU_26_TONE, 9, p80OrLow80, p160), 8, 1},  // user #9 in CC1
+                    {MakeRuSpec(RuType::RU_26_TONE, 10, p80OrLow80, p160), 8, 1}, // user #10 in CC2
+                    {MakeRuSpec(RuType::RU_26_TONE, 11, p80OrLow80, p160), 8, 1}, // user #11 in CC2
+                    {MakeRuSpec(RuType::RU_26_TONE, 12, p80OrLow80, p160), 8, 1}, // user #12 in CC2
+                    {MakeRuSpec(RuType::RU_26_TONE, 13, p80OrLow80, p160), 8, 1}, // user #13 in CC2
+                    {MakeRuSpec(RuType::RU_26_TONE, 14, p80OrLow80, p160), 8, 1}, // user #14 in CC2
+                    {MakeRuSpec(RuType::RU_26_TONE, 15, p80OrLow80, p160), 8, 1}, // user #15 in CC2
+                    {MakeRuSpec(RuType::RU_26_TONE, 16, p80OrLow80, p160), 8, 1}, // user #16 in CC2
+                    {MakeRuSpec(RuType::RU_26_TONE, 17, p80OrLow80, p160), 8, 1}, // user #17 in CC2
+                    {MakeRuSpec(RuType::RU_26_TONE, 18, p80OrLow80, p160), 8, 1}, // user #18 in CC2
+                    {MakeRuSpec(RuType::RU_26_TONE, 20, p80OrLow80, p160), 8, 1}, // user #19 in CC1
+                    {MakeRuSpec(RuType::RU_26_TONE, 21, p80OrLow80, p160), 8, 1}, // user #20 in CC1
+                    {MakeRuSpec(RuType::RU_26_TONE, 22, p80OrLow80, p160), 8, 1}, // user #21 in CC1
+                    {MakeRuSpec(RuType::RU_26_TONE, 23, p80OrLow80, p160), 8, 1}, // user #22 in CC1
+                    {MakeRuSpec(RuType::RU_26_TONE, 24, p80OrLow80, p160), 8, 1}, // user #23 in CC1
+                    {MakeRuSpec(RuType::RU_26_TONE, 25, p80OrLow80, p160), 8, 1}, // user #24 in CC1
+                    {MakeRuSpec(RuType::RU_26_TONE, 26, p80OrLow80, p160), 8, 1}, // user #25 in CC1
+                    {MakeRuSpec(RuType::RU_26_TONE, 27, p80OrLow80, p160), 8, 1}, // user #26 in CC1
+                    {MakeRuSpec(RuType::RU_26_TONE, 28, p80OrLow80, p160), 8, 1}, // user #27 in CC2
+                    {MakeRuSpec(RuType::RU_26_TONE, 29, p80OrLow80, p160), 8, 1}, // user #28 in CC2
+                    {MakeRuSpec(RuType::RU_26_TONE, 30, p80OrLow80, p160), 8, 1}, // user #29 in CC2
+                    {MakeRuSpec(RuType::RU_26_TONE, 31, p80OrLow80, p160), 8, 1}, // user #30 in CC2
+                    {MakeRuSpec(RuType::RU_26_TONE, 32, p80OrLow80, p160), 8, 1}, // user #31 in CC2
+                    {MakeRuSpec(RuType::RU_26_TONE, 33, p80OrLow80, p160), 8, 1}, // user #32 in CC2
+                    {MakeRuSpec(RuType::RU_26_TONE, 34, p80OrLow80, p160), 8, 1}, // user #33 in CC2
+                    {MakeRuSpec(RuType::RU_26_TONE, 35, p80OrLow80, p160), 8, 1}, // user #34 in CC2
+                    {MakeRuSpec(RuType::RU_26_TONE, 36, p80OrLow80, p160), 8, 1}, // user #35 in CC2
+                    {MakeRuSpec(RuType::RU_26_TONE, 37, p80OrLow80, p160), 8, 1},
+                }, // user #36 in CC2
+                VhtPhy::GetVhtMcs5(),
+                MHz_t{80},
+                0,
+                {0, 0, 0, 0},
+                MuSigDurationTest::OFDMA,
+                MicroSeconds(12), // three OFDM symbols
+                {{
+                     HePpdu::HeSigBUserSpecificField{.staId = 1, .nss = 1, .mcs = 8},
+                     HePpdu::HeSigBUserSpecificField{.staId = 2, .nss = 1, .mcs = 8},
+                     HePpdu::HeSigBUserSpecificField{.staId = 3, .nss = 1, .mcs = 8},
+                     HePpdu::HeSigBUserSpecificField{.staId = 4, .nss = 1, .mcs = 8},
+                     HePpdu::HeSigBUserSpecificField{.staId = 5, .nss = 1, .mcs = 8},
+                     HePpdu::HeSigBUserSpecificField{.staId = 6, .nss = 1, .mcs = 8},
+                     HePpdu::HeSigBUserSpecificField{.staId = 7, .nss = 1, .mcs = 8},
+                     HePpdu::HeSigBUserSpecificField{.staId = 8, .nss = 1, .mcs = 8},
+                     HePpdu::HeSigBUserSpecificField{.staId = 9, .nss = 1, .mcs = 8},
+                     HePpdu::HeSigBUserSpecificField{.staId = 19, .nss = 1, .mcs = 8},
+                     HePpdu::HeSigBUserSpecificField{.staId = 20, .nss = 1, .mcs = 8},
+                     HePpdu::HeSigBUserSpecificField{.staId = 21, .nss = 1, .mcs = 8},
+                     HePpdu::HeSigBUserSpecificField{.staId = 22, .nss = 1, .mcs = 8},
+                     HePpdu::HeSigBUserSpecificField{.staId = 23, .nss = 1, .mcs = 8},
+                     HePpdu::HeSigBUserSpecificField{.staId = 24, .nss = 1, .mcs = 8},
+                     HePpdu::HeSigBUserSpecificField{.staId = 25, .nss = 1, .mcs = 8},
+                     HePpdu::HeSigBUserSpecificField{.staId = 26, .nss = 1, .mcs = 8},
+                     HePpdu::HeSigBUserSpecificField{.staId = 27, .nss = 1, .mcs = 8},
+                 },
+                 {
+                     HePpdu::HeSigBUserSpecificField{.staId = 10, .nss = 1, .mcs = 8},
+                     HePpdu::HeSigBUserSpecificField{.staId = 11, .nss = 1, .mcs = 8},
+                     HePpdu::HeSigBUserSpecificField{.staId = 12, .nss = 1, .mcs = 8},
+                     HePpdu::HeSigBUserSpecificField{.staId = 13, .nss = 1, .mcs = 8},
+                     HePpdu::HeSigBUserSpecificField{.staId = 14, .nss = 1, .mcs = 8},
+                     HePpdu::HeSigBUserSpecificField{.staId = 15, .nss = 1, .mcs = 8},
+                     HePpdu::HeSigBUserSpecificField{.staId = 16, .nss = 1, .mcs = 8},
+                     HePpdu::HeSigBUserSpecificField{.staId = 17, .nss = 1, .mcs = 8},
+                     HePpdu::HeSigBUserSpecificField{.staId = 18, .nss = 1, .mcs = 8},
+                     HePpdu::HeSigBUserSpecificField{.staId = 28, .nss = 1, .mcs = 8},
+                     HePpdu::HeSigBUserSpecificField{.staId = 29, .nss = 1, .mcs = 8},
+                     HePpdu::HeSigBUserSpecificField{.staId = 30, .nss = 1, .mcs = 8},
+                     HePpdu::HeSigBUserSpecificField{.staId = 31, .nss = 1, .mcs = 8},
+                     HePpdu::HeSigBUserSpecificField{.staId = 32, .nss = 1, .mcs = 8},
+                     HePpdu::HeSigBUserSpecificField{.staId = 33, .nss = 1, .mcs = 8},
+                     HePpdu::HeSigBUserSpecificField{.staId = 34, .nss = 1, .mcs = 8},
+                     HePpdu::HeSigBUserSpecificField{.staId = 35, .nss = 1, .mcs = 8},
+                     HePpdu::HeSigBUserSpecificField{.staId = 36, .nss = 1, .mcs = 8},
+                 }}),
+            TestCase::Duration::QUICK);
+
+        AddTestCase(
+            new MuSigDurationTest(
+                "160 MHz band, OFDMA, no central 26-tones RU",
+                {
+                    {MakeRuSpec(RuType::RU_106_TONE, 1, p80OrLow80, p160), 11, 1}, // user #1 in CC1
+                    {MakeRuSpec(RuType::RU_106_TONE, 2, p80OrLow80, p160), 10, 4}, // user #2 in CC1
+                    {MakeRuSpec(RuType::RU_52_TONE, 5, p80OrLow80, p160), 4, 1},   // user #3 in CC2
+                    {MakeRuSpec(RuType::RU_52_TONE, 6, p80OrLow80, p160), 6, 2},   // user #4 in CC2
+                    {MakeRuSpec(RuType::RU_52_TONE, 7, p80OrLow80, p160), 5, 3},   // user #5 in CC2
+                    {MakeRuSpec(RuType::RU_52_TONE, 8, p80OrLow80, p160), 6, 2},   // user #6 in CC2
+                    {MakeRuSpec(RuType::RU_26_TONE, 14, p80OrLow80, p160),
+                     3,
+                     1}, // user #7 in CC2 (central 26-tone RU within the 20 MHz subchannel)
+                    {MakeRuSpec(RuType::RU_242_TONE, 3, p80OrLow80, p160), 1, 1}, // user #8 in CC1
+                    {MakeRuSpec(RuType::RU_242_TONE, 4, p80OrLow80, p160), 4, 1}, // user #9 in CC2
+                    {MakeRuSpec(RuType::RU_996_TONE, 1, s80OrHigh80, p160),
+                     1,
+                     1}, // user #10 in CC1 for better split
+                },
+                VhtPhy::GetVhtMcs1(),
+                MHz_t{160},
+                0,
+                (p160 == std::nullopt) ? RuAllocation{96, 15, 192, 192, 208, 115, 208, 115}
+                                       : RuAllocation{48, 15, 64, 64, 80, 30, 80, 30},
+                MuSigDurationTest::OFDMA,
+                MicroSeconds(16), // four OFDM symbols
+                {{
+                     HePpdu::HeSigBUserSpecificField{.staId = 1, .nss = 1, .mcs = 11},
+                     HePpdu::HeSigBUserSpecificField{.staId = 2, .nss = 4, .mcs = 10},
+                     HePpdu::HeSigBUserSpecificField{.staId = 8, .nss = 1, .mcs = 1},
+                     HePpdu::HeSigBUserSpecificField{.staId = 10, .nss = 1, .mcs = 1},
+                 },
+                 {
+                     HePpdu::HeSigBUserSpecificField{.staId = 3, .nss = 1, .mcs = 4},
+                     HePpdu::HeSigBUserSpecificField{.staId = 4, .nss = 2, .mcs = 6},
+                     HePpdu::HeSigBUserSpecificField{.staId = 7, .nss = 1, .mcs = 3},
+                     HePpdu::HeSigBUserSpecificField{.staId = 5, .nss = 3, .mcs = 5},
+                     HePpdu::HeSigBUserSpecificField{.staId = 6, .nss = 2, .mcs = 6},
+                     HePpdu::HeSigBUserSpecificField{.staId = 9, .nss = 1, .mcs = 4},
+                 }}),
+            TestCase::Duration::QUICK);
+
+        AddTestCase(
+            new MuSigDurationTest(
+                "20 MHz band, OFDMA, one unallocated RU at the middle",
+                {
+                    {MakeRuSpec(RuType::RU_26_TONE, 1, p80OrLow80, p160), 11, 1}, // user #1 in CC1
+                    {MakeRuSpec(RuType::RU_26_TONE, 2, p80OrLow80, p160), 11, 1}, // user #2 in CC1
+                    {MakeRuSpec(RuType::RU_26_TONE, 3, p80OrLow80, p160), 11, 1}, // user #3 in CC1
+                    {MakeRuSpec(RuType::RU_26_TONE, 4, p80OrLow80, p160), 11, 1}, // user #4 in CC1
+                    /* empty user in CC1 */
+                    {MakeRuSpec(RuType::RU_26_TONE, 6, p80OrLow80, p160), 11, 1}, // user #5 in CC1
+                    {MakeRuSpec(RuType::RU_26_TONE, 7, p80OrLow80, p160), 11, 1}, // user #6 in CC1
+                    {MakeRuSpec(RuType::RU_26_TONE, 8, p80OrLow80, p160), 11, 1}, // user #7 in CC1
+                    {MakeRuSpec(RuType::RU_26_TONE, 9, p80OrLow80, p160), 11, 1}, // user #8 in CC1
+                },
+                VhtPhy::GetVhtMcs5(),
+                MHz_t{20},
+                0,
                 {0},
-                std::make_pair(9, 0), // 9 users (8 users + 1 empty user) in content channel 1
-                MicroSeconds(8)),     // two OFDM symbols
+                MuSigDurationTest::OFDMA,
+                MicroSeconds(8), // two OFDM symbols
+                {{
+                    HePpdu::HeSigBUserSpecificField{.staId = 1, .nss = 1, .mcs = 11},
+                    HePpdu::HeSigBUserSpecificField{.staId = 2, .nss = 1, .mcs = 11},
+                    HePpdu::HeSigBUserSpecificField{.staId = 3, .nss = 1, .mcs = 11},
+                    HePpdu::HeSigBUserSpecificField{.staId = 4, .nss = 1, .mcs = 11},
+                    HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                    HePpdu::HeSigBUserSpecificField{.staId = 5, .nss = 1, .mcs = 11},
+                    HePpdu::HeSigBUserSpecificField{.staId = 6, .nss = 1, .mcs = 11},
+                    HePpdu::HeSigBUserSpecificField{.staId = 7, .nss = 1, .mcs = 11},
+                    HePpdu::HeSigBUserSpecificField{.staId = 8, .nss = 1, .mcs = 11},
+                }}),
             TestCase::Duration::QUICK);
 
-        // 40 MHz band, OFDMA, unallocated RUs at the begin and at the end of the
-        // first 20 MHz subband and in the middle of the second 20 MHz subband
         AddTestCase(
             new MuSigDurationTest(
-                {{MakeRuSpec(RuType::RU_52_TONE, 2, p80OrLow80, p160), 10, 1},  // CC1
-                 {MakeRuSpec(RuType::RU_52_TONE, 3, p80OrLow80, p160), 10, 2},  // CC1
-                 {MakeRuSpec(RuType::RU_52_TONE, 5, p80OrLow80, p160), 11, 1},  // CC2
-                 {MakeRuSpec(RuType::RU_52_TONE, 8, p80OrLow80, p160), 11, 2}}, // CC2
+                "40 MHz band, OFDMA, unallocated RUs at the begin and at the end of the first 20 "
+                "MHz subband and in the middle of the second 20 MHz subband",
+                {
+                    /* empty user in CC1 */
+                    {MakeRuSpec(RuType::RU_52_TONE, 2, p80OrLow80, p160), 10, 1}, // user #1 in CC1
+                    {MakeRuSpec(RuType::RU_52_TONE, 3, p80OrLow80, p160), 10, 2}, // user #2 in CC1
+                    /* empty user in CC1 */
+                    {MakeRuSpec(RuType::RU_52_TONE, 5, p80OrLow80, p160), 11, 1}, // user #3 in CC2
+                    /* empty user in CC2 */
+                    /* empty user in CC2 */
+                    {MakeRuSpec(RuType::RU_52_TONE, 8, p80OrLow80, p160), 11, 2}, // user #4 in CC2
+                },
                 VhtPhy::GetVhtMcs5(),
                 MHz_t{40},
                 0,
-                MuSigDurationTest::OFDMA,
                 (p160 == std::nullopt) ? RuAllocation{112, 112} : RuAllocation{24, 24},
-                std::make_pair(4,
-                               4), // 4 users (2 users + 2 empty users) in each content channel
-                MicroSeconds(4)),  // one OFDM symbol
+                MuSigDurationTest::OFDMA,
+                MicroSeconds(4), // one OFDM symbol
+                {{
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = 1, .nss = 1, .mcs = 10},
+                     HePpdu::HeSigBUserSpecificField{.staId = 2, .nss = 2, .mcs = 10},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                 },
+                 {
+                     HePpdu::HeSigBUserSpecificField{.staId = 3, .nss = 1, .mcs = 11},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = 4, .nss = 2, .mcs = 11},
+                 }}),
             TestCase::Duration::QUICK);
 
-        // 40 MHz band, OFDMA, one unallocated RUs in the first 20 MHz subband and
-        // two unallocated RUs in second 20 MHz subband
         AddTestCase(
             new MuSigDurationTest(
-                {{MakeRuSpec(RuType::RU_52_TONE, 1, p80OrLow80, p160), 10, 1},  // CC1
-                 {MakeRuSpec(RuType::RU_52_TONE, 2, p80OrLow80, p160), 10, 2},  // CC1
-                 {MakeRuSpec(RuType::RU_52_TONE, 3, p80OrLow80, p160), 11, 1},  // CC1
-                 {MakeRuSpec(RuType::RU_52_TONE, 5, p80OrLow80, p160), 11, 2},  // CC2
-                 {MakeRuSpec(RuType::RU_52_TONE, 6, p80OrLow80, p160), 11, 3}}, // CC2
+                "40 MHz band, OFDMA, unallocated RUs in the first 20 MHz subband and two "
+                "unallocated RUs in second 20 MHz subband",
+                {
+                    {MakeRuSpec(RuType::RU_52_TONE, 1, p80OrLow80, p160), 10, 1}, // user #1 in CC1
+                    {MakeRuSpec(RuType::RU_52_TONE, 2, p80OrLow80, p160), 10, 2}, // user #2 in CC1
+                    {MakeRuSpec(RuType::RU_52_TONE, 3, p80OrLow80, p160), 11, 1}, // user #3 in CC1
+                    /* empty user in CC1 */
+                    {MakeRuSpec(RuType::RU_52_TONE, 5, p80OrLow80, p160), 11, 2}, // user #4 in CC2
+                    {MakeRuSpec(RuType::RU_52_TONE, 6, p80OrLow80, p160), 11, 3}, // user #5 in CC2
+                    /* empty user in CC2 */
+                    /* empty user in CC2 */
+                },
                 VhtPhy::GetVhtMcs5(),
                 MHz_t{40},
                 0,
-                MuSigDurationTest::OFDMA,
                 (p160 == std::nullopt) ? RuAllocation{112, 112} : RuAllocation{24, 24},
-                std::make_pair(4,
-                               4), // 4 users (3 users + 1 empty user) in content channel 1 and
-                                   // 4 users (2 users + 2 empty users) in content channel 2
-                MicroSeconds(4)),  // one OFDM symbol
+                MuSigDurationTest::OFDMA,
+                MicroSeconds(4), // one OFDM symbol
+                {{
+                     HePpdu::HeSigBUserSpecificField{.staId = 1, .nss = 1, .mcs = 10},
+                     HePpdu::HeSigBUserSpecificField{.staId = 2, .nss = 2, .mcs = 10},
+                     HePpdu::HeSigBUserSpecificField{.staId = 3, .nss = 1, .mcs = 11},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                 },
+                 {
+                     HePpdu::HeSigBUserSpecificField{.staId = 4, .nss = 2, .mcs = 11},
+                     HePpdu::HeSigBUserSpecificField{.staId = 5, .nss = 3, .mcs = 11},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                 }}),
+            TestCase::Duration::QUICK);
+
+        AddTestCase(
+            new MuSigDurationTest(
+                "20 MHz band, OFDMA, unequalized RUs",
+                {
+                    {MakeRuSpec(RuType::RU_26_TONE, 1, p80OrLow80, p160), 11, 1}, // user #1 in CC1
+                    {MakeRuSpec(RuType::RU_26_TONE, 2, p80OrLow80, p160), 10, 1}, // user #2 in CC1
+                    {MakeRuSpec(RuType::RU_26_TONE, 3, p80OrLow80, p160), 9, 1},  // user #3 in CC1
+                    {MakeRuSpec(RuType::RU_26_TONE, 4, p80OrLow80, p160), 8, 1},  // user #4 in CC1
+                    {MakeRuSpec(RuType::RU_26_TONE, 5, p80OrLow80, p160), 7, 1},  // user #5 in CC1
+                    {MakeRuSpec(RuType::RU_26_TONE, 6, p80OrLow80, p160), 6, 1},  // user #6 in CC1
+                    {MakeRuSpec(RuType::RU_26_TONE, 7, p80OrLow80, p160), 5, 1},  // user #7 in CC1
+                    {MakeRuSpec(RuType::RU_52_TONE, 4, p80OrLow80, p160), 4, 2},  // user #8 in CC1
+                },
+                VhtPhy::GetVhtMcs4(),
+                MHz_t{20},
+                0,
+                RuAllocation{1},
+                MuSigDurationTest::OFDMA,
+                MicroSeconds(8), // one OFDM symbol
+                {{
+                    HePpdu::HeSigBUserSpecificField{.staId = 1, .nss = 1, .mcs = 11},
+                    HePpdu::HeSigBUserSpecificField{.staId = 2, .nss = 1, .mcs = 10},
+                    HePpdu::HeSigBUserSpecificField{.staId = 3, .nss = 1, .mcs = 9},
+                    HePpdu::HeSigBUserSpecificField{.staId = 4, .nss = 1, .mcs = 8},
+                    HePpdu::HeSigBUserSpecificField{.staId = 5, .nss = 1, .mcs = 7},
+                    HePpdu::HeSigBUserSpecificField{.staId = 6, .nss = 1, .mcs = 6},
+                    HePpdu::HeSigBUserSpecificField{.staId = 7, .nss = 1, .mcs = 5},
+                    HePpdu::HeSigBUserSpecificField{.staId = 8, .nss = 2, .mcs = 4},
+                }}),
+            TestCase::Duration::QUICK);
+
+        AddTestCase(
+            new MuSigDurationTest(
+                "20 MHz band, OFDMA, unequalized RUs and one unallocated RU at the middle",
+                {
+                    {MakeRuSpec(RuType::RU_52_TONE, 1, p80OrLow80, p160), 11, 1}, // user #1 in CC1
+                    {MakeRuSpec(RuType::RU_26_TONE, 3, p80OrLow80, p160), 10, 1}, // user #2 in CC1
+                    {MakeRuSpec(RuType::RU_26_TONE, 4, p80OrLow80, p160), 9, 1},  // user #3 in CC1
+                    /* empty user in CC1 */
+                    {MakeRuSpec(RuType::RU_26_TONE, 6, p80OrLow80, p160), 7, 1}, // user #4 in CC1
+                    {MakeRuSpec(RuType::RU_26_TONE, 7, p80OrLow80, p160), 6, 1}, // user #5 in CC1
+                    {MakeRuSpec(RuType::RU_26_TONE, 8, p80OrLow80, p160), 5, 1}, // user #6 in CC1
+                    {MakeRuSpec(RuType::RU_26_TONE, 9, p80OrLow80, p160), 4, 2}, // user #7 in CC1
+                },
+                VhtPhy::GetVhtMcs4(),
+                MHz_t{20},
+                0,
+                RuAllocation{8},
+                MuSigDurationTest::OFDMA,
+                MicroSeconds(8), // one OFDM symbol
+                {{
+                    HePpdu::HeSigBUserSpecificField{.staId = 1, .nss = 1, .mcs = 11},
+                    HePpdu::HeSigBUserSpecificField{.staId = 2, .nss = 1, .mcs = 10},
+                    HePpdu::HeSigBUserSpecificField{.staId = 3, .nss = 1, .mcs = 9},
+                    HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                    HePpdu::HeSigBUserSpecificField{.staId = 4, .nss = 1, .mcs = 7},
+                    HePpdu::HeSigBUserSpecificField{.staId = 5, .nss = 1, .mcs = 6},
+                    HePpdu::HeSigBUserSpecificField{.staId = 6, .nss = 1, .mcs = 5},
+                    HePpdu::HeSigBUserSpecificField{.staId = 7, .nss = 2, .mcs = 4},
+                }}),
             TestCase::Duration::QUICK);
     }
 
-    // 80 MHz band, OFDMA, central 26-tones RU (11ax only)
     AddTestCase(new MuSigDurationTest(
-                    {{HeRu::RuSpec{RuType::RU_26_TONE, 1, true}, 8, 1},   // CC1
-                     {HeRu::RuSpec{RuType::RU_26_TONE, 2, true}, 8, 1},   // CC1
-                     {HeRu::RuSpec{RuType::RU_26_TONE, 3, true}, 8, 1},   // CC1
-                     {HeRu::RuSpec{RuType::RU_26_TONE, 4, true}, 8, 1},   // CC1
-                     {HeRu::RuSpec{RuType::RU_26_TONE, 5, true}, 8, 1},   // CC1
-                     {HeRu::RuSpec{RuType::RU_26_TONE, 6, true}, 8, 1},   // CC1
-                     {HeRu::RuSpec{RuType::RU_26_TONE, 7, true}, 8, 1},   // CC1
-                     {HeRu::RuSpec{RuType::RU_26_TONE, 8, true}, 8, 1},   // CC1
-                     {HeRu::RuSpec{RuType::RU_26_TONE, 9, true}, 8, 1},   // CC1
-                     {HeRu::RuSpec{RuType::RU_26_TONE, 10, true}, 8, 1},  // CC2
-                     {HeRu::RuSpec{RuType::RU_26_TONE, 11, true}, 8, 1},  // CC2
-                     {HeRu::RuSpec{RuType::RU_26_TONE, 12, true}, 8, 1},  // CC2
-                     {HeRu::RuSpec{RuType::RU_26_TONE, 13, true}, 8, 1},  // CC2
-                     {HeRu::RuSpec{RuType::RU_26_TONE, 14, true}, 8, 1},  // CC2
-                     {HeRu::RuSpec{RuType::RU_26_TONE, 15, true}, 8, 1},  // CC2
-                     {HeRu::RuSpec{RuType::RU_26_TONE, 16, true}, 8, 1},  // CC2
-                     {HeRu::RuSpec{RuType::RU_26_TONE, 17, true}, 8, 1},  // CC2
-                     {HeRu::RuSpec{RuType::RU_26_TONE, 18, true}, 8, 1},  // CC2
-                     {HeRu::RuSpec{RuType::RU_26_TONE, 19, true}, 8, 1},  // CC1
-                     {HeRu::RuSpec{RuType::RU_26_TONE, 20, true}, 8, 1},  // CC1
-                     {HeRu::RuSpec{RuType::RU_26_TONE, 21, true}, 8, 1},  // CC1
-                     {HeRu::RuSpec{RuType::RU_26_TONE, 22, true}, 8, 1},  // CC1
-                     {HeRu::RuSpec{RuType::RU_26_TONE, 23, true}, 8, 1},  // CC1
-                     {HeRu::RuSpec{RuType::RU_26_TONE, 24, true}, 8, 1},  // CC1
-                     {HeRu::RuSpec{RuType::RU_26_TONE, 25, true}, 8, 1},  // CC1
-                     {HeRu::RuSpec{RuType::RU_26_TONE, 26, true}, 8, 1},  // CC1
-                     {HeRu::RuSpec{RuType::RU_26_TONE, 27, true}, 8, 1},  // CC1
-                     {HeRu::RuSpec{RuType::RU_26_TONE, 28, true}, 8, 1},  // CC2
-                     {HeRu::RuSpec{RuType::RU_26_TONE, 29, true}, 8, 1},  // CC2
-                     {HeRu::RuSpec{RuType::RU_26_TONE, 30, true}, 8, 1},  // CC2
-                     {HeRu::RuSpec{RuType::RU_26_TONE, 31, true}, 8, 1},  // CC2
-                     {HeRu::RuSpec{RuType::RU_26_TONE, 32, true}, 8, 1},  // CC2
-                     {HeRu::RuSpec{RuType::RU_26_TONE, 33, true}, 8, 1},  // CC2
-                     {HeRu::RuSpec{RuType::RU_26_TONE, 34, true}, 8, 1},  // CC2
-                     {HeRu::RuSpec{RuType::RU_26_TONE, 35, true}, 8, 1},  // CC2
-                     {HeRu::RuSpec{RuType::RU_26_TONE, 36, true}, 8, 1},  // CC2
-                     {HeRu::RuSpec{RuType::RU_26_TONE, 37, true}, 8, 1}}, // CC2
-                    VhtPhy::GetVhtMcs5(),
-                    MHz_t{80},
-                    0,
-                    MuSigDurationTest::OFDMA,
-                    {0, 0, 0, 0},
-                    std::make_pair(19,
-                                   18), // 19 users (18 users + 1 central tones-RU user) in content
-                                        // channel 1 and 18 users user in content channel 2
-                    MicroSeconds(12)),  // three OFDM symbols
-                TestCase::Duration::QUICK);
-
-    // 160 MHz band, OFDMA, central 26-tones RU in low 80 MHz (11ax only)
-    AddTestCase(new MuSigDurationTest({{HeRu::RuSpec{RuType::RU_106_TONE, 1, true}, 11, 1}, // CC1
-                                       {HeRu::RuSpec{RuType::RU_106_TONE, 2, true}, 10, 4}, // CC1
-                                       {HeRu::RuSpec{RuType::RU_52_TONE, 5, true}, 4, 1},   // CC2
-                                       {HeRu::RuSpec{RuType::RU_52_TONE, 6, true}, 6, 2},   // CC2
-                                       {HeRu::RuSpec{RuType::RU_52_TONE, 7, true}, 5, 3},   // CC2
-                                       {HeRu::RuSpec{RuType::RU_52_TONE, 8, true}, 6, 2},   // CC2
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 14, true}, 3, 1},  // CC2
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 19, true}, 8, 2},  // CC1
-                                       {HeRu::RuSpec{RuType::RU_242_TONE, 3, true}, 1, 1},  // CC1
-                                       {HeRu::RuSpec{RuType::RU_242_TONE, 4, true}, 4, 1},  // CC2
-                                       {HeRu::RuSpec{RuType::RU_996_TONE, 1, false},
-                                        1,
-                                        1}}, // CC1 or CC2 => CC1 for better split
-                                      VhtPhy::GetVhtMcs1(),
-                                      MHz_t{160},
-                                      0,
-                                      MuSigDurationTest::OFDMA,
-                                      {96, 15, 192, 192, 208, 115, 208, 115},
-                                      std::make_pair(5, 6), // five users in content channel 1 and
-                                                            // seven users in content channel 2
-                                      MicroSeconds(16)),    // four OFDM symbols
-                TestCase::Duration::QUICK);
-
-    // 160 MHz band, OFDMA, central 26-tones RU in high 80 MHz (11ax only)
-    AddTestCase(
-        new MuSigDurationTest({{HeRu::RuSpec{RuType::RU_106_TONE, 1, true}, 11, 1},  // CC1
-                               {HeRu::RuSpec{RuType::RU_106_TONE, 2, true}, 10, 4},  // CC1
-                               {HeRu::RuSpec{RuType::RU_106_TONE, 3, true}, 11, 1},  // CC2
-                               {HeRu::RuSpec{RuType::RU_106_TONE, 4, true}, 10, 4},  // CC2
-                               {HeRu::RuSpec{RuType::RU_242_TONE, 3, true}, 10, 1},  // CC1
-                               {HeRu::RuSpec{RuType::RU_242_TONE, 4, true}, 11, 1},  // CC2
-                               {HeRu::RuSpec{RuType::RU_484_TONE, 1, false}, 7, 1},  // CC1 or CC2
-                               {HeRu::RuSpec{RuType::RU_26_TONE, 19, false}, 8, 2},  // CC2
-                               {HeRu::RuSpec{RuType::RU_484_TONE, 2, false}, 9, 1}}, // CC1 or CC2
-                              VhtPhy::GetVhtMcs5(),
-                              MHz_t{160},
-                              0,
-                              MuSigDurationTest::OFDMA,
-                              {96, 96, 192, 192, 200, 114, 114, 200},
-                              std::make_pair(4, 5), // two users in content channel 1 and
-                                                    // one user in content channel 2
-                              MicroSeconds(4)),     // two OFDM symbols
-        TestCase::Duration::QUICK);
-
-    // 160 MHz band, OFDMA, central 26-tones RU in both 80 MHz (11ax only)
-    AddTestCase(
-        new MuSigDurationTest({{HeRu::RuSpec{RuType::RU_106_TONE, 1, true}, 11, 1},  // CC1
-                               {HeRu::RuSpec{RuType::RU_106_TONE, 2, true}, 10, 4},  // CC1
-                               {HeRu::RuSpec{RuType::RU_106_TONE, 3, true}, 11, 1},  // CC2
-                               {HeRu::RuSpec{RuType::RU_106_TONE, 4, true}, 10, 4},  // CC2
-                               {HeRu::RuSpec{RuType::RU_26_TONE, 19, true}, 8, 2},   // CC1
-                               {HeRu::RuSpec{RuType::RU_242_TONE, 3, true}, 10, 1},  // CC1
-                               {HeRu::RuSpec{RuType::RU_242_TONE, 4, true}, 11, 1},  // CC2
-                               {HeRu::RuSpec{RuType::RU_484_TONE, 1, false}, 7, 1},  // CC1 or CC2
-                               {HeRu::RuSpec{RuType::RU_26_TONE, 19, false}, 8, 2},  // CC2
-                               {HeRu::RuSpec{RuType::RU_484_TONE, 2, false}, 9, 1}}, // CC1 or CC2
-                              VhtPhy::GetVhtMcs5(),
-                              MHz_t{160},
-                              0,
-                              MuSigDurationTest::OFDMA,
-                              {96, 96, 192, 192, 200, 114, 114, 200},
-                              std::make_pair(5, 5), // two users in content channel 1 and
-                                                    // one user in content channel 2
-                              MicroSeconds(4)),     // two OFDM symbols
-        TestCase::Duration::QUICK);
-
-    // 160 MHz band, OFDMA, 11ax maximum number of users
-    AddTestCase(new MuSigDurationTest({{HeRu::RuSpec{RuType::RU_26_TONE, 1, true}, 8, 1},    // CC1
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 2, true}, 8, 1},    // CC1
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 3, true}, 8, 1},    // CC1
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 4, true}, 8, 1},    // CC1
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 5, true}, 8, 1},    // CC1
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 6, true}, 8, 1},    // CC1
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 7, true}, 8, 1},    // CC1
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 8, true}, 8, 1},    // CC1
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 9, true}, 8, 1},    // CC1
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 10, true}, 8, 1},   // CC2
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 11, true}, 8, 1},   // CC2
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 12, true}, 8, 1},   // CC2
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 13, true}, 8, 1},   // CC2
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 14, true}, 8, 1},   // CC2
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 15, true}, 8, 1},   // CC2
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 16, true}, 8, 1},   // CC2
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 17, true}, 8, 1},   // CC2
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 18, true}, 8, 1},   // CC2
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 19, true}, 8, 1},   // CC1
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 20, true}, 8, 1},   // CC1
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 21, true}, 8, 1},   // CC1
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 22, true}, 8, 1},   // CC1
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 23, true}, 8, 1},   // CC1
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 24, true}, 8, 1},   // CC1
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 25, true}, 8, 1},   // CC1
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 26, true}, 8, 1},   // CC1
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 27, true}, 8, 1},   // CC1
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 28, true}, 8, 1},   // CC2
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 29, true}, 8, 1},   // CC2
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 30, true}, 8, 1},   // CC2
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 31, true}, 8, 1},   // CC2
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 32, true}, 8, 1},   // CC2
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 33, true}, 8, 1},   // CC2
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 34, true}, 8, 1},   // CC2
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 35, true}, 8, 1},   // CC2
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 36, true}, 8, 1},   // CC2
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 37, true}, 8, 1},   // CC2
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 1, false}, 8, 1},   // CC1
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 2, false}, 8, 1},   // CC1
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 3, false}, 8, 1},   // CC1
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 4, false}, 8, 1},   // CC1
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 5, false}, 8, 1},   // CC1
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 6, false}, 8, 1},   // CC1
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 7, false}, 8, 1},   // CC1
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 8, false}, 8, 1},   // CC1
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 9, false}, 8, 1},   // CC1
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 10, false}, 8, 1},  // CC2
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 11, false}, 8, 1},  // CC2
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 12, false}, 8, 1},  // CC2
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 13, false}, 8, 1},  // CC2
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 14, false}, 8, 1},  // CC2
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 15, false}, 8, 1},  // CC2
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 16, false}, 8, 1},  // CC2
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 17, false}, 8, 1},  // CC2
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 18, false}, 8, 1},  // CC2
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 19, false}, 8, 1},  // CC1
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 20, false}, 8, 1},  // CC1
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 21, false}, 8, 1},  // CC1
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 22, false}, 8, 1},  // CC1
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 23, false}, 8, 1},  // CC1
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 24, false}, 8, 1},  // CC1
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 25, false}, 8, 1},  // CC1
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 26, false}, 8, 1},  // CC1
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 27, false}, 8, 1},  // CC1
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 28, false}, 8, 1},  // CC2
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 29, false}, 8, 1},  // CC2
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 30, false}, 8, 1},  // CC2
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 31, false}, 8, 1},  // CC2
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 32, false}, 8, 1},  // CC2
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 33, false}, 8, 1},  // CC2
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 34, false}, 8, 1},  // CC2
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 35, false}, 8, 1},  // CC2
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 36, false}, 8, 1},  // CC2
-                                       {HeRu::RuSpec{RuType::RU_26_TONE, 37, false}, 8, 1}}, // CC2
-                                      VhtPhy::GetVhtMcs5(),
-                                      MHz_t{160},
-                                      0,
-                                      MuSigDurationTest::OFDMA,
-                                      {0, 0, 0, 0, 0, 0, 0, 0},
-                                      std::make_pair(37,
-                                                     37), // 37 users (36 users + 1 central tones-RU
-                                                          // user) in each content channel
-                                      MicroSeconds(20)),  // five OFDM symbols
-                TestCase::Duration::QUICK);
-
-    // 320 MHz band, OFDMA, 11be maximum number of users
-    AddTestCase(
-        new MuSigDurationTest({{EhtRu::RuSpec{RuType::RU_26_TONE, 1, true, true}, 8, 1},     // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 2, true, true}, 8, 1},     // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 3, true, true}, 8, 1},     // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 4, true, true}, 8, 1},     // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 5, true, true}, 8, 1},     // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 6, true, true}, 8, 1},     // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 7, true, true}, 8, 1},     // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 8, true, true}, 8, 1},     // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 9, true, true}, 8, 1},     // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 10, true, true}, 8, 1},    // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 11, true, true}, 8, 1},    // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 12, true, true}, 8, 1},    // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 13, true, true}, 8, 1},    // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 14, true, true}, 8, 1},    // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 15, true, true}, 8, 1},    // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 16, true, true}, 8, 1},    // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 17, true, true}, 8, 1},    // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 18, true, true}, 8, 1},    // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 20, true, true}, 8, 1},    // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 21, true, true}, 8, 1},    // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 22, true, true}, 8, 1},    // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 23, true, true}, 8, 1},    // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 24, true, true}, 8, 1},    // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 25, true, true}, 8, 1},    // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 26, true, true}, 8, 1},    // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 27, true, true}, 8, 1},    // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 28, true, true}, 8, 1},    // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 29, true, true}, 8, 1},    // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 30, true, true}, 8, 1},    // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 31, true, true}, 8, 1},    // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 32, true, true}, 8, 1},    // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 33, true, true}, 8, 1},    // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 34, true, true}, 8, 1},    // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 35, true, true}, 8, 1},    // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 36, true, true}, 8, 1},    // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 37, true, true}, 8, 1},    // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 1, true, false}, 8, 1},    // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 2, true, false}, 8, 1},    // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 3, true, false}, 8, 1},    // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 4, true, false}, 8, 1},    // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 5, true, false}, 8, 1},    // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 6, true, false}, 8, 1},    // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 7, true, false}, 8, 1},    // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 8, true, false}, 8, 1},    // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 9, true, false}, 8, 1},    // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 10, true, false}, 8, 1},   // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 11, true, false}, 8, 1},   // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 12, true, false}, 8, 1},   // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 13, true, false}, 8, 1},   // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 14, true, false}, 8, 1},   // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 15, true, false}, 8, 1},   // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 16, true, false}, 8, 1},   // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 17, true, false}, 8, 1},   // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 18, true, false}, 8, 1},   // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 20, true, false}, 8, 1},   // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 21, true, false}, 8, 1},   // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 22, true, false}, 8, 1},   // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 23, true, false}, 8, 1},   // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 24, true, false}, 8, 1},   // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 25, true, false}, 8, 1},   // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 26, true, false}, 8, 1},   // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 27, true, false}, 8, 1},   // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 28, true, false}, 8, 1},   // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 29, true, false}, 8, 1},   // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 30, true, false}, 8, 1},   // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 31, true, false}, 8, 1},   // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 32, true, false}, 8, 1},   // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 33, true, false}, 8, 1},   // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 34, true, false}, 8, 1},   // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 35, true, false}, 8, 1},   // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 36, true, false}, 8, 1},   // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 37, true, false}, 8, 1},   // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 1, false, true}, 8, 1},    // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 2, false, true}, 8, 1},    // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 3, false, true}, 8, 1},    // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 4, false, true}, 8, 1},    // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 5, false, true}, 8, 1},    // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 6, false, true}, 8, 1},    // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 7, false, true}, 8, 1},    // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 8, false, true}, 8, 1},    // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 9, false, true}, 8, 1},    // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 10, false, true}, 8, 1},   // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 11, false, true}, 8, 1},   // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 12, false, true}, 8, 1},   // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 13, false, true}, 8, 1},   // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 14, false, true}, 8, 1},   // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 15, false, true}, 8, 1},   // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 16, false, true}, 8, 1},   // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 17, false, true}, 8, 1},   // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 18, false, true}, 8, 1},   // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 20, false, true}, 8, 1},   // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 21, false, true}, 8, 1},   // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 22, false, true}, 8, 1},   // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 23, false, true}, 8, 1},   // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 24, false, true}, 8, 1},   // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 25, false, true}, 8, 1},   // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 26, false, true}, 8, 1},   // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 27, false, true}, 8, 1},   // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 28, false, true}, 8, 1},   // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 29, false, true}, 8, 1},   // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 30, false, true}, 8, 1},   // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 31, false, true}, 8, 1},   // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 32, false, true}, 8, 1},   // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 33, false, true}, 8, 1},   // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 34, false, true}, 8, 1},   // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 35, false, true}, 8, 1},   // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 36, false, true}, 8, 1},   // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 37, false, true}, 8, 1},   // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 1, false, false}, 8, 1},   // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 2, false, false}, 8, 1},   // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 3, false, false}, 8, 1},   // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 4, false, false}, 8, 1},   // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 5, false, false}, 8, 1},   // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 6, false, false}, 8, 1},   // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 7, false, false}, 8, 1},   // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 8, false, false}, 8, 1},   // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 9, false, false}, 8, 1},   // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 10, false, false}, 8, 1},  // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 11, false, false}, 8, 1},  // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 12, false, false}, 8, 1},  // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 13, false, false}, 8, 1},  // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 14, false, false}, 8, 1},  // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 15, false, false}, 8, 1},  // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 16, false, false}, 8, 1},  // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 17, false, false}, 8, 1},  // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 18, false, false}, 8, 1},  // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 20, false, false}, 8, 1},  // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 21, false, false}, 8, 1},  // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 22, false, false}, 8, 1},  // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 23, false, false}, 8, 1},  // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 24, false, false}, 8, 1},  // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 25, false, false}, 8, 1},  // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 26, false, false}, 8, 1},  // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 27, false, false}, 8, 1},  // CC1
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 28, false, false}, 8, 1},  // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 29, false, false}, 8, 1},  // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 30, false, false}, 8, 1},  // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 31, false, false}, 8, 1},  // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 32, false, false}, 8, 1},  // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 33, false, false}, 8, 1},  // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 34, false, false}, 8, 1},  // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 35, false, false}, 8, 1},  // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 36, false, false}, 8, 1},  // CC2
-                               {EhtRu::RuSpec{RuType::RU_26_TONE, 37, false, false}, 8, 1}}, // CC2
-                              VhtPhy::GetVhtMcs5(),
-                              MHz_t{320},
-                              0,
-                              MuSigDurationTest::OFDMA,
-                              {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                              std::make_pair(72,
-                                             72), // 72 users in each content channel
-                              MicroSeconds(40)),  // ten OFDM symbols
-        TestCase::Duration::QUICK);
-
-    // 160 MHz band, OFDMA, 11ax single-user using 2x996 tones RU
-    AddTestCase(
-        new MuSigDurationTest({{HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 8, 1}}, // CC1
-                              VhtPhy::GetVhtMcs5(),
-                              MHz_t{160},
-                              0,
-                              MuSigDurationTest::OFDMA,
-                              {208, 208, 208, 208, 208, 208, 208, 208},
-                              std::make_pair(1, 0), // one user in HE-SIG-B content channel 1
-                              MicroSeconds(4)),     // one OFDM symbol;
-        TestCase::Duration::QUICK);
-
-    // 160 MHz band, OFDMA, 11ax with primary80 is in the high 80 MHz band
-    AddTestCase(
-        new MuSigDurationTest({{HeRu::RuSpec{RuType::RU_996_TONE, 1, false}, 8, 1}, // CC2
-                               {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 8, 1}}, // CC1
-                              VhtPhy::GetVhtMcs5(),
-                              MHz_t{160},
-                              4,
-                              MuSigDurationTest::OFDMA,
-                              {208, 115, 208, 115, 115, 208, 115, 208},
-                              std::make_pair(1, 1), // one user in each HE-SIG-B content channel
-                              MicroSeconds(4)),     // one OFDM symbol;
-        TestCase::Duration::QUICK);
-
-    // 40 MHz band, OFDMA, first 20 MHz is punctured
-    AddTestCase(
-        new MuSigDurationTest({{HeRu::RuSpec{RuType::RU_242_TONE, 2, true}, 11, 1}}, // CC2
-                              VhtPhy::GetVhtMcs5(),
-                              MHz_t{40},
-                              1,
-                              MuSigDurationTest::OFDMA,
-                              {113, 192},
-                              std::make_pair(0, 1), // one user in HE-SIG-B content channel 1
-                              MicroSeconds(4)),     // one OFDM symbol;
-        TestCase::Duration::QUICK);
-
-    // 20 MHz band, MU-MIMO, 2 users
-    AddTestCase(new MuSigDurationTest({{HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 11, 1},  // CC1
-                                       {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 10, 4}}, // CC1
-                                      VhtPhy::GetVhtMcs5(),
-                                      MHz_t{20},
-                                      0,
-                                      MuSigDurationTest::MU_MIMO,
-                                      {192},
-                                      std::make_pair(2, 0), // both users in content channel 1
-                                      MicroSeconds(4)),     // one OFDM symbol
-                TestCase::Duration::QUICK);
-
-    // 20 MHz band, MU-MIMO, 3 users
-    AddTestCase(new MuSigDurationTest({{HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 4, 3},  // CC1
-                                       {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 5, 2},  // CC1
-                                       {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 6, 1}}, // CC1
-                                      VhtPhy::GetVhtMcs4(),
-                                      MHz_t{20},
-                                      0,
-                                      MuSigDurationTest::MU_MIMO,
-                                      {192},
-                                      std::make_pair(3, 0), // all users in content channel 1
-                                      MicroSeconds(4)),     // one OFDM symbol
-                TestCase::Duration::QUICK);
-
-    // 20 MHz band, MU-MIMO, 4 users
-    AddTestCase(new MuSigDurationTest({{HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 4, 1},  // CC1
-                                       {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 5, 2},  // CC1
-                                       {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 6, 3},  // CC1
-                                       {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 7, 2}}, // CC1
-                                      VhtPhy::GetVhtMcs4(),
-                                      MHz_t{20},
-                                      0,
-                                      MuSigDurationTest::MU_MIMO,
-                                      {192},
-                                      std::make_pair(4, 0), // all users in content channel 1
-                                      MicroSeconds(4)),     // one OFDM symbol
-                TestCase::Duration::QUICK);
-
-    // 20 MHz band, MU-MIMO, 6 users
-    AddTestCase(new MuSigDurationTest({{HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 4, 1},  // CC1
-                                       {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 5, 1},  // CC1
-                                       {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 6, 2},  // CC1
-                                       {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 7, 2},  // CC1
-                                       {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 8, 1},  // CC1
-                                       {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 9, 1}}, // CC1
-                                      VhtPhy::GetVhtMcs4(),
-                                      MHz_t{20},
-                                      0,
-                                      MuSigDurationTest::MU_MIMO,
-                                      {192},
-                                      std::make_pair(6, 0), // all users in content channel 1
-                                      MicroSeconds(4)),     // one OFDM symbol
-                TestCase::Duration::QUICK);
-
-    // 20 MHz band, MU-MIMO, 8 users
-    AddTestCase(new MuSigDurationTest({{HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 4, 1},   // CC1
-                                       {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 5, 1},   // CC1
-                                       {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 6, 1},   // CC1
-                                       {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 7, 1},   // CC1
-                                       {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 8, 1},   // CC1
-                                       {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 9, 1},   // CC1
-                                       {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 10, 1},  // CC1
-                                       {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 11, 1}}, // CC1
-                                      VhtPhy::GetVhtMcs4(),
-                                      MHz_t{20},
-                                      0,
-                                      MuSigDurationTest::MU_MIMO,
-                                      {192},
-                                      std::make_pair(8, 0), // all users in content channel 1
-                                      MicroSeconds(8)),     // two OFDM symbols
-                TestCase::Duration::QUICK);
-
-    // 40 MHz band, MU-MIMO, 2 users
-    AddTestCase(new MuSigDurationTest(
-                    {{HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 11, 1},  // CC1
-                     {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 10, 4}}, // CC2
+                    "40 MHz band, OFDMA, unequalized RUs",
+                    {
+                        {HeRu::RuSpec(RuType::RU_106_TONE, 1, true), 11, 1}, // user #1 in CC1
+                        {HeRu::RuSpec(RuType::RU_52_TONE, 3, true), 10, 1},  // user #2 in CC1
+                        {HeRu::RuSpec(RuType::RU_52_TONE, 4, true), 9, 1},   // user #3 in CC1
+                        {HeRu::RuSpec(RuType::RU_52_TONE, 5, true), 8, 1},   // user #4 in CC2
+                        {HeRu::RuSpec(RuType::RU_52_TONE, 6, true), 7, 1},   // user #5 in CC2
+                        {HeRu::RuSpec(RuType::RU_106_TONE, 4, true), 6, 1},  // user #6 in CC2
+                    },
                     VhtPhy::GetVhtMcs5(),
                     MHz_t{40},
                     0,
-                    MuSigDurationTest::MU_MIMO,
-                    {200, 200},
-                    std::make_pair(1, 1), // users equally split between the two content channels
-                    MicroSeconds(4)),     // one OFDM symbol
+                    RuAllocation{24, 16},
+                    MuSigDurationTest::OFDMA,
+                    MicroSeconds(4), // one OFDM symbol
+                    {{
+                         HePpdu::HeSigBUserSpecificField{.staId = 1, .nss = 1, .mcs = 11},
+                         HePpdu::HeSigBUserSpecificField{.staId = 2, .nss = 1, .mcs = 10},
+                         HePpdu::HeSigBUserSpecificField{.staId = 3, .nss = 1, .mcs = 9},
+                     },
+                     {
+                         HePpdu::HeSigBUserSpecificField{.staId = 4, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 5, .nss = 1, .mcs = 7},
+                         HePpdu::HeSigBUserSpecificField{.staId = 6, .nss = 1, .mcs = 6},
+                     }}),
                 TestCase::Duration::QUICK);
 
-    // 40 MHz band, MU-MIMO, 3 users
     AddTestCase(
         new MuSigDurationTest(
-            {{HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 4, 3},  // CC1
-             {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 5, 2},  // CC2
-             {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 6, 1}}, // CC1
-            VhtPhy::GetVhtMcs4(),
+            "40 MHz band, OFDMA, unequalized RUs and unallocated RUs per CC",
+            {
+                {EhtRu::RuSpec(RuType::RU_106_TONE, 1, true, true), 11, 1}, // user #1 in CC1
+                {EhtRu::RuSpec(RuType::RU_26_TONE, 5, true, true), 10, 1},  // user #2 in CC1
+                /* empty user in CC1 */
+                {EhtRu::RuSpec(RuType::RU_52_TONE, 4, true, true), 9, 1}, // user #3 in CC1
+                /* empty user in CC2 */
+                {EhtRu::RuSpec(RuType::RU_26_TONE, 12, true, true), 8, 1}, // user #4 in CC2
+                {EhtRu::RuSpec(RuType::RU_26_TONE, 13, true, true), 7, 1}, // user #5 in CC2
+                /* empty user in CC2 */
+                {EhtRu::RuSpec(RuType::RU_106_TONE, 4, true, true), 6, 1}, // user #6 in CC2
+            },
+            VhtPhy::GetVhtMcs5(),
             MHz_t{40},
             0,
-            MuSigDurationTest::MU_MIMO,
-            {200, 200},
-            std::make_pair(2, 1), // 2 users in content channel 1 and 1 user in content channel 2
-            MicroSeconds(4)),     // one OFDM symbol
+            RuAllocation{23, 18},
+            MuSigDurationTest::OFDMA,
+            MicroSeconds(4), // one OFDM symbol
+            {{
+                 HePpdu::HeSigBUserSpecificField{.staId = 1, .nss = 1, .mcs = 11},
+                 HePpdu::HeSigBUserSpecificField{.staId = 2, .nss = 1, .mcs = 10},
+                 HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                 HePpdu::HeSigBUserSpecificField{.staId = 3, .nss = 1, .mcs = 9},
+             },
+             {
+                 HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                 HePpdu::HeSigBUserSpecificField{.staId = 4, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 5, .nss = 1, .mcs = 7},
+                 HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                 HePpdu::HeSigBUserSpecificField{.staId = 6, .nss = 1, .mcs = 6},
+             }}),
         TestCase::Duration::QUICK);
 
-    // 40 MHz band, MU-MIMO, 4 users
-    AddTestCase(new MuSigDurationTest(
-                    {{HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 4, 1},  // CC1
-                     {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 5, 2},  // CC2
-                     {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 6, 3},  // CC1
-                     {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 7, 2}}, // CC2
-                    VhtPhy::GetVhtMcs4(),
-                    MHz_t{40},
-                    0,
-                    MuSigDurationTest::MU_MIMO,
-                    {200, 200},
-                    std::make_pair(2, 2), // users equally split between the two content channels
-                    MicroSeconds(4)),     // one OFDM symbol
-                TestCase::Duration::QUICK);
-
-    // 40 MHz band, MU-MIMO, 6 users
-    AddTestCase(new MuSigDurationTest(
-                    {{HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 4, 1},  // CC1
-                     {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 5, 1},  // CC2
-                     {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 6, 2},  // CC1
-                     {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 7, 2},  // CC2
-                     {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 8, 1},  // CC1
-                     {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 9, 1}}, // CC2
-                    VhtPhy::GetVhtMcs4(),
-                    MHz_t{40},
-                    0,
-                    MuSigDurationTest::MU_MIMO,
-                    {200, 200},
-                    std::make_pair(3, 3), // users equally split between the two content channels
-                    MicroSeconds(4)),     // one OFDM symbol
-                TestCase::Duration::QUICK);
-
-    // 40 MHz band, MU-MIMO, 8 users
-    AddTestCase(new MuSigDurationTest(
-                    {{HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 4, 1},   // CC1
-                     {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 5, 1},   // CC2
-                     {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 6, 1},   // CC1
-                     {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 7, 1},   // CC2
-                     {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 8, 1},   // CC1
-                     {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 9, 1},   // CC2
-                     {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 10, 1},  // CC1
-                     {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 11, 1}}, // CC2
-                    VhtPhy::GetVhtMcs4(),
-                    MHz_t{40},
-                    0,
-                    MuSigDurationTest::MU_MIMO,
-                    {200, 200},
-                    std::make_pair(4, 4), // users equally split between the two content channels
-                    MicroSeconds(4)),     // one OFDM symbol
-                TestCase::Duration::QUICK);
-
-    // 80 MHz band, MU-MIMO, 2 users
-    AddTestCase(new MuSigDurationTest(
-                    {{HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 11, 1},  // CC1
-                     {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 10, 4}}, // CC2
-                    VhtPhy::GetVhtMcs5(),
-                    MHz_t{80},
-                    0,
-                    MuSigDurationTest::MU_MIMO,
-                    {208, 208, 208, 208},
-                    std::make_pair(1, 1), // users equally split between the two content channels
-                    MicroSeconds(4)),     // one OFDM symbol
-                TestCase::Duration::QUICK);
-
-    // 80 MHz band, MU-MIMO, 3 users
     AddTestCase(
         new MuSigDurationTest(
-            {{HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 4, 3},  // CC1
-             {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 5, 2},  // CC2
-             {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 6, 1}}, // CC1
+            "80 MHz band, OFDMA, central 26-tones RU (11ax only)",
+            {
+                {HeRu::RuSpec{RuType::RU_26_TONE, 1, true}, 8, 1},  // user #1 in CC1
+                {HeRu::RuSpec{RuType::RU_26_TONE, 2, true}, 8, 1},  // user #2 in CC1
+                {HeRu::RuSpec{RuType::RU_26_TONE, 3, true}, 8, 1},  // user #3 in CC1
+                {HeRu::RuSpec{RuType::RU_26_TONE, 4, true}, 8, 1},  // user #4 in CC1
+                {HeRu::RuSpec{RuType::RU_26_TONE, 5, true}, 8, 1},  // user #5 in CC1
+                {HeRu::RuSpec{RuType::RU_26_TONE, 6, true}, 8, 1},  // user #6 in CC1
+                {HeRu::RuSpec{RuType::RU_26_TONE, 7, true}, 8, 1},  // user #7 in CC1
+                {HeRu::RuSpec{RuType::RU_26_TONE, 8, true}, 8, 1},  // user #8 in CC1
+                {HeRu::RuSpec{RuType::RU_26_TONE, 9, true}, 8, 1},  // user #9 in CC1
+                {HeRu::RuSpec{RuType::RU_26_TONE, 10, true}, 8, 1}, // user #10 in CC2
+                {HeRu::RuSpec{RuType::RU_26_TONE, 11, true}, 8, 1}, // user #11 in CC2
+                {HeRu::RuSpec{RuType::RU_26_TONE, 12, true}, 8, 1}, // user #12 in CC2
+                {HeRu::RuSpec{RuType::RU_26_TONE, 13, true}, 8, 1}, // user #13 in CC2
+                {HeRu::RuSpec{RuType::RU_26_TONE, 14, true},
+                 8,
+                 1}, // user #14 in CC2 (central 26-tone RU within the 20 MHz subchannel)
+                {HeRu::RuSpec{RuType::RU_26_TONE, 15, true}, 8, 1}, // user #15 in CC2
+                {HeRu::RuSpec{RuType::RU_26_TONE, 16, true}, 8, 1}, // user #16 in CC2
+                {HeRu::RuSpec{RuType::RU_26_TONE, 17, true}, 8, 1}, // user #17 in CC2
+                {HeRu::RuSpec{RuType::RU_26_TONE, 18, true}, 8, 1}, // user #18 in CC2
+                {HeRu::RuSpec{RuType::RU_26_TONE, 19, true},
+                 8,
+                 1}, // user #19 in CC1 (central 26-tones RU)
+                {HeRu::RuSpec{RuType::RU_26_TONE, 20, true}, 8, 1}, // user #20 in CC1
+                {HeRu::RuSpec{RuType::RU_26_TONE, 21, true}, 8, 1}, // user #21 in CC1
+                {HeRu::RuSpec{RuType::RU_26_TONE, 22, true}, 8, 1}, // user #22 in CC1
+                {HeRu::RuSpec{RuType::RU_26_TONE, 23, true}, 8, 1}, // user #23 in CC1
+                {HeRu::RuSpec{RuType::RU_26_TONE, 24, true}, 8, 1}, // user #24 in CC1
+                {HeRu::RuSpec{RuType::RU_26_TONE, 25, true}, 8, 1}, // user #25 in CC1
+                {HeRu::RuSpec{RuType::RU_26_TONE, 26, true}, 8, 1}, // user #26 in CC1
+                {HeRu::RuSpec{RuType::RU_26_TONE, 27, true}, 8, 1}, // user #27 in CC1
+                {HeRu::RuSpec{RuType::RU_26_TONE, 28, true}, 8, 1}, // user #28 in CC1
+                {HeRu::RuSpec{RuType::RU_26_TONE, 29, true}, 8, 1}, // user #29 in CC2
+                {HeRu::RuSpec{RuType::RU_26_TONE, 30, true}, 8, 1}, // user #30 in CC2
+                {HeRu::RuSpec{RuType::RU_26_TONE, 31, true}, 8, 1}, // user #31 in CC2
+                {HeRu::RuSpec{RuType::RU_26_TONE, 32, true}, 8, 1}, // user #32 in CC2
+                {HeRu::RuSpec{RuType::RU_26_TONE, 33, true}, 8, 1}, // user #33 in CC2
+                {HeRu::RuSpec{RuType::RU_26_TONE, 34, true}, 8, 1}, // user #34 in CC2
+                {HeRu::RuSpec{RuType::RU_26_TONE, 35, true}, 8, 1}, // user #35 in CC2
+                {HeRu::RuSpec{RuType::RU_26_TONE, 36, true}, 8, 1}, // user #36 in CC2
+                {HeRu::RuSpec{RuType::RU_26_TONE, 37, true}, 8, 1}, // user #37 in CC2
+            },
+            VhtPhy::GetVhtMcs5(),
+            MHz_t{80},
+            0,
+            {0, 0, 0, 0},
+            MuSigDurationTest::OFDMA,
+            MicroSeconds(12), // three OFDM symbols
+            {{
+                 HePpdu::HeSigBUserSpecificField{.staId = 1, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 2, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 3, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 4, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 5, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 6, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 7, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 8, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 9, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 20, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 21, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 22, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 23, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 24, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 25, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 26, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 27, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 28, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 19,
+                                                 .nss = 1,
+                                                 .mcs = 8}, // user in central 26-tone RU at end
+             },
+             {
+                 HePpdu::HeSigBUserSpecificField{.staId = 10, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 11, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 12, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 13, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 14, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 15, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 16, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 17, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 18, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 29, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 30, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 31, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 32, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 33, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 34, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 35, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 36, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 37, .nss = 1, .mcs = 8},
+             }}),
+        TestCase::Duration::QUICK);
+
+    AddTestCase(
+        new MuSigDurationTest(
+            "160 MHz band, OFDMA, central 26-tones RU in low 80 MHz (11ax only)",
+            {
+                {HeRu::RuSpec{RuType::RU_106_TONE, 1, true}, 11, 1}, // user #1 in CC1
+                {HeRu::RuSpec{RuType::RU_106_TONE, 2, true}, 10, 4}, // user #2 in CC1
+                {HeRu::RuSpec{RuType::RU_52_TONE, 5, true}, 4, 1},   // user #3 in CC2
+                {HeRu::RuSpec{RuType::RU_52_TONE, 6, true}, 6, 2},   // user #4 in CC2
+                {HeRu::RuSpec{RuType::RU_52_TONE, 7, true}, 5, 3},   // user #5 in CC2
+                {HeRu::RuSpec{RuType::RU_52_TONE, 8, true}, 6, 2},   // user #6 in CC2
+                {HeRu::RuSpec{RuType::RU_26_TONE, 14, true},
+                 3,
+                 1}, // user #7 in CC2 (central 26-tone RU within the 20 MHz subchannel)
+                {HeRu::RuSpec{RuType::RU_26_TONE, 19, true},
+                 8,
+                 2}, // user #8 in CC1 (center 26-tones RU of the low 80 MHz)
+                {HeRu::RuSpec{RuType::RU_242_TONE, 3, true}, 1, 1}, // user #9 in CC1
+                {HeRu::RuSpec{RuType::RU_242_TONE, 4, true}, 4, 1}, // user #10 in CC2
+                {HeRu::RuSpec{RuType::RU_996_TONE, 1, false},
+                 1,
+                 1}, // user #11 in CC1 for better split
+            },
+            VhtPhy::GetVhtMcs1(),
+            MHz_t{160},
+            0,
+            {96, 15, 192, 192, 208, 115, 208, 115},
+            MuSigDurationTest::OFDMA,
+            MicroSeconds(16), // four OFDM symbols
+            {{
+                 HePpdu::HeSigBUserSpecificField{.staId = 1, .nss = 1, .mcs = 11},
+                 HePpdu::HeSigBUserSpecificField{.staId = 2, .nss = 4, .mcs = 10},
+                 HePpdu::HeSigBUserSpecificField{.staId = 9, .nss = 1, .mcs = 1},
+                 HePpdu::HeSigBUserSpecificField{.staId = 11, .nss = 1, .mcs = 1},
+                 HePpdu::HeSigBUserSpecificField{.staId = 8,
+                                                 .nss = 2,
+                                                 .mcs = 8}, // user in center 26-tone RU at end
+             },
+             {
+                 HePpdu::HeSigBUserSpecificField{.staId = 3, .nss = 1, .mcs = 4},
+                 HePpdu::HeSigBUserSpecificField{.staId = 4, .nss = 2, .mcs = 6},
+                 HePpdu::HeSigBUserSpecificField{.staId = 7, .nss = 1, .mcs = 3}, // central 26-tone
+                 HePpdu::HeSigBUserSpecificField{.staId = 5, .nss = 3, .mcs = 5},
+                 HePpdu::HeSigBUserSpecificField{.staId = 6, .nss = 2, .mcs = 6},
+                 HePpdu::HeSigBUserSpecificField{.staId = 10, .nss = 1, .mcs = 4},
+             }}),
+        TestCase::Duration::QUICK);
+
+    AddTestCase(
+        new MuSigDurationTest(
+            "160 MHz band, OFDMA, central 26-tones RU in high 80 MHz (11ax only)",
+            {
+                {HeRu::RuSpec{RuType::RU_106_TONE, 1, true}, 11, 1}, // user #1 in CC1
+                {HeRu::RuSpec{RuType::RU_106_TONE, 2, true}, 10, 4}, // user #2 in CC1
+                {HeRu::RuSpec{RuType::RU_106_TONE, 3, true}, 11, 1}, // user #3 in CC2
+                {HeRu::RuSpec{RuType::RU_106_TONE, 4, true}, 10, 4}, // user #4 in CC2
+                {HeRu::RuSpec{RuType::RU_242_TONE, 3, true}, 10, 1}, // user #5 in CC1
+                {HeRu::RuSpec{RuType::RU_242_TONE, 4, true}, 11, 1}, // user #6 in CC2
+                {HeRu::RuSpec{RuType::RU_484_TONE, 1, false}, 7, 1}, // user #7 in CC1
+                {HeRu::RuSpec{RuType::RU_26_TONE, 19, false},
+                 8,
+                 2}, // user #8 in CC2 (central 26-tones RU in high 80 MHz)
+                {HeRu::RuSpec{RuType::RU_484_TONE, 2, false}, 9, 1}, // user #9 in CC2
+            },
+            VhtPhy::GetVhtMcs5(),
+            MHz_t{160},
+            0,
+            {96, 96, 192, 192, 200, 114, 114, 200},
+            MuSigDurationTest::OFDMA,
+            MicroSeconds(4), // one OFDM symbol
+            {{
+                 HePpdu::HeSigBUserSpecificField{.staId = 1, .nss = 1, .mcs = 11},
+                 HePpdu::HeSigBUserSpecificField{.staId = 2, .nss = 4, .mcs = 10},
+                 HePpdu::HeSigBUserSpecificField{.staId = 5, .nss = 1, .mcs = 10},
+                 HePpdu::HeSigBUserSpecificField{.staId = 7, .nss = 1, .mcs = 7},
+             },
+             {
+                 HePpdu::HeSigBUserSpecificField{.staId = 3, .nss = 1, .mcs = 11},
+                 HePpdu::HeSigBUserSpecificField{.staId = 4, .nss = 4, .mcs = 10},
+                 HePpdu::HeSigBUserSpecificField{.staId = 6, .nss = 1, .mcs = 11},
+                 HePpdu::HeSigBUserSpecificField{.staId = 9, .nss = 1, .mcs = 9},
+                 HePpdu::HeSigBUserSpecificField{.staId = 8,
+                                                 .nss = 2,
+                                                 .mcs = 8}, // user in center 26-tone RU at end
+             }}),
+        TestCase::Duration::QUICK);
+
+    AddTestCase(
+        new MuSigDurationTest(
+            "160 MHz band, OFDMA, central 26-tones RU in both 80 MHz (11ax only)",
+            {
+                {HeRu::RuSpec{RuType::RU_106_TONE, 1, true}, 11, 1}, // user #1 in CC1
+                {HeRu::RuSpec{RuType::RU_106_TONE, 2, true}, 10, 4}, // user #2 in CC1
+                {HeRu::RuSpec{RuType::RU_106_TONE, 3, true}, 11, 1}, // user #3 in CC2
+                {HeRu::RuSpec{RuType::RU_106_TONE, 4, true}, 10, 4}, // user #4 in CC2
+                {HeRu::RuSpec{RuType::RU_26_TONE, 19, true},
+                 8,
+                 2}, // user #5 in CC1 (center 26-tones RU of the low 80 MHz)
+                {HeRu::RuSpec{RuType::RU_242_TONE, 3, true}, 10, 1}, // user #6 in CC1
+                {HeRu::RuSpec{RuType::RU_242_TONE, 4, true}, 11, 1}, // user #7 in CC2
+                {HeRu::RuSpec{RuType::RU_484_TONE, 1, false},
+                 7,
+                 1}, // user #8 in CC1 for better split
+                {HeRu::RuSpec{RuType::RU_26_TONE, 19, false},
+                 8,
+                 1}, // user #9 in CC2 (center 26-tones RU of the high 80 MHz)
+                {HeRu::RuSpec{RuType::RU_484_TONE, 2, false},
+                 9,
+                 1}, // user #10 in CC2 for better split
+            },
+            VhtPhy::GetVhtMcs5(),
+            MHz_t{160},
+            0,
+            {96, 96, 192, 192, 200, 114, 114, 200},
+            MuSigDurationTest::OFDMA,
+            MicroSeconds(4), // two OFDM symbols
+            {{
+                 HePpdu::HeSigBUserSpecificField{.staId = 1, .nss = 1, .mcs = 11},
+                 HePpdu::HeSigBUserSpecificField{.staId = 2, .nss = 4, .mcs = 10},
+                 HePpdu::HeSigBUserSpecificField{.staId = 6, .nss = 1, .mcs = 10},
+                 HePpdu::HeSigBUserSpecificField{.staId = 8, .nss = 1, .mcs = 7},
+                 HePpdu::HeSigBUserSpecificField{.staId = 5,
+                                                 .nss = 2,
+                                                 .mcs = 8}, // user in center 26-tone RU at end
+             },
+             {
+                 HePpdu::HeSigBUserSpecificField{.staId = 3, .nss = 1, .mcs = 11},
+                 HePpdu::HeSigBUserSpecificField{.staId = 4, .nss = 4, .mcs = 10},
+                 HePpdu::HeSigBUserSpecificField{.staId = 7, .nss = 1, .mcs = 11},
+                 HePpdu::HeSigBUserSpecificField{.staId = 10, .nss = 1, .mcs = 9},
+                 HePpdu::HeSigBUserSpecificField{.staId = 9,
+                                                 .nss = 1,
+                                                 .mcs = 8}, // user in center 26-tone RU of at end
+             }}),
+        TestCase::Duration::QUICK);
+
+    AddTestCase(new MuSigDurationTest(
+                    "160 MHz band, OFDMA, 11ax maximum number of users",
+                    {
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 1, true}, 8, 1},   // user #1 in CC1
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 2, true}, 8, 1},   // user #2 in CC1
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 3, true}, 8, 1},   // user #3 in CC1
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 4, true}, 8, 1},   // user #4 in CC1
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 5, true}, 8, 1},   // user #5 in CC1
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 6, true}, 8, 1},   // user #6 in CC1
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 7, true}, 8, 1},   // user #7 in CC1
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 8, true}, 8, 1},   // user #8 in CC1
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 9, true}, 8, 1},   // user #9 in CC1
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 10, true}, 8, 1},  // user #10 in CC2
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 11, true}, 8, 1},  // user #11 in CC2
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 12, true}, 8, 1},  // user #12 in CC2
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 13, true}, 8, 1},  // user #13 in CC2
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 14, true}, 8, 1},  // user #14 in CC2
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 15, true}, 8, 1},  // user #15 in CC2
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 16, true}, 8, 1},  // user #16 in CC2
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 17, true}, 8, 1},  // user #17 in CC2
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 18, true}, 8, 1},  // user #18 in CC2
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 19, true}, 8, 1},  // user #19 in CC1
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 20, true}, 8, 1},  // user #20 in CC1
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 21, true}, 8, 1},  // user #21 in CC1
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 22, true}, 8, 1},  // user #22 in CC1
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 23, true}, 8, 1},  // user #23 in CC1
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 24, true}, 8, 1},  // user #24 in CC1
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 25, true}, 8, 1},  // user #25 in CC1
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 26, true}, 8, 1},  // user #26 in CC1
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 27, true}, 8, 1},  // user #27 in CC1
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 28, true}, 8, 1},  // user #28 in CC1
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 29, true}, 8, 1},  // user #29 in CC2
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 30, true}, 8, 1},  // user #30 in CC2
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 31, true}, 8, 1},  // user #31 in CC2
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 32, true}, 8, 1},  // user #32 in CC2
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 33, true}, 8, 1},  // user #33 in CC2
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 34, true}, 8, 1},  // user #34 in CC2
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 35, true}, 8, 1},  // user #35 in CC2
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 36, true}, 8, 1},  // user #36 in CC2
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 37, true}, 8, 1},  // user #37 in CC2
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 1, false}, 8, 1},  // user #38 in CC1
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 2, false}, 8, 1},  // user #39 in CC1
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 3, false}, 8, 1},  // user #40 in CC1
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 4, false}, 8, 1},  // user #41 in CC1
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 5, false}, 8, 1},  // user #42 in CC1
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 6, false}, 8, 1},  // user #43 in CC1
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 7, false}, 8, 1},  // user #44 in CC1
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 8, false}, 8, 1},  // user #45 in CC1
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 9, false}, 8, 1},  // user #46 in CC1
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 10, false}, 8, 1}, // user #47 in CC2
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 11, false}, 8, 1}, // user #48 in CC2
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 12, false}, 8, 1}, // user #49 in CC2
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 13, false}, 8, 1}, // user #50 in CC2
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 14, false}, 8, 1}, // user #51 in CC2
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 15, false}, 8, 1}, // user #52 in CC2
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 16, false}, 8, 1}, // user #53 in CC2
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 17, false}, 8, 1}, // user #54 in CC2
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 18, false}, 8, 1}, // user #55 in CC2
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 19, false}, 8, 1}, // user #56 in CC2
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 20, false}, 8, 1}, // user #57 in CC1
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 21, false}, 8, 1}, // user #58 in CC1
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 22, false}, 8, 1}, // user #59 in CC1
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 23, false}, 8, 1}, // user #60 in CC1
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 24, false}, 8, 1}, // user #61 in CC1
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 25, false}, 8, 1}, // user #62 in CC1
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 26, false}, 8, 1}, // user #63 in CC1
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 27, false}, 8, 1}, // user #64 in CC1
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 28, false}, 8, 1}, // user #65 in CC1
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 29, false}, 8, 1}, // user #66 in CC2
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 30, false}, 8, 1}, // user #67 in CC2
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 31, false}, 8, 1}, // user #68 in CC2
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 32, false}, 8, 1}, // user #69 in CC2
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 33, false}, 8, 1}, // user #70 in CC2
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 34, false}, 8, 1}, // user #71 in CC2
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 35, false}, 8, 1}, // user #72 in CC2
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 36, false}, 8, 1}, // user #73 in CC2
+                        {HeRu::RuSpec{RuType::RU_26_TONE, 37, false}, 8, 1}, // user #74 in CC2
+                    },
+                    VhtPhy::GetVhtMcs5(),
+                    MHz_t{160},
+                    0,
+                    {0, 0, 0, 0, 0, 0, 0, 0},
+                    MuSigDurationTest::OFDMA,
+                    MicroSeconds(20), // five OFDM symbols
+                    {{
+                         HePpdu::HeSigBUserSpecificField{.staId = 1, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 2, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 3, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 4, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 5, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 6, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 7, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 8, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 9, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 20, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 21, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 22, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 23, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 24, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 25, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 26, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 27, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 28, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 38, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 39, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 40, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 41, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 42, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 43, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 44, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 45, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 46, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 57, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 58, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 59, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 60, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 61, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 62, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 63, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 64, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 65, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 19, .nss = 1, .mcs = 8},
+                     },
+                     {
+                         HePpdu::HeSigBUserSpecificField{.staId = 10, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 11, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 12, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 13, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 14, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 15, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 16, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 17, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 18, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 29, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 30, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 31, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 32, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 33, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 34, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 35, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 36, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 37, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 47, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 48, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 49, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 50, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 51, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 52, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 53, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 54, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 55, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 66, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 67, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 68, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 69, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 70, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 71, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 72, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 73, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 74, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 56, .nss = 1, .mcs = 8},
+                     }}),
+                TestCase::Duration::QUICK);
+
+    AddTestCase(
+        new MuSigDurationTest(
+            "80 MHz band, OFDMA, unequalized RUs with unallocated RUs and no center 26-tones RU",
+            {
+                /* empty user in CC1 */
+                {HeRu::RuSpec(RuType::RU_26_TONE, 2, true), 11, 1}, // user #1 in CC1
+                /* empty user in CC1 */
+                /* empty user in CC1 */
+                {HeRu::RuSpec(RuType::RU_106_TONE, 2, true), 11, 2}, // user #2 in CC1
+
+                /* empty user in CC2 */
+                /* empty user in CC2 */
+                /* empty user in CC2 */
+                {HeRu::RuSpec(RuType::RU_26_TONE, 14, true), 10, 1}, // user #3 in CC2
+                /* empty user in CC2 */
+                /* empty user in CC2 */
+
+                {HeRu::RuSpec(RuType::RU_106_TONE, 5, true), 9, 1}, // user #4 in CC1
+                /* empty user in CC1 */
+                {HeRu::RuSpec(RuType::RU_26_TONE, 25, true), 9, 2}, // user #5 in CC1
+                {HeRu::RuSpec(RuType::RU_26_TONE, 26, true), 9, 3}, // user #6 in CC1
+                {HeRu::RuSpec(RuType::RU_52_TONE, 12, true), 9, 4}, // user #7 in CC1
+
+                /* empty user in CC2 */
+                /* empty user in CC2 */
+                /* empty user in CC2 */
+                /* empty user in CC2 */
+                /* empty user in CC2 */
+                {HeRu::RuSpec(RuType::RU_52_TONE, 15, true), 8, 1}, // user #8 in CC2
+                {HeRu::RuSpec(RuType::RU_52_TONE, 16, true), 8, 2}, // user #9 in CC2
+            },
+            VhtPhy::GetVhtMcs5(),
+            MHz_t{80},
+            0,
+            RuAllocation{40, 48, 72, 3},
+            MuSigDurationTest::OFDMA,
+            MicroSeconds(8), // two OFDM symbols
+            {{
+                 HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                 HePpdu::HeSigBUserSpecificField{.staId = 1, .nss = 1, .mcs = 11},
+                 HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                 HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                 HePpdu::HeSigBUserSpecificField{.staId = 2, .nss = 2, .mcs = 11},
+                 HePpdu::HeSigBUserSpecificField{.staId = 4, .nss = 1, .mcs = 9},
+                 HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                 HePpdu::HeSigBUserSpecificField{.staId = 5, .nss = 2, .mcs = 9},
+                 HePpdu::HeSigBUserSpecificField{.staId = 6, .nss = 3, .mcs = 9},
+                 HePpdu::HeSigBUserSpecificField{.staId = 7, .nss = 4, .mcs = 9},
+             },
+             {
+                 HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                 HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                 HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                 HePpdu::HeSigBUserSpecificField{.staId = 3, .nss = 1, .mcs = 10},
+                 HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                 HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                 HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                 HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                 HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                 HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                 HePpdu::HeSigBUserSpecificField{.staId = 8, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 9, .nss = 2, .mcs = 8},
+             }}),
+        TestCase::Duration::QUICK);
+
+    AddTestCase(
+        new MuSigDurationTest(
+            "80 MHz band, OFDMA, unequalized RUs with unallocated RUs and center 26-tones RU",
+            {
+                {HeRu::RuSpec(RuType::RU_106_TONE, 1, true), 11, 1}, // user #1 in CC1
+                {HeRu::RuSpec(RuType::RU_26_TONE, 5, true), 10, 1},  // user #2 in CC1
+                /* empty user in CC1 */
+                /* empty user in CC1 */
+
+                /* empty user in CC2 */
+                {HeRu::RuSpec(RuType::RU_52_TONE, 6, true), 9, 1}, // user #3 in CC2
+                /* empty user in CC2 */
+                {HeRu::RuSpec(RuType::RU_106_TONE, 4, true), 8, 1}, // user #4 in CC2
+
+                {HeRu::RuSpec(RuType::RU_26_TONE, 19, true),
+                 3,
+                 1}, // user #5 in CC1 (center 26-tones RU)
+
+                {HeRu::RuSpec(RuType::RU_106_TONE, 5, true), 7, 1}, // user #6 in CC1
+                /* empty user in CC1 */
+                {HeRu::RuSpec(RuType::RU_52_TONE, 12, true), 6, 1}, // user #7 in CC1
+
+                {HeRu::RuSpec(RuType::RU_26_TONE, 29, true), 5, 2}, // user #8 in CC2
+                {HeRu::RuSpec(RuType::RU_26_TONE, 30, true), 6, 2}, // user #9 in CC2
+                {HeRu::RuSpec(RuType::RU_52_TONE, 14, true), 4, 2}, // user #10 in CC2
+                {HeRu::RuSpec(RuType::RU_26_TONE, 33, true), 3, 2}, // user #11 in CC2
+                {HeRu::RuSpec(RuType::RU_52_TONE, 15, true), 7, 2}, // user #12 in CC2
+                /* empty user in CC2 */
+            },
+            VhtPhy::GetVhtMcs3(),
+            MHz_t{80},
+            0,
+            RuAllocation{88, 56, 24, 7},
+            MuSigDurationTest::OFDMA,
+            MicroSeconds(12), // three OFDM symbols
+            {{
+                 HePpdu::HeSigBUserSpecificField{.staId = 1, .nss = 1, .mcs = 11},
+                 HePpdu::HeSigBUserSpecificField{.staId = 2, .nss = 1, .mcs = 10},
+                 HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                 HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                 HePpdu::HeSigBUserSpecificField{.staId = 6, .nss = 1, .mcs = 7},
+                 HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                 HePpdu::HeSigBUserSpecificField{.staId = 7, .nss = 1, .mcs = 6},
+                 HePpdu::HeSigBUserSpecificField{.staId = 5, .nss = 1, .mcs = 3},
+             },
+             {
+                 HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                 HePpdu::HeSigBUserSpecificField{.staId = 3, .nss = 1, .mcs = 9},
+                 HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                 HePpdu::HeSigBUserSpecificField{.staId = 4, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 8, .nss = 2, .mcs = 5},
+                 HePpdu::HeSigBUserSpecificField{.staId = 9, .nss = 2, .mcs = 6},
+                 HePpdu::HeSigBUserSpecificField{.staId = 10, .nss = 2, .mcs = 4},
+                 HePpdu::HeSigBUserSpecificField{.staId = 11, .nss = 2, .mcs = 3},
+                 HePpdu::HeSigBUserSpecificField{.staId = 12, .nss = 2, .mcs = 7},
+                 HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+             }}),
+        TestCase::Duration::QUICK);
+
+    for (auto p20Index : {0 /*primary80 is lowest*/, 4 /*primary80 is highest*/})
+    {
+        const auto p80IsLowest = p20Index < 4;
+        AddTestCase(
+            new MuSigDurationTest(
+                "160 MHz band, OFDMA, unequalized RUs with unallocated RUs and no center "
+                "26-tones RU (p20Index = " +
+                    std::to_string(p20Index) + ")",
+                {
+                    {HeRu::RuSpec(RuType::RU_106_TONE, 1, p80IsLowest), 11, 1}, // user #1 in CC1
+                    {HeRu::RuSpec(RuType::RU_26_TONE, 5, p80IsLowest), 10, 1},  // user #2 in CC1
+                    /* empty user in CC1 */
+                    /* empty user in CC1 */
+
+                    /* empty user in CC2 */
+                    {HeRu::RuSpec(RuType::RU_52_TONE, 6, p80IsLowest), 9, 1}, // user #3 in CC2
+                    /* empty user in CC2 */
+                    {HeRu::RuSpec(RuType::RU_106_TONE, 4, p80IsLowest), 8, 1}, // user #4 in CC2
+
+                    {HeRu::RuSpec(RuType::RU_26_TONE, 20, p80IsLowest), 7, 1}, // user #5 in CC1
+                    /* empty user in CC1 */
+                    /* empty user in CC1 */
+                    /* empty user in CC1 */
+                    /* empty user in CC1 */
+                    {HeRu::RuSpec(RuType::RU_106_TONE, 6, p80IsLowest), 6, 1}, // user #6 in CC1
+
+                    {HeRu::RuSpec(RuType::RU_26_TONE, 29, p80IsLowest), 5, 2}, // user #7 in CC2
+                    {HeRu::RuSpec(RuType::RU_26_TONE, 30, p80IsLowest), 6, 2}, // user #8 in CC2
+                    {HeRu::RuSpec(RuType::RU_52_TONE, 14, p80IsLowest), 4, 2}, // user #9 in CC2
+                    {HeRu::RuSpec(RuType::RU_26_TONE, 33, p80IsLowest), 3, 2}, // user #10 in CC2
+                    {HeRu::RuSpec(RuType::RU_52_TONE, 15, p80IsLowest), 7, 2}, // user #11 in CC2
+                    /* empty user in CC2 */
+                    /* empty user in CC2 */
+
+                    /* empty user in CC1 */
+                    {HeRu::RuSpec(RuType::RU_26_TONE, 2, !p80IsLowest), 11, 1}, // user #12 in CC1
+                    /* empty user in CC1 */
+                    /* empty user in CC1 */
+                    {HeRu::RuSpec(RuType::RU_106_TONE, 2, !p80IsLowest), 11, 2}, // user #13 in CC1
+
+                    /* empty user in CC2 */
+                    /* empty user in CC2 */
+                    {HeRu::RuSpec(RuType::RU_26_TONE, 14, !p80IsLowest), 10, 1}, // user #14 in CC2
+                    /* empty user in CC2 */
+                    /* empty user in CC2 */
+
+                    {HeRu::RuSpec(RuType::RU_106_TONE, 5, !p80IsLowest), 9, 1}, // user #15 in CC1
+                    /* empty user in CC1 */
+                    {HeRu::RuSpec(RuType::RU_26_TONE, 25, !p80IsLowest), 9, 2}, // user #16 in CC1
+                    {HeRu::RuSpec(RuType::RU_26_TONE, 26, !p80IsLowest), 9, 3}, // user #17 in CC1
+                    {HeRu::RuSpec(RuType::RU_52_TONE, 12, !p80IsLowest), 9, 4}, // user #18 in CC1
+
+                    /* empty user in CC2 */
+                    /* empty user in CC2 */
+                    /* empty user in CC2 */
+                    /* empty user in CC2 */
+                    /* empty user in CC2 */
+                    {HeRu::RuSpec(RuType::RU_26_TONE, 34, !p80IsLowest), 8, 1}, // user #19 in CC2
+                    /* empty user in CC2 */
+                    {HeRu::RuSpec(RuType::RU_52_TONE, 16, !p80IsLowest), 8, 2}, // user #20 in CC2
+                },
+                VhtPhy::GetVhtMcs3(),
+                MHz_t{160},
+                p20Index,
+                RuAllocation{88, 56, 32, 6, 40, 48, 72, 1},
+                MuSigDurationTest::OFDMA,
+                MicroSeconds(28), // seven OFDM symbols
+                {{
+                     HePpdu::HeSigBUserSpecificField{.staId = 1, .nss = 1, .mcs = 11},
+                     HePpdu::HeSigBUserSpecificField{.staId = 2, .nss = 1, .mcs = 10},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = 5, .nss = 1, .mcs = 7},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = 6, .nss = 1, .mcs = 6},
+
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = 12, .nss = 1, .mcs = 11},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = 13, .nss = 2, .mcs = 11},
+                     HePpdu::HeSigBUserSpecificField{.staId = 15, .nss = 1, .mcs = 9},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = 16, .nss = 2, .mcs = 9},
+                     HePpdu::HeSigBUserSpecificField{.staId = 17, .nss = 3, .mcs = 9},
+                     HePpdu::HeSigBUserSpecificField{.staId = 18, .nss = 4, .mcs = 9},
+                 },
+                 {
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = 3, .nss = 1, .mcs = 9},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = 4, .nss = 1, .mcs = 8},
+                     HePpdu::HeSigBUserSpecificField{.staId = 7, .nss = 2, .mcs = 5},
+                     HePpdu::HeSigBUserSpecificField{.staId = 8, .nss = 2, .mcs = 6},
+                     HePpdu::HeSigBUserSpecificField{.staId = 9, .nss = 2, .mcs = 4},
+                     HePpdu::HeSigBUserSpecificField{.staId = 10, .nss = 2, .mcs = 3},
+                     HePpdu::HeSigBUserSpecificField{.staId = 11, .nss = 2, .mcs = 7},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = 14, .nss = 1, .mcs = 10},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = 19, .nss = 1, .mcs = 8},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = 20, .nss = 2, .mcs = 8},
+                 }}),
+            TestCase::Duration::QUICK);
+
+        AddTestCase(
+            new MuSigDurationTest(
+                "160 MHz band, OFDMA, unequalized RUs with unallocated RUs and center "
+                "26-tones RUs (p20Index = " +
+                    std::to_string(p20Index) + ")",
+                {
+                    /* empty user in CC1 */
+                    {HeRu::RuSpec(RuType::RU_26_TONE, 2, p80IsLowest), 11, 1}, // user #1 in CC1
+                    /* empty user in CC1 */
+                    /* empty user in CC1 */
+                    {HeRu::RuSpec(RuType::RU_106_TONE, 2, p80IsLowest), 11, 2}, // user #2 in CC1
+
+                    /* empty user in CC2 */
+                    /* empty user in CC2 */
+                    /* empty user in CC2 */
+                    {HeRu::RuSpec(RuType::RU_26_TONE, 14, p80IsLowest), 10, 1}, // user #3 in CC2
+                    /* empty user in CC2 */
+                    /* empty user in CC2 */
+
+                    {HeRu::RuSpec(RuType::RU_26_TONE, 19, p80IsLowest),
+                     4,
+                     2}, // user #4 in CC1 (center 26-tones RU)
+
+                    {HeRu::RuSpec(RuType::RU_106_TONE, 5, p80IsLowest), 9, 1}, // user #5 in CC1
+                    /* empty user in CC1 */
+                    {HeRu::RuSpec(RuType::RU_26_TONE, 25, p80IsLowest), 9, 2}, // user #6 in CC1
+                    {HeRu::RuSpec(RuType::RU_26_TONE, 26, p80IsLowest), 9, 3}, // user #7 in CC1
+                    {HeRu::RuSpec(RuType::RU_52_TONE, 12, p80IsLowest), 9, 4}, // user #8 in CC1
+
+                    /* empty user in CC2 */
+                    /* empty user in CC2 */
+                    /* empty user in CC2 */
+                    /* empty user in CC2 */
+                    /* empty user in CC2 */
+                    {HeRu::RuSpec(RuType::RU_26_TONE, 34, p80IsLowest), 8, 1}, // user #9 in CC2
+                    /* empty user in CC2 */
+                    {HeRu::RuSpec(RuType::RU_52_TONE, 16, p80IsLowest), 8, 2}, // user #10 in CC2
+
+                    {HeRu::RuSpec(RuType::RU_106_TONE, 1, !p80IsLowest), 11, 1}, // user #11 in CC1
+                    {HeRu::RuSpec(RuType::RU_26_TONE, 5, !p80IsLowest), 10, 1},  // user #12 in CC1
+                    /* empty user in CC1 */
+                    /* empty user in CC1 */
+
+                    /* empty user in CC2 */
+                    {HeRu::RuSpec(RuType::RU_52_TONE, 6, !p80IsLowest), 9, 1}, // user #13 in CC2
+                    /* empty user in CC2 */
+                    {HeRu::RuSpec(RuType::RU_106_TONE, 4, !p80IsLowest), 8, 1}, // user #14 in CC2
+
+                    {HeRu::RuSpec(RuType::RU_26_TONE, 19, !p80IsLowest),
+                     3,
+                     1}, // user #15 in CC2 (center 26-tones RU)
+
+                    {HeRu::RuSpec(RuType::RU_26_TONE, 20, !p80IsLowest), 7, 1}, // user #16 in CC1
+                    /* empty user in CC1 */
+                    /* empty user in CC1 */
+                    /* empty user in CC1 */
+                    /* empty user in CC1 */
+                    {HeRu::RuSpec(RuType::RU_106_TONE, 6, !p80IsLowest), 6, 1}, // user #17 in CC1
+
+                    {HeRu::RuSpec(RuType::RU_26_TONE, 29, !p80IsLowest), 5, 2}, // user #18 in CC2
+                    {HeRu::RuSpec(RuType::RU_26_TONE, 30, !p80IsLowest), 6, 2}, // user #19 in CC2
+                    {HeRu::RuSpec(RuType::RU_52_TONE, 14, !p80IsLowest), 4, 2}, // user #20 in CC2
+                    {HeRu::RuSpec(RuType::RU_26_TONE, 33, !p80IsLowest), 3, 2}, // user #21 in CC2
+                    {HeRu::RuSpec(RuType::RU_52_TONE, 15, !p80IsLowest), 7, 2}, // user #22 in CC2
+                    /* empty user in CC2 */
+                    /* empty user in CC2 */
+                },
+                VhtPhy::GetVhtMcs3(),
+                MHz_t{160},
+                p20Index,
+                RuAllocation{40, 48, 72, 1, 88, 56, 32, 6},
+                MuSigDurationTest::OFDMA,
+                MicroSeconds(28), // seven OFDM symbols
+                {{
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = 1, .nss = 1, .mcs = 11},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = 2, .nss = 2, .mcs = 11},
+                     HePpdu::HeSigBUserSpecificField{.staId = 5, .nss = 1, .mcs = 9},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = 6, .nss = 2, .mcs = 9},
+                     HePpdu::HeSigBUserSpecificField{.staId = 7, .nss = 3, .mcs = 9},
+                     HePpdu::HeSigBUserSpecificField{.staId = 8, .nss = 4, .mcs = 9},
+
+                     HePpdu::HeSigBUserSpecificField{.staId = 11, .nss = 1, .mcs = 11},
+                     HePpdu::HeSigBUserSpecificField{.staId = 12, .nss = 1, .mcs = 10},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = 16, .nss = 1, .mcs = 7},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = 17, .nss = 1, .mcs = 6},
+
+                     HePpdu::HeSigBUserSpecificField{.staId = 4, .nss = 2, .mcs = 4},
+                 },
+                 {
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = 3, .nss = 1, .mcs = 10},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = 9, .nss = 1, .mcs = 8},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = 10, .nss = 2, .mcs = 8},
+
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = 13, .nss = 1, .mcs = 9},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = 14, .nss = 1, .mcs = 8},
+                     HePpdu::HeSigBUserSpecificField{.staId = 18, .nss = 2, .mcs = 5},
+                     HePpdu::HeSigBUserSpecificField{.staId = 19, .nss = 2, .mcs = 6},
+                     HePpdu::HeSigBUserSpecificField{.staId = 20, .nss = 2, .mcs = 4},
+                     HePpdu::HeSigBUserSpecificField{.staId = 21, .nss = 2, .mcs = 3},
+                     HePpdu::HeSigBUserSpecificField{.staId = 22, .nss = 2, .mcs = 7},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+
+                     HePpdu::HeSigBUserSpecificField{.staId = 15, .nss = 1, .mcs = 3},
+                 }}),
+            TestCase::Duration::QUICK);
+
+        AddTestCase(
+            new MuSigDurationTest(
+                "160 MHz band, OFDMA, mixed equalized and unequalized RUs with unallocated RUs and "
+                "one center 26-tones RU (p20Index = " +
+                    std::to_string(p20Index) + ")",
+                {
+                    /* empty user in CC1 */
+                    {HeRu::RuSpec(RuType::RU_26_TONE, 2, p80IsLowest), 11, 1}, // user #1 in CC1
+                    /* empty user in CC1 */
+                    /* empty user in CC1 */
+                    /* empty user in CC1 */
+                    /* empty user in CC1 */
+                    /* empty user in CC1 */
+                    /* empty user in CC1 */
+                    {HeRu::RuSpec(RuType::RU_26_TONE, 9, p80IsLowest), 11, 2}, // user #2 in CC1
+
+                    /* empty user in CC2 */
+                    {HeRu::RuSpec(RuType::RU_26_TONE, 14, p80IsLowest), 10, 1}, // user #3 in CC2
+                    /* empty user in CC2 */
+
+                    // center 26-tones RU not allocated to any user
+
+                    {HeRu::RuSpec(RuType::RU_106_TONE, 5, p80IsLowest), 9, 1}, // user #4 in CC1
+                    /* empty user in CC1 */
+                    {HeRu::RuSpec(RuType::RU_26_TONE, 25, p80IsLowest), 9, 2}, // user #5 in CC1
+                    {HeRu::RuSpec(RuType::RU_26_TONE, 26, p80IsLowest), 9, 3}, // user #6 in CC1
+                    {HeRu::RuSpec(RuType::RU_52_TONE, 12, p80IsLowest), 9, 4}, // user #7 in CC1
+
+                    /* empty user in CC2 */
+                    /* empty user in CC2 */
+                    /* empty user in CC2 */
+                    /* empty user in CC2 */
+                    /* empty user in CC2 */
+                    {HeRu::RuSpec(RuType::RU_26_TONE, 34, p80IsLowest), 8, 1}, // user #8 in CC2
+                    /* empty user in CC2 */
+                    {HeRu::RuSpec(RuType::RU_52_TONE, 16, p80IsLowest), 8, 2}, // user #9 in CC2
+
+                    {HeRu::RuSpec(RuType::RU_106_TONE, 1, !p80IsLowest), 11, 1}, // user #10 in CC1
+                    {HeRu::RuSpec(RuType::RU_26_TONE, 5, !p80IsLowest), 10, 1},  // user #11 in CC1
+                    /* empty user in CC1 */
+                    /* empty user in CC1 */
+
+                    /* empty user in CC2 */
+                    {HeRu::RuSpec(RuType::RU_52_TONE, 6, !p80IsLowest), 9, 1}, // user #12 in CC2
+                    /* empty user in CC2 */
+                    {HeRu::RuSpec(RuType::RU_106_TONE, 4, !p80IsLowest), 8, 1}, // user #13 in CC2
+
+                    {HeRu::RuSpec(RuType::RU_26_TONE, 19, !p80IsLowest),
+                     3,
+                     1}, // user #14 in CC2 (center 26-tones RU)
+
+                    {HeRu::RuSpec(RuType::RU_26_TONE, 20, !p80IsLowest), 7, 1}, // user #15 in CC1
+                    /* empty user in CC1 */
+                    /* empty user in CC1 */
+                    /* empty user in CC1 */
+                    /* empty user in CC1 */
+                    {HeRu::RuSpec(RuType::RU_106_TONE, 6, !p80IsLowest), 6, 1}, // user #16 in CC1
+
+                    {HeRu::RuSpec(RuType::RU_26_TONE, 29, !p80IsLowest), 5, 2}, // user #17 in CC2
+                    {HeRu::RuSpec(RuType::RU_26_TONE, 30, !p80IsLowest), 6, 2}, // user #18 in CC2
+                    {HeRu::RuSpec(RuType::RU_52_TONE, 14, !p80IsLowest), 4, 2}, // user #19 in CC2
+                    {HeRu::RuSpec(RuType::RU_26_TONE, 33, !p80IsLowest), 3, 2}, // user #20 in CC2
+                    {HeRu::RuSpec(RuType::RU_52_TONE, 15, !p80IsLowest), 7, 2}, // user #21 in CC2
+                    /* empty user in CC2 */
+                    /* empty user in CC2 */
+                },
+                VhtPhy::GetVhtMcs3(),
+                MHz_t{160},
+                p20Index,
+                RuAllocation{0, 128, 72, 1, 88, 56, 32, 6},
+                MuSigDurationTest::OFDMA,
+                MicroSeconds(28), // seven OFDM symbols
+                {{
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = 1, .nss = 1, .mcs = 11},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = 2, .nss = 2, .mcs = 11},
+                     HePpdu::HeSigBUserSpecificField{.staId = 4, .nss = 1, .mcs = 9},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = 5, .nss = 2, .mcs = 9},
+                     HePpdu::HeSigBUserSpecificField{.staId = 6, .nss = 3, .mcs = 9},
+                     HePpdu::HeSigBUserSpecificField{.staId = 7, .nss = 4, .mcs = 9},
+
+                     HePpdu::HeSigBUserSpecificField{.staId = 10, .nss = 1, .mcs = 11},
+                     HePpdu::HeSigBUserSpecificField{.staId = 11, .nss = 1, .mcs = 10},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = 15, .nss = 1, .mcs = 7},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = 16, .nss = 1, .mcs = 6},
+                 },
+                 {
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = 3, .nss = 1, .mcs = 10},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = 8, .nss = 1, .mcs = 8},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = 9, .nss = 2, .mcs = 8},
+
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = 12, .nss = 1, .mcs = 9},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = 13, .nss = 1, .mcs = 8},
+                     HePpdu::HeSigBUserSpecificField{.staId = 17, .nss = 2, .mcs = 5},
+                     HePpdu::HeSigBUserSpecificField{.staId = 18, .nss = 2, .mcs = 6},
+                     HePpdu::HeSigBUserSpecificField{.staId = 19, .nss = 2, .mcs = 4},
+                     HePpdu::HeSigBUserSpecificField{.staId = 20, .nss = 2, .mcs = 3},
+                     HePpdu::HeSigBUserSpecificField{.staId = 21, .nss = 2, .mcs = 7},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                     HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+
+                     HePpdu::HeSigBUserSpecificField{.staId = 14, .nss = 1, .mcs = 3},
+                 }}),
+            TestCase::Duration::QUICK);
+    }
+    AddTestCase(
+        new MuSigDurationTest(
+            "20 MHz band, OFDMA, unequalized EHT RUs with unallocated RU",
+            {
+                {EhtRu::RuSpec(RuType::RU_106_TONE, 1, true, true), 11, 1}, // user #1 in CC1
+                {EhtRu::RuSpec(RuType::RU_26_TONE, 5, true, true), 10, 2},  // user #2 in CC1
+                {EhtRu::RuSpec(RuType::RU_52_TONE, 3, true, true), 9, 3},   // user #3 in CC1
+                {EhtRu::RuSpec(RuType::RU_26_TONE, 8, true, true), 8, 4},   // user #4 in CC1
+                /* empty user in CC1 */
+            },
+            VhtPhy::GetVhtMcs5(),
+            MHz_t{20},
+            0,
+            RuAllocation{22},
+            MuSigDurationTest::OFDMA,
+            MicroSeconds(4), // one OFDM symbol
+            {{
+                HePpdu::HeSigBUserSpecificField{.staId = 1, .nss = 1, .mcs = 11},
+                HePpdu::HeSigBUserSpecificField{.staId = 2, .nss = 2, .mcs = 10},
+                HePpdu::HeSigBUserSpecificField{.staId = 3, .nss = 3, .mcs = 9},
+                HePpdu::HeSigBUserSpecificField{.staId = 4, .nss = 4, .mcs = 8},
+                HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+            }}),
+        TestCase::Duration::QUICK);
+
+    AddTestCase(new MuSigDurationTest(
+                    "40 MHz band, OFDMA, unequalized EHT RUs with unallocated RUs",
+                    {
+                        /* empty user in CC1 */
+                        /* empty user in CC1 */
+                        {EhtRu::RuSpec(RuType::RU_26_TONE, 6, true, true), 11, 1}, // user #1 in CC1
+                        {EhtRu::RuSpec(RuType::RU_26_TONE, 7, true, true), 10, 2}, // user #2 in CC1
+                        /* empty user in CC1 */
+                        /* empty user in CC1 */
+
+                        /* empty user in CC2 */
+                        {EhtRu::RuSpec(RuType::RU_26_TONE, 14, true, true), 9, 3}, // user #3 in CC2
+                        /* empty user in CC2 */
+                        {EhtRu::RuSpec(RuType::RU_26_TONE, 16, true, true), 8, 4}, // user #4 in CC2
+                        /* empty user in CC2 */
+                    },
+                    VhtPhy::GetVhtMcs5(),
+                    MHz_t{40},
+                    0,
+                    RuAllocation{20, 21},
+                    MuSigDurationTest::OFDMA,
+                    MicroSeconds(4), // one OFDM symbol
+                    {
+                        {
+                            HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                            HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                            HePpdu::HeSigBUserSpecificField{.staId = 1, .nss = 1, .mcs = 11},
+                            HePpdu::HeSigBUserSpecificField{.staId = 2, .nss = 2, .mcs = 10},
+                            HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                            HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        },
+                        {
+                            HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                            HePpdu::HeSigBUserSpecificField{.staId = 3, .nss = 3, .mcs = 9},
+                            HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                            HePpdu::HeSigBUserSpecificField{.staId = 4, .nss = 4, .mcs = 8},
+                            HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        },
+                    }),
+                TestCase::Duration::QUICK);
+
+    AddTestCase(
+        new MuSigDurationTest(
+            "80 MHz band, OFDMA, mixed equalized and unequalized EHT RUs with unallocated RUs",
+            {
+                /* empty user in CC1 */
+                {EhtRu::RuSpec(RuType::RU_52_TONE, 2, true, true), 11, 1}, // user #1 in CC1
+                {EhtRu::RuSpec(RuType::RU_26_TONE, 5, true, true), 10, 1}, // user #2 in CC1
+                /* empty user in CC1 */
+                {EhtRu::RuSpec(RuType::RU_52_TONE, 4, true, true), 9, 1}, // user #3 in CC1
+
+                {EhtRu::RuSpec(RuType::RU_106_TONE, 3, true, true), 8, 2}, // user #4 in CC2
+                {EhtRu::RuSpec(RuType::RU_26_TONE, 14, true, true), 7, 2}, // user #5 in CC2
+                {EhtRu::RuSpec(RuType::RU_52_TONE, 7, true, true), 6, 2},  // user #6 in CC2
+                {EhtRu::RuSpec(RuType::RU_52_TONE, 8, true, true), 6, 2},  // user #7 in CC2
+
+                /* empty user in CC1 */
+                {EhtRu::RuSpec(RuType::RU_52_TONE, 10, true, true), 5, 3}, // user #8 in CC1
+                {EhtRu::RuSpec(RuType::RU_52_TONE, 11, true, true), 5, 3}, // user #9 in CC1
+                /* empty user in CC1 */
+
+                /* empty user in CC2 */
+                {EhtRu::RuSpec(RuType::RU_26_TONE, 33, true, true), 4, 4}, // user #10 in CC2
+                /* empty user in CC2 */
+            },
             VhtPhy::GetVhtMcs4(),
             MHz_t{80},
             0,
-            MuSigDurationTest::MU_MIMO,
-            {208, 208, 208, 208},
-            std::make_pair(2, 1), // 2 users in content channel 1 and 1 user in content channel 2
-            MicroSeconds(4)),     // one OFDM symbol
+            RuAllocation{15, 23, 24, 25},
+            MuSigDurationTest::OFDMA,
+            MicroSeconds(8), // two OFDM symbols
+            {
+                {
+                    HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                    HePpdu::HeSigBUserSpecificField{.staId = 1, .nss = 1, .mcs = 11},
+                    HePpdu::HeSigBUserSpecificField{.staId = 2, .nss = 1, .mcs = 10},
+                    HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                    HePpdu::HeSigBUserSpecificField{.staId = 3, .nss = 1, .mcs = 9},
+                    HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                    HePpdu::HeSigBUserSpecificField{.staId = 8, .nss = 3, .mcs = 5},
+                    HePpdu::HeSigBUserSpecificField{.staId = 9, .nss = 3, .mcs = 5},
+                    HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                },
+                {
+                    HePpdu::HeSigBUserSpecificField{.staId = 4, .nss = 2, .mcs = 8},
+                    HePpdu::HeSigBUserSpecificField{.staId = 5, .nss = 2, .mcs = 7},
+                    HePpdu::HeSigBUserSpecificField{.staId = 6, .nss = 2, .mcs = 6},
+                    HePpdu::HeSigBUserSpecificField{.staId = 7, .nss = 2, .mcs = 6},
+                    HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                    HePpdu::HeSigBUserSpecificField{.staId = 10, .nss = 4, .mcs = 4},
+                    HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                },
+            }),
         TestCase::Duration::QUICK);
 
-    // 80 MHz band, MU-MIMO, 4 users
-    AddTestCase(new MuSigDurationTest(
-                    {{HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 4, 1},  // CC1
-                     {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 5, 2},  // CC2
-                     {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 6, 3},  // CC1
-                     {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 7, 2}}, // CC2
-                    VhtPhy::GetVhtMcs4(),
-                    MHz_t{80},
-                    0,
-                    MuSigDurationTest::MU_MIMO,
-                    {208, 208, 208, 208},
-                    std::make_pair(2, 2), // users equally split between the two content channels
-                    MicroSeconds(4)),     // one OFDM symbol
-                TestCase::Duration::QUICK);
+    for (auto p20Index : {0 /*primary80 is lowest*/, 4 /*primary80 is highest*/})
+    {
+        const auto p80IsLowest = p20Index < 4;
+        AddTestCase(
+            new MuSigDurationTest(
+                "160 MHz band, OFDMA, mixed equalized and unequalized EHT RUs with unallocated RUs "
+                "(p20Index = " +
+                    std::to_string(p20Index) + ")",
+                {
+                    /* empty user in CC1 */
+                    {EhtRu::RuSpec(RuType::RU_52_TONE, 2, true, p80IsLowest),
+                     11,
+                     1}, // user #1 in CC1
+                    {EhtRu::RuSpec(RuType::RU_26_TONE, 5, true, p80IsLowest),
+                     10,
+                     1}, // user #2 in CC1
+                    /* empty user in CC1 */
+                    {EhtRu::RuSpec(RuType::RU_52_TONE, 4, true, p80IsLowest),
+                     9,
+                     1}, // user #3 in CC1
 
-    // 80 MHz band, MU-MIMO, 6 users
-    AddTestCase(new MuSigDurationTest(
-                    {{HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 4, 1},  // CC1
-                     {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 5, 1},  // CC2
-                     {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 6, 2},  // CC1
-                     {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 7, 2},  // CC2
-                     {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 8, 1},  // CC1
-                     {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 9, 1}}, // CC2
-                    VhtPhy::GetVhtMcs4(),
-                    MHz_t{80},
-                    0,
-                    MuSigDurationTest::MU_MIMO,
-                    {208, 208, 208, 208},
-                    std::make_pair(3, 3), // users equally split between the two content channels
-                    MicroSeconds(4)),     // one OFDM symbol
-                TestCase::Duration::QUICK);
+                    {EhtRu::RuSpec(RuType::RU_52_TONE, 5, true, p80IsLowest),
+                     8,
+                     2}, // user #4 in CC2
+                    /* empty user in CC2 */
+                    {EhtRu::RuSpec(RuType::RU_26_TONE, 14, true, p80IsLowest),
+                     7,
+                     2}, // user #5 in CC2
+                    {EhtRu::RuSpec(RuType::RU_52_TONE, 7, true, p80IsLowest),
+                     8,
+                     2}, // user #6 in CC2
+                    {EhtRu::RuSpec(RuType::RU_26_TONE, 17, true, p80IsLowest),
+                     7,
+                     2}, // user #7 in CC2
+                    /* empty user in CC2 */
 
-    // 80 MHz band, MU-MIMO, 8 users
-    AddTestCase(new MuSigDurationTest(
-                    {{HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 4, 1},   // CC1
-                     {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 5, 1},   // CC2
-                     {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 6, 1},   // CC1
-                     {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 7, 1},   // CC2
-                     {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 8, 1},   // CC1
-                     {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 9, 1},   // CC2
-                     {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 10, 1},  // CC1
-                     {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 11, 1}}, // CC2
-                    VhtPhy::GetVhtMcs4(),
-                    MHz_t{80},
-                    0,
-                    MuSigDurationTest::MU_MIMO,
-                    {208, 208, 208, 208},
-                    std::make_pair(4, 4), // users equally split between the two content channels
-                    MicroSeconds(4)),     // one OFDM symbol
-                TestCase::Duration::QUICK);
+                    /* empty user in CC1 */
+                    {EhtRu::RuSpec(RuType::RU_52_TONE, 10, true, p80IsLowest),
+                     5,
+                     3}, // user #8 in CC1
+                    /* empty user in CC1 */
+                    /* empty user in CC1 */
+                    /* empty user in CC1 */
+                    {EhtRu::RuSpec(RuType::RU_52_TONE, 12, true, p80IsLowest),
+                     5,
+                     3}, // user #9 in CC1
 
-    // 160 MHz band, MU-MIMO, 2 users
+                    /* empty user in CC2 */
+                    /* empty user in CC2 */
+                    {EhtRu::RuSpec(RuType::RU_26_TONE, 33, true, p80IsLowest),
+                     4,
+                     4}, // user #10 in CC2
+                    /* empty user in CC2 */
+                    /* empty user in CC2 */
+                    /* empty user in CC2 */
+                    /* empty user in CC2 */
+
+                    {EhtRu::RuSpec(RuType::RU_52_TONE, 1, true, !p80IsLowest),
+                     11,
+                     1}, // user #11 in CC1
+                    /* empty user in CC1 */
+                    /* empty user in CC1 */
+                    {EhtRu::RuSpec(RuType::RU_26_TONE, 5, true, !p80IsLowest),
+                     10,
+                     1}, // user #12 in CC1
+                    /* empty user in CC1 */
+                    {EhtRu::RuSpec(RuType::RU_52_TONE, 4, true, !p80IsLowest),
+                     9,
+                     1}, // user #13 in CC1
+
+                    {EhtRu::RuSpec(RuType::RU_52_TONE, 5, true, !p80IsLowest),
+                     8,
+                     2}, // user #14 in CC2
+                    {EhtRu::RuSpec(RuType::RU_26_TONE, 12, true, !p80IsLowest),
+                     7,
+                     2}, // user #15 in CC2
+                    /* empty user in CC2 */
+                    /* empty user in CC2 */
+                    {EhtRu::RuSpec(RuType::RU_52_TONE, 7, true, !p80IsLowest),
+                     8,
+                     2}, // user #16 in CC2
+                    /* empty user in CC2 */
+                    {EhtRu::RuSpec(RuType::RU_26_TONE, 18, true, !p80IsLowest),
+                     7,
+                     2}, // user #17 in CC2
+
+                    {EhtRu::RuSpec(RuType::RU_52_TONE, 9, true, !p80IsLowest),
+                     5,
+                     3}, // user #18 in CC1
+                    /* empty user in CC1 */
+                    /* empty user in CC1 */
+                    /* empty user in CC1 */
+                    /* empty user in CC1 */
+                    /* empty user in CC1 */
+                    {EhtRu::RuSpec(RuType::RU_52_TONE, 12, true, !p80IsLowest),
+                     5,
+                     3}, // user #19 in CC1
+
+                    /* empty user in CC2 */
+                    /* empty user in CC2 */
+                    /* empty user in CC2 */
+                    {EhtRu::RuSpec(RuType::RU_26_TONE, 33, true, !p80IsLowest),
+                     4,
+                     4}, // user #20 in CC2
+                    /* empty user in CC2 */
+                    /* empty user in CC2 */
+                    /* empty user in CC2 */
+                    /* empty user in CC2 */
+                },
+                VhtPhy::GetVhtMcs4(),
+                MHz_t{160},
+                p20Index,
+                RuAllocation{15, 14, 13, 12, 11, 10, 9, 8},
+                MuSigDurationTest::OFDMA,
+                MicroSeconds(20), // five OFDM symbols
+                {
+                    {
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = 1, .nss = 1, .mcs = 11},
+                        HePpdu::HeSigBUserSpecificField{.staId = 2, .nss = 1, .mcs = 10},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = 3, .nss = 1, .mcs = 9},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = 8, .nss = 3, .mcs = 5},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = 9, .nss = 3, .mcs = 5},
+
+                        HePpdu::HeSigBUserSpecificField{.staId = 11, .nss = 1, .mcs = 11},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = 12, .nss = 1, .mcs = 10},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = 13, .nss = 1, .mcs = 9},
+                        HePpdu::HeSigBUserSpecificField{.staId = 18, .nss = 3, .mcs = 5},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = 19, .nss = 3, .mcs = 5},
+                    },
+                    {
+                        HePpdu::HeSigBUserSpecificField{.staId = 4, .nss = 2, .mcs = 8},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = 5, .nss = 2, .mcs = 7},
+                        HePpdu::HeSigBUserSpecificField{.staId = 6, .nss = 2, .mcs = 8},
+                        HePpdu::HeSigBUserSpecificField{.staId = 7, .nss = 2, .mcs = 7},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = 10, .nss = 4, .mcs = 4},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+
+                        HePpdu::HeSigBUserSpecificField{.staId = 14, .nss = 2, .mcs = 8},
+                        HePpdu::HeSigBUserSpecificField{.staId = 15, .nss = 2, .mcs = 7},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = 16, .nss = 2, .mcs = 8},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = 17, .nss = 2, .mcs = 7},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = 20, .nss = 4, .mcs = 4},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                    },
+                }),
+            TestCase::Duration::QUICK);
+    }
+
+    for (auto p20Index : {0 /*primary160 is lowest and primary80 is lowest in primary160t*/,
+                          4 /*primary160 is lowest and primary80 is highest in primary160*/,
+                          8 /*primary160 is highest and primary80 is lowest in primary160*/,
+                          12 /*primary160 is highest and primary80 is highest in primary160*/})
+    {
+        const auto p160IsLowest = p20Index < 8;
+        const auto isLow80in160MHz = (((p20Index / 4) % 2) == 0);
+        const auto p80IsHighest = p20Index >= 12;
+        AddTestCase(
+            new MuSigDurationTest(
+                "320 MHz band, OFDMA, mixed equalized and unequalized EHT RUs with unallocated RUs "
+                "(p20Index = " +
+                    std::to_string(p20Index) + ")",
+                {
+                    {EhtRu::RuSpec(RuType::RU_52_TONE,
+                                   1,
+                                   p160IsLowest,
+                                   !p160IsLowest || isLow80in160MHz),
+                     11,
+                     1}, // user #1 in CC1
+                    {EhtRu::RuSpec(RuType::RU_52_TONE,
+                                   2,
+                                   p160IsLowest,
+                                   !p160IsLowest || isLow80in160MHz),
+                     11,
+                     1}, // user #2 in CC1
+                    {EhtRu::RuSpec(RuType::RU_26_TONE,
+                                   5,
+                                   p160IsLowest,
+                                   !p160IsLowest || isLow80in160MHz),
+                     10,
+                     1}, // user #3 in CC1
+                    {EhtRu::RuSpec(RuType::RU_52_TONE,
+                                   3,
+                                   p160IsLowest,
+                                   !p160IsLowest || isLow80in160MHz),
+                     11,
+                     1}, // user #4 in CC1
+                    {EhtRu::RuSpec(RuType::RU_52_TONE,
+                                   4,
+                                   p160IsLowest,
+                                   !p160IsLowest || isLow80in160MHz),
+                     11,
+                     1}, // user #5 in CC1
+
+                    /* empty user in CC2 */
+                    /* empty user in CC2 */
+                    /* empty user in CC2 */
+                    {EhtRu::RuSpec(RuType::RU_52_TONE,
+                                   7,
+                                   p160IsLowest,
+                                   !p160IsLowest || isLow80in160MHz),
+                     8,
+                     2}, // user #6 in CC2
+                    {EhtRu::RuSpec(RuType::RU_26_TONE,
+                                   17,
+                                   p160IsLowest,
+                                   !p160IsLowest || isLow80in160MHz),
+                     7,
+                     2}, // user #7 in CC2
+                    /* empty user in CC2 */
+
+                    /* empty user in CC1 */
+                    {EhtRu::RuSpec(RuType::RU_52_TONE,
+                                   10,
+                                   p160IsLowest,
+                                   !p160IsLowest || isLow80in160MHz),
+                     5,
+                     3}, // user #8 in CC1
+                    /* empty user in CC1 */
+                    /* empty user in CC1 */
+                    /* empty user in CC1 */
+                    {EhtRu::RuSpec(RuType::RU_52_TONE,
+                                   12,
+                                   p160IsLowest,
+                                   !p160IsLowest || isLow80in160MHz),
+                     5,
+                     3}, // user #9 in CC1
+
+                    /* empty user in CC2 */
+                    /* empty user in CC2 */
+                    {EhtRu::RuSpec(RuType::RU_26_TONE,
+                                   33,
+                                   p160IsLowest,
+                                   !p160IsLowest || isLow80in160MHz),
+                     4,
+                     4}, // user #10 in CC2
+                    /* empty user in CC2 */
+                    /* empty user in CC2 */
+                    /* empty user in CC2 */
+                    /* empty user in CC2 */
+
+                    {EhtRu::RuSpec(RuType::RU_52_TONE,
+                                   1,
+                                   p160IsLowest,
+                                   !(!p160IsLowest || isLow80in160MHz)),
+                     11,
+                     1}, // user #11 in CC1
+                    /* empty user in CC1 */
+                    /* empty user in CC1 */
+                    {EhtRu::RuSpec(RuType::RU_26_TONE,
+                                   5,
+                                   p160IsLowest,
+                                   !(!p160IsLowest || isLow80in160MHz)),
+                     10,
+                     1}, // user #12 in CC1
+                    /* empty user in CC1 */
+                    {EhtRu::RuSpec(RuType::RU_52_TONE,
+                                   4,
+                                   p160IsLowest,
+                                   !(!p160IsLowest || isLow80in160MHz)),
+                     9,
+                     1}, // user #13 in CC1
+
+                    {EhtRu::RuSpec(RuType::RU_52_TONE,
+                                   5,
+                                   p160IsLowest,
+                                   !(!p160IsLowest || isLow80in160MHz)),
+                     8,
+                     2}, // user #14 in CC2
+                    {EhtRu::RuSpec(RuType::RU_26_TONE,
+                                   12,
+                                   p160IsLowest,
+                                   !(!p160IsLowest || isLow80in160MHz)),
+                     7,
+                     2}, // user #15 in CC2
+                    /* empty user in CC2 */
+                    /* empty user in CC2 */
+                    {EhtRu::RuSpec(RuType::RU_52_TONE,
+                                   7,
+                                   p160IsLowest,
+                                   !(!p160IsLowest || isLow80in160MHz)),
+                     8,
+                     2}, // user #16 in CC2
+                    /* empty user in CC2 */
+                    {EhtRu::RuSpec(RuType::RU_26_TONE,
+                                   18,
+                                   p160IsLowest,
+                                   !(!p160IsLowest || isLow80in160MHz)),
+                     7,
+                     2}, // user #17 in CC2
+
+                    {EhtRu::RuSpec(RuType::RU_52_TONE,
+                                   9,
+                                   p160IsLowest,
+                                   !(!p160IsLowest || isLow80in160MHz)),
+                     5,
+                     3}, // user #18 in CC1
+                    /* empty user in CC1 */
+                    /* empty user in CC1 */
+                    /* empty user in CC1 */
+                    /* empty user in CC1 */
+                    /* empty user in CC1 */
+                    {EhtRu::RuSpec(RuType::RU_52_TONE,
+                                   12,
+                                   p160IsLowest,
+                                   !(!p160IsLowest || isLow80in160MHz)),
+                     5,
+                     3}, // user #19 in CC1
+
+                    /* empty user in CC2 */
+                    /* empty user in CC2 */
+                    /* empty user in CC2 */
+                    {EhtRu::RuSpec(RuType::RU_26_TONE,
+                                   33,
+                                   p160IsLowest,
+                                   !(!p160IsLowest || isLow80in160MHz)),
+                     4,
+                     4}, // user #20 in CC2
+                    /* empty user in CC2 */
+                    /* empty user in CC2 */
+                    /* empty user in CC2 */
+                    /* empty user in CC2 */
+
+                    /* empty user in CC1 */
+                    /* empty user in CC1 */
+                    /* empty user in CC1 */
+                    {EhtRu::RuSpec(RuType::RU_26_TONE, 5, !p160IsLowest, !p80IsHighest),
+                     4,
+                     4}, // user #21 in CC1
+                    /* empty user in CC1 */
+                    /* empty user in CC1 */
+                    /* empty user in CC1 */
+                    /* empty user in CC1 */
+
+                    {EhtRu::RuSpec(RuType::RU_52_TONE, 5, !p160IsLowest, !p80IsHighest),
+                     5,
+                     3}, // user #22 in CC2
+                    /* empty user in CC2 */
+                    /* empty user in CC2 */
+                    /* empty user in CC2 */
+                    /* empty user in CC2 */
+                    /* empty user in CC2 */
+                    {EhtRu::RuSpec(RuType::RU_52_TONE, 8, !p160IsLowest, !p80IsHighest),
+                     5,
+                     3}, // user #23 in CC2
+
+                    {EhtRu::RuSpec(RuType::RU_52_TONE, 9, !p160IsLowest, !p80IsHighest),
+                     8,
+                     2}, // user #24 in CC1
+                    {EhtRu::RuSpec(RuType::RU_26_TONE, 22, !p160IsLowest, !p80IsHighest),
+                     7,
+                     2}, // user #25 in CC1
+                    /* empty user in CC1 */
+                    /* empty user in CC1 */
+                    {EhtRu::RuSpec(RuType::RU_52_TONE, 11, !p160IsLowest, !p80IsHighest),
+                     8,
+                     2}, // user #26 in CC1
+                    /* empty user in CC1 */
+                    {EhtRu::RuSpec(RuType::RU_26_TONE, 28, !p160IsLowest, !p80IsHighest),
+                     7,
+                     2}, // user #27 in CC1
+
+                    {EhtRu::RuSpec(RuType::RU_52_TONE, 13, !p160IsLowest, !p80IsHighest),
+                     11,
+                     1}, // user #28 in CC2
+                    /* empty user in CC2 */
+                    /* empty user in CC2 */
+                    {EhtRu::RuSpec(RuType::RU_26_TONE, 33, !p160IsLowest, !p80IsHighest),
+                     10,
+                     1}, // user #29 in CC2
+                    /* empty user in CC2 */
+                    {EhtRu::RuSpec(RuType::RU_52_TONE, 16, !p160IsLowest, !p80IsHighest),
+                     9,
+                     1}, // user #30 in CC2
+
+                    /* empty user in CC1 */
+                    /* empty user in CC1 */
+                    {EhtRu::RuSpec(RuType::RU_26_TONE, 5, !p160IsLowest, p80IsHighest),
+                     4,
+                     4}, // user #31 in CC1
+                    /* empty user in CC1 */
+                    /* empty user in CC1 */
+                    /* empty user in CC1 */
+                    /* empty user in CC1 */
+
+                    /* empty user in CC2 */
+                    {EhtRu::RuSpec(RuType::RU_52_TONE, 6, !p160IsLowest, p80IsHighest),
+                     5,
+                     3}, // user #32 in CC2
+                    /* empty user in CC2 */
+                    /* empty user in CC2 */
+                    /* empty user in CC2 */
+                    {EhtRu::RuSpec(RuType::RU_52_TONE, 8, !p160IsLowest, p80IsHighest),
+                     5,
+                     3}, // user #33 in CC2
+
+                    {EhtRu::RuSpec(RuType::RU_52_TONE, 9, !p160IsLowest, p80IsHighest),
+                     8,
+                     2}, // user #34 in CC1
+                    /* empty user in CC1 */
+                    {EhtRu::RuSpec(RuType::RU_26_TONE, 24, !p160IsLowest, p80IsHighest),
+                     7,
+                     2}, // user #35 in CC1
+                    /* empty user in CC1 */
+                    /* empty user in CC1 */
+                    /* empty user in CC1 */
+
+                    {EhtRu::RuSpec(RuType::RU_52_TONE, 13, !p160IsLowest, p80IsHighest),
+                     11,
+                     1}, // user #36 in CC2
+                    {EhtRu::RuSpec(RuType::RU_52_TONE, 14, !p160IsLowest, p80IsHighest),
+                     11,
+                     1}, // user #37 in CC2
+                    {EhtRu::RuSpec(RuType::RU_26_TONE, 33, !p160IsLowest, p80IsHighest),
+                     10,
+                     1}, // user #38 in CC2
+                    {EhtRu::RuSpec(RuType::RU_52_TONE, 15, !p160IsLowest, p80IsHighest),
+                     11,
+                     1}, // user #39 in CC2
+                    {EhtRu::RuSpec(RuType::RU_52_TONE, 16, !p160IsLowest, p80IsHighest),
+                     11,
+                     1}, // user #40 in CC2
+                },
+                VhtPhy::GetVhtMcs4(),
+                MHz_t{320},
+                p20Index,
+                RuAllocation{15, 14, 13, 12, 11, 10, 9, 8, 8, 9, 10, 11, 12, 13, 14, 15},
+                MuSigDurationTest::OFDMA,
+                MicroSeconds(40), // ten OFDM symbols
+                {
+                    {
+                        HePpdu::HeSigBUserSpecificField{.staId = 1, .nss = 1, .mcs = 11},
+                        HePpdu::HeSigBUserSpecificField{.staId = 2, .nss = 1, .mcs = 11},
+                        HePpdu::HeSigBUserSpecificField{.staId = 3, .nss = 1, .mcs = 10},
+                        HePpdu::HeSigBUserSpecificField{.staId = 4, .nss = 1, .mcs = 11},
+                        HePpdu::HeSigBUserSpecificField{.staId = 5, .nss = 1, .mcs = 11},
+
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = 8, .nss = 3, .mcs = 5},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = 9, .nss = 3, .mcs = 5},
+
+                        HePpdu::HeSigBUserSpecificField{.staId = 11, .nss = 1, .mcs = 11},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = 12, .nss = 1, .mcs = 10},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = 13, .nss = 1, .mcs = 9},
+
+                        HePpdu::HeSigBUserSpecificField{.staId = 18, .nss = 3, .mcs = 5},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = 19, .nss = 3, .mcs = 5},
+
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = 21, .nss = 4, .mcs = 4},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+
+                        HePpdu::HeSigBUserSpecificField{.staId = 24, .nss = 2, .mcs = 8},
+                        HePpdu::HeSigBUserSpecificField{.staId = 25, .nss = 2, .mcs = 7},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = 26, .nss = 2, .mcs = 8},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = 27, .nss = 2, .mcs = 7},
+
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = 31, .nss = 4, .mcs = 4},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+
+                        HePpdu::HeSigBUserSpecificField{.staId = 34, .nss = 2, .mcs = 8},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = 35, .nss = 2, .mcs = 7},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                    },
+                    {
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = 6, .nss = 2, .mcs = 8},
+                        HePpdu::HeSigBUserSpecificField{.staId = 7, .nss = 2, .mcs = 7},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = 10, .nss = 4, .mcs = 4},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+
+                        HePpdu::HeSigBUserSpecificField{.staId = 14, .nss = 2, .mcs = 8},
+                        HePpdu::HeSigBUserSpecificField{.staId = 15, .nss = 2, .mcs = 7},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = 16, .nss = 2, .mcs = 8},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = 17, .nss = 2, .mcs = 7},
+
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = 20, .nss = 4, .mcs = 4},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+
+                        HePpdu::HeSigBUserSpecificField{.staId = 22, .nss = 3, .mcs = 5},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = 23, .nss = 3, .mcs = 5},
+
+                        HePpdu::HeSigBUserSpecificField{.staId = 28, .nss = 1, .mcs = 11},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = 29, .nss = 1, .mcs = 10},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = 30, .nss = 1, .mcs = 9},
+
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = 32, .nss = 3, .mcs = 5},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = NO_USER_STA_ID},
+                        HePpdu::HeSigBUserSpecificField{.staId = 33, .nss = 3, .mcs = 5},
+
+                        HePpdu::HeSigBUserSpecificField{.staId = 36, .nss = 1, .mcs = 11},
+                        HePpdu::HeSigBUserSpecificField{.staId = 37, .nss = 1, .mcs = 11},
+                        HePpdu::HeSigBUserSpecificField{.staId = 38, .nss = 1, .mcs = 10},
+                        HePpdu::HeSigBUserSpecificField{.staId = 39, .nss = 1, .mcs = 11},
+                        HePpdu::HeSigBUserSpecificField{.staId = 40, .nss = 1, .mcs = 11},
+
+                    },
+                }),
+            TestCase::Duration::QUICK);
+    }
+
+    AddTestCase(
+        new MuSigDurationTest(
+            "320 MHz band, OFDMA, 11be maximum number of users",
+            {
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 1, true, true}, 8, 1},    // user #1 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 2, true, true}, 8, 1},    // user #2 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 3, true, true}, 8, 1},    // user #3 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 4, true, true}, 8, 1},    // user #4 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 5, true, true}, 8, 1},    // user #5 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 6, true, true}, 8, 1},    // user #6 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 7, true, true}, 8, 1},    // user #7 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 8, true, true}, 8, 1},    // user #8 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 9, true, true}, 8, 1},    // user #9 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 10, true, true}, 8, 1},   // user #10 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 11, true, true}, 8, 1},   // user #11 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 12, true, true}, 8, 1},   // user #12 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 13, true, true}, 8, 1},   // user #13 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 14, true, true}, 8, 1},   // user #14 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 15, true, true}, 8, 1},   // user #15 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 16, true, true}, 8, 1},   // user #16 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 17, true, true}, 8, 1},   // user #17 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 18, true, true}, 8, 1},   // user #18 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 20, true, true}, 8, 1},   // user #19 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 21, true, true}, 8, 1},   // user #20 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 22, true, true}, 8, 1},   // user #21 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 23, true, true}, 8, 1},   // user #22 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 24, true, true}, 8, 1},   // user #23 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 25, true, true}, 8, 1},   // user #24 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 26, true, true}, 8, 1},   // user #25 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 27, true, true}, 8, 1},   // user #26 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 28, true, true}, 8, 1},   // user #27 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 29, true, true}, 8, 1},   // user #28 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 30, true, true}, 8, 1},   // user #29 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 31, true, true}, 8, 1},   // user #30 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 32, true, true}, 8, 1},   // user #31 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 33, true, true}, 8, 1},   // user #32 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 34, true, true}, 8, 1},   // user #33 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 35, true, true}, 8, 1},   // user #34 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 36, true, true}, 8, 1},   // user #35 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 37, true, true}, 8, 1},   // user #36 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 1, true, false}, 8, 1},   // user #37 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 2, true, false}, 8, 1},   // user #38 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 3, true, false}, 8, 1},   // user #39 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 4, true, false}, 8, 1},   // user #40 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 5, true, false}, 8, 1},   // user #41 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 6, true, false}, 8, 1},   // user #42 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 7, true, false}, 8, 1},   // user #43 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 8, true, false}, 8, 1},   // user #44 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 9, true, false}, 8, 1},   // user #45 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 10, true, false}, 8, 1},  // user #46 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 11, true, false}, 8, 1},  // user #47 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 12, true, false}, 8, 1},  // user #48 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 13, true, false}, 8, 1},  // user #49 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 14, true, false}, 8, 1},  // user #50 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 15, true, false}, 8, 1},  // user #51 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 16, true, false}, 8, 1},  // user #52 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 17, true, false}, 8, 1},  // user #53 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 18, true, false}, 8, 1},  // user #54 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 20, true, false}, 8, 1},  // user #55 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 21, true, false}, 8, 1},  // user #56 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 22, true, false}, 8, 1},  // user #57 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 23, true, false}, 8, 1},  // user #58 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 24, true, false}, 8, 1},  // user #59 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 25, true, false}, 8, 1},  // user #60 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 26, true, false}, 8, 1},  // user #61 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 27, true, false}, 8, 1},  // user #62 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 28, true, false}, 8, 1},  // user #63 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 29, true, false}, 8, 1},  // user #64 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 30, true, false}, 8, 1},  // user #65 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 31, true, false}, 8, 1},  // user #66 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 32, true, false}, 8, 1},  // user #67 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 33, true, false}, 8, 1},  // user #68 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 34, true, false}, 8, 1},  // user #69 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 35, true, false}, 8, 1},  // user #70 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 36, true, false}, 8, 1},  // user #71 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 37, true, false}, 8, 1},  // user #72 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 1, false, true}, 8, 1},   // user #73 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 2, false, true}, 8, 1},   // user #74 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 3, false, true}, 8, 1},   // user #75 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 4, false, true}, 8, 1},   // user #76 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 5, false, true}, 8, 1},   // user #77 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 6, false, true}, 8, 1},   // user #78 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 7, false, true}, 8, 1},   // user #79 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 8, false, true}, 8, 1},   // user #80 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 9, false, true}, 8, 1},   // user #81 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 10, false, true}, 8, 1},  // user #82 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 11, false, true}, 8, 1},  // user #83 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 12, false, true}, 8, 1},  // user #84 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 13, false, true}, 8, 1},  // user #85 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 14, false, true}, 8, 1},  // user #86 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 15, false, true}, 8, 1},  // user #87 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 16, false, true}, 8, 1},  // user #88 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 17, false, true}, 8, 1},  // user #89 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 18, false, true}, 8, 1},  // user #90 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 20, false, true}, 8, 1},  // user #91 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 21, false, true}, 8, 1},  // user #92 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 22, false, true}, 8, 1},  // user #93 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 23, false, true}, 8, 1},  // user #94 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 24, false, true}, 8, 1},  // user #95 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 25, false, true}, 8, 1},  // user #96 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 26, false, true}, 8, 1},  // user #97 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 27, false, true}, 8, 1},  // user #98 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 28, false, true}, 8, 1},  // user #99 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 29, false, true}, 8, 1},  // user #100 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 30, false, true}, 8, 1},  // user #101 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 31, false, true}, 8, 1},  // user #102 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 32, false, true}, 8, 1},  // user #103 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 33, false, true}, 8, 1},  // user #104 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 34, false, true}, 8, 1},  // user #105 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 35, false, true}, 8, 1},  // user #106 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 36, false, true}, 8, 1},  // user #107 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 37, false, true}, 8, 1},  // user #108 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 1, false, false}, 8, 1},  // user #109 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 2, false, false}, 8, 1},  // user #110 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 3, false, false}, 8, 1},  // user #111 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 4, false, false}, 8, 1},  // user #112 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 5, false, false}, 8, 1},  // user #113 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 6, false, false}, 8, 1},  // user #114 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 7, false, false}, 8, 1},  // user #115 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 8, false, false}, 8, 1},  // user #116 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 9, false, false}, 8, 1},  // user #117 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 10, false, false}, 8, 1}, // user #118 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 11, false, false}, 8, 1}, // user #119 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 12, false, false}, 8, 1}, // user #120 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 13, false, false}, 8, 1}, // user #121 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 14, false, false}, 8, 1}, // user #122 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 15, false, false}, 8, 1}, // user #123 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 16, false, false}, 8, 1}, // user #124 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 17, false, false}, 8, 1}, // user #125 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 18, false, false}, 8, 1}, // user #126 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 20, false, false}, 8, 1}, // user #127 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 21, false, false}, 8, 1}, // user #128 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 22, false, false}, 8, 1}, // user #129 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 23, false, false}, 8, 1}, // user #130 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 24, false, false}, 8, 1}, // user #131 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 25, false, false}, 8, 1}, // user #132 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 26, false, false}, 8, 1}, // user #133 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 27, false, false}, 8, 1}, // user #134 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 28, false, false}, 8, 1}, // user #135 in CC1
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 29, false, false}, 8, 1}, // user #136 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 30, false, false}, 8, 1}, // user #137 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 31, false, false}, 8, 1}, // user #138 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 32, false, false}, 8, 1}, // user #139 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 33, false, false}, 8, 1}, // user #140 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 34, false, false}, 8, 1}, // user #141 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 35, false, false}, 8, 1}, // user #142 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 36, false, false}, 8, 1}, // user #143 in CC2
+                {EhtRu::RuSpec{RuType::RU_26_TONE, 37, false, false}, 8, 1}, // user #144 in CC2
+            },
+            VhtPhy::GetVhtMcs5(),
+            MHz_t{320},
+            0,
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            MuSigDurationTest::OFDMA,
+            MicroSeconds(40), // ten OFDM symbols
+            {{
+                 HePpdu::HeSigBUserSpecificField{.staId = 1, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 2, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 3, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 4, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 5, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 6, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 7, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 8, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 9, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 19, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 20, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 21, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 22, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 23, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 24, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 25, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 26, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 27, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 37, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 38, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 39, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 40, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 41, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 42, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 43, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 44, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 45, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 55, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 56, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 57, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 58, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 59, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 60, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 61, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 62, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 63, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 73, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 74, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 75, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 76, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 77, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 78, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 79, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 80, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 81, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 91, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 92, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 93, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 94, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 95, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 96, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 97, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 98, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 99, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 109, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 110, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 111, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 112, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 113, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 114, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 115, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 116, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 117, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 127, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 128, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 129, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 130, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 131, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 132, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 133, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 134, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 135, .nss = 1, .mcs = 8},
+             },
+             {
+                 HePpdu::HeSigBUserSpecificField{.staId = 10, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 11, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 12, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 13, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 14, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 15, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 16, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 17, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 18, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 28, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 29, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 30, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 31, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 32, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 33, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 34, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 35, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 36, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 46, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 47, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 48, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 49, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 50, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 51, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 52, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 53, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 54, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 64, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 65, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 66, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 67, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 68, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 69, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 70, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 71, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 72, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 82, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 83, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 84, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 85, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 86, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 87, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 88, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 89, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 90, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 100, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 101, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 102, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 103, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 104, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 105, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 106, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 107, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 108, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 118, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 119, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 120, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 121, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 122, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 123, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 124, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 125, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 126, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 136, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 137, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 138, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 139, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 140, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 141, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 142, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 143, .nss = 1, .mcs = 8},
+                 HePpdu::HeSigBUserSpecificField{.staId = 144, .nss = 1, .mcs = 8},
+             }}),
+        TestCase::Duration::QUICK);
+
     AddTestCase(new MuSigDurationTest(
-                    {{HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 11, 1},  // CC1
-                     {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 10, 4}}, // CC2
+                    "160 MHz band, OFDMA, 11ax single-user using 2x996 tones RU",
+                    {{HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 8, 1}}, // user #1 in CC1
                     VhtPhy::GetVhtMcs5(),
                     MHz_t{160},
                     0,
-                    MuSigDurationTest::MU_MIMO,
                     {208, 208, 208, 208, 208, 208, 208, 208},
-                    std::make_pair(1, 1), // users equally split between the two content channels
-                    MicroSeconds(4)),     // one OFDM symbol
+                    MuSigDurationTest::OFDMA,
+                    MicroSeconds(4), // one OFDM symbol
+                    {{HePpdu::HeSigBUserSpecificField{.staId = 1, .nss = 1, .mcs = 8}}, {}}),
                 TestCase::Duration::QUICK);
 
-    // 160 MHz band, MU-MIMO, 3 users
-    AddTestCase(
-        new MuSigDurationTest(
-            {{HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 4, 3},  // CC1
-             {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 5, 2},  // CC2
-             {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 6, 1}}, // CC1
-            VhtPhy::GetVhtMcs4(),
-            MHz_t{160},
-            0,
-            MuSigDurationTest::MU_MIMO,
-            {208, 208, 208, 208, 208, 208, 208, 208},
-            std::make_pair(2, 1), // 2 users in content channel 1 and 1 user in content channel 2
-            MicroSeconds(4)),     // one OFDM symbol
-        TestCase::Duration::QUICK);
-
-    // 160 MHz band, MU-MIMO, 4 users
     AddTestCase(new MuSigDurationTest(
-                    {{HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 4, 1},  // CC1
-                     {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 5, 2},  // CC2
-                     {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 6, 3},  // CC1
-                     {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 7, 2}}, // CC2
+                    "160 MHz band, OFDMA, 11ax with primary80 is in the high 80 MHz band",
+                    {
+                        {HeRu::RuSpec{RuType::RU_996_TONE, 1, false}, 8, 1}, // user #1 in CC1
+                        {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 9, 1},  // user #2 in CC2
+                    },
+                    VhtPhy::GetVhtMcs5(),
+                    MHz_t{160},
+                    4,
+                    {208, 115, 208, 115, 115, 208, 115, 208},
+                    MuSigDurationTest::OFDMA,
+                    MicroSeconds(4), // one OFDM symbol
+                    {
+                        {HePpdu::HeSigBUserSpecificField{.staId = 1, .nss = 1, .mcs = 8}},
+                        {HePpdu::HeSigBUserSpecificField{.staId = 2, .nss = 1, .mcs = 9}},
+                    }),
+                TestCase::Duration::QUICK);
+
+    AddTestCase(new MuSigDurationTest(
+                    "40 MHz band, OFDMA, first 20 MHz is punctured",
+                    {{HeRu::RuSpec{RuType::RU_242_TONE, 2, true}, 11, 1}}, // user #1 in CC2
+                    VhtPhy::GetVhtMcs5(),
+                    MHz_t{40},
+                    1,
+                    {113, 192},
+                    MuSigDurationTest::OFDMA,
+                    MicroSeconds(4), // one OFDM symbol
+                    {{}, {HePpdu::HeSigBUserSpecificField{.staId = 1, .nss = 1, .mcs = 11}}}),
+                TestCase::Duration::QUICK);
+
+    AddTestCase(new MuSigDurationTest(
+                    "20 MHz band, MU-MIMO, 2 users",
+                    {
+                        {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 11, 1}, // user #1 in CC1
+                        {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 10, 4}, // user #2 in CC1
+                    },
+                    VhtPhy::GetVhtMcs5(),
+                    MHz_t{20},
+                    0,
+                    {192},
+                    MuSigDurationTest::MU_MIMO,
+                    MicroSeconds(4), // one OFDM symbol
+                    {{
+                        HePpdu::HeSigBUserSpecificField{.staId = 1, .nss = 1, .mcs = 11},
+                        HePpdu::HeSigBUserSpecificField{.staId = 2, .nss = 4, .mcs = 10},
+                    }}),
+                TestCase::Duration::QUICK);
+
+    AddTestCase(new MuSigDurationTest(
+                    "20 MHz band, MU-MIMO, 3 users",
+                    {{HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 4, 3},  // user #1 in CC1
+                     {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 5, 2},  // user #2 in CC1
+                     {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 6, 1}}, // user #3 in CC1
+                    VhtPhy::GetVhtMcs4(),
+                    MHz_t{20},
+                    0,
+                    {192},
+                    MuSigDurationTest::MU_MIMO,
+                    MicroSeconds(4), // one OFDM symbol
+                    {{
+                        HePpdu::HeSigBUserSpecificField{.staId = 1, .nss = 3, .mcs = 4},
+                        HePpdu::HeSigBUserSpecificField{.staId = 2, .nss = 2, .mcs = 5},
+                        HePpdu::HeSigBUserSpecificField{.staId = 3, .nss = 1, .mcs = 6},
+                    }}),
+                TestCase::Duration::QUICK);
+
+    AddTestCase(new MuSigDurationTest(
+                    "20 MHz band, MU-MIMO, 4 users",
+                    {
+                        {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 4, 1}, // user #1 in CC1
+                        {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 5, 2}, // user #2 in CC1
+                        {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 6, 3}, // user #3 in CC1
+                        {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 7, 2}, // user #4 in CC1
+                    },
+                    VhtPhy::GetVhtMcs4(),
+                    MHz_t{20},
+                    0,
+                    {192},
+                    MuSigDurationTest::MU_MIMO,
+                    MicroSeconds(4), // one OFDM symbol
+                    {{
+                        HePpdu::HeSigBUserSpecificField{.staId = 1, .nss = 1, .mcs = 4},
+                        HePpdu::HeSigBUserSpecificField{.staId = 2, .nss = 2, .mcs = 5},
+                        HePpdu::HeSigBUserSpecificField{.staId = 3, .nss = 3, .mcs = 6},
+                        HePpdu::HeSigBUserSpecificField{.staId = 4, .nss = 2, .mcs = 7},
+                    }}),
+                TestCase::Duration::QUICK);
+
+    AddTestCase(new MuSigDurationTest(
+                    "20 MHz band, MU-MIMO, 6 users",
+                    {
+                        {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 4, 1}, // user #1 in CC1
+                        {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 5, 1}, // user #2 in CC1
+                        {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 6, 2}, // user #3 in CC1
+                        {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 7, 2}, // user #4 in CC1
+                        {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 8, 1}, // user #5 in CC1
+                        {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 9, 1}, // user #6 in CC1
+                    },
+                    VhtPhy::GetVhtMcs4(),
+                    MHz_t{20},
+                    0,
+                    {192},
+                    MuSigDurationTest::MU_MIMO,
+                    MicroSeconds(4), // one OFDM symbol
+                    {{
+                        HePpdu::HeSigBUserSpecificField{.staId = 1, .nss = 1, .mcs = 4},
+                        HePpdu::HeSigBUserSpecificField{.staId = 2, .nss = 1, .mcs = 5},
+                        HePpdu::HeSigBUserSpecificField{.staId = 3, .nss = 2, .mcs = 6},
+                        HePpdu::HeSigBUserSpecificField{.staId = 4, .nss = 2, .mcs = 7},
+                        HePpdu::HeSigBUserSpecificField{.staId = 5, .nss = 1, .mcs = 8},
+                        HePpdu::HeSigBUserSpecificField{.staId = 6, .nss = 1, .mcs = 9},
+                    }}),
+                TestCase::Duration::QUICK);
+
+    AddTestCase(new MuSigDurationTest(
+                    "20 MHz band, MU-MIMO, 8 users",
+                    {
+                        {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 4, 1},  // user #1 in CC1
+                        {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 5, 1},  // user #2 in CC1
+                        {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 6, 1},  // user #3 in CC1
+                        {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 7, 1},  // user #4 in CC1
+                        {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 8, 1},  // user #5 in CC1
+                        {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 9, 1},  // user #6 in CC1
+                        {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 10, 1}, // user #7 in CC1
+                        {HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 11, 1}, // user #8 in CC1
+                    },
+                    VhtPhy::GetVhtMcs4(),
+                    MHz_t{20},
+                    0,
+                    {192},
+                    MuSigDurationTest::MU_MIMO,
+                    MicroSeconds(8), // two OFDM symbols
+                    {{
+                        HePpdu::HeSigBUserSpecificField{.staId = 1, .nss = 1, .mcs = 4},
+                        HePpdu::HeSigBUserSpecificField{.staId = 2, .nss = 1, .mcs = 5},
+                        HePpdu::HeSigBUserSpecificField{.staId = 3, .nss = 1, .mcs = 6},
+                        HePpdu::HeSigBUserSpecificField{.staId = 4, .nss = 1, .mcs = 7},
+                        HePpdu::HeSigBUserSpecificField{.staId = 5, .nss = 1, .mcs = 8},
+                        HePpdu::HeSigBUserSpecificField{.staId = 6, .nss = 1, .mcs = 9},
+                        HePpdu::HeSigBUserSpecificField{.staId = 7, .nss = 1, .mcs = 10},
+                        HePpdu::HeSigBUserSpecificField{.staId = 8, .nss = 1, .mcs = 11},
+                    }}),
+                TestCase::Duration::QUICK);
+
+    AddTestCase(new MuSigDurationTest(
+                    "40 MHz band, MU-MIMO, 2 users",
+                    {
+                        {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 11, 1}, // user #1 in CC1
+                        {HeRu::RuSpec{RuType::RU_484_TONE, 1, true},
+                         10,
+                         4}, // user #2 in CC2 for better split
+                    },
+                    VhtPhy::GetVhtMcs5(),
+                    MHz_t{40},
+                    0,
+                    {200, 200},
+                    MuSigDurationTest::MU_MIMO,
+                    MicroSeconds(4), // one OFDM symbol
+                    {{
+                         HePpdu::HeSigBUserSpecificField{.staId = 1, .nss = 1, .mcs = 11},
+                     },
+                     {
+                         HePpdu::HeSigBUserSpecificField{.staId = 2, .nss = 4, .mcs = 10},
+                     }}),
+                TestCase::Duration::QUICK);
+
+    AddTestCase(new MuSigDurationTest(
+                    "40 MHz band, MU-MIMO, 3 users",
+                    {
+                        {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 4, 3}, // user #1 in CC1
+                        {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 5, 2}, // user #2 in CC2
+                        {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 6, 1}, // user #3 in CC1
+                    },
+                    VhtPhy::GetVhtMcs4(),
+                    MHz_t{40},
+                    0,
+                    {200, 200},
+                    MuSigDurationTest::MU_MIMO,
+                    MicroSeconds(4), // one OFDM symbol
+                    {{
+                         HePpdu::HeSigBUserSpecificField{.staId = 1, .nss = 3, .mcs = 4},
+                         HePpdu::HeSigBUserSpecificField{.staId = 3, .nss = 1, .mcs = 6},
+                     },
+                     {
+                         HePpdu::HeSigBUserSpecificField{.staId = 2, .nss = 2, .mcs = 5},
+                     }}),
+                TestCase::Duration::QUICK);
+
+    AddTestCase(new MuSigDurationTest(
+                    "40 MHz band, MU-MIMO, 4 users",
+                    {
+                        {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 4, 1}, // user #1 in CC1
+                        {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 5, 2}, // user #2 in CC2
+                        {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 6, 3}, // user #3 in CC1
+                        {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 7, 2}, // user #4 in CC2
+                    },
+                    VhtPhy::GetVhtMcs4(),
+                    MHz_t{40},
+                    0,
+                    {200, 200},
+                    MuSigDurationTest::MU_MIMO,
+                    MicroSeconds(4), // one OFDM symbol
+                    {{
+                         HePpdu::HeSigBUserSpecificField{.staId = 1, .nss = 1, .mcs = 4},
+                         HePpdu::HeSigBUserSpecificField{.staId = 3, .nss = 3, .mcs = 6},
+                     },
+                     {
+                         HePpdu::HeSigBUserSpecificField{.staId = 2, .nss = 2, .mcs = 5},
+                         HePpdu::HeSigBUserSpecificField{.staId = 4, .nss = 2, .mcs = 7},
+                     }}), // users equally split between the two content channels
+                TestCase::Duration::QUICK);
+
+    AddTestCase(new MuSigDurationTest(
+                    "40 MHz band, MU-MIMO, 6 users",
+                    {
+                        {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 4, 1}, // user #1 in CC1
+                        {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 5, 1}, // user #2 in CC2
+                        {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 6, 2}, // user #3 in CC1
+                        {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 7, 2}, // user #4 in CC2
+                        {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 8, 1}, // user #5 in CC1
+                        {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 9, 1}, // user #6 in CC2
+                    },
+                    VhtPhy::GetVhtMcs4(),
+                    MHz_t{40},
+                    0,
+                    {200, 200},
+                    MuSigDurationTest::MU_MIMO,
+                    MicroSeconds(4), // one OFDM symbol
+                    {{
+                         HePpdu::HeSigBUserSpecificField{.staId = 1, .nss = 1, .mcs = 4},
+                         HePpdu::HeSigBUserSpecificField{.staId = 3, .nss = 2, .mcs = 6},
+                         HePpdu::HeSigBUserSpecificField{.staId = 5, .nss = 1, .mcs = 8},
+                     },
+                     {
+                         HePpdu::HeSigBUserSpecificField{.staId = 2, .nss = 1, .mcs = 5},
+                         HePpdu::HeSigBUserSpecificField{.staId = 4, .nss = 2, .mcs = 7},
+                         HePpdu::HeSigBUserSpecificField{.staId = 6, .nss = 1, .mcs = 9},
+                     }}), // users equally split between the two content channels
+                TestCase::Duration::QUICK);
+
+    AddTestCase(new MuSigDurationTest(
+                    "40 MHz band, MU-MIMO, 8 users",
+                    {
+                        {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 4, 1},  // user #1 in CC1
+                        {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 5, 1},  // user #2 in CC2
+                        {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 6, 1},  // user #3 in CC1
+                        {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 7, 1},  // user #4 in CC2
+                        {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 8, 1},  // user #5 in CC1
+                        {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 9, 1},  // user #6 in CC2
+                        {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 10, 1}, // user #7 in CC1
+                        {HeRu::RuSpec{RuType::RU_484_TONE, 1, true}, 11, 1}, // user #8 in CC2
+                    },
+                    VhtPhy::GetVhtMcs4(),
+                    MHz_t{40},
+                    0,
+                    {200, 200},
+                    MuSigDurationTest::MU_MIMO,
+                    MicroSeconds(4), // one OFDM symbol
+                    {{
+                         HePpdu::HeSigBUserSpecificField{.staId = 1, .nss = 1, .mcs = 4},
+                         HePpdu::HeSigBUserSpecificField{.staId = 3, .nss = 1, .mcs = 6},
+                         HePpdu::HeSigBUserSpecificField{.staId = 5, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 7, .nss = 1, .mcs = 10},
+                     },
+                     {
+                         HePpdu::HeSigBUserSpecificField{.staId = 2, .nss = 1, .mcs = 5},
+                         HePpdu::HeSigBUserSpecificField{.staId = 4, .nss = 1, .mcs = 7},
+                         HePpdu::HeSigBUserSpecificField{.staId = 6, .nss = 1, .mcs = 9},
+                         HePpdu::HeSigBUserSpecificField{.staId = 8, .nss = 1, .mcs = 11},
+                     }}), // users equally split between the two content channels
+                TestCase::Duration::QUICK);
+
+    AddTestCase(new MuSigDurationTest(
+                    "80 MHz band, MU-MIMO, 2 users",
+                    {
+                        {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 11, 1}, // user #1 in CC1
+                        {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 10, 4}, // user #2 in CC2
+                    },
+                    VhtPhy::GetVhtMcs5(),
+                    MHz_t{80},
+                    0,
+                    {208, 208, 208, 208},
+                    MuSigDurationTest::MU_MIMO,
+                    MicroSeconds(4), // one OFDM symbol
+                    {{
+                         HePpdu::HeSigBUserSpecificField{.staId = 1, .nss = 1, .mcs = 11},
+                     },
+                     {
+                         HePpdu::HeSigBUserSpecificField{.staId = 2, .nss = 4, .mcs = 10},
+                     }}), // users equally split between the two content channels
+                TestCase::Duration::QUICK);
+
+    AddTestCase(new MuSigDurationTest(
+                    "80 MHz band, MU-MIMO, 3 users",
+                    {
+                        {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 4, 3}, // user #1 in CC1
+                        {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 5, 2}, // user #2 in CC2
+                        {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 6, 1}, // user #3 in CC1
+                    },
+                    VhtPhy::GetVhtMcs4(),
+                    MHz_t{80},
+                    0,
+                    {208, 208, 208, 208},
+                    MuSigDurationTest::MU_MIMO,
+                    MicroSeconds(4), // one OFDM symbol
+                    {{
+                         HePpdu::HeSigBUserSpecificField{.staId = 1, .nss = 3, .mcs = 4},
+                         HePpdu::HeSigBUserSpecificField{.staId = 3, .nss = 1, .mcs = 6},
+                     },
+                     {
+                         HePpdu::HeSigBUserSpecificField{.staId = 2, .nss = 2, .mcs = 5},
+                     }}),
+                TestCase::Duration::QUICK);
+
+    AddTestCase(new MuSigDurationTest(
+                    "80 MHz band, MU-MIMO, 4 users",
+                    {
+                        {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 4, 1}, // user #1 in CC1
+                        {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 5, 2}, // user #2 in CC2
+                        {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 6, 3}, // user #3 in CC1
+                        {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 7, 2}, // user #4 in CC2
+                    },
+                    VhtPhy::GetVhtMcs4(),
+                    MHz_t{80},
+                    0,
+                    {208, 208, 208, 208},
+                    MuSigDurationTest::MU_MIMO,
+                    MicroSeconds(4), // one OFDM symbol
+                    {{
+                         HePpdu::HeSigBUserSpecificField{.staId = 1, .nss = 1, .mcs = 4},
+                         HePpdu::HeSigBUserSpecificField{.staId = 3, .nss = 3, .mcs = 6},
+                     },
+                     {
+                         HePpdu::HeSigBUserSpecificField{.staId = 2, .nss = 2, .mcs = 5},
+                         HePpdu::HeSigBUserSpecificField{.staId = 4, .nss = 2, .mcs = 7},
+                     }}), // users equally split between the two content channels
+                TestCase::Duration::QUICK);
+
+    AddTestCase(new MuSigDurationTest(
+                    "80 MHz band, MU-MIMO, 6 users",
+                    {
+                        {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 4, 1}, // user #1 in CC1
+                        {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 5, 1}, // user #2 in CC2
+                        {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 6, 2}, // user #3 in CC1
+                        {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 7, 2}, // user #4 in CC2
+                        {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 8, 1}, // user #5 in CC1
+                        {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 9, 1}, // user #6 in CC2
+                    },
+                    VhtPhy::GetVhtMcs4(),
+                    MHz_t{80},
+                    0,
+                    {208, 208, 208, 208},
+                    MuSigDurationTest::MU_MIMO,
+                    MicroSeconds(4), // one OFDM symbol
+                    {{
+                         HePpdu::HeSigBUserSpecificField{.staId = 1, .nss = 1, .mcs = 4},
+                         HePpdu::HeSigBUserSpecificField{.staId = 3, .nss = 2, .mcs = 6},
+                         HePpdu::HeSigBUserSpecificField{.staId = 5, .nss = 1, .mcs = 8},
+                     },
+                     {
+                         HePpdu::HeSigBUserSpecificField{.staId = 2, .nss = 1, .mcs = 5},
+                         HePpdu::HeSigBUserSpecificField{.staId = 4, .nss = 2, .mcs = 7},
+                         HePpdu::HeSigBUserSpecificField{.staId = 6, .nss = 1, .mcs = 9},
+                     }}), // users equally split between the two content channels
+                TestCase::Duration::QUICK);
+
+    AddTestCase(new MuSigDurationTest(
+                    "80 MHz band, MU-MIMO, 8 users",
+                    {
+                        {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 4, 1},  // user #1 in CC1
+                        {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 5, 1},  // user #2 in CC2
+                        {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 6, 1},  // user #3 in CC1
+                        {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 7, 1},  // user #4 in CC2
+                        {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 8, 1},  // user #5 in CC1
+                        {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 9, 1},  // user #6 in CC2
+                        {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 10, 1}, // user #7 in CC1
+                        {HeRu::RuSpec{RuType::RU_996_TONE, 1, true}, 11, 1}, // user #8 in CC2
+                    },
+                    VhtPhy::GetVhtMcs4(),
+                    MHz_t{80},
+                    0,
+                    {208, 208, 208, 208},
+                    MuSigDurationTest::MU_MIMO,
+                    MicroSeconds(4), // one OFDM symbol
+                    {{
+                         HePpdu::HeSigBUserSpecificField{.staId = 1, .nss = 1, .mcs = 4},
+                         HePpdu::HeSigBUserSpecificField{.staId = 3, .nss = 1, .mcs = 6},
+                         HePpdu::HeSigBUserSpecificField{.staId = 5, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 7, .nss = 1, .mcs = 10},
+                     },
+                     {
+                         HePpdu::HeSigBUserSpecificField{.staId = 2, .nss = 1, .mcs = 5},
+                         HePpdu::HeSigBUserSpecificField{.staId = 4, .nss = 1, .mcs = 7},
+                         HePpdu::HeSigBUserSpecificField{.staId = 6, .nss = 1, .mcs = 9},
+                         HePpdu::HeSigBUserSpecificField{.staId = 8, .nss = 1, .mcs = 11},
+                     }}), // users equally split between the two content channels
+                TestCase::Duration::QUICK);
+
+    AddTestCase(new MuSigDurationTest(
+                    "160 MHz band, MU-MIMO, 2 users",
+                    {
+                        {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 11, 1}, // user #1 in CC1
+                        {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 10, 4}, // user #2 in CC2
+                    },
+                    VhtPhy::GetVhtMcs5(),
+                    MHz_t{160},
+                    0,
+                    {208, 208, 208, 208, 208, 208, 208, 208},
+                    MuSigDurationTest::MU_MIMO,
+                    MicroSeconds(4), // one OFDM symbol
+                    {{
+                         HePpdu::HeSigBUserSpecificField{.staId = 1, .nss = 1, .mcs = 11},
+                     },
+                     {
+                         HePpdu::HeSigBUserSpecificField{.staId = 2, .nss = 4, .mcs = 10},
+                     }}), // users equally split between the two content channels
+                TestCase::Duration::QUICK);
+
+    AddTestCase(new MuSigDurationTest(
+                    "160 MHz band, MU-MIMO, 3 users",
+                    {
+                        {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 4, 3}, // user #1 in CC1
+                        {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 5, 2}, // user #2 in CC2
+                        {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 6, 1}, // user #3 in CC1
+                    },
                     VhtPhy::GetVhtMcs4(),
                     MHz_t{160},
                     0,
-                    MuSigDurationTest::MU_MIMO,
                     {208, 208, 208, 208, 208, 208, 208, 208},
-                    std::make_pair(2, 2), // users equally split between the two content channels
-                    MicroSeconds(4)),     // one OFDM symbol
+                    MuSigDurationTest::MU_MIMO,
+                    MicroSeconds(4), // one OFDM symbol
+                    {{
+                         HePpdu::HeSigBUserSpecificField{.staId = 1, .nss = 3, .mcs = 4},
+                         HePpdu::HeSigBUserSpecificField{.staId = 3, .nss = 1, .mcs = 6},
+                     },
+                     {
+                         HePpdu::HeSigBUserSpecificField{.staId = 2, .nss = 2, .mcs = 5},
+                     }}),
                 TestCase::Duration::QUICK);
 
-    // 160 MHz band, MU-MIMO, 6 users
     AddTestCase(new MuSigDurationTest(
-                    {{HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 4, 1},  // CC1
-                     {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 5, 1},  // CC2
-                     {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 6, 2},  // CC1
-                     {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 7, 2},  // CC2
-                     {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 8, 1},  // CC1
-                     {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 9, 1}}, // CC2
+                    "160 MHz band, MU-MIMO, 4 users",
+                    {
+                        {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 4, 1}, // user #1 in CC1
+                        {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 5, 2}, // user #2 in CC2
+                        {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 6, 3}, // user #3 in CC1
+                        {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 7, 2}, // user #4 in CC2
+                    },
                     VhtPhy::GetVhtMcs4(),
                     MHz_t{160},
                     0,
-                    MuSigDurationTest::MU_MIMO,
                     {208, 208, 208, 208, 208, 208, 208, 208},
-                    std::make_pair(3, 3), // users equally split between the two content channels
-                    MicroSeconds(4)),     // one OFDM symbol
+                    MuSigDurationTest::MU_MIMO,
+                    MicroSeconds(4), // one OFDM symbol
+                    {{
+                         HePpdu::HeSigBUserSpecificField{.staId = 1, .nss = 1, .mcs = 4},
+                         HePpdu::HeSigBUserSpecificField{.staId = 3, .nss = 3, .mcs = 6},
+                     },
+                     {
+                         HePpdu::HeSigBUserSpecificField{.staId = 2, .nss = 2, .mcs = 5},
+                         HePpdu::HeSigBUserSpecificField{.staId = 4, .nss = 2, .mcs = 7},
+                     }}), // users equally split between the two content channels
                 TestCase::Duration::QUICK);
 
-    // 160 MHz band, MU-MIMO, 8 users
     AddTestCase(new MuSigDurationTest(
-                    {{HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 4, 1},   // CC1
-                     {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 5, 1},   // CC2
-                     {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 6, 1},   // CC1
-                     {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 7, 1},   // CC2
-                     {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 8, 1},   // CC1
-                     {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 9, 1},   // CC2
-                     {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 10, 1},  // CC1
-                     {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 11, 1}}, // CC2
+                    "160 MHz band, MU-MIMO, 6 users",
+                    {
+                        {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 4, 1}, // user #1 in CC1
+                        {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 5, 1}, // user #2 in CC2
+                        {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 6, 2}, // user #3 in CC1
+                        {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 7, 2}, // user #4 in CC2
+                        {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 8, 1}, // user #5 in CC1
+                        {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 9, 1}, // user #6 in CC2
+                    },
                     VhtPhy::GetVhtMcs4(),
                     MHz_t{160},
                     0,
-                    MuSigDurationTest::MU_MIMO,
                     {208, 208, 208, 208, 208, 208, 208, 208},
-                    std::make_pair(4, 4), // users equally split between the two content channels
-                    MicroSeconds(4)),     // one OFDM symbol
+                    MuSigDurationTest::MU_MIMO,
+                    MicroSeconds(4), // one OFDM symbol
+                    {{
+                         HePpdu::HeSigBUserSpecificField{.staId = 1, .nss = 1, .mcs = 4},
+                         HePpdu::HeSigBUserSpecificField{.staId = 3, .nss = 2, .mcs = 6},
+                         HePpdu::HeSigBUserSpecificField{.staId = 5, .nss = 1, .mcs = 8},
+                     },
+                     {
+                         HePpdu::HeSigBUserSpecificField{.staId = 2, .nss = 1, .mcs = 5},
+                         HePpdu::HeSigBUserSpecificField{.staId = 4, .nss = 2, .mcs = 7},
+                         HePpdu::HeSigBUserSpecificField{.staId = 6, .nss = 1, .mcs = 9},
+                     }}), // users equally split between the two content channels
+                TestCase::Duration::QUICK);
+
+    AddTestCase(new MuSigDurationTest(
+                    "160 MHz band, MU-MIMO, 8 users",
+                    {
+                        {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 4, 1},  // user #1 in CC1
+                        {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 5, 1},  // user #2 in CC2
+                        {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 6, 1},  // user #3 in CC1
+                        {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 7, 1},  // user #4 in CC2
+                        {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 8, 1},  // user #5 in CC1
+                        {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 9, 1},  // user #6 in CC2
+                        {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 10, 1}, // user #7 in CC1
+                        {HeRu::RuSpec{RuType::RU_2x996_TONE, 1, true}, 11, 1}, // user #8 in CC2
+                    },
+                    VhtPhy::GetVhtMcs4(),
+                    MHz_t{160},
+                    0,
+                    {208, 208, 208, 208, 208, 208, 208, 208},
+                    MuSigDurationTest::MU_MIMO,
+                    MicroSeconds(4), // one OFDM symbol
+                    {{
+                         HePpdu::HeSigBUserSpecificField{.staId = 1, .nss = 1, .mcs = 4},
+                         HePpdu::HeSigBUserSpecificField{.staId = 3, .nss = 1, .mcs = 6},
+                         HePpdu::HeSigBUserSpecificField{.staId = 5, .nss = 1, .mcs = 8},
+                         HePpdu::HeSigBUserSpecificField{.staId = 7, .nss = 1, .mcs = 10},
+                     },
+                     {
+                         HePpdu::HeSigBUserSpecificField{.staId = 2, .nss = 1, .mcs = 5},
+                         HePpdu::HeSigBUserSpecificField{.staId = 4, .nss = 1, .mcs = 7},
+                         HePpdu::HeSigBUserSpecificField{.staId = 6, .nss = 1, .mcs = 9},
+                         HePpdu::HeSigBUserSpecificField{.staId = 8, .nss = 1, .mcs = 11},
+                     }}), // users equally split between the two content channels
                 TestCase::Duration::QUICK);
 }
 

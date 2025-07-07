@@ -41,6 +41,12 @@ operator<<(std::ostream& os, const HePpdu::TxPsdFlag& flag)
     }
 }
 
+std::ostream&
+operator<<(std::ostream& os, const HePpdu::HeSigBUserSpecificField& field)
+{
+    return os << "{staId=" << field.staId << " mcs=" << +field.mcs << " nss=" << +field.nss << "}";
+}
+
 HePpdu::HePpdu(const WifiConstPsduMap& psdus,
                const WifiTxVector& txVector,
                const WifiPhyOperatingChannel& channel,

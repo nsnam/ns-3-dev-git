@@ -13,6 +13,7 @@
 
 #include "ns3/ofdm-ppdu.h"
 
+#include <compare>
 #include <variant>
 
 /**
@@ -41,6 +42,13 @@ class HePpdu : public OfdmPpdu
         uint16_t staId : 11 {NO_USER_STA_ID}; ///< STA-ID
         uint8_t nss : 4 {1};                  ///< number of spatial streams
         uint8_t mcs : 4 {0};                  ///< MCS index
+
+        /**
+         * @brief Three-way comparison
+         * @param rhs right hand side
+         * @return deduced comparison type
+         */
+        auto operator<=>(const HeSigBUserSpecificField& rhs) const = default;
     };
 
     /// HE SIG-B Content Channels
@@ -395,6 +403,15 @@ class HePpdu : public OfdmPpdu
  * @returns a reference to the stream
  */
 std::ostream& operator<<(std::ostream& os, const HePpdu::TxPsdFlag& flag);
+
+/**
+ * @brief Stream insertion operator.
+ *
+ * @param os the stream
+ * @param field the HE-SIG-B field
+ * @returns a reference to the stream
+ */
+std::ostream& operator<<(std::ostream& os, const HePpdu::HeSigBUserSpecificField& field);
 
 } // namespace ns3
 
