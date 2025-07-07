@@ -929,6 +929,8 @@ StaWifiMac::PmModeChanged(WifiPowerManagementMode pmMode, linkId_t linkId)
 {
     NS_LOG_FUNCTION(this << pmMode << linkId);
 
+    GetLink(linkId).pmModeChangeEvent.Cancel();
+
     if (m_powerSaveManager)
     {
         m_powerSaveManager->NotifyPmModeChanged(pmMode, linkId);
@@ -2174,10 +2176,11 @@ StaWifiMac::SetPowerSaveMode(const std::pair<bool, uint8_t>& enableLinkIdPair)
 
     // reschedule a call to this function to make sure that the PM mode switch
     // is eventually completed
-    Simulator::Schedule(m_pmModeSwitchTimeout,
-                        &StaWifiMac::SetPowerSaveMode,
-                        this,
-                        enableLinkIdPair);
+    link.pmModeChangeEvent.Cancel();
+    link.pmModeChangeEvent = Simulator::Schedule(m_pmModeSwitchTimeout,
+                                                 &StaWifiMac::SetPowerSaveMode,
+                                                 this,
+                                                 enableLinkIdPair);
 
     if (HasFramesToTransmit(linkId))
     {

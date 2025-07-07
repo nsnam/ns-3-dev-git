@@ -408,7 +408,8 @@ class WIFI_EXPORT StaWifiMac : public WifiMac
         WifiPowerManagementMode pmMode{WIFI_PM_ACTIVE}; /**< the current PM mode, if the STA is
                                                              associated, or the PM mode to switch
                                                              to upon association, otherwise */
-        bool emlsrEnabled{false}; //!< whether EMLSR mode is enabled on this link
+        EventId pmModeChangeEvent; //!< event indicating a pending PM mode change
+        bool emlsrEnabled{false};  //!< whether EMLSR mode is enabled on this link
     };
 
     /**
