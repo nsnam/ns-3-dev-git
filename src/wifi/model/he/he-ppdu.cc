@@ -814,6 +814,7 @@ HePpdu::GetHeSigBContentChannels(const WifiTxVector& txVector, uint8_t p20Index)
         contentChannels.at(1).push_back(*cc2Central26ToneRu);
     }
 
+#ifdef NS3_BUILD_PROFILE_DEBUG
     // check that the content channels returned by the function match with
     // GetNumRusPerHeSigBContentChannel
     const auto isSigBCompression = txVector.IsSigBCompression();
@@ -836,6 +837,7 @@ HePpdu::GetHeSigBContentChannels(const WifiTxVector& txVector, uint8_t p20Index)
             contentChannelIndex++;
         }
     }
+#endif // NS3_BUILD_PROFILE_DEBUG
 
     return contentChannels;
 }
