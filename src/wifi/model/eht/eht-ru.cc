@@ -1064,6 +1064,9 @@ EhtRu::GetSubcarrierGroup(MHz_u bw, RuType ruType, std::size_t phyIndex)
 {
     const auto it = m_ruSubcarrierGroups.find({bw, ruType});
     NS_ABORT_MSG_IF(it == m_ruSubcarrierGroups.cend(), "RU not found");
+    NS_ABORT_MSG_IF(phyIndex == 0 || phyIndex > it->second.size(),
+                    "Invalid PHY index " << phyIndex << " for RU type " << ruType
+                                         << " and bandwidth " << bw);
     return it->second.at(phyIndex - 1);
 }
 

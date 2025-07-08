@@ -992,6 +992,7 @@ HePhy::GetRuBandForTx(const WifiTxVector& txVector, uint16_t staId) const
                             channelWidth,
                             m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(MHz_u{20})),
         mc);
+    NS_ABORT_MSG_IF(group.empty(), "No subcarrier group found");
     // for a TX spectrum, the guard bandwidth is a function of the transmission channel width
     // and the spectrum width equals the transmission channel width (hence bandIndex equals 0)
     const auto indices = ConvertRuSubcarriers({channelWidth,
@@ -1027,6 +1028,7 @@ HePhy::GetRuBandForRx(const WifiTxVector& txVector, uint16_t staId) const
                             channelWidth,
                             m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(MHz_u{20})),
         mc);
+    NS_ABORT_MSG_IF(group.empty(), "No subcarrier group found");
     // for an RX spectrum, the guard bandwidth is a function of the operating channel width
     // and the spectrum width equals the operating channel width
     const auto indices = ConvertRuSubcarriers(
