@@ -81,8 +81,8 @@ class InterferenceExperiment
         dBm_t txPowerB;        ///< transmit power B
         uint32_t packetSizeA;  ///< packet size A
         uint32_t packetSizeB;  ///< packet size B
-        uint16_t channelA;     ///< channel number A
-        uint16_t channelB;     ///< channel number B
+        uint8_t channelA;      ///< channel number A
+        uint8_t channelB;      ///< channel number B
         MHz_t widthA;          ///< channel width A
         MHz_t widthB;          ///< channel width B
         WifiStandard standard; ///< standard
