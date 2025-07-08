@@ -197,14 +197,15 @@ class WifiPrimaryChannelsTest : public TestCase
     uint8_t m_nStationsPerBss;                    ///< number of stations per AP
     std::vector<NetDeviceContainer> m_staDevices; ///< containers for stations' NetDevices
     NetDeviceContainer m_apDevices;               ///< container for AP's NetDevice
-    std::vector<std::bitset<74>> m_received;  /**< whether the last packet transmitted to/from each
-                                                 of  the (up to 74 per BSS) stations was received */
-    std::vector<std::bitset<74>> m_processed; /**< whether the last packet transmitted to/from each
-                                                 of the (up to 74 per BSS) stations was processed */
-    Time m_time;                              ///< the time when the current action is executed
-    Ptr<WifiPsdu> m_trigger;                  ///< Basic Trigger Frame
-    WifiTxVector m_triggerTxVector;           ///< TX vector for Basic Trigger Frame
-    Time m_triggerTxDuration;                 ///< TX duration for Basic Trigger Frame
+    std::vector<std::bitset<144>> m_received; /**< whether the last packet transmitted to/from each
+                                                of  the (up to 144 per BSS) stations was received */
+    std::vector<std::bitset<144>>
+        m_processed;                /**< whether the last packet transmitted to/from each
+                                      of the (up to 144 per BSS) stations was processed */
+    Time m_time;                    ///< the time when the current action is executed
+    Ptr<WifiPsdu> m_trigger;        ///< Basic Trigger Frame
+    WifiTxVector m_triggerTxVector; ///< TX vector for Basic Trigger Frame
+    Time m_triggerTxDuration;       ///< TX duration for Basic Trigger Frame
 };
 
 WifiPrimaryChannelsTest::WifiPrimaryChannelsTest(WifiStandard standard,
@@ -651,6 +652,7 @@ WifiPrimaryChannelsTest::DoRun()
      */
     nRounds = 2;
     nApsPerRound = Count20MHzSubchannels(m_channelWidth) / 2;
+    const auto mc = GetModulationClassForStandard(m_standard);
     for (MHz_u txChannelWidth{20}; txChannelWidth <= m_channelWidth;
          txChannelWidth *= 2, nRounds *= 2, nApsPerRound /= 2)
     {
@@ -659,12 +661,10 @@ WifiPrimaryChannelsTest::DoRun()
 
         for (uint16_t round = 0; round < nRounds; round++)
         {
-            for (uint32_t type = 0; type < static_cast<uint32_t>(WifiRu::GetMaxRuType(
-                                               GetModulationClassForStandard(m_standard)));
-                 ++type)
+            for (uint32_t type = 0; type < static_cast<uint32_t>(WifiRu::GetMaxRuType(mc)); ++type)
             {
                 auto ruType = static_cast<RuType>(type);
-                std::size_t nRus = HeRu::GetNRus(txChannelWidth, ruType);
+                std::size_t nRus = WifiRu::GetNRus(txChannelWidth, ruType, mc);
                 std::set<uint8_t> txBss;
                 if (nRus > 0)
                 {
@@ -710,12 +710,10 @@ WifiPrimaryChannelsTest::DoRun()
 
         for (uint16_t round = 0; round < nRounds; round++)
         {
-            for (uint32_t type = 0; type < static_cast<uint32_t>(WifiRu::GetMaxRuType(
-                                               GetModulationClassForStandard(m_standard)));
-                 ++type)
+            for (uint32_t type = 0; type < static_cast<uint32_t>(WifiRu::GetMaxRuType(mc)); ++type)
             {
                 auto ruType = static_cast<RuType>(type);
-                std::size_t nRus = HeRu::GetNRus(txChannelWidth, ruType);
+                std::size_t nRus = WifiRu::GetNRus(txChannelWidth, ruType, mc);
                 std::set<uint8_t> txBss;
                 if (nRus > 0)
                 {
@@ -834,7 +832,14 @@ WifiPrimaryChannelsTest::SendDlMuPpdu(uint8_t bss,
 
     WifiConstPsduMap psduMap;
 
-    for (std::size_t i = 1; i <= nRus; i++)
+    auto numRus{nRus};
+    if ((m_standard != WIFI_STANDARD_80211ax) && (ruType == RuType::RU_26_TONE))
+    {
+        // for the loop, take undefined RUs for EHT into account
+        numRus += (txChannelWidth / MHz_u{80});
+    }
+    std::size_t staIdx{0};
+    for (std::size_t i = 1; i <= numRus; ++i)
     {
         auto primary80OrLow80{true};
         auto primary160{true};
@@ -861,13 +866,24 @@ WifiPrimaryChannelsTest::SendDlMuPpdu(uint8_t bss,
                 primary80OrLow80 = p80OrLow80;
             }
         }
+        if ((m_standard != WIFI_STANDARD_80211ax) && (txChannelWidth >= MHz_u{80}) &&
+            (ruType == RuType::RU_26_TONE) && (index == 19))
+        {
+            // skip undefined RU for EHT
+            continue;
+        }
         const auto ru =
             (m_standard == WIFI_STANDARD_80211ax)
                 ? WifiRu::RuSpec(HeRu::RuSpec{ruType, index, primary80OrLow80})
                 : WifiRu::RuSpec(EhtRu::RuSpec{ruType, index, primary160, primary80OrLow80});
 
-        auto staDev = DynamicCast<WifiNetDevice>(m_staDevices[bss].Get(i - 1));
-        uint16_t staId = DynamicCast<StaWifiMac>(staDev->GetMac())->GetAssociationId();
+        NS_ABORT_IF((bss >= m_staDevices.size()) || (staIdx >= m_staDevices[bss].GetN()));
+        auto staDev = DynamicCast<WifiNetDevice>(m_staDevices[bss].Get(staIdx));
+        ++staIdx;
+
+        NS_ABORT_IF(!staDev);
+        const auto staId = DynamicCast<StaWifiMac>(staDev->GetMac())->GetAssociationId();
+
         txVector.SetHeMuUserInfo(staId, {ru, 8, 1});
         hdr.SetAddr1(staDev->GetMac()->GetAddress());
         psduMap[staId] = Create<const WifiPsdu>(Create<Packet>(1000), hdr);
@@ -933,7 +949,14 @@ WifiPrimaryChannelsTest::DoSendHeTbPpdu(uint8_t bss,
         false,
         bssColor);
 
-    for (std::size_t i = 1; i <= nRus; i++)
+    auto numRus{nRus};
+    if ((m_standard != WIFI_STANDARD_80211ax) && (ruType == RuType::RU_26_TONE))
+    {
+        // for the loop, take undefined RUs for EHT into account
+        numRus += (txChannelWidth / MHz_u{80});
+    }
+    std::size_t staIdx{0};
+    for (std::size_t i = 1; i <= numRus; ++i)
     {
         NS_LOG_INFO("*** BSS " << +bss << " STA " << i - 1 << " transmits on primary "
                                << txChannelWidth
@@ -964,14 +987,22 @@ WifiPrimaryChannelsTest::DoSendHeTbPpdu(uint8_t bss,
                 primary80OrLow80 = p80OrLow80;
             }
         }
+        if ((m_standard != WIFI_STANDARD_80211ax) && (txChannelWidth >= MHz_u{80}) &&
+            (ruType == RuType::RU_26_TONE) && (index == 19))
+        {
+            // skip undefined RU for EHT
+            continue;
+        }
         const auto ru =
             (m_standard == WIFI_STANDARD_80211ax)
                 ? WifiRu::RuSpec(HeRu::RuSpec{ruType, index, primary80OrLow80})
                 : WifiRu::RuSpec(EhtRu::RuSpec{ruType, index, primary160, primary80OrLow80});
 
-        auto staDev = DynamicCast<WifiNetDevice>(m_staDevices[bss].Get(i - 1));
-        uint16_t staId = DynamicCast<StaWifiMac>(staDev->GetMac())->GetAssociationId();
+        NS_ABORT_IF((bss >= m_staDevices.size()) || (staIdx >= m_staDevices[bss].GetN()));
+        auto staDev = DynamicCast<WifiNetDevice>(m_staDevices[bss].Get(staIdx));
+        ++staIdx;
 
+        const auto staId = DynamicCast<StaWifiMac>(staDev->GetMac())->GetAssociationId();
         WifiTxVector txVector(
             (m_standard == WIFI_STANDARD_80211ax) ? HePhy::GetHeMcs8() : EhtPhy::GetEhtMcs8(),
             0,
@@ -1594,10 +1625,12 @@ WifiPrimaryChannelsTestSuite::WifiPrimaryChannelsTestSuite()
         AddTestCase(new WifiPrimaryChannelsTest(standard, MHz_u{160}, false),
                     TestCase::Duration::TAKES_FOREVER);
     }
-    AddTestCase(new WifiPrimaryChannelsTest(WIFI_STANDARD_80211be, MHz_u{320}, true),
+    // TODO: activate WifiPrimaryChannelsTest for 320 MHz channels once PHY operations are optimized
+    // to run faster, otherwise run-time is too long
+    /*AddTestCase(new WifiPrimaryChannelsTest(WIFI_STANDARD_80211be, MHz_u{320}, true),
                 TestCase::Duration::TAKES_FOREVER);
     AddTestCase(new WifiPrimaryChannelsTest(WIFI_STANDARD_80211be, MHz_u{320}, false),
-                TestCase::Duration::TAKES_FOREVER);
+                TestCase::Duration::TAKES_FOREVER);*/
     AddTestCase(new Wifi20MHzChannelIndicesTest(), TestCase::Duration::QUICK);
 }
 
