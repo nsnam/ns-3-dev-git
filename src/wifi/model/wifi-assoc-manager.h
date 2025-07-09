@@ -17,6 +17,7 @@
 #include "ns3/pair.h"
 #include "ns3/wifi-export.h"
 
+#include <list>
 #include <optional>
 #include <set>
 #include <unordered_map>
@@ -464,6 +465,13 @@ class WIFI_EXPORT WifiAssocManager : public Object
 
     /// hash table to help locate ApInfo objects in the sorted list based on the BSSID
     std::unordered_map<Mac48Address, SortedList::const_iterator, WifiAddressHash> m_apListIt;
+    std::list<StaWifiMac::ApInfo> m_currScanAps; ///< list of APs found during the current scan
+                                                 ///< (sorted in the order of discovery)
+    TracedCallback<const std::list<StaWifiMac::ApInfo>&>
+        m_scanEndLogger; ///< scanning procedure end logger
+
+    /// TracedCallback signature for scanning procedure end events
+    using ScanEndCallback = void (*)(const std::list<StaWifiMac::ApInfo>&);
 };
 
 } // namespace ns3

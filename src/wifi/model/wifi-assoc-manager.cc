@@ -130,7 +130,13 @@ WifiAssocManager::GetTypeId()
                 MakeEnumChecker(WifiOfflineScanProtection::NONE,
                                 "NONE",
                                 WifiOfflineScanProtection::POWERSAVE,
-                                "POWERSAVE"));
+                                "POWERSAVE"))
+            .AddTraceSource("ScanningEnd",
+                            "Traces the end of every scanning procedure. Provides the list of APs "
+                            "found during the scanning procedure, sorted in the order in which "
+                            "they were discovered.",
+                            MakeTraceSourceAccessor(&WifiAssocManager::m_scanEndLogger),
+                            "ns3::WifiAssocManager::ScanEndCallback");
     return tid;
 }
 
@@ -627,6 +633,8 @@ WifiAssocManager::ScanChannels()
     NS_ABORT_MSG_IF(m_scanParams.channelList.empty(), "No channels to scan");
     m_channelsToSet.clear();
 
+    m_currScanAps.clear();
+
     for (const auto& [phyId, phyBandChannelsMap] : m_scanParams.channelList)
     {
         NS_ABORT_MSG_IF(phyBandChannelsMap.empty(), "No PHY band for PHY ID " << +phyId);
@@ -823,6 +831,8 @@ WifiAssocManager::SwitchToNextChannelToScan(uint8_t phyId, WifiPhyBand band, uin
     if (!IsScanning())
     {
         EndScanning();
+        m_scanEndLogger(m_currScanAps);
+        m_currScanAps.clear();
     }
 }
 
@@ -848,6 +858,8 @@ WifiAssocManager::NotifyApInfo(const StaWifiMac::ApInfo&& apInfo)
         NS_LOG_DEBUG("AP info cannot be inserted");
         return;
     }
+
+    m_currScanAps.emplace_back(apInfo);
 
     // check if an ApInfo object with the same BSSID is already present in the
     // sorted list of ApInfo objects. This is done by trying to insert the BSSID
