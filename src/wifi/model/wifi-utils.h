@@ -97,6 +97,13 @@ using MgtFrameType = std::variant<MgtBeaconHeader,
                                   MgtReassocRequestHeader,
                                   MgtProbeRequestHeader>;
 
+/// Lambda to convert the given argument into a string
+constexpr auto toString{[](auto&& b) -> std::string {
+    std::stringstream ss;
+    ss << b;
+    return ss.str();
+}};
+
 /**
  * Convert from dBm to Watts.
  *
