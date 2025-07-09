@@ -6,6 +6,7 @@ build_lib(
     model/zigbee-aps-header.cc
     model/zigbee-aps-tables.cc
     model/zigbee-aps.cc
+    model/zigbee-group-table.cc
     model/zigbee-nwk-fields.cc
     model/zigbee-nwk.cc
     model/zigbee-stack.cc
@@ -18,6 +19,7 @@ build_lib(
     model/zigbee-aps-header.h
     model/zigbee-aps-tables.h
     model/zigbee-aps.h
+    model/zigbee-group-table.h
     model/zigbee-nwk-fields.h
     model/zigbee-nwk.h
     model/zigbee-stack.h
