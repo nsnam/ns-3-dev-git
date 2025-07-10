@@ -328,6 +328,14 @@ class WifiAssocManager : public Object
      */
     void SwitchToNextChannelToScan(uint8_t phyId, WifiPhyBand band, uint8_t channelNo);
 
+    /**
+     * Request an offline channel scanning procedure and schedule the next one after the given
+     * interval.
+     *
+     * @param interval the time interval after which scheduling the next offline scanning procedure
+     */
+    void RequestOffChannelScan(const Time& interval);
+
     WifiScanParams m_scanParams; ///< scanning parameters
     std::map<uint8_t, EventId>
         m_currentChannelScanEnd; ///< PHY ID-indexed map of events indicating the end of the scan of
@@ -343,6 +351,10 @@ class WifiAssocManager : public Object
                                        ///< timer started when switching to the channels to set
                                        ///< at the end of a scanning procedure
     SortedList m_apList;               ///< sorted list of candidate APs
+    Time m_offChannelScanInterval; ///< if non-zero, indicates the interval between two successive
+                                   ///< offline scanning procedures
+    EventId m_nextOffChannelScan;  ///< event associated with the next offline channel scan
+
     /// hash table to help locate ApInfo objects in the sorted list based on the BSSID
     std::unordered_map<Mac48Address, SortedList::const_iterator, WifiAddressHash> m_apListIt;
     std::list<StaWifiMac::ApInfo> m_currScanAps; ///< list of APs found during the current scan

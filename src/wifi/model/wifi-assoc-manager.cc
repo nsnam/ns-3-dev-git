@@ -88,6 +88,15 @@ WifiAssocManager::GetTypeId()
                           BooleanValue(false),
                           MakeBooleanAccessor(&WifiAssocManager::m_allowAssocAllChannelWidths),
                           MakeBooleanChecker())
+            .AddAttribute("OffChannelScanInterval",
+                          "If non-zero, indicates the interval between two successive requests for "
+                          "offline channel scanning procedures. Note that a channel scan is "
+                          "actually started if the STA is associated and no other scanning is "
+                          "ongoing. Also, note that a subclass may not start a scanning procedure "
+                          "if information about APs is available from previous scan procedures.",
+                          TimeValue(Time{0}),
+                          MakeTimeAccessor(&WifiAssocManager::RequestOffChannelScan),
+                          MakeTimeChecker())
             .AddTraceSource("ScanningEnd",
                             "Traces the end of every scanning procedure. Provides the list of APs "
                             "found during the scanning procedure, sorted in the order in which "
@@ -121,6 +130,7 @@ WifiAssocManager::DoDispose()
     {
         event.Cancel();
     }
+    m_nextOffChannelScan.Cancel();
     Object::DoDispose();
 }
 
@@ -141,6 +151,27 @@ const WifiScanParams&
 WifiAssocManager::GetScanParams() const
 {
     return m_scanParams;
+}
+
+void
+WifiAssocManager::RequestOffChannelScan(const Time& interval)
+{
+    NS_LOG_FUNCTION(this << interval);
+
+    m_nextOffChannelScan.Cancel();
+
+    if (interval.IsZero())
+    {
+        return;
+    }
+
+    if (m_mac && m_mac->IsAssociated() && !IsScanning())
+    {
+        m_mac->StartOfflineScanning();
+    }
+
+    m_nextOffChannelScan =
+        Simulator::Schedule(interval, &WifiAssocManager::RequestOffChannelScan, this, interval);
 }
 
 bool
