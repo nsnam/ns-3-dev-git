@@ -87,6 +87,14 @@ WifiAssocManager::GetTypeId()
                           BooleanValue(false),
                           MakeBooleanAccessor(&WifiAssocManager::m_allowAssocAllChannelWidths),
                           MakeBooleanChecker())
+            .AddAttribute("OfflineScanningInterval",
+                          "If non-zero, indicates the interval between two successive requests for "
+                          "offline channel scanning procedures. Note that a channel scan is "
+                          "actually started if the STA is associated and no other scanning is "
+                          "ongoing.",
+                          TimeValue(Time{0}),
+                          MakeTimeAccessor(&WifiAssocManager::RequestOfflineScanning),
+                          MakeTimeChecker())
             .AddAttribute("EnableScanning",
                           "If false, STA does not perform channel scanning. This may be useful in "
                           "case of static configuration via the static setup helper.",
@@ -164,6 +172,7 @@ WifiAssocManager::DoDispose()
     {
         event.Cancel();
     }
+    m_nextOfflineChannelScan.Cancel();
     Object::DoDispose();
 }
 
@@ -487,6 +496,27 @@ const WifiScanParams&
 WifiAssocManager::GetScanParams() const
 {
     return m_scanParams;
+}
+
+void
+WifiAssocManager::RequestOfflineScanning(const Time& interval)
+{
+    NS_LOG_FUNCTION(this << interval);
+
+    m_nextOfflineChannelScan.Cancel();
+
+    if (interval.IsZero())
+    {
+        return;
+    }
+
+    if (m_mac && m_mac->IsAssociated() && !IsScanning())
+    {
+        StartOfflineScanning();
+    }
+
+    m_nextOfflineChannelScan =
+        Simulator::Schedule(interval, &WifiAssocManager::RequestOfflineScanning, this, interval);
 }
 
 bool
