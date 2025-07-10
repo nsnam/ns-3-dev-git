@@ -151,13 +151,10 @@ PrintGnuplottableBuildingListToFile(std::string filename)
         NS_LOG_ERROR("Can't open file " << filename);
         return;
     }
-    uint32_t index = 0;
     for (auto it = BuildingList::Begin(); it != BuildingList::End(); ++it)
     {
-        ++index;
         Box box = (*it)->GetBoundaries();
-        outFile << "set object " << index << " rect from " << box.xMin << "," << box.yMin << " to "
-                << box.xMax << "," << box.yMax << std::endl;
+        outFile << box.xMin << " " << box.yMin << " " << box.xMax << " " << box.yMax << std::endl;
     }
 }
 
@@ -359,7 +356,7 @@ main(int argc, char* argv[])
 
     for (int i = 0; i < simTime / timeRes; i++)
     {
-        ComputeSnrParams params{txMob, rxMob, txParams, noiseFigure, txAntenna, rxAntenna};
+        ComputeSnrParams params{txMob, rxMob, txParams->Copy(), noiseFigure, txAntenna, rxAntenna};
         Simulator::Schedule(timeRes * i, &ComputeSnr, params);
     }
 
