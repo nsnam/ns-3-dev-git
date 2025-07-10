@@ -101,7 +101,6 @@ set(header_files
     model/tag-buffer.h
     model/tag.h
     model/trailer.h
-    test/header-serialization-test.h
     utils/address-utils.h
     utils/bit-deserializer.h
     utils/bit-serializer.h
@@ -115,6 +114,7 @@ set(header_files
     utils/ethernet-trailer.h
     utils/flow-id-tag.h
     utils/generic-phy.h
+    utils/header-serialization-test.h
     utils/inet-socket-address.h
     utils/inet6-socket-address.h
     utils/ipv4-address.h

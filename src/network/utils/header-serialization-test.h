@@ -13,6 +13,14 @@
 #include "ns3/buffer.h"
 #include "ns3/test.h"
 
+/**
+ * @file
+ * @ingroup network
+ * Contains the implementation of the HeaderSerializationTestCase base class.
+ * It is used to generate tests that verify whether a header, when encoded,
+ * then decoded, then re-encoded, matches the original encoded header byte-for-byte.
+ */
+
 namespace ns3
 {
 
