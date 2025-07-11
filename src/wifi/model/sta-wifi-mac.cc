@@ -2894,4 +2894,22 @@ operator<<(std::ostream& os, const StaWifiMac::ApInfo& apInfo)
     return os;
 }
 
+std::ostream&
+operator<<(std::ostream& os, WifiPowerManagementMode pmMode)
+{
+    switch (pmMode)
+    {
+    case WIFI_PM_ACTIVE:
+        return (os << "PM_ACTIVE");
+    case WIFI_PM_SWITCHING_TO_PS:
+        return (os << "PM_SWITCHING_TO_PS");
+    case WIFI_PM_POWERSAVE:
+        return (os << "PM_POWERSAVE");
+    case WIFI_PM_SWITCHING_TO_ACTIVE:
+        return (os << "PM_SWITCHING_TO_ACTIVE");
+    default:
+        return (os << "INVALID");
+    }
+}
+
 } // namespace ns3

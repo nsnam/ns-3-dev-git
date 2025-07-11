@@ -876,6 +876,15 @@ class StaWifiMac : public WifiMac
  */
 std::ostream& operator<<(std::ostream& os, const StaWifiMac::ApInfo& apInfo);
 
+/**
+ * @brief Stream insertion operator.
+ *
+ * @param os the output stream
+ * @param pmMode the power management mode
+ * @returns a reference to the stream
+ */
+std::ostream& operator<<(std::ostream& os, WifiPowerManagementMode pmMode);
+
 } // namespace ns3
 
 #endif /* STA_WIFI_MAC_H */
