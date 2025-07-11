@@ -1899,7 +1899,7 @@ HeFrameExchangeManager::SendQosNullFramesInTbPpdu(const CtrlTriggerHeader& trigg
     // TR3: Sequence numbers for transmitted QoS (+)Null frames may be set
     // to any value. (Table 10-3 of 802.11-2016)
     header.SetSequenceNumber(0);
-    // Set the EOSP bit so that NotifyTxToEdca will add the Queue Size
+    // Set the EOSP bit so that HtFEM::FinalizeMacHeader will add the Queue Size
     header.SetQosEosp();
 
     WifiTxParameters txParams;
