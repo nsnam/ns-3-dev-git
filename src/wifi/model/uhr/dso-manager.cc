@@ -117,12 +117,22 @@ DsoManager::NotifyMgtFrameReceived(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
 }
 
 void
-DsoManager::NotifyIcfReceived(uint8_t linkId, WifiRu::RuSpec ru)
+DsoManager::NotifyIcfReceived(uint8_t linkId, std::optional<WifiRu::RuSpec> ru)
 {
-    NS_LOG_FUNCTION(this << linkId << ru);
-    NS_ASSERT(WifiRu::IsEht(ru));
+    if (!ru)
+    {
+        NS_LOG_FUNCTION(this << linkId);
+        m_staMac->BlockUnicastTxOnLinks(WifiQueueBlockedReason::DSO_WAIT_FOR_TF,
+                                        GetUhrFem(linkId)->GetBssid(),
+                                        {linkId});
+        return;
+    }
 
+    NS_LOG_FUNCTION(this << linkId << *ru);
     m_dsoTxopEventTrace(DsoTxopEvent::RX_ICF, linkId);
+    m_staMac->UnblockUnicastTxOnLinks(WifiQueueBlockedReason::DSO_WAIT_FOR_TF,
+                                      GetUhrFem(linkId)->GetBssid(),
+                                      {linkId});
 
     if (m_dsoSubbands.empty())
     {
@@ -135,8 +145,8 @@ DsoManager::NotifyIcfReceived(uint8_t linkId, WifiRu::RuSpec ru)
 
     const auto& phy = m_staMac->GetWifiPhy(linkId);
     const auto& currentChannel = phy->GetOperatingChannel();
-    NS_ASSERT(currentChannel.GetWidth() < MHz_t{320});
-    auto ehtRu = std::get<EhtRu::RuSpec>(ru);
+    NS_ASSERT(WifiRu::IsEht(*ru) && (currentChannel.GetWidth() < MHz_t{320}));
+    auto ehtRu = std::get<EhtRu::RuSpec>(*ru);
     if (ehtRu.GetPrimary160MHz() &&
         (ehtRu.GetPrimary80MHzOrLower80MHz() || currentChannel.GetWidth() == MHz_t{160}))
 
@@ -172,6 +182,10 @@ DsoManager::NotifyTxopEnd(uint8_t linkId,
     {
         return;
     }
+
+    m_staMac->BlockUnicastTxOnLinks(WifiQueueBlockedReason::DSO_WAIT_FOR_TF,
+                                    GetUhrFem(linkId)->GetBssid(),
+                                    {linkId});
 
     auto phy = m_staMac->GetWifiPhy(linkId);
     if (psdu)

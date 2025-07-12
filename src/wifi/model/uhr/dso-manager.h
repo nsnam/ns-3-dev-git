@@ -97,9 +97,10 @@ class DsoManager : public Object
      * Notify the reception of an initial Control frame on the given link.
      *
      * @param linkId the ID of the link on which the initial Control frame was received
-     * @param ru the RU the non-AP STA should transition to
+     * @param ru the RU the non-AP STA should transition to or std::nullopt if no RU is assigned to
+     * this STA
      */
-    void NotifyIcfReceived(uint8_t linkId, WifiRu::RuSpec ru);
+    void NotifyIcfReceived(uint8_t linkId, std::optional<WifiRu::RuSpec> ru);
 
     /**
      * Notify the transmission of the response to an initial Control frame on the given link.

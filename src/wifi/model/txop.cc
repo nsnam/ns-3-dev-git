@@ -645,7 +645,8 @@ Txop::Queue(Ptr<WifiMpdu> mpdu)
         m_queue->GetAc(),
         mpdu,
         {WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
-         WifiQueueBlockedReason::WAITING_EMLSR_TRANSITION_DELAY});
+         WifiQueueBlockedReason::WAITING_EMLSR_TRANSITION_DELAY,
+         WifiQueueBlockedReason::DSO_WAIT_FOR_TF});
 
     // ignore the links for which a channel access request event is already running
     for (auto it = linkIds.begin(); it != linkIds.end();)
