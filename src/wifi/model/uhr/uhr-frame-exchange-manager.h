@@ -50,8 +50,9 @@ class UhrFrameExchangeManager : public EhtFrameExchangeManager
     void ForwardPsduMapDown(WifiConstPsduMap psduMap, WifiTxVector& txVector) override;
     void NotifyChannelReleased(Ptr<Txop> txop) override;
     void TbPpduTimeout(WifiPsduMap* psduMap, std::size_t nSolicitedStations) override;
+    std::set<uint8_t> GetIndicesOccupyingRu(const CtrlTriggerHeader& trigger,
+                                            uint16_t aid) const override;
 
-  private:
     /**
      * @param psdu the given PSDU
      * @param aid the AID of a DSO STA

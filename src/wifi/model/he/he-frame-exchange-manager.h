@@ -341,6 +341,16 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
      */
     virtual void ReceivedQosNullAfterBsrpTf(Mac48Address sender);
 
+    /**
+     * Get the indices of 20 MHz channels containing the RU of a given AID in a given Trigger Frame.
+     *
+     * @param trigger the Trigger Frame
+     * @param aid the AID of the station
+     * @return the set of indices occupied by the RU for the AID in the Trigger Frame
+     */
+    virtual std::set<uint8_t> GetIndicesOccupyingRu(const CtrlTriggerHeader& trigger,
+                                                    uint16_t aid) const;
+
     WifiTxVector m_trigVector;       //!< the TRIGVECTOR
     Time m_intraBssNavEnd;           //!< intra-BSS NAV expiration time
     EventId m_intraBssNavResetEvent; //!< the event to reset the intra-BSS NAV after an RTS

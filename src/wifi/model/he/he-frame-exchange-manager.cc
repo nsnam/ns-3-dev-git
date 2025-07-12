@@ -2235,6 +2235,26 @@ HeFrameExchangeManager::VirtualCsMediumIdle() const
     return m_navEnd <= Simulator::Now() && m_intraBssNavEnd <= Simulator::Now();
 }
 
+std::set<uint8_t>
+HeFrameExchangeManager::GetIndicesOccupyingRu(const CtrlTriggerHeader& trigger, uint16_t aid) const
+{
+    auto userInfoIt = trigger.FindUserInfoWithAid(aid);
+    if (userInfoIt == trigger.end())
+    {
+        userInfoIt = trigger.FindUserInfoWithAid(WIFI_AID_ADHOC_PEER);
+    }
+    NS_ASSERT_MSG(userInfoIt != trigger.end(),
+                  "No User Info field for STA (" << m_self << ") AID=" << aid);
+    if (trigger.IsMuRts())
+    {
+        auto ctsTxVector = GetCtsTxVectorAfterMuRts(trigger, aid);
+        auto bw = ctsTxVector.GetChannelWidth();
+        return m_phy->GetOperatingChannel().GetAll20MHzChannelIndicesInPrimary(bw);
+    }
+    return m_phy->GetOperatingChannel().Get20MHzIndicesCoveringRu(userInfoIt->GetRuAllocation(),
+                                                                  trigger.GetUlBandwidth());
+}
+
 bool
 HeFrameExchangeManager::UlMuCsMediumIdle(const CtrlTriggerHeader& trigger) const
 {
@@ -2256,29 +2276,7 @@ HeFrameExchangeManager::UlMuCsMediumIdle(const CtrlTriggerHeader& trigger) const
     }
 
     NS_ASSERT_MSG(m_staMac, "UL MU CS is only performed by non-AP STAs");
-    auto userInfoIt = trigger.FindUserInfoWithAid(m_staMac->GetAssociationId());
-    if (userInfoIt == trigger.end())
-    {
-        userInfoIt = trigger.FindUserInfoWithAid(WIFI_AID_ADHOC_PEER);
-    }
-    NS_ASSERT_MSG(userInfoIt != trigger.end(),
-                  "No User Info field for STA (" << m_self
-                                                 << ") AID=" << m_staMac->GetAssociationId());
-
-    std::set<uint8_t> indices;
-
-    if (trigger.IsMuRts())
-    {
-        auto ctsTxVector = GetCtsTxVectorAfterMuRts(trigger, m_staMac->GetAssociationId());
-        auto bw = ctsTxVector.GetChannelWidth();
-        indices = m_phy->GetOperatingChannel().GetAll20MHzChannelIndicesInPrimary(bw);
-    }
-    else
-    {
-        indices =
-            m_phy->GetOperatingChannel().Get20MHzIndicesCoveringRu(userInfoIt->GetRuAllocation(),
-                                                                   trigger.GetUlBandwidth());
-    }
+    const auto indices = GetIndicesOccupyingRu(trigger, m_staMac->GetAssociationId());
     return !m_channelAccessManager->GetPer20MHzBusy(indices);
 }
 

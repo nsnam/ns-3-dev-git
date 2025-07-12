@@ -13,6 +13,7 @@
 
 #include "ns3/ap-wifi-mac.h"
 #include "ns3/sta-wifi-mac.h"
+#include "ns3/wifi-net-device.h"
 
 #undef NS_LOG_APPEND_CONTEXT
 #define NS_LOG_APPEND_CONTEXT WIFI_FEM_NS_LOG_APPEND_CONTEXT
@@ -409,6 +410,23 @@ UhrFrameExchangeManager::TbPpduTimeout(WifiPsduMap* psduMap, std::size_t nSolici
     }
 
     EhtFrameExchangeManager::TbPpduTimeout(psduMap, nSolicitedStations);
+}
+
+std::set<uint8_t>
+UhrFrameExchangeManager::GetIndicesOccupyingRu(const CtrlTriggerHeader& trigger, uint16_t aid) const
+{
+    NS_ASSERT(m_staMac);
+    if (m_staMac->GetDevice()->IsDsoActivated() && !trigger.IsMuRts() &&
+        (trigger.GetVariant() == TriggerFrameVariant::UHR) &&
+        (trigger.GetUlBandwidth() > m_phy->GetChannelWidth()))
+    {
+        auto userInfoIt = trigger.FindUserInfoWithAid(aid);
+        NS_ASSERT_MSG(userInfoIt != trigger.end(),
+                      "No User Info field for STA (" << m_self << ") AID=" << aid);
+        return m_phy->GetOperatingChannel().Get20MHzIndicesCoveringRu(userInfoIt->GetRuAllocation(),
+                                                                      m_phy->GetChannelWidth());
+    }
+    return EhtFrameExchangeManager::GetIndicesOccupyingRu(trigger, aid);
 }
 
 } // namespace ns3
