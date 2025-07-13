@@ -1127,6 +1127,13 @@ RrMultiUserScheduler::ComputeDlMuInfo()
         NS_ASSERT_MSG(mpdu->GetOriginal()->GetHeader().GetAddr1() == candidate.first->address,
                       "RA of the stored MPDU must match the stored address");
 
+        if (!mpdu->GetHeader().HasData())
+        {
+            // this is a QoS Null frame, hence we can send it as a single MPDU
+            dlMuInfo.psduMap[candidate.first->aid] = Create<WifiPsdu>(mpdu, true);
+            continue;
+        }
+
         NS_ASSERT(mpdu->IsQueued());
         Ptr<WifiMpdu> item = mpdu;
 
