@@ -1238,6 +1238,7 @@ WifiHelper::EnableLogComponents(LogLevel logLevel)
     LogComponentEnable("DefaultApEmlsrManager", logLevel);
     LogComponentEnable("DefaultDsoManager", logLevel);
     LogComponentEnable("DefaultEmlsrManager", logLevel);
+    LogComponentEnable("DsoCapableMultiUserScheduler", logLevel);
     LogComponentEnable("DsoManager", logLevel);
     LogComponentEnable("DsssErrorRateModel", logLevel);
     LogComponentEnable("DsssPhy", logLevel);
