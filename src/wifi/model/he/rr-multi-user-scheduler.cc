@@ -17,6 +17,7 @@
 #include "ns3/wifi-mac-queue.h"
 #include "ns3/wifi-protection.h"
 #include "ns3/wifi-psdu.h"
+#include "ns3/wifi-utils.h"
 
 #include <algorithm>
 #include <numeric>
@@ -277,7 +278,7 @@ RrMultiUserScheduler::GetTxVectorForUlMu(std::function<bool(const MasterInfo&)> 
 }
 
 bool
-RrMultiUserScheduler::CanSolicitStaInBsrpTf(const MasterInfo& info) const
+RrMultiUserScheduler::CanSolicitStaInBsrpTf(const MasterInfo& info, WifiDirection direction) const
 {
     // check if station has setup the current link
     if (!m_apMac->GetStaList(m_linkId).contains(info.aid))
@@ -292,7 +293,10 @@ RrMultiUserScheduler::CanSolicitStaInBsrpTf(const MasterInfo& info) const
     {
         // check that a BA agreement is established with the receiver for the
         // considered TID, since ack sequences for UL MU require block ack
-        if (m_apMac->GetBaAgreementEstablishedAsRecipient(info.address, tid))
+        if ((direction == WifiDirection::UPLINK &&
+             m_apMac->GetBaAgreementEstablishedAsRecipient(info.address, tid)) ||
+            (direction == WifiDirection::DOWNLINK &&
+             m_apMac->GetBaAgreementEstablishedAsOriginator(info.address, tid)))
         {
             break;
         }
@@ -317,7 +321,7 @@ RrMultiUserScheduler::CanSolicitStaInBsrpTf(const MasterInfo& info) const
     bool mapped = false;
     for (uint8_t tid = 0; tid < 8; ++tid)
     {
-        if (m_apMac->TidMappedOnLink(*mldAddr, WifiDirection::UPLINK, tid, m_linkId))
+        if (m_apMac->TidMappedOnLink(*mldAddr, direction, tid, m_linkId))
         {
             mapped = true;
             break;
@@ -360,8 +364,10 @@ RrMultiUserScheduler::TrySendingBsrpTf()
         return TxFormat::SU_TX;
     }
 
-    auto txVector = GetTxVectorForUlMu(
-        std::bind(&RrMultiUserScheduler::CanSolicitStaInBsrpTf, this, std::placeholders::_1));
+    auto txVector = GetTxVectorForUlMu(std::bind(&RrMultiUserScheduler::CanSolicitStaInBsrpTf,
+                                                 this,
+                                                 std::placeholders::_1,
+                                                 WifiDirection::UPLINK));
 
     if (txVector.GetHeMuUserInfoMap().empty())
     {
@@ -452,7 +458,7 @@ RrMultiUserScheduler::CanSolicitStaInBasicTf(const MasterInfo& info) const
 {
     // in addition to the checks performed when sending a BSRP TF, also check if the station
     // has reported a null queue size
-    if (!CanSolicitStaInBsrpTf(info))
+    if (!CanSolicitStaInBsrpTf(info, WifiDirection::UPLINK))
     {
         return false;
     }

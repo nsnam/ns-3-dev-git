@@ -17,6 +17,8 @@
 namespace ns3
 {
 
+enum class WifiDirection : uint8_t;
+
 /**
  * @ingroup wifi
  *
@@ -117,9 +119,10 @@ class RrMultiUserScheduler : public MultiUserScheduler
      * Determine whether the given STA can be solicited via a BSRP Trigger Frame.
      *
      * @param info the information about the given STA
+     * @param direction the direction (DL/UL) of the following frame exchange
      * @return whether the given STA can be solicited via a BSRP Trigger Frame
      */
-    virtual bool CanSolicitStaInBsrpTf(const MasterInfo& info) const;
+    virtual bool CanSolicitStaInBsrpTf(const MasterInfo& info, WifiDirection direction) const;
 
     /**
      * Information stored for candidate stations
