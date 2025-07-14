@@ -26,6 +26,7 @@
 
 class EmlsrUlTxopTest;
 class EmlsrCcaBusyTest;
+class WifiBackoffMonitorTest;
 
 namespace ns3
 {
@@ -81,6 +82,7 @@ class ChannelAccessManager : public Object
     /// Allow test cases to access private members
     friend class ::EmlsrUlTxopTest;
     friend class ::EmlsrCcaBusyTest;
+    friend class ::WifiBackoffMonitorTest;
 
   public:
     ChannelAccessManager();
