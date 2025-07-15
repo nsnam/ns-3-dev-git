@@ -76,7 +76,7 @@ set(header_files
     model/trace-fading-loss-model.h
     model/tv-spectrum-transmitter.h
     model/waveform-generator.h
-    test/spectrum-test.h
+    utils/spectrum-test.h
 )
 
 build_lib(
