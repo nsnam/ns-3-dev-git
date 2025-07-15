@@ -37,6 +37,12 @@ class GeocentricConstantPositionMobilityModel : public MobilityModel
     GeocentricConstantPositionMobilityModel() = default;
     ~GeocentricConstantPositionMobilityModel() override = default;
 
+    // Inherited from MobilityModel
+    Ptr<MobilityModel> Copy() const override
+    {
+        return CreateObject<GeocentricConstantPositionMobilityModel>(*this);
+    }
+
     /**
      * @brief Computes elevation angle between a ground terminal and a HAPS/Satellite.
      * After calculating the plane perpendicular to a cartesian position vector,

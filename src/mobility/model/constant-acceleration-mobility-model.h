@@ -33,6 +33,13 @@ class ConstantAccelerationMobilityModel : public MobilityModel
      */
     ConstantAccelerationMobilityModel();
     ~ConstantAccelerationMobilityModel() override;
+
+    // Inherited from MobilityModel
+    Ptr<MobilityModel> Copy() const override
+    {
+        return CreateObject<ConstantAccelerationMobilityModel>(*this);
+    }
+
     /**
      * Set the model's velocity and acceleration
      * @param velocity the velocity (m/s)

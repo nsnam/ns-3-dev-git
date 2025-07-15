@@ -48,6 +48,12 @@ class RandomWalk2dMobilityModel : public MobilityModel
 
     ~RandomWalk2dMobilityModel() override;
 
+    // Inherited from MobilityModel
+    Ptr<MobilityModel> Copy() const override
+    {
+        return CreateObject<RandomWalk2dMobilityModel>(*this);
+    }
+
     /** An enum representing the different working modes of this module. */
     enum Mode
     {

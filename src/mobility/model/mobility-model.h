@@ -38,6 +38,15 @@ class MOBILITY_EXPORT MobilityModel : public Object
     ~MobilityModel() override = 0;
 
     /**
+     * Copy function allows one to copy the underlying MobilityModel
+     * from a MobilityModel pointer, by calling each children Copy implementation.
+     * This is primarily used by wraparound models for the spectrum channel.
+     *
+     * @return a copy of the current mobility model
+     */
+    virtual Ptr<MobilityModel> Copy() const = 0;
+
+    /**
      * @return the current position
      */
     Vector GetPosition() const;

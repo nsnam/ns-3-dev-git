@@ -42,6 +42,12 @@ class RandomDirection2dMobilityModel : public MobilityModel
     RandomDirection2dMobilityModel();
     ~RandomDirection2dMobilityModel() override;
 
+    // Inherited from MobilityModel
+    Ptr<MobilityModel> Copy() const override
+    {
+        return CreateObject<RandomDirection2dMobilityModel>(*this);
+    }
+
   private:
     /**
      * Set a new direction and speed

@@ -89,6 +89,12 @@ class WaypointMobilityModel : public MobilityModel
     WaypointMobilityModel();
     ~WaypointMobilityModel() override;
 
+    // Inherited from MobilityModel
+    Ptr<MobilityModel> Copy() const override
+    {
+        return CreateObject<WaypointMobilityModel>(*this);
+    }
+
     /**
      * @param waypoint waypoint to append to the object path.
      *
