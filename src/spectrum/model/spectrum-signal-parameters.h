@@ -18,6 +18,7 @@ namespace ns3
 class SpectrumPhy;
 class SpectrumValue;
 class AntennaModel;
+class MobilityModel;
 
 /**
  * @ingroup spectrum
@@ -113,6 +114,13 @@ struct SpectrumSignalParameters : public SimpleRefCount<SpectrumSignalParameters
      * the number of TX streams, the number of RBs.
      */
     Ptr<const ComplexMatrixArray> precodingMatrix;
+
+    /**
+     * The transmitter mobility model
+     * This should be used at StartRx instead of retrieving the mobility model directly from the
+     * PHY. This allows wraparound models to replace the real mobility model with a virtual one.
+     */
+    Ptr<MobilityModel> txMobility;
 };
 
 } // namespace ns3
