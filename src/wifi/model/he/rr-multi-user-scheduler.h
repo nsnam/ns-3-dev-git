@@ -73,6 +73,39 @@ class RrMultiUserScheduler : public MultiUserScheduler
                                    WifiTxParameters& txParams) const override;
 
     /**
+     * Notify the scheduler that a station associated with the AP
+     *
+     * @param aid the AID of the station
+     * @param address the MAC address of the station
+     */
+    virtual void NotifyStationAssociated(uint16_t aid, Mac48Address address);
+
+    /**
+     * Notify the scheduler that a station deassociated with the AP
+     *
+     * @param aid the AID of the station
+     * @param address the MAC address of the station
+     */
+    virtual void NotifyStationDeassociated(uint16_t aid, Mac48Address address);
+
+    /**
+     * Check if it is possible to send a Basic Trigger Frame given the current
+     * time limits.
+     *
+     * @return UL_MU_TX if it is possible to send a Basic TF, DL_MU_TX if we can try
+     *         to send a DL MU PPDU and NO_TX if the remaining time is too short
+     */
+    virtual TxFormat TrySendingBasicTf();
+
+    /**
+     * Check if it is possible to send a BSRP Trigger Frame given the current
+     * time limits.
+     *
+     * @return UL_MU_TX if it is possible to send a BSRP TF, NO_TX otherwise
+     */
+    virtual TxFormat TrySendingBsrpTf();
+
+    /**
      * Determine whether the given STA can be solicited via a Basic Trigger Frame.
      *
      * @param info the information about the given STA
@@ -88,27 +121,31 @@ class RrMultiUserScheduler : public MultiUserScheduler
      */
     virtual bool CanSolicitStaInBsrpTf(const MasterInfo& info) const;
 
+    /**
+     * Information stored for candidate stations
+     */
+    using CandidateInfo = std::pair<std::list<MasterInfo>::iterator, Ptr<WifiMpdu>>;
+
+    uint8_t m_nStations;         //!< Number of stations/slots to fill
+    bool m_enableTxopSharing;    //!< allow A-MPDUs of different TIDs in a DL MU PPDU
+    bool m_forceDlOfdma;         //!< return DL_OFDMA even if no DL MU PPDU was built
+    bool m_enableUlOfdma;        //!< enable the scheduler to also return UL_OFDMA
+    bool m_enableBsrp;           //!< send a BSRP before an UL MU transmission
+    bool m_useCentral26TonesRus; //!< whether to allocate central 26-tone RUs
+    uint32_t m_ulPsduSize;       //!< the size in byte of the solicited PSDU
+    std::map<AcIndex, std::list<MasterInfo>>
+        m_staListDl;                       //!< Per-AC list of stations (next to serve for DL first)
+    std::list<MasterInfo> m_staListUl;     //!< List of stations to serve for UL
+    std::list<CandidateInfo> m_candidates; //!< Candidate stations for MU TX
+    CtrlTriggerHeader m_trigger;           //!< Trigger Frame to send
+    WifiMacHeader m_triggerMacHdr;         //!< MAC header for Trigger Frame
+    Time m_triggerTxDuration{0};           //!< Trigger Frame TX duration
+    WifiTxParameters m_txParams;           //!< TX parameters
+
   private:
     TxFormat SelectTxFormat() override;
     DlMuInfo ComputeDlMuInfo() override;
     UlMuInfo ComputeUlMuInfo() override;
-
-    /**
-     * Check if it is possible to send a BSRP Trigger Frame given the current
-     * time limits.
-     *
-     * @return UL_MU_TX if it is possible to send a BSRP TF, NO_TX otherwise
-     */
-    virtual TxFormat TrySendingBsrpTf();
-
-    /**
-     * Check if it is possible to send a Basic Trigger Frame given the current
-     * time limits.
-     *
-     * @return UL_MU_TX if it is possible to send a Basic TF, DL_MU_TX if we can try
-     *         to send a DL MU PPDU and NO_TX if the remaining time is too short
-     */
-    virtual TxFormat TrySendingBasicTf();
 
     /**
      * Check if it is possible to send a DL MU PPDU given the current
@@ -130,21 +167,6 @@ class RrMultiUserScheduler : public MultiUserScheduler
      *         transmissions from suitable stations
      */
     virtual WifiTxVector GetTxVectorForUlMu(std::function<bool(const MasterInfo&)> canBeSolicited);
-
-    /**
-     * Notify the scheduler that a station associated with the AP
-     *
-     * @param aid the AID of the station
-     * @param address the MAC address of the station
-     */
-    void NotifyStationAssociated(uint16_t aid, Mac48Address address);
-    /**
-     * Notify the scheduler that a station deassociated with the AP
-     *
-     * @param aid the AID of the station
-     * @param address the MAC address of the station
-     */
-    void NotifyStationDeassociated(uint16_t aid, Mac48Address address);
 
     /**
      * Finalize the given TXVECTOR by only including the largest subset of the
@@ -170,27 +192,7 @@ class RrMultiUserScheduler : public MultiUserScheduler
                        Time txDuration,
                        const WifiTxVector& txVector);
 
-    /**
-     * Information stored for candidate stations
-     */
-    typedef std::pair<std::list<MasterInfo>::iterator, Ptr<WifiMpdu>> CandidateInfo;
-
-    uint8_t m_nStations;         //!< Number of stations/slots to fill
-    bool m_enableTxopSharing;    //!< allow A-MPDUs of different TIDs in a DL MU PPDU
-    bool m_forceDlOfdma;         //!< return DL_OFDMA even if no DL MU PPDU was built
-    bool m_enableUlOfdma;        //!< enable the scheduler to also return UL_OFDMA
-    bool m_enableBsrp;           //!< send a BSRP before an UL MU transmission
-    bool m_useCentral26TonesRus; //!< whether to allocate central 26-tone RUs
-    uint32_t m_ulPsduSize;       //!< the size in byte of the solicited PSDU
-    std::map<AcIndex, std::list<MasterInfo>>
-        m_staListDl;                       //!< Per-AC list of stations (next to serve for DL first)
-    std::list<MasterInfo> m_staListUl;     //!< List of stations to serve for UL
-    std::list<CandidateInfo> m_candidates; //!< Candidate stations for MU TX
-    Time m_maxCredits;                     //!< Max amount of credits a station can have
-    CtrlTriggerHeader m_trigger;           //!< Trigger Frame to send
-    WifiMacHeader m_triggerMacHdr;         //!< MAC header for Trigger Frame
-    Time m_triggerTxDuration{0};           //!< Trigger Frame TX duration
-    WifiTxParameters m_txParams;           //!< TX parameters
+    Time m_maxCredits; //!< Max amount of credits a station can have
 };
 
 } // namespace ns3

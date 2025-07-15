@@ -948,6 +948,7 @@ RrMultiUserScheduler::TrySendingDlMuPpdu()
         return SU_TX;
     }
 
+    FinalizeTxVector(m_txParams.m_txVector);
     return TxFormat::DL_MU_TX;
 }
 
@@ -1066,7 +1067,6 @@ RrMultiUserScheduler::ComputeDlMuInfo()
 
     DlMuInfo dlMuInfo;
     std::swap(dlMuInfo.txParams.m_txVector, m_txParams.m_txVector);
-    FinalizeTxVector(dlMuInfo.txParams.m_txVector);
 
     m_txParams.Clear();
     Ptr<WifiMpdu> mpdu;
