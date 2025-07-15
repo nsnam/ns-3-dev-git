@@ -12,6 +12,7 @@
 #include "spectrum-phy.h"
 #include "spectrum-propagation-loss-model.h"
 #include "spectrum-transmit-filter.h"
+#include "wraparound-model.h"
 
 #include "ns3/angles.h"
 #include "ns3/antenna-model.h"
@@ -225,7 +226,9 @@ MultiModelSpectrumChannel::StartTx(Ptr<SpectrumSignalParameters> txParams)
                                            // potential underlying DynamicCasts)
     m_txSigParamsTrace(txParamsTrace);
 
-    auto txMobility = txParams->txPhy->GetMobility();
+    auto wraparound = GetObject<WraparoundModel>();
+    auto refTxMobility = txParams->txPhy->GetMobility();
+    auto txMobility = refTxMobility;
     const auto txSpectrumModelUid = txParams->psd->GetSpectrumModelUid();
     NS_LOG_LOGIC("txSpectrumModelUid " << txSpectrumModelUid);
 
@@ -321,6 +324,14 @@ MultiModelSpectrumChannel::StartTx(Ptr<SpectrumSignalParameters> txParams)
 
                 if (txMobility && receiverMobility)
                 {
+                    if (wraparound)
+                    {
+                        // Use virtual mobility model instead
+                        txMobility =
+                            wraparound->GetVirtualMobilityModel(refTxMobility, receiverMobility);
+                    }
+                    rxParams->txMobility = txMobility;
+
                     if (rxParams->txAntenna)
                     {
                         Angles txAngles(receiverMobility->GetPosition(), txMobility->GetPosition());
@@ -413,7 +424,7 @@ MultiModelSpectrumChannel::StartRx(
         }
     }
 
-    auto txMobility = params->txPhy->GetMobility();
+    auto txMobility = params->txMobility;
     auto rxMobility = receiver->GetMobility();
     if (txMobility && rxMobility)
     {
