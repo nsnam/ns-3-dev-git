@@ -10,6 +10,7 @@ set(source_files
     model/friis-spectrum-propagation-loss.cc
     model/half-duplex-ideal-phy-signal-parameters.cc
     model/half-duplex-ideal-phy.cc
+    model/hexagonal-wraparound-model.cc
     model/ism-spectrum-value-helper.cc
     model/matrix-based-channel-model.cc
     model/microwave-oven-spectrum-value-helper.cc
@@ -51,6 +52,7 @@ set(header_files
     model/friis-spectrum-propagation-loss.h
     model/half-duplex-ideal-phy-signal-parameters.h
     model/half-duplex-ideal-phy.h
+    model/hexagonal-wraparound-model.h
     model/ism-spectrum-value-helper.h
     model/matrix-based-channel-model.h
     model/microwave-oven-spectrum-value-helper.h
@@ -98,4 +100,5 @@ build_lib(
     test/tv-helper-distribution-test.cc
     test/tv-spectrum-transmitter-test.cc
     test/two-ray-splm-test-suite.cc
+    test/wraparound-model-test.cc
 )
