@@ -209,12 +209,10 @@ jobs:
           %comspec% /k ""C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat""
           python ns3 configure --enable-tests --enable-examples --enable-asserts -d release -- -G"Visual Studio 17 2022" -A x64 -T ClangCL
       - name: Build ns-3
-        continue-on-error: true
         run: |
           %comspec% /k ""C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat""
           python ns3 build
       - name: Run tests and examples
-        continue-on-error: true
         run: |
           set PATH=%CD%\build;%PATH%
           python .\test.py --no-build --verbose-failed
