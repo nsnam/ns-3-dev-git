@@ -26,6 +26,10 @@
 // 3GPP R4-092042, Section 4.2.1 Dual Stripe Model
 // note that the term "apartments" used in that document matches with
 // the term "room" used in the BuildingsMobilityModel
+//
+// A user can pass the command-line --ns3::LteHexGridEnbTopologyHelper::EnableWraparound=1
+// to setup and use the hexagonal wraparound model, which causes all cells to receive
+// similar interference, rather than central cells receiving a lot more than edge cells.
 
 using namespace ns3;
 
@@ -272,7 +276,7 @@ static ns3::GlobalValue g_nFloors("nFloors",
 /// How many macro sites there are
 static ns3::GlobalValue g_nMacroEnbSites("nMacroEnbSites",
                                          "How many macro sites there are",
-                                         ns3::UintegerValue(3),
+                                         ns3::UintegerValue(7),
                                          ns3::MakeUintegerChecker<uint32_t>());
 
 /// (minimum) number of sites along the X-axis of the hex grid
@@ -638,7 +642,12 @@ main(int argc, char* argv[])
     lteHelper->SetEnbDeviceAttribute("UlBandwidth", UintegerValue(macroEnbBandwidth));
     NetDeviceContainer macroEnbDevs =
         lteHexGridEnbTopologyHelper->SetPositionAndInstallEnbDevice(macroEnbs);
-
+    Ptr<WraparoundModel> wraparoundModel = lteHexGridEnbTopologyHelper->GetWraparoundModel();
+    if (wraparoundModel)
+    {
+        lteHelper->GetDownlinkSpectrumChannel()->UnidirectionalAggregateObject(wraparoundModel);
+        lteHelper->GetUplinkSpectrumChannel()->UnidirectionalAggregateObject(wraparoundModel);
+    }
     if (epc)
     {
         // this enables handover for macro eNBs
