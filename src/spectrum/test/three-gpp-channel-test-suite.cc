@@ -156,6 +156,7 @@ ThreeGppChannelMatrixComputationTest::DoRun()
     channelModel->SetAttribute("Scenario", StringValue("RMa"));
     channelModel->SetAttribute("ChannelConditionModel", PointerValue(channelConditionModel));
     channelModel->SetAttribute("UpdatePeriod", TimeValue(MilliSeconds(updatePeriodMs - 1)));
+    channelModel->SetAttribute("Consistency", BooleanValue(true));
     channelModel->AssignStreams(1);
 
     // create the tx and rx nodes
@@ -248,7 +249,10 @@ ThreeGppChannelMatrixComputationTest::DoRun()
     double sampleStd = 0;
     for (auto i : m_normVector)
     {
-        sampleStd += ((i - sampleMean) * (i - sampleMean));
+        if (i - sampleMean >= 1e-10)
+        {
+            sampleStd += ((i - sampleMean) * (i - sampleMean));
+        }
     }
     sampleStd = std::sqrt(sampleStd / (numIt - 1));
 
@@ -392,6 +396,7 @@ ThreeGppChannelMatrixUpdateTest::DoRun()
     channelModel->SetAttribute("Scenario", StringValue("UMa"));
     channelModel->SetAttribute("ChannelConditionModel", PointerValue(channelConditionModel));
     channelModel->SetAttribute("UpdatePeriod", TimeValue(MilliSeconds(updatePeriodMs)));
+    channelModel->SetAttribute("Consistency", BooleanValue(true));
 
     // create the tx and rx nodes
     NodeContainer nodes;
@@ -849,6 +854,7 @@ ThreeGppSpectrumPropagationLossModelTest::DoRun()
 {
     // Build the scenario for the test
     Config::SetDefault("ns3::ThreeGppChannelModel::UpdatePeriod", TimeValue(MilliSeconds(100)));
+    Config::SetDefault("ns3::ThreeGppChannelModel::Consistency", BooleanValue(true));
 
     // create the ChannelConditionModel object to be used to retrieve the
     // channel condition
