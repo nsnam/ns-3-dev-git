@@ -133,6 +133,8 @@ WifiChannelSettingsTest::AppRx(Ptr<const Packet> p, const Address& adr)
 void
 WifiChannelSettingsTest::DoRun()
 {
+    Config::SetDefault("ns3::WifiAssocManager::EnableChannelSwitch", BooleanValue(false));
+
     RngSeedManager::SetSeed(1);
     RngSeedManager::SetRun(10);
     int64_t streamNumber = 100;

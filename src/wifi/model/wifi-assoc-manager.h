@@ -351,9 +351,11 @@ class WifiAssocManager : public Object
                                        ///< timer started when switching to the channels to set
                                        ///< at the end of a scanning procedure
     SortedList m_apList;               ///< sorted list of candidate APs
+    std::optional<StaWifiMac::ApInfo> m_bestAp; ///< the best AP to return to STA wifi MAC
     Time m_offChannelScanInterval; ///< if non-zero, indicates the interval between two successive
                                    ///< offline scanning procedures
     EventId m_nextOffChannelScan;  ///< event associated with the next offline channel scan
+    bool m_enableChannelSwitch; ///< whether to enable channel switch at the end of channel scanning
 
     /// hash table to help locate ApInfo objects in the sorted list based on the BSSID
     std::unordered_map<Mac48Address, SortedList::const_iterator, WifiAddressHash> m_apListIt;
