@@ -1241,12 +1241,17 @@ ApWifiMac::GetHtOperation(uint8_t linkId) const
     auto phy = GetWifiPhy(linkId);
     auto remoteStationManager = GetWifiRemoteStationManager(linkId);
 
-    operation.SetPrimaryChannel(phy->GetPrimaryChannelNumber(MHz_t{20}));
+    const auto& operatingChannel = phy->GetOperatingChannel();
+    const auto p20ChannelNumber =
+        operatingChannel.GetPrimaryChannelNumber(MHz_t{20}, phy->GetStandard());
+    operation.SetPrimaryChannel(p20ChannelNumber);
     operation.SetRifsMode(false);
     operation.SetNonGfHtStasPresent(true);
     if (phy->GetChannelWidth() > MHz_t{20})
     {
-        operation.SetSecondaryChannelOffset(1);
+        const auto s20ChannelNumber =
+            operatingChannel.GetSecondaryChannelNumber(MHz_t{20}, phy->GetStandard());
+        operation.SetSecondaryChannelOffset(s20ChannelNumber < p20ChannelNumber ? 3 : 1);
         operation.SetStaChannelWidth(1);
     }
     if (GetLink(linkId).numNonHtStations == 0)
