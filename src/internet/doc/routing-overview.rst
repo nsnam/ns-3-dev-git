@@ -285,6 +285,33 @@ Advertisement for each router, and this link state database is
 fed into the OSPF shortest path computation logic. The Ipv4 API
 is finally used to populate the routes themselves.
 
+Limitations
+~~~~~~~~~~~
+
+The following are the known limitations of the GlobalRouting implementation:
+
+#. When calculating routes for networks using GlobalRouting,
+   if multiple exit Interfaces are present from the root node to a network,
+   then Packets may travel an extra hop to reach their destination in that network.
+   Clarifying this further, the following is the generalized conditions:
+
+    #. Assume that there is a network (e.g., 10.1.2.0/24) and the network has 2 (or more) routers (2 egress points, or more).
+    #. Assume that a node has 2 (or more) equal-cost paths toward said network.
+    #. Assume that multiple IP addresses with that network prefix are present on one or more interfaces.
+
+   This will mean that, to reach the internal interfaces of the "other" router(s), the packets will
+   do one unnecessary hop, passing through the designated router, and discarding the (shorter) path
+   leading directly to the destination.
+
+   .. _Global-Routing-Limitation:
+
+   .. figure:: figures/global-routing-limitation.*
+
+#. Although adding Multiple IP addresses on the same interface
+   and Equal Cost Multi Path are both supported individually,
+   the combination of both is not fully supported and may lead to unexpected results
+   and in some specific cases routing loops.
+   This limitation is tracked in issue #1242 of the issue tracker.
 
 RIP and RIPng
 +++++++++++++
