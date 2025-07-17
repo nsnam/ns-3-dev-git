@@ -139,6 +139,7 @@ class WIFI_EXPORT StaWifiMac : public WifiMac
         double m_snr;                 ///< SNR in linear scale
         MgtResponseFrameType m_frame; ///< The body of the management frame used to update AP info
         Channel m_channel;            ///< The channel the management frame was received on
+        MHz_u m_apBw;                 ///< the width of the channel the AP is operating on
         linkId_t m_linkId;            ///< ID of the link used to communicate with the AP
         std::list<SetupLinksInfo>
             m_setupLinks; ///< information about the links to setup between MLDs
@@ -481,7 +482,7 @@ class WIFI_EXPORT StaWifiMac : public WifiMac
      * @param mpdu the MPDU containing the Beacon frame
      * @param linkId the ID of the given link
      */
-    void ReceiveBeacon(Ptr<const WifiMpdu> mpdu, uint8_t linkId);
+    void ReceiveBeacon(Ptr<const WifiMpdu> mpdu, linkId_t linkId);
 
     /**
      * Process the Probe Response frame received on the given link.
@@ -489,7 +490,7 @@ class WIFI_EXPORT StaWifiMac : public WifiMac
      * @param mpdu the MPDU containing the Probe Response frame
      * @param linkId the ID of the given link
      */
-    void ReceiveProbeResp(Ptr<const WifiMpdu> mpdu, uint8_t linkId);
+    void ReceiveProbeResp(Ptr<const WifiMpdu> mpdu, linkId_t linkId);
 
     /**
      * Process the (Re)Association Response frame received on the given link.
