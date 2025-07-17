@@ -64,6 +64,9 @@ information for a signal being transmitted/received by PHY devices:
 
 * a reference to the transmitting PHY device
 
+* a reference to the transmitting mobility model, which should be used in StartRx
+  instead of retrieving it from PHY in order to wraparound models to work
+
 * a reference to the antenna model used by the transmitting PHY device
   to transmit this signal
 
@@ -139,6 +142,9 @@ Spectrum Channel implementations
 The module provides two ``SpectrumChannel`` implementations:
 ``SingleModelSpectrumChannel`` and ``MultiModelSpectrumChannel``. They
 both provide this functionality:
+
+ * If a wraparound model is aggregated to the channel, automatically apply it
+   to transmitting nodes.
 
  * Propagation loss modeling, in three forms:
 
@@ -1139,3 +1145,135 @@ References
    100 GHz. V.15.0.0. (2018-06).
 
 .. [3GPPTR38811] 3GPP. 2018. TR 38.811, Study on New Radio (NR) to support non-terrestrial networks, V15.4.0. (2020-09).
+
+
+Wraparound Models
+=================
+The wrap around mechanism is a simulation technique used in cellular network modeling to eliminate
+edge effects and create a more realistic interference environment. The most common setup used by 3GPP
+is the hexagonal deployment wraparound, which transforms a finite hexagonal cellular cluster into what
+appears to be an infinite network by creating virtual copies of the cluster around the original one.
+
+This also can significantly reduce memory and computational requirements of simulations to achieve similar
+results in respect to interference, avoiding the simulation of additional rings and then filtering only
+central rings with equivalent interference.
+
+WraparoundModel Implementation
+##############################
+When a wraparound model is aggregated to the ``SingleModelSpectrumChannel`` or ``MultiModelSpectrumChannel``,
+the base class ``WraparoundModel`` creates a virtual ``MobilityModel`` for the transmitter, in respect to each
+receiver.
+
+The virtual ``MobilityModel`` is carried via the ``SpectrumSignalParameters`` to the receiver, which
+must use that model to retrieve the transmitter position, ``NodeId`` and buildings related information during ``StartRx``.
+
+The base ``WraparoundModel`` only reuses the existing transmitter mobility model, while its children classes may
+implement different wraparound techniques.
+
+HexagonalWraparoundModel Implementation
+########################################
+
+``HexagonalWraparoundModel`` implements wraparound for the standard cellular network setups using hexagonal clusters,
+and is based on [Panwar]_. Without wraparound, only the central cells experience symmetric interference from all
+directions. Edge cells receive unrealistic interference patterns because they lack neighboring cells on certain sides,
+making their performance data statistically invalid for real-world analysis. The wrap around mechanism addresses
+this "edge effect" problem by ensuring all cells in the simulation experience equivalent interference conditions.
+For this reason, wraparound is mandatory for 5G NR calibration of selected scenarios, as defined in [TR38901]_.
+
+.. figure:: figures/hexagonal-wraparound-cdf-comparison.png
+    :align: center
+    :width: 600
+
+    Ring 1 setup with 7 tri-sector cell clusters, with (orange) and without wraparound (blue),
+    plus ring 3 setup with 19 tri-sector cell clusters without wraparound (green).
+
+Interference with ring 1 and wraparound (orange) is higher than even ring 3 (green). This, in spite
+of only simulating 7 tri-cell clusters of ring 1 versus the 19 clusters of ring 3. The interference of
+both ring 1 with wraparound and ring 3 have much much higher than ring 1 without wraparound (blue).
+As a result, throughput without wraparound is unrealistically high (indicated by lower curves
+shifted to the right). This is confirmed in the following right figure.
+
+.. figure:: figures/hexagonal-wraparound-execution-and-median-thr.png
+    :align: center
+    :width: 800
+
+    Left: Execution times of ring 1 setup with and without wraparound,
+    plus ring 3 setup without wraparound in an AMD Ryzen Threadripper PRO 7965WX.
+    Right: Median throughput of the different configurations.
+
+Since the computational cost of wireless simulations scales quadratically with the number of nodes in the channel,
+we significantly reduce computational costs by cutting the number of simulated clusters. For this particular
+5G-NR outdoor calibration example with different number of rings and wraparound, the speedup of ring 1 with
+wraparound against ring 3 without wraparound is of 6x, for comparable results.
+
+Note: ring 3 simulations without wraparound require the user to manually filtering results to only cells and UEs
+that are part of the ring 1 cell clusters. This is because they suffer first and second tier interference.
+The remaining results for 12 out of 19 cells, and their respective UEs, would be discarded.
+
+The wrap around mechanism operates by creating six additional virtual copies of the original hexagonal cluster,
+positioned symmetrically around the central cluster. It usually follows these steps:
+
+* Virtual Cluster Creation: Six copies of the original cluster are mathematically placed around the central cluster to simulate an infinite grid
+* Distance Calculation: For each signal transmission, the system calculates seven different distances - one to the actual transmitter and six to the virtual transmitter positions
+* Minimum Distance Selection: The shortest distance is used for path loss and signal strength calculations, ensuring realistic propagation effects
+* UE Mobility Handling: When a user device moves to connect with a virtual cell, it's automatically repositioned within the central cluster while maintaining the same relative position to its serving cell (moving UE to central cluster is not currently implemented)
+
+
+.. figure:: figures/hexagonal-wraparound-topology.png
+    :align: center
+    :width: 400
+
+    Virtual cell clusters (white and green) around real cell cluster (red). Virtual distances are shown as dashed arrows.
+    The virtual transmitter position that results in the smallest distance to receiver is used
+    in the virtual mobility model. [`Panwar`_]
+
+The technique is implemented using geometric distance calculations with specific equations for different cluster sizes:
+- ring 3: 19-site clusters: Standard configuration with 2-tier interference (57 cells for tri-sector antennas)
+- ring 1: 7-site clusters: Smaller configuration with 1-tier interference (21 cells for tri-sector antennas)
+- ring 0: 3-site clusters: Minimal configuration for quick testing (9 cells for tri-sector antennas)
+
+Before start transmitting, each site position needs to be registered to the ``HexagonalWraparoundModel`` via
+``AddSitePosition(Vector3D position)``. The number of sites should also be set via ``SetNumSites(uint8_t sites)``.
+Finally, the inter-site distance (ISD) must be set via ``SetSiteDistance(double isd_in_meters)``.
+
+This can be automatically done by hexagonal deployment helpers of LTE and NR, by setting the ``EnableWraparound``
+attribute to true. After setting up the hexagonal deployment, the user should call ``GetWraparoundModel`` method
+of the hexagonal deployment helper, and then aggregate that model to the spectrum channel model.
+
+Caveats and Limitations
+#######################
+
+This implementation does not simply model edge interference in a localized or realistic way.
+Instead, because all signals are routed through higher-layer protocols, the effect resembles
+a "wormhole" model where transmissions can unrealistically appear at distant points in the topology.
+The transmitter itself stays fixed, but its signals may propagate as if emerging from arbitrary locations,
+depending on geometry and inter-site distances.
+
+A side-effect is that mobility and handover do not strictly reflect physical adjacency.
+Simulations may misleadingly suggest a larger or denser deployment, allowing handover not
+just to neighboring cells but also to virtually adjacent ones (including cells that are physically
+on opposite sides of the layout). Plots can therefore be confusing: devices that look widely separated
+in absolute position might be treated as if they were close in virtual space.
+
+The use of virtual mobility inside the spectrum channel models further complicates interpretation.
+Transmitters are treated as if they relocate, and any additional attenuation (such as building
+shadowing modeled through ns-3 propagation loss and buildings modules) is applied even though
+the device itself never actually moved. The buildings themselves are not virtualized,
+but buildings deployed into the non-virtualized topology still affect virtual transmissions.
+
+[Panwar]_ discusses the use of wraparound for mobility models also, such that a
+node that left the physical site boundaries would wormhole around and reappear
+within the site at the mirror location. This means replacing the physical position
+with the virtual position when going out of physical cell areas, so the node stays
+within the physical topology throughout the simulation. This is not currently implemented.
+As such, nodes may appear outside of physical cells, but still are considered as transmitting
+from within the virtual cells.
+
+References
+##########
+
+.. [Panwar] R. S. Panwar and K. M. Sivalingam, "Implementation of wrap
+    around mechanism for system level simulation of LTE cellular
+    networks in NS3," 2017 IEEE 18th International Symposium on
+    A World of Wireless, Mobile and Multimedia Networks (WoWMoM),
+    Macau, 2017, pp. 1-9, doi: 10.1109/WoWMoM.2017.7974289

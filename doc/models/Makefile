@@ -351,6 +351,9 @@ SOURCEFIGS = \
 	$(SRC)/spectrum/doc/two-ray-spectrum-loss-model-3gpp-radiation-pattern.png \
 	$(SRC)/spectrum/doc/two-ray-spectrum-loss-model-iso-radiation-pattern.png \
 	$(SRC)/spectrum/doc/three-gpp-gain-reference-gain-vs-fc.png \
+	$(SRC)/spectrum/doc/hexagonal-wraparound-cdf-comparison.png \
+	$(SRC)/spectrum/doc/hexagonal-wraparound-topology.png \
+	$(SRC)/spectrum/doc/hexagonal-wraparound-execution-and-median-thr.png \
 	$(SRC)/traffic-control/doc/classful-queue-disc.dia \
 	$(SRC)/traffic-control/doc/multi-queue-aware-queue-disc.dia \
 	$(SRC)/traffic-control/doc/figures/collision_prob.jpeg \
