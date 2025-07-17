@@ -139,6 +139,14 @@ WifiAssocManager::GetTypeId()
                                 "NONE",
                                 WifiOfflineScanProtection::POWERSAVE,
                                 "POWERSAVE"))
+            .AddAttribute("EnableChannelSwitch",
+                          "Whether to allow the association manager to switch the channel of the "
+                          "STA (on the link used to send the Association Request frame) to match "
+                          "the channel used by the AP. NOTE that this attribute has no effect if "
+                          "the requirements of the GetApOperatingChannel() function are not met.",
+                          BooleanValue(true),
+                          MakeBooleanAccessor(&WifiAssocManager::m_enableChannelSwitch),
+                          MakeBooleanChecker())
             .AddTraceSource("ScanningEnd",
                             "Traces the end of every scanning procedure. Provides the list of APs "
                             "found during the scanning procedure, sorted in the order in which "
@@ -811,7 +819,7 @@ WifiAssocManager::NotifyChannelSwitched(linkId_t linkId)
             }
             else
             {
-                m_mac->ScanningTimeout(std::nullopt);
+                m_mac->ScanningTimeout(m_bestAp);
             }
         }
         return true;
@@ -933,8 +941,6 @@ WifiAssocManager::ScanningTimeout()
 {
     NS_LOG_FUNCTION(this);
 
-    StaWifiMac::ApInfo bestAp;
-
     do
     {
         if (m_apList.empty())
@@ -943,15 +949,86 @@ WifiAssocManager::ScanningTimeout()
             return;
         }
 
-        bestAp = std::move(m_apList.extract(m_apList.begin()).value());
-        m_apListIt.erase(bestAp.m_bssid);
-    } while (!CanBeReturned(bestAp));
+        m_bestAp = std::move(m_apList.extract(m_apList.begin()).value());
+        m_apListIt.erase(m_bestAp->m_bssid);
+    } while (!CanBeReturned(*m_bestAp));
 
-    NS_ABORT_MSG_IF(!m_allowAssocAllChannelWidths && !IsChannelWidthCompatible(bestAp),
+    NS_ABORT_MSG_IF(!m_allowAssocAllChannelWidths && !IsChannelWidthCompatible(*m_bestAp),
                     "Channel width of STA is not part of the channel width set that can be "
                     "advertised to the AP");
 
-    m_mac->ScanningTimeout(std::move(bestAp));
+    // FIXME The ability to switch channel to match the AP channel requires the usage of the
+    // GetApOperatingChannel() function, which currently only works under some assumptions
+    if (auto checkOpIes =
+            [&](auto&& frame) {
+                if (m_bestAp->m_channel.band == WIFI_PHY_BAND_5GHZ)
+                {
+                    return frame.template Get<VhtOperation>().has_value() &&
+                           frame.template Get<HtOperation>().has_value();
+                }
+                if (m_bestAp->m_channel.band == WIFI_PHY_BAND_6GHZ)
+                {
+                    return frame.template Get<HeOperation>().has_value();
+                }
+                return false;
+            };
+        !m_enableChannelSwitch ||
+        m_mac->GetWifiPhy(m_bestAp->m_linkId)->GetStandard() < WIFI_STANDARD_80211ac ||
+        !std::visit(checkOpIes, m_bestAp->m_frame))
+    {
+        m_mac->ScanningTimeout(m_bestAp);
+        return;
+    }
+
+    // check if a channel switch is required
+    const auto phy = m_mac->GetWifiPhy(m_bestAp->m_linkId);
+    NS_ASSERT_MSG(phy, "No PHY operating on link " << +m_bestAp->m_linkId);
+
+    auto channelIt = WifiPhyOperatingChannel::FindFirst(m_bestAp->m_channel.number,
+                                                        MHz_u{0},
+                                                        MHz_u{0},
+                                                        phy->GetStandard(),
+                                                        m_bestAp->m_channel.band);
+    NS_ASSERT_MSG(channelIt != WifiPhyOperatingChannel::m_frequencyChannels.cend(),
+                  "Channel number " << m_bestAp->m_channel.number << " not found in "
+                                    << m_bestAp->m_channel.band << " band");
+
+    WifiPhyOperatingChannel channel(channelIt);
+    const auto phyId = phy->GetPhyId();
+
+    if (static_cast<uint16_t>(phy->GetChannelWidth()) % 20 == 0)
+    {
+        // first, determine the channel the AP is operating on
+        const auto apChannel = GetApOperatingChannel(m_bestAp->m_apBw,
+                                                     m_bestAp->m_channel.band,
+                                                     phy->GetStandard(),
+                                                     m_bestAp->m_frame);
+        // then, determine the width of the channel to use, assuming the current channel width
+        // as the maximum supported width
+        auto channelIt = m_channelsToSet.find(phyId);
+        const auto staWidth =
+            (channelIt != m_channelsToSet.cend() ? channelIt->second.GetTotalWidth()
+                                                 : phy->GetChannelWidth());
+        const auto width = std::min(staWidth, apChannel.GetTotalWidth());
+        channel = apChannel.GetPrimaryChannel(width);
+    }
+
+    if (phy->GetOperatingChannel() != channel)
+    {
+        // a channel switch is needed
+        NS_LOG_DEBUG("Switching PHY " << +phyId << " to " << channel);
+        m_channelsToSet = {{phyId, channel}};
+
+        phy->SetOperatingChannel(channel);
+        // abort if channel switch does not complete before the channel switch timeout
+        m_switchToChannelToSetTimeout[phyId].Cancel();
+        m_switchToChannelToSetTimeout[phyId] = Simulator::Schedule(m_channelSwitchTimeout, [=] {
+            NS_ABORT_MSG("Unable to set " << channel << " on PHY " << +phyId);
+        });
+        return;
+    }
+
+    m_mac->ScanningTimeout(m_bestAp);
 }
 
 void
@@ -976,6 +1053,8 @@ void
 WifiAssocManager::OfflineScanningTimeout()
 {
     NS_LOG_FUNCTION(this);
+
+    m_bestAp.reset();
 
     // restore previous channels
     for (auto it = m_channelsToSet.begin(); it != m_channelsToSet.end();)
