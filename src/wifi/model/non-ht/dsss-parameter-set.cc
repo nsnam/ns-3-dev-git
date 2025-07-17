@@ -22,12 +22,6 @@ DsssParameterSet::ElementId() const
     return IE_DSSS_PARAMETER_SET;
 }
 
-void
-DsssParameterSet::SetCurrentChannel(uint8_t currentChannel)
-{
-    m_currentChannel = currentChannel;
-}
-
 uint16_t
 DsssParameterSet::GetInformationFieldSize() const
 {

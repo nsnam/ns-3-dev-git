@@ -28,20 +28,13 @@ class DsssParameterSet : public WifiInformationElement
     // Implementations of pure virtual methods of WifiInformationElement
     WifiInformationElementId ElementId() const override;
 
-    /**
-     * Set the Current Channel field in the DsssParameterSet information element.
-     *
-     * @param currentChannel the CurrentChannel field in the DsssParameterSet information element
-     */
-    void SetCurrentChannel(uint8_t currentChannel);
+    uint8_t m_currentChannel; ///< current channel number
 
   private:
     uint16_t GetInformationFieldSize() const override;
     void SerializeInformationField(Buffer::Iterator start) const override;
     uint16_t DeserializeInformationField(Buffer::Iterator start, uint16_t length) override;
     void Print(std::ostream& os) const override;
-
-    uint8_t m_currentChannel; ///< current channel number
 };
 
 } // namespace ns3

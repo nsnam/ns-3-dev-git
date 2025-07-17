@@ -611,7 +611,7 @@ ApWifiMac::GetDsssParameterSet(uint8_t linkId) const
 {
     NS_ASSERT(GetDsssSupported(linkId));
     DsssParameterSet dsssParameters;
-    dsssParameters.SetCurrentChannel(GetWifiPhy(linkId)->GetChannelNumber());
+    dsssParameters.m_currentChannel = GetWifiPhy(linkId)->GetChannelNumber();
     return dsssParameters;
 }
 

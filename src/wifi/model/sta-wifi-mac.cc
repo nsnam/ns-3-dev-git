@@ -712,7 +712,7 @@ StaWifiMac::GetProbeRequest(uint8_t linkId) const
     if (GetWifiPhy(linkId)->GetPhyBand() == WIFI_PHY_BAND_2_4GHZ)
     {
         DsssParameterSet params;
-        params.SetCurrentChannel(GetWifiPhy(linkId)->GetChannelNumber());
+        params.m_currentChannel = GetWifiPhy(linkId)->GetChannelNumber();
         probe.Get<DsssParameterSet>() = params;
     }
     if (GetHtSupported(linkId))

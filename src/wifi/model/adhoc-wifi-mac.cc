@@ -519,7 +519,7 @@ AdhocWifiMac::GetDsssParameterSet() const
 {
     NS_ASSERT(GetDsssSupported(SINGLE_LINK_OP_ID));
     DsssParameterSet dsssParameters;
-    dsssParameters.SetCurrentChannel(GetWifiPhy()->GetChannelNumber());
+    dsssParameters.m_currentChannel = GetWifiPhy()->GetChannelNumber();
     return dsssParameters;
 }
 
