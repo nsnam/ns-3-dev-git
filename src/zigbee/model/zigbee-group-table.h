@@ -14,6 +14,7 @@
 
 #include <bitset>
 #include <unordered_map>
+#include <vector>
 
 namespace ns3
 {
