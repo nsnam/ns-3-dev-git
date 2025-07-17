@@ -189,6 +189,7 @@ class StaWifiMac : public WifiMac
         double m_snr;                 ///< SNR in linear scale
         MgtResponseFrameType m_frame; ///< The body of the management frame used to update AP info
         Channel m_channel;            ///< The channel the management frame was received on
+        MHz_t m_apBw;                 ///< the width of the channel the AP is operating on
         uint8_t m_linkId;             ///< ID of the link used to communicate with the AP
         std::list<SetupLinksInfo>
             m_setupLinks; ///< information about the links to setup between MLDs

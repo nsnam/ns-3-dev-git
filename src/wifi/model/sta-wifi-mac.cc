@@ -1818,18 +1818,6 @@ StaWifiMac::ReceiveBeacon(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
     SnrTag snrTag;
     bool found = mpdu->GetPacket()->PeekPacketTag(snrTag);
     NS_ASSERT(found);
-    ApInfo apInfo = {.m_bssid = bssid,
-                     .m_apAddr = from,
-                     .m_snr = snrTag.Get(),
-                     .m_frame = std::move(beacon),
-                     .m_channel = {GetCurrentChannel(linkId)},
-                     .m_linkId = linkId};
-
-    if (!m_beaconInfo.IsEmpty())
-    {
-        m_beaconInfo(apInfo);
-    }
-
     if (capabilities.IsIbss())
     {
         NS_LOG_LOGIC("Beacon is from IBSS");
@@ -1849,6 +1837,19 @@ StaWifiMac::ReceiveBeacon(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
 
     RecordCapabilities(beacon, from, linkId);
     RecordOperations(beacon, from, linkId);
+
+    ApInfo apInfo = {.m_bssid = bssid,
+                     .m_apAddr = from,
+                     .m_snr = snrTag.Get(),
+                     .m_frame = std::move(beacon),
+                     .m_channel = {GetCurrentChannel(linkId)},
+                     .m_apBw = GetWifiRemoteStationManager(linkId)->GetChannelWidthSupported(bssid),
+                     .m_linkId = linkId};
+
+    if (!m_beaconInfo.IsEmpty())
+    {
+        m_beaconInfo(apInfo);
+    }
 
     if (!beaconFromAssocAp)
     {
@@ -1891,11 +1892,13 @@ StaWifiMac::ReceiveProbeResp(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
     SnrTag snrTag;
     bool found = mpdu->GetPacket()->PeekPacketTag(snrTag);
     NS_ASSERT(found);
+    const auto apBw = GetWifiRemoteStationManager(linkId)->GetChannelWidthSupported(hdr.GetAddr3());
     m_assocManager->NotifyApInfo(ApInfo{.m_bssid = hdr.GetAddr3(),
                                         .m_apAddr = hdr.GetAddr2(),
                                         .m_snr = snrTag.Get(),
                                         .m_frame = std::move(probeResp),
                                         .m_channel = {GetCurrentChannel(linkId)},
+                                        .m_apBw = apBw,
                                         .m_linkId = linkId});
 }
 
@@ -2888,7 +2891,7 @@ operator<<(std::ostream& os, const StaWifiMac::ApInfo& apInfo)
 {
     os << "BSSID=" << apInfo.m_bssid << ", AP addr=" << apInfo.m_apAddr << ", SNR=" << apInfo.m_snr
        << ", Channel={" << apInfo.m_channel.number << "," << apInfo.m_channel.band
-       << "}, Link ID=" << +apInfo.m_linkId << ", Frame=[";
+       << "}, AP width=" << apInfo.m_apBw << ", Link ID=" << +apInfo.m_linkId << ", Frame=[";
     std::visit([&os](auto&& frame) { frame.Print(os); }, apInfo.m_frame);
     os << "]";
     return os;
