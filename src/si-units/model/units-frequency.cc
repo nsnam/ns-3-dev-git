@@ -200,13 +200,13 @@ operator>>(std::istream& is, MHz_t& rhs)
 }
 
 /// Multiply Hz_t by double
-/// @param lfs The double to multiply by
+/// @param lhs The double to multiply by
 /// @param rhs The Hz_t object to multiply
 /// @return The Hz_t object
 Hz_t
-operator*(double lfs, const Hz_t& rhs)
+operator*(double lhs, const Hz_t& rhs)
 {
-    return rhs * lfs;
+    return rhs * lhs;
 }
 
 /// Multiply Hz_t by Time

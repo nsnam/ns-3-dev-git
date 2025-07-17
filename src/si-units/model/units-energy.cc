@@ -127,9 +127,9 @@ mWatt_t::operator-=(const Watt_t& rhs)
 }
 
 mWatt_t
-operator*(const double& lfs, const mWatt_t& rhs)
+operator*(const double& lhs, const mWatt_t& rhs)
 {
-    return mWatt_t{lfs * rhs.val};
+    return mWatt_t{lhs * rhs.val};
 }
 
 bool

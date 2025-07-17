@@ -16,13 +16,13 @@ percent_t::percent_t(const std::string& str)
 }
 
 /// Multiply operation
-/// @param lfs a unitless value
+/// @param lhs a unitless value
 /// @param rhs percent
 /// @return multiplied percent
 percent_t
-operator*(const double& lfs, const percent_t& rhs)
+operator*(const double& lhs, const percent_t& rhs)
 {
-    return percent_t{lfs * rhs.val};
+    return percent_t{lhs * rhs.val};
 }
 
 /// User defined literals for percent

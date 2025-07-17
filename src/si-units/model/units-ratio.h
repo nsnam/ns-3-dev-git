@@ -200,7 +200,7 @@ struct percent_t
 percent_t operator""_percent(long double val);
 percent_t operator""_percent(unsigned long long val);
 
-percent_t operator*(const double& lfs, const percent_t& rhs);
+percent_t operator*(const double& lhs, const percent_t& rhs);
 
 std::ostream& operator<<(std::ostream& os, const percent_t& rhs);
 std::istream& operator>>(std::istream& is, percent_t& q);

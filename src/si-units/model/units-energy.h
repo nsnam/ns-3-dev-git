@@ -605,10 +605,10 @@ struct mWatt_t
 };
 
 /// Multiplier Operator for mWatt_t
-/// @param lfs left-hand side operand in double type
+/// @param lhs left-hand side operand in double type
 /// @param rhs right-hand side operand in mWatt_t type
-/// @returns a mWatt_t power unit struct with value equals to lfs * rhs.val
-mWatt_t operator*(const double& lfs, const mWatt_t& rhs);
+/// @returns a mWatt_t power unit struct with value equals to lhs * rhs.val
+mWatt_t operator*(const double& lhs, const mWatt_t& rhs);
 
 /// Watt_t power unit structure
 struct Watt_t

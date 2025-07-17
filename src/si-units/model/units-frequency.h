@@ -455,7 +455,7 @@ std::istream& operator>>(std::istream& is, Hz_t& rhs);
 std::ostream& operator<<(std::ostream& os, const MHz_t& rhs);
 std::istream& operator>>(std::istream& is, MHz_t& rhs);
 
-Hz_t operator*(double lfs, const Hz_t& rhs);
+Hz_t operator*(double lhs, const Hz_t& rhs);
 double operator*(Time nstime, const Hz_t& rhs);
 
 /// @cond Doxygen warning against macro internals
