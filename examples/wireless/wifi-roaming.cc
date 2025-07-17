@@ -16,7 +16,6 @@
 #include "ns3/wifi-module.h"
 
 #include <algorithm>
-#include <fstream>
 #include <iostream>
 #include <map>
 #include <vector>
@@ -103,6 +102,15 @@
  *   outage.
  * - `ap2Channels` and `staChannels` control whether the STA can discover AP 2. If they select no
  *   common channel, the STA may reassociate with AP 1 instead, and post-roam throughput drops.
+ *
+ *  Examples:
+ *
+ * ./ns3 run "wifi-roaming --simulationTime=5s --dlLoad=10Mbps --disassocTime=2.5s --udp=0
+ *     --ap1Channels=42,80,BAND_5GHZ,0:106,80,BAND_5GHZ,0
+ *     --ap2Channels=15,160,BAND_6GHZ,0:111,160,BAND_6GHZ,0"
+ * ./ns3 run "wifi-roaming --simulationTime=5s --dlLoad=10Mbps --disassocTime=2.5s --udp=0
+ *     --ap1Channels=15,160,BAND_6GHZ,0:111,160,BAND_6GHZ,0
+ *     --ap2Channels=42,80,BAND_5GHZ,0:106,80,BAND_5GHZ,0"
  */
 
 using namespace ns3;
@@ -117,14 +125,14 @@ namespace
  */
 struct WifiSetupParams
 {
-    NodeContainer apNodes;                            ///< AP node container
-    NodeContainer staNodes;                           ///< STA node container
-    std::string ap1Channels{"{36, 0, BAND_5GHZ, 0}"}; ///< Semicolon separated (no spaces) list of
-                                                      ///< channel settings for the links of AP 1
-    std::string ap2Channels;                          ///< Semicolon separated (no spaces) list of
-                                                      ///< channel settings for the links of AP 2
-    std::string staChannels;                          ///< Semicolon separated (no spaces) list of
-                                                      ///< channel settings for the links of STA
+    NodeContainer apNodes;                       ///< AP node container
+    NodeContainer staNodes;                      ///< STA node container
+    std::string ap1Channels{"36,0,BAND_5GHZ,0"}; ///< Colon separated (no spaces) list of
+                                                 ///< channel settings for the links of AP 1
+    std::string ap2Channels;                     ///< Colon separated (no spaces) list of
+                                                 ///< channel settings for the links of AP 2
+    std::string staChannels;                     ///< Colon separated (no spaces) list of
+                                                 ///< channel settings for the links of STA
 };
 
 /**
@@ -140,19 +148,19 @@ struct DropStats
  * Get a SpectrumWifiPhyHelper object configured with the channel settings listed in the given
  * input string and with the given Spectrum channel
  *
- * @param channelsStr the input string containing semicolon separated channel settings
+ * @param channelsStr the input string containing colon separated channel settings
  * @param channel the given Spectrum channel
  * @return a SpectrumWifiPhyHelper object configured with the given channel settings
  */
 SpectrumWifiPhyHelper
 GetPhyHelper(const std::string& channelsStr, Ptr<SpectrumChannel> channel)
 {
-    auto strings = SplitString(channelsStr, ";");
+    auto strings = SplitString(channelsStr, ":");
     SpectrumWifiPhyHelper phy{static_cast<uint8_t>(strings.size())};
     for (std::size_t id = 0; id < strings.size(); ++id)
     {
         NS_LOG_INFO("PHY ID " << id << ": " << strings[id]);
-        phy.Set(id, "ChannelSettings", StringValue(strings[id]));
+        phy.Set(id, "ChannelSettings", StringValue("{" + strings[id] + "}"));
     }
     phy.SetPcapDataLinkType(WifiPhyHelper::DLT_IEEE802_11_RADIO);
     phy.SetChannel(channel);
@@ -176,7 +184,7 @@ CreateWifiDevices(const WifiSetupParams& wifiParams)
 
     WifiHelper wifi;
     wifi.SetStandard(WIFI_STANDARD_80211be);
-    wifi.SetRemoteStationManager("ns3::ThompsonSamplingWifiManager");
+    wifi.SetRemoteStationManager("ns3::MinstrelHtWifiManager");
 
     WifiMacHelper mac;
     Ssid ssid("wifi-roaming");
@@ -298,6 +306,61 @@ PrintThroughput(const Time& start,
     }
 }
 
+/**
+ * Get a map of channels to scan including the channels on which the devices in the given container
+ * are operating. The map includes a single entry having a key (PHY ID) of zero.
+ *
+ * @param devices the given container of devices
+ * @return a PHY ID-indexed map of channels to scan
+ */
+WifiScanParams::Map
+GetScanParamsMap(const NetDeviceContainer& devices)
+{
+    WifiScanParams::Map scanChannel;
+    auto& phyBandChannelList = scanChannel[0];
+
+    for (uint32_t i = 0; i < devices.GetN(); ++i)
+    {
+        auto dev = DynamicCast<WifiNetDevice>(devices.Get(i));
+        if (!dev)
+        {
+            continue;
+        }
+        for (uint8_t phyId = 0; phyId < dev->GetNPhys(); ++phyId)
+        {
+            auto phy = dev->GetPhy(phyId);
+            auto& channelList = phyBandChannelList[phy->GetPhyBand()];
+            auto number = phy->GetPrimaryChannelNumber(MHz_u{20});
+            if (std::find(channelList.cbegin(), channelList.cend(), number) == channelList.cend())
+            {
+                phyBandChannelList[phy->GetPhyBand()].emplace_back(number);
+            }
+        }
+    }
+    return scanChannel;
+}
+
+/**
+ * Callback connected to the Assoc trace source.
+ *
+ * @param mac the MAC of the associating STA
+ * @param address the AP address
+ */
+void
+AssocCallback(WifiMac* mac, Mac48Address address)
+{
+    std::cout << "At time " << Simulator::Now().As(Time::S)
+              << ", STA completed association with BSSID " << address << std::endl;
+    for (const auto linkId : mac->GetLinkIds())
+    {
+        if (auto phy = mac->GetWifiPhy(linkId))
+        {
+            NS_LOG_DEBUG("STA on link " << +linkId << " is operating on "
+                                        << phy->GetOperatingChannel());
+        }
+    }
+}
+
 } // namespace
 
 int
@@ -331,17 +394,16 @@ main(int argc, char* argv[])
                  "Whether to send a Disassociation frame to notify disassociation to AP 1",
                  notifyAp);
     cmd.AddValue("ap1Channels",
-                 "Semicolon separated (no spaces) list of channel settings for the links of AP 1",
+                 "Colon separated (no spaces) list of channel settings for the links of AP 1",
                  wifiParams.ap1Channels);
     cmd.AddValue("ap2Channels",
-                 "Semicolon separated (no spaces) list of channel settings for the links of AP 2; "
+                 "Colon separated (no spaces) list of channel settings for the links of AP 2; "
                  "leave empty to use the same channel set as AP 1",
                  wifiParams.ap2Channels);
-    cmd.AddValue(
-        "staChannels",
-        "Semicolon separated (no spaces) list of channel settings for the links of the STA; "
-        "leave empty to use the same channel set as AP 1",
-        wifiParams.staChannels);
+    cmd.AddValue("staChannels",
+                 "Colon separated (no spaces) list of channel settings for the links of the STA; "
+                 "leave empty to use the same channel set as AP 1",
+                 wifiParams.staChannels);
     cmd.AddValue("forwardFrameOnAssoc",
                  "Whether APs forward a synthetic frame to make the CSMA bridge learn the port "
                  "of a newly associated STA",
@@ -385,6 +447,8 @@ main(int argc, char* argv[])
 
     // Create the wifi devices
     Config::SetDefault("ns3::ApWifiMac::ForwardFrameOnAssoc", BooleanValue(forwardFrameOnAssoc));
+    Config::SetDefault("ns3::WifiDefaultAssocManager::SkipScanningIfApInfoAvail",
+                       BooleanValue(false));
 
     auto [apWifiDevices, staWifiDevices] = CreateWifiDevices(wifiParams);
 
@@ -465,13 +529,13 @@ main(int argc, char* argv[])
     auto staMac = DynamicCast<StaWifiMac>(staDev->GetMac());
     NS_ASSERT(staMac);
 
+    const auto scanChannelsStr =
+        WifiAssocManager::ScanningChannelsToStr(GetScanParamsMap(apWifiDevices));
+    staMac->GetAssocManager()->SetAttribute("ScanningChannels", StringValue(scanChannelsStr));
+
     // print messages when (dis)association is completed
     staMac->TraceConnectWithoutContext("Assoc",
-                                       Callback<void, Mac48Address>([](Mac48Address apAddr) {
-                                           std::cout << "At time " << Simulator::Now().As(Time::S)
-                                                     << ", STA completed association with BSSID "
-                                                     << apAddr << std::endl;
-                                       }));
+                                       MakeCallback(&AssocCallback).Bind(PeekPointer(staMac)));
 
     staMac->TraceConnectWithoutContext("DeAssoc",
                                        Callback<void, Mac48Address>([](Mac48Address apAddr) {
@@ -519,19 +583,32 @@ main(int argc, char* argv[])
             }));
 
     // connect callbacks to Tx trace source to track transmitted UL and DL bytes
-    staDev->GetNode()->GetApplication(0)->TraceConnectWithoutContext(
-        "Tx",
-        Callback<void, uint64_t&, Ptr<const Packet>>([](uint64_t& txBytes,
-                                                        Ptr<const Packet> packet) {
-            txBytes += packet->GetSize();
-        }).Bind(std::ref(ulTxBytes)));
+    for (uint32_t i = 0; i < wifiParams.staNodes.Get(0)->GetNApplications(); ++i)
+    {
+        if (auto onoff =
+                DynamicCast<OnOffApplication>(wifiParams.staNodes.Get(0)->GetApplication(i)))
+        {
+            onoff->TraceConnectWithoutContext(
+                "Tx",
+                Callback<void, uint64_t&, Ptr<const Packet>>([](uint64_t& txBytes,
+                                                                Ptr<const Packet> packet) {
+                    txBytes += packet->GetSize();
+                }).Bind(std::ref(ulTxBytes)));
+        }
+    }
 
-    serverNodes.Get(0)->GetApplication(0)->TraceConnectWithoutContext(
-        "Tx",
-        Callback<void, uint64_t&, Ptr<const Packet>>([](uint64_t& txBytes,
-                                                        Ptr<const Packet> packet) {
-            txBytes += packet->GetSize();
-        }).Bind(std::ref(dlTxBytes)));
+    for (uint32_t i = 0; i < serverNodes.Get(0)->GetNApplications(); ++i)
+    {
+        if (auto onoff = DynamicCast<OnOffApplication>(serverNodes.Get(0)->GetApplication(i)))
+        {
+            onoff->TraceConnectWithoutContext(
+                "Tx",
+                Callback<void, uint64_t&, Ptr<const Packet>>([](uint64_t& txBytes,
+                                                                Ptr<const Packet> packet) {
+                    txBytes += packet->GetSize();
+                }).Bind(std::ref(dlTxBytes)));
+        }
+    }
 
     stats.try_emplace(staMac);
     stats.try_emplace(ap1Mac);
