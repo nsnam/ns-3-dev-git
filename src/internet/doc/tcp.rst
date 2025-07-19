@@ -1732,6 +1732,28 @@ More information (paper): https://dl.acm.org/citation.cfm?id=2068832
 
 More information (RFC): https://tools.ietf.org/html/rfc6937
 
+Alternative Backoff with ECN (ABE)
+++++++++++++++++++++++++++++++++++
+
+RFC 8511 recommends using an alternate ``m_betaEcn`` for calculation of the
+ssthresh  when the congestion control algorithm detects congestion using ECN.
+There is an  attribute ``ns3::TcpSocketBase::UseAbe`` which can be set to true
+to enable this feature. When enabled, the congestion control algorithm
+(NewReno or CUBIC) will use the ``m_betaEcn`` value to calculate the ssthresh when
+congestion is detected using ECN. The default value of ``m_betaEcn`` is set to
+0.85 for CUBIC and 0.7 for NewReno as recommended by the RFC, but can be changed
+using the attribute ``ns3::TcpNewReno::BetaEcn`` for NewReno or using
+``ns3::TcpCubic::BetaEcn`` for CUBIC.
+
+For example, to enable ABE for NewReno, you can set the attribute as follows:
+::
+
+  Config::SetDefault("ns3::TcpSocketBase::UseAbe", BooleanValue(true));
+  Config::SetDefault("ns3::TcpNewReno::BetaEcn", DoubleValue(0.7));
+
+
+More information (RFC): https://tools.ietf.org/html/rfc8511
+
 Adding a new loss recovery algorithm in ns-3
 ++++++++++++++++++++++++++++++++++++++++++++
 

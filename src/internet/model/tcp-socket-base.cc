@@ -299,10 +299,6 @@ TcpSocketBase::TcpSocketBase()
 {
     NS_LOG_FUNCTION(this);
 
-    // We need attributes initialized here, not later, so use the
-    // ConstructSelf() technique documented in the manual
-    ObjectBase::ConstructSelf(AttributeConstructionList());
-
     m_txBuffer = CreateObject<TcpTxBuffer>();
     m_txBuffer->SetRWndCallback(MakeCallback(&TcpSocketBase::GetRWnd, this));
     m_tcb = CreateObject<TcpSocketState>();
@@ -312,8 +308,6 @@ TcpSocketBase::TcpSocketBase()
 
     m_tcb->m_pacingRate = m_tcb->m_maxPacingRate;
     m_pacingTimer.SetFunction(&TcpSocketBase::NotifyPacingPerformed, this);
-
-    SetUseAbe(m_useAbe);
 
     m_tcb->m_sendEmptyPacketCallback = MakeCallback(&TcpSocketBase::SendEmptyPacket, this);
 
@@ -363,6 +357,14 @@ TcpSocketBase::TcpSocketBase()
     ok = m_tcb->TraceConnectWithoutContext("LastRTT",
                                            MakeCallback(&TcpSocketBase::UpdateLastRtt, this));
     NS_ASSERT(ok == true);
+}
+
+void
+TcpSocketBase::NotifyConstructionCompleted()
+{
+    NS_LOG_FUNCTION(this);
+
+    SetUseAbe(m_useAbe);
 }
 
 TcpSocketBase::TcpSocketBase(const TcpSocketBase& sock)

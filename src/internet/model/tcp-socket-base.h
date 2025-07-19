@@ -702,6 +702,7 @@ class TcpSocketBase : public TcpSocket
     Time GetPersistTimeout() const override;
     bool SetAllowBroadcast(bool allowBroadcast) override;
     bool GetAllowBroadcast() const override;
+    void NotifyConstructionCompleted() override;
 
     // Helper functions: Connection set up
 

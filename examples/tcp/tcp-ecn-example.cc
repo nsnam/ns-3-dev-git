@@ -185,7 +185,7 @@ main(int argc, char* argv[])
     std::string bottleNeckLinkDelay = "10ms";
 
     // CoDel parameters
-    Config::SetDefault("ns3::CoDelQueueDisc::MaxSize", QueueSizeValue(QueueSize("100p")));
+    Config::SetDefault("ns3::CoDelQueueDisc::MaxSize", QueueSizeValue(QueueSize("1000p")));
     Config::SetDefault("ns3::CoDelQueueDisc::Interval", TimeValue(MilliSeconds(100)));
     Config::SetDefault("ns3::CoDelQueueDisc::Target", TimeValue(MilliSeconds(5)));
     Config::SetDefault("ns3::CoDelQueueDisc::UseEcn", BooleanValue(true));

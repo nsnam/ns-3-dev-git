@@ -164,6 +164,7 @@ to work with the release.
 - (lr-wpan) - !2429 - Documentation update and small reformat fixes.
 - (wifi) 320 MHz channel support was added to the 802.11be model
 - (wifi) Added the `ProtectSingleExchange` attribute to the `QosFrameExchangeManager` to choose whether the NAV protection should cover the entire TXOP or only the current frame exchange when the TXOP limit is non-zero. In that case, the Duration/ID field in frames establishing the protection is set to the time remaining until the end of the current frame exchange. It is also possible to select whether the NAV duration should be extended by an additional time to protect beyond end of the immediate frame exchange via the `SingleExchangeProtectionSurplus` attribute of the `QosFrameExchangeManager`.
+- (tcp) !2410 - Added support for ABE (Alternative Backoff with ECN)
 
 ### Bugs fixed
 
