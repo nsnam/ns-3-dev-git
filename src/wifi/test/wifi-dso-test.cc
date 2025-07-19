@@ -321,7 +321,9 @@ DsoTestBase::StaAssociated(uint16_t aid, Mac48Address /*addr*/)
 {
     NS_LOG_FUNCTION(this << aid);
 
-    NS_ASSERT(m_lastAid < aid);
+    NS_TEST_ASSERT_MSG_LT(m_lastAid,
+                          aid,
+                          "Unexpected AID: " << aid << ", expected greater than " << m_lastAid);
     m_lastAid = aid;
 
     // wait some time (5ms) to allow the completion of association
@@ -844,7 +846,6 @@ DsoTxopTest::CheckIcf(const WifiConstPsduMap& psduMap, const WifiTxVector& txVec
             m_params.corruptIcf ? dsoManager->GetPrimarySubband(SINGLE_LINK_OP_ID)
                                 : dsoManager->GetDsoSubbands(SINGLE_LINK_OP_ID).cbegin()->second;
         phy = m_staMacs.at(m_idxStaInDsoSubband)->GetWifiPhy(SINGLE_LINK_OP_ID);
-        NS_ASSERT((!phy->IsStateSwitching()) && (phy->GetOperatingChannel() == expectedSubband));
         NS_TEST_EXPECT_MSG_EQ(
             ((!phy->IsStateSwitching()) && (phy->GetOperatingChannel() == expectedSubband)),
             true,
@@ -1210,12 +1211,10 @@ DsoTxopTest::CheckBlockAck(const WifiConstPsduMap& psduMap, const WifiTxVector& 
 
     auto muScheduler =
         DynamicCast<TestDsoMultiUserScheduler>(m_apMac->GetObject<MultiUserScheduler>());
-    const auto phy = m_staMacs.at(*clientId)->GetWifiPhy(SINGLE_LINK_OP_ID);
-    const auto timeout = phy->GetSifs() + phy->GetSlot() + EMLSR_OR_DSO_RX_PHY_START_DELAY;
+
     if (m_params.numDlMuPpdus > m_countQoSframes)
     {
         NS_LOG_DEBUG("Generate one more packet for STA " << *clientId + 1);
-        NS_ASSERT(clientId);
         m_apMac->GetDevice()->GetNode()->AddApplication(
             GetApplication(DOWNLINK, *clientId, 1, 1000));
     }
@@ -1223,6 +1222,11 @@ DsoTxopTest::CheckBlockAck(const WifiConstPsduMap& psduMap, const WifiTxVector& 
     {
         if (!m_params.generateInterferenceAfterIcf && !m_params.generateObssDuringDsoTxop)
         {
+            NS_TEST_ASSERT_MSG_EQ(clientId.has_value(),
+                                  true,
+                                  "Expected to find a client ID for BlockAck: " << ta);
+            const auto phy = m_staMacs.at(*clientId)->GetWifiPhy(SINGLE_LINK_OP_ID);
+            const auto timeout = phy->GetSifs() + phy->GetSlot() + EMLSR_OR_DSO_RX_PHY_START_DELAY;
             NS_LOG_DEBUG("DSO frame exchange(s) completed, channel shall switch back for STA "
                          << *clientId + 1);
             auto delay = GetDelayUntilTxopCompletion(*clientId, psduMap, txVector);
@@ -1257,19 +1261,18 @@ DsoTxopTest::CheckBlockAck(const WifiConstPsduMap& psduMap, const WifiTxVector& 
         {
             NS_LOG_DEBUG("DSO frame exchange(s) completed, channel shall switch back for STA "
                          << i + 1);
+            const auto phy = m_staMacs.at(i)->GetWifiPhy(SINGLE_LINK_OP_ID);
+            const auto timeout = phy->GetSifs() + phy->GetSlot() + EMLSR_OR_DSO_RX_PHY_START_DELAY;
             const auto delay = GetDelayUntilTxopCompletion(i, psduMap, txVector);
             ScheduleChecksSwitchBack(i, delay);
             ScheduleChecksBlockedDlTx(delay, timeout);
 
             // schedule one last packet to be transmitted in a following TXOP (non-DSO)
             NS_LOG_DEBUG("Generate one last packet for STA " << i + 1);
-            Simulator::Schedule(txDuration +
-                                    m_staMacs.at(i)->GetWifiPhy(SINGLE_LINK_OP_ID)->GetSifs() +
-                                    TimeStep(i),
-                                [this, i]() {
-                                    m_apMac->GetDevice()->GetNode()->AddApplication(
-                                        GetApplication(DOWNLINK, i, 1, 1000));
-                                });
+            Simulator::Schedule(txDuration + phy->GetSifs() + TimeStep(i), [this, i]() {
+                m_apMac->GetDevice()->GetNode()->AddApplication(
+                    GetApplication(DOWNLINK, i, 1, 1000));
+            });
         }
         muScheduler->SetForcedFormat(MultiUserScheduler::TxFormat::SU_TX);
         muScheduler->SetAccessReqInterval(Time());
@@ -1600,9 +1603,6 @@ DsoTxopTest::CheckResults()
             !m_params.protectSingleExchange && (numRemainingPsdus >= ((numDsoTxops == 1) ? 6 : 8)))
         {
             // Check the CF-END sent by the AP
-            NS_ASSERT(psduIt->psduMap.cbegin()->second->GetHeader(0).IsCfEnd() &&
-                      (psduIt->psduMap.cbegin()->second->GetHeader(0).GetAddr2() ==
-                       m_apMac->GetAddress()));
             NS_TEST_EXPECT_MSG_EQ((psduIt->psduMap.cbegin()->second->GetHeader(0).IsCfEnd() &&
                                    (psduIt->psduMap.cbegin()->second->GetHeader(0).GetAddr2() ==
                                     m_apMac->GetAddress())),
