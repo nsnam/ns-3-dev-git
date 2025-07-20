@@ -23,6 +23,21 @@ namespace ns3
  *
  * DsoMultiUserScheduler is a lightweight version of RrMultiUserScheduler that supports DSO
  * (dynamic subband operation).
+ *
+ * Once the scheduler is called for the initial frame of a TXOP, it will attempt to send a DSO ICF
+ * (initial control frame) using a BSRP trigger frame to solicit the DSO stations (DSO STAs) to
+ * eventually switch to the DSO subchannel where the assigned RUs are located. Once the DSO TXOP is
+ * started, the scheduler will keep using the same assigned RUs for the whole duration of the TXOP.
+ * It will alternate between sending DL MU transmissions (if there is at least one packet enqueued
+ * for one of the DSO STA with an allocated RU in the TXOP) and soliciting UL MU transmissions from
+ * the DSO STAs. In order to ensure that a DSO STA with no DL packets enqueued can still participate
+ * in the UL MU solicitations, the scheduler will send a QoS Null frame to the DSO STA in the DL MU
+ * PPDU.
+ *
+ * The current implementation presents the following limitations:
+ * - it is assumed that only DSO STAs are associated with the AP;
+ * - it is assumed that all DSO STAs have the same channel width;
+ * - the scheduler is only able to allocate equal-sized RUs (without using central 26-tone RUs);
  */
 class DsoMultiUserScheduler : public RrMultiUserScheduler
 {
