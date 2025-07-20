@@ -248,15 +248,15 @@ DsoManager::ComputeSubbands(uint8_t linkId, const MgtAssocResponseHeader& assocR
 {
     NS_LOG_FUNCTION(this << linkId << assocResp);
 
-    auto phy = m_staMac->GetWifiPhy(linkId);
+    const auto phy = m_staMac->GetWifiPhy(linkId);
+    const auto rsm = m_staMac->GetWifiRemoteStationManager(linkId);
     const auto bssid = GetUhrFem(linkId)->GetBssid();
-    const auto apBw =
-        m_staMac->GetWifiRemoteStationManager(linkId)->GetChannelWidthSupported(bssid);
-
+    const auto apStandard = rsm->GetStandard(bssid);
+    const auto apBw = rsm->GetChannelWidthSupported(bssid);
     const auto apChannel = GetApOperatingChannel(apBw,
                                                  phy->GetPrimaryChannelNumber(MHz_t{20}),
                                                  phy->GetPhyBand(),
-                                                 phy->GetStandard(),
+                                                 apStandard,
                                                  assocResp);
     NS_LOG_DEBUG("AP operating on channel " << apChannel << " for link " << +linkId);
 
