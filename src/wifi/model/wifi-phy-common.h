@@ -722,6 +722,14 @@ WifiModulationClass GetModulationClassForStandard(WifiStandard standard);
 std::set<MHz_t> GetSupportedChannelWidthSet(WifiStandard standard, WifiPhyBand band);
 
 /**
+ * Get the minimum channel width allowed for the given modulation class.
+ *
+ * @param modulation the modulation class
+ * @return the minimum channel width allowed for the given modulation class
+ */
+MHz_t GetMinimumChannelWidth(WifiModulationClass modulation);
+
+/**
  * Get the maximum channel width allowed for the given modulation class.
  *
  * @param modulation the modulation class

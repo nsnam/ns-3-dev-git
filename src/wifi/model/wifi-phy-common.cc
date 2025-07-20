@@ -290,6 +290,29 @@ GetSupportedChannelWidthSet(WifiStandard standard, WifiPhyBand band)
 }
 
 MHz_t
+GetMinimumChannelWidth(WifiModulationClass modulation)
+{
+    switch (modulation)
+    {
+    case WIFI_MOD_CLASS_DSSS:
+    case WIFI_MOD_CLASS_HR_DSSS:
+        return MHz_t{22};
+    case WIFI_MOD_CLASS_OFDM:
+        return MHz_t{5};
+    case WIFI_MOD_CLASS_ERP_OFDM:
+    case WIFI_MOD_CLASS_HT:
+    case WIFI_MOD_CLASS_VHT:
+    case WIFI_MOD_CLASS_HE:
+    case WIFI_MOD_CLASS_EHT:
+    case WIFI_MOD_CLASS_UHR:
+        return MHz_t{20};
+    default:
+        NS_ABORT_MSG("Unknown modulation class: " << modulation);
+        return MHz_t{0};
+    }
+}
+
+MHz_t
 GetMaximumChannelWidth(WifiModulationClass modulation)
 {
     switch (modulation)
