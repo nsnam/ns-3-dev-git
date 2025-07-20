@@ -2556,6 +2556,43 @@ WifiRemoteStationManager::GetNMcsSupported(Mac48Address address) const
     return static_cast<uint8_t>(LookupState(address)->m_operationalMcsSet.size());
 }
 
+WifiStandard
+WifiRemoteStationManager::GetStandard(Mac48Address address) const
+{
+    NS_LOG_FUNCTION(this << address);
+    auto state = LookupState(address);
+    if (state->m_uhrCapabilities)
+    {
+        return WIFI_STANDARD_80211bn;
+    }
+    if (state->m_ehtCapabilities)
+    {
+        return WIFI_STANDARD_80211be;
+    }
+    if (state->m_heCapabilities)
+    {
+        return WIFI_STANDARD_80211ax;
+    }
+    if (state->m_vhtCapabilities)
+    {
+        return WIFI_STANDARD_80211ac;
+    }
+    if (state->m_htCapabilities)
+    {
+        return WIFI_STANDARD_80211n;
+    }
+    if (state->m_erpOfdmSupported)
+    {
+        return WIFI_STANDARD_80211g;
+    }
+    if (state->m_dsssSupported)
+    {
+        return WIFI_STANDARD_80211b;
+    }
+    return GetChannelWidthSupported(address) < MHz_t{20} ? WIFI_STANDARD_80211p
+                                                         : WIFI_STANDARD_80211a;
+}
+
 bool
 WifiRemoteStationManager::GetDsssSupported(const Mac48Address& address) const
 {

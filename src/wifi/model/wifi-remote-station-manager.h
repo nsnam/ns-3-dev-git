@@ -718,6 +718,17 @@ class WifiRemoteStationManager : public Object
      */
     uint8_t GetNMcsSupported(Mac48Address address) const;
     /**
+     * Return the latest standard supported by the station.
+     * If the local station does not support the latest standard,
+     * it is not able to interpret received information elements
+     * and therefore the highest standard supported by the station is returned.
+     *
+     * @param address the address of the station
+     *
+     * @return the latest standard supported by the station
+     */
+    WifiStandard GetStandard(Mac48Address address) const;
+    /**
      * Return whether the station supports DSSS or not.
      *
      * @param address the address of the station
