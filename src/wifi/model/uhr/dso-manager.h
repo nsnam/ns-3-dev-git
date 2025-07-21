@@ -49,7 +49,7 @@ enum class DsoTxopEvent
               // to this DSO STA has been received
     FAILED_RESPONSE, // DSO TXOP terminated because no response to the most recently received frame
                      // from the AP that requires an immediate response after a SIFS has been
-                     // transmitted (not supported yet)
+                     // transmitted
 };
 
 /**
@@ -115,11 +115,16 @@ class DsoManager : public Object
      * Notify the end of a TXOP on the given link.
      *
      * @param linkId the ID of the given link
+     * @param failedResponse true if the TXOP ended because no response to the most recently
+     * received frame from the AP that requires an immediate response after a SIFS has been
+     * transmitted, false otherwise. This parameter is set to true when there is no response
+     * following an ICF.
      * @param psdu the received PSDU that triggered the termination of the TXOP, if any
      * @param txVector TXVECTOR of the received PSDU, if any
      */
     void NotifyTxopEnd(
         uint8_t linkId,
+        bool failedResponse = false,
         Ptr<const WifiPsdu> psdu = nullptr,
         std::optional<std::reference_wrapper<const WifiTxVector>> txVector = std::nullopt);
 

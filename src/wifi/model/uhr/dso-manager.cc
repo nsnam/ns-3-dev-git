@@ -173,10 +173,11 @@ DsoManager::NotifyIcrTransmitted(uint8_t linkId)
 
 void
 DsoManager::NotifyTxopEnd(uint8_t linkId,
+                          bool failedResponse,
                           Ptr<const WifiPsdu> psdu,
                           std::optional<std::reference_wrapper<const WifiTxVector>> txVector)
 {
-    NS_LOG_FUNCTION(this << linkId << psdu);
+    NS_LOG_FUNCTION(this << linkId << failedResponse << psdu);
 
     if (!m_staMac->IsAssociated())
     {
@@ -212,8 +213,8 @@ DsoManager::NotifyTxopEnd(uint8_t linkId,
     }
     else
     {
-        // TODO: FAILED_RESPONSE is not supported yet
-        m_dsoTxopEventTrace(DsoTxopEvent::TIMEOUT, linkId);
+        m_dsoTxopEventTrace(failedResponse ? DsoTxopEvent::FAILED_RESPONSE : DsoTxopEvent::TIMEOUT,
+                            linkId);
     }
 
     if (!IsOnDsoSubband(linkId))

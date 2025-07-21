@@ -101,6 +101,7 @@ UhrFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
 
             m_dsoIcfReceived = true;
         }
+        m_trigger = trigger;
     }
 
     EhtFrameExchangeManager::ReceiveMpdu(mpdu, rxSignalInfo, txVector, inAmpdu);
@@ -155,8 +156,9 @@ UhrFrameExchangeManager::TxopEnd(const std::optional<Mac48Address>& txopHolder)
 
     if (Ptr<DsoManager> dsoManager; m_staMac && (dsoManager = m_staMac->GetDsoManager()))
     {
-        dsoManager->NotifyTxopEnd(m_linkId);
+        dsoManager->NotifyTxopEnd(m_linkId, m_trigger.has_value());
     }
+    m_trigger.reset();
 }
 
 bool
@@ -227,10 +229,18 @@ UhrFrameExchangeManager::PostProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTx
     {
         NS_LOG_DEBUG("No longer involved in the TXOP and switching back to primary subchannel");
         m_ongoingTxopEnd.Cancel();
-        dsoManager->NotifyTxopEnd(m_linkId, psdu, txVector);
+        dsoManager->NotifyTxopEnd(m_linkId, false, psdu, txVector);
     }
 
     EhtFrameExchangeManager::PostProcessFrame(psdu, txVector);
+}
+
+void
+UhrFrameExchangeManager::ForwardPsduDown(Ptr<const WifiPsdu> psdu, WifiTxVector& txVector)
+{
+    NS_LOG_FUNCTION(this << psdu << txVector);
+    m_trigger.reset();
+    EhtFrameExchangeManager::ForwardPsduDown(psdu, txVector);
 }
 
 void
@@ -246,6 +256,7 @@ UhrFrameExchangeManager::ForwardPsduMapDown(WifiConstPsduMap psduMap, WifiTxVect
         m_staMac->GetDsoManager()->NotifyIcrTransmitted(m_linkId);
     }
     m_dsoIcfReceived = false;
+    m_trigger.reset();
 
     if (m_apMac && IsTrigger(psduMap))
     {

@@ -11,6 +11,8 @@
 
 #include "ns3/eht-frame-exchange-manager.h"
 
+#include <optional>
+
 namespace ns3
 {
 
@@ -47,6 +49,7 @@ class UhrFrameExchangeManager : public EhtFrameExchangeManager
     void ReceivedQosNullAfterBsrpTf(Mac48Address sender) override;
     void PostProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) override;
     void TxopEnd(const std::optional<Mac48Address>& txopHolder) override;
+    void ForwardPsduDown(Ptr<const WifiPsdu> psdu, WifiTxVector& txVector) override;
     void ForwardPsduMapDown(WifiConstPsduMap psduMap, WifiTxVector& txVector) override;
     void NotifyChannelReleased(Ptr<Txop> txop) override;
     void TbPpduTimeout(WifiPsduMap* psduMap, std::size_t nSolicitedStations) override;
@@ -88,6 +91,9 @@ class UhrFrameExchangeManager : public EhtFrameExchangeManager
 
     std::map<Mac48Address, WifiRu::RuSpec>
         m_dsoStas; //!< STAs that are being served in the current DSO TXOP
+
+    std::optional<CtrlTriggerHeader>
+        m_trigger; //!< the last Trigger Frame received in the current TXOP
 };
 
 } // namespace ns3
