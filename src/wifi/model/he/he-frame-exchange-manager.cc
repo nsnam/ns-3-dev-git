@@ -1831,6 +1831,7 @@ HeFrameExchangeManager::ReceiveBasicTrigger(const CtrlTriggerHeader& trigger,
 
     if (!UlMuCsMediumIdle(trigger))
     {
+        NS_LOG_DEBUG("UL MU CS indicated medium busy, cannot send UL MU PPDU");
         return;
     }
 
@@ -1928,6 +1929,7 @@ HeFrameExchangeManager::SendQosNullFramesInTbPpdu(const CtrlTriggerHeader& trigg
 
     if (!UlMuCsMediumIdle(trigger))
     {
+        NS_LOG_DEBUG("UL MU CS indicated medium busy, cannot send QoS Null frame");
         return;
     }
 
@@ -2020,6 +2022,7 @@ HeFrameExchangeManager::ReceiveMuBarTrigger(const CtrlTriggerHeader& trigger,
 
     if (!UlMuCsMediumIdle(trigger))
     {
+        NS_LOG_DEBUG("UL MU CS indicated medium busy, cannot send Block Ack in TB PPDU");
         return;
     }
 
