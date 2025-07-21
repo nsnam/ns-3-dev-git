@@ -51,13 +51,13 @@
 //
 // Examples:
 //
-// ./ns3 run "wifi-roaming --simulationTime=5s --disassocTime=2.5s --udp=0
-// --ap1Channels={42,80,BAND_5GHZ,0}:{106,80,BAND_5GHZ,0}
-// --ap2Channels={15,160,BAND_6GHZ,0}:{111,160,BAND_6GHZ,0}"
+// ./ns3 run "wifi-roaming --simulationTime=5s --dlLoad=10Mbps --disassocTime=2.5s --udp=0
+// --ap1Channels=42,80,BAND_5GHZ,0:106,80,BAND_5GHZ,0
+// --ap2Channels=15,160,BAND_6GHZ,0:111,160,BAND_6GHZ,0"
 //
-// ./ns3 run "wifi-roaming --simulationTime=5s --disassocTime=2.5s --udp=0
-// --ap1Channels={15,160,BAND_6GHZ,0}:{111,160,BAND_6GHZ,0}
-// --ap2Channels={42,80,BAND_5GHZ,0}:{106,80,BAND_5GHZ,0}"
+// ./ns3 run "wifi-roaming --simulationTime=5s --dlLoad=10Mbps --disassocTime=2.5s --udp=0
+// --ap1Channels=15,160,BAND_6GHZ,0:111,160,BAND_6GHZ,0
+// --ap2Channels=42,80,BAND_5GHZ,0:106,80,BAND_5GHZ,0"
 
 using namespace ns3;
 
@@ -71,14 +71,14 @@ namespace
  */
 struct WifiSetupParams
 {
-    NodeContainer apNodes;                         ///< AP node container
-    NodeContainer staNodes;                        ///< STA node container
-    std::string ap1Channels{"{36,0,BAND_5GHZ,0}"}; ///< Colon separated (no spaces) list of
-                                                   ///< channel settings for the links of AP 1
-    std::string ap2Channels;                       ///< Colon separated (no spaces) list of
-                                                   ///< channel settings for the links of AP 2
-    std::string staChannels;                       ///< Colon separated (no spaces) list of
-                                                   ///< channel settings for the links of STA
+    NodeContainer apNodes;                       ///< AP node container
+    NodeContainer staNodes;                      ///< STA node container
+    std::string ap1Channels{"36,0,BAND_5GHZ,0"}; ///< Colon separated (no spaces) list of
+                                                 ///< channel settings for the links of AP 1
+    std::string ap2Channels;                     ///< Colon separated (no spaces) list of
+                                                 ///< channel settings for the links of AP 2
+    std::string staChannels;                     ///< Colon separated (no spaces) list of
+                                                 ///< channel settings for the links of STA
 };
 
 /**
@@ -106,7 +106,7 @@ GetPhyHelper(const std::string& channelsStr, Ptr<SpectrumChannel> channel)
     for (std::size_t id = 0; id < strings.size(); ++id)
     {
         NS_LOG_INFO("PHY ID " << id << ": " << strings[id]);
-        phy.Set(id, "ChannelSettings", StringValue(strings[id]));
+        phy.Set(id, "ChannelSettings", StringValue("{" + strings[id] + "}"));
     }
     phy.SetPcapDataLinkType(WifiPhyHelper::DLT_IEEE802_11_RADIO);
     phy.SetChannel(channel);

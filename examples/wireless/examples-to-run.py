@@ -385,6 +385,16 @@ cpp_examples = [
         "True",
     ),
     (
+        "wifi-roaming --simulationTime=5s --disassocTime=2.5s --dlLoad=10Mbps --udp=0 --ap1Channels=42,80,BAND_5GHZ,0:106,80,BAND_5GHZ,0 --ap2Channels=15,160,BAND_6GHZ,0:111,160,BAND_6GHZ,0",
+        "True",
+        "True",
+    ),
+    (
+        "wifi-roaming --simulationTime=5s --disassocTime=2.5s --dlLoad=10Mbps --udp=0 --ap1Channels=15,160,BAND_6GHZ,0:111,160,BAND_6GHZ,0 --ap2Channels=42,80,BAND_5GHZ,0:106,80,BAND_5GHZ,0",
+        "True",
+        "True",
+    ),
+    (
         "wifi-dso --simulationTime=1s --enableDso=1 --frequency=6GHz --apBw=320MHz --staBw=80MHz --nStas=4 --expectedThroughput=2Gbps",
         "True",
         "True",
