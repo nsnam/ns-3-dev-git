@@ -32,6 +32,7 @@
 
 #include <array>
 #include <iomanip>
+#include <list>
 
 using namespace ns3;
 
@@ -45,17 +46,35 @@ NS_LOG_COMPONENT_DEFINE("WifiBackoffMonTest");
  *
  * This test comprises an AP and an associated non-AP STA. The backoff monitor is enabled on the
  * non-AP STA. A callback is connected to the BackoffStatus trace of the AC BE EDCAF of the non-AP
- * STA. It is checked that:
- * - the previous status provided in a trace notification matches the current status provided by the
- *   previous trace notification
- * - the backoff status is changed to ONGOING post initialization
- * - the backoff status is changed to PAUSED when a DL packet is transmitted
- * - the backoff status is changed to ONGOING a SIFS + slot after the end of the corresponding Ack
- * - when an UL packet is transmitted, the backoff status is changed to ZERO
- * - after the termination of the UL TXOP, a backoff value is generated and the backoff status is
- *   changed to ONGOING
- * - even if channel access is not requested because no other packet is queued at the STA, the
- *   backoff status is changed to ZERO when the backoff counter reaches zero.
+ * STA and checks that the previous status provided in a trace notification matches the current
+ * status provided by the previous trace notification. Additionally, the status reported by the
+ * trace is checked in various moments, as illustrated by the figure below.
+ *
+ *                     ┌────┐       SIFS +
+ *                     │QoS │       slot/2                    ┌───┐    backoff
+ *   AP   init         │data│      │------│                   │ACK│  counts to 0
+ *  ───────┬───────────┴┬───┴──┬───┬─────┬─┬──────────┬────┬──┴───┼─────────────┬──────
+ *  STA    ▼            ▼      │ACK│     ▼ ▼          │QoS │      ▼             ▼
+ *      ONGOING      PAUSED    └───┘ still back to    │data│   ONGOING        ZERO
+ *                   (after         PAUSED ONGOING    ├────┘
+ *                  preamble)                         ▼
+ *                                                  ZERO
+ *
+ * After that the backoff counter reaches zero, the AP transmits a second DL packet. Given that the
+ * ChannelAccessManager::ProactiveBackoff attribute is set to true, when the medium busy
+ * notification is sent (after the preamble detection period) a backoff value is generated, thus
+ * leading the backoff status to switch first to ONGOING and, immediately afterwards, to PAUSED
+ * (because the medium is busy).
+ *
+ *            ┌────┐       SIFS +
+ *            │QoS │       slot/2    backoff
+ *   AP       │data│      │------│  counts to 0
+ *  ──────────┴┬───┴──┬───┬───────┬──────────┼─────
+ *  STA        ▼      │ACK│       ▼          ▼
+ *         ONGOING    └───┘    back to     ZERO
+ *           then              ONGOING
+ *          PAUSED
+ *
  */
 class WifiBackoffMonitorTest : public TestCase
 {
@@ -80,7 +99,7 @@ class WifiBackoffMonitorTest : public TestCase
 
     /**
      * Callback connected to the BackoffStatus trace of the given AC. Store the information provided
-     * by the trace source into a member variable.
+     * by the trace source into a list of backoff status traces.
      *
      * @param aci the index of the given AC
      * @param info the information provided by the trace source
@@ -102,8 +121,13 @@ class WifiBackoffMonitorTest : public TestCase
      * @param context a string indicating the context
      * @param status the expected backoff status
      * @param value the expected backoff counter value
+     * @param pop whether to pop the head of the list of backoff status traces (set to false when
+     *            the status will be checked again before next status change)
      */
-    void CheckBackoffStatus(const std::string& context, BackoffStatus status, uint32_t value);
+    void CheckBackoffStatus(const std::string& context,
+                            BackoffStatus status,
+                            uint32_t value,
+                            bool pop);
 
   private:
     void DoSetup() override;
@@ -151,12 +175,14 @@ class WifiBackoffMonitorTest : public TestCase
 
     std::list<Events> m_events; //!< list of events for a test run
 
-    Ptr<ApWifiMac> m_apMac;                  ///< AP wifi MAC
-    Ptr<StaWifiMac> m_staMac;                ///< STA wifi MAC
-    Time m_duration{Seconds(1)};             ///< simulation duration
-    BackoffMonitor::StatusTrace m_traceInfo; ///< last traced backoff status update
-    const uint32_t m_initStaBackoff{12};     ///< initial backoff value for STA
-    const uint32_t m_initApBackoff{2};       ///< initial backoff value for AP
+    Ptr<ApWifiMac> m_apMac;                              ///< AP wifi MAC
+    Ptr<StaWifiMac> m_staMac;                            ///< STA wifi MAC
+    Time m_duration{Seconds(1)};                         ///< simulation duration
+    const Time m_preambleDetection{MicroSeconds(4)};     ///< preamble detection period
+    std::list<BackoffMonitor::StatusTrace> m_traceInfos; ///< traced backoff statuses
+    BackoffStatus m_currStatus{BackoffStatus::UNKNOWN};  ///< current backoff status
+    const uint32_t m_initStaBackoff{12};                 ///< initial backoff value for STA
+    const uint32_t m_initApBackoff{2};                   ///< initial backoff value for AP
 };
 
 WifiBackoffMonitorTest::WifiBackoffMonitorTest()
@@ -229,10 +255,23 @@ WifiBackoffMonitorTest::DoSetup()
     m_apMac = DynamicCast<ApWifiMac>(DynamicCast<WifiNetDevice>(devices.Get(0))->GetMac());
     m_staMac = DynamicCast<StaWifiMac>(DynamicCast<WifiNetDevice>(devices.Get(1))->GetMac());
 
+    m_staMac->GetChannelAccessManager(SINGLE_LINK_OP_ID)
+        ->SetAttribute("ProactiveBackoff", BooleanValue(true));
+
+    auto staCam = m_staMac->GetChannelAccessManager(SINGLE_LINK_OP_ID);
+    auto staPhy = m_staMac->GetWifiPhy(SINGLE_LINK_OP_ID);
+
+    // Remove and setup (again) a PHY listener for the ChannelAccessManager of the non-AP STA, so
+    // that the PHY listener for the Backoff monitor is notified first (this is the most challenging
+    // scenario to test correct operation when a backoff value is proactively generated on medium
+    // busy notification)
+    staCam->RemovePhyListener(staPhy);
+    staCam->SetupPhyListener(staPhy);
+
     const auto apDev = m_apMac->GetDevice();
     const auto staDev = m_staMac->GetDevice();
 
-    // statically configure and Block Ack agreements for TID 0
+    // statically configure association and Block Ack agreements for TID 0
     WifiStaticSetupHelper::SetStaticAssoc(apDev, staDev);
     WifiStaticSetupHelper::SetStaticBlockAck(apDev, staDev, 0);
     WifiStaticSetupHelper::SetStaticBlockAck(staDev, apDev, 0);
@@ -341,29 +380,44 @@ WifiBackoffMonitorTest::BackoffStatusChangeCallback(AcIndex aci,
                      << +info.linkId << ", counter: " << info.counter << "\n");
 
     NS_TEST_EXPECT_MSG_EQ(info.prevStatus,
-                          m_traceInfo.currStatus,
+                          m_currStatus,
                           "BackoffStatus trace provided unexpected previous status at time "
                               << Simulator::Now());
 
-    m_traceInfo = info;
+    m_currStatus = info.currStatus;
+    m_traceInfos.emplace_back(info);
 }
 
 void
 WifiBackoffMonitorTest::CheckBackoffStatus(const std::string& context,
                                            BackoffStatus status,
-                                           uint32_t value)
+                                           uint32_t value,
+                                           bool pop)
 {
-    NS_TEST_EXPECT_MSG_EQ(m_traceInfo.currStatus, status, "Unexpected backoff status " << context);
-    NS_TEST_EXPECT_MSG_EQ(m_traceInfo.counter, value, "Unexpected backoff counter " << context);
+    NS_TEST_ASSERT_MSG_EQ(m_traceInfos.empty(),
+                          false,
+                          "Expected some trace info to be stored " << context);
+    NS_TEST_EXPECT_MSG_EQ(m_traceInfos.front().currStatus,
+                          status,
+                          "Unexpected backoff status " << context);
+    NS_TEST_EXPECT_MSG_EQ(m_traceInfos.front().counter,
+                          value,
+                          "Unexpected backoff counter " << context);
+
+    if (pop)
+    {
+        m_traceInfos.pop_front();
+    }
 }
 
 void
 WifiBackoffMonitorTest::InsertEvents()
 {
-    // check m_traceInfo a nanosecond after initialization to avoid issues with the scheduling
+    // check m_traceInfos a nanosecond after initialization to avoid issues with the scheduling
     // of events occurring at the same time
     Simulator::Schedule(NanoSeconds(1), [this] {
-        CheckBackoffStatus("post initialization", BackoffStatus::ONGOING, m_initStaBackoff);
+        // skip the notification caused by the backoff generation in Txop::DoInitialize()
+        m_traceInfos.pop_front();
     });
 
     PacketSocketAddress staAddr;
@@ -387,15 +441,14 @@ WifiBackoffMonitorTest::InsertEvents()
                                   m_apMac->GetAddress(),
                                   "First QoS data frame not sent by the AP");
 
-            // first interruption starts after the preamble of the DL packet is detected, thus
-            // by the end of PHY header it has been certainly notified
-            auto phyHdrDuration = WifiPhy::CalculatePhyPreambleAndHeaderDuration(txVector);
-            Simulator::Schedule(phyHdrDuration, [this] {
+            // first interruption starts after the preamble of the DL packet is detected
+            Simulator::Schedule(m_preambleDetection + TimeStep(1), [this] {
                 // The backoff counter at STA is decremented after the AIFS and then as many times
                 // as the number of slots awaited by the AP before transmitting
-                CheckBackoffStatus("after PHY header of first QoS data frame",
+                CheckBackoffStatus("after preamble detection period of first QoS data frame",
                                    BackoffStatus::PAUSED,
-                                   m_initStaBackoff - m_initApBackoff - 1);
+                                   m_initStaBackoff - m_initApBackoff - 1,
+                                   false);
             });
         });
 
@@ -404,23 +457,27 @@ WifiBackoffMonitorTest::InsertEvents()
         [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, linkId_t linkId) {
             // STA generates an UL packet for the AP
             m_staMac->GetDevice()->GetNode()->AddApplication(GetApplication(apAddr, 1, 1000));
+            auto apPhy = m_apMac->GetWifiPhy(SINGLE_LINK_OP_ID);
 
             const auto txDuration =
                 WifiPhy::CalculateTxDuration(psdu,
                                              txVector,
                                              m_apMac->GetWifiPhy(linkId)->GetPhyBand());
-            Simulator::Schedule(txDuration, [=, this] {
-                // at the end of the Ack, the backoff status is still paused
-                CheckBackoffStatus("after the Ack for the first QoS data frame",
-                                   BackoffStatus::PAUSED,
-                                   m_initStaBackoff - m_initApBackoff - 1);
-                // after a SIFS + slot, the backoff is resumed
-                auto apPhy = m_apMac->GetWifiPhy(SINGLE_LINK_OP_ID);
-                Simulator::Schedule(apPhy->GetSifs() + apPhy->GetSlot(), [this] {
-                    CheckBackoffStatus("a SIFS + slot after the Ack for the first QoS data frame",
-                                       BackoffStatus::ONGOING,
-                                       m_initStaBackoff - m_initApBackoff - 1);
-                });
+            const auto delay = txDuration + apPhy->GetSifs() + apPhy->GetSlot() / 2;
+            // before SIFS + slot/2 since the end of the Ack, the backoff status is still paused
+            Simulator::Schedule(delay - TimeStep(1), [=, this] {
+                CheckBackoffStatus(
+                    "before SIFS + slot/2 since the Ack for the first QoS data frame",
+                    BackoffStatus::PAUSED,
+                    m_initStaBackoff - m_initApBackoff - 1,
+                    true);
+            });
+            // after SIFS + slot/2 since the end of the Ack, the backoff is resumed
+            Simulator::Schedule(delay + TimeStep(1), [this] {
+                CheckBackoffStatus("after SIFS + slot/2 since the Ack for the first QoS data frame",
+                                   BackoffStatus::ONGOING,
+                                   m_initStaBackoff - m_initApBackoff - 1,
+                                   true);
             });
         });
 
@@ -435,7 +492,8 @@ WifiBackoffMonitorTest::InsertEvents()
             Simulator::Schedule(TimeStep(1), [this] {
                 CheckBackoffStatus("when starting the transmission of the UL frame",
                                    BackoffStatus::ZERO,
-                                   0);
+                                   0,
+                                   true);
             });
         });
 
@@ -451,13 +509,80 @@ WifiBackoffMonitorTest::InsertEvents()
                 // at the end of the Ack, the backoff status is ongoing again
                 CheckBackoffStatus("after the Ack for the UL QoS data frame",
                                    BackoffStatus::ONGOING,
-                                   beTxop->GetBackoffSlots(linkId));
+                                   beTxop->GetBackoffSlots(linkId),
+                                   true);
                 auto backoffEnd =
                     m_staMac->GetChannelAccessManager(linkId)->GetBackoffEndFor(beTxop);
                 Simulator::Schedule(backoffEnd - Simulator::Now() + TimeStep(1), [=, this] {
                     CheckBackoffStatus("when the backoff counter is expected to reach zero",
                                        BackoffStatus::ZERO,
-                                       0);
+                                       0,
+                                       true);
+                    // AP generates another DL packet for the STA
+                    m_apMac->GetDevice()->GetNode()->AddApplication(
+                        GetApplication(staAddr, 1, 1000));
+                });
+            });
+        });
+
+    // the transmission of the second DL packet comes when the backoff counter of the non-AP STA is
+    // already zero, hence it is a medium busy event that leads to the generation of a new backoff
+    // value, hence the backoff status changes to ONGOING and immediately afterwards to PAUSED
+    // because the medium is busy
+    m_events.emplace_back(
+        WIFI_MAC_QOSDATA,
+        [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, linkId_t linkId) {
+            NS_TEST_EXPECT_MSG_EQ(psdu->GetHeader(0).GetAddr2(),
+                                  m_apMac->GetAddress(),
+                                  "Third QoS data frame not sent by the AP");
+
+            // medium busy is notified after the preamble of the DL packet is detected
+            Simulator::Schedule(m_preambleDetection + TimeStep(1), [this] {
+                const auto slots = m_staMac->GetQosTxop(AC_BE)->GetBackoffSlots(SINGLE_LINK_OP_ID);
+                CheckBackoffStatus(
+                    "after preamble detection period of third QoS data frame (first check)",
+                    BackoffStatus::ONGOING,
+                    slots,
+                    true);
+                CheckBackoffStatus(
+                    "after preamble detection period of third QoS data frame (second check)",
+                    BackoffStatus::PAUSED,
+                    slots,
+                    false);
+            });
+        });
+
+    m_events.emplace_back(
+        WIFI_MAC_CTL_ACK,
+        [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, linkId_t linkId) {
+            const auto txDuration =
+                WifiPhy::CalculateTxDuration(psdu,
+                                             txVector,
+                                             m_apMac->GetWifiPhy(linkId)->GetPhyBand());
+            Simulator::Schedule(txDuration + TimeStep(1), [=, this] {
+                auto beTxop = m_staMac->GetQosTxop(AC_BE);
+                // at the end of the Ack, the backoff status is still paused
+                CheckBackoffStatus("after the Ack for the third QoS data frame",
+                                   BackoffStatus::PAUSED,
+                                   beTxop->GetBackoffSlots(linkId),
+                                   true);
+
+                // after a PIFS, the backoff status is ongoing again
+                Simulator::Schedule(m_staMac->GetWifiPhy()->GetPifs(), [=, this] {
+                    CheckBackoffStatus("a PIFS after the Ack for the third QoS data frame",
+                                       BackoffStatus::ONGOING,
+                                       beTxop->GetBackoffSlots(linkId),
+                                       true);
+                });
+
+                auto backoffEnd =
+                    m_staMac->GetChannelAccessManager(linkId)->GetBackoffEndFor(beTxop);
+                Simulator::Schedule(backoffEnd - Simulator::Now() + TimeStep(1), [=, this] {
+                    CheckBackoffStatus("when the backoff counter after medium busy event is "
+                                       "expected to reach zero",
+                                       BackoffStatus::ZERO,
+                                       0,
+                                       true);
                 });
             });
         });
@@ -470,6 +595,9 @@ WifiBackoffMonitorTest::DoRun()
     Simulator::Run();
 
     NS_TEST_EXPECT_MSG_EQ(m_events.empty(), true, "Not all events took place");
+    NS_TEST_EXPECT_MSG_EQ(m_traceInfos.empty(),
+                          true,
+                          "Expected all backoff status changes to be checked");
 
     Simulator::Destroy();
 }
