@@ -292,9 +292,8 @@ class WifiPhyOperatingChannel
 
     /**
      * Set the channel number of the primary 20 MHz channel.
-     *
-     * Note: this function only supports setting the channel number of the primary 20 MHz channel
-     * when the PHY band is either 5 GHz or 6 GHz.
+     * This function is not intended to be used when the width of the operating channel is not a
+     * multiple of 20 MHz.
      *
      * @param number the channel number of the primary 20 MHz channel
      */

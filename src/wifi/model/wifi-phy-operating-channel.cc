@@ -666,16 +666,27 @@ WifiPhyOperatingChannel::SetPrimary20ChannelNumber(uint8_t number)
 {
     NS_LOG_FUNCTION(this << number);
     NS_ASSERT_MSG(IsSet(), "No channel set");
-    NS_ASSERT_MSG(GetPhyBand() == WIFI_PHY_BAND_5GHZ || GetPhyBand() == WIFI_PHY_BAND_6GHZ,
-                  "SetPrimary20ChannelNumber is only supported for 5 and 6 GHz band");
+    NS_ASSERT_MSG(GetTotalWidth().IsMultipleOf(MHz_t{20}),
+                  "The operating channel width is not a multiple of 20 MHz");
 
-    // 20 MHz channels in the 5 and 6 GHz bands are always spaced by 4 channel numbers
+    // In the 5 and 6 GHz bands, 20 MHz channels are spaced by 4 channel numbers and do not overlap
+    // with each others. In the 2.4 GHz band, 20 MHz channels are spaced by 1 channel number but
+    // they overlap with each others. Since they are spaced by 5 MHz in the frequency domain, it
+    // means that non-overlapping 20 MHz channels are also spaced by 4 channel numbers and the same
+    // logic can be used as for the 5 and 6 GHz bands.
     const uint8_t spacing = 4;
 
-    // reset the primary20Index to 0 to find the lowest 20 MHz channel number
+    // set the primary20Index to 0 to find the lowest 20 MHz channel number
     m_primary20Index = 0;
     const auto lowest20MHzChannelNumber =
         GetPrimaryChannelNumber(MHz_t{20}, WIFI_STANDARD_UNSPECIFIED);
+    // set the primary20Index to 0 to find the highest 20 MHz channel number
+    m_primary20Index = (GetTotalWidth() / MHz_t{20}) - 1;
+    const auto highest20MHzChannelNumber =
+        GetPrimaryChannelNumber(MHz_t{20}, WIFI_STANDARD_UNSPECIFIED);
+    NS_ASSERT_MSG(number >= lowest20MHzChannelNumber && number <= highest20MHzChannelNumber,
+                  "Primary20 channel number out of range [" << +lowest20MHzChannelNumber << ", "
+                                                            << +highest20MHzChannelNumber << "]");
 
     uint8_t offset = 0;
     if (GetWidthType() == WifiChannelWidthType::CW_80_PLUS_80MHZ)
@@ -697,6 +708,9 @@ WifiPhyOperatingChannel::SetPrimary20ChannelNumber(uint8_t number)
         }
     }
 
+    NS_ASSERT_MSG((number - lowest20MHzChannelNumber - offset) % spacing == 0,
+                  "Invalid Primary20 channel number "
+                      << +number << " for the current operating channel (" << *this << ")");
     m_primary20Index = (number - lowest20MHzChannelNumber - offset) / spacing;
 }
 

@@ -1640,6 +1640,20 @@ WifiPrimary20MHzChannelTest::RunOne(uint8_t p20ChanNumber, uint8_t expectedP20Id
 void
 WifiPrimary20MHzChannelTest::DoRun()
 {
+    /* 20 MHz channel in 2.4 GHz band */
+    m_channel.SetDefault(MHz_t{20}, WIFI_STANDARD_80211n, WIFI_PHY_BAND_2_4GHZ);
+    RunOne(1, 0);
+
+    /* 40 MHz channel in 2.4 GHz band with default settings */
+    m_channel.SetDefault(MHz_t{40}, WIFI_STANDARD_80211n, WIFI_PHY_BAND_2_4GHZ);
+    RunOne(1, 0);
+    RunOne(5, 1);
+
+    /* 40 MHz channel in 2.4 GHz band with custom settings */
+    m_channel.Set({{7, MHz_t{0}, MHz_t{40}, WIFI_PHY_BAND_2_4GHZ}}, WIFI_STANDARD_80211n);
+    RunOne(5, 0);
+    RunOne(9, 1);
+
     /* 20 MHz channel in 5 GHz band */
     m_channel.SetDefault(MHz_t{20}, WIFI_STANDARD_80211be, WIFI_PHY_BAND_5GHZ);
     RunOne(36, 0);
