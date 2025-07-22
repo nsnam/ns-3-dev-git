@@ -602,6 +602,7 @@ WifiAssocManager::ScanningTimeout()
     {
         // first, determine the channel the AP is operating on
         const auto apChannel = GetApOperatingChannel(m_bestAp->m_apBw,
+                                                     m_bestAp->m_channel.number,
                                                      m_bestAp->m_channel.band,
                                                      phy->GetStandard(),
                                                      m_bestAp->m_frame);

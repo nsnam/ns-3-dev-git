@@ -395,7 +395,8 @@ DoesOverlap(const WifiPhyOperatingChannel& opChannel, const FrequencyRange& freq
  *
  * @param ccfs0 the center frequency segment 0.
  * @param ccfs1 the center frequency segment 1 (0 if not applicable).
- * @param p20ChannelNumber the primary 20 MHz channel number.
+ * @param p20ChannelNumber the primary 20 MHz channel number (present only if operating channel is a
+ * multiple of 20 MHz).
  * @param bw the bandwidth of the operating channel.
  * @param band the band of the operating channel (5 GHz or 6 GHz).
  * @param standard the standard.
@@ -404,13 +405,11 @@ DoesOverlap(const WifiPhyOperatingChannel& opChannel, const FrequencyRange& freq
 WifiPhyOperatingChannel
 GetOperatingChannel(uint8_t ccfs0,
                     uint8_t ccfs1,
-                    uint8_t p20ChannelNumber,
+                    std::optional<uint8_t> p20ChannelNumber,
                     MHz_t bw,
                     WifiPhyBand band,
                     WifiStandard standard)
 {
-    NS_ASSERT_MSG(band == WIFI_PHY_BAND_5GHZ || band == WIFI_PHY_BAND_6GHZ,
-                  "GetOperatingChannel is only supported for 5 and 6 GHz band");
     WifiPhyOperatingChannel opChannel;
 
     // Table 9-317 in IEEE Std 802.11-2024 for 5 GHz band and Table 26-15 in IEEE Std 802.11-2024
@@ -440,36 +439,107 @@ GetOperatingChannel(uint8_t ccfs0,
                       "Operating channel not found for " << +ccfs);
         opChannel = WifiPhyOperatingChannel(chanIt);
     }
-    opChannel.SetPrimary20ChannelNumber(p20ChannelNumber);
+    if (p20ChannelNumber)
+    {
+        opChannel.SetPrimary20ChannelNumber(*p20ChannelNumber);
+    }
     return opChannel;
+}
+
+/**
+ * @brief Get the channel number for HT based on the HT Operation IE.
+ *
+ * @param htOperation the HT Operation IE.
+ * @return The channel number for HT.
+ */
+uint8_t
+GetChannelNumberForHt(const HtOperation& htOperation)
+{
+    switch (const auto p20ChannelNumber = htOperation.GetPrimaryChannel();
+            htOperation.GetSecondaryChannelOffset())
+    {
+    case 0: // no secondary channel
+        return p20ChannelNumber;
+    case 1: // secondary channel above
+        return p20ChannelNumber + 2;
+    case 3: // secondary channel below
+        return p20ChannelNumber - 2;
+    default:
+        NS_ASSERT_MSG(false, "Invalid secondary channel offset in HT Operation");
+    }
+    return 0;
 }
 
 WifiPhyOperatingChannel
 GetApOperatingChannel(MHz_t apBw,
+                      std::optional<uint8_t> staP20ChannelNumber,
                       WifiPhyBand band,
                       WifiStandard standard,
                       const MgtResponseFrameType& frame)
 {
-    NS_ASSERT_MSG(standard >= WIFI_STANDARD_80211n,
-                  "GetApOperatingChannel is only supported for 802.11n and later standards");
+    // DSSS Parameter Set is not present in Association Response frames
+    const auto& dsssParams =
+        std::holds_alternative<MgtBeaconHeader>(frame)
+            ? std::get<MgtBeaconHeader>(frame).Get<DsssParameterSet>()
+            : (std::holds_alternative<MgtProbeResponseHeader>(frame)
+                   ? std::get<MgtProbeResponseHeader>(frame).Get<DsssParameterSet>()
+                   : std::nullopt);
 
     uint8_t ccfs0{0};
     uint8_t ccfs1{0};
-    uint8_t p20ChannelNumber{0};
+    std::optional<uint8_t> p20ChannelNumber;
     auto readFromOpIes = [&](auto&& frame) {
-        if (band == WIFI_PHY_BAND_5GHZ)
+        if (band == WIFI_PHY_BAND_2_4GHZ)
         {
-            const auto& htOperation = frame.template Get<HtOperation>();
-            NS_ASSERT_MSG(htOperation.has_value(),
-                          "HT Operation should be present in management response for 5 GHz band");
-            p20ChannelNumber = htOperation->GetPrimaryChannel();
-
-            const auto& vhtOperation = frame.template Get<VhtOperation>();
-            NS_ASSERT_MSG(vhtOperation.has_value(),
-                          "VHT Operation should be present in management response for 5 GHz band");
-
-            ccfs0 = vhtOperation->GetChannelCenterFrequencySegment0();
-            ccfs1 = vhtOperation->GetChannelCenterFrequencySegment1();
+            NS_ASSERT_MSG(apBw <= MHz_t{40},
+                          "Operating channel for 2.4 GHz band should not be larger than 40 MHz");
+            if (const auto& htOperation = frame.template Get<HtOperation>())
+            {
+                p20ChannelNumber = htOperation->GetPrimaryChannel();
+                ccfs0 = GetChannelNumberForHt(*htOperation);
+            }
+            else
+            {
+                NS_ASSERT_MSG(
+                    dsssParams,
+                    "DSSS Parameter Set not present: AP operating channel cannot be determined");
+                ccfs0 = dsssParams->m_currentChannel;
+                if (apBw.IsMultipleOf(MHz_t{20}))
+                {
+                    p20ChannelNumber = ccfs0;
+                }
+            }
+            ccfs1 = 0;
+        }
+        else if (band == WIFI_PHY_BAND_5GHZ)
+        {
+            if (const auto& htOperation = frame.template Get<HtOperation>();
+                !htOperation.has_value())
+            {
+                // this is an 11a AP, no information provides the information about the AP's
+                // operating channel and hence we need to use the channel number of the P20 on which
+                // this management frame has been received
+                NS_ASSERT_MSG(staP20ChannelNumber.has_value(),
+                              "P20 channel number on which the management has been received should "
+                              "be present for 5 GHz band");
+                p20ChannelNumber = *staP20ChannelNumber;
+                ccfs0 = *p20ChannelNumber;
+                ccfs1 = 0;
+            }
+            else
+            {
+                p20ChannelNumber = htOperation->GetPrimaryChannel();
+                if (const auto& vhtOperation = frame.template Get<VhtOperation>())
+                {
+                    ccfs0 = vhtOperation->GetChannelCenterFrequencySegment0();
+                    ccfs1 = vhtOperation->GetChannelCenterFrequencySegment1();
+                }
+                else
+                {
+                    ccfs0 = GetChannelNumberForHt(*htOperation);
+                    ccfs1 = 0;
+                }
+            }
         }
         else // 6 GHz band
         {

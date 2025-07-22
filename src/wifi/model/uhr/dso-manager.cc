@@ -253,8 +253,11 @@ DsoManager::ComputeSubbands(uint8_t linkId, const MgtAssocResponseHeader& assocR
     const auto apBw =
         m_staMac->GetWifiRemoteStationManager(linkId)->GetChannelWidthSupported(bssid);
 
-    const auto apChannel =
-        GetApOperatingChannel(apBw, phy->GetPhyBand(), phy->GetStandard(), assocResp);
+    const auto apChannel = GetApOperatingChannel(apBw,
+                                                 phy->GetPrimaryChannelNumber(MHz_t{20}),
+                                                 phy->GetPhyBand(),
+                                                 phy->GetStandard(),
+                                                 assocResp);
     NS_LOG_DEBUG("AP operating on channel " << apChannel << " for link " << +linkId);
 
     ComputeSubbands(linkId, apChannel);

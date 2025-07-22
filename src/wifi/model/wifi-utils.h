@@ -20,6 +20,7 @@
 
 #include <list>
 #include <map>
+#include <optional>
 #include <set>
 #include <variant>
 
@@ -372,6 +373,8 @@ bool DoesOverlap(const WifiPhyOperatingChannel& opChannel, const FrequencyRange&
  * Get the operating channel of an AP from the Operation elements included in a management frame.
  *
  * @param apBw the bandwidth of the operating channel the AP is operating on
+ * @param staP20ChannelNumber the primary 20 MHz channel number of the STA on which the management
+ * frame has been received (present only if the channel width is a multiple of 20 MHz)
  * @param band the PHY band of the link for which the operating channel is requested. Note that only
  * the 5 and 6 GHz bands are supported.
  * @param standard the standard of the AP. Note that standards earlier than 802.11n are not
@@ -380,6 +383,7 @@ bool DoesOverlap(const WifiPhyOperatingChannel& opChannel, const FrequencyRange&
  * @return the operating channel of the AP
  */
 WifiPhyOperatingChannel GetApOperatingChannel(MHz_t apBw,
+                                              std::optional<uint8_t> staP20ChannelNumber,
                                               WifiPhyBand band,
                                               WifiStandard standard,
                                               const MgtResponseFrameType& frame);
