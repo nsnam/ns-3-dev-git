@@ -280,6 +280,15 @@ class Ipv6RoutingTableEntry
 std::ostream& operator<<(std::ostream& os, const Ipv6RoutingTableEntry& route);
 
 /**
+ * @brief Equality operator.
+ *
+ * @param a lhs
+ * @param b rhs
+ * @returns true if operands are equal, false otherwise
+ */
+bool operator==(const Ipv6RoutingTableEntry a, const Ipv6RoutingTableEntry b);
+
+/**
  * @ingroup ipv6Routing
  *
  * @brief A record of an IPv6 multicast route.

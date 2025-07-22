@@ -90,7 +90,7 @@ The following unicast routing protocols are defined for IPv4 and IPv6:
 
 * classes Ipv4ListRouting and Ipv6ListRouting (used to store a prioritized list of routing protocols)
 * classes Ipv4StaticRouting and Ipv6StaticRouting (covering both unicast and multicast)
-* class Ipv4GlobalRouting (used to store routes computed by the global route
+* class Ipv[4,6]GlobalRouting (used to store routes computed by the global route
   manager, if that is used)
 * class Ipv4NixVectorRouting (a more efficient version of global routing that
   stores source routes in a packet header field)
@@ -158,165 +158,12 @@ protocols will be searched.
 
 .. _Global-centralized-routing:
 
-Global centralized routing
-++++++++++++++++++++++++++
+Global Centralized Routing
++++++++++++++++++++++++++++
 
-Global centralized routing is sometimes called "God" routing; it is a special
-implementation that walks the simulation topology and runs a shortest path
-algorithm, and populates each node's routing tables. No actual protocol overhead
-(on the simulated links) is incurred with this approach. It does have a few
-constraints:
-
-* **Wired only:**  It is not intended for use in wireless networks.
-* **Unicast only:** It does not do multicast.
-* **Scalability:**  Some users of this on large topologies (e.g. 1000 nodes)
-  have noticed that the current implementation is not very scalable. The global
-  centralized routing will be modified in the future to reduce computations and
-  runtime performance.
-
-Presently, global centralized IPv4 unicast routing over both point-to-point and
-shared (CSMA) links is supported.
-
-By default, when using the |ns3| helper API and the default InternetStackHelper,
-global routing capability will be added to the node, and global routing will be
-inserted as a routing protocol with lower priority than the static routes (i.e.,
-users can insert routes via Ipv4StaticRouting API and they will take precedence
-over routes found by global routing).
-
-Global Unicast Routing API
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The public API is very minimal. User scripts include the following::
-
-    #include "ns3/internet-module.h"
-
-If the default InternetStackHelper is used, then an instance of global routing
-will be aggregated to each node.  After IP addresses are configured, the
-following function call will cause all of the nodes that have an Ipv4 interface
-to receive forwarding tables entered automatically by the GlobalRouteManager::
-
-  Ipv4GlobalRoutingHelper::PopulateRoutingTables();
-
-*Note:* A reminder that the wifi NetDevice will work but does not take any
-wireless effects into account. For wireless, we recommend OLSR dynamic routing
-described below.
-
-It is possible to call this function again in the midst of a simulation using
-the following additional public function::
-
-  Ipv4GlobalRoutingHelper::RecomputeRoutingTables();
-
-which flushes the old tables, queries the nodes for new interface information,
-and rebuilds the routes.
-
-For instance, this scheduling call will cause the tables to be rebuilt
-at time 5 seconds::
-
-  Simulator::Schedule(Seconds(5),
-                      &Ipv4GlobalRoutingHelper::RecomputeRoutingTables);
-
-
-There are two attributes that govern the behavior. The first is
-Ipv4GlobalRouting::RandomEcmpRouting. If set to true, packets are randomly
-routed across equal-cost multipath routes. If set to false (default), only one
-route is consistently used. The second is
-Ipv4GlobalRouting::RespondToInterfaceEvents. If set to true, dynamically
-recompute the global routes upon Interface notification events (up/down, or
-add/remove address). If set to false (default), routing may break unless the
-user manually calls RecomputeRoutingTables() after such events. The default is
-set to false to preserve legacy |ns3| program behavior.
-The helper also provides a ``PrintRoute()`` method that allows users to
-print the routing path calculated between two nodes; see the example
-program ``src/internet/examples/ipv4-global-routing-print-route.cc`` for a
-number of example statements showing how this method can be called.
-
-
-Global Routing Implementation
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-This section is for those readers who care about how this is implemented.  A
-singleton object (GlobalRouteManager) is responsible for populating the static
-routes on each node, using the public Ipv4 API of that node.  It queries each
-node in the topology for a "globalRouter" interface.  If found, it uses the API
-of that interface to obtain a "link state advertisement (LSA)" for the router.
-Link State Advertisements are used in OSPF routing, and we follow their
-formatting.
-
-It is important to note that all of these computations are done before
-packets are flowing in the network.  In particular, there are no
-overhead or control packets being exchanged when using this implementation.
-Instead, this global route manager just walks the list of nodes to
-build the necessary information and configure each node's routing table.
-
-The GlobalRouteManager populates a link state database with LSAs gathered from
-the entire topology. Then, for each router in the topology, the
-GlobalRouteManager executes the OSPF shortest path first (SPF) computation on
-the database, and populates the routing tables on each node.
-
-The quagga (`<https://www.nongnu.org/quagga/>`_) OSPF implementation was used as the
-basis for the routing computation logic. One benefit of following an existing
-OSPF SPF implementation is that OSPF already has defined link state
-advertisements for all common types of network links:
-
-* point-to-point (serial links)
-* point-to-multipoint (Frame Relay, ad hoc wireless)
-* non-broadcast multiple access (ATM)
-* broadcast (Ethernet)
-
-Therefore, we think that enabling these other link types will be more
-straightforward now that the underlying OSPF SPF framework is in place.
-
-Presently, we can handle IPv4 point-to-point, numbered links, as well as shared
-broadcast (CSMA) links.  Equal-cost multipath is also supported.  Although
-wireless link types are supported by the implementation, note that due
-to the nature of this implementation, any channel effects will not be
-considered and the routing tables will assume that every node on the
-same shared channel is reachable from every other node (i.e. it will
-be treated like a broadcast CSMA link).
-
-The GlobalRouteManager first walks the list of nodes and aggregates
-a GlobalRouter interface to each one as follows::
-
-  typedef std::vector<Ptr<Node>>::iterator Iterator;
-  for (Iterator i = NodeList::Begin(); i != NodeList::End(); i++)
-    {
-      Ptr<Node> node = *i;
-      Ptr<GlobalRouter> globalRouter = CreateObject<GlobalRouter>(node);
-      node->AggregateObject(globalRouter);
-    }
-
-This interface is later queried and used to generate a Link State
-Advertisement for each router, and this link state database is
-fed into the OSPF shortest path computation logic. The Ipv4 API
-is finally used to populate the routes themselves.
-
-Limitations
-~~~~~~~~~~~
-
-The following are the known limitations of the GlobalRouting implementation:
-
-#. When calculating routes for networks using GlobalRouting,
-   if multiple exit Interfaces are present from the root node to a network,
-   then Packets may travel an extra hop to reach their destination in that network.
-   Clarifying this further, the following is the generalized conditions:
-
-    #. Assume that there is a network (e.g., 10.1.2.0/24) and the network has 2 (or more) routers (2 egress points, or more).
-    #. Assume that a node has 2 (or more) equal-cost paths toward said network.
-    #. Assume that multiple IP addresses with that network prefix are present on one or more interfaces.
-
-   This will mean that, to reach the internal interfaces of the "other" router(s), the packets will
-   do one unnecessary hop, passing through the designated router, and discarding the (shorter) path
-   leading directly to the destination.
-
-   .. _Global-Routing-Limitation:
-
-   .. figure:: figures/global-routing-limitation.*
-
-#. Although adding Multiple IP addresses on the same interface
-   and Equal Cost Multi Path are both supported individually,
-   the combination of both is not fully supported and may lead to unexpected results
-   and in some specific cases routing loops.
-   This limitation is tracked in issue #1242 of the issue tracker.
+Global centralized routing is an offline computation of routing tables that
+builds and installs routing tables without any protocol overhead on the
+simulated links. It is described in detail in the :doc:`global-routing` chapter.
 
 RIP and RIPng
 +++++++++++++

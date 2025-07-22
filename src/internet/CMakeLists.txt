@@ -3,6 +3,7 @@ set(source_files
     helper/internet-trace-helper.cc
     helper/ipv4-address-helper.cc
     helper/ipv4-global-routing-helper.cc
+    helper/ipv6-global-routing-helper.cc
     helper/ipv4-interface-container.cc
     helper/ipv4-list-routing-helper.cc
     helper/ipv4-routing-helper.cc
@@ -31,7 +32,7 @@ set(source_files
     model/ipv4-address-generator.cc
     model/ipv4-end-point-demux.cc
     model/ipv4-end-point.cc
-    model/ipv4-global-routing.cc
+    model/global-routing.cc
     model/ipv4-header.cc
     model/ipv4-interface-address.cc
     model/ipv4-interface.cc
@@ -133,6 +134,7 @@ set(header_files
     helper/internet-trace-helper.h
     helper/ipv4-address-helper.h
     helper/ipv4-global-routing-helper.h
+    helper/ipv6-global-routing-helper.h
     helper/ipv4-interface-container.h
     helper/ipv4-list-routing-helper.h
     helper/ipv4-routing-helper.h
@@ -161,7 +163,7 @@ set(header_files
     model/ipv4-address-generator.h
     model/ipv4-end-point-demux.h
     model/ipv4-end-point.h
-    model/ipv4-global-routing.h
+    model/global-routing.h
     model/ipv4-header.h
     model/ipv4-interface-address.h
     model/ipv4-interface.h
@@ -267,7 +269,7 @@ set(test_sources
     test/ipv4-deduplication-test.cc
     test/ipv4-forwarding-test.cc
     test/ipv4-fragmentation-test.cc
-    test/ipv4-global-routing-test-suite.cc
+    test/global-routing-test-suite.cc
     test/ipv4-header-test.cc
     test/ipv4-list-routing-test-suite.cc
     test/ipv4-packet-info-tag-test-suite.cc

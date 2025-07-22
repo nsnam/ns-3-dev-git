@@ -176,6 +176,7 @@ Ipv6Interface::SetUp()
         return;
     }
     DoSetup();
+
     m_ifup = true;
 
     Ptr<Ipv6> ip = m_node->GetObject<Ipv6>();
