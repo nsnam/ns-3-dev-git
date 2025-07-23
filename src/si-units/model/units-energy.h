@@ -920,7 +920,7 @@ struct dBm_per_Hz_t // NOLINT(readability-identifier-naming)
     /// @returns a string representation of the value
     std::string str(bool space=true) const // NOLINT(readability-identifier-naming)
     {
-        return sformat(space ? "%.1Lf dBm/Hz" : "%.1LfdBm/Hz", val);
+        return sformat(space ? "%.1f dBm/Hz" : "%.1fdBm/Hz", val);
     }
 
     /// Calculate average PSD
@@ -1078,7 +1078,7 @@ struct dBm_per_MHz_t // NOLINT(readability-identifier-naming)
     /// @returns a string representation of the value
     std::string str(bool space=true) const // NOLINT(readability-identifier-naming)
     {
-        return sformat(space ? "%.1Lf dBm/Hz" : "%.1LfdBm/Hz", val);
+        return sformat(space ? "%.1f dBm/MHz" : "%.1fdBm/MHz", val);
     }
 
     /// Calculate average PSD

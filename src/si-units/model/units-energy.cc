@@ -41,14 +41,14 @@ Watt_t::Watt_t(const std::string& str)
 dBm_per_Hz_t::dBm_per_Hz_t(const std::string& str)
 {
     auto res = from_str(str);
-    NS_ABORT_MSG_IF(!res.has_value(), GetParseErrMsg(str, "dBm/Hz_t"));
+    NS_ABORT_MSG_IF(!res.has_value(), GetParseErrMsg(str, "dBm/Hz"));
     val = res.value().val;
 }
 
 dBm_per_MHz_t::dBm_per_MHz_t(const std::string& str)
 {
     auto res = from_str(str);
-    NS_ABORT_MSG_IF(!res.has_value(), GetParseErrMsg(str, "dBm/MHz_t"));
+    NS_ABORT_MSG_IF(!res.has_value(), GetParseErrMsg(str, "dBm/MHz"));
     val = res.value().val;
 }
 
@@ -639,7 +639,7 @@ Watt_t::from_str(const std::string& input)
 std::optional<dBm_per_Hz_t>
 dBm_per_Hz_t::from_str(const std::string& input)
 {
-    auto res = StringToDouble(input, "dBm_per_Hz");
+    auto res = StringToDouble(input, "dBm/Hz");
     return res.has_value() ? std::optional(dBm_per_Hz_t{res.value()}) : std::nullopt;
 }
 
@@ -649,7 +649,7 @@ dBm_per_Hz_t::from_str(const std::string& input)
 std::optional<dBm_per_MHz_t>
 dBm_per_MHz_t::from_str(const std::string& input)
 {
-    auto res = StringToDouble(input, "dBm_per_MHz");
+    auto res = StringToDouble(input, "dBm/MHz");
     return res.has_value() ? std::optional(dBm_per_MHz_t{res.value()}) : std::nullopt;
 }
 

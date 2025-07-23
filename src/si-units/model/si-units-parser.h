@@ -11,6 +11,7 @@
 namespace ns3
 {
 
+// TODO(porce): Use std::format() instead
 // https://stackoverflow.com/a/26221725
 // License: CC0 1.0
 /// A string formatter returning std::string

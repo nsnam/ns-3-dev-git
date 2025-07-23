@@ -715,12 +715,15 @@ class TestCaseSiUnits : public TestCase
         NS_TEST_EXPECT_MSG_EQ(dBm_per_Hz_t{123}.str(false), "123.0dBm/Hz", ""); // NOLINT
         NS_TEST_EXPECT_MSG_EQ(dBm_per_Hz_t{123.45}.val, 123.45, "");            // NOLINT
         NS_TEST_EXPECT_MSG_EQ(dBm_per_Hz_t{123.45}.str(), "123.5 dBm/Hz", "");  // NOLINT
-
-        NS_TEST_EXPECT_MSG_EQ(dBm_per_Hz_t{-80.0}.OverBandwidth(1_MHz), -20_dBm, ""); // NOLINT
-        NS_TEST_EXPECT_MSG_EQ(dBm_per_Hz_t::AveragePsd(-20_dBm, 1_MHz),
-                              dBm_per_Hz_t{-80},
-                              "");                                        // NOLINT
         NS_TEST_EXPECT_MSG_EQ(dBm_per_Hz_t{123.45}.in_dBm(), 123.45, ""); // NOLINT
+
+        NS_TEST_EXPECT_MSG_EQ_TOL(dBm_per_Hz_t{-80.0}.OverBandwidth(2_Hz), -77_dBm, 0.1_dB, ""); // NOLINT
+        NS_TEST_EXPECT_MSG_EQ_TOL(dBm_per_Hz_t{-80.0}.OverBandwidth(0.5_Hz), -83_dBm, 0.1_dB, ""); // NOLINT
+        NS_TEST_EXPECT_MSG_EQ(dBm_per_Hz_t{-80.0}.OverBandwidth(1_MHz), -20_dBm, ""); // NOLINT
+        NS_TEST_EXPECT_MSG_EQ(dBm_per_Hz_t{-80.0}.OverBandwidth(100_kHz), -30_dBm, ""); // NOLINT
+
+        NS_TEST_EXPECT_MSG_EQ(dBm_per_Hz_t::AveragePsd(-20_dBm, 1_MHz),
+                              dBm_per_Hz_t{-80}, ""); // NOLINT
 
         TestInputOperatorPositives<dBm_per_Hz_t>({"12.3dBm/Hz", "12.3 dBm/Hz", " 12.3  dBm/Hz "});
         TestInputOperatorNegatives<dBm_per_Hz_t>(
@@ -739,12 +742,18 @@ class TestCaseSiUnits : public TestCase
         NS_TEST_EXPECT_MSG_EQ(dBm_per_MHz_t{123}.str(false), "123.0dBm/MHz", ""); // NOLINT
         NS_TEST_EXPECT_MSG_EQ(dBm_per_MHz_t{123.45}.val, 123.45, "");             // NOLINT
         NS_TEST_EXPECT_MSG_EQ(dBm_per_MHz_t{123.45}.str(), "123.5 dBm/MHz", "");  // NOLINT
+        NS_TEST_EXPECT_MSG_EQ(dBm_per_MHz_t{123.45}.in_dBm(), 123.45, "");              // NOLINT
 
         NS_TEST_EXPECT_MSG_EQ(dBm_per_MHz_t::AveragePsd(-20_dBm, 1_MHz),
-                              dBm_per_MHz_t{-20},
-                              "");                                                      // NOLINT
-        NS_TEST_EXPECT_MSG_EQ(dBm_per_MHz_t{-80.0}.OverBandwidth(100_kHz), -8_dBm, ""); // NOLINT
-        NS_TEST_EXPECT_MSG_EQ(dBm_per_MHz_t{123.45}.in_dBm(), 123.45, "");              // NOLINT
+                              dBm_per_MHz_t{-20}, ""); // NOLINT
+
+        NS_TEST_EXPECT_MSG_EQ_TOL(dBm_per_MHz_t{-80.0}.OverBandwidth(2_MHz), -77_dBm, 0.1_dB, ""); // NOLINT
+        NS_TEST_EXPECT_MSG_EQ_TOL(dBm_per_MHz_t{-80.0}.OverBandwidth(500_kHz), -83_dBm, 0.1_dB, ""); // NOLINT
+        NS_TEST_EXPECT_MSG_EQ(dBm_per_MHz_t{-80.0}.OverBandwidth(1_MHz), -80_dBm, ""); // NOLINT
+        NS_TEST_EXPECT_MSG_EQ(dBm_per_MHz_t{-80.0}.OverBandwidth(100_kHz), -90_dBm, ""); // NOLINT
+
+        NS_TEST_EXPECT_MSG_EQ(dBm_per_MHz_t::AveragePsd(-20_dBm, 1_MHz),
+                              dBm_per_MHz_t{-20}, "");                                        // NOLINT
 
         TestInputOperatorPositives<dBm_per_MHz_t>(
             {"12.3dBm/MHz", "12.3 dBm/MHz", " 12.3  dBm/MHz "});
@@ -965,6 +974,8 @@ class TestCaseSiUnits : public TestCase
         Unit_mWatt_and_Watt();
         Unit_mWatt_and_double();
         Unit_double_and_mWatt();
+        Unit_dBm_per_Hz();
+        Unit_dBm_per_MHz();
         Conversion();
         Unit_Hz();
         Unit_dBm_and_dB();
