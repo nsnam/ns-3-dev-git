@@ -72,7 +72,7 @@ RadiotapHeader::Serialize(Buffer::Iterator start) const
     //
     if (m_present & RADIOTAP_TSFT) // bit 0
     {
-        start.WriteU64(m_tsft);
+        SerializeTsft(start);
     }
 
     //
@@ -307,8 +307,7 @@ RadiotapHeader::Deserialize(Buffer::Iterator start)
     //
     if (m_present & RADIOTAP_TSFT) // bit 0
     {
-        m_tsft = start.ReadU64();
-        bytesRead += 8;
+        bytesRead += DeserializeTsft(start, bytesRead);
     }
 
     //
@@ -575,12 +574,29 @@ RadiotapHeader::SetTsft(uint64_t value)
     NS_LOG_FUNCTION(this << value);
 
     NS_ASSERT_MSG(!(m_present & RADIOTAP_TSFT), "TSFT radiotap field already present");
+    m_tsftPad = ((8 - m_length % 8) % 8);
     m_present |= RADIOTAP_TSFT;
-    m_length += 8;
+    m_length += 8 + m_tsftPad;
     m_tsft = value;
 
     NS_LOG_LOGIC(this << " m_length=" << m_length << " m_present=0x" << std::hex << m_present
                       << std::dec);
+}
+
+void
+RadiotapHeader::SerializeTsft(Buffer::Iterator& start) const
+{
+    start.WriteU8(0, m_tsftPad);
+    start.WriteU64(m_tsft);
+}
+
+uint32_t
+RadiotapHeader::DeserializeTsft(Buffer::Iterator start, uint32_t bytesRead)
+{
+    m_tsftPad = ((8 - bytesRead % 8) % 8);
+    start.Next(m_tsftPad);
+    m_tsft = start.ReadU64();
+    return sizeof(m_tsft) + m_tsftPad;
 }
 
 void

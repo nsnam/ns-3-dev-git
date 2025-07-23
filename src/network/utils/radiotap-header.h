@@ -774,6 +774,23 @@ class RadiotapHeader : public Header
 
   private:
     /**
+     * Serialize the TSFT radiotap header.
+     *
+     * @param start An iterator which points to where the header should be written.
+     */
+    void SerializeTsft(Buffer::Iterator& start) const;
+
+    /**
+     * Deserialize the TSFT radiotap header.
+     *
+     * @param start An iterator which points to where the header should be read.
+     * @param bytesRead the number of bytes already read.
+
+     * @returns The number of bytes read.
+     */
+    uint32_t DeserializeTsft(Buffer::Iterator start, uint32_t bytesRead);
+
+    /**
      * Serialize the Channel radiotap header.
      *
      * @param start An iterator which points to where the header should be written.
@@ -1035,8 +1052,9 @@ class RadiotapHeader : public Header
     uint32_t m_present{0};                  //!< bits describing which fields follow header
     std::optional<uint32_t> m_presentExt{}; //!< optional extended present bitmask
 
-    uint64_t m_tsft{0}; //!< Time Synchronization Function Timer (when the first bit of the MPDU
-                        //!< arrived at the MAC)
+    uint8_t m_tsftPad{0}; //!< TSFT padding.
+    uint64_t m_tsft{0};   //!< Time Synchronization Function Timer (when the first bit of the MPDU
+                          //!< arrived at the MAC)
 
     uint8_t m_flags{FRAME_FLAG_NONE}; //!< Properties of transmitted and received frames.
 
