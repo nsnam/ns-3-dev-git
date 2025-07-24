@@ -1677,18 +1677,20 @@ EmlsrSwitchMainPhyBackTest::MainPhySwitchInfoCallback(std::size_t index,
             m_staMacs[0]->GetDevice()->GetNode()->AddApplication(
                 GetApplication(UPLINK, 0, 1, 500, 4));
             // channel access can be obtained within a slot due to slot alignment
-            Simulator::Schedule(m_apMac->GetWifiPhy(m_linkIdForTid4)->GetSlot(), [=, this]() {
-                auto advEmlsrMgr =
-                    DynamicCast<AdvancedEmlsrManager>(m_staMacs[0]->GetEmlsrManager());
+            Simulator::Schedule(
+                m_apMac->GetWifiPhy(m_linkIdForTid4)->GetSlot() + TimeStep(1),
+                [=, this]() {
+                    auto advEmlsrMgr =
+                        DynamicCast<AdvancedEmlsrManager>(m_staMacs[0]->GetEmlsrManager());
 
-                NS_TEST_EXPECT_MSG_EQ(advEmlsrMgr->m_mainPhySwitchInfo.disconnected,
-                                      true,
-                                      "Expected the main PHY to be switching");
-                NS_TEST_EXPECT_MSG_EQ(
-                    +advEmlsrMgr->m_mainPhySwitchInfo.to,
-                    +(advEmlsrMgr->m_interruptSwitching ? m_linkIdForTid4 : m_mainPhyId),
-                    "Main PHY is switching to wrong link");
-            });
+                    NS_TEST_EXPECT_MSG_EQ(advEmlsrMgr->m_mainPhySwitchInfo.disconnected,
+                                          true,
+                                          "Expected the main PHY to be switching");
+                    NS_TEST_EXPECT_MSG_EQ(
+                        +advEmlsrMgr->m_mainPhySwitchInfo.to,
+                        +(advEmlsrMgr->m_interruptSwitching ? m_linkIdForTid4 : m_mainPhyId),
+                        "Test index " << +m_testIndex << ": Main PHY is switching to wrong link");
+                });
         });
         InsertEventsForQosTid4();
     };
