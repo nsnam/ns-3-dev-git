@@ -199,6 +199,48 @@ class ZigbeeNwkHeader : public Header
      */
     Mac64Address GetSrcIeeeAddr() const;
 
+    /**
+     * Set the multicast mode
+     *
+     * @param mode The multicast mode (member or non-member)
+     */
+    void SetMulticastMode(MulticastMode mode);
+
+    /**
+     * Get the multicast mode
+     *
+     * @return The multicast mode (member or non-member)
+     */
+    MulticastMode GetMulticastMode() const;
+
+    /**
+     * Set the non-member radius
+     *
+     * @param radius The non-member radius (0-7)
+     */
+    void SetNonMemberRadius(uint8_t radius);
+
+    /**
+     * Get the non-member radius
+     *
+     * @return The non-member radius (0-7)
+     */
+    uint8_t GetNonMemberRadius() const;
+
+    /**
+     * Set the maximum non-member radius
+     *
+     * @param radius The maximum non-member radius (0-7)
+     */
+    void SetMaxNonMemberRadius(uint8_t radius);
+
+    /**
+     * Get the maximum non-member radius
+     *
+     * @return The maximum non-member radius (0-7)
+     */
+    uint8_t GetMaxNonMemberRadius() const;
+
     void Serialize(Buffer::Iterator start) const override;
     uint32_t Deserialize(Buffer::Iterator start) override;
     uint32_t GetSerializedSize() const override;
@@ -223,7 +265,7 @@ class ZigbeeNwkHeader : public Header
      */
     uint16_t GetFrameControl() const;
     /**
-     * Set the Multicast control field
+     * Set the Multicast control field (mcstMode, nonMemberRadius, maxNonMemberRadius)
      * @param multicastControl 8 bits representing the multicast control field
      */
     void SetMulticastControl(uint8_t multicastControl);

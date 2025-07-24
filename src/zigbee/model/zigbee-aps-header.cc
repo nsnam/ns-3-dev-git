@@ -103,6 +103,18 @@ ZigbeeApsHeader::GetDstEndpoint() const
 }
 
 void
+ZigbeeApsHeader::SetGroupAddress(uint16_t groupAddress)
+{
+    m_groupAddress = groupAddress;
+}
+
+uint16_t
+ZigbeeApsHeader::GetGroupAddress() const
+{
+    return m_groupAddress;
+}
+
+void
 ZigbeeApsHeader::SetClusterId(uint16_t clusterId)
 {
     m_clusterId = clusterId;

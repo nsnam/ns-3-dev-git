@@ -172,6 +172,20 @@ class ZigbeeApsHeader : public Header
     uint8_t GetDstEndpoint() const;
 
     /**
+     * Set the group address in the APS header.
+     *
+     * @param groupAddress The group address to set.
+     */
+    void SetGroupAddress(uint16_t groupAddress);
+
+    /**
+     * Get the group address in the APS header.
+     *
+     * @return The group address.
+     */
+    uint16_t GetGroupAddress() const;
+
+    /**
      * Set the cluster id in the APS header.
      *
      * @param clusterId The cluster id

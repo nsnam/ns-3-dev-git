@@ -77,11 +77,14 @@ class ZigbeePayloadType : public Header
 
     /**
      * Set the command frame type
+     *
      * @param nwkCmd the command frame type
      */
     void SetCmdType(enum NwkCommandType nwkCmd);
+
     /**
      * Get the command frame type
+     *
      * @return The command type from the command payload header
      */
     NwkCommandType GetCmdType() const;
@@ -93,7 +96,8 @@ class ZigbeePayloadType : public Header
 /**
  * @ingroup zigbee
  * Represent a variable portion of the zigbee payload header that includes
- * the route request command
+ * the route request command.
+ * See Zigbee specification r22.1.0, Section 3.4.1
  */
 class ZigbeePayloadRouteRequestCommand : public Header
 {
@@ -126,36 +130,42 @@ class ZigbeePayloadRouteRequestCommand : public Header
 
     /**
      * Set the Route request identifier
+     *
      * @param id the route request identifier
      */
     void SetRouteReqId(uint8_t id);
 
     /**
      * Get the Route request identifier
+     *
      * @return the route request identifier
      */
     uint8_t GetRouteReqId() const;
 
     /**
      * Set Destination address
+     *
      * @param addr The destination address (16 bit)
      */
     void SetDstAddr(Mac16Address addr);
 
     /**
      * Get the Destination address
+     *
      * @return the Destination address (16bits)
      */
     Mac16Address GetDstAddr() const;
 
     /**
      * Set the path cost
+     *
      * @param cost the path cost
      */
     void SetPathCost(uint8_t cost);
 
     /**
      * Set the path cost
+     *
      * @return the path cost
      */
     uint8_t GetPathCost() const;
@@ -168,16 +178,34 @@ class ZigbeePayloadRouteRequestCommand : public Header
     bool IsDstIeeeAddressPresent() const;
 
     /**
-     *  Set the destination IEEE address
+     *  Set the destination IEEE address, also automatically
+     *  sets the command option DstIeeeAddr field
+     *
      *  @param dst The destination IEEE address (64 bits)
      */
     void SetDstIeeeAddr(Mac64Address dst);
 
     /**
-     * Get the destination IEEE address
+     * Get the destination IEEE address (64-bit) contained in the
+     * route request command.
+     *
      * @return The destination IEEE address (64bits)
      */
     Mac64Address GetDstIeeeAddr() const;
+
+    /**
+     * Set the command option multicast field
+     *
+     * @param mcst True if the command option multicast field is active
+     */
+    void SetMulticastField(bool mcst);
+
+    /**
+     * Get the command option multicast field
+     *
+     * @return True if the command option multicast field is active
+     */
+    bool GetMulticastField() const;
 
   private:
     /**
@@ -208,7 +236,8 @@ class ZigbeePayloadRouteRequestCommand : public Header
 /**
  * @ingroup zigbee
  * Represent a variable portion of the zigbee payload header that includes
- * the route reply command
+ * the route reply command.
+ * See Zigbee specification r22.1.0, Section 3.4.2
  */
 class ZigbeePayloadRouteReplyCommand : public Header
 {

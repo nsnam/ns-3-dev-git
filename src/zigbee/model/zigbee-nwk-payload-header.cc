@@ -301,6 +301,18 @@ ZigbeePayloadRouteRequestCommand::GetDstIeeeAddr() const
 }
 
 void
+ZigbeePayloadRouteRequestCommand::SetMulticastField(bool mcst)
+{
+    m_cmdOptMcst = mcst;
+}
+
+bool
+ZigbeePayloadRouteRequestCommand::GetMulticastField() const
+{
+    return m_cmdOptMcst;
+}
+
+void
 ZigbeePayloadRouteRequestCommand::SetCmdOptionField(uint8_t cmdOptionField)
 {
     m_cmdOptManyToOne = static_cast<ManyToOne>((cmdOptionField >> 3) & (0x03)); // Bit 3-4

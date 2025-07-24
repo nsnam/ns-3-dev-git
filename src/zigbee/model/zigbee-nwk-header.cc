@@ -175,6 +175,42 @@ ZigbeeNwkHeader::GetSrcIeeeAddr() const
 }
 
 void
+ZigbeeNwkHeader::SetMulticastMode(MulticastMode mode)
+{
+    m_mcstMode = mode;
+}
+
+MulticastMode
+ZigbeeNwkHeader::GetMulticastMode() const
+{
+    return m_mcstMode;
+}
+
+void
+ZigbeeNwkHeader::SetNonMemberRadius(uint8_t radius)
+{
+    m_nonMemberRadius = radius;
+}
+
+uint8_t
+ZigbeeNwkHeader::GetNonMemberRadius() const
+{
+    return m_nonMemberRadius;
+}
+
+void
+ZigbeeNwkHeader::SetMaxNonMemberRadius(uint8_t radius)
+{
+    m_maxNonMemberRadius = radius;
+}
+
+uint8_t
+ZigbeeNwkHeader::GetMaxNonMemberRadius() const
+{
+    return m_maxNonMemberRadius;
+}
+
+void
 ZigbeeNwkHeader::SetFrameControl(uint16_t frameControl)
 {
     m_fctrlFrmType = static_cast<NwkType>((frameControl) & (0x03));                  // Bit 0-1
@@ -217,13 +253,13 @@ ZigbeeNwkHeader::SetMulticastControl(uint8_t multicastControl)
 uint8_t
 ZigbeeNwkHeader::GetMulticastControl() const
 {
-    uint8_t val = 0;
+    uint8_t mcstCtrl = 0;
 
-    val = m_mcstMode & (0x03);                        // Bit 0-1
-    val |= (m_nonMemberRadius << 2) & (0x07 << 2);    // Bit 2-4
-    val |= (m_maxNonMemberRadius << 5) & (0x07 << 5); // Bit 5-7
+    mcstCtrl = m_mcstMode & (0x03);                        // Bit 0-1
+    mcstCtrl |= (m_nonMemberRadius << 2) & (0x07 << 2);    // Bit 2-4
+    mcstCtrl |= (m_maxNonMemberRadius << 5) & (0x07 << 5); // Bit 5-7
 
-    return val;
+    return mcstCtrl;
 }
 
 void
@@ -280,8 +316,8 @@ ZigbeeNwkHeader::Deserialize(Buffer::Iterator start)
 
     if (m_fctrlMcst)
     {
-        uint8_t multicastControl = i.ReadU8();
-        SetMulticastControl(multicastControl);
+        uint8_t mcstCtrl = i.ReadU8();
+        SetMulticastControl(mcstCtrl);
     }
 
     // TODO: Add Source route subframe when supported
