@@ -206,27 +206,6 @@ BackoffMonitor::NotifyBackoffGenerated(linkId_t linkId)
     {
         auto& state = GetState(linkId);
         state.SetStatus(BackoffStatus::ONGOING);
-
-        // if a backoff value is generated but channel access has not been requested, start a timer
-        // to detect the transition from ONGOING to ZERO in case channel access is not requested
-        // before the backoff counter reaches zero.
-        auto txop = m_mac->GetTxopFor(m_aci);
-        if (const auto timeout =
-                m_mac->GetChannelAccessManager(linkId)->GetBackoffEndFor(txop) - Simulator::Now();
-            timeout.IsStrictlyPositive())
-        {
-            state.statusChangeEvent.Cancel();
-            state.statusChangeEvent = Simulator::Schedule(timeout, [=, &state, this] {
-                if (GetBackoffStatus(state.linkId) == BackoffStatus::ONGOING &&
-                    txop->GetAccessStatus(state.linkId) ==
-                        WifiChannelAccessStatus::NOT_REQUESTED_NO_BACKOFF &&
-                    m_mac->GetChannelAccessManager(state.linkId)->GetBackoffEndFor(txop) ==
-                        Simulator::Now())
-                {
-                    state.SetStatus(BackoffStatus::ZERO);
-                }
-            });
-        }
     }
 }
 
