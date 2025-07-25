@@ -167,6 +167,8 @@ WifiTxStatsHelperTest::DoSetup()
 void
 WifiTxStatsHelperTest::DoRun()
 {
+    Config::SetDefault("ns3::WifiRemoteStationManager::IncrementRetryCountUnderBa",
+                       BooleanValue(true));
     std::string dataMode;
     std::string ackMode;
     if (m_option == SINGLE_LINK_NON_QOS)
