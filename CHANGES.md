@@ -20,10 +20,11 @@ This file is a best-effort approach to solving this issue; we will do our best b
 
 ### Changes to existing API
 
-* (antenna) Reformatted documentation
+* (antenna) Reformatted documentation.
+* (internet) Added check for longest prefix match in GlobalRouting.
 * (lr-wpan) Debloat MAC PD-DATA.indication and reduce packet copies.
-* (zigbee) Added group table
-* (internet) Added check for longest prefix match in GlobalRouting
+* (zigbee) Added group table.
+* (zigbee) Added Groupcast (Multicast) support.
 
 ### Changes to build system
 

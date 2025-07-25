@@ -11,6 +11,7 @@
 #define ZIGBEE_STACK_H
 
 #include "zigbee-aps.h"
+#include "zigbee-group-table.h"
 #include "zigbee-nwk.h"
 
 #include "ns3/lr-wpan-mac-base.h"
@@ -18,7 +19,6 @@
 #include "ns3/traced-callback.h"
 
 #include <stdint.h>
-#include <string>
 
 namespace ns3
 {
@@ -136,8 +136,9 @@ class ZigbeeStack : public Object
     Ptr<lrwpan::LrWpanMacBase> m_mac; //!< The underlying LrWpan MAC connected to this Zigbee Stack.
     Ptr<ZigbeeNwk> m_nwk;             //!< The Zigbee Network layer.
     Ptr<ZigbeeAps> m_aps;             //!< The Zigbee Application Support Sub-layer
-    Ptr<Node> m_node;                 //!< The node associated with this NetDevice.
-    Ptr<NetDevice> m_netDevice;       //!< Smart pointer to the underlying NetDevice.
+    Ptr<ZigbeeGroupTable> m_groupTable; //!< The Zigbee Group Table used by both NWK and APS layers.
+    Ptr<Node> m_node;                   //!< The node associated with this NetDevice.
+    Ptr<NetDevice> m_netDevice;         //!< Smart pointer to the underlying NetDevice.
     bool m_nwkOnly; //!< Indicates that only the NWK layer is present in the Zigbee stack
 };
 

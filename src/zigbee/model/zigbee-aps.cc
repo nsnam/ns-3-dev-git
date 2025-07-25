@@ -28,7 +28,13 @@ ZigbeeAps::GetTypeId()
     static TypeId tid = TypeId("ns3::zigbee::ZigbeeAps")
                             .SetParent<Object>()
                             .SetGroupName("Zigbee")
-                            .AddConstructor<ZigbeeAps>();
+                            .AddConstructor<ZigbeeAps>()
+                            .AddAttribute("ApsNonMemberRadius",
+                                          "The value to be used for the NonmemberRadius parameter"
+                                          " when using NWK layer multicast",
+                                          UintegerValue(0x02),
+                                          MakeUintegerAccessor(&ZigbeeAps::m_apsNonMemberRadius),
+                                          MakeUintegerChecker<uint8_t>());
     return tid;
 }
 
@@ -69,6 +75,12 @@ void
 ZigbeeAps::SetNwk(Ptr<ZigbeeNwk> nwk)
 {
     m_nwk = nwk;
+}
+
+void
+ZigbeeAps::SetGroupTable(Ptr<ZigbeeGroupTable> groupTable)
+{
+    m_apsGroupTable = groupTable;
 }
 
 Ptr<ZigbeeNwk>
@@ -125,8 +137,8 @@ ZigbeeAps::ApsdeDataRequest(ApsdeDataRequestParams params, Ptr<Packet> asdu)
         break;
     }
     case ApsDstAddressMode::GROUP_ADDR_DST_ENDPOINT_NOT_PRESENT: {
-        // TODO: Add Groupcast (multicast) support
-        NS_ABORT_MSG("GROUP ADDRESS (MCST) not supported");
+        // Groupcast (a kind of multicast) support
+        SendDataGroup(params, asdu);
         break;
     }
     case ApsDstAddressMode::DST_ADDR16_DST_ENDPOINT_PRESENT: {
@@ -305,6 +317,55 @@ ZigbeeAps::SendDataUcstBcst(ApsdeDataRequestParams params, Ptr<Packet> asdu)
 }
 
 void
+ZigbeeAps::SendDataGroup(ApsdeDataRequestParams params, Ptr<Packet> asdu)
+{
+    NS_LOG_FUNCTION(this);
+
+    // Fill APSDE-data.confirm parameters in case we need to return an error
+    ApsdeDataConfirmParams confirmParams;
+    confirmParams.m_dstAddrMode = params.m_dstAddrMode;
+    confirmParams.m_dstAddr16 = params.m_dstAddr16;
+    confirmParams.m_dstAddr64 = params.m_dstAddr64;
+    confirmParams.m_dstEndPoint = params.m_dstEndPoint;
+    confirmParams.m_srcEndPoint = params.m_srcEndPoint;
+
+    if (params.m_dstAddr16 == Mac16Address("00:00"))
+    {
+        if (!m_apsdeDataConfirmCallback.IsNull())
+        {
+            confirmParams.m_status = ApsStatus::INVALID_GROUP;
+            confirmParams.m_txTime = Simulator::Now();
+            m_apsdeDataConfirmCallback(confirmParams);
+        }
+        return;
+    }
+
+    // APS Header
+    ZigbeeApsTxOptions txOptions(params.m_txOptions);
+    ZigbeeApsHeader apsHeader;
+    apsHeader.SetFrameType(ApsFrameType::APS_DATA);
+    apsHeader.SetSrcEndpoint(params.m_srcEndPoint);
+    apsHeader.SetProfileId(params.m_profileId);
+    apsHeader.SetClusterId(params.m_clusterId);
+    apsHeader.SetExtHeaderPresent(false);
+    apsHeader.SetDeliveryMode(ApsDeliveryMode::APS_GROUP_ADDRESSING);
+    apsHeader.SetGroupAddress(params.m_dstAddr16.ConvertToInt());
+
+    // NLDE-data.request params
+    NldeDataRequestParams nwkParams;
+    nwkParams.m_radius = params.m_radius;
+    nwkParams.m_discoverRoute = DiscoverRouteType::ENABLE_ROUTE_DISCOVERY;
+    nwkParams.m_securityEnable = txOptions.IsSecurityEnabled();
+    nwkParams.m_dstAddrMode = AddressMode::MCST;
+    nwkParams.m_dstAddr = params.m_dstAddr16;
+    nwkParams.m_nonMemberRadius = m_apsNonMemberRadius;
+
+    asdu->AddHeader(apsHeader);
+
+    Simulator::ScheduleNow(&ZigbeeNwk::NldeDataRequest, m_nwk, nwkParams, asdu);
+}
+
+void
 ZigbeeAps::ApsmeBindRequest(ApsmeBindRequestParams params)
 {
     ApsmeBindConfirmParams confirmParams;
@@ -375,8 +436,71 @@ ZigbeeAps::ApsmeUnbindRequest(ApsmeBindRequestParams params)
 }
 
 void
+ZigbeeAps::ApsmeAddGroupRequest(ApsmeGroupRequestParams params)
+{
+    NS_LOG_FUNCTION(this);
+
+    ApsmeGroupConfirmParams confirmParams;
+    confirmParams.m_status = ApsStatus::SUCCESS;
+    confirmParams.m_groupAddress = params.m_groupAddress;
+    confirmParams.m_endPoint = params.m_endPoint;
+
+    if (!m_apsGroupTable->AddEntry(params.m_groupAddress.ConvertToInt(), params.m_endPoint))
+    {
+        confirmParams.m_status = ApsStatus::TABLE_FULL;
+    }
+
+    if (!m_apsmeAddGroupConfirmCallback.IsNull())
+    {
+        m_apsmeAddGroupConfirmCallback(confirmParams);
+    }
+}
+
+void
+ZigbeeAps::ApsmeRemoveGroupRequest(ApsmeGroupRequestParams params)
+{
+    NS_LOG_FUNCTION(this);
+
+    ApsmeGroupConfirmParams confirmParams;
+    confirmParams.m_status = ApsStatus::SUCCESS;
+    confirmParams.m_groupAddress = params.m_groupAddress;
+    confirmParams.m_endPoint = params.m_endPoint;
+
+    if (!m_apsGroupTable->RemoveEntry(params.m_groupAddress.ConvertToInt(), params.m_endPoint))
+    {
+        confirmParams.m_status = ApsStatus::INVALID_GROUP;
+    }
+
+    if (!m_apsmeRemoveGroupConfirmCallback.IsNull())
+    {
+        m_apsmeRemoveGroupConfirmCallback(confirmParams);
+    }
+}
+
+void
+ZigbeeAps::ApsmeRemoveAllGroupsRequest(uint8_t endPoint)
+{
+    NS_LOG_FUNCTION(this);
+
+    ApsmeRemoveAllGroupsConfirmParams confirmParams;
+    confirmParams.m_status = ApsStatus::SUCCESS;
+    confirmParams.m_endPoint = endPoint;
+
+    if (!m_apsGroupTable->RemoveMembership(endPoint))
+    {
+        confirmParams.m_status = ApsStatus::INVALID_PARAMETER;
+    }
+
+    if (!m_apsmeRemoveAllGroupsConfirmCallback.IsNull())
+    {
+        m_apsmeRemoveAllGroupsConfirmCallback(confirmParams);
+    }
+}
+
+void
 ZigbeeAps::NldeDataConfirm(NldeDataConfirmParams params)
 {
+    // TODO: Handle the confirmation of the data request
 }
 
 void
@@ -384,64 +508,124 @@ ZigbeeAps::NldeDataIndication(NldeDataIndicationParams params, Ptr<Packet> nsdu)
 {
     NS_LOG_FUNCTION(this);
 
+    // See section 2.2.4.1.3.
+    // - TODO: Handle Security
+    // - Handle groupcast (MCST) delivery (Note group table shared by NWK and APS)
+    // - Handle UCST, BCST delivery
+    // - TODO: Handle binding
+    // - TODO: Handle fragmentation
+    // - TODO: Detect Duplicates
+    // - TODO: Handle ACK
+    // - TODO: Handle other frame types (APS Command, APS Inter-PAN)
+
     ZigbeeApsHeader apsHeader;
     nsdu->RemoveHeader(apsHeader);
-
-    ApsdeDataIndicationParams indicationParams;
-    indicationParams.m_status = ApsStatus::SUCCESS;
-
-    // TODO:
-    // See section 2.2.4.1.3.
-    // - Handle Security
-    // - Handle grouping(MCST) (Note group table shared by NWK and APS)
-    // - Handle binding
-    // - Handle fragmentation
-    // - Detect Duplicates
-    // - Handle ACK
 
     // Check if packet is fragmented
     if (apsHeader.IsExtHeaderPresent())
     {
-        indicationParams.m_status = ApsStatus::DEFRAG_UNSUPPORTED;
         if (!m_apsdeDataIndicationCallback.IsNull())
         {
+            ApsdeDataIndicationParams indicationParams;
+            indicationParams.m_status = ApsStatus::DEFRAG_UNSUPPORTED;
             m_apsdeDataIndicationCallback(indicationParams, nsdu);
         }
+
         NS_LOG_WARN("Extended Header (Fragmentation) not supported");
+        return;
+        // TODO: Handle fragmentation See 2.2.8.4.5
+    }
+
+    // TODO: IF security is present, remove as described in Section 4.4.
+    if (params.m_securityUse)
+    {
+        NS_LOG_ERROR("Security is not currently supported");
+    }
+
+    // TODO: Duplicate detection here
+    // See last paragraph of section 2.2.8.4.2
+
+    switch (apsHeader.GetFrameType())
+    {
+    case ApsFrameType::APS_DATA:
+        // Zigbee Specification, Section 2.2.8.4.2
+        // Reception and Rejection
+        ReceiveData(apsHeader, params, nsdu);
+        break;
+    case ApsFrameType::APS_ACK:
+        NS_LOG_ERROR("APS ACK frames are not supported");
+        break;
+    case ApsFrameType::APS_COMMAND:
+        NS_LOG_ERROR("APS Command frames are not supported");
+        break;
+    case ApsFrameType::APS_INTERPAN_APS:
+        NS_LOG_ERROR("APS Inter-PAN frames are not supported");
+        break;
+    }
+}
+
+void
+ZigbeeAps::ReceiveData(const ZigbeeApsHeader& apsHeader,
+                       const NldeDataIndicationParams& params,
+                       Ptr<Packet> nsdu)
+{
+    NS_LOG_FUNCTION(this);
+
+    ApsdeDataIndicationParams indicationParams;
+    indicationParams.m_status = ApsStatus::SUCCESS;
+    indicationParams.m_srcAddress16 = params.m_srcAddr;
+    indicationParams.m_srcEndpoint = apsHeader.GetSrcEndpoint();
+    indicationParams.m_profileId = apsHeader.GetProfileId();
+    indicationParams.m_clusterId = apsHeader.GetClusterId();
+    indicationParams.asduLength = nsdu->GetSize();
+    indicationParams.m_securityStatus = ApsSecurityStatus::UNSECURED;
+    indicationParams.m_linkQuality = params.m_linkQuality;
+    indicationParams.m_rxTime = Simulator::Now();
+
+    // UNICAST or BROADCAST delivery
+
+    if (apsHeader.GetDeliveryMode() == ApsDeliveryMode::APS_UCST ||
+        apsHeader.GetDeliveryMode() == ApsDeliveryMode::APS_BCST)
+    {
+        if (!m_apsdeDataIndicationCallback.IsNull())
+        {
+            // Note: Extracting the Address directly from the NWK, creates a dependency on this NWK
+            // implementation. This is not a very good design, but in practice, it is unavoidable
+            // due to the quasi cross-layer design of the specification
+            //(tigly coupled design of the APS in respect to the NWK).
+            indicationParams.m_dstAddr16 = m_nwk->GetNetworkAddress();
+            indicationParams.m_dstAddrMode = ApsDstAddressMode::DST_ADDR16_DST_ENDPOINT_PRESENT;
+            indicationParams.m_dstEndPoint = apsHeader.GetDstEndpoint();
+            indicationParams.m_srcAddrMode = ApsSrcAddressMode::SRC_ADDR16_SRC_ENDPOINT_PRESENT;
+            m_apsdeDataIndicationCallback(indicationParams, nsdu);
+        }
         return;
     }
 
-    if (apsHeader.GetFrameType() == ApsFrameType::APS_DATA)
-    {
-        if (apsHeader.GetDeliveryMode() == ApsDeliveryMode::APS_UCST ||
-            apsHeader.GetDeliveryMode() == ApsDeliveryMode::APS_BCST)
-        {
-            indicationParams.m_dstAddrMode = ApsDstAddressMode::DST_ADDR16_DST_ENDPOINT_PRESENT;
-            // Note: Extracting the Address directly from the NWK, creates a dependency on this NWK
-            // implementation. This is not a very good design, but in practice, it is unavoidable
-            // due to the descriptions in the specification.
-            indicationParams.m_dstAddr16 = m_nwk->GetNetworkAddress();
-            indicationParams.m_dstEndPoint = apsHeader.GetDstEndpoint();
-            indicationParams.m_srcAddrMode = ApsSrcAddressMode::SRC_ADDR16_SRC_ENDPOINT_PRESENT;
-            indicationParams.m_srcAddress16 = params.m_srcAddr;
-            indicationParams.m_srcEndpoint = apsHeader.GetSrcEndpoint();
-            indicationParams.m_profileId = apsHeader.GetProfileId();
-            indicationParams.m_clusterId = apsHeader.GetClusterId();
-            indicationParams.asduLength = nsdu->GetSize();
-            indicationParams.m_securityStatus = ApsSecurityStatus::UNSECURED;
-            indicationParams.m_linkQuality = params.m_linkQuality;
-            indicationParams.m_rxTime = Simulator::Now();
+    // GROUPCAST delivery
 
-            if (!m_apsdeDataIndicationCallback.IsNull())
+    if (apsHeader.GetDeliveryMode() == ApsDeliveryMode::APS_GROUP_ADDRESSING &&
+        params.m_dstAddrMode == AddressMode::MCST)
+    {
+        std::vector<uint8_t> endPoints;
+        if (m_apsGroupTable->LookUpEndPoints(apsHeader.GetGroupAddress(), endPoints))
+        {
+            // Give a copy of the packet to each endpoint associated with the group ID.
+            for (const auto& endPoint : endPoints)
             {
-                m_apsdeDataIndicationCallback(indicationParams, nsdu);
+                if (!m_apsdeDataIndicationCallback.IsNull())
+                {
+                    indicationParams.m_dstAddr16 = Mac16Address(apsHeader.GetGroupAddress());
+                    indicationParams.m_dstAddrMode =
+                        ApsDstAddressMode::GROUP_ADDR_DST_ENDPOINT_NOT_PRESENT;
+                    indicationParams.m_dstEndPoint = endPoint;
+                    indicationParams.m_srcAddrMode =
+                        ApsSrcAddressMode::SRC_ADDR16_SRC_ENDPOINT_PRESENT;
+                    m_apsdeDataIndicationCallback(indicationParams, nsdu->Copy());
+                }
             }
         }
-        else
-        {
-            // TODO: Group deliveryMode == (MCST)
-            NS_LOG_WARN("Group delivery not supported");
-        }
+        return;
     }
 }
 
@@ -467,6 +651,24 @@ void
 ZigbeeAps::SetApsmeUnbindConfirmCallback(ApsmeUnbindConfirmCallback c)
 {
     m_apsmeUnbindConfirmCallback = c;
+}
+
+void
+ZigbeeAps::SetApsmeAddGroupConfirmCallback(ApsmeAddGroupConfirmCallback c)
+{
+    m_apsmeAddGroupConfirmCallback = c;
+}
+
+void
+ZigbeeAps::SetApsmeRemoveGroupConfirmCallback(ApsmeRemoveGroupConfirmCallback c)
+{
+    m_apsmeRemoveGroupConfirmCallback = c;
+}
+
+void
+ZigbeeAps::SetApsmeRemoveAllGroupsConfirmCallback(ApsmeRemoveAllGroupsConfirmCallback c)
+{
+    m_apsmeRemoveAllGroupsConfirmCallback = c;
 }
 
 //////////////////////////

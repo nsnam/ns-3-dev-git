@@ -12,6 +12,7 @@
 #ifndef ZIGBEE_NWK_H
 #define ZIGBEE_NWK_H
 
+#include "zigbee-group-table.h"
 #include "zigbee-nwk-fields.h"
 #include "zigbee-nwk-header.h"
 #include "zigbee-nwk-payload-header.h"
@@ -49,7 +50,7 @@ static constexpr uint32_t ALL_CHANNELS = 0x07FFF800; //!< Bitmap representing al
                                                      //!< Page 0 in Zigbee (250kbps O-QPSK)
 
 /**
- * @ingroup zigbee
+ * @ingroup Zigbee
  *
  * Indicates a pending NWK primitive
  */
@@ -67,7 +68,7 @@ enum PendingPrimitiveNwk : std::uint8_t
 };
 
 /**
- * @ingroup zigbee
+ * @ingroup Zigbee
  *
  * Table 3.2 (Address Mode) NLDE-DATA-Request parameters
  */
@@ -137,7 +138,7 @@ enum RouteDiscoveryStatus : std::uint8_t
 };
 
 /**
- * @ingroup zigbee
+ * @ingroup Zigbee
  *
  *  Network layer status values
  *  Combines Zigbee Specification r22.1.0 Table 3-73 and
@@ -235,7 +236,7 @@ std::ostream& operator<<(std::ostream& os, const std::vector<uint8_t>& vec);
 std::ostream& operator<<(std::ostream& os, const uint8_t& num);
 
 /**
- * @ingroup zigbee
+ * @ingroup Zigbee
  *
  *  Status codes for network status command frame and route discovery failures.
  *
@@ -265,7 +266,7 @@ enum NetworkStatusCode : std::uint8_t
 };
 
 /**
- *  @ingroup zigbee
+ *  @ingroup Zigbee
  *
  *  Channel List Structure. See Zigbee Specification 3.2.2.2.1
  */
@@ -283,7 +284,7 @@ struct ChannelList
 };
 
 /**
- * @ingroup zigbee
+ * @ingroup Zigbee
  *
  * NLDE-DATA.confirm params. See Zigbee Specification 3.2.1.2
  */
@@ -297,7 +298,7 @@ struct NldeDataConfirmParams
 };
 
 /**
- * @ingroup zigbee
+ * @ingroup Zigbee
  *
  * NLDE-DATA.indication params. See Zigbee Specification 3.2.1.3.1
  */
@@ -315,7 +316,7 @@ struct NldeDataIndicationParams
 };
 
 /**
- * @ingroup zigbee
+ * @ingroup Zigbee
  *
  * NLDE-DATA.request params. See Zigbee Specification 3.2.1.1
  */
@@ -340,7 +341,7 @@ struct NldeDataRequestParams
 };
 
 /**
- *  @ingroup zigbee
+ *  @ingroup Zigbee
  *
  *  NLME-NETWORK-FORMATION.request params. See Zigbee Specification 3.2.2.5.1
  */
@@ -372,7 +373,7 @@ struct NlmeNetworkFormationRequestParams
 };
 
 /**
- * @ingroup zigbee
+ * @ingroup Zigbee
  *
  * A group of pending parameters arranged into a structure during the execution of
  * a NLME-NETWORK-FORMATION.request primitive.
@@ -385,7 +386,7 @@ struct NetFormPendingParamsGen : public SimpleRefCount<NetFormPendingParamsGen>
 };
 
 /**
- *  @ingroup zigbee
+ *  @ingroup Zigbee
  *
  *  NLME-NETWORK-FORMATION.confirm params. See Zigbee Specification 3.2.2.6.1
  */
@@ -396,14 +397,15 @@ struct NlmeNetworkFormationConfirmParams
 };
 
 /**
- *  @ingroup zigbee
+ *  @ingroup Zigbee
  *
  *  NLME-ROUTE-DISCOVERY.request params. See Zigbee Specification 3.2.2.33
  */
 struct NlmeRouteDiscoveryRequestParams
 {
     AddressMode m_dstAddrMode{UCST_BCST}; //!< Specifies the kind of destination address.
-    Mac16Address m_dstAddr;               //!< The destination of the route discovery.
+    Mac16Address m_dstAddr;    //!< The 16-bit destination address or Group ID (MCST destination)
+                               //!<  of the route discovery.
     uint16_t m_radius{0};      //!< Optional parameter that describes the number of hops that the
                                //!< route request will travel through the network.
     bool m_noRouteCache{true}; //!< This flag determines whether the NWK should establish a
@@ -411,7 +413,7 @@ struct NlmeRouteDiscoveryRequestParams
 };
 
 /**
- *  @ingroup zigbee
+ *  @ingroup Zigbee
  *
  *  NLME-ROUTE-DISCOVERY.confirm params. See Zigbee Specification r22.1.0, 3.2.2.34
  */
@@ -425,7 +427,7 @@ struct NlmeRouteDiscoveryConfirmParams
 };
 
 /**
- *  @ingroup zigbee
+ *  @ingroup Zigbee
  *
  *  NLME-DIRECT-JOIN.request params.
  *  See Zigbee Specification r22.1.0, 3.2.2.16
@@ -438,7 +440,7 @@ struct NlmeDirectJoinRequestParams
 };
 
 /**
- *  @ingroup zigbee
+ *  @ingroup Zigbee
  *
  *  NLME-DIRECT-JOIN.confirm params.
  *  See Zigbee Specification r22.1.0, 3.2.2.17
@@ -452,7 +454,7 @@ struct NlmeDirectJoinConfirmParams
 };
 
 /**
- *  @ingroup zigbee
+ *  @ingroup Zigbee
  *
  *  NLME-NETWORK-DISCOVERY.request params.
  *  See Zigbee Specification r22.1.0, 3.2.2.3
@@ -492,7 +494,7 @@ struct NetworkDescriptor
 };
 
 /**
- *  @ingroup zigbee
+ *  @ingroup Zigbee
  *
  *  NLME-NETWORK-DISCOVERY.confirm params. See Zigbee Specification r22.1.0, 3.2.2.4
  */
@@ -506,7 +508,7 @@ struct NlmeNetworkDiscoveryConfirmParams
 };
 
 /**
- * @ingroup zigbee
+ * @ingroup Zigbee
  *
  * NLME-JOIN.request params.
  * See Zigbee Specification r22.1.0, 3.2.2.13
@@ -528,7 +530,7 @@ struct NlmeJoinRequestParams
 };
 
 /**
- *  @ingroup zigbee
+ *  @ingroup Zigbee
  *
  *  NLME-JOIN.confirm params.
  *  See Zigbee Specification r22.1.0, 3.2.2.15
@@ -560,7 +562,7 @@ struct NlmeJoinConfirmParams
 };
 
 /**
- *  @ingroup zigbee
+ *  @ingroup Zigbee
  *
  *  NLME-JOIN.indication params.
  *  See Zigbee Specification r22.1.0, 3.2.2.14
@@ -579,7 +581,7 @@ struct NlmeJoinIndicationParams
 };
 
 /**
- * @ingroup zigbee
+ * @ingroup Zigbee
  *
  * NLME-START-ROUTER.request params.
  * See Zigbee Specification r22.1.0, 3.2.2.13
@@ -592,7 +594,7 @@ struct NlmeStartRouterRequestParams
 };
 
 /**
- * @ingroup zigbee
+ * @ingroup Zigbee
  *
  * NLME-START-ROUTER.confirm params.
  * See Zigbee Specification r22.1.0, 3.2.2.10
@@ -608,7 +610,7 @@ struct NlmeStartRouterConfirmParams
 //////////////////////
 
 /**
- * @ingroup zigbee
+ * @ingroup Zigbee
  *
  * This callback is called after a NSDU has successfully received and
  *  NWK push it to deliver it to the next higher layer.
@@ -617,7 +619,7 @@ struct NlmeStartRouterConfirmParams
 typedef Callback<void, NldeDataIndicationParams, Ptr<Packet>> NldeDataIndicationCallback;
 
 /**
- * @ingroup zigbee
+ * @ingroup Zigbee
  *
  * This callback is used to notify the next higher layer with a confirmation in response to
  * a previously issued NLDE-DATA.request.
@@ -626,7 +628,7 @@ typedef Callback<void, NldeDataIndicationParams, Ptr<Packet>> NldeDataIndication
 typedef Callback<void, NldeDataConfirmParams> NldeDataConfirmCallback;
 
 /**
- *  @ingroup zigbee
+ *  @ingroup Zigbee
  *
  *  This callback is used to notify the next higher layer with a confirmation in response to
  *  a previously issued NLME-NETWORK-FORMATION.request.
@@ -634,7 +636,7 @@ typedef Callback<void, NldeDataConfirmParams> NldeDataConfirmCallback;
 typedef Callback<void, NlmeNetworkFormationConfirmParams> NlmeNetworkFormationConfirmCallback;
 
 /**
- *  @ingroup zigbee
+ *  @ingroup Zigbee
  *
  *  This callback is used to notify the next higher layer with a confirmation in response to
  *  a previously issued NLME-NETWORK-DISCOVERY.request.
@@ -642,7 +644,7 @@ typedef Callback<void, NlmeNetworkFormationConfirmParams> NlmeNetworkFormationCo
 typedef Callback<void, NlmeNetworkDiscoveryConfirmParams> NlmeNetworkDiscoveryConfirmCallback;
 
 /**
- *  @ingroup zigbee
+ *  @ingroup Zigbee
  *
  *  This callback is used to notify the next higher layer with a confirmation in response to
  *  a previously issued NLME-ROUTE-DISCOVERY.request.
@@ -650,7 +652,7 @@ typedef Callback<void, NlmeNetworkDiscoveryConfirmParams> NlmeNetworkDiscoveryCo
 typedef Callback<void, NlmeRouteDiscoveryConfirmParams> NlmeRouteDiscoveryConfirmCallback;
 
 /**
- *  @ingroup zigbee
+ *  @ingroup Zigbee
  *
  *  This callback is used to notify the next higher layer with a confirmation in response to
  *  a previously issued NLME-DIRECT-JOIN.request.
@@ -658,7 +660,7 @@ typedef Callback<void, NlmeRouteDiscoveryConfirmParams> NlmeRouteDiscoveryConfir
 typedef Callback<void, NlmeDirectJoinConfirmParams> NlmeDirectJoinConfirmCallback;
 
 /**
- *  @ingroup zigbee
+ *  @ingroup Zigbee
  *
  *  This callback is used to notify the next higher layer with a confirmation in response to
  *  a previously issued NLME-JOIN.request.
@@ -666,7 +668,7 @@ typedef Callback<void, NlmeDirectJoinConfirmParams> NlmeDirectJoinConfirmCallbac
 typedef Callback<void, NlmeJoinConfirmParams> NlmeJoinConfirmCallback;
 
 /**
- *  @ingroup zigbee
+ *  @ingroup Zigbee
  *
  *  This callback is used to notify the next higher layer with an indication that a new
  *  device has successfully joined its network by association or rejoining.
@@ -674,7 +676,7 @@ typedef Callback<void, NlmeJoinConfirmParams> NlmeJoinConfirmCallback;
 typedef Callback<void, NlmeJoinIndicationParams> NlmeJoinIndicationCallback;
 
 /**
- *  @ingroup zigbee
+ *  @ingroup Zigbee
  *
  *  This callback is used to notify the next higher layer with a confirmation in response to
  *  a previously issued NLME-START-ROUTER.request.
@@ -682,7 +684,7 @@ typedef Callback<void, NlmeJoinIndicationParams> NlmeJoinIndicationCallback;
 typedef Callback<void, NlmeStartRouterConfirmParams> NlmeStartRouterConfirmCallback;
 
 /**
- * @ingroup zigbee
+ * @ingroup Zigbee
  *
  * Class that implements the Zigbee Specification Network Layer
  */
@@ -708,6 +710,13 @@ class ZigbeeNwk : public Object
      * @param mac The pointer to the underlying LrWpan MAC to set to this Zigbee NWK
      */
     void SetMac(Ptr<lrwpan::LrWpanMacBase> mac);
+
+    /**
+     * Get the group table used by this Zigbee NWK.
+     *
+     * @param groupTable The pointer to the group table to set.
+     */
+    void SetGroupTable(Ptr<ZigbeeGroupTable> groupTable);
 
     /**
      * Get the underlying MAC used by the current Zigbee NWK.
@@ -1284,6 +1293,12 @@ class ZigbeeNwk : public Object
     BroadcastTransactionTable m_btt;
 
     /**
+     *  The Group Table used by this Zigbee NWK.
+     *  See Zigbee specification r22.1.0, 3.6.3.2
+     */
+    Ptr<ZigbeeGroupTable> m_nwkGroupIdTable;
+
+    /**
      * Enqueue a packet in the pending transmission queue until
      * a route is discovered for its destination.
      *
@@ -1446,6 +1461,30 @@ class ZigbeeNwk : public Object
                      ZigbeePayloadRouteReplyCommand payload);
 
     /**
+     *  Process a Multicast Frame received as a member of a multicast group.
+     *  See Zigbee specification r22.1.0 Section 3.6.6.3
+     *
+     * @param nwkHeader The network header of the received multicast frame.
+     * @param msdu The MSDU (MSDU = MAC Service Data Unit) received
+     * @param params The MCPS-DATA.indication parameters associated to the received frame.
+     */
+    void ReceiveMulticastMemberFrame(ZigbeeNwkHeader nwkHeader,
+                                     Ptr<Packet> msdu,
+                                     lrwpan::McpsDataIndicationParams params);
+
+    /**
+     *  Process a Multicast Frame received as a non member of a multicast group.
+     *  See Zigbee specification r22.1.0 Section 3.6.6.4
+     *
+     * @param nwkHeader The network header of the received multicast frame.
+     * @param msdu The MSDU (MSDU = MAC Service Data Unit) received
+     * @param params The MCPS-DATA.indication parameters associated to the received frame.
+     */
+    void ReceiveMulticastNonMemberFrame(ZigbeeNwkHeader nwkHeader,
+                                        Ptr<Packet> msdu,
+                                        lrwpan::McpsDataIndicationParams params);
+
+    /**
      *  Returns true if the address is a broadcast address according to
      *  Zigbee specification r22.1.0, Section 3.6.5, Table 3-69
      *
@@ -1479,6 +1518,18 @@ class ZigbeeNwk : public Object
      *                  requests (NLDE-DATA.confirm).
      */
     void SendDataBcst(Ptr<Packet> packet, uint8_t nwkHandle);
+
+    /**
+     * Send a data multicast packet to all the members of a multicast group.
+     *
+     * @param packet The NPDU (nwkHeader + data payload) to transmit.
+     * @param nwkHandle The NWK handle associated to this packet (nsdu handle).
+     *                  A handle of 0 implies that the unicast transmission is a
+     *                  retransmission and do not requires a handle which is
+     *                  used to identify a packet in confirmations to
+     *                  requests (NLDE-DATA.confirm).
+     */
+    void SendDataMcst(Ptr<Packet> packet, uint8_t nwkHandle);
 
     /**
      * Find the next hop in route to a destination.
@@ -1525,6 +1576,11 @@ class ZigbeeNwk : public Object
      *  Provides uniform random values for the route request jitter
      */
     Ptr<UniformRandomVariable> m_rreqJitter;
+
+    /**
+     *  Provides uniform random values for the broadcast jitter
+     */
+    Ptr<UniformRandomVariable> m_bcstJitter;
 
     /**
      * Temporarily store beacons information from POS routers and PAN coordinators
@@ -1612,6 +1668,14 @@ class ZigbeeNwk : public Object
      * per device.
      */
     double m_nwkcMaxRREQJitter;
+
+    /**
+     * Minimum Broadcast jitter time (msec).
+     * Zigbee Specification r22.1.0, Table 3-57. Defined as a constant
+     * in the specification but here is defined as variable to allow the selection of values
+     * per device.
+     */
+    double m_nwkcMaxBroadcastJitter;
 
     //////////////////////////////
     // Network layer attributes //
@@ -1763,6 +1827,7 @@ class ZigbeeNwk : public Object
      * The maximum time duration in milliseconds allowed for the parent all the child devices to
      * retransmit a broadcast message.
      * See Zigbe Specification r22.1.0, Table 3-58 (NIB attributes)
+     * See Zigbee-2007 Layer PICS and Stack Profiles
      */
     Time m_nwkPassiveAckTimeout;
 

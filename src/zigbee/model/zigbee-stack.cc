@@ -41,6 +41,7 @@ ZigbeeStack::ZigbeeStack()
 
     m_nwk = CreateObject<zigbee::ZigbeeNwk>();
     m_aps = CreateObject<zigbee::ZigbeeAps>();
+    m_groupTable = Create<zigbee::ZigbeeGroupTable>();
 
     m_nwkOnly = false;
 }
@@ -59,6 +60,7 @@ ZigbeeStack::DoDispose()
     m_node = nullptr;
     m_aps = nullptr;
     m_nwk = nullptr;
+    m_groupTable = nullptr;
     m_mac = nullptr;
     Object::DoDispose();
 }
@@ -67,8 +69,6 @@ void
 ZigbeeStack::DoInitialize()
 {
     NS_LOG_FUNCTION(this);
-
-    // AggregateObject(m_aps);
 
     NS_ABORT_MSG_UNLESS(m_netDevice,
                         "Invalid NetDevice found when attempting to install ZigbeeStack");
@@ -108,9 +108,16 @@ ZigbeeStack::DoInitialize()
         m_nwk->SetNldeDataConfirmCallback(MakeCallback(&ZigbeeAps::NldeDataConfirm, m_aps));
         m_nwk->SetNldeDataIndicationCallback(MakeCallback(&ZigbeeAps::NldeDataIndication, m_aps));
 
+        m_nwk->SetGroupTable(m_groupTable);
+        m_aps->SetGroupTable(m_groupTable);
+
         m_aps->Initialize();
         m_aps->SetNwk(m_nwk);
         AggregateObject(m_aps);
+    }
+    else
+    {
+        m_nwk->SetGroupTable(m_groupTable);
     }
 
     // Obtain Extended address as soon as NWK is set to begin operations

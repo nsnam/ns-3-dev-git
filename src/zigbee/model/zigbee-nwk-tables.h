@@ -924,10 +924,10 @@ class BroadcastTransactionRecord : public SimpleRefCount<BroadcastTransactionRec
     void Print(Ptr<OutputStreamWrapper> stream) const;
 
   private:
-    Mac16Address m_srcAddr;        //!< The 16-bit network address of the broadcast initiator.
-    uint8_t m_sequenceNumber;      //!< The RREQ sequence number of the initiator's broadcast.
-    Time m_expirationTime;         //!< An indicator of when the entry expires
-    uint8_t m_broadcastRetryCount; //!< The number of times this BCST has been retried.
+    Mac16Address m_srcAddr;           //!< The 16-bit network address of the broadcast initiator.
+    uint8_t m_sequenceNumber{0};      //!< The RREQ sequence number of the initiator's broadcast.
+    Time m_expirationTime;            //!< An indicator of when the entry expires
+    uint8_t m_broadcastRetryCount{1}; //!< The number of times this BCST has been retried.
 };
 
 /**
@@ -1296,6 +1296,13 @@ class BroadcastTransactionTable
      * @return True if a searched entry is found
      */
     bool LookUpEntry(uint8_t seq, Ptr<BroadcastTransactionRecord>& entryFound);
+
+    /**
+     * Delete a broadcast transaction record (BTR) from the broadcast transaction table (BTT).
+     *
+     * @param seq The sequence number of the broadcasted frame to delete.
+     */
+    void Delete(uint8_t seq);
 
     /**
      * Purge expired entries from the broadcast transaction table (BTT).

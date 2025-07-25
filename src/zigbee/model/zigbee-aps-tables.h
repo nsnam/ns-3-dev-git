@@ -26,7 +26,7 @@ namespace zigbee
 {
 
 /**
- * @ingroup zigbee
+ * @ingroup Zigbee
  *
  * APS Destination Address Mode for Binding
  * Zigbee Specification r22.1.0, Table 2-6
@@ -39,7 +39,7 @@ enum class ApsDstAddressModeBind : std::uint8_t
 };
 
 /**
- * @ingroup zigbee
+ * @ingroup Zigbee
  *
  * The status resulting of interactions with the binding table.
  */
@@ -53,7 +53,7 @@ enum class BindingTableStatus : std::uint8_t
 };
 
 /**
- * @ingroup zigbee
+ * @ingroup Zigbee
  *
  * Binding Table entry: Source portion of the table.
  * As described in Zigbee Specification r22.1.0, Table 2-134

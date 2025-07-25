@@ -1327,6 +1327,14 @@ BroadcastTransactionTable::LookUpEntry(uint8_t seq, Ptr<BroadcastTransactionReco
 }
 
 void
+BroadcastTransactionTable::Delete(uint8_t seq)
+{
+    std::erase_if(m_broadcastTransactionTable, [&seq](Ptr<BroadcastTransactionRecord> entry) {
+        return entry->GetSeqNum() == seq;
+    });
+}
+
+void
 BroadcastTransactionTable::Purge()
 {
     std::erase_if(m_broadcastTransactionTable, [](Ptr<BroadcastTransactionRecord> btr) {

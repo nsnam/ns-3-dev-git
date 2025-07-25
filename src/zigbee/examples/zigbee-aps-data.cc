@@ -16,6 +16,10 @@
  * handle automatically by the NWK layer. There is no ZDO, therefore we need to manually
  * use the NWK to form the network and establish the router devices.
  *
+ * The example demonstrates the following:
+ * - Sending data using the APS layer (Unicast and Groupcast destinations).
+ * - Using the APS layer to establish groupcast groups and endpoints.
+ *
  *
  *  Network Extended PAN id: 0X000000000000CA:FE (based on the PAN coordinator address)
  *
@@ -29,10 +33,14 @@
  *
  *  Topology:
  *
- *  ZC--------ZR1------------ZR2----------ZR3
+ *  ZC--------ZR1------------ZR2----------ZR3 (GroupID Member: [01:23] | Endpoints: 3)
  *             |
  *             |
- *            ZR4
+ *            ZR4 (GroupID Member: [01:23] | Endpoints: 3, 9)
+ *
+ *
+ *  In example, Both ZR4 and ZR3 are part of the multicast group [01:23].
+ *  ZR4 has two endpoints in the group, 3 and 9. ZR3 has only one endpoint in the group, 3.
  */
 
 #include "ns3/constant-position-mobility-model.h"
@@ -57,66 +65,30 @@ NS_LOG_COMPONENT_DEFINE("ZigbeeRouting");
 ZigbeeStackContainer zigbeeStacks;
 
 static void
-TraceRoute(Mac16Address src, Mac16Address dst)
-{
-    std::cout << "\nTime " << Simulator::Now().As(Time::S) << " | "
-              << "Traceroute to destination [" << dst << "]:\n";
-    Mac16Address target = src;
-    uint32_t count = 1;
-    while (target != Mac16Address("FF:FF") && target != dst)
-    {
-        Ptr<ZigbeeStack> zstack;
-
-        for (auto i = zigbeeStacks.Begin(); i != zigbeeStacks.End(); i++)
-        {
-            zstack = *i;
-            if (zstack->GetNwk()->GetNetworkAddress() == target)
-            {
-                break;
-            }
-        }
-
-        bool neighbor = false;
-        target = zstack->GetNwk()->FindRoute(dst, neighbor);
-        if (target == Mac16Address("FF:FF"))
-        {
-            std::cout << count << ". Node " << zstack->GetNode()->GetId() << " ["
-                      << zstack->GetNwk()->GetNetworkAddress() << " | "
-                      << zstack->GetNwk()->GetIeeeAddress() << "]: "
-                      << " Destination Unreachable\n";
-        }
-        else
-        {
-            std::cout << count << ". Node " << zstack->GetNode()->GetId() << " ["
-                      << zstack->GetNwk()->GetNetworkAddress() << " | "
-                      << zstack->GetNwk()->GetIeeeAddress() << "]: "
-                      << "NextHop [" << target << "] ";
-            if (neighbor)
-            {
-                std::cout << "(*Neighbor)\n";
-            }
-            else
-            {
-                std::cout << "\n";
-            }
-            count++;
-        }
-    }
-    std::cout << "\n";
-}
-
-static void
 ApsDataIndication(Ptr<ZigbeeStack> stack, ApsdeDataIndicationParams params, Ptr<Packet> p)
 {
-    std::cout << Simulator::Now().As(Time::S) << " Node " << stack->GetNode()->GetId() << " | "
-              << "ApsdeDataIndication:  Received packet of size " << p->GetSize()
+    std::cout << Simulator::Now().As(Time::S) << " Node " << stack->GetNode()->GetId() << " | ";
+    if (params.m_dstAddrMode == ApsDstAddressMode::DST_ADDR16_DST_ENDPOINT_PRESENT)
+    {
+        std::cout << "UCST | ";
+    }
+    else if (params.m_dstAddrMode == ApsDstAddressMode::GROUP_ADDR_DST_ENDPOINT_NOT_PRESENT)
+    {
+        std::cout << "GROUPCAST | ";
+    }
+    else
+    {
+        std::cout << "Unknown | ";
+    }
+    std::cout << "ApsdeDataIndication: Received DATA packet with size " << p->GetSize()
               << " for destination EndPoint " << params.m_dstEndPoint << "\n";
 }
 
 static void
 NwkNetworkFormationConfirm(Ptr<ZigbeeStack> stack, NlmeNetworkFormationConfirmParams params)
 {
-    std::cout << "NlmeNetworkFormationConfirmStatus = " << params.m_status << "\n";
+    std::cout << Simulator::Now().As(Time::S) << " Node " << stack->GetNode()->GetId() << " | "
+              << "NlmeNetworkFormationConfirmStatus = " << params.m_status << "\n";
 }
 
 static void
@@ -129,19 +101,9 @@ NwkNetworkDiscoveryConfirm(Ptr<ZigbeeStack> stack, NlmeNetworkDiscoveryConfirmPa
 
     if (params.m_status == NwkStatus::SUCCESS)
     {
-        std::cout << " Network discovery confirm Received. Networks found ("
-                  << params.m_netDescList.size() << "):\n";
-
-        for (const auto& netDescriptor : params.m_netDescList)
-        {
-            std::cout << " ExtPanID: 0x" << std::hex << netDescriptor.m_extPanId << "\n"
-                      << std::dec << " CH:  " << static_cast<uint32_t>(netDescriptor.m_logCh)
-                      << "\n"
-                      << std::hex << " Pan ID: 0x" << netDescriptor.m_panId << "\n"
-                      << " Stack profile: " << std::dec
-                      << static_cast<uint32_t>(netDescriptor.m_stackProfile) << "\n"
-                      << "--------------------\n";
-        }
+        std::cout << Simulator::Now().As(Time::S) << " Node " << stack->GetNode()->GetId() << " | "
+                  << " Network discovery confirm Received. Networks found ("
+                  << params.m_netDescList.size() << ")\n";
 
         NlmeJoinRequestParams joinParams;
 
@@ -168,7 +130,7 @@ NwkJoinConfirm(Ptr<ZigbeeStack> stack, NlmeJoinConfirmParams params)
     {
         std::cout << Simulator::Now().As(Time::S) << " Node " << stack->GetNode()->GetId() << " | "
                   << " The device joined the network SUCCESSFULLY with short address " << std::hex
-                  << params.m_networkAddress << " on the Extended PAN Id: " << std::hex
+                  << params.m_networkAddress << " on the Extended PAN Id: 0x" << std::hex
                   << params.m_extendedPanId << "\n"
                   << std::dec;
 
@@ -193,7 +155,7 @@ NwkRouteDiscoveryConfirm(Ptr<ZigbeeStack> stack, NlmeRouteDiscoveryConfirmParams
 }
 
 static void
-SendData(Ptr<ZigbeeStack> stackSrc, Ptr<ZigbeeStack> stackDst)
+SendDataUcst(Ptr<ZigbeeStack> stackSrc, Ptr<ZigbeeStack> stackDst)
 {
     // Send data from a device with stackSrc to device with stackDst.
 
@@ -213,32 +175,39 @@ SendData(Ptr<ZigbeeStack> stackSrc, Ptr<ZigbeeStack> stackDst)
     dataReqParams.m_useAlias = false;
     // Default, use 16 bit address destination (No option), equivalent to 0x00
     dataReqParams.m_txOptions = txOptions.GetTxOptions();
-    dataReqParams.m_srcEndPoint = 3;
-    dataReqParams.m_clusterId = 5; // Arbitrary value
-    dataReqParams.m_profileId = 2; // Arbitrary value
+    dataReqParams.m_srcEndPoint = 4; // Arbitrary value, must not be 0
+    dataReqParams.m_clusterId = 5;   // Arbitrary value
+    dataReqParams.m_profileId = 2;   // Arbitrary value
 
     dataReqParams.m_dstAddrMode = ApsDstAddressMode::DST_ADDR16_DST_ENDPOINT_PRESENT;
     dataReqParams.m_dstAddr16 = stackDst->GetNwk()->GetNetworkAddress();
-    dataReqParams.m_dstEndPoint = 4;
+    dataReqParams.m_dstEndPoint = 3;
 
     Simulator::ScheduleNow(&ZigbeeAps::ApsdeDataRequest, stackSrc->GetAps(), dataReqParams, p);
+}
 
-    // Give a few seconds to allow the creation of the route and
-    // then print the route trace and tables from the source
-    Simulator::Schedule(Seconds(3),
-                        &TraceRoute,
-                        stackSrc->GetNwk()->GetNetworkAddress(),
-                        stackDst->GetNwk()->GetNetworkAddress());
+static void
+SendDataGcst(Ptr<ZigbeeStack> stackSrc)
+{
+    Ptr<Packet> p = Create<Packet>(5);
+    // Src and Dst Endpoints must not be 0, because this is reserved for the ZDO.
+    // Other Endpoint numbers can help to differentiate between different applications
+    // running in the same node (similar to the concept of a port in TCP/IP).
+    // Likewise, because we currently do not have ZDO or ZCL or AF, clusterId
+    // and profileId numbers are non-sensical.
+    ApsdeDataRequestParams dataReqParams;
+    ZigbeeApsTxOptions txOptions;
+    dataReqParams.m_useAlias = false;
+    // Default, use 16 bit address destination (No option), equivalent to 0x00
+    dataReqParams.m_txOptions = txOptions.GetTxOptions();
+    dataReqParams.m_srcEndPoint = 4; // Arbitrary value, must not be 0
+    dataReqParams.m_clusterId = 5;   // Arbitrary value
+    dataReqParams.m_profileId = 2;   // Arbitrary value
 
-    Ptr<OutputStreamWrapper> stream = Create<OutputStreamWrapper>(&std::cout);
-    Simulator::Schedule(Seconds(4), &ZigbeeNwk::PrintNeighborTable, stackSrc->GetNwk(), stream);
+    dataReqParams.m_dstAddrMode = ApsDstAddressMode::GROUP_ADDR_DST_ENDPOINT_NOT_PRESENT;
+    dataReqParams.m_dstAddr16 = Mac16Address("01:23"); // The destination group address
 
-    Simulator::Schedule(Seconds(4), &ZigbeeNwk::PrintRoutingTable, stackSrc->GetNwk(), stream);
-
-    Simulator::Schedule(Seconds(4),
-                        &ZigbeeNwk::PrintRouteDiscoveryTable,
-                        stackSrc->GetNwk(),
-                        stream);
+    Simulator::ScheduleNow(&ZigbeeAps::ApsdeDataRequest, stackSrc->GetAps(), dataReqParams, p);
 }
 
 int
@@ -247,6 +216,7 @@ main(int argc, char* argv[])
     LogComponentEnableAll(LogLevel(LOG_PREFIX_TIME | LOG_PREFIX_FUNC | LOG_PREFIX_NODE));
     // Enable logs for further details
     // LogComponentEnable("ZigbeeNwk", LOG_LEVEL_DEBUG);
+    // LogComponentEnable("ZigbeeAps", LOG_LEVEL_DEBUG);
 
     RngSeedManager::SetSeed(3);
     RngSeedManager::SetRun(4);
@@ -373,6 +343,11 @@ main(int argc, char* argv[])
     zstack4->GetAps()->SetApsdeDataIndicationCallback(
         MakeBoundCallback(&ApsDataIndication, zstack4));
 
+    // NWK Layer
+    // We do not have a ZDO, therefore we need to manually
+    // initiate the network formation and discovery procedures
+    // using the NWK layer.
+
     // 1 - Initiate the Zigbee coordinator, start the network
     // ALL_CHANNELS = 0x07FFF800 (Channels 11~26)
     NlmeNetworkFormationRequestParams netFormParams;
@@ -431,9 +406,49 @@ main(int argc, char* argv[])
                                    zstack4->GetNwk(),
                                    netDiscParams4);
 
-    // 5- Find Route and Send data (Call to APS layer)
+    // APS Layer
+    // 4- Establish the Groupcast groups and its endpoints
+    // Add group [01:23] and endpoint 3 to Devices 3 and 4
+    // Also add endpoint 9 to device 4 in the same group.
+    ApsmeGroupRequestParams groupParams;
+    groupParams.m_groupAddress = Mac16Address("01:23");
+    groupParams.m_endPoint = 3;
+    Simulator::ScheduleWithContext(zstack3->GetNode()->GetId(),
+                                   Seconds(7),
+                                   &ZigbeeAps::ApsmeAddGroupRequest,
+                                   zstack3->GetAps(),
+                                   groupParams);
 
-    Simulator::Schedule(Seconds(8), &SendData, zstack0, zstack3);
+    Simulator::ScheduleWithContext(zstack4->GetNode()->GetId(),
+                                   Seconds(7),
+                                   &ZigbeeAps::ApsmeAddGroupRequest,
+                                   zstack4->GetAps(),
+                                   groupParams);
+
+    groupParams.m_endPoint = 9; // Add endpoint 9 to the same group
+    Simulator::ScheduleWithContext(zstack4->GetNode()->GetId(),
+                                   Seconds(7),
+                                   &ZigbeeAps::ApsmeAddGroupRequest,
+                                   zstack4->GetAps(),
+                                   groupParams);
+
+    // 4- Send data using the APS layer
+
+    // GROUPCAST
+    // Transmit data to all endpoints in devices that are
+    // part of the group [01:23] (i.e. endpoints in the ZR3 and ZR4).
+    Simulator::Schedule(Seconds(9), &SendDataGcst, zstack0);
+
+    // UNICAST
+    // Transmit data to a specific endpoint in a device
+    // In this case, we send data to the endpoint 3 of ZR3.
+    // We require the destination address, but we do not know this apriori,
+    // therefore we can request it from zstack3 on runtime.
+    Simulator::Schedule(Seconds(10), &SendDataUcst, zstack0, zstack3);
+
+    // Print the contents of the routing table in the initiator device (ZC)
+    Ptr<OutputStreamWrapper> stream = Create<OutputStreamWrapper>(&std::cout);
+    Simulator::Schedule(Seconds(11), &ZigbeeNwk::PrintRoutingTable, zstack0->GetNwk(), stream);
 
     Simulator::Stop(Seconds(20));
     Simulator::Run();

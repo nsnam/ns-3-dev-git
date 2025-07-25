@@ -13,6 +13,7 @@
 
 #include "zigbee-aps-header.h"
 #include "zigbee-aps-tables.h"
+#include "zigbee-group-table.h"
 #include "zigbee-nwk.h"
 
 #include "ns3/event-id.h"
@@ -222,6 +223,44 @@ struct ApsmeBindConfirmParams
     uint8_t m_dstEndPoint{0xF0}; //!< The application destination endpoint
 };
 
+/**
+ * @ingroup zigbee
+ *
+ * Zigbee Specification r22.1.0, Section 2.2.4.5.1  and  2.2.4.5.3
+ * APSME-ADD-GROUP.request and APSME-REMOVE-GROUP.request params
+ */
+struct ApsmeGroupRequestParams
+{
+    Mac16Address m_groupAddress; //!< The group address to add
+    uint8_t m_endPoint{1};       //!< The endpoint to which the group address is associated
+};
+
+/**
+ * @ingroup zigbee
+ *
+ * Zigbee Specification r22.1.0, Section 2.2.4.5.2 and 2.2.4.5.4
+ * APSME-ADD-GROUP.confirm  and APSME-REMOVE-GROUP.confirm params
+ */
+struct ApsmeGroupConfirmParams
+{
+    ApsStatus m_status{ApsStatus::INVALID_PARAMETER}; //!< The status of the add group request
+    Mac16Address m_groupAddress;                      //!< The group address being added
+    uint8_t m_endPoint{1}; //!< The endpoint to which the given group is being added.
+};
+
+/**
+ * @ingroup zigbee
+ *
+ * Zigbee Specification r22.1.0, Section 2.2.4.5.6
+ * APSME-REMOVE-ALL-GROUPS.request params
+ */
+struct ApsmeRemoveAllGroupsConfirmParams
+{
+    ApsStatus m_status{
+        ApsStatus::INVALID_PARAMETER}; //!< The status of the remove all groups request
+    uint8_t m_endPoint{1};             //!< The endpoint from which all groups are being removed.
+};
+
 //////////////////////
 //     Callbacks    //
 //////////////////////
@@ -260,6 +299,30 @@ typedef Callback<void, ApsmeBindConfirmParams> ApsmeUnbindConfirmCallback;
 /**
  * @ingroup zigbee
  *
+ * This callback is called to confirm a successfully addition of a group address
+ * and or endPoint into the group table.
+ */
+typedef Callback<void, ApsmeGroupConfirmParams> ApsmeAddGroupConfirmCallback;
+
+/**
+ * @ingroup zigbee
+ *
+ * This callback is called to confirm a successfully removal of a group address
+ * and or endPoint from the group table.
+ */
+typedef Callback<void, ApsmeGroupConfirmParams> ApsmeRemoveGroupConfirmCallback;
+
+/**
+ * @ingroup zigbee
+ *
+ * This callback is called to confirm a successfully removal of an endpoint from
+ * all the the groups.
+ */
+typedef Callback<void, ApsmeRemoveAllGroupsConfirmParams> ApsmeRemoveAllGroupsConfirmCallback;
+
+/**
+ * @ingroup zigbee
+ *
  * Zigbee Specification r22.1.0, Section 2.2.3
  * Class that implements the Zigbee Specification Application Support Sub-layer (APS).
  */
@@ -285,6 +348,13 @@ class ZigbeeAps : public Object
      * @param nwk The pointer to the underlying Zigbee NWK to set to this Zigbee APS
      */
     void SetNwk(Ptr<ZigbeeNwk> nwk);
+
+    /**
+     * Get the group table used by this Zigbee APS.
+     *
+     * @param groupTable The pointer to the group table to set.
+     */
+    void SetGroupTable(Ptr<ZigbeeGroupTable> groupTable);
 
     /**
      * Get the underlying NWK used by the current Zigbee APS.
@@ -322,6 +392,36 @@ class ZigbeeAps : public Object
     void ApsmeUnbindRequest(ApsmeBindRequestParams params);
 
     /**
+     * Zigbee Specification r22.1.0, Section 2.2.4.5.1
+     * APSME-ADD-GROUP.request
+     * Request that group membership for a particular group be added
+     * for a particular endpoint.
+     *
+     * @param params The APSME add group request params
+     */
+    void ApsmeAddGroupRequest(ApsmeGroupRequestParams params);
+
+    /**
+     * Zigbee Specification r22.1.0, Section 2.2.4.5.3
+     * APSME-REMOVE-GROUP.request
+     * Request that group membership for a particular group be removed
+     * for a particular endpoint.
+     *
+     * @param params The APSME remove group request params
+     */
+    void ApsmeRemoveGroupRequest(ApsmeGroupRequestParams params);
+
+    /**
+     * Zigbee Specification r22.1.0, Section 2.2.4.5.5
+     * APSME-REMOVE-ALL-GROUPS.request
+     * Remove membership in all groups from an endpoint, so that no group-addressed frames
+     * will be delivered to that endpoint.
+     *
+     * @param endPoint The endpoint from which all groups are being removed.
+     */
+    void ApsmeRemoveAllGroupsRequest(uint8_t endPoint);
+
+    /**
      * Zigbee Specification r22.1.0, Section 3.2.1.2
      * NLDE-DATA.confirm
      * Used to report to the APS the transmission of data from the NWK.
@@ -339,6 +439,18 @@ class ZigbeeAps : public Object
      * @param nsdu The packet received
      */
     void NldeDataIndication(NldeDataIndicationParams params, Ptr<Packet> nsdu);
+
+    /**
+     * Zigbee Specification r22.1.0, Section 2.2.8.4.2
+     * Reception and Rejection of data from the NWK.
+     *
+     *  @param apsHeader The APS header of the received packet
+     *  @param params The NLDE data indication params
+     *  @param nsdu The packet received
+     */
+    void ReceiveData(const ZigbeeApsHeader& apsHeader,
+                     const NldeDataIndicationParams& params,
+                     Ptr<Packet> nsdu);
 
     /**
      *  Set the callback as part of the interconnections between the APS and
@@ -376,6 +488,33 @@ class ZigbeeAps : public Object
      */
     void SetApsmeUnbindConfirmCallback(ApsmeUnbindConfirmCallback c);
 
+    /**
+     *  Set the callback as part of the interconnections between the APS and
+     *  the next layer or service (typically the application framework). The callback
+     *  implements the callback used in a APSME-ADD-GROUP.confirm
+     *
+     *  @param c the ApsmeAddGroupConfirm callback
+     */
+    void SetApsmeAddGroupConfirmCallback(ApsmeAddGroupConfirmCallback c);
+
+    /**
+     *  Set the callback as part of the interconnections between the APS and
+     *  the next layer or service (typically the application framework). The callback
+     *  implements the callback used in a APSME-REMOVE-GROUP.confirm
+     *
+     *  @param c the ApsmeRemoveGroupConfirm callback
+     */
+    void SetApsmeRemoveGroupConfirmCallback(ApsmeRemoveGroupConfirmCallback c);
+
+    /**
+     *  Set the callback as part of the interconnections between the APS and
+     *  the next layer or service (typically the application framework). The callback
+     *  implements the callback used in a APSME-REMOVE-ALL-GROUPS.confirm
+     *
+     *  @param c the ApsmeRemoveAllGroupsConfirm callback
+     */
+    void SetApsmeRemoveAllGroupsConfirmCallback(ApsmeRemoveAllGroupsConfirmCallback c);
+
   protected:
     void DoInitialize() override;
     void DoDispose() override;
@@ -399,9 +538,13 @@ class ZigbeeAps : public Object
      */
     void SendDataUcstBcst(ApsdeDataRequestParams params, Ptr<Packet> asdu);
 
-    Ptr<ZigbeeNwk> m_nwk;           //!< Pointer to the underlying NWK connected to this Zigbee APS
-    SequenceNumber8 m_apsCounter;   //!< The sequence number used in packet Tx with APS headers.
-    BindingTable m_apsBindingTable; //!< The binding table associated to this APS layer
+    /**
+     * Send a Groupcast to a group address destination.
+     *
+     * @param params The APSDE data request params
+     * @param asdu  The packet to transmit
+     */
+    void SendDataGroup(ApsdeDataRequestParams params, Ptr<Packet> asdu);
 
     /**
      *  This callback is used to to notify the results of a data transmission
@@ -430,6 +573,59 @@ class ZigbeeAps : public Object
      *  See Zigbee specification r22.1.0, Section 2.2.4.3.4
      */
     ApsmeUnbindConfirmCallback m_apsmeUnbindConfirmCallback;
+
+    /**
+     *  This callback is used to to notify the result of endpoint addition
+     *  request in the APS to the Application framework (AF).
+     *  See Zigbee specification r22.1.0, Section 2.2.4.5.2
+     */
+    ApsmeAddGroupConfirmCallback m_apsmeAddGroupConfirmCallback;
+
+    /**
+     *  This callback is used to to notify the result of a endpoint removal
+     *  request in the APS to the Application framework (AF).
+     *  See Zigbee specification r22.1.0, Section 2.2.4.5.4
+     */
+    ApsmeRemoveGroupConfirmCallback m_apsmeRemoveGroupConfirmCallback;
+
+    /**
+     *  This callback is used to to notify the result of a endpoint removal
+     *  request in the APS to the Application framework (AF).
+     *  See Zigbee specification r22.1.0, Section 2.2.4.5.5
+     */
+    ApsmeRemoveAllGroupsConfirmCallback m_apsmeRemoveAllGroupsConfirmCallback;
+
+    /**
+     * The underlying Zigbee NWK connected to this Zigbee APS.
+     */
+    Ptr<ZigbeeNwk> m_nwk;
+
+    /**
+     * The group table used by this Zigbee APS.
+     * The group table is a shared resource with the NWK layer.
+     * Zigbee Specification r22.1.0, Section 2.2.7.2
+     */
+    Ptr<ZigbeeGroupTable> m_apsGroupTable;
+
+    /**
+     * The sequence number used in packet Tx with APS headers.
+     * Zigbee Specification r22.1.0, Section 2.2.7.2
+     */
+    SequenceNumber8 m_apsCounter;
+
+    /**
+     * The binding table used by this Zigbee APS.
+     * Zigbee Specification r22.1.0, Section 2.2.7.2
+     */
+    BindingTable m_apsBindingTable;
+
+    /**
+     * The APS non-member radius, used to limit the number of hops
+     * for non-member multicast group devices when using NWK layer multicast.
+     * Valid range 0x00 to 0x07.
+     * Zigbee Specification r22.1.0, Section 2.2.7.2
+     */
+    uint8_t m_apsNonMemberRadius;
 };
 
 /**

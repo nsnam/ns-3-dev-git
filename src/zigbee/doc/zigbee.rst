@@ -55,11 +55,13 @@ The NWK has the following limitations:
 - Address duplication detection is not supported.
 - Beacon mode is not througly tested.
 - 16-bit address resolution from a IEEE address at NWK layer is not supported.
+- Route Maintenance is not supported.
 
 
 The APS has the following limitations:
 
-- No groupcasting support (Similar to multicast)
+- No binding table support
+- No security handling
 - No fragmentation support
 - No duplicates detection
 - No acknowledged transmissions
@@ -82,13 +84,13 @@ These primitives are implemented in |ns3| with a combination of functions and ca
 
 The following is a list of NWK primitives supported:
 
-- NLME-NETWORK-DISCOVERY (Request, Confirm)
-- NLME-ROUTE-DISCOVERY (Request, Confirm)
-- NLME-NETWORK-FORMATION (Request, Confirm)
-- NLME-JOIN (Request, Confirm, Indication)
-- NLME-DIRECT-JOIN (Request, Confirm)
-- NLME-START-ROUTER (Request, Confirm)
-- NLDE-DATA (Request, Confirm, Indication)
+- ``NLME-NETWORK-DISCOVERY`` (Request, Confirm)
+- ``NLME-ROUTE-DISCOVERY`` (Request, Confirm)
+- ``NLME-NETWORK-FORMATION`` (Request, Confirm)
+- ``NLME-JOIN`` (Request, Confirm, Indication)
+- ``NLME-DIRECT-JOIN`` (Request, Confirm)
+- ``NLME-START-ROUTER`` (Request, Confirm)
+- ``NLDE-DATA`` (Request, Confirm, Indication)
 
 For details on how to use these primitives, please consult the Zigbee Pro specification.
 
@@ -98,7 +100,7 @@ must interact directly with the NWK.
 
 The following is a brief explanation of how users can interact with the NWK and what are the supported capabilities.
 
-Network joining
+Network Joining
 ~~~~~~~~~~~~~~~
 
 In a Zigbee network, before devices attempt to exchange data with one another, they must first be organized and related to one another based on their specific roles.
@@ -111,7 +113,8 @@ There are three primary roles in a Zigbee network:
 Devices must first join a Zigbee network before they can upgrade their roles to either routers or remain as end devices.
 There are two ways for devices to join a Zigbee network: they can either go through the MAC association process or directly join the network.
 
-**MAC Association Join**
+MAC Association Join
+^^^^^^^^^^^^^^^^^^^^
 
 This method is the default approach used by Zigbee. As the name suggests, it utilizes the underlying MAC layer association mechanism to connect to the Zigbee network.
 For a comprehensive explanation of the association mechanism occurring in the MAC, please refer to the lr-wpan model documentation.
@@ -119,17 +122,17 @@ For a comprehensive explanation of the association mechanism occurring in the MA
 When employing the association mechanism, devices communicate with each other to join an existing network via the network coordinator or a designated router within the network.
 As a result of this joining process, devices are assigned a short address (16-bit address) that they use for routing and data exchange operations. Below is a summary of the MAC association join process:
 
-1. At least one coordinator must be operational and capable of receiving join requests (i.e. A device successfully completed a `NLME-NETWORK-FORMATION.request` primitive).
-2. Devices must issue a `NLME-NETWORK-DISCOVERY.request` to look for candidate coordinators/routers to join. The parameters channel numbers (represented by a bitmap for channels 11-26) and scan duration (ranging from 0 to 14) must also be specified to define the channel in which the device will search for a coordinator or router and the duration of that search.
+1. At least one coordinator must be operational and capable of receiving join requests (i.e. A device successfully completed a ``NLME-NETWORK-FORMATION.request`` primitive).
+2. Devices must issue a ``NLME-NETWORK-DISCOVERY.request`` to look for candidate coordinators/routers to join. The parameters channel numbers (represented by a bitmap for channels 11-26) and scan duration (ranging from 0 to 14) must also be specified to define the channel in which the device will search for a coordinator or router and the duration of that search.
 3. If a coordinator (or a capable router) is found on the designated channel and within communication range, it will respond to the device's request with a beacon that contains both a PAN descriptor and a beacon payload describing the capabilities of the coordinator or router.
 4. Upon receiving these beacons, the device will select "the most ideal coordinator or router candidate" to join.
-5. After selecting the candidate, devices must issue a `NLME-JOIN.request` primitive with the network parameter set to `ASSOCIATION`. This will initiate the join process.
+5. After selecting the candidate, devices must issue a ``NLME-JOIN.request`` primitive with the network parameter set to ``ASSOCIATION``. This will initiate the join process.
 6. If the association is successful, the device will receive a confirmation from the coordinator or router, along with a short address that the device will use for its operations within the Zigbee network.
 7. Short addresses are assigned by the coordinator randomly, which means there could be instances of address duplication. Although the Zigbee specification includes a mechanism for detecting address duplication, this feature is not currently supported in this implementation.
-8. If the association request fails, the device will receive a confirmation with a status indicating failure, rather than `SUCCESSFUL`, and the short address FF:FF will be received (indicating that the device is not associated).
+8. If the association request fails, the device will receive a confirmation with a status indicating failure, rather than ``SUCCESSFUL``, and the short address FF:FF will be received (indicating that the device is not associated).
 
 Note: The process described above outlines the steps for joining the network using a MAC association join.
-However, devices that are required to act as routers must also issue an additional `NLME-START-ROUTER.request` primitive after joining the network in order to begin functioning as routers.
+However, devices that are required to act as routers must also issue an additional ``NLME-START-ROUTER.request`` primitive after joining the network in order to begin functioning as routers.
 
 In |ns3|, Zigbee NWK, coordinators or routers can be found using the following primitive::
 
@@ -158,8 +161,8 @@ In |ns3| a Zigbee NWK join request (using MAC association) is used as follows::
 
 See zigbee/examples for detailed examples using network joining.
 
-**Direct Join (a.k.a. Orphaning process)**
-
+Direct Join (a.k.a. Orphaning process)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Direct Join is employed when the number of nodes in the network and their relationships are known in advance.
 As the name suggests, this method involves registering devices directly with a coordinator or router.
 Subsequently, these devices confirm their registration with the coordinator to receive a network address.
@@ -167,12 +170,12 @@ Subsequently, these devices confirm their registration with the coordinator to r
 This process is simpler than the association method of joining a network, but it is less flexible since it requires manual intervention.
 Below is a summary of the direct join process:
 
-1. If a coordinator device or router is already operational, devices that can communicate with this coordinator must be manually registered using the primitive `NLME-DIRECT-JOIN.request`.
-2. After this registration, the devices registered in step 1 will send a `NLME-JOIN.request` with the rejoin network parameter set to `DIRECT_OR_REJOIN`. This action triggers a MAC orphaning request message, which is used to confirm the device's existence with the coordinator.
+1. If a coordinator device or router is already operational, devices that can communicate with this coordinator must be manually registered using the primitive ``NLME-DIRECT-JOIN.request``.
+2. After this registration, the devices registered in step 1 will send a ``NLME-JOIN.request`` with the rejoin network parameter set to ``DIRECT_OR_REJOIN``. This action triggers a MAC orphaning request message, which is used to confirm the device's existence with the coordinator.
 3. The coordinator or router will respond to the orphaning message by providing an assigned short address.
 4. The device accepts this short address and successfully joins the network.
 
-Similar to the MAC association mechanism, devices that want to function as routers must issue an additional `NLME-START-ROUTER.request` once the joining process is completed.
+Similar to the MAC association mechanism, devices that want to function as routers must issue an additional ``NLME-START-ROUTER.request`` once the joining process is completed.
 
 In |ns3|, a direct join primitive is used as follows::
 
@@ -209,7 +212,8 @@ Despite the common belief that the routing protocol contained in Zigbee is AODV,
 In fact, Zigbee supports not one but 4 different methods of routing: Mesh routing, Many-To-One routing, Source routing, and Tree routing.
 From these routing protocols, the current |ns3| implementation only supports the first two.
 
-**Many-To-One Routing**
+Many-To-One Routing
+^^^^^^^^^^^^^^^^^^^
 
 In Zigbee networks, it's common for multiple nodes to need to communicate with a single node, often referred to as a concentrator.
 If all nodes perform a Mesh route discovery for this single point in the network, it can lead to an overwhelming number of route request messages, which may degrade network performance.
@@ -241,12 +245,13 @@ In |ns3|, Many-To-One routing is achieved by using the ``NLME-ROUTE-DISCOVERY.re
    zstack->GetNwk()->NlmeRouteDiscoveryRequest(routeDiscParams);
 
 .. note::
-    Important: The process described above assumes that devices have already joined the network.
+    The process described above assumes that devices have already joined the network.
     A route discovery request issued before a device is part of the network (join process) will result in failure.
 
-**Mesh Routing**
+Mesh Routing
+^^^^^^^^^^^^
 
-Mesh routing in Zigbee is often attributed to the mechanisms used by the AODV routing protocol (`RFC 3561 <https://datatracker.ietf.org/doc/html/rfc3561>`_).
+Mesh routing in Zigbee is often attributed to the mechanisms used by the AODV routing protocol (:rfc3561).
 Although Zigbee mesh routing and the AODV protocol share some similarities, there are significant differences between them that directly influence performance.
 
 Firstly, AODV was designed for IP-based networks, whereas Zigbee operates without the concept of IP addresses, thus eliminating their associated overhead.
@@ -309,36 +314,139 @@ Alternatively, a Mesh route discovery can be performed along a data transmission
     zstack->GetNwk()->NldeDataRequest(dataReqParams, p);
 
 .. note::
-    Important: The process described above assumes that devices have already joined the network.
+    The process described above assumes that devices have already joined the network.
     A route discovery request issued before a device is part of the network (join process) will result in failure.
 
 The application support sub-layer (APS)
 ---------------------------------------
 
-As its name suggests, this intermediate layer exists between the Network (NWK) layer and the Application Framework (AF).
+As its name suggests, the APS (Application Support) layer acts as an intermediate layer between the Network (NWK) layer and the Application Framework (AF).
 It provides services to both the Zigbee Device Object (ZDO) and the AF.
-The APS layer introduces abstract concepts such as **EndPoints**, **Clusters**, and **Profiles**; however, it does not assign specific meanings to these concepts.
-Instead, it simply adds this information to the transmitted frames.
 
-Effective management of **EndPoints**, **Clusters**, and **Profile IDs** requires the use of the Zigbee Cluster Library (ZCL) and the ZDO, which are not currently supported by this implementation.
-This implementation offers only the most basic functions of the APS, allowing data transmission using known 16-bit address destinations.
-Features such as groupcasting, transmission to IEEE addresses (64-bit address destinations), fragmentation, duplication detection, and security are not currently supported but are under development.
+The primary functions of the APS layer include:
 
-By default, the APS layer is integrated within the Zigbee stack.
+- Handling security and data integrity through encryption and decryption of data.
+- Managing the binding table, which establishes relationships between devices.
+- Managing the group table, which facilitates group destinations similar to multicast groups.
+- Offering various data transmission modes, such as unicast, broadcast, and groupcast.
+- Detecting and filtering duplicate data transmissions.
+- Managing the fragmentation and reassembly of data packets.
+- Providing a mechanism for data acknowledgment and retransmission.
+
+The APS layer introduces abstract concepts such as **EndPoints**, **Clusters**, and **Profiles**.
+However, it does not assign specific meanings to these concepts; instead, it simply adds ID information to the transmitted frames.
+
+Effective interpretation and management of **EndPoints**, **Clusters**, and **Profile IDs** require the use of the Zigbee Cluster Library (ZCL) and the ZDO, which are not currently supported in this implementation.
+Similarly, the APS layer can transmit data that includes information about source and destination endpoints, but it cannot initiate network formation or joining procedures. Typically, these processes are managed by the ZDO; however, since the ZDO is currently unavailable, users must interact directly with the NWK layer’s network formation and joining primitives to initiate these options.
+
+This implementation provides only the most basic functions of the APS, enabling data transmission using 16-bit or group address destinations.
+Features such as transmission to IEEE addresses (64-bit address destinations), fragmentation, duplication detection, and security are not currently supported.
+
+By default, the APS layer is integrated and active within the Zigbee stack.
 However, users can choose to work solely with the NWK layer.
-To do this, they must disable the APS by using the `SetNwkLayerOnly()` function in the Zigbee helper.
+To do this, they must disable the APS by using the ``SetNwkLayerOnly()`` function in the Zigbee helper.
 
-The APS layer can transmit data that includes information regarding source and destination endpoints, but it cannot initiate network formation or network joining procedures.
-Typically, the ZDO manages these processes; however, since we currently do not have the ZDO, users must directly interact with the NWK layer’s network formation and joining primitives to trigger these options.
 
 The following is a list of APS primitives are included:
 
-- APSDE-DATA (Request, Confirm, Indication) <------ Only Address mode 0x02 (16-bit address and destination endpoint present) supported.
-- APSME-BIND (Request, Confirm)  <----Included but inconsequential without group table support
-- APSME-UNBIND (Request, Confirm) <----Included but inconsequential without group table support
+- ``APSDE-DATA`` (Request, Confirm, Indication) : Only Address mode 0x01 and 0x02 (Regular unicast and groupcast) supported.
+- ``APSME-BIND`` (Request, Confirm)
+- ``APSME-UNBIND`` (Request, Confirm)
+- ``APSME-ADD-GROUP`` (Request, Confirm)
+- ``APSME-REMOVE-GROUP`` (Request, Confirm)
+- ``APSME-REMOVE-ALL-GROUPS`` (Request, Confirm)
+
+Data Transmission
+~~~~~~~~~~~~~~~~~
+
+The APS layer must transmit data using the ``APSD-DATA.request`` primitive. This primitive supports 4 types of destination address modes:
+
+- **0x00**: No address (Use Binding table to establish destinations) <Not supported>
+- **0x01**: Group address (Groupcasting)
+- **0x02**: 16-bit address with destination endpoint present (Regular Unicast or Broadcast)
+- **0x03**: 64-bit address with destination endpoint not present (Regular Unicast) <Not supported>
+
+
+GroupCasting (Address Mode: 0x01)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Group casting (Multicasting) is a method of transmitting data to multiple devices endpoints within a specific group.
+This is particularly useful in scenarios where a device needs to send the same data to multiple endpoints simultaneously,
+such as in lighting control systems or sensor networks.
+In Zigbee, group addresses are used to facilitate this type of communication.
+The APS layer manages group addresses and ensures that data is delivered to all devices in the group.
+To use group casting, devices must first be added to a group. This is done using the ``APSME-ADD-GROUP`` primitive, which allows a device to join a group by specifying the group ID.::
+
+    // Multiple groups can be added to the same device.
+    // Multiple endpoints can be added to the same group.
+    // The group address is a 16-bit address.
+    // In this example, group [BE:EF] and endpoint 5 is added to a device.
+    ApsmeGroupRequestParams groupParams;
+    groupParams.m_groupAddress = Mac16Address("BE:EF");
+    groupParams.m_endPoint = 5;
+    zstack->GetNwk()->GetAps()->ApsmeAddGroupRequest(groupParams);
+
+Once a device is part of a group, any device can send data to ALL the endpoints in the group using the APSDE-DATA.request primitive with
+the destination address mode ``GROUP_ADDR_DST_ENDPOINT_NOT_PRESENT`` (i.e., 0x01 address mode) and the appropriate group address.::
+
+    // The message will be delivered to ALL the endpoints in any device in the network
+    // that is part of the group [BE:EF].
+    ApsdeDataRequestParams dataReqParams;
+    ZigbeeApsTxOptions txOptions;
+    dataReqParams.m_useAlias = false;
+    // Default, use 16 bit address destination (No option), equivalent to 0x00
+    dataReqParams.m_txOptions = txOptions.GetTxOptions();
+    dataReqParams.m_srcEndPoint = 4; // Arbitrary value, must not be 0
+    dataReqParams.m_clusterId = 5;   // Arbitrary value (depends on the application)
+    dataReqParams.m_profileId = 2;   // Arbitrary value (depends on the application)
+    dataReqParams.m_dstAddrMode = ApsDstAddressMode::GROUP_ADDR_DST_ENDPOINT_NOT_PRESENT; // dstAddrMode 0x01
+    dataReqParams.m_dstAddr16 = Mac16Address("BE:EF"); // The destination group address
+    zstack->GetNwk()->GetAps()->ApsdeDataRequest(dataReqParams, p);
+
+
+Prior Zigbee Specification Revision 22 1.0 (2017), groupcasting used a form of controlled broadcast to propagate data to all group members in the network.
+However, the current specification has changed this behavior to a more efficient group addressing scheme. In the new scheme, data transmissions,
+propagate differently depending on whether or not the receiving or initiating device is member of the group.
+If the devices are members of the group, they broadcast the data to the nearby devices (like in the old approach),
+however, if device are not a members of the group, group addresses are treated as regular unicast addresses, and a route discovery is performed
+to find the closest device which is part of the group. These route are stored in the routing table, and subsequent transmissions to the same group address will use the stored route.
+In this way, the group address is treated as a unicast address, and the APS layer will not broadcast the data to all devices in the network.
+This change improves the efficiency of groupcasting by reducing unnecessary broadcasts.
+
+
+
+UniCasting (Address Mode: 0x02)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Unicasting is a method of transmitting data to a single specific device endpoint.
+In Zigbee, this is achieved by using the ``APSDE-DATA.request`` primitive with the appropriate destination address mode and address information.
+To use unicasting, the sender must know the 16-bit address of the destination device and the endpoint it wants to communicate with.
+The ``APSDE-DATA.request`` primitive is used to send data to a specific device endpoint using the address mode 0x02 (Regular Unicast).
+
+The following example demonstrates how to send data to a specific device endpoint using the APSDE-DATA.request primitive with address mode 0x02::
+
+    // The message will be delivered to the endpoint 5 of the device with address AB:1C
+    ApsdeDataRequestParams dataReqParams;
+    ZigbeeApsTxOptions txOptions;
+    dataReqParams.m_useAlias = false;
+    // Default, use 16 bit address destination (No option), equivalent to 0x00
+    dataReqParams.m_txOptions = txOptions.GetTxOptions();
+    dataReqParams.m_srcEndPoint = 4; // Arbitrary value, must not be 0
+    dataReqParams.m_clusterId = 5;   // Arbitrary value (depends on the application)
+    dataReqParams.m_profileId = 2;   // Arbitrary value (depends on the application)
+    dataReqParams.m_dstAddrMode = ApsDstAddressMode::DST_ADDR16_DST_ENDPOINT_PRESENT; // dstAddrMode 0x02
+    dataReqParams.m_dstAddr16 = Mac16Address("AB:1C"); // The destination device address
+    dataReqParams.m_dstEndPoint = 5; // The destination endpoint, must not be 0
+    zstack->GetNwk()->GetAps()->ApsdeDataRequest(dataReqParams, p);
 
 Usage
 -----
+
+Zigbee is implemented as a |ns3| module, which means it can be used in the same way as other |ns3| modules.
+It requires the ``lr-wpan`` module to be installed and operational, as it relies on the lr-wpan MAC layer to function.
+Zigbee networks can be created by using the ``ZigbeeHelper`` class,
+which simplifies the process of configuring and installing the Zigbee stack but  it also possible to create and configure
+Zigbee stacks manually.
 
 Helpers
 ~~~~~~~
@@ -395,8 +503,6 @@ Below is a list of the currently supported attributes:
 - ``NwkcMaxRREQJitter``: [Constant] The duration between retries of a broadcast RREQ (msec).
 - ``MaxPendingTxQueueSize``: The maximum size of the table storing pending packets awaiting to be transmitted after discovering a route to the destination.
 
-
-
 Traces
 ~~~~~~
 
@@ -417,7 +523,7 @@ All the examples listed here shows scenarios in which a quasi-layer implementati
 * ``zigbee-association-join.cc``:  An example showing the NWK layer join process of 3 devices in a zigbee network (MAC association).
 * ``zigbee-nwk-routing.cc``: Shows a simple topology of 5 router devices sequentially joining a network. Data transmission and route discovery (MESH routing) are also shown in this example
 * ``zigbee-nwk-routing-grid.cc``: Shows a complex grid topology of 50 router devices sequentially joining a network. Route discovery (MANY-TO-ONE routing) is also shown in this example.
-* ``zigbee-aps-data.cc``: Demonstrates the usage of the APS layer to transmit data.
+* ``zigbee-aps-data.cc``: Demonstrates the usage of the APS layer to transmit data (Unicast and Groupcast).)
 
 The following unit test have been developed to ensure the correct behavior of the module:
 
