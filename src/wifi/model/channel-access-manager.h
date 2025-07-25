@@ -391,6 +391,14 @@ class ChannelAccessManager : public Object
     void ResetAllBackoffs();
 
     /**
+     * Used by a Txop to notify this channel access manager that a new backoff value has been
+     * generated.
+     *
+     * @param txop the Txop that generated a new backoff value
+     */
+    void NotifyBackoffGenerated(Ptr<Txop> txop);
+
+    /**
      * Notify that the given PHY is about to switch to the given operating channel, which is
      * used by the given link. This notification is sent by the EMLSR Manager when a PHY object
      * switches operating channel to operate on another link.

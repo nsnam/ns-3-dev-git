@@ -770,7 +770,8 @@ Txop::StartAccessAfterEvent(uint8_t linkId, bool hadFramesToTransmit, bool check
         return;
     }
 
-    if (GetLink(linkId).access != WifiChannelAccessStatus::NOT_REQUESTED)
+    if (const auto& link = GetLink(linkId); link.access == WifiChannelAccessStatus::REQUESTED ||
+                                            link.access == WifiChannelAccessStatus::GRANTED)
     {
         NS_LOG_DEBUG("Channel access already requested or granted on link " << +linkId);
         return;
@@ -828,7 +829,7 @@ void
 Txop::NotifyChannelReleased(uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << linkId);
-    GetLink(linkId).access = WifiChannelAccessStatus::NOT_REQUESTED;
+    GetLink(linkId).access = WifiChannelAccessStatus::NOT_REQUESTED_NO_BACKOFF;
     GenerateBackoff(linkId);
     if (HasFramesToTransmit(linkId))
     {
@@ -849,7 +850,9 @@ void
 Txop::RequestAccess(uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << linkId);
-    if (GetLink(linkId).access == WifiChannelAccessStatus::NOT_REQUESTED)
+    const auto& link = GetLink(linkId);
+    if (link.access == WifiChannelAccessStatus::NOT_REQUESTED_NO_BACKOFF ||
+        link.access == WifiChannelAccessStatus::NOT_REQUESTED_WITH_BACKOFF)
     {
         m_mac->NotifyRequestAccess(this, linkId);
     }
@@ -857,7 +860,7 @@ Txop::RequestAccess(uint8_t linkId)
     // manager to wake up the STA, which may cause a channel access request. Hence, we have to
     // check again whether the channel access has not been already requested before calling
     // ChannelAccessManager::RequestAccess().
-    if (GetLink(linkId).access == WifiChannelAccessStatus::NOT_REQUESTED)
+    if (link.access != WifiChannelAccessStatus::REQUESTED)
     {
         m_mac->GetChannelAccessManager(linkId)->RequestAccess(this);
     }
@@ -870,6 +873,8 @@ Txop::GenerateBackoff(uint8_t linkId)
     NS_LOG_FUNCTION(this << linkId << backoff);
     m_backoffTrace(backoff, linkId);
     StartBackoffNow(backoff, linkId);
+    GetLink(linkId).access = WifiChannelAccessStatus::NOT_REQUESTED_WITH_BACKOFF;
+    m_mac->GetChannelAccessManager(linkId)->NotifyBackoffGenerated(this);
 }
 
 void

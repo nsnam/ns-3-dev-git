@@ -76,8 +76,8 @@ class Txop : public Object
      * Use `WifiChannelAccessStatus` class enum values instead.
      * @{
      */
-    NS_DEPRECATED_3_45("Use WifiChannelAccessStatus::NOT_REQUESTED instead")
-    static constexpr auto NOT_REQUESTED = WifiChannelAccessStatus::NOT_REQUESTED;
+    NS_DEPRECATED_3_45("Use WifiChannelAccessStatus::NOT_REQUESTED_NO_BACKOFF instead")
+    static constexpr auto NOT_REQUESTED = WifiChannelAccessStatus::NOT_REQUESTED_NO_BACKOFF;
     NS_DEPRECATED_3_45("Use WifiChannelAccessStatus::REQUESTED instead")
     static constexpr auto REQUESTED = WifiChannelAccessStatus::REQUESTED;
     NS_DEPRECATED_3_45("Use WifiChannelAccessStatus::GRANTED instead")
@@ -563,7 +563,7 @@ class Txop : public Object
                                       //!< non-QoS stations or the QoS STA Retry Count (QSRC)
                                       //!< maintained by QoS STAs for each AC
         WifiChannelAccessStatus access{
-            WifiChannelAccessStatus::NOT_REQUESTED}; //!< channel access status
+            WifiChannelAccessStatus::NOT_REQUESTED_NO_BACKOFF}; //!< channel access status
 
         mutable class
         {

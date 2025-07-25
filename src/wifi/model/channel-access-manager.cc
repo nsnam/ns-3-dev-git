@@ -199,9 +199,10 @@ ChannelAccessManager::GetTypeId()
             .AddAttribute("NSlotsLeft",
                           "The NSlotsLeftAlert trace source is fired when the number of remaining "
                           "backoff slots for any AC is equal to or less than the value of this "
-                          "attribute. Note that the trace source is fired only if the AC for which "
-                          "the previous condition is met has requested channel access. Also, if "
-                          "the value of this attribute is zero, the trace source is never fired.",
+                          "attribute. Note that the trace source is fired independently of whether "
+                          "the AC for which the previous condition is met has requested channel "
+                          "access. Also, if the value of this attribute is zero, the trace source "
+                          "is never fired.",
                           UintegerValue(0),
                           MakeUintegerAccessor(&ChannelAccessManager::m_nSlotsLeft),
                           MakeUintegerChecker<uint8_t>())
@@ -633,9 +634,16 @@ ChannelAccessManager::DoGrantDcfAccess()
     for (auto i = m_txops.begin(); i != m_txops.end(); k++)
     {
         Ptr<Txop> txop = *i;
-        if (txop->GetAccessStatus(m_linkId) == WifiChannelAccessStatus::REQUESTED &&
-            (!txop->IsQosTxop() || !StaticCast<QosTxop>(txop)->EdcaDisabled(m_linkId)) &&
+        if (txop->GetAccessStatus(m_linkId) ==
+                WifiChannelAccessStatus::NOT_REQUESTED_WITH_BACKOFF &&
             GetBackoffEndFor(txop, accessGrantStart) <= now)
+        {
+            // backoff counter reached zero but channel access was not requested
+            txop->GetLink(m_linkId).access = WifiChannelAccessStatus::NOT_REQUESTED_NO_BACKOFF;
+        }
+        else if (txop->GetAccessStatus(m_linkId) == WifiChannelAccessStatus::REQUESTED &&
+                 (!txop->IsQosTxop() || !StaticCast<QosTxop>(txop)->EdcaDisabled(m_linkId)) &&
+                 GetBackoffEndFor(txop, accessGrantStart) <= now)
         {
             /**
              * This is the first Txop we find with an expired backoff and which
@@ -949,7 +957,9 @@ ChannelAccessManager::DoRestartAccessTimeoutIfNeeded()
     const auto now = Simulator::Now();
     for (auto txop : m_txops)
     {
-        if (txop->GetAccessStatus(m_linkId) == WifiChannelAccessStatus::REQUESTED)
+        if (const auto status = txop->GetAccessStatus(m_linkId);
+            status == WifiChannelAccessStatus::REQUESTED ||
+            status == WifiChannelAccessStatus::NOT_REQUESTED_WITH_BACKOFF)
         {
             if (auto backoffEnd = GetBackoffEndFor(txop, accessGrantStart);
                 backoffEnd > now && backoffEnd < expectedBackoffEnd)
@@ -996,6 +1006,13 @@ ChannelAccessManager::DoRestartAccessTimeoutIfNeeded()
                                                   this);
         }
     }
+}
+
+void
+ChannelAccessManager::NotifyBackoffGenerated(Ptr<Txop> txop)
+{
+    NS_LOG_FUNCTION(this << txop);
+    DoRestartAccessTimeoutIfNeeded();
 }
 
 MHz_t
@@ -1258,7 +1275,7 @@ ChannelAccessManager::ResetBackoff(Ptr<Txop> txop)
 
     txop->ResetBackoffNow(m_linkId);
     txop->ResetCw(m_linkId);
-    txop->GetLink(m_linkId).access = WifiChannelAccessStatus::NOT_REQUESTED;
+    txop->GetLink(m_linkId).access = WifiChannelAccessStatus::NOT_REQUESTED_NO_BACKOFF;
 }
 
 void

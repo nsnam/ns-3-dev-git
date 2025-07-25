@@ -574,7 +574,7 @@ AdvancedEmlsrManager::CheckNavAndCcaLastPifs(Ptr<WifiPhy> phy, uint8_t linkId, P
         }
 
         // restart channel access
-        edca->NotifyChannelReleased(linkId); // to set access to NOT_REQUESTED
+        edca->NotifyChannelReleased(linkId); // to set access to NOT_REQUESTED_NO_BACKOFF
         edca->StartAccessAfterEvent(linkId,
                                     Txop::DIDNT_HAVE_FRAMES_TO_TRANSMIT,
                                     Txop::CHECK_MEDIUM_BUSY);
@@ -1003,7 +1003,7 @@ AdvancedEmlsrManager::SwitchMainPhyIfTxopGainedByAuxPhy(uint8_t linkId, AcIndex 
 
     NS_LOG_DEBUG("Main PHY state is " << mainPhy->GetState()->GetState());
     auto edca = GetStaMac()->GetQosTxop(aci);
-    edca->NotifyChannelReleased(linkId); // to set access to NOT_REQUESTED
+    edca->NotifyChannelReleased(linkId); // to set access to NOT_REQUESTED_NO_BACKOFF
 
     if (!delay.has_value())
     {

@@ -218,7 +218,8 @@ BackoffMonitor::NotifyBackoffGenerated(linkId_t linkId)
             state.statusChangeEvent.Cancel();
             state.statusChangeEvent = Simulator::Schedule(timeout, [=, &state, this] {
                 if (GetBackoffStatus(state.linkId) == BackoffStatus::ONGOING &&
-                    txop->GetAccessStatus(state.linkId) == WifiChannelAccessStatus::NOT_REQUESTED &&
+                    txop->GetAccessStatus(state.linkId) ==
+                        WifiChannelAccessStatus::NOT_REQUESTED_NO_BACKOFF &&
                     m_mac->GetChannelAccessManager(state.linkId)->GetBackoffEndFor(txop) ==
                         Simulator::Now())
                 {

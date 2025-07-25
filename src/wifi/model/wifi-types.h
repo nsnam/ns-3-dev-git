@@ -347,11 +347,36 @@ using BwTonesPair = std::pair<MHz_t, RuType>;
 using SubcarrierGroups = std::map<BwTonesPair, std::vector<SubcarrierGroup>>;
 
 /**
- * Enumeration for channel access status
+ * Enumeration for channel access status. The state machine is as follows:
+ *
+   \verbatim
+   ┌──────────────────────────┐      [1]      ┌─────────────┐      [5]         ┌─────────┐
+   │ NOT_REQUESTED_NO_BACKOFF ├──────────────►│  REQUESTED  ├─────────────────►│ GRANTED │
+   └─▲───┬───────▲────────────┘               └───▲─────────┘                  └────┬────┘
+     │   │[2]    │[4]                             │                                 │
+     │   │     ┌─┴──────────────────────────┐     │[3]                              │
+     │   └────►│ NOT_REQUESTED_WITH_BACKOFF ├─────┘                                 │
+     │         └────────────────────────────┘          [6]                          │
+     └──────────────────────────────────────────────────────────────────────────────┘
+   \endverbatim
+ *
+ * [1] Channel access is requested (e.g., a packet is queued) and there is no need to generate
+ *     a backoff value (e.g., backoff is zero, medium is idle and no other packet is queued)
+ * [2] A backoff value is generated. This happens, e.g., when a packet is queued and a backoff
+ *     value must be generated because, e.g., medium is busy (in this case, channel access is also
+ *     requested, thus the status immediately transitions to REQUESTED [3]), or the channel has been
+ *     just released after a TXOP, or the medium gets busy while the backoff is zero and the
+ *     ProactiveBackoff attribute of the channel access manager is set to true
+ * [3] Channel access is requested (e.g., a packet is queued) before the backoff counter reaches
+ *     zero
+ * [4] The backoff counter reaches zero and channel access has not been requested
+ * [5] The channel access manager grants channel access to the Txop
+ * [6] The Txop releases the channel after terminating the TXOP
  */
 enum class WifiChannelAccessStatus : uint8_t
 {
-    NOT_REQUESTED = 0,
+    NOT_REQUESTED_NO_BACKOFF = 0,
+    NOT_REQUESTED_WITH_BACKOFF,
     REQUESTED,
     GRANTED
 };

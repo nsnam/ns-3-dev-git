@@ -630,6 +630,7 @@ QosTxop::NotifyChannelReleased(uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << +linkId);
     auto& link = GetLink(linkId);
+    link.access = WifiChannelAccessStatus::NOT_REQUESTED_NO_BACKOFF;
 
     if (link.startTxop)
     {
@@ -667,7 +668,6 @@ QosTxop::NotifyChannelReleased(uint8_t linkId)
         }
     }
     link.startTxop.reset();
-    GetLink(linkId).access = WifiChannelAccessStatus::NOT_REQUESTED;
     m_mac->NotifyChannelReleased(this, linkId);
 }
 
