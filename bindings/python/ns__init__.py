@@ -177,7 +177,7 @@ def extract_linked_libraries(library_name: str, prefix: str) -> tuple:
     try:
         with open(os.path.abspath(library_path), "rb") as f:
             linked_libs = re.findall(
-                b"\x00(lib.*?.%b)" % LIBRARY_EXTENSION.encode("utf-8"), f.read()
+                b"\x00(lib[^\\x00]*?\\.%b)(?![\\w.])" % LIBRARY_EXTENSION.encode("utf-8"), f.read()
             )
     except Exception as e:
         print(f"Failed to extract libraries used by {library_path} with exception:{e}")
