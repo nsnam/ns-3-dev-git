@@ -533,7 +533,7 @@ def load_modules():
         cppyy.load_library(library)
         for module in modules:
             library_name_from_module = (
-                f"{version}-{module}{'-' if len(build_type)>0 else ''}{build_type}"
+                f"{version}-{module}{'-' if len(build_type)>0 else ''}{build_type}."
             )
             if library_name_from_module in library:
                 cppyy.include(f"ns3/{module}-module.h")
