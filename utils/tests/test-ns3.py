@@ -3237,6 +3237,8 @@ class NS3QualityControlTestCase(unittest.TestCase):
             "http://en.wikipedia.org/wiki/Namespace_(computer_science",
             "http://en.wikipedia.org/wiki/Bonobo_(component_model",
             "http://msdn.microsoft.com/en-us/library/aa365247(v=vs.85",
+            "https://github.com/rui314/mold/releases/download/v1.4.2/mold-1.4.2-{arch",
+            "http://www.nsnam.org/bugzilla/show_bug.cgi?id=",
             # historical links
             "http://www.research.att.com/info/kpv/",
             "http://www.research.att.com/~gsf/",
@@ -3482,6 +3484,7 @@ def main():
     parser.add_argument("-tn", "--test-name", action="store", default=None, type=str)
     parser.add_argument("-rtn", "--resume-from-test-name", action="store", default=None, type=str)
     parser.add_argument("-q", "--quiet", action="store_true", default=False)
+    parser.add_argument("-f", "--failfast", action="store_true", default=False)
     args = parser.parse_args(sys.argv[1:])
 
     loader = unittest.TestLoader()
@@ -3517,7 +3520,7 @@ def main():
         shutil.move(ns3rc_script, ns3rc_script_bak)
 
     # Run tests and fail as fast as possible
-    runner = unittest.TextTestRunner(failfast=True, verbosity=1 if args.quiet else 2)
+    runner = unittest.TextTestRunner(failfast=args.failfast, verbosity=1 if args.quiet else 2)
     runner.run(suite)
 
     # After completing the tests successfully, restore the ns3rc file
