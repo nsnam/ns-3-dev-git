@@ -63,18 +63,19 @@ check_cxx_source_compiles(
   "
   STACKTRACE_LIBRARY_ENABLED
 )
+mark_as_advanced(stacktrace_flags)
+set(stacktrace_flags "" CACHE INTERNAL "")
 if(STACKTRACE_LIBRARY_ENABLED)
-  set(stacktrace_flags)
   if(GCC)
     if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "12.0.0")
       # GCC does not support stacktracing
     elseif(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "14.0.0")
-      set(stacktrace_flags -lstdc++_libbacktrace)
+      set(stacktrace_flags -lstdc++_libbacktrace CACHE INTERNAL "")
     else()
-      set(stacktrace_flags -lstdc++exp)
+      set(stacktrace_flags -lstdc++exp CACHE INTERNAL "")
     endif()
   elseif(CLANG)
-    set(stacktrace_flags -lstdc++_libbacktrace)
+    set(stacktrace_flags -lstdc++_libbacktrace CACHE INTERNAL "")
   else()
     # Most likely MSVC, which does not need custom flags for this
   endif()
@@ -96,6 +97,7 @@ if(STACKTRACE_LIBRARY_ENABLED)
 
   if(STACKTRACE_LIBRARY_IS_LINKED)
     add_definitions(-DSTACKTRACE_LIBRARY_IS_LINKED=1)
-    link_libraries(${stacktrace_flags})
+  else()
+    set(stacktrace_flags "" CACHE INTERNAL "")
   endif()
 endif()

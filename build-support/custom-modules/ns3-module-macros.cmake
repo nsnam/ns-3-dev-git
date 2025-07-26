@@ -288,8 +288,8 @@ endfunction()
 function(build_lib_reexport_third_party_libraries libname libraries_to_link)
   # Separate ns-3 and non-ns-3 libraries to manage their propagation properly
   separate_ns3_from_non_ns3_libs(
-    "${libname}" "${libraries_to_link}" ns_libraries_to_link
-    non_ns_libraries_to_link
+    "${libname}" "${libraries_to_link};${stacktrace_flags}"
+    ns_libraries_to_link non_ns_libraries_to_link
   )
 
   set(ns3-external-libs "${non_ns_libraries_to_link};${ns3-external-libs}"
