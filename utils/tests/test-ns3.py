@@ -1801,7 +1801,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         """
 
         run_ns3("clean")
-        with DockerContainerManager(self, "gcc:12.1") as container:
+        with DockerContainerManager(self, "gcc:12") as container:
             # Install basic packages
             container.execute("apt-get update")
             container.execute("apt-get install -y python3 ninja-build cmake g++ lld")
@@ -1869,14 +1869,14 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         """
 
         run_ns3("clean")
-        with DockerContainerManager(self, "ubuntu:22.04") as container:
+        with DockerContainerManager(self, "ubuntu:24.04") as container:
             container.execute("apt-get update")
-            container.execute("apt-get install -y python3 ninja-build cmake clang-12")
+            container.execute("apt-get install -y python3 ninja-build cmake clang-18")
 
             # Enable ClangTimeTrace without git (it should fail)
             try:
                 container.execute(
-                    "./ns3 configure -G Ninja --enable-modules=core --enable-examples --enable-tests -- -DCMAKE_CXX_COMPILER=/usr/bin/clang++-12 -DNS3_CLANG_TIMETRACE=ON"
+                    "./ns3 configure -G Ninja --enable-modules=core --enable-examples --enable-tests -- -DCMAKE_CXX_COMPILER=/usr/bin/clang++-18 -DNS3_CLANG_TIMETRACE=ON"
                 )
             except DockerException as e:
                 self.assertIn("could not find git for clone of ClangBuildAnalyzer", e.stderr)
@@ -1886,7 +1886,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
             # Enable ClangTimeTrace without git (it should succeed)
             try:
                 container.execute(
-                    "./ns3 configure -G Ninja --enable-modules=core --enable-examples --enable-tests -- -DCMAKE_CXX_COMPILER=/usr/bin/clang++-12 -DNS3_CLANG_TIMETRACE=ON"
+                    "./ns3 configure -G Ninja --enable-modules=core --enable-examples --enable-tests -- -DCMAKE_CXX_COMPILER=/usr/bin/clang++-18 -DNS3_CLANG_TIMETRACE=ON"
                 )
             except DockerException as e:
                 self.assertIn("could not find git for clone of ClangBuildAnalyzer", e.stderr)
@@ -1908,7 +1908,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
             # Now try with GCC, which should fail during the configuration
             run_ns3("clean")
             container.execute("apt-get install -y g++")
-            container.execute("apt-get remove -y clang-12")
+            container.execute("apt-get remove -y clang-18")
 
             try:
                 container.execute(
@@ -1929,15 +1929,15 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         """
 
         run_ns3("clean")
-        with DockerContainerManager(self, "ubuntu:22.04") as container:
+        with DockerContainerManager(self, "ubuntu:24.04") as container:
             container.execute("apt-get update")
             container.execute("apt-get remove -y g++")
-            container.execute("apt-get install -y python3 cmake g++-11 clang-17")
+            container.execute("apt-get install -y python3 cmake g++-11 clang-18")
 
             # Enable Ninja tracing without using the Ninja generator
             try:
                 container.execute(
-                    "./ns3 configure --enable-modules=core --enable-ninja-tracing -- -DCMAKE_CXX_COMPILER=/usr/bin/clang++-11"
+                    "./ns3 configure --enable-modules=core --enable-ninja-tracing -- -DCMAKE_CXX_COMPILER=/usr/bin/clang++-18"
                 )
             except DockerException as e:
                 self.assertIn("Ninjatracing requires the Ninja generator", e.stderr)
@@ -1949,7 +1949,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
             # Enable Ninjatracing support without git (should fail)
             try:
                 container.execute(
-                    "./ns3 configure -G Ninja --enable-modules=core --enable-ninja-tracing -- -DCMAKE_CXX_COMPILER=/usr/bin/clang++-11"
+                    "./ns3 configure -G Ninja --enable-modules=core --enable-ninja-tracing -- -DCMAKE_CXX_COMPILER=/usr/bin/clang++-18"
                 )
             except DockerException as e:
                 self.assertIn("could not find git for clone of NinjaTracing", e.stderr)
@@ -1958,7 +1958,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
             # Enable Ninjatracing support with git (it should succeed)
             try:
                 container.execute(
-                    "./ns3 configure -G Ninja --enable-modules=core --enable-ninja-tracing -- -DCMAKE_CXX_COMPILER=/usr/bin/clang++-11"
+                    "./ns3 configure -G Ninja --enable-modules=core --enable-ninja-tracing -- -DCMAKE_CXX_COMPILER=/usr/bin/clang++-18"
                 )
             except DockerException as e:
                 self.assertTrue(False, "Failed to configure with Ninjatracing")
@@ -1987,7 +1987,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
             # Enable Clang TimeTrace feature for more detailed traces
             try:
                 container.execute(
-                    "./ns3 configure -G Ninja --enable-modules=core --enable-ninja-tracing -- -DCMAKE_CXX_COMPILER=/usr/bin/clang++-11 -DNS3_CLANG_TIMETRACE=ON"
+                    "./ns3 configure -G Ninja --enable-modules=core --enable-ninja-tracing -- -DCMAKE_CXX_COMPILER=/usr/bin/clang++-18 -DNS3_CLANG_TIMETRACE=ON"
                 )
             except DockerException as e:
                 self.assertTrue(False, "Failed to configure Ninjatracing with Clang's TimeTrace")
@@ -2359,9 +2359,9 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
             for import_method in ns3_import_methods:
                 test_cmake_project = (
                     """
-                                     cmake_minimum_required(VERSION 3.12..3.12)
+                                     cmake_minimum_required(VERSION 3.20..3.20)
                                      project(ns3_consumer CXX)
-                                     set(CMAKE_CXX_STANDARD 20)
+                                     set(CMAKE_CXX_STANDARD 23)
                                      set(CMAKE_CXX_STANDARD_REQUIRED ON)
                                      add_executable(test main.cpp)
                                      """
