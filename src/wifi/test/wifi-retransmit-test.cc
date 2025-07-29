@@ -31,6 +31,8 @@
 #include "ns3/wifi-net-device.h"
 #include "ns3/wifi-psdu.h"
 
+#include <vector>
+
 using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE("WifiRetransmitTest");
@@ -78,11 +80,13 @@ class WifiRetransmitTest : public TestCase
     /// Parameters for this test
     struct Params
     {
-        bool isMld;                 //!< whether devices are MLDs
-        bool useRts;                //!< whether RTS is used to protect frame transmissions
-        bool incrRetryCountUnderBa; //!< whether retry count is incremented under block ack
-        bool useBarAfterBaTimeout;  //!< whether to send a BAR after a missed BlockAck
-        bool pifsRecovery; //!< whether PIFS recovery is used after failure of a non-initial
+        std::size_t id{};             //!< input ID
+        bool isMld{};                 //!< whether devices are MLDs
+        bool useRts{};                //!< whether RTS is used to protect frame transmissions
+        bool incrRetryCountUnderBa{}; //!< whether retry count is incremented under block ack
+        bool useBarAfterBaTimeout{};  //!< whether to send a BAR after a missed BlockAck
+        tid_t tid{};                  //!< the TID of the generated packets
+        bool pifsRecovery{}; //!< whether PIFS recovery is used after failure of a non-initial
     };
 
     /**
@@ -156,6 +160,7 @@ class WifiRetransmitTest : public TestCase
     bool m_useRts;                //!< whether RTS is used to protect frame transmissions
     bool m_incrRetryCountUnderBa; //!< whether retry count is incremented under block ack
     bool m_useBarAfterBaTimeout;  //!< whether to send a BAR after a missed BlockAck
+    tid_t m_tid;                  //!< the TID of the generated packets
     bool m_pifsRecovery;          ///< whether to use PIFS recovery
     const Time m_txopLimit{MicroSeconds(4768)};  //!< TXOP limit
     Ptr<StaWifiMac> m_staMac;                    //!< MAC of the non-AP STA
@@ -170,14 +175,17 @@ class WifiRetransmitTest : public TestCase
 };
 
 WifiRetransmitTest::WifiRetransmitTest(const Params& params)
-    : TestCase(std::string("Check retransmit procedure (useRts=") + std::to_string(params.useRts) +
+    : TestCase(std::string("Check retransmit procedure (ID=" + std::to_string(params.id)) +
+               ", useRts=" + std::to_string(params.useRts) +
                ", incrRetryCountUnderBa=" + std::to_string(params.incrRetryCountUnderBa) +
                ", useBarAfterBaTimeout=" + std::to_string(params.useBarAfterBaTimeout) +
+               ", tid=" + std::to_string(+params.tid) +
                ", pifsRecovery=" + std::to_string(params.pifsRecovery) + ")"),
       m_nLinks(params.isMld ? 2 : 1),
       m_useRts(params.useRts),
       m_incrRetryCountUnderBa(params.incrRetryCountUnderBa),
       m_useBarAfterBaTimeout(params.useBarAfterBaTimeout),
+      m_tid(params.tid),
       m_pifsRecovery(params.pifsRecovery),
       m_apErrorModel(CreateObject<ListErrorModel>())
 {
@@ -230,7 +238,7 @@ WifiRetransmitTest::DoSetup()
     phy.Set(0, "ChannelSettings", StringValue("{0, 160, BAND_5GHZ, 0}"));
 
     mac.SetType("ns3::ApWifiMac");
-    mac.SetEdca(AC_BE,
+    mac.SetEdca(QosUtilsMapTidToAc(m_tid),
                 "TxopLimits",
                 AttributeContainerValue<TimeValue>(std::vector(m_nLinks, m_txopLimit)));
 
@@ -287,7 +295,7 @@ WifiRetransmitTest::DoSetup()
             }
         };
 
-    m_staMac->GetQosTxop(AC_BE)->TraceConnectWithoutContext("BaEstablished", baEstablished);
+    m_staMac->GetQosTxop(m_tid)->TraceConnectWithoutContext("BaEstablished", baEstablished);
 
     // Trace PSDUs passed to the PHY on all devices
     for (std::size_t phyId = 0; phyId < m_nLinks; phyId++)
@@ -309,8 +317,8 @@ WifiRetransmitTest::CheckValues(const std::map<uint16_t, uint32_t>& seqNoRetryCo
 {
     const auto psduNumber = std::distance(m_events.cbegin(), m_eventIt);
     const auto apAddr = Mac48Address::ConvertFrom(m_apDevice.Get(0)->GetAddress());
-    WifiContainerQueueId queueId{WIFI_QOSDATA_QUEUE, WifiRcvAddr::UNICAST, apAddr, 0};
-    const auto staQueue = m_staMac->GetTxopQueue(AC_BE);
+    WifiContainerQueueId queueId{WIFI_QOSDATA_QUEUE, WifiRcvAddr::UNICAST, apAddr, m_tid};
+    const auto staQueue = m_staMac->GetTxopQueue(QosUtilsMapTidToAc(m_tid));
     NS_TEST_EXPECT_MSG_EQ(seqNoRetryCountMap.size(),
                           staQueue->GetNPackets(queueId),
                           "Unexpected number of queued MPDUs when transmitting frame #"
@@ -341,7 +349,7 @@ WifiRetransmitTest::CheckValues(const std::map<uint16_t, uint32_t>& seqNoRetryCo
         qsrcLinkIdMap.emplace((linkId == 0 ? 1 : 0), qsrcOther.value());
     }
 
-    const auto txop = m_staMac->GetQosTxop(AC_BE);
+    const auto txop = m_staMac->GetQosTxop(m_tid);
 
     for (const auto& [id, expectedQsrc] : qsrcLinkIdMap)
     {
@@ -687,6 +695,7 @@ WifiRetransmitTest::GetApplication(std::size_t count, std::size_t pktSize) const
     client->SetAttribute("PacketSize", UintegerValue(pktSize));
     client->SetAttribute("MaxPackets", UintegerValue(count));
     client->SetAttribute("Interval", TimeValue(MicroSeconds(0)));
+    client->SetAttribute("Priority", UintegerValue(m_tid));
     client->SetRemote(m_ulSocket);
     client->SetStartTime(Time{0}); // now
     client->SetStopTime(Seconds(1.0));
@@ -709,6 +718,9 @@ class WifiRetransmitTestSuite : public TestSuite
 WifiRetransmitTestSuite::WifiRetransmitTestSuite()
     : TestSuite("wifi-retransmit", Type::UNIT)
 {
+    std::size_t inputId{};
+    std::vector<WifiRetransmitTest::Params> testVectors;
+
     for (auto isMld : {true, false})
     {
         for (auto useRts : {true, false})
@@ -717,19 +729,28 @@ WifiRetransmitTestSuite::WifiRetransmitTestSuite()
             {
                 for (auto useBarAfterBaTimeout : {true, false})
                 {
-                    for (auto pifsRecovery : {true, false})
+                    for (tid_t tid : {0, 5})
                     {
-                        AddTestCase(
-                            new WifiRetransmitTest({.isMld = isMld,
-                                                    .useRts = useRts,
-                                                    .incrRetryCountUnderBa = incrRetryCountUnderBa,
-                                                    .useBarAfterBaTimeout = useBarAfterBaTimeout,
-                                                    .pifsRecovery = pifsRecovery}),
-                            TestCase::Duration::QUICK);
+                        for (auto pifsRecovery : {true, false})
+                        {
+                            testVectors.emplace_back(WifiRetransmitTest::Params{
+                                .id = inputId++,
+                                .isMld = isMld,
+                                .useRts = useRts,
+                                .incrRetryCountUnderBa = incrRetryCountUnderBa,
+                                .useBarAfterBaTimeout = useBarAfterBaTimeout,
+                                .tid = tid,
+                                .pifsRecovery = pifsRecovery});
+                        }
                     }
                 }
             }
         }
+    }
+
+    for (const auto& testVector : testVectors)
+    {
+        AddTestCase(new WifiRetransmitTest(testVector), TestCase::Duration::QUICK);
     }
 }
 
