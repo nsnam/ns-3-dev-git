@@ -28,6 +28,7 @@
 
 #include <array>
 #include <list>
+#include <vector>
 
 using namespace ns3;
 
@@ -73,22 +74,24 @@ NS_LOG_COMPONENT_DEFINE("WifiMloUdpTest");
 class WifiMloUdpTest : public MultiLinkOperationsTestBase
 {
   public:
+    /// Input parameters
+    struct InputParams
+    {
+        std::size_t id;                             ///< input ID
+        std::vector<std::string> apChannels;        ///< string specifying channels for AP
+        std::vector<std::string> firstStaChannels;  ///< string specifying channels for first STA
+        std::vector<std::string> secondStaChannels; ///< string specifying channels for second STA
+        WifiTrafficPattern trafficPattern;          ///< the pattern of traffic to generate
+        WifiAssocType assocType; ///< the type of association procedure for non-AP devices
+        bool amsduAggr;          ///< whether A-MSDU aggregation is enabled
+    };
+
     /**
      * Constructor
      *
-     * @param apChannels string specifying channels for AP
-     * @param firstStaChannels string specifying channels for first STA
-     * @param secondStaChannels string specifying channels for second STA
-     * @param trafficPattern the pattern of traffic to generate
-     * @param assocType the type of association procedure for non-AP devices
-     * @param amsduAggr whether A-MSDU aggregation is enabled
+     * @param params the input parameters
      */
-    WifiMloUdpTest(const std::vector<std::string>& apChannels,
-                   const std::vector<std::string>& firstStaChannels,
-                   const std::vector<std::string>& secondStaChannels,
-                   WifiTrafficPattern trafficPattern,
-                   WifiAssocType assocType,
-                   bool amsduAggr);
+    WifiMloUdpTest(const InputParams& params);
 
   protected:
     void DoSetup() override;
@@ -135,26 +138,23 @@ class WifiMloUdpTest : public MultiLinkOperationsTestBase
     std::size_t m_nCheckedArpReply{0};   ///< counts how many ARP Replies are checked
 };
 
-WifiMloUdpTest::WifiMloUdpTest(const std::vector<std::string>& apChannels,
-                               const std::vector<std::string>& firstStaChannels,
-                               const std::vector<std::string>& secondStaChannels,
-                               WifiTrafficPattern trafficPattern,
-                               WifiAssocType assocType,
-                               bool amsduAggr)
+WifiMloUdpTest::WifiMloUdpTest(const InputParams& params)
     : MultiLinkOperationsTestBase(
           std::string("Check UDP packet transmission between MLDs ") +
-              " (#AP_links: " + std::to_string(apChannels.size()) +
-              ", #STA_1_links: " + std::to_string(firstStaChannels.size()) +
-              ", #STA_2_links: " + std::to_string(secondStaChannels.size()) +
-              ", Traffic pattern: " + std::to_string(static_cast<uint8_t>(trafficPattern)) +
-              ", Assoc type: " + (assocType == WifiAssocType::LEGACY ? "Legacy" : "ML setup") +
-              ", A-MSDU aggregation: " + std::to_string(amsduAggr) + ")",
+              " (ID: " + std::to_string(params.id) +
+              ", #AP_links: " + std::to_string(params.apChannels.size()) +
+              ", #STA_1_links: " + std::to_string(params.firstStaChannels.size()) +
+              ", #STA_2_links: " + std::to_string(params.secondStaChannels.size()) +
+              ", Traffic pattern: " + std::to_string(static_cast<uint8_t>(params.trafficPattern)) +
+              ", Assoc type: " +
+              (params.assocType == WifiAssocType::LEGACY ? "Legacy" : "ML setup") +
+              ", A-MSDU aggregation: " + std::to_string(params.amsduAggr) + ")",
           2,
-          BaseParams{firstStaChannels, apChannels, {}}),
-      m_2ndStaChannels(secondStaChannels),
-      m_trafficPattern(trafficPattern),
-      m_assocType(assocType),
-      m_amsduAggr(amsduAggr)
+          BaseParams{params.firstStaChannels, params.apChannels, {}}),
+      m_2ndStaChannels(params.secondStaChannels),
+      m_trafficPattern(params.trafficPattern),
+      m_assocType(params.assocType),
+      m_amsduAggr(params.amsduAggr)
 {
 }
 
@@ -568,6 +568,8 @@ class WifiMloUdpTestSuite : public TestSuite
 WifiMloUdpTestSuite::WifiMloUdpTestSuite()
     : TestSuite("wifi-mlo-udp", Type::SYSTEM)
 {
+    std::size_t inputId{};
+    std::vector<WifiMloUdpTest::InputParams> testVectors;
     using ParamsTuple = std::array<std::vector<std::string>, 3>; // AP, STA 1, STA 2 channels
 
     for (const auto& channels :
@@ -600,16 +602,22 @@ WifiMloUdpTestSuite::WifiMloUdpTestSuite()
             {
                 for (const auto assocType : {WifiAssocType::LEGACY, WifiAssocType::ML_SETUP})
                 {
-                    AddTestCase(new WifiMloUdpTest(channels[0],
-                                                   channels[1],
-                                                   channels[2],
-                                                   trafficPattern,
-                                                   assocType,
-                                                   amsduAggr),
-                                TestCase::Duration::QUICK);
+                    testVectors.emplace_back(
+                        WifiMloUdpTest::InputParams{.id = inputId++,
+                                                    .apChannels = channels[0],
+                                                    .firstStaChannels = channels[1],
+                                                    .secondStaChannels = channels[2],
+                                                    .trafficPattern = trafficPattern,
+                                                    .assocType = assocType,
+                                                    .amsduAggr = amsduAggr});
                 }
             }
         }
+    }
+
+    for (const auto& testVector : testVectors)
+    {
+        AddTestCase(new WifiMloUdpTest(testVector), TestCase::Duration::QUICK);
     }
 }
 
