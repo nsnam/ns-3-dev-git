@@ -16,10 +16,7 @@ SOURCES = \
 	source/network.rst \
 	source/emulation-overview.rst \
 	source/traffic-control.rst \
-	$(SRC)/antenna/doc/source/antenna.rst \
-	$(SRC)/antenna/doc/source/antenna-design.rst \
-	$(SRC)/antenna/doc/source/antenna-user.rst \
-	$(SRC)/antenna/doc/source/antenna-testing.rst \
+	$(SRC)/antenna/doc/antenna.rst \
 	$(SRC)/aodv/doc/aodv.rst \
 	$(SRC)/applications/doc/applications.rst \
 	$(SRC)/bridge/doc/bridge.rst \
@@ -109,8 +106,8 @@ SOURCES = \
 SOURCEFIGS = \
 	figures/testbed.dia \
 	figures/emulated-channel.dia \
-	$(SRC)/antenna/doc/source/figures/antenna-coordinate-system.dia	\
-	$(SRC)/antenna/doc/source/figures/circular-antenna-pattern.png	\
+	$(SRC)/antenna/doc/figures/antenna-coordinate-system.dia	\
+	$(SRC)/antenna/doc/figures/circular-antenna-pattern.png	\
 	$(SRC)/applications/doc/http-embedded-object-size.png \
 	$(SRC)/applications/doc/http-main-object-size.png \
 	$(SRC)/applications/doc/http-num-of-embedded-objects.png \

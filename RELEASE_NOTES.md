@@ -32,6 +32,7 @@ been tested on Linux. As of this release, the latest known version to work with 
 
 ns-3 has switched to the C++23 standard by default.
 
+- (antenna) !2516 - Reformatted documentation
 - (core) A stacktrace will now be printed on fatal errors in supported platforms.
 
 ### Bugs fixed
