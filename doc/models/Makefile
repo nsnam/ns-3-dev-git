@@ -357,14 +357,14 @@ SOURCEFIGS = \
 	$(SRC)/traffic-control/doc/multi-queue-aware-queue-disc.dia \
 	$(SRC)/traffic-control/doc/figures/collision_prob.jpeg \
 	$(SRC)/traffic-control/doc/figures/overlapped.jpeg \
-	$(SRC)/lr-wpan/doc/lr-wpan-arch.dia \
-	$(SRC)/lr-wpan/doc/lr-wpan-assocSequence.dia \
-	$(SRC)/lr-wpan/doc/lr-wpan-data-example.dia \
-	$(SRC)/lr-wpan/doc/lr-wpan-phy.dia \
-	$(SRC)/lr-wpan/doc/lr-wpan-primitives.dia \
-	$(SRC)/lr-wpan/doc/802-15-4-ber.eps \
-	$(SRC)/lr-wpan/doc/802-15-4-per-sens.eps \
-	$(SRC)/lr-wpan/doc/802-15-4-psr-distance.eps \
+	$(SRC)/lr-wpan/doc/figures/lr-wpan-arch.dia \
+	$(SRC)/lr-wpan/doc/figures/lr-wpan-assocSequence.dia \
+	$(SRC)/lr-wpan/doc/figures/lr-wpan-data-example.dia \
+	$(SRC)/lr-wpan/doc/figures/lr-wpan-phy.dia \
+	$(SRC)/lr-wpan/doc/figures/lr-wpan-primitives.dia \
+	$(SRC)/lr-wpan/doc/figures/802-15-4-ber.eps \
+	$(SRC)/lr-wpan/doc/figures/802-15-4-per-sens.eps \
+	$(SRC)/lr-wpan/doc/figures/802-15-4-psr-distance.eps \
 	$(SRC)/flow-monitor/doc/figures/flowmonitorArq.dia \
 	$(SRC)/energy/doc/figures/dischargeCurve.png \
 	$(SRC)/energy/doc/figures/energyFramework.dia \
