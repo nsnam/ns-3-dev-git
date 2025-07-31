@@ -40,6 +40,7 @@ CoexHelper::EnableLogComponents(LogLevel logLevel)
 
     LogComponentEnable("CoexArbitrator", logLevel);
     LogComponentEnable("DeviceCoexManager", logLevel);
+    LogComponentEnable("MockEventGenerator", logLevel);
 }
 
 } // namespace ns3
