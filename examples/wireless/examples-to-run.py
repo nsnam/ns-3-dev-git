@@ -365,7 +365,7 @@ cpp_examples = [
         "True",
     ),
     (
-        "wifi-p2p --simulationTime=1s --numLinksAp=3 --numLinksSta=3 --numLinksP2p=1 --linksOverlap=0 --p2pLinkId=2 --adhocToStaMinExpectedThroughput=49Mbps --staToAdhocMinExpectedThroughput=49Mbps --staToAdhocMaxExpectedLoss=1.0 --adhocToStaMaxExpectedLoss=1.0 --RngRun=2",
+        "wifi-p2p --simulationTime=1s --numLinksAp=3 --numLinksSta=3 --numLinksP2p=1 --linksOverlap=0 --p2pLinkId=2 --adhocToStaMinExpectedThroughput=49Mbps --staToAdhocMinExpectedThroughput=49Mbps --staToAdhocMaxExpectedLoss=1.0 --adhocToStaMaxExpectedLoss=1.0",
         "True",
         "True",
     ),

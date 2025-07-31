@@ -15,6 +15,7 @@
 #include "ns3/enum.h"
 #include "ns3/inet-socket-address.h"
 #include "ns3/internet-stack-helper.h"
+#include "ns3/internet-static-setup-helper.h"
 #include "ns3/ipv4-address-helper.h"
 #include "ns3/ipv4-global-routing-helper.h"
 #include "ns3/ipv4-l3-protocol.h"
@@ -44,6 +45,7 @@
 #include "ns3/uinteger.h"
 #include "ns3/wifi-mac-queue.h"
 #include "ns3/wifi-net-device.h"
+#include "ns3/wifi-static-setup-helper.h"
 
 #include <algorithm>
 #include <array>
@@ -105,6 +107,14 @@ const std::map<AcIndex, std::string> AcToString{
     {AC_BK, "BK"},
     {AC_VI, "VI"},
     {AC_VO, "VO"},
+};
+
+/// Access category to human readable string mapping
+const std::map<std::string, AcIndex> strToAc{
+    {"BE", AC_BE},
+    {"BK", AC_BK},
+    {"VI", AC_VI},
+    {"VO", AC_VO},
 };
 
 /// Traffic type to Type ID
@@ -283,8 +293,9 @@ class WifiP2pExample
      */
     Ipv4Address GetDestinationIp(Direction dir);
 
-    bool m_pcap{false};               //!< flag whether PCAP files should be generated
-    bool m_p2p{true};                 //!< flag whether P2P is enabled
+    bool m_staticSetup{true}; //!< flag whether devices are configured using the static setup helper
+    bool m_pcap{false};       //!< flag whether PCAP files should be generated
+    bool m_p2p{true};         //!< flag whether P2P is enabled
     bool m_linksOverlap{true};        //!< flag whether to consider links overlapping for P2P
     bool m_emlsr{false};              //!< flag whether the non-AP STA is an EMLSR client
     uint16_t paddingDelayUsec{32};    //!< padding delay advertised by EMLSR client
@@ -422,6 +433,9 @@ WifiP2pExample::Config(int argc, char* argv[])
     CommandLine cmd(__FILE__);
     cmd.AddValue("logging", "turn on example log components", logging);
     cmd.AddValue("verbose", "turn on all wifi log components", verbose);
+    cmd.AddValue("staticSetup",
+                 "Whether devices are configured using the static setup helper",
+                 m_staticSetup);
     cmd.AddValue("pcap", "turn on pcap file output", m_pcap);
     cmd.AddValue("p2p",
                  "turn on P2P capability, if enabled one STA is an ADHOC STA and traffic flows "
@@ -580,6 +594,14 @@ WifiP2pExample::Setup()
         NS_FATAL_ERROR("Frequency values must be unique!");
     }
 
+    // TODO: remove this workaround once it is supported by the static setup helper
+    if (m_staticSetup && (m_numLinksSta > m_numLinksAp))
+    {
+        NS_LOG_WARN("Static setup does not support more links for non-AP MLD than for AP MLD: "
+                    "disable use of static setup");
+        m_staticSetup = false;
+    }
+
     std::vector<std::pair<std::string, FrequencyRange>> allChannelStrs{};
     std::vector<std::pair<std::string, FrequencyRange>> apChannelStrs{};
     std::vector<std::pair<std::string, FrequencyRange>> staChannelStrs{};
@@ -704,6 +726,8 @@ WifiP2pExample::Setup()
     wifiMac.SetType("ns3::ApWifiMac",
                     "Ssid",
                     SsidValue(ssid),
+                    "BeaconGeneration",
+                    BooleanValue(!m_staticSetup),
                     "BE_MaxAmpduSize",
                     UintegerValue(m_maxAmpduLength));
     auto apDevice = wifi.Install(apPhyHelper, wifiMac, m_wifiApNode);
@@ -727,7 +751,7 @@ WifiP2pExample::Setup()
                         UintegerValue(m_maxAmpduLength));
         if (m_numLinksSta > 1 && m_emlsr)
         {
-            std::cout << "EMLSR links " << staLinkIdsStr << "\n";
+            std::cout << "EMLSR links: " << staLinkIdsStr << "\n";
             wifiMac.SetEmlsrManager("ns3::AdvancedEmlsrManager",
                                     "EmlsrLinkSet",
                                     StringValue(staLinkIdsStr),
@@ -763,7 +787,7 @@ WifiP2pExample::Setup()
         wifi.SetStandard(GetStandardForType(m_adhocType));
         wifiMac.SetType("ns3::AdhocWifiMac",
                         "BeaconGeneration",
-                        BooleanValue(true),
+                        BooleanValue(!m_staticSetup),
                         "BE_MaxAmpduSize",
                         UintegerValue(m_maxAmpduLength),
                         "EmlsrPeer",
@@ -820,6 +844,46 @@ WifiP2pExample::Setup()
     mobility.Install(m_wifiApNode);
     mobility.Install(m_wifiStaNodes);
 
+    if (m_staticSetup)
+    {
+        /* static setup of association and BA agreements */
+        auto apDev = DynamicCast<WifiNetDevice>(apDevice.Get(0));
+        NS_ASSERT(apDev);
+        auto sta1Dev = DynamicCast<WifiNetDevice>(staDevices.Get(0));
+        NS_ASSERT(sta1Dev);
+        auto sta2Dev = DynamicCast<WifiNetDevice>(staDevices.Get(1));
+        NS_ASSERT(sta2Dev);
+        WifiStaticSetupHelper::SetStaticAssoc(apDev, m_p2p ? staDevices.Get(0) : staDevices);
+        if (m_p2p)
+        {
+            WifiStaticSetupHelper::SetStaticAssoc(sta2Dev, sta1Dev);
+        }
+        if (m_emlsr)
+        {
+            WifiStaticSetupHelper::SetStaticEmlsr(apDev, m_p2p ? staDevices.Get(0) : staDevices);
+        }
+        for (const auto tidsApToSta = wifiAcList.at(strToAc.at(m_infos.at(AP_TO_STA).ac));
+             const auto tid : {tidsApToSta.GetLowTid(), tidsApToSta.GetHighTid()})
+        {
+            WifiStaticSetupHelper::SetStaticBlockAck(apDev, sta1Dev, tid);
+        }
+        for (const auto tidsStaToAp = wifiAcList.at(strToAc.at(m_infos.at(STA_TO_AP).ac));
+             const auto tid : {tidsStaToAp.GetLowTid(), tidsStaToAp.GetHighTid()})
+        {
+            WifiStaticSetupHelper::SetStaticBlockAck(sta1Dev, apDev, tid);
+        }
+        for (const auto tidsStaToAdhoc = wifiAcList.at(strToAc.at(m_infos.at(STA_TO_ADHOC).ac));
+             const auto tid : {tidsStaToAdhoc.GetLowTid(), tidsStaToAdhoc.GetHighTid()})
+        {
+            WifiStaticSetupHelper::SetStaticBlockAck(m_p2p ? sta1Dev : apDev, sta2Dev, tid);
+        }
+        for (const auto tidsAdhocToSta = wifiAcList.at(strToAc.at(m_infos.at(ADHOC_TO_STA).ac));
+             const auto tid : {tidsAdhocToSta.GetLowTid(), tidsAdhocToSta.GetHighTid()})
+        {
+            WifiStaticSetupHelper::SetStaticBlockAck(sta2Dev, m_p2p ? sta1Dev : apDev, tid);
+        }
+    }
+
     // Internet stack
     InternetStackHelper stack;
     stack.Install(m_wifiApNode);
@@ -832,6 +896,12 @@ WifiP2pExample::Setup()
     m_apInterface = infraAddress.Assign(apDevice);
     m_staInterfaces = infraAddress.Assign(m_p2p ? staDevices.Get(0) : staDevices);
 
+    if (m_staticSetup)
+    {
+        /* static setup of ARP cache for infrastructure subnet */
+        InternetStaticSetupHelper::PopulateArpCache();
+    }
+
     if (m_p2p)
     {
         // use a different subnet for P2P
@@ -842,6 +912,13 @@ WifiP2pExample::Setup()
         // populate ARP cache for DUT
         P2pCacheHelper cacheHelper{};
         cacheHelper.PopulateP2pCache(staDevices.Get(0), staDevices.Get(1));
+
+        if (m_staticSetup)
+        {
+            /* static setup of ARP cache for P2P subnet */
+            Simulator::ScheduleNow(
+                [=] { cacheHelper.PopulateP2pCache(staDevices.Get(1), staDevices.Get(0)); });
+        }
     }
 
     // traffic
