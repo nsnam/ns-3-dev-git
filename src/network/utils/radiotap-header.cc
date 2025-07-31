@@ -1061,8 +1061,8 @@ RadiotapHeader::SetUsigFields(const UsigFields& usigFields)
     m_usigFields = usigFields;
     m_length += m_usigTlv.length + m_usigPad;
 
-    NS_LOG_LOGIC(this << " m_length=" << m_length << " m_present=0x" << std::hex << m_present.at(0)
-                      << " " << m_present.at(1) << std::dec);
+    NS_LOG_LOGIC(this << " m_length=" << m_length << " m_present[0]=0x" << std::hex
+                      << m_present.at(0) << " m_present[1]=0x" << m_present.at(1) << std::dec);
 }
 
 void
@@ -1123,8 +1123,8 @@ RadiotapHeader::SetEhtFields(const EhtFields& ehtFields)
     m_ehtFields = ehtFields;
     m_length += m_ehtTlv.length + m_ehtPad;
 
-    NS_LOG_LOGIC(this << " m_length=" << m_length << " m_present=0x" << std::hex << m_present.at(0)
-                      << " " << m_present.at(1) << std::dec);
+    NS_LOG_LOGIC(this << " m_length=" << m_length << " m_present[0]=0x" << std::hex
+                      << m_present.at(0) << " m_present[1]=0x" << m_present.at(1) << std::dec);
 }
 
 void
