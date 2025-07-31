@@ -1046,7 +1046,8 @@ void
 RadiotapHeader::SetUsigFields(const UsigFields& usigFields)
 {
     NS_LOG_FUNCTION(this << usigFields.common << usigFields.mask << usigFields.value);
-    NS_ASSERT_MSG(m_present.size() >= 2, "Number of it_present words is incorrect");
+    NS_ASSERT_MSG(m_present.size() >= 2,
+                  "Number of it_present words (" << m_present.size() << ") is incorrect");
     m_present.at(0) |= RADIOTAP_TLV;
 
     NS_ASSERT_MSG(!(m_present.at(1) & RADIOTAP_USIG), "U-SIG radiotap field already present");
@@ -1108,7 +1109,8 @@ void
 RadiotapHeader::SetEhtFields(const EhtFields& ehtFields)
 {
     NS_LOG_FUNCTION(this << ehtFields.known);
-    NS_ASSERT_MSG(m_present.size() >= 2, "Number of it_present words is incorrect");
+    NS_ASSERT_MSG(m_present.size() >= 2,
+                  "Number of it_present words (" << m_present.size() << ") is incorrect");
     m_present.at(0) |= RADIOTAP_TLV;
 
     NS_ASSERT_MSG(!(m_present.at(1) & RADIOTAP_EHT_SIG), "EHT radiotap field already present");
