@@ -254,7 +254,12 @@ BackoffMonitor::NotifyMediumBusy(uint8_t phyId, Time duration)
 
     if (const auto linkId = m_mac->GetLinkForPhy(phyId))
     {
-        HandleMediumBusyUpdates(*linkId, Simulator::Now() + duration, std::nullopt);
+        // schedule now to give lower priority to PHY listener connected to backoff monitor
+        Simulator::ScheduleNow(&BackoffMonitor::HandleMediumBusyUpdates,
+                               this,
+                               *linkId,
+                               Simulator::Now() + duration,
+                               std::nullopt);
     }
     // else, PHY is not operating on any link
 }
