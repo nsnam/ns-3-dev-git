@@ -1219,7 +1219,7 @@ WifiP2pExample::PrintResults()
         if (m_simulationTime.IsStrictlyPositive() && (totalTxPacket > 0))
         {
             const auto averageBackoff =
-                m_backoffs.at(ac).empty() ? 0.0 : (totalBackoff / m_backoffs.size());
+                m_backoffs.at(ac).empty() ? 0.0 : (totalBackoff / m_backoffs.at(ac).size());
             oss << "Average backoff [" << acStr << "]: " << averageBackoff << std::endl;
         }
     }
