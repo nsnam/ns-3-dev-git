@@ -71,6 +71,14 @@ Ipv4GlobalRouting::AddHostRouteTo(Ipv4Address dest, Ipv4Address nextHop, uint32_
     NS_LOG_FUNCTION(this << dest << nextHop << interface);
     auto route = new Ipv4RoutingTableEntry();
     *route = Ipv4RoutingTableEntry::CreateHostRouteTo(dest, nextHop, interface);
+    for (auto routePointer : m_hostRoutes)
+    {
+        if (*routePointer == *route)
+        {
+            NS_LOG_LOGIC("Route already exists");
+            return;
+        }
+    }
     m_hostRoutes.push_back(route);
 }
 
@@ -80,6 +88,14 @@ Ipv4GlobalRouting::AddHostRouteTo(Ipv4Address dest, uint32_t interface)
     NS_LOG_FUNCTION(this << dest << interface);
     auto route = new Ipv4RoutingTableEntry();
     *route = Ipv4RoutingTableEntry::CreateHostRouteTo(dest, interface);
+    for (auto routePointer : m_hostRoutes)
+    {
+        if (*routePointer == *route)
+        {
+            NS_LOG_LOGIC("Route already exists");
+            return;
+        }
+    }
     m_hostRoutes.push_back(route);
 }
 
@@ -92,6 +108,14 @@ Ipv4GlobalRouting::AddNetworkRouteTo(Ipv4Address network,
     NS_LOG_FUNCTION(this << network << networkMask << nextHop << interface);
     auto route = new Ipv4RoutingTableEntry();
     *route = Ipv4RoutingTableEntry::CreateNetworkRouteTo(network, networkMask, nextHop, interface);
+    for (auto routePointer : m_networkRoutes)
+    {
+        if (*routePointer == *route)
+        {
+            NS_LOG_LOGIC("Route already exists");
+            return;
+        }
+    }
     m_networkRoutes.push_back(route);
 }
 
@@ -101,6 +125,14 @@ Ipv4GlobalRouting::AddNetworkRouteTo(Ipv4Address network, Ipv4Mask networkMask, 
     NS_LOG_FUNCTION(this << network << networkMask << interface);
     auto route = new Ipv4RoutingTableEntry();
     *route = Ipv4RoutingTableEntry::CreateNetworkRouteTo(network, networkMask, interface);
+    for (auto routePointer : m_networkRoutes)
+    {
+        if (*routePointer == *route)
+        {
+            NS_LOG_LOGIC("Route already exists");
+            return;
+        }
+    }
     m_networkRoutes.push_back(route);
 }
 
@@ -113,6 +145,14 @@ Ipv4GlobalRouting::AddASExternalRouteTo(Ipv4Address network,
     NS_LOG_FUNCTION(this << network << networkMask << nextHop << interface);
     auto route = new Ipv4RoutingTableEntry();
     *route = Ipv4RoutingTableEntry::CreateNetworkRouteTo(network, networkMask, nextHop, interface);
+    for (auto routePointer : m_ASexternalRoutes)
+    {
+        if (*routePointer == *route)
+        {
+            NS_LOG_LOGIC("Route already exists");
+            return;
+        }
+    }
     m_ASexternalRoutes.push_back(route);
 }
 
