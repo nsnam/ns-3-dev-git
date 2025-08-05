@@ -1994,7 +1994,7 @@ def run_tests():
                 status = "CRASH"
                 status_print = colors.PINK + status + colors.NORMAL
 
-        print("[%d/%d] %s" % (i, total_tests, status_print), end="")
+        print("[%d/%d] %s" % (i + 1, total_tests, status_print), end="")
 
         if args.duration or args.constrain == "performance":
             print(" (%.3f)" % job.elapsed_time, end="")
