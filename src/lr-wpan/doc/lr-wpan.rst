@@ -1,9 +1,9 @@
-.. include:: replace.txt
-.. highlight:: cpp
-.. highlight:: bash
 
 IEEE 802.15.4: Low-Rate Wireless Personal Area Network (LR-WPAN)
 ================================================================
+
+.. include:: replace.txt
+.. highlight:: cpp
 
 This chapter describes the implementation of |ns3| models for the
 low-rate, wireless personal area network (LR-WPAN) as specified by

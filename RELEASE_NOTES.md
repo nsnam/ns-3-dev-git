@@ -33,6 +33,7 @@ been tested on Linux. As of this release, the latest known version to work with 
 ns-3 has switched to the C++23 standard by default.
 
 - (antenna) !2516 - Reformatted documentation
+- (documentation) !2519 - Improve models documentation look and feel
 - (core) A stacktrace will now be printed on fatal errors in supported platforms.
 - (wifi) !2524 - Fix corrupted radiotap header when EHT is used.
 - (zigbee) !2512 - Added Groupcast (Multicast) support

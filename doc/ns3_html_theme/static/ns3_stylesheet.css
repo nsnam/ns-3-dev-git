@@ -1,5 +1,15 @@
 /* ns-3 changes to the default CSS from Doxygen and Sphinx */
 
+/* This size should match the height of the div.related (Navigation menu)
+   + titlearea.
+   Because these areas are "fixed" (sticky), addint this property
+   solves a scroll offset issue (Links in the sidebar point to the
+   correct position of the section anchors in the body.
+*/
+html {
+    scroll-padding-top: 96px;
+}
+
 body,
 table,
 div,
@@ -15,17 +25,50 @@ a {
     font-weight: bold;
 }
 
-/* Sphinx headings */
-/*
-div.body h1,
-div.body h2,
+/* Sphinx body headings (All Section level headings in the body) */
+
+div.body {
+    margin-left: 20px; /*Controls the body area initial position after the default*/
+}
+
+div.body h1 {
+    font-weight: normal;
+    font-size: 39px;
+    color: #91A501;
+}
+
+div.body h2 {
+    color: #91A501;
+    font-weight: normal;
+    font-size: 28px;
+}
+
+div.body h3 {
+    color: #41531C;
+    font-weight: 700;
+    font-size: 18px;
+}
+
+div.body h4,
+div.body h5,
+div.body h6 {
+    font-weight: normal;
+    font-style: italic;
+    font-size: 14px;
+}
+
 div.body h3,
 div.body h4,
 div.body h5,
 div.body h6 {
-  background-image: url('nav_f.png');
+    border-bottom: none;/* Remove horizontal line for subsections */
+    padding-bottom: 0;
+    margin-bottom: 0.5em;
+    margin-left: 0;
+    border-left: none;
+    padding-left: 0;
+    background: none;
 }
-*/
 
 /* Sphinx figure captions */
 p.caption {
@@ -41,12 +84,13 @@ p.caption {
     font-weight: normal;
 }
 
-/* Sphinx nav links bar (relbar) */
-/*
+/* Sphinx navigation links bar (relbar) */
 div.related {
-  background-image: url('tab_b.png')
+    position: sticky;
+    top: 56px; /* or 96px if your #titlearea + #ns3-menu is ~96px total */
+    z-index: 9999;
+    background-color: #E3E3E3;/*#f8f8f8; /* Prevent transparency when stuck */
 }
-*/
 
 div.related h3 {
     display: none;
@@ -72,15 +116,59 @@ div.related li.right {
     padding-right: 0px;
 }
 
-/* Sphinx side bar */
+
+div.sphinxsidebar {
+    width: 330px;
+}
+
+div.bodywrapper {
+    margin-left: 330px;
+}
+
+/* Enable independent vertical scrolling in sidebar */
 div.sphinxsidebar {
     font-size: 12px;
+    position: sticky;        /* keep sidebar visible on scroll */
+    top: 90px;               /* align with top of viewport (title area + div.related) */
+    max-height: 100vh;       /* full viewport height */
+    overflow-y: auto;        /* only vertical scrolling */
+    overflow-x: hidden;      /* no horizontal scroll */
+    z-index: 10;             /* ensure it stays above main content */
+
+    /* Hide scrollbar cross-browser */
+    scrollbar-width: none;          /* Firefox */
+    -ms-overflow-style: none;       /* IE/Edge */
+}
+
+div.sphinxsidebar::-webkit-scrollbar {
+    display: none;                  /* Chrome/Safari */
 }
 
 div.sphinxsidebar a {
     font-weight: normal;
 }
 
+/* Top-level (Module Title) */
+.sphinxsidebar .sphinxsidebarwrapper > div > ul > li > a {
+    color: #91A501 !important;
+    font-weight: bold;
+}
+
+/* Second-level (Sections) */
+.sphinxsidebar .sphinxsidebarwrapper > div > ul > li > ul > li > a {
+    color: #91A501 !important;
+}
+
+/* 3rd level (SubsubSections and deeper) */
+.sphinxsidebar .sphinxsidebarwrapper ul ul ul a {
+    color: #41531C !important;
+}
+
+
+/* Hide any subsection after the 3rd level*/
+.sphinxsidebar .sphinxsidebarwrapper ul ul ul ul {
+    display: none;
+}
 
 /* Title bar elements */
 
@@ -89,8 +177,8 @@ div.sphinxsidebar a {
     background-repeat: repeat;
     border-bottom: 1px solid #5B5B5B;
     color: white;
-    position: relative;
-    /* Doxygen tab bar ("Main Page", "Related Pages"..) is at z: 9999 */
+    position: sticky;
+    top: 0;
     z-index: 10000;
 }
 
@@ -229,6 +317,15 @@ div.sphinxsidebar a {
     /* don't add underline on hover */
 }
 
+/* Highlight small code blocks in the documentation */
+code.literal, span.literal {
+    background-color: #f0f0f0;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-family: monospace;
+    font-size: 90%;
+}
+
 /* Dark mode is not supported in Doxygen versions earlier than 1.9.6 */
 @media (prefers-color-scheme: dark) {
     a {
@@ -248,25 +345,43 @@ div.sphinxsidebar a {
     div.sphinxsidebar h3,
     div.sphinxsidebar h4,
     div.sphinxsidebar h3 a {
-        color: ivory;
+        color: #b2beb5;
         background: #2f2f2f;
     }
 
-    div.related a,
-    div.sphinxsidebar a {
-        color: #cfde63;
-    }
+    div.body h3 {
+        color: #DFF9BA; /* #C5C7C0; */
+        font-weight: 700;
+        font-size: 18px;
+   }
+
+    /* 3rd level (SubsubSections and deeper) */
+    .sphinxsidebar .sphinxsidebarwrapper ul ul ul a {
+        color: #DFF9BA !important;
+   }
 
     div.sphinxsidebar input {
         background: #2c2d24;
     }
 
-    div.note {
-        background-color: unset;
+    /* Notes in the dark theme*/
+    div.note,
+    div.note p {
+        background-color: #404040;
     }
 
+    /*div.related a,
+    div.sphinxsidebar a {
+        color: #cfde63;
+    }*/
+
+    /* Sphinx navigation links bar (relbar) */
     div.related {
-        background-image: linear-gradient(to bottom, #66696a 0%, transparent 80%);
+        position: sticky;
+        top: 56px; /* or 96px if your #titlearea + #ns3-menu is ~96px total */
+        z-index: 9999;
+        background-color: #404040;/*#f8f8f8; /* Prevent transparency when stuck */
+        background-image: linear-gradient(to bottom, #404040 0%, transparent 80%);
     }
 
     th {
@@ -276,6 +391,8 @@ div.sphinxsidebar a {
     th p {
         background-color: transparent;
     }
+
+    /* Code blocks (highlight), ns-3 dark theme starts here */
 
     .highlight {
         background-color: #424e20;
@@ -355,7 +472,7 @@ div.sphinxsidebar a {
     }
 
     img {
-        background-color: #ceccca;
+        background-color: white;
         padding: 3px;
     }
 
@@ -370,4 +487,15 @@ div.sphinxsidebar a {
     #nav-sync img {
         background-color: transparent;
     }
+
+    code.literal, span.literal {
+        color:#E3E3E3;
+        background-color: /*#6B5A39;*/ #424E20;
+        padding: 2px 4px;
+        border-radius: 3px;
+        font-family: monospace;
+        font-size: 90%;
+    }
 }
+
+
