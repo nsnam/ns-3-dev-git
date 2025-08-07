@@ -21,6 +21,7 @@ This file is a best-effort approach to solving this issue; we will do our best b
 * (antenna) Reformatted documentation
 * (lr-wpan) Debloat MAC PD-DATA.indication and reduce packet copies.
 * (zigbee) Added group table
+* (internet) Added check for longest prefix match in GlobalRouting
 
 ### Changes to build system
 

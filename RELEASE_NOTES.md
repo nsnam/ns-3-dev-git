@@ -37,6 +37,8 @@ ns-3 has switched to the C++23 standard by default.
 
 ### Bugs fixed
 
+- (internet) #1251 - Added check for longest prefix match in GlobalRouting
+
 ## Release 3.45
 
 This release is available from:
