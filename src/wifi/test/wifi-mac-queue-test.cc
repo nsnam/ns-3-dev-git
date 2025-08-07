@@ -504,7 +504,7 @@ WifiMacQueueFlushTest::DoRun()
                           0,
                           "Unexpected number of packets in container queue");
 
-    Simulator::Destroy();
+    wifiMacQueue->Dispose();
 }
 
 /**
