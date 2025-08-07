@@ -76,6 +76,7 @@ Ipv4GlobalRouting::AddHostRouteTo(Ipv4Address dest, Ipv4Address nextHop, uint32_
         if (*routePointer == *route)
         {
             NS_LOG_LOGIC("Route already exists");
+            delete route;
             return;
         }
     }
@@ -93,6 +94,7 @@ Ipv4GlobalRouting::AddHostRouteTo(Ipv4Address dest, uint32_t interface)
         if (*routePointer == *route)
         {
             NS_LOG_LOGIC("Route already exists");
+            delete route;
             return;
         }
     }
@@ -113,6 +115,7 @@ Ipv4GlobalRouting::AddNetworkRouteTo(Ipv4Address network,
         if (*routePointer == *route)
         {
             NS_LOG_LOGIC("Route already exists");
+            delete route;
             return;
         }
     }
@@ -130,6 +133,7 @@ Ipv4GlobalRouting::AddNetworkRouteTo(Ipv4Address network, Ipv4Mask networkMask, 
         if (*routePointer == *route)
         {
             NS_LOG_LOGIC("Route already exists");
+            delete route;
             return;
         }
     }
@@ -150,6 +154,7 @@ Ipv4GlobalRouting::AddASExternalRouteTo(Ipv4Address network,
         if (*routePointer == *route)
         {
             NS_LOG_LOGIC("Route already exists");
+            delete route;
             return;
         }
     }
