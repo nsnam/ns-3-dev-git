@@ -498,8 +498,15 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams,
     {
         senderNodeId = rxParams->txPhy->GetDevice()->GetNode()->GetId();
     }
-    NS_LOG_DEBUG("Received signal from " << senderNodeId << " with unfiltered power "
-                                         << WToDbm(Watt_t{Integral(*receivedSignalPsd)}));
+    if (const Watt_t rxUnfilteredPower{Integral(*receivedSignalPsd)}; rxUnfilteredPower > Watt_t{0})
+    {
+        NS_LOG_DEBUG("Received signal from " << senderNodeId << " with unfiltered power "
+                                             << WToDbm(rxUnfilteredPower).str());
+    }
+    else
+    {
+        NS_LOG_DEBUG("Received signal from " << senderNodeId << " with unfiltered power of zero");
+    }
 
     // Integrate over our receive bandwidth (i.e., all that the receive
     // spectral mask representing our filtering allows) to find the
