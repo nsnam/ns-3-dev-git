@@ -138,7 +138,7 @@ FindSelf()
         while (true)
         {
             status = readlink("/proc/self/exe", buffer, size);
-            if (status != 1 || (status == -1 && errno != ENAMETOOLONG))
+            if ((status > 0 && status < size) || (status == -1 && errno != ENAMETOOLONG))
             {
                 break;
             }
