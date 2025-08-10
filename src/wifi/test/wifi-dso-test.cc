@@ -36,6 +36,7 @@
 #include "ns3/wifi-net-device.h"
 #include "ns3/wifi-protection.h"
 #include "ns3/wifi-psdu.h"
+#include "ns3/wifi-static-setup-helper.h"
 
 #include <algorithm>
 #include <initializer_list>
@@ -170,10 +171,7 @@ DsoTestBase::DoSetup()
     WifiMacHelper mac;
     mac.SetType("ns3::StaWifiMac",
                 "Ssid",
-                SsidValue(Ssid("wrong-ssid")),
-                "MaxMissedBeacons",
-                UintegerValue(1e6), // do not deassociate (beacons are stopped once all STAs are
-                                    // associated to simplify)
+                SsidValue(Ssid("ns-3-ssid")),
                 "ActiveProbing",
                 BooleanValue(false));
     mac.SetDsoManager("ns3::TestDsoManager");
@@ -204,7 +202,7 @@ DsoTestBase::DoSetup()
                 "Ssid",
                 SsidValue(Ssid("ns-3-ssid")),
                 "BeaconGeneration",
-                BooleanValue(true));
+                BooleanValue(false));
     mac.SetMultiUserScheduler("ns3::TestDsoMultiUserScheduler");
 
     apPhyHelper.Set("ChannelSettings", StringValue(m_apOpChannel));
@@ -239,6 +237,17 @@ DsoTestBase::DoSetup()
     mobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
     mobility.Install(wifiApNode);
     mobility.Install(wifiStaNodes);
+
+    auto apDev = DynamicCast<WifiNetDevice>(apDevice.Get(0));
+    NS_ASSERT(apDev);
+    WifiStaticSetupHelper::SetStaticAssoc(apDev, staDevices);
+    for (uint32_t i = 0; i < staDevices.GetN(); ++i)
+    {
+        auto staDev = DynamicCast<WifiNetDevice>(staDevices.Get(i));
+        NS_ASSERT(staDev);
+        WifiStaticSetupHelper::SetStaticBlockAck(apDev, staDev, 0);
+        WifiStaticSetupHelper::SetStaticBlockAck(staDev, apDev, 0);
+    }
 
     // install packet socket on all nodes
     PacketSocketHelper packetSocket;
@@ -278,21 +287,7 @@ DsoTestBase::DoSetup()
     Config::ConnectWithoutContext("/NodeList/*/ApplicationList/*/$ns3::PacketSocketServer/Rx",
                                   MakeCallback(&DsoTestBase::Receive, this));
 
-    m_startAid = m_apMac->GetNextAssociationId();
-
-    // schedule ML setup for one station at a time
-    m_apMac->TraceConnectWithoutContext("AssociatedSta",
-                                        MakeCallback(&DsoTestBase::StaAssociated, this));
-    m_apMac->GetQosTxop(AC_BE)->TraceConnectWithoutContext(
-        "BaEstablished",
-        MakeCallback(&DsoTestBase::BaEstablishedDl, this));
-    for (std::size_t i = 0; i < m_nDsoStas + m_nNonDsoStas + m_nNonUhrStas; ++i)
-    {
-        m_staMacs.at(i)->GetQosTxop(AC_BE)->TraceConnectWithoutContext(
-            "BaEstablished",
-            MakeCallback(&DsoTestBase::BaEstablishedUl, this).Bind(i));
-    }
-    Simulator::Schedule(Seconds(0), [&]() { m_staMacs.front()->SetSsid(Ssid("ns-3-ssid")); });
+    Simulator::ScheduleNow([&]() { StartTraffic(); });
 }
 
 Ptr<PacketSocketClient>
@@ -317,156 +312,15 @@ DsoTestBase::GetApplication(TrafficDirection dir,
 }
 
 void
-DsoTestBase::StaAssociated(uint16_t aid, Mac48Address /*addr*/)
-{
-    NS_LOG_FUNCTION(this << aid);
-
-    NS_TEST_ASSERT_MSG_LT(m_lastAid,
-                          aid,
-                          "Unexpected AID: " << aid << ", expected greater than " << m_lastAid);
-    m_lastAid = aid;
-
-    // wait some time (5ms) to allow the completion of association
-    const auto delay = MilliSeconds(5);
-
-    if (!m_establishBaDl.empty())
-    {
-        // trigger establishment of BA agreement with AP as originator
-        Simulator::Schedule(delay, [=, this]() {
-            m_apMac->GetDevice()->GetNode()->AddApplication(
-                GetApplication(DOWNLINK, aid - m_startAid, 1, 1000, m_establishBaDl.front()));
-        });
-    }
-    else if (!m_establishBaUl.empty())
-    {
-        // trigger establishment of BA agreement with AP as recipient
-        Simulator::Schedule(delay, [=, this]() {
-            m_staMacs.at(aid - m_startAid)
-                ->GetDevice()
-                ->GetNode()
-                ->AddApplication(
-                    GetApplication(UPLINK, aid - m_startAid, 1, 1000, m_establishBaUl.front()));
-        });
-    }
-    else
-    {
-        Simulator::Schedule(delay, [=, this]() { SetSsid(aid - m_startAid + 1); });
-    }
-}
-
-void
-DsoTestBase::BaEstablishedDl(Mac48Address recipient,
-                             uint8_t tid,
-                             std::optional<Mac48Address> /* gcrGroup */)
-{
-    NS_LOG_FUNCTION(this << recipient << tid);
-
-    // wait some time (5ms) to allow the exchange of the data frame that triggered the Block Ack
-    const auto delay = MilliSeconds(5);
-
-    auto linkId = m_apMac->IsAssociated(recipient);
-    NS_TEST_ASSERT_MSG_EQ(linkId.has_value(), true, "No link for association of " << recipient);
-    auto aid = m_apMac->GetWifiRemoteStationManager(*linkId)->GetAssociationId(recipient);
-
-    if (auto it = std::find(m_establishBaDl.cbegin(), m_establishBaDl.cend(), tid);
-        it != m_establishBaDl.cend() && std::next(it) != m_establishBaDl.cend())
-    {
-        // trigger establishment of BA agreement with AP as originator
-        Simulator::Schedule(delay, [=, this]() {
-            m_apMac->GetDevice()->GetNode()->AddApplication(
-                GetApplication(DOWNLINK, aid - m_startAid, 1, 1000, *std::next(it)));
-        });
-    }
-    else if (!m_establishBaUl.empty())
-    {
-        // trigger establishment of BA agreement with AP as recipient
-        Simulator::Schedule(delay, [=, this]() {
-            m_staMacs.at(aid - m_startAid)
-                ->GetDevice()
-                ->GetNode()
-                ->AddApplication(
-                    GetApplication(UPLINK, aid - m_startAid, 1, 1000, m_establishBaUl.front()));
-        });
-    }
-    else
-    {
-        Simulator::Schedule(delay, [=, this]() { SetSsid(aid - m_startAid + 1); });
-    }
-}
-
-void
-DsoTestBase::BaEstablishedUl(std::size_t index,
-                             Mac48Address recipient,
-                             uint8_t tid,
-                             std::optional<Mac48Address> /* gcrGroup */)
-{
-    NS_LOG_FUNCTION(this << index << recipient << tid);
-
-    // wait some time (5ms) to allow the exchange of the data frame that triggered the Block Ack
-    const auto delay = MilliSeconds(5);
-
-    if (auto it = std::find(m_establishBaUl.cbegin(), m_establishBaUl.cend(), tid);
-        it != m_establishBaUl.cend() && std::next(it) != m_establishBaUl.cend())
-    {
-        // trigger establishment of BA agreement with AP as recipient
-        Simulator::Schedule(delay, [=, this]() {
-            m_staMacs.at(index)->GetDevice()->GetNode()->AddApplication(
-                GetApplication(UPLINK, index, 1, 1000, *std::next(it)));
-        });
-    }
-    else
-    {
-        Simulator::Schedule(delay, [=, this]() { SetSsid(index + 1); });
-    }
-}
-
-void
-DsoTestBase::SetSsid(std::size_t staIdx)
-{
-    NS_LOG_FUNCTION(this << staIdx);
-
-    if (staIdx < m_nDsoStas + m_nNonDsoStas + m_nNonUhrStas)
-    {
-        // make the next STA start association
-        m_staMacs.at(staIdx)->SetSsid(Ssid("ns-3-ssid"));
-        return;
-    }
-
-    // all stations associated: traffic if needed
-    StartTraffic();
-
-    // stop generation of beacon frames in order to avoid interference
-    m_apMac->SetAttribute("BeaconGeneration", BooleanValue(false));
-
-    // disconnect callbacks
-    m_apMac->TraceDisconnectWithoutContext("AssociatedSta",
-                                           MakeCallback(&DsoTestBase::StaAssociated, this));
-    m_apMac->GetQosTxop(AC_BE)->TraceDisconnectWithoutContext(
-        "BaEstablished",
-        MakeCallback(&DsoTestBase::BaEstablishedDl, this));
-    for (std::size_t i = 0; i < m_nDsoStas + m_nNonDsoStas + m_nNonUhrStas; ++i)
-    {
-        m_staMacs.at(i)->GetQosTxop(AC_BE)->TraceDisconnectWithoutContext(
-            "BaEstablished",
-            MakeCallback(&DsoTestBase::BaEstablishedUl, this).Bind(i));
-    }
-}
-
-void
 DsoTestBase::StartTraffic()
 {
     NS_LOG_FUNCTION(this);
-    m_started = true;
 }
 
 void
 DsoTestBase::Transmit(WifiConstPsduMap psduMap, WifiTxVector txVector, double /*txPowerW*/)
 {
     NS_LOG_FUNCTION(this << psduMap << txVector);
-    if (!m_started)
-    {
-        return;
-    }
     m_txPsdus.push_back({Simulator::Now(), psduMap, txVector});
 }
 
@@ -474,10 +328,6 @@ void
 DsoTestBase::Receive(Ptr<const Packet> p, const Address& adr)
 {
     NS_LOG_FUNCTION(this << p << adr);
-    if (!m_started)
-    {
-        return;
-    }
     ++m_receivedPackets;
 }
 
@@ -492,7 +342,6 @@ DsoSubbandsTest::DsoSubbandsTest(
     m_nDsoStas = 1;
     m_apOpChannel = apChannel;
     m_stasOpChannel = {stasChannel};
-    m_duration = Seconds(0.5);
 }
 
 void
@@ -530,9 +379,7 @@ DsoTxopTest::DsoTxopTest(const Params& params)
     m_nDsoStas = 2;
     m_apOpChannel = "{114, 0, BAND_5GHZ, 0}";
     m_stasOpChannel = {"{106, 0, BAND_5GHZ, 0}", "{106, 0, BAND_5GHZ, 0}"};
-    m_duration = Seconds(1.0);
-    m_establishBaDl = {0};
-    m_establishBaUl = {0};
+    m_duration = Seconds(0.1);
     if (m_params.generateInterferenceAfterIcf)
     {
         // use more robust modulation if interference is generated
@@ -628,20 +475,15 @@ DsoTxopTest::StartTraffic()
         DynamicCast<TestDsoManager>(m_staMacs.at(m_idxStaInDsoSubband)->GetDsoManager());
     m_obssPhy->SetOperatingChannel(dsoManager->GetDsoSubbands(SINGLE_LINK_OP_ID).cbegin()->second);
 
-    auto muScheduler =
-        DynamicCast<TestDsoMultiUserScheduler>(m_apMac->GetObject<MultiUserScheduler>());
-    muScheduler->SetForcedFormat(std::nullopt);
-
     DsoTestBase::StartTraffic();
 
     auto numDlMuPpdus{m_params.numDlMuPpdus};
     if ((m_params.numDlMuPpdus == 0) && (m_params.numUlMuPpdus == 0))
     {
         // we need to generate at least one packet to trigger the DSO frame exchange to be
-        // initiated, but we ensure the packet gets dropped before it has a chance to be transmitted
+        // initiated, but we will ensure the packet gets dropped before it has a chance to be
+        // transmitted
         numDlMuPpdus = 1;
-        m_apMac->GetQosTxop(AC_BE)->GetWifiMacQueue()->SetAttribute("MaxDelay",
-                                                                    TimeValue(MicroSeconds(10)));
     }
 
     if (numDlMuPpdus > 0)
@@ -651,6 +493,9 @@ DsoTxopTest::StartTraffic()
             m_apMac->GetDevice()->GetNode()->AddApplication(GetApplication(DOWNLINK, i, 1, 1000));
         }
     }
+
+    auto muScheduler =
+        DynamicCast<TestDsoMultiUserScheduler>(m_apMac->GetObject<MultiUserScheduler>());
     if (m_params.numUlMuPpdus > 0)
     {
         muScheduler->SetAttribute("EnableUlOfdma", BooleanValue(true));
@@ -695,12 +540,6 @@ DsoTxopTest::Transmit(WifiConstPsduMap psduMap, WifiTxVector txVector, double tx
 void
 DsoTxopTest::CheckIcf(const WifiConstPsduMap& psduMap, const WifiTxVector& txVector)
 {
-    if (!m_started)
-    {
-        // traffic is not started yet
-        return;
-    }
-
     CtrlTriggerHeader trigger;
     psduMap.cbegin()->second->GetPayload(0)->PeekHeader(trigger);
     if (!trigger.IsBsrp())
@@ -867,12 +706,6 @@ DsoTxopTest::CheckIcf(const WifiConstPsduMap& psduMap, const WifiTxVector& txVec
 void
 DsoTxopTest::CheckQosNullFrames(const WifiConstPsduMap& psduMap, const WifiTxVector& txVector)
 {
-    if (!m_started)
-    {
-        // traffic is not started yet
-        return;
-    }
-
     NS_LOG_DEBUG("Send DSO ICF response");
 
     const auto ta = psduMap.cbegin()->second->GetAddr2();
@@ -1104,12 +937,6 @@ DsoTxopTest::CheckBlockedDlTx(std::size_t staId, bool blocked)
 void
 DsoTxopTest::CheckQosFrames(const WifiConstPsduMap& psduMap, const WifiTxVector& txVector)
 {
-    if (!m_started)
-    {
-        // traffic is not started yet
-        return;
-    }
-
     ++m_countQoSframes;
     NS_LOG_DEBUG("Send QoS DATA frame #" << m_countQoSframes);
 
@@ -1173,12 +1000,6 @@ DsoTxopTest::CheckQosFrames(const WifiConstPsduMap& psduMap, const WifiTxVector&
 void
 DsoTxopTest::CheckBlockAck(const WifiConstPsduMap& psduMap, const WifiTxVector& txVector)
 {
-    if (!m_started)
-    {
-        // traffic is not started yet
-        return;
-    }
-
     ++m_countBlockAck;
     NS_LOG_DEBUG("Send Block ACK #" << m_countBlockAck);
 
@@ -1269,12 +1090,15 @@ DsoTxopTest::CheckBlockAck(const WifiConstPsduMap& psduMap, const WifiTxVector& 
 
             // schedule one last packet to be transmitted in a following TXOP (non-DSO)
             NS_LOG_DEBUG("Generate one last packet for STA " << i + 1);
-            Simulator::Schedule(txDuration + phy->GetSifs() + TimeStep(i), [this, i]() {
+            Simulator::Schedule(txDuration + phy->GetSifs(), [this, i]() {
                 m_apMac->GetDevice()->GetNode()->AddApplication(
                     GetApplication(DOWNLINK, i, 1, 1000));
             });
         }
-        muScheduler->SetForcedFormat(MultiUserScheduler::TxFormat::SU_TX);
+        if (!m_params.nextTxopIsDso)
+        {
+            muScheduler->SetForcedFormat(MultiUserScheduler::TxFormat::SU_TX);
+        }
         muScheduler->SetAccessReqInterval(Time());
     }
 
@@ -1292,8 +1116,7 @@ DsoTxopTest::CheckBlockAck(const WifiConstPsduMap& psduMap, const WifiTxVector& 
             {
                 NS_LOG_DEBUG("Generate one last packet for STA " << i + 1);
                 Simulator::Schedule(
-                    txDuration + m_staMacs.at(*clientId)->GetWifiPhy(SINGLE_LINK_OP_ID)->GetSifs() +
-                        TimeStep(i),
+                    txDuration + m_staMacs.at(*clientId)->GetWifiPhy(SINGLE_LINK_OP_ID)->GetSifs(),
                     [this, i]() {
                         m_apMac->GetDevice()->GetNode()->AddApplication(
                             GetApplication(DOWNLINK, i, 1, 1000));
@@ -1313,6 +1136,16 @@ DsoTxopTest::DsoTxopEventCallback(std::size_t index, DsoTxopEvent event, uint8_t
     NS_LOG_DEBUG("DSO TXOP event for STA " << index + 1 << ": " << event);
     const auto& [it, inserted] = m_dsoTxopEventInfos.emplace(index, std::vector<DsoTxopEvent>{});
     it->second.emplace_back(event);
+
+    if ((event == DsoTxopEvent::RX_ICF) && (m_params.numDlMuPpdus == 0) &&
+        (m_params.numUlMuPpdus == 0))
+    {
+        // scenario where no DL nor UL MU PPDU should be transmitted, force the packet enqueued to
+        // be dropped because of lifetime expiry
+        m_apMac->GetQosTxop(AC_BE)->GetWifiMacQueue()->SetAttribute("MaxDelay",
+                                                                    TimeValue(TimeStep(1)));
+        m_apMac->GetQosTxop(AC_BE)->GetWifiMacQueue()->Flush();
+    }
 }
 
 void
@@ -1737,11 +1570,6 @@ DsoTxopTest::DoSetup()
     m_interferer->SetDutyCycle(1);
     interfererNode->AddDevice(interfererDev);
 
-    // SU as long as steady conditions are not reached
-    auto muScheduler =
-        DynamicCast<TestDsoMultiUserScheduler>(m_apMac->GetObject<MultiUserScheduler>());
-    muScheduler->SetForcedFormat(MultiUserScheduler::TxFormat::SU_TX);
-
     m_apErrorModel = CreateObject<ListErrorModel>();
     m_apMac->GetDevice()->GetPhy(SINGLE_LINK_OP_ID)->SetPostReceptionErrorModel(m_apErrorModel);
 
@@ -1785,19 +1613,13 @@ DsoSchedulerTest::DsoSchedulerTest(const Params& params)
     m_nDsoStas = params.dsoStasOpChannel.size();
     m_apOpChannel = params.apOpChannel;
     m_stasOpChannel = params.dsoStasOpChannel;
-    m_duration = Seconds(2.0);
-    m_establishBaDl = {0};
-    m_establishBaUl = {0};
+    m_duration = Seconds(0.25);
 }
 
 void
 DsoSchedulerTest::StartTraffic()
 {
     NS_LOG_FUNCTION(this);
-
-    auto muScheduler =
-        DynamicCast<TestDsoMultiUserScheduler>(m_apMac->GetObject<MultiUserScheduler>());
-    muScheduler->SetForcedFormat(std::nullopt);
 
     DsoTestBase::StartTraffic();
 
@@ -1824,6 +1646,8 @@ DsoSchedulerTest::StartTraffic()
 
     if (m_enableUlOfdma)
     {
+        auto muScheduler =
+            DynamicCast<TestDsoMultiUserScheduler>(m_apMac->GetObject<MultiUserScheduler>());
         muScheduler->SetAccessReqInterval(MilliSeconds(100));
         // UL traffic is started once the first trigger is transmitted to avoid non-OFDMA UL traffic
     }
@@ -1833,12 +1657,6 @@ void
 DsoSchedulerTest::Transmit(WifiConstPsduMap psduMap, WifiTxVector txVector, double txPowerW)
 {
     DsoTestBase::Transmit(psduMap, txVector, txPowerW);
-
-    if (!m_started)
-    {
-        // traffic is not started yet
-        return;
-    }
 
     switch (auto psdu = psduMap.begin()->second; psdu->GetHeader(0).GetType())
     {
@@ -1903,12 +1721,6 @@ void
 DsoSchedulerTest::CheckTrigger(const WifiConstPsduMap& psduMap, const WifiTxVector& txVector)
 {
     NS_LOG_FUNCTION(this << psduMap << txVector);
-
-    if (!m_started)
-    {
-        // traffic is not started yet
-        return;
-    }
 
     if (m_txopId >= m_params.expectedRuAllocations.size())
     {
@@ -2058,8 +1870,6 @@ DsoSchedulerTest::DoSetup()
     auto muScheduler =
         DynamicCast<TestDsoMultiUserScheduler>(m_apMac->GetObject<MultiUserScheduler>());
     muScheduler->SetAttribute("NStations", UintegerValue(m_params.maxServedStas));
-    // do not have OFDMA before StartTraffic() is called
-    muScheduler->SetForcedFormat(MultiUserScheduler::TxFormat::SU_TX);
     // Enable UL-OFDMA in case of UL traffic
     muScheduler->SetAttribute("EnableUlOfdma", BooleanValue(m_enableUlOfdma));
 

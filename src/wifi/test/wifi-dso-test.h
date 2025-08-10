@@ -123,56 +123,10 @@ class DsoTestBase : public TestCase
     Ptr<ApWifiMac> m_apMac;                   ///< AP wifi MAC
     std::vector<Ptr<StaWifiMac>> m_staMacs;   ///< MACs of the non-AP STAs
     Time m_duration;                          ///< simulation duration
-    std::vector<uint8_t> m_establishBaDl{};   /**< the TIDs for which BA needs to be established
-                                                   with the AP as originator */
-    std::vector<uint8_t> m_establishBaUl{};   /**< the TIDs for which BA needs to be established
-                                                   with the AP as recipient */
     std::vector<FrameInfo> m_txPsdus;         ///< transmitted PSDUs
     uint64_t m_receivedPackets{0};            ///< received packets
-    bool m_started{
-        false}; ///< flag whether traffic is started and transmitted PSDUs can be recorded
 
   private:
-    /**
-     * Callback connected to the ApWifiMac's AssociatedSta trace source.
-     * Start generating traffic (if needed) when all stations are associated.
-     *
-     * @param aid the AID assigned to the previous associated STA
-     */
-    void StaAssociated(uint16_t aid, Mac48Address /* addr */);
-
-    /**
-     * Callback connected to the QosTxop's BaEstablished trace source of the AP's BE AC.
-     *
-     * @param recipient the recipient of the established Block Ack agreement
-     * @param tid the TID
-     */
-    void BaEstablishedDl(Mac48Address recipient,
-                         uint8_t tid,
-                         std::optional<Mac48Address> /*gcrGroup*/);
-
-    /**
-     * Callback connected to the QosTxop's BaEstablished trace source of a STA's BE AC.
-     *
-     * @param index the index of the STA which the callback is connected to
-     * @param recipient the recipient of the established Block Ack agreement
-     * @param tid the TID
-     */
-    void BaEstablishedUl(std::size_t index,
-                         Mac48Address recipient,
-                         uint8_t tid,
-                         std::optional<Mac48Address> /*gcrGroup*/);
-
-    /**
-     * Set the SSID on the next station that needs to start the association procedure, or start
-     * traffic if no other station left.
-     *
-     * @param count the number of STAs that completed the association procedure
-     */
-    void SetSsid(std::size_t count);
-
-    uint16_t m_startAid{MIN_AID};                 ///< first AID to allocate to stations
-    uint16_t m_lastAid{0};                        ///< AID of last associated station
     std::vector<PacketSocketAddress> m_dlSockets; ///< packet socket address for DL traffic
     std::vector<PacketSocketAddress> m_ulSockets; ///< packet socket address for UL traffic
 };
