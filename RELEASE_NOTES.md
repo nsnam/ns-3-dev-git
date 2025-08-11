@@ -34,6 +34,7 @@ ns-3 has switched to the C++23 standard by default.
 
 - (antenna) !2516 - Reformatted documentation
 - (core) A stacktrace will now be printed on fatal errors in supported platforms.
+- (wifi) !2524 - Fix corrupted radiotap header when EHT is used.
 
 ### Bugs fixed
 
