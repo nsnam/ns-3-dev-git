@@ -277,14 +277,23 @@ UhrFrameExchangeManager::NotifyChannelReleased(Ptr<Txop> txop)
 
     if (m_apMac && !m_dsoStas.empty())
     {
-        // the channel has been released; if the TXNAV is still set or if m_protectSingleExchange is
-        // enabled, it means no CF-End is going to be sent. In this case, DSO clients wait for a
-        // slot plus the PHY RX start delay before switching back to the DSO subband (in this case,
-        // this function is called a SIFS after the last frame in the TXOP)
         Time delay{0};
-        if (const auto remTxNav = m_txNav - Simulator::Now();
-            remTxNav.IsStrictlyPositive() || m_protectSingleExchange)
+        if (ReceivedDsoIcfResponsesExceptOnP20())
         {
+            // the channel has been released; if the DSO TXOP terminated because no non-AP STA
+            // assigned in the P20 subband responded to the DSO ICF and there is at least one
+            // response to the DSO ICF from a non-AP STA on any other subband, DSO STAs will start
+            // to switch back to the primary subband in a SIFS + slot + PHY RXSTART delay.
+            delay = m_phy->GetSifs() + m_phy->GetSlot() + EMLSR_OR_DSO_RX_PHY_START_DELAY;
+        }
+        else if (const auto remTxNav = m_txNav - Simulator::Now();
+                 remTxNav.IsStrictlyPositive() || m_protectSingleExchange)
+        {
+            // the channel has been released; if the TXNAV is still set or if
+            // m_protectSingleExchange is enabled, it means no CF-End is going to be sent. In this
+            // case, DSO clients wait for a slot plus the PHY RX start delay before switching back
+            // to the DSO subband (in this case, this function is called a SIFS after the last frame
+            // in the TXOP)
             delay = m_phy->GetSlot() + EMLSR_OR_DSO_RX_PHY_START_DELAY;
         }
 
@@ -371,45 +380,49 @@ UhrFrameExchangeManager::TbPpduTimeout(WifiPsduMap* psduMap, std::size_t nSolici
 
             m_dsoStas.clear();
         }
-        else
+        else if (ReceivedDsoIcfResponsesExceptOnP20())
         {
-            auto assignedRuInP20{false};
-            auto assignedRuOtherThanP20{false};
-            const auto p20Index{m_phy->GetOperatingChannel().GetPrimary20Index()};
-            const auto& aidAddrMap = m_apMac->GetStaList(m_linkId);
-            for (const auto& userInfo : trigger)
-            {
-                const auto addressIt = aidAddrMap.find(userInfo.GetAid12());
-                NS_ASSERT_MSG(addressIt != aidAddrMap.end(), "AID not found");
-                if (!m_protectedStas.contains(addressIt->second))
-                {
-                    continue;
-                }
-                if (const auto indices = m_phy->GetOperatingChannel().Get20MHzIndicesCoveringRu(
-                        userInfo.GetRuAllocation(),
-                        m_phy->GetChannelWidth());
-                    indices.contains(p20Index))
-                {
-                    assignedRuInP20 = true;
-                }
-                else
-                {
-                    assignedRuOtherThanP20 = true;
-                }
-            }
-            if (!assignedRuInP20 && assignedRuOtherThanP20)
-            {
-                NS_LOG_DEBUG(
-                    "No non-AP STA assigned in the P20 subband responded to the DSO ICF and "
-                    "there is at least one response to the DSO ICF from a non-AP STA on any "
-                    "other subband: terminate the TXOP");
-                TransmissionFailed();
-                return;
-            }
+            NS_LOG_DEBUG("No non-AP STA assigned in the P20 subband responded to the DSO ICF and "
+                         "there is at least one response to the DSO ICF from a non-AP STA on any "
+                         "other subband: terminate the TXOP");
+            TransmissionFailed();
+            return;
         }
     }
 
     EhtFrameExchangeManager::TbPpduTimeout(psduMap, nSolicitedStations);
+}
+
+bool
+UhrFrameExchangeManager::ReceivedDsoIcfResponsesExceptOnP20() const
+{
+    auto assignedRuInP20{false};
+    auto assignedRuOtherThanP20{false};
+    const auto p20Index{m_phy->GetOperatingChannel().GetPrimary20Index()};
+    const auto& aidAddrMap = m_apMac->GetStaList(m_linkId);
+    const auto& userInfos = m_trigVector.GetHeMuUserInfoMap();
+    for (const auto& [aid, userInfo] : userInfos)
+    {
+        const auto addressIt = aidAddrMap.find(aid);
+        NS_ASSERT_MSG(addressIt != aidAddrMap.end(), "AID not found");
+        if (!m_protectedStas.contains(addressIt->second))
+        {
+            // ICF response not received
+            continue;
+        }
+        if (const auto indices =
+                m_phy->GetOperatingChannel().Get20MHzIndicesCoveringRu(userInfo.ru,
+                                                                       m_phy->GetChannelWidth());
+            indices.contains(p20Index))
+        {
+            assignedRuInP20 = true;
+        }
+        else
+        {
+            assignedRuOtherThanP20 = true;
+        }
+    }
+    return !assignedRuInP20 && assignedRuOtherThanP20;
 }
 
 std::set<uint8_t>

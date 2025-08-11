@@ -76,6 +76,12 @@ class UhrFrameExchangeManager : public EhtFrameExchangeManager
      */
     void DsoSwitchBackToPrimary(const Mac48Address& address, const Time& delay);
 
+    /**
+     * @return whether at least one DSO STA assigned outside of the P20 subband has responded to the
+     * DSO ICF and none of the DSO STAs assigned inside of P20 subband has responded to the DSO ICF.
+     */
+    bool ReceivedDsoIcfResponsesExceptOnP20() const;
+
     bool m_dsoIcfReceived{
         false}; //!< flag whether an ICF has been received to indicate the start of a DSO TXOP
     bool m_switchingForDso{false}; //!< flag whether channel is switching for DSO operations
