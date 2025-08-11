@@ -134,11 +134,12 @@ FindSelf()
         ssize_t size = 1024;
         char* buffer = (char*)malloc(size);
         memset(buffer, 0, size);
-        int status;
+        int pathLength;
         while (true)
         {
-            status = readlink("/proc/self/exe", buffer, size);
-            if ((status > 0 && status < size) || (status == -1 && errno != ENAMETOOLONG))
+            pathLength = readlink("/proc/self/exe", buffer, size);
+            if ((pathLength > 0 && pathLength < size) ||
+                (pathLength == -1 && errno != ENAMETOOLONG))
             {
                 break;
             }
@@ -147,7 +148,7 @@ FindSelf()
             buffer = (char*)malloc(size);
             memset(buffer, 0, size);
         }
-        if (status == -1)
+        if (pathLength == -1)
         {
             NS_FATAL_ERROR("Oops, could not find self directory.");
         }
@@ -159,15 +160,15 @@ FindSelf()
         //  LPTSTR = char *
         DWORD size = 1024;
         auto lpFilename = (LPTSTR)malloc(sizeof(TCHAR) * size);
-        DWORD status = GetModuleFileName(nullptr, lpFilename, size);
-        while (status == size)
+        DWORD pathLength = GetModuleFileName(nullptr, lpFilename, size);
+        while (pathLength == size)
         {
             size = size * 2;
             free(lpFilename);
             lpFilename = (LPTSTR)malloc(sizeof(TCHAR) * size);
-            status = GetModuleFileName(nullptr, lpFilename, size);
+            pathLength = GetModuleFileName(nullptr, lpFilename, size);
         }
-        NS_ASSERT(status != 0);
+        NS_ASSERT(pathLength != 0);
         filename = lpFilename;
         free(lpFilename);
     }
