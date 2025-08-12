@@ -571,13 +571,13 @@ PhyEntity::DoStartReceivePayload(Ptr<Event> event)
     ScheduleEndOfMpdus(event);
     const auto& txVector = event->GetPpdu()->GetTxVector();
     Time payloadDuration = ppdu->GetTxDuration() - CalculatePhyPreambleAndHeaderDuration(txVector);
-    m_wifiPhy->m_phyRxPayloadBeginTrace(
-        txVector,
-        payloadDuration); // this callback (equivalent to PHY-RXSTART primitive) is triggered only
-                          // if headers have been correctly decoded and that the mode within is
-                          // supported
     m_endRxPayloadEvents.push_back(
         Simulator::Schedule(payloadDuration, &PhyEntity::EndReceivePayload, this, event));
+    // this callback (equivalent to PHY-RXSTART primitive) is triggered only if headers have been
+    // correctly decoded and that the mode within is supported. It must be called after scheduling
+    // the call to EndReceivePayload (above) because EndReceivePayload must be called before the
+    // expiration of the timer started by the MAC when receiving the RXSTART indication.
+    m_wifiPhy->m_phyRxPayloadBeginTrace(txVector, payloadDuration);
     return payloadDuration;
 }
 

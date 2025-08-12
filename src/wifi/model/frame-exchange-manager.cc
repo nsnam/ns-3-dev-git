@@ -22,11 +22,6 @@
 #undef NS_LOG_APPEND_CONTEXT
 #define NS_LOG_APPEND_CONTEXT WIFI_FEM_NS_LOG_APPEND_CONTEXT
 
-// Time (in nanoseconds) to be added to the PSDU duration to yield the duration
-// of the timer that is started when the PHY indicates the start of the reception
-// of a frame and we are waiting for a response.
-#define PSDU_DURATION_SAFEGUARD 400
-
 namespace ns3
 {
 
@@ -304,15 +299,15 @@ FrameExchangeManager::RxStartIndication(WifiTxVector txVector, Time psduDuration
         NS_LOG_DEBUG("Rescheduling timeout event");
         if (m_txTimer.GetReason() == WifiTxTimer::WAIT_DATA_AFTER_PS_POLL)
         {
-            // postpone the timer expiration by an additional SIFS, so that SendNormalAck() and
-            // SendBlockAck() detect that this is a frame exchange initiated by us and take usual
-            // actions in case of successful transmission
-            m_txTimer.Reschedule(psduDuration + m_phy->GetSifs() +
-                                 NanoSeconds(PSDU_DURATION_SAFEGUARD));
+            // SendNormalAck() or SendBlockAck() must detect that this is a frame exchange initiated
+            // by us and take usual actions in case of successful transmission; to this end, we
+            // postpone the timer expiration by an additional SIFS (plus a time step, because
+            // SendNormalAck() and SendBlockAck() are scheduled afterwards)
+            m_txTimer.Reschedule(psduDuration + m_phy->GetSifs() + TimeStep(1));
         }
         else
         {
-            m_txTimer.Reschedule(psduDuration + NanoSeconds(PSDU_DURATION_SAFEGUARD));
+            m_txTimer.Reschedule(psduDuration);
             // PHY has switched to RX, so we can reset the ack timeout
             m_channelAccessManager->NotifyAckTimeoutResetNow();
         }
