@@ -103,14 +103,24 @@ class FrameExchangeManager : public Object
                  const std::vector<bool>& perMpduStatus);
 
     /**
-     * Information about the MPDU being received. The TXVECTOR is populated upon
-     * PHY-RXSTART indication; the MAC header is populated when notified by the PHY.
+     * Information about the MPDU(s) being received. In case of TB PPDUs, information about multiple
+     * MPDUs can be stored; otherwise, information about a single MPDU is stored. TXVECTORs are
+     * populated upon PHY-RXSTART indication; MAC headers are populated when notified by the PHY.
      */
     struct OngoingRxInfo
     {
-        std::optional<WifiMacHeader> macHdr; //!< MAC header of the MPDU being received
-        WifiTxVector txVector;               //!< TXVECTOR of the MPDU being received
-        Time endOfPsduRx;                    //!< time when reception of PSDU ends
+        std::map<uint16_t, WifiMacHeader> macHdrs; ///< AID-indexed (SU_STA_ID if not a TB PPDU) map
+                                                   ///< of MAC headers of MPDUs being received
+        WifiTxVector txVector;                     ///< TXVECTOR of MPDUs being received
+        Time endOfPpduRx;                          ///< time when reception of PPDU ends
+
+        /// Reset the stored information
+        void Reset()
+        {
+            macHdrs.clear();
+            txVector = WifiTxVector{};
+            endOfPpduRx = Time{};
+        }
     };
 
     /**
@@ -121,11 +131,14 @@ class FrameExchangeManager : public Object
     std::optional<std::reference_wrapper<const OngoingRxInfo>> GetOngoingRxInfo() const;
 
     /**
+     * @param aid for TB PPDUs being received by an AP, the AID of a solicited STA; otherwise, this
+     *        parameter must be set to SU_STA_ID
      * @return the information about the MAC header of the MPDU being received by the PHY, if any.
      *         The MAC header is available from the time its reception is completed until the end
      *         of PSDU reception
      */
-    std::optional<std::reference_wrapper<const WifiMacHeader>> GetReceivedMacHdr() const;
+    std::optional<std::reference_wrapper<const WifiMacHeader>> GetReceivedMacHdr(
+        uint16_t aid = SU_STA_ID) const;
 
     /**
      * Set the ID of the link this Frame Exchange Manager is associated with.

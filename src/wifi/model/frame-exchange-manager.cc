@@ -74,8 +74,7 @@ FrameExchangeManager::Reset()
     m_navEnd = Simulator::Now();
     m_mpdu = nullptr;
     m_txParams.Clear();
-    m_ongoingRxInfo.macHdr.reset();
-    m_ongoingRxInfo.endOfPsduRx = Time{};
+    m_ongoingRxInfo.Reset();
     m_dcf = nullptr;
 }
 
@@ -201,8 +200,7 @@ FrameExchangeManager::ResetPhy()
             m_phy->SetReceiveErrorCallback(MakeNullCallback<void, Ptr<const WifiPsdu>>());
         }
         m_phy = nullptr;
-        m_ongoingRxInfo.macHdr.reset();
-        m_ongoingRxInfo.endOfPsduRx = Time{};
+        m_ongoingRxInfo.Reset();
     }
 }
 
@@ -290,6 +288,13 @@ FrameExchangeManager::RxStartIndication(WifiTxVector txVector, Time psduDuration
     NS_ASSERT_MSG(!m_txTimer.IsRunning() || !m_navResetEvent.IsPending(),
                   "The TX timer and the NAV reset event cannot be both running");
 
+    const auto now = Simulator::Now();
+    if (now > m_ongoingRxInfo.endOfPpduRx)
+    {
+        // this is a new PPDU being received
+        m_ongoingRxInfo.Reset();
+    }
+
     // No need to reschedule timeouts if PSDU duration is null. In this case,
     // PHY-RXEND immediately follows PHY-RXSTART (e.g. when PPDU has been filtered)
     // and CCA will take over
@@ -318,7 +323,15 @@ FrameExchangeManager::RxStartIndication(WifiTxVector txVector, Time psduDuration
         m_navResetEvent.Cancel();
     }
 
-    m_ongoingRxInfo = {std::nullopt, txVector, Simulator::Now() + psduDuration};
+    if (txVector.IsUlMu() && m_ongoingRxInfo.txVector.IsUlMu())
+    {
+        // extract elements from the MU user info map of the current TXVECTOR and insert them in
+        // the input TXVECTOR
+        txVector.GetHeMuUserInfoMap().merge(m_ongoingRxInfo.txVector.GetHeMuUserInfoMap());
+    }
+
+    m_ongoingRxInfo.txVector = txVector;
+    m_ongoingRxInfo.endOfPpduRx = now + psduDuration;
 }
 
 void
@@ -327,14 +340,15 @@ FrameExchangeManager::ReceivedMacHdr(const WifiMacHeader& macHdr,
                                      Time psduDuration)
 {
     NS_LOG_FUNCTION(this << macHdr << txVector << psduDuration.As(Time::MS));
-    m_ongoingRxInfo = {macHdr, txVector, Simulator::Now() + psduDuration};
+    const auto aid = !txVector.IsUlMu() ? SU_STA_ID : txVector.GetHeMuUserInfoMap().cbegin()->first;
+    m_ongoingRxInfo.macHdrs[aid] = macHdr;
     UpdateNav(macHdr, txVector, psduDuration);
 }
 
 std::optional<std::reference_wrapper<const FrameExchangeManager::OngoingRxInfo>>
 FrameExchangeManager::GetOngoingRxInfo() const
 {
-    if (m_ongoingRxInfo.endOfPsduRx >= Simulator::Now())
+    if (m_ongoingRxInfo.endOfPpduRx >= Simulator::Now())
     {
         return m_ongoingRxInfo;
     }
@@ -342,11 +356,14 @@ FrameExchangeManager::GetOngoingRxInfo() const
 }
 
 std::optional<std::reference_wrapper<const WifiMacHeader>>
-FrameExchangeManager::GetReceivedMacHdr() const
+FrameExchangeManager::GetReceivedMacHdr(uint16_t aid) const
 {
-    if (auto info = GetOngoingRxInfo(); info.has_value() && info->get().macHdr.has_value())
+    if (auto info = GetOngoingRxInfo())
     {
-        return info->get().macHdr.value();
+        if (auto hdrIt = info->get().macHdrs.find(aid); hdrIt != info->get().macHdrs.cend())
+        {
+            return hdrIt->second;
+        }
     }
     return std::nullopt;
 }
