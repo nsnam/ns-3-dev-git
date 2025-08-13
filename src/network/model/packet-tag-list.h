@@ -69,18 +69,18 @@ class Tag;
  * @enddot
  *
  *   - Tags are stored in serialized form in a tree of TagData
- *     structures. (<tt>T1-T7</tt> in the diagram)
+ *     structures. (``T1-T7`` in the diagram)
  *
  *   - Each TagData points (\c next pointers in the diagram)
  *     toward the root of the tree, which is a null pointer.
  *
  *   - \c count is the number of incoming pointers to this
  *     TagData.  Branch points, where branches merge or join, have
- *     <tt>count \> 1</tt> (\c T3, \c T5); successive links along
- *     a branch have <tt>count = 1</tt> (\c T1, \c T2, \c T4, \c T6, \c T7).
+ *     ``count \> 1`` (\c T3, \c T5); successive links along
+ *     a branch have ``count = 1`` (\c T1, \c T2, \c T4, \c T6, \c T7).
  *
  *   - Each PacketTagList points to a specific TagData,
- *     which is the most recent Tag added to the packet. (<tt>T5-T7</tt>)
+ *     which is the most recent Tag added to the packet. (``T5-T7``)
  *
  *   - Conceptually, therefore, each Packet has a PacketTagList which
  *     points to a singly-linked list of TagData.

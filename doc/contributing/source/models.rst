@@ -337,7 +337,7 @@ The following is the general outline of a module documentation in ns-3:
 
 Examples
 ~~~~~~~~
-For many submissions, it will be important to include at least one example that exercises the new code, so the reviewer understands how it is intended to be used. For final submission, please consider to add as many examples as you can that will help new users of your code. The <tt>samples/</tt> and <tt>examples/</tt> directories are places for these files.
+For many submissions, it will be important to include at least one example that exercises the new code, so the reviewer understands how it is intended to be used. For final submission, please consider to add as many examples as you can that will help new users of your code. The ``samples/`` and ``examples/`` directories are places for these files.
 
 Tests
 ~~~~~

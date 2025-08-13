@@ -27,13 +27,13 @@
  * Example of TopologyReader: read in a topology in a specified format.
  *
  * This example can be used with the following parameters:
- *   - <tt>--format=Inet --input=src/topology-read/examples/Inet_small_toposample.txt</tt>
- *   - <tt>--format=Inet --input=src/topology-read/examples/Inet_toposample.txt</tt>
- *   - <tt>--format=Orbis --input=src/topology-read/examples/Orbis_toposample.txt</tt>
- *   - <tt>--format=Rocket
- *     --input=src/topology-read/examples/RocketFuel_sample_4755.r0.cch_maps.txt</tt>
- *   - <tt>--format=Rocket
- *     --input=src/topology-read/examples/RocketFuel_toposample_1239_weights.txt</tt>
+ *   - ``--format=Inet --input=src/topology-read/examples/Inet_small_toposample.txt``
+ *   - ``--format=Inet --input=src/topology-read/examples/Inet_toposample.txt``
+ *   - ``--format=Orbis --input=src/topology-read/examples/Orbis_toposample.txt``
+ *   - ``--format=Rocket
+ *     --input=src/topology-read/examples/RocketFuel_sample_4755.r0.cch_maps.txt``
+ *   - ``--format=Rocket
+ *     --input=src/topology-read/examples/RocketFuel_toposample_1239_weights.txt``
  */
 
 using namespace ns3;
