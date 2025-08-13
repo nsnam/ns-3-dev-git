@@ -7,283 +7,415 @@ International System of Units
 
 Motivation
 **********
-In 1998, NASA's Mars Climate Orbiter crashed because NASA used metric system while spacecraft
-builder Lockheed Martin used US customary units. It was a USD 328 million project. And this is not
-the only failure in government agencies and industries that are caused by unit mismatch.
+In 1998, NASA's Mars Climate Orbiter crashed because NASA used the metric system while spacecraft
+builder Lockheed Martin used US customary units. This USD 328 million project failure exemplifies
+the catastrophic consequences of unit mismatch. Similar failures have occurred across government
+agencies and industries, underscoring the critical importance of unit coherence.
 
-Coherent use of units - dimensions, quantities, and scales - is imperative in correct physics equations,
-robust software APIs, and trustworthy simulation results. Yet, it is easy to miss for untrained eyes.
-Some of the popular mistakes include
+Coherent use of units—dimensions, quantities, and scales—is imperative for correct physics equations,
+robust software APIs, and trustworthy simulation results. Yet, these errors remain pervasive and often
+difficult to detect through manual inspection. Common unit-related errors include:
 
-  * Adding dBm_t and mWatt_t
-  * Adding dB and dB
-  * Treating MHz as if Hz
-  * Multiplying dB with a number
-  * Mixing linear scale variables and log scale variables without conversion
+* Adding incompatible units (e.g., dBm_t and mWatt_t)
+* Performing invalid operations (e.g., direct addition of dB values)
+* Treating units at different scales as equivalent (e.g., MHz as Hz)
+* Applying operations to logarithmic units as if they were linear
+* Mixing linear scale variables and logarithmic scale variables without proper conversion
 
-`Issue 649 <https://gitlab.com/nsnam/ns-3-dev/-/issues/649>` is one of such examples that were
-detected and fixed in |ns3|.
+`Issue 649 <https://gitlab.com/nsnam/ns-3-dev/-/issues/649>`_ represents one such example that was
+detected and fixed in |ns3|, but many similar issues may remain undetected without systematic safeguards.
 
 
 Background
 **********
-International System of Units (SI Units) is the only system of coherent measurements. Although |ns3|
-had already adopted it, enforcing and guaranteeing it in API coherence is yet to be fulfilled; rich
-documentation and sharp human eyes are not enough. ``si-units`` module overcomes this limitation by
-introducing compile-time guarantee in API-level coherence.
+The International System of Units (SI Units) provides the only internationally recognized system of coherent
+measurements. While |ns3| has conceptually adopted SI units, enforcing and guaranteeing API coherence
+has remained challenging. Documentation and human vigilance alone are insufficient safeguards against
+unit-related errors. The ``si-units`` module addresses this fundamental limitation by introducing
+compile-time guarantees for unit coherence at the API level.
 
 
-Design and Implementation considerations
-****************************************
-The implementation of ``si-units`` module does not distinguish idiosynchracies of `NIST
-<www.nist.gov>`, `ISO <www.iso.org>`, or `IEC <www.iec.ch>`, although "National institute of
-Standards and Technology's Guide for the Use of the International System of Units" is largely
-followed.
+Design Philosophy
+****************
+The ``si-units`` module implements a type-safe representation of physical quantities that enforces
+correct operations between compatible units while preventing invalid operations between incompatible units.
+The implementation follows several key design principles:
 
-In fact, if non-SI units such as miles, hour, degree, knot, and other `Imperial Units
-<https://en.wikipedia.org/wiki/Imperial_units>` may well be implemented along as long as doing so
-is useful and promotes convergence to `SI Units`.
+**Type Safety and Correctness**
+
+The module prioritizes compile-time validation of unit operations over runtime performance, though
+performance considerations are not neglected. Strong typing ensures that operations between incompatible
+units (such as adding frequency to power) result in compilation errors rather than runtime errors or
+silent incorrect behavior.
+
+**Standards Compliance**
+
+The implementation follows the "National Institute of Standards and Technology's Guide for the Use of the
+International System of Units" while pragmatically accommodating the needs of network simulation. The module
+does not strictly distinguish between the idiosyncrasies of NIST, ISO, or IEC standards, but adheres
+primarily to `National institute of Standards and Technology's Guide for the Use of the International System of Units <https://physics.nist.gov/cuu/pdf/sp811.pdf>`.
+
+**Selective Implementation**
+
+Rather than implementing all possible SI units, the module focuses on units most relevant to network
+simulation, particularly those used in wireless communications. This includes:
+
+* Energy and power units (dB_t, dBm_t, mWatt_t, Watt_t)
+* Frequency units (Hz_t, kHz_t, MHz_t, GHz_t, THz_t)
+* Time units (nSEC_t with support for nanoseconds to seconds)
+* Angle units (degree_t, radian_t)
+* Ratio units (percent_t)
+* Spectral density units (dBm_per_Hz_t, dBm_per_MHz_t)
+
+**Intuitive Syntax**
+
+The module provides user-defined literals for natural expression of physical quantities:
+
+::
+
+  auto frequency = 2.4_GHz;
+  auto power = 20_dBm;
+  auto angle = 90_degree;
+  auto duration = 100_nSEC;
+
+**Seamless Conversion**
+
+Each unit type provides methods for conversion to related units:
+
+::
+
+  MHz_t freq{2400};
+  auto freq_in_hz = freq.in_Hz();      // Get value as double
+  auto freq_as_hz = freq.to_Hz();      // Get as Hz_t type
+
+**Operator Overloading**
+
+The module carefully defines valid operations between units, allowing intuitive expressions while
+preventing physically meaningless operations:
+
+::
+
+  // Valid operations
+  auto sum = 10_dBm + 3_dB;            // Adding dB to dBm is valid
+  auto product = 2.0 * 10_mWatt;       // Scaling by a unitless value
+
+  // Invalid operations (will not compile)
+  auto invalid = 10_dBm + 20_mWatt;    // Error: incompatible units
+  auto nonsense = 10_MHz + 20_dBm;     // Error: incompatible dimensions
+
+**Attribute System Integration**
+
+The module integrates with the |ns3| attribute system, allowing SI units to be used as attributes
+in simulation objects:
+
+::
+
+  .AddAttribute("TxPower",
+                "Transmission power",
+                dBmValue(20_dBm),
+                MakedBmAccessor(&WifiPhy::m_txPower),
+                MakedBmChecker())
+
+**Extendability**
+
+The implementation of select SI units exhbit a pattern to use to introduce new stong types, including
+other than SI units, eg. `Imperial Units <https://en.wikipedia.org/wiki/Imperial_units>` such as miles,
+hour, or knots, as long as doing so promotes convergence to `SI Units` and the rigor of the engineering.
 
 
-SI rules takes precedence over |ns3|'s coding style or its idiomatic usages. The former is global
-while the latter is relatively local. For example, a unit `dB` shall not be written as `DB`, `Db`,
-or `db`. A symbol for a metric prefix "milli" shall be `m` and never `M`. A meter prefix mega's symbol
-shall be `M` and never `m`. When spelled out, no space or hyphen shall be used. eg. `milligram`.
-Neither `milli-gram` nor `milli_gram`. Neither CamelCase `MilliGram` nor camelCase `milliGram`.
+**Notation and style guides**
 
-``si-units`` module does not pursue to implement exhaustive SI units. Instead, decide what is useful
-for |ns3| and implement that only. Same is applicable to operators for those units.
+SI rules, a global standard, takes precedence over |ns3|'s coding style or its idiomatic usages.
 
-Behavioral correctness, ergonomic syntax, and compile-time validation are more emphasized while the
-compile-and-run time performance is not dismissed.
+  ==================== ================ ==========================================
+  Unit                 Ok               Not Ok
+  ==================== ================ ==========================================
+  decibel              dB               DB, Db, db
+  decibel-milliwatts   dBm, dBmW        DBM, DBm, DbM, Dbm, dBM, dbM, dbm
+  milli                m                M
+  mega                 M                m
+  milligram            mg, milligram    milli-gram mill_gram, MilliGram, milliGram
+  ==================== ================ ==========================================
 
-What are possible patterns of coherence?
-****************************************
-There are couple of popular patterns with varying degree of robustness. As an example of the
-underlying data type, below examples use ``double``, but it could be ``int32_t`` or any useful
-choice.
+Implementation Approach
+**********************
+The ``si-units`` module implements strong typing through C++ structures that encapsulate the underlying
+value while providing type-safe operations. Each unit type follows a consistent pattern:
 
-A. Bad: Same-line comment in definitions
+1. A structure with an underlying value member (typically ``double`` or ``int64_t``)
+2. Constructors for various input types (numeric literals, strings)
+3. Conversion methods to related units
+4. Overloaded operators for valid operations
+5. String representation methods
+6. Integration with the |ns3| attribute system
+
+For example, the ``dBm_t`` structure encapsulates power in dBm, providing:
+
+* Conversion to/from linear power units (mWatt_t, Watt_t)
+* Addition/subtraction with dB_t (representing relative power)
+* Prevention of direct addition/subtraction with other dBm_t values
+* String representation for debugging and logging
+
+The module carefully considers the appropriate underlying type for each unit. While some units
+could theoretically use integral types (e.g., Hz_t could use int64_t for frequencies above 1 Hz),
+the current implementation primarily uses ``double`` to facilitate migration from legacy APIs.
+
+Unit Coherence Patterns
+**********************
+The evolution of unit handling in code typically follows these patterns, from least to most robust:
+
+**A. Primitive Types with Comments**
+
 ::
 
    double power1;                                   // mWatt. This comment is necessary
    double power2;                                   // dBm.   This comment is necessary
-   double result = power1 + FromDbmToMWatt(power2); // mWatt. Note the use of CamelCase
-   double result = FromMWattToDbm(power1) + power2; // dBm.   Note the use of CamelCase
-   double result = power1 + power2;                 // valid in compile, invalid in physics
+   double result = power1 + FromDbmToMWatt(power2); // mWatt. Note the use of conversion
+   double result = FromMWattToDbm(power1) + power2; // dBm.   Note the use of conversion
+   double result = power1 + power2;                 // Compiles but physically incorrect!
 
-B. Good: Suffix in the names
+**B. Naming Conventions**
+
 ::
 
-   double powerMWatt;                                          // No need of a comment indicating a unit
-   double powerDbm;                                            // No need of a comment indicating a unit
-   double resultMWatt = powerMWatt + FromDbmToMWatt(powerDbm); // Note the use of CamelCase
-   double resultDbm   = FromMWattToDbm(powerMWatt) + powerDbm; // Note the use of CamelCase
-   double result      = powerMWatt + powerDbm;                 // valid in compile, invalid in physics
+   double powerMWatt;                                          // Unit indicated in name
+   double powerDbm;                                            // Unit indicated in name
+   double resultMWatt = powerMWatt + FromDbmToMWatt(powerDbm); // Conversion still needed
+   double resultDbm   = FromMWattToDbm(powerMWatt) + powerDbm; // Conversion still needed
+   double result      = powerMWatt + powerDbm;                 // Compiles but physically incorrect!
 
+**C. Weak Type Aliases**
 
-C. Better: Weak type aliases
 ::
 
-   using   mWatt_t = double;                         // type alias. Helping readability, but not helping coherence
-   using   dBm_u   = double;                         // type alias. Helping readability, but not helping coherence
-   mWatt_t power1;                                   // No need of a comment indicating a unit
-   dBm_u   power2;                                   // No need of a comment indicating a unit
-   mWatt_t result = power1 + FromDbmToMWatt(power2); // mWatt. Note the use of CamelCase
-   dBm_u   result = FromMWattToDbm(power1) + power2; // dBm.   Note the use of CamelCase
-   auto    result = power1 + power2;                 // valid in compile, invalid in physics
+   using mWatt_t = double;                         // Type alias improves readability
+   using dBm_u   = double;                         // But doesn't enforce type safety
+   mWatt_t power1;
+   dBm_u   power2;
+   mWatt_t result = power1 + FromDbmToMWatt(power2); // Conversion still needed
+   dBm_u   result = FromMWattToDbm(power1) + power2; // Conversion still needed
+   auto    result = power1 + power2;                 // Compiles but physically incorrect!
 
+**D. Strong Types (Implemented in this module)**
 
-D. Best: Strong types
 ::
 
-   struct mWatt_t{..};
+   struct mWatt_t{..};                             // Full encapsulation with operators
    struct dBm_t{..};
-   mWatt_t  power1;
-   dBm_t    power2;
+   mWatt_t  power1{100.0};
+   dBm_t    power2{20.0};
 
-   // Note operator overriding. Intuitive and robust. Valid in compile, valid in physics
-   // Type deduction is valid depending on how operator overloadings are implemented
-   mWatt_t result = power1 + power2; // mWatt
-   dBm_t   result = power2 + power1; // dBm
-   auto    result = power1 + power2; // mWatt
-   auto    result = power2 + power1; // dBm
+   // Type-safe operations with automatic conversion where appropriate
+   mWatt_t result1 = power1 + power2.to_mWatt();   // Explicit conversion
+   dBm_t   result2 = power2 + dB_t{3.0};           // Valid: dBm + dB = dBm
 
-   auto    result = power1 - power2; // Compiler time failure, which is a desirable safe guard
-                                     // unless the notion of subtracing energy is well-defined first.
-                                     // This safeguard is infeasible in A, B, or C patterns
+   // This would cause a compilation error:
+   // auto invalid = power1 + power2;              // Error: no operator+ between mWatt_t and dBm_t
 
-D pattern is the best since it adds the eyes of the compiler on top of what a human does and
-guarantees the type matching, and validity of operations. Further, it eliminates cumbersome
-conversions and allows direct translations of mathematical equations. The authors attain higher
-confidence on the correctness on the implementations when the compiler okays it.
+The strong typing approach (D) provides compile-time guarantees against unit errors, eliminating an entire
+class of potential bugs while making the code more readable and self-documenting.
 
-
-Postfix
-*******
-``si-units`` module enables naturally readable syntax.  Below are equivalent
+User-Defined Literals
+********************
+The ``si-units`` module provides user-defined literals for intuitive expression of physical quantities:
 
 ::
 
-  mWatt_t{100}
-  100_mWatt
+  // Energy and power
+  auto power1 = 100_mWatt;
+  auto power2 = 20_dBm;
+  auto power3 = 1_Watt;
+  auto ratio = 3_dB;
 
-Conversions
-***********
-The strong types are data structures in disguise. They allow getters, setters, and useful converters
-in a highly readable way. For example.
+  // Frequency
+  auto freq1 = 2400_MHz;
+  auto freq2 = 5_GHz;
 
-::
+  // Time
+  auto time1 = 100_nSEC;
+  auto time2 = 1_mSEC;
 
-  mWatt_t power{100.0};
-  static_assert(power.in_dBm() == 20_dBm);
+  // Angle
+  auto angle1 = 90_degree;
+  auto angle2 = 3.14_radian;
 
-It is straightforward to extend converters or useful utilities.
+  // Ratio
+  auto percentage = 50_percent;
 
+These literals make the code more readable and self-documenting while maintaining type safety.
 
-Attribute Systems
-*****************
-``si-units`` module supports |ns3| attribute system.
-
-
-Working with legacy APIs
-************************
-
-It is recommended that every new code adopts strongly-typed SI units. The APIs and their
-implementations will be naturally coherent. When the new code interfaces with the legacy code that do not
-use strongly-typed SI units, apply conversions in calling the APIs and handling the return values. A
-side benefit of this mindful integration is it provides an opportunity to document and validate the
-behaviors of legacy APIs.
+Conversion Methods
+****************
+Each unit type provides methods for conversion to related units:
 
 ::
 
-  // Legacy code taking frequency in MHz, returning power in dBm
-  double SomeLegacyApi(double freq);
+  // Value accessors (return primitive type)
+  double value_in_mw = power.in_mWatt();
+  double value_in_dbm = power.in_dBm();
 
-  // New code
-  auto myFreq{2.4_GHz};                             // Hz
-  auto xyz = dBm_t{SomeLegacyApi(myFreq.in_MHz())}; // dBm
+  // Type conversion (return strong type)
+  dBm_t power_dbm = power.to_dBm();
+  mWatt_t power_mw = power.to_mWatt();
 
+The naming convention consistently uses:
+* ``in_X()`` methods return the value as a primitive type (double/int)
+* ``to_X()`` methods return a new object of the target unit type
 
-Migration of implementations
-****************************
-
-Each individual implementation can be migrated independently. The migration effort shall not
-change the APIs. This approach does not require caller code changes, keeping the legacy behavior, while improving the fidelity of implementation.
+Attribute System Integration
+**************************
+The ``si-units`` module integrates with the |ns3| attribute system through specialized value types,
+accessors, and checkers:
 
 ::
 
-  // Legacy code taking frequency in MHz, returning power in dBm
-  double SomeLegacyApi(double freq);
+  .AddAttribute("TxPower",
+                "Transmission power in dBm",
+                dBmValue(20_dBm),
+                MakedBmAccessor(&WifiPhy::m_txPower),
+                MakedBmChecker())
 
-  // Improved implementation of the legacy API
-  double SomeLegacyApi(double freq)
+This integration allows simulation parameters to be specified with proper units in configuration files
+and command-line arguments.
+
+Working with Legacy APIs
+***********************
+When interfacing with legacy code that uses primitive types, conversion methods provide a clean interface:
+
+::
+
+  // Legacy API using primitive types
+  double SomeLegacyApi(double freq_mhz);
+
+  // Modern code using strong types
+  auto freq = 2.4_GHz;
+  auto result = dBm_t{SomeLegacyApi(freq.in_MHz())};
+
+Migration Strategy
+****************
+Migrating existing code to use the ``si-units`` module can follow these approaches:
+
+**Wrapper Approach**
+
+Preserve legacy APIs while providing strongly-typed alternatives:
+
+::
+
+  // Legacy API (preserved)
+  double GetTxPower();
+
+  // New strongly-typed wrapper
+  dBm_t GetTxPowerDbm()
   {
-     GHz myFreq{freq};
-     dBm_t myResult = ...;
-     return myResult.in_dBm();
+      return dBm_t{GetTxPower()};
   }
 
+**Two-Phase Migration**
 
-Migration of APIs
-*****************
+For large codebases, a two-phase approach may be more manageable:
 
-A key is gradual, incremental, and testable refactoring. The outcome of the migration shall not
-change the behaviors. If the migration efforts discover incumbent bugs, bug fixes should be handled
-separately from API migration; Guaranteeing no behavioral changes during refactoring is as important
-as fixing bugs.
+1. **Phase 1**: Introduce weak type aliases to improve readability without changing function signatures:
+
+   ::
+
+     // Before
+     double CalculatePower(double frequency, double distance);
+
+     // Phase 1
+     using MHz_u = double;
+     using meter_u = double;
+     using dBm_u = double;
+
+     dBm_u CalculatePower(MHz_u frequency, meter_u distance);
+
+2. **Phase 2**: Replace weak aliases with strong types, updating function implementations as needed:
+
+   ::
+
+     // Phase 2
+     dBm_t CalculatePower(MHz_t frequency, meter_t distance);
+
+This approach allows gradual migration while maintaining backward compatibility.
+
+Implementation Details
+********************
+The ``si-units`` module makes several important implementation choices:
+
+**Storage Types**
+
+Most unit types currently use ``double`` as the underlying storage type, though some time-related
+units use ``int64_t``. This choice balances precision requirements with compatibility concerns:
+
+* Energy/power units (dBm_t, mWatt_t): ``double`` for wide dynamic range
+* Frequency units (Hz_t): ``double`` currently, with potential future migration to ``int64_t``
+* Time units (nSEC_t): ``int64_t`` for precise representation of discrete time steps
+* Angle units (degree_t, radian_t): ``double`` for fractional angles
+
+**Operator Constraints**
+
+Operations between units are carefully constrained to prevent physically meaningless combinations:
+
+* Addition/subtraction: Only allowed between compatible units (e.g., MHz_t + MHz_t)
+* Multiplication/division by scalars: Generally allowed (e.g., 2.0 * 10_mWatt)
+* Multiplication/division between units: Selectively implemented where physically meaningful
+* Special handling for logarithmic units: dB_t can be added to dBm_t, but dBm_t cannot be directly added to another dBm_t
+
+**String Representation**
+
+Each unit type provides string representation methods that follow SI conventions:
 
 ::
 
-  // Before: Legacy API
-  double SomeLegacyApi(double freq);
+  auto power = 20_dBm;
+  std::cout << power.str();      // "20.0 dBm"
+  std::cout << power.str(false); // "20.0dBm" (without space)
 
-  // After: Improved API
-  dBm_t SomeLegacyApi(Hz_t freq);
+**Vector Operations**
 
-Note this API change does not necessarily imply the changes of implementation. The legacy
-implementatinos may be preserved without a single change by making the new API wrap the legacy one.
-This wrapper pattern adds confidence on the correctness, and allows gradual migration under a
-controlled risk. Once you gain confidence, you can retire the legacy API and its implementation by
-absorting the functionality in the new ones.
+For operations on collections of values, the module provides utility methods:
 
 ::
 
-  // Keep the legacy API and implementation
-  double SomeLegacyApi(double freq) { ... }
-
-  // Improved API with the same name as the legacy one
-  dBm_t SomeLegacyApi(Hz_t freq)
-  {
-    auto in = freq.in_MHz();
-    auto out = SomeLegacyApi(in);
-    return dBm_t{out}; // or combine all above lines into a single line.
-  }
-
-In some situations, adopting a strong-typed units can be prohibitive. There, two pass migration is
-useful.
-
-  * Pass 1: Replace standard types (eg. ``int8_t``, ``size_t``, ``double``) by weak-type aliases
-    (eg. ``meter_u``, ``picoWatt_t``, ``joule_u``).
-  * Pass 2: Replace weak-typed aliases by strong by strong types
-
-::
-
-  // Pass 0: Legacy API to deprecate
-  double SomeLegacyApi(double freq);
-
-  // Pass 1: Intermediate API with weak-types
-  using dBm_u = double;
-  using Hz_u  = double;
-  dBm_u SomeLegacyApi(Hz_u freq);
-
-  // Pass 2: Ultimate API with strong-types
-  struct dBm_t {..};
-  struct Hz {..};
-  dBm_t SomeLegacyApi(Hz_t freq);
-
-
-Limitations
-***********
-``si-units`` module implements select SI units that are immediately useful for wired, wireless
-communications and networking. Apparently, different use cases demand different SI units. In that
-case, one should be able to extend in reference to existing modules.
-
-Although users are presented strong types, their values are stored in fundamental data types. Some
-are of an integral type, and some are of a floating type. Some integral types are signed and some
-may be unsigned. Some integral types may use a 64 bit storage type, a smaller storage type, or a
-platform-dependent one. These are chosen to satisfy typical daily needs. The choice of underlying
-types may change as needs change.
-
-The choice of underlying storage types in fact reflects a crucial design choice and inherent
-limitations. For example, frequency type `Hz` can be designed with an understanding that the
-simulators do not have a need to deal with sub-Hertz frequency such as `0.1 Hz`. Is this an
-acceptable assumption? The answer depends on the use cases. Most of wireless communications deal
-with kilo, mega, giga, terahertz carrier frequencies and bandwidths. Their Phased-lock loop drift
-is sufficiently modeled in a unit Hertz. This is similar to that |ns3|'s time resolution is
-nanoseconds by default, and no smaller than femtoseconds. Defining a minimum resolution makes it
-possible to use an integral storage type instead of a floating-point one, effectively eliminating
-doubts and fears of notorious precision and accuracy errors. As a result, ``si-units`` module
-_envisions_ to use an integral type to implement `Hz`'s underlying storage.
-
-But it implements a floating point type `double` instead. This is purely for easing the migration of
-the legacy APIs, most of which are using `double`. (Some use integral types out of a questionable
-design). Once their migration is complete, it is great to revisit `Hz_t` implementation and change
-the underlying storage type to `int64_t`, without incurring large scale changes in the codebase.
-
-Same idea can be applied to other SI unit implementations.
-
+  std::vector<double> values = {1.0, 2.0, 3.0};
+  auto powers = dBm_t::from_doubles(values);  // Convert to vector of dBm_t
+  auto raw_values = dBm_t::to_doubles(powers); // Convert back to vector of double
 
 Validation
 **********
-`si-units-test-suite.cc` offers exhaustive unit tests.
+The ``si-units`` module includes comprehensive unit tests that verify:
+
+* Correct behavior of individual unit types
+* Valid operations between compatible units
+* Proper conversion between related units
+* Integration with the |ns3| attribute system
+* String parsing and formatting
+* Vector operations
+
+These tests can be run using:
 
 ::
 
   $ ./test.py -s si-units-test
 
-or in DEBUG build profile,
+or in DEBUG build profile:
 
 ::
 
   $ build/utils/ns3-dev-test-runner-default --verbose --test-name=si-units-test --stop-on-failure --fullness=QUICK
+
+Future Directions
+***************
+The ``si-units`` module could be extended in several ways:
+
+* Additional unit types (length, mass, etc.) as needed for simulation scenarios
+* Compound units (e.g., acceleration as meters per second squared)
+* Optimization of storage types for specific use cases
+* Enhanced integration with visualization and analysis tools
+
+Conclusion
+*********
+The ``si-units`` module provides a robust foundation for handling physical quantities in |ns3|
+simulations. By enforcing unit coherence at compile time, it eliminates an entire class of potential
+errors while making code more readable and self-documenting. The module's design balances theoretical
+correctness with practical considerations, providing a path for gradual migration of existing code
+while enabling new code to benefit from strong typing immediately.
