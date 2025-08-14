@@ -536,8 +536,8 @@ class ChannelAccessManager : public Object
     std::map<WifiChannelListType, Timespan>
         m_lastIdle;               //!< the last idle start and end time for each channel type
     Time m_lastSwitchingEnd;      //!< the last switching end time
-    Time m_lastSleepEnd;          //!< the last sleep end time
-    Time m_lastOffEnd;            //!< the last off end time
+    Timespan m_lastSleep;         //!< the last sleep start and end time
+    Timespan m_lastOff;           //!< the last off start and end time
     Time m_eifsNoDifs;            //!< EIFS no DIFS time
     Timespan m_lastNoPhy;         //!< the last start and end time no PHY was operating on the link
     mutable Time m_cachedSifs;    //!< cached value for SIFS, to be only used without a PHY

@@ -190,7 +190,8 @@ ChannelAccessManager::GetTypeId()
                           MakeBooleanAccessor(&ChannelAccessManager::m_proactiveBackoff),
                           MakeBooleanChecker())
             .AddAttribute("ResetBackoffThreshold",
-                          "If no PHY operates on this link for a period greater than this "
+                          "If no PHY operates on this link, or the PHY operating on this link "
+                          "stays in sleep mode or off mode, for a period greater than this "
                           "threshold, all the backoffs are reset.",
                           TimeValue(Time{0}),
                           MakeTimeAccessor(&ChannelAccessManager::m_resetBackoffThreshold),
@@ -226,8 +227,6 @@ ChannelAccessManager::ChannelAccessManager()
       m_lastRxReceivedOk(true),
       m_lastTxEnd(0),
       m_lastSwitchingEnd(0),
-      m_lastSleepEnd(0),
-      m_lastOffEnd(0),
       m_linkId(0)
 {
     NS_LOG_FUNCTION(this);
@@ -704,7 +703,14 @@ ChannelAccessManager::AccessTimeout()
 {
     NS_LOG_FUNCTION(this);
 
-    if (!m_phy && Simulator::Now() - m_lastNoPhy.start > m_resetBackoffThreshold)
+    const auto now = Simulator::Now();
+    const auto noPhyForTooLong = (!m_phy && now - m_lastNoPhy.start > m_resetBackoffThreshold);
+    const auto sleepForTooLong =
+        (m_phy && m_phy->IsStateSleep() && now - m_lastSleep.start > m_resetBackoffThreshold);
+    const auto offForTooLong =
+        (m_phy && m_phy->IsStateOff() && now - m_lastOff.start > m_resetBackoffThreshold);
+
+    if (noPhyForTooLong || sleepForTooLong || offForTooLong)
     {
         ResetAllBackoffs();
         return;
@@ -747,8 +753,11 @@ ChannelAccessManager::DoGetAccessGrantStart(bool ignoreNav) const
     const auto noPhyStart = m_phy ? m_lastNoPhy.end : now;
     ret.emplace(noPhyStart, WifiExpectedAccessReason::NO_PHY_END);
 
-    ret.emplace(m_lastSleepEnd, WifiExpectedAccessReason::SLEEP_END);
-    ret.emplace(m_lastOffEnd, WifiExpectedAccessReason::OFF_END);
+    const auto lastSleepEnd = (m_lastSleep.start > m_lastSleep.end ? now : m_lastSleep.end);
+    ret.emplace(lastSleepEnd, WifiExpectedAccessReason::SLEEP_END);
+
+    const auto lastOffEnd = (m_lastOff.start > m_lastOff.end ? now : m_lastOff.end);
+    ret.emplace(lastOffEnd, WifiExpectedAccessReason::OFF_END);
 
     NS_LOG_INFO("rx access start=" << rxAccessStart.As(Time::US)
                                    << ", busy access start=" << busyAccessStart.As(Time::US)
@@ -756,8 +765,8 @@ ChannelAccessManager::DoGetAccessGrantStart(bool ignoreNav) const
                                    << ", nav access start=" << navAccessStart.As(Time::US)
                                    << ", switching access start=" << m_lastSwitchingEnd.As(Time::US)
                                    << ", no PHY start=" << noPhyStart.As(Time::US)
-                                   << ", sleep access start=" << m_lastSleepEnd.As(Time::US)
-                                   << ", off access start=" << m_lastOffEnd.As(Time::US));
+                                   << ", sleep access start=" << lastSleepEnd.As(Time::US)
+                                   << ", off access start=" << lastOffEnd.As(Time::US));
     return ret;
 }
 
@@ -1227,6 +1236,8 @@ ChannelAccessManager::ResetState()
     m_lastAckTimeoutEnd = std::min(m_lastAckTimeoutEnd, now);
     m_lastCtsTimeoutEnd = std::min(m_lastCtsTimeoutEnd, now);
     m_lastNoPhy.end = std::min(m_lastNoPhy.end, now);
+    m_lastSleep.end = std::min(m_lastSleep.end, now);
+    m_lastOff.end = std::min(m_lastOff.end, now);
 
     InitLastBusyStructs();
 }
@@ -1262,8 +1273,9 @@ void
 ChannelAccessManager::NotifySleepNow()
 {
     NS_LOG_FUNCTION(this);
-    // Reset backoffs
-    ResetAllBackoffs();
+    UpdateBackoff();
+    UpdateLastIdlePeriod();
+    m_lastSleep.start = Simulator::Now();
     m_feManager->NotifySleepNow();
     for (auto txop : m_txops)
     {
@@ -1275,8 +1287,10 @@ void
 ChannelAccessManager::NotifyOffNow()
 {
     NS_LOG_FUNCTION(this);
-    // Reset backoffs
-    ResetAllBackoffs();
+    UpdateBackoff();
+    UpdateLastIdlePeriod();
+    m_lastOff.start = Simulator::Now();
+    m_feManager->NotifyOffNow();
     for (auto txop : m_txops)
     {
         txop->NotifyOff(m_linkId);
@@ -1287,10 +1301,14 @@ void
 ChannelAccessManager::NotifyWakeupNow()
 {
     NS_LOG_FUNCTION(this);
-    m_lastSleepEnd = Simulator::Now();
+    const auto now = Simulator::Now();
+    m_lastSleep.end = now;
+    if (now - m_lastSleep.start > m_resetBackoffThreshold)
+    {
+        ResetAllBackoffs();
+    }
     for (auto txop : m_txops)
     {
-        ResetBackoff(txop);
         txop->NotifyWakeUp(m_linkId);
     }
 }
@@ -1299,10 +1317,14 @@ void
 ChannelAccessManager::NotifyOnNow()
 {
     NS_LOG_FUNCTION(this);
-    m_lastOffEnd = Simulator::Now();
+    const auto now = Simulator::Now();
+    m_lastOff.end = now;
+    if (now - m_lastOff.start > m_resetBackoffThreshold)
+    {
+        ResetAllBackoffs();
+    }
     for (auto txop : m_txops)
     {
-        ResetBackoff(txop);
         txop->NotifyOn();
     }
 }
@@ -1379,8 +1401,8 @@ ChannelAccessManager::UpdateLastIdlePeriod()
                                m_lastRx.end,
                                m_lastSwitchingEnd,
                                m_lastNoPhy.end,
-                               m_lastSleepEnd,
-                               m_lastOffEnd});
+                               m_lastSleep.end,
+                               m_lastOff.end});
     Time now = Simulator::Now();
 
     if (idleStart >= now)
