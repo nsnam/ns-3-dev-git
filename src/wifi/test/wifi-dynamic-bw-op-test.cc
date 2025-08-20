@@ -155,8 +155,8 @@ WifiUseAvailBwTest::Transmit(uint8_t bss,
         client->SetAttribute("Interval", TimeValue(MicroSeconds(0)));
         client->SetRemote(m_sockets[0]);
         m_apDevices.Get(0)->GetNode()->AddApplication(client);
-        client->SetStartTime(Seconds(0)); // start now
-        client->SetStopTime(Seconds(1));  // stop in a second
+        client->SetStartTime(TimeStep(1)); // start shortly after the start of PPDU in BSS 1
+        client->SetStopTime(Seconds(1));   // stop in a second
         client->Initialize();
 
         // after 1us (to allow for propagation delay), the largest idle primary
@@ -470,20 +470,18 @@ WifiDynamicBwOpTestSuite::WifiDynamicBwOpTestSuite()
     AddTestCase(
         new WifiUseAvailBwTest({"{50, 160, BAND_5GHZ, 5}", "{42, 80, BAND_5GHZ, 2}"}, MHz_u{80}),
         TestCase::Duration::QUICK);
-    // clang-format off
     /**
-     *                                                                                 ───────────────────────────── primary 160 ─────────────────────────────
-     *                                                                                                    primary20
-     *          ┌────────┬────────┬────────┬────────┬───────┬────────┬────────┬────────┌────────┬────────┬────────┬────────┬───────┬────────┬────────┬────────┐
-     *  BSS 0   │   1    │   5    │   9    │   13   │  17   │   21   │   25   │   29   │   33   │   37   │   41   │   45   │  49   │   53   │   57   │   61   │
-     *          └────────┴────────┴────────┴────────┴───────┴────────┴────────┴────────└────────┴────────┴────────┴────────┴───────┴────────┴────────┴────────┘
+     *                                                  ────────────── primary 160 ──────────────
+     *                                                           primary20
+     *          ┌────┬────┬────┬────┬────┬────┬────┬────┬────┬────┬────┬────┬────┬────┬────┬────┐
+     *  BSS 0   │  1 │  5 │  9 │ 13 │ 17 │ 21 │ 25 │ 29 │ 33 │ 37 │ 41 │ 45 │ 49 │ 53 │ 57 │ 61 │
+     *          └────┴────┴────┴────┴────┴────┴────┴────┴────┴────┴────┴────┴────┴────┴────┴────┘
      *
-     *          ┌────────┬────────┬────────┬────────┬───────┬────────┬────────┬────────┐
-     *  BSS 1   │   1    │   5    │   9    │   13   │  17   │   21   │   25   │   29   │
-     *          └────────┴────────┴────────┴────────┴───────┴────────┴────────┴────────┘
-     *                                                                         primary20
+     *          ┌────┬────┬────┬────┬────┬────┬────┬────┐
+     *  BSS 1   │  1 │  5 │  9 │ 13 │ 17 │ 21 │ 25 │ 29 │
+     *          └────┴────┴────┴────┴────┴────┴────┴────┘
+     *                                            primary20
      */
-    // clang-format on
     AddTestCase(
         new WifiUseAvailBwTest({"{31, 320, BAND_6GHZ, 10}", "{15, 160, BAND_6GHZ, 7}"}, 160),
         TestCase::Duration::QUICK);

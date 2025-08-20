@@ -17,6 +17,7 @@
 #include "ns3/log.h"
 #include "ns3/simulator.h"
 
+#include <cmath>
 #include <sstream>
 
 #undef NS_LOG_APPEND_CONTEXT
@@ -591,13 +592,13 @@ ChannelAccessManager::RequestAccess(Ptr<Txop> txop)
      */
     Time accessGrantStart = GetAccessGrantStart() + (txop->GetAifsn(m_linkId) * GetSlot());
 
-    if (txop->IsQosTxop() && txop->GetBackoffStart(m_linkId) > accessGrantStart)
+    if (const auto diff = txop->GetBackoffStart(m_linkId) - accessGrantStart;
+        txop->IsQosTxop() && diff.IsStrictlyPositive())
     {
-        // The backoff start time reported by the EDCAF is more recent than the last
-        // time the medium was busy plus an AIFS, hence we need to align it to the
-        // next slot boundary.
-        Time diff = txop->GetBackoffStart(m_linkId) - accessGrantStart;
-        uint32_t nIntSlots = (diff / GetSlot()).GetHigh() + 1;
+        // The backoff start time reported by the EDCAF is more recent than the last time the medium
+        // was busy plus an AIFS, hence we need to align it to the next slot boundary.
+        const auto div = diff / GetSlot();
+        const uint32_t nIntSlots = div.GetHigh() + (div.GetLow() > 0 ? 1 : 0);
         txop->UpdateBackoffSlotsNow(0, accessGrantStart + (nIntSlots * GetSlot()), m_linkId);
     }
 
