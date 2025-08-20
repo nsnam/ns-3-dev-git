@@ -1747,15 +1747,15 @@ LargestIdlePrimaryChannelTest::DoRun()
  * that the frame is not transmitted. A backoff value is kept being generated as long as the
  * frame is kept in the queue.
  *
- *                                                       Backoff                             Last
- * Backoff                 Backoff        Backoff        value #3,                          backoff
- * value #0                value #1       value #2       unblock queue                       value
- *  |              ┌─────┐    |              |              |              ┌─────┐   ┌────┐    |
- *  |       ┌───┐  │Assoc│    |    |Decrement|    |Decrement|    |Decrement│ADDBA│   │QoS │    |
- *  |       │ACK│  │Resp │    |AIFS| backoff |slot| backoff |slot| backoff │ Req │. .│data│    |
- * ──┬─────┬┴───┴──┴─────┴┬───┬────────────────────────────────────────────┴─────┴───┴────┴┬───┬──
- *   │Assoc│              │ACK│                                                            │ACK│
- *   │ Req │              └───┘                                                            └───┘
+ *                                                      Backoff                          Last
+ * Backoff                 Backoff          Backoff     value #3,                       backoff
+ * value #0                value #1         value #2    unblock queue                    value
+ *  |              ┌─────┐    |                |           |           ┌─────┐   ┌────┐    |
+ *  |       ┌───┐  │Assoc│    |    | Decrement | Decrement | Decrement │ADDBA│   │QoS │    |
+ *  |       │ACK│  │Resp │    |AIFS|  backoff  |  backoff  |  backoff  │ Req │. .│data│    |
+ * ──┬─────┬┴───┴──┴─────┴┬───┬────────────────────────────────────────┴─────┴───┴────┴┬───┬──
+ *   │Assoc│              │ACK│                                                        │ACK│
+ *   │ Req │              └───┘                                                        └───┘
  *   └─────┘
  *
  * The ProactiveBackoff test checks the generation of backoff values when the attribute is set
@@ -2165,10 +2165,6 @@ BackoffGenerationTest::BackoffGenerated(AcIndex ac, uint32_t backoff, uint8_t li
                                   offset,
                                   "Backoff value generated too early");
             m_nextBackoffGen.Cancel();
-
-            // we get here when the backoff expired but no transmission occurred, thus we have
-            // generated a new backoff value and we will start decrementing the counter in a slot
-            delay = m_apMac->GetWifiPhy(linkId)->GetSlot();
         }
 
         if (m_nGenBackoff < nValues)
