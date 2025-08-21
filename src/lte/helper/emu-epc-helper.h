@@ -55,6 +55,9 @@ class EmuEpcHelper : public NoBackhaulEpcHelper
                 std::vector<uint16_t> cellIds) override;
     void AddX2Interface(Ptr<Node> enbNode1, Ptr<Node> enbNode2) override;
 
+  protected:
+    void NotifyConstructionCompleted() override;
+
   private:
     /**
      * helper to assign addresses to S1-U NetDevices

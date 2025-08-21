@@ -788,12 +788,20 @@ consistently to allow correct operation. To this end we do allow for consistency
 checking *when the attribute is used* (*cf*. ``NS_ASSERT_MSG``
 or ``NS_ABORT_MSG``).
 
-In general, the attribute code to assign values to the underlying class member
-variables is executed after an object is constructed. But what if you need the
-values assigned before the constructor body executes, because you need them in
-the logic of the constructor? There is a way to do this, used for example in the
-class :cpp:class:`ConfigStore`: call :cpp:func:`ObjectBase::ConstructSelf()` as
-follows::
+For classes deriving from the :cpp:class:`Object` class, the attribute code to assign initial
+values to the underlying class member variables is executed after an object is constructed.
+Therefore, you cannot access the values assigned to the attributes of an object from within
+its constructor. Instead, you can override :cpp:func:`ObjectBase::NotifyConstructionCompleted()`
+and access the values assigned to the attributes of the object from within that function.
+A practical example of how this is used can be found in the ns-3 class :cpp:class:`RttEstimator`
+in the `internet` module.
+
+For classes deriving directly from :cpp:class:`ObjectBase`, it is instead needed to explicitly
+call :cpp:func:`ObjectBase::ConstructSelf()` to assign initial values to the class attributes.
+Such a call can be made in the class constructor, in which case the values assigned to the
+attributes are accessible from within its constructor. There are not many examples of this usage
+in the ns-3 codebase because most classes with attributes typically derive from :cpp:class:`Object`.
+One example is the :cpp:class:`ConfigStore` class, whose constructor is shown as follows::
 
     ConfigStore::ConfigStore()
     {

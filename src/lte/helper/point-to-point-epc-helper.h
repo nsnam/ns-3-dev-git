@@ -51,6 +51,9 @@ class PointToPointEpcHelper : public NoBackhaulEpcHelper
                 Ptr<NetDevice> lteEnbNetDevice,
                 std::vector<uint16_t> cellIds) override;
 
+  protected:
+    void NotifyConstructionCompleted() override;
+
   private:
     /**
      * S1-U interfaces

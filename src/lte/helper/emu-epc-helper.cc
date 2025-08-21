@@ -31,8 +31,14 @@ EmuEpcHelper::EmuEpcHelper()
     : NoBackhaulEpcHelper()
 {
     NS_LOG_FUNCTION(this);
-    // To access the attribute value within the constructor
-    ObjectBase::ConstructSelf(AttributeConstructionList());
+}
+
+void
+EmuEpcHelper::NotifyConstructionCompleted()
+{
+    NoBackhaulEpcHelper::NotifyConstructionCompleted();
+
+    NS_LOG_FUNCTION(this);
 
     // Create EmuFdNetDevice for SGW
     EmuFdNetDeviceHelper emu;

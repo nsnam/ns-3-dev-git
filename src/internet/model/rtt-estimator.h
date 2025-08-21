@@ -89,6 +89,8 @@ class RttEstimator : public Object
     Time m_initialEstimatedRtt; //!< Initial RTT estimation
 
   protected:
+    void NotifyConstructionCompleted() override;
+
     Time m_estimatedRtt;       //!< Current estimate
     Time m_estimatedVariation; //!< Current estimate variation
     uint32_t m_nSamples;       //!< Number of samples

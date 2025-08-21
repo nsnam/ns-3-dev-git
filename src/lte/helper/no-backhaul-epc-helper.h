@@ -76,6 +76,8 @@ class NoBackhaulEpcHelper : public EpcHelper
     int64_t AssignStreams(int64_t stream) override;
 
   protected:
+    void NotifyConstructionCompleted() override;
+
     /**
      * @brief DoAddX2Interface: Call AddX2Interface on top of the Enb device pointers
      *
