@@ -105,6 +105,20 @@ files are bundled together and the archive is usually compressed.
 The process for downloading |ns3| via tarball is simple; you just
 have to pick a release, download it and uncompress it.
 
+We recommend downloading the most recent release (highest release
+number).  Prior to the ns-3.45 release, we offered one downloadable
+source code archive, called ``ns-allinone-3.nn.tar.bz2`` (where ``nn``
+stands for the release number), which contained the network animator
+NetAnim, the bake build tool and the ns-3 release.  Starting with
+ns-3.45, we offer two release archives:
+
+#.  ``ns-3.45.tar.bz2``: Contains only ns-3
+#.  ``ns-allinone-3.45.tar.bz2``: Contains ns-3 plus some compatible extension modules available in the `ns-3 App Store <https://apps.nsnam.org>`_
+
+We will focus on the first option above.  The instructions for the second
+one are basically the same, except that you will need to change into
+the ``ns-3.nn`` directory after unpacking it.
+
 Let's assume that you, as a user, wish to build |ns3| in a local
 directory called ``workspace``.
 If you adopt the ``workspace`` directory approach, you can
@@ -116,8 +130,8 @@ get a copy of a release by typing the following into your Linux shell
   $ cd
   $ mkdir workspace
   $ cd workspace
-  $ wget https://www.nsnam.org/release/ns-allinone-3.45.tar.bz2
-  $ tar xjf ns-allinone-3.45.tar.bz2
+  $ wget https://www.nsnam.org/release/ns-3.45.tar.bz2
+  $ tar xjf ns-3.45.tar.bz2
 
 Notice the use above of the ``wget`` utility, which is a command-line
 tool to fetch objects from the web; if you do not have this installed,
@@ -400,30 +414,6 @@ for an already configured project:
 
   $ ./ns3 show profile
   Build profile: debug
-
-The build.py script discussed above supports also the ``--enable-examples``
-and ``enable-tests`` arguments and passes them through to the ns-3
-configuration, but in general, does not directly support
-other ns3 options; for example, this will not work:
-
-.. sourcecode:: console
-
-  $ ./build.py --enable-asserts
-
-will result in:
-
-.. sourcecode:: console
-
-  build.py: error: no such option: --enable-asserts
-
-However, the special operator ``--`` can be used to pass additional
-configure options through to ns3, so instead of the above, the following will work:
-
-.. sourcecode:: console
-
-  $ ./build.py -- --enable-asserts
-
-as it generates the underlying command ``./ns3 configure --enable-asserts``.
 
 Here are a few more introductory tips about CMake.
 

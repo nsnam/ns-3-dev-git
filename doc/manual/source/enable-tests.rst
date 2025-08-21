@@ -12,39 +12,10 @@ This chapter discusses how to build |ns3| with or without its examples and tests
 How to enable/disable examples and tests in |ns3|
 *************************************************
 
-There are 3 ways to enable/disable examples and tests in |ns3|:
+There are 2 ways to enable/disable examples and tests in |ns3|:
 
-#. Using build.py when |ns3| is built for the first time
 #. Using ns3 once |ns3| has been built
 #. Using the |ns3| configuration file once |ns3| has been built
-
-Enable/disable examples and tests using build.py
-++++++++++++++++++++++++++++++++++++++++++++++++
-
-You can use build.py to enable/disable examples and tests when |ns3| is built for the first time.
-
-By default, examples and tests are not built in |ns3|.
-
-From the ns-3-allinone directory, you can build |ns3| without any
-examples or tests simply by doing: ::
-
-  $ ./build.py
-
-Running test.py in the top level |ns3| directory now will cause no examples or tests to be run:
-
-.. sourcecode:: text
-
-  0 of 0 tests passed (0 passed, 0 skipped, 0 failed, 0 crashed, 0 valgrind errors)
-
-If you would like build |ns3| with examples and tests, then do the following from the ns-3-allinone directory: ::
-
-  $ ./build.py --enable-examples --enable-tests
-
-Running test.py in the top level |ns3| directory will cause all of the examples and tests to be run:
-
-.. sourcecode:: text
-
-  170 of 170 tests passed (170 passed, 0 skipped, 0 failed, 0 crashed, 0 valgrind errors)
 
 Enable/disable examples and tests using ns3
 +++++++++++++++++++++++++++++++++++++++++++
