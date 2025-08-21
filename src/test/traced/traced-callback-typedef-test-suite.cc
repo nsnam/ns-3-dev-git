@@ -53,6 +53,16 @@ using namespace ns3;
 class TracedCallbackTypedefTestCase : public TestCase
 {
   public:
+    /// @return the TypeId for the callback checkers
+    static TypeId GetCheckerTypeId()
+    {
+        static TypeId tid = TypeId("ns3::TracedCallbackTypedefTestCaseChecker")
+                                .SetParent<Object>()
+                                .SetGroupName("Test")
+                                .HideFromDocumentation();
+        return tid;
+    }
+
     TracedCallbackTypedefTestCase();
 
     ~TracedCallbackTypedefTestCase() override
@@ -268,6 +278,12 @@ class TracedCallbackTypedefTestCase::Checker : public Object
     TracedCallback<Ts...> m_cb;
 
   public:
+    /// @return the TypeId for this checker
+    static TypeId GetTypeId()
+    {
+        return TracedCallbackTypedefTestCase::GetCheckerTypeId();
+    }
+
     Checker()
     {
     }

@@ -18,7 +18,17 @@ namespace ns3
 
 NS_LOG_COMPONENT_DEFINE("Ipv6AutoconfiguredPrefix");
 
+NS_OBJECT_ENSURE_REGISTERED(Ipv6AutoconfiguredPrefix);
+
 uint32_t Ipv6AutoconfiguredPrefix::m_prefixId = 0;
+
+TypeId
+Ipv6AutoconfiguredPrefix::GetTypeId()
+{
+    static TypeId tid =
+        TypeId("ns3::Ipv6AutoconfiguredPrefix").SetParent<Object>().SetGroupName("Internet");
+    return tid;
+}
 
 Ipv6AutoconfiguredPrefix::Ipv6AutoconfiguredPrefix(Ptr<Node> node,
                                                    uint32_t interface,
