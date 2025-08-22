@@ -12,7 +12,7 @@ builder Lockheed Martin used US customary units. This USD 328 million project fa
 the catastrophic consequences of unit mismatch. Similar failures have occurred across government
 agencies and industries, underscoring the critical importance of unit coherence.
 
-Coherent use of units—dimensions, quantities, and scales—is imperative for correct physics equations,
+Coherent use of units — dimensions, quantities, and scales — is imperative for correct physics equations,
 robust software APIs, and trustworthy simulation results. Yet, these errors remain pervasive and often
 difficult to detect through manual inspection. Common unit-related errors include:
 
@@ -55,6 +55,20 @@ International System of Units" while pragmatically accommodating the needs of ne
 does not strictly distinguish between the idiosyncrasies of NIST, ISO, or IEC standards, but adheres
 primarily to `National institute of Standards and Technology's Guide for the Use of the International System of Units <https://physics.nist.gov/cuu/pdf/sp811.pdf>`.
 
+**Notation and Style Guides**
+
+SI rules, a global standard, takes precedence over |ns3|'s coding style or its idiomatic usages.
+
+  ==================== ================ ==========================================
+  Unit                 Ok               Not Ok
+  ==================== ================ ==========================================
+  decibel              dB               DB, Db, db
+  decibel-milliwatts   dBm, dBmW        DBM, DBm, DbM, Dbm, dBM, dbM, dbm
+  milli                m                M
+  mega                 M                m
+  milligram            mg, milligram    milli-gram mill_gram, MilliGram, milliGram
+  ==================== ================ ==========================================
+
 **Selective Implementation**
 
 Rather than implementing all possible SI units, the module focuses on units most relevant to network
@@ -77,6 +91,9 @@ The module provides user-defined literals for natural expression of physical qua
   auto power = 20_dBm;
   auto angle = 90_degree;
   auto duration = 100_nSEC;
+  auto percentage = 50_percent;
+
+These literals make the code more readable and self-documenting while maintaining type safety.
 
 **Seamless Conversion**
 
@@ -84,9 +101,17 @@ Each unit type provides methods for conversion to related units:
 
 ::
 
-  MHz_t freq{2400};
-  auto freq_in_hz = freq.in_Hz();      // Get value as double
-  auto freq_as_hz = freq.to_Hz();      // Get as Hz_t type
+  // Value accessors (return primitive type)
+  double value_in_mw = power.in_mWatt();
+  double value_in_dbm = power.in_dBm();
+
+  // Type conversion (return strong type)
+  dBm_t power_dbm = power.to_dBm();
+  mWatt_t power_mw = power.to_mWatt();
+
+The naming convention consistently uses:
+* ``in_X()`` methods return the value as a primitive type (double/int)
+* ``to_X()`` methods return a new object of the target unit type
 
 **Operator Overloading**
 
@@ -116,26 +141,16 @@ in simulation objects:
                 MakedBmAccessor(&WifiPhy::m_txPower),
                 MakedBmChecker())
 
+Furthermore, this makes possible coherent implementations from configuration files to command-line arguments,
+and to attributes.
+
 **Extendability**
 
-The implementation of select SI units exhbit a pattern to use to introduce new stong types, including
-other than SI units, eg. `Imperial Units <https://en.wikipedia.org/wiki/Imperial_units>` such as miles,
-hour, or knots, as long as doing so promotes convergence to `SI Units` and the rigor of the engineering.
+The implementation of select SI units exhibits a pattern that can be used to introduce new strong types,
+including other than SI units, eg. `Imperial Units <https://en.wikipedia.org/wiki/Imperial_units>` such as
+miles, hour, or knots, as long as doing so promotes convergence to `SI Units` and the rigor of the
+engineering.
 
-
-**Notation and style guides**
-
-SI rules, a global standard, takes precedence over |ns3|'s coding style or its idiomatic usages.
-
-  ==================== ================ ==========================================
-  Unit                 Ok               Not Ok
-  ==================== ================ ==========================================
-  decibel              dB               DB, Db, db
-  decibel-milliwatts   dBm, dBmW        DBM, DBm, DbM, Dbm, dBM, dbM, dbm
-  milli                m                M
-  mega                 M                m
-  milligram            mg, milligram    milli-gram mill_gram, MilliGram, milliGram
-  ==================== ================ ==========================================
 
 Implementation Approach
 **********************
@@ -152,7 +167,7 @@ value while providing type-safe operations. Each unit type follows a consistent 
 For example, the ``dBm_t`` structure encapsulates power in dBm, providing:
 
 * Conversion to/from linear power units (mWatt_t, Watt_t)
-* Addition/subtraction with dB_t (representing relative power)
+* Addition/subtraction with dB_t (representing relative power, such as power gain or loss)
 * Prevention of direct addition/subtraction with other dBm_t values
 * String representation for debugging and logging
 
@@ -160,9 +175,11 @@ The module carefully considers the appropriate underlying type for each unit. Wh
 could theoretically use integral types (e.g., Hz_t could use int64_t for frequencies above 1 Hz),
 the current implementation primarily uses ``double`` to facilitate migration from legacy APIs.
 
-Unit Coherence Patterns
-**********************
-The evolution of unit handling in code typically follows these patterns, from least to most robust:
+Evolution of Unit Coherence Patterns
+***********************************
+There are couple of popular patterns with varying degree of robustness. The evolution of unit
+handling in code typically follows these patterns, from least to most robust. Below examples
+use ``double``, but it could be ``int32_t`` or any useful choice.
 
 **A. Primitive Types with Comments**
 
@@ -215,85 +232,22 @@ The evolution of unit handling in code typically follows these patterns, from le
 The strong typing approach (D) provides compile-time guarantees against unit errors, eliminating an entire
 class of potential bugs while making the code more readable and self-documenting.
 
-User-Defined Literals
-********************
-The ``si-units`` module provides user-defined literals for intuitive expression of physical quantities:
-
-::
-
-  // Energy and power
-  auto power1 = 100_mWatt;
-  auto power2 = 20_dBm;
-  auto power3 = 1_Watt;
-  auto ratio = 3_dB;
-
-  // Frequency
-  auto freq1 = 2400_MHz;
-  auto freq2 = 5_GHz;
-
-  // Time
-  auto time1 = 100_nSEC;
-  auto time2 = 1_mSEC;
-
-  // Angle
-  auto angle1 = 90_degree;
-  auto angle2 = 3.14_radian;
-
-  // Ratio
-  auto percentage = 50_percent;
-
-These literals make the code more readable and self-documenting while maintaining type safety.
-
-Conversion Methods
-****************
-Each unit type provides methods for conversion to related units:
-
-::
-
-  // Value accessors (return primitive type)
-  double value_in_mw = power.in_mWatt();
-  double value_in_dbm = power.in_dBm();
-
-  // Type conversion (return strong type)
-  dBm_t power_dbm = power.to_dBm();
-  mWatt_t power_mw = power.to_mWatt();
-
-The naming convention consistently uses:
-* ``in_X()`` methods return the value as a primitive type (double/int)
-* ``to_X()`` methods return a new object of the target unit type
-
-Attribute System Integration
-**************************
-The ``si-units`` module integrates with the |ns3| attribute system through specialized value types,
-accessors, and checkers:
-
-::
-
-  .AddAttribute("TxPower",
-                "Transmission power in dBm",
-                dBmValue(20_dBm),
-                MakedBmAccessor(&WifiPhy::m_txPower),
-                MakedBmChecker())
-
-This integration allows simulation parameters to be specified with proper units in configuration files
-and command-line arguments.
-
-Working with Legacy APIs
-***********************
-When interfacing with legacy code that uses primitive types, conversion methods provide a clean interface:
-
-::
-
-  // Legacy API using primitive types
-  double SomeLegacyApi(double freq_mhz);
-
-  // Modern code using strong types
-  auto freq = 2.4_GHz;
-  auto result = dBm_t{SomeLegacyApi(freq.in_MHz())};
-
 Migration Strategy
-****************
-Migrating existing code to use the ``si-units`` module can follow these approaches:
+*****************
+While newly written code may adopt ``si-units`` from its inception, bringing its benefits to existing
+code is certainly impactful.
+
+A key is gradual, incremental, and testable refactoring. The outcome of the migration shall not
+change the behaviors. If the migration efforts discover incumbent bugs, bug fixes should be handled
+separately from API migration; Guaranteeing no behavioral changes during refactoring is as important
+as fixing bugs.
+
+::
+  // Before: Legacy API using primitive types
+  double SomeLegacyApi(double freq);
+
+  // After: Modern code using strong types
+  dBm_t SomeLegacyApi(MHz_t freq);
 
 **Wrapper Approach**
 
@@ -312,7 +266,7 @@ Preserve legacy APIs while providing strongly-typed alternatives:
 
 **Two-Phase Migration**
 
-For large codebases, a two-phase approach may be more manageable:
+If directly adopting strong-typed units is prohibitive, a two-phase approach may be more manageable.
 
 1. **Phase 1**: Introduce weak type aliases to improve readability without changing function signatures:
 
