@@ -12,55 +12,94 @@ namespace ns3
 {
 
 uint16_t
-UhrMacCapabilities::GetSize() const
+UhrCapabilities::UhrMacCapabilities::GetSize() const
 {
-    // TODO: size is still TBD in 802.11bn/D0.2
-    return 1;
+    // TODO: size is still not defined in 802.11bn/D1.0
+    return 8;
 }
 
 void
-UhrMacCapabilities::Serialize(Buffer::Iterator& start) const
+UhrCapabilities::UhrMacCapabilities::Serialize(Buffer::Iterator& start) const
 {
-    uint8_t val = dpsSupport | (dpsAssistingSupport << 1) | (mlPowerManagement << 2) |
-                  (npcaSupported << 4) | (bsrEnhancementSupport << 5) | (dsoSupport << 7);
+    uint64_t val =
+        dpsSupport | (dpsAssistingSupport << 1) | (dpsApStaticHcmSupport << 2) |
+        (mlPowerManagement << 3) | (npcaSupport << 4) | (enhancedBsrSupport << 5) |
+        (additionalMappedTidSupport << 6) | (eotspSupport << 7) |
+        (static_cast<uint64_t>(dsoSupport) << 8) | (static_cast<uint64_t>(pEdcaSupport) << 9) |
+        (static_cast<uint64_t>(dbeSupport) << 10) | (static_cast<uint64_t>(ulLliSupport) << 11) |
+        (static_cast<uint64_t>(p2pLliSupport) << 12) | (static_cast<uint64_t>(puoSupport) << 13) |
+        (static_cast<uint64_t>(apPuoSupport) << 14) | (static_cast<uint64_t>(duoSupport) << 15) |
+        (static_cast<uint64_t>(omCtrlUlMuDataDisableRxSupport) << 16) |
+        (static_cast<uint64_t>(aomSupport) << 17) |
+        (static_cast<uint64_t>(ifcsLocationSupport) << 18) |
+        (static_cast<uint64_t>(uhrTrsSupport) << 19) | (static_cast<uint64_t>(txspgSupport) << 20) |
+        (static_cast<uint64_t>(txspgTxopReturnSupport) << 21) |
+        (static_cast<uint64_t>(uhrOpModeAndParamsUpdateTimeout) << 22) |
+        (static_cast<uint64_t>(paramUpdateAdvNotificationInterval) << 26) |
+        (static_cast<uint64_t>(updateIndicationTimIntervals) << 29) |
+        (static_cast<uint64_t>(boundedEss) << 34) | (static_cast<uint64_t>(btmAssurance) << 35);
 
     // TODO: implement other fields once next 802.11bn draft is available
-    start.WriteU8(val);
+    start.WriteHtolsbU64(val);
 }
 
 uint16_t
-UhrMacCapabilities::Deserialize(Buffer::Iterator start)
+UhrCapabilities::UhrMacCapabilities::Deserialize(Buffer::Iterator start)
 {
     Buffer::Iterator i = start;
-    const auto val = i.ReadU8();
+    const auto val = i.ReadLsbtohU64();
     dpsSupport = val & 0x01;
     dpsAssistingSupport = (val >> 1) & 0x01;
-    mlPowerManagement = (val >> 2) & 0x01;
-    npcaSupported = (val >> 4) & 0x01;
-    bsrEnhancementSupport = (val >> 5) & 0x01;
-    dsoSupport = (val >> 7) & 0x01;
+    dpsApStaticHcmSupport = (val >> 2) & 0x01;
+    mlPowerManagement = (val >> 3) & 0x01;
+    npcaSupport = (val >> 4) & 0x01;
+    enhancedBsrSupport = (val >> 5) & 0x01;
+    additionalMappedTidSupport = (val >> 6) & 0x01;
+    eotspSupport = (val >> 7) & 0x01;
+    dsoSupport = (val >> 8) & 0x01;
+    pEdcaSupport = (val >> 9) & 0x01;
+    dbeSupport = (val >> 10) & 0x01;
+    ulLliSupport = (val >> 11) & 0x01;
+    p2pLliSupport = (val >> 12) & 0x01;
+    puoSupport = (val >> 13) & 0x01;
+    apPuoSupport = (val >> 14) & 0x01;
+    duoSupport = (val >> 15) & 0x01;
+    omCtrlUlMuDataDisableRxSupport = (val >> 16) & 0x01;
+    aomSupport = (val >> 17) & 0x01;
+    ifcsLocationSupport = (val >> 18) & 0x01;
+    uhrTrsSupport = (val >> 19) & 0x01;
+    txspgSupport = (val >> 20) & 0x01;
+    txspgTxopReturnSupport = (val >> 21) & 0x01;
+    uhrOpModeAndParamsUpdateTimeout = (val >> 22) & 0x0f;
+    paramUpdateAdvNotificationInterval = (val >> 26) & 0x07;
+    updateIndicationTimIntervals = (val >> 29) & 0x1f;
+    boundedEss = (val >> 34) & 0x01;
+    btmAssurance = (val >> 35) & 0x01;
+
     // TODO: implement other fields once next 802.11bn draft is available
-    return 1;
+    return i.GetDistanceFrom(start);
 }
 
 uint16_t
-UhrPhyCapabilities::GetSize() const
+UhrCapabilities::UhrPhyCapabilities::GetSize() const
 {
-    // TODO: size is still TBD in 802.11bn/D0.2
-    return 0;
+    // TODO: size is still not defined in 802.11bn/D1.0
+    return 8;
 }
 
 void
-UhrPhyCapabilities::Serialize(Buffer::Iterator& /*start*/) const
+UhrCapabilities::UhrPhyCapabilities::Serialize(Buffer::Iterator& start) const
 {
-    // TODO: implement once defined in a next 802.11bn draft
+    // TODO: implement once finalized in a next 802.11bn draft
+    start.WriteU64(0);
 }
 
 uint16_t
-UhrPhyCapabilities::Deserialize(Buffer::Iterator /*start*/)
+UhrCapabilities::UhrPhyCapabilities::Deserialize(Buffer::Iterator start)
 {
-    // TODO: implement once defined in a next 802.11bn draft
-    return 0;
+    Buffer::Iterator i = start;
+    i.ReadU64();
+    return i.GetDistanceFrom(start);
 }
 
 WifiInformationElementId

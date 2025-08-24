@@ -238,7 +238,7 @@ typedef uint8_t WifiInformationElementId;
 #define IE_EXT_EHT_CAPABILITIES ((WifiInformationElementId)108)
 #define IE_EXT_TID_TO_LINK_MAPPING_ELEMENT ((WifiInformationElementId)109)
 
-#define IE_EXT_UHR_CAPABILITIES ((WifiInformationElementId)142) // FIXME: not defined yet
+#define IE_EXT_UHR_CAPABILITIES ((WifiInformationElementId)152)
 
 /**
  * @brief Information element, as defined in 802.11-2007 standard
