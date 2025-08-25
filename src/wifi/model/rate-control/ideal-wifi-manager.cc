@@ -279,7 +279,7 @@ IdealWifiManager::DoReportRtsOk(WifiRemoteStation* st,
     auto station = static_cast<IdealWifiRemoteStation*>(st);
     station->m_lastSnrObserved = rtsSnr;
     station->m_lastChannelWidthObserved =
-        GetPhy()->GetChannelWidth() >= MHz_t{42} ? MHz_t{20} : GetPhy()->GetChannelWidth();
+        GetPhy()->GetChannelWidth() >= MHz_t{40} ? MHz_t{20} : GetPhy()->GetChannelWidth();
     station->m_lastNssObserved = 1;
 }
 
