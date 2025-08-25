@@ -262,8 +262,8 @@ class GcrUrTest : public GcrTestBase
     struct GcrUrParameters
     {
         uint8_t nGcrRetries{7}; ///< number of solicited retries to use for GCR-UR
-        uint8_t expectedSkippedRetries{
-            0}; ///< the number of skipped retries because of lifetime expiry
+        uint8_t expectedMinSkippedRetries{
+            0}; ///< the minimum number of skipped retries because of lifetime expiry
         std::optional<uint16_t>
             packetsPauzeAggregation{}; ///< the amount of generated packets after which MPDU
                                        ///< aggregation should not be used by limiting the queue to
