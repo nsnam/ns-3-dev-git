@@ -144,8 +144,10 @@ python-format-3.8:
 # Markdown lint
 markdown-lint:
   stage: .pre
-  image: ruby:slim
+  image: node:slim
   before_script:
-    - gem install mdl
+    - npm install -g markdownlint-cli
   script:
-    - mdl -s .mdl_style.rb .
+    - markdownlint .
+  timeout: 1h
+  interruptible: true

@@ -1911,73 +1911,79 @@ add the following configuration to ``.vscode/settings.json``:
 Markdown Lint
 *************
 
-.. _Markdownlint: https://github.com/markdownlint/markdownlint
-.. _Markdownlint Rules: https://github.com/markdownlint/markdownlint/blob/main/docs/RULES.md
-.. _Markdownlint Configuration Style File: https://github.com/markdownlint/markdownlint/blob/main/docs/creating_styles.md
-.. _Markdownlint Docker Hub: https://hub.docker.com/r/markdownlint/markdownlint
-.. _Markdownlint Docker Instructions: https://github.com/markdownlint/markdownlint/tree/main/tools/docker
-.. _Markdownlint VS Code Extension: https://marketplace.visualstudio.com/items?itemName=DavidAnson.vscode-markdownlint
+.. _MarkdownLint: https://github.com/DavidAnson/MarkdownLint
+.. _MarkdownLint Rules: https://github.com/DavidAnson/MarkdownLint/blob/main/doc/Rules.md
+.. _MarkdownLint Installation: https://github.com/igorshubovych/markdownlint-cli?tab=readme-ov-file#installation
+.. _MarkdownLint Configuration File: https://github.com/DavidAnson/MarkdownLint/blob/main/schema/.MarkdownLint.yaml
+.. _MarkdownLint Docker: https://github.com/igorshubovych/MarkdownLint-cli/pkgs/container/MarkdownLint-cli
+.. _MarkdownLint VS Code Extension: https://marketplace.visualstudio.com/items?itemName=DavidAnson.vscode-MarkdownLint
 
-|ns3| uses `Markdownlint`_ as a linter of Markdown files.
+|ns3| uses `MarkdownLint`_ as a linter of Markdown files.
 This linter checks if Markdown files follow a set of defined rules, in order to encourage
 standardization and consistency of Markdown files across parsers.
 It also ensures that Markdown files are correctly interpreted and rendered.
 
-Markdownlint detects linting issues, but it can not fix them automatically.
-The issues must be fixed manually.
+MarkdownLint detects linting issues and can fix most of them automatically.
+Some issues may need to be manually fixed.
 
-Markdownlint configuration
+MarkdownLint configuration
 ==========================
 
-Markdownlint's settings are saved in the file ``.mdl_style.rb``.
-This file is defined in `Markdownlint Configuration Style File`_, which explains how to
-customize the tool to enable / disable rules or customize its parameters.
+MarkdownLint's settings are saved in the file ``.markdownlint.yml``.
+This schema of this file is defined in `MarkdownLint Configuration File`_,
+which explains how to customize the tool to enable / disable rules or customize its parameters.
 
-The list of Markdown rules supported by Markdownlint is available in `Markdownlint Rules`_.
+The list of Markdown rules supported by MarkdownLint is available in `MarkdownLint Rules`_.
 
-Install and Run Markdownlint
+Install and Run MarkdownLint
 ============================
 
-Markdownlint is written in Ruby. To run Markdownlint, either use the official
-Markdownlint Docker image or install Ruby and Markdownlint.
+MarkdownLint is written in NodeJS. To run MarkdownLint, either use the official
+MarkdownLint Docker image, install it natively in macOS via Homebrew,
+or install MarkdownLint with NodeJS / npm.
 
-Run Markdownlint with Docker image
+Run MarkdownLint with Docker image
 ##################################
 
-Markdownlint has an official Docker image in `Markdownlint Docker Hub`_ with the tool
+MarkdownLint has an official Docker image in `MarkdownLint Docker`_ with the tool
 and all dependencies installed.
-The instructions to use the Docker image are available in `Markdownlint Docker Instructions`_.
 
-To run Markdownlint in a Docker container, use the following command:
-
-.. sourcecode:: console
-
-  docker run -v .:/data markdownlint/markdownlint -s .mdl_style.rb .
-
-Install and Run Markdownlint with Ruby
-######################################
-
-To install Markdownlint natively, you need to have Ruby installed in your system.
-Check the installation instructions in the Ruby's official documentation.
-
-After installing Ruby in your system, install Markdownlint using the following command:
+To run MarkdownLint in a Docker container, use the following command:
 
 .. sourcecode:: console
 
-  gem install mdl
+  # Check all Markdown files in the current directory and subdirectories
+  docker run --rm -v $PWD:/workdir ghcr.io/igorshubovych/markdownlint-cli:latest . [--fix]
 
-To run Markdownlint and check Markdown files for linting issues, run Markdownlint
-using the following command:
+  # Check specific Markdown file
+  docker run --rm -v $PWD:/workdir ghcr.io/igorshubovych/markdownlint-cli:latest PATH_TO_FILE [--fix]
+
+If the ``fix`` flag is used, the tool tries to automatically fix the detected issues.
+Otherwise, it only reports the issues found.
+
+Install and Run MarkdownLint natively
+#####################################
+
+To install MarkdownLint natively, either on macOS via Homebrew or using NodeJS / npm,
+follow the instructions available in `MarkdownLint Installation`_.
+
+To run MarkdownLint, use the following command:
 
 .. sourcecode:: console
 
-  mdl -s .mdl_style.rb .
+  # Check all Markdown files in the current directory and subdirectories
+  markdownlint-cli . [--fix]
+
+  # Check specific Markdown file
+  markdownlint-cli PATH_TO_FILE [--fix]
 
 VS Code Extension
 =================
 
-For VS Code users, the `Markdownlint VS Code Extension`_ extension is available in the marketplace.
-This extension is inspired in `Markdownlint`_ and follows the same set of rules.
+For VS Code users, the `MarkdownLint VS Code Extension`_ extension is available in the marketplace.
+This extension uses the same engine and respects the configuration file.
 
-The Markdownlint extension automatically analyzes files open in the editor and provides inline hints
+The MarkdownLint extension automatically analyzes files open in the editor and provides inline hints
 when issues are detected. It can automatically fix most issues related with formatting.
+As explained in the "Integration with IDEs" section, VS Code can be configured to automatically
+format code when saving, editing or pasting code.

@@ -1,0 +1,20 @@
+# Markdownlint Rules
+
+# Configuration file schema:
+# https://github.com/DavidAnson/markdownlint/blob/main/schema/.markdownlint.yaml
+
+# Markdown lint rules:
+#   Individual rules: https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md
+#   Tags: https://github.com/DavidAnson/markdownlint#tags
+
+# Markdownlint CLI usage:
+# https://github.com/igorshubovych/markdownlint-cli?tab=readme-ov-file#usage
+#
+# Example with Docker:
+#   docker run -v $PWD:/workdir ghcr.io/igorshubovych/markdownlint-cli:latest . [--fix]
+
+default: true
+
+descriptive-link-text: false # MD059
+line-length: false # MD013
+no-duplicate-heading: false # MD024
