@@ -52,7 +52,7 @@ class TcpSocketAdvertisedWindowProxy : public TcpSocketMsgBase
         : TcpSocketMsgBase(other)
     {
         m_segmentSize = other.m_segmentSize;
-        m_inwalidAwndCb = other.m_inwalidAwndCb;
+        m_invalidAwndCb = other.m_invalidAwndCb;
     }
 
     /**
@@ -78,7 +78,7 @@ class TcpSocketAdvertisedWindowProxy : public TcpSocketMsgBase
 
   private:
     uint16_t OldAdvertisedWindowSize(bool scale = true) const;
-    InvalidAwndCallback m_inwalidAwndCb; //!< Callback
+    InvalidAwndCallback m_invalidAwndCb; //!< Callback
 
     /**
      * @brief Test meta-information: size of the segments that are received.
@@ -93,7 +93,7 @@ void
 TcpSocketAdvertisedWindowProxy::SetInvalidAwndCb(InvalidAwndCallback cb)
 {
     NS_ASSERT(!cb.IsNull());
-    m_inwalidAwndCb = cb;
+    m_invalidAwndCb = cb;
 }
 
 TypeId
@@ -148,9 +148,9 @@ TcpSocketAdvertisedWindowProxy::AdvertisedWindowSize(bool scale) const
 
             if (static_cast<uint16_t>(newAwndKnownDifference) != oldAwnd)
             {
-                if (!m_inwalidAwndCb.IsNull())
+                if (!m_invalidAwndCb.IsNull())
                 {
-                    m_inwalidAwndCb(oldAwnd, newAwnd);
+                    m_invalidAwndCb(oldAwnd, newAwnd);
                 }
             }
         }
