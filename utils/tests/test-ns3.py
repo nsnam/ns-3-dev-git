@@ -3195,8 +3195,68 @@ class NS3ExpectedUseTestCase(NS3BaseTestCase):
 
 class NS3QualityControlTestCase(unittest.TestCase):
     """!
-    ns-3 tests to control the quality of the repository over time,
-    by checking the state of URLs listed and more
+    ns-3 tests to control the quality of the repository over time
+    """
+
+    def test_01_CheckImageBrightness(self):
+        """!
+        Check if images in the docs are above a brightness threshold.
+        This should prevent screenshots with dark UI themes.
+        @return None
+        """
+        if shutil.which("convert") is None:
+            self.skipTest("Imagemagick was not found")
+
+        from pathlib import Path
+
+        # Scan for images
+        image_extensions = ["png", "jpg"]
+        images = []
+        for extension in image_extensions:
+            images += list(Path("./doc").glob("**/figures/*.{ext}".format(ext=extension)))
+            images += list(Path("./doc").glob("**/figures/**/*.{ext}".format(ext=extension)))
+
+        # Get the brightness of an image on a scale of 0-100%
+        imagemagick_get_image_brightness = 'convert {image} -colorspace HSI -channel b -separate +channel -scale 1x1 -format "%[fx:100*u]" info:'
+
+        # We could invert colors of target image to increase its brightness
+        # convert source.png -channel RGB -negate target.png
+        brightness_threshold = 50
+        for image in images:
+            brightness = subprocess.check_output(
+                imagemagick_get_image_brightness.format(image=image).split()
+            )
+            brightness = float(brightness.decode().strip("'\""))
+            self.assertGreater(
+                brightness,
+                brightness_threshold,
+                "Image darker than threshold (%d < %d): %s"
+                % (brightness, brightness_threshold, image),
+            )
+
+    def test_02_CheckForBrokenLogs(self):
+        """!
+        Check if one of the log statements of examples/tests contains/exposes a bug.
+        @return None
+        """
+        # First enable examples and tests with sanitizers
+        return_code, stdout, stderr = run_ns3(
+            'configure -G "{generator}" -d release --enable-examples --enable-tests --enable-sanitizers'
+        )
+        self.assertEqual(return_code, 0)
+
+        # Then build and run tests setting the environment variable
+        return_code, stdout, stderr = run_program(
+            "test.py", "", python=True, env={"TEST_LOGS": "1"}
+        )
+        self.assertEqual(return_code, 0)
+
+
+class NS3QualityControlThatCanFailTestCase(unittest.TestCase):
+    """!
+    ns-3 complementary tests, allowed to fail, to help control
+    the quality of the repository over time, by checking the
+    state of URLs listed and more
     """
 
     def test_01_CheckForDeadLinksInSources(self):
@@ -3394,59 +3454,6 @@ class NS3QualityControlTestCase(unittest.TestCase):
         test_return_code, stdout, stderr = run_program("test.py", "", python=True)
         self.assertEqual(test_return_code, 0)
 
-    def test_03_CheckImageBrightness(self):
-        """!
-        Check if images in the docs are above a brightness threshold.
-        This should prevent screenshots with dark UI themes.
-        @return None
-        """
-        if shutil.which("convert") is None:
-            self.skipTest("Imagemagick was not found")
-
-        from pathlib import Path
-
-        # Scan for images
-        image_extensions = ["png", "jpg"]
-        images = []
-        for extension in image_extensions:
-            images += list(Path("./doc").glob("**/figures/*.{ext}".format(ext=extension)))
-            images += list(Path("./doc").glob("**/figures/**/*.{ext}".format(ext=extension)))
-
-        # Get the brightness of an image on a scale of 0-100%
-        imagemagick_get_image_brightness = 'convert {image} -colorspace HSI -channel b -separate +channel -scale 1x1 -format "%[fx:100*u]" info:'
-
-        # We could invert colors of target image to increase its brightness
-        # convert source.png -channel RGB -negate target.png
-        brightness_threshold = 50
-        for image in images:
-            brightness = subprocess.check_output(
-                imagemagick_get_image_brightness.format(image=image).split()
-            )
-            brightness = float(brightness.decode().strip("'\""))
-            self.assertGreater(
-                brightness,
-                brightness_threshold,
-                "Image darker than threshold (%d < %d): %s"
-                % (brightness, brightness_threshold, image),
-            )
-
-    def test_04_CheckForBrokenLogs(self):
-        """!
-        Check if one of the log statements of examples/tests contains/exposes a bug.
-        @return None
-        """
-        # First enable examples and tests with sanitizers
-        return_code, stdout, stderr = run_ns3(
-            'configure -G "{generator}" -d release --enable-examples --enable-tests --enable-sanitizers'
-        )
-        self.assertEqual(return_code, 0)
-
-        # Then build and run tests setting the environment variable
-        return_code, stdout, stderr = run_program(
-            "test.py", "", python=True, env={"TEST_LOGS": "1"}
-        )
-        self.assertEqual(return_code, 0)
-
 
 def main():
     """!
@@ -3478,6 +3485,7 @@ def main():
         ],
         "extras": [
             NS3DependenciesTestCase,
+            NS3QualityControlThatCanFailTestCase,
         ],
     }
 

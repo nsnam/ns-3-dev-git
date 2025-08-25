@@ -24,7 +24,7 @@
     - export CCACHE_DIR=${PWD}/$CCACHE_BASEDIR_VALUE
     - ccache -M 3G # Set maximum cache size to 3GB
     - ccache -F 0 # Remove the limit on number of files in the cache
-    - python3 $TEST_SCRIPT
+    - ./$TEST_SCRIPT
   cache:
     # Use separate key for each (debug/default/optimized) jobs because
     # they run in parallel and will otherwise overwrite each other
