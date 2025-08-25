@@ -214,6 +214,12 @@ class DockerContainerManager:
                     os.environ[key] = value
                     del setting, key, value
 
+        # Check if we can use Docker (docker-on-docker is a pain)
+        try:
+            docker.ps()
+        except DockerException as e:
+            currentTestCase.skipTest(f"python-on-whales returned:{e.__str__()}")
+
         # Create Docker client instance and start it
         ## The Python-on-whales container instance
         self.container = docker.run(
