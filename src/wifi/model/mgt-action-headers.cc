@@ -1641,6 +1641,7 @@ FilsDiscHeader::Deserialize(Buffer::Iterator start)
     }
     if (m_frameCtl.m_capPresenceInd)
     {
+        m_fdCap = FilsDiscHeader::FdCapability{};
         nOctets = m_fdCap->Deserialize(i);
         i.Next(nOctets);
     }
