@@ -1543,33 +1543,26 @@ DsoTxopTest::CheckResults()
 
         if (m_params.generateInterferenceAfterIcf || m_params.generateObssDuringDsoTxop)
         {
-            NS_TEST_ASSERT_MSG_EQ(
-                (psduIt->psduMap.cbegin()->second->GetHeader(0).IsBlockAckReq() &&
-                 (psduIt->psduMap.cbegin()->second->GetHeader(0).GetAddr2() ==
-                  m_apMac->GetAddress()) &&
-                 (psduIt->psduMap.cbegin()->second->GetHeader(0).GetAddr1() ==
-                  m_staMacs.at(m_idxStaInDsoSubband)->GetAddress())),
-                true,
-                "A BAR is expected to be sent to the DSO STA that did not reply with a Block ACK");
-            ++psduIt;
-
-            NS_TEST_ASSERT_MSG_EQ(
-                (psduIt->psduMap.cbegin()->second->GetHeader(0).IsBlockAckReq() &&
-                 (psduIt->psduMap.cbegin()->second->GetHeader(0).GetAddr2() ==
-                  m_apMac->GetAddress()) &&
-                 (psduIt->psduMap.cbegin()->second->GetHeader(0).GetAddr1() ==
-                  m_staMacs.at(m_idxStaInDsoSubband)->GetAddress()) &&
-                 psduIt->psduMap.cbegin()->second->GetHeader(0).IsRetry()),
-                true,
-                "A BAR is expected to be retransmitted to the DSO STA since it was "
-                "switching back to its primary subband during the first BAR");
-            endPrevious =
-                psduIt->startTx +
-                WifiPhy::CalculateTxDuration(psduIt->psduMap,
-                                             psduIt->txVector,
-                                             m_apMac->GetWifiPhy(SINGLE_LINK_OP_ID)->GetPhyBand());
-
-            ++psduIt;
+            do
+            {
+                NS_TEST_ASSERT_MSG_EQ(
+                    (psduIt->psduMap.cbegin()->second->GetHeader(0).IsBlockAckReq() &&
+                     (psduIt->psduMap.cbegin()->second->GetHeader(0).GetAddr2() ==
+                      m_apMac->GetAddress()) &&
+                     (psduIt->psduMap.cbegin()->second->GetHeader(0).GetAddr1() ==
+                      m_staMacs.at(m_idxStaInDsoSubband)->GetAddress()) &&
+                     psduIt->psduMap.cbegin()->second->GetHeader(0).IsRetry()),
+                    true,
+                    "BARs are expected to be transmitted to the DSO STA while it is switching back "
+                    "to its primary subband during the first BAR");
+                endPrevious =
+                    psduIt->startTx + WifiPhy::CalculateTxDuration(
+                                          psduIt->psduMap,
+                                          psduIt->txVector,
+                                          m_apMac->GetWifiPhy(SINGLE_LINK_OP_ID)->GetPhyBand());
+                ++psduIt;
+            } while (psduIt != m_txPsdus.cend() &&
+                     psduIt->psduMap.cbegin()->second->GetHeader(0).IsBlockAckReq());
             NS_TEST_EXPECT_MSG_EQ(
                 psduIt->psduMap.cbegin()->second->GetHeader(0).IsBlockAck(),
                 true,
