@@ -154,6 +154,7 @@ set(source_files
     model/uhr/uhr-capabilities.cc
     model/uhr/uhr-configuration.cc
     model/uhr/uhr-frame-exchange-manager.cc
+    model/uhr/uhr-mode-change.cc
     model/uhr/uhr-operation.cc
     model/uhr/uhr-phy.cc
     model/uhr/uhr-ppdu.cc
@@ -340,6 +341,8 @@ set(header_files
     model/uhr/uhr-capabilities.h
     model/uhr/uhr-configuration.h
     model/uhr/uhr-frame-exchange-manager.h
+    model/uhr/uhr-mode-change.h
+    model/uhr/uhr-mode.h
     model/uhr/uhr-operation.h
     model/uhr/uhr-phy.h
     model/uhr/uhr-ppdu.h
