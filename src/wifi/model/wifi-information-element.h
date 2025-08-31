@@ -241,6 +241,8 @@ typedef uint8_t WifiInformationElementId;
 #define IE_EXT_UHR_OPERATION ((WifiInformationElementId)151)
 #define IE_EXT_UHR_CAPABILITIES ((WifiInformationElementId)152)
 
+#define IE_EXT_UHR_MODE_CHANGE_ELEMENT ((WifiInformationElementId)157)
+
 /**
  * @brief Information element, as defined in 802.11-2007 standard
  * @ingroup wifi
