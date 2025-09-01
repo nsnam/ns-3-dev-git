@@ -616,6 +616,12 @@ ChannelAccessManager::DoGrantDcfAccess()
     uint32_t k = 0;
     const auto now = Simulator::Now();
     const auto accessGrantStart = GetAccessGrantStart();
+    if (accessGrantStart > now)
+    {
+        NS_LOG_DEBUG("access cannot be granted yet");
+        return;
+    }
+
     for (auto i = m_txops.begin(); i != m_txops.end(); k++)
     {
         Ptr<Txop> txop = *i;
