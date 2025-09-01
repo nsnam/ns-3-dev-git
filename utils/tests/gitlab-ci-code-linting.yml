@@ -2,9 +2,15 @@
 #
 # Contains jobs to check the ns-3 coding style and perform lint checking.
 
+# Common settings
+.code-linting-base:
+  stage: .pre
+  timeout: 1h
+  interruptible: true
+
 # Clang-format
 .check-style-clang-format:
-  stage: .pre
+  extends: .code-linting-base
   image: ubuntu:rolling
   before_script:
     - apt update
@@ -13,8 +19,6 @@
       clang-format-$CLANG_FORMAT_VERSION
   script:
     - python3 utils/check-style-clang-format.py --verbose .
-  timeout: 1h
-  interruptible: true
 
 check-style-clang-format-19:
   extends: .check-style-clang-format
@@ -28,6 +32,7 @@ check-style-clang-format-15:
 
 # Clang-tidy
 clang-tidy-19:
+  extends: .code-linting-base
   stage: code-linting
   image: ubuntu:rolling
   variables:
@@ -80,12 +85,11 @@ clang-tidy-19:
     paths:
       - $CLANG_TIDY_OUTPUT
     when: on_failure
-  interruptible: true
   timeout: 3h
 
 # Spell checking
 spell-check:
-  stage: .pre
+  extends: .code-linting-base
   image: python:latest
   before_script:
     - pip install codespell
@@ -99,12 +103,10 @@ spell-check:
     - git log --pretty=%B HEAD...upstream/$CI_DEFAULT_BRANCH ^upstream/$CI_DEFAULT_BRANCH > git_messages.txt
     # Check source code and commit messages
     - codespell -f -C0 ./
-  timeout: 1h
-  interruptible: true
 
 # Check cmake format
 cmake-format:
-  stage: .pre
+  extends: .code-linting-base
   image: python:latest
   before_script:
     - pip install pyyaml cmake cmake-format ninja
@@ -119,19 +121,15 @@ cmake-format:
         echo "You might need to run \"./ns3 configure\" after installing it.";
         exit 1;
       fi
-  timeout: 1h
-  interruptible: true
 
 # Check Python format
 .python-format:
-  stage: .pre
+  extends: .code-linting-base
   before_script:
     - pip install black isort
   script:
     - black --check .
     - isort --check .
-  timeout: 1h
-  interruptible: true
 
 python-format-latest:
   extends: .python-format
@@ -143,11 +141,9 @@ python-format-3.8:
 
 # Markdown lint
 markdown-lint:
-  stage: .pre
+  extends: .code-linting-base
   image: node:slim
   before_script:
     - npm install -g markdownlint-cli
   script:
     - markdownlint .
-  timeout: 1h
-  interruptible: true
