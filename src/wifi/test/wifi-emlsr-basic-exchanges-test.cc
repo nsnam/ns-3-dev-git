@@ -2590,6 +2590,16 @@ EmlsrUlTxopTest::CheckResults()
                           "RTS before second data frame transmitted on an unexpected width");
     psduIt++;
     // CTS
+    if (m_nonEmlsrLink && psduIt != m_txPsdus.cend() &&
+        psduIt->psduMap.cbegin()->second->GetHeader(0).IsBlockAck())
+    {
+        // in case a non-EMLSR link is present, the QoS data frame (seq. numbers 6 and 7) may be
+        // sent late on that link due to the ongoing backoff, thus the corresponding BlockAck is
+        // transmitted on that link after the RTS but before the CTS transmitted on the other EMLSR
+        // aux link
+        ++psduIt;
+    }
+
     NS_TEST_ASSERT_MSG_EQ((psduIt != m_txPsdus.cend()),
                           true,
                           "CTS before second QoS data frame has not been transmitted");
