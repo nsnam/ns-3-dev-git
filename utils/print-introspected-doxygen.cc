@@ -453,7 +453,6 @@ StaticInformation::DoGather(TypeId tid)
             TypeId pointee = ptrChecker->GetPointeeTypeId();
 
             // See if this is a pointer to an Object.
-            Ptr<Object> object = CreateObject<Object>();
             TypeId objectTypeId = Object::GetTypeId();
             if (objectTypeId == pointee)
             {
