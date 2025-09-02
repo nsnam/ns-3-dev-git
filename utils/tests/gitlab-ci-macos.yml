@@ -1,0 +1,86 @@
+# Copyright (c) 2025 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
+#
+# SPDX-License-Identifier: GPL-2.0-only
+# NS3 CI script for MacOS
+# Check if everything builds fine under debug, default, and optimized, on MacOS.
+
+.build-macos-base:
+  extends: .base-build
+  tags:
+     - saas-macos-medium-m1
+  #  - saas-macos-large-m2pro
+  image: macos-14-xcode-15
+  #tags:
+  #  - macos
+  #  - nsnam
+  before_script:
+    - brew update
+    - brew upgrade
+    - brew install ninja cmake ccache libxml2 eigen git
+  rules:
+    - if: $RELEASE == "weekly"
+    - if: $RELEASE == "daily"
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      allow_failure: true
+  variables:
+    EXTRA_OPTIONS: --disable-mpi
+    COMPILER: clang++
+
+daily-macos:
+  rules:
+    - if: $RELEASE == "weekly"
+    - if: $RELEASE == "daily"
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      when: manual
+      allow_failure: true
+  stage: pre-build
+  script:
+    - echo "Starting MacOS jobs"
+
+daily-build-macos-debug:
+  extends: .build-macos-base
+  needs: [ "daily-macos" ]
+  stage: build
+  variables:
+    MODE: debug
+
+daily-build-macos-default:
+  extends: .build-macos-base
+  needs: [ "daily-macos" ]
+  stage: build
+  variables:
+    MODE: default
+
+daily-build-macos-optimized:
+  extends: .build-macos-base
+  needs: [ "daily-macos" ]
+  stage: build
+  variables:
+    MODE: optimized
+
+daily-test-macos-debug:
+  extends: .build-macos-base
+  stage: test
+  needs: ["daily-build-macos-debug"]
+  dependencies:
+    - daily-build-macos-debug
+  variables:
+    MODE: debug
+
+daily-test-macos-default:
+  extends: .build-macos-base
+  stage: test
+  needs: [ "daily-build-macos-default" ]
+  dependencies:
+    - daily-build-macos-default
+  variables:
+    MODE: default
+
+daily-test-macos-optimized:
+  extends: .build-macos-base
+  stage: test
+  needs: [ "daily-build-macos-optimized" ]
+  dependencies:
+    - daily-build-macos-optimized
+  variables:
+    MODE: optimized
