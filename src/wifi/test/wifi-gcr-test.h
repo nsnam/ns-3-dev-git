@@ -288,6 +288,9 @@ class GcrUrTest : public GcrTestBase
               const GcrUrParameters& gcrUrParams);
     ~GcrUrTest() override = default;
 
+  protected:
+    void DoSetup() override;
+
   private:
     void ConfigureGcrManager(WifiMacHelper& macHelper) override;
     void CheckResults() override;
