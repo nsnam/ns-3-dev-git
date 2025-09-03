@@ -35,6 +35,7 @@
 #include "ns3/multi-link-element.h"
 #include "ns3/tid-to-link-mapping-element.h"
 #include "ns3/uhr-capabilities.h"
+#include "ns3/uhr-operation.h"
 #include "ns3/vht-capabilities.h"
 #include "ns3/vht-operation.h"
 #include "ns3/wifi-export.h"
@@ -109,7 +110,8 @@ using BeaconElems = std::tuple<Ssid,
                                std::optional<EhtCapabilities>,
                                std::optional<EhtOperation>,
                                std::vector<TidToLinkMapping>,
-                               std::optional<UhrCapabilities>>;
+                               std::optional<UhrCapabilities>,
+                               std::optional<UhrOperation>>;
 
 /// List of Information Elements included in Probe Request frames
 using ProbeRequestElems = std::tuple<Ssid,
@@ -146,7 +148,8 @@ using ProbeResponseElems = std::tuple<Ssid,
                                       std::optional<EhtCapabilities>,
                                       std::optional<EhtOperation>,
                                       std::vector<TidToLinkMapping>,
-                                      std::optional<UhrCapabilities>>;
+                                      std::optional<UhrCapabilities>,
+                                      std::optional<UhrOperation>>;
 
 /// List of Information Elements included in Association Request frames
 using AssocRequestElems = std::tuple<Ssid,
@@ -179,7 +182,8 @@ using AssocResponseElems = std::tuple<SupportedRates,
                                       std::optional<EhtCapabilities>,
                                       std::optional<EhtOperation>,
                                       std::vector<TidToLinkMapping>,
-                                      std::optional<UhrCapabilities>>;
+                                      std::optional<UhrCapabilities>,
+                                      std::optional<UhrOperation>>;
 
 // Explicit instantiation declarations.
 //

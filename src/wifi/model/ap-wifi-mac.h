@@ -38,6 +38,7 @@ class HtOperation;
 class VhtOperation;
 class HeOperation;
 class EhtOperation;
+class UhrOperation;
 class CfParameterSet;
 class UniformRandomVariable;
 class MgtEmlOmn;
@@ -704,6 +705,13 @@ class WIFI_EXPORT ApWifiMac : public WifiMac
      * @return the EHT operation that we support
      */
     EhtOperation GetEhtOperation(uint8_t linkId) const;
+    /**
+     * Return the UHR operation of the current AP for the given link.
+     *
+     * @param linkId the ID of the given link
+     * @return the UHR operation that we support
+     */
+    UhrOperation GetUhrOperation(linkId_t linkId) const;
     /**
      * Return an instance of SupportedRates that contains all rates that we support
      * for the given link (including HT rates).

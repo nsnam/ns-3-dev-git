@@ -28,6 +28,7 @@
 #include "ns3/object.h"
 #include "ns3/traced-callback.h"
 #include "ns3/uhr-capabilities.h"
+#include "ns3/uhr-operation.h"
 #include "ns3/vht-capabilities.h"
 #include "ns3/vht-operation.h"
 #include "ns3/wifi-export.h"
@@ -128,6 +129,7 @@ struct WIFI_EXPORT WifiRemoteStationState
     std::shared_ptr<CommonInfoBasicMle> m_mleCommonInfo;
     bool m_emlsrEnabled;                          //!< whether EMLSR mode is enabled on this link
     Ptr<const UhrCapabilities> m_uhrCapabilities; //!< remote station UHR capabilities
+    Ptr<const UhrOperation> m_uhrOperation;       //!< remote station UHR operation
 
     MHz_u m_channelWidth; //!< Channel width supported by the remote station
     Time m_guardInterval; //!< HE Guard interval durationsupported by the remote station
@@ -354,6 +356,13 @@ class WIFI_EXPORT WifiRemoteStationManager : public Object
      */
     void AddStationUhrCapabilities(Mac48Address from, const UhrCapabilities& uhrCapabilities);
     /**
+     * Records UHR operation of the remote station.
+     *
+     * @param from the address of the station being recorded
+     * @param uhrOperation the UHR operation of the station
+     */
+    void AddStationUhrOperation(Mac48Address from, const UhrOperation& uhrOperation);
+    /**
      * Return the HT capabilities sent by the remote station.
      *
      * @param from the address of the remote station
@@ -442,6 +451,13 @@ class WIFI_EXPORT WifiRemoteStationManager : public Object
      * @return the UHR capabilities sent by the remote station
      */
     Ptr<const UhrCapabilities> GetStationUhrCapabilities(Mac48Address from);
+    /**
+     * Return the UHR operation sent by the remote station.
+     *
+     * @param from the address of the remote station
+     * @return the UHR operation sent by the remote station
+     */
+    Ptr<const UhrOperation> GetStationUhrOperation(Mac48Address from);
     /**
      * Return whether the device has HT capability support enabled on the link this manager is
      * associated with. Note that this means that this function returns false if this is a

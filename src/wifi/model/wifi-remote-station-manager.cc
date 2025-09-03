@@ -1599,6 +1599,7 @@ WifiRemoteStationManager::ResetState(Mac48Address address) const
         state->m_mleCommonInfo = nullptr;
         state->m_emlsrEnabled = false;
         state->m_uhrCapabilities = nullptr;
+        state->m_uhrOperation = nullptr;
         state->m_channelWidth = m_wifiPhy->GetChannelWidth();
         state->m_guardInterval = GetGuardInterval();
         state->m_ness = 0;
@@ -1918,6 +1919,15 @@ WifiRemoteStationManager::AddStationUhrCapabilities(Mac48Address from,
     SetQosSupport(from, true);
 }
 
+void
+WifiRemoteStationManager::AddStationUhrOperation(Mac48Address from,
+                                                 const UhrOperation& uhrOperation)
+{
+    NS_LOG_FUNCTION(this << from << uhrOperation);
+    auto state = LookupState(from);
+    state->m_uhrOperation = Create<const UhrOperation>(uhrOperation);
+}
+
 Ptr<const HtCapabilities>
 WifiRemoteStationManager::GetStationHtCapabilities(Mac48Address from)
 {
@@ -1998,6 +2008,12 @@ Ptr<const UhrCapabilities>
 WifiRemoteStationManager::GetStationUhrCapabilities(Mac48Address from)
 {
     return LookupState(from)->m_uhrCapabilities;
+}
+
+Ptr<const UhrOperation>
+WifiRemoteStationManager::GetStationUhrOperation(Mac48Address from)
+{
+    return LookupState(from)->m_uhrOperation;
 }
 
 bool

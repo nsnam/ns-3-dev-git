@@ -36,6 +36,7 @@
 #include "ns3/random-variable-stream.h"
 #include "ns3/string.h"
 #include "ns3/uhr-capabilities.h"
+#include "ns3/uhr-operation.h"
 #include "ns3/vht-capabilities.h"
 #include "ns3/vht-operation.h"
 
@@ -409,6 +410,7 @@ AdhocWifiMac::SendOneBeacon()
     if (GetUhrSupported())
     {
         beacon.Get<UhrCapabilities>() = GetUhrCapabilities(SINGLE_LINK_OP_ID);
+        beacon.Get<UhrOperation>() = GetUhrOperation();
     }
 
     auto packet = Create<Packet>();
@@ -749,6 +751,20 @@ AdhocWifiMac::GetEhtOperation() const
     const auto maxSpatialStream = GetWifiPhy()->GetMaxSupportedRxSpatialStreams();
     operation.SetMaxRxNss(maxSpatialStream, 0, WIFI_EHT_MAX_MCS_INDEX);
     operation.SetMaxTxNss(maxSpatialStream, 0, WIFI_EHT_MAX_MCS_INDEX);
+
+    return operation;
+}
+
+UhrOperation
+AdhocWifiMac::GetUhrOperation() const
+{
+    NS_ASSERT(GetUhrSupported());
+
+    UhrOperation operation;
+
+    const auto maxSpatialStream = GetWifiPhy()->GetMaxSupportedRxSpatialStreams();
+    operation.SetMaxRxNss(maxSpatialStream, 0, WIFI_UHR_MAX_MCS_INDEX);
+    operation.SetMaxTxNss(maxSpatialStream, 0, WIFI_UHR_MAX_MCS_INDEX);
 
     return operation;
 }

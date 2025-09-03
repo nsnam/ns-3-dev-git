@@ -28,6 +28,7 @@ class HtOperation;
 class VhtOperation;
 class HeOperation;
 class EhtOperation;
+class UhrOperation;
 
 /**
  * @ingroup wifi
@@ -185,6 +186,13 @@ class WIFI_EXPORT AdhocWifiMac : public WifiMac
      * @return the EHT operation that we support
      */
     EhtOperation GetEhtOperation() const;
+
+    /**
+     * Return the UHR operation of the IBSS.
+     *
+     * @return the UHR operation that we support
+     */
+    UhrOperation GetUhrOperation() const;
 
     Ptr<Txop> m_beaconTxop;        //!< Dedicated Txop for beacons
     bool m_enableBeaconGeneration; //!< Flag whether beacons are being generated
