@@ -605,84 +605,6 @@ struct NlmeStartRouterConfirmParams
                                                     //!< the corresponding request.
 };
 
-//////////////////////
-//     Callbacks    //
-//////////////////////
-
-/**
- * @ingroup Zigbee
- *
- * This callback is called after a NSDU has successfully received and
- *  NWK push it to deliver it to the next higher layer.
- *
- */
-typedef Callback<void, NldeDataIndicationParams, Ptr<Packet>> NldeDataIndicationCallback;
-
-/**
- * @ingroup Zigbee
- *
- * This callback is used to notify the next higher layer with a confirmation in response to
- * a previously issued NLDE-DATA.request.
- *
- */
-typedef Callback<void, NldeDataConfirmParams> NldeDataConfirmCallback;
-
-/**
- *  @ingroup Zigbee
- *
- *  This callback is used to notify the next higher layer with a confirmation in response to
- *  a previously issued NLME-NETWORK-FORMATION.request.
- */
-typedef Callback<void, NlmeNetworkFormationConfirmParams> NlmeNetworkFormationConfirmCallback;
-
-/**
- *  @ingroup Zigbee
- *
- *  This callback is used to notify the next higher layer with a confirmation in response to
- *  a previously issued NLME-NETWORK-DISCOVERY.request.
- */
-typedef Callback<void, NlmeNetworkDiscoveryConfirmParams> NlmeNetworkDiscoveryConfirmCallback;
-
-/**
- *  @ingroup Zigbee
- *
- *  This callback is used to notify the next higher layer with a confirmation in response to
- *  a previously issued NLME-ROUTE-DISCOVERY.request.
- */
-typedef Callback<void, NlmeRouteDiscoveryConfirmParams> NlmeRouteDiscoveryConfirmCallback;
-
-/**
- *  @ingroup Zigbee
- *
- *  This callback is used to notify the next higher layer with a confirmation in response to
- *  a previously issued NLME-DIRECT-JOIN.request.
- */
-typedef Callback<void, NlmeDirectJoinConfirmParams> NlmeDirectJoinConfirmCallback;
-
-/**
- *  @ingroup Zigbee
- *
- *  This callback is used to notify the next higher layer with a confirmation in response to
- *  a previously issued NLME-JOIN.request.
- */
-typedef Callback<void, NlmeJoinConfirmParams> NlmeJoinConfirmCallback;
-
-/**
- *  @ingroup Zigbee
- *
- *  This callback is used to notify the next higher layer with an indication that a new
- *  device has successfully joined its network by association or rejoining.
- */
-typedef Callback<void, NlmeJoinIndicationParams> NlmeJoinIndicationCallback;
-
-/**
- *  @ingroup Zigbee
- *
- *  This callback is used to notify the next higher layer with a confirmation in response to
- *  a previously issued NLME-START-ROUTER.request.
- */
-typedef Callback<void, NlmeStartRouterConfirmParams> NlmeStartRouterConfirmCallback;
-
 /**
  * @ingroup Zigbee
  *
@@ -703,6 +625,60 @@ class ZigbeeNwk : public Object
      */
     ZigbeeNwk();
     ~ZigbeeNwk() override;
+
+    /**
+     * This callback is called after a NSDU has successfully received and
+     *  NWK push it to deliver it to the next higher layer.
+     */
+    using NldeDataIndicationCallback = Callback<void, NldeDataIndicationParams, Ptr<Packet>>;
+
+    /**
+     * This callback is used to notify the next higher layer with a confirmation in response to
+     * a previously issued NLDE-DATA.request.
+     */
+    using NldeDataConfirmCallback = Callback<void, NldeDataConfirmParams>;
+
+    /**
+     *  This callback is used to notify the next higher layer with a confirmation in response to
+     *  a previously issued NLME-NETWORK-FORMATION.request.
+     */
+    using NlmeNetworkFormationConfirmCallback = Callback<void, NlmeNetworkFormationConfirmParams>;
+
+    /**
+     *  This callback is used to notify the next higher layer with a confirmation in response to
+     *  a previously issued NLME-NETWORK-DISCOVERY.request.
+     */
+    using NlmeNetworkDiscoveryConfirmCallback = Callback<void, NlmeNetworkDiscoveryConfirmParams>;
+
+    /**
+     *  This callback is used to notify the next higher layer with a confirmation in response to
+     *  a previously issued NLME-ROUTE-DISCOVERY.request.
+     */
+    using NlmeRouteDiscoveryConfirmCallback = Callback<void, NlmeRouteDiscoveryConfirmParams>;
+
+    /**
+     *  This callback is used to notify the next higher layer with a confirmation in response to
+     *  a previously issued NLME-DIRECT-JOIN.request.
+     */
+    using NlmeDirectJoinConfirmCallback = Callback<void, NlmeDirectJoinConfirmParams>;
+
+    /**
+     *  This callback is used to notify the next higher layer with a confirmation in response to
+     *  a previously issued NLME-JOIN.request.
+     */
+    using NlmeJoinConfirmCallback = Callback<void, NlmeJoinConfirmParams>;
+
+    /**
+     *  This callback is used to notify the next higher layer with an indication that a new
+     *  device has successfully joined its network by association or rejoining.
+     */
+    using NlmeJoinIndicationCallback = Callback<void, NlmeJoinIndicationParams>;
+
+    /**
+     *  This callback is used to notify the next higher layer with a confirmation in response to
+     *  a previously issued NLME-START-ROUTER.request.
+     */
+    using NlmeStartRouterConfirmCallback = Callback<void, NlmeStartRouterConfirmParams>;
 
     /**
      * Set the underlying MAC to use in this Zigbee NWK

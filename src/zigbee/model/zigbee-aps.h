@@ -261,65 +261,6 @@ struct ApsmeRemoveAllGroupsConfirmParams
     uint8_t m_endPoint{1};             //!< The endpoint from which all groups are being removed.
 };
 
-//////////////////////
-//     Callbacks    //
-//////////////////////
-
-/**
- * @ingroup zigbee
- *
- * This callback is called to confirm a successfully transmission of an ASDU.
- */
-typedef Callback<void, ApsdeDataConfirmParams> ApsdeDataConfirmCallback;
-
-/**
- * @ingroup zigbee
- *
- * This callback is called after a ASDU has successfully received and
- *  APS push it to deliver it to the next higher layer (typically the application framework).
- */
-typedef Callback<void, ApsdeDataIndicationParams, Ptr<Packet>> ApsdeDataIndicationCallback;
-
-/**
- * @ingroup zigbee
- *
- * This callback is called to confirm a successfully addition of a destination
- * into the binding table.
- */
-typedef Callback<void, ApsmeBindConfirmParams> ApsmeBindConfirmCallback;
-
-/**
- * @ingroup zigbee
- *
- * This callback is called to confirm a successfully  unbind request performed
- * into the binding table.
- */
-typedef Callback<void, ApsmeBindConfirmParams> ApsmeUnbindConfirmCallback;
-
-/**
- * @ingroup zigbee
- *
- * This callback is called to confirm a successfully addition of a group address
- * and or endPoint into the group table.
- */
-typedef Callback<void, ApsmeGroupConfirmParams> ApsmeAddGroupConfirmCallback;
-
-/**
- * @ingroup zigbee
- *
- * This callback is called to confirm a successfully removal of a group address
- * and or endPoint from the group table.
- */
-typedef Callback<void, ApsmeGroupConfirmParams> ApsmeRemoveGroupConfirmCallback;
-
-/**
- * @ingroup zigbee
- *
- * This callback is called to confirm a successfully removal of an endpoint from
- * all the the groups.
- */
-typedef Callback<void, ApsmeRemoveAllGroupsConfirmParams> ApsmeRemoveAllGroupsConfirmCallback;
-
 /**
  * @ingroup zigbee
  *
@@ -341,6 +282,47 @@ class ZigbeeAps : public Object
      */
     ZigbeeAps();
     ~ZigbeeAps() override;
+
+    /**
+     * This callback is called to confirm a successfully transmission of an ASDU.
+     */
+    using ApsdeDataConfirmCallback = Callback<void, ApsdeDataConfirmParams>;
+
+    /**
+     * This callback is called after a ASDU has successfully received and
+     *  APS push it to deliver it to the next higher layer (typically the application framework).
+     */
+    using ApsdeDataIndicationCallback = Callback<void, ApsdeDataIndicationParams, Ptr<Packet>>;
+
+    /**
+     * This callback is called to confirm a successfully addition of a destination
+     * into the binding table.
+     */
+    using ApsmeBindConfirmCallback = Callback<void, ApsmeBindConfirmParams>;
+
+    /**
+     * This callback is called to confirm a successfully  unbind request performed
+     * into the binding table.
+     */
+    using ApsmeUnbindConfirmCallback = Callback<void, ApsmeBindConfirmParams>;
+
+    /**
+     * This callback is called to confirm a successfully addition of a group address
+     * and or endPoint into the group table.
+     */
+    using ApsmeAddGroupConfirmCallback = Callback<void, ApsmeGroupConfirmParams>;
+
+    /**
+     * This callback is called to confirm a successfully removal of a group address
+     * and or endPoint from the group table.
+     */
+    using ApsmeRemoveGroupConfirmCallback = Callback<void, ApsmeGroupConfirmParams>;
+
+    /**
+     * This callback is called to confirm a successfully removal of an endpoint from
+     * all the the groups.
+     */
+    using ApsmeRemoveAllGroupsConfirmCallback = Callback<void, ApsmeRemoveAllGroupsConfirmParams>;
 
     /**
      * Set the underlying NWK to use in this Zigbee APS
