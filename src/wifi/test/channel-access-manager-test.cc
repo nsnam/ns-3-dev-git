@@ -80,6 +80,13 @@ class TxopTest : public TxopType
     /// @copydoc ns3::Txop::GenerateBackoff
     void GenerateBackoff(uint8_t linkId) override;
 
+    /**
+     * Callback connected to the BackoffStatus trace.
+     *
+     * @param info the information provided by the trace source
+     */
+    void BackoffStatusChangeCallback(const BackoffMonitor::StatusTrace& info);
+
     typedef std::pair<uint64_t, uint64_t> ExpectedGrant; //!< the expected grant typedef
     typedef std::list<ExpectedGrant> ExpectedGrants; //!< the collection of expected grants typedef
 
@@ -92,9 +99,20 @@ class TxopTest : public TxopType
 
     typedef std::list<ExpectedBackoff> ExpectedBackoffs; //!< expected backoffs typedef
 
+    /// expected backoff status structure
+    struct ExpectedBackoffStatus
+    {
+        uint64_t at;          //!< time in microseconds
+        BackoffStatus status; //!< new backoff status
+    };
+
+    /// expected backoff statuses typedef
+    using ExpectedBackoffStatuses = std::list<ExpectedBackoffStatus>;
+
     ExpectedBackoffs m_expectedInternalCollision; //!< expected backoff due to an internal collision
     ExpectedBackoffs m_expectedBackoff; //!< expected backoff (not due to an internal collision)
     ExpectedGrants m_expectedGrants;    //!< expected grants
+    ExpectedBackoffStatuses m_expectedBackoffStatuses; //!< expected backoff statuses
 
     /**
      * Check if the Txop has frames to transmit.
@@ -269,6 +287,13 @@ class ChannelAccessManagerTest : public TestCase
      */
     void GenerateBackoff(uint32_t i);
     /**
+     * Check that the notified backoff status change for the given Txop is expected.
+     *
+     * @param status the notified backoff status
+     * @param i the index of the Txop
+     */
+    void NotifyBackoffStatusChange(BackoffStatus status, uint32_t i);
+    /**
      * Notify channel switching function
      */
     void NotifyChannelSwitching();
@@ -282,8 +307,9 @@ class ChannelAccessManagerTest : public TestCase
     /**
      * Add Txop function
      * @param aifsn the AIFSN
+     * @param enableBackoffMon whether to enable the backoff monitor for this Txop
      */
-    void AddTxop(uint32_t aifsn);
+    void AddTxop(uint32_t aifsn, bool enableBackoffMon = false);
     /// End test function
     void EndTest();
     /**
@@ -306,6 +332,14 @@ class ChannelAccessManagerTest : public TestCase
      * @param busy whether the manager is expected to be busy
      */
     void ExpectBusy(uint64_t time, bool busy);
+    /**
+     * Expect a change in the backoff status of the given Txop.
+     *
+     * @param at the event time
+     * @param status the new backoff status
+     * @param from the index of the Txop for which the backoff status change is expected
+     */
+    void ExpectBackoffStatus(uint64_t at, BackoffStatus status, uint32_t from);
     /**
      * Perform check that channel access manager is busy or idle
      * @param busy whether expected state is busy
@@ -491,7 +525,10 @@ template <typename TxopType>
 void
 TxopTest<TxopType>::NotifyChannelAccessed(uint8_t linkId, Time txopDuration)
 {
-    Txop::GetLink(0).access = WifiChannelAccessStatus::NOT_REQUESTED_NO_BACKOFF;
+    Txop::GetLink(0).access = WifiChannelAccessStatus::GRANTED;
+    Simulator::Schedule(txopDuration, [this] {
+        Txop::GetLink(0).access = WifiChannelAccessStatus::NOT_REQUESTED_NO_BACKOFF;
+    });
     m_test->NotifyAccessGranted(m_i);
 }
 
@@ -507,6 +544,13 @@ bool
 TxopTest<TxopType>::HasFramesToTransmit(uint8_t linkId)
 {
     return !m_expectedGrants.empty();
+}
+
+template <typename TxopType>
+void
+TxopTest<TxopType>::BackoffStatusChangeCallback(const BackoffMonitor::StatusTrace& info)
+{
+    m_test->NotifyBackoffStatusChange(info.currStatus, m_i);
 }
 
 template <typename TxopType>
@@ -556,6 +600,7 @@ ChannelAccessManagerTest<TxopType>::NotifyInternalCollision(Ptr<TxopTest<TxopTyp
                           "Have expected internal collisions");
     if (!state->m_expectedInternalCollision.empty())
     {
+        state->GetLink(0).access = WifiChannelAccessStatus::NOT_REQUESTED_NO_BACKOFF;
         struct TxopTest<TxopType>::ExpectedBackoff expected =
             state->m_expectedInternalCollision.front();
         state->m_expectedInternalCollision.pop_front();
@@ -563,6 +608,8 @@ ChannelAccessManagerTest<TxopType>::NotifyInternalCollision(Ptr<TxopTest<TxopTyp
                               MicroSeconds(expected.at),
                               "Expected internal collision time is now");
         state->StartBackoffNow(expected.nSlots, 0);
+        state->GetLink(0).access = WifiChannelAccessStatus::NOT_REQUESTED_WITH_BACKOFF;
+        m_ChannelAccessManager->RequestAccess(state);
     }
 }
 
@@ -580,6 +627,31 @@ ChannelAccessManagerTest<TxopType>::GenerateBackoff(uint32_t i)
                               MicroSeconds(expected.at),
                               "Expected backoff is now");
         state->StartBackoffNow(expected.nSlots, 0);
+        state->GetLink(0).access = WifiChannelAccessStatus::NOT_REQUESTED_WITH_BACKOFF;
+    }
+}
+
+template <typename TxopType>
+void
+ChannelAccessManagerTest<TxopType>::NotifyBackoffStatusChange(BackoffStatus status, uint32_t i)
+{
+    const auto now = Simulator::Now();
+    auto state = m_txop.at(i);
+    NS_TEST_EXPECT_MSG_EQ(state->m_expectedBackoffStatuses.empty(),
+                          false,
+                          "Notified an unexpected backoff status ("
+                              << status << ") for Txop " << i << " at time " << now.As(Time::US));
+    if (!state->m_expectedBackoffStatuses.empty())
+    {
+        const auto expected = state->m_expectedBackoffStatuses.front();
+        state->m_expectedBackoffStatuses.pop_front();
+        NS_TEST_EXPECT_MSG_EQ(status,
+                              expected.status,
+                              "Unexpected backoff status for Txop " << i << " at time "
+                                                                    << now.As(Time::US));
+        NS_TEST_EXPECT_MSG_EQ(now,
+                              MicroSeconds(expected.at),
+                              "Unexpected time for backoff status change for Txop " << i);
     }
 }
 
@@ -637,6 +709,17 @@ ChannelAccessManagerTest<TxopType>::ExpectBusy(uint64_t time, bool busy)
 
 template <typename TxopType>
 void
+ChannelAccessManagerTest<TxopType>::ExpectBackoffStatus(uint64_t at,
+                                                        BackoffStatus status,
+                                                        uint32_t from)
+{
+    auto state = m_txop.at(from);
+    state->m_expectedBackoffStatuses.emplace_back(
+        typename TxopTest<TxopType>::ExpectedBackoffStatus{.at = at, .status = status});
+}
+
+template <typename TxopType>
+void
 ChannelAccessManagerTest<TxopType>::DoCheckBusy(bool busy)
 {
     NS_TEST_EXPECT_MSG_EQ(m_ChannelAccessManager->IsBusy(), busy, "Incorrect busy/idle state");
@@ -665,12 +748,14 @@ ChannelAccessManagerTest<TxopType>::StartTest(const Params& params)
     m_phy->SetOperatingChannel(
         WifiPhy::ChannelTuple{0, params.chWidth.in_MHz(), WIFI_PHY_BAND_6GHZ, 0});
     m_phy->ConfigureStandard(WIFI_STANDARD_80211be); // required to use 320 MHz channels
+    m_phy->SetSlot(MicroSeconds(params.slotTime));
+    m_phy->SetSifs(MicroSeconds(params.sifs));
     m_ChannelAccessManager->SetupPhyListener(m_phy);
 }
 
 template <typename TxopType>
 void
-ChannelAccessManagerTest<TxopType>::AddTxop(uint32_t aifsn)
+ChannelAccessManagerTest<TxopType>::AddTxop(uint32_t aifsn, bool enableBackoffMon)
 {
     Ptr<TxopTest<TxopType>> txop = CreateObject<TxopTest<TxopType>>(this, m_txop.size());
     m_txop.push_back(txop);
@@ -683,6 +768,16 @@ ChannelAccessManagerTest<TxopType>::AddTxop(uint32_t aifsn)
     mac->SetChannelAccessManagers({m_ChannelAccessManager});
     txop->SetWifiMac(mac);
     txop->SetAifsn(aifsn);
+    if (enableBackoffMon)
+    {
+        auto dev = CreateObject<WifiNetDevice>();
+        mac->SetDevice(dev);
+        dev->SetPhy(m_phy);
+        txop->EnableBackoffMon(true);
+        txop->TraceConnectWithoutContext(
+            "BackoffStatus",
+            MakeCallback(&TxopTest<TxopType>::BackoffStatusChangeCallback, txop));
+    }
 }
 
 template <typename TxopType>
@@ -705,6 +800,13 @@ ChannelAccessManagerTest<TxopType>::EndTest()
                               true,
                               "Have no internal collisions");
         NS_TEST_EXPECT_MSG_EQ(state->m_expectedBackoff.empty(), true, "Have no expected backoffs");
+        NS_TEST_EXPECT_MSG_EQ(state->m_expectedBackoffStatuses.empty(),
+                              true,
+                              "Some expected backoff status changes did not occur");
+
+        state->TraceDisconnectWithoutContext(
+            "BackoffStatus",
+            MakeCallback(&TxopTest<TxopType>::BackoffStatusChangeCallback, state));
         state->Dispose();
         state = nullptr;
     }
@@ -1488,26 +1590,44 @@ ChannelAccessManagerTest<QosTxop>::DoRun()
     //      |                        |          |          |          |
     //     30 request access.    decrement  decrement  decrement  decrement
     //        backoff slots: 4    slots: 3   slots: 2   slots: 1   slots: 0
+    // Backoff status (ONGOING is signaled a sifs + half slot after the medium busy end):
+    //        30                  58        76
+    // UNKNOWN | ONGOING -> PAUSED | ONGOING | ZERO
     StartTest({.slotTime = 4, .sifs = 6});
-    AddTxop(1);
+    AddTxop(1, true);
     AddRxOkEvt(20, 30);
     AddAccessRequest(30, 20, 76, 0);
     ExpectBackoff(30, 4, 0);
+    ExpectBackoffStatus(30, BackoffStatus::ONGOING, 0);
+    ExpectBackoffStatus(30, BackoffStatus::PAUSED, 0);
+    ExpectBackoffStatus(58, BackoffStatus::ONGOING, 0);
+    ExpectBackoffStatus(76, BackoffStatus::ZERO, 0);
     EndTest();
 
     // Check backoff decrement at slot boundaries. Medium becomes busy during backoff
-    //  20     50     56      60     61   71     77      81     85     87     97    103     107  127
+    //  20     50     56      60     61   71     77      81     85     86     97    103     107  127
     //   |  rx  | sifs | aifsn | idle | rx | sifs | aifsn | idle | idle |  rx  | sifs | aifsn | tx |
     //      |                  |                          |      |
     //   30 request access.  decrement                decrement  decrement
     //    backoff slots: 3    slots: 2                 slots: 1   slots: 0
+    // Backoff status (ONGOING is signaled a sifs + half slot after the medium busy end):
+    //        30                  58        61       79        86      105       107
+    // UNKNOWN | ONGOING -> PAUSED | ONGOING | PAUSED | ONGOING | PAUSED | ONGOING | ZERO
     StartTest({.slotTime = 4, .sifs = 6});
-    AddTxop(1);
+    AddTxop(1, true);
     AddRxOkEvt(20, 30);
     AddRxOkEvt(61, 10);
-    AddRxOkEvt(87, 10);
+    AddRxOkEvt(86, 11);
     AddAccessRequest(30, 20, 107, 0);
     ExpectBackoff(30, 3, 0);
+    ExpectBackoffStatus(30, BackoffStatus::ONGOING, 0);
+    ExpectBackoffStatus(30, BackoffStatus::PAUSED, 0);
+    ExpectBackoffStatus(58, BackoffStatus::ONGOING, 0);
+    ExpectBackoffStatus(61, BackoffStatus::PAUSED, 0);
+    ExpectBackoffStatus(79, BackoffStatus::ONGOING, 0);
+    ExpectBackoffStatus(86, BackoffStatus::PAUSED, 0);
+    ExpectBackoffStatus(105, BackoffStatus::ONGOING, 0);
+    ExpectBackoffStatus(107, BackoffStatus::ZERO, 0);
     EndTest();
 
     // Check backoff reset after no PHY operates on a link for more than the threshold.
@@ -1557,60 +1677,206 @@ ChannelAccessManagerTest<QosTxop>::DoRun()
     // more than the threshold.
     //  20     50     56      60     63          73     79      83       87       91       95    115
     //   |  rx  | sifs | aifsn | idle | phy sleep | sifs | aifsn |  idle  |  idle  |  idle  |  tx  |
-    //      |                  |                  |              |        |        |
+    //      |                  |  | cca_busy |    |              |        |        |
+    //      |                  | 61         71    |              |        |        |
     //   30 request access.  decrement      reset backoff    decrement  decrement decrement
     //    backoff slots: 3    slots: 2     backoff slots: 3  slots: 2   slots: 1  slots: 0
+    // Backoff status (access timeout expires at 72, at this time backoff is reset):
+    //        30                  58        61       72              73        95
+    // UNKNOWN | ONGOING -> PAUSED | ONGOING | PAUSED | RESET -> ZERO | ONGOING | ZERO
     StartTest({.slotTime = 4, .sifs = 6, .resetBackoffThr = 5});
-    AddTxop(1);
+    AddTxop(1, true);
     AddRxOkEvt(20, 30);
+    AddCcaBusyEvt(61, 10);
     AddAccessRequest(30, 20, 95, 0);
     ExpectBackoff(30, 3, 0);
     AddPhySleepEvt(63, 10);
     ExpectBackoff(73, 3, 0);
+    ExpectBackoffStatus(30, BackoffStatus::ONGOING, 0);
+    ExpectBackoffStatus(30, BackoffStatus::PAUSED, 0);
+    ExpectBackoffStatus(58, BackoffStatus::ONGOING, 0);
+    ExpectBackoffStatus(61, BackoffStatus::PAUSED, 0);
+    ExpectBackoffStatus(72, BackoffStatus::RESET, 0);
+    ExpectBackoffStatus(72, BackoffStatus::ZERO, 0);
+    ExpectBackoffStatus(73, BackoffStatus::ONGOING, 0);
+    ExpectBackoffStatus(95, BackoffStatus::ZERO, 0);
     EndTest();
 
     // Check backoff freeze while PHY is put to sleep for less than the threshold.
-    //  20     50     56      60     61          71     77      81     85     89    109
-    //   |  rx  | sifs | aifsn | idle | phy sleep | sifs | aifsn | idle | idle |  tx  |
-    //      |                  |                  |              |      |
-    //   30 request access.  decrement          resume      decrement  decrement
-    //    backoff slots: 3    slots: 2          backoff      slots: 1   slots: 0
+    //  20     50     56      60     61          71   75     81      85     89     93    113
+    //   |  rx  | sifs | aifsn | idle | phy sleep |    | sifs | aifsn | idle | idle |  tx  |
+    //      |                  |            | cca_busy |              |      |
+    //      |                  |           65          |              |      |
+    //   30 request access.  decrement               resume      decrement  decrement
+    //    backoff slots: 3    slots: 2               backoff     slots: 1   slots: 0
+    // Backoff status:
+    //        30                  58        61       83        93
+    // UNKNOWN | ONGOING -> PAUSED | ONGOING | PAUSED | ONGOING | ZERO
     StartTest({.slotTime = 4, .sifs = 6, .resetBackoffThr = 20});
-    AddTxop(1);
+    AddTxop(1, true);
     AddRxOkEvt(20, 30);
-    AddAccessRequest(30, 20, 89, 0);
+    AddCcaBusyEvt(65, 10);
+    AddAccessRequest(30, 20, 93, 0);
     ExpectBackoff(30, 3, 0);
     AddPhySleepEvt(61, 10);
+    ExpectBackoffStatus(30, BackoffStatus::ONGOING, 0);
+    ExpectBackoffStatus(30, BackoffStatus::PAUSED, 0);
+    ExpectBackoffStatus(58, BackoffStatus::ONGOING, 0);
+    ExpectBackoffStatus(61, BackoffStatus::PAUSED, 0);
+    ExpectBackoffStatus(83, BackoffStatus::ONGOING, 0);
+    ExpectBackoffStatus(93, BackoffStatus::ZERO, 0);
     EndTest();
 
     // Check reset of backoff and generation of new backoff value after that PHY is put to off for
     // more than the threshold.
-    //  20     50     56      60     61        71     77      81       85       89       93    113
-    //   |  rx  | sifs | aifsn | idle | phy off | sifs | aifsn |  idle  |  idle  |  idle  |  tx  |
-    //      |                  |                |              |        |        |
-    //   30 request access.  decrement    reset backoff    decrement  decrement decrement
-    //    backoff slots: 3    slots: 2   backoff slots: 3  slots: 2   slots: 1  slots: 0
+    //  20     50     56      60     61           74     80      84     88     92     96    116
+    //   |  rx  | sifs | aifsn | idle |  cca_busy  | sifs | aifsn | idle | idle | idle |  tx  |
+    //      |                  |      | phy off |                 |      |      |
+    //      |                  |               71                 |      |      |
+    //   30 request access.  decrement    reset backoff     decrement decrement decrement
+    //    backoff slots: 3    slots: 2   backoff slots: 3   slots: 2  slots: 1  slots: 0
+    // Backoff status (when PHY resumes, backoff is reset and then a backoff value is generated):
+    //        30                58        61       71                             82        96
+    // UNKNOWN | ONGOING->PAUSED | ONGOING | PAUSED | RESET->ZERO->ONGOING->PAUSED | ONGOING | ZERO
     StartTest({.slotTime = 4, .sifs = 6, .resetBackoffThr = 5});
-    AddTxop(1);
+    AddTxop(1, true);
     AddRxOkEvt(20, 30);
-    AddAccessRequest(30, 20, 93, 0);
+    AddCcaBusyEvt(61, 13);
+    AddAccessRequest(30, 20, 96, 0);
     ExpectBackoff(30, 3, 0);
     AddPhyOffEvt(61, 10);
     ExpectBackoff(71, 3, 0);
+    ExpectBackoffStatus(30, BackoffStatus::ONGOING, 0);
+    ExpectBackoffStatus(30, BackoffStatus::PAUSED, 0);
+    ExpectBackoffStatus(58, BackoffStatus::ONGOING, 0);
+    ExpectBackoffStatus(61, BackoffStatus::PAUSED, 0);
+    ExpectBackoffStatus(71, BackoffStatus::RESET, 0);
+    ExpectBackoffStatus(71, BackoffStatus::ZERO, 0);
+    ExpectBackoffStatus(71, BackoffStatus::ONGOING, 0);
+    ExpectBackoffStatus(71, BackoffStatus::PAUSED, 0);
+    ExpectBackoffStatus(82, BackoffStatus::ONGOING, 0);
+    ExpectBackoffStatus(96, BackoffStatus::ZERO, 0);
     EndTest();
 
     // Check backoff freeze while PHY is put to off for less than the threshold.
-    //  20     50     56      60     63        73     79      83     87     91    111
-    //   |  rx  | sifs | aifsn | idle | phy off | sifs | aifsn | idle | idle |  tx  |
-    //      |                  |                |              |      |
+    //  20     50     56      60     63        73     79      83     87     91    111    120   130
+    //   |  rx  | sifs | aifsn | idle | phy off | sifs | aifsn | idle | idle |  tx  | idle | off |
+    //      |                  |  | cca_busy |  |              |      |
+    //      |                  | 61         71  |              |      |
     //   30 request access.  decrement        resume      decrement  decrement
     //    backoff slots: 3    slots: 2        backoff      slots: 1   slots: 0
+    // Backoff status (PHY off state is ignored when the backoff status is ZERO):
+    //        30                  58        61       73        91
+    // UNKNOWN | ONGOING -> PAUSED | ONGOING | PAUSED | ONGOING | ZERO
     StartTest({.slotTime = 4, .sifs = 6, .resetBackoffThr = 20});
-    AddTxop(1);
+    AddTxop(1, true);
     AddRxOkEvt(20, 30);
+    AddCcaBusyEvt(61, 10);
     AddAccessRequest(30, 20, 91, 0);
     ExpectBackoff(30, 3, 0);
     AddPhyOffEvt(63, 10);
+    AddPhyOffEvt(120, 10);
+    ExpectBackoffStatus(30, BackoffStatus::ONGOING, 0);
+    ExpectBackoffStatus(30, BackoffStatus::PAUSED, 0);
+    ExpectBackoffStatus(58, BackoffStatus::ONGOING, 0);
+    ExpectBackoffStatus(61, BackoffStatus::PAUSED, 0);
+    ExpectBackoffStatus(73, BackoffStatus::ONGOING, 0);
+    ExpectBackoffStatus(91, BackoffStatus::ZERO, 0);
+    EndTest();
+
+    // First NAV end exceeds RX end, backoff counter and backoff monitor are aligned to NAV end.
+    // Second NAV is reset.
+    //  20     50       58      62     66     68       78 80     86      90     94  114
+    //   |  rx  | | sifs | aifsn | idle | idle |   rx   |  | sifs | aifsn | idle | tx |
+    //   |  | nav |              |      |      |    nav    |              |
+    //      |    52              |      |      |          nav             |
+    //  30 request access  decrement decrement           reset        decrement
+    //   backoff slots: 3  slots: 2  slots: 1                         slots: 0
+    // Backoff status:
+    //        30                  60        68       80        94
+    // UNKNOWN | ONGOING -> PAUSED | ONGOING | PAUSED | ONGOING | ZERO
+    StartTest({.slotTime = 4, .sifs = 6});
+    AddTxop(1, true);
+    AddRxOkEvt(20, 30);
+    AddNavStart(20, 32);
+    AddRxOkEvt(68, 10);
+    AddNavStart(68, 20);
+    AddNavReset(80, 0);
+    AddAccessRequest(30, 20, 94, 0);
+    ExpectBackoff(30, 3, 0);
+    ExpectBackoffStatus(30, BackoffStatus::ONGOING, 0);
+    ExpectBackoffStatus(30, BackoffStatus::PAUSED, 0);
+    ExpectBackoffStatus(60, BackoffStatus::ONGOING, 0);
+    ExpectBackoffStatus(68, BackoffStatus::PAUSED, 0);
+    ExpectBackoffStatus(80, BackoffStatus::ONGOING, 0);
+    ExpectBackoffStatus(94, BackoffStatus::ZERO, 0);
+    EndTest();
+
+    // When one of two Txops transmits, the backoff status of the other one is set to PAUSED.
+    //  20     50     56      60       64       68     88     94      98    118
+    //   |  rx  | sifs | aifsn |  idle  |  idle  | tx 0 | sifs | aifsn | tx 1 |
+    //      |                  |        |        |
+    //  30 request access 0             |        |
+    //  35 request access 1             |        |
+    // 0) backoff slots: 2  slots: 1  slots: 0
+    // 1) backoff slots: 3  slots: 2  slots: 1  slots: 0
+    // Backoff status:
+    //           30 35                 58        68       96        98
+    // 0) UNKNOWN |  ONGOING -> PAUSED  | ONGOING | ZERO
+    // 1) UNKNOWN   | ONGOING -> PAUSED | ONGOING | PAUSED | ONGOING | ZERO
+    StartTest({.slotTime = 4, .sifs = 6});
+    AddTxop(1, true);
+    AddTxop(1, true);
+    AddRxOkEvt(20, 30);
+    AddAccessRequest(30, 20, 68, 0);
+    ExpectBackoff(30, 2, 0);
+    AddAccessRequest(35, 20, 98, 1);
+    ExpectBackoff(35, 3, 1);
+    ExpectBackoffStatus(30, BackoffStatus::ONGOING, 0);
+    ExpectBackoffStatus(30, BackoffStatus::PAUSED, 0);
+    ExpectBackoffStatus(35, BackoffStatus::ONGOING, 1);
+    ExpectBackoffStatus(35, BackoffStatus::PAUSED, 1);
+    ExpectBackoffStatus(58, BackoffStatus::ONGOING, 0);
+    ExpectBackoffStatus(58, BackoffStatus::ONGOING, 1);
+    ExpectBackoffStatus(68, BackoffStatus::ZERO, 0);
+    ExpectBackoffStatus(68, BackoffStatus::PAUSED, 1);
+    ExpectBackoffStatus(96, BackoffStatus::ONGOING, 1);
+    ExpectBackoffStatus(98, BackoffStatus::ZERO, 1);
+    EndTest();
+
+    // When one of two Txops transmits, the backoff status of the other one is set to PAUSED.
+    //  20     50     56      60       64       68     88     94      98    102    122
+    //   |  rx  | sifs | aifsn |  idle  |  idle  | tx 0 | sifs | aifsn | idle | tx 1 |
+    //      |                  |        |        |                     |
+    //  30 request access 0             |        |                     |
+    //  35 request access 1             |        |                     |
+    // 0) backoff slots: 2  slots: 1  slots: 0   |                     |
+    // 1) backoff slots: 2  slots: 1  slots: 0  coll -> slots: 1    slots: 0
+    // Backoff status:
+    //           30 35                 58        68                      96       102
+    // 0) UNKNOWN |  ONGOING -> PAUSED  | ONGOING | ZERO
+    // 1) UNKNOWN   | ONGOING -> PAUSED | ONGOING | ZERO->ONGOING->PAUSED | ONGOING | ZERO
+    StartTest({.slotTime = 4, .sifs = 6});
+    AddTxop(1, true);
+    AddTxop(1, true);
+    AddRxOkEvt(20, 30);
+    AddAccessRequest(30, 20, 68, 0);
+    ExpectBackoff(30, 2, 0);
+    AddAccessRequest(35, 20, 102, 1);
+    ExpectBackoff(35, 2, 1);
+    ExpectInternalCollision(68, 1, 1);
+    ExpectBackoffStatus(30, BackoffStatus::ONGOING, 0);
+    ExpectBackoffStatus(30, BackoffStatus::PAUSED, 0);
+    ExpectBackoffStatus(35, BackoffStatus::ONGOING, 1);
+    ExpectBackoffStatus(35, BackoffStatus::PAUSED, 1);
+    ExpectBackoffStatus(58, BackoffStatus::ONGOING, 0);
+    ExpectBackoffStatus(58, BackoffStatus::ONGOING, 1);
+    ExpectBackoffStatus(68, BackoffStatus::ZERO, 0);
+    ExpectBackoffStatus(68, BackoffStatus::ZERO, 1);
+    ExpectBackoffStatus(68, BackoffStatus::ONGOING, 1);
+    ExpectBackoffStatus(68, BackoffStatus::PAUSED, 1);
+    ExpectBackoffStatus(96, BackoffStatus::ONGOING, 1);
+    ExpectBackoffStatus(102, BackoffStatus::ZERO, 1);
     EndTest();
 }
 
