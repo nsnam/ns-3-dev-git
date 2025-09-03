@@ -28,6 +28,7 @@
 #include "ns3/string.h"
 #include "ns3/test.h"
 #include "ns3/wifi-net-device.h"
+#include "ns3/wifi-phy-listener.h"
 #include "ns3/wifi-spectrum-phy-interface.h"
 
 #include <iomanip>
@@ -527,7 +528,9 @@ ChannelAccessManagerTest<TxopType>::NotifyAccessGranted(uint32_t i)
         NS_TEST_EXPECT_MSG_EQ(Simulator::Now(),
                               MicroSeconds(expected.second),
                               "Expected access grant is now");
-        m_ChannelAccessManager->NotifyTxStartNow(MicroSeconds(expected.first));
+        m_phy->GetState()->NotifyListeners(&WifiPhyListener::NotifyTxStart,
+                                           MicroSeconds(expected.first),
+                                           dBm_t{});
         m_ChannelAccessManager->NotifyAckTimeoutStartNow(
             MicroSeconds(m_ackTimeoutValue + expected.first));
     }
@@ -537,10 +540,11 @@ template <typename TxopType>
 void
 ChannelAccessManagerTest<TxopType>::AddTxEvt(uint64_t at, uint64_t duration)
 {
-    Simulator::Schedule(MicroSeconds(at) - Now(),
-                        &ChannelAccessManager::NotifyTxStartNow,
-                        m_ChannelAccessManager,
-                        MicroSeconds(duration));
+    Simulator::Schedule(MicroSeconds(at) - Now(), [=, this] {
+        m_phy->GetState()->NotifyListeners(&WifiPhyListener::NotifyTxStart,
+                                           MicroSeconds(duration),
+                                           dBm_t{});
+    });
 }
 
 template <typename TxopType>
@@ -713,50 +717,47 @@ template <typename TxopType>
 void
 ChannelAccessManagerTest<TxopType>::AddRxOkEvt(uint64_t at, uint64_t duration)
 {
-    Simulator::Schedule(MicroSeconds(at) - Now(),
-                        &ChannelAccessManager::NotifyRxStartNow,
-                        m_ChannelAccessManager,
-                        MicroSeconds(duration));
-    Simulator::Schedule(MicroSeconds(at + duration) - Now(),
-                        &ChannelAccessManager::NotifyRxEndOkNow,
-                        m_ChannelAccessManager);
+    Simulator::Schedule(MicroSeconds(at) - Now(), [=, this] {
+        m_phy->GetState()->NotifyListeners(&WifiPhyListener::NotifyRxStart, MicroSeconds(duration));
+    });
+    Simulator::Schedule(MicroSeconds(at + duration) - Now(), [this] {
+        m_phy->GetState()->NotifyListeners(&WifiPhyListener::NotifyRxEndOk);
+    });
 }
 
 template <typename TxopType>
 void
 ChannelAccessManagerTest<TxopType>::AddRxInsideSifsEvt(uint64_t at, uint64_t duration)
 {
-    Simulator::Schedule(MicroSeconds(at) - Now(),
-                        &ChannelAccessManager::NotifyRxStartNow,
-                        m_ChannelAccessManager,
-                        MicroSeconds(duration));
+    Simulator::Schedule(MicroSeconds(at) - Now(), [=, this] {
+        m_phy->GetState()->NotifyListeners(&WifiPhyListener::NotifyRxStart, MicroSeconds(duration));
+    });
 }
 
 template <typename TxopType>
 void
 ChannelAccessManagerTest<TxopType>::AddRxErrorEvt(uint64_t at, uint64_t duration)
 {
-    Simulator::Schedule(MicroSeconds(at) - Now(),
-                        &ChannelAccessManager::NotifyRxStartNow,
-                        m_ChannelAccessManager,
-                        MicroSeconds(duration));
-    Simulator::Schedule(MicroSeconds(at + duration) - Now(),
-                        &ChannelAccessManager::NotifyRxEndErrorNow,
-                        m_ChannelAccessManager,
-                        WifiTxVector(OfdmPhy::GetOfdmRate6Mbps(),
-                                     1,
-                                     WIFI_PREAMBLE_LONG,
-                                     NanoSeconds(800),
-                                     1,
-                                     1,
-                                     0,
-                                     MHz_t{20},
-                                     false,
-                                     false,
-                                     false,
-                                     0,
-                                     0,
-                                     false));
+    Simulator::Schedule(MicroSeconds(at) - Now(), [=, this] {
+        m_phy->GetState()->NotifyListeners(&WifiPhyListener::NotifyRxStart, MicroSeconds(duration));
+    });
+    Simulator::Schedule(MicroSeconds(at + duration) - Now(), [this] {
+        WifiTxVector txVector(OfdmPhy::GetOfdmRate6Mbps(),
+                              1,
+                              WIFI_PREAMBLE_LONG,
+                              NanoSeconds(800),
+                              1,
+                              1,
+                              0,
+                              MHz_t{20},
+                              false,
+                              false,
+                              false,
+                              0,
+                              0,
+                              false);
+        m_phy->GetState()->NotifyListeners(&WifiPhyListener::NotifyRxEndError, txVector);
+    });
 }
 
 template <typename TxopType>
@@ -765,33 +766,32 @@ ChannelAccessManagerTest<TxopType>::AddRxErrorEvt(uint64_t at,
                                                   uint64_t duration,
                                                   uint64_t timeUntilError)
 {
-    Simulator::Schedule(MicroSeconds(at) - Now(),
-                        &ChannelAccessManager::NotifyRxStartNow,
-                        m_ChannelAccessManager,
-                        MicroSeconds(duration));
-    Simulator::Schedule(MicroSeconds(at + timeUntilError) - Now(),
-                        &ChannelAccessManager::NotifyRxEndErrorNow,
-                        m_ChannelAccessManager,
-                        WifiTxVector(OfdmPhy::GetOfdmRate6Mbps(),
-                                     1,
-                                     WIFI_PREAMBLE_LONG,
-                                     NanoSeconds(800),
-                                     1,
-                                     1,
-                                     0,
-                                     MHz_t{20},
-                                     false,
-                                     false,
-                                     false,
-                                     0,
-                                     0,
-                                     false));
-    Simulator::Schedule(MicroSeconds(at + timeUntilError) - Now(),
-                        &ChannelAccessManager::NotifyCcaBusyStartNow,
-                        m_ChannelAccessManager,
-                        MicroSeconds(duration - timeUntilError),
-                        WIFI_CHANLIST_PRIMARY,
-                        std::vector<Time>{});
+    Simulator::Schedule(MicroSeconds(at) - Now(), [=, this] {
+        m_phy->GetState()->NotifyListeners(&WifiPhyListener::NotifyRxStart, MicroSeconds(duration));
+    });
+    Simulator::Schedule(MicroSeconds(at + timeUntilError) - Now(), [this] {
+        WifiTxVector txVector(OfdmPhy::GetOfdmRate6Mbps(),
+                              1,
+                              WIFI_PREAMBLE_LONG,
+                              NanoSeconds(800),
+                              1,
+                              1,
+                              0,
+                              MHz_t{20},
+                              false,
+                              false,
+                              false,
+                              0,
+                              0,
+                              false);
+        m_phy->GetState()->NotifyListeners(&WifiPhyListener::NotifyRxEndError, txVector);
+    });
+    Simulator::Schedule(MicroSeconds(at + timeUntilError) - Now(), [=, this] {
+        m_phy->GetState()->NotifyListeners(&WifiPhyListener::NotifyCcaBusyStart,
+                                           MicroSeconds(duration - timeUntilError),
+                                           WIFI_CHANLIST_PRIMARY,
+                                           std::vector<Time>{});
+    });
 }
 
 template <typename TxopType>
@@ -889,33 +889,31 @@ ChannelAccessManagerTest<TxopType>::AddCcaBusyEvt(uint64_t at,
 {
     const auto chWidth = m_phy->GetChannelWidth();
     std::vector<Time> per20MhzDurations(chWidth == MHz_t{20} ? 0 : chWidth / MHz_t{20}, Seconds(0));
-    Simulator::Schedule(MicroSeconds(at) - Now(),
-                        &ChannelAccessManager::NotifyCcaBusyStartNow,
-                        m_ChannelAccessManager,
-                        MicroSeconds(duration),
-                        channelType,
-                        per20MhzDurations);
+    Simulator::Schedule(MicroSeconds(at) - Now(), [=, this] {
+        m_phy->GetState()->NotifyListeners(&WifiPhyListener::NotifyCcaBusyStart,
+                                           MicroSeconds(duration),
+                                           channelType,
+                                           per20MhzDurations);
+    });
 }
 
 template <typename TxopType>
 void
 ChannelAccessManagerTest<TxopType>::AddSwitchingEvt(uint64_t at, uint64_t duration)
 {
-    Simulator::Schedule(MicroSeconds(at) - Now(),
-                        &ChannelAccessManager::NotifySwitchingStartNow,
-                        m_ChannelAccessManager,
-                        nullptr,
-                        MicroSeconds(duration));
+    Simulator::Schedule(MicroSeconds(at) - Now(), [=, this] {
+        m_phy->GetState()->NotifyListeners(&WifiPhyListener::NotifySwitchingStart,
+                                           MicroSeconds(duration));
+    });
 }
 
 template <typename TxopType>
 void
 ChannelAccessManagerTest<TxopType>::AddRxStartEvt(uint64_t at, uint64_t duration)
 {
-    Simulator::Schedule(MicroSeconds(at) - Now(),
-                        &ChannelAccessManager::NotifyRxStartNow,
-                        m_ChannelAccessManager,
-                        MicroSeconds(duration));
+    Simulator::Schedule(MicroSeconds(at) - Now(), [=, this] {
+        m_phy->GetState()->NotifyListeners(&WifiPhyListener::NotifyRxStart, MicroSeconds(duration));
+    });
 }
 
 template <typename TxopType>
