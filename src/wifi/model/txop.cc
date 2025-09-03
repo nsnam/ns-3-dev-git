@@ -191,6 +191,7 @@ void
 Txop::DoDispose()
 {
     NS_LOG_FUNCTION(this);
+    EnableBackoffMon(false);
     m_queue = nullptr;
     m_mac = nullptr;
     m_rng = nullptr;
@@ -295,27 +296,11 @@ Txop::EnableBackoffMon(bool enable)
     {
         BackoffMonitor::StatusChangeCb cb(
             [this](const BackoffMonitor::StatusTrace& info) { m_backoffStatusTrace(info); });
-        m_backoffMon.Enable(m_mac, m_queue->GetAc(), cb);
-        // connect NAV end callback to all channel access managers
-        for (const auto linkId : m_mac->GetLinkIds())
-        {
-            auto cam = m_mac->GetChannelAccessManager(linkId);
-            cam->TraceConnectWithoutContext(
-                "NavEnd",
-                MakeCallback(&BackoffMonitor::NotifyNavUpdated, &m_backoffMon).Bind(cam));
-        }
+        m_backoffMon.Enable(m_mac, this, cb);
     }
     else
     {
         m_backoffMon.Disable();
-        // disconnect NAV end callback to all channel access managers
-        for (const auto linkId : m_mac->GetLinkIds())
-        {
-            auto cam = m_mac->GetChannelAccessManager(linkId);
-            cam->TraceDisconnectWithoutContext(
-                "NavEnd",
-                MakeCallback(&BackoffMonitor::NotifyNavUpdated, &m_backoffMon).Bind(cam));
-        }
     }
 }
 

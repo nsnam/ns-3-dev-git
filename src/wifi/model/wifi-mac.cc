@@ -462,7 +462,6 @@ WifiMac::DoDispose()
 
     m_rxMiddle = nullptr;
     m_txMiddle = nullptr;
-    m_links.clear();
 
     if (m_txop)
     {
@@ -476,6 +475,8 @@ WifiMac::DoDispose()
         it->second = nullptr;
     }
 
+    m_links.clear();
+    m_linkIds.clear();
     m_device = nullptr;
     if (m_scheduler != nullptr)
     {

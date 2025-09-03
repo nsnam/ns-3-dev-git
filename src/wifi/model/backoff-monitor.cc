@@ -10,6 +10,7 @@
 
 #include "channel-access-manager.h"
 #include "txop.h"
+#include "wifi-mac-queue.h"
 #include "wifi-mac.h"
 #include "wifi-net-device.h"
 #include "wifi-phy-listener.h"
@@ -107,16 +108,23 @@ class BackoffMonPhyListener : public ns3::WifiPhyListener
  *      Implement the backoff monitor
  ****************************************************************/
 
-void
-BackoffMonitor::Enable(Ptr<WifiMac> mac, AcIndex aci, StatusChangeCb cb)
+BackoffMonitor::~BackoffMonitor()
 {
-    NS_LOG_FUNCTION(this << mac << aci);
+    NS_LOG_FUNCTION(this);
+}
+
+void
+BackoffMonitor::Enable(Ptr<WifiMac> mac, Ptr<Txop> txop, StatusChangeCb cb)
+{
+    if (const auto queue = txop->GetWifiMacQueue())
+    {
+        m_aci = queue->GetAc();
+    }
+    NS_LOG_FUNCTION(this << mac << m_aci);
     m_mac = mac;
     NS_ASSERT_MSG(!cb.IsNull(), "Cannot connect a null callback");
     m_enabled = true;
-    m_aci = aci;
     Callback<uint32_t, linkId_t> getSlotsCb = [=](linkId_t linkId) {
-        auto txop = mac->GetTxopFor(aci);
         // trigger a backoff update
         mac->GetChannelAccessManager(linkId)->NeedBackoffUponAccess(txop, true, true);
         return txop->GetBackoffSlots(linkId);
@@ -138,20 +146,48 @@ BackoffMonitor::Enable(Ptr<WifiMac> mac, AcIndex aci, StatusChangeCb cb)
             mac->GetDevice()->GetPhy(phyId)->RegisterListener(listener);
         }
     }
+
+    // connect NAV end callback to all channel access managers
+    for (const auto linkId : m_mac->GetLinkIds())
+    {
+        auto cam = m_mac->GetChannelAccessManager(linkId);
+        cam->TraceConnectWithoutContext(
+            "NavEnd",
+            MakeCallback(&BackoffMonitor::NotifyNavUpdated, this).Bind(cam));
+    }
 }
 
 void
 BackoffMonitor::Disable()
 {
     NS_LOG_FUNCTION(this);
+
+    if (!m_enabled)
+    {
+        return;
+    }
+
+    for (const auto linkId : m_mac->GetLinkIds())
+    {
+        if (auto cam = m_mac->GetChannelAccessManager(linkId))
+        {
+            cam->TraceDisconnectWithoutContext(
+                "NavEnd",
+                MakeCallback(&BackoffMonitor::NotifyNavUpdated, this).Bind(cam));
+        }
+    }
     for (const auto& [phyId, listener] : m_listeners)
     {
-        m_mac->GetDevice()->GetPhy(phyId)->UnregisterListener(listener);
+        if (auto phy = m_mac->GetDevice()->GetPhy(phyId); phy && phy->GetState())
+        {
+            phy->UnregisterListener(listener);
+        }
     }
     m_listeners.clear();
     m_states.clear();
     m_enabled = false;
     m_aci = AC_UNDEF;
+    m_mac = nullptr;
 }
 
 void

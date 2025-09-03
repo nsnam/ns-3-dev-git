@@ -28,6 +28,7 @@ namespace ns3
 class BackoffMonPhyListener;
 class ChannelAccessManager;
 class WifiMac;
+class Txop;
 
 /**
  * Enumeration for backoff status
@@ -51,6 +52,8 @@ enum class BackoffStatus : uint8_t
 class BackoffMonitor
 {
   public:
+    ~BackoffMonitor();
+
     /// Information fed to the Txop::BackoffStatus trace
     struct StatusTrace
     {
@@ -73,10 +76,10 @@ class BackoffMonitor
      * given MAC and setting the given status change callback.
      *
      * @param mac the given MAC
-     * @param aci the AC monitored by this object
+     * @param txop the Txop monitored by this object
      * @param cb the status change callback
      */
-    void Enable(Ptr<WifiMac> mac, AcIndex aci, StatusChangeCb cb);
+    void Enable(Ptr<WifiMac> mac, Ptr<Txop> txop, StatusChangeCb cb);
 
     /**
      * Disable backoff monitoring by removing all PHY listeners and nullifying the status change
@@ -182,7 +185,9 @@ class BackoffMonitor
 
         ~State()
         {
+            statusChangeCb.Nullify();
             statusChangeEvent.Cancel();
+            getBackoffSlotsCb.Nullify();
         }
 
         /**
