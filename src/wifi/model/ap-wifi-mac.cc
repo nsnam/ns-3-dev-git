@@ -1481,6 +1481,30 @@ ApWifiMac::GetEhtOperation(uint8_t linkId) const
     return operation;
 }
 
+UhrOperation
+ApWifiMac::GetUhrOperation(uint8_t linkId) const
+{
+    NS_ASSERT(GetUhrSupported());
+    UhrOperation operation;
+    auto remoteStationManager = GetWifiRemoteStationManager(linkId);
+
+    auto maxSpatialStream = GetWifiPhy(linkId)->GetMaxSupportedRxSpatialStreams();
+    for (const auto& sta : GetLink(linkId).staList)
+    {
+        if (remoteStationManager->GetUhrSupported(sta.second))
+        {
+            if (remoteStationManager->GetNumberOfSupportedStreams(sta.second) < maxSpatialStream)
+            {
+                maxSpatialStream = remoteStationManager->GetNumberOfSupportedStreams(sta.second);
+            }
+        }
+    }
+    operation.SetMaxRxNss(maxSpatialStream, 0, WIFI_UHR_MAX_MCS_INDEX);
+    operation.SetMaxTxNss(maxSpatialStream, 0, WIFI_UHR_MAX_MCS_INDEX);
+
+    return operation;
+}
+
 void
 ApWifiMac::IncrBssParamsChgCount(uint8_t linkId)
 {

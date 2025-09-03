@@ -28,6 +28,7 @@
 #include "ns3/object.h"
 #include "ns3/traced-callback.h"
 #include "ns3/uhr-capabilities.h"
+#include "ns3/uhr-operation.h"
 #include "ns3/vht-capabilities.h"
 #include "ns3/vht-operation.h"
 
@@ -138,11 +139,12 @@ struct WifiRemoteStationState
     std::shared_ptr<CommonInfoBasicMle> m_mleCommonInfo;
     bool m_emlsrEnabled;                          //!< whether EMLSR mode is enabled on this link
     Ptr<const UhrCapabilities> m_uhrCapabilities; //!< remote station UHR capabilities
+    Ptr<const UhrOperation> m_uhrOperation;       //!< remote station UHR operation
     bool m_dsoEnabled;                            //!< whether DSO mode is enabled on this link
     std::shared_ptr<DsoParams> m_dsoParams;       //!< remote station DSO parameters
 
     MHz_t m_channelWidth; //!< Channel width supported by the remote station
-    Time m_guardInterval; //!< HE Guard interval durationsupported by the remote station
+    Time m_guardInterval; //!< HE Guard interval duration supported by the remote station
     uint8_t m_ness;       //!< Number of extended spatial streams of the remote station
     bool m_aggregation;   //!< Flag if MPDU aggregation is used by the remote station
     bool m_shortPreamble; //!< Flag if short PHY preamble is supported by the remote station
@@ -372,6 +374,13 @@ class WifiRemoteStationManager : public Object
     void AddStationUhrCapabilities(const Mac48Address& from,
                                    const UhrCapabilities& uhrCapabilities);
     /**
+     * Records UHR operation of the remote station.
+     *
+     * @param from the address of the station being recorded
+     * @param uhrOperation the UHR operation of the station
+     */
+    void AddStationUhrOperation(const Mac48Address& from, const UhrOperation& uhrOperation);
+    /**
      * Records the DSO Parameters field advertised by the given remote station.
      *
      * @param from the address of the station being recorded
@@ -467,6 +476,13 @@ class WifiRemoteStationManager : public Object
      * @return the UHR capabilities sent by the remote station
      */
     Ptr<const UhrCapabilities> GetStationUhrCapabilities(const Mac48Address& from);
+    /**
+     * Return the UHR operation sent by the remote station.
+     *
+     * @param from the address of the remote station
+     * @return the UHR operation sent by the remote station
+     */
+    Ptr<const UhrOperation> GetStationUhrOperation(const Mac48Address& from);
     /**
      * @param from the (MLD or link) address of the remote non-AP MLD
      * @return the DSO parameters advertised by the remote non-AP MLD
