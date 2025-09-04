@@ -71,14 +71,18 @@ class Txop : public Object
     typedef Callback<void, WifiMacDropReason, Ptr<const WifiMpdu>> DroppedMpdu;
 
     /**
-     * Enumeration for channel access status
+     * Deprecated channel access status enums.
+     *
+     * Use `WifiChannelAccessStatus` class enum values instead.
+     * @{
      */
-    enum ChannelAccessStatus
-    {
-        NOT_REQUESTED = 0,
-        REQUESTED,
-        GRANTED
-    };
+    NS_DEPRECATED_3_45("Use WifiChannelAccessStatus::NOT_REQUESTED instead")
+    static constexpr auto NOT_REQUESTED = WifiChannelAccessStatus::NOT_REQUESTED;
+    NS_DEPRECATED_3_45("Use WifiChannelAccessStatus::REQUESTED instead")
+    static constexpr auto REQUESTED = WifiChannelAccessStatus::REQUESTED;
+    NS_DEPRECATED_3_45("Use WifiChannelAccessStatus::GRANTED instead")
+    static constexpr auto GRANTED = WifiChannelAccessStatus::GRANTED;
+    /**@}*/
 
     /**
      * Check for QoS TXOP.
@@ -388,7 +392,7 @@ class Txop : public Object
      * @param linkId the ID of the given link
      * @return the current channel access status for the given link
      */
-    virtual ChannelAccessStatus GetAccessStatus(uint8_t linkId) const;
+    virtual WifiChannelAccessStatus GetAccessStatus(uint8_t linkId) const;
 
     /**
      * Request channel access on the given link after the occurrence of an event that possibly
@@ -558,7 +562,8 @@ class Txop : public Object
         std::size_t staRetryCount{0}; //!< the Station Short Retry Count (SSRC) maintained by
                                       //!< non-QoS stations or the QoS STA Retry Count (QSRC)
                                       //!< maintained by QoS STAs for each AC
-        ChannelAccessStatus access{NOT_REQUESTED}; //!< channel access status
+        WifiChannelAccessStatus access{
+            WifiChannelAccessStatus::NOT_REQUESTED}; //!< channel access status
 
         mutable class
         {

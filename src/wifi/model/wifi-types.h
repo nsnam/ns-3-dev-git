@@ -346,6 +346,16 @@ using BwTonesPair = std::pair<MHz_t, RuType>;
 /// map (bandwidth, number of tones) pairs to the group of subcarrier ranges
 using SubcarrierGroups = std::map<BwTonesPair, std::vector<SubcarrierGroup>>;
 
+/**
+ * Enumeration for channel access status
+ */
+enum class WifiChannelAccessStatus : uint8_t
+{
+    NOT_REQUESTED = 0,
+    REQUESTED,
+    GRANTED
+};
+
 } // namespace ns3
 
 #endif /* WIFI_TYPES_H */

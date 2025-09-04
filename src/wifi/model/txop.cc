@@ -770,7 +770,7 @@ Txop::StartAccessAfterEvent(uint8_t linkId, bool hadFramesToTransmit, bool check
         return;
     }
 
-    if (GetLink(linkId).access != NOT_REQUESTED)
+    if (GetLink(linkId).access != WifiChannelAccessStatus::NOT_REQUESTED)
     {
         NS_LOG_DEBUG("Channel access already requested or granted on link " << +linkId);
         return;
@@ -803,7 +803,7 @@ Txop::DoInitialize()
     }
 }
 
-Txop::ChannelAccessStatus
+WifiChannelAccessStatus
 Txop::GetAccessStatus(uint8_t linkId) const
 {
     return GetLink(linkId).access;
@@ -813,14 +813,14 @@ void
 Txop::NotifyAccessRequested(uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << linkId);
-    GetLink(linkId).access = REQUESTED;
+    GetLink(linkId).access = WifiChannelAccessStatus::REQUESTED;
 }
 
 void
 Txop::NotifyChannelAccessed(uint8_t linkId, Time txopDuration)
 {
     NS_LOG_FUNCTION(this << linkId << txopDuration);
-    GetLink(linkId).access = GRANTED;
+    GetLink(linkId).access = WifiChannelAccessStatus::GRANTED;
     m_backoffMon.NotifyChannelAccessed(linkId);
 }
 
@@ -828,7 +828,7 @@ void
 Txop::NotifyChannelReleased(uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << linkId);
-    GetLink(linkId).access = NOT_REQUESTED;
+    GetLink(linkId).access = WifiChannelAccessStatus::NOT_REQUESTED;
     GenerateBackoff(linkId);
     if (HasFramesToTransmit(linkId))
     {
@@ -849,7 +849,7 @@ void
 Txop::RequestAccess(uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << linkId);
-    if (GetLink(linkId).access == NOT_REQUESTED)
+    if (GetLink(linkId).access == WifiChannelAccessStatus::NOT_REQUESTED)
     {
         m_mac->NotifyRequestAccess(this, linkId);
     }
@@ -857,7 +857,7 @@ Txop::RequestAccess(uint8_t linkId)
     // manager to wake up the STA, which may cause a channel access request. Hence, we have to
     // check again whether the channel access has not been already requested before calling
     // ChannelAccessManager::RequestAccess().
-    if (GetLink(linkId).access == NOT_REQUESTED)
+    if (GetLink(linkId).access == WifiChannelAccessStatus::NOT_REQUESTED)
     {
         m_mac->GetChannelAccessManager(linkId)->RequestAccess(this);
     }

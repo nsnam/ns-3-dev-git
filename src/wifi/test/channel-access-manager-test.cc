@@ -490,7 +490,7 @@ template <typename TxopType>
 void
 TxopTest<TxopType>::NotifyChannelAccessed(uint8_t linkId, Time txopDuration)
 {
-    Txop::GetLink(0).access = Txop::NOT_REQUESTED;
+    Txop::GetLink(0).access = WifiChannelAccessStatus::NOT_REQUESTED;
     m_test->NotifyAccessGranted(m_i);
 }
 
@@ -593,7 +593,7 @@ ChannelAccessManagerTest<TxopType>::NotifyChannelSwitching()
                                   MicroSeconds(expected.second),
                                   "Expected grant is now");
         }
-        state->Txop::GetLink(0).access = Txop::NOT_REQUESTED;
+        state->Txop::GetLink(0).access = WifiChannelAccessStatus::NOT_REQUESTED;
     }
 }
 

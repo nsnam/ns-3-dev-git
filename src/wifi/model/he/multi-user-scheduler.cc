@@ -220,7 +220,7 @@ MultiUserScheduler::AccessReqTimeout(uint8_t linkId)
     // request channel access if not requested yet
     auto edca = m_apMac->GetQosTxop(m_accessReqAc);
 
-    if (edca->GetAccessStatus(linkId) == Txop::NOT_REQUESTED)
+    if (edca->GetAccessStatus(linkId) == WifiChannelAccessStatus::NOT_REQUESTED)
     {
         m_apMac->GetChannelAccessManager(linkId)->RequestAccess(edca);
     }
