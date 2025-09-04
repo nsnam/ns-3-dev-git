@@ -129,7 +129,8 @@ PowerSaveManager::HasRequestedOrGainedChannel(linkId_t linkId) const
     for (const auto aci : acList)
     {
         if (const auto status = GetStaMac()->GetTxopFor(aci)->GetAccessStatus(linkId);
-            status == Txop::REQUESTED || status == Txop::GRANTED)
+            status == WifiChannelAccessStatus::REQUESTED ||
+            status == WifiChannelAccessStatus::GRANTED)
         {
             return true;
         }

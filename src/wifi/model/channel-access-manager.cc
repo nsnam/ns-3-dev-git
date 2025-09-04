@@ -546,7 +546,8 @@ ChannelAccessManager::NeedBackoffUponAccess(Ptr<Txop> txop,
      *    associated with that AC are empty; the medium is busy on the primary channel
      */
     if (!hadFramesToTransmit && txop->HasFramesToTransmit(m_linkId) &&
-        txop->GetAccessStatus(m_linkId) != Txop::GRANTED && txop->GetBackoffSlots(m_linkId) == 0)
+        txop->GetAccessStatus(m_linkId) != WifiChannelAccessStatus::GRANTED &&
+        txop->GetBackoffSlots(m_linkId) == 0)
     {
         if (checkMediumBusy && !IsBusy())
         {
@@ -598,7 +599,7 @@ ChannelAccessManager::RequestAccess(Ptr<Txop> txop)
     }
 
     UpdateBackoff();
-    NS_ASSERT(txop->GetAccessStatus(m_linkId) != Txop::REQUESTED);
+    NS_ASSERT(txop->GetAccessStatus(m_linkId) != WifiChannelAccessStatus::REQUESTED);
     txop->NotifyAccessRequested(m_linkId);
     DoGrantDcfAccess();
     DoRestartAccessTimeoutIfNeeded();
@@ -620,7 +621,7 @@ ChannelAccessManager::DoGrantDcfAccess()
     for (auto i = m_txops.begin(); i != m_txops.end(); k++)
     {
         Ptr<Txop> txop = *i;
-        if (txop->GetAccessStatus(m_linkId) == Txop::REQUESTED &&
+        if (txop->GetAccessStatus(m_linkId) == WifiChannelAccessStatus::REQUESTED &&
             (!txop->IsQosTxop() || !StaticCast<QosTxop>(txop)->EdcaDisabled(m_linkId)) &&
             GetBackoffEndFor(txop, accessGrantStart) <= now)
         {
@@ -636,7 +637,7 @@ ChannelAccessManager::DoGrantDcfAccess()
             for (auto j = i; j != m_txops.end(); j++, k++)
             {
                 Ptr<Txop> otherTxop = *j;
-                if (otherTxop->GetAccessStatus(m_linkId) == Txop::REQUESTED &&
+                if (otherTxop->GetAccessStatus(m_linkId) == WifiChannelAccessStatus::REQUESTED &&
                     GetBackoffEndFor(otherTxop, accessGrantStart) <= now)
                 {
                     NS_LOG_DEBUG(
@@ -851,7 +852,7 @@ ChannelAccessManager::GetExpectedAccessWithin(const Time& delay) const
 
     for (auto txop : m_txops)
     {
-        if (txop->GetAccessStatus(m_linkId) != Txop::REQUESTED)
+        if (txop->GetAccessStatus(m_linkId) != WifiChannelAccessStatus::REQUESTED)
         {
             continue;
         }
@@ -936,7 +937,7 @@ ChannelAccessManager::DoRestartAccessTimeoutIfNeeded()
     const auto now = Simulator::Now();
     for (auto txop : m_txops)
     {
-        if (txop->GetAccessStatus(m_linkId) == Txop::REQUESTED)
+        if (txop->GetAccessStatus(m_linkId) == WifiChannelAccessStatus::REQUESTED)
         {
             if (auto backoffEnd = GetBackoffEndFor(txop, accessGrantStart);
                 backoffEnd > now && backoffEnd < expectedBackoffEnd)
@@ -1154,7 +1155,7 @@ ChannelAccessManager::NotifyCcaBusyStartNow(Time duration,
         // zero proactively generate a new backoff value
         for (auto txop : m_txops)
         {
-            if (txop->GetAccessStatus(m_linkId) != Txop::GRANTED &&
+            if (txop->GetAccessStatus(m_linkId) != WifiChannelAccessStatus::GRANTED &&
                 txop->GetBackoffSlots(m_linkId) == 0)
             {
                 NS_LOG_DEBUG("Generate backoff for " << txop->GetWifiMacQueue()->GetAc());
@@ -1250,7 +1251,7 @@ ChannelAccessManager::ResetBackoff(Ptr<Txop> txop)
         NS_ASSERT(txop->GetBackoffSlots(m_linkId) == 0);
     }
     txop->ResetCw(m_linkId);
-    txop->GetLink(m_linkId).access = Txop::NOT_REQUESTED;
+    txop->GetLink(m_linkId).access = WifiChannelAccessStatus::NOT_REQUESTED;
 }
 
 void

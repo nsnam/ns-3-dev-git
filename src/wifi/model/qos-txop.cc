@@ -669,7 +669,7 @@ QosTxop::NotifyChannelReleased(uint8_t linkId)
         }
     }
     link.startTxop.reset();
-    GetLink(linkId).access = NOT_REQUESTED;
+    GetLink(linkId).access = WifiChannelAccessStatus::NOT_REQUESTED;
     m_mac->NotifyChannelReleased(this, linkId);
 }
 
