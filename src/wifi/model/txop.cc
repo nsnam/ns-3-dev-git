@@ -166,7 +166,13 @@ Txop::GetTypeId()
             .AddTraceSource("CwTrace",
                             "Trace source for contention window values",
                             MakeTraceSourceAccessor(&Txop::m_cwTrace),
-                            "ns3::Txop::CwValueTracedCallback");
+                            "ns3::Txop::CwValueTracedCallback")
+            .AddTraceSource("ChannelAccessStatus",
+                            "Trace source for channel access status changes. Provides the link ID, "
+                            "the old status and the new status.",
+                            MakeTraceSourceAccessor(&Txop::m_accessStatusTrace),
+                            "ns3::Txop::ChannelAccessStatusTracedCallback");
+    ;
     return tid;
 }
 
@@ -254,7 +260,13 @@ Txop::SetWifiMac(const Ptr<WifiMac> mac)
     m_mac = mac;
     for (const auto linkId : m_mac->GetLinkIds())
     {
-        m_links.emplace(linkId, CreateLinkEntity());
+        auto link = CreateLinkEntity();
+        auto cb = [linkId, this](WifiChannelAccessStatus prev, WifiChannelAccessStatus curr) {
+            m_accessStatusTrace({.linkId = linkId, .prevStatus = prev, .currStatus = curr});
+        };
+        link->access.ConnectWithoutContext(
+            Callback<void, WifiChannelAccessStatus, WifiChannelAccessStatus>(cb));
+        m_links.emplace(linkId, std::move(link));
     }
 }
 

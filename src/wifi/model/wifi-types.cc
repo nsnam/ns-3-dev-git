@@ -28,4 +28,23 @@ WifiChannelConfig::FromString(const std::string& settings)
     return WifiChannelConfig(value.Get());
 }
 
+std::ostream&
+operator<<(std::ostream& os, WifiChannelAccessStatus status)
+{
+    switch (status)
+    {
+    case WifiChannelAccessStatus::NOT_REQUESTED_NO_BACKOFF:
+        return (os << "NOT_REQUESTED_NO_BACKOFF");
+    case WifiChannelAccessStatus::NOT_REQUESTED_WITH_BACKOFF:
+        return (os << "NOT_REQUESTED_WITH_BACKOFF");
+    case WifiChannelAccessStatus::REQUESTED:
+        return (os << "REQUESTED");
+    case WifiChannelAccessStatus::GRANTED:
+        return (os << "GRANTED");
+    default:
+        NS_ABORT_MSG("Invalid channel access status: " << static_cast<uint16_t>(status));
+    }
+    return os;
+}
+
 } // namespace ns3

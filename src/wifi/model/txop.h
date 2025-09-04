@@ -562,7 +562,7 @@ class Txop : public Object
         std::size_t staRetryCount{0}; //!< the Station Short Retry Count (SSRC) maintained by
                                       //!< non-QoS stations or the QoS STA Retry Count (QSRC)
                                       //!< maintained by QoS STAs for each AC
-        WifiChannelAccessStatus access{
+        TracedValue<WifiChannelAccessStatus> access{
             WifiChannelAccessStatus::NOT_REQUESTED_NO_BACKOFF}; //!< channel access status
 
         mutable class
@@ -598,10 +598,13 @@ class Txop : public Object
     using BackoffStatusTracedCallback = TracedCallback<const BackoffMonitor::StatusTrace&>;
     /// TracedCallback for CW trace value typedef
     using CwValueTracedCallback = TracedCallback<uint32_t /* value */, uint8_t /* linkId */>;
+    /// TracedCallback for channel access status typedef
+    using ChannelAccessStatusTracedCallback = TracedCallback<const ChannelAccessStatusTrace&>;
 
-    BackoffValueTracedCallback m_backoffTrace;        //!< backoff trace value
-    BackoffStatusTracedCallback m_backoffStatusTrace; //!< backoff status trace
-    CwValueTracedCallback m_cwTrace;                  //!< CW trace value
+    BackoffValueTracedCallback m_backoffTrace;             //!< backoff trace value
+    BackoffStatusTracedCallback m_backoffStatusTrace;      //!< backoff status trace
+    CwValueTracedCallback m_cwTrace;                       //!< CW trace value
+    ChannelAccessStatusTracedCallback m_accessStatusTrace; //!< channel access status trace
 
   private:
     /**

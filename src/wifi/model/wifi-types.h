@@ -381,6 +381,25 @@ enum class WifiChannelAccessStatus : uint8_t
     GRANTED
 };
 
+/**
+ * Stream insertion operator.
+ *
+ * @param os the stream
+ * @param status the channel access status
+ * @returns a reference to the stream
+ */
+std::ostream& operator<<(std::ostream& os, WifiChannelAccessStatus status);
+
+/// Information fed to the Txop::ChannelAccessStatus trace
+struct ChannelAccessStatusTrace
+{
+    uint8_t linkId{}; ///< link ID
+    WifiChannelAccessStatus prevStatus{
+        WifiChannelAccessStatus::NOT_REQUESTED_NO_BACKOFF}; ///< previous channel access status
+    WifiChannelAccessStatus currStatus{
+        WifiChannelAccessStatus::NOT_REQUESTED_NO_BACKOFF}; ///< current channel access status
+};
+
 } // namespace ns3
 
 #endif /* WIFI_TYPES_H */
