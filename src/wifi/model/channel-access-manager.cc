@@ -249,11 +249,7 @@ void
 ChannelAccessManager::DoDispose()
 {
     NS_LOG_FUNCTION(this);
-    for (Ptr<Txop> i : m_txops)
-    {
-        i->Dispose();
-        i = nullptr;
-    }
+    m_txops.clear();
     m_phy = nullptr;
     m_feManager = nullptr;
     m_phyListeners.clear();
