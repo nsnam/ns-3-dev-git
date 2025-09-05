@@ -461,7 +461,6 @@ Txop::UpdateBackoffSlotsNow(uint32_t nSlots, Time backoffUpdateBound, uint8_t li
     link.backoffSlots -= nSlots;
     link.backoffStart = backoffUpdateBound;
     NS_LOG_DEBUG("update slots=" << nSlots << " slots, backoff=" << link.backoffSlots);
-    m_backoffMon.NotifyBackoffUpdated(linkId, link.backoffSlots);
 }
 
 void
@@ -480,7 +479,6 @@ Txop::StartBackoffNow(uint32_t nSlots, uint8_t linkId)
     }
     link.backoffSlots = nSlots;
     link.backoffStart = Simulator::Now();
-    m_backoffMon.NotifyBackoffGenerated(linkId);
 }
 
 void
@@ -819,7 +817,6 @@ Txop::NotifyChannelAccessed(uint8_t linkId, Time txopDuration)
 {
     NS_LOG_FUNCTION(this << linkId << txopDuration);
     GetLink(linkId).access = WifiChannelAccessStatus::GRANTED;
-    m_backoffMon.NotifyChannelAccessed(linkId);
 }
 
 void

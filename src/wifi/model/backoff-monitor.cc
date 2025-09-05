@@ -155,6 +155,11 @@ BackoffMonitor::Enable(Ptr<WifiMac> mac, Ptr<Txop> txop, StatusChangeCb cb)
             "NavEnd",
             MakeCallback(&BackoffMonitor::NotifyNavUpdated, this).Bind(cam));
     }
+
+    // connect a callback to the channel access status trace
+    txop->TraceConnectWithoutContext(
+        "ChannelAccessStatus",
+        MakeCallback(&BackoffMonitor::NotifyChannelAccessStatusChange, this));
 }
 
 void
@@ -246,15 +251,49 @@ BackoffMonitor::NotifyBackoffGenerated(linkId_t linkId)
 }
 
 void
-BackoffMonitor::NotifyChannelAccessed(linkId_t linkId)
+BackoffMonitor::NotifyChannelAccessStatusChange(const ChannelAccessStatusTrace& info)
 {
-    NS_LOG_FUNCTION(this << linkId);
+    NS_LOG_FUNCTION(this << info.linkId << info.prevStatus << info.currStatus);
 
-    // set status to ZERO (unless it is already ZERO)
-    using enum BackoffStatus;
-    if (const auto status = GetBackoffStatus(linkId); status != ZERO && status != UNKNOWN)
+    // if a backoff has been generated, notify it first, because the backoff status may be UNKNOWN
+    // and notifying the backoff generation creates the state information that is used below
+    if (info.currStatus == WifiChannelAccessStatus::NOT_REQUESTED_WITH_BACKOFF)
     {
-        GetState(linkId).SetStatus(BackoffStatus::ZERO);
+        NotifyBackoffGenerated(info.linkId);
+    }
+
+    const auto status = GetBackoffStatus(info.linkId);
+
+    if (status == BackoffStatus::UNKNOWN)
+    {
+        return;
+    }
+
+    auto& state = GetState(info.linkId);
+    state.accessStatus = info.currStatus;
+
+    switch (state.accessStatus)
+    {
+    case WifiChannelAccessStatus::GRANTED:
+        // channel access granted, backoff counter has reached zero
+        state.SetStatus(BackoffStatus::ZERO);
+        break;
+    case WifiChannelAccessStatus::NOT_REQUESTED_NO_BACKOFF:
+        // channel access status transitions from GRANTED to NOT_REQUESTED_NO_BACKOFF when the
+        // channel is released after being accessed; in this case, the backoff status has been
+        // already set to ZERO and nothing needs to be done; channel access status transitions from
+        // BACKOFF_GENERATED or REQUESTED to NOT_REQUESTED_NO_BACKOFF when the backoff is reset, or
+        // the backoff counter reaches zero without channel access having been requested, or channel
+        // access is granted but nothing is transmitted, or in case of internal collision: in all
+        // such cases, the backoff status must be ZERO
+        if (info.prevStatus != WifiChannelAccessStatus::NOT_REQUESTED_NO_BACKOFF &&
+            info.prevStatus != WifiChannelAccessStatus::GRANTED)
+        {
+            state.SetStatus(BackoffStatus::ZERO);
+        }
+        break;
+    default:
+        break;
     }
 }
 
@@ -266,20 +305,6 @@ BackoffMonitor::NotifyBackoffReset(linkId_t linkId)
     if (GetBackoffStatus(linkId) != BackoffStatus::UNKNOWN)
     {
         GetState(linkId).SetStatus(BackoffStatus::RESET);
-    }
-}
-
-void
-BackoffMonitor::NotifyBackoffUpdated(linkId_t linkId, uint32_t nSlots)
-{
-    NS_LOG_FUNCTION(this << linkId << nSlots);
-
-    // if the backoff counter has reached zero, set status to ZERO (unless it is already ZERO)
-    using enum BackoffStatus;
-    if (const auto status = GetBackoffStatus(linkId);
-        nSlots == 0 && status != ZERO && status != UNKNOWN)
-    {
-        GetState(linkId).SetStatus(BackoffStatus::ZERO);
     }
 }
 

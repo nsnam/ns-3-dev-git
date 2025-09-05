@@ -112,11 +112,11 @@ class BackoffMonitor
     void NotifyBackoffGenerated(linkId_t linkId);
 
     /**
-     * Notify that channel access has been granted on the given link.
+     * Notify a channel access status change.
      *
-     * @param linkId the ID of the given link
+     * @param info the information provided by the Txop::ChannelAccessStatus trace
      */
-    void NotifyChannelAccessed(linkId_t linkId);
+    void NotifyChannelAccessStatusChange(const ChannelAccessStatusTrace& info);
 
     /**
      * Notify that the backoff has been reset for the given link.
@@ -124,14 +124,6 @@ class BackoffMonitor
      * @param linkId the ID of the given link
      */
     void NotifyBackoffReset(linkId_t linkId);
-
-    /**
-     * Update backoff slots for the given link.
-     *
-     * @param linkId the ID of the given link
-     * @param nSlots the updated number of remaining backoff slots
-     */
-    void NotifyBackoffUpdated(linkId_t linkId, uint32_t nSlots);
 
     /**
      * Used by the PHY listener to notify that medium is busy for the given period.
@@ -177,6 +169,8 @@ class BackoffMonitor
     {
         linkId_t linkId; ///< ID of the link this information refers to
         BackoffStatus backoffStatus{BackoffStatus::UNKNOWN}; //!< backoff status
+        WifiChannelAccessStatus accessStatus{
+            WifiChannelAccessStatus::NOT_REQUESTED_NO_BACKOFF}; //!< channel access status
         Time physicalCsEnd; ///< last time medium is busy based on physical carrier sense
         Time virtualCsEnd;  ///< last time medium is busy based on virtual carrier sense (NAV)
         StatusChangeCb statusChangeCb;                  ///< status change callback
