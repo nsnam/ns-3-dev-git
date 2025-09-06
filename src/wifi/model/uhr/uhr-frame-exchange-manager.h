@@ -34,6 +34,8 @@ class UhrFrameExchangeManager : public EhtFrameExchangeManager
     ~UhrFrameExchangeManager() override;
 
     void NotifySwitchingStartNow(Time duration) override;
+    void SetIcfPaddingAndTxVector(CtrlTriggerHeader& trigger,
+                                  WifiTxVector& txVector) const override;
 
     /**
      * Notify that the PHY is switching to or from a DSO subband.

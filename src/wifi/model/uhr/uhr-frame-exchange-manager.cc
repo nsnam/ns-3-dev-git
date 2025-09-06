@@ -19,6 +19,37 @@
 #undef NS_LOG_APPEND_CONTEXT
 #define NS_LOG_APPEND_CONTEXT WIFI_FEM_NS_LOG_APPEND_CONTEXT
 
+namespace
+{
+/**
+ * @param delay the DSO Padding delay
+ * @return the encoded value for the DSO Padding Delay subfield
+ * TODO: not defined yet in 802.11bn D1.0, this is a temporary solution based on EMLSR padding delay
+ * encoding for now
+ */
+uint8_t
+EncodeDsoPaddingDelay(const ns3::Time& delay)
+{
+    auto delayUs = delay.GetMicroSeconds();
+
+    if (delayUs == 0)
+    {
+        return 0;
+    }
+
+    for (uint8_t i = 1; i <= 6; i++)
+    {
+        if (1 << (i + 4) == delayUs)
+        {
+            return i;
+        }
+    }
+
+    NS_ABORT_MSG("Value not allowed (" << delay.As(ns3::Time::US) << ")");
+    return 0;
+}
+} // namespace
+
 namespace ns3
 {
 
@@ -458,6 +489,60 @@ UhrFrameExchangeManager::SwitchToPrimarySubchannel(const Time& delay)
     for (const auto& [address, ru] : m_dsoStas)
     {
         DsoSwitchBackToPrimary(address, maxSwitchChannelBackDelay + delay);
+    }
+}
+
+void
+UhrFrameExchangeManager::SetIcfPaddingAndTxVector(CtrlTriggerHeader& trigger,
+                                                  WifiTxVector& txVector) const
+{
+    NS_LOG_FUNCTION(this << trigger << txVector);
+
+    EhtFrameExchangeManager::SetIcfPaddingAndTxVector(trigger, txVector);
+
+    if (!trigger.IsBsrp())
+    {
+        NS_LOG_DEBUG("Not a DSO ICF");
+        return;
+    }
+
+    uint8_t maxPaddingDelay{0};
+    bool isUnprotectedDsoDst{false};
+
+    const auto recipients = GetTfRecipients(trigger);
+    for (const auto& address : recipients)
+    {
+        if (!GetWifiRemoteStationManager()->GetDsoEnabled(address) ||
+            m_protectedStas.contains(address))
+        {
+            continue; // not a DSO client or DSO client already protected
+        }
+
+        isUnprotectedDsoDst = true;
+        auto dsoParams = GetWifiRemoteStationManager()->GetStationDsoParameters(address);
+        if (dsoParams)
+        {
+            const auto staPaddingDelay = EncodeDsoPaddingDelay(dsoParams->dsoPaddingDelay);
+            maxPaddingDelay = std::max(maxPaddingDelay, staPaddingDelay);
+        }
+    }
+
+    if (isUnprotectedDsoDst)
+    {
+        // The initial Control frame of frame exchanges shall be sent in the non-HT PPDU or
+        // non-HT duplicate PPDU format using a rate of 6 Mb/s, 12 Mb/s, or 24 Mb/s.
+        // (Sec. 35.3.17 of 802.11be D3.0)
+        GetWifiRemoteStationManager()->AdjustTxVectorForIcf(txVector);
+    }
+
+    // add padding (if needed)
+    if (maxPaddingDelay > 0)
+    {
+        // TODO: DSO padding not defined in 802.11bn D1.0, hence use same calculation as EMLSR
+        // padding for now
+        auto rate = txVector.GetMode().GetDataRate(txVector);
+        std::size_t nDbps = rate / 1e6 * 4;
+        trigger.SetPaddingSize((1 << (maxPaddingDelay + 2)) * nDbps / 8);
     }
 }
 

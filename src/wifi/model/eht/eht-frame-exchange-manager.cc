@@ -1093,7 +1093,7 @@ EhtFrameExchangeManager::SetIcfPaddingAndTxVector(CtrlTriggerHeader& trigger,
     // add padding (if needed)
     if (maxPaddingDelay > 0)
     {
-        // see formula (35-1) in Sec. 35.5.2.2.3 of 802.11be D3.0
+        // see formula (35-1) in Sec. 35.5.2.2.3 of 802.11be D7.0
         auto rate = txVector.GetMode().GetDataRate(txVector);
         std::size_t nDbps = rate / 1e6 * 4; // see Table 17-4 of 802.11-2020
         trigger.SetPaddingSize((1 << (maxPaddingDelay + 2)) * nDbps / 8);

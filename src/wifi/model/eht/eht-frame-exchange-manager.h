@@ -159,12 +159,12 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
 
     /**
      * Set the padding and the TXVECTOR of the given Trigger Frame, in case it is an Initial
-     * Control Frame for some EMLSR client(s).
+     * Control Frame.
      *
      * @param trigger the given Trigger Frame
      * @param txVector the TXVECTOR used to transmit the Trigger Frame
      */
-    void SetIcfPaddingAndTxVector(CtrlTriggerHeader& trigger, WifiTxVector& txVector) const;
+    virtual void SetIcfPaddingAndTxVector(CtrlTriggerHeader& trigger, WifiTxVector& txVector) const;
 
     /// ICF drop reason traced callback (WifiMac exposes this trace source)
     WifiMac::IcfDropTracedCallback m_icfDropCallback;

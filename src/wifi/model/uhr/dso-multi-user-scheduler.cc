@@ -469,6 +469,9 @@ DsoMultiUserScheduler::TrySendingDsoIcf(WifiDirection direction)
 
     m_apMac->GetWifiRemoteStationManager(m_linkId)->AdjustTxVectorForIcf(m_txParams.m_txVector);
 
+    // we need to add padding and adjust the TXVECTOR
+    UpdateTriggerForIcf(item);
+
     if (!GetHeFem(m_linkId)->TryAddMpdu(item, m_txParams, m_availableTime))
     {
         // sending the BSRP Trigger Frame is not possible, hence return NO_TX. In
