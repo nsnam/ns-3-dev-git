@@ -220,6 +220,7 @@ class DsoManager : public Object
         m_dsoSubbands; //!< link ID-indexed map of DSO subbands
 
     Time m_dsoSwitchBackDelay; //!< DSO Switch Back delay
+    Time m_dsoPaddingDelay;    //!< DSO Padding delay
 
     /**
      * TracedCallback signature for DSO TXOP event trace source.

@@ -48,6 +48,13 @@ DsoManager::GetTypeId()
                           TimeValue(MicroSeconds(DEFAULT_CHANNEL_SWITCH_DELAY_USEC)),
                           MakeTimeAccessor(&DsoManager::m_dsoSwitchBackDelay),
                           MakeTimeChecker())
+            .AddAttribute(
+                "DsoPaddingDelay",
+                "The DSO Paddind Delay. "
+                "Possible values are 0 us, 32 us, 64 us, 128 us, 256 us, 512 us, 1024 us.",
+                TimeValue(MicroSeconds(0)),
+                MakeTimeAccessor(&DsoManager::m_dsoPaddingDelay),
+                MakeTimeChecker(MicroSeconds(0), MicroSeconds(1024)))
             .AddTraceSource("DsoTxopEvent",
                             "Trace source indicating a DSO TXOP event.",
                             MakeTraceSourceAccessor(&DsoManager::m_dsoTxopEventTrace),
