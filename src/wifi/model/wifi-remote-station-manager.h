@@ -53,6 +53,17 @@ struct WifiRemoteStationState;
 struct RxSignalInfo;
 
 /**
+ * DSO parameters
+ * TODO: this is a temporary placeholder to speed up DSO evaluation and will belong to UHR Mode
+ * Change element once implemented (and encoded accordingly)
+ */
+struct DsoParams
+{
+    Time dsoPaddingDelay;    //!< DSO Padding Delay
+    Time dsoSwitchBackDelay; //!< DSO Switch Back Delay
+};
+
+/**
  * @brief hold per-remote-station state.
  *
  * The state in this class is used to keep track
@@ -128,6 +139,7 @@ struct WifiRemoteStationState
     bool m_emlsrEnabled;                          //!< whether EMLSR mode is enabled on this link
     Ptr<const UhrCapabilities> m_uhrCapabilities; //!< remote station UHR capabilities
     bool m_dsoEnabled;                            //!< whether DSO mode is enabled on this link
+    std::shared_ptr<DsoParams> m_dsoParams;       //!< remote station DSO parameters
 
     MHz_t m_channelWidth; //!< Channel width supported by the remote station
     Time m_guardInterval; //!< HE Guard interval durationsupported by the remote station
@@ -360,6 +372,13 @@ class WifiRemoteStationManager : public Object
     void AddStationUhrCapabilities(const Mac48Address& from,
                                    const UhrCapabilities& uhrCapabilities);
     /**
+     * Records the DSO Parameters field advertised by the given remote station.
+     *
+     * @param from the address of the station being recorded
+     * @param dsoParams the DSO Parameters advertised by the station
+     */
+    void AddStationDsoParameters(Mac48Address from, const std::shared_ptr<DsoParams>& dsoParams);
+    /**
      * Return the HT capabilities sent by the remote station.
      *
      * @param from the address of the remote station
@@ -448,6 +467,11 @@ class WifiRemoteStationManager : public Object
      * @return the UHR capabilities sent by the remote station
      */
     Ptr<const UhrCapabilities> GetStationUhrCapabilities(const Mac48Address& from);
+    /**
+     * @param from the (MLD or link) address of the remote non-AP MLD
+     * @return the DSO parameters advertised by the remote non-AP MLD
+     */
+    std::shared_ptr<DsoParams> GetStationDsoParameters(Mac48Address from);
     /**
      * Return whether the device has HT capability support enabled on the link this manager is
      * associated with. Note that this means that this function returns false if this is a

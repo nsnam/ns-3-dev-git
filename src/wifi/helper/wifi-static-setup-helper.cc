@@ -676,7 +676,20 @@ WifiStaticSetupHelper::SetStaticDsoPostInit(Ptr<ApWifiMac> apMac, Ptr<StaWifiMac
     NS_ASSERT_MSG(dsoManager, "DSO Manager not set");
 
     // TODO: add DSO support for MLD
-    dsoManager->ComputeSubbands(SINGLE_LINK_OP_ID, apMac->GetWifiPhy()->GetOperatingChannel());
+    const auto linkId = SINGLE_LINK_OP_ID;
+    dsoManager->ComputeSubbands(linkId, apMac->GetWifiPhy(linkId)->GetOperatingChannel());
+
+    // TODO: temporary solution to exchange DSO parameters until UHR Mode Change element is
+    // implemented
+    auto dsoParams = std::make_shared<DsoParams>();
+    TimeValue time;
+    dsoManager->GetAttribute("DsoPaddingDelay", time);
+    dsoParams->dsoPaddingDelay = time.Get();
+    dsoManager->GetAttribute("DsoSwitchBackDelay", time);
+    dsoParams->dsoSwitchBackDelay = time.Get();
+
+    auto apManager = apMac->GetWifiRemoteStationManager(linkId);
+    apManager->AddStationDsoParameters(clientMac->GetAddress(), dsoParams);
 }
 
 } // namespace ns3
