@@ -281,10 +281,11 @@ will result in a list of the test suite being displayed, similar to
   system       devices-mesh-flame-regression
   system       epc-gtpu
   ...
-  unit         wimax-phy-layer
-  unit         wimax-service-flow
-  unit         wimax-ss-mac-layer
-  unit         wimax-tlv
+  unit         wifi-primary-channels
+  unit         wifi-ru-allocation
+  unit         wifi-spectrum-wifi-phy
+  unit         wifi-transmit-mask
+  unit         wifi-txop
   example      adhoc-aloha-ideal-phy
   example      adhoc-aloha-ideal-phy-matrix-propagation-loss-model
   example      adhoc-aloha-ideal-phy-with-microwave-oven

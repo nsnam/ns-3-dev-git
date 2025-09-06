@@ -184,7 +184,7 @@ Building-aware pathloss model
 After you placed buildings and nodes in a simulation, you can use a
 building-aware pathloss model in a simulation exactly in the same way
 you would use any regular path loss model. How to do this is specific
-for the wireless module that you are considering (lte, wifi, wimax,
+for the wireless module that you are considering (lte, wifi,
 etc.), so please refer to the documentation of that model for specific
 instructions.
 

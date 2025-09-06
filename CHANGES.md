@@ -20,6 +20,8 @@ This file is a best-effort approach to solving this issue; we will do our best b
 
 ### Changes to existing API
 
+The wimax module was removed and moved to the ns-3 App Store.
+
 * (antenna) Reformatted documentation.
 * (documentation) Improve models documentation look and feel
 * (internet) Added check for longest prefix match in GlobalRouting.

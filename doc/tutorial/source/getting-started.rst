@@ -325,7 +325,6 @@ output that looks similar to the following:
   -- Processing src/uan
   -- Processing src/virtual-net-device
   -- Processing src/wifi
-  -- Processing src/wimax
   -- ---- Summary of optional NS-3 features:
   Build profile                 : optimized
   Build directory               : /mnt/dev/tools/source/ns-3-dev/build
@@ -363,7 +362,7 @@ output that looks similar to the following:
   sixlowpan                 spectrum                  stats
   tap-bridge                test                      topology-read
   traffic-control           uan                       virtual-net-device
-  wifi                      wimax
+  wifi
 
 
   Modules that cannot be built:

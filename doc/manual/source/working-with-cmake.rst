@@ -122,7 +122,6 @@ Now we run it for real:
   -- Detecting CXX compile features - done
   ...
   -- Processing src/wifi
-  -- Processing src/wimax
   -- ---- Summary of optional ns-3 features:
   Build profile                 : release
   Build directory               : /ns-3-dev/build
@@ -138,7 +137,7 @@ Now we run it for real:
   bridge                    buildings                 config-store
   core                      csma                      csma-layout
   ...
-  wifi                      wimax
+  wifi
 
   Modules that cannot be built:
   brite                     click                     openflow
@@ -453,7 +452,6 @@ You should have a source tree like the following:
    │   │   ├── antenna
    │   │   ├── ...
    │   │   ├── wifi
-   │   │   └── wimax
    │   ├── third-party
    │   └── utils
    │       ├── perf

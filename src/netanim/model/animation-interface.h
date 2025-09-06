@@ -531,7 +531,6 @@ class AnimationInterface
         UAN,
         LTE,
         WIFI,
-        WIMAX,
         CSMA,
         LRWPAN
     };
@@ -652,7 +651,6 @@ class AnimationInterface
     uint32_t m_wifiPhyRxDropCounterId; ///< wifi Phy receive drop counter ID
 
     AnimUidPacketInfoMap m_pendingWifiPackets;   ///< pending wifi packets
-    AnimUidPacketInfoMap m_pendingWimaxPackets;  ///< pending wimax packets
     AnimUidPacketInfoMap m_pendingLrWpanPackets; ///< pending LR-WPAN packets
     AnimUidPacketInfoMap m_pendingLtePackets;    ///< pending LTE packets
     AnimUidPacketInfoMap m_pendingCsmaPackets;   ///< pending CSMA packets
@@ -1078,20 +1076,6 @@ class AnimationInterface
      * @param p the packet
      */
     void LrWpanPhyRxBeginTrace(std::string context, Ptr<const Packet> p);
-    /**
-     * WIMax transmit trace function
-     * @param context the context
-     * @param p the packet
-     * @param m the MAC address
-     */
-    void WimaxTxTrace(std::string context, Ptr<const Packet> p, const Mac48Address& m);
-    /**
-     * WIMax receive trace function
-     * @param context the context
-     * @param p the packet
-     * @param m the MAC address
-     */
-    void WimaxRxTrace(std::string context, Ptr<const Packet> p, const Mac48Address& m);
     /**
      * CSMA Phy transmit begin trace function
      * @param context the context

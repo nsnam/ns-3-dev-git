@@ -939,7 +939,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         """
         # Try filtering disabled modules to disable lte and modules that depend on it.
         return_code, stdout, stderr = run_ns3(
-            "configure -G \"{generator}\" --disable-modules='lte;wimax'"
+            "configure -G \"{generator}\" --disable-modules='lte;wifi'"
         )
         self.config_ok(return_code, stdout, stderr)
 
@@ -947,7 +947,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         enabled_modules = get_enabled_modules()
         self.assertLess(len(enabled_modules), len(self.ns3_modules))
         self.assertNotIn("ns3-lte", enabled_modules)
-        self.assertNotIn("ns3-wimax", enabled_modules)
+        self.assertNotIn("ns3-wifi", enabled_modules)
 
         # Try cleaning the list of enabled modules to reset to the normal configuration.
         return_code, stdout, stderr = run_ns3("configure -G \"{generator}\" --disable-modules=''")
@@ -1127,7 +1127,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
                     'lte',
                     #comment2,
                     #comment3
-                    'network', 'internet','wimax'""",
+                    'network', 'internet','wifi'""",
                             examples="True",
                             tests="True",
                         )
@@ -1135,7 +1135,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
                 else:
                     f.write(
                         ns3rc_template.format(
-                            modules="'core', 'lte', 'network', 'internet', 'wimax'",
+                            modules="'core', 'lte', 'network', 'internet', 'wifi'",
                             examples="True",
                             tests="True",
                         )
@@ -1150,7 +1150,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
             self.assertIn("ns3-core", enabled_modules)
             self.assertIn("ns3-internet", enabled_modules)
             self.assertIn("ns3-lte", enabled_modules)
-            self.assertIn("ns3-wimax", enabled_modules)
+            self.assertIn("ns3-wifi", enabled_modules)
             self.assertTrue(get_test_enabled())
             self.assertGreater(len(get_programs_list()), len(self.ns3_executables))
 

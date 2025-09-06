@@ -73,7 +73,6 @@ SOURCES = \
 	$(SRC)/wifi/doc/source/wifi-testing.rst \
 	$(SRC)/wifi/doc/source/wifi-changelog.rst \
 	$(SRC)/wifi/doc/source/wifi-references.rst \
-	$(SRC)/wimax/doc/wimax.rst \
 	$(SRC)/uan/doc/uan.rst \
 	$(SRC)/topology-read/doc/topology.rst \
 	$(SRC)/traffic-control/doc/traffic-control-layer.rst \
@@ -168,7 +167,6 @@ SOURCEFIGS = \
 	$(SRC)/wifi/doc/source/figures/spectrum-wifi-phy-multiple-interfaces.png \
 	$(SRC)/wifi/doc/source/figures/cca-channel-switching-multiple-interfaces.pdf \
 	$(SRC)/wifi/doc/source/figures/cca-channel-switching-multiple-interfaces.png \
-	$(SRC)/wimax/doc/WimaxArchitecture.dia \
 	$(SRC)/lte/doc/source/figures/epc-ctrl-arch.dia \
 	$(SRC)/lte/doc/source/figures/epc-data-flow-dl.dia \
 	$(SRC)/lte/doc/source/figures/epc-data-flow-dl-with-split.dia \
@@ -399,7 +397,6 @@ IMAGES_EPS = \
 	$(FIGURES)/FemHierarchy.eps \
 	$(FIGURES)/wifi-phy-rx-trace-helper.eps \
 	$(FIGURES)/snir.eps \
-	$(FIGURES)/WimaxArchitecture.eps \
 	$(FIGURES)/epc-ctrl-arch.eps \
 	$(FIGURES)/epc-data-flow-dl.eps \
 	$(FIGURES)/epc-data-flow-dl-with-split.eps \

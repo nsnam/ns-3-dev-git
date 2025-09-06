@@ -44,7 +44,7 @@
 # sixlowpan                 spectrum                  stats
 # tap-bridge                test (no Python)          topology-read
 # traffic-control           uan                       virtual-net-device
-# wave                      wifi                      wimax
+# wave                      wifi
 #
 # Modules not built (see ns-3 tutorial for explanation):
 # brite                     click                     dpdk-net-device

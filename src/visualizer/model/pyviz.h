@@ -393,25 +393,6 @@ class PyViz
     void TraceNetDevRxPointToPoint(std::string context, Ptr<const Packet> packet);
 
     /**
-     * WiMax transmit trace callback function
-     * @param context the context
-     * @param packet the packet
-     * @param destination the destination MAC address
-     */
-    void TraceNetDevTxWimax(std::string context,
-                            Ptr<const Packet> packet,
-                            const Mac48Address& destination);
-    /**
-     * WiMax transmit trace callback function
-     * @param context the context
-     * @param packet the packet
-     * @param source the source MAC address
-     */
-    void TraceNetDevRxWimax(std::string context,
-                            Ptr<const Packet> packet,
-                            const Mac48Address& source);
-
-    /**
      * LTE transmit trace callback function
      * @param context the context
      * @param packet the packet

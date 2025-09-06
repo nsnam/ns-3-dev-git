@@ -203,7 +203,6 @@ Using the above constructor ensures that each animation XML trace file has only 
 With the above statement, AnimationInterface records the meta-data of each packet in the xml trace file. Metadata can be used by NetAnim to provide better statistics and filter, along with providing some brief information about the packet such as TCP sequence number or source & destination IP address during packet animation.
 
 CAUTION: Enabling this feature will result in larger XML trace files.
-Please do NOT enable this feature when using Wimax links.
 
 ::
 

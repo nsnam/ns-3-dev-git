@@ -172,7 +172,7 @@ Sanitizers were used to find issues in multiple occasions:
   * The adopted solution in merge request `MR703`_ was to fix one of the schedulers that could produce the index value of -1,
     and updating the asserts to catch the illegal index value.
 
-* A wrong downcast in the Wimax module:
+* A wrong downcast in the wimax module (note: wimax is no longer a module within the ns-3 mainline):
 
   * The pointer was casted incorrectly to U16TlvValue instead of U8TvlValue, which could have different sizes in memory
     leading to the program reading the wrong memory address.

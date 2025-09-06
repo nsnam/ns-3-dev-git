@@ -236,7 +236,7 @@ def parse_args(argv):
     )
     parser_configure.add_argument(
         "--disable-modules",
-        help='List of modules not to build (e.g. "lte;wimax")',
+        help='List of modules not to build (e.g. "lte;wifi")',
         action="store",
         type=str,
         default=None,

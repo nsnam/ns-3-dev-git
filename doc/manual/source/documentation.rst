@@ -403,7 +403,6 @@ script:
     Count Directory
     ----- ----------------------------------
     3414 src/lte/model
-    1532 src/wimax/model
      825 src/lte/test
     ....
        1 src/applications/test
@@ -434,7 +433,6 @@ script:
      272 src/core/model/simulator.h
      221 src/netanim/model/animation-interface.h
     ....
-       1 src/wimax/model/ul-job.cc
     ----------------------------------------
        771 files with warnings
 

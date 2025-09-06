@@ -19,7 +19,7 @@ The Buildings module provides:
  #. a channel condition model (``BuildingsChannelConditionModel``) which determined the LOS/NLOS channel condition based on the ``Building`` objects deployed in the scenario.
  #. hybrid channel condition models (``ThreeGppV2vUrbanChannelConditionModel`` and ``ThreeGppV2vHighwayChannelConditionModel``) specifically designed to model vehicular environments (more information can be found in the :ref:`documentation of the propagation module <sec-3gpp-v2v-ch-cond>`)
 
-The models have been designed with LTE in mind, though their implementation is in fact independent from any LTE-specific code, and can be used with other ns-3 wireless technologies as well (e.g., wifi, wimax).
+The models have been designed with LTE in mind, though their implementation is in fact independent from any LTE-specific code, and can be used with other ns-3 wireless technologies as well (e.g., wifi).
 
 The ``HybridBuildingsPropagationLossModel`` pathloss model included is obtained through a combination of several well known pathloss models in order to mimic different environmental scenarios such as urban, suburban and open areas. Moreover, the model considers both outdoor and indoor indoor and outdoor communication has to be included since HeNB might be installed either within building and either outside. In case of indoor communication, the model has to consider also the type of building in outdoor <-> indoor communication according to some general criteria such as the wall penetration losses of the common materials; moreover it includes some general configuration for the internal walls in indoor communications.
 

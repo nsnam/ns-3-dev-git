@@ -286,4 +286,3 @@ Please open an issue on `infrastructure` if you have suggestions for new labels,
 | `visualizer` | Any issue related to this module |
 | `wave module` | Any issue related to this module |
 | `wifi` | Any issue related to this module |
-| `wimax` | Any issue related to this module |

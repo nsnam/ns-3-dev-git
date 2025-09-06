@@ -139,7 +139,7 @@ You should see some output such as below, if successful::
   sixlowpan                 spectrum                  stats
   tap-bridge                test                      topology-read
   traffic-control           uan                       virtual-net-device
-  wifi                      wimax
+  wifi
 
   Modules that cannot be built:
   brite                     click                     mpi
