@@ -1341,6 +1341,57 @@ You can export statistics from this helper for use cases such as printing in you
 
 You can refer an example program in ``src/wifi/examples/wifi-co-trace-example.cc`` on how to use these APIs.
 
+BackoffMonitor
+==============
+
+The ``BackoffMonitor`` is a tool enabling to track the backoff status for each Access Category on
+every link of a device. Each Access Category has its own Backoff Monitor, which however is disabled
+by default. To enable a Backoff Monitor, it is necessary to set the ``EnableBackoffMon`` attribute
+of a ``WifiMac`` object to true; as a result, the Backoff Monitor will be enabled for all the Access
+Categories used by that MAC. There are 5 backoff statutes, illustrated by the following state
+machine:
+
+.. sourcecode:: text
+
+   -----------  [1]  -----------      [2]      ----------
+   | UNKNOWN |------>| ONGOING |-------------->| PAUSED |
+   -----------       |         |<--------------|        |
+                     -----------    [3]        ----------
+                       ^    |[4]
+                    [5]|    |       ----------   [6]  -----------
+                       |    ------->|  ZERO  |<-------|  RESET  |
+                       -------------|        |        -----------
+                                    ----------
+
+Transitions from one backoff status to another occur in the following cases:
+
+1. After that the backoff monitor is enabled, the backoff status becomes ONGOING as soon as a
+   backoff value is generated
+2. While the backoff counter is counting down, the backoff status becomes PAUSED as soon as the
+   medium is detected to be busy (which includes the case that another Access Category is
+   granted channel access and transmits), or the PHY is put to sleep/off state
+3. The backoff status is considered to be ONGOING again if the medium is idle for a SIFS plus
+   half a slot after the last medium busy end (two frames separated by a SIFS belong to the same
+   TXOP, while two frames separated by at least a SIFS plus a slot belong to two distinct TXOPs),
+   or immediately when the NAV is reset or when the PHY resumes from a sleep/off state period that
+   lasted less than the reset threshold (configured via the
+   ``ChannelAccessManager::ResetBackoffThreshold`` attribute) and the medium is idle
+4. The backoff status becomes ZERO when channel access is granted, or the backoff counter
+   reaches zero without channel access having been requested, or channel access is granted but
+   nothing is transmitted, or in case of internal collision
+5. When a new backoff value is generated, the backoff status becomes ONGOING
+6. From the RESET status, which is the backoff status that is set when the backoff is reset,
+   the backoff status immediately (i.e., at the same time) switches to ZERO
+
+In order to be notified of the backoff status changes of a specific Access Category, it is necessary
+to connect a callback to the ``BackoffStatus`` trace source of the corresponding ``Txop`` object.
+This trace provides the information contained in the ``BackoffMonitor::StatusTrace`` struct:
+
+* the ID of the link
+* the previous backoff status
+* the current backoff status
+* the number of slots remaining until channel access is granted
+
 HT configuration
 ================
 

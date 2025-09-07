@@ -31,7 +31,37 @@ class WifiMac;
 class Txop;
 
 /**
- * Enumeration for backoff status
+ * Enumeration for backoff status. The state machine is as follows:
+ *
+   \verbatim
+   ┌─────────┐  [1]  ┌─────────┐      [2]      ┌────────┐
+   │ UNKNOWN ├──────►│ ONGOING ├──────────────►│ PAUSED │
+   └─────────┘       │         │◄──────────────┤        │
+                     └─▲────┬──┘    [3]        └────────┘
+                       │    │[4]
+                    [5]│    │       ┌────────┐   [6]  ┌─────────┐
+                       │    └──────►│  ZERO  │◄───────│  RESET  │
+                       └────────────┤        │        └─────────┘
+                                    └────────┘
+   \endverbatim
+ *
+ * [1] After that the backoff monitor is enabled, the backoff status becomes ONGOING as soon as a
+ *     backoff value is generated
+ * [2] While the backoff counter is counting down, the backoff status becomes PAUSED as soon as the
+ *     medium is detected to be busy (which includes the case that another Access Category is
+ *     granted channel access and transmits), or the PHY is put to sleep/off state
+ * [3] The backoff status is considered to be ONGOING again if the medium is idle for a SIFS plus
+ *     half a slot after the last medium busy end (two frames separated by a SIFS belong to the same
+ *     TXOP, while two frames separated by at least a SIFS plus a slot belong to two distinct
+ *     TXOPs), or immediately when the NAV is reset or when the PHY resumes from a sleep/off state
+ *     period that lasted less than the reset threshold (configured via the
+ *     ``ChannelAccessManager::ResetBackoffThreshold`` attribute) and the medium is idle
+ * [4] The backoff status becomes ZERO when channel access is granted, or the backoff counter
+ *     reaches zero without channel access having been requested, or channel access is granted but
+ *     nothing is transmitted, or in case of internal collision
+ * [5] When a new backoff value is generated, the backoff status becomes ONGOING
+ * [6] From the RESET status, which is the backoff status that is set when the backoff is reset,
+ *     the backoff status immediately (i.e., at the same time) switches to ZERO
  */
 enum class BackoffStatus : uint8_t
 {
