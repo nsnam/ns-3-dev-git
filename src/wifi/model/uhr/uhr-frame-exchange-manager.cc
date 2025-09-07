@@ -533,6 +533,14 @@ UhrFrameExchangeManager::SetIcfPaddingAndTxVector(CtrlTriggerHeader& trigger,
         // non-HT duplicate PPDU format using a rate of 6 Mb/s, 12 Mb/s, or 24 Mb/s.
         // (Sec. 35.3.17 of 802.11be D3.0)
         GetWifiRemoteStationManager()->AdjustTxVectorForIcf(txVector);
+
+        // The number of spatial streams in response to the BSRP Trigger frame as the DSO ICF shall
+        // be limited to one for all the scheduled DSO non-AP STAs and shall be indicated in the
+        // BSRP Trigger frame.
+        for (auto& userInfo : trigger)
+        {
+            userInfo.SetSsAllocation(1, 1);
+        }
     }
 
     // add padding (if needed)

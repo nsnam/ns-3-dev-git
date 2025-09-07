@@ -735,6 +735,10 @@ DsoTxopTest::CheckQosNullFrames(const WifiConstPsduMap& psduMap, const WifiTxVec
 {
     NS_LOG_DEBUG("Send DSO ICF response");
 
+    NS_TEST_EXPECT_MSG_EQ(txVector.GetHeMuUserInfoMap().cbegin()->second.nss,
+                          1,
+                          "number of spatial streams in DSO ICF response should be limited to 1");
+
     const auto ta = psduMap.cbegin()->second->GetAddr2();
     std::size_t clientId;
     if (m_staMacs.at(0)->GetLinkIdByAddress(ta))
