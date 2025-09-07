@@ -997,7 +997,6 @@ EhtFrameExchangeManager::SendEmlOmn(const Mac48Address& dest, const MgtEmlOmn& f
     hdr.SetDsNotTo();
     hdr.SetDsNotFrom();
 
-    // get the sequence number for the TWT Setup management frame
     const auto sequence = m_txMiddle->GetNextSequenceNumberFor(&hdr);
     hdr.SetSequenceNumber(sequence);
 
