@@ -309,10 +309,7 @@ UhrFrameExchangeManager::NotifyChannelReleased()
             delay = m_phy->GetSlot() + EMLSR_OR_DSO_RX_PHY_START_DELAY;
         }
 
-        for (const auto& [address, ru] : m_dsoStas)
-        {
-            DsoSwitchBackToPrimary(address, delay);
-        }
+        SwitchToPrimarySubchannel(delay);
 
         m_dsoStas.clear();
     }
@@ -345,14 +342,7 @@ UhrFrameExchangeManager::DsoSwitchBackToPrimary(const Mac48Address& address, con
                                        {m_linkId});
     };
 
-    const auto switchBackDelay =
-        DEFAULT_CHANNEL_SWITCH_DELAY; // TODO: TBD how switch back delay is advertised to AP
-    const auto timeout =
-        switchBackDelay +
-        delay; // switching delay needed by the DSO to switch back to the primary subband, an extra
-               // delay is passed to account for the extra timeout before the PHY switching of the
-               // DSO STA is expected to start
-    Simulator::Schedule(timeout, unblockLink);
+    Simulator::Schedule(delay, unblockLink);
 }
 
 void
@@ -382,10 +372,7 @@ UhrFrameExchangeManager::TbPpduTimeout(WifiPsduMap* psduMap, std::size_t nSolici
             const auto delay =
                 remainingIcrDuration + m_phy->GetSifs() + EMLSR_OR_DSO_RX_PHY_START_DELAY;
 
-            for (const auto& [address, ru] : m_dsoStas)
-            {
-                DsoSwitchBackToPrimary(address, delay);
-            }
+            SwitchToPrimarySubchannel(delay);
 
             m_dsoStas.clear();
         }
@@ -449,6 +436,29 @@ UhrFrameExchangeManager::GetIndicesOccupyingRu(const CtrlTriggerHeader& trigger,
                                                                       m_phy->GetChannelWidth());
     }
     return EhtFrameExchangeManager::GetIndicesOccupyingRu(trigger, aid);
+}
+
+void
+UhrFrameExchangeManager::SwitchToPrimarySubchannel(const Time& delay)
+{
+    NS_LOG_FUNCTION(this << delay);
+
+    Time maxSwitchChannelBackDelay;
+    for (const auto& [address, ru] : m_dsoStas)
+    {
+        auto dsoParams = GetWifiRemoteStationManager()->GetStationDsoParameters(address);
+        maxSwitchChannelBackDelay =
+            dsoParams
+                ? std::max(maxSwitchChannelBackDelay, dsoParams->dsoSwitchBackDelay)
+                : std::max(maxSwitchChannelBackDelay,
+                           DEFAULT_CHANNEL_SWITCH_DELAY); // use default value since exchange of DSO
+                                                          // parameters is not implemented yet
+    }
+
+    for (const auto& [address, ru] : m_dsoStas)
+    {
+        DsoSwitchBackToPrimary(address, maxSwitchChannelBackDelay + delay);
+    }
 }
 
 } // namespace ns3

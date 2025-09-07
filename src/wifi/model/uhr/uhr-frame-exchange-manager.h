@@ -74,10 +74,18 @@ class UhrFrameExchangeManager : public EhtFrameExchangeManager
      * advertised by the DSO STA expires.
      *
      * @param address the link MAC address of the given DSO STA
-     * @param delay the delay after which the DSO STA is expected to switch back to its primary
-     * subband
+     * @param delay the delay after which the DSO STA is expected to have switched back to its
+     * primary subband
      */
     void DsoSwitchBackToPrimary(const Mac48Address& address, const Time& delay);
+
+    /**
+     * All DSO STAs are expected to switch back to their primary subchannel after a certain delay.
+     *
+     * @param delay the delay after which the DSO STAs are expected to start switching back to their
+     * primary subband (hence do not account for the channel switch duration)
+     */
+    void SwitchToPrimarySubchannel(const Time& delay);
 
     /**
      * @return whether at least one DSO STA assigned outside of the P20 subband has responded to the
