@@ -380,6 +380,12 @@ DsoTxopTest::DsoTxopTest(const Params& params)
         // use more robust modulation if interference is generated
         m_mode = "UhrMcs0";
     }
+    // use default DSO channel switch back delay if not provided
+    if (m_params.channelSwitchBackDelays.empty())
+    {
+        m_params.channelSwitchBackDelays =
+            std::vector<Time>(m_nDsoStas, DEFAULT_CHANNEL_SWITCH_DELAY);
+    }
 }
 
 void
@@ -829,7 +835,7 @@ DsoTxopTest::ScheduleChecksSwitchBack(std::size_t clientId, const Time& delay)
 
     // Check that STAs are operating on the expected channel after the end of the switch back
     // delay and DL transmissions to these STAs are blocked by AP during the switch back delay.
-    if (m_params.switchingDelayToPrimary.IsStrictlyPositive())
+    if (m_params.channelSwitchBackDelays.at(clientId).IsStrictlyPositive())
     {
         Simulator::Schedule(delay + MAX_PROPAGATION_DELAY, [=, this]() {
             if (isStaOperatingOnDsoSubband)
@@ -840,9 +846,11 @@ DsoTxopTest::ScheduleChecksSwitchBack(std::size_t clientId, const Time& delay)
     }
     if (isStaOperatingOnDsoSubband)
     {
-        Simulator::Schedule(delay + m_params.switchingDelayToPrimary + TimeStep(1), [=, this]() {
-            CheckChannelSwitchingBack(clientId, SwitchBackStatus::SWITCHED_BACK_TO_PRIMARY);
-        });
+        Simulator::Schedule(
+            delay + m_params.channelSwitchBackDelays.at(clientId) + TimeStep(1),
+            [=, this]() {
+                CheckChannelSwitchingBack(clientId, SwitchBackStatus::SWITCHED_BACK_TO_PRIMARY);
+            });
     }
 }
 
@@ -890,23 +898,20 @@ void
 DsoTxopTest::ScheduleChecksBlockedDlTx(const Time& delay, const Time& timeout)
 {
     NS_LOG_FUNCTION(this << delay);
+    const auto maxSwitchBackDelay = *std::max_element(m_params.channelSwitchBackDelays.cbegin(),
+                                                      m_params.channelSwitchBackDelays.cend());
     for (std::size_t i = 0; i < m_nDsoStas; ++i)
     {
         // check downlink transmissions are not blocked yet.
         Simulator::Schedule(delay - TimeStep(1), [=, this]() { CheckBlockedDlTx(i, false); });
 
         // check downlink transmissions are blocked during the switch back delay at AP.
-        if (m_params.switchingDelayToPrimary.IsStrictlyPositive())
+        if (m_params.channelSwitchBackDelays.at(i).IsStrictlyPositive())
         {
             Simulator::Schedule(delay + MAX_PROPAGATION_DELAY,
                                 [=, this]() { CheckBlockedDlTx(i, true); });
         }
-        const auto switchBackDelay =
-            MicroSeconds(295); // FIXME: switch back delay is not advertised to AP yet
-        const auto apPhy = m_apMac->GetWifiPhy(SINGLE_LINK_OP_ID);
-        const auto switchingDelay = switchBackDelay - (apPhy->GetSifs() + apPhy->GetSlot() +
-                                                       EMLSR_OR_DSO_RX_PHY_START_DELAY);
-        Simulator::Schedule(delay + timeout + switchingDelay + MAX_PROPAGATION_DELAY,
+        Simulator::Schedule(delay + timeout + maxSwitchBackDelay + MAX_PROPAGATION_DELAY,
                             [=, this]() { CheckBlockedDlTx(i, false); });
     }
 }
@@ -1571,10 +1576,14 @@ DsoTxopTest::DoSetup()
     m_apMac->GetQosTxop(AC_BE)->SetTxopLimit(MicroSeconds(1600));
     for (std::size_t i = 0; i < m_nDsoStas; ++i)
     {
+        NS_ASSERT_MSG(i < m_params.channelSwitchBackDelays.size(),
+                      "Not enough switch back delay values provided");
         m_staMacs.at(i)
             ->GetWifiPhy(SINGLE_LINK_OP_ID)
-            ->SetAttribute("ChannelSwitchDelay", TimeValue(m_params.switchingDelayToPrimary));
-
+            ->SetAttribute("ChannelSwitchDelay", TimeValue(m_params.channelSwitchBackDelays.at(i)));
+        m_staMacs.at(i)->GetDsoManager()->SetAttribute(
+            "DsoSwitchBackDelay",
+            TimeValue(m_params.channelSwitchBackDelays.at(i)));
         m_staMacs.at(i)->GetDsoManager()->SetAttribute("ChSwitchToDsoBandDelay",
                                                        TimeValue(m_params.switchingDelayToDso));
 
@@ -2100,187 +2109,226 @@ WifiDsoTestSuite::WifiDsoTestSuite()
                 TestCase::Duration::QUICK);
     expectedDsoSubbands.clear();
 
+    auto printDelays = [](const std::vector<Time>& delays) {
+        std::ostringstream oss;
+        for (const auto& delay : delays)
+        {
+            oss << delay.As(Time::US) << " ";
+        }
+        return oss.str();
+    };
+
     for (const auto nextTxopIsDso : {false, true})
     {
-        /**
-         *             ┌──────┐          ┌────────┐   switch back
-         *             │ BSRP │          │QoS DATA│   to primary
-         *  [AP]       │  TF  │          ├────────┤    |
-         *             │(ICF) │          │QoS DATA│    |
-         *  ───────────┴──────▼┬────────┬┴────────┴┬─┬─▼─ ...
-         *  [DSO STA]         |│QoS Null│          │B│
-         *                    |│(ICR)   │          │A│
-         *                    |├────────┤          ├─┤
-         *  [UHR STA]         |│QoS Null│          │B│
-         *                    |│(ICR)   │          │A│
-         *                    |└────────┘          └─┘
-         *                    |
-         *                  switch
-         *                  to DSO
-         */
-        AddTestCase(new DsoTxopTest({.testName = "Check DSO basic frame exchange sequence with "
-                                                 "single protection enabled (nextTxopIsDso=" +
-                                                 std::to_string(nextTxopIsDso) + ")",
-                                     .numDlMuPpdus = 1,
-                                     .nextTxopIsDso = nextTxopIsDso,
-                                     .protectSingleExchange = true,
-                                     .expectedTxopEndEventInDsoSubband = DsoTxopEvent::TIMEOUT}),
-                    TestCase::Duration::QUICK);
+        for (const auto& channelSwitchBackDelays :
+             std::initializer_list<std::vector<Time>>{{MicroSeconds(250), MicroSeconds(250)},
+                                                      {MicroSeconds(100), MicroSeconds(300)},
+                                                      {MicroSeconds(400), MicroSeconds(200)}})
+        {
+            /**
+             *             ┌──────┐          ┌────────┐   switch back
+             *             │ BSRP │          │QoS DATA│   to primary
+             *  [AP]       │  TF  │          ├────────┤    |
+             *             │(ICF) │          │QoS DATA│    |
+             *  ───────────┴──────▼┬────────┬┴────────┴┬─┬─▼─ ...
+             *  [DSO STA]         |│QoS Null│          │B│
+             *                    |│(ICR)   │          │A│
+             *                    |├────────┤          ├─┤
+             *  [UHR STA]         |│QoS Null│          │B│
+             *                    |│(ICR)   │          │A│
+             *                    |└────────┘          └─┘
+             *                    |
+             *                  switch
+             *                  to DSO
+             */
+            AddTestCase(
+                new DsoTxopTest({.testName = "Check DSO basic frame exchange sequence with "
+                                             "single protection enabled (nextTxopIsDso=" +
+                                             std::to_string(nextTxopIsDso) +
+                                             ", channelSwitchBackDelays=" +
+                                             printDelays(channelSwitchBackDelays) + ")",
+                                 .numDlMuPpdus = 1,
+                                 .channelSwitchBackDelays = channelSwitchBackDelays,
+                                 .nextTxopIsDso = nextTxopIsDso,
+                                 .protectSingleExchange = true,
+                                 .expectedTxopEndEventInDsoSubband = DsoTxopEvent::TIMEOUT}),
+                TestCase::Duration::QUICK);
 
-        /**
-         *                                                 switch back
-         *                                                 to primary
-         *                                                    |
-         *             ┌──────┐          ┌────────┐    ┌──────┐
-         *             │ BSRP │          │QoS DATA│    │      │
-         *  [AP]       │  TF  │          ├────────┤    │CF-END│
-         *             │(ICF) │          │QoS DATA│    │      │
-         *  ───────────┴──────▼┬────────┬┴────────┴┬─┬─┴──────▼── ...
-         *  [DSO STA]         |│QoS Null│          │B│
-         *                    |│(ICR)   │          │A│
-         *                    |├────────┤          ├─┤
-         *  [UHR STA]         |│QoS Null│          │B│
-         *                    |│(ICR)   │          │A│
-         *                    |└────────┘          └─┘
-         *                    |
-         *                  switch
-         *                  to DSO
-         */
-        AddTestCase(
-            new DsoTxopTest({.testName = "Check DSO basic frame exchange sequence with CF-END to "
-                                         "indicate end of TXOP (nextTxopIsDso=" +
-                                         std::to_string(nextTxopIsDso) + ")",
-                             .numDlMuPpdus = 1,
-                             .nextTxopIsDso = nextTxopIsDso,
-                             .expectedTxopEndEventInDsoSubband = DsoTxopEvent::RX_CF_END}),
-            TestCase::Duration::QUICK);
+            /**
+             *                                                 switch back
+             *                                                 to primary
+             *                                                    |
+             *             ┌──────┐          ┌────────┐    ┌──────┐
+             *             │ BSRP │          │QoS DATA│    │      │
+             *  [AP]       │  TF  │          ├────────┤    │CF-END│
+             *             │(ICF) │          │QoS DATA│    │      │
+             *  ───────────┴──────▼┬────────┬┴────────┴┬─┬─┴──────▼── ...
+             *  [DSO STA]         |│QoS Null│          │B│
+             *                    |│(ICR)   │          │A│
+             *                    |├────────┤          ├─┤
+             *  [UHR STA]         |│QoS Null│          │B│
+             *                    |│(ICR)   │          │A│
+             *                    |└────────┘          └─┘
+             *                    |
+             *                  switch
+             *                  to DSO
+             */
+            AddTestCase(
+                new DsoTxopTest(
+                    {.testName = "Check DSO basic frame exchange sequence with CF-END to "
+                                 "indicate end of TXOP (nextTxopIsDso=" +
+                                 std::to_string(nextTxopIsDso) + ", channelSwitchBackDelays=" +
+                                 printDelays(channelSwitchBackDelays) + ")",
+                     .numDlMuPpdus = 1,
+                     .channelSwitchBackDelays = channelSwitchBackDelays,
+                     .nextTxopIsDso = nextTxopIsDso,
+                     .expectedTxopEndEventInDsoSubband = DsoTxopEvent::RX_CF_END}),
+                TestCase::Duration::QUICK);
 
-        /**
-         *                                                               switch back
-         *                                                               to primary
-         *                                                                  |
-         *             ┌──────┐          ┌────────┐    ┌────────┐    ┌──────┐
-         *             │ BSRP │          │QoS DATA│    │QoS DATA│    │      │
-         *  [AP]       │  TF  │          ├────────┤    ├────────┤    │CF-END│
-         *             │(ICF) │          │QoS DATA│    │QoS DATA│    │      │
-         *  ───────────┴──────▼┬────────┬┴────────┴┬─┬─┴────────┴┬─┬─┴──────▼─ ...
-         *  [DSO STA]         |│QoS Null│          │B│           │B│
-         *                    |│(ICR)   │          │A│           │A│
-         *                    |├────────┤          ├─┤           ├─┤
-         *  [UHR STA]         |│QoS Null│          │B│           │B│
-         *                    |│(ICR)   │          │A│           │A│
-         *                    |└────────┘          └─┘           └─┘
-         *                  switch
-         *                  to DSO
-         */
-        AddTestCase(new DsoTxopTest({.testName = "Check DSO operations with multiple downlink "
-                                                 "transmissions (nextTxopIsDso=" +
-                                                 std::to_string(nextTxopIsDso) + ")",
-                                     .numDlMuPpdus = 2,
-                                     .nextTxopIsDso = nextTxopIsDso,
-                                     .expectedTxopEndEventInDsoSubband = DsoTxopEvent::RX_CF_END}),
-                    TestCase::Duration::QUICK);
+            /**
+             *                                                               switch back
+             *                                                               to primary
+             *                                                                  |
+             *             ┌──────┐          ┌────────┐    ┌────────┐    ┌──────┐
+             *             │ BSRP │          │QoS DATA│    │QoS DATA│    │      │
+             *  [AP]       │  TF  │          ├────────┤    ├────────┤    │CF-END│
+             *             │(ICF) │          │QoS DATA│    │QoS DATA│    │      │
+             *  ───────────┴──────▼┬────────┬┴────────┴┬─┬─┴────────┴┬─┬─┴──────▼─ ...
+             *  [DSO STA]         |│QoS Null│          │B│           │B│
+             *                    |│(ICR)   │          │A│           │A│
+             *                    |├────────┤          ├─┤           ├─┤
+             *  [UHR STA]         |│QoS Null│          │B│           │B│
+             *                    |│(ICR)   │          │A│           │A│
+             *                    |└────────┘          └─┘           └─┘
+             *                  switch
+             *                  to DSO
+             */
+            AddTestCase(
+                new DsoTxopTest({.testName = "Check DSO operations with multiple downlink "
+                                             "transmissions (nextTxopIsDso=" +
+                                             std::to_string(nextTxopIsDso) +
+                                             ", channelSwitchBackDelays=" +
+                                             printDelays(channelSwitchBackDelays) + ")",
+                                 .numDlMuPpdus = 2,
+                                 .channelSwitchBackDelays = channelSwitchBackDelays,
+                                 .nextTxopIsDso = nextTxopIsDso,
+                                 .expectedTxopEndEventInDsoSubband = DsoTxopEvent::RX_CF_END}),
+                TestCase::Duration::QUICK);
 
-        /**
-         *                                                       switch back
-         *                                                       to primary
-         *                                                           |
-         *             ┌──────┐          ┌────────┐    ┌────────┐    |
-         *             │ BSRP │          │QoS DATA│    │QoS DATA│    |
-         *  [AP]       │  TF  │          ├────────┤    ├────────┤    |
-         *             │(ICF) │          │QoS DATA│    │QoS DATA│    |
-         *  ───────────┴──────▼┬────────┬┴────────┴┬─┬─┴────────┴┬─┬─▼─ ...
-         *  [DSO STA]         |│QoS Null│          │B│           │B│
-         *                    |│(ICR)   │          │A│           │A│
-         *                    |├────────┤          ├─┤           ├─┤
-         *  [UHR STA]         |│QoS Null│          │B│           │B│
-         *                    |│(ICR)   │          │A│           │A│
-         *                    |└────────┘          └─┘           └─┘
-         *                  switch
-         *                  to DSO
-         */
-        AddTestCase(new DsoTxopTest({
-                        .testName = "Check DSO operations with SIFS bursting (nextTxopIsDso=" +
-                                    std::to_string(nextTxopIsDso) + ")",
-                        .numDlMuPpdus = 2,
-                        .nextTxopIsDso = nextTxopIsDso,
-                        .protectSingleExchange = true,
-                        .expectedTxopEndEventInDsoSubband = DsoTxopEvent::TIMEOUT,
-                    }),
-                    TestCase::Duration::QUICK);
+            /**
+             *                                                       switch back
+             *                                                       to primary
+             *                                                           |
+             *             ┌──────┐          ┌────────┐    ┌────────┐    |
+             *             │ BSRP │          │QoS DATA│    │QoS DATA│    |
+             *  [AP]       │  TF  │          ├────────┤    ├────────┤    |
+             *             │(ICF) │          │QoS DATA│    │QoS DATA│    |
+             *  ───────────┴──────▼┬────────┬┴────────┴┬─┬─┴────────┴┬─┬─▼─ ...
+             *  [DSO STA]         |│QoS Null│          │B│           │B│
+             *                    |│(ICR)   │          │A│           │A│
+             *                    |├────────┤          ├─┤           ├─┤
+             *  [UHR STA]         |│QoS Null│          │B│           │B│
+             *                    |│(ICR)   │          │A│           │A│
+             *                    |└────────┘          └─┘           └─┘
+             *                  switch
+             *                  to DSO
+             */
+            AddTestCase(
+                new DsoTxopTest({
+                    .testName = "Check DSO operations with SIFS bursting (nextTxopIsDso=" +
+                                std::to_string(nextTxopIsDso) + ", channelSwitchBackDelays=" +
+                                printDelays(channelSwitchBackDelays) + ")",
+                    .numDlMuPpdus = 2,
+                    .channelSwitchBackDelays = channelSwitchBackDelays,
+                    .nextTxopIsDso = nextTxopIsDso,
+                    .protectSingleExchange = true,
+                    .expectedTxopEndEventInDsoSubband = DsoTxopEvent::TIMEOUT,
+                }),
+                TestCase::Duration::QUICK);
 
-        /**
-         *             ┌──────┐        switch back
-         *             │ BSRP │        to primary
-         *  [AP]       │  TF  │           |
-         *             │(ICF) │           |
-         *  ───────────┴──────▼┬────────┬─▼─ ...
-         *  [DSO STA]         |│QoS Null│
-         *                    |│(ICR)   │
-         *                    |├────────┤
-         *  [UHR STA]         |│QoS Null│
-         *                    |│(ICR)   │
-         *                    |└────────┘
-         *                  switch
-         *                  to DSO
-         */
-        AddTestCase(new DsoTxopTest({.testName = "Check DSO operations with no DL MU PPDU after "
-                                                 "ICF response (nextTxopIsDso=" +
-                                                 std::to_string(nextTxopIsDso) + ")",
-                                     .numDlMuPpdus = 0,
-                                     .nextTxopIsDso = nextTxopIsDso,
-                                     .protectSingleExchange = true,
-                                     .expectedTxopEndEventInDsoSubband = DsoTxopEvent::TIMEOUT}),
-                    TestCase::Duration::QUICK);
+            /**
+             *             ┌──────┐        switch back
+             *             │ BSRP │        to primary
+             *  [AP]       │  TF  │           |
+             *             │(ICF) │           |
+             *  ───────────┴──────▼┬────────┬─▼─ ...
+             *  [DSO STA]         |│QoS Null│
+             *                    |│(ICR)   │
+             *                    |├────────┤
+             *  [UHR STA]         |│QoS Null│
+             *                    |│(ICR)   │
+             *                    |└────────┘
+             *                  switch
+             *                  to DSO
+             */
+            AddTestCase(
+                new DsoTxopTest({.testName = "Check DSO operations with no DL MU PPDU after "
+                                             "ICF response (nextTxopIsDso=" +
+                                             std::to_string(nextTxopIsDso) +
+                                             ", channelSwitchBackDelays=" +
+                                             printDelays(channelSwitchBackDelays) + ")",
+                                 .numDlMuPpdus = 0,
+                                 .channelSwitchBackDelays = channelSwitchBackDelays,
+                                 .nextTxopIsDso = nextTxopIsDso,
+                                 .protectSingleExchange = true,
+                                 .expectedTxopEndEventInDsoSubband = DsoTxopEvent::TIMEOUT}),
+                TestCase::Duration::QUICK);
 
-        /**
-         *             ┌──────┐          ┌──────┐
-         *             │ BSRP │          │      │
-         *  [AP]       │  TF  │          │CF-END│
-         *             │(ICF) │          │      │
-         *  ───────────┴──────▼┬────────┬┴──────▼─ ...
-         *  [DSO STA]         |│QoS Null│       |
-         *                    |│(ICR)   │       |
-         *                    |├────────┤       │
-         *  [UHR STA]         |│QoS Null│       │
-         *                    |│(ICR)   │       │
-         *                    |└────────┘       │
-         *                    |                 |
-         *                  switch          switch back
-         *                  to DSO          to primary
-         */
-        AddTestCase(new DsoTxopTest(
-                        {.testName = "Check DSO operations with truncated TXOP (nextTxopIsDso=" +
-                                     std::to_string(nextTxopIsDso) + ")",
-                         .numDlMuPpdus = 0,
-                         .nextTxopIsDso = nextTxopIsDso,
-                         .expectedTxopEndEventInDsoSubband = DsoTxopEvent::RX_CF_END}),
-                    TestCase::Duration::QUICK);
+            /**
+             *             ┌──────┐          ┌──────┐
+             *             │ BSRP │          │      │
+             *  [AP]       │  TF  │          │CF-END│
+             *             │(ICF) │          │      │
+             *  ───────────┴──────▼┬────────┬┴──────▼─ ...
+             *  [DSO STA]         |│QoS Null│       |
+             *                    |│(ICR)   │       |
+             *                    |├────────┤       │
+             *  [UHR STA]         |│QoS Null│       │
+             *                    |│(ICR)   │       │
+             *                    |└────────┘       │
+             *                    |                 |
+             *                  switch          switch back
+             *                  to DSO          to primary
+             */
+            AddTestCase(
+                new DsoTxopTest(
+                    {.testName = "Check DSO operations with truncated TXOP (nextTxopIsDso=" +
+                                 std::to_string(nextTxopIsDso) + ", channelSwitchBackDelays=" +
+                                 printDelays(channelSwitchBackDelays) + ")",
+                     .numDlMuPpdus = 0,
+                     .channelSwitchBackDelays = channelSwitchBackDelays,
+                     .nextTxopIsDso = nextTxopIsDso,
+                     .expectedTxopEndEventInDsoSubband = DsoTxopEvent::RX_CF_END}),
+                TestCase::Duration::QUICK);
 
-        /**
-         *             ┌──────┐          ┌────────┐        ┌────────┐  switch back
-         *             │ BSRP │          │QoS DATA│        │QoS DATA│  to primary
-         *  [AP]       │  TF  │          ├────────┤        ├────────┤    |
-         *             │(ICF) │          │QoS DATA│        │QoS DATA│    │
-         *  ───────────┴──────▼┬────────┬┴────────┴┬─┬─...─┴────────┴┬─┬─▼── ...
-         *  [DSO STA]         ││QoS Null│          │B│               │B│
-         *                    ││(ICR)   │          │A│               │A│
-         *                    │├────────┤          ├─┤               ├─┤
-         *  [UHR STA]         ││QoS Null│          │B│               │B│
-         *                    ││(ICR)   │          │A│               │A│
-         *                    │└────────┘          └─┘               └─┘
-         *                    |
-         *                  switch
-         *                  to DSO
-         */
-        AddTestCase(
-            new DsoTxopTest({.testName = "Check DSO operations with downlink transmissions "
-                                         "covering the whole TXOP duration (nextTxopIsDso=" +
-                                         std::to_string(nextTxopIsDso) + ")",
-                             .numDlMuPpdus = 8,
-                             .nextTxopIsDso = nextTxopIsDso,
-                             .expectedTxopEndEventInDsoSubband = DsoTxopEvent::TIMEOUT}),
-            TestCase::Duration::QUICK);
+            /**
+             *             ┌──────┐          ┌────────┐        ┌────────┐  switch back
+             *             │ BSRP │          │QoS DATA│        │QoS DATA│  to primary
+             *  [AP]       │  TF  │          ├────────┤        ├────────┤    |
+             *             │(ICF) │          │QoS DATA│        │QoS DATA│    │
+             *  ───────────┴──────▼┬────────┬┴────────┴┬─┬─...─┴────────┴┬─┬─▼── ...
+             *  [DSO STA]         ││QoS Null│          │B│               │B│
+             *                    ││(ICR)   │          │A│               │A│
+             *                    │├────────┤          ├─┤               ├─┤
+             *  [UHR STA]         ││QoS Null│          │B│               │B│
+             *                    ││(ICR)   │          │A│               │A│
+             *                    │└────────┘          └─┘               └─┘
+             *                    |
+             *                  switch
+             *                  to DSO
+             */
+            AddTestCase(
+                new DsoTxopTest({.testName = "Check DSO operations with downlink transmissions "
+                                             "covering the whole TXOP duration (nextTxopIsDso=" +
+                                             std::to_string(nextTxopIsDso) +
+                                             ", channelSwitchBackDelays=" +
+                                             printDelays(channelSwitchBackDelays) + ")",
+                                 .numDlMuPpdus = 8,
+                                 .channelSwitchBackDelays = channelSwitchBackDelays,
+                                 .nextTxopIsDso = nextTxopIsDso,
+                                 .expectedTxopEndEventInDsoSubband = DsoTxopEvent::TIMEOUT}),
+                TestCase::Duration::QUICK);
+        }
     }
 
     /**
