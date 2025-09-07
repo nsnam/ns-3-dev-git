@@ -386,6 +386,11 @@ DsoTxopTest::DsoTxopTest(const Params& params)
         m_params.channelSwitchBackDelays =
             std::vector<Time>(m_nDsoStas, DEFAULT_CHANNEL_SWITCH_DELAY);
     }
+    // use default DSO padding delay if not provided
+    if (m_params.paddingDelays.empty())
+    {
+        m_params.paddingDelays = std::vector<Time>(m_nDsoStas, MicroSeconds(0));
+    }
 }
 
 void
@@ -542,7 +547,8 @@ void
 DsoTxopTest::CheckIcf(const WifiConstPsduMap& psduMap, const WifiTxVector& txVector)
 {
     CtrlTriggerHeader trigger;
-    psduMap.cbegin()->second->GetPayload(0)->PeekHeader(trigger);
+    auto mpdu = *psduMap.begin()->second->begin();
+    mpdu->GetPacket()->PeekHeader(trigger);
     if (!trigger.IsBsrp())
     {
         // not a DSO ICF
@@ -562,20 +568,40 @@ DsoTxopTest::CheckIcf(const WifiConstPsduMap& psduMap, const WifiTxVector& txVec
         true,
         "DSO ICF shall be sent at 6 Mb/s, 12 Mb/s, or 24 Mb/s");
 
+    auto apPhy = m_apMac->GetWifiPhy(SINGLE_LINK_OP_ID);
+    const auto icfDuration = WifiPhy::CalculateTxDuration(psduMap, txVector, apPhy->GetPhyBand());
+
+    const auto maxPaddingDelay =
+        *std::max_element(m_params.paddingDelays.cbegin(), m_params.paddingDelays.cend());
+    if (maxPaddingDelay.IsStrictlyPositive())
+    {
+        // compare the TX duration of this Trigger Frame to that of the Trigger Frame with no
+        // padding added
+        trigger.SetPaddingSize(0);
+        auto pkt = Create<Packet>();
+        pkt->AddHeader(trigger);
+        auto icfDurationWithout =
+            WifiPhy::CalculateTxDuration(Create<WifiPsdu>(pkt, mpdu->GetHeader()),
+                                         txVector,
+                                         apPhy->GetPhyBand());
+
+        NS_TEST_EXPECT_MSG_EQ(icfDuration,
+                              icfDurationWithout + maxPaddingDelay,
+                              "Unexpected TX duration of the DSO ICF with padding "
+                                  << maxPaddingDelay.As(Time::US));
+    }
+
     if (m_countIcf > 1)
     {
         return; // only check the ICF of the first DSO TXOP
     }
-
-    auto apPhy = m_apMac->GetWifiPhy(SINGLE_LINK_OP_ID);
-    auto icfDuration = WifiPhy::CalculateTxDuration(psduMap, txVector, apPhy->GetPhyBand());
 
     if (m_params.corruptIcf)
     {
         NS_LOG_DEBUG("CORRUPTED");
         for (std::size_t i = 0; i < m_staErrorModels.size(); ++i)
         {
-            m_staErrorModels.at(i)->SetList({psduMap.cbegin()->second->GetPayload(0)->GetUid()});
+            m_staErrorModels.at(i)->SetList({mpdu->GetPacket()->GetUid()});
             const auto uhrFem = DynamicCast<UhrFrameExchangeManager>(
                 m_staMacs.at(i)->GetFrameExchangeManager(SINGLE_LINK_OP_ID));
             auto tbTxVector = uhrFem->GetHeTbTxVector(trigger, m_apMac->GetAddress());
@@ -1584,6 +1610,8 @@ DsoTxopTest::DoSetup()
         m_staMacs.at(i)->GetDsoManager()->SetAttribute(
             "DsoSwitchBackDelay",
             TimeValue(m_params.channelSwitchBackDelays.at(i)));
+        m_staMacs.at(i)->GetDsoManager()->SetAttribute("DsoPaddingDelay",
+                                                       TimeValue(m_params.paddingDelays.at(i)));
         m_staMacs.at(i)->GetDsoManager()->SetAttribute("ChSwitchToDsoBandDelay",
                                                        TimeValue(m_params.switchingDelayToDso));
 
@@ -2125,34 +2153,43 @@ WifiDsoTestSuite::WifiDsoTestSuite()
                                                       {MicroSeconds(100), MicroSeconds(300)},
                                                       {MicroSeconds(400), MicroSeconds(200)}})
         {
-            /**
-             *             ┌──────┐          ┌────────┐   switch back
-             *             │ BSRP │          │QoS DATA│   to primary
-             *  [AP]       │  TF  │          ├────────┤    |
-             *             │(ICF) │          │QoS DATA│    |
-             *  ───────────┴──────▼┬────────┬┴────────┴┬─┬─▼─ ...
-             *  [DSO STA]         |│QoS Null│          │B│
-             *                    |│(ICR)   │          │A│
-             *                    |├────────┤          ├─┤
-             *  [UHR STA]         |│QoS Null│          │B│
-             *                    |│(ICR)   │          │A│
-             *                    |└────────┘          └─┘
-             *                    |
-             *                  switch
-             *                  to DSO
-             */
-            AddTestCase(
-                new DsoTxopTest({.testName = "Check DSO basic frame exchange sequence with "
-                                             "single protection enabled (nextTxopIsDso=" +
-                                             std::to_string(nextTxopIsDso) +
-                                             ", channelSwitchBackDelays=" +
-                                             printDelays(channelSwitchBackDelays) + ")",
-                                 .numDlMuPpdus = 1,
-                                 .channelSwitchBackDelays = channelSwitchBackDelays,
-                                 .nextTxopIsDso = nextTxopIsDso,
-                                 .protectSingleExchange = true,
-                                 .expectedTxopEndEventInDsoSubband = DsoTxopEvent::TIMEOUT}),
-                TestCase::Duration::QUICK);
+            for (const auto& paddingDelays :
+                 std::initializer_list<std::vector<Time>>{{MicroSeconds(0), MicroSeconds(0)},
+                                                          {MicroSeconds(256), MicroSeconds(256)},
+                                                          {MicroSeconds(64), MicroSeconds(128)},
+                                                          {MicroSeconds(1024), MicroSeconds(512)}})
+            {
+                /**
+                 *             ┌──────┐          ┌────────┐   switch back
+                 *             │ BSRP │          │QoS DATA│   to primary
+                 *  [AP]       │  TF  │          ├────────┤    |
+                 *             │(ICF) │          │QoS DATA│    |
+                 *  ───────────┴──────▼┬────────┬┴────────┴┬─┬─▼─ ...
+                 *  [DSO STA]         |│QoS Null│          │B│
+                 *                    |│(ICR)   │          │A│
+                 *                    |├────────┤          ├─┤
+                 *  [UHR STA]         |│QoS Null│          │B│
+                 *                    |│(ICR)   │          │A│
+                 *                    |└────────┘          └─┘
+                 *                    |
+                 *                  switch
+                 *                  to DSO
+                 */
+                AddTestCase(
+                    new DsoTxopTest(
+                        {.testName = "Check DSO basic frame exchange sequence with "
+                                     "single protection enabled (nextTxopIsDso=" +
+                                     std::to_string(nextTxopIsDso) + ", channelSwitchBackDelays=" +
+                                     printDelays(channelSwitchBackDelays) +
+                                     ", paddingDelays=" + printDelays(paddingDelays) + ")",
+                         .numDlMuPpdus = 1,
+                         .channelSwitchBackDelays = channelSwitchBackDelays,
+                         .paddingDelays = paddingDelays,
+                         .nextTxopIsDso = nextTxopIsDso,
+                         .protectSingleExchange = true,
+                         .expectedTxopEndEventInDsoSubband = DsoTxopEvent::TIMEOUT}),
+                    TestCase::Duration::QUICK);
+            }
 
             /**
              *                                                 switch back

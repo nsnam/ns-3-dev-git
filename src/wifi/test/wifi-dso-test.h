@@ -183,6 +183,7 @@ class DsoTxopTest : public DsoTestBase
             0}; //!< the number of UL MU PPDU to be transmitted by the STA during DSO TXOP
         Time switchingDelayToDso; //!< the delay to switch the channel to the DSO subband
         std::vector<Time> channelSwitchBackDelays; ///< channel switch back delay per non-AP STAs
+        std::vector<Time> paddingDelays;           ///< padding delay per non-AP STAs
         bool nextTxopIsDso{
             false}; //!< whether the next TXOP following the DSO TXOP under test is also a DSO TXOP
         bool protectSingleExchange{false};        //!< whether single protection mechanism is used
