@@ -45,9 +45,7 @@ DsoManager::GetTypeId()
             .SetGroupName("Wifi")
             .AddAttribute("DsoSwitchBackDelay",
                           "The DSO Switch Back Delay.",
-                          TimeValue(MicroSeconds(16 /* aSIFSTime */ + 9 /* aSlotTime */ +
-                                                 20 /* aRxPHYStartDelay */ +
-                                                 DEFAULT_CHANNEL_SWITCH_DELAY_USEC)),
+                          TimeValue(MicroSeconds(DEFAULT_CHANNEL_SWITCH_DELAY_USEC)),
                           MakeTimeAccessor(&DsoManager::m_dsoSwitchBackDelay),
                           MakeTimeChecker())
             .AddTraceSource("DsoTxopEvent",
@@ -235,6 +233,12 @@ DsoManager::SwitchPhyChannel(uint8_t linkId,
 
     auto phy = m_staMac->GetWifiPhy(linkId);
     const auto initialDelay = phy->GetChannelSwitchDelay();
+
+    NS_ABORT_MSG_IF(initialDelay > m_dsoSwitchBackDelay,
+                    "Channel switch delay ("
+                        << initialDelay.As(Time::US)
+                        << ") should be shorter than the DSO channel switch back delay ("
+                        << m_dsoSwitchBackDelay.As(Time::US) << ")");
 
     // switch channel within the provided delay
     phy->SetAttribute("ChannelSwitchDelay", TimeValue(delay));

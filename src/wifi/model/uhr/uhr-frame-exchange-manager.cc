@@ -346,16 +346,12 @@ UhrFrameExchangeManager::DsoSwitchBackToPrimary(const Mac48Address& address, con
     };
 
     const auto switchBackDelay =
-        OFDM_SIFS_TIME_20MHZ + OFDM_SLOT_TIME_20MHZ + EMLSR_OR_DSO_RX_PHY_START_DELAY +
         DEFAULT_CHANNEL_SWITCH_DELAY; // TODO: TBD how switch back delay is advertised to AP
     const auto timeout =
-        switchBackDelay + delay - m_phy->GetSifs() - m_phy->GetSlot() -
-        EMLSR_OR_DSO_RX_PHY_START_DELAY; // switch back delay accounts for a SIFS + slot + PHY
-                                         // RXSTART delay, removing this quantity gives the
-                                         // switching delay needed by the DSO to switch back to the
-                                         // primary subband, an extra delay is passed to account for
-                                         // the extra timeout before the PHY switching of the DSO
-                                         // STA is expected to start
+        switchBackDelay +
+        delay; // switching delay needed by the DSO to switch back to the primary subband, an extra
+               // delay is passed to account for the extra timeout before the PHY switching of the
+               // DSO STA is expected to start
     Simulator::Schedule(timeout, unblockLink);
 }
 
