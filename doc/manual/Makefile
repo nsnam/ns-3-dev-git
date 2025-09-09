@@ -43,6 +43,7 @@ SOURCES = \
 	source/tracing.rst \
 	source/troubleshoot.rst \
 	source/utilities.rst \
+	source/working-with-cilicon.rst \
 	source/working-with-cmake.rst \
 	source/working-with-docker.rst \
 	source/working-with-git.rst \
