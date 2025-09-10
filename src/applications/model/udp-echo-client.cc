@@ -90,7 +90,6 @@ UdpEchoClient::UdpEchoClient()
 UdpEchoClient::~UdpEchoClient()
 {
     NS_LOG_FUNCTION(this);
-    m_socket = nullptr;
 
     delete[] m_data;
     m_data = nullptr;
@@ -220,7 +219,6 @@ UdpEchoClient::StopApplication()
     {
         m_socket->Close();
         m_socket->SetRecvCallback(MakeNullCallback<void, Ptr<Socket>>());
-        m_socket = nullptr;
     }
 
     Simulator::Cancel(m_sendEvent);

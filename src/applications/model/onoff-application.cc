@@ -117,13 +117,6 @@ OnOffApplication::SetMaxBytes(uint64_t maxBytes)
     m_maxBytes = maxBytes;
 }
 
-Ptr<Socket>
-OnOffApplication::GetSocket() const
-{
-    NS_LOG_FUNCTION(this);
-    return m_socket;
-}
-
 int64_t
 OnOffApplication::AssignStreams(int64_t stream)
 {
@@ -139,9 +132,7 @@ void
 OnOffApplication::DoDispose()
 {
     NS_LOG_FUNCTION(this);
-
     CancelEvents();
-    m_socket = nullptr;
     m_unsentPacket = nullptr;
     // chain up
     SourceApplication::DoDispose();

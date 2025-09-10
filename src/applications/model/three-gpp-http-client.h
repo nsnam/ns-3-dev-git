@@ -21,7 +21,6 @@
 namespace ns3
 {
 
-class Socket;
 class Packet;
 class ThreeGppHttpVariables;
 
@@ -112,12 +111,6 @@ class ThreeGppHttpClient : public SourceApplication
      * @return The object TypeId.
      */
     static TypeId GetTypeId();
-
-    /**
-     * Returns a pointer to the associated socket.
-     * @return Pointer to the associated socket.
-     */
-    Ptr<Socket> GetSocket() const;
 
     /// The possible states of the application.
     enum State_t
@@ -362,8 +355,6 @@ class ThreeGppHttpClient : public SourceApplication
 
     /// The current state of the client application. Begins with NOT_STARTED.
     State_t m_state{NOT_STARTED};
-    /// The socket for sending and receiving packets to/from the web server.
-    Ptr<Socket> m_socket;
     /// According to the content length specified by the ThreeGppHttpHeader.
     uint32_t m_objectBytesToBeReceived{0};
     /// The packet constructed of one or more parts with ThreeGppHttpHeader.

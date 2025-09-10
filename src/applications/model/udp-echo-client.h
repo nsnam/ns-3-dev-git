@@ -20,7 +20,6 @@
 namespace ns3
 {
 
-class Socket;
 class Packet;
 
 /**
@@ -170,7 +169,6 @@ class UdpEchoClient : public SourceApplication
     uint8_t* m_data{nullptr}; //!< packet payload data
 
     uint32_t m_sent{0};                 //!< Counter for sent packets
-    Ptr<Socket> m_socket;               //!< Socket
     std::optional<uint16_t> m_peerPort; //!< Remote peer port (deprecated) // NS_DEPRECATED_3_44
     EventId m_sendEvent;                //!< Event to send the next packet
 
