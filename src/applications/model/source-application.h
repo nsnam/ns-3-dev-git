@@ -73,6 +73,8 @@ class SourceApplication : public Application
 
     Ptr<Socket> m_socket; //!< Socket
 
+    TypeId m_protocolTid; //!< Protocol TypeId value
+
     Address m_peer;  //!< Peer address
     Address m_local; //!< Local address to bind to
     uint8_t m_tos;   //!< The packets Type of Service

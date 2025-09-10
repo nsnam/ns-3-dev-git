@@ -106,7 +106,6 @@ class BulkSendApplication : public SourceApplication
     uint32_t m_sendSize;                 //!< Size of data to send each time
     uint64_t m_maxBytes;                 //!< Limit total number of bytes sent
     uint64_t m_totBytes{0};              //!< Total bytes sent so far
-    TypeId m_tid;                        //!< The type of protocol to use.
     uint32_t m_seq{0};                   //!< Sequence
     Ptr<Packet> m_unsentPacket;          //!< Variable to cache unsent packet
     bool m_enableSeqTsSizeHeader{false}; //!< Enable or disable the SeqTsSizeHeader

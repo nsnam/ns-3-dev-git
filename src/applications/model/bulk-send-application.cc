@@ -52,7 +52,7 @@ BulkSendApplication::GetTypeId()
             .AddAttribute("Protocol",
                           "The type of protocol to use.",
                           TypeIdValue(TcpSocketFactory::GetTypeId()),
-                          MakeTypeIdAccessor(&BulkSendApplication::m_tid),
+                          MakeTypeIdAccessor(&BulkSendApplication::m_protocolTid),
                           MakeTypeIdChecker())
             .AddAttribute("EnableSeqTsSizeHeader",
                           "Add SeqTsSizeHeader to each packet",
@@ -107,7 +107,7 @@ BulkSendApplication::StartApplication() // Called at time specified by Start
     // Create the socket if not already
     if (!m_socket)
     {
-        m_socket = Socket::CreateSocket(GetNode(), m_tid);
+        m_socket = Socket::CreateSocket(GetNode(), m_protocolTid);
         int ret = -1;
 
         // Fatal error if socket type is not NS3_SOCK_STREAM or NS3_SOCK_SEQPACKET
