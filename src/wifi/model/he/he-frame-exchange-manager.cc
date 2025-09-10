@@ -1276,6 +1276,25 @@ HeFrameExchangeManager::GetCtsTxVectorAfterMuRts(const CtrlTriggerHeader& trigge
     return txVector;
 }
 
+WifiTxVector
+HeFrameExchangeManager::GetBlockAckReqTxVector(Mac48Address to) const
+{
+    if (m_txParams.m_acknowledgment &&
+        m_txParams.m_acknowledgment->method == WifiAcknowledgment::DL_MU_BAR_BA_SEQUENCE)
+    {
+        auto acknowledgment =
+            static_cast<WifiDlMuBarBaSequence*>(m_txParams.m_acknowledgment.get());
+        if (acknowledgment->stationsSendBlockAckReqTo.contains(to))
+        {
+            NS_LOG_DEBUG("Acknowledging a DL MU PPDU with DL_MU_BAR_BA_SEQUENCE sequence");
+            return GetWifiRemoteStationManager()->GetBlockAckReqTxVector(to, m_txParams.m_txVector);
+        }
+    }
+
+    // check the parent class implementation
+    return VhtFrameExchangeManager::GetBlockAckReqTxVector(to);
+}
+
 Time
 HeFrameExchangeManager::GetTxDuration(uint32_t ppduPayloadSize,
                                       Mac48Address receiver,

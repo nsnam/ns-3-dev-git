@@ -1116,6 +1116,31 @@ class WifiRemoteStationManager : public Object
     WifiMode GetControlAnswerMode(WifiMode reqMode) const;
 
     /**
+     * Return a TXVECTOR for a BlockAckReq frame sent in a frame exchange sequence involving the
+     * transmission of a data frame (e.g., a BAR-BA sequence after a DL MU PPDU). The returned
+     * TXVECTOR is determined as the TXVECTOR that would be used to transmit a BlockAck in response
+     * to a data frame sent with the given TXVECTOR.
+     *
+     * @param to the MAC address of the BlockAckReq receiver
+     * @param dataTxVector the TXVECTOR of the Data frame
+     * @return TXVECTOR for the BlockAckReq
+     */
+    virtual WifiTxVector GetBlockAckReqTxVector(Mac48Address to,
+                                                const WifiTxVector& dataTxVector) const;
+
+    /**
+     * Return a TXVECTOR for a BlockAckReq frame sent in a frame exchange sequence that does not
+     * involve the transmission of a data frame (e.g., a BAR scheduled to advance the recipient
+     * window). The returned TXVECTOR is determined as the TXVECTOR that would be used to transmit
+     * a BlockAck in response to a data frame sent to the given receiver and using the given width.
+     *
+     * @param to the MAC address of the BlockAckReq receiver
+     * @param allowedWidth the allowed width to send this BlockAckReq
+     * @return TXVECTOR for the BlockAckReq
+     */
+    virtual WifiTxVector GetBlockAckReqTxVector(Mac48Address to, MHz_t allowedWidth);
+
+    /**
      * Should be invoked whenever the RtsTimeout associated to a transmission
      * attempt expires.
      *

@@ -268,6 +268,14 @@ class HtFrameExchangeManager : public QosFrameExchangeManager
     virtual bool SendMpduFromBaManager(Ptr<WifiMpdu> mpdu, Time availableTime, bool initialFrame);
 
     /**
+     * Get the TXVECTOR to use to send a BlockAckReq to the given recipient.
+     *
+     * @param to the MAC address of the given recipient
+     * @return the TXVECTOR to use to send a BlockAckReq to the given recipient
+     */
+    virtual WifiTxVector GetBlockAckReqTxVector(Mac48Address to) const;
+
+    /**
      * Given a non-broadcast QoS data frame, prepare the PSDU to transmit by attempting
      * A-MSDU and A-MPDU aggregation (if enabled), while making sure that the frame
      * exchange (possibly including protection and acknowledgment) is completed within

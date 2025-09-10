@@ -873,6 +873,22 @@ WifiRemoteStationManager::GetBlockAckTxVector(Mac48Address to,
     return v;
 }
 
+WifiTxVector
+WifiRemoteStationManager::GetBlockAckReqTxVector(Mac48Address to,
+                                                 const WifiTxVector& dataTxVector) const
+{
+    return GetBlockAckTxVector(to, dataTxVector);
+}
+
+WifiTxVector
+WifiRemoteStationManager::GetBlockAckReqTxVector(Mac48Address to, MHz_t allowedWidth)
+{
+    WifiMacHeader hdr(WIFI_MAC_QOSDATA);
+    hdr.SetAddr1(to);
+    auto txVector = GetDataTxVector(hdr, allowedWidth);
+    return GetBlockAckReqTxVector(to, txVector);
+}
+
 WifiMode
 WifiRemoteStationManager::GetControlAnswerMode(WifiMode reqMode) const
 {

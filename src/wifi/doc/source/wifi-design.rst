@@ -194,6 +194,12 @@ Some implementation choices that are not imposed by the standard are listed belo
 * Once an A-MSDU is created, it is no longer modified, even before it is actually transmitted
   for the first time. This means that this A-MSDU cannot be aggregated to other MSDUs using A-MSDU
   aggregation.
+* A BlockAckReq in a frame exchange sequence involving the transmission of a data frame (e.g., a
+  BAR-BA sequence after a DL MU PPDU) is sent using the TXVECTOR that would be used to transmit a
+  BlockAck in response to that data frame.
+* A BlockAckReq in a frame exchange sequence that does not involve the transmission of a data frame
+  (e.g., a BAR scheduled to advance the recipient window) is sent using the TXVECTOR that would be
+  used to transmit a BlockAck in response to a data frame sent to the BlockAckReq receiver.
 
 Design Details
 **************

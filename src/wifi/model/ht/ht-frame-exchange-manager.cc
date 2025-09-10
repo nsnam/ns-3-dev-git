@@ -724,13 +724,10 @@ HtFrameExchangeManager::SendMpduFromBaManager(Ptr<WifiMpdu> mpdu,
         return false;
     }
 
-    // Prepare the TX parameters. Note that the default ack manager expects the
-    // data TxVector in the m_txVector field to compute the BlockAck TxVector.
-    // The m_txVector field of the TX parameters is set to the BlockAckReq TxVector
-    // a few lines below.
+    // Prepare the TX parameters. Note that the default ack manager expects the data TxVector in the
+    // m_txVector field to compute the BlockAck TxVector.
     WifiTxParameters txParams;
-    txParams.m_txVector =
-        GetWifiRemoteStationManager()->GetDataTxVector(mpdu->GetHeader(), m_allowedWidth);
+    txParams.m_txVector = GetBlockAckReqTxVector(mpdu->GetHeader().GetAddr1());
 
     if (!TryAddMpdu(mpdu, txParams, availableTime))
     {
@@ -740,13 +737,23 @@ HtFrameExchangeManager::SendMpduFromBaManager(Ptr<WifiMpdu> mpdu,
 
     NS_ABORT_IF(txParams.m_acknowledgment->method != WifiAcknowledgment::BLOCK_ACK);
 
-    // the BlockAckReq frame is sent using the same TXVECTOR as the BlockAck frame
-    auto blockAcknowledgment = static_cast<WifiBlockAck*>(txParams.m_acknowledgment.get());
-    txParams.m_txVector = blockAcknowledgment->blockAckTxVector;
-
     // we can transmit the BlockAckReq frame
     SendPsduWithProtection(GetWifiPsdu(mpdu, txParams.m_txVector), txParams);
     return true;
+}
+
+WifiTxVector
+HtFrameExchangeManager::GetBlockAckReqTxVector(Mac48Address to) const
+{
+    if (m_txParams.m_acknowledgment &&
+        m_txParams.m_acknowledgment->method == WifiAcknowledgment::BAR_BLOCK_ACK)
+    {
+        NS_LOG_DEBUG("Acknowledging a data frame with BAR_BLOCK_ACK sequence");
+        return GetWifiRemoteStationManager()->GetBlockAckReqTxVector(to, m_txParams.m_txVector);
+    }
+
+    // this is a BAR sent in a frame exchange sequence that does not include a data frame
+    return GetWifiRemoteStationManager()->GetBlockAckReqTxVector(to, m_allowedWidth);
 }
 
 bool
