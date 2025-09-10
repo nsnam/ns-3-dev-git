@@ -174,9 +174,6 @@ class UdpEchoClient : public SourceApplication
     std::optional<uint16_t> m_peerPort; //!< Remote peer port (deprecated) // NS_DEPRECATED_3_44
     EventId m_sendEvent;                //!< Event to send the next packet
 
-    /// Callbacks for tracing the packet Tx events
-    TracedCallback<Ptr<const Packet>> m_txTrace;
-
     /// Callbacks for tracing the packet Rx events
     TracedCallback<Ptr<const Packet>> m_rxTrace;
 

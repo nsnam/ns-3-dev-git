@@ -59,10 +59,6 @@ BulkSendApplication::GetTypeId()
                           BooleanValue(false),
                           MakeBooleanAccessor(&BulkSendApplication::m_enableSeqTsSizeHeader),
                           MakeBooleanChecker())
-            .AddTraceSource("Tx",
-                            "A new packet is sent",
-                            MakeTraceSourceAccessor(&BulkSendApplication::m_txTrace),
-                            "ns3::Packet::TracedCallback")
             .AddTraceSource("TxWithSeqTsSize",
                             "A new packet is created with SeqTsSizeHeader",
                             MakeTraceSourceAccessor(&BulkSendApplication::m_txTraceWithSeqTsSize),

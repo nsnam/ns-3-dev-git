@@ -85,10 +85,6 @@ OnOffApplication::GetTypeId()
                           BooleanValue(false),
                           MakeBooleanAccessor(&OnOffApplication::m_enableSeqTsSizeHeader),
                           MakeBooleanChecker())
-            .AddTraceSource("Tx",
-                            "A new packet is created and is sent",
-                            MakeTraceSourceAccessor(&OnOffApplication::m_txTrace),
-                            "ns3::Packet::TracedCallback")
             .AddTraceSource("TxWithAddresses",
                             "A new packet is created and is sent",
                             MakeTraceSourceAccessor(&OnOffApplication::m_txTraceWithAddresses),

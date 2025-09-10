@@ -75,10 +75,6 @@ UdpClient::GetTypeId()
                           UintegerValue(1024),
                           MakeUintegerAccessor(&UdpClient::m_size),
                           MakeUintegerChecker<uint32_t>(12, 65507))
-            .AddTraceSource("Tx",
-                            "A new packet is created and sent",
-                            MakeTraceSourceAccessor(&UdpClient::m_txTrace),
-                            "ns3::Packet::TracedCallback")
             .AddTraceSource("TxWithAddresses",
                             "A new packet is created and sent",
                             MakeTraceSourceAccessor(&UdpClient::m_txTraceWithAddresses),

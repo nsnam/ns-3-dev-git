@@ -11,9 +11,12 @@
 
 #include "ns3/address.h"
 #include "ns3/application.h"
+#include "ns3/traced-callback.h"
 
 namespace ns3
 {
+
+class Packet;
 
 /**
  * @ingroup applications
@@ -56,6 +59,9 @@ class SourceApplication : public Application
     Address GetRemote() const;
 
   protected:
+    /// Traced Callback: transmitted packets.
+    TracedCallback<Ptr<const Packet>> m_txTrace;
+
     Address m_peer;  //!< Peer address
     Address m_local; //!< Local address to bind to
     uint8_t m_tos;   //!< The packets Type of Service

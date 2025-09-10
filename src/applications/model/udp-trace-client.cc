@@ -369,6 +369,7 @@ UdpTraceClient::SendPacket(uint32_t size)
     }
 #endif
 
+    m_txTrace(p);
     if ((m_socket->Send(p)) >= 0)
     {
         ++m_sent;

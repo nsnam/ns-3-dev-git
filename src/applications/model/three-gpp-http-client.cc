@@ -88,10 +88,6 @@ ThreeGppHttpClient::GetTypeId()
                             "Connection to the destination web server is closed.",
                             MakeTraceSourceAccessor(&ThreeGppHttpClient::m_connectionClosedTrace),
                             "ns3::ThreeGppHttpClient::TracedCallback")
-            .AddTraceSource("Tx",
-                            "General trace for sending a packet of any kind.",
-                            MakeTraceSourceAccessor(&ThreeGppHttpClient::m_txTrace),
-                            "ns3::Packet::TracedCallback")
             .AddTraceSource(
                 "TxMainObjectRequest",
                 "Sent a request for a main object.",
