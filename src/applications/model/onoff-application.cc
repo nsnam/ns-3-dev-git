@@ -131,7 +131,7 @@ OnOffApplication::AssignStreams(int64_t stream)
     auto currentStream = stream;
     m_onTime->SetStream(currentStream++);
     m_offTime->SetStream(currentStream++);
-    currentStream += Application::AssignStreams(currentStream);
+    currentStream += SourceApplication::AssignStreams(currentStream);
     return (currentStream - stream);
 }
 
@@ -144,7 +144,7 @@ OnOffApplication::DoDispose()
     m_socket = nullptr;
     m_unsentPacket = nullptr;
     // chain up
-    Application::DoDispose();
+    SourceApplication::DoDispose();
 }
 
 // Application Methods
