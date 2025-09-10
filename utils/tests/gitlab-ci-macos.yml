@@ -6,13 +6,13 @@
 
 .build-macos-base:
   extends: .base-build
-  tags:
-     - saas-macos-medium-m1
-  #  - saas-macos-large-m2pro
-  image: macos-14-xcode-15
   #tags:
-  #  - macos
-  #  - nsnam
+  #  - saas-macos-medium-m1
+  #  - saas-macos-large-m2pro
+  #image: macos-14-xcode-15
+  tags:
+    - macOS
+    - nsnam
   before_script:
     - brew update
     - brew upgrade
