@@ -13,7 +13,7 @@
 #include "ns3/log.h"
 #include "ns3/string.h"
 #include "ns3/tuple.h"
-#include "ns3/units-energy.h"
+#include "ns3/units-power.h"
 
 namespace ns3
 {

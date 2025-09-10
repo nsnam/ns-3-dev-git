@@ -1,7 +1,7 @@
 set(source_files
     model/si-units-parser.cc
     model/units-angle.cc
-    model/units-energy.cc
+    model/units-power.cc
     model/units-frequency.cc
     model/units-time.cc
     model/units-ratio.cc
@@ -12,7 +12,7 @@ set(header_files
     model/si-units.h
     model/units-aliases.h
     model/units-angle.h
-    model/units-energy.h
+    model/units-power.h
     model/units-frequency.h
     model/units-time.h
     model/units-ratio.h

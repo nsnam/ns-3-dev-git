@@ -1,5 +1,5 @@
-#ifndef UNITS_ENERGY_H
-#define UNITS_ENERGY_H
+#ifndef UNITS_POWER_H
+#define UNITS_POWER_H
 
 #include "si-units-parser.h"
 #include "units-aliases.h"
@@ -1234,4 +1234,4 @@ ATTRIBUTE_CHECKER_DEFINE_WITH_CONVERTER(dBm_per_MHz_t, dBm_per_MHz, Double);
 /// @endcond
 } // namespace ns3
 
-#endif // UNITS_ENERGY_H
+#endif // UNITS_POWER_H

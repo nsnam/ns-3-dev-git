@@ -5,8 +5,8 @@
 #include "ns3/tuple.h"
 #include "ns3/units-aliases.h"
 #include "ns3/units-angle.h"
-#include "ns3/units-energy.h"
 #include "ns3/units-frequency.h"
+#include "ns3/units-power.h"
 #include "ns3/units-ratio.h"
 #include "ns3/units-time.h"
 
