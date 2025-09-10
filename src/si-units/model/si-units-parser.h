@@ -49,6 +49,7 @@ std::string TrimR(const std::string& str);
 std::string Trim(const std::string& str);
 
 /// Convert a string to double, when the suffix matches
+/// @note Valid suffix is expected. This code does not handle when str is "123kHz" and suffix is "Hz".
 /// @param str input string
 /// @param suffix suffix to match
 /// @return optional double if parsed. std::nullopt otherwise
