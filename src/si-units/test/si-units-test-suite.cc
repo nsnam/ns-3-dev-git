@@ -284,7 +284,7 @@ class TestCaseSiUnits : public TestCase
         NS_TEST_EXPECT_MSG_EQ(dBr_t{0}, 0._dBr, "");
         NS_TEST_EXPECT_MSG_EQ(dBr_t{0}, 0.0_dBr, "");
         NS_TEST_EXPECT_MSG_EQ(dBr_t{0}, -0_dBr, "");
-        NS_TEST_EXPECT_MSG_EQ(dBr_t{0}, -0._dB, "");
+        NS_TEST_EXPECT_MSG_EQ(dBr_t{0}, -0._dBr, "");
         NS_TEST_EXPECT_MSG_EQ(dBr_t{0}, -0.0_dBr, "");
         NS_TEST_EXPECT_MSG_EQ(dBr_t{0}, dBr_t(0.0), "");
         NS_TEST_EXPECT_MSG_EQ(dBr_t{0}, dBr_t{0_dBr}, "");
