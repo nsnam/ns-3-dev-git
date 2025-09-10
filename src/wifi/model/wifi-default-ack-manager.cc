@@ -320,7 +320,8 @@ WifiDefaultAckManager::TryAddMpdu(Ptr<const WifiMpdu> mpdu, const WifiTxParamete
                 apMac->GetGcrManager()->GetIndividuallyAddressedRecipient(receiver);
             auto acknowledgment = std::make_unique<WifiBarBlockAck>();
             acknowledgment->blockAckReqTxVector =
-                GetWifiRemoteStationManager()->GetBlockAckTxVector(recipient, txParams.m_txVector);
+                GetWifiRemoteStationManager()->GetBlockAckReqTxVector(recipient,
+                                                                      txParams.m_txVector);
             acknowledgment->blockAckTxVector = acknowledgment->blockAckReqTxVector;
             acknowledgment->barType = BlockAckReqType::GCR;
             acknowledgment->baType = BlockAckType::GCR;
@@ -394,7 +395,7 @@ WifiDefaultAckManager::TryAddMpdu(Ptr<const WifiMpdu> mpdu, const WifiTxParamete
 
         auto acknowledgment = std::make_unique<WifiBarBlockAck>();
         acknowledgment->blockAckReqTxVector =
-            GetWifiRemoteStationManager()->GetBlockAckTxVector(receiver, txParams.m_txVector);
+            GetWifiRemoteStationManager()->GetBlockAckReqTxVector(receiver, txParams.m_txVector);
         acknowledgment->blockAckTxVector = acknowledgment->blockAckReqTxVector;
         acknowledgment->barType = m_mac->GetBarTypeAsOriginator(receiver, tid);
         acknowledgment->baType = m_mac->GetBaTypeAsOriginator(receiver, tid);
@@ -525,7 +526,8 @@ WifiDefaultAckManager::GetAckInfoIfBarBaSequence(Ptr<const WifiMpdu> mpdu,
         acknowledgment->stationsSendBlockAckReqTo.emplace(
             receiver,
             WifiDlMuBarBaSequence::BlockAckReqInfo{
-                GetWifiRemoteStationManager()->GetBlockAckTxVector(receiver, txParams.m_txVector),
+                GetWifiRemoteStationManager()->GetBlockAckReqTxVector(receiver,
+                                                                      txParams.m_txVector),
                 m_mac->GetBarTypeAsOriginator(receiver, tid),
                 GetWifiRemoteStationManager()->GetBlockAckTxVector(receiver, txParams.m_txVector),
                 m_mac->GetBaTypeAsOriginator(receiver, tid)});
