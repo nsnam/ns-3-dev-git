@@ -1341,6 +1341,66 @@ You can export statistics from this helper for use cases such as printing in you
 
 You can refer an example program in ``src/wifi/examples/wifi-co-trace-example.cc`` on how to use these APIs.
 
+WifiStaticSetupHelper
+=====================
+
+Wi-Fi devices normally exchange management frames over the air to perform association or setup
+various features. In many simulations, users are not interested in the actual exchange of such
+management frames because they want to evaluate the performance of the network when the requested
+features are already established. In such cases, actually exchanging management frames not only
+constitutes a waste of computing resources, but it could also lead to unexpected results due to
+collisions among the required management frames.
+
+The purpose of the ``WifiStaticSetupHelper`` is to statically setup wifi devices at the exact time
+the simulation starts without actually exchanging management frames over the air. Currently, the
+following operations can be statically setup:
+
+* legacy association/ML setup (note that channel scanning is automatically disabled by the helper)
+* establishment of block ack agreements
+* enabling EMLSR mode on EMLSR client links
+
+The ``WifiStaticSetupHelper`` is made of various static functions to perform the operations above,
+which can be called once the installation and configuration of the wifi is completed.
+For example, the following line of code:
+
+.. sourcecode:: cpp
+
+    WifiStaticSetupHelper::SetStaticAssociation(apDev, staDevices);
+
+performs association or ML setup (depending on whether involved devices are single-link or multi-link)
+between the AP ``apDev`` and the non-AP STAs included in the ``staDevices`` container of devices.
+Additionally, the following line of code:
+
+.. sourcecode:: cpp
+
+    WifiStaticSetupHelper::SetStaticBlockAck(apDev, staDev, 0);
+
+establishes a Block Ack agreement for TID 0 between the AP ``apDev`` and the non-AP STA ``staDev``,
+with the AP being the originator and the non-AP STA the recipient.
+
+To enable EMLSR mode on the links specified via the ``EmlsrManager::EmlsrLinkSet`` attribute, the
+following line of code can be used:
+
+.. sourcecode:: cpp
+
+    WifiStaticSetupHelper::SetStaticEmlsr(apDev, staDev);
+
+where ``apDev`` is the AP device and ``staDev`` is the EMLSR client device.
+
+In case wifi devices exchange IPv4 or IPv6 traffic, it is also convenient to statically setup their
+ARP or NDISC cache, so that ARP Request/Response frames do not need to be actually exchanged. This
+can be achieved by calling:
+
+.. sourcecode:: cpp
+
+    NeighborCacheHelper nbCache;
+    nbCache.PopulateNeighborCache();
+
+after assigning IP addresses to the devices in the network.
+
+For an example usage of these static helpers, you can refer to the
+``/examples/wireless/wifi-{ht,vht,he,eht}-network.cc`` example programs.
+
 HT configuration
 ================
 
