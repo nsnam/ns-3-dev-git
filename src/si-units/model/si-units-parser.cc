@@ -64,12 +64,17 @@ std::optional<double>
 StringToDouble(std::string str, std::string suffix)
 {
     str = Trim(str);
-    if (not str.ends_with(suffix))
+    if (!suffix.empty() && !str.ends_with(suffix))
     {
         return std::nullopt;
     }
-    str.resize(str.rfind(suffix));
-    str = Trim(str);
+
+    if (!suffix.empty())
+    {
+        str.resize(str.rfind(suffix));
+        str = Trim(str);
+    }
+
     if (not IsNumber(str))
     {
         return std::nullopt;
