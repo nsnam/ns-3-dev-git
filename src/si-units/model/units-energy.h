@@ -1181,7 +1181,9 @@ mWatt_t operator""_pWatt(unsigned long long val);
 Watt_t operator""_Watt(long double val);
 Watt_t operator""_Watt(unsigned long long val);
 dBm_per_Hz_t operator""_dBm_per_Hz(long double val);
+dBm_per_Hz_t operator""_dBm_per_Hz(unsigned long long val);
 dBm_per_MHz_t operator""_dBm_per_MHz(long double val);
+dBm_per_MHz_t operator""_dBm_per_MHz(unsigned long long val);
 
 std::ostream& operator<<(std::ostream& os, const dB_t& rhs);
 std::ostream& operator<<(std::ostream& os, const dBm_t& rhs);

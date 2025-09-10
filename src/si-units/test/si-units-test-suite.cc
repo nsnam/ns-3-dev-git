@@ -709,6 +709,7 @@ class TestCaseSiUnits : public TestCase
         NS_TEST_EXPECT_MSG_EQ(dBm_per_Hz_t{-43.21}, -43.21_dBm_per_Hz, ""); // NOLINT
         NS_TEST_EXPECT_MSG_EQ(dBm_per_Hz_t{"1.5 dBm/Hz"}, 1.5_dBm_per_Hz, "");
 
+
         // Utilities
         NS_TEST_EXPECT_MSG_EQ(dBm_per_Hz_t{123}.val, 123.0, "");                // NOLINT
         NS_TEST_EXPECT_MSG_EQ(dBm_per_Hz_t{123}.str(), "123.0 dBm/Hz", "");     // NOLINT
@@ -716,6 +717,7 @@ class TestCaseSiUnits : public TestCase
         NS_TEST_EXPECT_MSG_EQ(dBm_per_Hz_t{123.45}.val, 123.45, "");            // NOLINT
         NS_TEST_EXPECT_MSG_EQ(dBm_per_Hz_t{123.45}.str(), "123.5 dBm/Hz", "");  // NOLINT
         NS_TEST_EXPECT_MSG_EQ(dBm_per_Hz_t{123.45}.in_dBm(), 123.45, ""); // NOLINT
+        NS_TEST_EXPECT_MSG_EQ(dBm_per_Hz_t{123}, 123_dBm_per_Hz, ""); // NOLINT
 
         NS_TEST_EXPECT_MSG_EQ_TOL(dBm_per_Hz_t{-80.0}.OverBandwidth(2_Hz), -77_dBm, 0.1_dB, ""); // NOLINT
         NS_TEST_EXPECT_MSG_EQ_TOL(dBm_per_Hz_t{-80.0}.OverBandwidth(0.5_Hz), -83_dBm, 0.1_dB, ""); // NOLINT
@@ -743,6 +745,8 @@ class TestCaseSiUnits : public TestCase
         NS_TEST_EXPECT_MSG_EQ(dBm_per_MHz_t{123.45}.val, 123.45, "");             // NOLINT
         NS_TEST_EXPECT_MSG_EQ(dBm_per_MHz_t{123.45}.str(), "123.5 dBm/MHz", "");  // NOLINT
         NS_TEST_EXPECT_MSG_EQ(dBm_per_MHz_t{123.45}.in_dBm(), 123.45, "");              // NOLINT
+        NS_TEST_EXPECT_MSG_EQ(dBm_per_MHz_t{123}, 123_dBm_per_MHz, ""); // NOLINT
+
 
         NS_TEST_EXPECT_MSG_EQ(dBm_per_MHz_t::AveragePsd(-20_dBm, 1_MHz),
                               dBm_per_MHz_t{-20}, ""); // NOLINT

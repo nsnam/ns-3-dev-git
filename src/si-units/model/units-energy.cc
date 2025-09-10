@@ -467,6 +467,15 @@ operator""_dBm_per_MHz(long double val)
     return dBm_per_MHz_t{static_cast<double>(val)};
 }
 
+/// User defined literals for dBm_per_MHz
+/// @param val Value in dBm_per_MHz
+/// @return dBm_per_MHz_t
+dBm_per_MHz_t
+operator""_dBm_per_MHz(unsigned long long val)
+{
+    return dBm_per_MHz_t{static_cast<double>(val)};
+}
+
 // Output-input operators overloading
 
 /// Output stream for dB
