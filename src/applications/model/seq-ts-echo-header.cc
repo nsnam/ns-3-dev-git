@@ -22,9 +22,7 @@ NS_LOG_COMPONENT_DEFINE("SeqTsEchoHeader");
 NS_OBJECT_ENSURE_REGISTERED(SeqTsEchoHeader);
 
 SeqTsEchoHeader::SeqTsEchoHeader()
-    : m_seq(0),
-      m_tsValue(Simulator::Now()),
-      m_tsEchoReply()
+    : m_tsValue(Simulator::Now())
 {
     NS_LOG_FUNCTION(this);
 }

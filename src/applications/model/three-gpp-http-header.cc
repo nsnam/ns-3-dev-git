@@ -22,11 +22,7 @@ namespace ns3
 NS_OBJECT_ENSURE_REGISTERED(ThreeGppHttpHeader);
 
 ThreeGppHttpHeader::ThreeGppHttpHeader()
-    : Header(),
-      m_contentType(NOT_SET),
-      m_contentLength(0),
-      m_clientTs(0),
-      m_serverTs(0)
+    : Header()
 {
     NS_LOG_FUNCTION(this);
 }

@@ -83,11 +83,6 @@ UdpClient::GetTypeId()
 }
 
 UdpClient::UdpClient()
-    : m_sent{0},
-      m_totalTx{0},
-      m_socket{nullptr},
-      m_peerPort{},
-      m_sendEvent{}
 {
     NS_LOG_FUNCTION(this);
 }
@@ -204,7 +199,6 @@ UdpClient::StartApplication()
         }
         m_socket->SetIpTos(m_tos); // Affects only IPv4 sockets.
         m_socket->Connect(m_peer);
-        m_socket->SetRecvCallback(MakeNullCallback<void, Ptr<Socket>>());
         m_socket->SetAllowBroadcast(true);
     }
 

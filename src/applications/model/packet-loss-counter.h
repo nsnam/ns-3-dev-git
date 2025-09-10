@@ -76,10 +76,10 @@ class PacketLossCounter
      */
     void SetBit(uint32_t seqNum, bool val);
 
-    uint32_t m_lost;          //!< Lost packets counter.
-    uint16_t m_bitMapSize;    //!< Window size.
-    uint32_t m_lastMaxSeqNum; //!< Last sequence number seen.
-    uint8_t* m_receiveBitMap; //!< Received packets in the window size.
+    uint32_t m_lost{0};                //!< Lost packets counter.
+    uint16_t m_bitMapSize{0};          //!< Window size.
+    uint32_t m_lastMaxSeqNum{0};       //!< Last sequence number seen.
+    uint8_t* m_receiveBitMap{nullptr}; //!< Received packets in the window size.
 };
 } // namespace ns3
 

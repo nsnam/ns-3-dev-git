@@ -52,7 +52,6 @@ SourceApplication::GetTypeId()
 }
 
 SourceApplication::SourceApplication()
-    : m_peer{}
 {
     NS_LOG_FUNCTION(this);
 }

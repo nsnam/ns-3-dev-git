@@ -139,16 +139,16 @@ class OnOffApplication : public SourceApplication
     void SendPacket();
 
     Ptr<Socket> m_socket;                //!< Associated socket
-    bool m_connected;                    //!< True if connected
+    bool m_connected{false};             //!< True if connected
     Ptr<RandomVariableStream> m_onTime;  //!< rng for On Time
     Ptr<RandomVariableStream> m_offTime; //!< rng for Off Time
     DataRate m_cbrRate;                  //!< Rate that data is generated
     DataRate m_cbrRateFailSafe;          //!< Rate that data is generated (check copy)
     uint32_t m_pktSize;                  //!< Size of packets
-    uint32_t m_residualBits;             //!< Number of generated, but not sent, bits
+    uint32_t m_residualBits{0};          //!< Number of generated, but not sent, bits
     Time m_lastStartTime;                //!< Time last packet sent
     uint64_t m_maxBytes;                 //!< Limit total number of bytes sent
-    uint64_t m_totBytes;                 //!< Total bytes sent so far
+    uint64_t m_totBytes{0};              //!< Total bytes sent so far
     EventId m_startStopEvent;            //!< Event id for next start or stop event
     EventId m_sendEvent;                 //!< Event id of pending "send packet" event
     TypeId m_tid;                        //!< Type of the socket used

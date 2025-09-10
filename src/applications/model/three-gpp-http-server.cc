@@ -34,11 +34,8 @@ NS_OBJECT_ENSURE_REGISTERED(ThreeGppHttpServer);
 
 ThreeGppHttpServer::ThreeGppHttpServer()
     : SinkApplication(HTTP_DEFAULT_PORT),
-      m_state{NOT_STARTED},
-      m_initialSocket{nullptr},
       m_txBuffer{Create<ThreeGppHttpServerTxBuffer>()},
       m_httpVariables{CreateObject<ThreeGppHttpVariables>()},
-      m_optPort{},
       m_mtuSize{m_httpVariables->GetMtuSize()}
 {
     NS_LOG_FUNCTION(this);
@@ -227,18 +224,6 @@ ThreeGppHttpServer::StartApplication()
     m_httpVariables->Initialize();
     if (!m_initialSocket)
     {
-        // Find the current default MTU value of TCP sockets.
-        Ptr<const ns3::AttributeValue> previousSocketMtu;
-        const TypeId tcpSocketTid = TcpSocket::GetTypeId();
-        for (uint32_t i = 0; i < tcpSocketTid.GetAttributeN(); i++)
-        {
-            TypeId::AttributeInformation attrInfo = tcpSocketTid.GetAttribute(i);
-            if (attrInfo.name == "SegmentSize")
-            {
-                previousSocketMtu = attrInfo.initialValue;
-            }
-        }
-
         // Creating a TCP socket to connect to the server.
         m_initialSocket = Socket::CreateSocket(GetNode(), TcpSocketFactory::GetTypeId());
         m_initialSocket->SetAttribute("SegmentSize", UintegerValue(m_mtuSize));

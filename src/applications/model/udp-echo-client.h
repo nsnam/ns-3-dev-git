@@ -166,10 +166,10 @@ class UdpEchoClient : public SourceApplication
     Time m_interval;  //!< Packet inter-send time
     uint32_t m_size;  //!< Size of the sent packet
 
-    uint32_t m_dataSize; //!< packet payload size (must be equal to m_size)
-    uint8_t* m_data;     //!< packet payload data
+    uint32_t m_dataSize{0};   //!< packet payload size (must be equal to m_size)
+    uint8_t* m_data{nullptr}; //!< packet payload data
 
-    uint32_t m_sent;                    //!< Counter for sent packets
+    uint32_t m_sent{0};                 //!< Counter for sent packets
     Ptr<Socket> m_socket;               //!< Socket
     std::optional<uint16_t> m_peerPort; //!< Remote peer port (deprecated) // NS_DEPRECATED_3_44
     EventId m_sendEvent;                //!< Event to send the next packet

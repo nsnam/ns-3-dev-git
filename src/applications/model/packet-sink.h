@@ -181,10 +181,10 @@ class PacketSink : public SinkApplication
     // listening socket is stored separately from the accepted sockets
     std::list<Ptr<Socket>> m_socketList; //!< the accepted sockets
 
-    uint64_t m_totalRx; //!< Total bytes received
-    TypeId m_tid;       //!< Protocol TypeId
+    uint64_t m_totalRx{0}; //!< Total bytes received
+    TypeId m_tid;          //!< Protocol TypeId
 
-    bool m_enableSeqTsSizeHeader; //!< Enable or disable the export of SeqTsSize header
+    bool m_enableSeqTsSizeHeader{false}; //!< Enable or disable the export of SeqTsSize header
 
     /// Callback for tracing the packet Rx events, includes source and destination addresses
     TracedCallback<Ptr<const Packet>, const Address&, const Address&> m_rxTraceWithAddresses;
