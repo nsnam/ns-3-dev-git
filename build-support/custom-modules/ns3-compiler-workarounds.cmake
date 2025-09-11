@@ -74,7 +74,7 @@ if(STACKTRACE_LIBRARY_ENABLED)
     else()
       set(stacktrace_flags -lstdc++exp CACHE INTERNAL "")
     endif()
-  elseif(CLANG)
+  elseif(CLANG AND (NOT ("${CMAKE_CXX_SIMULATE_ID}" MATCHES "MSVC")))
     set(stacktrace_flags -lstdc++_libbacktrace CACHE INTERNAL "")
   else()
     # Most likely MSVC, which does not need custom flags for this
