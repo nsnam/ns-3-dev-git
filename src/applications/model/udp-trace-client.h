@@ -86,7 +86,7 @@ class UdpTraceClient : public SourceApplication
      * @brief Return the maximum packet size
      * @return the maximum packet size
      */
-    uint16_t GetMaxPacketSize();
+    uint16_t GetMaxPacketSize() const;
 
     /**
      * @brief Set the maximum packet size
@@ -101,8 +101,8 @@ class UdpTraceClient : public SourceApplication
     void SetTraceLoop(bool traceLoop);
 
   private:
-    void StartApplication() override;
-    void StopApplication() override;
+    void DoStartApplication() override;
+    void CancelEvents() override;
 
     /**
      * @brief Set the remote port (temporary function until deprecated attributes are removed)

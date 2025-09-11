@@ -121,8 +121,8 @@ class UdpEchoClient : public SourceApplication
     void SetFill(uint8_t* fill, uint32_t fillSize, uint32_t dataSize);
 
   private:
-    void StartApplication() override;
-    void StopApplication() override;
+    void DoStartApplication() override;
+    void CancelEvents() override;
 
     /**
      * @brief Set the remote port (temporary function until deprecated attributes are removed)

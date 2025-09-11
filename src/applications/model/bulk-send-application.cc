@@ -89,101 +89,42 @@ BulkSendApplication::SetMaxBytes(uint64_t maxBytes)
 }
 
 void
-BulkSendApplication::DoDispose()
+BulkSendApplication::CancelEvents()
 {
     NS_LOG_FUNCTION(this);
     m_unsentPacket = nullptr;
-    // chain up
-    SourceApplication::DoDispose();
 }
 
 // Application Methods
 void
-BulkSendApplication::StartApplication() // Called at time specified by Start
+BulkSendApplication::DoStartApplication() // Called at time specified by Start
 {
     NS_LOG_FUNCTION(this);
-    Address from;
 
-    // Create the socket if not already
-    if (!m_socket)
+    // Fatal error if socket type is not NS3_SOCK_STREAM or NS3_SOCK_SEQPACKET
+    if (m_socket->GetSocketType() != Socket::NS3_SOCK_STREAM &&
+        m_socket->GetSocketType() != Socket::NS3_SOCK_SEQPACKET)
     {
-        m_socket = Socket::CreateSocket(GetNode(), m_protocolTid);
-        int ret = -1;
-
-        // Fatal error if socket type is not NS3_SOCK_STREAM or NS3_SOCK_SEQPACKET
-        if (m_socket->GetSocketType() != Socket::NS3_SOCK_STREAM &&
-            m_socket->GetSocketType() != Socket::NS3_SOCK_SEQPACKET)
-        {
-            NS_FATAL_ERROR("Using BulkSend with an incompatible socket type. "
-                           "BulkSend requires SOCK_STREAM or SOCK_SEQPACKET. "
-                           "In other words, use TCP instead of UDP.");
-        }
-
-        NS_ABORT_MSG_IF(m_peer.IsInvalid(), "'Remote' attribute not properly set");
-
-        if (!m_local.IsInvalid())
-        {
-            NS_ABORT_MSG_IF((Inet6SocketAddress::IsMatchingType(m_peer) &&
-                             InetSocketAddress::IsMatchingType(m_local)) ||
-                                (InetSocketAddress::IsMatchingType(m_peer) &&
-                                 Inet6SocketAddress::IsMatchingType(m_local)),
-                            "Incompatible peer and local address IP version");
-            ret = m_socket->Bind(m_local);
-        }
-        else
-        {
-            if (Inet6SocketAddress::IsMatchingType(m_peer))
-            {
-                ret = m_socket->Bind6();
-            }
-            else if (InetSocketAddress::IsMatchingType(m_peer))
-            {
-                ret = m_socket->Bind();
-            }
-        }
-
-        if (ret == -1)
-        {
-            NS_FATAL_ERROR("Failed to bind socket");
-        }
-
-        if (InetSocketAddress::IsMatchingType(m_peer))
-        {
-            m_socket->SetIpTos(m_tos); // Affects only IPv4 sockets.
-        }
-        m_socket->Connect(m_peer);
-        m_socket->ShutdownRecv();
-        m_socket->SetConnectCallback(MakeCallback(&BulkSendApplication::ConnectionSucceeded, this),
-                                     MakeCallback(&BulkSendApplication::ConnectionFailed, this));
-        m_socket->SetSendCallback(MakeCallback(&BulkSendApplication::DataSend, this));
-        Ptr<TcpSocketBase> tcpSocket = DynamicCast<TcpSocketBase>(m_socket);
-        if (tcpSocket)
-        {
-            tcpSocket->TraceConnectWithoutContext(
-                "Retransmission",
-                MakeCallback(&BulkSendApplication::PacketRetransmitted, this));
-        }
+        NS_FATAL_ERROR("Using BulkSend with an incompatible socket type. "
+                       "BulkSend requires SOCK_STREAM or SOCK_SEQPACKET. "
+                       "In other words, use TCP instead of UDP.");
     }
+
+    m_socket->ShutdownRecv();
+    m_socket->SetSendCallback(MakeCallback(&BulkSendApplication::DataSend, this));
+
+    if (auto tcpSocket = DynamicCast<TcpSocketBase>(m_socket))
+    {
+        tcpSocket->TraceConnectWithoutContext(
+            "Retransmission",
+            MakeCallback(&BulkSendApplication::PacketRetransmitted, this));
+    }
+
     if (m_connected)
     {
+        Address from;
         m_socket->GetSockName(from);
         SendData(from, m_peer);
-    }
-}
-
-void
-BulkSendApplication::StopApplication() // Called at time specified by Stop
-{
-    NS_LOG_FUNCTION(this);
-
-    if (m_socket)
-    {
-        m_socket->Close();
-        m_connected = false;
-    }
-    else
-    {
-        NS_LOG_WARN("BulkSendApplication found null socket to close in StopApplication");
     }
 }
 
@@ -275,23 +216,15 @@ BulkSendApplication::SendData(const Address& from, const Address& to)
 }
 
 void
-BulkSendApplication::ConnectionSucceeded(Ptr<Socket> socket)
+BulkSendApplication::DoConnectionSucceeded(Ptr<Socket> socket)
 {
     NS_LOG_FUNCTION(this << socket);
     NS_LOG_LOGIC("BulkSendApplication Connection succeeded");
-    m_connected = true;
     Address from;
     Address to;
     socket->GetSockName(from);
     socket->GetPeerName(to);
     SendData(from, to);
-}
-
-void
-BulkSendApplication::ConnectionFailed(Ptr<Socket> socket)
-{
-    NS_LOG_FUNCTION(this << socket);
-    NS_LOG_LOGIC("BulkSendApplication, Connection Failed");
 }
 
 void

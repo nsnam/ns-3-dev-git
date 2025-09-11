@@ -104,18 +104,10 @@ class OnOffApplication : public SourceApplication
 
     int64_t AssignStreams(int64_t stream) override;
 
-  protected:
-    void DoDispose() override;
-
   private:
-    void StartApplication() override;
-    void StopApplication() override;
-
-    // helpers
-    /**
-     * @brief Cancel all pending events.
-     */
-    void CancelEvents();
+    void DoStartApplication() override;
+    void DoConnectionSucceeded(Ptr<Socket> socket) override;
+    void CancelEvents() override;
 
     // Event handlers
     /**
@@ -130,8 +122,19 @@ class OnOffApplication : public SourceApplication
      * @brief Send a packet
      */
     void SendPacket();
+    /**
+     * @brief Schedule the next packet transmission
+     */
+    void ScheduleNextTx();
+    /**
+     * @brief Schedule the next On period start
+     */
+    void ScheduleStartEvent();
+    /**
+     * @brief Schedule the next Off period start
+     */
+    void ScheduleStopEvent();
 
-    bool m_connected{false};             //!< True if connected
     Ptr<RandomVariableStream> m_onTime;  //!< rng for On Time
     Ptr<RandomVariableStream> m_offTime; //!< rng for Off Time
     DataRate m_cbrRate;                  //!< Rate that data is generated
@@ -154,30 +157,6 @@ class OnOffApplication : public SourceApplication
     /// and header
     TracedCallback<Ptr<const Packet>, const Address&, const Address&, const SeqTsSizeHeader&>
         m_txTraceWithSeqTsSize;
-
-  private:
-    /**
-     * @brief Schedule the next packet transmission
-     */
-    void ScheduleNextTx();
-    /**
-     * @brief Schedule the next On period start
-     */
-    void ScheduleStartEvent();
-    /**
-     * @brief Schedule the next Off period start
-     */
-    void ScheduleStopEvent();
-    /**
-     * @brief Handle a Connection Succeed event
-     * @param socket the connected socket
-     */
-    void ConnectionSucceeded(Ptr<Socket> socket);
-    /**
-     * @brief Handle a Connection Failed event
-     * @param socket the not connected socket
-     */
-    void ConnectionFailed(Ptr<Socket> socket);
 
     TracedValue<bool> m_state; //!< State of application (0-OFF, 1-ON)
 };

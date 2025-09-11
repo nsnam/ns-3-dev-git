@@ -176,8 +176,11 @@ class ThreeGppHttpClient : public SourceApplication
     void DoDispose() override;
 
   private:
-    void StartApplication() override;
-    void StopApplication() override;
+    void DoStartApplication() override;
+    void DoStopApplication() override;
+    void DoConnectionSucceeded(Ptr<Socket> socket) override;
+    void DoConnectionFailed(Ptr<Socket> socket) override;
+    void CancelEvents() override;
 
     /**
      * @brief set the remote port (temporary function until deprecated attributes are removed)
@@ -186,19 +189,6 @@ class ThreeGppHttpClient : public SourceApplication
     void SetPort(uint16_t port);
 
     // SOCKET CALLBACK METHODS
-
-    /**
-     * Invoked when a connection is established successfully on #m_socket. This
-     * triggers a request for a main object.
-     * @param socket Pointer to the socket where the event originates from.
-     */
-    void ConnectionSucceededCallback(Ptr<Socket> socket);
-    /**
-     * Invoked when #m_socket cannot establish a connection with the web server.
-     * Simulation will stop and error will be raised.
-     * @param socket Pointer to the socket where the event originates from.
-     */
-    void ConnectionFailedCallback(Ptr<Socket> socket);
     /**
      * Invoked when connection between #m_socket and the web sever is terminated.
      * Error will be logged, but simulation continues.
@@ -334,12 +324,6 @@ class ThreeGppHttpClient : public SourceApplication
      * The method is invoked after a complete web page has been received.
      */
     void EnterReadingTime();
-    /**
-     * Cancels #m_eventRequestMainObject, #m_eventRequestEmbeddedObject, and
-     * #m_eventParseMainObject. Invoked by StopApplication() and when connection
-     * has been terminated.
-     */
-    void CancelAllPendingEvents();
 
     /**
      * Change the state of the client. Fires the `StateTransition` trace source.

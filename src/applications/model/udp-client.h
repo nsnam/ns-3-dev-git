@@ -62,8 +62,8 @@ class UdpClient : public SourceApplication
     uint64_t GetTotalTx() const;
 
   private:
-    void StartApplication() override;
-    void StopApplication() override;
+    void DoStartApplication() override;
+    void CancelEvents() override;
 
     /**
      * @brief Send a packet

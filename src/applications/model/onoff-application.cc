@@ -128,72 +128,16 @@ OnOffApplication::AssignStreams(int64_t stream)
     return (currentStream - stream);
 }
 
-void
-OnOffApplication::DoDispose()
-{
-    NS_LOG_FUNCTION(this);
-    CancelEvents();
-    m_unsentPacket = nullptr;
-    // chain up
-    SourceApplication::DoDispose();
-}
-
 // Application Methods
 void
-OnOffApplication::StartApplication() // Called at time specified by Start
+OnOffApplication::DoStartApplication() // Called at time specified by Start
 {
     NS_LOG_FUNCTION(this);
 
-    // Create the socket if not already
-    if (!m_socket)
-    {
-        m_socket = Socket::CreateSocket(GetNode(), m_protocolTid);
-        int ret = -1;
+    m_socket->SetAllowBroadcast(true);
+    m_socket->ShutdownRecv();
 
-        NS_ABORT_MSG_IF(m_peer.IsInvalid(), "'Remote' attribute not properly set");
-
-        if (!m_local.IsInvalid())
-        {
-            NS_ABORT_MSG_IF((Inet6SocketAddress::IsMatchingType(m_peer) &&
-                             InetSocketAddress::IsMatchingType(m_local)) ||
-                                (InetSocketAddress::IsMatchingType(m_peer) &&
-                                 Inet6SocketAddress::IsMatchingType(m_local)),
-                            "Incompatible peer and local address IP version");
-            ret = m_socket->Bind(m_local);
-        }
-        else
-        {
-            if (Inet6SocketAddress::IsMatchingType(m_peer))
-            {
-                ret = m_socket->Bind6();
-            }
-            else if (InetSocketAddress::IsMatchingType(m_peer) ||
-                     PacketSocketAddress::IsMatchingType(m_peer))
-            {
-                ret = m_socket->Bind();
-            }
-        }
-
-        if (ret == -1)
-        {
-            NS_FATAL_ERROR("Failed to bind socket");
-        }
-
-        m_socket->SetConnectCallback(MakeCallback(&OnOffApplication::ConnectionSucceeded, this),
-                                     MakeCallback(&OnOffApplication::ConnectionFailed, this));
-
-        if (InetSocketAddress::IsMatchingType(m_peer))
-        {
-            m_socket->SetIpTos(m_tos); // Affects only IPv4 sockets.
-        }
-        m_socket->Connect(m_peer);
-        m_socket->SetAllowBroadcast(true);
-        m_socket->ShutdownRecv();
-    }
     m_cbrRateFailSafe = m_cbrRate;
-
-    // Ensure no pending event
-    CancelEvents();
 
     // If we are not yet connected, there is nothing to do here,
     // the ConnectionComplete upcall will start timers at that time.
@@ -202,22 +146,6 @@ OnOffApplication::StartApplication() // Called at time specified by Start
     if (m_connected)
     {
         ScheduleStartEvent();
-    }
-}
-
-void
-OnOffApplication::StopApplication() // Called at time specified by Stop
-{
-    NS_LOG_FUNCTION(this);
-
-    CancelEvents();
-    if (m_socket)
-    {
-        m_socket->Close();
-    }
-    else
-    {
-        NS_LOG_WARN("OnOffApplication found null socket to close in StopApplication");
     }
 }
 
@@ -283,8 +211,10 @@ OnOffApplication::ScheduleNextTx()
         m_sendEvent = Simulator::Schedule(nextTime, &OnOffApplication::SendPacket, this);
     }
     else
-    { // All done, cancel any pending events
-        StopApplication();
+    {
+        // All done, cancel any pending events and close connection
+        CancelEvents();
+        CloseSocket();
     }
 }
 
@@ -379,19 +309,10 @@ OnOffApplication::SendPacket()
 }
 
 void
-OnOffApplication::ConnectionSucceeded(Ptr<Socket> socket)
+OnOffApplication::DoConnectionSucceeded(Ptr<Socket> socket)
 {
     NS_LOG_FUNCTION(this << socket);
-
     ScheduleStartEvent();
-    m_connected = true;
-}
-
-void
-OnOffApplication::ConnectionFailed(Ptr<Socket> socket)
-{
-    NS_LOG_FUNCTION(this << socket);
-    NS_FATAL_ERROR("Can't connect");
 }
 
 } // Namespace ns3

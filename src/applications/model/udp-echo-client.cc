@@ -83,6 +83,7 @@ UdpEchoClient::GetTypeId()
 }
 
 UdpEchoClient::UdpEchoClient()
+    : SourceApplication(false)
 {
     NS_LOG_FUNCTION(this);
     m_protocolTid = TypeId::LookupByName("ns3::UdpSocketFactory");
@@ -160,68 +161,12 @@ UdpEchoClient::GetPort() const
 }
 
 void
-UdpEchoClient::StartApplication()
+UdpEchoClient::DoStartApplication()
 {
     NS_LOG_FUNCTION(this);
-
-    if (!m_socket)
-    {
-        m_socket = Socket::CreateSocket(GetNode(), m_protocolTid);
-        NS_ABORT_MSG_IF(m_peer.IsInvalid(), "Remote address not properly set");
-        if (!m_local.IsInvalid())
-        {
-            NS_ABORT_MSG_IF((Inet6SocketAddress::IsMatchingType(m_peer) &&
-                             InetSocketAddress::IsMatchingType(m_local)) ||
-                                (InetSocketAddress::IsMatchingType(m_peer) &&
-                                 Inet6SocketAddress::IsMatchingType(m_local)),
-                            "Incompatible peer and local address IP version");
-            if (m_socket->Bind(m_local) == -1)
-            {
-                NS_FATAL_ERROR("Failed to bind socket");
-            }
-        }
-        else
-        {
-            if (InetSocketAddress::IsMatchingType(m_peer))
-            {
-                if (m_socket->Bind() == -1)
-                {
-                    NS_FATAL_ERROR("Failed to bind socket");
-                }
-            }
-            else if (Inet6SocketAddress::IsMatchingType(m_peer))
-            {
-                if (m_socket->Bind6() == -1)
-                {
-                    NS_FATAL_ERROR("Failed to bind socket");
-                }
-            }
-            else
-            {
-                NS_ASSERT_MSG(false, "Incompatible address type: " << m_peer);
-            }
-        }
-        m_socket->SetIpTos(m_tos); // Affects only IPv4 sockets.
-        m_socket->Connect(m_peer);
-        m_socket->SetRecvCallback(MakeCallback(&UdpEchoClient::HandleRead, this));
-        m_socket->SetAllowBroadcast(true);
-    }
-
-    ScheduleTransmit(Seconds(0.));
-}
-
-void
-UdpEchoClient::StopApplication()
-{
-    NS_LOG_FUNCTION(this);
-
-    if (m_socket)
-    {
-        m_socket->Close();
-        m_socket->SetRecvCallback(MakeNullCallback<void, Ptr<Socket>>());
-    }
-
-    Simulator::Cancel(m_sendEvent);
+    m_socket->SetRecvCallback(MakeCallback(&UdpEchoClient::HandleRead, this));
+    m_socket->SetAllowBroadcast(true);
+    ScheduleTransmit(Time(0));
 }
 
 void
@@ -243,7 +188,6 @@ UdpEchoClient::SetDataSize(uint32_t dataSize)
 uint32_t
 UdpEchoClient::GetDataSize() const
 {
-    NS_LOG_FUNCTION(this);
     return m_size;
 }
 
@@ -420,6 +364,13 @@ UdpEchoClient::HandleRead(Ptr<Socket> socket)
         m_rxTrace(packet);
         m_rxTraceWithAddresses(packet, from, localAddress);
     }
+}
+
+void
+UdpEchoClient::CancelEvents()
+{
+    NS_LOG_FUNCTION(this);
+    Simulator::Cancel(m_sendEvent);
 }
 
 } // Namespace ns3

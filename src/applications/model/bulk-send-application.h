@@ -88,12 +88,10 @@ class BulkSendApplication : public SourceApplication
      */
     void SetMaxBytes(uint64_t maxBytes);
 
-  protected:
-    void DoDispose() override;
-
   private:
-    void StartApplication() override;
-    void StopApplication() override;
+    void DoStartApplication() override;
+    void DoConnectionSucceeded(Ptr<Socket> socket) override;
+    void CancelEvents() override;
 
     /**
      * @brief Send data until the L4 transmission buffer is full.
@@ -102,7 +100,6 @@ class BulkSendApplication : public SourceApplication
      */
     void SendData(const Address& from, const Address& to);
 
-    bool m_connected{false};             //!< True if connected
     uint32_t m_sendSize;                 //!< Size of data to send each time
     uint64_t m_maxBytes;                 //!< Limit total number of bytes sent
     uint64_t m_totBytes{0};              //!< Total bytes sent so far
@@ -123,17 +120,6 @@ class BulkSendApplication : public SourceApplication
     TracedCallback<Ptr<const Packet>, const Address&, const Address&, const SeqTsSizeHeader&>
         m_txTraceWithSeqTsSize;
 
-  private:
-    /**
-     * @brief Connection Succeeded (called by Socket through a callback)
-     * @param socket the connected socket
-     */
-    void ConnectionSucceeded(Ptr<Socket> socket);
-    /**
-     * @brief Connection Failed (called by Socket through a callback)
-     * @param socket the connected socket
-     */
-    void ConnectionFailed(Ptr<Socket> socket);
     /**
      * @brief Send more data as soon as some has been transmitted.
      *
