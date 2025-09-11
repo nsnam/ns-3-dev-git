@@ -431,25 +431,14 @@ main(int argc, char* argv[])
         /* static setup of association and BA agreements */
         auto apDev = DynamicCast<WifiNetDevice>(apDevice.Get(0));
         NS_ASSERT(apDev);
-        WifiStaticSetupHelper::SetStaticAssoc(apDev, staDevices);
+        WifiStaticSetupHelper::SetStaticAssociation(apDev, staDevices);
         const auto gcrAddress = Mac48Address::GetMulticast(mcastAddress);
         const auto ac = strToAc.at(accessCategory);
         const auto wifiAc = wifiAcList.at(ac);
-        for (uint32_t i = 0; i < staDevices.GetN(); ++i)
-        {
-            auto staDev = DynamicCast<WifiNetDevice>(staDevices.Get(i));
-            NS_ASSERT(staDev);
-            WifiStaticSetupHelper::SetStaticBlockAck(apDev, staDev, wifiAc.GetLowTid(), gcrAddress);
-            WifiStaticSetupHelper::SetStaticBlockAck(apDev,
-                                                     staDev,
-                                                     wifiAc.GetHighTid(),
-                                                     gcrAddress);
-            WifiStaticSetupHelper::SetStaticBlockAck(staDev, apDev, wifiAc.GetLowTid(), gcrAddress);
-            WifiStaticSetupHelper::SetStaticBlockAck(staDev,
-                                                     apDev,
-                                                     wifiAc.GetHighTid(),
-                                                     gcrAddress);
-        }
+        WifiStaticSetupHelper::SetStaticBlockAck(apDev,
+                                                 staDevices,
+                                                 {wifiAc.GetLowTid(), wifiAc.GetHighTid()},
+                                                 gcrAddress);
     }
 
     // setup static routes to facilitate multicast flood

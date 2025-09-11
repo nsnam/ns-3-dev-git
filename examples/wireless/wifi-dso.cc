@@ -250,14 +250,8 @@ main(int argc, char* argv[])
         /* static setup of association and BA agreements */
         auto apDev = DynamicCast<WifiNetDevice>(apDevice.Get(0));
         NS_ASSERT(apDev);
-        WifiStaticSetupHelper::SetStaticAssoc(apDev, staDevices);
-        for (uint32_t i = 0; i < staDevices.GetN(); ++i)
-        {
-            auto staDev = DynamicCast<WifiNetDevice>(staDevices.Get(i));
-            NS_ASSERT(staDev);
-            WifiStaticSetupHelper::SetStaticBlockAck(apDev, staDev, 0);
-            WifiStaticSetupHelper::SetStaticBlockAck(staDev, apDev, 0);
-        }
+        WifiStaticSetupHelper::SetStaticAssociation(apDev, staDevices);
+        WifiStaticSetupHelper::SetStaticBlockAck(apDev, staDevices, {0});
         startTime = MilliSeconds(1);
     }
 

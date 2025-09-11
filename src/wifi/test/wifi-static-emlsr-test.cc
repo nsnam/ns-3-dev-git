@@ -230,7 +230,7 @@ WifiStaticEmlsrTest::DoSetup()
     m_clientDev = GetWifiNetDevice(false, channelMap);
     NS_ASSERT(m_clientDev);
 
-    WifiStaticSetupHelper::SetStaticAssoc(m_apDev, m_clientDev);
+    WifiStaticSetupHelper::SetStaticAssociation(m_apDev, m_clientDev);
     WifiStaticSetupHelper::SetStaticEmlsr(m_apDev, m_clientDev);
 }
 

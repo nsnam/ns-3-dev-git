@@ -200,7 +200,7 @@ WifiStaticAdhocBeaconsTest::DoSetup()
         m_devs.push_back(GetWifiNetDevice(i, channelMap));
     }
 
-    WifiStaticSetupHelper::SetStaticAssoc(m_devs[0], m_devs[1]);
+    WifiStaticSetupHelper::SetStaticAssociation(m_devs[0], m_devs[1]);
 }
 
 void

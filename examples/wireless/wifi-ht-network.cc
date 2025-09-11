@@ -16,11 +16,11 @@
 #include "ns3/enum.h"
 #include "ns3/ht-phy.h"
 #include "ns3/internet-stack-helper.h"
-#include "ns3/internet-static-setup-helper.h"
 #include "ns3/ipv4-address-helper.h"
 #include "ns3/ipv4-global-routing-helper.h"
 #include "ns3/log.h"
 #include "ns3/mobility-helper.h"
+#include "ns3/neighbor-cache-helper.h"
 #include "ns3/on-off-helper.h"
 #include "ns3/packet-sink-helper.h"
 #include "ns3/packet-sink.h"
@@ -361,11 +361,8 @@ main(int argc, char* argv[])
                     /* static setup of association and BA agreements */
                     auto apDev = DynamicCast<WifiNetDevice>(apDevice.Get(0));
                     NS_ASSERT(apDev);
-                    WifiStaticSetupHelper::SetStaticAssoc(apDev, staDevice);
-                    auto staDev = DynamicCast<WifiNetDevice>(staDevice.Get(0));
-                    NS_ASSERT(staDev);
-                    WifiStaticSetupHelper::SetStaticBlockAck(apDev, staDev, 0);
-                    WifiStaticSetupHelper::SetStaticBlockAck(staDev, apDev, 0);
+                    WifiStaticSetupHelper::SetStaticAssociation(apDev, staDevice);
+                    WifiStaticSetupHelper::SetStaticBlockAck(apDev, staDevice, {0});
                     startTime = MilliSeconds(1);
                 }
 
@@ -387,7 +384,8 @@ main(int argc, char* argv[])
                 if (staticSetup)
                 {
                     /* static setup of ARP cache */
-                    InternetStaticSetupHelper::PopulateArpCache();
+                    NeighborCacheHelper nbCache;
+                    nbCache.PopulateNeighborCache();
                 }
 
                 /* Setting applications */

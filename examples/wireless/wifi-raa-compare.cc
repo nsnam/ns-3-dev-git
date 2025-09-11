@@ -227,11 +227,8 @@ RunOne(const std::string& raa, const Params& params)
     /* static setup of association and BA agreements */
     auto apDev = DynamicCast<WifiNetDevice>(apDevice.Get(0));
     NS_ASSERT(apDev);
-    WifiStaticSetupHelper::SetStaticAssoc(apDev, staDevice);
-    auto staDev = DynamicCast<WifiNetDevice>(staDevice.Get(0));
-    NS_ASSERT(staDev);
-    WifiStaticSetupHelper::SetStaticBlockAck(apDev, staDev, 0);
-    WifiStaticSetupHelper::SetStaticBlockAck(staDev, apDev, 0);
+    WifiStaticSetupHelper::SetStaticAssociation(apDev, staDevice);
+    WifiStaticSetupHelper::SetStaticBlockAck(apDev, staDevice, {0});
 
     // Internet stack
     InternetStackHelper stack;

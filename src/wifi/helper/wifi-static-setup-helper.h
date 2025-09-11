@@ -43,12 +43,13 @@ class WifiStaticSetupHelper
     /// Bypass static capabilities exchange for input devices
     /// @param bssDev BSS advertising device
     /// @param clientDevs client devices
-    static void SetStaticAssoc(Ptr<WifiNetDevice> bssDev, const NetDeviceContainer& clientDevs);
+    static void SetStaticAssociation(Ptr<WifiNetDevice> bssDev,
+                                     const NetDeviceContainer& clientDevs);
 
     /// Bypass static capabilities exchange for input devices
     /// @param bssDev BSS advertising device
     /// @param clientDev client device
-    static void SetStaticAssoc(Ptr<WifiNetDevice> bssDev, Ptr<WifiNetDevice> clientDev);
+    static void SetStaticAssociation(Ptr<WifiNetDevice> bssDev, Ptr<WifiNetDevice> clientDev);
 
     /// Perform static Association Request/Response exchange for input devices post initialization
     /// at runtime begin

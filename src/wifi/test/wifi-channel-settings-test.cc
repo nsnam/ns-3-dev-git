@@ -299,14 +299,11 @@ WifiChannelSettingsTest::DoRun()
     {
         auto apDev = DynamicCast<WifiNetDevice>(apDevice.Get(0));
         NS_ASSERT(apDev);
-        WifiStaticSetupHelper::SetStaticAssoc(apDev, staDevice);
-        auto staDev = DynamicCast<WifiNetDevice>(staDevice.Get(0));
-        NS_ASSERT(staDev);
+        WifiStaticSetupHelper::SetStaticAssociation(apDev, staDevice);
         if ((m_params.apStandard >= WIFI_STANDARD_80211n) &&
             (m_params.staStandard >= WIFI_STANDARD_80211n))
         {
-            WifiStaticSetupHelper::SetStaticBlockAck(apDev, staDev, 0);
-            WifiStaticSetupHelper::SetStaticBlockAck(staDev, apDev, 0);
+            WifiStaticSetupHelper::SetStaticBlockAck(apDev, staDevice, {0});
         }
     }
 

@@ -272,7 +272,7 @@ WifiBackoffMonitorTest::DoSetup()
     const auto staDev = m_staMac->GetDevice();
 
     // statically configure association and Block Ack agreements for TID 0
-    WifiStaticSetupHelper::SetStaticAssoc(apDev, staDev);
+    WifiStaticSetupHelper::SetStaticAssociation(apDev, staDev);
     WifiStaticSetupHelper::SetStaticBlockAck(apDev, staDev, 0);
     WifiStaticSetupHelper::SetStaticBlockAck(staDev, apDev, 0);
 

@@ -249,7 +249,7 @@ WifiStaticInfraBssTest::DoSetup()
     m_clientDev = GetWifiNetDevice(false, channelMap); // Client
     NS_ASSERT(m_clientDev);
 
-    WifiStaticSetupHelper::SetStaticAssoc(m_apDev, m_clientDev);
+    WifiStaticSetupHelper::SetStaticAssociation(m_apDev, m_clientDev);
     if (auto multicastIp = m_testVec.apMulticastIp)
     {
         NS_ASSERT_MSG(multicastIp->IsMulticast(),

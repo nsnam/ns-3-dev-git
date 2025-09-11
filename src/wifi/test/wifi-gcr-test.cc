@@ -903,7 +903,7 @@ GcrTestBase::DoSetup()
 
     auto apNetDevice = DynamicCast<WifiNetDevice>(apDevice.Get(0));
     NS_ASSERT(apNetDevice);
-    WifiStaticSetupHelper::SetStaticAssoc(apNetDevice, staDevices);
+    WifiStaticSetupHelper::SetStaticAssociation(apNetDevice, staDevices);
 
     m_apWifiMac = DynamicCast<ApWifiMac>(apNetDevice->GetMac());
     m_apWifiMac->SetAttribute("BE_MaxAmsduSize", UintegerValue(0));

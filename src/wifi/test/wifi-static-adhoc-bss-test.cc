@@ -230,7 +230,7 @@ WifiStaticAdhocBssTest::DoSetup()
     m_clientDev = GetWifiNetDevice(true, channelMap);
     NS_ASSERT(m_clientDev);
 
-    WifiStaticSetupHelper::SetStaticAssoc(m_adhocDev, m_clientDev);
+    WifiStaticSetupHelper::SetStaticAssociation(m_adhocDev, m_clientDev);
 }
 
 void

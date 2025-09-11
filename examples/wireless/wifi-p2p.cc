@@ -853,10 +853,10 @@ WifiP2pExample::Setup()
         NS_ASSERT(sta1Dev);
         auto sta2Dev = DynamicCast<WifiNetDevice>(staDevices.Get(1));
         NS_ASSERT(sta2Dev);
-        WifiStaticSetupHelper::SetStaticAssoc(apDev, m_p2p ? staDevices.Get(0) : staDevices);
+        WifiStaticSetupHelper::SetStaticAssociation(apDev, m_p2p ? staDevices.Get(0) : staDevices);
         if (m_p2p)
         {
-            WifiStaticSetupHelper::SetStaticAssoc(sta2Dev, sta1Dev);
+            WifiStaticSetupHelper::SetStaticAssociation(sta2Dev, sta1Dev);
         }
         if (m_emlsr)
         {

@@ -33,19 +33,19 @@ namespace ns3
 {
 
 void
-WifiStaticSetupHelper::SetStaticAssoc(Ptr<WifiNetDevice> bssDev,
-                                      const NetDeviceContainer& clientDevs)
+WifiStaticSetupHelper::SetStaticAssociation(Ptr<WifiNetDevice> bssDev,
+                                            const NetDeviceContainer& clientDevs)
 {
     for (auto i = clientDevs.Begin(); i != clientDevs.End(); ++i)
     {
         auto clientDev = DynamicCast<WifiNetDevice>(*i);
         NS_ASSERT_MSG(clientDev, "WifiNetDevice expected");
-        SetStaticAssoc(bssDev, clientDev);
+        SetStaticAssociation(bssDev, clientDev);
     }
 }
 
 void
-WifiStaticSetupHelper::SetStaticAssoc(Ptr<WifiNetDevice> bssDev, Ptr<WifiNetDevice> clientDev)
+WifiStaticSetupHelper::SetStaticAssociation(Ptr<WifiNetDevice> bssDev, Ptr<WifiNetDevice> clientDev)
 {
     Simulator::ScheduleNow(
         [=] { WifiStaticSetupHelper::SetStaticAssocPostInit(bssDev, clientDev); });
