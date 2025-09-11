@@ -179,6 +179,26 @@ operator>>(std::istream& is, Hz_t& rhs)
     return ParseSIString(is, rhs, "Hz");
 }
 
+/// Output stream for kHz_t
+/// @param os The output stream
+/// @param rhs The kHz_t object to output
+/// @return The output stream
+std::ostream&
+operator<<(std::ostream& os, const kHz_t& rhs)
+{
+    return os << rhs.str();
+}
+
+/// Input stream for kHz_t
+/// @param is The input stream
+/// @param rhs The kHz_t object to input
+/// @return The input stream
+std::istream&
+operator>>(std::istream& is, kHz_t& rhs)
+{
+    return ParseSIString(is, rhs, "kHz");
+}
+
 /// Output stream for MHz_t
 /// @param os The output stream
 /// @param rhs The MHz_t object to output
@@ -197,6 +217,46 @@ std::istream&
 operator>>(std::istream& is, MHz_t& rhs)
 {
     return ParseSIString(is, rhs, "MHz");
+}
+
+/// Output stream for GHz_t
+/// @param os The output stream
+/// @param rhs The GHz_t object to output
+/// @return The output stream
+std::ostream&
+operator<<(std::ostream& os, const GHz_t& rhs)
+{
+    return os << rhs.str();
+}
+
+/// Input stream for GHz_t
+/// @param is The input stream
+/// @param rhs The GHz_t object to input
+/// @return The input stream
+std::istream&
+operator>>(std::istream& is, GHz_t& rhs)
+{
+    return ParseSIString(is, rhs, "GHz");
+}
+
+/// Output stream for THz_t
+/// @param os The output stream
+/// @param rhs The THz_t object to output
+/// @return The output stream
+std::ostream&
+operator<<(std::ostream& os, const THz_t& rhs)
+{
+    return os << rhs.str();
+}
+
+/// Input stream for THz_t
+/// @param is The input stream
+/// @param rhs The THz_t object to input
+/// @return The input stream
+std::istream&
+operator>>(std::istream& is, THz_t& rhs)
+{
+    return ParseSIString(is, rhs, "THz");
 }
 
 /// Multiply Hz_t by double

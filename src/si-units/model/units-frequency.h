@@ -452,8 +452,17 @@ THz_t operator""_THz(long double val);
 std::ostream& operator<<(std::ostream& os, const Hz_t& rhs);
 std::istream& operator>>(std::istream& is, Hz_t& rhs);
 
+std::ostream& operator<<(std::ostream& os, const kHz_t& rhs);
+std::istream& operator>>(std::istream& is, kHz_t& rhs);
+
 std::ostream& operator<<(std::ostream& os, const MHz_t& rhs);
 std::istream& operator>>(std::istream& is, MHz_t& rhs);
+
+std::ostream& operator<<(std::ostream& os, const GHz_t& rhs);
+std::istream& operator>>(std::istream& is, GHz_t& rhs);
+
+std::ostream& operator<<(std::ostream& os, const THz_t& rhs);
+std::istream& operator>>(std::istream& is, THz_t& rhs);
 
 Hz_t operator*(double lhs, const Hz_t& rhs);
 double operator*(Time nstime, const Hz_t& rhs);
