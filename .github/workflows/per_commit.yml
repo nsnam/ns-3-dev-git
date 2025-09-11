@@ -162,6 +162,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install required packages
         run: |
+          brew uninstall cmake ninja
           brew install ninja cmake ccache libxml2 gsl open-mpi #qt5
       - name: Get timestamp
         id: time
