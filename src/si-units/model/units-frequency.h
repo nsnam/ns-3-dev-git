@@ -5,9 +5,6 @@
 #include "units-aliases.h"
 
 #include "ns3/assert.h"
-#include "ns3/attribute-helper.h"
-#include "ns3/attribute.h"
-#include "ns3/double.h"
 #include "ns3/nstime.h"
 
 #include <algorithm>
@@ -29,13 +26,6 @@ struct Hz_t
     double val{}; ///< Value in Hz
 
     Hz_t() = default; ///< Default constructor
-
-    /// Constructor
-    /// @param hz Value in Hz
-    constexpr Hz_t(const Hz_t& hz)
-        : val(hz.val)
-    {
-    }
 
     /// Constructor
     /// @param val Value in Hz
@@ -67,7 +57,18 @@ struct Hz_t
 
     /// Constructor
     /// @param str a string representation of the frequency
-    explicit Hz_t(const std::string& str);
+    explicit Hz_t(const std::string& str){
+        auto res = from_str(str);
+        NS_ABORT_MSG_IF(!res.has_value(), GetParseErrMsg(str, "Hz"));
+        val = res.value().val;
+    }
+
+    /// Constructor
+    /// @param hz Value in Hz
+    constexpr Hz_t(const Hz_t& hz)
+        : val(hz.val)
+    {
+    }
 
     /// @brief Stringify with metric prefix
     /// Sub-Hertz not supported
@@ -259,13 +260,63 @@ struct Hz_t
     /// Test if this is a multiple of the right hand side
     /// @param rhs the measuring size in Hz
     /// @returns true if a multiple, false otherwise
-    bool IsMultipleOf(const Hz_t& rhs) const;
+    bool IsMultipleOf(const Hz_t& rhs) const
+    {
+        NS_ASSERT(rhs.val != 0.);
+        auto div = static_cast<const int64_t>(val / rhs.val);
+        return val == (div * rhs.val);
+    }
 };
+
+/// User-defined literals for Hz
+/// @param val The value in Hz
+/// @return Hz_t object
+inline Hz_t
+operator""_Hz(unsigned long long val)
+{
+    return Hz_t{static_cast<double>(val)};
+}
+
+/// User-defined literals for Hz
+/// @param val The value in Hz
+/// @return Hz_t object
+inline Hz_t
+operator""_Hz(long double val)
+{
+    return Hz_t{static_cast<double>(val)};
+}
+
+/// Output stream for Hz_t
+/// @param os The output stream
+/// @param rhs The Hz_t object to output
+/// @return The output stream
+inline std::ostream&
+operator<<(std::ostream& os, const Hz_t& rhs)
+{
+    return os << rhs.str();
+}
+
+/// Input stream for Hz_t
+/// @param is The input stream
+/// @param rhs The Hz_t object to input
+/// @return The input stream
+inline std::istream&
+operator>>(std::istream& is, Hz_t& rhs)
+{
+    return ParseSIString(is, rhs, "Hz");
+}
 
 /// Frequency unit in kHz
 struct kHz_t : Hz_t
 {
-    kHz_t() = default; ///< Default constructor // NOLINT(readability-identifier-naming
+    kHz_t() = default; // NOLINT(readability-identifier-naming
+
+    /// Constructor
+    /// @param val Value in kHz
+    constexpr explicit kHz_t(double val)
+        : Hz_t(static_cast<double>(val * ONE_KILO))
+    {
+    }
 
     /// Constructor
     /// @param val Value in kHz
@@ -289,28 +340,61 @@ struct kHz_t : Hz_t
     }
 
     /// Constructor
-    /// @param val Value in kHz
-    constexpr explicit kHz_t(double val)
-        : Hz_t(val * ONE_KILO)
+    /// @param str a string representation of the frequency
+    explicit kHz_t(const std::string& str)
     {
+        auto res = from_str(str);
+        NS_ABORT_MSG_IF(!res.has_value(), GetParseErrMsg(str, "kHz"));
+        val = res.value().val;
     }
 
     /// Constructor
     /// @param hz Value in Hz
-    constexpr kHz_t(const Hz_t& hz)
+    constexpr kHz_t(const Hz_t hz)
         : Hz_t(hz)
     {
     }
-
-    /// Constructor
-    /// @param str a string representation of the frequency
-    explicit kHz_t(const std::string& str);
 };
+
+/// @param val The value in kHz
+/// @return Hz_t object
+inline kHz_t operator""_kHz(unsigned long long val)
+{
+    return kHz_t{static_cast<double>(val)};
+}
+
+/// User-defined literals for kHz
+/// @param val The value in kHz
+/// @return Hz_t object
+inline kHz_t operator""_kHz(long double val)
+{
+    return kHz_t{static_cast<double>(val)};
+}
+
+/// Output stream for kHz_t
+/// @param os The output stream
+/// @param rhs The kHz_t object to output
+/// @return The output stream
+inline std::ostream&
+operator<<(std::ostream& os, const kHz_t& rhs)
+{
+    return os << rhs.str();
+}
+
+/// Input stream for kHz_t
+/// @param is The input stream
+/// @param rhs The kHz_t object to input
+/// @return The input stream
+inline std::istream&
+operator>>(std::istream& is, kHz_t& rhs)
+{
+    return ParseSIString(is, rhs, "kHz");
+}
 
 /// Frequency unit in MHz
 struct MHz_t : Hz_t
 {
-    MHz_t() = default; ///< Default constructor // NOLINT(readability-identifier-naming
+    MHz_t() = default; // NOLINT(readability-identifier-naming
 
     /// Constructor
     /// @param val Value in MHz
@@ -320,7 +404,7 @@ struct MHz_t : Hz_t
     }
 
     /// Constructor
-    /// @param val Value in MHz
+    /// @param val Value in MH
     constexpr explicit MHz_t(int32_t val)
         : Hz_t(static_cast<int64_t>(val * ONE_MEGA))
     {
@@ -334,21 +418,65 @@ struct MHz_t : Hz_t
     }
 
     /// Constructor
-    /// @param hz Value in Hz
-    constexpr MHz_t(const Hz_t& hz)
-        : Hz_t(hz)
+    /// @param str a string representation of the frequency
+    explicit MHz_t(const std::string& str)
     {
+        auto res = from_str(str);
+        NS_ABORT_MSG_IF(!res.has_value(), GetParseErrMsg(str, "MHz"));
+        val = res.value().val;
     }
 
     /// Constructor
-    /// @param str a string representation of the frequency
-    explicit MHz_t(const std::string& str);
+    /// @param hz Value in Hz
+    constexpr MHz_t(const Hz_t hz)
+        : Hz_t(hz)
+    {
+    }
 };
+
+
+/// User-defined literals for MHz
+/// @param val The value in MHz
+/// @return Hz_t object
+inline MHz_t operator""_MHz(unsigned long long val)
+{
+    return MHz_t{static_cast<double>(val)};
+}
+
+/// User-defined literals for MHz
+/// @param val The value in MHz
+/// @return Hz_t object
+inline MHz_t operator""_MHz(long double val)
+{
+    return MHz_t{static_cast<double>(val)};
+}
+
+
+/// Output stream for MHz_t
+/// @param os The output stream
+/// @param rhs The MHz_t object to output
+/// @return The output stream
+inline std::ostream&
+operator<<(std::ostream& os, const MHz_t& rhs)
+{
+    return os << rhs.str();
+}
+
+/// Input stream for MHz_t
+/// @param is The input stream
+/// @param rhs The MHz_t object to input
+/// @return The input stream
+inline std::istream&
+operator>>(std::istream& is, MHz_t& rhs)
+{
+    return ParseSIString(is, rhs, "MHz");
+}
+
 
 /// Frequency unit in GHz
 struct GHz_t : Hz_t
 {
-    GHz_t() = default; ///< Default constructor // NOLINT(readability-identifier-naming
+    GHz_t() = default; // NOLINT(readability-identifier-naming
 
     /// Constructor
     /// @param val Value in GHz
@@ -379,21 +507,65 @@ struct GHz_t : Hz_t
     }
 
     /// Constructor
-    /// @param hz Value in Hz
-    constexpr GHz_t(const Hz_t& hz)
-        : Hz_t(hz)
+    /// @param str a string representation of the frequency
+    explicit GHz_t(const std::string& str)
     {
+        auto res = from_str(str);
+        NS_ABORT_MSG_IF(!res.has_value(), GetParseErrMsg(str, "GHz"));
+        val = res.value().val;
     }
 
     /// Constructor
-    /// @param str a string representation of the frequency
-    explicit GHz_t(const std::string& str);
+    /// @param hz Value in Hz
+    constexpr GHz_t(const Hz_t hz)
+        : Hz_t(hz)
+    {
+    }
 };
+
+
+
+/// User-defined literals for GHz
+/// @param val The value in GHz
+/// @return Hz_t object
+inline GHz_t operator""_GHz(unsigned long long val)
+{
+    return GHz_t{static_cast<double>(val)};
+}
+
+/// User-defined literals for GHz
+/// @param val The value in GHz
+/// @return Hz_t object
+inline GHz_t operator""_GHz(long double val)
+{
+    return GHz_t{static_cast<double>(val)};
+}
+
+
+/// Output stream for GHz_t
+/// @param os The output stream
+/// @param rhs The GHz_t object to output
+/// @return The output stream
+inline std::ostream&
+operator<<(std::ostream& os, const GHz_t& rhs)
+{
+    return os << rhs.str();
+}
+
+/// Input stream for GHz_t
+/// @param is The input stream
+/// @param rhs The GHz_t object to input
+/// @return The input stream
+inline std::istream&
+operator>>(std::istream& is, GHz_t& rhs)
+{
+    return ParseSIString(is, rhs, "GHz");
+}
 
 /// Frequency unit in THz
 struct THz_t : Hz_t
 {
-    THz_t() = default; ///< Default constructor // NOLINT(readability-identifier-naming
+    THz_t() = default; // NOLINT(readability-identifier-naming
 
     /// Constructor
     /// @param val Value in THz
@@ -424,70 +596,80 @@ struct THz_t : Hz_t
     }
 
     /// Constructor
-    /// @param hz Value in Hz
-    constexpr THz_t(const Hz_t& hz)
-        : Hz_t(hz)
+    /// @param str a string representation of the frequency
+    explicit THz_t(const std::string& str)
     {
+        auto res = from_str(str);
+        NS_ABORT_MSG_IF(!res.has_value(), GetParseErrMsg(str, "THz"));
+        val = res.value().val;
     }
 
     /// Constructor
-    /// @param str a string representation of the frequency
-    explicit THz_t(const std::string& str);
+    /// @param hz Value in Hz
+    constexpr THz_t(const Hz_t hz)
+        : Hz_t(hz)
+    {
+    }
 };
 
-// User defined literals
-/// @cond API signatures are clear enough
-Hz_t operator""_Hz(unsigned long long val);
-Hz_t operator""_Hz(long double val);
-kHz_t operator""_kHz(unsigned long long val);
-kHz_t operator""_kHz(long double val);
-MHz_t operator""_MHz(unsigned long long val);
-MHz_t operator""_MHz(long double val);
-GHz_t operator""_GHz(unsigned long long val);
-GHz_t operator""_GHz(long double val);
-THz_t operator""_THz(unsigned long long val);
-THz_t operator""_THz(long double val);
+/// User-defined literals for THz
+/// @param val The value in THz
+/// @return Hz_t object
+inline THz_t operator""_THz(unsigned long long val)
+{
+    return THz_t{static_cast<double>(val)};
+}
 
-std::ostream& operator<<(std::ostream& os, const Hz_t& rhs);
-std::istream& operator>>(std::istream& is, Hz_t& rhs);
+/// User-defined literals for THz
+/// @param val The value in THz
+/// @return Hz_t object
+inline THz_t operator""_THz(long double val)
+{
+    return THz_t{static_cast<double>(val)};
+}
 
-std::ostream& operator<<(std::ostream& os, const kHz_t& rhs);
-std::istream& operator>>(std::istream& is, kHz_t& rhs);
+/// Output stream for THz_t
+/// @param os The output stream
+/// @param rhs The THz_t object to output
+/// @return The output stream
+inline std::ostream&
+operator<<(std::ostream& os, const THz_t& rhs)
+{
+    return os << rhs.str();
+}
 
-std::ostream& operator<<(std::ostream& os, const MHz_t& rhs);
-std::istream& operator>>(std::istream& is, MHz_t& rhs);
+/// Input stream for THz_t
+/// @param is The input stream
+/// @param rhs The THz_t object to input
+/// @return The input stream
+inline std::istream&
+operator>>(std::istream& is, THz_t& rhs)
+{
+    return ParseSIString(is, rhs, "THz");
+}
 
-std::ostream& operator<<(std::ostream& os, const GHz_t& rhs);
-std::istream& operator>>(std::istream& is, GHz_t& rhs);
+/// Multiply Hz_t by double
+/// @param lhs The double to multiply by
+/// @param rhs The Hz_t object to multiply
+/// @return The Hz_t object
+inline Hz_t
+operator*(double lhs, const Hz_t& rhs)
+{
+    return rhs * lhs;
+}
 
-std::ostream& operator<<(std::ostream& os, const THz_t& rhs);
-std::istream& operator>>(std::istream& is, THz_t& rhs);
+/// Multiply Hz_t by Time
+/// @param nstime The Time to multiply by
+/// @param rhs The Hz_t object to multiply
+/// @return unitless value
+inline double
+operator*(Time nstime, const Hz_t& rhs)
+{
+    return rhs * nstime;
+}
 
-Hz_t operator*(double lhs, const Hz_t& rhs);
-double operator*(Time nstime, const Hz_t& rhs);
-/// @endcond
-
-/// @cond Doxygen warning against macro internals
-ATTRIBUTE_VALUE_DEFINE_WITH_NAME(Hz_t, Hz); // See si-units-test-suite.cc for usages
-ATTRIBUTE_ACCESSOR_DEFINE(Hz);
-ATTRIBUTE_CHECKER_DEFINE_WITH_CONVERTER(Hz_t, Hz, Double);
-
-ATTRIBUTE_VALUE_DEFINE_WITH_NAME(kHz_t, kHz); // See si-units-test-suite.cc for usages
-ATTRIBUTE_ACCESSOR_DEFINE(kHz);
-ATTRIBUTE_CHECKER_DEFINE_WITH_CONVERTER(kHz_t, kHz, Double);
-
-ATTRIBUTE_VALUE_DEFINE_WITH_NAME(MHz_t, MHz); // See si-units-test-suite.cc for usages
-ATTRIBUTE_ACCESSOR_DEFINE(MHz);
-ATTRIBUTE_CHECKER_DEFINE_WITH_CONVERTER(MHz_t, MHz, Double);
-
-ATTRIBUTE_VALUE_DEFINE_WITH_NAME(GHz_t, GHz); // See si-units-test-suite.cc for usages
-ATTRIBUTE_ACCESSOR_DEFINE(GHz);
-ATTRIBUTE_CHECKER_DEFINE_WITH_CONVERTER(GHz_t, GHz, Double);
-
-ATTRIBUTE_VALUE_DEFINE_WITH_NAME(THz_t, THz); // See si-units-test-suite.cc for usages
-ATTRIBUTE_ACCESSOR_DEFINE(THz);
-ATTRIBUTE_CHECKER_DEFINE_WITH_CONVERTER(THz_t, THz, Double);
-/// @endcond
 } // namespace ns3
+
+#include "units-frequency-attributes.h" // Attribute Support
 
 #endif // UNITS_FREQUENCY_H
