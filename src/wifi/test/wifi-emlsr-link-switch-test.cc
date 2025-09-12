@@ -2473,7 +2473,7 @@ WifiEmlsrLinkSwitchTestSuite::WifiEmlsrLinkSwitchTestSuite()
     {
         for (bool resetCamStateAndInterruptSwitch : {true, false})
         {
-            for (auto auxPhyMaxChWidth : {MHz_t{20}, MHz_t{40}, MHz_t{80}, MHz_t{160}})
+            for (const auto& auxPhyMaxChWidth : {MHz_t{20}, MHz_t{40}, MHz_t{80}, MHz_t{160}})
             {
                 AddTestCase(new EmlsrLinkSwitchTest(
                                 {switchAuxPhy, resetCamStateAndInterruptSwitch, auxPhyMaxChWidth}),

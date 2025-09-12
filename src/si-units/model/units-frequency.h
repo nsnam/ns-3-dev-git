@@ -20,10 +20,6 @@
 // clang-format off
 namespace ns3
 {
-struct kHz_t;
-struct MHz_t;
-struct GHz_t;
-struct THz_t;
 
 /// Frequency unit in Hz
 struct Hz_t
@@ -33,6 +29,13 @@ struct Hz_t
     double val{}; ///< Value in Hz
 
     Hz_t() = default; ///< Default constructor
+
+    /// Constructor
+    /// @param hz Value in Hz
+    constexpr Hz_t(const Hz_t& hz)
+        : val(hz.val)
+    {
+    }
 
     /// Constructor
     /// @param val Value in Hz
@@ -232,25 +235,6 @@ struct Hz_t
         return val / ONE_TERA;
     }
 
-    /// Copies an object
-    /// @returns frequency unit struct in Hz_t
-    Hz_t to_Hz() const;
-
-    /// Converts to kHz_t type
-    /// @returns object in kHz_t
-    kHz_t to_kHz() const; // NOLINT(readability-identifier-naming)
-
-    /// Converts to MHz_t type
-    /// @returns object in MHz_t
-    MHz_t to_MHz() const; // NOLINT(readability-identifier-naming)
-
-    /// Converts to GHz_t type
-    /// @returns object in GHz_t
-    GHz_t to_GHz() const; // NOLINT(readability-identifier-naming)
-
-    /// Converts to THz_t type
-    /// @returns object in THz_t
-    THz_t to_THz() const; // NOLINT(readability-identifier-naming)
 
     /// Converts from a string
     /// @param input String to convert from
@@ -299,7 +283,7 @@ struct kHz_t : Hz_t
 
     /// Constructor
     /// @param hz Value in Hz
-    constexpr kHz_t(const Hz_t hz)
+    constexpr kHz_t(const Hz_t& hz)
         : Hz_t(hz)
     {
     }
@@ -337,7 +321,7 @@ struct MHz_t : Hz_t
 
     /// Constructor
     /// @param hz Value in Hz
-    constexpr MHz_t(const Hz_t hz)
+    constexpr MHz_t(const Hz_t& hz)
         : Hz_t(hz)
     {
     }
@@ -382,7 +366,7 @@ struct GHz_t : Hz_t
 
     /// Constructor
     /// @param hz Value in Hz
-    constexpr GHz_t(const Hz_t hz)
+    constexpr GHz_t(const Hz_t& hz)
         : Hz_t(hz)
     {
     }
@@ -427,7 +411,7 @@ struct THz_t : Hz_t
 
     /// Constructor
     /// @param hz Value in Hz
-    constexpr THz_t(const Hz_t hz)
+    constexpr THz_t(const Hz_t& hz)
         : Hz_t(hz)
     {
     }

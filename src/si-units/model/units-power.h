@@ -938,7 +938,7 @@ struct dBm_per_Hz_t // NOLINT(readability-identifier-naming)
     /// @returns average PSD in dBm/Hz
     static dBm_per_Hz_t AveragePsd(dBm_t power, MHz_t bandwidth)
     {
-        return AveragePsd(power, bandwidth.to_Hz());
+        return AveragePsd(power,Hz_t{bandwidth});
     }
 
     /// Calculate power over bandwidth
@@ -954,7 +954,7 @@ struct dBm_per_Hz_t // NOLINT(readability-identifier-naming)
     /// @returns power over bandwidth in dBm
     inline dBm_t OverBandwidth(const MHz_t& rhs) const
     {
-        return OverBandwidth(rhs.to_Hz());
+        return OverBandwidth(Hz_t{rhs});
     }
 
     /// Three-way comparison
@@ -1096,7 +1096,7 @@ struct dBm_per_MHz_t // NOLINT(readability-identifier-naming)
     /// @returns average PSD in dBm/MHz
     static dBm_per_MHz_t AveragePsd(dBm_t power, Hz_t bandwidth)
     {
-        return AveragePsd(power, bandwidth.to_MHz());
+        return AveragePsd(power, MHz_t{bandwidth});
     }
 
     /// Calculate power over bandwidth
@@ -1112,7 +1112,7 @@ struct dBm_per_MHz_t // NOLINT(readability-identifier-naming)
     /// @returns power over bandwidth in dBm
     inline dBm_t OverBandwidth(const Hz_t& rhs) const
     {
-        return OverBandwidth(rhs.to_MHz());
+        return OverBandwidth(MHz_t{rhs});
     }
 
     /// Three-way comparison

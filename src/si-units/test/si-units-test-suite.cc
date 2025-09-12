@@ -641,6 +641,16 @@ class TestCaseSiUnits : public TestCase
         NS_TEST_EXPECT_MSG_EQ(GHz_t{123.4}, 123400000000_Hz, "");
         NS_TEST_EXPECT_MSG_EQ(THz_t{123.4}, 123400000000000_Hz, "");
 
+        NS_TEST_EXPECT_MSG_EQ(kHz_t(1200_Hz), 1.2_kHz, "");
+        NS_TEST_EXPECT_MSG_EQ(MHz_t(1200_kHz), 1.2_MHz, "");
+        NS_TEST_EXPECT_MSG_EQ(GHz_t(1200_MHz), 1.2_GHz, "");
+        NS_TEST_EXPECT_MSG_EQ(THz_t(1200_GHz), 1.2_THz, "");
+
+        NS_TEST_EXPECT_MSG_EQ(kHz_t(1.2_kHz), 1.2_kHz, "");
+        NS_TEST_EXPECT_MSG_EQ(Hz_t{1.2_kHz}, 1200_Hz, "");
+        NS_TEST_EXPECT_MSG_EQ(Hz_t{1.2_MHz}, 1200_kHz, "");
+        NS_TEST_EXPECT_MSG_EQ(MHz_t(1.2_THz), 1200_GHz, "");
+
         // Conversion from string
         NS_TEST_EXPECT_MSG_EQ(Hz_t::from_str("3.14Hz").value(), 3.14_Hz, "");
         NS_TEST_EXPECT_MSG_EQ(Hz_t::from_str("3.14 Hz").value(), 3.14_Hz, "");

@@ -1785,7 +1785,7 @@ LargestIdlePrimaryChannelTest::DoRun()
     uint8_t channel = 0;
     std::list<WifiChannelListType> busyChannels;
 
-    for (auto chWidth : {MHz_t{20}, MHz_t{40}, MHz_t{80}, MHz_t{160}, MHz_t{320}})
+    for (const auto& chWidth : {MHz_t{20}, MHz_t{40}, MHz_t{80}, MHz_t{160}, MHz_t{320}})
     {
         busyChannels.push_back(static_cast<WifiChannelListType>(channel));
 

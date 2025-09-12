@@ -731,9 +731,9 @@ SpectrumWifiPhyFilterTest::RunOne()
 void
 SpectrumWifiPhyFilterTest::DoRun()
 {
-    for (const auto txBw : {MHz_t{20}, MHz_t{40}, MHz_t{80}, MHz_t{160}, MHz_t{320}})
+    for (const auto& txBw : {MHz_t{20}, MHz_t{40}, MHz_t{80}, MHz_t{160}, MHz_t{320}})
     {
-        for (const auto rxBw : {MHz_t{20}, MHz_t{40}, MHz_t{80}, MHz_t{160}, MHz_t{320}})
+        for (const auto& rxBw : {MHz_t{20}, MHz_t{40}, MHz_t{80}, MHz_t{160}, MHz_t{320}})
         {
             m_txChannelWidth = txBw;
             m_rxChannelWidth = rxBw;
@@ -882,7 +882,7 @@ SpectrumWifiPhyGetBandTest::DoRun()
         uint32_t guardStopIndice = (indicesPer20MhzBand * Count20MHzSubchannels(guardWidth)) - 1;
         std::vector<WifiSpectrumBandIndices> previousExpectedIndices{};
         std::vector<WifiSpectrumBandFrequencies> previousExpectedFrequencies{};
-        for (auto bandWidth : {MHz_t{20}, MHz_t{40}, MHz_t{80}, MHz_t{160}})
+        for (const auto& bandWidth : {MHz_t{20}, MHz_t{40}, MHz_t{80}, MHz_t{160}})
         {
             const MHz_t startFreq{5170};
             const uint32_t expectedStartIndice = guardStopIndice + 1;

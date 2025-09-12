@@ -279,36 +279,6 @@ operator*(Time nstime, const Hz_t& rhs)
     return rhs * nstime;
 }
 
-Hz_t
-Hz_t::to_Hz() const
-{
-    return *this;
-}
-
-kHz_t
-Hz_t::to_kHz() const
-{
-    return kHz_t{val / ONE_KILO};
-}
-
-MHz_t
-Hz_t::to_MHz() const
-{
-    return MHz_t{val / ONE_MEGA};
-}
-
-GHz_t
-Hz_t::to_GHz() const
-{
-    return GHz_t{val / ONE_GIGA};
-}
-
-THz_t
-Hz_t::to_THz() const
-{
-    return THz_t{val / ONE_TERA};
-}
-
 /// @cond Doxygen bug: multiple @param
 /// Converts a string to a Hz_t object
 /// @param input The string to convert
@@ -341,7 +311,8 @@ Hz_t::from_str(const std::string& input)
     return res.has_value() ? std::optional(Hz_t{res.value()}) : std::nullopt;
 }
 
-/// @cond Doxygen warning against macro internasl
+/// @cond Doxygen warning against macro internal
+
 ATTRIBUTE_CHECKER_IMPLEMENT_WITH_CONVERTER(Hz_t, Hz);
 ATTRIBUTE_VALUE_IMPLEMENT_WITH_NAME(Hz_t, Hz);
 

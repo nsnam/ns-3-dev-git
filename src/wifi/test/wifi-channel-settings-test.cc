@@ -493,7 +493,7 @@ WifiChannelSettingsTestSuite::WifiChannelSettingsTestSuite()
                                        WIFI_STANDARD_80211be,
                                        WIFI_STANDARD_80211bn})
         {
-            for (const auto maxSupportedBw :
+            for (const auto& maxSupportedBw :
                  {MHz_t{20}, MHz_t{22}, MHz_t{40}, MHz_t{80}, MHz_t{160}, MHz_t{320}})
             {
                 for (const auto& [apWidthBandPair, apChannel] : channelSettingsMap)
