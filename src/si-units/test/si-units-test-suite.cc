@@ -975,6 +975,36 @@ class TestCaseSiUnits : public TestCase
         // NS_TEST_EXPECT_MSG_EQ(percent_t{30} / percent_t{10}, percent_t{300}, "");
     }
 
+    /// Test metric prefixes
+    void MetricPrefix()
+    {
+        NS_TEST_EXPECT_MSG_EQ(MetricStrToNum("123k").value(), 123000, "");
+        NS_TEST_EXPECT_MSG_EQ(MetricStrToNum("123 k").value(), 123000, "");
+        NS_TEST_EXPECT_MSG_EQ(MetricStrToNum("123 k ").value(), 123000, "");
+        NS_TEST_EXPECT_MSG_EQ(MetricStrToNum("123  k ").value(), 123000, "");
+        NS_TEST_EXPECT_MSG_EQ(MetricStrToNum(" 123  k ").value(), 123000, "");
+        NS_TEST_EXPECT_MSG_EQ(MetricStrToNum("123.0k").value(), 123000, "");
+        NS_TEST_EXPECT_MSG_EQ(MetricStrToNum("123.456k").value(), 123456, "");
+        NS_TEST_EXPECT_MSG_EQ(MetricStrToNum("123M").value(), 123000000, "");
+        NS_TEST_EXPECT_MSG_EQ(MetricStrToNum("123G").value(), 123000000000, "");
+        NS_TEST_EXPECT_MSG_EQ(MetricStrToNum("123T").value(), 123000000000000, "");
+        NS_TEST_EXPECT_MSG_EQ(MetricStrToNum("123A").has_value(), false, "");
+
+        NS_TEST_EXPECT_MSG_EQ(ns3::NumToMetricStr(123), "123", "");
+        NS_TEST_EXPECT_MSG_EQ(ns3::NumToMetricStr(1230), "1230", "");
+        NS_TEST_EXPECT_MSG_EQ(ns3::NumToMetricStr(12300), "12300", "");
+        NS_TEST_EXPECT_MSG_EQ(ns3::NumToMetricStr(123000), "123k", "");
+        NS_TEST_EXPECT_MSG_EQ(ns3::NumToMetricStr(1230000), "1230k", "");
+        NS_TEST_EXPECT_MSG_EQ(ns3::NumToMetricStr(12300000), "12300k", "");
+        NS_TEST_EXPECT_MSG_EQ(ns3::NumToMetricStr(123000000), "123M", "");
+        NS_TEST_EXPECT_MSG_EQ(ns3::NumToMetricStr(123000000000), "123G", "");
+        NS_TEST_EXPECT_MSG_EQ(ns3::NumToMetricStr(123000000000000), "123T", "");
+        NS_TEST_EXPECT_MSG_EQ(ns3::NumToMetricStr(123400), "123400", "");
+        NS_TEST_EXPECT_MSG_EQ(ns3::NumToMetricStr(-123000), "-123k", "");
+        NS_TEST_EXPECT_MSG_EQ(ns3::NumToMetricStr(123, true), "123 ", "");
+    }
+
+
     void DoRun() override
     {
         Unit_degree();
@@ -996,6 +1026,8 @@ class TestCaseSiUnits : public TestCase
         Vectors();
         Unit_nsec();
         Unit_percent();
+
+        MetricPrefix();
     }
 };
 

@@ -11,6 +11,22 @@
 namespace ns3
 {
 
+/// Convert a number to a string in metric system
+/// @param val number to convert
+/// @param space whether to insert space between number and unit
+/// @return string representation of the number in metric system
+std::string NumToMetricStr(const double val, bool space = false);
+
+/// Convert a string in metric system to a number
+/// @param str string to convert
+/// @return number if parsed. std::nullopt otherwise
+std::optional<double> MetricStrToNum(std::string str);
+
+/// Test if a double is an integer
+/// @param val double to test
+/// @return true if integer, false otherwise
+bool IsInteger(const double val);
+
 // TODO(porce): Use std::format() instead
 // https://stackoverflow.com/a/26221725
 // License: CC0 1.0
