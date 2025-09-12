@@ -189,7 +189,7 @@ UdpTraceClient::SetMaxPacketSize(uint16_t maxPacketSize)
 }
 
 uint16_t
-UdpTraceClient::GetMaxPacketSize()
+UdpTraceClient::GetMaxPacketSize() const
 {
     return m_maxPacketSize;
 }

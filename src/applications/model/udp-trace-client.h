@@ -86,7 +86,7 @@ class UdpTraceClient : public SourceApplication
      * @brief Return the maximum packet size
      * @return the maximum packet size
      */
-    uint16_t GetMaxPacketSize();
+    uint16_t GetMaxPacketSize() const;
 
     /**
      * @brief Set the maximum packet size
