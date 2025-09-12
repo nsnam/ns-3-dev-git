@@ -11,6 +11,7 @@
 
 #include "wifi-mac-queue-elem.h"
 
+#include "ns3/deprecated.h"
 #include "ns3/mac48-address.h"
 
 #include <list>

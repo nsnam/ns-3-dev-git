@@ -10,7 +10,6 @@
 #ifndef WIFI_PHY_STATE_H
 #define WIFI_PHY_STATE_H
 
-#include "ns3/deprecated.h"
 #include "ns3/fatal-error.h"
 
 namespace ns3
@@ -85,27 +84,5 @@ operator<<(std::ostream& os, WifiPhyState state)
 }
 
 } // namespace ns3
-
-/**
- * Deprecated WifiPhyState enums.
- *
- * Use WifiPhyState class enum symbols instead.
- * @{
- */
-NS_DEPRECATED_3_42("Use WifiPhyState::IDLE instead")
-static constexpr auto IDLE = ns3::WifiPhyState::IDLE;
-NS_DEPRECATED_3_42("Use WifiPhyState::CCA_BUSY instead")
-static constexpr auto CCA_BUSY = ns3::WifiPhyState::CCA_BUSY;
-NS_DEPRECATED_3_42("Use WifiPhyState::TX instead")
-static constexpr auto TX = ns3::WifiPhyState::TX;
-NS_DEPRECATED_3_42("Use WifiPhyState::RX instead")
-static constexpr auto RX = ns3::WifiPhyState::RX;
-NS_DEPRECATED_3_42("Use WifiPhyState::SWITCHING instead")
-static constexpr auto SWITCHING = ns3::WifiPhyState::SWITCHING;
-NS_DEPRECATED_3_42("Use WifiPhyState::SLEEP instead")
-static constexpr auto SLEEP = ns3::WifiPhyState::SLEEP;
-NS_DEPRECATED_3_42("Use WifiPhyState::OFF instead")
-static constexpr auto OFF = ns3::WifiPhyState::OFF;
-/**@}*/
 
 #endif /* WIFI_PHY_STATE_H */

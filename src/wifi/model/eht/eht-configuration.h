@@ -10,7 +10,6 @@
 #ifndef EHT_CONFIGURATION_H
 #define EHT_CONFIGURATION_H
 
-#include "ns3/deprecated.h"
 #include "ns3/nstime.h"
 #include "ns3/object.h"
 #include "ns3/wifi-utils.h"
@@ -39,23 +38,6 @@ enum class WifiTidToLinkMappingNegSupport : uint8_t
     SAME_LINK_SET = 1,
     ANY_LINK_SET = 3
 };
-
-/**
- * Deprecated link mapping support enums.
- *
- * Use `WifiTidToLinkMappingNegSupport` class enum values instead.
- * @{
- */
-NS_DEPRECATED_3_42("Use WifiTidToLinkMappingNegSupport::NOT_SUPPORTED instead")
-static constexpr auto WIFI_TID_TO_LINK_MAPPING_NOT_SUPPORTED =
-    WifiTidToLinkMappingNegSupport::NOT_SUPPORTED;
-NS_DEPRECATED_3_42("Use WifiTidToLinkMappingNegSupport::SAME_LINK_SET instead")
-static constexpr auto WIFI_TID_TO_LINK_MAPPING_SAME_LINK_SET =
-    WifiTidToLinkMappingNegSupport::SAME_LINK_SET;
-NS_DEPRECATED_3_42("Use WifiTidToLinkMappingNegSupport::ANY_LINK_SET instead")
-static constexpr auto WIFI_TID_TO_LINK_MAPPING_ANY_LINK_SET =
-    WifiTidToLinkMappingNegSupport::ANY_LINK_SET;
-/**@}*/
 
 /**
  * @brief Stream insertion operator.
