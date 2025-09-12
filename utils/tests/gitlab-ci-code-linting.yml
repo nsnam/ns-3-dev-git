@@ -21,11 +21,6 @@ check-style-clang-format-19:
   variables:
     CLANG_FORMAT_VERSION: 19
 
-check-style-clang-format-15:
-  extends: .check-style-clang-format
-  variables:
-    CLANG_FORMAT_VERSION: 15
-
 # Clang-tidy
 clang-tidy-19:
   stage: code-linting
