@@ -73,7 +73,10 @@ struct Hz_t
     /// Sub-Hertz not supported
     /// @param space Insert or omit space between a number and a unit measurement, with SI standard as default
     /// @return String with metric prefix
-    std::string str(bool space=true) const; // NOLINT(readability-identifier-naming);
+    std::string str(bool space=true) const // NOLINT(readability-identifier-naming)
+    {
+        return NumToMetricStr(val, space) + "Hz";
+    }
 
     /// @brief Convert a vector of double values to a vector of Hz_t values
     /// @param input vector of double values
@@ -239,8 +242,19 @@ struct Hz_t
     /// Converts from a string
     /// @param input String to convert from
     /// @return Optional Hz_t value
-    static std::optional<Hz_t> from_str( // NOLINT(readability-identifier-naming)
-        const std::string& input);
+    static std::optional<Hz_t> from_str(const std::string& input)
+    {
+        std::string unit = "Hz";
+        auto str = Trim(input);
+        if (not str.ends_with(unit))
+        {
+            return std::nullopt;
+        }
+        str.erase(str.length() - unit.length());
+        str = Trim(str);
+        auto res = MetricStrToNum(str);
+        return res.has_value()? std::optional(Hz_t(res.value())) : std::nullopt;
+    }
 
     /// Test if this is a multiple of the right hand side
     /// @param rhs the measuring size in Hz
@@ -422,6 +436,7 @@ struct THz_t : Hz_t
 };
 
 // User defined literals
+/// @cond API signatures are clear enough
 Hz_t operator""_Hz(unsigned long long val);
 Hz_t operator""_Hz(long double val);
 kHz_t operator""_kHz(unsigned long long val);
@@ -450,6 +465,7 @@ std::istream& operator>>(std::istream& is, THz_t& rhs);
 
 Hz_t operator*(double lhs, const Hz_t& rhs);
 double operator*(Time nstime, const Hz_t& rhs);
+/// @endcond
 
 /// @cond Doxygen warning against macro internals
 ATTRIBUTE_VALUE_DEFINE_WITH_NAME(Hz_t, Hz); // See si-units-test-suite.cc for usages

@@ -7,24 +7,10 @@ using namespace ns3;
 // clang-format off
 namespace ns3
 {
-std::string
-Hz_t::str(bool space) const // NOLINT(readability-identifier-naming)
-{
-    const std::vector<std::string> WHOLE_UNIT_PREFIX = {"", "k", "M", "G", "T"};
 
-    size_t idx{};
-    auto valInt = static_cast<int64_t>(val); // No support of sub-Hertz
-    if (valInt > 0)
-    {
-        while (((idx + 1) < WHOLE_UNIT_PREFIX.size()) && ((valInt % ONE_KILO) == 0))
-        {
-            valInt /= ONE_KILO;
-            ++idx;
-        }
-    }
+/// @cond Doxygen warning against macro internal
 
-    return sformat(space ? "%lld %sHz" : "%lld%sHz", valInt, WHOLE_UNIT_PREFIX[idx].c_str());
-}
+
 
 Hz_t::Hz_t(const std::string& str)
 {
@@ -278,40 +264,6 @@ operator*(Time nstime, const Hz_t& rhs)
 {
     return rhs * nstime;
 }
-
-/// @cond Doxygen bug: multiple @param
-/// Converts a string to a Hz_t object
-/// @param input The string to convert
-/// @return The Hz_t object if successful, nullopt otherwise
-/// @endcond
-std::optional<Hz_t>
-Hz_t::from_str(const std::string& input)
-{
-    auto res = StringToDouble(input, "THz");
-    if (res.has_value())
-    {
-        return THz_t(res.value());
-    }
-    res = StringToDouble(input, "GHz");
-    if (res.has_value())
-    {
-        return GHz_t(res.value());
-    }
-    res = StringToDouble(input, "MHz");
-    if (res.has_value())
-    {
-        return MHz_t{res.value()};
-    }
-    res = StringToDouble(input, "kHz");
-    if (res.has_value())
-    {
-        return kHz_t(res.value());
-    }
-    res = StringToDouble(input, "Hz");
-    return res.has_value() ? std::optional(Hz_t{res.value()}) : std::nullopt;
-}
-
-/// @cond Doxygen warning against macro internal
 
 ATTRIBUTE_CHECKER_IMPLEMENT_WITH_CONVERTER(Hz_t, Hz);
 ATTRIBUTE_VALUE_IMPLEMENT_WITH_NAME(Hz_t, Hz);

@@ -659,10 +659,20 @@ class TestCaseSiUnits : public TestCase
         NS_TEST_EXPECT_MSG_EQ(Hz_t::from_str("3.14 hz").has_value(), false, "");
         NS_TEST_EXPECT_MSG_EQ(Hz_t::from_str("3.14_Hz").has_value(), false, "");
 
+        // Consistent parsing regardless of the struct type
         NS_TEST_EXPECT_MSG_EQ(Hz_t::from_str("3.14kHz").value(), 3.14_kHz, "");
         NS_TEST_EXPECT_MSG_EQ(Hz_t::from_str("3.14MHz").value(), 3.14_MHz, "");
         NS_TEST_EXPECT_MSG_EQ(Hz_t::from_str("3.14GHz").value(), 3.14_GHz, "");
         NS_TEST_EXPECT_MSG_EQ(Hz_t::from_str("3.14THz").value(), 3.14_THz, "");
+        NS_TEST_EXPECT_MSG_EQ(kHz_t::from_str("3.14kHz").value(), 3.14_kHz, "");
+        NS_TEST_EXPECT_MSG_EQ(MHz_t::from_str("3.14MHz").value(), 3.14_MHz, "");
+        NS_TEST_EXPECT_MSG_EQ(GHz_t::from_str("3.14GHz").value(), 3.14_GHz, "");
+        NS_TEST_EXPECT_MSG_EQ(THz_t::from_str("3.14THz").value(), 3.14_THz, "");
+        NS_TEST_EXPECT_MSG_EQ(Hz_t::from_str("3.14GHz").value(), 3.14_GHz, "");
+        NS_TEST_EXPECT_MSG_EQ(kHz_t::from_str("3.14GHz").value(), 3.14_GHz, "");
+        NS_TEST_EXPECT_MSG_EQ(MHz_t::from_str("3.14THz").value(), 3.14_THz, "");
+        NS_TEST_EXPECT_MSG_EQ(GHz_t::from_str("3.14kHz").value(), 3.14_kHz, "");
+        NS_TEST_EXPECT_MSG_EQ(THz_t::from_str("3.14MHz").value(), 3.14_MHz, "");
 
         TestInputOperatorPositives<Hz_t>({"12.3Hz", "12.3 Hz", " 12.3  Hz "});
         TestInputOperatorNegatives<Hz_t>(
