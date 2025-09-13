@@ -324,6 +324,15 @@ class QosTxop : public Txop
     virtual Time GetRemainingTxop(uint8_t linkId) const;
 
     /**
+     * Update the remaining TXOP duration on the given link. This function can only be called if a
+     * TXOP is ongoing.
+     *
+     * @param linkId the ID of the given link
+     * @param remainingDuration the updated remaining duration (from now)
+     */
+    void UpdateTxopDuration(uint8_t linkId, const Time& remainingDuration);
+
+    /**
      * Set the minimum contention window size to use while the MU EDCA Timer
      * is running for the given link.
      *

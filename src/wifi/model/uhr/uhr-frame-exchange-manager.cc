@@ -13,6 +13,7 @@
 
 #include "ns3/ap-wifi-mac.h"
 #include "ns3/coex-arbitrator.h"
+#include "ns3/node.h"
 #include "ns3/sta-wifi-mac.h"
 #include "ns3/wifi-coex-manager.h"
 #include "ns3/wifi-net-device.h"
@@ -545,6 +546,22 @@ UhrFrameExchangeManager::GetTxAllowedFor(const Time& duration) const
         }
     }
     return EhtFrameExchangeManager::GetTxAllowedFor(duration);
+}
+
+std::optional<Time>
+UhrFrameExchangeManager::GetLimitForTxopDuration() const
+{
+    // check if a coex event is ongoing or will start soon
+    Ptr<coex::Arbitrator> coexArbitrator;
+    if (m_staMac && (coexArbitrator = m_staMac->GetCoexArbitrator()))
+    {
+        if (auto nextStart = coexArbitrator->GetCurrOrNextEventStart())
+        {
+            return Max(*nextStart - Simulator::Now(), Time{0});
+        }
+    }
+
+    return EhtFrameExchangeManager::GetLimitForTxopDuration();
 }
 
 } // namespace ns3

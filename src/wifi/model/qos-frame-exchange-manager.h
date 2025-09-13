@@ -175,6 +175,13 @@ class QosFrameExchangeManager : public FrameExchangeManager
     virtual bool SendCfEndIfNeeded();
 
     /**
+     * Get the maximum TXOP duration according to possible other limits than the TXOP limit.
+     *
+     * @return the maximum TXOP duration or no value if no other limit is applicable
+     */
+    virtual std::optional<Time> GetLimitForTxopDuration() const;
+
+    /**
      * Determine the holder of the TXOP, if possible, based on the received frame
      *
      * @param hdr the MAC header of an MPDU included in the received PSDU

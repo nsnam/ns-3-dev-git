@@ -51,6 +51,7 @@ class UhrFrameExchangeManager : public EhtFrameExchangeManager
     std::set<uint8_t> GetIndicesOccupyingRu(const CtrlTriggerHeader& trigger,
                                             uint16_t aid) const override;
     bool GetTxAllowedFor(const Time& duration) const override;
+    std::optional<Time> GetLimitForTxopDuration() const override;
 
     /**
      * @param psdu the given PSDU

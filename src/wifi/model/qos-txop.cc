@@ -624,6 +624,17 @@ QosTxop::GetTxopStartTime(uint8_t linkId) const
 }
 
 void
+QosTxop::UpdateTxopDuration(uint8_t linkId, const Time& remainingDuration)
+{
+    NS_LOG_FUNCTION(this << linkId << remainingDuration.As(Time::US));
+
+    auto& link = GetLink(linkId);
+    NS_ASSERT_MSG(link.startTxop.has_value(),
+                  "TXOP duration can only be updated when a TXOP is ongoing");
+    link.txopDuration = (Simulator::Now() - *link.startTxop + remainingDuration);
+}
+
+void
 QosTxop::NotifyChannelReleased(uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << +linkId);

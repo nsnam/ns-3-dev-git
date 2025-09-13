@@ -106,8 +106,11 @@ QosFrameExchangeManager::SendCfEndIfNeeded()
     auto txDuration =
         WifiPhy::CalculateTxDuration(mpdu->GetSize(), cfEndTxVector, m_phy->GetPhyBand());
 
-    // Send the CF-End frame if the remaining TXNAV is long enough to transmit this frame
-    if (m_txNav > Simulator::Now() + txDuration)
+    // Send the CF-End frame if both the remaining TXNAV and remaining TXOP time are long enough to
+    // transmit this frame (the remaining TXOP time can change during the TXOP itself due to, e.g.,
+    // the notification of a coex event)
+    if ((m_txNav > Simulator::Now() + txDuration) &&
+        (m_edca->GetRemainingTxop(m_linkId) >= txDuration))
     {
         NS_LOG_DEBUG("Send CF-End frame");
         ForwardMpduDown(mpdu, cfEndTxVector);
@@ -159,6 +162,12 @@ QosFrameExchangeManager::CancelPifsRecovery()
     NS_LOG_DEBUG("Cancel PIFS recovery being attempted by EDCAF " << m_edca);
     m_pifsRecoveryEvent.Cancel();
     NotifyChannelReleased();
+}
+
+std::optional<Time>
+QosFrameExchangeManager::GetLimitForTxopDuration() const
+{
+    return std::nullopt;
 }
 
 bool
@@ -219,6 +228,8 @@ QosFrameExchangeManager::StartTransmission(Ptr<QosTxop> edca, Time txopDuration)
         m_edcaBackingOff = nullptr;
     }
 
+    const auto maxTxopDuration = GetLimitForTxopDuration();
+
     if (m_edca->GetTxopLimit(m_linkId).IsStrictlyPositive())
     {
         // TXOP limit is not null. We have to check if this EDCAF is starting a
@@ -231,9 +242,11 @@ QosFrameExchangeManager::StartTransmission(Ptr<QosTxop> edca, Time txopDuration)
             (backingOff && m_edca->GetRemainingTxop(m_linkId).IsZero()))
         {
             // starting a new TXOP
+            txopDuration =
+                Min(txopDuration, maxTxopDuration.value_or(Simulator::GetMaximumSimulationTime()));
             m_edca->NotifyChannelAccessed(m_linkId, txopDuration);
-
-            if (StartFrameExchange(m_edca, txopDuration, true))
+            // TXOP duration cannot be exceeded if there is a hard limit on the TXOP end
+            if (StartFrameExchange(m_edca, txopDuration, !maxTxopDuration.has_value()))
             {
                 m_initialFrame = true;
                 return true;
@@ -248,7 +261,15 @@ QosFrameExchangeManager::StartTransmission(Ptr<QosTxop> edca, Time txopDuration)
         // We are continuing a TXOP, check if we can transmit another frame
         NS_ASSERT(!m_initialFrame);
 
-        if (!StartFrameExchange(m_edca, m_edca->GetRemainingTxop(m_linkId), false))
+        auto remainingTxop = m_edca->GetRemainingTxop(m_linkId);
+
+        if (maxTxopDuration.has_value() && *maxTxopDuration < remainingTxop)
+        {
+            remainingTxop = *maxTxopDuration;
+            m_edca->UpdateTxopDuration(m_linkId, remainingTxop);
+        }
+
+        if (!StartFrameExchange(m_edca, remainingTxop, false))
         {
             NS_LOG_DEBUG("Not enough remaining TXOP time");
             return SendCfEndIfNeeded();
@@ -259,9 +280,10 @@ QosFrameExchangeManager::StartTransmission(Ptr<QosTxop> edca, Time txopDuration)
 
     // we get here if TXOP limit is null
     m_initialFrame = true;
-    m_edca->NotifyChannelAccessed(m_linkId, Seconds(0));
+    m_edca->NotifyChannelAccessed(m_linkId, maxTxopDuration.value_or(Time{0}));
 
-    if (StartFrameExchange(m_edca, std::nullopt, true))
+    // TXOP duration cannot be exceeded if there is a hard limit on the TXOP end
+    if (StartFrameExchange(m_edca, maxTxopDuration, !maxTxopDuration.has_value()))
     {
         return true;
     }
@@ -659,7 +681,9 @@ QosFrameExchangeManager::TransmissionFailed(bool forceCurrentCw)
         return;
     }
 
-    if (m_initialFrame)
+    if (m_initialFrame ||
+        // TXOP limit is zero but a hard limit on TXOP duration was set
+        (m_edca->GetTxopLimit(m_linkId).IsZero() && !m_edca->GetRemainingTxop(m_linkId).IsZero()))
     {
         // The backoff procedure shall be invoked by an EDCAF when the transmission
         // of an MPDU in the initial PPDU of a TXOP fails (Sec. 10.22.2.2 of 802.11-2016)
