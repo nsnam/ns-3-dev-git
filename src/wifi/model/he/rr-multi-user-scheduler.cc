@@ -388,19 +388,7 @@ RrMultiUserScheduler::TrySendingBsrpTf()
                                                                        m_allowedWidth);
 
     // If this BSRP TF is an ICF, we need to add padding and adjust the TXVECTOR
-    if (auto ehtFem =
-            DynamicCast<EhtFrameExchangeManager>(m_apMac->GetFrameExchangeManager(m_linkId)))
-    {
-        auto prevPaddingSize = m_trigger.GetPaddingSize();
-        ehtFem->SetIcfPaddingAndTxVector(m_trigger, m_txParams.m_txVector);
-        // serialize again if padding has been added
-        if (m_trigger.GetPaddingSize() != prevPaddingSize)
-        {
-            auto packet = Create<Packet>();
-            packet->AddHeader(m_trigger);
-            item = Create<WifiMpdu>(packet, item->GetHeader());
-        }
-    }
+    UpdateTriggerForIcf(item);
 
     if (!GetHeFem(m_linkId)->TryAddMpdu(item, m_txParams, m_availableTime))
     {
@@ -1191,6 +1179,25 @@ const std::list<RrMultiUserScheduler::MasterInfo>&
 RrMultiUserScheduler::GetUlMuStas() const
 {
     return m_staListUl;
+}
+
+void
+RrMultiUserScheduler::UpdateTriggerForIcf(Ptr<WifiMpdu> trigger)
+{
+    NS_LOG_FUNCTION(this << *trigger);
+    if (auto ehtFem =
+            DynamicCast<EhtFrameExchangeManager>(m_apMac->GetFrameExchangeManager(m_linkId)))
+    {
+        auto prevPaddingSize = m_trigger.GetPaddingSize();
+        ehtFem->SetIcfPaddingAndTxVector(m_trigger, m_txParams.m_txVector);
+        // serialize again if padding has been added
+        if (m_trigger.GetPaddingSize() != prevPaddingSize)
+        {
+            auto packet = Create<Packet>();
+            packet->AddHeader(m_trigger);
+            trigger = Create<WifiMpdu>(packet, trigger->GetHeader());
+        }
+    }
 }
 
 } // namespace ns3

@@ -125,6 +125,14 @@ class RrMultiUserScheduler : public MultiUserScheduler
     virtual bool CanSolicitStaInBsrpTf(const MasterInfo& info, WifiDirection direction) const;
 
     /**
+     * Set the padding and the TXVECTOR of the given Trigger Frame, in case it is an Initial
+     * Control Frame. Otherwise, nothing is done.
+     *
+     * @param trigger the given Trigger Frame
+     */
+    virtual void UpdateTriggerForIcf(Ptr<WifiMpdu> trigger);
+
+    /**
      * Information stored for candidate stations
      */
     using CandidateInfo = std::pair<std::list<MasterInfo>::iterator, Ptr<WifiMpdu>>;
