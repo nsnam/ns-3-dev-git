@@ -29,8 +29,6 @@
 #include "ns3/ssid.h"
 #include "ns3/test.h"
 #include "ns3/trace-helper.h"
-#include "ns3/wifi-helper.h"
-#include "ns3/yans-wifi-helper.h"
 
 using namespace ns3;
 
