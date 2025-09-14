@@ -101,49 +101,50 @@ if you run ``test.py --help`` you should see a command summary like:
 
 .. sourcecode:: text
 
-  Usage: test.py [options]
+  usage: test.py [-h] [-b BUILDPATH] [-c CONSTRAIN] [-d] [-e EXAMPLE] [-u]
+                 [-f {QUICK,EXTENSIVE,TAKES_FOREVER} | -of {QUICK,EXTENSIVE,TAKES_FOREVER}]
+                 [-g] [-k] [-l] [-m] [-n] [-p PYEXAMPLE] [-r] [-s SUITE] [-t TEXT-FILE]
+                 [-v] [--verbose-failed] [-w HTML-FILE] [-x XML-FILE] [--nocolor]
+                 [--jobs PROCESS_LIMIT] [--rerun-failed]
 
-  Options:
+  options:
     -h, --help            show this help message and exit
-    -b BUILDPATH, --buildpath=BUILDPATH
-                          specify the path where ns-3 was built (defaults to the
-                          build directory for the current variant)
-    -c KIND, --constrain=KIND
+    -b, --buildpath BUILDPATH
+                          specify the path where ns-3 was built (defaults to the build
+                          directory for the current variant)
+    -c, --constrain CONSTRAIN
                           constrain the test-runner by kind of test
-    -e EXAMPLE, --example=EXAMPLE
-                          specify a single example to run (no relative path is
-                          needed)
     -d, --duration        print the duration of each test suite and example
-    -e EXAMPLE, --example=EXAMPLE
-                          specify a single example to run (no relative path is
-                          needed)
-    -u, --update-data     If examples use reference data files, get them to re-
-                          generate them
-    -f FULLNESS, --fullness=FULLNESS
-                          choose the duration of tests to run: QUICK, EXTENSIVE,
-                          or TAKES_FOREVER, where EXTENSIVE includes QUICK and
-                          TAKES_FOREVER includes QUICK and EXTENSIVE (only QUICK
-                          tests are run by default)
+    -e, --example EXAMPLE
+                          specify a single example to run (no relative path is needed)
+    -u, --update-data     If examples use reference data files, get them to re-generate
+                          them
+    -f, --fullness {QUICK,EXTENSIVE,TAKES_FOREVER}
+                          choose the duration of tests to run: QUICK, EXTENSIVE, or
+                          TAKES_FOREVER, where EXTENSIVE includes QUICK and TAKES_FOREVER
+                          includes QUICK and EXTENSIVE (only QUICK tests are run by
+                          default)
+    -of, --only-fullness {QUICK,EXTENSIVE,TAKES_FOREVER}
+                          choose the duration of tests to run: QUICK, EXTENSIVE, or
+                          TAKES_FOREVER (only tests marked with fullness will be executed)
     -g, --grind           run the test suites and examples using valgrind
     -k, --kinds           print the kinds of tests available
     -l, --list            print the list of known tests
-    -m, --multiple        report multiple failures from test suites and test
-                          cases
-    -n, --nobuild           do not run ns3 before starting testing
-    -p PYEXAMPLE, --pyexample=PYEXAMPLE
-                          specify a single python example to run (with relative
-                          path)
-    -r, --retain          retain all temporary files (which are normally
-                          deleted)
-    -s TEST-SUITE, --suite=TEST-SUITE
-                          specify a single test suite to run
-    -t TEXT-FILE, --text=TEXT-FILE
-                          write detailed test results into TEXT-FILE.txt
+    -m, --multiple        report multiple failures from test suites and test cases
+    -n, --no-build        do not build before starting testing
+    -p, --pyexample PYEXAMPLE
+                          specify a single python example to run (with relative path)
+    -r, --retain          retain all temporary files (which are normally deleted)
+    -s, --suite SUITE     specify a single test suite to run
+    -t, --text TEXT-FILE  write detailed test results into TEXT-FILE.txt
     -v, --verbose         print progress and informational messages
-    -w HTML-FILE, --web=HTML-FILE, --html=HTML-FILE
+    --verbose-failed      print progress and informational messages for failed jobs
+    -w, --web, --html HTML-FILE
                           write detailed test results into HTML-FILE.html
-    -x XML-FILE, --xml=XML-FILE
-                          write detailed test results into XML-FILE.xml
+    -x, --xml XML-FILE    write detailed test results into XML-FILE.xml
+    --nocolor             do not use colors in the standard output
+    --jobs PROCESS_LIMIT  limit number of worker threads
+    --rerun-failed        rerun failed tests
 
 If one specifies an optional output style, one can generate detailed descriptions
 of the tests and status.  Available styles are ``text`` and ``HTML``.
@@ -266,10 +267,6 @@ will result in a list of the test suite being displayed, similar to
 
 .. sourcecode:: text
 
-  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-test/ns-3-dev/build'
-  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-test/ns-3-dev/build'
-  'build' finished successfully (0.939s)
-
   Test Type    Test Name
   ---------    ---------
   performance  many-uniform-random-variables-one-get-value-call
@@ -337,6 +334,40 @@ results in that single example being run.
 .. sourcecode:: text
 
   PASS: Example examples/udp/udp-echo
+
+You can also execute all instances of declared examples using different parameters,
+as defined in ``examples-to-run.py`` by including a star at the end of the example name.
+
+::
+
+  $ ./test.py --example=wifi-phy-configuration*
+
+results in that example being run with the following parameters:
+
+.. sourcecode:: text
+
+  [1/21] PASS: Example src/wifi/examples/wifi-phy-configuration --testCase=0
+  [2/21] PASS: Example src/wifi/examples/wifi-phy-configuration --testCase=8
+  [3/21] PASS: Example src/wifi/examples/wifi-phy-configuration --testCase=10
+  [4/21] PASS: Example src/wifi/examples/wifi-phy-configuration --testCase=12
+  [5/21] PASS: Example src/wifi/examples/wifi-phy-configuration --testCase=1
+  [6/21] PASS: Example src/wifi/examples/wifi-phy-configuration --testCase=13
+  [7/21] PASS: Example src/wifi/examples/wifi-phy-configuration --testCase=4
+  [8/21] PASS: Example src/wifi/examples/wifi-phy-configuration --testCase=3
+  [9/21] PASS: Example src/wifi/examples/wifi-phy-configuration --testCase=14
+  [10/21] PASS: Example src/wifi/examples/wifi-phy-configuration --testCase=5
+  [11/21] PASS: Example src/wifi/examples/wifi-phy-configuration --testCase=15
+  [12/21] PASS: Example src/wifi/examples/wifi-phy-configuration --testCase=6
+  [13/21] PASS: Example src/wifi/examples/wifi-phy-configuration --testCase=7
+  [14/21] PASS: Example src/wifi/examples/wifi-phy-configuration --testCase=11
+  [15/21] PASS: Example src/wifi/examples/wifi-phy-configuration --testCase=2
+  [16/21] PASS: Example src/wifi/examples/wifi-phy-configuration --testCase=9
+  [17/21] PASS: Example src/wifi/examples/wifi-phy-configuration --testCase=16
+  [18/21] PASS: Example src/wifi/examples/wifi-phy-configuration --testCase=19
+  [19/21] PASS: Example src/wifi/examples/wifi-phy-configuration --testCase=18
+  [20/21] PASS: Example src/wifi/examples/wifi-phy-configuration --testCase=17
+  [21/21] PASS: Example src/wifi/examples/wifi-phy-configuration --testCase=20
+  21 of 21 tests passed (21 passed, 0 skipped, 0 failed, 0 crashed, 0 valgrind errors)
 
 You can specify the directory where |ns3| was built using the
 ``--buildpath`` option as follows.
@@ -459,6 +490,12 @@ Note that specifying EXTENSIVE fullness will also run tests in QUICK category.
 Specifying TAKES_FOREVER will run tests in EXTENSIVE and QUICK categories.
 By default, only QUICK tests are ran.
 
+Alternatively, one can specify only-fullness option, which runs tests
+from just that particular category. This allows for tiered execution, both in
+time constrained jobs (starting from TAKES_FOREVER to give them more time,
+then EXTENSIVE, and then QUICK), or to progressively run more expensive tests
+(QUICK, then EXTENSIVE, then TAKES_FOREVER).
+
 As a rule of thumb, tests that must be run to ensure |ns3| coherence should be
 QUICK (i.e., take a few seconds). Tests that could be skipped, but are nice to do
 can be EXTENSIVE; these are tests that typically need minutes. TAKES_FOREVER is
@@ -565,34 +602,37 @@ You should see something like the following
 
 .. sourcecode:: text
 
-  Usage: /home/craigdo/repos/ns-3-allinone-test/ns-3-dev/build/utils/ns3-dev-test-runner-debug [OPTIONS]
+  Usage: /mnt/c/tools/sources/ns-3-dev/build/utils/ns3-dev-test-runner-debug [OPTIONS]
 
   Options:
-  --help                 : print these options
-  --print-test-name-list : print the list of names of tests available
-  --list                 : an alias for --print-test-name-list
-  --print-test-types     : print the type of tests along with their names
-  --print-test-type-list : print the list of types of tests available
-  --print-temp-dir       : print name of temporary directory before running
-                           the tests
-  --test-type=TYPE       : process only tests of type TYPE
-  --test-name=NAME       : process only test whose name matches NAME
-  --suite=NAME           : an alias (here for compatibility reasons only)
-                           for --test-name=NAME
-  --assert-on-failure    : when a test fails, crash immediately (useful
-                           when running under a debugger
-  --stop-on-failure      : when a test fails, stop immediately
-  --fullness=FULLNESS    : choose the duration of tests to run: QUICK,
-                           EXTENSIVE, or TAKES_FOREVER, where EXTENSIVE
-                           includes QUICK and TAKES_FOREVER includes
-                           QUICK and EXTENSIVE (only QUICK tests are
-                           run by default)
-  --verbose              : print details of test execution
-  --xml                  : format test run output as xml
-  --tempdir=DIR          : set temp dir for tests to store output files
-  --datadir=DIR          : set data dir for tests to read reference files
-  --out=FILE             : send test result to FILE instead of standard output
-  --append=FILE          : append test result to FILE instead of standard output
+    --help                   : print these options
+    --print-test-name-list   : print the list of names of tests available
+    --list                   : an alias for --print-test-name-list
+    --print-test-types       : print the type of tests along with their names
+    --print-test-type-list   : print the list of types of tests available
+    --print-temp-dir         : print name of temporary directory before running
+                               the tests
+    --test-type=TYPE         : process only tests of type TYPE
+    --test-name=NAME         : process only test whose name matches NAME
+    --suite=NAME             : an alias (here for compatibility reasons only)
+                               for --test-name=NAME
+    --assert-on-failure      : when a test fails, crash immediately (useful
+                               when running under a debugger
+    --stop-on-failure        : when a test fails, stop immediately
+    --fullness=FULLNESS      : choose the duration of tests to run: QUICK,
+                               EXTENSIVE, or TAKES_FOREVER, where EXTENSIVE
+                               includes QUICK and TAKES_FOREVER includes
+                               QUICK and EXTENSIVE (only QUICK tests are
+                               run by default)
+    --only-fullness=FULLNESS : choose the duration of tests to run: QUICK,
+                               EXTENSIVE, TAKES_FOREVER (only tests marked
+                               with fullness will be executed)
+    --verbose                : print details of test execution
+    --xml                    : format test run output as xml
+    --tempdir=DIR            : set temp dir for tests to store output files
+    --datadir=DIR            : set data dir for tests to read reference files
+    --out=FILE               : send test result to FILE instead of standard output
+    --append=FILE            : append test result to FILE instead of standard output
 
 
 There are a number of things available to you which will be familiar to you if
@@ -742,6 +782,7 @@ of functionality.  As described above, test suites can be classified as,
 * Unit Tests
 * System Tests
 * Examples
+* Examples-as-Tests
 * Performance Tests
 
 This classification is exported from the TestSuite class.  This class is quite
