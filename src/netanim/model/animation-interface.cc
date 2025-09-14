@@ -22,7 +22,6 @@
 
 // ns3 includes
 #ifdef __WIN32__
-#include "ns3/bs-net-device.h"
 #include "ns3/csma-net-device.h"
 #endif
 #include "animation-interface.h"
