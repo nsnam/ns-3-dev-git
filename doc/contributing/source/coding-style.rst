@@ -1213,10 +1213,46 @@ the issue. In the following example, ``x`` can be declared as ``float`` instead 
 Namespaces
 ==========
 
-Code should always be included in a given namespace, namely ``ns3``.
-In order to avoid exposing internal symbols, consider placing the code in an
-anonymous namespace, which can only be accessed by functions in the same file.
+|ns3| uses the ``ns3`` namespace to separate ns-3 model library code from the
+C++ global namespace. The following guidelines apply to the use of
+the ``ns3`` namespace and additional namespaces. Note that these guidelines are
+applied inconsistently within the |ns3| mainline because |ns3| historically had
+limited use of nested namespaces, and a widespread change to use nested namespaces
+in all libraries would hinder backward compatibility of user programs. Therefore,
+the migration to use the below guidelines is gradual, but they should apply to
+newly authored code.
 
+- |ns3| model library code (code within the ``model`` and ``helper`` directories)
+  should be included within the ``ns3`` namespace.
+- We recommend that new ns-3 modules, intended for the mainline, wrap their
+  model code in a nested namespace. The name of the namespace should be the
+  module name in lowercase, without any hyphens. See the ``lr-wpan`` module
+  for an example (the nested namespace in that case is ``lrwpan``). An example
+  of a recently added module following this guideline is the ``zigbee`` module.
+- Tests should use the ``tests`` namespace outside of the ``ns3`` namespace,
+  and can import the ``ns3`` namespace and any nested namespaces with the ``using``
+  directive.
+- Example program code should not be within the ``ns3`` or nested namespaces, but
+  can import those namespaces with the ``using`` directive.
+- In order to avoid exposing internal symbols, consider placing such code in an
+  anonymous namespace, which can only be accessed by functions in the same file.
+
+When using nested namespaces, a question arises as to the use of prefixes on types
+that are declared in the namespace. For instance, consider the ``LrWpanNetDevice``
+class, which is a derived class of ``NetDevice`` and which exists in the
+``ns3::lrwpan`` namespace. When using scope resolution to refer to these types,
+the prefix is repetitive with the namespace; e.g., ``ns3::lrwpan::LrWpanNetDevice``,
+although ``ns3::lrwpan::NetDevice`` would be sufficient to avoid collisions and
+would be shorter. However, use of the shorter version can hinder regular expression
+searches through the codebase for given types, and require more instances of scope
+resolution. This style
+guide leaves this decision of whether to prefix type names with nested namespace
+hints (such as ``LrWpanNetDevice``) or to shorten the type names (such as
+``NetDevice``) for authors to decide, but in the case where a name may be the same
+as used in another module (such as the NetDevice example herein), a prefix on the
+type name is recommended.
+
+The following guidelines apply to the code syntax for namespace usage.
 Code within namespaces should not be indented. To more easily identify the end
 of a namespace, add a trailing comment to its closing brace.
 
@@ -1228,8 +1264,6 @@ of a namespace, add a trailing comment to its closing brace.
   // (...)
 
   } // namespace ns3
-
-Namespace names should follow the snake_case convention.
 
 Unused variables
 ================
