@@ -97,7 +97,6 @@ AnimationInterface::AnimationInterface(const std::string fn)
      * modules are registered during runtime, we need to instantiate
      * at least one symbol exported by each of these module libraries.
      */
-    static BaseStationNetDevice b;
     static CsmaNetDevice c;
     static WifiNetDevice w;
     static UanNetDevice u;
