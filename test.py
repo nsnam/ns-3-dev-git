@@ -1657,11 +1657,15 @@ def run_tests():
                 multiple = ""
             else:
                 multiple = " --stop-on-failure"
-            if len(args.fullness):
-                fullness = args.fullness.upper()
-                fullness = " --fullness=%s" % fullness
-            else:
-                fullness = " --fullness=QUICK"
+
+            if args.fullness:
+                if len(args.fullness):
+                    fullness = args.fullness.upper()
+                    fullness = " --fullness=%s" % fullness
+                else:
+                    fullness = " --fullness=QUICK"
+            elif args.only_fullness:
+                fullness = " --only-fullness=%s" % args.only_fullness.upper()
 
             path_cmd = os.path.join(
                 "utils", test_runner_name + " --test-name=%s%s%s" % (test, multiple, fullness)
@@ -2292,8 +2296,9 @@ def main(argv):
         default=False,
         help="If examples use reference data files, get them to re-generate them",
     )
+    fullness_group = parser.add_mutually_exclusive_group(required=False)
 
-    parser.add_argument(
+    fullness_group.add_argument(
         "-f",
         "--fullness",
         action="store",
@@ -2301,6 +2306,16 @@ def main(argv):
         default="QUICK",
         choices=["QUICK", "EXTENSIVE", "TAKES_FOREVER"],
         help="choose the duration of tests to run: QUICK, EXTENSIVE, or TAKES_FOREVER, where EXTENSIVE includes QUICK and TAKES_FOREVER includes QUICK and EXTENSIVE (only QUICK tests are run by default)",
+    )
+
+    fullness_group.add_argument(
+        "-of",
+        "--only-fullness",
+        action="store",
+        type=str,
+        default=None,
+        choices=["QUICK", "EXTENSIVE", "TAKES_FOREVER"],
+        help="choose the duration of tests to run: QUICK, EXTENSIVE, or TAKES_FOREVER (only tests marked with fullness will be executed)",
     )
 
     parser.add_argument(
