@@ -578,6 +578,28 @@ The program ``test.py`` invokes, for C++ tests and examples, a lower-level
 C++ program called ``test-runner`` to actually run the tests.  As discussed
 below, this ``test-runner`` can be a helpful way to debug tests.
 
+There are two options to control the scope of tests that are run:
+
+* ``--fullness`` (abbreviated ``-f``):  Runs all tests up to that classification
+   * ``./test.py`` (runs only QUICK)
+   * ``./test.py -f QUICK`` (runs only QUICK)
+   * ``./test.py -f EXTENSIVE`` (runs QUICK and EXTENSIVE)
+   * ``./test.py -f TAKES_FOREVER`` (runs QUICK, EXTENSIVE, and TAKES_FOREVER)
+
+* ``--only-fullness`` (abbreviated ``-of``):  Runs only tests of that classification
+
+   * ``./test.py -of QUICK`` (runs only QUICK)
+   * ``./test.py -of EXTENSIVE`` (runs only EXTENSIVE)
+   * ``./test.py -of TAKES_FOREVER`` (runs only TAKES_FOREVER)
+
+The change in test scope can be further controlled by selecting individual
+tests by using the ``-s`` option.  For example, the following command
+will cause all test cases of only one test suite to be executed:
+
+::
+
+  $ ./test.py -s wifi-primary-channels -f TAKES_FOREVER
+
 Debugging Tests
 ***************
 
