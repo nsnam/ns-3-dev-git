@@ -818,15 +818,17 @@ void
 TestRunnerImpl::PrintTestTypeList() const
 {
     NS_LOG_FUNCTION(this);
-    std::cout << "  core:        Run all TestSuite-based tests (exclude examples)" << std::endl;
-    std::cout << "  example-as-test:     Examples (to see if example programs run successfully)"
-              << std::endl;
-    std::cout
-        << "  performance: Performance Tests (check to see if the system is as fast as expected)"
-        << std::endl;
-    std::cout << "  system:      System Tests (spans modules to check integration of modules)"
-              << std::endl;
-    std::cout << "  unit:        Unit Tests (within modules to check basic functionality)"
+    std::cout << "  core:            Run all TestSuite-based tests (exclude examples)" << std::endl
+              << "  example:         Examples (to see if example programs run successfully)"
+              << std::endl
+              << "  example-as-test: Examples (which are tested against reference outputs)"
+              << std::endl
+              << "  performance:     Performance Tests (check to see if the system is as fast as "
+                 "expected)"
+              << std::endl
+              << "  system:          System Tests (spans modules to check integration of modules)"
+              << std::endl
+              << "  unit:            Unit Tests (within modules to check basic functionality)"
               << std::endl;
 }
 
