@@ -23,7 +23,7 @@ requirements (Note: not all ns-3 features are available on all systems):
 - Python 3.8 or later
 - CMake 3.20 or later
 - (macOS only) Xcode 13.1.6 or later
-- (Windows only) Msys2/MinGW64 and Msys2/UCRT64 toolchains or WSL2
+- (Windows only) Msys2/MinGW64, Msys2/UCRT64 and ClangCL/MSVC toolchains, or WSL2
 
 Python API requires [Cppyy](https://cppyy.readthedocs.io/en/latest/installation.html) and has only
 been tested on Linux. As of this release, the latest known version to work with ns-3 is cppyy==3.5.0.
@@ -39,6 +39,7 @@ The wimax module was removed and moved to the ns-3 App Store.
 - (core) A stacktrace will now be printed on fatal errors in supported platforms.
 - (wifi) !2524 - Fix corrupted radiotap header when EHT is used.
 - (zigbee) !2512 - Added Groupcast (Multicast) support
+- (spectrum) !2452 - Added new wraparound model support for spectrum channels, and the hexagonal wraparound model, typical of cellular deployments
 
 ### Bugs fixed
 

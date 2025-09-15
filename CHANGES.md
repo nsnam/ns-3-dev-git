@@ -17,6 +17,8 @@ This file is a best-effort approach to solving this issue; we will do our best b
 ### New API
 
 * (wifi) Added a new `EarlyTxopEndDetect` attribute to `EhtFrameExchangeManager` to control whether the Duration/ID value of the frame being transmitted or received by a device shall be used to early detect the end of an ongoing TXOP (held by another device).
+* (spectrum) Added the base `WraparoundModel`, which is retrieved from the associated objects of a spectrum channel, and then used to wraparound the transmitter mobility model during transmissions.
+* (spectrum) Added the `HexagonalWraparoundModel`, which implements the wraparound for a hexagonal cell deployment, typical of cellular networks.
 
 ### Changes to existing API
 
@@ -28,8 +30,20 @@ The wimax module was removed and moved to the ns-3 App Store.
 * (lr-wpan) Debloat MAC PD-DATA.indication and reduce packet copies.
 * (zigbee) Added group table.
 * (zigbee) Added Groupcast (Multicast) support.
+* (mobility) Mobility models now implement a Copy() function.
+* (propagation) MatrixPropagationLossModels are now associated per NodeId, and not per mobility model objects.
+* (propagation) Removed ThreeGppPropagationLossModel prologue function, added temporarily for ns-3.45 wraparound support.
+* (spectrum) MobilityModels associated to devices are not passed to receptor in SpectrumChannel. A virtual mobility model object, created from a copy and subject to wraparound is passed in its place.
+* (spectrum) SpectrumSignalParameters now includes an entry for the transmitter virtual mobility model.
 
 ### Changes to build system
+
+* Raised minimum C++ version from C++20 to C++23.
+* Raised minimum CMake version from 3.13 to 3.20.
+* Raised minimum Clang version from 11 to 17.
+* Raised minimum GCC version from 10.1 to 11.0.
+* Added support for ClangCL compiler (part of MSVC tools).
+* Added ``GENERATE_EXPORT_HEADER`` flag to the CMake ``build_lib`` macro. It will generate a ``ns3/module-export.h`` header file, which defines a C++ macro``MODULE_EXPORT``. The macro must be used when declaring a class with static member variables, or a global variable exported by a library.
 
 ### Changed behavior
 
