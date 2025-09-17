@@ -43,6 +43,7 @@ The wimax module was removed and moved to the ns-3 App Store.
 
 ### Bugs fixed
 
+- (internet) #851 - NeighborCacheHelper entries are no longer removed due to LinkUp events
 - (internet) #1251 - Added check for longest prefix match in GlobalRouting
 - (wifi) Block transmission on other EMLSR links as soon as it is detected that the main PHY is receiving an A-MPDU, to prevent that the EMLSR client starts an UL TXOP before the end of the A-MPDU
 - (wifi) EMLSR clients can switch to listening operations when receiving the MAC header of a broadcast frame that is not a Trigger Frame nor a Multi-STA BA
