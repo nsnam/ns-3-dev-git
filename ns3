@@ -184,7 +184,11 @@ def parse_args(argv):
     )
 
     parser_configure.add_argument(
-        "--cxx-standard", help="Compile NS-3 with the given C++ standard", type=str, default=None
+        "--cxx-standard",
+        help="Compile NS-3 with the given C++ standard",
+        type=str,
+        default=None,
+        choices=["23", "26"],
     )
 
     # On-Off options
