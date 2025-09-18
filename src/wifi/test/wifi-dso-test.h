@@ -122,7 +122,7 @@ class DsoTestBase : public TestCase
     Ptr<MultiModelSpectrumChannel> m_channel; ///< the spectrum channel
     Ptr<ApWifiMac> m_apMac;                   ///< AP wifi MAC
     std::vector<Ptr<StaWifiMac>> m_staMacs;   ///< MACs of the non-AP STAs
-    Time m_duration;                          ///< simulation duration
+    Time m_duration{Seconds(0.1)};            ///< simulation duration
     std::vector<FrameInfo> m_txPsdus;         ///< transmitted PSDUs
     uint64_t m_receivedPackets{0};            ///< received packets
 

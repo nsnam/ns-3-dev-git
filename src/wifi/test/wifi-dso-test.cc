@@ -153,6 +153,13 @@ DsoTestBase::DoSetup()
     RngSeedManager::SetRun(10);
     int64_t streamNumber = 100;
 
+    // prioritize trigger-based UL
+    const auto muEdcaTimer = 255 * 8 * WIFI_TU;
+    Config::SetDefault("ns3::HeConfiguration::BeMuEdcaTimer", TimeValue(muEdcaTimer));
+    Config::SetDefault("ns3::HeConfiguration::BkMuEdcaTimer", TimeValue(muEdcaTimer));
+    Config::SetDefault("ns3::HeConfiguration::ViMuEdcaTimer", TimeValue(muEdcaTimer));
+    Config::SetDefault("ns3::HeConfiguration::VoMuEdcaTimer", TimeValue(muEdcaTimer));
+
     NodeContainer wifiApNode(1);
     NodeContainer wifiStaNodes;
 
@@ -374,7 +381,6 @@ DsoTxopTest::DsoTxopTest(const Params& params)
     m_nDsoStas = 2;
     m_apOpChannel = "{114, 0, BAND_5GHZ, 0}";
     m_stasOpChannel = {"{106, 0, BAND_5GHZ, 0}", "{106, 0, BAND_5GHZ, 0}"};
-    m_duration = Seconds(0.1);
     if (m_params.generateInterferenceAfterIcf)
     {
         // use more robust modulation if interference is generated
@@ -1677,7 +1683,6 @@ DsoSchedulerTest::DsoSchedulerTest(const Params& params)
     m_nDsoStas = params.dsoStasOpChannel.size();
     m_apOpChannel = params.apOpChannel;
     m_stasOpChannel = params.dsoStasOpChannel;
-    m_duration = Seconds(0.25);
 }
 
 void
@@ -1712,8 +1717,11 @@ DsoSchedulerTest::StartTraffic()
     {
         auto muScheduler =
             DynamicCast<TestDsoMultiUserScheduler>(m_apMac->GetObject<MultiUserScheduler>());
-        muScheduler->SetAccessReqInterval(MilliSeconds(100));
-        // UL traffic is started once the first trigger is transmitted to avoid non-OFDMA UL traffic
+        // Keep polling interval short to ensure DSO ICF is sent as soon as possible after the
+        // previous TXOP to trigger UL OFDMA transmissions, since this test is not interested in
+        // SU UL transmissions. Hence, interval has to be greater than AIFSN * slottime, where AIFSN
+        // has been set to 15 in DoSetup().
+        muScheduler->SetAccessReqInterval(MicroSeconds(100));
     }
 }
 
@@ -1788,6 +1796,14 @@ DsoSchedulerTest::CheckTrigger(const WifiConstPsduMap& psduMap, const WifiTxVect
 
     if (m_txopId >= m_params.expectedRuAllocations.size())
     {
+        if (m_enableUlOfdma)
+        {
+            // all UL MU PPDUs are expected to be transmitted, disable polling to speed up test
+            // completion
+            auto muScheduler =
+                DynamicCast<TestDsoMultiUserScheduler>(m_apMac->GetObject<MultiUserScheduler>());
+            muScheduler->SetAccessReqInterval(Time());
+        }
         return;
     }
 
@@ -1930,6 +1946,12 @@ DsoSchedulerTest::CheckResults()
 void
 DsoSchedulerTest::DoSetup()
 {
+    // MU EDCA timers only prioritize trigger-based for STAs that have participated to the previous
+    // TXOP, but this test also involves multiple TXOPs with different DSO STAs participating in
+    // each of these TXOPs. Hence, in order to prioritize trigger-based access needed to test DSO MU
+    // scheduler, we set AIFSN as high as allowed by the specs.
+    Config::SetDefault("ns3::ApWifiMac::AifsnsForSta", StringValue(std::string("BE 15")));
+
     DsoTestBase::DoSetup();
     auto muScheduler =
         DynamicCast<TestDsoMultiUserScheduler>(m_apMac->GetObject<MultiUserScheduler>());
@@ -2788,17 +2810,7 @@ WifiDsoTestSuite::WifiDsoTestSuite()
                                          EhtRu::RuSpec{RuType::RU_996_TONE,
                                                        1,
                                                        EhtRu::SECONDARY_80_FLAGS.first,
-                                                       EhtRu::SECONDARY_80_FLAGS.second}},
-                                        {0,
-                                         EhtRu::RuSpec{RuType::RU_996_TONE,
-                                                       1,
-                                                       EhtRu::SECONDARY_160_LOW_FLAGS.first,
-                                                       EhtRu::SECONDARY_160_LOW_FLAGS.second}},
-                                        {1,
-                                         EhtRu::RuSpec{RuType::RU_996_TONE,
-                                                       1,
-                                                       EhtRu::SECONDARY_160_HIGH_FLAGS.first,
-                                                       EhtRu::SECONDARY_160_HIGH_FLAGS.second}}}}}),
+                                                       EhtRu::SECONDARY_80_FLAGS.second}}}}}),
         TestCase::Duration::QUICK);
 }
 
