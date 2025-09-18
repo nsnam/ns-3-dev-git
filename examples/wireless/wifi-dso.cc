@@ -94,10 +94,12 @@ main(int argc, char* argv[])
     std::size_t nStas{2};
     bool enableDso{true};
     bool enableUlOfdma{false};
-    Time accessReqInterval{0};
+    Time accessReqInterval;
     Time txopLimit{"12ms"};
+    Time muEdcaTimer{255 * 8 * WIFI_TU};
     uint32_t payloadSize{1472};
     DataRate expectedThroughput;
+    DataRate expectedMinPerStaThroughput;
     percent_t tolerance{10};
     percent_t perStaTolerance{5};
     bool pcap{false};
@@ -120,18 +122,24 @@ main(int argc, char* argv[])
         "muSchedAccessReqInterval",
         "Duration of the interval between two requests for channel access made by the MU scheduler",
         accessReqInterval);
+    cmd.AddValue("txopLimit", "The TXOP limit", txopLimit);
+    cmd.AddValue("muEdcaTimer", "The MU EDCA timer", muEdcaTimer);
     cmd.AddValue("payloadSize", "The application payload size in bytes", payloadSize);
     cmd.AddValue("pcap", "Enable/disable PCAP traces", pcap);
     cmd.AddValue(
         "expectedThroughput",
         "if set, simulation fails if the aggregated throughput is different than this value",
         expectedThroughput);
+    cmd.AddValue("expectedMinPerStaThroughput",
+                 "if set, simulation fails if the per-STA throughput is lower than this value",
+                 expectedMinPerStaThroughput);
     cmd.AddValue("tolerance",
                  "if 'expectedThroughput' is set, simulation fails if the throughput is not within "
                  "this percentage of the expected throughput",
                  tolerance);
     cmd.AddValue("perStaTolerance",
-                 "if 'expectedThroughput' is set, simulation fails if the throughput per STA is "
+                 "if 'expectedThroughput' is set and 'expectedMinPerStaThroughput' is not set, "
+                 "simulation fails if the throughput per STA is "
                  "not within this percentage of the expected throughput",
                  perStaTolerance);
     cmd.Parse(argc, argv);
@@ -146,6 +154,12 @@ main(int argc, char* argv[])
     {
         Config::SetDefault("ns3::TcpSocket::SegmentSize", UintegerValue(payloadSize));
     }
+
+    // prioritize trigger-based UL
+    Config::SetDefault("ns3::HeConfiguration::BeMuEdcaTimer", TimeValue(muEdcaTimer));
+    Config::SetDefault("ns3::HeConfiguration::BkMuEdcaTimer", TimeValue(muEdcaTimer));
+    Config::SetDefault("ns3::HeConfiguration::ViMuEdcaTimer", TimeValue(muEdcaTimer));
+    Config::SetDefault("ns3::HeConfiguration::VoMuEdcaTimer", TimeValue(muEdcaTimer));
 
     NodeContainer wifiStaNodes;
     wifiStaNodes.Create(nStas);
@@ -369,12 +383,12 @@ main(int argc, char* argv[])
 
     Simulator::Destroy();
 
-    if (expectedThroughput != DataRate())
+    if (expectedThroughput != DataRate() || expectedMinPerStaThroughput != DataRate())
     {
         const auto minExpectedThroughput = expectedThroughput * (1.0 - tolerance.to_ratio());
         const auto maxExpectedThroughput = expectedThroughput * (1.0 + tolerance.to_ratio());
-        if ((aggregatedThroughput < minExpectedThroughput) ||
-            (aggregatedThroughput > maxExpectedThroughput))
+        if ((expectedThroughput != DataRate()) && ((aggregatedThroughput < minExpectedThroughput) ||
+                                                   (aggregatedThroughput > maxExpectedThroughput)))
         {
             NS_LOG_ERROR("Aggregated throughput " << aggregatedThroughput
                                                   << " is outside expected range!");
@@ -383,6 +397,16 @@ main(int argc, char* argv[])
         for (std::size_t i = 0; i < nStas; ++i)
         {
             const auto& staThroughput = perStaThroughput.at(i);
+            if (expectedMinPerStaThroughput != DataRate())
+            {
+                if (staThroughput < expectedMinPerStaThroughput)
+                {
+                    NS_LOG_ERROR("STA " << i + 1 << " throughput " << staThroughput
+                                        << " is below expected minimum!");
+                    exit(1);
+                }
+                continue;
+            }
             const auto minStaExpectedThroughput =
                 staThroughput * (1.0 - perStaTolerance.to_ratio());
             const auto maxStaExpectedThroughput =

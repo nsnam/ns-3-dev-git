@@ -405,12 +405,22 @@ cpp_examples = [
         "True",
     ),
     (
-        "wifi-dso --simulationTime=1s --enableDso=1 --frequency=6GHz --apBw=320MHz --staBw=160MHz --nStas=2 --downlink=0 --enableUlOfdma=1 --muSchedAccessReqInterval=100us --expectedThroughput=2Gbps",
+        "wifi-dso --simulationTime=1s --enableDso=1 --frequency=6GHz --apBw=320MHz --staBw=160MHz --nStas=2 --downlink=0 --enableUlOfdma=1 --muSchedAccessReqInterval=100us --muEdcaTimer=2.08896s --expectedThroughput=2Gbps",
         "True",
         "True",
     ),
     (
-        "wifi-dso --simulationTime=1s --enableDso=0 --frequency=6GHz --apBw=320MHz --staBw=160MHz --nStas=2 --downlink=0 --enableUlOfdma=1 --muSchedAccessReqInterval=100us --expectedThroughput=1Gbps --RngRun=6",
+        "wifi-dso --simulationTime=1s --enableDso=0 --frequency=6GHz --apBw=320MHz --staBw=160MHz --nStas=2 --downlink=0 --enableUlOfdma=1 --muSchedAccessReqInterval=100us --muEdcaTimer=2.08896s --expectedThroughput=1Gbps",
+        "True",
+        "True",
+    ),
+    (
+        "wifi-dso --simulationTime=1s --enableDso=1 --frequency=6GHz --apBw=320MHz --staBw=160MHz --nStas=2 --downlink=0 --enableUlOfdma=1 --muSchedAccessReqInterval=100us --muEdcaTimer=0us --expectedMinPerStaThroughput=400Mbps",
+        "True",
+        "True",
+    ),
+    (
+        "wifi-dso --simulationTime=1s --enableDso=0 --frequency=6GHz --apBw=320MHz --staBw=160MHz --nStas=2 --downlink=0 --enableUlOfdma=1 --muSchedAccessReqInterval=100us --muEdcaTimer=0us --expectedMinPerStaThroughput=300Mbps",
         "True",
         "True",
     ),
