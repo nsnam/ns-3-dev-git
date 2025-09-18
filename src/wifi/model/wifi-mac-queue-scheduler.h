@@ -38,7 +38,6 @@ enum class WifiQueueBlockedReason : uint8_t
     TID_NOT_MAPPED,
     WAIT_UNTIL_DTIM,
     TX_GROUP_AFTER_DTIM,
-    DSO_WAIT_FOR_TF,
     WAITING_DSO_SWITCH_BACK_DELAY,
     REASONS_COUNT
 };
@@ -71,8 +70,6 @@ operator<<(std::ostream& os, WifiQueueBlockedReason reason)
         return (os << "WAIT_UNTIL_DTIM");
     case WifiQueueBlockedReason::TX_GROUP_AFTER_DTIM:
         return (os << "TX_GROUP_AFTER_DTIM");
-    case WifiQueueBlockedReason::DSO_WAIT_FOR_TF:
-        return (os << "DSO_WAIT_FOR_TF");
     case WifiQueueBlockedReason::WAITING_DSO_SWITCH_BACK_DELAY:
         return (os << "WAITING_DSO_SWITCH_BACK_DELAY");
     case WifiQueueBlockedReason::REASONS_COUNT:

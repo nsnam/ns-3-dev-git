@@ -101,9 +101,11 @@ UhrFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
         CtrlTriggerHeader trigger;
         mpdu->GetPacket()->PeekHeader(trigger);
 
+        auto it = trigger.FindUserInfoWithAid(m_staMac->GetAssociationId());
         if ((hdr.GetAddr1() != m_self) &&
             (!hdr.GetAddr1().IsBroadcast() ||
-             (sender != m_bssid))) // not sent by the AP this STA is associated with
+             (sender != m_bssid) // not sent by the AP this STA is associated with
+             || (it == trigger.end())))
         {
             return; // not addressed to us
         }
@@ -112,14 +114,6 @@ UhrFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
             trigger.IsBsrp() && !m_ongoingTxopEnd.IsPending() && dsoManager)
         {
             // this is a DSO ICF
-
-            auto it = trigger.FindUserInfoWithAid(m_staMac->GetAssociationId());
-            if (it == trigger.end())
-            {
-                dsoManager->NotifyIcfReceived(m_linkId, std::nullopt);
-                return;
-            }
-
             dsoManager->NotifyIcfReceived(m_linkId, it->GetRuAllocation());
 
             // we just got involved in a DL TXOP. Check if we are still involved in the TXOP in a
