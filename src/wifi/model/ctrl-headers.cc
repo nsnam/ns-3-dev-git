@@ -2185,6 +2185,7 @@ CtrlTriggerHeader::Serialize(Buffer::Iterator start) const
     if (m_specialUserInfoField)
     {
         NS_ASSERT(m_variant == m_specialUserInfoField->GetTriggerVariant());
+        NS_ASSERT(m_triggerType == m_specialUserInfoField->m_triggerType);
         i = m_specialUserInfoField->Serialize(i);
     }
 
@@ -2263,6 +2264,11 @@ void
 CtrlTriggerHeader::SetType(TriggerFrameType type)
 {
     m_triggerType = type;
+
+    if (m_specialUserInfoField)
+    {
+        m_specialUserInfoField->m_triggerType = type;
+    }
 }
 
 TriggerFrameType

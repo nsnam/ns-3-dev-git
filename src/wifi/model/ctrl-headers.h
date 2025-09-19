@@ -1015,8 +1015,9 @@ class CtrlTriggerSpecialUserInfoField
      */
     const CtrlBAckRequestHeader& GetMuBarTriggerDepUserInfo() const;
 
+    TriggerFrameType m_triggerType{}; //!< Trigger type
+
   private:
-    TriggerFrameType m_triggerType{};                        //!< Trigger type
     TriggerFrameVariant m_triggerVariant{};                  //!< Trigger variant
     uint8_t m_ulBwExt : 2 {};                                //!< UL Bandwidth Extension
     CtrlBAckRequestHeader m_muBarTriggerDependentUserInfo{}; //!< MU-BAR variant of Trigger
