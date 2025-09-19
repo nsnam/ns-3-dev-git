@@ -15,9 +15,84 @@
 #include "ns3/he-phy.h"
 
 #include <algorithm>
+#include <cmath>
+#include <utility>
 
 namespace ns3
 {
+
+namespace
+{
+
+/// Value of the Unavailability Duration field indicating indefinite duration (Sec. 9.3.1.22.7 of
+/// 802.11bn D1.0)
+constexpr uint16_t INDEFINITE_DURATION{1023};
+
+/**
+ * Encode the given unavailability period for use with BSRP NTB Trigger Frame and Multi-Sta Block
+ * Ack (Sec. 9.3.1.8.6 and 9.3.1.22.7 of 802.11bn D1.0).
+ *
+ * @param[in] period the given unavailability period
+ * @param[out] indefinite whether the unavailability period is considered to have an indefinite
+ *             duration of time (because the resulting duration cannot be encoded in the
+ *             Unavailability Duration field)
+ * @return the encoded unavailability period
+ */
+uint32_t
+EncodeUnavailPeriod(const WifiUnavailPeriod& period, bool& indefinite)
+{
+    // the encoded period must contain the actual unavailability period:
+    // encoded_start <= actual_start < actual_end <= encoded_end
+    const uint64_t start64 = period.start.GetMicroSeconds() >> 6;
+    uint64_t duration{INDEFINITE_DURATION};
+    if (period.end)
+    {
+        const uint64_t end64 = std::ceil(period.end->GetMicroSeconds() / 64.);
+        duration = std::min<uint64_t>(end64 - start64, INDEFINITE_DURATION);
+    }
+    indefinite = (duration == INDEFINITE_DURATION);
+
+    return (start64 & 0x03ff) | (duration << 10);
+}
+
+/**
+ * Get the unavailability period encoded in the given value.
+ *
+ * @param value a value encoding the unavailability start time in the lower 10 bits and the
+ *        unavailability duration in the upper 10 bits
+ * @return the unavailability period encoded in the given value, unless the value indicates that
+ *         the STA is available
+ */
+std::optional<WifiUnavailPeriod>
+DecodeUnavailPeriod(uint32_t value)
+{
+    const uint16_t duration = (value >> 10) & 0x03ff;
+
+    if (duration == 0)
+    {
+        return std::nullopt;
+    }
+
+    const auto now = Simulator::Now();
+    const uint64_t startUpper48 = now.GetMicroSeconds() & 0xffffffffffff0000;
+    const uint64_t startLower16 = (value & 0x03ff) << 6;
+    ns3::WifiUnavailPeriod unavailPeriod;
+    unavailPeriod.start = MicroSeconds(startUpper48 + startLower16);
+    if (unavailPeriod.start < now)
+    {
+        // The Unavailability Target Start Time field is larger than the TSF value at the end of
+        // the PPDU that carries the feedback (sec. 9.3.1.8.6.1 802.11bn D1.0). This must be a
+        // wrap around issue with the TSF, add 2^16 microseconds
+        unavailPeriod.start += MicroSeconds(0x10000);
+    }
+    if (duration < INDEFINITE_DURATION)
+    {
+        unavailPeriod.end = unavailPeriod.start + MicroSeconds(duration * 64);
+    }
+    return unavailPeriod;
+}
+
+} // namespace
 
 /***********************************
  *       Block ack request
@@ -1961,6 +2036,130 @@ CtrlTriggerSpecialUserInfoField::GetMuBarTriggerDepUserInfo() const
     return m_muBarTriggerDependentUserInfo;
 }
 
+/*****************************************
+ * Trigger frame - Feedback User Info field
+ *****************************************/
+
+CtrlTriggerFeedbackUserInfoField::CtrlTriggerFeedbackUserInfoField(
+    Type type,
+    TriggerFrameVariant triggerVariant)
+    : m_feedbackType(type),
+      m_triggerVariant(triggerVariant)
+{
+}
+
+CtrlTriggerFeedbackUserInfoField&
+CtrlTriggerFeedbackUserInfoField::operator=(const CtrlTriggerFeedbackUserInfoField& other)
+{
+    // check for self-assignment
+    if (&other == this)
+    {
+        return *this;
+    }
+
+    m_triggerVariant = other.m_triggerVariant;
+    m_feedbackType = other.m_feedbackType;
+    m_feedbackInformation = other.m_feedbackInformation;
+
+    return *this;
+}
+
+uint32_t
+CtrlTriggerFeedbackUserInfoField::GetSerializedSize() const
+{
+    // AID12 (12 bits), FeedbackType (4 bits), FeedbackInformation (24 bits)
+    // (Sec. 9.3.1.22.7 of 802.11bn D1.0)
+    return 5;
+}
+
+Buffer::Iterator
+CtrlTriggerFeedbackUserInfoField::Serialize(Buffer::Iterator start) const
+{
+    Buffer::Iterator i = start;
+
+    uint16_t aidType = 0;
+    aidType |= (AID_FEEDBACK_USER_INFO & 0x0fff);
+    aidType |= (std::to_underlying(m_feedbackType) << 12);
+    i.WriteHtolsbU16(aidType);
+    i.Write(m_feedbackInformation.data(), 3);
+
+    return i;
+}
+
+Buffer::Iterator
+CtrlTriggerFeedbackUserInfoField::Deserialize(Buffer::Iterator start)
+{
+    Buffer::Iterator i = start;
+
+    const auto aidType = i.ReadLsbtohU16();
+    const uint16_t aid12 = aidType & 0x0fff;
+    NS_ABORT_MSG_IF(aid12 != AID_FEEDBACK_USER_INFO,
+                    "Failed to deserialize Feedback User Info field");
+    m_feedbackType = static_cast<Type>((aidType >> 12) & 0x0f);
+    i.Read(m_feedbackInformation.data(), 3);
+
+    return i;
+}
+
+void
+CtrlTriggerFeedbackUserInfoField::Print(std::ostream& os) const
+{
+    os << ", FEEDBACK_USER_INFO ";
+    if (m_feedbackType == Type::UNSOLICITED_UNAVAILABILITY)
+    {
+        os << "Unsolicited Unavailability, ";
+
+        if (const auto unavailPeriod = GetUnavailability())
+        {
+            os << "start: " << unavailPeriod->start.As(Time::US);
+            if (unavailPeriod->end)
+            {
+                os << ", end: " << unavailPeriod->end->As(Time::US);
+            }
+            else
+            {
+                os << ", indefinite duration";
+            }
+        }
+        else
+        {
+            os << "STA available";
+        }
+    }
+}
+
+void
+CtrlTriggerFeedbackUserInfoField::SetStaUnavailable(const WifiUnavailPeriod& unavailPeriod,
+                                                    bool& indefinite)
+{
+    NS_ASSERT(m_feedbackType == Type::UNSOLICITED_UNAVAILABILITY);
+    NS_ASSERT_MSG(!unavailPeriod.end.has_value() || *unavailPeriod.end > unavailPeriod.start,
+                  "The duration of the unavailability period must be strictly positive");
+
+    const auto encoding = EncodeUnavailPeriod(unavailPeriod, indefinite);
+    m_feedbackInformation[0] = (encoding & 0xff);
+    m_feedbackInformation[1] = (encoding >> 8) & 0xff;
+    m_feedbackInformation[2] = (encoding >> 16) & 0xff;
+}
+
+void
+CtrlTriggerFeedbackUserInfoField::SetStaAvailable()
+{
+    NS_ASSERT(m_feedbackType == Type::UNSOLICITED_UNAVAILABILITY);
+    m_feedbackInformation = {};
+}
+
+std::optional<WifiUnavailPeriod>
+CtrlTriggerFeedbackUserInfoField::GetUnavailability() const
+{
+    NS_ASSERT(m_feedbackType == Type::UNSOLICITED_UNAVAILABILITY);
+
+    const uint32_t encoding = m_feedbackInformation[0] | (m_feedbackInformation[1] << 8) |
+                              (m_feedbackInformation[2] << 16);
+
+    return DecodeUnavailPeriod(encoding);
+}
+
 /***********************************
  *       Trigger frame
  ***********************************/
@@ -2058,6 +2257,8 @@ CtrlTriggerHeader::operator=(const CtrlTriggerHeader& trigger)
     m_padding = trigger.m_padding;
     m_specialUserInfoField.reset();
     m_specialUserInfoField = trigger.m_specialUserInfoField;
+    m_feedbackUserInfoField.reset();
+    m_feedbackUserInfoField = trigger.m_feedbackUserInfoField;
     m_userInfoFields.clear();
     m_userInfoFields = trigger.m_userInfoFields;
     return *this;
@@ -2088,6 +2289,11 @@ CtrlTriggerHeader::Print(std::ostream& os) const
     for (auto& ui : m_userInfoFields)
     {
         ui.Print(os);
+    }
+
+    if (m_feedbackUserInfoField)
+    {
+        m_feedbackUserInfoField->Print(os);
     }
 }
 
@@ -2130,6 +2336,12 @@ CtrlTriggerHeader::GetSerializedSize() const
     {
         NS_ASSERT(m_variant >= TriggerFrameVariant::EHT);
         size += m_specialUserInfoField->GetSerializedSize();
+    }
+
+    if (m_feedbackUserInfoField)
+    {
+        NS_ASSERT(m_variant >= TriggerFrameVariant::UHR);
+        size += m_feedbackUserInfoField->GetSerializedSize();
     }
 
     for (auto& ui : m_userInfoFields)
@@ -2189,6 +2401,11 @@ CtrlTriggerHeader::Serialize(Buffer::Iterator start) const
         i = m_specialUserInfoField->Serialize(i);
     }
 
+    if (m_feedbackUserInfoField)
+    {
+        i = m_feedbackUserInfoField->Serialize(i);
+    }
+
     for (auto& ui : m_userInfoFields)
     {
         i = ui.Serialize(i);
@@ -2244,7 +2461,7 @@ CtrlTriggerHeader::Deserialize(Buffer::Iterator start)
     while (i.GetRemainingSize() >= 2)
     {
         // read the first 2 bytes to check if we encountered the Padding field
-        if (i.ReadU16() == 0xffff)
+        if (const auto first2b = i.ReadU16(); first2b == 0xffff)
         {
             m_padding = i.GetRemainingSize() + 2;
         }
@@ -2252,8 +2469,16 @@ CtrlTriggerHeader::Deserialize(Buffer::Iterator start)
         {
             // go back 2 bytes to deserialize the User Info field from the beginning
             i.Prev(2);
-            CtrlTriggerUserInfoField& ui = AddUserInfoField();
-            i = ui.Deserialize(i);
+            if ((first2b & 0x0fff) == AID_FEEDBACK_USER_INFO)
+            {
+                auto& fui = AddFeedbackUserInfoField();
+                i = fui.Deserialize(i);
+            }
+            else
+            {
+                auto& ui = AddUserInfoField();
+                i = ui.Deserialize(i);
+            }
         }
     }
 
@@ -2334,6 +2559,12 @@ bool
 CtrlTriggerHeader::IsBsrp() const
 {
     return (m_triggerType == TriggerFrameType::BSRP_TRIGGER);
+}
+
+bool
+CtrlTriggerHeader::IsBsrpNtb() const
+{
+    return IsBsrp() && m_variant >= TriggerFrameVariant::UHR && m_giAndLtfType == 3;
 }
 
 bool
@@ -2517,6 +2748,16 @@ CtrlTriggerHeader::GetLtfType() const
 }
 
 void
+CtrlTriggerHeader::SetNtb()
+{
+    NS_ABORT_MSG_IF(m_variant < TriggerFrameVariant::UHR,
+                    "NTB not available for TF variant " << +std::to_underlying(m_variant));
+    NS_ABORT_MSG_IF(m_triggerType != TriggerFrameType::BSRP_TRIGGER,
+                    "NTB not available for TF type " << +std::to_underlying(m_triggerType));
+    m_giAndLtfType = 3;
+}
+
+void
 CtrlTriggerHeader::SetApTxPower(int8_t power)
 {
     // see Table 9-25f "AP Tx Power subfield encoding" of 802.11ax amendment D3.0
@@ -2561,9 +2802,10 @@ CtrlTriggerHeader
 CtrlTriggerHeader::GetCommonInfoField() const
 {
     // make a copy of this Trigger Frame and remove the User Info fields (including the Special User
-    // Info field) from the copy
+    // Info field and the Feedback User Info field) from the copy
     CtrlTriggerHeader trigger(*this);
     trigger.m_specialUserInfoField.reset();
+    trigger.m_feedbackUserInfoField.reset();
     trigger.m_userInfoFields.clear();
     return trigger;
 }
@@ -2659,6 +2901,22 @@ CtrlTriggerHeader::ConstIterator
 CtrlTriggerHeader::FindUserInfoWithRaRuUnassociated() const
 {
     return FindUserInfoWithAid(2045);
+}
+
+CtrlTriggerFeedbackUserInfoField&
+CtrlTriggerHeader::AddFeedbackUserInfoField(CtrlTriggerFeedbackUserInfoField::Type type)
+{
+    NS_ABORT_MSG_IF(m_feedbackUserInfoField.has_value(),
+                    "Cannot add more than one Feedback User Info field");
+    SetNtb();
+    m_feedbackUserInfoField.emplace(type, m_variant);
+    return m_feedbackUserInfoField.value();
+}
+
+const std::optional<CtrlTriggerFeedbackUserInfoField>&
+CtrlTriggerHeader::GetFeedbackUserInfo() const
+{
+    return m_feedbackUserInfoField;
 }
 
 bool
