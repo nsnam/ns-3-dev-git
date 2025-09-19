@@ -13,6 +13,8 @@
 #include "ns3/buffer.h"
 #include "ns3/test.h"
 
+#include <algorithm>
+
 namespace ns3
 {
 
@@ -43,9 +45,11 @@ class HeaderSerializationTestCase : public TestCase
      * @tparam Args \deduced Type of arguments to pass to the constructor of the header
      * @param [in] hdr the header to test
      * @param [in] args the arguments to construct the new header
+     * @return the new header obtained by deserializing from the buffer in which the given header
+     *         is serialized
      */
     template <typename T, typename... Args>
-    void TestHeaderSerialization(const T& hdr, Args&&... args);
+    T TestHeaderSerialization(const T& hdr, Args&&... args);
 };
 
 } // namespace ns3
@@ -58,7 +62,7 @@ namespace ns3
 {
 
 template <typename T, typename... Args>
-void
+T
 HeaderSerializationTestCase::TestHeaderSerialization(const T& hdr, Args&&... args)
 {
     Buffer buffer;
@@ -71,19 +75,21 @@ HeaderSerializationTestCase::TestHeaderSerialization(const T& hdr, Args&&... arg
     otherBuffer.AddAtStart(otherHdr.GetSerializedSize());
     otherHdr.Serialize(otherBuffer.Begin());
 
-    NS_TEST_ASSERT_MSG_EQ(buffer.GetSize(), otherBuffer.GetSize(), "Size of buffers differs");
+    NS_TEST_EXPECT_MSG_EQ(buffer.GetSize(), otherBuffer.GetSize(), "Size of buffers differs");
 
-    Buffer::Iterator bufferIterator = buffer.Begin();
-    Buffer::Iterator otherBufferIterator = otherBuffer.Begin();
-    for (uint32_t j = 0; j < buffer.GetSize(); j++)
+    auto bufferIterator = buffer.Begin();
+    auto otherBufferIterator = otherBuffer.Begin();
+    for (uint32_t j = 0; j < std::min(buffer.GetSize(), otherBuffer.GetSize()); j++)
     {
-        uint8_t bufferVal = bufferIterator.ReadU8();
-        uint8_t otherBufferVal = otherBufferIterator.ReadU8();
+        const auto bufferVal = bufferIterator.ReadU8();
+        const auto otherBufferVal = otherBufferIterator.ReadU8();
         NS_TEST_EXPECT_MSG_EQ(+bufferVal,
                               +otherBufferVal,
                               "Serialization -> Deserialization -> Serialization "
                                   << "is different than Serialization at byte " << j);
     }
+
+    return otherHdr;
 }
 
 } // namespace ns3
