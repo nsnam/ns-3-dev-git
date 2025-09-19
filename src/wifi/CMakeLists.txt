@@ -417,6 +417,7 @@ build_lib(
     test/wifi-channel-settings-test.cc
     test/wifi-coex-test-base.cc
     test/wifi-coex-basic-test.cc
+    test/wifi-coex-unsol-duo-test.cc
     test/wifi-co-trace-helper-test.cc
     test/wifi-dso-test.cc
     test/wifi-dynamic-bw-op-test.cc
