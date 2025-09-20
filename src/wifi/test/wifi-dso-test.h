@@ -303,12 +303,20 @@ class DsoTxopTest : public DsoTestBase
     void CheckChannelSwitchingBack(std::size_t staId, SwitchBackStatus status);
 
     /**
-     * Check that the DL transmissions to the DSO STA are blocked/unblocked.
+     * Check whether QoS data unicast transmissions addressed to the given destination on the
+     * given link are blocked or unblocked for the given reason on the given device.
      *
-     * @param staId the index of the STA to check
-     * @param blocked whether the DL transmissions to the DSO STA are blocked
+     * @param mac the MAC of the given device
+     * @param dest the MAC address of the given destination
+     * @param linkId the ID of the given link
+     * @param reason the reason for blocking transmissions to test
+     * @param blocked whether transmissions are blocked for the given reason
      */
-    void CheckBlockedDlTx(std::size_t staId, bool blocked);
+    void CheckBlockedLink(Ptr<WifiMac> mac,
+                          const Mac48Address& dest,
+                          uint8_t linkId,
+                          WifiQueueBlockedReason reason,
+                          bool blocked);
 
     /**
      * Check that the simulation produced the expected results.

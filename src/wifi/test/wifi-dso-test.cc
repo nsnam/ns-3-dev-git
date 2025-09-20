@@ -927,41 +927,62 @@ DsoTxopTest::CheckChannelSwitchingBack(std::size_t staId, SwitchBackStatus statu
 void
 DsoTxopTest::ScheduleChecksBlockedDlTx(const Time& delay, const Time& timeout)
 {
-    NS_LOG_FUNCTION(this << delay);
+    NS_LOG_FUNCTION(this << delay << timeout);
     const auto maxSwitchBackDelay = *std::max_element(m_params.channelSwitchBackDelays.cbegin(),
                                                       m_params.channelSwitchBackDelays.cend());
+
+    using enum WifiQueueBlockedReason;
     for (std::size_t i = 0; i < m_nDsoStas; ++i)
     {
         // check downlink transmissions are not blocked yet.
-        Simulator::Schedule(delay - TimeStep(1), [=, this]() { CheckBlockedDlTx(i, false); });
+        Simulator::Schedule(delay - TimeStep(1), [=, this]() {
+            CheckBlockedLink(m_apMac,
+                             m_staMacs.at(i)->GetAddress(),
+                             SINGLE_LINK_OP_ID,
+                             WAITING_DSO_SWITCH_BACK_DELAY,
+                             false);
+        });
 
         // check downlink transmissions are blocked during the switch back delay at AP.
         if (m_params.channelSwitchBackDelays.at(i).IsStrictlyPositive())
         {
-            Simulator::Schedule(delay + MAX_PROPAGATION_DELAY,
-                                [=, this]() { CheckBlockedDlTx(i, true); });
+            Simulator::Schedule(delay + MAX_PROPAGATION_DELAY, [=, this]() {
+                CheckBlockedLink(m_apMac,
+                                 m_staMacs.at(i)->GetAddress(),
+                                 SINGLE_LINK_OP_ID,
+                                 WAITING_DSO_SWITCH_BACK_DELAY,
+                                 true);
+            });
         }
         Simulator::Schedule(delay + timeout + maxSwitchBackDelay + MAX_PROPAGATION_DELAY,
-                            [=, this]() { CheckBlockedDlTx(i, false); });
+                            [=, this]() {
+                                CheckBlockedLink(m_apMac,
+                                                 m_staMacs.at(i)->GetAddress(),
+                                                 SINGLE_LINK_OP_ID,
+                                                 WAITING_DSO_SWITCH_BACK_DELAY,
+                                                 false);
+                            });
     }
 }
 
 void
-DsoTxopTest::CheckBlockedDlTx(std::size_t staId, bool blocked)
+DsoTxopTest::CheckBlockedLink(Ptr<WifiMac> mac,
+                              const Mac48Address& dest,
+                              uint8_t linkId,
+                              WifiQueueBlockedReason reason,
+                              bool blocked)
 {
-    NS_LOG_DEBUG("Check DL transmissions to STA " << staId + 1 << " are "
-                                                  << (blocked ? "blocked" : "unblocked"));
-    WifiContainerQueueId queueId(WIFI_QOSDATA_QUEUE,
-                                 WifiRcvAddr::UNICAST,
-                                 m_staMacs.at(staId)->GetAddress(),
-                                 0);
-    const auto mask =
-        m_apMac->GetMacQueueScheduler()->GetQueueLinkMask(AC_BE, queueId, SINGLE_LINK_OP_ID);
-    NS_TEST_ASSERT_MSG_EQ(mask.has_value(), true, "Expected to find a mask");
-    NS_TEST_EXPECT_MSG_EQ(
-        mask->test(static_cast<std::size_t>(WifiQueueBlockedReason::WAITING_DSO_SWITCH_BACK_DELAY)),
-        blocked,
-        "Expected DL transmissions to be " << (blocked ? "blocked" : "unblocked"));
+    NS_LOG_DEBUG("Check " << ((mac == m_apMac) ? "DL" : "UL") << " transmissions to " << dest
+                          << " for link ID " << +linkId << " are "
+                          << (blocked ? "blocked" : "unblocked"));
+    WifiContainerQueueId queueId(WIFI_QOSDATA_QUEUE, WifiRcvAddr::UNICAST, dest, 0);
+    auto mask = mac->GetMacQueueScheduler()->GetQueueLinkMask(AC_BE, queueId, linkId);
+    NS_TEST_EXPECT_MSG_EQ(mask.has_value(), true, "Expected to find a mask for link " << +linkId);
+    NS_TEST_EXPECT_MSG_EQ(mask->test(static_cast<std::size_t>(reason)),
+                          blocked,
+                          "Expected link " << +linkId << " to be "
+                                           << (blocked ? "blocked" : "unblocked") << " for reason "
+                                           << reason);
 }
 
 void
@@ -1068,6 +1089,15 @@ DsoTxopTest::CheckBlockAck(const WifiConstPsduMap& psduMap, const WifiTxVector& 
         NS_LOG_DEBUG("Generate one more packet for STA " << *clientId + 1);
         m_apMac->GetDevice()->GetNode()->AddApplication(
             GetApplication(DOWNLINK, *clientId, 1, 1000));
+    }
+    else if ((m_nDsoStas * m_params.numUlMuPpdus) > m_countQoSframes)
+    {
+        for (std::size_t i = 0; i < m_nDsoStas; ++i)
+        {
+            NS_LOG_DEBUG("Generate one more packet for STA " << i + 1);
+            m_staMacs.at(i)->GetDevice()->GetNode()->AddApplication(
+                GetApplication(UPLINK, i, 1, 500));
+        }
     }
     else if (m_params.numDlMuPpdus == m_countQoSframes)
     {
@@ -1611,13 +1641,11 @@ DsoTxopTest::DoSetup()
         m_staMacs.at(i)
             ->GetWifiPhy(SINGLE_LINK_OP_ID)
             ->SetAttribute("ChannelSwitchDelay", TimeValue(m_params.channelSwitchBackDelays.at(i)));
-        m_staMacs.at(i)->GetDsoManager()->SetAttribute(
-            "DsoSwitchBackDelay",
-            TimeValue(m_params.channelSwitchBackDelays.at(i)));
-        m_staMacs.at(i)->GetDsoManager()->SetAttribute("DsoPaddingDelay",
-                                                       TimeValue(m_params.paddingDelays.at(i)));
-        m_staMacs.at(i)->GetDsoManager()->SetAttribute("ChSwitchToDsoBandDelay",
-                                                       TimeValue(m_params.switchingDelayToDso));
+        auto dsoManager = m_staMacs.at(i)->GetDsoManager();
+        dsoManager->SetAttribute("DsoSwitchBackDelay",
+                                 TimeValue(m_params.channelSwitchBackDelays.at(i)));
+        dsoManager->SetAttribute("DsoPaddingDelay", TimeValue(m_params.paddingDelays.at(i)));
+        dsoManager->SetAttribute("ChSwitchToDsoBandDelay", TimeValue(m_params.switchingDelayToDso));
 
         auto errorModel = CreateObject<ListErrorModel>();
         m_staMacs.at(i)
@@ -2373,25 +2401,25 @@ WifiDsoTestSuite::WifiDsoTestSuite()
     }
 
     /**
-     *             ┌──────┐          ┌──────┐          ┌──┐┌──────┐
-     *             │ BSRP │          │Basic │          │BA││      │
-     *  [AP]       │  TF  │          │  TF  │          ├──┤│CF-END│
-     *             │(ICF) │          │      │          │BA││      │
-     *  ───────────┴──────▼┬────────┬┴──────┴┬────────┬┴──┴┴──────▼─ ...
-     *  [DSO STA]         ││QoS Null│        │QoS DATA│           │
-     *                    ││(ICR)   │        │        │           │
-     *                    │├────────┤        ├────────┤           │
-     *  [UHR STA]         ││QoS Null│        │QoS DATA│           │
-     *                    ││(ICR)   │        │        │           │
-     *                    │└────────┘        └────────┘           │
-     *                    │                                       │
-     *                  switch                                switch back
-     *                  to DSO                                to primary
+     *             ┌──────┐          ┌──────┐          ┌──┐┌──────┐          ┌──┐┌──────┐
+     *             │ BSRP │          │Basic │          │BA││Basic │          │BA││      │
+     *  [AP]       │  TF  │          │  TF  │          ├──┤│  TF  │          ├──┤│CF-END│
+     *             │(ICF) │          │      │          │BA││      │          │BA││      │
+     *  ───────────┴──────▼┬────────┬┴──────┴┬────────┬┴──┴┴──────┴┬────────┬┴──┴┴──────▼─ ...
+     *  [DSO STA]         ││QoS Null│        │QoS DATA│            │QoS DATA│           │
+     *                    ││(ICR)   │        │        │            │        │           │
+     *                    │├────────┤        ├────────┤            ├────────┤           │
+     *  [UHR STA]         ││QoS Null│        │QoS DATA│            │QoS DATA│           │
+     *                    ││(ICR)   │        │        │            │        │           │
+     *                    │└────────┘        └────────┘            └────────┘           │
+     *                    │                                                             │
+     *                  switch                                                    switch back
+     *                  to DSO                                                    to primary
      *
      */
     AddTestCase(new DsoTxopTest({.testName = "Check DSO operations with trigger-based uplink "
                                              "transmission",
-                                 .numUlMuPpdus = 1,
+                                 .numUlMuPpdus = 2,
                                  .expectedTxopEndEventInDsoSubband = DsoTxopEvent::RX_CF_END}),
                 TestCase::Duration::QUICK);
 
