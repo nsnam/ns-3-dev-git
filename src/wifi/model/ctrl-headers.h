@@ -1152,7 +1152,15 @@ class CtrlTriggerFeedbackUserInfoField
 class CtrlTriggerHeader : public Header
 {
   public:
-    CtrlTriggerHeader();
+    /**
+     * Constructor
+     *
+     * @param triggerType the Trigger frame type
+     * @param triggerVariant the Trigger frame variant
+     */
+    CtrlTriggerHeader(TriggerFrameType triggerType = TriggerFrameType::BASIC_TRIGGER,
+                      TriggerFrameVariant triggerVariant = TriggerFrameVariant::HE);
+
     /**
      * @brief Constructor
      *

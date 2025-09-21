@@ -2166,10 +2166,9 @@ CtrlTriggerFeedbackUserInfoField::GetUnavailability() const
 
 NS_OBJECT_ENSURE_REGISTERED(CtrlTriggerHeader);
 
-CtrlTriggerHeader::CtrlTriggerHeader()
-    : m_variant(TriggerFrameVariant::HE),
-      m_triggerType(TriggerFrameType::BASIC_TRIGGER),
-      m_ulLength(0),
+CtrlTriggerHeader::CtrlTriggerHeader(TriggerFrameType triggerType,
+                                     TriggerFrameVariant triggerVariant)
+    : m_ulLength(0),
       m_moreTF(false),
       m_csRequired(false),
       m_ulBandwidth(0),
@@ -2178,6 +2177,8 @@ CtrlTriggerHeader::CtrlTriggerHeader()
       m_ulSpatialReuse(0),
       m_padding(0)
 {
+    SetType(triggerType);
+    SetVariant(triggerVariant);
 }
 
 CtrlTriggerHeader::CtrlTriggerHeader(TriggerFrameType type, const WifiTxVector& txVector)
