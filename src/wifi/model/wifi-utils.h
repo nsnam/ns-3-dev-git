@@ -398,10 +398,6 @@ static constexpr uint8_t WIFI_LINKID_UNDEFINED = 0xff;
 /// Invalid TID identifier
 static constexpr uint8_t WIFI_TID_UNDEFINED = 0xff;
 
-/// AID used by an adhoc STA to send MU-RTS frames to a peer EMLSR client
-/// (2008 is the smallest value that is reserved by the standard)
-static constexpr uint16_t WIFI_AID_ADHOC_PEER = 2008;
-
 } // namespace ns3
 
 #endif /* WIFI_UTILS_H */

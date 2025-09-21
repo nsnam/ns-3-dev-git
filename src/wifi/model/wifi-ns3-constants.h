@@ -11,6 +11,8 @@
 
 #include "ns3/nstime.h"
 
+#include <cstdint>
+
 /**
  * @file
  * @ingroup wifi
@@ -19,6 +21,10 @@
 
 namespace ns3
 {
+
+/// AID used by an adhoc STA to send MU-RTS frames to a peer EMLSR client
+/// (2009 is the smallest value that is reserved by the standard)
+static constexpr uint16_t WIFI_AID_ADHOC_PEER = 2009;
 
 /// UL MU Data Disable flag at non-AP STA
 static constexpr bool DEFAULT_WIFI_UL_MU_DATA_DISABLE{false};

@@ -9,6 +9,7 @@
 #include "wifi-protection-manager.h"
 
 #include "ap-wifi-mac.h"
+#include "wifi-ns3-constants.h"
 #include "wifi-phy.h"
 
 #include "ns3/log.h"

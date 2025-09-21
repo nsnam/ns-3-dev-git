@@ -21,6 +21,7 @@
 #include "ns3/sta-wifi-mac.h"
 #include "ns3/wifi-mac-queue.h"
 #include "ns3/wifi-net-device.h"
+#include "ns3/wifi-ns3-constants.h"
 #include "ns3/wifi-spectrum-phy-interface.h"
 
 #include <algorithm>
