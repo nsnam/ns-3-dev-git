@@ -24,6 +24,7 @@
 #include "ns3/waveform-generator.h"
 #include "ns3/wifi-mac-header.h"
 #include "ns3/wifi-net-device.h"
+#include "ns3/wifi-ns3-constants.h"
 #include "ns3/wifi-phy-listener.h"
 #include "ns3/wifi-psdu.h"
 #include "ns3/wifi-spectrum-phy-interface.h"
@@ -1730,8 +1731,8 @@ class SpectrumWifiPhyMultipleInterfacesTest : public TestCase
 
     const dBm_t m_ccaEdThreshold{-62.0}; ///< CCA-ED threshold
     const Time m_txAfterChannelSwitchDelay{
-        MicroSeconds(250)}; ///< delay in seconds between channel switch is triggered and a
-                            ///< transmission gets started
+        DEFAULT_CHANNEL_SWITCH_DELAY}; ///< delay in seconds between channel switch is triggered and
+                                       ///< a transmission gets started
     const Time m_checkResultsDelay{
         Seconds(0.5)}; ///< delay in seconds between start of test and moment results are verified
     const Time m_flushResultsDelay{

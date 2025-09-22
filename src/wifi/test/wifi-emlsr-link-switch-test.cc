@@ -23,6 +23,7 @@
 #include "ns3/spectrum-wifi-phy.h"
 #include "ns3/string.h"
 #include "ns3/wifi-net-device.h"
+#include "ns3/wifi-ns3-constants.h"
 #include "ns3/wifi-spectrum-phy-interface.h"
 
 #include <algorithm>
@@ -1882,7 +1883,7 @@ EmlsrSwitchMainPhyBackTest::RunOne()
     {
         // make switch main PHY back delay at least two channel switch delays shorter than the
         // PPDU TX duration
-        m_switchMainPhyBackDelay -= MicroSeconds(250);
+        m_switchMainPhyBackDelay -= DEFAULT_CHANNEL_SWITCH_DELAY;
     }
 
     const auto interruptSwitch =

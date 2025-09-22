@@ -34,6 +34,7 @@
 #include "ns3/wifi-mac-header.h"
 #include "ns3/wifi-mac-queue.h"
 #include "ns3/wifi-net-device.h"
+#include "ns3/wifi-ns3-constants.h"
 #include "ns3/wifi-protection.h"
 #include "ns3/wifi-psdu.h"
 #include "ns3/wifi-static-setup-helper.h"

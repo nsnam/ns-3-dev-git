@@ -14,6 +14,7 @@
 #include "interference-helper.h"
 #include "preamble-detection-model.h"
 #include "wifi-net-device.h"
+#include "wifi-ns3-constants.h"
 #include "wifi-ppdu.h"
 #include "wifi-psdu.h"
 #include "wifi-radio-energy-model.h"
@@ -200,7 +201,7 @@ WifiPhy::GetTypeId()
                           MakePointerChecker<WifiPhyStateHelper>())
             .AddAttribute("ChannelSwitchDelay",
                           "Delay between two short frames transmitted on different frequencies.",
-                          TimeValue(MicroSeconds(250)),
+                          TimeValue(MicroSeconds(DEFAULT_CHANNEL_SWITCH_DELAY_USEC)),
                           MakeTimeAccessor(&WifiPhy::m_channelSwitchDelay),
                           MakeTimeChecker(Seconds(0)))
             .AddAttribute(

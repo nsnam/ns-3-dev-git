@@ -14,6 +14,7 @@
 #include "ns3/ap-wifi-mac.h"
 #include "ns3/sta-wifi-mac.h"
 #include "ns3/wifi-net-device.h"
+#include "ns3/wifi-ns3-constants.h"
 
 #undef NS_LOG_APPEND_CONTEXT
 #define NS_LOG_APPEND_CONTEXT WIFI_FEM_NS_LOG_APPEND_CONTEXT
@@ -345,7 +346,8 @@ UhrFrameExchangeManager::DsoSwitchBackToPrimary(const Mac48Address& address, con
     };
 
     const auto switchBackDelay =
-        MicroSeconds(295); // TODO: TBD how switch back delay is advertised to AP
+        OFDM_SIFS_TIME_20MHZ + OFDM_SLOT_TIME_20MHZ + EMLSR_OR_DSO_RX_PHY_START_DELAY +
+        DEFAULT_CHANNEL_SWITCH_DELAY; // TODO: TBD how switch back delay is advertised to AP
     const auto timeout =
         switchBackDelay + delay - m_phy->GetSifs() - m_phy->GetSlot() -
         EMLSR_OR_DSO_RX_PHY_START_DELAY; // switch back delay accounts for a SIFS + slot + PHY

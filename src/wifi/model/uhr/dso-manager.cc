@@ -25,6 +25,7 @@
 #include "ns3/vht-operation.h"
 #include "ns3/wifi-mpdu.h"
 #include "ns3/wifi-net-device.h"
+#include "ns3/wifi-ns3-constants.h"
 #include "ns3/wifi-phy-operating-channel.h"
 #include "ns3/wifi-utils.h"
 
@@ -42,13 +43,13 @@ DsoManager::GetTypeId()
         TypeId("ns3::DsoManager")
             .SetParent<Object>()
             .SetGroupName("Wifi")
-            .AddAttribute(
-                "DsoSwitchBackDelay",
-                "The DSO Switch Back Delay.",
-                TimeValue(MicroSeconds(
-                    295)), // aSIFSTime + aSlotTime + aRxPHYStartDelay + default switching delay
-                MakeTimeAccessor(&DsoManager::m_dsoSwitchBackDelay),
-                MakeTimeChecker())
+            .AddAttribute("DsoSwitchBackDelay",
+                          "The DSO Switch Back Delay.",
+                          TimeValue(MicroSeconds(16 /* aSIFSTime */ + 9 /* aSlotTime */ +
+                                                 20 /* aRxPHYStartDelay */ +
+                                                 DEFAULT_CHANNEL_SWITCH_DELAY_USEC)),
+                          MakeTimeAccessor(&DsoManager::m_dsoSwitchBackDelay),
+                          MakeTimeChecker())
             .AddTraceSource("DsoTxopEvent",
                             "Trace source indicating a DSO TXOP event.",
                             MakeTraceSourceAccessor(&DsoManager::m_dsoTxopEventTrace),
