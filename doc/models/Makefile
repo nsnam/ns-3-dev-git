@@ -32,6 +32,8 @@ SOURCES = \
 	$(SRC)/buildings/doc/source/buildings-testing.rst \
 	$(SRC)/buildings/doc/source/buildings-references.rst \
 	$(SRC)/click/doc/click.rst \
+	$(SRC)/coex/doc/source/coex.rst \
+	$(SRC)/coex/doc/source/coex-design.rst \
 	$(SRC)/csma/doc/csma.rst \
 	$(SRC)/dsdv/doc/dsdv.rst \
 	$(SRC)/dsr/doc/dsr.rst \
@@ -118,6 +120,8 @@ SOURCEFIGS = \
 	$(SRC)/applications/doc/http-num-of-embedded-objects.png \
 	$(SRC)/applications/doc/http-parsing-time.png \
 	$(SRC)/applications/doc/http-reading-time.png \
+	$(SRC)/coex/doc/source/figures/coex-architecture.pdf \
+	$(SRC)/coex/doc/source/figures/coex-architecture.png \
 	$(SRC)/network/doc/packet.dia \
 	$(SRC)/network/doc/node.dia \
 	$(SRC)/network/doc/buffer.dia \

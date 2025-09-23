@@ -36,6 +36,7 @@ from the ``doc/`` directory of each module.  Source file column width is 100 col
    brite
    buildings
    click
+   coex
    csma
    dsdv
    dsr
