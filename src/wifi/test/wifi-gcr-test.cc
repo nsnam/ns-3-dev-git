@@ -1806,7 +1806,7 @@ WifiGcrTestSuite::WifiGcrTestSuite()
          std::vector<std::pair<bool, std::string>>{{false, "A-MPDU disabled"},
                                                    {true, "A-MPDU enabled"}})
     {
-        for (auto& [rtsThreshold, gcrPotection, protectionName] :
+        for (auto& [rtsThreshold, gcrProtection, protectionName] :
              std::vector<std::tuple<uint32_t, GroupcastProtectionMode, std::string>>{
                  {maxRtsCtsThreshold, GroupcastProtectionMode::RTS_CTS, "no protection"},
                  {500, GroupcastProtectionMode::RTS_CTS, "RTS-CTS"},
@@ -1850,7 +1850,7 @@ WifiGcrTestSuite::WifiGcrTestSuite()
                                    .numGroupcastPackets = useAmpdu ? uint16_t(4) : uint16_t(2),
                                    .maxNumMpdusInPsdu = useAmpdu ? uint16_t(2) : uint16_t(1),
                                    .rtsThreshold = rtsThreshold,
-                                   .gcrProtectionMode = gcrPotection},
+                                   .gcrProtectionMode = gcrProtection},
                                   {}),
                     useSpectrum ? TestCase::Duration::EXTENSIVE : TestCase::Duration::QUICK);
                 AddTestCase(
@@ -1859,7 +1859,7 @@ WifiGcrTestSuite::WifiGcrTestSuite()
                                    .numGroupcastPackets = useAmpdu ? uint16_t(4) : uint16_t(2),
                                    .maxNumMpdusInPsdu = useAmpdu ? uint16_t(2) : uint16_t(1),
                                    .rtsThreshold = rtsThreshold,
-                                   .gcrProtectionMode = gcrPotection,
+                                   .gcrProtectionMode = gcrProtection,
                                    // if no MPDU aggregation, MPDUs list is ignored
                                    .mpdusToCorruptPerPsdu = {{1, {{0, {1, 2}}}}}},
                                   {}),
@@ -1870,7 +1870,7 @@ WifiGcrTestSuite::WifiGcrTestSuite()
                                    .numGroupcastPackets = useAmpdu ? uint16_t(4) : uint16_t(2),
                                    .maxNumMpdusInPsdu = useAmpdu ? uint16_t(2) : uint16_t(1),
                                    .rtsThreshold = rtsThreshold,
-                                   .gcrProtectionMode = gcrPotection,
+                                   .gcrProtectionMode = gcrProtection,
                                    // if no MPDU aggregation, MPDUs list is ignored
                                    .mpdusToCorruptPerPsdu = {{1, {{0, {1, 2}}}},
                                                              {2, {{0, {1, 2}}}},
@@ -1887,7 +1887,7 @@ WifiGcrTestSuite::WifiGcrTestSuite()
                                    .numGroupcastPackets = useAmpdu ? uint16_t(4) : uint16_t(2),
                                    .maxNumMpdusInPsdu = useAmpdu ? uint16_t(2) : uint16_t(1),
                                    .rtsThreshold = rtsThreshold,
-                                   .gcrProtectionMode = gcrPotection,
+                                   .gcrProtectionMode = gcrProtection,
                                    // if no MPDU aggregation, MPDUs list is ignored
                                    .mpdusToCorruptPerPsdu = {{1, {{0, {1, 2}}}},
                                                              {2, {{0, {1, 2}}}},
@@ -1909,7 +1909,7 @@ WifiGcrTestSuite::WifiGcrTestSuite()
                                        .numGroupcastPackets = 4,
                                        .maxNumMpdusInPsdu = 2,
                                        .rtsThreshold = rtsThreshold,
-                                       .gcrProtectionMode = gcrPotection,
+                                       .gcrProtectionMode = gcrProtection,
                                        .mpdusToCorruptPerPsdu = {{1, {{0, {2}}}},
                                                                  {2, {{0, {1}}}},
                                                                  {3, {{0, {2}}}},
@@ -1928,7 +1928,7 @@ WifiGcrTestSuite::WifiGcrTestSuite()
                                        .numGroupcastPackets = 4,
                                        .maxNumMpdusInPsdu = 2,
                                        .rtsThreshold = rtsThreshold,
-                                       .gcrProtectionMode = gcrPotection,
+                                       .gcrProtectionMode = gcrProtection,
                                        .mpdusToCorruptPerPsdu = {{1, {{0, {1}}}},
                                                                  {2, {{0, {2}}}},
                                                                  {3, {{0, {1}}}},
@@ -1947,7 +1947,7 @@ WifiGcrTestSuite::WifiGcrTestSuite()
                                        .numGroupcastPackets = 4,
                                        .maxNumMpdusInPsdu = 2,
                                        .rtsThreshold = rtsThreshold,
-                                       .gcrProtectionMode = gcrPotection,
+                                       .gcrProtectionMode = gcrProtection,
                                        .mpdusToCorruptPerPsdu = {{1, {{0, {1, 2}}}},
                                                                  {2, {{0, {1, 2}}}},
                                                                  {3, {{0, {1, 2}}}},
@@ -1966,7 +1966,7 @@ WifiGcrTestSuite::WifiGcrTestSuite()
                                        .numGroupcastPackets = 4,
                                        .maxNumMpdusInPsdu = 2,
                                        .rtsThreshold = rtsThreshold,
-                                       .gcrProtectionMode = gcrPotection,
+                                       .gcrProtectionMode = gcrProtection,
                                        .mpdusToCorruptPerPsdu = {{1, {{0, {1, 2}}}},
                                                                  {2, {{0, {1, 2}}}},
                                                                  {3, {{0, {1, 2}}}},
@@ -1984,7 +1984,7 @@ WifiGcrTestSuite::WifiGcrTestSuite()
                                        .numGroupcastPackets = 4,
                                        .maxNumMpdusInPsdu = 2,
                                        .rtsThreshold = rtsThreshold,
-                                       .gcrProtectionMode = gcrPotection,
+                                       .gcrProtectionMode = gcrProtection,
                                        .mpdusToCorruptPerPsdu = {{1, {{0, {1, 2}}}},
                                                                  {2, {{0, {1, 2}}}},
                                                                  {3, {{0, {1, 2}}}},
@@ -2003,7 +2003,7 @@ WifiGcrTestSuite::WifiGcrTestSuite()
                                      .numGroupcastPackets = 4,
                                      .maxNumMpdusInPsdu = 2,
                                      .rtsThreshold = rtsThreshold,
-                                     .gcrProtectionMode = gcrPotection,
+                                     .gcrProtectionMode = gcrProtection,
                                      .mpdusToCorruptPerPsdu = {{9, {{0, {2}}}},
                                                                {10, {{0, {1}}}},
                                                                {11, {{0, {2}}}},
@@ -2023,7 +2023,7 @@ WifiGcrTestSuite::WifiGcrTestSuite()
                                      .numGroupcastPackets = 4,
                                      .maxNumMpdusInPsdu = 2,
                                      .rtsThreshold = rtsThreshold,
-                                     .gcrProtectionMode = gcrPotection,
+                                     .gcrProtectionMode = gcrProtection,
                                      .mpdusToCorruptPerPsdu = {{9, {{0, {1}}}},
                                                                {10, {{0, {2}}}},
                                                                {11, {{0, {1}}}},
@@ -2043,7 +2043,7 @@ WifiGcrTestSuite::WifiGcrTestSuite()
                                        .numGroupcastPackets = 4,
                                        .maxNumMpdusInPsdu = 2,
                                        .rtsThreshold = rtsThreshold,
-                                       .gcrProtectionMode = gcrPotection,
+                                       .gcrProtectionMode = gcrProtection,
                                        .mpdusToCorruptPerPsdu = {{9, {{0, {1, 2}}}},
                                                                  {10, {{0, {1, 2}}}},
                                                                  {11, {{0, {1, 2}}}},
@@ -2062,7 +2062,7 @@ WifiGcrTestSuite::WifiGcrTestSuite()
                                        .numGroupcastPackets = 4,
                                        .maxNumMpdusInPsdu = 2,
                                        .rtsThreshold = rtsThreshold,
-                                       .gcrProtectionMode = gcrPotection,
+                                       .gcrProtectionMode = gcrProtection,
                                        .mpdusToCorruptPerPsdu = {{9, {{0, {1, 2}}}},
                                                                  {10, {{0, {1, 2}}}},
                                                                  {11, {{0, {1, 2}}}},
@@ -2080,7 +2080,7 @@ WifiGcrTestSuite::WifiGcrTestSuite()
                                        .numGroupcastPackets = 4,
                                        .maxNumMpdusInPsdu = 2,
                                        .rtsThreshold = rtsThreshold,
-                                       .gcrProtectionMode = gcrPotection,
+                                       .gcrProtectionMode = gcrProtection,
                                        .mpdusToCorruptPerPsdu = {{9, {{0, {1, 2}}}},
                                                                  {10, {{0, {1, 2}}}},
                                                                  {11, {{0, {1, 2}}}},
@@ -2200,7 +2200,7 @@ WifiGcrTestSuite::WifiGcrTestSuite()
                                                                           {{}, {1}},
                                                                           {{1}, {1}}})
         {
-            for (auto& [rtsThreshold, gcrPotection, protectionName] :
+            for (auto& [rtsThreshold, gcrProtection, protectionName] :
                  std::vector<std::tuple<uint32_t, GroupcastProtectionMode, std::string>>{
                      {maxRtsCtsThreshold, GroupcastProtectionMode::RTS_CTS, "no protection"},
                      {500, GroupcastProtectionMode::RTS_CTS, "RTS-CTS"},
@@ -2267,7 +2267,7 @@ WifiGcrTestSuite::WifiGcrTestSuite()
                                                .startGroupcast = groupcastStartTime,
                                                .startUnicast = unicastStartTime,
                                                .rtsThreshold = rtsThreshold,
-                                               .gcrProtectionMode = gcrPotection},
+                                               .gcrProtectionMode = gcrProtection},
                                               {corruptedBars, corruptedBlockAcks}),
                                 useSpectrum ? TestCase::Duration::EXTENSIVE
                                             : TestCase::Duration::QUICK);
@@ -2281,7 +2281,7 @@ WifiGcrTestSuite::WifiGcrTestSuite()
                                                    .startGroupcast = groupcastStartTime,
                                                    .startUnicast = unicastStartTime,
                                                    .rtsThreshold = rtsThreshold,
-                                                   .gcrProtectionMode = gcrPotection,
+                                                   .gcrProtectionMode = gcrProtection,
                                                    .mpdusToCorruptPerPsdu = {{1, {{0, {2}}}}}},
                                                   {corruptedBars, corruptedBlockAcks}),
                                     useSpectrum ? TestCase::Duration::EXTENSIVE
@@ -2294,7 +2294,7 @@ WifiGcrTestSuite::WifiGcrTestSuite()
                                                    .startGroupcast = groupcastStartTime,
                                                    .startUnicast = unicastStartTime,
                                                    .rtsThreshold = rtsThreshold,
-                                                   .gcrProtectionMode = gcrPotection,
+                                                   .gcrProtectionMode = gcrProtection,
                                                    .mpdusToCorruptPerPsdu = {{1, {{0, {1}}}}}},
                                                   {corruptedBars, corruptedBlockAcks}),
                                     useSpectrum ? TestCase::Duration::EXTENSIVE
@@ -2307,7 +2307,7 @@ WifiGcrTestSuite::WifiGcrTestSuite()
                                                    .startGroupcast = groupcastStartTime,
                                                    .startUnicast = unicastStartTime,
                                                    .rtsThreshold = rtsThreshold,
-                                                   .gcrProtectionMode = gcrPotection,
+                                                   .gcrProtectionMode = gcrProtection,
                                                    .mpdusToCorruptPerPsdu = {{1, {{0, {1, 2}}}}}},
                                                   {corruptedBars, corruptedBlockAcks}),
                                     useSpectrum ? TestCase::Duration::EXTENSIVE
@@ -2324,7 +2324,7 @@ WifiGcrTestSuite::WifiGcrTestSuite()
                                                .startGroupcast = groupcastStartTime,
                                                .startUnicast = unicastStartTime,
                                                .rtsThreshold = rtsThreshold,
-                                               .gcrProtectionMode = gcrPotection,
+                                               .gcrProtectionMode = gcrProtection,
                                                .mpdusToCorruptPerPsdu = {{1, {{1, {2}}}}}},
                                               {corruptedBars, corruptedBlockAcks}),
                                 useSpectrum ? TestCase::Duration::EXTENSIVE
@@ -2339,7 +2339,7 @@ WifiGcrTestSuite::WifiGcrTestSuite()
                                                .startGroupcast = groupcastStartTime,
                                                .startUnicast = unicastStartTime,
                                                .rtsThreshold = rtsThreshold,
-                                               .gcrProtectionMode = gcrPotection,
+                                               .gcrProtectionMode = gcrProtection,
                                                .mpdusToCorruptPerPsdu = {{1, {{1, {1}}}}}},
                                               {corruptedBars, corruptedBlockAcks}),
                                 useSpectrum ? TestCase::Duration::EXTENSIVE
@@ -2355,7 +2355,7 @@ WifiGcrTestSuite::WifiGcrTestSuite()
                                      .startGroupcast = groupcastStartTime,
                                      .startUnicast = unicastStartTime,
                                      .rtsThreshold = rtsThreshold,
-                                     .gcrProtectionMode = gcrPotection,
+                                     .gcrProtectionMode = gcrProtection,
                                      .mpdusToCorruptPerPsdu = {{1, {{1, {1}}, {2, {2}}}}}},
                                     {corruptedBars, corruptedBlockAcks}),
                                 useSpectrum ? TestCase::Duration::EXTENSIVE
@@ -2371,7 +2371,7 @@ WifiGcrTestSuite::WifiGcrTestSuite()
                                              .startGroupcast = groupcastStartTime,
                                              .startUnicast = unicastStartTime,
                                              .rtsThreshold = rtsThreshold,
-                                             .gcrProtectionMode = gcrPotection,
+                                             .gcrProtectionMode = gcrProtection,
                                              .mpdusToCorruptPerPsdu = {{1, {{1, {2}}, {2, {1}}}}}},
                                             {corruptedBars, corruptedBlockAcks}),
                                         useSpectrum ? TestCase::Duration::EXTENSIVE

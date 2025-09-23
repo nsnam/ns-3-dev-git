@@ -275,7 +275,7 @@ class ChannelAccessManager : public Object
     void NotifyRxEndOkNow();
     /**
      * Notify the Txop that a packet reception was just
-     * completed unsuccessfuly.
+     * completed unsuccessfully.
      *
      * @param txVector the TXVECTOR used for transmission
      */

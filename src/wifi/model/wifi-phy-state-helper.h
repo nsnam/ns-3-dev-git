@@ -51,9 +51,9 @@ typedef Callback<void,
                  const std::vector<bool>&>
     RxOkCallback;
 /**
- * Callback if PSDU unsuccessfuly received
+ * Callback if PSDU unsuccessfully received
  *
- * arg1: PSDU received unsuccessfuly
+ * arg1: PSDU received unsuccessfully
  */
 typedef Callback<void, Ptr<const WifiPsdu>> RxErrorCallback;
 

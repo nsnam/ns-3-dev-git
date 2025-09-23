@@ -2269,7 +2269,7 @@ the PCFICH errors [R4-081920]_ (also refer to
 :ref:`sec-control-channels-phy-error-model`). Once, the UE is unable to decode
 20 consecutive frames, i.e., the Qout evaluation period (200ms) is reached, an
 out-of-sync indication is sent to the UE RRC layer (see ``LteUeRrc::DoNotifyOutOfSync``).
-Else, the counter for the unsuccessfuly decoded frames is reset to zero. At the
+Else, the counter for the unsuccessfully decoded frames is reset to zero. At the
 LteUeRrc, when the number of consecutive out-of-sync indications matches with the
 value of N310 parameter, the T310 timer is started and LteUePhy is notified to start
 measuring for in-sync indications (see ``LteUePhy::DoStartInSyncDetection``). We note

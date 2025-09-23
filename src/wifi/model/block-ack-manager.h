@@ -414,7 +414,7 @@ class BlockAckManager : public Object
     void SetTxOkCallback(TxOk callback);
     /**
      * @param callback the callback to invoke when a
-     * packet transmission was completed unsuccessfuly.
+     * packet transmission was completed unsuccessfully.
      */
     void SetTxFailedCallback(TxFailed callback);
     /**

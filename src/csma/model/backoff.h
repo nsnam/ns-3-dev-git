@@ -105,7 +105,7 @@ class Backoff
 
   private:
     /**
-     * Number of times that the transmitter has tried to unsuccessfuly transmit the current packet.
+     * Number of times that the transmitter has tried to unsuccessfully transmit the current packet.
      */
     uint32_t m_numBackoffRetries;
 

@@ -849,7 +849,7 @@ class TestThresholdPreambleDetectionWithFrameCapture : public WifiPhyReceptionTe
     /**
      * Check the number of received packets
      * @param expectedSuccessCount the number of successfully received packets
-     * @param expectedFailureCount the number of unsuccessfuly received packets
+     * @param expectedFailureCount the number of unsuccessfully received packets
      */
     void CheckRxPacketCount(uint32_t expectedSuccessCount, uint32_t expectedFailureCount);
 };
@@ -4207,7 +4207,7 @@ class TestUnsupportedBandwidthReception : public TestCase
                    const std::vector<bool>& statusPerMpdu);
 
     /**
-     * Function called upon a PSDU received unsuccessfuly
+     * Function called upon a PSDU received unsuccessfully
      * @param psdu the PSDU
      */
     void RxFailure(Ptr<const WifiPsdu> psdu);

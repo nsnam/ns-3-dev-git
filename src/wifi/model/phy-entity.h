@@ -681,7 +681,7 @@ class WIFI_EXPORT PhyEntity
                                     uint16_t staId,
                                     const std::vector<bool>& statusPerMpdu);
     /**
-     * Perform amendment-specific actions when the payload is unsuccessfuly received.
+     * Perform amendment-specific actions when the payload is unsuccessfully received.
      *
      * @param psdu the PSDU that we failed to received
      * @param snr the SNR of the received PSDU in linear scale
