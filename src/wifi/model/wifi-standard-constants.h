@@ -146,6 +146,10 @@ static constexpr uint16_t AID_SPECIAL_USER{2007};
 /// AID value for Feedback User Info field in trigger frames (Sec. 9.3.1.22.7 of 802.11bn D1.0)
 static constexpr uint16_t AID_FEEDBACK_USER_INFO{2008};
 
+/// AID11 value for a Multi-STA BlockAck Per AID TID Info subfield intended for an unassociated STA
+/// (Sec. 9.3.1.8.6 of 802.11-2024)
+static constexpr uint16_t MULTISTA_BA_UNASSOC_STA_AID11{2045};
+
 /// BSS Parameters Change Count max value for APs part of AP MLD
 /// IEEE 802.11be D5.0 35.3.10
 static constexpr uint8_t WIFI_DEFAULT_BSS_PARAMS_CHANGE_MAX{254};

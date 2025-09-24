@@ -375,14 +375,8 @@ CtrlBAckRequestHeader::IsGcr() const
 NS_OBJECT_ENSURE_REGISTERED(CtrlBAckResponseHeader);
 
 CtrlBAckResponseHeader::CtrlBAckResponseHeader()
-    : m_baAckPolicy(false),
-      m_tidInfo(0)
 {
     SetType(BlockAckType::BASIC);
-}
-
-CtrlBAckResponseHeader::~CtrlBAckResponseHeader()
-{
 }
 
 TypeId
@@ -406,15 +400,37 @@ CtrlBAckResponseHeader::Print(std::ostream& os) const
 {
     if (m_baType.m_variant != BlockAckType::MULTI_STA)
     {
-        os << "TID_INFO=" << m_tidInfo << ", StartingSeq=0x" << std::hex
-           << m_baInfo[0].m_startingSeq << std::dec;
+        os << "TID_INFO=" << m_tidInfo << ", StartingSeq=" << m_baInfo[0].m_startSeqCtrlUpper12;
     }
     else
     {
         for (std::size_t i = 0; i < m_baInfo.size(); i++)
         {
-            os << "{AID=" << GetAid11(i) << ", TID=" << GetTidInfo(i) << ", StartingSeq=0x"
-               << std::hex << m_baInfo[i].m_startingSeq << std::dec << "}";
+            const auto aid11 = GetAid11(i);
+            os << "{AID=" << aid11;
+            if (aid11 != MULTISTA_BA_UNASSOC_STA_AID11)
+            {
+                const auto context = GetPerAidTidInfoContext(i);
+                os << ", " << context << " context";
+                if (context == MultiStaBaContext::ACKNOWLEDGMENT ||
+                    context == MultiStaBaContext::BLOCK_ACK)
+                {
+                    os << ", TID=" << +GetTidInfo(i);
+                }
+                if (context == MultiStaBaContext::FEEDBACK)
+                {
+                    os << ", type=" << GetFeedbackType(i);
+                }
+                else if (!GetAckType(i))
+                {
+                    os << ", StartingSeq=" << m_baInfo[i].m_startSeqCtrlUpper12;
+                }
+            }
+            else
+            {
+                os << ", unassociated STA address=" << GetUnassociatedStaAddress(i);
+            }
+            os << "}";
         }
     }
 }
@@ -474,9 +490,9 @@ CtrlBAckResponseHeader::Serialize(Buffer::Iterator start) const
         for (std::size_t index = 0; index < m_baInfo.size(); index++)
         {
             i.WriteHtolsbU16(m_baInfo[index].m_aidTidInfo);
-            if (GetAid11(index) != 2045)
+            if (GetAid11(index) != MULTISTA_BA_UNASSOC_STA_AID11)
             {
-                if (!m_baInfo[index].m_bitmap.empty())
+                if (!m_baInfo[index].m_bitmapOrFeedback.empty())
                 {
                     i.WriteHtolsbU16(GetStartingSequenceControl(index));
                     i = SerializeBitmap(i, index);
@@ -526,12 +542,12 @@ CtrlBAckResponseHeader::Deserialize(Buffer::Iterator start)
 
             m_baInfo.back().m_aidTidInfo = i.ReadLsbtohU16();
 
-            if (GetAid11(index) != 2045)
+            if (GetAid11(index) != MULTISTA_BA_UNASSOC_STA_AID11)
             {
-                // the Block Ack Starting Sequence Control and Block Ack Bitmap subfields
-                // are only present in Block acknowledgement context, i.e., if the Ack Type
-                // subfield is set to 0 and the TID subfield is set to a value from 0 to 7.
-                if (!GetAckType(index) && GetTidInfo(index) < 8)
+                // the Block Ack Starting Sequence Control subfield and either the Block Ack Bitmap
+                // or the Feedback subfields are only present when the Ack Type subfield is set to 0
+                // (Table 9-39 802.11bn D1.0)
+                if (!GetAckType(index))
                 {
                     SetStartingSequenceControl(i.ReadLsbtohU16(), index);
                     i = DeserializeBitmap(i, index);
@@ -574,8 +590,8 @@ CtrlBAckResponseHeader::SetType(BlockAckType type)
     for (auto& bitmapLen : m_baType.m_bitmapLen)
     {
         BaInfoInstance baInfoInstance{.m_aidTidInfo = 0,
-                                      .m_startingSeq = 0,
-                                      .m_bitmap = std::vector<uint8_t>(bitmapLen, 0),
+                                      .m_startSeqCtrlUpper12 = 0,
+                                      .m_bitmapOrFeedback = std::vector<uint8_t>(bitmapLen, 0),
                                       .m_address = Mac48Address()};
 
         m_baInfo.emplace_back(baInfoInstance);
@@ -606,13 +622,113 @@ CtrlBAckResponseHeader::SetTidInfo(uint8_t tid, std::size_t index)
 }
 
 void
+CtrlBAckResponseHeader::SetPerAidTidInfoContext(MultiStaBaContext context, std::size_t index)
+{
+    NS_ABORT_MSG_IF(GetAid11(index) == MULTISTA_BA_UNASSOC_STA_AID11,
+                    "Context is defined if AID11 is not " << MULTISTA_BA_UNASSOC_STA_AID11);
+
+    using enum MultiStaBaContext;
+
+    switch (context)
+    {
+    case BLOCK_ACK:
+        SetAckType(false, index);
+        break;
+    case ACKNOWLEDGMENT:
+        SetAckType(true, index);
+        break;
+    case FEEDBACK:
+        SetAckType(false, index);
+        SetTidInfo(13, index);
+        break;
+    case ICR:
+        SetAckType(true, index);
+        SetTidInfo(13, index);
+        break;
+    case ALL_ACK:
+        SetAckType(true, index);
+        SetTidInfo(14, index);
+        break;
+    case MGT_FRAME_ACK:
+        SetAckType(true, index);
+        SetTidInfo(15, index);
+        break;
+    default:
+        NS_ABORT_MSG("Cannot set context " << context);
+    }
+}
+
+MultiStaBaContext
+CtrlBAckResponseHeader::GetPerAidTidInfoContext(std::size_t index) const
+{
+    NS_ABORT_MSG_IF(GetAid11(index) == MULTISTA_BA_UNASSOC_STA_AID11,
+                    "Context is defined if AID11 is not " << MULTISTA_BA_UNASSOC_STA_AID11);
+
+    const auto ackType = GetAckType(index) ? 1 : 0;
+    const auto tid = GetTidInfo(index);
+
+    // Table 9-39 of 802.11bn D1.0
+    if (ackType == 0 && tid <= 7)
+    {
+        return MultiStaBaContext::BLOCK_ACK;
+    }
+    if (ackType == 1 && tid <= 7)
+    {
+        return MultiStaBaContext::ACKNOWLEDGMENT;
+    }
+    if (ackType == 0 && tid == 13)
+    {
+        return MultiStaBaContext::FEEDBACK;
+    }
+    if (ackType == 1 && tid == 13)
+    {
+        return MultiStaBaContext::ICR;
+    }
+    if (ackType == 1 && tid == 14)
+    {
+        return MultiStaBaContext::ALL_ACK;
+    }
+    if (ackType == 1 && tid == 15)
+    {
+        return MultiStaBaContext::MGT_FRAME_ACK;
+    }
+    return MultiStaBaContext::RESERVED;
+}
+
+void
 CtrlBAckResponseHeader::SetStartingSequence(uint16_t seq, std::size_t index)
 {
     NS_ASSERT_MSG(m_baType.m_variant == BlockAckType::MULTI_STA || index == 0,
                   "index can only be non null for Multi-STA Block Ack");
     NS_ASSERT(index < m_baInfo.size());
+    if (m_baType.m_variant == BlockAckType::MULTI_STA)
+    {
+        const auto ackType = GetAckType(index);
+        const auto context = GetPerAidTidInfoContext(index);
+        NS_ABORT_MSG_UNLESS(
+            !ackType && context != MultiStaBaContext::FEEDBACK,
+            "The Starting Sequence Number subfield in a Multi-STA Block Ack is only present if the "
+            "AID11 subfield is not "
+                << MULTISTA_BA_UNASSOC_STA_AID11 << ", the Ack Type subfield (" << ackType
+                << ") is zero and the Per AID TID Info subfield context (" << context
+                << ") is not FEEDBACK");
+    }
+    m_baInfo[index].m_startSeqCtrlUpper12 = seq;
+}
 
-    m_baInfo[index].m_startingSeq = seq;
+void
+CtrlBAckResponseHeader::SetFeedbackType(MultiStaBaFeedback feedback, std::size_t index)
+{
+    NS_ASSERT(m_baType.m_variant == BlockAckType::MULTI_STA);
+    NS_ASSERT(index < m_baInfo.size());
+    const auto context = GetPerAidTidInfoContext(index);
+    NS_ABORT_MSG_UNLESS(
+        context == MultiStaBaContext::FEEDBACK,
+        "The Feedback Type subfield in a Multi-STA Block Ack is only present if the "
+        "AID11 subfield is not "
+            << MULTISTA_BA_UNASSOC_STA_AID11 << " and the Per AID TID Info subfield context ("
+            << context << ") is FEEDBACK");
+    m_baInfo[index].m_startSeqCtrlUpper12 = (static_cast<uint8_t>(feedback) & 0x0f) << 8;
 }
 
 bool
@@ -648,7 +764,70 @@ CtrlBAckResponseHeader::GetStartingSequence(std::size_t index) const
                   "index can only be non null for Multi-STA Block Ack");
     NS_ASSERT(index < m_baInfo.size());
 
-    return m_baInfo[index].m_startingSeq;
+    return m_baInfo[index].m_startSeqCtrlUpper12;
+}
+
+MultiStaBaFeedback
+CtrlBAckResponseHeader::GetFeedbackType(std::size_t index) const
+{
+    NS_ASSERT(m_baType.m_variant == BlockAckType::MULTI_STA);
+    NS_ASSERT(index < m_baInfo.size());
+    const auto context = GetPerAidTidInfoContext(index);
+    NS_ABORT_MSG_UNLESS(
+        context == MultiStaBaContext::FEEDBACK,
+        "The Feedback Type subfield in a Multi-STA Block Ack is only present if the "
+        "AID11 subfield is not "
+            << MULTISTA_BA_UNASSOC_STA_AID11 << " and the Per AID TID Info subfield context ("
+            << context << ") is FEEDBACK");
+
+    return static_cast<MultiStaBaFeedback>(m_baInfo[index].m_startSeqCtrlUpper12 >> 8);
+}
+
+void
+CtrlBAckResponseHeader::SetStaUnavailable(const WifiUnavailPeriod& unavailPeriod,
+                                          bool& indefinite,
+                                          std::size_t index)
+{
+    NS_ASSERT(GetFeedbackType(index) == MultiStaBaFeedback::UNAVAILABILITY);
+
+    const auto len = m_baInfo[index].m_bitmapOrFeedback.size();
+    NS_ASSERT_MSG(len == 4, "Unexpected Feedback length (" << len << " octets)");
+
+    NS_ASSERT_MSG(!unavailPeriod.end.has_value() || *unavailPeriod.end > unavailPeriod.start,
+                  "The duration of the unavailability period must be strictly positive");
+
+    const auto encoding = EncodeUnavailPeriod(unavailPeriod, indefinite);
+
+    m_baInfo[index].m_bitmapOrFeedback[0] = (encoding & 0xff);
+    m_baInfo[index].m_bitmapOrFeedback[1] = (encoding >> 8) & 0xff;
+    m_baInfo[index].m_bitmapOrFeedback[2] = (encoding >> 16) & 0xff;
+    m_baInfo[index].m_bitmapOrFeedback[3] = 0;
+}
+
+void
+CtrlBAckResponseHeader::SetStaAvailable(std::size_t index)
+{
+    NS_ASSERT(GetFeedbackType(index) == MultiStaBaFeedback::UNAVAILABILITY);
+
+    const auto len = m_baInfo[index].m_bitmapOrFeedback.size();
+    NS_ASSERT_MSG(len == 4, "Unexpected Feedback length (" << len << " octets)");
+
+    m_baInfo[index].m_bitmapOrFeedback.assign(4, 0);
+}
+
+std::optional<WifiUnavailPeriod>
+CtrlBAckResponseHeader::GetUnavailability(std::size_t index) const
+{
+    NS_ASSERT(GetFeedbackType(index) == MultiStaBaFeedback::UNAVAILABILITY);
+
+    const auto len = m_baInfo[index].m_bitmapOrFeedback.size();
+    NS_ASSERT_MSG(len == 4, "Unexpected Feedback length (" << len << " octets)");
+
+    const uint32_t encoding = m_baInfo[index].m_bitmapOrFeedback[0] |
+                              (m_baInfo[index].m_bitmapOrFeedback[1] << 8) |
+                              (m_baInfo[index].m_bitmapOrFeedback[2] << 16);
+
+    return DecodeUnavailPeriod(encoding);
 }
 
 bool
@@ -725,7 +904,7 @@ CtrlBAckResponseHeader::GetAckType(std::size_t index) const
 void
 CtrlBAckResponseHeader::SetUnassociatedStaAddress(const Mac48Address& ra, std::size_t index)
 {
-    NS_ASSERT(GetAid11(index) == 2045);
+    NS_ASSERT(GetAid11(index) == MULTISTA_BA_UNASSOC_STA_AID11);
 
     m_baInfo[index].m_address = ra;
 }
@@ -733,7 +912,7 @@ CtrlBAckResponseHeader::SetUnassociatedStaAddress(const Mac48Address& ra, std::s
 Mac48Address
 CtrlBAckResponseHeader::GetUnassociatedStaAddress(std::size_t index) const
 {
-    NS_ASSERT(GetAid11(index) == 2045);
+    NS_ASSERT(GetAid11(index) == MULTISTA_BA_UNASSOC_STA_AID11);
 
     return m_baInfo[index].m_address;
 }
@@ -859,7 +1038,7 @@ CtrlBAckResponseHeader::GetStartingSequenceControl(std::size_t index) const
                   "index can only be non null for Multi-STA Block Ack");
     NS_ASSERT(index < m_baInfo.size());
 
-    uint16_t ret = (m_baInfo[index].m_startingSeq << 4) & 0xfff0;
+    uint16_t ret = (m_baInfo[index].m_startSeqCtrlUpper12 << 4) & 0xfff0;
 
     // The Fragment Number subfield encodes the length of the bitmap for Compressed and Multi-STA
     // variants (see sections 9.3.1.8.2 and 9.3.1.8.7 of 802.11ax-2021 and 802.11be Draft 4.0).
@@ -887,7 +1066,7 @@ CtrlBAckResponseHeader::GetStartingSequenceControl(std::size_t index) const
     else if (m_baType.m_variant == BlockAckType::MULTI_STA)
     {
         NS_ASSERT(m_baInfo.size() == m_baType.m_bitmapLen.size());
-        NS_ASSERT_MSG(!m_baInfo[index].m_bitmap.empty(),
+        NS_ASSERT_MSG(!m_baInfo[index].m_bitmapOrFeedback.empty(),
                       "This Per AID TID Info subfield has no Starting Sequence Control subfield");
 
         switch (m_baType.m_bitmapLen[index])
@@ -986,10 +1165,10 @@ CtrlBAckResponseHeader::SetStartingSequenceControl(uint16_t seqControl, std::siz
             NS_ABORT_MSG("Unsupported fragment number: " << fragNumber);
         }
         m_baType.m_bitmapLen[index] = bitmapLen;
-        m_baInfo[index].m_bitmap.assign(bitmapLen, 0);
+        m_baInfo[index].m_bitmapOrFeedback.assign(bitmapLen, 0);
     }
 
-    m_baInfo[index].m_startingSeq = (seqControl >> 4) & 0x0fff;
+    m_baInfo[index].m_startSeqCtrlUpper12 = (seqControl >> 4) & 0x0fff;
 }
 
 Buffer::Iterator
@@ -1007,7 +1186,7 @@ CtrlBAckResponseHeader::SerializeBitmap(Buffer::Iterator start, std::size_t inde
     case BlockAckType::EXTENDED_COMPRESSED:
     case BlockAckType::GCR:
     case BlockAckType::MULTI_STA:
-        for (const auto& byte : m_baInfo[index].m_bitmap)
+        for (const auto& byte : m_baInfo[index].m_bitmapOrFeedback)
         {
             i.WriteU8(byte);
         }
@@ -1039,7 +1218,7 @@ CtrlBAckResponseHeader::DeserializeBitmap(Buffer::Iterator start, std::size_t in
     case BlockAckType::MULTI_STA:
         for (uint8_t j = 0; j < m_baType.m_bitmapLen[index]; j++)
         {
-            m_baInfo[index].m_bitmap[j] = i.ReadU8();
+            m_baInfo[index].m_bitmapOrFeedback[j] = i.ReadU8();
         }
         break;
     case BlockAckType::MULTI_TID:
@@ -1068,14 +1247,14 @@ CtrlBAckResponseHeader::SetReceivedPacket(uint16_t seq, std::size_t index)
     case BlockAckType::BASIC:
         /* To set correctly basic block ack bitmap we need fragment number too.
             So if it's not specified, we consider packet not fragmented. */
-        m_baInfo[index].m_bitmap[IndexInBitmap(seq) * 2] |= 0x01;
+        m_baInfo[index].m_bitmapOrFeedback[IndexInBitmap(seq) * 2] |= 0x01;
         break;
     case BlockAckType::COMPRESSED:
     case BlockAckType::EXTENDED_COMPRESSED:
     case BlockAckType::GCR:
     case BlockAckType::MULTI_STA: {
         uint16_t i = IndexInBitmap(seq, index);
-        m_baInfo[index].m_bitmap[i / 8] |= (uint8_t(0x01) << (i % 8));
+        m_baInfo[index].m_bitmapOrFeedback[i / 8] |= (uint8_t(0x01) << (i % 8));
         break;
     }
     case BlockAckType::MULTI_TID:
@@ -1098,7 +1277,7 @@ CtrlBAckResponseHeader::SetReceivedFragment(uint16_t seq, uint8_t frag)
     switch (m_baType.m_variant)
     {
     case BlockAckType::BASIC:
-        m_baInfo[0].m_bitmap[IndexInBitmap(seq) * 2 + frag / 8] |= (0x01 << (frag % 8));
+        m_baInfo[0].m_bitmapOrFeedback[IndexInBitmap(seq) * 2 + frag / 8] |= (0x01 << (frag % 8));
         break;
     case BlockAckType::COMPRESSED:
     case BlockAckType::EXTENDED_COMPRESSED:
@@ -1144,7 +1323,7 @@ CtrlBAckResponseHeader::IsPacketReceived(uint16_t seq, std::size_t index) const
     case BlockAckType::MULTI_STA: {
         uint16_t i = IndexInBitmap(seq, index);
         uint8_t mask = uint8_t(0x01) << (i % 8);
-        return (m_baInfo[index].m_bitmap[i / 8] & mask) != 0;
+        return (m_baInfo[index].m_bitmapOrFeedback[i / 8] & mask) != 0;
     }
     case BlockAckType::MULTI_TID:
         NS_FATAL_ERROR("Multi-tid block ack is not supported.");
@@ -1167,8 +1346,8 @@ CtrlBAckResponseHeader::IsFragmentReceived(uint16_t seq, uint8_t frag) const
     switch (m_baType.m_variant)
     {
     case BlockAckType::BASIC:
-        return (m_baInfo[0].m_bitmap[IndexInBitmap(seq) * 2 + frag / 8] & (0x01 << (frag % 8))) !=
-               0;
+        return (m_baInfo[0].m_bitmapOrFeedback[IndexInBitmap(seq) * 2 + frag / 8] &
+                (0x01 << (frag % 8))) != 0;
     case BlockAckType::COMPRESSED:
     case BlockAckType::EXTENDED_COMPRESSED:
     case BlockAckType::GCR:
@@ -1192,13 +1371,13 @@ uint16_t
 CtrlBAckResponseHeader::IndexInBitmap(uint16_t seq, std::size_t index) const
 {
     uint16_t i;
-    if (seq >= m_baInfo[index].m_startingSeq)
+    if (seq >= m_baInfo[index].m_startSeqCtrlUpper12)
     {
-        i = seq - m_baInfo[index].m_startingSeq;
+        i = seq - m_baInfo[index].m_startSeqCtrlUpper12;
     }
     else
     {
-        i = SEQNO_SPACE_SIZE - m_baInfo[index].m_startingSeq + seq;
+        i = SEQNO_SPACE_SIZE - m_baInfo[index].m_startSeqCtrlUpper12 + seq;
     }
 
     uint16_t nAckedMpdus = m_baType.m_bitmapLen[index] * 8;
@@ -1226,7 +1405,7 @@ CtrlBAckResponseHeader::IsInBitmap(uint16_t seq, std::size_t index) const
         nAckedMpdus = nAckedMpdus / 16;
     }
 
-    return (seq - m_baInfo[index].m_startingSeq + SEQNO_SPACE_SIZE) % SEQNO_SPACE_SIZE <
+    return (seq - m_baInfo[index].m_startSeqCtrlUpper12 + SEQNO_SPACE_SIZE) % SEQNO_SPACE_SIZE <
            nAckedMpdus;
 }
 
@@ -1237,7 +1416,7 @@ CtrlBAckResponseHeader::GetBitmap(std::size_t index) const
                   "index can only be non null for Multi-STA Block Ack");
     NS_ASSERT(index < m_baInfo.size());
 
-    return m_baInfo[index].m_bitmap;
+    return m_baInfo[index].m_bitmapOrFeedback;
 }
 
 void
@@ -1247,7 +1426,7 @@ CtrlBAckResponseHeader::ResetBitmap(std::size_t index)
                   "index can only be non null for Multi-STA Block Ack");
     NS_ASSERT(index < m_baInfo.size());
 
-    m_baInfo[index].m_bitmap.assign(m_baType.m_bitmapLen[index], 0);
+    m_baInfo[index].m_bitmapOrFeedback.assign(m_baType.m_bitmapLen[index], 0);
 }
 
 /***********************************
@@ -2940,6 +3119,48 @@ CtrlTriggerHeader::IsValid() const
         prevRus.push_back(ui.GetRuAllocation());
     }
     return true;
+}
+
+std::ostream&
+operator<<(std::ostream& os, MultiStaBaContext context)
+{
+    switch (context)
+    {
+    case MultiStaBaContext::BLOCK_ACK:
+        return os << "BLOCK_ACK";
+    case MultiStaBaContext::ACKNOWLEDGMENT:
+        return os << "ACKNOWLEDGMENT";
+    case MultiStaBaContext::FEEDBACK:
+        return os << "FEEDBACK";
+    case MultiStaBaContext::ICR:
+        return os << "ICR";
+    case MultiStaBaContext::ALL_ACK:
+        return os << "ALL_ACK";
+    case MultiStaBaContext::MGT_FRAME_ACK:
+        return os << "MGT_FRAME_ACK";
+    case MultiStaBaContext::RESERVED:
+        return os << "RESERVED";
+    };
+    return os << "UNKNOWN(" << static_cast<uint16_t>(context) << ")";
+}
+
+std::ostream&
+operator<<(std::ostream& os, MultiStaBaFeedback feedback)
+{
+    switch (feedback)
+    {
+    case MultiStaBaFeedback::UNAVAILABILITY:
+        return os << "UNAVAILABILITY";
+    case MultiStaBaFeedback::LOW_LATENCY:
+        return os << "LOW_LATENCY";
+    case MultiStaBaFeedback::CO_BF:
+        return os << "CO_BF";
+    case MultiStaBaFeedback::CO_TDMA:
+        return os << "CO_TDMA";
+    case MultiStaBaFeedback::CO_SR:
+        return os << "CO_SR";
+    };
+    return os << "UNKNOWN(" << static_cast<uint16_t>(feedback) << ")";
 }
 
 } // namespace ns3

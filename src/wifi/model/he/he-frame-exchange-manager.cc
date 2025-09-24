@@ -2587,16 +2587,18 @@ HeFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
             {
                 uint8_t tid = blockAck.GetTidInfo(index);
 
-                if (blockAck.GetAckType(index) && tid < 8)
+                if (const auto context = blockAck.GetPerAidTidInfoContext(index);
+                    context == MultiStaBaContext::ACKNOWLEDGMENT)
                 {
                     // Acknowledgment context
                     NS_ABORT_IF(m_psduMap.empty() || m_psduMap.begin()->first != staId);
                     GetBaManager(tid)->NotifyGotAck(m_linkId, *m_psduMap.at(staId)->begin());
                 }
-                else
+                else if (context == MultiStaBaContext::BLOCK_ACK ||
+                         context == MultiStaBaContext::ALL_ACK)
                 {
                     // Block Acknowledgment or All-ack context
-                    if (blockAck.GetAckType(index) && tid == 14)
+                    if (context == MultiStaBaContext::ALL_ACK)
                     {
                         // All-ack context, we need to determine the actual TID(s) of the PSDU
                         NS_ASSERT(indices.size() == 1);

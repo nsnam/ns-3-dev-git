@@ -187,6 +187,33 @@ class CtrlBAckRequestHeader : public Header
 };
 
 /**
+ * Enumerates the contexts of a Per AID TID Info subfield of a Multi-STA BlockAck if the
+ * AID11 subfield is not 2045.
+ */
+enum class MultiStaBaContext : uint8_t
+{
+    BLOCK_ACK = 0,
+    ACKNOWLEDGMENT,
+    FEEDBACK,
+    ICR,
+    ALL_ACK,
+    MGT_FRAME_ACK,
+    RESERVED
+};
+
+/**
+ * Enumerates the feedback types of a Feedback Per AID TID Info subfield of a Multi-STA Block Ack.
+ */
+enum class MultiStaBaFeedback : uint8_t
+{
+    UNAVAILABILITY = 0,
+    LOW_LATENCY = 1,
+    CO_BF = 2,
+    CO_TDMA = 3,
+    CO_SR = 4
+};
+
+/**
  * @ingroup wifi
  * @brief Headers for BlockAck response.
  *
@@ -204,7 +231,7 @@ class CtrlBAckResponseHeader : public Header
 {
   public:
     CtrlBAckResponseHeader();
-    ~CtrlBAckResponseHeader() override;
+
     /**
      * @brief Get the type ID.
      * @return the object TypeId
@@ -239,15 +266,26 @@ class CtrlBAckResponseHeader : public Header
      */
     void SetTidInfo(uint8_t tid, std::size_t index = 0);
     /**
-     * For Block Ack variants other than Multi-STA Block Ack, set the starting sequence
-     * number to the given value. For Multi-STA Block Acks, set the starting sequence
-     * number in the Per AID TID Info subfield identified by the given index to the
-     * given value.
+     * For Block Ack variants other than Multi-STA Block Ack, set the Starting Sequence Number
+     * subfield of the Block Ack Starting Sequence Control subfield to the given value. For
+     * Multi-STA Block Acks, set the Starting Sequence Number subfield of the Block Ack Starting
+     * Sequence Control subfield of the Acknowledgment Per AID TID Info subfield identified by the
+     * given index to the given value.
      *
      * @param seq the starting sequence number
      * @param index the index of the Per AID TID Info subfield (Multi-STA Block Ack only)
      */
     void SetStartingSequence(uint16_t seq, std::size_t index = 0);
+
+    /**
+     * For Multi-STA Block Acks, set the Feedback Type subfield of the Feedback Per AID TID Info
+     * subfield identified by the given index to the given value.
+     *
+     * @param feedback the feedback type
+     * @param index the index of the Per AID TID Info subfield
+     */
+    void SetFeedbackType(MultiStaBaFeedback feedback, std::size_t index);
+
     /**
      * Set the GCR Group address (GCR variant only).
      *
@@ -287,6 +325,49 @@ class CtrlBAckResponseHeader : public Header
      * @return the starting sequence number
      */
     uint16_t GetStartingSequence(std::size_t index = 0) const;
+
+    /**
+     * For Multi-STA Block Acks, get the Feedback Type subfield of the Feedback Per AID TID Info
+     * subfield identified by the given index to the given value.
+     *
+     * @param index the index of the Per AID TID Info subfield
+     * @return the feedback type
+     */
+    MultiStaBaFeedback GetFeedbackType(std::size_t index) const;
+
+    /**
+     * For Multi-STA Block Acks, set the Feedback subfield of the Feedback Per AID TID Info subfield
+     * identified by the given index, if the feedback type is unavailability, to indicate that the
+     * STA is unavailable for the given period of time.
+     *
+     * @param[in] unavailPeriod the time period during which the STA will be unavailable
+     * @param[out] indefinite whether the unavailability period is considered to have an indefinite
+     *             duration of time (because the resulting duration cannot be encoded in the
+     *             Unavailability Duration field)
+     * @param[in] index the index of the Per AID TID Info subfield
+     */
+    void SetStaUnavailable(const WifiUnavailPeriod& unavailPeriod,
+                           bool& indefinite,
+                           std::size_t index);
+
+    /**
+     * For Multi-STA Block Acks, set the Feedback subfield of the Feedback Per AID TID Info subfield
+     * identified by the given index, if the feedback type is unavailability, to indicate that the
+     * STA is available.
+     *
+     * @param[in] index the index of the Per AID TID Info subfield
+     */
+    void SetStaAvailable(std::size_t index);
+
+    /**
+     * @param index the index of the Per AID TID Info subfield
+     * @return the unavailability period encoded in the Feedback subfield of the Feedback Per AID
+     *         TID Info subfield identified by the given index, or a null value if such a field
+     *         indicates that the STA is available. It is required that the feedback type is
+     *         unavailability
+     */
+    std::optional<WifiUnavailPeriod> GetUnavailability(std::size_t index) const;
+
     /**
      * @return the GCR Group Address (GCR variant only)
      */
@@ -366,6 +447,25 @@ class CtrlBAckResponseHeader : public Header
      * @return the MAC address stored in the RA subfield
      */
     Mac48Address GetUnassociatedStaAddress(std::size_t index) const;
+
+    /**
+     * For Multi-STA Block Acks, set the context of the Per AID TID Info subfield identified by
+     * the given index, if the AID11 subfield is not 2045.
+     *
+     * @param context the context to set
+     * @param index the index of the Per AID TID Info subfield
+     */
+    void SetPerAidTidInfoContext(MultiStaBaContext context, std::size_t index);
+
+    /**
+     * For Multi-STA Block Acks, get the context of the Per AID TID Info subfield identified by
+     * the given index, if the AID11 subfield is not 2045.
+     *
+     * @param index the index of the Per AID TID Info subfield
+     * @return the context of the Per AID TID Info subfield
+     */
+    MultiStaBaContext GetPerAidTidInfoContext(std::size_t index) const;
+
     /**
      * For Multi-STA Block Acks, get the number of Per AID TID Info subfields
      * included in this Block Ack.
@@ -526,9 +626,9 @@ class CtrlBAckResponseHeader : public Header
      * For now only non HT immediate block ack is implemented so this field
      * is here only for a future implementation of HT delayed variant.
      */
-    bool m_baAckPolicy;    ///< BA Ack Policy
-    BlockAckType m_baType; ///< BA type
-    uint16_t m_tidInfo;    ///< TID info (reserved if Multi-STA Block Ack)
+    bool m_baAckPolicy{false}; ///< BA Ack Policy
+    BlockAckType m_baType;     ///< BA type
+    uint16_t m_tidInfo{};      ///< TID info (reserved if Multi-STA Block Ack)
 
     /**
      * The following structure can hold the BA Information field for the Basic and
@@ -540,14 +640,14 @@ class CtrlBAckResponseHeader : public Header
      */
     struct BaInfoInstance
     {
-        uint16_t m_aidTidInfo;         //!< Reserved for Basic and Compressed
-                                       //!< Per TID Info subfield for Multi-TID
-                                       //!< AID TID Info subfield for Multi-STA
-        uint16_t m_startingSeq;        //!< Block Ack Starting Sequence Control subfield
-        std::vector<uint8_t> m_bitmap; //!< block ack bitmap
-        Mac48Address m_address;        //!< RA subfield (address of an unassociated station) for
-                                       //!< Multi-STA variant; GCR Group Address subfield for GCR
-                                       //!< variant; reserved for other variants
+        uint16_t m_aidTidInfo;          //!< Reserved for Basic and Compressed
+                                        //!< Per TID Info subfield for Multi-TID
+                                        //!< AID TID Info subfield for Multi-STA
+        uint16_t m_startSeqCtrlUpper12; //!< Block Ack Starting Sequence Control subfield (12 MSBs)
+        std::vector<uint8_t> m_bitmapOrFeedback; //!< block ack bitmap or feedback
+        Mac48Address m_address; //!< RA subfield (address of an unassociated station) for
+                                //!< Multi-STA variant; GCR Group Address subfield for GCR
+                                //!< variant; reserved for other variants
     };
 
     std::vector<BaInfoInstance> m_baInfo; //!< BA Information field
@@ -1605,6 +1705,22 @@ class CtrlTriggerHeader : public Header
      */
     std::list<CtrlTriggerUserInfoField> m_userInfoFields; //!< list of User Info fields
 };
+
+/**
+ * @brief Stream insertion operator.
+ * @param [in] os The reference to the output stream.
+ * @param [in] context the Per AID TID Info subfield context.
+ * @return The reference to the output stream.
+ */
+std::ostream& operator<<(std::ostream& os, MultiStaBaContext context);
+
+/**
+ * @brief Stream insertion operator.
+ * @param [in] os The reference to the output stream.
+ * @param [in] feedback the Feedback Per AID TID Info subfield type.
+ * @return The reference to the output stream.
+ */
+std::ostream& operator<<(std::ostream& os, MultiStaBaFeedback feedback);
 
 } // namespace ns3
 
