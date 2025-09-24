@@ -181,6 +181,8 @@ HwmpProtocol::DoInitialize()
     if (m_isRoot)
     {
         Time randomStart = Seconds(m_coefficient->GetValue());
+        NS_LOG_INFO("Root is starting proactive PREQ timer to expire at "
+                    << randomStart.As(Time::S));
         m_proactivePreqTimer =
             Simulator::Schedule(randomStart, &HwmpProtocol::SendProactivePreq, this);
     }
@@ -412,7 +414,7 @@ HwmpProtocol::ReceivePreq(IePreq preq,
 {
     NS_LOG_FUNCTION(this << from << interface << fromMp << metric);
     preq.IncrementMetric(metric);
-    // acceptance cretirea:
+    // acceptance criteria:
     auto i = m_hwmpSeqnoMetricDatabase.find(preq.GetOriginatorAddress());
     bool freshInfo(true);
     if (i != m_hwmpSeqnoMetricDatabase.end())
@@ -598,7 +600,7 @@ HwmpProtocol::ReceivePrep(IePrep prep,
 {
     NS_LOG_FUNCTION(this << from << interface << fromMp << metric);
     prep.IncrementMetric(metric);
-    // acceptance cretirea:
+    // acceptance criteria:
     auto i = m_hwmpSeqnoMetricDatabase.find(prep.GetOriginatorAddress());
     bool freshInfo(true);
     uint32_t sequence = prep.GetDestinationSeqNumber();
@@ -705,7 +707,7 @@ HwmpProtocol::ReceivePerr(std::vector<FailedDestination> destinations,
                           Mac48Address fromMp)
 {
     NS_LOG_FUNCTION(this << from << interface << fromMp);
-    // Acceptance cretirea:
+    // Acceptance criteria:
     NS_LOG_DEBUG("I am " << GetAddress() << ", received PERR from " << from);
     std::vector<FailedDestination> retval;
     HwmpRtable::LookupResult result;
@@ -735,6 +737,8 @@ HwmpProtocol::SendPrep(Mac48Address src,
                        uint32_t lifetime,
                        uint32_t interface)
 {
+    NS_LOG_FUNCTION(this << src << dst << retransmitter << initMetric << originatorDsn
+                         << destinationSN << lifetime << interface);
     IePrep prep;
     prep.SetHopcount(0);
     prep.SetTtl(m_maxTtl);
