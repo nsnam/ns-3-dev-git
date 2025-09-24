@@ -256,7 +256,6 @@ QosTxop::GetMinCw(uint8_t linkId) const
     {
         return GetLink(linkId).cwMin;
     }
-    NS_ASSERT(!EdcaDisabled(linkId));
     return GetLink(linkId).muCwMin;
 }
 
@@ -267,7 +266,6 @@ QosTxop::GetMaxCw(uint8_t linkId) const
     {
         return GetLink(linkId).cwMax;
     }
-    NS_ASSERT(!EdcaDisabled(linkId));
     return GetLink(linkId).muCwMax;
 }
 
