@@ -21,6 +21,7 @@
 #include <algorithm>
 #include <map>
 #include <memory>
+#include <optional>
 #include <unordered_map>
 #include <vector>
 
@@ -411,6 +412,16 @@ class ChannelAccessManager : public Object
                                   const WifiPhyOperatingChannel& channel,
                                   uint8_t linkId);
 
+    /**
+     * Notify an upcoming channel switch to or from the given DSO subchannel. This notification is
+     * sent by the DSO Manager when it switches the operating channel to operate to or from a DSO
+     * subchannel.
+     *
+     * @param channel the new operating channel of the given PHY
+     * @param isSwitchBack whether the PHY is switching back to the primary subband
+     */
+    void NotifySwitchingDsoSubchannel(const WifiPhyOperatingChannel& channel, bool isSwitchBack);
+
   protected:
     void DoInitialize() override;
     void DoDispose() override;
@@ -573,8 +584,25 @@ class ChannelAccessManager : public Object
         uint8_t linkId; //!< ID of the EMLSR link on which the PHY is going to operate
     };
 
+    /// Information that the PHY is going to switch to or from a DSO subchannel
+    struct DsoSubchannelSwitchInfo
+    {
+        WifiPhyOperatingChannel channel; //!< new operating channel
+        /**
+         * Enumeration which indicates whether the PHY is switching to or from a DSO subchannel
+         */
+        enum class DsoSwitchType
+        {
+            TO_DSO,
+            FROM_DSO
+        } switchType; //!< whether the PHY is switching to or from a DSO subchannel
+    };
+
     /// Store information about the PHY objects that are going to operate on another EMLSR link
     std::unordered_map<Ptr<WifiPhy>, EmlsrLinkSwitchInfo> m_switchingEmlsrLinks;
+
+    /// Store information about upcoming switch to or from a DSO subchannel
+    std::optional<DsoSubchannelSwitchInfo> m_switchingDsoSubchannel;
 
     /// Maps each PHY listener to the associated PHY
     using PhyListenerMap = std::unordered_map<Ptr<WifiPhy>, std::shared_ptr<PhyListener>>;

@@ -12,7 +12,8 @@
 #include "uhr-frame-exchange-manager.h"
 
 #include "ns3/abort.h"
-#include "ns3/boolean.h"
+#include "ns3/callback.h"
+#include "ns3/channel-access-manager.h"
 #include "ns3/eht-configuration.h"
 #include "ns3/eht-operation.h"
 #include "ns3/he-operation.h"
@@ -246,6 +247,13 @@ DsoManager::SwitchPhyChannel(uint8_t linkId,
                         << initialDelay.As(Time::US)
                         << ") should be shorter than the DSO channel switch back delay ("
                         << m_dsoSwitchBackDelay.As(Time::US) << ")");
+
+    // We cannot simply set the new channel, because otherwise the MAC will perform some reset.
+    // We need to inform the MAC (via the Channel Access Manager) that this channel switch must not
+    // have such a consequence and a snapshot of its states has to be stored/restored.
+    auto cam = m_staMac->GetChannelAccessManager(linkId);
+    const auto isSwitchBack = (channel == GetPrimarySubband(linkId));
+    cam->NotifySwitchingDsoSubchannel(channel, isSwitchBack);
 
     // switch channel within the provided delay
     phy->SetAttribute("ChannelSwitchDelay", TimeValue(delay));

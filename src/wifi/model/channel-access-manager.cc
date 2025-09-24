@@ -363,6 +363,18 @@ ChannelAccessManager::NotifySwitchingEmlsrLink(Ptr<WifiPhy> phy,
 }
 
 void
+ChannelAccessManager::NotifySwitchingDsoSubchannel(const WifiPhyOperatingChannel& channel,
+                                                   bool isSwitchBack)
+{
+    NS_LOG_FUNCTION(this << channel << isSwitchBack);
+    NS_ASSERT_MSG(!m_switchingDsoSubchannel, "Another DSO subchannel switch is already expected");
+    using enum DsoSubchannelSwitchInfo::DsoSwitchType;
+    m_switchingDsoSubchannel.emplace(
+        DsoSubchannelSwitchInfo{.channel = channel,
+                                .switchType = isSwitchBack ? FROM_DSO : TO_DSO});
+}
+
+void
 ChannelAccessManager::SetLinkId(uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << +linkId);
@@ -1205,7 +1217,6 @@ ChannelAccessManager::NotifySwitchingStartNow(PhyListener* phyListener, Time dur
     if (phyListener) // to make tests happy
     {
         // check if the PHY switched channel to operate on another EMLSR link
-
         for (const auto& [phyRef, listener] : m_phyListeners)
         {
             Ptr<WifiPhy> phy = phyRef;
@@ -1225,6 +1236,18 @@ ChannelAccessManager::NotifySwitchingStartNow(PhyListener* phyListener, Time dur
                 m_switchingEmlsrLinks.erase(emlsrInfoIt);
                 return;
             }
+        }
+
+        // check if the PHY switched channel to operate to or from a DSO subchannel
+        if (m_switchingDsoSubchannel &&
+            (m_phy->GetOperatingChannel() == m_switchingDsoSubchannel->channel))
+        {
+            using enum DsoSubchannelSwitchInfo::DsoSwitchType;
+            NS_LOG_DEBUG("Switching channel "
+                         << ((m_switchingDsoSubchannel->switchType == TO_DSO) ? "to" : "from")
+                         << " DSO subband");
+            m_switchingDsoSubchannel.reset();
+            return;
         }
     }
 
