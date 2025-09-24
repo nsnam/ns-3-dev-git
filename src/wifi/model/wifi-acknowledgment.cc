@@ -363,6 +363,10 @@ std::ostream&
 operator<<(std::ostream& os, const WifiAcknowledgment* acknowledgment)
 {
     acknowledgment->Print(os);
+    if (acknowledgment->acknowledgmentTime)
+    {
+        os << ", acknowledgment time: " << acknowledgment->acknowledgmentTime.value().As(Time::US);
+    }
     return os;
 }
 
