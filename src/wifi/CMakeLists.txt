@@ -461,6 +461,7 @@ build_lib(
     test/wifi-phy-mu-mimo-test.cc
     test/wifi-operating-channel-test.cc
     test/wifi-tx-stats-helper-test.cc
+    test/wifi-uhr-info-elems-test.cc
     ${applications_test_sources}
     test/wifi-traced-callback-typedef-test-suite.cc
   TEST_LIBRARIES_TO_LINK ${applications_lib}
