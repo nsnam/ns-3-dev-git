@@ -101,7 +101,8 @@ SOURCES = \
 # documentation formats (html, latex...) the following formats are supported:
 #  1) a single .dia file (preferred option, because it can be edited)
 #  2) a single .eps file
-#  3) both a .pdf and .png file
+#  3) a single .png file
+#  4) both a .pdf and .png file
 SOURCEFIGS = \
 	figures/testbed.dia \
 	figures/emulated-channel.dia \
