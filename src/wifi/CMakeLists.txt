@@ -450,4 +450,5 @@ build_lib(
     test/wifi-operating-channel-test.cc
     test/wifi-tx-stats-helper-test.cc
     test/wifi-p2p-test.cc
+    test/wifi-uhr-info-elems-test.cc
 )
