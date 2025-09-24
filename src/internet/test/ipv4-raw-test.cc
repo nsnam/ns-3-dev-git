@@ -24,7 +24,6 @@
 #include "ns3/ipv4-static-routing.h"
 #include "ns3/log.h"
 #include "ns3/node.h"
-#include "ns3/point-to-point-helper.h"
 #include "ns3/simple-channel.h"
 #include "ns3/simple-net-device-helper.h"
 #include "ns3/simple-net-device.h"
