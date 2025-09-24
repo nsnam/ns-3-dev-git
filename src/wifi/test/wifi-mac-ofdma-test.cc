@@ -1777,6 +1777,18 @@ OfdmaAckSequenceTest::CheckResults(Time sifs, Time slotTime, uint8_t aifsn)
                                   "Expected null Duration/ID for BlockAck");
         }
 
+        if (m_txopLimit == 0)
+        {
+            // the duration/ID of the DL MU PPDU covers the entire acknowledgment sequence
+            // dlMuNavEnd <= ackSequenceEnd < dlMuNavEnd + tolerance
+            NS_TEST_EXPECT_MSG_LT_OR_EQ(dlMuNavEnd,
+                                        m_txPsdus[33].endTx,
+                                        "Duration/ID in DL MU PPDU is too long");
+            NS_TEST_EXPECT_MSG_LT(m_txPsdus[33].endTx,
+                                  dlMuNavEnd + tolerance,
+                                  "Duration/ID in DL MU PPDU does not cover the ack sequence");
+        }
+
         nTxPsdus = 34;
     }
     else if (m_dlMuAckType == WifiAcknowledgment::DL_MU_TF_MU_BAR)
