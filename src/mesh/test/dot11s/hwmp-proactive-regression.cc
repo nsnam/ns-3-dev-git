@@ -13,6 +13,7 @@
 #include "ns3/internet-stack-helper.h"
 #include "ns3/ipv4-address-helper.h"
 #include "ns3/ipv4-interface-container.h"
+#include "ns3/log.h"
 #include "ns3/mesh-helper.h"
 #include "ns3/mobility-helper.h"
 #include "ns3/mobility-model.h"
@@ -27,6 +28,8 @@
 #include <sstream>
 
 using namespace ns3;
+
+NS_LOG_COMPONENT_DEFINE("HwmpProactiveRegression");
 
 /// Unique PCAP file name prefix
 const char* const PREFIX = "hwmp-proactive-regression-test";
@@ -167,6 +170,7 @@ HwmpProactiveRegressionTest::SendData(Ptr<Socket> socket)
     {
         socket->Send(Create<Packet>(100));
         m_sentPktsCounter++;
+        NS_LOG_INFO("Send packet; total sent = " << m_sentPktsCounter);
         Simulator::ScheduleWithContext(socket->GetNode()->GetId(),
                                        Seconds(0.5),
                                        &HwmpProactiveRegressionTest::SendData,
@@ -182,6 +186,8 @@ HwmpProactiveRegressionTest::HandleReadServer(Ptr<Socket> socket)
     Address from;
     while ((packet = socket->RecvFrom(from)))
     {
+        NS_LOG_INFO("Receive packet from " << InetSocketAddress::ConvertFrom(from).GetIpv4()
+                                           << "; return to sender");
         packet->RemoveAllPacketTags();
         packet->RemoveAllByteTags();
 
@@ -196,5 +202,6 @@ HwmpProactiveRegressionTest::HandleReadClient(Ptr<Socket> socket)
     Address from;
     while ((packet = socket->RecvFrom(from)))
     {
+        NS_LOG_INFO("Receive packet from " << InetSocketAddress::ConvertFrom(from).GetIpv4());
     }
 }
