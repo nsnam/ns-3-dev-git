@@ -154,26 +154,6 @@ UhrFrameExchangeManager::ReceivedQosNullAfterBsrpTf(Mac48Address sender)
 }
 
 void
-UhrFrameExchangeManager::NotifySwitchingStartNow(Time duration)
-{
-    NS_LOG_FUNCTION(this << duration);
-    if (m_switchingForDso)
-    {
-        NS_LOG_DEBUG("Switching channel to/from DSO subband for DSO operations");
-        m_switchingForDso = false;
-        return;
-    }
-    EhtFrameExchangeManager::NotifySwitchingStartNow(duration);
-}
-
-void
-UhrFrameExchangeManager::NotifyDsoSwitching()
-{
-    NS_LOG_FUNCTION(this);
-    m_switchingForDso = true;
-}
-
-void
 UhrFrameExchangeManager::TxopEnd(const std::optional<Mac48Address>& txopHolder)
 {
     NS_LOG_FUNCTION(this << txopHolder.has_value());

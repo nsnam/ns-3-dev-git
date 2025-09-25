@@ -257,7 +257,6 @@ DsoManager::SwitchPhyChannel(uint8_t linkId,
 
     // switch channel within the provided delay
     phy->SetAttribute("ChannelSwitchDelay", TimeValue(delay));
-    GetUhrFem(linkId)->NotifyDsoSwitching();
     phy->SetOperatingChannel(channel);
 
     // restore previous channel switch delay

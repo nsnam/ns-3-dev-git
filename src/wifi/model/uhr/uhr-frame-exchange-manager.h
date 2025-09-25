@@ -33,15 +33,8 @@ class UhrFrameExchangeManager : public EhtFrameExchangeManager
     UhrFrameExchangeManager();
     ~UhrFrameExchangeManager() override;
 
-    void NotifySwitchingStartNow(Time duration) override;
     void SetIcfPaddingAndTxVector(CtrlTriggerHeader& trigger,
                                   WifiTxVector& txVector) const override;
-
-    /**
-     * Notify that the PHY is switching to or from a DSO subband.
-     * This notification is sent by the DSO Manager.
-     */
-    void NotifyDsoSwitching();
 
   protected:
     void ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
@@ -97,7 +90,6 @@ class UhrFrameExchangeManager : public EhtFrameExchangeManager
 
     bool m_dsoIcfReceived{
         false}; //!< flag whether an ICF has been received to indicate the start of a DSO TXOP
-    bool m_switchingForDso{false}; //!< flag whether channel is switching for DSO operations
 
     std::map<Mac48Address, WifiRu::RuSpec>
         m_dsoStas; //!< STAs that are being served in the current DSO TXOP
