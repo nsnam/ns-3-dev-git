@@ -393,8 +393,7 @@ FrameExchangeManager::StartTransmission(Ptr<Txop> dcf, MHz_t allowedWidth)
     if (!mpdu)
     {
         NS_LOG_DEBUG("Queue empty");
-        NotifyChannelReleased(m_dcf);
-        m_dcf = nullptr;
+        NotifyChannelReleased();
         return false;
     }
 
@@ -1118,8 +1117,7 @@ FrameExchangeManager::TransmissionSucceeded()
     }
     else
     {
-        NotifyChannelReleased(m_dcf);
-        m_dcf = nullptr;
+        NotifyChannelReleased();
     }
 }
 
@@ -1135,15 +1133,18 @@ FrameExchangeManager::TransmissionFailed(bool forceCurrentCw)
     // reset TXNAV because transmission failed
     ResetTxNav();
     // A non-QoS station always releases the channel upon a transmission failure
-    NotifyChannelReleased(m_dcf);
-    m_dcf = nullptr;
+    NotifyChannelReleased();
 }
 
 void
-FrameExchangeManager::NotifyChannelReleased(Ptr<Txop> txop)
+FrameExchangeManager::NotifyChannelReleased()
 {
-    NS_LOG_FUNCTION(this << txop);
-    txop->NotifyChannelReleased(m_linkId);
+    NS_LOG_FUNCTION(this);
+    if (m_dcf)
+    {
+        m_dcf->NotifyChannelReleased(m_linkId);
+        m_dcf = nullptr;
+    }
     m_protectedStas.clear();
 }
 

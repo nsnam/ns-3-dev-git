@@ -51,7 +51,7 @@ class UhrFrameExchangeManager : public EhtFrameExchangeManager
     void TxopEnd(const std::optional<Mac48Address>& txopHolder) override;
     void ForwardPsduDown(Ptr<const WifiPsdu> psdu, WifiTxVector& txVector) override;
     void ForwardPsduMapDown(WifiConstPsduMap psduMap, WifiTxVector& txVector) override;
-    void NotifyChannelReleased(Ptr<Txop> txop) override;
+    void NotifyChannelReleased() override;
     void TbPpduTimeout(WifiPsduMap* psduMap, std::size_t nSolicitedStations) override;
     std::set<uint8_t> GetIndicesOccupyingRu(const CtrlTriggerHeader& trigger,
                                             uint16_t aid) const override;

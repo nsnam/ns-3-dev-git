@@ -282,9 +282,9 @@ UhrFrameExchangeManager::ForwardPsduMapDown(WifiConstPsduMap psduMap, WifiTxVect
 }
 
 void
-UhrFrameExchangeManager::NotifyChannelReleased(Ptr<Txop> txop)
+UhrFrameExchangeManager::NotifyChannelReleased()
 {
-    NS_LOG_FUNCTION(this << txop);
+    NS_LOG_FUNCTION(this);
 
     if (m_apMac && !m_dsoStas.empty())
     {
@@ -316,7 +316,7 @@ UhrFrameExchangeManager::NotifyChannelReleased(Ptr<Txop> txop)
         m_dsoStas.clear();
     }
 
-    EhtFrameExchangeManager::NotifyChannelReleased(txop);
+    EhtFrameExchangeManager::NotifyChannelReleased();
 }
 
 void

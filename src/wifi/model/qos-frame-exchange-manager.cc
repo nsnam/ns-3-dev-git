@@ -111,16 +111,12 @@ QosFrameExchangeManager::SendCfEndIfNeeded()
     {
         NS_LOG_DEBUG("Send CF-End frame");
         ForwardMpduDown(mpdu, cfEndTxVector);
-        Simulator::Schedule(txDuration,
-                            &QosFrameExchangeManager::NotifyChannelReleased,
-                            this,
-                            m_edca);
+        Simulator::Schedule(txDuration, &QosFrameExchangeManager::NotifyChannelReleased, this);
         ResetTxNav();
         return true;
     }
 
-    NotifyChannelReleased(m_edca);
-    m_edca = nullptr;
+    NotifyChannelReleased();
     return false;
 }
 
@@ -139,12 +135,12 @@ QosFrameExchangeManager::PifsRecovery(bool forceCurrentCw)
     if (m_allowedWidth == MHz_t{0})
     {
         // PIFS recovery failed, TXOP is terminated
-        NotifyChannelReleased(m_edca);
+        auto edca = m_edca;
+        NotifyChannelReleased();
         if (!forceCurrentCw)
         {
-            m_edca->UpdateFailedCw(m_linkId);
+            edca->UpdateFailedCw(m_linkId);
         }
-        m_edca = nullptr;
     }
     else
     {
@@ -162,7 +158,7 @@ QosFrameExchangeManager::CancelPifsRecovery()
 
     NS_LOG_DEBUG("Cancel PIFS recovery being attempted by EDCAF " << m_edca);
     m_pifsRecoveryEvent.Cancel();
-    NotifyChannelReleased(m_edca);
+    NotifyChannelReleased();
 }
 
 bool
@@ -245,8 +241,7 @@ QosFrameExchangeManager::StartTransmission(Ptr<QosTxop> edca, Time txopDuration)
 
             // TXOP not even started, return false
             NS_LOG_DEBUG("No frame transmitted");
-            NotifyChannelReleased(m_edca);
-            m_edca = nullptr;
+            NotifyChannelReleased();
             return false;
         }
 
@@ -272,8 +267,7 @@ QosFrameExchangeManager::StartTransmission(Ptr<QosTxop> edca, Time txopDuration)
     }
 
     NS_LOG_DEBUG("No frame transmitted");
-    NotifyChannelReleased(m_edca);
-    m_edca = nullptr;
+    NotifyChannelReleased();
     return false;
 }
 
@@ -645,8 +639,7 @@ QosFrameExchangeManager::TransmissionSucceeded()
     }
     else
     {
-        NotifyChannelReleased(m_edca);
-        m_edca = nullptr;
+        NotifyChannelReleased();
     }
     m_initialFrame = false;
     m_sentFrameTo.clear();
@@ -673,8 +666,7 @@ QosFrameExchangeManager::TransmissionFailed(bool forceCurrentCw)
         {
             m_edca->UpdateFailedCw(m_linkId);
         }
-        NotifyChannelReleased(m_edca);
-        m_edca = nullptr;
+        NotifyChannelReleased();
     }
     else
     {
@@ -722,6 +714,21 @@ QosFrameExchangeManager::TransmissionFailed(bool forceCurrentCw)
     m_sentFrameTo.clear();
     // reset TXNAV because transmission failed
     ResetTxNav();
+}
+
+void
+QosFrameExchangeManager::NotifyChannelReleased()
+{
+    NS_LOG_FUNCTION(this);
+
+    NS_ASSERT_MSG(m_dcf || m_edca, "No DCF/EDCAF gained access to the channel being released");
+    if (m_edca)
+    {
+        m_edca->NotifyChannelReleased(m_linkId);
+        m_edca = nullptr;
+        m_dcf = nullptr;
+    }
+    FrameExchangeManager::NotifyChannelReleased();
 }
 
 void

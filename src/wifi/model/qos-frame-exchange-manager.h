@@ -123,6 +123,7 @@ class QosFrameExchangeManager : public FrameExchangeManager
                                 Time response) const override;
     void TransmissionSucceeded() override;
     void TransmissionFailed(bool forceCurrentCw = false) override;
+    void NotifyChannelReleased() override;
     void ForwardMpduDown(Ptr<WifiMpdu> mpdu, WifiTxVector& txVector) override;
     void ReceivedMacHdr(const WifiMacHeader& macHdr,
                         const WifiTxVector& txVector,

@@ -183,7 +183,7 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
     bool StartTransmission(Ptr<QosTxop> edca, Time txopDuration) override;
     void TransmissionSucceeded() override;
     void TransmissionFailed(bool forceCurrentCw = false) override;
-    void NotifyChannelReleased(Ptr<Txop> txop) override;
+    void NotifyChannelReleased() override;
     void PreProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) override;
     void PostProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) override;
     void ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
