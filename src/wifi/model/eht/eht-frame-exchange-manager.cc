@@ -256,7 +256,8 @@ EhtFrameExchangeManager::StartTransmission(Ptr<Txop> edca, MHz_u allowedWidth)
         if (UsingOtherEmlsrLink())
         {
             NS_LOG_DEBUG("StartTransmission called while another EMLSR link is being used");
-            NotifyChannelReleased(edca);
+            m_edca = DynamicCast<QosTxop>(edca);
+            NotifyChannelReleased();
             return false;
         }
 
@@ -276,14 +277,16 @@ EhtFrameExchangeManager::StartTransmission(Ptr<Txop> edca, MHz_u allowedWidth)
                 Txop::DIDNT_HAVE_FRAMES_TO_TRANSMIT, // queued frames cannot be transmitted until
                                                      // MSD expires
                 Txop::DONT_CHECK_MEDIUM_BUSY);       // generate backoff regardless of medium busy
-            NotifyChannelReleased(edca);
+            m_edca = DynamicCast<QosTxop>(edca);
+            NotifyChannelReleased();
             return false;
         }
 
         if (!m_phy)
         {
             NS_LOG_DEBUG("No PHY is currently operating on EMLSR link " << +m_linkId);
-            NotifyChannelReleased(edca);
+            m_edca = DynamicCast<QosTxop>(edca);
+            NotifyChannelReleased();
             return false;
         }
 
@@ -296,7 +299,8 @@ EhtFrameExchangeManager::StartTransmission(Ptr<Txop> edca, MHz_u allowedWidth)
         {
             if (delay.IsStrictlyPositive())
             {
-                NotifyChannelReleased(edca);
+                m_edca = DynamicCast<QosTxop>(edca);
+                NotifyChannelReleased();
                 Simulator::Schedule(
                     delay,
                     &Txop::StartAccessAfterEvent,
@@ -1241,9 +1245,9 @@ EhtFrameExchangeManager::TransmissionFailed(bool forceCurrentCw)
 }
 
 void
-EhtFrameExchangeManager::NotifyChannelReleased(Ptr<Txop> txop)
+EhtFrameExchangeManager::NotifyChannelReleased()
 {
-    NS_LOG_FUNCTION(this << txop);
+    NS_LOG_FUNCTION(this);
 
     if (m_apMac)
     {
@@ -1268,14 +1272,13 @@ EhtFrameExchangeManager::NotifyChannelReleased(Ptr<Txop> txop)
     else if (m_staMac && m_staMac->IsEmlsrLink(m_linkId))
     {
         // Notify the UL TXOP end to the EMLSR Manager
-        auto edca = DynamicCast<QosTxop>(txop);
-        NS_ASSERT(edca);
+        NS_ASSERT(m_edca);
 
         NS_ASSERT(m_staMac->GetEmlsrManager());
-        m_staMac->GetEmlsrManager()->NotifyTxopEnd(m_linkId, edca);
+        m_staMac->GetEmlsrManager()->NotifyTxopEnd(m_linkId, m_edca);
     }
 
-    HeFrameExchangeManager::NotifyChannelReleased(txop);
+    HeFrameExchangeManager::NotifyChannelReleased();
 }
 
 void

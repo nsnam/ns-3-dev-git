@@ -308,8 +308,7 @@ HeFrameExchangeManager::ProtectionCompleted()
                     SendCfEndIfNeeded();
                     return;
                 }
-                NotifyChannelReleased(m_edca);
-                m_edca = nullptr;
+                NotifyChannelReleased();
                 return;
             }
         }
