@@ -41,3 +41,21 @@ build_lib_example(
   LIBRARIES_TO_LINK ${libnetwork}
                     ${libmobility}
 )
+
+set(leo_examples
+    leo-circular-orbit-tracing-example
+    leo-antenna-orientation
+)
+foreach(
+  example
+  ${leo_examples}
+)
+  build_lib_example(
+    NAME ${example}
+    SOURCE_FILES ${example}.cc
+    LIBRARIES_TO_LINK
+      ${libcore}
+      ${libmobility}
+      ${libantenna}
+  )
+endforeach()

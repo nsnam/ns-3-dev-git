@@ -1,6 +1,7 @@
 build_lib(
   LIBNAME mobility
   SOURCE_FILES
+    helper/leo-orbit-node-helper.cc
     helper/group-mobility-helper.cc
     helper/mobility-helper.cc
     helper/ns2-mobility-helper.cc
@@ -13,6 +14,9 @@ build_lib(
     model/geocentric-constant-position-mobility-model.cc
     model/geographic-positions.cc
     model/hierarchical-mobility-model.cc
+    model/leo-circular-orbit-mobility-model.cc
+    model/leo-circular-orbit-position-allocator.cc
+    model/leo-orbit.cc
     model/mobility-model.cc
     model/position-allocator.cc
     model/random-direction-2d-mobility-model.cc
@@ -23,6 +27,7 @@ build_lib(
     model/waypoint-mobility-model.cc
     model/waypoint.cc
   HEADER_FILES
+    helper/leo-orbit-node-helper.h
     helper/group-mobility-helper.h
     helper/mobility-helper.h
     helper/ns2-mobility-helper.h
@@ -35,6 +40,9 @@ build_lib(
     model/geocentric-constant-position-mobility-model.h
     model/geographic-positions.h
     model/hierarchical-mobility-model.h
+    model/leo-circular-orbit-mobility-model.h
+    model/leo-circular-orbit-position-allocator.h
+    model/leo-orbit.h
     model/mobility-model.h
     model/position-allocator.h
     model/random-direction-2d-mobility-model.h

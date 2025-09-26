@@ -609,6 +609,173 @@ Validation
 
 No formal validation has been done.
 
+
+Orbital Mobility
+****************
+
+This mobility model was originally developed by Tim Schubert as part of [_mobilityRef4]_.
+It was then ported, refactored and optimized by Thiago Myazaki as part of Google Summer of Code (GSoC) 2025.
+
+It allows for the configuration of satellite scenarios, with the objective to create an example integrating
+LEO satellites using beamforming, channel and propagation models from the NR Module and ns-3, leveraging a
+helper model to aid the instantiation of LEO satellites.
+
+It models simple circular orbits with constant escape/orbital velocity. While the base model was mostly preserved,
+some modifications were introduced to precompute node offsets within their orbits.
+
+In addition to the mobility model, we have also ported an example from ns-3-leo that outputs position traces
+as ECEF coordinates. Using a Python script developed during the project, ``plot_leo_traces.py`` we produced
+animated plots that helped validate the nodes' initial positions and their movement over time, under
+different configurations of numbers of nodes, inclination, and altitude.
+
+Finally, we have also created an example that builds upon the orbit tracing example ported from ns-3-leo,
+adding Antenna Orientation support for the satellite nodes.
+
+Characteristics & Assumptions
+#############################
+
+* **Orbit type**: only models ideal circular orbits. There is no support for elliptical orbits.
+* **Fixed speed**: Since the orbit is circular and not elliptical, we assume the satellite nodes are moving at constant speed along their orbits, given a certain altitude.
+* **Static Earth**: While the model takes into consideration Earth’s rotation, it does not consider Earth’s orbit around the sun; i.e., the Earth is static.
+* In the plots, Earth is modelled as a perfect sphere.
+
+Usage
+#####
+
+The module offers a helper model (``LeoOrbitNodeHelper``) to ease the instantiation of the satellite nodes:
+
+.. sourcecode:: cpp
+
+    LeoOrbitNodeHelper orbit(Time(MilliSeconds(precision)));
+
+    // creates the satellite nodes and put them into a container
+    NodeContainer satellites;
+    if (!orbitFile.empty())
+    {
+        satellites = orbit.Install(orbitFile);
+    }
+    else
+    {
+        satellites = orbit.Install({LeoOrbit(1200, 30, 1, 2)});
+    }
+
+
+In this snippet, the helper is used to create the satellite nodes.
+Calling ``LeoOrbitNodeHelper.Install()`` returns a ``NodeContainer`` containing the nodes created.
+At this point, the nodes are already placed in their initial positions.
+The ``LeoOrbit`` class is used to hold values used to parameterize the instantiation of nodes
+and orbits - its values are, in order, altitude in meters, inclination
+angle in degrees, number of planes and number of satellite nodes per plane.
+
+A file can be used as a source of information for the program to know how many orbits to instantiate.
+Typically, a file path must be passed via command line. This is how such a file would look like:
+
+.. sourcecode:: text
+
+    1150.0:53.0:32:50
+    1110.0:53.8:32:50
+    1130.0:74.0:8:50
+    (...)
+
+Precision
+#########
+
+An important parameter present in the module is ``Precision``.
+The term itself may be a bit vague.
+It is related to the frequency on which the model will update its position.
+The mobility model uses simulation time to calculate node position, and it uses precision to know how often
+it must trigger this calculation, effectively updating the position of every satellite node.
+
+leo-circular-orbit-tracing-example
+==================================
+This example provides a demonstration of how to trace the motion of LEO
+satellites using the ``LeoCircularOrbitMobilityModel``. The example has
+also been ported from [_mobilityRef4]_ project. It illustrates how satellite
+positions evolve over time in circular orbits and generates output traces in
+ECEF(Earth-Centered, Earth-Fixed) coordinates at each simulation timestep
+defined by the attribute ``precision``.
+
+The program instantiates satellite nodes using the ``LeoOrbitNodeHelper``
+and connects the ``CourseChange`` callback function to the ``$ns3::MobilityModel/CourseChange``
+trace source. The callback function is responsible for outputting the satellite node
+position to the console or to a trace file specified via command line (`--traceFile=<path_to_file>`).
+
+To execute the it (duration in s, precision in ms):
+
+.. sourcecode:: bash
+
+    $ ./ns3 run leo-circular-orbit-tracing-example --duration=10 \
+    --precision=500 \
+    --orbitFile=/path/to/orbit-parameters.csv \
+    --traceFile=/path/to/orbit-trace.csv
+
+
+leo-antenna-orientation
+=======================
+This example builds upon the ``leo-circular-orbit-tracing-example``, with the addition of
+a function that enforces the antenna aggregated to the satellite node to be always pointing
+towards a place. To support different types of strategies, perhaps this function could
+be altered to make the beam steer, but currently it may be used to simulate attitude
+control, forcing the satellite antennas to be always pointing downwards (nadir-pointing).
+
+In this example, the callback function ``CourseChange`` was altered to insert additional
+information to the position trace output. Two coordinates are provided, one corresponding
+to the node position, and an additional coordinate representing the point where the
+antenna must point to. These two coordinates can be used to with ``model/plot-orbital-traces.py``,
+to generate an animated plot displaying the antenna orientation vector and satellite motion.
+
+To execute it, with duration in seconds and precision in milliseconds:
+
+.. sourcecode:: bash
+
+    $ ./ns3 run leo-antenna-orientation -- --duration=10 \
+    --precision=500 \
+    --orbitFile=/path/to/orbit-parameters.csv \
+    --traceFile=/path/to/orbit-trace.csv
+
+To use the Starlink constellation, point ``orbit-parameters.csv`` to ``./src/mobility/examples/starlink.csv``:
+
+.. sourcecode:: bash
+
+    ~/ns-3-dev/$ ./ns3 run leo-antenna-orientation -- --duration=1000 \
+    --precision=500 \
+    --orbitFile=./src/mobility/examples/starlink.csv \
+    --traceFile=starlink-orbit-trace
+
+utils/plot-orbital-traces.py
+============================
+With this script we are able to generate animated plots which we can use to
+validate whether the implementations/programs are correctly placing satellite
+nodes in the initial positions, and whether their positions are being correctly
+updated, as we can see the nodes orbiting around Earth in the plot. To generate
+this plot, the user must pass two arguments via command line, specifying file
+paths to the input file, where traces will be taken for plotting, and output file,
+the output video file itself. Additionally, if the user passes the flag ``-a`` then
+the script will also try to plot a vector representing the antenna orientation for
+the satellite nodes, but the input file must contain data produced by
+the ``leo-antenna-orientation`` example.
+
+To execute it, run the following:
+
+.. sourcecode:: bash
+
+    $ plot-orbital-traces.py -i <path-to-traceFile> -o <path-to-output-file>.mp4 -a
+
+The ``-a`` option also illustrates the antenna orientation, but it requires a uniform-planar array to be configured.
+For example, using the starlink orbit traces:
+
+.. sourcecode:: bash
+
+    ~/ns-3-dev/$ ./src/mobility/model/plot-orbital-traces.py -i starlink-orbit-trace -o starlink-animation.mp4
+
+To also plot antenna panel normal vector, try:
+
+.. sourcecode:: bash
+
+    ~/ns-3-dev/$ ./ns3 build leo-antenna-orientation
+    ~/ns-3-dev/$ ./ns3 run "leo-antenna-orientation --duration=100" --no-build > satellite-antenna-trace
+    ~/ns-3-dev/$ ./src/mobility/model/plot-orbital-traces.py -i satellite-antenna-trace -o satellite-antenna-trace.mp4 -a
+
 References
 ----------
 
@@ -624,3 +791,7 @@ References
 .. _mobilityRef3:
 
 [`3 <https://sys.cs.uos.de/bonnmotion/doc/README.pdf>`_] BonnMotion documentation
+
+.. _mobilityRef4:
+
+[`4 <https://github.com/dadada/ns-3-leo>`_] ns-3-leo
