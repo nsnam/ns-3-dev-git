@@ -473,7 +473,7 @@ CommandLine::PrintDoxygenUsage() const
 
     std::fstream os(outf, std::fstream::out);
 
-    os << "/**\n \\file " << m_shortName << ".cc\n"
+    os << "/**\n @file " << m_shortName << ".cc\n"
        << "<h3>Usage</h3>\n"
        << "<code>$ ./ns3 run \"" << m_shortName << (!m_options.empty() ? " [Program Options]" : "")
        << (!nonOptions.empty() ? " [Program Arguments]" : "") << "\"</code>\n";
@@ -501,12 +501,12 @@ CommandLine::PrintDoxygenUsage() const
 
     if (!m_options.empty())
     {
-        listOptions("Program Options", m_options, "\\c --");
+        listOptions("Program Options", m_options, "@c --");
     }
 
     if (!nonOptions.empty())
     {
-        listOptions("Program Arguments", nonOptions, "\\c ");
+        listOptions("Program Arguments", nonOptions, "@c ");
     }
 
     os << "*/" << std::endl;
