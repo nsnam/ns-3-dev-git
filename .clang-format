@@ -4,12 +4,11 @@ BasedOnStyle: Microsoft
 
 AllowAllArgumentsOnNextLine: false
 AllowAllParametersOfDeclarationOnNextLine: false
-AlwaysBreakAfterReturnType: TopLevelDefinitions
-AlwaysBreakTemplateDeclarations: Yes
 BinPackArguments: false
 BinPackParameters: false
+BreakAfterReturnType: TopLevelDefinitions
+BreakTemplateDeclarations: Yes
 ColumnLimit: 100
-DeriveLineEnding: false
 IncludeBlocks: Regroup
 IncludeCategories:
   - Regex: '^(<|")ns3/'
@@ -22,7 +21,9 @@ IncludeCategories:
     Priority: 1
     SortPriority: 0
 InsertBraces: true
-KeepEmptyLinesAtTheStartOfBlocks: false
+KeepEmptyLines:
+  AtStartOfBlock: false
+LineEnding: LF
 PackConstructorInitializers: Never
 PointerAlignment: Left
 QualifierAlignment: Left
