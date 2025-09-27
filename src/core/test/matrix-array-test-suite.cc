@@ -487,34 +487,34 @@ MatrixArrayTestCase<T>::DoRun()
     }
     // clang-format off
     std::valarray<int> multiPageMatrixValues{
-            // page 0: identity matrix
-            1, 0, 0,
-            0, 1, 0,
-            0, 0, 1,
-            // page 1: permutation matrix
-            0, 0, 1,
-            0, 1, 0,
-            1, 0, 0,
-            // page 2: random matrix
-            1, 4, 6,
-            0, 2, 5,
-            7, 0, 3,
-            // page 3: upper triangular
-            5, -9, 2,
-            0, -4, -10,
-            0, 0, -3,
-            // page 4: lower triangular
-            -7, 0, 0,
-            -1, -9, 0,
-            -5, 6, -5,
-            // page 5: zero diagonal
-            0, 1, 2,
-            1, 0, 1,
-            2, 1, 0,
-            // page 6: zero bidiagonal
-            0, 1, 0,
-            1, 0, 1,
-            0, 1, 0
+        // page 0: identity matrix
+        1, 0, 0,
+        0, 1, 0,
+        0, 0, 1,
+        // page 1: permutation matrix
+        0, 0, 1,
+        0, 1, 0,
+        1, 0, 0,
+        // page 2: random matrix
+        1, 4, 6,
+        0, 2, 5,
+        7, 0, 3,
+        // page 3: upper triangular
+        5, -9, 2,
+        0, -4, -10,
+        0, 0, -3,
+        // page 4: lower triangular
+        -7, 0, 0,
+        -1, -9, 0,
+        -5, 6, -5,
+        // page 5: zero diagonal
+        0, 1, 2,
+        1, 0, 1,
+        2, 1, 0,
+        // page 6: zero bidiagonal
+        0, 1, 0,
+        1, 0, 1,
+        0, 1, 0
     };
     // clang-format on
     std::valarray<T> castMultiPageMatrixValues(multiPageMatrixValues.size());
