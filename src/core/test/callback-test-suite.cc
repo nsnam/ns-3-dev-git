@@ -1013,25 +1013,20 @@ class MakeCallbackTemplatesTestCase : public TestCase
  * Test function - does nothing.
  * @{
  */
+void TestFZero() {};
+void TestFOne(int) {};
+void TestFTwo(int, int) {};
+void TestFThree(int, int, int) {};
+void TestFFour(int, int, int, int) {};
+void TestFFive(int, int, int, int, int) {};
+void TestFSix(int, int, int, int, int, int) {};
 
-// clang-format off
-
-void TestFZero() {}
-void TestFOne(int) {}
-void TestFTwo(int, int) {}
-void TestFThree(int, int, int) {}
-void TestFFour(int, int, int, int) {}
-void TestFFive(int, int, int, int, int) {}
-void TestFSix(int, int, int, int, int, int) {}
-
-void TestFROne(int&) {}
-void TestFRTwo(int&, int&) {}
-void TestFRThree(int&, int&, int&) {}
-void TestFRFour(int&, int&, int&, int&) {}
-void TestFRFive(int&, int&, int&, int&, int&) {}
-void TestFRSix(int&, int&, int&, int&, int&, int&) {}
-
-// clang-format on
+void TestFROne(int&) {};
+void TestFRTwo(int&, int&) {};
+void TestFRThree(int&, int&, int&) {};
+void TestFRFour(int&, int&, int&, int&) {};
+void TestFRFive(int&, int&, int&, int&, int&) {};
+void TestFRSix(int&, int&, int&, int&, int&, int&) {};
 
 /** @} */
 
@@ -1080,25 +1075,20 @@ class CallbackTestClass : public CallbackTestParent
      * Test function - does nothing.
      * @{
      */
-
-    // clang-format off
-
-    void TestZero() {}
-    void TestOne(int) {}
-    void TestTwo(int, int) {}
-    void TestThree(int, int, int) {}
-    void TestFour(int, int, int, int) {}
-    void TestFive(int, int, int, int, int) {}
-    void TestSix(int, int, int, int, int, int) {}
-    void TestCZero() const  {}
-    void TestCOne(int) const  {}
-    void TestCTwo(int, int) const  {}
-    void TestCThree(int, int, int) const  {}
-    void TestCFour(int, int, int, int) const  {}
-    void TestCFive(int, int, int, int, int) const  {}
-    void TestCSix(int, int, int, int, int, int) const  {}
-
-    // clang-format on
+    void TestZero() {};
+    void TestOne(int) {};
+    void TestTwo(int, int) {};
+    void TestThree(int, int, int) {};
+    void TestFour(int, int, int, int) {};
+    void TestFive(int, int, int, int, int) {};
+    void TestSix(int, int, int, int, int, int) {};
+    void TestCZero() const {};
+    void TestCOne(int) const {};
+    void TestCTwo(int, int) const {};
+    void TestCThree(int, int, int) const {};
+    void TestCFour(int, int, int, int) const {};
+    void TestCFive(int, int, int, int, int) const {};
+    void TestCSix(int, int, int, int, int, int) const {};
 
     /** @} */
 
