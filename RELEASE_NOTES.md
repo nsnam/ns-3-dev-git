@@ -25,6 +25,14 @@ requirements (Note: not all ns-3 features are available on all systems):
 - (macOS only) Xcode 16.2 or later
 - (Windows only) Msys2/MinGW64, Msys2/UCRT64 and ClangCL/MSVC toolchains, or WSL2
 
+Note that the minimum C++ compiler versions have increased since the last release.
+
+The version of clang-format enforced by the check-style-clang-format.py script for
+this release is version 20 only; the previous ns-3 release was compatible with versions 15-19.
+
+Version 20 of the clang-tidy linter is now supported and recommended, although versions 15-19
+are still compatible.
+
 Python API requires [Cppyy](https://cppyy.readthedocs.io/en/latest/installation.html) and has only
 been tested on Linux. As of this release, the latest known version to work with ns-3 is cppyy==3.5.0.
 
@@ -37,17 +45,22 @@ The wimax module was removed and moved to the ns-3 App Store.
 - (antenna) !2516 - Reformatted documentation
 - (documentation) !2519 - Improve models documentation look and feel
 - (core) A stacktrace will now be printed on fatal errors in supported platforms.
-- (wifi) !2524 - Fix corrupted radiotap header when EHT is used.
 - (zigbee) !2512 - Added Groupcast (Multicast) support
+- (zigbee) Added basic APS layer support
 - (spectrum) !2452 - Added new wraparound model support for spectrum channels, and the hexagonal wraparound model, typical of cellular deployments
 
 ### Bugs fixed
 
+- (examples) #1146 - Fixed three-gpp-v2v-channel-example to prevent pathloss from being incorrectly accumulated over time
 - (internet) #851 - NeighborCacheHelper entries are no longer removed due to LinkUp events
+- (internet) #809 - Fixed IPv4,6 Raw Socket fragmentation issue
 - (internet) #1251 - Added check for longest prefix match in GlobalRouting
+- (stats) #295 - Added 100 ms timeout for sqlite3 operations to prevent hangs
+- (wifi) !2524 - Fix corrupted radiotap header when EHT is used.
 - (wifi) Block transmission on other EMLSR links as soon as it is detected that the main PHY is receiving an A-MPDU, to prevent that the EMLSR client starts an UL TXOP before the end of the A-MPDU
 - (wifi) EMLSR clients can switch to listening operations when receiving the MAC header of a broadcast frame that is not a Trigger Frame nor a Multi-STA BA
 - (wifi) Immediate channel access should not be postponed by a backoff slot if channel access is requested at a slot boundary
+- (wifi) Reset backoffs only if PHY went to sleep or off for more than a threshold
 
 ## Release 3.45
 
