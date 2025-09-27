@@ -68,7 +68,8 @@ Mac16Address::IsMatchingType(const Address& address)
     return address.CheckCompatible(GetType(), 2);
 }
 
-Mac16Address::operator Address() const
+Mac16Address::
+operator Address() const
 {
     return ConvertTo();
 }

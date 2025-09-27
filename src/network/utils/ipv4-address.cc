@@ -332,7 +332,8 @@ Ipv4Address::IsMatchingType(const Address& address)
     return address.CheckCompatible(GetType(), 4);
 }
 
-Ipv4Address::operator Address() const
+Ipv4Address::
+operator Address() const
 {
     return ConvertTo();
 }

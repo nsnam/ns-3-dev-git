@@ -83,7 +83,8 @@ Mac64Address::IsMatchingType(const Address& address)
     return address.CheckCompatible(GetType(), 8);
 }
 
-Mac64Address::operator Address() const
+Mac64Address::
+operator Address() const
 {
     return ConvertTo();
 }

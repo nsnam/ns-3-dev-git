@@ -86,7 +86,8 @@ Inet6SocketAddress::IsMatchingType(const Address& addr)
     return addr.CheckCompatible(GetType(), 18); /* 16 (address) + 2  (port) */
 }
 
-Inet6SocketAddress::operator Address() const
+Inet6SocketAddress::
+operator Address() const
 {
     return ConvertTo();
 }
