@@ -33,13 +33,28 @@ namespace ns3
 class LeoOrbitNodeHelper
 {
   public:
-    /// constructor
-    LeoOrbitNodeHelper(const Time& precision);
+    /**
+     * Construct a LEO Orbit Node Helper which is used to make life easier when working
+     * with mobility models.
+     * @param timeStep the time precision for the mobility, which determines the granularity of
+     * positions generated in a given orbit (the faster the orbital speed, the smallest
+     */
+    LeoOrbitNodeHelper(const Time& timeStep);
 
     /// destructor
     virtual ~LeoOrbitNodeHelper();
 
     /**
+     * @brief Install orbits from orbitFile.
+     *
+     * Install orbits from orbitFile containing one or more lines, each with 4 columns separated by
+     * colons (:). The first column contains the orbit altitude (from the surface of the earth). The
+     * second column contains the orbital plane inclination. The third column contains the number of
+     * orbital planes, uniformly distributed (180/orbital planes). The fourth column contains the
+     * number of satellites per orbital plane.
+     *
+     * One example: 1150.0:53.0:32:50, represents 32 orbits with 50 satellites each, with 53 degrees
+     * of inclination in respect to the equator, and with an altitude of 1150 km.
      *
      * @param orbitFile path to orbit definitions file
      * @returns a node container containing nodes using the specified attributes
@@ -74,14 +89,17 @@ class LeoOrbitNodeHelper
      * offset value regarding the node itself and its orbit.
      *
      * @param orbit a LeoOrbit object that holds orbit information
+     * @returns a shared pointer to the vector containing positions of satellites for the specified
+     * LEO orbit
      */
     std::shared_ptr<std::vector<double>> GenerateProgressVector(const LeoOrbit& orbit) const;
 
   private:
-    ObjectFactory m_nodeFactory;
+    ObjectFactory m_nodeFactory; ///< Node factory
 
-    /// The time precision of the model - the rate at which the mobility model is updated.
-    Time m_precision;
+    /// The period at which the mobility model is updated. Higher orbital speeds require smaller
+    /// steps.
+    Time m_timeStep;
 };
 
 }; // namespace ns3

@@ -22,10 +22,8 @@
  * Declaration of LeoCircularOrbitMobilityModel
  */
 
-/// earth's radius in KM
-constexpr double LEO_EARTH_RAD_KM = 6371.0090;
-/// geocentric gravitational constant in KM
-constexpr double LEO_EARTH_GM_KM_E10 = 39.8600436;
+/// geocentric gravitational constant in KM^3/s^2 https://ntrs.nasa.gov/citations/19760058274
+constexpr double LEO_EARTH_GGC = 398600.7;
 
 namespace ns3
 {
@@ -47,8 +45,6 @@ class LeoCircularOrbitMobilityModel : public GeocentricConstantPositionMobilityM
     static TypeId GetTypeId();
     /// constructor
     LeoCircularOrbitMobilityModel();
-    /// destructor
-    ~LeoCircularOrbitMobilityModel() override;
 
     /**
      * @brief Gets the speed of the node
@@ -57,13 +53,13 @@ class LeoCircularOrbitMobilityModel : public GeocentricConstantPositionMobilityM
     double GetSpeed() const;
 
     /**
-     * @brief Gets the altitude
-     * @return the altitude
+     * @brief Gets the altitude in km
+     * @return the altitude in km
      */
     double GetAltitude() const;
     /**
-     * @brief Sets the altitude
-     * @param the altitude
+     * @brief Sets the altitude in km
+     * @param h the altitude km
      */
     void SetAltitude(double h);
 
@@ -75,7 +71,7 @@ class LeoCircularOrbitMobilityModel : public GeocentricConstantPositionMobilityM
 
     /**
      * @brief Sets the inclination
-     * @param the inclination
+     * @param incl the inclination
      */
     void SetInclination(double incl);
 
@@ -104,8 +100,14 @@ class LeoCircularOrbitMobilityModel : public GeocentricConstantPositionMobilityM
      */
     Vector DoGetGeocentricPosition() const override;
 
+    // Inherited from MobilityModel
+    Ptr<MobilityModel> Copy() const override
+    {
+        return CreateObject<LeoCircularOrbitMobilityModel>(*this);
+    }
+
   private:
-    /// Orbit height in m
+    /// Orbit height in km
     double m_orbitHeight;
 
     /// Inclination in rad

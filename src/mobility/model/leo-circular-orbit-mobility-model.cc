@@ -7,6 +7,7 @@
 
 #include "leo-circular-orbit-mobility-model.h"
 
+#include "geographic-positions.h"
 #include "math.h"
 
 #include "ns3/double.h"
@@ -58,14 +59,14 @@ LeoCircularOrbitMobilityModel::LeoCircularOrbitMobilityModel()
     NS_LOG_FUNCTION_NOARGS();
 }
 
-LeoCircularOrbitMobilityModel::~LeoCircularOrbitMobilityModel()
-{
-}
+/// meters in a kilometer
+constexpr double M_TO_KM = 1000;
 
 double
 LeoCircularOrbitMobilityModel::GetSpeed() const
 {
-    return sqrt(LEO_EARTH_GM_KM_E10 / m_orbitHeight) * 1e5;
+    // sqrt((km^3/s^2) / km) => sqrt(km^2/s^2) => km/s * 1000m/km = m/s
+    return sqrt(LEO_EARTH_GGC / m_orbitHeight) * M_TO_KM;
 }
 
 Vector
@@ -107,7 +108,7 @@ LeoCircularOrbitMobilityModel::CalcPosition(Time t) const
 {
     double lat = CalcLatitude(t);
     // account for orbit latitude and earth rotation offset
-    Vector3D x = (m_orbitHeight * 1000 *
+    Vector3D x = (m_orbitHeight * M_TO_KM *
                   Vector3D(cos(m_inclination) * cos(lat),
                            cos(m_inclination) * sin(lat),
                            sin(m_inclination)));
@@ -124,14 +125,7 @@ LeoCircularOrbitMobilityModel::UpdateNodePositionAndScheduleEvent()
 
     // Advances the node position in the Progress Vector or resets its index when an orbital period
     // has been completed.
-    if (static_cast<uint16_t>(m_progressVector->size()) == m_nodeIndexAtProgressVector + 1)
-    {
-        m_nodeIndexAtProgressVector = 0;
-    }
-    else
-    {
-        m_nodeIndexAtProgressVector++;
-    }
+    m_nodeIndexAtProgressVector = (m_nodeIndexAtProgressVector + 1) % m_progressVector->size();
 
     if (m_precision > Seconds(0))
     {
@@ -174,13 +168,13 @@ LeoCircularOrbitMobilityModel::DoSetPosition(const Vector& position)
 double
 LeoCircularOrbitMobilityModel::GetAltitude() const
 {
-    return m_orbitHeight - LEO_EARTH_RAD_KM;
+    return m_orbitHeight - (GeographicPositions::EARTH_SEMIMAJOR_AXIS / M_TO_KM);
 }
 
 void
 LeoCircularOrbitMobilityModel::SetAltitude(double h)
 {
-    m_orbitHeight = LEO_EARTH_RAD_KM + h;
+    m_orbitHeight = (GeographicPositions::EARTH_SEMIMAJOR_AXIS / M_TO_KM) + h;
 }
 
 double

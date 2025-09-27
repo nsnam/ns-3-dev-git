@@ -611,7 +611,7 @@ No formal validation has been done.
 
 
 Orbital Mobility
-****************
+----------------
 
 This mobility model was originally developed by Tim Schubert as part of [_mobilityRef4]_.
 It was then ported, refactored and optimized by Thiago Myazaki as part of Google Summer of Code (GSoC) 2025.
@@ -632,7 +632,7 @@ Finally, we have also created an example that builds upon the orbit tracing exam
 adding Antenna Orientation support for the satellite nodes.
 
 Characteristics & Assumptions
-#############################
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 * **Orbit type**: only models ideal circular orbits. There is no support for elliptical orbits.
 * **Fixed speed**: Since the orbit is circular and not elliptical, we assume the satellite nodes are moving at constant speed along their orbits, given a certain altitude.
@@ -640,7 +640,7 @@ Characteristics & Assumptions
 * In the plots, Earth is modelled as a perfect sphere.
 
 Usage
-#####
+~~~~~
 
 The module offers a helper model (``LeoOrbitNodeHelper``) to ease the instantiation of the satellite nodes:
 
@@ -678,13 +678,12 @@ Typically, a file path must be passed via command line. This is how such a file 
     (...)
 
 Precision
-#########
+~~~~~~~~~
 
-An important parameter present in the module is ``Precision``.
-The term itself may be a bit vague.
-It is related to the frequency on which the model will update its position.
-The mobility model uses simulation time to calculate node position, and it uses precision to know how often
-it must trigger this calculation, effectively updating the position of every satellite node.
+An important parameter that needs to be set appropriately during the construction of ``LeoOrbitNodeHelper``
+is the ``TimeStep``. The term itself may be a bit vague, but it is related to the period between positions
+of a satellite in a given orbit. A smaller period results in more steps, or higher resolution orbit,
+with smaller position jumps. Higher resolution is needed by higher orbital speeds.
 
 leo-circular-orbit-tracing-example
 ==================================
