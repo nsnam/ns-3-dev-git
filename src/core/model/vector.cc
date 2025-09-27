@@ -206,6 +206,12 @@ operator*(const Vector3D& a, const Vector3D& b)
     return a.x * b.x + a.y * b.y + a.z * b.z;
 }
 
+Vector3D
+CrossProduct(const Vector3D& a, const Vector3D& b)
+{
+    return Vector3D(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
+}
+
 std::ostream&
 operator<<(std::ostream& os, const Vector2D& vector)
 {
@@ -289,6 +295,12 @@ double
 operator*(const Vector2D& a, const Vector2D& b)
 {
     return a.x * b.x + a.y * b.y;
+}
+
+double
+CrossProduct(const Vector2D& a, const Vector2D& b)
+{
+    return (a.x * b.y) - (a.y * b.x);
 }
 
 } // namespace ns3

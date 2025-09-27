@@ -185,6 +185,14 @@ class Vector3D
      * @returns The dot product of \pname{a} and \pname{b}.
      */
     friend double operator*(const Vector3D& a, const Vector3D& b);
+
+    /**
+     * Cross product
+     * @param [in] a lhs vector.
+     * @param [in] b rhs vector.
+     * @return The cross product of \pname{a} and \pname{b}
+     */
+    friend Vector3D CrossProduct(const Vector3D& a, const Vector3D& b);
 };
 
 /**
@@ -338,6 +346,14 @@ class Vector2D
      * @returns The dot product of \pname{a} and \pname{b}.
      */
     friend double operator*(const Vector2D& a, const Vector2D& b);
+
+    /**
+     * Cross product
+     * @param [in] a lhs vector.
+     * @param [in] b rhs vector.
+     * @return The cross product of \pname{a} and \pname{b} @$ a_x b_y - a_y b_x @$
+     */
+    friend double CrossProduct(const Vector2D& a, const Vector2D& b);
 };
 
 double CalculateDistance(const Vector3D& a, const Vector3D& b);
