@@ -247,6 +247,25 @@ BackoffMonitor::NotifyBackoffGenerated(linkId_t linkId)
     {
         auto& state = GetState(linkId);
         state.SetStatus(BackoffStatus::ONGOING);
+
+        auto phy = m_mac->GetWifiPhy(linkId);
+        NS_ASSERT(phy);
+        const auto accessGrantStart =
+            m_mac->GetChannelAccessManager(linkId)->GetAccessGrantStart() - phy->GetSifs();
+        if (const auto now = Simulator::Now(); accessGrantStart > now)
+        {
+            // medium is busy
+            state.SetStatus(BackoffStatus::PAUSED);
+
+            const auto timeout = accessGrantStart + GetTxopEndTimeout(linkId) - now;
+            NS_LOG_DEBUG("Medium busy, resume event set to expire in "
+                         << timeout.As(Time::US) << " at time " << now + timeout);
+            state.statusChangeEvent.Cancel();
+            state.statusChangeEvent = Simulator::Schedule(timeout,
+                                                          &BackoffMonitor::State::SetStatus,
+                                                          &state,
+                                                          BackoffStatus::ONGOING);
+        }
     }
 }
 
