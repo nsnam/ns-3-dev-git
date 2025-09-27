@@ -20,15 +20,15 @@
   script:
     - python3 utils/check-style-clang-format.py --verbose .
 
-check-style-clang-format-19:
+check-style-clang-format-20:
   extends: .check-style-clang-format
   variables:
-    CLANG_FORMAT_VERSION: 19
+    CLANG_FORMAT_VERSION: 20
 
-check-style-clang-format-15:
-  extends: .check-style-clang-format
-  variables:
-    CLANG_FORMAT_VERSION: 15
+# check-style-clang-format-21:
+#   extends: .check-style-clang-format
+#   variables:
+#     CLANG_FORMAT_VERSION: 21
 
 # Clang-tidy
 clang-tidy-19:

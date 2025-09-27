@@ -41,8 +41,8 @@ from typing import Callable, Dict, List, Tuple
 ###########################################################
 # PARAMETERS
 ###########################################################
-CLANG_FORMAT_MAX_VERSION = 19
-CLANG_FORMAT_MIN_VERSION = 15
+CLANG_FORMAT_MAX_VERSION = 20
+CLANG_FORMAT_MIN_VERSION = 20
 
 FORMAT_GUARD_ON = [
     "// clang-format on",
