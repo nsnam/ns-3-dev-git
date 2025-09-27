@@ -134,6 +134,20 @@ class BackoffMonitor
     void NotifyMediumBusy(uint8_t phyId, Time duration);
 
     /**
+     * Used by the PHY listener to notify that a PHY is switching to sleep or off state.
+     *
+     * @param phyId the PHY ID
+     */
+    void NotifyPhySleepOrOff(uint8_t phyId);
+
+    /**
+     * Used by the PHY listener to notify that a PHY is resuming from sleep or off state.
+     *
+     * @param phyId the PHY ID
+     */
+    void NotifyPhyResume(uint8_t phyId);
+
+    /**
      * Callback to be connected to the NavEnd trace source of the ChannelAccessManager.
      *
      * @param cam pointer to the ChannelAccessManager object
@@ -163,6 +177,14 @@ class BackoffMonitor
     void HandleMediumBusyUpdates(linkId_t linkId,
                                  std::optional<Time> physicalCsEnd,
                                  std::optional<Time> virtualCsEnd);
+
+    /**
+     * Switch to the PAUSED backoff status if the medium is (physically or virtually) busy.
+     *
+     * @param linkId the ID of the involved link
+     * @return whether the medium is (physically or virtually) busy
+     */
+    bool SwitchToPausedIfBusy(linkId_t linkId);
 
     /// Backoff counter state information
     struct State

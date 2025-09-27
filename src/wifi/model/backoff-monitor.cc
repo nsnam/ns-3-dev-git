@@ -81,22 +81,26 @@ class BackoffMonPhyListener : public ns3::WifiPhyListener
 
     void NotifySleep() override
     {
-        // Do nothing, the backoff is reset
+        // schedule now to decrease the priority of this listener
+        Simulator::ScheduleNow(&BackoffMonitor::NotifyPhySleepOrOff, &m_backoffMon, m_phyId);
     }
 
     void NotifyOff() override
     {
-        // Do nothing, the backoff is reset
+        // schedule now to decrease the priority of this listener
+        Simulator::ScheduleNow(&BackoffMonitor::NotifyPhySleepOrOff, &m_backoffMon, m_phyId);
     }
 
     void NotifyWakeup() override
     {
-        // Do nothing, the backoff is reset
+        // schedule now to decrease the priority of this listener
+        Simulator::ScheduleNow(&BackoffMonitor::NotifyPhyResume, &m_backoffMon, m_phyId);
     }
 
     void NotifyOn() override
     {
-        // Do nothing, the backoff is reset
+        // schedule now to decrease the priority of this listener
+        Simulator::ScheduleNow(&BackoffMonitor::NotifyPhyResume, &m_backoffMon, m_phyId);
     }
 
   private:
@@ -238,6 +242,37 @@ BackoffMonitor::State::SetStatus(BackoffStatus status)
         {.linkId = linkId, .prevStatus = prevStatus, .currStatus = status, .counter = slots});
 }
 
+bool
+BackoffMonitor::SwitchToPausedIfBusy(linkId_t linkId)
+{
+    NS_LOG_FUNCTION(this);
+
+    auto& state = GetState(linkId);
+    auto phy = m_mac->GetWifiPhy(linkId);
+    NS_ASSERT(phy);
+    const auto accessGrantStart =
+        m_mac->GetChannelAccessManager(linkId)->GetAccessGrantStart() - phy->GetSifs();
+    if (const auto now = Simulator::Now(); accessGrantStart > now)
+    {
+        // medium is busy
+        if (state.backoffStatus != BackoffStatus::PAUSED)
+        {
+            state.SetStatus(BackoffStatus::PAUSED);
+        }
+        const auto timeout = accessGrantStart + GetTxopEndTimeout(linkId) - now;
+        NS_LOG_DEBUG("Medium busy, resume event set to expire in " << timeout.As(Time::US)
+                                                                   << " at time " << now + timeout);
+        state.statusChangeEvent.Cancel();
+        state.statusChangeEvent = Simulator::Schedule(timeout,
+                                                      &BackoffMonitor::State::SetStatus,
+                                                      &state,
+                                                      BackoffStatus::ONGOING);
+
+        return true;
+    }
+    return false;
+}
+
 void
 BackoffMonitor::NotifyBackoffGenerated(linkId_t linkId)
 {
@@ -246,26 +281,16 @@ BackoffMonitor::NotifyBackoffGenerated(linkId_t linkId)
     if (m_enabled)
     {
         auto& state = GetState(linkId);
-        state.SetStatus(BackoffStatus::ONGOING);
 
-        auto phy = m_mac->GetWifiPhy(linkId);
-        NS_ASSERT(phy);
-        const auto accessGrantStart =
-            m_mac->GetChannelAccessManager(linkId)->GetAccessGrantStart() - phy->GetSifs();
-        if (const auto now = Simulator::Now(); accessGrantStart > now)
+        if (state.backoffStatus == BackoffStatus::UNKNOWN)
         {
-            // medium is busy
-            state.SetStatus(BackoffStatus::PAUSED);
-
-            const auto timeout = accessGrantStart + GetTxopEndTimeout(linkId) - now;
-            NS_LOG_DEBUG("Medium busy, resume event set to expire in "
-                         << timeout.As(Time::US) << " at time " << now + timeout);
-            state.statusChangeEvent.Cancel();
-            state.statusChangeEvent = Simulator::Schedule(timeout,
-                                                          &BackoffMonitor::State::SetStatus,
-                                                          &state,
-                                                          BackoffStatus::ONGOING);
+            // initialize physical and virtual CS end
+            state.physicalCsEnd = Simulator::Now() + m_mac->GetWifiPhy(linkId)->GetDelayUntilIdle();
+            state.virtualCsEnd = m_mac->GetChannelAccessManager(linkId)->GetNavEnd();
         }
+
+        state.SetStatus(BackoffStatus::ONGOING);
+        SwitchToPausedIfBusy(linkId);
     }
 }
 
@@ -387,8 +412,6 @@ BackoffMonitor::HandleMediumBusyUpdates(linkId_t linkId,
     case PAUSED:
         // if this busy notification modifies the current medium busy period, reschedule the
         // resume event
-        NS_ASSERT_MSG(state.statusChangeEvent.IsPending(),
-                      "Resume event should be pending in PAUSE status");
         if (Simulator::GetDelayLeft(state.statusChangeEvent) != timeout)
         {
             NS_LOG_DEBUG("Resume event set to expire in " << timeout.As(Time::US) << " at time "
@@ -430,6 +453,55 @@ BackoffMonitor::GetTxopEndTimeout(linkId_t linkId) const
     // if the medium is idle for more than a SIFS but less than a PIFS, then we consider the TXOP
     // ended
     return phy->GetSifs() + (phy->GetSlot() / 2);
+}
+
+void
+BackoffMonitor::NotifyPhySleepOrOff(uint8_t phyId)
+{
+    NS_LOG_FUNCTION(this << phyId);
+
+    const auto linkId = m_mac->GetLinkForPhy(phyId);
+
+    if (!linkId)
+    {
+        return; // the PHY is not operating on any link
+    }
+
+    if (GetBackoffStatus(*linkId) == BackoffStatus::ONGOING)
+    {
+        GetState(*linkId).SetStatus(BackoffStatus::PAUSED);
+    }
+    if (GetBackoffStatus(*linkId) == BackoffStatus::PAUSED)
+    {
+        // cancel the resume event because we don't know when the PHY will resume
+        GetState(*linkId).statusChangeEvent.Cancel();
+    }
+}
+
+void
+BackoffMonitor::NotifyPhyResume(uint8_t phyId)
+{
+    NS_LOG_FUNCTION(this << phyId);
+
+    const auto linkId = m_mac->GetLinkForPhy(phyId);
+
+    if (!linkId)
+    {
+        return; // the PHY is not operating on any link
+    }
+
+    // If the backoff is reset because the time spent by the PHY in sleep/off state exceeds the
+    // threshold, the backoff status is set to RESET and then to ZERO; when the PHY is resumed, a
+    // backoff value may be generated and the backoff status set to ONGOING. Either way, we have
+    // to do nothing.
+    // Otherwise, if the backoff status was ZERO when the PHY was put to sleep/off, it is still ZERO
+    // and we have to do nothing. Thus, if the backoff status is now PAUSED, it means that it was
+    // either PAUSED or ONGOING when the PHY was put to sleep/off and it must be now set to ONGOING,
+    // unless the medium is busy (in which case, it is set or stays equal to PAUSED).
+    if ((GetBackoffStatus(*linkId) == BackoffStatus::PAUSED) && !SwitchToPausedIfBusy(*linkId))
+    {
+        GetState(*linkId).SetStatus(BackoffStatus::ONGOING);
+    }
 }
 
 std::ostream&
