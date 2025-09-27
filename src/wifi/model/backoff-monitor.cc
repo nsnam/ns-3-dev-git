@@ -391,6 +391,7 @@ BackoffMonitor::HandleMediumBusyUpdates(linkId_t linkId,
     }
 
     auto& state = GetState(linkId);
+    auto navReset{false};
 
     if (physicalCsEnd.has_value())
     {
@@ -398,13 +399,15 @@ BackoffMonitor::HandleMediumBusyUpdates(linkId_t linkId,
     }
     if (virtualCsEnd.has_value())
     {
+        navReset = (*virtualCsEnd < state.virtualCsEnd);
         // NAV may be reset
         state.virtualCsEnd = *virtualCsEnd;
     }
 
     const auto now = Simulator::Now();
     const auto timeout =
-        Max(state.physicalCsEnd, state.virtualCsEnd) + GetTxopEndTimeout(linkId) - now;
+        (navReset ? state.virtualCsEnd - now // NAV is only reset when medium is idle
+                  : Max(state.physicalCsEnd, state.virtualCsEnd) + GetTxopEndTimeout(linkId) - now);
 
     using enum BackoffStatus;
     switch (state.backoffStatus)
