@@ -29,9 +29,37 @@ use this Python script to check and fix all formatting guidelines followed by |n
 Clang-format installation
 =========================
 
-Clang-format can be installed using your OS's package manager. Please note that you
-should install one of the supported versions of clang-format, which are listed in the
-following section.
+Clang-format can be installed using one of two methods.
+Please note that you should install one of the supported versions of clang-format,
+which are listed in the ``RELEASE_NOTES.md`` file.
+
+The first method is to install clang-format using the package manager available in the
+Linux distribution (e.g., Ubuntu's ``apt``).
+For example, in Ubuntu 24.04, clang-format 20 can be installed with the following command:
+
+.. sourcecode:: console
+
+  sudo apt install clang-format-20
+
+If the package manager does not provide one of the clang-format versions supported by |ns3|,
+users can install clang-format using Python's pip tool.
+
+The following command will install the latest version of clang-format:
+
+.. sourcecode:: console
+
+  pip3 install clang-format
+
+To install a specific version of clang-format, use the following command:
+
+.. sourcecode:: console
+
+  pip3 install clang-format==<version_number>
+
+where ``<version_number>`` is something like ``20.1.8`` (MAJOR.MINOR.PATCH).
+
+Starting with Python 3.11, pip requires users to either create a virtual environment (venv)
+or add the ``--break-system-packages`` flag to the installation commands above.
 
 Supported versions of clang-format
 ==================================
@@ -51,10 +79,11 @@ read the ``.clang-format`` file and automatically format the code on save or on 
 
 Please refer to the documentation of your IDE for more information.
 Some examples of IDE integration are provided in
-`clang-format documentation <https://clang.llvm.org/docs/ClangFormat.html>`_
+`clang-format documentation <https://clang.llvm.org/docs/ClangFormat.html>`_.
 
-As an example, VS Code can be configured to automatically format code on save, on paste
-and on type by enabling the following settings:
+As an example, VS Code's `C/C++ extension <https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools>`_
+contains the latest clang-format binary.
+VS Code can be configured to automatically format code on save, on paste and on type by enabling the following settings:
 
 .. sourcecode:: json
 
