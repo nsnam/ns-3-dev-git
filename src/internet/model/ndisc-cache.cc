@@ -53,7 +53,11 @@ void
 NdiscCache::DoDispose()
 {
     NS_LOG_FUNCTION(this);
-    Flush();
+    for (auto& iter : m_ndCache)
+    {
+        delete iter.second; /* delete the pointer NdiscCache::Entry */
+    }
+    m_ndCache.clear();
     m_device = nullptr;
     m_interface = nullptr;
     m_icmpv6 = nullptr;

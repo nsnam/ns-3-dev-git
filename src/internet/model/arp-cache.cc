@@ -88,7 +88,11 @@ void
 ArpCache::DoDispose()
 {
     NS_LOG_FUNCTION(this);
-    Flush();
+    for (auto& iter : m_arpCache)
+    {
+        delete iter.second; /* delete the pointer ArpCache::Entry */
+    }
+    m_arpCache.clear();
     m_device = nullptr;
     m_interface = nullptr;
     if (!m_waitReplyTimer.IsPending())
