@@ -13,6 +13,7 @@
 #include "ns3/ctrl-headers.h"
 #include "ns3/double.h"
 #include "ns3/frame-exchange-manager.h"
+#include "ns3/header-serialization-test.h"
 #include "ns3/mac-rx-middle.h"
 #include "ns3/mobility-helper.h"
 #include "ns3/multi-model-spectrum-channel.h"
@@ -26,7 +27,6 @@
 #include "ns3/recipient-block-ack-agreement.h"
 #include "ns3/spectrum-wifi-helper.h"
 #include "ns3/string.h"
-#include "ns3/test.h"
 #include "ns3/wifi-default-ack-manager.h"
 #include "ns3/wifi-mac-header.h"
 #include "ns3/wifi-mac-queue.h"
@@ -993,7 +993,7 @@ BlockAckRecipientBufferTest::DoRun()
  *
  * @brief Test for Multi-STA block ack header
  */
-class MultiStaCtrlBAckResponseHeaderTest : public TestCase
+class MultiStaCtrlBAckResponseHeaderTest : public HeaderSerializationTestCase
 {
   public:
     MultiStaCtrlBAckResponseHeaderTest();
@@ -1003,38 +1003,40 @@ class MultiStaCtrlBAckResponseHeaderTest : public TestCase
 };
 
 MultiStaCtrlBAckResponseHeaderTest::MultiStaCtrlBAckResponseHeaderTest()
-    : TestCase("Check the correctness of Multi-STA block ack")
+    : HeaderSerializationTestCase("Check the correctness of Multi-STA block ack")
 {
 }
 
 void
 MultiStaCtrlBAckResponseHeaderTest::DoRun()
 {
-    // Create a Multi-STA Block Ack with 6 Per AID TID Info subfields
-    BlockAckType baType(BlockAckType::MULTI_STA, {0, 4, 8, 16, 32, 8});
+    // Create a Multi-STA Block Ack with 8 Per AID TID Info subfields
+    BlockAckType baType(BlockAckType::MULTI_STA, {0, 4, 8, 16, 32, 8, 4, 0});
 
     CtrlBAckResponseHeader blockAck;
     blockAck.SetType(baType);
 
     /* 1st Per AID TID Info subfield */
+    std::size_t index = 0;
     uint16_t aid1 = 100;
     bool ackType1 = true;
     uint8_t tid1 = 1;
 
-    blockAck.SetAid11(aid1, 0);
-    blockAck.SetAckType(ackType1, 0);
-    blockAck.SetTidInfo(tid1, 0);
+    blockAck.SetAid11(aid1, index);
+    blockAck.SetAckType(ackType1, index);
+    blockAck.SetTidInfo(tid1, index);
 
     /* 2nd Per AID TID Info subfield */
+    ++index;
     uint16_t aid2 = 200;
     bool ackType2 = false;
     uint8_t tid2 = 2;
     uint16_t startSeq2 = 1000;
 
-    blockAck.SetAid11(aid2, 1);
-    blockAck.SetAckType(ackType2, 1);
-    blockAck.SetTidInfo(tid2, 1);
-    blockAck.SetStartingSequence(startSeq2, 1);
+    blockAck.SetAid11(aid2, index);
+    blockAck.SetAckType(ackType2, index);
+    blockAck.SetTidInfo(tid2, index);
+    blockAck.SetStartingSequence(startSeq2, index);
     // 1st byte of the bitmap: 01010101
     for (uint16_t i = startSeq2; i < startSeq2 + 8; i += 2)
     {
@@ -1053,15 +1055,16 @@ MultiStaCtrlBAckResponseHeaderTest::DoRun()
     }
 
     /* 3rd Per AID TID Info subfield */
+    ++index;
     uint16_t aid3 = 300;
     bool ackType3 = false;
     uint8_t tid3 = 3;
     uint16_t startSeq3 = 2000;
 
-    blockAck.SetAid11(aid3, 2);
-    blockAck.SetAckType(ackType3, 2);
-    blockAck.SetTidInfo(tid3, 2);
-    blockAck.SetStartingSequence(startSeq3, 2);
+    blockAck.SetAid11(aid3, index);
+    blockAck.SetAckType(ackType3, index);
+    blockAck.SetTidInfo(tid3, index);
+    blockAck.SetStartingSequence(startSeq3, index);
     // 1st byte of the bitmap: 01010101
     for (uint16_t i = startSeq3; i < startSeq3 + 8; i += 2)
     {
@@ -1096,15 +1099,16 @@ MultiStaCtrlBAckResponseHeaderTest::DoRun()
     }
 
     /* 4th Per AID TID Info subfield */
+    ++index;
     uint16_t aid4 = 400;
     bool ackType4 = false;
     uint8_t tid4 = 4;
     uint16_t startSeq4 = 3000;
 
-    blockAck.SetAid11(aid4, 3);
-    blockAck.SetAckType(ackType4, 3);
-    blockAck.SetTidInfo(tid4, 3);
-    blockAck.SetStartingSequence(startSeq4, 3);
+    blockAck.SetAid11(aid4, index);
+    blockAck.SetAckType(ackType4, index);
+    blockAck.SetTidInfo(tid4, index);
+    blockAck.SetStartingSequence(startSeq4, index);
     // 1st byte of the bitmap: 01010101
     for (uint16_t i = startSeq4; i < startSeq4 + 8; i += 2)
     {
@@ -1163,15 +1167,16 @@ MultiStaCtrlBAckResponseHeaderTest::DoRun()
     }
 
     /* 5th Per AID TID Info subfield */
+    ++index;
     uint16_t aid5 = 500;
     bool ackType5 = false;
     uint8_t tid5 = 5;
     uint16_t startSeq5 = 4000;
 
-    blockAck.SetAid11(aid5, 4);
-    blockAck.SetAckType(ackType5, 4);
-    blockAck.SetTidInfo(tid5, 4);
-    blockAck.SetStartingSequence(startSeq5, 4);
+    blockAck.SetAid11(aid5, index);
+    blockAck.SetAckType(ackType5, index);
+    blockAck.SetTidInfo(tid5, index);
+    blockAck.SetStartingSequence(startSeq5, index);
     // 1st byte of the bitmap: 01010101
     for (int i = startSeq5; i < startSeq5 + 8; i += 2)
     {
@@ -1278,23 +1283,36 @@ MultiStaCtrlBAckResponseHeaderTest::DoRun()
     }
 
     /* 6th Per AID TID Info subfield */
+    ++index;
     uint16_t aid6 = 2045;
     bool ackType6 = true;
     uint8_t tid6 = 6;
     Mac48Address address6("00:00:00:00:00:01");
 
-    blockAck.SetAid11(aid6, 5);
-    blockAck.SetAckType(ackType6, 5);
-    blockAck.SetTidInfo(tid6, 5);
-    blockAck.SetUnassociatedStaAddress(address6, 5);
+    blockAck.SetAid11(aid6, index);
+    blockAck.SetAckType(ackType6, index);
+    blockAck.SetTidInfo(tid6, index);
+    blockAck.SetUnassociatedStaAddress(address6, index);
 
-    // Serialize the header
-    Ptr<Packet> packet = Create<Packet>();
-    packet->AddHeader(blockAck);
+    /* 7th Per AID TID Info subfield */
+    ++index;
+    uint16_t aid7 = 0;
+    bool indefinite;
+    const auto unavailStart = MicroSeconds(200);
+    const auto unavailEnd = MicroSeconds(400);
 
-    // Deserialize the header
-    CtrlBAckResponseHeader blockAckCopy;
-    packet->RemoveHeader(blockAckCopy);
+    blockAck.SetAid11(aid7, index);
+    blockAck.SetPerAidTidInfoContext(MultiStaBaContext::FEEDBACK, index);
+    blockAck.SetFeedbackType(MultiStaBaFeedback::UNAVAILABILITY, index);
+    blockAck.SetStaUnavailable({.start = unavailStart, .end = unavailEnd}, indefinite, index);
+
+    /* 8th Per AID TID Info subfield */
+    ++index;
+    uint16_t aid8 = 800;
+    blockAck.SetAid11(aid8, index);
+    blockAck.SetPerAidTidInfoContext(MultiStaBaContext::ICR, index);
+
+    auto blockAckCopy = TestHeaderSerialization(blockAck);
 
     // Check that the header has been correctly deserialized
     BlockAckType baTypeCopy = blockAckCopy.GetType();
@@ -1302,41 +1320,45 @@ MultiStaCtrlBAckResponseHeaderTest::DoRun()
     NS_TEST_EXPECT_MSG_EQ(baTypeCopy.m_variant,
                           BlockAckType::MULTI_STA,
                           "Different block ack variant");
-    NS_TEST_EXPECT_MSG_EQ(baTypeCopy.m_bitmapLen.size(), 6, "Different number of bitmaps");
+    NS_TEST_EXPECT_MSG_EQ(baTypeCopy.m_bitmapLen.size(), 8, "Different number of bitmaps");
     NS_TEST_EXPECT_MSG_EQ(baTypeCopy.m_bitmapLen[0], 0, "Different length of the first bitmap");
     NS_TEST_EXPECT_MSG_EQ(baTypeCopy.m_bitmapLen[1], 4, "Different length of the second bitmap");
     NS_TEST_EXPECT_MSG_EQ(baTypeCopy.m_bitmapLen[2], 8, "Different length of the third bitmap");
     NS_TEST_EXPECT_MSG_EQ(baTypeCopy.m_bitmapLen[3], 16, "Different length of the fourth bitmap");
     NS_TEST_EXPECT_MSG_EQ(baTypeCopy.m_bitmapLen[4], 32, "Different length of the fifth bitmap");
     NS_TEST_EXPECT_MSG_EQ(baTypeCopy.m_bitmapLen[5], 8, "Different length for the sixth bitmap");
+    NS_TEST_EXPECT_MSG_EQ(baTypeCopy.m_bitmapLen[6], 4, "Different length for the seventh bitmap");
+    NS_TEST_EXPECT_MSG_EQ(baTypeCopy.m_bitmapLen[7], 0, "Different length for the eighth bitmap");
 
     /* Check 1st Per AID TID Info subfield */
-    NS_TEST_EXPECT_MSG_EQ(blockAckCopy.GetAid11(0),
+    index = 0;
+    NS_TEST_EXPECT_MSG_EQ(blockAckCopy.GetAid11(index),
                           aid1,
                           "Different AID for the first Per AID TID Info subfield");
-    NS_TEST_EXPECT_MSG_EQ(blockAckCopy.GetAckType(0),
+    NS_TEST_EXPECT_MSG_EQ(blockAckCopy.GetAckType(index),
                           ackType1,
                           "Different Ack Type for the first Per AID TID Info subfield");
-    NS_TEST_EXPECT_MSG_EQ(blockAckCopy.GetTidInfo(0),
+    NS_TEST_EXPECT_MSG_EQ(blockAckCopy.GetTidInfo(index),
                           tid1,
                           "Different TID for the first Per AID TID Info subfield");
 
     /* Check 2nd Per AID TID Info subfield */
-    NS_TEST_EXPECT_MSG_EQ(blockAckCopy.GetAid11(1),
+    ++index;
+    NS_TEST_EXPECT_MSG_EQ(blockAckCopy.GetAid11(index),
                           aid2,
                           "Different AID for the second Per AID TID Info subfield");
-    NS_TEST_EXPECT_MSG_EQ(blockAckCopy.GetAckType(1),
+    NS_TEST_EXPECT_MSG_EQ(blockAckCopy.GetAckType(index),
                           ackType2,
                           "Different Ack Type for the second Per AID TID Info subfield");
-    NS_TEST_EXPECT_MSG_EQ(blockAckCopy.GetTidInfo(1),
+    NS_TEST_EXPECT_MSG_EQ(blockAckCopy.GetTidInfo(index),
                           tid2,
                           "Different TID for the second Per AID TID Info subfield");
     NS_TEST_EXPECT_MSG_EQ(
-        blockAckCopy.GetStartingSequence(1),
+        blockAckCopy.GetStartingSequence(index),
         startSeq2,
         "Different starting sequence number for the second Per AID TID Info subfield");
 
-    auto& bitmap2 = blockAckCopy.GetBitmap(1);
+    auto& bitmap2 = blockAckCopy.GetBitmap(index);
     NS_TEST_EXPECT_MSG_EQ(bitmap2.size(),
                           4,
                           "Different bitmap length for the second Per AID TID Info subfield");
@@ -1358,21 +1380,22 @@ MultiStaCtrlBAckResponseHeaderTest::DoRun()
         "Error in the 4th byte of the bitmap for the second Per AID TID Info subfield");
 
     /* Check 3rd Per AID TID Info subfield */
-    NS_TEST_EXPECT_MSG_EQ(blockAckCopy.GetAid11(2),
+    ++index;
+    NS_TEST_EXPECT_MSG_EQ(blockAckCopy.GetAid11(index),
                           aid3,
                           "Different AID for the third Per AID TID Info subfield");
-    NS_TEST_EXPECT_MSG_EQ(blockAckCopy.GetAckType(2),
+    NS_TEST_EXPECT_MSG_EQ(blockAckCopy.GetAckType(index),
                           ackType3,
                           "Different Ack Type for the third Per AID TID Info subfield");
-    NS_TEST_EXPECT_MSG_EQ(blockAckCopy.GetTidInfo(2),
+    NS_TEST_EXPECT_MSG_EQ(blockAckCopy.GetTidInfo(index),
                           tid3,
                           "Different TID for the third Per AID TID Info subfield");
     NS_TEST_EXPECT_MSG_EQ(
-        blockAckCopy.GetStartingSequence(2),
+        blockAckCopy.GetStartingSequence(index),
         startSeq3,
         "Different starting sequence number for the third Per AID TID Info subfield");
 
-    auto& bitmap3 = blockAckCopy.GetBitmap(2);
+    auto& bitmap3 = blockAckCopy.GetBitmap(index);
     NS_TEST_EXPECT_MSG_EQ(bitmap3.size(),
                           8,
                           "Different bitmap length for the third Per AID TID Info subfield");
@@ -1410,21 +1433,22 @@ MultiStaCtrlBAckResponseHeaderTest::DoRun()
         "Error in the 8th byte of the bitmap for the third Per AID TID Info subfield");
 
     /* Check 4th Per AID TID Info subfield */
-    NS_TEST_EXPECT_MSG_EQ(blockAckCopy.GetAid11(3),
+    ++index;
+    NS_TEST_EXPECT_MSG_EQ(blockAckCopy.GetAid11(index),
                           aid4,
                           "Different AID for the fourth Per AID TID Info subfield");
-    NS_TEST_EXPECT_MSG_EQ(blockAckCopy.GetAckType(3),
+    NS_TEST_EXPECT_MSG_EQ(blockAckCopy.GetAckType(index),
                           ackType4,
                           "Different Ack Type for the fourth Per AID TID Info subfield");
-    NS_TEST_EXPECT_MSG_EQ(blockAckCopy.GetTidInfo(3),
+    NS_TEST_EXPECT_MSG_EQ(blockAckCopy.GetTidInfo(index),
                           tid4,
                           "Different TID for the fourth Per AID TID Info subfield");
     NS_TEST_EXPECT_MSG_EQ(
-        blockAckCopy.GetStartingSequence(3),
+        blockAckCopy.GetStartingSequence(index),
         startSeq4,
         "Different starting sequence number for the fourth Per AID TID Info subfield");
 
-    auto& bitmap4 = blockAckCopy.GetBitmap(3);
+    auto& bitmap4 = blockAckCopy.GetBitmap(index);
     NS_TEST_EXPECT_MSG_EQ(bitmap4.size(),
                           16,
                           "Different bitmap length for the fourth Per AID TID Info subfield");
@@ -1494,21 +1518,22 @@ MultiStaCtrlBAckResponseHeaderTest::DoRun()
         "Error in the 16th byte of the bitmap for the fourth Per AID TID Info subfield");
 
     /* Check 5th Per AID TID Info subfield */
-    NS_TEST_EXPECT_MSG_EQ(blockAckCopy.GetAid11(4),
+    ++index;
+    NS_TEST_EXPECT_MSG_EQ(blockAckCopy.GetAid11(index),
                           aid5,
                           "Different AID for the fifth Per AID TID Info subfield");
-    NS_TEST_EXPECT_MSG_EQ(blockAckCopy.GetAckType(4),
+    NS_TEST_EXPECT_MSG_EQ(blockAckCopy.GetAckType(index),
                           ackType5,
                           "Different Ack Type for the fifth Per AID TID Info subfield");
-    NS_TEST_EXPECT_MSG_EQ(blockAckCopy.GetTidInfo(4),
+    NS_TEST_EXPECT_MSG_EQ(blockAckCopy.GetTidInfo(index),
                           tid5,
                           "Different TID for the fifth Per AID TID Info subfield");
     NS_TEST_EXPECT_MSG_EQ(
-        blockAckCopy.GetStartingSequence(4),
+        blockAckCopy.GetStartingSequence(index),
         startSeq5,
         "Different starting sequence number for the fifth Per AID TID Info subfield");
 
-    auto& bitmap5 = blockAckCopy.GetBitmap(4);
+    auto& bitmap5 = blockAckCopy.GetBitmap(index);
     NS_TEST_EXPECT_MSG_EQ(bitmap5.size(),
                           32,
                           "Different bitmap length for the fifth Per AID TID Info subfield");
@@ -1642,19 +1667,61 @@ MultiStaCtrlBAckResponseHeaderTest::DoRun()
         "Error in the 32th byte of the bitmap for the fifth Per AID TID Info subfield");
 
     /* Check 6th Per AID TID Info subfield */
-    NS_TEST_EXPECT_MSG_EQ(blockAckCopy.GetAid11(5),
+    ++index;
+    NS_TEST_EXPECT_MSG_EQ(blockAckCopy.GetAid11(index),
                           aid6,
                           "Different AID for the sixth Per AID TID Info subfield");
-    NS_TEST_EXPECT_MSG_EQ(blockAckCopy.GetAckType(5),
+    NS_TEST_EXPECT_MSG_EQ(blockAckCopy.GetAckType(index),
                           ackType6,
                           "Different Ack Type for the sixth Per AID TID Info subfield");
-    NS_TEST_EXPECT_MSG_EQ(blockAckCopy.GetTidInfo(5),
+    NS_TEST_EXPECT_MSG_EQ(blockAckCopy.GetTidInfo(index),
                           tid6,
                           "Different TID for the sixth Per AID TID Info subfield");
     NS_TEST_EXPECT_MSG_EQ(
-        blockAckCopy.GetUnassociatedStaAddress(5),
+        blockAckCopy.GetUnassociatedStaAddress(index),
         address6,
         "Different starting sequence number for the sixth Per AID TID Info subfield");
+
+    /* Check 7th Per AID TID Info subfield */
+    ++index;
+    NS_TEST_EXPECT_MSG_EQ(blockAckCopy.GetAid11(index),
+                          aid7,
+                          "Different AID for the seventh Per AID TID Info subfield");
+    NS_TEST_EXPECT_MSG_EQ(static_cast<uint16_t>(blockAckCopy.GetPerAidTidInfoContext(index)),
+                          static_cast<uint16_t>(MultiStaBaContext::FEEDBACK),
+                          "Different context for the seventh Per AID TID Info subfield");
+    NS_TEST_EXPECT_MSG_EQ(static_cast<uint16_t>(blockAckCopy.GetFeedbackType(index)),
+                          static_cast<uint16_t>(MultiStaBaFeedback::UNAVAILABILITY),
+                          "Different feedback type for the seventh Per AID TID Info subfield");
+    auto unavailPeriod = blockAckCopy.GetUnavailability(index);
+    NS_TEST_ASSERT_MSG_EQ(unavailPeriod.has_value(),
+                          true,
+                          "No unavailability period found in the deserialized Feedback info");
+    NS_TEST_EXPECT_MSG_EQ(
+        indefinite,
+        !unavailPeriod->end.has_value(),
+        "Incorrect end of unavailability period from the deserialized Feedback info");
+
+    const auto expectedStart = MicroSeconds(unavailStart.GetMicroSeconds() >> 6) * 64;
+    NS_TEST_EXPECT_MSG_EQ(unavailPeriod->start,
+                          expectedStart,
+                          "Unexpected unavailable period start time");
+    if (!indefinite)
+    {
+        const auto expectedEnd = MicroSeconds(std::ceil(unavailEnd.GetMicroSeconds() / 64.)) * 64;
+        NS_TEST_EXPECT_MSG_EQ(unavailPeriod->end.value(),
+                              expectedEnd,
+                              "Unexpected unavailable period end time");
+    }
+
+    /* Check 8th Per AID TID Info subfield */
+    ++index;
+    NS_TEST_EXPECT_MSG_EQ(blockAckCopy.GetAid11(index),
+                          aid8,
+                          "Different AID for the eighth Per AID TID Info subfield");
+    NS_TEST_EXPECT_MSG_EQ(static_cast<uint16_t>(blockAckCopy.GetPerAidTidInfoContext(index)),
+                          static_cast<uint16_t>(MultiStaBaContext::ICR),
+                          "Different context for the eighth Per AID TID Info subfield");
 }
 
 /**
