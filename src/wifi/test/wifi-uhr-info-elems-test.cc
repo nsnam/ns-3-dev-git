@@ -10,6 +10,7 @@
 #include "ns3/log.h"
 #include "ns3/simulator.h"
 #include "ns3/uhr-capabilities.h"
+#include "ns3/uhr-mode-change.h"
 #include "ns3/uhr-operation.h"
 
 #include <optional>
@@ -137,6 +138,178 @@ void
 UhrOperationElementTest::DoRun()
 {
     TestHeaderSerialization(m_uhrOperation);
+}
+
+/**
+ * @ingroup wifi-test
+ * @ingroup tests
+ *
+ * @brief Test UHR Mode Change information element serialization and deserialization
+ */
+class UhrModeChangeElementTest : public HeaderSerializationTestCase
+{
+  public:
+    /**
+     * Parameters for UhrModeChangeElementTest
+     */
+    struct TestParams
+    {
+        std::string name;                                 ///< Test case name
+        std::vector<UhrModeChange::ModeTuple> modeTuples; ///< Mode Tuples
+    };
+
+    /**
+     * Constructor
+     *
+     * @param params Test parameters
+     */
+    UhrModeChangeElementTest(const TestParams& params);
+
+  private:
+    void DoRun() override;
+
+    UhrModeChange m_uhrModeChange; ///< UHR Mode Change element
+};
+
+UhrModeChangeElementTest::UhrModeChangeElementTest(const TestParams& params)
+    : HeaderSerializationTestCase(
+          "Check serialization and deserialization of UHR Mode Change elements: " + params.name)
+{
+    m_uhrModeChange.m_modeTuples = params.modeTuples;
+}
+
+void
+UhrModeChangeElementTest::DoRun()
+{
+    auto deserIe = TestHeaderSerialization(m_uhrModeChange);
+    NS_TEST_EXPECT_MSG_EQ(deserIe.m_modeTuples.size(),
+                          m_uhrModeChange.m_modeTuples.size(),
+                          "Number of Mode Tuples differs after serialization and deserialization");
+    for (std::size_t i = 0; i < m_uhrModeChange.m_modeTuples.size(); ++i)
+    {
+        const auto& origModeTuple = m_uhrModeChange.m_modeTuples[i];
+        const auto& deserModeTuple = deserIe.m_modeTuples[i];
+        NS_TEST_EXPECT_MSG_EQ(+deserModeTuple.modeId,
+                              +origModeTuple.modeId,
+                              "Mode ID field of Mode Tuple "
+                                  << i << " differs after serialization and deserialization");
+        NS_TEST_EXPECT_MSG_EQ(+deserModeTuple.modeEnable,
+                              +origModeTuple.modeEnable,
+                              "Mode Enable field of Mode Tuple "
+                                  << i << " differs after serialization and deserialization");
+        NS_TEST_EXPECT_MSG_EQ(+deserModeTuple.modeUpdate,
+                              +origModeTuple.modeUpdate,
+                              "Mode Update field of Mode Tuple "
+                                  << i << " differs after serialization and deserialization");
+        const auto expectHasModeLengthAndParams =
+            (origModeTuple.modeEnable == 1) &&
+            ((origModeTuple.modeId == UhrMode::DPS) || (origModeTuple.modeId == UhrMode::NPCA) ||
+             (origModeTuple.modeId == UhrMode::DSO) || (origModeTuple.modeId == UhrMode::EMLSR));
+        NS_TEST_EXPECT_MSG_EQ(deserModeTuple.modeLength.has_value(),
+                              expectHasModeLengthAndParams,
+                              "Mode Length field presence of Mode Tuple "
+                                  << i << " is expected to be "
+                                  << (expectHasModeLengthAndParams ? "present" : "not present"));
+        NS_TEST_EXPECT_MSG_EQ(deserModeTuple.modeParams.has_value(),
+                              expectHasModeLengthAndParams,
+                              "Mode Specific Parameters field presence of Mode Tuple "
+                                  << i << " is expected to be "
+                                  << (expectHasModeLengthAndParams ? "present" : "not present"));
+        if (!expectHasModeLengthAndParams)
+        {
+            continue;
+        }
+        const auto& origModeParams = origModeTuple.modeParams.value();
+        const auto& deserModeParams = deserModeTuple.modeParams.value();
+        NS_TEST_EXPECT_MSG_EQ(deserModeParams.index(),
+                              origModeParams.index(),
+                              "Mode Specific Parameters type of Mode Tuple "
+                                  << i << " differs after serialization and deserialization");
+        switch (origModeTuple.modeId)
+        {
+        case UhrMode::DPS: {
+            const auto& origDpsParams = std::get<UhrModeChange::DpsParams>(origModeParams);
+            const auto& deserDpsParams = std::get<UhrModeChange::DpsParams>(deserModeParams);
+            NS_TEST_EXPECT_MSG_EQ(
+                deserDpsParams.paddingDelay,
+                origDpsParams.paddingDelay,
+                "Padding Delay field of DPS Mode Specific Parameters in Mode Tuple "
+                    << i << " differs after serialization and deserialization");
+            NS_TEST_EXPECT_MSG_EQ(
+                deserDpsParams.transitionDelay,
+                origDpsParams.transitionDelay,
+                "Transition Delay field of DPS Mode Specific Parameters in Mode Tuple "
+                    << i << " differs after serialization and deserialization");
+            NS_TEST_EXPECT_MSG_EQ(
+                deserDpsParams.icfRequired,
+                origDpsParams.icfRequired,
+                "ICF Required field of DPS Mode Specific Parameters in Mode Tuple "
+                    << i << " differs after serialization and deserialization");
+            break;
+        }
+        case UhrMode::EMLSR: {
+            const auto& origEmlsrParams = std::get<UhrModeChange::EmlsrParams>(origModeParams);
+            const auto& deserEmlsrParams = std::get<UhrModeChange::EmlsrParams>(deserModeParams);
+            NS_TEST_EXPECT_MSG_EQ(
+                deserEmlsrParams.paddingDelay,
+                origEmlsrParams.paddingDelay,
+                "Padding Delay field of EMLSR Mode Specific Parameters in Mode Tuple "
+                    << i << " differs after serialization and deserialization");
+            NS_TEST_EXPECT_MSG_EQ(
+                deserEmlsrParams.transitionDelay,
+                origEmlsrParams.transitionDelay,
+                "Transition Delay field of EMLSR Mode Specific Parameters in Mode Tuple "
+                    << i << " differs after serialization and deserialization");
+            NS_TEST_EXPECT_MSG_EQ(
+                deserEmlsrParams.inDevCoexAct,
+                origEmlsrParams.inDevCoexAct,
+                "In-device Coexistence Activity field of EMLSR Mode Specific Parameters in "
+                "Mode Tuple "
+                    << i << " differs after serialization and deserialization");
+            break;
+        }
+        case UhrMode::NPCA: {
+            const auto& origNpcaParams = std::get<UhrModeChange::NpcaParams>(origModeParams);
+            const auto& deserNpcaParams = std::get<UhrModeChange::NpcaParams>(deserModeParams);
+            NS_TEST_EXPECT_MSG_EQ(
+                deserNpcaParams.switchingDelay,
+                origNpcaParams.switchingDelay,
+                "Switching Delay field of NPCA Mode Specific Parameters in Mode Tuple "
+                    << i << " differs after serialization and deserialization");
+            NS_TEST_EXPECT_MSG_EQ(
+                deserNpcaParams.switchBackDelay,
+                origNpcaParams.switchBackDelay,
+                "Switch Back Delay field of NPCA Mode Specific Parameters in Mode Tuple "
+                    << i << " differs after serialization and deserialization");
+            break;
+        }
+        case UhrMode::DSO: {
+            const auto& origDsoParams = std::get<UhrModeChange::DsoParams>(origModeParams);
+            const auto& deserDsoParams = std::get<UhrModeChange::DsoParams>(deserModeParams);
+            NS_TEST_EXPECT_MSG_EQ(
+                deserDsoParams.switchBackDelay,
+                origDsoParams.switchBackDelay,
+                "Switch Back Delay field of DSO Mode Specific Parameters in Mode Tuple "
+                    << i << " differs after serialization and deserialization");
+            NS_TEST_EXPECT_MSG_EQ(
+                deserDsoParams.paddingDelay,
+                origDsoParams.paddingDelay,
+                "Padding Delay field of DSO Mode Specific Parameters in Mode Tuple "
+                    << i << " differs after serialization and deserialization");
+            NS_TEST_EXPECT_MSG_EQ(
+                deserDsoParams.preferred80MHzSubband,
+                origDsoParams.preferred80MHzSubband,
+                "Preferred 80 MHz Subband field of DSO Mode Specific Parameters in Mode Tuple "
+                    << i << " differs after serialization and deserialization");
+            break;
+        }
+        default:
+            NS_ASSERT_MSG(
+                false,
+                "Unexpected Mode Specific Parameters type index: " << deserModeParams.index());
+            break;
+        }
+    }
 }
 
 /**
@@ -360,6 +533,105 @@ WifiUhrInfoElemsTestSuite::WifiUhrInfoElemsTestSuite()
                     .duoParams =
                         UhrOperation::DuoOpParams{
                             .maxStandaloneDuoBsrp = 31,
+                        },
+                }),
+                TestCase::Duration::QUICK);
+    AddTestCase(new UhrModeChangeElementTest({
+                    .name = "UHR Mode Change to enable DPS",
+                    .modeTuples =
+                        {
+                            UhrModeChange::ModeTuple{
+                                .modeId = UhrMode::DPS,
+                                .modeEnable = 1,
+                                .modeLength = WIFI_UHR_MODE_CHANGE_DPS_PARAMS_SIZE_B,
+                                .modeParams =
+                                    UhrModeChange::DpsParams{
+                                        .paddingDelay = 10,
+                                        .transitionDelay = 20,
+                                        .icfRequired = 1,
+                                    },
+                            },
+                        },
+                }),
+                TestCase::Duration::QUICK);
+    AddTestCase(new UhrModeChangeElementTest({
+                    .name = "UHR Mode Change to disable NPCA",
+                    .modeTuples =
+                        {
+                            UhrModeChange::ModeTuple{
+                                .modeId = UhrMode::NPCA,
+                                .modeEnable = 0,
+                            },
+                        },
+                }),
+                TestCase::Duration::QUICK);
+    AddTestCase(new UhrModeChangeElementTest({
+                    .name = "UHR Mode Change to disable EMLSR",
+                    .modeTuples =
+                        {
+                            UhrModeChange::ModeTuple{
+                                .modeId = UhrMode::EMLSR,
+                                .modeEnable = 0,
+                                .modeLength = WIFI_UHR_MODE_CHANGE_EMLSR_PARAMS_SIZE_B,
+                                .modeParams = // Even though parameters should be ignored when
+                                              // disabling a mode, this verifies that the presence
+                                              // of parameters in this case does not cause issues
+                                              // with serialization and deserialization
+                                UhrModeChange::EmlsrParams{},
+                            },
+                        },
+                }),
+                TestCase::Duration::QUICK);
+    AddTestCase(new UhrModeChangeElementTest({
+                    .name = "UHR Mode Change to update NPCA",
+                    .modeTuples =
+                        {
+                            UhrModeChange::ModeTuple{
+                                .modeId = UhrMode::NPCA,
+                                .modeEnable = 1,
+                                .modeUpdate = 1,
+                                .modeLength = WIFI_UHR_MODE_CHANGE_NPCA_PARAMS_SIZE_B,
+                                .modeParams =
+                                    UhrModeChange::NpcaParams{
+                                        .switchingDelay = 20,
+                                        .switchBackDelay = 30,
+                                    },
+                            },
+                        },
+                }),
+                TestCase::Duration::QUICK);
+    AddTestCase(new UhrModeChangeElementTest({
+                    .name = "UHR Mode Change to enable DSO, to update EMLSR and to disable DPS",
+                    .modeTuples =
+                        {
+                            UhrModeChange::ModeTuple{
+                                .modeId = UhrMode::DSO,
+                                .modeEnable = 1,
+                                .modeLength = WIFI_UHR_MODE_CHANGE_DSO_PARAMS_SIZE_B,
+                                .modeParams =
+                                    UhrModeChange::DsoParams{
+                                        .paddingDelay = 15,
+                                        .switchBackDelay = 25,
+                                        .preferred80MHzSubband = 1,
+                                    },
+                            },
+                            UhrModeChange::ModeTuple{
+                                .modeId = UhrMode::EMLSR,
+                                .modeEnable = 1,
+                                .modeUpdate = 1,
+                                .modeLength = WIFI_UHR_MODE_CHANGE_EMLSR_PARAMS_SIZE_B,
+                                .modeParams =
+                                    UhrModeChange::EmlsrParams{
+                                        .linkBm = 0x0037,
+                                        .paddingDelay = 5,
+                                        .transitionDelay = 15,
+                                        .inDevCoexAct = 1,
+                                    },
+                            },
+                            UhrModeChange::ModeTuple{
+                                .modeId = UhrMode::DPS,
+                                .modeEnable = 0,
+                            },
                         },
                 }),
                 TestCase::Duration::QUICK);
