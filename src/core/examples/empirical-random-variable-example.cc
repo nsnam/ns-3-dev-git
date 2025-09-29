@@ -200,14 +200,14 @@ main(int argc, char* argv[])
     // Create the ERV in sampling mode
     Ptr<EmpiricalRandomVariable> erv = CreateObject<EmpiricalRandomVariable>();
 
-    //                          // Expectation for bin
-    erv->CDF(0.0, 0.0 / 15.0);  // 0
-    erv->CDF(0.2, 1.0 / 15.0);  // 0.2 1/15  =  2/150
-    erv->CDF(0.4, 3.0 / 15.0);  // 0.4 2/15  =  8/150
-    erv->CDF(0.6, 4.0 / 15.0);  // 0.6 1/15  =  6/150
-    erv->CDF(0.8, 7.0 / 15.0);  // 0.8 3/15  = 24/150
-    erv->CDF(1.0, 9.0 / 15.0);  // 1.0 2/15  = 20/150
-    erv->CDF(1.0, 15.0 / 15.0); // 1.0 6/15  = 60/150  <avg> = 120/150 = 0.8
+    //                         // Expectation for bin
+    erv->CDF(0.0, 0.0);        // 0
+    erv->CDF(0.2, 1.0 / 15.0); // 0.2 1/15  =  2/150
+    erv->CDF(0.4, 3.0 / 15.0); // 0.4 2/15  =  8/150
+    erv->CDF(0.6, 4.0 / 15.0); // 0.6 1/15  =  6/150
+    erv->CDF(0.8, 7.0 / 15.0); // 0.8 3/15  = 24/150
+    erv->CDF(1.0, 9.0 / 15.0); // 1.0 2/15  = 20/150
+    erv->CDF(1.0, 1.0);        // 1.0 6/15  = 60/150  <avg> = 120/150 = 0.8
 
     if (single)
     {
