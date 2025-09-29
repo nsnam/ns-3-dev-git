@@ -1152,6 +1152,7 @@ class Int64x64DoubleTestCase : public TestCase
      *
      * This will lie in the closed interval [0, 64]
      */
+    // NOLINTNEXTLINE(misc-redundant-expression)
     static constexpr int MISS_MANT_DIG = std::max(0, 64 - LDBL_MANT_DIG);
 
     /**

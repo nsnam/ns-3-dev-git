@@ -268,12 +268,12 @@ main(int argc, char* argv[])
         plot.AppendExtra("set xrange [*:*]");
 
         auto x = CreateObject<EmpiricalRandomVariable>();
-        x->CDF(0.0, 0.0 / 15.0);
+        x->CDF(0.0, 0.0);
         x->CDF(0.2, 1.0 / 15.0);
         x->CDF(0.4, 3.0 / 15.0);
         x->CDF(0.6, 6.0 / 15.0);
         x->CDF(0.8, 10.0 / 15.0);
-        x->CDF(1.0, 15.0 / 15.0);
+        x->CDF(1.0, 1.0);
 
         plot.AddDataset(
             Histogram(x, probes, precision, "EmpiricalRandomVariable (Sampling)", true));

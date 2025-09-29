@@ -1217,9 +1217,6 @@ UeManager::RecvRrcConnectionReconfigurationCompleted(
     // This case is added to NS-3 in order to handle bearer de-activation scenario for CONNECTED
     // state UE
     case CONNECTED_NORMALLY:
-        NS_LOG_INFO("ignoring RecvRrcConnectionReconfigurationCompleted in state " << m_state);
-        break;
-
     case HANDOVER_LEAVING:
         NS_LOG_INFO("ignoring RecvRrcConnectionReconfigurationCompleted in state " << m_state);
         break;
