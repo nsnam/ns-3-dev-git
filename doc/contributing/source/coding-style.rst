@@ -40,14 +40,8 @@ Since each new major version of clang-format can add or modify properties,
 newer versions of clang-format might produce different outputs compared to
 previous versions.
 
-The following list contains the set of clang-format versions that are verified
-to produce consistent output among themselves.
-
-* clang-format-19
-* clang-format-18
-* clang-format-17
-* clang-format-16
-* clang-format-15
+The list of clang-format versions that are verified to produce consistent output
+among themselves are listed in the ``RELEASE_NOTES.md`` document.
 
 Integration with IDEs
 =====================
