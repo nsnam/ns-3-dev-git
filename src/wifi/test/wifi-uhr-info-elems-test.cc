@@ -10,6 +10,7 @@
 #include "ns3/log.h"
 #include "ns3/simulator.h"
 #include "ns3/uhr-capabilities.h"
+#include "ns3/uhr-mode-change.h"
 #include "ns3/uhr-operation.h"
 
 #include <optional>
@@ -131,6 +132,50 @@ void
 UhrOperationElementTest::DoRun()
 {
     TestHeaderSerialization(m_uhrOperation);
+}
+
+/**
+ * @ingroup wifi-test
+ * @ingroup tests
+ *
+ * @brief Test UHR Mode Change information element serialization and deserialization
+ */
+class UhrModeChangeElementTest : public HeaderSerializationTestCase
+{
+  public:
+    /**
+     * Parameters for UhrModeChangeElementTest
+     */
+    struct TestParams
+    {
+        std::string name;                                 ///< Test case name
+        std::vector<UhrModeChange::ModeTuple> modeTuples; ///< Mode Tuples
+    };
+
+    /**
+     * Constructor
+     *
+     * @param params Test parameters
+     */
+    UhrModeChangeElementTest(const TestParams& params);
+
+  private:
+    void DoRun() override;
+
+    UhrModeChange m_uhrModeChange; ///< UHR Mode Change element
+};
+
+UhrModeChangeElementTest::UhrModeChangeElementTest(const TestParams& params)
+    : HeaderSerializationTestCase(
+          "Check serialization and deserialization of UHR Mode Change elements: " + params.name)
+{
+    m_uhrModeChange.m_modeTuples = params.modeTuples;
+}
+
+void
+UhrModeChangeElementTest::DoRun()
+{
+    TestHeaderSerialization(m_uhrModeChange);
 }
 
 /**
@@ -291,6 +336,64 @@ WifiUhrInfoElemsTestSuite::WifiUhrInfoElemsTestSuite()
                         UhrOperation::DbeOpParams{
                             .dBeBandwidth = 4,
                             .dbeDisabledSubchannelBitmap = 0x000F,
+                        },
+                }),
+                TestCase::Duration::QUICK);
+    AddTestCase(new UhrModeChangeElementTest({
+                    .name = "UHR Mode Change to enable DSO",
+                    .modeTuples =
+                        {
+                            UhrModeChange::ModeTuple{
+                                .modeId = static_cast<uint8_t>(UhrModeChange::UhrModes::DSO),
+                                .modeEnable = 1},
+                        },
+                }),
+                TestCase::Duration::QUICK);
+    AddTestCase(new UhrModeChangeElementTest({
+                    .name = "UHR Mode Change to update NPCA",
+                    .modeTuples =
+                        {
+                            UhrModeChange::ModeTuple{
+                                .modeId = static_cast<uint8_t>(UhrModeChange::UhrModes::NPCA),
+                                .modeEnable = 1,
+                                .modeUpdate = 1,
+                                .modeLength = 2,
+                                .modeParams =
+                                    UhrModeChange::NpcaParams{
+                                        .switchingDelay = 20,
+                                        .switchBackDelay = 30,
+                                    },
+                            },
+                        },
+                }),
+                TestCase::Duration::QUICK);
+    AddTestCase(new UhrModeChangeElementTest({
+                    .name = "UHR Mode Change to enable NPCA and update EMLSR",
+                    .modeTuples =
+                        {
+                            UhrModeChange::ModeTuple{
+                                .modeId = static_cast<uint8_t>(UhrModeChange::UhrModes::NPCA),
+                                .modeEnable = 1,
+                                .modeLength = 2,
+                                .modeParams =
+                                    UhrModeChange::NpcaParams{
+                                        .switchingDelay = 20,
+                                        .switchBackDelay = 30,
+                                    },
+                            },
+                            UhrModeChange::ModeTuple{
+                                .modeId = static_cast<uint8_t>(UhrModeChange::UhrModes::EMLSR),
+                                .modeEnable = 1,
+                                .modeUpdate = 1,
+                                .modeLength = 4,
+                                .modeParams =
+                                    UhrModeChange::EmlsrParams{
+                                        .linkBm = 0x0037,
+                                        .paddingDelay = 5,
+                                        .transitionDelay = 15,
+                                        .inDevCoexAct = 1,
+                                    },
+                            },
                         },
                 }),
                 TestCase::Duration::QUICK);
