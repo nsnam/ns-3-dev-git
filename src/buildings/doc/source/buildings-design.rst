@@ -117,7 +117,7 @@ The BuildingsPropagationLossModel provides an additional set of building-depende
 External Wall Loss (EWL)
 -------------------------
 
-This component models the penetration loss through walls for indoor to outdoor communications and vice-versa. The values are taken from the [cost231]_ model.
+This component models the penetration loss through walls for indoor to outdoor communications and vice-versa. The values are taken from the COST231 model.
 
   * Wood ~ 4 dB
   * Concrete with windows (not metallized) ~ 7 dB
