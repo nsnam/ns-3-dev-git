@@ -100,6 +100,22 @@ struct WifiChannelConfig
         double width{};                              ///< channel width in MHz
         WifiPhyBand band{WIFI_PHY_BAND_UNSPECIFIED}; ///< PHY band
         uint8_t p20Index{};                          ///< primary20 index
+
+        /**
+         * Constructor.
+         *
+         * @param n the channel number
+         * @param w the channel width
+         * @param b the PHY band
+         * @param i the primary20 index
+         */
+        SegmentWithoutUnits(uint8_t n, double w, WifiPhyBand b, uint8_t i)
+            : number(n),
+              width(w),
+              band(b),
+              p20Index(i)
+        {
+        }
     };
 
     /// a channel segment, as a struct with units for channel width
