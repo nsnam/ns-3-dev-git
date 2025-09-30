@@ -50,6 +50,7 @@ class UhrFrameExchangeManager : public EhtFrameExchangeManager
     void TbPpduTimeout(WifiPsduMap* psduMap, std::size_t nSolicitedStations) override;
     std::set<uint8_t> GetIndicesOccupyingRu(const CtrlTriggerHeader& trigger,
                                             uint16_t aid) const override;
+    bool GetTxAllowedFor(const Time& duration) const override;
 
     /**
      * @param psdu the given PSDU

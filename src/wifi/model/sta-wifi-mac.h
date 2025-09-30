@@ -14,6 +14,7 @@
 #include "wifi-mac.h"
 
 #include "ns3/attribute-container.h"
+#include "ns3/coex-arbitrator.h"
 #include "ns3/eht-configuration.h"
 #include "ns3/enum.h"
 #include "ns3/pair.h"
@@ -36,6 +37,7 @@ class PowerSaveManager;
 class WifiAssocManager;
 class EmlsrManager;
 class DsoManager;
+class WifiCoexManager;
 
 /**
  * @ingroup wifi
@@ -257,6 +259,16 @@ class StaWifiMac : public WifiMac
      * @return the DSO Manager
      */
     Ptr<DsoManager> GetDsoManager() const;
+
+    /**
+     * @return the wifi coex Manager
+     */
+    Ptr<WifiCoexManager> GetWifiCoexManager();
+
+    /**
+     * @return the coex Arbitrator
+     */
+    Ptr<coex::Arbitrator> GetCoexArbitrator();
 
     /**
      * Get the frame body of the Probe Request to transmit on the given link.
@@ -821,6 +833,7 @@ class StaWifiMac : public WifiMac
     WifiAssocType m_assocType;                ///< type of association
     Ptr<EmlsrManager> m_emlsrManager;         ///< EMLSR Manager
     Ptr<DsoManager> m_dsoManager;             ///< DSO Manager
+    Ptr<WifiCoexManager> m_wifiCoexManager;   ///< Wifi coex Manager
     Time m_waitBeaconTimeout;                 ///< wait beacon timeout
     Time m_probeRequestTimeout;               ///< probe request timeout
     WifiScanParams::Map m_scanChannels;       ///< data structure containing the channels to scan

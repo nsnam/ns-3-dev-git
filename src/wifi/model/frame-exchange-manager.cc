@@ -700,7 +700,16 @@ FrameExchangeManager::ForwardMpduDown(Ptr<WifiMpdu> mpdu, WifiTxVector& txVector
         Simulator::Schedule(txDuration, &FrameExchangeManager::TransmissionSucceeded, this);
     }
 
-    m_phy->Send(psdu, txVector);
+    if (GetTxAllowedFor(txDuration))
+    {
+        m_phy->Send(psdu, txVector);
+    }
+}
+
+bool
+FrameExchangeManager::GetTxAllowedFor(const Time& duration) const
+{
+    return true;
 }
 
 void

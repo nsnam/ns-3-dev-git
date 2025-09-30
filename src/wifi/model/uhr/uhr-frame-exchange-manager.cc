@@ -12,7 +12,9 @@
 #include "uhr-phy.h"
 
 #include "ns3/ap-wifi-mac.h"
+#include "ns3/coex-arbitrator.h"
 #include "ns3/sta-wifi-mac.h"
+#include "ns3/wifi-coex-manager.h"
 #include "ns3/wifi-net-device.h"
 #include "ns3/wifi-ns3-constants.h"
 
@@ -526,6 +528,23 @@ UhrFrameExchangeManager::SetIcfPaddingAndTxVector(CtrlTriggerHeader& trigger,
         std::size_t nDbps = rate / 1e6 * 4;
         trigger.SetPaddingSize((1 << (maxPaddingDelay + 2)) * nDbps / 8);
     }
+}
+
+bool
+UhrFrameExchangeManager::GetTxAllowedFor(const Time& duration) const
+{
+    Ptr<coex::Arbitrator> coexArbitrator;
+    if (m_staMac && (coexArbitrator = m_staMac->GetCoexArbitrator()))
+    {
+        if (auto nextStart = coexArbitrator->GetCurrOrNextEventStart();
+            nextStart.has_value() && nextStart.value() < Simulator::Now() + duration)
+        {
+            NS_LOG_DEBUG("TX not allowed because of an overlapping coex event with start time "
+                         << nextStart->As(Time::S));
+            return false;
+        }
+    }
+    return EhtFrameExchangeManager::GetTxAllowedFor(duration);
 }
 
 } // namespace ns3

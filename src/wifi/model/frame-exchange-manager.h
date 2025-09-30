@@ -602,6 +602,14 @@ class FrameExchangeManager : public Object
     virtual void ForwardMpduDown(Ptr<WifiMpdu> mpdu, WifiTxVector& txVector);
 
     /**
+     * Return whether this device is allowed to transmit for the given duration starting from now.
+     *
+     * @param duration the given duration
+     * @return whether this device is allowed to transmit for the given duration starting from now
+     */
+    virtual bool GetTxAllowedFor(const Time& duration) const;
+
+    /**
      * Dequeue the given MPDU from the queue in which it is stored.
      *
      * @param mpdu the given MPDU

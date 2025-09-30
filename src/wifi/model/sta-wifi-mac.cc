@@ -17,16 +17,19 @@
 #include "qos-txop.h"
 #include "snr-tag.h"
 #include "wifi-assoc-manager.h"
+#include "wifi-coex-manager.h"
 #include "wifi-mac-queue.h"
 #include "wifi-net-device.h"
 #include "wifi-phy.h"
 
+#include "ns3/coex-arbitrator.h"
 #include "ns3/dso-manager.h"
 #include "ns3/eht-configuration.h"
 #include "ns3/emlsr-manager.h"
 #include "ns3/he-configuration.h"
 #include "ns3/ht-configuration.h"
 #include "ns3/log.h"
+#include "ns3/node.h"
 #include "ns3/packet.h"
 #include "ns3/pointer.h"
 #include "ns3/random-variable-stream.h"
@@ -581,6 +584,34 @@ Ptr<DsoManager>
 StaWifiMac::GetDsoManager() const
 {
     return m_dsoManager;
+}
+
+Ptr<WifiCoexManager>
+StaWifiMac::GetWifiCoexManager()
+{
+    if (m_wifiCoexManager)
+    {
+        return m_wifiCoexManager;
+    }
+
+    if (auto coexArbitrator = GetDevice()->GetNode()->GetObject<coex::Arbitrator>())
+    {
+        m_wifiCoexManager =
+            DynamicCast<WifiCoexManager>(coexArbitrator->GetDeviceCoexManager(coex::Rat::WIFI));
+        return m_wifiCoexManager;
+    }
+
+    return nullptr;
+}
+
+Ptr<coex::Arbitrator>
+StaWifiMac::GetCoexArbitrator()
+{
+    if (auto wifiCoexManager = GetWifiCoexManager())
+    {
+        return wifiCoexManager->GetCoexArbitrator();
+    }
+    return nullptr;
 }
 
 uint16_t

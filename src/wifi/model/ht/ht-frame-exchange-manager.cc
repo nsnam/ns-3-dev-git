@@ -1472,7 +1472,10 @@ HtFrameExchangeManager::ForwardPsduDown(Ptr<const WifiPsdu> psdu, WifiTxVector& 
         Simulator::Schedule(txDuration, &HtFrameExchangeManager::TransmissionSucceeded, this);
     }
 
-    m_phy->Send(psdu, txVector);
+    if (GetTxAllowedFor(txDuration))
+    {
+        m_phy->Send(psdu, txVector);
+    }
 }
 
 bool

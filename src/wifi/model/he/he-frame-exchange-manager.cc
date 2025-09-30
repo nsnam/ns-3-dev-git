@@ -970,7 +970,10 @@ HeFrameExchangeManager::ForwardPsduMapDown(WifiConstPsduMap psduMap, WifiTxVecto
     const auto txDuration = WifiPhy::CalculateTxDuration(psduMap, txVector, m_phy->GetPhyBand());
     SetTxNav(*psduMap.cbegin()->second->begin(), txDuration);
 
-    m_phy->Send(psduMap, txVector);
+    if (GetTxAllowedFor(txDuration))
+    {
+        m_phy->Send(psduMap, txVector);
+    }
 }
 
 Ptr<WifiMpdu>
