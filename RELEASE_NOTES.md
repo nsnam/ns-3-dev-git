@@ -12,7 +12,10 @@ a [GitLab.com issue tracker](https://gitlab.com/nsnam/ns-3-dev/-/issues) number,
 and references prefixed by '!' refer to a
 [GitLab.com merge request](https://gitlab.com/nsnam/ns-3-dev/-/merge_requests) number.
 
-## Release 3-dev
+## Release 3.46
+
+This release is available from:
+<https://www.nsnam.org/release/ns-3.46.tar.bz2>
 
 ### Supported platforms
 
