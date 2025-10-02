@@ -792,23 +792,24 @@ def search_cmake_cache(build_profile):
                     current_cmake_generator = line.split("=")[-1]
 
     if not current_cmake_generator:
+        supported_cmake_generators = subprocess.check_output(["cmake", "--help"]).decode()
         # Search for available generators
-        cmake_generator_map = {
+        cmake_build_tool_to_generator_map = {
             "msbuild": "Visual Studio 17 2022",
             "ninja": "Ninja",
             "make": "Unix Makefiles",
             "xcodebuild": "Xcode",
         }
         available_generators = []
-        for generator in cmake_generator_map.keys():
-            if shutil.which(generator):
+        for build_tool, generator in cmake_build_tool_to_generator_map.items():
+            if shutil.which(build_tool) and generator in supported_cmake_generators:
                 available_generators.append(generator)
 
         # Select the first one
         if len(available_generators) == 0:
             raise Exception("No generator available.")
 
-        current_cmake_generator = cmake_generator_map[available_generators[0]]
+        current_cmake_generator = available_generators[0]
 
     return current_cmake_cache_folder, current_cmake_generator
 
