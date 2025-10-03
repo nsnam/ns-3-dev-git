@@ -44,52 +44,6 @@ weekly-fedora:
   script:
     - echo "Starting Fedora jobs"
 
-# Fedora 40
-weekly-build-fedora-40-debug:
-  extends: .weekly-build-fedora
-  needs: ["weekly-fedora"]
-  image: fedora:40
-  stage: build
-  variables:
-    MODE: debug
-
-weekly-build-fedora-40-default:
-  extends: .weekly-build-fedora
-  needs: ["weekly-fedora"]
-  image: fedora:40
-  stage: build
-  variables:
-    MODE: default
-
-weekly-build-fedora-40-optimized:
-  extends: .weekly-build-fedora
-  needs: ["weekly-fedora"]
-  image: fedora:40
-  stage: build
-  variables:
-    MODE: optimized
-
-# Fedora 40 test
-weekly-test-fedora-40-default:
-  extends: .weekly-build-fedora
-  image: fedora:40
-  stage: test
-  needs: ["weekly-build-fedora-40-default"]
-  dependencies:
-    - weekly-build-fedora-40-default
-  variables:
-    MODE: default
-
-weekly-test-fedora-40-optimized:
-  extends: .weekly-build-fedora
-  image: fedora:40
-  stage: test
-  needs: ["weekly-build-fedora-40-optimized"]
-  dependencies:
-    - weekly-build-fedora-40-optimized
-  variables:
-    MODE: optimized
-
 # Fedora 41
 weekly-build-fedora-41-debug:
   extends: .weekly-build-fedora
@@ -133,5 +87,51 @@ weekly-test-fedora-41-optimized:
   needs: ["weekly-build-fedora-41-optimized"]
   dependencies:
     - weekly-build-fedora-41-optimized
+  variables:
+    MODE: optimized
+
+# Fedora 42
+weekly-build-fedora-42-debug:
+  extends: .weekly-build-fedora
+  needs: ["weekly-fedora"]
+  image: fedora:42
+  stage: build
+  variables:
+    MODE: debug
+
+weekly-build-fedora-42-default:
+  extends: .weekly-build-fedora
+  needs: ["weekly-fedora"]
+  image: fedora:42
+  stage: build
+  variables:
+    MODE: default
+
+weekly-build-fedora-42-optimized:
+  extends: .weekly-build-fedora
+  needs: ["weekly-fedora"]
+  image: fedora:42
+  stage: build
+  variables:
+    MODE: optimized
+
+# Fedora 42 test
+weekly-test-fedora-42-default:
+  extends: .weekly-build-fedora
+  image: fedora:42
+  stage: test
+  needs: ["weekly-build-fedora-42-default"]
+  dependencies:
+    - weekly-build-fedora-42-default
+  variables:
+    MODE: default
+
+weekly-test-fedora-42-optimized:
+  extends: .weekly-build-fedora
+  image: fedora:42
+  stage: test
+  needs: ["weekly-build-fedora-42-optimized"]
+  dependencies:
+    - weekly-build-fedora-42-optimized
   variables:
     MODE: optimized
