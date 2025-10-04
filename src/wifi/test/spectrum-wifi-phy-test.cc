@@ -1711,13 +1711,13 @@ class SpectrumWifiPhyMultipleInterfacesTest : public TestCase
      *
      * @param index the index to identify the RX PHY to check
      * @param expectedCcaBusyIndication flag to indicate whether a CCA BUSY notification is expected
-     * @param switchingDelay delay between the TX has started and the time RX switched to the TX
-     * channel
+     * @param timeBeforeChannelSwitchStarted delay between the TX has started and the time RX
+     * switched to the TX channel
      * @param propagationDelay the propagation delay
      */
     void CheckCcaIndication(std::size_t index,
                             bool expectedCcaBusyIndication,
-                            Time switchingDelay,
+                            Time timeBeforeChannelSwitchStarted,
                             Time propagationDelay);
 
     /**
@@ -1749,6 +1749,11 @@ class SpectrumWifiPhyMultipleInterfacesTest : public TestCase
     std::vector<Ptr<SpectrumWifiPhy>> m_txPhys{};                   //!< TX PHYs
     std::vector<Ptr<SpectrumWifiPhy>> m_rxPhys{};                   //!< RX PHYs
     std::vector<std::shared_ptr<TestPhyListener>> m_listeners{};    //!< listeners
+
+    Time m_switchingDelay{
+        MicroSeconds(50)}; //!< The switching delay to consider to the test, this has to be lessen
+                           //!< than the default one to ensure TX is still ongoing when the RX PHYs
+                           //!< switched to the TX channel
 
     std::vector<uint32_t> m_counts; //!< count number of packets received by PHYs
     std::vector<uint32_t>
@@ -1959,11 +1964,13 @@ SpectrumWifiPhyMultipleInterfacesTest::CheckResults(
 void
 SpectrumWifiPhyMultipleInterfacesTest::CheckCcaIndication(std::size_t index,
                                                           bool expectedCcaBusyIndication,
-                                                          Time switchingDelay,
+                                                          Time timeBeforeChannelSwitchStarted,
                                                           Time propagationDelay)
 {
     const auto expectedCcaBusyStart =
-        expectedCcaBusyIndication ? m_lastTxStart + switchingDelay : Seconds(0);
+        expectedCcaBusyIndication
+            ? m_lastTxStart + timeBeforeChannelSwitchStarted + m_switchingDelay
+            : Seconds(0);
     const auto expectedCcaBusyEnd =
         expectedCcaBusyIndication ? m_lastTxEnd + propagationDelay : Seconds(0);
     NS_LOG_FUNCTION(this << index << expectedCcaBusyIndication << expectedCcaBusyStart
@@ -2115,11 +2122,13 @@ SpectrumWifiPhyMultipleInterfacesTest::DoSetup()
         txPhy->SetAttribute("TxMaskInnerBandMinimumRejection", DoubleValue(-120.0));
         txPhy->SetAttribute("TxMaskOuterBandMinimumRejection", DoubleValue(-120.0));
         txPhy->SetAttribute("TxMaskOuterBandMaximumRejection", DoubleValue(-120.0));
+        txPhy->SetAttribute("ChannelSwitchDelay", TimeValue(m_switchingDelay));
         m_txPhys.push_back(txPhy);
 
         const auto index = m_rxPhys.size();
         auto rxPhy =
             DynamicCast<SpectrumWifiPhy>(DynamicCast<WifiNetDevice>(staDevice.Get(0))->GetPhy(i));
+        rxPhy->SetAttribute("ChannelSwitchDelay", TimeValue(m_switchingDelay));
         rxPhy->TraceConnectWithoutContext(
             "PhyRxBegin",
             MakeCallback(&SpectrumWifiPhyMultipleInterfacesTest::RxBeginCallback, this)
@@ -2419,12 +2428,7 @@ class EmlsrSpectrumPhyInterfacesTest : public SpectrumWifiPhyMultipleInterfacesT
     explicit EmlsrSpectrumPhyInterfacesTest(ChannelSwitchScenario chanSwitchScenario);
 
   protected:
-    void DoSetup() override;
     void DoRun() override;
-
-  private:
-    ChannelSwitchScenario
-        m_chanSwitchScenario; //!< the channel switch scenario to consider for the test
 };
 
 EmlsrSpectrumPhyInterfacesTest::EmlsrSpectrumPhyInterfacesTest(
@@ -2434,26 +2438,11 @@ EmlsrSpectrumPhyInterfacesTest::EmlsrSpectrumPhyInterfacesTest(
               ((chanSwitchScenario == ChannelSwitchScenario::BEFORE_TX)
                    ? std::string("TX after channel switch")
                    : std::string("channel switch during propagation delay")),
-          true), // track signals from inactive interfaces
-      m_chanSwitchScenario{chanSwitchScenario}
+          true) // track signals from inactive interfaces
 {
-}
-
-void
-EmlsrSpectrumPhyInterfacesTest::DoSetup()
-{
-    SpectrumWifiPhyMultipleInterfacesTest::DoSetup();
-    if (m_chanSwitchScenario != ChannelSwitchScenario::BETWEEN_TX_RX)
+    if (chanSwitchScenario == ChannelSwitchScenario::BETWEEN_TX_RX)
     {
-        return;
-    }
-    for (auto& phy : m_txPhys)
-    {
-        phy->SetAttribute("ChannelSwitchDelay", TimeValue(NanoSeconds(1)));
-    }
-    for (auto& phy : m_rxPhys)
-    {
-        phy->SetAttribute("ChannelSwitchDelay", TimeValue(NanoSeconds(1)));
+        m_switchingDelay = NanoSeconds(1); // very short delay to switch during propagation delay
     }
 }
 
@@ -2692,14 +2681,6 @@ DsoSpectrumPhyInterfacesTest::DoSetup()
 {
     Config::SetDefault("ns3::UhrConfiguration::DsoActivated", BooleanValue(true));
     SpectrumWifiPhyMultipleInterfacesTest::DoSetup();
-    for (auto& phy : m_txPhys)
-    {
-        phy->SetAttribute("ChannelSwitchDelay", TimeValue(NanoSeconds(1)));
-    }
-    for (auto& phy : m_rxPhys)
-    {
-        phy->SetAttribute("ChannelSwitchDelay", TimeValue(NanoSeconds(1)));
-    }
 }
 
 void
