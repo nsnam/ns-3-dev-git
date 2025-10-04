@@ -938,6 +938,12 @@ class WifiPhyCcaIndicationTest : public TestCase
     void StopSignal(Ptr<WaveformGenerator> signalGenerator);
 
     /**
+     * Update the CCA threshold of the PHY
+     * @param ccaThreshold the new CCA threshold value to be set
+     */
+    void UpdateCcaThreshold(dBm_u ccaThreshold);
+
+    /**
      * Check the PHY state
      * @param scenario the scenario under test
      * @param expectedState the expected state of the PHY
@@ -1022,6 +1028,15 @@ class WifiPhyCcaIndicationTest : public TestCase
     };
 
     /**
+     * structure that holds information to perform CCA threshold update
+     */
+    struct CcaThresholdUpdatePoint
+    {
+        Time timePoint;     //!< time at which the update will be performed
+        dBm_u ccaThreshold; //!< new CCA threshold value to be set
+    };
+
+    /**
      * Schedule test to perform.
      * @param delay the reference delay to schedule the events
      * @param scenario description of the scenario to test
@@ -1029,13 +1044,15 @@ class WifiPhyCcaIndicationTest : public TestCase
      * @param generatedPpdus the vector of PPDUs to be generated
      * @param stateCheckpoints the vector of PHY state checks
      * @param ccaCheckpoints the vector of PHY CCA checks
+     * @param ccaThresholdUpdates the vector of CCA threshold updates
      */
     void ScheduleTest(Time delay,
                       const std::string& scenario,
                       const std::vector<TxSignalInfo>& generatedSignals,
                       const std::vector<TxPpduInfo>& generatedPpdus,
                       const std::vector<StateCheckPoint>& stateCheckpoints,
-                      const std::vector<CcaCheckPoint>& ccaCheckpoints);
+                      const std::vector<CcaCheckPoint>& ccaCheckpoints,
+                      const std::vector<CcaThresholdUpdatePoint>& ccaThresholdUpdates = {});
 
     /**
      * Reset function
@@ -1142,6 +1159,13 @@ WifiPhyCcaIndicationTest::SendSuPpdu(dBm_u txPower, MHz_u frequency, MHz_u bandw
     m_uxPhy->SetTxPowerEnd(txPower);
 
     m_uxPhy->Send(psdu, txVector);
+}
+
+void
+WifiPhyCcaIndicationTest::UpdateCcaThreshold(dBm_u ccaThreshold)
+{
+    NS_LOG_FUNCTION(this << ccaThreshold);
+    m_rxPhy->SetCcaEdThreshold(ccaThreshold);
 }
 
 void
@@ -1265,12 +1289,14 @@ WifiPhyCcaIndicationTest::LogScenario(const std::string& scenario) const
 }
 
 void
-WifiPhyCcaIndicationTest::ScheduleTest(Time delay,
-                                       const std::string& scenario,
-                                       const std::vector<TxSignalInfo>& generatedSignals,
-                                       const std::vector<TxPpduInfo>& generatedPpdus,
-                                       const std::vector<StateCheckPoint>& stateCheckpoints,
-                                       const std::vector<CcaCheckPoint>& ccaCheckpoints)
+WifiPhyCcaIndicationTest::ScheduleTest(
+    Time delay,
+    const std::string& scenario,
+    const std::vector<TxSignalInfo>& generatedSignals,
+    const std::vector<TxPpduInfo>& generatedPpdus,
+    const std::vector<StateCheckPoint>& stateCheckpoints,
+    const std::vector<CcaCheckPoint>& ccaCheckpoints,
+    const std::vector<CcaThresholdUpdatePoint>& ccaThresholdUpdates)
 {
     Simulator::Schedule(delay, &WifiPhyCcaIndicationTest::LogScenario, this, scenario);
 
@@ -1335,6 +1361,14 @@ WifiPhyCcaIndicationTest::ScheduleTest(Time delay,
                             scenario,
                             checkpoint.expectedPhyState);
     }
+
+    for (const auto& ccaThresholdUpdate : ccaThresholdUpdates)
+    {
+        Simulator::Schedule(delay + ccaThresholdUpdate.timePoint,
+                            &WifiPhyCcaIndicationTest::UpdateCcaThreshold,
+                            this,
+                            ccaThresholdUpdate.ccaThreshold);
+    }
 }
 
 void
@@ -1343,6 +1377,7 @@ WifiPhyCcaIndicationTest::Reset()
     NS_LOG_FUNCTION(this);
     m_rxPhy->ConfigureStandard(m_standard); // make sure to clear PHY states
     m_rxPhyStateListener->Reset();
+    UpdateCcaThreshold(dBm_u{-62}); // restore default CCA threshold
 }
 
 void
@@ -1541,6 +1576,8 @@ WifiPhyCcaIndicationTest::RunOne()
     const auto txDuration2 = txEndSignal2 - tx2Start;
 
     const auto txDiff = tx2Start - tx1Start;
+
+    const auto thresholdUpdateTime = MicroSeconds(75);
 
     //----------------------------------------------------------------------------------------------------------------------------------
     // Verify PHY state stays IDLE and no CCA-BUSY indication is reported when a signal below the
@@ -3616,6 +3653,85 @@ WifiPhyCcaIndicationTest::RunOne()
         delay += testStep;
         ResetExpectedPer20MhzCcaBusyDurations();
     }
+
+    if (m_channelWidth > MHz_u{20})
+    {
+        m_expectedPer20MhzCcaBusyDurations.at(0).at(0) = txDuration1;
+        m_expectedPer20MhzCcaBusyDurations.at(1).at(0) = Time();
+    }
+
+    ScheduleTest(
+        delay,
+        "Reception of signal above ED threshold that triggers CCA BUSY indication followed by CCA "
+        "IDLE indication when the threshold is increased",
+        {{dBm_u{-60}, tx1Start, txDuration1, P20_CENTER_FREQUENCY, MHz_u{20}}},
+        {},
+        {
+            {aCcaTimeWithDelta, WifiPhyState::CCA_BUSY}, // CCA-BUSY after aCcaTimeWithDelta
+            {thresholdUpdateTime - smallDelta,
+             WifiPhyState::CCA_BUSY}, // CCA-BUSY just before the threshold changes
+            {thresholdUpdateTime + smallDelta,
+             WifiPhyState::IDLE}, // IDLE just after the threshold changes
+            {txEndSignal1 - smallDelta,
+             WifiPhyState::IDLE}, // IDLE just before the transmission ends
+            {txEndSignal1 + smallDelta, WifiPhyState::IDLE} // IDLE just after the transmission ends
+        },
+        {{thresholdUpdateTime - smallDelta,
+          1, // first notification CCA busy until end of transmission
+          tx1Start,
+          txEndSignal1,
+          WIFI_CHANLIST_PRIMARY,
+          m_expectedPer20MhzCcaBusyDurations.at(0)},
+         {txEndSignal1 - smallDelta,
+          2, // second notification CCA busy ends when threshold changed
+          tx1Start,
+          thresholdUpdateTime,
+          WIFI_CHANLIST_PRIMARY,
+          m_expectedPer20MhzCcaBusyDurations.at(1)}},
+        {
+            {.timePoint = thresholdUpdateTime,
+             .ccaThreshold =
+                 dBm_u{-50}}, // change CCA threshold during the reception to a higher value
+        });
+    delay += testStep;
+    ResetExpectedPer20MhzCcaBusyDurations();
+
+    if (m_channelWidth > MHz_u{20})
+    {
+        m_expectedPer20MhzCcaBusyDurations.at(0).at(0) = txDuration1 - thresholdUpdateTime;
+    }
+
+    ScheduleTest(
+        delay,
+        "Reception of signal below ED threshold that triggers CCA IDLE indication followed by CCA "
+        "BUSY indication when the threshold is decreased",
+        {{dBm_u{-65}, tx1Start, txDuration1, P20_CENTER_FREQUENCY, MHz_u{20}}},
+        {},
+        {
+            {aCcaTimeWithDelta, WifiPhyState::IDLE}, // IDLE after aCcaTimeWithDelta
+            {thresholdUpdateTime - smallDelta,
+             WifiPhyState::IDLE}, // IDLE just before the threshold changes
+            {thresholdUpdateTime + smallDelta,
+             WifiPhyState::CCA_BUSY}, // CCA-BUSY just after the threshold changes
+            {txEndSignal1 - smallDelta,
+             WifiPhyState::CCA_BUSY}, // CCA-BUSY just before the transmission ends
+            {txEndSignal1 + smallDelta, WifiPhyState::IDLE} // IDLE just after the transmission ends
+        },
+        {
+            {txEndSignal1 - smallDelta,
+             1, // first notification CCA busy until end of transmission since threshold changed
+             thresholdUpdateTime,
+             txEndSignal1,
+             WIFI_CHANLIST_PRIMARY,
+             m_expectedPer20MhzCcaBusyDurations.at(0)},
+        },
+        {
+            {.timePoint = thresholdUpdateTime,
+             .ccaThreshold =
+                 dBm_u{-70}}, // change CCA threshold during the reception to a higher value
+        });
+    delay += testStep;
+    ResetExpectedPer20MhzCcaBusyDurations();
 
     Simulator::Run();
 }
