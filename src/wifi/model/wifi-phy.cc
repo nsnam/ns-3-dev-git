@@ -1306,7 +1306,10 @@ WifiPhy::DoChannelSwitch()
          * state are added to the event list and are employed later to figure
          * out the state of the medium after the switching.
          */
-        SwitchMaybeToCcaBusy();
+        Simulator::Schedule(GetChannelSwitchDelay(), [=, this]() {
+            NS_LOG_DEBUG("Channel switching completed: update CCA indication");
+            SwitchMaybeToCcaBusy();
+        });
     }
 }
 
